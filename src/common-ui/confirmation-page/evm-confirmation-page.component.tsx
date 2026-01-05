@@ -237,19 +237,7 @@ const ConfirmationPage = ({
             ))}
           </div>
         )}
-        {balanceInfo && (
-          <Card className="balance-change-panel">
-            <div className="balance-change-title">
-              {chrome.i18n.getMessage('evm_balance_change_title')}
-            </div>
 
-            <div className="balance-panel">
-              <div className="balance-before">{balanceInfo?.before}</div>
-              <SVGIcon icon={SVGIcons.GLOBAL_TRIANGLE_ARROW} className="icon" />
-              <div className="balance-after">{balanceInfo?.estimatedAfter}</div>
-            </div>
-          </Card>
-        )}
         {hasGasFee && (
           <GasFeePanel
             chain={chain}
@@ -263,6 +251,20 @@ const ConfirmationPage = ({
             forceOpenGasFeePanelEvent={forceOpenGasFeePanelEvent}
             setErrorMessage={handleErrors}
           />
+        )}
+
+        {balanceInfo && (
+          <Card className="balance-change-panel">
+            <div className="balance-change-title">
+              {chrome.i18n.getMessage('evm_balance_change_title')}
+            </div>
+
+            <div className="balance-panel">
+              <div className="balance-before">{balanceInfo?.before}</div>
+              <SVGIcon icon={SVGIcons.GLOBAL_TRIANGLE_ARROW} className="icon" />
+              <div className="balance-after">{balanceInfo?.estimatedAfter}</div>
+            </div>
+          </Card>
         )}
       </div>
       <div className="evm-bottom-panel">

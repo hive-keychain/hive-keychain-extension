@@ -735,24 +735,6 @@ export const SendTransaction = (props: Props) => {
           }
           bottomPanel={
             <>
-              {shouldDisplayBalanceChange && balanceInfo && (
-                <Card className="balance-change-panel">
-                  <div className="balance-change-title">
-                    {chrome.i18n.getMessage('evm_balance_change_title')}
-                  </div>
-
-                  <div className="balance-panel">
-                    <div className="balance-before">{balanceInfo?.before}</div>
-                    <SVGIcon
-                      icon={SVGIcons.GLOBAL_TRIANGLE_ARROW}
-                      className="icon"
-                    />
-                    <div className="balance-after">
-                      {balanceInfo?.estimatedAfter}
-                    </div>
-                  </div>
-                </Card>
-              )}
               {transactionHook.ready &&
                 transactionHook.fields &&
                 chain &&
@@ -771,6 +753,24 @@ export const SendTransaction = (props: Props) => {
                     setErrorMessage={transactionHook.setErrorMessage}
                   />
                 )}
+              {shouldDisplayBalanceChange && balanceInfo && (
+                <Card className="balance-change-panel">
+                  <div className="balance-change-title">
+                    {chrome.i18n.getMessage('evm_balance_change_title')}
+                  </div>
+
+                  <div className="balance-panel">
+                    <div className="balance-before">{balanceInfo?.before}</div>
+                    <SVGIcon
+                      icon={SVGIcons.GLOBAL_TRIANGLE_ARROW}
+                      className="icon"
+                    />
+                    <div className="balance-after">
+                      {balanceInfo?.estimatedAfter}
+                    </div>
+                  </div>
+                </Card>
+              )}
             </>
           }
           onConfirm={() => handleClickOnConfirm()}
