@@ -45,22 +45,20 @@ export const TextAreaComponent = React.forwardRef(
         setMounted(false);
         document.removeEventListener('keydown', listenToBackspace);
       };
-    }, []);
+    }, [chips]);
 
     useEffect(() => {
       props.onChange(chips);
     }, [chips]);
 
     const listenToBackspace = (event: KeyboardEvent) => {
-      if (
-        event.key === 'Backspace' &&
-        (event.target as HTMLTextAreaElement).value.length === 0
-      ) {
-        deleteLastChip();
+      if (event.key === 'Backspace') {
+        deleteChip(chips[chips.length - 1]);
       }
     };
 
     const addChips = () => {
+      if (localValue.trim().length === 0) return;
       if (props.maxChips && chips.length + 1 > props.maxChips) return;
 
       setChips((previousChips) => {
@@ -71,11 +69,8 @@ export const TextAreaComponent = React.forwardRef(
       setLocalValue('');
     };
 
-    const deleteLastChip = () => {
-      setChips((previousChips) => previousChips.slice(0, -1));
-    };
-
     const deleteChip = (chip: string) => {
+      if (!chip) return;
       const newChips = chips.filter((c) => c !== chip);
       setChips(newChips);
       props.onChange(newChips);
@@ -104,6 +99,16 @@ export const TextAreaComponent = React.forwardRef(
         props.onChange(newChips);
       } else {
         props.onChange(pastedData);
+      }
+    };
+
+    const handleEnterOrSpaceKeyPressed = (
+      e: React.KeyboardEvent<HTMLTextAreaElement>,
+    ) => {
+      if (props.useChips) {
+        if (e.key === ' ' || e.key === 'Enter') {
+          addChips();
+        }
       }
     };
 
@@ -145,45 +150,35 @@ export const TextAreaComponent = React.forwardRef(
                 />
               </div>
             ))}
-            {
-              <textarea
-                disabled={props.disabled}
-                data-testid={props.dataTestId}
-                ref={ref}
-                placeholder={`${
-                  props.placeholder
-                    ? props.skipPlaceholderTranslation
-                      ? props.placeholder
-                      : chrome.i18n.getMessage(props.placeholder)
-                    : ''
-                } ${props.required ? '*' : ''}`}
-                value={props.useChips ? localValue : props.value}
-                onChange={(e) =>
-                  props.useChips
-                    ? setLocalValue(e.target.value)
-                    : props.onChange(e.target.value)
-                }
-                onKeyPress={(e) => {
-                  if (props.useChips) {
-                    if (e.key === ' ') {
-                      addChips();
-                    } else if (e.key === 'Backspace') {
-                      deleteChip(chips[chips.length - 1]);
-                    }
-                  }
-                }}
-                onFocus={() => handleOnFocus()}
-                onBlur={() => handleOnBlur()}
-                onPaste={($event) => handlePaste($event)}
-                className={`${
-                  props.useChips &&
-                  props.maxChips &&
-                  chips.length >= props.maxChips
-                    ? 'force-hide'
-                    : ''
-                }`}
-              />
-            }
+            <textarea
+              disabled={props.disabled}
+              data-testid={props.dataTestId}
+              ref={ref}
+              placeholder={`${
+                props.placeholder
+                  ? props.skipPlaceholderTranslation
+                    ? props.placeholder
+                    : chrome.i18n.getMessage(props.placeholder)
+                  : ''
+              } ${props.required ? '*' : ''}`}
+              value={props.useChips ? localValue : props.value}
+              onChange={(e) =>
+                props.useChips
+                  ? setLocalValue(e.target.value)
+                  : props.onChange(e.target.value)
+              }
+              onKeyPress={handleEnterOrSpaceKeyPressed}
+              onFocus={() => handleOnFocus()}
+              onBlur={() => handleOnBlur()}
+              onPaste={($event) => handlePaste($event)}
+              className={`${
+                props.useChips &&
+                props.maxChips &&
+                chips.length >= props.maxChips
+                  ? 'force-hide'
+                  : ''
+              }`}
+            />
 
             {!props.disabled && props.value && props.value.length > 0 && (
               <SVGIcon
