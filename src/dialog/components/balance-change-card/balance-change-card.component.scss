@@ -1,0 +1,27 @@
+.balance-change-panel {
+  color: var(--main-font-color);
+  .balance-change-title {
+    align-self: flex-start;
+  }
+
+  .insufficient-balance {
+    @include poppins400(12px);
+    color: $red;
+  }
+
+  .balance-panel {
+    display: flex;
+    flex: 1;
+    column-gap: 8px;
+    align-items: center;
+    line-height: 24px;
+    justify-content: space-between;
+    width: 100%;
+    @include poppins400(14px);
+
+    .icon {
+      --triangle-arrow-color: #{$red};
+      @include icon-size(24px);
+    }
+  }
+}

@@ -1,3 +1,4 @@
+import { BalanceChangeCard } from '@dialog/components/balance-change-card/balance-change-card.component';
 import { EvmRequestItem } from '@dialog/evm/components/evm-request-item/evm-request-item';
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
@@ -32,15 +33,14 @@ import {
 } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { ConfirmationPopup } from 'src/common-ui/confirmation-warning-info/confirmation-popups/confirmation-popups.component';
 import { ConfirmationWarnings } from 'src/common-ui/confirmation-warning-info/confirmation-warnings/confirmation-warnings.component';
-import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 import FormatUtils from 'src/utils/format.utils';
 
 interface BalanceInfo {
   before: string;
   estimatedAfter: string;
+  insufficientBalance?: boolean;
 }
 
 const ConfirmationPage = ({
@@ -148,6 +148,8 @@ const ConfirmationPage = ({
           (tokenInfo as EvmSmartContractInfoErc20).decimals || 8,
           true,
         )}  ${tokenInfo?.symbol}`,
+        insufficientBalance:
+          new Decimal(balance?.balanceInteger!).sub(amount!).toNumber() < 0,
       });
     }
   };
@@ -254,17 +256,11 @@ const ConfirmationPage = ({
         )}
 
         {balanceInfo && (
-          <Card className="balance-change-panel">
-            <div className="balance-change-title">
-              {chrome.i18n.getMessage('evm_balance_change_title')}
-            </div>
-
-            <div className="balance-panel">
-              <div className="balance-before">{balanceInfo?.before}</div>
-              <SVGIcon icon={SVGIcons.GLOBAL_TRIANGLE_ARROW} className="icon" />
-              <div className="balance-after">{balanceInfo?.estimatedAfter}</div>
-            </div>
-          </Card>
+          <BalanceChangeCard
+            beforeBalance={balanceInfo.before}
+            afterBalance={balanceInfo.estimatedAfter}
+            insufficientBalance={balanceInfo.insufficientBalance}
+          />
         )}
       </div>
       <div className="evm-bottom-panel">

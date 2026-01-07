@@ -1,16 +1,19 @@
+import { BalanceChangeCard } from '@dialog/components/balance-change-card/balance-change-card.component';
 import { RequestId, RequestTransfer } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
-import React from 'react';
+import AccountUtils from '@popup/hive/utils/account.utils';
+import React, { useEffect, useState } from 'react';
 import AmountWithLogo from 'src/common-ui/amount-with-logo/amount-with-logo';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
-import RequestBalance from 'src/dialog/components/request-balance/request-balance';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import Operation from 'src/dialog/hive/operation/operation';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 import { useTransferCheck } from 'src/dialog/hooks/transfer-check';
-import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
+import CurrencyUtils, {
+  BaseCurrencies,
+} from 'src/popup/hive/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 
 type Props = {
@@ -23,6 +26,10 @@ type Props = {
 };
 
 const Transfer = (props: Props) => {
+  const [beforeBalance, setBeforeBalance] = useState<string>('');
+  const [afterBalance, setAfterBalance] = useState<string>('');
+  const [insufficientBalance, setInsufficientBalance] =
+    useState<boolean>(false);
   const { data, accounts, rpc } = props;
   const { memo } = data;
   const anonymousProps = useAnonymousRequest(data, accounts);
@@ -40,6 +47,32 @@ const Transfer = (props: Props) => {
     memoField = chrome.i18n.getMessage('popup_empty');
   }
 
+  useEffect(() => {
+    initBalance();
+  }, []);
+
+  const initBalance = async () => {
+    if (data.username) {
+      const account = await AccountUtils.getExtendedAccount(data.username);
+      const balanceNumber = parseFloat(
+        (
+          (data.currency.toLowerCase() === BaseCurrencies.HIVE
+            ? account.balance
+            : account.hbd_balance) as string
+        ).split(' ')[0],
+      );
+      setBeforeBalance(
+        `${FormatUtils.formatCurrencyValue(balanceNumber)} ${currencyLabel}`,
+      );
+      setAfterBalance(
+        `${FormatUtils.formatCurrencyValue(
+          balanceNumber - parseFloat(data.amount),
+        )} ${currencyLabel}`,
+      );
+      setInsufficientBalance(balanceNumber - parseFloat(data.amount) < 0);
+    }
+  };
+
   const renderUsername = () => {
     return !accounts && data.username ? (
       <>
@@ -56,6 +89,17 @@ const Transfer = (props: Props) => {
       title={chrome.i18n.getMessage('dialog_title_transfer')}
       header={header}
       redHeader
+      bottomPanel={
+        <>
+          {beforeBalance && afterBalance && (
+            <BalanceChangeCard
+              beforeBalance={beforeBalance}
+              afterBalance={afterBalance}
+              insufficientBalance={insufficientBalance}
+            />
+          )}
+        </>
+      }
       {...anonymousProps}
       {...props}>
       {renderUsername()}
@@ -71,13 +115,12 @@ const Transfer = (props: Props) => {
             : SVGIcons.WALLET_HBD_LOGO
         }
       />
-      <Separator type={'horizontal'} fullSize />
-      <RequestBalance
+      {/* <RequestBalance
         username={anonymousProps.username}
         rpc={props.rpc}
         amount={parseFloat(data.amount)}
         currency={data.currency}
-      />
+      /> */}
       {data.memo && data.memo.length ? (
         <>
           <Separator type={'horizontal'} fullSize />

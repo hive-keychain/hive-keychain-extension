@@ -5690,5 +5690,9 @@
   "evm_cancel_transaction_confirm_message": {
     "message": "You are about to cancel a unknown pending transaction.",
     "description": "Error during cancel transaction"
+  },
+  "insufficient_balance_warning": {
+    "message": "Insufficient balance. Transaction will fail.",
+    "description": "Insufficient balance warning message"
   }
 }

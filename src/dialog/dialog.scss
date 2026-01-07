@@ -1,12 +1,8 @@
 @import '../common-style/common-style.scss';
 @import '../common-ui/common-ui.scss';
-@import './components/collapsible-item/collapsible-item.scss';
-@import './components/dialog-header/dialog-header.component.scss';
-@import './components/dialog-caption/dialog-caption.component.scss';
-@import './components/display-text/display-text.scss';
 @import './hive/hive.scss';
 @import './evm/evm.scss';
-@import './components/request-username/request-username.scss';
+@import './components/components.scss';
 @import './multichain/multichain.scss';
 
 .theme {

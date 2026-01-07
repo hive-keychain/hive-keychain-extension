@@ -1,3 +1,4 @@
+import { BalanceChangeCard } from '@dialog/components/balance-change-card/balance-change-card.component';
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { AvalancheApi } from '@popup/evm/api/avalanche.api';
@@ -35,10 +36,7 @@ import Decimal from 'decimal.js';
 import { ethers, HDNodeWallet, Wallet } from 'ethers';
 import EventEmitter from 'events';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Card } from 'src/common-ui/card/card.component';
-import { SVGIcons } from 'src/common-ui/icons.enum';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
@@ -55,6 +53,7 @@ interface Props {
 interface BalanceInfo {
   before: string;
   estimatedAfter: string;
+  insufficientBalance?: boolean;
 }
 
 export const SendTransaction = (props: Props) => {
@@ -700,6 +699,9 @@ export const SendTransaction = (props: Props) => {
         (tokenInfo as EvmSmartContractInfoErc20).decimals || 8,
         true,
       )}  ${tokenInfo?.symbol}`,
+      insufficientBalance:
+        new Decimal(balance?.balanceInteger!).sub(transferAmount!).toNumber() <
+        0,
     });
   };
 
@@ -753,24 +755,16 @@ export const SendTransaction = (props: Props) => {
                     setErrorMessage={transactionHook.setErrorMessage}
                   />
                 )}
-              {shouldDisplayBalanceChange && balanceInfo && (
-                <Card className="balance-change-panel">
-                  <div className="balance-change-title">
-                    {chrome.i18n.getMessage('evm_balance_change_title')}
-                  </div>
-
-                  <div className="balance-panel">
-                    <div className="balance-before">{balanceInfo?.before}</div>
-                    <SVGIcon
-                      icon={SVGIcons.GLOBAL_TRIANGLE_ARROW}
-                      className="icon"
-                    />
-                    <div className="balance-after">
-                      {balanceInfo?.estimatedAfter}
-                    </div>
-                  </div>
-                </Card>
-              )}
+              {shouldDisplayBalanceChange &&
+                balanceInfo &&
+                balanceInfo.before &&
+                balanceInfo.estimatedAfter && (
+                  <BalanceChangeCard
+                    beforeBalance={balanceInfo.before}
+                    afterBalance={balanceInfo.estimatedAfter}
+                    insufficientBalance={balanceInfo.insufficientBalance}
+                  />
+                )}
             </>
           }
           onConfirm={() => handleClickOnConfirm()}

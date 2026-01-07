@@ -40,6 +40,7 @@ type Props = {
   username?: string;
   setUsername?: (username: string) => void;
   redHeader?: boolean;
+  bottomPanel?: any;
 };
 
 const Operation = ({
@@ -57,6 +58,7 @@ const Operation = ({
   username,
   redHeader,
   setUsername,
+  bottomPanel,
 }: Props) => {
   const [keep, setKeep] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -236,17 +238,11 @@ const Operation = ({
             setUsername={setUsername!}
           />
         )}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-around',
-            flex: 1,
-            flexDirection: 'column',
-          }}>
-          <div className="operation-body">
-            <div className="fields">{...children}</div>
-          </div>
+        <div className="operation-body">
+          <div className="fields">{...children}</div>
         </div>
+
+        {bottomPanel && <>{bottomPanel}</>}
       </div>
       {twoFABots && Object.keys(twoFABots).length > 0 && (
         <div className="two-fa-codes-panel">
