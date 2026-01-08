@@ -33,7 +33,7 @@ export const EditContactPopupComponent = ({
 
   const save = () => {
     onSaveClicked({
-      ...favoriteAddress,
+      id: favoriteAddress.id,
       label: contactLabel,
       address: contactAddress,
     });

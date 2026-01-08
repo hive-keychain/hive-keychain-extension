@@ -21,30 +21,26 @@ export const EditContactComponent = ({
   onDeleteClicked,
   chainType,
 }: Props) => {
-  const [contactLabel, setContactLabel] = useState(favoriteAddress.label);
-  const [contactAddress, setContactAddress] = useState(favoriteAddress.address);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  const save = async () => {
+  const save = async (item: FavoriteAddress) => {
     onSaveClicked({
-      ...favoriteAddress,
-      label: contactLabel,
-      address: contactAddress,
+      ...item,
+      label: item.label,
+      address: item.address,
     });
     setIsPopupOpen(false);
   };
   const closePopup = async () => {
     setIsPopupOpen(false);
-    setContactLabel(favoriteAddress.label);
-    setContactAddress(favoriteAddress.address);
   };
 
   const openEditContactModal = () => {
     setIsPopupOpen(true);
   };
 
-  const deleteContact = () => {
-    onDeleteClicked(favoriteAddress);
+  const deleteContact = (item: FavoriteAddress) => {
+    onDeleteClicked(item);
     setIsPopupOpen(false);
   };
 
@@ -81,8 +77,8 @@ export const EditContactComponent = ({
       {isPopupOpen && (
         <EditContactPopupComponent
           favoriteAddress={favoriteAddress}
-          onSaveClicked={save}
-          onDeleteClicked={deleteContact}
+          onSaveClicked={(item) => save(item)}
+          onDeleteClicked={(item) => deleteContact(item)}
           closePopup={closePopup}
           chainType={chainType}
         />
