@@ -79,7 +79,11 @@ export const EditContactPopupComponent = ({
           onChange={setContactLabel}
         />
         <TextAreaComponent
-          label="evm_contact_address"
+          label={
+            chainType === ChainType.HIVE
+              ? 'popup_html_accounts'
+              : 'evm_contact_address'
+          }
           value={contactAddress}
           onChange={setContactAddress}
           useChips={false}

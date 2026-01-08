@@ -9,16 +9,20 @@
     flex-direction: column;
     row-gap: 24px;
     margin: 0 24px;
+  }
 
+  .evm-contacts-card {
+    overflow: hidden;
+    max-height: 420px;
     .chain-custom-select {
       width: 100%;
     }
-
     .edit-contacts-panel {
       display: flex;
       flex-direction: column;
       row-gap: 8px;
       width: 100%;
+      overflow: auto;
 
       .right-action-logo {
         div {

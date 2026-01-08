@@ -23,11 +23,14 @@
     display: flex;
     flex-direction: column;
     row-gap: 8px;
+    overflow: hidden;
+    max-height: 300px;
     .edit-contacts-panel {
       display: flex;
       flex-direction: column;
       row-gap: 8px;
       width: 100%;
+      overflow: auto;
 
       .right-action-logo {
         div {

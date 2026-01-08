@@ -120,7 +120,7 @@ const Contacts = ({ chain, setTitleContainerProperties }: PropsType) => {
 
   return (
     <div className="evm-contacts-page">
-      <Card>
+      <Card className="evm-contacts-card">
         {chainOptions && selectedChain && (
           <ComplexeCustomSelect
             options={chainOptions}
