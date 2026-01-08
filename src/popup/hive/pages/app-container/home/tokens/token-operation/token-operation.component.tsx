@@ -263,8 +263,8 @@ const TokensOperation = ({
             removeFromLoadingList('html_popup_confirm_transaction_operation');
             if (tokenOperationResult.confirmed) {
               await FavoriteUserUtils.saveFavoriteUser(
-                form.receiverUsername,
                 activeAccount,
+                form.receiverUsername,
               );
               setSuccessMessage(`popup_html_${operationType}_tokens_success`);
               navigateTo(Screen.HOME_PAGE, true);

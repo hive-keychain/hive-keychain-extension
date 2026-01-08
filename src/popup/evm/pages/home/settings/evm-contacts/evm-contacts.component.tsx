@@ -1,17 +1,17 @@
 import { Card } from '@common-ui/card/card.component';
+import { EditContactPopupComponent } from '@common-ui/contacts/edit-contact-popup/edit-contact-popup.component';
+import { EditContactComponent } from '@common-ui/contacts/edit-contact/edit-contact.component';
 import {
   ComplexeCustomSelect,
   OptionItem,
 } from '@common-ui/custom-select/custom-select.component';
 import { LabelComponent } from '@common-ui/label/label.component';
+import { FavoriteAddress } from '@interfaces/contacts.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import {
   EvmAddressType,
-  EvmFavoriteAddress,
   EvmWhitelistedAddresses,
 } from '@popup/evm/interfaces/evm-addresses.interface';
-import { EvmEditContactPopupComponent } from '@popup/evm/pages/home/settings/evm-contacts/evm-edit-contact-popup/evm-edit-contact-popup.component';
-import { EvmEditContactComponent } from '@popup/evm/pages/home/settings/evm-contacts/evm-edit-contact/evm-edit-contact.component';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import { openModal } from '@popup/multichain/actions/modal.actions';
@@ -27,17 +27,18 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { v4 } from 'uuid';
 
-const EvmContacts = ({ chain, setTitleContainerProperties }: PropsType) => {
+const Contacts = ({ chain, setTitleContainerProperties }: PropsType) => {
   const [chainOptions, setChainOptions] = useState<OptionItem[]>();
   const [selectedChain, setSelectedChain] = useState<EvmChain>(chain);
   const [addresses, setAddresses] = useState<EvmWhitelistedAddresses>();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [newFavoriteAddress, setNewFavoriteAddress] =
-    useState<EvmFavoriteAddress>({
+  const [newFavoriteAddress, setNewFavoriteAddress] = useState<FavoriteAddress>(
+    {
       address: '',
       label: '',
       id: v4(),
-    });
+    },
+  );
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -74,7 +75,7 @@ const EvmContacts = ({ chain, setTitleContainerProperties }: PropsType) => {
   };
 
   const updateWhitelistedAddresses = async (
-    updatedFavoriteAddress: EvmFavoriteAddress,
+    updatedFavoriteAddress: FavoriteAddress,
     type: EvmAddressType,
   ) => {
     await EvmAddressesUtils.updateAddress(
@@ -85,7 +86,7 @@ const EvmContacts = ({ chain, setTitleContainerProperties }: PropsType) => {
     initAddresses(selectedChain);
   };
 
-  const createNewFavoriteAddress = async (item: EvmFavoriteAddress) => {
+  const createNewFavoriteAddress = async (item: FavoriteAddress) => {
     await EvmAddressesUtils.saveWalletAddress(
       selectedChain.chainId,
       item.address,
@@ -106,7 +107,7 @@ const EvmContacts = ({ chain, setTitleContainerProperties }: PropsType) => {
   };
 
   const deleteWhitelistedAddresses = async (
-    deletedFavoriteAddress: EvmFavoriteAddress,
+    deletedFavoriteAddress: FavoriteAddress,
     type: EvmAddressType,
   ) => {
     await EvmAddressesUtils.deleteAddress(
@@ -145,8 +146,9 @@ const EvmContacts = ({ chain, setTitleContainerProperties }: PropsType) => {
                   <LabelComponent value="evm_wallets" />
                   {addresses[EvmAddressType.WALLET_ADDRESS].map(
                     (savedAddress, index) => (
-                      <EvmEditContactComponent
+                      <EditContactComponent
                         key={`${savedAddress.address}-${index}`}
+                        shortAddress={true}
                         favoriteAddress={savedAddress}
                         onSaveClicked={(item) =>
                           updateWhitelistedAddresses(
@@ -160,6 +162,7 @@ const EvmContacts = ({ chain, setTitleContainerProperties }: PropsType) => {
                             EvmAddressType.WALLET_ADDRESS,
                           )
                         }
+                        chainType={ChainType.EVM}
                       />
                     ),
                   )}
@@ -171,8 +174,9 @@ const EvmContacts = ({ chain, setTitleContainerProperties }: PropsType) => {
                   <LabelComponent value="evm_menu_advanced_smart_contracts" />
                   {addresses[EvmAddressType.SMART_CONTRACT].map(
                     (savedAddress, index) => (
-                      <EvmEditContactComponent
+                      <EditContactComponent
                         key={`${savedAddress.address}-${index}`}
+                        shortAddress={true}
                         favoriteAddress={savedAddress}
                         onSaveClicked={(item) =>
                           updateWhitelistedAddresses(
@@ -186,6 +190,7 @@ const EvmContacts = ({ chain, setTitleContainerProperties }: PropsType) => {
                             EvmAddressType.SMART_CONTRACT,
                           )
                         }
+                        chainType={ChainType.EVM}
                       />
                     ),
                   )}
@@ -195,11 +200,12 @@ const EvmContacts = ({ chain, setTitleContainerProperties }: PropsType) => {
         )}
       </Card>
       {isPopupOpen && (
-        <EvmEditContactPopupComponent
+        <EditContactPopupComponent
           isNew={true}
           favoriteAddress={newFavoriteAddress}
           onSaveClicked={(item) => createNewFavoriteAddress(item)}
           closePopup={() => resetNewFavoriteAddress()}
+          chainType={ChainType.EVM}
         />
       )}
     </div>
@@ -223,4 +229,4 @@ const connector = connect(mapStateToProps, {
 
 type PropsType = ConnectedProps<typeof connector>;
 
-export const EvmContactsComponent = connector(EvmContacts);
+export const EvmContactsComponent = connector(Contacts);

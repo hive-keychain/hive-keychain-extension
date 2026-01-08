@@ -27,10 +27,16 @@ const UsernameWithAvatar = ({ username, title, className = '' }: Props) => {
   );
 };
 
-export const UsernameAvatar = ({ username }: { username: string }) => {
+export const UsernameAvatar = ({
+  username,
+  className = '',
+}: {
+  username: string;
+  className?: string;
+}) => {
   return (
     <PreloadedImage
-      className="user-avatar"
+      className={`user-avatar ${className}`}
       src={`https://images.hive.blog/u/${username}/avatar`}
       alt={'/assets/images/accounts.png'}
       placeholder={'/assets/images/accounts.png'}

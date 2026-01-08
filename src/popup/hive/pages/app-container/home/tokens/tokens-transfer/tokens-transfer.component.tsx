@@ -263,8 +263,8 @@ const TokensTransfer = ({
             if (transactionStatus.confirmed) {
               navigateTo(Screen.HOME_PAGE, true);
               await FavoriteUserUtils.saveFavoriteUser(
-                form.receiverUsername,
                 activeAccount,
+                form.receiverUsername,
               );
 
               setSuccessMessage('popup_html_transfer_successful', [

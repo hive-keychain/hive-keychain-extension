@@ -6,23 +6,27 @@ import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
 import { PopupContainer } from '@common-ui/popup-container/popup-container.component';
 import { TextAreaComponent } from '@common-ui/text-area/textarea.component';
-import { EvmFavoriteAddress } from '@popup/evm/interfaces/evm-addresses.interface';
+import { UsernameAvatar } from '@common-ui/username-with-avatar/username-with-avatar';
+import { FavoriteAddress } from '@interfaces/contacts.interface';
+import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import React, { useState } from 'react';
 
 interface Props {
   isNew?: boolean;
-  favoriteAddress: EvmFavoriteAddress;
-  onSaveClicked: (newAddressSaved: EvmFavoriteAddress) => void;
-  onDeleteClicked?: (favoriteAddress: EvmFavoriteAddress) => void;
+  favoriteAddress: FavoriteAddress;
+  onSaveClicked: (newAddressSaved: FavoriteAddress) => void;
+  onDeleteClicked?: (favoriteAddress: FavoriteAddress) => void;
   closePopup: () => void;
+  chainType: ChainType;
 }
 
-export const EvmEditContactPopupComponent = ({
+export const EditContactPopupComponent = ({
   isNew,
   favoriteAddress,
   onSaveClicked,
   onDeleteClicked,
   closePopup,
+  chainType,
 }: Props) => {
   const [contactLabel, setContactLabel] = useState(favoriteAddress.label);
   const [contactAddress, setContactAddress] = useState(favoriteAddress.address);
@@ -43,7 +47,16 @@ export const EvmEditContactPopupComponent = ({
             {isNew && chrome.i18n.getMessage('evm_contact_new_contact')}
             {!isNew && (
               <>
-                <EvmAccountImage address={favoriteAddress.address} />
+                {chainType === ChainType.EVM && (
+                  <EvmAccountImage address={favoriteAddress.address} />
+                )}
+                {chainType === ChainType.HIVE && (
+                  <UsernameAvatar
+                    username={favoriteAddress.address}
+                    className="user-picture"
+                  />
+                )}
+
                 {favoriteAddress.label && favoriteAddress.label.length > 0
                   ? favoriteAddress.label
                   : chrome.i18n.getMessage('evm_contact_no_label')}
@@ -69,6 +82,7 @@ export const EvmEditContactPopupComponent = ({
           label="evm_contact_address"
           value={contactAddress}
           onChange={setContactAddress}
+          useChips={false}
         />
 
         <div className="action-buttons">

@@ -4,8 +4,38 @@
   height: 100%;
   row-gap: 16px;
   overflow: hidden;
-
+  padding: 0 24px;
   .intro {
     @include caption();
+  }
+  .hive-select-account-section {
+    width: 100%;
+    .react-dropdown-select {
+      border: 1px solid var(--input-border) !important;
+      border-radius: 66px !important;
+    }
+  }
+  .add-contact-link {
+    @include link;
+    align-self: flex-end;
+  }
+  .favorite-accounts-card {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    .edit-contacts-panel {
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
+      width: 100%;
+
+      .right-action-logo {
+        div {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+    }
   }
 }

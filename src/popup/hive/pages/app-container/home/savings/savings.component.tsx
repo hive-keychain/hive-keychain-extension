@@ -305,8 +305,8 @@ const SavingsPage = ({
           navigateTo(Screen.HOME_PAGE, true);
           if (success) {
             await FavoriteUserUtils.saveFavoriteUser(
-              form.username,
               activeAccount,
+              form.username,
             );
             if (success.isUsingMultisig) {
               setSuccessMessage('multisig_transaction_sent_to_signers');

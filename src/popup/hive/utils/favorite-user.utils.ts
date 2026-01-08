@@ -66,8 +66,9 @@ const getAutocompleteList = async (
 };
 
 const saveFavoriteUser = async (
-  username: string,
   activeAccount: ActiveAccount,
+  username: string,
+  subLabel?: string,
 ) => {
   const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
   const localAccounts = await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
@@ -95,10 +96,10 @@ const saveFavoriteUser = async (
   ) {
     favoriteUser[activeAccount.name!].push({
       label: username,
-      subLabel: '',
+      subLabel: subLabel ?? '',
     } as AutoCompleteValue);
   }
-  LocalStorageUtils.saveValueInLocalStorage(
+  await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.FAVORITE_USERS,
     favoriteUser,
   );

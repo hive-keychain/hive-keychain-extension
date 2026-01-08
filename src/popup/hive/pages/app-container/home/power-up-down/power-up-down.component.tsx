@@ -250,8 +250,8 @@ const PowerUpDown = ({
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
             await FavoriteUserUtils.saveFavoriteUser(
-              form.receiver,
               activeAccount,
+              form.receiver,
             );
             if (success.isUsingMultisig) {
               setSuccessMessage('multisig_transaction_sent_to_signers');
@@ -305,8 +305,8 @@ const PowerUpDown = ({
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
             await FavoriteUserUtils.saveFavoriteUser(
-              form.receiver,
               activeAccount,
+              form.receiver,
             );
             if (success.isUsingMultisig) {
               setSuccessMessage('multisig_transaction_sent_to_signers');

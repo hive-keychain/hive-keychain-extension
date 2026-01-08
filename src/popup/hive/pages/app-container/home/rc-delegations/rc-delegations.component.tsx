@@ -230,8 +230,8 @@ const RCDelegations = ({
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
             await FavoriteUserUtils.saveFavoriteUser(
-              form.delegatee,
               activeAccount,
+              form.delegatee,
             );
             if (success.isUsingMultisig) {
               setSuccessMessage('multisig_transaction_sent_to_signers');

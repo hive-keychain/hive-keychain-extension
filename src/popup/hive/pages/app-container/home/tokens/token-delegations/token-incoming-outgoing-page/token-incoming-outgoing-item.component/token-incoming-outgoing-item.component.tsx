@@ -83,7 +83,7 @@ const TokenIncomingOutgoing = ({
             addToLoadingList('html_popup_confirm_transaction_operation');
 
             if (tokenOperationResult.confirmed) {
-              await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
+              await FavoriteUserUtils.saveFavoriteUser(activeAccount, username);
               setSuccessMessage(`popup_html_cancel_delegation_tokens_success`);
               navigateTo(Screen.HOME_PAGE, true);
             } else {
@@ -160,7 +160,7 @@ const TokenIncomingOutgoing = ({
             removeFromLoadingList(`html_popup_delegation_operation`);
             removeFromLoadingList('html_popup_confirm_transaction_operation');
             if (tokenOperationResult.confirmed) {
-              await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
+              await FavoriteUserUtils.saveFavoriteUser(activeAccount, username);
               setSuccessMessage(`popup_html_delegate_tokens_success`);
               navigateTo(Screen.HOME_PAGE, true);
             } else {

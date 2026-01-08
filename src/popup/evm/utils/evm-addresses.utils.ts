@@ -1,7 +1,7 @@
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
+import { FavoriteAddress } from '@interfaces/contacts.interface';
 import {
   EvmAddressType,
-  EvmFavoriteAddress,
   EvmWhitelistedAddresses,
 } from '@popup/evm/interfaces/evm-addresses.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
@@ -199,7 +199,7 @@ const getAllWhitelistedAddresses = async (): Promise<string[]> => {
     addresses = [
       ...addresses,
       ...allAddresses[EvmAddressType.WALLET_ADDRESS].map(
-        (address: EvmFavoriteAddress) => address.address.toLowerCase(),
+        (address: FavoriteAddress) => address.address.toLowerCase(),
       ),
     ];
   }
@@ -263,7 +263,7 @@ const getContractAddresses = async (chainId: string) => {
 
 const updateAddress = async (
   chainId: string,
-  updatedFavorite: EvmFavoriteAddress,
+  updatedFavorite: FavoriteAddress,
   addressType: EvmAddressType,
 ) => {
   const whitelistedAddresses = await getWhitelistedAddresses(chainId);

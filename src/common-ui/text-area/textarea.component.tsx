@@ -48,7 +48,9 @@ export const TextAreaComponent = React.forwardRef(
     }, [chips]);
 
     useEffect(() => {
-      props.onChange(chips);
+      if (props.useChips) {
+        props.onChange(chips);
+      }
     }, [chips]);
 
     const listenToBackspace = (event: KeyboardEvent) => {

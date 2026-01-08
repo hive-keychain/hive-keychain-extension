@@ -269,8 +269,8 @@ const Delegations = ({
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
             await FavoriteUserUtils.saveFavoriteUser(
-              form.username,
               activeAccount,
+              form.username,
             );
 
             if (success.isUsingMultisig) {
@@ -325,8 +325,8 @@ const Delegations = ({
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
             await FavoriteUserUtils.saveFavoriteUser(
-              form.username,
               activeAccount,
+              form.username,
             );
 
             if (success.isUsingMultisig) {

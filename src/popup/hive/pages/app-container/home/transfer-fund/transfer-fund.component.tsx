@@ -331,8 +331,8 @@ const TransferFunds = ({
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
             await FavoriteUserUtils.saveFavoriteUser(
-              form.receiverUsername,
               activeAccount,
+              form.receiverUsername,
             );
 
             if (success.isUsingMultisig) {
