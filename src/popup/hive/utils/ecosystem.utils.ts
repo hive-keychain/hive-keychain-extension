@@ -6,7 +6,6 @@ const getDappList = async (chain: string) => {
     const response = await KeychainApi.get(
       `${chain.toLowerCase()}/ecosystem/dapps`,
     );
-    console.log('response', response);
     return response;
   } catch (err) {
     Logger.error('Error while fetching dapp list', err);
