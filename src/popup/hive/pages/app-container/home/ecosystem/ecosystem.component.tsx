@@ -1,3 +1,4 @@
+import { ComingSoonPanel } from '@common-ui/coming-soon-panel/coming-soon-panel.component';
 import {
   DAppCategory,
   EcosystemCategory,
@@ -34,7 +35,7 @@ export const Ecosystem = ({
   const init = async () => {
     setLoading(true);
     const categories: DAppCategory[] = await EcosystemUtils.getDappList(
-      chain.name!,
+      chain.chainId!,
     );
     if (categories) {
       const tempTabs: any = [];
@@ -60,11 +61,12 @@ export const Ecosystem = ({
     <div className="ecosystem-page">
       {!hasError && (
         <>
-          {tabs && (
+          {tabs && tabs.length > 0 && (
             <FormContainer>
               <TabsComponent tabs={tabs}></TabsComponent>
             </FormContainer>
           )}
+          {tabs && tabs.length === 0 && <ComingSoonPanel />}
           {loading && <LoadingComponent />}
         </>
       )}

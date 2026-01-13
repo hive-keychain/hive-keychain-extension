@@ -5694,5 +5694,13 @@
   "insufficient_balance_warning": {
     "message": "Insufficient balance. Transaction will fail.",
     "description": "Insufficient balance warning message"
+  },
+  "coming_soon_panel_title": {
+    "message": "Coming Soon",
+    "description": "Coming soon panel title"
+  },
+  "coming_soon_panel_description": {
+    "message": "This feature is not available yet. Please check back later.",
+    "description": "Coming soon panel description"
   }
 }
