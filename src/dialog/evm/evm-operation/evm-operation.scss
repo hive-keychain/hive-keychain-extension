@@ -105,6 +105,19 @@
                   width: 24px;
                   border-radius: 50%;
                 }
+                .chain-container {
+                  display: flex;
+                  flex-direction: column;
+                  align-items: flex-end;
+                  .chain-name {
+                  }
+                  .chain-id {
+                    opacity: 0.8;
+                    font-style: italic;
+                    align-self: start;
+                    font-size: 12px;
+                  }
+                }
               }
               // .value-content-vertical {
               //   display: flex;

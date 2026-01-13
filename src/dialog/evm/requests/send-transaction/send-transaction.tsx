@@ -145,7 +145,10 @@ export const SendTransaction = (props: Props) => {
         value: (
           <div className="value-content">
             <EvmTokenLogo tokenInfo={mainToken} />
-            <div>{`${chainTmp.name} (${chainTmp.chainId})`}</div>
+            <div className="chain-container">
+              <div className="chain-name">{chainTmp.name}</div>
+              <div className="chain-id">{chainTmp.chainId}</div>
+            </div>
           </div>
         ),
       });
