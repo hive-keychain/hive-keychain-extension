@@ -1,0 +1,127 @@
+.field-container {
+  display: flex;
+  flex-direction: column;
+  row-gap: 4px;
+  .field-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 8px;
+    .field {
+      flex: 1;
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      column-gap: 16px;
+      user-select: auto;
+      pre {
+        user-select: all;
+      }
+      .label {
+        @include poppins500(14px);
+        text-transform: capitalize;
+      }
+      .value {
+        @include poppins400(14px);
+        overflow-wrap: anywhere;
+        max-width: 70%;
+        text-align: right;
+        user-select: text;
+        ul {
+          margin: 0;
+        }
+        &.xs-font {
+          font-size: 11px;
+        }
+
+        .value-content {
+          display: flex;
+          align-items: center;
+          column-gap: 8px;
+
+          img {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+          }
+          .chain-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            .chain-name {
+            }
+            .chain-id {
+              opacity: 0.8;
+              font-style: italic;
+              align-self: start;
+              font-size: 12px;
+            }
+          }
+        }
+        // .value-content-vertical {
+        //   display: flex;
+        //   flex-direction: column;
+        //   padding: 4px;
+        //   border: 1px solid var(--card-border);
+        //   border-radius: 4px;
+        //   .label {
+        //     font-style: italic;
+        //     color: $light-grey;
+        //   }
+
+        // }
+      }
+
+      &.string-centered {
+        justify-content: center;
+        .value {
+          font-weight: 600;
+        }
+      }
+
+      &.html-element {
+        display: flex;
+        flex-direction: column;
+        .label {
+          text-align: center;
+        }
+        .value {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+
+      .long-text-container {
+        @include expandable-panel();
+
+        .expandable-panel-content {
+          word-wrap: break-word;
+          word-break: break-word;
+          font-size: 13px;
+        }
+        .title {
+          font-weight: 500;
+        }
+      }
+
+      .list {
+        display: flex;
+        flex-direction: column;
+        row-gap: 4px;
+      }
+
+      &.image {
+        .value {
+          width: 100%;
+          max-width: unset;
+          display: flex;
+          justify-content: center;
+          img {
+            width: 300px;
+          }
+        }
+      }
+    }
+  }
+}

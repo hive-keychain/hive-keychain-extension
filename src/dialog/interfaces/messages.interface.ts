@@ -23,6 +23,14 @@ export type EvmRequestMessage = {
   accounts?: EvmAccount[];
 };
 
+export type RequestAddEvmChainMessage = {
+  command: DialogCommand.REQUEST_ADD_EVM_CHAIN;
+  chainId: string;
+  request: EvmRequest;
+  tab: number;
+  dappInfo: EvmDappInfo;
+};
+
 export type ErrorMessage = {
   msg: { display_msg: string; tab?: number };
   command: DialogCommand.SEND_DIALOG_ERROR;

@@ -14,6 +14,8 @@ import { evmRequestWithoutConfirmation } from '@background/evm/requests/logic/ev
 import { handleDeprecatedMethods } from '@background/evm/requests/logic/handle-deprecated-methods.logic';
 import { handleEvmError } from '@background/evm/requests/logic/handle-evm-error.logic';
 import { handleNonExistingMethod } from '@background/evm/requests/logic/handle-non-existing-methods.logic';
+import { handleNonSupportedChain } from '@background/evm/requests/logic/handle-non-supported-chain.logic';
+import { requestAddEvmChain } from '@background/evm/requests/logic/request-add-evm-chain.logic';
 import MkModule from '@background/hive/modules/mk.module';
 import {
   initializeWallet,
@@ -25,6 +27,11 @@ import {
   getEvmProviderRpcFullError,
 } from '@interfaces/evm-provider.interface';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import {
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { DappRequestUtils } from 'src/utils/dapp-request.utils';
@@ -39,7 +46,31 @@ export const initEvmRequestHandler = async (
 ) => {
   Logger.info('Initializing EVM request logic');
 
-  if (EvmDeprecatedMethods.includes(request.method)) {
+  const allChains = await ChainUtils.getDefaultChains();
+  let chainId: string;
+  if (
+    request.method === EvmRequestMethod.WALLET_ADD_ETH_CHAIN ||
+    request.method === EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN
+  ) {
+    // check if chain is valid (within keychain allowed chains)
+    chainId = request.params[0].chainId;
+  } else {
+    chainId = request.chainId as string;
+  }
+  let chain: EvmChain | null = null;
+  if (chainId) {
+    chain = allChains.find(
+      (c) => c.chainId.toLowerCase() === chainId.toLowerCase(),
+    ) as EvmChain;
+  }
+
+  const setupChains = await ChainUtils.getAllSetupChainsForType<EvmChain>(
+    ChainType.EVM,
+  );
+  console.log('setupChains', setupChains);
+  if (chainId && chain === null) {
+    handleNonSupportedChain(requestHandler, tab!, request, request.chainId!);
+  } else if (EvmDeprecatedMethods.includes(request.method)) {
     handleDeprecatedMethods(requestHandler, tab!, request, dappInfo);
   } else if (!doesMethodExist(request.method)) {
     handleNonExistingMethod(requestHandler, tab!, request, dappInfo);
@@ -86,6 +117,10 @@ export const initEvmRequestHandler = async (
         dappInfo,
         DialogCommand.UNLOCK_EVM,
       );
+    } else if (
+      !setupChains.find((c: EvmChain) => c.chainId === request.chainId)
+    ) {
+      requestAddEvmChain(requestHandler, tab!, request, dappInfo);
     } else if (EvmNeedPermissionMethods.includes(request.method)) {
       const hasPermission = await EvmWalletUtils.hasPermission(
         dappInfo.domain,

@@ -1,3 +1,4 @@
+import { RequestAddEvmChain } from '@dialog/evm/requests/request-add-chain/request-add-chain';
 import { FeedbackMessage } from '@dialog/interfaces/messages.interface';
 import { DialogConfirmationPage } from '@dialog/multichain/dialog-confirmation-page/dialog-confirmation-page.component';
 import { Theme } from '@popup/theme.context';
@@ -71,10 +72,12 @@ const App = () => {
   }, []);
 
   const renderDialogContent = (data: any) => {
+    console.log('data', data);
     switch (data.command) {
       case DialogCommand.UNLOCK:
       case DialogCommand.UNLOCK_EVM:
         return <Unlock data={data} />;
+
       case DialogCommand.WRONG_MK:
         return <Unlock data={data} wrongMk index={Math.random()} />;
       case DialogCommand.REGISTER_KEYLESS_KEYCHAIN:
@@ -92,6 +95,15 @@ const App = () => {
             message={data}
             feedBackMessage={feedBackMessage}
             setFeedBackMessage={setFeedBackMessage}
+          />
+        );
+      case DialogCommand.REQUEST_ADD_EVM_CHAIN:
+        return (
+          <RequestAddEvmChain
+            request={data.msg.request}
+            requestedChain={data.msg.chain}
+            dappInfo={data.msg.dappInfo}
+            tab={data.tab}
           />
         );
       default:

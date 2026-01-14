@@ -6,7 +6,7 @@ import {
   HiveChain,
 } from '@popup/multichain/interfaces/chains.interface';
 
-export const defaultChainList = [
+const defaultChainList = [
   {
     name: 'HIVE',
     type: ChainType.HIVE,

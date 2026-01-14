@@ -7,7 +7,7 @@ const getLastEvmChainId = async () => {
   const lastEvmChain: string = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.EVM_LAST_CHAIN_USED,
   );
-  return lastEvmChain ?? getEthChainId();
+  return lastEvmChain ?? (await getEthChainId());
 };
 
 const getLastEvmChain = async () => {
@@ -15,12 +15,12 @@ const getLastEvmChain = async () => {
   return ChainUtils.getChain<EvmChain>(lastChainId);
 };
 
-const getEthChainId = () => {
-  return getEthChain()?.chainId;
+const getEthChainId = async () => {
+  return (await getEthChain())?.chainId;
 };
 
-const getEthChain = (): EvmChain => {
-  return ChainUtils.getDefaultChains().find(
+const getEthChain = async (): Promise<EvmChain> => {
+  return (await ChainUtils.getDefaultChains()).find(
     (chain) => chain.name === 'Ethereum',
   ) as EvmChain;
 };

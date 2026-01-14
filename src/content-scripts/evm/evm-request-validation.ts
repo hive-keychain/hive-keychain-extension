@@ -8,15 +8,11 @@ import {
   getAllTransactionTypes,
   ProviderTransactionData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
-import { Chain } from '@popup/multichain/interfaces/chains.interface';
-import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
-import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { ethers } from 'ethers';
 
 export const validateRequest = (
   method: EvmRequestMethod,
   params: any,
-  domain: string,
 ): boolean => {
   switch (method) {
     case EvmRequestMethod.SEND_TRANSACTION: {
@@ -102,32 +98,32 @@ export const validateRequest = (
           message: `Invalid parameter. ${params[0].chainId} is not a valid chainId. It must be using hexadecimal format`,
         } as ProviderRpcError;
       }
-      if (
-        !defaultChainList.find(
-          (chain: Chain) => chain.chainId === params[0].chainId,
-        )
-      ) {
-        throw {
-          ...ProviderRpcErrorList.chainNotAdded,
-          message: `Invalid parameter. ${params[0].chainId} hasn't been added to Keychain`,
-        } as ProviderRpcError;
-      }
+      // if (
+      //   !(await ChainUtils.getDefaultChains()).find(
+      //     (chain: Chain) => chain.chainId === params[0].chainId,
+      //   )
+      // ) {
+      //   throw {
+      //     ...ProviderRpcErrorList.chainNotAdded,
+      //     message: `Invalid parameter. ${params[0].chainId} hasn't been added to Keychain`,
+      //   } as ProviderRpcError;
+      // }
       break;
     }
-    case EvmRequestMethod.WALLET_ADD_ETH_CHAIN: {
-      if (
-        !ChainUtils.getDefaultChains().find(
-          (chain) =>
-            params[0].chainId.toLowerCase() === chain.chainId.toLowerCase(),
-        )
-      ) {
-        throw {
-          ...ProviderRpcErrorList.invalidMethodParams,
-          message: `Chain ${params[0].chainId} is not compatible with Keychain`,
-        } as ProviderRpcError;
-      }
-      break;
-    }
+    // case EvmRequestMethod.WALLET_ADD_ETH_CHAIN: {
+    //   if (
+    //     !(await ChainUtils.getDefaultChains()).find(
+    //       (chain) =>
+    //         params[0].chainId.toLowerCase() === chain.chainId.toLowerCase(),
+    //     )
+    //   ) {
+    //     throw {
+    //       ...ProviderRpcErrorList.invalidMethodParams,
+    //       message: `Chain ${params[0].chainId} is not compatible with Keychain`,
+    //     } as ProviderRpcError;
+    //   }
+    //   break;
+    // }
   }
   return true;
 };

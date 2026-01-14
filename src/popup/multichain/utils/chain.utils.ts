@@ -1,11 +1,12 @@
+import { KeychainApi } from '@api/keychain';
 import {
   Chain,
   ChainType,
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
-import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 
 let previousChain: Chain;
 
@@ -16,8 +17,10 @@ const getPreviousChain = () => {
   return previousChain;
 };
 
-const getDefaultChains = (): Chain[] => {
-  return defaultChainList;
+const getDefaultChains = async (): Promise<Chain[]> => {
+  return await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.DEFAULT_CHAINS,
+  );
 };
 
 const getAllSetupChainsForType = async <T>(type: ChainType): Promise<T[]> => {
@@ -32,14 +35,15 @@ const getSetupChains = async (forceBaseChains?: boolean): Promise<Chain[]> => {
     );
   if (!chainIds) chainIds = [];
 
-  const chains = [...getDefaultChains(), ...(await getCustomChains())].filter(
-    (c: Chain) => chainIds.includes(c.chainId),
-  );
+  const chains = [
+    ...(await getDefaultChains()),
+    ...(await getCustomChains()),
+  ].filter((c: Chain) => chainIds.includes(c.chainId));
 
   if (forceBaseChains) {
     if (!chains.some((c: Chain) => c.type === ChainType.HIVE)) {
       chains.push(
-        getDefaultChains().find(
+        (await getDefaultChains()).find(
           (c) =>
             c.chainId ===
             'beeab0de00000000000000000000000000000000000000000000000000000000',
@@ -47,7 +51,7 @@ const getSetupChains = async (forceBaseChains?: boolean): Promise<Chain[]> => {
       );
     }
     if (!chains.some((c: Chain) => c.type === ChainType.EVM)) {
-      chains.push(getDefaultChains().find((c) => c.chainId === '0x1')!);
+      chains.push((await getDefaultChains()).find((c) => c.chainId === '0x1')!);
     }
   }
 
@@ -64,7 +68,7 @@ const getChain = async <T>(chainId: Chain['chainId']): Promise<T> => {
 const getChainFromDefaultChains = async <T>(
   chainId: Chain['chainId'],
 ): Promise<T> => {
-  const chains = getDefaultChains();
+  const chains = await getDefaultChains();
   return chains.find(
     (c: Chain) => c.chainId.toLowerCase() === chainId.toLowerCase(),
   )! as unknown as T;
@@ -115,6 +119,20 @@ const addCustomChain = async (chain: EvmChain) => {
   const customChains = await getCustomChains();
 };
 
+const initChains = async () => {
+  try {
+    const defaultChains = await KeychainApi.get('chains');
+    if (defaultChains) {
+      await LocalStorageUtils.saveValueInLocalStorage(
+        LocalStorageKeyEnum.DEFAULT_CHAINS,
+        defaultChains,
+      );
+    }
+  } catch (err) {
+    Logger.error('Error while initializing chains', err);
+  }
+};
+
 export const ChainUtils = {
   getDefaultChains,
   getSetupChains,
@@ -127,4 +145,5 @@ export const ChainUtils = {
   getPreviousChain,
   getAllSetupChainsForType,
   getChainFromDefaultChains,
+  initChains,
 };

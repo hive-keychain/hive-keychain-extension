@@ -12,6 +12,7 @@ import {
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { TransactionResponse } from 'ethers';
@@ -167,6 +168,20 @@ const chromeMessageHandler = async (
       );
       EvmPendingTransactionsNotifications.waitForTransaction(
         transactionResponse,
+      );
+      break;
+    }
+    case BackgroundCommand.ACCEPT_ADD_EVM_CHAIN: {
+      const { request, tab, dappInfo, requestedChain } =
+        backgroundMessage.value;
+
+      await ChainUtils.addChainToSetupChains(requestedChain);
+
+      initEvmRequestHandler(
+        request,
+        tab,
+        dappInfo,
+        await EvmRequestHandler.getFromLocalStorage(),
       );
       break;
     }

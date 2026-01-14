@@ -3,6 +3,7 @@ import { EvmServiceWorker } from '@background/evm/evm-service-worker';
 import { HiveServiceWorker } from '@background/hive/hive-service-worker';
 import MkModule from '@background/hive/modules/mk.module';
 import VaultModule from '@background/vault.module';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { VaultCommand } from '@reference-data/vault-message-key.enum';
 import Logger from 'src/utils/logger.utils';
 
@@ -16,6 +17,7 @@ EvmServiceWorker.initializeServiceWorker();
     Logger.log('Initializing vault');
     VaultModule.init();
   }
+  ChainUtils.initChains();
 })();
 
 const chromeMessageHandler = async (backgroundMessage: BackgroundMessage) => {

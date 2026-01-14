@@ -52,6 +52,8 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
   };
 
   const init = async () => {
+    await ChainUtils.initChains();
+
     const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([
       LocalStorageKeyEnum.ACTIVE_THEME,
       LocalStorageKeyEnum.ACTIVE_CHAIN,

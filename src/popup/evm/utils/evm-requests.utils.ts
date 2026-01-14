@@ -11,7 +11,7 @@ import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
-import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BlockTag, ethers, HDNodeWallet } from 'ethers';
 import Logger from 'src/utils/logger.utils';
 
@@ -21,8 +21,9 @@ const instanciateProvider = async (chain?: EvmChain) => {
   return provider;
 };
 
-const getEthProvider = () => {
-  const ethChain = defaultChainList.find(
+const getEthProvider = async () => {
+  const defaultChains = await ChainUtils.getDefaultChains();
+  const ethChain = defaultChains.find(
     (chain: Chain) => chain.chainId === '0x1',
   );
 
@@ -196,7 +197,8 @@ const getNonce = async (
 };
 
 const getEnsResolver = async (ensAddress: string) => {
-  return getEthProvider().getResolver(ensAddress);
+  const ethProvider = await getEthProvider();
+  return ethProvider.getResolver(ensAddress);
 };
 
 const resolveEns = async (ensAddress: string) => {
@@ -206,8 +208,8 @@ const resolveEns = async (ensAddress: string) => {
 
 const lookupEns = async (address: string) => {
   try {
-    const provider = getEthProvider();
-    return await provider.lookupAddress(address);
+    const ethProvider = await getEthProvider();
+    return await ethProvider.lookupAddress(address);
   } catch (err) {
     return null;
   }

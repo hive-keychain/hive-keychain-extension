@@ -759,8 +759,9 @@ const getTokenInfo = async (
   let tokenMetaData = tokensMetadataPerChain[chainId];
   let token;
   if (!tokenMetaData) {
-    tokenMetaData = await KeychainApi.get(
-      `evm/tokensInfoShort/${chainId}/${[address?.toLowerCase()].join(',')}`,
+    tokenMetaData = await KeychainApi.post(
+      `evm/smart-contracts-info/${chainId}`,
+      { addresses: address ? [{ address: address }] : [] },
     );
   }
   if (tokenMetaData) {
@@ -816,6 +817,9 @@ const getMainTokenInfo = async (chain: EvmChain) => {
     return tokens[chain.chainId].find(
       (t: EvmSmartContractInfo) => t.type === EVMSmartContractType.NATIVE,
     );
+  } else {
+    const tokenInfo = await getTokenInfo(chain.chainId);
+    return tokenInfo;
   }
 };
 

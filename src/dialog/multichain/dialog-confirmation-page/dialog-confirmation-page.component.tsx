@@ -9,6 +9,7 @@ import {
   EvmRequestMessage,
   FeedbackMessage,
   HiveRequestMessage,
+  RequestAddEvmChainMessage,
   ResultMessage,
 } from '@dialog/interfaces/messages.interface';
 import { DialogError } from '@dialog/multichain/error/error';
@@ -30,7 +31,8 @@ interface Props {
     | KeylessUsernameMessage
     | AddAccountQRMessage
     | HiveRequestMessage
-    | EvmRequestMessage;
+    | EvmRequestMessage
+    | RequestAddEvmChainMessage;
   feedBackMessage: FeedbackMessage | null;
   setFeedBackMessage: (feedBackMessage: FeedbackMessage | null) => void;
 }
