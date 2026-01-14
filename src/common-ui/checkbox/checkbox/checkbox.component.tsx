@@ -15,7 +15,12 @@ export interface CheckboxProps {
   skipTooltipTranslation?: boolean;
 }
 
-const handleClick = (props: CheckboxProps) => {
+const handleClick = (
+  props: CheckboxProps,
+  event: React.MouseEvent<HTMLDivElement>,
+) => {
+  event.stopPropagation();
+  event.preventDefault();
   if (props.disabled !== true) {
     props.onChange(!props.checked);
   }
@@ -29,7 +34,7 @@ const getCheckbox = (props: CheckboxProps) => {
         props.disabled ? 'disabled' : ''
       }`}
       data-testid={props.extraDataTestIdOnInput}
-      onClick={() => handleClick(props)}>
+      onClick={(event) => handleClick(props, event)}>
       <div className="custom-checkbox">
         {props.checked && <SVGIcon icon={SVGIcons.CHECKBOX_CHECKED} />}
       </div>

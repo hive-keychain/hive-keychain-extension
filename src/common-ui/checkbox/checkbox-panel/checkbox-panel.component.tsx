@@ -18,12 +18,18 @@ interface CheckboxPanelProps extends CheckboxProps {
 }
 
 export const CheckboxPanelComponent = (props: CheckboxPanelProps) => {
+  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    event.preventDefault();
+    props.onChange(!props.checked);
+  };
+
   return (
     <div
       className={`checkbox-panel ${
         props.backgroundType ?? BackgroundType.FILLED
       } ${props.hint ? 'has-hint' : ''} ${props.text ? 'has-text' : ''}`}
-      onClick={() => props.onChange(!props.checked)}>
+      onClick={handleClick}>
       <CheckboxComponent {...props} />
       {props.children && props.children}
       {!props.children && (
