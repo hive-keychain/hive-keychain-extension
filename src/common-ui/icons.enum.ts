@@ -21,8 +21,9 @@ export enum SVGIcons {
   CHECKBOX_CHECKED = 'checkbox/checked',
 
   EVM_ACCOUNT_ADD = 'evm-account/add-circle',
-  EVM_ACCOUNT_EDIT = 'evm-account/edit-circle',
+  EVM_ACCOUNT_COPY = 'evm-account/copy-circle',
   EVM_ACCOUNT_DELETE = 'evm-account/delete-circle',
+  EVM_ACCOUNT_EDIT = 'evm-account/edit-circle',
 
   EVM_CHAIN_TESTNET = 'evm-chains/testnet',
 

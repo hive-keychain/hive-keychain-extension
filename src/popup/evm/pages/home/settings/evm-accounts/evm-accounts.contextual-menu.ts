@@ -7,6 +7,7 @@ interface EvmAccountContextualMenuParams {
   onDeleteClicked: Function;
   onCreateClicked: Function;
   onImportClicked: Function;
+  onCopyClicked: Function;
 }
 
 export const EvmAccountsContextualMenu = ({
@@ -15,6 +16,7 @@ export const EvmAccountsContextualMenu = ({
   onDeleteClicked,
   onCreateClicked,
   onImportClicked,
+  onCopyClicked,
 }: EvmAccountContextualMenuParams): ContextualMenu => {
   return {
     sections: [
@@ -22,6 +24,11 @@ export const EvmAccountsContextualMenu = ({
         title: activeSeedName,
         skipTranslation: true,
         items: [
+          {
+            icon: SVGIcons.EVM_ACCOUNT_COPY,
+            label: 'html_popup_copy',
+            onClick: onCopyClicked,
+          },
           {
             icon: SVGIcons.EVM_ACCOUNT_EDIT,
             label: 'evm_edit_seed_nickname',

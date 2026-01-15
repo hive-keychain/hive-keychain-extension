@@ -64,6 +64,7 @@ const EvmAccounts = ({
           onDeleteClicked: handleDeleteSeedClick,
           onCreateClicked: handleCreateSeedClick,
           onImportClicked: handleImportSeedClick,
+          onCopyClicked: handleCopySeedClick,
         }),
       );
   };
@@ -109,6 +110,14 @@ const EvmAccounts = ({
     setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
 
     setEditParams(undefined);
+  };
+
+  const handleCopySeedClick = () => {
+    const seed = accounts.find(
+      (account) => account.seedId === selectedSeed?.value,
+    );
+    navigator.clipboard.writeText(seed!.wallet.mnemonic!.phrase);
+    setInfoMessage('popup_html_text_copied', [seed!.wallet.mnemonic!.phrase]);
   };
 
   const handleCreateSeedClick = () => {
