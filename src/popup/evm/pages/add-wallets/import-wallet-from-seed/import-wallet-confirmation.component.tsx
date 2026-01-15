@@ -8,6 +8,7 @@ import {
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
@@ -30,6 +31,7 @@ const ImportWalletConfirmation = ({
   chain,
   activeAccount,
   loadEvmActiveAccount,
+  navigateTo,
 }: PropsType) => {
   const [wallets, setWallets] = useState<WalletWithBalance[]>([]);
 
@@ -70,13 +72,10 @@ const ImportWalletConfirmation = ({
         nickname,
       );
       await ChainUtils.addChainToSetupChains(chain);
-      if (!activeAccount.address) {
-        const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(
-          mk,
-        );
-        setEvmAccounts(accounts);
-        await loadEvmActiveAccount(chain, accounts[0].wallet);
-      }
+      const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+      setEvmAccounts(accounts);
+      await loadEvmActiveAccount(chain, accounts[0].wallet);
+      navigateTo(Screen.HOME_PAGE, true);
     }
   };
 
@@ -146,6 +145,7 @@ const connector = connect(mapStateToProps, {
   setErrorMessage,
   setEvmAccounts,
   loadEvmActiveAccount,
+  navigateTo,
 });
 type PropsType = ConnectedProps<typeof connector>;
 
