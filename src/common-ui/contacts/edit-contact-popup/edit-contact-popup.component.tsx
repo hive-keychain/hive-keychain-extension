@@ -48,7 +48,10 @@ export const EditContactPopupComponent = ({
             {!isNew && (
               <>
                 {chainType === ChainType.EVM && (
-                  <EvmAccountImage address={favoriteAddress.address} />
+                  <EvmAccountImage
+                    address={favoriteAddress.address}
+                    avatar={favoriteAddress.avatar}
+                  />
                 )}
                 {chainType === ChainType.HIVE && (
                   <UsernameAvatar

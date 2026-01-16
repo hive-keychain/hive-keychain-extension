@@ -51,7 +51,10 @@ export const EditContactComponent = ({
         onClick={() => openEditContactModal()}>
         <div className="contact-label">
           {chainType === ChainType.EVM && (
-            <EvmAccountImage address={favoriteAddress.address} />
+            <EvmAccountImage
+              address={favoriteAddress.address}
+              avatar={favoriteAddress.avatar}
+            />
           )}
           {chainType === ChainType.HIVE && (
             <UsernameAvatar

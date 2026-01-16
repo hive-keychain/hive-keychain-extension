@@ -113,7 +113,7 @@ export const evmRequestWithoutConfirmation = async (
     }
     case EvmRequestMethod.KC_LOOKUP_ENS: {
       try {
-        message.value.result = await EvmRequestsUtils.lookupEns(
+        message.value.result = await EvmRequestsUtils.getEnsForAddress(
           request.params[0],
         );
       } catch (err) {

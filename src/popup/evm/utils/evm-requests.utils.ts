@@ -206,7 +206,7 @@ const resolveEns = async (ensAddress: string) => {
   return ensResolver ? ensResolver.getAddress() : '';
 };
 
-const lookupEns = async (address: string) => {
+const getEnsForAddress = async (address: string) => {
   try {
     const ethProvider = await getEthProvider();
     return await ethProvider.lookupAddress(address);
@@ -215,7 +215,7 @@ const lookupEns = async (address: string) => {
   }
 };
 
-const getResolveData = async (ensAddress: string) => {
+const getDataForEns = async (ensAddress: string) => {
   try {
     const ensResolver = await getEnsResolver(ensAddress);
     if (ensResolver) {
@@ -262,9 +262,9 @@ export const EvmRequestsUtils = {
   getGasPrice,
   getNonce,
   resolveEns,
-  lookupEns,
+  getEnsForAddress,
   getEnsResolver,
-  getResolveData,
+  getDataForEns,
   getMaxPriorityFeePerGas,
   getBaseFee,
   instanciateProvider,
