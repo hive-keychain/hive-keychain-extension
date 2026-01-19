@@ -154,10 +154,26 @@ const EvmTransfer = ({
         )!,
       );
     }
-
-    setAutocompleteValues(
-      await EvmAddressesUtils.getWhiteListAutocomplete(chain, localAccounts),
+    const values = await EvmAddressesUtils.getWhiteListAutocomplete(
+      chain,
+      localAccounts,
     );
+    setAutocompleteValues(values);
+    if (formParams.receiverAddress) {
+      let prefilledValue;
+      for (const category of values.categories) {
+        for (const value of category.values) {
+          if (
+            value.value.toLowerCase() ===
+            formParams.receiverAddress.toLowerCase()
+          ) {
+            prefilledValue = value.value;
+            break;
+          }
+        }
+      }
+      if (prefilledValue) setValue('receiverAddress', prefilledValue);
+    }
   };
 
   const handleClickOnSend = async (form: TransferForm) => {
