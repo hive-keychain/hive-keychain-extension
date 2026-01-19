@@ -47,9 +47,6 @@
       align-items: center;
       column-gap: 8px;
     }
-    .user-picture {
-      @include user-avatar-small;
-    }
 
     .react-dropdown-select-content {
       .selected-account-panel {
@@ -172,9 +169,6 @@
     }
     .active-icon {
       margin-right: 10px;
-    }
-    .user-picture {
-      @include user-avatar-small;
     }
     .react-dropdown-select-dropdown {
       top: 72px;
