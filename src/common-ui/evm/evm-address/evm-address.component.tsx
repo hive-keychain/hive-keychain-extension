@@ -2,7 +2,6 @@ import {
   EvmAddressDetail,
   EvmAddressesUtils,
 } from '@popup/evm/utils/evm-addresses.utils';
-import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import React, { useEffect, useState } from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
@@ -13,20 +12,15 @@ interface Props {
 }
 
 export const EvmAddressComponent = ({ address, chainId }: Props) => {
-  const [addressDetail, setAddressDetail] = useState<EvmAddressDetail>({
-    formattedAddress: EvmFormatUtils.formatAddress(address),
-    fullAddress: address,
-  });
+  const [addressDetail, setAddressDetail] = useState<EvmAddressDetail>();
 
   useEffect(() => {
     initComponent();
   }, []);
 
   const initComponent = async () => {
-    // await sleep(5000);
-    setAddressDetail(
-      await EvmAddressesUtils.getAddressDetails(address, chainId),
-    );
+    const details = await EvmAddressesUtils.getAddressDetails(address, chainId);
+    setAddressDetail(details);
   };
 
   return (

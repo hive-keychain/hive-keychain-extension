@@ -12,6 +12,7 @@ const filterSpamTokens = (tokens: NativeAndErc20Token[]) => {
 
 const getAccountFullname = (account: EvmAccount) => {
   if (account.nickname && account.nickname.length > 0) return account.nickname;
+
   return `${getSeedName(account)} - ${chrome.i18n.getMessage(
     'dialog_account',
   )} ${account.id + 1}`;

@@ -86,6 +86,12 @@ const getAddressDetails = async (
   const isAddress = ethers.isAddress(address);
   let ensDetected = false;
   if (!savedEnsDataFromAddress && !savedEnsDataFromEns) {
+    details.fullAddress = address;
+    details.formattedAddress = EvmFormatUtils.formatAddress(
+      details.fullAddress,
+    );
+    details.avatar = undefined;
+    details.label = details.formattedAddress;
     if (isAddress === false) {
       newEns.ens = address;
       const ensData = await EvmRequestsUtils.getDataForEns(address);
@@ -107,6 +113,8 @@ const getAddressDetails = async (
       }
     }
     if (ensDetected) {
+      details.avatar = newEns.avatar;
+      details.label = newEns.ens;
       await addEnsToLocalStorage(newEns);
     }
   } else if (savedEnsDataFromAddress && savedEnsDataFromAddress.ens) {
@@ -136,6 +144,19 @@ const getAddressDetails = async (
   const localLabel = await EvmAddressesUtils.getAddressLabel(address, chainId);
   if (localLabel) {
     details.label = localLabel;
+  }
+
+  // check local accounts
+  const localAccounts = await EvmWalletUtils.getAllLocalAccounts();
+  const localAccount = localAccounts.find((account) => {
+    return account.wallet.address.toLowerCase() === address.toLowerCase();
+  });
+  if (localAccount) {
+    if (localAccount.nickname) {
+      details.label = localAccount.nickname;
+    } else {
+      details.label = EvmAccountUtils.getAccountFullname(localAccount);
+    }
   }
 
   return details;

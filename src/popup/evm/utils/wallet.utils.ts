@@ -493,6 +493,12 @@ const getAllLocalAddresses = async () => {
   );
   return accounts.map((account) => account.wallet.address.toLowerCase());
 };
+const getAllLocalAccounts = async () => {
+  const accounts = await rebuildAccountsFromLocalStorage(
+    await VaultUtils.getValueFromVault(VaultKey.__MK),
+  );
+  return accounts;
+};
 
 export const EvmWalletUtils = {
   getWalletFromSeedPhrase,
@@ -520,4 +526,5 @@ export const EvmWalletUtils = {
   hideOrShowAddress,
   updateSeedNickname,
   updateAddressName,
+  getAllLocalAccounts,
 };
