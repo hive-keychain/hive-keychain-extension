@@ -74,7 +74,6 @@ const Contacts = ({ chain, setTitleContainerProperties }: PropsType) => {
         walletAdd.address,
         newChain.chainId,
       );
-      console.log('addressDetails', addressDetails);
       walletAdd.avatar = addressDetails.avatar;
       addresses.push(walletAdd);
     }

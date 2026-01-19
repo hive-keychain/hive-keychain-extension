@@ -1,4 +1,5 @@
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmAddressDetail } from '@popup/evm/utils/evm-addresses.utils';
 import { CurrencyLabels } from 'src/popup/hive/utils/currency.utils';
 
 export interface CurrencyListItem {
@@ -13,7 +14,12 @@ export interface SavingOperationTypeListItem {
 
 export interface EvmLocalAccountListItem {
   label: string;
-  value: EvmAccount;
+  value: EvmSelectAccountItem;
+}
+
+export interface EvmSelectAccountItem {
+  account: EvmAccount;
+  addressDetails: EvmAddressDetail;
 }
 
 export interface LocalAccountListItem {

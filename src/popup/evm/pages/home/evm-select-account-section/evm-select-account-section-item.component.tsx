@@ -13,7 +13,7 @@ interface AccountItemProps {
   item: EvmLocalAccountListItem;
   selectedAccount: string;
   handleItemClicked: (
-    value: EvmLocalAccountListItem['value']['wallet']['address'],
+    value: EvmLocalAccountListItem['value']['account']['wallet']['address'],
   ) => void;
   closeDropdown: () => void;
   setInfoMessage?: (key: string, params?: string[]) => void;
@@ -36,24 +36,27 @@ export const EvmSelectAccountSectionItemComponent = ({
   const copyUsernameToClipboard = async (event: SyntheticEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    await navigator.clipboard.writeText(item.value.wallet.address);
+    await navigator.clipboard.writeText(item.value.account.wallet.address);
     closeDropdown();
     if (setInfoMessage) {
-      setInfoMessage('popup_html_text_copied', [item.value.wallet.address]);
+      setInfoMessage('popup_html_text_copied', [
+        item.value.account.wallet.address,
+      ]);
     }
   };
   const renderCheckedAccount = () => {
     if (isOnMain)
       return (
         <div className="icons-wrapper">
-          {selectedAccount === item.value.wallet.address && !hovered && (
-            <SVGIcon
-              icon={SVGIcons.SELECT_ACTIVE}
-              className="active-icon"
-              forceHover={hovered}
-              hoverable
-            />
-          )}
+          {selectedAccount === item.value.account.wallet.address &&
+            !hovered && (
+              <SVGIcon
+                icon={SVGIcons.SELECT_ACTIVE}
+                className="active-icon"
+                forceHover={hovered}
+                hoverable
+              />
+            )}
           {hovered && (
             <div
               className={`hovered-icons ${
@@ -74,7 +77,7 @@ export const EvmSelectAccountSectionItemComponent = ({
           )}
         </div>
       );
-    else if (selectedAccount === item.value.wallet.address)
+    else if (selectedAccount === item.value.account.wallet.address)
       return (
         <SVGIcon
           icon={SVGIcons.SELECT_ACTIVE}
@@ -95,10 +98,12 @@ export const EvmSelectAccountSectionItemComponent = ({
       <div
         data-testid={`select-account-item-${item.value}`}
         className={`select-account-item ${
-          selectedAccount === item.value.wallet.address ? 'selected' : ''
+          selectedAccount === item.value.account.wallet.address
+            ? 'selected'
+            : ''
         }`}
         onClick={() => {
-          handleItemClicked(item.value.wallet.address!);
+          handleItemClicked(item.value.account.wallet.address!);
           closeDropdown();
         }}>
         <EvmAccountImage address={item.label} />
@@ -106,13 +111,15 @@ export const EvmSelectAccountSectionItemComponent = ({
           className="selected-account-name"
           data-testid="selected-account-name">
           <div className="seed-name">
-            {EvmAccountUtils.getSeedName(item.value)}
+            {EvmAccountUtils.getSeedName(item.value.account)}
           </div>
           <div className="address-name">
-            {item.value?.nickname ?? 'No name'}
+            {item.value.account.nickname ??
+              item.value.addressDetails.label ??
+              'No name'}
           </div>
           <div className="address">
-            {FormatUtils.shortenString(item.value?.wallet.address!, 4)}
+            {FormatUtils.shortenString(item.value.account.wallet.address!, 4)}
           </div>
         </div>
         {renderCheckedAccount()}
