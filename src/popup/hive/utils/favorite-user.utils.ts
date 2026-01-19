@@ -142,7 +142,11 @@ const getAutocompleteListByCategories = async (
         !exchanges.find((exchange) => exchange.username === fav) &&
         !localAccounts.find((localAccount) => localAccount.name === fav)
       )
-        favoriteUsersList.values.push(fav);
+        favoriteUsersList.values.push({
+          value: fav.label,
+          label: fav.label,
+          subLabel: fav.subLabel,
+        });
     }
   }
 
