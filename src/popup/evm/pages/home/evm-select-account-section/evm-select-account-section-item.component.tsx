@@ -106,7 +106,10 @@ export const EvmSelectAccountSectionItemComponent = ({
           handleItemClicked(item.value.account.wallet.address!);
           closeDropdown();
         }}>
-        <EvmAccountImage address={item.label} />
+        <EvmAccountImage
+          address={item.value.account.wallet.address}
+          avatar={item.value.addressDetails.avatar}
+        />
         <div
           className="selected-account-name"
           data-testid="selected-account-name">

@@ -114,7 +114,10 @@ const SelectAccountSection = ({
         onClick={() => {
           handleClickOnSelector();
         }}>
-        <EvmAccountImage address={selectedAddress?.account.wallet.address} />
+        <EvmAccountImage
+          address={selectedAddress?.account.wallet.address}
+          avatar={selectedAddress?.addressDetails.avatar}
+        />
         <div
           className="selected-account-name"
           data-testid="selected-account-name">
