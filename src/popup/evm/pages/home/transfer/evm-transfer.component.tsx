@@ -365,7 +365,6 @@ const EvmTransfer = ({
                   control={control}
                   dataTestId="input-address"
                   type={InputType.TEXT}
-                  logo={SVGIcons.INPUT_AT}
                   placeholder="popup_html_address"
                   label="popup_html_username"
                   autocompleteValues={autocompleteValues}
