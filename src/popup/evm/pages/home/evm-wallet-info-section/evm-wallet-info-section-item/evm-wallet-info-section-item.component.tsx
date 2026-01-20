@@ -1,6 +1,5 @@
 import { NativeAndErc20Token } from '@popup/evm/interfaces/active-account.interface';
 import { EVMWalletInfoSectionActions } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section-actions';
-import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { ActionButton } from '@popup/hive/pages/app-container/home/hive-wallet-info-section/hive-wallet-info-section-actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
@@ -8,7 +7,6 @@ import React, { BaseSyntheticEvent, useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { WalletInfoSectionItemButton } from 'src/common-ui/wallet-info-section-item-button/wallet-info-section-item-button.component';
 import { ColorsUtils } from 'src/utils/colors.utils';
 import FormatUtils from 'src/utils/format.utils';
@@ -67,18 +65,6 @@ const WalletInfoSectionItem = ({
       actionButton.nextScreen,
       actionButton.nextScreenParams,
     );
-  };
-
-  const handleHistoryClick = (
-    event: BaseSyntheticEvent,
-    token?: NativeAndErc20Token,
-  ) => {
-    event.stopPropagation();
-    navigateToWithParams(EvmScreen.EVM_TOKEN_HISTORY, { token });
-  };
-
-  const goToTokenWebsite = (token: NativeAndErc20Token) => {
-    // chrome.tabs.create({ url: token });
   };
 
   return (
@@ -140,14 +126,6 @@ const WalletInfoSectionItem = ({
               </div>
             )}
         </div>
-        {isExpanded && (
-          <SVGIcon
-            icon={SVGIcons.WALLET_HISTORY_BUTTON}
-            className={`history-icon`}
-            onClick={($event) => handleHistoryClick($event, token)}
-            hoverable
-          />
-        )}
       </div>
       {isExpanded && (
         <>
