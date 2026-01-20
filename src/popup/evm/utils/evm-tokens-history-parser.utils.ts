@@ -495,16 +495,29 @@ const parseEvent = async (
           }
 
           default: {
-            label = chrome.i18n.getMessage(
-              `evm_history_operation_generic_smart_contract_messages${
-                isPending ? '_pending' : ''
-              }`,
-              [
-                functionName,
-                event.tokenName,
-                EvmFormatUtils.formatAddress(event.contractAddress),
-              ],
-            );
+            if (event.from.toLowerCase() === walletAddress.toLowerCase()) {
+              label = chrome.i18n.getMessage(
+                `evm_history_operation_generic_smart_contract_messages_out${
+                  isPending ? '_pending' : ''
+                }`,
+                [
+                  functionName,
+                  event.tokenName,
+                  EvmFormatUtils.formatAddress(event.contractAddress),
+                ],
+              );
+            } else {
+              label = chrome.i18n.getMessage(
+                `evm_history_operation_generic_smart_contract_messages_in${
+                  isPending ? '_pending' : ''
+                }`,
+                [
+                  functionName,
+                  event.tokenName,
+                  EvmFormatUtils.formatAddress(event.contractAddress),
+                ],
+              );
+            }
             pageTitle = 'evm_history_smart_contract';
             break;
           }
@@ -608,7 +621,6 @@ const parseEvent = async (
     default:
       break;
   }
-
   return historyItem;
 };
 

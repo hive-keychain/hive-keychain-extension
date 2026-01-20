@@ -5364,7 +5364,11 @@
     "message": "Minting $1#$2",
     "description": "Mint single nft history item"
   },
-  "evm_history_operation_generic_smart_contract_messages": {
+  "evm_history_operation_generic_smart_contract_messages_in": {
+    "message": "You were included in operation $1 on contract $2 ($3)",
+    "description": "Generic smart contract operation history label"
+  },
+  "evm_history_operation_generic_smart_contract_messages_out": {
     "message": "Broadcasted operation $1 on contract $2 ($3)",
     "description": "Generic smart contract operation history label"
   },

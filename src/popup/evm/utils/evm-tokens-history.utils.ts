@@ -165,6 +165,34 @@ const fetchHistory = async (
       Logger.warn(`Transaction ${event.hash} ignored because failed`);
       continue;
     }
+    if (event.contractAddress && event.contractAddress.length > 0) {
+      const metadata = newAllTokensMetadata.find(
+        (metadata) =>
+          metadata.type !== EVMSmartContractType.NATIVE &&
+          (
+            metadata as
+              | EvmSmartContractInfoErc20
+              | EvmSmartContractInfoErc721
+              | EvmSmartContractInfoErc1155
+          ).contractAddress.toLowerCase() ===
+            event.contractAddress.toLowerCase(),
+      ) as
+        | EvmSmartContractInfoErc20
+        | EvmSmartContractInfoErc721
+        | EvmSmartContractInfoErc1155;
+      if (evmSettings && evmSettings.smartContracts) {
+        if (!evmSettings?.smartContracts.displayPossibleSpam) {
+          if (metadata && metadata.possibleSpam) {
+            continue;
+          }
+        }
+        if (!evmSettings?.smartContracts.displayNonVerifiedContracts) {
+          if (metadata && !metadata.verifiedContract) {
+            continue;
+          }
+        }
+      }
+    }
 
     const historyItem = await EvmTokensHistoryParserUtils.parseEvent(
       event,
