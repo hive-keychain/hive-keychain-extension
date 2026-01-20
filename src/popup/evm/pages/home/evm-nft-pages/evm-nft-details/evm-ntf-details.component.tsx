@@ -31,7 +31,6 @@ export const EvmNftDetails = ({
     if (onClick) onClick();
   };
   const handleOnClickSend = (event: BaseSyntheticEvent) => {
-    console.log('handleOnClickSend', onClickSend);
     event.stopPropagation();
     if (onClickSend) onClickSend();
   };
@@ -100,7 +99,11 @@ export const EvmNftDetails = ({
                 className="label-value smart-contract-address"
                 key={`${collection.tokenInfo.contractAddress}-${nft.id}-${attribute.trait_type}`}>
                 <div className="label">{attribute.trait_type}</div>
-                <div className="value">{attribute.value}</div>
+                <div className="value">
+                  {typeof attribute.value === 'string'
+                    ? attribute.value
+                    : JSON.stringify(attribute.value)}
+                </div>
               </div>
             ))}
 

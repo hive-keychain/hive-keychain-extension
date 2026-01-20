@@ -489,7 +489,6 @@ const getWhiteListAutocomplete = async (
 
   autocomplete.categories.push(walletCategory);
   autocomplete.categories.push(localAccountCategory);
-  console.log(autocomplete);
   return autocomplete;
 };
 
