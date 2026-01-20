@@ -37,8 +37,13 @@ const getAutocompleteList = async (
       if (
         !exchanges.find((exchange) => exchange.username === fav) &&
         !localAccounts.find((localAccount) => localAccount.name === fav)
-      )
-        autoCompleteList.push({ label: fav, value: fav });
+      ) {
+        autoCompleteList.push({
+          label: fav,
+          value: fav,
+          img: `https://images.hive.blog/u/${fav}/avatar`,
+        });
+      }
     }
   }
   for (const localAccount of localAccounts) {
@@ -46,6 +51,7 @@ const getAutocompleteList = async (
       autoCompleteList.push({
         label: localAccount.name,
         value: localAccount.name,
+        img: `https://images.hive.blog/u/${localAccount.name}/avatar`,
       });
     }
   }
@@ -60,6 +66,7 @@ const getAutocompleteList = async (
           value: exchange.username,
           label: exchange.username,
           subLabel: exchange.name,
+          img: `https://images.hive.blog/u/${exchange.username}/avatar`,
         });
     }
   return autoCompleteList;
@@ -146,6 +153,7 @@ const getAutocompleteListByCategories = async (
           value: fav.label,
           label: fav.label,
           subLabel: fav.subLabel,
+          img: `https://images.hive.blog/u/${fav.label}/avatar`,
         });
     }
   }
@@ -156,6 +164,7 @@ const getAutocompleteListByCategories = async (
         value: localAccount.name,
         label: localAccount.name,
         subLabel: '',
+        img: `https://images.hive.blog/u/${localAccount.name}/avatar`,
       });
     }
   }
@@ -170,6 +179,7 @@ const getAutocompleteListByCategories = async (
           value: exchange.username,
           label: exchange.username,
           subLabel: exchange.name,
+          img: `https://images.hive.blog/u/${exchange.username}/avatar`,
         });
     }
   if (favoriteUsersList.values.length > 0) {

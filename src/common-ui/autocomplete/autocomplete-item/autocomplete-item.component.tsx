@@ -5,6 +5,7 @@ interface AutocompleteProps {
   label: string;
   translateLabel?: boolean;
   subLabel?: string;
+  img?: string;
   translateSublabel?: boolean;
   onItemClick: (value: string) => void;
   prefix?: string;
@@ -16,6 +17,7 @@ export const AutocompleteItemComponent = ({
   value,
   subLabel,
   translateSublabel,
+  img,
   onItemClick,
   prefix,
 }: AutocompleteProps) => {
@@ -24,17 +26,16 @@ export const AutocompleteItemComponent = ({
       className="autocomplete-item"
       key={value}
       onClick={() => onItemClick(value)}>
-      {translateLabel ? chrome.i18n.getMessage(label) : label}{' '}
+      {img && <img src={img} className="user-avatar" />}
+      <span>
+        {prefix ?? ''}
+        {translateLabel ? chrome.i18n.getMessage(label) : label}{' '}
+      </span>
       <div className="autocomplete-item-subvalue">
         {subLabel && subLabel.trim().length > 0
           ? `${translateSublabel ? chrome.i18n.getMessage(subLabel) : subLabel}`
           : ''}
       </div>
-      {/* {prefix === '@' && <UsernameAvatar username={value} />}
-      {prefix + (translateValue ? chrome.i18n.getMessage(value) : value)}
-      {subLabel && subLabel.trim().length > 0
-        ? `(${translateSublabel ? chrome.i18n.getMessage(subLabel) : subLabel})`
-        : ''} */}
     </div>
   );
 };

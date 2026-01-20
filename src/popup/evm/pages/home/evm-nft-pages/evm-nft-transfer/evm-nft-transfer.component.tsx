@@ -119,7 +119,11 @@ const EvmNftTransfer = ({
 
   const init = async () => {
     setAutocompleteValues(
-      await EvmAddressesUtils.getWhiteListAutocomplete(chain, localAccounts),
+      await EvmAddressesUtils.getWhiteListAutocomplete(
+        chain,
+        localAccounts,
+        activeAccount.wallet.address,
+      ),
     );
   };
 

@@ -74,6 +74,7 @@ export const AutocompleteBox = ({
                       translateLabel={autoCompleteItem.translateLabel}
                       onItemClick={handleOnChange}
                       subLabel={autoCompleteItem.subLabel}
+                      img={autoCompleteItem.img}
                       translateSublabel={autoCompleteItem.translateSubLabel}
                       prefix={prefix}
                     />
@@ -111,6 +112,7 @@ export const AutocompleteBox = ({
               translateSublabel={item.translateSubLabel}
               onItemClick={handleOnChange}
               prefix={prefix}
+              img={item.img}
             />
           ))}
         </div>

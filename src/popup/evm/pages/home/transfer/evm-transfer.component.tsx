@@ -157,6 +157,7 @@ const EvmTransfer = ({
     const values = await EvmAddressesUtils.getWhiteListAutocomplete(
       chain,
       localAccounts,
+      activeAccount.wallet.address,
     );
     setAutocompleteValues(values);
     if (formParams.receiverAddress) {

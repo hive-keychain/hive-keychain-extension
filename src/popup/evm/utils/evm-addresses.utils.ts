@@ -1,4 +1,8 @@
-import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
+import {
+  AutoCompleteCategory,
+  AutoCompleteValue,
+  AutoCompleteValues,
+} from '@interfaces/autocomplete.interface';
 import { FavoriteAddress } from '@interfaces/contacts.interface';
 import {
   EvmAddressType,
@@ -422,6 +426,7 @@ const isPotentialSpoofing = async (address: string) => {
 const getWhiteListAutocomplete = async (
   chain: EvmChain,
   localAccounts: EvmAccount[],
+  walletAddress: string,
 ) => {
   const wallets = await getWalletAddresses(chain.chainId);
 
@@ -429,42 +434,63 @@ const getWhiteListAutocomplete = async (
     localAccount.wallet.address.toLowerCase(),
   );
 
-  return {
-    categories: [
-      {
-        title: 'evm_wallets',
-        translateTitle: true,
-        values: wallets
-          .filter(
-            (wallet) => !localAddresses.includes(wallet.address.toLowerCase()),
-          )
-          .map((wallet) => {
-            return {
-              value: wallet.address,
-              label:
-                wallet.label?.length && wallet.label.length > 0
-                  ? wallet.label
-                  : EvmFormatUtils.formatAddress(wallet.address),
-              subLabel:
-                wallet.label?.length && wallet.label.length > 0
-                  ? EvmFormatUtils.formatAddress(wallet.address)
-                  : '',
-            };
-          }),
-      },
-      {
-        title: 'local_accounts',
-        translateTitle: true,
-        values: localAccounts.map((localAccount) => {
-          return {
-            value: localAccount.wallet.address,
-            label: EvmAccountUtils.getAccountFullname(localAccount),
-            subLabel: EvmFormatUtils.formatAddress(localAccount.wallet.address),
-          };
-        }),
-      },
-    ],
+  const autocomplete = {
+    categories: [],
   } as AutoCompleteValues;
+
+  const walletCategory: AutoCompleteCategory = {
+    title: 'evm_wallets',
+    translateTitle: true,
+    values: [],
+  };
+  const localAccountCategory: AutoCompleteCategory = {
+    title: 'local_accounts',
+    translateTitle: true,
+    values: [],
+  };
+
+  for (const wallet of wallets.filter(
+    (w) => !localAddresses.includes(w.address.toLowerCase()),
+  )) {
+    console.log(wallet);
+    walletCategory.values.push({
+      value: wallet.address,
+      label:
+        wallet.label?.length && wallet.label.length > 0
+          ? wallet.label
+          : EvmFormatUtils.formatAddress(wallet.address),
+      subLabel:
+        wallet.label?.length && wallet.label.length > 0
+          ? EvmFormatUtils.formatAddress(wallet.address)
+          : '',
+      img:
+        (await getAddressDetails(wallet.address, chain.chainId)).avatar ??
+        `data:image/svg+xml;utf8,${encodeURIComponent(
+          getIdenticonFromAddress(wallet.address).svg,
+        )}`,
+    } as AutoCompleteValue);
+  }
+
+  for (const localAccount of localAccounts.filter(
+    (la) => walletAddress.toLowerCase() !== la.wallet.address.toLowerCase(),
+  )) {
+    localAccountCategory.values.push({
+      value: localAccount.wallet.address,
+      label: EvmAccountUtils.getAccountFullname(localAccount),
+      subLabel: EvmFormatUtils.formatAddress(localAccount.wallet.address),
+      img:
+        (await getAddressDetails(localAccount.wallet.address, chain.chainId))
+          .avatar ??
+        `data:image/svg+xml;utf8,${encodeURIComponent(
+          getIdenticonFromAddress(localAccount.wallet.address).svg,
+        )}`,
+    } as AutoCompleteValue);
+  }
+
+  autocomplete.categories.push(walletCategory);
+  autocomplete.categories.push(localAccountCategory);
+  console.log(autocomplete);
+  return autocomplete;
 };
 
 export const EvmAddressesUtils = {

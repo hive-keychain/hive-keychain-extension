@@ -4,6 +4,7 @@ export interface AutoCompleteValue {
   subLabel?: string;
   translateSubLabel?: boolean;
   value: string;
+  img?: string;
 }
 
 export interface AutoCompleteCategory {

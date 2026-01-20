@@ -2,9 +2,9 @@
   @include poppins500(14px);
   height: 35px;
   cursor: pointer;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
 
   .autocomplete-item-subvalue {
     font-size: 12px;
@@ -12,7 +12,7 @@
     opacity: 0.7;
   }
 
-  padding-left: 20px;
+  padding-left: 12px;
   padding-right: 16px;
   .user-avatar {
     @include icon-size(30px);
