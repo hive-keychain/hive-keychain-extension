@@ -47,7 +47,7 @@ const getTotalBalanceInUsd = (
   prices: EvmPrices,
 ) => {
   return tokens.reduce((a, b) => {
-    const price = prices[b.tokenInfo.symbol.toLowerCase()] ?? 0;
+    const price = prices[b.tokenInfo.symbol.toLowerCase()] ?? { usd: 0 };
     return (
       a +
       price.usd *
