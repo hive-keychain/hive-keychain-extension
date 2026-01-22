@@ -69,6 +69,9 @@ const Config = {
     twitter: 'https://twitter.com/HiveKeychain',
     medium: 'https://medium.com/@hivekeychain',
   },
+  vault: {
+    portName: 'vault-connection',
+  },
 };
 
 export default Config;
