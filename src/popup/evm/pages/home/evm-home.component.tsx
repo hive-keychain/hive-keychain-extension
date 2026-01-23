@@ -101,6 +101,8 @@ const Home = ({
   const [pendingTransactionsInfo, setPendingTransactionsInfo] =
     useState<EvmPendingTransactionsInfo>();
 
+  const [accountValues, setAccountValues] = useState<{usdValue: string, mainTokenValue: string}>();
+
   // RPC related
   const [displayChangeRpcPopup, setDisplayChangeRpcPopup] = useState(false);
   const [initialRpc, setInitialRpc] = useState<MultichainRpc>();
@@ -136,6 +138,20 @@ const Home = ({
       fetchPrices(
         activeAccount.nativeAndErc20Tokens.value.map((t) => t.tokenInfo),
       );
+      const usdValue = `$${FormatUtils.withCommas(
+                EvmTokensUtils.getTotalBalanceInUsd(
+                  activeAccount.nativeAndErc20Tokens.value,
+                  prices,
+                ),
+              )}`;
+              const mainTokenValue = `${FormatUtils.withCommas(
+                EvmTokensUtils.getTotalBalanceInMainToken(
+                  activeAccount.nativeAndErc20Tokens.value,
+                  chain,
+                  prices,
+                ),
+              )} ${chain.mainToken}`;
+              setAccountValues({usdValue, mainTokenValue});
     }
   }, [activeAccount.nativeAndErc20Tokens]);
 
@@ -418,23 +434,12 @@ const Home = ({
 
       <div className={'home-page-content'} onScroll={handleScroll}>
         <div className="evm-account-value-wrapper">
-          <EstimatedAccountValueSectionComponent
+         {accountValues && <EstimatedAccountValueSectionComponent
             accountValues={{
-              [AccountValueType.DOLLARS]: `$${FormatUtils.withCommas(
-                EvmTokensUtils.getTotalBalanceInUsd(
-                  activeAccount.nativeAndErc20Tokens.value,
-                  prices,
-                ),
-              )}`,
-              [AccountValueType.TOKEN]: `${FormatUtils.withCommas(
-                EvmTokensUtils.getTotalBalanceInMainToken(
-                  activeAccount.nativeAndErc20Tokens.value,
-                  chain,
-                  prices,
-                ),
-              )} ${chain.mainToken}`,
+              [AccountValueType.DOLLARS]: accountValues.usdValue,
+              [AccountValueType.TOKEN]: accountValues.mainTokenValue,
             }}
-          />
+          />}
 
           <EvmDappStatusComponent />
         </div>

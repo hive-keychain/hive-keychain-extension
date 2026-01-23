@@ -47,23 +47,24 @@ const getTotalBalanceInUsd = (
   prices: EvmPrices,
 ) => {
   return tokens.reduce((a, b) => {
-    const price = prices[b.tokenInfo.symbol.toLowerCase()] ?? { usd: 0 };
-    return (
-      a +
-      price.usd *
-        Number(
-          ethers.formatUnits(
-            b.balance,
-            b.tokenInfo.type === EVMSmartContractType.ERC20
-              ? Number(b.tokenInfo.decimals)
-              : 18,
-          ),
-        )
-    );
+    let price = {usd: 0};
+    if(b.tokenInfo.coingeckoId && prices[b.tokenInfo.coingeckoId]) {
+      price = prices[b.tokenInfo.coingeckoId];
+    }
+    
+    const tokenValue = price.usd *
+    Number(
+      ethers.formatUnits(
+        b.balance,
+        b.tokenInfo.type === EVMSmartContractType.ERC20
+        ? Number(b.tokenInfo.decimals)
+      : 18,
+      ),
+    )
+    return a + tokenValue;
   }, 0);
 };
 
-// TODO need to add erc20 and nfts tokens values as well
 const getTotalBalanceInMainToken = (
   tokens: NativeAndErc20Token[],
   chain: EvmChain,
@@ -76,7 +77,14 @@ const getTotalBalanceInMainToken = (
 
   if (mainToken) {
     const valueInUsd = getTotalBalanceInUsd(tokens, prices) || 0;
-    return valueInUsd / (prices[mainToken.tokenInfo.symbol]?.usd ?? 1);
+
+
+    let price = {usd: 0};
+    if(mainToken.tokenInfo.coingeckoId && prices[mainToken.tokenInfo.coingeckoId]) {
+      price = prices[mainToken.tokenInfo.coingeckoId];
+    }
+    if(!price || price.usd === 0) return 0;
+    return valueInUsd / price.usd;
   } else return 0;
 };
 
@@ -633,6 +641,7 @@ const getTokensFullDetails = async (
       addressesToFetch.push(address);
     }
   }
+  console.log(addressesToFetch, 'addressesToFetch');
   let tokensMetadata: any = [];
   tokensMetadata = await getMetadataFromBackend(addressesToFetch, chain);
 
@@ -645,25 +654,29 @@ const getTokensFullDetails = async (
     missingMetadataAddresses.includes(t.contractAddress),
   );
 
+  if(chainTokenMetaData.find((t: any) => t.type === EVMSmartContractType.NATIVE)) {
+    tokensMetadata =tokensMetadata.filter((t: any) => t.type !== EVMSmartContractType.NATIVE);
+  }
+
   const newMetadata = [
-    ...chainTokenMetaData.filter(
-      (t: any) => t.type !== EVMSmartContractType.NATIVE,
-    ),
+    ...chainTokenMetaData,
     ...tokensMetadata,
     ...missingMetadata,
   ];
-  if (!newMetadata.find((m) => m.type === EVMSmartContractType.NATIVE)) {
-    const mainTokenMetadata = {
-      type: EVMSmartContractType.NATIVE,
-      name: chain.mainToken,
-      symbol: chain.mainToken,
-      chainId: chain.chainId,
-      logo: chain.logo,
-      backgroundColor: '',
-      coingeckoId: '',
-    } as EvmSmartContractInfo;
-    newMetadata.push(mainTokenMetadata);
-  }
+
+
+  // if (!newMetadata.find((m) => m.type === EVMSmartContractType.NATIVE)) {
+  //   const mainTokenMetadata = {
+  //     type: EVMSmartContractType.NATIVE,
+  //     name: chain.mainToken,
+  //     symbol: chain.mainToken,
+  //     chainId: chain.chainId,
+  //     logo: chain.logo,
+  //     backgroundColor: '',
+  //     coingeckoId: '',
+  //   } as EvmSmartContractInfo;
+  //   newMetadata.push(mainTokenMetadata);
+  // }
   allSavedMetadata[chain.chainId] = newMetadata;
 
   await LocalStorageUtils.saveValueInLocalStorage(
@@ -740,6 +753,7 @@ const getMetadataFromBackend = async (
       `evm/smart-contracts-info/${chain.chainId}`,
       { addresses },
     );
+    console.log(result, 'result');
     return result;
   } catch (err) {
     Logger.error('Error while fetching metadata', err);
