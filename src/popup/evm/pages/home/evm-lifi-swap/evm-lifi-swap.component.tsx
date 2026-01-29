@@ -13,12 +13,15 @@ import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.compon
 import { LiFiTokenFilter } from '@popup/evm/pages/home/evm-lifi-swap/lifi-token-filter/lifi-token-filter.component';
 import { LiFiUtils } from '@popup/evm/utils/lifi.utils';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 export const EvmLifiSwap = ({
   setTitleContainerProperties,
+  activeChain,
+  activeAccount,
 }: PropsFromRedux) => {
   const [fromSelectedToken, setFromSelectedToken] = useState<any>(null);
   const [toSelectedToken, setToSelectedToken] = useState<any>(null);
@@ -44,7 +47,6 @@ export const EvmLifiSwap = ({
   useEffect(() => {
     if (fromSelectedChain) {
       const tokens = filterTokenList(fromSelectedChain);
-      console.log(tokens, 'fromSelectedChain');
       setFromTokenList(tokens);
       setFromSelectedToken(tokens[0]);
     }
@@ -53,7 +55,6 @@ export const EvmLifiSwap = ({
   useEffect(() => {
     if (toSelectedChain) {
       const tokens = filterTokenList(toSelectedChain);
-      console.log(tokens, 'toSelectedChain');
       setToTokenList(tokens);
       setToSelectedToken(tokens[0]);
     }
@@ -65,14 +66,16 @@ export const EvmLifiSwap = ({
     setTokenList(optionsLists.tokens);
     setChainList(optionsLists.chains);
 
-    setFromSelectedChain(optionsLists.chains[1]);
-    setToSelectedChain(optionsLists.chains[1]);
+    const chain = optionsLists.chains.find(
+      (chainOption) => chainOption.value.id === Number(activeChain.chainId),
+    );
+    setFromSelectedChain(chain);
+    setToSelectedChain(chain);
 
     setLoading(false);
   };
 
   const filterTokenList = (chainOption: OptionItem) => {
-    console.log(chainOption, 'chainOption', tokenList);
     if (chainOption.value === '*') {
       return tokenList;
     } else {
@@ -115,8 +118,19 @@ export const EvmLifiSwap = ({
                 options={fromTokenList}
                 selectedItem={toSelectedToken}
                 setSelectedItem={setToSelectedToken}
-                filterable
                 generateImageIfNull
+                filterable
+                customFilter={
+                  <>
+                    {toSelectedChain && (
+                      <LiFiTokenFilter
+                        options={chainList}
+                        selectedItem={toSelectedChain}
+                        setSelectedItem={setToSelectedChain}
+                      />
+                    )}
+                  </>
+                }
               />
             </div>
             <InputComponent
@@ -161,6 +175,7 @@ export const EvmLifiSwap = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.evm.activeAccount,
+    activeChain: state.chain as EvmChain,
   };
 };
 
