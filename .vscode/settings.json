@@ -6,5 +6,5 @@
     "source.organizeImports": "explicit"
   },
   "typescript.preferences.importModuleSpecifier": "non-relative",
-  "git.ignoreLimitWarning": true,
+  "git.ignoreLimitWarning": true
 }

@@ -1,3 +1,4 @@
+import FlatList from 'flatlist-react';
 import React, { useEffect, useRef, useState } from 'react';
 import Select, { SelectRenderer } from 'react-dropdown-select';
 import { CustomSelectItemComponent } from 'src/common-ui/custom-select/custom-select-item.component';
@@ -13,8 +14,9 @@ export interface OptionItem {
   value: any;
   canDelete?: boolean;
   subLabel?: string;
+  subLabelHover?: string;
   img?: string;
-  imgChip?: SVGIcons;
+  imgChip?: SVGIcons | string;
   imgBackup?: string;
   key?: string;
 }
@@ -35,6 +37,8 @@ export interface CustomSelectProps<T> {
   rightActionIcon?: boolean;
   rightActionClicked?: () => void;
   generateImageIfNull?: boolean;
+  minFilterLength?: number;
+  customFilter?: JSX.Element;
 }
 
 export function ComplexeCustomSelect<T extends OptionItem>(
@@ -50,6 +54,9 @@ export function ComplexeCustomSelect<T extends OptionItem>(
   }, [query, itemProps.options]);
 
   const filter = (query: string) => {
+    if (itemProps.minFilterLength && query.length < itemProps.minFilterLength) {
+      return [];
+    }
     return itemProps.options.filter(
       (option) =>
         option.label.toLowerCase().includes(query.toLowerCase()) ||
@@ -60,7 +67,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
   const customLabelRender = (selectProps: SelectRenderer<T>) => {
     return (
       <div
-        className="selected-item"
+        className={`selected-item ${itemProps.selectedItem?.imgChip ? 'has-img-chip' : ''}`}
         onClick={() => {
           selectProps.methods.dropDown('close');
         }}>
@@ -79,10 +86,26 @@ export function ComplexeCustomSelect<T extends OptionItem>(
               />
             )}
             {itemProps.selectedItem.imgChip && (
-              <SVGIcon
-                className="left-svg-chip"
-                icon={itemProps.selectedItem.imgChip as SVGIcons}
-              />
+              <>
+                {EnumUtils.isValueOf(
+                  itemProps.selectedItem.imgChip,
+                  SVGIcons,
+                ) && (
+                  <SVGIcon
+                    className="left-svg-chip"
+                    icon={itemProps.selectedItem.imgChip as SVGIcons}
+                  />
+                )}
+                {!EnumUtils.isValueOf(
+                  itemProps.selectedItem.imgChip,
+                  SVGIcons,
+                ) && (
+                  <PreloadedImage
+                    className="left-svg-chip"
+                    src={itemProps.selectedItem.imgChip as string}
+                  />
+                )}
+              </>
             )}
           </>
         )}
@@ -122,7 +145,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
     }, 200);
     return (
       <div className="custom-select-dropdown">
-        {itemProps.filterable && (
+        {itemProps.filterable && !itemProps.customFilter && (
           <InputComponent
             onChange={setQuery}
             value={query}
@@ -136,6 +159,33 @@ export function ComplexeCustomSelect<T extends OptionItem>(
             rightActionClicked={itemProps.rightActionClicked ?? undefined}
           />
         )}
+        {itemProps.filterable &&
+          !!itemProps.customFilter &&
+          itemProps.customFilter}
+
+        <FlatList
+          list={filteredOptions}
+          renderItem={(option: T, index: number) => (
+            <CustomSelectItemComponent
+              key={option.key ?? `option-${option.label}`}
+              isLast={props.options.length === index}
+              item={option}
+              isSelected={option.value === itemProps.selectedItem.value}
+              handleItemClicked={() => {
+                itemProps.setSelectedItem(option);
+              }}
+              closeDropdown={() => methods.dropDown('close')}
+              onDelete={itemProps.onDelete}
+              canDelete={
+                option.canDelete &&
+                itemProps.selectedItem.value !== option.value
+              }
+              generateImageIfNull={itemProps.generateImageIfNull}
+            />
+          )}
+          renderOnScroll
+        />
+
         {filteredOptions.map((option, index) => (
           <CustomSelectItemComponent
             key={option.key ?? `option-${option.label}`}

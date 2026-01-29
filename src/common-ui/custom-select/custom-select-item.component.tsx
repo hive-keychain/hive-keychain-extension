@@ -1,3 +1,4 @@
+import { PreloadedImage } from '@common-ui/preloaded-image/preloaded-image.component';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import { OptionItem } from 'src/common-ui/custom-select/custom-select.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -45,7 +46,7 @@ export function CustomSelectItemComponent<T extends OptionItem>({
     <div className="option">
       <div
         data-testid={`custom-select-item-${item.key}`}
-        className={`custom-select-item ${isSelected ? 'selected' : ''}`}
+        className={`custom-select-item ${isSelected ? 'selected' : ''} ${item.imgChip ? 'has-img-chip' : ''}`}
         onClick={() => {
           handleItemClicked();
           closeDropdown();
@@ -59,10 +60,20 @@ export function CustomSelectItemComponent<T extends OptionItem>({
               <img className="left-image" src={item.img} />
             )}
             {item.imgChip && (
-              <SVGIcon
-                className="left-svg-chip"
-                icon={item.imgChip as SVGIcons}
-              />
+              <>
+                {EnumUtils.isValueOf(item.imgChip, SVGIcons) && (
+                  <SVGIcon
+                    className="left-svg-chip"
+                    icon={item.imgChip as SVGIcons}
+                  />
+                )}
+                {!EnumUtils.isValueOf(item.imgChip, SVGIcons) && (
+                  <PreloadedImage
+                    className="left-svg-chip"
+                    src={item.imgChip as string}
+                  />
+                )}
+              </>
             )}
           </>
         )}
@@ -76,7 +87,15 @@ export function CustomSelectItemComponent<T extends OptionItem>({
             {item.label.slice(0, 2)}
           </div>
         )}
-        <div className="item-label">{item.label}</div>
+        <div className="item-label">
+          {item.label}
+          {item.subLabel && (
+            <>
+              <span className="item-sub-label">{item.subLabel}</span>
+              <span className="item-sub-label-hover">{item.subLabelHover}</span>
+            </>
+          )}
+        </div>
         {onDelete && canDelete && !isSelected && (
           <SVGIcon
             className="right-action-icon"

@@ -1,0 +1,23 @@
+.evm-lifi-swap-page {
+    padding: 0 24px;
+    .evm-lifi-swap-page-content {
+        display: flex;
+        flex-direction: column;
+        row-gap: 8px;
+        flex: 1;
+    
+        .evm-lifi-swap-chain-token-selectors {
+            display: flex;
+            flex-direction: row;
+            column-gap: 8px;
+            .custom-select-container  {
+                flex: 1;
+            }
+        }
+        .evm-lifi-swap-page-content-buttons {
+            display: flex;
+            flex-direction: row;
+            column-gap: 8px;
+        }
+    }
+}
