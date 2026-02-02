@@ -49,11 +49,9 @@ export interface DelegationTokenTransaction extends TokenTransaction {
   delegatee: string;
   delegator: string;
 }
-export interface UndelegateTokenStartTransaction
-  extends DelegationTokenTransaction {}
+export interface UndelegateTokenStartTransaction extends DelegationTokenTransaction {}
 
-export interface UndelegateTokenDoneTransaction
-  extends DelegationTokenTransaction {}
+export interface UndelegateTokenDoneTransaction extends DelegationTokenTransaction {}
 
 export interface DelegateTokenTransaction extends DelegationTokenTransaction {}
 
@@ -105,6 +103,7 @@ export interface TokenMarket {
 }
 
 export interface TokenBalance {
+  isMainToken?: boolean;
   account: string;
   balance: string;
   delegationsIn: string;
