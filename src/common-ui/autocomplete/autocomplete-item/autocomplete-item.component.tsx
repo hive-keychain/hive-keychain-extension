@@ -22,7 +22,7 @@ const AutocompleteItemComponent = ({
     <div
       className="autocomplete-item"
       key={value}
-      onClick={() => onItemClick(value)}>
+      onMouseDown={() => onItemClick(value)}>
       {prefix === '@' && <UsernameAvatar username={value} />}
       {prefix + (translateValue ? chrome.i18n.getMessage(value) : value)}
       {subLabel && subLabel.trim().length > 0
