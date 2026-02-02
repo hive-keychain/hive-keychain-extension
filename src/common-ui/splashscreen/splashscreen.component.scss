@@ -48,22 +48,18 @@
     width: 140px;
     height: auto;
     justify-content: space-around;
-    .first,
-    .second,
-    .third {
-      border-radius: 50%;
-      width: 1em;
-      height: 1em;
-      transform-origin: 50% 100%;
-      animation: bounce 2s linear infinite;
-    }
+    align-items: center;
+    z-index: 2;
 
     .ball {
-      display: flex;
-      margin: 1.5em;
-      width: 1em;
-      height: 1em;
+      border-radius: 50%;
+      width: 12px;
+      height: 12px;
       background: var(--splashscreen-text-color);
+      transform-origin: 50% 100%;
+      animation: bounce 2s ease-in-out infinite;
+      flex-shrink: 0;
+
       &.second {
         animation-delay: 0.1s;
       }

@@ -7,6 +7,7 @@ import {
 import RpcUtils from '@popup/hive/utils/rpc.utils';
 import { store } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { AsyncUtils } from 'src/utils/async.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 export const useWorkingRPC = async (activeRpc?: Rpc) => {
@@ -17,6 +18,7 @@ export const useWorkingRPC = async (activeRpc?: Rpc) => {
   for (const rpc of RpcUtils.getFullList().filter(
     (rpc) => rpc.uri !== currentRpc?.uri && !rpc.testnet,
   )) {
+    await AsyncUtils.sleep(1000);
     if (await RpcUtils.checkRpcStatus(rpc.uri)) {
       if (switchAuto) {
         store.dispatch(setActiveRpc(rpc));

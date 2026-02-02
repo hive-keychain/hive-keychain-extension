@@ -1,0 +1,20 @@
+.pending-recurrent-transfers-page {
+  .list {
+    flex-direction: column;
+    display: flex;
+    row-gap: 12px;
+    .recurrent-transfer-row {
+      @include delegation-row();
+
+      .expanded-panel {
+        width: 100%;
+        .recurrent-transfer-details {
+          display: flex;
+          flex-direction: row;
+          padding: 8px 16px;
+          justify-content: space-between;
+        }
+      }
+    }
+  }
+}

@@ -4,11 +4,18 @@ import {
   HiveEngineConfig,
 } from '@interfaces/hive-engine-rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { BgdHiveEngineConfigModule } from 'src/background/hive-engine-config.module';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 let rpc = 'https://api.hive-engine.com/rpc';
 
 let accountHistoryApi = 'https://history.hive-engine.com';
+
+(async () => {
+  const config = await BgdHiveEngineConfigModule.getActiveConfig();
+  rpc = config.rpc;
+  accountHistoryApi = config.accountHistoryApi;
+})();
 
 const getApi = () => {
   return rpc;

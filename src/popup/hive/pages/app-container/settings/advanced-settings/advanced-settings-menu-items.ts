@@ -24,11 +24,11 @@ const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
       icon: SVGIcons.MENU_ADVANCED_SETTINGS_KEYCHAINIFY,
       nextScreen: Screen.SETTINGS_KEYCHAINIFY,
     },
-    {
-      label: 'popup_html_analytics',
-      icon: SVGIcons.MENU_ADVANCED_SETTINGS_ANALYTICS,
-      nextScreen: Screen.SETTINGS_ANALYTICS,
-    },
+    // {
+    //   label: 'popup_html_analytics',
+    //   icon: SVGIcons.MENU_ADVANCED_SETTINGS_ANALYTICS,
+    //   nextScreen: Screen.SETTINGS_ANALYTICS,
+    // },
     {
       label: 'ledger_link_ledger_device',
       icon: SVGIcons.MENU_ADVANCED_SETTINGS_LINK_LEDGER_DEVICE,

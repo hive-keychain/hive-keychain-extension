@@ -29,6 +29,7 @@ const getSwapTokenStartList = async (account: ExtendedAccount) => {
       account: account.name,
       balance: Asset.fromString(account.balance.toString()).amount.toString(),
       symbol: BaseCurrencies.HIVE.toUpperCase(),
+      isMainToken: true,
     } as TokenBalance);
   }
   if (Asset.fromString(account.hbd_balance.toString()).amount > 0) {
@@ -38,6 +39,7 @@ const getSwapTokenStartList = async (account: ExtendedAccount) => {
         account.hbd_balance.toString(),
       ).amount.toString(),
       symbol: BaseCurrencies.HBD.toUpperCase(),
+      isMainToken: true,
     } as TokenBalance);
   }
 

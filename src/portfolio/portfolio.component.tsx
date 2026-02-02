@@ -3,6 +3,7 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { Theme } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
@@ -13,6 +14,7 @@ import { PortfolioTableComponent } from 'src/portfolio/portolfio-table/portfolio
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
+import VaultUtils from 'src/utils/vault.utils';
 
 const Portfolio = () => {
   const [theme, setTheme] = useState<Theme>();
@@ -54,9 +56,7 @@ const Portfolio = () => {
     ]);
     setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
 
-    const mk = await LocalStorageUtils.getValueFromSessionStorage(
-      LocalStorageKeyEnum.__MK,
-    );
+    const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
     let localAccounts = await AccountUtils.getAccountsFromLocalStorage(mk);
     let extendedAccounts = await AccountUtils.getExtendedAccounts(
       localAccounts.map((localAcc) => localAcc.name),

@@ -5,6 +5,7 @@ import {
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
 import { TransactionOptions } from '@interfaces/keys.interface';
+import { fetchRecurrentTransfers } from '@popup/hive/actions/recurrent-transfer.actions';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -20,12 +21,17 @@ import {
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import Joi from 'joi';
+import { capitalize } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { ConnectedProps, connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
 import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { CheckboxFormComponent } from 'src/common-ui/checkbox/checkbox/form-checkbox.component';
+import {
+  ConfirmationPageFields,
+  ConfirmationPageFieldType,
+} from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import {
   ComplexeCustomSelect,
@@ -45,6 +51,7 @@ import HiveUtils from 'src/popup/hive/utils/hive.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 import { Screen } from 'src/reference-data/screen.enum';
+
 import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
@@ -102,6 +109,8 @@ const TransferFunds = ({
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
+  fetchRecurrentTransfers,
+  recurrentTransfers,
 }: PropsFromRedux) => {
   const { control, handleSubmit, setValue, watch } = useForm<TransferForm>({
     defaultValues: {
@@ -142,6 +151,7 @@ const TransferFunds = ({
 
   useEffect(() => {
     fetchPhishingAccounts();
+    fetchRecurrentTransfers(activeAccount.name!);
     loadAutocompleteTransferUsernames();
     setTitleContainerProperties({
       title: 'popup_html_transfer_funds',
@@ -152,6 +162,13 @@ const TransferFunds = ({
   useEffect(() => {
     setBalance(balances[watch('selectedCurrency')]);
   }, [watch('selectedCurrency')]);
+
+  useEffect(() => {
+    const memo = watch('memo');
+    if (memo && memo.startsWith('#')) {
+      setValue('encrypted', true);
+    }
+  }, [watch('memo')]);
 
   const options = [
     { label: currencyLabels.hive, value: 'hive' as keyof CurrencyLabels },
@@ -210,25 +227,35 @@ const TransferFunds = ({
       memoField = chrome.i18n.getMessage('popup_empty');
     }
 
-    let fields = [
-      { label: 'popup_html_transfer_from', value: `@${activeAccount.name}` },
-      { label: 'popup_html_transfer_to', value: `@${form.receiverUsername}` },
-      { label: 'popup_html_transfer_amount', value: stringifiedAmount },
+    let fields: ConfirmationPageFields[] = [
+      {
+        label: 'popup_html_transfer_from',
+        value: `@${activeAccount.name}`,
+        tag: ConfirmationPageFieldType.USERNAME,
+        iconPosition: 'right',
+      },
+      {
+        label: 'popup_html_transfer_to',
+        value: `@${form.receiverUsername}`,
+        tag: ConfirmationPageFieldType.USERNAME,
+        iconPosition: 'right',
+      },
+      {
+        label: 'popup_html_transfer_amount',
+        value: stringifiedAmount,
+        tag: ConfirmationPageFieldType.AMOUNT,
+        tokenSymbol: currencyLabels[form.selectedCurrency],
+        iconPosition: 'right',
+      },
       { label: 'popup_html_transfer_memo', value: memoField },
     ];
 
-    const isCancelRecurrent = form.amount === 0 && form.isRecurrent;
-
-    if (
-      form.isRecurrent &&
-      !isCancelRecurrent &&
-      (!form.frequency || !form.iteration)
-    ) {
+    if (form.isRecurrent && (!form.frequency || !form.iteration)) {
       setErrorMessage('popup_html_transfer_recurrent_missing_field');
       return;
     }
 
-    if (form.isRecurrent && !isCancelRecurrent) {
+    if (form.isRecurrent) {
       fields.push({
         label: 'popup_html_transfer_recurrence',
         value: chrome.i18n.getMessage('popup_html_transfer_recurrence_value', [
@@ -236,9 +263,6 @@ const TransferFunds = ({
           form.iteration.toString(),
         ]),
       });
-    }
-    if (isCancelRecurrent) {
-      fields = [fields[0], fields[1]];
     }
 
     let warningMessage = await TransferUtils.getTransferWarningLabel(
@@ -250,23 +274,15 @@ const TransferFunds = ({
     );
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage(
-        isCancelRecurrent
-          ? 'popup_html_transfer_confirm_cancel_recurrent'
-          : 'popup_html_transfer_confirm_text',
-      ),
+      message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
       fields: fields,
       warningMessage: warningMessage,
       skipWarningTranslation: true,
-      title: isCancelRecurrent
-        ? 'popup_html_cancel_recurrent_transfer'
-        : 'popup_html_transfer_funds',
+      title: 'popup_html_transfer_funds',
       formParams: getFormParams(),
       afterConfirmAction: async (options?: TransactionOptions) => {
         addToLoadingList(
-          form.isRecurrent && form.amount === 0
-            ? 'html_popup_stop_recc_transfer_fund_operation'
-            : 'html_popup_transfer_fund_operation',
+          'html_popup_transfer_fund_operation',
           KeysUtils.getKeyType(
             activeAccount.keys.active!,
             activeAccount.keys.activePubkey!,
@@ -290,23 +306,25 @@ const TransferFunds = ({
             }
           }
 
+          const pair_id = TransferUtils.getRecurrentTransferPairId(
+            recurrentTransfers,
+            form.receiverUsername,
+          );
+
           success = await TransferUtils.sendTransfer(
             activeAccount.name!,
             form.receiverUsername,
             formattedAmount,
             memoParam,
             form.isRecurrent,
-            isCancelRecurrent ? 2 : +form.iteration,
-            isCancelRecurrent ? 24 : +form.frequency,
+            +form.iteration,
+            +form.frequency,
             activeAccount.keys.active!,
             options,
+            pair_id,
           );
 
-          removeFromLoadingList(
-            form.isRecurrent && form.amount === 0
-              ? 'html_popup_stop_recc_transfer_fund_operation'
-              : 'html_popup_transfer_fund_operation',
-          );
+          removeFromLoadingList('html_popup_transfer_fund_operation');
 
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
@@ -323,20 +341,12 @@ const TransferFunds = ({
                 stringifiedAmount,
               ]);
             } else {
-              isCancelRecurrent
-                ? setSuccessMessage(
-                    'popup_html_cancel_transfer_recurrent_successful',
-                    [`@${form.receiverUsername}`],
-                  )
-                : setSuccessMessage(
-                    'popup_html_transfer_recurrent_successful',
-                    [
-                      `@${form.receiverUsername}`,
-                      stringifiedAmount,
-                      form.frequency.toString(),
-                      form.iteration.toString(),
-                    ],
-                  );
+              setSuccessMessage('popup_html_transfer_recurrent_successful', [
+                `@${form.receiverUsername}`,
+                stringifiedAmount,
+                form.frequency.toString(),
+                form.iteration.toString(),
+              ]);
             }
           } else {
             setErrorMessage('popup_html_transfer_failed');
@@ -361,6 +371,19 @@ const TransferFunds = ({
           unit={currencyLabels[watch('selectedCurrency')]}
           label="popup_html_balance"
         />
+        {recurrentTransfers?.length > 0 && (
+          <div
+            className="pending-recurrent-transfer-panel"
+            onClick={() => {
+              navigateTo(Screen.RECURRENT_TRANSFERS_PAGE);
+            }}>
+            <div className="pending-recurrent-transfer-text">
+              {`${recurrentTransfers?.length} ${chrome.i18n.getMessage(
+                'popup_html_active_recurrent_transfer',
+              )}`}
+            </div>
+          </div>
+        )}
 
         <FormContainer onSubmit={handleSubmit(handleClickOnSend)}>
           <div className="form-fields">
@@ -373,6 +396,7 @@ const TransferFunds = ({
               placeholder="popup_html_username"
               label="popup_html_username"
               autocompleteValues={autocompleteFavoriteUsers}
+              autocompletePrefix="@"
             />
             <div className="value-panel">
               <ComplexeCustomSelect
@@ -416,7 +440,13 @@ const TransferFunds = ({
               control={control}
               dataTestId="input-memo-optional"
               type={InputType.TEXT}
-              label="popup_html_memo_optional"
+              label="popup_html_transfer_memo"
+              hint={
+                watch('encrypted') || watch('memo').startsWith('#')
+                  ? capitalize(chrome.i18n.getMessage('popup_encrypted'))
+                  : undefined
+              }
+              skipHintTranslation
               placeholder="popup_html_memo_optional"
               rightActionClicked={() =>
                 setValue('encrypted', !watch('encrypted'))
@@ -431,13 +461,9 @@ const TransferFunds = ({
               name="isRecurrent"
               control={control}
               dataTestId="checkbox-transfer-recurrent"
-              title={
-                watch('amount') + '' === '0'
-                  ? 'popup_html_cancel_recurrent_transfer'
-                  : 'popup_html_recurrent_transfer'
-              }
+              title={'popup_html_recurrent_transfer'}
             />
-            {watch('isRecurrent') && watch('amount') + '' !== '0' && (
+            {watch('isRecurrent') && (
               <div className="recurrent-panel">
                 <FormInputComponent
                   name="frequency"
@@ -488,6 +514,7 @@ const mapStateToProps = (state: RootState) => {
       : {},
     phishing: state.hive.phishing,
     localAccounts: state.hive.accounts,
+    recurrentTransfers: state.hive.recurrentTransfers,
   };
 };
 
@@ -500,6 +527,7 @@ const connector = connect(mapStateToProps, {
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
+  fetchRecurrentTransfers,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

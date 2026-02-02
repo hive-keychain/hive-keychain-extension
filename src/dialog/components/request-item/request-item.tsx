@@ -3,11 +3,12 @@ import React from 'react';
 export enum RequestItemType {
   STRING = 'STRING',
   LIST = 'LIST',
+  REACT_NODE = 'REACT_NODE',
 }
 
 type Props = {
   title: string;
-  content: string | string[];
+  content: string | string[] | React.ReactNode;
   red?: boolean; // show balance red
   type?: RequestItemType;
   xsFont?: boolean;
@@ -16,7 +17,7 @@ type Props = {
 const renderContent = (content: any, type: RequestItemType) => {
   switch (type) {
     case RequestItemType.STRING:
-      return content;
+      return <span>{content}</span>;
     case RequestItemType.LIST:
       return (
         <ul>
@@ -29,6 +30,8 @@ const renderContent = (content: any, type: RequestItemType) => {
           })}
         </ul>
       );
+    case RequestItemType.REACT_NODE:
+      return content;
   }
 };
 

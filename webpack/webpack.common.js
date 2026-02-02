@@ -20,6 +20,7 @@ const config = {
     web_interface: './src/content-scripts/web-interface/index.ts',
     keychainify: './src/content-scripts/keychainify/index.ts',
     portfolio: './src/portfolio/index.tsx',
+    vault: './src/vault/index.ts',
   },
   module: {
     rules: [

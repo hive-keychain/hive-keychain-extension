@@ -1,3 +1,4 @@
+import MkModule from '@background/mk.module';
 import BgdAccountsUtils from '@background/utils/accounts.utils';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
@@ -21,9 +22,7 @@ const start = async () => {
 };
 
 const alarmHandler = async () => {
-  const mk = await LocalStorageUtils.getValueFromSessionStorage(
-    LocalStorageKeyEnum.__MK,
-  );
+  const mk = await MkModule.getMk();
   if (!mk) return;
 
   const localStorage = await LocalStorageUtils.getMultipleValueFromLocalStorage(

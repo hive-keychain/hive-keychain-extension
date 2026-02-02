@@ -1,10 +1,18 @@
 .autocomplete-item {
   @include poppins500(14px);
-  height: 30px;
+  height: 35px;
   cursor: pointer;
   display: flex;
   align-items: center;
   padding-left: 20px;
+  .user-avatar {
+    @include icon-size(30px);
+    border-radius: 50%;
+    margin-right: 12px;
+    &.shimmer {
+      @include icon-size(30px);
+    }
+  }
   &:hover {
     background-color: $red;
     color: white;

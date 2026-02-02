@@ -4,6 +4,7 @@ const Config = {
     mainnet: 'ssc-mainnet-hive',
     accountHistoryApi: 'https://history.hive-engine.com/',
     rpc: 'https://api.hive-engine.com/rpc',
+    maxSpread: 100,
   } as HiveEngineConfig,
   claims: {
     FREQUENCY: +(process.env.DEV_CLAIM_FREQUENCY || 10),
@@ -38,6 +39,7 @@ const Config = {
   transactions: {
     expirationTimeInMinutes: 10,
     multisigExpirationTimeInMinutes: 60,
+    multisigExpirationTimeInMinutesForHardfork28: 24 * 60,
   },
   swaps: {
     autoRefreshPeriodSec: +(process.env.DEV_SWAP_AUTO_REFRESH ?? 30),
@@ -57,6 +59,18 @@ const Config = {
   },
   tutorial: {
     baseUrl: process.env.DEV_TUTORIAL || 'https://tutorial.hive-keychain.com',
+  },
+  keyless: {
+    host: process.env.KEYLESS_HOST || 'https://hive-auth.arcange.eu/',
+  },
+  social: {
+    discord: 'https://discord.gg/tUHtyev2xF',
+    peakd: 'https://peakd.com/@keychain',
+    twitter: 'https://twitter.com/HiveKeychain',
+    medium: 'https://medium.com/@hivekeychain',
+  },
+  vault: {
+    portName: 'vault-connection',
   },
 };
 

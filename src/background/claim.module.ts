@@ -1,4 +1,5 @@
 import { ActiveAccountModule } from '@background/active-account.module';
+import MkModule from '@background/mk.module';
 import BgdAccountsUtils from '@background/utils/accounts.utils';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { LocalStorageClaimItem } from '@interfaces/local-storage-claim-item.interface';
@@ -30,9 +31,7 @@ const alarmHandler = async () => {
       LocalStorageKeyEnum.CLAIM_SAVINGS,
     ],
   );
-  const mk = await LocalStorageUtils.getValueFromSessionStorage(
-    LocalStorageKeyEnum.__MK,
-  );
+  const mk = await MkModule.getMk();
   const claimAccounts = localStorage[LocalStorageKeyEnum.CLAIM_ACCOUNTS];
   const claimRewards = localStorage[LocalStorageKeyEnum.CLAIM_REWARDS];
   const claimSavings = localStorage[LocalStorageKeyEnum.CLAIM_SAVINGS];

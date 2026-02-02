@@ -1,0 +1,44 @@
+.amount-with-logo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  transition: all 0.2s ease;
+
+  .title {
+    @include poppins500(14px);
+    color: var(--main-font-color);
+    margin-right: 12px;
+  }
+  .amount-logo-container {
+    display: flex;
+    align-items: center;
+    min-height: 32px;
+    gap: 8px;
+  }
+  .svg-icon {
+    height: 32px;
+    width: 32px;
+  }
+  .amount-logo {
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    &.shimmer {
+      @include icon-size(32px);
+    }
+
+    &.loading-placeholder {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      // animation: loading-shimmer 1.5s infinite;
+      border: 1px solid var(--card-border);
+    }
+  }
+
+  .amount {
+    @include poppins400(14px);
+    color: var(--main-font-color);
+  }
+}

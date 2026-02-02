@@ -10,6 +10,7 @@ import { navigateToWithParams } from '@popup/multichain/actions/navigation.actio
 import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import { Asset } from 'hive-keychain-commons';
+import ImageUtils from 'hive-keychain-commons/lib/utils/images.utils';
 import React, { BaseSyntheticEvent, useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -159,7 +160,7 @@ const walletInfoSectionItem = ({
         )}
         {tokenInfo && (
           <PreloadedImage
-            src={tokenInfo?.metadata.icon}
+            src={ImageUtils.getImmutableImage(tokenInfo?.metadata.icon)}
             className="currency-icon"
             addBackground
             symbol={tokenInfo.symbol}

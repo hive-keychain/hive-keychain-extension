@@ -9,6 +9,7 @@ import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { HiveInternalMarketLockedInOrders } from '@interfaces/hive-market.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { isWif } from 'hive-keychain-commons';
 import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
@@ -24,13 +25,13 @@ import { KeychainError } from 'src/keychain-error';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
-import MkUtils from 'src/popup/hive/utils/mk.utils';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import FormatUtils from 'src/utils/format.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
+import VaultUtils from 'src/utils/vault.utils';
 
 export enum AccountErrorMessages {
   INCORRECT_KEY = 'popup_accounts_incorrect_key',
@@ -104,7 +105,11 @@ const verifyAccount = async (
     throw new Error(AccountErrorMessages.ALREADY_REGISTERED);
   }
 
-  return await getKeys(username, password);
+  const keys = await getKeys(username, password);
+  if (!keys || KeysUtils.keysCount(keys) === 0) {
+    throw new Error(AccountErrorMessages.INCORRECT_KEY);
+  }
+  return keys;
 };
 /* istanbul ignore next */
 const saveAccounts = async (localAccounts: LocalAccount[], mk: string) => {
@@ -119,7 +124,7 @@ const saveAccounts = async (localAccounts: LocalAccount[], mk: string) => {
 const getAccountFromLocalStorage = async (
   username: string,
 ): Promise<LocalAccount | undefined> => {
-  const mk = await MkUtils.getMkFromLocalStorage();
+  const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
   const accounts = await getAccountsFromLocalStorage(mk);
   return accounts.find((acc) => acc.name === username);
 };
@@ -490,7 +495,7 @@ const getRCMana = async (username: string) => {
 };
 
 const addKeyFromLedger = async (username: string, keys: Keys) => {
-  const mk = await MkUtils.getMkFromLocalStorage();
+  const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
   let accounts = await AccountUtils.getAccountsFromLocalStorage(mk);
   let account = accounts.find(
     (account: LocalAccount) => account.name === username,
@@ -617,9 +622,7 @@ const getUpdateAccountTransaction = (
 };
 
 const addAccount = async (username: string, keys: Keys) => {
-  const mk = await LocalStorageUtils.getValueFromSessionStorage(
-    LocalStorageKeyEnum.__MK,
-  );
+  const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
 
   const localAccounts = await AccountUtils.getAccountsFromLocalStorage(mk);
   localAccounts.push({ name: username, keys: keys });
@@ -627,9 +630,7 @@ const addAccount = async (username: string, keys: Keys) => {
 };
 
 const addMultipleAccounts = async (localAccounts: LocalAccount[]) => {
-  const mk = await LocalStorageUtils.getValueFromSessionStorage(
-    LocalStorageKeyEnum.__MK,
-  );
+  const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
 
   let savedAccounts = await AccountUtils.getAccountsFromLocalStorage(mk);
   if (!savedAccounts) savedAccounts = [];
@@ -655,6 +656,119 @@ const getAccountFromKey = async (key: Key) => {
     : KeysUtils.getPublicKeyFromPrivateKeyString(key!.toString());
   const accountName = (await KeysUtils.getKeyReferences([pubKey!]))[0];
   return AccountUtils.getExtendedAccount(accountName[0]);
+};
+
+const processAuthorityUpdate = async (
+  userAccount: ExtendedAccount,
+  role: 'posting' | 'active',
+  authorizedUsername: string,
+  weight?: number,
+) => {
+  const updatedAuthority = userAccount[role];
+
+  /** Check if account already exists in the account_auths array */
+  const authorizedAccounts = updatedAuthority.account_auths.map(
+    (auth) => auth[0],
+  );
+
+  const hasAuthority = authorizedAccounts.indexOf(authorizedUsername) !== -1;
+  if (hasAuthority) {
+    throw new KeychainError('already_has_authority_error');
+  }
+
+  /** Use weight_threshold as default weight */
+  const finalWeight = weight || userAccount[role].weight_threshold;
+  updatedAuthority.account_auths.push([authorizedUsername, +finalWeight]);
+  updatedAuthority.account_auths.sort((a, b) => a[0].localeCompare(b[0]));
+
+  const active = role === 'active' ? updatedAuthority : userAccount.active;
+  const posting = role === 'posting' ? updatedAuthority : userAccount.posting;
+
+  return { active, posting };
+};
+
+const processAuthorityRemoval = async (
+  userAccount: ExtendedAccount,
+  role: 'posting' | 'active',
+  authorizedUsername: string,
+) => {
+  const updatedAuthority = userAccount[role];
+  const totalAuthorizedUser = updatedAuthority.account_auths.length;
+
+  // Remove the authority if it exists
+  for (let i = 0; i < totalAuthorizedUser; i++) {
+    const user = updatedAuthority.account_auths[i];
+    if (user[0] === authorizedUsername) {
+      updatedAuthority.account_auths.splice(i, 1);
+      break;
+    }
+  }
+
+  /** Check if the account was actually removed */
+  if (totalAuthorizedUser === updatedAuthority.account_auths.length) {
+    throw new KeychainError('nothing_to_remove_error');
+  }
+
+  const active = role === 'active' ? updatedAuthority : userAccount.active;
+  const posting = role === 'posting' ? updatedAuthority : userAccount.posting;
+
+  return { active, posting };
+};
+
+const processKeyAuthorityUpdate = async (
+  userAccount: ExtendedAccount,
+  role: 'posting' | 'active',
+  authorizedKey: string,
+  weight?: number,
+) => {
+  const updatedAuthority = userAccount[role];
+
+  /** Check if key already exists in the key_auths array */
+  const authorizedKeys = updatedAuthority.key_auths.map((auth) => auth[0]);
+  const hasAuthority = authorizedKeys.indexOf(authorizedKey) !== -1;
+  if (hasAuthority) {
+    throw new KeychainError('already_has_authority_error');
+  }
+
+  /** Use weight_threshold as default weight */
+  const finalWeight = weight || userAccount[role].weight_threshold;
+  updatedAuthority.key_auths.push([authorizedKey, +finalWeight]);
+  updatedAuthority.key_auths.sort((a, b) =>
+    (a[0] as string).localeCompare(b[0] as string),
+  );
+
+  const active = role === 'active' ? updatedAuthority : userAccount.active;
+  const posting = role === 'posting' ? updatedAuthority : userAccount.posting;
+
+  return { active, posting };
+};
+
+const processKeyAuthorityRemoval = async (
+  userAccount: ExtendedAccount,
+  role: 'posting' | 'active',
+  authorizedKey: string,
+) => {
+  const updatedAuthority = userAccount[role];
+  const totalAuthorizedKey = updatedAuthority.key_auths.length;
+
+  // Remove the key authority if it exists
+  for (let i = 0; i < totalAuthorizedKey; i++) {
+    const key = updatedAuthority.key_auths[i];
+    if (key[0] === authorizedKey) {
+      updatedAuthority.key_auths.splice(i, 1);
+      break;
+    }
+  }
+
+  /** Check if the key was actually removed */
+  if (totalAuthorizedKey === updatedAuthority.key_auths.length) {
+    throw new KeychainError('missing_authority_error');
+  }
+
+  const active = role === 'active' ? updatedAuthority : userAccount.active;
+  const posting = role === 'posting' ? updatedAuthority : userAccount.posting;
+
+  return { active, posting };
 };
 
 const AccountUtils = {
@@ -692,6 +806,10 @@ const AccountUtils = {
   reorderAccounts,
   addAuthorizedKey,
   getAccountFromKey,
+  processAuthorityUpdate,
+  processAuthorityRemoval,
+  processKeyAuthorityUpdate,
+  processKeyAuthorityRemoval,
 };
 
 export const BackgroundAccountUtils = {

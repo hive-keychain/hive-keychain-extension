@@ -76,6 +76,17 @@ export const loadUserTokens =
       tokensBalance = tokensBalance.sort(
         (a, b) => parseFloat(b.balance) - parseFloat(a.balance),
       );
+
+      tokensBalance = tokensBalance.filter(
+        (t) =>
+          parseFloat(t.balance) !== 0 ||
+          parseFloat(t.delegationsIn) !== 0 ||
+          parseFloat(t.delegationsOut) !== 0 ||
+          parseFloat(t.pendingUndelegations) !== 0 ||
+          parseFloat(t.pendingUnstake) !== 0 ||
+          parseFloat(t.stake) !== 0,
+      );
+
       const action: ActionPayload<TokenBalance[]> = {
         type: HiveActionType.LOAD_USER_TOKENS,
         payload: tokensBalance,

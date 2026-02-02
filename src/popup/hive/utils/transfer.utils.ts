@@ -4,6 +4,7 @@ import type {
   TransferOperation,
 } from '@hiveio/dhive';
 import { Key, TransactionOptions } from '@interfaces/keys.interface';
+import { PendingRecurrentTransfer } from '@interfaces/transaction.interface';
 import {
   ExchangesUtils,
   TransferUtils as TransferUtilsCommons,
@@ -76,6 +77,7 @@ const sendTransfer = (
   frequency: number,
   activeKey: Key,
   options?: TransactionOptions,
+  pair_id?: number,
 ) => {
   if (!recurrent) {
     return HiveTxUtils.sendOperation(
@@ -94,6 +96,7 @@ const sendTransfer = (
           memo,
           frequency,
           iterations,
+          pair_id,
         ),
       ],
       activeKey,
@@ -127,6 +130,7 @@ const getRecurrentTransferOperation = (
   memo: string,
   frequency: number,
   iterations: number,
+  pair_id: number = 0,
 ) => {
   return [
     'recurrent_transfer',
@@ -137,7 +141,7 @@ const getRecurrentTransferOperation = (
       memo: memo,
       recurrence: frequency,
       executions: iterations,
-      extensions: [],
+      extensions: [{ type: 1, value: { pair_id } }],
     },
   ] as RecurrentTransferOperation;
 };
@@ -169,6 +173,31 @@ const getTransferTransaction = (
   }
 };
 
+const getRecurrentTransfers = async (
+  name: string,
+): Promise<{ recurrent_transfers: PendingRecurrentTransfer[] }> => {
+  const recurrentTransfers = await HiveTxUtils.getData(
+    'database_api.find_recurrent_transfers',
+    { from: name },
+  );
+  return recurrentTransfers;
+};
+
+const getRecurrentTransferPairId = (
+  recurrentTransfers: PendingRecurrentTransfer[],
+  to: string,
+): number => {
+  const pairTrx = recurrentTransfers.filter((transfer) => transfer.to === to);
+  if (pairTrx.length === 0) return 0;
+  const pairId = pairTrx.reduce(
+    (max: number, transfer: PendingRecurrentTransfer) => {
+      return max === 0 || transfer.pair_id > max ? transfer.pair_id : max;
+    },
+    0,
+  );
+  return pairId + 1;
+};
+
 const TransferUtils = {
   getTransferFromToSavingsValidationWarning,
   sendTransfer,
@@ -176,6 +205,8 @@ const TransferUtils = {
   getRecurrentTransferOperation,
   getTransferTransaction,
   getTransferWarningLabel,
+  getRecurrentTransfers,
+  getRecurrentTransferPairId,
 };
 
 export default TransferUtils;
