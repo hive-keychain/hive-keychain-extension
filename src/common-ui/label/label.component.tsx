@@ -5,6 +5,7 @@ interface Props {
   params?: any[];
   skipTranslation?: boolean;
   className?: string;
+  onClick?: () => void;
 }
 
 export const LabelComponent = ({
@@ -12,9 +13,15 @@ export const LabelComponent = ({
   params,
   skipTranslation,
   className,
+  onClick,
 }: Props) => {
+  const handleOnClick = () => {
+    if (onClick) {
+      onClick();
+    }
+  };
   return (
-    <span className={className}>
+    <span className={className} onClick={handleOnClick}>
       {skipTranslation ? value : chrome.i18n.getMessage(value, params ?? [])}
     </span>
   );

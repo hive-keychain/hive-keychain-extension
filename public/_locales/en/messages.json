@@ -5718,5 +5718,21 @@
   "evm_request_add_chain_caption": {
     "message": "$1 has requested to make an action on a chain you haven't setup yet. Do you want to add it to Keychain and proceed with that transaction?",
     "description": "Request to add chain caption"
+  },
+  "evm_link_to_other_receiver": {
+    "message": "Click here to change the receiver",
+    "description": "Link to other receiver"
+  },
+  "evm_swap_receiver_address": {
+    "message": "Receiver address",
+    "description": "Swap receiver address"
+  },
+  "evm_processed_by": {
+    "message": "Processed by $1",
+    "description": "Processed by"
+  },
+  "evm_swap_approval_amount": {
+    "message": "Approval amount",
+    "description": "Swap approval amount"
   }
 }

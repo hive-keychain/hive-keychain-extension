@@ -47,6 +47,10 @@ const weiToGwei = (value: Decimal) => {
   return value.div(new Decimal(1000000000));
 };
 
+const formatTokenValue = (value: number, decimals: number) => {
+  return new Decimal(value).mul(new Decimal(10).pow(new Decimal(decimals)));
+};
+
 export const EvmFormatUtils = {
   addHexPrefix,
   formatAddress,
@@ -56,4 +60,5 @@ export const EvmFormatUtils = {
   weiToGwei,
   GWEI,
   WEI,
+  formatTokenValue,
 };

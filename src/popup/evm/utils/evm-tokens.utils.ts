@@ -47,20 +47,21 @@ const getTotalBalanceInUsd = (
   prices: EvmPrices,
 ) => {
   return tokens.reduce((a, b) => {
-    let price = {usd: 0};
-    if(b.tokenInfo.coingeckoId && prices[b.tokenInfo.coingeckoId]) {
+    let price = { usd: 0 };
+    if (b.tokenInfo.coingeckoId && prices[b.tokenInfo.coingeckoId]) {
       price = prices[b.tokenInfo.coingeckoId];
     }
-    
-    const tokenValue = price.usd *
-    Number(
-      ethers.formatUnits(
-        b.balance,
-        b.tokenInfo.type === EVMSmartContractType.ERC20
-        ? Number(b.tokenInfo.decimals)
-      : 18,
-      ),
-    )
+
+    const tokenValue =
+      price.usd *
+      Number(
+        ethers.formatUnits(
+          b.balance,
+          b.tokenInfo.type === EVMSmartContractType.ERC20
+            ? Number(b.tokenInfo.decimals)
+            : 18,
+        ),
+      );
     return a + tokenValue;
   }, 0);
 };
@@ -78,12 +79,14 @@ const getTotalBalanceInMainToken = (
   if (mainToken) {
     const valueInUsd = getTotalBalanceInUsd(tokens, prices) || 0;
 
-
-    let price = {usd: 0};
-    if(mainToken.tokenInfo.coingeckoId && prices[mainToken.tokenInfo.coingeckoId]) {
+    let price = { usd: 0 };
+    if (
+      mainToken.tokenInfo.coingeckoId &&
+      prices[mainToken.tokenInfo.coingeckoId]
+    ) {
       price = prices[mainToken.tokenInfo.coingeckoId];
     }
-    if(!price || price.usd === 0) return 0;
+    if (!price || price.usd === 0) return 0;
     return valueInUsd / price.usd;
   } else return 0;
 };
@@ -654,8 +657,12 @@ const getTokensFullDetails = async (
     missingMetadataAddresses.includes(t.contractAddress),
   );
 
-  if(chainTokenMetaData.find((t: any) => t.type === EVMSmartContractType.NATIVE)) {
-    tokensMetadata =tokensMetadata.filter((t: any) => t.type !== EVMSmartContractType.NATIVE);
+  if (
+    chainTokenMetaData.find((t: any) => t.type === EVMSmartContractType.NATIVE)
+  ) {
+    tokensMetadata = tokensMetadata.filter(
+      (t: any) => t.type !== EVMSmartContractType.NATIVE,
+    );
   }
 
   const newMetadata = [
@@ -663,7 +670,6 @@ const getTokensFullDetails = async (
     ...tokensMetadata,
     ...missingMetadata,
   ];
-
 
   // if (!newMetadata.find((m) => m.type === EVMSmartContractType.NATIVE)) {
   //   const mainTokenMetadata = {
@@ -945,6 +951,17 @@ const getCustomTokens = async (chain: EvmChain, walletAddress: string) => {
   return savedCustomTokens[chain.chainId][walletAddress];
 };
 
+const getAllowance = async (
+  chain: EvmChain,
+  walletAddress: string,
+  tokenAddress: string,
+) => {
+  const provider = await EthersUtils.getProvider(chain);
+  const contract = new ethers.Contract(tokenAddress, Erc20Abi, provider);
+  const allowance = await contract.allowance(walletAddress, tokenAddress);
+  return allowance;
+};
+
 export const EvmTokensUtils = {
   getTotalBalanceInMainToken,
   getTotalBalanceInUsd,
@@ -970,4 +987,5 @@ export const EvmTokensUtils = {
   addCustomToken,
   getCustomTokens,
   getNfts,
+  getAllowance,
 };

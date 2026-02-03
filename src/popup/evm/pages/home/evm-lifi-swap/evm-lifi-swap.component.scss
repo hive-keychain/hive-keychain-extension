@@ -1,23 +1,97 @@
 .evm-lifi-swap-page {
-    padding: 0 24px;
-    .evm-lifi-swap-page-content {
-        display: flex;
-        flex-direction: column;
-        row-gap: 8px;
-        flex: 1;
-    
-        .evm-lifi-swap-chain-token-selectors {
-            display: flex;
-            flex-direction: row;
-            column-gap: 8px;
-            .custom-select-container  {
-                flex: 1;
-            }
-        }
-        .evm-lifi-swap-page-content-buttons {
-            display: flex;
-            flex-direction: row;
-            column-gap: 8px;
-        }
+  flex: 1;
+  display: flex;
+  .evm-lifi-swap-page-content {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    flex: 1;
+
+    .countdown {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-top: 10px;
+      font-size: 13px;
+      color: $red;
     }
+
+    .swap-label {
+      @include input-label;
+    }
+
+    .swap-icon {
+      align-self: center;
+      margin-top: 16px;
+    }
+
+    .evm-lifi-swap-chain-token-selectors {
+      display: flex;
+      flex-direction: row;
+      column-gap: 8px;
+      .custom-select-container {
+        flex: 1;
+      }
+    }
+    .evm-lifi-swap-page-content-buttons {
+      display: flex;
+      flex-direction: row;
+      column-gap: 8px;
+    }
+
+    .link-to-other-receiver {
+      @include link;
+      align-self: center;
+      margin-top: 16px;
+    }
+
+    .tool-details-card {
+      .tool-details-title {
+        display: flex;
+        flex-direction: row;
+        column-gap: 8px;
+        align-items: center;
+
+        .tool-logo {
+          @include user-avatar-small;
+        }
+        .tool-name {
+          @include poppins500(14px);
+          color: var(--main-font-color);
+        }
+        .tool-key {
+          @include poppins400(12px);
+          color: var(--main-font-color);
+          opacity: 0.7;
+        }
+      }
+    }
+
+    .advanced-parameters {
+      margin-top: 5px;
+      color: var(--main-font-color);
+      @include poppins500(18);
+      .title-panel {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        user-select: none;
+        column-gap: 8px;
+        align-items: center;
+
+        .advanced-parameters-toggle {
+          @include open-close-rotate();
+        }
+      }
+      .advanced-parameters-container {
+        padding-top: 8px;
+        padding-bottom: 8px;
+      }
+    }
+    .current-allowance {
+      @include poppins400(12px);
+      color: var(--main-font-color);
+      opacity: 0.7;
+    }
+  }
 }
