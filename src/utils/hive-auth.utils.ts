@@ -42,6 +42,7 @@ import EncryptUtils from '@popup/hive/utils/encrypt.utils';
 import { PowerUtils } from '@popup/hive/utils/power.utils';
 import ProposalUtils from '@popup/hive/utils/proposal.utils';
 import ProxyUtils from '@popup/hive/utils/proxy.utils';
+import { SavingsUtils } from '@popup/hive/utils/savings.utils';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import TransferUtils from '@popup/hive/utils/transfer.utils';
 import WitnessUtils from '@popup/hive/utils/witness.utils';
@@ -488,6 +489,20 @@ const getRequestOperation = async (request: KeychainRequest) => {
         request.amount + ' ' + request.currency,
         request.memo,
       );
+    case KeychainRequestTypes.savings:
+      return request.operation === 'deposit'
+        ? SavingsUtils.getDepositOperation(
+            request.username!,
+            request.to,
+            request.amount + ' ' + request.currency,
+            request.memo ?? '',
+          )
+        : SavingsUtils.getWithdrawOperation(
+            request.username!,
+            request.to,
+            request.amount + ' ' + request.currency,
+            request.memo ?? '',
+          );
     case KeychainRequestTypes.signTx:
       return request.tx.operations;
     case KeychainRequestTypes.post:

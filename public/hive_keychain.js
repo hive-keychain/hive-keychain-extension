@@ -31,7 +31,7 @@ var hive_keychain = {
    *   }
    * });
    *
-   * @param {String} username Hive account to perform the request
+   * @param {String} [username=null] Hive account to perform the request. If null, user can choose the account from a dropdown
    * @param {String} receiver Account that will decode the string
    * @param {String} message Message to be encrypted
    * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
@@ -510,6 +510,50 @@ var hive_keychain = {
       memo,
       enforce,
       currency,
+      rpc,
+    };
+    this.dispatchCustomEvent('swRequest_hive', request, callback);
+  },
+  /**
+   * Requests a savings operation (deposit or withdraw)
+   * @example
+   * const keychain = window.hive_keychain;
+   * keychain.requestSavingsOperation(username, toUsername, '1.000', 'HBD', 'deposit', 'test memo', (response) => {
+   *   console.log(response);
+   * });
+   *
+   * @param {String} username Hive account to perform the request
+   * @param {String} to Account to receive the savings transfer
+   * @param {String} amount Amount to be transferred. Requires 3 decimals.
+   * @param {String} currency 'HIVE' or 'HBD'
+   * @param {String} operation 'deposit' or 'withdraw'
+   * @param {String} [memo=''] Memo attached to the savings operation
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
+  requestSavingsOperation: function (
+    username,
+    to,
+    amount,
+    currency,
+    operation,
+    memo,
+    callback,
+    rpc,
+  ) {
+    if (typeof memo === 'function') {
+      rpc = callback;
+      callback = memo;
+      memo = '';
+    }
+    var request = {
+      type: 'savings',
+      username,
+      to,
+      amount,
+      currency,
+      operation,
+      memo: memo || '',
       rpc,
     };
     this.dispatchCustomEvent('swRequest_hive', request, callback);

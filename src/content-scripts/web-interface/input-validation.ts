@@ -3,6 +3,7 @@ import Joi from 'joi';
 
 const arrayPublicKeys = Joi.array().items(Joi.string());
 const username = Joi.string().required().min(3);
+const optionalUsername = Joi.string().allow(null);
 const method = Joi.string()
   .valid('Posting', 'Active', 'Memo', 'posting', 'active', 'memo')
   .required();
@@ -11,6 +12,9 @@ const authority = Joi.string()
   .required();
 const message = Joi.string().required().min(2).regex(/^#/);
 const currency = Joi.string().valid('HIVE', 'HBD', 'TESTS', 'TBD').required();
+const savingsOperation = Joi.string()
+  .valid('deposit', 'withdraw')
+  .required();
 const amount = Joi.string()
   .regex(/^\d+(\.\d{3})$/)
   .required()
@@ -224,6 +228,16 @@ const transfer = Joi.object({
   rpc,
 });
 
+const savings = Joi.object({
+  username: optionalUsername,
+  to: username,
+  amount,
+  currency,
+  operation: savingsOperation,
+  memo: Joi.string().allow(''),
+  rpc,
+});
+
 const sendToken = Joi.object({
   username,
   to: username,
@@ -353,6 +367,7 @@ const schemas = {
   proxy,
   delegation,
   transfer,
+  savings,
   sendToken,
   powerUp,
   powerDown,

@@ -16,9 +16,10 @@ const deposit = async (
   username: string,
   activeKey: Key,
   options?: TransactionOptions,
+  memo = '',
 ) => {
   return HiveTxUtils.sendOperation(
-    [await getDepositOperation(username, receiver, amount)],
+    [await getDepositOperation(username, receiver, amount, memo)],
     activeKey,
     false,
     options,
@@ -31,9 +32,10 @@ const withdraw = async (
   username: string,
   activeKey: Key,
   options?: TransactionOptions,
+  memo = '',
 ) => {
   return HiveTxUtils.sendOperation(
-    [await getWithdrawOperation(username, to, amount)],
+    [await getWithdrawOperation(username, to, amount, memo)],
     activeKey,
     false,
     options,
@@ -44,13 +46,14 @@ const getWithdrawOperation = async (
   from: string,
   to: string,
   amount: string,
+  memo = '',
 ) => {
   return [
     'transfer_from_savings',
     {
       amount: amount,
       from: from,
-      memo: '',
+      memo: memo || '',
       request_id: await SavingsUtils.getRequestId(from),
       to,
     },
@@ -61,13 +64,14 @@ const getDepositOperation = async (
   from: string,
   to: string,
   amount: string,
+  memo = '',
 ) => {
   return [
     'transfer_to_savings',
     {
       amount: amount,
       from: from,
-      memo: '',
+      memo: memo || '',
       request_id: await SavingsUtils.getRequestId(from),
       to,
     },
