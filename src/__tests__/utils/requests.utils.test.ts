@@ -5,7 +5,7 @@ import {
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
 import {
-  anonymous_requests,
+  anonymousRequests,
   getRequiredWifType,
 } from 'src/utils/requests.utils';
 
@@ -20,23 +20,30 @@ describe('requests.utils tests:\n', () => {
       const anonymousRequestsExpected = [
         KeychainRequestTypes.delegation,
         KeychainRequestTypes.witnessVote,
+        KeychainRequestTypes.vote,
         KeychainRequestTypes.proxy,
+        KeychainRequestTypes.savings,
         KeychainRequestTypes.custom,
         KeychainRequestTypes.signBuffer,
+        KeychainRequestTypes.sendToken,
+        KeychainRequestTypes.powerUp,
+        KeychainRequestTypes.convert,
         KeychainRequestTypes.recurrentTransfer,
+        KeychainRequestTypes.updateProposalVote,
+        KeychainRequestTypes.swap,
       ];
       anonymousRequestsExpected.forEach((request: any) => {
         if (showEachRequestIteration) {
           console.log(`Searching: ${request}`);
         }
         expect(
-          anonymous_requests.find((found) => found === request),
+          anonymousRequests.find((found) => found === request),
         ).not.toBeUndefined();
         if (showEachRequestIteration) {
           console.log('Found.');
         }
       });
-      expect(anonymous_requests.length).toBe(anonymousRequestsExpected.length);
+      expect(anonymousRequests.length).toBe(anonymousRequestsExpected.length);
     });
   });
 

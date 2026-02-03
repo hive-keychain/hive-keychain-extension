@@ -477,7 +477,7 @@ const getRequestOperation = async (request: KeychainRequest) => {
   switch (request.type) {
     case KeychainRequestTypes.vote:
       return BloggingUtils.getVoteOperation(
-        request.username,
+        request.username!,
         request.author,
         request.permlink,
         +request.weight,

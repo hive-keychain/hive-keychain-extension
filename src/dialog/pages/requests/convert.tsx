@@ -6,6 +6,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
 import Operation from 'src/dialog/components/operation/operation';
+import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -14,10 +15,12 @@ type Props = {
   domain: string;
   tab: number;
   rpc: Rpc;
+  accounts?: string[];
 };
 
 const Convert = (props: Props) => {
-  const { data, rpc } = props;
+  const { data, rpc, accounts } = props;
+  const anonymousProps = useAnonymousRequest(data, accounts);
   const currencyLabel = CurrencyUtils.getCurrencyLabel(
     data.collaterized ? 'HIVE' : 'HBD',
     rpc.testnet,
@@ -40,9 +43,19 @@ const Convert = (props: Props) => {
             ])
           : chrome.i18n.getMessage(`popup_html_convert_hbd_intro`)
       }
+      {...anonymousProps}
       {...props}>
-      <UsernameWithAvatar title="dialog_account" username={data.username} />
-      <Separator type={'horizontal'} fullSize />
+      {!accounts && data.username ? (
+        <>
+          <UsernameWithAvatar
+            title="dialog_account"
+            username={anonymousProps.username}
+          />
+          <Separator type={'horizontal'} fullSize />
+        </>
+      ) : (
+        <></>
+      )}
       <AmountWithLogo
         title="dialog_amount"
         amount={FormatUtils.formatCurrencyValue(data.amount)}

@@ -72,7 +72,7 @@ const signBuffer = Joi.object({
 });
 
 const vote = Joi.object({
-  username,
+  username: optionalUsername,
   permlink: Joi.string().required(),
   author: username,
   weight: Joi.number().required(),
@@ -239,7 +239,7 @@ const savings = Joi.object({
 });
 
 const sendToken = Joi.object({
-  username,
+  username: optionalUsername,
   to: username,
   amount: amountToken,
   currency: Joi.string().required(),
@@ -248,7 +248,7 @@ const sendToken = Joi.object({
 });
 
 const powerUp = Joi.object({
-  username,
+  username: optionalUsername,
   recipient: username,
   hive: amount,
   rpc,
@@ -307,7 +307,7 @@ const addAccount = Joi.object({
 });
 
 const convert = Joi.object({
-  username,
+  username: optionalUsername,
   amount,
   collaterized: Joi.boolean().required(),
   rpc,
