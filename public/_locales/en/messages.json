@@ -2615,6 +2615,51 @@
     "description": "Wallet information create account"
   },
 
+  "popup_html_wallet_info_escrow_transfer_out": {
+    "message": "Sending $1 escrow to @$2",
+    "description": "Wallet information escrow transfer outgoing"
+  },
+  "popup_html_wallet_info_escrow_transfer_in": {
+    "message": "Pending $1 escrow from @$2",
+    "description": "Wallet information escrow transfer incoming"
+  },
+  "popup_html_wallet_info_escrow_transfer_other": {
+    "message": "Escrow of $1 from @$2 to @$3",
+    "description": "Wallet information escrow transfer other"
+  },
+  "popup_html_wallet_info_escrow_approve_self": {
+    "message": "Approved escrow #$1",
+    "description": "Wallet information escrow approve self"
+  },
+  "popup_html_wallet_info_escrow_approve_other": {
+    "message": "@$1 approved escrow #$2",
+    "description": "Wallet information escrow approve other"
+  },
+  "popup_html_wallet_info_escrow_reject_self": {
+    "message": "Rejected escrow #$1",
+    "description": "Wallet information escrow reject self"
+  },
+  "popup_html_wallet_info_escrow_reject_other": {
+    "message": "@$1 rejected escrow #$2",
+    "description": "Wallet information escrow reject other"
+  },
+  "popup_html_wallet_info_escrow_dispute_self": {
+    "message": "Disputed escrow #$1",
+    "description": "Wallet information escrow dispute self"
+  },
+  "popup_html_wallet_info_escrow_dispute_other": {
+    "message": "@$1 disputed escrow #$2",
+    "description": "Wallet information escrow dispute other"
+  },
+  "popup_html_wallet_info_escrow_release_self": {
+    "message": "Released $1 escrow to @$2 (#$3)",
+    "description": "Wallet information escrow release self"
+  },
+  "popup_html_wallet_info_escrow_release_other": {
+    "message": "@$1 released $2 escrow to @$3 (#$4)",
+    "description": "Wallet information escrow release other"
+  },
+
   "popup_html_filter_in": {
     "message": "In",
     "description": "Wallet filters"

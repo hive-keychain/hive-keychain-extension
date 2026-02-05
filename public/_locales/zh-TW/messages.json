@@ -1947,6 +1947,50 @@
     "message": "填入轉換：$1 => $2",
     "description": "Wallet information receive conversion"
   },
+  "popup_html_wallet_info_escrow_transfer_out": {
+    "message": "發送 $1 托管給 @$2",
+    "description": "Wallet information escrow transfer outgoing"
+  },
+  "popup_html_wallet_info_escrow_transfer_in": {
+    "message": "來自 @$2 的 $1 托管待確認",
+    "description": "Wallet information escrow transfer incoming"
+  },
+  "popup_html_wallet_info_escrow_transfer_other": {
+    "message": "$1 托管從 @$2 到 @$3",
+    "description": "Wallet information escrow transfer other"
+  },
+  "popup_html_wallet_info_escrow_approve_self": {
+    "message": "已批准托管 #$1",
+    "description": "Wallet information escrow approve self"
+  },
+  "popup_html_wallet_info_escrow_approve_other": {
+    "message": "@$1 已批准托管 #$2",
+    "description": "Wallet information escrow approve other"
+  },
+  "popup_html_wallet_info_escrow_reject_self": {
+    "message": "已拒絕托管 #$1",
+    "description": "Wallet information escrow reject self"
+  },
+  "popup_html_wallet_info_escrow_reject_other": {
+    "message": "@$1 已拒絕托管 #$2",
+    "description": "Wallet information escrow reject other"
+  },
+  "popup_html_wallet_info_escrow_dispute_self": {
+    "message": "托管 #$1 已爭議",
+    "description": "Wallet information escrow dispute self"
+  },
+  "popup_html_wallet_info_escrow_dispute_other": {
+    "message": "@$1 對托管 #$2 提出爭議",
+    "description": "Wallet information escrow dispute other"
+  },
+  "popup_html_wallet_info_escrow_release_self": {
+    "message": "已釋放 $1 托管給 @$2 (#$3)",
+    "description": "Wallet information escrow release self"
+  },
+  "popup_html_wallet_info_escrow_release_other": {
+    "message": "@$1 已釋放 $2 托管給 @$3 (#$4)",
+    "description": "Wallet information escrow release other"
+  },
   "popup_html_filter_in": {
     "message": "進",
     "description": "Wallet filters"

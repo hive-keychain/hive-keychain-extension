@@ -1959,6 +1959,50 @@
     "message": "Conversion complète : $1 => $2",
     "description": "Wallet information receive conversion"
   },
+  "popup_html_wallet_info_escrow_transfer_out": {
+    "message": "Envoi d'un séquestre de $1 à @$2",
+    "description": "Wallet information escrow transfer outgoing"
+  },
+  "popup_html_wallet_info_escrow_transfer_in": {
+    "message": "Séquestre en attente de $1 de @$2",
+    "description": "Wallet information escrow transfer incoming"
+  },
+  "popup_html_wallet_info_escrow_transfer_other": {
+    "message": "Séquestre de $1 de @$2 à @$3",
+    "description": "Wallet information escrow transfer other"
+  },
+  "popup_html_wallet_info_escrow_approve_self": {
+    "message": "Séquestre #$1 approuvé",
+    "description": "Wallet information escrow approve self"
+  },
+  "popup_html_wallet_info_escrow_approve_other": {
+    "message": "@$1 a approuvé le séquestre #$2",
+    "description": "Wallet information escrow approve other"
+  },
+  "popup_html_wallet_info_escrow_reject_self": {
+    "message": "Séquestre #$1 rejeté",
+    "description": "Wallet information escrow reject self"
+  },
+  "popup_html_wallet_info_escrow_reject_other": {
+    "message": "@$1 a rejeté le séquestre #$2",
+    "description": "Wallet information escrow reject other"
+  },
+  "popup_html_wallet_info_escrow_dispute_self": {
+    "message": "Séquestre #$1 contesté",
+    "description": "Wallet information escrow dispute self"
+  },
+  "popup_html_wallet_info_escrow_dispute_other": {
+    "message": "@$1 a contesté le séquestre #$2",
+    "description": "Wallet information escrow dispute other"
+  },
+  "popup_html_wallet_info_escrow_release_self": {
+    "message": "Séquestre de $1 libéré vers @$2 (#$3)",
+    "description": "Wallet information escrow release self"
+  },
+  "popup_html_wallet_info_escrow_release_other": {
+    "message": "@$1 a libéré $2 du séquestre vers @$3 (#$4)",
+    "description": "Wallet information escrow release other"
+  },
   "popup_html_filter_in": {
     "message": "In",
     "description": "Wallet filters"

@@ -2600,6 +2600,50 @@
     "message": "Membayar $1 untuk membuat @$2",
     "description": "Wallet information create account"
   },
+  "popup_html_wallet_info_escrow_transfer_out": {
+    "message": "Mengirim escrow $1 ke @$2",
+    "description": "Wallet information escrow transfer outgoing"
+  },
+  "popup_html_wallet_info_escrow_transfer_in": {
+    "message": "Escrow $1 menunggu dari @$2",
+    "description": "Wallet information escrow transfer incoming"
+  },
+  "popup_html_wallet_info_escrow_transfer_other": {
+    "message": "Escrow $1 dari @$2 ke @$3",
+    "description": "Wallet information escrow transfer other"
+  },
+  "popup_html_wallet_info_escrow_approve_self": {
+    "message": "Escrow #$1 disetujui",
+    "description": "Wallet information escrow approve self"
+  },
+  "popup_html_wallet_info_escrow_approve_other": {
+    "message": "@$1 menyetujui escrow #$2",
+    "description": "Wallet information escrow approve other"
+  },
+  "popup_html_wallet_info_escrow_reject_self": {
+    "message": "Escrow #$1 ditolak",
+    "description": "Wallet information escrow reject self"
+  },
+  "popup_html_wallet_info_escrow_reject_other": {
+    "message": "@$1 menolak escrow #$2",
+    "description": "Wallet information escrow reject other"
+  },
+  "popup_html_wallet_info_escrow_dispute_self": {
+    "message": "Escrow #$1 disengketakan",
+    "description": "Wallet information escrow dispute self"
+  },
+  "popup_html_wallet_info_escrow_dispute_other": {
+    "message": "@$1 menyengketakan escrow #$2",
+    "description": "Wallet information escrow dispute other"
+  },
+  "popup_html_wallet_info_escrow_release_self": {
+    "message": "Melepas escrow $1 ke @$2 (#$3)",
+    "description": "Wallet information escrow release self"
+  },
+  "popup_html_wallet_info_escrow_release_other": {
+    "message": "@$1 melepas escrow $2 ke @$3 (#$4)",
+    "description": "Wallet information escrow release other"
+  },
   "popup_html_filter_in": {
     "message": " Masuk",
     "description": "Wallet filters"

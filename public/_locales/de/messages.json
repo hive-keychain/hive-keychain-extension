@@ -2600,6 +2600,50 @@
     "message": "Bezahlte $1, um @$2 zu erstellen",
     "description": "Wallet information create account"
   },
+  "popup_html_wallet_info_escrow_transfer_out": {
+    "message": "Sende $1 Escrow an @$2",
+    "description": "Wallet information escrow transfer outgoing"
+  },
+  "popup_html_wallet_info_escrow_transfer_in": {
+    "message": "Ausstehendes $1 Escrow von @$2",
+    "description": "Wallet information escrow transfer incoming"
+  },
+  "popup_html_wallet_info_escrow_transfer_other": {
+    "message": "Escrow von $1 von @$2 an @$3",
+    "description": "Wallet information escrow transfer other"
+  },
+  "popup_html_wallet_info_escrow_approve_self": {
+    "message": "Escrow #$1 genehmigt",
+    "description": "Wallet information escrow approve self"
+  },
+  "popup_html_wallet_info_escrow_approve_other": {
+    "message": "@$1 genehmigte Escrow #$2",
+    "description": "Wallet information escrow approve other"
+  },
+  "popup_html_wallet_info_escrow_reject_self": {
+    "message": "Escrow #$1 abgelehnt",
+    "description": "Wallet information escrow reject self"
+  },
+  "popup_html_wallet_info_escrow_reject_other": {
+    "message": "@$1 lehnte Escrow #$2 ab",
+    "description": "Wallet information escrow reject other"
+  },
+  "popup_html_wallet_info_escrow_dispute_self": {
+    "message": "Escrow #$1 angefochten",
+    "description": "Wallet information escrow dispute self"
+  },
+  "popup_html_wallet_info_escrow_dispute_other": {
+    "message": "@$1 hat Escrow #$2 angefochten",
+    "description": "Wallet information escrow dispute other"
+  },
+  "popup_html_wallet_info_escrow_release_self": {
+    "message": "Escrow von $1 an @$2 freigegeben (#$3)",
+    "description": "Wallet information escrow release self"
+  },
+  "popup_html_wallet_info_escrow_release_other": {
+    "message": "@$1 hat $2 Escrow an @$3 freigegeben (#$4)",
+    "description": "Wallet information escrow release other"
+  },
   "popup_html_filter_in": {
     "message": "In",
     "description": "Wallet filters"
