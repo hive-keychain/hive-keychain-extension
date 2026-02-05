@@ -180,6 +180,8 @@ export enum SVGIcons {
   WALLET_HISTORY_EXPAND_COLLAPSE = 'wallet/history/expand-collapse',
   WALLET_HISTORY_TOP = 'wallet/history/back-to-top',
 
+  WALLET_HISTORY_ESCROW = 'wallet/history/escrow',
+
   // LOGOS
   BINANCE = 'binance',
   IONOMY = 'ionomy',

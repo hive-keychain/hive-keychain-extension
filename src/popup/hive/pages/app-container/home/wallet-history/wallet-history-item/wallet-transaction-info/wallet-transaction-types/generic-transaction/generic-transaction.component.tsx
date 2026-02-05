@@ -32,11 +32,12 @@ const GenericTransaction = ({
       case 'transfer':
       case 'recurrent_transfer':
       case 'fill_recurrent_transfer':
+        return SVGIcons.WALLET_HISTORY_TRANSFER;
       case 'escrow_transfer':
       case 'escrow_approve':
       case 'escrow_dispute':
       case 'escrow_release':
-        return SVGIcons.WALLET_HISTORY_TRANSFER;
+        return SVGIcons.WALLET_HISTORY_ESCROW;
       case 'claim_reward_balance':
         return SVGIcons.WALLET_HISTORY_CLAIM_REWARDS;
       case 'savings':
