@@ -92,9 +92,6 @@ const getAccountTransactions = async (
     
     const transactions = transactionsFromBlockchain
       .map((e: any) => {
-        if(e[1].op[0].startsWith('escrow')){
-          console.log(e[1].op[0],JSON.stringify(e[1].op[1]));
-        }
         let specificTransaction = null;
         switch (e[1].op[0]) {
           case 'transfer': {
