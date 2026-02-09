@@ -23,6 +23,8 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { LocalAccount } from 'src/interfaces/local-account.interface';
+import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import { PowerType } from 'src/popup/hive/pages/app-container/home/power-up-down/power-type.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -35,6 +37,7 @@ const Shortcuts = ({
   activeAccount,
   userTokens,
   tokens,
+  loadActiveAccount,
   setErrorMessage,
   setSuccessMessage,
   setTitleContainerProperties,
@@ -58,6 +61,12 @@ const Shortcuts = ({
     DelegationType
   >(DelegationType.OUTGOING);
 
+  // `combo` is stored normalized for binding (e.g. "shift+command+w").
+  // We format it only for display (e.g. "⇧+⌘+W").
+  const comboDisplay = useMemo(() => {
+    return combo ? ShortcutsUtils.formatShortcutCombo(combo) : '';
+  }, [combo]);
+
   useEffect(() => {
     setTitleContainerProperties({
       title: 'popup_html_shortcuts',
@@ -80,7 +89,7 @@ const Shortcuts = ({
       }
       const newCombo = ShortcutsUtils.buildShortcutComboFromEvent(event);
       if (!newCombo) return;
-      setCombo(ShortcutsUtils. formatShortcutCombo(newCombo));
+      setCombo(newCombo);
     };
     input.addEventListener('keydown', handler);
     return () => {
@@ -231,7 +240,7 @@ const Shortcuts = ({
     ) {
       setTarget(activeAccount.name);
     }
-  }, [actionType, activeAccount, isFormVisible]);
+  }, [actionType, activeAccount?.name, isFormVisible, target]);
 
   useEffect(() => {
     if (requiresCurrency && !selectedCurrency) {
@@ -346,6 +355,7 @@ const Shortcuts = ({
 
   const handleSave = () => {
     if (!validateForm()) return;
+    const normalizedCombo = ShortcutsUtils.normalizeShortcutCombo(combo);
     const params: ShortcutParams = {};
     if (requiresCurrency) {
       params.selectedCurrency = selectedCurrency;
@@ -363,7 +373,7 @@ const Shortcuts = ({
     }
     const shortcut: ShortcutDefinition = {
       id: editingShortcutId ?? ShortcutsUtils.createShortcutId(),
-      combo: ShortcutsUtils.normalizeShortcutCombo(combo),
+      combo: normalizedCombo,
       actionType,
       target,
       params: Object.keys(params).length ? params : undefined,
@@ -378,7 +388,7 @@ const Shortcuts = ({
 
   const handleEdit = (shortcut: ShortcutDefinition) => {
     setEditingShortcutId(shortcut.id);
-    setCombo(ShortcutsUtils.formatShortcutCombo(shortcut.combo));
+    setCombo(ShortcutsUtils.normalizeShortcutCombo(shortcut.combo));
     setActionType(shortcut.actionType);
     setTarget(shortcut.target);
     setSelectedCurrency(shortcut.params?.selectedCurrency ?? 'hive');
@@ -387,6 +397,14 @@ const Shortcuts = ({
       (shortcut.params?.delegationType as DelegationType) ??
         DelegationType.OUTGOING,
     );
+    if (shortcut.actionType === ShortcutActionType.CHANGE_ACCOUNT) {
+      const account = accounts?.find(
+        (item: LocalAccount) => item.name === shortcut.target,
+      );
+      if (account) {
+        loadActiveAccount(account);
+      }
+    }
     setFormVisible(true);
     setTimeout(() => keyInputRef.current?.focus(), 0);
   };
@@ -502,7 +520,7 @@ const Shortcuts = ({
             <div key={shortcut.id} className="shortcut-item">
               <div className="shortcut-details">
                 <div className="shortcut-combo">
-                  {displayParts.firstLine.replace('Page', '')}
+                  {displayParts.firstLine}
                 </div>
                 {displayParts.secondLine && (
                   <div className="shortcut-meta">
@@ -538,10 +556,11 @@ const Shortcuts = ({
             dataTestId="shortcuts-combo-input"
             label="popup_html_shortcuts_key_combo"
             placeholder="popup_html_shortcuts_key_combo_placeholder"
-            value={combo}
-            onChange={(value) => setCombo(value)}
+            value={comboDisplay}
+            onChange={() => undefined}
             type={InputType.TEXT}
             ref={keyInputRef}
+            readOnly
           />
           <ComplexeCustomSelect
             label="popup_html_shortcuts_action"
@@ -632,6 +651,7 @@ const connector = connect(mapStateToProps, {
   setErrorMessage,
   setSuccessMessage,
   setTitleContainerProperties,
+  loadActiveAccount,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

@@ -145,7 +145,7 @@ export const MultichainContainer = () => {
       return;
     }
 
-    store.dispatch(navigateTo(targetScreen, false));
+    store.dispatch(navigateTo(targetScreen));
   }, []);
 
   const registerShortcuts = useCallback((shortcuts: ShortcutDefinition[]) => {

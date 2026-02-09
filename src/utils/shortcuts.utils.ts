@@ -22,7 +22,7 @@ const SPECIAL_KEY_VALUES: Record<string, string> = {
   ArrowRight: 'right',
 };
 
- const isEditableTarget = (target: EventTarget | null) => {
+const isEditableTarget = (target: EventTarget | null) => {
   if (!target || !(target instanceof HTMLElement)) return false;
   const tagName = target.tagName.toUpperCase();
   if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tagName)) return true;
@@ -50,7 +50,7 @@ const normalizeKey = (key: string) => {
   return normalized;
 };
 
- const normalizeShortcutCombo = (combo: string) => {
+const normalizeShortcutCombo = (combo: string) => {
   if (!combo) return '';
   const parts = combo.split('+').map((part) => part.trim());
   const modifiers = new Set<string>();
@@ -91,7 +91,7 @@ const formatKeyLabel = (key: string) => {
   return displayKey.charAt(0).toUpperCase() + displayKey.slice(1);
 };
 
- const formatShortcutCombo = (combo: string) => {
+const formatShortcutCombo = (combo: string) => {
   const normalized = normalizeShortcutCombo(combo);
   if (!normalized) return '';
   const parts = normalized.split('+');
@@ -104,7 +104,7 @@ const formatKeyLabel = (key: string) => {
 
 const isModifierKey = (key: string) => MODIFIER_KEYS.includes(key);
 
- const buildShortcutComboFromEvent = (event: KeyboardEvent) => {
+const buildShortcutComboFromEvent = (event: KeyboardEvent) => {
   if (isModifierKey(event.key)) return null;
 
   const parts: string[] = [];
