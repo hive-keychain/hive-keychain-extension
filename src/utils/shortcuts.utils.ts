@@ -31,6 +31,11 @@ const SPECIAL_KEY_VALUES: Record<string, string> = {
 
 const normalizeModifier = (modifier: string) => {
   const normalized = modifier.trim().toLowerCase();
+  // Support display symbols (e.g. "⌘+⇧+W") used in UI formatting.
+  if (normalized === '⌘') return 'command';
+  if (normalized === '⇧') return 'shift';
+  if (normalized === '⌥') return 'alt';
+  if (normalized === '⌃') return 'ctrl';
   if (['control', 'ctrl'].includes(normalized)) return 'ctrl';
   if (['alt', 'option'].includes(normalized)) return 'alt';
   if (normalized === 'shift') return 'shift';
