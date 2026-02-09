@@ -1423,6 +1423,78 @@
     "message": "進階",
     "description": "Advanced settings sub menu"
   },
+  "popup_html_shortcuts": {
+    "message": "Shortcuts",
+    "description": "Shortcuts settings menu"
+  },
+  "popup_html_shortcuts_intro": {
+    "message": "Create keyboard shortcuts to navigate or change account. Be aware that some shortcuts may be intercepted by the browser and close the popup.",
+    "description": "Shortcuts settings intro"
+  },
+  "popup_html_shortcuts_add_button": {
+    "message": "Add shortcut",
+    "description": "Add shortcut button"
+  },
+  "popup_html_shortcuts_key_combo": {
+    "message": "Shortcut",
+    "description": "Shortcut key combo label"
+  },
+  "popup_html_shortcuts_key_combo_placeholder": {
+    "message": "Press a key combination",
+    "description": "Shortcut key combo placeholder"
+  },
+  "popup_html_shortcuts_action": {
+    "message": "Action",
+    "description": "Shortcut action label"
+  },
+  "popup_html_shortcuts_target": {
+    "message": "Target",
+    "description": "Shortcut target label"
+  },
+  "popup_html_shortcuts_delegation_type": {
+    "message": "Delegation type",
+    "description": "Shortcut delegation type label"
+  },
+  "popup_html_shortcuts_power_type": {
+    "message": "Power type",
+    "description": "Shortcut power type label"
+  },
+  "popup_html_shortcuts_save_button": {
+    "message": "Save shortcut",
+    "description": "Save shortcut button"
+  },
+  "popup_html_shortcuts_cancel_button": {
+    "message": "Cancel",
+    "description": "Cancel shortcut button"
+  },
+  "popup_html_shortcuts_no_shortcuts": {
+    "message": "No shortcuts yet.",
+    "description": "No shortcuts message"
+  },
+  "popup_html_shortcuts_action_navigate": {
+    "message": "Navigate",
+    "description": "Shortcut action navigate"
+  },
+  "popup_html_shortcuts_action_change_account": {
+    "message": "Change account",
+    "description": "Shortcut action change account"
+  },
+  "popup_html_shortcuts_duplicate": {
+    "message": "This shortcut is already assigned.",
+    "description": "Duplicate shortcut error"
+  },
+  "popup_html_shortcuts_missing_combo": {
+    "message": "Please enter a shortcut.",
+    "description": "Missing shortcut combo error"
+  },
+  "popup_html_shortcuts_missing_target": {
+    "message": "Please select a target.",
+    "description": "Missing shortcut target error"
+  },
+  "popup_html_shortcuts_no_accounts": {
+    "message": "No accounts available.",
+    "description": "No accounts available for shortcuts"
+  },
   "popup_html_rpc_node_text": {
     "message": "您可以選擇使用 RPC 節點從 Hive 區塊鏈讀取訊息和廣播交易。",
     "description": "Text on rpc node settings page"

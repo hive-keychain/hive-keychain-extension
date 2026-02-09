@@ -65,6 +65,7 @@
     "hive-keychain-commons": "^1.13.2",
     "hive-tx": "github:hive-keychain/hive-tx-js",
     "hive-uri": "0.2.5",
+    "hotkeys-js": "^4.0.0",
     "joi": "17.13.3",
     "jsonwebtoken": "^9.0.2",
     "keychain-sdk": "0.7.0",

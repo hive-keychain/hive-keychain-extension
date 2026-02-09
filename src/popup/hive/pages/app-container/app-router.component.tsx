@@ -54,6 +54,7 @@ import { ClearAllDataComponent } from 'src/popup/hive/pages/app-container/settin
 import { ImportExportPreferencesComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/import-export-preferences/import-export-preferences.component';
 import { KeychainifyComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/keychainify/keychainify.component';
 import { RpcNodesComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/rpc-nodes/rpc-nodes.component';
+import { ShortcutsComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/shortcuts/shortcuts.component';
 import { SettingsMainPageComponent } from 'src/popup/hive/pages/app-container/settings/settings-main-page/settings-main-page.component';
 import { AuthorizedOperationsComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/authorized-operations/authorized-operations.component';
 import { AutomatedTasksComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/automated-tasks/automated-tasks.component';
@@ -150,6 +151,8 @@ const AppRouter = ({
         return <AddKeyComponent />;
       case Screen.SETTINGS_ADVANCED:
         return <AdvancedSettingsPageComponent />;
+      case Screen.SETTINGS_SHORTCUTS:
+        return <ShortcutsComponent />;
       case Screen.SETTINGS_CHANGE_PASSWORD:
         return <ChangePasswordComponent />;
       case Screen.SETTINGS_RPC_NODES:
