@@ -8,6 +8,7 @@ import {
   ComplexeCustomSelect,
   OptionItem,
 } from '@common-ui/custom-select/custom-select.component';
+import { EvmAddressComponent } from '@common-ui/evm/evm-address/evm-address.component';
 import { SVGIcons } from '@common-ui/icons.enum';
 import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
@@ -16,14 +17,26 @@ import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.compon
 import ServiceUnavailablePage from '@common-ui/service-unavailable-page/service-unavailable-page.component';
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import { ExtendedChain, LiFiStep, TokenExtended } from '@lifi/types';
+import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
+import {
+  EvmTransactionType,
+  ProviderTransactionData,
+} from '@popup/evm/interfaces/evm-transactions.interface';
 import { LiFiTokenFilter } from '@popup/evm/pages/home/evm-lifi-swap/lifi-token-filter/lifi-token-filter.component';
+import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
+import { Erc20Abi, LiFiAbi } from '@popup/evm/reference-data/abi.data';
+import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { LiFiUtils } from '@popup/evm/utils/lifi.utils';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
+import { goBack } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { ethers, Wallet } from 'ethers';
+import { FormatUtils } from 'hive-keychain-commons';
 import { throttle, ThrottleSettings } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -43,6 +56,8 @@ interface EvmSwapForm {
 
 export const EvmLifiSwap = ({
   setTitleContainerProperties,
+  setErrorMessage,
+  goBack,
   activeChain,
   activeAccount,
 }: PropsFromRedux) => {
@@ -54,7 +69,7 @@ export const EvmLifiSwap = ({
     amount: 0,
     approvalAmount: null,
     currentAllowance: null,
-    slippage: 0,
+    slippage: 0.5,
     receiverAddress: '',
   });
 
@@ -169,10 +184,10 @@ export const EvmLifiSwap = ({
 
   useEffect(() => {
     refreshAllowance();
-  }, [form.fromSelectedToken]);
+  }, [form.fromSelectedToken, form.amount]);
 
   const refreshAllowance = async () => {
-    if (form.fromSelectedToken) {
+    if (form.fromSelectedToken && form.amount > 0) {
       const chain: EvmChain = await ChainUtils.getChain<EvmChain>(
         `0x${form.fromSelectedChain!.id.toString(16)}`,
       );
@@ -181,8 +196,16 @@ export const EvmLifiSwap = ({
         activeAccount.wallet.address,
         form.fromSelectedToken.address,
       );
-      console.log(allowance);
-      setForm((prev) => ({ ...prev, currentAllowance: allowance }));
+
+      let approvalAmount = 0;
+      if (allowance < form.amount) {
+        approvalAmount = form.amount;
+      }
+      setForm((prev) => ({
+        ...prev,
+        currentAllowance: allowance,
+        approvalAmount: approvalAmount,
+      }));
     }
   };
 
@@ -235,39 +258,178 @@ export const EvmLifiSwap = ({
       fromAddress,
       toAddress,
     );
-    const quote = await KeychainApi.post('evm/lifi/quote', {
-      fromChain: fromChain.id,
-      fromToken: fromToken.address,
-      toChain: toChain.id,
-      toToken: toToken.address,
-      amount: EvmFormatUtils.formatTokenValue(amount, toToken.decimals),
-      fromAddress,
-      toAddress: toAddress?.length > 0 ? toAddress : null,
-    });
-    console.log(quote);
-    if (quote) {
-      setLifiQuote({
-        ...quote,
-        estimate: {
-          ...quote.estimate,
-          fromAmount: EvmFormatUtils.formatTokenValue(
-            quote.estimate.fromAmount,
-            -fromToken.decimals,
-          ),
-          toAmount: EvmFormatUtils.formatTokenValue(
-            quote.estimate.toAmount,
-            -toToken.decimals,
-          ),
-          feeCosts: quote.estimate.feeCosts.map((fee: any) => ({
-            ...fee,
-            amount: EvmFormatUtils.formatTokenValue(
-              Number(fee.amount),
-              -Number(fee.token.decimals),
-            ),
-          })),
-        },
+    try {
+      const quote = await KeychainApi.post('evm/lifi/quote', {
+        fromChain: fromChain.id,
+        fromToken: fromToken.address,
+        toChain: toChain.id,
+        toToken: toToken.address,
+        amount: EvmFormatUtils.formatTokenValue(amount, toToken.decimals),
+        fromAddress,
+        toAddress: toAddress?.length > 0 ? toAddress : null,
       });
+      console.log(quote);
+      if (quote) {
+        setLifiQuote({
+          ...quote,
+          estimate: {
+            ...quote.estimate,
+            fromAmount: EvmFormatUtils.formatTokenValue(
+              quote.estimate.fromAmount,
+              -fromToken.decimals,
+            ),
+            toAmount: EvmFormatUtils.formatTokenValue(
+              quote.estimate.toAmount,
+              -toToken.decimals,
+            ),
+            feeCosts: quote.estimate.feeCosts.map((fee: any) => ({
+              ...fee,
+              amount: EvmFormatUtils.formatTokenValue(
+                Number(fee.amount),
+                -Number(fee.token.decimals),
+              ),
+            })),
+          },
+        });
+      } else {
+        setErrorMessage('swap_error_getting_estimate');
+      }
+    } catch (error) {
+      setErrorMessage('swap_error_getting_estimate');
     }
+  };
+
+  const processCancel = () => {
+    goBack();
+  };
+
+  const processSwap = async () => {
+    if (form.approvalAmount && form.approvalAmount > 0) {
+      let fields = [
+        {
+          label: 'popup_html_transfer_from',
+          value: (
+            <EvmAddressComponent
+              address={activeAccount.address}
+              chainId={activeChain.chainId}
+            />
+          ),
+        },
+        {
+          label: 'popup_html_transfer_to',
+          value: (
+            <EvmAddressComponent
+              address={form.receiverAddress}
+              chainId={activeChain.chainId}
+            />
+          ),
+        },
+        {
+          label: 'popup_html_transfer_amount',
+          value: (
+            <div className="value-content-horizontal">
+              {form.fromSelectedToken && (
+                <EvmTokenLogo
+                  tokenInfo={
+                    {
+                      logo: form.fromSelectedToken.logoURI!,
+                      name: form.fromSelectedToken.name,
+                      symbol: form.fromSelectedToken.symbol,
+                    } as EvmSmartContractInfo
+                  }
+                />
+              )}
+              <span>{`${FormatUtils.withCommas(form.amount.toString(), form.toSelectedToken?.decimals ?? 18, true)} ${
+                form.fromSelectedToken?.symbol ?? ''
+              }`}</span>
+            </div>
+          ),
+        },
+        {
+          label: 'popup_html_transfer_amount',
+          value: (
+            <div className="value-content-horizontal">
+              {form.toSelectedToken && (
+                <EvmTokenLogo
+                  tokenInfo={
+                    {
+                      logo: form.toSelectedToken.logoURI!,
+                      name: form.toSelectedToken.name,
+                      symbol: form.toSelectedToken.symbol,
+                    } as EvmSmartContractInfo
+                  }
+                />
+              )}
+              <span>{`${FormatUtils.withCommas(form.amount.toString(), form.toSelectedToken?.decimals ?? 18, true)} ${
+                form.toSelectedToken?.symbol ?? ''
+              }`}</span>
+            </div>
+          ),
+        },
+      ];
+
+      let approveTransactionData: ProviderTransactionData = {
+        from: activeAccount.address,
+        type: EvmTransactionType.EIP_1559,
+        to: form.toSelectedToken?.address,
+        data: await encodeApproveData(
+          form.toSelectedToken?.address!,
+          form.amount,
+          lifiQuote?.estimate.approvalAddress!,
+        ),
+        value: '0x0',
+      };
+
+      console.log(lifiQuote, approveTransactionData);
+      let swapTransactionData: ProviderTransactionData = {
+        from: activeAccount.address,
+        type: EvmTransactionType.EIP_1559,
+        to: lifiQuote!.transactionRequest!.to,
+        data: lifiQuote!.transactionRequest!.data!,
+        value: '0x0',
+      };
+
+      return;
+    }
+  };
+
+  const encodeApproveData = async (
+    contractAddress: string,
+    approvalAmount: number,
+    approvalAddress: string,
+  ) => {
+    const provider = await EthersUtils.getProvider(activeChain);
+    const connectedWallet = new Wallet(
+      activeAccount.wallet.signingKey,
+      provider,
+    );
+    const contract = new ethers.Contract(
+      contractAddress,
+      Erc20Abi,
+      connectedWallet,
+    );
+    return contract.interface.encodeFunctionData('approve', [
+      approvalAddress,
+      approvalAmount,
+    ]);
+  };
+
+  const encodeSwapData = async (contractAddress: string, amount: number) => {
+    const provider = await EthersUtils.getProvider(activeChain);
+    const connectedWallet = new Wallet(
+      activeAccount.wallet.signingKey,
+      provider,
+    );
+    const contract = new ethers.Contract(
+      contractAddress,
+      LiFiAbi,
+      connectedWallet,
+    );
+
+    return contract.interface.encodeFunctionData(
+      'swapTokensSingleV3ERC20ToERC20',
+      [amount],
+    );
   };
 
   return (
@@ -484,12 +646,12 @@ export const EvmLifiSwap = ({
               <ButtonComponent
                 type={ButtonType.ALTERNATIVE}
                 label="popup_html_button_label_cancel"
-                onClick={() => {}}
+                onClick={processCancel}
               />
               <ButtonComponent
                 type={ButtonType.IMPORTANT}
                 label="html_popup_swaps_process_swap"
-                onClick={() => {}}
+                onClick={processSwap}
               />
             </div>
           </div>
@@ -522,6 +684,8 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
+  setErrorMessage,
+  goBack,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

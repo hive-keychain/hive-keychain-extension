@@ -5734,5 +5734,12 @@
   "evm_swap_approval_amount": {
     "message": "Approval amount",
     "description": "Swap approval amount"
+  },
+  "swap_error_getting_estimate": {
+    "message": "Error getting estimate",
+    "description": "Error getting estimate"
+  },
+  "evm_lifi_swap_confirm_message": {
+    "message": ""
   }
 }
