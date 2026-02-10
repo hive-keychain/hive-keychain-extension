@@ -1,6 +1,5 @@
 import { Screen } from '@reference-data/screen.enum';
 
-
 const MODIFIER_KEYS = ['Shift', 'Control', 'Alt', 'Meta'];
 const MODIFIER_ORDER = ['ctrl', 'alt', 'shift', 'command'];
 
@@ -121,12 +120,11 @@ const buildShortcutComboFromEvent = (event: KeyboardEvent) => {
 };
 
 const NAVIGATION_SCREENS: Screen[] = [
- 
   Screen.HOME_PAGE,
   Screen.TRANSFER_FUND_PAGE,
   // Screen.RECURRENT_TRANSFERS_PAGE,
   Screen.WALLET_HISTORY_PAGE,
-  
+
   Screen.POWER_UP_PAGE,
   Screen.POWER_DOWN_PAGE,
   Screen.SAVINGS_PAGE,
@@ -201,7 +199,8 @@ const DELEGATION_REQUIRED_SCREENS: Screen[] = [Screen.TOKENS_DELEGATIONS];
 const formatScreenLabel = (screen: Screen) => {
   return screen
     .split('_')
-    .map((part) => part.charAt(0) + part.slice(1).toLowerCase()).filter((part) => part !== 'page')
+    .map((part) => part.charAt(0) + part.slice(1).toLowerCase())
+    .filter((part) => part !== 'Page')
     .join(' ');
 };
 
