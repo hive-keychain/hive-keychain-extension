@@ -4,10 +4,6 @@ import {
   Convert,
   Delegation,
   DepositSavings,
-  EscrowApprove,
-  EscrowDispute,
-  EscrowRelease,
-  EscrowTransfer,
   FillCollateralizedConvert,
   FillConvert,
   PowerDown,
@@ -17,6 +13,7 @@ import {
   Transfer,
   WithdrawSavings,
 } from '@interfaces/transaction.interface';
+import { EscrowHistoryUtils } from 'hive-keychain-commons';
 
 const filterTransfer = (
   transfer: Transfer,
@@ -99,67 +96,6 @@ const filterFillConversion = (
   );
 };
 
-const filterEscrowTransfer = (
-  escrow: EscrowTransfer,
-  filterValue: string,
-) => {
-  const searchValue = filterValue.toLowerCase();
-  return (
-    escrow.hive_amount?.toLowerCase().includes(searchValue) ||
-    escrow.hbd_amount?.toLowerCase().includes(searchValue) ||
-    escrow.fee?.toLowerCase().includes(searchValue) ||
-    escrow.from?.toLowerCase().includes(searchValue) ||
-    escrow.to?.toLowerCase().includes(searchValue) ||
-    escrow.agent?.toLowerCase().includes(searchValue) ||
-    escrow.escrow_id?.toString().includes(searchValue)
-  );
-};
-
-const filterEscrowApprove = (
-  escrow: EscrowApprove,
-  filterValue: string,
-) => {
-  const searchValue = filterValue.toLowerCase();
-  return (
-    escrow.from?.toLowerCase().includes(searchValue) ||
-    escrow.to?.toLowerCase().includes(searchValue) ||
-    escrow.who?.toLowerCase().includes(searchValue) ||
-    escrow.agent?.toLowerCase().includes(searchValue) ||
-    escrow.escrow_id?.toString().includes(searchValue)
-  );
-};
-
-const filterEscrowDispute = (
-  escrow: EscrowDispute,
-  filterValue: string,
-) => {
-  const searchValue = filterValue.toLowerCase();
-  return (
-    escrow.from?.toLowerCase().includes(searchValue) ||
-    escrow.to?.toLowerCase().includes(searchValue) ||
-    escrow.who?.toLowerCase().includes(searchValue) ||
-    escrow.agent?.toLowerCase().includes(searchValue) ||
-    escrow.escrow_id?.toString().includes(searchValue)
-  );
-};
-
-const filterEscrowRelease = (
-  escrow: EscrowRelease,
-  filterValue: string,
-) => {
-  const searchValue = filterValue.toLowerCase();
-  return (
-    escrow.hive_amount?.toLowerCase().includes(searchValue) ||
-    escrow.hbd_amount?.toLowerCase().includes(searchValue) ||
-    escrow.from?.toLowerCase().includes(searchValue) ||
-    escrow.to?.toLowerCase().includes(searchValue) ||
-    escrow.who?.toLowerCase().includes(searchValue) ||
-    escrow.receiver?.toLowerCase().includes(searchValue) ||
-    escrow.agent?.toLowerCase().includes(searchValue) ||
-    escrow.escrow_id?.toString().includes(searchValue)
-  );
-};
-
 export const WalletHistoryUtils = {
   filterTransfer,
   filterClaimReward,
@@ -169,8 +105,8 @@ export const WalletHistoryUtils = {
   filterInterest,
   filterFillConversion,
   filterConversion,
-  filterEscrowTransfer,
-  filterEscrowApprove,
-  filterEscrowDispute,
-  filterEscrowRelease,
+  filterEscrowTransfer: EscrowHistoryUtils.filterEscrowTransfer,
+  filterEscrowApprove: EscrowHistoryUtils.filterEscrowApprove,
+  filterEscrowDispute: EscrowHistoryUtils.filterEscrowDispute,
+  filterEscrowRelease: EscrowHistoryUtils.filterEscrowRelease,
 };

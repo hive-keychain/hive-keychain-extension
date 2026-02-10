@@ -89,7 +89,7 @@ const getAccountTransactions = async (
       operationsBitmask[0],
       operationsBitmask[1],
     );
-    
+
     const transactions = transactionsFromBlockchain
       .map((e: any) => {
         let specificTransaction = null;
@@ -225,7 +225,6 @@ const getAccountTransactions = async (
           case 'account_create': {
             specificTransaction = e[1].op[1] as CreateAccount;
             break;
-            
           }
           case 'escrow_transfer': {
             specificTransaction = e[1].op[1] as EscrowTransfer;
@@ -254,8 +253,8 @@ const getAccountTransactions = async (
           blockNumber: e[1].block,
           url:
             e[1].trx_id === '0000000000000000000000000000000000000000'
-              ? `https://hiveblocks.com/b/${e[1].block}#${e[1].trx_id}`
-              : `https://hiveblocks.com/tx/${e[1].trx_id}`,
+              ? `https://hivehub.dev/b/${e[1].block}#${e[1].trx_id}`
+              : `https://hivehub.dev/tx/${e[1].trx_id}`,
           last: false,
           lastFetched: false,
         };

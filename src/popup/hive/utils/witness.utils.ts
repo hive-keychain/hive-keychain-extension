@@ -194,7 +194,7 @@ const getWitnessInfo = async (
     ),
     blockMissed: resultFromBlockchain.total_missed,
     lastBlock: resultFromBlockchain.last_confirmed_block_num,
-    lastBlockUrl: `https://hiveblocks.com/b/${resultFromBlockchain.last_confirmed_block_num}`,
+    lastBlockUrl: `https://hivehub.dev/b/${resultFromBlockchain.last_confirmed_block_num}`,
     priceFeed: FormatUtils.fromNaiAndSymbol(
       resultFromBlockchain.hbd_exchange_rate.base,
     ),

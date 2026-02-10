@@ -28,6 +28,7 @@ export interface InputProps {
   error?: FieldError;
   dataTestId?: string;
   disabled?: boolean;
+  readOnly?: boolean;
   classname?: string;
   onChange: (value: any) => void;
   onEnterPress?(): any;
@@ -84,6 +85,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
           }`}>
           <input
             disabled={props.disabled}
+            readOnly={props.readOnly}
             data-testid={props.dataTestId}
             type={
               props.type === InputType.PASSWORD && isPasswordDisplay

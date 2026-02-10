@@ -1,5 +1,6 @@
 import { EscrowDispute } from '@interfaces/transaction.interface';
 import { RootState } from '@popup/multichain/store';
+import { EscrowHistoryUtils } from 'hive-keychain-commons';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
@@ -13,21 +14,18 @@ const EscrowDisputeTransaction = ({
   transaction,
   activeAccountName,
 }: PropsFromRedux & EscrowDisputeTransactionProps) => {
-  const getDetail = () => {
-    const escrowId = `${transaction.escrow_id}`;
-    const isSelf = activeAccountName === transaction.who;
-    return chrome.i18n.getMessage(
-      isSelf
-        ? 'popup_html_wallet_info_escrow_dispute_self'
-        : 'popup_html_wallet_info_escrow_dispute_other',
-      isSelf ? [escrowId] : [transaction.who, escrowId],
-    );
-  };
+  const { key, params } = EscrowHistoryUtils.getEscrowDisputeHistoryMessage(
+    activeAccountName!,
+    transaction,
+  );
 
   return (
     <GenericTransactionComponent
       transaction={transaction}
-      detail={getDetail()}></GenericTransactionComponent>
+      detail={chrome.i18n.getMessage(
+        `popup_html_${key}`,
+        params,
+      )}></GenericTransactionComponent>
   );
 };
 
