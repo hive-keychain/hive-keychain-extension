@@ -43,6 +43,14 @@ const config = {
           },
           {
             loader: 'sass-loader',
+            options: {
+              // Disable source maps in sass-loader (webpack handles them)
+              // This significantly speeds up compilation
+              sourceMap: false,
+              sassOptions: {
+                outputStyle: 'expanded',
+              },
+            },
           },
         ],
       },

@@ -6,7 +6,15 @@ const { DefinePlugin } = require('webpack');
 
 module.exports = merge(common, {
   mode: 'development',
-  devtool: 'inline-source-map',
+  // Use eval-source-map for faster compilation (faster than inline-source-map)
+  devtool: 'eval-source-map',
+  // Enable webpack caching for faster rebuilds
+  cache: {
+    type: 'filesystem',
+    buildDependencies: {
+      config: [__filename],
+    },
+  },
   devServer: {
     static: '../../dist-dev-firefox',
   },
