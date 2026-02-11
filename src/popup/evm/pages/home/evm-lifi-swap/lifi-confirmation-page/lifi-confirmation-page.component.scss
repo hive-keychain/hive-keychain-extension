@@ -1,0 +1,16 @@
+.lifi-confirmation-page {
+  @include pageLayoutRowGap;
+
+  .lifi-confirmation-page-content {
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+  }
+
+  .lifi-confirmation-page-actions {
+    width: 100%;
+    display: flex;
+    column-gap: 16px;
+    padding-bottom: 16px;
+  }
+}

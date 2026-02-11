@@ -6,6 +6,7 @@ import { ImportWalletConfirmationComponent } from '@popup/evm/pages/add-wallets/
 import { ImportWalletFromSeedComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-seed/import-wallet-from-seed.component';
 import { EvmHomeComponent } from '@popup/evm/pages/home/evm-home.component';
 import { EvmLifiSwapComponent } from '@popup/evm/pages/home/evm-lifi-swap/evm-lifi-swap.component';
+import { LiFiConfirmationPageComponent } from '@popup/evm/pages/home/evm-lifi-swap/lifi-confirmation-page/lifi-confirmation-page.component';
 import { EvmNftAllCollectionsPageComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-all-collections-page/evm-nft-all-collections-page.component';
 import { EvmNFTTransferComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-transfer/evm-nft-transfer.component';
 import { EvmNftCollectionPageComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-ntf-collection-page/evm-ntf-collection-page.component';
@@ -49,7 +50,8 @@ const EvmAppRouter = ({
 
       case EvmScreen.EVM_TOKEN_HISTORY:
         return <EvmTokenHistoryComponent />;
-
+      case EvmScreen.LIFI_CONFIRMATION_PAGE:
+        return <LiFiConfirmationPageComponent />;
       case MultichainScreen.BUY_COINS_PAGE:
         return <>EVM on ramp</>;
       case MultichainScreen.TRANSFER_FUND_PAGE:

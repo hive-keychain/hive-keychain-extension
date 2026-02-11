@@ -303,9 +303,8 @@ const EvmTransactionResult = ({
 
   const getImage = async (value: string) => {
     const connectedWallet = new Wallet(
-      HDNodeWallet.fromPhrase(
-        activeAccount?.wallet.mnemonic?.phrase!,
-      ).signingKey,
+      HDNodeWallet.fromPhrase(activeAccount?.wallet.mnemonic?.phrase!)
+        .signingKey,
       await EthersUtils.getProvider(chain),
     );
 
@@ -395,7 +394,6 @@ const EvmTransactionResult = ({
           </div>
           <GasFeePanel
             chain={chain}
-            tokenInfo={tokenInfo}
             wallet={localAccounts[0].wallet}
             onSelectFee={(value) => setIncreasedGasFee(value)}
             selectedFee={increasedGasFee}

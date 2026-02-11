@@ -243,7 +243,6 @@ const ConfirmationPage = ({
         {hasGasFee && (
           <GasFeePanel
             chain={chain}
-            tokenInfo={tokenInfo}
             wallet={wallet}
             selectedFee={selectedFee}
             onSelectFee={setSelectedFee}

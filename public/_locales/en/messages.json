@@ -5741,5 +5741,17 @@
   },
   "evm_lifi_swap_confirm_message": {
     "message": ""
+  },
+  "evm_lifi_swap": {
+    "message": "LiFi Swap",
+    "description": "LiFi Swap"
+  },
+  "evm_swap_operation": {
+    "message": "Swap",
+    "description": "Swap operation"
+  },
+  "evm_approval_operation": {
+    "message": "Approve",
+    "description": "Approval operation"
   }
 }

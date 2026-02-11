@@ -1,5 +1,4 @@
 import { EtherRPCCustomError } from '@popup/evm/interfaces/evm-errors.interface';
-import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   EvmTransactionType,
   ProviderTransactionData,
@@ -33,7 +32,6 @@ import Logger from 'src/utils/logger.utils';
 
 interface GasFeePanelProps {
   chain: EvmChain;
-  tokenInfo?: EvmSmartContractInfo;
   wallet: HDNodeWallet;
   selectedFee?: GasFeeEstimationBase;
   onSelectFee: (fee: GasFeeEstimationBase) => void;
@@ -47,7 +45,6 @@ interface GasFeePanelProps {
 
 export const GasFeePanel = ({
   chain,
-  tokenInfo,
   wallet,
   selectedFee,
   onSelectFee,

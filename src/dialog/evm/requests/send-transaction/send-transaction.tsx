@@ -748,7 +748,6 @@ export const SendTransaction = (props: Props) => {
                 transactionData.type !== EvmTransactionType.EIP_155 && (
                   <GasFeePanel
                     chain={chain}
-                    tokenInfo={tokenInfo}
                     wallet={selectedAccount.wallet}
                     selectedFee={transactionHook.selectedFee}
                     onSelectFee={transactionHook.setSelectedFee}

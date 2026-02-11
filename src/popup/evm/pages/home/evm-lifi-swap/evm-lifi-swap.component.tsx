@@ -4,6 +4,7 @@ import ButtonComponent, {
   ButtonType,
 } from '@common-ui/button/button.component';
 import { Card } from '@common-ui/card/card.component';
+import { ConfirmationPageEvmFields } from '@common-ui/confirmation-page/confirmation-page.interface';
 import {
   ComplexeCustomSelect,
   OptionItem,
@@ -24,13 +25,17 @@ import {
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { LiFiTokenFilter } from '@popup/evm/pages/home/evm-lifi-swap/lifi-token-filter/lifi-token-filter.component';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
-import { Erc20Abi, LiFiAbi } from '@popup/evm/reference-data/abi.data';
+import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { LiFiUtils } from '@popup/evm/utils/lifi.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
-import { goBack } from '@popup/multichain/actions/navigation.actions';
+import {
+  goBack,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
@@ -58,6 +63,7 @@ export const EvmLifiSwap = ({
   setTitleContainerProperties,
   setErrorMessage,
   goBack,
+  navigateToWithParams,
   activeChain,
   activeAccount,
 }: PropsFromRedux) => {
@@ -304,8 +310,24 @@ export const EvmLifiSwap = ({
   };
 
   const processSwap = async () => {
+    let approveFields: ConfirmationPageEvmFields[] = [];
+    let swapFields: ConfirmationPageEvmFields[] = [];
+    let approveTransactionData: ProviderTransactionData =
+      {} as ProviderTransactionData;
+    console.log(form.approvalAmount, 'formApprovalAmount');
     if (form.approvalAmount && form.approvalAmount > 0) {
-      let fields = [
+      approveTransactionData = {
+        from: activeAccount.address,
+        type: EvmTransactionType.EIP_1559,
+        to: form.toSelectedToken?.address,
+        data: await encodeApproveData(
+          form.toSelectedToken?.address!,
+          form.amount,
+          lifiQuote?.estimate.approvalAddress!,
+        ),
+        value: '0x0',
+      };
+      approveFields = [
         {
           label: 'popup_html_transfer_from',
           value: (
@@ -314,15 +336,17 @@ export const EvmLifiSwap = ({
               chainId={activeChain.chainId}
             />
           ),
+          name: 'popup_html_transfer_from',
         },
         {
           label: 'popup_html_transfer_to',
           value: (
             <EvmAddressComponent
-              address={form.receiverAddress}
+              address={lifiQuote?.estimate.approvalAddress!}
               chainId={activeChain.chainId}
             />
           ),
+          name: 'popup_html_transfer_to',
         },
         {
           label: 'popup_html_transfer_amount',
@@ -344,6 +368,7 @@ export const EvmLifiSwap = ({
               }`}</span>
             </div>
           ),
+          name: 'popup_html_transfer_amount',
         },
         {
           label: 'popup_html_transfer_amount',
@@ -365,32 +390,91 @@ export const EvmLifiSwap = ({
               }`}</span>
             </div>
           ),
+          name: 'popup_html_transfer_amount',
         },
       ];
-
-      let approveTransactionData: ProviderTransactionData = {
-        from: activeAccount.address,
-        type: EvmTransactionType.EIP_1559,
-        to: form.toSelectedToken?.address,
-        data: await encodeApproveData(
-          form.toSelectedToken?.address!,
-          form.amount,
-          lifiQuote?.estimate.approvalAddress!,
-        ),
-        value: '0x0',
-      };
-
-      console.log(lifiQuote, approveTransactionData);
-      let swapTransactionData: ProviderTransactionData = {
-        from: activeAccount.address,
-        type: EvmTransactionType.EIP_1559,
-        to: lifiQuote!.transactionRequest!.to,
-        data: lifiQuote!.transactionRequest!.data!,
-        value: '0x0',
-      };
-
-      return;
     }
+
+    console.log(lifiQuote, approveTransactionData ?? {});
+    let swapTransactionData: ProviderTransactionData = {
+      from: activeAccount.address,
+      type: EvmTransactionType.EIP_1559,
+      to: lifiQuote!.transactionRequest!.to,
+      data: lifiQuote!.transactionRequest!.data!,
+      value: '0x0',
+    };
+
+    swapFields = [
+      {
+        label: 'popup_html_transfer_from',
+        value: (
+          <EvmAddressComponent
+            address={activeAccount.address}
+            chainId={activeChain.chainId}
+          />
+        ),
+        name: 'popup_html_transfer_from',
+      },
+      {
+        label: 'popup_html_transfer_to',
+        value: (
+          <EvmAddressComponent
+            address={lifiQuote?.estimate.approvalAddress!}
+            chainId={activeChain.chainId}
+          />
+        ),
+        name: 'popup_html_transfer_to',
+      },
+      {
+        label: 'popup_html_transfer_amount',
+        value: (
+          <div className="value-content-horizontal">
+            {form.toSelectedToken && (
+              <EvmTokenLogo
+                tokenInfo={
+                  {
+                    logo: form.toSelectedToken.logoURI!,
+                    name: form.toSelectedToken.name,
+                    symbol: form.toSelectedToken.symbol,
+                  } as EvmSmartContractInfo
+                }
+              />
+            )}
+            <span>{`${FormatUtils.withCommas(form.amount.toString(), form.toSelectedToken?.decimals ?? 18, true)} ${
+              form.toSelectedToken?.symbol ?? ''
+            }`}</span>
+          </div>
+        ),
+        name: 'popup_html_transfer_amount',
+      },
+    ];
+
+    console.log({
+      swapTransactionData,
+      approveTransactionData,
+      approveFields: approveFields,
+      swapFields: swapFields,
+      message: chrome.i18n.getMessage('evm_lifi_swap_confirm_message', [
+        form.fromSelectedToken?.symbol ?? '',
+        form.toSelectedToken?.symbol ?? '',
+        form.amount.toString(),
+      ]),
+      title: 'evm_lifi_swap',
+    });
+
+    navigateToWithParams(EvmScreen.LIFI_CONFIRMATION_PAGE, {
+      swapTransactionData,
+      approveTransactionData,
+      approveFields: approveFields,
+      swapFields: swapFields,
+      message: chrome.i18n.getMessage('evm_lifi_swap_confirm_message', [
+        form.fromSelectedToken?.symbol ?? '',
+        form.toSelectedToken?.symbol ?? '',
+        form.amount.toString(),
+      ]),
+      title: 'evm_lifi_swap',
+      skipTitleTranslation: true,
+    });
   };
 
   const encodeApproveData = async (
@@ -412,24 +496,6 @@ export const EvmLifiSwap = ({
       approvalAddress,
       approvalAmount,
     ]);
-  };
-
-  const encodeSwapData = async (contractAddress: string, amount: number) => {
-    const provider = await EthersUtils.getProvider(activeChain);
-    const connectedWallet = new Wallet(
-      activeAccount.wallet.signingKey,
-      provider,
-    );
-    const contract = new ethers.Contract(
-      contractAddress,
-      LiFiAbi,
-      connectedWallet,
-    );
-
-    return contract.interface.encodeFunctionData(
-      'swapTokensSingleV3ERC20ToERC20',
-      [amount],
-    );
   };
 
   return (
@@ -686,6 +752,7 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   setErrorMessage,
   goBack,
+  navigateToWithParams,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
