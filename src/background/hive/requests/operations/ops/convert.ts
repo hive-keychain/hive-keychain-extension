@@ -1,7 +1,11 @@
 import LedgerModule from '@background/hive/modules/ledger.module';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { createMessage } from '@background/hive/requests/operations/operations.utils';
-import { RequestConvert, RequestId } from '@interfaces/keychain.interface';
+import {
+  KeychainKeyTypesLC,
+  RequestConvert,
+  RequestId,
+} from '@interfaces/keychain.interface';
 import { PrivateKeyType, TransactionOptions } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
 import { ConversionType } from 'src/popup/hive/pages/app-container/home/conversion/conversion-type.enum';
@@ -19,11 +23,18 @@ export const convert = async (
   options?: TransactionOptions,
 ) => {
   let result, err, err_message;
+  const { amount, collaterized } = data;
+  const username = data.username!;
   const request = requestHandler.getRequestData(data.request_id);
 
-  const { username, amount, collaterized } = data;
-  const key = requestHandler.getRequestData(data.request_id)?.key;
-  const rpc = requestHandler.getRequestData(data.request_id)?.rpc;
+  let key = request?.key;
+  if (!key) {
+    [key] = requestHandler.getUserKeyPair(
+      data.username!,
+      KeychainKeyTypesLC.active,
+    ) as [string, string];
+  }
+  const rpc = request?.rpc;
   const requestId = await getNextRequestID(username);
   const conversionType = collaterized
     ? ConversionType.CONVERT_HIVE_TO_HBD
@@ -88,81 +99,6 @@ export const convert = async (
     return message;
   }
 };
-
-// export const convert = async (
-//   requestHandler: RequestsHandler,
-//   data: RequestConvert & RequestId,
-// ) => {
-//   const { username, amount, collaterized } = data;
-//   const key = requestHandler.data.key;
-//   const rpc = requestHandler.data.rpc;
-//   const requestId = await getNextRequestID(username);
-//   let result, err, err_message;
-//   if (collaterized) {
-//     try {
-//       const amountS = `${amount} ${CurrencyUtils.getCurrencyLabel(
-//         'HBD',
-//         rpc!.testnet,
-//       )}`;
-//       result = await ConversionUtils.sendConvert(
-//         username,
-//         requestId,
-//         amountS,
-//         ConversionType.CONVERT_HIVE_TO_HBD,
-//         key!,
-//       );
-//     } catch (e) {
-//       Logger.error(e);
-//       err = (e as KeychainError).trace || e;
-//       err_message = await chrome.i18n.getMessage(
-//         (e as KeychainError).message,
-//         (e as KeychainError).messageParams,
-//       );
-//     } finally {
-//       const message = createMessage(
-//         err,
-//         result,
-//         data,
-//         await chrome.i18n.getMessage('bgd_ops_convert_collaterized', [
-//           amount,
-//           username,
-//         ]),
-//         err_message,
-//       );
-//       return message;
-//     }
-//   } else {
-//     try {
-//       const amountS = `${amount} ${CurrencyUtils.getCurrencyLabel(
-//         'HBD',
-//         rpc!.testnet,
-//       )}`;
-//       result = await ConversionUtils.sendConvert(
-//         username,
-//         requestId,
-//         amountS,
-//         ConversionType.CONVERT_HBD_TO_HIVE,
-//         key!,
-//       );
-//     } catch (e) {
-//       Logger.error(e);
-//       err = (e as KeychainError).trace || e;
-//       err_message = await chrome.i18n.getMessage(
-//         (e as KeychainError).message,
-//         (e as KeychainError).messageParams,
-//       );
-//     } finally {
-//       const message = createMessage(
-//         err,
-//         result,
-//         data,
-//         await chrome.i18n.getMessage('bgd_ops_convert', [amount, username]),
-//         err_message,
-//       );
-//       return message;
-//     }
-//   }
-// };
 
 const getNextRequestID = async (username: string) => {
   let conversions = await ConversionUtils.getConversionRequests(username);

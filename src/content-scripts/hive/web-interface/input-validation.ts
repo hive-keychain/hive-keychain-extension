@@ -3,6 +3,7 @@ import Joi from 'joi';
 
 const arrayPublicKeys = Joi.array().items(Joi.string());
 const username = Joi.string().required().min(3);
+const optionalUsername = Joi.string().allow(null);
 const method = Joi.string()
   .valid('Posting', 'Active', 'Memo', 'posting', 'active', 'memo')
   .required();
@@ -11,6 +12,9 @@ const authority = Joi.string()
   .required();
 const message = Joi.string().required().min(2).regex(/^#/);
 const currency = Joi.string().valid('HIVE', 'HBD', 'TESTS', 'TBD').required();
+const savingsOperation = Joi.string()
+  .valid('deposit', 'withdraw')
+  .required();
 const amount = Joi.string()
   .regex(/^\d+(\.\d{3})$/)
   .required()
@@ -68,7 +72,7 @@ const signBuffer = Joi.object({
 });
 
 const vote = Joi.object({
-  username,
+  username: optionalUsername,
   permlink: Joi.string().required(),
   author: username,
   weight: Joi.number().required(),
@@ -224,8 +228,18 @@ const transfer = Joi.object({
   rpc,
 });
 
+const savings = Joi.object({
+  username: optionalUsername,
+  to: username,
+  amount,
+  currency,
+  operation: savingsOperation,
+  memo: Joi.string().allow(''),
+  rpc,
+});
+
 const sendToken = Joi.object({
-  username,
+  username: optionalUsername,
   to: username,
   amount: amountToken,
   currency: Joi.string().required(),
@@ -234,7 +248,7 @@ const sendToken = Joi.object({
 });
 
 const powerUp = Joi.object({
-  username,
+  username: optionalUsername,
   recipient: username,
   hive: amount,
   rpc,
@@ -293,7 +307,7 @@ const addAccount = Joi.object({
 });
 
 const convert = Joi.object({
-  username,
+  username: optionalUsername,
   amount,
   collaterized: Joi.boolean().required(),
   rpc,
@@ -353,6 +367,7 @@ const schemas = {
   proxy,
   delegation,
   transfer,
+  savings,
   sendToken,
   powerUp,
   powerDown,

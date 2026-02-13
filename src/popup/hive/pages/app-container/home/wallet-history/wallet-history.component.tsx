@@ -5,6 +5,10 @@ import {
   Convert,
   Delegation,
   DepositSavings,
+  EscrowApprove,
+  EscrowDispute,
+  EscrowRelease,
+  EscrowTransfer,
   FillCollateralizedConvert,
   FillConvert,
   PowerDown,
@@ -326,6 +330,26 @@ const WalletHistory = ({
         (transaction.subType === 'convert' &&
           WalletHistoryUtils.filterConversion(
             transaction as Convert,
+            filter.filterValue,
+          )) ||
+        (transaction.type === 'escrow_transfer' &&
+          WalletHistoryUtils.filterEscrowTransfer(
+            transaction as EscrowTransfer,
+            filter.filterValue,
+          )) ||
+        (transaction.type === 'escrow_approve' &&
+          WalletHistoryUtils.filterEscrowApprove(
+            transaction as EscrowApprove,
+            filter.filterValue,
+          )) ||
+        (transaction.type === 'escrow_dispute' &&
+          WalletHistoryUtils.filterEscrowDispute(
+            transaction as EscrowDispute,
+            filter.filterValue,
+          )) ||
+        (transaction.type === 'escrow_release' &&
+          WalletHistoryUtils.filterEscrowRelease(
+            transaction as EscrowRelease,
             filter.filterValue,
           )) ||
         (transaction.timestamp &&

@@ -63,6 +63,15 @@ const Config = {
   keyless: {
     host: process.env.KEYLESS_HOST || 'https://hive-auth.arcange.eu/',
   },
+  social: {
+    discord: 'https://discord.gg/tUHtyev2xF',
+    peakd: 'https://peakd.com/@keychain',
+    twitter: 'https://twitter.com/HiveKeychain',
+    medium: 'https://medium.com/@hivekeychain',
+  },
+  vault: {
+    portName: 'vault-connection',
+  },
 };
 
 export default Config;

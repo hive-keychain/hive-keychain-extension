@@ -7,9 +7,14 @@ import {
 export const anonymousRequests = [
   KeychainRequestTypes.delegation,
   KeychainRequestTypes.witnessVote,
+  KeychainRequestTypes.vote,
   KeychainRequestTypes.proxy,
+  KeychainRequestTypes.savings,
   KeychainRequestTypes.custom,
   KeychainRequestTypes.signBuffer,
+  KeychainRequestTypes.sendToken,
+  KeychainRequestTypes.powerUp,
+  KeychainRequestTypes.convert,
   KeychainRequestTypes.recurrentTransfer,
   KeychainRequestTypes.updateProposalVote,
   KeychainRequestTypes.swap,
@@ -35,6 +40,7 @@ export const getRequiredWifType = (request: KeychainRequest) => {
     case KeychainRequestTypes.signedCall:
       return request.typeWif.toLowerCase() as KeychainKeyTypesLC;
     case KeychainRequestTypes.transfer:
+    case KeychainRequestTypes.savings:
     case KeychainRequestTypes.sendToken:
     case KeychainRequestTypes.delegation:
     case KeychainRequestTypes.witnessVote:

@@ -1,0 +1,180 @@
+.shortcuts-page {
+  @include pageLayoutRowGap;
+  row-gap: 20px;
+  padding: 0px 24px;
+  margin-top: 3px;
+  padding-bottom: 24px;
+
+  .shortcuts-header {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .shortcuts-intro {
+    @include poppins400(14px);
+    color: var(--main-font-color);
+    padding: 0;
+    line-height: 1.5;
+    text-align: left;
+  }
+
+  .shortcuts-add-button {
+    width: 100%;
+    
+    &.alternative {
+      border-radius: 24px !important;
+      padding: 14px 20px !important;
+      height: auto !important;
+      min-height: auto !important;
+      position: relative;
+      
+      .button-label {
+        font-weight: 500;
+        font-size: 15px;
+        text-align: center;
+      }
+      
+      .logo {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 18px;
+        height: 18px;
+        bottom: auto;
+        right: auto;
+      }
+    }
+  }
+
+  .shortcuts-list {
+    display: flex;
+    flex-direction: column;
+    margin: 0 -24px; // Break out of parent padding for full-width separators
+  }
+
+  .shortcuts-empty {
+    color: var(--main-font-color);
+    font-size: 14px;
+  }
+
+  .shortcut-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 14px 16px;
+    margin: 0 24px 12px 24px; 
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+  }
+
+  .shortcut-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .shortcut-combo {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--main-font-color);
+  }
+
+  .shortcut-meta {
+    font-size: 13px;
+    color: var(--main-font-color);
+    opacity: 0.8;
+    word-break: break-word;
+  }
+
+  .shortcut-actions {
+    display: flex;
+    align-items: stretch;
+    flex-shrink: 0;
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    overflow: hidden;
+  }
+
+  .shortcut-label {
+    font-size: 14px;
+    color: var(--main-font-color);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 8px 0px;
+    padding: 0 10px;
+    }
+
+  .shortcut-action-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--main-font-color);
+    margin: 8px 0px;
+    padding: 0 10px;
+    transition: background-color 0.2s;
+    border-left: 1px solid var(--card-border);
+
+    
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+    
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .shortcut-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 16px;
+  }
+
+  .shortcut-form-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .shortcuts-account-selector {
+    .label {
+      @include poppins500(14px);
+      margin-bottom: 8px;
+      color: var(--main-font-color);
+    }
+
+    .select-account-section {
+      margin: 0;
+      padding: 5px;
+      border: 1px solid var(--input-border) !important;
+      border-radius: 66px !important;
+
+      .react-dropdown-select-dropdown {
+        top: 52px;
+      }
+
+      &.fullsize {
+        height: auto;
+        margin: 0;
+
+        .select-account-select {
+          height: auto;
+          border-width: 0px !important;
+        }
+      }
+    }
+  }
+}

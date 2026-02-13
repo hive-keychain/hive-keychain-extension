@@ -196,7 +196,7 @@ const TokenSwaps = ({
       const tokenInfo = allTokens.find((t) => t.symbol === token.symbol);
       let img = '';
       let imgBackup = '';
-      if (tokenInfo) {
+      if (tokenInfo && !token.isMainToken) {
         img =
           tokenInfo.metadata.icon && tokenInfo.metadata.icon.length > 0
             ? ImageUtils.getImmutableImage(tokenInfo.metadata.icon)

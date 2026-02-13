@@ -2,6 +2,7 @@ import LedgerModule from '@background/hive/modules/ledger.module';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { createMessage } from '@background/hive/requests/operations/operations.utils';
 import {
+  KeychainKeyTypesLC,
   RequestId,
   RequestPowerDown,
   RequestPowerUp,
@@ -21,7 +22,13 @@ export const broadcastPowerUp = async (
 ) => {
   const request = requestHandler.getRequestData(data.request_id);
 
-  let key = requestHandler.getRequestData(data.request_id)?.key;
+  let key = request?.key;
+  if (!key) {
+    [key] = requestHandler.getUserKeyPair(
+      data.username!,
+      KeychainKeyTypesLC.active,
+    ) as [string, string];
+  }
 
   let result, err, err_message;
 
@@ -29,7 +36,7 @@ export const broadcastPowerUp = async (
     switch (KeysUtils.getKeyType(key!)) {
       case PrivateKeyType.LEDGER: {
         const tx = await PowerUtils.getPowerUpTransaction(
-          data.username,
+          data.username!,
           data.recipient,
           `${data.hive} HIVE`,
         );
@@ -46,7 +53,7 @@ export const broadcastPowerUp = async (
       }
       default: {
         result = await PowerUtils.powerUp(
-          data.username,
+          data.username!,
           data.recipient,
           `${data.hive} HIVE`,
           key!,

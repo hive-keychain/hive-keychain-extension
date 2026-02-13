@@ -118,6 +118,7 @@ export enum SVGIcons {
   MENU_ADVANCED_SETTINGS_KEYCHAINIFY = 'menu/advanced-settings/keychainify',
   MENU_ADVANCED_SETTINGS_LINK_LEDGER_DEVICE = 'menu/advanced-settings/link-ledger-device',
   MENU_ADVANCED_SETTINGS_RPC_NODE = 'menu/advanced-settings/rpc-nodes',
+  MENU_ADVANCED_SETTINGS_SHORTCUTS = 'menu/advanced-settings/shortcuts',
   MENU_ADVANCED_SETTINGS_IMPORT_SETTINGS = 'menu/advanced-settings/import-settings',
   MENU_ADVANCED_SETTINGS_EXPORT_SETTINGS = 'menu/advanced-settings/export-settings',
   MENU_ADVANCED_SETTINGS_SECURITY = 'menu/advanced-settings/security',
@@ -223,6 +224,8 @@ export enum SVGIcons {
   WALLET_HISTORY_UNSTAKE = 'wallet/history/unstake',
   WALLET_HISTORY_EXPAND_COLLAPSE = 'wallet/history/expand-collapse',
   WALLET_HISTORY_TOP = 'wallet/history/back-to-top',
+
+  WALLET_HISTORY_ESCROW = 'wallet/history/escrow',
 
   // LOGOS
   BINANCE = 'binance',

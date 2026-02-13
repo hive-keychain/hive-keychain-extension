@@ -7,6 +7,9 @@ import { TokenPendingUnstakePage } from '@popup/hive/pages/app-container/home/to
 import { PendingRecurrentTransfersPageComponent } from '@popup/hive/pages/app-container/home/transfer-fund/recurrent-transfers/recurrent-transfers.component';
 import { ExportAccountsSubMenuComponent } from '@popup/hive/pages/app-container/settings/accounts/export-accounts/export-accounts-sub-menu.component';
 import { ExportedAccountsQRComponent } from '@popup/hive/pages/app-container/settings/accounts/export-accounts/exported-accounts-qr/exported-accounts-qr.component';
+import { AutoLockComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/auto-lock/auto-lock.component';
+import { ChangePasswordComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/change-password/change-password.component';
+import { ClearAllDataComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/clear-all-data/clear-all-data.component';
 import { ExportTransactionsComponent } from '@popup/hive/pages/app-container/settings/user-preferences/export-transactions/export-transactions.component';
 import { MultisigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/multisig/multisig.component';
 import { NotificationsConfigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notifications-config/notifications-config.component';
@@ -49,6 +52,9 @@ import { AddKeyComponent } from 'src/popup/hive/pages/app-container/settings/acc
 import { ManageAccountComponent } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/manage-account.component';
 import { AdvancedSettingsPageComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/advanced-settings.component';
 import { ImportExportPreferencesComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/import-export-preferences/import-export-preferences.component';
+import { KeychainifyComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/keychainify/keychainify.component';
+import { RpcNodesComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/rpc-nodes/rpc-nodes.component';
+import { ShortcutsComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/shortcuts/shortcuts.component';
 import { SettingsMainPageComponent } from 'src/popup/hive/pages/app-container/settings/settings-main-page/settings-main-page.component';
 import { AuthorizedOperationsComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/authorized-operations/authorized-operations.component';
 import { AutomatedTasksComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/automated-tasks/automated-tasks.component';
@@ -150,6 +156,19 @@ const AppRouter = ({
         return <AdvancedSettingsPageComponent />;
 
       case HiveScreen.SETTINGS_IMPORT_EXPORT:
+      case Screen.SETTINGS_SHORTCUTS:
+        return <ShortcutsComponent />;
+      case Screen.SETTINGS_CHANGE_PASSWORD:
+        return <ChangePasswordComponent />;
+      case Screen.SETTINGS_RPC_NODES:
+        return <RpcNodesComponent />;
+      case Screen.SETTINGS_AUTO_LOCK:
+        return <AutoLockComponent />;
+      case Screen.SETTINGS_KEYCHAINIFY:
+        return <KeychainifyComponent />;
+      case Screen.SETTINGS_CLEAR_ALL_DATA:
+        return <ClearAllDataComponent />;
+      case Screen.SETTINGS_IMPORT_EXPORT:
         return <ImportExportPreferencesComponent />;
       case HiveScreen.SETTINGS_USER_PREFERENCES:
         return <UserPreferencesPageComponent />;

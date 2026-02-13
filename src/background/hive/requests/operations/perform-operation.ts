@@ -26,6 +26,7 @@ import {
 } from '@background/hive/requests/operations/ops/proposals';
 import { broadcastProxy } from '@background/hive/requests/operations/ops/proxy';
 import { recurrentTransfer } from '@background/hive/requests/operations/ops/recurrent-transfer';
+import { broadcastSavings } from '@background/hive/requests/operations/ops/savings';
 import { broadcastSendToken } from '@background/hive/requests/operations/ops/send-token';
 import { signBuffer } from '@background/hive/requests/operations/ops/sign-buffer';
 import { signTx } from '@background/hive/requests/operations/ops/sign-tx';
@@ -68,6 +69,9 @@ export const performHiveOperation = async (
         break;
       case KeychainRequestTypes.transfer:
         message = await broadcastTransfer(requestHandler, request, options);
+        break;
+      case KeychainRequestTypes.savings:
+        message = await broadcastSavings(requestHandler, request, options);
         break;
       case KeychainRequestTypes.post:
         message = await broadcastPost(requestHandler, request, options);

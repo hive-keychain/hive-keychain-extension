@@ -2,6 +2,7 @@ import { HiveRequestsHandler } from '@background/hive/requests/hive-request-hand
 import { createMessage } from '@background/hive/requests/operations/operations.utils';
 import { RequestId, RequestVote } from '@interfaces/keychain.interface';
 import { TransactionOptions } from '@interfaces/keys.interface';
+import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import { KeychainError } from 'src/keychain-error';
 import { BloggingUtils } from 'src/popup/hive/utils/blogging.utils';
 
@@ -11,12 +12,18 @@ export const broadcastVote = async (
   options?: TransactionOptions,
 ) => {
   const request = requestHandler.getRequestData(data.request_id);
-  const key = requestHandler.getRequestData(data.request_id)?.key;
+  let key = request?.key;
+  if (!key) {
+    [key] = requestHandler.getUserKeyPair(
+      data.username!,
+      KeychainKeyTypesLC.posting,
+    ) as [string, string];
+  }
   let err, result, err_message;
   try {
     // TODO : When Ledger ready for full usage with posting key, add compatibility with Ledger
     result = await BloggingUtils.vote(
-      data.username,
+      data.username!,
       data.author,
       data.permlink,
       +data.weight,

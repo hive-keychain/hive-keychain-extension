@@ -25,7 +25,7 @@ import * as LogicTransferRequest from 'src/background/requests/logic/transferReq
 import * as LogicUnlockWallet from 'src/background/requests/logic/unlockWallet.logic';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
-import { anonymous_requests } from 'src/utils/requests.utils';
+import { anonymousRequests } from 'src/utils/requests.utils';
 
 describe('init tests:\n', () => {
   const _accounts = {
@@ -258,7 +258,7 @@ describe('init tests:\n', () => {
     const cloneKeychainRequestData = objects.clone(
       keychainRequest.data,
     ) as KeychainRequest;
-    cloneKeychainRequestData.type = anonymous_requests[0];
+    cloneKeychainRequestData.type = anonymousRequests[0];
     const sAnonymousRequests = jest.spyOn(
       LogicAnonymousRequests,
       'anonymousRequests',

@@ -1,6 +1,7 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import { AddChain } from '@dialog/evm/requests/add-chain/add-chain';
+import Savings from '@dialog/hive/requests/savings';
 import {
   EvmRequestMessage,
   HiveRequestMessage,
@@ -126,6 +127,14 @@ export const RequestConfirmation = ({ message, afterCancel }: Props) => {
         case KeychainRequestTypes.transfer:
           return (
             <Transfer
+              {...displayedMessage}
+              data={request}
+              afterCancel={afterCancel}
+            />
+          );
+        case KeychainRequestTypes.savings:
+          return (
+            <Savings
               {...displayedMessage}
               data={request}
               afterCancel={afterCancel}

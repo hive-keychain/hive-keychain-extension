@@ -25,7 +25,7 @@ export const AutocompleteItemComponent = ({
     <div
       className="autocomplete-item"
       key={value}
-      onClick={() => onItemClick(value)}>
+      onMouseDown={() => onItemClick(value)}>
       {img && <img src={img} className="user-avatar" />}
       <span>
         {prefix ?? ''}
