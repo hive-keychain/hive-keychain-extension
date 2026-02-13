@@ -23,6 +23,7 @@ import {
   EvmTransactionType,
   ProviderTransactionData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
+import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { LiFiTokenFilter } from '@popup/evm/pages/home/evm-lifi-swap/lifi-token-filter/lifi-token-filter.component';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
@@ -30,7 +31,12 @@ import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { LiFiUtils } from '@popup/evm/utils/lifi.utils';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import {
   goBack,
@@ -40,7 +46,7 @@ import { setTitleContainerProperties } from '@popup/multichain/actions/title-con
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
-import { ethers, Wallet } from 'ethers';
+import { ethers, TransactionResponse, Wallet } from 'ethers';
 import { FormatUtils } from 'hive-keychain-commons';
 import { throttle, ThrottleSettings } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -64,6 +70,8 @@ export const EvmLifiSwap = ({
   setErrorMessage,
   goBack,
   navigateToWithParams,
+  addToLoadingList,
+  removeFromLoadingList,
   activeChain,
   activeAccount,
 }: PropsFromRedux) => {
@@ -308,7 +316,7 @@ export const EvmLifiSwap = ({
     let swapFields: ConfirmationPageEvmFields[] = [];
     let approveTransactionData: ProviderTransactionData =
       {} as ProviderTransactionData;
-    console.log(form.approvalAmount, 'formApprovalAmount');
+
     if (form.approvalAmount && form.approvalAmount > 0) {
       approveTransactionData = {
         from: activeAccount.address,
@@ -367,13 +375,6 @@ export const EvmLifiSwap = ({
       ];
     }
 
-    console.log(
-      lifiQuote,
-      approveTransactionData ?? {},
-      lifiQuote?.estimate.toAmount ?? 'No amount',
-      form.toSelectedToken?.decimals ?? 18,
-      form.toSelectedToken?.symbol ?? 'No symbol',
-    );
     let swapTransactionData: ProviderTransactionData = {
       from: activeAccount.address,
       type: EvmTransactionType.EIP_1559,
@@ -450,19 +451,6 @@ export const EvmLifiSwap = ({
       },
     ];
 
-    console.log({
-      swapTransactionData,
-      approveTransactionData,
-      approveFields: approveFields,
-      swapFields: swapFields,
-      message: chrome.i18n.getMessage('evm_lifi_swap_confirm_message', [
-        form.fromSelectedToken?.symbol ?? '',
-        form.toSelectedToken?.symbol ?? '',
-        form.amount.toString(),
-      ]),
-      title: 'evm_lifi_swap',
-    });
-
     navigateToWithParams(EvmScreen.LIFI_CONFIRMATION_PAGE, {
       swapTransactionData,
       approveTransactionData,
@@ -475,6 +463,42 @@ export const EvmLifiSwap = ({
       ]),
       title: 'evm_lifi_swap',
       skipTitleTranslation: true,
+      afterConfirmAction: async (
+        swapGasFee: GasFeeEstimationBase,
+        approveGasFee: GasFeeEstimationBase,
+      ) => {
+        addToLoadingList('evm_lifi_swap');
+        try {
+          let approveTransactionResponse: TransactionResponse | undefined;
+          if (approveTransactionData) {
+            approveTransactionResponse = await EvmTransactionsUtils.send(
+              activeAccount.wallet,
+              {
+                ...approveTransactionData,
+                type: Number(approveTransactionData.type),
+              },
+              approveGasFee,
+              activeChain.chainId,
+            );
+          }
+          const swapTransactionResponse = await EvmTransactionsUtils.send(
+            activeAccount.wallet,
+            {
+              ...swapTransactionData,
+              type: Number(approveTransactionData.type),
+            },
+            swapGasFee,
+            activeChain.chainId,
+          );
+          navigateToWithParams(EvmScreen.LIFI_STATUS_PAGE, {
+            swapTransactionResponse,
+            approveTransactionResponse: approveTransactionResponse ?? undefined,
+            lifiQuote,
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      },
     });
   };
 
@@ -754,6 +778,8 @@ const connector = connect(mapStateToProps, {
   setErrorMessage,
   goBack,
   navigateToWithParams,
+  addToLoadingList,
+  removeFromLoadingList,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
