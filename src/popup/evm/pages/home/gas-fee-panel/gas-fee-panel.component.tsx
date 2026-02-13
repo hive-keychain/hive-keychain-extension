@@ -41,6 +41,7 @@ interface GasFeePanelProps {
   prices: EvmPrices;
   forceOpenGasFeePanelEvent?: EventEmitter;
   setErrorMessage: (error: EtherRPCCustomError) => void;
+  expandable?: boolean;
 }
 
 export const GasFeePanel = ({
@@ -54,6 +55,7 @@ export const GasFeePanel = ({
   prices,
   forceOpenGasFeePanelEvent,
   setErrorMessage,
+  expandable,
 }: GasFeePanelProps) => {
   const [isAdvancedPanelOpen, setIsAdvancedPanelOpen] = useState(false);
   const [feeEstimation, setFeeEstimation] = useState<FullGasFeeEstimation>();
@@ -70,6 +72,8 @@ export const GasFeePanel = ({
     gasPriceInGwei: '0',
     type: transactionType,
   });
+
+  const [isExpandablePanelOpened, setExpandablePanelOpened] = useState(false);
 
   useEffect(() => {
     forceOpenGasFeePanelEvent?.addListener('forceOpenCustomFeePanel', () => {
@@ -97,13 +101,13 @@ export const GasFeePanel = ({
         priorityFeeInGwei: priorityFeeInGwei.toFixed(),
 
         gasPriceInEth: new Decimal(
-          ethers.formatUnits(gasLimit.toNumber(), 'gwei'),
+          ethers.formatUnits(Number(gasLimit.toFixed(0)), 'gwei'),
         ).mul(gasPriceInGwei),
         priorityFeeInEth: new Decimal(
-          ethers.formatUnits(gasLimit.toNumber(), 'gwei'),
+          ethers.formatUnits(Number(gasLimit.toFixed(0)), 'gwei'),
         ).mul(priorityFeeInGwei),
         maxBaseFeeInEth: new Decimal(
-          ethers.formatUnits(gasLimit.toNumber(), 'gwei'),
+          ethers.formatUnits(Number(gasLimit.toFixed(0)), 'gwei'),
         ).mul(maxBaseFeeInGwei),
       });
     }
@@ -117,7 +121,9 @@ export const GasFeePanel = ({
         wallet,
         transactionType,
         prices,
-        undefined,
+        transactionData?.gasLimit
+          ? Number(transactionData.gasLimit)
+          : undefined,
         transactionData,
       );
 
@@ -390,14 +396,31 @@ export const GasFeePanel = ({
   };
 
   const handlePanelOnClick = () => {
-    setIsAdvancedPanelOpen(true);
-    if (
-      chain.onlyCustomFee ||
-      (feeEstimation &&
-        !feeEstimation.suggestedByDApp &&
-        !feeEstimation.suggested)
-    ) {
-      openCustomFeePanel();
+    if (expandable) {
+      if (isExpandablePanelOpened) {
+        setIsAdvancedPanelOpen(true);
+      }
+      if (
+        chain.onlyCustomFee ||
+        (feeEstimation &&
+          !feeEstimation.suggestedByDApp &&
+          !feeEstimation.suggested)
+      ) {
+        openCustomFeePanel();
+      } else {
+        setExpandablePanelOpened(true);
+      }
+      return;
+    } else {
+      setIsAdvancedPanelOpen(true);
+      if (
+        chain.onlyCustomFee ||
+        (feeEstimation &&
+          !feeEstimation.suggestedByDApp &&
+          !feeEstimation.suggested)
+      ) {
+        openCustomFeePanel();
+      }
     }
   };
 
@@ -409,101 +432,119 @@ export const GasFeePanel = ({
   return (
     <>
       {feeEstimation && selectedFee && (
-        <div className="gas-fee-panel" onClick={() => handlePanelOnClick()}>
+        <div
+          className={`gas-fee-panel ${expandable ? 'expandable' : ''}`}
+          onClick={() => handlePanelOnClick()}>
           <div className="title-row">
             <SVGIcon className="gas-fee-settings" icon={selectedFee.icon} />
             <div className="title">
               {chrome.i18n.getMessage('popup_html_evm_gas_fee')} :{' '}
               {chrome.i18n.getMessage(selectedFee.name)}
             </div>
-            <SVGIcon
-              className="gas-fee-settings"
-              icon={SVGIcons.EVM_GAS_FEE_DETAILS}
-            />
+            {(!expandable || (expandable && isExpandablePanelOpened)) && (
+              <SVGIcon
+                className="gas-fee-settings"
+                icon={SVGIcons.EVM_GAS_FEE_DETAILS}
+              />
+            )}
+            {expandable && (
+              <SVGIcon
+                icon={SVGIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
+                className={`expand-collapse ${
+                  isExpandablePanelOpened ? 'open' : 'closed'
+                }`}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setExpandablePanelOpened(!isExpandablePanelOpened);
+                }}
+              />
+            )}
           </div>
           {gasFeeWarning && (
             <div className="gas-fee-warning">
               {chrome.i18n.getMessage(gasFeeWarning)}
             </div>
           )}
-          <div className="details">
-            {selectedFee.type !== EvmTransactionType.LEGACY && (
+          {((expandable && isExpandablePanelOpened) || !expandable) && (
+            <div className="details">
+              {selectedFee.type !== EvmTransactionType.LEGACY && (
+                <div className="gas-fee-top-row">
+                  <div className="label gas-fee-label">
+                    {chrome.i18n.getMessage(
+                      'popup_html_evm_gas_fee_estimate_label',
+                    )}
+                  </div>
+                  <div className="label gas-fee">
+                    <div>
+                      {!selectedFee.estimatedFeeInEth.equals(-1) ? (
+                        <>
+                          {FormatUtils.formatCurrencyValue(
+                            selectedFee.estimatedFeeInEth.toFixed(),
+                            8,
+                          )}{' '}
+                          {chain.mainToken}
+                        </>
+                      ) : (
+                        '-'
+                      )}
+                    </div>
+                    {!selectedFee.estimatedFeeInEth.equals(-1) &&
+                      !!selectedFee.estimatedFeeUSD && (
+                        <div className="label usd-value">
+                          {selectedFee.estimatedFeeUSD.toFixed(2)}
+                          {' USD'}
+                        </div>
+                      )}
+                  </div>
+                </div>
+              )}
+
               <div className="gas-fee-top-row">
                 <div className="label gas-fee-label">
-                  {chrome.i18n.getMessage(
-                    'popup_html_evm_gas_fee_estimate_label',
-                  )}
+                  {chrome.i18n.getMessage(getFeeLabel())}
                 </div>
                 <div className="label gas-fee">
-                  <div>
-                    {!selectedFee.estimatedFeeInEth.equals(-1) ? (
-                      <>
-                        {FormatUtils.formatCurrencyValue(
-                          selectedFee.estimatedFeeInEth.toFixed(),
-                          8,
-                        )}{' '}
-                        {chain.mainToken}
-                      </>
-                    ) : (
-                      '-'
-                    )}
+                  <div className="label gas-fee">
+                    <div>
+                      {!selectedFee.maxFeeInEth.equals(-1) ? (
+                        <>
+                          {FormatUtils.formatCurrencyValue(
+                            selectedFee.maxFeeInEth.toFixed(),
+                            8,
+                          )}{' '}
+                          {chain.mainToken}
+                        </>
+                      ) : (
+                        '-'
+                      )}
+                    </div>
+                    {!selectedFee.maxFeeInEth.equals(-1) &&
+                      !!selectedFee.maxFeeUSD && (
+                        <div className="label usd-value">
+                          {selectedFee.maxFeeUSD.toFixed(2)}
+                          {' USD'}
+                        </div>
+                      )}
                   </div>
-                  {!selectedFee.estimatedFeeInEth.equals(-1) &&
-                    !!selectedFee.estimatedFeeUSD && (
-                      <div className="label usd-value">
-                        {selectedFee.estimatedFeeUSD.toFixed(2)}
-                        {' USD'}
-                      </div>
-                    )}
                 </div>
               </div>
-            )}
-
-            <div className="gas-fee-top-row">
-              <div className="label gas-fee-label">
-                {chrome.i18n.getMessage(getFeeLabel())}
-              </div>
-              <div className="label gas-fee">
-                <div className="label gas-fee">
-                  <div>
-                    {!selectedFee.maxFeeInEth.equals(-1) ? (
-                      <>
-                        {FormatUtils.formatCurrencyValue(
-                          selectedFee.maxFeeInEth.toFixed(),
-                          8,
-                        )}{' '}
-                        {chain.mainToken}
-                      </>
-                    ) : (
-                      '-'
+              {!selectedFee.estimatedMaxDuration.equals(-1) && (
+                <div className="gas-fee-top-row">
+                  <div className="label duration">
+                    {chrome.i18n.getMessage(
+                      'popup_html_evm_gas_fee_estimate_duration_label',
                     )}
                   </div>
-                  {!selectedFee.maxFeeInEth.equals(-1) &&
-                    !!selectedFee.maxFeeUSD && (
-                      <div className="label usd-value">
-                        {selectedFee.maxFeeUSD.toFixed(2)}
-                        {' USD'}
-                      </div>
+                  <div className="label duration">
+                    {chrome.i18n.getMessage(
+                      'popup_html_evm_gas_fee_estimate_duration',
+                      [selectedFee.estimatedMaxDuration.toString()],
                     )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
-            {!selectedFee.estimatedMaxDuration.equals(-1) && (
-              <div className="gas-fee-top-row">
-                <div className="label duration">
-                  {chrome.i18n.getMessage(
-                    'popup_html_evm_gas_fee_estimate_duration_label',
-                  )}
-                </div>
-                <div className="label duration">
-                  {chrome.i18n.getMessage(
-                    'popup_html_evm_gas_fee_estimate_duration',
-                    [selectedFee.estimatedMaxDuration.toString()],
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
+          )}
         </div>
       )}
       {isAdvancedPanelOpen && feeEstimation && (

@@ -65,7 +65,6 @@ const LiFiConfirmationPage = ({
   useEffect(() => {
     setTitleContainerProperties({
       title: title ?? 'popup_html_confirm',
-      skipTitleTranslation,
       isBackButtonEnabled: true,
       onBackAdditional: () => {
         if (afterCancelAction) afterCancelAction();
@@ -155,6 +154,7 @@ const LiFiConfirmationPage = ({
                 transactionData={approveTransactionData}
                 prices={evmPrices}
                 setErrorMessage={handleErrors}
+                expandable={true}
               />
             </div>
           </>
@@ -199,6 +199,7 @@ const LiFiConfirmationPage = ({
             transactionData={swapTransactionData}
             prices={evmPrices}
             setErrorMessage={handleErrors}
+            expandable={true}
           />
         </div>
       </div>

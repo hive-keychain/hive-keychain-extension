@@ -7,7 +7,7 @@ const { DefinePlugin } = require('webpack');
 module.exports = merge(common, {
   mode: 'development',
   // Use eval-source-map for faster compilation (faster than inline-source-map)
-  devtool: 'eval-source-map',
+  devtool: 'cheap-module-source-map',
   // Enable webpack caching for faster rebuilds
   cache: {
     type: 'filesystem',

@@ -192,6 +192,10 @@ export const EvmLifiSwap = ({
     refreshAllowance();
   }, [form.fromSelectedToken, form.amount]);
 
+  useEffect(() => {
+    console.log(lifiQuote);
+  }, [lifiQuote]);
+
   const refreshAllowance = async () => {
     if (form.fromSelectedToken && form.amount > 0) {
       const chain: EvmChain = await ChainUtils.getChain<EvmChain>(
@@ -255,15 +259,6 @@ export const EvmLifiSwap = ({
     fromAddress: string,
     toAddress: string,
   ) => {
-    console.log(
-      fromChain,
-      fromToken,
-      toChain,
-      toToken,
-      amount,
-      fromAddress,
-      toAddress,
-    );
     try {
       const quote = await KeychainApi.post('evm/lifi/quote', {
         fromChain: fromChain.id,
@@ -274,7 +269,6 @@ export const EvmLifiSwap = ({
         fromAddress,
         toAddress: toAddress?.length > 0 ? toAddress : null,
       });
-      console.log(quote);
       if (quote) {
         setLifiQuote({
           ...quote,
@@ -283,11 +277,11 @@ export const EvmLifiSwap = ({
             fromAmount: EvmFormatUtils.formatTokenValue(
               quote.estimate.fromAmount,
               -fromToken.decimals,
-            ),
+            ).toNumber(),
             toAmount: EvmFormatUtils.formatTokenValue(
               quote.estimate.toAmount,
               -toToken.decimals,
-            ),
+            ).toNumber(),
             feeCosts: quote.estimate.feeCosts.map((fee: any) => ({
               ...fee,
               amount: EvmFormatUtils.formatTokenValue(
@@ -370,38 +364,23 @@ export const EvmLifiSwap = ({
           ),
           name: 'popup_html_transfer_amount',
         },
-        {
-          label: 'popup_html_transfer_amount',
-          value: (
-            <div className="value-content-horizontal">
-              {form.toSelectedToken && (
-                <EvmTokenLogo
-                  tokenInfo={
-                    {
-                      logo: form.toSelectedToken.logoURI!,
-                      name: form.toSelectedToken.name,
-                      symbol: form.toSelectedToken.symbol,
-                    } as EvmSmartContractInfo
-                  }
-                />
-              )}
-              <span>{`${FormatUtils.withCommas(form.amount.toString(), form.toSelectedToken?.decimals ?? 18, true)} ${
-                form.toSelectedToken?.symbol ?? ''
-              }`}</span>
-            </div>
-          ),
-          name: 'popup_html_transfer_amount',
-        },
       ];
     }
 
-    console.log(lifiQuote, approveTransactionData ?? {});
+    console.log(
+      lifiQuote,
+      approveTransactionData ?? {},
+      lifiQuote?.estimate.toAmount ?? 'No amount',
+      form.toSelectedToken?.decimals ?? 18,
+      form.toSelectedToken?.symbol ?? 'No symbol',
+    );
     let swapTransactionData: ProviderTransactionData = {
       from: activeAccount.address,
       type: EvmTransactionType.EIP_1559,
       to: lifiQuote!.transactionRequest!.to,
       data: lifiQuote!.transactionRequest!.data!,
       value: '0x0',
+      gasLimit: Number(lifiQuote!.estimate!.gasCosts![0].limit!),
     };
 
     swapFields = [
@@ -426,10 +405,32 @@ export const EvmLifiSwap = ({
         name: 'popup_html_transfer_to',
       },
       {
-        label: 'popup_html_transfer_amount',
+        label: 'evm_lifi_swap_amount_in',
         value: (
           <div className="value-content-horizontal">
-            {form.toSelectedToken && (
+            {form.fromSelectedToken && (
+              <EvmTokenLogo
+                tokenInfo={
+                  {
+                    logo: form.fromSelectedToken?.logoURI!,
+                    name: form.fromSelectedToken?.name,
+                    symbol: form.fromSelectedToken?.symbol,
+                  } as EvmSmartContractInfo
+                }
+              />
+            )}
+            <span>{`${FormatUtils.withCommas(form.amount.toString(), form.fromSelectedToken?.decimals ?? 18, true)} ${
+              form.fromSelectedToken?.symbol ?? ''
+            }`}</span>
+          </div>
+        ),
+        name: 'evm_lifi_swap_amount_in',
+      },
+      {
+        label: 'evm_lifi_swap_amount_out',
+        value: (
+          <div className="value-content-horizontal">
+            {form.toSelectedToken && lifiQuote?.estimate.toAmount && (
               <EvmTokenLogo
                 tokenInfo={
                   {
@@ -440,12 +441,12 @@ export const EvmLifiSwap = ({
                 }
               />
             )}
-            <span>{`${FormatUtils.withCommas(form.amount.toString(), form.toSelectedToken?.decimals ?? 18, true)} ${
+            <span>{`${FormatUtils.withCommas((lifiQuote?.estimate.toAmount as string).toString(), form.toSelectedToken?.decimals ?? 18, true)} ${
               form.toSelectedToken?.symbol ?? ''
             }`}</span>
           </div>
         ),
-        name: 'popup_html_transfer_amount',
+        name: 'evm_lifi_swap_amount_out',
       },
     ];
 

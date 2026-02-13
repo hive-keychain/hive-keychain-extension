@@ -6,6 +6,11 @@
   align-items: unset;
   row-gap: 8px;
 
+  .expand-collapse {
+    @include icon-size(18px);
+    @include open-close-rotate();
+  }
+
   .title-row {
     display: grid;
     grid-template-columns: auto 1fr auto;
@@ -21,6 +26,12 @@
     .title {
       @include poppins500(14px);
       color: var(--main-font-color);
+    }
+  }
+
+  &.expandable {
+    .title-row {
+      grid-template-columns: auto 1fr auto auto;
     }
   }
 

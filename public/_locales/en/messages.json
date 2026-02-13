@@ -5753,5 +5753,13 @@
   "evm_approval_operation": {
     "message": "Approve",
     "description": "Approval operation"
+  },
+  "evm_lifi_swap_amount_out": {
+    "message": "Amount out",
+    "description": "Amount out"
+  },
+  "evm_lifi_swap_amount_in": {
+    "message": "Amount in",
+    "description": "Amount in"
   }
 }

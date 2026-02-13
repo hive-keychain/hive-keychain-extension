@@ -39,7 +39,7 @@ const estimate = async (
   }
 
   const price = new Decimal(evmPrices[chain.mainToken.toLowerCase()]?.usd ?? 0);
-
+  console.log(gasLimit, 'gasLimit');
   if (!gasLimit) {
     gasLimit = Number(
       await EthersUtils.getGasLimit(

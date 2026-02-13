@@ -10,3 +10,5 @@ coverage
 *.code-workspace
 _releases
 .notes
+keychain*.zip
+diff*.patch
