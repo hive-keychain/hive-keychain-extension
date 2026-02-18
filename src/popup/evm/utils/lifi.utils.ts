@@ -3,12 +3,17 @@ import { OptionItem } from '@common-ui/custom-select/custom-select.component';
 import { SVGIcons } from '@common-ui/icons.enum';
 import { ExtendedChain, TokenExtended } from '@lifi/types';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
+import { LifiHistoryItem, LifiHistoryResponse } from 'hive-keychain-commons';
+
+const getLifiData = async (): Promise<any> => {
+  return await KeychainApi.get(`evm/lifi/data`);
+};
 
 const getLiFiSwapOptionLists = async (): Promise<{
   tokens: OptionItem[];
   chains: OptionItem[];
 }> => {
-  const data = await KeychainApi.get(`evm/lifi/data`);
+  const data = await getLifiData();
   const tokensOptions: OptionItem[] = [];
   const chainsOptions: OptionItem[] = [
     {
@@ -59,8 +64,20 @@ const getChainOptionItem = (chain: ExtendedChain): OptionItem => {
   };
 };
 
+const retrieveLiFiHistory = async (
+  wallet: string,
+): Promise<LifiHistoryItem[]> => {
+  if (!wallet) return [];
+  const historyResponse = (await KeychainApi.get(
+    `evm/lifi/history?wallet=${encodeURIComponent(wallet)}`,
+  )) as LifiHistoryResponse;
+  return historyResponse?.transfers ?? [];
+};
+
 export const LiFiUtils = {
+  getLifiData,
   getLiFiSwapOptionLists,
   getTokenOptionItem,
   getChainOptionItem,
+  retrieveLiFiHistory,
 };

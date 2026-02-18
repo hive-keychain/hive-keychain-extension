@@ -16,6 +16,22 @@
       color: $red;
     }
 
+    .top-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+
+      .swap-history-button {
+        cursor: pointer;
+      }
+
+      .swap-history-button:hover {
+        --swap-history-button-icon-color: white;
+        --swap-history-button-border-color: #{$red};
+        --swap-history-button-background: #{$red};
+      }
+    }
+
     .swap-label {
       @include input-label;
     }

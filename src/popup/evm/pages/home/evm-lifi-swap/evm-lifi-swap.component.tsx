@@ -40,6 +40,7 @@ import {
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import {
   goBack,
+  navigateTo,
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -69,6 +70,7 @@ export const EvmLifiSwap = ({
   setTitleContainerProperties,
   setErrorMessage,
   goBack,
+  navigateTo,
   navigateToWithParams,
   addToLoadingList,
   removeFromLoadingList,
@@ -485,12 +487,12 @@ export const EvmLifiSwap = ({
             activeAccount.wallet,
             {
               ...swapTransactionData,
-              type: Number(approveTransactionData.type),
+              type: Number(swapTransactionData.type),
             },
             swapGasFee,
             activeChain.chainId,
           );
-          navigateToWithParams(EvmScreen.LIFI_STATUS_PAGE, {
+          navigateToWithParams(EvmScreen.LIFI_HISTORY_PAGE, {
             swapTransactionResponse,
             approveTransactionResponse: approveTransactionResponse ?? undefined,
             lifiQuote,
@@ -541,6 +543,13 @@ export const EvmLifiSwap = ({
                   }
                 </>
               )}
+            </div>
+            <div className="top-row">
+              <SVGIcon
+                className="swap-history-button"
+                icon={SVGIcons.SWAPS_HISTORY}
+                onClick={() => navigateTo(EvmScreen.LIFI_HISTORY_PAGE)}
+              />
             </div>
             {lifiQuote && (
               <Card className="tool-details-card">
@@ -777,6 +786,7 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   setErrorMessage,
   goBack,
+  navigateTo,
   navigateToWithParams,
   addToLoadingList,
   removeFromLoadingList,

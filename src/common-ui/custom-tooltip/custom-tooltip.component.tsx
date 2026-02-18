@@ -38,11 +38,15 @@ export const CustomTooltip = ({
 }: TooltipProps) => {
   const anchor = useRef<HTMLDivElement>(null);
   const tooltip = useRef<HTMLDivElement>(null);
+  const isHoverRef = useRef(false);
 
   const [isHover, setIsHover] = useState(false);
   const [isOpen, setOpen] = useState(false);
   const [timeout, setTimeoutId] = useState<NodeJS.Timeout>();
   let [coordinates, setCoordinates] = useState<TooltipCoordinates>();
+
+  // Keep ref in sync so timeout callback reads current hover state (avoids stale closure)
+  isHoverRef.current = isHover;
 
   useEffect(() => {
     if (isOpen && (!position || position === 'top')) {
@@ -101,7 +105,9 @@ export const CustomTooltip = ({
 
     let timeoutId = setTimeout(
       () => {
-        if (isHover) setOpen(true);
+        if (isHoverRef.current) {
+          setOpen(true);
+        }
       },
       delayShow ? delayShow : 250,
     );
