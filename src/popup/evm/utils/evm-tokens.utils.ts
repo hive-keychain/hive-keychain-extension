@@ -955,10 +955,12 @@ const getAllowance = async (
   chain: EvmChain,
   walletAddress: string,
   tokenAddress: string,
+  spenderAddress: string,
 ) => {
   const provider = await EthersUtils.getProvider(chain);
+  console.log(provider);
   const contract = new ethers.Contract(tokenAddress, Erc20Abi, provider);
-  const allowance = await contract.allowance(walletAddress, tokenAddress);
+  const allowance = await contract.allowance(walletAddress, spenderAddress);
   return allowance;
 };
 

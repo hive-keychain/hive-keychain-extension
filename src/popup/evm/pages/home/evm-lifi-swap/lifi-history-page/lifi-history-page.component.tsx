@@ -73,18 +73,8 @@ const LiFiHistoryPage = ({
       const result = await LiFiUtils.retrieveLiFiHistory(
         activeAccount.wallet.address,
       );
-      const sorted = [...result].sort((a, b) => {
-        const aTs = Math.max(
-          a.sending?.timestamp ?? 0,
-          a.receiving?.timestamp ?? 0,
-        );
-        const bTs = Math.max(
-          b.sending?.timestamp ?? 0,
-          b.receiving?.timestamp ?? 0,
-        );
-        return bTs - aTs;
-      });
-      setHistory(sorted);
+      console.log(result, 'result');
+      setHistory(result);
     } finally {
       setAutoRefreshCountdown(Config.swaps.autoRefreshHistoryPeriodSec);
       setShouldRefresh(false);

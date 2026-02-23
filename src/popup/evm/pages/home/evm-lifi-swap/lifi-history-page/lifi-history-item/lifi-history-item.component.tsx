@@ -150,7 +150,7 @@ const LiFiHistoryItemComponent = ({
               )}
               <div className="logos">
                 <img
-                  src={historyItem.sending?.token?.logoURI}
+                  src={historyItem.receiving?.token?.logoURI}
                   className="token-logo"
                 />
                 <img src={receivingChainLogoURI} className="chain-logo" />

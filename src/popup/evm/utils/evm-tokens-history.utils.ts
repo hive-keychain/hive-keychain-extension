@@ -16,7 +16,6 @@ import {
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
 import { ArrayUtils } from 'src/utils/array.utils';
-import { AsyncUtils } from 'src/utils/async.utils';
 import Logger from 'src/utils/logger.utils';
 
 // const RESULTS_PER_PAGE = 20;
@@ -49,13 +48,18 @@ const fetchHistory = async (
   // walletAddress = '0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58';
 
   let promisesResult: { [key: string]: any[] } = {};
-  promisesResult = await AsyncUtils.promiseAllWithKeys({
-    tokens: fetchAllTokensTx(walletAddress, chain, history.lastPage),
-    nfts: fetchAllNftsTx(walletAddress, chain, history.lastPage),
-    internals: fetchAllInternalTx(walletAddress, chain, history.lastPage),
-    main: fetchMainHistory(walletAddress, chain, history.lastPage),
-  });
-
+  // promisesResult = await AsyncUtils.promiseAllWithKeys({
+  //   tokens: fetchAllTokensTx(walletAddress, chain, history.lastPage),
+  //   nfts: fetchAllNftsTx(walletAddress, chain, history.lastPage),
+  //   internals: fetchAllInternalTx(walletAddress, chain, history.lastPage),
+  //   main: fetchMainHistory(walletAddress, chain, history.lastPage),
+  // });
+  promisesResult = {
+    tokens: [],
+    nfts: [],
+    internals: [],
+    main: [],
+  };
   promisesResult['internals'] = [];
 
   // TODO delete when finish

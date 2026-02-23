@@ -85,6 +85,8 @@ const send = async (
     ...feeData,
   };
 
+  console.log(transactionRequest, 'transactionRequest');
+
   if (
     request.type &&
     (request.type as unknown as EvmTransactionType) ===

@@ -200,25 +200,34 @@ export const EvmLifiSwap = ({
 
   useEffect(() => {
     refreshAllowance();
-  }, [form.fromSelectedToken, form.amount]);
+  }, [lifiQuote]);
 
   useEffect(() => {
     console.log(lifiQuote);
   }, [lifiQuote]);
 
   const refreshAllowance = async () => {
+    console.log('refreshAllowance');
     if (form.fromSelectedToken && form.amount > 0) {
       const chain: EvmChain = await ChainUtils.getChain<EvmChain>(
         `0x${form.fromSelectedChain!.id.toString(16)}`,
       );
+      console.log(chain, 'chain');
       const allowance = await EvmTokensUtils.getAllowance(
         chain,
         activeAccount.wallet.address,
         form.fromSelectedToken.address,
+        lifiQuote?.estimate.approvalAddress!,
       );
+      console.log(allowance, 'allowance');
 
+      const decimals = form.fromSelectedToken.decimals ?? 18;
+      const amountInRawUnits = ethers.parseUnits(
+        form.amount.toString(),
+        decimals,
+      );
       let approvalAmount = 0;
-      if (allowance < form.amount) {
+      if (allowance < amountInRawUnits) {
         approvalAmount = form.amount;
       }
       setForm((prev) => ({
@@ -319,14 +328,16 @@ export const EvmLifiSwap = ({
     let approveTransactionData: ProviderTransactionData =
       {} as ProviderTransactionData;
 
+    console.log(form);
     if (form.approvalAmount && form.approvalAmount > 0) {
       approveTransactionData = {
         from: activeAccount.address,
         type: EvmTransactionType.EIP_1559,
-        to: form.toSelectedToken?.address,
+        to: form.fromSelectedToken?.address,
         data: await encodeApproveData(
-          form.toSelectedToken?.address!,
+          form.fromSelectedToken?.address!,
           form.amount,
+          form.fromSelectedToken?.decimals ?? 18,
           lifiQuote?.estimate.approvalAddress!,
         ),
         value: '0x0',
@@ -367,7 +378,7 @@ export const EvmLifiSwap = ({
                   }
                 />
               )}
-              <span>{`${FormatUtils.withCommas(form.amount.toString(), form.toSelectedToken?.decimals ?? 18, true)} ${
+              <span>{`${FormatUtils.withCommas(form.amount.toString(), form.fromSelectedToken?.decimals ?? 18, true)} ${
                 form.fromSelectedToken?.symbol ?? ''
               }`}</span>
             </div>
@@ -455,7 +466,10 @@ export const EvmLifiSwap = ({
 
     navigateToWithParams(EvmScreen.LIFI_CONFIRMATION_PAGE, {
       swapTransactionData,
-      approveTransactionData,
+      approveTransactionData:
+        form.approvalAmount && form.approvalAmount > 0
+          ? approveTransactionData
+          : undefined,
       approveFields: approveFields,
       swapFields: swapFields,
       message: chrome.i18n.getMessage('evm_lifi_swap_confirm_message', [
@@ -467,12 +481,14 @@ export const EvmLifiSwap = ({
       skipTitleTranslation: true,
       afterConfirmAction: async (
         swapGasFee: GasFeeEstimationBase,
-        approveGasFee: GasFeeEstimationBase,
+        swapTransactionData: ProviderTransactionData,
+        approveGasFee?: GasFeeEstimationBase,
+        approveTransactionData?: ProviderTransactionData,
       ) => {
         addToLoadingList('evm_lifi_swap');
         try {
           let approveTransactionResponse: TransactionResponse | undefined;
-          if (approveTransactionData) {
+          if (approveTransactionData && approveGasFee) {
             approveTransactionResponse = await EvmTransactionsUtils.send(
               activeAccount.wallet,
               {
@@ -480,9 +496,11 @@ export const EvmLifiSwap = ({
                 type: Number(approveTransactionData.type),
               },
               approveGasFee,
-              activeChain.chainId,
+              `0x${form.fromSelectedChain!.id.toString(16)}`,
             );
+            await approveTransactionResponse.wait();
           }
+
           const swapTransactionResponse = await EvmTransactionsUtils.send(
             activeAccount.wallet,
             {
@@ -490,7 +508,10 @@ export const EvmLifiSwap = ({
               type: Number(swapTransactionData.type),
             },
             swapGasFee,
-            activeChain.chainId,
+            `0x${form.toSelectedChain!.id.toString(16)}`,
+            approveTransactionResponse?.nonce
+              ? approveTransactionResponse.nonce + 1
+              : undefined,
           );
           navigateToWithParams(EvmScreen.LIFI_HISTORY_PAGE, {
             swapTransactionResponse,
@@ -499,6 +520,8 @@ export const EvmLifiSwap = ({
           });
         } catch (error) {
           console.log(error);
+          // catch error and display message
+          // not enough funds to pay for gas etc
         }
       },
     });
@@ -507,6 +530,7 @@ export const EvmLifiSwap = ({
   const encodeApproveData = async (
     contractAddress: string,
     approvalAmount: number,
+    decimals: number,
     approvalAddress: string,
   ) => {
     const provider = await EthersUtils.getProvider(activeChain);
@@ -519,9 +543,13 @@ export const EvmLifiSwap = ({
       Erc20Abi,
       connectedWallet,
     );
+    const amountInRawUnits = ethers.parseUnits(
+      approvalAmount.toString(),
+      decimals,
+    );
     return contract.interface.encodeFunctionData('approve', [
       approvalAddress,
-      approvalAmount,
+      amountInRawUnits,
     ]);
   };
 

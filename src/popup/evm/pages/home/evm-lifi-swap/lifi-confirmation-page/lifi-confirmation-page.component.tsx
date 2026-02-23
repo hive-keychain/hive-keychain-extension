@@ -28,10 +28,12 @@ interface LiFiConfirmationPageNavigationParams {
   message?: string;
   title?: string;
   skipTitleTranslation?: boolean;
-  afterConfirmAction: (params?: {
-    swapTransactionData: ProviderTransactionData;
-    approveTransactionData?: ProviderTransactionData;
-  }) => {};
+  afterConfirmAction: (
+    swapGasFee: GasFeeEstimationBase,
+    swapTransactionData: ProviderTransactionData,
+    approveGasFee?: GasFeeEstimationBase,
+    approveTransactionData?: ProviderTransactionData,
+  ) => void;
   afterCancelAction?: () => {};
 }
 
@@ -63,6 +65,7 @@ const LiFiConfirmationPage = ({
     useState<GasFeeEstimationBase>();
 
   useEffect(() => {
+    console.log({ approveTransactionData, swapTransactionData });
     setTitleContainerProperties({
       title: title ?? 'popup_html_confirm',
       isBackButtonEnabled: true,
@@ -76,7 +79,21 @@ const LiFiConfirmationPage = ({
   }, []);
 
   const handleClickOnConfirm = () => {
-    afterConfirmAction({ approveTransactionData, swapTransactionData });
+    if (swapSelectedFee) {
+      if (
+        (approveTransactionData && approveSelectedFee) ||
+        !approveTransactionData
+      ) {
+        afterConfirmAction(
+          swapSelectedFee,
+          swapTransactionData,
+          approveSelectedFee,
+          approveTransactionData,
+        );
+        return;
+      }
+    }
+    // If here display error message beacause gas fee missing
   };
 
   const handleClickOnCancel = () => {
@@ -223,6 +240,7 @@ const LiFiConfirmationPage = ({
 const mapStateToProps = (state: RootState) => {
   const params = state.navigation.stack[0]
     .params as LiFiConfirmationPageNavigationParams;
+  console.log(params, 'params');
   return {
     swapTransactionData: params.swapTransactionData,
     approveTransactionData: params.approveTransactionData,
