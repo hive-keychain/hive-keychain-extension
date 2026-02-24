@@ -648,14 +648,27 @@ const getTokensFullDetails = async (
   let tokensMetadata: any = [];
   tokensMetadata = await getMetadataFromBackend(addressesToFetch, chain);
 
+  console.log(tokensMetadata, 'tokensMetadata');
+
   const missingMetadataAddresses = addressesToFetch.filter(
     (address) =>
       !tokensMetadata.map((t: any) => t.contractAddress).includes(address),
   );
 
-  const missingMetadata = discoveredTokens.filter((t) =>
-    missingMetadataAddresses.includes(t.contractAddress),
-  );
+  console.log(missingMetadataAddresses, 'missingMetadataAddresses');
+
+  const missingMetadata = discoveredTokens
+    .filter((t) =>
+      missingMetadataAddresses
+        .map((t) => t.address)
+        .includes(t.contractAddress),
+    )
+    .map((t) => ({
+      ...t,
+      decimals: Number(t.decimals),
+    }));
+
+  console.log(missingMetadata, 'missingMetadata');
 
   if (
     chainTokenMetaData.find((t: any) => t.type === EVMSmartContractType.NATIVE)
@@ -801,6 +814,8 @@ const getTokenInfo = async (
 };
 
 const sortTokens = (tokens: NativeAndErc20Token[], prices: EvmPrices) => {
+  console.log(tokens, 'tokens');
+  console.log(prices, 'prices');
   return tokens.sort((tokenA, tokenB) => {
     const priceA = prices[tokenA.tokenInfo.symbol] ?? 0;
     const priceB = prices[tokenB.tokenInfo.symbol] ?? 0;
