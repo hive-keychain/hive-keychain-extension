@@ -131,7 +131,10 @@ const LiFiConfirmationPage = ({
         {approveTransactionData && (
           <>
             <div className="fields">
-              <LabelComponent value={'evm_approval_operation'} />
+              <LabelComponent
+                value={'evm_approval_operation'}
+                className="lifi-operation-name"
+              />
               {approveFields.map((field, index) => (
                 <React.Fragment key={field.label}>
                   <div className="field">
@@ -179,7 +182,10 @@ const LiFiConfirmationPage = ({
           </>
         )}
         <div className="fields">
-          <LabelComponent value={'evm_swap_operation'} />
+          <LabelComponent
+            value={'evm_swap_operation'}
+            className="lifi-operation-name"
+          />
           {swapFields.map((field, index) => (
             <React.Fragment key={field.label}>
               <div className="field">
