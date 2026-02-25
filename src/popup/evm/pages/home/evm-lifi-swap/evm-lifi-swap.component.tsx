@@ -13,6 +13,7 @@ import { SVGIcons } from '@common-ui/icons.enum';
 import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
 import { LabelComponent } from '@common-ui/label/label.component';
+import { PreloadedImage } from '@common-ui/preloaded-image/preloaded-image.component';
 import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.component';
 import ServiceUnavailablePage from '@common-ui/service-unavailable-page/service-unavailable-page.component';
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
@@ -239,7 +240,6 @@ export const EvmLifiSwap = ({
   const initList = async () => {
     const optionsLists = await LiFiUtils.getLiFiSwapOptionLists();
 
-    console.log(optionsLists, 'optionsLists');
     setTokenList(optionsLists.tokens);
     setChainList(optionsLists.chains);
 
@@ -408,16 +408,17 @@ export const EvmLifiSwap = ({
         label: 'evm_lifi_swap_amount_in',
         value: (
           <div className="value-content-horizontal">
-            {form.fromSelectedToken && (
-              <EvmTokenLogo
-                tokenInfo={
-                  {
-                    logo: form.fromSelectedToken?.logoURI!,
-                    name: form.fromSelectedToken?.name,
-                    symbol: form.fromSelectedToken?.symbol,
-                  } as EvmSmartContractInfo
-                }
-              />
+            {form.fromSelectedToken && form.fromSelectedChain && (
+              <div className="currency-icon-container">
+                <PreloadedImage
+                  className="currency-icon"
+                  src={form.fromSelectedToken?.logoURI as string}
+                />
+                <PreloadedImage
+                  className="currency-icon-chip"
+                  src={form.fromSelectedChain?.logoURI as string}
+                />
+              </div>
             )}
             <span>{`${FormatUtils.withCommas(form.amount.toString(), form.fromSelectedToken?.decimals ?? 18, true)} ${
               form.fromSelectedToken?.symbol ?? ''
@@ -431,15 +432,16 @@ export const EvmLifiSwap = ({
         value: (
           <div className="value-content-horizontal">
             {form.toSelectedToken && lifiQuote?.estimate.toAmount && (
-              <EvmTokenLogo
-                tokenInfo={
-                  {
-                    logo: form.toSelectedToken.logoURI!,
-                    name: form.toSelectedToken.name,
-                    symbol: form.toSelectedToken.symbol,
-                  } as EvmSmartContractInfo
-                }
-              />
+              <div className="currency-icon-container">
+                <PreloadedImage
+                  className="currency-icon"
+                  src={form.toSelectedToken?.logoURI as string}
+                />
+                <PreloadedImage
+                  className="currency-icon-chip"
+                  src={form.toSelectedChain?.logoURI as string}
+                />
+              </div>
             )}
             <span>{`${FormatUtils.withCommas((lifiQuote?.estimate.toAmount as string).toString(), form.toSelectedToken?.decimals ?? 18, true)} ${
               form.toSelectedToken?.symbol ?? ''
