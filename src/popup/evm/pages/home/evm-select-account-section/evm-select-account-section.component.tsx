@@ -6,7 +6,11 @@ import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions'
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmSelectAccountSectionItemComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section-item.component';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
-import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
+import {
+  EvmAddressDetail,
+  EvmAddressesUtils,
+} from '@popup/evm/utils/evm-addresses.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -54,32 +58,63 @@ const SelectAccountSection = ({
     init();
   }, [accounts, activeAccount]);
 
+  const buildPlaceholderAddressDetail = (
+    account: EvmAccount,
+  ): EvmAddressDetail => ({
+    fullAddress: account.wallet.address,
+    formattedAddress: EvmFormatUtils.formatAddress(account.wallet.address),
+    label:
+      account.nickname ??
+      EvmAccountUtils.getAccountFullname(account),
+    avatar: undefined,
+  });
+
   const init = async () => {
     if (accounts && activeAccount.address) {
-      const opts = await Promise.all(
-        accounts
-          .filter((account) => !account.hide)
-          .map(async (account: EvmAccount) => {
-            return {
-              label: account.wallet.address,
-              value: {
-                account: account,
-                addressDetails: await EvmAddressesUtils.getAddressDetails(
-                  account.wallet.address,
-                  chain!.chainId,
-                ),
-              },
-            };
-          }),
+      const visibleAccounts = accounts.filter((account) => !account.hide);
+
+      // Build options immediately with placeholder details so the selector
+      // renders without waiting for async ENS / label lookups.
+      const placeholderOpts = visibleAccounts.map((account: EvmAccount) => ({
+        label: account.wallet.address,
+        value: {
+          account: account,
+          addressDetails: buildPlaceholderAddressDetail(account),
+        },
+      }));
+
+      setOptions(placeholderOpts);
+      const placeholderSelected = placeholderOpts.find(
+        (opt) =>
+          opt.value.account.wallet.address === activeAccount.wallet.address,
+      );
+      if (placeholderSelected) {
+        setSelectedAddress(placeholderSelected.value);
+      }
+
+      // Enrich with full address details (ENS, avatar, custom labels) in the
+      // background and update state once ready.
+      const enrichedOpts = await Promise.all(
+        visibleAccounts.map(async (account: EvmAccount) => ({
+          label: account.wallet.address,
+          value: {
+            account: account,
+            addressDetails: await EvmAddressesUtils.getAddressDetails(
+              account.wallet.address,
+              chain!.chainId,
+            ),
+          },
+        })),
       );
 
-      setOptions(opts);
-      const selectedOption = opts.find((opt) => {
-        return (
-          opt.value.account.wallet.address === activeAccount.wallet.address
-        );
-      });
-      setSelectedAddress(selectedOption!.value);
+      setOptions(enrichedOpts);
+      const enrichedSelected = enrichedOpts.find(
+        (opt) =>
+          opt.value.account.wallet.address === activeAccount.wallet.address,
+      );
+      if (enrichedSelected) {
+        setSelectedAddress(enrichedSelected.value);
+      }
     }
   };
 
