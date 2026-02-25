@@ -24,7 +24,8 @@ $autoCompleteItemHeight: 30px;
       position: relative;
       flex: 1;
       input {
-        width: calc(100% - 32px);
+        width: 100%;
+        box-sizing: border-box;
         flex: 1;
         border-style: unset;
         border: none;
@@ -92,9 +93,10 @@ $autoCompleteItemHeight: 30px;
         display: none;
       }
 
-      &:hover {
+      &:hover,
+      &.focused {
         input {
-          padding-right: 32px !important;
+          padding-right: 36px;
         }
         .erase {
           display: block;
