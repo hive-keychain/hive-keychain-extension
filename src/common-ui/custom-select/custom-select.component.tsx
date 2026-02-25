@@ -185,24 +185,6 @@ export function ComplexeCustomSelect<T extends OptionItem>(
           )}
           renderOnScroll
         />
-
-        {filteredOptions.map((option, index) => (
-          <CustomSelectItemComponent
-            key={option.key ?? `option-${option.label}`}
-            isLast={props.options.length === index}
-            item={option}
-            isSelected={option.value === itemProps.selectedItem.value}
-            handleItemClicked={() => {
-              itemProps.setSelectedItem(option);
-            }}
-            closeDropdown={() => methods.dropDown('close')}
-            onDelete={itemProps.onDelete}
-            canDelete={
-              option.canDelete && itemProps.selectedItem.value !== option.value
-            }
-            generateImageIfNull={itemProps.generateImageIfNull}
-          />
-        ))}
         {itemProps.footer && itemProps.footer}
       </div>
     );
