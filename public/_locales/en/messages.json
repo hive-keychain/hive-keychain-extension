@@ -5954,5 +5954,9 @@
   "evm_lifi_swap_sending_swap_transaction": {
     "message": "Sending swap transaction",
     "description": "Sending swap transaction"
+  },
+  "evm_lifi_swap_delay_caption_message": {
+    "message": "Your swap might take a few minutes to appear in your history after the transaction is confirmed",
+    "description": "Delay caption message"
   }
 }

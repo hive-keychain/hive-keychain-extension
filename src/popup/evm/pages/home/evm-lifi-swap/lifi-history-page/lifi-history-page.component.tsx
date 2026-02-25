@@ -91,6 +91,9 @@ const LiFiHistoryPage = ({
 
   return (
     <div className="lifi-history-page">
+      <div className="delay-caption-message">
+        {chrome.i18n.getMessage('evm_lifi_swap_delay_caption_message')}
+      </div>
       <div className="refresh-panel">
         {!!autoRefreshCountdown && (
           <>
