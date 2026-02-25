@@ -38,7 +38,6 @@ interface LiFiConfirmationPageNavigationParams {
 }
 
 const LiFiConfirmationPage = ({
-  chain,
   activeAccount,
   evmPrices,
   approveTransactionData,
@@ -163,11 +162,14 @@ const LiFiConfirmationPage = ({
                 </React.Fragment>
               ))}
               <GasFeePanel
-                chain={chain}
+                chain={approveTransactionData.chain!}
                 wallet={activeAccount.wallet}
                 selectedFee={approveSelectedFee}
                 onSelectFee={setApproveSelectedFee}
-                transactionType={(chain as EvmChain).defaultTransactionType}
+                transactionType={
+                  (approveTransactionData.chain! as EvmChain)
+                    .defaultTransactionType
+                }
                 transactionData={approveTransactionData}
                 prices={evmPrices}
                 setErrorMessage={handleErrors}
@@ -208,11 +210,13 @@ const LiFiConfirmationPage = ({
             </React.Fragment>
           ))}
           <GasFeePanel
-            chain={chain}
+            chain={swapTransactionData.chain!}
             wallet={activeAccount.wallet}
             selectedFee={swapSelectedFee}
             onSelectFee={setSwapSelectedFee}
-            transactionType={(chain as EvmChain).defaultTransactionType}
+            transactionType={
+              (swapTransactionData.chain! as EvmChain).defaultTransactionType
+            }
             transactionData={swapTransactionData}
             prices={evmPrices}
             setErrorMessage={handleErrors}
@@ -251,7 +255,6 @@ const mapStateToProps = (state: RootState) => {
     skipTitleTranslation: params.skipTitleTranslation,
     afterConfirmAction: params.afterConfirmAction,
     afterCancelAction: params.afterCancelAction,
-    chain: state.chain as EvmChain,
     activeAccount: state.evm.activeAccount,
     evmPrices: state.evm.prices,
   };

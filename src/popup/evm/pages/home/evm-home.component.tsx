@@ -101,7 +101,10 @@ const Home = ({
   const [pendingTransactionsInfo, setPendingTransactionsInfo] =
     useState<EvmPendingTransactionsInfo>();
 
-  const [accountValues, setAccountValues] = useState<{usdValue: string, mainTokenValue: string}>();
+  const [accountValues, setAccountValues] = useState<{
+    usdValue: string;
+    mainTokenValue: string;
+  }>();
 
   // RPC related
   const [displayChangeRpcPopup, setDisplayChangeRpcPopup] = useState(false);
@@ -139,19 +142,19 @@ const Home = ({
         activeAccount.nativeAndErc20Tokens.value.map((t) => t.tokenInfo),
       );
       const usdValue = `$${FormatUtils.withCommas(
-                EvmTokensUtils.getTotalBalanceInUsd(
-                  activeAccount.nativeAndErc20Tokens.value,
-                  prices,
-                ),
-              )}`;
-              const mainTokenValue = `${FormatUtils.withCommas(
-                EvmTokensUtils.getTotalBalanceInMainToken(
-                  activeAccount.nativeAndErc20Tokens.value,
-                  chain,
-                  prices,
-                ),
-              )} ${chain.mainToken}`;
-              setAccountValues({usdValue, mainTokenValue});
+        EvmTokensUtils.getTotalBalanceInUsd(
+          activeAccount.nativeAndErc20Tokens.value,
+          prices,
+        ),
+      )}`;
+      const mainTokenValue = `${FormatUtils.withCommas(
+        EvmTokensUtils.getTotalBalanceInMainToken(
+          activeAccount.nativeAndErc20Tokens.value,
+          chain,
+          prices,
+        ),
+      )} ${chain.mainToken}`;
+      setAccountValues({ usdValue, mainTokenValue });
     }
   }, [activeAccount.nativeAndErc20Tokens]);
 
@@ -164,9 +167,8 @@ const Home = ({
 
     if (!rpcStatusOk) {
       if (switchAuto) {
-        const switchResult = await EvmRpcUtils.automaticallySwitchToWorkingRpc(
-          chain,
-        );
+        const switchResult =
+          await EvmRpcUtils.automaticallySwitchToWorkingRpc(chain);
         if (!switchResult) {
           setErrorMessage('evm_rpcs_not_responding_error');
         } else {
@@ -420,7 +422,6 @@ const Home = ({
       <TopBarComponent
         onMenuButtonClicked={async () => {
           navigateTo(EvmScreen.EVM_SETTINGS);
-          return;
         }}
         onRefreshButtonClicked={refresh}
         accountSelector={
@@ -434,12 +435,14 @@ const Home = ({
 
       <div className={'home-page-content'} onScroll={handleScroll}>
         <div className="evm-account-value-wrapper">
-         {accountValues && <EstimatedAccountValueSectionComponent
-            accountValues={{
-              [AccountValueType.DOLLARS]: accountValues.usdValue,
-              [AccountValueType.TOKEN]: accountValues.mainTokenValue,
-            }}
-          />}
+          {accountValues && (
+            <EstimatedAccountValueSectionComponent
+              accountValues={{
+                [AccountValueType.DOLLARS]: accountValues.usdValue,
+                [AccountValueType.TOKEN]: accountValues.mainTokenValue,
+              }}
+            />
+          )}
 
           <EvmDappStatusComponent />
         </div>

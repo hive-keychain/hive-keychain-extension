@@ -5938,5 +5938,21 @@
   "evm_lifi_swap_failed_transaction_expired": {
     "message": "Transaction expired",
     "description": "Transaction expired"
+  },
+  "evm_lifi_swap_error_no_available_quotes": {
+    "message": "No available quotes for the requested transfer",
+    "description": "No available quotes for the requested transfer"
+  },
+  "evm_lifi_swap_error_same_token_source_and_destination": {
+    "message": "The same token cannot be used as source and destination",
+    "description": "The same token cannot be used as source and destination"
+  },
+  "evm_lifi_swap_approving_smart_contract": {
+    "message": "Approving smart contract",
+    "description": "Approving smart contract"
+  },
+  "evm_lifi_swap_sending_swap_transaction": {
+    "message": "Sending swap transaction",
+    "description": "Sending swap transaction"
   }
 }

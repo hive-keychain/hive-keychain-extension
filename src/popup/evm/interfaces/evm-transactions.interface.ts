@@ -1,4 +1,5 @@
 import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { TransactionResponse } from 'ethers';
 
 export interface CanceledTransactionData {
@@ -45,6 +46,7 @@ export interface ProviderTransactionData {
   gasLimit?: number;
   accessList?: any[];
   nonce?: number;
+  chain?: EvmChain;
   // smartContract?: string;
 }
 

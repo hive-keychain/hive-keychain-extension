@@ -4,6 +4,7 @@ import { SVGIcons } from '@common-ui/icons.enum';
 import { ExtendedChain, TokenExtended } from '@lifi/types';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { LifiHistoryItem, LifiHistoryResponse } from 'hive-keychain-commons';
+import { KeychainError } from 'src/keychain-error';
 
 const getLifiData = async (): Promise<any> => {
   return await KeychainApi.get(`evm/lifi/data`);
@@ -74,10 +75,78 @@ const retrieveLiFiHistory = async (
   return historyResponse?.transfers ?? [];
 };
 
+const getQuote = async ({
+  fromChain,
+  fromToken,
+  toChain,
+  toToken,
+  amount,
+  fromAddress,
+  toAddress,
+}: {
+  fromChain: ExtendedChain;
+  fromToken: TokenExtended;
+  toChain: ExtendedChain;
+  toToken: TokenExtended;
+  amount: number;
+  fromAddress: string;
+  toAddress: string;
+}) => {
+  const quote = await KeychainApi.post('evm/lifi/quote', {
+    fromChain: fromChain.id,
+    fromToken: fromToken.address,
+    toChain: toChain.id,
+    toToken: toToken.address,
+    amount: EvmFormatUtils.formatTokenValue(amount, toToken.decimals),
+    fromAddress,
+    toAddress: toAddress?.length > 0 ? toAddress : null,
+  });
+  if (quote.errorCode) {
+    throw new KeychainError(getLiFiErrorMessage(quote.errorCode), [
+      quote.errorCode,
+    ]);
+  } else {
+    return {
+      ...quote,
+      estimate: {
+        ...quote.estimate,
+        fromAmount: EvmFormatUtils.formatTokenValue(
+          quote.estimate.fromAmount,
+          -fromToken.decimals,
+        ).toNumber(),
+        toAmount: EvmFormatUtils.formatTokenValue(
+          quote.estimate.toAmount,
+          -toToken.decimals,
+        ).toNumber(),
+        feeCosts: quote.estimate.feeCosts.map((fee: any) => ({
+          ...fee,
+          amount: EvmFormatUtils.formatTokenValue(
+            Number(fee.amount),
+            -Number(fee.token.decimals),
+          ),
+        })),
+      },
+    };
+  }
+};
+
+const getLiFiErrorMessage = (errorCode: number) => {
+  switch (errorCode) {
+    case 1006:
+      return 'evm_lifi_swap_error_no_available_quotes';
+    case 1001:
+      return 'evm_lifi_swap_error_same_token_source_and_destination';
+    default:
+      return 'swap_error_getting_estimate';
+  }
+};
+
 export const LiFiUtils = {
   getLifiData,
   getLiFiSwapOptionLists,
   getTokenOptionItem,
   getChainOptionItem,
   retrieveLiFiHistory,
+  getQuote,
+  getLiFiErrorMessage,
 };

@@ -644,18 +644,13 @@ const getTokensFullDetails = async (
       addressesToFetch.push(address);
     }
   }
-  console.log(addressesToFetch, 'addressesToFetch');
   let tokensMetadata: any = [];
   tokensMetadata = await getMetadataFromBackend(addressesToFetch, chain);
-
-  console.log(tokensMetadata, 'tokensMetadata');
 
   const missingMetadataAddresses = addressesToFetch.filter(
     (address) =>
       !tokensMetadata.map((t: any) => t.contractAddress).includes(address),
   );
-
-  console.log(missingMetadataAddresses, 'missingMetadataAddresses');
 
   const missingMetadata = discoveredTokens
     .filter((t) =>
@@ -667,8 +662,6 @@ const getTokensFullDetails = async (
       ...t,
       decimals: Number(t.decimals),
     }));
-
-  console.log(missingMetadata, 'missingMetadata');
 
   if (
     chainTokenMetaData.find((t: any) => t.type === EVMSmartContractType.NATIVE)
@@ -772,7 +765,6 @@ const getMetadataFromBackend = async (
       `evm/smart-contracts-info/${chain.chainId}`,
       { addresses },
     );
-    console.log(result, 'result');
     return result;
   } catch (err) {
     Logger.error('Error while fetching metadata', err);
@@ -814,8 +806,6 @@ const getTokenInfo = async (
 };
 
 const sortTokens = (tokens: NativeAndErc20Token[], prices: EvmPrices) => {
-  console.log(tokens, 'tokens');
-  console.log(prices, 'prices');
   return tokens.sort((tokenA, tokenB) => {
     const priceA = prices[tokenA.tokenInfo.symbol] ?? 0;
     const priceB = prices[tokenB.tokenInfo.symbol] ?? 0;
@@ -973,7 +963,6 @@ const getAllowance = async (
   spenderAddress: string,
 ) => {
   const provider = await EthersUtils.getProvider(chain);
-  console.log(provider);
   const contract = new ethers.Contract(tokenAddress, Erc20Abi, provider);
   const allowance = await contract.allowance(walletAddress, spenderAddress);
   return allowance;

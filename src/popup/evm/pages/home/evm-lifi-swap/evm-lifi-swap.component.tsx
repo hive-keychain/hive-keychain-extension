@@ -1,4 +1,3 @@
-import { KeychainApi } from '@api/keychain';
 import { FormContainer } from '@common-ui/_containers/form-container/form-container.component';
 import ButtonComponent, {
   ButtonType,
@@ -29,13 +28,13 @@ import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-log
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
-import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { LiFiUtils } from '@popup/evm/utils/lifi.utils';
 import {
   addToLoadingList,
   removeFromLoadingList,
+  resetLoading,
 } from '@popup/multichain/actions/loading.actions';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import {
@@ -53,6 +52,7 @@ import { throttle, ThrottleSettings } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import Config from 'src/config';
+import { KeychainError } from 'src/keychain-error';
 
 interface EvmSwapForm {
   fromSelectedToken: TokenExtended | null;
@@ -74,6 +74,7 @@ export const EvmLifiSwap = ({
   navigateToWithParams,
   addToLoadingList,
   removeFromLoadingList,
+  resetLoading,
   activeChain,
   activeAccount,
 }: PropsFromRedux) => {
@@ -207,19 +208,16 @@ export const EvmLifiSwap = ({
   }, [lifiQuote]);
 
   const refreshAllowance = async () => {
-    console.log('refreshAllowance');
     if (form.fromSelectedToken && form.amount > 0) {
       const chain: EvmChain = await ChainUtils.getChain<EvmChain>(
         `0x${form.fromSelectedChain!.id.toString(16)}`,
       );
-      console.log(chain, 'chain');
       const allowance = await EvmTokensUtils.getAllowance(
         chain,
         activeAccount.wallet.address,
         form.fromSelectedToken.address,
         lifiQuote?.estimate.approvalAddress!,
       );
-      console.log(allowance, 'allowance');
 
       const decimals = form.fromSelectedToken.decimals ?? 18;
       const amountInRawUnits = ethers.parseUnits(
@@ -241,6 +239,7 @@ export const EvmLifiSwap = ({
   const initList = async () => {
     const optionsLists = await LiFiUtils.getLiFiSwapOptionLists();
 
+    console.log(optionsLists, 'optionsLists');
     setTokenList(optionsLists.tokens);
     setChainList(optionsLists.chains);
 
@@ -279,42 +278,24 @@ export const EvmLifiSwap = ({
     toAddress: string,
   ) => {
     try {
-      const quote = await KeychainApi.post('evm/lifi/quote', {
-        fromChain: fromChain.id,
-        fromToken: fromToken.address,
-        toChain: toChain.id,
-        toToken: toToken.address,
-        amount: EvmFormatUtils.formatTokenValue(amount, toToken.decimals),
+      const quote = await LiFiUtils.getQuote({
+        fromChain,
+        fromToken,
+        toChain,
+        toToken,
+        amount,
         fromAddress,
-        toAddress: toAddress?.length > 0 ? toAddress : null,
+        toAddress,
       });
       if (quote) {
-        setLifiQuote({
-          ...quote,
-          estimate: {
-            ...quote.estimate,
-            fromAmount: EvmFormatUtils.formatTokenValue(
-              quote.estimate.fromAmount,
-              -fromToken.decimals,
-            ).toNumber(),
-            toAmount: EvmFormatUtils.formatTokenValue(
-              quote.estimate.toAmount,
-              -toToken.decimals,
-            ).toNumber(),
-            feeCosts: quote.estimate.feeCosts.map((fee: any) => ({
-              ...fee,
-              amount: EvmFormatUtils.formatTokenValue(
-                Number(fee.amount),
-                -Number(fee.token.decimals),
-              ),
-            })),
-          },
-        });
+        setLifiQuote(quote);
       } else {
         setErrorMessage('swap_error_getting_estimate');
       }
     } catch (error) {
-      setErrorMessage('swap_error_getting_estimate');
+      setErrorMessage(
+        (error as KeychainError).message ?? 'swap_error_getting_estimate',
+      );
     }
   };
 
@@ -328,9 +309,13 @@ export const EvmLifiSwap = ({
     let approveTransactionData: ProviderTransactionData =
       {} as ProviderTransactionData;
 
-    console.log(form);
+    const fromChain = await ChainUtils.getChain<EvmChain>(
+      `0x${form.fromSelectedChain!.id.toString(16)}`,
+    );
+
     if (form.approvalAmount && form.approvalAmount > 0) {
       approveTransactionData = {
+        chain: fromChain,
         from: activeAccount.address,
         type: EvmTransactionType.EIP_1559,
         to: form.fromSelectedToken?.address,
@@ -389,6 +374,7 @@ export const EvmLifiSwap = ({
     }
 
     let swapTransactionData: ProviderTransactionData = {
+      chain: fromChain,
       from: activeAccount.address,
       type: EvmTransactionType.EIP_1559,
       to: lifiQuote!.transactionRequest!.to,
@@ -485,7 +471,11 @@ export const EvmLifiSwap = ({
         approveGasFee?: GasFeeEstimationBase,
         approveTransactionData?: ProviderTransactionData,
       ) => {
-        addToLoadingList('evm_lifi_swap');
+        if (approveTransactionData && approveGasFee) {
+          addToLoadingList('evm_lifi_swap_approving_smart_contract');
+        }
+        addToLoadingList('evm_lifi_swap_sending_swap_transaction');
+
         try {
           let approveTransactionResponse: TransactionResponse | undefined;
           if (approveTransactionData && approveGasFee) {
@@ -499,6 +489,8 @@ export const EvmLifiSwap = ({
               `0x${form.fromSelectedChain!.id.toString(16)}`,
             );
             await approveTransactionResponse.wait();
+
+            removeFromLoadingList('evm_lifi_swap_approving_smart_contract');
           }
 
           const swapTransactionResponse = await EvmTransactionsUtils.send(
@@ -508,17 +500,22 @@ export const EvmLifiSwap = ({
               type: Number(swapTransactionData.type),
             },
             swapGasFee,
-            `0x${form.toSelectedChain!.id.toString(16)}`,
+            `0x${form.fromSelectedChain!.id.toString(16)}`,
             approveTransactionResponse?.nonce
               ? approveTransactionResponse.nonce + 1
               : undefined,
           );
+          removeFromLoadingList('evm_lifi_swap_sending_swap_transaction');
           navigateToWithParams(EvmScreen.LIFI_HISTORY_PAGE, {
             swapTransactionResponse,
             approveTransactionResponse: approveTransactionResponse ?? undefined,
             lifiQuote,
           });
         } catch (error) {
+          resetLoading();
+          setErrorMessage(
+            (error as KeychainError).message ?? 'swap_error_getting_estimate',
+          );
           console.log(error);
           // catch error and display message
           // not enough funds to pay for gas etc
@@ -818,6 +815,7 @@ const connector = connect(mapStateToProps, {
   navigateToWithParams,
   addToLoadingList,
   removeFromLoadingList,
+  resetLoading,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

@@ -38,3 +38,10 @@ export const setLoadingPercentage = (percentage: number) => {
     payload: { loadingPercentage: percentage },
   };
 };
+
+export const resetLoading = () => {
+  return {
+    type: MultichainActionType.RESET_LOADING,
+    payload: {},
+  };
+};
