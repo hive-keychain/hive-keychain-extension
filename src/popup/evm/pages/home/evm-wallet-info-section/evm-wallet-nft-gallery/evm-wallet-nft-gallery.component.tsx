@@ -11,6 +11,7 @@ import { EvmWalletNftPreviewComponent } from '@popup/evm/pages/home/evm-wallet-i
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { HDNodeWallet } from 'ethers';
 import FlatList from 'flatlist-react';
 import React, { useEffect, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -23,6 +24,7 @@ interface Props {
   ) => void;
   chain: EvmChain;
   manualDiscoverNfts: () => void;
+  loadEvmActiveAccountNfts: (chain: EvmChain, wallet: HDNodeWallet) => void;
 }
 
 export const EvmWalletNftGalleryComponent = ({
@@ -30,6 +32,7 @@ export const EvmWalletNftGalleryComponent = ({
   chain,
   onClickOnNftPreview,
   manualDiscoverNfts,
+  loadEvmActiveAccountNfts,
 }: Props) => {
   const [displayedCollections, setDisplayedCollections] =
     useState<(EvmErc721Token | EvmErc1155Token)[]>();
@@ -39,6 +42,12 @@ export const EvmWalletNftGalleryComponent = ({
   const [filterValue, setFilterValue] = useState('');
 
   const [showAddCustomTokenPopup, setShowAddCustomTokenPopup] = useState(false);
+
+  useEffect(() => {
+    if (!activeAccount.nfts.initialized) {
+      loadEvmActiveAccountNfts(chain, activeAccount.wallet);
+    }
+  }, []);
 
   useEffect(() => {
     if (!activeAccount.nfts.loading) {

@@ -51,11 +51,9 @@ const EvmApp = ({
 
   useEffect(() => {
     if (displaySplashscreen) {
-      if (appStatus.priceLoaded) {
-        setTimeout(() => {
-          setDisplaySplashscreen(false);
-        }, Config.loader.minDuration);
-      }
+      setTimeout(() => {
+        setDisplaySplashscreen(false);
+      }, Config.loader.minDuration);
     }
   }, [appStatus, displaySplashscreen]);
 

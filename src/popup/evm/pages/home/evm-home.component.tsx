@@ -3,6 +3,7 @@ import { EVMConfirmationPageParams } from '@common-ui/confirmation-page/confirma
 import { Screen } from '@interfaces/screen.interface';
 import {
   loadEvmActiveAccount,
+  loadEvmActiveAccountNfts,
   loadEvmHistory,
   manualDiscoverErc20Tokens,
   manualDiscoverNfts,
@@ -64,7 +65,6 @@ import { Survey } from 'src/popup/hive/pages/app-container/survey/survey.interfa
 import { WhatsNewComponent } from 'src/popup/hive/pages/app-container/whats-new/whats-new.component';
 import { WhatsNewContent } from 'src/popup/hive/pages/app-container/whats-new/whats-new.interface';
 import { SurveyUtils } from 'src/popup/hive/utils/survey.utils';
-import { ArrayUtils } from 'src/utils/array.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
@@ -88,6 +88,7 @@ const Home = ({
   addToLoadingList,
   removeFromLoadingList,
   setSuccessMessage,
+  loadEvmActiveAccountNfts,
 }: PropsFromRedux) => {
   const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
   const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
@@ -132,30 +133,18 @@ const Home = ({
   }, [activeAccount.wallet.address]);
 
   useEffect(() => {
-    if (
-      !ArrayUtils.includesAll(
-        Object.keys(prices),
-        activeAccount.nativeAndErc20Tokens.value.map((b) => b.tokenInfo.symbol),
-      )
-    ) {
-      fetchPrices(
-        activeAccount.nativeAndErc20Tokens.value.map((t) => t.tokenInfo),
-      );
-      const usdValue = `$${FormatUtils.withCommas(
-        EvmTokensUtils.getTotalBalanceInUsd(
-          activeAccount.nativeAndErc20Tokens.value,
-          prices,
-        ),
-      )}`;
-      const mainTokenValue = `${FormatUtils.withCommas(
-        EvmTokensUtils.getTotalBalanceInMainToken(
-          activeAccount.nativeAndErc20Tokens.value,
-          chain,
-          prices,
-        ),
-      )} ${chain.mainToken}`;
-      setAccountValues({ usdValue, mainTokenValue });
-    }
+    const usdValue = `$${FormatUtils.withCommas(
+      EvmTokensUtils.getTotalBalanceInUsd(
+        activeAccount.nativeAndErc20Tokens.value,
+      ),
+    )}`;
+    const mainTokenValue = `${FormatUtils.withCommas(
+      EvmTokensUtils.getTotalBalanceInMainToken(
+        activeAccount.nativeAndErc20Tokens.value,
+        chain,
+      ),
+    )} ${chain.mainToken}`;
+    setAccountValues({ usdValue, mainTokenValue });
   }, [activeAccount.nativeAndErc20Tokens]);
 
   const checkActiveRpc = async () => {
@@ -470,6 +459,7 @@ const Home = ({
           pendingTransactionsItems={pendingTransactionsItems}
           manualDiscoverErc20Tokens={manualDiscoverErc20Tokens}
           manualDiscoverNfts={manualDiscoverNfts}
+          loadEvmActiveAccountNfts={loadEvmActiveAccountNfts}
         />
       </div>
       <ActionsSectionComponent
@@ -508,6 +498,7 @@ const connector = connect(mapStateToProps, {
   addToLoadingList,
   removeFromLoadingList,
   setSuccessMessage,
+  loadEvmActiveAccountNfts,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

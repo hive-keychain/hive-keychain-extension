@@ -15,13 +15,15 @@ export const EvmActiveAccountReducer = (
     nfts: {
       value: [],
       loading: true,
+      initialized: false,
     },
     history: {
       value: {} as EvmUserHistory,
       loading: true,
+      initialized: false,
     },
 
-    isInitialized: false,
+    isReady: false,
   },
   { type, payload }: ActionPayload<Partial<EvmActiveAccount>>,
 ): EvmActiveAccount => {

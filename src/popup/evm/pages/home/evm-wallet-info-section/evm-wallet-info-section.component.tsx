@@ -12,6 +12,7 @@ import { EvmHistoryComponent } from '@popup/evm/pages/home/token-history/evm-his
 import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { HDNodeWallet } from 'ethers';
 import React, { useState } from 'react';
 import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.component';
 
@@ -28,6 +29,7 @@ interface EvmWalletInfoSectionProps {
   pendingTransactionsItems?: EvmUserHistoryItem[];
   manualDiscoverErc20Tokens: () => void;
   manualDiscoverNfts: () => void;
+  loadEvmActiveAccountNfts: (chain: EvmChain, wallet: HDNodeWallet) => void;
 }
 
 enum EvmDisplayedPage {
@@ -45,6 +47,7 @@ export const EvmWalletInfoSectionComponent = ({
   pendingTransactionsItems,
   manualDiscoverNfts,
   manualDiscoverErc20Tokens,
+  loadEvmActiveAccountNfts,
 }: EvmWalletInfoSectionProps) => {
   const [displayedSection, setDisplayedSection] = useState<EvmDisplayedPage>(
     EvmDisplayedPage.TOKENS,
@@ -73,6 +76,7 @@ export const EvmWalletInfoSectionComponent = ({
             onClickOnNftPreview={onClickOnNftPreview}
             chain={chain}
             manualDiscoverNfts={manualDiscoverNfts}
+            loadEvmActiveAccountNfts={loadEvmActiveAccountNfts}
           />
         );
       }

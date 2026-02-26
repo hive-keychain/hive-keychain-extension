@@ -1,25 +1,38 @@
 import { KeychainApi } from '@api/keychain';
+import {
+  EvmSmartContractInfo,
+  EvmSmartContractInfoErc1155,
+  EvmSmartContractInfoErc721,
+} from '@popup/evm/interfaces/evm-tokens.interface';
 
+// Done
 const getDiscoveredTokens = async (
   chainId: string | number,
   address: string,
   isNew?: boolean,
-): Promise<unknown> => {
+): Promise<EvmSmartContractInfo[]> => {
   const suffix = isNew === undefined ? '' : `/${isNew}`;
-  return KeychainApi.get(
+  const tokens: EvmSmartContractInfo[] = await KeychainApi.get(
     `evm/light-node/discovery/tokens/${chainId}/${encodeURIComponent(
       address,
     )}${suffix}`,
   );
+
+  console.log('response', tokens);
+
+  return tokens;
 };
 
 const getDiscoveredNfts = async (
   chainId: string | number,
   address: string,
-): Promise<unknown> => {
-  return KeychainApi.get(
-    `evm/light-node/discovery/nfts/${chainId}/${encodeURIComponent(address)}`,
-  );
+): Promise<(EvmSmartContractInfoErc721 | EvmSmartContractInfoErc1155)[]> => {
+  const nfts: (EvmSmartContractInfoErc721 | EvmSmartContractInfoErc1155)[] =
+    await KeychainApi.get(
+      `evm/light-node/discovery/nfts/${chainId}/${encodeURIComponent(address)}`,
+    );
+  console.log('response', nfts);
+  return nfts;
 };
 
 const getNftDetail = async (

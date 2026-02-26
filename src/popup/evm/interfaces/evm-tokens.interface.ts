@@ -16,6 +16,7 @@ export interface EvmSmartContractInfoBase {
   backgroundColor: string;
   coingeckoId?: string;
   // links: { [name: string]: string[] | string };
+  price: number;
 }
 
 export interface EvmSmartContractInfoNative extends EvmSmartContractInfoBase {
@@ -25,27 +26,23 @@ export interface EvmSmartContractInfoNative extends EvmSmartContractInfoBase {
   categories: string[];
 }
 
-export interface EvmSmartContractNonNativeBase
-  extends EvmSmartContractInfoBase {
+export interface EvmSmartContractNonNativeBase extends EvmSmartContractInfoBase {
   contractAddress: string;
   possibleSpam: boolean;
   verifiedContract: boolean;
 }
 
-export interface EvmSmartContractInfoErc20
-  extends EvmSmartContractNonNativeBase {
+export interface EvmSmartContractInfoErc20 extends EvmSmartContractNonNativeBase {
   type: EVMSmartContractType.ERC20;
   decimals: number;
   validated: number;
 }
 
-export interface EvmSmartContractInfoErc721
-  extends EvmSmartContractNonNativeBase {
+export interface EvmSmartContractInfoErc721 extends EvmSmartContractNonNativeBase {
   type: EVMSmartContractType;
   name: string;
 }
-export interface EvmSmartContractInfoErc1155
-  extends EvmSmartContractNonNativeBase {
+export interface EvmSmartContractInfoErc1155 extends EvmSmartContractNonNativeBase {
   type: EVMSmartContractType;
   name: string;
 }

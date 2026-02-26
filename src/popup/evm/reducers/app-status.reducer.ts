@@ -3,12 +3,10 @@ import { ActionPayload } from '@popup/multichain/actions/interfaces';
 
 export interface EvmAppStatus {
   processingDecryptAccount: boolean;
-  priceLoaded: boolean;
   isLedgerSupported: boolean;
 }
 const INITIAL_STATE: EvmAppStatus = {
   processingDecryptAccount: false,
-  priceLoaded: false,
   isLedgerSupported: false,
 };
 

@@ -42,18 +42,12 @@ import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
-const getTotalBalanceInUsd = (
-  tokens: NativeAndErc20Token[],
-  prices: EvmPrices,
-) => {
+const getTotalBalanceInUsd = (tokens: NativeAndErc20Token[]) => {
   return tokens.reduce((a, b) => {
-    let price = { usd: 0 };
-    if (b.tokenInfo.coingeckoId && prices[b.tokenInfo.coingeckoId]) {
-      price = prices[b.tokenInfo.coingeckoId];
-    }
+    let price = b.tokenInfo.price ?? 0;
 
     const tokenValue =
-      price.usd *
+      price *
       Number(
         ethers.formatUnits(
           b.balance,
@@ -69,7 +63,6 @@ const getTotalBalanceInUsd = (
 const getTotalBalanceInMainToken = (
   tokens: NativeAndErc20Token[],
   chain: EvmChain,
-  prices: EvmPrices,
 ) => {
   const mainToken = tokens.find(
     (token) =>
@@ -77,17 +70,12 @@ const getTotalBalanceInMainToken = (
   );
 
   if (mainToken) {
-    const valueInUsd = getTotalBalanceInUsd(tokens, prices) || 0;
+    const valueInUsd = getTotalBalanceInUsd(tokens) || 0;
 
-    let price = { usd: 0 };
-    if (
-      mainToken.tokenInfo.coingeckoId &&
-      prices[mainToken.tokenInfo.coingeckoId]
-    ) {
-      price = prices[mainToken.tokenInfo.coingeckoId];
-    }
-    if (!price || price.usd === 0) return 0;
-    return valueInUsd / price.usd;
+    let price = mainToken?.tokenInfo.price ?? 0;
+
+    if (!price || price === 0) return 0;
+    return valueInUsd / price;
   } else return 0;
 };
 

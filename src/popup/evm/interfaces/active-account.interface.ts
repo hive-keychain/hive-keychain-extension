@@ -17,13 +17,15 @@ export interface EvmActiveAccount {
   nfts: {
     value: (EvmErc721Token | EvmErc1155Token)[];
     loading: boolean;
+    initialized: boolean;
   };
   history: {
     value: EvmUserHistory;
     loading: boolean;
+    initialized: boolean;
   };
   wallet: HDNodeWallet;
-  isInitialized: boolean;
+  isReady: boolean;
 }
 
 export interface NativeAndErc20Token {
