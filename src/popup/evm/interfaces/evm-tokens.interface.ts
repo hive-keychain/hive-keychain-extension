@@ -16,7 +16,7 @@ export interface EvmSmartContractInfoBase {
   backgroundColor: string;
   coingeckoId?: string;
   // links: { [name: string]: string[] | string };
-  price: number;
+  priceUsd: number;
 }
 
 export interface EvmSmartContractInfoNative extends EvmSmartContractInfoBase {

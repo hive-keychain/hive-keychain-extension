@@ -44,7 +44,8 @@ import Logger from 'src/utils/logger.utils';
 
 const getTotalBalanceInUsd = (tokens: NativeAndErc20Token[]) => {
   return tokens.reduce((a, b) => {
-    let price = b.tokenInfo.price ?? 0;
+    console.log(b, 'price');
+    let price = b.tokenInfo.priceUsd ?? 0;
 
     const tokenValue =
       price *
@@ -72,7 +73,7 @@ const getTotalBalanceInMainToken = (
   if (mainToken) {
     const valueInUsd = getTotalBalanceInUsd(tokens) || 0;
 
-    let price = mainToken?.tokenInfo.price ?? 0;
+    let price = mainToken?.tokenInfo.priceUsd ?? 0;
 
     if (!price || price === 0) return 0;
     return valueInUsd / price;
