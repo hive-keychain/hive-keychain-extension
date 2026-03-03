@@ -19,6 +19,12 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { HDNodeWallet } from 'ethers';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+const EMPTY_EVM_HISTORY: EvmUserHistory = {
+  events: [],
+  cursor: '',
+  fullyFetch: false,
+};
+
 // export const loadEvmActiveAccount2 =
 //   (chain: EvmChain, wallet: HDNodeWallet): AppThunk =>
 //   async (dispatch, getState) => {
@@ -200,6 +206,8 @@ export const loadEvmHistory = (): AppThunk => async (dispatch, getState) => {
     getState().evm.activeAccount.history.value ?? null,
   );
 
+  console.log(newHistory);
+
   dispatch({
     type: EvmActionType.SET_ACTIVE_ACCOUNT,
     payload: {
@@ -231,7 +239,7 @@ export const loadEvmActiveAccount =
           initialized: false,
         },
         history: {
-          value: {} as EvmUserHistory,
+          value: EMPTY_EVM_HISTORY,
           loading: true,
           initialized: false,
         },

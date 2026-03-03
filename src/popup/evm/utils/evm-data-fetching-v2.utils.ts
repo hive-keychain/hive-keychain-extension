@@ -96,6 +96,11 @@ type HistoryFlow =
       quantity: string;
     };
 
+export type LightNodeHistoryDetailItem = HistoryDetailItem;
+export type LightNodeHistoryFlow = HistoryFlow;
+export type LightNodeHistoryFlowWithMeta = HistoryFlowWithMeta;
+export type LightNodeHistoryItem = HistoryItem;
+
 // Done
 const getDiscoveredTokens = async (
   chainId: string | number,
@@ -139,7 +144,7 @@ const getHistory = async (
   chainId: string | number,
   address: string,
   query: string,
-): Promise<{ items: HistoryItem[]; cursor: number }> => {
+): Promise<{ items: HistoryItem[]; cursor: string | null }> => {
   return await KeychainApi.get(
     `evm/light-node/history/${chainId}/${encodeURIComponent(address)}${
       query && query.length > 0 ? `?${query}` : ''

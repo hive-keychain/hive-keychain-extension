@@ -5389,6 +5389,10 @@
     "message": "You created the $1 smart contract",
     "description": "Evm smart contract creation"
   },
+  "evm_history_smart_contract_creation_message_no_address": {
+    "message": "You created a smart contract",
+    "description": "Evm smart contract creation when created address is unknown"
+  },
   "evm_history_smart_contract_creation_message_pending": {
     "message": "Creating smart contract",
     "description": "Evm smart contract creation"
@@ -5472,6 +5476,34 @@
   "evm_history_operation_approve_out_erc721_pending": {
     "message": "Approving $1 to use $2#$3",
     "description": "Approve history item"
+  },
+  "evm_history_operation_approve_out_for_all": {
+    "message": "You approved $1 to manage all your $2 tokens",
+    "description": "Approve for all history item"
+  },
+  "evm_history_operation_swap": {
+    "message": "You swapped $1 for $2",
+    "description": "Swap history item"
+  },
+  "evm_history_operation_add_liquidity": {
+    "message": "You added liquidity ($1 for $2)",
+    "description": "Add liquidity history item"
+  },
+  "evm_history_operation_remove_liquidity": {
+    "message": "You removed liquidity ($1 for $2)",
+    "description": "Remove liquidity history item"
+  },
+  "evm_history_operation_wrap": {
+    "message": "You wrapped $1 into $2",
+    "description": "Wrap history item"
+  },
+  "evm_history_operation_unwrap": {
+    "message": "You unwrapped $1 into $2",
+    "description": "Unwrap history item"
+  },
+  "evm_history_operation_airdrop_receive": {
+    "message": "You received an airdrop: $1",
+    "description": "Airdrop history item"
   },
   "evm_history_operation_mintNFTs": {
     "message": "You minted $1#$2",

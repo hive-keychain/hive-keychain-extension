@@ -4,6 +4,12 @@ import { EvmUserHistory } from '@popup/evm/interfaces/evm-tokens-history.interfa
 import { ActionPayload } from '@popup/multichain/actions/interfaces';
 import { HDNodeWallet } from 'ethers';
 
+const EMPTY_EVM_HISTORY: EvmUserHistory = {
+  events: [],
+  cursor: null,
+  fullyFetch: false,
+};
+
 export const EvmActiveAccountReducer = (
   state: EvmActiveAccount = {
     address: '',
@@ -18,7 +24,7 @@ export const EvmActiveAccountReducer = (
       initialized: false,
     },
     history: {
-      value: {} as EvmUserHistory,
+      value: EMPTY_EVM_HISTORY,
       loading: true,
       initialized: false,
     },
