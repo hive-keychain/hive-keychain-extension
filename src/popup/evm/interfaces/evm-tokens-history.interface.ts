@@ -6,7 +6,7 @@ export interface EvmUsersHistory {
 }
 export interface EvmUserHistory {
   events: EvmUserHistoryItem[];
-  cursor: string | null;
+  nextCursor: string | null;
   fullyFetch: boolean;
 }
 

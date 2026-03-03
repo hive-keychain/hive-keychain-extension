@@ -21,7 +21,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const EMPTY_EVM_HISTORY: EvmUserHistory = {
   events: [],
-  cursor: '',
+  nextCursor: '',
   fullyFetch: false,
 };
 

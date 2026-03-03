@@ -98,7 +98,7 @@ const COMPLEX_OPS = new Set<KnownOpName>([
 
 const getEmptyHistory = (): EvmUserHistory => ({
   events: [],
-  cursor: null,
+  nextCursor: null,
   fullyFetch: false,
 });
 
@@ -608,8 +608,8 @@ const fetchHistory2 = async (
   }
 
   const params = new URLSearchParams();
-  if (!!previousHistory.cursor) {
-    params.set('cursor', previousHistory.cursor.toString());
+  if (!!previousHistory.nextCursor) {
+    params.set('cursor', previousHistory.nextCursor.toString());
   }
   params.set('limit', LIMIT.toString());
 
@@ -634,8 +634,8 @@ const fetchHistory2 = async (
 
   return {
     events: sortEvents(merged),
-    cursor: response.cursor,
-    fullyFetch: !response.cursor,
+    nextCursor: response.nextCursor,
+    fullyFetch: !response.nextCursor,
   } as EvmUserHistory;
 };
 

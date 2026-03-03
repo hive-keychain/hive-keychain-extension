@@ -144,7 +144,7 @@ const getHistory = async (
   chainId: string | number,
   address: string,
   query: string,
-): Promise<{ items: HistoryItem[]; cursor: string | null }> => {
+): Promise<{ items: HistoryItem[]; nextCursor: string | null }> => {
   return await KeychainApi.get(
     `evm/light-node/history/${chainId}/${encodeURIComponent(address)}${
       query && query.length > 0 ? `?${query}` : ''

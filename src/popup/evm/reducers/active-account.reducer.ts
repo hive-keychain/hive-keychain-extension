@@ -6,7 +6,7 @@ import { HDNodeWallet } from 'ethers';
 
 const EMPTY_EVM_HISTORY: EvmUserHistory = {
   events: [],
-  cursor: null,
+  nextCursor: null,
   fullyFetch: false,
 };
 
