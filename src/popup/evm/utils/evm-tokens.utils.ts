@@ -1,11 +1,6 @@
-import { AvalancheApi } from '@popup/evm/api/avalanche.api';
-import { BlockscoutApi } from '@popup/evm/api/blockscout.api';
-import { EtherscanApi } from '@popup/evm/api/etherscan.api';
 import {
   EvmErc1155Token,
-  EvmErc1155TokenCollectionItem,
   EvmErc721Token,
-  EvmErc721TokenCollectionItem,
   NativeAndErc20Token,
 } from '@popup/evm/interfaces/active-account.interface';
 import {
@@ -31,12 +26,9 @@ import {
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
-import {
-  BlockExplorerType,
-  EvmChain,
-} from '@popup/multichain/interfaces/chains.interface';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { ethers, HDNodeWallet } from 'ethers';
+import { ethers } from 'ethers';
 import { KeychainApi } from 'src/api/keychain';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -44,7 +36,6 @@ import Logger from 'src/utils/logger.utils';
 
 const getTotalBalanceInUsd = (tokens: NativeAndErc20Token[]) => {
   return tokens.reduce((a, b) => {
-    console.log(b, 'price');
     let price = b.tokenInfo.priceUsd ?? 0;
 
     const tokenValue =
@@ -195,308 +186,295 @@ const getTokenBalance = async (
   }
 };
 
-const getErc721Tokens = async (
-  walletAddress: string,
-  chain: EvmChain,
-  allDiscoveredTokens: any[],
-  tokensInfo: EvmSmartContractInfoErc721[],
-) => {
-  const LIMIT = 1000;
-  let finalTransactions: any[] = [];
-  let transactions: any[] = [];
-  const idsPerCollection: any = {};
+// const getErc721Tokens = async (
+//   walletAddress: string,
+//   chain: EvmChain,
+//   allDiscoveredTokens: any[],
+//   tokensInfo: EvmSmartContractInfoErc721[],
+// ) => {
+//   const LIMIT = 1000;
+//   let finalTransactions: any[] = [];
+//   let transactions: any[] = [];
+//   const idsPerCollection: any = {};
 
-  let erc721tokens: EvmErc721Token[] = [];
+//   let erc721tokens: EvmErc721Token[] = [];
 
-  switch (chain.blockExplorerApi?.type) {
-    case BlockExplorerType.BLOCKSCOUT: {
-      for (const token of tokensInfo) {
-        if (!idsPerCollection[token.contractAddress.toLowerCase()]) {
-          idsPerCollection[token.contractAddress.toLowerCase()] = [];
-        }
-      }
+//   switch (chain.blockExplorerApi?.type) {
+//     case BlockExplorerType.BLOCKSCOUT: {
+//       for (const token of tokensInfo) {
+//         if (!idsPerCollection[token.contractAddress.toLowerCase()]) {
+//           idsPerCollection[token.contractAddress.toLowerCase()] = [];
+//         }
+//       }
 
-      const nfts = await BlockscoutApi.getNftList(
-        chain,
-        walletAddress,
-        EVMSmartContractType.ERC721,
-      );
+//       const nfts = await BlockscoutApi.getNftList(
+//         chain,
+//         walletAddress,
+//         EVMSmartContractType.ERC721,
+//       );
 
-      for (const nftItem of nfts) {
-        const item = {
-          tokenInfo: tokensInfo.find(
-            (token) =>
-              token.contractAddress.toLowerCase() ===
-              nftItem.token.contractAddress.toLowerCase(),
-          )!,
-          collection: [],
-        } as EvmErc721Token;
-        for (const instance of nftItem.tokensInstances) {
-          if (!instance.metadata) {
-            item.collection.push(
-              await EvmNFTUtils.getMetadataFromTokenId(
-                EVMSmartContractType.ERC721,
-                instance.id,
-                new ethers.Contract(
-                  nftItem.token.contractAddress,
-                  ERC721Abi,
-                  await EthersUtils.getProvider(chain),
-                ),
-                chain,
-                nftItem.token.contractAddress,
-              ),
-            );
-          } else {
-            item.collection.push({
-              id: instance.id,
-              metadata: {
-                name: instance.metadata?.name,
-                description: instance.metadata?.description,
-                image: EvmNFTUtils.getImgFromMetadata(instance.metadata),
-                attributes: instance.metadata?.attributes,
-              },
-            });
-          }
-        }
-        erc721tokens.push(item);
-      }
+//       for (const nftItem of nfts) {
+//         const item = {
+//           tokenInfo: tokensInfo.find(
+//             (token) =>
+//               token.contractAddress.toLowerCase() ===
+//               nftItem.token.contractAddress.toLowerCase(),
+//           )!,
+//           collection: [],
+//         } as EvmErc721Token;
+//         for (const instance of nftItem.tokensInstances) {
+//           if (!instance.metadata) {
+//             item.collection.push(
+//               await EvmNFTUtils.getMetadataFromTokenId(
+//                 EVMSmartContractType.ERC721,
+//                 instance.id,
+//                 new ethers.Contract(
+//                   nftItem.token.contractAddress,
+//                   ERC721Abi,
+//                   await EthersUtils.getProvider(chain),
+//                 ),
+//                 chain,
+//                 nftItem.token.contractAddress,
+//               ),
+//             );
+//           } else {
+//             item.collection.push({
+//               id: instance.id,
+//               metadata: {
+//                 name: instance.metadata?.name,
+//                 description: instance.metadata?.description,
+//                 image: EvmNFTUtils.getImgFromMetadata(instance.metadata),
+//                 attributes: instance.metadata?.attributes,
+//               },
+//             });
+//           }
+//         }
+//         erc721tokens.push(item);
+//       }
 
-      return erc721tokens;
-    }
+//       return erc721tokens;
+//     }
 
-    case BlockExplorerType.ETHERSCAN: {
-      do {
-        transactions = await EtherscanApi.getNftTx(
-          walletAddress,
-          chain,
-          1,
-          LIMIT,
-        );
+//     case BlockExplorerType.ETHERSCAN: {
+//       do {
+//         transactions = await EtherscanApi.getNftTx(
+//           walletAddress,
+//           chain,
+//           1,
+//           LIMIT,
+//         );
 
-        finalTransactions = [...finalTransactions, ...transactions];
-      } while (transactions.length === LIMIT);
+//         finalTransactions = [...finalTransactions, ...transactions];
+//       } while (transactions.length === LIMIT);
 
-      for (const token of tokensInfo) {
-        if (!idsPerCollection[token.contractAddress.toLowerCase()]) {
-          idsPerCollection[token.contractAddress.toLowerCase()] = [];
-        }
-      }
+//       for (const token of tokensInfo) {
+//         if (!idsPerCollection[token.contractAddress.toLowerCase()]) {
+//           idsPerCollection[token.contractAddress.toLowerCase()] = [];
+//         }
+//       }
 
-      for (const tx of finalTransactions) {
-        if (
-          !tokensInfo
-            .map((token) => token.contractAddress.toLowerCase())
-            .includes(tx.contractAddress)
-        )
-          continue;
+//       for (const tx of finalTransactions) {
+//         if (
+//           !tokensInfo
+//             .map((token) => token.contractAddress.toLowerCase())
+//             .includes(tx.contractAddress)
+//         )
+//           continue;
 
-        if (tx.to.toLowerCase() === walletAddress.toLowerCase()) {
-          idsPerCollection[tx.contractAddress.toLowerCase()].push(tx.tokenID);
-        } else if (tx.from.toLowerCase() === walletAddress.toLowerCase()) {
-          idsPerCollection[tx.contractAddress.toLowerCase()] = idsPerCollection[
-            tx.contractAddress
-          ].filter((id: string) => id !== tx.tokenID);
-        }
-      }
+//         if (tx.to.toLowerCase() === walletAddress.toLowerCase()) {
+//           idsPerCollection[tx.contractAddress.toLowerCase()].push(tx.tokenID);
+//         } else if (tx.from.toLowerCase() === walletAddress.toLowerCase()) {
+//           idsPerCollection[tx.contractAddress.toLowerCase()] = idsPerCollection[
+//             tx.contractAddress
+//           ].filter((id: string) => id !== tx.tokenID);
+//         }
+//       }
 
-      break;
-    }
+//       break;
+//     }
 
-    case BlockExplorerType.AVALANCHE_SCAN: {
-      const result = await AvalancheApi.getErc721(walletAddress, chain);
-      for (const token of result) {
-        idsPerCollection[token.address.toLowerCase()] = [token.tokenId];
-      }
-      break;
-    }
-    default:
-      break;
-  }
+//     case BlockExplorerType.AVALANCHE_SCAN: {
+//       const result = await AvalancheApi.getErc721(walletAddress, chain);
+//       for (const token of result) {
+//         idsPerCollection[token.address.toLowerCase()] = [token.tokenId];
+//       }
+//       break;
+//     }
+//     default:
+//       break;
+//   }
 
-  for (const contractAddress of Object.keys(idsPerCollection)) {
-    const token = tokensInfo.find(
-      (token) =>
-        token.contractAddress.toLowerCase() === contractAddress.toLowerCase(),
-    );
-    const provider = await EthersUtils.getProvider(chain);
-    const contract = new ethers.Contract(
-      token!.contractAddress!,
-      ERC721Abi,
-      provider,
-    );
+//   for (const contractAddress of Object.keys(idsPerCollection)) {
+//     const token = tokensInfo.find(
+//       (token) =>
+//         token.contractAddress.toLowerCase() === contractAddress.toLowerCase(),
+//     );
+//     const provider = await EthersUtils.getProvider(chain);
+//     const contract = new ethers.Contract(
+//       token!.contractAddress!,
+//       ERC721Abi,
+//       provider,
+//     );
 
-    const collectionPromises: Promise<EvmErc721TokenCollectionItem>[] = [];
+//     const collectionPromises: Promise<EvmErc721TokenCollectionItem>[] = [];
 
-    for (const tokenId of idsPerCollection[contractAddress]) {
-      collectionPromises.push(
-        EvmNFTUtils.getMetadataFromTokenId(
-          EVMSmartContractType.ERC721,
-          tokenId,
-          contract,
-          chain,
-          token!.contractAddress,
-        ),
-      );
-    }
+//     for (const tokenId of idsPerCollection[contractAddress]) {
+//       collectionPromises.push(
+//         EvmNFTUtils.getMetadataFromTokenId(
+//           EVMSmartContractType.ERC721,
+//           tokenId,
+//           contract,
+//           chain,
+//           token!.contractAddress,
+//         ),
+//       );
+//     }
 
-    erc721tokens.push({
-      tokenInfo: token as EvmSmartContractInfoErc721,
-      collection: await Promise.all(collectionPromises),
-    });
-  }
+//     erc721tokens.push({
+//       tokenInfo: token as EvmSmartContractInfoErc721,
+//       collection: await Promise.all(collectionPromises),
+//     });
+//   }
 
-  return erc721tokens;
-};
-const getErc1155Tokens = async (
-  walletAddress: string,
-  allDiscoveredTokens: any[],
-  tokenInfos: EvmSmartContractInfoErc1155[],
-  chain: EvmChain,
-): Promise<EvmErc1155Token[]> => {
-  const erc1155Tokens: EvmErc1155Token[] = [];
+//   return erc721tokens;
+// };
+// const getErc1155Tokens = async (
+//   walletAddress: string,
+//   allDiscoveredTokens: any[],
+//   tokenInfos: EvmSmartContractInfoErc1155[],
+//   chain: EvmChain,
+// ): Promise<EvmErc1155Token[]> => {
+//   const erc1155Tokens: EvmErc1155Token[] = [];
 
-  switch (chain.blockExplorerApi?.type) {
-    case BlockExplorerType.BLOCKSCOUT: {
-      const nfts = await BlockscoutApi.getNftList(
-        chain,
-        walletAddress,
-        EVMSmartContractType.ERC1155,
-      );
-      for (const nftItem of nfts) {
-        const item = {
-          tokenInfo: tokenInfos.find(
-            (token) =>
-              token.contractAddress.toLowerCase() ===
-              nftItem.token.contractAddress.toLowerCase(),
-          )!,
-          collection: [],
-        } as EvmErc1155Token;
+//   switch (chain.blockExplorerApi?.type) {
+//     case BlockExplorerType.BLOCKSCOUT: {
+//       const nfts = await BlockscoutApi.getNftList(
+//         chain,
+//         walletAddress,
+//         EVMSmartContractType.ERC1155,
+//       );
+//       for (const nftItem of nfts) {
+//         const item = {
+//           tokenInfo: tokenInfos.find(
+//             (token) =>
+//               token.contractAddress.toLowerCase() ===
+//               nftItem.token.contractAddress.toLowerCase(),
+//           )!,
+//           collection: [],
+//         } as EvmErc1155Token;
 
-        for (const instance of nftItem.tokensInstances) {
-          if (!instance.metadata) {
-            item.collection.push(
-              (await EvmNFTUtils.getMetadataFromTokenId(
-                EVMSmartContractType.ERC1155,
-                instance.id,
-                new ethers.Contract(
-                  nftItem.token.contractAddress,
-                  ERC1155Abi,
-                  await EthersUtils.getProvider(chain),
-                ),
-                chain,
-                nftItem.token.contractAddress,
-                Number(instance.value),
-              )) as EvmErc1155TokenCollectionItem,
-            );
-          } else {
-            item.collection.push({
-              id: instance.id,
-              metadata: {
-                name: instance.metadata?.name,
-                description: instance.metadata?.description,
-                image: EvmNFTUtils.getImgFromMetadata(instance.metadata),
-                attributes: instance.metadata?.attributes,
-              },
-              balance: Number(instance.value),
-            });
-          }
-        }
-        erc1155Tokens.push(item);
-      }
-      return erc1155Tokens;
-    }
-    case BlockExplorerType.ETHERSCAN: {
-      for (const tokenInfo of tokenInfos) {
-        const tokens = allDiscoveredTokens.filter(
-          (token) => token.contractAddress === tokenInfo.contractAddress,
-        );
-        const erc1155Token: EvmErc1155Token = {
-          tokenInfo: tokenInfo,
-          collection: [],
-        };
-        for (const token of tokens) {
-          const provider = await EthersUtils.getProvider(chain);
-          const contract = new ethers.Contract(
-            tokenInfo.contractAddress,
-            ERC1155Abi,
-            provider,
-          );
+//         for (const instance of nftItem.tokensInstances) {
+//           if (!instance.metadata) {
+//             item.collection.push(
+//               (await EvmNFTUtils.getMetadataFromTokenId(
+//                 EVMSmartContractType.ERC1155,
+//                 instance.id,
+//                 new ethers.Contract(
+//                   nftItem.token.contractAddress,
+//                   ERC1155Abi,
+//                   await EthersUtils.getProvider(chain),
+//                 ),
+//                 chain,
+//                 nftItem.token.contractAddress,
+//                 Number(instance.value),
+//               )) as EvmErc1155TokenCollectionItem,
+//             );
+//           } else {
+//             item.collection.push({
+//               id: instance.id,
+//               metadata: {
+//                 name: instance.metadata?.name,
+//                 description: instance.metadata?.description,
+//                 image: EvmNFTUtils.getImgFromMetadata(instance.metadata),
+//                 attributes: instance.metadata?.attributes,
+//               },
+//               balance: Number(instance.value),
+//             });
+//           }
+//         }
+//         erc1155Tokens.push(item);
+//       }
+//       return erc1155Tokens;
+//     }
+//     case BlockExplorerType.ETHERSCAN: {
+//       for (const tokenInfo of tokenInfos) {
+//         const tokens = allDiscoveredTokens.filter(
+//           (token) => token.contractAddress === tokenInfo.contractAddress,
+//         );
+//         const erc1155Token: EvmErc1155Token = {
+//           tokenInfo: tokenInfo,
+//           collection: [],
+//         };
+//         for (const token of tokens) {
+//           const provider = await EthersUtils.getProvider(chain);
+//           const contract = new ethers.Contract(
+//             tokenInfo.contractAddress,
+//             ERC1155Abi,
+//             provider,
+//           );
 
-          erc1155Token.collection.push(
-            (await EvmNFTUtils.getMetadataFromTokenId(
-              EVMSmartContractType.ERC1155,
-              token.id,
-              contract,
-              chain,
-              tokenInfo.contractAddress,
-              Number(token.balance),
-            )) as EvmErc1155TokenCollectionItem,
-          );
-        }
-        erc1155Tokens.push(erc1155Token);
-      }
-    }
-    default:
-      break;
-  }
+//           erc1155Token.collection.push(
+//             (await EvmNFTUtils.getMetadataFromTokenId(
+//               EVMSmartContractType.ERC1155,
+//               token.id,
+//               contract,
+//               chain,
+//               tokenInfo.contractAddress,
+//               Number(token.balance),
+//             )) as EvmErc1155TokenCollectionItem,
+//           );
+//         }
+//         erc1155Tokens.push(erc1155Token);
+//       }
+//     }
+//     default:
+//       break;
+//   }
 
-  return erc1155Tokens;
-};
+//   return erc1155Tokens;
+// };
 
-const getNfts = async (
-  wallet: HDNodeWallet,
-  chain: EvmChain,
-  allTokensInfo: EvmSmartContractInfo[],
-  allDiscoveredTokens: any[],
-) => {
-  const walletAddress =
-    process.env.FORCED_EVM_WALLET_ADDRESS?.toLowerCase() ??
-    wallet.address.toLowerCase();
-  if (chain.manualDiscoverAvailable) {
-    const savedManualDiscoveredNfts =
-      await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.EVM_MANUAL_DISCOVERED_NFTS,
-      );
-    if (
-      savedManualDiscoveredNfts &&
-      savedManualDiscoveredNfts[chain.chainId] &&
-      savedManualDiscoveredNfts[chain.chainId][walletAddress]
-    ) {
-      return [savedManualDiscoveredNfts[chain.chainId][walletAddress], []];
-    } else return [[], []];
-  }
-  return Promise.all([
-    getErc721Tokens(
-      walletAddress,
-      chain,
-      allDiscoveredTokens,
-      allTokensInfo.filter(
-        (token) => token.type === EVMSmartContractType.ERC721,
-      ) as EvmSmartContractInfoErc721[],
-    ),
-    getErc1155Tokens(
-      walletAddress,
-      allDiscoveredTokens,
-      allTokensInfo.filter(
-        (token) => token.type === EVMSmartContractType.ERC1155,
-      ) as EvmSmartContractInfoErc1155[],
-      chain,
-    ),
-  ]);
-};
-
-const discoverTokens = async (walletAddress: string, chain: EvmChain) => {
-  switch (chain.blockExplorerApi?.type) {
-    case BlockExplorerType.BLOCKSCOUT:
-      return await BlockscoutApi.discoverTokens(walletAddress, chain);
-    case BlockExplorerType.AVALANCHE_SCAN:
-      return await AvalancheApi.discoverTokens(walletAddress, chain);
-    case BlockExplorerType.ETHERSCAN:
-      return await EtherscanApi.discoverTokens(walletAddress, chain);
-    default:
-      return [];
-  }
-};
+// const getNfts = async (
+//   wallet: HDNodeWallet,
+//   chain: EvmChain,
+//   allTokensInfo: EvmSmartContractInfo[],
+//   allDiscoveredTokens: any[],
+// ) => {
+//   const walletAddress =
+//     process.env.FORCED_EVM_WALLET_ADDRESS?.toLowerCase() ??
+//     wallet.address.toLowerCase();
+//   if (chain.manualDiscoverAvailable) {
+//     const savedManualDiscoveredNfts =
+//       await LocalStorageUtils.getValueFromLocalStorage(
+//         LocalStorageKeyEnum.EVM_MANUAL_DISCOVERED_NFTS,
+//       );
+//     if (
+//       savedManualDiscoveredNfts &&
+//       savedManualDiscoveredNfts[chain.chainId] &&
+//       savedManualDiscoveredNfts[chain.chainId][walletAddress]
+//     ) {
+//       return [savedManualDiscoveredNfts[chain.chainId][walletAddress], []];
+//     } else return [[], []];
+//   }
+//   return Promise.all([
+//     getErc721Tokens(
+//       walletAddress,
+//       chain,
+//       allDiscoveredTokens,
+//       allTokensInfo.filter(
+//         (token) => token.type === EVMSmartContractType.ERC721,
+//       ) as EvmSmartContractInfoErc721[],
+//     ),
+//     getErc1155Tokens(
+//       walletAddress,
+//       allDiscoveredTokens,
+//       allTokensInfo.filter(
+//         (token) => token.type === EVMSmartContractType.ERC1155,
+//       ) as EvmSmartContractInfoErc1155[],
+//       chain,
+//     ),
+//   ]);
+// };
 
 const manualDiscoverErc20Tokens = async (
   walletAddress: string,
@@ -969,18 +947,12 @@ export const EvmTokensUtils = {
   displayValue,
   getTokenInfo,
   getTokenType,
-  discoverTokens,
   getTokensFullDetails,
-  getErc721Tokens,
-  getErc1155Tokens,
   filterTokensBasedOnSettings,
-  getMetadataFromStorage,
-  getMetadataFromBackend,
   getPopularTokensForChain,
   manualDiscoverErc20Tokens,
   manualDiscoverNfts,
   addCustomToken,
   getCustomTokens,
-  getNfts,
   getAllowance,
 };

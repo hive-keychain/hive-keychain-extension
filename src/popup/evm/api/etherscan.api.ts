@@ -71,11 +71,11 @@ const getPendingTransactions = async (chain: EvmChain, address: string) => {
 };
 
 export const EtherscanApi = {
-  getTokenTx,
-  getHistory,
-  getInternalsTx,
-  getAbi,
-  discoverTokens,
-  getNftTx,
-  getPendingTransactions,
+  // getTokenTx,
+  // getHistory,
+  // getInternalsTx,
+  // getAbi,
+  // discoverTokens,
+  // getNftTx,
+  // getPendingTransactions,
 };

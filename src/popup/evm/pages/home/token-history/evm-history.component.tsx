@@ -42,10 +42,10 @@ export const EvmHistory = ({
   const [displayScrollToTop, setDisplayedScrollToTop] = useState(false);
 
   useEffect(() => {
-    if ((chain.manualLoadHistory && !history) || (history && !history.events)) {
+    if (history && !activeAccount.history.initialized && !history.fullyFetch) {
       loadEvmHistory();
     }
-  }, []);
+  }, [history]);
 
   const goToDetailsPage = async (
     transactionHash: string,

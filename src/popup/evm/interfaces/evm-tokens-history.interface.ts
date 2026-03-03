@@ -6,7 +6,7 @@ export interface EvmUsersHistory {
 }
 export interface EvmUserHistory {
   events: EvmUserHistoryItem[];
-  lastPage: number;
+  cursor: number;
   fullyFetch: boolean;
 }
 

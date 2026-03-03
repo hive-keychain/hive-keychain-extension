@@ -15,7 +15,6 @@ import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmTokensHistoryParserUtils } from '@popup/evm/utils/evm-tokens-history-parser.utils';
-import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import {
   BlockExplorerType,
   EvmChain,
@@ -279,12 +278,10 @@ const getPendingTransactionsDetails = async (
   }
 
   if (pendingTx) {
-    const tokensMetadata = await EvmTokensUtils.getMetadataFromStorage(chain);
     const item = await EvmTokensHistoryParserUtils.parseEvent(
       pendingTx,
       chain,
       walletAddress.toLowerCase(),
-      tokensMetadata,
       undefined,
       true,
     );

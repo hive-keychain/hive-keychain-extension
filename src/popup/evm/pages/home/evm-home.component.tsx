@@ -25,7 +25,6 @@ import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
-import { EvmTokensHistoryParserUtils } from '@popup/evm/utils/evm-tokens-history-parser.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component';
@@ -196,33 +195,6 @@ const Home = ({
     const pendingTransactionsInfo =
       await EvmTransactionsUtils.hasPendingTransaction(wallet, chain);
     setPendingTransactionsInfo(pendingTransactionsInfo);
-  };
-
-  const getPendingTransactions = async () => {
-    const pendingTransactions =
-      await EvmTransactionsUtils.getPendingTransactionsForWallet(
-        activeAccount.address,
-        chain.chainId,
-      );
-
-    const pendingTxItems = [];
-    const tokensMetadata = await EvmTokensUtils.getMetadataFromStorage(chain);
-    for (const pendingTx of pendingTransactions) {
-      const item = await EvmTokensHistoryParserUtils.parseEvent(
-        {
-          ...pendingTx.txResponseParams,
-          input: pendingTx.txResponseParams.data,
-        },
-        chain,
-        pendingTx.walletAddress.toLowerCase(),
-        tokensMetadata,
-      );
-      if (item) {
-        item.isPending = true;
-        pendingTxItems.push(item);
-      }
-    }
-    setPendingTransactionsItems(pendingTxItems);
   };
 
   //TODO : move survey and whatsnew logic in a hook since its called on both evm and hive

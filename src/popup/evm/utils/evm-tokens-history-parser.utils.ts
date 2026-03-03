@@ -19,6 +19,7 @@ import {
   EvmTransactionDecodedData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
+import { EvmDataFetchingV2Utils } from '@popup/evm/utils/evm-data-fetching-v2.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import {
@@ -33,10 +34,11 @@ const parseEvent = async (
   event: any,
   chain: EvmChain,
   walletAddress: string,
-  allTokensMetadata: EvmSmartContractInfo[],
   evmSettings?: EvmSettings,
   isPending?: boolean,
 ) => {
+  const mainTokenMetadata = {} as EvmSmartContractInfo;
+
   let historyItem = { ...getCommonHistoryItem(event) } as EvmUserHistoryItem;
 
   // parse event
@@ -97,8 +99,8 @@ const parseEvent = async (
                     isPending ? '_pending' : ''
                   }`
                 : event.from === ethers.ZeroAddress
-                ? 'evm_history_operation_transfer_in_no_sender'
-                : 'popup_html_evm_history_transfer_in',
+                  ? 'evm_history_operation_transfer_in_no_sender'
+                  : 'popup_html_evm_history_transfer_in',
               [
                 amountS,
                 event.token!.symbol,
@@ -121,8 +123,8 @@ const parseEvent = async (
                     isPending ? '_pending' : ''
                   }`
                 : event.from === ethers.ZeroAddress
-                ? 'evm_history_operation_safe_transfer_from_erc721_in_no_sender'
-                : 'evm_history_operation_safe_transfer_from_erc721_in',
+                  ? 'evm_history_operation_safe_transfer_from_erc721_in_no_sender'
+                  : 'evm_history_operation_safe_transfer_from_erc721_in',
               [
                 event.token!.symbol,
                 event.token!.tokenId,
@@ -145,8 +147,8 @@ const parseEvent = async (
                     isPending ? '_pending' : ''
                   }`
                 : event.from === ethers.ZeroAddress
-                ? 'evm_history_operation_safe_transfer_from_erc1155_in_no_sender'
-                : 'evm_history_operation_safe_transfer_from_erc1155_in',
+                  ? 'evm_history_operation_safe_transfer_from_erc1155_in_no_sender'
+                  : 'evm_history_operation_safe_transfer_from_erc1155_in',
               [
                 event.value,
                 event.token!.symbol,
@@ -170,14 +172,7 @@ const parseEvent = async (
             ).toString();
             const amountS = FormatUtils.withCommas(amount, 18, true);
 
-            const mainToken = allTokensMetadata.find(
-              (t) => t.type == EVMSmartContractType.NATIVE,
-            );
-            const token = allTokensMetadata.find(
-              (t) =>
-                t.type !== EVMSmartContractType.NATIVE &&
-                t.contractAddress.toLowerCase() === event.to.toLowerCase(),
-            );
+            const token = {} as EvmSmartContractInfo;
 
             const details: EvmUserHistoryItemDetail[] = [];
             details.push({
@@ -192,18 +187,22 @@ const parseEvent = async (
             });
             details.push({
               label: 'popup_html_transfer_amount',
-              value: `${amountS} ${mainToken!.symbol.toString()}`,
+              value: `${amountS} ${mainTokenMetadata!.symbol.toString()}`,
               type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
             });
             historyItem.detailFields = details;
             historyItem.pageTitle = 'evm_pay_to_smart_contract';
-            historyItem.tokenInfo = mainToken;
+            historyItem.tokenInfo = mainTokenMetadata;
 
             historyItem.label = chrome.i18n.getMessage(
               `popup_html_evm_history_transfer_out${
                 isPending ? '_pending' : ''
               }`,
-              [amountS, mainToken!.symbol, token ? token.name : event.to],
+              [
+                amountS,
+                mainTokenMetadata!.symbol,
+                token ? token.name : event.to,
+              ],
             );
             break;
           }
@@ -212,7 +211,7 @@ const parseEvent = async (
               event,
               chain,
               walletAddress,
-              allTokensMetadata,
+              mainTokenMetadata,
               historyItem,
               isPending,
             );
@@ -547,6 +546,10 @@ const parseEvent = async (
         let decodedData;
         // Smart contract (parse transaction)
         try {
+          const tokenMetadata = await EvmDataFetchingV2Utils.getMetadata(
+            chain.chainId,
+            event.to.toLowerCase(),
+          );
           historyItem = {
             ...historyItem,
             type: EvmUserHistoryItemType.SMART_CONTRACT,
@@ -563,7 +566,7 @@ const parseEvent = async (
             event.from.toLowerCase(),
             walletAddress.toLowerCase(),
             decodedData,
-            allTokensMetadata,
+            tokenMetadata,
             event,
             evmSettings,
             isPending,
@@ -599,7 +602,7 @@ const parseEvent = async (
           event,
           chain,
           walletAddress,
-          allTokensMetadata,
+          mainTokenMetadata,
           historyItem,
           isPending,
         );
@@ -628,13 +631,10 @@ const getNativeTransferData = async (
   event: any,
   chain: EvmChain,
   walletAddress: string,
-  allTokensMetadata: EvmSmartContractInfo[],
+  mainTokenMetadata: EvmSmartContractInfo,
   historyItem: EvmUserHistoryItem,
   isPending?: boolean,
 ) => {
-  const mainToken = allTokensMetadata.find(
-    (t) => t.type === EVMSmartContractType.NATIVE,
-  );
   // native event
   const amount = EvmFormatUtils.etherToWei(Number(event.value)).toString();
   const amountS = FormatUtils.withCommas(amount, 18, true);
@@ -669,7 +669,7 @@ const getNativeTransferData = async (
   });
   details.push({
     label: 'popup_html_transfer_amount',
-    value: `${amountS} ${mainToken!.symbol.toString()}`,
+    value: `${amountS} ${mainTokenMetadata!.symbol.toString()}`,
     type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
   });
 
@@ -689,13 +689,13 @@ const getNativeTransferData = async (
         : 'popup_html_evm_history_transfer_in',
       [
         amountS,
-        mainToken!.symbol,
+        mainTokenMetadata!.symbol,
         addressDetails.label ?? addressDetails.formattedAddress,
       ],
     ),
     detailFields: details,
     pageTitle: 'popup_html_transfer_funds',
-    tokenInfo: mainToken,
+    tokenInfo: mainTokenMetadata,
   } as EvmTokenTransferInHistoryItem | EvmTokenTransferOutHistoryItem;
   return historyItem;
 };
@@ -706,7 +706,7 @@ const getSpecificData = async (
   broadcaster: string,
   walletAddress: string,
   decodedData: EvmTransactionDecodedData | undefined,
-  metadata: EvmSmartContractInfo[],
+  tokenMetadata: EvmSmartContractInfo,
   event: any,
   evmSettings?: EvmSettings,
   isPending?: boolean,
@@ -725,11 +725,6 @@ const getSpecificData = async (
     pageTitle: defaultLabel,
     detailFields: details,
   };
-  const tokenMetadata = metadata.find(
-    (md) =>
-      md.type !== EVMSmartContractType.NATIVE &&
-      md.contractAddress.toLowerCase() === contractAddress.toLowerCase(),
-  );
 
   let name;
   let symbol;
@@ -954,9 +949,9 @@ const getSpecificData = async (
               amount,
               symbol,
               isTransferIn
-                ? broadcasterDetails.label ??
-                  broadcasterDetails.formattedAddress
-                : toDetails.label ?? toDetails.formattedAddress,
+                ? (broadcasterDetails.label ??
+                  broadcasterDetails.formattedAddress)
+                : (toDetails.label ?? toDetails.formattedAddress),
             ],
           ),
           pageTitle: 'evm_transfer',
@@ -1007,8 +1002,8 @@ const getSpecificData = async (
               amount,
               symbol,
               isTransferIn
-                ? fromDetails.label ?? fromDetails.formattedAddress
-                : toDetails.label ?? toDetails.formattedAddress,
+                ? (fromDetails.label ?? fromDetails.formattedAddress)
+                : (toDetails.label ?? toDetails.formattedAddress),
             ],
           ),
           pageTitle: 'evm_transfer',

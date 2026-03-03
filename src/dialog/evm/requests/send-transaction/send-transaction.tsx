@@ -3,7 +3,6 @@ import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { AvalancheApi } from '@popup/evm/api/avalanche.api';
 import { BlockscoutApi } from '@popup/evm/api/blockscout.api';
-import { EtherscanApi } from '@popup/evm/api/etherscan.api';
 import {
   EvmSmartContractInfo,
   EvmSmartContractInfoErc20,
@@ -19,6 +18,7 @@ import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-log
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
 import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmDataFetchingV2Utils } from '@popup/evm/utils/evm-data-fetching-v2.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmPricesUtils } from '@popup/evm/utils/evm-prices.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
@@ -188,8 +188,8 @@ export const SendTransaction = (props: Props) => {
             break;
           }
           case BlockExplorerType.BLOCKSCOUT:
-            abi = await EtherscanApi.getAbi(
-              chainTmp! as EvmChain,
+            abi = await EvmDataFetchingV2Utils.getAbi(
+              chainTmp.chainId,
               proxy ?? params.to,
             );
             break;
