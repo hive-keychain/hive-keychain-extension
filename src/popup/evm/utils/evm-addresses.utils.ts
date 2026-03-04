@@ -449,10 +449,28 @@ const getWhiteListAutocomplete = async (
     values: [],
   };
 
-  for (const wallet of wallets.filter(
+  const filteredWallets = wallets.filter(
     (w) => !localAddresses.includes(w.address.toLowerCase()),
-  )) {
-    console.log(wallet);
+  );
+  const filteredLocalAccounts = localAccounts.filter(
+    (la) => walletAddress.toLowerCase() !== la.wallet.address.toLowerCase(),
+  );
+
+  // Fetch address details in parallel instead of sequentially
+  const [walletDetails, localAccountDetails] = await Promise.all([
+    Promise.all(
+      filteredWallets.map((w) => getAddressDetails(w.address, chain.chainId)),
+    ),
+    Promise.all(
+      filteredLocalAccounts.map((la) =>
+        getAddressDetails(la.wallet.address, chain.chainId),
+      ),
+    ),
+  ]);
+
+  for (let i = 0; i < filteredWallets.length; i++) {
+    const wallet = filteredWallets[i];
+    const details = walletDetails[i];
     walletCategory.values.push({
       value: wallet.address,
       label:
@@ -464,23 +482,22 @@ const getWhiteListAutocomplete = async (
           ? EvmFormatUtils.formatAddress(wallet.address)
           : '',
       img:
-        (await getAddressDetails(wallet.address, chain.chainId)).avatar ??
+        details.avatar ??
         `data:image/svg+xml;utf8,${encodeURIComponent(
           getIdenticonFromAddress(wallet.address).svg,
         )}`,
     } as AutoCompleteValue);
   }
 
-  for (const localAccount of localAccounts.filter(
-    (la) => walletAddress.toLowerCase() !== la.wallet.address.toLowerCase(),
-  )) {
+  for (let i = 0; i < filteredLocalAccounts.length; i++) {
+    const localAccount = filteredLocalAccounts[i];
+    const details = localAccountDetails[i];
     localAccountCategory.values.push({
       value: localAccount.wallet.address,
       label: EvmAccountUtils.getAccountFullname(localAccount),
       subLabel: EvmFormatUtils.formatAddress(localAccount.wallet.address),
       img:
-        (await getAddressDetails(localAccount.wallet.address, chain.chainId))
-          .avatar ??
+        details.avatar ??
         `data:image/svg+xml;utf8,${encodeURIComponent(
           getIdenticonFromAddress(localAccount.wallet.address).svg,
         )}`,
