@@ -184,7 +184,7 @@ const addSeedAndAccounts = async (
   };
   const allAccounts = [...previousAccounts, newAccounts];
   encryptAccountsInLocalStorage(mk, allAccounts);
-  return allAccounts;
+  return newAccounts.accounts;
 };
 
 const updateSeedNickname = async (

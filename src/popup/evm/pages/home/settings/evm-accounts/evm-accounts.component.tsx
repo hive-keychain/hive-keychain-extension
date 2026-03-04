@@ -7,10 +7,12 @@ import {
   EvmEditAccountPopup,
 } from '@popup/evm/pages/home/settings/evm-accounts/evm-edit-account-popup/evm-edit-account-popup.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -27,6 +29,7 @@ import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-displa
 const EvmAccounts = ({
   accounts,
   mk,
+  chain,
   setTitleContainerProperties,
   setInfoMessage,
   navigateTo,
@@ -102,14 +105,24 @@ const EvmAccounts = ({
   };
 
   const handleConfirmAddAddress = async (addressNickname: string) => {
-    await EvmWalletUtils.addAddressToSeed(
-      selectedSeed?.value,
-      mk,
-      addressNickname,
+    // await EvmWalletUtils.addAddressToSeed(
+    //   selectedSeed?.value,
+    //   mk,
+    //   addressNickname,
+    // );
+    const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+    const account = accounts.find(
+      (account) => account.seedId === selectedSeed!.value,
     );
-    setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
-
+    setEvmAccounts(accounts);
     setEditParams(undefined);
+    if (!account) return;
+
+    await EvmLightNodeUtils.registerAddress(
+      chain.chainId,
+      account.wallet.address,
+      false,
+    );
   };
 
   const handleCopySeedClick = () => {
@@ -255,6 +268,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     accounts: state.evm.accounts,
     mk: state.mk,
+    chain: state.chain as EvmChain,
   };
 };
 const connector = connect(mapStateToProps, {

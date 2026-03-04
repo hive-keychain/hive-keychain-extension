@@ -1,6 +1,7 @@
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { EvmEventName } from '@interfaces/evm-provider.interface';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { resetChain, setChain } from '@popup/multichain/actions/chain.actions';
 import { Chain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
@@ -50,7 +51,12 @@ const ChainDropdown = ({
     resetChain();
   };
 
-  const selectChain = (chain: Chain) => {
+  const selectChain = async (chain: Chain) => {
+    await EvmLightNodeUtils.registerAddress(
+      chain.chainId,
+      activeAccount.address,
+      false,
+    );
     CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.SEND_EVM_EVENT,
       value: { eventType: EvmEventName.CHAIN_CHANGED, args: chain.chainId },

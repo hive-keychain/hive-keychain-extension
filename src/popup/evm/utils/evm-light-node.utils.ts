@@ -1,9 +1,12 @@
 import { KeychainApi } from '@api/keychain';
+import { EvmLightNodeRegisteredAddresses } from '@popup/evm/interfaces/evm-light-node.interface';
 import {
   EvmSmartContractInfo,
   EvmSmartContractInfoErc1155,
   EvmSmartContractInfoErc721,
 } from '@popup/evm/interfaces/evm-tokens.interface';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 type HistoryDetailItem = {
   txId: string;
@@ -105,16 +108,10 @@ export type LightNodeHistoryItem = HistoryItem;
 const getDiscoveredTokens = async (
   chainId: string | number,
   address: string,
-  isNew?: boolean,
 ): Promise<EvmSmartContractInfo[]> => {
-  const suffix = isNew === undefined ? '' : `/${isNew}`;
   const tokens: EvmSmartContractInfo[] = await KeychainApi.get(
-    `evm/light-node/discovery/tokens/${chainId}/${encodeURIComponent(
-      address,
-    )}${suffix}`,
+    `evm/light-node/discovery/tokens/${chainId}/${encodeURIComponent(address)}`,
   );
-
-  console.log('response', tokens);
 
   return tokens;
 };
@@ -127,7 +124,6 @@ const getDiscoveredNfts = async (
     await KeychainApi.get(
       `evm/light-node/discovery/nfts/${chainId}/${encodeURIComponent(address)}`,
     );
-  console.log('response', nfts);
   return nfts;
 };
 
@@ -199,7 +195,33 @@ const getMetadata = async (
   return {} as EvmSmartContractInfo;
 };
 
-export const EvmDataFetchingV2Utils = {
+const registerAddress = async (
+  chainId: string,
+  address: string,
+  newAddress: boolean,
+): Promise<void> => {
+  let registeredAddresses: EvmLightNodeRegisteredAddresses =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_LIGHT_NODE_REGISTERED_ADDRESSES,
+    );
+  if (!registeredAddresses) registeredAddresses = {};
+  if (!registeredAddresses[chainId]) registeredAddresses[chainId] = [];
+  if (registeredAddresses[chainId].includes(address)) {
+    return;
+  }
+  registeredAddresses[chainId].push(address);
+
+  await KeychainApi.get(
+    `evm/light-node/register-address/${chainId}/${encodeURIComponent(address)}/${newAddress}`,
+  );
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_LIGHT_NODE_REGISTERED_ADDRESSES,
+    registeredAddresses,
+  );
+  return;
+};
+
+export const EvmLightNodeUtils = {
   getDiscoveredTokens,
   getDiscoveredNfts,
   getNftDetail,
@@ -210,4 +232,5 @@ export const EvmDataFetchingV2Utils = {
   getPrice,
   getAbi,
   getMetadata,
+  registerAddress,
 };

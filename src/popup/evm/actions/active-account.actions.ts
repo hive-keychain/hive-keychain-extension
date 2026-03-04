@@ -10,7 +10,7 @@ import {
   EvmSmartContractInfo,
   EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
-import { EvmDataFetchingV2Utils } from '@popup/evm/utils/evm-data-fetching-v2.utils';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { AppThunk } from '@popup/multichain/actions/interfaces';
@@ -249,7 +249,7 @@ export const loadEvmActiveAccount =
     });
 
     const erc20Tokens: EvmSmartContractInfo[] =
-      await EvmDataFetchingV2Utils.getDiscoveredTokens(
+      await EvmLightNodeUtils.getDiscoveredTokens(
         chain.chainId,
         process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
       );
@@ -288,7 +288,7 @@ export const loadEvmActiveAccountNfts =
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: { nfts: { value: [], loading: true, initialized: false } },
     });
-    const nfts = await EvmDataFetchingV2Utils.getDiscoveredNfts(
+    const nfts = await EvmLightNodeUtils.getDiscoveredNfts(
       chain.chainId,
       process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
     );

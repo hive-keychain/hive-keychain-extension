@@ -6,10 +6,12 @@ import {
   WalletWithBalance,
 } from '@popup/evm/interfaces/wallet.interface';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { HDNodeWallet } from 'ethers';
@@ -71,8 +73,16 @@ const ImportWalletConfirmation = ({
         mk,
         nickname,
       );
+
       await ChainUtils.addChainToSetupChains(chain);
       const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+      for (const acc of accounts) {
+        await EvmLightNodeUtils.registerAddress(
+          (chain as EvmChain).chainId,
+          acc.wallet.address,
+          false,
+        );
+      }
       setEvmAccounts(accounts);
       await loadEvmActiveAccount(chain, accounts[0].wallet);
       navigateTo(Screen.HOME_PAGE, true);

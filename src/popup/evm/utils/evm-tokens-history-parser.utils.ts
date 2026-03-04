@@ -19,8 +19,8 @@ import {
   EvmTransactionDecodedData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
-import { EvmDataFetchingV2Utils } from '@popup/evm/utils/evm-data-fetching-v2.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import {
   BlockExplorerType,
@@ -546,7 +546,7 @@ const parseEvent = async (
         let decodedData;
         // Smart contract (parse transaction)
         try {
-          const tokenMetadata = await EvmDataFetchingV2Utils.getMetadata(
+          const tokenMetadata = await EvmLightNodeUtils.getMetadata(
             chain.chainId,
             event.to.toLowerCase(),
           );

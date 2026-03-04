@@ -2,10 +2,12 @@ import { Screen } from '@interfaces/screen.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { HDNodeWallet } from 'ethers';
 import React, { useEffect, useRef, useState } from 'react';
@@ -78,6 +80,13 @@ const CreateNewWalletVerification = ({
       seedId: 0,
     };
     await EvmWalletUtils.addSeedAndAccounts(wallet, [account], mk, nickname);
+
+    await EvmLightNodeUtils.registerAddress(
+      chain.chainId,
+      derivedWallet.address,
+      true,
+    );
+
     const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
     setEvmAccounts(accounts);
     await loadEvmActiveAccount(chain, accounts[0].wallet);
@@ -189,7 +198,7 @@ const mapStateToProps = (state: RootState) => {
     wallet: state.navigation.stack[0].params as HDNodeWallet,
     mk: state.mk,
     activeAccount: state.evm.activeAccount,
-    chain: state.chain,
+    chain: state.chain as EvmChain,
   };
 };
 

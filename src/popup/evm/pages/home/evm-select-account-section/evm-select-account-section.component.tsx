@@ -11,6 +11,7 @@ import {
   EvmAddressesUtils,
 } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -63,9 +64,7 @@ const SelectAccountSection = ({
   ): EvmAddressDetail => ({
     fullAddress: account.wallet.address,
     formattedAddress: EvmFormatUtils.formatAddress(account.wallet.address),
-    label:
-      account.nickname ??
-      EvmAccountUtils.getAccountFullname(account),
+    label: account.nickname ?? EvmAccountUtils.getAccountFullname(account),
     avatar: undefined,
   });
 
@@ -118,11 +117,12 @@ const SelectAccountSection = ({
     }
   };
 
-  const handleItemClicked = (address: string) => {
+  const handleItemClicked = async (address: string) => {
     const itemClicked = accounts.find(
       (account: EvmAccount) => account.wallet.address === address,
     );
     if (itemClicked) {
+      await EvmLightNodeUtils.registerAddress(chain.chainId, address, false);
       loadEvmActiveAccount(chain, itemClicked?.wallet);
       handleClickOnSelector();
     }

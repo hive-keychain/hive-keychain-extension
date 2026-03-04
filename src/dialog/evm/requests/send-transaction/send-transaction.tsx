@@ -17,8 +17,8 @@ import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
-import { EvmDataFetchingV2Utils } from '@popup/evm/utils/evm-data-fetching-v2.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import {
   EvmInputDisplayType,
@@ -183,7 +183,7 @@ export const SendTransaction = (props: Props) => {
             break;
           }
           case BlockExplorerType.BLOCKSCOUT:
-            abi = await EvmDataFetchingV2Utils.getAbi(
+            abi = await EvmLightNodeUtils.getAbi(
               chainTmp.chainId,
               proxy ?? params.to,
             );

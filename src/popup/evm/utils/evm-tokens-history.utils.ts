@@ -5,12 +5,12 @@ import {
   EvmUserHistoryItemDetailType,
   EvmUserHistoryItemType,
 } from '@popup/evm/interfaces/evm-tokens-history.interface';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import {
-  EvmDataFetchingV2Utils,
+  EvmLightNodeUtils,
   LightNodeHistoryFlow,
   LightNodeHistoryItem,
-} from '@popup/evm/utils/evm-data-fetching-v2.utils';
-import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
+} from '@popup/evm/utils/evm-light-node.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -613,7 +613,7 @@ const fetchHistory2 = async (
   }
   params.set('limit', LIMIT.toString());
 
-  const response = await EvmDataFetchingV2Utils.getHistory(
+  const response = await EvmLightNodeUtils.getHistory(
     chain.chainId,
     walletAddress,
     params.toString(),

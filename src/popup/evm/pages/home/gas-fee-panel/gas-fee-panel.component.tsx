@@ -10,8 +10,8 @@ import {
 } from '@popup/evm/interfaces/gas-fee.interface';
 import { GasFeePanelItem } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel-item.component';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
-import { EvmDataFetchingV2Utils } from '@popup/evm/utils/evm-data-fetching-v2.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
@@ -116,7 +116,7 @@ export const GasFeePanel = ({
   const init = async () => {
     let estimate;
 
-    const mainTokenPriceTmp = await EvmDataFetchingV2Utils.getPrice(
+    const mainTokenPriceTmp = await EvmLightNodeUtils.getPrice(
       (chain as EvmChain).chainId,
     );
     console.log('mainTokenPriceTmp', mainTokenPriceTmp);
