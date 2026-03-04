@@ -1,7 +1,6 @@
 import { Screen } from '@interfaces/screen.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
-import { fetchPrices } from '@popup/evm/actions/price.actions';
 import { EvmRouterComponent } from '@popup/evm/evm-router.component';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
@@ -12,13 +11,11 @@ import {
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LoadingState } from '@popup/multichain/reducers/loading.reducer';
 import { RootState } from '@popup/multichain/store';
-import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';
 import Config from 'src/config';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
 const EvmApp = ({
@@ -32,7 +29,6 @@ const EvmApp = ({
   navigateTo,
   navigateToWithParams,
   setEvmAccounts,
-  fetchPrices,
   loadEvmActiveAccount,
 }: PropsFromRedux) => {
   const [displaySplashscreen, setDisplaySplashscreen] = useState(true);
@@ -62,15 +58,6 @@ const EvmApp = ({
       const localAccounts =
         await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
       setEvmAccounts(localAccounts);
-      const chainsTokensMetadata =
-        await LocalStorageUtils.getValueFromLocalStorage(
-          LocalStorageKeyEnum.EVM_TOKENS_METADATA,
-        );
-
-      if (chainsTokensMetadata && chainsTokensMetadata[chain.chainId]) {
-        const tokensMetadata = chainsTokensMetadata[chain.chainId];
-        fetchPrices(tokensMetadata);
-      }
 
       const wallet = await EvmActiveAccountUtils.getSavedActiveAccountWallet(
         chain,
@@ -115,7 +102,6 @@ const connector = connect(mapStateToProps, {
   navigateTo,
   navigateToWithParams,
   setEvmAccounts,
-  fetchPrices,
   loadEvmActiveAccount,
 });
 

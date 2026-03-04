@@ -16,11 +16,9 @@ import {
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
-import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmDataFetchingV2Utils } from '@popup/evm/utils/evm-data-fetching-v2.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
-import { EvmPricesUtils } from '@popup/evm/utils/evm-prices.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import {
   EvmInputDisplayType,
@@ -73,8 +71,6 @@ export const SendTransaction = (props: Props) => {
   const [shouldDisplayBalanceChange, setShouldDisplayBalanceChange] =
     useState(false);
 
-  const [evmPrices, setEvmPrices] = useState<EvmPrices>();
-
   const [transactionData, setTransactionData] =
     useState<ProviderTransactionData>();
 
@@ -102,7 +98,6 @@ export const SendTransaction = (props: Props) => {
     const mainToken = await EvmTokensUtils.getMainTokenInfo(
       (chainTmp as EvmChain)!,
     );
-    setEvmPrices(await EvmPricesUtils.fetchPrices([mainToken]));
 
     const params = request.params[0];
 
@@ -727,7 +722,7 @@ export const SendTransaction = (props: Props) => {
 
   return (
     <>
-      {transactionHook.fields && evmPrices && (
+      {transactionHook.fields && (
         <EvmOperation
           afterCancel={handleCancel}
           request={request}
@@ -753,7 +748,6 @@ export const SendTransaction = (props: Props) => {
                     onSelectFee={transactionHook.setSelectedFee}
                     transactionType={transactionData.type}
                     transactionData={transactionData}
-                    prices={evmPrices}
                     setErrorMessage={transactionHook.setErrorMessage}
                   />
                 )}

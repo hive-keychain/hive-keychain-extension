@@ -8,7 +8,6 @@ import {
   manualDiscoverErc20Tokens,
   manualDiscoverNfts,
 } from '@popup/evm/actions/active-account.actions';
-import { fetchPrices } from '@popup/evm/actions/price.actions';
 import { EvmErc721Token } from '@popup/evm/interfaces/active-account.interface';
 import { EvmUserHistoryItem } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import {
@@ -78,7 +77,6 @@ const Home = ({
   navigateTo,
   loadEvmActiveAccount,
   resetTitleContainerProperties,
-  fetchPrices,
   navigateToWithParams,
   loadEvmHistory,
   setErrorMessage,
@@ -462,7 +460,6 @@ const connector = connect(mapStateToProps, {
   setErrorMessage,
   loadEvmActiveAccount,
   navigateTo,
-  fetchPrices,
   navigateToWithParams,
   loadEvmHistory,
   manualDiscoverErc20Tokens,

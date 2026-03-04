@@ -9,8 +9,8 @@ import {
   GasFeeEstimationBase,
 } from '@popup/evm/interfaces/gas-fee.interface';
 import { GasFeePanelItem } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel-item.component';
-import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmDataFetchingV2Utils } from '@popup/evm/utils/evm-data-fetching-v2.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -38,7 +38,6 @@ interface GasFeePanelProps {
   multiplier?: number;
   transactionType: EvmTransactionType;
   transactionData?: ProviderTransactionData;
-  prices: EvmPrices;
   forceOpenGasFeePanelEvent?: EventEmitter;
   setErrorMessage: (error: EtherRPCCustomError) => void;
   expandable?: boolean;
@@ -52,7 +51,6 @@ export const GasFeePanel = ({
   multiplier,
   transactionType,
   transactionData,
-  prices,
   forceOpenGasFeePanelEvent,
   setErrorMessage,
   expandable,
@@ -74,6 +72,8 @@ export const GasFeePanel = ({
   });
 
   const [isExpandablePanelOpened, setExpandablePanelOpened] = useState(false);
+
+  const [mainTokenPrice, setMainTokenPrice] = useState<number>();
 
   useEffect(() => {
     forceOpenGasFeePanelEvent?.addListener('forceOpenCustomFeePanel', () => {
@@ -115,12 +115,19 @@ export const GasFeePanel = ({
 
   const init = async () => {
     let estimate;
+
+    const mainTokenPriceTmp = await EvmDataFetchingV2Utils.getPrice(
+      (chain as EvmChain).chainId,
+    );
+    console.log('mainTokenPriceTmp', mainTokenPriceTmp);
+    setMainTokenPrice(mainTokenPriceTmp);
+
     try {
       estimate = await GasFeeUtils.estimate(
         chain,
         wallet,
         transactionType,
-        prices,
+        mainTokenPriceTmp,
         transactionData?.gasLimit
           ? Number(transactionData.gasLimit)
           : undefined,
@@ -361,12 +368,8 @@ export const GasFeePanel = ({
           new Decimal(customGasFeeForm.priorityFeeInGwei),
         ),
         priorityFeeInGwei: new Decimal(customGasFeeForm.priorityFeeInGwei),
-        estimatedFeeUSD: customEstimatedFee.mul(
-          new Decimal(prices[chain.mainToken.toLowerCase()]?.usd ?? 0),
-        ),
-        maxFeeUSD: customMaxFee.mul(
-          new Decimal(prices[chain.mainToken.toLowerCase()]?.usd ?? 0),
-        ),
+        estimatedFeeUSD: customEstimatedFee.mul(new Decimal(mainTokenPrice!)),
+        maxFeeUSD: customMaxFee.mul(new Decimal(mainTokenPrice!)),
         name: 'popup_html_evm_custom_gas_fee_custom',
         icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
       } as GasFeeEstimationBase;

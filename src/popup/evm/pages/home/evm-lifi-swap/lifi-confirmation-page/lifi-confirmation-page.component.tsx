@@ -64,7 +64,6 @@ const LiFiConfirmationPage = ({
     useState<GasFeeEstimationBase>();
 
   useEffect(() => {
-    console.log({ approveTransactionData, swapTransactionData });
     setTitleContainerProperties({
       title: title ?? 'popup_html_confirm',
       isBackButtonEnabled: true,
@@ -174,7 +173,6 @@ const LiFiConfirmationPage = ({
                     .defaultTransactionType
                 }
                 transactionData={approveTransactionData}
-                prices={evmPrices}
                 setErrorMessage={handleErrors}
                 expandable={true}
               />
@@ -224,7 +222,6 @@ const LiFiConfirmationPage = ({
               (swapTransactionData.chain! as EvmChain).defaultTransactionType
             }
             transactionData={swapTransactionData}
-            prices={evmPrices}
             setErrorMessage={handleErrors}
             expandable={true}
           />

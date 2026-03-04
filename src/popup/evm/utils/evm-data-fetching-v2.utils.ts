@@ -176,11 +176,12 @@ const getGasFee = async (chainId: string | number): Promise<unknown> => {
 
 const getPrice = async (
   chainId: string | number,
-  tokenAddress: string,
-): Promise<unknown> => {
-  return KeychainApi.get(
-    `evm/light-node/price/${chainId}/${encodeURIComponent(tokenAddress)}`,
+  tokenAddress?: string,
+): Promise<number> => {
+  const response = await KeychainApi.get(
+    `evm/light-node/price/${Number(chainId)}/${tokenAddress ? encodeURIComponent(tokenAddress) : ''}`,
   );
+  return response.priceUsd ?? 0;
 };
 
 const getAbi = async (chainId: string, contractAddress: string) => {

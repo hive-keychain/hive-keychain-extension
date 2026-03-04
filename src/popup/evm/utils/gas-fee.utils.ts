@@ -7,7 +7,6 @@ import {
   FullGasFeeEstimation,
   GasFeeEstimationBase,
 } from '@popup/evm/interfaces/gas-fee.interface';
-import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
@@ -27,7 +26,7 @@ const estimate = async (
   chain: EvmChain,
   wallet: HDNodeWallet,
   type: EvmTransactionType,
-  evmPrices: EvmPrices,
+  mainTokenPrice: number,
   gasLimit?: number,
   transactionData?: ProviderTransactionData,
 ): Promise<FullGasFeeEstimation> => {
@@ -38,7 +37,7 @@ const estimate = async (
     Logger.error('Error in gas fee estimation', error);
   }
 
-  const price = new Decimal(evmPrices[chain.mainToken.toLowerCase()]?.usd ?? 0);
+  const price = new Decimal(mainTokenPrice);
   if (!gasLimit) {
     gasLimit = Number(
       await EthersUtils.getGasLimit(
