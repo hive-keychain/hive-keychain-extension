@@ -105,11 +105,11 @@ const EvmAccounts = ({
   };
 
   const handleConfirmAddAddress = async (addressNickname: string) => {
-    // await EvmWalletUtils.addAddressToSeed(
-    //   selectedSeed?.value,
-    //   mk,
-    //   addressNickname,
-    // );
+    await EvmWalletUtils.addAddressToSeed(
+      selectedSeed?.value,
+      mk,
+      addressNickname,
+    );
     const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
     const account = accounts.find(
       (account) => account.seedId === selectedSeed!.value,
