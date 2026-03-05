@@ -10,7 +10,12 @@ import {
   EvmSmartContractInfo,
   EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
-import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
+import {
+  CatchupStatus,
+  DiscoveredTokensResponse,
+  EvmLightNodeUtils,
+  PricingStatus,
+} from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { AppThunk } from '@popup/multichain/actions/interfaces';
@@ -221,6 +226,47 @@ export const loadEvmHistory = (): AppThunk => async (dispatch, getState) => {
   });
 };
 
+export const loadMoreTokensInActiveAccount =
+  (chain: EvmChain, wallet: HDNodeWallet): AppThunk =>
+  async (dispatch, getState) => {
+    console.log('loadMoreTokensInActiveAccount');
+    const result = await EvmLightNodeUtils.getDiscoveredTokens(
+      chain.chainId,
+      process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
+    );
+    const balances = await EvmTokensUtils.getTokenBalances(
+      process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
+      chain,
+      result.tokens.filter(
+        (token) =>
+          token.type === EVMSmartContractType.ERC20 ||
+          token.type === EVMSmartContractType.NATIVE,
+      ),
+    );
+
+    dispatch({
+      type: EvmActionType.SET_ACTIVE_ACCOUNT_TOKENS,
+      payload: {
+        nativeAndErc20Tokens: {
+          value: balances,
+          loading: balances.length > 0 ? false : true,
+          initialized: true,
+        },
+      },
+    });
+
+    if (
+      !result.catchupStatus ||
+      result.catchupStatus === CatchupStatus.RUNNING ||
+      !result.pricingStatus ||
+      result.pricingStatus !== PricingStatus.READY
+    ) {
+      setTimeout(() => {
+        dispatch(loadMoreTokensInActiveAccount(chain, wallet));
+      }, 1000);
+    }
+  };
+
 export const loadEvmActiveAccount =
   (chain: EvmChain, wallet: HDNodeWallet): AppThunk =>
   async (dispatch, getState) => {
@@ -248,7 +294,7 @@ export const loadEvmActiveAccount =
       } as EvmActiveAccount,
     });
 
-    const erc20Tokens: EvmSmartContractInfo[] =
+    const result: DiscoveredTokensResponse =
       await EvmLightNodeUtils.getDiscoveredTokens(
         chain.chainId,
         process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
@@ -257,7 +303,7 @@ export const loadEvmActiveAccount =
     const balances = await EvmTokensUtils.getTokenBalances(
       process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
       chain,
-      erc20Tokens.filter(
+      result.tokens.filter(
         (token) =>
           token.type === EVMSmartContractType.ERC20 ||
           token.type === EVMSmartContractType.NATIVE,
@@ -279,6 +325,16 @@ export const loadEvmActiveAccount =
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: { isReady: true },
     });
+    if (
+      !result.catchupStatus ||
+      result.catchupStatus === CatchupStatus.RUNNING ||
+      !result.pricingStatus ||
+      result.pricingStatus !== PricingStatus.READY
+    ) {
+      setTimeout(() => {
+        dispatch(loadMoreTokensInActiveAccount(chain, wallet));
+      }, 1000);
+    }
   };
 
 export const loadEvmActiveAccountNfts =

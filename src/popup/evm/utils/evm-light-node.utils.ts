@@ -120,17 +120,36 @@ export type LightNodeHistoryDetailItem = HistoryDetailItem;
 export type LightNodeHistoryFlow = HistoryFlow;
 export type LightNodeHistoryFlowWithMeta = HistoryFlowWithMeta;
 export type LightNodeHistoryItem = HistoryItem;
+export enum CatchupStatus {
+  SKIPPED = 'SKIPPED',
+  RUNNING = 'RUNNING',
+  DONE = 'DONE',
+  PARTIAL = 'PARTIAL',
+  ERROR = 'ERROR',
+}
+export enum PricingStatus {
+  READY = 'READY',
+  PARTIAL = 'PARTIAL',
+  PENDING = 'PENDING',
+}
 
+export type DiscoveredTokensResponse = {
+  address: string;
+  chainId: string;
+  tokens: EvmSmartContractInfo[];
+  catchupStatus: CatchupStatus;
+  pricingStatus: PricingStatus;
+};
 // Done
 const getDiscoveredTokens = async (
   chainId: string | number,
   address: string,
-): Promise<EvmSmartContractInfo[]> => {
-  const tokens: EvmSmartContractInfo[] = await KeychainApi.get(
+): Promise<DiscoveredTokensResponse> => {
+  const reponse: DiscoveredTokensResponse = await KeychainApi.get(
     `evm/light-node/discovery/tokens/${chainId}/${encodeURIComponent(address)}`,
   );
 
-  return tokens;
+  return reponse;
 };
 
 const getDiscoveredNfts = async (
@@ -217,6 +236,7 @@ const registerAddress = async (
   address: string,
   newAddress: boolean,
 ): Promise<void> => {
+  address = process.env.FORCED_EVM_WALLET_ADDRESS ?? address;
   let registeredAddresses: EvmLightNodeRegisteredAddresses =
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.EVM_LIGHT_NODE_REGISTERED_ADDRESSES,
