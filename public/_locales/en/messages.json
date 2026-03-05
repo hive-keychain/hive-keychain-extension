@@ -5469,6 +5469,10 @@
     "message": "Approving $1 to use up to $2 $3",
     "description": "Approve history item"
   },
+  "evm_history_operation_approve_out_erc20_unlimited": {
+    "message": "You approved $1 to use unlimited $2",
+    "description": "Approve unlimited history item"
+  },
   "evm_history_operation_approve_out_erc721": {
     "message": "You approved $1 to use $2#$3",
     "description": "Approve history item"
@@ -5504,6 +5508,14 @@
   "evm_history_operation_airdrop_receive": {
     "message": "You received an airdrop: $1",
     "description": "Airdrop history item"
+  },
+  "evm_history_operation_reverted": {
+    "message": "$1 has been reverted",
+    "description": "Reverted operation message"
+  },
+  "evm_history_unlimited_approval_value": {
+    "message": "Unlimited $1",
+    "description": "Unlimited approval value"
   },
   "evm_history_operation_mint_erc20": {
     "message": "You minted $1 $2",

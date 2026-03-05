@@ -11,6 +11,7 @@ import {
   LightNodeHistoryFlow,
   LightNodeHistoryItem,
 } from '@popup/evm/utils/evm-light-node.utils';
+import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -208,6 +209,95 @@ const formatFlow = (flow: LightNodeHistoryFlow, chain: EvmChain) => {
   return `${formatTokenAmount(getFlowAmount(flow))} ${getFlowSymbol(flow, chain)}`;
 };
 
+const shouldDisplayFlow = (
+  flow: LightNodeHistoryFlow,
+  displayPossibleSpam: boolean,
+  displayNonVerifiedContracts: boolean,
+) => {
+  if (flow.kind === 'NATIVE') {
+    return true;
+  }
+  if (!displayPossibleSpam && flow.possibleSpam === true) {
+    return false;
+  }
+  if (!displayNonVerifiedContracts && flow.verified === false) {
+    return false;
+  }
+  return true;
+};
+
+const shouldDisplayHistoryItem = (
+  historyItem: LightNodeHistoryItem,
+  displayPossibleSpam: boolean,
+  displayNonVerifiedContracts: boolean,
+) => {
+  return [...historyItem.in, ...historyItem.out].every((flow) =>
+    shouldDisplayFlow(flow, displayPossibleSpam, displayNonVerifiedContracts),
+  );
+};
+
+const getRevertedOperationName = (opName: KnownOpName) => {
+  if (
+    opName === 'NATIVE_SEND' ||
+    opName === 'NATIVE_RECEIVE' ||
+    opName === 'ERC20_SEND' ||
+    opName === 'ERC20_RECEIVE' ||
+    opName === 'ERC721_SEND' ||
+    opName === 'ERC721_RECEIVE' ||
+    opName === 'ERC1155_SEND' ||
+    opName === 'ERC1155_RECEIVE'
+  ) {
+    return 'transfer';
+  }
+
+  if (APPROVE_OPS.has(opName)) {
+    return 'approval';
+  }
+  if (NFT_MINT_OPS.has(opName) || ERC20_MINT_OPS.has(opName)) {
+    return 'mint';
+  }
+  if (BURN_OPS.has(opName)) {
+    return 'burn';
+  }
+
+  switch (opName) {
+    case 'SWAP':
+      return 'swap';
+    case 'AIRDROP_RECEIVE':
+      return 'airdrop';
+    case 'ADD_LIQUIDITY':
+      return 'add liquidity';
+    case 'REMOVE_LIQUIDITY':
+      return 'remove liquidity';
+    case 'WRAP':
+      return 'wrap';
+    case 'UNWRAP':
+      return 'unwrap';
+    case 'CONTRACT_DEPLOY':
+      return 'contract deployment';
+    case 'CONTRACT_CALL':
+      return 'contract call';
+    default:
+      return 'operation';
+  }
+};
+
+const applyStatusLabel = (
+  parsedItem: EvmUserHistoryItem,
+  sourceItem: LightNodeHistoryItem,
+): EvmUserHistoryItem => {
+  if (sourceItem.status !== 'REVERTED') {
+    return parsedItem;
+  }
+
+  return {
+    ...parsedItem,
+    label: chrome.i18n.getMessage('evm_history_operation_reverted', [
+      getRevertedOperationName(toKnownOpName(sourceItem.opName)),
+    ]),
+  };
+};
+
 const makeCommonItem = (item: LightNodeHistoryItem): EvmUserHistoryItem => ({
   pageTitle: 'evm_history_smart_contract',
   type: EvmUserHistoryItemType.BASE_TRANSACTION,
@@ -357,11 +447,20 @@ const parseApprove = (
 
   if (flow?.kind === 'ERC20') {
     const amount = formatTokenAmount(flow.amount);
-    labelKey = 'evm_history_operation_approve_out_erc20';
-    labelArgs = [counterpartyLabel, amount, flow.symbol ?? 'ERC20'];
+    if (flow.infinite) {
+      labelKey = 'evm_history_operation_approve_out_erc20_unlimited';
+      labelArgs = [counterpartyLabel, flow.symbol ?? 'ERC20'];
+    } else {
+      labelKey = 'evm_history_operation_approve_out_erc20';
+      labelArgs = [counterpartyLabel, amount, flow.symbol ?? 'ERC20'];
+    }
     details.push({
       label: 'popup_html_transfer_amount',
-      value: `${amount} ${flow.symbol ?? 'ERC20'}`,
+      value: flow.infinite
+        ? chrome.i18n.getMessage('evm_history_unlimited_approval_value', [
+            flow.symbol ?? 'ERC20',
+          ])
+        : `${amount} ${flow.symbol ?? 'ERC20'}`,
       type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
     });
   } else if (
@@ -758,8 +857,21 @@ const fetchHistory2 = async (
     params.toString(),
   );
 
-  const parsedItems = response.items.map((item) =>
-    parseItem(item, chain, walletAddress),
+  const settings = await EvmSettingsUtils.getSettings();
+  const displayPossibleSpam =
+    settings?.smartContracts?.displayPossibleSpam ?? false;
+  const displayNonVerifiedContracts =
+    settings?.smartContracts?.displayNonVerifiedContracts ?? false;
+
+  const visibleItems = response.items.filter((item) =>
+    shouldDisplayHistoryItem(
+      item,
+      displayPossibleSpam,
+      displayNonVerifiedContracts,
+    ),
+  );
+  const parsedItems = visibleItems.map((item) =>
+    applyStatusLabel(parseItem(item, chain, walletAddress), item),
   );
   const dedupSet = new Set(previousHistory.events.map(getEventKey));
   const merged = [...previousHistory.events];

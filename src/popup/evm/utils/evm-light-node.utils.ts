@@ -35,8 +35,10 @@ type HistoryFlowWithMeta =
       kind: 'ERC20';
       tokenAddress: string;
       symbol: string | null;
-      amountRaw: string;
       amount: string;
+      infinite?: boolean;
+      verified: boolean;
+      possibleSpam: boolean;
       token?: {
         name: string | null;
         decimals: number | null;
@@ -49,6 +51,8 @@ type HistoryFlowWithMeta =
       collectionName: string | null;
       tokenId: string;
       quantity: string;
+      verified: boolean;
+      possibleSpam: boolean;
       collection?: {
         name: string | null;
         symbol: string | null;
@@ -70,19 +74,28 @@ type HistoryItem = {
   opName: string; // derived from OpType enum key
   in: HistoryFlow[];
   out: HistoryFlow[];
+  status: 'SUCCESS' | 'REVERTED' | null;
   fromAddress: string | null;
   toAddress: string | null;
   action?: string; // currently always null in DB unless populated elsewhere
 };
 
 type HistoryFlow =
-  | { kind: 'NATIVE'; amountWei: string; amount: string } // amountWei raw; amount parsed at 18 decimals
+  | {
+      kind: 'NATIVE';
+      amountWei: string;
+      amount: string;
+      verified: boolean;
+      possibleSpam: boolean;
+    } // amountWei raw; amount parsed at 18 decimals
   | {
       kind: 'ERC20';
       tokenAddress: string;
       symbol: string | null;
-      amountRaw: string;
       amount: string;
+      infinite?: boolean;
+      verified: boolean;
+      possibleSpam: boolean;
     } // amountRaw raw; amount parsed with token decimals, fallback 18
   | {
       kind: 'ERC721';
@@ -90,6 +103,8 @@ type HistoryFlow =
       collectionName: string | null;
       tokenId: string;
       quantity: '1';
+      verified: boolean;
+      possibleSpam: boolean;
     }
   | {
       kind: 'ERC1155';
@@ -97,6 +112,8 @@ type HistoryFlow =
       collectionName: string | null;
       tokenId: string;
       quantity: string;
+      verified: boolean;
+      possibleSpam: boolean;
     };
 
 export type LightNodeHistoryDetailItem = HistoryDetailItem;
