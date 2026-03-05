@@ -30,6 +30,16 @@ const EMPTY_EVM_HISTORY: EvmUserHistory = {
   fullyFetch: false,
 };
 
+const LOAD_MORE_TOKENS_INITIAL_DELAY_MS = 1000;
+const LOAD_MORE_TOKENS_MAX_DELAY_MS = 30000;
+
+const getLoadMoreTokensRetryDelay = (retryCount: number): number => {
+  return Math.min(
+    LOAD_MORE_TOKENS_INITIAL_DELAY_MS * 2 ** retryCount,
+    LOAD_MORE_TOKENS_MAX_DELAY_MS,
+  );
+};
+
 // export const loadEvmActiveAccount2 =
 //   (chain: EvmChain, wallet: HDNodeWallet): AppThunk =>
 //   async (dispatch, getState) => {
@@ -227,7 +237,7 @@ export const loadEvmHistory = (): AppThunk => async (dispatch, getState) => {
 };
 
 export const loadMoreTokensInActiveAccount =
-  (chain: EvmChain, wallet: HDNodeWallet): AppThunk =>
+  (chain: EvmChain, wallet: HDNodeWallet, retryCount = 0): AppThunk =>
   async (dispatch, getState) => {
     console.log('loadMoreTokensInActiveAccount');
     const result = await EvmLightNodeUtils.getDiscoveredTokens(
@@ -261,9 +271,12 @@ export const loadMoreTokensInActiveAccount =
       !result.pricingStatus ||
       result.pricingStatus !== PricingStatus.READY
     ) {
+      const retryDelay = getLoadMoreTokensRetryDelay(retryCount);
       setTimeout(() => {
-        dispatch(loadMoreTokensInActiveAccount(chain, wallet));
-      }, 1000);
+        dispatch(
+          loadMoreTokensInActiveAccount(chain, wallet, retryCount + 1),
+        );
+      }, retryDelay);
     }
   };
 
