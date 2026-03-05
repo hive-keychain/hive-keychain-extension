@@ -191,9 +191,9 @@ const toKnownOpName = (opName: string): KnownOpName => {
     'WRAP',
     'UNWRAP',
   ];
-  return (known.includes(value as KnownOpName)
-    ? value
-    : 'UNKNOWN') as KnownOpName;
+  return (
+    known.includes(value as KnownOpName) ? value : 'UNKNOWN'
+  ) as KnownOpName;
 };
 
 const formatTokenAmount = (amount: string) =>
@@ -207,33 +207,6 @@ const formatFlow = (flow: LightNodeHistoryFlow, chain: EvmChain) => {
     return `${flow.quantity} ${getFlowSymbol(flow, chain)}#${flow.tokenId}`;
   }
   return `${formatTokenAmount(getFlowAmount(flow))} ${getFlowSymbol(flow, chain)}`;
-};
-
-const shouldDisplayFlow = (
-  flow: LightNodeHistoryFlow,
-  displayPossibleSpam: boolean,
-  displayNonVerifiedContracts: boolean,
-) => {
-  if (flow.kind === 'NATIVE') {
-    return true;
-  }
-  if (!displayPossibleSpam && flow.possibleSpam === true) {
-    return false;
-  }
-  if (!displayNonVerifiedContracts && flow.verified === false) {
-    return false;
-  }
-  return true;
-};
-
-const shouldDisplayHistoryItem = (
-  historyItem: LightNodeHistoryItem,
-  displayPossibleSpam: boolean,
-  displayNonVerifiedContracts: boolean,
-) => {
-  return [...historyItem.in, ...historyItem.out].every((flow) =>
-    shouldDisplayFlow(flow, displayPossibleSpam, displayNonVerifiedContracts),
-  );
 };
 
 const getRevertedOperationName = (opName: KnownOpName) => {
@@ -851,26 +824,22 @@ const fetchHistory2 = async (
   }
   params.set('limit', LIMIT.toString());
 
+  const settings = await EvmSettingsUtils.getSettings();
+  const showPossibleSpam =
+    settings?.smartContracts?.displayPossibleSpam ?? false;
+  const showUnverified =
+    settings?.smartContracts?.displayNonVerifiedContracts ?? false;
+
+  params.set('showPossibleSpam', String(showPossibleSpam));
+  params.set('showUnverified', String(showUnverified));
+
   const response = await EvmLightNodeUtils.getHistory(
     chain.chainId,
     walletAddress,
     params.toString(),
   );
 
-  const settings = await EvmSettingsUtils.getSettings();
-  const displayPossibleSpam =
-    settings?.smartContracts?.displayPossibleSpam ?? false;
-  const displayNonVerifiedContracts =
-    settings?.smartContracts?.displayNonVerifiedContracts ?? false;
-
-  const visibleItems = response.items.filter((item) =>
-    shouldDisplayHistoryItem(
-      item,
-      displayPossibleSpam,
-      displayNonVerifiedContracts,
-    ),
-  );
-  const parsedItems = visibleItems.map((item) =>
+  const parsedItems = response.items.map((item) =>
     applyStatusLabel(parseItem(item, chain, walletAddress), item),
   );
   const dedupSet = new Set(previousHistory.events.map(getEventKey));
