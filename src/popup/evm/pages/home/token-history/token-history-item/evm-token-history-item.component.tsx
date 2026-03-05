@@ -14,11 +14,13 @@ interface EvmTokenHistoryItemProps {
   historyItem: EvmUserHistoryItem;
   chain: Chain;
   goToDetailsPage: () => void;
+  index: number;
 }
 
 export const EvmTokenHistoryItemComponent = ({
   historyItem,
   chain,
+  index,
   goToDetailsPage,
 }: EvmTokenHistoryItemProps) => {
   const [isExpandablePanelOpened, setExpandablePanelOpened] = useState(false);
@@ -74,7 +76,9 @@ export const EvmTokenHistoryItemComponent = ({
               onClick={goToBlockchainExplorer}
             />
             <div className="right-panel">
-              <div className="detail">{historyItem.label}</div>
+              <div className="detail">
+                {index} -{historyItem.label}
+              </div>
               {!historyItem.isPending && (
                 <CustomTooltip
                   dataTestId="scustom-tool-tip"

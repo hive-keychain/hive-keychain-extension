@@ -86,6 +86,12 @@ const APPROVE_OPS = new Set<KnownOpName>([
 ]);
 
 const NFT_MINT_OPS = new Set<KnownOpName>(['ERC721_MINT', 'ERC1155_MINT']);
+const ERC20_MINT_OPS = new Set<KnownOpName>(['ERC20_MINT']);
+const BURN_OPS = new Set<KnownOpName>([
+  'ERC20_BURN',
+  'ERC721_BURN',
+  'ERC1155_BURN',
+]);
 
 const COMPLEX_OPS = new Set<KnownOpName>([
   'SWAP',
@@ -155,8 +161,38 @@ const getDisplayAddress = (address?: string | null) => {
 };
 
 const toKnownOpName = (opName: string): KnownOpName => {
-  const value = (opName || 'UNKNOWN').toUpperCase() as KnownOpName;
-  return value;
+  const value = (opName || 'UNKNOWN').toUpperCase();
+  const known: KnownOpName[] = [
+    'NATIVE_SEND',
+    'NATIVE_RECEIVE',
+    'ERC20_SEND',
+    'ERC20_RECEIVE',
+    'ERC20_APPROVE',
+    'ERC20_MINT',
+    'ERC20_BURN',
+    'ERC721_SEND',
+    'ERC721_RECEIVE',
+    'ERC721_APPROVE',
+    'ERC721_APPROVE_FOR_ALL',
+    'ERC721_MINT',
+    'ERC721_BURN',
+    'ERC1155_SEND',
+    'ERC1155_RECEIVE',
+    'ERC1155_APPROVE_FOR_ALL',
+    'ERC1155_MINT',
+    'ERC1155_BURN',
+    'SWAP',
+    'AIRDROP_RECEIVE',
+    'CONTRACT_CALL',
+    'CONTRACT_DEPLOY',
+    'ADD_LIQUIDITY',
+    'REMOVE_LIQUIDITY',
+    'WRAP',
+    'UNWRAP',
+  ];
+  return (known.includes(value as KnownOpName)
+    ? value
+    : 'UNKNOWN') as KnownOpName;
 };
 
 const formatTokenAmount = (amount: string) =>
@@ -419,6 +455,101 @@ const parseMint = (
   };
 };
 
+const parseErc20Mint = (
+  historyItem: EvmUserHistoryItem,
+  item: LightNodeHistoryItem,
+  chain: EvmChain,
+): EvmUserHistoryItem => {
+  const details: EvmUserHistoryItemDetail[] = [];
+  const flow = [...item.in, ...item.out].find((f) => f.kind === 'ERC20');
+  if (!flow || flow.kind !== 'ERC20') {
+    return parseTransfer(historyItem, item, chain, false, '');
+  }
+
+  const amount = formatTokenAmount(flow.amount);
+  const symbol = flow.symbol ?? 'ERC20';
+  details.push({
+    label: 'popup_html_transfer_amount',
+    value: `${amount} ${symbol}`,
+    type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+  });
+  pushAddressDetails(details, item.fromAddress, item.toAddress);
+
+  return {
+    ...historyItem,
+    pageTitle: 'evm_mint',
+    type: EvmUserHistoryItemType.SMART_CONTRACT,
+    label: chrome.i18n.getMessage('evm_history_operation_mint_erc20', [
+      amount,
+      symbol,
+    ]),
+    detailFields: details,
+    receiverAddress: item.toAddress ?? undefined,
+  };
+};
+
+const parseBurn = (
+  historyItem: EvmUserHistoryItem,
+  item: LightNodeHistoryItem,
+  chain: EvmChain,
+): EvmUserHistoryItem => {
+  const details: EvmUserHistoryItemDetail[] = [];
+  const flow = item.out[0] ?? item.in[0];
+  if (!flow) {
+    return parseSmartContractOperation(historyItem, item, true);
+  }
+
+  let labelKey = 'evm_history_generic_message';
+  let labelArgs: string[] = [];
+
+  if (flow.kind === 'ERC20') {
+    const amount = formatTokenAmount(flow.amount);
+    const symbol = flow.symbol ?? 'ERC20';
+    labelKey = 'evm_history_operation_burn_erc20';
+    labelArgs = [amount, symbol];
+    details.push({
+      label: 'popup_html_transfer_amount',
+      value: `${amount} ${symbol}`,
+      type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+    });
+  } else if (flow.kind === 'ERC721') {
+    const symbol = flow.collectionName ?? 'NFT';
+    labelKey = 'evm_history_operation_burn_erc721';
+    labelArgs = [symbol, flow.tokenId];
+    details.push({
+      label: `${symbol}#${flow.tokenId}`,
+      value: flow.tokenId,
+      type: EvmUserHistoryItemDetailType.IMAGE,
+    });
+  } else if (flow.kind === 'ERC1155') {
+    const symbol = flow.collectionName ?? 'NFT';
+    labelKey = 'evm_history_operation_burn_erc1155';
+    labelArgs = [flow.quantity, symbol, flow.tokenId];
+    details.push({
+      label: `${flow.quantity} ${symbol}#${flow.tokenId}`,
+      value: flow.tokenId,
+      type: EvmUserHistoryItemDetailType.IMAGE,
+    });
+  } else {
+    details.push({
+      label: 'popup_html_transfer_amount',
+      value: formatFlow(flow, chain),
+      type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+    });
+  }
+
+  pushAddressDetails(details, item.fromAddress, item.toAddress);
+
+  return {
+    ...historyItem,
+    pageTitle: 'evm_transfer',
+    type: EvmUserHistoryItemType.SMART_CONTRACT,
+    label: chrome.i18n.getMessage(labelKey, labelArgs),
+    detailFields: details,
+    receiverAddress: item.toAddress ?? undefined,
+  };
+};
+
 const parseComplexOperation = (
   historyItem: EvmUserHistoryItem,
   item: LightNodeHistoryItem,
@@ -574,6 +705,14 @@ const parseItem = (
 
   if (NFT_MINT_OPS.has(opName)) {
     return parseMint(base, item, chain);
+  }
+
+  if (ERC20_MINT_OPS.has(opName)) {
+    return parseErc20Mint(base, item, chain);
+  }
+
+  if (BURN_OPS.has(opName)) {
+    return parseBurn(base, item, chain);
   }
 
   if (COMPLEX_OPS.has(opName)) {

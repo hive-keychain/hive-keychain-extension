@@ -74,6 +74,7 @@ export const EvmHistory = ({
                   goToDetailsPage={() => {
                     goToDetailsPage(item.transactionHash, item);
                   }}
+                  index={index}
                 />
               ))}
               <Separator type="horizontal" />
@@ -91,6 +92,7 @@ export const EvmHistory = ({
                   goToDetailsPage={() => {
                     goToDetailsPage(event.transactionHash, event);
                   }}
+                  index={index}
                 />
               )}
               renderOnScroll

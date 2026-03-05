@@ -5505,6 +5505,22 @@
     "message": "You received an airdrop: $1",
     "description": "Airdrop history item"
   },
+  "evm_history_operation_mint_erc20": {
+    "message": "You minted $1 $2",
+    "description": "ERC20 mint history item"
+  },
+  "evm_history_operation_burn_erc20": {
+    "message": "You burned $1 $2",
+    "description": "ERC20 burn history item"
+  },
+  "evm_history_operation_burn_erc721": {
+    "message": "You burned $1#$2",
+    "description": "ERC721 burn history item"
+  },
+  "evm_history_operation_burn_erc1155": {
+    "message": "You burned $1 $2#$3",
+    "description": "ERC1155 burn history item"
+  },
   "evm_history_operation_mintNFTs": {
     "message": "You minted $1#$2",
     "description": "Mint single nft history item"
