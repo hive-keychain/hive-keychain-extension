@@ -623,8 +623,36 @@ const formatEtherValue = (value: string) => {
   return FormatUtils.withCommas(ethers.formatEther(value), 18, true);
 };
 
-const getMainTokenInfo = async (chain: EvmChain) => {
-  return {};
+type NativeTokenApiResponse = {
+  chainId: number;
+  metadata: {
+    name: string;
+    symbol: string;
+    decimals: number;
+    logoUrl: string;
+    wrappedNativeTokenAddress: string;
+  };
+  price: { priceUsd: number; fetchedAt: string };
+};
+
+const getMainTokenInfo = async (
+  chain: EvmChain,
+): Promise<EvmSmartContractInfoNative> => {
+  const response = (await KeychainApi.get(
+    `evm/light-node/native/${Number(chain.chainId)}`,
+  )) as NativeTokenApiResponse;
+  return {
+    type: EVMSmartContractType.NATIVE,
+    name: response.metadata.name,
+    symbol: response.metadata.symbol,
+    logo: response.metadata.logoUrl,
+    chainId: chain.chainId,
+    backgroundColor: '',
+    coingeckoId: '',
+    priceUsd: response.price.priceUsd,
+    createdAt: response.price.fetchedAt,
+    categories: [],
+  };
 };
 
 const displayValue = (value: number, tokenInfo: EvmSmartContractInfo) => {
