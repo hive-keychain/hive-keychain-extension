@@ -12,6 +12,7 @@ import {
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   CatchupStatus,
+  DiscoveredNftsResponse,
   DiscoveredTokensResponse,
   EvmLightNodeUtils,
   PricingStatus,
@@ -40,6 +41,87 @@ const getLoadMoreTokensRetryDelay = (retryCount: number): number => {
   );
 };
 
+const shouldLoadMoreDiscoveredAssets = (
+  result: DiscoveredTokensResponse | DiscoveredNftsResponse,
+): boolean => {
+  const shouldLoadMoreCatchup =
+    !result.catchupStatus || result.catchupStatus === CatchupStatus.RUNNING;
+  if ('pricingStatus' in result) {
+    return (
+      shouldLoadMoreCatchup ||
+      !result.pricingStatus ||
+      result.pricingStatus !== PricingStatus.READY
+    );
+  }
+  return shouldLoadMoreCatchup;
+};
+
+const mapDiscoveredNftsResponseToActiveAccountNfts = (
+  response: DiscoveredNftsResponse,
+): (EvmErc721Token | EvmErc1155Token)[] => {
+  console.log(response);
+  return response.collections.flatMap((collection) => {
+    if (collection.contractType === 'ERC721') {
+      return [
+        {
+          tokenInfo: {
+            type: EVMSmartContractType.ERC721,
+            name: collection.name ?? '',
+            symbol: collection.symbol ?? '',
+            logo: '',
+            chainId: String(response.chainId),
+            backgroundColor: '',
+            priceUsd: 0,
+            contractAddress: collection.contractAddress,
+            possibleSpam: collection.possibleSpam,
+            verifiedContract: collection.verifiedContract,
+          },
+          collection: collection.nfts.map((nft) => ({
+            id: nft.tokenId,
+            metadata: {
+              name: nft.name ?? '',
+              description: '',
+              image: nft.imageUrl ?? '',
+              attributes: [],
+            },
+          })),
+        } as EvmErc721Token,
+      ];
+    }
+
+    if (collection.contractType === 'ERC1155') {
+      return [
+        {
+          tokenInfo: {
+            type: EVMSmartContractType.ERC1155,
+            name: collection.name ?? '',
+            symbol: collection.symbol ?? '',
+            logo: '',
+            chainId: String(response.chainId),
+            backgroundColor: '',
+            priceUsd: 0,
+            contractAddress: collection.contractAddress,
+            possibleSpam: collection.possibleSpam,
+            verifiedContract: collection.verifiedContract,
+          },
+          collection: collection.nfts.map((nft) => ({
+            id: nft.tokenId,
+            balance: Number.parseInt(nft.balance, 10) || 0,
+            metadata: {
+              name: nft.name ?? '',
+              description: '',
+              image: nft.imageUrl ?? '',
+              attributes: [],
+            },
+          })),
+        } as EvmErc1155Token,
+      ];
+    }
+
+    return [];
+  });
+};
+
 // export const loadEvmActiveAccount2 =
 //   (chain: EvmChain, wallet: HDNodeWallet): AppThunk =>
 //   async (dispatch, getState) => {
@@ -61,18 +143,18 @@ const getLoadMoreTokensRetryDelay = (retryCount: number): number => {
 //         isReady: false,
 //       } as EvmActiveAccount,
 //     });
-
+//
 //     const allTokens = await EvmTokensUtils.discoverTokens(
 //       process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
 //       chain,
 //     );
-
+//
 //     const allTokensInfo = await EvmTokensUtils.getTokensFullDetails(
 //       allTokens,
 //       chain,
 //       chain.manualDiscoverAvailable || chain.addTokensManually,
 //     );
-
+//
 //     Promise.all([
 //       EvmTokensUtils.getTokenBalances(
 //         process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
@@ -265,17 +347,10 @@ export const loadMoreTokensInActiveAccount =
       },
     });
 
-    if (
-      !result.catchupStatus ||
-      result.catchupStatus === CatchupStatus.RUNNING ||
-      !result.pricingStatus ||
-      result.pricingStatus !== PricingStatus.READY
-    ) {
+    if (shouldLoadMoreDiscoveredAssets(result)) {
       const retryDelay = getLoadMoreTokensRetryDelay(retryCount);
       setTimeout(() => {
-        dispatch(
-          loadMoreTokensInActiveAccount(chain, wallet, retryCount + 1),
-        );
+        dispatch(loadMoreTokensInActiveAccount(chain, wallet, retryCount + 1));
       }, retryDelay);
     }
   };
@@ -338,15 +413,40 @@ export const loadEvmActiveAccount =
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: { isReady: true },
     });
-    if (
-      !result.catchupStatus ||
-      result.catchupStatus === CatchupStatus.RUNNING ||
-      !result.pricingStatus ||
-      result.pricingStatus !== PricingStatus.READY
-    ) {
+    if (shouldLoadMoreDiscoveredAssets(result)) {
       setTimeout(() => {
         dispatch(loadMoreTokensInActiveAccount(chain, wallet));
       }, 1000);
+    }
+  };
+
+export const loadMoreNftsInActiveAccount =
+  (chain: EvmChain, wallet: HDNodeWallet, retryCount = 0): AppThunk =>
+  async (dispatch, getState) => {
+    const result = await EvmLightNodeUtils.getDiscoveredNfts(
+      chain.chainId,
+      process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
+    );
+    console.log(result);
+    const nfts = mapDiscoveredNftsResponseToActiveAccountNfts(result);
+    const shouldLoadMore = shouldLoadMoreDiscoveredAssets(result);
+
+    dispatch({
+      type: EvmActionType.SET_ACTIVE_ACCOUNT,
+      payload: {
+        nfts: {
+          value: nfts,
+          loading: shouldLoadMore ? nfts.length === 0 : false,
+          initialized: true,
+        },
+      },
+    });
+
+    if (shouldLoadMore) {
+      const retryDelay = getLoadMoreTokensRetryDelay(retryCount);
+      setTimeout(() => {
+        dispatch(loadMoreNftsInActiveAccount(chain, wallet, retryCount + 1));
+      }, retryDelay);
     }
   };
 
@@ -357,12 +457,26 @@ export const loadEvmActiveAccountNfts =
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: { nfts: { value: [], loading: true, initialized: false } },
     });
-    const nfts = await EvmLightNodeUtils.getDiscoveredNfts(
+    const result = await EvmLightNodeUtils.getDiscoveredNfts(
       chain.chainId,
       process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
     );
+    const nfts = mapDiscoveredNftsResponseToActiveAccountNfts(result);
+    const shouldLoadMore = shouldLoadMoreDiscoveredAssets(result);
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
-      payload: { nfts: { value: nfts, loading: false, initialized: true } },
+      payload: {
+        nfts: {
+          value: nfts,
+          loading: shouldLoadMore ? nfts.length === 0 : false,
+          initialized: true,
+        },
+      },
     });
+
+    if (shouldLoadMore) {
+      setTimeout(() => {
+        dispatch(loadMoreNftsInActiveAccount(chain, wallet));
+      }, 1000);
+    }
   };

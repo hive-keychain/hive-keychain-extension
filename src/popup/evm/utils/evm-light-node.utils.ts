@@ -1,10 +1,6 @@
 import { KeychainApi } from '@api/keychain';
 import { EvmLightNodeRegisteredAddresses } from '@popup/evm/interfaces/evm-light-node.interface';
-import {
-  EvmSmartContractInfo,
-  EvmSmartContractInfoErc1155,
-  EvmSmartContractInfoErc721,
-} from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -140,6 +136,31 @@ export type DiscoveredTokensResponse = {
   catchupStatus: CatchupStatus;
   pricingStatus: PricingStatus;
 };
+
+export type DiscoveredNftsResponse = {
+  chainId: number;
+  address: string;
+  catchupStatus: string | null;
+  collections: NftDiscoveryCollectionResponse[];
+};
+
+export type NftDiscoveryCollectionResponse = {
+  contractAddress: string;
+  contractType: 'ERC721' | 'ERC1155' | 'UNKNOWN';
+  name: string | null;
+  symbol: string | null;
+  verifiedContract: boolean;
+  possibleSpam: boolean;
+  nfts: NftDiscoveryItemResponse[];
+};
+
+export type NftDiscoveryItemResponse = {
+  tokenId: string;
+  balance: string;
+  name: string | null;
+  imageUrl: string | null;
+};
+
 // Done
 const getDiscoveredTokens = async (
   chainId: string | number,
@@ -155,12 +176,11 @@ const getDiscoveredTokens = async (
 const getDiscoveredNfts = async (
   chainId: string | number,
   address: string,
-): Promise<(EvmSmartContractInfoErc721 | EvmSmartContractInfoErc1155)[]> => {
-  const nfts: (EvmSmartContractInfoErc721 | EvmSmartContractInfoErc1155)[] =
-    await KeychainApi.get(
-      `evm/light-node/discovery/nfts/${chainId}/${encodeURIComponent(address)}`,
-    );
-  return nfts;
+): Promise<DiscoveredNftsResponse> => {
+  const response: DiscoveredNftsResponse = await KeychainApi.get(
+    `evm/light-node/discovery/nfts/${chainId}/${encodeURIComponent(address)}`,
+  );
+  return response;
 };
 
 const getNftDetail = async (
