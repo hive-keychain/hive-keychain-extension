@@ -95,9 +95,9 @@ export const SendTransaction = (props: Props) => {
 
     setChain(chainTmp as EvmChain);
 
-    const mainToken = await EvmTokensUtils.getMainTokenInfo(
+    const mainToken = (await EvmTokensUtils.getMainTokenInfo(
       (chainTmp as EvmChain)!,
-    );
+    )) as EvmSmartContractInfo;
 
     const params = request.params[0];
 
@@ -587,7 +587,9 @@ export const SendTransaction = (props: Props) => {
         );
 
         setTokenInfo(
-          await EvmTokensUtils.getMainTokenInfo(chainTmp as EvmChain),
+          (await EvmTokensUtils.getMainTokenInfo(
+            chainTmp as EvmChain,
+          )) as EvmSmartContractInfo,
         );
 
         setShouldDisplayBalanceChange(true);
@@ -637,7 +639,9 @@ export const SendTransaction = (props: Props) => {
         );
 
         setTokenInfo(
-          await EvmTokensUtils.getMainTokenInfo(chainTmp as EvmChain),
+          (await EvmTokensUtils.getMainTokenInfo(
+            chainTmp as EvmChain,
+          )) as EvmSmartContractInfo,
         );
 
         tData.from = params.from;

@@ -23,7 +23,6 @@ interface Props {
     screen: EvmScreen,
   ) => void;
   chain: EvmChain;
-  manualDiscoverNfts: () => void;
   loadEvmActiveAccountNfts: (chain: EvmChain, wallet: HDNodeWallet) => void;
 }
 
@@ -31,7 +30,6 @@ export const EvmWalletNftGalleryComponent = ({
   activeAccount,
   chain,
   onClickOnNftPreview,
-  manualDiscoverNfts,
   loadEvmActiveAccountNfts,
 }: Props) => {
   const [displayedCollections, setDisplayedCollections] =
@@ -99,9 +97,7 @@ export const EvmWalletNftGalleryComponent = ({
               chain.manualDiscoverAvailable || chain.addTokensManually
                 ? {
                     icon: SVGIcons.WALLET_ADD,
-                    onClick: chain.manualDiscoverAvailable
-                      ? manualDiscoverNfts
-                      : openAddCustomTokenPanel,
+                    onClick: openAddCustomTokenPanel,
                   }
                 : undefined
             }

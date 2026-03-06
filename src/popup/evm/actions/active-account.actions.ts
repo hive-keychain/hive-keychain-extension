@@ -6,10 +6,7 @@ import {
   NativeAndErc20Token,
 } from '@popup/evm/interfaces/active-account.interface';
 import { EvmUserHistory } from '@popup/evm/interfaces/evm-tokens-history.interface';
-import {
-  EvmSmartContractInfo,
-  EVMSmartContractType,
-} from '@popup/evm/interfaces/evm-tokens.interface';
+import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   CatchupStatus,
   DiscoveredNftsResponse,
@@ -21,9 +18,7 @@ import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { AppThunk } from '@popup/multichain/actions/interfaces';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
-import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { HDNodeWallet } from 'ethers';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const EMPTY_EVM_HISTORY: EvmUserHistory = {
   events: [],
@@ -122,167 +117,6 @@ const mapDiscoveredNftsResponseToActiveAccountNfts = (
   });
 };
 
-// export const loadEvmActiveAccount2 =
-//   (chain: EvmChain, wallet: HDNodeWallet): AppThunk =>
-//   async (dispatch, getState) => {
-//     await EvmActiveAccountUtils.saveActiveAccountWallet(chain, wallet.address);
-//     dispatch({
-//       type: EvmActionType.SET_ACTIVE_ACCOUNT,
-//       payload: {
-//         address: wallet.address,
-//         nativeAndErc20Tokens: {
-//           value: [] as NativeAndErc20Token[],
-//           loading: true,
-//         },
-//         nfts: {
-//           value: [] as (EvmErc721Token | EvmErc1155Token)[],
-//           loading: true,
-//         },
-//         history: { value: {} as EvmUserHistory, loading: true },
-//         wallet: wallet,
-//         isReady: false,
-//       } as EvmActiveAccount,
-//     });
-//
-//     const allTokens = await EvmTokensUtils.discoverTokens(
-//       process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
-//       chain,
-//     );
-//
-//     const allTokensInfo = await EvmTokensUtils.getTokensFullDetails(
-//       allTokens,
-//       chain,
-//       chain.manualDiscoverAvailable || chain.addTokensManually,
-//     );
-//
-//     Promise.all([
-//       EvmTokensUtils.getTokenBalances(
-//         process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
-//         chain,
-//         allTokensInfo.filter(
-//           (token) =>
-//             token.type === EVMSmartContractType.ERC20 ||
-//             token.type === EVMSmartContractType.NATIVE,
-//         ),
-//       ).then((res) => {
-//         dispatch({
-//           type: EvmActionType.SET_ACTIVE_ACCOUNT_TOKENS,
-//           payload: { nativeAndErc20Tokens: { value: res, loading: false } },
-//         });
-//       }),
-//       EvmTokensUtils.getNfts(wallet, chain, allTokensInfo, allTokens).then(
-//         ([erc721, erc1155]) => {
-//           dispatch({
-//             type: EvmActionType.SET_ACTIVE_ACCOUNT_NFT,
-//             payload: {
-//               nfts: { value: [...erc721, ...erc1155], loading: false },
-//             },
-//           });
-//         },
-//       ),
-//       chain.manualLoadHistory
-//         ? Promise.resolve()
-//         : EvmTokensHistoryUtils.fetchHistory(
-//             process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
-//             chain,
-//           ).then((res) => {
-//             dispatch({
-//               type: EvmActionType.SET_ACTIVE_ACCOUNT_HISTORY,
-//               payload: { history: { value: res, loading: false } },
-//             });
-//           }),
-//     ]).then(() => {
-//       dispatch({
-//         type: EvmActionType.SET_ACTIVE_ACCOUNT,
-//         payload: { isInitialized: true },
-//       });
-//     });
-//   };
-
-export const manualDiscoverErc20Tokens =
-  (): AppThunk => async (dispatch, getState) => {
-    dispatch({
-      type: EvmActionType.SET_ACTIVE_ACCOUNT,
-      payload: { nativeAndErc20Tokens: { value: [], loading: true } },
-    });
-
-    const tokens = await EvmTokensUtils.manualDiscoverErc20Tokens(
-      getState().evm.activeAccount.wallet.address,
-      getState().chain,
-    );
-
-    const allTokensInfo = await EvmTokensUtils.getTokensFullDetails(
-      tokens,
-      getState().chain,
-    );
-
-    const tokenBalances = (await EvmTokensUtils.getTokenBalances(
-      process.env.FORCED_EVM_WALLET_ADDRESS ??
-        getState().evm.activeAccount.wallet.address,
-      getState().chain,
-      allTokensInfo.filter(
-        (token) =>
-          token.type === EVMSmartContractType.ERC20 ||
-          token.type === EVMSmartContractType.NATIVE,
-      ),
-    )) as NativeAndErc20Token[];
-    dispatch({
-      type: EvmActionType.SET_ACTIVE_ACCOUNT,
-      payload: {
-        nativeAndErc20Tokens: { value: tokenBalances, loading: false },
-      },
-    });
-  };
-
-export const manualDiscoverNfts =
-  (): AppThunk => async (dispatch, getState) => {
-    dispatch({
-      type: EvmActionType.SET_ACTIVE_ACCOUNT,
-      payload: { nfts: { value: [], loading: true } },
-    });
-
-    const nftList = await EvmTokensUtils.manualDiscoverNfts(
-      process.env.FORCED_EVM_WALLET_ADDRESS ??
-        getState().evm.activeAccount.wallet.address,
-      getState().chain,
-    );
-
-    let allMetadata = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.EVM_TOKENS_METADATA,
-    );
-
-    if (!allMetadata) {
-      allMetadata = {};
-    }
-    if (!allMetadata[(getState().chain as EvmChain).chainId]) {
-      allMetadata[(getState().chain as EvmChain).chainId] =
-        [] as EvmSmartContractInfo[];
-    }
-
-    for (const nft of nftList) {
-      const index = allMetadata[
-        (getState().chain as EvmChain).chainId
-      ].findIndex(
-        (m: EvmSmartContractInfo) =>
-          m.type !== EVMSmartContractType.NATIVE &&
-          m.contractAddress === nft.tokenInfo.contractAddress,
-      );
-      if (index === -1) {
-        allMetadata[(getState().chain as EvmChain).chainId].push(nft.tokenInfo);
-      }
-    }
-
-    await LocalStorageUtils.saveValueInLocalStorage(
-      LocalStorageKeyEnum.EVM_TOKENS_METADATA,
-      allMetadata,
-    );
-
-    dispatch({
-      type: EvmActionType.SET_ACTIVE_ACCOUNT,
-      payload: { nfts: { value: nftList, loading: false } },
-    });
-  };
-
 export const loadEvmHistory = (): AppThunk => async (dispatch, getState) => {
   dispatch({
     type: EvmActionType.SET_ACTIVE_ACCOUNT,
@@ -303,8 +137,6 @@ export const loadEvmHistory = (): AppThunk => async (dispatch, getState) => {
     getState().evm.activeAccount.history.value ?? null,
   );
 
-  console.log(newHistory);
-
   dispatch({
     type: EvmActionType.SET_ACTIVE_ACCOUNT,
     payload: {
@@ -321,7 +153,6 @@ export const loadEvmHistory = (): AppThunk => async (dispatch, getState) => {
 export const loadMoreTokensInActiveAccount =
   (chain: EvmChain, wallet: HDNodeWallet, retryCount = 0): AppThunk =>
   async (dispatch, getState) => {
-    console.log('loadMoreTokensInActiveAccount');
     const result = await EvmLightNodeUtils.getDiscoveredTokens(
       chain.chainId,
       process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
@@ -427,7 +258,6 @@ export const loadMoreNftsInActiveAccount =
       chain.chainId,
       process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
     );
-    console.log(result);
     const nfts = mapDiscoveredNftsResponseToActiveAccountNfts(result);
     const shouldLoadMore = shouldLoadMoreDiscoveredAssets(result);
 

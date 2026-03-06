@@ -5,8 +5,6 @@ import {
   loadEvmActiveAccount,
   loadEvmActiveAccountNfts,
   loadEvmHistory,
-  manualDiscoverErc20Tokens,
-  manualDiscoverNfts,
 } from '@popup/evm/actions/active-account.actions';
 import { EvmErc721Token } from '@popup/evm/interfaces/active-account.interface';
 import { EvmUserHistoryItem } from '@popup/evm/interfaces/evm-tokens-history.interface';
@@ -80,8 +78,6 @@ const Home = ({
   navigateToWithParams,
   loadEvmHistory,
   setErrorMessage,
-  manualDiscoverErc20Tokens,
-  manualDiscoverNfts,
   addToLoadingList,
   removeFromLoadingList,
   setSuccessMessage,
@@ -427,8 +423,6 @@ const Home = ({
           chain={chain}
           loadEvmHistory={loadEvmHistory}
           pendingTransactionsItems={pendingTransactionsItems}
-          manualDiscoverErc20Tokens={manualDiscoverErc20Tokens}
-          manualDiscoverNfts={manualDiscoverNfts}
           loadEvmActiveAccountNfts={loadEvmActiveAccountNfts}
         />
       </div>
@@ -462,8 +456,6 @@ const connector = connect(mapStateToProps, {
   navigateTo,
   navigateToWithParams,
   loadEvmHistory,
-  manualDiscoverErc20Tokens,
-  manualDiscoverNfts,
   addToLoadingList,
   removeFromLoadingList,
   setSuccessMessage,

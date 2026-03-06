@@ -16,14 +16,12 @@ interface Props {
   chain: EvmChain;
   prices: EvmPrices;
   activeAccount: EvmActiveAccount;
-  manualDiscoverErc20Tokens: () => void;
 }
 
 export const EvmWalletTokensComponent = ({
   chain,
   prices,
   activeAccount,
-  manualDiscoverErc20Tokens,
 }: Props) => {
   const [displayedTokens, setDisplayedTokens] = useState<NativeAndErc20Token[]>(
     [],
@@ -87,9 +85,7 @@ export const EvmWalletTokensComponent = ({
               chain.manualDiscoverAvailable || chain.addTokensManually
                 ? {
                     icon: SVGIcons.WALLET_ADD,
-                    onClick: chain.manualDiscoverAvailable
-                      ? manualDiscoverErc20Tokens
-                      : openAddCustomTokenPanel,
+                    onClick: openAddCustomTokenPanel,
                   }
                 : undefined
             }
