@@ -63,14 +63,16 @@ const AutoLock = ({
           onChange={() =>
             setSelectedType(AutoLockType.DEFAULT)
           }></CheckboxPanelComponent>
-        <CheckboxPanelComponent
-          dataTestId={`checkbox-auto-lock-${AutoLockType.DEVICE_LOCK}`}
-          title="popup_html_al_locked_title"
-          hint="popup_html_al_locked_info"
-          checked={selectedType === AutoLockType.DEVICE_LOCK}
-          onChange={() =>
-            setSelectedType(AutoLockType.DEVICE_LOCK)
-          }></CheckboxPanelComponent>
+        {!process.env.IS_FIREFOX && (
+          <CheckboxPanelComponent
+            dataTestId={`checkbox-auto-lock-${AutoLockType.DEVICE_LOCK}`}
+            title="popup_html_al_locked_title"
+            hint="popup_html_al_locked_info"
+            checked={selectedType === AutoLockType.DEVICE_LOCK}
+            onChange={() =>
+              setSelectedType(AutoLockType.DEVICE_LOCK)
+            }></CheckboxPanelComponent>
+        )}
         <CheckboxPanelComponent
           dataTestId={`checkbox-auto-lock-${AutoLockType.IDLE_LOCK}`}
           title="popup_html_al_idle_title"

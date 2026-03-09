@@ -13,9 +13,10 @@ import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { MultisigRequestSignatures } from '@interfaces/multisig.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
-import MkUtils from '@popup/hive/utils/mk.utils';
+import HiveUtils from '@popup/hive/utils/hive.utils';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import {
   Transaction as HiveTransaction,
@@ -30,6 +31,7 @@ import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import { AsyncUtils } from 'src/utils/async.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
+import VaultUtils from 'src/utils/vault.utils';
 
 const MINUTE = 60;
 
@@ -100,7 +102,7 @@ const createSignAndBroadcastTransaction = async (
 
   const localAccount = (
     await AccountUtils.getAccountsFromLocalStorage(
-      await MkUtils.getMkFromLocalStorage(),
+      await VaultUtils.getValueFromVault(VaultKey.__MK),
     )
   ).find(
     (account) => account.keys.posting === key || account.keys.active === key,
@@ -117,9 +119,14 @@ const createSignAndBroadcastTransaction = async (
     method.toLowerCase() as KeychainKeyTypesLC,
   );
   if (isUsingMultisig) {
+    const hardforkVersion = await HiveUtils.getHardforkVersion();
+    Logger.log(`hardforkVersion => ${hardforkVersion}`);
     transaction = await hiveTransaction.create(
       operations,
-      Config.transactions.multisigExpirationTimeInMinutes * MINUTE,
+      hardforkVersion >= 28
+        ? Config.transactions.multisigExpirationTimeInMinutesForHardfork28 *
+            MINUTE
+        : Config.transactions.multisigExpirationTimeInMinutes * MINUTE,
     );
     const signedTransaction = await signTransaction(transaction, key);
     if (!signedTransaction) {
@@ -330,21 +337,27 @@ const getData = async (
   params: any[] | object,
   key?: string,
 ) => {
-  const response = await call(method, params, 3000);
-  if (response?.result) {
-    return key ? response.result[key] : response.result;
-  } else {
-    if (window && window.document) {
-      import('src/utils/rpc-switcher.utils').then(({ useWorkingRPC }) => {
-        useWorkingRPC();
-      });
+  try {
+    const response = await call(method, params, 3000);
+    if (response?.result) {
+      return key ? response.result[key] : response.result;
+    } else {
+      switchToWorkingRpc(method, response.error);
     }
-    throw new Error(
-      `Error while retrieving data from ${method} : ${JSON.stringify(
-        response.error,
-      )}`,
-    );
+  } catch (err) {
+    switchToWorkingRpc(method, err);
   }
+};
+
+const switchToWorkingRpc = async (method: string, error: any) => {
+  if (window && window.document) {
+    import('src/utils/rpc-switcher.utils').then(({ useWorkingRPC }) => {
+      useWorkingRPC();
+    });
+  }
+  throw new Error(
+    `Error while retrieving data from ${method} : ${JSON.stringify(error)}`,
+  );
 };
 
 const useMultisigThroughBackgroundOnly = async (

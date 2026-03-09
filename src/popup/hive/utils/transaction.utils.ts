@@ -8,6 +8,10 @@ import {
   CreateClaimedAccount,
   Delegation,
   DepositSavings,
+  EscrowApprove,
+  EscrowDispute,
+  EscrowRelease,
+  EscrowTransfer,
   FillCollateralizedConvert,
   FillConvert,
   FillRecurrentTransfer,
@@ -69,6 +73,10 @@ const getAccountTransactions = async (
       op.fill_collateralized_convert_request,
       op.account_create,
       op.create_claimed_account,
+      op.escrow_approve,
+      op.escrow_dispute,
+      op.escrow_release,
+      op.escrow_transfer,
     ]) as [number, number];
 
     let limit = Math.min(start, NB_TRANSACTION_FETCHED);
@@ -81,6 +89,7 @@ const getAccountTransactions = async (
       operationsBitmask[0],
       operationsBitmask[1],
     );
+
     const transactions = transactionsFromBlockchain
       .map((e: any) => {
         let specificTransaction = null;
@@ -217,6 +226,22 @@ const getAccountTransactions = async (
             specificTransaction = e[1].op[1] as CreateAccount;
             break;
           }
+          case 'escrow_transfer': {
+            specificTransaction = e[1].op[1] as EscrowTransfer;
+            break;
+          }
+          case 'escrow_approve': {
+            specificTransaction = e[1].op[1] as EscrowApprove;
+            break;
+          }
+          case 'escrow_dispute': {
+            specificTransaction = e[1].op[1] as EscrowDispute;
+            break;
+          }
+          case 'escrow_release': {
+            specificTransaction = e[1].op[1] as EscrowRelease;
+            break;
+          }
         }
         const tr: Transaction = {
           ...specificTransaction,
@@ -228,8 +253,8 @@ const getAccountTransactions = async (
           blockNumber: e[1].block,
           url:
             e[1].trx_id === '0000000000000000000000000000000000000000'
-              ? `https://hiveblocks.com/b/${e[1].block}#${e[1].trx_id}`
-              : `https://hiveblocks.com/tx/${e[1].trx_id}`,
+              ? `https://hivehub.dev/b/${e[1].block}#${e[1].trx_id}`
+              : `https://hivehub.dev/tx/${e[1].trx_id}`,
           last: false,
           lastFetched: false,
         };

@@ -2,6 +2,7 @@ export interface HiveEngineConfig {
   rpc: string;
   mainnet: string;
   accountHistoryApi: string;
+  maxSpread: number;
 }
 
 export const DefaultHiveEngineRpcs: HiveEngineConfig['rpc'][] = [

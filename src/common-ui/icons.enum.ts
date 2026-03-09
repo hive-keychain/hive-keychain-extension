@@ -20,6 +20,7 @@ export enum SVGIcons {
   FAVORITE_ACCOUNTS_SAVE = 'favorite-accounts/save',
 
   GLOBAL_ARROW = 'global/arrow',
+  GLOBAL_ARROW_RIGHT = 'global/arrow-right',
   GLOBAL_DELETE = 'global/delete',
   GLOBAL_ERROR = 'global/error',
   GLOBAL_ADD_CIRCLE = 'global/add-circle',
@@ -75,6 +76,7 @@ export enum SVGIcons {
   MENU_ADVANCED_SETTINGS_KEYCHAINIFY = 'menu/advanced-settings/keychainify',
   MENU_ADVANCED_SETTINGS_LINK_LEDGER_DEVICE = 'menu/advanced-settings/link-ledger-device',
   MENU_ADVANCED_SETTINGS_RPC_NODE = 'menu/advanced-settings/rpc-nodes',
+  MENU_ADVANCED_SETTINGS_SHORTCUTS = 'menu/advanced-settings/shortcuts',
   MENU_ADVANCED_SETTINGS_IMPORT_SETTINGS = 'menu/advanced-settings/import-settings',
   MENU_ADVANCED_SETTINGS_EXPORT_SETTINGS = 'menu/advanced-settings/export-settings',
 
@@ -100,6 +102,7 @@ export enum SVGIcons {
   MENU_BOTTOM_BAR_DISCORD = 'menu/bottom-bar/discord',
   MENU_BOTTOM_BAR_HIVE = 'menu/bottom-bar/hive',
   MENU_BOTTOM_BAR_TWITTER = 'menu/bottom-bar/twitter',
+  MENU_BOTTOM_BAR_MEDIUM = 'menu/bottom-bar/medium',
 
   MENU_RPC_ADD_BUTTON = 'menu/rpc/add-button',
   MENU_RPC_CLOSE_BUTTON = 'menu/rpc/close-button',
@@ -177,6 +180,8 @@ export enum SVGIcons {
   WALLET_HISTORY_UNSTAKE = 'wallet/history/unstake',
   WALLET_HISTORY_EXPAND_COLLAPSE = 'wallet/history/expand-collapse',
   WALLET_HISTORY_TOP = 'wallet/history/back-to-top',
+
+  WALLET_HISTORY_ESCROW = 'wallet/history/escrow',
 
   // LOGOS
   BINANCE = 'binance',

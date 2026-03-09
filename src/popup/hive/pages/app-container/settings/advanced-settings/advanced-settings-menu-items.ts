@@ -15,6 +15,11 @@ const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
       nextScreen: Screen.SETTINGS_AUTO_LOCK,
     },
     {
+      label: 'popup_html_shortcuts',
+      icon: SVGIcons.MENU_ADVANCED_SETTINGS_SHORTCUTS,
+      nextScreen: Screen.SETTINGS_SHORTCUTS,
+    },
+    {
       label: 'popup_html_change_password',
       icon: SVGIcons.MENU_ADVANCED_SETTINGS_CHANGE_PASSWORD,
       nextScreen: Screen.SETTINGS_CHANGE_PASSWORD,
@@ -24,11 +29,11 @@ const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
       icon: SVGIcons.MENU_ADVANCED_SETTINGS_KEYCHAINIFY,
       nextScreen: Screen.SETTINGS_KEYCHAINIFY,
     },
-    {
-      label: 'popup_html_analytics',
-      icon: SVGIcons.MENU_ADVANCED_SETTINGS_ANALYTICS,
-      nextScreen: Screen.SETTINGS_ANALYTICS,
-    },
+    // {
+    //   label: 'popup_html_analytics',
+    //   icon: SVGIcons.MENU_ADVANCED_SETTINGS_ANALYTICS,
+    //   nextScreen: Screen.SETTINGS_ANALYTICS,
+    // },
     {
       label: 'ledger_link_ledger_device',
       icon: SVGIcons.MENU_ADVANCED_SETTINGS_LINK_LEDGER_DEVICE,

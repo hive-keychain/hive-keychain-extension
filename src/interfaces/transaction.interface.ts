@@ -1,4 +1,5 @@
 import type { OperationName, VirtualOperationName } from '@hiveio/dhive';
+import { Asset } from 'hive-keychain-commons';
 
 export type CustomTransactionType = 'savings' | 'power_up_down';
 export interface Transactions {
@@ -30,6 +31,18 @@ export interface RecurrentTransfer extends Transfer {
   recurrence: number;
 }
 
+export interface PendingRecurrentTransfer {
+  amount: Asset;
+  consecutive_failures: number;
+  from: string;
+  id: number;
+  memo: string;
+  pair_id: number;
+  recurrence: number;
+  remaining_executions: number;
+  to: string;
+  trigger_date: string;
+}
 export interface FillRecurrentTransfer extends Transfer {
   remainingExecutions: number;
 }
@@ -104,4 +117,41 @@ export interface CreateAccount extends Transaction {
 export interface ProducerReward extends Transaction {
   producer: string;
   vesting_shares: string;
+}
+export interface EscrowTransfer extends Transaction {
+  from: string;
+  to: string;
+  escrow_id: number;
+  agent: string;
+  hbd_amount: string;
+  hive_amount: string;
+  fee: string;
+  ratification_deadline: string;
+  escrow_expiration: string;
+  json_meta: string;
+}
+export interface EscrowApprove extends Transaction {
+  from: string;
+  to: string;
+  escrow_id: number;
+  approve: boolean;
+  who: string;
+  agent: string;
+}
+export interface EscrowDispute extends Transaction {
+  from: string;
+  to: string;
+  escrow_id: number;
+  who: string;
+  agent: string;
+}
+export interface EscrowRelease extends Transaction {
+  from: string;
+  to: string;
+  escrow_id: number;
+  who: string;
+  receiver: string;
+  agent: string;
+  hbd_amount: string;
+  hive_amount: string;
 }

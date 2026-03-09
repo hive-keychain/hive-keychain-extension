@@ -6,6 +6,10 @@ import {
   CreateClaimedAccount,
   Delegation,
   DepositSavings,
+  EscrowApprove,
+  EscrowDispute,
+  EscrowRelease,
+  EscrowTransfer,
   FillCollateralizedConvert,
   FillConvert,
   FillRecurrentTransfer,
@@ -30,6 +34,10 @@ import { CreateAccountTransactionComponent } from 'src/popup/hive/pages/app-cont
 import { CreateClaimedAccountTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/create-claimed-account-transaction/create-claimed-account-transaction.component';
 import { DelegationTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/delegation-transaction/delegation-transaction.component';
 import { DepositSavingsTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/deposit-savings-transaction/deposit-savings-transaction.component';
+import { EscrowApproveTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/escrow-approve-transaction/escrow-approve-transaction.component';
+import { EscrowDisputeTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/escrow-dispute-transaction/escrow-dispute-transaction.component';
+import { EscrowReleaseTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/escrow-release-transaction/escrow-release-transaction.component';
+import { EscrowTransferTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/escrow-transfer-transaction/escrow-transfer-transaction.component';
 import { FillCollateralizedConvertTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/fill-collateralized-convert-transaction/fill-collateralized-convert-transaction.component';
 import { FillConvertTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/fill-convert-transaction/fill-convert-transaction.component';
 import { FillRecurrentTransferTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/fill-recurrent-transfer-transaction/fill-recurrent-transfer-transaction.component';
@@ -167,6 +175,30 @@ const WalletTransactionInfo = ({
         return (
           <CreateClaimedAccountTransactionComponent
             transaction={transaction as CreateClaimedAccount}
+          />
+        );
+      case 'escrow_transfer':
+        return (
+          <EscrowTransferTransactionComponent
+            transaction={transaction as EscrowTransfer}
+          />
+        );
+      case 'escrow_approve':
+        return (
+          <EscrowApproveTransactionComponent
+            transaction={transaction as EscrowApprove}
+          />
+        );
+      case 'escrow_dispute':
+        return (
+          <EscrowDisputeTransactionComponent
+            transaction={transaction as EscrowDispute}
+          />
+        );
+      case 'escrow_release':
+        return (
+          <EscrowReleaseTransactionComponent
+            transaction={transaction as EscrowRelease}
           />
         );
     }

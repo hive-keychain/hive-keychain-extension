@@ -70,7 +70,7 @@ const RpcNodes = ({
         label: rpc.uri,
         value: rpc.uri,
         rpc: rpc,
-        canDelete: RpcUtils.isDefault(rpc),
+        canDelete: rpc.custom,
       };
     }),
   );
@@ -155,7 +155,7 @@ const RpcNodes = ({
           label: rpc.uri,
           value: rpc.uri,
           rpc: rpc,
-          canDelete: !RpcUtils.isDefault(rpc),
+          canDelete: rpc.custom ?? false,
         };
       }),
     );
@@ -284,7 +284,7 @@ const RpcNodes = ({
           {activeRpc && !switchAuto && hiveRpcOptions && (
             <div className="select-rpc-panel">
               <ComplexeCustomSelect
-                options={hiveRpcOptions}
+                options={hiveRpcOptions as RpcListItem[]}
                 selectedItem={
                   {
                     value: activeRpc.uri,

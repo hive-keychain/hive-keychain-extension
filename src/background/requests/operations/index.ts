@@ -27,6 +27,7 @@ import {
 } from '@background/requests/operations/ops/proposals';
 import { broadcastProxy } from '@background/requests/operations/ops/proxy';
 import { recurrentTransfer } from '@background/requests/operations/ops/recurrent-transfer';
+import { broadcastSavings } from '@background/requests/operations/ops/savings';
 import { broadcastSendToken } from '@background/requests/operations/ops/send-token';
 import { signBuffer } from '@background/requests/operations/ops/sign-buffer';
 import { signTx } from '@background/requests/operations/ops/sign-tx';
@@ -67,6 +68,9 @@ export const performOperation = async (
         break;
       case KeychainRequestTypes.transfer:
         message = await broadcastTransfer(requestHandler, data, options);
+        break;
+      case KeychainRequestTypes.savings:
+        message = await broadcastSavings(requestHandler, data, options);
         break;
       case KeychainRequestTypes.post:
         message = await broadcastPost(requestHandler, data, options);

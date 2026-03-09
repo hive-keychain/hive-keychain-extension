@@ -59,6 +59,9 @@
             .left-image {
               height: 32px !important;
               width: 32px !important;
+              &.shimmer {
+                @include icon-size(32px);
+              }
             }
           }
           .option {
@@ -106,6 +109,9 @@
               width: 32px;
               border-radius: 50%;
               margin-left: 10px;
+              &.shimmer {
+                @include icon-size(32px);
+              }
             }
 
             .item-label {

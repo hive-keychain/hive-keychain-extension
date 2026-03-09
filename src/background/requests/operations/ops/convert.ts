@@ -1,7 +1,11 @@
 import LedgerModule from '@background/ledger.module';
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestsHandler } from '@background/requests/request-handler';
-import { RequestConvert, RequestId } from '@interfaces/keychain.interface';
+import {
+  KeychainKeyTypesLC,
+  RequestConvert,
+  RequestId,
+} from '@interfaces/keychain.interface';
 import { PrivateKeyType, TransactionOptions } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
 import { ConversionType } from 'src/popup/hive/pages/app-container/home/conversion/conversion-type.enum';
@@ -19,8 +23,15 @@ export const convert = async (
   options?: TransactionOptions,
 ) => {
   let result, err, err_message;
-  const { username, amount, collaterized } = data;
-  const key = requestHandler.data.key;
+  const { amount, collaterized } = data;
+  const username = data.username!;
+  let key = requestHandler.data.key;
+  if (!key) {
+    [key] = requestHandler.getUserKeyPair(
+      data.username!,
+      KeychainKeyTypesLC.active,
+    ) as [string, string];
+  }
   const rpc = requestHandler.data.rpc;
   const requestId = await getNextRequestID(username);
   const conversionType = collaterized

@@ -11,8 +11,10 @@ import {
 } from '@interfaces/favorite-user.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { ExchangesUtils } from 'hive-keychain-commons';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import VaultUtils from 'src/utils/vault.utils';
 
 export interface AutocompleteListOption {
   addExchanges?: boolean;
@@ -65,9 +67,7 @@ const saveFavoriteUser = async (
   username: string,
   activeAccount: ActiveAccount,
 ) => {
-  const mk = await LocalStorageUtils.getValueFromSessionStorage(
-    LocalStorageKeyEnum.__MK,
-  );
+  const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
   const localAccounts = await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
   let favoriteUser = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.FAVORITE_USERS,

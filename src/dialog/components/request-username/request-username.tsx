@@ -1,5 +1,5 @@
 import React from 'react';
-import { ComplexeCustomSelect } from 'src/common-ui/custom-select/custom-select.component';
+import OperationSelectUsername from 'src/common-ui/operation-select-username/operation-select-username';
 
 type Props = {
   accounts: string[];
@@ -8,16 +8,13 @@ type Props = {
 };
 
 const RequestUsername = ({ accounts, username, setUsername }: Props) => {
-  const accountsList = accounts.map((e) => ({ label: e, value: e }));
-
   return (
     <div className="select-account-section">
-      <ComplexeCustomSelect
-        selectedItem={{ label: username, value: username }}
-        options={accountsList}
-        setSelectedItem={(item) => setUsername(item.value)}
+      <OperationSelectUsername
+        accounts={accounts}
+        username={username}
+        setUsername={setUsername}
         label="popup_html_username"
-        background="white"
       />
     </div>
   );

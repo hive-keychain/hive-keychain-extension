@@ -223,6 +223,30 @@
     "message": "Enter your Hive account name and either the master password or the private posting or active key for that account below. Your master password will NOT be saved and will only be used to generate your private keys.<br/><br/> You may add / remove Hive accounts or keys at any time. If you need to create a new Hive account, you can do so at <a href=\"https://signup.hive.io\" target=\"_blank\" >signup.hive.io</a>.",
     "description": "When adding new account"
   },
+  "popup_html_keyless_keychain": {
+    "message": "Keyless Keychain",
+    "description": "Keyless keychain"
+  },
+  "popup_html_keyless_keychain_setup": {
+    "message": "Keychain is in keyless mode and will use HiveAuth to request transactions to be signed on your mobile device. \n Sign in to your favorite dApp with Keychain and scan the QR code to get started.",
+    "description": "When setting up keyless keychain"
+  },
+  "popup_html_keyless_keychain_register": {
+    "message": "Keychain is in keyless mode and will use HiveAuth to authenticate you. \n Scan this QR code with your mobile device to get started.",
+    "description": "When setting up keyless keychain"
+  },
+  "popup_html_keyless_keychain_setup_qr": {
+    "message": "Scan the QR code with your mobile device to connect to HiveAuth.",
+    "description": "When setting up keyless keychain"
+  },
+  "popup_html_keyless_sessions": {
+    "message": "Sessions",
+    "description": "When setting up keyless keychain"
+  },
+  "popup_html_keyless_keychain_leave_button": {
+    "message": "Leave Keyless Mode",
+    "description": "when keyless keychain is enabled"
+  },
   "popup_html_setup": {
     "message": "Setup",
     "description": "when adding new account"
@@ -436,7 +460,7 @@
     "description": "on keychainify settings"
   },
   "popup_html_enable_keychainify_info": {
-    "message": "When enabled, this feature will open a Keychain pop when you click on supported links.",
+    "message": "When enabled, this feature will open a Keychain popup when you click on supported links.",
     "description": "on keychainify settings"
   },
   "popup_html_import": {
@@ -460,7 +484,7 @@
     "description": "on import / export settings"
   },
   "popup_html_about_text": {
-    "message": "<ul><li><span class='text'>The Hive Keychain team is led by <a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a>, a full-stack developer and Hive witness, and completed by two more full-time developers, <a href=\"https://peakd.com/@cedricguillas\" target=\"_blank\">@cedricguillas</a> and <a href=\"https://peakd.com/@theghost1980\" target=\"_blank\">@theghost1980</a>, and <a href=\"https://peakd.com/@manuphotos\" target=\"_blank\">@manuphotos</a>, our Community Manager. Our work is funded by the DHF, thanks to the community support.</span></li><div class='separator horizontal'></div><li><span class='text'>Besides this extension, we provide mobile Hive wallets for Android and iOS, various Hive tools, and Keychain Store, a mobile App for brick-and-mortar businesses wishing to add HIVE and HBD as payment methods.</span></li><div class='separator horizontal'></div><li><span class='text'>For more information on our products (browser extensions and mobile Apps), visit our <a href='https://hive-keychain.com' target='__blank'>landing page</a>.</></li></ul>",
+    "message": "<ul><li><span class='text'>The Hive Keychain team is led by <a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a>, a full-stack developer and Hive witness, and completed by two more full-time developers, <a href=\"https://peakd.com/@cedricguillas\" target=\"_blank\">@cedricguillas</a> and <a href=\"https://peakd.com/@krios003\" target=\"_blank\">@krios003</a>, and <a href=\"https://peakd.com/@manuphotos\" target=\"_blank\">@manuphotos</a>, our Community Manager. Our work is funded by the DHF, thanks to the community support.</span></li><div class='separator horizontal'></div><li><span class='text'>Besides this extension, we provide mobile Hive wallets for Android and iOS, various Hive tools, and Keychain Store, a mobile App for brick-and-mortar businesses wishing to add HIVE and HBD as payment methods.</span></li><div class='separator horizontal'></div><li><span class='text'>For more information on our products (browser extensions and mobile Apps), visit our <a href='https://hive-keychain.com' target='__blank'>landing page</a>.</span></li></ul>",
     "description": "on about keychain"
   },
   "popup_html_delete_account": {
@@ -644,7 +668,7 @@
     "description": "When initiating a HIVE or HBD transfer and the balance is loading."
   },
   "popup_html_memo_optional": {
-    "message": "MEMO (optional)",
+    "message": "Memo (optional)",
     "description": "When initiating a HIVE or HBD transfer"
   },
   "popup_html_memo_key_missing": {
@@ -1085,6 +1109,14 @@
     "message": "Swap",
     "description": "When website requests a swap"
   },
+  "dialog_from_amount": {
+    "message": "From",
+    "description": "When website requests a swap"
+  },
+  "dialog_to_amount": {
+    "message": "To",
+    "description": "When website requests a swap"
+  },
   "dialog_approve": {
     "message": "Approve",
     "description": "When website request a witness vote"
@@ -1298,7 +1330,7 @@
     "description": "Website request title"
   },
   "dialog_title_proxy": {
-    "message": "Chose Proxy",
+    "message": "Choose Proxy",
     "description": "Website request title"
   },
   "dialog_title_token": {
@@ -1349,6 +1381,10 @@
     "message": "Recurrence",
     "description": "When requesting recurrent transfers"
   },
+  "dialog_pair_id": {
+    "message": "Pair ID",
+    "description": "When requesting recurrent transfers"
+  },
   "dialog_executions": {
     "message": "Executions",
     "description": "When requesting recurrent transfers"
@@ -1368,6 +1404,10 @@
   "dialog_recurrence_days_hours": {
     "message": "Every $1 day(s) and $2 hours(s)",
     "description": "When requesting recurrent transfers"
+  },
+  "bgd_keyless_keychain_error": {
+    "message": "Keyless Keychain Error",
+    "description": "Keyless Keychain Error"
   },
   "bgd_init_no_wallet": {
     "message": "No wallet!",
@@ -1472,6 +1512,9 @@
   "bgd_ops_sign_success": {
     "message": "Message signed successfully."
   },
+  "bgd_ops_sign_requested": {
+    "message": "Transaction has been requested. Please check your keychain mobile app to sign it."
+  },
   "bgd_ops_sign_error": {
     "message": "Could not sign."
   },
@@ -1543,6 +1586,16 @@
   },
   "bgd_ops_remove_auth": {
     "message": "Succesfully removed $1 authority from @$2 on account @$3."
+  },
+  "bgd_ops_keyless_broadcast_success": {
+    "message": "Keyless transaction has been broadcasted successfully."
+  },
+  "bgd_ops_keyless_broadcast_error": {
+    "message": "Keyless transaction failed to broadcast."
+  },
+  "bgd_ops_challenge_success": {
+    "message": "$1 request has been processed successfully.",
+    "description": "Success message for encode/decode/sign operations."
   },
   "popup_account_redeem": {
     "message": "You have Rewards ready to redeem in the amount of",
@@ -1774,6 +1827,43 @@
     "message": "Welcome to Keychain",
     "description": "When registering from request"
   },
+
+  "dialog_register_keyless_title": {
+    "message": "Register Keyless Keychain",
+    "description": "When registering from request"
+  },
+  "dialog_header_keyless_username": {
+    "message": "Register Keyless Keychain",
+    "description": "When registering from request"
+  },
+  "dialog_register_keyless_loading": {
+    "message": "Registering to HiveAuth",
+    "description": "When registering to keyless keychain"
+  },
+  "dialog_hiveauth_connection_failed": {
+    "message": "Failed to establish HiveAuth connection after 5 attempts",
+    "description": "When registering to keyless keychain via HiveAuth"
+  },
+  "dialog_anonymous_keyless_content": {
+    "message": "You are about to perform an anonymous keyless operation. Please enter your username to register your keyless keychain.",
+    "description": "When registering from request"
+  },
+  "dialog_keyless_unsupported_operation": {
+    "message": "$1 is not supported by keyless keychain.",
+    "description": "When trying to perform an unsupported operation"
+  },
+  "dialog_keyless_username_required": {
+    "message": "Username is required",
+    "description": "When trying to perform an unsupported anonymous operation"
+  },
+  "dialog_keyless_expired": {
+    "message": "Keyless authentication request has expired. Please try again.",
+    "description": "When keyless tx expires"
+  },
+  "dialog_keyless_expire_in": {
+    "message": "Expiring in $1 seconds",
+    "description": "When keyless tx hasnt expired yet"
+  },
   "popup_html_automated_intro": {
     "message": "Setup automated tasks that will run every hour if fitting your conditions.",
     "description": "When on automated tasks page"
@@ -1854,6 +1944,78 @@
     "message": "Advanced settings",
     "description": "Advanced settings sub menu"
   },
+  "popup_html_shortcuts": {
+    "message": "Shortcuts",
+    "description": "Shortcuts settings menu"
+  },
+  "popup_html_shortcuts_intro": {
+    "message": "Create keyboard shortcuts to navigate or change account. Be aware that some shortcuts may be intercepted by the browser and close the popup.",
+    "description": "Shortcuts settings intro"
+  },
+  "popup_html_shortcuts_add_button": {
+    "message": "Add shortcut",
+    "description": "Add shortcut button"
+  },
+  "popup_html_shortcuts_key_combo": {
+    "message": "Shortcut",
+    "description": "Shortcut key combo label"
+  },
+  "popup_html_shortcuts_key_combo_placeholder": {
+    "message": "Press a key combination",
+    "description": "Shortcut key combo placeholder"
+  },
+  "popup_html_shortcuts_action": {
+    "message": "Action",
+    "description": "Shortcut action label"
+  },
+  "popup_html_shortcuts_target": {
+    "message": "Target",
+    "description": "Shortcut target label"
+  },
+  "popup_html_shortcuts_delegation_type": {
+    "message": "Delegation type",
+    "description": "Shortcut delegation type label"
+  },
+  "popup_html_shortcuts_power_type": {
+    "message": "Power type",
+    "description": "Shortcut power type label"
+  },
+  "popup_html_shortcuts_save_button": {
+    "message": "Save shortcut",
+    "description": "Save shortcut button"
+  },
+  "popup_html_shortcuts_cancel_button": {
+    "message": "Cancel",
+    "description": "Cancel shortcut button"
+  },
+  "popup_html_shortcuts_no_shortcuts": {
+    "message": "No shortcuts yet.",
+    "description": "No shortcuts message"
+  },
+  "popup_html_shortcuts_action_navigate": {
+    "message": "Navigate",
+    "description": "Shortcut action navigate"
+  },
+  "popup_html_shortcuts_action_change_account": {
+    "message": "Change account",
+    "description": "Shortcut action change account"
+  },
+  "popup_html_shortcuts_duplicate": {
+    "message": "This shortcut is already assigned.",
+    "description": "Duplicate shortcut error"
+  },
+  "popup_html_shortcuts_missing_combo": {
+    "message": "Please enter a shortcut.",
+    "description": "Missing shortcut combo error"
+  },
+  "popup_html_shortcuts_missing_target": {
+    "message": "Please select a target.",
+    "description": "Missing shortcut target error"
+  },
+  "popup_html_shortcuts_no_accounts": {
+    "message": "No accounts available.",
+    "description": "No accounts available for shortcuts"
+  },
   "popup_html_rpc_node_text": {
     "message": "You can choose which RPC node is used to read information and broadcast transactions from/to the Hive Blockchain.",
     "description": "Text on rpc node settings page"
@@ -1929,6 +2091,10 @@
   },
   "popup_html_recurrent_transfer": {
     "message": "Recurrent transfer",
+    "description": "In transfer fund page"
+  },
+  "popup_html_recurrent_transfers": {
+    "message": "Recurrent transfers",
     "description": "In transfer fund page"
   },
   "popup_html_cancel_recurrent_transfer": {
@@ -2521,6 +2687,51 @@
     "description": "Wallet information create account"
   },
 
+  "popup_html_wallet_info_escrow_transfer_out": {
+    "message": "Sending $1 escrow to @$2",
+    "description": "Wallet information escrow transfer outgoing"
+  },
+  "popup_html_wallet_info_escrow_transfer_in": {
+    "message": "Pending $1 escrow from @$2",
+    "description": "Wallet information escrow transfer incoming"
+  },
+  "popup_html_wallet_info_escrow_transfer_other": {
+    "message": "Escrow of $1 from @$2 to @$3",
+    "description": "Wallet information escrow transfer other"
+  },
+  "popup_html_wallet_info_escrow_approve_self": {
+    "message": "Approved escrow #$1",
+    "description": "Wallet information escrow approve self"
+  },
+  "popup_html_wallet_info_escrow_approve_other": {
+    "message": "@$1 approved escrow #$2",
+    "description": "Wallet information escrow approve other"
+  },
+  "popup_html_wallet_info_escrow_reject_self": {
+    "message": "Rejected escrow #$1",
+    "description": "Wallet information escrow reject self"
+  },
+  "popup_html_wallet_info_escrow_reject_other": {
+    "message": "@$1 rejected escrow #$2",
+    "description": "Wallet information escrow reject other"
+  },
+  "popup_html_wallet_info_escrow_dispute_self": {
+    "message": "Disputed escrow #$1",
+    "description": "Wallet information escrow dispute self"
+  },
+  "popup_html_wallet_info_escrow_dispute_other": {
+    "message": "@$1 disputed escrow #$2",
+    "description": "Wallet information escrow dispute other"
+  },
+  "popup_html_wallet_info_escrow_release_self": {
+    "message": "Released $1 escrow to @$2 (#$3)",
+    "description": "Wallet information escrow release self"
+  },
+  "popup_html_wallet_info_escrow_release_other": {
+    "message": "@$1 released $2 escrow to @$3 (#$4)",
+    "description": "Wallet information escrow release other"
+  },
+
   "popup_html_filter_in": {
     "message": "In",
     "description": "Wallet filters"
@@ -2953,16 +3164,12 @@
     "message": "Master password",
     "description": "General"
   },
-  "html_popup_create_account_username_too_short": {
-    "message": "Username is too short. Needs minimum 4 characters",
-    "description": "General"
-  },
   "html_popup_create_account_username_already_used": {
     "message": "Username is already used. Please pick a new one",
     "description": "General"
   },
   "html_popup_create_account_account_name_not_valid": {
-    "message": "Account name is not valid",
+    "message": "The account name is not valid. Make sure you don't have dots and hyphens next to each other, and that dot-separated segments are 3 characters long or more.",
     "description": "General"
   },
   "html_popup_create_account_safely_copied_keys": {
@@ -3009,6 +3216,10 @@
     "message": "You need to accept the terms and condition before creating account",
     "description": "Create account payment message"
   },
+  "html_popup_create_account_need_copy": {
+    "message": "Make sure you have copied your keys before creating the account",
+    "description": "Create account payment message"
+  },
   "html_popup_create_account_successful": {
     "message": "Your account has been successfully created and added to your Keychain",
     "description": "Create account successful message"
@@ -3046,11 +3257,11 @@
     "description": "Governance expiration renewal popup"
   },
   "html_popup_wrong_key_title": {
-    "message": "Wrong key$1 found",
+    "message": "Wrong key(s) found",
     "description": "Wrong key popup"
   },
   "html_popup_wrong_key_introduction": {
-    "message": "Your account @$1 has wrong <strong>$2</strong> key$3. Would you like to update the key$4 right now?",
+    "message": "Some wrong key(s) were found on your account @$1. Would you like to update them right now?",
     "description": "Governance expiration renewal popup"
   },
   "html_popup_governance_renewal_introduction": {
@@ -3100,6 +3311,18 @@
   "popup_html_pending": {
     "message": "Pending",
     "description": "Global"
+  },
+  "popup_html_active_recurrent_transfer": {
+    "message": "active recurrent transfer(s)",
+    "description": "Global"
+  },
+  "popup_html_pending_remaining_executions": {
+    "message": "$1 remaining execution(s)",
+    "description": "Pending recurrent transfer remaining executions"
+  },
+  "popup_html_pending_recurrence": {
+    "message": "Every $1 hours",
+    "description": "Pending recurrent transfer recurrence every x hours"
   },
   "popup_html_pending_currency": {
     "message": "Pending conversions",
@@ -3423,8 +3646,24 @@
     "description": "automated tasks => need active key claim accounts"
   },
   "popup_html_need_posting_key_to_claim_rewards": {
-    "message": "You need to add your active key to Keychain to claim accounts",
+    "message": "You need to add your posting key to Keychain to claim rewards",
     "description": "automated tasks => need active key claim accounts"
+  },
+  "popup_html_create_account_username_too_long": {
+    "message": "Username is too long (max 16 characters)",
+    "description": "create account => username too long"
+  },
+  "popup_html_create_account_username_case_not_valid": {
+    "message": "Username must only contain lowercase letters, numbers, hyphens and dots",
+    "description": "create account => username case not valid"
+  },
+  "popup_html_create_account_username_too_short": {
+    "message": "Username is too short (min 3 characters)",
+    "description": "create account => username too short"
+  },
+  "popup_html_create_account_username_start_or_end_not_valid": {
+    "message": "Username must start with a letter and end with a letter or number",
+    "description": "create account => username start or end not valid"
   },
   "popup_html_cant_automatically_claim_ledger": {
     "message": "You can't automatically claim because your key is saved on Ledger",
@@ -3442,6 +3681,11 @@
     "message": "Add from Ledger",
     "description": "Message to remind user to accept transaction on his Ledger device"
   },
+  "popup_html_setup_keyless_keychain": {
+    "message": "Keyless Keychain",
+    "description": "Keychain is in keyless mode and will use HiveAuth to request transactions to be signed on your mobile device"
+  },
+
   "add_key_from_ledger": {
     "message": "Link key",
     "description": "Title of add key from ledger page"

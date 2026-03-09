@@ -13,6 +13,7 @@ import {
   Transfer,
   WithdrawSavings,
 } from '@interfaces/transaction.interface';
+import { EscrowHistoryUtils } from 'hive-keychain-commons';
 
 const filterTransfer = (
   transfer: Transfer,
@@ -104,4 +105,8 @@ export const WalletHistoryUtils = {
   filterInterest,
   filterFillConversion,
   filterConversion,
+  filterEscrowTransfer: EscrowHistoryUtils.filterEscrowTransfer,
+  filterEscrowApprove: EscrowHistoryUtils.filterEscrowApprove,
+  filterEscrowDispute: EscrowHistoryUtils.filterEscrowDispute,
+  filterEscrowRelease: EscrowHistoryUtils.filterEscrowRelease,
 };

@@ -27,6 +27,7 @@ import RemoveProposal from 'src/dialog/pages/requests/proposals/remove-proposal'
 import UpdateProposalVote from 'src/dialog/pages/requests/proposals/update-proposal-vote';
 import Proxy from 'src/dialog/pages/requests/proxy';
 import RecurrentTransfer from 'src/dialog/pages/requests/recurrent-transfer';
+import Savings from 'src/dialog/pages/requests/savings';
 import SendToken from 'src/dialog/pages/requests/send-token';
 import SignBuffer from 'src/dialog/pages/requests/sign-buffer';
 import SignTx from 'src/dialog/pages/requests/sign-tx';
@@ -69,6 +70,8 @@ const RequestConfirmation = ({ data }: Props) => {
       return <UpdateProposalVote {...data} data={data.data} />;
     case KeychainRequestTypes.transfer:
       return <Transfer {...data} data={data.data} />;
+    case KeychainRequestTypes.savings:
+      return <Savings {...data} data={data.data} />;
     case KeychainRequestTypes.addAccountAuthority:
       return <AddAccountAuthority {...data} data={data.data} />;
     case KeychainRequestTypes.removeAccountAuthority:

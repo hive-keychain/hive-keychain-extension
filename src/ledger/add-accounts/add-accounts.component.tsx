@@ -2,6 +2,7 @@ import { Keys } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Theme } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
@@ -20,6 +21,7 @@ import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+import VaultUtils from 'src/utils/vault.utils';
 
 enum SynchronizeLedgerStep {
   DISCOVER_ACCOUNTS = 'add_accounts_from_ledger',
@@ -160,9 +162,7 @@ const AddAccountsComponent = () => {
   const filterFromExistingAccounts = async (
     discoveredAccounts: LocalAccount[],
   ) => {
-    const mk = await LocalStorageUtils.getValueFromSessionStorage(
-      LocalStorageKeyEnum.__MK,
-    );
+    const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
     let localAccounts = await AccountUtils.getAccountsFromLocalStorage(mk);
     if (!localAccounts) return discoveredAccounts;
     return discoveredAccounts.filter((discoveredAccount) => {

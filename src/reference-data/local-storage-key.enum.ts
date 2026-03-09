@@ -9,6 +9,7 @@ export enum LocalStorageKeyEnum {
   CLAIM_ACCOUNTS = 'claimAccounts',
   CLAIM_SAVINGS = 'claimSavings',
   AUTOLOCK = 'autolock',
+  SHORTCUTS = 'shortcuts',
   NO_CONFIRM = 'no_confirm',
   WALLET_HISTORY_FILTERS = 'walletHistoryFilters',
   HIDDEN_TOKENS = 'hidden_tokens',
@@ -53,4 +54,9 @@ export enum LocalStorageKeyEnum {
   //Auto Stake Engine Tokens
   LAYER_TWO_AUTO_STAKE = 'LAYER_TWO_AUTO_STAKE',
   LAYER_TWO_AUTO_STAKE_TOKENS = 'LAYER_TWO_AUTO_STAKE_TOKENS',
+
+  // Keyless Keychain
+  KEYLESS_KEYCHAIN_ENABLED = 'KEYLESS_KEYCHAIN_ENABLED',
+  
+  KEYLESS_KEYCHAIN_AUTH_DATA_USER_DICT = 'KEYLESS_KEYCHAIN_AUTH_DATA_USER_DICT'
 }

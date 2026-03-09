@@ -10,10 +10,15 @@ export enum BaseCurrencies {
 }
 
 const getCurrencyLabels = (isTestnet: boolean): CurrencyLabels => {
+  // return {
+  //   hive: isTestnet ? 'TESTS' : 'HIVE',
+  //   hbd: isTestnet ? 'TBD' : 'HBD',
+  //   hp: isTestnet ? 'TP' : 'HP',
+  // };
   return {
-    hive: isTestnet ? 'TESTS' : 'HIVE',
-    hbd: isTestnet ? 'TBD' : 'HBD',
-    hp: isTestnet ? 'TP' : 'HP',
+    hive: 'HIVE',
+    hbd: 'HBD',
+    hp: 'HP',
   };
 };
 

@@ -72,4 +72,4 @@ const connector = connect(mapStateToProps, {
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export const PendingConersionPageComponent = connector(PendingConversionPage);
+export const PendingConversionPageComponent = connector(PendingConversionPage);

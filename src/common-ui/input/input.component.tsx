@@ -28,12 +28,14 @@ export interface InputProps {
   error?: FieldError;
   dataTestId?: string;
   disabled?: boolean;
+  readOnly?: boolean;
   classname?: string;
   onChange: (value: any) => void;
   onEnterPress?(): any;
   rightActionClicked?(): any;
   rightActionIcon?: SVGIcons;
   rightActionIconClassname?: string;
+  autocompletePrefix?: string;
 }
 
 const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
@@ -83,6 +85,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
           }`}>
           <input
             disabled={props.disabled}
+            readOnly={props.readOnly}
             data-testid={props.dataTestId}
             type={
               props.type === InputType.PASSWORD && isPasswordDisplay
@@ -147,6 +150,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
               autoCompleteValues={props.autocompleteValues}
               handleOnChange={props.onChange}
               value={props.value}
+              prefix={props.autocompletePrefix}
             />
           )}
           {props.logo && (

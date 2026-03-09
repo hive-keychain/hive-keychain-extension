@@ -8,6 +8,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { MenuComponent } from 'src/common-ui/menu/menu.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import Config from 'src/config';
 import { WitnessVotingSectionComponent } from 'src/popup/hive/pages/app-container/home/voting-section/witness-voting-section/witness-voting-section.component';
 import SettingsMenuItems from './settings-main-page-menu-items';
 
@@ -15,13 +16,16 @@ const SettingsMainPage = ({ forgetMk, resetNav }: PropsFromRedux) => {
   const { toggleTheme, theme } = useThemeContext();
 
   const goToDiscord = () => {
-    chrome.tabs.create({ url: 'https://discord.gg/E6P6Gjv9MC' });
+    chrome.tabs.create({ url: Config.social.discord });
   };
   const goToPeakD = () => {
-    chrome.tabs.create({ url: 'https://peakd.com/@keychain' });
+    chrome.tabs.create({ url: Config.social.peakd });
   };
   const goToTwitter = () => {
-    chrome.tabs.create({ url: 'https://twitter.com/HiveKeychain' });
+    chrome.tabs.create({ url: Config.social.twitter });
+  };
+  const goToMedium = () => {
+    chrome.tabs.create({ url: Config.social.medium });
   };
   const logout = () => {
     resetNav();
@@ -51,20 +55,26 @@ const SettingsMainPage = ({ forgetMk, resetNav }: PropsFromRedux) => {
       <div className="link-panel">
         <SVGIcon
           className="network-icon"
-          icon={SVGIcons.MENU_BOTTOM_BAR_DISCORD}
-          onClick={goToDiscord}
-          hoverable
-        />
-        <SVGIcon
-          className="network-icon"
           icon={SVGIcons.MENU_BOTTOM_BAR_HIVE}
           onClick={goToPeakD}
           hoverable
         />
         <SVGIcon
           className="network-icon"
+          icon={SVGIcons.MENU_BOTTOM_BAR_DISCORD}
+          onClick={goToDiscord}
+          hoverable
+        />
+        <SVGIcon
+          className="network-icon"
           icon={SVGIcons.MENU_BOTTOM_BAR_TWITTER}
           onClick={goToTwitter}
+          hoverable
+        />
+        <SVGIcon
+          className="network-icon"
+          icon={SVGIcons.MENU_BOTTOM_BAR_MEDIUM}
+          onClick={goToMedium}
           hoverable
         />
       </div>

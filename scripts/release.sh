@@ -1,6 +1,8 @@
 #!/bin/sh
 
 rm -rf _releases
+find . -name .DS_Store -delete
+npm ci
 
 echo "Compiling chromium..."
 resultChromium=`npm run build:chromium | grep -o "compiled with .* error[s]* in"`
@@ -49,5 +51,5 @@ zip -qr "../_releases/${version}-chromium.zip" *
 cd ../dist-beta
 zip -qr "../_releases/${version}-chromium-beta.zip" *
 cd ..
-zip -q -r "_releases/${version}-source.zip" . -x node_modules\* dist-*\* example\* coverage\* .github\* _releases\* .vscode\* scripts\* .env
+zip -q -r "_releases/${version}-source.zip" . -x node_modules\* dist-*\* example\* coverage\* .github\* _releases\* .vscode\* scripts\* .env .DS_Store
 

@@ -2,13 +2,14 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import { setHasFinishedSignup } from '@popup/multichain/actions/has-finished-signup.actions';
 import reducers from '@popup/multichain/reducers';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { applyMiddleware, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
-import MkUtils from 'src/popup/hive/utils/mk.utils';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import VaultUtils from 'src/utils/vault.utils';
 
 /* istanbul ignore next */
 const store = createStore(
@@ -61,7 +62,7 @@ if (store.getState().hive) {
     }
     if (previousMk !== mk) {
       previousMk = mk;
-      MkUtils.saveMkInLocalStorage(mk);
+      VaultUtils.saveValueInVault(VaultKey.__MK, mk);
     }
     if (
       previousHiveEngineConfig &&

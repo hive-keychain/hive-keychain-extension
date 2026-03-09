@@ -1,3 +1,9 @@
+// Hydration-safe extension detection for Dapps—avoids SSR/Next.js hydration issues
+if (!(window as any).hive_keychain_extension) {
+  (window as any).hive_keychain_extension = true;
+  window.dispatchEvent(new Event('hive-keychain-loaded'));
+}
+
 /* istanbul ignore file */
 import keychainify from './keychainify';
 
@@ -49,17 +55,15 @@ let contentScript: Props = {
         // This is to scan dynamically loaded content (lazyload of comments for example)
         contentScript.process.observer = new MutationObserver(
           (function (process) {
-            return function (mutations: MutationRecord[]) {
-              mutations.forEach(function () {
-                // Preventing multiple calls to checkAnchors()
-                if (process.observerTimer) {
-                  window.clearTimeout(process.observerTimer);
-                }
-                // Lets wait for a DOM change
-                process.observerTimer = window.setTimeout(function () {
-                  process.checkAnchors(isKeychainifyEnabled);
-                }, 500);
-              });
+            return function (_mutations: MutationRecord[]) {
+              // Preventing multiple calls to checkAnchors()
+              if (process.observerTimer) {
+                window.clearTimeout(process.observerTimer);
+              }
+              // Lets wait for a DOM change
+              process.observerTimer = window.setTimeout(function () {
+                process.checkAnchors(isKeychainifyEnabled);
+              }, 500);
             };
           })(contentScript.process),
         );
@@ -93,6 +97,7 @@ let contentScript: Props = {
             ? keychainify.isSupportedHiveSignerUrl(anchor.href) ||
               keychainify.isSupportedHiveUri(anchor.href)
             : keychainify.isSupportedHiveUri(anchor.href);
+
           /**
            * Attach click event listener when url is supported
            */

@@ -4,10 +4,12 @@ import {
   MultisigDialogCommand,
 } from '@reference-data/dialog-message-key.enum';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
+import { VaultCommand } from 'src/reference-data/vault-message-key.enum';
 
 export interface BackgroundMessage {
-  command: BackgroundCommand;
+  command: BackgroundCommand | VaultCommand;
   value?: any;
+  key?: string;
 }
 
 export interface DialogMessage {

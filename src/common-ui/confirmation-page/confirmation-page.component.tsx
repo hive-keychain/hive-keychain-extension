@@ -8,14 +8,20 @@ import { RootState } from '@popup/multichain/store';
 import { Screen } from '@reference-data/screen.enum';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
-import { ConnectedProps, connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
+import AmountWithLogo from 'src/common-ui/amount-with-logo/amount-with-logo';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
-import { ConfirmationPageFields } from 'src/common-ui/confirmation-page/confirmation-field.interface';
+import {
+  ConfirmationPageFields,
+  ConfirmationPageFieldType,
+} from 'src/common-ui/confirmation-page/confirmation-field.interface';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
 
 export interface ConfirmationPageParams {
   fields: ConfirmationPageFields[];
@@ -46,6 +52,7 @@ const ConfirmationPage = ({
   goBack,
   setTitleContainerProperties,
   addCaptionToLoading,
+  tokens,
 }: PropsType) => {
   const [willUseMultisig, setWillUseMultisig] = useState<boolean>();
   const [hasField] = useState(fields && fields.length !== 0);
@@ -150,6 +157,72 @@ const ConfirmationPage = ({
     }
     goBack();
   };
+  const getIcon = (field: ConfirmationPageFields) => {
+    switch (field.tokenSymbol) {
+      case 'HIVE':
+        return SVGIcons.WALLET_HIVE_LOGO;
+      case 'HBD':
+        return SVGIcons.WALLET_HBD_LOGO;
+      case 'HP':
+        return SVGIcons.WALLET_HP_LOGO;
+      default:
+        return undefined;
+    }
+  };
+  const getFieldComponent = (field: ConfirmationPageFields) => {
+    switch (field.tag) {
+      case ConfirmationPageFieldType.USERNAME:
+        return (
+          <div className={`value ${field.valueClassName ?? ''}`}>
+            <UsernameWithAvatar username={field.value} />
+          </div>
+        );
+      case ConfirmationPageFieldType.AMOUNT:
+        return (
+          <div className={`value ${field.valueClassName ?? ''}`}>
+            <AmountWithLogo
+              amount={field.value}
+              symbol={field.tokenSymbol}
+              icon={getIcon(field)}
+              tokens={tokens}
+            />
+          </div>
+        );
+      default:
+        return (
+          <div className={`value ${field.valueClassName ?? ''}`}>
+            {field.value}
+          </div>
+        );
+    }
+  };
+
+  const renderFields = () => {
+    return (
+      <div className="fields">
+        {fields.map((field, index) => (
+          <React.Fragment key={field.label}>
+            <div className="field">
+              <div
+                className="label"
+                style={{ display: 'flex', alignItems: 'center' }}>
+                {chrome.i18n.getMessage(field.label)}
+              </div>
+              {getFieldComponent(field)}
+            </div>
+            {index !== fields.length - 1 && (
+              <Separator
+                key={` separator-${field.label}`}
+                type={'horizontal'}
+                fullSize
+              />
+            )}
+          </React.Fragment>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div
       className="confirmation-page"
@@ -179,29 +252,7 @@ const ConfirmationPage = ({
             </div>
           </div>
         )}
-        {hasField && (
-          <div className="fields">
-            {fields.map((field, index) => (
-              <React.Fragment key={field.label}>
-                <div className="field">
-                  <div className="label">
-                    {chrome.i18n.getMessage(field.label)}
-                  </div>
-                  <div className={`value ${field.valueClassName ?? ''}`}>
-                    {field.value}
-                  </div>
-                </div>
-                {index !== fields.length - 1 && (
-                  <Separator
-                    key={` separator-${field.label}`}
-                    type={'horizontal'}
-                    fullSize
-                  />
-                )}
-              </React.Fragment>
-            ))}
-          </div>
-        )}
+        {hasField && renderFields()}
         {twoFABots && Object.keys(twoFABots).length > 0 && (
           <div className="two-fa-codes-panel">
             {Object.entries(twoFABots).map(([botName, code]) => (
@@ -257,6 +308,7 @@ const mapStateToProps = (state: RootState) => {
     skipTitleTranslation: state.navigation.stack[0].params.skipTitleTranslation,
     method: state.navigation.stack[0].params.method as KeychainKeyTypes,
     activeAccount: state.hive.activeAccount,
+    tokens: state.hive.tokens,
   };
 };
 

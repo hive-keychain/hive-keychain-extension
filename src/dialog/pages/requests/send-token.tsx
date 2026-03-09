@@ -3,10 +3,13 @@ import { RequestId, RequestSendToken } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import React, { useEffect, useState } from 'react';
+import AmountWithLogo from 'src/common-ui/amount-with-logo/amount-with-logo';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import RequestTokenBalance from 'src/dialog/components/request-token-balance/request-token-balance';
+import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 import { useTransferCheck } from 'src/dialog/hooks/transfer-check';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -16,12 +19,14 @@ type Props = {
   tab: number;
   rpc: Rpc;
   hiveEngineConfig: HiveEngineConfig;
+  accounts?: string[];
 };
 
 const SendToken = (props: Props) => {
-  const { data, rpc, hiveEngineConfig } = props;
+  const { data, rpc, hiveEngineConfig, accounts } = props;
   const { memo } = data;
   const header = useTransferCheck(data, rpc);
+  const anonymousProps = useAnonymousRequest(data, accounts);
   const [precision, setPrecision] = useState(3);
   let memoField = memo;
   if (memo.length) {
@@ -39,27 +44,38 @@ const SendToken = (props: Props) => {
     });
   }, []);
 
+  const renderUsername = () => {
+    return !accounts && data.username ? (
+      <>
+        <UsernameWithAvatar
+          title="dialog_account"
+          username={anonymousProps.username}
+        />
+        <Separator type={'horizontal'} fullSize />
+      </>
+    ) : (
+      <></>
+    );
+  };
+
   return (
     <Operation
       title={chrome.i18n.getMessage('dialog_title_token')}
+      {...anonymousProps}
       {...props}
       header={header}
       redHeader>
-      <RequestItem title="dialog_account" content={`@${data.username}`} />
+      {renderUsername()}
+      <UsernameWithAvatar title="dialog_to" username={data.to} />
       <Separator type={'horizontal'} fullSize />
-      <RequestItem title="dialog_to" content={`@${data.to}`} />
-      <Separator type={'horizontal'} fullSize />
-      <RequestItem
+      <AmountWithLogo
         title="dialog_amount"
-        content={`${FormatUtils.formatCurrencyValue(
-          data.amount,
-          precision,
-          true,
-        )} ${data.currency}`}
+        amount={FormatUtils.formatCurrencyValue(data.amount, precision, true)}
+        symbol={data.currency}
       />
       <Separator type={'horizontal'} fullSize />
       <RequestTokenBalance
-        username={data.username}
+        username={anonymousProps.username}
         amount={parseFloat(data.amount)}
         currency={data.currency}
         precision={precision}

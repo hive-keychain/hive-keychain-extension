@@ -2,6 +2,7 @@ import AccountModule from '@background/account';
 import AutoStakeTokensModule from '@background/auto-stake-tokens.module';
 import AutolockModule from '@background/autolock.module';
 import ClaimModule from '@background/claim.module';
+import { KeylessKeychainModule } from '@background/keyless-keychain.module';
 import LocalStorageModule from '@background/local-storage.module';
 import { MultisigModule } from '@background/multisig.module';
 import init from '@background/requests/init';
@@ -10,6 +11,7 @@ import { RequestsHandler } from '@background/requests/request-handler';
 import RPCModule from '@background/rpc.module';
 import SettingsModule from '@background/settings.module';
 import getMessage from '@background/utils/i18n.utils';
+import VaultModule from '@background/vault.module';
 import {
   KeychainRequest,
   KeychainRequestWrapper,
@@ -17,13 +19,21 @@ import {
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { VaultCommand, VaultKey } from '@reference-data/vault-message-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+import VaultUtils from 'src/utils/vault.utils';
 import { BackgroundMessage } from './background-message.interface';
 import MkModule from './mk.module';
 
+Object.assign(global, { contextType: 'service_worker' });
+
 /* istanbul ignore next */
 (async () => {
+  if (!process.env.IS_FIREFOX) {
+    Logger.log('Initializing vault');
+    VaultModule.init();
+  }
   await RPCModule.init();
   LocalStorageUtils.removeFromLocalStorage(LocalStorageKeyEnum.__MK);
   Logger.info('Initializing background tasks');
@@ -38,6 +48,7 @@ import MkModule from './mk.module';
   );
   MultisigModule.start();
 })();
+
 /* istanbul ignore next */
 //@ts-ignore
 chrome.i18n.getMessage = getMessage;
@@ -47,7 +58,7 @@ const chromeMessageHandler = async (
   sender: chrome.runtime.MessageSender,
   sendResp: (response?: any) => void,
 ) => {
-  Logger.log('Background message', backgroundMessage);
+  // Logger.log('Background message', backgroundMessage);
   switch (backgroundMessage.command) {
     case BackgroundCommand.GET_MK:
       MkModule.sendBackMk();
@@ -115,11 +126,52 @@ const chromeMessageHandler = async (
         JSON.parse(backgroundMessage.value),
       );
       break;
+    case BackgroundCommand.KEYLESS_KEYCHAIN:
+      KeylessKeychainModule.handleOperation(
+        backgroundMessage.value.requestHandler,
+        backgroundMessage.value.data,
+        backgroundMessage.value.domain,
+        backgroundMessage.value.tab,
+      );
+      break;
+    case BackgroundCommand.KEYLESS_KEYCHAIN_REGISTER:
+      KeylessKeychainModule.register(
+        backgroundMessage.value.requestHandler,
+        backgroundMessage.value.data,
+        backgroundMessage.value.domain,
+        backgroundMessage.value.tab,
+      );
+      break;
     case BackgroundCommand.PING:
       Logger.log('ping');
       break;
+
+    // Replace vault by persistent data storage for Firefox
+    case VaultCommand.GET_VALUE:
+      if (!process.env.IS_FIREFOX) return;
+      return MkModule.getMk();
+    case VaultCommand.SET_VALUE:
+      if (!process.env.IS_FIREFOX) return;
+      MkModule.saveMk(backgroundMessage.value);
+      return true;
+    case VaultCommand.REMOVE_VALUE:
+      if (!process.env.IS_FIREFOX) return;
+      MkModule.lock();
+      return true;
   }
+  return true;
 };
+
+// When a chrome window is removed, check if there are no window left open
+chrome.windows.onRemoved.addListener(() => {
+  chrome.windows.getAll(async (windows) => {
+    if (windows.length === 0) {
+      if (await chrome.offscreen.hasDocument()) {
+        VaultUtils.removeFromVault(VaultKey.__MK);
+      }
+    }
+  });
+});
 
 export const performOperationFromIndex = async (
   requestHandler: RequestsHandler,
@@ -127,6 +179,15 @@ export const performOperationFromIndex = async (
   request: KeychainRequest,
 ) => {
   performOperation(requestHandler, request, tab!, request.domain, false);
+};
+
+export const performKeylessOperation = async (
+  requestHandler: RequestsHandler,
+  tab: number,
+  request: KeychainRequest,
+  domain: string,
+) => {
+  KeylessKeychainModule.handleOperation(requestHandler, request, domain, tab);
 };
 
 chrome.runtime.onMessage.addListener(chromeMessageHandler);

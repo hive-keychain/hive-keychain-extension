@@ -1,0 +1,36 @@
+.username-with-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  transition: all 0.2s ease;
+
+  .title {
+    @include poppins500(14px);
+    color: var(--main-font-color);
+    margin-right: 12px;
+  }
+
+  .avatar-username-container {
+    display: flex;
+    align-items: center;
+    min-height: 32px;
+  }
+
+  .user-avatar {
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+    margin-right: 0;
+    margin-left: 8px;
+    object-fit: cover;
+    &.shimmer {
+      @include icon-size(32px);
+    }
+  }
+
+  .username {
+    @include poppins400(14px);
+    color: var(--main-font-color);
+  }
+}
