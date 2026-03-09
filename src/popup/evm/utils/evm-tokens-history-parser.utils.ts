@@ -1,5 +1,3 @@
-import { AvalancheApi } from '@popup/evm/api/avalanche.api';
-import { BlockscoutApi } from '@popup/evm/api/blockscout.api';
 import { EvmAddressType } from '@popup/evm/interfaces/evm-addresses.interface';
 import { EvmSettings } from '@popup/evm/interfaces/evm-settings.interface';
 import {
@@ -745,16 +743,7 @@ const getSpecificData = async (
     name = tokenMetadata.name ?? tokenMetadata.symbol;
     symbol = tokenMetadata.symbol;
   } else {
-    let abi;
-    switch (chain.blockExplorerApi?.type) {
-      case BlockExplorerType.BLOCKSCOUT:
-        abi = await BlockscoutApi.getAbi(chain as EvmChain, contractAddress);
-        break;
-      case BlockExplorerType.AVALANCHE_SCAN: {
-        abi = await AvalancheApi.getAbi(chain as EvmChain, contractAddress);
-        break;
-      }
-    }
+    const abi = await EvmLightNodeUtils.getAbi(chain.chainId, contractAddress);
 
     if (abi) {
       try {

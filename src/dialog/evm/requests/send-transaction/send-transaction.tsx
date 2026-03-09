@@ -1,8 +1,6 @@
 import { BalanceChangeCard } from '@dialog/components/balance-change-card/balance-change-card.component';
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
-import { AvalancheApi } from '@popup/evm/api/avalanche.api';
-import { BlockscoutApi } from '@popup/evm/api/blockscout.api';
 import {
   EvmSmartContractInfo,
   EvmSmartContractInfoErc20,
@@ -25,10 +23,7 @@ import {
   EvmTransactionParserUtils,
 } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
-import {
-  BlockExplorerType,
-  EvmChain,
-} from '@popup/multichain/interfaces/chains.interface';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import Decimal from 'decimal.js';
 import { ethers, HDNodeWallet, Wallet } from 'ethers';
@@ -167,28 +162,10 @@ export const SendTransaction = (props: Props) => {
           params.to,
           chainTmp as EvmChain,
         );
-        let abi;
-        switch (chainTmp.blockExplorerApi?.type) {
-          case BlockExplorerType.BLOCKSCOUT:
-            abi = await BlockscoutApi.getAbi(
-              chainTmp! as EvmChain,
-              proxy ?? params.to,
-            );
-            break;
-          case BlockExplorerType.AVALANCHE_SCAN: {
-            abi = await AvalancheApi.getAbi(
-              chainTmp! as EvmChain,
-              proxy ?? params.to,
-            );
-            break;
-          }
-          case BlockExplorerType.BLOCKSCOUT:
-            abi = await EvmLightNodeUtils.getAbi(
-              chainTmp.chainId,
-              proxy ?? params.to,
-            );
-            break;
-        }
+        let abi = await EvmLightNodeUtils.getAbi(
+          chainTmp.chainId,
+          proxy ?? params.to,
+        );
 
         tData.abi = abi;
         tData.value = params.value;
@@ -281,7 +258,6 @@ export const SendTransaction = (props: Props) => {
               )),
             });
 
-            // TODO change here
             if (Number(decodedTransactionData?.value) > 0) {
               transactionConfirmationFields.mainTokenAmount = {
                 name: 'evm_main_token_amount',
