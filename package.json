@@ -57,7 +57,7 @@
     "@ledgerhq/hw-transport-webusb": "6.27.19",
     "@types/chrome": "0.0.243",
     "@types/yargs": "17.0.11",
-    "axios": "1.13.2",
+    "axios": "1.13.6",
     "chrome-webstore-upload": "^4.0.3",
     "crypto-js": "4.2",
     "decimal.js": "10.4.3",
