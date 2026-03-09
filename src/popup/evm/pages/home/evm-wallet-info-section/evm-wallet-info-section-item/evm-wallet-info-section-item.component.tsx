@@ -1,4 +1,5 @@
 import { NativeAndErc20Token } from '@popup/evm/interfaces/active-account.interface';
+import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EVMWalletInfoSectionActions } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section-actions';
 import { ActionButton } from '@popup/hive/pages/app-container/home/hive-wallet-info-section/hive-wallet-info-section-actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
@@ -90,16 +91,38 @@ const WalletInfoSectionItem = ({
             useDefaultSVG={icon}
           />
         )}
-        {!token.tokenInfo.logo && (
-          <div
-            className="currency-icon add-background"
-            style={{
-              backgroundColor: `${color}2b`,
-              color: `${color}`,
-            }}>
-            {token.tokenInfo.symbol.slice(0, 2)}
-          </div>
-        )}
+        {!token.tokenInfo.logo &&
+          !(
+            token.tokenInfo.type === EVMSmartContractType.ERC20 &&
+            token.tokenInfo.lpV2
+          ) && (
+            <div
+              className="currency-icon add-background"
+              style={{
+                backgroundColor: `${color}2b`,
+                color: `${color}`,
+              }}>
+              {token.tokenInfo.symbol.slice(0, 2)}
+            </div>
+          )}
+        {token.tokenInfo.type === EVMSmartContractType.ERC20 &&
+          token.tokenInfo.lpV2 && (
+            <div className="currency-icon-container">
+              <PreloadedImage
+                src={token.tokenInfo.lpV2.token0.logo}
+                className="currency-icon dual-icon"
+                addBackground
+                backgroundColor={token.tokenInfo.lpV2.token0.backgroundColor}
+              />
+              <PreloadedImage
+                src={token.tokenInfo.lpV2.token1.logo}
+                className="currency-icon dual-icon right-icon"
+                addBackground
+                backgroundColor={token.tokenInfo.lpV2.token1.backgroundColor}
+              />
+            </div>
+          )}
+
         <div className="main-value-label">
           <div className="label">
             {mainValueLabel.length > 20

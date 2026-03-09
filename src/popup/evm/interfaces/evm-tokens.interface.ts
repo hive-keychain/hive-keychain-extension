@@ -24,6 +24,7 @@ export interface EvmSmartContractInfoNative extends EvmSmartContractInfoBase {
   coingeckoId: string;
   createdAt: string;
   categories: string[];
+  backgroundColor: string;
 }
 
 export interface EvmSmartContractNonNativeBase extends EvmSmartContractInfoBase {
@@ -32,10 +33,28 @@ export interface EvmSmartContractNonNativeBase extends EvmSmartContractInfoBase 
   verifiedContract: boolean;
 }
 
+export interface EvmLpV2Token {
+  address: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+  logo: string;
+  backgroundColor: string;
+}
+
+export interface EvmLpV2Pair {
+  token0: EvmLpV2Token;
+  token1: EvmLpV2Token;
+  factoryAddress: string;
+}
+
 export interface EvmSmartContractInfoErc20 extends EvmSmartContractNonNativeBase {
   type: EVMSmartContractType.ERC20;
   decimals: number;
   validated: number;
+  isNativeWrapped?: boolean;
+  backgroundColor: string;
+  lpV2?: EvmLpV2Pair;
 }
 
 export interface EvmSmartContractInfoErc721 extends EvmSmartContractNonNativeBase {

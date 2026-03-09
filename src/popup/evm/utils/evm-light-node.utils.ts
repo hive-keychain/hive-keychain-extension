@@ -1,6 +1,13 @@
 import { KeychainApi } from '@api/keychain';
 import { EvmLightNodeRegisteredAddresses } from '@popup/evm/interfaces/evm-light-node.interface';
-import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
+import {
+  EvmLpV2Pair,
+  EvmSmartContractInfo,
+  EvmSmartContractInfoErc1155,
+  EvmSmartContractInfoErc20,
+  EvmSmartContractInfoErc721,
+  EvmSmartContractInfoNative,
+} from '@popup/evm/interfaces/evm-tokens.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -129,10 +136,24 @@ export enum PricingStatus {
   PENDING = 'PENDING',
 }
 
+export type DiscoveredErc20Token = EvmSmartContractInfoErc20 & {
+  balance?: string;
+  formattedBalance?: string;
+  balanceUsd?: string;
+  isNativeWrapped?: boolean;
+  lpV2?: EvmLpV2Pair;
+};
+
+export type DiscoveredToken =
+  | EvmSmartContractInfoNative
+  | DiscoveredErc20Token
+  | EvmSmartContractInfoErc721
+  | EvmSmartContractInfoErc1155;
+
 export type DiscoveredTokensResponse = {
   address: string;
   chainId: string;
-  tokens: EvmSmartContractInfo[];
+  tokens: DiscoveredToken[];
   catchupStatus: CatchupStatus;
   pricingStatus: PricingStatus;
 };

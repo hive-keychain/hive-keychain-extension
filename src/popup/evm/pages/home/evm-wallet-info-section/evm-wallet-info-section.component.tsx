@@ -9,7 +9,6 @@ import {
 import { EvmWalletNftGalleryComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-nft-gallery/evm-wallet-nft-gallery.component';
 import { EvmWalletTokensComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-tokens/evm-wallet-tokens.component';
 import { EvmHistoryComponent } from '@popup/evm/pages/home/token-history/evm-history.component';
-import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { HDNodeWallet } from 'ethers';
@@ -19,7 +18,6 @@ import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.compon
 interface EvmWalletInfoSectionProps {
   activeAccount: EvmActiveAccount;
   history?: EvmUserHistory;
-  prices: EvmPrices;
   chain: EvmChain;
   onClickOnNftPreview: (
     params: EvmErc721Token | EvmErc721Token[],
@@ -38,7 +36,6 @@ enum EvmDisplayedPage {
 
 export const EvmWalletInfoSectionComponent = ({
   activeAccount,
-  prices,
   chain,
   onClickOnNftPreview,
   loadEvmHistory,
@@ -59,7 +56,6 @@ export const EvmWalletInfoSectionComponent = ({
         return (
           <EvmWalletTokensComponent
             chain={chain}
-            prices={prices}
             activeAccount={activeAccount}
           />
         );
@@ -93,7 +89,7 @@ export const EvmWalletInfoSectionComponent = ({
     <div className="wallet-info-wrapper">
       <div className="wallet-background" />
       <div className="wallet-info-section">
-        {prices && activeAccount.nativeAndErc20Tokens && (
+        {activeAccount.nativeAndErc20Tokens && (
           <>
             <SlidingBarComponent
               onChange={setDisplayedSection}

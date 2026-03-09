@@ -78,7 +78,6 @@ const getBackgroundColorFromImage = (img: HTMLImageElement) => {
       dominantColor = color;
     }
   }
-
   return `${dominantColor}2b`;
 };
 

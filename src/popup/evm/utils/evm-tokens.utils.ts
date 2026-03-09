@@ -15,7 +15,6 @@ import {
   EvmSmartContractInfoNative,
   EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
-import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import {
   AbiList,
   ERC1155Abi,
@@ -81,12 +80,14 @@ const getTokenBalances = async (
     );
 
   const result = await Promise.all(balancesPromises);
-  return result.filter(
-    (balance) =>
-      !!balance &&
-      (balance.balance > 0 ||
-        balance.tokenInfo.type === EVMSmartContractType.NATIVE),
-  );
+  console.log(result, 'result');
+  return result;
+  // return result.filter(
+  //   (balance) =>
+  //     !!balance &&
+  //     (balance.balance > 0 ||
+  //       balance.tokenInfo.type === EVMSmartContractType.NATIVE),
+  // );
 };
 
 const filterTokensBasedOnSettings = async (
@@ -304,18 +305,19 @@ const getTokenInfo = async (
   return {} as EvmSmartContractInfo;
 };
 
-const sortTokens = (tokens: NativeAndErc20Token[], prices: EvmPrices) => {
+const sortTokens = (tokens: NativeAndErc20Token[]) => {
+  console.log(tokens, 'tokens');
   return tokens.sort((tokenA, tokenB) => {
-    const priceA = prices[tokenA.tokenInfo.symbol] ?? 0;
-    const priceB = prices[tokenB.tokenInfo.symbol] ?? 0;
+    const priceA = tokenA.tokenInfo.priceUsd ?? 0;
+    const priceB = tokenB.tokenInfo.priceUsd ?? 0;
     if (tokenA.tokenInfo.type === EVMSmartContractType.NATIVE) return -1;
     else if (tokenB.tokenInfo.type === EVMSmartContractType.NATIVE) return 1;
     else {
       const tokenAPrice =
-        priceA.usd *
+        priceA *
         Number(ethers.formatUnits(tokenA.balance, tokenA.tokenInfo.decimals));
       const tokenBPrice =
-        priceB.usd *
+        priceB *
         Number(ethers.formatUnits(tokenB.balance, tokenB.tokenInfo.decimals));
       return tokenBPrice - tokenAPrice;
     }

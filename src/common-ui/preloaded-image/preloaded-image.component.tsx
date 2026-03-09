@@ -11,6 +11,7 @@ interface PreloadedImageProps {
   alt?: string;
   placeholder?: string;
   addBackground?: boolean;
+  backgroundColor?: string;
   symbol?: string;
   useDefaultSVG?: SVGIcons;
 }
@@ -22,6 +23,7 @@ export const PreloadedImage = ({
   addBackground,
   placeholder,
   symbol,
+  backgroundColor,
   useDefaultSVG,
 }: PreloadedImageProps) => {
   const [image, setImage] = useState<HTMLImageElement>();
@@ -58,7 +60,9 @@ export const PreloadedImage = ({
     if (existingImg.complete) {
       // Image is already cached, use it directly
       if (addBackground) {
-        if (symbol) {
+        if (backgroundColor) {
+          setBackground(`${backgroundColor}2b`);
+        } else if (symbol) {
           setBackground(
             ColorsUtils.getBackgroundColorFromBackend(symbol, theme),
           );
@@ -75,7 +79,9 @@ export const PreloadedImage = ({
 
     img.onload = () => {
       if (addBackground) {
-        if (symbol) {
+        if (backgroundColor) {
+          setBackground(`${backgroundColor}2b`);
+        } else if (symbol) {
           setBackground(
             ColorsUtils.getBackgroundColorFromBackend(symbol, theme),
           );

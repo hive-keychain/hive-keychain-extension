@@ -7,22 +7,17 @@ import {
 } from '@popup/evm/interfaces/active-account.interface';
 import { EvmAddCustomTokenPopup } from '@popup/evm/pages/home/evm-add-custom-token-popup/evm-add-custom-token-popup.component';
 import { EVMWalletInfoSectionItemComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section-item/evm-wallet-info-section-item.component';
-import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import React, { useEffect, useState } from 'react';
 
 interface Props {
   chain: EvmChain;
-  prices: EvmPrices;
   activeAccount: EvmActiveAccount;
 }
 
-export const EvmWalletTokensComponent = ({
-  chain,
-  prices,
-  activeAccount,
-}: Props) => {
+export const EvmWalletTokensComponent = ({ chain, activeAccount }: Props) => {
+  console.log(activeAccount, 'activeAccount');
   const [displayedTokens, setDisplayedTokens] = useState<NativeAndErc20Token[]>(
     [],
   );
@@ -60,7 +55,7 @@ export const EvmWalletTokensComponent = ({
       (await EvmTokensUtils.filterTokensBasedOnSettings(
         activeAccount.nativeAndErc20Tokens.value,
       )) as NativeAndErc20Token[];
-    const sortedTokens = EvmTokensUtils.sortTokens(tokens, prices);
+    const sortedTokens = EvmTokensUtils.sortTokens(tokens);
     setFilteredTokens(sortedTokens);
     setDisplayedTokens(sortedTokens);
   };

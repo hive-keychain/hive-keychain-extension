@@ -23,9 +23,15 @@
 
   .information-panel {
     width: 100%;
-    display: flex;
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
     align-items: center;
     column-gap: 16px;
+    .currency-icon-container {
+      display: flex;
+      align-items: center;
+      column-gap: -4px;
+    }
     .currency-icon {
       @include icon-size(36px);
       &.shimmer {
@@ -47,6 +53,13 @@
         padding: 6px;
         border-radius: 50%;
         @include icon-size(24px);
+      }
+
+      &.dual-icon {
+        @include icon-size(16px);
+      }
+      &.right-icon {
+        margin-left: -8px;
       }
     }
 

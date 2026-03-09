@@ -18,7 +18,6 @@ import { EvmActionButtonList } from '@popup/evm/pages/home/evm-action-section/ev
 import { EvmDappStatusComponent } from '@popup/evm/pages/home/evm-dapp-status/evm-dapp-status.component';
 import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section.component';
 import { EvmWalletInfoSectionComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section.component';
-import { EvmPrices } from '@popup/evm/reducers/prices.reducer';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
@@ -71,7 +70,6 @@ const Home = ({
   chain,
   accounts,
   activeAccount,
-  prices,
   navigateTo,
   loadEvmActiveAccount,
   resetTitleContainerProperties,
@@ -418,7 +416,6 @@ const Home = ({
         )}
         <EvmWalletInfoSectionComponent
           activeAccount={activeAccount}
-          prices={prices}
           onClickOnNftPreview={handleClickOnNftCollection}
           chain={chain}
           loadEvmHistory={loadEvmHistory}
@@ -444,7 +441,6 @@ const mapStateToProps = (state: RootState) => {
     chain: state.chain as EvmChain,
     accounts: state.evm.accounts,
     activeAccount: state.evm.activeAccount,
-    prices: state.evm.prices as EvmPrices,
   };
 };
 
