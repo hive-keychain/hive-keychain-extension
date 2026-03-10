@@ -127,7 +127,6 @@ export const SendTransaction = (props: Props) => {
     } as ProviderTransactionData;
 
     transactionConfirmationFields.otherFields = [];
-
     if (chainTmp) {
       transactionConfirmationFields.otherFields.push({
         type: EvmInputDisplayType.STRING,
@@ -162,22 +161,25 @@ export const SendTransaction = (props: Props) => {
           params.to,
           chainTmp as EvmChain,
         );
-        let abi = await EvmLightNodeUtils.getAbi(
-          chainTmp.chainId,
-          proxy ?? params.to,
-        );
 
-        tData.abi = abi;
         tData.value = params.value;
 
         tokenAddress = params.to;
-
         // Case of the execution of a smart contract
         if (params.to) {
+          let abi = await EvmLightNodeUtils.getAbi(
+            chainTmp.chainId,
+            proxy ?? params.to,
+          );
+          console.log(abi, 'abi');
+
+          tData.abi = abi;
+
           const usedToken = await EvmTokensUtils.getTokenInfo(
             chainTmp.chainId,
             tokenAddress,
           );
+          console.log(usedToken, 'usedToken');
 
           setTokenInfo(usedToken);
 
@@ -508,6 +510,8 @@ export const SendTransaction = (props: Props) => {
           tData.to = tokenAddress;
           tData.data = params.data;
         } else {
+          console.log('Case of smart contract deployment');
+
           // Case of smart contract deployment
           // Unknown ABI
           setCaption(

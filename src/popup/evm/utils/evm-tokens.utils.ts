@@ -7,6 +7,7 @@ import {
   EvmCustomToken,
   EvmSavedCustomTokens,
 } from '@popup/evm/interfaces/evm-custom-tokens.interface';
+import { EvmLightNodeContractResponse } from '@popup/evm/interfaces/evm-light-node.interface';
 import {
   EvmSmartContractInfo,
   EvmSmartContractInfoErc1155,
@@ -22,6 +23,7 @@ import {
   ERC721Abi,
 } from '@popup/evm/reference-data/abi.data';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -282,31 +284,15 @@ const manualDiscoverNfts = async (walletAddress: string, chain: EvmChain) => {
   } else return [];
 };
 
-const getMetadataFromBackend = async (
-  addresses: { address: string; tokenId?: string }[],
-  chain: EvmChain,
-): Promise<EvmSmartContractInfo[] | null> => {
-  try {
-    const result = await KeychainApi.post(
-      `evm/smart-contracts-info/${chain.chainId}`,
-      { addresses },
-    );
-    return result;
-  } catch (err) {
-    Logger.error('Error while fetching metadata', err);
-    return [];
-  }
-};
-
 const getTokenInfo = async (
   chainId: EvmChain['chainId'],
-  address?: string,
+  address: string,
 ): Promise<EvmSmartContractInfo> => {
-  return {} as EvmSmartContractInfo;
+  const result = await EvmLightNodeUtils.getContract(chainId, address);
+  return mapLightNodeContractToTokenInfo(chainId, result);
 };
 
 const sortTokens = (tokens: NativeAndErc20Token[]) => {
-  console.log(tokens, 'tokens');
   return tokens.sort((tokenA, tokenB) => {
     const priceA = tokenA.tokenInfo.priceUsd ?? 0;
     const priceB = tokenB.tokenInfo.priceUsd ?? 0;
@@ -361,10 +347,85 @@ const getMainTokenInfo = async (
     chainId: chain.chainId,
     backgroundColor: '',
     coingeckoId: '',
-    priceUsd: response.price.priceUsd,
-    createdAt: response.price.fetchedAt,
+    priceUsd: response.price?.priceUsd ?? 0,
+    createdAt: response.price?.fetchedAt ?? Date.now(),
     categories: [],
   };
+};
+
+const mapLightNodeContractToTokenInfo = (
+  chainId: EvmChain['chainId'],
+  contract: EvmLightNodeContractResponse,
+): EvmSmartContractInfo => {
+  const metadata = contract.metadata;
+  const name = metadata?.name ?? '';
+  const symbol = metadata?.symbol ?? '';
+  const logo =
+    metadata && 'logoUrl' in metadata ? (metadata.logoUrl ?? '') : '';
+  const priceUsd = contract.price?.priceUsd ?? 0;
+  const contractAddress = contract.address;
+  const verifiedContract = contract.verified ?? false;
+  const possibleSpam = contract.possibleSpam ?? false;
+  const normalizedContractType = contract.contractType?.toUpperCase() ?? null;
+
+  const base = {
+    name,
+    symbol,
+    logo,
+    chainId: String(chainId),
+    backgroundColor: '',
+    priceUsd,
+  };
+
+  if (normalizedContractType === 'ERC721') {
+    return {
+      ...base,
+      type: EVMSmartContractType.ERC721,
+      contractAddress,
+      possibleSpam,
+      verifiedContract,
+    } as EvmSmartContractInfoErc721;
+  }
+
+  if (
+    normalizedContractType === 'ERC721ENUMERABLE' ||
+    normalizedContractType === 'ERC721_ENUMERABLE'
+  ) {
+    return {
+      ...base,
+      type: EVMSmartContractType.ERC721Enumerable,
+      contractAddress,
+      possibleSpam,
+      verifiedContract,
+    } as EvmSmartContractInfoErc721;
+  }
+
+  if (normalizedContractType === 'ERC1155') {
+    return {
+      ...base,
+      type: EVMSmartContractType.ERC1155,
+      contractAddress,
+      possibleSpam,
+      verifiedContract,
+    } as EvmSmartContractInfoErc1155;
+  }
+
+  const isTokenMetadata = !!metadata && 'decimals' in metadata;
+  const decimals = isTokenMetadata ? (metadata.decimals ?? 18) : 18;
+  const coingeckoId = isTokenMetadata
+    ? (metadata.coingeckoId ?? undefined)
+    : undefined;
+
+  return {
+    ...base,
+    type: EVMSmartContractType.ERC20,
+    contractAddress,
+    possibleSpam,
+    verifiedContract,
+    decimals,
+    validated: 0,
+    coingeckoId,
+  } as EvmSmartContractInfoErc20;
 };
 
 const displayValue = (value: number, tokenInfo: EvmSmartContractInfo) => {
@@ -386,7 +447,7 @@ const displayValue = (value: number, tokenInfo: EvmSmartContractInfo) => {
 };
 
 const getTokenType = (abi: any) => {
-  const parsedAbi = JSON.parse(abi);
+  const parsedAbi = abi;
   const abiMethods = parsedAbi.map((abiFunctions: any) => abiFunctions.name);
 
   for (const referenceAbi of AbiList) {
@@ -400,19 +461,6 @@ const getTokenType = (abi: any) => {
 
   return null;
 };
-
-// TODO Remove this function
-// const getMetadataFromStorage = async (
-//   chain: EvmChain,
-// ): Promise<EvmSmartContractInfo[]> => {
-//   const allChainsMetadata = await LocalStorageUtils.getValueFromLocalStorage(
-//     LocalStorageKeyEnum.EVM_TOKENS_METADATA,
-//   );
-
-//   if (allChainsMetadata) {
-//     return allChainsMetadata[chain.chainId];
-//   } else return [] as EvmSmartContractInfo[];
-// };
 
 const getPopularTokensForChain = async (chain: EvmChain) => {
   const res = await KeychainApi.get(`evm/token/${chain.chainId}/popular`);

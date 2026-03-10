@@ -1,5 +1,8 @@
 import { KeychainApi } from '@api/keychain';
-import { EvmLightNodeRegisteredAddresses } from '@popup/evm/interfaces/evm-light-node.interface';
+import {
+  EvmLightNodeContractResponse,
+  EvmLightNodeRegisteredAddresses,
+} from '@popup/evm/interfaces/evm-light-node.interface';
 import {
   EvmLpV2Pair,
   EvmSmartContractInfo,
@@ -237,10 +240,14 @@ const getHistoryDetail = async (
 const getContract = async (
   chainId: string | number,
   contractAddress: string,
-): Promise<any> => {
-  return KeychainApi.get(
+): Promise<EvmLightNodeContractResponse> => {
+  const response = await KeychainApi.get(
     `evm/light-node/contract/${chainId}/${encodeURIComponent(contractAddress)}`,
   );
+
+  console.log(response, 'response');
+
+  return response;
 };
 
 const getGasFee = async (chainId: string | number): Promise<unknown> => {
