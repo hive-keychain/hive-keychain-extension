@@ -59,9 +59,8 @@ export const EvmTransactionWarningsComponent = ({
       {warningHook.fields &&
         warningHook.fields.otherFields?.map((f, index) => {
           return (
-            <>
+            <Fragment key={`${f.name}-${index}`}>
               <EvmRequestItem
-                key={`${f.name}-${index}`}
                 field={f}
                 onWarningClicked={(warningIndex: number) =>
                   warningHook.openSingleWarningPopup(
@@ -71,11 +70,10 @@ export const EvmTransactionWarningsComponent = ({
                   )
                 }
               />
-              {/* TODO confirm design for separator */}
               {index !== warningHook.fields!.otherFields.length - 1 && (
                 <Separator type="horizontal" fullSize />
               )}
-            </>
+            </Fragment>
           );
         })}
     </Fragment>

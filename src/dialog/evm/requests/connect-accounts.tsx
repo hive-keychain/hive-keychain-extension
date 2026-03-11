@@ -127,7 +127,7 @@ export const ConnectAccounts = (props: Props) => {
         afterCancel={handleCancel}
         request={request}
         domain={data.dappInfo.domain}
-        tab={0}
+        tab={data.tab}
         title={chrome.i18n.getMessage('evm_connect_wallet')}
         onConfirm={saveInStorage}
         caption={chrome.i18n.getMessage('dialog_evm_dapp_status_caption', [
@@ -142,7 +142,7 @@ export const ConnectAccounts = (props: Props) => {
           accountsToConnect &&
           accounts.map((account) => (
             <CheckboxPanelComponent
-              key={`account-${account.id}`}
+              key={`account-${account.wallet.address}`}
               onChange={() => toggleAccount(account.wallet.address)}
               checked={accountsToConnect[account.wallet.address]}>
               <EvmAccountDisplayComponent

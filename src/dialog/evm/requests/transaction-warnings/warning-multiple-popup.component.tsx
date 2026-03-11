@@ -4,7 +4,7 @@ import {
   TransactionConfirmationField,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
-import React from 'react';
+import React, { Fragment } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -25,9 +25,10 @@ interface Props {
 export const EvmMultipleWarningsPopup = ({ warningHook }: Props) => {
   const fieldWarningTemplate = (
     field: ConfirmationPageEvmFields | TransactionConfirmationField,
+    warningIndex: number,
   ) => {
     return (
-      <>
+      <Fragment key={`warning-${field.name}-warning-${warningIndex}`}>
         {field.name && (
           <div className="field-name">{chrome.i18n.getMessage(field.name)}</div>
         )}
@@ -50,7 +51,7 @@ export const EvmMultipleWarningsPopup = ({ warningHook }: Props) => {
             }
           },
         )}
-      </>
+      </Fragment>
     );
   };
 
@@ -68,8 +69,10 @@ export const EvmMultipleWarningsPopup = ({ warningHook }: Props) => {
         {warningHook
           .getAllFieldsWithNotIgnoredWarnings()
           .map(
-            (field: ConfirmationPageEvmFields | TransactionConfirmationField) =>
-              fieldWarningTemplate(field),
+            (
+              field: ConfirmationPageEvmFields | TransactionConfirmationField,
+              index: number,
+            ) => fieldWarningTemplate(field, index),
           )}
       </div>
 
