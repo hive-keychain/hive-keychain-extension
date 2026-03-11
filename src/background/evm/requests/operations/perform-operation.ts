@@ -96,6 +96,5 @@ export const performEvmOperation = async (
     );
   } finally {
     if (message) CommunicationUtils.runtimeSendMessage(message);
-    requestHandler.removeRequestById(request.request_id, tab);
   }
 };

@@ -253,7 +253,12 @@ export class HiveRequestsHandler {
       return true;
     });
 
-    if ((await RequestHandlerUtils.countPendingRestrictedRequest()) === 0) {
+    if (
+      (await RequestHandlerUtils.countPendingRestrictedRequest(
+        requestId,
+        tabId,
+      )) === 0
+    ) {
       if (this.windowId) chrome.windows.remove(this.windowId);
     }
 

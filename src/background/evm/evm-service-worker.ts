@@ -96,13 +96,13 @@ const chromeMessageHandler = async (
     case BackgroundCommand.SEND_EVM_RESPONSE_TO_SW: {
       const message = backgroundMessage.value;
       const requestHandler = await EvmRequestHandler.getFromLocalStorage();
-
-      CommunicationUtils.tabsSendMessage(message.tab!, {
+      const requestData = requestHandler?.getRequestData(message.request_id);
+      CommunicationUtils.tabsSendMessage(requestData?.tab!, {
         command: BackgroundCommand.SEND_EVM_RESPONSE,
         value: message,
       });
 
-      // requestHandler.removeRequestById(message.request_id, message.tab!);
+      requestHandler.removeRequestById(message.request_id, requestData?.tab!);
       break;
     }
     case BackgroundCommand.ACCEPT_EVM_TRANSACTION:

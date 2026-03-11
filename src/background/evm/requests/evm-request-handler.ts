@@ -71,6 +71,7 @@ export class EvmRequestHandler {
     sender: chrome.runtime.MessageSender,
     msg: KeychainEvmRequestWrapper,
   ) {
+    console.log('EvmRequestHandler sendRequest', sender, msg);
     this.requestsData.push({
       tab: sender.tab!.id,
       request: msg.request,
@@ -105,6 +106,7 @@ export class EvmRequestHandler {
   }
 
   async removeRequestById(requestId: number, tab: number) {
+    console.log('EvmRequestHandler removeRequestById', requestId, tab);
     this.requestsData = this.requestsData.filter((requestData: RequestData) => {
       if (requestData.request_id === requestId && requestData.tab === tab) {
         return false;
@@ -112,7 +114,15 @@ export class EvmRequestHandler {
       return true;
     });
 
-    if ((await RequestHandlerUtils.countPendingRestrictedRequest()) === 0) {
+    if (
+      (await RequestHandlerUtils.countPendingRestrictedRequest(
+        requestId,
+        tab,
+      )) === 0
+    ) {
+      console.log(
+        'EVMRequestHandler close window if windowId is set because countPending is 0',
+      );
       if (this.windowId) chrome.windows.remove(this.windowId);
     }
 
@@ -140,9 +150,8 @@ export class EvmRequestHandler {
     }
     const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
     if (mk)
-      handler.accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(
-        mk,
-      );
+      handler.accounts =
+        await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
     return handler;
   }
 

@@ -5,7 +5,10 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { isWhitelisted } from 'src/utils/preferences.utils';
 
-const countPendingRestrictedRequest = async () => {
+const countPendingRestrictedRequest = async (
+  requestId: number,
+  tab: number,
+) => {
   const [hiveRequestHandler, evmRequestHandler] = await getRequestHandlers();
 
   const restrictedHiveRequests = hiveRequestHandler?.requestsData?.filter(
@@ -15,11 +18,13 @@ const countPendingRestrictedRequest = async () => {
         requestData.request!,
         requestData.domain!,
         requestData.rpc!,
-      ),
+      ) &&
+      (requestData.request_id !== requestId || requestData.tab !== tab),
   );
   const restrictedEvmRequests = evmRequestHandler?.requestsData?.filter(
     (requestData) =>
-      !EvmUnrestrictedMethods.includes(requestData.request!.method),
+      !EvmUnrestrictedMethods.includes(requestData.request!.method) &&
+      (requestData.request_id !== requestId || requestData.tab !== tab),
   );
 
   return (
