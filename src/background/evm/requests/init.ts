@@ -67,7 +67,6 @@ export const initEvmRequestHandler = async (
   const setupChains = await ChainUtils.getAllSetupChainsForType<EvmChain>(
     ChainType.EVM,
   );
-  console.log('setupChains', setupChains);
   if (chainId && chain === null) {
     handleNonSupportedChain(requestHandler, tab!, request, request.chainId!);
   } else if (EvmDeprecatedMethods.includes(request.method)) {

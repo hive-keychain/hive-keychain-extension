@@ -247,7 +247,6 @@ const LiFiConfirmationPage = ({
 const mapStateToProps = (state: RootState) => {
   const params = state.navigation.stack[0]
     .params as LiFiConfirmationPageNavigationParams;
-  console.log(params, 'params');
   return {
     swapTransactionData: params.swapTransactionData,
     approveTransactionData: params.approveTransactionData,

@@ -43,7 +43,6 @@ const send = async (
   forceNounce?: number,
 ) => {
   const chain = await ChainUtils.getChain<EvmChain>(chainId);
-  console.log(chain, 'chain');
   let feeData = {};
   if (gasFee)
     switch (gasFee.type) {

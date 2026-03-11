@@ -52,27 +52,24 @@ const App = () => {
 
   useEffect(() => {
     initGoogleAnalytics();
-    chrome.runtime.onMessage.addListener(async function (
-      data,
-      sender,
-      sendResp,
-    ) {
-      if (data.command === DialogCommand.READY) {
-        return BrowserUtils.sendResponse(true, sendResp);
-      } else if (
-        data.command === DialogCommand.ANSWER_REQUEST ||
-        data.command === DialogCommand.ANSWER_EVM_REQUEST ||
-        data.command === DialogCommand.SEND_DIALOG_ERROR
-      ) {
-        setFeedBackMessage(data);
-      } else if (Object.values(DialogCommand).includes(data.command)) {
-        setData(data);
-      }
-    });
+    chrome.runtime.onMessage.addListener(
+      async function (data, sender, sendResp) {
+        if (data.command === DialogCommand.READY) {
+          return BrowserUtils.sendResponse(true, sendResp);
+        } else if (
+          data.command === DialogCommand.ANSWER_REQUEST ||
+          data.command === DialogCommand.ANSWER_EVM_REQUEST ||
+          data.command === DialogCommand.SEND_DIALOG_ERROR
+        ) {
+          setFeedBackMessage(data);
+        } else if (Object.values(DialogCommand).includes(data.command)) {
+          setData(data);
+        }
+      },
+    );
   }, []);
 
   const renderDialogContent = (data: any) => {
-    console.log('data', data);
     switch (data.command) {
       case DialogCommand.UNLOCK:
       case DialogCommand.UNLOCK_EVM:

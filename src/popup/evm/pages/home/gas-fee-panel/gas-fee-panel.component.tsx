@@ -119,7 +119,6 @@ export const GasFeePanel = ({
     const mainTokenPriceTmp = await EvmLightNodeUtils.getPrice(
       (chain as EvmChain).chainId,
     );
-    console.log('mainTokenPriceTmp', mainTokenPriceTmp);
     setMainTokenPrice(mainTokenPriceTmp);
 
     try {

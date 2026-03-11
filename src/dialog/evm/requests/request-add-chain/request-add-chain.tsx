@@ -21,7 +21,6 @@ export const RequestAddEvmChain = (props: Props) => {
   const { request, requestedChain, dappInfo, tab } = props;
 
   const handleConfirm = () => {
-    console.log('handleConfirm');
     CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.ACCEPT_ADD_EVM_CHAIN,
       value: {

@@ -15,7 +15,6 @@ export const requestAddEvmChain = async (
   const requestedChain = await ChainUtils.getChainFromDefaultChains<EvmChain>(
     request.chainId!,
   );
-  console.log('requestedChain', requestedChain);
 
   /* istanbul ignore next */
   createOrUpdateDialog(async () => {

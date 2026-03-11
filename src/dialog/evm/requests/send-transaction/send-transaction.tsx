@@ -171,7 +171,6 @@ export const SendTransaction = (props: Props) => {
             chainTmp.chainId,
             proxy ?? params.to,
           );
-          console.log(abi, 'abi');
 
           tData.abi = abi;
 
@@ -179,7 +178,6 @@ export const SendTransaction = (props: Props) => {
             chainTmp.chainId,
             tokenAddress,
           );
-          console.log(usedToken, 'usedToken');
 
           setTokenInfo(usedToken);
 
@@ -510,8 +508,6 @@ export const SendTransaction = (props: Props) => {
           tData.to = tokenAddress;
           tData.data = params.data;
         } else {
-          console.log('Case of smart contract deployment');
-
           // Case of smart contract deployment
           // Unknown ABI
           setCaption(

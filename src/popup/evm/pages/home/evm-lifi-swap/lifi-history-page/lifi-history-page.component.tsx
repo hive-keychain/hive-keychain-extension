@@ -59,7 +59,6 @@ const LiFiHistoryPage = ({
     setLoading(true);
     try {
       const data = await LiFiUtils.getLifiData();
-      console.log(data);
       setLifiData(data);
       await refresh();
     } finally {
@@ -73,7 +72,6 @@ const LiFiHistoryPage = ({
       const result = await LiFiUtils.retrieveLiFiHistory(
         activeAccount.wallet.address,
       );
-      console.log(result, 'result');
       setHistory(result);
     } finally {
       setAutoRefreshCountdown(Config.swaps.autoRefreshHistoryPeriodSec);

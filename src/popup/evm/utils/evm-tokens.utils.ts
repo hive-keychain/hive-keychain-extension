@@ -82,14 +82,12 @@ const getTokenBalances = async (
     );
 
   const result = await Promise.all(balancesPromises);
-  console.log(result, 'result');
-  return result;
-  // return result.filter(
-  //   (balance) =>
-  //     !!balance &&
-  //     (balance.balance > 0 ||
-  //       balance.tokenInfo.type === EVMSmartContractType.NATIVE),
-  // );
+  return result.filter(
+    (balance) =>
+      !!balance &&
+      (balance.balance > 0 ||
+        balance.tokenInfo.type === EVMSmartContractType.NATIVE),
+  );
 };
 
 const filterTokensBasedOnSettings = async (

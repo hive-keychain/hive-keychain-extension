@@ -54,7 +54,6 @@ const shouldLoadMoreDiscoveredAssets = (
 const mapDiscoveredNftsResponseToActiveAccountNfts = (
   response: DiscoveredNftsResponse,
 ): (EvmErc721Token | EvmErc1155Token)[] => {
-  console.log(response);
   return response.collections.flatMap((collection) => {
     if (collection.contractType === 'ERC721') {
       return [

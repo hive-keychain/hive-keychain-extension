@@ -191,10 +191,6 @@ const EvmTransactionResult = ({
           .wait()
           .then(
             async (speedUpTransactionReceipt: TransactionReceipt | null) => {
-              console.log(
-                'speedUpTransactionReceipt',
-                speedUpTransactionReceipt,
-              );
               if (speedUpTransactionReceipt) {
                 const speedUpTransactionResult = await provider.getTransaction(
                   speedUpTransactionReceipt.hash,

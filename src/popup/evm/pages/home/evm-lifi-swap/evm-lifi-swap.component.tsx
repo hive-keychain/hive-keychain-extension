@@ -204,10 +204,6 @@ export const EvmLifiSwap = ({
     refreshAllowance();
   }, [lifiQuote]);
 
-  useEffect(() => {
-    console.log(lifiQuote);
-  }, [lifiQuote]);
-
   const refreshAllowance = async () => {
     if (form.fromSelectedToken && form.amount > 0) {
       const chain: EvmChain = await ChainUtils.getChain<EvmChain>(
@@ -518,7 +514,6 @@ export const EvmLifiSwap = ({
           setErrorMessage(
             (error as KeychainError).message ?? 'swap_error_getting_estimate',
           );
-          console.log(error);
           // catch error and display message
           // not enough funds to pay for gas etc
         }

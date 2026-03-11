@@ -182,7 +182,6 @@ const switchToWorkingRpc = async (chain: EvmChain) => {
   const allRpcs = await getRpcListForChain(chain);
   for (const rpc of allRpcs) {
     const rpcStatusOk = await checkRpcStatus(rpc.url);
-    console.log('rpcStatusOk', rpcStatusOk, rpc.url);
     if (rpcStatusOk) {
       return rpc;
     }
@@ -193,7 +192,6 @@ const switchToWorkingRpc = async (chain: EvmChain) => {
 // Returning false, it means that no rpc is working
 const automaticallySwitchToWorkingRpc = async (chain: EvmChain) => {
   const allRpcs = await getRpcListForChain(chain);
-  console.log('allRpcs', allRpcs);
   for (const rpc of allRpcs) {
     const rpcStatusOk = await checkRpcStatus(rpc.url);
     if (rpcStatusOk) {

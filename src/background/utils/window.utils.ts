@@ -36,7 +36,6 @@ const askIfReady = (
         var lastError = chrome.runtime.lastError;
         if (lastError) {
           resolve(false);
-          // console.log(lastError.message);
           return;
         } else if (resp) resolve(resp);
       },
