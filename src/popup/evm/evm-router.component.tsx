@@ -17,7 +17,6 @@ import { EvmRpcNodesComponent } from '@popup/evm/pages/home/settings/evm-advance
 import { EvmSecuritySettingsComponent } from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-security/evm-security.component';
 import { EvmContactsComponent } from '@popup/evm/pages/home/settings/evm-contacts/evm-contacts.component';
 import { EvmSettingPage } from '@popup/evm/pages/home/settings/evm-settings.component';
-import { EvmTokenHistoryComponent } from '@popup/evm/pages/home/token-history/evm-token-history.component';
 import { EvmTransactionResultComponent } from '@popup/evm/pages/home/transaction-result/transaction-result.component';
 import { EvmTransferComponent } from '@popup/evm/pages/home/transfer/evm-transfer.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
@@ -49,8 +48,6 @@ const EvmAppRouter = ({
       case MultichainScreen.HOME_PAGE:
         return <EvmHomeComponent />;
 
-      case EvmScreen.EVM_TOKEN_HISTORY:
-        return <EvmTokenHistoryComponent />;
       case EvmScreen.LIFI_CONFIRMATION_PAGE:
         return <LiFiConfirmationPageComponent />;
       case EvmScreen.LIFI_HISTORY_PAGE:

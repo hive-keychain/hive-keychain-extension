@@ -18,7 +18,10 @@ import {
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
-import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
+import {
+  EvmLightNodeUtils,
+  LightNodeHistoryDetailItem,
+} from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import {
   BlockExplorerType,
@@ -1163,6 +1166,44 @@ const getSpecificData = async (
   return result;
 };
 
+export type TransactionTokenKind = 'NATIVE' | 'ERC20' | 'ERC721' | 'ERC1155';
+
+const getTransactionTokenKind = async (
+  chainId: string | number,
+  transactionId: string,
+): Promise<TransactionTokenKind | null> => {
+  const raw = await EvmLightNodeUtils.getHistoryDetail(chainId, transactionId);
+  if (raw == null) return null;
+
+  // API may return a single detail object, an array of operations, or a wrapper (e.g. { operations: [...] })
+  let details: LightNodeHistoryDetailItem[] = [];
+  if (Array.isArray(raw)) {
+    details = raw as LightNodeHistoryDetailItem[];
+  } else if (
+    typeof raw === 'object' &&
+    raw !== null &&
+    !('in' in raw) &&
+    !('out' in raw)
+  ) {
+    const arr =
+      (raw as Record<string, unknown>).operations ??
+      (raw as Record<string, unknown>).items ??
+      (raw as Record<string, unknown>).data;
+    details = Array.isArray(arr) ? (arr as LightNodeHistoryDetailItem[]) : [];
+  } else {
+    details = [raw as LightNodeHistoryDetailItem];
+  }
+
+  const items: Array<{ kind?: string }> = [];
+  for (const detail of details) {
+    if (detail?.in?.length) items.push(...detail.in);
+    if (detail?.out?.length) items.push(...detail.out);
+  }
+
+  const itemWithKind = items.find((item) => 'kind' in item && item.kind);
+  return (itemWithKind?.kind as TransactionTokenKind) ?? null;
+};
+
 const getCommonHistoryItem = (e: any) => {
   return {
     blockNumber: e.blockNumber,
@@ -1176,6 +1217,7 @@ const getCommonHistoryItem = (e: any) => {
 
 export const EvmTokensHistoryParserUtils = {
   parseEvent,
+  getTransactionTokenKind,
 };
 
 interface EvmHistoryItemSpecificData {

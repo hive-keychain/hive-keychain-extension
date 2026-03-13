@@ -13,6 +13,10 @@ import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.c
 import { getAbiFromType } from '@popup/evm/reference-data/abi.data';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
+import {
+  EvmTokensHistoryParserUtils,
+  TransactionTokenKind,
+} from '@popup/evm/utils/evm-tokens-history-parser.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
@@ -72,6 +76,10 @@ const EvmTransactionResult = ({
   const [increasedGasFee, setIncreasedGasFee] =
     useState<GasFeeEstimationBase>(gasFee);
 
+  const [transactionTokenType, setTransactionTokenType] = useState<
+    string | null
+  >(null);
+
   useEffect(() => {
     setTitleContainerProperties({
       title: pageTitle,
@@ -79,6 +87,27 @@ const EvmTransactionResult = ({
     });
     getTransactionStatus();
   }, []);
+
+  useEffect(() => {
+    console.log('tokenInfo', tokenInfo);
+    if (tokenInfo) {
+      setTransactionTokenType(tokenInfo.type);
+    } else {
+      console.log('getTransactionTokenKind', {
+        chainId: chain.chainId,
+        hash: transactionResponse.hash,
+      });
+      EvmTokensHistoryParserUtils.getTransactionTokenKind(
+        chain.chainId,
+        transactionResponse.hash,
+      ).then((type: TransactionTokenKind | null) => {
+        console.log('type', type);
+        if (type) {
+          setTransactionTokenType(type as string);
+        }
+      });
+    }
+  }, [tokenInfo]);
 
   const getTransactionStatus = async () => {
     const provider = await EthersUtils.getProvider(chain);
@@ -451,7 +480,7 @@ const EvmTransactionResult = ({
             )}
           <SmallDataCardComponent
             label="evm_nft_token_type"
-            value={tokenInfo ? tokenInfo.type : 'unknown'}
+            value={transactionTokenType ?? 'unknown'}
           />
           <SmallDataCardComponent
             label="popup_html_evm_transaction_info_block_number"

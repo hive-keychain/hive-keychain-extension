@@ -17,7 +17,6 @@ interface Props {
 }
 
 export const EvmWalletTokensComponent = ({ chain, activeAccount }: Props) => {
-  console.log(activeAccount, 'activeAccount');
   const [displayedTokens, setDisplayedTokens] = useState<NativeAndErc20Token[]>(
     [],
   );
