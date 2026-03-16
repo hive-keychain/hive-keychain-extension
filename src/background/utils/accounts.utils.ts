@@ -8,7 +8,7 @@ const getAccountsFromFileData = async (
   mk: string,
 ): Promise<LocalAccount[]> => {
   try {
-    const accounts = await EncryptUtils.decryptToJsonWithoutMD5Check(
+    const accounts = await EncryptUtils.decryptToJsonWithLegacySupport(
       fileContent,
       mk,
     );

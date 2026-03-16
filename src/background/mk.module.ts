@@ -1,6 +1,6 @@
+import { KeylessKeychainUtils } from '@background/utils/keyless-keychain.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
-import CryptoJS from 'crypto-js';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -38,12 +38,8 @@ const login = async (password: string): Promise<boolean> => {
     storage[LocalStorageKeyEnum.KEYLESS_KEYCHAIN_AUTH_DATA_USER_DICT]
   ) {
     try {
-      const decryptedKeylessAuthDataUserDictionary = await EncryptUtils.decrypt(
-        storage[LocalStorageKeyEnum.KEYLESS_KEYCHAIN_AUTH_DATA_USER_DICT],
+      const res = await KeylessKeychainUtils.getKeylessAuthDataUserDictionaryFromPassword(
         password,
-      );
-      const res = JSON.parse(
-        decryptedKeylessAuthDataUserDictionary.toString(CryptoJS.enc.Utf8),
       );
       return !!res;
     } catch (error) {

@@ -207,7 +207,7 @@ function decryptNoIV(content: string, encryptPassword: string) {
   return decrypted.toString(CryptoJS.enc.Utf8);
 }
 
-const decryptToJsonWithoutMD5Check = async (
+const decryptToJsonWithLegacySupport = async (
   msg: string,
   pwd: string,
 ): Promise<any> => {
@@ -266,7 +266,7 @@ const EncryptUtils = {
   encrypt: encryptLegacyCompat,
   encryptNoIV,
   decryptToJson,
-  decryptToJsonWithoutMD5Check,
+  decryptToJsonWithLegacySupport,
   decrypt: LegacyEncryptUtils.decrypt,
   decryptNoIV,
   isEncryptedJsonV2,

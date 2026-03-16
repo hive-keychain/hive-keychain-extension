@@ -1,4 +1,3 @@
-import MkModule from '@background/mk.module';
 import {
   AuthWait,
   ChallengeReqData,
@@ -14,7 +13,9 @@ import {
 import CryptoJS from 'crypto-js';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
+import { VaultKey } from 'src/reference-data/vault-message-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import VaultUtils from 'src/utils/vault.utils';
 
 /**
  * Register user and dapp to local storage.
@@ -104,31 +105,76 @@ const generateSecureHexKey = (length: number = 32) => {
  * Get the keyless auth data user dictionary
  * @returns The keyless auth data user dictionary
  */
+const getKeylessAuthDataUserDictionaryFromPassword = async (
+  password: string,
+): Promise<KeylessAuthDataUserDictionary | undefined> => {
+  try {
+    const encryptedKeylessAuthDataUserDictionary = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.KEYLESS_KEYCHAIN_AUTH_DATA_USER_DICT,
+    );
+    if (!encryptedKeylessAuthDataUserDictionary) {
+      return undefined;
+    }
+
+    if (
+      EncryptUtils.isEncryptedJsonV2(encryptedKeylessAuthDataUserDictionary)
+    ) {
+      const decryptedKeylessAuthDataUserDictionary = await EncryptUtils.decryptToJson(
+        encryptedKeylessAuthDataUserDictionary,
+        password,
+      );
+
+      if (
+        decryptedKeylessAuthDataUserDictionary &&
+        typeof decryptedKeylessAuthDataUserDictionary.list === 'object' &&
+        decryptedKeylessAuthDataUserDictionary.list !== null &&
+        !Array.isArray(decryptedKeylessAuthDataUserDictionary.list)
+      ) {
+        return decryptedKeylessAuthDataUserDictionary.list;
+      }
+
+      throw new Error('Unable to decrypt payload');
+    }
+
+    const decryptedKeylessAuthDataUserDictionary = EncryptUtils.decrypt(
+      encryptedKeylessAuthDataUserDictionary,
+      password,
+    );
+    const keylessAuthDataUserDictionary = JSON.parse(
+      decryptedKeylessAuthDataUserDictionary.toString(CryptoJS.enc.Utf8),
+    ) as KeylessAuthDataUserDictionary;
+
+    if (
+      typeof keylessAuthDataUserDictionary !== 'object' ||
+      keylessAuthDataUserDictionary === null ||
+      Array.isArray(keylessAuthDataUserDictionary)
+    ) {
+      throw new Error('Unable to decrypt payload');
+    }
+
+    await storeKeylessAuthDataUserDictionary(
+      keylessAuthDataUserDictionary,
+      password,
+    );
+
+    return keylessAuthDataUserDictionary;
+  } catch (error: any) {
+    throw new Error(
+      `Failed to get keyless auth data user dictionary: ${error.message}`,
+    );
+  }
+};
+
 const getKeylessAuthDataUserDictionary = async (): Promise<
   KeylessAuthDataUserDictionary | undefined
 > => {
   try {
-    const keylessAuthDataUserDictionary =
-      await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.KEYLESS_KEYCHAIN_AUTH_DATA_USER_DICT,
-      );
-    if (!keylessAuthDataUserDictionary) {
-      return undefined;
-    }
-
-    const mk = await MkModule.getMk();
+    const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
     if (!mk) {
       throw new Error('MK not found');
     }
 
-    // Decrypt the keyless_auth_data_user_dictionary with mk
-    const decryptedKeylessAuthDataUserDictionary = EncryptUtils.decrypt(
-      keylessAuthDataUserDictionary,
-      mk,
-    );
-    return JSON.parse(
-      decryptedKeylessAuthDataUserDictionary.toString(CryptoJS.enc.Utf8),
-    );
+    return await getKeylessAuthDataUserDictionaryFromPassword(mk as string);
   } catch (error: any) {
     throw new Error(
       `Failed to get keyless auth data user dictionary: ${error.message}`,
@@ -142,12 +188,13 @@ const getKeylessAuthDataUserDictionary = async (): Promise<
  */
 const storeKeylessAuthDataUserDictionary = async (
   keylessAuthDataUserDictionary: KeylessAuthDataUserDictionary,
+  password?: string,
 ) => {
   try {
-    const mk = await MkModule.getMk();
+    const mk = password ?? (await VaultUtils.getValueFromVault(VaultKey.__MK));
     if (!mk) throw new Error('MK not found');
-    const encryptedKeylessAuthDataUserDictionary = EncryptUtils.encrypt(
-      JSON.stringify(keylessAuthDataUserDictionary),
+    const encryptedKeylessAuthDataUserDictionary = await EncryptUtils.encryptJson(
+      { list: keylessAuthDataUserDictionary },
       mk,
     );
     await LocalStorageUtils.saveValueInLocalStorage(
@@ -169,8 +216,7 @@ const storeKeylessAuthDataUserDictionary = async (
 const getKeylessAuthDataArray = async (
   username: string,
 ): Promise<KeylessAuthData[] | undefined> => {
-  const keylessAuthDataUserDictionary =
-    await getKeylessAuthDataUserDictionary();
+  const keylessAuthDataUserDictionary = await getKeylessAuthDataUserDictionary();
   if (!keylessAuthDataUserDictionary) return undefined;
   return keylessAuthDataUserDictionary[username];
 };
@@ -230,8 +276,7 @@ const storeKeylessAuthData = async (
   keylessAuthData: KeylessAuthData,
 ) => {
   try {
-    let keylessAuthDataUserDictionary =
-      await getKeylessAuthDataUserDictionary();
+    let keylessAuthDataUserDictionary = await getKeylessAuthDataUserDictionary();
     //initialize the keylessAuthDataUserDictionary if it does not exist
     if (!keylessAuthDataUserDictionary) {
       keylessAuthDataUserDictionary = {} as KeylessAuthDataUserDictionary;
@@ -273,8 +318,7 @@ const storeKeylessAuthData = async (
  */
 const removeKeylessAuthData = async (username: string, uuid: string) => {
   try {
-    let keylessAuthDataUserDictionary =
-      await getKeylessAuthDataUserDictionary();
+    let keylessAuthDataUserDictionary = await getKeylessAuthDataUserDictionary();
     if (
       !keylessAuthDataUserDictionary ||
       !keylessAuthDataUserDictionary[username]
@@ -313,6 +357,7 @@ export const KeylessKeychainUtils = {
   removeKeylessAuthData,
   updateAuthenticatedKeylessAuthData,
   getKeylessAuthDataUserDictionary,
+  getKeylessAuthDataUserDictionaryFromPassword,
   isKeylessAuthDataRegistered,
   encryptHiveAuthRequestData,
 };
