@@ -57,6 +57,7 @@ import { getRequiredWifType } from 'src/utils/requests.utils';
 let ws: WebSocket | null = null;
 let reconnectInterval = 1000;
 let connectionAttempts = 0;
+let pingInterval: ReturnType<typeof setInterval> | null = null;
 const MAX_CONNECTION_ATTEMPTS = 5;
 const PRE_CORRELATION_TIMEOUT_MS = 30000;
 const PRE_CORRELATION_WAIT_COMMANDS = [
@@ -85,6 +86,13 @@ const toError = (error: unknown, fallbackMessage: string) => {
 
 const isKeylessCancellationError = (error: unknown) => {
   return error instanceof Error && error.message === 'Keyless request cancelled';
+};
+
+const clearPingInterval = () => {
+  if (pingInterval) {
+    clearInterval(pingInterval);
+    pingInterval = null;
+  }
 };
 
 const getPreCorrelationKey = (requestHandler: RequestsHandler) => {
@@ -275,22 +283,30 @@ const setupWebSocketHandlers = (
   resolve: () => void,
   reject: (error: any) => void,
 ) => {
-  if (!ws) return;
+  const socket = ws;
+  if (!socket) return;
 
-  ws.onopen = () => {
+  socket.onopen = () => {
+    clearPingInterval();
     reconnectInterval = 1000;
     connectionAttempts = 0;
-    setInterval(() => {
-      ws?.send('ping');
+    pingInterval = setInterval(() => {
+      if (socket.readyState !== WebSocket.OPEN) {
+        clearPingInterval();
+        return;
+      }
+
+      socket.send('ping');
     }, 10000);
     resolve();
   };
 
-  ws.onmessage = (event) => {
+  socket.onmessage = (event) => {
     // console.log('Message from server:', event.data);
   };
 
-  ws.onclose = async (event) => {
+  socket.onclose = async (event) => {
+    clearPingInterval();
     cancelAllPreCorrelationRequests(
       new Error('HiveAuth connection closed before correlation was established'),
     );
@@ -314,7 +330,8 @@ const setupWebSocketHandlers = (
     reconnectInterval = Math.min(reconnectInterval * 2, 30000);
   };
 
-  ws.onerror = (error) => {
+  socket.onerror = (error) => {
+    clearPingInterval();
     cancelAllPreCorrelationRequests(
       toError(error, 'HiveAuth connection error before correlation'),
     );
@@ -328,6 +345,7 @@ const connect = (): Promise<void> => {
   }
 
   return new Promise<void>((resolve, reject) => {
+    clearPingInterval();
     ws = new WebSocket(Config.keyless.host);
     setupWebSocketHandlers(resolve, reject);
   });
@@ -454,6 +472,13 @@ const listenToAuthAck = (
         message.cmd === HasCmd.AUTH_NACK ||
         message.cmd === 'auth_err'
       ) {
+        if (
+          'uuid' in message &&
+          message.uuid &&
+          message.uuid !== keylessRequest.uuid
+        ) {
+          return;
+        }
         ws?.removeEventListener('message', handleMessage);
         try {
           await handleAuthNack(username, message as AuthNack);
@@ -564,35 +589,6 @@ const handleSignRequest = async (
     keylessRequest.appName,
     tab,
   );
-
-  if (!ws) {
-    throw new Error('WebSocket is not connected');
-  }
-
-  const signResponse = await new Promise<SignAck>((resolve) => {
-    const handleSignMessage = (event: MessageEvent) => {
-      const response = JSON.parse(event.data) as SignAck;
-      if (response.cmd === HasCmd.SIGN_ACK) {
-        ws?.removeEventListener('message', handleSignMessage);
-        resolve(response);
-      }
-    };
-    ws?.addEventListener('message', handleSignMessage);
-  });
-
-  const message = await createMessage(
-    null,
-    signResponse,
-    requestHandler.data.request!,
-    await chrome.i18n.getMessage('bgd_ops_sign_success'),
-    null,
-    null,
-  );
-
-  await Promise.all([
-    chrome.runtime.sendMessage(message),
-    chrome.tabs.sendMessage(tab, message),
-  ]);
 };
 
 const handleEncodeDecodeRequest = async (
@@ -954,7 +950,7 @@ const signRequest = async (
     token: keylessAuthData.token,
   };
 
-  void waitForPreCorrelation<SignWait>(
+  return waitForPreCorrelation<SignWait>(
     requestHandler,
     signReq,
     HasCmd.SIGN_WAIT,
@@ -967,11 +963,7 @@ const signRequest = async (
       return null;
     },
   )
-    .then((response) => {
-      void handleSignWait(request, domain, tab, response).catch((error) => {
-        Logger.error('Error handling sign wait:', error);
-      });
-    })
+    .then((response) => handleSignWait(request, domain, tab, response))
     .catch(async (error) => {
       if (isKeylessCancellationError(error)) {
         return;
@@ -1172,6 +1164,9 @@ const handleChallengeWait = async (
             resolve();
           }
         } else if (challengeAck.cmd === HasCmd.CHALLENGE_NACK) {
+          if (challengeWait.uuid !== challengeAck.uuid) {
+            return;
+          }
           // Remove the event listener since we got an error response
           ws?.removeEventListener('message', handleMessage);
           await handleChallengeNack(

@@ -66,6 +66,9 @@ const mockEncryptHiveAuthRequestData = jest.fn<
 }));
 const mockGetRequiredWifType = jest.fn<string, [unknown]>(() => 'posting');
 const mockLoggerError = jest.fn();
+const mockStoreKeylessAuthData = jest.fn();
+const mockRemoveKeylessAuthData = jest.fn();
+const mockUpdateAuthenticatedKeylessAuthData = jest.fn();
 
 jest.mock('@background/requests/operations/operations.utils', () => ({
   createMessage: (
@@ -101,9 +104,9 @@ jest.mock('@background/utils/keyless-keychain.utils', () => ({
       domain: string,
       data: unknown,
     ) => mockEncryptHiveAuthRequestData(username, domain, data),
-    storeKeylessAuthData: jest.fn(),
-    removeKeylessAuthData: jest.fn(),
-    updateAuthenticatedKeylessAuthData: jest.fn(),
+    storeKeylessAuthData: mockStoreKeylessAuthData,
+    removeKeylessAuthData: mockRemoveKeylessAuthData,
+    updateAuthenticatedKeylessAuthData: mockUpdateAuthenticatedKeylessAuthData,
   },
 }));
 
@@ -182,6 +185,9 @@ const flushPromises = async () => {
 
 const getJsonMessages = (socket: FakeWebSocket) =>
   socket.sentMessages.filter((message) => message !== 'ping');
+
+const getPingCount = (socket: FakeWebSocket) =>
+  socket.sentMessages.filter((message) => message === 'ping').length;
 
 const createRequest = (requestId: number, username: string) =>
   ({
@@ -447,17 +453,73 @@ describe('hive-auth.utils pre-correlation gate', () => {
     await expect(auth2Promise).resolves.toMatchObject({ uuid: 'uuid-2' });
   });
 
-  it('applies the same gate to sign requests without changing uuid-based ack handling', async () => {
+  it('correlates auth nack handling by uuid after auth_wait', async () => {
     const HiveAuthUtils = await loadHiveAuthUtils();
     const socket = await connectSocket(HiveAuthUtils);
 
     const request1 = createRequest(1, 'alice');
     const request2 = createRequest(2, 'bob');
-    const handler1 = createRequestHandler(request1);
-    const handler2 = createRequestHandler(request2);
+    const keylessRequest1 = {
+      ...createKeylessRequest(request1),
+      uuid: 'auth-1',
+    } as any;
+    const keylessRequest2 = {
+      ...createKeylessRequest(request2),
+      uuid: 'auth-2',
+    } as any;
 
-    await HiveAuthUtils.signRequest(handler1, request1, 'peakd.com', 11);
-    await HiveAuthUtils.signRequest(handler2, request2, 'peakd.com', 12);
+    HiveAuthUtils.listenToAuthAck(
+      createRequestHandler(request1),
+      'alice',
+      keylessRequest1,
+      1,
+    );
+    HiveAuthUtils.listenToAuthAck(
+      createRequestHandler(request2),
+      'bob',
+      keylessRequest2,
+      2,
+    );
+
+    socket.dispatchMessage({
+      cmd: HasCmd.AUTH_NACK,
+      uuid: 'auth-2',
+      data: 'nope',
+    });
+    await flushPromises();
+
+    expect(mockRemoveKeylessAuthData).toHaveBeenCalledTimes(1);
+    expect(mockRemoveKeylessAuthData).toHaveBeenCalledWith('bob', 'auth-2');
+  });
+
+  it('keeps the post-auth sign flow on the correlated sign wait/ack path', async () => {
+    const HiveAuthUtils = await loadHiveAuthUtils();
+    const socket = await connectSocket(HiveAuthUtils);
+    jest.useFakeTimers();
+
+    const request = createRequest(1, 'alice');
+    const requestHandler = createRequestHandler(request);
+    const keylessRequest = {
+      ...createKeylessRequest(request),
+      uuid: 'auth-uuid',
+    } as any;
+
+    HiveAuthUtils.listenToAuthAck(requestHandler, 'alice', keylessRequest, 11);
+    socket.dispatchMessage({
+      cmd: HasCmd.AUTH_ACK,
+      uuid: 'auth-uuid',
+      data: JSON.stringify({
+        expire: Date.now() + 60_000,
+        token: 'token-1',
+        challenge: {
+          challenge: 'challenge',
+          pubkey: 'STM111',
+          key_type: 'posting',
+        },
+      }),
+    });
+    await flushPromises();
+    jest.advanceTimersByTime(3000);
     await flushPromises();
 
     expect(getJsonMessages(socket)).toHaveLength(1);
@@ -467,56 +529,68 @@ describe('hive-auth.utils pre-correlation gate', () => {
     });
 
     socket.dispatchMessage({
-      cmd: HasCmd.SIGN_WAIT,
-      uuid: 'sign-1',
-      expire: Date.now() + 60_000,
-    });
-    await flushPromises();
-
-    expect(getJsonMessages(socket)).toHaveLength(2);
-    expect(getJsonMessages(socket)[1]).toMatchObject({
-      cmd: HasCmd.SIGN_REQ,
-      account: 'bob',
-    });
-
-    socket.dispatchMessage({
       cmd: HasCmd.SIGN_ACK,
-      uuid: 'sign-1',
+      uuid: 'wrong-sign-uuid',
       broadcast: true,
-      data: 'tx-1',
+      data: 'wrong-tx',
     });
     await flushPromises();
+    expect(mockCreateMessage).not.toHaveBeenCalledWith(
+      false,
+      expect.objectContaining({ uuid: 'wrong-sign-uuid' }),
+      request,
+      expect.any(String),
+      null,
+      null,
+    );
 
     socket.dispatchMessage({
       cmd: HasCmd.SIGN_WAIT,
-      uuid: 'sign-2',
+      uuid: 'sign-uuid',
       expire: Date.now() + 60_000,
     });
     await flushPromises();
 
     socket.dispatchMessage({
       cmd: HasCmd.SIGN_ACK,
-      uuid: 'sign-2',
+      uuid: 'sign-uuid',
       broadcast: true,
-      data: 'tx-2',
+      data: 'tx',
     });
     await flushPromises();
 
     expect(mockCreateMessage).toHaveBeenCalledWith(
       false,
-      expect.objectContaining({ uuid: 'sign-1' }),
-      request1,
+      expect.objectContaining({ uuid: 'sign-uuid' }),
+      request,
       expect.any(String),
       null,
       null,
     );
-    expect(mockCreateMessage).toHaveBeenCalledWith(
-      false,
-      expect.objectContaining({ uuid: 'sign-2' }),
-      request2,
-      expect.any(String),
-      null,
-      null,
-    );
+  });
+
+  it('clears the ping interval across reconnects', async () => {
+    jest.useFakeTimers();
+    const HiveAuthUtils = await loadHiveAuthUtils();
+
+    const connectPromise1 = HiveAuthUtils.connect();
+    const socket1 = FakeWebSocket.instances[FakeWebSocket.instances.length - 1];
+    socket1.open();
+    await connectPromise1;
+
+    jest.advanceTimersByTime(10_000);
+    expect(getPingCount(socket1)).toBe(1);
+
+    socket1.close();
+    await flushPromises();
+
+    const connectPromise2 = HiveAuthUtils.connect();
+    const socket2 = FakeWebSocket.instances[FakeWebSocket.instances.length - 1];
+    socket2.open();
+    await connectPromise2;
+
+    jest.advanceTimersByTime(10_000);
+    expect(getPingCount(socket1)).toBe(1);
+    expect(getPingCount(socket2)).toBe(1);
   });
 });
