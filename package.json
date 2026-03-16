@@ -32,7 +32,8 @@
     "check-installed-libs": "node scripts/check-installed-libs.js",
     "upload": "concurrently \"npm:upload:*\"",
     "upload:chromium": "node scripts/chromium-upload.mjs",
-    "upload:firefox": "node scripts/firefox-upload.mjs"
+    "upload:firefox": "node scripts/firefox-upload.mjs",
+    "git:archive": "rm -rf hive-keychain*.zip; sh -c 'uploadStash=$(git stash create); git archive -o \"hive-keychain-$(date +%Y%m%d-%H%M%S).zip\" ${uploadStash:-HEAD}'"
   },
   "repository": {
     "type": "git",
