@@ -175,8 +175,8 @@ const encryptJson = async (content: any, encryptPassword: string) => {
   return encryptV2(JSON.stringify(content), encryptPassword);
 };
 
-// Compatibility-only string encryption for existing non-account callers.
-const encryptCompat = (content: string, encryptPassword: string) => {
+// Legacy compatibility-only string encryption for existing non-account callers.
+const encryptLegacyCompat = (content: string, encryptPassword: string) => {
   const salt = CryptoJS.lib.WordArray.random(128 / 8);
   const key = CryptoJS.PBKDF2(encryptPassword, salt, {
     keySize: KEY_SIZE / 32,
@@ -236,8 +236,6 @@ const decryptToJson = async (msg: string, pwd: string): Promise<any> => {
   }
 
   const { isVersioned, payload } = getVersionedPayload(msg);
-  console.log('isVersioned', isVersioned);
-  console.log('payload', payload);
   if (isVersioned) {
     if (!payload) {
       return null;
@@ -264,7 +262,8 @@ const isEncryptedJsonV2 = (msg: string) =>
 
 const EncryptUtils = {
   encryptJson,
-  encrypt: encryptCompat,
+  // Kept for legacy non-account storage compatibility only.
+  encrypt: encryptLegacyCompat,
   encryptNoIV,
   decryptToJson,
   decryptToJsonWithoutMD5Check,

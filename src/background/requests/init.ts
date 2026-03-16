@@ -75,7 +75,7 @@ export default async (
       items.accounts &&
       !EncryptUtils.isEncryptedJsonV2(items.accounts)
     ) {
-      LocalStorageUtils.saveValueInLocalStorage(
+      await LocalStorageUtils.saveValueInLocalStorage(
         LocalStorageKeyEnum.ACCOUNTS,
         await EncryptUtils.encryptJson({ list: accounts }, mk!),
       );

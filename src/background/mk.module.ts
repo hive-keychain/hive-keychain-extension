@@ -23,7 +23,7 @@ const login = async (password: string): Promise<boolean> => {
     encryptedAccounts &&
     !EncryptUtils.isEncryptedJsonV2(encryptedAccounts)
   ) {
-    LocalStorageUtils.saveValueInLocalStorage(
+    await LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.ACCOUNTS,
       await EncryptUtils.encryptJson({ list: accounts.list }, password),
     );

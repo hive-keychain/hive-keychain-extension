@@ -97,6 +97,43 @@ describe('accounts.utils tests:\n', () => {
       ).toEqual({ list: result });
     });
 
+    it('awaits migration persistence before returning accounts', async () => {
+      LocalStorageUtils.getValueFromLocalStorage = jest
+        .fn()
+        .mockResolvedValue(legacyPayload);
+
+      let notifySaveCalled!: () => void;
+      const saveCalled = new Promise<void>((resolve) => {
+        notifySaveCalled = resolve;
+      });
+      let resolveSave!: () => void;
+      jest
+        .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+        .mockImplementation(() => {
+          notifySaveCalled();
+          return new Promise<void>((resolve) => {
+            resolveSave = resolve;
+          });
+        });
+
+      let settled = false;
+      const resultPromise = BgdAccountsUtils.getAccountsFromLocalStorage(
+        mk.user.one,
+      ).then((result) => {
+        settled = true;
+        return result;
+      });
+
+      await saveCalled;
+      expect(settled).toBe(false);
+
+      resolveSave();
+
+      expect(await resultPromise).toEqual(
+        expect.arrayContaining([expectedAccountShape]),
+      );
+    });
+
     it('must return undefined when decrypting with the wrong password', async () => {
       LocalStorageUtils.getValueFromLocalStorage = jest
         .fn()
