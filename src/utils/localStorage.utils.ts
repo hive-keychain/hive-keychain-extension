@@ -28,15 +28,31 @@ const saveValueInLocalStorage = async (
 ): Promise<void> => {
   const storageValue: LocaleStorageObject = {};
   storageValue[key] = value;
-  await new Promise<void>((resolve) => {
-    const setLocalStorageValue = chrome.storage.local.set as any;
-    const done = () => resolve();
-    const maybePromise = setLocalStorageValue(storageValue, () => done());
+  await new Promise<void>((resolve, reject) => {
+    const storageArea = chrome.storage.local;
+    const setLocalStorageValue = storageArea.set as any;
+    const done = () => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+        return;
+      }
+      resolve();
+    };
 
-    if (typeof maybePromise?.then === 'function') {
-      maybePromise.then(done).catch(done);
-    } else if (setLocalStorageValue.mock) {
-      done();
+    try {
+      const maybePromise = setLocalStorageValue.call(
+        storageArea,
+        storageValue,
+        done,
+      );
+
+      if (typeof maybePromise?.then === 'function') {
+        maybePromise.then(() => resolve()).catch(reject);
+      } else if (setLocalStorageValue.mock) {
+        resolve();
+      }
+    } catch (error) {
+      reject(error);
     }
   });
 };
