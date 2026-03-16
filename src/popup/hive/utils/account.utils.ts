@@ -136,7 +136,17 @@ const getAccountsFromLocalStorage = async (
   const encryptedAccounts = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.ACCOUNTS,
   );
-  const accounts = EncryptUtils.decryptToJson(encryptedAccounts, mk);
+  const accounts = await EncryptUtils.decryptToJson(encryptedAccounts, mk);
+  if (
+    accounts &&
+    encryptedAccounts &&
+    !EncryptUtils.isEncryptedJsonV2(encryptedAccounts)
+  ) {
+    LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.ACCOUNTS,
+      await EncryptUtils.encryptJson({ list: accounts.list }, mk),
+    );
+  }
   return accounts?.list.filter(
     (e: LocalAccount) => e.name.length,
   ) as LocalAccount[];
@@ -155,7 +165,7 @@ const isAccountNameAlreadyExisting = (
 };
 /* istanbul ignore next */
 const encryptAccounts = async (accounts: Accounts, mk: string) => {
-  return EncryptUtils.encryptJson(accounts, mk);
+  return await EncryptUtils.encryptJson(accounts, mk);
 };
 
 const hasStoredAccounts = async () => {

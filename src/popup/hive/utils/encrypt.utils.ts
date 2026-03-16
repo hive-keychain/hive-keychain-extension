@@ -1,27 +1,186 @@
 import CryptoJS from 'crypto-js';
-import md5 from 'md5';
-import Logger from 'src/utils/logger.utils';
+import LegacyEncryptUtils from 'src/popup/hive/utils/encrypt.legacy.utils';
 
 const KEY_SIZE = 256;
 const IV_SIZE = 128;
+const AES_GCM_IV_SIZE = 12;
+const AES_GCM_SALT_SIZE = 16;
+const PBKDF2_ITERATIONS = 250000;
+const ENCRYPTION_VERSION = 2;
+const ENCRYPTION_KDF = 'PBKDF2-HMAC-SHA256';
+const ENCRYPTION_HASH = 'SHA-256';
+const ENCRYPTION_ALGORITHM = 'AES-GCM';
 
-const ITERATIONS_SHA1 = 100;
-const ITERATIONS_SHA256 = 10000;
-enum Hasher {
-  SHA256 = 1,
-  SHA1 = 2,
+interface EncryptedPayloadV2 {
+  version: typeof ENCRYPTION_VERSION;
+  kdf: typeof ENCRYPTION_KDF;
+  iterations: number;
+  salt: string;
+  iv: string;
+  ciphertext: string;
 }
-const encryptJson = (content: any, encryptPassword: string): string => {
-  content.hash = md5(content.list);
-  var msg = encrypt(JSON.stringify(content), encryptPassword);
-  return msg;
+
+const textEncoder = new TextEncoder();
+const textDecoder = new TextDecoder();
+
+const getWebCrypto = () => {
+  if (!globalThis.crypto?.subtle) {
+    throw new Error('Web Crypto API is unavailable');
+  }
+  return globalThis.crypto;
 };
 
-const encrypt = (content: string, encryptPassword: string) => {
+const bytesToBase64 = (bytes: Uint8Array) => {
+  let binary = '';
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+  return btoa(binary);
+};
+
+const base64ToBytes = (value: string) =>
+  Uint8Array.from(atob(value), (char) => char.charCodeAt(0));
+
+const importPasswordKey = async (password: string) => {
+  return getWebCrypto().subtle.importKey(
+    'raw',
+    textEncoder.encode(password),
+    'PBKDF2',
+    false,
+    ['deriveKey'],
+  );
+};
+
+const deriveAesKey = async (
+  password: string,
+  salt: Uint8Array,
+  iterations: number,
+  usages: KeyUsage[],
+) => {
+  const passwordKey = await importPasswordKey(password);
+  return getWebCrypto().subtle.deriveKey(
+    {
+      name: 'PBKDF2',
+      salt,
+      iterations,
+      hash: ENCRYPTION_HASH,
+    },
+    passwordKey,
+    {
+      name: ENCRYPTION_ALGORITHM,
+      length: KEY_SIZE,
+    },
+    false,
+    usages,
+  );
+};
+
+const isObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
+const isEncryptedPayloadV2 = (
+  payload: unknown,
+): payload is EncryptedPayloadV2 => {
+  return (
+    isObject(payload) &&
+    payload.version === ENCRYPTION_VERSION &&
+    payload.kdf === ENCRYPTION_KDF &&
+    typeof payload.iterations === 'number' &&
+    Number.isInteger(payload.iterations) &&
+    payload.iterations > 0 &&
+    typeof payload.salt === 'string' &&
+    !!payload.salt &&
+    typeof payload.iv === 'string' &&
+    !!payload.iv &&
+    typeof payload.ciphertext === 'string' &&
+    !!payload.ciphertext
+  );
+};
+
+const getVersionedPayload = (
+  message: string,
+): { isVersioned: boolean; payload: EncryptedPayloadV2 | null } => {
+  const trimmed = message?.trim();
+  if (!trimmed?.startsWith('{')) {
+    return { isVersioned: false, payload: null };
+  }
+
+  try {
+    const parsed = JSON.parse(trimmed);
+    return {
+      isVersioned: true,
+      payload: isEncryptedPayloadV2(parsed) ? parsed : null,
+    };
+  } catch (error) {
+    return { isVersioned: true, payload: null };
+  }
+};
+
+const encryptV2 = async (content: string, encryptPassword: string) => {
+  const salt = getWebCrypto().getRandomValues(
+    new Uint8Array(AES_GCM_SALT_SIZE),
+  );
+  const iv = getWebCrypto().getRandomValues(new Uint8Array(AES_GCM_IV_SIZE));
+  const key = await deriveAesKey(encryptPassword, salt, PBKDF2_ITERATIONS, [
+    'encrypt',
+  ]);
+  const ciphertext = await getWebCrypto().subtle.encrypt(
+    { name: ENCRYPTION_ALGORITHM, iv },
+    key,
+    textEncoder.encode(content),
+  );
+
+  return JSON.stringify({
+    version: ENCRYPTION_VERSION,
+    kdf: ENCRYPTION_KDF,
+    iterations: PBKDF2_ITERATIONS,
+    salt: bytesToBase64(salt),
+    iv: bytesToBase64(iv),
+    ciphertext: bytesToBase64(new Uint8Array(ciphertext)),
+  } as EncryptedPayloadV2);
+};
+
+const decryptV2 = async (
+  payload: EncryptedPayloadV2,
+  password: string,
+): Promise<string | null> => {
+  try {
+    const salt = base64ToBytes(payload.salt);
+    const iv = base64ToBytes(payload.iv);
+    const ciphertext = base64ToBytes(payload.ciphertext);
+
+    if (
+      salt.length !== AES_GCM_SALT_SIZE ||
+      iv.length !== AES_GCM_IV_SIZE ||
+      !ciphertext.length
+    ) {
+      return null;
+    }
+
+    const key = await deriveAesKey(password, salt, payload.iterations, [
+      'decrypt',
+    ]);
+    const decrypted = await getWebCrypto().subtle.decrypt(
+      { name: ENCRYPTION_ALGORITHM, iv },
+      key,
+      ciphertext,
+    );
+    return textDecoder.decode(decrypted);
+  } catch (error) {
+    return null;
+  }
+};
+
+const encryptJson = async (content: any, encryptPassword: string) => {
+  return encryptV2(JSON.stringify(content), encryptPassword);
+};
+
+// Compatibility-only string encryption for existing non-account callers.
+const encryptCompat = (content: string, encryptPassword: string) => {
   const salt = CryptoJS.lib.WordArray.random(128 / 8);
   const key = CryptoJS.PBKDF2(encryptPassword, salt, {
     keySize: KEY_SIZE / 32,
-    iterations: ITERATIONS_SHA256,
+    iterations: 10000,
     hasher: CryptoJS.algo.SHA256,
   });
 
@@ -48,80 +207,70 @@ function decryptNoIV(content: string, encryptPassword: string) {
   return decrypted.toString(CryptoJS.enc.Utf8);
 }
 
-function decrypt(transitmessage: string, pass: string, hasher = Hasher.SHA256) {
-  var salt = CryptoJS.enc.Hex.parse(transitmessage.substr(0, 32));
-  var iv = CryptoJS.enc.Hex.parse(transitmessage.substr(32, 32));
-  var encrypted = transitmessage.substring(64);
-  var key = CryptoJS.PBKDF2(pass, salt, {
-    keySize: KEY_SIZE / 32,
-    iterations: hasher === Hasher.SHA256 ? ITERATIONS_SHA256 : ITERATIONS_SHA1,
-    hasher:
-      hasher === Hasher.SHA256 ? CryptoJS.algo.SHA256 : CryptoJS.algo.SHA1,
-  });
-
-  var decrypted = CryptoJS.AES.decrypt(encrypted, key, {
-    iv: iv,
-    padding: CryptoJS.pad.Pkcs7,
-    mode: CryptoJS.mode.CBC,
-  });
-  return decrypted;
-}
-
-const decryptToJsonWithoutMD5Check = (
+const decryptToJsonWithoutMD5Check = async (
   msg: string,
   pwd: string,
-  hasher = Hasher.SHA256,
-): any => {
-  try {
-    const decrypted = decrypt(msg, pwd, hasher).toString(CryptoJS.enc.Utf8);
-    const decryptedJSON: any = JSON.parse(decrypted);
-    if (decryptedJSON.hash != null) return decryptedJSON;
-    else {
-      return null;
+): Promise<any> => {
+  const { isVersioned, payload } = getVersionedPayload(msg);
+
+  if (isVersioned) {
+    if (!payload) {
+      throw new Error('Invalid encrypted payload');
     }
-  } catch (e: any) {
-    if (hasher === Hasher.SHA256) {
-      return decryptToJsonWithoutMD5Check(msg, pwd, Hasher.SHA1);
+
+    const decrypted = await decryptV2(payload, pwd);
+    if (!decrypted) {
+      throw new Error('Unable to decrypt payload');
     }
-    Logger.error('Error while decrypting', e);
-    throw new Error(e);
+
+    const decryptedJSON = JSON.parse(decrypted);
+    return decryptedJSON?.list != null ? decryptedJSON : null;
   }
+
+  return LegacyEncryptUtils.decryptToJsonWithoutHashCheck(msg, pwd);
 };
 
-const decryptToJson = (
-  msg: string,
-  pwd: string,
-  hasher = Hasher.SHA256,
-): any => {
-  try {
-    if (!msg) {
-      return null;
-    }
-    const decrypted = decrypt(msg, pwd, hasher).toString(CryptoJS.enc.Utf8);
-    const decryptedJSON: any = JSON.parse(decrypted);
-
-    if (decryptedJSON.hash && decryptedJSON.list) return decryptedJSON;
-    else {
-      return null;
-    }
-  } catch (e: any) {
-    if (hasher === Hasher.SHA256) {
-      Logger.log('trying SHA1');
-      return decryptToJson(msg, pwd, Hasher.SHA1);
-    }
-    Logger.error('Error while decrypting', e);
+const decryptToJson = async (msg: string, pwd: string): Promise<any> => {
+  if (!msg) {
     return null;
   }
+
+  const { isVersioned, payload } = getVersionedPayload(msg);
+  console.log('isVersioned', isVersioned);
+  console.log('payload', payload);
+  if (isVersioned) {
+    if (!payload) {
+      return null;
+    }
+
+    const decrypted = await decryptV2(payload, pwd);
+    if (!decrypted) {
+      return null;
+    }
+
+    try {
+      const decryptedJSON = JSON.parse(decrypted);
+      return decryptedJSON?.list != null ? decryptedJSON : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  return LegacyEncryptUtils.decryptToJson(msg, pwd);
 };
+
+const isEncryptedJsonV2 = (msg: string) =>
+  getVersionedPayload(msg).payload !== null;
 
 const EncryptUtils = {
   encryptJson,
-  encrypt,
+  encrypt: encryptCompat,
   encryptNoIV,
   decryptToJson,
   decryptToJsonWithoutMD5Check,
-  decrypt,
+  decrypt: LegacyEncryptUtils.decrypt,
   decryptNoIV,
+  isEncryptedJsonV2,
 };
 
 export default EncryptUtils;

@@ -18,6 +18,16 @@ const login = async (password: string): Promise<boolean> => {
     encryptedAccounts,
     password,
   );
+  if (
+    accounts &&
+    encryptedAccounts &&
+    !EncryptUtils.isEncryptedJsonV2(encryptedAccounts)
+  ) {
+    LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.ACCOUNTS,
+      await EncryptUtils.encryptJson({ list: accounts.list }, password),
+    );
+  }
   const storage = await LocalStorageUtils.getMultipleValueFromLocalStorage([
     LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED,
     LocalStorageKeyEnum.KEYLESS_KEYCHAIN_AUTH_DATA_USER_DICT,

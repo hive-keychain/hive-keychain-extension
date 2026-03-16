@@ -3,12 +3,15 @@ import { LocalAccount } from 'src/interfaces/local-account.interface';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
-const getAccountsFromFileData = (
+const getAccountsFromFileData = async (
   fileContent: string,
   mk: string,
-): LocalAccount[] => {
+): Promise<LocalAccount[]> => {
   try {
-    const accounts = EncryptUtils.decryptToJsonWithoutMD5Check(fileContent, mk);
+    const accounts = await EncryptUtils.decryptToJsonWithoutMD5Check(
+      fileContent,
+      mk,
+    );
     if (accounts) {
       return accounts?.list;
     } else {
@@ -81,7 +84,17 @@ const getAccountsFromLocalStorage = async (
   const encryptedAccounts = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.ACCOUNTS,
   );
-  const accounts = EncryptUtils.decryptToJson(encryptedAccounts, mk);
+  const accounts = await EncryptUtils.decryptToJson(encryptedAccounts, mk);
+  if (
+    accounts &&
+    encryptedAccounts &&
+    !EncryptUtils.isEncryptedJsonV2(encryptedAccounts)
+  ) {
+    LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.ACCOUNTS,
+      await EncryptUtils.encryptJson({ list: accounts.list }, mk),
+    );
+  }
   return accounts?.list;
 };
 
