@@ -62,6 +62,9 @@ chrome.windows.onRemoved.addListener(async (id: number) => {
     isKeyless,
   } = requestHandler.data;
   if (id == windowId && !confirmed && tab) {
+    const HiveAuthUtils = (await import('src/utils/hive-auth.utils')).default;
+    HiveAuthUtils.cancelPreCorrelationRequest(requestHandler);
+
     if (request?.type?.includes('vsc') && isWaitingForConfirmation) {
       return;
     }
