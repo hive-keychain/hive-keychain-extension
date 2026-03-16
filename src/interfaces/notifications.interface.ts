@@ -46,6 +46,8 @@ export interface Notification {
   id: string;
   message: string;
   messageParams: string[];
+  linkLabel?: string;
+  linkUrl?: string;
   txUrl?: string;
   createdAt: moment.Moment;
   read: boolean;

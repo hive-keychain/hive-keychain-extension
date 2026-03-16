@@ -4362,11 +4362,11 @@
     "description": "Notification unfollow"
   },
   "notification_reblog": {
-    "message": "@$1 reblogged @$2's Beitrag <a classname='notification-link' target='__blank' href='https://peakd.com/@$2/$3'>$2/$3</a>",
+    "message": "@$1 reblogged @$2's Beitrag {link}",
     "description": "Notification reblog"
   },
   "notification_unreblog": {
-    "message": "@$1 unreblogged @$2's Beitrag <a classname='notification-link' target='__blank' href='https://peakd.com/@$2/$3'>$2/$3</a>",
+    "message": "@$1 unreblogged @$2's Beitrag {link}",
     "description": "Notification unreblog"
   },
   "notification_account_update": {
@@ -4374,11 +4374,11 @@
     "description": "Notification account updated"
   },
   "notification_mention": {
-    "message": "@$1 erwähnte @$2 in <a classname='notification-link' target='__blank' href='https://peakd.com/@$3/$4'>$3/$4</a>",
+    "message": "@$1 erwähnte @$2 in {link}",
     "description": "Notification mentioned"
   },
   "notification_answer": {
-    "message": "@$1 hat auf <a classname='notification-link' target='__blank' href='https://peakd.com/@$2/$3'>$2/$3</a> geantwortet",
+    "message": "@$1 hat auf {link} geantwortet",
     "description": "Notification reply"
   },
   "notification_account_witness_proxy": {
@@ -4418,11 +4418,11 @@
     "description": "Notification fill convert"
   },
   "notification_author_reward": {
-    "message": "@$1 hat $2, $3, $4 als Autorenbelohnung für <a classname='notification-link' target='__blank' href='https://peakd.com/@$1/$5'>$1/$5</a> erhalten",
+    "message": "@$1 hat $2, $3, $4 als Autorenbelohnung für {link} erhalten",
     "description": "Notification author reward"
   },
   "notification_comment_reward": {
-    "message": "@$1 hat $2 als Kommentarbelohnung für <a classname='notification-link' target='__blank' href='https://peakd.com/@$1/$5'>$1/$5</a> erhalten",
+    "message": "@$1 hat $2 als Kommentarbelohnung für {link} erhalten",
     "description": "Notification comment reward"
   },
   "notification_hbd_interest": {
@@ -4446,7 +4446,7 @@
     "description": "Notification for producer rewards"
   },
   "notification_curation_reward": {
-    "message": "@$1 hat $2 als Kuratierungsbelohnung für <a classname='notification-link' target='__blank' href='https://peakd.com/@$3/$4'>@$3/$4</a> erhalten",
+    "message": "@$1 hat $2 als Kuratierungsbelohnung für {link} erhalten",
     "description": "Notification for curation rewards"
   },
   "notification_failed_recurrent_transfer": {
@@ -4470,7 +4470,7 @@
     "description": "Notification for when HP is avalable after undelegating"
   },
   "notification_comment_benefactor_reward": {
-    "message": "@$1 hat $2, $3, $4 als Kommentar-Beteiligungsbelohnung für <a classname='notification-link' href='https://peakd.com/@$5/$6' target='__blank'>@$5/$6</a> erhalten",
+    "message": "@$1 hat $2, $3, $4 als Kommentar-Beteiligungsbelohnung für {link} erhalten",
     "description": "Notification author reward"
   },
   "notification_fill_order": {
@@ -4482,7 +4482,7 @@
     "description": "Notification change recovery account"
   },
   "notification_vote": {
-    "message": "@$1 hat für <a classname='notification-link' href='https://peakd.com/@$2/$3' target='__blank'>@$2/$3</a> gestimmt",
+    "message": "@$1 hat für {link} gestimmt",
     "description": "Notification for vote"
   },
   "notification_clear_config": {

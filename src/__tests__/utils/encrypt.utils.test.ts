@@ -32,7 +32,7 @@ describe('encrypt.utils tests:\n', () => {
     expect(parsedPayload).toMatchObject({
       version: 2,
       kdf: 'PBKDF2-HMAC-SHA256',
-      iterations: 250000,
+      iterations: 600_000,
     });
     expect(parsedPayload).toHaveProperty('salt');
     expect(parsedPayload).toHaveProperty('iv');
@@ -77,8 +77,9 @@ describe('encrypt.utils tests:\n', () => {
   it('fails closed when a v2 payload is tampered with', async () => {
     const encrypted = await EncryptUtils.encryptJson(accountPayload, password);
     const parsedPayload = JSON.parse(encrypted);
-    const ciphertextBytes = Uint8Array.from(atob(parsedPayload.ciphertext), (c) =>
-      c.charCodeAt(0),
+    const ciphertextBytes = Uint8Array.from(
+      atob(parsedPayload.ciphertext),
+      (c) => c.charCodeAt(0),
     );
     ciphertextBytes[0] ^= 1;
     parsedPayload.ciphertext = bytesToBase64(ciphertextBytes);
@@ -97,7 +98,7 @@ describe('encrypt.utils tests:\n', () => {
         JSON.stringify({
           version: 2,
           kdf: 'PBKDF2-HMAC-SHA256',
-          iterations: 250000,
+          iterations: 600_000,
           salt: '',
           iv: '',
           ciphertext: '',
