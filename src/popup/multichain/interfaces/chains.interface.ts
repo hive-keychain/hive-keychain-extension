@@ -3,6 +3,7 @@ import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.inter
 export enum ChainType {
   HIVE = 'HIVE',
   EVM = 'EVM',
+  NONE = 'NONE',
 }
 
 export interface HiveMainTokens {
@@ -19,7 +20,7 @@ export interface MultichainRpc {
 
 export interface Chain {
   name: string;
-  type?: ChainType;
+  type: ChainType;
   logo: string;
   chainId: string;
   testnet?: boolean;

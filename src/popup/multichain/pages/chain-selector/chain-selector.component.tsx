@@ -1,8 +1,8 @@
 import CheckboxComponent from '@common-ui/checkbox/checkbox/checkbox.component';
 import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { setChain } from '@popup/multichain/actions/chain.actions';
-import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import {
   Chain,
   ChainType,
@@ -19,8 +19,8 @@ interface ChainSelectorProps {}
 
 const ChainSelector = ({
   chain,
+  activeAccount,
   setChain,
-  navigateTo,
 }: PropsFromRedux & ChainSelectorProps) => {
   const [setupChains, setSetupChains] = useState<Chain[]>();
   const [popularChains, setPopularChains] = useState<Chain[]>();
@@ -57,6 +57,17 @@ const ChainSelector = ({
   };
 
   const selectChain = async (chain: Chain) => {
+    if (
+      !!activeAccount &&
+      activeAccount.address &&
+      chain.type === ChainType.EVM
+    ) {
+      await EvmLightNodeUtils.registerAddress(
+        chain.chainId,
+        activeAccount.address,
+        false,
+      );
+    }
     setChain(chain);
   };
 
@@ -171,13 +182,13 @@ const ChainSelector = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
+    activeAccount: state.evm?.activeAccount,
     chain: state.chain,
   };
 };
 
 const connector = connect(mapStateToProps, {
   setChain,
-  navigateTo,
 });
 
 type PropsFromRedux = ConnectedProps<typeof connector>;

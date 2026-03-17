@@ -60,6 +60,7 @@ const getSetupChains = async (forceBaseChains?: boolean): Promise<Chain[]> => {
 
 const getChain = async <T>(chainId: Chain['chainId']): Promise<T> => {
   const chains = await getSetupChains();
+  if (!chains) return null as unknown as T;
   return chains.find(
     (c: Chain) => c.chainId.toLowerCase() === chainId.toLowerCase(),
   )! as unknown as T;

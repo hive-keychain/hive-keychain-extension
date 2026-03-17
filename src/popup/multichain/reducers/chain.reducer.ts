@@ -1,11 +1,14 @@
 import { MultichainActionType } from '@popup/multichain/actions/action-type.enum';
 import { ActionPayload } from '@popup/multichain/actions/interfaces';
-import { Chain } from '@popup/multichain/interfaces/chains.interface';
+import {
+  Chain,
+  ChainType,
+} from '@popup/multichain/interfaces/chains.interface';
 
 export const ChainReducer = (
   state: Chain = {
     name: '',
-    type: undefined,
+    type: ChainType.EVM,
     logo: '',
     chainId: '',
     rpcs: [],
