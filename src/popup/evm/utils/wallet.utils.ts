@@ -102,7 +102,7 @@ const hideOrShowAddress = async (
 
   savedSeed.accounts[addressIndex].hide = hide;
 
-  encryptAccountsInLocalStorage(mk, savedSeeds);
+  await encryptAccountsInLocalStorage(mk, savedSeeds);
 };
 
 const updateAddressName = async (
@@ -126,7 +126,7 @@ const updateAddressName = async (
       ? newName
       : `${chrome.i18n.getMessage('dialog_account')} ${addressIndex + 1}`;
 
-  encryptAccountsInLocalStorage(mk, savedSeeds);
+  await encryptAccountsInLocalStorage(mk, savedSeeds);
 };
 
 const addAddressToSeed = async (
@@ -159,7 +159,7 @@ const addAddressToSeed = async (
         ? addressNickname
         : `${chrome.i18n.getMessage('dialog_account')} ${newAccountIndex + 1}`,
   } as StoredEvmWalletAddress);
-  encryptAccountsInLocalStorage(mk, savedSeeds);
+  await encryptAccountsInLocalStorage(mk, savedSeeds);
   return savedSeeds;
 };
 
@@ -183,7 +183,8 @@ const addSeedAndAccounts = async (
     })),
   };
   const allAccounts = [...previousAccounts, newAccounts];
-  encryptAccountsInLocalStorage(mk, allAccounts);
+  console.log('allAccounts', allAccounts);
+  await encryptAccountsInLocalStorage(mk, allAccounts);
   return newAccounts.accounts;
 };
 
@@ -198,7 +199,7 @@ const updateSeedNickname = async (
 
   savedSeeds[seedIndex].nickname = newNickname;
 
-  encryptAccountsInLocalStorage(mk, savedSeeds);
+  await encryptAccountsInLocalStorage(mk, savedSeeds);
   return savedSeeds;
 };
 
@@ -259,15 +260,15 @@ const deleteSeed = async (
     walletPermissions,
   );
 
-  encryptAccountsInLocalStorage(mk, savedSeeds);
+  await encryptAccountsInLocalStorage(mk, savedSeeds);
   return savedSeeds;
 };
 
-const encryptAccountsInLocalStorage = (
+const encryptAccountsInLocalStorage = async (
   mk: string,
   evmAccountObject: StoredSeed[],
 ) => {
-  const encryptedAccounts = EncryptUtils.encryptJson(
+  const encryptedAccounts = await EncryptUtils.encryptJson(
     { list: evmAccountObject },
     mk,
   );
@@ -283,11 +284,13 @@ const getAccountsFromLocalStorage = async (mk: string) => {
     LocalStorageKeyEnum.EVM_ACCOUNTS,
   );
 
-  if (!wallets) return [];
+  if (!wallets || Object.keys(wallets).length === 0) return [];
   else {
-    const decryptedAccounts = ((
-      await EncryptUtils.decryptToJsonWithLegacySupport(wallets, mk)
-    ).list || []) as StoredSeed[];
+    const decryptResult = await EncryptUtils.decryptToJsonWithLegacySupport(
+      wallets,
+      mk,
+    );
+    const decryptedAccounts = (decryptResult?.list ?? []) as StoredSeed[];
     return decryptedAccounts;
   }
 };
