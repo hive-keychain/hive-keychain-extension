@@ -96,12 +96,24 @@ const clearPingInterval = () => {
   }
 };
 
-const getPreCorrelationKey = (requestHandler: HiveRequestsHandler) => {
+/**
+ * Builds a unique key for pre-correlation queue/cancel matching.
+ * Prefer passing requestId when the caller knows the specific request; otherwise falls back to first request in handler.
+ */
+const getPreCorrelationKey = (
+  requestHandler: HiveRequestsHandler,
+  requestId?: number,
+): string => {
+  const data =
+    requestId != null
+      ? requestHandler.getRequestData(requestId)
+      : requestHandler.requestsData[0];
+  if (!data) return '';
   return [
-    requestHandler.requestsData[0]?.tab ?? 'tab',
-    requestHandler.requestsData[0]?.request_id ?? 'request',
-    requestHandler.requestsData[0]?.request?.type ?? 'type',
-    requestHandler.requestsData[0]?.request?.username ?? 'anonymous',
+    data.tab ?? 'tab',
+    data.request_id ?? 'request',
+    data.request?.type ?? 'type',
+    data.request?.username ?? 'anonymous',
   ].join(':');
 };
 
@@ -135,10 +147,11 @@ const waitForPreCorrelation = async <T extends PreCorrelationWait>(
   expectedCommand: PreCorrelationWaitCommand,
   failureLabel: string,
   getProtocolError: (message: any) => Error | null,
+  requestId?: number,
 ): Promise<T> => {
   return new Promise<T>((resolve, reject) => {
     const entry: PreCorrelationQueueEntry = {
-      key: getPreCorrelationKey(requestHandler),
+      key: getPreCorrelationKey(requestHandler, requestId),
       reject,
       start: () => {
         if (!ws) {
@@ -266,17 +279,19 @@ const cancelAllPreCorrelationRequests = (error: Error) => {
 };
 
 const cancelPreCorrelationRequest = (requestHandler: HiveRequestsHandler) => {
-  if (!requestHandler.requestsData[0]?.request) {
-    return;
-  }
-
-  const key = getPreCorrelationKey(requestHandler);
   const cancellationError = new Error('Keyless request cancelled');
 
-  cancelQueuedPreCorrelationRequests(key, cancellationError);
-
-  if (activePreCorrelationQueueEntry?.key === key) {
-    activePreCorrelationQueueEntry.cancel?.(cancellationError);
+  for (const requestData of requestHandler.requestsData) {
+    if (!requestData?.request) continue;
+    const key = getPreCorrelationKey(
+      requestHandler,
+      requestData.request_id,
+    );
+    if (!key) continue;
+    cancelQueuedPreCorrelationRequests(key, cancellationError);
+    if (activePreCorrelationQueueEntry?.key === key) {
+      activePreCorrelationQueueEntry.cancel?.(cancellationError);
+    }
   }
 };
 
@@ -403,6 +418,9 @@ const authenticate = async (
     data: authReqDataEncrypted,
   };
 
+  const requestId = (keylessRequest.request as KeychainRequest & { request_id?: number })
+    ?.request_id;
+
   return waitForPreCorrelation<AuthWait>(
     requestHandler,
     authReq,
@@ -419,6 +437,7 @@ const authenticate = async (
 
       return null;
     },
+    requestId,
   );
 };
 
@@ -999,6 +1018,7 @@ const signRequest = async (
 
       return null;
     },
+    request.request_id,
   )
     .then((response) => handleSignWait(request, domain, tab, response))
     .catch(async (error) => {
@@ -1156,6 +1176,7 @@ const challengeRequest = async (
 
       return null;
     },
+    request.request_id,
   );
 
   await handleChallengeWait(
