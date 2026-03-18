@@ -153,7 +153,7 @@ const FavoriteAccounts = ({
           {chrome.i18n.getMessage('evm_add_contact_link')}
         </div>
 
-        {favoriteAccountsList && (
+        {favoriteAccountsList && favoriteAccountsList.length > 0 && (
           <div className="edit-contacts-panel">
             <LabelComponent value="popup_html_accounts" />
             {favoriteAccountsList.map((favorite) => (

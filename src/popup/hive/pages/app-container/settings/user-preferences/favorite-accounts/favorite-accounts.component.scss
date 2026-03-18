@@ -9,10 +9,12 @@
     @include caption();
   }
   .hive-select-account-section {
+    height: 48px !important;
     width: 100%;
     .react-dropdown-select {
       border: 1px solid var(--input-border) !important;
       border-radius: 66px !important;
+      height: 48px !important;
     }
   }
   .add-contact-link {

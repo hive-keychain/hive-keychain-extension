@@ -81,16 +81,23 @@ export const EditContactPopupComponent = ({
           type={InputType.TEXT}
           onChange={setContactLabel}
         />
-        <TextAreaComponent
-          label={
-            chainType === ChainType.HIVE
-              ? 'popup_html_accounts'
-              : 'evm_contact_address'
-          }
-          value={contactAddress}
-          onChange={setContactAddress}
-          useChips={false}
-        />
+
+        {chainType === ChainType.EVM && (
+          <TextAreaComponent
+            label={'evm_contact_address'}
+            value={contactAddress}
+            onChange={setContactAddress}
+            useChips={false}
+          />
+        )}
+        {chainType === ChainType.HIVE && (
+          <InputComponent
+            label={'dialog_account'}
+            value={contactAddress}
+            onChange={setContactAddress}
+            type={InputType.TEXT}
+          />
+        )}
 
         <div className="action-buttons">
           <ButtonComponent
