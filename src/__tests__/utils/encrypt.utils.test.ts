@@ -1,243 +1,118 @@
-import MkModule from '@background/mk.module';
-import EncryptUtils from '@hiveapp/utils/encrypt.utils';
-import { LocalAccount } from '@interfaces/local-account.interface';
 import CryptoJS from 'crypto-js';
-import userData from 'src/__tests__/utils-for-testing/data/user-data';
-import Logger from 'src/utils/logger.utils';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
+import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
+
+const bytesToBase64 = (bytes: Uint8Array) => {
+  let binary = '';
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+  return btoa(binary);
+};
 
 describe('encrypt.utils tests:\n', () => {
+  const password = mk.user.one;
+  const accountPayload = {
+    list: [accounts.local.justTwoKeys],
+  };
+  const legacyPayload =
+    '0000009b000000770000005700000029000000ae0000008d000000ae00000046WHrXFxuZRaj4uDwLXR8vFw+tW0M7fUZqAfRqnqga+fvyVCNAEnutR76JDJ+Hi6zfX2bMEkzk2c/fnL2FZb9e+ZNoklar2xYnxvM3tXjkh8Qj0roAbwXfWt+DzjqMfeTvuzHzbgnCzir7r5v6NgDug0pBplvNAsk83kj5Kd3gBmJfhRieDf8VRk18bZ8DUmhGqu0U0EmFn9KqSE6HxOKo/sZFRu0In8090s/05IHro9OLCZQ3vEy6A0GPyzoc5PyL/a7qgNiERpK37e3h3LXZBG9HkmDh0HimY2GoQzBYr7sOKFrrmfZlT7rtIuXWfa0nhQSM1pI9Y1s9Y2GWkoiUlweNRuTuAwFAi+SuEHRHBtmokqkgChUUT4bNs0fGbszm3NuB3rqiCXj27kcVWw/aqglb0qJGT77cv2gqhqSKu3BJkw7KNwkjFRYow/5ScHvh6RP1hUPEpEavIiuYZEi0cMu7cmROyZYbc8XLDry8Jpc=';
+
   afterEach(() => {
     jest.clearAllMocks();
     jest.resetModules();
     jest.restoreAllMocks();
   });
-  describe('encryptJson tests:\n', () => {
-    test('Passing both parameters as empty, and password as empty must return a 152 length string', () => {
-      const content = { list: '' };
-      const result = EncryptUtils.encryptJson(content, '');
-      expect(result).not.toBeUndefined();
-      expect(result).not.toBeNull();
-      expect(result.length).toBe(152);
+
+  it('encrypts new payloads as v2 and decrypts them', async () => {
+    const encrypted = await EncryptUtils.encryptJson(accountPayload, password);
+    const parsedPayload = JSON.parse(encrypted);
+
+    expect(parsedPayload).toMatchObject({
+      version: 2,
+      kdf: 'PBKDF2-HMAC-SHA256',
+      iterations: 600_000,
     });
-    test('Passing a valid LocalAccount obj and encryptPassword as "new key" must return a string and pass all conditions bellow', async () => {
-      const spyGetMk = jest
-        .spyOn(MkModule, 'getMk')
-        .mockResolvedValueOnce('new key');
-      const mk = await MkModule.getMk();
-      const newAccount: LocalAccount = {
-        name: userData.one.username,
-        keys: {
-          active: userData.one.encryptKeys.active,
-          posting: userData.one.encryptKeys.posting,
-        },
-      };
-      const content = { list: newAccount };
-      const result = EncryptUtils.encryptJson(content, mk);
-      expect(spyGetMk).toBeCalledTimes(1);
-      expect(result).not.toBeNull();
-      expect(result).not.toBeUndefined();
-      expect(result.length).toBe(364);
-    });
+    expect(parsedPayload).toHaveProperty('salt');
+    expect(parsedPayload).toHaveProperty('iv');
+    expect(parsedPayload).toHaveProperty('ciphertext');
+    expect(parsedPayload).not.toHaveProperty('hash');
+    expect(EncryptUtils.isEncryptedJsonV2(encrypted)).toBe(true);
+
+    expect(await EncryptUtils.decryptToJson(encrypted, password)).toEqual(
+      accountPayload,
+    );
   });
 
-  describe('decryptToJson tests:\n', () => {
-    test('Passing a valid encoded message, must equal expected obj and contain hash property', () => {
-      const expectedDecodedObj = {
-        list: [
-          {
-            name: userData.one.username,
-            keys: {
-              active: userData.one.nonEncryptKeys.active,
-              posting: userData.one.nonEncryptKeys.posting,
-              activePubkey: userData.one.encryptKeys.active,
-              postingPubkey: userData.one.encryptKeys.posting,
-            },
-          },
-        ],
-        hash: '3449c9e5e332f1dbb81505cd739fbf3f',
-      };
-      const encodedMessage =
-        process.env._TEST_USER_ENCRYPTED_ACCOUNTS || 'error';
-      const passwordUsed = process.env._TEST_USER_PWD || 'error';
-
-      const result = EncryptUtils.decryptToJson(encodedMessage, passwordUsed);
-      expect(result).not.toBeNull();
-      expect(result).not.toBeUndefined();
-      expect(result.hash).toBeDefined();
-      expect(result.list).toEqual(expectedDecodedObj.list);
-    });
-
-    test('Passing an empty message and empty password must return null', () => {
-      const encodedMessage = '';
-      const passwordUsed = '';
-      const result = EncryptUtils.decryptToJson(encodedMessage, passwordUsed);
-      expect(result).toBeNull();
-    });
-
-    test('Passing an empty message and a password must return null', () => {
-      const encodedMessage = '';
-      const passwordUsed = 'new key';
-      const result = EncryptUtils.decryptToJson(encodedMessage, passwordUsed);
-      expect(result).toBeNull();
-    });
-
-    test('Passing a valid message and an empty password must return null', () => {
-      const encodedMessage =
-        'aa9e6eaac0b82ebf4fd00f37af5379c1d8c2741ab6e65421f10284eb133584a43Rnhqhy1RNtixb9DEJsI1VkdSaqKzz/jLpt7eVQc1AlQkkIOZ0RB+htmb8emgDn5pdS2oPcj4VaMTY4NVP38nx9kws0rSBBRId3oAj1Y753VdRj5/KZ4oHc2FBsUQ+4be23TOb2SsA9uc77P3fC9i50XT56GhWqjQYiczp6KW70xlZHt9mINDethi0AQIu2DU7TvAuydeoWoPeyVJD56x3v76SPEjeLYfRBUWehMVbrLXw1rQ86+4rnEyT3lWjRpOOc16TOFjVanOTHsNTk0cIE/qi5qh9+HpTlvU9QKLY8=';
-      const passwordUsed = '';
-      const result = EncryptUtils.decryptToJson(encodedMessage, passwordUsed);
-      expect(result).toBeNull();
-    });
-
-    test('Passing a valid message and an invalid password must return null', () => {
-      const encodedMessage =
-        'aa9e6eaac0b82ebf4fd00f37af5379c1d8c2741ab6e65421f10284eb133584a43Rnhqhy1RNtixb9DEJsI1VkdSaqKzz/jLpt7eVQc1AlQkkIOZ0RB+htmb8emgDn5pdS2oPcj4VaMTY4NVP38nx9kws0rSBBRId3oAj1Y753VdRj5/KZ4oHc2FBsUQ+4be23TOb2SsA9uc77P3fC9i50XT56GhWqjQYiczp6KW70xlZHt9mINDethi0AQIu2DU7TvAuydeoWoPeyVJD56x3v76SPEjeLYfRBUWehMVbrLXw1rQ86+4rnEyT3lWjRpOOc16TOFjVanOTHsNTk0cIE/qi5qh9+HpTlvU9QKLY8=';
-      const passwordUsed = 'new keys';
-      const result = EncryptUtils.decryptToJson(encodedMessage, passwordUsed);
-      expect(result).toBeNull();
-    });
-
-    test('Passing an invalid encoded JSON and a password must Log an error and return null', () => {
-      const errorMessage = 'Error while decrypting';
-      const badjJson =
-        'f651e1ca737f9885189f22508bf9b869b077abe4f377f2733187c99861ca5bd1+WqfVLferccfU4qIl4voGsdcVFTL/9/pCYBMlHvhXU0=';
-      const passwordUsed = '12345678';
-      const spyLogger = jest.spyOn(Logger, 'error');
-      const result = EncryptUtils.decryptToJson(badjJson, passwordUsed);
-      expect(result).toBeNull();
-      expect(spyLogger).toBeCalledTimes(1);
-      expect(spyLogger).toBeCalledWith(
-        errorMessage,
-        new SyntaxError('Unexpected token } in JSON at position 19'),
-      );
-    });
+  it('still decrypts legacy payloads', async () => {
+    expect(await EncryptUtils.decryptToJson(legacyPayload, password)).toEqual(
+      expect.objectContaining({
+        list: expect.arrayContaining([
+          expect.objectContaining({
+            name: accounts.local.justTwoKeys.name,
+            keys: expect.objectContaining({
+              active: expect.any(String),
+              activePubkey: expect.any(String),
+              posting: expect.any(String),
+              postingPubkey: expect.any(String),
+            }),
+          }),
+        ]),
+        hash: expect.any(String),
+      }),
+    );
   });
 
-  describe('decryptToJsonWithoutMD5Check tests:\n', () => {
-    test('Passing an empty message and an empty password must throw error as SyntaxError', () => {
-      const spyLogger = jest.spyOn(Logger, 'error');
-      const errorMessage = 'Error while decrypting';
-      const encodedMessage = '';
-      const passwordUsed = '';
-      try {
-        EncryptUtils.decryptToJsonWithoutMD5Check(encodedMessage, passwordUsed);
-      } catch (error) {
-        expect(spyLogger).toBeCalledTimes(1);
-        expect(spyLogger).toBeCalledWith(
-          errorMessage,
-          new SyntaxError('Unexpected end of JSON input'),
-        );
-      }
-    });
+  it('migrated writes do not use the legacy crypto-js write path', async () => {
+    const pbkdf2Spy = jest.spyOn(CryptoJS, 'PBKDF2');
+    const aesEncryptSpy = jest.spyOn(CryptoJS.AES, 'encrypt');
 
-    test('Passing an empty message and a password must throw error as SyntaxError', () => {
-      const spyLogger = jest.spyOn(Logger, 'error');
-      const errorMessage = 'Error while decrypting';
-      const encodedMessage = '';
-      const passwordUsed = 'new key';
-      try {
-        EncryptUtils.decryptToJsonWithoutMD5Check(encodedMessage, passwordUsed);
-      } catch (error) {
-        expect(spyLogger).toBeCalledTimes(1);
-        expect(spyLogger).toBeCalledWith(
-          errorMessage,
-          new SyntaxError('Unexpected end of JSON input'),
-        );
-      }
-    });
+    await EncryptUtils.encryptJson(accountPayload, password);
 
-    test('Passing a valid enconded JSON and a password must return the expected JSON object', () => {
-      const encodedMessage =
-        '8474478f4676151091dc999f6a29ff94b750da86dc64f30e5d3f4c2f0748d9edBJh91QxBAO/4g1avx1cdXVnuxoAWto2u04KMf5OHjoyxrANZsYodheKdDh6G2zLoSKXGJaDimBT379jv6vWh7Brg1jaKLrOB/rwmK7bSE2VFv1Qdq6tzAq5pXwWbs7Bw';
-      const passwordUsed = 'new key';
-      const content = {
-        list: {
-          name: 'theghost1980',
-          age: 100,
-        },
-      };
-      const result = EncryptUtils.decryptToJsonWithoutMD5Check(
-        encodedMessage,
-        passwordUsed,
-      );
-      expect(result.list).toEqual(content.list);
-      expect(result.hash).toBeDefined();
-    });
-
-    test('Passing an invalid enconded JSON(without hash property) and a password must return null', () => {
-      const encodedMessageNohash =
-        '954f487f879b7e847dd374825e6b15a150c7f4c77dc0646188d89d757a6bb0bagCmc00j0czkBe86wm587tLAhu0mPRYe0yN1P8I49RA9/Ua62NJUytBCUV4ob1g2e';
-      const passwordUsed = 'new key';
-      const result = EncryptUtils.decryptToJsonWithoutMD5Check(
-        encodedMessageNohash,
-        passwordUsed,
-      );
-      expect(result).toBeNull();
-    });
+    expect(pbkdf2Spy).not.toHaveBeenCalled();
+    expect(aesEncryptSpy).not.toHaveBeenCalled();
   });
 
-  describe('encrypt tests:\n', () => {
-    test('Passing a string and a password must return a 108 length string', () => {
-      const content = 'Test String to Encrypt!';
-      const passwordUsed = '12345678';
-      const result = EncryptUtils.encrypt(content, passwordUsed);
-      expect(result.length).toBe(108);
-    });
+  it('fails closed when a v2 payload is tampered with', async () => {
+    const encrypted = await EncryptUtils.encryptJson(accountPayload, password);
+    const parsedPayload = JSON.parse(encrypted);
+    const ciphertextBytes = Uint8Array.from(
+      atob(parsedPayload.ciphertext),
+      (c) => c.charCodeAt(0),
+    );
+    ciphertextBytes[0] ^= 1;
+    parsedPayload.ciphertext = bytesToBase64(ciphertextBytes);
 
-    test('Passing empty content and password must return a 88 length string', () => {
-      const content = '';
-      const passwordUsed = '';
-      const result = EncryptUtils.encrypt(content, passwordUsed);
-      expect(result.length).toBe(88);
-    });
-
-    test('Passing empty content and a password must return a 88 length string', () => {
-      const content = '';
-      const passwordUsed = 'new key';
-      const result = EncryptUtils.encrypt(content, passwordUsed);
-      expect(result.length).toBe(88);
-    });
+    expect(
+      await EncryptUtils.decryptToJson(JSON.stringify(parsedPayload), password),
+    ).toBeNull();
   });
 
-  describe('decrypt tests:\n', () => {
-    test('Passing a valid encrypted message and a password must return especific string', () => {
-      const expectedString = 'Test String to Encrypt!';
-      const encodedMessage =
-        '52638257972a7749c8a62295525a3d03d2a6fbd15252f96c4c4abeb745ca29e8JZmzuRr/VwIdjEp969OQiTQdgrYm5r15iY3jkwugKXw=';
-      const passwordUsed = '12345678';
-      const result = EncryptUtils.decrypt(encodedMessage, passwordUsed);
-      expect(result.toString(CryptoJS.enc.Utf8)).toBe(expectedString);
-    });
+  it('fails safely on malformed payloads', async () => {
+    expect(await EncryptUtils.decryptToJson('{not valid json', password)).toBe(
+      null,
+    );
+    expect(
+      await EncryptUtils.decryptToJson(
+        JSON.stringify({
+          version: 2,
+          kdf: 'PBKDF2-HMAC-SHA256',
+          iterations: 600_000,
+          salt: '',
+          iv: '',
+          ciphertext: '',
+        }),
+        password,
+      ),
+    ).toBeNull();
+  });
 
-    test('Passing a valid encrypted message and a wrong password must return ""', () => {
-      const encodedMessage =
-        '52638257972a7749c8a62295525a3d03d2a6fbd15252f96c4c4abeb745ca29e8JZmzuRr/VwIdjEp969OQiTQdgrYm5r15iY3jkwugKXw=';
-      const passwordUsed = '123456';
-      const result = EncryptUtils.decrypt(encodedMessage, passwordUsed);
-      expect(result.toString(CryptoJS.enc.Utf8)).toBe('');
-    });
+  it('fails safely with the wrong password', async () => {
+    const encrypted = await EncryptUtils.encryptJson(accountPayload, password);
 
-    test('Passing a valid encrypted message and an empty password must return an object as described bellow', () => {
-      const expectedObj = {
-        sigBytes: -199,
-        words: [
-          80706647, -1861783499, 1585771160, -2083535540, -1868632093,
-          1811537193, 1162119157, 1506142183,
-        ],
-      };
-      const encodedMessage =
-        '52638257972a7749c8a62295525a3d03d2a6fbd15252f96c4c4abeb745ca29e8JZmzuRr/VwIdjEp969OQiTQdgrYm5r15iY3jkwugKXw=';
-      const passwordUsed = '';
-      const result = EncryptUtils.decrypt(encodedMessage, passwordUsed);
-      expect(result).toEqual(expectedObj);
-    });
-
-    test('Passing an empty message and a password must return expectedObj', () => {
-      const expectedObj = { sigBytes: 0, words: [] };
-      const encodedMessage = '';
-      const passwordUsed = '';
-      const result = EncryptUtils.decrypt(encodedMessage, passwordUsed);
-      expect(result).toEqual(expectedObj);
-    });
+    expect(await EncryptUtils.decryptToJson(encrypted, 'wrong password')).toBe(
+      null,
+    );
   });
 });

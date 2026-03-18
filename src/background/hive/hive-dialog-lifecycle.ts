@@ -12,6 +12,9 @@ export const onRemoveHive = async (id: number) => {
         !requestData.confirmed &&
         requestData.tab
       ) {
+        const HiveAuthUtils = (await import('src/utils/hive-auth.utils'))
+          .default;
+        HiveAuthUtils.cancelPreCorrelationRequest(requestHandler);
         if (
           requestData.request?.type?.includes('vsc') &&
           requestData.isWaitingForConfirmation

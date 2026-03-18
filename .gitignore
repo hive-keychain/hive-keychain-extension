@@ -12,3 +12,4 @@ _releases
 .notes
 keychain*.zip
 diff*.patch
+*.zip

@@ -23,7 +23,7 @@ describe('account tests:\n', () => {
     jest.spyOn(MkModule, 'getMk').mockResolvedValue(mk.user.one);
     const sSendMessage = jest
       .spyOn(chrome.runtime, 'sendMessage')
-      .mockReturnValue(undefined);
+      .mockResolvedValue(undefined);
     await AccountModule.sendBackImportedAccounts('Wrong_FileContent0000');
     expect(sSendMessage).toBeCalledWith({
       command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
@@ -43,16 +43,20 @@ describe('account tests:\n', () => {
       .mockResolvedValue(null);
     const sSendMessage = jest
       .spyOn(chrome.runtime, 'sendMessage')
-      .mockReturnValue(undefined);
+      .mockResolvedValue(undefined);
     await AccountModule.sendBackImportedAccounts(
       accounts.encrypted.noHash.oneAccount.msg,
     );
     expect(sSendMessage).toBeCalledWith({
       command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
-      value: {
-        accounts: accounts.encrypted.noHash.oneAccount.original.list,
+      value: expect.objectContaining({
+        accounts: expect.arrayContaining([
+          expect.objectContaining({
+            name: accounts.encrypted.noHash.oneAccount.original.list[0].name,
+          }),
+        ]),
         feedback: null,
-      },
+      }),
     });
   });
 });

@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "3.14.1",
+  "version": "3.15.0",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
@@ -34,7 +34,7 @@
     "upload:chromium": "node scripts/chromium-upload.mjs",
     "upload:firefox": "node scripts/firefox-upload.mjs",
     "git:diff": "git add . && rm -rf diff*.patch && sh -c 'git diff --staged > diff-$(date +%Y%m%d-%H%M%S).patch'",
-    "git:archive": "rm -rf keychain*.zip && sh -c 'git archive --format=zip HEAD > \"keychain-$(date +%Y%m%d-%H%M%S).zip\"'"
+    "git:archive": "rm -rf hive-keychain*.zip; sh -c 'uploadStash=$(git stash create); git archive -o \"hive-keychain-$(date +%Y%m%d-%H%M%S).zip\" ${uploadStash:-HEAD}'"
   },
   "repository": {
     "type": "git",

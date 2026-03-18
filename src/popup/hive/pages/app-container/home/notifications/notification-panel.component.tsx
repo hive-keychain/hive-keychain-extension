@@ -9,6 +9,7 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import { renderLocalizedNotificationMessage } from 'src/popup/hive/pages/app-container/home/notifications/notification-message.utils';
 
 interface NotificationPanelProps {
   isPanelOpened: boolean;
@@ -35,16 +36,46 @@ export const NotificationPanel = ({
     setAllRead(notifications.every((notif) => notif.read));
   }, [notifications]);
 
+  const openUrl = (url: string) => {
+    chrome.tabs.create({
+      url,
+    });
+  };
+
   const clickOnNotification = (notification: Notification) => {
     if (notification.externalUrl) {
-      chrome.tabs.create({
-        url: notification.externalUrl,
-      });
+      openUrl(notification.externalUrl);
     } else if (notification.txUrl) {
-      chrome.tabs.create({
-        url: notification.txUrl,
-      });
+      openUrl(notification.txUrl);
     }
+  };
+
+  const renderMessage = (notification: Notification) => {
+    const localizedMessage = chrome.i18n.getMessage(
+      notification.message,
+      notification.messageParams,
+    );
+
+    if (!notification.linkUrl || !notification.linkLabel) {
+      return localizedMessage;
+    }
+
+    const notificationLinkUrl = notification.linkUrl;
+    return renderLocalizedNotificationMessage(
+      localizedMessage,
+      <a
+        className="notification-link"
+        href={notificationLinkUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          openUrl(notificationLinkUrl);
+        }}>
+        {notification.linkLabel}
+      </a>,
+    );
   };
 
   const handleLoadMore = async () => {
@@ -96,14 +127,7 @@ export const NotificationPanel = ({
                       notif.read ? 'read' : ''
                     }`}></div>
                   <div className="notification-content">
-                    <div
-                      className="message"
-                      dangerouslySetInnerHTML={{
-                        __html: chrome.i18n.getMessage(
-                          notif.message,
-                          notif.messageParams,
-                        ),
-                      }}></div>
+                    <div className="message">{renderMessage(notif)}</div>
                     <div className="date">
                       {moment(notif.createdAt).fromNow()}
                     </div>

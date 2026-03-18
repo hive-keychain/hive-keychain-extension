@@ -1,6 +1,6 @@
+import { KeylessKeychainUtils } from '@background/utils/keyless-keychain.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
-import CryptoJS from 'crypto-js';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
@@ -20,6 +20,17 @@ const login = async (mk: string) => {
     hiveEncryptedAccounts,
     mk,
   );
+
+  if (
+    hiveAccounts &&
+    hiveEncryptedAccounts &&
+    !EncryptUtils.isEncryptedJsonV2(hiveEncryptedAccounts)
+  ) {
+    await LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.ACCOUNTS,
+      await EncryptUtils.encryptJson({ list: hiveAccounts.list }, mk),
+    );
+  }
   if (!!hiveAccounts) return true;
 
   const evmEncryptedAccounts = await LocalStorageUtils.getValueFromLocalStorage(
@@ -30,6 +41,16 @@ const login = async (mk: string) => {
     mk,
   );
 
+  if (
+    evmAccounts &&
+    evmEncryptedAccounts &&
+    !EncryptUtils.isEncryptedJsonV2(evmEncryptedAccounts)
+  ) {
+    await LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.EVM_ACCOUNTS,
+      await EncryptUtils.encryptJson({ list: evmAccounts.list }, mk),
+    );
+  }
   if (!!evmAccounts) return true;
 
   const storage = await LocalStorageUtils.getMultipleValueFromLocalStorage([
@@ -42,13 +63,10 @@ const login = async (mk: string) => {
     storage[LocalStorageKeyEnum.KEYLESS_KEYCHAIN_AUTH_DATA_USER_DICT]
   ) {
     try {
-      const decryptedKeylessAuthDataUserDictionary = await EncryptUtils.decrypt(
-        storage[LocalStorageKeyEnum.KEYLESS_KEYCHAIN_AUTH_DATA_USER_DICT],
-        mk,
-      );
-      const res = JSON.parse(
-        decryptedKeylessAuthDataUserDictionary.toString(CryptoJS.enc.Utf8),
-      );
+      const res =
+        await KeylessKeychainUtils.getKeylessAuthDataUserDictionaryFromPassword(
+          mk,
+        );
       return !!res;
     } catch (error) {
       return false;

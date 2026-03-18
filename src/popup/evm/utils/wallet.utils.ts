@@ -285,9 +285,8 @@ const getAccountsFromLocalStorage = async (mk: string) => {
 
   if (!wallets) return [];
   else {
-    const decryptedAccounts = (EncryptUtils.decryptToJsonWithoutMD5Check(
-      wallets,
-      mk,
+    const decryptedAccounts = ((
+      await EncryptUtils.decryptToJsonWithLegacySupport(wallets, mk)
     ).list || []) as StoredSeed[];
     return decryptedAccounts;
   }
