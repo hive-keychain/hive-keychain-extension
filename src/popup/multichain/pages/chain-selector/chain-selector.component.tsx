@@ -133,6 +133,7 @@ const ChainSelector = ({
                       badgeType={
                         chain.testnet ? BadgeType.TESTNET : BadgeType.MAINNET
                       }
+                      inverted
                     />
                   </div>
                 ))}
@@ -159,6 +160,7 @@ const ChainSelector = ({
                       badgeType={
                         chain.testnet ? BadgeType.TESTNET : BadgeType.MAINNET
                       }
+                      inverted
                     />
                   </div>
                 ))}

@@ -40,7 +40,7 @@ const shouldLoadMoreDiscoveredAssets = (
   result: DiscoveredTokensResponse | DiscoveredNftsResponse,
 ): boolean => {
   const shouldLoadMoreCatchup =
-    !result.catchupStatus || result.catchupStatus === CatchupStatus.RUNNING;
+    !result.catchupStatus || result.catchupStatus !== CatchupStatus.DONE;
   if ('pricingStatus' in result) {
     return (
       shouldLoadMoreCatchup ||

@@ -8,7 +8,7 @@ import {
 export const ChainReducer = (
   state: Chain = {
     name: '',
-    type: ChainType.EVM,
+    type: ChainType.NONE,
     logo: '',
     chainId: '',
     rpcs: [],

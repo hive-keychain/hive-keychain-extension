@@ -148,22 +148,26 @@ const chromeMessageHandler = async (
         JSON.parse(backgroundMessage.value),
       );
       break;
-    case BackgroundCommand.KEYLESS_KEYCHAIN:
+    case BackgroundCommand.KEYLESS_KEYCHAIN: {
+      const requestHandler = await HiveRequestsHandler.getFromLocalStorage();
       KeylessKeychainModule.handleOperation(
-        backgroundMessage.value.requestHandler,
+        requestHandler,
         backgroundMessage.value.data,
         backgroundMessage.value.domain,
         backgroundMessage.value.tab,
       );
       break;
-    case BackgroundCommand.KEYLESS_KEYCHAIN_REGISTER:
+    }
+    case BackgroundCommand.KEYLESS_KEYCHAIN_REGISTER: {
+      const requestHandler = await HiveRequestsHandler.getFromLocalStorage();
       KeylessKeychainModule.register(
-        backgroundMessage.value.requestHandler,
+        requestHandler,
         backgroundMessage.value.data,
         backgroundMessage.value.domain,
         backgroundMessage.value.tab,
       );
       break;
+    }
     case BackgroundCommand.PING:
       Logger.log('ping');
       break;

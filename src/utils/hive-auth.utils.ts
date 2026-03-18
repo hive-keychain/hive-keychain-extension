@@ -643,6 +643,7 @@ const handleAuthAck = async (
   authAck: AuthAck,
   tab: number,
 ): Promise<void> => {
+  console.log(requestHandler);
   const request = requestHandler.getRequest(keylessRequest.request.request_id)!;
   try {
     if (authAck.uuid !== keylessRequest.uuid) return;

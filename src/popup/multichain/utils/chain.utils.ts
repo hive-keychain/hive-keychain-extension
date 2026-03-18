@@ -10,6 +10,8 @@ import Logger from 'src/utils/logger.utils';
 
 let previousChain: Chain;
 
+let defaultChains: Chain[];
+
 const setPreviousChain = (chain: Chain) => {
   previousChain = chain;
 };
@@ -17,10 +19,18 @@ const getPreviousChain = () => {
   return previousChain;
 };
 
+const setDefaultChains = (chains: Chain[]) => {
+  defaultChains = chains;
+};
+
 const getDefaultChains = async (): Promise<Chain[]> => {
-  return await LocalStorageUtils.getValueFromLocalStorage(
-    LocalStorageKeyEnum.DEFAULT_CHAINS,
-  );
+  // return await LocalStorageUtils.getValueFromLocalStorage(
+  //   LocalStorageKeyEnum.DEFAULT_CHAINS,
+  // );
+  if (!defaultChains) {
+    await initChains();
+  }
+  return defaultChains;
 };
 
 const getAllSetupChainsForType = async <T>(type: ChainType): Promise<T[]> => {
@@ -123,12 +133,7 @@ const addCustomChain = async (chain: EvmChain) => {
 const initChains = async () => {
   try {
     const defaultChains = await KeychainApi.get('chains');
-    if (defaultChains) {
-      await LocalStorageUtils.saveValueInLocalStorage(
-        LocalStorageKeyEnum.DEFAULT_CHAINS,
-        defaultChains,
-      );
-    }
+    setDefaultChains(defaultChains);
   } catch (err) {
     Logger.error('Error while initializing chains', err);
   }

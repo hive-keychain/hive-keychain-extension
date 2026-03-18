@@ -17,6 +17,7 @@ const handleOperation = async (
   domain: string,
   tab: number,
 ) => {
+  console.log('handleOperation', requestHandler);
   await HiveAuthUtils.connect();
 
   switch (request.type) {
@@ -106,9 +107,8 @@ const register = async (
       key: keylessRequest.authKey,
       host: Config.keyless.host,
     };
-    const authPayloadUri = await HiveAuthUtils.generateAuthPayloadURI(
-      authPayload,
-    );
+    const authPayloadUri =
+      await HiveAuthUtils.generateAuthPayloadURI(authPayload);
     showQRCode(keylessRequest, domain, authPayloadUri);
     await HiveAuthUtils.listenToAuthAck(
       requestHandler,

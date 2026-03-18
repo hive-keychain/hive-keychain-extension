@@ -105,23 +105,28 @@ const ChainRouter = ({
 
   const renderChain = () => {
     if (!mk || mk.length === 0) {
+      console.log({ hasFinishedSignup, keylessKeychainEnabled });
       if (!hasFinishedSignup && !keylessKeychainEnabled) {
         return <SignUpComponent />;
       } else {
         return <SignInRouterComponent />;
       }
     } else {
-      switch (chain?.type) {
-        case ChainType.HIVE:
-          return <HiveAppComponent />;
-        case ChainType.EVM:
-          return <EvmAppComponent />;
-        default:
-          if (nav?.currentPage === MultichainScreen.CREATE_BLOCKCHAIN_PAGE) {
-            return <AddCustomChainPage />;
-          } else {
-            return <ChainSelectorPageComponent />;
-          }
+      if (keylessKeychainEnabled) {
+        return <HiveAppComponent />;
+      } else {
+        switch (chain?.type) {
+          case ChainType.HIVE:
+            return <HiveAppComponent />;
+          case ChainType.EVM:
+            return <EvmAppComponent />;
+          default:
+            if (nav?.currentPage === MultichainScreen.CREATE_BLOCKCHAIN_PAGE) {
+              return <AddCustomChainPage />;
+            } else {
+              return <ChainSelectorPageComponent />;
+            }
+        }
       }
     }
   };

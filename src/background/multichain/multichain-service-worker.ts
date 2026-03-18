@@ -12,12 +12,12 @@ Object.assign(global, { contextType: 'service_worker' });
 HiveServiceWorker.initializeServiceWorker();
 EvmServiceWorker.initializeServiceWorker();
 
-(() => {
+(async () => {
   if (!process.env.IS_FIREFOX) {
     Logger.log('Initializing vault');
     VaultModule.init();
   }
-  ChainUtils.initChains();
+  await ChainUtils.initChains();
 })();
 
 const chromeMessageHandler = async (backgroundMessage: BackgroundMessage) => {
