@@ -7,7 +7,9 @@ import { Key } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
+import AccountUtils from '@popup/hive/utils/account.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { config } from 'hive-tx';
 import Config from 'src/config';
 import {
@@ -16,6 +18,8 @@ import {
   KeychainRequestWrapper,
 } from 'src/interfaces/keychain.interface';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { getRequiredWifType } from 'src/utils/requests.utils';
+import VaultUtils from 'src/utils/vault.utils';
 
 if (!process.env.IS_FIREFOX && !global.window) {
   //@ts-ignore
@@ -40,14 +44,12 @@ type RequestData = {
 };
 export class HiveRequestsHandler {
   requestsData: RequestData[];
-  // data: RequestData;
   hiveEngineConfig: HiveEngineConfig;
   defaultRpcConfig: any;
   windowId: number | undefined;
   accounts: LocalAccount[];
 
   constructor() {
-    // this.data = { confirmed: false, isWaitingForConfirmation: false };
     this.hiveEngineConfig = Config.hiveEngine;
     this.defaultRpcConfig = config;
     this.requestsData = [];
@@ -188,7 +190,6 @@ export class HiveRequestsHandler {
         break;
       }
     }
-    this.saveInLocalStorage();
   }
 
   sendRequest(
@@ -242,7 +243,7 @@ export class HiveRequestsHandler {
         break;
       }
     }
-    this.saveInLocalStorage();
+    // this.saveInLocalStorage();
   }
 
   async removeRequestById(requestId: number, tabId: number) {
@@ -272,28 +273,64 @@ export class HiveRequestsHandler {
     const params = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.__REQUEST_HANDLER,
     );
+
+    const accounts = await AccountUtils.getAccountsFromLocalStorage(
+      await VaultUtils.getValueFromVault(VaultKey.__MK),
+    );
+
     const handler = new HiveRequestsHandler();
     if (params) {
       await handler.initFromLocalStorage(
         params.requestsData,
-        params.accounts,
+        accounts,
         params.hiveEngineConfig,
         params.defaultRpcConfig,
         windowId,
       );
+      for (const requestData of params.requestsData) {
+        const username = requestData.request.username;
+        const selectedAccount = accounts.find((acc) => acc.name === username);
+        if (selectedAccount) {
+          let typeWif = getRequiredWifType(requestData.request);
+          const publicKey: Key = selectedAccount.keys[`${typeWif}Pubkey`]!;
+          const key = selectedAccount.keys[typeWif];
+
+          handler.setKeys(key!, publicKey!, requestData.request_id!);
+        }
+      }
     }
     return handler;
   }
 
   async saveInLocalStorage() {
+    const requestsDataToSave: Partial<RequestData>[] = this.requestsData.map(
+      (rd: RequestData) => {
+        return {
+          tab: rd.tab,
+          request: rd.request,
+          request_id: rd.request_id,
+          confirmed: rd.confirmed,
+          rpc: rd.rpc,
+          preferences: rd.preferences,
+          windowId: rd.windowId,
+          isMultisig: rd.isMultisig,
+          isWaitingForConfirmation: rd.isWaitingForConfirmation,
+          isKeyless: rd.isKeyless,
+          domain: rd.domain,
+        };
+      },
+    );
+
+    const dataToSave = {
+      hiveEngineConfig: this.hiveEngineConfig,
+      defaultRpcConfig: this.defaultRpcConfig,
+      windowId: this.windowId,
+      requestsData: requestsDataToSave,
+    };
+
     await LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.__REQUEST_HANDLER,
-      {
-        requestsData: this.requestsData,
-        accounts: this.accounts,
-        hiveEngineConfig: this.hiveEngineConfig,
-        defaultRpcConfig: this.defaultRpcConfig,
-      },
+      dataToSave,
     );
     await LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.DIALOG_WINDOW_ID,
