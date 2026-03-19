@@ -35,6 +35,17 @@ export enum EvmEventName {
   SEND_BACK_CHAIN_TO_BACKGROUND = 'sendBackChainToBackground',
 }
 
+export type EvmEventScope =
+  | { kind: 'tab'; tabId: number }
+  | { kind: 'domain'; domain: string }
+  | { kind: 'global' };
+
+export interface RoutedEvmEvent {
+  eventType: EvmEventName;
+  args?: any;
+  scope: EvmEventScope;
+}
+
 export interface EvmDappInfo {
   domain: string;
   protocol: string;

@@ -3,6 +3,7 @@ import {
   EvmEventName,
   EvmRequest,
   KeychainEvmRequestWrapper,
+  RoutedEvmEvent,
 } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import Joi from 'joi';
@@ -147,22 +148,41 @@ export const sendEventToEvm = (event: any) => {
   }
 };
 
-export const sendEvmEvent = (event: EvmEventName, args?: any) => {
+export const sendEvmEvent = (event: RoutedEvmEvent) => {
   CommunicationUtils.runtimeSendMessage({
     command: BackgroundCommand.SEND_EVM_EVENT,
-    value: { eventType: event, args: args },
+    value: event,
   } as BackgroundMessage);
 };
 
-export const sendEvmEventFromSW = (event: EvmEventName, args?: any) => {
-  chrome.tabs.query({}, (tabs) => {
-    for (const tab of tabs) {
-      if (tab.id) {
-        CommunicationUtils.tabsSendMessage(tab.id, {
-          command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
-          value: { eventType: event, args: args },
-        } as BackgroundMessage);
-      }
-    }
+export const sendEvmEventToTab = (
+  tabId: number,
+  eventType: EvmEventName,
+  args?: any,
+) => {
+  sendEvmEvent({
+    eventType,
+    args,
+    scope: { kind: 'tab', tabId },
+  });
+};
+
+export const sendEvmEventToDomain = (
+  domain: string,
+  eventType: EvmEventName,
+  args?: any,
+) => {
+  sendEvmEvent({
+    eventType,
+    args,
+    scope: { kind: 'domain', domain },
+  });
+};
+
+export const sendEvmEventGlobal = (eventType: EvmEventName, args?: any) => {
+  sendEvmEvent({
+    eventType,
+    args,
+    scope: { kind: 'global' },
   });
 };

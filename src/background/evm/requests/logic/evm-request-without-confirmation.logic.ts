@@ -14,7 +14,7 @@ import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
-import { sendEvmEventFromSW } from 'src/content-scripts/hive/web-interface/response.logic';
+import { sendEvmEventToDomain } from 'src/content-scripts/hive/web-interface/response.logic';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -56,7 +56,11 @@ export const evmRequestWithoutConfirmation = async (
         );
         message.value.result = connectedWallets;
       }
-      sendEvmEventFromSW(EvmEventName.ACCOUNT_CHANGED, message.value.result);
+      sendEvmEventToDomain(
+        dappInfo.domain,
+        EvmEventName.ACCOUNT_CHANGED,
+        message.value.result,
+      );
       break;
     }
 
@@ -72,7 +76,7 @@ export const evmRequestWithoutConfirmation = async (
       await EvmWalletUtils.disconnectAllWallets(dappInfo.domain);
       await EvmWalletUtils.revokeAllPermissions(dappInfo.domain);
       message.value.result = null;
-      sendEvmEventFromSW(EvmEventName.ACCOUNT_CHANGED, []);
+      sendEvmEventToDomain(dappInfo.domain, EvmEventName.ACCOUNT_CHANGED, []);
       break;
     }
 

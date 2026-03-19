@@ -8,6 +8,7 @@ import {
   KeychainEvmRequestWrapper,
   ProviderRpcError,
   ProviderRpcErrorList,
+  RoutedEvmEvent,
 } from '@interfaces/evm-provider.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
@@ -37,6 +38,49 @@ const initializeServiceWorker = async () => {
   });
 };
 
+const sendEvmEventToTab = (tabId: number, event: RoutedEvmEvent) => {
+  CommunicationUtils.tabsSendMessage(tabId, {
+    command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
+    value: event,
+  });
+};
+
+const isDomainMatch = (tabUrl: string | undefined, domain: string) => {
+  if (!tabUrl) return false;
+
+  try {
+    return new URL(tabUrl).hostname === domain;
+  } catch (error) {
+    return false;
+  }
+};
+
+const routeEvmEvent = (event: RoutedEvmEvent) => {
+  switch (event.scope.kind) {
+    case 'tab':
+      sendEvmEventToTab(event.scope.tabId, event);
+      break;
+    case 'domain':
+      chrome.tabs.query({}, (tabs) => {
+        for (const tab of tabs) {
+          if (tab.id && isDomainMatch(tab.url, event.scope.domain)) {
+            sendEvmEventToTab(tab.id, event);
+          }
+        }
+      });
+      break;
+    case 'global':
+      chrome.tabs.query({}, (tabs) => {
+        for (const tab of tabs) {
+          if (tab.id) {
+            sendEvmEventToTab(tab.id, event);
+          }
+        }
+      });
+      break;
+  }
+};
+
 const chromeMessageHandler = async (
   backgroundMessage: BackgroundMessage,
   sender: chrome.runtime.MessageSender,
@@ -58,15 +102,7 @@ const chromeMessageHandler = async (
       break;
     }
     case BackgroundCommand.SEND_EVM_EVENT: {
-      chrome.tabs.query({}, (tabs) => {
-        for (const tab of tabs) {
-          if (tab.id)
-            CommunicationUtils.tabsSendMessage(tab.id, {
-              ...backgroundMessage,
-              command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
-            });
-        }
-      });
+      routeEvmEvent(backgroundMessage.value as RoutedEvmEvent);
       break;
     }
     case BackgroundCommand.UNLOCK_FROM_DIALOG: {
