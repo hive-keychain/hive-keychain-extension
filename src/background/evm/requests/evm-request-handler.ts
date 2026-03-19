@@ -34,11 +34,11 @@ export class EvmRequestHandler {
 
   async initFromLocalStorage(
     requestsData: RequestData[],
-    accounts: EvmAccount[],
+    // accounts: EvmAccount[],
     windowId?: number,
   ) {
     this.requestsData = requestsData;
-    this.accounts = accounts;
+    // this.accounts = accounts;
     this.windowId = windowId;
   }
 
@@ -139,7 +139,7 @@ export class EvmRequestHandler {
     if (requestHandlersParams) {
       await handler.initFromLocalStorage(
         requestHandlersParams.requestsData,
-        requestHandlersParams.accounts,
+        // requestHandlersParams.accounts,
         windowId,
       );
     }
@@ -155,7 +155,6 @@ export class EvmRequestHandler {
       LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
       {
         requestsData: this.requestsData,
-        accounts: this.accounts,
       },
     );
     await LocalStorageUtils.saveValueInLocalStorage(
