@@ -1,8 +1,6 @@
-import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { EvmEventName } from '@interfaces/evm-provider.interface';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { RootState } from '@popup/multichain/store';
-import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent, {
@@ -13,10 +11,10 @@ import {
   DappStatusEnum,
 } from 'src/common-ui/evm/dapp-status/dapp-status.component';
 import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
+import { sendEvmEventToDomain } from 'src/content-scripts/hive/web-interface/response.logic';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { CommunicationUtils } from 'src/utils/communication.utils';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -59,13 +57,11 @@ const EvmDappStatus = ({ activeAccount, accounts }: PropsFromRedux) => {
       ),
     ].filter((e) => !!e);
 
-    CommunicationUtils.runtimeSendMessage({
-      command: BackgroundCommand.SEND_EVM_EVENT,
-      value: {
-        eventType: EvmEventName.ACCOUNT_CHANGED,
-        args: sortedConnectedWallets,
-      },
-    } as BackgroundMessage);
+    sendEvmEventToDomain(
+      domain,
+      EvmEventName.ACCOUNT_CHANGED,
+      sortedConnectedWallets,
+    );
 
     setConnectedWallets(connectedWallets);
     if (connectedWallets.includes(activeAccount.address)) {

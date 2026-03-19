@@ -61,9 +61,10 @@ const routeEvmEvent = (event: RoutedEvmEvent) => {
       sendEvmEventToTab(event.scope.tabId, event);
       break;
     case 'domain':
+      const targetDomain = event.scope.domain;
       chrome.tabs.query({}, (tabs) => {
         for (const tab of tabs) {
-          if (tab.id && isDomainMatch(tab.url, event.scope.domain)) {
+          if (tab.id && isDomainMatch(tab.url, targetDomain)) {
             sendEvmEventToTab(tab.id, event);
           }
         }

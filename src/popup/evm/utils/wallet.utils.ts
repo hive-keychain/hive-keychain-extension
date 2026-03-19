@@ -18,7 +18,7 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { EthersError, HDNodeWallet, ethers } from 'ethers';
-import { sendEvmEvent } from 'src/content-scripts/hive/web-interface/response.logic';
+import { sendEvmEventToDomain } from 'src/content-scripts/hive/web-interface/response.logic';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
@@ -349,7 +349,7 @@ const connectMultipleWallet = async (
     await connectWallet(walletAddress, domain, false);
   }
   const connectedWallets = await getConnectedWallets(domain);
-  sendEvmEvent(EvmEventName.ACCOUNT_CHANGED, connectedWallets);
+  sendEvmEventToDomain(domain, EvmEventName.ACCOUNT_CHANGED, connectedWallets);
 };
 
 const connectWallet = async (
@@ -364,7 +364,8 @@ const connectWallet = async (
   );
 
   if (sendEvent)
-    sendEvmEvent(
+    sendEvmEventToDomain(
+      domain,
       EvmEventName.ACCOUNT_CHANGED,
       await getConnectedWallets(domain),
     );
@@ -376,12 +377,20 @@ const disconnectWallet = async (walletAddress: string, domain: string) => {
     EvmRequestPermission.ETH_ACCOUNTS,
     walletAddress,
   );
-  sendEvmEvent(EvmEventName.ACCOUNT_CHANGED, await getConnectedWallets(domain));
+  sendEvmEventToDomain(
+    domain,
+    EvmEventName.ACCOUNT_CHANGED,
+    await getConnectedWallets(domain),
+  );
 };
 
 const disconnectAllWallets = async (domain: string) => {
   await removeWalletPermission(domain, EvmRequestPermission.ETH_ACCOUNTS);
-  sendEvmEvent(EvmEventName.ACCOUNT_CHANGED, await getConnectedWallets(domain));
+  sendEvmEventToDomain(
+    domain,
+    EvmEventName.ACCOUNT_CHANGED,
+    await getConnectedWallets(domain),
+  );
 };
 
 const getWalletPermissionFull = async (domain: string) => {
@@ -430,7 +439,8 @@ const addWalletPermission = async (
 
   if (address && !walletPermissions[domain][permission]!.includes(address)) {
     walletPermissions[domain][permission]!.push(address);
-    sendEvmEvent(
+    sendEvmEventToDomain(
+      domain,
       EvmEventName.ACCOUNT_CHANGED,
       walletPermissions[domain][permission],
     );
@@ -485,7 +495,7 @@ const revokeAllPermissions = async (domain: string) => {
       LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
       walletPermissions,
     );
-    sendEvmEvent(EvmEventName.ACCOUNT_CHANGED, []);
+    sendEvmEventToDomain(domain, EvmEventName.ACCOUNT_CHANGED, []);
   }
 };
 

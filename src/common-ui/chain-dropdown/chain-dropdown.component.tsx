@@ -1,4 +1,3 @@
-import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { EvmEventName } from '@interfaces/evm-provider.interface';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
@@ -9,16 +8,15 @@ import {
 } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
-import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import {
   ComplexeCustomSelect,
   OptionItem,
 } from 'src/common-ui/custom-select/custom-select.component';
+import { sendEvmEventGlobal } from 'src/content-scripts/hive/web-interface/response.logic';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { CommunicationUtils } from 'src/utils/communication.utils';
 
 const ChainDropdown = ({
   chain,
@@ -62,10 +60,7 @@ const ChainDropdown = ({
         false,
       );
     }
-    CommunicationUtils.runtimeSendMessage({
-      command: BackgroundCommand.SEND_EVM_EVENT,
-      value: { eventType: EvmEventName.CHAIN_CHANGED, args: chain.chainId },
-    } as BackgroundMessage);
+    sendEvmEventGlobal(EvmEventName.CHAIN_CHANGED, chain.chainId);
     setChain(chain);
   };
 

@@ -2,6 +2,7 @@ import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import {
   EIP6963ProviderInfo,
   EvmEventName,
+  RoutedEvmEvent,
   RequestArguments,
 } from '@interfaces/evm-provider.interface';
 import EventEmitter from 'events';
@@ -87,6 +88,13 @@ export class EvmProvider extends EventEmitter {
           }
         } else if (event.data.type && event.data.type == 'evm_keychain_event') {
           const eventData = event.data;
+          const routedEvent = eventData.event as RoutedEvmEvent;
+          if (
+            routedEvent.scope?.kind === 'domain' &&
+            routedEvent.scope.domain !== window.location.hostname
+          ) {
+            return;
+          }
           switch (eventData.event.eventType) {
             case EvmEventName.CHAIN_CHANGED: {
               if (this._dappForcedChain) {
