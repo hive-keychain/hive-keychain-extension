@@ -4,6 +4,7 @@ import {
   ChainType,
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
+import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
@@ -11,6 +12,28 @@ import Logger from 'src/utils/logger.utils';
 let previousChain: Chain;
 
 let defaultChains: Chain[];
+let defaultChainsPromise: Promise<Chain[]> | null = null;
+
+const isValidChain = (chain: Partial<Chain> | null | undefined) => {
+  return (
+    !!chain &&
+    typeof chain.chainId === 'string' &&
+    typeof chain.name === 'string' &&
+    typeof chain.type === 'string'
+  );
+};
+
+const isValidChainList = (chains: unknown): chains is Chain[] => {
+  return Array.isArray(chains) && chains.length > 0 && chains.every(isValidChain);
+};
+
+const cloneChains = (chains: Chain[]) => {
+  return JSON.parse(JSON.stringify(chains)) as Chain[];
+};
+
+const getBundledDefaultChains = (): Chain[] => {
+  return cloneChains(defaultChainList as Chain[]);
+};
 
 const setPreviousChain = (chain: Chain) => {
   previousChain = chain;
@@ -24,11 +47,8 @@ const setDefaultChains = (chains: Chain[]) => {
 };
 
 const getDefaultChains = async (): Promise<Chain[]> => {
-  // return await LocalStorageUtils.getValueFromLocalStorage(
-  //   LocalStorageKeyEnum.DEFAULT_CHAINS,
-  // );
   if (!defaultChains) {
-    await initChains();
+    return initChains();
   }
   return defaultChains;
 };
@@ -130,12 +150,60 @@ const addCustomChain = async (chain: EvmChain) => {
   const customChains = await getCustomChains();
 };
 
-const initChains = async () => {
+const initChains = async (): Promise<Chain[]> => {
+  if (defaultChains) return defaultChains;
+  if (defaultChainsPromise) return defaultChainsPromise;
+
+  defaultChainsPromise = (async () => {
+    try {
+      const apiChains = await KeychainApi.get('chains');
+      if (isValidChainList(apiChains)) {
+        const normalizedChains = cloneChains(apiChains);
+        setDefaultChains(normalizedChains);
+        try {
+          await LocalStorageUtils.saveValueInLocalStorage(
+            LocalStorageKeyEnum.DEFAULT_CHAINS,
+            normalizedChains,
+          );
+        } catch (err) {
+          Logger.error('Error while caching default chains', err);
+        }
+        Logger.info('Initialized chains from api');
+        return normalizedChains;
+      }
+      Logger.warn(
+        'Chains API returned an invalid or empty payload, using fallback source',
+      );
+    } catch (err) {
+      Logger.error('Error while fetching chains from api', err);
+    }
+
+    const cachedChains = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.DEFAULT_CHAINS,
+    );
+    if (isValidChainList(cachedChains)) {
+      const normalizedChains = cloneChains(cachedChains);
+      setDefaultChains(normalizedChains);
+      Logger.info('Initialized chains from cache');
+      return normalizedChains;
+    }
+
+    if (cachedChains) {
+      Logger.warn(
+        'Stored default chains are invalid or empty, using bundled defaults',
+      );
+    }
+
+    const bundledChains = getBundledDefaultChains();
+    setDefaultChains(bundledChains);
+    Logger.info('Initialized chains from bundle');
+    return bundledChains;
+  })();
+
   try {
-    const defaultChains = await KeychainApi.get('chains');
-    setDefaultChains(defaultChains);
-  } catch (err) {
-    Logger.error('Error while initializing chains', err);
+    return await defaultChainsPromise;
+  } finally {
+    defaultChainsPromise = null;
   }
 };
 
