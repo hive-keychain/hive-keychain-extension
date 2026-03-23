@@ -6,15 +6,21 @@ import { Key } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
+import AccountUtils from '@popup/hive/utils/account.utils';
+import EncryptUtils from '@popup/hive/utils/encrypt.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { config } from 'hive-tx';
 import Config from 'src/config';
 import {
   KeychainKeyTypesLC,
   KeychainRequest,
+  KeychainRequestTypes,
   KeychainRequestWrapper,
 } from 'src/interfaces/keychain.interface';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { getRequiredWifType } from 'src/utils/requests.utils';
+import VaultUtils from 'src/utils/vault.utils';
 
 if (!process.env.IS_FIREFOX && !global.window) {
   //@ts-ignore
@@ -47,8 +53,16 @@ export class RequestsHandler {
     this.defaultRpcConfig = config;
   }
 
-  async initFromLocalStorage(data: RequestData) {
+  async initFromLocalStorage(
+    data: RequestData,
+    accounts: LocalAccount[],
+    hiveEngineConfig: HiveEngineConfig,
+    defaultRpcConfig: any,
+  ) {
     this.data = data;
+    this.data.accounts = accounts;
+    this.hiveEngineConfig = hiveEngineConfig;
+    this.defaultRpcConfig = defaultRpcConfig;
   }
 
   async setupHiveEngine() {
@@ -143,17 +157,84 @@ export class RequestsHandler {
     const params = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.__REQUEST_HANDLER,
     );
+
+    const accounts = await AccountUtils.getAccountsFromLocalStorage(
+      await VaultUtils.getValueFromVault(VaultKey.__MK),
+    );
+
     const handler = new RequestsHandler();
     if (params) {
-      await handler.initFromLocalStorage(params);
+      if (
+        params.data.request &&
+        params.data.request.type === KeychainRequestTypes.addAccount
+      ) {
+        const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
+        params.data.request = {
+          ...params.data.request,
+          keys: await EncryptUtils.decryptToJson(
+            params.data.request.encryptedKeys,
+            mk!,
+          ),
+        };
+      }
+      await handler.initFromLocalStorage(
+        params.data,
+        accounts,
+        params.hiveEngineConfig,
+        params.defaultRpcConfig,
+      );
+
+      const username = params.data?.request?.username;
+      if (username) {
+        const selectedAccount = accounts.find((acc) => acc.name === username);
+        if (selectedAccount) {
+          let typeWif = getRequiredWifType(params.data.request);
+          const publicKey: Key = selectedAccount.keys[`${typeWif}Pubkey`]!;
+          const key = selectedAccount.keys[typeWif];
+
+          handler.setKeys(key!, publicKey!);
+        }
+      }
     }
     return handler;
   }
 
   async saveInLocalStorage() {
+    const dataToSave = {
+      hiveEngineConfig: this.hiveEngineConfig,
+      defaultRpcConfig: this.defaultRpcConfig,
+      data: {
+        tab: this.data.tab,
+        request: this.data.request,
+        request_id: this.data.request_id,
+        confirmed: this.data.confirmed,
+        rpc: this.data.rpc,
+        preferences: this.data.preferences,
+        windowId: this.data.windowId,
+        isMultisig: this.data.isMultisig,
+        isWaitingForConfirmation: this.data.isWaitingForConfirmation,
+        isKeyless: this.data.isKeyless,
+      } as RequestData,
+    };
+
+    if (
+      dataToSave.data.request &&
+      this.data.request?.type === KeychainRequestTypes.addAccount
+    ) {
+      const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
+      dataToSave.data.request = {
+        request_id: this.data.request_id,
+        type: this.data.request.type,
+        username: this.data.request.username,
+        encryptedKeys: await EncryptUtils.encryptJson(
+          { keys: this.data.request.keys },
+          mk!,
+        ),
+      } as any;
+    }
     await LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.__REQUEST_HANDLER,
-      this.data,
+      dataToSave,
     );
   }
 
