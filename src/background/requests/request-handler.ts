@@ -163,7 +163,7 @@ export class RequestsHandler {
     );
 
     const handler = new RequestsHandler();
-    if (params) {
+    if (accounts && params) {
       if (
         params.data.request &&
         params.data.request.type === KeychainRequestTypes.addAccount
