@@ -12,6 +12,7 @@ import {
   RequestResponse,
 } from 'src/interfaces/keychain.interface';
 import { CommunicationUtils } from 'src/utils/communication.utils';
+import KeychainifyUtils from 'src/utils/keychainify.utils';
 
 export const cancelPreviousRequest = (prevReq: KeychainRequest) => {
   const response = {
@@ -81,7 +82,13 @@ export const sendIncompleteDataResponse = (
 };
 /* istanbul ignore next */
 export const sendResponse = (response: RequestResponse) => {
-  if (response.data?.redirect_uri) {
+  if (
+    response.data?.redirect_uri &&
+    KeychainifyUtils.isRedirectUriAcceptable(
+      response.data.redirect_uri,
+      window.location.href,
+    )
+  ) {
     window.location.href = response.data.redirect_uri;
   } else {
     try {
@@ -99,7 +106,13 @@ export const sendResponse = (response: RequestResponse) => {
 };
 
 export const sendResponseToEvm = (response: any) => {
-  if (response.data?.redirect_uri) {
+  if (
+    response.data?.redirect_uri &&
+    KeychainifyUtils.isRedirectUriAcceptable(
+      response.data.redirect_uri,
+      window.location.href,
+    )
+  ) {
     window.location.href = response.data.redirect_uri;
   } else {
     try {
@@ -117,7 +130,13 @@ export const sendResponseToEvm = (response: any) => {
 };
 
 export const sendErrorToEvm = (response: any) => {
-  if (response.data?.redirect_uri) {
+  if (
+    response.data?.redirect_uri &&
+    KeychainifyUtils.isRedirectUriAcceptable(
+      response.data.redirect_uri,
+      window.location.href,
+    )
+  ) {
     window.location.href = response.data.redirect_uri;
   } else {
     try {

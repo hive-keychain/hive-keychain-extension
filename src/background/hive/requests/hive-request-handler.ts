@@ -8,6 +8,7 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
+import EncryptUtils from '@popup/hive/utils/encrypt.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { config } from 'hive-tx';
@@ -15,6 +16,7 @@ import Config from 'src/config';
 import {
   KeychainKeyTypesLC,
   KeychainRequest,
+  KeychainRequestTypes,
   KeychainRequestWrapper,
 } from 'src/interfaces/keychain.interface';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -280,8 +282,22 @@ export class HiveRequestsHandler {
 
     const handler = new HiveRequestsHandler();
     if (params) {
+      const requestsData = params.requestsData;
+      for (const rd of requestsData) {
+        if (rd.request && rd.request.type === KeychainRequestTypes.addAccount) {
+          const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
+          rd.request = {
+            ...rd.request,
+            keys: await EncryptUtils.decryptToJson(
+              params.data.request.encryptedKeys,
+              mk!,
+            ),
+          };
+        }
+      }
+
       await handler.initFromLocalStorage(
-        params.requestsData,
+        requestsData,
         accounts,
         params.hiveEngineConfig,
         params.defaultRpcConfig,
@@ -303,23 +319,36 @@ export class HiveRequestsHandler {
   }
 
   async saveInLocalStorage() {
-    const requestsDataToSave: Partial<RequestData>[] = this.requestsData.map(
-      (rd: RequestData) => {
-        return {
-          tab: rd.tab,
-          request: rd.request,
+    const requestsDataToSave: Partial<RequestData>[] = [];
+
+    for (const rd of this.requestsData) {
+      const requestData: RequestData = {
+        tab: rd.tab,
+        request: rd.request,
+        request_id: rd.request_id,
+        confirmed: rd.confirmed,
+        rpc: rd.rpc,
+        preferences: rd.preferences,
+        windowId: rd.windowId,
+        isMultisig: rd.isMultisig,
+        isWaitingForConfirmation: rd.isWaitingForConfirmation,
+        isKeyless: rd.isKeyless,
+        domain: rd.domain,
+      };
+      if (rd.request?.type === KeychainRequestTypes.addAccount) {
+        const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
+        requestData.request = {
           request_id: rd.request_id,
-          confirmed: rd.confirmed,
-          rpc: rd.rpc,
-          preferences: rd.preferences,
-          windowId: rd.windowId,
-          isMultisig: rd.isMultisig,
-          isWaitingForConfirmation: rd.isWaitingForConfirmation,
-          isKeyless: rd.isKeyless,
-          domain: rd.domain,
-        };
-      },
-    );
+          type: rd.request.type,
+          username: rd.request.username,
+          encryptedKeys: await EncryptUtils.encryptJson(
+            { keys: rd.request.keys },
+            mk!,
+          ),
+        } as any;
+      }
+      requestsDataToSave.push(requestData);
+    }
 
     const dataToSave = {
       hiveEngineConfig: this.hiveEngineConfig,

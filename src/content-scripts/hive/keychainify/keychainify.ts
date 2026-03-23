@@ -7,6 +7,7 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import * as HiveUri from 'hive-uri';
 import { HiveUriTransaction } from 'src/content-scripts/keychainify/hive-uri.types';
 import { CommunicationUtils } from 'src/utils/communication.utils';
+import KeychainifyUtils from 'src/utils/keychainify.utils';
 import Logger from 'src/utils/logger.utils';
 
 if (window.chrome) {
@@ -331,6 +332,13 @@ export default {
     redirect_uri: string,
     enforce = false,
   ) {
+    const safeRedirectUri = KeychainifyUtils.isRedirectUriAcceptable(
+      redirect_uri,
+      window.location.href,
+    )
+      ? redirect_uri
+      : '';
+
     const request = {
       type: KeychainRequestTypes.transfer,
       username: account,
@@ -339,7 +347,7 @@ export default {
       memo: memo,
       enforce: enforce,
       currency: currency,
-      redirect_uri,
+      redirect_uri: safeRedirectUri,
     };
 
     if (to && amount && currency) {
@@ -456,6 +464,12 @@ export default {
       username = required_auths;
       authority = KeychainKeyTypes.posting;
     }
+    const safeRedirectUri = KeychainifyUtils.isRedirectUriAcceptable(
+      redirect_uri,
+      window.location.href,
+    )
+      ? redirect_uri
+      : '';
     var request = {
       type: 'custom',
       username,
@@ -463,7 +477,7 @@ export default {
       method: authority,
       json,
       display_msg,
-      redirect_uri,
+      redirect_uri: safeRedirectUri,
     };
 
     this.dispatchRequest(tab, request);
