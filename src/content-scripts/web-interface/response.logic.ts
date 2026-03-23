@@ -32,7 +32,10 @@ export const sendIncompleteDataResponse = (
   value: KeychainRequest,
   error: string | Joi.ValidationError,
 ) => {
-  let message = typeof error === 'string' ? error : error.stack!;
+  let message =
+    typeof error === 'string'
+      ? error
+      : error.details?.[0]?.message || error.message || 'Invalid request data.';
   var response = {
     success: false,
     error: 'incomplete',

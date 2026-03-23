@@ -26,7 +26,7 @@ import { getRequiredWifType } from 'src/utils/requests.utils';
 
 type Props = {
   title: string;
-  children: JSX.Element[];
+  children: React.ReactNode;
   onConfirm?: () => void;
   data: KeychainRequest;
   domain: string;
@@ -38,6 +38,7 @@ type Props = {
   username?: string;
   setUsername?: (username: string) => void;
   redHeader?: boolean;
+  confirmDisabled?: boolean;
 };
 
 const Operation = ({
@@ -54,6 +55,7 @@ const Operation = ({
   username,
   redHeader,
   setUsername,
+  confirmDisabled,
 }: Props) => {
   const [keep, setKeep] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -229,7 +231,7 @@ const Operation = ({
             flexDirection: 'column',
           }}>
           <div className="operation-body">
-            <div className="fields">{...children}</div>
+            <div className="fields">{children}</div>
           </div>
         </div>
       </div>
@@ -282,6 +284,7 @@ const Operation = ({
           <ButtonComponent
             type={ButtonType.IMPORTANT}
             label="dialog_confirm"
+            disabled={confirmDisabled}
             onClick={onConfirm || genericOnConfirm}
             height="small"
           />

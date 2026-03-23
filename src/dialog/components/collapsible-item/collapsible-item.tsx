@@ -6,9 +6,15 @@ type Props = {
   title: string;
   content: string;
   pre?: boolean; // set pre to true if we are showing a pretty printed json
+  skipTitleTranslation?: boolean;
 };
 
-const CollaspsibleItem = ({ title, content, pre }: Props) => {
+const CollaspsibleItem = ({
+  title,
+  content,
+  pre,
+  skipTitleTranslation,
+}: Props) => {
   const [collapsed, setCollapsed] = useState(true);
   const [copied, setCopied] = useState(false);
   return (
@@ -21,7 +27,7 @@ const CollaspsibleItem = ({ title, content, pre }: Props) => {
         <div
           className="label"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage(title),
+            __html: skipTitleTranslation ? title : chrome.i18n.getMessage(title),
           }}></div>
         <SVGIcon icon={SVGIcons.SELECT_ARROW_DOWN} />
       </div>

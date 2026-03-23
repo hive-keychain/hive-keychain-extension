@@ -168,7 +168,7 @@ const broadcast = Joi.object({
 
 const signTx = Joi.object({
   username,
-  tx: Joi.any().required(),
+  tx: Joi.object().required(),
   method: authority,
   rpc,
 });

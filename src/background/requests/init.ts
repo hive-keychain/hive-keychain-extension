@@ -1,11 +1,15 @@
 import MkModule from '@background/mk.module';
+import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestsHandler } from '@background/requests/request-handler';
 import {
   KeychainRequest,
   KeychainRequestTypes,
+  RequestId,
+  RequestSignTx,
   RequestTransfer,
 } from '@interfaces/keychain.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { DynamicGlobalPropertiesUtils } from '@popup/hive/utils/dynamic-global-properties.utils';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -20,7 +24,29 @@ import {
   anonymousRequests,
   getRequiredWifType,
 } from 'src/utils/requests.utils';
+import { validateSignTxTransaction } from 'src/utils/sign-tx.utils';
 import * as Logic from './logic';
+
+const validateIncomingSignTx = async (tx: unknown) => {
+  const now = new Date();
+  let validation = validateSignTxTransaction(tx, { now });
+
+  if (!validation.ok) {
+    return validation;
+  }
+
+  try {
+    const props = await DynamicGlobalPropertiesUtils.getDynamicGlobalProperties();
+    validation = validateSignTxTransaction(validation.value.transaction, {
+      now,
+      currentHeadBlockNumber: props.head_block_number,
+    });
+  } catch (_error) {
+    Logger.warn('Skipping signTx head block freshness check');
+  }
+
+  return validation;
+};
 
 export default async (
   request: KeychainRequest,
@@ -115,6 +141,27 @@ export default async (
       if (!account) {
         Logic.missingUser(requestHandler, tab!, request, username!);
       } else {
+        if (type === KeychainRequestTypes.signTx) {
+          const signTxRequest = request as RequestSignTx & RequestId;
+          const validation = await validateIncomingSignTx(signTxRequest.tx);
+          if (!validation.ok) {
+            chrome.tabs.sendMessage(
+              tab!,
+              await createMessage(
+                'invalid_transaction',
+                undefined,
+                signTxRequest,
+                null,
+                validation.error.message,
+              ),
+            );
+            requestHandler.reset(false);
+            return;
+          }
+
+          signTxRequest.tx = validation.value.transaction;
+        }
+
         let typeWif = getRequiredWifType(request);
         let req = request;
         req.key = typeWif;
