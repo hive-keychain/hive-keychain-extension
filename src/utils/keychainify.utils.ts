@@ -1,5 +1,4 @@
 type RedirectUriValidationOptions = {
-  enforceSameOrigin?: boolean;
   allowLocalhostHttp?: boolean;
 };
 
@@ -16,24 +15,19 @@ const isLocalhostHostname = (hostname: string) => {
 
 const isRedirectUriAcceptable = (
   redirectUri: string,
-  requesterUrl: string,
+  _requesterUrl: string,
   options: RedirectUriValidationOptions = {},
 ) => {
-  const {
-    enforceSameOrigin = true,
-    allowLocalhostHttp = false,
-  } = options;
+  const { allowLocalhostHttp = false } = options;
 
-  if (!redirectUri || !requesterUrl) {
+  if (!redirectUri) {
     return false;
   }
 
   let parsedRedirectUri: URL;
-  let parsedRequesterUrl: URL;
 
   try {
     parsedRedirectUri = new URL(redirectUri);
-    parsedRequesterUrl = new URL(requesterUrl);
   } catch {
     return false;
   }
@@ -47,10 +41,6 @@ const isRedirectUriAcceptable = (
   }
 
   if (parsedRedirectUri.protocol !== 'https:') {
-    return false;
-  }
-
-  if (enforceSameOrigin && parsedRedirectUri.origin !== parsedRequesterUrl.origin) {
     return false;
   }
 

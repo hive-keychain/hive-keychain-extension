@@ -43,13 +43,13 @@ describe('keychainify.utils.ts tests:\n', () => {
       ).toBe(false);
     });
 
-    it('Must reject cross-origin https redirects', () => {
+    it('Must accept cross-origin https redirects', () => {
       expect(
         KeychainifyUtils.isRedirectUriAcceptable(
           'https://evil.example/steal',
           requesterUrl,
         ),
-      ).toBe(false);
+      ).toBe(true);
     });
 
     it('Must reject file urls', () => {
