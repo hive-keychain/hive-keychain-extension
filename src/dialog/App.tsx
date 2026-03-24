@@ -1,6 +1,7 @@
 import { RequestAddEvmChain } from '@dialog/evm/requests/request-add-chain/request-add-chain';
 import { FeedbackMessage } from '@dialog/interfaces/messages.interface';
 import { DialogConfirmationPage } from '@dialog/multichain/dialog-confirmation-page/dialog-confirmation-page.component';
+import { DialogError } from '@dialog/multichain/error/error';
 import { Theme } from '@popup/theme.context';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -13,7 +14,8 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 // import './../analytics/analytics/gtag';
 
 const App = () => {
-  const [data, setData] = useState<any>({});
+  const [globalData, setGlobalData] = useState<any>({});
+  const [globalError, setGlobalError] = useState<any>({});
   const [theme, setTheme] = useState<Theme>();
 
   const [feedBackMessage, setFeedBackMessage] =
@@ -61,9 +63,13 @@ const App = () => {
           data.command === DialogCommand.ANSWER_EVM_REQUEST ||
           data.command === DialogCommand.SEND_DIALOG_ERROR
         ) {
-          setFeedBackMessage(data);
+          if (globalData) {
+            setFeedBackMessage(data);
+          } else if (data.command === DialogCommand.SEND_DIALOG_ERROR) {
+            setGlobalError(data);
+          }
         } else if (Object.values(DialogCommand).includes(data.command)) {
-          setData(data);
+          setGlobalData(data);
         }
       },
     );
@@ -103,13 +109,20 @@ const App = () => {
             tab={data.tab}
           />
         );
+
       default:
+        if (globalError) {
+          return <DialogError data={globalError} />;
+        }
+
         return null;
     }
   };
 
   return (
-    <div className={`theme ${theme} dialog`}>{renderDialogContent(data)}</div>
+    <div className={`theme ${theme} dialog`}>
+      {renderDialogContent(globalData)}
+    </div>
   );
 };
 
