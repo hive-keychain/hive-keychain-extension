@@ -41,10 +41,10 @@ describe('claim.module tests:\n', () => {
       .spyOn(chrome.alarms, 'create')
       .mockReturnValue(undefined);
     await ClaimModule.start();
-    expect(sLoggerInfo).toBeCalledWith(
+    expect(sLoggerInfo).toHaveBeenCalledWith(
       `Will autoclaim every ${Config.claims.FREQUENCY}mn`,
     );
-    expect(sCreate).toBeCalledWith({
+    expect(sCreate).toHaveBeenCalledWith({
       periodInMinutes: Config.claims.FREQUENCY,
     });
   });
@@ -114,7 +114,7 @@ describe('claim.module tests:\n', () => {
       2,
       `@${accounts.active.name} doesn't have any savings interests to claim`,
     );
-    expect(sClaimSavings).not.toBeCalled();
+    expect(sClaimSavings).not.toHaveBeenCalled();
   });
 
   it('Must call logger with no time to claim', async () => {
@@ -146,6 +146,6 @@ describe('claim.module tests:\n', () => {
       2,
       `Not time to claim yet for @${accounts.active.name}`,
     );
-    expect(sClaimSavings).not.toBeCalled();
+    expect(sClaimSavings).not.toHaveBeenCalled();
   });
 });

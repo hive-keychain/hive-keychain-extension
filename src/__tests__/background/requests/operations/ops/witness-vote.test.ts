@@ -47,7 +47,7 @@ describe('witness-vote tests:\n', () => {
       const requestHandler = new RequestsHandler();
       const sGetUserKeyPair = jest.spyOn(requestHandler, 'getUserKeyPair');
       await broadcastWitnessVote(requestHandler, data);
-      expect(sGetUserKeyPair).toBeCalledWith(
+      expect(sGetUserKeyPair).toHaveBeenCalledWith(
         data.username!,
         KeychainKeyTypesLC.active,
       );

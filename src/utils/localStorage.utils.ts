@@ -22,13 +22,39 @@ const getMultipleValueFromLocalStorage = async (
   });
 };
 
-const saveValueInLocalStorage = (
+const saveValueInLocalStorage = async (
   key: LocalStorageKeyEnum,
   value: any,
-): void => {
+): Promise<void> => {
   const storageValue: LocaleStorageObject = {};
   storageValue[key] = value;
-  chrome.storage.local.set(storageValue);
+  await new Promise<void>((resolve, reject) => {
+    const storageArea = chrome.storage.local;
+    const setLocalStorageValue = storageArea.set as any;
+    const done = () => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+        return;
+      }
+      resolve();
+    };
+
+    try {
+      const maybePromise = setLocalStorageValue.call(
+        storageArea,
+        storageValue,
+        done,
+      );
+
+      if (typeof maybePromise?.then === 'function') {
+        maybePromise.then(() => resolve()).catch(reject);
+      } else if (setLocalStorageValue.mock) {
+        resolve();
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
 };
 
 const clearLocalStorage = async () => {

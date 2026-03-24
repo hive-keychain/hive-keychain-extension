@@ -105,7 +105,7 @@ describe('automated-tasks.component tests:\n', () => {
             ),
           );
         });
-        expect(jest.spyOn(chrome.runtime, 'sendMessage')).toBeCalledTimes(2);
+        expect(jest.spyOn(chrome.runtime, 'sendMessage')).toHaveBeenCalledTimes(2);
       });
 
       it('Must call sendMessage', async () => {
@@ -121,7 +121,7 @@ describe('automated-tasks.component tests:\n', () => {
             ),
           );
         });
-        expect(jest.spyOn(chrome.runtime, 'sendMessage')).toBeCalledTimes(2);
+        expect(jest.spyOn(chrome.runtime, 'sendMessage')).toHaveBeenCalledTimes(2);
       });
     });
   });

@@ -20,8 +20,8 @@ describe('dialog-lifecycle tests:\n', () => {
       const sSetConfirmed = jest.spyOn(requestHandler, 'setConfirmed');
       const sGetCurrent = jest.spyOn(chrome.windows, 'getCurrent');
       createPopup(() => {}, requestHandler);
-      expect(sSetConfirmed).toBeCalledWith(false);
-      expect(sGetCurrent).toBeCalledTimes(1);
+      expect(sSetConfirmed).toHaveBeenCalledWith(false);
+      expect(sGetCurrent).toHaveBeenCalledTimes(1);
     });
 
     it('Must createPopup with windowId as undefined', () => {
@@ -35,10 +35,10 @@ describe('dialog-lifecycle tests:\n', () => {
       const sRemoveWindow = jest.spyOn(DialogLifeCycle, 'removeWindow');
       const sSetWindowId = jest.spyOn(requestHandler, 'setWindowId');
       createPopup(async () => {}, requestHandler);
-      expect(sSetConfirmed).toBeCalledWith(false);
-      expect(sRemoveWindow).toBeCalledWith(1);
-      expect(sSetWindowId).toBeCalledWith(undefined);
-      expect(sGetCurrent).toBeCalledTimes(1);
+      expect(sSetConfirmed).toHaveBeenCalledWith(false);
+      expect(sRemoveWindow).toHaveBeenCalledWith(1);
+      expect(sSetWindowId).toHaveBeenCalledWith(undefined);
+      expect(sGetCurrent).toHaveBeenCalledTimes(1);
     });
   });
 });

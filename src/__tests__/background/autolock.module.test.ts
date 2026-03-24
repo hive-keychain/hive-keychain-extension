@@ -21,13 +21,13 @@ describe('autolock.module tests:\n', () => {
     it('Must return undefined', async () => {
       const sLoggerInfo = jest.spyOn(Logger, 'info');
       expect(await AutolockModule.set({} as Autolock)).toBeUndefined();
-      expect(sLoggerInfo).not.toBeCalled();
+      expect(sLoggerInfo).not.toHaveBeenCalled();
     });
 
     it('Must set autoLock as Device', async () => {
       const sLoggerInfo = jest.spyOn(Logger, 'info');
       await AutolockModule.set(constants.autoLock.deviceLock);
-      expect(sLoggerInfo).toBeCalledWith(
+      expect(sLoggerInfo).toHaveBeenCalledWith(
         `hive-keychain: setting up ${constants.autoLock.deviceLock.type} listener `,
       );
     });
@@ -39,10 +39,10 @@ describe('autolock.module tests:\n', () => {
         .mockReturnValue(undefined);
 
       await AutolockModule.set(constants.autoLock.idleLock);
-      expect(sLoggerInfo).toBeCalledWith(
+      expect(sLoggerInfo).toHaveBeenCalledWith(
         `hive-keychain: setting up ${constants.autoLock.idleLock.type} listener (${constants.autoLock.idleLock.mn}mn)`,
       );
-      expect(setDetectionInterval).toBeCalledWith(
+      expect(setDetectionInterval).toHaveBeenCalledWith(
         constants.autoLock.idleLock.mn * 60,
       );
     });
@@ -55,7 +55,7 @@ describe('autolock.module tests:\n', () => {
         .mockResolvedValue(undefined);
       const sLoggerInfo = jest.spyOn(Logger, 'info');
       expect(await AutolockModule.start()).toBeUndefined();
-      expect(sLoggerInfo).toBeCalledWith('Starting autolock');
+      expect(sLoggerInfo).toHaveBeenCalledWith('Starting autolock');
     });
   });
 });

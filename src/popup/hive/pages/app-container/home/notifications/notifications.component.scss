@@ -65,6 +65,11 @@
           .message {
             color: var(--main-font-color);
             font-size: 13px;
+
+            .notification-link {
+              color: inherit;
+              text-decoration: underline;
+            }
           }
           .date {
             color: var(--main-font-color);

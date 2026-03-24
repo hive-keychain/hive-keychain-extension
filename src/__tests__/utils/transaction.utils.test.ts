@@ -42,7 +42,7 @@ describe('transaction.utils tests:\n', () => {
         console.log(result);
       }
       expect(result).toEqual(transactionHistory.expectedDataGetAccountHistory);
-      expect(mockGetAccountHistory).toBeCalledTimes(1);
+      expect(mockGetAccountHistory).toHaveBeenCalledTimes(1);
       mockGetAccountHistory.mockReset();
       mockGetAccountHistory.mockRestore();
     });
@@ -161,8 +161,8 @@ describe('transaction.utils tests:\n', () => {
         .mockReturnValueOnce(messageFromI18n));
       const result = TransactionUtils.decodeMemoIfNeeded(fakeTransfer, '');
       expect(result).toEqual(expectedResult);
-      expect(mocki18nGetMessage).toBeCalledTimes(1);
-      expect(mocki18nGetMessage).toBeCalledWith('popup_accounts_add_memo');
+      expect(mocki18nGetMessage).toHaveBeenCalledTimes(1);
+      expect(mocki18nGetMessage).toHaveBeenCalledWith('popup_accounts_add_memo');
       mocki18nGetMessage.mockReset();
       mocki18nGetMessage.mockRestore();
     });
@@ -174,8 +174,8 @@ describe('transaction.utils tests:\n', () => {
         'wr0ng_key_to_fail',
       );
       expect(result).toEqual(fakeTransfer);
-      expect(spyLoggerError).toBeCalledTimes(1);
-      expect(spyLoggerError).toBeCalledWith('Error while decoding', '');
+      expect(spyLoggerError).toHaveBeenCalledTimes(1);
+      expect(spyLoggerError).toHaveBeenCalledWith('Error while decoding', '');
       spyLoggerError.mockReset();
       spyLoggerError.mockRestore();
     });

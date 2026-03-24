@@ -43,7 +43,7 @@ const handleOperation = async (
       });
       break;
     default:
-      HiveAuthUtils.signRequest(request, domain, tab);
+      HiveAuthUtils.signRequest(requestHandler, request, domain, tab);
   }
 };
 
@@ -88,7 +88,10 @@ const register = async (
       },
     };
 
-    const authWait = await HiveAuthUtils.authenticate(keylessRequest);
+    const authWait = await HiveAuthUtils.authenticate(
+      requestHandler,
+      keylessRequest,
+    );
     keylessRequest.uuid = authWait.uuid;
     keylessRequest.expire = authWait.expire;
     await KeylessKeychainUtils.updateAuthenticatedKeylessAuthData(

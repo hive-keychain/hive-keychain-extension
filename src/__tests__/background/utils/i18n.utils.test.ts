@@ -42,7 +42,7 @@ describe('i18n.utils tests:\n', () => {
       const result = await getMessage(
         'popup_html_undelegation_pending_until_message',
       );
-      expect(sGetURL).toBeCalledTimes(2);
+      expect(sGetURL).toHaveBeenCalledTimes(2);
       expect(sGetURL).toHaveBeenNthCalledWith(1, '_locales/es/messages.json');
       expect(sGetURL).toHaveBeenNthCalledWith(2, '_locales/en/messages.json');
       expect(result).toBe(

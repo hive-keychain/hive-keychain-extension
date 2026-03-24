@@ -59,6 +59,6 @@ describe('settings-main-page.component tests:\n', () => {
         screen.getByTestId(dataTestIdButton.menuPreFix + Icons.SUPPORT),
       );
     });
-    expect(jest.spyOn(chrome.tabs, 'create')).toBeCalledTimes(1);
+    expect(jest.spyOn(chrome.tabs, 'create')).toHaveBeenCalledTimes(1);
   });
 });

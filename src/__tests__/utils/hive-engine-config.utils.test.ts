@@ -59,7 +59,7 @@ describe('hive-engine-config.utils.ts tests:/n', () => {
         .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
         .mockResolvedValue([]);
       await HiveEngineConfigUtils.addCustomRpc(customRpcApi);
-      expect(sSaveInLocalStorage).toBeCalledWith(
+      expect(sSaveInLocalStorage).toHaveBeenCalledWith(
         LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_RPC_LIST,
         [customRpcApi],
       );
@@ -75,7 +75,7 @@ describe('hive-engine-config.utils.ts tests:/n', () => {
         .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
         .mockResolvedValue(['found']);
       expect(await HiveEngineConfigUtils.deleteCustomRpc('found')).toEqual([]);
-      expect(sSaveInLocalStorage).toBeCalledWith(
+      expect(sSaveInLocalStorage).toHaveBeenCalledWith(
         LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_RPC_LIST,
         [],
       );
@@ -132,7 +132,7 @@ describe('hive-engine-config.utils.ts tests:/n', () => {
         .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
         .mockResolvedValue([]);
       await HiveEngineConfigUtils.addCustomAccountHistoryApi(customRpcApi);
-      expect(sSaveInLocalStorage).toBeCalledWith(
+      expect(sSaveInLocalStorage).toHaveBeenCalledWith(
         LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_ACCOUNT_HISTORY_API,
         [customRpcApi],
       );
@@ -150,7 +150,7 @@ describe('hive-engine-config.utils.ts tests:/n', () => {
       expect(
         await HiveEngineConfigUtils.deleteCustomAccountHistoryApi('to_delete'),
       ).toEqual(['foundhistory']);
-      expect(sSaveInLocalStorage).toBeCalledWith(
+      expect(sSaveInLocalStorage).toHaveBeenCalledWith(
         LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_ACCOUNT_HISTORY_API,
         ['foundhistory'],
       );
@@ -196,7 +196,7 @@ describe('hive-engine-config.utils.ts tests:/n', () => {
         .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
         .mockReturnValue(undefined);
       await HiveEngineConfigUtils.saveConfigInStorage(configHE);
-      expect(sSaveInLocalStorage).toBeCalledWith(
+      expect(sSaveInLocalStorage).toHaveBeenCalledWith(
         LocalStorageKeyEnum.HIVE_ENGINE_ACTIVE_CONFIG,
         configHE,
       );

@@ -65,9 +65,21 @@ export default async (
   } else if (items.KEYLESS_KEYCHAIN_ENABLED) {
     Logic.keylessKeychainRequest(requestHandler, tab!, request, domain);
   } else {
-    const accounts = items.accounts
-      ? (EncryptUtils.decryptToJson(items.accounts, mk!).list as LocalAccount[])
-      : [];
+    const decryptedAccounts = items.accounts
+      ? await EncryptUtils.decryptToJson(items.accounts, mk!)
+      : null;
+    const accounts = (decryptedAccounts?.list as LocalAccount[]) || [];
+
+    if (
+      decryptedAccounts &&
+      items.accounts &&
+      !EncryptUtils.isEncryptedJsonV2(items.accounts)
+    ) {
+      await LocalStorageUtils.saveValueInLocalStorage(
+        LocalStorageKeyEnum.ACCOUNTS,
+        await EncryptUtils.encryptJson({ list: accounts }, mk!),
+      );
+    }
 
     await requestHandler.initializeParameters(
       accounts,

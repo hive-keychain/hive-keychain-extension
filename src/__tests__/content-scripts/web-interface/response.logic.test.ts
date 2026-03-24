@@ -6,7 +6,9 @@ import {
   cancelPreviousRequest,
   sendIncompleteDataResponse,
   sendRequestToBackground,
+  sendResponse,
 } from 'src/content-scripts/web-interface/response.logic';
+import KeychainifyUtils from 'src/utils/keychainify.utils';
 
 describe('response.logic tests:\n', () => {
   const prevReq = {
@@ -33,7 +35,7 @@ describe('response.logic tests:\n', () => {
         .mockImplementation(() => {});
 
       cancelPreviousRequest(prevReq);
-      expect(sSendResponse).toBeCalledWith({
+      expect(sSendResponse).toHaveBeenCalledWith({
         success: false,
         error: 'ignored',
         result: null,
@@ -47,10 +49,10 @@ describe('response.logic tests:\n', () => {
     it('Must call sendMessage', () => {
       const sSendMessage = jest
         .spyOn(chrome.runtime, 'sendMessage')
-        .mockImplementation(() => {});
+        .mockImplementation(async () => undefined);
 
-      sendRequestToBackground(req);
-      expect(sSendMessage).toBeCalledWith({
+      sendRequestToBackground(req, chrome);
+      expect(sSendMessage).toHaveBeenCalledWith({
         command: 'sendRequest',
         request: req,
         domain: window.location.hostname,
@@ -64,7 +66,7 @@ describe('response.logic tests:\n', () => {
         .spyOn(ResponseLogicModule, 'sendResponse')
         .mockImplementation(() => {});
       sendIncompleteDataResponse(req, 'error_string');
-      expect(sSendResponse).toBeCalledWith({
+      expect(sSendResponse).toHaveBeenCalledWith({
         success: false,
         error: 'incomplete',
         result: null,
@@ -76,7 +78,7 @@ describe('response.logic tests:\n', () => {
     it('Must call sendResponse using error as stack', () => {
       const joiError = new Joi.ValidationError(
         'error_stack',
-        'details_error_stack',
+        [],
         'original',
       );
       const sSendResponse = jest
@@ -84,7 +86,7 @@ describe('response.logic tests:\n', () => {
         .mockImplementation(() => {});
 
       sendIncompleteDataResponse(req, joiError);
-      expect(sSendResponse).toBeCalledWith({
+      expect(sSendResponse).toHaveBeenCalledWith({
         success: false,
         error: 'incomplete',
         result: null,
@@ -92,6 +94,38 @@ describe('response.logic tests:\n', () => {
         data: req,
         request_id: req.request_id,
       });
+    });
+  });
+
+  describe('sendResponse cases:\n', () => {
+    it('Must post a message when redirect_uri is rejected', () => {
+      jest
+        .spyOn(KeychainifyUtils, 'isRedirectUriAcceptable')
+        .mockReturnValue(false);
+      const sPostMessage = jest
+        .spyOn(window, 'postMessage')
+        .mockImplementation(() => {});
+
+      const response = {
+        success: true,
+        error: null,
+        result: null,
+        message: 'ok',
+        data: {
+          redirect_uri: 'javascript:alert(1)',
+        },
+        request_id: 1,
+      } as any;
+
+      sendResponse(response);
+
+      expect(sPostMessage).toHaveBeenCalledWith(
+        {
+          type: 'hive_keychain_response',
+          response,
+        },
+        window.location.origin,
+      );
     });
   });
 });

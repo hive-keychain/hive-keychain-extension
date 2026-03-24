@@ -43,7 +43,7 @@ describe('global-properties.actions tests:\n', () => {
         globalPropertiesActions.loadGlobalProperties(),
       );
       expect(fakeStore.getState().globalProperties).toEqual({});
-      expect(spyLoggerError).toBeCalledWith(promiseError);
+      expect(spyLoggerError).toHaveBeenCalledWith(promiseError);
       spyLoggerError.mockClear();
       spyLoggerError.mockReset();
     });

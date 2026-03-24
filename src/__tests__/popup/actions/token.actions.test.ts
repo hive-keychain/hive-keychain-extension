@@ -116,7 +116,7 @@ describe('token.actions tests:\n', () => {
         tokenActions.loadUserTokens(userData.two.username),
       );
       expect(fakeStore.getState().userTokens).toEqual(userTokensReseted);
-      expect(spyLoggerError).toBeCalledWith(promiseError);
+      expect(spyLoggerError).toHaveBeenCalledWith(promiseError);
       spyLoggerError.mockReset();
       spyLoggerError.mockRestore();
     });

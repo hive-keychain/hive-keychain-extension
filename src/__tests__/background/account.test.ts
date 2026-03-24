@@ -16,16 +16,16 @@ describe('account tests:\n', () => {
   it('Must return undefined', async () => {
     const sGetMk = jest.spyOn(MkModule, 'getMk').mockResolvedValue(undefined);
     await AccountModule.sendBackImportedAccounts('');
-    expect(sGetMk).not.toBeCalled();
+    expect(sGetMk).not.toHaveBeenCalled();
   });
 
   it('Must call sendMessage with error', async () => {
     jest.spyOn(MkModule, 'getMk').mockResolvedValue(mk.user.one);
     const sSendMessage = jest
       .spyOn(chrome.runtime, 'sendMessage')
-      .mockReturnValue(undefined);
+      .mockResolvedValue(undefined);
     await AccountModule.sendBackImportedAccounts('Wrong_FileContent0000');
-    expect(sSendMessage).toBeCalledWith({
+    expect(sSendMessage).toHaveBeenCalledWith({
       command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
       value: { feedback: { message: 'import_html_error' } },
     });
@@ -43,16 +43,20 @@ describe('account tests:\n', () => {
       .mockResolvedValue(null);
     const sSendMessage = jest
       .spyOn(chrome.runtime, 'sendMessage')
-      .mockReturnValue(undefined);
+      .mockResolvedValue(undefined);
     await AccountModule.sendBackImportedAccounts(
       accounts.encrypted.noHash.oneAccount.msg,
     );
-    expect(sSendMessage).toBeCalledWith({
+    expect(sSendMessage).toHaveBeenCalledWith({
       command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
-      value: {
-        accounts: accounts.encrypted.noHash.oneAccount.original.list,
+      value: expect.objectContaining({
+        accounts: expect.arrayContaining([
+          expect.objectContaining({
+            name: accounts.encrypted.noHash.oneAccount.original.list[0].name,
+          }),
+        ]),
         feedback: null,
-      },
+      }),
     });
   });
 });

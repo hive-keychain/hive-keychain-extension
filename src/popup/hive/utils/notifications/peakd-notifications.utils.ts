@@ -17,6 +17,20 @@ import { Asset } from 'hive-keychain-commons';
 import moment from 'moment';
 import FormatUtils from 'src/utils/format.utils';
 
+const buildNotificationPostUrl = (author: string, permlink: string) =>
+  `https://peakd.com/@${encodeURIComponent(author)}/${encodeURIComponent(
+    permlink,
+  )}`;
+
+const buildNotificationPostLabel = (
+  author: string,
+  permlink: string,
+  withAtPrefix = false,
+) => `${withAtPrefix ? '@' : ''}${author}/${permlink}`;
+
+const buildNotificationTxUrl = (transactionId: string) =>
+  `https://hivehub.dev/tx/${encodeURIComponent(transactionId)}`;
+
 const operationFieldList = [
   // {
   //   name: 'account_create',
@@ -601,6 +615,8 @@ const getNotifications = async (
     let messageParams: string[] = [];
     let message: string = `notification_${notif.operation}`;
     let externalUrl;
+    let linkLabel;
+    let linkUrl;
     switch (notif.operation_type) {
       case 'custom_json.follow': {
         const json = payload.json[1];
@@ -615,6 +631,8 @@ const getNotifications = async (
         const json = payload.json[1];
         message = json.delete ? 'notification_unreblog' : 'notification_reblog';
         messageParams = [json.account, json.author, json.permlink];
+        linkUrl = buildNotificationPostUrl(json.author, json.permlink);
+        linkLabel = buildNotificationPostLabel(json.author, json.permlink);
         break;
       case 'transfer': {
         if (typeof payload.amount !== 'string')
@@ -685,6 +703,14 @@ const getNotifications = async (
             payload.author,
             payload.parent_permlink,
           ];
+          linkUrl = buildNotificationPostUrl(
+            payload.author,
+            payload.parent_permlink,
+          );
+          linkLabel = buildNotificationPostLabel(
+            payload.author,
+            payload.parent_permlink,
+          );
         } else {
           // case mention
           message = 'notification_mention';
@@ -694,8 +720,13 @@ const getNotifications = async (
             payload.author,
             payload.permlink,
           ];
+          linkUrl = buildNotificationPostUrl(payload.author, payload.permlink);
+          linkLabel = buildNotificationPostLabel(
+            payload.author,
+            payload.permlink,
+          );
         }
-        externalUrl = `https://peakd.com/@${payload.author}/${payload.permlink}`;
+        externalUrl = buildNotificationPostUrl(payload.author, payload.permlink);
         break;
       }
       case 'delegate_vesting_shares': {
@@ -760,7 +791,13 @@ const getNotifications = async (
       case 'vote': {
         message = 'notification_vote';
         messageParams = [payload.voter, payload.author, payload.permlink];
-        externalUrl = `https://peakd.com/@${payload.author}/${payload.permlink}`;
+        externalUrl = buildNotificationPostUrl(payload.author, payload.permlink);
+        linkUrl = externalUrl;
+        linkLabel = buildNotificationPostLabel(
+          payload.author,
+          payload.permlink,
+          true,
+        );
         break;
       }
       case 'withdraw_vesting': {
@@ -807,7 +844,12 @@ const getNotifications = async (
           ),
           payload.permlink,
         ];
-        externalUrl = `https://peakd.com/@${payload.author}/${payload.permlink}`;
+        externalUrl = buildNotificationPostUrl(payload.author, payload.permlink);
+        linkUrl = externalUrl;
+        linkLabel = buildNotificationPostLabel(
+          payload.author,
+          payload.permlink,
+        );
 
         break;
       }
@@ -822,7 +864,16 @@ const getNotifications = async (
           payload.comment_author,
           payload.comment_permlink,
         ];
-        externalUrl = `https://peakd.com/@${payload.comment_author}/${payload.comment_permlink}`;
+        externalUrl = buildNotificationPostUrl(
+          payload.comment_author,
+          payload.comment_permlink,
+        );
+        linkUrl = externalUrl;
+        linkLabel = buildNotificationPostLabel(
+          payload.comment_author,
+          payload.comment_permlink,
+          true,
+        );
         break;
       }
       case 'comment_reward': {
@@ -832,7 +883,12 @@ const getNotifications = async (
           FormatUtils.withCommas(payload.payout, 3),
           payload.permlink,
         ];
-        externalUrl = `https://peakd.com/@${payload.author}/${payload.permlink}`;
+        externalUrl = buildNotificationPostUrl(payload.author, payload.permlink);
+        linkUrl = externalUrl;
+        linkLabel = buildNotificationPostLabel(
+          payload.author,
+          payload.permlink,
+        );
         break;
       }
       case 'interest': {
@@ -912,7 +968,13 @@ const getNotifications = async (
           payload.author,
           payload.permlink,
         ];
-        externalUrl = `https://peakd.com/@${payload.author}/${payload.permlink}`;
+        externalUrl = buildNotificationPostUrl(payload.author, payload.permlink);
+        linkUrl = externalUrl;
+        linkLabel = buildNotificationPostLabel(
+          payload.author,
+          payload.permlink,
+          true,
+        );
         break;
       }
       case 'producer_reward': {
@@ -963,9 +1025,11 @@ const getNotifications = async (
       createdAt: moment(notif.created),
       txUrl:
         notif.trx_id && !notif.trx_id.startsWith('v')
-          ? `https://hivehub.dev/tx/${notif.trx_id}`
+          ? buildNotificationTxUrl(notif.trx_id)
           : undefined,
       externalUrl: externalUrl,
+      linkLabel: linkLabel,
+      linkUrl: linkUrl,
       message: message,
       messageParams: messageParams,
       read: !!notif.read_at,

@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "3.14.1",
+  "version": "3.15.1",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
@@ -32,7 +32,8 @@
     "check-installed-libs": "node scripts/check-installed-libs.js",
     "upload": "concurrently \"npm:upload:*\"",
     "upload:chromium": "node scripts/chromium-upload.mjs",
-    "upload:firefox": "node scripts/firefox-upload.mjs"
+    "upload:firefox": "node scripts/firefox-upload.mjs",
+    "git:archive": "rm -rf hive-keychain*.zip; sh -c 'uploadStash=$(git stash create); git archive -o \"hive-keychain-$(date +%Y%m%d-%H%M%S).zip\" ${uploadStash:-HEAD}'"
   },
   "repository": {
     "type": "git",
@@ -57,7 +58,7 @@
     "@ledgerhq/hw-transport-webusb": "6.27.19",
     "@types/chrome": "0.0.243",
     "@types/yargs": "17.0.11",
-    "axios": "1.13.2",
+    "axios": "1.13.6",
     "chrome-webstore-upload": "^4.0.3",
     "crypto-js": "4.2",
     "decimal.js": "10.4.3",
@@ -70,8 +71,7 @@
     "jsonwebtoken": "^9.0.2",
     "keychain-sdk": "0.7.0",
     "locate-path": "7.1.1",
-    "lodash": "4.17.21",
-    "md5": "2.3.0",
+    "lodash": "4.17.23",
     "moment": "2.29.4",
     "node-fetch": "3.2.10",
     "node-polyfill-webpack-plugin": "1.1.4",
@@ -95,7 +95,7 @@
     "resolve-cwd": "3.0.0",
     "sass": "1.65.1",
     "scss-tokenizer": "0.4.3",
-    "socket.io-client": "4.7.5",
+    "socket.io-client": "4.8.1",
     "sscjs": "github:hive-keychain/sscjs",
     "url-loader": "4.1.1",
     "valid-url": "1.0.9",
@@ -116,9 +116,8 @@
     "@types/chrome": "^0.0.243",
     "@types/crypto-js": "4.2",
     "@types/gtag.js": "0.0.12",
-    "@types/jest": "27.5.2",
+    "@types/jest": "30.0.0",
     "@types/lodash.debounce": "^4.0.7",
-    "@types/md5": "2.3.2",
     "@types/node": "17.0.45",
     "@types/react": "17.0.2",
     "@types/react-beautiful-dnd": "^13.1.4",
@@ -135,7 +134,7 @@
     "babel-plugin-module-resolver": "^5.0.0",
     "baseline-browser-mapping": "^2.8.32",
     "concurrently": "7.3.0",
-    "copy-webpack-plugin": "10.2.4",
+    "copy-webpack-plugin": "14.0.0",
     "css-loader": "6.7.1",
     "dotenv": "14.3.2",
     "eslint": "8.21.0",
@@ -143,8 +142,9 @@
     "file-loader": "^6.2.0",
     "fs": "0.0.1-security",
     "identity-obj-proxy": "3.0.0",
-    "jest": "27.5.1",
+    "jest": "30.3.0",
     "jest-chrome": "0.7.2",
+    "jest-environment-jsdom": "30.3.0",
     "npm-force-resolutions": "0.0.10",
     "patch-package": "^8.0.1",
     "react-hot-loader": "4.13.0",
@@ -152,7 +152,7 @@
     "sass-loader": "13.0.2",
     "sinon-chrome": "3.0.1",
     "style-loader": "3.3.1",
-    "ts-jest": "27.1.5",
+    "ts-jest": "29.4.6",
     "ts-loader": "9.3.1",
     "tsconfig-paths-webpack-plugin": "3.5.2",
     "typescript": "4.7.4",
@@ -163,6 +163,9 @@
     "webpack-merge": "5.8.0"
   },
   "overrides": {
+    "jest-chrome": {
+      "jest": "$jest"
+    },
     "sass-graph": {
       "scss-tokenizer": "$scss-tokenizer"
     },

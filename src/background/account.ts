@@ -10,7 +10,7 @@ const sendBackImportedAccounts = async (fileContent: string) => {
     const mk = await MkModule.getMk();
     let importedAccounts;
     try {
-      importedAccounts = BgdAccountsUtils.getAccountsFromFileData(
+      importedAccounts = await BgdAccountsUtils.getAccountsFromFileData(
         fileContent,
         mk,
       );
@@ -23,19 +23,19 @@ const sendBackImportedAccounts = async (fileContent: string) => {
     }
 
     const accounts =
-      EncryptUtils.decryptToJson(
+      (await EncryptUtils.decryptToJson(
         await LocalStorageUtils.getValueFromLocalStorage(
           LocalStorageKeyEnum.ACCOUNTS,
         ),
         mk,
-      ) || [];
+      )) || [];
 
     const newAccounts =
       await BgdAccountsUtils.mergeImportedAccountsToExistingAccounts(
         importedAccounts,
         accounts.list || [],
       );
-    const newAccountsEncrypted = EncryptUtils.encryptJson(
+    const newAccountsEncrypted = await EncryptUtils.encryptJson(
       { list: newAccounts },
       mk,
     );

@@ -57,28 +57,259 @@ import { getRequiredWifType } from 'src/utils/requests.utils';
 let ws: WebSocket | null = null;
 let reconnectInterval = 1000;
 let connectionAttempts = 0;
+let pingInterval: ReturnType<typeof setInterval> | null = null;
 const MAX_CONNECTION_ATTEMPTS = 5;
+const PRE_CORRELATION_TIMEOUT_MS = 30000;
+const PRE_CORRELATION_WAIT_COMMANDS = [
+  HasCmd.AUTH_WAIT,
+  HasCmd.SIGN_WAIT,
+  HasCmd.CHALLENGE_WAIT,
+] as const;
+
+type PreCorrelationWaitCommand =
+  (typeof PRE_CORRELATION_WAIT_COMMANDS)[number];
+type PreCorrelationRequest = AuthReq | SignReq | ChallengeReq;
+type PreCorrelationWait = AuthWait | SignWait | ChallengeWait;
+type PreCorrelationQueueEntry = {
+  key: string;
+  start: () => void;
+  reject: (error: Error) => void;
+  cancel?: (error: Error) => void;
+};
+
+let activePreCorrelationQueueEntry: PreCorrelationQueueEntry | null = null;
+const pendingPreCorrelationQueue: PreCorrelationQueueEntry[] = [];
+
+const toError = (error: unknown, fallbackMessage: string) => {
+  return error instanceof Error ? error : new Error(fallbackMessage);
+};
+
+const isKeylessCancellationError = (error: unknown) => {
+  return error instanceof Error && error.message === 'Keyless request cancelled';
+};
+
+const clearPingInterval = () => {
+  if (pingInterval) {
+    clearInterval(pingInterval);
+    pingInterval = null;
+  }
+};
+
+const getPreCorrelationKey = (requestHandler: RequestsHandler) => {
+  return [
+    requestHandler.data.tab ?? 'tab',
+    requestHandler.data.request_id ?? 'request',
+    requestHandler.data.request?.type ?? 'type',
+    requestHandler.data.request?.username ?? 'anonymous',
+  ].join(':');
+};
+
+const startNextPreCorrelationQueueEntry = () => {
+  if (activePreCorrelationQueueEntry || !pendingPreCorrelationQueue.length) {
+    return;
+  }
+
+  const nextEntry = pendingPreCorrelationQueue.shift();
+  if (!nextEntry) {
+    return;
+  }
+
+  activePreCorrelationQueueEntry = nextEntry;
+  nextEntry.start();
+};
+
+const releasePreCorrelationQueueEntry = (entry: PreCorrelationQueueEntry) => {
+  if (activePreCorrelationQueueEntry !== entry) {
+    return;
+  }
+
+  activePreCorrelationQueueEntry = null;
+  entry.cancel = undefined;
+  startNextPreCorrelationQueueEntry();
+};
+
+const waitForPreCorrelation = async <T extends PreCorrelationWait>(
+  requestHandler: RequestsHandler,
+  request: PreCorrelationRequest,
+  expectedCommand: PreCorrelationWaitCommand,
+  failureLabel: string,
+  getProtocolError: (message: any) => Error | null,
+): Promise<T> => {
+  return new Promise<T>((resolve, reject) => {
+    const entry: PreCorrelationQueueEntry = {
+      key: getPreCorrelationKey(requestHandler),
+      reject,
+      start: () => {
+        if (!ws) {
+          releasePreCorrelationQueueEntry(entry);
+          reject(new Error('WebSocket is not connected'));
+          return;
+        }
+
+        let timeout: ReturnType<typeof setTimeout> | undefined;
+        const cleanup = () => {
+          if (timeout) {
+            clearTimeout(timeout);
+          }
+          ws?.removeEventListener('message', handleMessage);
+          entry.cancel = undefined;
+        };
+
+        const fail = (error: unknown) => {
+          cleanup();
+          releasePreCorrelationQueueEntry(entry);
+          reject(toError(error, `${failureLabel} failed`));
+        };
+
+        const succeed = (message: T) => {
+          cleanup();
+          releasePreCorrelationQueueEntry(entry);
+          resolve(message);
+        };
+
+        const handleMessage = (event: MessageEvent) => {
+          let message: any;
+          try {
+            message = JSON.parse(event.data);
+          } catch (error) {
+            fail(error);
+            return;
+          }
+
+          if (message.cmd === expectedCommand) {
+            if (
+              typeof message.uuid !== 'string' ||
+              typeof message.expire !== 'number' ||
+              Number.isNaN(message.expire)
+            ) {
+              fail(new Error(`Invalid ${expectedCommand} message`));
+              return;
+            }
+
+            if (
+              expectedCommand === HasCmd.AUTH_WAIT &&
+              typeof message.account !== 'string'
+            ) {
+              fail(new Error('Invalid auth_wait message'));
+              return;
+            }
+
+            succeed(message as T);
+            return;
+          }
+
+          const protocolError = getProtocolError(message);
+          if (protocolError) {
+            fail(protocolError);
+            return;
+          }
+
+          if (
+            PRE_CORRELATION_WAIT_COMMANDS.includes(
+              message.cmd as PreCorrelationWaitCommand,
+            )
+          ) {
+            fail(
+              new Error(
+                `Unexpected HiveAuth message order: received ${message.cmd} while waiting for ${expectedCommand}`,
+              ),
+            );
+          }
+        };
+
+        entry.cancel = (error: Error) => {
+          fail(error);
+        };
+
+        try {
+          ws.addEventListener('message', handleMessage);
+          timeout = setTimeout(() => {
+            fail(
+              new Error(
+                `${failureLabel} timed out before correlation was established`,
+              ),
+            );
+          }, PRE_CORRELATION_TIMEOUT_MS);
+          sendMessage(request);
+        } catch (error) {
+          fail(error);
+        }
+      },
+    };
+
+    pendingPreCorrelationQueue.push(entry);
+    startNextPreCorrelationQueueEntry();
+  });
+};
+
+const cancelQueuedPreCorrelationRequests = (key: string, error: Error) => {
+  for (let index = pendingPreCorrelationQueue.length - 1; index >= 0; index--) {
+    const entry = pendingPreCorrelationQueue[index];
+    if (entry.key !== key) {
+      continue;
+    }
+
+    pendingPreCorrelationQueue.splice(index, 1);
+    entry.reject(error);
+  }
+};
+
+const cancelAllPreCorrelationRequests = (error: Error) => {
+  if (activePreCorrelationQueueEntry?.cancel) {
+    activePreCorrelationQueueEntry.cancel(error);
+  }
+
+  while (pendingPreCorrelationQueue.length) {
+    pendingPreCorrelationQueue.shift()?.reject(error);
+  }
+};
+
+const cancelPreCorrelationRequest = (requestHandler: RequestsHandler) => {
+  if (!requestHandler.data.request) {
+    return;
+  }
+
+  const key = getPreCorrelationKey(requestHandler);
+  const cancellationError = new Error('Keyless request cancelled');
+
+  cancelQueuedPreCorrelationRequests(key, cancellationError);
+
+  if (activePreCorrelationQueueEntry?.key === key) {
+    activePreCorrelationQueueEntry.cancel?.(cancellationError);
+  }
+};
 
 const setupWebSocketHandlers = (
   resolve: () => void,
   reject: (error: any) => void,
 ) => {
-  if (!ws) return;
+  const socket = ws;
+  if (!socket) return;
 
-  ws.onopen = () => {
+  socket.onopen = () => {
+    clearPingInterval();
     reconnectInterval = 1000;
     connectionAttempts = 0;
-    setInterval(() => {
-      ws?.send('ping');
+    pingInterval = setInterval(() => {
+      if (socket.readyState !== WebSocket.OPEN) {
+        clearPingInterval();
+        return;
+      }
+
+      socket.send('ping');
     }, 10000);
     resolve();
   };
 
-  ws.onmessage = (event) => {
+  socket.onmessage = (event) => {
     // console.log('Message from server:', event.data);
   };
 
-  ws.onclose = async (event) => {
+  socket.onclose = async (event) => {
+    clearPingInterval();
+    cancelAllPreCorrelationRequests(
+      new Error('HiveAuth connection closed before correlation was established'),
+    );
     connectionAttempts++;
 
     if (connectionAttempts >= MAX_CONNECTION_ATTEMPTS) {
@@ -99,7 +330,11 @@ const setupWebSocketHandlers = (
     reconnectInterval = Math.min(reconnectInterval * 2, 30000);
   };
 
-  ws.onerror = (error) => {
+  socket.onerror = (error) => {
+    clearPingInterval();
+    cancelAllPreCorrelationRequests(
+      toError(error, 'HiveAuth connection error before correlation'),
+    );
     reject(error);
   };
 };
@@ -110,6 +345,7 @@ const connect = (): Promise<void> => {
   }
 
   return new Promise<void>((resolve, reject) => {
+    clearPingInterval();
     ws = new WebSocket(Config.keyless.host);
     setupWebSocketHandlers(resolve, reject);
   });
@@ -123,6 +359,7 @@ const sendMessage = (message: any) => {
 };
 
 const authenticate = async (
+  requestHandler: RequestsHandler,
   keylessRequest: KeylessRequest,
 ): Promise<AuthWait> => {
   if (keylessRequest.expire && keylessRequest.expire > Date.now()) {
@@ -163,36 +400,26 @@ const authenticate = async (
     data: authReqDataEncrypted,
   };
 
-  // Send the authentication request
-  sendMessage(authReq);
-
-  return new Promise<AuthWait>((resolve, reject) => {
-    if (!ws) {
-      reject(new Error('WebSocket is not connected'));
-      return;
-    }
-
-    const handleMessage = (event: MessageEvent) => {
-      const message = JSON.parse(event.data);
-
-      if (message.cmd === HasCmd.AUTH_WAIT) {
-        ws?.removeEventListener('message', handleMessage);
-        resolve(message as AuthWait);
-      } else if (
+  return waitForPreCorrelation<AuthWait>(
+    requestHandler,
+    authReq,
+    HasCmd.AUTH_WAIT,
+    'Authentication request',
+    (message) => {
+      if (
         message.cmd === HasCmd.AUTH_NACK ||
         message.cmd === 'auth_err'
       ) {
-        ws?.removeEventListener('message', handleMessage);
-        reject(
-          new Error(
-            `Authentication failed: ${message.error || 'Unknown error'}`,
-          ),
+        return new Error(
+          `Authentication failed: ${
+            message.error || message.data || 'Unknown error'
+          }`,
         );
       }
-    };
 
-    ws.addEventListener('message', handleMessage);
-  });
+      return null;
+    },
+  );
 };
 
 const generateAuthPayloadURI = async (authPayload: AuthPayload) => {
@@ -245,6 +472,13 @@ const listenToAuthAck = (
         message.cmd === HasCmd.AUTH_NACK ||
         message.cmd === 'auth_err'
       ) {
+        if (
+          'uuid' in message &&
+          message.uuid &&
+          message.uuid !== keylessRequest.uuid
+        ) {
+          return;
+        }
         ws?.removeEventListener('message', handleMessage);
         try {
           await handleAuthNack(username, message as AuthNack);
@@ -349,40 +583,12 @@ const handleSignRequest = async (
   keylessRequest: KeylessRequest,
   tab: number,
 ): Promise<void> => {
-  const signWait = await signRequest(
+  await signRequest(
+    requestHandler,
     requestHandler.data.request!,
     keylessRequest.appName,
     tab,
   );
-
-  if (!ws) {
-    throw new Error('WebSocket is not connected');
-  }
-
-  const signResponse = await new Promise<SignAck>((resolve) => {
-    const handleSignMessage = (event: MessageEvent) => {
-      const response = JSON.parse(event.data) as SignAck;
-      if (response.cmd === HasCmd.SIGN_ACK) {
-        ws?.removeEventListener('message', handleSignMessage);
-        resolve(response);
-      }
-    };
-    ws?.addEventListener('message', handleSignMessage);
-  });
-
-  const message = await createMessage(
-    null,
-    signResponse,
-    requestHandler.data.request!,
-    await chrome.i18n.getMessage('bgd_ops_sign_success'),
-    null,
-    null,
-  );
-
-  await Promise.all([
-    chrome.runtime.sendMessage(message),
-    chrome.tabs.sendMessage(tab, message),
-  ]);
 };
 
 const handleEncodeDecodeRequest = async (
@@ -708,6 +914,7 @@ const getRequestOperation = async (request: KeychainRequest) => {
 };
 
 const signRequest = async (
+  requestHandler: RequestsHandler,
   request: KeychainRequest,
   domain: string,
   tab: number,
@@ -742,17 +949,28 @@ const signRequest = async (
     data: encryptedHiveAuthRequestData,
     token: keylessAuthData.token,
   };
-  sendMessage(signReq);
 
-  const signWaitHandler = async (event: MessageEvent) => {
-    const response = JSON.parse(event.data) as SignWait;
-    if (response.cmd === HasCmd.SIGN_WAIT) {
-      ws?.removeEventListener('message', signWaitHandler);
-      await handleSignWait(request, domain, tab, response);
-    }
-  };
+  return waitForPreCorrelation<SignWait>(
+    requestHandler,
+    signReq,
+    HasCmd.SIGN_WAIT,
+    'Sign request',
+    (message) => {
+      if (message.cmd === HasCmd.SIGN_NACK || message.cmd === 'sign_err') {
+        return new Error(message.data || message.error || 'Sign request failed');
+      }
 
-  ws.addEventListener('message', signWaitHandler);
+      return null;
+    },
+  )
+    .then((response) => handleSignWait(request, domain, tab, response))
+    .catch(async (error) => {
+      if (isKeylessCancellationError(error)) {
+        return;
+      }
+
+      Logger.error('Error waiting for sign correlation:', error);
+    });
 };
 
 const handleSignWait = async (
@@ -882,38 +1100,34 @@ const challengeRequest = async (
     data: encryptedHiveAuthRequestData,
     token: keylessAuthData.token,
   };
-  sendMessage(challengeReq);
 
-  return new Promise<ChallengeWait>((resolve, reject) => {
-    const challengeWaitHandler = async (event: MessageEvent) => {
-      const response = JSON.parse(event.data) as ChallengeWait;
-      if (response.cmd === HasCmd.CHALLENGE_WAIT) {
-        ws?.removeEventListener('message', challengeWaitHandler);
-        await handleChallengeWait(
-          requestHandler,
-          request,
-          domain,
-          tab,
-          response,
-          keylessAuthData,
-        );
-        resolve(response as ChallengeWait);
-      } else if (
-        response.cmd === HasCmd.CHALLENGE_NACK ||
-        response.cmd === 'challenge_err'
+  const challengeWait = await waitForPreCorrelation<ChallengeWait>(
+    requestHandler,
+    challengeReq,
+    HasCmd.CHALLENGE_WAIT,
+    'Challenge request',
+    (message) => {
+      if (
+        message.cmd === HasCmd.CHALLENGE_NACK ||
+        message.cmd === 'challenge_err'
       ) {
-        ws?.removeEventListener('message', challengeWaitHandler);
-        reject(new Error('Challenge request failed'));
+        return new Error(message.data || message.error || 'Challenge request failed');
       }
-    };
 
-    ws?.addEventListener('message', challengeWaitHandler);
+      return null;
+    },
+  );
 
-    setTimeout(() => {
-      ws?.removeEventListener('message', challengeWaitHandler);
-      reject(new Error('Challenge wait timeout'));
-    }, 30000);
-  });
+  await handleChallengeWait(
+    requestHandler,
+    request,
+    domain,
+    tab,
+    challengeWait,
+    keylessAuthData,
+  );
+
+  return challengeWait;
 };
 
 const handleChallengeWait = async (
@@ -950,6 +1164,9 @@ const handleChallengeWait = async (
             resolve();
           }
         } else if (challengeAck.cmd === HasCmd.CHALLENGE_NACK) {
+          if (challengeWait.uuid !== challengeAck.uuid) {
+            return;
+          }
           // Remove the event listener since we got an error response
           ws?.removeEventListener('message', handleMessage);
           await handleChallengeNack(
@@ -1154,6 +1371,7 @@ const handleChallengeNack = async (
 
 const HiveAuthUtils = {
   authenticate,
+  cancelPreCorrelationRequest,
   connect,
   generateAuthPayloadURI,
   listenToAuthAck,

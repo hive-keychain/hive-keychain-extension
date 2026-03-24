@@ -52,7 +52,7 @@ describe('transfer tests:\n', () => {
           const requestHandler = new RequestsHandler();
           const sGetUserKeyPair = jest.spyOn(requestHandler, 'getUserKeyPair');
           await broadcastTransfer(requestHandler, data);
-          expect(sGetUserKeyPair).toBeCalledWith(
+          expect(sGetUserKeyPair).toHaveBeenCalledWith(
             mk.user.one,
             KeychainKeyTypesLC.memo,
           );
