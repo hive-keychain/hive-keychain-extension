@@ -352,7 +352,7 @@ describe('account.utils tests:\n', () => {
         .mockResolvedValue([]);
       const result = await AccountUtils.hasStoredAccounts();
       expect(result).toBe(true);
-      expect(LocalStorageUtils.getValueFromLocalStorage).toBeCalledTimes(1);
+      expect(LocalStorageUtils.getValueFromLocalStorage).toHaveBeenCalledTimes(1);
     });
     test('Test with getValueFromLocalStorage returning null, must return true', async () => {
       LocalStorageUtils.getValueFromLocalStorage = jest
@@ -360,7 +360,7 @@ describe('account.utils tests:\n', () => {
         .mockResolvedValue(null);
       const result = await AccountUtils.hasStoredAccounts();
       expect(result).toBe(true);
-      expect(LocalStorageUtils.getValueFromLocalStorage).toBeCalledTimes(1);
+      expect(LocalStorageUtils.getValueFromLocalStorage).toHaveBeenCalledTimes(1);
     });
     test('Test with getValueFromLocalStorage returning undefined, must return false', async () => {
       LocalStorageUtils.getValueFromLocalStorage = jest
@@ -368,7 +368,7 @@ describe('account.utils tests:\n', () => {
         .mockResolvedValue(undefined);
       const result = await AccountUtils.hasStoredAccounts();
       expect(result).toBe(false);
-      expect(LocalStorageUtils.getValueFromLocalStorage).toBeCalledTimes(1);
+      expect(LocalStorageUtils.getValueFromLocalStorage).toHaveBeenCalledTimes(1);
     });
     test('Test with getValueFromLocalStorage returning list with at least one element, must return true', async () => {
       LocalStorageUtils.getValueFromLocalStorage = jest
@@ -376,7 +376,7 @@ describe('account.utils tests:\n', () => {
         .mockResolvedValue(['atLeastOneElement']);
       const result = await AccountUtils.hasStoredAccounts();
       expect(result).toBe(true);
-      expect(LocalStorageUtils.getValueFromLocalStorage).toBeCalledTimes(1);
+      expect(LocalStorageUtils.getValueFromLocalStorage).toHaveBeenCalledTimes(1);
     });
   });
 

@@ -82,7 +82,7 @@ describe('advanced-settings.component tests:\n', () => {
         screen.getByTestId(dataTestIdButton.menuPreFix + ledgerMenuItem.icon),
       );
     });
-    expect(jest.spyOn(chrome.tabs, 'create')).toBeCalledWith({
+    expect(jest.spyOn(chrome.tabs, 'create')).toHaveBeenCalledWith({
       url: `chrome-extension://${tabId}/link-ledger-device.html`,
     });
   });

@@ -52,7 +52,7 @@ describe('proxy.utils tests:\n', () => {
       proxy: requestedProxyAccountName,
     } as ExtendedAccount);
     expect(result).toBe('account3');
-    expect(mockGetExtendedAccount).toBeCalledTimes(2);
+    expect(mockGetExtendedAccount).toHaveBeenCalledTimes(2);
     mockGetExtendedAccount.mockReset();
     mockGetExtendedAccount.mockRestore();
   });

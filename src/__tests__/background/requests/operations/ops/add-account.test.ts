@@ -155,7 +155,7 @@ describe('add-account tests:\n', () => {
     const requestHandler = new RequestsHandler();
     const result = await addAccount(requestHandler, cloneData);
     const { request_id, ...datas } = cloneData;
-    expect(sSaveAccounts).toBeCalledTimes(1);
+    expect(sSaveAccounts).toHaveBeenCalledTimes(1);
     expect(result).toEqual({
       command: DialogCommand.ANSWER_REQUEST,
       msg: {

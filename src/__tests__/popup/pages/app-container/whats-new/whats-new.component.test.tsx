@@ -108,7 +108,7 @@ describe('whats-new.component tests:\n', () => {
           screen.getAllByTestId(dataTestIdLink.whatsNew.link.readMore)[0],
         );
       });
-      expect(jest.spyOn(chrome.tabs, 'create')).toBeCalledWith({
+      expect(jest.spyOn(chrome.tabs, 'create')).toHaveBeenCalledWith({
         url:
           versionLog.versionLog2_2.url +
           '#' +

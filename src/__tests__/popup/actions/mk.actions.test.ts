@@ -16,7 +16,7 @@ describe('mk.actions tests:\n', () => {
       const fakeStore = getFakeStore(initialEmptyStateStore);
       fakeStore.dispatch<any>(mkActions.setMk(mk.user.two, false));
       expect(fakeStore.getState().mk).toBe(mk.user.two);
-      expect(mockSaveValue).toBeCalledWith(
+      expect(mockSaveValue).toHaveBeenCalledWith(
         LocalStorageKeyEnum.__MK,
         mk.user.two,
       );
@@ -30,7 +30,7 @@ describe('mk.actions tests:\n', () => {
       const mk = '';
       fakeStore.dispatch<any>(mkActions.setMk(mk, false));
       expect(fakeStore.getState().mk).toBe(mk);
-      expect(mockSaveValue).toBeCalledWith(LocalStorageKeyEnum.__MK, mk);
+      expect(mockSaveValue).toHaveBeenCalledWith(LocalStorageKeyEnum.__MK, mk);
       mockSaveValue.mockClear();
       mockSaveValue.mockReset();
     });
@@ -46,7 +46,7 @@ describe('mk.actions tests:\n', () => {
       });
       fakeStore.dispatch<any>(mkActions.forgetMk());
       expect(fakeStore.getState().mk).toBe('');
-      expect(mockRemoveValue).toBeCalledWith(LocalStorageKeyEnum.__MK);
+      expect(mockRemoveValue).toHaveBeenCalledWith(LocalStorageKeyEnum.__MK);
       mockRemoveValue.mockClear();
       mockRemoveValue.mockReset();
     });

@@ -21,7 +21,7 @@ describe('rpc.module tests:\n', () => {
       'saveValueInLocalStorage',
     );
     await RPCModule.setActiveRpc(DefaultRpcs[0]);
-    expect(sSaveValueInLocalStorage).toBeCalledWith(
+    expect(sSaveValueInLocalStorage).toHaveBeenCalledWith(
       LocalStorageKeyEnum.CURRENT_RPC,
       DefaultRpcs[0],
     );
@@ -41,7 +41,7 @@ describe('rpc.module tests:\n', () => {
     );
 
     expect(await RPCModule.getActiveRpc()).toEqual(DefaultRpcs[1]);
-    expect(sGetValueFromLocalStorage).toBeCalledWith(
+    expect(sGetValueFromLocalStorage).toHaveBeenCalledWith(
       LocalStorageKeyEnum.CURRENT_RPC,
     );
   });

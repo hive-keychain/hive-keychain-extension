@@ -35,7 +35,7 @@ describe('survey.utils.ts tests:\n', () => {
         'saveValueInLocalStorage',
       );
       expect(SurveyUtils.setCurrentAsSeen()).toBeUndefined();
-      expect(spySaveValueInLocalStorage).toBeCalledWith(
+      expect(spySaveValueInLocalStorage).toHaveBeenCalledWith(
         LocalStorageKeyEnum.SURVEY_INFO,
         {
           lastSurveyIdSeen: SurveyData.id,

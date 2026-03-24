@@ -27,7 +27,7 @@ describe('sendResponse tests', () => {
     console.log = jest.fn();
     const result = BrowserUtils.sendResponse(resolvedMessage, consoleLogA);
     expect(result).toBeUndefined();
-    expect(console.log).toBeCalledTimes(1);
-    expect(console.log).toBeCalledWith(resolvedMessage + ' by console.log');
+    expect(console.log).toHaveBeenCalledTimes(1);
+    expect(console.log).toHaveBeenCalledWith(resolvedMessage + ' by console.log');
   });
 });

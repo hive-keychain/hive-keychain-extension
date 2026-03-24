@@ -66,8 +66,8 @@ describe('delegations.actions tests:\n', () => {
         delegationsActions.loadDelegatees(userData.two.username),
       );
       expect(fakeStore.getState().delegations.outgoing).toEqual([]);
-      expect(spyLoggerError).toBeCalledTimes(1);
-      expect(spyLoggerError).toBeCalledWith(promiseError);
+      expect(spyLoggerError).toHaveBeenCalledTimes(1);
+      expect(spyLoggerError).toHaveBeenCalledWith(promiseError);
       spyLoggerError.mockClear();
       spyLoggerError.mockReset();
     });

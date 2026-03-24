@@ -48,7 +48,7 @@ describe('custom-json tests:\n', () => {
       const requestHandler = new RequestsHandler();
       const sGetUserKeyPair = jest.spyOn(requestHandler, 'getUserKeyPair');
       await broadcastCustomJson(requestHandler, data);
-      expect(sGetUserKeyPair).toBeCalledWith(
+      expect(sGetUserKeyPair).toHaveBeenCalledWith(
         data.username!,
         data.method.toLowerCase() as KeychainKeyTypesLC,
       );

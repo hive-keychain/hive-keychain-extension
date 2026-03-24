@@ -101,7 +101,7 @@ describe('hive-tx.utils.ts tests:\n', () => {
             userData.one.encryptKeys.posting,
           );
         } catch (error) {
-          expect(sLoggerError).toBeCalledWith(new Error('invalid private key'));
+          expect(sLoggerError).toHaveBeenCalledWith(new Error('invalid private key'));
           expect(error).toEqual(
             new Error('html_popup_error_while_signing_transaction'),
           );
@@ -151,7 +151,7 @@ describe('hive-tx.utils.ts tests:\n', () => {
           expect(error).toEqual(
             new TypeError("Cannot read properties of undefined (reading '0')"), //new KeychainError('popup_html_ledger_unknown_error'),
           );
-          expect(sLoggerError).toBeCalledWith(
+          expect(sLoggerError).toHaveBeenCalledWith(
             new TypeError("Cannot read properties of undefined (reading '0')"),
           );
         }
@@ -299,7 +299,7 @@ describe('hive-tx.utils.ts tests:\n', () => {
           await HiveTxUtils.signTransaction(constants.tx, '#qqqw11');
         } catch (error) {
           expect(error).toEqual(new Error('signHash error'));
-          expect(sLoggerError).toBeCalledWith(new Error('signHash error'));
+          expect(sLoggerError).toHaveBeenCalledWith(new Error('signHash error'));
         }
       });
     });
@@ -328,7 +328,7 @@ describe('hive-tx.utils.ts tests:\n', () => {
           expect(error).toEqual(
             new KeychainError('html_popup_error_while_signing_transaction'),
           );
-          expect(sLoggerError).toBeCalledWith(new Error('invalid private key'));
+          expect(sLoggerError).toHaveBeenCalledWith(new Error('invalid private key'));
         }
       });
     });
@@ -352,7 +352,7 @@ describe('hive-tx.utils.ts tests:\n', () => {
         expect(error).toEqual(
           new KeychainError('html_popup_error_while_broadcasting'),
         );
-        expect(sLoggerError).toBeCalledWith(constants.broadcastResponse.error);
+        expect(sLoggerError).toHaveBeenCalledWith(constants.broadcastResponse.error);
       }
     });
 
@@ -371,7 +371,7 @@ describe('hive-tx.utils.ts tests:\n', () => {
         );
       } catch (error) {
         expect(error).toEqual(new Error('html_popup_error_while_broadcasting'));
-        expect(sLoggerError).toBeCalledWith(new Error('error on broadcast'));
+        expect(sLoggerError).toHaveBeenCalledWith(new Error('error on broadcast'));
       }
     });
   });

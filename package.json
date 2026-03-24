@@ -116,7 +116,7 @@
     "@types/chrome": "^0.0.243",
     "@types/crypto-js": "4.2",
     "@types/gtag.js": "0.0.12",
-    "@types/jest": "27.5.2",
+    "@types/jest": "30.0.0",
     "@types/lodash.debounce": "^4.0.7",
     "@types/node": "17.0.45",
     "@types/react": "17.0.2",
@@ -134,7 +134,7 @@
     "babel-plugin-module-resolver": "^5.0.0",
     "baseline-browser-mapping": "^2.8.32",
     "concurrently": "7.3.0",
-    "copy-webpack-plugin": "10.2.4",
+    "copy-webpack-plugin": "14.0.0",
     "css-loader": "6.7.1",
     "dotenv": "14.3.2",
     "eslint": "8.21.0",
@@ -142,8 +142,9 @@
     "file-loader": "^6.2.0",
     "fs": "0.0.1-security",
     "identity-obj-proxy": "3.0.0",
-    "jest": "27.5.1",
+    "jest": "30.3.0",
     "jest-chrome": "0.7.2",
+    "jest-environment-jsdom": "30.3.0",
     "npm-force-resolutions": "0.0.10",
     "patch-package": "^8.0.1",
     "react-hot-loader": "4.13.0",
@@ -151,7 +152,7 @@
     "sass-loader": "13.0.2",
     "sinon-chrome": "3.0.1",
     "style-loader": "3.3.1",
-    "ts-jest": "27.1.5",
+    "ts-jest": "29.4.6",
     "ts-loader": "9.3.1",
     "tsconfig-paths-webpack-plugin": "3.5.2",
     "typescript": "4.7.4",
@@ -162,6 +163,9 @@
     "webpack-merge": "5.8.0"
   },
   "overrides": {
+    "jest-chrome": {
+      "jest": "$jest"
+    },
     "sass-graph": {
       "scss-tokenizer": "$scss-tokenizer"
     },

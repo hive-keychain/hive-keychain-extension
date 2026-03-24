@@ -76,7 +76,7 @@ describe('init tests:\n', () => {
       cloneKeychainRequestData.domain,
       keychainRequest.requestHandler,
     );
-    expect(sLoggerInfo).toBeCalledWith('Initializing request logic');
+    expect(sLoggerInfo).toHaveBeenCalledWith('Initializing request logic');
   });
 
   it('Must call initializeWallet & saveInLocalStorage', async () => {
@@ -140,7 +140,7 @@ describe('init tests:\n', () => {
       cloneKeychainRequestData.domain,
       keychainRequest.requestHandler,
     );
-    expect(sAddAccountToEmptyWallet).toBeCalledWith(
+    expect(sAddAccountToEmptyWallet).toHaveBeenCalledWith(
       keychainRequest.requestHandler,
       0,
       cloneKeychainRequestData,
@@ -172,7 +172,7 @@ describe('init tests:\n', () => {
       cloneKeychainRequestData.domain,
       keychainRequest.requestHandler,
     );
-    expect(sUnlockWallet).toBeCalledWith(
+    expect(sUnlockWallet).toHaveBeenCalledWith(
       keychainRequest.requestHandler,
       0,
       cloneKeychainRequestData,
@@ -207,7 +207,7 @@ describe('init tests:\n', () => {
       cloneKeychainRequestData.domain,
       keychainRequest.requestHandler,
     );
-    expect(sAddAccountRequest).toBeCalledWith(
+    expect(sAddAccountRequest).toHaveBeenCalledWith(
       keychainRequest.requestHandler,
       0,
       cloneKeychainRequestData,
@@ -243,7 +243,7 @@ describe('init tests:\n', () => {
       cloneKeychainRequestData.domain,
       keychainRequest.requestHandler,
     );
-    expect(sTransferRequest).toBeCalledWith(
+    expect(sTransferRequest).toHaveBeenCalledWith(
       keychainRequest.requestHandler,
       0,
       cloneKeychainRequestData,
@@ -282,7 +282,7 @@ describe('init tests:\n', () => {
       cloneKeychainRequestData.domain,
       keychainRequest.requestHandler,
     );
-    expect(sAnonymousRequests).toBeCalledWith(
+    expect(sAnonymousRequests).toHaveBeenCalledWith(
       keychainRequest.requestHandler,
       0,
       cloneKeychainRequestData,
@@ -316,7 +316,7 @@ describe('init tests:\n', () => {
       cloneKeychainRequestData.domain,
       keychainRequest.requestHandler,
     );
-    expect(sMissingUser).toBeCalledWith(
+    expect(sMissingUser).toHaveBeenCalledWith(
       keychainRequest.requestHandler,
       0,
       cloneKeychainRequestData,
@@ -347,7 +347,7 @@ describe('init tests:\n', () => {
       cloneKeychainRequestDecodeData.domain,
       keychainRequest.requestHandler,
     );
-    expect(sMissingKey).toBeCalledWith(
+    expect(sMissingKey).toHaveBeenCalledWith(
       keychainRequest.requestHandler,
       0,
       cloneKeychainRequestDecodeData,
@@ -384,7 +384,7 @@ describe('init tests:\n', () => {
       cloneKeychainRequestPostData.domain,
       keychainRequest.requestHandler,
     );
-    expect(sRequestWithoutConfirmation).toBeCalledWith(
+    expect(sRequestWithoutConfirmation).toHaveBeenCalledWith(
       keychainRequest.requestHandler,
       0,
       cloneKeychainRequestPostData,
@@ -417,7 +417,7 @@ describe('init tests:\n', () => {
       cloneKeychainRequestPostData.domain,
       keychainRequest.requestHandler,
     );
-    expect(sRequestWithConfirmation).toBeCalledWith(
+    expect(sRequestWithConfirmation).toHaveBeenCalledWith(
       keychainRequest.requestHandler,
       0,
       cloneKeychainRequestPostData,

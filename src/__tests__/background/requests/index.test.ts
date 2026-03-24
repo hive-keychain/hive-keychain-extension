@@ -39,7 +39,7 @@ describe('index tests:\n', () => {
       'getValueFromLocalStorage',
     );
     const _requestHandler = await RequestsHandler.getFromLocalStorage();
-    expect(sGetValueFromLocalStorage).toBeCalledWith(
+    expect(sGetValueFromLocalStorage).toHaveBeenCalledWith(
       LocalStorageKeyEnum.__REQUEST_HANDLER,
     );
     expect(_requestHandler).toBeInstanceOf(RequestsHandler);
@@ -68,7 +68,7 @@ describe('index tests:\n', () => {
       confirmed: false,
       windowId: undefined,
     });
-    expect(sSaveValueInLocalStorage).toBeCalledWith(
+    expect(sSaveValueInLocalStorage).toHaveBeenCalledWith(
       LocalStorageKeyEnum.__REQUEST_HANDLER,
       {
         confirmed: false,
@@ -92,7 +92,7 @@ describe('index tests:\n', () => {
       .mockResolvedValue(undefined);
     const requestHandler = new RequestsHandler();
     requestHandler.reset(true);
-    expect(sRemoveFromLocalStorage).toBeCalledWith(
+    expect(sRemoveFromLocalStorage).toHaveBeenCalledWith(
       LocalStorageKeyEnum.__REQUEST_HANDLER,
     );
   });
@@ -127,7 +127,7 @@ describe('index tests:\n', () => {
         request: keychainRequest.noValues.decode,
       } as KeychainRequestWrapper,
     );
-    expect(sInit).toBeCalledWith(
+    expect(sInit).toHaveBeenCalledWith(
       keychainRequest.noValues.decode,
       requestHandler.data.tab,
       'domain',

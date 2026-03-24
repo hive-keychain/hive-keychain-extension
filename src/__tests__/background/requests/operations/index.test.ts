@@ -65,15 +65,15 @@ describe('index tests:\n', () => {
     requestHandler.data.rpc = DefaultRpcs[1];
     requestHandler.data.windowId = 1;
     await performOperation(requestHandler, data, 0, 'domain', true);
-    expect(sLoggerInfo).toBeCalledWith('-- PERFORMING TRANSACTION --');
-    expect(sLoggerLog).toBeCalledWith(data);
-    expect(sSendMessage).toBeCalledWith(
+    expect(sLoggerInfo).toHaveBeenCalledWith('-- PERFORMING TRANSACTION --');
+    expect(sLoggerLog).toHaveBeenCalledWith(data);
+    expect(sSendMessage).toHaveBeenCalledWith(
       0,
       `mocked message for ${KeychainRequestTypes.addAccount}`,
     );
-    expect(sAddToWhitelist).toBeCalledWith(data.username!, 'domain', data.type);
-    expect(sRemoveWindow).toBeCalledWith(requestHandler.data.windowId);
-    expect(sReset).toBeCalledWith(false);
+    expect(sAddToWhitelist).toHaveBeenCalledWith(data.username!, 'domain', data.type);
+    expect(sRemoveWindow).toHaveBeenCalledWith(requestHandler.data.windowId);
+    expect(sReset).toHaveBeenCalledWith(false);
   });
 
   it('Must call each type of request', async () => {

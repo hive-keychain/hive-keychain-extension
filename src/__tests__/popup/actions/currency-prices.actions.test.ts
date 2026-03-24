@@ -38,8 +38,8 @@ describe('currency-prices.actions tests:\n', () => {
       const fakeStore = getFakeStore(initialEmptyStateStore);
       await fakeStore.dispatch<any>(currencyPricesActions.loadCurrencyPrices());
       expect(fakeStore.getState().currencyPrices).toEqual(emptyCurrencyPrices);
-      expect(spyLoggerError).toBeCalledTimes(1);
-      expect(spyLoggerError).toBeCalledWith(
+      expect(spyLoggerError).toHaveBeenCalledTimes(1);
+      expect(spyLoggerError).toHaveBeenCalledWith(
         errorMessageFromFile,
         (errorReceived as any).toString(),
       );

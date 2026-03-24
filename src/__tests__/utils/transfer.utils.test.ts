@@ -41,8 +41,8 @@ describe('transfer.utils tests:\n', () => {
           false,
         ),
       ).toBe(messageFromI18n);
-      expect(mocki18nGetMessage).toBeCalledTimes(1);
-      expect(mocki18nGetMessage).toBeCalledWith(i18nMessageName, [
+      expect(mocki18nGetMessage).toHaveBeenCalledTimes(1);
+      expect(mocki18nGetMessage).toHaveBeenCalledWith(i18nMessageName, [
         currencyToCheck,
       ]);
       mocki18nGetMessage.mockReset();
@@ -63,8 +63,8 @@ describe('transfer.utils tests:\n', () => {
           false,
         ),
       ).toBe(messageFromI18n);
-      expect(mocki18nGetMessage).toBeCalledTimes(1);
-      expect(mocki18nGetMessage).toBeCalledWith(i18nMessageName);
+      expect(mocki18nGetMessage).toHaveBeenCalledTimes(1);
+      expect(mocki18nGetMessage).toHaveBeenCalledWith(i18nMessageName);
       mocki18nGetMessage.mockReset();
       mocki18nGetMessage.mockRestore();
     });

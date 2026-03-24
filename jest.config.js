@@ -1,4 +1,19 @@
-/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
+const path = require('path');
+const ts = require('typescript');
+const { pathsToModuleNameMapper } = require('ts-jest');
+
+const tsconfigPath = path.join(__dirname, 'tsconfig.json');
+const { config } = ts.readConfigFile(tsconfigPath, ts.sys.readFile);
+
+// Align Jest resolution with tsconfig paths (Jest resolves before ts-jest transform).
+// Exclude `react` → @types/react — tests must resolve the real `react` package.
+const tsPaths = { ...(config.compilerOptions?.paths || {}) };
+delete tsPaths.react;
+const fromTsconfigPaths = pathsToModuleNameMapper(tsPaths, {
+  prefix: '<rootDir>/',
+});
+
+/** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
   setupFiles: ['dotenv/config'],
   preset: 'ts-jest',
@@ -13,11 +28,7 @@ module.exports = {
   },
   moduleDirectories: ['node_modules', 'src'],
   moduleNameMapper: {
-    '^@popup(.*)$': '<rootDir>/src/popup/$1',
-    '^@background(.*)$': '<rootDir>/src/background/$1',
-    '^@interfaces(.*)$': '<rootDir>/src/interfaces/$1',
-    '^@reference-data(.*)$': '<rootDir>/src/reference-data/$1',
-    '^@api(.*)$': '<rootDir>/src/api/$1',
+    ...fromTsconfigPaths,
     '^axios$': 'axios/dist/node/axios.cjs',
     '\\.(css|less|scss)$': 'identity-obj-proxy',
     '@ledgerhq/devices/hid-framing': '@ledgerhq/devices/lib/hid-framing',

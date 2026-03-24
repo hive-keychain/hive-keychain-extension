@@ -79,7 +79,7 @@ describe('encode-memo tests:\n', () => {
     requestHandler.data.key = userData.one.nonEncryptKeys.memo;
     data.message = memo._default.decoded;
     await encodeMessage(requestHandler, data);
-    expect(sEncode).toBeCalledWith(
+    expect(sEncode).toHaveBeenCalledWith(
       userData.one.nonEncryptKeys.memo,
       userData.one.encryptKeys.memo,
       data.message,
@@ -96,7 +96,7 @@ describe('encode-memo tests:\n', () => {
     data.method = KeychainKeyTypes.posting;
     data.message = memo._default.decoded;
     await encodeMessage(requestHandler, data);
-    expect(sEncode).toBeCalledWith(
+    expect(sEncode).toHaveBeenCalledWith(
       userData.one.nonEncryptKeys.memo,
       accounts.extended.posting.key_auths[0][0],
       data.message,

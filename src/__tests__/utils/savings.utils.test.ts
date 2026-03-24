@@ -34,7 +34,7 @@ describe('savings.utils.ts tests:\n', () => {
       clonedActiveAccount.account.hbd_balance = '0.000 HBD';
       clonedActiveAccount.account.savings_hbd_balance = '0.000 HBD';
       expect(await SavingsUtils.claimSavings(clonedActiveAccount)).toBe(false);
-      expect(sLogger).toBeCalledWith(
+      expect(sLogger).toHaveBeenCalledWith(
         `@${clonedActiveAccount.name} has no HBD to deposit or savings to withdraw`,
       );
       sLogger.mockClear();
