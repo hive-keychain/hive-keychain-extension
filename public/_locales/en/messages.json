@@ -5353,9 +5353,29 @@
     "message": "Security",
     "description": "Evm Security menu"
   },
+  "evm_menu_provider_compatibility": {
+    "message": "Provider compatibility",
+    "description": "Evm provider compatibility menu"
+  },
   "evm_menu_advanced_smart_contracts": {
     "message": "Smart Contracts",
     "description": "Evm Advanced smart contracts"
+  },
+  "evm_provider_compatibility_prefer_title": {
+    "message": "Prefer Keychain on legacy dapps",
+    "description": "Evm provider compatibility legacy preference title"
+  },
+  "evm_provider_compatibility_prefer_hint": {
+    "message": "Keychain will try to stay on <code>window.ethereum</code> for older dapps while still announcing itself through EIP-6963.",
+    "description": "Evm provider compatibility legacy preference hint"
+  },
+  "evm_provider_compatibility_warning": {
+    "message": "This can conflict with other installed wallets that also try to control the legacy provider.",
+    "description": "Evm provider compatibility warning"
+  },
+  "evm_provider_compatibility_reload_note": {
+    "message": "Reload open dapp tabs after changing this setting so websites pick up the new provider order.",
+    "description": "Evm provider compatibility reload note"
   },
   "evm_menu_advanced_smart_contracts_display_spam_title": {
     "message": "Display possible spam",

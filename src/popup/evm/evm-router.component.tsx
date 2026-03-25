@@ -13,6 +13,7 @@ import { EvmNFTTransferComponent } from '@popup/evm/pages/home/evm-nft-pages/evm
 import { EvmNftCollectionPageComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-ntf-collection-page/evm-ntf-collection-page.component';
 import { EvmAccountsComponent } from '@popup/evm/pages/home/settings/evm-accounts/evm-accounts.component';
 import { EvmAdvancedSettingsComponent } from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-advanced-settings.component';
+import EvmProviderSettingsComponent from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-provider/evm-provider.component';
 import { EvmRpcNodesComponent } from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-rpc-nodes/evm-rpc-nodes.component';
 import { EvmSecuritySettingsComponent } from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-security/evm-security.component';
 import { EvmContactsComponent } from '@popup/evm/pages/home/settings/evm-contacts/evm-contacts.component';
@@ -85,6 +86,8 @@ const EvmAppRouter = ({
         return <EvmRpcNodesComponent />;
       case EvmScreen.EVM_SECURITY_SETTINGS:
         return <EvmSecuritySettingsComponent />;
+      case EvmScreen.EVM_PROVIDER_SETTINGS:
+        return <EvmProviderSettingsComponent />;
       default:
         return globalRouter(page);
     }

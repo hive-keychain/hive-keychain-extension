@@ -2,16 +2,10 @@ import {
   EvmProvider,
   EvmProviderModule,
 } from 'src/content-scripts/evm/injected/provider/evm-provider';
-
-type LegacyEthereumProvider = EvmProvider & {
-  providers?: unknown[];
-};
-
-type InjectedWindow = Window & {
-  ethereum?: LegacyEthereumProvider;
-  hiveKeychain?: { ethereum: EvmProvider };
-  hiveKeychainEthereum?: EvmProvider;
-};
+import {
+  getProviderCompatibilityConfig,
+  registerLegacyProvider,
+} from 'src/content-scripts/evm/injected/provider/provider-compatibility';
 
 const announceProvider = (provider: EvmProvider) => {
   window.dispatchEvent(
@@ -24,41 +18,18 @@ const announceProvider = (provider: EvmProvider) => {
   );
 };
 
-const registerLegacyProvider = (provider: EvmProvider) => {
-  const injectedWindow = window as InjectedWindow;
+const providerCompatibilityConfig = getProviderCompatibilityConfig(
+  document.currentScript,
+);
 
-  injectedWindow.hiveKeychain = {
-    ...(injectedWindow.hiveKeychain ?? {}),
-    ethereum: provider,
-  };
-  injectedWindow.hiveKeychainEthereum = provider;
+const provider = EvmProviderModule.getProvider();
+registerLegacyProvider(
+  window,
+  provider,
+  providerCompatibilityConfig.preferOnLegacyDapps,
+);
 
-  if (!injectedWindow.ethereum) {
-    injectedWindow.ethereum = provider as LegacyEthereumProvider;
-    return;
-  }
-
-  if (injectedWindow.ethereum === provider) {
-    return;
-  }
-
-  try {
-    const existingProviders = Array.isArray(injectedWindow.ethereum.providers)
-      ? injectedWindow.ethereum.providers
-      : [injectedWindow.ethereum];
-
-    if (!existingProviders.includes(provider)) {
-      injectedWindow.ethereum.providers = [...existingProviders, provider];
-    }
-  } catch {
-    // Some injected providers expose read-only compatibility shims.
-  }
-};
-
-let provider = EvmProviderModule.getProvider();
-registerLegacyProvider(provider);
-
-window.addEventListener('eip6963:requestProvider', (event) => {
+window.addEventListener('eip6963:requestProvider', () => {
   announceProvider(provider);
 });
 

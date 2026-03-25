@@ -15,6 +15,11 @@ export const getEvmAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
       nextScreen: Screen.EVM_SECURITY_SETTINGS,
     },
     {
+      label: 'evm_menu_provider_compatibility',
+      icon: SVGIcons.WALLET_SETTINGS,
+      nextScreen: Screen.EVM_PROVIDER_SETTINGS,
+    },
+    {
       label: 'popup_html_autolock',
       icon: SVGIcons.MENU_ADVANCED_SETTINGS_AUTO_LOCK,
       nextScreen: Screen.SETTINGS_AUTO_LOCK,

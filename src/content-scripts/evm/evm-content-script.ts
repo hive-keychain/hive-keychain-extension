@@ -1,4 +1,5 @@
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
+import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
 import { EvmEventName } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import {
@@ -10,10 +11,14 @@ import {
 } from 'src/content-scripts/hive/web-interface/response.logic';
 import Logger from 'src/utils/logger.utils';
 
-const setupInjection = () => {
+const setupInjection = async () => {
   try {
+    const settings = await EvmSettingsUtils.getSettings();
     var scriptTag = document.createElement('script');
     scriptTag.src = chrome.runtime.getURL('./evmKeychainBundle.js');
+    scriptTag.dataset.preferOnLegacyDapps = String(
+      settings.providerCompatibility.preferOnLegacyDapps,
+    );
     var container = document.head || document.documentElement;
     container.insertBefore(scriptTag, container.children[0]);
   } catch (e) {

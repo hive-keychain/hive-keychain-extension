@@ -1,0 +1,40 @@
+.evm-provider-settings-page {
+  @include pageLayoutRowGap;
+  row-gap: 24px;
+  padding: 0px 24px;
+  margin-top: 3px;
+  padding-bottom: 24px;
+
+  .fields {
+    @include fields-panel;
+
+    .settings-section {
+      display: flex;
+      flex-direction: column;
+      row-gap: 12px;
+
+      .section-fields {
+        display: flex;
+        flex-direction: column;
+        row-gap: 8px;
+      }
+    }
+  }
+
+  .provider-note {
+    @include poppins400(14px);
+    color: var(--main-font-color);
+    background: var(--card-background);
+    border-radius: 16px;
+    padding: 12px 16px;
+    line-height: 1.4;
+  }
+
+  .warning-note {
+    border: 1px solid rgba(227, 19, 55, 0.45);
+  }
+
+  .reload-note {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+}
