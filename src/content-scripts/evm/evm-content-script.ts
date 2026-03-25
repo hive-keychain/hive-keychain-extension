@@ -12,41 +12,48 @@ import {
   sendEvmRequestToBackground,
   sendResponseToEvm,
 } from 'src/content-scripts/hive/web-interface/response.logic';
+import {
+  PROVIDER_COMPATIBILITY_DATA_ATTRIBUTE,
+  PROVIDER_COMPATIBILITY_UPDATE_EVENT,
+} from 'src/content-scripts/evm/provider-compatibility.constants';
 import Logger from 'src/utils/logger.utils';
 
-const injectPageProvider = (preferOnLegacyDapps: boolean) => {
-  const scriptTag = document.createElement('script');
-  scriptTag.src = chrome.runtime.getURL('./evmKeychainBundle.js');
-  scriptTag.dataset.preferOnLegacyDapps = String(preferOnLegacyDapps);
-
-  const container = document.head || document.documentElement;
-
-  if (!container) {
-    throw new Error('Missing document container for EVM injection.');
-  }
-
-  container.insertBefore(scriptTag, container.firstChild);
+const setSharedProviderCompatibilityPreference = (
+  preferOnLegacyDapps: boolean,
+) => {
+  document.documentElement?.dataset &&
+    (document.documentElement.dataset[
+      PROVIDER_COMPATIBILITY_DATA_ATTRIBUTE
+    ] = String(preferOnLegacyDapps));
 };
 
-const setupInjection = async () => {
-  let preferOnLegacyDapps =
+const dispatchProviderCompatibilityUpdate = () => {
+  document.dispatchEvent(new Event(PROVIDER_COMPATIBILITY_UPDATE_EVENT));
+};
+
+const setupInjection = () => {
+  const defaultPreferOnLegacyDapps =
     DEFAULT_EVM_SETTINGS.providerCompatibility.preferOnLegacyDapps;
+  setSharedProviderCompatibilityPreference(defaultPreferOnLegacyDapps);
 
-  try {
-    const settings = await EvmSettingsUtils.getSettings();
-    preferOnLegacyDapps = settings.providerCompatibility.preferOnLegacyDapps;
-  } catch (e) {
-    Logger.warn(
-      'Unable to read EVM settings before injection. Falling back to defaults.',
-    );
-    Logger.error(e);
-  }
+  EvmSettingsUtils.getSettings()
+    .then((settings) => {
+      const preferOnLegacyDapps =
+        settings.providerCompatibility.preferOnLegacyDapps;
 
-  try {
-    injectPageProvider(preferOnLegacyDapps);
-  } catch (e) {
-    Logger.error('Hive Keychain injection failed.', e);
-  }
+      if (preferOnLegacyDapps === defaultPreferOnLegacyDapps) {
+        return;
+      }
+
+      setSharedProviderCompatibilityPreference(preferOnLegacyDapps);
+      dispatchProviderCompatibilityUpdate();
+    })
+    .catch((e) => {
+      Logger.warn(
+        'Unable to read EVM settings before injection. Falling back to defaults.',
+      );
+      Logger.error(e);
+    });
 };
 
 document.addEventListener(EvmEventName.REQUEST, async (request: any) => {

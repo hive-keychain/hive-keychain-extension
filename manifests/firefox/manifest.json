@@ -30,6 +30,13 @@
     },
     {
       "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
+      "js": ["evmKeychainBundle.js"],
+      "world": "MAIN",
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
       "js": ["evmContentScriptBundle.js"],
       "run_at": "document_start",
       "all_frames": true

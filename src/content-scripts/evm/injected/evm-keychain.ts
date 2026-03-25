@@ -6,6 +6,7 @@ import {
   getProviderCompatibilityConfig,
   registerLegacyProvider,
 } from 'src/content-scripts/evm/injected/provider/provider-compatibility';
+import { PROVIDER_COMPATIBILITY_UPDATE_EVENT } from 'src/content-scripts/evm/provider-compatibility.constants';
 
 const announceProvider = (provider: EvmProvider) => {
   window.dispatchEvent(
@@ -28,6 +29,15 @@ registerLegacyProvider(
   provider,
   providerCompatibilityConfig.preferOnLegacyDapps,
 );
+
+document.addEventListener(PROVIDER_COMPATIBILITY_UPDATE_EVENT, () => {
+  const updatedProviderCompatibilityConfig = getProviderCompatibilityConfig();
+  registerLegacyProvider(
+    window,
+    provider,
+    updatedProviderCompatibilityConfig.preferOnLegacyDapps,
+  );
+});
 
 window.addEventListener('eip6963:requestProvider', () => {
   announceProvider(provider);
