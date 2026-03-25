@@ -45,7 +45,7 @@ export const DialogConfirmationPage = ({
 }: Props) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [requestQueue, setRequestQueue] = useState<DialogQueueMessage[]>([]);
-  const afterCancel = () => {};
+  const [hasQueueState, setHasQueueState] = useState(false);
 
   const isConfirmMessage = (
     currentMessage: Props['message'],
@@ -57,14 +57,41 @@ export const DialogConfirmationPage = ({
     );
   };
 
+  const removeRequestFromQueue = (requestId: number, tab: number) => {
+    setHasQueueState(true);
+    setRequestQueue((previousQueue) => {
+      const removedIndex = previousQueue.findIndex(
+        (item) => item.request.request_id === requestId && item.tab === tab,
+      );
+
+      if (removedIndex === -1) {
+        return previousQueue;
+      }
+
+      const nextQueue = previousQueue.filter(
+        (item) => item.request.request_id !== requestId || item.tab !== tab,
+      );
+
+      setSelectedIndex((currentIndex) => {
+        if (!nextQueue.length) return 0;
+        if (currentIndex > removedIndex) return currentIndex - 1;
+        return Math.min(currentIndex, nextQueue.length - 1);
+      });
+
+      return nextQueue;
+    });
+  };
+
   useEffect(() => {
     if (isConfirmMessage(message)) {
+      setHasQueueState(true);
       setRequestQueue((previousQueue) => {
         const snapshotQueue =
           message.queue?.length &&
           message.queue.every((item) => 'command' in item)
             ? message.queue
             : null;
+
         const nextQueue = snapshotQueue
           ? snapshotQueue
           : (() => {
@@ -83,26 +110,47 @@ export const DialogConfirmationPage = ({
               return next;
             })();
 
-        const nextSelectedIndex = snapshotQueue
-          ? Math.max((message.queuePosition ?? 1) - 1, 0)
-          : previousQueue.length === 0
-            ? 0
-            : selectedIndex;
+        setSelectedIndex((currentIndex) => {
+          if (snapshotQueue) {
+            return Math.max((message.queuePosition ?? 1) - 1, 0);
+          }
+          if (previousQueue.length === 0) {
+            return 0;
+          }
+          return currentIndex;
+        });
 
-        setSelectedIndex(nextSelectedIndex);
         return nextQueue;
       });
     } else {
       setRequestQueue([]);
       setSelectedIndex(0);
+      setHasQueueState(false);
     }
-  }, [message, selectedIndex]);
+  }, [message]);
 
   useEffect(() => {
     if (selectedIndex >= requestQueue.length && requestQueue.length > 0) {
       setSelectedIndex(requestQueue.length - 1);
     }
   }, [requestQueue, selectedIndex]);
+
+  const afterCancel = (requestId: number, tab: number) => {
+    removeRequestFromQueue(requestId, tab);
+  };
+
+  const closeFeedBackMessage = () => {
+    const requestId =
+      (feedBackMessage as any)?.msg?.request_id ??
+      (feedBackMessage as any)?.msg?.data?.request_id;
+    const tab = (feedBackMessage as any)?.msg?.tab;
+
+    if (requestId !== undefined && tab !== undefined) {
+      removeRequestFromQueue(requestId, tab);
+    }
+
+    setFeedBackMessage(null);
+  };
 
   const displayRequest = (displayedMessage: Props['message']) => {
     if (!('command' in displayedMessage)) {
@@ -139,10 +187,7 @@ export const DialogConfirmationPage = ({
     switch (feedbackMessage.command) {
       case DialogCommand.SEND_DIALOG_ERROR:
         return (
-          <DialogError
-            data={feedbackMessage}
-            onClose={() => setFeedBackMessage(null)}
-          />
+          <DialogError data={feedbackMessage} onClose={closeFeedBackMessage} />
         );
 
       case DialogCommand.ANSWER_REQUEST:
@@ -150,19 +195,21 @@ export const DialogConfirmationPage = ({
         return (
           <RequestResponse
             data={feedbackMessage}
-            onClose={() => setFeedBackMessage(null)}
+            onClose={closeFeedBackMessage}
           />
         );
     }
   };
 
   const queueItems = isConfirmMessage(message)
-    ? requestQueue.length
+    ? hasQueueState
       ? requestQueue
       : [message]
     : [message];
   const displayedMessage =
-    (queueItems[selectedIndex] as Props['message']) ?? message;
+    queueItems.length > 0
+      ? ((queueItems[selectedIndex] as Props['message']) ?? queueItems[0])
+      : null;
   const queueSize = queueItems.length;
   const queuePosition = queueSize > 1 ? selectedIndex + 1 : 1;
 
@@ -187,7 +234,7 @@ export const DialogConfirmationPage = ({
           )}
         </div>
       )}
-      {displayRequest(displayedMessage)}
+      {displayedMessage && displayRequest(displayedMessage)}
       {feedBackMessage && (
         <ModalComponent>
           {displayFeedBackMessage(feedBackMessage)}
