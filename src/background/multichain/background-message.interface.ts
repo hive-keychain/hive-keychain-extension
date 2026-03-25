@@ -59,6 +59,9 @@ export type SendConfirmHiveMessage = {
   accounts?: string[] | undefined;
   rpc?: Rpc;
   hiveEngineConfig?: HiveEngineConfig;
+  queueSize?: number;
+  queuePosition?: number;
+  queue?: (SendConfirmHiveMessage | SendConfirmEvmMessage)[];
 };
 
 export type SendConfirmEvmMessage = {
@@ -67,6 +70,9 @@ export type SendConfirmEvmMessage = {
   dappInfo: EvmDappInfo;
   tab: number;
   accounts: EvmAccount[];
+  queueSize?: number;
+  queuePosition?: number;
+  queue?: (SendConfirmHiveMessage | SendConfirmEvmMessage)[];
 };
 
 export type UnlockEvmDialogMessage = {

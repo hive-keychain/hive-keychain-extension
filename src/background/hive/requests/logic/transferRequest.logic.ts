@@ -37,6 +37,10 @@ export const transferRequest = (
         await chrome.i18n.getMessage('bgd_auth_transfer_no_active', [username]),
         request as KeychainRequest,
       );
+      await requestHandler.removeRequestById(
+        (request as KeychainRequest).request_id,
+        tab,
+      );
     }, requestHandler);
   } else if (account && encode && !account.keys.memo) {
     /* istanbul ignore next */
@@ -47,6 +51,10 @@ export const transferRequest = (
         await chrome.i18n.getMessage('bgd_auth_canceled'),
         await chrome.i18n.getMessage('bgd_auth_transfer_no_memo', [username!]),
         request as KeychainRequest,
+      );
+      await requestHandler.removeRequestById(
+        (request as KeychainRequest).request_id,
+        tab,
       );
     }, requestHandler);
   } else if (active_accounts.length == 0) {
@@ -61,19 +69,12 @@ export const transferRequest = (
         ]),
         request as KeychainRequest,
       );
+      await requestHandler.removeRequestById(
+        (request as KeychainRequest).request_id,
+        tab,
+      );
     }, requestHandler);
   } else {
-    // if (requestHandler.windowId) {
-    //   CommunicationUtils.runtimeSendMessage({
-    //     command: DialogCommand.SEND_DIALOG_CONFIRM,
-    //     request,
-    //     domain,
-    //     accounts: encode || enforce ? undefined : active_accounts,
-    //     tab,
-    //     rpc: current_rpc,
-    //   });
-    // } else {
-    /* istanbul ignore next */
     const callback = () => {
       CommunicationUtils.runtimeSendMessage({
         command: DialogCommand.SEND_DIALOG_CONFIRM,
@@ -85,6 +86,5 @@ export const transferRequest = (
       });
     };
     createOrUpdateDialog(callback, requestHandler);
-    // }
   }
 };

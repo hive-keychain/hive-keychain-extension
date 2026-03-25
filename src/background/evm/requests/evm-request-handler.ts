@@ -1,7 +1,11 @@
 import { initEvmRequestHandler } from '@background/evm/requests/init';
-import { removeWindow } from '@background/multichain/dialog-lifecycle';
-import { RequestHandlerUtils } from '@background/utils/request-handler.utils';
 import {
+  getNextDialogRequestOrder,
+  syncSharedDialogWindow,
+} from '@background/multichain/dialog-coordinator';
+import { removeWindow } from '@background/multichain/dialog-lifecycle';
+import {
+  EvmDappInfo,
   EvmRequest,
   KeychainEvmRequestWrapper,
 } from '@interfaces/evm-provider.interface';
@@ -17,13 +21,15 @@ if (!process.env.IS_FIREFOX) {
   global.window = { crypto };
 }
 
-type RequestData = {
+export type EvmRequestData = {
   tab?: number;
   request?: EvmRequest;
   request_id?: number;
+  dappInfo?: EvmDappInfo;
+  arrivalOrder?: number;
 };
 export class EvmRequestHandler {
-  requestsData: RequestData[];
+  requestsData: EvmRequestData[];
   accounts: EvmAccount[];
   windowId: number | undefined;
   constructor() {
@@ -33,7 +39,7 @@ export class EvmRequestHandler {
   }
 
   async initFromLocalStorage(
-    requestsData: RequestData[],
+    requestsData: EvmRequestData[],
     // accounts: EvmAccount[],
     windowId?: number,
   ) {
@@ -45,7 +51,7 @@ export class EvmRequestHandler {
   closeWindow() {
     if (this.windowId) {
       removeWindow(this.windowId);
-      RequestHandlerUtils.removeWindowId();
+      this.windowId = undefined;
     }
   }
 
@@ -62,23 +68,25 @@ export class EvmRequestHandler {
 
   setWindowId(windowId?: number) {
     this.windowId = windowId;
-    this.saveInLocalStorage();
   }
 
   setKeys(key: string, publicKey: string) {}
 
-  sendRequest(
+  async sendRequest(
     sender: chrome.runtime.MessageSender,
     msg: KeychainEvmRequestWrapper,
   ) {
+    const arrivalOrder = await getNextDialogRequestOrder();
     this.requestsData.push({
       tab: sender.tab!.id,
       request: msg.request,
       request_id: msg.request_id,
+      dappInfo: msg.dappInfo,
+      arrivalOrder,
     });
-    this.saveInLocalStorage();
+    await this.saveInLocalStorage();
 
-    initEvmRequestHandler(msg.request, sender.tab!.id, msg.dappInfo, this);
+    await initEvmRequestHandler(msg.request, sender.tab!.id, msg.dappInfo, this);
 
     // AnalyticsModule.sendData(msg.request.type, msg.domain);
   }
@@ -104,24 +112,24 @@ export class EvmRequestHandler {
     this.saveInLocalStorage();
   }
 
-  async removeRequestById(requestId: number, tab: number) {
-    this.requestsData = this.requestsData.filter((requestData: RequestData) => {
-      if (requestData.request_id === requestId && requestData.tab === tab) {
-        return false;
-      }
-      return true;
-    });
-
-    if (
-      (await RequestHandlerUtils.countPendingRestrictedRequest(
-        requestId,
-        tab,
-      )) === 0
-    ) {
-      if (this.windowId) chrome.windows.remove(this.windowId);
-    }
+  async removeRequestById(
+    requestId: number,
+    tab: number,
+    shouldSyncDialog = true,
+  ) {
+    this.requestsData = this.requestsData.filter(
+      (requestData: EvmRequestData) => {
+        if (requestData.request_id === requestId && requestData.tab === tab) {
+          return false;
+        }
+        return true;
+      },
+    );
 
     await this.saveInLocalStorage();
+    if (shouldSyncDialog) {
+      await syncSharedDialogWindow();
+    }
   }
 
   // Local storage methods
@@ -136,6 +144,7 @@ export class EvmRequestHandler {
       );
 
     const handler = new EvmRequestHandler();
+    handler.windowId = windowId;
     if (requestHandlersParams) {
       await handler.initFromLocalStorage(
         requestHandlersParams.requestsData,
@@ -156,10 +165,6 @@ export class EvmRequestHandler {
       {
         requestsData: this.requestsData,
       },
-    );
-    await LocalStorageUtils.saveValueInLocalStorage(
-      LocalStorageKeyEnum.DIALOG_WINDOW_ID,
-      this.windowId,
     );
   }
 

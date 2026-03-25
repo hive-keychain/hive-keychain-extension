@@ -29,6 +29,7 @@ export const anonymousRequests = (
         await chrome.i18n.getMessage('bgd_auth_no_active'),
         request,
       );
+      await requestHandler.removeRequestById(request.request_id, tab);
     }, requestHandler);
   } else {
     const callback = () => {

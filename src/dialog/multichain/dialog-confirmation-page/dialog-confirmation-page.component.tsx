@@ -5,6 +5,7 @@ import SignTransaction, {
   SignFromLedgerRequestMessage,
 } from '@dialog/hive/sign-transaction/sign-transaction';
 import {
+  DialogQueueMessage,
   ErrorMessage,
   EvmRequestMessage,
   FeedbackMessage,
@@ -37,86 +38,99 @@ interface Props {
   setFeedBackMessage: (feedBackMessage: FeedbackMessage | null) => void;
 }
 
-type RequestsMessages = (HiveRequestMessage | EvmRequestMessage)[];
-
 export const DialogConfirmationPage = ({
   message,
   feedBackMessage,
   setFeedBackMessage,
 }: Props) => {
-  const [displayedRequestIndex, setDisplayedRequestIndex] = useState(0);
-  const [requestsMessages, setRequestsMessages] = useState<RequestsMessages>(
-    [],
-  );
-  const [displayedRequest, setDisplayedRequest] = useState<
-    HiveRequestMessage | EvmRequestMessage
-  >();
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [requestQueue, setRequestQueue] = useState<DialogQueueMessage[]>([]);
+  const afterCancel = () => {};
 
-  useEffect(() => {
-    if (requestsMessages.length > 0) {
-      setDisplayedRequest(requestsMessages[displayedRequestIndex]);
-    }
-  }, [requestsMessages, displayedRequestIndex]);
-
-  const removeRequest = (requestId: number, tab: number) => {
-    const index = requestsMessages.findIndex(
-      (message) =>
-        message.request.request_id === requestId && message.tab === tab,
+  const isConfirmMessage = (
+    currentMessage: Props['message'],
+  ): currentMessage is HiveRequestMessage | EvmRequestMessage => {
+    return (
+      'command' in currentMessage &&
+      (currentMessage.command === DialogCommand.SEND_DIALOG_CONFIRM ||
+        currentMessage.command === DialogCommand.SEND_DIALOG_CONFIRM_EVM)
     );
-    const newMessages = requestsMessages.filter((elem, i) => i !== index);
-
-    if (newMessages.length === 0) {
-      setTimeout(() => {
-        window.close();
-      }, 250);
-    }
-    const newDisplayedIndex =
-      displayedRequestIndex === 0 ? 0 : displayedRequestIndex - 1;
-    setDisplayedRequestIndex(newDisplayedIndex);
-    setRequestsMessages(newMessages);
-  };
-
-  const closeFeedBackMessage = () => {
-    if (feedBackMessage) {
-      removeRequest(
-        (feedBackMessage.msg as any).request_id,
-        feedBackMessage.msg.tab!,
-      );
-      setFeedBackMessage(null);
-    }
   };
 
   useEffect(() => {
-    setRequestsMessages([...requestsMessages, message] as RequestsMessages);
-  }, [message]);
+    if (isConfirmMessage(message)) {
+      setRequestQueue((previousQueue) => {
+        const snapshotQueue =
+          message.queue?.length &&
+          message.queue.every((item) => 'command' in item)
+            ? message.queue
+            : null;
+        const nextQueue = snapshotQueue
+          ? snapshotQueue
+          : (() => {
+              const next = [...previousQueue];
+              const existingIndex = next.findIndex(
+                (item) =>
+                  item.command === message.command &&
+                  item.tab === message.tab &&
+                  item.request.request_id === message.request.request_id,
+              );
+              if (existingIndex >= 0) {
+                next[existingIndex] = message;
+              } else {
+                next.push(message);
+              }
+              return next;
+            })();
 
-  const afterCancel = (requestId: number, tabId: number) => {
-    removeRequest(requestId, tabId);
-  };
+        const nextSelectedIndex = snapshotQueue
+          ? Math.max((message.queuePosition ?? 1) - 1, 0)
+          : previousQueue.length === 0
+            ? 0
+            : selectedIndex;
 
-  const displayRequest = (displayedMessage: any) => {
+        setSelectedIndex(nextSelectedIndex);
+        return nextQueue;
+      });
+    } else {
+      setRequestQueue([]);
+      setSelectedIndex(0);
+    }
+  }, [message, selectedIndex]);
+
+  useEffect(() => {
+    if (selectedIndex >= requestQueue.length && requestQueue.length > 0) {
+      setSelectedIndex(requestQueue.length - 1);
+    }
+  }, [requestQueue, selectedIndex]);
+
+  const displayRequest = (displayedMessage: Props['message']) => {
+    if (!('command' in displayedMessage)) {
+      return <SignTransaction data={displayedMessage} />;
+    }
+
     switch (displayedMessage.command) {
       case DialogCommand.SEND_DIALOG_CONFIRM:
       case DialogCommand.SEND_DIALOG_CONFIRM_EVM:
         return (
           <RequestConfirmation
-            message={displayedMessage}
+            message={displayedMessage as HiveRequestMessage | EvmRequestMessage}
             afterCancel={afterCancel}
           />
         );
       case DialogCommand.ANONYMOUS_KEYLESS_OP:
-        return <KeylessUsernameComponent data={displayedMessage} />;
+        return (
+          <KeylessUsernameComponent
+            data={displayedMessage as KeylessUsernameMessage}
+          />
+        );
       case DialogCommand.SIGN_WITH_LEDGER:
-        return <SignTransaction data={displayedMessage} />;
+        return <SignTransaction data={displayedMessage as any} />;
       case DialogCommand.ADD_ACCOUNT:
-        return <AddAccountQR data={displayedMessage} />;
+        return <AddAccountQR data={displayedMessage as AddAccountQRMessage} />;
       default:
         return <div>Default screen</div>;
     }
-  };
-
-  const handlePageChange = (nextPage: number) => {
-    setDisplayedRequestIndex(nextPage);
   };
 
   const displayFeedBackMessage = (
@@ -127,7 +141,7 @@ export const DialogConfirmationPage = ({
         return (
           <DialogError
             data={feedbackMessage}
-            onClose={() => closeFeedBackMessage()}
+            onClose={() => setFeedBackMessage(null)}
           />
         );
 
@@ -136,34 +150,44 @@ export const DialogConfirmationPage = ({
         return (
           <RequestResponse
             data={feedbackMessage}
-            onClose={() => closeFeedBackMessage()}
+            onClose={() => setFeedBackMessage(null)}
           />
         );
     }
   };
 
+  const queueItems = isConfirmMessage(message)
+    ? requestQueue.length
+      ? requestQueue
+      : [message]
+    : [message];
+  const displayedMessage =
+    (queueItems[selectedIndex] as Props['message']) ?? message;
+  const queueSize = queueItems.length;
+  const queuePosition = queueSize > 1 ? selectedIndex + 1 : 1;
+
   return (
     <div className="dialog-confirmation-page">
-      {requestsMessages.length > 1 && (
+      {queueSize > 1 && (
         <div className="multiple-page-container">
-          {displayedRequestIndex > 0 && (
+          {selectedIndex > 0 && (
             <SVGIcon
               className="previous-button"
               icon={SVGIcons.GLOBAL_ARROW_RIGHT}
-              onClick={() => handlePageChange(displayedRequestIndex - 1)}
+              onClick={() => setSelectedIndex(selectedIndex - 1)}
             />
           )}
-          {displayedRequestIndex + 1} / {requestsMessages.length}
-          {displayedRequestIndex < requestsMessages.length - 1 && (
+          {queuePosition} / {queueSize}
+          {selectedIndex < queueItems.length - 1 && (
             <SVGIcon
               className="next-button"
               icon={SVGIcons.GLOBAL_ARROW_RIGHT}
-              onClick={() => handlePageChange(displayedRequestIndex + 1)}
+              onClick={() => setSelectedIndex(selectedIndex + 1)}
             />
           )}
         </div>
       )}
-      {displayedRequest && <>{displayRequest(displayedRequest)}</>}
+      {displayRequest(displayedMessage)}
       {feedBackMessage && (
         <ModalComponent>
           {displayFeedBackMessage(feedBackMessage)}

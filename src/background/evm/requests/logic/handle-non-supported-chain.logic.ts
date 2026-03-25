@@ -38,6 +38,7 @@ export const handleNonSupportedChain = async (
         tab,
       },
     });
+    await requestHandler.removeRequestById(request.request_id, tab);
   };
   createOrUpdateDialog(callback, requestHandler);
 };

@@ -95,7 +95,7 @@ const chromeMessageHandler = async (
       if (!requestHandler) {
         requestHandler = new EvmRequestHandler();
       }
-      requestHandler.sendRequest(
+      await requestHandler.sendRequest(
         sender,
         backgroundMessage as KeychainEvmRequestWrapper,
       );

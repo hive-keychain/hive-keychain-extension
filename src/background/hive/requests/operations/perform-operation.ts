@@ -183,6 +183,9 @@ export const performHiveOperation = async (
         message.command = DialogCommand.SEND_HIVE_RESPONSE;
       }
       CommunicationUtils.tabsSendMessage(tab, message);
+      if (!no_confirm) {
+        await requestHandler.removeRequestById(request.request_id, tab);
+      }
     }
   } catch (e) {
     Logger.error(e);
@@ -193,6 +196,9 @@ export const performHiveOperation = async (
       await chrome.i18n.getMessage('unknown_error'),
       request,
     );
+    if (!no_confirm) {
+      await requestHandler.removeRequestById(request.request_id, tab);
+    }
   } finally {
     if (no_confirm) {
       addToWhitelist(request.username!, domain, request.type);

@@ -5,6 +5,8 @@ import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { KeychainRequest } from 'hive-keychain-commons';
 
+export type DialogQueueMessage = HiveRequestMessage | EvmRequestMessage;
+
 export type HiveRequestMessage = {
   command: DialogCommand.SEND_DIALOG_CONFIRM;
   request: KeychainRequest;
@@ -13,6 +15,9 @@ export type HiveRequestMessage = {
   domain: string;
   accounts?: string[];
   hiveEngineConfig: HiveEngineConfig;
+  queueSize?: number;
+  queuePosition?: number;
+  queue?: DialogQueueMessage[];
 };
 
 export type EvmRequestMessage = {
@@ -21,6 +26,9 @@ export type EvmRequestMessage = {
   tab: number;
   dappInfo: EvmDappInfo;
   accounts?: EvmAccount[];
+  queueSize?: number;
+  queuePosition?: number;
+  queue?: DialogQueueMessage[];
 };
 
 export type RequestAddEvmChainMessage = {

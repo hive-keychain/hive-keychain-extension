@@ -39,7 +39,10 @@ export const handleEvmError = async (
           tab,
         },
       });
+      await requestHandler.removeRequestById(request.request_id, tab);
     };
     createOrUpdateDialog(callback, requestHandler);
+  } else {
+    await requestHandler.removeRequestById(request.request_id, tab);
   }
 };

@@ -1,47 +1,25 @@
-import { EvmUnrestrictedMethods } from '@background/evm/evm-methods/evm-methods.list';
-import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
-import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
+import {
+  getRequestHandlers,
+  getVisibleDialogRequests,
+} from '@background/multichain/dialog-request.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import { isWhitelisted } from 'src/utils/preferences.utils';
 
 const countPendingRestrictedRequest = async (
   requestId: number,
   tab: number,
 ) => {
-  const [hiveRequestHandler, evmRequestHandler] = await getRequestHandlers();
+  const visibleRequests = await getVisibleDialogRequests();
 
-  const restrictedHiveRequests = hiveRequestHandler?.requestsData?.filter(
-    (requestData) =>
-      !isWhitelisted(
-        requestData.preferences!,
-        requestData.request!,
-        requestData.domain!,
-        requestData.rpc!,
-      ) &&
-      (requestData.request_id !== requestId || requestData.tab !== tab),
-  );
-  const restrictedEvmRequests = evmRequestHandler?.requestsData?.filter(
-    (requestData) =>
-      !EvmUnrestrictedMethods.includes(requestData.request!.method) &&
-      (requestData.request_id !== requestId || requestData.tab !== tab),
-  );
-
-  return (
-    (restrictedHiveRequests?.length ?? 0) + (restrictedEvmRequests?.length ?? 0)
-  );
-};
-
-const getRequestHandlers = async () => {
-  return Promise.all([
-    HiveRequestsHandler.getFromLocalStorage(),
-    EvmRequestHandler.getFromLocalStorage(),
-  ]);
+  return visibleRequests.filter(
+    (request) => request.requestId !== requestId || request.tab !== tab,
+  ).length;
 };
 
 const getWindowId = async () => {
-  const [hiveRequestHandler, evmRequestHandler] = await getRequestHandlers();
-  return hiveRequestHandler?.windowId ?? evmRequestHandler?.windowId;
+  return LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.DIALOG_WINDOW_ID,
+  );
 };
 
 const removeWindowId = async () => {
@@ -52,6 +30,7 @@ const removeWindowId = async () => {
 
 export const RequestHandlerUtils = {
   countPendingRestrictedRequest,
+  getRequestHandlers,
   getWindowId,
   removeWindowId,
 };

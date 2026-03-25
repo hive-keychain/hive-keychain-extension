@@ -25,9 +25,9 @@ export const addAccountRequest = (
         ]),
         request,
       );
+      await requestHandler.removeRequestById(request.request_id, tab);
     }, requestHandler);
   } else {
-    /* istanbul ignore next */
     const callback = () => {
       CommunicationUtils.runtimeSendMessage({
         command: DialogCommand.SEND_DIALOG_CONFIRM,

@@ -20,6 +20,7 @@ export const evmRequestWithConfirmation = (
       accounts: requestHandler.accounts,
     });
   };
+
   let height = 600;
   if (
     request.method === EvmRequestMethod.SEND_TRANSACTION ||
@@ -28,7 +29,6 @@ export const evmRequestWithConfirmation = (
     height = 800;
   }
 
-  //TODO : change height here if needed, default is 600 for other windows. Check if we can avoid the glitch
   createOrUpdateDialog(callback, requestHandler, undefined, height);
 };
 

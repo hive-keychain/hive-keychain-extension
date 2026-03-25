@@ -81,12 +81,13 @@ export const performEvmOperation = async (
       command: BackgroundCommand.SEND_EVM_RESPONSE,
       value: { requestId: request.request_id, result: result },
     });
+    await requestHandler.removeRequestById(request.request_id, tab);
   } catch (err) {
     const error = err as any;
     const etherJSError = getErrorFromEtherJS(error.code);
     Logger.log('etherJSError', etherJSError);
     Logger.log('error', error);
-    handleEvmError(
+    await handleEvmError(
       requestHandler,
       tab,
       request,

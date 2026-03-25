@@ -5,7 +5,7 @@ import { DialogError } from '@dialog/multichain/error/error';
 import { Theme } from '@popup/theme.context';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Register from 'src/dialog/hive/register/register';
 import Unlock from 'src/dialog/multichain/unlock/unlock';
 import { RegisterKeylessComponent } from 'src/dialog/pages/register-keyless/register-keyless';
@@ -14,8 +14,9 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 // import './../analytics/analytics/gtag';
 
 const App = () => {
-  const [globalData, setGlobalData] = useState<any>({});
-  const [globalError, setGlobalError] = useState<any>({});
+  const [globalData, setGlobalData] = useState<any>(null);
+  const [globalError, setGlobalError] = useState<any>(null);
+  const globalDataRef = useRef<any>(null);
   const [theme, setTheme] = useState<Theme>();
 
   const [feedBackMessage, setFeedBackMessage] =
@@ -56,6 +57,7 @@ const App = () => {
     initGoogleAnalytics();
     chrome.runtime.onMessage.addListener(
       async function (data, sender, sendResp) {
+        console.log(data);
         if (data.command === DialogCommand.READY) {
           return BrowserUtils.sendResponse(true, sendResp);
         } else if (
@@ -63,12 +65,14 @@ const App = () => {
           data.command === DialogCommand.ANSWER_EVM_REQUEST ||
           data.command === DialogCommand.SEND_DIALOG_ERROR
         ) {
-          if (globalData) {
+          if (globalDataRef.current) {
             setFeedBackMessage(data);
           } else if (data.command === DialogCommand.SEND_DIALOG_ERROR) {
             setGlobalError(data);
           }
         } else if (Object.values(DialogCommand).includes(data.command)) {
+          setGlobalError(null);
+          globalDataRef.current = data;
           setGlobalData(data);
         }
       },
@@ -76,6 +80,10 @@ const App = () => {
   }, []);
 
   const renderDialogContent = (data: any) => {
+    if (!data?.command) {
+      return null;
+    }
+
     switch (data.command) {
       case DialogCommand.UNLOCK:
       case DialogCommand.UNLOCK_EVM:
@@ -111,10 +119,6 @@ const App = () => {
         );
 
       default:
-        if (globalError) {
-          return <DialogError data={globalError} />;
-        }
-
         return null;
     }
   };
@@ -122,6 +126,7 @@ const App = () => {
   return (
     <div className={`theme ${theme} dialog`}>
       {renderDialogContent(globalData)}
+      {globalError && <DialogError data={globalError} />}
     </div>
   );
 };

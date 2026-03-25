@@ -19,5 +19,6 @@ export const missingKey = (
       await chrome.i18n.getMessage('bgd_auth_no_key', [username, typeWif]),
       request,
     );
+    await requestHandler.removeRequestById(request.request_id, tab);
   }, requestHandler);
 };

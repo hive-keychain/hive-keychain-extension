@@ -74,7 +74,7 @@ const chromeMessageHandler = async (
       if (!requestHandler) {
         requestHandler = new HiveRequestsHandler();
       }
-      requestHandler.sendRequest(
+      await requestHandler.sendRequest(
         sender,
         backgroundMessage as KeychainRequestWrapper,
       );

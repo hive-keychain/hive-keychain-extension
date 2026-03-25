@@ -1,7 +1,10 @@
 import { BgdHiveEngineConfigModule } from '@background/hive/modules/hive-engine-config.module';
 import { initHiveRequestHandler } from '@background/hive/requests/init';
+import {
+  getNextDialogRequestOrder,
+  syncSharedDialogWindow,
+} from '@background/multichain/dialog-coordinator';
 import { removeWindow } from '@background/multichain/dialog-lifecycle';
-import { RequestHandlerUtils } from '@background/utils/request-handler.utils';
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import { Key } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
@@ -28,7 +31,7 @@ if (!process.env.IS_FIREFOX && !global.window) {
   global.window = { crypto };
 }
 
-type RequestData = {
+export type HiveRequestData = {
   tab?: number;
   request?: KeychainRequest;
   request_id?: number;
@@ -43,9 +46,10 @@ type RequestData = {
   isWaitingForConfirmation: boolean;
   isKeyless?: boolean;
   domain?: string;
+  arrivalOrder?: number;
 };
 export class HiveRequestsHandler {
-  requestsData: RequestData[];
+  requestsData: HiveRequestData[];
   hiveEngineConfig: HiveEngineConfig;
   defaultRpcConfig: any;
   windowId: number | undefined;
@@ -59,7 +63,7 @@ export class HiveRequestsHandler {
   }
 
   async initFromLocalStorage(
-    requestsData: RequestData[],
+    requestsData: HiveRequestData[],
     accounts: LocalAccount[],
     hiveEngineConfig: HiveEngineConfig,
     defaultRpcConfig: any,
@@ -156,7 +160,7 @@ export class HiveRequestsHandler {
   closeWindow() {
     if (this.windowId) {
       removeWindow(this.windowId);
-      RequestHandlerUtils.removeWindowId();
+      this.windowId = undefined;
     }
   }
 
@@ -194,24 +198,27 @@ export class HiveRequestsHandler {
     }
   }
 
-  sendRequest(
+  async sendRequest(
     sender: chrome.runtime.MessageSender,
     msg: KeychainRequestWrapper,
   ) {
-    const requestData: RequestData = {
+    const arrivalOrder = await getNextDialogRequestOrder();
+    const requestData: HiveRequestData = {
       tab: sender.tab!.id,
       request: msg.request,
       request_id: msg.request_id,
       confirmed: false,
       isWaitingForConfirmation: false,
       domain: msg.domain,
+      arrivalOrder,
     };
     if (msg.request.rpc) {
       requestData.rpc = { uri: msg.request.rpc, testnet: false };
     }
     this.requestsData.push(requestData);
+    await this.saveInLocalStorage();
 
-    initHiveRequestHandler(msg.request, sender.tab!.id, msg.domain, this);
+    await initHiveRequestHandler(msg.request, sender.tab!.id, msg.domain, this);
   }
 
   getUserKeyPair(username: string, keyType: KeychainKeyTypesLC) {
@@ -248,24 +255,24 @@ export class HiveRequestsHandler {
     // this.saveInLocalStorage();
   }
 
-  async removeRequestById(requestId: number, tabId: number) {
-    this.requestsData = this.requestsData.filter((requestData: RequestData) => {
-      if (requestData.request_id === requestId && requestData.tab! === tabId) {
-        return false;
-      }
-      return true;
-    });
-
-    if (
-      (await RequestHandlerUtils.countPendingRestrictedRequest(
-        requestId,
-        tabId,
-      )) === 0
-    ) {
-      if (this.windowId) chrome.windows.remove(this.windowId);
-    }
+  async removeRequestById(
+    requestId: number,
+    tabId: number,
+    shouldSyncDialog = true,
+  ) {
+    this.requestsData = this.requestsData.filter(
+      (requestData: HiveRequestData) => {
+        if (requestData.request_id === requestId && requestData.tab! === tabId) {
+          return false;
+        }
+        return true;
+      },
+    );
 
     await this.saveInLocalStorage();
+    if (shouldSyncDialog) {
+      await syncSharedDialogWindow();
+    }
   }
 
   static async getFromLocalStorage() {
@@ -281,7 +288,8 @@ export class HiveRequestsHandler {
     );
 
     const handler = new HiveRequestsHandler();
-    if (params) {
+    handler.windowId = windowId;
+    if (params && accounts) {
       const requestsData = params.requestsData;
       for (const rd of requestsData) {
         if (rd.request && rd.request.type === KeychainRequestTypes.addAccount) {
@@ -319,10 +327,10 @@ export class HiveRequestsHandler {
   }
 
   async saveInLocalStorage() {
-    const requestsDataToSave: Partial<RequestData>[] = [];
+    const requestsDataToSave: Partial<HiveRequestData>[] = [];
 
     for (const rd of this.requestsData) {
-      const requestData: RequestData = {
+      const requestData: HiveRequestData = {
         tab: rd.tab,
         request: rd.request,
         request_id: rd.request_id,
@@ -334,6 +342,7 @@ export class HiveRequestsHandler {
         isWaitingForConfirmation: rd.isWaitingForConfirmation,
         isKeyless: rd.isKeyless,
         domain: rd.domain,
+        arrivalOrder: rd.arrivalOrder,
       };
       if (rd.request?.type === KeychainRequestTypes.addAccount) {
         const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
@@ -360,10 +369,6 @@ export class HiveRequestsHandler {
     await LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.__REQUEST_HANDLER,
       dataToSave,
-    );
-    await LocalStorageUtils.saveValueInLocalStorage(
-      LocalStorageKeyEnum.DIALOG_WINDOW_ID,
-      this.windowId,
     );
   }
 

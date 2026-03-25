@@ -45,6 +45,7 @@ export const handleNonExistingMethod = async (
         tab,
       },
     });
+    await requestHandler.removeRequestById(request.request_id, tab);
   };
   createOrUpdateDialog(callback, requestHandler);
 };

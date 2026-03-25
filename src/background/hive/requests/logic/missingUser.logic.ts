@@ -18,6 +18,7 @@ export const missingUser = (
       await chrome.i18n.getMessage('bgd_auth_no_account', [username]),
       request,
     );
+    await requestHandler.removeRequestById(request.request_id, tab);
   };
   createOrUpdateDialog(callback, requestHandler);
 };
