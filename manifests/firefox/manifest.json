@@ -5,6 +5,7 @@
   "version": "3.15.0",
   "permissions": [
     "storage",
+    "scripting",
     "idle",
     "alarms",
     "notifications",
@@ -19,20 +20,12 @@
   "background": { "scripts": ["backgroundBundle.js"], "persistent": true },
   "web_accessible_resources": [
     "/images/logo.png",
-    "hive_keychain.js",
-    "evmKeychainBundle.js"
+    "hive_keychain.js"
   ],
   "content_scripts": [
     {
       "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
       "js": ["web_interfaceBundle.js", "keychainifyBundle.js"],
-      "all_frames": true
-    },
-    {
-      "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
-      "js": ["evmKeychainBundle.js"],
-      "world": "MAIN",
-      "run_at": "document_start",
       "all_frames": true
     },
     {

@@ -17,7 +17,10 @@ const config = {
     addAccountsFromLedger: './src/ledger/add-accounts/index.tsx',
     web_interface: './src/content-scripts/hive/web-interface/index.ts',
     keychainify: './src/content-scripts/hive/keychainify/index.ts',
-    evmKeychain: './src/content-scripts/evm/injected/evm-keychain.ts',
+    evmKeychainLegacyPreferred:
+      './src/content-scripts/evm/injected/evm-keychain-legacy-preferred.ts',
+    evmKeychainLegacyYielding:
+      './src/content-scripts/evm/injected/evm-keychain-legacy-yielding.ts',
     evmContentScript: './src/content-scripts/evm/evm-content-script.ts',
     portfolio: './src/portfolio/index.tsx',
     vault: './src/vault/index.ts',

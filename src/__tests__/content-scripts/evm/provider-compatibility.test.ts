@@ -1,6 +1,6 @@
+import { afterEach, describe, expect, it, jest } from '@jest/globals';
 import { EvmProvider } from 'src/content-scripts/evm/injected/provider/evm-provider';
 import {
-  getProviderCompatibilityConfig,
   InjectedWindow,
   LegacyEthereumProvider,
   registerLegacyProvider,
@@ -13,19 +13,7 @@ describe('provider-compatibility tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
-  });
-
-  it('defaults to preferring Keychain on legacy dapps', () => {
-    expect(getProviderCompatibilityConfig(null).preferOnLegacyDapps).toBe(true);
-  });
-
-  it('reads the bootstrap flag from the injected script dataset', () => {
-    const scriptTag = document.createElement('script');
-    scriptTag.dataset.preferOnLegacyDapps = 'false';
-
-    expect(getProviderCompatibilityConfig(scriptTag).preferOnLegacyDapps).toBe(
-      false,
-    );
+    jest.useRealTimers();
   });
 
   it('keeps the existing provider primary when legacy preference is disabled', () => {
@@ -38,7 +26,7 @@ describe('provider-compatibility tests:\n', () => {
     registerLegacyProvider(
       injectedWindow,
       keychainProvider as unknown as EvmProvider,
-      false,
+      'yielding',
     );
 
     expect(injectedWindow.ethereum).toBe(existingProvider);
@@ -50,10 +38,49 @@ describe('provider-compatibility tests:\n', () => {
     ]);
   });
 
+  it('falls back to Keychain on legacy dapps when it is the only wallet', () => {
+    jest.useFakeTimers();
+    const keychainProvider = makeProvider('keychain');
+    const injectedWindow = {} as InjectedWindow;
+
+    registerLegacyProvider(
+      injectedWindow,
+      keychainProvider as unknown as EvmProvider,
+      'yielding',
+    );
+
+    expect(injectedWindow.ethereum).toBeUndefined();
+
+    jest.runOnlyPendingTimers();
+
+    expect(injectedWindow.ethereum).toBe(keychainProvider);
+    expect(injectedWindow.ethereum?.providers).toEqual([keychainProvider]);
+  });
+
+  it('yields to a later provider even after the fallback timers run', () => {
+    jest.useFakeTimers();
+    const keychainProvider = makeProvider('keychain');
+    const rabbyProvider = makeProvider('rabby');
+    const injectedWindow = {} as InjectedWindow;
+
+    registerLegacyProvider(
+      injectedWindow,
+      keychainProvider as unknown as EvmProvider,
+      'yielding',
+    );
+
+    jest.runOnlyPendingTimers();
+    expect(injectedWindow.ethereum).toBe(keychainProvider);
+
+    injectedWindow.ethereum = rabbyProvider;
+
+    expect(injectedWindow.ethereum).toBe(rabbyProvider);
+    expect(rabbyProvider.providers).toEqual([rabbyProvider, keychainProvider]);
+  });
+
   it('makes Keychain primary and keeps tracking later providers when enabled', () => {
     const keychainProvider = makeProvider('keychain');
     const existingProvider = makeProvider('metamask');
-    existingProvider.providers = [existingProvider];
     const injectedWindow = {
       ethereum: existingProvider,
     } as InjectedWindow;
@@ -61,7 +88,7 @@ describe('provider-compatibility tests:\n', () => {
     registerLegacyProvider(
       injectedWindow,
       keychainProvider as unknown as EvmProvider,
-      true,
+      'preferred',
     );
 
     expect(injectedWindow.ethereum).toBe(keychainProvider);
@@ -79,5 +106,10 @@ describe('provider-compatibility tests:\n', () => {
       existingProvider,
       rabbyProvider,
     ]);
+    expect(() =>
+      Object.defineProperty(injectedWindow, 'ethereum', {
+        value: rabbyProvider,
+      }),
+    ).toThrow();
   });
 });

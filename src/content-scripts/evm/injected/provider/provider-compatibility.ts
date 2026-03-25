@@ -1,5 +1,6 @@
 import { EvmProvider } from 'src/content-scripts/evm/injected/provider/evm-provider';
-import { PROVIDER_COMPATIBILITY_DATA_ATTRIBUTE } from 'src/content-scripts/evm/provider-compatibility.constants';
+
+export type LegacyProviderMode = 'preferred' | 'yielding';
 
 export type LegacyEthereumProvider = EvmProvider & {
   providers?: LegacyEthereumProvider[];
@@ -11,22 +12,8 @@ export type InjectedWindow = Window & {
   hiveKeychainEthereum?: EvmProvider;
 };
 
-interface ProviderCompatibilityController {
-  legacyProvider: LegacyEthereumProvider;
-  trackedProviders: LegacyEthereumProvider[];
-  preferOnLegacyDapps: boolean;
-  accessorInstalled: boolean;
-}
-
-export interface ProviderCompatibilityConfig {
-  preferOnLegacyDapps: boolean;
-}
-
-const DEFAULT_PROVIDER_COMPATIBILITY_CONFIG: ProviderCompatibilityConfig = {
-  preferOnLegacyDapps: true,
-};
-
-let compatibilityController: ProviderCompatibilityController | undefined;
+const DEFAULT_LEGACY_PROVIDER_MODE: LegacyProviderMode = 'preferred';
+const YIELDING_FALLBACK_DELAYS = [0, 25, 100, 500];
 
 const isLegacyEthereumProvider = (
   provider: unknown,
@@ -71,130 +58,101 @@ const syncKnownNamespaces = (
   injectedWindow.hiveKeychainEthereum = provider;
 };
 
-const getPrimaryLegacyProvider = (
-  controller: ProviderCompatibilityController,
+const getPrimaryExternalProvider = (
+  legacyProvider: LegacyEthereumProvider,
+  trackedProviders: LegacyEthereumProvider[],
 ) => {
-  return (
-    controller.trackedProviders.find(
-      (provider) => provider !== controller.legacyProvider,
-    ) ?? controller.legacyProvider
-  );
+  return trackedProviders.find((provider) => provider !== legacyProvider);
 };
 
-const getDisplayedProvider = (
-  controller: ProviderCompatibilityController,
-) => {
-  return controller.preferOnLegacyDapps
-    ? controller.legacyProvider
-    : getPrimaryLegacyProvider(controller);
-};
-
-const syncProviderList = (
-  provider: LegacyEthereumProvider,
+const buildProviderList = (
+  primaryProvider: LegacyEthereumProvider,
   providers: LegacyEthereumProvider[],
 ) => {
-  provider.providers = mergeProviders(provider, providers);
+  return [
+    primaryProvider,
+    ...providers.filter((provider) => provider !== primaryProvider),
+  ];
 };
 
-const syncTrackedProviders = (controller: ProviderCompatibilityController) => {
-  controller.trackedProviders = mergeProviders(
-    controller.legacyProvider,
-    controller.trackedProviders,
+const syncTrackedProviders = (
+  mode: LegacyProviderMode,
+  legacyProvider: LegacyEthereumProvider,
+  trackedProviders: LegacyEthereumProvider[],
+) => {
+  const mergedProviders = mergeProviders(legacyProvider, trackedProviders);
+  legacyProvider.providers = mergedProviders;
+
+  const primaryExternalProvider = getPrimaryExternalProvider(
+    legacyProvider,
+    mergedProviders,
   );
 
-  syncProviderList(controller.legacyProvider, controller.trackedProviders);
-
-  const primaryLegacyProvider = getPrimaryLegacyProvider(controller);
-
-  if (primaryLegacyProvider !== controller.legacyProvider) {
+  if (primaryExternalProvider) {
     try {
-      syncProviderList(primaryLegacyProvider, controller.trackedProviders);
+      primaryExternalProvider.providers =
+        mode === 'yielding'
+          ? buildProviderList(primaryExternalProvider, mergedProviders)
+          : mergedProviders;
     } catch {
       // Some injected providers expose read-only compatibility shims.
     }
   }
-};
 
-const captureProvider = (
-  controller: ProviderCompatibilityController,
-  nextProvider: unknown,
-) => {
-  if (!nextProvider || nextProvider === controller.legacyProvider) {
-    syncTrackedProviders(controller);
-    return;
-  }
-
-  controller.trackedProviders = mergeProviders(
-    controller.legacyProvider,
-    controller.trackedProviders,
-    nextProvider,
-  );
-  syncTrackedProviders(controller);
+  return mergedProviders;
 };
 
 const installEthereumAccessor = (
   injectedWindow: InjectedWindow,
-  controller: ProviderCompatibilityController,
+  getDisplayedProvider: () => LegacyEthereumProvider | undefined,
+  captureProvider: (nextProvider: unknown) => void,
+  configurable: boolean,
 ) => {
   const ethereumDescriptor = Object.getOwnPropertyDescriptor(
     injectedWindow,
     'ethereum',
   );
 
-  if (controller.accessorInstalled) {
-    syncTrackedProviders(controller);
-    return true;
-  }
-
   if (ethereumDescriptor && !ethereumDescriptor.configurable) {
     return false;
   }
 
   Object.defineProperty(injectedWindow, 'ethereum', {
-    configurable: true,
+    configurable,
     enumerable: ethereumDescriptor?.enumerable ?? true,
-    get: () => getDisplayedProvider(controller),
+    get: () => getDisplayedProvider(),
     set: (nextProvider: unknown) => {
-      captureProvider(controller, nextProvider);
+      captureProvider(nextProvider);
     },
   });
 
-  controller.accessorInstalled = true;
-  syncTrackedProviders(controller);
   return true;
 };
 
-const registerConservativeProvider = (
+const registerPreferredProvider = (
   injectedWindow: InjectedWindow,
-  controller: ProviderCompatibilityController,
+  legacyProvider: LegacyEthereumProvider,
 ) => {
-  const legacyProvider = controller.legacyProvider;
-  syncTrackedProviders(controller);
+  let trackedProviders = mergeProviders(legacyProvider, injectedWindow.ethereum);
 
-  if (!injectedWindow.ethereum) {
-    injectedWindow.ethereum = legacyProvider;
-    return;
-  }
+  const sync = () => {
+    trackedProviders = syncTrackedProviders(
+      'preferred',
+      legacyProvider,
+      trackedProviders,
+    );
+  };
 
-  if (injectedWindow.ethereum === legacyProvider) {
-    syncProviderList(legacyProvider, [legacyProvider]);
-    return;
-  }
-
-  captureProvider(controller, injectedWindow.ethereum);
-
-  try {
-    injectedWindow.ethereum.providers = controller.trackedProviders;
-  } catch {
-    // Some injected providers expose read-only compatibility shims.
-  }
-};
-
-const registerAggressiveProvider = (
-  injectedWindow: InjectedWindow,
-  controller: ProviderCompatibilityController,
-) => {
-  const legacyProvider = controller.legacyProvider;
+  const captureProvider = (nextProvider: unknown) => {
+    if (nextProvider && nextProvider !== legacyProvider) {
+      trackedProviders = mergeProviders(
+        legacyProvider,
+        trackedProviders,
+        nextProvider,
+      );
+    }
+    sync();
+  };
 
   const reclaimProvider = () => {
     try {
@@ -202,82 +160,139 @@ const registerAggressiveProvider = (
     } catch {
       // Best effort only when another extension defines a fixed legacy provider.
     }
-    syncTrackedProviders(controller);
+    sync();
   };
 
-  if (installEthereumAccessor(injectedWindow, controller)) {
+  if (
+    installEthereumAccessor(
+      injectedWindow,
+      () => legacyProvider,
+      captureProvider,
+      false,
+    )
+  ) {
+    sync();
     return;
   }
 
-  syncTrackedProviders(controller);
+  sync();
   reclaimProvider();
+
   [0, 25, 100, 500].forEach((delay) => {
     setTimeout(() => {
       if (injectedWindow.ethereum && injectedWindow.ethereum !== legacyProvider) {
-        captureProvider(controller, injectedWindow.ethereum);
+        captureProvider(injectedWindow.ethereum);
       }
       reclaimProvider();
     }, delay);
   });
 };
 
-export const getProviderCompatibilityConfig = (
-  currentScript?: Document['currentScript'] | null,
-): ProviderCompatibilityConfig => {
-  const sharedPreference =
-    document.documentElement?.dataset[PROVIDER_COMPATIBILITY_DATA_ATTRIBUTE];
+const registerYieldingProvider = (
+  injectedWindow: InjectedWindow,
+  legacyProvider: LegacyEthereumProvider,
+) => {
+  let trackedProviders = mergeProviders(legacyProvider, injectedWindow.ethereum);
+  let fallbackActive = false;
 
-  if (sharedPreference !== undefined) {
-    return {
-      preferOnLegacyDapps: sharedPreference !== 'false',
-    };
+  const sync = () => {
+    trackedProviders = syncTrackedProviders(
+      'yielding',
+      legacyProvider,
+      trackedProviders,
+    );
+  };
+
+  const captureProvider = (nextProvider: unknown) => {
+    if (nextProvider && nextProvider !== legacyProvider) {
+      trackedProviders = mergeProviders(
+        legacyProvider,
+        trackedProviders,
+        nextProvider,
+      );
+    }
+    sync();
+  };
+
+  const getDisplayedProvider = () => {
+    return (
+      getPrimaryExternalProvider(legacyProvider, trackedProviders) ??
+      (fallbackActive ? legacyProvider : undefined)
+    );
+  };
+
+  if (
+    installEthereumAccessor(
+      injectedWindow,
+      getDisplayedProvider,
+      captureProvider,
+      true,
+    )
+  ) {
+    sync();
+
+    YIELDING_FALLBACK_DELAYS.forEach((delay) => {
+      setTimeout(() => {
+        if (getPrimaryExternalProvider(legacyProvider, trackedProviders)) {
+          sync();
+          return;
+        }
+
+        fallbackActive = true;
+        sync();
+      }, delay);
+    });
+
+    return;
   }
 
-  const scriptTag = currentScript as HTMLScriptElement | null;
-  return {
-    preferOnLegacyDapps:
-      scriptTag?.dataset.preferOnLegacyDapps !== 'false',
-  };
+  sync();
+
+  if (injectedWindow.ethereum && injectedWindow.ethereum !== legacyProvider) {
+    captureProvider(injectedWindow.ethereum);
+    try {
+      injectedWindow.ethereum.providers = buildProviderList(
+        injectedWindow.ethereum,
+        trackedProviders,
+      );
+    } catch {
+      // Some injected providers expose read-only compatibility shims.
+    }
+    return;
+  }
+
+  YIELDING_FALLBACK_DELAYS.forEach((delay) => {
+    setTimeout(() => {
+      if (injectedWindow.ethereum && injectedWindow.ethereum !== legacyProvider) {
+        captureProvider(injectedWindow.ethereum);
+        return;
+      }
+
+      fallbackActive = true;
+      sync();
+
+      try {
+        injectedWindow.ethereum = legacyProvider;
+      } catch {
+        // Best effort only when another extension defines a fixed legacy provider.
+      }
+    }, delay);
+  });
 };
 
 export const registerLegacyProvider = (
   injectedWindow: InjectedWindow,
   provider: EvmProvider,
-  preferOnLegacyDapps: boolean = DEFAULT_PROVIDER_COMPATIBILITY_CONFIG.preferOnLegacyDapps,
+  mode: LegacyProviderMode = DEFAULT_LEGACY_PROVIDER_MODE,
 ) => {
   syncKnownNamespaces(injectedWindow, provider);
 
-  if (!compatibilityController) {
-    compatibilityController = {
-      legacyProvider: provider as LegacyEthereumProvider,
-      trackedProviders: mergeProviders(
-        provider as LegacyEthereumProvider,
-        injectedWindow.ethereum,
-      ),
-      preferOnLegacyDapps,
-      accessorInstalled: false,
-    };
-  } else {
-    compatibilityController.preferOnLegacyDapps = preferOnLegacyDapps;
+  const legacyProvider = provider as LegacyEthereumProvider;
 
-    if (!compatibilityController.accessorInstalled && injectedWindow.ethereum) {
-      captureProvider(compatibilityController, injectedWindow.ethereum);
-    } else {
-      syncTrackedProviders(compatibilityController);
-    }
-  }
-
-  compatibilityController.preferOnLegacyDapps = preferOnLegacyDapps;
-
-  if (preferOnLegacyDapps) {
-    registerAggressiveProvider(injectedWindow, compatibilityController);
+  if (mode === 'preferred') {
+    registerPreferredProvider(injectedWindow, legacyProvider);
     return;
   }
 
-  if (compatibilityController.accessorInstalled) {
-    syncTrackedProviders(compatibilityController);
-    return;
-  }
-
-  registerConservativeProvider(injectedWindow, compatibilityController);
+  registerYieldingProvider(injectedWindow, legacyProvider);
 };

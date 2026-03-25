@@ -3,10 +3,9 @@ import {
   EvmProviderModule,
 } from 'src/content-scripts/evm/injected/provider/evm-provider';
 import {
-  getProviderCompatibilityConfig,
+  LegacyProviderMode,
   registerLegacyProvider,
 } from 'src/content-scripts/evm/injected/provider/provider-compatibility';
-import { PROVIDER_COMPATIBILITY_UPDATE_EVENT } from 'src/content-scripts/evm/provider-compatibility.constants';
 
 const announceProvider = (provider: EvmProvider) => {
   window.dispatchEvent(
@@ -19,30 +18,15 @@ const announceProvider = (provider: EvmProvider) => {
   );
 };
 
-const providerCompatibilityConfig = getProviderCompatibilityConfig(
-  document.currentScript,
-);
+export const bootstrapEvmKeychain = (mode: LegacyProviderMode) => {
+  const provider = EvmProviderModule.getProvider();
+  registerLegacyProvider(window, provider, mode);
 
-const provider = EvmProviderModule.getProvider();
-registerLegacyProvider(
-  window,
-  provider,
-  providerCompatibilityConfig.preferOnLegacyDapps,
-);
+  window.addEventListener('eip6963:requestProvider', () => {
+    announceProvider(provider);
+  });
 
-document.addEventListener(PROVIDER_COMPATIBILITY_UPDATE_EVENT, () => {
-  const updatedProviderCompatibilityConfig = getProviderCompatibilityConfig();
-  registerLegacyProvider(
-    window,
-    provider,
-    updatedProviderCompatibilityConfig.preferOnLegacyDapps,
-  );
-});
-
-window.addEventListener('eip6963:requestProvider', () => {
   announceProvider(provider);
-});
 
-announceProvider(provider);
-
-window.dispatchEvent(new Event('ethereum#initialized'));
+  window.dispatchEvent(new Event('ethereum#initialized'));
+};

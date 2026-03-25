@@ -1,6 +1,7 @@
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { initEvmRequestHandler } from '@background/evm/requests/init';
 import { performEvmOperation } from '@background/evm/requests/operations/perform-operation';
+import { initializeEvmProviderRegistration } from '@background/evm/evm-provider-registration';
 import MkModule from '@background/hive/modules/mk.module';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import {
@@ -24,6 +25,7 @@ const initializeServiceWorker = async () => {
   Object.assign(global, { contextType: 'service_worker' });
 
   Logger.info('Starting EVM service worker');
+  initializeEvmProviderRegistration();
 
   chrome.webNavigation.onBeforeNavigate.addListener((details: any) => {
     if (details.url?.endsWith('.eth/')) {

@@ -6,6 +6,12 @@ Object.assign(global, {
   TextEncoder,
   TextDecoder,
 });
+if (!global.self) {
+  Object.defineProperty(global, 'self', {
+    value: global,
+    configurable: true,
+  });
+}
 Object.defineProperty(global.self, 'crypto', {
   value: {
     subtle: crypto.subtle,
