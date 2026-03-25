@@ -176,9 +176,9 @@ const getKeyType = (
     )
   ) {
     return PrivateKeyType.MULTISIG;
-  } else if (privateKey?.toString().startsWith('#')) {
+  } else if ((privateKey?.toString() ?? '').startsWith('#')) {
     return PrivateKeyType.LEDGER;
-  } else if (publicKey?.toString().startsWith('@')) {
+  } else if ((publicKey?.toString() ?? '').startsWith('@')) {
     return PrivateKeyType.AUTHORIZED_ACCOUNT;
   } else {
     return PrivateKeyType.PRIVATE_KEY;

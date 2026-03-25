@@ -47,7 +47,10 @@ describe('rpc.utils tests:\n', () => {
       LocalStorageUtils.getValueFromLocalStorage = jest
         .fn()
         .mockResolvedValueOnce(customRpcs);
-      expect(await RpcUtils.getCustomRpcs()).toEqual(customRpcs);
+      expect(await RpcUtils.getCustomRpcs()).toEqual([
+        { uri: 'https://apiHive/', testnet: true, custom: true },
+        { uri: 'https://apiHive2/', testnet: false, custom: true },
+      ]);
     });
     test('If no stored customRpc list, must return empty array', async () => {
       LocalStorageUtils.getValueFromLocalStorage = jest
@@ -184,13 +187,13 @@ describe('rpc.utils tests:\n', () => {
       jussi_num: 64517562,
     };
     const hardCodedUri = 'https://hived.emre.sh';
-    test('Checking on uri "DEFAULT" will check on "defaultAPI/health" and return status', async () => {
+    test('Checking on uri "DEFAULT" will hit the default Hive API base URL and return status', async () => {
       const spyAxiosGet = jest
         .spyOn(axios, 'get')
         .mockResolvedValueOnce(fakeResponse);
       expect(await RpcUtils.checkRpcStatus('DEFAULT')).toBe(true);
       expect(spyAxiosGet).toHaveBeenCalledTimes(1);
-      expect(spyAxiosGet).toHaveBeenCalledWith('https://api.hive.blog/health', {
+      expect(spyAxiosGet).toHaveBeenCalledWith('https://api.hive.blog', {
         timeout: 10000,
       });
     });

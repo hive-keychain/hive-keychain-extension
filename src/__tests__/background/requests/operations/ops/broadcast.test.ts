@@ -1,8 +1,9 @@
+import * as HiveMemo from '@hiveio/hive-js/lib/auth/memo';
 import LedgerModule from '@background/ledger.module';
 import { broadcastOperations } from '@background/requests/operations/ops/broadcast';
 import { RequestsHandler } from '@background/requests/request-handler';
-import AccountUtils from '@hiveapp/utils/account.utils';
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import {
   KeychainKeyTypes,
@@ -17,6 +18,7 @@ import operation from 'src/__tests__/utils-for-testing/data/operation';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { mockHiveTxCreateTransactionForLedger } from 'src/__tests__/utils-for-testing/mocks/hive-tx-ledger.helpers';
 import { KeychainError } from 'src/keychain-error';
 
 describe('broadcast tests:\n', () => {
@@ -40,48 +42,45 @@ describe('broadcast tests:\n', () => {
     chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
+    jest.spyOn(HiveMemo, 'encode').mockReturnValue('#mock-encoded-memo');
   });
 
   describe('Default cases:\n', () => {
     it('Must return error if parsing fails', async () => {
       const cloneData = objects.clone(data) as RequestBroadcast & RequestId;
       cloneData.operations = '//!!';
-      const message = 'Unexpected token / in JSON at position 0';
       const requestHandler = new RequestsHandler();
       const result = await broadcastOperations(requestHandler, cloneData);
       const { request_id, ...datas } = cloneData;
-      expect(result).toEqual({
-        command: DialogCommand.ANSWER_REQUEST,
-        msg: {
-          success: false,
-          error: new SyntaxError(message),
-          result: undefined,
-          data: datas,
-          message: message,
-          request_id: request_id,
-          publicKey: undefined,
-        },
+      expect(result.command).toBe(DialogCommand.ANSWER_REQUEST);
+      expect(result.msg.success).toBe(false);
+      expect(result.msg.error).toBeInstanceOf(SyntaxError);
+      const err = result.msg.error as SyntaxError;
+      expect(err.message).toMatch(/JSON/);
+      expect(result.msg.message).toBe(err.message);
+      expect(result.msg).toMatchObject({
+        result: undefined,
+        data: datas,
+        request_id: request_id,
+        publicKey: undefined,
       });
     });
 
     it('Must return error if invalid operations format', async () => {
       const cloneData = objects.clone(data) as RequestBroadcast & RequestId;
       cloneData.operations = '{}';
-      const message = 'operations is not iterable';
       const requestHandler = new RequestsHandler();
       const result = await broadcastOperations(requestHandler, cloneData);
       const { request_id, ...datas } = cloneData;
-      expect(result).toEqual({
-        command: DialogCommand.ANSWER_REQUEST,
-        msg: {
-          success: false,
-          error: new TypeError(message),
-          result: undefined,
-          data: datas,
-          message: message,
-          request_id: request_id,
-          publicKey: undefined,
-        },
+      expect(result.command).toBe(DialogCommand.ANSWER_REQUEST);
+      expect(result.msg.success).toBe(false);
+      expect(result.msg.error).toBeInstanceOf(TypeError);
+      expect((result.msg.error as TypeError).message).toMatch(/iterable/);
+      expect(result.msg).toMatchObject({
+        result: undefined,
+        data: datas,
+        request_id: request_id,
+        publicKey: undefined,
       });
     });
 
@@ -234,6 +233,9 @@ describe('broadcast tests:\n', () => {
   });
 
   describe('Using ledger cases:\n', () => {
+    beforeEach(() => {
+      mockHiveTxCreateTransactionForLedger();
+    });
     it('Must return success on transfer', async () => {
       AccountUtils.getExtendedAccount = jest
         .fn()

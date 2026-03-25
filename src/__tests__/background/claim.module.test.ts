@@ -1,4 +1,5 @@
 import ClaimModule from '@background/claim.module';
+import MkModule from '@background/mk.module';
 import BgdAccountsUtils from '@background/utils/accounts.utils';
 import AccountUtils from '@hiveapp/utils/account.utils';
 import { SavingsUtils } from '@hiveapp/utils/savings.utils';
@@ -18,14 +19,17 @@ describe('claim.module tests:\n', () => {
   afterAll(() => {
     Config.claims.freeAccount.MIN_RC_PCT = initialMIN_RC_PCT;
     Config.claims.savings.delay = initialSavingsDelay;
-  }),
-    afterEach(() => {
-      jest.clearAllMocks();
-      jest.resetModules();
-      jest.restoreAllMocks();
-      jest.resetAllMocks();
-      Config.claims.savings.delay = initialSavingsDelay;
-    });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
+    Config.claims.savings.delay = initialSavingsDelay;
+  });
+
+  beforeEach(() => {
+    jest.spyOn(MkModule, 'getMk').mockResolvedValue(undefined);
+  });
 
   it('Must create alarm and call Logger', async () => {
     LocalStorageUtils.getMultipleValueFromLocalStorage = jest
@@ -50,6 +54,7 @@ describe('claim.module tests:\n', () => {
   });
 
   it('Must call Logger with error on each case', async () => {
+    jest.spyOn(MkModule, 'getMk').mockResolvedValue(mk.user.one);
     const nonValidClaims = [
       {
         __MK: mk.user.one,
@@ -87,6 +92,7 @@ describe('claim.module tests:\n', () => {
   });
 
   it('Must call logger with nothing to claim', async () => {
+    jest.spyOn(MkModule, 'getMk').mockResolvedValue(mk.user.one);
     LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue({
@@ -103,6 +109,7 @@ describe('claim.module tests:\n', () => {
         savings_hbd_balance: '0.000 HBD',
       },
     ]);
+    AccountUtils.getRCMana = jest.fn().mockResolvedValue(accounts.active.rc);
     BgdAccountsUtils.getAccountsFromLocalStorage = jest
       .fn()
       .mockResolvedValue([accounts.local.justTwoKeys]);
@@ -118,6 +125,7 @@ describe('claim.module tests:\n', () => {
   });
 
   it('Must call logger with no time to claim', async () => {
+    jest.spyOn(MkModule, 'getMk').mockResolvedValue(mk.user.one);
     LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue({
@@ -134,6 +142,7 @@ describe('claim.module tests:\n', () => {
         savings_hbd_balance: '3,148.720 HBD',
       },
     ]);
+    AccountUtils.getRCMana = jest.fn().mockResolvedValue(accounts.active.rc);
     BgdAccountsUtils.getAccountsFromLocalStorage = jest
       .fn()
       .mockResolvedValue([accounts.local.justTwoKeys]);

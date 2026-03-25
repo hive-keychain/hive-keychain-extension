@@ -342,11 +342,18 @@ const SavingsPage = ({
   };
 
   const setToMax = () => {
-    if (watch('type') === SavingOperationType.WITHDRAW) {
-      setValue('amount', Number(savings));
-    } else {
-      setValue('amount', Number(liquid));
+    const raw =
+      watch('type') === SavingOperationType.WITHDRAW
+        ? Number(savings)
+        : Number(liquid);
+    if (!Number.isFinite(raw)) {
+      return;
     }
+    setValue('amount', raw, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
+    });
   };
 
   const goToPendingSavingsWithdrawal = () => {
@@ -415,6 +422,7 @@ const SavingsPage = ({
           <ComplexeCustomSelect
             label="popup_html_savings_operation_type"
             options={savingOperationTypeOptions}
+            selectHandleDataTestId="select-operation-type"
             selectedItem={
               {
                 value: watch('type'),
@@ -442,6 +450,7 @@ const SavingsPage = ({
             <ComplexeCustomSelect
               label="popup_html_currency"
               options={currencyOptions}
+              selectHandleDataTestId="select-currency-savings"
               selectedItem={
                 {
                   value: watch('currency'),

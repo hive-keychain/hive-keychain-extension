@@ -1,7 +1,8 @@
 import LedgerModule from '@background/ledger.module';
 import { convert } from '@background/requests/operations/ops/convert';
 import { RequestsHandler } from '@background/requests/request-handler';
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import { ConversionUtils } from 'src/popup/hive/utils/conversion.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
@@ -13,6 +14,7 @@ import {
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { mockHiveTxCreateTransactionForLedger } from 'src/__tests__/utils-for-testing/mocks/hive-tx-ledger.helpers';
 
 describe('convert tests:\n', () => {
   const requestHandler = new RequestsHandler();
@@ -33,6 +35,9 @@ describe('convert tests:\n', () => {
   });
   beforeEach(() => {
     requestHandler.data.rpc = DefaultRpcs[0];
+    jest
+      .spyOn(ConversionUtils, 'getConversionRequests')
+      .mockResolvedValue([{ requestid: 0 } as any]);
     jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('en-US');
     chrome.i18n.getMessage = jest
       .fn()
@@ -128,6 +133,9 @@ describe('convert tests:\n', () => {
   });
 
   describe('Using ledger cases:\n', () => {
+    beforeEach(() => {
+      mockHiveTxCreateTransactionForLedger();
+    });
     it('Must return success with a non collateralized convertion', async () => {
       jest
         .spyOn(LedgerModule, 'getSignatureFromLedger')

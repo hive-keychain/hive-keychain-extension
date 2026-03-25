@@ -2,7 +2,7 @@ import ProxyUtils from '@hiveapp/utils/proxy.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import '@testing-library/jest-dom';
-import { act, cleanup, screen } from '@testing-library/react';
+import { act, cleanup, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React from 'react';
@@ -40,9 +40,14 @@ describe('proxy-tab.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
           await userEvent.click(
-            screen.getByTestId(dataTestIdButton.menuPreFix + Icons.HIVE),
+            screen.getByTestId(dataTestIdButton.menuPreFix + Icons.GOVERNANCE),
           );
-          await userEvent.click(screen.getAllByRole('tab')[1]);
+        });
+        await screen.findByText(chrome.i18n.getMessage('popup_html_witness'));
+        await act(async () => {
+          await userEvent.click(
+            screen.getByText(chrome.i18n.getMessage('popup_html_proxy')),
+          );
         });
       });
 
@@ -142,21 +147,27 @@ describe('proxy-tab.component tests:\n', () => {
         await act(async () => {
           await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
           await userEvent.click(
-            screen.getByTestId(dataTestIdButton.menuPreFix + Icons.HIVE),
+            screen.getByTestId(dataTestIdButton.menuPreFix + Icons.GOVERNANCE),
           );
-          await userEvent.click(screen.getAllByRole('tab')[1]);
+        });
+        await screen.findByText(chrome.i18n.getMessage('popup_html_witness'));
+        await act(async () => {
+          await userEvent.click(
+            screen.getByText(chrome.i18n.getMessage('popup_html_proxy')),
+          );
         });
       });
 
       it('Must show intro message and current proxy account', async () => {
+        const proxyTab = await screen.findByTestId('proxy-tab');
         expect(
-          await screen.findByText(
+          await within(proxyTab).findByText(
             chrome.i18n.getMessage('html_popup_witness_has_proxy').trim(),
             { exact: true },
           ),
         ).toBeInTheDocument();
         expect(
-          await screen.findByText(
+          within(proxyTab).getByText(
             chrome.i18n.getMessage('html_popup_currently_using_proxy', [
               'keychain',
             ]),
@@ -190,9 +201,14 @@ describe('proxy-tab.component tests:\n', () => {
       await act(async () => {
         await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.HIVE),
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.GOVERNANCE),
         );
-        await userEvent.click(screen.getAllByRole('tab')[1]);
+      });
+      await screen.findByText(chrome.i18n.getMessage('popup_html_witness'));
+      await act(async () => {
+        await userEvent.click(
+          screen.getByText(chrome.i18n.getMessage('popup_html_proxy')),
+        );
       });
     });
 

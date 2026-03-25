@@ -9,17 +9,14 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
 import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
-import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-import { ActionButtonList } from 'src/popup/hive/pages/app-container/home/actions-section/action-button.list';
+
 describe('token-operation.component tests', () => {
-  const actionButtonTokenIconName = ActionButtonList.find((actionButton) =>
-    actionButton.label.includes('token'),
-  )?.icon;
   const selectedToken = tokensUser.balances.find(
     (token) => token.symbol === 'LEO',
   )!;
@@ -34,18 +31,11 @@ describe('token-operation.component tests', () => {
       initialStates.iniStateAs.defaultExistent,
     );
     await act(async () => {
-      await userEvent.click(
-        screen.getByTestId(
-          `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
-        ),
+      const leoRow = (await screen.findAllByTestId('token-user-item')).find(
+        (el) => el.textContent?.includes('LEO'),
       );
-    });
-    await act(async () => {
-      await userEvent.click(
-        screen.getByTestId(
-          dataTestIdIcon.tokens.prefix.expandMore + selectedToken.symbol,
-        ),
-      );
+      expect(leoRow).toBeTruthy();
+      await userEvent.click(leoRow!);
     });
   });
   describe('unstake cases', () => {
@@ -112,9 +102,10 @@ describe('token-operation.component tests', () => {
               selectedToken.symbol,
           ),
         );
+        // Unstake max is derived from stake, not liquid balance; exceeding it fails Joi first.
         await userEvent.type(
           screen.getByTestId(dataTestIdInput.amount),
-          (parseFloat(selectedToken.balance) + 1).toString(),
+          (parseFloat(selectedToken.stake) + 1).toString(),
         );
         await userEvent.click(
           screen.getByTestId(
@@ -124,7 +115,7 @@ describe('token-operation.component tests', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_power_up_down_error'),
+          chrome.i18n.getMessage('validation_error_less_or_equal_value'),
           { exact: true },
         ),
       ).toBeInTheDocument();
@@ -266,6 +257,10 @@ describe('token-operation.component tests', () => {
             dataTestIdDiv.token.user.prefixes.action.delegate +
               selectedToken.symbol,
           ),
+        );
+        await userEvent.type(
+          screen.getByTestId(dataTestIdInput.username),
+          mk.user.two,
         );
         await userEvent.type(
           screen.getByTestId(dataTestIdInput.amount),

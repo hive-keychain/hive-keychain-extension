@@ -1,8 +1,9 @@
 import LedgerModule from '@background/ledger.module';
 import { broadcastTransfer } from '@background/requests/operations/ops/transfer';
 import { RequestsHandler } from '@background/requests/request-handler';
-import AccountUtils from '@hiveapp/utils/account.utils';
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import * as MemoEncodeHiveJS from '@hiveio/hive-js/lib/auth/memo';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
@@ -17,6 +18,7 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { mockHiveTxCreateTransactionForLedger } from 'src/__tests__/utils-for-testing/mocks/hive-tx-ledger.helpers';
 import { KeychainError } from 'src/keychain-error';
 
 describe('transfer tests:\n', () => {
@@ -34,15 +36,17 @@ describe('transfer tests:\n', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-    jest.resetModules();
     jest.restoreAllMocks();
     jest.resetAllMocks();
   });
   beforeEach(() => {
-    jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('em-US');
+    jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValue('em-US');
     chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
+    AccountUtils.getExtendedAccount = jest
+      .fn()
+      .mockResolvedValue(accounts.extended);
   });
 
   describe('broadcastTransfer cases:\n', () => {
@@ -143,6 +147,12 @@ describe('transfer tests:\n', () => {
       });
 
       describe('Encrypted memo:\n', () => {
+        beforeEach(() => {
+          jest
+            .spyOn(MemoEncodeHiveJS, 'encode')
+            .mockReturnValue('#mock-encoded-memo');
+        });
+
         it('Must return error if no memoKey', async () => {
           AccountUtils.getExtendedAccount = jest
             .fn()
@@ -238,6 +248,9 @@ describe('transfer tests:\n', () => {
     });
 
     describe('Using ledger cases:\n', () => {
+      beforeEach(() => {
+        mockHiveTxCreateTransactionForLedger();
+      });
       it('Must return success', async () => {
         jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValueOnce({
           id: 'id',

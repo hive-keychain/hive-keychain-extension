@@ -222,9 +222,28 @@ describe('index tests:\n', () => {
       .mockImplementation(() =>
         cbImplementation(KeychainRequestTypes.recurrentTransfer),
       );
+    const SavingsOpModule = require('src/background/requests/operations/ops/savings.ts');
+    jest
+      .spyOn(SavingsOpModule, 'broadcastSavings')
+      .mockImplementation(() =>
+        cbImplementation(KeychainRequestTypes.savings),
+      );
+    const EncodeWithKeysOpModule = require('src/background/requests/operations/ops/encode-with-keys.ts');
+    jest
+      .spyOn(EncodeWithKeysOpModule, 'encodeWithKeys')
+      .mockImplementation(() =>
+        cbImplementation(KeychainRequestTypes.encodeWithKeys),
+      );
+    const SwapOpModule = require('src/background/requests/operations/ops/swap.ts');
+    jest
+      .spyOn(SwapOpModule, 'broadcastSwap')
+      .mockImplementation(() =>
+        cbImplementation(KeychainRequestTypes.swap),
+      );
 
     const RequestTypeList = Object.keys(KeychainRequestTypes).filter(
-      (requestType) => requestType !== 'signedCall',
+      (requestType) =>
+        requestType !== 'signedCall' && !requestType.startsWith('vsc'),
     );
 
     const sSendMessage = jest

@@ -1,8 +1,10 @@
 import LedgerModule from '@background/ledger.module';
 import { broadcastSendToken } from '@background/requests/operations/ops/send-token';
 import { RequestsHandler } from '@background/requests/request-handler';
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
-import TokensUtils from '@hiveapp/utils/tokens.utils';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
@@ -14,6 +16,7 @@ import {
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { mockHiveTxCreateTransactionForLedger } from 'src/__tests__/utils-for-testing/mocks/hive-tx-ledger.helpers';
 
 describe('send-token tests:\n', () => {
   const data = {
@@ -34,6 +37,9 @@ describe('send-token tests:\n', () => {
     jest.resetAllMocks();
   });
   beforeEach(() => {
+    jest
+      .spyOn(AccountUtils, 'getExtendedAccount')
+      .mockResolvedValue(accounts.extended);
     jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('en-US');
     chrome.i18n.getMessage = jest
       .fn()
@@ -91,6 +97,9 @@ describe('send-token tests:\n', () => {
   });
 
   describe('Using ledger cases:\n', () => {
+    beforeEach(() => {
+      mockHiveTxCreateTransactionForLedger();
+    });
     it('Must return success', async () => {
       jest
         .spyOn(LedgerModule, 'getSignatureFromLedger')

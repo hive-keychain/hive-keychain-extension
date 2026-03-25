@@ -17,10 +17,20 @@ import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+
+jest.mock(
+  'hive-keychain-commons',
+  () =>
+    require('src/__tests__/utils-for-testing/mocks/hive-keychain-commons-iswif').getHiveKeychainCommonsIsWifMock(),
+);
+
+/** Matches `AccountKeysListItemComponent` public key display (SUBSTRING_LENGTH = 15). */
+const truncatedPublicKey = (pk: string) =>
+  `${pk.substring(0, 15)}...${pk.slice(-15)}`;
+
 describe('add-key.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
-    jest.resetModules();
     cleanup();
   });
   beforeEach(async () => {
@@ -54,7 +64,7 @@ describe('add-key.component tests:\n', () => {
   });
 
   it('Must show add keys buttons', async () => {
-    expect(await screen.findAllByText(`${Icons.ADD_CIRCLE}`)).toHaveLength(2);
+    expect(screen.getAllByTestId(/icon-add-key-/)).toHaveLength(2);
   });
 
   it('Must show add keys page and message', async () => {
@@ -101,7 +111,7 @@ describe('add-key.component tests:\n', () => {
         );
       });
       expect(
-        await screen.findByText(userData.one.encryptKeys.active),
+        await screen.findByText(truncatedPublicKey(userData.one.encryptKeys.active)),
       ).toBeInTheDocument();
     });
 
@@ -116,7 +126,7 @@ describe('add-key.component tests:\n', () => {
         );
       });
       expect(
-        await screen.findByText(userData.one.encryptKeys.memo),
+        await screen.findByText(truncatedPublicKey(userData.one.encryptKeys.memo)),
       ).toBeInTheDocument();
     });
 
@@ -132,7 +142,7 @@ describe('add-key.component tests:\n', () => {
           );
         });
         expect(
-          await screen.findByText(userData.one.encryptKeys.memo),
+          await screen.findByText(truncatedPublicKey(userData.one.encryptKeys.memo)),
         ).toBeInTheDocument();
       });
 
@@ -147,7 +157,7 @@ describe('add-key.component tests:\n', () => {
           );
         });
         expect(
-          await screen.findByText(userData.one.encryptKeys.active),
+          await screen.findByText(truncatedPublicKey(userData.one.encryptKeys.active)),
         ).toBeInTheDocument();
       });
     });
@@ -182,7 +192,7 @@ describe('add-key.component tests:\n', () => {
         await userEvent.click(screen.getByTestId(dataTestIdButton.importKeys));
       });
       expect(
-        await screen.findByText(userData.one.encryptKeys.active),
+        await screen.findByText(truncatedPublicKey(userData.one.encryptKeys.active)),
       ).toBeInTheDocument();
     });
 
@@ -190,7 +200,7 @@ describe('add-key.component tests:\n', () => {
       it('Must add memo key using master password', async () => {
         await act(async () => {
           await userEvent.click(
-            screen.getByTestId(dataTestIdIcon.keys.list.preFix.add + 'active'),
+            screen.getByTestId(dataTestIdIcon.keys.list.preFix.add + 'memo'),
           );
           await userEvent.type(
             screen.getByTestId(dataTestIdInput.privateKey),
@@ -201,7 +211,7 @@ describe('add-key.component tests:\n', () => {
           );
         });
         expect(
-          await screen.findByText(userData.one.encryptKeys.active),
+          await screen.findByText(truncatedPublicKey(userData.one.encryptKeys.memo)),
         ).toBeInTheDocument();
       });
     });

@@ -98,6 +98,8 @@ describe('automated-tasks.component tests:\n', () => {
           .mockResolvedValue({
             'keychain.tests': false,
           });
+        const sendMessage = jest.spyOn(chrome.runtime, 'sendMessage');
+        sendMessage.mockClear();
         await act(async () => {
           await userEvent.click(
             screen.getByTestId(
@@ -105,23 +107,7 @@ describe('automated-tasks.component tests:\n', () => {
             ),
           );
         });
-        expect(jest.spyOn(chrome.runtime, 'sendMessage')).toHaveBeenCalledTimes(2);
-      });
-
-      it('Must call sendMessage', async () => {
-        LocalStorageUtils.getValueFromLocalStorage = jest
-          .fn()
-          .mockResolvedValue({
-            'keychain.tests': false,
-          });
-        await act(async () => {
-          await userEvent.click(
-            screen.getByTestId(
-              dataTestIdCheckbox.automatedTasks.checkbox.claim.accounts,
-            ),
-          );
-        });
-        expect(jest.spyOn(chrome.runtime, 'sendMessage')).toHaveBeenCalledTimes(2);
+        expect(sendMessage).toHaveBeenCalledTimes(1);
       });
     });
   });

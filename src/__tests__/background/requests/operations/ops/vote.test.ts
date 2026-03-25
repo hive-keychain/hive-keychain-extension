@@ -1,6 +1,6 @@
 import { broadcastVote } from '@background/requests/operations/ops/vote';
 import { RequestsHandler } from '@background/requests/request-handler';
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import {

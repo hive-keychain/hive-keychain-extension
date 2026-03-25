@@ -1,9 +1,7 @@
-import {
-  SignedBuffer,
-  signBuffer,
-} from '@background/requests/operations/ops/sign-buffer';
+import { signBuffer } from '@background/requests/operations/ops/sign-buffer';
 import { RequestsHandler } from '@background/requests/request-handler';
-import { KeysUtils } from '@hiveapp/utils/keys.utils';
+import HiveUtils from 'src/popup/hive/utils/hive.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import {
   KeychainKeyTypes,
@@ -25,13 +23,6 @@ describe('sign-buffer tests:\n', () => {
     method: KeychainKeyTypes.active,
     title: 'title',
   } as RequestSignBuffer & RequestId;
-
-  const signedMessage = {
-    string:
-      '20221a058cd7f8d541427066e326b968efdcf0632773ee4042f87a0f559b9b93d3293aeedc37d6a50565ff9b4a9cf78e684f8fe94a381e1ff146c00c48500535de',
-    buffer:
-      '20382cf71c9264cf5ac5feec1c3a4de25f73113bae496769603087dc63531fb0c676097d99da6c42c3ecde7297b73c2bf187e4e7982cb1cae663e414bfe31bc6b2',
-  } as { string: string; buffer: SignedBuffer };
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -62,12 +53,16 @@ describe('sign-buffer tests:\n', () => {
     data.message = 'the key is very importat on HIVE';
     const signed = await signBuffer(requestHandler, data);
     const { request_id, ...datas } = data;
+    const expectedHex = HiveUtils.signMessage(
+      data.message,
+      userData.one.nonEncryptKeys.active,
+    );
     expect(signed).toEqual({
       command: DialogCommand.ANSWER_REQUEST,
       msg: {
         success: true,
         error: null,
-        result: signedMessage.string,
+        result: expectedHex,
         data: datas,
         message: chrome.i18n.getMessage('bgd_ops_sign_success'),
         request_id: request_id,
@@ -83,12 +78,16 @@ describe('sign-buffer tests:\n', () => {
     data.message = JSON.stringify(_buffer);
     const signed = await signBuffer(requestHandler, data);
     const { request_id, ...datas } = data;
+    const expectedBufferHex = HiveUtils.signMessage(
+      data.message,
+      userData.one.nonEncryptKeys.active,
+    );
     expect(signed).toEqual({
       command: DialogCommand.ANSWER_REQUEST,
       msg: {
         success: true,
         error: null,
-        result: signedMessage.buffer,
+        result: expectedBufferHex,
         data: datas,
         message: chrome.i18n.getMessage('bgd_ops_sign_success'),
         request_id: request_id,

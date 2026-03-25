@@ -134,3 +134,6 @@ const AutoStakeTokensModule = {
 };
 
 export default AutoStakeTokensModule;
+
+/** Exported for unit tests (alarm + parsing pipeline). */
+export { alarmHandler, initAutoStakeTokens };

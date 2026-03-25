@@ -1,7 +1,7 @@
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import { PageTitleProps } from 'src/common-ui/page-title/page-title.component';
-import * as titleContainerActions from 'src/popup/hive/actions/title-container.actions';
+import * as titleContainerActions from 'src/popup/multichain/actions/title-container.actions';
 describe('title-container.actions tests:\n', () => {
   describe('setTitleContainerProperties tests:\n', () => {
     const properties = {

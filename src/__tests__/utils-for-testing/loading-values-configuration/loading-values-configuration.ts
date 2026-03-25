@@ -14,6 +14,7 @@ import { RcDelegation } from '@interfaces/rc-delegation.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
 import {
+  PendingUnstaking,
   TokenBalance,
   TokenMarket,
   TokenTransaction,
@@ -35,9 +36,9 @@ import {
   CustomDataFromLocalStorage,
   GetManifest,
 } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
-import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
+import CurrencyPricesUtils from 'src/popup/hive/utils/currency-prices.utils';
 import { ConversionUtils } from 'src/popup/hive/utils/conversion.utils';
 import { DelegationUtils } from 'src/popup/hive/utils/delegation.utils';
 import { DynamicGlobalPropertiesUtils } from 'src/popup/hive/utils/dynamic-global-properties.utils';
@@ -54,6 +55,7 @@ import { SurveyUtils } from 'src/popup/hive/utils/survey.utils';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import TransactionUtils from 'src/popup/hive/utils/transaction.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
+import { AsyncUtils } from 'src/utils/async.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import PopupUtils from 'src/utils/popup.utils';
 
@@ -95,6 +97,9 @@ export interface TestsAppLoadingValues {
     getCurrentRpc?: Rpc;
     checkRpcStatus?: boolean;
   };
+  currencyPrices?: {
+    getPrices?: Record<string, unknown>;
+  };
   accountsRelated?: {
     ActiveAccountUtils?: { getActiveAccountNameFromLocalStorage?: string };
     AccountUtils?: {
@@ -129,6 +134,7 @@ export interface TestsAppLoadingValues {
       getOutgoingDelegations?: TokenDelegation[];
       getAllTokens?: any[];
       getTokensMarket?: TokenMarket[];
+      getPendingUnstakes?: PendingUnstaking[];
     };
     HiveEngineUtils?: { getTokenHistory?: TokenTransaction[] };
     DelegationUtils?: {
@@ -148,12 +154,6 @@ export interface TestsAppLoadingValues {
     };
   };
   googleAnalytics?: {
-    AnalyticsUtils?: {
-      initializeSettings?: jest.Mock;
-      initializeGoogleAnalytics?: jest.Mock;
-      acceptAll?: jest.Mock;
-      rejectAll?: jest.Mock;
-    };
     window?: { gtag?: jest.Mock };
   };
   popupsRelated?: {
@@ -277,6 +277,12 @@ const set = (params?: {
     .mockResolvedValue(
       params?.app?.globalData?.rewardFund ?? dynamic.rewardFund,
     );
+  CurrencyPricesUtils.getPrices = jest.fn().mockResolvedValue(
+    params?.app?.currencyPrices?.getPrices ?? {},
+  );
+  AsyncUtils.sleep = jest
+    .fn()
+    .mockImplementation(() => Promise.resolve());
   //////////
 
   //////////
@@ -407,6 +413,11 @@ const set = (params?: {
       params?.app?.accountsRelated?.TokensUtils?.getTokensMarket ??
         tokenMarket.all,
     );
+  TokensUtils.getPendingUnstakes = jest
+    .fn()
+    .mockResolvedValue(
+      params?.app?.accountsRelated?.TokensUtils?.getPendingUnstakes ?? [],
+    );
   HiveEngineUtils.getHistory = jest
     .fn()
     .mockResolvedValueOnce(
@@ -469,24 +480,9 @@ const set = (params?: {
     );
   //////////
 
-  //////////
-  //Google Analytics related
-  AnalyticsUtils.initializeSettings =
-    params?.app?.googleAnalytics?.AnalyticsUtils?.initializeSettings ??
-    jest.fn().mockResolvedValue(true);
   window.gtag =
     params?.app?.googleAnalytics?.window?.gtag ??
-    jest.fn().mockImplementation((...args) => undefined);
-  AnalyticsUtils.initializeGoogleAnalytics =
-    params?.app?.googleAnalytics?.AnalyticsUtils?.initializeGoogleAnalytics ??
     jest.fn().mockImplementation(() => undefined);
-  AnalyticsUtils.acceptAll =
-    params?.app?.googleAnalytics?.AnalyticsUtils?.acceptAll ??
-    jest.fn().mockImplementation(() => undefined);
-  AnalyticsUtils.rejectAll =
-    params?.app?.googleAnalytics?.AnalyticsUtils?.rejectAll ??
-    jest.fn().mockImplementation(() => undefined);
-  /////////
 
   /////////
   //AppPopups related (including: survey, governance, whats'new)

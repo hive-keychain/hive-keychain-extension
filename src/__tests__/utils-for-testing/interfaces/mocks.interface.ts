@@ -78,10 +78,6 @@ export interface MocksChromeRunTime {
   sendMessage: jest.Mock;
 }
 
-export interface MocksGoogleAnalytics {
-  initializeGoogleAnalytics?: string;
-}
-
 export interface MocksSurvey {
   byPassing: boolean;
 }
@@ -105,7 +101,6 @@ export interface MocksToUse {
   proposal?: MocksProposal;
   chromeRunTime?: MocksChromeRunTime;
   keyChainApiGet?: KeyChainApiGetCustomData;
-  googleAnalytics?: MocksGoogleAnalytics;
   survey?: MocksSurvey;
   convertions?: MocksConvertionRequests;
   governance?: MocksGovernance;

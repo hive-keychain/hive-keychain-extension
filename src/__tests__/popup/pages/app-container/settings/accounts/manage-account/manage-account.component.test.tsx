@@ -21,7 +21,6 @@ import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 describe('manage-account.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
-    jest.resetModules();
     cleanup();
   });
   describe('General cases:\n', () => {
@@ -74,6 +73,23 @@ describe('manage-account.component tests:\n', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByTestId(dataTestIdButton.qrCode.toogle),
+        );
+      });
+      const confirmCheck = (messageKey: string) => {
+        const label = screen.getByText(chrome.i18n.getMessage(messageKey));
+        const panel = label.closest('.checkbox-panel');
+        expect(panel).toBeTruthy();
+        return userEvent.click(
+          panel!.querySelector('.custom-checkbox-container')!,
+        );
+      };
+      await act(async () => {
+        await confirmCheck('popup_html_qr_check1');
+        await confirmCheck('popup_html_qr_check2');
+        await userEvent.click(
+          screen.getByRole('button', {
+            name: chrome.i18n.getMessage('popup_html_qr_exported_show_button'),
+          }),
         );
       });
       expect(

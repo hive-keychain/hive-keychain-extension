@@ -1,12 +1,19 @@
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import HiveUtils from '@hiveapp/utils/hive.utils';
 import TransactionUtils from '@hiveapp/utils/transaction.utils';
 import { Transfer } from '@interfaces/transaction.interface';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import transactionHistory from 'src/__tests__/utils-for-testing/data/history/transactions/transaction-history';
 import rpc from 'src/__tests__/utils-for-testing/data/rpc';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
-import { store } from 'src/popup/hive/store';
+import { store } from 'src/popup/multichain/store';
 import Logger from 'src/utils/logger.utils';
+
+/** Fixed keypair from @hiveio/hive-js memo self-test — avoids .env-dependent memo ciphertext. */
+const MEMO_CIPHER_SENDER_WIF =
+  '5JdeC9P7Pbd1uGdFVEsJ41EkEnADbbHGq6p1BwFxm6txNBsQnsw';
+const MEMO_CIPHER_RECEIVER_PUB =
+  'STM8m5UgaFAAYQRuaNejYdS8FVLVp9Ss3K1qAVk5de6F8s3HnVbvA';
 
 describe('transaction.utils tests:\n', () => {
   afterEach(() => {
@@ -21,12 +28,22 @@ describe('transaction.utils tests:\n', () => {
     const callingData = {
       accountName: userData.one.username,
       start: 1000,
-      memoKey: userData.one.nonEncryptKeys.memo,
+      memoKey: MEMO_CIPHER_SENDER_WIF,
     };
+
+    beforeAll(() => {
+      const decodedMemoPlain = ' Encrypted Memo Test';
+      transactionHistory.fakeGetAccountHistoryResponse[2][1].op[1].memo =
+        HiveUtils.encodeMemo(
+          '#' + decodedMemoPlain,
+          MEMO_CIPHER_SENDER_WIF,
+          MEMO_CIPHER_RECEIVER_PUB,
+        );
+    });
 
     test('Getting data from an account that has transfers, must return a new sorted array with added fields', async () => {
       const showOutPutData = false;
-      store.getState().globalProperties.globals = dynamic.globalProperties;
+      store.getState().hive.globalProperties.globals = dynamic.globalProperties;
       const mockGetAccountHistory = (HiveTxUtils.getData = jest
         .fn()
         .mockResolvedValueOnce(
@@ -47,7 +64,7 @@ describe('transaction.utils tests:\n', () => {
       mockGetAccountHistory.mockRestore();
     });
     test('Getting data from an account that has no transfers, must return [[], start]', async () => {
-      store.getState().globalProperties.globals = dynamic.globalProperties;
+      store.getState().hive.globalProperties.globals = dynamic.globalProperties;
       const mockGetAccountHistory = (HiveTxUtils.getData = jest
         .fn()
         .mockResolvedValueOnce([]));
@@ -64,7 +81,7 @@ describe('transaction.utils tests:\n', () => {
     });
 
     test('Getting one transaction with id(0x40), must return the expected output bellow', async () => {
-      store.getState().globalProperties.globals = dynamic.globalProperties;
+      store.getState().hive.globalProperties.globals = dynamic.globalProperties;
       const mockGetAccountHistory = (HiveTxUtils.getData = jest
         .fn()
         .mockResolvedValueOnce(transactionHistory.fakeOneTransactionResponse));
@@ -82,7 +99,7 @@ describe('transaction.utils tests:\n', () => {
 
     test('Must return the expected results, for the rest of cases', async () => {
       const showResults = false;
-      store.getState().globalProperties.globals = dynamic.globalProperties;
+      store.getState().hive.globalProperties.globals = dynamic.globalProperties;
       const mockGetAccountHistory = (HiveTxUtils.getData = jest
         .fn()
         .mockResolvedValueOnce(
@@ -137,9 +154,12 @@ describe('transaction.utils tests:\n', () => {
       amount: '0.001 HIVE',
       memo: 'Not encrypted Memo',
     } as Transfer;
-    const encodedMemoMsg =
-      '#AhTgoBkHRDnswPQt2sBq41FV7iC39CgnnvmS3ZoDBADJmZqyftpQxcrrwrTfxN33ZuyLoWMQ2f2fnG44LaFpvF1gpkRqfBPwMYcgg1FzE5Y6dCxbWKvpDYDQZdPsWMJHsBBSBC9UfJsSxqiqcACzqSH';
     const decodedMemoMsg = ' Encrypted Memo Test';
+    const encodedMemoMsg = HiveUtils.encodeMemo(
+      '#' + decodedMemoMsg,
+      MEMO_CIPHER_SENDER_WIF,
+      MEMO_CIPHER_RECEIVER_PUB,
+    );
     test('If transfer.memo does not start with #, must return the original transfer', () => {
       const result = TransactionUtils.decodeMemoIfNeeded(
         fakeTransfer,
@@ -189,7 +209,7 @@ describe('transaction.utils tests:\n', () => {
       };
       const result = TransactionUtils.decodeMemoIfNeeded(
         fakeTransfer,
-        userData.one.nonEncryptKeys.memo,
+        MEMO_CIPHER_SENDER_WIF,
       );
       expect(result).toEqual(expectedResult);
     });

@@ -19,9 +19,13 @@ describe('add-account-main.component tests:\n', () => {
 
   describe('No Accounts cases: ', () => {
     beforeEach(async () => {
+      const base = initialStates.iniStateAs.defaultExistent;
       await reactTestingLibrary.renderWithConfiguration(
         <HiveAppComponent />,
-        { ...initialStates.iniStateAs.defaultExistent, accounts: [] },
+        {
+          ...base,
+          hive: { ...base.hive, accounts: [] },
+        },
         {
           app: {
             accountsRelated: {

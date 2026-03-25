@@ -15,7 +15,7 @@ describe('phishing.actions tests:\n', () => {
     KeychainApi.get = jest.fn().mockResolvedValueOnce(phisingAccounts);
     const fakeStore = getFakeStore(initialEmptyStateStore);
     await fakeStore.dispatch<any>(phishinActions.fetchPhishingAccounts());
-    expect(fakeStore.getState().phishing).toEqual(phisingAccounts);
+    expect(fakeStore.getState().hive.phishing).toEqual(phisingAccounts);
   });
   test('If error, will throw an unhandled error', async () => {
     const error = new Error('Error Message');
@@ -23,7 +23,7 @@ describe('phishing.actions tests:\n', () => {
     const fakeStore = getFakeStore(initialEmptyStateStore);
     try {
       await fakeStore.dispatch<any>(phishinActions.fetchPhishingAccounts());
-      expect(fakeStore.getState().phishing).toEqual('');
+      expect(fakeStore.getState().hive.phishing).toEqual('');
     } catch (error) {
       expect(error).toEqual(error);
     }

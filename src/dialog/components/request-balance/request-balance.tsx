@@ -30,6 +30,9 @@ const RequestBalance = ({ rpc, username, amount, currency }: Props) => {
 
   const init = async (username: string) => {
     const account = await AccountUtils.getExtendedAccount(username);
+    if (!account) {
+      return;
+    }
     const currencyParsed = CurrencyUtils.getCurrencyLabel(
       currency,
       rpc.testnet,

@@ -144,8 +144,13 @@ const ProposalVotingSection = ({
     );
   };
   if (forceClosed || hasVoted) return null;
+
+  const proposalReadMoreUrl = `https://peakd.com/proposals/${Config.KEYCHAIN_PROPOSAL}`;
+
   return (
-    <PopupContainer className="proposal-voting-section">
+    <PopupContainer
+      dataTestId="proposal-voting-section"
+      className="proposal-voting-section">
       <div className="popup-title">
         {chrome.i18n.getMessage('popup_html_proposal_vote')}
       </div>
@@ -170,8 +175,13 @@ const ProposalVotingSection = ({
         <div>
           Read more{' '}
           <a
-            href={`https://peakd.com/proposals/${Config.KEYCHAIN_PROPOSAL}`}
-            target="_blank">
+            href={proposalReadMoreUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(event) => {
+              event.preventDefault();
+              chrome.tabs.create({ url: proposalReadMoreUrl });
+            }}>
             here
           </a>
           .

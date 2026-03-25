@@ -12,6 +12,7 @@ import { MyWitnessTabComponent } from 'src/popup/hive/pages/app-container/home/g
 import { ProposalTabComponent } from 'src/popup/hive/pages/app-container/home/governance/proposal-tab/proposal-tab.component';
 import { ProxyTabComponent } from 'src/popup/hive/pages/app-container/home/governance/proxy-tab/proxy-tab.component';
 import { WitnessTabComponent } from 'src/popup/hive/pages/app-container/home/governance/witness-tab/witness-tab.component';
+import { Screen } from 'src/reference-data/screen.enum';
 
 const Governance = ({
   setTitleContainerProperties,
@@ -70,7 +71,10 @@ const Governance = ({
   };
 
   return (
-    <div className="governance-page" aria-label="governance-page">
+    <div
+      className="governance-page"
+      aria-label="governance-page"
+      data-testid={`${Screen.GOVERNANCE_PAGE}-page`}>
       {!isLoading && <TabsComponent tabs={tabs} />}
       {isLoading && (
         <div className="rotating-logo-container">

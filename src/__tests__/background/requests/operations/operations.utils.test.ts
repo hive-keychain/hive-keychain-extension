@@ -29,8 +29,8 @@ describe('operations.utils tests:\n', () => {
     jest.resetAllMocks();
   });
   describe('createMessage cases:\n', () => {
-    it('Must return an answerRequest with success', () => {
-      const result = createMessage(
+    it('Must return an answerRequest with success', async () => {
+      const result = await createMessage(
         undefined,
         {
           tx_id: 'tx_id',
@@ -69,9 +69,9 @@ describe('operations.utils tests:\n', () => {
       });
     });
 
-    it('Must return an answerRequest with error', () => {
+    it('Must return an answerRequest with error', async () => {
       const errorMsg = 'Error while waiting confirmation';
-      const result = createMessage(
+      const result = await createMessage(
         `${chrome.i18n.getMessage('bgd_ops_error')} : ${errorMsg}`,
         undefined,
         datas,
@@ -92,6 +92,21 @@ describe('operations.utils tests:\n', () => {
           publicKey: undefined,
         },
       });
+    });
+
+    it('uses multisig pending message when tx is routed to signers', async () => {
+      const multisigMsg = chrome.i18n.getMessage(
+        'multisig_transaction_sent_to_signers',
+      );
+      const result = await createMessage(
+        null,
+        { isUsingMultisig: true, tx_id: '' },
+        datas,
+        'would-be-success',
+        'would-be-fail',
+      );
+      expect(result.msg.success).toBe(true);
+      expect(result.msg.message).toBe(multisigMsg);
     });
   });
 
@@ -116,6 +131,18 @@ describe('operations.utils tests:\n', () => {
       const error = new Error(' ');
       const errorMessage = await beautifyErrorMessage(error);
       expect(errorMessage).toBe(chrome.i18n.getMessage('unknown_error'));
+    });
+
+    it('uses colon split when no Exception substring is present', async () => {
+      const error = new Error('rpc:node timeout');
+      const out = await beautifyErrorMessage(error);
+      expect(out).toContain('node timeout');
+    });
+
+    it('passes through simple messages when no colon', async () => {
+      const error = new Error('network down');
+      const out = await beautifyErrorMessage(error);
+      expect(out).toContain('network down');
     });
   });
 });

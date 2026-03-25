@@ -172,7 +172,7 @@ const TopBar = ({
         className={`logo ${rotateLogo ? 'rotate' : ''}`}
         icon={SVGIcons.TOP_BAR_KEYCHAIN_LOGO}
         onClick={refresh}
-        data-testid="top-bar-refresh-icon"
+        dataTestId="top-bar-refresh-icon"
       />
       <div className="spacer"></div>
       {activeAccount.name && globalProperties.globals && (

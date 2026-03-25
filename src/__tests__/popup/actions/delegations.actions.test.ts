@@ -1,10 +1,15 @@
 import { DelegationUtils } from '@hiveapp/utils/delegation.utils';
+import multichainReducers from '@popup/multichain/reducers';
+import { applyMiddleware, createStore } from 'redux';
+import thunk from 'redux-thunk';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
-import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
-import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import * as delegationsActions from 'src/popup/hive/actions/delegations.actions';
 import Logger from 'src/utils/logger.utils';
+
+/** `setErrorMessage` is handled by multichain `message` reducer, not hive-only store. */
+const createDelegationsTestStore = () =>
+  createStore(multichainReducers, applyMiddleware(thunk));
 
 describe('delegations.actions tests:\n', () => {
   afterEach(() => {
@@ -15,11 +20,11 @@ describe('delegations.actions tests:\n', () => {
       DelegationUtils.getDelegators = jest
         .fn()
         .mockResolvedValue(delegations.delegators);
-      const fakeStore = getFakeStore(initialEmptyStateStore);
+      const fakeStore = createDelegationsTestStore();
       await fakeStore.dispatch<any>(
         delegationsActions.loadDelegators(userData.two.username),
       );
-      expect(fakeStore.getState().delegations.incoming).toEqual(
+      expect(fakeStore.getState().hive.delegations.incoming).toEqual(
         delegations.delegators,
       );
     });
@@ -32,12 +37,12 @@ describe('delegations.actions tests:\n', () => {
       const promiseError = new Error('Custom error message');
       DelegationUtils.getDelegators = jest.fn().mockRejectedValue(promiseError);
       jest.spyOn(Logger, 'error');
-      const fakeStore = getFakeStore(initialEmptyStateStore);
+      const fakeStore = createDelegationsTestStore();
       await fakeStore.dispatch<any>(
         delegationsActions.loadDelegators(userData.two.username),
       );
-      expect(fakeStore.getState().delegations.incoming).toEqual(null);
-      expect(fakeStore.getState().errorMessage).toEqual(errorMessageExpected);
+      expect(fakeStore.getState().hive.delegations.incoming).toEqual(null);
+      expect(fakeStore.getState().message).toEqual(errorMessageExpected);
     });
   });
 
@@ -46,11 +51,11 @@ describe('delegations.actions tests:\n', () => {
       DelegationUtils.getDelegatees = jest
         .fn()
         .mockResolvedValue(delegations.delegatees);
-      const fakeStore = getFakeStore(initialEmptyStateStore);
+      const fakeStore = createDelegationsTestStore();
       await fakeStore.dispatch<any>(
         delegationsActions.loadDelegatees(userData.two.username),
       );
-      expect(fakeStore.getState().delegations.outgoing).toEqual(
+      expect(fakeStore.getState().hive.delegations.outgoing).toEqual(
         delegations.delegatees,
       );
     });
@@ -61,11 +66,11 @@ describe('delegations.actions tests:\n', () => {
         .fn()
         .mockRejectedValueOnce(promiseError);
       const spyLoggerError = jest.spyOn(Logger, 'error');
-      const fakeStore = getFakeStore(initialEmptyStateStore);
+      const fakeStore = createDelegationsTestStore();
       await fakeStore.dispatch<any>(
         delegationsActions.loadDelegatees(userData.two.username),
       );
-      expect(fakeStore.getState().delegations.outgoing).toEqual([]);
+      expect(fakeStore.getState().hive.delegations.outgoing).toEqual([]);
       expect(spyLoggerError).toHaveBeenCalledTimes(1);
       expect(spyLoggerError).toHaveBeenCalledWith(promiseError);
       spyLoggerError.mockClear();

@@ -232,6 +232,44 @@ describe('error.utils.ts tests:\n', () => {
         expect(ErrorUtils.parse(element.error)).toEqual(element.expectError);
       }
     });
+
+    it('maps validate_transaction + expiration message to broadcast_error_transaction_expired', () => {
+      expect(
+        ErrorUtils.parse({
+          message: 'transaction expiration exception',
+          data: {
+            stack: [
+              {
+                context: { method: 'validate_transaction' },
+              },
+            ],
+          },
+        }),
+      ).toEqual(new KeychainError('broadcast_error_transaction_expired'));
+    });
+
+    it('maps verify_authority stack to KeychainError using data.name', () => {
+      expect(
+        ErrorUtils.parse({
+          data: {
+            name: 'missing_posting_authority',
+            stack: [
+              {
+                context: { method: 'verify_authority' },
+              },
+            ],
+          },
+        }),
+      ).toEqual(new KeychainError('missing_posting_authority'));
+    });
+
+    it('maps not_enough_rc_exception to not_enough_rc', () => {
+      const err = {
+        data: { name: 'not_enough_rc_exception', stack: [] },
+      };
+      const parsed = ErrorUtils.parse(err);
+      expect(parsed).toEqual(new KeychainError('not_enough_rc', [], err));
+    });
   });
 
   describe('parseHiveEngine cases:\n', () => {
@@ -242,6 +280,36 @@ describe('error.utils.ts tests:\n', () => {
           ErrorUtils.parseHiveEngine(element.error, element.payload),
         ).toEqual(element.expectError);
       }
+    });
+  });
+
+  describe('parseLedger', () => {
+    it('returns the same KeychainError instance when already KeychainError', () => {
+      const ke = new KeychainError('x');
+      expect(ErrorUtils.parseLedger(ke)).toBe(ke);
+    });
+
+    it('maps known Ledger status codes', () => {
+      expect(
+        ErrorUtils.parseLedger({ statusCode: 0xb003 }),
+      ).toEqual(new KeychainError('error_ledger_failed_to_parse_transaction'));
+      expect(ErrorUtils.parseLedger({ statusCode: 0x6985 })).toEqual(
+        new KeychainError('error_ledger_denied_by_user', [], {
+          statusCode: 0x6985,
+        }),
+      );
+      expect(ErrorUtils.parseLedger({ statusCode: 0x530c })).toEqual(
+        new KeychainError('error_ledger_locked'),
+      );
+    });
+
+    it('maps disconnected transport errors to not detected', () => {
+      expect(
+        ErrorUtils.parseLedger({
+          statusCode: 0xffff,
+          name: 'DisconnectedDeviceDuringOperation',
+        }),
+      ).toEqual(new KeychainError('popup_html_ledger_not_detected'));
     });
   });
 });

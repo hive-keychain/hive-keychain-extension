@@ -272,7 +272,9 @@ const RpcNodes = ({
       </div>
 
       <div className="rpc-form-container">
-        <div className="rpc-section hive-rpc">
+        <div
+          className="rpc-section hive-rpc"
+          data-testid="section-hive-rpc">
           <div className="title">Hive RPC</div>
           <CheckboxPanelComponent
             dataTestId="checkbox-rpc-nodes-automatic-mode"
@@ -285,6 +287,7 @@ const RpcNodes = ({
             <div className="select-rpc-panel">
               <ComplexeCustomSelect
                 options={hiveRpcOptions as RpcListItem[]}
+                selectHandleDataTestId="selected-rpc-node-panel"
                 selectedItem={
                   {
                     value: activeRpc.uri,
@@ -304,6 +307,7 @@ const RpcNodes = ({
                 className={`round-button ${
                   isAddRpcPanelDisplayed ? 'close-button' : 'add-button'
                 }`}
+                data-testid="button-add-rpc"
                 onClick={() =>
                   setIsAddRpcPanelDisplayed(!isAddRpcPanelDisplayed)
                 }>
@@ -316,6 +320,7 @@ const RpcNodes = ({
               <div className="add-rpc-caption">
                 <span>{chrome.i18n.getMessage('popup_html_add_rpc_text')}</span>
                 <SVGIcon
+                  dataTestId="button-save"
                   icon={SVGIcons.MENU_RPC_SAVE_BUTTON}
                   onClick={() => saveNewHiveRpc()}
                 />
@@ -356,11 +361,14 @@ const RpcNodes = ({
           )}
         </div>
 
-        <div className="rpc-section hive-engine-rpc">
+        <div
+          className="rpc-section hive-engine-rpc"
+          data-testid="section-hive-engine-rpc">
           <div className="title">Hive-Engine RPC</div>
           <div className="select-rpc-panel">
             <ComplexeCustomSelect
               options={hiveEngineRpcOptions}
+              selectHandleDataTestId="hive-engine-rpc-select-handle"
               selectedItem={
                 {
                   value: activeHERpc,
@@ -380,6 +388,7 @@ const RpcNodes = ({
               className={`round-button ${
                 isNewHERpcPanelOpened ? 'close-button' : 'add-button'
               }`}
+              data-testid="button-hive-engine-rpc-add"
               onClick={() => setIsNewHERpcPanelOpened(!isNewHERpcPanelOpened)}>
               <SVGIcon icon={SVGIcons.MENU_RPC_ADD_BUTTON} />
             </div>
@@ -389,18 +398,19 @@ const RpcNodes = ({
               <div className="add-rpc-caption">
                 <span>{chrome.i18n.getMessage('popup_html_add_rpc_text')}</span>
                 <SVGIcon
+                  dataTestId="button-hive-engine-rpc-save"
                   icon={SVGIcons.MENU_RPC_SAVE_BUTTON}
                   onClick={() => saveHiveEngineRpc()}
                 />
               </div>
               <Separator type="horizontal" />
               <InputComponent
-                dataTestId="input-rpc-node-uri"
+                dataTestId="input-hive-engine-rpc-uri"
                 type={InputType.TEXT}
                 value={newHERpc}
                 onChange={setNewHERpc}
                 placeholder={'popup_html_rpc_node'}
-                onEnterPress={saveNewHiveRpc}
+                onEnterPress={saveHiveEngineRpc}
               />
 
               <CheckboxComponent
@@ -411,11 +421,14 @@ const RpcNodes = ({
             </div>
           )}
         </div>
-        <div className="rpc-section hive-engine-account-history">
+        <div
+          className="rpc-section hive-engine-account-history"
+          data-testid="section-hive-engine-account-history">
           <div className="title">Hive-Engine account history API</div>
           <div className="select-rpc-panel">
             <ComplexeCustomSelect
               options={accountHistoryApiOptions}
+              selectHandleDataTestId="hive-account-history-api-select-handle"
               selectedItem={
                 {
                   value: activeAccountHistoryApi,
@@ -435,6 +448,7 @@ const RpcNodes = ({
               className={`round-button ${
                 isNewAccountHistoryPanelOpened ? 'close-button' : 'add-button'
               }`}
+              data-testid="button-account-history-api-add"
               onClick={() =>
                 setIsNewAccountHistoryPanelOpened(
                   !isNewAccountHistoryPanelOpened,
@@ -448,13 +462,14 @@ const RpcNodes = ({
               <div className="add-rpc-caption">
                 <span>{chrome.i18n.getMessage('popup_html_add_rpc_text')}</span>
                 <SVGIcon
+                  dataTestId="button-account-history-api-save"
                   icon={SVGIcons.MENU_RPC_SAVE_BUTTON}
                   onClick={() => saveAccountHistory()}
                 />
               </div>
               <Separator type="horizontal" />
               <InputComponent
-                dataTestId="input-rpc-node-uri"
+                dataTestId="input-account-history-api-uri"
                 type={InputType.TEXT}
                 value={newAccountHistory}
                 onChange={setNewAccountHistory}

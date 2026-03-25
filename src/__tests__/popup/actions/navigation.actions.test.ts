@@ -1,7 +1,7 @@
 import { Screen } from '@reference-data/screen.enum';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
-import * as navigationActions from 'src/popup/hive/actions/navigation.actions';
+import * as navigationActions from 'src/popup/multichain/actions/navigation.actions';
 import { Navigation } from 'src/popup/hive/reducers/navigation.reducer';
 describe('navigation.actions tests:\n', () => {
   describe('resetNav tests:\n', () => {
