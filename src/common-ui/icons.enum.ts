@@ -122,6 +122,7 @@ export enum SVGIcons {
   MENU_ADVANCED_SETTINGS_IMPORT_SETTINGS = 'menu/advanced-settings/import-settings',
   MENU_ADVANCED_SETTINGS_EXPORT_SETTINGS = 'menu/advanced-settings/export-settings',
   MENU_ADVANCED_SETTINGS_SECURITY = 'menu/advanced-settings/security',
+  MENU_ADVANCED_SETTINGS_PROVIDER_COMPATIBILITY = 'menu/advanced-settings/provider-compatibility',
 
   MENU_TOKENS = 'menu/tokens',
 

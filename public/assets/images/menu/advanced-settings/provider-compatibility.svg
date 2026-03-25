@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="45" height="40" fill="none" viewBox="0 0 45 40">
+  <path stroke="var(--menu-icon-color)" stroke-linecap="round" stroke-linejoin="round" d="M22 13.5v4.25m0 4.5v4.25M16.75 16.5l3.7 2.15m3.1 1.8 3.7 2.15m0-6.1-3.7 2.15m-3.1 1.8-3.7 2.15"/>
+  <circle cx="22" cy="11.75" r="1.75" stroke="var(--menu-icon-color)" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="15.75" cy="15.5" r="1.75" stroke="var(--menu-icon-color)" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="28.25" cy="15.5" r="1.75" stroke="var(--menu-icon-color)" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="15.75" cy="24.5" r="1.75" stroke="var(--menu-icon-color)" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="28.25" cy="24.5" r="1.75" stroke="var(--menu-icon-color)" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="22" cy="28.25" r="1.75" stroke="var(--menu-icon-color)" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect width="43.37" height="38.948" x=".423" y="-.423" stroke="var(--menu-icon-border-color)" stroke-width="var(--menu-icon-border-width)" rx="19.474" transform="matrix(1 0 0 -1 0 38.948)"/>
+</svg>

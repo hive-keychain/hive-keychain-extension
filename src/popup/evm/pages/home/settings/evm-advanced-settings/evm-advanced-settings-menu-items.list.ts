@@ -16,7 +16,7 @@ export const getEvmAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
     },
     {
       label: 'evm_menu_provider_compatibility',
-      icon: SVGIcons.WALLET_SETTINGS,
+      icon: SVGIcons.MENU_ADVANCED_SETTINGS_PROVIDER_COMPATIBILITY,
       nextScreen: Screen.EVM_PROVIDER_SETTINGS,
     },
     {
