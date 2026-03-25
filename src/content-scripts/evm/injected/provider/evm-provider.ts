@@ -14,14 +14,14 @@ const ProviderInfo: EIP6963ProviderInfo = {
   uuid: '03e583ef-0285-4bd0-afaf-7032f5f61b3a',
   name: 'Hive Keychain',
   icon: providerIcon,
-  rdns: 'https://hive-keychain.com/',
+  rdns: 'com.hive-keychain',
 };
 
 let evmProvider: EvmProvider;
 
 export class EvmProvider extends EventEmitter {
   chainId: string | undefined;
-  isMetaMask: boolean = true;
+  isMetaMask: boolean = false;
   private _accounts: string[] = [];
   private _current_id = 1;
   private _requests = {} as { [id: number]: any };
