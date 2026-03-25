@@ -1,5 +1,8 @@
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
-import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
+import {
+  DEFAULT_EVM_SETTINGS,
+  EvmSettingsUtils,
+} from '@popup/evm/utils/evm-settings.utils';
 import { EvmEventName } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import {
@@ -11,16 +14,36 @@ import {
 } from 'src/content-scripts/hive/web-interface/response.logic';
 import Logger from 'src/utils/logger.utils';
 
+const injectPageProvider = (preferOnLegacyDapps: boolean) => {
+  const scriptTag = document.createElement('script');
+  scriptTag.src = chrome.runtime.getURL('./evmKeychainBundle.js');
+  scriptTag.dataset.preferOnLegacyDapps = String(preferOnLegacyDapps);
+
+  const container = document.head || document.documentElement;
+
+  if (!container) {
+    throw new Error('Missing document container for EVM injection.');
+  }
+
+  container.insertBefore(scriptTag, container.firstChild);
+};
+
 const setupInjection = async () => {
+  let preferOnLegacyDapps =
+    DEFAULT_EVM_SETTINGS.providerCompatibility.preferOnLegacyDapps;
+
   try {
     const settings = await EvmSettingsUtils.getSettings();
-    var scriptTag = document.createElement('script');
-    scriptTag.src = chrome.runtime.getURL('./evmKeychainBundle.js');
-    scriptTag.dataset.preferOnLegacyDapps = String(
-      settings.providerCompatibility.preferOnLegacyDapps,
+    preferOnLegacyDapps = settings.providerCompatibility.preferOnLegacyDapps;
+  } catch (e) {
+    Logger.warn(
+      'Unable to read EVM settings before injection. Falling back to defaults.',
     );
-    var container = document.head || document.documentElement;
-    container.insertBefore(scriptTag, container.children[0]);
+    Logger.error(e);
+  }
+
+  try {
+    injectPageProvider(preferOnLegacyDapps);
   } catch (e) {
     Logger.error('Hive Keychain injection failed.', e);
   }

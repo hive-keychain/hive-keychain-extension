@@ -8,19 +8,8 @@ module.exports = merge(common, {
   mode: 'development',
   // Browser extension CSP blocks eval-based sourcemaps.
   devtool: 'cheap-module-source-map',
-  // Enable webpack caching for faster rebuilds
-  cache: {
-    type: 'filesystem',
-    name: 'firefox-development',
-    buildDependencies: {
-      config: [
-        __filename,
-        path.resolve(__dirname, '../webpack.common.js'),
-        path.resolve(__dirname, '../../tsconfig.json'),
-        path.resolve(__dirname, '../../.babelrc'),
-      ],
-    },
-  },
+  // Filesystem cache has produced stale module graphs for injected scripts.
+  cache: false,
   watchOptions: {
     ignored: /node_modules|dist-dev-firefox/,
   },
