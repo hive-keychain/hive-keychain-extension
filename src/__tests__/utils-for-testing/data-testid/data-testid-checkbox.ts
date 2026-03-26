@@ -43,6 +43,10 @@ const dataTestIdCheckbox = {
       },
     },
   },
+
+  signUp: {
+    acceptTerms: 'accept-terms-and-condition',
+  },
 };
 
 export default dataTestIdCheckbox;

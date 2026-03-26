@@ -18,7 +18,7 @@ describe('requestWithoutConfirmation.logic tests:\n', () => {
       0,
       keychainRequest.noValues.decode,
     );
-    expect(sPerformOperation).toBeCalledWith(
+    expect(sPerformOperation).toHaveBeenCalledWith(
       requestHandler,
       keychainRequest.noValues.decode,
       0,

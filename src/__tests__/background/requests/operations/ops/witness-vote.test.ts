@@ -1,7 +1,7 @@
 import LedgerModule from '@background/ledger.module';
 import { broadcastWitnessVote } from '@background/requests/operations/ops/witness-vote';
 import { RequestsHandler } from '@background/requests/request-handler';
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import {
   KeychainKeyTypesLC,
@@ -14,6 +14,7 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { mockHiveTxCreateTransactionForLedger } from 'src/__tests__/utils-for-testing/mocks/hive-tx-ledger.helpers';
 
 describe('witness-vote tests:\n', () => {
   const data = {
@@ -47,7 +48,7 @@ describe('witness-vote tests:\n', () => {
       const requestHandler = new RequestsHandler();
       const sGetUserKeyPair = jest.spyOn(requestHandler, 'getUserKeyPair');
       await broadcastWitnessVote(requestHandler, data);
-      expect(sGetUserKeyPair).toBeCalledWith(
+      expect(sGetUserKeyPair).toHaveBeenCalledWith(
         data.username!,
         KeychainKeyTypesLC.active,
       );
@@ -137,6 +138,9 @@ describe('witness-vote tests:\n', () => {
   });
 
   describe('Using ledger cases:\n', () => {
+    beforeEach(() => {
+      mockHiveTxCreateTransactionForLedger();
+    });
     it('Must return success when vote', async () => {
       jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValueOnce({
         id: 'id',

@@ -33,7 +33,7 @@ const getCheckbox = (props: CheckboxProps) => {
       className={`custom-checkbox-container ${
         props.disabled ? 'disabled' : ''
       }`}
-      data-testid={props.extraDataTestIdOnInput}
+      data-testid={props.extraDataTestIdOnInput ?? props.dataTestId}
       onClick={(event) => handleClick(props, event)}>
       <div className="custom-checkbox">
         {props.checked && <SVGIcon icon={SVGIcons.CHECKBOX_CHECKED} />}

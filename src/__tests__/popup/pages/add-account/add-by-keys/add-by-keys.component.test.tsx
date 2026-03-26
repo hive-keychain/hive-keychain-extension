@@ -1,5 +1,5 @@
 import AccountUtils from '@hiveapp/utils/account.utils';
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -13,16 +13,25 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
+jest.mock(
+  'hive-keychain-commons',
+  () =>
+    require('src/__tests__/utils-for-testing/mocks/hive-keychain-commons-iswif').getHiveKeychainCommonsIsWifMock(),
+);
+
 describe('add-by-keys:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
-    jest.resetModules();
     cleanup();
   });
   beforeEach(async () => {
+    const base = initialStates.iniStateAs.defaultExistent;
     await reactTestingLibrary.renderWithConfiguration(
       <HiveAppComponent />,
-      { ...initialStates.iniStateAs.defaultExistent, accounts: [] },
+      {
+        ...base,
+        hive: { ...base.hive, accounts: [] },
+      },
       {
         app: {
           accountsRelated: {

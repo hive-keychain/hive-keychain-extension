@@ -2,7 +2,7 @@ import LedgerModule from '@background/ledger.module';
 import { broadcastDelegation } from '@background/requests/operations/ops/delegation';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { DynamicGlobalPropertiesUtils } from '@hiveapp/utils/dynamic-global-properties.utils';
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { DynamicGlobalProperties } from '@hiveio/dhive';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import {
@@ -16,6 +16,7 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { mockHiveTxCreateTransactionForLedger } from 'src/__tests__/utils-for-testing/mocks/hive-tx-ledger.helpers';
 
 describe('delegation tests:\n', () => {
   const data = {
@@ -120,6 +121,7 @@ describe('delegation tests:\n', () => {
       jest
         .spyOn(DynamicGlobalPropertiesUtils, 'getDynamicGlobalProperties')
         .mockResolvedValueOnce(dynamic.globalProperties);
+      mockHiveTxCreateTransactionForLedger();
       jest
         .spyOn(LedgerModule, 'getSignatureFromLedger')
         .mockResolvedValueOnce('signed!');

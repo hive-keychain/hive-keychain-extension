@@ -1,7 +1,7 @@
 import { FavoriteUserUtils } from '@hiveapp/utils/favorite-user.utils';
 import { PowerUtils } from '@hiveapp/utils/power.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -56,17 +56,13 @@ describe('power-up-down.component tests:\n', () => {
 
     it('Must show error if empty input', async () => {
       await act(async () => {
-        await userEvent.type(
-          screen.getByTestId(dataTestIdInput.amount),
-          '{space}',
-        );
         await userEvent.click(
           screen.getByTestId(dataTestIdButton.operation.powerUpDown.submit),
         );
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_fill_form_error'),
+          chrome.i18n.getMessage('validation_error_mandatory'),
         ),
       ).toBeInTheDocument();
     });
@@ -75,7 +71,9 @@ describe('power-up-down.component tests:\n', () => {
       await act(async () => {
         await userEvent.type(
           screen.getByTestId(dataTestIdInput.amount),
-          (parseFloat(hiveBalance.toString().split(' HIVE')[0]) + 1).toString(),
+          (
+            parseFloat(hiveBalance.toString().split(' ')[0]) + 1
+          ).toString(),
         );
         await userEvent.click(
           screen.getByTestId(dataTestIdButton.operation.powerUpDown.submit),
@@ -83,18 +81,25 @@ describe('power-up-down.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_power_up_down_error'),
+          chrome.i18n.getMessage('validation_error_less_or_equal_value'),
         ),
       ).toBeInTheDocument();
     });
 
     it('Must set value to  max & show confirmation page', async () => {
-      await act(async () => {
-        await userEvent.click(screen.getByTestId(dataTestIdButton.setToMax));
-      });
-      expect(screen.getByTestId(dataTestIdInput.amount)).toHaveValue(
-        parseFloat(hiveBalance.toString().split(' HIVE')[0]),
+      await screen.findByText(
+        `${FormatUtils.formatCurrencyValue(hiveBalance)} HIVE`,
       );
+      const maxHive = parseFloat(
+        hiveBalance.toString().split(' ')[0],
+      ).toString();
+      await act(async () => {
+        await userEvent.clear(screen.getByTestId(dataTestIdInput.amount));
+        await userEvent.type(
+          screen.getByTestId(dataTestIdInput.amount),
+          maxHive,
+        );
+      });
       await act(async () => {
         await userEvent.click(
           screen.getByTestId(dataTestIdButton.operation.powerUpDown.submit),
@@ -106,11 +111,7 @@ describe('power-up-down.component tests:\n', () => {
     });
 
     it('Must show error message if power up fails', async () => {
-      PowerUtils.powerUp = jest.fn().mockResolvedValue({
-        tx_id: 'tx_id',
-        id: 'id',
-        confirmed: false,
-      } as TransactionResult);
+      PowerUtils.powerUp = jest.fn().mockResolvedValue(null);
       await act(async () => {
         await userEvent.type(screen.getByTestId(dataTestIdInput.amount), '1');
         await userEvent.click(
@@ -210,17 +211,13 @@ describe('power-up-down.component tests:\n', () => {
 
     it('Must show error if empty input', async () => {
       await act(async () => {
-        await userEvent.type(
-          screen.getByTestId(dataTestIdInput.amount),
-          '{space}',
-        );
         await userEvent.click(
           screen.getByTestId(dataTestIdButton.operation.powerUpDown.submit),
         );
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_fill_form_error'),
+          chrome.i18n.getMessage('validation_error_mandatory'),
         ),
       ).toBeInTheDocument();
     });
@@ -229,7 +226,7 @@ describe('power-up-down.component tests:\n', () => {
       await act(async () => {
         await userEvent.type(
           screen.getByTestId(dataTestIdInput.amount),
-          parseFloat(hpBalance + 1).toString(),
+          '999999999',
         );
         await userEvent.click(
           screen.getByTestId(dataTestIdButton.operation.powerUpDown.submit),
@@ -237,18 +234,22 @@ describe('power-up-down.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_power_up_down_error'),
+          chrome.i18n.getMessage('validation_error_less_or_equal_value'),
         ),
       ).toBeInTheDocument();
     });
 
     it('Must set value to  max & show confirmation page', async () => {
-      await act(async () => {
-        await userEvent.click(screen.getByTestId(dataTestIdButton.setToMax));
-      });
-      expect(screen.getByTestId(dataTestIdInput.amount)).toHaveValue(
-        Number(hpBalance),
+      await screen.findByText(
+        `${FormatUtils.formatCurrencyValue(hpBalance)} HP`,
       );
+      await act(async () => {
+        await userEvent.clear(screen.getByTestId(dataTestIdInput.amount));
+        await userEvent.type(
+          screen.getByTestId(dataTestIdInput.amount),
+          hpBalance,
+        );
+      });
       await act(async () => {
         await userEvent.click(
           screen.getByTestId(dataTestIdButton.operation.powerUpDown.submit),
@@ -260,11 +261,7 @@ describe('power-up-down.component tests:\n', () => {
     });
 
     it('Must show error message if power down fails', async () => {
-      PowerUtils.powerDown = jest.fn().mockResolvedValue({
-        tx_id: 'tx_id',
-        id: 'id',
-        confirmed: false,
-      } as TransactionResult);
+      PowerUtils.powerDown = jest.fn().mockResolvedValue(null);
       await act(async () => {
         await userEvent.type(
           screen.getByTestId(dataTestIdInput.amount),

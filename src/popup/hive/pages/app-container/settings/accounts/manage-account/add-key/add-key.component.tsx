@@ -13,7 +13,7 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { KeyType } from 'src/interfaces/keys.interface';
 import { addKey } from 'src/popup/hive/actions/account.actions';
 // import { LedgerUtils } from 'src/utils/ledger.utils';
-import type { ExtendedAccount } from '@hiveio/dhive';
+import type { AuthorityType, ExtendedAccount } from '@hiveio/dhive';
 import { Screen } from '@interfaces/screen.interface';
 import { refreshActiveAccount } from '@popup/hive/actions/active-account.actions';
 import AccountUtils from '@popup/hive/utils/account.utils';
@@ -60,13 +60,28 @@ const AddKey = ({
     });
   };
 
+  /** Memo uses `memo_key` (public key string), not an Authority — only owner/active/posting have account_auths. */
+  const getAuthorityForKeyType = (
+    account: ExtendedAccount,
+    kt: KeyType,
+  ): AuthorityType | undefined => {
+    switch (kt) {
+      case KeyType.OWNER:
+        return account.owner;
+      case KeyType.ACTIVE:
+        return account.active;
+      case KeyType.POSTING:
+        return account.posting;
+      case KeyType.MEMO:
+      default:
+        return undefined;
+    }
+  };
+
   const loadAuthorizedAccounts = async () => {
-    activeAccount.account.posting;
-    const auths: any = (
-      activeAccount.account[
-        keyType.toLowerCase() as keyof ExtendedAccount
-      ] as any
-    ).account_auths.map((auth: any) => auth[0]);
+    const authority = getAuthorityForKeyType(activeAccount.account, keyType);
+    const auths: string[] =
+      authority?.account_auths?.map((auth) => auth[0]) ?? [];
 
     setAvailableAuths(
       ArrayUtils.findCommons(

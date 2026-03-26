@@ -1,19 +1,28 @@
 import MkUtils from '@hiveapp/utils/mk.utils';
-import { Screen } from '@reference-data/screen.enum';
 import '@testing-library/jest-dom';
-import { act, cleanup, screen } from '@testing-library/react';
+import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
+import { Store } from 'redux';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
 import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { RootState } from 'src/popup/multichain/store';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+
 describe('sign-in.component.tsx tests:\n', () => {
+  let store: Store<RootState>;
+
   beforeEach(async () => {
-    await reactTestingLibrary.renderWithConfiguration(
+    store = await reactTestingLibrary.renderWithConfiguration(
       <HiveAppComponent />,
-      { ...initialStates.iniStateAs.defaultExistent, mk: '' },
+      {
+        ...initialStates.iniStateAs.defaultExistent,
+        mk: '',
+        /** HiveApp only re-runs `selectComponent` after login when this is truthy. */
+        hasFinishedSignup: true,
+      },
       {
         app: {
           accountsRelated: {
@@ -60,7 +69,7 @@ describe('sign-in.component.tsx tests:\n', () => {
     ).toBeInTheDocument();
   });
 
-  it('Must navigate to home page when pressing enter key', async () => {
+  it('Must complete login when pressing enter key', async () => {
     MkUtils.login = jest.fn().mockResolvedValue(true);
     await act(async () => {
       await userEvent.type(
@@ -68,12 +77,18 @@ describe('sign-in.component.tsx tests:\n', () => {
         'correct_password{enter}',
       );
     });
-    expect(
-      await screen.findByTestId(`${Screen.HOME_PAGE}-page`),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(store.getState().mk).toBe('correct_password');
+    });
+    await waitFor(() => {
+      expect(store.getState().hive.accounts.length).toBeGreaterThan(0);
+    });
+    expect(store.getState().hive.appStatus.processingDecryptAccount).toBe(
+      false,
+    );
   });
 
-  it('Must navigate to home page when clicking submit button', async () => {
+  it('Must complete login when clicking submit button', async () => {
     MkUtils.login = jest.fn().mockResolvedValue(true);
     await act(async () => {
       await userEvent.type(
@@ -82,8 +97,14 @@ describe('sign-in.component.tsx tests:\n', () => {
       );
       await userEvent.click(screen.getByTestId(dataTestIdButton.login));
     });
-    expect(
-      await screen.findByTestId(`${Screen.HOME_PAGE}-page`),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(store.getState().mk).toBe('correct_password');
+    });
+    await waitFor(() => {
+      expect(store.getState().hive.accounts.length).toBeGreaterThan(0);
+    });
+    expect(store.getState().hive.appStatus.processingDecryptAccount).toBe(
+      false,
+    );
   });
 });

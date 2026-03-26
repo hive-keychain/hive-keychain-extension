@@ -1,9 +1,9 @@
-import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
-import * as mkActions from 'src/popup/hive/actions/mk.actions';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import * as mkActions from 'src/popup/multichain/actions/mk.actions';
+import VaultUtils from 'src/utils/vault.utils';
 
 describe('mk.actions tests:\n', () => {
   afterEach(() => {
@@ -11,44 +11,41 @@ describe('mk.actions tests:\n', () => {
   });
   describe('setMk tests:\n', () => {
     test('Must set mk', () => {
-      const mockSaveValue = (LocalStorageUtils.saveValueInLocalStorage =
-        jest.fn());
+      const mockSave = jest
+        .spyOn(VaultUtils, 'saveValueInVault')
+        .mockImplementation(() => Promise.resolve());
       const fakeStore = getFakeStore(initialEmptyStateStore);
       fakeStore.dispatch<any>(mkActions.setMk(mk.user.two, false));
       expect(fakeStore.getState().mk).toBe(mk.user.two);
-      expect(mockSaveValue).toBeCalledWith(
-        LocalStorageKeyEnum.__MK,
-        mk.user.two,
-      );
-      mockSaveValue.mockClear();
-      mockSaveValue.mockReset();
+      expect(mockSave).toHaveBeenCalledWith(VaultKey.__MK, mk.user.two);
+      mockSave.mockRestore();
     });
     test('As empty will still set mk', () => {
-      const mockSaveValue = (LocalStorageUtils.saveValueInLocalStorage =
-        jest.fn());
+      const mockSave = jest
+        .spyOn(VaultUtils, 'saveValueInVault')
+        .mockImplementation(() => Promise.resolve());
       const fakeStore = getFakeStore(initialEmptyStateStore);
-      const mk = '';
-      fakeStore.dispatch<any>(mkActions.setMk(mk, false));
-      expect(fakeStore.getState().mk).toBe(mk);
-      expect(mockSaveValue).toBeCalledWith(LocalStorageKeyEnum.__MK, mk);
-      mockSaveValue.mockClear();
-      mockSaveValue.mockReset();
+      const emptyMk = '';
+      fakeStore.dispatch<any>(mkActions.setMk(emptyMk, false));
+      expect(fakeStore.getState().mk).toBe(emptyMk);
+      expect(mockSave).toHaveBeenCalledWith(VaultKey.__MK, emptyMk);
+      mockSave.mockRestore();
     });
   });
 
   describe('forgetMk tests:\n', () => {
     test('Must remove mk', () => {
-      const mockRemoveValue = (LocalStorageUtils.removeFromLocalStorage =
-        jest.fn());
+      const mockRemove = jest
+        .spyOn(VaultUtils, 'removeFromVault')
+        .mockImplementation(() => Promise.resolve());
       const fakeStore = getFakeStore({
         ...initialEmptyStateStore,
         mk: mk.user.two,
       });
       fakeStore.dispatch<any>(mkActions.forgetMk());
       expect(fakeStore.getState().mk).toBe('');
-      expect(mockRemoveValue).toBeCalledWith(LocalStorageKeyEnum.__MK);
-      mockRemoveValue.mockClear();
-      mockRemoveValue.mockReset();
+      expect(mockRemove).toHaveBeenCalledWith(VaultKey.__MK);
+      mockRemove.mockRestore();
     });
   });
 });

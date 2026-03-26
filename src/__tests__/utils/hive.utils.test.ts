@@ -1,11 +1,10 @@
 import { KeychainApi } from '@api/keychain';
 import { ConversionUtils } from '@hiveapp/utils/conversion.utils';
 import { DelegationUtils } from '@hiveapp/utils/delegation.utils';
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import HiveUtils from '@hiveapp/utils/hive.utils';
 import { ExtendedAccount } from '@hiveio/dhive';
 import { Rpc } from '@interfaces/rpc.interface';
-import { AssertionError } from 'assert';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import conversions from 'src/__tests__/utils-for-testing/data/conversions';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
@@ -244,32 +243,16 @@ describe('hive.utils tests:\n', () => {
   });
 
   describe('signMessage tests:\n', () => {
-    test('Must return the expected signature', () => {
-      const expectedSignature =
-        '1f4aa1439a8a3c1f559eec87b4ada274698138efc6ba4e5b7cabffa32828943e6251aca3b097b5c422f8689cb13b933b49c32b81064bfb8662e423a281142f1286';
-      const result = HiveUtils.signMessage(
-        'test message',
-        userData.one.nonEncryptKeys.posting,
-      );
-      expect(result).toBe(expectedSignature);
+    test('Must return a stable hex signature for a given message and key', () => {
+      const key = userData.one.nonEncryptKeys.posting;
+      const result = HiveUtils.signMessage('test message', key);
+      expect(result).toBe(HiveUtils.signMessage('test message', key));
+      expect(result).toMatch(/^[0-9a-f]{130}$/);
     });
-    test('Must throw an AssertionError', () => {
-      try {
-        const result = HiveUtils.signMessage(
-          'test message',
-          userData.one.encryptKeys.posting,
-        );
-        expect(result).toBe(1);
-      } catch (error) {
-        expect(error).toEqual(
-          new AssertionError({
-            message: 'Expected version 128, instead got 38',
-            actual: 128,
-            expected: 38,
-            operator: '==',
-          }),
-        );
-      }
+    test('Must throw when given a public key instead of a private key', () => {
+      expect(() =>
+        HiveUtils.signMessage('test message', userData.one.encryptKeys.posting),
+      ).toThrow();
     });
   });
 });

@@ -24,7 +24,9 @@ describe('currency-prices.actions tests:\n', () => {
         .mockResolvedValueOnce(mockedApiReply.data);
       const fakeStore = getFakeStore(initialEmptyStateStore);
       await fakeStore.dispatch<any>(currencyPricesActions.loadCurrencyPrices());
-      expect(fakeStore.getState().currencyPrices).toEqual(mockedApiReply.data);
+      expect(fakeStore.getState().hive.currencyPrices).toEqual(
+        mockedApiReply.data,
+      );
     });
     test('If an error occurs, must catch the error and call Logger.error', async () => {
       const errorMessageFromFile = 'currency price error';
@@ -37,9 +39,11 @@ describe('currency-prices.actions tests:\n', () => {
         .mockRejectedValueOnce(errorReceived);
       const fakeStore = getFakeStore(initialEmptyStateStore);
       await fakeStore.dispatch<any>(currencyPricesActions.loadCurrencyPrices());
-      expect(fakeStore.getState().currencyPrices).toEqual(emptyCurrencyPrices);
-      expect(spyLoggerError).toBeCalledTimes(1);
-      expect(spyLoggerError).toBeCalledWith(
+      expect(fakeStore.getState().hive.currencyPrices).toEqual(
+        emptyCurrencyPrices,
+      );
+      expect(spyLoggerError).toHaveBeenCalledTimes(1);
+      expect(spyLoggerError).toHaveBeenCalledWith(
         errorMessageFromFile,
         (errorReceived as any).toString(),
       );

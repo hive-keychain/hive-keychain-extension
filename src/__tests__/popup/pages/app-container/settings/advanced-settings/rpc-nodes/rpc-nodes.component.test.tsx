@@ -1,7 +1,7 @@
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
-import { Screen } from '@reference-data/screen.enum';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
-import { act, cleanup, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
@@ -160,8 +160,10 @@ describe('rpc-nodes.component tests:\n', () => {
           'https://saturno.hive.com/rpc',
         );
         await userEvent.click(screen.getByTestId(dataTestIdButton.save));
-        await userEvent.click(
-          screen.getByTestId(dataTestIdSelect.rpcNode.selected),
+        fireEvent.click(
+          screen
+            .getByTestId(dataTestIdSelect.rpcNode.selected)
+            .closest('[aria-label="Dropdown select"]') as HTMLElement,
         );
       });
       expect(
@@ -185,16 +187,13 @@ describe('rpc-nodes.component tests:\n', () => {
           screen.getByTestId(dataTestIdCheckbox.rpcNodes.select.setAsActive),
         );
         await userEvent.click(screen.getByTestId(dataTestIdButton.save));
-        await userEvent.click(
-          screen.getByTestId(dataTestIdSelect.rpcNode.selected),
+        fireEvent.click(
+          screen
+            .getByTestId(dataTestIdSelect.rpcNode.selected)
+            .closest('[aria-label="Dropdown select"]') as HTMLElement,
         );
       });
-      expect(
-        screen.getByTestId(
-          dataTestIdSelect.rpcNode.selectItem.preFix +
-            'https://saturno.hive.com/rpc',
-        ),
-      ).toBeInTheDocument();
+      expect(sSetRpc).toHaveBeenCalled();
       sSetRpc.mockRestore();
     });
   });

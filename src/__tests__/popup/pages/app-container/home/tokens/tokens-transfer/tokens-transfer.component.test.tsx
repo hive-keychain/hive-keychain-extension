@@ -3,7 +3,7 @@ import { FavoriteUserUtils } from '@hiveapp/utils/favorite-user.utils';
 import TokensUtils from '@hiveapp/utils/tokens.utils';
 import { Token } from '@interfaces/tokens.interface';
 import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -17,16 +17,12 @@ import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list'
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-import { ActionButtonList } from 'src/popup/hive/pages/app-container/home/actions-section/action-button.list';
 describe('tokens-transfer.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
     jest.resetModules();
     cleanup();
   });
-  const actionButtonTokenIconName = ActionButtonList.find((actionButton) =>
-    actionButton.label.includes('token'),
-  )?.icon;
   const selectedToken = tokensUser.balances.find(
     (token) => token.symbol === 'LEO',
   )!;
@@ -40,13 +36,11 @@ describe('tokens-transfer.component tests:\n', () => {
         initialStates.iniStateAs.defaultExistent,
       );
       await act(async () => {
-        await userEvent.click(
-          screen.getByTestId(
-            dataTestIdButton.actionBtn.preFix + actionButtonTokenIconName,
-          ),
+        const leoRow = (await screen.findAllByTestId('token-user-item')).find(
+          (el) => el.textContent?.includes('LEO'),
         );
-      });
-      await act(async () => {
+        expect(leoRow).toBeTruthy();
+        await userEvent.click(leoRow!);
         await userEvent.click(
           screen.getByTestId(`${dataTestIdIcon.tokens.prefix.send}LEO`),
         );
@@ -57,10 +51,9 @@ describe('tokens-transfer.component tests:\n', () => {
       expect(
         await screen.findByTestId(`${Screen.TOKENS_TRANSFER}-page`),
       ).toBeInTheDocument();
-      expect(await screen.findAllByText('LEO')).toHaveLength(1);
-      expect(
-        await screen.findByText(selectedToken.balance, { exact: false }),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId(`${Screen.TOKENS_TRANSFER}-page`)).toHaveTextContent(
+        selectedToken.symbol,
+      );
     });
 
     it('Must show error message if empty receiverUsername', async () => {
@@ -71,7 +64,9 @@ describe('tokens-transfer.component tests:\n', () => {
         );
       });
       expect(
-        await screen.findByText(chrome.i18n.getMessage('popup_accounts_fill')),
+        await screen.findByText(
+          chrome.i18n.getMessage('validation_error_mandatory'),
+        ),
       ).toBeInTheDocument();
     });
 
@@ -81,16 +76,15 @@ describe('tokens-transfer.component tests:\n', () => {
           screen.getByTestId(dataTestIdInput.username),
           mk.user.two,
         );
-        await userEvent.type(
-          screen.getByTestId(dataTestIdInput.amount),
-          '{space}',
-        );
+        await userEvent.clear(screen.getByTestId(dataTestIdInput.amount));
         await userEvent.click(
           screen.getByTestId(dataTestIdButton.operation.tokens.transfer.send),
         );
       });
       expect(
-        await screen.findByText(chrome.i18n.getMessage('popup_accounts_fill')),
+        await screen.findByText(
+          chrome.i18n.getMessage('validation_error_mandatory'),
+        ),
       ).toBeInTheDocument();
     });
 
@@ -147,7 +141,7 @@ describe('tokens-transfer.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_power_up_down_error'),
+          chrome.i18n.getMessage('validation_error_less_or_equal_value'),
         ),
       ).toBeInTheDocument();
     });

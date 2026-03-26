@@ -1,9 +1,9 @@
 import AccountUtils from '@hiveapp/utils/account.utils';
 import { ExtendedAccount } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
-import { act, cleanup, screen } from '@testing-library/react';
+import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
@@ -16,10 +16,14 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+
+/** Matches `AccountKeysListItemComponent` private key display (SUBSTRING_LENGTH = 15). */
+const truncatedPrivateKeyDisplay = (pk: string) =>
+  `${pk.substring(0, 15)}...${pk.slice(-15)}`;
+
 describe('account-keys-list.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
-    jest.resetModules();
     cleanup();
   });
   describe('General cases:\n', () => {
@@ -61,7 +65,9 @@ describe('account-keys-list.component tests:\n', () => {
         );
       });
       expect(
-        await screen.findByText(userData.one.nonEncryptKeys.posting),
+        await screen.findByText(
+          truncatedPrivateKeyDisplay(userData.one.nonEncryptKeys.posting),
+        ),
       ).toBeInTheDocument();
     });
 
@@ -148,7 +154,9 @@ describe('account-keys-list.component tests:\n', () => {
       expect(
         await screen.findByTestId(`${Screen.HOME_PAGE}-page`),
       ).toBeInTheDocument();
-      expect(await screen.findByText(mk.user.two)).toBeInTheDocument();
+      expect(
+        await screen.findByTestId(`select-account-item-${mk.user.two}`),
+      ).toBeInTheDocument();
     });
   });
 
@@ -171,7 +179,10 @@ describe('account-keys-list.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+        const menu = await waitFor(() =>
+          screen.getByTestId(dataTestIdButton.menu),
+        );
+        await userEvent.click(menu);
         await userEvent.click(
           screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
         );
@@ -201,17 +212,7 @@ describe('account-keys-list.component tests:\n', () => {
           screen.getByTestId(dataTestIdButton.dialog.confirm),
         );
       });
-      await act(async () => {
-        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
-        );
-        await userEvent.click(
-          screen.getByTestId(
-            dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
-          ),
-        );
-      });
+      // After confirm, `goBack()` returns to manage account (no home top-bar menu).
       expect(
         await screen.findByTestId(
           dataTestIdIcon.keys.list.preFix.add + 'posting',

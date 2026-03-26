@@ -1,5 +1,5 @@
 import { KeysUtils } from '@hiveapp/utils/keys.utils';
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -15,6 +15,12 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
+jest.mock(
+  'hive-keychain-commons',
+  () =>
+    require('src/__tests__/utils-for-testing/mocks/hive-keychain-commons-iswif').getHiveKeychainCommonsIsWifMock(),
+);
+
 describe('select-keys.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -22,9 +28,13 @@ describe('select-keys.component tests:\n', () => {
     cleanup();
   });
   beforeEach(async () => {
+    const base = initialStates.iniStateAs.defaultExistent;
     await reactTestingLibrary.renderWithConfiguration(
       <HiveAppComponent />,
-      { ...initialStates.iniStateAs.defaultExistent, accounts: [] },
+      {
+        ...base,
+        hive: { ...base.hive, accounts: [] },
+      },
       {
         app: {
           accountsRelated: {
@@ -98,10 +108,12 @@ describe('select-keys.component tests:\n', () => {
       );
       await userEvent.click(await screen.findByTestId(dataTestIdButton.save));
     });
-    expect(sHasKeys).toHaveBeenCalledWith({
-      active: userData.one.nonEncryptKeys.active,
-      activePubkey: userData.one.encryptKeys.active,
-    });
+    expect(sHasKeys).toHaveBeenCalled();
+    const passed = sHasKeys.mock.calls[sHasKeys.mock.calls.length - 1][0];
+    expect(passed.activePubkey).toBe(userData.one.encryptKeys.active);
+    expect(KeysUtils.getPublicKeyFromPrivateKeyString(passed.active)).toBe(
+      userData.one.encryptKeys.active,
+    );
   });
 
   it('Must import the selected posting key', async () => {
@@ -114,10 +126,12 @@ describe('select-keys.component tests:\n', () => {
       );
       await userEvent.click(await screen.findByTestId(dataTestIdButton.save));
     });
-    expect(sHasKeys).toHaveBeenCalledWith({
-      posting: userData.one.nonEncryptKeys.posting,
-      postingPubkey: userData.one.encryptKeys.posting,
-    });
+    expect(sHasKeys).toHaveBeenCalled();
+    const passed = sHasKeys.mock.calls[sHasKeys.mock.calls.length - 1][0];
+    expect(passed.postingPubkey).toBe(userData.one.encryptKeys.posting);
+    expect(KeysUtils.getPublicKeyFromPrivateKeyString(passed.posting)).toBe(
+      userData.one.encryptKeys.posting,
+    );
   });
 
   it('Must import the selected memo key', async () => {
@@ -128,9 +142,11 @@ describe('select-keys.component tests:\n', () => {
       );
       await userEvent.click(await screen.findByTestId(dataTestIdButton.save));
     });
-    expect(sHasKeys).toHaveBeenCalledWith({
-      memo: userData.one.nonEncryptKeys.memo,
-      memoPubkey: userData.one.encryptKeys.memo,
-    });
+    expect(sHasKeys).toHaveBeenCalled();
+    const passed = sHasKeys.mock.calls[sHasKeys.mock.calls.length - 1][0];
+    expect(passed.memoPubkey).toBe(userData.one.encryptKeys.memo);
+    expect(KeysUtils.getPublicKeyFromPrivateKeyString(passed.memo!)).toBe(
+      userData.one.encryptKeys.memo,
+    );
   });
 });

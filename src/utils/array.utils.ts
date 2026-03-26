@@ -89,3 +89,5 @@ export const ArrayUtils = {
   findUnique,
   inAButNotB,
 };
+
+export default ArrayUtils;

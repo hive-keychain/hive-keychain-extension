@@ -67,7 +67,7 @@ describe('accounts.utils tests:\n', () => {
         mk.user.one,
       );
 
-      expect(sGetValueFromLocalStorage).toBeCalledWith(
+      expect(sGetValueFromLocalStorage).toHaveBeenCalledWith(
         LocalStorageKeyEnum.ACCOUNTS,
       );
       expect(result).toEqual(expect.arrayContaining([expectedAccountShape]));

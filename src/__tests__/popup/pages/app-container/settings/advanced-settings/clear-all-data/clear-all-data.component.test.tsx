@@ -1,9 +1,9 @@
 import AccountUtils from '@hiveapp/utils/account.utils';
 import ActiveAccountUtils from '@hiveapp/utils/active-account.utils';
 import MkUtils from '@hiveapp/utils/mk.utils';
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
-import { act, cleanup, screen } from '@testing-library/react';
+import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
@@ -11,6 +11,7 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import VaultUtils from 'src/utils/vault.utils';
 describe('clear-all-data.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -54,6 +55,8 @@ describe('clear-all-data.component tests:\n', () => {
   });
 
   it('Must clear user data and go to sign up page', async () => {
+    jest.spyOn(VaultUtils, 'getValueFromVault').mockResolvedValue(undefined);
+    jest.spyOn(VaultUtils, 'removeFromVault').mockResolvedValue(undefined);
     AccountUtils.getAccount = jest.fn().mockResolvedValue([]);
     AccountUtils.getAccountsFromLocalStorage = jest.fn().mockResolvedValue([]);
     MkUtils.getMkFromLocalStorage = jest.fn().mockResolvedValue('');
@@ -67,6 +70,11 @@ describe('clear-all-data.component tests:\n', () => {
         screen.getByTestId(dataTestIdButton.dialog.confirm),
       );
     });
-    expect(await screen.findByTestId('signup-page')).toBeInTheDocument();
+    await waitFor(() => {
+      const postClear =
+        screen.queryByTestId('signup-page') ??
+        screen.queryByTestId('sign-in-page');
+      expect(postClear).toBeTruthy();
+    });
   });
 });

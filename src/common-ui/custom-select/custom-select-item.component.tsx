@@ -29,6 +29,7 @@ export function CustomSelectItemComponent<T extends OptionItem>({
   generateImageIfNull = false,
 }: CustomSelectItemProps<T>) {
   const [color, setColor] = useState<string>();
+  const itemTestId = item.key ?? String(item.value ?? item.label);
 
   const handleDeleteClick = (event: BaseSyntheticEvent) => {
     event.stopPropagation();
@@ -45,7 +46,7 @@ export function CustomSelectItemComponent<T extends OptionItem>({
   return (
     <div className="option">
       <div
-        data-testid={`custom-select-item-${item.key}`}
+        data-testid={`custom-select-item-${itemTestId}`}
         className={`custom-select-item ${isSelected ? 'selected' : ''} ${item.imgChip ? 'has-img-chip' : ''}`}
         onClick={() => {
           handleItemClicked();

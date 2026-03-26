@@ -1,14 +1,32 @@
 import { render as rtlRender } from '@testing-library/react';
 import React, { ReactElement } from 'react';
-import { Provider } from 'react-redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import { resetMessage } from '@popup/multichain/actions/message.actions';
+import { RootState } from '@popup/multichain/store';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
+import { MessageContainerComponent } from 'src/common-ui/message-container/message-container.component';
 
 interface Props {
   children: React.ReactNode;
 }
 
 const initialReducerState = initialEmptyStateStore;
+
+/** Mirrors `ChainRouter` message overlay so `setErrorMessage` / `setSuccessMessage` are visible in tests. */
+const TestMessageOverlay = () => {
+  const message = useSelector((state: RootState) => state.message);
+  const dispatch = useDispatch();
+  if (!message?.key) {
+    return null;
+  }
+  return (
+    <MessageContainerComponent
+      message={message}
+      onResetMessage={() => dispatch(resetMessage())}
+    />
+  );
+};
 
 const render = (
   ui: ReactElement,
@@ -19,10 +37,18 @@ const render = (
   } = {},
 ) => {
   const Wrapper = ({ children }: Props) => {
-    return <Provider store={fakeStore}>{children}</Provider>;
+    return (
+      <Provider store={fakeStore}>
+        {children}
+        <TestMessageOverlay />
+      </Provider>
+    );
   };
 
-  return rtlRender(ui, { wrapper: Wrapper, ...renderOptions });
+  return {
+    ...rtlRender(ui, { wrapper: Wrapper, ...renderOptions }),
+    store: fakeStore,
+  };
 };
 export * from '@testing-library/react';
 export { render as customRender };

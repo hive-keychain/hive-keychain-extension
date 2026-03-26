@@ -1,4 +1,4 @@
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -18,9 +18,19 @@ describe('advanced-settings.component tests:\n', () => {
     cleanup();
   });
   beforeEach(async () => {
+    const base = initialStates.iniStateAs.defaultExistent;
     await reactTestingLibrary.renderWithConfiguration(
       <HiveAppComponent />,
-      initialStates.iniStateAs.defaultExistent,
+      {
+        ...base,
+        hive: {
+          ...base.hive,
+          appStatus: {
+            ...base.hive.appStatus,
+            isLedgerSupported: true,
+          },
+        },
+      },
       {
         app: {
           ledgerRelated: {
@@ -82,7 +92,7 @@ describe('advanced-settings.component tests:\n', () => {
         screen.getByTestId(dataTestIdButton.menuPreFix + ledgerMenuItem.icon),
       );
     });
-    expect(jest.spyOn(chrome.tabs, 'create')).toBeCalledWith({
+    expect(jest.spyOn(chrome.tabs, 'create')).toHaveBeenCalledWith({
       url: `chrome-extension://${tabId}/link-ledger-device.html`,
     });
   });

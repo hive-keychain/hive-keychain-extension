@@ -2,13 +2,12 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import { Screen } from '@interfaces/screen.interface';
 import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
 import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import walletHistory from 'src/__tests__/utils-for-testing/data/history/transactions/wallet-history';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { DEFAULT_FILTER } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history.component';
 describe('wallet-history.component tests:\n', () => {
@@ -22,12 +21,8 @@ describe('wallet-history.component tests:\n', () => {
       await reactTestingLibrary.renderWithConfiguration(
         <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
+        { navigateToAfterMount: Screen.WALLET_HISTORY_PAGE },
       );
-      await act(async () => {
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.actionBtn.preFix + Icons.HISTORY),
-        );
-      });
     });
     it('Must show empty transactions & try clear filter, messages', async () => {
       expect(
@@ -52,6 +47,7 @@ describe('wallet-history.component tests:\n', () => {
         <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
         {
+          navigateToAfterMount: Screen.WALLET_HISTORY_PAGE,
           app: {
             accountsRelated: {
               TransactionUtils: {
@@ -62,11 +58,6 @@ describe('wallet-history.component tests:\n', () => {
           },
         },
       );
-      await act(async () => {
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.actionBtn.preFix + Icons.HISTORY),
-        );
-      });
     });
     it('Must show transaction list', async () => {
       await waitFor(async () => {

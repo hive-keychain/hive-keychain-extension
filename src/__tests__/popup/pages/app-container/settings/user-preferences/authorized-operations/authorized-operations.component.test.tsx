@@ -1,11 +1,10 @@
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
 import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
-import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
@@ -93,13 +92,13 @@ describe('authorized-operations.component tests:\n', () => {
     });
 
     it('Must delete selected website', async () => {
-      const toDelete = 'post-splinterlands.com';
-      const ariaLabel =
-        dataTestIdIcon.authorizedOperations.icon.delete.preFix + toDelete;
+      const deleteIconTestId = `icon-action-splinterlands.com-${chrome.i18n.getMessage(
+        'popup_post',
+      )}`;
       await act(async () => {
-        await userEvent.click(screen.getByTestId(ariaLabel));
+        await userEvent.click(screen.getByTestId(deleteIconTestId));
       });
-      expect(screen.queryByTestId(ariaLabel)).not.toBeInTheDocument();
+      expect(screen.queryByTestId(deleteIconTestId)).not.toBeInTheDocument();
     });
   });
 });

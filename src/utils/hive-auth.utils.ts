@@ -79,6 +79,25 @@ type PreCorrelationQueueEntry = {
 let activePreCorrelationQueueEntry: PreCorrelationQueueEntry | null = null;
 const pendingPreCorrelationQueue: PreCorrelationQueueEntry[] = [];
 
+const getRequestsDataCompat = (requestHandler: HiveRequestsHandler) => {
+  if (requestHandler.requestsData?.length) {
+    return requestHandler.requestsData;
+  }
+  const legacyData = (requestHandler as any).data;
+  return legacyData ? [legacyData] : [];
+};
+
+const getRequestCompat = (
+  requestHandler: HiveRequestsHandler,
+  requestId: number,
+) => {
+  return (
+    requestHandler.getRequest?.(requestId) ??
+    requestHandler.getRequestData?.(requestId)?.request ??
+    (requestHandler as any).data?.request
+  );
+};
+
 const toError = (error: unknown, fallbackMessage: string) => {
   return error instanceof Error ? error : new Error(fallbackMessage);
 };
@@ -106,8 +125,9 @@ const getPreCorrelationKey = (
 ): string => {
   const data =
     requestId != null
-      ? requestHandler.getRequestData(requestId)
-      : requestHandler.requestsData[0];
+      ? requestHandler.getRequestData?.(requestId) ??
+        (requestHandler as any).data
+      : requestHandler.requestsData?.[0] ?? (requestHandler as any).data;
   if (!data) return '';
   return [
     data.tab ?? 'tab',
@@ -281,7 +301,7 @@ const cancelAllPreCorrelationRequests = (error: Error) => {
 const cancelPreCorrelationRequest = (requestHandler: HiveRequestsHandler) => {
   const cancellationError = new Error('Keyless request cancelled');
 
-  for (const requestData of requestHandler.requestsData) {
+  for (const requestData of getRequestsDataCompat(requestHandler)) {
     if (!requestData?.request) continue;
     const key = getPreCorrelationKey(
       requestHandler,
@@ -606,7 +626,10 @@ const handleSignRequest = async (
   keylessRequest: KeylessRequest,
   tab: number,
 ): Promise<void> => {
-  const request = requestHandler.getRequest(keylessRequest.request.request_id)!;
+  const request = getRequestCompat(
+    requestHandler,
+    keylessRequest.request.request_id,
+  )!;
 
   const signWait = await signRequest(
     requestHandler,
@@ -651,7 +674,10 @@ const handleEncodeDecodeRequest = async (
   keylessRequest: KeylessRequest,
   tab: number,
 ): Promise<void> => {
-  const request = requestHandler.getRequest(keylessRequest.request.request_id)!;
+  const request = getRequestCompat(
+    requestHandler,
+    keylessRequest.request.request_id,
+  )!;
   await challengeRequest(requestHandler, request, keylessRequest.appName, tab);
 };
 
@@ -662,8 +688,10 @@ const handleAuthAck = async (
   authAck: AuthAck,
   tab: number,
 ): Promise<void> => {
-  console.log(requestHandler);
-  const request = requestHandler.getRequest(keylessRequest.request.request_id)!;
+  const request = getRequestCompat(
+    requestHandler,
+    keylessRequest.request.request_id,
+  )!;
   try {
     if (authAck.uuid !== keylessRequest.uuid) return;
     const authAckData = validateAuthAckData(authAck, keylessRequest);

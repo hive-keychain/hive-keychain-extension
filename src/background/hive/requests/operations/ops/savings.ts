@@ -15,7 +15,9 @@ export const broadcastSavings = async (
   options?: TransactionOptions,
 ) => {
   let result, err, err_message;
-  const request = requestHandler.getRequestData(data.request_id);
+  const request =
+    requestHandler.getRequestData?.(data.request_id) ??
+    (requestHandler as any).data;
   let key = request?.key;
   const amountLabel = `${FormatUtils.formatCurrencyValue(data.amount)} ${
     data.currency

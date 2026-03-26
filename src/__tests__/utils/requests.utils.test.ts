@@ -115,5 +115,45 @@ describe('requests.utils tests:\n', () => {
         }
       });
     });
+
+    test('method-based types use request.method in lowercase', () => {
+      expect(
+        getRequiredWifType({
+          type: KeychainRequestTypes.decode,
+          method: KeychainKeyTypes.active,
+        } as KeychainRequest),
+      ).toBe('active');
+      expect(
+        getRequiredWifType({
+          type: KeychainRequestTypes.signBuffer,
+          method: KeychainKeyTypes.posting,
+        } as KeychainRequest),
+      ).toBe('posting');
+      expect(
+        getRequiredWifType({
+          type: KeychainRequestTypes.broadcast,
+          method: KeychainKeyTypes.memo,
+        } as KeychainRequest),
+      ).toBe('memo');
+      expect(
+        getRequiredWifType({
+          type: KeychainRequestTypes.signTx,
+          method: KeychainKeyTypes.active,
+        } as KeychainRequest),
+      ).toBe('active');
+    });
+
+    test('savings and authority operations require active key', () => {
+      expect(
+        getRequiredWifType({
+          type: KeychainRequestTypes.savings,
+        } as KeychainRequest),
+      ).toBe(KeychainKeyTypesLC.active);
+      expect(
+        getRequiredWifType({
+          type: KeychainRequestTypes.addAccountAuthority,
+        } as KeychainRequest),
+      ).toBe(KeychainKeyTypesLC.active);
+    });
   });
 });

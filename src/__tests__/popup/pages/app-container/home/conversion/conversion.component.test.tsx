@@ -1,17 +1,19 @@
 import { ConversionUtils } from '@hiveapp/utils/conversion.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
 import dataTestIdDropdown from 'src/__tests__/utils-for-testing/data-testid/data-testid-dropdown';
+import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import FormatUtils from 'src/utils/format.utils';
 
 describe('conversion.component tests:\n', () => {
   afterEach(() => {
@@ -55,15 +57,23 @@ describe('conversion.component tests:\n', () => {
         confirmed: true,
       } as TransactionResult);
       await act(async () => {
-        await userEvent.click(
-          await screen.findByTestId(dataTestIdButton.setToMax),
+        await userEvent.clear(screen.getByTestId(dataTestIdInput.amount));
+        await userEvent.type(
+          screen.getByTestId(dataTestIdInput.amount),
+          parseFloat(
+            accounts.extended.balance.toString().split(' ')[0],
+          ).toString(),
         );
         await userEvent.click(
           await screen.findByTestId(dataTestIdButton.submit),
         );
       });
       expect(
-        await screen.findByText(accounts.extended.balance.toString()),
+        await screen.findByText(
+          `${FormatUtils.formatCurrencyValue(
+            parseFloat(accounts.extended.balance.toString().split(' ')[0]),
+          )} HIVE`,
+        ),
       ).toBeInTheDocument();
       expect(
         await screen.findByText(
@@ -83,14 +93,14 @@ describe('conversion.component tests:\n', () => {
     });
 
     it('Must show error if HIVE convertion fails', async () => {
-      ConversionUtils.sendConvert = jest.fn().mockResolvedValue({
-        tx_id: 'tx_id',
-        id: 'id',
-        confirmed: false,
-      } as TransactionResult);
+      ConversionUtils.sendConvert = jest.fn().mockResolvedValue(null);
       await act(async () => {
-        await userEvent.click(
-          await screen.findByTestId(dataTestIdButton.setToMax),
+        await userEvent.clear(screen.getByTestId(dataTestIdInput.amount));
+        await userEvent.type(
+          screen.getByTestId(dataTestIdInput.amount),
+          parseFloat(
+            accounts.extended.balance.toString().split(' ')[0],
+          ).toString(),
         );
         await userEvent.click(
           await screen.findByTestId(dataTestIdButton.submit),
@@ -111,8 +121,12 @@ describe('conversion.component tests:\n', () => {
         .fn()
         .mockRejectedValue(new Error('Error HIVE to HBD'));
       await act(async () => {
-        await userEvent.click(
-          await screen.findByTestId(dataTestIdButton.setToMax),
+        await userEvent.clear(screen.getByTestId(dataTestIdInput.amount));
+        await userEvent.type(
+          screen.getByTestId(dataTestIdInput.amount),
+          parseFloat(
+            accounts.extended.balance.toString().split(' ')[0],
+          ).toString(),
         );
         await userEvent.click(
           await screen.findByTestId(dataTestIdButton.submit),
@@ -153,15 +167,23 @@ describe('conversion.component tests:\n', () => {
         confirmed: true,
       } as TransactionResult);
       await act(async () => {
-        await userEvent.click(
-          await screen.findByTestId(dataTestIdButton.setToMax),
+        await userEvent.clear(screen.getByTestId(dataTestIdInput.amount));
+        await userEvent.type(
+          screen.getByTestId(dataTestIdInput.amount),
+          parseFloat(
+            accounts.extended.hbd_balance.toString().split(' ')[0],
+          ).toString(),
         );
         await userEvent.click(
           await screen.findByTestId(dataTestIdButton.submit),
         );
       });
       expect(
-        await screen.findByText(accounts.extended.hbd_balance.toString()),
+        await screen.findByText(
+          `${FormatUtils.formatCurrencyValue(
+            parseFloat(accounts.extended.hbd_balance.toString().split(' ')[0]),
+          )} HBD`,
+        ),
       ).toBeInTheDocument();
       expect(
         await screen.findByText(
@@ -181,14 +203,14 @@ describe('conversion.component tests:\n', () => {
     });
 
     it('Must show error if HBD convertion fails', async () => {
-      ConversionUtils.sendConvert = jest.fn().mockResolvedValue({
-        tx_id: 'tx_id',
-        id: 'id',
-        confirmed: false,
-      } as TransactionResult);
+      ConversionUtils.sendConvert = jest.fn().mockResolvedValue(null);
       await act(async () => {
-        await userEvent.click(
-          await screen.findByTestId(dataTestIdButton.setToMax),
+        await userEvent.clear(screen.getByTestId(dataTestIdInput.amount));
+        await userEvent.type(
+          screen.getByTestId(dataTestIdInput.amount),
+          parseFloat(
+            accounts.extended.hbd_balance.toString().split(' ')[0],
+          ).toString(),
         );
         await userEvent.click(
           await screen.findByTestId(dataTestIdButton.submit),
@@ -209,8 +231,12 @@ describe('conversion.component tests:\n', () => {
         .fn()
         .mockRejectedValue(new Error('Error HBD to HIVE'));
       await act(async () => {
-        await userEvent.click(
-          await screen.findByTestId(dataTestIdButton.setToMax),
+        await userEvent.clear(screen.getByTestId(dataTestIdInput.amount));
+        await userEvent.type(
+          screen.getByTestId(dataTestIdInput.amount),
+          parseFloat(
+            accounts.extended.hbd_balance.toString().split(' ')[0],
+          ).toString(),
         );
         await userEvent.click(
           await screen.findByTestId(dataTestIdButton.submit),

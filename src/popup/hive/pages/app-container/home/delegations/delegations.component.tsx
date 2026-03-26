@@ -215,6 +215,7 @@ const Delegations = ({
 
     if (Number(form.amount) <= 0) {
       cancelDelegation(form);
+      return;
     }
 
     const formattedAmount = `${parseFloat(form.amount.toString()).toFixed(3)} ${
@@ -360,6 +361,7 @@ const Delegations = ({
               ${currencyLabels.hp}`}
           onClick={goToIncomings}
           additionalClass="blue"
+          ariaLabel="total-incoming"
         />
         <ResourceItemComponent
           icon={SVGIcons.RESOURCE_ITEM_DELEGATION_OUTGOING}
@@ -368,6 +370,7 @@ const Delegations = ({
               ${currencyLabels.hp}`}
           onClick={goToOutgoing}
           additionalClass="red"
+          ariaLabel="total-outgoing"
         />
       </div>
 

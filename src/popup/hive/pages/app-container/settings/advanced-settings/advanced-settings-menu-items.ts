@@ -61,3 +61,5 @@ export const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
 
   return settings;
 };
+
+export default getAdvancedSettingsMenuItems;

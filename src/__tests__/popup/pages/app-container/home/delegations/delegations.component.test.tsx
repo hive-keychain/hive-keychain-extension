@@ -1,13 +1,12 @@
 import { DelegationUtils } from '@hiveapp/utils/delegation.utils';
 import { FavoriteUserUtils } from '@hiveapp/utils/favorite-user.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
-import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
 import dataTestIdDropdown from 'src/__tests__/utils-for-testing/data-testid/data-testid-dropdown';
 import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import dataTestIdSpan from 'src/__tests__/utils-for-testing/data-testid/data-testid-span';
@@ -19,7 +18,6 @@ import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 describe('delegations.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
-    jest.resetModules();
     cleanup();
   });
   describe('handling errors on load:\n', () => {
@@ -77,12 +75,12 @@ describe('delegations.component tests:\n', () => {
     });
     it('Must show total incoming/outgoing values', async () => {
       const incomingHTMLElement = await screen.findByTestId(
-        dataTestIdSpan.delegations.incoming.spanTotal,
+        dataTestIdButton.delegations.total.incoming,
       );
       expect(incomingHTMLElement.textContent).toContain('+');
       expect(incomingHTMLElement.textContent).toContain('HP');
       const outgoingTotalHTMLElement = await screen.findByTestId(
-        dataTestIdDiv.delegations.outgoing.totalValue,
+        dataTestIdButton.delegations.total.outgoing,
       );
       expect(outgoingTotalHTMLElement.textContent).toContain('-');
       expect(outgoingTotalHTMLElement.textContent).toContain('HP');
@@ -121,11 +119,7 @@ describe('delegations.component tests:\n', () => {
     });
 
     it('Must show error when delegation fails', async () => {
-      DelegationUtils.delegateVestingShares = jest.fn().mockResolvedValue({
-        tx_id: 'tx_id',
-        id: 'id',
-        confirmed: false,
-      } as TransactionResult);
+      DelegationUtils.delegateVestingShares = jest.fn().mockResolvedValue(null);
       await act(async () => {
         await userEvent.type(
           await screen.findByTestId(dataTestIdInput.username),
@@ -193,7 +187,7 @@ describe('delegations.component tests:\n', () => {
         );
         await userEvent.type(
           await screen.findByTestId(dataTestIdInput.amount),
-          '{space}',
+          '0',
         );
         await userEvent.click(
           await screen.findByTestId(dataTestIdButton.operation.delegate.submit),
@@ -210,11 +204,7 @@ describe('delegations.component tests:\n', () => {
     });
 
     it('Must show error message if cancellation fail', async () => {
-      DelegationUtils.delegateVestingShares = jest.fn().mockResolvedValue({
-        tx_id: 'tx_id',
-        id: 'id',
-        confirmed: false,
-      } as TransactionResult);
+      DelegationUtils.delegateVestingShares = jest.fn().mockResolvedValue(null);
       FavoriteUserUtils.saveFavoriteUser = jest.fn();
       await act(async () => {
         await userEvent.type(
@@ -223,7 +213,7 @@ describe('delegations.component tests:\n', () => {
         );
         await userEvent.type(
           await screen.findByTestId(dataTestIdInput.amount),
-          '{space}',
+          '0',
         );
         await userEvent.click(
           await screen.findByTestId(dataTestIdButton.operation.delegate.submit),
@@ -250,7 +240,7 @@ describe('delegations.component tests:\n', () => {
         );
         await userEvent.type(
           await screen.findByTestId(dataTestIdInput.amount),
-          '{space}',
+          '0',
         );
         await userEvent.click(
           await screen.findByTestId(dataTestIdButton.operation.delegate.submit),

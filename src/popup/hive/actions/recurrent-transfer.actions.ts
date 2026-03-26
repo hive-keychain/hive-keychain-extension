@@ -5,9 +5,8 @@ import { HiveActionType } from 'src/popup/hive/actions/action-type.enum';
 export const fetchRecurrentTransfers =
   (name: string): AppThunk =>
   async (dispatch) => {
-    const recurrentTransfers = (
-      await TransferUtils.getRecurrentTransfers(name)
-    ).recurrent_transfers.sort(
+    const result = await TransferUtils.getRecurrentTransfers(name);
+    const recurrentTransfers = [...(result?.recurrent_transfers ?? [])].sort(
       (a, b) => a.to.localeCompare(b.to) || a.pair_id - b.pair_id,
     );
     dispatch({

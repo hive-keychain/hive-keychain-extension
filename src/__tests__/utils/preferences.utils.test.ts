@@ -37,12 +37,12 @@ describe('preferences.utils tests:\n', () => {
         jest.fn();
       const result = await addToWhitelist(username, domain, type);
       expect(result).toBe(undefined);
-      expect(mockGetValueFromLocalStorage).toBeCalledTimes(1);
-      expect(mockGetValueFromLocalStorage).toBeCalledWith(
+      expect(mockGetValueFromLocalStorage).toHaveBeenCalledTimes(1);
+      expect(mockGetValueFromLocalStorage).toHaveBeenCalledWith(
         LocalStorageKeyEnum.NO_CONFIRM,
       );
-      expect(mockSaveValueInLocalStorage).toBeCalledTimes(1);
-      expect(mockSaveValueInLocalStorage).toBeCalledWith('no_confirm', {
+      expect(mockSaveValueInLocalStorage).toHaveBeenCalledTimes(1);
+      expect(mockSaveValueInLocalStorage).toHaveBeenCalledWith('no_confirm', {
         'keychain.tests': { domain: { type: true } },
       });
     });
@@ -55,12 +55,12 @@ describe('preferences.utils tests:\n', () => {
         jest.fn();
       const result = await addToWhitelist(username, domain, type);
       expect(result).toBe(undefined);
-      expect(mockGetValueFromLocalStorage).toBeCalledTimes(1);
-      expect(mockGetValueFromLocalStorage).toBeCalledWith(
+      expect(mockGetValueFromLocalStorage).toHaveBeenCalledTimes(1);
+      expect(mockGetValueFromLocalStorage).toHaveBeenCalledWith(
         LocalStorageKeyEnum.NO_CONFIRM,
       );
-      expect(mockSaveValueInLocalStorage).toBeCalledTimes(1);
-      expect(mockSaveValueInLocalStorage).toBeCalledWith('no_confirm', {
+      expect(mockSaveValueInLocalStorage).toHaveBeenCalledTimes(1);
+      expect(mockSaveValueInLocalStorage).toHaveBeenCalledWith('no_confirm', {
         'keychain.tests': {
           domain: {
             type: true,
@@ -80,12 +80,12 @@ describe('preferences.utils tests:\n', () => {
         jest.fn();
       const result = await addToWhitelist(username, domain, type);
       expect(result).toBe(undefined);
-      expect(mockGetValueFromLocalStorage).toBeCalledTimes(1);
-      expect(mockGetValueFromLocalStorage).toBeCalledWith(
+      expect(mockGetValueFromLocalStorage).toHaveBeenCalledTimes(1);
+      expect(mockGetValueFromLocalStorage).toHaveBeenCalledWith(
         LocalStorageKeyEnum.NO_CONFIRM,
       );
-      expect(mockSaveValueInLocalStorage).toBeCalledTimes(1);
-      expect(mockSaveValueInLocalStorage).toBeCalledWith('no_confirm', {
+      expect(mockSaveValueInLocalStorage).toHaveBeenCalledTimes(1);
+      expect(mockSaveValueInLocalStorage).toHaveBeenCalledWith('no_confirm', {
         'keychain.tests': {
           domain: {
             type: true,
@@ -166,8 +166,8 @@ describe('preferences.utils tests:\n', () => {
         'decode',
       );
       expect(result).toEqual({ 'keychain.tests': {} });
-      expect(spySaveValue).toBeCalledTimes(1);
-      expect(spySaveValue).toBeCalledWith('no_confirm', {
+      expect(spySaveValue).toHaveBeenCalledTimes(1);
+      expect(spySaveValue).toHaveBeenCalledWith('no_confirm', {
         'keychain.tests': {},
       });
     });
@@ -187,8 +187,8 @@ describe('preferences.utils tests:\n', () => {
         'decode',
       );
       expect(result).toEqual(arr);
-      expect(spySaveValue).toBeCalledTimes(1);
-      expect(spySaveValue).toBeCalledWith('no_confirm', arr);
+      expect(spySaveValue).toHaveBeenCalledTimes(1);
+      expect(spySaveValue).toHaveBeenCalledWith('no_confirm', arr);
     });
   });
 });

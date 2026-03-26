@@ -377,6 +377,7 @@ const Home = ({
           navigateTo(EvmScreen.EVM_SETTINGS);
         }}
         onRefreshButtonClicked={refresh}
+        showChainDropdown
         accountSelector={
           <EvmSelectAccountSectionComponent
             background="white"

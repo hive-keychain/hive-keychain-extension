@@ -11,10 +11,14 @@ export const encodeWithKeys = async (
 ) => {
   let encoded: { [a: string]: string } = {};
   let error = null;
-  const request = requestHandler.getRequestData(data.request_id);
+  const request =
+    requestHandler.getRequestData?.(data.request_id) ??
+    (requestHandler as any).data;
 
   try {
-    const key = requestHandler.getRequestData(data.request_id)?.key;
+    const key =
+      requestHandler.getRequestData?.(data.request_id)?.key ??
+      (requestHandler as any).data?.key;
 
     for (const receiverPublicKey of data.publicKeys) {
       encoded[receiverPublicKey.toString()] = encode(

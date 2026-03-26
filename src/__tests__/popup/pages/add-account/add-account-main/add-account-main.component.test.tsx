@@ -1,4 +1,4 @@
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -19,9 +19,13 @@ describe('add-account-main.component tests:\n', () => {
 
   describe('No Accounts cases: ', () => {
     beforeEach(async () => {
+      const base = initialStates.iniStateAs.defaultExistent;
       await reactTestingLibrary.renderWithConfiguration(
         <HiveAppComponent />,
-        { ...initialStates.iniStateAs.defaultExistent, accounts: [] },
+        {
+          ...base,
+          hive: { ...base.hive, accounts: [] },
+        },
         {
           app: {
             accountsRelated: {

@@ -25,7 +25,7 @@ describe('global-properties.actions tests:\n', () => {
       await fakeStore.dispatch<any>(
         globalPropertiesActions.loadGlobalProperties(),
       );
-      expect(fakeStore.getState().globalProperties).toEqual({
+      expect(fakeStore.getState().hive.globalProperties).toEqual({
         globals: dynamic.globalProperties,
         price: dynamic.medianHistoryPrice,
         rewardFund: dynamic.rewardFund,
@@ -42,8 +42,8 @@ describe('global-properties.actions tests:\n', () => {
       await fakeStore.dispatch<any>(
         globalPropertiesActions.loadGlobalProperties(),
       );
-      expect(fakeStore.getState().globalProperties).toEqual({});
-      expect(spyLoggerError).toBeCalledWith(promiseError);
+      expect(fakeStore.getState().hive.globalProperties).toEqual({});
+      expect(spyLoggerError).toHaveBeenCalledWith(promiseError);
       spyLoggerError.mockClear();
       spyLoggerError.mockReset();
     });

@@ -7,6 +7,8 @@ import { ActiveAccount } from '@interfaces/active-account.interface';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { KeyType, Keys } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
+import { AccountValueType } from '@reference-data/account-value-type.enum';
 import accounts, * as dataAccounts from 'src/__tests__/utils-for-testing/data/accounts';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -16,6 +18,12 @@ import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import { KeychainError } from 'src/keychain-error';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+
+jest.mock(
+  'hive-keychain-commons',
+  () =>
+    require('src/__tests__/utils-for-testing/mocks/hive-keychain-commons-iswif').getHiveKeychainCommonsIsWifMock(),
+);
 
 describe('account.utils tests:\n', () => {
   const constants = {
@@ -352,7 +360,7 @@ describe('account.utils tests:\n', () => {
         .mockResolvedValue([]);
       const result = await AccountUtils.hasStoredAccounts();
       expect(result).toBe(true);
-      expect(LocalStorageUtils.getValueFromLocalStorage).toBeCalledTimes(1);
+      expect(LocalStorageUtils.getValueFromLocalStorage).toHaveBeenCalledTimes(1);
     });
     test('Test with getValueFromLocalStorage returning null, must return true', async () => {
       LocalStorageUtils.getValueFromLocalStorage = jest
@@ -360,7 +368,7 @@ describe('account.utils tests:\n', () => {
         .mockResolvedValue(null);
       const result = await AccountUtils.hasStoredAccounts();
       expect(result).toBe(true);
-      expect(LocalStorageUtils.getValueFromLocalStorage).toBeCalledTimes(1);
+      expect(LocalStorageUtils.getValueFromLocalStorage).toHaveBeenCalledTimes(1);
     });
     test('Test with getValueFromLocalStorage returning undefined, must return false', async () => {
       LocalStorageUtils.getValueFromLocalStorage = jest
@@ -368,7 +376,7 @@ describe('account.utils tests:\n', () => {
         .mockResolvedValue(undefined);
       const result = await AccountUtils.hasStoredAccounts();
       expect(result).toBe(false);
-      expect(LocalStorageUtils.getValueFromLocalStorage).toBeCalledTimes(1);
+      expect(LocalStorageUtils.getValueFromLocalStorage).toHaveBeenCalledTimes(1);
     });
     test('Test with getValueFromLocalStorage returning list with at least one element, must return true', async () => {
       LocalStorageUtils.getValueFromLocalStorage = jest
@@ -376,7 +384,7 @@ describe('account.utils tests:\n', () => {
         .mockResolvedValue(['atLeastOneElement']);
       const result = await AccountUtils.hasStoredAccounts();
       expect(result).toBe(true);
-      expect(LocalStorageUtils.getValueFromLocalStorage).toBeCalledTimes(1);
+      expect(LocalStorageUtils.getValueFromLocalStorage).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -634,6 +642,14 @@ describe('account.utils tests:\n', () => {
     FormatUtils.withCommas = jest.fn().mockReturnValue(1.51);
     FormatUtils.toHP = jest.fn().mockReturnValue(1.51);
     const { balances } = constants;
+    const emptyLayerTwo: [
+      TokenBalance[],
+      TokenMarket[],
+      AccountValueType,
+      Token[],
+      { hive: number; hbd: number },
+      string[],
+    ] = [[], [], AccountValueType.DOLLARS, [], { hive: 0, hbd: 0 }, []];
     test('must return 0 when passed invalid hiveDollar.usd', () => {
       const currencies = {
         hive: { usd: 1.0 },
@@ -644,6 +660,7 @@ describe('account.utils tests:\n', () => {
         balances,
         currencies,
         dynamic.globalProperties,
+        ...emptyLayerTwo,
       );
       expect(result).toBe(0);
     });
@@ -657,6 +674,7 @@ describe('account.utils tests:\n', () => {
         balances,
         currencies,
         dynamic.globalProperties,
+        ...emptyLayerTwo,
       );
       expect(result).toBe(0);
     });
@@ -670,6 +688,7 @@ describe('account.utils tests:\n', () => {
         balances,
         currencies,
         dynamic.globalProperties,
+        ...emptyLayerTwo,
       );
       expect(result).toBe(1.51);
     });
@@ -781,8 +800,12 @@ describe('account.utils tests:\n', () => {
   });
 
   describe('getRCMana cases:\n', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
     it('Must return rc account with percentage 100', async () => {
-      HiveTxUtils.getData = jest.fn().mockResolvedValue(rcAccounts);
+      jest.spyOn(HiveTxUtils, 'getData').mockResolvedValue(rcAccounts as any);
       const result = await AccountUtils.getRCMana(mk.user.one);
       expect(result.percentage).toBe(100);
     });
@@ -791,7 +814,7 @@ describe('account.utils tests:\n', () => {
       const clonedRcAccounts: any = objects.clone(rcAccounts);
       clonedRcAccounts.rc_accounts[0].rc_manabar.current_mana = 0;
       clonedRcAccounts.rc_accounts[0].max_rc = 0;
-      HiveTxUtils.getData = jest.fn().mockResolvedValue(clonedRcAccounts);
+      jest.spyOn(HiveTxUtils, 'getData').mockResolvedValue(clonedRcAccounts);
       const result = await AccountUtils.getRCMana(mk.user.one);
       expect(result.percentage).toBe(0);
     });

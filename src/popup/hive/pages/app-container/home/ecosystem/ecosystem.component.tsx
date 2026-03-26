@@ -1,8 +1,10 @@
 import { ComingSoonPanel } from '@common-ui/coming-soon-panel/coming-soon-panel.component';
+import { Screen } from '@interfaces/screen.interface';
 import {
   DAppCategory,
   EcosystemCategory,
 } from '@popup/hive/pages/app-container/home/ecosystem/ecosystem-category/ecosystem-category.component';
+import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
 import { EcosystemUtils } from '@popup/hive/utils/ecosystem.utils';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { Chain } from '@popup/multichain/interfaces/chains.interface';
@@ -35,7 +37,7 @@ export const Ecosystem = ({
   const init = async () => {
     setLoading(true);
     const categories: DAppCategory[] = await EcosystemUtils.getDappList(
-      chain.chainId!,
+      chain.chainId,
     );
     if (categories) {
       const tempTabs: any = [];
@@ -58,7 +60,7 @@ export const Ecosystem = ({
   };
 
   return (
-    <div className="ecosystem-page">
+    <div className="ecosystem-page" data-testid={`${Screen.ECOSYSTEM_PAGE}-page`}>
       {!hasError && (
         <>
           {tabs && tabs.length > 0 && (

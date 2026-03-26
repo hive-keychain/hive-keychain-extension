@@ -35,7 +35,7 @@ describe('response.logic tests:\n', () => {
         .mockImplementation(() => {});
 
       cancelPreviousRequest(prevReq);
-      expect(sSendResponse).toBeCalledWith({
+      expect(sSendResponse).toHaveBeenCalledWith({
         success: false,
         error: 'ignored',
         result: null,
@@ -52,7 +52,7 @@ describe('response.logic tests:\n', () => {
         .mockImplementation(async () => undefined);
 
       sendRequestToBackground(req, chrome);
-      expect(sSendMessage).toBeCalledWith({
+      expect(sSendMessage).toHaveBeenCalledWith({
         command: 'sendRequest',
         request: req,
         domain: window.location.hostname,
@@ -66,7 +66,7 @@ describe('response.logic tests:\n', () => {
         .spyOn(ResponseLogicModule, 'sendResponse')
         .mockImplementation(() => {});
       sendIncompleteDataResponse(req, 'error_string');
-      expect(sSendResponse).toBeCalledWith({
+      expect(sSendResponse).toHaveBeenCalledWith({
         success: false,
         error: 'incomplete',
         result: null,
@@ -86,7 +86,7 @@ describe('response.logic tests:\n', () => {
         .mockImplementation(() => {});
 
       sendIncompleteDataResponse(req, joiError);
-      expect(sSendResponse).toBeCalledWith({
+      expect(sSendResponse).toHaveBeenCalledWith({
         success: false,
         error: 'incomplete',
         result: null,
@@ -119,7 +119,7 @@ describe('response.logic tests:\n', () => {
 
       sendResponse(response);
 
-      expect(sPostMessage).toBeCalledWith(
+      expect(sPostMessage).toHaveBeenCalledWith(
         {
           type: 'hive_keychain_response',
           response,

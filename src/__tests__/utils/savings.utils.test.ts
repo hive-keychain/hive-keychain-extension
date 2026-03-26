@@ -1,4 +1,4 @@
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { SavingsUtils } from '@hiveapp/utils/savings.utils';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
@@ -34,7 +34,7 @@ describe('savings.utils.ts tests:\n', () => {
       clonedActiveAccount.account.hbd_balance = '0.000 HBD';
       clonedActiveAccount.account.savings_hbd_balance = '0.000 HBD';
       expect(await SavingsUtils.claimSavings(clonedActiveAccount)).toBe(false);
-      expect(sLogger).toBeCalledWith(
+      expect(sLogger).toHaveBeenCalledWith(
         `@${clonedActiveAccount.name} has no HBD to deposit or savings to withdraw`,
       );
       sLogger.mockClear();

@@ -1,63 +1,46 @@
 import '@testing-library/jest-dom';
-// //TODO to fix
-// describe('buy-coins.component tests:\n', () => {
-//   const actionButtonIconBuy = ActionButtonList.find(
-//     (actionButton) => actionButton.icon === Icons.BUY,
-//   )!.icon;
-//   afterEach(() => {
-//     jest.clearAllMocks();
-//     jest.resetModules();
-//     cleanup();
-//   });
-//   beforeEach(async () => {
-//     await reactTestingLibrary.renderWithConfiguration(
-//       <HiveAppComponent />,
-//       initialStates.iniStateAs.defaultExistent,
-//     );
-//   });
+import { act, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import { Screen } from '@interfaces/screen.interface';
 
-//   it('Must show the buy coins page & list of exchanges for hive', async () => {
-//     const BuyCoinListHIVE = BuyCoinsListItem(
-//       BuyCoinType.BUY_HIVE,
-//       mk.user.one,
-//     ).list;
-//     await act(async () => {
-//       await userEvent.click(
-//         await screen.findByTestId(
-//           dataTestIdButton.actionBtn.preFix + actionButtonIconBuy,
-//         ),
-//       );
-//     });
-//     expect(
-//       await screen.findByTestId(`${Screen.BUY_COINS_PAGE}-page`),
-//     ).toBeInTheDocument();
-//     const linksFound = await screen.findAllByRole('link');
-//     for (let i = 0; i < BuyCoinListHIVE.length; i++) {
-//       expect(linksFound[i]).toHaveAttribute('href', BuyCoinListHIVE[i].link);
-//     }
-//   });
+describe('buy-coins.component tests:\n', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+  });
 
-//   it('Must show the buy coins page & list of exchanges for HBD', async () => {
-//     const BuyCoinListHBD = BuyCoinsListItem(
-//       BuyCoinType.BUY_HDB,
-//       mk.user.one,
-//     ).list;
-//     await act(async () => {
-//       await userEvent.click(
-//         await screen.findByTestId(
-//           dataTestIdButton.actionBtn.preFix + actionButtonIconBuy,
-//         ),
-//       );
-//       await userEvent.click(
-//         await screen.findByTestId(dataTestIdSwitch.buyCoins.buyCoins),
-//       );
-//     });
-//     expect(
-//       await screen.findByTestId(`${Screen.BUY_COINS_PAGE}-page`),
-//     ).toBeInTheDocument();
-//     const linksFound = await screen.findAllByRole('link');
-//     for (let i = 0; i < BuyCoinListHBD.length; i++) {
-//       expect(linksFound[i]).toHaveAttribute('href', BuyCoinListHBD[i].link);
-//     }
-//   });
-// });
+  beforeEach(async () => {
+    await reactTestingLibrary.renderWithConfiguration(
+      <HiveAppComponent />,
+      initialStates.iniStateAs.defaultExistent,
+      {
+        app: {
+          accountsRelated: {
+            AccountUtils: {
+              getAccountsFromLocalStorage: accounts.twoAccounts,
+            },
+          },
+        },
+      },
+    );
+  });
+
+  it('Must open buy coins page from the home action bar', async () => {
+    await act(async () => {
+      await userEvent.click(
+        screen.getByTestId(
+          dataTestIdButton.actionBtn.preFix + 'popup_html_buy',
+        ),
+      );
+    });
+    expect(
+      await screen.findByTestId(`${Screen.BUY_COINS_PAGE}-page`),
+    ).toBeInTheDocument();
+  });
+});

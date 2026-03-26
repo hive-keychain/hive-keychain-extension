@@ -2,8 +2,12 @@ import { KeychainApi } from '@api/keychain';
 import CurrencyPricesUtils from '@hiveapp/utils/currency-prices.utils';
 import bittrexData from 'src/__tests__/utils-for-testing/data/bittrex-data/bittrex-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 describe('currency-prices-utils tests', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
   afterAll(() => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
@@ -20,14 +24,20 @@ describe('currency-prices-utils tests', () => {
       const result = await CurrencyPricesUtils.getPrices();
       expect(result).toEqual(mockedApiReply);
     });
-    test('If error on request will throw an unhandled error', async () => {
-      const errorThrown = new Error('Network Failed');
-      KeychainApi.get = jest.fn().mockRejectedValueOnce(errorThrown);
-      try {
-        expect(await CurrencyPricesUtils.getPrices()).toBe(1);
-      } catch (error) {
-        expect(error).toEqual(errorThrown);
-      }
+    test('If error on request will fall back to last known price from storage', async () => {
+      const lastKnown = {
+        bitcoin: { usd: 1 },
+        hive: { usd: 0.5 },
+        hive_dollar: { usd: 1 },
+      };
+      KeychainApi.get = jest
+        .fn()
+        .mockRejectedValueOnce(new Error('Network Failed'));
+      jest
+        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+        .mockResolvedValueOnce(lastKnown);
+      const result = await CurrencyPricesUtils.getPrices();
+      expect(result).toEqual(lastKnown);
     });
   });
 

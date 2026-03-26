@@ -90,6 +90,9 @@ const createSignAndBroadcastTransaction = async (
   key: Key,
   options?: TransactionOptions,
 ): Promise<HiveTxBroadcastResult | undefined> => {
+  if (key == null || key === '') {
+    throw new Error('html_popup_error_while_signing_transaction');
+  }
   let hiveTransaction = new HiveTransaction();
   let transaction = await hiveTransaction.create(
     operations,

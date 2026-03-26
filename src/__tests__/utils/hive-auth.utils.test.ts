@@ -593,4 +593,44 @@ describe('hive-auth.utils pre-correlation gate', () => {
     expect(getPingCount(socket1)).toBe(1);
     expect(getPingCount(socket2)).toBe(1);
   });
+
+  it('generateAuthPayloadURI returns has:// URI with base64 payload', async () => {
+    const HiveAuthUtils = await loadHiveAuthUtils();
+    const uri = await HiveAuthUtils.generateAuthPayloadURI({
+      account: 'alice',
+      uuid: 'uuid-1',
+      key: 'auth-key',
+      host: 'https://hive-auth.example/',
+    });
+    expect(uri).toMatch(/^has:\/\/auth_req\//);
+    const b64 = uri.replace(/^has:\/\/auth_req\//, '');
+    const decoded = JSON.parse(Buffer.from(b64, 'base64').toString('utf8'));
+    expect(decoded).toEqual({
+      account: 'alice',
+      uuid: 'uuid-1',
+      key: 'auth-key',
+      host: 'https://hive-auth.example/',
+    });
+  });
+
+  it('authenticate returns immediately when uuid and future expire are already set', async () => {
+    const HiveAuthUtils = await loadHiveAuthUtils();
+    const future = Date.now() + 3600_000;
+    const handler = createRequestHandler(createRequest(1, 'alice'));
+    const keylessRequest = {
+      ...createKeylessRequest(createRequest(1, 'alice')),
+      uuid: 'existing-uuid',
+      expire: future,
+    };
+
+    const out = await HiveAuthUtils.authenticate(handler, keylessRequest as any);
+
+    expect(out).toMatchObject({
+      cmd: 'auth_wait',
+      uuid: 'existing-uuid',
+      expire: future,
+      account: 'alice',
+    });
+    expect(FakeWebSocket.instances.length).toBe(0);
+  });
 });

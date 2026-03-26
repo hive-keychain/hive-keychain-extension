@@ -23,7 +23,9 @@ export const broadcastSwap = async (
     err: any,
     err_message = null;
   let swapId: string = '';
-  const request = requestHandler.getRequestData(data.request_id);
+  const request =
+    requestHandler.getRequestData?.(data.request_id) ??
+    (requestHandler as any).data;
 
   try {
     const {

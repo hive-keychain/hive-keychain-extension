@@ -24,7 +24,7 @@ import { SignInRouterComponent } from '@popup/multichain/pages/sign-in/sign-in-r
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
-import { ConnectedProps, connect } from 'react-redux';
+import { ConnectedProps, connect, useStore } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';
@@ -38,6 +38,21 @@ import { AsyncUtils } from 'src/utils/async.utils';
 import { ColorsUtils } from 'src/utils/colors.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { useWorkingRPC } from 'src/utils/rpc-switcher.utils';
+
+/** Same screens as the HiveApp `useEffect` that calls `selectComponent` after adding the first account(s). */
+const stackHasAccountSetupPage = (
+  stack: { currentPage: Screen }[],
+): boolean =>
+  stack.some(
+    (navigation) =>
+      navigation.currentPage === Screen.ACCOUNT_PAGE_INIT_ACCOUNT ||
+      navigation.currentPage === Screen.SIGN_IN_PAGE ||
+      navigation.currentPage === Screen.ACCOUNT_PAGE_ADD_BY_KEYS ||
+      navigation.currentPage === Screen.ACCOUNT_PAGE_ADD_BY_AUTH ||
+      navigation.currentPage === Screen.ACCOUNT_PAGE_SELECT_KEYS ||
+      navigation.currentPage === Screen.ACCOUNT_PAGE_IMPORT_KEYS ||
+      navigation.currentPage === Screen.ACCOUNT_PAGE_KEYLESS_KEYCHAIN,
+  );
 
 let rpc: string | undefined = '';
 const HiveApp = ({
@@ -64,6 +79,7 @@ const HiveApp = ({
   loadCurrencyPrices,
   hasFinishedSignup,
 }: PropsFromRedux) => {
+  const store = useStore<RootState>();
   const [isAppReady, setAppReady] = useState(false);
   const [initialRpc, setInitialRpc] = useState<Rpc>();
   const [displaySplashscreen, setDisplaySplashscreen] = useState(true);
@@ -111,14 +127,10 @@ const HiveApp = ({
   }, [activeRpc]);
 
   useEffect(() => {
-    const found = navigationStack.find(
-      (navigation) =>
-        navigation.currentPage === Screen.ACCOUNT_PAGE_INIT_ACCOUNT ||
-        navigation.currentPage === Screen.SIGN_IN_PAGE,
-    );
+    const isOnAccountSetupFlow = stackHasAccountSetupPage(navigationStack);
     if (
       isAppReady &&
-      (navigationStack.length === 0 || found) &&
+      (navigationStack.length === 0 || isOnAccountSetupFlow) &&
       hasFinishedSignup
     ) {
       if (accounts.length > 0) {
@@ -197,7 +209,14 @@ const HiveApp = ({
   ): Promise<void> => {
     if (mk && mk.length > 0 && accounts && accounts.length > 0) {
       setDisplaySplashscreen(true);
-      navigateTo(Screen.HOME_PAGE, true);
+      // Only seed HOME on an empty stack. Async init can run again after the user has
+      // navigated (e.g. RPC refresh); resetting here would wipe the current screen.
+      // Exception: user just finished add-by-keys / import / select-keys — stack is still
+      // on a setup screen but accounts are now non-empty; go to home.
+      const navStack = store.getState().navigation.stack;
+      if (navStack.length === 0 || stackHasAccountSetupPage(navStack)) {
+        navigateTo(Screen.HOME_PAGE, true);
+      }
     } else if (mk && mk.length > 0) {
       navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);
     } else if (

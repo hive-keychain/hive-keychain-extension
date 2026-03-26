@@ -1,4 +1,3 @@
-import { sleep } from '@hiveio/dhive/lib/utils';
 import { HiveInternalMarketLockedInOrders } from '@interfaces/hive-market.interface';
 import {
   TransactionOptions,
@@ -65,6 +64,7 @@ import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import { GovernanceUtils } from 'src/popup/hive/utils/governance.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import { SurveyUtils } from 'src/popup/hive/utils/survey.utils';
+import { AsyncUtils } from 'src/utils/async.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
@@ -327,7 +327,7 @@ const Home = ({
         activeAccount.keys.posting!,
         options,
       );
-      await sleep(3000);
+      await AsyncUtils.sleep(3000);
       refreshActiveAccount();
       if (claimResult) {
         if (claimResult.isUsingMultisig) {
@@ -419,7 +419,7 @@ const Home = ({
                   {activeAccount.name && globalProperties.globals && (
                     <NotificationsComponent />
                   )}
-                  {hasRewardToClaim === false && (
+                  {hasRewardToClaim && (
                     <SVGIcon
                       icon={SVGIcons.TOP_BAR_CLAIM_REWARDS_BTN}
                       dataTestId="reward-claim-icon"
@@ -439,7 +439,7 @@ const Home = ({
               <ResourcesSectionComponent />
               <EstimatedAccountValueSectionComponent
                 accountValues={{
-                  [AccountValueType.DOLLARS]: `$${AccountUtils.getAccountValue(
+                  [AccountValueType.DOLLARS]: `$ ${AccountUtils.getAccountValue(
                     activeAccount.account,
                     currencyPrices,
                     globalProperties.globals!,
@@ -460,7 +460,7 @@ const Home = ({
                     tokens,
                     hiveMarketLockedOpenOrdersValues,
                     hiddenTokensList,
-                  )} ${chain.mainTokens.hive}`,
+                  )} ${chain.mainTokens?.hive ?? 'HIVE'}`,
                 }}
                 hasPortofolio
               />

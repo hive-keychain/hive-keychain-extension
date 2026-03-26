@@ -27,6 +27,8 @@ const dataTestIdInput = {
   rpcNodes: {
     uri: 'input-rpc-node-uri',
     nodeChainId: 'input-node-chain-id',
+    hiveEngineRpcUri: 'input-hive-engine-rpc-uri',
+    accountHistoryApiUri: 'input-account-history-api-uri',
   },
 };
 

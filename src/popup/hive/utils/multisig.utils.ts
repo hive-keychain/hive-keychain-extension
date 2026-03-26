@@ -6,9 +6,10 @@ if (process.env.IS_FIREFOX) {
   if (!global.window) {
     //@ts-ignore
     global.window = { crypto };
-    decodeModule = require('@hiveio/hive-js/lib/auth/memo');
-    encodeModule = require('@hiveio/hive-js/lib/auth/memo');
   }
+  // Always load memo helpers in non-Firefox builds (including Jest/jsdom where `window` already exists).
+  decodeModule = require('@hiveio/hive-js/lib/auth/memo');
+  encodeModule = require('@hiveio/hive-js/lib/auth/memo');
 }
 
 import type {
@@ -441,4 +442,5 @@ export const MultisigUtils = {
   encodeMetadata,
   getPotentialSigners,
   isMultisigCompatible,
+  getTwoFaBotUserConfig,
 };

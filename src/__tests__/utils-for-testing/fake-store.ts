@@ -1,18 +1,16 @@
+import reducers from 'src/popup/multichain/reducers';
 import { applyMiddleware, createStore } from 'redux';
 import thunk from 'redux-thunk';
-import reducers from 'src/popup/hive/reducers';
 
-// const composeEnhancers = composeWithDevTools({
-//   realtime: true,
-//   port: 8000,
-// });
-const fakeStore = createStore(
-  reducers,
-  /* preloadedState, */ applyMiddleware(thunk),
-);
+const enhancer = applyMiddleware(thunk);
+
+/** Same root reducer as the popup app (includes `hive` slice). */
+const fakeStore = createStore(reducers, enhancer);
+
+export const initialEmptyStateStore = fakeStore.getState();
 
 export const getFakeStore = (initialState?: RootState) => {
-  return createStore(reducers, initialState, applyMiddleware(thunk));
+  return createStore(reducers, initialState, enhancer);
 };
 
 export { fakeStore };

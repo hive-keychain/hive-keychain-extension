@@ -1,7 +1,10 @@
 import LedgerModule from '@background/ledger.module';
 import { recurrentTransfer } from '@background/requests/operations/ops/recurrent-transfer';
 import { RequestsHandler } from '@background/requests/request-handler';
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import * as HiveMemo from '@hiveio/hive-js/lib/auth/memo';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import {
   KeychainRequestTypes,
@@ -12,6 +15,7 @@ import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { mockHiveTxCreateTransactionForLedger } from 'src/__tests__/utils-for-testing/mocks/hive-tx-ledger.helpers';
 import { KeychainError } from 'src/keychain-error';
 
 describe('recurrent-transfer tests:\n', () => {
@@ -34,6 +38,10 @@ describe('recurrent-transfer tests:\n', () => {
     jest.resetAllMocks();
   });
   beforeEach(() => {
+    jest
+      .spyOn(AccountUtils, 'getExtendedAccount')
+      .mockResolvedValue(accounts.extended);
+    jest.spyOn(HiveMemo, 'encode').mockReturnValue('#mock-memo');
     jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('en-US');
     chrome.i18n.getMessage = jest
       .fn()
@@ -90,6 +98,7 @@ describe('recurrent-transfer tests:\n', () => {
     });
 
     it('Must return sucess on start recurrent, using ledger', async () => {
+      mockHiveTxCreateTransactionForLedger();
       jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValueOnce({
         id: 'id',
         confirmed: true,
