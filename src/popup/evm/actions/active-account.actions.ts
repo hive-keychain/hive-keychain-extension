@@ -14,6 +14,7 @@ import {
   EvmLightNodeUtils,
   PricingStatus,
 } from '@popup/evm/utils/evm-light-node.utils';
+import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { AppThunk } from '@popup/multichain/actions/interfaces';
@@ -51,9 +52,24 @@ const shouldLoadMoreDiscoveredAssets = (
   return shouldLoadMoreCatchup;
 };
 
-const mapDiscoveredNftsResponseToActiveAccountNfts = (
+const mapDiscoveredNftsResponseToActiveAccountNfts = async (
   response: DiscoveredNftsResponse,
-): (EvmErc721Token | EvmErc1155Token)[] => {
+): Promise<(EvmErc721Token | EvmErc1155Token)[]> => {
+  const getMetadata = (
+    nft: (typeof response.collections)[number]['nfts'][number],
+  ) => {
+    const metadata = {
+      name: nft.name ?? '',
+      description: '',
+      image: nft.imageUrl ?? '',
+      attributes: [],
+    };
+
+    metadata.image = EvmNFTUtils.getImgFromMetadata(metadata);
+
+    return metadata;
+  };
+
   return response.collections.flatMap((collection) => {
     if (collection.contractType === 'ERC721') {
       return [
@@ -72,12 +88,7 @@ const mapDiscoveredNftsResponseToActiveAccountNfts = (
           },
           collection: collection.nfts.map((nft) => ({
             id: nft.tokenId,
-            metadata: {
-              name: nft.name ?? '',
-              description: '',
-              image: nft.imageUrl ?? '',
-              attributes: [],
-            },
+            metadata: getMetadata(nft),
           })),
         } as EvmErc721Token,
       ];
@@ -101,12 +112,7 @@ const mapDiscoveredNftsResponseToActiveAccountNfts = (
           collection: collection.nfts.map((nft) => ({
             id: nft.tokenId,
             balance: Number.parseInt(nft.balance, 10) || 0,
-            metadata: {
-              name: nft.name ?? '',
-              description: '',
-              image: nft.imageUrl ?? '',
-              attributes: [],
-            },
+            metadata: getMetadata(nft),
           })),
         } as EvmErc1155Token,
       ];
@@ -257,7 +263,7 @@ export const loadMoreNftsInActiveAccount =
       chain.chainId,
       process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
     );
-    const nfts = mapDiscoveredNftsResponseToActiveAccountNfts(result);
+    const nfts = await mapDiscoveredNftsResponseToActiveAccountNfts(result);
     const shouldLoadMore = shouldLoadMoreDiscoveredAssets(result);
 
     dispatch({
@@ -290,7 +296,7 @@ export const loadEvmActiveAccountNfts =
       chain.chainId,
       process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
     );
-    const nfts = mapDiscoveredNftsResponseToActiveAccountNfts(result);
+    const nfts = await mapDiscoveredNftsResponseToActiveAccountNfts(result);
     const shouldLoadMore = shouldLoadMoreDiscoveredAssets(result);
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
