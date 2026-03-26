@@ -2,8 +2,8 @@ import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import {
   EIP6963ProviderInfo,
   EvmEventName,
-  RoutedEvmEvent,
   RequestArguments,
+  RoutedEvmEvent,
 } from '@interfaces/evm-provider.interface';
 import EventEmitter from 'events';
 import { validateRequest } from 'src/content-scripts/evm/evm-request-validation';
@@ -45,17 +45,33 @@ export class EvmProvider extends EventEmitter {
   };
 
   initiateProviderInformation = async () => {
-    const chainId = (await this.processRequest({
-      method: EvmRequestMethod.GET_CHAIN,
-      params: [],
-    })) as string;
-    // const accounts = (await this.processRequest({
-    //   method: EvmRequestMethod.GET_ACCOUNTS,
-    //   params: [],
-    // })) as string[];
-    // this._accounts = accounts;
+    const [chainId, accounts] = (await Promise.all([
+      this.processRequest({
+        method: EvmRequestMethod.GET_CHAIN,
+        params: [],
+      }),
+      this.processRequest({
+        method: EvmRequestMethod.GET_ACCOUNTS,
+        params: [],
+      }),
+    ])) as [string, string[]];
+    this.updateAccounts(accounts);
     this.chainId = chainId;
     // this.emit('accountsChanged', []);
+  };
+
+  private normalizeAccounts = (accounts: unknown): string[] => {
+    if (!Array.isArray(accounts)) return [];
+
+    return accounts
+      .filter((account): account is string => typeof account === 'string')
+      .map((account) => account.toLowerCase());
+  };
+
+  private updateAccounts = (accounts: unknown): string[] => {
+    const normalizedAccounts = this.normalizeAccounts(accounts);
+    this._accounts = normalizedAccounts;
+    return normalizedAccounts;
   };
 
   isConnected = () => {
@@ -70,8 +86,13 @@ export class EvmProvider extends EventEmitter {
         if (event.source != window) return;
         if (event.data.type && event.data.type == 'evm_keychain_response') {
           const result = event.data.response.result;
-          const requestId = event.data.response.requestId;
-          if (result !== null && requestId !== null) {
+          const requestId =
+            event.data.response.requestId ?? event.data.response.request_id;
+          if (
+            result !== null &&
+            requestId !== null &&
+            requestId !== undefined
+          ) {
             if (this._requests[requestId]) {
               this._requests[requestId]({ result: result });
               delete this._requests[requestId];
@@ -79,8 +100,9 @@ export class EvmProvider extends EventEmitter {
           }
         } else if (event.data.type && event.data.type == 'evm_keychain_error') {
           const error = event.data.response.error;
-          const requestId = event.data.response.requestId;
-          if (error && requestId) {
+          const requestId =
+            event.data.response.requestId ?? event.data.response.request_id;
+          if (error && requestId !== null && requestId !== undefined) {
             if (this._requests[requestId]) {
               this._requests[requestId]({ error });
               delete this._requests[requestId];
@@ -105,15 +127,16 @@ export class EvmProvider extends EventEmitter {
               break;
             }
             case EvmEventName.ACCOUNT_CHANGED: {
+              const normalizedAccounts = this.normalizeAccounts(
+                eventData.event.args,
+              );
               if (
-                JSON.stringify(eventData.event.args) ===
+                JSON.stringify(normalizedAccounts) ===
                 JSON.stringify(this._accounts)
               )
                 return;
-              else
-                this._accounts = eventData.event.args.map((acc: string) =>
-                  acc.toLowerCase(),
-                );
+              else this._accounts = normalizedAccounts;
+              eventData.event.args = normalizedAccounts;
               break;
             }
             case EvmEventName.GET_CHAIN_FROM_PROVIDER: {
@@ -137,7 +160,7 @@ export class EvmProvider extends EventEmitter {
       validateRequest(args.method, args.params);
       switch (args.method) {
         case EvmRequestMethod.GET_ACCOUNTS: {
-          return this._accounts;
+          return this.updateAccounts(await this.processRequest(args));
         }
         case EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN: {
           if (args.params && (args.params as any[])[0].chainId) {
@@ -150,6 +173,10 @@ export class EvmProvider extends EventEmitter {
       }
 
       const result = await this.processRequest(args);
+      if (args.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
+        return this.updateAccounts(result);
+      }
+      console.log(result, 'result', args, 'args');
       return result;
     } catch (err) {
       throw err;

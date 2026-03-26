@@ -102,7 +102,7 @@ export const ConnectAccounts = (props: Props) => {
       CommunicationUtils.runtimeSendMessage({
         command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
         value: {
-          request_id: request.request_id,
+          requestId: request.request_id,
           result: result,
         },
       });

@@ -3,6 +3,7 @@ import {
   EvmRequestMethod,
 } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
+import MkModule from '@background/hive/modules/mk.module';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import {
   EvmDappInfo,
@@ -32,6 +33,23 @@ export const evmRequestWithoutConfirmation = async (
     },
   };
   switch (request.method) {
+    case EvmRequestMethod.GET_ACCOUNTS: {
+      message.value.result = [];
+      const mk = await MkModule.getMk();
+      if (!mk) {
+        break;
+      }
+      const hasPermission = await EvmWalletUtils.hasPermission(
+        dappInfo.domain,
+        EvmMethodPermissionMap[request.method]!,
+      );
+      if (hasPermission) {
+        message.value.result = await EvmWalletUtils.getConnectedWallets(
+          dappInfo.domain,
+        );
+      }
+      break;
+    }
     case EvmRequestMethod.WALLET_GET_CAPABILITIES: {
       message.value.result = await EvmRequestsUtils.getWalletCapabilities();
       break;

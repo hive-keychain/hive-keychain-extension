@@ -134,14 +134,24 @@ const chromeMessageHandler = async (
     }
     case BackgroundCommand.SEND_EVM_RESPONSE_TO_SW: {
       const message = backgroundMessage.value;
+      const requestId = message.requestId ?? message.request_id;
+      if (requestId === null || requestId === undefined) {
+        break;
+      }
       const requestHandler = await EvmRequestHandler.getFromLocalStorage();
-      const requestData = requestHandler?.getRequestData(message.request_id);
+      const requestData = requestHandler?.getRequestData(requestId);
+      if (requestData?.tab === null || requestData?.tab === undefined) {
+        break;
+      }
       CommunicationUtils.tabsSendMessage(requestData?.tab!, {
         command: BackgroundCommand.SEND_EVM_RESPONSE,
-        value: message,
+        value: {
+          ...message,
+          requestId,
+        },
       });
 
-      requestHandler.removeRequestById(message.request_id, requestData?.tab!);
+      requestHandler.removeRequestById(requestId, requestData?.tab!);
       break;
     }
     case BackgroundCommand.ACCEPT_EVM_TRANSACTION:
