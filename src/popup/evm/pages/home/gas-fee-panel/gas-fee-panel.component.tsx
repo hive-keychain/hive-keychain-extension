@@ -11,7 +11,7 @@ import {
 import { GasFeePanelItem } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel-item.component';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
-import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
+import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
@@ -116,17 +116,17 @@ export const GasFeePanel = ({
   const init = async () => {
     let estimate;
 
-    const mainTokenPriceTmp = await EvmLightNodeUtils.getPrice(
-      (chain as EvmChain).chainId,
+    const mainTokenInfo = await EvmTokensUtils.getMainTokenInfo(
+      chain as EvmChain,
     );
-    setMainTokenPrice(mainTokenPriceTmp);
+    setMainTokenPrice(mainTokenInfo.priceUsd);
 
     try {
       estimate = await GasFeeUtils.estimate(
         chain,
         wallet,
         transactionType,
-        mainTokenPriceTmp,
+        mainTokenInfo.priceUsd,
         transactionData?.gasLimit
           ? Number(transactionData.gasLimit)
           : undefined,

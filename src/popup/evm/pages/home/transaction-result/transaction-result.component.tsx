@@ -89,19 +89,13 @@ const EvmTransactionResult = ({
   }, []);
 
   useEffect(() => {
-    console.log('tokenInfo', tokenInfo);
     if (tokenInfo) {
       setTransactionTokenType(tokenInfo.type);
     } else {
-      console.log('getTransactionTokenKind', {
-        chainId: chain.chainId,
-        hash: transactionResponse.hash,
-      });
       EvmTokensHistoryParserUtils.getTransactionTokenKind(
         chain.chainId,
         transactionResponse.hash,
       ).then((type: TransactionTokenKind | null) => {
-        console.log('type', type);
         if (type) {
           setTransactionTokenType(type as string);
         }
