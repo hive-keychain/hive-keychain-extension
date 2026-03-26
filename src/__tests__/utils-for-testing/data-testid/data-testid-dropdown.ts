@@ -20,8 +20,9 @@ const dataTestIdDropdown = {
       currency: 'select-currency-savings',
       operation: {
         selector: 'select-operation-type',
-        withdraw: 'select-operation-Withdraw',
-        deposit: 'select-operation-Deposit',
+        /** Matches `CustomSelectItemComponent`: `custom-select-item-${SavingOperationType.*}` */
+        withdraw: 'custom-select-item-popup_html_withdraw',
+        deposit: 'custom-select-item-popup_html_deposit',
       },
     },
     preFix: {

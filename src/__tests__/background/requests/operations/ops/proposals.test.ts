@@ -5,7 +5,7 @@ import {
   broadcastUpdateProposalVote,
 } from '@background/requests/operations/ops/proposals';
 import { RequestsHandler } from '@background/requests/request-handler';
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import {
@@ -18,6 +18,7 @@ import {
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { mockHiveTxCreateTransactionForLedger } from 'src/__tests__/utils-for-testing/mocks/hive-tx-ledger.helpers';
 
 describe('proposals tests:\n', () => {
   const data = {
@@ -69,7 +70,6 @@ describe('proposals tests:\n', () => {
   describe('broadcastCreateProposal cases:\n', () => {
     describe('default cases:\n', () => {
       it('Must return error if bad json format', async () => {
-        const errorMessage = 'Unexpected token ! in JSON at position 1';
         data.create.extensions = '{!}';
         const requestHandler = new RequestsHandler();
         requestHandler.data.key = userData.one.nonEncryptKeys.posting;
@@ -78,17 +78,17 @@ describe('proposals tests:\n', () => {
           data.create,
         );
         const { request_id, ...datas } = data.create;
-        expect(result).toEqual({
-          command: DialogCommand.ANSWER_REQUEST,
-          msg: {
-            success: false,
-            error: new SyntaxError(errorMessage),
-            result: undefined,
-            data: datas,
-            message: errorMessage,
-            request_id: request_id,
-            publicKey: undefined,
-          },
+        expect(result.command).toBe(DialogCommand.ANSWER_REQUEST);
+        expect(result.msg.success).toBe(false);
+        expect(result.msg.error).toBeInstanceOf(SyntaxError);
+        const syntaxErr = result.msg.error as SyntaxError;
+        expect(syntaxErr.message).toMatch(/JSON/);
+        expect(result.msg.message).toBe(syntaxErr.message);
+        expect(result.msg).toMatchObject({
+          result: undefined,
+          data: datas,
+          request_id: request_id,
+          publicKey: undefined,
         });
       });
 
@@ -151,6 +151,9 @@ describe('proposals tests:\n', () => {
     });
 
     describe('using ledger cases:\n', () => {
+      beforeEach(() => {
+        mockHiveTxCreateTransactionForLedger();
+      });
       it('Must return success using ledger', async () => {
         data.create.extensions = '{"keychain":10000,"points":6}';
         const requestHandler = new RequestsHandler();
@@ -395,6 +398,9 @@ describe('proposals tests:\n', () => {
     });
 
     describe('Using Ledger cases:\n', () => {
+      beforeEach(() => {
+        mockHiveTxCreateTransactionForLedger();
+      });
       it('Must return success using proposal_ids as object', async () => {
         jest
           .spyOn(LedgerModule, 'getSignatureFromLedger')
@@ -479,7 +485,6 @@ describe('proposals tests:\n', () => {
   describe('broadcastRemoveProposal cases:\n', () => {
     describe('default cases:\n', () => {
       it('Must return error if bad json format in proposal_ids', async () => {
-        const error = 'Unexpected token ! in JSON at position 0';
         data.remove.proposal_ids = '!{}';
         data.remove.extensions = '{}';
         const requestHandler = new RequestsHandler();
@@ -488,14 +493,19 @@ describe('proposals tests:\n', () => {
           data.remove,
         );
         const { request_id, ...datas } = data.remove;
+        expect(result.msg.success).toBe(false);
+        expect(result.msg.error).toBeInstanceOf(SyntaxError);
+        expect((result.msg.error as SyntaxError).message).toMatch(
+          /Unexpected token/,
+        );
         expect(result).toEqual({
           command: DialogCommand.ANSWER_REQUEST,
           msg: {
             success: false,
-            error: new SyntaxError(error),
+            error: result.msg.error,
             result: undefined,
             data: datas,
-            message: error,
+            message: (result.msg.error as SyntaxError).message,
             request_id: request_id,
             publicKey: undefined,
           },
@@ -503,7 +513,6 @@ describe('proposals tests:\n', () => {
       });
 
       it('Must return error if bad json format in extensions', async () => {
-        const error = 'Unexpected token ! in JSON at position 0';
         data.remove.proposal_ids = '{}';
         data.remove.extensions = '!{!}';
         const requestHandler = new RequestsHandler();
@@ -513,14 +522,19 @@ describe('proposals tests:\n', () => {
           data.remove,
         );
         const { request_id, ...datas } = data.remove;
+        expect(result.msg.success).toBe(false);
+        expect(result.msg.error).toBeInstanceOf(SyntaxError);
+        expect((result.msg.error as SyntaxError).message).toMatch(
+          /Unexpected token/,
+        );
         expect(result).toEqual({
           command: DialogCommand.ANSWER_REQUEST,
           msg: {
             success: false,
-            error: new SyntaxError(error),
+            error: result.msg.error,
             result: undefined,
             data: datas,
-            message: error,
+            message: (result.msg.error as SyntaxError).message,
             request_id: request_id,
             publicKey: undefined,
           },
@@ -589,6 +603,9 @@ describe('proposals tests:\n', () => {
     });
 
     describe('Using Ledger cases:\n', () => {
+      beforeEach(() => {
+        mockHiveTxCreateTransactionForLedger();
+      });
       it('Must return success using proposal_ids as json', async () => {
         jest
           .spyOn(LedgerModule, 'getSignatureFromLedger')

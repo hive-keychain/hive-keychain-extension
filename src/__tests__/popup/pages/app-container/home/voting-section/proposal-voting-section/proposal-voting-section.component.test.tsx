@@ -2,7 +2,7 @@ import ProposalUtils from '@hiveapp/utils/proposal.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import '@testing-library/jest-dom';
-import { act, cleanup, screen } from '@testing-library/react';
+import { act, cleanup, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
@@ -13,15 +13,22 @@ import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import Config from 'src/config';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import FormatUtils from 'src/utils/format.utils';
 
 describe('proposal-voting-section.component tests:\n', () => {
+  let toHpSpy: jest.SpiedFunction<typeof FormatUtils.toHP>;
+
   afterEach(() => {
+    toHpSpy?.mockRestore();
     jest.clearAllMocks();
-    jest.resetModules();
     cleanup();
   });
+
   describe('With Active key', () => {
     beforeEach(async () => {
+      // Banner hides when computed HP is under 100; fixture accounts are below that, and
+      // globals are often unset on first paint. Stub HP so the section can render.
+      toHpSpy = jest.spyOn(FormatUtils, 'toHP').mockReturnValue(500);
       await reactTestingLibrary.renderWithConfiguration(
         <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
@@ -30,6 +37,7 @@ describe('proposal-voting-section.component tests:\n', () => {
             proposal: {
               ProposalUtils: {
                 hasVotedForProposal: false,
+                isRequestingProposalVotes: true,
               },
             },
           },
@@ -39,8 +47,11 @@ describe('proposal-voting-section.component tests:\n', () => {
 
     it('Must show keychain proposal', async () => {
       expect(
-        await screen.findByText(
-          chrome.i18n.getMessage('popup_html_proposal_request'),
+        await screen.findByTestId(dataTestIdDiv.proposalVotingSection),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          chrome.i18n.getMessage('popup_html_proposal_vote'),
         ),
       ).toBeInTheDocument();
     });
@@ -53,10 +64,7 @@ describe('proposal-voting-section.component tests:\n', () => {
       } as TransactionResult);
       await act(async () => {
         await userEvent.click(
-          screen.getByTestId(dataTestIdDiv.proposalVotingSection),
-        );
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.operation.voteProposal),
+          await screen.findByTestId(dataTestIdButton.operation.voteProposal),
         );
       });
       expect(
@@ -65,18 +73,15 @@ describe('proposal-voting-section.component tests:\n', () => {
         ),
       ).toBeInTheDocument();
       expect(
-        screen.queryByTestId(dataTestIdDiv.proposalVotingSection)?.className,
-      ).toContain('hide');
+        screen.queryByTestId(dataTestIdDiv.proposalVotingSection),
+      ).not.toBeInTheDocument();
     });
 
     it('Must show error on voting failed', async () => {
       ProposalUtils.voteForKeychainProposal = jest.fn().mockResolvedValue(null);
       await act(async () => {
         await userEvent.click(
-          screen.getByTestId(dataTestIdDiv.proposalVotingSection),
-        );
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.operation.voteProposal),
+          await screen.findByTestId(dataTestIdButton.operation.voteProposal),
         );
       });
       expect(
@@ -88,16 +93,16 @@ describe('proposal-voting-section.component tests:\n', () => {
 
     it('Must open a new window when open to read', async () => {
       const sChromeTabs = jest.spyOn(chrome.tabs, 'create');
+      const section = await screen.findByTestId(
+        dataTestIdDiv.proposalVotingSection,
+      );
       await act(async () => {
         await userEvent.click(
-          screen.getByTestId(dataTestIdDiv.proposalVotingSection),
-        );
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.readProposal),
+          within(section).getByRole('link', { name: /here/i }),
         );
       });
       expect(sChromeTabs).toHaveBeenCalledWith({
-        url: `https://peakd.com/me/proposals/${Config.KEYCHAIN_PROPOSAL}`,
+        url: `https://peakd.com/proposals/${Config.KEYCHAIN_PROPOSAL}`,
       });
       sChromeTabs.mockRestore();
     });
@@ -105,6 +110,8 @@ describe('proposal-voting-section.component tests:\n', () => {
 
   describe('No Active key', () => {
     beforeEach(async () => {
+      toHpSpy = jest.spyOn(FormatUtils, 'toHP').mockReturnValue(500);
+      const base = initialStates.iniStateAs.defaultExistent;
       const cloneLocalAccounts = objects.clone(
         accounts.twoAccounts,
       ) as LocalAccount[];
@@ -112,12 +119,24 @@ describe('proposal-voting-section.component tests:\n', () => {
       delete cloneLocalAccounts[0].keys.activePubkey;
       await reactTestingLibrary.renderWithConfiguration(
         <HiveAppComponent />,
-        initialStates.iniStateAs.defaultExistent,
+        {
+          ...base,
+          hive: {
+            ...base.hive,
+            accounts: cloneLocalAccounts,
+          },
+        },
         {
           app: {
             accountsRelated: {
               AccountUtils: {
                 getAccountsFromLocalStorage: cloneLocalAccounts,
+              },
+            },
+            proposal: {
+              ProposalUtils: {
+                hasVotedForProposal: false,
+                isRequestingProposalVotes: true,
               },
             },
           },
@@ -127,10 +146,7 @@ describe('proposal-voting-section.component tests:\n', () => {
     it('Must show error trying to vote proposal', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByTestId(dataTestIdDiv.proposalVotingSection),
-        );
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.operation.voteProposal),
+          await screen.findByTestId(dataTestIdButton.operation.voteProposal),
         );
       });
       expect(

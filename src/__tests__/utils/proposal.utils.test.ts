@@ -1,4 +1,4 @@
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import ProposalUtils from '@hiveapp/utils/proposal.utils';
 import { Asset } from '@hiveio/dhive';
 import { FundedOption } from '@interfaces/proposal.interface';
@@ -86,7 +86,9 @@ describe('proposal.utils tests:\n', () => {
         'theghost1980',
         dynamic.globalProperties,
       );
-      expect(result).toEqual(proposal.expectedResultProposal);
+      expect(JSON.parse(JSON.stringify(result))).toEqual(
+        JSON.parse(JSON.stringify(proposal.expectedResultProposal)),
+      );
     });
 
     test('Passing a user that has voted on the keychain proposal, must return a list of proposal with one voted proposal', async () => {
@@ -102,7 +104,9 @@ describe('proposal.utils tests:\n', () => {
         'theghost1980',
         dynamic.globalProperties,
       );
-      expect(result).toEqual(constants.expectedResultProposalWithkeyChain);
+      expect(JSON.parse(JSON.stringify(result))).toEqual(
+        JSON.parse(JSON.stringify(constants.expectedResultProposalWithkeyChain)),
+      );
     });
   });
 

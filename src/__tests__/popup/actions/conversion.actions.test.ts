@@ -22,7 +22,7 @@ describe('conversion.actions tests:\n', () => {
       await fakeStore.dispatch<any>(
         convertionActions.fetchConversionRequests('wesp05'),
       );
-      expect(fakeStore.getState().conversions).toEqual(fakeArrayResponse);
+      expect(fakeStore.getState().hive.conversions).toEqual(fakeArrayResponse);
     });
 
     test('If an error occurs on the request, will thrown a unhandled error', async () => {
@@ -35,7 +35,7 @@ describe('conversion.actions tests:\n', () => {
         await fakeStore.dispatch<any>(
           convertionActions.fetchConversionRequests('wesp05'),
         );
-        expect(fakeStore.getState().conversions).toEqual(null);
+        expect(fakeStore.getState().hive.conversions).toEqual(null);
       } catch (error) {
         expect(error).toEqual(errorRequest);
       }

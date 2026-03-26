@@ -34,7 +34,7 @@ describe('estimated-account-value-section.component tests:\n', () => {
     it('Must display the estimated account value', async () => {
       expect(
         await screen.findByTestId(dataTestIdDiv.estimatedAccountValue),
-      ).toHaveTextContent(`$ ${accountValue} USD`);
+      ).toHaveTextContent(`$ ${accountValue}`);
     });
 
     it('Must display custom tooltip on mouse enter', async () => {
@@ -67,10 +67,10 @@ describe('estimated-account-value-section.component tests:\n', () => {
         },
       );
     });
-    it('Must display ... when account value not received', async () => {
+    it('Must display $ 0 when account value not received', async () => {
       expect(
         await screen.findByTestId(dataTestIdDiv.estimatedAccountValue),
-      ).toHaveTextContent('...');
+      ).toHaveTextContent('$ 0');
     });
   });
 });

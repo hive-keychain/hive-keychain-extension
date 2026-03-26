@@ -6,7 +6,6 @@ import userEvent from '@testing-library/user-event';
 import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
-import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
@@ -15,7 +14,7 @@ import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user'
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-import { ActionButtonList } from 'src/popup/hive/pages/app-container/home/actions-section/action-button.list';
+import { Screen } from '@interfaces/screen.interface';
 import { TokenOperationType } from 'src/popup/hive/pages/app-container/home/tokens/token-operation/token-operation.component';
 
 describe('token-operation No Active key tests:\n', () => {
@@ -24,9 +23,6 @@ describe('token-operation No Active key tests:\n', () => {
     jest.resetModules();
     cleanup();
   });
-  const actionButtonTokenIconName = ActionButtonList.find((actionButton) =>
-    actionButton.label.includes('token'),
-  )?.icon;
   const selectedToken = tokensUser.balances.find(
     (token) => token.symbol === 'LEO',
   )!;
@@ -55,18 +51,11 @@ describe('token-operation No Active key tests:\n', () => {
       },
     );
     await act(async () => {
-      await userEvent.click(
-        screen.getByTestId(
-          `${dataTestIdButton.actionBtn.preFix}${actionButtonTokenIconName}`,
-        ),
+      const leoRow = (await screen.findAllByTestId('token-user-item')).find(
+        (el) => el.textContent?.includes('LEO'),
       );
-    });
-    await act(async () => {
-      await userEvent.click(
-        screen.getByTestId(
-          `${dataTestIdIcon.tokens.prefix.expandMore}${selectedToken.symbol}`,
-        ),
-      );
+      expect(leoRow).toBeTruthy();
+      await userEvent.click(leoRow!);
     });
   });
 

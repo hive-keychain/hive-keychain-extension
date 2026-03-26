@@ -178,11 +178,13 @@ const TransferFunds = ({
   ];
 
   const loadAutocompleteTransferUsernames = async () => {
+    const selectedCurrency =
+      (watch('selectedCurrency') ?? 'hive') as keyof CurrencyLabels;
     const autoCompleteListByCategories: AutoCompleteValues =
       await FavoriteUserUtils.getAutocompleteListByCategories(
         activeAccount.name!,
         localAccounts,
-        { addExchanges: true, token: watch('selectedCurrency').toUpperCase() },
+        { addExchanges: true, token: selectedCurrency.toUpperCase() },
       );
     setAutocompleteFavoriteUsers(autoCompleteListByCategories);
   };

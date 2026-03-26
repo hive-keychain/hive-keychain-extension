@@ -201,18 +201,18 @@ describe('automatedTasks.utils tests', () => {
         username,
       );
       expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(3);
-      expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimRewards', {
+      expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledWith('claimRewards', {
         workerjab1: false,
       });
-      expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimSavings', {
+      expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledWith('claimSavings', {
         workerjab1: true,
       });
-      expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimAccounts', {
+      expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledWith('claimAccounts', {
         workerjab1: true,
         quentin: true,
         aggroed: false,
       });
-      expect(spyChromeRuntimeSendMessage).toBeCalledWith({
+      expect(spyChromeRuntimeSendMessage).toHaveBeenCalledWith({
         command: 'updateClaims',
         value: {
           claimAccounts: {
@@ -253,18 +253,18 @@ describe('automatedTasks.utils tests', () => {
         username,
       );
       expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(3);
-      expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimRewards', {
+      expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledWith('claimRewards', {
         workerjab1: false,
       });
-      expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimSavings', {
+      expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledWith('claimSavings', {
         workerjab1: false,
       });
-      expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimAccounts', {
+      expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledWith('claimAccounts', {
         workerjab1: false,
         quentin: true,
         aggroed: false,
       });
-      expect(spyChromeRuntimeSendMessage).toBeCalledWith({
+      expect(spyChromeRuntimeSendMessage).toHaveBeenCalledWith({
         command: 'updateClaims',
         value: {
           claimAccounts: {
@@ -301,18 +301,18 @@ describe('automatedTasks.utils tests', () => {
         username,
       );
       expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(3);
-      expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimRewards', {
+      expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledWith('claimRewards', {
         workerjab1: true,
         aggroed: false,
         quentin: true,
       });
-      expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimAccounts', {
+      expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledWith('claimAccounts', {
         workerjab1: false,
       });
-      expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimSavings', {
+      expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledWith('claimSavings', {
         workerjab1: false,
       });
-      expect(spyChromeRuntimeSendMessage).toBeCalledWith({
+      expect(spyChromeRuntimeSendMessage).toHaveBeenCalledWith({
         command: 'updateClaims',
         value: {
           claimAccounts: {
@@ -354,22 +354,22 @@ describe('automatedTasks.utils tests', () => {
       );
       expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(3);
 
-      expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimAccounts', {
+      expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledWith('claimAccounts', {
         workerjab1: true,
         aggroed: false,
         quentin: false,
       });
-      expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimRewards', {
+      expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledWith('claimRewards', {
         workerjab1: true,
         aggroed: false,
         quentin: false,
       });
-      expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimSavings', {
+      expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledWith('claimSavings', {
         workerjab1: true,
         aggroed: false,
         quentin: false,
       });
-      expect(spyChromeRuntimeSendMessage).toBeCalledWith({
+      expect(spyChromeRuntimeSendMessage).toHaveBeenCalledWith({
         command: 'updateClaims',
         value: {
           claimAccounts: {
@@ -418,10 +418,10 @@ describe('automatedTasks.utils tests', () => {
     });
     test('On execution will call chrome.runtime.sendMessage after reading claim values and set values as undefined', async () => {
       const result = await AutomatedTasksUtils.initBackgroundClaims();
-      expect(spyOnGetAllClaimAccounts).toBeCalledTimes(1);
-      expect(spyOnGetAllClaimRewards).toBeCalledTimes(1);
-      expect(spyOnGetAllClaimSavings).toBeCalledTimes(1);
-      expect(spyChromeRuntimeSendMessage).toBeCalledWith({
+      expect(spyOnGetAllClaimAccounts).toHaveBeenCalledTimes(1);
+      expect(spyOnGetAllClaimRewards).toHaveBeenCalledTimes(1);
+      expect(spyOnGetAllClaimSavings).toHaveBeenCalledTimes(1);
+      expect(spyChromeRuntimeSendMessage).toHaveBeenCalledWith({
         command: 'updateClaims',
         value: {
           claimAccounts: undefined,
@@ -457,7 +457,7 @@ describe('automatedTasks.utils tests', () => {
         .fn()
         .mockResolvedValueOnce(mockClaimSavingsObj);
       const result = await AutomatedTasksUtils.initBackgroundClaims();
-      expect(spyChromeRuntimeSendMessage).toBeCalledWith({
+      expect(spyChromeRuntimeSendMessage).toHaveBeenCalledWith({
         command: 'updateClaims',
         value: {
           claimAccounts: mockClaimAccountsObj,

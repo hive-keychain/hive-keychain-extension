@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
 import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
@@ -11,10 +12,21 @@ import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import UserPreferencesMenuItems from 'src/popup/hive/pages/app-container/settings/user-preferences/user-preferences-menu-items';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 describe('user-preferences.component tests:\n', () => {
+  const userPreferencesMenuItems = UserPreferencesMenuItems(jest.fn());
+
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(
       <HiveAppComponent />,
       initialStates.iniStateAs.defaultExistent,
+      {
+        app: {
+          accountsRelated: {
+            AccountUtils: {
+              getAccountsFromLocalStorage: accounts.twoAccounts,
+            },
+          },
+        },
+      },
     );
     await act(async () => {
       await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
@@ -29,7 +41,7 @@ describe('user-preferences.component tests:\n', () => {
     cleanup();
   });
   it('Must load each menu items', () => {
-    UserPreferencesMenuItems.forEach((item) => {
+    userPreferencesMenuItems.forEach((item) => {
       expect(screen.getByTestId(dataTestIdButton.menuPreFix + item.icon));
     });
   });
@@ -37,10 +49,10 @@ describe('user-preferences.component tests:\n', () => {
     LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue([]);
-    for (let i = 0; i < UserPreferencesMenuItems.length; i++) {
+    for (let i = 0; i < userPreferencesMenuItems.length; i++) {
       const menuButtonAriaLabel =
-        dataTestIdButton.menuPreFix + UserPreferencesMenuItems[i].icon;
-      const pageAriaLabel = UserPreferencesMenuItems[i].nextScreen + '-page';
+        dataTestIdButton.menuPreFix + userPreferencesMenuItems[i].icon;
+      const pageAriaLabel = userPreferencesMenuItems[i].nextScreen + '-page';
       await act(async () => {
         await userEvent.click(screen.getByTestId(menuButtonAriaLabel));
       });

@@ -61,7 +61,7 @@ const deriveAesKey = async (
   return getWebCrypto().subtle.deriveKey(
     {
       name: 'PBKDF2',
-      salt: salt.buffer as ArrayBuffer,
+      salt: salt as unknown as BufferSource,
       iterations,
       hash: ENCRYPTION_HASH,
     },

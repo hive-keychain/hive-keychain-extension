@@ -26,7 +26,7 @@ describe('hive-engine-config.module tests:\n', () => {
       'getValueFromLocalStorage',
     );
     expect(await BgdHiveEngineConfigModule.getActiveConfig()).toEqual(config);
-    expect(sDetValueFromLocalStorage).toBeCalledWith(
+    expect(sDetValueFromLocalStorage).toHaveBeenCalledWith(
       LocalStorageKeyEnum.HIVE_ENGINE_ACTIVE_CONFIG,
     );
   });

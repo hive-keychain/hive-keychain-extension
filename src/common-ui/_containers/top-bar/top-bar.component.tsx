@@ -8,11 +8,13 @@ interface TopBarProps {
   onRefreshButtonClicked: () => Promise<void>;
   accountSelector: JSX.Element;
   actions?: JSX.Element;
+  showChainDropdown?: boolean;
 }
 
 export const TopBarComponent = ({
   accountSelector,
   actions,
+  showChainDropdown = false,
   onMenuButtonClicked,
   onRefreshButtonClicked,
 }: TopBarProps) => {
@@ -40,13 +42,13 @@ export const TopBarComponent = ({
           className={`logo ${rotateLogo ? 'rotate' : ''}`}
           icon={SVGIcons.TOP_BAR_KEYCHAIN_LOGO}
           onClick={refresh}
-          data-testid="top-bar-refresh-icon"
+          dataTestId="top-bar-refresh-icon"
         />
       </div>
 
       {actions && <div className="top-bar-actions">{actions}</div>}
       <div className="account-selector-panel">{accountSelector}</div>
-      <ChainDropdownComponent />
+      {showChainDropdown && <ChainDropdownComponent />}
     </div>
   );
 };

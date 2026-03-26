@@ -20,9 +20,9 @@ describe('active-rpc.actions tests:\n', () => {
         jest.fn());
       const fakeStore = getFakeStore(initialEmptyStateStore);
       await fakeStore.dispatch<any>(setActiveRpc(rpc));
-      expect(fakeStore.getState().activeRpc).toEqual(rpc);
-      expect(mockChromeRuntimeSendMessage).toBeCalledTimes(1);
-      expect(mockChromeRuntimeSendMessage).toBeCalledWith({
+      expect(fakeStore.getState().hive.activeRpc).toEqual(rpc);
+      expect(mockChromeRuntimeSendMessage).toHaveBeenCalledTimes(1);
+      expect(mockChromeRuntimeSendMessage).toHaveBeenCalledWith({
         command: BackgroundCommand.SAVE_RPC,
         value: rpc,
       });
@@ -45,9 +45,9 @@ describe('active-rpc.actions tests:\n', () => {
         jest.fn());
       const fakeStore = getFakeStore(initialEmptyStateStore);
       await fakeStore.dispatch<any>(setActiveRpc(rpc));
-      expect(fakeStore.getState().activeRpc).toEqual(rpc);
-      expect(mockChromeRuntimeSendMessage).toBeCalledTimes(1);
-      expect(mockChromeRuntimeSendMessage).toBeCalledWith({
+      expect(fakeStore.getState().hive.activeRpc).toEqual(rpc);
+      expect(mockChromeRuntimeSendMessage).toHaveBeenCalledTimes(1);
+      expect(mockChromeRuntimeSendMessage).toHaveBeenCalledWith({
         command: BackgroundCommand.SAVE_RPC,
         value: rpc,
       });

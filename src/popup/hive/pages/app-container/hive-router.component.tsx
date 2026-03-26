@@ -156,6 +156,8 @@ const AppRouter = ({
         return <AdvancedSettingsPageComponent />;
 
       case HiveScreen.SETTINGS_IMPORT_EXPORT:
+      case Screen.SETTINGS_IMPORT_EXPORT:
+        return <ImportExportPreferencesComponent />;
       case Screen.SETTINGS_SHORTCUTS:
         return <ShortcutsComponent />;
       case Screen.SETTINGS_CHANGE_PASSWORD:
@@ -168,8 +170,6 @@ const AppRouter = ({
         return <KeychainifyComponent />;
       case Screen.SETTINGS_CLEAR_ALL_DATA:
         return <ClearAllDataComponent />;
-      case Screen.SETTINGS_IMPORT_EXPORT:
-        return <ImportExportPreferencesComponent />;
       case HiveScreen.SETTINGS_USER_PREFERENCES:
         return <UserPreferencesPageComponent />;
       case HiveScreen.SETTINGS_AUTHORIZED_OPERATIONS:

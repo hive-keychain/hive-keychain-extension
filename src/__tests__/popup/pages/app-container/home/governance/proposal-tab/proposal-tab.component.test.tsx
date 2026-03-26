@@ -57,9 +57,14 @@ describe('Proposal tab:\n', () => {
     await act(async () => {
       await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
       await userEvent.click(
-        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.HIVE),
+        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.GOVERNANCE),
       );
-      await userEvent.click(screen.getAllByRole('tab')[2]);
+    });
+    await screen.findByText(chrome.i18n.getMessage('popup_html_witness'));
+    await act(async () => {
+      await userEvent.click(
+        screen.getByText(chrome.i18n.getMessage('popup_html_proposal')),
+      );
     });
   });
 

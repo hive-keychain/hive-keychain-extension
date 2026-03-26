@@ -102,7 +102,7 @@ describe('mk.module tests:\n', () => {
 
     const sSendMessage = jest.spyOn(chrome.runtime, 'sendMessage');
     await MkModule.sendBackMk();
-    expect(sSendMessage).toBeCalledWith({
+    expect(sSendMessage).toHaveBeenCalledWith({
       command: BackgroundCommand.SEND_BACK_MK,
       value: mk.user.one,
     });
@@ -113,7 +113,7 @@ describe('mk.module tests:\n', () => {
       .spyOn(VaultUtils, 'saveValueInVault')
       .mockResolvedValue(true);
     MkModule.saveMk(mk.user.two);
-    expect(sSave).toBeCalledWith(VaultKey.__MK, mk.user.two);
+    expect(sSave).toHaveBeenCalledWith(VaultKey.__MK, mk.user.two);
   });
 
   it('Must remove mk', () => {
@@ -121,6 +121,6 @@ describe('mk.module tests:\n', () => {
       .spyOn(VaultUtils, 'removeFromVault')
       .mockResolvedValue(true);
     MkModule.lock();
-    expect(sRemove).toBeCalledWith(VaultKey.__MK);
+    expect(sRemove).toHaveBeenCalledWith(VaultKey.__MK);
   });
 });

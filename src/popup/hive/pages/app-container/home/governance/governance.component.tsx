@@ -1,4 +1,5 @@
 import { Witness } from '@interfaces/witness.interface';
+import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
@@ -70,7 +71,10 @@ const Governance = ({
   };
 
   return (
-    <div className="governance-page" aria-label="governance-page">
+    <div
+      className="governance-page"
+      aria-label="governance-page"
+      data-testid={`${HiveScreen.GOVERNANCE_PAGE}-page`}>
       {!isLoading && <TabsComponent tabs={tabs} />}
       {isLoading && (
         <div className="rotating-logo-container">

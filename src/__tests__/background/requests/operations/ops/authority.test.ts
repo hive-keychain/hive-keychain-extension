@@ -6,8 +6,8 @@ import {
   broadcastRemoveKeyAuthority,
 } from '@background/requests/operations/ops/authority';
 import { RequestsHandler } from '@background/requests/request-handler';
-import AccountUtils from '@hiveapp/utils/account.utils';
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { AuthorityType, ExtendedAccount } from '@hiveio/dhive';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import {
@@ -26,6 +26,7 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { mockHiveTxCreateTransactionForLedger } from 'src/__tests__/utils-for-testing/mocks/hive-tx-ledger.helpers';
 import { KeychainError } from 'src/keychain-error';
 
 describe('authority tests:\n', () => {
@@ -389,6 +390,7 @@ describe('authority tests:\n', () => {
     });
 
     it('Must broadcast using ledger', async () => {
+      mockHiveTxCreateTransactionForLedger();
       const cloneExtended = objects.clone(accounts.extended) as ExtendedAccount;
       cloneExtended.active = {
         weight_threshold: 1,
@@ -469,6 +471,9 @@ describe('authority tests:\n', () => {
     });
 
     it('Must return error if no key on handler', async () => {
+      jest
+        .spyOn(AccountUtils, 'getExtendedAccount')
+        .mockResolvedValueOnce(accounts.extended);
       const cloneData = objects.clone(
         data.addKeyAuthority,
       ) as RequestAddKeyAuthority & RequestId;
@@ -597,6 +602,7 @@ describe('authority tests:\n', () => {
     });
 
     it('Must broadcast addKey using ledger', async () => {
+      mockHiveTxCreateTransactionForLedger();
       const cloneExtended = objects.clone(accounts.extended) as ExtendedAccount;
       cloneExtended.active = {
         weight_threshold: 1,
@@ -769,6 +775,7 @@ describe('authority tests:\n', () => {
     });
 
     it('Must remove active key using ledger', async () => {
+      mockHiveTxCreateTransactionForLedger();
       const cloneExtended = objects.clone(accounts.extended) as ExtendedAccount;
       jest
         .spyOn(LedgerModule, 'getSignatureFromLedger')

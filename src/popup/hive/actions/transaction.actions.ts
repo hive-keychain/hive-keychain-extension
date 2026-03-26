@@ -1,6 +1,5 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { AppThunk } from '@popup/multichain/actions/interfaces';
-import { store } from '@popup/multichain/store';
 import { HiveActionType } from 'src/popup/hive/actions/action-type.enum';
 import TransactionUtils from 'src/popup/hive/utils/transaction.utils';
 
@@ -13,7 +12,7 @@ export const initAccountTransactions =
     const result = await TransactionUtils.getAccountTransactions(
       accountName,
       -1,
-      store.getState().hive.globalProperties.globals!,
+      getState().hive.globalProperties.globals!,
       memoKey!,
     );
 
@@ -32,7 +31,7 @@ export const fetchAccountTransactions =
     const result = await TransactionUtils.getAccountTransactions(
       accountName,
       start,
-      store.getState().hive.globalProperties.globals!,
+      getState().hive.globalProperties.globals!,
       memoKey!,
     );
 

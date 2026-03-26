@@ -59,25 +59,20 @@ describe('wallet-info-section.component tests:\n', () => {
         FormatUtils.toHP(delegationVestingShares, dynamic.globalProperties),
       );
       const infoSectionRowListHTMLElements = await screen.findAllByTestId(
-        'wallet-info-section-row',
+        /^dropdown-arrow-/,
       );
       expect(infoSectionRowListHTMLElements).toHaveLength(3);
+      const savingsLabel = chrome.i18n.getMessage('popup_html_wallet_savings');
+      const delegShort =
+        chrome.i18n.getMessage('popup_html_delegations').slice(0, 5) + '.';
       expect(infoSectionRowListHTMLElements[0].textContent).toBe(
-        `${hiveBalanceFormatted}+${hiveSavingsBalanceFormatted}${
-          CurrencyUtils.getCurrencyLabels(false).hive
-        }(${chrome.i18n.getMessage('popup_html_wallet_savings')})`,
+        `${CurrencyUtils.getCurrencyLabels(false).hive}${hiveBalanceFormatted}+${hiveSavingsBalanceFormatted} (${savingsLabel})`,
       );
       expect(infoSectionRowListHTMLElements[1].textContent).toBe(
-        `${hbdBalanceFormatted}+${hbdSavingsBalanceFormatted}${
-          CurrencyUtils.getCurrencyLabels(false).hbd
-        }(${chrome.i18n.getMessage('popup_html_wallet_savings')})`,
+        `${CurrencyUtils.getCurrencyLabels(false).hbd}${hbdBalanceFormatted}+${hbdSavingsBalanceFormatted} (${savingsLabel})`,
       );
       expect(infoSectionRowListHTMLElements[2].textContent).toBe(
-        `${delegationsMainValueFormatted}+${delegationAmountSubValueFormatted}${
-          CurrencyUtils.getCurrencyLabels(false).hp
-        }(${
-          chrome.i18n.getMessage('popup_html_delegations').slice(0, 5) + '.'
-        })`,
+        `${CurrencyUtils.getCurrencyLabels(false).hp}${delegationsMainValueFormatted}+${delegationAmountSubValueFormatted} (${delegShort})`,
       );
     });
   });
@@ -110,17 +105,17 @@ describe('wallet-info-section.component tests:\n', () => {
       });
       it('Must show 3 info section rows with zero values', async () => {
         const infoSectionRowListHTMLElements = await screen.findAllByTestId(
-          'wallet-info-section-row',
+          /^dropdown-arrow-/,
         );
         expect(infoSectionRowListHTMLElements).toHaveLength(3);
         expect(infoSectionRowListHTMLElements[0].textContent).toBe(
-          `0.000${CurrencyUtils.getCurrencyLabels(false).hive}`,
+          `${CurrencyUtils.getCurrencyLabels(false).hive}0.000`,
         );
         expect(infoSectionRowListHTMLElements[1].textContent).toBe(
-          `0.000${CurrencyUtils.getCurrencyLabels(false).hbd}`,
+          `${CurrencyUtils.getCurrencyLabels(false).hbd}0.000`,
         );
         expect(infoSectionRowListHTMLElements[2].textContent).toBe(
-          `0.000${CurrencyUtils.getCurrencyLabels(false).hp}`,
+          `${CurrencyUtils.getCurrencyLabels(false).hp}0.000`,
         );
       });
     });

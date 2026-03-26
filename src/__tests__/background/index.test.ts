@@ -39,7 +39,7 @@ describe('index tests:\n', () => {
 
       requestHandler.data.key = userData.one.nonEncryptKeys.posting;
       await performOperationFromIndex(requestHandler, 0, data);
-      expect(sPerformOperation).toBeCalledTimes(1);
+      expect(sPerformOperation).toHaveBeenCalledTimes(1);
     });
   });
 });

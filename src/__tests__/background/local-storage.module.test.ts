@@ -1,8 +1,11 @@
+import MkModule from '@background/mk.module';
 import LocalStorageModule from '@background/local-storage.module';
+import BgdAccountsUtils from '@background/utils/accounts.utils';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { CustomDataFromLocalStorage } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 describe('local-storage.module tests:\n', () => {
@@ -14,6 +17,10 @@ describe('local-storage.module tests:\n', () => {
   });
 
   it('Must execute switch cases', async () => {
+    jest.spyOn(MkModule, 'getMk').mockResolvedValue(mk.user.one);
+    jest.spyOn(BgdAccountsUtils, 'getAccountsFromLocalStorage').mockResolvedValue(
+      [],
+    );
     LocalStorageUtils.getValueFromLocalStorage = jest
       .fn()
       .mockImplementation((...args: any[]) =>
@@ -44,6 +51,17 @@ describe('local-storage.module tests:\n', () => {
     );
     expect(sSaveValueInLocalStorage).toHaveBeenNthCalledWith(
       3,
+      LocalStorageKeyEnum.FAVORITE_USERS,
+      {
+        'keychain.tests': [
+          { label: 'one1', subLabel: '' },
+          { label: 'two2', subLabel: '' },
+          { label: 'three3', subLabel: '' },
+        ],
+      },
+    );
+    expect(sSaveValueInLocalStorage).toHaveBeenNthCalledWith(
+      4,
       LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,
       4,
     );

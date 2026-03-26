@@ -23,6 +23,13 @@ describe('home.component action-buttons tests:\n', () => {
             },
           },
         },
+        apiRelated: {
+          KeychainApi: {
+            customData: {
+              ecosystemDapps: [{ category: 'social', dapps: [] }],
+            },
+          },
+        },
       },
     );
   });
@@ -36,7 +43,7 @@ describe('home.component action-buttons tests:\n', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByTestId(
-            dataTestIdButton.actionBtn.preFix + ActionButtonList[i].icon,
+            dataTestIdButton.actionBtn.preFix + ActionButtonList[i].label,
           ),
         );
       });

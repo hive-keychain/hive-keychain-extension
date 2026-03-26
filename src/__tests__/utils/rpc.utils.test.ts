@@ -47,7 +47,10 @@ describe('rpc.utils tests:\n', () => {
       LocalStorageUtils.getValueFromLocalStorage = jest
         .fn()
         .mockResolvedValueOnce(customRpcs);
-      expect(await RpcUtils.getCustomRpcs()).toEqual(customRpcs);
+      expect(await RpcUtils.getCustomRpcs()).toEqual([
+        { uri: 'https://apiHive/', testnet: true, custom: true },
+        { uri: 'https://apiHive2/', testnet: false, custom: true },
+      ]);
     });
     test('If no stored customRpc list, must return empty array', async () => {
       LocalStorageUtils.getValueFromLocalStorage = jest
@@ -67,10 +70,10 @@ describe('rpc.utils tests:\n', () => {
         (LocalStorageUtils.saveValueInLocalStorage = jest.fn());
       const customRpc: Rpc = { uri: 'https://newRPC.api/', testnet: false };
       expect(await RpcUtils.addCustomRpc(customRpc)).toBe(undefined);
-      expect(mockedGetValueFromLocalStorage).toBeCalledTimes(1);
-      expect(mockedGetValueFromLocalStorage).toBeCalledWith('rpc');
-      expect(mockSaveValueInLocalStorage).toBeCalledTimes(1);
-      expect(mockSaveValueInLocalStorage).toBeCalledWith('rpc', [customRpc]);
+      expect(mockedGetValueFromLocalStorage).toHaveBeenCalledTimes(1);
+      expect(mockedGetValueFromLocalStorage).toHaveBeenCalledWith('rpc');
+      expect(mockSaveValueInLocalStorage).toHaveBeenCalledTimes(1);
+      expect(mockSaveValueInLocalStorage).toHaveBeenCalledWith('rpc', [customRpc]);
     });
     test('Adding a customRpc into and non empty rpc object in localStorage, must call saveValueInLocalStorage adding the new rpc into that object', async () => {
       const customRpcs: Rpc[] = [
@@ -86,10 +89,10 @@ describe('rpc.utils tests:\n', () => {
       const mockSaveValueInLocalStorage =
         (LocalStorageUtils.saveValueInLocalStorage = jest.fn());
       expect(await RpcUtils.addCustomRpc(customRpc)).toBe(undefined);
-      expect(mockedGetValueFromLocalStorage).toBeCalledTimes(1);
-      expect(mockedGetValueFromLocalStorage).toBeCalledWith('rpc');
-      expect(mockSaveValueInLocalStorage).toBeCalledTimes(1);
-      expect(mockSaveValueInLocalStorage).toBeCalledWith(
+      expect(mockedGetValueFromLocalStorage).toHaveBeenCalledTimes(1);
+      expect(mockedGetValueFromLocalStorage).toHaveBeenCalledWith('rpc');
+      expect(mockSaveValueInLocalStorage).toHaveBeenCalledTimes(1);
+      expect(mockSaveValueInLocalStorage).toHaveBeenCalledWith(
         'rpc',
         expectedRpcArray,
       );
@@ -107,8 +110,8 @@ describe('rpc.utils tests:\n', () => {
       const mockSaveValueInLocalStorage =
         (LocalStorageUtils.saveValueInLocalStorage = jest.fn());
       const result = RpcUtils.deleteCustomRpc(customRpcList, rpcToDelete);
-      expect(mockSaveValueInLocalStorage).toBeCalledTimes(1);
-      expect(mockSaveValueInLocalStorage).toBeCalledWith('rpc', expectedArray);
+      expect(mockSaveValueInLocalStorage).toHaveBeenCalledTimes(1);
+      expect(mockSaveValueInLocalStorage).toHaveBeenCalledWith('rpc', expectedArray);
       expect(result.length).toBe(expectedArray.length);
       expect(result).toEqual(expectedArray);
     });
@@ -118,8 +121,8 @@ describe('rpc.utils tests:\n', () => {
       const mockSaveValueInLocalStorage =
         (LocalStorageUtils.saveValueInLocalStorage = jest.fn());
       const result = RpcUtils.deleteCustomRpc(customRpcList, rpcToDelete);
-      expect(mockSaveValueInLocalStorage).toBeCalledTimes(1);
-      expect(mockSaveValueInLocalStorage).toBeCalledWith('rpc', expectedArray);
+      expect(mockSaveValueInLocalStorage).toHaveBeenCalledTimes(1);
+      expect(mockSaveValueInLocalStorage).toHaveBeenCalledWith('rpc', expectedArray);
       expect(result.length).toBe(expectedArray.length);
       expect(result).toEqual(expectedArray);
     });
@@ -133,8 +136,8 @@ describe('rpc.utils tests:\n', () => {
           .fn()
           .mockResolvedValueOnce(undefined));
       expect(await RpcUtils.getCurrentRpc()).toEqual(defaultValuesRpc);
-      expect(mockGetValueFromLocalStorage).toBeCalledTimes(1);
-      expect(mockGetValueFromLocalStorage).toBeCalledWith(
+      expect(mockGetValueFromLocalStorage).toHaveBeenCalledTimes(1);
+      expect(mockGetValueFromLocalStorage).toHaveBeenCalledWith(
         LocalStorageKeyEnum.CURRENT_RPC,
       );
     });
@@ -145,8 +148,8 @@ describe('rpc.utils tests:\n', () => {
           .fn()
           .mockResolvedValueOnce(currentRpcFound));
       expect(await RpcUtils.getCurrentRpc()).toEqual(currentRpcFound);
-      expect(mockGetValueFromLocalStorage).toBeCalledTimes(1);
-      expect(mockGetValueFromLocalStorage).toBeCalledWith(
+      expect(mockGetValueFromLocalStorage).toHaveBeenCalledTimes(1);
+      expect(mockGetValueFromLocalStorage).toHaveBeenCalledWith(
         LocalStorageKeyEnum.CURRENT_RPC,
       );
     });
@@ -164,14 +167,14 @@ describe('rpc.utils tests:\n', () => {
       expect(await RpcUtils.findRpc('https://apiHive/')).toEqual(
         customRpcList[0],
       );
-      expect(mockGetCustomRpcs).toBeCalledTimes(1);
+      expect(mockGetCustomRpcs).toHaveBeenCalledTimes(1);
     });
     test('Find an rpc which not exists, must return undefined', async () => {
       const mockGetCustomRpcs = (RpcUtils.getCustomRpcs = jest
         .fn()
         .mockResolvedValueOnce(customRpcList));
       expect(await RpcUtils.findRpc('https://apiHive2.blog/')).toBe(undefined);
-      expect(mockGetCustomRpcs).toBeCalledTimes(1);
+      expect(mockGetCustomRpcs).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -184,13 +187,13 @@ describe('rpc.utils tests:\n', () => {
       jussi_num: 64517562,
     };
     const hardCodedUri = 'https://hived.emre.sh';
-    test('Checking on uri "DEFAULT" will check on "defaultAPI/health" and return status', async () => {
+    test('Checking on uri "DEFAULT" will hit the default Hive API base URL and return status', async () => {
       const spyAxiosGet = jest
         .spyOn(axios, 'get')
         .mockResolvedValueOnce(fakeResponse);
       expect(await RpcUtils.checkRpcStatus('DEFAULT')).toBe(true);
-      expect(spyAxiosGet).toBeCalledTimes(1);
-      expect(spyAxiosGet).toBeCalledWith('https://api.hive.blog/health', {
+      expect(spyAxiosGet).toHaveBeenCalledTimes(1);
+      expect(spyAxiosGet).toHaveBeenCalledWith('https://api.hive.blog', {
         timeout: 10000,
       });
     });
@@ -199,8 +202,8 @@ describe('rpc.utils tests:\n', () => {
         .spyOn(axios, 'get')
         .mockResolvedValueOnce(fakeResponse);
       expect(await RpcUtils.checkRpcStatus(hardCodedUri)).toBe(true);
-      expect(spyAxiosGet).toBeCalledTimes(1);
-      expect(spyAxiosGet).toBeCalledWith(`${hardCodedUri}/health`, {
+      expect(spyAxiosGet).toHaveBeenCalledTimes(1);
+      expect(spyAxiosGet).toHaveBeenCalledWith(`${hardCodedUri}/health`, {
         timeout: 10000,
       });
     });
@@ -211,12 +214,12 @@ describe('rpc.utils tests:\n', () => {
         .spyOn(axios, 'get')
         .mockImplementationOnce((...args) => Promise.reject(error));
       expect(await RpcUtils.checkRpcStatus(hardCodedUri)).toBe(false);
-      expect(spyAxiosGet).toBeCalledTimes(1);
-      expect(spyAxiosGet).toBeCalledWith(`${hardCodedUri}/health`, {
+      expect(spyAxiosGet).toHaveBeenCalledTimes(1);
+      expect(spyAxiosGet).toHaveBeenCalledWith(`${hardCodedUri}/health`, {
         timeout: 10000,
       });
-      expect(spyLoggerError).toBeCalledTimes(1);
-      expect(spyLoggerError).toBeCalledWith('error', error);
+      expect(spyLoggerError).toHaveBeenCalledTimes(1);
+      expect(spyLoggerError).toHaveBeenCalledWith('error', error);
     });
   });
 });

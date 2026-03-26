@@ -1,5 +1,5 @@
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
 import { RcDelegationsUtils } from '@hiveapp/utils/rc-delegations.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 
@@ -73,6 +73,12 @@ describe('rc-delegations.utils.ts tests:\n', () => {
   });
 
   describe('formatRcWithUnit with unit', () => {
+    it('formats raw RC amounts without fromGiga (trillion-scale → T RC)', () => {
+      expect(RcDelegationsUtils.formatRcWithUnit('1000000000000')).toBe(
+        '1.000 T RC',
+      );
+    });
+
     it('Must return each case', () => {
       const rcToUnits = [
         {
@@ -118,6 +124,33 @@ describe('rc-delegations.utils.ts tests:\n', () => {
       expect(RcDelegationsUtils.rcToHp('100000000', hiveTxGlobals)).toBe(
         '0.055',
       );
+    });
+  });
+
+  describe('getRcDelegationOperation', () => {
+    it('builds a delegate_rc custom_json op for posting authority', () => {
+      const op = RcDelegationsUtils.getRcDelegationOperation(
+        'delegatee1',
+        9_000_000_000,
+        'alice',
+      );
+
+      expect(op[0]).toBe('custom_json');
+      const payload = op[1] as {
+        id: string;
+        json: string;
+        required_posting_auths: string[];
+      };
+      expect(payload.id).toBe('rc');
+      expect(payload.required_posting_auths).toEqual(['alice']);
+      expect(JSON.parse(payload.json)).toEqual([
+        'delegate_rc',
+        {
+          from: 'alice',
+          delegatees: ['delegatee1'],
+          max_rc: 9_000_000_000,
+        },
+      ]);
     });
   });
 });

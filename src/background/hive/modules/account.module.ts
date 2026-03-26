@@ -70,3 +70,5 @@ const sendBackImportedAccounts = async (fileContent: string) => {
 export const AccountModule = {
   sendBackImportedAccounts,
 };
+
+export default AccountModule;

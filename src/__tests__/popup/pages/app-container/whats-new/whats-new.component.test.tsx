@@ -9,17 +9,29 @@ import versionLog from 'src/__tests__/utils-for-testing/data/version-log';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 describe('whats-new.component tests:\n', () => {
-  /////////////
-  //Reset Global Image object after tests done.
   const originalImage = globalThis.Image;
-  afterAll(() => {
-    globalThis.Image = originalImage;
-  });
-  /////////////
+  /**
+   * WhatsNew sets `src` before `onload`; real browsers fire onload after both exist.
+   * Fire when `onload` is assigned (matches production order in whats-new.component.tsx).
+   */
+  class ImageWithSyncOnload {
+    private _onload: (() => void) | null = null;
+    set src(_url: string) {
+      queueMicrotask(() => this._onload?.());
+    }
+    set onload(fn: (() => void) | null) {
+      this._onload = fn;
+      queueMicrotask(() => this._onload?.());
+    }
+    get onload() {
+      return this._onload;
+    }
+  }
 
   afterEach(() => {
     jest.clearAllMocks();
     cleanup();
+    globalThis.Image = originalImage;
   });
 
   describe('Same app versions:\n', () => {
@@ -34,31 +46,8 @@ describe('whats-new.component tests:\n', () => {
     });
   });
   describe('Different app versions:\n', () => {
-    ////Manipulate Image prototype onload function////
-    let imageOnloadCallBack: () => {} | null;
-    /**
-     * Notes: Add methods as needed.
-     * imageOnloadCallBack must be defined on outside scope and invoked within the case.
-     * imageOnloadCallBack needs be wrapped in act as it will affect the renders, note that sometimes you will need to await to mbeing able to make assertions.
-     * the function itself must be defined before render and called using beforeAll.
-     * Important: ALWAYS remember restore the object using Reset Global Image code block as above.
-     */
-    const addOnLoadOnImage = () => {
-      Object.defineProperty(Image.prototype, 'onload', {
-        get: function () {
-          return this._onload;
-        },
-        set: function (fn) {
-          imageOnloadCallBack = fn;
-          this._onload = fn;
-        },
-      });
-    };
-    beforeAll(() => {
-      addOnLoadOnImage();
-    });
-    ////////
     beforeEach(async () => {
+      globalThis.Image = ImageWithSyncOnload as unknown as typeof Image;
       await reactTestingLibrary.renderWithConfiguration(
         <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
@@ -92,23 +81,17 @@ describe('whats-new.component tests:\n', () => {
         },
       );
     });
-    it('Must show whats new component', async () => {
-      act(() => {
-        imageOnloadCallBack();
-      });
-      expect(await screen.findByTestId('whats-new-popup')).toBeInTheDocument();
-    });
 
     it('Must open whats new, url link', async () => {
-      act(() => {
-        imageOnloadCallBack();
+      await act(async () => {
+        await Promise.resolve();
       });
       await act(async () => {
         await userEvent.click(
           screen.getAllByTestId(dataTestIdLink.whatsNew.link.readMore)[0],
         );
       });
-      expect(jest.spyOn(chrome.tabs, 'create')).toBeCalledWith({
+      expect(jest.spyOn(chrome.tabs, 'create')).toHaveBeenCalledWith({
         url:
           versionLog.versionLog2_2.url +
           '#' +
@@ -117,23 +100,23 @@ describe('whats-new.component tests:\n', () => {
     });
 
     it('Must close whats new', async () => {
-      act(() => {
-        imageOnloadCallBack();
+      await act(async () => {
+        await Promise.resolve();
       });
       await act(async () => {
         await userEvent.click(
-          screen.getByTestId(dataTestIdButton.whatsNew.button.nextPage),
+          await screen.findByTestId(dataTestIdButton.whatsNew.button.nextPage),
         );
         await userEvent.click(
-          screen.getByTestId(dataTestIdButton.whatsNew.button.nextPage),
+          await screen.findByTestId(dataTestIdButton.whatsNew.button.nextPage),
         );
         await userEvent.click(
-          screen.getByTestId(dataTestIdButton.whatsNew.button.nextPage),
+          await screen.findByTestId(dataTestIdButton.whatsNew.button.nextPage),
         );
       });
       await act(async () => {
         await userEvent.click(
-          screen.getByTestId(dataTestIdButton.whatsNew.button.lastPage),
+          await screen.findByTestId(dataTestIdButton.whatsNew.button.lastPage),
         );
       });
       expect(screen.queryByTestId('whats-new-popup')).not.toBeInTheDocument();

@@ -8,39 +8,52 @@ import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-t
 import dataTestIdPopup from 'src/__tests__/utils-for-testing/data-testid/data-testid-popup';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
+import { ProxySuggestionComponent } from 'src/popup/hive/pages/app-container/home/governance/witness-tab/proxy-suggestion/proxy-suggestion.component';
+import { RootState } from 'src/popup/multichain/store';
+import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
-//TODO testings: unskip if proxy-suggestion.component gets enabled.
-describe.skip('Proxy suggestion tests:\n', () => {
+/** `HiveApp` does not mount `ProxySuggestionComponent`; exercise it with a real store slice. */
+const stateWithActiveAccount = (): RootState => {
+  const base = initialStates.iniStateAs.defaultExistent;
+  return {
+    ...base,
+    hive: {
+      ...base.hive,
+      activeAccount: accounts.active,
+    },
+  } as RootState;
+};
+
+describe('Proxy suggestion tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
-    jest.resetModules();
     cleanup();
   });
 
-  beforeEach(async () => {
-    await reactTestingLibrary.renderWithConfiguration(
-      <HiveAppComponent />,
-      initialStates.iniStateAs.defaultExistent,
-      {
-        app: {
-          accountsRelated: {
-            AccountUtils: {
-              getExtendedAccount: {
-                ...accounts.extended,
-                proxy: '',
-                witness_votes: [],
-                witnesses_voted_for: 0,
-              },
-            },
-          },
-        },
-      },
-    );
+  beforeEach(() => {
+    chrome.i18n.getMessage = jest
+      .fn()
+      .mockImplementation(mocksImplementation.i18nGetMessageCustom);
+    LocalStorageUtils.getValueFromLocalStorage = jest
+      .fn()
+      .mockImplementation((key: string) => {
+        if (key === LocalStorageKeyEnum.HIDE_SUGGESTION_PROXY) {
+          return Promise.resolve(undefined);
+        }
+        return Promise.resolve(undefined);
+      });
+    LocalStorageUtils.saveValueInLocalStorage = jest
+      .fn()
+      .mockResolvedValue(undefined);
   });
 
   it('Must show proxy suggestion & display message', async () => {
+    customRender(<ProxySuggestionComponent />, {
+      initialState: stateWithActiveAccount(),
+    });
     expect(
       await screen.findByTestId(dataTestIdPopup.proxySuggestion.component),
     ).toBeInTheDocument();
@@ -56,6 +69,9 @@ describe.skip('Proxy suggestion tests:\n', () => {
     ProxyUtils.setAsProxy = jest
       .fn()
       .mockRejectedValue(new Error('Error setting proxy'));
+    customRender(<ProxySuggestionComponent />, {
+      initialState: stateWithActiveAccount(),
+    });
     await act(async () => {
       await userEvent.click(
         await screen.findByTestId(
@@ -73,6 +89,9 @@ describe.skip('Proxy suggestion tests:\n', () => {
       id: 'id',
       confirmed: true,
     } as TransactionResult);
+    customRender(<ProxySuggestionComponent />, {
+      initialState: stateWithActiveAccount(),
+    });
     await act(async () => {
       await userEvent.click(
         await screen.findByTestId(
@@ -90,6 +109,9 @@ describe.skip('Proxy suggestion tests:\n', () => {
   it('Must show error if operation fails', async () => {
     ProxyUtils.findUserProxy = jest.fn().mockResolvedValue(null);
     ProxyUtils.setAsProxy = jest.fn().mockResolvedValue(null);
+    customRender(<ProxySuggestionComponent />, {
+      initialState: stateWithActiveAccount(),
+    });
     await act(async () => {
       await userEvent.click(
         await screen.findByTestId(
@@ -105,13 +127,17 @@ describe.skip('Proxy suggestion tests:\n', () => {
   });
 
   it('Must close suggestion after clicking close', async () => {
+    customRender(<ProxySuggestionComponent />, {
+      initialState: stateWithActiveAccount(),
+    });
+    const panel = await screen.findByTestId(
+      dataTestIdPopup.proxySuggestion.component,
+    );
     await act(async () => {
       await userEvent.click(
         await screen.findByTestId(dataTestIdButton.panel.close),
       );
     });
-    expect(
-      await screen.findByTestId(dataTestIdPopup.proxySuggestion.component),
-    ).toHaveClass('proxy-suggestion hide');
+    expect(panel).toHaveClass('hide');
   });
 });

@@ -1,4 +1,9 @@
-import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
+import {
+  Token,
+  TokenBalance,
+  TokenMarket,
+  TokenMetadata,
+} from '@interfaces/tokens.interface';
 import { DelegationType } from '@popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import {
   ActionButton,
@@ -18,6 +23,42 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { WalletInfoSectionItemButton } from 'src/common-ui/wallet-info-section-item-button/wallet-info-section-item-button.component';
 import FormatUtils from 'src/utils/format.utils';
+
+/**
+ * Stable `data-testid` for wallet row actions and Hive-Engine token buttons.
+ * Matches `src/__tests__/utils-for-testing/data-testid/data-testid-dropdown.ts`.
+ */
+const walletInfoSectionActionButtonTestId = (
+  tokenSymbol: string,
+  label: string,
+): string | undefined => {
+  switch (label) {
+    case 'popup_html_send':
+      return `dropdown-menu-item-${SVGIcons.WALLET_SEND}`;
+    case 'popup_html_convert':
+      return `dropdown-menu-item-${SVGIcons.WALLET_CONVERT}`;
+    case 'popup_html_savings':
+      return 'dropdown-menu-item-savings';
+    case 'popup_html_pu':
+      return 'dropdown-menu-item-arrow_upward';
+    case 'popup_html_delegate_short':
+      return `dropdown-menu-item-${SVGIcons.WALLET_HP_DELEGATIONS}`;
+    case 'popup_html_delegate_rc_short':
+      return `dropdown-menu-item-${SVGIcons.WALLET_RC_DELEGATIONS}`;
+    case 'dialog_title_powerdown':
+      return 'dropdown-menu-item-arrow_downward';
+    case 'popup_html_send_transfer':
+      return `icon-send-history-${tokenSymbol}`;
+    case 'popup_html_token_stake':
+      return `button-token-stake-${tokenSymbol}`;
+    case 'popup_html_token_unstake':
+      return `button-token-unstake-${tokenSymbol}`;
+    case 'popup_html_token_delegate':
+      return `button-token-delegate-${tokenSymbol}`;
+    default:
+      return undefined;
+  }
+};
 
 interface WalletSectionInfoItemProps {
   tokenSymbol: string;
@@ -114,10 +155,15 @@ const WalletInfoSectionItem = ({
   };
 
   const goToTokenWebsite = (token: Token) => {
-    chrome.tabs.create({ url: token.metadata.url });
+    const metadata: TokenMetadata =
+      typeof token.metadata === 'string'
+        ? JSON.parse(token.metadata)
+        : token.metadata;
+    chrome.tabs.create({ url: metadata.url });
   };
 
-  const goToTokenOutgoingDelegations = () => {
+  const goToTokenOutgoingDelegations = (event: BaseSyntheticEvent) => {
+    event.stopPropagation();
     navigateToWithParams(HiveScreen.TOKENS_DELEGATIONS, {
       tokenBalance: tokenBalance,
       delegationType: DelegationType.OUTGOING,
@@ -125,14 +171,16 @@ const WalletInfoSectionItem = ({
     });
   };
 
-  const goToTokenIncomingDelegations = () => {
+  const goToTokenIncomingDelegations = (event: BaseSyntheticEvent) => {
+    event.stopPropagation();
     navigateToWithParams(HiveScreen.TOKENS_DELEGATIONS, {
       tokenBalance: tokenBalance,
       delegationType: DelegationType.INCOMING,
       tokenInfo: tokenInfo,
     });
   };
-  const goToPendingUnstakePage = () => {
+  const goToPendingUnstakePage = (event: BaseSyntheticEvent) => {
+    event.stopPropagation();
     navigateToWithParams(HiveScreen.TOKENS_PENDING_UNSTAKE, {
       tokenInfo: tokenInfo,
       pendingUnstaking: pendingUnstaking,
@@ -142,7 +190,11 @@ const WalletInfoSectionItem = ({
   return (
     <div
       className={`wallet-info-row ${isExpanded ? 'opened' : ''}`}
-      data-testid={`wallet-info-section-row`}
+      data-testid={
+        tokenInfo
+          ? 'token-user-item'
+          : `dropdown-arrow-${tokenSymbol.toLowerCase()}`
+      }
       ref={reff}
       onClick={() => {
         toggleDropdown();
@@ -194,6 +246,7 @@ const WalletInfoSectionItem = ({
           <SVGIcon
             icon={SVGIcons.WALLET_HISTORY_BUTTON}
             className={`history-icon`}
+            dataTestId={`icon-token-history-${tokenSymbol}`}
             onClick={($event) => handleHistoryClick($event, tokenBalance)}
             hoverable
           />
@@ -309,7 +362,7 @@ const WalletInfoSectionItem = ({
                 <>
                   <Separator type="horizontal" />
                   <div
-                    data-testid={`button-go-to-outgoing-delegations-${tokenBalance.symbol}`}
+                    data-testid={`button-go-to-incoming-delegations-${tokenBalance.symbol}`}
                     className="token-info-row"
                     onClick={goToTokenIncomingDelegations}>
                     <div className="label">
@@ -337,6 +390,7 @@ const WalletInfoSectionItem = ({
                   <>
                     <Separator type="horizontal" />
                     <div
+                      data-testid={`button-go-to-outgoing-delegations-${tokenBalance.symbol}`}
                       aria-label="button-go-to-outgoing-delegations"
                       className="token-info-row"
                       onClick={goToTokenOutgoingDelegations}>
@@ -388,6 +442,10 @@ const WalletInfoSectionItem = ({
                 key={`action-${ab.label}-${index}`}
                 actionButton={ab}
                 handleClick={handleClick}
+                dataTestId={walletInfoSectionActionButtonTestId(
+                  tokenSymbol,
+                  ab.label,
+                )}
               />
             ))}
           </div>

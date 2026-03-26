@@ -3,7 +3,9 @@ import { ActiveAccount, RC } from '@interfaces/active-account.interface';
 import { Keys } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
-import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import userData, {
+  TEST_VAULT_MK,
+} from 'src/__tests__/utils-for-testing/data/user-data';
 
 const extended = {
   name: userData.one.username,
@@ -113,11 +115,18 @@ const active = {
 
 const twoAccounts = [local.one, local.two];
 
+/**
+ * Precomputed `EncryptUtils.encryptJson({ list: [...] }, TEST_VAULT_MK)` output
+ * matching `local.justTwoKeys` keys. Regenerate with the same utils + webcrypto if needed.
+ */
+const ENCRYPTED_JUST_TWO_KEYS_V2 =
+  '{"version":2,"kdf":"PBKDF2-HMAC-SHA256","iterations":600000,"salt":"m2eFGr3Vm2Wh7ZfA0yiVtw==","iv":"oi6rCEg2SYURxq0s","ciphertext":"fICNRas60Osq1U/+1sNLDQCXPlAkt7+0ov6Z5uqlxGS8JaeM1TqQzDT/u/vK6PyQpYEuaeeqiLLvaD0KKITOsLyq16WsKENQompc84nPQL21ZIkqQh98Z8k+1kFz6NXv5ql2tyAZTOC1ofbBhaqRzWgmcT+ftuVXmsjG7eWL+i7bATuOJ4ArKHyVoMuGLadkimvRwVCk8WA5iF/cPAIhlWNhUno+NoT/L5IcdmRlT9bYsa9E1ARvPhLGp2dimHpXXxFvk0Idqr2pk3YaViqLHBqFmWO26s1+/874SUdKecHgJJnXjlpwkxK++iOSZnarONMCQlO+hUEVFrzqeqCjZuPvNCp+R6JN6xCVZRN41XBGnDqUpqTJxQn19XI6SZpvhBwmF/thryFgpiMI0MlloswbCQWNkOQx1bcJPOyNuua8plwFn9AGODCyjA=="}';
+
 const encrypted = {
   noHash: {
     oneAccount: {
-      msg: process.env._TEST_USER_ENCRYPTED_ACCOUNTS || 'error',
-      mkUsed: process.env._TEST_USER_PWD || 'error',
+      msg: ENCRYPTED_JUST_TWO_KEYS_V2,
+      mkUsed: TEST_VAULT_MK,
       original: {
         list: [local.justTwoKeys],
       },

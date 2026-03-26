@@ -28,7 +28,7 @@ describe('ledger module tests:\n', () => {
         .mockReturnValue(undefined);
 
       LedgerModule.signTransactionFromLedger(data);
-      expect(sSendMessage).toBeCalledWith({
+      expect(sSendMessage).toHaveBeenCalledWith({
         command: DialogCommand.SIGN_WITH_LEDGER,
         ...data,
       });

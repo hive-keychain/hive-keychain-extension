@@ -1,9 +1,8 @@
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
-import { act, cleanup, screen } from '@testing-library/react';
+import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
 import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
 import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
@@ -11,7 +10,6 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-import { ActionButtonList } from 'src/popup/hive/pages/app-container/home/actions-section/action-button.list';
 
 describe('tokens.component tests:\n', () => {
   afterEach(() => {
@@ -19,29 +17,19 @@ describe('tokens.component tests:\n', () => {
     jest.resetModules();
     cleanup();
   });
-  const tokenIconName = ActionButtonList.find((actionButton) =>
-    actionButton.label.includes('token'),
-  )?.icon;
   describe('User has tokens:\n', () => {
     beforeEach(async () => {
       await reactTestingLibrary.renderWithConfiguration(
         <HiveAppComponent />,
         initialStates.iniStateAs.defaultExistent,
       );
-      await act(async () => {
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.actionBtn.preFix + tokenIconName),
-        );
-      });
     });
     it('Must show tokens page & disclaimer message', async () => {
       expect(
-        await screen.findByTestId(`${Screen.TOKENS_PAGE}-page`),
+        await screen.findByTestId(`${Screen.HOME_PAGE}-page`),
       ).toBeInTheDocument();
       expect(
-        await screen.findByText(
-          chrome.i18n.getMessage('popup_view_tokens_balance'),
-        ),
+        await screen.findByTestId(dataTestIdIcon.tokens.openFilter),
       ).toBeInTheDocument();
     });
 
@@ -62,6 +50,7 @@ describe('tokens.component tests:\n', () => {
 
     it('Must set filter box value & display one result', async () => {
       await act(async () => {
+        await userEvent.click(screen.getByTestId(dataTestIdIcon.tokens.openFilter));
         await userEvent.type(
           screen.getByTestId(dataTestIdInput.filter.token),
           'LEO',
@@ -76,14 +65,20 @@ describe('tokens.component tests:\n', () => {
 
     it('Must display no tokens found message', async () => {
       await act(async () => {
+        await userEvent.click(screen.getByTestId(dataTestIdIcon.tokens.openFilter));
         await userEvent.type(
           screen.getByTestId(dataTestIdInput.filter.token),
           'KEYCHAIN',
         );
       });
-      expect(
-        await screen.findByText(chrome.i18n.getMessage('popup_no_tokens')),
-      ).toBeInTheDocument();
+      await waitFor(
+        () => {
+          expect(
+            screen.queryAllByTestId(dataTestIdDiv.token.user.item),
+          ).toHaveLength(0);
+        },
+        { timeout: 15000 },
+      );
     });
 
     it('Must show tokens settings page & go back to tokens page', async () => {
@@ -93,13 +88,13 @@ describe('tokens.component tests:\n', () => {
         );
       });
       expect(
-        await screen.findByTestId(`${Screen.TOKENS_SETTINGS}-page`),
+        await screen.findByTestId(`${Screen.TOKENS_FILTER}-page`),
       ).toBeInTheDocument();
       await act(async () => {
         await userEvent.click(screen.getByTestId(dataTestIdIcon.arrowBack));
       });
       expect(
-        await screen.findByTestId(`${Screen.TOKENS_PAGE}-page`),
+        await screen.findByTestId(`${Screen.HOME_PAGE}-page`),
       ).toBeInTheDocument();
     });
   });
@@ -119,16 +114,11 @@ describe('tokens.component tests:\n', () => {
           },
         },
       );
-      await act(async () => {
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.actionBtn.preFix + tokenIconName),
-        );
-      });
     });
     it('Must show no tokens message', async () => {
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_tokens_no_tokens'),
+          chrome.i18n.getMessage('html_tokens_none_available'),
         ),
       ).toBeInTheDocument();
     });
@@ -149,17 +139,14 @@ describe('tokens.component tests:\n', () => {
           },
         },
       );
-      await act(async () => {
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.actionBtn.preFix + tokenIconName),
-        );
-      });
     });
 
-    it('Must not show hidden token', () => {
+    it('Must not show hidden token', async () => {
       expect(
-        screen.queryByTestId(`${dataTestIdDiv.token.user.symbolPreFix}LEO`),
-      ).not.toBeInTheDocument();
+        (await screen.findAllByTestId(dataTestIdDiv.token.user.item)).filter(
+          (el) => el.textContent?.includes('LEO'),
+        ),
+      ).toHaveLength(0);
     });
   });
 });

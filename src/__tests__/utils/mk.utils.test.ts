@@ -1,4 +1,5 @@
 import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -14,6 +15,9 @@ describe('mk.utils tests:\n', () => {
       AccountUtils.getAccountsFromLocalStorage = jest
         .fn()
         .mockResolvedValueOnce(undefined);
+      jest
+        .spyOn(EvmWalletUtils, 'getAccountsFromLocalStorage')
+        .mockResolvedValueOnce(undefined as never);
       LocalStorageUtils.getMultipleValueFromLocalStorage = jest
         .fn()
         .mockResolvedValueOnce({});
@@ -24,6 +28,9 @@ describe('mk.utils tests:\n', () => {
       AccountUtils.getAccountsFromLocalStorage = jest
         .fn()
         .mockResolvedValueOnce([]);
+      jest
+        .spyOn(EvmWalletUtils, 'getAccountsFromLocalStorage')
+        .mockResolvedValueOnce([] as never);
       LocalStorageUtils.getMultipleValueFromLocalStorage = jest
         .fn()
         .mockResolvedValueOnce({});
@@ -43,6 +50,9 @@ describe('mk.utils tests:\n', () => {
       AccountUtils.getAccountsFromLocalStorage = jest
         .fn()
         .mockResolvedValueOnce(undefined);
+      jest
+        .spyOn(EvmWalletUtils, 'getAccountsFromLocalStorage')
+        .mockResolvedValueOnce(undefined as never);
       LocalStorageUtils.getValueFromLocalStorage = jest
         .fn()
         .mockResolvedValueOnce(keylessPayload);

@@ -31,7 +31,7 @@ describe('keychainify.ts tests:\n', () => {
         'javascript:alert(1)',
       );
 
-      expect(sDispatchRequest).toBeCalledWith(
+      expect(sDispatchRequest).toHaveBeenCalledWith(
         null,
         expect.objectContaining({
           type: KeychainRequestTypes.transfer,
@@ -60,7 +60,7 @@ describe('keychainify.ts tests:\n', () => {
         'https://app.example.com/hk-callback',
       );
 
-      expect(sDispatchRequest).toBeCalledWith(
+      expect(sDispatchRequest).toHaveBeenCalledWith(
         null,
         expect.objectContaining({
           type: 'custom',
