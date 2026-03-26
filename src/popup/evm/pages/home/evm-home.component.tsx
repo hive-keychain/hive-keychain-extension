@@ -287,6 +287,7 @@ const Home = ({
         navigateToWithParams(EvmScreen.EVM_NFT_ALL_NFTS_PAGE, {
           collections: params,
         } as NavigationParams);
+        console.log('params', params);
         break;
       }
     }

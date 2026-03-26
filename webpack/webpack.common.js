@@ -2,6 +2,8 @@ const CopyPlugin = require('copy-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
+const useFastDev = process.env.WEBPACK_FS_CACHE === 'true';
+
 const config = {
   entry: {
     hiveTx: 'hive-tx',
@@ -29,7 +31,13 @@ const config = {
     rules: [
       {
         test: /\.(js|jsx)$/,
-        use: 'babel-loader',
+        use: {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: true,
+            cacheCompression: false,
+          },
+        },
         exclude: /node_modules/,
       },
       {
@@ -61,6 +69,10 @@ const config = {
           loader: 'ts-loader',
           options: {
             experimentalWatchApi: true,
+            // Fast dev prioritizes rebuild speed; run npm run typecheck when needed.
+            onlyCompileBundledFiles: useFastDev,
+            transpileOnly: useFastDev,
+            useCaseSensitiveFileNames: useFastDev,
           },
         },
         exclude: /node_modules/,
