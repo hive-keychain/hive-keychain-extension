@@ -8,13 +8,11 @@ interface TopBarProps {
   onRefreshButtonClicked: () => Promise<void>;
   accountSelector: JSX.Element;
   actions?: JSX.Element;
-  showChainDropdown?: boolean;
 }
 
 export const TopBarComponent = ({
   accountSelector,
   actions,
-  showChainDropdown = false,
   onMenuButtonClicked,
   onRefreshButtonClicked,
 }: TopBarProps) => {
@@ -48,7 +46,7 @@ export const TopBarComponent = ({
 
       {actions && <div className="top-bar-actions">{actions}</div>}
       <div className="account-selector-panel">{accountSelector}</div>
-      {showChainDropdown && <ChainDropdownComponent />}
+      <ChainDropdownComponent />
     </div>
   );
 };

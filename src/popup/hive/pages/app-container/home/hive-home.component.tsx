@@ -166,9 +166,8 @@ const Home = ({
   }, [activeAccount]);
 
   const initGovernanceExpirationReminder = async (accountNames: string[]) => {
-    const accountsToRemind = await GovernanceUtils.getGovernanceReminderList(
-      accountNames,
-    );
+    const accountsToRemind =
+      await GovernanceUtils.getGovernanceReminderList(accountNames);
     setGovernanceAccountsToExpire(accountsToRemind);
   };
 
