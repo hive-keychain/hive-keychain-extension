@@ -98,7 +98,7 @@ export interface EvmTransactionVerificationInformation {
     hasBeenUsedBefore: boolean;
     isBlacklisted: boolean;
     proxy: {
-      target: string;
+      target?: string;
     };
     verifiedBy: {
       icon: string;

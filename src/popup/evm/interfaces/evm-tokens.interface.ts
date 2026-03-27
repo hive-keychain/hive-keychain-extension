@@ -31,6 +31,8 @@ export interface EvmSmartContractNonNativeBase extends EvmSmartContractInfoBase 
   contractAddress: string;
   possibleSpam: boolean;
   verifiedContract: boolean;
+  isProxy: boolean;
+  proxyTarget: string | null;
 }
 
 export interface EvmLpV2Token {

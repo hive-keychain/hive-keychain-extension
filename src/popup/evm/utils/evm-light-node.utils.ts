@@ -241,13 +241,9 @@ const getContract = async (
   chainId: string | number,
   contractAddress: string,
 ): Promise<EvmLightNodeContractResponse> => {
-  const response = await KeychainApi.get(
+  return await KeychainApi.get(
     `evm/light-node/contract/${chainId}/${encodeURIComponent(contractAddress)}`,
   );
-
-  console.log(response, 'response');
-
-  return response;
 };
 
 const getGasFee = async (chainId: string | number): Promise<unknown> => {
@@ -266,10 +262,20 @@ const getPrice = async (
 
 const getAbi = async (chainId: string, contractAddress: string) => {
   const contractInfo = await getContract(chainId, contractAddress);
-  if (contractInfo) {
-    return contractInfo.abi;
+  if (!contractInfo) {
+    return null;
   }
-  return null;
+
+  if (
+    contractInfo.isProxy &&
+    contractInfo.proxyTarget &&
+    contractInfo.proxyTarget.toLowerCase() !== contractAddress.toLowerCase()
+  ) {
+    const proxyTargetInfo = await getContract(chainId, contractInfo.proxyTarget);
+    return proxyTargetInfo?.abi ?? null;
+  }
+
+  return contractInfo.abi;
 };
 
 const getMetadata = async (

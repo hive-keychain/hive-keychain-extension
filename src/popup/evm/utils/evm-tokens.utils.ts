@@ -226,6 +226,8 @@ const manualDiscoverNfts = async (walletAddress: string, chain: EvmChain) => {
             contractAddress: nft.contractAddress,
             possibleSpam: nft.possibleSpam,
             verifiedContract: nft.verifiedContract,
+            isProxy: false,
+            proxyTarget: null,
             symbol: nft.symbol,
             logo: nft.logo,
             chainId: chain.chainId,
@@ -364,6 +366,8 @@ const mapLightNodeContractToTokenInfo = (
   const contractAddress = contract.address;
   const verifiedContract = contract.verified ?? false;
   const possibleSpam = contract.possibleSpam ?? false;
+  const isProxy = contract.isProxy ?? false;
+  const proxyTarget = contract.proxyTarget ?? null;
   const normalizedContractType = contract.contractType?.toUpperCase() ?? null;
 
   const base = {
@@ -375,13 +379,19 @@ const mapLightNodeContractToTokenInfo = (
     priceUsd,
   };
 
+  const nonNativeBase = {
+    ...base,
+    contractAddress,
+    possibleSpam,
+    verifiedContract,
+    isProxy,
+    proxyTarget,
+  };
+
   if (normalizedContractType === 'ERC721') {
     return {
-      ...base,
+      ...nonNativeBase,
       type: EVMSmartContractType.ERC721,
-      contractAddress,
-      possibleSpam,
-      verifiedContract,
     } as EvmSmartContractInfoErc721;
   }
 
@@ -390,21 +400,15 @@ const mapLightNodeContractToTokenInfo = (
     normalizedContractType === 'ERC721_ENUMERABLE'
   ) {
     return {
-      ...base,
+      ...nonNativeBase,
       type: EVMSmartContractType.ERC721Enumerable,
-      contractAddress,
-      possibleSpam,
-      verifiedContract,
     } as EvmSmartContractInfoErc721;
   }
 
   if (normalizedContractType === 'ERC1155') {
     return {
-      ...base,
+      ...nonNativeBase,
       type: EVMSmartContractType.ERC1155,
-      contractAddress,
-      possibleSpam,
-      verifiedContract,
     } as EvmSmartContractInfoErc1155;
   }
 
@@ -415,11 +419,8 @@ const mapLightNodeContractToTokenInfo = (
     : undefined;
 
   return {
-    ...base,
+    ...nonNativeBase,
     type: EVMSmartContractType.ERC20,
-    contractAddress,
-    possibleSpam,
-    verifiedContract,
     decimals,
     validated: 0,
     coingeckoId,
@@ -444,9 +445,33 @@ const displayValue = (value: number, tokenInfo: EvmSmartContractInfo) => {
   return FormatUtils.withCommas(value, decimals, true);
 };
 
+const normalizeAbi = (abi: any): any[] | null => {
+  if (!abi) return null;
+  if (Array.isArray(abi)) return abi;
+
+  if (typeof abi === 'string') {
+    try {
+      return normalizeAbi(JSON.parse(abi));
+    } catch (error) {
+      Logger.error('Error while parsing ABI', error);
+      return null;
+    }
+  }
+
+  if (typeof abi === 'object' && 'abi' in abi) {
+    return normalizeAbi(abi.abi);
+  }
+
+  return null;
+};
+
 const getTokenType = (abi: any) => {
-  const parsedAbi = abi;
-  const abiMethods = parsedAbi.map((abiFunctions: any) => abiFunctions.name);
+  const parsedAbi = normalizeAbi(abi);
+  if (!parsedAbi) return null;
+
+  const abiMethods = parsedAbi
+    .map((abiFunctions: any) => abiFunctions.name)
+    .filter(Boolean);
 
   for (const referenceAbi of AbiList) {
     if (
@@ -546,6 +571,7 @@ export const EvmTokensUtils = {
   displayValue,
   getTokenInfo,
   getTokenType,
+  normalizeAbi,
   filterTokensBasedOnSettings,
   getPopularTokensForChain,
   manualDiscoverErc20Tokens,

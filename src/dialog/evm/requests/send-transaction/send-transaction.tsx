@@ -157,29 +157,26 @@ export const SendTransaction = (props: Props) => {
 
       // Case with data
       if (params.data) {
-        const proxy = await EvmTransactionParserUtils.getSmartContractProxy(
-          params.to,
-          chainTmp as EvmChain,
-        );
-
         tData.value = params.value;
 
         tokenAddress = params.to;
         // Case of the execution of a smart contract
         if (params.to) {
-          let abi = await EvmLightNodeUtils.getAbi(
-            chainTmp.chainId,
-            proxy ?? params.to,
-          );
-
-          tData.abi = abi;
-
           const usedToken = await EvmTokensUtils.getTokenInfo(
             chainTmp.chainId,
             tokenAddress,
           );
+          const proxyTarget =
+            usedToken.type !== EVMSmartContractType.NATIVE
+              ? usedToken.proxyTarget
+              : null;
 
           setTokenInfo(usedToken);
+
+          let abi = await EvmLightNodeUtils.getAbi(
+            chainTmp.chainId,
+            params.to,
+          );
 
           if (!abi) {
             abi = await EvmTransactionParserUtils.findAbiFromData(
@@ -188,11 +185,14 @@ export const SendTransaction = (props: Props) => {
             );
           }
 
-          if (abi) {
-            const contractType = EvmTokensUtils.getTokenType(abi);
+          const normalizedAbi = EvmTokensUtils.normalizeAbi(abi);
+          tData.abi = normalizedAbi ?? undefined;
+
+          if (normalizedAbi) {
+            const contractType = EvmTokensUtils.getTokenType(normalizedAbi);
             const contract = new ethers.Contract(
               params.to,
-              abi,
+              normalizedAbi,
               connectedWallet,
             );
 
@@ -212,7 +212,7 @@ export const SendTransaction = (props: Props) => {
 
             setShouldDisplayBalanceChange(
               EvmTransactionParserUtils.shouldDisplayBalanceChange(
-                abi,
+                normalizedAbi,
                 decodedTransactionData?.name!,
               ),
             );
@@ -230,7 +230,7 @@ export const SendTransaction = (props: Props) => {
                 data.dappInfo.domain,
                 params.to,
                 usedAccount.wallet.address,
-                proxy,
+                proxyTarget,
               );
 
             transactionHook.setUnableToReachBackend(
@@ -306,7 +306,7 @@ export const SendTransaction = (props: Props) => {
                 let value;
                 const inputDisplayType =
                   EvmTransactionParserUtils.getDisplayInputType(
-                    abi,
+                    normalizedAbi,
                     decodedTransactionData.name,
                     input.type,
                     input.name,
@@ -369,14 +369,14 @@ export const SendTransaction = (props: Props) => {
                 transactionConfirmationFields.otherFields.push({
                   name: input.name,
                   type: EvmTransactionParserUtils.getDisplayInputType(
-                    abi,
+                    normalizedAbi,
                     decodedTransactionData.name,
                     input.type,
                     input.name,
                   ),
                   value: value,
                   warnings: await EvmTransactionParserUtils.getFieldWarnings(
-                    abi,
+                    normalizedAbi,
                     decodedTransactionData.name,
                     input.type,
                     input.name,
@@ -416,7 +416,7 @@ export const SendTransaction = (props: Props) => {
                 data.dappInfo.domain,
                 params.to,
                 usedAccount.wallet.address,
-                proxy,
+                proxyTarget,
               );
 
             transactionHook.setUnableToReachBackend(
@@ -529,7 +529,6 @@ export const SendTransaction = (props: Props) => {
               data.dappInfo.domain,
               params.to,
               usedAccount.wallet.address,
-              proxy,
             );
           transactionHook.setUnableToReachBackend(
             !!(transactionInfo && transactionInfo.unableToReach),

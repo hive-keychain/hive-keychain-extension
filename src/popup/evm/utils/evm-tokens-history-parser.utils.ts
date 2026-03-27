@@ -23,6 +23,7 @@ import {
   LightNodeHistoryDetailItem,
 } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
+import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import {
   BlockExplorerType,
   EvmChain,
@@ -747,10 +748,11 @@ const getSpecificData = async (
     symbol = tokenMetadata.symbol;
   } else {
     const abi = await EvmLightNodeUtils.getAbi(chain.chainId, contractAddress);
+    const normalizedAbi = EvmTokensUtils.normalizeAbi(abi);
 
-    if (abi) {
+    if (normalizedAbi) {
       try {
-        const contract = new ethers.Contract(contractAddress, JSON.parse(abi));
+        const contract = new ethers.Contract(contractAddress, normalizedAbi);
         [name, symbol] = await Promise.all([
           contract.name(),
           contract.symbol(),

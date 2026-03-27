@@ -15,7 +15,6 @@ import {
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { AbiList } from '@popup/evm/reference-data/abi.data';
-import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmDataParser } from '@popup/evm/utils/evm-data-parser.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
@@ -24,7 +23,6 @@ import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { MethodRegistry } from 'eth-method-registry';
 import { ethers, Result } from 'ethers';
-import detectProxyTarget from 'evm-proxy-detection';
 import { KeychainApi } from 'src/api/keychain';
 import Logger from 'src/utils/logger.utils';
 
@@ -473,11 +471,29 @@ const getSmartContractWarningAndInfo = async (
   return warningAndInfo;
 };
 
+const normalizeVerificationInformation = (
+  verificationInformation: Partial<EvmTransactionVerificationInformation> = {},
+  proxyTarget?: string | null,
+): EvmTransactionVerificationInformation => {
+  const normalizedProxyTarget =
+    typeof verificationInformation.contract?.proxy === 'string'
+      ? verificationInformation.contract.proxy
+      : verificationInformation.contract?.proxy?.target ?? proxyTarget;
+
+  return {
+    ...verificationInformation,
+    contract: {
+      ...(verificationInformation.contract ?? {}),
+      proxy: normalizedProxyTarget ? { target: normalizedProxyTarget } : {},
+    },
+  } as EvmTransactionVerificationInformation;
+};
+
 const verifyTransactionInformation = async (
   domain?: string,
   to?: string,
   contract?: string,
-  proxy?: string,
+  proxyTarget?: string | null,
 ): Promise<EvmTransactionVerificationInformation> => {
   let url = `evm/verify-transaction?`;
   if (domain) {
@@ -491,43 +507,14 @@ const verifyTransactionInformation = async (
   }
 
   try {
-    let result = await KeychainApi.get(url);
-    if (proxy) {
-      if (!result.contract) {
-        result.contract = { proxy: '' };
-      }
-      result.contract.proxy = proxy;
-    }
-
-    return result;
+    const result = await KeychainApi.get(url);
+    return normalizeVerificationInformation(result, proxyTarget);
   } catch (err) {
     Logger.error('Error while fetchingm transaction information', err);
     return {
       unableToReach: true,
     } as EvmTransactionVerificationInformation;
   }
-};
-
-const getSmartContractProxy = async (
-  smartContractAddress: string,
-  chain: EvmChain,
-): Promise<string | undefined> => {
-  const EIP1193RequestFunc = async ({
-    method,
-    params,
-  }: {
-    method: string;
-    params: any[];
-  }): Promise<unknown> => {
-    const provider = await EthersUtils.getProvider(chain);
-    return provider.send(method, params);
-  };
-
-  const res = await detectProxyTarget(
-    smartContractAddress as unknown as any,
-    EIP1193RequestFunc,
-  );
-  if (res?.target) return res.target as string;
 };
 
 const findAbiFromData = async (data: string, chain: EvmChain) => {
@@ -732,10 +719,10 @@ export const EvmTransactionParserUtils = {
   getHighestWarningLevel,
   getHighestWarning,
   getDomainWarnings,
+  normalizeVerificationInformation,
   verifyTransactionInformation,
   getAddressWarning,
   getSmartContractWarningAndInfo,
-  getSmartContractProxy,
   parseData,
   findAbiFromData,
   recipientInputNameList,

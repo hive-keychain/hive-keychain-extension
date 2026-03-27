@@ -85,6 +85,8 @@ const mapDiscoveredNftsResponseToActiveAccountNfts = async (
             contractAddress: collection.contractAddress,
             possibleSpam: collection.possibleSpam,
             verifiedContract: collection.verifiedContract,
+            isProxy: false,
+            proxyTarget: null,
           },
           collection: collection.nfts.map((nft) => ({
             id: nft.tokenId,
@@ -108,6 +110,8 @@ const mapDiscoveredNftsResponseToActiveAccountNfts = async (
             contractAddress: collection.contractAddress,
             possibleSpam: collection.possibleSpam,
             verifiedContract: collection.verifiedContract,
+            isProxy: false,
+            proxyTarget: null,
           },
           collection: collection.nfts.map((nft) => ({
             id: nft.tokenId,
