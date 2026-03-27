@@ -19,6 +19,6 @@ export const initializeWallet = (
       await chrome.i18n.getMessage('bgd_init_no_wallet_explained'),
       request,
     );
-    await requestHandler.removeRequestById(request.request_id, tab);
+    // await requestHandler.removeRequestById(request.request_id, tab);
   }, requestHandler);
 };

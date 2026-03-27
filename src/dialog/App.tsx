@@ -3,12 +3,14 @@ import { FeedbackMessage } from '@dialog/interfaces/messages.interface';
 import { DialogConfirmationPage } from '@dialog/multichain/dialog-confirmation-page/dialog-confirmation-page.component';
 import { DialogError } from '@dialog/multichain/error/error';
 import { Theme } from '@popup/theme.context';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useRef, useState } from 'react';
 import Register from 'src/dialog/hive/register/register';
 import Unlock from 'src/dialog/multichain/unlock/unlock';
 import { RegisterKeylessComponent } from 'src/dialog/pages/register-keyless/register-keyless';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import BrowserUtils from 'src/utils/browser.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 // import './../analytics/analytics/gtag';
@@ -79,6 +81,32 @@ const App = () => {
     );
   }, []);
 
+  const closeGlobalError = async () => {
+    if (
+      globalError?.command === DialogCommand.SEND_DIALOG_ERROR &&
+      globalError?.msg?.error === 'no_wallet' &&
+      globalError?.msg?.data &&
+      globalError?.msg?.request_id !== undefined
+    ) {
+      await CommunicationUtils.runtimeSendMessage({
+        command: BackgroundCommand.REJECT_TRANSACTION,
+        value: {
+          success: false,
+          error: 'user_cancel',
+          result: null,
+          data: globalError.msg.data,
+          message: await chrome.i18n.getMessage(
+            'bgd_lifecycle_request_canceled',
+          ),
+          request_id: globalError.msg.request_id,
+          tab: globalError.tab ?? globalError.msg.tab,
+        },
+      });
+    }
+
+    close();
+  };
+
   const renderDialogContent = (data: any) => {
     if (!data?.command) {
       return null;
@@ -126,7 +154,7 @@ const App = () => {
   return (
     <div className={`theme ${theme} dialog`}>
       {renderDialogContent(globalData)}
-      {globalError && <DialogError data={globalError} />}
+      {globalError && <DialogError data={globalError} onClose={closeGlobalError} />}
     </div>
   );
 };
