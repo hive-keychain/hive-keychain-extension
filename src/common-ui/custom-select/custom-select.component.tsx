@@ -27,6 +27,8 @@ export interface CustomSelectProps<T> {
   filterable?: boolean;
   rightActionIcon?: boolean;
   rightActionClicked?: () => void;
+  /** For tests / automation: identifies the dropdown arrow control. */
+  selectHandleDataTestId?: string;
 }
 
 export function ComplexeCustomSelect<T extends OptionItem>(
@@ -75,6 +77,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
     return (
       <SVGIcon
         className="custom-select-handle"
+        dataTestId={itemProps.selectHandleDataTestId}
         icon={
           state.dropdown ? SVGIcons.SELECT_ARROW_UP : SVGIcons.SELECT_ARROW_DOWN
         }

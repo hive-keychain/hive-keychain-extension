@@ -12,6 +12,7 @@ import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
+import { TEST_VAULT_MK } from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import * as LogicAddAccountRequest from 'src/background/requests/logic/addAccountRequest.logic';
 import * as LogicAddAccountToEmptyWallet from 'src/background/requests/logic/addAccountToEmptyWallet.logic';
@@ -43,7 +44,15 @@ describe('init tests:\n', () => {
     rpc: 'https://api.hive-engine.com/rpc',
     mainnet: 'ssc-mainnet-hive',
     accountHistoryApi: 'https://history.hive-engine.com/',
+    maxSpread: 100,
   } as HiveEngineConfig;
+
+  /** Legacy ciphertext still used by the unlock-wallet path (empty mk). */
+  const legacyAccountsEncryptMsg = _accounts.encrypt.msg;
+
+  beforeEach(() => {
+    jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValue('en-US');
+  });
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -57,11 +66,11 @@ describe('init tests:\n', () => {
       keychainRequest.data,
     ) as KeychainRequest;
     const sLoggerInfo = jest.spyOn(Logger, 'info');
-    MkModule.getMk = jest.fn().mockResolvedValue(mk.user.one);
+    MkModule.getMk = jest.fn().mockResolvedValue(TEST_VAULT_MK);
     LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue({
-        accounts: _accounts.encrypt.msg,
+        accounts: accounts.encrypted.noHash.oneAccount.msg,
         current_rpc: DefaultRpcs[0],
         no_confirm: {},
       });
@@ -158,7 +167,7 @@ describe('init tests:\n', () => {
     LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue({
-        accounts: _accounts.encrypt.msg,
+        accounts: legacyAccountsEncryptMsg,
         current_rpc: DefaultRpcs[0],
         no_confirm: {},
       });
@@ -189,11 +198,11 @@ describe('init tests:\n', () => {
       LogicAddAccountRequest,
       'addAccountRequest',
     );
-    MkModule.getMk = jest.fn().mockResolvedValue(mk.user.one);
+    MkModule.getMk = jest.fn().mockResolvedValue(TEST_VAULT_MK);
     LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue({
-        accounts: _accounts.encrypt.msg,
+        accounts: accounts.encrypted.noHash.oneAccount.msg,
         current_rpc: DefaultRpcs[0],
         no_confirm: {},
       });
@@ -225,11 +234,11 @@ describe('init tests:\n', () => {
       LogicTransferRequest,
       'transferRequest',
     );
-    MkModule.getMk = jest.fn().mockResolvedValue(mk.user.one);
+    MkModule.getMk = jest.fn().mockResolvedValue(TEST_VAULT_MK);
     LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue({
-        accounts: _accounts.encrypt.msg,
+        accounts: accounts.encrypted.noHash.oneAccount.msg,
         current_rpc: DefaultRpcs[0],
         no_confirm: {},
       });
@@ -263,11 +272,11 @@ describe('init tests:\n', () => {
       LogicAnonymousRequests,
       'anonymousRequests',
     );
-    MkModule.getMk = jest.fn().mockResolvedValue(mk.user.one);
+    MkModule.getMk = jest.fn().mockResolvedValue(TEST_VAULT_MK);
     LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue({
-        accounts: _accounts.encrypt.msg,
+        accounts: accounts.encrypted.noHash.oneAccount.msg,
         current_rpc: DefaultRpcs[0],
         no_confirm: {},
       });
@@ -329,11 +338,11 @@ describe('init tests:\n', () => {
       keychainRequest.decodeData,
     ) as KeychainRequest;
     const sMissingKey = jest.spyOn(LogicMissingKey, 'missingKey');
-    MkModule.getMk = jest.fn().mockResolvedValue(mk.user.one);
+    MkModule.getMk = jest.fn().mockResolvedValue(TEST_VAULT_MK);
     LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue({
-        accounts: _accounts.encrypt.msg,
+        accounts: accounts.encrypted.noHash.oneAccount.msg,
         current_rpc: DefaultRpcs[0],
         no_confirm: {},
       });
@@ -364,11 +373,11 @@ describe('init tests:\n', () => {
       LogicRequestWithoutConfirmation,
       'requestWithoutConfirmation',
     );
-    MkModule.getMk = jest.fn().mockResolvedValue(mk.user.one);
+    MkModule.getMk = jest.fn().mockResolvedValue(TEST_VAULT_MK);
     LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue({
-        accounts: _accounts.encrypt.msg,
+        accounts: accounts.encrypted.noHash.oneAccount.msg,
         current_rpc: DefaultRpcs[0],
         no_confirm: {
           'keychain.tests': { domain: { post: true } },
@@ -399,12 +408,13 @@ describe('init tests:\n', () => {
       LogicRequestWithConfirmation,
       'requestWithConfirmation',
     );
-    MkModule.getMk = jest.fn().mockResolvedValue(mk.user.one);
+    MkModule.getMk = jest.fn().mockResolvedValue(TEST_VAULT_MK);
     LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue({
-        accounts: _accounts.encrypt.msg,
+        accounts: accounts.encrypted.noHash.oneAccount.msg,
         current_rpc: DefaultRpcs[0],
+        no_confirm: {},
       });
     RpcUtils.findRpc = jest.fn().mockResolvedValue(DefaultRpcs[0]);
     BgdHiveEngineConfigModule.getActiveConfig = jest

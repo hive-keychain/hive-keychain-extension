@@ -28,7 +28,7 @@ describe('autolock.module tests:\n', () => {
       const sLoggerInfo = jest.spyOn(Logger, 'info');
       await AutolockModule.set(constants.autoLock.deviceLock);
       expect(sLoggerInfo).toHaveBeenCalledWith(
-        `hive-keychain: setting up ${constants.autoLock.deviceLock.type} listener `,
+        `Setting up ${constants.autoLock.deviceLock.type} listener`,
       );
     });
 
@@ -40,7 +40,7 @@ describe('autolock.module tests:\n', () => {
 
       await AutolockModule.set(constants.autoLock.idleLock);
       expect(sLoggerInfo).toHaveBeenCalledWith(
-        `hive-keychain: setting up ${constants.autoLock.idleLock.type} listener (${constants.autoLock.idleLock.mn}mn)`,
+        `Setting up ${constants.autoLock.idleLock.type} listener`,
       );
       expect(setDetectionInterval).toHaveBeenCalledWith(
         constants.autoLock.idleLock.mn * 60,

@@ -49,7 +49,7 @@ describe('witness tab:\n', () => {
       await act(async () => {
         await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.HIVE),
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.GOVERNANCE),
         );
       });
     });
@@ -154,11 +154,9 @@ describe('witness tab:\n', () => {
       BlockchainTransactionUtils.delayRefresh = jest
         .fn()
         .mockResolvedValue(undefined);
-      WitnessUtils.unvoteWitness = jest.fn().mockResolvedValue({
-        tx_id: 'tx_id',
-        id: 'id',
-        confirmed: false,
-      } as TransactionResult);
+      WitnessUtils.unvoteWitness = jest
+        .fn()
+        .mockResolvedValue(null as unknown as TransactionResult);
       const selectedWitness = accounts.extended.witness_votes[0];
       await act(async () => {
         await userEvent.click(
@@ -276,7 +274,7 @@ describe('witness tab:\n', () => {
       await act(async () => {
         await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.HIVE),
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.GOVERNANCE),
         );
       });
     });

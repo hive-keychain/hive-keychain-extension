@@ -92,7 +92,9 @@ const TokensOperation = ({
           ? ''
           : activeAccount.name,
         amount: formParams.amount ? formParams.amount : '',
-        symbol: formParams.symbol ? formParams.symbol : tokenBalance.symbol,
+        symbol: formParams.symbol
+          ? formParams.symbol
+          : tokenBalance?.symbol ?? '',
       },
       resolver: (values, context, options) => {
         const resolver = joiResolver<Joi.ObjectSchema<TokenOperationForm>>(
@@ -107,6 +109,9 @@ const TokensOperation = ({
     useState<AutoCompleteValues>({ categories: [] });
 
   useEffect(() => {
+    if (!tokenBalance || !tokenInfo) {
+      return;
+    }
     setTitleContainerProperties({
       title: `popup_html_${operationType}_tokens`,
       isBackButtonEnabled: true,
@@ -115,7 +120,7 @@ const TokensOperation = ({
     switch (operationType) {
       case TokenOperationType.UNSTAKE:
       case TokenOperationType.DELEGATE:
-        const tokenUnstaking = pendingUnstaking!.filter(
+        const tokenUnstaking = (pendingUnstaking ?? []).filter(
           (e) => e.symbol === tokenBalance.symbol,
         );
         const sumUnstaking = tokenUnstaking.reduce(
@@ -378,10 +383,10 @@ const mapStateToProps = (state: RootState) => {
     currencyLabels: CurrencyUtils.getCurrencyLabels(
       state.hive.activeRpc?.testnet!,
     ),
-    tokenBalance: state.navigation.stack[0].params
+    tokenBalance: state.navigation.stack[0]?.params
       ?.tokenBalance as TokenBalance,
-    tokenInfo: state.navigation.stack[0].params.tokenInfo as Token,
-    operationType: state.navigation.stack[0].params
+    tokenInfo: state.navigation.stack[0]?.params?.tokenInfo as Token,
+    operationType: state.navigation.stack[0]?.params
       ?.operationType as TokenOperationType,
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams

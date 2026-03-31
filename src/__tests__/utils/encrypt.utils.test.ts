@@ -115,4 +115,20 @@ describe('encrypt.utils tests:\n', () => {
       null,
     );
   });
+
+  it('decryptToJson returns null for empty input', async () => {
+    expect(await EncryptUtils.decryptToJson('', password)).toBeNull();
+  });
+
+  it('decryptToJsonWithLegacySupport throws on invalid v2 envelope', async () => {
+    await expect(
+      EncryptUtils.decryptToJsonWithLegacySupport('{not valid json', password),
+    ).rejects.toThrow('Invalid encrypted payload');
+  });
+
+  it('round-trips encryptNoIV / decryptNoIV for legacy string encryption', () => {
+    const secret = 'memo text';
+    const enc = EncryptUtils.encryptNoIV(secret, password);
+    expect(EncryptUtils.decryptNoIV(enc, password)).toBe(secret);
+  });
 });

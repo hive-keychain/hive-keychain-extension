@@ -18,7 +18,7 @@ export const ActionCardComponent = ({
 }: Props) => {
   return (
     <div
-      data-testid={'operation-item'}
+      data-testid="whitelisted-operation-item"
       className="action-card-operation"
       key={key}>
       <div className="left-panel">

@@ -8,6 +8,7 @@ import {
 import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
 const DEFAULT_RPC = 'https://api.hive.blog';

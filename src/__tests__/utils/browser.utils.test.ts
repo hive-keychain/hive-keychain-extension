@@ -6,6 +6,10 @@ describe('sendResponse tests', () => {
     jest.clearAllMocks();
     jest.resetModules();
   });
+  beforeEach(() => {
+    chrome.windows.getCurrent = jest.fn().mockResolvedValue({ id: 99 });
+    chrome.windows.update = jest.fn();
+  });
   test('While mocking the env variable IS_FIREFOX it must return resolvedMessage', async () => {
     process.env = {
       ...env,
@@ -21,11 +25,11 @@ describe('sendResponse tests', () => {
     expect(result).toBe('It is been returned');
     process.env = env;
   });
-  test('While not mocking env variables, it should execute the consoleLogA function and return undefined', () => {
+  test('While not mocking env variables, it should execute the consoleLogA function and return undefined', async () => {
     const resolvedMessage = 'It is been returned';
     const consoleLogA = (a?: any) => console.log(`${a} by console.log`);
     console.log = jest.fn();
-    const result = BrowserUtils.sendResponse(resolvedMessage, consoleLogA);
+    const result = await BrowserUtils.sendResponse(resolvedMessage, consoleLogA);
     expect(result).toBeUndefined();
     expect(console.log).toHaveBeenCalledTimes(1);
     expect(console.log).toHaveBeenCalledWith(resolvedMessage + ' by console.log');

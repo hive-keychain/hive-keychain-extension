@@ -11,6 +11,7 @@ interface ResourceItemProps {
   value: string;
   tooltipText?: string;
   secondaryValue?: string;
+  /** Used as `data-testid` on the root row (e.g. tests / a11y). */
   ariaLabel?: string;
   additionalClass?: string;
   onClick?: () => void;

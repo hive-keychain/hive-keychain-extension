@@ -36,7 +36,7 @@ describe('home.component action-buttons tests:\n', () => {
       await act(async () => {
         await userEvent.click(
           screen.getByTestId(
-            dataTestIdButton.actionBtn.preFix + ActionButtonList[i].icon,
+            dataTestIdButton.actionBtn.preFix + ActionButtonList[i].label,
           ),
         );
       });

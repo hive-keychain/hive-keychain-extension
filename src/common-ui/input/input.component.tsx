@@ -162,15 +162,28 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
         </div>
 
         {props.rightActionClicked && props.rightActionIcon && (
-          <div className="right-action">
+          <div
+            className="right-action"
+            data-testid={
+              props.rightActionIcon === SVGIcons.INPUT_MAX
+                ? 'set-to-max-button'
+                : 'right-action'
+            }
+            onClick={props.rightActionClicked}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                props.rightActionClicked?.();
+              }
+            }}>
             <Separator type={'vertical'} />
             <SVGIcon
               className={`right-action-logo ${
                 props.rightActionIconClassname ?? ''
               }`}
-              data-testid="right-action"
               icon={props.rightActionIcon}
-              onClick={props.rightActionClicked}
             />
           </div>
         )}

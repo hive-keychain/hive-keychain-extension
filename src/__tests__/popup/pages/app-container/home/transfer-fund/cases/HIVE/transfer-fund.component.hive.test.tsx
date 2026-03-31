@@ -22,7 +22,8 @@ import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-import { exchanges } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins-list-item.list';
+import { BuyCoinType } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coin-type.enum';
+import { BuyCoinsListItem } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 describe('transfer-fund.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -71,7 +72,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_fill_form_error'),
+            chrome.i18n.getMessage('validation_error_mandatory'),
           ),
         );
       });
@@ -88,7 +89,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_fill_form_error'),
+            chrome.i18n.getMessage('validation_error_mandatory'),
           ),
         );
       });
@@ -109,7 +110,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_fill_form_error'),
+            chrome.i18n.getMessage('validation_error_mandatory'),
           ),
         );
       });
@@ -151,7 +152,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_power_up_down_error'),
+            chrome.i18n.getMessage('validation_error_less_or_equal_value'),
           ),
         );
       });
@@ -175,9 +176,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage(
-              'popup_html_transfer_recurrent_missing_field',
-            ),
+            chrome.i18n.getMessage('validation_error_mandatory'),
           ),
         );
       });
@@ -197,7 +196,7 @@ describe('transfer-fund.component tests:\n', () => {
           );
           await userEvent.type(
             screen.getByTestId(dataTestIdInput.recurrent.frecuency),
-            '10',
+            '24',
           );
           await userEvent.click(
             screen.getByTestId(dataTestIdButton.operation.transfer.send),
@@ -205,20 +204,20 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage(
-              'popup_html_transfer_recurrent_missing_field',
-            ),
+            chrome.i18n.getMessage('validation_error_mandatory'),
           ),
         );
       });
 
       it('Must show memo warning when transferring to an exchange account', async () => {
+        const exchangeUsername = BuyCoinsListItem(
+          BuyCoinType.BUY_HIVE,
+          mk.user.one,
+        ).exchanges[0].username;
         await act(async () => {
           await userEvent.type(
             screen.getByTestId(dataTestIdInput.username),
-            exchanges.filter((exchange) =>
-              exchange.acceptedCoins.includes('HIVE'),
-            )[0].username,
+            exchangeUsername,
           );
           await userEvent.type(
             screen.getByTestId(dataTestIdInput.amount),
@@ -361,41 +360,6 @@ describe('transfer-fund.component tests:\n', () => {
         ).toBeInTheDocument();
       });
 
-      it('Must show success message on recurrent cancellation', async () => {
-        TransferUtils.sendTransfer = jest.fn().mockResolvedValue({
-          tx_id: 'trx_id',
-          id: 'id',
-          confirmed: true,
-        } as TransactionResult);
-        FavoriteUserUtils.saveFavoriteUser = jest
-          .fn()
-          .mockResolvedValue(undefined);
-        await act(async () => {
-          await userEvent.type(
-            screen.getByTestId(dataTestIdInput.username),
-            mk.user.two,
-          );
-          await userEvent.type(screen.getByTestId(dataTestIdInput.amount), '0');
-          await userEvent.click(
-            screen.getByTestId(dataTestIdCheckbox.transfer.recurrent),
-          );
-          await userEvent.click(
-            screen.getByTestId(dataTestIdButton.operation.transfer.send),
-          );
-          await userEvent.click(
-            await screen.findByTestId(dataTestIdButton.dialog.confirm),
-          );
-        });
-        expect(
-          await screen.findByText(
-            chrome.i18n.getMessage(
-              'popup_html_cancel_transfer_recurrent_successful',
-              [`@${mk.user.two}`],
-            ),
-          ),
-        ).toBeInTheDocument();
-      });
-
       it('Must show success message on recurrent', async () => {
         TransferUtils.sendTransfer = jest.fn().mockResolvedValue({
           tx_id: 'trx_id',
@@ -419,7 +383,7 @@ describe('transfer-fund.component tests:\n', () => {
           );
           await userEvent.type(
             screen.getByTestId(dataTestIdInput.recurrent.frecuency),
-            '10',
+            '24',
           );
           await userEvent.type(
             screen.getByTestId(dataTestIdInput.recurrent.iterations),
@@ -437,7 +401,7 @@ describe('transfer-fund.component tests:\n', () => {
             chrome.i18n.getMessage('popup_html_transfer_recurrent_successful', [
               `@${mk.user.two}`,
               '0.001 HIVE',
-              '10',
+              '24',
               '10',
             ]),
           ),

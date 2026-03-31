@@ -89,7 +89,13 @@ const WalletInfoSection = ({
       );
       setDelegationAmount(delegation);
     }
-  }, [activeAccount.name]);
+    /** Re-run when chain account data arrives (name alone is stable while `account` is still loading). */
+  }, [
+    activeAccount.name,
+    activeAccount.account?.delegated_vesting_shares,
+    activeAccount.account?.received_vesting_shares,
+    globalProperties.globals,
+  ]);
 
   useEffect(() => {
     if (userTokens.loading) {
@@ -188,6 +194,7 @@ const WalletInfoSection = ({
 
           <InputComponent
             classname={`token-searchbar ${showSearchHE ? '' : 'hide'}`}
+            dataTestId="input-filter-box"
             type={InputType.TEXT}
             placeholder="popup_html_search"
             onChange={(e) => {
@@ -204,6 +211,7 @@ const WalletInfoSection = ({
           <SVGIcon
             icon={SVGIcons.WALLET_SEARCH}
             className={`token-search ${!showSearchHE ? '' : 'hide'}`}
+            dataTestId="open-tokens-filter"
             onClick={() => {
               setShowSearchHE(true);
               setTimeout(() => {
@@ -214,6 +222,7 @@ const WalletInfoSection = ({
 
           <SVGIcon
             icon={SVGIcons.WALLET_SETTINGS}
+            dataTestId="tokens-settings-icon"
             onClick={() => {
               navigateTo(Screen.TOKENS_FILTER);
             }}

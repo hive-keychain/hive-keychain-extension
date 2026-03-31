@@ -2,10 +2,10 @@ import CurrencyUtils from '@hiveapp/utils/currency.utils';
 
 describe('currency.utils tests:\n', () => {
   describe('getCurrencyLabels tests:\n', () => {
-    test('Passing isTestnet as true must return currency labels for testnet', () => {
+    test('Passing isTestnet as true must return currency labels (same as mainnet for now)', () => {
       const isTestnet = true;
       const result = CurrencyUtils.getCurrencyLabels(isTestnet);
-      expect(result).toEqual({ hbd: 'TBD', hive: 'TESTS', hp: 'TP' });
+      expect(result).toEqual({ hbd: 'HBD', hive: 'HIVE', hp: 'HP' });
     });
 
     test('Passing isTestnet as false must return currency labels for mainnet', () => {
@@ -51,25 +51,25 @@ describe('currency.utils tests:\n', () => {
       expect(result).toBe('HP');
     });
 
-    test('Passing currency="hive" and isTesnet as true, must return TESTS', () => {
+    test('Passing currency="hive" and isTesnet as true, must return HIVE', () => {
       const isTestnet = true;
       const currency = 'hive';
       const result = CurrencyUtils.getCurrencyLabel(currency, isTestnet);
-      expect(result).toBe('TESTS');
+      expect(result).toBe('HIVE');
     });
 
-    test('Passing currency="hbd" and isTesnet as true, must return TBD', () => {
+    test('Passing currency="hbd" and isTesnet as true, must return HBD', () => {
       const isTestnet = true;
       const currency = 'hbd';
       const result = CurrencyUtils.getCurrencyLabel(currency, isTestnet);
-      expect(result).toBe('TBD');
+      expect(result).toBe('HBD');
     });
 
-    test('Passing currency="hp" and isTesnet as true, must return TP', () => {
+    test('Passing currency="hp" and isTesnet as true, must return HP', () => {
       const isTestnet = true;
       const currency = 'hp';
       const result = CurrencyUtils.getCurrencyLabel(currency, isTestnet);
-      expect(result).toBe('TP');
+      expect(result).toBe('HP');
     });
   });
 });

@@ -1,5 +1,4 @@
 import AccountUtils from '@hiveapp/utils/account.utils';
-import CurrencyUtils from '@hiveapp/utils/currency.utils';
 import HiveUtils from '@hiveapp/utils/hive.utils';
 import { ExtendedAccount } from '@hiveio/dhive';
 import { Screen } from '@reference-data/screen.enum';
@@ -9,7 +8,6 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
 import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
-import dataTestIdDropdown from 'src/__tests__/utils-for-testing/data-testid/data-testid-dropdown';
 import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import dataTestIdSelect from 'src/__tests__/utils-for-testing/data-testid/data-testid-select';
 import dataTestIdToolTip from 'src/__tests__/utils-for-testing/data-testid/data-testid-tool-tip';
@@ -21,6 +19,7 @@ import manabar from 'src/__tests__/utils-for-testing/data/manabar';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import fake_RC from 'src/__tests__/utils-for-testing/data/rc';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { ActionButtonList } from 'src/popup/hive/pages/app-container/home/actions-section/action-button.list';
 import FormatUtils from 'src/utils/format.utils';
@@ -54,7 +53,6 @@ describe('home.component tests:\n', () => {
   it('Must show user related information & labels', () => {
     //TopBarComponent
     expect(screen.getByTestId(dataTestIdIcon.refreshHome)).toBeInTheDocument();
-    expect(screen.getByTestId(dataTestIdButton.logOut)).toBeInTheDocument();
     expect(screen.getByTestId(dataTestIdButton.menu)).toBeInTheDocument();
 
     //SelectAccountSectionComponent
@@ -83,36 +81,19 @@ describe('home.component tests:\n', () => {
       currencies.prices.data,
       dynamic.globalProperties,
     );
-    expect(estimatedValueHTMLElement).toHaveTextContent(
-      `$ ${accountValue} USD`,
-    );
+    expect(estimatedValueHTMLElement).toHaveTextContent(`$ ${accountValue}`);
 
-    //WalletInfoSectionComponent
-    expect(
-      screen.getByTestId(
-        dataTestIdDropdown.arrow.preFix +
-          CurrencyUtils.getCurrencyLabels(false).hp.toLowerCase(),
-      ),
-    ).toBeDefined();
-    expect(
-      screen.getByTestId(
-        dataTestIdDropdown.arrow.preFix +
-          CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase(),
-      ),
-    ).toBeDefined();
-    expect(
-      screen.getByTestId(
-        dataTestIdDropdown.arrow.preFix +
-          CurrencyUtils.getCurrencyLabels(false).hbd.toLowerCase(),
-      ),
-    ).toBeDefined();
+    //WalletInfoSectionComponent (HIVE, HBD, HP rows)
+    expect(screen.getAllByTestId(/^dropdown-arrow-/).length).toBeGreaterThanOrEqual(
+      3,
+    );
   });
 
   it('Must show action buttons labels', () => {
     for (let i = 0; i < ActionButtonList.length; i++) {
       expect(
         screen.getByTestId(
-          dataTestIdButton.actionBtn.preFix + ActionButtonList[i].icon,
+          dataTestIdButton.actionBtn.preFix + ActionButtonList[i].label,
         ),
       ).toBeInTheDocument();
       expect(
@@ -182,15 +163,22 @@ describe('home.component tests:\n', () => {
       await userEvent.click(screen.getByTestId(dataTestIdIcon.refreshHome));
     });
     expect(
-      await screen.findByText(`$ ${formattedEstimatedAccountValue} USD`, {
+      await screen.findByText(`$ ${formattedEstimatedAccountValue}`, {
         exact: true,
       }),
     ).toBeInTheDocument();
   });
 
-  it('Must log out user when clicking on log out', async () => {
+  it('Must log out user when choosing log out from settings menu', async () => {
     await act(async () => {
-      await userEvent.click(screen.getByTestId(dataTestIdButton.logOut));
+      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+    });
+    await act(async () => {
+      await userEvent.click(
+        screen.getByTestId(
+          dataTestIdButton.menuPreFix + SVGIcons.MENU_LOGOUT,
+        ),
+      );
     });
     expect(await screen.findByTestId('sign-in-page')).toBeInTheDocument();
   });

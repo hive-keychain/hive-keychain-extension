@@ -9,7 +9,9 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import * as DialogLifeCycle from 'src/background/requests/dialog-lifecycle';
 import * as Init from 'src/background/requests/init';
 import Config from 'src/config';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import VaultUtils from 'src/utils/vault.utils';
 
 describe('index tests:\n', () => {
   afterEach(() => {
@@ -24,13 +26,22 @@ describe('index tests:\n', () => {
   });
 
   it('Must match this values by default', () => {
-    expect(keychainRequest.requestHandler.data).toEqual({ confirmed: false });
+    expect(keychainRequest.requestHandler.data).toEqual({
+      confirmed: false,
+      isWaitingForConfirmation: false,
+    });
     expect(keychainRequest.requestHandler.hiveEngineConfig).toEqual(
       Config.hiveEngine,
     );
   });
 
   it('Must return handler if no values on local storage', async () => {
+    jest
+      .spyOn(VaultUtils, 'getValueFromVault')
+      .mockResolvedValue('test-mk' as unknown as string);
+    jest
+      .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
+      .mockResolvedValue([]);
     jest
       .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
       .mockResolvedValue(undefined);
@@ -67,13 +78,17 @@ describe('index tests:\n', () => {
     expect(requestHandler.data).toEqual({
       confirmed: false,
       windowId: undefined,
+      isWaitingForConfirmation: false,
     });
     expect(sSaveValueInLocalStorage).toHaveBeenCalledWith(
       LocalStorageKeyEnum.__REQUEST_HANDLER,
-      {
-        confirmed: false,
-        windowId: undefined,
-      },
+      expect.objectContaining({
+        data: expect.objectContaining({
+          confirmed: false,
+          windowId: undefined,
+          isWaitingForConfirmation: false,
+        }),
+      }),
     );
   });
 
@@ -133,5 +148,48 @@ describe('index tests:\n', () => {
       'domain',
       requestHandler,
     );
+  });
+
+  it('sendRequest stores rpc from request payload', () => {
+    const sInit = jest.spyOn(Init, 'default').mockResolvedValue(undefined);
+    const requestHandler = new RequestsHandler();
+    requestHandler.sendRequest(
+      { tab: { id: 2 } } as chrome.runtime.MessageSender,
+      {
+        domain: 'd',
+        request: {
+          ...keychainRequest.noValues.decode,
+          rpc: 'https://hived.example',
+        },
+      } as KeychainRequestWrapper,
+    );
+    expect(requestHandler.data.rpc).toEqual({
+      uri: 'https://hived.example',
+      testnet: false,
+    });
+    sInit.mockRestore();
+  });
+
+  it('getUserKeyPair and getUserPrivateKey resolve keys from loaded accounts', () => {
+    const requestHandler = new RequestsHandler();
+    requestHandler.data.accounts = [accounts.local.oneAllkeys] as any;
+    const name = accounts.local.oneAllkeys.name;
+    expect(requestHandler.getUserPrivateKey(name, 'active')).toBe(
+      accounts.local.oneAllkeys.keys.active,
+    );
+    const [priv, pub] = requestHandler.getUserKeyPair(name, 'posting');
+    expect(priv).toBe(accounts.local.oneAllkeys.keys.posting);
+    expect(pub).toBe(accounts.local.oneAllkeys.keys.postingPubkey);
+  });
+
+  it('setIsWaitingForConfirmation persists handler state', async () => {
+    const save = jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockResolvedValue(undefined);
+    const requestHandler = new RequestsHandler();
+    await requestHandler.setIsWaitingForConfirmation(true);
+    expect(requestHandler.data.isWaitingForConfirmation).toBe(true);
+    expect(save).toHaveBeenCalled();
+    save.mockRestore();
   });
 });

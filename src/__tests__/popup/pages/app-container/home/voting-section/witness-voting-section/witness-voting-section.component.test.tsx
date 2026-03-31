@@ -29,10 +29,10 @@ describe('witness-voting-section.component tests:\n', () => {
       });
     });
 
-    it('Must show text message', async () => {
+    it('Must show vote-for-witness when user has not yet voted for stoodkev', async () => {
       expect(
-        await screen.findByText(
-          chrome.i18n.getMessage('html_popup_made_with_love_by_stoodkev'),
+        await screen.findByTestId(
+          dataTestIdButton.operation.voteStoodkevWitness,
         ),
       ).toBeInTheDocument();
     });

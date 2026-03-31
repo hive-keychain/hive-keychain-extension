@@ -1,7 +1,7 @@
 import MkModule from '@background/mk.module';
 import { addAccount } from '@background/requests/operations/ops/add-account';
 import { RequestsHandler } from '@background/requests/request-handler';
-import AccountUtils from '@hiveapp/utils/account.utils';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
 import {
   KeychainRequestTypes,
   RequestAddAccount,
@@ -38,6 +38,10 @@ describe('add-account tests:\n', () => {
   });
 
   it('Must return error with no such account', async () => {
+    jest.spyOn(MkModule, 'getMk').mockResolvedValueOnce(mk.user.one);
+    jest
+      .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
+      .mockResolvedValue([]);
     AccountUtils.getExtendedAccount = jest
       .fn()
       .mockResolvedValueOnce(undefined);
@@ -63,6 +67,9 @@ describe('add-account tests:\n', () => {
       .fn()
       .mockResolvedValueOnce(accounts.extended);
     jest.spyOn(MkModule, 'getMk').mockResolvedValueOnce(mk.user.one);
+    jest
+      .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
+      .mockResolvedValue([]);
     const cloneData = objects.clone(data) as RequestAddAccount & RequestId;
     cloneData.keys = {};
     const { request_id, ...datas } = cloneData;
@@ -87,6 +94,9 @@ describe('add-account tests:\n', () => {
       .fn()
       .mockResolvedValueOnce(accounts.extended);
     jest.spyOn(MkModule, 'getMk').mockResolvedValueOnce(null);
+    jest
+      .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
+      .mockResolvedValue([]);
     const cloneData = objects.clone(data) as RequestAddAccount & RequestId;
     cloneData.keys = userData.one.nonEncryptKeys;
     const requestHandler = new RequestsHandler();
@@ -112,6 +122,9 @@ describe('add-account tests:\n', () => {
         .fn()
         .mockResolvedValueOnce(accounts.extended);
       jest.spyOn(MkModule, 'getMk').mockResolvedValueOnce(null);
+      jest
+        .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
+        .mockResolvedValue([]);
       const cloneData = objects.clone(data) as RequestAddAccount & RequestId;
       cloneData.keys = userData.one.encryptKeys;
       const requestHandler = new RequestsHandler();
@@ -127,6 +140,9 @@ describe('add-account tests:\n', () => {
         .fn()
         .mockResolvedValueOnce(accounts.extended);
       jest.spyOn(MkModule, 'getMk').mockResolvedValueOnce(null);
+      jest
+        .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
+        .mockResolvedValue([]);
       const cloneData = objects.clone(data) as RequestAddAccount & RequestId;
       cloneData.keys = {
         ...userData.one.nonEncryptKeys,

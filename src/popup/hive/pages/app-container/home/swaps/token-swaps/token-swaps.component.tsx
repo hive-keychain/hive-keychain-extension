@@ -489,13 +489,18 @@ const TokenSwaps = ({
 
   if (loading)
     return (
-      <div className="rotating-logo-wrapper">
+      <div
+        className="rotating-logo-wrapper"
+        data-testid={`${Screen.TOKEN_SWAP_PAGE}-page`}>
         <RotatingLogoComponent />
       </div>
     );
   else if (!startTokenListOptions.length) {
     return (
-      <div className="token-swaps" aria-label="token-swaps">
+      <div
+        className="token-swaps"
+        aria-label="token-swaps"
+        data-testid={`${Screen.TOKEN_SWAP_PAGE}-page`}>
         <div>
           <div className="caption">
             {' '}
@@ -506,7 +511,10 @@ const TokenSwaps = ({
     );
   } else
     return (
-      <div className="token-swaps" aria-label="token-swaps">
+      <div
+        className="token-swaps"
+        aria-label="token-swaps"
+        data-testid={`${Screen.TOKEN_SWAP_PAGE}-page`}>
         {!loading && !underMaintenance && !serviceUnavailable && (
           <>
             <div className="caption">

@@ -18,9 +18,19 @@ describe('advanced-settings.component tests:\n', () => {
     cleanup();
   });
   beforeEach(async () => {
+    const base = initialStates.iniStateAs.defaultExistent;
     await reactTestingLibrary.renderWithConfiguration(
       <HiveAppComponent />,
-      initialStates.iniStateAs.defaultExistent,
+      {
+        ...base,
+        hive: {
+          ...base.hive,
+          appStatus: {
+            ...base.hive.appStatus,
+            isLedgerSupported: true,
+          },
+        },
+      },
       {
         app: {
           ledgerRelated: {

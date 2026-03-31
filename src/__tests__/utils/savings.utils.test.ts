@@ -1,4 +1,4 @@
-import { HiveTxUtils } from '@hiveapp/utils/hive-tx.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { SavingsUtils } from '@hiveapp/utils/savings.utils';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';

@@ -157,6 +157,8 @@ const keychainApiGet = async (
     case urlToGet === 'hive/phishingAccounts':
       return customData?.phishingAccounts ?? phishing.accounts;
     case urlToGet === 'hive/last-extension-version':
+    case urlToGet === 'last-extension-version':
+    case urlToGet.includes('last-extension-version'):
       return (
         customData?.extensionVersion ??
         ({
@@ -168,6 +170,10 @@ const keychainApiGet = async (
       );
     case urlToGet.includes('hive/delegators/'):
       return customData?.delegators ?? delegations.delegators;
+    case urlToGet === 'hive/ecosystem/dapps':
+      return (
+        customData?.ecosystemDapps ?? [{ category: 'social', dapps: [] }]
+      );
     default:
       return 'Please check on default cases as not found condition ->/implementations/...';
   }
@@ -206,7 +212,7 @@ const hiveTxUtils = {
  * > getBittrexCurrency
  */
 const mockFetch = (data: any, status: number, reject?: boolean) => {
-  jest.spyOn(global, 'fetch').mockImplementationOnce(() =>
+  jest.spyOn(globalThis, 'fetch').mockImplementationOnce(() =>
     reject
       ? Promise.reject(data)
       : Promise.resolve({

@@ -8,7 +8,8 @@ const TokensPendingUnstakingReducer = (
 ) => {
   switch (type) {
     case HiveActionType.LOAD_PENDING_UNSTAKING:
-      return payload;
+      // Hive Engine responses must be an array; bad/mocked payloads must not break UI.
+      return Array.isArray(payload) ? payload : [];
     default:
       return state;
   }

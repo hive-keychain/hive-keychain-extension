@@ -30,23 +30,22 @@ describe('i18n.utils tests:\n', () => {
       expect(result).toBe('Confirmer');
     });
 
-    it('Must return missing name message', async () => {
+    it('Must return key name when missing in locale files', async () => {
       chrome.i18n.getUILanguage = jest.fn().mockReturnValue('fr-FR');
       const result = await getMessage('popup_html_new_age_keychain');
-      expect(result).toBe(`[Missing popup_html_new_age_keychain locale]`);
+      expect(result).toBe('popup_html_new_age_keychain');
     });
 
-    it('Must return message from EN as not found on ES', async () => {
+    it('Must return message from ES when key exists in Spanish bundle', async () => {
       chrome.i18n.getUILanguage = jest.fn().mockReturnValue('es-ES');
       const sGetURL = jest.spyOn(chrome.runtime, 'getURL');
       const result = await getMessage(
         'popup_html_undelegation_pending_until_message',
       );
-      expect(sGetURL).toHaveBeenCalledTimes(2);
-      expect(sGetURL).toHaveBeenNthCalledWith(1, '_locales/es/messages.json');
-      expect(sGetURL).toHaveBeenNthCalledWith(2, '_locales/en/messages.json');
+      expect(sGetURL).toHaveBeenCalledTimes(1);
+      expect(sGetURL).toHaveBeenCalledWith('_locales/es/messages.json');
       expect(result).toBe(
-        'After being canceled, delegations take 5 days to return to your available Hive Power balance',
+        'Después de ser cancelado, las delegaciones tardan 5 días en volver a tu saldo disponible de Hive Power',
       );
     });
 

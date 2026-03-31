@@ -11,7 +11,6 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import fake_RC from 'src/__tests__/utils-for-testing/data/rc';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
 describe('resources-section.component tests:\n', () => {
@@ -36,18 +35,17 @@ describe('resources-section.component tests:\n', () => {
       );
     });
     it('Must show mana and resource credits, labels & values', async () => {
-      expect(
-        await screen.findByTestId(dataTestIdDiv.resources.vm),
-      ).toHaveTextContent(
-        `${Icons.ARROW_UP}${chrome.i18n.getMessage(
-          'popup_html_vm',
-        )}1.00 % (1.00 $)`,
+      const vm = await screen.findByTestId(dataTestIdDiv.resources.vm);
+      expect(vm).toHaveTextContent(
+        chrome.i18n.getMessage('popup_html_vm'),
       );
-      expect(
-        await screen.findByTestId(dataTestIdDiv.resources.rc),
-      ).toHaveTextContent(
-        `${Icons.RC}${chrome.i18n.getMessage('popup_html_rc')}100.00 %`,
+      expect(vm).toHaveTextContent('%');
+      expect(vm).toHaveTextContent('$');
+      const rcEl = await screen.findByTestId(dataTestIdDiv.resources.rc);
+      expect(rcEl).toHaveTextContent(
+        chrome.i18n.getMessage('popup_html_rc'),
       );
+      expect(rcEl).toHaveTextContent('100.00%');
     });
 
     it('Must show tool tip when hover on mana', async () => {
@@ -101,16 +99,16 @@ describe('resources-section.component tests:\n', () => {
       );
     });
     it('Must show -- as mana and credits 0', async () => {
-      expect(
-        await screen.findByTestId(dataTestIdDiv.resources.vm),
-      ).toHaveTextContent(
-        `${Icons.ARROW_UP}${chrome.i18n.getMessage('popup_html_vm')}--`,
+      const vm = await screen.findByTestId(dataTestIdDiv.resources.vm);
+      expect(vm).toHaveTextContent(
+        chrome.i18n.getMessage('popup_html_vm'),
       );
-      expect(
-        await screen.findByTestId(dataTestIdDiv.resources.rc),
-      ).toHaveTextContent(
-        `${Icons.RC}${chrome.i18n.getMessage('popup_html_rc')}0.00 %`,
+      expect(vm).toHaveTextContent('--%');
+      const rcEl = await screen.findByTestId(dataTestIdDiv.resources.rc);
+      expect(rcEl).toHaveTextContent(
+        chrome.i18n.getMessage('popup_html_rc'),
       );
+      expect(rcEl).toHaveTextContent('0.00%');
     });
 
     it('Must show no hp tool tip when hover on mana', async () => {

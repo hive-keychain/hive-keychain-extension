@@ -8,7 +8,7 @@ import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-t
 import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Icons } from 'src/common-ui/icons.enum';
+import { Icons, SVGIcons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import AccountSubMenuItems from 'src/popup/hive/pages/app-container/settings/accounts/account-sub-menu-items';
 
@@ -77,7 +77,16 @@ describe('account-sub-menu.component tests:\n', () => {
       .mockImplementation((...args) => Promise.resolve(undefined));
     await act(async () => {
       await userEvent.click(
-        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.EXPORT),
+        screen.getByTestId(
+          dataTestIdButton.menuPreFix + SVGIcons.MENU_ACCOUNTS_EXPORT,
+        ),
+      );
+    });
+    await act(async () => {
+      await userEvent.click(
+        screen.getByTestId(
+          dataTestIdButton.menuPreFix + SVGIcons.MENU_ACCOUNTS_EXPORT,
+        ),
       );
     });
     expect(sDownloadAccounts).toHaveBeenCalledTimes(1);
