@@ -5,6 +5,8 @@ export interface DApp {
   name: string;
   description: string;
   icon: string;
+  chainId?: string;
+  chainLogo?: string;
   url: string;
   appendUsername?: boolean;
   categories: string[];
@@ -27,16 +29,25 @@ export const EcosystemCategory = ({ category }: EcosystemCategoryProps) => {
 
   return (
     <div className="ecosystem-category">
-      {(category.dapps ?? []).map((dapp, index) => (
-        <div
-          className="dapp"
-          onClick={() => navigateToDapp(dapp)}
-          key={`${dapp.name}-${index}`}>
-          <img className="logo" src={dapp.icon} />
-          <div className="label">{dapp.name}</div>
-          <div className="description">{dapp.description}</div>
-        </div>
-      ))}
+      {(category.dapps ?? []).map((dapp, index) => {
+        return (
+          <div
+            className="dapp"
+            onClick={() => navigateToDapp(dapp)}
+            key={`${dapp.name}-${index}`}>
+            {!!dapp.chainLogo && (
+              <img
+                className="corner-logo"
+                src={dapp.chainLogo}
+                alt={`${dapp.name} chain logo`}
+              />
+            )}
+            <img className="logo" src={dapp.icon} alt={dapp.name} />
+            <div className="label">{dapp.name}</div>
+            <div className="description">{dapp.description}</div>
+          </div>
+        );
+      })}
     </div>
   );
 };
