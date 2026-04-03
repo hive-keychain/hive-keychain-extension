@@ -14,9 +14,9 @@ import {
   EvmLightNodeUtils,
   PricingStatus,
 } from '@popup/evm/utils/evm-light-node.utils';
-import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import { AppThunk } from '@popup/multichain/actions/interfaces';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { HDNodeWallet } from 'ethers';
@@ -198,6 +198,12 @@ export const loadMoreTokensInActiveAccount =
 export const loadEvmActiveAccount =
   (chain: EvmChain, wallet: HDNodeWallet): AppThunk =>
   async (dispatch, getState) => {
+    // TODO remove after testing period
+    await EvmLightNodeUtils.registerAddress(
+      chain.chainId,
+      wallet.address,
+      false,
+    );
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: {
