@@ -106,7 +106,11 @@ export const EvmWalletTokensComponent = ({ chain, activeAccount }: Props) => {
         />
       )}
 
-      {activeAccount.nativeAndErc20Tokens.loading && <RotatingLogoComponent />}
+      {activeAccount.nativeAndErc20Tokens.loading && (
+        <div className="rotating-logo-container">
+          <RotatingLogoComponent />
+        </div>
+      )}
     </>
   );
 };

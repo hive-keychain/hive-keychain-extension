@@ -135,7 +135,11 @@ export const EvmWalletNftGalleryComponent = ({
         />
       )}
 
-      {activeAccount.nfts.loading && <RotatingLogoComponent />}
+      {activeAccount.nfts.loading && (
+        <div className="rotating-logo-container">
+          <RotatingLogoComponent />
+        </div>
+      )}
     </div>
   );
 };

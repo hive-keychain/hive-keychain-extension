@@ -17,6 +17,14 @@
     .sliding-bar-container {
       margin-bottom: 4px;
     }
+
+    .rotating-logo-container {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
   }
 
   .no-token {
