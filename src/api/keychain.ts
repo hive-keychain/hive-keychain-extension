@@ -2,9 +2,7 @@ import { BaseApi } from 'src/api/base';
 
 const buildUrl = (url: string) => {
   const baseURL =
-    process.env.KEYCHAIN_API_DEV === 'true'
-      ? 'http://localhost:5000'
-      : 'https://api.hive-keychain.com';
+    process.env.KEYCHAIN_API_URL || 'https://api.hive-keychain.com';
   return `${baseURL}/${url}`;
 };
 

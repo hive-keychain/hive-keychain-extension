@@ -1,7 +1,22 @@
 import { KeychainApi } from '@api/keychain';
-import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
+import {
+  EvmLightNodeUtils,
+  evmChainIdToDecimalPathSegment,
+} from '@popup/evm/utils/evm-light-node.utils';
 
 describe('evm-light-node.utils tests:\n', () => {
+  it('uses decimal chain id in light-node URLs when chainId is hex', async () => {
+    const getSpy = jest.spyOn(KeychainApi, 'get').mockResolvedValue({});
+    await EvmLightNodeUtils.getGasFee('0x89');
+    expect(getSpy).toHaveBeenCalledWith('evm/light-node/gas-fee/137');
+  });
+
+  it('evmChainIdToDecimalPathSegment maps hex and decimal strings', () => {
+    expect(evmChainIdToDecimalPathSegment('0x1')).toBe('1');
+    expect(evmChainIdToDecimalPathSegment('137')).toBe('137');
+    expect(evmChainIdToDecimalPathSegment(56)).toBe('56');
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
