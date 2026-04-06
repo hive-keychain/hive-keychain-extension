@@ -6,6 +6,7 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
+import { toast } from 'react-toastify';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
 import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
 import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
@@ -14,6 +15,7 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { COPY_TOAST_AUTO_CLOSE_MS } from 'src/common-ui/toast/copy-toast.component';
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
@@ -21,8 +23,17 @@ import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 const truncatedPrivateKeyDisplay = (pk: string) =>
   `${pk.substring(0, 15)}...${pk.slice(-15)}`;
 
+const flushToastTimers = () => {
+  if ((setTimeout as any)._isMockFunction) {
+    jest.runOnlyPendingTimers();
+  }
+};
+
 describe('account-keys-list.component tests:\n', () => {
   afterEach(() => {
+    toast.dismiss();
+    flushToastTimers();
+    jest.useRealTimers();
     jest.clearAllMocks();
     cleanup();
   });
@@ -72,19 +83,24 @@ describe('account-keys-list.component tests:\n', () => {
     });
 
     it('Must copy selected private key to clipboard', async () => {
+      jest.useFakeTimers();
+      const user = userEvent.setup({
+        advanceTimers: jest.advanceTimersByTime,
+      });
       const originalNavigator = navigator;
       Object.defineProperty(navigator, 'clipboard', {
         value: {
-          writeText: jest.fn(),
+          writeText: jest.fn().mockResolvedValue(undefined),
         },
+        configurable: true,
       });
       await act(async () => {
-        await userEvent.click(
+        await user.click(
           screen.getByTestId(
             dataTestIdDiv.keys.list.preFix.clickeableKey + 'posting',
           ),
         );
-        await userEvent.click(
+        await user.click(
           screen.getByTestId(
             dataTestIdDiv.keys.list.preFix.clickeableKey + 'posting',
           ),
@@ -93,6 +109,14 @@ describe('account-keys-list.component tests:\n', () => {
       expect(
         await screen.findByText(chrome.i18n.getMessage('popup_html_copied')),
       ).toBeInTheDocument();
+      await act(async () => {
+        jest.advanceTimersByTime(COPY_TOAST_AUTO_CLOSE_MS + 1000);
+      });
+      await waitFor(() => {
+        expect(
+          screen.queryByText(chrome.i18n.getMessage('popup_html_copied')),
+        ).not.toBeInTheDocument();
+      });
       navigator = originalNavigator;
     });
 

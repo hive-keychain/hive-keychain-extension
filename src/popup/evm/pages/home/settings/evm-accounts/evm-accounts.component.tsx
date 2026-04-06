@@ -9,7 +9,6 @@ import {
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
-import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -25,13 +24,13 @@ import {
   OptionItem,
 } from 'src/common-ui/custom-select/custom-select.component';
 import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
+import { COPY_GENERIC_MESSAGE_KEY, copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
 
 const EvmAccounts = ({
   accounts,
   mk,
   chain,
   setTitleContainerProperties,
-  setInfoMessage,
   navigateTo,
   setEvmAccounts,
 }: PropsType) => {
@@ -90,8 +89,7 @@ const EvmAccounts = ({
   };
 
   const onCopyAddress = (account: EvmAccount) => {
-    navigator.clipboard.writeText(account.wallet.address);
-    setInfoMessage('popup_html_text_copied', [account.wallet.address]);
+    void copyTextWithToast(account.wallet.address, COPY_GENERIC_MESSAGE_KEY);
   };
 
   const handleAddAddressClick = () => {
@@ -129,8 +127,10 @@ const EvmAccounts = ({
     const seed = accounts.find(
       (account) => account.seedId === selectedSeed?.value,
     );
-    navigator.clipboard.writeText(seed!.wallet.mnemonic!.phrase);
-    setInfoMessage('popup_html_text_copied', [seed!.wallet.mnemonic!.phrase]);
+    void copyTextWithToast(
+      seed!.wallet.mnemonic!.phrase,
+      'html_popup_evm_create_wallet_copied_mnemonic',
+    );
   };
 
   const handleCreateSeedClick = () => {
@@ -273,7 +273,6 @@ const mapStateToProps = (state: RootState) => {
 };
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
-  setInfoMessage,
   navigateTo,
   setEvmAccounts,
 });

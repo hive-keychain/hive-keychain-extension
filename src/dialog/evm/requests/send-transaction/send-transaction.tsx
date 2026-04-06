@@ -30,6 +30,10 @@ import { ethers, HDNodeWallet, Wallet } from 'ethers';
 import EventEmitter from 'events';
 import React, { useEffect, useMemo, useState } from 'react';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
+import {
+  COPY_GENERIC_MESSAGE_KEY,
+  copyTextWithToast,
+} from 'src/common-ui/toast/copy-toast.utils';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
@@ -83,7 +87,7 @@ export const SendTransaction = (props: Props) => {
   }, [tokenInfo, selectedAccount, transferAmount]);
 
   const handleCopyAddress = (address: string) => {
-    navigator.clipboard.writeText(address);
+    void copyTextWithToast(address, COPY_GENERIC_MESSAGE_KEY);
   };
 
   const init = async () => {

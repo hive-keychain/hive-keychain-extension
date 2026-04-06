@@ -1,5 +1,4 @@
 import { Screen } from '@interfaces/screen.interface';
-import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import {
   goBack,
   navigateToWithParams,
@@ -12,6 +11,7 @@ import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirma
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
 import { Key, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { removeKey, setAccounts } from 'src/popup/hive/actions/account.actions';
@@ -39,7 +39,6 @@ const AccountKeysListItem = ({
   accounts,
   canDelete,
   isWrongKey,
-  setInfoMessage,
   navigateToWithParams,
   removeKey,
   goBack,
@@ -66,8 +65,7 @@ const AccountKeysListItem = ({
 
   const copyToClipboard = (key: Key | undefined) => {
     if (key) {
-      navigator.clipboard.writeText(key!.toString());
-      setInfoMessage('popup_html_copied');
+      void copyTextWithToast(key.toString(), 'popup_html_copied');
     }
   };
 
@@ -220,7 +218,6 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const connector = connect(mapStateToProps, {
-  setInfoMessage,
   setAccounts,
   navigateToWithParams,
   removeKey,

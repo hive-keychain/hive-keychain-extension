@@ -4,6 +4,10 @@ import { DraggableProvidedDragHandleProps } from 'react-beautiful-dnd';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import {
+  COPY_GENERIC_MESSAGE_KEY,
+  copyTextWithToast,
+} from 'src/common-ui/toast/copy-toast.utils';
 
 interface AccountItemProps {
   isLast: boolean;
@@ -11,7 +15,6 @@ interface AccountItemProps {
   selectedAccount: string;
   handleItemClicked: (value: LocalAccountListItem['value']) => void;
   closeDropdown: () => void;
-  setInfoMessage?: (key: string, params?: string[]) => void;
   dragHandle: DraggableProvidedDragHandleProps | null | undefined;
   isOnMain: boolean;
 }
@@ -22,7 +25,6 @@ export const SelectAccountSectionItemComponent = ({
   isLast,
   handleItemClicked,
   closeDropdown,
-  setInfoMessage,
   dragHandle,
   isOnMain,
 }: AccountItemProps) => {
@@ -31,11 +33,8 @@ export const SelectAccountSectionItemComponent = ({
   const copyUsernameToClipboard = async (event: SyntheticEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    await navigator.clipboard.writeText(item.value);
     closeDropdown();
-    if (setInfoMessage) {
-      setInfoMessage('popup_html_text_copied', [item.value]);
-    }
+    void copyTextWithToast(item.value, COPY_GENERIC_MESSAGE_KEY);
   };
   const renderCheckedAccount = () => {
     if (isOnMain)

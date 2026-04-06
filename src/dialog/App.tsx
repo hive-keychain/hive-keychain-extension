@@ -10,6 +10,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Register from 'src/dialog/hive/register/register';
 import Unlock from 'src/dialog/multichain/unlock/unlock';
 import { RegisterKeylessComponent } from 'src/dialog/pages/register-keyless/register-keyless';
+import { CopyToastContainer } from 'src/common-ui/toast/copy-toast.component';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import BrowserUtils from 'src/utils/browser.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -155,6 +156,7 @@ const App = () => {
     <div className={`theme ${theme} dialog`}>
       {renderDialogContent(globalData)}
       {globalError && <DialogError data={globalError} onClose={closeGlobalError} />}
+      <CopyToastContainer />
     </div>
   );
 };

@@ -5,6 +5,10 @@ import {
 import React, { useEffect, useState } from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
+import {
+  COPY_GENERIC_MESSAGE_KEY,
+  copyTextWithToast,
+} from 'src/common-ui/toast/copy-toast.utils';
 
 interface Props {
   address: string;
@@ -26,7 +30,7 @@ export const EvmAddressComponent = ({ address, chainId, canCopy }: Props) => {
 
   const handleCopyAddress = () => {
     if (canCopy) {
-      navigator.clipboard.writeText(address);
+      void copyTextWithToast(address, COPY_GENERIC_MESSAGE_KEY);
     }
   };
 

@@ -72,16 +72,22 @@ const getSetupChains = async (forceBaseChains?: boolean): Promise<Chain[]> => {
 
   if (forceBaseChains) {
     if (!chains.some((c: Chain) => c.type === ChainType.HIVE)) {
-      chains.push(
-        (await getDefaultChains()).find(
-          (c) =>
-            c.chainId ===
-            'beeab0de00000000000000000000000000000000000000000000000000000000',
-        )!,
+      const defaultHiveChain = (await getDefaultChains()).find(
+        (c) =>
+          c.chainId ===
+          'beeab0de00000000000000000000000000000000000000000000000000000000',
       );
+      if (defaultHiveChain) {
+        chains.push(defaultHiveChain);
+      }
     }
     if (!chains.some((c: Chain) => c.type === ChainType.EVM)) {
-      chains.push((await getDefaultChains()).find((c) => c.chainId === '0x1')!);
+      const defaultEvmChain = (await getDefaultChains()).find(
+        (c) => c.chainId === '0x1',
+      );
+      if (defaultEvmChain) {
+        chains.push(defaultEvmChain);
+      }
     }
   }
 

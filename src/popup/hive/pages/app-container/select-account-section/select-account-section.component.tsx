@@ -2,7 +2,6 @@ import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import { SelectAccountSectionItemComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section-item.component';
 import AccountUtils from '@popup/hive/utils/account.utils';
-import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import {
@@ -32,7 +31,6 @@ const SelectAccountSection = ({
   setAccounts,
   activeAccount,
   loadActiveAccount,
-  setInfoMessage,
   isOnMain = false,
 }: PropsFromRedux & Props) => {
   const defaultOptions: LocalAccountListItem[] = [];
@@ -156,7 +154,6 @@ const SelectAccountSection = ({
                           isOnMain={isOnMain}
                           dragHandle={provided.dragHandleProps}
                           closeDropdown={() => methods.dropDown('close')}
-                          setInfoMessage={setInfoMessage}
                         />
                       </div>
                     )}
@@ -206,7 +203,6 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   loadActiveAccount,
-  setInfoMessage,
   setAccounts,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;

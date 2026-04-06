@@ -23,6 +23,7 @@ import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
+import { copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
 import { addAccount } from 'src/popup/hive/actions/account.actions';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -127,12 +128,14 @@ const CreateAccountStepTwo = ({
   };
 
   const copyAllKeys = () => {
-    navigator.clipboard.writeText(
+    copyTextWithToast(
       FormatUtils.removeHtmlTags(generateKeysTextVersion()),
-    );
-    setHasCopied(true);
-
-    setSuccessMessage('popup_html_copied');
+      'popup_html_copied',
+    ).then((hasCopied) => {
+      if (hasCopied) {
+        setHasCopied(true);
+      }
+    });
   };
 
   const generateKeysTextVersion = () => {

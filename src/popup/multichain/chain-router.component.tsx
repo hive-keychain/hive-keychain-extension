@@ -27,6 +27,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { MessageContainerComponent } from 'src/common-ui/message-container/message-container.component';
 import { ModalComponent } from 'src/common-ui/modal/modal.component';
 import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';
+import { CopyToastContainer } from 'src/common-ui/toast/copy-toast.component';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import PopupUtils from 'src/utils/popup.utils';
@@ -141,6 +142,7 @@ const ChainRouter = ({
         />
       )}
       {modal && <ModalComponent {...modal} />}
+      <CopyToastContainer />
       {!mk && hasFinishedSignup === null && !currentPage && !nav && (
         <SplashscreenComponent />
       )}

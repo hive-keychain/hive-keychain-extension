@@ -6,6 +6,7 @@ import { RootState } from '@popup/multichain/store';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import { MessageContainerComponent } from 'src/common-ui/message-container/message-container.component';
+import { CopyToastContainer } from 'src/common-ui/toast/copy-toast.component';
 
 interface Props {
   children: React.ReactNode;
@@ -41,6 +42,7 @@ const render = (
       <Provider store={fakeStore}>
         {children}
         <TestMessageOverlay />
+        <CopyToastContainer />
       </Provider>
     );
   };

@@ -2,7 +2,6 @@ import { Screen } from '@interfaces/screen.interface';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import {
   setErrorMessage,
-  setInfoMessage,
 } from '@popup/multichain/actions/message.actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -13,12 +12,12 @@ import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
 
 const CreateNewWallet = ({
   navigateToWithParams,
   setTitleContainerProperties,
   setErrorMessage,
-  setInfoMessage,
 }: PropsType) => {
   const [wallet, setWallet] = useState<HDNodeWallet | undefined>(undefined);
 
@@ -46,9 +45,14 @@ const CreateNewWallet = ({
 
   const copySeedPhraseToClipboard = () => {
     if (wallet?.mnemonic?.phrase) {
-      navigator.clipboard.writeText(wallet?.mnemonic?.phrase);
-      setInfoMessage('html_popup_evm_create_wallet_copied_mnemonic');
-      setHasCopiedSeedPhrase(true);
+      copyTextWithToast(
+        wallet.mnemonic.phrase,
+        'html_popup_evm_create_wallet_copied_mnemonic',
+      ).then((hasCopied) => {
+        if (hasCopied) {
+          setHasCopiedSeedPhrase(true);
+        }
+      });
     }
   };
 
@@ -135,7 +139,6 @@ const connector = connect(mapStateToProps, {
   navigateToWithParams,
   setTitleContainerProperties,
   setErrorMessage,
-  setInfoMessage,
 });
 type PropsType = ConnectedProps<typeof connector>;
 

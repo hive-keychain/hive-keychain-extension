@@ -13,7 +13,6 @@ import {
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { setAccounts } from '@popup/hive/actions/account.actions';
-import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
@@ -44,7 +43,6 @@ const SelectAccountSection = ({
   activeAccount,
   chain,
   loadEvmActiveAccount,
-  setInfoMessage,
   isOnMain = false,
   removeBorder,
 }: PropsFromRedux & Props) => {
@@ -229,7 +227,6 @@ const SelectAccountSection = ({
                           isOnMain={isOnMain}
                           dragHandle={provided.dragHandleProps}
                           closeDropdown={() => methods.dropDown('close')}
-                          setInfoMessage={setInfoMessage}
                         />
                       </div>
                     )}
@@ -282,7 +279,6 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   loadEvmActiveAccount,
-  setInfoMessage,
   setAccounts,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;

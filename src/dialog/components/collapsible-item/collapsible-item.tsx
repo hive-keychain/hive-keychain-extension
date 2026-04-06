@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import {
+  COPY_GENERIC_MESSAGE_KEY,
+  copyTextWithToast,
+} from 'src/common-ui/toast/copy-toast.utils';
 
 type Props = {
   title: string;
@@ -10,7 +14,6 @@ type Props = {
 
 const CollaspsibleItem = ({ title, content, pre }: Props) => {
   const [collapsed, setCollapsed] = useState(true);
-  const [copied, setCopied] = useState(false);
   return (
     <>
       <div
@@ -26,20 +29,10 @@ const CollaspsibleItem = ({ title, content, pre }: Props) => {
         <SVGIcon icon={SVGIcons.SELECT_ARROW_DOWN} />
       </div>
       <div className={collapsed ? 'hide' : 'field collapsible'}>
-        {copied ? (
-          <SVGIcon icon={SVGIcons.CHECKBOX_CHECKED} className="checked" />
-        ) : (
-          <SVGIcon
-            icon={SVGIcons.SELECT_COPY}
-            onClick={async () => {
-              await navigator.clipboard.writeText(content);
-              setCopied(true);
-              setTimeout(() => {
-                setCopied(false);
-              }, 3000);
-            }}
-          />
-        )}
+        <SVGIcon
+          icon={SVGIcons.SELECT_COPY}
+          onClick={() => void copyTextWithToast(content, COPY_GENERIC_MESSAGE_KEY)}
+        />
         {pre ? (
           <div className="operation-item-content">
             <pre>{content}</pre>

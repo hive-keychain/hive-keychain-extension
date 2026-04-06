@@ -1,4 +1,3 @@
-import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import { RootState } from '@popup/multichain/store';
 import { ISwap, SwapStatus } from 'hive-keychain-commons';
 import moment from 'moment';
@@ -7,18 +6,21 @@ import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import {
+  COPY_GENERIC_MESSAGE_KEY,
+  copyTextWithToast,
+} from 'src/common-ui/toast/copy-toast.utils';
 import FormatUtils from 'src/utils/format.utils';
 
 interface Props {
   swap: ISwap;
 }
 
-const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
+const TokenSwapsHistoryItem = ({ swap }: PropsFromRedux) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const copyIdToCliplboard = (id: string) => {
-    navigator.clipboard.writeText(id.toString());
-    setInfoMessage('swap_copied_to_clipboard');
+    void copyTextWithToast(id.toString(), COPY_GENERIC_MESSAGE_KEY);
   };
   const getStatusMessage = (
     status: ISwap['status'],
@@ -184,7 +186,7 @@ const mapStateToProps = (state: RootState) => {
   return {};
 };
 
-const connector = connect(mapStateToProps, { setInfoMessage });
+const connector = connect(mapStateToProps, {});
 type PropsFromRedux = ConnectedProps<typeof connector> & Props;
 
 export const TokenSwapsHistoryItemComponent = connector(TokenSwapsHistoryItem);
