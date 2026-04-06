@@ -141,7 +141,7 @@ const ChainRouter = ({
         />
       )}
       {modal && <ModalComponent {...modal} />}
-      {hasFinishedSignup === null && !currentPage && !nav && (
+      {!mk && hasFinishedSignup === null && !currentPage && !nav && (
         <SplashscreenComponent />
       )}
     </>

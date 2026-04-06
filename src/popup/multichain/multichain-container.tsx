@@ -1,4 +1,3 @@
-import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
 import { setChain } from '@popup/multichain/actions/chain.actions';
 import { ChainComponentWithBoundary } from '@popup/multichain/chain.component';
@@ -6,11 +5,12 @@ import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { RootState, store } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
-import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { getProviderChainWithTimeout } from '@popup/multichain/utils/provider-chain-bootstrap.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import hotkeys from 'hotkeys-js';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';
 import {
   ShortcutActionType,
   ShortcutDefinition,
@@ -24,19 +24,15 @@ import {
   navigateToWithParams,
 } from 'src/popup/multichain/actions/navigation.actions';
 import { Theme, ThemeContext } from 'src/popup/theme.context';
-import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import ShortcutsUtils from 'src/utils/shortcuts.utils';
 
 const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
-  const [theme, setTheme] = useState<Theme>();
-  const [ready, setReady] = useState(false);
-  const shortcutsRef = React.useRef<ShortcutDefinition[]>([]);
-  const registeredCombosRef = React.useRef<string[]>([]);
-
-  useEffect(() => {
-    init();
-  }, []);
+  const [theme, setTheme] = useState<Theme>(Theme.LIGHT);
+  const [hasHydratedSettings, setHasHydratedSettings] = useState(false);
+  const [isBootstrapping, setIsBootstrapping] = useState(true);
+  const shortcutsRef = useRef<ShortcutDefinition[]>([]);
+  const registeredCombosRef = useRef<string[]>([]);
 
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     // console.log({ event }, event.key, event.ctrlKey);
@@ -198,6 +194,55 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
   );
 
   useEffect(() => {
+    let isMounted = true;
+
+    const init = async () => {
+      const storagePromise = LocalStorageUtils.getMultipleValueFromLocalStorage([
+        LocalStorageKeyEnum.ACTIVE_THEME,
+        LocalStorageKeyEnum.ACTIVE_CHAIN,
+        LocalStorageKeyEnum.SHORTCUTS,
+      ]);
+      const providerChainPromise = getProviderChainWithTimeout();
+
+      const res = await storagePromise;
+
+      if (!isMounted) return;
+
+      setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
+
+      const shortcutsValue = res[LocalStorageKeyEnum.SHORTCUTS];
+      shortcutsRef.current = Array.isArray(shortcutsValue) ? shortcutsValue : [];
+      registerShortcuts(shortcutsRef.current);
+      setHasHydratedSettings(true);
+
+      const storedChain = res.ACTIVE_CHAIN
+        ? await ChainUtils.getChain<EvmChain>(res.ACTIVE_CHAIN)
+        : null;
+
+      if (!isMounted) return;
+
+      if (storedChain) {
+        setChain(storedChain);
+      }
+      setIsBootstrapping(false);
+
+      const chainFromProvider = await providerChainPromise;
+
+      if (!isMounted || !chainFromProvider) return;
+
+      if (chainFromProvider.chainId !== storedChain?.chainId) {
+        setChain(chainFromProvider);
+      }
+    };
+
+    void init();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [registerShortcuts, setChain]);
+
+  useEffect(() => {
     hotkeys('ctrl+alt+t', (event) => {
       if (ShortcutsUtils.isEditableTarget(event.target)) return;
       event.preventDefault();
@@ -217,52 +262,6 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
       registeredCombosRef.current = [];
     };
   }, [handleDetachWindow]);
-
-  const init = async () => {
-    const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([
-      LocalStorageKeyEnum.ACTIVE_THEME,
-      LocalStorageKeyEnum.ACTIVE_CHAIN,
-      LocalStorageKeyEnum.SHORTCUTS,
-    ]);
-
-    const chainFromProvider: EvmChain | null = await new Promise(
-      (resolve, reject) => {
-        CommunicationUtils.runtimeSendMessage({
-          command: BackgroundCommand.GET_CHAIN_FROM_PROVIDER,
-        } as BackgroundMessage);
-
-        const getChainCallback = async (message: BackgroundMessage) => {
-          if (
-            message.command === BackgroundCommand.SEND_BACK_CHAIN_FROM_PROVIDER
-          ) {
-            if (message.value.chainId) {
-              const chain: EvmChain = await ChainUtils.getChain<EvmChain>(
-                message.value.chainId,
-              );
-              chrome.runtime.onMessage.removeListener(getChainCallback);
-              resolve(chain as EvmChain);
-            }
-            resolve(null);
-          }
-        };
-
-        chrome.runtime.onMessage.addListener(getChainCallback);
-      },
-    );
-
-    const chain: EvmChain = await ChainUtils.getChain<EvmChain>(
-      res.ACTIVE_CHAIN,
-    );
-
-    setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
-
-    setChain(chainFromProvider ?? chain);
-    const shortcutsValue = res[LocalStorageKeyEnum.SHORTCUTS];
-    shortcutsRef.current = Array.isArray(shortcutsValue) ? shortcutsValue : [];
-    registerShortcuts(shortcutsRef.current);
-
-    setReady(true);
-  };
 
   useEffect(() => {
     const handleStorageChange = (
@@ -292,12 +291,12 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
   }, [chain]);
 
   useEffect(() => {
-    if (theme)
+    if (theme && hasHydratedSettings)
       LocalStorageUtils.saveValueInLocalStorage(
         LocalStorageKeyEnum.ACTIVE_THEME,
         theme,
       );
-  }, [theme]);
+  }, [hasHydratedSettings, theme]);
 
   const toggleTheme = () => {
     setTheme((oldTheme) => {
@@ -306,15 +305,15 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
   };
 
   return (
-    <>
-      {ready && theme && (
-        <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
-          <div className={`theme ${theme}`}>
-            <ChainComponentWithBoundary theme={theme} chain={chain} />
-          </div>
-        </ThemeContext.Provider>
-      )}
-    </>
+    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
+      <div className={`theme ${theme}`}>
+        {isBootstrapping ? (
+          <SplashscreenComponent />
+        ) : (
+          <ChainComponentWithBoundary theme={theme} chain={chain} />
+        )}
+      </div>
+    </ThemeContext.Provider>
   );
 };
 
