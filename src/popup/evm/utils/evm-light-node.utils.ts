@@ -32,6 +32,42 @@ export function evmChainIdToDecimalPathSegment(
   return s;
 }
 
+const normalizeProxyTarget = (
+  proxyTarget: unknown,
+  depth = 0,
+): string | null => {
+  if (depth > 2 || proxyTarget == null) {
+    return null;
+  }
+
+  if (typeof proxyTarget === 'string') {
+    const normalizedProxyTarget = proxyTarget.trim();
+    return normalizedProxyTarget.length ? normalizedProxyTarget : null;
+  }
+
+  if (Array.isArray(proxyTarget)) {
+    return normalizeProxyTarget(proxyTarget[0], depth + 1);
+  }
+
+  if (typeof proxyTarget === 'object') {
+    const nestedProxyTarget = proxyTarget as Record<string, unknown>;
+    for (const key of ['target', 'proxyTarget', 'address']) {
+      if (key in nestedProxyTarget) {
+        return normalizeProxyTarget(nestedProxyTarget[key], depth + 1);
+      }
+    }
+  }
+
+  return null;
+};
+
+const normalizeContract = (
+  contract: EvmLightNodeContractResponse,
+): EvmLightNodeContractResponse => ({
+  ...contract,
+  proxyTarget: normalizeProxyTarget(contract.proxyTarget),
+});
+
 type HistoryDetailItem = {
   txId: string;
   blockNumber: number;
@@ -265,9 +301,10 @@ const getContract = async (
   contractAddress: string,
 ): Promise<EvmLightNodeContractResponse> => {
   const id = evmChainIdToDecimalPathSegment(chainId);
-  return await KeychainApi.get(
+  const response = await KeychainApi.get(
     `evm/light-node/contract/${id}/${encodeURIComponent(contractAddress)}`,
   );
+  return normalizeContract(response as EvmLightNodeContractResponse);
 };
 
 const getGasFee = async (chainId: string | number): Promise<unknown> => {

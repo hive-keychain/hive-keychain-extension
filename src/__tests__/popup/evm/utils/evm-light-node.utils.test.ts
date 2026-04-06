@@ -111,6 +111,52 @@ describe('evm-light-node.utils tests:\n', () => {
     ).resolves.toBeNull();
   });
 
+  it('normalizes structured proxy target payloads before resolving abi', async () => {
+    const proxyAddress = '0x00000000000000000000000000000000000000aa';
+    const targetAddress = '0x00000000000000000000000000000000000000bb';
+    const targetAbi = [{ type: 'function', name: 'approve', inputs: [] }];
+    const getSpy = jest
+      .spyOn(KeychainApi, 'get')
+      .mockResolvedValueOnce({
+        abi: [{ type: 'function', name: 'fallback', inputs: [] }],
+        address: proxyAddress,
+        chainId: 1,
+        contractType: 'ERC20',
+        firstSeenBlock: 1,
+        id: 1,
+        isProxy: true,
+        lastSeenBlock: null,
+        metadata: null,
+        possibleSpam: false,
+        price: null,
+        proxyTarget: { target: targetAddress },
+        verified: true,
+      })
+      .mockResolvedValueOnce({
+        abi: targetAbi,
+        address: targetAddress,
+        chainId: 1,
+        contractType: 'ERC20',
+        firstSeenBlock: 1,
+        id: 2,
+        isProxy: false,
+        lastSeenBlock: null,
+        metadata: null,
+        possibleSpam: false,
+        price: null,
+        proxyTarget: null,
+        verified: true,
+      });
+
+    await expect(EvmLightNodeUtils.getAbi('1', proxyAddress)).resolves.toEqual(
+      targetAbi,
+    );
+    expect(getSpy).toHaveBeenNthCalledWith(
+      2,
+      `evm/light-node/contract/1/${encodeURIComponent(targetAddress)}`,
+    );
+  });
+
   it('returns the contract abi directly when the contract is not a proxy', async () => {
     const abi = [{ type: 'function', name: 'transfer', inputs: [] }];
     jest.spyOn(KeychainApi, 'get').mockResolvedValue({

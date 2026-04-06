@@ -138,6 +138,15 @@ describe('send-transaction proxy tests:\n', () => {
     jest.spyOn(EvmTokensUtils, 'getTokenType').mockReturnValue(
       EVMSmartContractType.ERC20,
     );
+    jest.spyOn(EvmTokensUtils, 'getTokenBalance').mockResolvedValue({
+      balance: '1000000',
+      balanceInteger: 1,
+      formattedBalance: '1',
+      shortFormattedBalance: '1',
+      tokenInfo: {
+        symbol: 'USDC',
+      },
+    } as any);
     jest.spyOn(EvmLightNodeUtils, 'getAbi').mockResolvedValue([
       { inputs: [], name: 'approve', outputs: [], type: 'function' },
     ]);
@@ -147,6 +156,9 @@ describe('send-transaction proxy tests:\n', () => {
       to: {},
     });
     jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(true);
+    jest.spyOn(EvmAddressesUtils, 'isPotentialSpoofing').mockResolvedValue(
+      null as any,
+    );
     jest.spyOn(EvmTransactionParserUtils, 'parseArgs').mockReturnValue([]);
     global.chrome.i18n.getMessage = jest.fn((key: string) => key);
     mockParseTransaction.mockReturnValue({
@@ -295,5 +307,96 @@ describe('send-transaction proxy tests:\n', () => {
     expect((ethers.Contract as jest.Mock).mock.calls[0][1]).toEqual(
       JSON.parse(serializedAbi),
     );
+  });
+
+  it('falls back to a signature-derived abi when the backend abi does not decode the transaction', async () => {
+    const recipient = '0x00000000000000000000000000000000000000ab';
+    const fallbackAbi = [
+      {
+        inputs: [
+          { internalType: 'address', name: 'recipient', type: 'address' },
+          { internalType: 'uint256', name: 'amount', type: 'uint256' },
+        ],
+        name: 'transfer',
+        outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+    ];
+
+    jest.spyOn(EvmLightNodeUtils, 'getAbi').mockResolvedValue([
+      { inputs: [], name: 'approve', outputs: [], type: 'function' },
+    ]);
+    jest
+      .spyOn(EvmTransactionParserUtils, 'findAbiFromData')
+      .mockResolvedValue(fallbackAbi as any);
+    jest.spyOn(EvmTransactionParserUtils, 'parseArgs').mockReturnValue([
+      recipient,
+      1000n,
+    ]);
+    mockParseTransaction
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce({
+        args: {
+          0: recipient,
+          1: 1000n,
+          toArray: () => [recipient, 1000n],
+        },
+        fragment: {
+          inputs: [
+            { name: 'recipient', type: 'address' },
+            { name: 'amount', type: 'uint256' },
+          ],
+        },
+        name: 'transfer',
+        signature: 'transfer(address,uint256)',
+        value: 0,
+      });
+
+    render(
+      <SendTransaction
+        accounts={[
+          {
+            wallet: {
+              address: '0x00000000000000000000000000000000000000ff',
+              mnemonic: { phrase: 'test phrase' },
+            },
+          } as any,
+        ]}
+        afterCancel={jest.fn()}
+        data={{ dappInfo: { domain: 'app.example' }, tab: 1 } as any}
+        request={
+          {
+            chainId: '1',
+            params: [
+              {
+                data: '0xa9059cbb00000000000000000000000000000000000000000000000000000000000000ab00000000000000000000000000000000000000000000000000000000000003e8',
+                from: '0x00000000000000000000000000000000000000ff',
+                gasLimit: 21000,
+                maxFeePerGas: '1',
+                maxPriorityFeePerGas: '1',
+                to: proxyAddress,
+                type: EvmTransactionType.EIP_1559,
+                value: '0',
+              },
+            ],
+            request_id: 1,
+          } as any
+        }
+      />,
+    );
+
+    await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
+
+    const fields = transactionHook.setFields.mock.calls[0][0];
+    expect(EvmTransactionParserUtils.findAbiFromData).toHaveBeenCalled();
+    expect(fields.operationName).toBe('evm_operation_transfer');
+    expect(
+      fields.otherFields.some((field: any) => field.name === 'recipient'),
+    ).toBe(true);
+    expect(fields.otherFields.some((field: any) => field.name === 'amount')).toBe(
+      true,
+    );
+    expect((ethers.Contract as jest.Mock).mock.calls[1][1]).toEqual(fallbackAbi);
   });
 });
