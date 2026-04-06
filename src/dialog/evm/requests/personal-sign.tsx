@@ -14,6 +14,7 @@ import React, { useEffect, useState } from 'react';
 import { Card } from 'src/common-ui/card/card.component';
 import { DisplayText } from 'src/dialog/components/display-text/display-text';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
+import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 
@@ -70,6 +71,9 @@ export const PersonalSign = (props: Props) => {
       !!(transactionInfo && transactionInfo.unableToReach),
     );
 
+    transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
+      transactionConfirmationFields.otherFields,
+    );
     transactionHook.setFields(transactionConfirmationFields);
     setTimeout(() => {
       transactionHook.setReady(true);

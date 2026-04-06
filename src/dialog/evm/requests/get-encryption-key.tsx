@@ -6,6 +6,7 @@ import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import React, { useEffect } from 'react';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
+import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 
@@ -58,6 +59,9 @@ export const GetEncryptionKey = (props: Props) => {
       !!(transactionInfo && transactionInfo.unableToReach),
     );
 
+    transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
+      transactionConfirmationFields.otherFields,
+    );
     transactionHook.setFields(transactionConfirmationFields);
     setTimeout(() => {
       transactionHook.setReady(true);

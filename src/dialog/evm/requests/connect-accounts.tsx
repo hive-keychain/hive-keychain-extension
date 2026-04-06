@@ -13,6 +13,7 @@ import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/ch
 import { DappStatusEnum } from 'src/common-ui/evm/dapp-status/dapp-status.component';
 import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
+import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 import { CommunicationUtils } from 'src/utils/communication.utils';
@@ -61,6 +62,9 @@ export const ConnectAccounts = (props: Props) => {
     );
     transactionConfirmationFields.otherFields.push(
       await transactionHook.getDomainWarnings(transactionInfo),
+    );
+    transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
+      transactionConfirmationFields.otherFields,
     );
     transactionHook.setFields(transactionConfirmationFields);
     setTimeout(() => {

@@ -10,6 +10,7 @@ import React, { useEffect, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
+import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 
@@ -66,6 +67,9 @@ export const DecryptMessage = (props: Props) => {
       !!(transactionInfo && transactionInfo.unableToReach),
     );
 
+    transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
+      transactionConfirmationFields.otherFields,
+    );
     transactionHook.setFields(transactionConfirmationFields);
     setTimeout(() => {
       transactionHook.setReady(true);

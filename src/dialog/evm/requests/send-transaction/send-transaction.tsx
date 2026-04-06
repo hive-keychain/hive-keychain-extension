@@ -31,6 +31,7 @@ import EventEmitter from 'events';
 import React, { useEffect, useMemo, useState } from 'react';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
+import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 import FormatUtils from 'src/utils/format.utils';
@@ -709,6 +710,9 @@ export const SendTransaction = (props: Props) => {
         }
       }
       setTransactionData(tData);
+      transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
+        transactionConfirmationFields.otherFields,
+      );
       transactionHook.setFields(transactionConfirmationFields);
     } else {
       Logger.error('No corresponding account found');

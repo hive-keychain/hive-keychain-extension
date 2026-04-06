@@ -74,15 +74,25 @@ describe('send-transaction proxy tests:\n', () => {
   const transactionHook = {
     fields: undefined,
     getDomainWarnings: jest.fn().mockResolvedValue({
-      name: 'domain',
+      name: 'dialog_evm_domain',
       type: 'string',
       value: 'app.example',
     }),
-    getWalletAddressInput: jest.fn().mockResolvedValue({
-      name: 'dialog_account',
-      type: 'wallet-address',
-      value: '0x0000...00ff',
-    }),
+    getWalletAddressInput: jest
+      .fn()
+      .mockImplementation(
+        async (
+          _address: string,
+          _chainId: string,
+          _transactionInfo: unknown,
+          _accounts: unknown[],
+          name = '',
+        ) => ({
+          name,
+          type: 'wallet-address',
+          value: '0x0000...00ff',
+        }),
+      ),
     handleOnConfirmClick: jest.fn(),
     initPendingTransactionWarning: jest.fn().mockResolvedValue(undefined),
     loading: false,
@@ -212,6 +222,12 @@ describe('send-transaction proxy tests:\n', () => {
     const contractField = fields.otherFields.find(
       (field: any) => field.name === 'evm_operation_smart_contract_address',
     );
+    expect(fields.otherFields.map((field: any) => field.name)).toEqual([
+      'evm_chain',
+      'dialog_evm_domain',
+      'evm_operation_smart_contract_address',
+      'dialog_account',
+    ]);
 
     expect(contractField.information).toEqual([
       {
@@ -260,6 +276,52 @@ describe('send-transaction proxy tests:\n', () => {
     await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
 
     expect(EvmLightNodeUtils.getAbi).not.toHaveBeenCalled();
+  });
+
+  it('places the used account right after the domain when there is no smart contract field', async () => {
+    render(
+      <SendTransaction
+        accounts={[
+          {
+            wallet: {
+              address: '0x00000000000000000000000000000000000000ff',
+              mnemonic: { phrase: 'test phrase' },
+            },
+          } as any,
+        ]}
+        afterCancel={jest.fn()}
+        data={{ dappInfo: { domain: 'app.example' }, tab: 1 } as any}
+        request={
+          {
+            chainId: '1',
+            params: [
+              {
+                from: '0x00000000000000000000000000000000000000ff',
+                gasLimit: 21000,
+                maxFeePerGas: '1',
+                maxPriorityFeePerGas: '1',
+                to: '0x00000000000000000000000000000000000000ab',
+                type: EvmTransactionType.EIP_1559,
+                value: '1000000000000000000',
+              },
+            ],
+            request_id: 1,
+          } as any
+        }
+      />,
+    );
+
+    await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
+
+    const fields = transactionHook.setFields.mock.calls[0][0];
+
+    expect(fields.otherFields.map((field: any) => field.name)).toEqual([
+      'evm_chain',
+      'dialog_evm_domain',
+      'dialog_account',
+      'evm_operation_from',
+      'evm_operation_to',
+    ]);
   });
 
   it('normalizes serialized abi responses before decoding the transaction', async () => {
