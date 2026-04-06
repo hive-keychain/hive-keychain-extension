@@ -9,9 +9,10 @@ import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account
 interface Props {
   address: string;
   chainId: string;
+  canCopy?: boolean;
 }
 
-export const EvmAddressComponent = ({ address, chainId }: Props) => {
+export const EvmAddressComponent = ({ address, chainId, canCopy }: Props) => {
   const [addressDetail, setAddressDetail] = useState<EvmAddressDetail>();
 
   useEffect(() => {
@@ -21,6 +22,12 @@ export const EvmAddressComponent = ({ address, chainId }: Props) => {
   const initComponent = async () => {
     const details = await EvmAddressesUtils.getAddressDetails(address, chainId);
     setAddressDetail(details);
+  };
+
+  const handleCopyAddress = () => {
+    if (canCopy) {
+      navigator.clipboard.writeText(address);
+    }
   };
 
   return (
@@ -33,7 +40,11 @@ export const EvmAddressComponent = ({ address, chainId }: Props) => {
             small
           />
           <CustomTooltip message={addressDetail.fullAddress} skipTranslation>
-            <span>{addressDetail.label ?? addressDetail.formattedAddress}</span>
+            <span
+              className={`value-content ${canCopy ? 'address-content' : ''}`}
+              onClick={handleCopyAddress}>
+              {addressDetail.label ?? addressDetail.formattedAddress}
+            </span>
           </CustomTooltip>
         </div>
       )}

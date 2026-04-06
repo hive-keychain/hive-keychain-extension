@@ -57,6 +57,9 @@
               font-size: 12px;
             }
           }
+          &.address-content {
+            cursor: url('assets/images/global/copy-icon.png'), copy;
+          }
         }
         // .value-content-vertical {
         //   display: flex;

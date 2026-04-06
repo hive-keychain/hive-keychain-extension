@@ -82,6 +82,10 @@ export const SendTransaction = (props: Props) => {
     }
   }, [tokenInfo, selectedAccount, transferAmount]);
 
+  const handleCopyAddress = (address: string) => {
+    navigator.clipboard.writeText(address);
+  };
+
   const init = async () => {
     transactionHook.setLoading(true);
     transactionHook.setReady(false);
@@ -389,7 +393,9 @@ export const SendTransaction = (props: Props) => {
               name: 'evm_operation_smart_contract_address',
               type: EvmInputDisplayType.CONTRACT_ADDRESS,
               value: (
-                <div className="value-content">
+                <div
+                  className="value-content address-content"
+                  onClick={() => handleCopyAddress(tokenAddress!)}>
                   {usedToken && <EvmTokenLogo tokenInfo={usedToken} />}
                   <div>{EvmFormatUtils.formatAddress(tokenAddress!)}</div>
                 </div>

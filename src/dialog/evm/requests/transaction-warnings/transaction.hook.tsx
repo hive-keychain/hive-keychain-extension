@@ -370,7 +370,13 @@ export const useTransactionHook = (
     return {
       name: name,
       type: EvmInputDisplayType.WALLET_ADDRESS,
-      value: <EvmAddressComponent address={address} chainId={chainId} />,
+      value: (
+        <EvmAddressComponent
+          address={address}
+          chainId={chainId}
+          canCopy={true}
+        />
+      ),
       warnings: skipWarnings
         ? []
         : await EvmTransactionParserUtils.getAddressWarning(
