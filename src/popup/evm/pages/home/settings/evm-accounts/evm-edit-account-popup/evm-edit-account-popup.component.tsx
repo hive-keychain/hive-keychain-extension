@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -12,6 +12,12 @@ export interface EditAccountParams {
   onCancel: () => void;
   title: string;
   caption?: string;
+  inputLabel?: string;
+  inputPlaceholder?: string;
+  inputType?: InputType;
+  confirmLabel?: string;
+  errorMessage?: string;
+  onInputChange?: (value: string) => void;
 }
 
 interface Props {
@@ -19,9 +25,25 @@ interface Props {
 }
 
 export const EvmEditAccountPopup = ({ editParams }: Props) => {
-  const { initialValue, onSubmit, onCancel, title, caption } = editParams;
+  const {
+    initialValue,
+    onSubmit,
+    onCancel,
+    title,
+    caption,
+    inputLabel,
+    inputPlaceholder,
+    inputType,
+    confirmLabel,
+    errorMessage,
+    onInputChange,
+  } = editParams;
 
   const [value, setValue] = useState(initialValue);
+
+  useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
 
   return (
     <PopupContainer className="seed-nickname-popup">
@@ -31,11 +53,19 @@ export const EvmEditAccountPopup = ({ editParams }: Props) => {
       )}
       <InputComponent
         value={value}
-        onChange={setValue}
-        label="evm_address_nickname"
-        placeholder="evm_address_nickname"
-        type={InputType.TEXT}
+        onChange={(newValue) => {
+          setValue(newValue);
+          onInputChange?.(newValue);
+        }}
+        label={inputLabel ?? 'evm_address_nickname'}
+        placeholder={inputPlaceholder ?? 'evm_address_nickname'}
+        type={inputType ?? InputType.TEXT}
       />
+      {errorMessage && (
+        <div className="caption error-message">
+          {chrome.i18n.getMessage(errorMessage)}
+        </div>
+      )}
       <div className="popup-footer">
         <ButtonComponent
           label="dialog_cancel"
@@ -45,7 +75,7 @@ export const EvmEditAccountPopup = ({ editParams }: Props) => {
         />
         <ButtonComponent
           type={ButtonType.IMPORTANT}
-          label="popup_html_confirm"
+          label={confirmLabel ?? 'popup_html_confirm'}
           onClick={() => onSubmit(value)}
           height="small"
         />

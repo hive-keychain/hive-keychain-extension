@@ -4707,6 +4707,10 @@
     "message": "Seed phrase copied to clipboard",
     "description": "display seed phrase"
   },
+  "evm_copy_seed_phrase_password_caption": {
+    "message": "You are about to copy your seed phrase. For security reasons, please enter your password to continue.",
+    "description": "Prompt shown before copying an EVM seed phrase"
+  },
   "html_popup_add_blockchain": {
     "message": "Add chain",
     "description": "display seed phrase"

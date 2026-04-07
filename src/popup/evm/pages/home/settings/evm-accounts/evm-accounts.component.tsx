@@ -24,6 +24,7 @@ import {
   OptionItem,
 } from 'src/common-ui/custom-select/custom-select.component';
 import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
+import { InputType } from 'src/common-ui/input/input-type.enum';
 import {
   COPY_GENERIC_MESSAGE_KEY,
   copyTextWithToast,
@@ -149,11 +150,49 @@ const EvmAccounts = ({
   };
 
   const handleCopySeedClick = () => {
+    setEditParams({
+      initialValue: '',
+      onSubmit: handleConfirmCopySeedClick,
+      onCancel: closePopup,
+      title: 'html_popup_evm_create_wallet_copy_mnemonic',
+      caption: 'evm_copy_seed_phrase_password_caption',
+      inputLabel: 'popup_html_master_password',
+      inputPlaceholder: 'popup_html_master_password',
+      inputType: InputType.PASSWORD,
+      confirmLabel: 'popup_html_submit',
+      onInputChange: () =>
+        setEditParams((currentParams) =>
+          currentParams
+            ? {
+                ...currentParams,
+                errorMessage: undefined,
+              }
+            : currentParams,
+        ),
+    });
+  };
+
+  const handleConfirmCopySeedClick = async (password: string) => {
+    if (password !== mk) {
+      setEditParams((currentParams) =>
+        currentParams
+          ? {
+              ...currentParams,
+              errorMessage: 'wrong_password',
+            }
+          : currentParams,
+      );
+      return;
+    }
+
     const seed = accounts.find(
       (account) => account.seedId === selectedSeed?.value,
     );
-    void copyTextWithToast(
-      seed!.wallet.mnemonic!.phrase,
+    if (!seed?.wallet.mnemonic?.phrase) return;
+
+    closePopup();
+    await copyTextWithToast(
+      seed.wallet.mnemonic.phrase,
       'html_popup_evm_create_wallet_copied_mnemonic',
     );
   };

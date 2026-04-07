@@ -48,6 +48,7 @@
           }
           .label {
             @include poppins300(13px);
+            line-height: 136%;
           }
           &:hover {
             background: $red;

@@ -26,7 +26,7 @@ export const EvmAccountsContextualMenu = ({
         items: [
           {
             icon: SVGIcons.EVM_ACCOUNT_COPY,
-            label: 'html_popup_copy',
+            label: 'html_popup_evm_create_wallet_copy_mnemonic',
             onClick: onCopyClicked,
           },
           {

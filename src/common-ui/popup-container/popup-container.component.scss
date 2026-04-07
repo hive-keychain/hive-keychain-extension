@@ -37,6 +37,11 @@
       padding: 0 24px;
     }
 
+    .error-message {
+      color: $red;
+      margin-top: -16px;
+    }
+
     .popup-footer {
       display: flex;
       align-items: center;
