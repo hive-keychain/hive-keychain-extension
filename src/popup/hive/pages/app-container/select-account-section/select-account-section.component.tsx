@@ -119,7 +119,7 @@ const SelectAccountSection = ({
   };
 
   const customDropdownRenderer = ({
-    props: properties,
+    props,
     state,
     methods,
   }: SelectRenderer<LocalAccountListItem>) => {
@@ -132,7 +132,7 @@ const SelectAccountSection = ({
             isDropDisabled={!isOnMain}>
             {(provided) => (
               <div {...provided.droppableProps} ref={provided.innerRef}>
-                {properties.options.map((option, index) => (
+                {options.map((option, index) => (
                   <Draggable
                     key={option.value}
                     draggableId={option.value}
@@ -145,7 +145,7 @@ const SelectAccountSection = ({
                         {...provided.dragHandleProps}>
                         <SelectAccountSectionItemComponent
                           key={`option-${option.value}`}
-                          isLast={options.length === index}
+                          isLast={options.length - 1 === index}
                           item={option}
                           selectedAccount={selectedLocalAccount}
                           handleItemClicked={(value) =>
@@ -159,6 +159,7 @@ const SelectAccountSection = ({
                     )}
                   </Draggable>
                 ))}
+                {provided.placeholder}
               </div>
             )}
           </Droppable>

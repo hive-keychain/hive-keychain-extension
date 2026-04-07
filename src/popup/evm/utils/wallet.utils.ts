@@ -24,6 +24,42 @@ import VaultUtils from 'src/utils/vault.utils';
 
 const INITIAL_PATH = "44'/60'/0'/0";
 
+const getEvmAccountOrderKey = (seedId: number, addressId: number) =>
+  `${seedId}-${addressId}`;
+
+const hasValidAccountOrders = (savedSeeds: StoredSeed[]) => {
+  const orders = savedSeeds
+    .map((seed) => seed.accounts.map((account) => account.order))
+    .flat();
+
+  return (
+    orders.every((order) => typeof order === 'number' && Number.isFinite(order)) &&
+    new Set(orders).size === orders.length
+  );
+};
+
+const normalizeSeedAccountOrders = (savedSeeds: StoredSeed[]) => {
+  if (hasValidAccountOrders(savedSeeds)) {
+    return savedSeeds;
+  }
+
+  let order = 0;
+  return savedSeeds.map((seed) => ({
+    ...seed,
+    accounts: seed.accounts.map((account) => ({
+      ...account,
+      order: order++,
+    })),
+  }));
+};
+
+const getMaxAccountOrder = (savedSeeds: StoredSeed[]) => {
+  return savedSeeds
+    .map((seed) => seed.accounts.map((account) => account.order ?? -1))
+    .flat()
+    .reduce((max, current) => Math.max(max, current), -1);
+};
+
 const getWalletFromSeedPhrase = (seed: string) => {
   let wallet: HDNodeWallet | undefined, error;
   let errorParams: string[] = [];
@@ -90,7 +126,9 @@ const hideOrShowAddress = async (
   addressId: number,
   hide: boolean,
 ) => {
-  const savedSeeds = await getAccountsFromLocalStorage(mk);
+  const savedSeeds = normalizeSeedAccountOrders(
+    await getAccountsFromLocalStorage(mk),
+  );
 
   const seedIndex = savedSeeds.findIndex((seed) => seed.id === seedId);
 
@@ -111,7 +149,9 @@ const updateAddressName = async (
   newName: string,
   mk: string,
 ) => {
-  const savedSeeds = await getAccountsFromLocalStorage(mk);
+  const savedSeeds = normalizeSeedAccountOrders(
+    await getAccountsFromLocalStorage(mk),
+  );
 
   const seedIndex = savedSeeds.findIndex((seed) => seed.id === seedId);
 
@@ -134,7 +174,9 @@ const addAddressToSeed = async (
   mk: string,
   addressNickname: string,
 ) => {
-  const savedSeeds = await getAccountsFromLocalStorage(mk);
+  const savedSeeds = normalizeSeedAccountOrders(
+    await getAccountsFromLocalStorage(mk),
+  );
 
   const seedIndex = savedSeeds.findIndex((account) => account.id === seedId);
 
@@ -154,6 +196,7 @@ const addAddressToSeed = async (
   savedSeeds[seedIndex].accounts.push({
     id: derivedWallet.index,
     path: derivedWallet.path,
+    order: getMaxAccountOrder(savedSeeds) + 1,
     nickname:
       addressNickname.length > 0
         ? addressNickname
@@ -169,9 +212,12 @@ const addSeedAndAccounts = async (
   mk: string,
   nickname?: string,
 ) => {
-  const previousAccounts = await getAccountsFromLocalStorage(mk);
+  const previousAccounts = normalizeSeedAccountOrders(
+    await getAccountsFromLocalStorage(mk),
+  );
   const id =
     previousAccounts.map((e) => e.id).reduce((a, b) => Math.max(a, b), 0) + 1;
+  let nextOrder = getMaxAccountOrder(previousAccounts) + 1;
   const newAccounts: StoredSeed = {
     seed: wallet.mnemonic!.phrase,
     nickname: nickname,
@@ -179,6 +225,7 @@ const addSeedAndAccounts = async (
     accounts: accounts.map((derivedWallet, index) => ({
       id: derivedWallet.id,
       path: derivedWallet.path!,
+      order: nextOrder++,
       nickname: `${chrome.i18n.getMessage('dialog_account')} ${index + 1}`,
     })),
   };
@@ -193,7 +240,9 @@ const updateSeedNickname = async (
   newNickname: string,
   mk: string,
 ) => {
-  const savedSeeds = await getAccountsFromLocalStorage(mk);
+  const savedSeeds = normalizeSeedAccountOrders(
+    await getAccountsFromLocalStorage(mk),
+  );
 
   const seedIndex = savedSeeds.findIndex((account) => account.id === seedId);
 
@@ -208,7 +257,9 @@ const deleteSeed = async (
   accounts: EvmAccount[],
   mk: string,
 ) => {
-  let savedSeeds = await getAccountsFromLocalStorage(mk);
+  let savedSeeds = normalizeSeedAccountOrders(
+    await getAccountsFromLocalStorage(mk),
+  );
 
   savedSeeds = savedSeeds.filter((seed) => seed.id !== seedId);
 
@@ -273,7 +324,7 @@ const encryptAccountsInLocalStorage = async (
     mk,
   );
 
-  LocalStorageUtils.saveValueInLocalStorage(
+  await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_ACCOUNTS,
     encryptedAccounts,
   );
@@ -296,21 +347,72 @@ const getAccountsFromLocalStorage = async (mk: string) => {
 };
 
 const rebuildAccountsFromLocalStorage = async (mk: string) => {
-  const seeds = await getAccountsFromLocalStorage(mk);
-  const test = seeds
+  const seeds = normalizeSeedAccountOrders(await getAccountsFromLocalStorage(mk));
+  return seeds
     .map((seed) =>
-      seed.accounts.map((acc) => {
-        const account: EvmAccount = {
-          ...acc,
-          wallet: HDNodeWallet.fromPhrase(seed.seed, undefined, acc.path),
+      seed.accounts.map((account) => ({
+        order: account.order ?? 0,
+        account: {
+          ...account,
+          wallet: HDNodeWallet.fromPhrase(seed.seed, undefined, account.path),
           seedId: seed.id,
           seedNickname: seed.nickname,
-        };
-        return account;
-      }),
+        } as EvmAccount,
+      })),
+    )
+    .flat()
+    .sort((first, second) => first.order - second.order)
+    .map(({ account }) => account);
+};
+
+const reorderAccounts = async (
+  orderedVisibleAccounts: Pick<EvmAccount, 'id' | 'seedId'>[],
+  mk: string,
+) => {
+  const savedSeeds = normalizeSeedAccountOrders(
+    await getAccountsFromLocalStorage(mk),
+  );
+  const orderedVisibleKeys = orderedVisibleAccounts.map((account) =>
+    getEvmAccountOrderKey(account.seedId, account.id),
+  );
+  const visibleKeys = new Set(orderedVisibleKeys);
+
+  const flattenedAccounts = savedSeeds
+    .map((seed) =>
+      seed.accounts.map((account) => ({
+        key: getEvmAccountOrderKey(seed.id, account.id),
+        hidden: !!account.hide,
+      })),
     )
     .flat();
-  return test;
+
+  let visibleIndex = 0;
+  const mergedOrder = flattenedAccounts.map(({ key, hidden }) => {
+    if (hidden || !visibleKeys.has(key)) {
+      return key;
+    }
+
+    const reorderedKey = orderedVisibleKeys[visibleIndex];
+    visibleIndex += 1;
+    return reorderedKey ?? key;
+  });
+
+  const accountOrderByKey = new Map(
+    mergedOrder.map((key, index) => [key, index] as const),
+  );
+
+  const reorderedSeeds = savedSeeds.map((seed) => ({
+    ...seed,
+    accounts: seed.accounts.map((account) => ({
+      ...account,
+      order:
+        accountOrderByKey.get(getEvmAccountOrderKey(seed.id, account.id)) ??
+        account.order,
+    })),
+  }));
+
+  await encryptAccountsInLocalStorage(mk, reorderedSeeds);
+  return rebuildAccountsFromLocalStorage(mk);
 };
 
 const rebuildAccount = (account: EvmAccount) => {
@@ -536,6 +638,7 @@ export const EvmWalletUtils = {
   addAddressToSeed,
   deleteSeed,
   hideOrShowAddress,
+  reorderAccounts,
   updateSeedNickname,
   updateAddressName,
   getAllLocalAccounts,

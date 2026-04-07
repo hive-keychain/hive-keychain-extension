@@ -15,6 +15,7 @@ export type StoredSeed = {
 export type StoredEvmWalletAddress = {
   id: number;
   path: string;
+  order?: number;
   hide?: boolean;
   nickname?: string;
 };

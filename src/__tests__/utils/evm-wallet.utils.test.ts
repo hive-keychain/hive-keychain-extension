@@ -1,0 +1,149 @@
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
+import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { HDNodeWallet } from 'ethers';
+
+describe('evm wallet utils', () => {
+  const mk = 'test-master-password';
+  const seedOne =
+    'test test test test test test test test test test test junk';
+  const seedTwo =
+    'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+
+  let storedAccounts: { list: any[] };
+
+  beforeEach(() => {
+    storedAccounts = {
+      list: [
+        {
+          seed: seedOne,
+          id: 1,
+          nickname: 'Seed One',
+          accounts: [
+            {
+              id: 0,
+              path: "m/44'/60'/0'/0/0",
+              nickname: 'Seed One Account 1',
+            },
+            {
+              id: 1,
+              path: "m/44'/60'/0'/0/1",
+              nickname: 'Seed One Account 2',
+            },
+          ],
+        },
+        {
+          seed: seedTwo,
+          id: 2,
+          nickname: 'Seed Two',
+          accounts: [
+            {
+              id: 0,
+              path: "m/44'/60'/0'/0/0",
+              nickname: 'Seed Two Hidden Account',
+              hide: true,
+            },
+            {
+              id: 1,
+              path: "m/44'/60'/0'/0/1",
+              nickname: 'Seed Two Account 2',
+            },
+          ],
+        },
+      ],
+    };
+
+    jest
+      .spyOn(EncryptUtils, 'decryptToJsonWithLegacySupport')
+      .mockImplementation(async () => storedAccounts);
+
+    jest
+      .spyOn(EncryptUtils, 'encryptJson')
+      .mockImplementation(async (content) => content as never);
+
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockImplementation(async (key) => {
+        if (key === LocalStorageKeyEnum.EVM_ACCOUNTS) {
+          return storedAccounts;
+        }
+
+        return undefined;
+      });
+
+    jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockImplementation(async (key, value) => {
+        if (key === LocalStorageKeyEnum.EVM_ACCOUNTS) {
+          storedAccounts = value;
+        }
+      });
+
+    jest.spyOn(HDNodeWallet, 'fromPhrase').mockImplementation(
+      (phrase: string, password?: string, path?: string) =>
+        ({
+          address: `${phrase.slice(0, 12)}-${path}`,
+          mnemonic: { phrase },
+          path,
+        }) as HDNodeWallet,
+    );
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('persists reordered visible accounts while keeping hidden accounts in place', async () => {
+    const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+    const visibleAccounts = accounts.filter((account) => !account.hide);
+
+    const reorderedAccounts = [
+      visibleAccounts[2],
+      visibleAccounts[0],
+      visibleAccounts[1],
+    ];
+
+    const updatedAccounts = await EvmWalletUtils.reorderAccounts(
+      reorderedAccounts,
+      mk,
+    );
+
+    expect(updatedAccounts.map((account) => account.nickname)).toEqual([
+      'Seed Two Account 2',
+      'Seed One Account 1',
+      'Seed Two Hidden Account',
+      'Seed One Account 2',
+    ]);
+
+    const rebuiltAccounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(
+      mk,
+    );
+
+    expect(rebuiltAccounts.map((account) => account.nickname)).toEqual([
+      'Seed Two Account 2',
+      'Seed One Account 1',
+      'Seed Two Hidden Account',
+      'Seed One Account 2',
+    ]);
+
+    const storedSeeds = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
+    const storedOrderByAccount = Object.fromEntries(
+      storedSeeds
+        .map((seed) =>
+          seed.accounts.map((account) => [
+            `${seed.id}-${account.id}`,
+            account.order,
+          ]),
+        )
+        .flat(),
+    );
+
+    expect(storedOrderByAccount).toEqual({
+      '1-0': 1,
+      '1-1': 3,
+      '2-0': 2,
+      '2-1': 0,
+    });
+  });
+});
