@@ -90,6 +90,7 @@ const ChainDropdown = ({
             </div>
           }
           renderOnlyIcon
+          showOverlay
         />
       )}
     </>

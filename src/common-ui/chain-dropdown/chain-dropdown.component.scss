@@ -9,9 +9,10 @@
   }
 
   .react-dropdown-select-dropdown {
-    top: 36px !important;
+    top: calc(100% + 4px) !important;
     right: 0;
     left: unset;
+    background-color: var(--select-dropdown-bg-color);
 
     .left-image {
       height: 20px !important;

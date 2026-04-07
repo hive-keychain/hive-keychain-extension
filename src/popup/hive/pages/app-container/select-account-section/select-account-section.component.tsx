@@ -172,7 +172,9 @@ const SelectAccountSection = ({
         <div
           className={`hive-select-account-section ${
             fullSize ? 'fullsize' : ''
-          } ${isOpened ? 'opened' : 'closed'}`}>
+          } ${isOpened ? 'opened' : 'closed'} ${
+            isOnMain ? 'main-page' : ''
+          }`}>
           <Select
             keepOpen
             values={[selectedLocalAccount as any]}

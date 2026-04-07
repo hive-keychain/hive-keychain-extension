@@ -21,6 +21,7 @@
   }
 
   .chain-selector {
+    margin-right: 4px;
   }
 
   .logo-container {
@@ -44,6 +45,10 @@
   .top-bar-actions {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    flex: 0 0 44px;
+    width: 44px;
+    min-width: 44px;
     row-gap: 6px;
     padding-left: 4px;
     padding-right: 4px;
