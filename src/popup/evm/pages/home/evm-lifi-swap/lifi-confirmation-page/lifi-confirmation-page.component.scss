@@ -10,10 +10,14 @@
       display: flex;
       position: relative;
 
+      .currency-icon {
+        @include icon-size(24px);
+        border-radius: 50%;
+      }
+
       .currency-icon-chip {
+        @include icon-size(16px);
         position: absolute;
-        height: 16px;
-        width: 16px;
         bottom: -4px;
         right: -4px;
         border-radius: 50%;

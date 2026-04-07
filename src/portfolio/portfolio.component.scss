@@ -193,6 +193,9 @@ html {
             border-radius: 50%;
             width: 30px;
             height: 30px;
+            &.shimmer {
+              @include icon-size(30px);
+            }
           }
           .cursor-pointer {
             cursor: pointer;

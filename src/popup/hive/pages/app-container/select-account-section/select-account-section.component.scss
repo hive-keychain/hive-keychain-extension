@@ -32,6 +32,9 @@
       border-radius: 50%;
       width: 24px;
       height: 24px;
+      &.shimmer {
+        @include icon-size(24px);
+      }
     }
 
     .react-dropdown-select-content {
@@ -124,6 +127,9 @@
           }
           .copy-icon {
             margin-right: 7px;
+            &.shimmer {
+              @include icon-size(20px);
+            }
           }
           .active-icon {
             margin-left: 27px;
@@ -152,6 +158,9 @@
       border-radius: 50%;
       width: 24px;
       height: 24px;
+      &.shimmer {
+        @include icon-size(24px);
+      }
     }
     .react-dropdown-select-dropdown {
       top: 72px;

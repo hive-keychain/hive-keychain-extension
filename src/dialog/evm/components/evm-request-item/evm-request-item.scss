@@ -44,6 +44,10 @@
             width: 24px;
             border-radius: 50%;
           }
+          .shimmer {
+            @include icon-size(24px);
+            border-radius: 50%;
+          }
           .chain-container {
             display: flex;
             flex-direction: column;

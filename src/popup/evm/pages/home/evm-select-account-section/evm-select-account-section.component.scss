@@ -137,6 +137,9 @@
           }
           .copy-icon {
             margin-right: 7px;
+            &.shimmer {
+              @include icon-size(20px);
+            }
           }
           .active-icon {
             margin-left: 27px;

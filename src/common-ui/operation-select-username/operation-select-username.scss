@@ -32,6 +32,9 @@
         border-radius: 50%;
         margin-right: 8px;
         object-fit: cover;
+        &.shimmer {
+          @include icon-size(40px);
+        }
       }
 
       .username {
@@ -108,6 +111,9 @@
           border-radius: 50%;
           margin-left: 10px;
           object-fit: cover;
+          &.shimmer {
+            @include icon-size(40px);
+          }
         }
 
         .username {
