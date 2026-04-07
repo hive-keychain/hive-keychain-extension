@@ -8,6 +8,7 @@ import {
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   EvmTransactionType,
+  EvmTransactionVerificationInformation,
   ProviderTransactionData,
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
@@ -94,6 +95,7 @@ export const SendTransaction = (props: Props) => {
     transactionHook.setLoading(true);
     transactionHook.setReady(false);
     let transactionConfirmationFields = {} as TransactionConfirmationFields;
+    let lastTransactionInfo: EvmTransactionVerificationInformation | undefined;
 
     const chainTmp = await ChainUtils.getChain<EvmChain>(request.chainId!);
 
@@ -152,6 +154,10 @@ export const SendTransaction = (props: Props) => {
         ),
       });
     }
+    transactionConfirmationFields.otherFields.push(
+      transactionHook.buildInitialDomainField(),
+    );
+    transactionHook.setFields({ ...transactionConfirmationFields });
 
     if (usedAccount) {
       const usedAccountInput = await transactionHook.getWalletAddressInput(
@@ -191,13 +197,10 @@ export const SendTransaction = (props: Props) => {
                 usedAccount.wallet.address,
                 proxyTarget,
               );
+            lastTransactionInfo = transactionInfo;
 
             transactionHook.setUnableToReachBackend(
               !!(transactionInfo && transactionInfo.unableToReach),
-            );
-
-            transactionConfirmationFields.otherFields.push(
-              await transactionHook.getDomainWarnings(transactionInfo),
             );
 
             transactionConfirmationFields.otherFields.push({
@@ -384,13 +387,10 @@ export const SendTransaction = (props: Props) => {
                 usedAccount.wallet.address,
                 proxyTarget,
               );
+            lastTransactionInfo = transactionInfo;
 
             transactionHook.setUnableToReachBackend(
               !!(transactionInfo && transactionInfo.unableToReach),
-            );
-
-            transactionConfirmationFields.otherFields.push(
-              await transactionHook.getDomainWarnings(transactionInfo),
             );
 
             transactionConfirmationFields.otherFields.push({
@@ -592,12 +592,9 @@ export const SendTransaction = (props: Props) => {
               params.to,
               usedAccount.wallet.address,
             );
+          lastTransactionInfo = transactionInfo;
           transactionHook.setUnableToReachBackend(
             !!(transactionInfo && transactionInfo.unableToReach),
-          );
-
-          transactionConfirmationFields.otherFields.push(
-            await transactionHook.getDomainWarnings(transactionInfo),
           );
 
           transactionConfirmationFields.otherFields.push({
@@ -614,13 +611,10 @@ export const SendTransaction = (props: Props) => {
             params.to,
             usedAccount.wallet.address,
           );
+        lastTransactionInfo = transactionInfo;
 
         transactionHook.setUnableToReachBackend(
           !!(transactionInfo && transactionInfo.unableToReach),
-        );
-
-        transactionConfirmationFields.otherFields.push(
-          await transactionHook.getDomainWarnings(transactionInfo),
         );
 
         setTokenInfo(
@@ -724,6 +718,9 @@ export const SendTransaction = (props: Props) => {
         transactionConfirmationFields.otherFields,
       );
       transactionHook.setFields(transactionConfirmationFields);
+      if (lastTransactionInfo) {
+        void transactionHook.hydrateDomainFieldWarnings(lastTransactionInfo);
+      }
     } else {
       Logger.error('No corresponding account found');
     }

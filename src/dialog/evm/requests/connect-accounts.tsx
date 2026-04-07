@@ -39,6 +39,14 @@ export const ConnectAccounts = (props: Props) => {
   const init = async () => {
     transactionHook.setLoading(true);
     transactionHook.setReady(false);
+    let transactionConfirmationFields = {
+      otherFields: [transactionHook.buildInitialDomainField()],
+    } as TransactionConfirmationFields;
+    transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
+      transactionConfirmationFields.otherFields,
+    );
+    transactionHook.setFields(transactionConfirmationFields);
+
     const connected = await EvmWalletUtils.getConnectedWallets(
       data.dappInfo.domain,
     );
@@ -50,9 +58,6 @@ export const ConnectAccounts = (props: Props) => {
     }
     setAccountsToConnect(accs);
 
-    let transactionConfirmationFields = {
-      otherFields: [],
-    } as TransactionConfirmationFields;
     const transactionInfo =
       await EvmTransactionParserUtils.verifyTransactionInformation(
         data.dappInfo.domain,
@@ -60,13 +65,7 @@ export const ConnectAccounts = (props: Props) => {
     transactionHook.setUnableToReachBackend(
       !!(transactionInfo && transactionInfo.unableToReach),
     );
-    transactionConfirmationFields.otherFields.push(
-      await transactionHook.getDomainWarnings(transactionInfo),
-    );
-    transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
-      transactionConfirmationFields.otherFields,
-    );
-    transactionHook.setFields(transactionConfirmationFields);
+    void transactionHook.hydrateDomainFieldWarnings(transactionInfo);
     setTimeout(() => {
       transactionHook.setReady(true);
       transactionHook.setLoading(false);

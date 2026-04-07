@@ -66,17 +66,18 @@ export const SignTypedData = (props: Props) => {
     transactionHook.setLoading(true);
     transactionHook.setReady(false);
     let transactionConfirmationFields = {
-      otherFields: [],
+      otherFields: [transactionHook.buildInitialDomainField()],
       operationName: chrome.i18n.getMessage('dialog_evm_sign_data_title'),
     } as TransactionConfirmationFields;
+    transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
+      transactionConfirmationFields.otherFields,
+    );
+    transactionHook.setFields(transactionConfirmationFields);
 
     const transactionInfo =
       await EvmTransactionParserUtils.verifyTransactionInformation(
         data.dappInfo.domain,
       );
-    transactionConfirmationFields.otherFields.push(
-      await transactionHook.getDomainWarnings(transactionInfo),
-    );
     transactionHook.setUnableToReachBackend(
       !!(transactionInfo && transactionInfo.unableToReach),
     );
@@ -169,6 +170,7 @@ export const SignTypedData = (props: Props) => {
       transactionConfirmationFields.otherFields,
     );
     transactionHook.setFields(transactionConfirmationFields);
+    void transactionHook.hydrateDomainFieldWarnings(transactionInfo);
     setTimeout(() => {
       transactionHook.setReady(true);
       transactionHook.setLoading(false);

@@ -30,6 +30,8 @@ import { CommunicationUtils } from 'src/utils/communication.utils';
 import { DappRequestUtils } from 'src/utils/dapp-request.utils';
 import { EvmWarningUtils } from 'src/utils/evm/evm-warning.utils';
 
+const EVM_DOMAIN_FIELD_NAME = 'dialog_evm_domain';
+
 interface SelectedWarning {
   warning: EvmTransactionWarning;
   fieldIndex: number;
@@ -340,24 +342,40 @@ export const useTransactionHook = (
     return false;
   };
 
-  const getDomainWarnings = async (
+  /** Renders dapp domain immediately; call {@link hydrateDomainFieldWarnings} after verify. */
+  const buildInitialDomainField = (): TransactionConfirmationField => ({
+    name: EVM_DOMAIN_FIELD_NAME,
+    type: EvmInputDisplayType.STRING,
+    value: (
+      <div className="value-content">
+        <PreloadedImage src={data.dappInfo.logo} />
+        <div>{data.dappInfo.domain}</div>
+      </div>
+    ),
+    warnings: [],
+  });
+
+  const hydrateDomainFieldWarnings = async (
     transactionInfo: EvmTransactionVerificationInformation,
   ) => {
-    return {
-      name: 'dialog_evm_domain',
-      type: EvmInputDisplayType.STRING,
-      value: (
-        <div className="value-content">
-          <PreloadedImage src={data.dappInfo.logo} />
-          <div>{data.dappInfo.domain}</div>
-        </div>
-      ),
-      warnings: await EvmTransactionParserUtils.getDomainWarnings(
-        data.dappInfo.domain,
-        data.dappInfo.protocol,
-        transactionInfo,
-      ),
-    };
+    const warnings = await EvmTransactionParserUtils.getDomainWarnings(
+      data.dappInfo.domain,
+      data.dappInfo.protocol,
+      transactionInfo,
+    );
+    setFields((prev) => {
+      if (!prev?.otherFields) return prev;
+      const idx = prev.otherFields.findIndex(
+        (f) => f.name === EVM_DOMAIN_FIELD_NAME,
+      );
+      if (idx === -1) return prev;
+      const next: TransactionConfirmationFields = {
+        ...prev,
+        otherFields: [...prev.otherFields],
+      };
+      next.otherFields[idx] = { ...next.otherFields[idx], warnings };
+      return next;
+    });
   };
   const getWalletAddressInput = async (
     address: string,
@@ -453,7 +471,8 @@ export const useTransactionHook = (
     handleOnConfirmClick,
     hasWarning,
     ignoreWarning,
-    getDomainWarnings,
+    buildInitialDomainField,
+    hydrateDomainFieldWarnings,
     getWalletAddressInput,
     getAllNotIgnoredWarnings,
     openSingleWarningPopup,

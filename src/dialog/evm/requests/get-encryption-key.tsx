@@ -29,12 +29,20 @@ export const GetEncryptionKey = (props: Props) => {
     transactionHook.setLoading(true);
     transactionHook.setReady(false);
     let transactionConfirmationFields = {
-      otherFields: [],
+      otherFields: [transactionHook.buildInitialDomainField()],
     } as TransactionConfirmationFields;
+    transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
+      transactionConfirmationFields.otherFields,
+    );
+    transactionHook.setFields(transactionConfirmationFields);
+
     const transactionInfo =
       await EvmTransactionParserUtils.verifyTransactionInformation(
         data.dappInfo.domain,
       );
+    transactionHook.setUnableToReachBackend(
+      !!(transactionInfo && transactionInfo.unableToReach),
+    );
 
     const chain = await EvmChainUtils.getLastEvmChain();
     const usedAccount = accounts.find(
@@ -52,17 +60,11 @@ export const GetEncryptionKey = (props: Props) => {
     transactionConfirmationFields.otherFields.push({
       ...usedAccountInput,
     });
-    transactionConfirmationFields.otherFields.push(
-      await transactionHook.getDomainWarnings(transactionInfo),
-    );
-    transactionHook.setUnableToReachBackend(
-      !!(transactionInfo && transactionInfo.unableToReach),
-    );
-
     transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
       transactionConfirmationFields.otherFields,
     );
     transactionHook.setFields(transactionConfirmationFields);
+    void transactionHook.hydrateDomainFieldWarnings(transactionInfo);
     setTimeout(() => {
       transactionHook.setReady(true);
       transactionHook.setLoading(false);

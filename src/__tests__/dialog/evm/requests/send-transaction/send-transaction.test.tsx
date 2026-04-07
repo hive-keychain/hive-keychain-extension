@@ -73,11 +73,13 @@ describe('send-transaction proxy tests:\n', () => {
 
   const transactionHook = {
     fields: undefined,
-    getDomainWarnings: jest.fn().mockResolvedValue({
+    buildInitialDomainField: jest.fn().mockReturnValue({
       name: 'dialog_evm_domain',
       type: 'string',
       value: 'app.example',
+      warnings: [],
     }),
+    hydrateDomainFieldWarnings: jest.fn().mockResolvedValue(undefined),
     getWalletAddressInput: jest
       .fn()
       .mockImplementation(
@@ -104,6 +106,11 @@ describe('send-transaction proxy tests:\n', () => {
     setReady: jest.fn(),
     setSelectedFee: jest.fn(),
     setUnableToReachBackend: jest.fn(),
+  };
+
+  const lastSetFieldsPayload = () => {
+    const calls = transactionHook.setFields.mock.calls;
+    return calls[calls.length - 1][0];
   };
 
   beforeEach(() => {
@@ -218,7 +225,7 @@ describe('send-transaction proxy tests:\n', () => {
 
     await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
 
-    const fields = transactionHook.setFields.mock.calls[0][0];
+    const fields = lastSetFieldsPayload();
     const contractField = fields.otherFields.find(
       (field: any) => field.name === 'evm_operation_smart_contract_address',
     );
@@ -313,7 +320,7 @@ describe('send-transaction proxy tests:\n', () => {
 
     await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
 
-    const fields = transactionHook.setFields.mock.calls[0][0];
+    const fields = lastSetFieldsPayload();
 
     expect(fields.otherFields.map((field: any) => field.name)).toEqual([
       'evm_chain',
@@ -450,7 +457,7 @@ describe('send-transaction proxy tests:\n', () => {
 
     await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
 
-    const fields = transactionHook.setFields.mock.calls[0][0];
+    const fields = lastSetFieldsPayload();
     expect(EvmTransactionParserUtils.findAbiFromData).toHaveBeenCalled();
     expect(fields.operationName).toBe('evm_operation_transfer');
     expect(

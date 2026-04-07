@@ -43,12 +43,20 @@ export const PersonalSign = (props: Props) => {
     transactionHook.setLoading(true);
     transactionHook.setReady(false);
     let transactionConfirmationFields = {
-      otherFields: [],
+      otherFields: [transactionHook.buildInitialDomainField()],
     } as TransactionConfirmationFields;
+    transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
+      transactionConfirmationFields.otherFields,
+    );
+    transactionHook.setFields(transactionConfirmationFields);
+
     const transactionInfo =
       await EvmTransactionParserUtils.verifyTransactionInformation(
         data.dappInfo.domain,
       );
+    transactionHook.setUnableToReachBackend(
+      !!(transactionInfo && transactionInfo.unableToReach),
+    );
 
     const lastChain = await EvmChainUtils.getLastEvmChain();
 
@@ -64,17 +72,11 @@ export const PersonalSign = (props: Props) => {
       name: 'dialog_account',
       value: accountDisplay.value,
     } as TransactionConfirmationField);
-    transactionConfirmationFields.otherFields.push(
-      await transactionHook.getDomainWarnings(transactionInfo),
-    );
-    transactionHook.setUnableToReachBackend(
-      !!(transactionInfo && transactionInfo.unableToReach),
-    );
-
     transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
       transactionConfirmationFields.otherFields,
     );
     transactionHook.setFields(transactionConfirmationFields);
+    void transactionHook.hydrateDomainFieldWarnings(transactionInfo);
     setTimeout(() => {
       transactionHook.setReady(true);
       transactionHook.setLoading(false);
