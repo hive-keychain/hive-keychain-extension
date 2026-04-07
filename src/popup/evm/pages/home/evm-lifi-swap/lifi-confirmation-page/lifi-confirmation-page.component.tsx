@@ -174,7 +174,6 @@ const LiFiConfirmationPage = ({
                 }
                 transactionData={approveTransactionData}
                 setErrorMessage={handleErrors}
-                expandable={true}
               />
             </div>
           </>
@@ -223,7 +222,6 @@ const LiFiConfirmationPage = ({
             }
             transactionData={swapTransactionData}
             setErrorMessage={handleErrors}
-            expandable={true}
           />
         </div>
       </div>

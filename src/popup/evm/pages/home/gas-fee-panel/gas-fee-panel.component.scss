@@ -15,7 +15,7 @@
     display: grid;
     grid-template-columns: auto 1fr auto;
     column-gap: 8px;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
 
     .svg-icon {
@@ -26,6 +26,22 @@
     .title {
       @include poppins500(14px);
       color: var(--main-font-color);
+    }
+
+    .gas-fee-estimate {
+      display: flex;
+      flex-direction: column;
+      .gas-fee-value {
+        @include poppins400(14px);
+        color: var(--main-font-color);
+        text-align: right;
+        &.usd-value {
+          font-style: italic;
+          opacity: 0.7;
+          font-size: 13px;
+          text-align: right;
+        }
+      }
     }
   }
 

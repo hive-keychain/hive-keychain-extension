@@ -40,7 +40,6 @@ interface GasFeePanelProps {
   transactionData?: ProviderTransactionData;
   forceOpenGasFeePanelEvent?: EventEmitter;
   setErrorMessage: (error: EtherRPCCustomError) => void;
-  expandable?: boolean;
 }
 
 export const GasFeePanel = ({
@@ -53,7 +52,6 @@ export const GasFeePanel = ({
   transactionData,
   forceOpenGasFeePanelEvent,
   setErrorMessage,
-  expandable,
 }: GasFeePanelProps) => {
   const [isAdvancedPanelOpen, setIsAdvancedPanelOpen] = useState(false);
   const [feeEstimation, setFeeEstimation] = useState<FullGasFeeEstimation>();
@@ -151,21 +149,6 @@ export const GasFeePanel = ({
             ? new Decimal(selectedFee.priorityFeeInGwei).mul(multiplier)
             : undefined,
         };
-
-        // switch (transactionType) {
-        //   case EvmTransactionType.EIP_1559: {
-        //     increasedFee.estimatedFee = new Decimal(increasedFee.gasLimit)
-        //       .mul(new Decimal(increasedFee.maxFeePerGas!))
-        //       .div(EvmFormatUtils.GWEI);
-        //     break;
-        //   }
-        //   case EvmTransactionType.LEGACY: {
-        //     increasedFee.estimatedFee = new Decimal(increasedFee.gasLimit)
-        //       .mul(new Decimal(increasedFee.gasPrice!))
-        //       .div(EvmFormatUtils.GWEI);
-        //     break;
-        //   }
-        // }
 
         if (
           estimate?.aggressive?.estimatedFeeInEth &&
@@ -399,32 +382,20 @@ export const GasFeePanel = ({
   };
 
   const handlePanelOnClick = () => {
-    if (expandable) {
-      if (isExpandablePanelOpened) {
-        setIsAdvancedPanelOpen(true);
-      }
-      if (
-        chain.onlyCustomFee ||
-        (feeEstimation &&
-          !feeEstimation.suggestedByDApp &&
-          !feeEstimation.suggested)
-      ) {
-        openCustomFeePanel();
-      } else {
-        setExpandablePanelOpened(true);
-      }
-      return;
-    } else {
+    if (isExpandablePanelOpened) {
       setIsAdvancedPanelOpen(true);
-      if (
-        chain.onlyCustomFee ||
-        (feeEstimation &&
-          !feeEstimation.suggestedByDApp &&
-          !feeEstimation.suggested)
-      ) {
-        openCustomFeePanel();
-      }
     }
+    if (
+      chain.onlyCustomFee ||
+      (feeEstimation &&
+        !feeEstimation.suggestedByDApp &&
+        !feeEstimation.suggested)
+    ) {
+      openCustomFeePanel();
+    } else {
+      setExpandablePanelOpened(true);
+    }
+    return;
   };
 
   const closeCustomFeePanel = () => {
@@ -436,7 +407,7 @@ export const GasFeePanel = ({
     <>
       {feeEstimation && selectedFee && (
         <div
-          className={`gas-fee-panel ${expandable ? 'expandable' : ''}`}
+          className={`gas-fee-panel expandable`}
           onClick={() => handlePanelOnClick()}>
           <div className="title-row">
             <SVGIcon className="gas-fee-settings" icon={selectedFee.icon} />
@@ -444,31 +415,53 @@ export const GasFeePanel = ({
               {chrome.i18n.getMessage('popup_html_evm_gas_fee')} :{' '}
               {chrome.i18n.getMessage(selectedFee.name)}
             </div>
-            {(!expandable || (expandable && isExpandablePanelOpened)) && (
+            {!isExpandablePanelOpened && (
+              <div className="gas-fee-estimate">
+                <div className="gas-fee-value">
+                  {!selectedFee.estimatedFeeInEth.equals(-1) ? (
+                    <>
+                      {FormatUtils.formatCurrencyValue(
+                        selectedFee.estimatedFeeInEth.toFixed(),
+                        8,
+                      )}{' '}
+                      {chain.mainToken}
+                    </>
+                  ) : (
+                    '-'
+                  )}
+                </div>
+                <div className="gas-fee-value usd-value">
+                  {Number(selectedFee.estimatedFeeUSD.toFixed(2)) === 0
+                    ? '~'
+                    : ''}{' '}
+                  {selectedFee.estimatedFeeUSD.toFixed(2)}
+                  {' USD'}
+                </div>
+              </div>
+            )}
+            {isExpandablePanelOpened && (
               <SVGIcon
                 className="gas-fee-settings"
                 icon={SVGIcons.EVM_GAS_FEE_DETAILS}
               />
             )}
-            {expandable && (
-              <SVGIcon
-                icon={SVGIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
-                className={`expand-collapse ${
-                  isExpandablePanelOpened ? 'open' : 'closed'
-                }`}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  setExpandablePanelOpened(!isExpandablePanelOpened);
-                }}
-              />
-            )}
+            <SVGIcon
+              icon={SVGIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
+              className={`expand-collapse ${
+                isExpandablePanelOpened ? 'open' : 'closed'
+              }`}
+              onClick={(event) => {
+                event.stopPropagation();
+                setExpandablePanelOpened(!isExpandablePanelOpened);
+              }}
+            />
           </div>
           {gasFeeWarning && (
             <div className="gas-fee-warning">
               {chrome.i18n.getMessage(gasFeeWarning)}
             </div>
           )}
-          {((expandable && isExpandablePanelOpened) || !expandable) && (
+          {isExpandablePanelOpened && (
             <div className="details">
               {selectedFee.type !== EvmTransactionType.LEGACY && (
                 <div className="gas-fee-top-row">
