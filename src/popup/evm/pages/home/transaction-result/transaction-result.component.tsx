@@ -40,10 +40,6 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SmallDataCardComponent } from 'src/common-ui/small-data-card/small-data-card.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import {
-  COPY_GENERIC_MESSAGE_KEY,
-  copyTextWithToast,
-} from 'src/common-ui/toast/copy-toast.utils';
 import Logger from 'src/utils/logger.utils';
 
 enum ReplacedTransactionReason {
@@ -304,8 +300,7 @@ const EvmTransactionResult = ({
   };
 
   const openTransaction = (tx: string) => {
-    void copyTextWithToast(tx.toString(), COPY_GENERIC_MESSAGE_KEY);
-    // chrome.tabs.create({ url: `${chain.blockExplorer?.url}/tx/${tx}` });
+    chrome.tabs.create({ url: `${chain.blockExplorer?.url}/tx/${tx}` });
   };
 
   const confirmNewFee = () => {
@@ -362,18 +357,6 @@ const EvmTransactionResult = ({
             className={`transaction-status`}
           />
           <div className="amount-row">
-            {/* {!txResult && !waitingForTx && tokenInfo && (
-              <div className="amount">
-                {amount
-                  ? FormatUtils.withCommas(
-                      amount,
-                      (tokenInfo as EvmSmartContractInfoErc20).decimals ?? 18,
-                      true,
-                    )
-                  : 1}{' '}
-                {tokenInfo.symbol}
-              </div>
-            )} */}
             <div className="status">
               {chrome.i18n.getMessage(getStatusLabel(getStatus()))}
             </div>
