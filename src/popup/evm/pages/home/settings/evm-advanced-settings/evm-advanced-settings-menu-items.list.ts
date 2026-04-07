@@ -25,6 +25,11 @@ export const getEvmAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
       nextScreen: Screen.SETTINGS_AUTO_LOCK,
     },
     {
+      label: 'popup_html_shortcuts',
+      icon: SVGIcons.MENU_ADVANCED_SETTINGS_SHORTCUTS,
+      nextScreen: Screen.SETTINGS_SHORTCUTS,
+    },
+    {
       label: 'popup_html_change_password',
       icon: SVGIcons.MENU_ADVANCED_SETTINGS_CHANGE_PASSWORD,
       nextScreen: Screen.SETTINGS_CHANGE_PASSWORD,

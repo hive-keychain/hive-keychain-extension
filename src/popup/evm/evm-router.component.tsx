@@ -21,6 +21,7 @@ import { EvmSettingPage } from '@popup/evm/pages/home/settings/evm-settings.comp
 import { EvmTransactionResultComponent } from '@popup/evm/pages/home/transaction-result/transaction-result.component';
 import { EvmTransferComponent } from '@popup/evm/pages/home/transfer/evm-transfer.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { ShortcutsComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/shortcuts/shortcuts.component';
 import { globalRouter } from '@popup/multichain/global-router';
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { RootState } from '@popup/multichain/store';
@@ -88,6 +89,8 @@ const EvmAppRouter = ({
         return <EvmSecuritySettingsComponent />;
       case EvmScreen.EVM_PROVIDER_SETTINGS:
         return <EvmProviderSettingsComponent />;
+      case Screen.SETTINGS_SHORTCUTS:
+        return <ShortcutsComponent />;
       default:
         return globalRouter(page);
     }

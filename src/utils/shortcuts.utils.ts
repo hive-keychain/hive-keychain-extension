@@ -158,7 +158,6 @@ const NAVIGATION_SCREENS: (MultichainScreen | HiveScreen)[] = [
   HiveScreen.SETTINGS_MANAGE_ACCOUNTS_AUTHORITIES,
   HiveScreen.SETTINGS_ADD_KEY,
   HiveScreen.SETTINGS_ADVANCED,
-  HiveScreen.SETTINGS_SHORTCUTS,
   HiveScreen.SETTINGS_CHANGE_PASSWORD,
   HiveScreen.SETTINGS_RPC_NODES,
   HiveScreen.SETTINGS_AUTO_LOCK,
@@ -174,6 +173,7 @@ const NAVIGATION_SCREENS: (MultichainScreen | HiveScreen)[] = [
   HiveScreen.SETTINGS_OPERATION_POPUP,
   MultichainScreen.SETTINGS_ABOUT,
   MultichainScreen.SETTINGS_ANALYTICS,
+  MultichainScreen.SETTINGS_SHORTCUTS,
   HiveScreen.SETTINGS_NOTIFICATIONS_CONFIGURATION,
   HiveScreen.SETTINGS_HELP,
 ];
