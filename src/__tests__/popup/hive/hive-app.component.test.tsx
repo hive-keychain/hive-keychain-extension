@@ -27,7 +27,7 @@ describe('HiveApp startup', () => {
     jest.restoreAllMocks();
   });
 
-  it('keeps the splashscreen visible and hides the startup shell', async () => {
+  it('keeps the real splashscreen visible until startup resolves', async () => {
     const pricesDeferred = createDeferred<Record<string, unknown>>();
 
     jest

@@ -32,88 +32,6 @@
         background: #e5edf5;
       }
 
-      .popup-startup-shell {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 16px;
-        height: 100%;
-        width: 100%;
-        background:
-          radial-gradient(circle at top, rgba(54, 67, 96, 0.08), transparent 38%),
-          #e5edf5;
-        color: #212838;
-        font-family:
-          Poppins, 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-          sans-serif;
-        text-align: center;
-      }
-
-      .popup-startup-shell__mark {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 58px;
-        height: 58px;
-        border-radius: 18px;
-        background: linear-gradient(160deg, #293144 0%, #212838 100%);
-        color: #ffffff;
-        font-size: 22px;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        box-shadow: 0 14px 30px rgba(33, 40, 56, 0.18);
-      }
-
-      .popup-startup-shell__title {
-        font-size: 15px;
-        font-weight: 600;
-        letter-spacing: 0.02em;
-      }
-
-      .popup-startup-shell__subtitle {
-        font-size: 12px;
-        color: rgba(33, 40, 56, 0.68);
-      }
-
-      .popup-startup-shell__loading {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        margin-top: 6px;
-      }
-
-      .popup-startup-shell__dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: #e31337;
-        animation: popup-startup-bounce 1.2s ease-in-out infinite;
-      }
-
-      .popup-startup-shell__dot:nth-child(2) {
-        animation-delay: 0.15s;
-      }
-
-      .popup-startup-shell__dot:nth-child(3) {
-        animation-delay: 0.3s;
-      }
-
-      @keyframes popup-startup-bounce {
-        0%,
-        80%,
-        100% {
-          transform: scale(0.7);
-          opacity: 0.35;
-        }
-        40% {
-          transform: scale(1);
-          opacity: 1;
-        }
-      }
-
       @-moz-document url-prefix() {
         div:not(.scrollable) {
           scrollbar-width: none;
@@ -123,18 +41,7 @@
   </head>
 
   <body>
-    <div id="root">
-      <div class="popup-startup-shell" aria-hidden="true">
-        <div class="popup-startup-shell__mark">HK</div>
-        <div class="popup-startup-shell__title">Hive Keychain</div>
-        <div class="popup-startup-shell__subtitle">Loading wallet...</div>
-        <div class="popup-startup-shell__loading">
-          <span class="popup-startup-shell__dot"></span>
-          <span class="popup-startup-shell__dot"></span>
-          <span class="popup-startup-shell__dot"></span>
-        </div>
-      </div>
-    </div>
+    <div id="root"></div>
     <noscript> You need to enable JavaScript to run this app. </noscript>
     <script src="hiveTxBundle.js"></script>
     <script src="popupBundle.js"></script>
