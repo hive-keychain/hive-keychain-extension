@@ -4,7 +4,7 @@ import Logger from 'src/utils/logger.utils';
 
 const REQUEST_LIMIT_PER_DAPP = 3;
 const REQUEST_TIME_LIMIT_PER_DAPP_IN_MINUTE = 1;
-const REQUEST_LOCK_TIME_IN_MINUTE = 1;
+export const REQUEST_LOCK_TIME_IN_MINUTE = 1;
 
 interface GuardDappRequest {
   [domain: string]: {

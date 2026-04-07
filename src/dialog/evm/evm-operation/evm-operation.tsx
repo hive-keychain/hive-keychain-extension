@@ -14,7 +14,10 @@ import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { DialogCaption } from 'src/dialog/components/dialog-caption/dialog-caption.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 import { CommunicationUtils } from 'src/utils/communication.utils';
-import { DappRequestUtils } from 'src/utils/dapp-request.utils';
+import {
+  DappRequestUtils,
+  REQUEST_LOCK_TIME_IN_MINUTE,
+} from 'src/utils/dapp-request.utils';
 
 type Props = {
   title: string;
@@ -161,6 +164,7 @@ export const EvmOperation = ({
         {transactionHook?.shouldDisplayBlockButton && (
           <ButtonComponent
             label="evm_too_many_transaction_button"
+            labelParams={[REQUEST_LOCK_TIME_IN_MINUTE.toString()]}
             type={ButtonType.ALTERNATIVE}
             onClick={cancelAndBlock}
             height="small"
