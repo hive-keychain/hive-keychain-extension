@@ -1,8 +1,6 @@
 import { Screen } from '@interfaces/screen.interface';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
-import {
-  setErrorMessage,
-} from '@popup/multichain/actions/message.actions';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
@@ -70,7 +68,9 @@ const CreateNewWallet = ({
         <div className="mnemonic-container">
           {!isMnemonicDisplayed && (
             <div className="mnemonic-overlay">
-              <div>{chrome.i18n.getMessage('html_popup_mnemonic_overlay')}</div>
+              <div className="mnemonic-overlay-text">
+                {chrome.i18n.getMessage('html_popup_mnemonic_overlay')}
+              </div>
             </div>
           )}
           <div
