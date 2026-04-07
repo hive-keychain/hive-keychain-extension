@@ -15,6 +15,7 @@ interface EvmTokenHistoryItemProps {
   chain: Chain;
   goToDetailsPage: () => void;
   index: number;
+  hasDetails?: boolean;
 }
 
 export const EvmTokenHistoryItemComponent = ({
@@ -22,6 +23,7 @@ export const EvmTokenHistoryItemComponent = ({
   chain,
   index,
   goToDetailsPage,
+  hasDetails = true,
 }: EvmTokenHistoryItemProps) => {
   const [isExpandablePanelOpened, setExpandablePanelOpened] = useState(false);
   const [expandableContent, setExpandableContent] = useState(
@@ -75,7 +77,7 @@ export const EvmTokenHistoryItemComponent = ({
               icon={getIcon()}
               onClick={goToBlockchainExplorer}
             />
-            <div className="right-panel">
+            <div className={`right-panel ${hasDetails ? 'has-details' : ''}`}>
               <div className="detail">
                 {index} -{historyItem.label}
               </div>

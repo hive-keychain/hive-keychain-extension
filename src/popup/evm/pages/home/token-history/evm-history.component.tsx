@@ -93,6 +93,7 @@ export const EvmHistory = ({
                     goToDetailsPage(event.transactionHash, event);
                   }}
                   index={index}
+                  hasDetails={false}
                 />
               )}
               renderOnScroll
