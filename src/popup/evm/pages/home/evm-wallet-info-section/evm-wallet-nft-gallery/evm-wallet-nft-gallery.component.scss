@@ -7,7 +7,7 @@
   height: 100%;
 
   .no-nfts-found {
-    @include no-data-panel(50px);
+    @include no-data-panel();
     flex: 1;
   }
 

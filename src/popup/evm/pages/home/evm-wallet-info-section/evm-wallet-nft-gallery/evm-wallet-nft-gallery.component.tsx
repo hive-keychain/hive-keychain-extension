@@ -90,19 +90,21 @@ export const EvmWalletNftGalleryComponent = ({
     <div className="nft-gallery">
       {displayedCollections && !activeAccount.nfts.loading && (
         <>
-          <SeparatorWithFilter
-            setFilterValue={setFilterValue}
-            filterValue={filterValue}
-            rightAction={
-              chain.manualDiscoverAvailable || chain.addTokensManually
-                ? {
-                    icon: SVGIcons.WALLET_ADD,
-                    onClick: openAddCustomTokenPanel,
-                  }
-                : undefined
-            }
-            filterDisabled={activeAccount.nfts.value.length === 0}
-          />
+          {displayedCollections.length > 0 && (
+            <SeparatorWithFilter
+              setFilterValue={setFilterValue}
+              filterValue={filterValue}
+              rightAction={
+                chain.manualDiscoverAvailable || chain.addTokensManually
+                  ? {
+                      icon: SVGIcons.WALLET_ADD,
+                      onClick: openAddCustomTokenPanel,
+                    }
+                  : undefined
+              }
+              filterDisabled={activeAccount.nfts.value.length === 0}
+            />
+          )}
           <FlatList
             list={displayedCollections}
             renderItem={(token: EvmErc721Token | EvmErc1155Token) => (

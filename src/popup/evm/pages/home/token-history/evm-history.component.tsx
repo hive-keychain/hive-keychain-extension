@@ -80,7 +80,7 @@ export const EvmHistory = ({
               <Separator type="horizontal" />
             </>
           )}
-          {history.events && history.events.length > 0 && (
+          {history && history.events && (
             <FlatList
               ref={historyItemList}
               list={history.events}
@@ -98,25 +98,7 @@ export const EvmHistory = ({
               )}
               renderOnScroll
               renderWhenEmpty={() => {
-                if (!loading) {
-                  return (
-                    <div className="empty-history-panel">
-                      <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
-                      <div className="text">
-                        <div>
-                          {chrome.i18n.getMessage(
-                            'popup_html_transaction_list_is_empty',
-                          )}
-                        </div>
-                        <div>
-                          {chrome.i18n.getMessage(
-                            'popup_html_transaction_list_is_empty_try_clear_filter',
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }
+                return <></>;
               }}
             />
           )}
@@ -133,6 +115,16 @@ export const EvmHistory = ({
         </div>
       )}
       {loading && <RotatingLogoComponent />}
+      {!loading && history && history.fullyFetch && (
+        <div className="empty-history-panel evm-history-empty-panel">
+          <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
+          <div className="text">
+            <div>
+              {chrome.i18n.getMessage('popup_html_transaction_list_is_empty')}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

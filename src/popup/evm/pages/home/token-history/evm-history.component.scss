@@ -20,3 +20,7 @@
     color: var(--main-font-color);
   }
 }
+
+.evm-history-empty-panel {
+  width: calc(100% - 64px);
+}
