@@ -382,8 +382,8 @@ const EvmTransfer = ({
                   control={control}
                   dataTestId="input-address"
                   type={InputType.TEXT}
-                  placeholder="popup_html_address"
-                  label="popup_html_address"
+                  placeholder="evm_contact_address"
+                  label="evm_contact_address"
                   autocompleteValues={autocompleteValues}
                 />
                 <div className="value-panel">
