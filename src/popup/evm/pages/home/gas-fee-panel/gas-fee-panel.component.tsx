@@ -464,35 +464,38 @@ export const GasFeePanel = ({
           {isExpandablePanelOpened && (
             <div className="details">
               {selectedFee.type !== EvmTransactionType.LEGACY && (
-                <div className="gas-fee-top-row">
-                  <div className="label gas-fee-label">
-                    {chrome.i18n.getMessage(
-                      'popup_html_evm_gas_fee_estimate_label',
-                    )}
-                  </div>
-                  <div className="label gas-fee">
-                    <div>
-                      {!selectedFee.estimatedFeeInEth.equals(-1) ? (
-                        <>
-                          {FormatUtils.formatCurrencyValue(
-                            selectedFee.estimatedFeeInEth.toFixed(),
-                            8,
-                          )}{' '}
-                          {chain.mainToken}
-                        </>
-                      ) : (
-                        '-'
+                <>
+                  <div className="gas-fee-top-row">
+                    <div className="label gas-fee-label">
+                      {chrome.i18n.getMessage(
+                        'popup_html_evm_gas_fee_estimate_label',
                       )}
                     </div>
-                    {!selectedFee.estimatedFeeInEth.equals(-1) &&
-                      !!selectedFee.estimatedFeeUSD && (
-                        <div className="label usd-value">
-                          {selectedFee.estimatedFeeUSD.toFixed(2)}
-                          {' USD'}
-                        </div>
-                      )}
+                    <div className="label gas-fee">
+                      <div>
+                        {!selectedFee.estimatedFeeInEth.equals(-1) ? (
+                          <>
+                            {FormatUtils.formatCurrencyValue(
+                              selectedFee.estimatedFeeInEth.toFixed(),
+                              8,
+                            )}{' '}
+                            {chain.mainToken}
+                          </>
+                        ) : (
+                          '-'
+                        )}
+                      </div>
+                      {!selectedFee.estimatedFeeInEth.equals(-1) &&
+                        !!selectedFee.estimatedFeeUSD && (
+                          <div className="label usd-value">
+                            {selectedFee.estimatedFeeUSD.toFixed(2)}
+                            {' USD'}
+                          </div>
+                        )}
+                    </div>
                   </div>
-                </div>
+                  <Separator fullSize type="horizontal" />
+                </>
               )}
 
               <div className="gas-fee-top-row">
@@ -525,19 +528,22 @@ export const GasFeePanel = ({
                 </div>
               </div>
               {!selectedFee.estimatedMaxDuration.equals(-1) && (
-                <div className="gas-fee-top-row">
-                  <div className="label duration">
-                    {chrome.i18n.getMessage(
-                      'popup_html_evm_gas_fee_estimate_duration_label',
-                    )}
+                <>
+                  <Separator fullSize type="horizontal" />
+                  <div className="gas-fee-top-row">
+                    <div className="label duration">
+                      {chrome.i18n.getMessage(
+                        'popup_html_evm_gas_fee_estimate_duration_label',
+                      )}
+                    </div>
+                    <div className="label duration">
+                      {chrome.i18n.getMessage(
+                        'popup_html_evm_gas_fee_estimate_duration',
+                        [selectedFee.estimatedMaxDuration.toString()],
+                      )}
+                    </div>
                   </div>
-                  <div className="label duration">
-                    {chrome.i18n.getMessage(
-                      'popup_html_evm_gas_fee_estimate_duration',
-                      [selectedFee.estimatedMaxDuration.toString()],
-                    )}
-                  </div>
-                </div>
+                </>
               )}
             </div>
           )}
