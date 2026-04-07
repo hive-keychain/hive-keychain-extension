@@ -1,4 +1,12 @@
 .custom-select-container {
+  position: relative;
+
+  &.opened {
+    .custom-select {
+      z-index: 5;
+    }
+  }
+
   .label {
     @include input-label;
   }
@@ -231,6 +239,16 @@
           }
         }
       }
+    }
+  }
+
+  .overlay {
+    display: none;
+    @include overlay;
+    z-index: 4;
+
+    &.opened {
+      display: block;
     }
   }
 }

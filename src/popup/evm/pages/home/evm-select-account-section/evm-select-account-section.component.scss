@@ -5,7 +5,6 @@
     border: 1px solid var(--select-border-color) !important;
     border-radius: 16px !important;
     background: var(--select-account-background);
-    z-index: 5;
 
     &:hover,
     &:focus {
@@ -159,6 +158,37 @@
     }
   }
 
+  &.main-page {
+    .select-account-select {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+
+      .react-dropdown-select-content {
+        .selected-account-panel {
+          padding: 4px 6px 4px 12px;
+          column-gap: 12px;
+        }
+      }
+
+      .react-dropdown-select-dropdown-handle {
+        margin-left: unset !important;
+      }
+
+      .react-dropdown-select-dropdown {
+        top: calc(100% + 4px);
+        left: 0 !important;
+        right: unset;
+        width: max-content;
+        min-width: calc(100% + 2px);
+        background-color: var(--select-dropdown-bg-color);
+
+        .select-account-item {
+          padding: 10px 12px;
+        }
+      }
+    }
+  }
+
   &.fullsize {
     margin: 0px 20px;
     height: 68px;
@@ -183,6 +213,12 @@
     .react-dropdown-select-dropdown {
       visibility: hidden;
       pointer-events: none;
+    }
+  }
+
+  &.opened {
+    .select-account-select {
+      z-index: 5;
     }
   }
 

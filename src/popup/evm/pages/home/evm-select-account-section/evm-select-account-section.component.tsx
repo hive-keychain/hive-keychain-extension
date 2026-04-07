@@ -245,7 +245,9 @@ const SelectAccountSection = ({
         <div
           className={`evm-select-account-section ${
             fullSize ? 'fullsize' : ''
-          } ${isOpened ? 'opened' : 'closed'}`}>
+          } ${isOpened ? 'opened' : 'closed'} ${
+            isOnMain ? 'main-page' : ''
+          }`}>
           <Select
             keepOpen
             values={[selectedAddress as any]}

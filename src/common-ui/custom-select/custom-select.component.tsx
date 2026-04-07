@@ -1,6 +1,7 @@
 import FlatList from 'flatlist-react';
 import React, { useEffect, useRef, useState } from 'react';
 import Select, { SelectRenderer } from 'react-dropdown-select';
+import type { SelectMethods } from 'react-dropdown-select';
 import { CustomSelectItemComponent } from 'src/common-ui/custom-select/custom-select-item.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -41,15 +42,18 @@ export interface CustomSelectProps<T> {
   customFilter?: JSX.Element;
   /** For tests / automation: identifies the dropdown arrow control. */
   selectHandleDataTestId?: string;
+  showOverlay?: boolean;
 }
 
 export function ComplexeCustomSelect<T extends OptionItem>(
   itemProps: CustomSelectProps<T>,
 ) {
   const ref = useRef<HTMLInputElement>(null);
+  const methodsRef = useRef<SelectMethods<T> | null>(null);
 
   const [filteredOptions, setFilteredOptions] = useState(itemProps.options);
   const [query, setQuery] = useState('');
+  const [isOpened, setIsOpened] = useState(false);
 
   useEffect(() => {
     setFilteredOptions(filter(query));
@@ -67,6 +71,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
   };
 
   const customLabelRender = (selectProps: SelectRenderer<T>) => {
+    methodsRef.current = selectProps.methods;
     return (
       <div
         className={`selected-item ${itemProps.selectedItem?.imgChip ? 'has-img-chip' : ''}`}
@@ -127,6 +132,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
     state,
     methods,
   }: SelectRenderer<T>) => {
+    methodsRef.current = methods;
     return (
       <SVGIcon
         className="custom-select-handle"
@@ -143,6 +149,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
     state,
     methods,
   }: SelectRenderer<T>) => {
+    methodsRef.current = methods;
     setTimeout(() => {
       ref.current?.focus();
     }, 200);
@@ -196,7 +203,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
     <div
       className={`custom-select-container ${
         itemProps.additionalClassname ?? ''
-      }`}>
+      } ${isOpened ? 'opened' : 'closed'}`}>
       {itemProps.label && (
         <div className="label">
           {itemProps.skipLabelTranslation
@@ -214,7 +221,15 @@ export function ComplexeCustomSelect<T extends OptionItem>(
           itemProps.background ? itemProps.background : ''
         }`}
         values={[]}
+        onDropdownOpen={() => setIsOpened(true)}
+        onDropdownClose={() => setIsOpened(false)}
       />
+      {itemProps.showOverlay && (
+        <div
+          className={`overlay ${isOpened ? 'opened' : 'closed'}`}
+          onClick={() => methodsRef.current?.dropDown('close')}
+        />
+      )}
     </div>
   );
 }
