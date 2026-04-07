@@ -1,11 +1,18 @@
 .evm-lifi-swap-page {
   flex: 1;
   display: flex;
+
+  .form-container {
+    align-items: center;
+    justify-content: center;
+  }
+
   .evm-lifi-swap-page-content {
     display: flex;
     flex-direction: column;
     row-gap: 8px;
     flex: 1;
+    width: 100%;
 
     .countdown {
       display: flex;
