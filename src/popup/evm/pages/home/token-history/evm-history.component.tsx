@@ -114,7 +114,11 @@ export const EvmHistory = ({
           <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE}></SVGIcon>
         </div>
       )}
-      {loading && <RotatingLogoComponent />}
+      {loading && (
+        <div className="rotating-logo-container">
+          <RotatingLogoComponent />
+        </div>
+      )}
       {!loading && history && history.fullyFetch && (
         <div className="empty-history-panel evm-history-empty-panel">
           <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
