@@ -13,7 +13,7 @@ import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
@@ -24,7 +24,10 @@ import {
   OptionItem,
 } from 'src/common-ui/custom-select/custom-select.component';
 import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
-import { COPY_GENERIC_MESSAGE_KEY, copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
+import {
+  COPY_GENERIC_MESSAGE_KEY,
+  copyTextWithToast,
+} from 'src/common-ui/toast/copy-toast.utils';
 
 const EvmAccounts = ({
   accounts,
@@ -41,17 +44,32 @@ const EvmAccounts = ({
 
   const [menu, setMenu] = useState<ContextualMenu>();
 
+  const [localAccounts, setLocalAccounts] = useState<EvmAccount[]>(accounts);
+
+  const accountListDiv = useRef(null);
+
   useEffect(() => {
     setTitleContainerProperties({
       title: 'evm_seeds_and_accounts',
       isBackButtonEnabled: true,
       isCloseButtonDisabled: false,
+      onCloseAdditional: async () => {
+        setEvmAccounts(
+          await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk),
+        );
+      },
+      onBackAdditional: async () => {
+        setEvmAccounts(
+          await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk),
+        );
+      },
     });
   }, []);
 
   useEffect(() => {
     initializeOptions();
-  }, [accounts]);
+    setLocalAccounts(accounts);
+  }, []);
 
   useEffect(() => {
     initializeMenu();
@@ -112,7 +130,8 @@ const EvmAccounts = ({
     const account = accounts.find(
       (account) => account.seedId === selectedSeed!.value,
     );
-    setEvmAccounts(accounts);
+    // setEvmAccounts(accounts);
+    setLocalAccounts(accounts);
     setEditParams(undefined);
     if (!account) return;
 
@@ -121,6 +140,12 @@ const EvmAccounts = ({
       account.wallet.address,
       false,
     );
+    if (accountListDiv.current) {
+      (accountListDiv.current as HTMLDivElement).scrollTo({
+        top: (accountListDiv.current as HTMLDivElement).scrollHeight,
+        behavior: 'smooth',
+      });
+    }
   };
 
   const handleCopySeedClick = () => {
@@ -144,7 +169,7 @@ const EvmAccounts = ({
     const seed = getCurrentSeed();
     if (!seed) return;
     await EvmWalletUtils.deleteSeed(seed.seedId, accounts, mk);
-    setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
+    setLocalAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
   };
 
   const handleEditSeedClick = () => {
@@ -174,7 +199,9 @@ const EvmAccounts = ({
         seedNickname,
         mk,
       );
-      setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
+      setLocalAccounts(
+        await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk),
+      );
       setEditParams(undefined);
     }
   };
@@ -200,7 +227,7 @@ const EvmAccounts = ({
       newAddressNickname,
       mk,
     );
-    setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
+    setLocalAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
     setEditParams(undefined);
   };
 
@@ -214,7 +241,7 @@ const EvmAccounts = ({
     hide: boolean,
   ) => {
     await EvmWalletUtils.hideOrShowAddress(seedId, mk, addressId, hide);
-    setEvmAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
+    setLocalAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
   };
 
   return (
@@ -231,9 +258,10 @@ const EvmAccounts = ({
           {menu && <ContextualMenuComponent menu={menu} />}
         </div>
       )}
-      <div className="accounts-panel">
+      <div className="accounts-panel" ref={accountListDiv}>
         {selectedSeed &&
-          accounts
+          localAccounts &&
+          localAccounts
             .filter((account) => account.seedId === selectedSeed.value)
             .map((account: EvmAccount) => (
               <div
