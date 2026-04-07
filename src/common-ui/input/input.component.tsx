@@ -37,6 +37,7 @@ export interface InputProps {
   rightActionIconClassname?: string;
   size?: 'small';
   autocompletePrefix?: string;
+  onBlur?(): any;
 }
 
 const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
@@ -54,6 +55,9 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
   const handleOnBlur = () => {
     if (mounted) {
       setTimeout(() => setIsFocused(false), 200);
+    }
+    if (props.onBlur) {
+      props.onBlur();
     }
   };
   const handleOnFocus = () => {

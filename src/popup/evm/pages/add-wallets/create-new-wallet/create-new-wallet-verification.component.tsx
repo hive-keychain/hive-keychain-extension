@@ -156,6 +156,7 @@ const CreateNewWalletVerification = ({
             value={currentWord}
             onChange={setCurrentWord}
             onEnterPress={() => verifyWord()}
+            onBlur={() => verifyWord()}
             label={chrome.i18n.getMessage(
               'html_popup_evm_create_wallet_verification_enter_word',
               [(hiddenWordIndexes[currentWordIndex] + 1).toString()],
@@ -183,11 +184,13 @@ const CreateNewWalletVerification = ({
           </>
         )}
         <div className="fill-space"></div>
-        <ButtonComponent
-          dataTestId="submit-button"
-          label={'popup_html_submit'}
-          onClick={submitForm}
-        />
+        {allWordsVerified && (
+          <ButtonComponent
+            dataTestId="submit-button"
+            label={'popup_html_submit'}
+            onClick={submitForm}
+          />
+        )}
       </FormContainer>
     </div>
   );
