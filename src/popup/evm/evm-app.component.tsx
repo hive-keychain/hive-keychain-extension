@@ -32,26 +32,38 @@ const EvmApp = ({
   loadEvmActiveAccount,
 }: PropsFromRedux) => {
   const [displaySplashscreen, setDisplaySplashscreen] = useState(true);
+  const [isAppReady, setIsAppReady] = useState(false);
   useEffect(() => {
+    if (!isAppReady) {
+      return;
+    }
+
     if (!accounts.length) {
       navigateToWithParams(Screen.EVM_ADD_WALLET_MAIN, { resetOnBack: true });
     } else {
       navigateTo(Screen.HOME_PAGE, true);
     }
-  }, [accounts.length]);
+  }, [accounts.length, isAppReady]);
 
   useEffect(() => {
     setDisplaySplashscreen(true);
+    setIsAppReady(false);
     init();
   }, [chain]);
 
   useEffect(() => {
-    if (displaySplashscreen) {
-      setTimeout(() => {
-        setDisplaySplashscreen(false);
-      }, Config.loader.minDuration);
+    if (!displaySplashscreen || !isAppReady) {
+      return;
     }
-  }, [appStatus, displaySplashscreen]);
+
+    const timeoutId = window.setTimeout(() => {
+      setDisplaySplashscreen(false);
+    }, Config.loader.minDuration);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [appStatus, displaySplashscreen, isAppReady]);
 
   const init = async () => {
     try {
@@ -66,14 +78,22 @@ const EvmApp = ({
       loadEvmActiveAccount(chain, wallet);
     } catch (err) {
       Logger.log(err);
-      setDisplaySplashscreen(false);
+    } finally {
+      setIsAppReady(true);
     }
   };
+
+  if (!isAppReady || displaySplashscreen) {
+    return (
+      <div className={`App evm ${isCurrentPageHomePage ? 'homepage' : ''}`}>
+        <SplashscreenComponent />
+      </div>
+    );
+  }
 
   return (
     <div className={`App evm ${isCurrentPageHomePage ? 'homepage' : ''}`}>
       {<EvmRouterComponent />}
-      {displaySplashscreen && <SplashscreenComponent />}
       {loading && (
         <LoadingComponent
           operations={loadingState.loadingOperations}

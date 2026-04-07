@@ -221,18 +221,20 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
 
       if (!isMounted) return;
 
-      if (storedChain) {
-        setChain(storedChain);
+      let chainFromProvider: EvmChain | null = null;
+      try {
+        chainFromProvider = await providerChainPromise;
+      } catch {
+        chainFromProvider = null;
+      }
+
+      if (!isMounted) return;
+
+      const initialChain = chainFromProvider ?? storedChain;
+      if (initialChain) {
+        setChain(initialChain);
       }
       setIsBootstrapping(false);
-
-      const chainFromProvider = await providerChainPromise;
-
-      if (!isMounted || !chainFromProvider) return;
-
-      if (chainFromProvider.chainId !== storedChain?.chainId) {
-        setChain(chainFromProvider);
-      }
     };
 
     void init();

@@ -149,14 +149,28 @@ const HiveApp = ({
   ]);
 
   useEffect(() => {
-    if (displaySplashscreen) {
-      if (appStatus.priceLoaded && appStatus.globalPropertiesLoaded) {
-        setTimeout(() => {
-          setDisplaySplashscreen(false);
-        }, Config.loader.minDuration);
-      }
+    if (
+      !displaySplashscreen ||
+      !isAppReady ||
+      !appStatus.priceLoaded ||
+      !appStatus.globalPropertiesLoaded
+    ) {
+      return;
     }
-  }, [appStatus, displaySplashscreen]);
+
+    const timeoutId = window.setTimeout(() => {
+      setDisplaySplashscreen(false);
+    }, Config.loader.minDuration);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [
+    appStatus.globalPropertiesLoaded,
+    appStatus.priceLoaded,
+    displaySplashscreen,
+    isAppReady,
+  ]);
 
   const initActiveRpc = async (rpc: Rpc) => {
     const rpcStatusOk = await RpcUtils.checkRpcStatus(rpc.uri);
@@ -180,8 +194,8 @@ const HiveApp = ({
       setAccounts(accountsFromStorage);
     }
 
-    setAppReady(true);
     await selectComponent(mk, accountsFromStorage);
+    setAppReady(true);
 
     const rpc = await RpcUtils.getCurrentRpc();
     setInitialRpc(rpc);
@@ -254,7 +268,7 @@ const HiveApp = ({
     displayChangeRpcPopup: boolean,
     switchToRpc: Rpc | undefined,
   ) => {
-    if (loading || !activeRpc) {
+    if (loading) {
       return (
         <LoadingComponent
           operations={loadingState.loadingOperations}
@@ -291,10 +305,21 @@ const HiveApp = ({
     }, 1000);
   };
 
+  const showStartupSplash =
+    !isAppReady ||
+    displaySplashscreen ||
+    (!activeRpc && !displayChangeRpcPopup);
+
+  if (showStartupSplash) {
+    return (
+      <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
+        <SplashscreenComponent />
+      </div>
+    );
+  }
+
   return (
     <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
-      {displaySplashscreen && <SplashscreenComponent />}
-
       {renderPopup(
         loading,
         activeRpc,
@@ -303,7 +328,7 @@ const HiveApp = ({
         switchToRpc,
       )}
 
-      {isAppReady && renderMainLayoutNav()}
+      {renderMainLayoutNav()}
     </div>
   );
 };

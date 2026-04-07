@@ -36,7 +36,6 @@ import VaultUtils from 'src/utils/vault.utils';
 type Props = { screen: SignUpScreen };
 
 const ChainRouter = ({
-  screen,
   message,
   mk,
   setMk,
@@ -47,9 +46,11 @@ const ChainRouter = ({
   resetMessage,
   chain,
   modal,
-  currentPage,
 }: Props & PropsFromRedux) => {
-  const [keylessKeychainEnabled, setKeylessKeychainEnabled] = useState(false);
+  const [hasHydratedMk, setHasHydratedMk] = useState(false);
+  const [keylessKeychainEnabled, setKeylessKeychainEnabled] = useState<
+    boolean | null
+  >(null);
   useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
     initAutoLock();
@@ -65,14 +66,18 @@ const ChainRouter = ({
     LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED,
     ).then((enabled) => {
-      setKeylessKeychainEnabled(enabled);
+      setKeylessKeychainEnabled(!!enabled);
     });
   }, []);
 
   const initMk = async () => {
-    const mkFromStorage = await VaultUtils.getValueFromVault(VaultKey.__MK);
-    if (mkFromStorage) {
-      setMk(mkFromStorage, false);
+    try {
+      const mkFromStorage = await VaultUtils.getValueFromVault(VaultKey.__MK);
+      if (mkFromStorage) {
+        setMk(mkFromStorage, false);
+      }
+    } finally {
+      setHasHydratedMk(true);
     }
   };
   const checkIfHasFinishedSignup = async () => {
@@ -105,15 +110,15 @@ const ChainRouter = ({
   };
 
   const renderChain = () => {
+    const isKeylessKeychainEnabled = !!keylessKeychainEnabled;
     if (!mk || mk.length === 0) {
-      console.log({ hasFinishedSignup, keylessKeychainEnabled });
-      if (!hasFinishedSignup && !keylessKeychainEnabled) {
+      if (!hasFinishedSignup && !isKeylessKeychainEnabled) {
         return <SignUpComponent />;
       } else {
         return <SignInRouterComponent />;
       }
     } else {
-      if (keylessKeychainEnabled) {
+      if (isKeylessKeychainEnabled) {
         return <HiveAppComponent />;
       } else {
         switch (chain?.type) {
@@ -132,6 +137,15 @@ const ChainRouter = ({
     }
   };
 
+  const isRouterReady =
+    hasHydratedMk &&
+    hasFinishedSignup !== null &&
+    keylessKeychainEnabled !== null;
+
+  if (!isRouterReady) {
+    return <SplashscreenComponent />;
+  }
+
   return (
     <>
       {renderChain()}
@@ -143,9 +157,6 @@ const ChainRouter = ({
       )}
       {modal && <ModalComponent {...modal} />}
       <CopyToastContainer />
-      {!mk && hasFinishedSignup === null && !currentPage && !nav && (
-        <SplashscreenComponent />
-      )}
     </>
   );
 };
