@@ -2,6 +2,7 @@ import {
   EvmLocalAccountListItem,
   EvmSelectAccountItem,
 } from '@interfaces/list-item.interface';
+import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmSelectAccountSectionItemComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section-item.component';
@@ -12,10 +13,10 @@ import {
 } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
-import { setAccounts } from '@popup/hive/actions/account.actions';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   DragDropContext,
   Draggable,
@@ -42,7 +43,9 @@ const SelectAccountSection = ({
   accounts,
   activeAccount,
   chain,
+  mk,
   loadEvmActiveAccount,
+  setEvmAccounts,
   isOnMain = false,
   removeBorder,
 }: PropsFromRedux & Props) => {
@@ -52,6 +55,7 @@ const SelectAccountSection = ({
   const [options, setOptions] = useState(defaultOptions);
   const [selectedAddress, setSelectedAddress] =
     useState<EvmSelectAccountItem>();
+  const initRequestId = useRef(0);
 
   useEffect(() => {
     init();
@@ -67,6 +71,8 @@ const SelectAccountSection = ({
   });
 
   const init = async () => {
+    const currentRequestId = ++initRequestId.current;
+
     if (accounts && activeAccount.address) {
       const visibleAccounts = accounts.filter((account) => !account.hide);
 
@@ -79,6 +85,10 @@ const SelectAccountSection = ({
           addressDetails: buildPlaceholderAddressDetail(account),
         },
       }));
+
+      if (initRequestId.current !== currentRequestId) {
+        return;
+      }
 
       setOptions(placeholderOpts);
       const placeholderSelected = placeholderOpts.find(
@@ -104,6 +114,10 @@ const SelectAccountSection = ({
         })),
       );
 
+      if (initRequestId.current !== currentRequestId) {
+        return;
+      }
+
       setOptions(enrichedOpts);
       const enrichedSelected = enrichedOpts.find(
         (opt) =>
@@ -126,12 +140,23 @@ const SelectAccountSection = ({
     }
   };
 
-  const onDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
+  const onDragEnd = async (result: DropResult) => {
+    if (
+      !result.destination ||
+      result.destination.index === result.source.index
+    )
+      return;
+
     const list = Array.from(options);
     const [removed] = list.splice(result.source.index, 1);
     list.splice(result.destination.index, 0, removed);
     setOptions(list);
+
+    const reorderedAccounts = await EvmWalletUtils.reorderAccounts(
+      list.map((option) => option.value.account),
+      mk,
+    );
+    setEvmAccounts(reorderedAccounts);
   };
 
   const handleClickOnSelector = () => {
@@ -190,7 +215,7 @@ const SelectAccountSection = ({
   };
 
   const customDropdownRenderer = ({
-    props: properties,
+    props,
     state,
     methods,
   }: SelectRenderer<EvmLocalAccountListItem>) => {
@@ -203,7 +228,7 @@ const SelectAccountSection = ({
             isDropDisabled={!isOnMain}>
             {(provided) => (
               <div {...provided.droppableProps} ref={provided.innerRef}>
-                {properties.options.map((option, index) => (
+                {options.map((option, index) => (
                   <Draggable
                     key={option.value.account.wallet.address}
                     draggableId={option.value.account.wallet.address}
@@ -216,7 +241,7 @@ const SelectAccountSection = ({
                         {...provided.dragHandleProps}>
                         <EvmSelectAccountSectionItemComponent
                           key={`option-${option.value.account.wallet.address!}`}
-                          isLast={options.length === index}
+                          isLast={options.length - 1 === index}
                           item={option}
                           selectedAccount={
                             selectedAddress?.account.wallet.address!
@@ -232,6 +257,7 @@ const SelectAccountSection = ({
                     )}
                   </Draggable>
                 ))}
+                {provided.placeholder}
               </div>
             )}
           </Droppable>
@@ -276,12 +302,13 @@ const mapStateToProps = (state: RootState) => {
     accounts: state.evm.accounts,
     activeAccount: state.evm.activeAccount,
     chain: state.chain as EvmChain,
+    mk: state.mk,
   };
 };
 
 const connector = connect(mapStateToProps, {
   loadEvmActiveAccount,
-  setAccounts,
+  setEvmAccounts,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
