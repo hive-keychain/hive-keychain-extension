@@ -2,12 +2,15 @@ import {
   EvmMethodPermissionMap,
   EvmRequestMethod,
 } from '@background/evm/evm-methods/evm-methods.list';
+import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import MkModule from '@background/hive/modules/mk.module';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import {
   EvmDappInfo,
   EvmRequest,
+  ProviderRpcErrorItem,
+  ProviderRpcErrorList,
   getErrorFromEtherJS,
 } from '@interfaces/evm-provider.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
@@ -16,6 +19,49 @@ import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
+import { ObjectUtils } from 'src/utils/object.utils';
+
+const validateWalletRevokePermissionsParams = (
+  params: unknown,
+): {
+  permission?: EvmRequestPermission;
+  error?: ProviderRpcErrorItem;
+} => {
+  if (!params || !Array.isArray(params) || params.length !== 1) {
+    return { error: ProviderRpcErrorList.invalidMethodParams };
+  }
+
+  const requestedPermissions = params[0];
+  if (!ObjectUtils.isPureObject(requestedPermissions)) {
+    return { error: ProviderRpcErrorList.invalidMethodParams };
+  }
+
+  const permissionKeys = Object.keys(requestedPermissions);
+  if (permissionKeys.length !== 1) {
+    return { error: ProviderRpcErrorList.invalidMethodParams };
+  }
+
+  const requestedPermission = permissionKeys[0];
+  if (
+    !(Object.values(EvmRequestPermission) as string[]).includes(
+      requestedPermission,
+    )
+  ) {
+    return { error: ProviderRpcErrorList.unsupportedMethod };
+  }
+
+  if (
+    !ObjectUtils.isPureObject(
+      (requestedPermissions as Record<string, unknown>)[requestedPermission],
+    )
+  ) {
+    return { error: ProviderRpcErrorList.invalidMethodParams };
+  }
+
+  return {
+    permission: requestedPermission as EvmRequestPermission,
+  };
+};
 
 export const evmRequestWithoutConfirmation = async (
   requestHandler: EvmRequestHandler,
@@ -84,8 +130,22 @@ export const evmRequestWithoutConfirmation = async (
     }
 
     case EvmRequestMethod.WALLET_REVOKE_PERMISSION: {
-      await EvmWalletUtils.disconnectAllWallets(dappInfo.domain);
-      await EvmWalletUtils.revokeAllPermissions(dappInfo.domain);
+      const { permission, error } = validateWalletRevokePermissionsParams(
+        request.params,
+      );
+
+      if (error) {
+        message = {
+          command: BackgroundCommand.SEND_EVM_ERROR,
+          value: {
+            requestId: request.request_id,
+            error,
+          },
+        };
+        break;
+      }
+
+      await EvmWalletUtils.removeWalletPermission(dappInfo.domain, permission!);
       message.value.result = null;
       break;
     }

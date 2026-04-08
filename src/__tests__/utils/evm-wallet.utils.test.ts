@@ -266,6 +266,47 @@ describe('evm wallet utils', () => {
     );
   });
 
+  it('removes eth_accounts for only the requested origin and emits once for that origin', async () => {
+    const sendEvmEventToDomain = jest
+      .spyOn(responseLogic, 'sendEvmEventToDomain')
+      .mockImplementation(jest.fn());
+
+    localStorageState[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS] = {
+      'https://app.test': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: ['0xaaa'],
+      },
+      'https://other.test': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: ['0xbbb'],
+      },
+    };
+
+    await EvmWalletUtils.removeWalletPermission(
+      'https://app.test',
+      EvmRequestPermission.ETH_ACCOUNTS,
+    );
+
+    expect(await EvmWalletUtils.getConnectedWallets('https://app.test')).toEqual(
+      [],
+    );
+    expect(
+      await EvmWalletUtils.getConnectedWallets('https://other.test'),
+    ).toEqual(['0xbbb']);
+    expect(
+      localStorageState[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS],
+    ).toEqual({
+      'https://app.test': {},
+      'https://other.test': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: ['0xbbb'],
+      },
+    });
+    expect(sendEvmEventToDomain).toHaveBeenCalledTimes(1);
+    expect(sendEvmEventToDomain).toHaveBeenCalledWith(
+      'https://app.test',
+      EvmEventName.ACCOUNT_CHANGED,
+      [],
+    );
+  });
+
   it('does not emit duplicate accountsChanged events across nested revoke helper flows', async () => {
     const sendEvmEventToDomain = jest
       .spyOn(responseLogic, 'sendEvmEventToDomain')

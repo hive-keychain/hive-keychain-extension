@@ -1,4 +1,6 @@
+import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
+import { ProviderRpcErrorList } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 
 jest.mock('@background/hive/modules/mk.module', () => ({
@@ -26,11 +28,10 @@ jest.mock('@popup/evm/utils/evm-requests.utils', () => ({
 
 jest.mock('@popup/evm/utils/wallet.utils', () => ({
   EvmWalletUtils: {
-    disconnectAllWallets: jest.fn(),
     getConnectedWallets: jest.fn(),
     getWalletPermission: jest.fn(),
     hasPermission: jest.fn(),
-    revokeAllPermissions: jest.fn(),
+    removeWalletPermission: jest.fn(),
   },
 }));
 
@@ -57,10 +58,9 @@ const loadTestContext = async () => {
   return {
     evmRequestWithoutConfirmation,
     EvmWalletUtils: EvmWalletUtils as {
-      disconnectAllWallets: jest.Mock;
       getConnectedWallets: jest.Mock;
       hasPermission: jest.Mock;
-      revokeAllPermissions: jest.Mock;
+      removeWalletPermission: jest.Mock;
     },
     CommunicationUtils: CommunicationUtils as {
       tabsSendMessage: jest.Mock;
@@ -116,7 +116,7 @@ describe('evm request without confirmation', () => {
     });
   });
 
-  it('does not emit accountsChanged directly from the revoke wrapper flow', async () => {
+  it('returns null and only revokes eth_accounts for the current origin', async () => {
     const {
       evmRequestWithoutConfirmation,
       EvmWalletUtils,
@@ -127,8 +127,7 @@ describe('evm request without confirmation', () => {
       removeRequestById: jest.fn(),
     } as any;
 
-    EvmWalletUtils.disconnectAllWallets.mockResolvedValue(undefined);
-    EvmWalletUtils.revokeAllPermissions.mockResolvedValue(undefined);
+    EvmWalletUtils.removeWalletPermission.mockResolvedValue(undefined);
 
     await evmRequestWithoutConfirmation(
       requestHandler,
@@ -136,7 +135,7 @@ describe('evm request without confirmation', () => {
       {
         request_id: 13,
         method: EvmRequestMethod.WALLET_REVOKE_PERMISSION,
-        params: [],
+        params: [{ [EvmRequestPermission.ETH_ACCOUNTS]: {} }],
       },
       {
         domain: 'https://app.test',
@@ -145,11 +144,9 @@ describe('evm request without confirmation', () => {
       },
     );
 
-    expect(EvmWalletUtils.disconnectAllWallets).toHaveBeenCalledWith(
+    expect(EvmWalletUtils.removeWalletPermission).toHaveBeenCalledWith(
       'https://app.test',
-    );
-    expect(EvmWalletUtils.revokeAllPermissions).toHaveBeenCalledWith(
-      'https://app.test',
+      EvmRequestPermission.ETH_ACCOUNTS,
     );
     expect(responseLogic.sendEvmEventToDomain).not.toHaveBeenCalled();
     expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(9, {
@@ -157,6 +154,77 @@ describe('evm request without confirmation', () => {
       value: {
         requestId: 13,
         result: null,
+      },
+    });
+  });
+
+  it.each([
+    undefined,
+    [],
+    [{}, {}],
+    ['eth_accounts'],
+    [{ eth_accounts: {}, wallet_snap: {} }],
+    [{ eth_accounts: 'invalid' }],
+  ])('returns an RPC error for malformed revoke params: %p', async (params) => {
+    const { evmRequestWithoutConfirmation, EvmWalletUtils, CommunicationUtils } =
+      await loadTestContext();
+    const requestHandler = {
+      removeRequestById: jest.fn(),
+    } as any;
+
+    await evmRequestWithoutConfirmation(
+      requestHandler,
+      5,
+      {
+        request_id: 21,
+        method: EvmRequestMethod.WALLET_REVOKE_PERMISSION,
+        params: params as any,
+      },
+      {
+        domain: 'https://app.test',
+        protocol: 'https:',
+        logo: '',
+      },
+    );
+
+    expect(EvmWalletUtils.removeWalletPermission).not.toHaveBeenCalled();
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(5, {
+      command: BackgroundCommand.SEND_EVM_ERROR,
+      value: {
+        requestId: 21,
+        error: ProviderRpcErrorList.invalidMethodParams,
+      },
+    });
+  });
+
+  it('returns an RPC error for unsupported revoke permissions', async () => {
+    const { evmRequestWithoutConfirmation, EvmWalletUtils, CommunicationUtils } =
+      await loadTestContext();
+    const requestHandler = {
+      removeRequestById: jest.fn(),
+    } as any;
+
+    await evmRequestWithoutConfirmation(
+      requestHandler,
+      6,
+      {
+        request_id: 22,
+        method: EvmRequestMethod.WALLET_REVOKE_PERMISSION,
+        params: [{ wallet_snap: {} } as any],
+      },
+      {
+        domain: 'https://app.test',
+        protocol: 'https:',
+        logo: '',
+      },
+    );
+
+    expect(EvmWalletUtils.removeWalletPermission).not.toHaveBeenCalled();
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(6, {
+      command: BackgroundCommand.SEND_EVM_ERROR,
+      value: {
+        requestId: 22,
+        error: ProviderRpcErrorList.unsupportedMethod,
       },
     });
   });
