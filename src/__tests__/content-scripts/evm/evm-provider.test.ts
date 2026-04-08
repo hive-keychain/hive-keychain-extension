@@ -120,7 +120,7 @@ describe('evm-provider tests:\n', () => {
         event: {
           eventType: EvmEventName.ACCOUNT_CHANGED,
           args: ['0xAaBbCc'],
-          scope: { kind: 'domain', domain: window.location.hostname },
+          scope: { kind: 'domain', domain: window.location.origin },
         },
       },
     });
@@ -132,6 +132,35 @@ describe('evm-provider tests:\n', () => {
     window.dispatchEvent(event);
 
     expect((provider as any)._accounts).toEqual(['0xaabbcc']);
+    cleanup();
+  });
+
+  it('ignores routed events from a different origin', async () => {
+    const cleanup = installRequestResponder({
+      [EvmRequestMethod.GET_CHAIN]: { result: '0x1' },
+      [EvmRequestMethod.GET_ACCOUNTS]: { result: [] },
+    });
+    const provider = new EvmProvider();
+    await waitForInit();
+
+    const event = new MessageEvent('message', {
+      data: {
+        type: 'evm_keychain_event',
+        event: {
+          eventType: EvmEventName.ACCOUNT_CHANGED,
+          args: ['0xDdEeFf'],
+          scope: { kind: 'domain', domain: 'http://localhost:3000' },
+        },
+      },
+    });
+
+    Object.defineProperty(event, 'source', {
+      value: window,
+    });
+
+    window.dispatchEvent(event);
+
+    expect((provider as any)._accounts).toEqual([]);
     cleanup();
   });
 });

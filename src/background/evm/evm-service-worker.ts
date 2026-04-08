@@ -47,11 +47,11 @@ const sendEvmEventToTab = (tabId: number, event: RoutedEvmEvent) => {
   });
 };
 
-const isDomainMatch = (tabUrl: string | undefined, domain: string) => {
+const isOriginMatch = (tabUrl: string | undefined, domain: string) => {
   if (!tabUrl) return false;
 
   try {
-    return new URL(tabUrl).hostname === domain;
+    return new URL(tabUrl).origin === domain;
   } catch (error) {
     return false;
   }
@@ -63,10 +63,10 @@ const routeEvmEvent = (event: RoutedEvmEvent) => {
       sendEvmEventToTab(event.scope.tabId, event);
       break;
     case 'domain':
-      const targetDomain = event.scope.domain;
+      const targetOrigin = event.scope.domain;
       chrome.tabs.query({}, (tabs) => {
         for (const tab of tabs) {
-          if (tab.id && isDomainMatch(tab.url, targetDomain)) {
+          if (tab.id && isOriginMatch(tab.url, targetOrigin)) {
             sendEvmEventToTab(tab.id, event);
           }
         }

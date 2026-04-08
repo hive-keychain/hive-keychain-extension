@@ -48,8 +48,8 @@ const EvmDappStatus = ({ activeAccount, accounts }: PropsFromRedux) => {
       return;
     }
 
-    const domain = FormatUtils.urlToDomain(dapp.url!);
-    const connectedWallets = await EvmWalletUtils.getConnectedWallets(domain);
+    const origin = FormatUtils.urlToOrigin(dapp.url!);
+    const connectedWallets = await EvmWalletUtils.getConnectedWallets(origin);
     const sortedConnectedWallets = [
       connectedWallets.find((e) => e === activeAccount.address.toLowerCase()),
       ...connectedWallets.filter(
@@ -58,7 +58,7 @@ const EvmDappStatus = ({ activeAccount, accounts }: PropsFromRedux) => {
     ].filter((e) => !!e);
 
     sendEvmEventToDomain(
-      domain,
+      origin,
       EvmEventName.ACCOUNT_CHANGED,
       sortedConnectedWallets,
     );
@@ -133,7 +133,7 @@ const EvmDappStatus = ({ activeAccount, accounts }: PropsFromRedux) => {
                       onClick={async () => {
                         await EvmWalletUtils.disconnectWallet(
                           account.wallet.address,
-                          FormatUtils.urlToDomain(dapp?.url!),
+                          FormatUtils.urlToOrigin(dapp?.url!),
                         );
                         onAddressLoaded();
                       }}
@@ -161,7 +161,7 @@ const EvmDappStatus = ({ activeAccount, accounts }: PropsFromRedux) => {
                       onClick={async () => {
                         await EvmWalletUtils.connectWallet(
                           account.wallet.address,
-                          FormatUtils.urlToDomain(dapp?.url!),
+                          FormatUtils.urlToOrigin(dapp?.url!),
                         );
                         onAddressLoaded();
                       }}
@@ -175,7 +175,7 @@ const EvmDappStatus = ({ activeAccount, accounts }: PropsFromRedux) => {
                   label="popup_html_evm_dapp_status_disconnect_all"
                   onClick={async () => {
                     await EvmWalletUtils.disconnectAllWallets(
-                      FormatUtils.urlToDomain(dapp?.url!),
+                      FormatUtils.urlToOrigin(dapp?.url!),
                     );
                     onAddressLoaded();
                   }}

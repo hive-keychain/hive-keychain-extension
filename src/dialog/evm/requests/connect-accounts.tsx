@@ -17,6 +17,7 @@ import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transactio
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 import { CommunicationUtils } from 'src/utils/communication.utils';
+import FormatUtils from 'src/utils/format.utils';
 
 interface Props {
   request: EvmRequest;
@@ -29,6 +30,7 @@ export const ConnectAccounts = (props: Props) => {
   const { accounts, data, request, afterCancel } = props;
   const [accountsToConnect, setAccountsToConnect] = useState<any>({});
   const [connectedAccounts, setConnectedAccounts] = useState<any>();
+  const dappDisplayDomain = FormatUtils.urlToDomain(data.dappInfo.domain);
 
   const transactionHook = useTransactionHook(data, request);
 
@@ -134,7 +136,7 @@ export const ConnectAccounts = (props: Props) => {
         title={chrome.i18n.getMessage('evm_connect_wallet')}
         onConfirm={saveInStorage}
         caption={chrome.i18n.getMessage('dialog_evm_dapp_status_caption', [
-          data.dappInfo.domain,
+          dappDisplayDomain,
         ])}
         fields={
           <EvmTransactionWarningsComponent warningHook={transactionHook} />

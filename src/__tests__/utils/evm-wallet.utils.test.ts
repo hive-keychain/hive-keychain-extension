@@ -1,3 +1,4 @@
+import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
@@ -12,6 +13,7 @@ describe('evm wallet utils', () => {
     'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
 
   let storedAccounts: { list: any[] };
+  let localStorageState: Partial<Record<LocalStorageKeyEnum, any>>;
 
   beforeEach(() => {
     storedAccounts = {
@@ -54,6 +56,10 @@ describe('evm wallet utils', () => {
       ],
     };
 
+    localStorageState = {
+      [LocalStorageKeyEnum.EVM_ACCOUNTS]: storedAccounts,
+    };
+
     jest
       .spyOn(EncryptUtils, 'decryptToJsonWithLegacySupport')
       .mockImplementation(async () => storedAccounts);
@@ -64,17 +70,12 @@ describe('evm wallet utils', () => {
 
     jest
       .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
-      .mockImplementation(async (key) => {
-        if (key === LocalStorageKeyEnum.EVM_ACCOUNTS) {
-          return storedAccounts;
-        }
-
-        return undefined;
-      });
+      .mockImplementation(async (key) => localStorageState[key]);
 
     jest
       .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
       .mockImplementation(async (key, value) => {
+        localStorageState[key] = value;
         if (key === LocalStorageKeyEnum.EVM_ACCOUNTS) {
           storedAccounts = value;
         }
@@ -144,6 +145,66 @@ describe('evm wallet utils', () => {
       '1-1': 3,
       '2-0': 2,
       '2-1': 0,
+    });
+  });
+
+  it('stores wallet permissions separately for localhost origins with different ports', async () => {
+    await EvmWalletUtils.addWalletPermission(
+      'http://localhost:3000',
+      EvmRequestPermission.ETH_ACCOUNTS,
+      '0xaaa',
+    );
+    await EvmWalletUtils.addWalletPermission(
+      'http://localhost:5173',
+      EvmRequestPermission.ETH_ACCOUNTS,
+      '0xbbb',
+    );
+
+    expect(
+      await EvmWalletUtils.getConnectedWallets('http://localhost:3000'),
+    ).toEqual(['0xaaa']);
+    expect(
+      await EvmWalletUtils.getConnectedWallets('http://localhost:5173'),
+    ).toEqual(['0xbbb']);
+    expect(localStorageState[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS]).toEqual(
+      {
+        'http://localhost:3000': {
+          [EvmRequestPermission.ETH_ACCOUNTS]: ['0xaaa'],
+        },
+        'http://localhost:5173': {
+          [EvmRequestPermission.ETH_ACCOUNTS]: ['0xbbb'],
+        },
+      },
+    );
+  });
+
+  it('stores wallet permissions separately for http and https origins on the same host', async () => {
+    await EvmWalletUtils.addWalletPermission(
+      'http://app.test',
+      EvmRequestPermission.ETH_ACCOUNTS,
+      '0x111',
+    );
+    await EvmWalletUtils.addWalletPermission(
+      'https://app.test',
+      EvmRequestPermission.ETH_ACCOUNTS,
+      '0x222',
+    );
+
+    expect(await EvmWalletUtils.getConnectedWallets('http://app.test')).toEqual(
+      ['0x111'],
+    );
+    expect(
+      await EvmWalletUtils.getConnectedWallets('https://app.test'),
+    ).toEqual(['0x222']);
+    expect(
+      localStorageState[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS],
+    ).toMatchObject({
+      'http://app.test': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: ['0x111'],
+      },
+      'https://app.test': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: ['0x222'],
+      },
     });
   });
 });

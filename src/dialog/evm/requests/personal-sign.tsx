@@ -17,6 +17,7 @@ import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
+import FormatUtils from 'src/utils/format.utils';
 
 interface Props {
   request: EvmRequest;
@@ -34,6 +35,7 @@ export const PersonalSign = (props: Props) => {
   const [message, setMessage] = useState<string>(msg);
   const [target, setTarget] = useState<string>(request.params[1]);
   const transactionHook = useTransactionHook(data, request);
+  const dappDisplayDomain = FormatUtils.urlToDomain(data.dappInfo.domain);
 
   useEffect(() => {
     init();
@@ -95,7 +97,7 @@ export const PersonalSign = (props: Props) => {
       tab={data.tab}
       title={chrome.i18n.getMessage('dialog_evm_sign_request')}
       caption={chrome.i18n.getMessage('dialog_signature_request_caption', [
-        data.dappInfo.domain,
+        dappDisplayDomain,
       ])}
       fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}
       bottomPanel={

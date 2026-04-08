@@ -9,6 +9,7 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React from 'react';
 import { CommunicationUtils } from 'src/utils/communication.utils';
+import FormatUtils from 'src/utils/format.utils';
 
 interface Props {
   request: EvmRequest;
@@ -19,6 +20,7 @@ interface Props {
 
 export const RequestAddEvmChain = (props: Props) => {
   const { request, requestedChain, dappInfo, tab } = props;
+  const dappDisplayDomain = FormatUtils.urlToDomain(dappInfo.domain);
 
   const handleConfirm = () => {
     CommunicationUtils.runtimeSendMessage({
@@ -52,7 +54,7 @@ export const RequestAddEvmChain = (props: Props) => {
         </div>
         <div className="caption">
           {chrome.i18n.getMessage('evm_request_add_chain_caption', [
-            dappInfo.domain,
+            dappDisplayDomain,
           ])}
         </div>
         <div className="requested-chain">

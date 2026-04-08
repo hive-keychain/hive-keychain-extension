@@ -29,6 +29,7 @@ import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.co
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import { DappRequestUtils } from 'src/utils/dapp-request.utils';
 import { EvmWarningUtils } from 'src/utils/evm/evm-warning.utils';
+import FormatUtils from 'src/utils/format.utils';
 
 const EVM_DOMAIN_FIELD_NAME = 'dialog_evm_domain';
 
@@ -349,7 +350,7 @@ export const useTransactionHook = (
     value: (
       <div className="value-content">
         <PreloadedImage src={data.dappInfo.logo} />
-        <div>{data.dappInfo.domain}</div>
+        <div>{FormatUtils.urlToDomain(data.dappInfo.domain)}</div>
       </div>
     ),
     warnings: [],

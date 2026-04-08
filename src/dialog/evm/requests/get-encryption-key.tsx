@@ -9,6 +9,7 @@ import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
+import FormatUtils from 'src/utils/format.utils';
 
 interface Props {
   request: EvmRequest;
@@ -20,6 +21,7 @@ interface Props {
 export const GetEncryptionKey = (props: Props) => {
   const { accounts, data, request, afterCancel } = props;
   const transactionHook = useTransactionHook(data, request);
+  const dappDisplayDomain = FormatUtils.urlToDomain(data.dappInfo.domain);
 
   useEffect(() => {
     init();
@@ -84,7 +86,7 @@ export const GetEncryptionKey = (props: Props) => {
       title={chrome.i18n.getMessage('dialog_evm_get_encryption_key_title')}
       fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}
       caption={chrome.i18n.getMessage('dialog_evm_get_encryption_key', [
-        data.dappInfo.domain,
+        dappDisplayDomain,
       ])}
       transactionHook={transactionHook}></EvmOperation>
   );

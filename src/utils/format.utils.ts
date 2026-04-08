@@ -147,7 +147,19 @@ const trimUselessZero = (number: number, precision: number) => {
 };
 
 const urlToDomain = (url: string) => {
-  return new URL(url).hostname;
+  try {
+    return new URL(url).hostname;
+  } catch (error) {
+    return url;
+  }
+};
+
+const urlToOrigin = (url: string) => {
+  try {
+    return new URL(url).origin;
+  } catch (error) {
+    return url;
+  }
 };
 
 const getUSDFromVests = (
@@ -202,6 +214,7 @@ const FormatUtils = {
   getOrdinalLabelTranslation,
   shortenString,
   urlToDomain,
+  urlToOrigin,
 };
 
 export default FormatUtils;

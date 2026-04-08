@@ -13,6 +13,7 @@ import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
+import FormatUtils from 'src/utils/format.utils';
 
 interface Props {
   request: EvmRequest;
@@ -24,6 +25,7 @@ interface Props {
 export const DecryptMessage = (props: Props) => {
   const { accounts, data, request, afterCancel } = props;
   const transactionHook = useTransactionHook(data, request);
+  const dappDisplayDomain = FormatUtils.urlToDomain(data.dappInfo.domain);
 
   const [decryptedMessage, setDecryptedMessage] = useState<
     string | undefined
@@ -106,7 +108,7 @@ export const DecryptMessage = (props: Props) => {
       tab={data.tab}
       title={chrome.i18n.getMessage('dialog_evm_decrypt_message_title')}
       caption={chrome.i18n.getMessage('dialog_evm_decrypt_message_caption', [
-        data.dappInfo.domain,
+        dappDisplayDomain,
       ])}
       fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}
       bottomPanel={

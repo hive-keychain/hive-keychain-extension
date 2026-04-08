@@ -4,6 +4,7 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import * as ResponseLogicModule from 'src/content-scripts/web-interface/response.logic';
 import {
   cancelPreviousRequest,
+  sendEvmRequestToBackground,
   sendIncompleteDataResponse,
   sendRequestToBackground,
   sendResponse,
@@ -57,6 +58,28 @@ describe('response.logic tests:\n', () => {
         request: req,
         domain: window.location.hostname,
         request_id: req.request_id,
+      });
+    });
+
+    it('Must send EVM dapp identity using the current origin', () => {
+      const sSendMessage = jest
+        .spyOn(chrome.runtime, 'sendMessage')
+        .mockImplementation(async () => undefined);
+
+      sendEvmRequestToBackground(
+        { method: 'eth_requestAccounts', params: [], request_id: 7 } as any,
+        chrome,
+      );
+
+      expect(sSendMessage).toHaveBeenCalledWith({
+        command: 'sendEvmRequest',
+        request: { method: 'eth_requestAccounts', params: [], request_id: 7 },
+        dappInfo: {
+          domain: window.location.origin,
+          protocol: window.location.protocol,
+          logo: undefined,
+        },
+        request_id: 7,
       });
     });
   });

@@ -48,7 +48,7 @@ export const sendEvmRequestToBackground = async (
     command: 'sendEvmRequest',
     request: req,
     dappInfo: {
-      domain: window.location.hostname,
+      domain: window.location.origin,
       protocol: window.location.protocol,
       logo: (link as any)?.href,
     },

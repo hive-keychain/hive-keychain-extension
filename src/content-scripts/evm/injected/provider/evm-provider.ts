@@ -113,7 +113,7 @@ export class EvmProvider extends EventEmitter {
           const routedEvent = eventData.event as RoutedEvmEvent;
           if (
             routedEvent.scope?.kind === 'domain' &&
-            routedEvent.scope.domain !== window.location.hostname
+            routedEvent.scope.domain !== window.location.origin
           ) {
             return;
           }

@@ -19,6 +19,7 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import { CommunicationUtils } from 'src/utils/communication.utils';
+import FormatUtils from 'src/utils/format.utils';
 
 interface Props {
   request: EvmRequest<AddChainRequest>;
@@ -29,6 +30,7 @@ interface Props {
 export const AddChain = (props: Props) => {
   const { request, data } = props;
   const transactionHook = useTransactionHook(data, request);
+  const dappDisplayDomain = FormatUtils.urlToDomain(data.dappInfo.domain);
 
   const addChainRequest = request.params[0] as AddChainRequest;
 
@@ -154,7 +156,7 @@ export const AddChain = (props: Props) => {
       onConfirm={handleConfirm}
       caption={chrome.i18n.getMessage(
         isUpdatingChain ? 'evm_update_chain_caption' : 'evm_add_chain_caption',
-        [data.dappInfo.domain],
+        [dappDisplayDomain],
       )}
       fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}
       bottomPanel={
