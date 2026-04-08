@@ -117,8 +117,8 @@ export const EvmSelectAccountSectionItemComponent = ({
             {EvmAccountUtils.getSeedName(item.value.account)}
           </div>
           <div className="address-name">
-            {item.value.account.nickname ??
-              item.value.addressDetails.label ??
+            {item.value.addressDetails.label ??
+              EvmAccountUtils.getAccountName(item.value.account) ??
               'No name'}
           </div>
           <div className="address">

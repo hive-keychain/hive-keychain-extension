@@ -73,6 +73,7 @@ const addEnsToLocalStorage = async (newEns: SavedEns) => {
 const getAddressDetails = async (
   address: string,
   chainId: string,
+  fullName: boolean = true,
 ): Promise<EvmAddressDetail> => {
   const details: EvmAddressDetail = {
     fullAddress: '',
@@ -159,7 +160,9 @@ const getAddressDetails = async (
     if (localAccount.nickname) {
       details.label = localAccount.nickname;
     } else {
-      details.label = EvmAccountUtils.getAccountFullname(localAccount);
+      details.label = fullName
+        ? EvmAccountUtils.getAccountFullname(localAccount)
+        : EvmAccountUtils.getAccountName(localAccount);
     }
   }
 

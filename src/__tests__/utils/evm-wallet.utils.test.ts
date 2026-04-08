@@ -86,6 +86,11 @@ describe('evm wallet utils', () => {
           address: `${phrase.slice(0, 12)}-${path}`,
           mnemonic: { phrase },
           path,
+          deriveChild: (index: number) => ({
+            address: `${phrase.slice(0, 12)}-${path}/${index}`,
+            path: `${path}/${index}`,
+            index,
+          }),
         }) as HDNodeWallet,
     );
   });
@@ -145,5 +150,19 @@ describe('evm wallet utils', () => {
       '2-0': 2,
       '2-1': 0,
     });
+  });
+
+  it('stores an empty nickname when adding a new address without a name', async () => {
+    await EvmWalletUtils.addAddressToSeed(1, mk, '');
+
+    const storedSeeds = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
+    expect(storedSeeds[0].accounts[2].nickname).toBe('');
+  });
+
+  it('keeps an address nickname empty when clearing it', async () => {
+    await EvmWalletUtils.updateAddressName(1, 1, '', mk);
+
+    const storedSeeds = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
+    expect(storedSeeds[0].accounts[1].nickname).toBe('');
   });
 });
