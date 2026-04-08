@@ -360,18 +360,10 @@ const EvmTransfer = ({
           className="transfer-funds-page"
           data-testid={`${Screen.TRANSFER_FUND_PAGE}-page`}>
           <BalanceSectionComponent
-            value={watch('selectedToken').shortFormattedBalance}
+            value={watch('selectedToken').formattedBalance}
             unit={watch('selectedToken').tokenInfo.symbol}
             label="popup_html_balance"
-            // decimals={
-            //   watch('selectedToken').tokenInfo.type ===
-            //   EVMSmartContractType.NATIVE
-            //     ? 18
-            //     : (
-            //         watch('selectedToken')
-            //           .tokenInfo as EvmSmartContractInfoErc20
-            //       ).decimals
-            // }
+            skipFormat
           />
 
           {tokenOptions && (

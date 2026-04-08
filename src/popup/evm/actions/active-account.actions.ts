@@ -244,6 +244,8 @@ export const loadEvmActiveAccount =
       ),
     );
 
+    console.log('balances', balances);
+
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT_TOKENS,
       payload: {

@@ -34,6 +34,25 @@ import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
+const SHORT_BALANCE_DECIMALS = 5;
+const SHORT_BALANCE_ZERO_DISPLAY = FormatUtils.withCommas(
+  0,
+  SHORT_BALANCE_DECIMALS,
+  false,
+);
+
+const formatShortBalance = (balanceInteger: number) => {
+  const short = FormatUtils.withCommas(
+    balanceInteger,
+    SHORT_BALANCE_DECIMALS,
+    false,
+  );
+
+  return `${
+    balanceInteger > 0 && short === SHORT_BALANCE_ZERO_DISPLAY ? '~' : ''
+  }${short}`;
+};
+
 const getTotalBalanceInUsd = (tokens: NativeAndErc20Token[]) => {
   return tokens.reduce((a, b) => {
     let price = b.tokenInfo.priceUsd ?? 0;
@@ -130,10 +149,7 @@ const getTokenBalance = async (
         balance = await provider.getBalance(walletAddress);
         balanceInteger = Number(parseFloat(ethers.formatEther(balance)));
         formattedBalance = FormatUtils.withCommas(balanceInteger, 8, true);
-        const short = FormatUtils.withCommas(balanceInteger, 3, false);
-        shortFormattedBalance = `${
-          balanceInteger > 0 && short === '0.000' ? '~' : ''
-        }${short}`;
+        shortFormattedBalance = formatShortBalance(balanceInteger);
 
         tokenInfo = token as EvmSmartContractInfoNative;
         break;
@@ -159,10 +175,7 @@ const getTokenBalance = async (
           Number((token as EvmSmartContractInfoErc20).decimals),
           true,
         );
-        const short = FormatUtils.withCommas(balanceInteger, 3, false);
-        shortFormattedBalance = `${
-          balanceInteger > 0 && short === '0.000' ? '~' : ''
-        }${short}`;
+        shortFormattedBalance = formatShortBalance(balanceInteger);
 
         tokenInfo = token as EvmSmartContractInfoErc20;
         break;
