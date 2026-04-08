@@ -6,6 +6,7 @@ import {
 } from '@interfaces/evm-provider.interface';
 import { UserPendingTransactions } from '@popup/evm/interfaces/evm-tokens.interface';
 import { UserCanceledTransactions } from '@popup/evm/interfaces/evm-transactions.interface';
+import { EvmSavedActiveAccounts } from '@popup/evm/interfaces/active-account.interface';
 import {
   EvmAccount,
   StoredEvmWalletAddress,
@@ -275,6 +276,10 @@ const deleteSeed = async (
     values[LocalStorageKeyEnum.EVM_CANCELED_TRANSACTIONS];
   let walletPermissions: EvmWalletPermissions =
     values[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS];
+  const previousWalletPermissions = walletPermissions
+    ? (JSON.parse(JSON.stringify(walletPermissions)) as EvmWalletPermissions)
+    : undefined;
+  const activeWalletAddress = await getCurrentActiveWalletAddress();
 
   for (const account of accounts.filter(
     (account) => account.seedId === seedId,
@@ -312,6 +317,14 @@ const deleteSeed = async (
   );
 
   await encryptAccountsInLocalStorage(mk, savedSeeds);
+
+  notifyAccountsChangedForDomains({
+    previousWalletPermissions,
+    nextWalletPermissions: walletPermissions,
+    previousActiveWalletAddress: activeWalletAddress,
+    nextActiveWalletAddress: activeWalletAddress,
+  });
+
   return savedSeeds;
 };
 
@@ -443,6 +456,42 @@ const getConnectedWalletsFromPermissions = (
   return walletPermissions?.[domain]?.[EvmRequestPermission.ETH_ACCOUNTS] ?? [];
 };
 
+const getCurrentActiveWalletAddress = async () => {
+  const currentChainId = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_LAST_CHAIN_USED,
+  );
+  if (!currentChainId) return undefined;
+
+  const savedActiveAccounts: EvmSavedActiveAccounts | undefined =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_ACTIVE_ACCOUNT_WALLET,
+    );
+
+  return savedActiveAccounts?.[currentChainId];
+};
+
+const getEffectiveConnectedWallets = (
+  connectedWallets: string[],
+  activeWalletAddress?: string,
+) => {
+  if (!activeWalletAddress) return connectedWallets;
+
+  const activeWalletIndex = connectedWallets.findIndex(
+    (walletAddress) =>
+      walletAddress.toLowerCase() === activeWalletAddress.toLowerCase(),
+  );
+
+  if (activeWalletIndex <= 0) {
+    return connectedWallets;
+  }
+
+  return [
+    connectedWallets[activeWalletIndex],
+    ...connectedWallets.slice(0, activeWalletIndex),
+    ...connectedWallets.slice(activeWalletIndex + 1),
+  ];
+};
+
 const hasChangedConnectedWallets = (
   previousConnectedWallets: string[],
   nextConnectedWallets: string[],
@@ -453,6 +502,46 @@ const hasChangedConnectedWallets = (
       (wallet, index) => wallet !== nextConnectedWallets[index],
     )
   );
+};
+
+const notifyAccountsChangedForDomains = ({
+  previousWalletPermissions,
+  nextWalletPermissions,
+  previousActiveWalletAddress,
+  nextActiveWalletAddress,
+}: {
+  previousWalletPermissions?: EvmWalletPermissions;
+  nextWalletPermissions?: EvmWalletPermissions;
+  previousActiveWalletAddress?: string;
+  nextActiveWalletAddress?: string;
+}) => {
+  const domains = [
+    ...new Set([
+      ...Object.keys(previousWalletPermissions ?? {}),
+      ...Object.keys(nextWalletPermissions ?? {}),
+    ]),
+  ];
+
+  for (const domain of domains) {
+    const previousConnectedWallets = getEffectiveConnectedWallets(
+      getConnectedWalletsFromPermissions(previousWalletPermissions, domain),
+      previousActiveWalletAddress,
+    );
+    const nextConnectedWallets = getEffectiveConnectedWallets(
+      getConnectedWalletsFromPermissions(nextWalletPermissions, domain),
+      nextActiveWalletAddress,
+    );
+
+    if (
+      hasChangedConnectedWallets(previousConnectedWallets, nextConnectedWallets)
+    ) {
+      sendEvmEventToDomain(
+        domain,
+        EvmEventName.ACCOUNT_CHANGED,
+        nextConnectedWallets,
+      );
+    }
+  }
 };
 
 const persistWalletPermissionsAndNotify = async (
@@ -466,9 +555,11 @@ const persistWalletPermissionsAndNotify = async (
       LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
     )) ?? ({} as EvmWalletPermissions);
 
-  const previousConnectedWallets = [
-    ...getConnectedWalletsFromPermissions(walletPermissions, domain),
-  ];
+  const activeWalletAddress = await getCurrentActiveWalletAddress();
+  const previousConnectedWallets = getEffectiveConnectedWallets(
+    [...getConnectedWalletsFromPermissions(walletPermissions, domain)],
+    activeWalletAddress,
+  );
   const shouldPersist = updateWalletPermissions(walletPermissions);
 
   if (!shouldPersist) return;
@@ -478,9 +569,9 @@ const persistWalletPermissionsAndNotify = async (
     walletPermissions,
   );
 
-  const nextConnectedWallets = getConnectedWalletsFromPermissions(
-    walletPermissions,
-    domain,
+  const nextConnectedWallets = getEffectiveConnectedWallets(
+    getConnectedWalletsFromPermissions(walletPermissions, domain),
+    activeWalletAddress,
   );
 
   if (
@@ -496,9 +587,12 @@ const persistWalletPermissionsAndNotify = async (
 
 const getConnectedWallets = async (domain: string): Promise<string[]> => {
   const permissions = await getWalletPermissionFull(domain);
-  const connectedWallet = permissions[EvmRequestPermission.ETH_ACCOUNTS];
-  if (permissions && connectedWallet) return connectedWallet;
-  else return [];
+  const connectedWallet = permissions[EvmRequestPermission.ETH_ACCOUNTS] ?? [];
+
+  return getEffectiveConnectedWallets(
+    connectedWallet,
+    await getCurrentActiveWalletAddress(),
+  );
 };
 
 const connectMultipleWallet = async (
@@ -658,6 +752,30 @@ const revokeAllPermissions = async (domain: string) => {
   });
 };
 
+const notifyAccountsChangedForActiveWalletChange = async (
+  previousActiveWalletAddress?: string,
+  nextActiveWalletAddress?: string,
+) => {
+  if (
+    previousActiveWalletAddress?.toLowerCase() ===
+    nextActiveWalletAddress?.toLowerCase()
+  ) {
+    return;
+  }
+
+  const walletPermissions: EvmWalletPermissions =
+    (await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
+    )) ?? ({} as EvmWalletPermissions);
+
+  notifyAccountsChangedForDomains({
+    previousWalletPermissions: walletPermissions,
+    nextWalletPermissions: walletPermissions,
+    previousActiveWalletAddress,
+    nextActiveWalletAddress,
+  });
+};
+
 const getAllLocalAddresses = async () => {
   const accounts = await rebuildAccountsFromLocalStorage(
     await VaultUtils.getValueFromVault(VaultKey.__MK),
@@ -700,4 +818,5 @@ export const EvmWalletUtils = {
   updateSeedNickname,
   updateAddressName,
   getAllLocalAccounts,
+  notifyAccountsChangedForActiveWalletChange,
 };

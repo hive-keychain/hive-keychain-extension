@@ -1,5 +1,6 @@
 import { EvmSavedActiveAccounts } from '@popup/evm/interfaces/active-account.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -34,10 +35,21 @@ const saveActiveAccountWallet = async (chain: EvmChain, address: string) => {
   if (!savedActiveAccounts) {
     savedActiveAccounts = {};
   }
+  const previousAddress = savedActiveAccounts[chain.chainId];
+
+  if (previousAddress?.toLowerCase() === address.toLowerCase()) {
+    return;
+  }
+
   savedActiveAccounts[chain.chainId] = address;
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_ACTIVE_ACCOUNT_WALLET,
     savedActiveAccounts,
+  );
+
+  await EvmWalletUtils.notifyAccountsChangedForActiveWalletChange(
+    previousAddress,
+    address,
   );
 };
 

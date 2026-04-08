@@ -75,6 +75,14 @@ describe('evm wallet utils', () => {
       .mockImplementation(async (key) => localStorageState[key]);
 
     jest
+      .spyOn(LocalStorageUtils, 'getMultipleValueFromLocalStorage')
+      .mockImplementation(async (keys) =>
+        Object.fromEntries(
+          keys.map((key) => [key, localStorageState[key as LocalStorageKeyEnum]]),
+        ),
+      );
+
+    jest
       .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
       .mockImplementation(async (key, value) => {
         localStorageState[key] = value;
@@ -210,6 +218,22 @@ describe('evm wallet utils', () => {
     });
   });
 
+  it('returns the active permitted wallet first from eth_accounts', async () => {
+    localStorageState[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS] = {
+      'https://app.test': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: ['0xaaa', '0xbbb', '0xccc'],
+      },
+    };
+    localStorageState[LocalStorageKeyEnum.EVM_LAST_CHAIN_USED] = '0x1';
+    localStorageState[LocalStorageKeyEnum.EVM_ACTIVE_ACCOUNT_WALLET] = {
+      '0x1': '0xbbb',
+    };
+
+    expect(await EvmWalletUtils.getConnectedWallets('https://app.test')).toEqual(
+      ['0xbbb', '0xaaa', '0xccc'],
+    );
+  });
+
   it('emits accountsChanged once after the first successful connect persists', async () => {
     const sendEvmEventToDomain = jest
       .spyOn(responseLogic, 'sendEvmEventToDomain')
@@ -327,5 +351,46 @@ describe('evm wallet utils', () => {
       EvmEventName.ACCOUNT_CHANGED,
       [],
     );
+  });
+
+  it('emits accountsChanged only for origins whose exposed accounts change after deleting a seed', async () => {
+    const sendEvmEventToDomain = jest
+      .spyOn(responseLogic, 'sendEvmEventToDomain')
+      .mockImplementation(jest.fn());
+    const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+    const deletedAccount = accounts.find(
+      (account) => account.seedId === 1 && account.id === 0,
+    )!;
+    const remainingAccount = accounts.find(
+      (account) => account.seedId === 2 && account.id === 1,
+    )!;
+
+    localStorageState[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS] = {
+      'https://affected.test': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: [
+          deletedAccount.wallet.address,
+          remainingAccount.wallet.address,
+        ],
+      },
+      'https://unaffected.test': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: [remainingAccount.wallet.address],
+      },
+    };
+    localStorageState[LocalStorageKeyEnum.EVM_LAST_CHAIN_USED] = '0x1';
+    localStorageState[LocalStorageKeyEnum.EVM_ACTIVE_ACCOUNT_WALLET] = {
+      '0x1': deletedAccount.wallet.address,
+    };
+
+    await EvmWalletUtils.deleteSeed(1, accounts, mk);
+
+    expect(sendEvmEventToDomain).toHaveBeenCalledTimes(1);
+    expect(sendEvmEventToDomain).toHaveBeenCalledWith(
+      'https://affected.test',
+      EvmEventName.ACCOUNT_CHANGED,
+      [remainingAccount.wallet.address],
+    );
+    expect(
+      await EvmWalletUtils.getConnectedWallets('https://unaffected.test'),
+    ).toEqual([remainingAccount.wallet.address]);
   });
 });
