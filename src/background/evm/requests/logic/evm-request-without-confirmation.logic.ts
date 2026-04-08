@@ -7,7 +7,6 @@ import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler'
 import MkModule from '@background/hive/modules/mk.module';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import {
-  EvmEventName,
   EvmDappInfo,
   EvmRequest,
   ProviderRpcErrorItem,
@@ -15,7 +14,6 @@ import {
   getErrorFromEtherJS,
 } from '@interfaces/evm-provider.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
-import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -27,7 +25,6 @@ import {
   getWalletRequestPermissionsResponse,
   validateWalletRequestPermissionsParams,
 } from 'src/background/evm/requests/logic/wallet-request-permissions.logic';
-import { sendEvmEventGlobal } from 'src/content-scripts/hive/web-interface/response.logic';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -183,21 +180,11 @@ export const evmRequestWithoutConfirmation = async (
         break;
       }
 
-      const previousChainId = await EvmChainUtils.getLastEvmChainId();
-
-      await EvmChainUtils.saveLastUsedChain(requestedChain);
+      await EvmChainUtils.setActiveEvmChain(requestedChain);
       await LocalStorageUtils.saveValueInLocalStorage(
         LocalStorageKeyEnum.ACTIVE_CHAIN,
         requestedChain.chainId,
       );
-      await EvmRpcUtils.setActiveRpc(
-        await EvmRpcUtils.getActiveRpc(requestedChain),
-        requestedChain,
-      );
-
-      if (previousChainId?.toLowerCase() !== requestedChain.chainId.toLowerCase()) {
-        sendEvmEventGlobal(EvmEventName.CHAIN_CHANGED, requestedChain.chainId);
-      }
 
       message.value.result = null;
       break;

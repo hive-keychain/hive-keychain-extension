@@ -1,6 +1,9 @@
+import { EvmEventName } from '@interfaces/evm-provider.interface';
+import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { sendEvmEventGlobal } from 'src/content-scripts/hive/web-interface/response.logic';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const getLastEvmChainId = async () => {
@@ -32,10 +35,31 @@ const saveLastUsedChain = (chain: EvmChain) => {
   );
 };
 
+const setActiveEvmChain = async (
+  chain: EvmChain,
+  options?: { emitEvent?: boolean },
+) => {
+  const previousChainId = await getLastEvmChainId();
+
+  await saveLastUsedChain(chain);
+  await EvmRpcUtils.setActiveRpc(
+    await EvmRpcUtils.getActiveRpc(chain),
+    chain,
+  );
+
+  if (
+    options?.emitEvent !== false &&
+    previousChainId?.toLowerCase() !== chain.chainId.toLowerCase()
+  ) {
+    sendEvmEventGlobal(EvmEventName.CHAIN_CHANGED, chain.chainId);
+  }
+};
+
 export const EvmChainUtils = {
   getLastEvmChainId,
   getEthChain,
   getEthChainId,
   getLastEvmChain,
   saveLastUsedChain,
+  setActiveEvmChain,
 };

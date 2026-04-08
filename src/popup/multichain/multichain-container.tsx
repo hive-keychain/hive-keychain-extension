@@ -232,7 +232,7 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
 
       const initialChain = chainFromProvider ?? storedChain;
       if (initialChain) {
-        setChain(initialChain);
+        setChain(initialChain, { emitEvmChainChanged: false });
       }
       setIsBootstrapping(false);
     };

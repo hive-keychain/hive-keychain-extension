@@ -1,9 +1,6 @@
 import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
-import {
-  EvmEventName,
-  ProviderRpcErrorList,
-} from '@interfaces/evm-provider.interface';
+import { ProviderRpcErrorList } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 
@@ -18,13 +15,7 @@ jest.mock('@popup/evm/utils/evm-chain.utils', () => ({
   EvmChainUtils: {
     getLastEvmChainId: jest.fn(),
     saveLastUsedChain: jest.fn(),
-  },
-}));
-
-jest.mock('@popup/evm/utils/evm-rpc.utils', () => ({
-  EvmRpcUtils: {
-    getActiveRpc: jest.fn(),
-    setActiveRpc: jest.fn(),
+    setActiveEvmChain: jest.fn(),
   },
 }));
 
@@ -77,7 +68,6 @@ const loadTestContext = async () => {
     '@background/evm/requests/logic/evm-request-without-confirmation.logic'
   );
   const { EvmChainUtils } = await import('@popup/evm/utils/evm-chain.utils');
-  const { EvmRpcUtils } = await import('@popup/evm/utils/evm-rpc.utils');
   const { EvmRequestsUtils } = await import('@popup/evm/utils/evm-requests.utils');
   const { EvmWalletUtils } = await import('@popup/evm/utils/wallet.utils');
   const { ChainUtils } = await import('@popup/multichain/utils/chain.utils');
@@ -95,10 +85,7 @@ const loadTestContext = async () => {
     EvmChainUtils: EvmChainUtils as {
       getLastEvmChainId: jest.Mock;
       saveLastUsedChain: jest.Mock;
-    },
-    EvmRpcUtils: EvmRpcUtils as {
-      getActiveRpc: jest.Mock;
-      setActiveRpc: jest.Mock;
+      setActiveEvmChain: jest.Mock;
     },
     EvmRequestsUtils: EvmRequestsUtils as {
       call: jest.Mock;
@@ -178,7 +165,6 @@ describe('evm request without confirmation', () => {
     const {
       evmRequestWithoutConfirmation,
       EvmChainUtils,
-      EvmRpcUtils,
       EvmRequestsUtils,
       ChainUtils,
       CommunicationUtils,
@@ -189,10 +175,8 @@ describe('evm request without confirmation', () => {
       removeRequestById: jest.fn(),
     } as any;
 
-    EvmChainUtils.getLastEvmChainId.mockResolvedValue('0x1');
     ChainUtils.getChain.mockResolvedValue(polygonChain);
-    EvmRpcUtils.getActiveRpc.mockResolvedValue(polygonChain.rpcs[0]);
-    EvmRpcUtils.setActiveRpc.mockResolvedValue(undefined);
+    EvmChainUtils.setActiveEvmChain.mockResolvedValue(undefined);
 
     await evmRequestWithoutConfirmation(
       requestHandler,
@@ -211,20 +195,12 @@ describe('evm request without confirmation', () => {
 
     expect(EvmRequestsUtils.call).not.toHaveBeenCalled();
     expect(ChainUtils.getChain).toHaveBeenCalledWith('0x89');
-    expect(EvmChainUtils.saveLastUsedChain).toHaveBeenCalledWith(polygonChain);
+    expect(EvmChainUtils.setActiveEvmChain).toHaveBeenCalledWith(polygonChain);
     expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
       LocalStorageKeyEnum.ACTIVE_CHAIN,
       '0x89',
     );
-    expect(EvmRpcUtils.getActiveRpc).toHaveBeenCalledWith(polygonChain);
-    expect(EvmRpcUtils.setActiveRpc).toHaveBeenCalledWith(
-      polygonChain.rpcs[0],
-      polygonChain,
-    );
-    expect(responseLogic.sendEvmEventGlobal).toHaveBeenCalledWith(
-      EvmEventName.CHAIN_CHANGED,
-      '0x89',
-    );
+    expect(responseLogic.sendEvmEventGlobal).not.toHaveBeenCalled();
     expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(14, {
       command: BackgroundCommand.SEND_EVM_RESPONSE,
       value: {
@@ -238,7 +214,6 @@ describe('evm request without confirmation', () => {
     const {
       evmRequestWithoutConfirmation,
       EvmChainUtils,
-      EvmRpcUtils,
       EvmRequestsUtils,
       ChainUtils,
       CommunicationUtils,
@@ -267,9 +242,8 @@ describe('evm request without confirmation', () => {
     );
 
     expect(EvmRequestsUtils.call).not.toHaveBeenCalled();
-    expect(EvmChainUtils.saveLastUsedChain).not.toHaveBeenCalled();
+    expect(EvmChainUtils.setActiveEvmChain).not.toHaveBeenCalled();
     expect(LocalStorageUtils.saveValueInLocalStorage).not.toHaveBeenCalled();
-    expect(EvmRpcUtils.setActiveRpc).not.toHaveBeenCalled();
     expect(responseLogic.sendEvmEventGlobal).not.toHaveBeenCalled();
     expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(15, {
       command: BackgroundCommand.SEND_EVM_ERROR,
@@ -295,7 +269,6 @@ describe('evm request without confirmation', () => {
       const {
         evmRequestWithoutConfirmation,
         EvmChainUtils,
-        EvmRpcUtils,
         EvmRequestsUtils,
         ChainUtils,
         CommunicationUtils,
@@ -323,9 +296,8 @@ describe('evm request without confirmation', () => {
 
       expect(ChainUtils.getChain).not.toHaveBeenCalled();
       expect(EvmRequestsUtils.call).not.toHaveBeenCalled();
-      expect(EvmChainUtils.saveLastUsedChain).not.toHaveBeenCalled();
+      expect(EvmChainUtils.setActiveEvmChain).not.toHaveBeenCalled();
       expect(LocalStorageUtils.saveValueInLocalStorage).not.toHaveBeenCalled();
-      expect(EvmRpcUtils.setActiveRpc).not.toHaveBeenCalled();
       expect(responseLogic.sendEvmEventGlobal).not.toHaveBeenCalled();
       expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(16, {
         command: BackgroundCommand.SEND_EVM_ERROR,
