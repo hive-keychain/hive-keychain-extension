@@ -590,7 +590,9 @@ const getBalanceInfo = (
     before: `${balance?.formattedBalance!} ${tokenInfo.symbol}`,
     estimatedAfter: `${FormatUtils.withCommas(
       new Decimal(balance?.balanceInteger!).sub(amount!).toString(),
-      (tokenInfo as EvmSmartContractInfoErc20).decimals || 8,
+      tokenInfo.type === EVMSmartContractType.ERC20
+        ? (tokenInfo as EvmSmartContractInfoErc20).decimals
+        : 8,
       true,
     )}  ${tokenInfo?.symbol}`,
     insufficientBalance:
