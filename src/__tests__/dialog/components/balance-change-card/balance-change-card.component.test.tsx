@@ -12,19 +12,40 @@ describe('BalanceChangeCard', () => {
     jest.clearAllMocks();
   });
 
-  it('renders main balance values and ignores fee balance', () => {
-    render(
+  it('renders a single row when only mainBalance is provided', () => {
+    const { container } = render(
       <BalanceChangeCard
         balanceInfo={{
           mainBalance: {
             before: '10 ETH',
             estimatedAfter: '8 ETH',
-            insufficientBalance: true,
+          },
+        }}
+      />,
+    );
+
+    expect(screen.getByText('evm_balance_change_title')).toBeInTheDocument();
+    expect(screen.getByText('10 ETH')).toBeInTheDocument();
+    expect(screen.getByText('8 ETH')).toBeInTheDocument();
+    expect(
+      screen.queryByText('insufficient_balance_warning'),
+    ).not.toBeInTheDocument();
+    expect(container.querySelectorAll('.balance-panel')).toHaveLength(1);
+  });
+
+  it('renders a second fee row and warns when any row is insufficient', () => {
+    const { container } = render(
+      <BalanceChangeCard
+        balanceInfo={{
+          mainBalance: {
+            before: '10 ETH',
+            estimatedAfter: '8 ETH',
+            insufficientBalance: false,
           },
           feeBalance: {
             before: '1 ETH',
             estimatedAfter: '0.9 ETH',
-            insufficientBalance: false,
+            insufficientBalance: true,
           },
         }}
       />,
@@ -36,7 +57,8 @@ describe('BalanceChangeCard', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('10 ETH')).toBeInTheDocument();
     expect(screen.getByText('8 ETH')).toBeInTheDocument();
-    expect(screen.queryByText('1 ETH')).not.toBeInTheDocument();
-    expect(screen.queryByText('0.9 ETH')).not.toBeInTheDocument();
+    expect(screen.getByText('1 ETH')).toBeInTheDocument();
+    expect(screen.getByText('0.9 ETH')).toBeInTheDocument();
+    expect(container.querySelectorAll('.balance-panel')).toHaveLength(2);
   });
 });

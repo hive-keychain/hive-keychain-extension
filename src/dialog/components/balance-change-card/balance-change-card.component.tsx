@@ -2,14 +2,19 @@ import { Card } from '@common-ui/card/card.component';
 import { SVGIcons } from '@common-ui/icons.enum';
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import React from 'react';
-import type { BalanceInfo } from './balance-change-card.interface';
+import type { BalanceDetails, BalanceInfo } from './balance-change-card.interface';
 
 interface Props {
   balanceInfo: BalanceInfo;
 }
 
 export const BalanceChangeCard = ({ balanceInfo }: Props) => {
-  const { mainBalance } = balanceInfo;
+  const balanceRows = [balanceInfo.mainBalance, balanceInfo.feeBalance].filter(
+    (balance): balance is BalanceDetails => !!balance,
+  );
+  const hasInsufficientBalance = balanceRows.some(
+    (balance) => balance.insufficientBalance,
+  );
 
   return (
     <Card className="balance-change-panel">
@@ -17,17 +22,19 @@ export const BalanceChangeCard = ({ balanceInfo }: Props) => {
         {chrome.i18n.getMessage('evm_balance_change_title')}
       </div>
 
-      {mainBalance.insufficientBalance && (
+      {hasInsufficientBalance && (
         <span className="insufficient-balance">
           {chrome.i18n.getMessage('insufficient_balance_warning')}
         </span>
       )}
 
-      <div className="balance-panel">
-        <div className="balance-before">{mainBalance.before}</div>
-        <SVGIcon icon={SVGIcons.GLOBAL_TRIANGLE_ARROW} className="icon" />
-        <div className="balance-after">{mainBalance.estimatedAfter}</div>
-      </div>
+      {balanceRows.map((balance, index) => (
+        <div className="balance-panel" key={`${balance.before}-${index}`}>
+          <div className="balance-before">{balance.before}</div>
+          <SVGIcon icon={SVGIcons.GLOBAL_TRIANGLE_ARROW} className="icon" />
+          <div className="balance-after">{balance.estimatedAfter}</div>
+        </div>
+      ))}
     </Card>
   );
 };

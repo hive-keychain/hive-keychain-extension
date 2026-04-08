@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { KeychainApi } from '@api/keychain';
 import { SendTransaction } from '@dialog/evm/requests/send-transaction/send-transaction';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
@@ -10,18 +10,24 @@ import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import Decimal from 'decimal.js';
 import { ethers } from 'ethers';
 import { EthersUtils } from 'src/popup/evm/utils/ethers.utils';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 
 const mockParseTransaction = jest.fn();
+const mockBalanceChangeCard = jest.fn(({ balanceInfo }) => (
+  <div data-testid="balance-card">{JSON.stringify(balanceInfo)}</div>
+));
 
 jest.mock('src/dialog/evm/requests/transaction-warnings/transaction.hook', () => ({
   useTransactionHook: jest.fn(),
 }));
 
 jest.mock('src/dialog/evm/evm-operation/evm-operation', () => ({
-  EvmOperation: () => <div data-testid="evm-operation" />,
+  EvmOperation: ({ bottomPanel }: any) => (
+    <div data-testid="evm-operation">{bottomPanel}</div>
+  ),
 }));
 
 jest.mock('src/common-ui/loading/loading.component', () => ({
@@ -29,7 +35,7 @@ jest.mock('src/common-ui/loading/loading.component', () => ({
 }));
 
 jest.mock('@dialog/components/balance-change-card/balance-change-card.component', () => ({
-  BalanceChangeCard: () => <div data-testid="balance-card" />,
+  BalanceChangeCard: (props: any) => mockBalanceChangeCard(props),
 }));
 
 jest.mock('@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component', () => ({
@@ -116,6 +122,7 @@ describe('send-transaction proxy tests:\n', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
+    mockBalanceChangeCard.mockClear();
     (useTransactionHook as jest.Mock).mockReturnValue(transactionHook);
     jest.spyOn(ChainUtils, 'getChain').mockResolvedValue({
       chainId: '1',
@@ -467,5 +474,102 @@ describe('send-transaction proxy tests:\n', () => {
       true,
     );
     expect((ethers.Contract as jest.Mock).mock.calls[1][1]).toEqual(fallbackAbi);
+  });
+
+  it('recomputes the balance card when a selected gas fee becomes available', async () => {
+    transactionHook.fields = {
+      operationName: 'evm_operation_transfer',
+    } as any;
+    transactionHook.ready = true;
+
+    const selectedGasFee = {
+      estimatedFeeInEth: new Decimal('0.01'),
+      gasLimit: new Decimal(21000),
+      maxFeeInEth: new Decimal('0.02'),
+      priorityFeeInGwei: new Decimal('1'),
+    } as any;
+
+    const getBalanceInfoSpy = jest
+      .spyOn(EvmTokensUtils, 'getBalanceInfo')
+      .mockResolvedValueOnce({
+        mainBalance: {
+          before: '1 ETH',
+          estimatedAfter: '0.5  ETH',
+        },
+      } as any)
+      .mockResolvedValueOnce({
+        mainBalance: {
+          before: '1 ETH',
+          estimatedAfter: '0.49  ETH',
+        },
+      } as any);
+
+    const props = {
+      accounts: [
+        {
+          wallet: {
+            address: '0x00000000000000000000000000000000000000ff',
+            mnemonic: { phrase: 'test phrase' },
+          },
+        } as any,
+      ],
+      afterCancel: jest.fn(),
+      data: { dappInfo: { domain: 'app.example' }, tab: 1 } as any,
+      request: {
+        chainId: '1',
+        params: [
+          {
+            from: '0x00000000000000000000000000000000000000ff',
+            gasLimit: 21000,
+            maxFeePerGas: '1',
+            maxPriorityFeePerGas: '1',
+            to: '0x00000000000000000000000000000000000000ab',
+            type: EvmTransactionType.EIP_1559,
+            value: '1000000000000000000',
+          },
+        ],
+        request_id: 1,
+      } as any,
+    };
+
+    const { rerender } = render(<SendTransaction {...props} />);
+
+    await waitFor(() =>
+      expect(getBalanceInfoSpy).toHaveBeenCalledWith(
+        '0x00000000000000000000000000000000000000ff',
+        expect.objectContaining({ chainId: '1' }),
+        expect.objectContaining({ symbol: 'ETH' }),
+        expect.any(Number),
+        undefined,
+      ),
+    );
+    await waitFor(() => expect(screen.getByTestId('balance-card')).toBeTruthy());
+
+    let lastBalanceCardCall =
+      mockBalanceChangeCard.mock.calls[mockBalanceChangeCard.mock.calls.length - 1][0];
+    expect(lastBalanceCardCall.balanceInfo.mainBalance.estimatedAfter).toBe(
+      '0.5  ETH',
+    );
+
+    transactionHook.selectedFee = selectedGasFee;
+    rerender(<SendTransaction {...props} />);
+
+    await waitFor(() =>
+      expect(getBalanceInfoSpy).toHaveBeenLastCalledWith(
+        '0x00000000000000000000000000000000000000ff',
+        expect.objectContaining({ chainId: '1' }),
+        expect.objectContaining({ symbol: 'ETH' }),
+        expect.any(Number),
+        selectedGasFee,
+      ),
+    );
+
+    await waitFor(() => {
+      const latestCall =
+        mockBalanceChangeCard.mock.calls[
+          mockBalanceChangeCard.mock.calls.length - 1
+        ][0];
+      expect(latestCall.balanceInfo.mainBalance.estimatedAfter).toBe('0.49  ETH');
+    });
   });
 });

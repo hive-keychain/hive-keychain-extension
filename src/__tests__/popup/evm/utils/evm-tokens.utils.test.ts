@@ -7,6 +7,7 @@ import {
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import Decimal from 'decimal.js';
 import { ethers } from 'ethers';
 
 describe('evm-tokens.utils proxy metadata tests:\n', () => {
@@ -182,5 +183,184 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
     );
 
     expect(balance?.shortFormattedBalance).toBe('1.23457');
+  });
+
+  it('includes the estimated gas fee in mainBalance for native transfers', async () => {
+    const nativeToken = {
+      name: 'Ether',
+      symbol: 'ETH',
+      logo: '',
+      chainId: '1',
+      backgroundColor: '#000000',
+      coingeckoId: 'ethereum',
+      priceUsd: 3000,
+      createdAt: '',
+      categories: [],
+      type: EVMSmartContractType.NATIVE,
+    } as EvmSmartContractInfoNative;
+
+    jest.spyOn(EvmTokensUtils, 'getTokenBalance').mockResolvedValue({
+      balance: 5n,
+      balanceInteger: 5,
+      formattedBalance: '5',
+      shortFormattedBalance: '5',
+      tokenInfo: nativeToken,
+    } as any);
+
+    const balanceInfo = await EvmTokensUtils.getBalanceInfo(
+      '0x1234567890123456789012345678901234567890',
+      { chainId: '1' } as any,
+      nativeToken,
+      1,
+      { estimatedFeeInEth: new Decimal('0.1') } as any,
+    );
+
+    expect(balanceInfo).toEqual({
+      mainBalance: {
+        before: '5 ETH',
+        estimatedAfter: '3.9  ETH',
+        insufficientBalance: false,
+      },
+    });
+  });
+
+  it('adds a feeBalance row for ERC20 transfers when a gas fee is selected', async () => {
+    const nativeToken = {
+      name: 'Ether',
+      symbol: 'ETH',
+      logo: '',
+      chainId: '1',
+      backgroundColor: '#000000',
+      coingeckoId: 'ethereum',
+      priceUsd: 3000,
+      createdAt: '',
+      categories: [],
+      type: EVMSmartContractType.NATIVE,
+    } as EvmSmartContractInfoNative;
+    const erc20Token = {
+      name: 'USD Coin',
+      symbol: 'USDC',
+      decimals: 6,
+      logo: '',
+      chainId: '1',
+      contractAddress: '0x00000000000000000000000000000000000000aa',
+      backgroundColor: '#000000',
+      coingeckoId: 'usd-coin',
+      priceUsd: 1,
+      possibleSpam: false,
+      verifiedContract: true,
+      isProxy: false,
+      proxyTarget: null,
+      type: EVMSmartContractType.ERC20,
+    } as EvmSmartContractInfoErc20;
+
+    jest
+      .spyOn(EvmTokensUtils, 'getTokenBalance')
+      .mockImplementation(async (_walletAddress, _chain, token) => {
+        if (token.type === EVMSmartContractType.NATIVE) {
+          return {
+            balance: 1n,
+            balanceInteger: 1,
+            formattedBalance: '1',
+            shortFormattedBalance: '1',
+            tokenInfo: nativeToken,
+          } as any;
+        }
+
+        return {
+          balance: 100n,
+          balanceInteger: 100,
+          formattedBalance: '100',
+          shortFormattedBalance: '100',
+          tokenInfo: erc20Token,
+        } as any;
+      });
+    jest.spyOn(EvmTokensUtils, 'getMainTokenInfo').mockResolvedValue(nativeToken);
+
+    const balanceInfo = await EvmTokensUtils.getBalanceInfo(
+      '0x1234567890123456789012345678901234567890',
+      { chainId: '1' } as any,
+      erc20Token,
+      25,
+      { estimatedFeeInEth: new Decimal('0.1') } as any,
+    );
+
+    expect(balanceInfo).toEqual({
+      mainBalance: {
+        before: '100 USDC',
+        estimatedAfter: '75  USDC',
+        insufficientBalance: false,
+      },
+      feeBalance: {
+        before: '1 ETH',
+        estimatedAfter: '0.9  ETH',
+        insufficientBalance: false,
+      },
+    });
+  });
+
+  it('marks the balance as insufficient when the selected gas fee exceeds the native balance', async () => {
+    const nativeToken = {
+      name: 'Ether',
+      symbol: 'ETH',
+      logo: '',
+      chainId: '1',
+      backgroundColor: '#000000',
+      coingeckoId: 'ethereum',
+      priceUsd: 3000,
+      createdAt: '',
+      categories: [],
+      type: EVMSmartContractType.NATIVE,
+    } as EvmSmartContractInfoNative;
+    const erc20Token = {
+      name: 'USD Coin',
+      symbol: 'USDC',
+      decimals: 6,
+      logo: '',
+      chainId: '1',
+      contractAddress: '0x00000000000000000000000000000000000000aa',
+      backgroundColor: '#000000',
+      coingeckoId: 'usd-coin',
+      priceUsd: 1,
+      possibleSpam: false,
+      verifiedContract: true,
+      isProxy: false,
+      proxyTarget: null,
+      type: EVMSmartContractType.ERC20,
+    } as EvmSmartContractInfoErc20;
+
+    jest
+      .spyOn(EvmTokensUtils, 'getTokenBalance')
+      .mockImplementation(async (_walletAddress, _chain, token) => {
+        if (token.type === EVMSmartContractType.NATIVE) {
+          return {
+            balance: 0n,
+            balanceInteger: 0.05,
+            formattedBalance: '0.05',
+            shortFormattedBalance: '0.05',
+            tokenInfo: nativeToken,
+          } as any;
+        }
+
+        return {
+          balance: 100n,
+          balanceInteger: 100,
+          formattedBalance: '100',
+          shortFormattedBalance: '100',
+          tokenInfo: erc20Token,
+        } as any;
+      });
+    jest.spyOn(EvmTokensUtils, 'getMainTokenInfo').mockResolvedValue(nativeToken);
+
+    const balanceInfo = await EvmTokensUtils.getBalanceInfo(
+      '0x1234567890123456789012345678901234567890',
+      { chainId: '1' } as any,
+      erc20Token,
+      25,
+      { estimatedFeeInEth: new Decimal('0.1') } as any,
+    );
+
+    expect(balanceInfo.feeBalance?.insufficientBalance).toBe(true);
+    expect(balanceInfo.mainBalance.insufficientBalance).toBe(false);
   });
 });
