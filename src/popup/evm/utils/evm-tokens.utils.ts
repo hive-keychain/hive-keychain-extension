@@ -28,6 +28,7 @@ import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import Decimal from 'decimal.js';
 import { ethers } from 'ethers';
 import { KeychainApi } from 'src/api/keychain';
 import FormatUtils from 'src/utils/format.utils';
@@ -90,12 +91,20 @@ const getTotalBalanceInMainToken = (
   } else return 0;
 };
 
+interface EvmTokenBalanceResult {
+  tokenInfo: EvmSmartContractInfoNative | EvmSmartContractInfoErc20;
+  formattedBalance: string;
+  balance: bigint;
+  balanceInteger: number;
+  shortFormattedBalance: string;
+}
+
 const getTokenBalances = async (
   walletAddress: string,
   chain: EvmChain,
   tokensMetadata: EvmSmartContractInfo[],
 ) => {
-  const balancesPromises: Promise<NativeAndErc20Token | undefined>[] =
+  const balancesPromises: Promise<EvmTokenBalanceResult | undefined>[] =
     tokensMetadata.map(async (token) =>
       getTokenBalance(walletAddress, chain, token),
     );
@@ -136,7 +145,7 @@ const getTokenBalance = async (
   walletAddress: string,
   chain: EvmChain,
   token: EvmSmartContractInfo,
-) => {
+): Promise<EvmTokenBalanceResult | undefined> => {
   const provider = await EthersUtils.getProvider(chain);
   try {
     let formattedBalance;
@@ -572,6 +581,23 @@ const getAllowance = async (
   return allowance;
 };
 
+const getBalanceInfo = (
+  balance: EvmTokenBalanceResult,
+  amount: number,
+  tokenInfo: EvmSmartContractInfo,
+) => {
+  return {
+    before: `${balance?.formattedBalance!} ${tokenInfo.symbol}`,
+    estimatedAfter: `${FormatUtils.withCommas(
+      new Decimal(balance?.balanceInteger!).sub(amount!).toString(),
+      (tokenInfo as EvmSmartContractInfoErc20).decimals || 8,
+      true,
+    )}  ${tokenInfo?.symbol}`,
+    insufficientBalance:
+      new Decimal(balance?.balanceInteger!).sub(amount!).toNumber() < 0,
+  };
+};
+
 export const EvmTokensUtils = {
   getTotalBalanceInMainToken,
   getTotalBalanceInUsd,
@@ -592,4 +618,5 @@ export const EvmTokensUtils = {
   addCustomToken,
   getCustomTokens,
   getAllowance,
+  getBalanceInfo,
 };

@@ -737,17 +737,9 @@ export const SendTransaction = (props: Props) => {
       tokenInfo,
     );
 
-    setBalanceInfo({
-      before: `${balance?.formattedBalance!} ${tokenInfo.symbol}`,
-      estimatedAfter: `${FormatUtils.withCommas(
-        new Decimal(balance?.balanceInteger!).sub(transferAmount!).toString(),
-        (tokenInfo as EvmSmartContractInfoErc20).decimals || 8,
-        true,
-      )}  ${tokenInfo?.symbol}`,
-      insufficientBalance:
-        new Decimal(balance?.balanceInteger!).sub(transferAmount!).toNumber() <
-        0,
-    });
+    setBalanceInfo(
+      EvmTokensUtils.getBalanceInfo(balance!, transferAmount!, tokenInfo),
+    );
   };
 
   const handleClickOnConfirm = () => {

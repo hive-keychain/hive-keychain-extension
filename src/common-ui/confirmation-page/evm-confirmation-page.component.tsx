@@ -6,7 +6,6 @@ import { Screen } from '@interfaces/screen.interface';
 import { EtherRPCCustomError } from '@popup/evm/interfaces/evm-errors.interface';
 import {
   EvmSmartContractInfo,
-  EvmSmartContractInfoErc20,
   EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
@@ -18,7 +17,6 @@ import { goBack } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
-import Decimal from 'decimal.js';
 import EventEmitter from 'events';
 import React, { BaseSyntheticEvent, useEffect, useMemo, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -35,7 +33,6 @@ import { ConfirmationPopup } from 'src/common-ui/confirmation-warning-info/confi
 import { ConfirmationWarnings } from 'src/common-ui/confirmation-warning-info/confirmation-warnings/confirmation-warnings.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
-import FormatUtils from 'src/utils/format.utils';
 
 interface BalanceInfo {
   before: string;
@@ -140,16 +137,9 @@ const ConfirmationPage = ({
       tokenInfo.type === EVMSmartContractType.ERC20 ||
       tokenInfo.type === EVMSmartContractType.NATIVE
     ) {
-      setBalanceInfo({
-        before: `${balance?.formattedBalance!} ${tokenInfo.symbol}`,
-        estimatedAfter: `${FormatUtils.withCommas(
-          new Decimal(balance?.balanceInteger!).sub(amount!).toString(),
-          (tokenInfo as EvmSmartContractInfoErc20).decimals || 8,
-          true,
-        )}  ${tokenInfo?.symbol}`,
-        insufficientBalance:
-          new Decimal(balance?.balanceInteger!).sub(amount!).toNumber() < 0,
-      });
+      setBalanceInfo(
+        EvmTokensUtils.getBalanceInfo(balance!, amount!, tokenInfo),
+      );
     }
   };
 
