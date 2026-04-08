@@ -1,7 +1,11 @@
 import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
-import { ProviderRpcErrorList } from '@interfaces/evm-provider.interface';
+import {
+  EvmEventName,
+  ProviderRpcErrorList,
+} from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 
 jest.mock('@background/hive/modules/mk.module', () => ({
   __esModule: true,
@@ -13,6 +17,14 @@ jest.mock('@background/hive/modules/mk.module', () => ({
 jest.mock('@popup/evm/utils/evm-chain.utils', () => ({
   EvmChainUtils: {
     getLastEvmChainId: jest.fn(),
+    saveLastUsedChain: jest.fn(),
+  },
+}));
+
+jest.mock('@popup/evm/utils/evm-rpc.utils', () => ({
+  EvmRpcUtils: {
+    getActiveRpc: jest.fn(),
+    setActiveRpc: jest.fn(),
   },
 }));
 
@@ -36,8 +48,15 @@ jest.mock('@popup/evm/utils/wallet.utils', () => ({
   },
 }));
 
+jest.mock('@popup/multichain/utils/chain.utils', () => ({
+  ChainUtils: {
+    getChain: jest.fn(),
+  },
+}));
+
 jest.mock('src/content-scripts/hive/web-interface/response.logic', () => ({
   sendEvmEventToDomain: jest.fn(),
+  sendEvmEventGlobal: jest.fn(),
 }));
 
 jest.mock('src/utils/communication.utils', () => ({
@@ -46,34 +65,71 @@ jest.mock('src/utils/communication.utils', () => ({
   },
 }));
 
+jest.mock('src/utils/localStorage.utils', () => ({
+  __esModule: true,
+  default: {
+    saveValueInLocalStorage: jest.fn(),
+  },
+}));
+
 const loadTestContext = async () => {
   const { evmRequestWithoutConfirmation } = await import(
     '@background/evm/requests/logic/evm-request-without-confirmation.logic'
   );
+  const { EvmChainUtils } = await import('@popup/evm/utils/evm-chain.utils');
+  const { EvmRpcUtils } = await import('@popup/evm/utils/evm-rpc.utils');
+  const { EvmRequestsUtils } = await import('@popup/evm/utils/evm-requests.utils');
   const { EvmWalletUtils } = await import('@popup/evm/utils/wallet.utils');
+  const { ChainUtils } = await import('@popup/multichain/utils/chain.utils');
   const { CommunicationUtils } = await import('src/utils/communication.utils');
+  const LocalStorageUtils = (await import('src/utils/localStorage.utils'))
+    .default as {
+    saveValueInLocalStorage: jest.Mock;
+  };
   const responseLogic = await import(
     'src/content-scripts/hive/web-interface/response.logic'
   );
 
   return {
     evmRequestWithoutConfirmation,
+    EvmChainUtils: EvmChainUtils as {
+      getLastEvmChainId: jest.Mock;
+      saveLastUsedChain: jest.Mock;
+    },
+    EvmRpcUtils: EvmRpcUtils as {
+      getActiveRpc: jest.Mock;
+      setActiveRpc: jest.Mock;
+    },
+    EvmRequestsUtils: EvmRequestsUtils as {
+      call: jest.Mock;
+    },
     EvmWalletUtils: EvmWalletUtils as {
       getConnectedWallets: jest.Mock;
       getWalletPermissionFull: jest.Mock;
       hasPermission: jest.Mock;
       removeWalletPermission: jest.Mock;
     },
+    ChainUtils: ChainUtils as {
+      getChain: jest.Mock;
+    },
     CommunicationUtils: CommunicationUtils as {
       tabsSendMessage: jest.Mock;
     },
+    LocalStorageUtils,
     responseLogic: responseLogic as {
       sendEvmEventToDomain: jest.Mock;
+      sendEvmEventGlobal: jest.Mock;
     },
   };
 };
 
 describe('evm request without confirmation', () => {
+  const polygonChain = {
+    chainId: '0x89',
+    name: 'Polygon',
+    rpcs: [{ url: 'https://polygon-rpc.test' }],
+  } as any;
+
   beforeEach(() => {
     jest.resetModules();
     jest.clearAllMocks();
@@ -117,6 +173,169 @@ describe('evm request without confirmation', () => {
       },
     });
   });
+
+  it('handles wallet_switchEthereumChain wallet-side without forwarding to provider.send', async () => {
+    const {
+      evmRequestWithoutConfirmation,
+      EvmChainUtils,
+      EvmRpcUtils,
+      EvmRequestsUtils,
+      ChainUtils,
+      CommunicationUtils,
+      LocalStorageUtils,
+      responseLogic,
+    } = await loadTestContext();
+    const requestHandler = {
+      removeRequestById: jest.fn(),
+    } as any;
+
+    EvmChainUtils.getLastEvmChainId.mockResolvedValue('0x1');
+    ChainUtils.getChain.mockResolvedValue(polygonChain);
+    EvmRpcUtils.getActiveRpc.mockResolvedValue(polygonChain.rpcs[0]);
+    EvmRpcUtils.setActiveRpc.mockResolvedValue(undefined);
+
+    await evmRequestWithoutConfirmation(
+      requestHandler,
+      14,
+      {
+        request_id: 27,
+        method: EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN,
+        params: [{ chainId: '0x89' }],
+      },
+      {
+        domain: 'https://app.test',
+        protocol: 'https:',
+        logo: '',
+      },
+    );
+
+    expect(EvmRequestsUtils.call).not.toHaveBeenCalled();
+    expect(ChainUtils.getChain).toHaveBeenCalledWith('0x89');
+    expect(EvmChainUtils.saveLastUsedChain).toHaveBeenCalledWith(polygonChain);
+    expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.ACTIVE_CHAIN,
+      '0x89',
+    );
+    expect(EvmRpcUtils.getActiveRpc).toHaveBeenCalledWith(polygonChain);
+    expect(EvmRpcUtils.setActiveRpc).toHaveBeenCalledWith(
+      polygonChain.rpcs[0],
+      polygonChain,
+    );
+    expect(responseLogic.sendEvmEventGlobal).toHaveBeenCalledWith(
+      EvmEventName.CHAIN_CHANGED,
+      '0x89',
+    );
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(14, {
+      command: BackgroundCommand.SEND_EVM_RESPONSE,
+      value: {
+        requestId: 27,
+        result: null,
+      },
+    });
+  });
+
+  it('returns chainNotAdded for wallet_switchEthereumChain when the chain is not available in wallet state', async () => {
+    const {
+      evmRequestWithoutConfirmation,
+      EvmChainUtils,
+      EvmRpcUtils,
+      EvmRequestsUtils,
+      ChainUtils,
+      CommunicationUtils,
+      LocalStorageUtils,
+      responseLogic,
+    } = await loadTestContext();
+    const requestHandler = {
+      removeRequestById: jest.fn(),
+    } as any;
+
+    ChainUtils.getChain.mockResolvedValue(undefined);
+
+    await evmRequestWithoutConfirmation(
+      requestHandler,
+      15,
+      {
+        request_id: 28,
+        method: EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN,
+        params: [{ chainId: '0x89' }],
+      },
+      {
+        domain: 'https://app.test',
+        protocol: 'https:',
+        logo: '',
+      },
+    );
+
+    expect(EvmRequestsUtils.call).not.toHaveBeenCalled();
+    expect(EvmChainUtils.saveLastUsedChain).not.toHaveBeenCalled();
+    expect(LocalStorageUtils.saveValueInLocalStorage).not.toHaveBeenCalled();
+    expect(EvmRpcUtils.setActiveRpc).not.toHaveBeenCalled();
+    expect(responseLogic.sendEvmEventGlobal).not.toHaveBeenCalled();
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(15, {
+      command: BackgroundCommand.SEND_EVM_ERROR,
+      value: {
+        requestId: 28,
+        error: ProviderRpcErrorList.chainNotAdded,
+      },
+    });
+  });
+
+  it.each([
+    undefined,
+    [],
+    [{}, {}],
+    ['0x89'],
+    [{}],
+    [{ chainId: 1 }],
+    [{ chainId: '1' }],
+    [{ chainId: '0xzz' }],
+  ])(
+    'returns invalid params for malformed wallet_switchEthereumChain params: %p',
+    async (params) => {
+      const {
+        evmRequestWithoutConfirmation,
+        EvmChainUtils,
+        EvmRpcUtils,
+        EvmRequestsUtils,
+        ChainUtils,
+        CommunicationUtils,
+        LocalStorageUtils,
+        responseLogic,
+      } = await loadTestContext();
+      const requestHandler = {
+        removeRequestById: jest.fn(),
+      } as any;
+
+      await evmRequestWithoutConfirmation(
+        requestHandler,
+        16,
+        {
+          request_id: 29,
+          method: EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN,
+          params: params as any,
+        },
+        {
+          domain: 'https://app.test',
+          protocol: 'https:',
+          logo: '',
+        },
+      );
+
+      expect(ChainUtils.getChain).not.toHaveBeenCalled();
+      expect(EvmRequestsUtils.call).not.toHaveBeenCalled();
+      expect(EvmChainUtils.saveLastUsedChain).not.toHaveBeenCalled();
+      expect(LocalStorageUtils.saveValueInLocalStorage).not.toHaveBeenCalled();
+      expect(EvmRpcUtils.setActiveRpc).not.toHaveBeenCalled();
+      expect(responseLogic.sendEvmEventGlobal).not.toHaveBeenCalled();
+      expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(16, {
+        command: BackgroundCommand.SEND_EVM_ERROR,
+        value: {
+          requestId: 29,
+          error: ProviderRpcErrorList.invalidMethodParams,
+        },
+      });
+    },
+  );
 
   it('returns the granted eth_accounts permission for wallet_requestPermissions', async () => {
     const { evmRequestWithoutConfirmation, EvmWalletUtils, CommunicationUtils } =

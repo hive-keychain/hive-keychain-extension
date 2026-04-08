@@ -50,20 +50,27 @@ export const initEvmRequestHandler = async (
   Logger.info('Initializing EVM request logic');
 
   const allChains = await ChainUtils.getDefaultChains();
-  let chainId: string;
-  if (
-    request.method === EvmRequestMethod.WALLET_ADD_ETH_CHAIN ||
-    request.method === EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN
-  ) {
+  let chainId: string | undefined;
+  if (request.method === EvmRequestMethod.WALLET_ADD_ETH_CHAIN) {
     // check if chain is valid (within keychain allowed chains)
     chainId = request.params[0].chainId;
+  } else if (request.method === EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN) {
+    chainId =
+      Array.isArray(request.params) &&
+      request.params.length === 1 &&
+      typeof request.params[0] === 'object' &&
+      request.params[0] !== null &&
+      typeof (request.params[0] as { chainId?: unknown }).chainId === 'string'
+        ? ((request.params[0] as { chainId: string }).chainId as string)
+        : undefined;
   } else {
     chainId = request.chainId as string;
   }
   let chain: EvmChain | null = null;
   if (chainId) {
+    const requestedChainId = chainId.toLowerCase();
     chain = allChains.find(
-      (c) => c.chainId.toLowerCase() === chainId.toLowerCase(),
+      (c) => c.chainId.toLowerCase() === requestedChainId,
     ) as EvmChain;
   }
 
@@ -75,7 +82,11 @@ export const initEvmRequestHandler = async (
   const setupChains = await ChainUtils.getAllSetupChainsForType<EvmChain>(
     ChainType.EVM,
   );
-  if (chainId && chain === null) {
+  if (
+    chainId &&
+    chain === null &&
+    request.method !== EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN
+  ) {
     handleNonSupportedChain(requestHandler, tab!, request, request.chainId!);
   } else if (EvmDeprecatedMethods.includes(request.method)) {
     handleDeprecatedMethods(requestHandler, tab!, request, dappInfo);

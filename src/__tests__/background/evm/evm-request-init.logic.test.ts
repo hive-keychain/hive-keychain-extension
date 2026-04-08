@@ -91,6 +91,9 @@ const loadTestContext = async () => {
   const { handleEvmError } = await import(
     '@background/evm/requests/logic/handle-evm-error.logic'
   );
+  const { handleNonSupportedChain } = await import(
+    '@background/evm/requests/logic/handle-non-supported-chain.logic'
+  );
 
   return {
     initEvmRequestHandler,
@@ -110,6 +113,7 @@ const loadTestContext = async () => {
     evmRequestWithConfirmation: evmRequestWithConfirmation as jest.Mock,
     evmRequestWithoutConfirmation: evmRequestWithoutConfirmation as jest.Mock,
     handleEvmError: handleEvmError as jest.Mock,
+    handleNonSupportedChain: handleNonSupportedChain as jest.Mock,
   };
 };
 
@@ -171,6 +175,36 @@ describe('evm request init', () => {
     );
     expect(evmRequestWithConfirmation).not.toHaveBeenCalled();
     expect(handleEvmError).not.toHaveBeenCalled();
+  });
+
+  it('routes wallet_switchEthereumChain through the wallet-side no-confirmation path even when the target chain is not in the default chain list', async () => {
+    const {
+      initEvmRequestHandler,
+      ChainUtils,
+      evmRequestWithoutConfirmation,
+      evmRequestWithConfirmation,
+      handleNonSupportedChain,
+    } = await loadTestContext();
+    const requestHandler = getRequestHandler();
+    const request = {
+      request_id: 30,
+      method: EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN,
+      params: [{ chainId: '0x999' }],
+    };
+
+    ChainUtils.getDefaultChains.mockResolvedValue([chain]);
+    ChainUtils.getAllSetupChainsForType.mockResolvedValue([chain]);
+
+    await initEvmRequestHandler(request as any, 10, dappInfo, requestHandler);
+
+    expect(evmRequestWithoutConfirmation).toHaveBeenCalledWith(
+      requestHandler,
+      10,
+      request,
+      dappInfo,
+    );
+    expect(handleNonSupportedChain).not.toHaveBeenCalled();
+    expect(evmRequestWithConfirmation).not.toHaveBeenCalled();
   });
 
   it('treats valid eth_accounts wallet_requestPermissions like eth_requestAccounts for dapp lock gating', async () => {

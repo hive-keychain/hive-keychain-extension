@@ -7,6 +7,7 @@ import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler'
 import MkModule from '@background/hive/modules/mk.module';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import {
+  EvmEventName,
   EvmDappInfo,
   EvmRequest,
   ProviderRpcErrorItem,
@@ -14,16 +15,22 @@ import {
   getErrorFromEtherJS,
 } from '@interfaces/evm-provider.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import {
   getWalletPermissionsResponse,
   getWalletRequestPermissionsResponse,
   validateWalletRequestPermissionsParams,
 } from 'src/background/evm/requests/logic/wallet-request-permissions.logic';
+import { sendEvmEventGlobal } from 'src/content-scripts/hive/web-interface/response.logic';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { ObjectUtils } from 'src/utils/object.utils';
 
 const validateWalletRevokePermissionsParams = (
@@ -66,6 +73,29 @@ const validateWalletRevokePermissionsParams = (
   return {
     permission: requestedPermission as EvmRequestPermission,
   };
+};
+
+const validateWalletSwitchEthereumChainParams = (
+  params: unknown,
+): {
+  chainId?: string;
+  error?: ProviderRpcErrorItem;
+} => {
+  if (!params || !Array.isArray(params) || params.length !== 1) {
+    return { error: ProviderRpcErrorList.invalidMethodParams };
+  }
+
+  const requestedChain = params[0];
+  if (!ObjectUtils.isPureObject(requestedChain)) {
+    return { error: ProviderRpcErrorList.invalidMethodParams };
+  }
+
+  const chainId = (requestedChain as Record<string, unknown>).chainId;
+  if (typeof chainId !== 'string' || !/^0x[0-9a-fA-F]+$/.test(chainId)) {
+    return { error: ProviderRpcErrorList.invalidMethodParams };
+  }
+
+  return { chainId };
 };
 
 export const evmRequestWithoutConfirmation = async (
@@ -123,6 +153,53 @@ export const evmRequestWithoutConfirmation = async (
         );
         message.value.result = connectedWallets;
       }
+      break;
+    }
+    case EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN: {
+      const { chainId, error } = validateWalletSwitchEthereumChainParams(
+        request.params,
+      );
+
+      if (error) {
+        message = {
+          command: BackgroundCommand.SEND_EVM_ERROR,
+          value: {
+            requestId: request.request_id,
+            error,
+          },
+        };
+        break;
+      }
+
+      const requestedChain = await ChainUtils.getChain<EvmChain>(chainId!);
+      if (!requestedChain) {
+        message = {
+          command: BackgroundCommand.SEND_EVM_ERROR,
+          value: {
+            requestId: request.request_id,
+            error: ProviderRpcErrorList.chainNotAdded,
+          },
+        };
+        break;
+      }
+
+      const previousChainId = await EvmChainUtils.getLastEvmChainId();
+
+      await EvmChainUtils.saveLastUsedChain(requestedChain);
+      await LocalStorageUtils.saveValueInLocalStorage(
+        LocalStorageKeyEnum.ACTIVE_CHAIN,
+        requestedChain.chainId,
+      );
+      await EvmRpcUtils.setActiveRpc(
+        await EvmRpcUtils.getActiveRpc(requestedChain),
+        requestedChain,
+      );
+
+      if (previousChainId?.toLowerCase() !== requestedChain.chainId.toLowerCase()) {
+        sendEvmEventGlobal(EvmEventName.CHAIN_CHANGED, requestedChain.chainId);
+      }
+
+      message.value.result = null;
       break;
     }
     case EvmRequestMethod.WALLET_REQUEST_PERMISSIONS: {

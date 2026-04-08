@@ -26,7 +26,7 @@ const getEthChain = async (): Promise<EvmChain> => {
 };
 
 const saveLastUsedChain = (chain: EvmChain) => {
-  LocalStorageUtils.saveValueInLocalStorage(
+  return LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_LAST_CHAIN_USED,
     chain.chainId,
   );
