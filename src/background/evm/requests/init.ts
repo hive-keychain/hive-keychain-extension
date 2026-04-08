@@ -7,7 +7,6 @@ import {
   EvmRestrictedMethods,
   EvmUnrestrictedMethods,
 } from '@background/evm/evm-methods/evm-methods.list';
-import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { evmRequestWithConfirmation } from '@background/evm/requests/logic/evm-request-with-confirmation.logic';
 import { evmRequestWithoutConfirmation } from '@background/evm/requests/logic/evm-request-without-confirmation.logic';
@@ -16,6 +15,10 @@ import { handleEvmError } from '@background/evm/requests/logic/handle-evm-error.
 import { handleNonExistingMethod } from '@background/evm/requests/logic/handle-non-existing-methods.logic';
 import { handleNonSupportedChain } from '@background/evm/requests/logic/handle-non-supported-chain.logic';
 import { requestAddEvmChain } from '@background/evm/requests/logic/request-add-evm-chain.logic';
+import {
+  getRequestedConnectionPermission,
+  validateWalletRequestPermissionsParams,
+} from '@background/evm/requests/logic/wallet-request-permissions.logic';
 import MkModule from '@background/hive/modules/mk.module';
 import {
   initializeWallet,
@@ -64,6 +67,11 @@ export const initEvmRequestHandler = async (
     ) as EvmChain;
   }
 
+  const walletRequestPermissionsValidation =
+    request.method === EvmRequestMethod.WALLET_REQUEST_PERMISSIONS
+      ? validateWalletRequestPermissionsParams(request.params)
+      : undefined;
+
   const setupChains = await ChainUtils.getAllSetupChainsForType<EvmChain>(
     ChainType.EVM,
   );
@@ -73,6 +81,17 @@ export const initEvmRequestHandler = async (
     handleDeprecatedMethods(requestHandler, tab!, request, dappInfo);
   } else if (!doesMethodExist(request.method)) {
     handleNonExistingMethod(requestHandler, tab!, request, dappInfo);
+  } else if (walletRequestPermissionsValidation?.error) {
+    const providerError = walletRequestPermissionsValidation.error;
+    handleEvmError(
+      requestHandler,
+      tab!,
+      request,
+      providerError,
+      providerError.message,
+      [],
+      true,
+    );
   } else if (EvmUnrestrictedMethods.includes(request.method)) {
     evmRequestWithoutConfirmation(requestHandler, tab!, request, dappInfo);
   } else if (
@@ -81,6 +100,7 @@ export const initEvmRequestHandler = async (
   ) {
     if (
       request.method !== EvmRequestMethod.REQUEST_ACCOUNTS &&
+      request.method !== EvmRequestMethod.WALLET_REQUEST_PERMISSIONS &&
       (await DappRequestUtils.isDappLocked(dappInfo.domain))
     ) {
       const providerError = getEvmProviderRpcFullError('userReject');
@@ -132,13 +152,12 @@ export const initEvmRequestHandler = async (
         console.log('return error ? (Init L82)');
       }
     } else if (EvmRestrictedMethods.includes(request.method)) {
-      if (request.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
-        if (
-          await EvmWalletUtils.hasPermission(
-            dappInfo.domain,
-            EvmRequestPermission.ETH_ACCOUNTS,
-          )
-        ) {
+      const requestedPermission = getRequestedConnectionPermission(
+        request,
+        walletRequestPermissionsValidation,
+      );
+      if (requestedPermission) {
+        if (await EvmWalletUtils.hasPermission(dappInfo.domain, requestedPermission)) {
           evmRequestWithoutConfirmation(
             requestHandler,
             tab!,

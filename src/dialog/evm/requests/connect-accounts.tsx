@@ -1,10 +1,8 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
-import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { TransactionConfirmationFields } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
-import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -13,6 +11,7 @@ import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/ch
 import { DappStatusEnum } from 'src/common-ui/evm/dapp-status/dapp-status.component';
 import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
+import { saveConnectedAccountsRequest } from 'src/dialog/evm/requests/connect-accounts.logic';
 import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
@@ -88,21 +87,13 @@ export const ConnectAccounts = (props: Props) => {
       for (const address of Object.keys(accountsToConnect)) {
         if (accountsToConnect[address]) addresses.push(address);
       }
-      await EvmWalletUtils.connectMultipleWallet(
+      const result = await saveConnectedAccountsRequest(
+        request.method as
+          | EvmRequestMethod.REQUEST_ACCOUNTS
+          | EvmRequestMethod.WALLET_REQUEST_PERMISSIONS,
         addresses,
         data.dappInfo.domain,
       );
-      await EvmAddressesUtils.saveDomainAddress(data.dappInfo.domain);
-
-      let result;
-
-      if (request.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
-        result = addresses.map((add) => add.toLowerCase());
-      } else if (
-        request.method === EvmRequestMethod.WALLET_REQUEST_PERMISSIONS
-      ) {
-        result = [{ parentCapability: EvmRequestPermission.ETH_ACCOUNTS }];
-      }
 
       CommunicationUtils.runtimeSendMessage({
         command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,

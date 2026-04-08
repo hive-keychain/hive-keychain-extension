@@ -1,5 +1,6 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
+import { validateWalletRequestPermissionsParams } from '@background/evm/requests/logic/wallet-request-permissions.logic';
 import { AddChain } from '@dialog/evm/requests/add-chain/add-chain';
 import Savings from '@dialog/hive/requests/savings';
 import {
@@ -369,7 +370,9 @@ export const RequestConfirmation = ({ message, afterCancel }: Props) => {
         }
 
         case EvmRequestMethod.WALLET_REQUEST_PERMISSIONS: {
-          const requestedPermission = Object.keys(request.params[0])[0];
+          const requestedPermission = validateWalletRequestPermissionsParams(
+            request.params,
+          ).permission;
           switch (requestedPermission) {
             case EvmRequestPermission.ETH_ACCOUNTS: {
               return (
@@ -381,6 +384,8 @@ export const RequestConfirmation = ({ message, afterCancel }: Props) => {
                 />
               );
             }
+            default:
+              return null;
           }
         }
 

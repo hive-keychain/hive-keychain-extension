@@ -17,6 +17,10 @@ import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import {
+  getWalletRequestPermissionsResponse,
+  validateWalletRequestPermissionsParams,
+} from 'src/background/evm/requests/logic/wallet-request-permissions.logic';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 import { ObjectUtils } from 'src/utils/object.utils';
@@ -118,6 +122,40 @@ export const evmRequestWithoutConfirmation = async (
         );
         message.value.result = connectedWallets;
       }
+      break;
+    }
+    case EvmRequestMethod.WALLET_REQUEST_PERMISSIONS: {
+      const { permission, error } = validateWalletRequestPermissionsParams(
+        request.params,
+      );
+
+      if (error) {
+        message = {
+          command: BackgroundCommand.SEND_EVM_ERROR,
+          value: {
+            requestId: request.request_id,
+            error,
+          },
+        };
+        break;
+      }
+
+      const hasPermission = await EvmWalletUtils.hasPermission(
+        dappInfo.domain,
+        permission!,
+      );
+      if (!hasPermission) {
+        message = {
+          command: BackgroundCommand.SEND_EVM_ERROR,
+          value: {
+            requestId: request.request_id,
+            error: ProviderRpcErrorList.unauthorized,
+          },
+        };
+        break;
+      }
+
+      message.value.result = getWalletRequestPermissionsResponse(permission!);
       break;
     }
 

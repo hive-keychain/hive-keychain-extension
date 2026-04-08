@@ -116,6 +116,43 @@ describe('evm request without confirmation', () => {
     });
   });
 
+  it('returns the granted eth_accounts permission for wallet_requestPermissions', async () => {
+    const { evmRequestWithoutConfirmation, EvmWalletUtils, CommunicationUtils } =
+      await loadTestContext();
+    const requestHandler = {
+      removeRequestById: jest.fn(),
+    } as any;
+
+    EvmWalletUtils.hasPermission.mockResolvedValue(true);
+
+    await evmRequestWithoutConfirmation(
+      requestHandler,
+      8,
+      {
+        request_id: 12,
+        method: EvmRequestMethod.WALLET_REQUEST_PERMISSIONS,
+        params: [{ [EvmRequestPermission.ETH_ACCOUNTS]: {} }],
+      },
+      {
+        domain: 'https://app.test',
+        protocol: 'https:',
+        logo: '',
+      },
+    );
+
+    expect(EvmWalletUtils.hasPermission).toHaveBeenCalledWith(
+      'https://app.test',
+      EvmRequestPermission.ETH_ACCOUNTS,
+    );
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(8, {
+      command: BackgroundCommand.SEND_EVM_RESPONSE,
+      value: {
+        requestId: 12,
+        result: [{ parentCapability: EvmRequestPermission.ETH_ACCOUNTS }],
+      },
+    });
+  });
+
   it('returns null and only revokes eth_accounts for the current origin', async () => {
     const {
       evmRequestWithoutConfirmation,
@@ -193,6 +230,83 @@ describe('evm request without confirmation', () => {
       value: {
         requestId: 21,
         error: ProviderRpcErrorList.invalidMethodParams,
+      },
+    });
+  });
+
+  it.each([
+    undefined,
+    [],
+    [{}, {}],
+    ['eth_accounts'],
+    [{ eth_accounts: {}, wallet_snap: {} }],
+    [{ eth_accounts: 'invalid' }],
+  ])(
+    'returns an RPC error for malformed wallet_requestPermissions params: %p',
+    async (params) => {
+      const {
+        evmRequestWithoutConfirmation,
+        EvmWalletUtils,
+        CommunicationUtils,
+      } = await loadTestContext();
+      const requestHandler = {
+        removeRequestById: jest.fn(),
+      } as any;
+
+      await evmRequestWithoutConfirmation(
+        requestHandler,
+        10,
+        {
+          request_id: 23,
+          method: EvmRequestMethod.WALLET_REQUEST_PERMISSIONS,
+          params: params as any,
+        },
+        {
+          domain: 'https://app.test',
+          protocol: 'https:',
+          logo: '',
+        },
+      );
+
+      expect(EvmWalletUtils.hasPermission).not.toHaveBeenCalled();
+      expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(10, {
+        command: BackgroundCommand.SEND_EVM_ERROR,
+        value: {
+          requestId: 23,
+          error: ProviderRpcErrorList.invalidMethodParams,
+        },
+      });
+    },
+  );
+
+  it('returns an RPC error for unsupported wallet_requestPermissions permissions', async () => {
+    const { evmRequestWithoutConfirmation, EvmWalletUtils, CommunicationUtils } =
+      await loadTestContext();
+    const requestHandler = {
+      removeRequestById: jest.fn(),
+    } as any;
+
+    await evmRequestWithoutConfirmation(
+      requestHandler,
+      11,
+      {
+        request_id: 24,
+        method: EvmRequestMethod.WALLET_REQUEST_PERMISSIONS,
+        params: [{ wallet_snap: {} } as any],
+      },
+      {
+        domain: 'https://app.test',
+        protocol: 'https:',
+        logo: '',
+      },
+    );
+
+    expect(EvmWalletUtils.hasPermission).not.toHaveBeenCalled();
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(11, {
+      command: BackgroundCommand.SEND_EVM_ERROR,
+      value: {
+        requestId: 24,
+        error: ProviderRpcErrorList.unsupportedMethod,
       },
     });
   });

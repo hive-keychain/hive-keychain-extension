@@ -7,6 +7,7 @@ import {
   EvmRequestData,
   EvmRequestHandler,
 } from '@background/evm/requests/evm-request-handler';
+import { getRequestedConnectionPermission } from '@background/evm/requests/logic/wallet-request-permissions.logic';
 import {
   HiveRequestData,
   HiveRequestsHandler,
@@ -128,15 +129,19 @@ export const isEvmDialogVisibleRequest = async (requestData: EvmRequestData) => 
 
   if (EvmUnrestrictedMethods.includes(request.method)) return false;
 
-  if (
-    request.method === EvmRequestMethod.REQUEST_ACCOUNTS &&
-    requestData.dappInfo?.domain
-  ) {
+  const connectionPermission = getRequestedConnectionPermission(
+    requestData.request,
+  );
+  if (connectionPermission && requestData.dappInfo?.domain) {
     const hasPermission = await EvmWalletUtils.hasPermission(
       requestData.dappInfo.domain,
-      EvmMethodPermissionMap[request.method]!,
+      connectionPermission,
     );
     return !hasPermission;
+  }
+
+  if (request.method === EvmRequestMethod.WALLET_REQUEST_PERMISSIONS) {
+    return false;
   }
 
   return true;
@@ -407,15 +412,22 @@ const buildEvmConfirmationMessage = async (
     if (!hasPermission) return null;
   }
 
-  if (
-    request.method === EvmRequestMethod.REQUEST_ACCOUNTS &&
-    requestData.dappInfo.domain
-  ) {
+  const connectionPermission = getRequestedConnectionPermission(
+    requestData.request,
+  );
+  if (connectionPermission && requestData.dappInfo.domain) {
     const hasPermission = await EvmWalletUtils.hasPermission(
       requestData.dappInfo.domain,
-      EvmMethodPermissionMap[request.method]!,
+      connectionPermission,
     );
     if (hasPermission) return null;
+  }
+
+  if (
+    request.method === EvmRequestMethod.WALLET_REQUEST_PERMISSIONS &&
+    !connectionPermission
+  ) {
+    return null;
   }
 
   if (!evmRequestHandler.accounts.length) return null;

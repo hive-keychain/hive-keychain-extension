@@ -119,6 +119,8 @@ export const EvmMethodPermissionMap: {
 } = {
   [EvmRequestMethod.GET_ACCOUNTS]: EvmRequestPermission.ETH_ACCOUNTS,
   [EvmRequestMethod.REQUEST_ACCOUNTS]: EvmRequestPermission.ETH_ACCOUNTS,
+  [EvmRequestMethod.WALLET_REQUEST_PERMISSIONS]:
+    EvmRequestPermission.ETH_ACCOUNTS,
   [EvmRequestMethod.ETH_SIGN_DATA]: EvmRequestPermission.ETH_ACCOUNTS,
   [EvmRequestMethod.ETH_SIGN_DATA_3]: EvmRequestPermission.ETH_ACCOUNTS,
   [EvmRequestMethod.ETH_SIGN_DATA_4]: EvmRequestPermission.ETH_ACCOUNTS,
