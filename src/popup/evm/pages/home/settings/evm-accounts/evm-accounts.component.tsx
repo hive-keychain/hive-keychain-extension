@@ -1,5 +1,6 @@
 import { ContextualMenu } from '@interfaces/contextual-menu.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
+import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountsContextualMenu } from '@popup/evm/pages/home/settings/evm-accounts/evm-accounts.contextual-menu';
 import {
@@ -7,6 +8,7 @@ import {
   EvmEditAccountPopup,
 } from '@popup/evm/pages/home/settings/evm-accounts/evm-edit-account-popup/evm-edit-account-popup.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
@@ -37,6 +39,7 @@ const EvmAccounts = ({
   setTitleContainerProperties,
   navigateTo,
   setEvmAccounts,
+  loadEvmActiveAccount,
 }: PropsType) => {
   const [selectedSeed, setSelectedSeed] = useState<OptionItem>();
   const [seedsOptions, setSeedsOptions] = useState<OptionItem[]>();
@@ -55,14 +58,10 @@ const EvmAccounts = ({
       isBackButtonEnabled: true,
       isCloseButtonDisabled: false,
       onCloseAdditional: async () => {
-        setEvmAccounts(
-          await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk),
-        );
+        await onLeavePage();
       },
       onBackAdditional: async () => {
-        setEvmAccounts(
-          await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk),
-        );
+        await onLeavePage();
       },
     });
   }, []);
@@ -75,6 +74,14 @@ const EvmAccounts = ({
   useEffect(() => {
     initializeMenu();
   }, [selectedSeed]);
+
+  const onLeavePage = async () => {
+    const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+    setEvmAccounts(accounts);
+    const newActiveAccount =
+      await EvmActiveAccountUtils.getSavedActiveAccountWallet(chain, accounts);
+    loadEvmActiveAccount(chain, newActiveAccount);
+  };
 
   const initializeMenu = () => {
     if (selectedSeed)
@@ -333,6 +340,7 @@ const EvmAccounts = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
+    activeAccount: state.evm.activeAccount,
     accounts: state.evm.accounts,
     mk: state.mk,
     chain: state.chain as EvmChain,
@@ -342,6 +350,7 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   navigateTo,
   setEvmAccounts,
+  loadEvmActiveAccount,
 });
 
 type PropsType = ConnectedProps<typeof connector>;

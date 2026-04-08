@@ -19,9 +19,11 @@ const getSavedActiveAccountWallet = async (
       (localAccount) =>
         localAccount.wallet.address === savedActiveAccount[chainId],
     );
-    return localAccount ? localAccount.wallet : localAccounts[0].wallet;
+    return localAccount && !localAccount.hide
+      ? localAccount.wallet
+      : localAccounts.filter((localAccount) => !localAccount.hide)[0].wallet;
   } else {
-    return localAccounts[0].wallet;
+    return localAccounts.filter((localAccount) => !localAccount.hide)[0].wallet;
   }
 };
 
