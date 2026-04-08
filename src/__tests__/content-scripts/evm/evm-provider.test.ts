@@ -24,6 +24,21 @@ const dispatchProviderResponse = (response: Record<string, unknown>) => {
   window.dispatchEvent(event);
 };
 
+const dispatchProviderEvent = (eventData: Record<string, unknown>) => {
+  const event = new MessageEvent('message', {
+    data: {
+      type: 'evm_keychain_event',
+      event: eventData,
+    },
+  });
+
+  Object.defineProperty(event, 'source', {
+    value: window,
+  });
+
+  window.dispatchEvent(event);
+};
+
 const installRequestResponder = (
   responses: Partial<
     Record<
@@ -106,6 +121,72 @@ describe('evm-provider tests:\n', () => {
     cleanup();
   });
 
+  it('does not emit or cache a chain change before a confirmed switch event arrives', async () => {
+    const cleanup = installRequestResponder({
+      [EvmRequestMethod.GET_CHAIN]: { result: '0x1' },
+      [EvmRequestMethod.GET_ACCOUNTS]: { result: [] },
+      [EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN]: { result: null },
+    });
+    const provider = new EvmProvider();
+    const chainChangedListener = jest.fn();
+    provider.on('chainChanged', chainChangedListener);
+    await waitForInit();
+
+    await expect(
+      provider.request({
+        method: EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN,
+        params: [{ chainId: '0x89' }],
+      }),
+    ).resolves.toBeNull();
+
+    expect(provider.chainId).toBe('0x1');
+    expect(chainChangedListener).not.toHaveBeenCalled();
+
+    dispatchProviderEvent({
+      eventType: EvmEventName.CHAIN_CHANGED,
+      args: '0x89',
+      scope: { kind: 'domain', domain: window.location.origin },
+    });
+
+    expect(provider.chainId).toBe('0x89');
+    expect(chainChangedListener).toHaveBeenCalledTimes(1);
+    expect(chainChangedListener).toHaveBeenCalledWith('0x89');
+    cleanup();
+  });
+
+  it('does not suppress later confirmed wallet-driven chain changes after a dapp switch request', async () => {
+    const cleanup = installRequestResponder({
+      [EvmRequestMethod.GET_CHAIN]: { result: '0x1' },
+      [EvmRequestMethod.GET_ACCOUNTS]: { result: [] },
+      [EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN]: { result: null },
+    });
+    const provider = new EvmProvider();
+    const chainChangedListener = jest.fn();
+    provider.on('chainChanged', chainChangedListener);
+    await waitForInit();
+
+    await provider.request({
+      method: EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN,
+      params: [{ chainId: '0x89' }],
+    });
+
+    dispatchProviderEvent({
+      eventType: EvmEventName.CHAIN_CHANGED,
+      args: '0x89',
+      scope: { kind: 'domain', domain: window.location.origin },
+    });
+    dispatchProviderEvent({
+      eventType: EvmEventName.CHAIN_CHANGED,
+      args: '0x1',
+      scope: { kind: 'global' },
+    });
+
+    expect(provider.chainId).toBe('0x1');
+    expect(chainChangedListener).toHaveBeenCalledTimes(2);
+    expect(chainChangedListener.mock.calls).toEqual([['0x89'], ['0x1']]);
+    cleanup();
+  });
+
   it('normalizes account change events before caching them', async () => {
     const cleanup = installRequestResponder({
       [EvmRequestMethod.GET_CHAIN]: { result: '0x1' },
@@ -135,32 +216,24 @@ describe('evm-provider tests:\n', () => {
     cleanup();
   });
 
-  it('ignores routed events from a different origin', async () => {
+  it('ignores routed chain events from a different origin', async () => {
     const cleanup = installRequestResponder({
       [EvmRequestMethod.GET_CHAIN]: { result: '0x1' },
       [EvmRequestMethod.GET_ACCOUNTS]: { result: [] },
     });
     const provider = new EvmProvider();
+    const chainChangedListener = jest.fn();
+    provider.on('chainChanged', chainChangedListener);
     await waitForInit();
 
-    const event = new MessageEvent('message', {
-      data: {
-        type: 'evm_keychain_event',
-        event: {
-          eventType: EvmEventName.ACCOUNT_CHANGED,
-          args: ['0xDdEeFf'],
-          scope: { kind: 'domain', domain: 'http://localhost:3000' },
-        },
-      },
+    dispatchProviderEvent({
+      eventType: EvmEventName.CHAIN_CHANGED,
+      args: '0x89',
+      scope: { kind: 'domain', domain: 'http://localhost:3000' },
     });
 
-    Object.defineProperty(event, 'source', {
-      value: window,
-    });
-
-    window.dispatchEvent(event);
-
-    expect((provider as any)._accounts).toEqual([]);
+    expect(provider.chainId).toBe('0x1');
+    expect(chainChangedListener).not.toHaveBeenCalled();
     cleanup();
   });
 });

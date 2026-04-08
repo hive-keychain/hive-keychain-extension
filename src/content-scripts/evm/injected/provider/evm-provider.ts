@@ -8,7 +8,6 @@ import {
 import EventEmitter from 'events';
 import { validateRequest } from 'src/content-scripts/evm/evm-request-validation';
 import { providerIcon } from 'src/content-scripts/evm/injected/provider/provider-icon';
-import Logger from 'src/utils/logger.utils';
 
 const ProviderInfo: EIP6963ProviderInfo = {
   uuid: '03e583ef-0285-4bd0-afaf-7032f5f61b3a',
@@ -29,7 +28,6 @@ export class EvmProvider extends EventEmitter {
   _isConnected = true;
   _initialized = true;
   _isUnlocked = true;
-  _dappForcedChain = false;
 
   constructor() {
     super();
@@ -89,7 +87,6 @@ export class EvmProvider extends EventEmitter {
           const requestId =
             event.data.response.requestId ?? event.data.response.request_id;
           if (
-            result !== null &&
             requestId !== null &&
             requestId !== undefined
           ) {
@@ -119,11 +116,10 @@ export class EvmProvider extends EventEmitter {
           }
           switch (eventData.event.eventType) {
             case EvmEventName.CHAIN_CHANGED: {
-              if (this._dappForcedChain) {
-                Logger.info('Skip change of chain');
+              if (this.chainId === eventData.event.args) {
                 return;
               }
-              evmProvider.chainId = eventData.event.args;
+              this.chainId = eventData.event.args;
               break;
             }
             case EvmEventName.ACCOUNT_CHANGED: {
@@ -142,7 +138,7 @@ export class EvmProvider extends EventEmitter {
             case EvmEventName.GET_CHAIN_FROM_PROVIDER: {
               this.dispatchCustomEvent(
                 EvmEventName.SEND_BACK_CHAIN_TO_BACKGROUND,
-                { chainId: this._dappForcedChain ? this.chainId : null },
+                { chainId: this.chainId ?? null },
                 () => {},
               );
               return;
@@ -162,21 +158,12 @@ export class EvmProvider extends EventEmitter {
         case EvmRequestMethod.GET_ACCOUNTS: {
           return this.updateAccounts(await this.processRequest(args));
         }
-        case EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN: {
-          if (args.params && (args.params as any[])[0].chainId) {
-            this._dappForcedChain = true;
-            this.chainId = (args.params as any[])[0].chainId;
-            this.emit('chainChanged', this.chainId);
-          }
-          return this.chainId;
-        }
       }
 
       const result = await this.processRequest(args);
       if (args.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
         return this.updateAccounts(result);
       }
-      console.log(result, 'result', args, 'args');
       return result;
     } catch (err) {
       throw err;
@@ -189,10 +176,10 @@ export class EvmProvider extends EventEmitter {
         EvmEventName.REQUEST,
         { ...args, chainId: this.chainId },
         (response: any) => {
-          if (response.result !== null && response.result !== undefined) {
-            resolve(response.result);
-          } else {
+          if (response.error !== null && response.error !== undefined) {
             reject(response.error);
+          } else {
+            resolve(response.result);
           }
         },
       );
