@@ -2,6 +2,8 @@ import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import {
   EIP6963ProviderInfo,
   EvmEventName,
+  ProviderRpcErrorItem,
+  ProviderRpcErrorList,
   RequestArguments,
   RoutedEvmEvent,
 } from '@interfaces/evm-provider.interface';
@@ -25,21 +27,33 @@ export class EvmProvider extends EventEmitter {
   private _current_id = 1;
   private _requests = {} as { [id: number]: any };
 
-  _isConnected = true;
-  _initialized = true;
+  _isConnected = false;
+  _initialized = false;
   _isUnlocked = true;
 
   constructor() {
     super();
-    this.init();
-    // this._state.initialized = true;
+    void this.init();
   }
 
   init = async () => {
     await this.initListener();
-    await this.initiateProviderInformation();
-    this._initialized = true;
-    this.emit('_initialized');
+    let hydrated = false;
+
+    try {
+      await this.initiateProviderInformation();
+      hydrated = true;
+    } catch (error) {
+      if (this.isDisconnectedError(error)) {
+        this.setDisconnected(error);
+      }
+    } finally {
+      this._initialized = true;
+      this.emit(EvmEventName.INITIALIZED);
+      if (hydrated) {
+        this.setConnected(this.chainId);
+      }
+    }
   };
 
   initiateProviderInformation = async () => {
@@ -72,8 +86,49 @@ export class EvmProvider extends EventEmitter {
     return normalizedAccounts;
   };
 
+  private isProviderRpcErrorItem = (
+    error: unknown,
+  ): error is ProviderRpcErrorItem => {
+    return (
+      !!error &&
+      typeof error === 'object' &&
+      typeof (error as ProviderRpcErrorItem).code === 'number' &&
+      typeof (error as ProviderRpcErrorItem).message === 'string'
+    );
+  };
+
+  private isDisconnectedError = (error: unknown) => {
+    return (
+      this.isProviderRpcErrorItem(error) &&
+      error.code === ProviderRpcErrorList.disconnected.code
+    );
+  };
+
+  private setConnected = (chainId = this.chainId) => {
+    if (!chainId || this._isConnected) {
+      return;
+    }
+
+    this._isConnected = true;
+    this.emit('connect', { chainId });
+  };
+
+  private setDisconnected = (error?: unknown) => {
+    if (!this._isConnected) {
+      return;
+    }
+
+    this._isConnected = false;
+    this.emit(
+      'disconnect',
+      this.isProviderRpcErrorItem(error)
+        ? { code: error.code, message: error.message }
+        : { ...ProviderRpcErrorList.disconnected },
+    );
+  };
+
   isConnected = () => {
-    return true;
+    return this._isConnected;
   };
 
   initListener = () => {
@@ -100,6 +155,9 @@ export class EvmProvider extends EventEmitter {
           const requestId =
             event.data.response.requestId ?? event.data.response.request_id;
           if (error && requestId !== null && requestId !== undefined) {
+            if (this.isDisconnectedError(error)) {
+              this.setDisconnected(error);
+            }
             if (this._requests[requestId]) {
               this._requests[requestId]({ error });
               delete this._requests[requestId];
@@ -144,6 +202,9 @@ export class EvmProvider extends EventEmitter {
               return;
             }
           }
+          if (this._initialized) {
+            this.setConnected(this.chainId);
+          }
           this.emit(eventData.event.eventType, eventData.event.args);
         }
       },
@@ -155,14 +216,33 @@ export class EvmProvider extends EventEmitter {
     try {
       validateRequest(args.method, args.params);
       switch (args.method) {
+        case EvmRequestMethod.GET_CHAIN: {
+          const chainId = (await this.processRequest(args)) as string;
+          this.chainId = chainId;
+          if (this._initialized) {
+            this.setConnected(chainId);
+          }
+          return chainId;
+        }
         case EvmRequestMethod.GET_ACCOUNTS: {
-          return this.updateAccounts(await this.processRequest(args));
+          const accounts = this.updateAccounts(await this.processRequest(args));
+          if (this._initialized) {
+            this.setConnected(this.chainId);
+          }
+          return accounts;
         }
       }
 
       const result = await this.processRequest(args);
       if (args.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
-        return this.updateAccounts(result);
+        const accounts = this.updateAccounts(result);
+        if (this._initialized) {
+          this.setConnected(this.chainId);
+        }
+        return accounts;
+      }
+      if (this._initialized) {
+        this.setConnected(this.chainId);
       }
       return result;
     } catch (err) {

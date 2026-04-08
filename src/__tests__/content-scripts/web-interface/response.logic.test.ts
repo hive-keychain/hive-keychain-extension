@@ -1,5 +1,6 @@
 import { KeychainRequest, KeychainRequestTypes } from 'hive-keychain-commons';
 import Joi from 'joi';
+import { ProviderRpcErrorList } from '@interfaces/evm-provider.interface';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import * as ResponseLogicModule from 'src/content-scripts/web-interface/response.logic';
 import {
@@ -81,6 +82,34 @@ describe('response.logic tests:\n', () => {
         },
         request_id: 7,
       });
+    });
+
+    it('Must surface runtime bridge failures as a disconnected EVM error response', async () => {
+      jest.spyOn(console, 'log').mockImplementation(() => {});
+      jest
+        .spyOn(chrome.runtime, 'sendMessage')
+        .mockRejectedValue(new Error('Receiving end does not exist.'));
+      const sPostMessage = jest
+        .spyOn(window, 'postMessage')
+        .mockImplementation(() => {});
+
+      sendEvmRequestToBackground(
+        { method: 'eth_chainId', params: [], request_id: 8 } as any,
+        chrome,
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(sPostMessage).toHaveBeenCalledWith(
+        {
+          type: 'evm_keychain_error',
+          response: {
+            requestId: 8,
+            error: ProviderRpcErrorList.disconnected,
+          },
+        },
+        window.location.origin,
+      );
     });
   });
   describe('sendIncompleteDataResponse cases:\n', () => {

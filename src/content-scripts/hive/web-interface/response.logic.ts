@@ -3,6 +3,7 @@ import {
   EvmEventName,
   EvmRequest,
   KeychainEvmRequestWrapper,
+  ProviderRpcErrorList,
   RoutedEvmEvent,
 } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -44,16 +45,24 @@ export const sendEvmRequestToBackground = async (
 ) => {
   const link = document.querySelector("link[rel='icon']");
 
-  CommunicationUtils.runtimeSendMessage({
-    command: 'sendEvmRequest',
-    request: req,
-    dappInfo: {
-      domain: window.location.origin,
-      protocol: window.location.protocol,
-      logo: (link as any)?.href,
+  CommunicationUtils.runtimeSendMessage(
+    {
+      command: 'sendEvmRequest',
+      request: req,
+      dappInfo: {
+        domain: window.location.origin,
+        protocol: window.location.protocol,
+        logo: (link as any)?.href,
+      },
+      request_id: req.request_id,
+    } as KeychainEvmRequestWrapper,
+    () => {
+      sendErrorToEvm({
+        requestId: req.request_id,
+        error: { ...ProviderRpcErrorList.disconnected },
+      });
     },
-    request_id: req.request_id,
-  } as KeychainEvmRequestWrapper);
+  );
 };
 export const sendEvmChainToBackground = async (
   chainId: string,

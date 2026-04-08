@@ -6,13 +6,31 @@ import {
   jest,
 } from '@jest/globals';
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
-import { EvmEventName } from '@interfaces/evm-provider.interface';
+import {
+  EvmEventName,
+  ProviderRpcErrorList,
+} from '@interfaces/evm-provider.interface';
 import { EvmProvider } from 'src/content-scripts/evm/injected/provider/evm-provider';
 
 const dispatchProviderResponse = (response: Record<string, unknown>) => {
   const event = new MessageEvent('message', {
     data: {
       type: 'evm_keychain_response',
+      response,
+    },
+  });
+
+  Object.defineProperty(event, 'source', {
+    value: window,
+  });
+
+  window.dispatchEvent(event);
+};
+
+const dispatchProviderError = (response: Record<string, unknown>) => {
+  const event = new MessageEvent('message', {
+    data: {
+      type: 'evm_keychain_error',
       response,
     },
   });
@@ -78,7 +96,12 @@ describe('evm-provider tests:\n', () => {
   });
 
   it('refreshes cached accounts from eth_accounts responses', async () => {
-    const responses = {
+    const responses: Partial<
+      Record<
+        EvmRequestMethod,
+        { result: unknown; requestIdKey?: 'requestId' | 'request_id' }
+      >
+    > = {
       [EvmRequestMethod.GET_CHAIN]: { result: '0x1' },
       [EvmRequestMethod.GET_ACCOUNTS]: { result: [] },
     };
@@ -95,6 +118,88 @@ describe('evm-provider tests:\n', () => {
       }),
     ).resolves.toEqual(['0xabc123']);
     expect((provider as any)._accounts).toEqual(['0xabc123']);
+    cleanup();
+  });
+
+  it('starts disconnected until initial provider state hydration succeeds', () => {
+    const provider = new EvmProvider();
+
+    expect(provider.isConnected()).toBe(false);
+    expect((provider as any)._initialized).toBe(false);
+  });
+
+  it('emits connect once after the ready hydration path succeeds', async () => {
+    const cleanup = installRequestResponder({
+      [EvmRequestMethod.GET_CHAIN]: { result: '0x1' },
+      [EvmRequestMethod.GET_ACCOUNTS]: { result: [] },
+    });
+    const provider = new EvmProvider();
+    const connectListener = jest.fn();
+    provider.on('connect', connectListener);
+    await waitForInit();
+
+    await expect(
+      provider.request({
+        method: EvmRequestMethod.GET_CHAIN,
+        params: [],
+      }),
+    ).resolves.toBe('0x1');
+
+    expect(provider.isConnected()).toBe(true);
+    expect(connectListener).toHaveBeenCalledTimes(1);
+    expect(connectListener).toHaveBeenCalledWith({ chainId: '0x1' });
+    cleanup();
+  });
+
+  it('emits disconnect when a request hits an observable provider bridge failure', async () => {
+    const responses: Partial<
+      Record<
+        EvmRequestMethod,
+        { result: unknown; requestIdKey?: 'requestId' | 'request_id' }
+      >
+    > = {
+      [EvmRequestMethod.GET_CHAIN]: { result: '0x1' },
+      [EvmRequestMethod.GET_ACCOUNTS]: { result: [] },
+    };
+    const cleanup = installRequestResponder(responses);
+    const provider = new EvmProvider();
+    const disconnectListener = jest.fn();
+    provider.on('disconnect', disconnectListener);
+    await waitForInit();
+
+    delete responses[EvmRequestMethod.GET_CHAIN];
+
+    const handler = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      if (customEvent.detail.method !== EvmRequestMethod.GET_CHAIN) {
+        return;
+      }
+
+      dispatchProviderError({
+        requestId: customEvent.detail.request_id,
+        error: { ...ProviderRpcErrorList.disconnected },
+      });
+    };
+
+    document.addEventListener(EvmEventName.REQUEST, handler as EventListener);
+
+    await expect(
+      provider.request({
+        method: EvmRequestMethod.GET_CHAIN,
+        params: [],
+      }),
+    ).rejects.toEqual(ProviderRpcErrorList.disconnected);
+
+    expect(provider.isConnected()).toBe(false);
+    expect(disconnectListener).toHaveBeenCalledTimes(1);
+    expect(disconnectListener).toHaveBeenCalledWith(
+      ProviderRpcErrorList.disconnected,
+    );
+
+    document.removeEventListener(
+      EvmEventName.REQUEST,
+      handler as EventListener,
+    );
     cleanup();
   });
 
