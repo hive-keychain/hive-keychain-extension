@@ -36,7 +36,7 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { KeychainKeyTypes } from 'hive-keychain-commons';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
 import { TopBarComponent } from 'src/common-ui/_containers/top-bar/top-bar.component';
@@ -93,8 +93,6 @@ const Home = ({
   openModal,
   closeModal,
 }: PropsFromRedux) => {
-  const [hasRewardToClaim, setHasRewardToClaim] = useState(false);
-
   const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
   const [governanceAccountsToExpire, setGovernanceAccountsToExpire] = useState<
     string[]
@@ -114,65 +112,88 @@ const Home = ({
     hiveMarketLockedOpenOrdersValues,
     setHiveMarketLockedOpenOrdersValues,
   ] = useState<HiveInternalMarketLockedInOrders>({ hive: 0, hbd: 0 });
+  const isMountedRef = useRef(false);
+  const setStateIfMounted = <
+    TSetter extends React.Dispatch<React.SetStateAction<any>>,
+  >(
+    setter: TSetter,
+    value: Parameters<TSetter>[0],
+  ) => {
+    if (!isMountedRef.current) {
+      return;
+    }
+    setter(value);
+  };
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     resetTitleContainerProperties();
     if (!ActiveAccountUtils.isEmpty(activeAccount)) {
       refreshActiveAccount();
     }
-    initWhatsNew();
-    initSurvey();
-    initCheckKeysOnAccounts(accounts);
-    initCheckVestingRoutes();
-    loadHiddenTokensList();
+    void initWhatsNew();
+    void initSurvey();
+    void initCheckKeysOnAccounts(accounts);
+    void initCheckVestingRoutes();
+    void loadHiddenTokensList();
     ChainUtils.addChainToSetupChains(chain);
     ChainUtils.setPreviousChain(chain);
   }, []);
 
   const loadHiddenTokensList = async () => {
-    setHiddenTokensList(await HiveEngineUtils.loadHiddenTokensList());
+    const hiddenTokens = await HiveEngineUtils.loadHiddenTokensList();
+    setStateIfMounted(setHiddenTokensList, hiddenTokens);
   };
 
   const loadHiveInternalMarketOrders = async (username: string) => {
-    setHiveMarketLockedOpenOrdersValues(
-      await HiveInternalMarketUtils.getHiveInternalMarketOrders(username),
-    );
+    const openOrders =
+      await HiveInternalMarketUtils.getHiveInternalMarketOrders(username);
+    setStateIfMounted(setHiveMarketLockedOpenOrdersValues, openOrders);
   };
   useEffect(() => {
     if (activeRpc && activeRpc.uri !== 'NULL')
-      initGovernanceExpirationReminder(
+      void initGovernanceExpirationReminder(
         accounts
           .filter((localAccount: LocalAccount) => localAccount.keys.active)
           .map((localAccount: LocalAccount) => localAccount.name),
       );
   }, [activeRpc]);
 
+  const hasRewardToClaim =
+    !ActiveAccountUtils.isEmpty(activeAccount) &&
+    !!globalProperties.globals &&
+    RewardsUtils.hasReward(
+      activeAccount.account.reward_hbd_balance as string,
+      FormatUtils.toHP(
+        activeAccount.account.reward_vesting_balance
+          .toString()
+          .replace('VESTS', ''),
+        globalProperties.globals,
+      ).toString(),
+      activeAccount.account.reward_hive_balance as string,
+    );
+
   useEffect(() => {
     if (!ActiveAccountUtils.isEmpty(activeAccount)) {
-      setHasRewardToClaim(
-        RewardsUtils.hasReward(
-          activeAccount.account.reward_hbd_balance as string,
-          FormatUtils.toHP(
-            activeAccount.account.reward_vesting_balance
-              .toString()
-              .replace('VESTS', ''),
-            globalProperties.globals,
-          ).toString(),
-          activeAccount.account.reward_hive_balance as string,
-        ),
-      );
-      loadHiveInternalMarketOrders(activeAccount.name!);
+      void loadHiveInternalMarketOrders(activeAccount.name!);
     }
   }, [activeAccount]);
 
   const initGovernanceExpirationReminder = async (accountNames: string[]) => {
     const accountsToRemind =
       await GovernanceUtils.getGovernanceReminderList(accountNames);
-    setGovernanceAccountsToExpire(accountsToRemind);
+    setStateIfMounted(setGovernanceAccountsToExpire, accountsToRemind);
   };
 
   const initSurvey = async () => {
-    setSurveyToDisplay(await SurveyUtils.getSurvey());
+    const survey = await SurveyUtils.getSurvey();
+    setStateIfMounted(setSurveyToDisplay, survey);
   };
 
   const initWhatsNew = async () => {
@@ -196,8 +217,8 @@ const Home = ({
       extensionVersion !== lastVersionSeen &&
       versionLog?.version === extensionVersion
     ) {
-      setWhatsNewContent(versionLog);
-      setDisplayWhatsNew(true);
+      setStateIfMounted(setWhatsNewContent, versionLog);
+      setStateIfMounted(setDisplayWhatsNew, true);
     }
   };
 
@@ -234,8 +255,7 @@ const Home = ({
           );
         }
         if (foundWrongKey[accountName].length > 0) {
-          //change here to force test
-          setDisplayWrongKeyPopup(foundWrongKey);
+          setStateIfMounted(setDisplayWrongKeyPopup, foundWrongKey);
           break;
         }
       }
@@ -245,9 +265,22 @@ const Home = ({
   };
 
   const initCheckVestingRoutes = async () => {
-    setVestingRoutesDifferences(
-      await VestingRoutesUtils.getWrongVestingRoutes(accounts),
-    );
+    const differences = await VestingRoutesUtils.getWrongVestingRoutes(accounts);
+    setStateIfMounted(setVestingRoutesDifferences, differences);
+  };
+
+  const handleCloseWhatsNew = () => {
+    setStateIfMounted(setDisplayWhatsNew, false);
+  };
+
+  const handleSetDisplayWrongKeyPopup: React.Dispatch<
+    React.SetStateAction<WrongKeysOnUser | undefined>
+  > = (value) => {
+    setStateIfMounted(setDisplayWrongKeyPopup, value);
+  };
+
+  const handleCloseVestingRoutesPopup = () => {
+    setStateIfMounted(setVestingRoutesDifferences, undefined);
   };
 
   const renderPopup = (
@@ -260,7 +293,7 @@ const Home = ({
     if (displayWhatsNew) {
       return (
         <WhatsNewComponent
-          onOverlayClick={() => setDisplayWhatsNew(false)}
+          onOverlayClick={handleCloseWhatsNew}
           content={whatsNewContent!}
         />
       );
@@ -274,7 +307,7 @@ const Home = ({
       return (
         <WrongKeyPopupComponent
           displayWrongKeyPopup={displayWrongKeyPopup}
-          setDisplayWrongKeyPopup={setDisplayWrongKeyPopup}
+          setDisplayWrongKeyPopup={handleSetDisplayWrongKeyPopup}
         />
       );
     } else if (
@@ -284,7 +317,7 @@ const Home = ({
       return (
         <VestingRoutesPopupComponent
           vestingRoutesDifferences={vestingRoutesDifferences}
-          closePopup={() => setVestingRoutesDifferences(undefined)}
+          closePopup={handleCloseVestingRoutesPopup}
         />
       );
     } else {

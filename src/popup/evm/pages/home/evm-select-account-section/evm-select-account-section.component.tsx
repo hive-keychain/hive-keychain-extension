@@ -56,9 +56,29 @@ const SelectAccountSection = ({
   const [selectedAddress, setSelectedAddress] =
     useState<EvmSelectAccountItem>();
   const initRequestId = useRef(0);
+  const isMountedRef = useRef(false);
+  const setStateIfMounted = <
+    TSetter extends React.Dispatch<React.SetStateAction<any>>,
+  >(
+    setter: TSetter,
+    value: Parameters<TSetter>[0],
+  ) => {
+    if (!isMountedRef.current) {
+      return;
+    }
+    setter(value);
+  };
 
   useEffect(() => {
-    init();
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      initRequestId.current += 1;
+    };
+  }, []);
+
+  useEffect(() => {
+    void init();
   }, [accounts, activeAccount]);
 
   const buildPlaceholderAddressDetail = (
@@ -90,13 +110,13 @@ const SelectAccountSection = ({
         return;
       }
 
-      setOptions(placeholderOpts);
+      setStateIfMounted(setOptions, placeholderOpts);
       const placeholderSelected = placeholderOpts.find(
         (opt) =>
           opt.value.account.wallet.address === activeAccount.wallet.address,
       );
       if (placeholderSelected) {
-        setSelectedAddress(placeholderSelected.value);
+        setStateIfMounted(setSelectedAddress, placeholderSelected.value);
       }
 
       // Enrich with full address details (ENS, avatar, custom labels) in the
@@ -118,13 +138,13 @@ const SelectAccountSection = ({
         return;
       }
 
-      setOptions(enrichedOpts);
+      setStateIfMounted(setOptions, enrichedOpts);
       const enrichedSelected = enrichedOpts.find(
         (opt) =>
           opt.value.account.wallet.address === activeAccount.wallet.address,
       );
       if (enrichedSelected) {
-        setSelectedAddress(enrichedSelected.value);
+        setStateIfMounted(setSelectedAddress, enrichedSelected.value);
       }
     }
   };
@@ -150,7 +170,7 @@ const SelectAccountSection = ({
     const list = Array.from(options);
     const [removed] = list.splice(result.source.index, 1);
     list.splice(result.destination.index, 0, removed);
-    setOptions(list);
+    setStateIfMounted(setOptions, list);
 
     const reorderedAccounts = await EvmWalletUtils.reorderAccounts(
       list.map((option) => option.value.account),
@@ -160,7 +180,7 @@ const SelectAccountSection = ({
   };
 
   const handleClickOnSelector = () => {
-    setIsOpened(!isOpened);
+    setStateIfMounted(setIsOpened, (previousState) => !previousState);
   };
 
   const customLabelRender = (
@@ -289,7 +309,7 @@ const SelectAccountSection = ({
           <div
             className={`overlay ${isOpened ? 'opened' : 'closed'}`}
             onClick={() => {
-              setIsOpened(false);
+              setStateIfMounted(setIsOpened, false);
             }}></div>
         </div>
       )}

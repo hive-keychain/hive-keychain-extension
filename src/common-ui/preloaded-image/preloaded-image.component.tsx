@@ -26,32 +26,31 @@ export const PreloadedImage = ({
   backgroundColor,
   useDefaultSVG,
 }: PreloadedImageProps) => {
-  const [image, setImage] = useState<HTMLImageElement>();
   const [background, setBackground] = useState<string>('transparent');
   const { theme } = useThemeContext();
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    return function cleanup() {
-      setMounted(false);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (mounted && src) {
-      // if (placeholder) {
-      //   const placeholderImg = new Image();
-      //   placeholderImg.src = placeholder ?? '';
-      //   setImage(placeholderImg);
-      // }
-      preload();
+    if (!src) {
+      return;
     }
-  }, [src, mounted]);
-
-  const preload = () => {
-    // Check if image is already cached/loaded
+    let isCancelled = false;
     const existingImg = new Image();
+
+    const setBackgroundColor = (img: HTMLImageElement) => {
+      if (!addBackground || isCancelled) {
+        return;
+      }
+
+      if (backgroundColor) {
+        setBackground(`${backgroundColor}2b`);
+      } else if (symbol) {
+        setBackground(ColorsUtils.getBackgroundColorFromBackend(symbol, theme));
+      } else {
+        setBackground(ColorsUtils.getBackgroundColorFromImage(img));
+      }
+    };
+
+    // Check if image is already cached/loaded
     existingImg.onerror = () => {
       // Dont display errors
     };
@@ -59,39 +58,23 @@ export const PreloadedImage = ({
 
     if (existingImg.complete) {
       // Image is already cached, use it directly
-      if (addBackground) {
-        if (backgroundColor) {
-          setBackground(`${backgroundColor}2b`);
-        } else if (symbol) {
-          setBackground(
-            ColorsUtils.getBackgroundColorFromBackend(symbol, theme),
-          );
-        } else {
-          setBackground(ColorsUtils.getBackgroundColorFromImage(existingImg));
-        }
-      }
-      setImage(existingImg);
-      return;
+      setBackgroundColor(existingImg);
+      return () => {
+        isCancelled = true;
+        existingImg.onerror = null;
+      };
     }
 
     // Image not cached, proceed with normal preloading
     const img = new Image();
 
     img.onload = () => {
-      if (addBackground) {
-        if (backgroundColor) {
-          setBackground(`${backgroundColor}2b`);
-        } else if (symbol) {
-          setBackground(
-            ColorsUtils.getBackgroundColorFromBackend(symbol, theme),
-          );
-        } else {
-          setBackground(ColorsUtils.getBackgroundColorFromImage(img));
-        }
-      }
-      setImage(img);
+      setBackgroundColor(img);
     };
     img.onerror = () => {
+      if (isCancelled) {
+        return;
+      }
       if (addBackground && useDefaultSVG) {
         setBackground('#e31337');
       } else {
@@ -99,7 +82,22 @@ export const PreloadedImage = ({
       }
     };
     img.src = src;
-  };
+
+    return () => {
+      isCancelled = true;
+      existingImg.onerror = null;
+      img.onload = null;
+      img.onerror = null;
+    };
+  }, [
+    addBackground,
+    alt,
+    backgroundColor,
+    src,
+    symbol,
+    theme,
+    useDefaultSVG,
+  ]);
 
   return (
     <>

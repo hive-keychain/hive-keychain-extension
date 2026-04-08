@@ -43,6 +43,7 @@ export interface CustomSelectProps<T> {
   /** For tests / automation: identifies the dropdown arrow control. */
   selectHandleDataTestId?: string;
   showOverlay?: boolean;
+  ariaLabel?: string;
 }
 
 export function ComplexeCustomSelect<T extends OptionItem>(
@@ -217,6 +218,11 @@ export function ComplexeCustomSelect<T extends OptionItem>(
         dropdownHandleRenderer={customHandleRenderer}
         contentRenderer={customLabelRender}
         dropdownRenderer={customDropdownRenderer}
+        additionalProps={
+          itemProps.ariaLabel
+            ? { 'aria-label': itemProps.ariaLabel }
+            : undefined
+        }
         className={`custom-select ${
           itemProps.background ? itemProps.background : ''
         }`}

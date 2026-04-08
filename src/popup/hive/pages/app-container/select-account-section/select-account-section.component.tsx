@@ -3,7 +3,7 @@ import { setAccounts } from '@popup/hive/actions/account.actions';
 import { SelectAccountSectionItemComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section-item.component';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { RootState } from '@popup/multichain/store';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   DragDropContext,
   Draggable,
@@ -24,6 +24,14 @@ interface Props {
   isOnMain?: boolean;
 }
 
+const buildAccountOptions = (
+  localAccounts: LocalAccount[],
+): LocalAccountListItem[] =>
+  localAccounts.map((account: LocalAccount) => ({
+    label: account.name,
+    value: account.name,
+  }));
+
 const SelectAccountSection = ({
   background,
   fullSize,
@@ -33,38 +41,60 @@ const SelectAccountSection = ({
   loadActiveAccount,
   isOnMain = false,
 }: PropsFromRedux & Props) => {
-  const defaultOptions: LocalAccountListItem[] = [];
-
   const [isOpened, setIsOpened] = useState(false);
+  const isMountedRef = useRef(false);
+  const setStateIfMounted = <
+    TSetter extends React.Dispatch<React.SetStateAction<any>>,
+  >(
+    setter: TSetter,
+    value: Parameters<TSetter>[0],
+  ) => {
+    if (!isMountedRef.current) {
+      return;
+    }
+    setter(value);
+  };
+  const [options, setOptions] = useState<LocalAccountListItem[]>(() =>
+    buildAccountOptions(accounts),
+  );
+  const [selectedLocalAccount, setSelectedLocalAccount] = useState(
+    activeAccount.name ?? accounts[0]?.name,
+  );
 
   useEffect(() => {
-    setOptions(
-      accounts.map((account: LocalAccount) => {
-        return { label: account.name, value: account.name };
-      }),
-    );
-    setSelectedLocalAccount(activeAccount.name!);
-  }, [accounts, activeAccount]);
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
-  const [options, setOptions] = useState(defaultOptions);
-  const [selectedLocalAccount, setSelectedLocalAccount] = useState(
-    accounts[0].name,
-  );
+  useEffect(() => {
+    setStateIfMounted(setOptions, buildAccountOptions(accounts));
+    setStateIfMounted(
+      setSelectedLocalAccount,
+      activeAccount.name ?? accounts[0]?.name,
+    );
+  }, [accounts, activeAccount]);
 
   const handleItemClicked = (accountName: string) => {
     const itemClicked = accounts.find(
       (account: LocalAccount) => account.name === accountName,
     );
-    loadActiveAccount(itemClicked!);
+    if (!itemClicked) {
+      return;
+    }
+    loadActiveAccount(itemClicked);
     handleClickOnSelector();
   };
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
+
     const list = Array.from(options);
     const [removed] = list.splice(result.source.index, 1);
     list.splice(result.destination.index, 0, removed);
-    setOptions(list);
+    setStateIfMounted(setOptions, list);
+
     setAccounts(
       AccountUtils.reorderAccounts(
         accounts,
@@ -75,7 +105,7 @@ const SelectAccountSection = ({
   };
 
   const handleClickOnSelector = () => {
-    setIsOpened(!isOpened);
+    setStateIfMounted(setIsOpened, (previousState) => !previousState);
   };
 
   const customLabelRender = (
@@ -189,7 +219,7 @@ const SelectAccountSection = ({
           <div
             className={`overlay ${isOpened ? 'opened' : 'closed'}`}
             onClick={() => {
-              setIsOpened(false);
+              setStateIfMounted(setIsOpened, false);
             }}></div>
         </div>
       )}

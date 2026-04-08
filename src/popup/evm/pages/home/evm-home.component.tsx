@@ -47,7 +47,7 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { ethers, HDNodeWallet } from 'ethers';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
 import { TopBarComponent } from 'src/common-ui/_containers/top-bar/top-bar.component';
@@ -102,12 +102,35 @@ const Home = ({
   const [displayChangeRpcPopup, setDisplayChangeRpcPopup] = useState(false);
   const [initialRpc, setInitialRpc] = useState<MultichainRpc>();
   const [switchToRpc, setSwitchToRpc] = useState<MultichainRpc>();
+  const isMountedRef = useRef(false);
+  const pendingTransactionsRequestId = useRef(0);
+  const rpcCheckRequestId = useRef(0);
+  const setStateIfMounted = <
+    TSetter extends React.Dispatch<React.SetStateAction<any>>,
+  >(
+    setter: TSetter,
+    value: Parameters<TSetter>[0],
+  ) => {
+    if (!isMountedRef.current) {
+      return;
+    }
+    setter(value);
+  };
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      pendingTransactionsRequestId.current += 1;
+      rpcCheckRequestId.current += 1;
+    };
+  }, []);
 
   useEffect(() => {
     resetTitleContainerProperties();
-    initWhatsNew();
-    initSurvey();
-    checkActiveRpc();
+    void initWhatsNew();
+    void initSurvey();
+    void checkActiveRpc();
   }, []);
 
   useEffect(() => {
@@ -119,7 +142,7 @@ const Home = ({
 
   useEffect(() => {
     if (activeAccount.wallet.address) {
-      loadPendingTransactions(activeAccount.wallet);
+      void loadPendingTransactions(activeAccount.wallet);
     }
   }, [activeAccount.wallet.address]);
 
@@ -139,11 +162,21 @@ const Home = ({
   }, [activeAccount.nativeAndErc20Tokens]);
 
   const checkActiveRpc = async () => {
+    const currentRequestId = ++rpcCheckRequestId.current;
     const rpc = await EvmRpcUtils.getActiveRpc(chain);
-    setInitialRpc(rpc);
+    if (rpcCheckRequestId.current !== currentRequestId) {
+      return;
+    }
+    setStateIfMounted(setInitialRpc, rpc);
     const rpcStatusOk = await EvmRpcUtils.checkRpcStatus(rpc.url);
+    if (rpcCheckRequestId.current !== currentRequestId) {
+      return;
+    }
 
     const switchAuto = await EvmRpcUtils.getSwitchRpcAuto(chain);
+    if (rpcCheckRequestId.current !== currentRequestId) {
+      return;
+    }
 
     if (!rpcStatusOk) {
       if (switchAuto) {
@@ -152,13 +185,16 @@ const Home = ({
         if (!switchResult) {
           setErrorMessage('evm_rpcs_not_responding_error');
         } else {
-          refresh();
+          void refresh();
         }
       } else {
         const rpcToSwitch = await EvmRpcUtils.switchToWorkingRpc(chain);
+        if (rpcCheckRequestId.current !== currentRequestId) {
+          return;
+        }
         if (rpcToSwitch) {
-          setDisplayChangeRpcPopup(true);
-          setSwitchToRpc(rpcToSwitch);
+          setStateIfMounted(setDisplayChangeRpcPopup, true);
+          setStateIfMounted(setSwitchToRpc, rpcToSwitch);
         } else {
           setErrorMessage('evm_rpcs_not_responding_error');
         }
@@ -168,8 +204,8 @@ const Home = ({
 
   const switchRpc = async () => {
     await EvmRpcUtils.setActiveRpc(switchToRpc!, chain);
-    setDisplayChangeRpcPopup(false);
-    refresh();
+    setStateIfMounted(setDisplayChangeRpcPopup, false);
+    void refresh();
   };
 
   const loadActiveAccount = async () => {
@@ -184,14 +220,19 @@ const Home = ({
   };
 
   const loadPendingTransactions = async (wallet: HDNodeWallet) => {
+    const currentRequestId = ++pendingTransactionsRequestId.current;
     const pendingTransactionsInfo =
       await EvmTransactionsUtils.hasPendingTransaction(wallet, chain);
-    setPendingTransactionsInfo(pendingTransactionsInfo);
+    if (pendingTransactionsRequestId.current !== currentRequestId) {
+      return;
+    }
+    setStateIfMounted(setPendingTransactionsInfo, pendingTransactionsInfo);
   };
 
   //TODO : move survey and whatsnew logic in a hook since its called on both evm and hive
   const initSurvey = async () => {
-    setSurveyToDisplay(await SurveyUtils.getSurvey());
+    const survey = await SurveyUtils.getSurvey();
+    setStateIfMounted(setSurveyToDisplay, survey);
   };
 
   const initWhatsNew = async () => {
@@ -215,13 +256,17 @@ const Home = ({
       extensionVersion !== lastVersionSeen &&
       versionLog?.version === extensionVersion
     ) {
-      setWhatsNewContent(versionLog);
-      setDisplayWhatsNew(true);
+      setStateIfMounted(setWhatsNewContent, versionLog);
+      setStateIfMounted(setDisplayWhatsNew, true);
     }
   };
 
   const refresh = async () => {
-    loadActiveAccount();
+    await loadActiveAccount();
+  };
+
+  const handleCloseWhatsNew = () => {
+    setStateIfMounted(setDisplayWhatsNew, false);
   };
 
   const renderPopup = (
@@ -232,7 +277,7 @@ const Home = ({
     if (displayWhatsNew) {
       return (
         <WhatsNewComponent
-          onOverlayClick={() => setDisplayWhatsNew(false)}
+          onOverlayClick={handleCloseWhatsNew}
           content={whatsNewContent!}
         />
       );

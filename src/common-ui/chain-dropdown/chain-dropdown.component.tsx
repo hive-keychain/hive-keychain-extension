@@ -69,6 +69,7 @@ const ChainDropdown = ({
       {options && chain && (
         <ComplexeCustomSelect
           additionalClassname="chain-selector"
+          ariaLabel="Chain dropdown"
           options={options}
           selectedItem={{
             key: chain.chainId,

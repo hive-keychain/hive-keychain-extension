@@ -39,14 +39,36 @@ export const CustomTooltip = ({
   const anchor = useRef<HTMLDivElement>(null);
   const tooltip = useRef<HTMLDivElement>(null);
   const isHoverRef = useRef(false);
+  const showTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [isHover, setIsHover] = useState(false);
   const [isOpen, setOpen] = useState(false);
-  const [timeout, setTimeoutId] = useState<NodeJS.Timeout>();
-  let [coordinates, setCoordinates] = useState<TooltipCoordinates>();
+  const [coordinates, setCoordinates] = useState<TooltipCoordinates>();
 
   // Keep ref in sync so timeout callback reads current hover state (avoids stale closure)
   isHoverRef.current = isHover;
+
+  const clearShowTimeout = () => {
+    if (showTimeoutRef.current) {
+      clearTimeout(showTimeoutRef.current);
+      showTimeoutRef.current = null;
+    }
+  };
+
+  const clearHideTimeout = () => {
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      clearShowTimeout();
+      clearHideTimeout();
+    };
+  }, []);
 
   useEffect(() => {
     if (isOpen && (!position || position === 'top')) {
@@ -65,6 +87,9 @@ export const CustomTooltip = ({
     const divInfo = anchor.current?.getBoundingClientRect();
 
     if (!divInfo) return;
+
+    clearHideTimeout();
+    clearShowTimeout();
 
     switch (position) {
       case 'left': {
@@ -103,20 +128,22 @@ export const CustomTooltip = ({
       }
     }
 
-    let timeoutId = setTimeout(
+    showTimeoutRef.current = setTimeout(
       () => {
+        showTimeoutRef.current = null;
         if (isHoverRef.current) {
           setOpen(true);
         }
       },
       delayShow ? delayShow : 250,
     );
-    setTimeoutId(timeoutId);
   };
 
   const hide = () => {
-    clearTimeout(timeout);
-    setTimeout(() => {
+    clearShowTimeout();
+    clearHideTimeout();
+    hideTimeoutRef.current = setTimeout(() => {
+      hideTimeoutRef.current = null;
       setOpen(false);
     }, 250);
   };

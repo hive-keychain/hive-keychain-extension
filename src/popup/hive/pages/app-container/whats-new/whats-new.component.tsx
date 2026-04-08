@@ -18,22 +18,38 @@ interface Props {
 
 const WhatsNew = ({ onOverlayClick, content }: Props) => {
   const [pageIndex, setPageIndex] = useState(0);
-  const [images, setImages] = useState<HTMLImageElement[]>();
   const [ready, setReady] = useState(false);
   const locale = 'en'; // later use getUILanguage()
 
   useEffect(() => {
-    const imgs = [];
+    let isCancelled = false;
+    const imgs: HTMLImageElement[] = [];
+    setReady(false);
     for (const feature of content.features[locale]) {
       const imageElement = new Image();
       imageElement.src = feature.image;
       imgs.push(imageElement);
     }
-    setImages(imgs);
-    imgs[0].onload = () => {
+    const firstImage = imgs[0];
+    if (!firstImage) {
       setReady(true);
+      return;
+    }
+    firstImage.onload = () => {
+      if (!isCancelled) {
+        setReady(true);
+      }
     };
-  }, []);
+    if (firstImage.complete) {
+      setReady(true);
+    }
+    return () => {
+      isCancelled = true;
+      imgs.forEach((img) => {
+        img.onload = null;
+      });
+    };
+  }, [content, locale]);
 
   const next = () => {
     setPageIndex(pageIndex + 1);
@@ -82,35 +98,33 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
         <div className="popup-title">
           {chrome.i18n.getMessage('popup_html_whats_new', [content.version])}
         </div>
-        {images && (
-          <Carousel
-            showArrows={false}
-            showIndicators={content.features[locale].length > 1}
-            selectedItem={pageIndex}
-            showThumbs={false}
-            showStatus={false}
-            renderIndicator={renderCustomIndicator}>
-            {content.features[locale].map((feature, index) => (
-              <div className="carousel-item" key={`feature-${index}`}>
-                <div className="image">
-                  <img src={images[index].src} />
-                </div>
-                <div className="title">{feature.title}</div>
-                <div className="description">{feature.description}</div>
-                <div className="extra-information">
-                  {feature.extraInformation}
-                </div>
-                <a
-                  data-testid="link-whats-new-read-more"
-                  className="read-more-link"
-                  onClick={() => handleOnClick(content, feature)}>
-                  {feature.overrideReadMoreLabel ??
-                    chrome.i18n.getMessage('html_popup_read_more')}
-                </a>
+        <Carousel
+          showArrows={false}
+          showIndicators={content.features[locale].length > 1}
+          selectedItem={pageIndex}
+          showThumbs={false}
+          showStatus={false}
+          renderIndicator={renderCustomIndicator}>
+          {content.features[locale].map((feature, index) => (
+            <div className="carousel-item" key={`feature-${index}`}>
+              <div className="image">
+                <img src={feature.image} />
               </div>
-            ))}
-          </Carousel>
-        )}
+              <div className="title">{feature.title}</div>
+              <div className="description">{feature.description}</div>
+              <div className="extra-information">
+                {feature.extraInformation}
+              </div>
+              <a
+                data-testid="link-whats-new-read-more"
+                className="read-more-link"
+                onClick={() => handleOnClick(content, feature)}>
+                {feature.overrideReadMoreLabel ??
+                  chrome.i18n.getMessage('html_popup_read_more')}
+              </a>
+            </div>
+          ))}
+        </Carousel>
         <div className="popup-footer">
           {pageIndex > 0 && (
             <ButtonComponent

@@ -1,5 +1,5 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -11,15 +11,20 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const TutorialPopup = () => {
   const [show, setShow] = useState(false);
+  const isMountedRef = useRef(false);
   useEffect(() => {
-    init();
+    isMountedRef.current = true;
+    void init();
+    return () => {
+      isMountedRef.current = false;
+    };
   }, []);
 
   const init = async () => {
     const skipTutorial = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.SKIP_TUTORIAL,
     );
-    if (!skipTutorial) {
+    if (!skipTutorial && isMountedRef.current) {
       setShow(true);
     }
   };
@@ -34,7 +39,9 @@ const TutorialPopup = () => {
       LocalStorageKeyEnum.SKIP_TUTORIAL,
       true,
     );
-    setShow(false);
+    if (isMountedRef.current) {
+      setShow(false);
+    }
   };
 
   if (!show) return null;
