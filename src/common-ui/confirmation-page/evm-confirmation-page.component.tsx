@@ -1,4 +1,5 @@
 import { BalanceChangeCard } from '@dialog/components/balance-change-card/balance-change-card.component';
+import type { BalanceInfo } from '@dialog/components/balance-change-card/balance-change-card.interface';
 import { EvmRequestItem } from '@dialog/evm/components/evm-request-item/evm-request-item';
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
@@ -33,12 +34,6 @@ import { ConfirmationPopup } from 'src/common-ui/confirmation-warning-info/confi
 import { ConfirmationWarnings } from 'src/common-ui/confirmation-warning-info/confirmation-warnings/confirmation-warnings.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
-
-interface BalanceInfo {
-  before: string;
-  estimatedAfter: string;
-  insufficientBalance?: boolean;
-}
 
 const ConfirmationPage = ({
   fields,
@@ -243,11 +238,7 @@ const ConfirmationPage = ({
         )}
 
         {balanceInfo && (
-          <BalanceChangeCard
-            beforeBalance={balanceInfo.before}
-            afterBalance={balanceInfo.estimatedAfter}
-            insufficientBalance={balanceInfo.insufficientBalance}
-          />
+          <BalanceChangeCard balanceInfo={balanceInfo} />
         )}
       </div>
       <div className="evm-bottom-panel">

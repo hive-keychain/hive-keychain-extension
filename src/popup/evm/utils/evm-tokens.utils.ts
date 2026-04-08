@@ -8,6 +8,7 @@ import {
   EvmSavedCustomTokens,
 } from '@popup/evm/interfaces/evm-custom-tokens.interface';
 import { EvmLightNodeContractResponse } from '@popup/evm/interfaces/evm-light-node.interface';
+import type { BalanceInfo } from '@dialog/components/balance-change-card/balance-change-card.interface';
 import {
   EvmSmartContractInfo,
   EvmSmartContractInfoErc1155,
@@ -585,18 +586,20 @@ const getBalanceInfo = (
   balance: EvmTokenBalanceResult,
   amount: number,
   tokenInfo: EvmSmartContractInfo,
-) => {
+): BalanceInfo => {
   return {
-    before: `${balance?.formattedBalance!} ${tokenInfo.symbol}`,
-    estimatedAfter: `${FormatUtils.withCommas(
-      new Decimal(balance?.balanceInteger!).sub(amount!).toString(),
-      tokenInfo.type === EVMSmartContractType.ERC20
-        ? (tokenInfo as EvmSmartContractInfoErc20).decimals
-        : 8,
-      true,
-    )}  ${tokenInfo?.symbol}`,
-    insufficientBalance:
-      new Decimal(balance?.balanceInteger!).sub(amount!).toNumber() < 0,
+    mainBalance: {
+      before: `${balance?.formattedBalance!} ${tokenInfo.symbol}`,
+      estimatedAfter: `${FormatUtils.withCommas(
+        new Decimal(balance?.balanceInteger!).sub(amount!).toString(),
+        tokenInfo.type === EVMSmartContractType.ERC20
+          ? (tokenInfo as EvmSmartContractInfoErc20).decimals
+          : 8,
+        true,
+      )}  ${tokenInfo?.symbol}`,
+      insufficientBalance:
+        new Decimal(balance?.balanceInteger!).sub(amount!).toNumber() < 0,
+    },
   };
 };
 

@@ -93,9 +93,13 @@ const Transfer = (props: Props) => {
         <>
           {beforeBalance && afterBalance && (
             <BalanceChangeCard
-              beforeBalance={beforeBalance}
-              afterBalance={afterBalance}
-              insufficientBalance={insufficientBalance}
+              balanceInfo={{
+                mainBalance: {
+                  before: beforeBalance,
+                  estimatedAfter: afterBalance,
+                  insufficientBalance,
+                },
+              }}
             />
           )}
         </>
