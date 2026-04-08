@@ -529,6 +529,35 @@ const connectMultipleWallet = async (
   });
 };
 
+const setConnectedWallets = async (
+  walletAddresses: string[],
+  domain: string,
+) => {
+  await persistWalletPermissionsAndNotify(domain, (walletPermissions) => {
+    const previousConnectedWallets = getConnectedWalletsFromPermissions(
+      walletPermissions,
+      domain,
+    );
+
+    if (!hasChangedConnectedWallets(previousConnectedWallets, walletAddresses)) {
+      return false;
+    }
+
+    if (!walletPermissions[domain])
+      walletPermissions[domain] = {} as EvmWalletDomainPermissions;
+
+    if (walletAddresses.length) {
+      walletPermissions[domain][EvmRequestPermission.ETH_ACCOUNTS] = [
+        ...walletAddresses,
+      ];
+    } else {
+      delete walletPermissions[domain][EvmRequestPermission.ETH_ACCOUNTS];
+    }
+
+    return true;
+  });
+};
+
 const connectWallet = async (walletAddress: string, domain: string) => {
   await addWalletPermission(
     domain,
@@ -653,6 +682,7 @@ export const EvmWalletUtils = {
   getConnectedWallets,
   connectWallet,
   connectMultipleWallet,
+  setConnectedWallets,
   disconnectWallet,
   disconnectAllWallets,
   hasPermission,

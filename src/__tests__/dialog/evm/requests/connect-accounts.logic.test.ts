@@ -94,6 +94,105 @@ describe('connect accounts logic', () => {
     );
   });
 
+  it('replaces the origin eth_accounts list with the selected subset instead of appending', async () => {
+    const sendEvmEventToDomain = jest
+      .spyOn(responseLogic, 'sendEvmEventToDomain')
+      .mockImplementation(jest.fn());
+
+    localStorageState[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS] = {
+      'https://app.test': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: ['0xaaa', '0xbbb'],
+      },
+    };
+
+    const result = await saveConnectedAccountsRequest(
+      EvmRequestMethod.REQUEST_ACCOUNTS,
+      ['0xbbb'],
+      'https://app.test',
+    );
+
+    expect(result).toEqual(['0xbbb']);
+    expect(localStorageState[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS]).toEqual(
+      {
+        'https://app.test': {
+          [EvmRequestPermission.ETH_ACCOUNTS]: ['0xbbb'],
+        },
+      },
+    );
+    expect(sendEvmEventToDomain).toHaveBeenCalledTimes(1);
+    expect(sendEvmEventToDomain).toHaveBeenCalledWith(
+      'https://app.test',
+      EvmEventName.ACCOUNT_CHANGED,
+      ['0xbbb'],
+    );
+  });
+
+  it('adds newly selected accounts while preserving the provided selection order', async () => {
+    const sendEvmEventToDomain = jest
+      .spyOn(responseLogic, 'sendEvmEventToDomain')
+      .mockImplementation(jest.fn());
+
+    localStorageState[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS] = {
+      'https://app.test': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: ['0xbbb'],
+      },
+    };
+
+    const result = await saveConnectedAccountsRequest(
+      EvmRequestMethod.WALLET_REQUEST_PERMISSIONS,
+      ['0xccc', '0xbbb'],
+      'https://app.test',
+    );
+
+    expect(result).toEqual([
+      { parentCapability: EvmRequestPermission.ETH_ACCOUNTS },
+    ]);
+    expect(localStorageState[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS]).toEqual(
+      {
+        'https://app.test': {
+          [EvmRequestPermission.ETH_ACCOUNTS]: ['0xccc', '0xbbb'],
+        },
+      },
+    );
+    expect(sendEvmEventToDomain).toHaveBeenCalledTimes(1);
+    expect(sendEvmEventToDomain).toHaveBeenCalledWith(
+      'https://app.test',
+      EvmEventName.ACCOUNT_CHANGED,
+      ['0xccc', '0xbbb'],
+    );
+  });
+
+  it('clears the origin eth_accounts permission when the confirmed selection is empty', async () => {
+    const sendEvmEventToDomain = jest
+      .spyOn(responseLogic, 'sendEvmEventToDomain')
+      .mockImplementation(jest.fn());
+
+    localStorageState[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS] = {
+      'https://app.test': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: ['0xaaa'],
+      },
+    };
+
+    const result = await saveConnectedAccountsRequest(
+      EvmRequestMethod.REQUEST_ACCOUNTS,
+      [],
+      'https://app.test',
+    );
+
+    expect(result).toEqual([]);
+    expect(localStorageState[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS]).toEqual(
+      {
+        'https://app.test': {},
+      },
+    );
+    expect(sendEvmEventToDomain).toHaveBeenCalledTimes(1);
+    expect(sendEvmEventToDomain).toHaveBeenCalledWith(
+      'https://app.test',
+      EvmEventName.ACCOUNT_CHANGED,
+      [],
+    );
+  });
+
   it('keeps eth_accounts permissions origin-scoped across the shared connect flow', async () => {
     await saveConnectedAccountsRequest(
       EvmRequestMethod.REQUEST_ACCOUNTS,

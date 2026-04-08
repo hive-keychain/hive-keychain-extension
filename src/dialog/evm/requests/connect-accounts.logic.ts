@@ -11,7 +11,7 @@ export const saveConnectedAccountsRequest = async (
   addresses: string[],
   domain: string,
 ) => {
-  await EvmWalletUtils.connectMultipleWallet(addresses, domain);
+  await EvmWalletUtils.setConnectedWallets(addresses, domain);
   await EvmAddressesUtils.saveDomainAddress(domain);
 
   if (method === EvmRequestMethod.REQUEST_ACCOUNTS) {
