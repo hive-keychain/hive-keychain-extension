@@ -1,6 +1,8 @@
 import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
+import { EvmEventName } from '@interfaces/evm-provider.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
+import * as responseLogic from 'src/content-scripts/hive/web-interface/response.logic';
 import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { HDNodeWallet } from 'ethers';
@@ -206,5 +208,83 @@ describe('evm wallet utils', () => {
         [EvmRequestPermission.ETH_ACCOUNTS]: ['0x222'],
       },
     });
+  });
+
+  it('emits accountsChanged once after the first successful connect persists', async () => {
+    const sendEvmEventToDomain = jest
+      .spyOn(responseLogic, 'sendEvmEventToDomain')
+      .mockImplementation(jest.fn());
+
+    await EvmWalletUtils.connectWallet('0xaaa', 'http://localhost:3000');
+
+    expect(sendEvmEventToDomain).toHaveBeenCalledTimes(1);
+    expect(sendEvmEventToDomain).toHaveBeenCalledWith(
+      'http://localhost:3000',
+      EvmEventName.ACCOUNT_CHANGED,
+      ['0xaaa'],
+    );
+    expect(
+      (LocalStorageUtils.saveValueInLocalStorage as jest.Mock).mock
+        .invocationCallOrder[0],
+    ).toBeLessThan(sendEvmEventToDomain.mock.invocationCallOrder[0]);
+  });
+
+  it('does not emit accountsChanged when the exposed accounts stay unchanged', async () => {
+    const sendEvmEventToDomain = jest
+      .spyOn(responseLogic, 'sendEvmEventToDomain')
+      .mockImplementation(jest.fn());
+
+    await EvmWalletUtils.connectWallet('0xaaa', 'https://app.test');
+    await EvmWalletUtils.connectWallet('0xaaa', 'https://app.test');
+
+    expect(sendEvmEventToDomain).toHaveBeenCalledTimes(1);
+    expect(sendEvmEventToDomain).toHaveBeenLastCalledWith(
+      'https://app.test',
+      EvmEventName.ACCOUNT_CHANGED,
+      ['0xaaa'],
+    );
+  });
+
+  it('emits accountsChanged once when all permissions are revoked to empty', async () => {
+    const sendEvmEventToDomain = jest
+      .spyOn(responseLogic, 'sendEvmEventToDomain')
+      .mockImplementation(jest.fn());
+
+    localStorageState[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS] = {
+      'https://app.test': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: ['0xaaa'],
+      },
+    };
+
+    await EvmWalletUtils.revokeAllPermissions('https://app.test');
+
+    expect(sendEvmEventToDomain).toHaveBeenCalledTimes(1);
+    expect(sendEvmEventToDomain).toHaveBeenCalledWith(
+      'https://app.test',
+      EvmEventName.ACCOUNT_CHANGED,
+      [],
+    );
+  });
+
+  it('does not emit duplicate accountsChanged events across nested revoke helper flows', async () => {
+    const sendEvmEventToDomain = jest
+      .spyOn(responseLogic, 'sendEvmEventToDomain')
+      .mockImplementation(jest.fn());
+
+    localStorageState[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS] = {
+      'http://localhost:5173': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: ['0xaaa'],
+      },
+    };
+
+    await EvmWalletUtils.disconnectAllWallets('http://localhost:5173');
+    await EvmWalletUtils.revokeAllPermissions('http://localhost:5173');
+
+    expect(sendEvmEventToDomain).toHaveBeenCalledTimes(1);
+    expect(sendEvmEventToDomain).toHaveBeenCalledWith(
+      'http://localhost:5173',
+      EvmEventName.ACCOUNT_CHANGED,
+      [],
+    );
   });
 });

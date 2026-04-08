@@ -1,4 +1,3 @@
-import { EvmEventName } from '@interfaces/evm-provider.interface';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
@@ -11,7 +10,6 @@ import {
   DappStatusEnum,
 } from 'src/common-ui/evm/dapp-status/dapp-status.component';
 import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
-import { sendEvmEventToDomain } from 'src/content-scripts/hive/web-interface/response.logic';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -50,18 +48,6 @@ const EvmDappStatus = ({ activeAccount, accounts }: PropsFromRedux) => {
 
     const origin = FormatUtils.urlToOrigin(dapp.url!);
     const connectedWallets = await EvmWalletUtils.getConnectedWallets(origin);
-    const sortedConnectedWallets = [
-      connectedWallets.find((e) => e === activeAccount.address.toLowerCase()),
-      ...connectedWallets.filter(
-        (e) => e !== activeAccount.address.toLowerCase(),
-      ),
-    ].filter((e) => !!e);
-
-    sendEvmEventToDomain(
-      origin,
-      EvmEventName.ACCOUNT_CHANGED,
-      sortedConnectedWallets,
-    );
 
     setConnectedWallets(connectedWallets);
     if (connectedWallets.includes(activeAccount.address)) {
