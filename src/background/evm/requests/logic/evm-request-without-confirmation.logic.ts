@@ -18,6 +18,7 @@ import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import {
+  getWalletPermissionsResponse,
   getWalletRequestPermissionsResponse,
   validateWalletRequestPermissionsParams,
 } from 'src/background/evm/requests/logic/wallet-request-permissions.logic';
@@ -197,12 +198,13 @@ export const evmRequestWithoutConfirmation = async (
     }
 
     case EvmRequestMethod.WALLET_GET_PERMISSIONS: {
-      const permissions = await EvmWalletUtils.getWalletPermission(
+      const permissions = await EvmWalletUtils.getWalletPermissionFull(
         dappInfo.domain,
       );
-      message.value.result = permissions.map((perm) => {
-        return { parentCapability: perm };
-      });
+      message.value.result = getWalletPermissionsResponse(
+        dappInfo.domain,
+        permissions,
+      );
       break;
     }
 

@@ -29,6 +29,7 @@ jest.mock('@popup/evm/utils/evm-requests.utils', () => ({
 jest.mock('@popup/evm/utils/wallet.utils', () => ({
   EvmWalletUtils: {
     getConnectedWallets: jest.fn(),
+    getWalletPermissionFull: jest.fn(),
     getWalletPermission: jest.fn(),
     hasPermission: jest.fn(),
     removeWalletPermission: jest.fn(),
@@ -59,6 +60,7 @@ const loadTestContext = async () => {
     evmRequestWithoutConfirmation,
     EvmWalletUtils: EvmWalletUtils as {
       getConnectedWallets: jest.Mock;
+      getWalletPermissionFull: jest.Mock;
       hasPermission: jest.Mock;
       removeWalletPermission: jest.Mock;
     },
@@ -149,6 +151,98 @@ describe('evm request without confirmation', () => {
       value: {
         requestId: 12,
         result: [{ parentCapability: EvmRequestPermission.ETH_ACCOUNTS }],
+      },
+    });
+  });
+
+  it('returns exact-origin eth_accounts descriptors with caveats for wallet_getPermissions', async () => {
+    const { evmRequestWithoutConfirmation, EvmWalletUtils, CommunicationUtils } =
+      await loadTestContext();
+    const requestHandler = {
+      removeRequestById: jest.fn(),
+    } as any;
+
+    EvmWalletUtils.getWalletPermissionFull.mockResolvedValue({
+      [EvmRequestPermission.ETH_ACCOUNTS]: ['0xaaa', '0xbbb'],
+    });
+
+    await evmRequestWithoutConfirmation(
+      requestHandler,
+      12,
+      {
+        request_id: 25,
+        method: EvmRequestMethod.WALLET_GET_PERMISSIONS,
+        params: [],
+      },
+      {
+        domain: 'http://localhost:3000',
+        protocol: 'http:',
+        logo: '',
+      },
+    );
+
+    expect(EvmWalletUtils.getWalletPermissionFull).toHaveBeenCalledWith(
+      'http://localhost:3000',
+    );
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(12, {
+      command: BackgroundCommand.SEND_EVM_RESPONSE,
+      value: {
+        requestId: 25,
+        result: [
+          {
+            invoker: 'http://localhost:3000',
+            parentCapability: EvmRequestPermission.ETH_ACCOUNTS,
+            caveats: [
+              {
+                type: 'restrictReturnedAccounts',
+                value: ['0xaaa', '0xbbb'],
+              },
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  it('returns [] for wallet_getPermissions when a different origin has no granted permissions', async () => {
+    const { evmRequestWithoutConfirmation, EvmWalletUtils, CommunicationUtils } =
+      await loadTestContext();
+    const requestHandler = {
+      removeRequestById: jest.fn(),
+    } as any;
+
+    EvmWalletUtils.getWalletPermissionFull.mockImplementation(
+      async (domain: string) =>
+        domain === 'http://localhost:3000'
+          ? {
+              [EvmRequestPermission.ETH_ACCOUNTS]: ['0xaaa'],
+            }
+          : {},
+    );
+
+    await evmRequestWithoutConfirmation(
+      requestHandler,
+      13,
+      {
+        request_id: 26,
+        method: EvmRequestMethod.WALLET_GET_PERMISSIONS,
+        params: [],
+      },
+      {
+        domain: 'http://localhost:5173',
+        protocol: 'http:',
+        logo: '',
+      },
+    );
+
+    expect(EvmWalletUtils.getWalletPermissionFull).toHaveBeenCalledWith(
+      'http://localhost:5173',
+    );
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(13, {
+      command: BackgroundCommand.SEND_EVM_RESPONSE,
+      value: {
+        requestId: 26,
+        result: [],
       },
     });
   });

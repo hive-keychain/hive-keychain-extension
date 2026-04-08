@@ -2,6 +2,7 @@ import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import {
   EvmRequest,
+  EvmWalletDomainPermissions,
   ProviderRpcErrorItem,
   ProviderRpcErrorList,
 } from '@interfaces/evm-provider.interface';
@@ -52,6 +53,39 @@ export const validateWalletRequestPermissionsParams = (
 export const getWalletRequestPermissionsResponse = (
   permission: EvmRequestPermission,
 ) => [{ parentCapability: permission }];
+
+export type WalletPermissionDescriptor = {
+  invoker: string;
+  parentCapability: EvmRequestPermission;
+  caveats: {
+    type: 'restrictReturnedAccounts';
+    value: string[];
+  }[];
+};
+
+const buildEthAccountsPermissionDescriptor = (
+  invoker: string,
+  exposedAccounts: string[],
+): WalletPermissionDescriptor => ({
+  invoker,
+  parentCapability: EvmRequestPermission.ETH_ACCOUNTS,
+  caveats: [
+    {
+      type: 'restrictReturnedAccounts',
+      value: exposedAccounts,
+    },
+  ],
+});
+
+export const getWalletPermissionsResponse = (
+  invoker: string,
+  permissions?: EvmWalletDomainPermissions,
+): WalletPermissionDescriptor[] => {
+  const exposedAccounts = permissions?.[EvmRequestPermission.ETH_ACCOUNTS];
+  if (exposedAccounts === undefined) return [];
+
+  return [buildEthAccountsPermissionDescriptor(invoker, exposedAccounts)];
+};
 
 export const getRequestedConnectionPermission = (
   request?: Pick<EvmRequest, 'method' | 'params'>,
