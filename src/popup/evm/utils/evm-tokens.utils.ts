@@ -600,6 +600,7 @@ const buildBalanceDetails = (
   const estimatedAfterBalance = new Decimal(balance.balanceInteger).sub(amount);
 
   return {
+    symbol: tokenInfo.symbol,
     before: `${balance.formattedBalance} ${tokenInfo.symbol}`,
     estimatedAfter: `${FormatUtils.withCommas(
       estimatedAfterBalance.toString(),

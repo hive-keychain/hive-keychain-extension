@@ -6042,5 +6042,9 @@
   "evm_lifi_swap_delay_caption_message": {
     "message": "Your swap might take a few minutes to appear in your history after the transaction is confirmed",
     "description": "Delay caption message"
+  },
+  "evm_insufficient_token_balance": {
+    "message": "Insufficient $1 balance.",
+    "description": "Insufficient token balance message on EVM balance change card"
   }
 }

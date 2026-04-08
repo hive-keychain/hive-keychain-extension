@@ -217,6 +217,7 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
 
     expect(balanceInfo).toEqual({
       mainBalance: {
+        symbol: 'ETH',
         before: '5 ETH',
         estimatedAfter: '3.9  ETH',
         insufficientBalance: false,
@@ -287,11 +288,13 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
 
     expect(balanceInfo).toEqual({
       mainBalance: {
+        symbol: 'USDC',
         before: '100 USDC',
         estimatedAfter: '75  USDC',
         insufficientBalance: false,
       },
       feeBalance: {
+        symbol: 'ETH',
         before: '1 ETH',
         estimatedAfter: '0.9  ETH',
         insufficientBalance: false,

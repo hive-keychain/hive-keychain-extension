@@ -4556,5 +4556,9 @@
   "error_granularity": {
     "message": "Esta operación no está permitida por reglas de granularidad",
     "description": "Error message if granularity failed has been used already"
+  },
+  "evm_insufficient_token_balance": {
+    "message": "Saldo insuficiente de $1.",
+    "description": "Insufficient token balance message on EVM balance change card"
   }
 }

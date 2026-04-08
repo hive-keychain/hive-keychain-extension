@@ -12,7 +12,7 @@ export const BalanceChangeCard = ({ balanceInfo }: Props) => {
   const balanceRows = [balanceInfo.mainBalance, balanceInfo.feeBalance].filter(
     (balance): balance is BalanceDetails => !!balance,
   );
-  const hasInsufficientBalance = balanceRows.some(
+  const insufficientBalance = balanceRows.find(
     (balance) => balance.insufficientBalance,
   );
 
@@ -22,19 +22,21 @@ export const BalanceChangeCard = ({ balanceInfo }: Props) => {
         {chrome.i18n.getMessage('evm_balance_change_title')}
       </div>
 
-      {hasInsufficientBalance && (
+      {insufficientBalance ? (
         <span className="insufficient-balance">
-          {chrome.i18n.getMessage('insufficient_balance_warning')}
+          {chrome.i18n.getMessage('evm_insufficient_token_balance', [
+            insufficientBalance.symbol,
+          ])}
         </span>
+      ) : (
+        balanceRows.map((balance, index) => (
+          <div className="balance-panel" key={`${balance.before}-${index}`}>
+            <div className="balance-before">{balance.before}</div>
+            <SVGIcon icon={SVGIcons.GLOBAL_TRIANGLE_ARROW} className="icon" />
+            <div className="balance-after">{balance.estimatedAfter}</div>
+          </div>
+        ))
       )}
-
-      {balanceRows.map((balance, index) => (
-        <div className="balance-panel" key={`${balance.before}-${index}`}>
-          <div className="balance-before">{balance.before}</div>
-          <SVGIcon icon={SVGIcons.GLOBAL_TRIANGLE_ARROW} className="icon" />
-          <div className="balance-after">{balance.estimatedAfter}</div>
-        </div>
-      ))}
     </Card>
   );
 };
