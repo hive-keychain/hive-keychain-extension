@@ -185,36 +185,6 @@ Rules:
 - prefer existing alias coverage over introducing new aliases casually;
 - do not mix multiple paths to the same module in nearby files unless unavoidable.
 
-### Exports
-
-Current code uses both named exports and default exports.
-
-Project convention going forward:
-
-- **utils should use named exports by default**;
-- React components may keep **default export** when that matches existing local pattern;
-- if a file already exposes an object-style utility API and changing it would create churn, keep it as-is unless you are already refactoring the file for a good reason.
-
-Preferred patterns:
-
-```ts
-export const isWhitelisted = (...) => { ... };
-export const addToWhitelist = async (...) => { ... };
-```
-
-For components:
-
-```ts
-const ButtonComponent = (props: ButtonProps) => { ... };
-export default ButtonComponent;
-```
-
-Rules:
-
-- do not introduce both default and named exports from the same file unless there is a clear need;
-- do not rename exports only for style reasons if that would create broad churn;
-- avoid “god objects” of unrelated helpers.
-
 ### TypeScript
 
 The repo is in `strict` mode. Respect it.
@@ -261,7 +231,7 @@ Utilities are heavily used in this repo and must stay disciplined.
 Rules:
 
 - a util file should contain **cohesive helpers** around one topic;
-- do not dump unrelated helpers into one file because they are “small”; 
+- do not dump unrelated helpers into one file because they are “small”;
 - if logic depends on browser APIs, storage, or background state, think twice before calling it a utility;
 - keep utilities deterministic where possible;
 - prefer pure functions for formatting, parsing, mapping, sorting, and validation.
@@ -344,7 +314,9 @@ const getChainFromDefaultChains = async (
   chainId: Chain['chainId'],
 ): Promise<Chain | undefined> => {
   const chains = await getDefaultChains();
-  return chains.find((chain) => chain.chainId.toLowerCase() === chainId.toLowerCase());
+  return chains.find(
+    (chain) => chain.chainId.toLowerCase() === chainId.toLowerCase(),
+  );
 };
 ```
 
