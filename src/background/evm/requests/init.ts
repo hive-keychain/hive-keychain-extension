@@ -17,6 +17,7 @@ import { handleNonSupportedChain } from '@background/evm/requests/logic/handle-n
 import { requestAddEvmChain } from '@background/evm/requests/logic/request-add-evm-chain.logic';
 import {
   getRequestedConnectionPermission,
+  isEthAccountsConnectionRequest,
   validateWalletRequestPermissionsParams,
 } from '@background/evm/requests/logic/wallet-request-permissions.logic';
 import MkModule from '@background/hive/modules/mk.module';
@@ -167,8 +168,19 @@ export const initEvmRequestHandler = async (
         request,
         walletRequestPermissionsValidation,
       );
-      if (requestedPermission) {
-        if (await EvmWalletUtils.hasPermission(dappInfo.domain, requestedPermission)) {
+      if (
+        requestedPermission &&
+        !isEthAccountsConnectionRequest(
+          request,
+          walletRequestPermissionsValidation,
+        )
+      ) {
+        if (
+          await EvmWalletUtils.hasPermission(
+            dappInfo.domain,
+            requestedPermission,
+          )
+        ) {
           evmRequestWithoutConfirmation(
             requestHandler,
             tab!,

@@ -137,7 +137,47 @@ describe('evm request init', () => {
     jest.clearAllMocks();
   });
 
-  it('routes authorized eth_accounts wallet_requestPermissions through the no-confirmation path', async () => {
+  it('routes authorized eth_requestAccounts through the confirmation path', async () => {
+    const {
+      initEvmRequestHandler,
+      MkModule,
+      EvmWalletUtils,
+      ChainUtils,
+      DappRequestUtils,
+      LocalStorageUtils,
+      evmRequestWithConfirmation,
+      evmRequestWithoutConfirmation,
+      handleEvmError,
+    } = await loadTestContext();
+    const requestHandler = getRequestHandler();
+    const request = {
+      request_id: 1,
+      method: EvmRequestMethod.REQUEST_ACCOUNTS,
+      params: [],
+      chainId: '0x1',
+    };
+
+    MkModule.getMk.mockResolvedValue('mk');
+    EvmWalletUtils.rebuildAccountsFromLocalStorage.mockResolvedValue([]);
+    EvmWalletUtils.hasPermission.mockResolvedValue(true);
+    ChainUtils.getDefaultChains.mockResolvedValue([chain]);
+    ChainUtils.getAllSetupChainsForType.mockResolvedValue([chain]);
+    DappRequestUtils.isDappLocked.mockResolvedValue(false);
+    LocalStorageUtils.getValueFromLocalStorage.mockResolvedValue({ list: [] });
+
+    await initEvmRequestHandler(request as any, 7, dappInfo, requestHandler);
+
+    expect(evmRequestWithConfirmation).toHaveBeenCalledWith(
+      requestHandler,
+      7,
+      request,
+      dappInfo,
+    );
+    expect(evmRequestWithoutConfirmation).not.toHaveBeenCalled();
+    expect(handleEvmError).not.toHaveBeenCalled();
+  });
+
+  it('routes authorized eth_accounts wallet_requestPermissions through the confirmation path', async () => {
     const {
       initEvmRequestHandler,
       MkModule,
@@ -167,13 +207,13 @@ describe('evm request init', () => {
 
     await initEvmRequestHandler(request as any, 7, dappInfo, requestHandler);
 
-    expect(evmRequestWithoutConfirmation).toHaveBeenCalledWith(
+    expect(evmRequestWithConfirmation).toHaveBeenCalledWith(
       requestHandler,
       7,
       request,
       dappInfo,
     );
-    expect(evmRequestWithConfirmation).not.toHaveBeenCalled();
+    expect(evmRequestWithoutConfirmation).not.toHaveBeenCalled();
     expect(handleEvmError).not.toHaveBeenCalled();
   });
 

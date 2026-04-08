@@ -7,7 +7,10 @@ import {
   EvmRequestData,
   EvmRequestHandler,
 } from '@background/evm/requests/evm-request-handler';
-import { getRequestedConnectionPermission } from '@background/evm/requests/logic/wallet-request-permissions.logic';
+import {
+  getRequestedConnectionPermission,
+  isEthAccountsConnectionRequest,
+} from '@background/evm/requests/logic/wallet-request-permissions.logic';
 import {
   HiveRequestData,
   HiveRequestsHandler,
@@ -128,6 +131,10 @@ export const isEvmDialogVisibleRequest = async (requestData: EvmRequestData) => 
   if (!request) return false;
 
   if (EvmUnrestrictedMethods.includes(request.method)) return false;
+
+  if (isEthAccountsConnectionRequest(requestData.request)) {
+    return true;
+  }
 
   const connectionPermission = getRequestedConnectionPermission(
     requestData.request,
@@ -400,10 +407,14 @@ const buildEvmConfirmationMessage = async (
 
   if (EvmUnrestrictedMethods.includes(request.method)) return null;
 
+  const shouldOpenEthAccountsConnectionFlow = isEthAccountsConnectionRequest(
+    requestData.request,
+  );
+
   if (
     EvmMethodPermissionMap[request.method] &&
     requestData.dappInfo.domain &&
-    request.method !== EvmRequestMethod.REQUEST_ACCOUNTS
+    !shouldOpenEthAccountsConnectionFlow
   ) {
     const hasPermission = await EvmWalletUtils.hasPermission(
       requestData.dappInfo.domain,
@@ -415,7 +426,11 @@ const buildEvmConfirmationMessage = async (
   const connectionPermission = getRequestedConnectionPermission(
     requestData.request,
   );
-  if (connectionPermission && requestData.dappInfo.domain) {
+  if (
+    connectionPermission &&
+    requestData.dappInfo.domain &&
+    !shouldOpenEthAccountsConnectionFlow
+  ) {
     const hasPermission = await EvmWalletUtils.hasPermission(
       requestData.dappInfo.domain,
       connectionPermission,

@@ -106,3 +106,14 @@ export const getRequestedConnectionPermission = (
     );
   }
 };
+
+export const isEthAccountsConnectionRequest = (
+  request?: Pick<EvmRequest, 'method' | 'params'>,
+  validatedWalletRequestPermissions?: {
+    permission?: EvmRequestPermission;
+  },
+) =>
+  getRequestedConnectionPermission(
+    request,
+    validatedWalletRequestPermissions,
+  ) === EvmRequestPermission.ETH_ACCOUNTS;
