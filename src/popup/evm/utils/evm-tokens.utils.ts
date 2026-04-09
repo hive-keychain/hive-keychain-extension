@@ -7,6 +7,7 @@ import {
   EvmCustomToken,
   EvmSavedCustomTokens,
 } from '@popup/evm/interfaces/evm-custom-tokens.interface';
+import { EvmLightNodeApi } from '@api/evm-light-node';
 import { EvmLightNodeContractResponse } from '@popup/evm/interfaces/evm-light-node.interface';
 import type {
   BalanceDetails,
@@ -363,8 +364,8 @@ type NativeTokenApiResponse = {
 const getMainTokenInfo = async (
   chain: EvmChain,
 ): Promise<EvmSmartContractInfoNative> => {
-  const response = (await KeychainApi.get(
-    `evm/light-node/native/${Number(chain.chainId)}`,
+  const response = (await EvmLightNodeApi.get(
+    `native/${Number(chain.chainId)}`,
   )) as NativeTokenApiResponse;
   return {
     type: EVMSmartContractType.NATIVE,

@@ -4,8 +4,8 @@ import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 
-jest.mock('@api/keychain', () => ({
-  KeychainApi: {
+jest.mock('@api/evm-light-node', () => ({
+  EvmLightNodeApi: {
     get: jest.fn(),
   },
 }));
@@ -31,12 +31,9 @@ jest.mock('src/utils/logger.utils', () => ({
 
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value));
 
-const getBundleChain = (chainId: string) =>
-  clone((defaultChainList as any[]).find((chain) => chain.chainId === chainId));
-
 const loadTestContext = async () => {
   const { ChainUtils } = await import('@popup/multichain/utils/chain.utils');
-  const { KeychainApi } = await import('@api/keychain');
+  const { EvmLightNodeApi } = await import('@api/evm-light-node');
   const LocalStorageUtils = (await import('src/utils/localStorage.utils'))
     .default as unknown as {
     getValueFromLocalStorage: jest.Mock;
@@ -50,15 +47,42 @@ const loadTestContext = async () => {
     log: jest.Mock;
     debug: jest.Mock;
   };
-  return { ChainUtils, KeychainApi, LocalStorageUtils, Logger };
+  return { ChainUtils, EvmLightNodeApi, LocalStorageUtils, Logger };
 };
 
 describe('ChainUtils', () => {
   const apiChains = [
-    getBundleChain(
-      'beeab0de00000000000000000000000000000000000000000000000000000000',
-    ),
-    getBundleChain('0x1'),
+    {
+      name: 'HIVE',
+      type: ChainType.HIVE,
+      logo: 'https://example.com/hive.svg',
+      chainId:
+        'beeab0de00000000000000000000000000000000000000000000000000000000',
+      mainTokens: {
+        hbd: 'HBD',
+        hive: 'HIVE',
+        hp: 'HP',
+      },
+      rpcs: [],
+      isPopular: true,
+      active: true,
+    },
+    {
+      name: 'Ethereum',
+      type: ChainType.EVM,
+      logo: 'https://example.com/eth.svg',
+      chainId: '0x1',
+      mainToken: 'ETH',
+      defaultTransactionType: '0x2',
+      blockExplorer: {
+        url: 'https://etherscan.io',
+      },
+      testnet: false,
+      isEth: true,
+      rpcs: [{ url: 'https://rpc.ethereum.org', isDefault: true }],
+      isPopular: true,
+      active: true,
+    },
   ];
   const cachedChains = clone(apiChains);
 
@@ -68,9 +92,9 @@ describe('ChainUtils', () => {
   });
 
   it('loads chains from the API, caches them, and reuses the in-memory list', async () => {
-    const { ChainUtils, KeychainApi, LocalStorageUtils, Logger } =
+    const { ChainUtils, EvmLightNodeApi, LocalStorageUtils, Logger } =
       await loadTestContext();
-    (KeychainApi.get as jest.Mock).mockResolvedValue(clone(apiChains));
+    (EvmLightNodeApi.get as jest.Mock).mockResolvedValue(clone(apiChains));
     LocalStorageUtils.getValueFromLocalStorage.mockResolvedValue(undefined);
     LocalStorageUtils.saveValueInLocalStorage.mockResolvedValue(undefined);
 
@@ -79,8 +103,8 @@ describe('ChainUtils', () => {
 
     expect(result).toEqual(apiChains);
     expect(secondResult).toEqual(apiChains);
-    expect(KeychainApi.get).toHaveBeenCalledTimes(1);
-    expect(KeychainApi.get).toHaveBeenCalledWith('chains');
+    expect(EvmLightNodeApi.get).toHaveBeenCalledTimes(1);
+    expect(EvmLightNodeApi.get).toHaveBeenCalledWith('chains');
     expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
       LocalStorageKeyEnum.DEFAULT_CHAINS,
       apiChains,
@@ -92,9 +116,9 @@ describe('ChainUtils', () => {
   });
 
   it('falls back to cached chains when the API request fails', async () => {
-    const { ChainUtils, KeychainApi, LocalStorageUtils, Logger } =
+    const { ChainUtils, EvmLightNodeApi, LocalStorageUtils, Logger } =
       await loadTestContext();
-    (KeychainApi.get as jest.Mock).mockRejectedValue(new Error('offline'));
+    (EvmLightNodeApi.get as jest.Mock).mockRejectedValue(new Error('offline'));
     LocalStorageUtils.getValueFromLocalStorage.mockResolvedValue(
       clone(cachedChains),
     );
@@ -113,9 +137,9 @@ describe('ChainUtils', () => {
   it.each([[], { invalid: true }])(
     'falls back to cached chains when the API response is invalid: %p',
     async (invalidApiResponse: unknown) => {
-      const { ChainUtils, KeychainApi, LocalStorageUtils, Logger } =
+      const { ChainUtils, EvmLightNodeApi, LocalStorageUtils, Logger } =
         await loadTestContext();
-      (KeychainApi.get as jest.Mock).mockResolvedValue(invalidApiResponse);
+      (EvmLightNodeApi.get as jest.Mock).mockResolvedValue(invalidApiResponse);
       LocalStorageUtils.getValueFromLocalStorage.mockResolvedValue(
         clone(cachedChains),
       );
@@ -133,9 +157,9 @@ describe('ChainUtils', () => {
   );
 
   it('falls back to bundled chains when both the API and cache are unavailable', async () => {
-    const { ChainUtils, KeychainApi, LocalStorageUtils, Logger } =
+    const { ChainUtils, EvmLightNodeApi, LocalStorageUtils, Logger } =
       await loadTestContext();
-    (KeychainApi.get as jest.Mock).mockRejectedValue(new Error('offline'));
+    (EvmLightNodeApi.get as jest.Mock).mockRejectedValue(new Error('offline'));
     LocalStorageUtils.getValueFromLocalStorage.mockResolvedValue(undefined);
     LocalStorageUtils.saveValueInLocalStorage.mockResolvedValue(undefined);
 
@@ -150,9 +174,9 @@ describe('ChainUtils', () => {
   });
 
   it('keeps forced base chains available when running from cached defaults', async () => {
-    const { ChainUtils, KeychainApi, LocalStorageUtils } =
+    const { ChainUtils, EvmLightNodeApi, LocalStorageUtils } =
       await loadTestContext();
-    (KeychainApi.get as jest.Mock).mockRejectedValue(new Error('offline'));
+    (EvmLightNodeApi.get as jest.Mock).mockRejectedValue(new Error('offline'));
     LocalStorageUtils.getValueFromLocalStorage.mockImplementation(
       async (key: LocalStorageKeyEnum) => {
         if (key === LocalStorageKeyEnum.DEFAULT_CHAINS) {
@@ -178,9 +202,9 @@ describe('ChainUtils', () => {
   });
 
   it('keeps forced base chains available when running from bundled defaults', async () => {
-    const { ChainUtils, KeychainApi, LocalStorageUtils } =
+    const { ChainUtils, EvmLightNodeApi, LocalStorageUtils } =
       await loadTestContext();
-    (KeychainApi.get as jest.Mock).mockRejectedValue(new Error('offline'));
+    (EvmLightNodeApi.get as jest.Mock).mockRejectedValue(new Error('offline'));
     LocalStorageUtils.getValueFromLocalStorage.mockImplementation(
       async (key: LocalStorageKeyEnum) => {
         if (key === LocalStorageKeyEnum.SETUP_CHAINS) {
@@ -193,12 +217,10 @@ describe('ChainUtils', () => {
 
     const result = await ChainUtils.getSetupChains(true);
 
-    expect(result).toHaveLength(2);
+    expect(result).toEqual(defaultChainList);
     expect(result.find((chain) => chain.type === ChainType.HIVE)?.chainId).toBe(
       'beeab0de00000000000000000000000000000000000000000000000000000000',
     );
-    expect(result.find((chain) => chain.type === ChainType.EVM)?.chainId).toBe(
-      '0x1',
-    );
+    expect(result.find((chain) => chain.type === ChainType.EVM)).toBeUndefined();
   });
 });

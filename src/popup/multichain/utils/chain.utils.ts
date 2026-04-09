@@ -1,4 +1,4 @@
-import { KeychainApi } from '@api/keychain';
+import { EvmLightNodeApi } from '@api/evm-light-node';
 import {
   Chain,
   ChainType,
@@ -24,7 +24,9 @@ const isValidChain = (chain: Partial<Chain> | null | undefined) => {
 };
 
 const isValidChainList = (chains: unknown): chains is Chain[] => {
-  return Array.isArray(chains) && chains.length > 0 && chains.every(isValidChain);
+  return (
+    Array.isArray(chains) && chains.length > 0 && chains.every(isValidChain)
+  );
 };
 
 const cloneChains = (chains: Chain[]) => {
@@ -162,7 +164,7 @@ const initChains = async (): Promise<Chain[]> => {
 
   defaultChainsPromise = (async () => {
     try {
-      const apiChains = await KeychainApi.get('chains');
+      const apiChains = await EvmLightNodeApi.get('chains/active');
       if (isValidChainList(apiChains)) {
         const normalizedChains = cloneChains(apiChains);
         setDefaultChains(normalizedChains);

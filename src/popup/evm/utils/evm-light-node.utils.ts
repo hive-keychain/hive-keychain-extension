@@ -1,4 +1,4 @@
-import { KeychainApi } from '@api/keychain';
+import { EvmLightNodeApi } from '@api/evm-light-node';
 import {
   EvmLightNodeContractResponse,
   EvmLightNodeRegisteredAddresses,
@@ -14,7 +14,7 @@ import {
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
-/** Keychain `evm/light-node/*` routes expect a decimal chain id in the path, not hex (`0x…`). */
+/** Direct light-node routes expect a decimal chain id in the path, not hex (`0x…`). */
 export function evmChainIdToDecimalPathSegment(
   chainId: string | number,
 ): string {
@@ -239,14 +239,32 @@ export type NftDiscoveryItemResponse = {
   imageUrl: string | null;
 };
 
+const buildHistoryQuery = (query: string) => {
+  if (!query || query.length === 0) {
+    return '';
+  }
+
+  const source = new URLSearchParams(query);
+  const allowed = new URLSearchParams();
+  for (const key of ['cursor', 'limit']) {
+    const value = source.get(key);
+    if (value != null && value.length > 0) {
+      allowed.set(key, value);
+    }
+  }
+
+  const normalizedQuery = allowed.toString();
+  return normalizedQuery ? `?${normalizedQuery}` : '';
+};
+
 // Done
 const getDiscoveredTokens = async (
   chainId: string | number,
   address: string,
 ): Promise<DiscoveredTokensResponse> => {
   const id = evmChainIdToDecimalPathSegment(chainId);
-  const reponse: DiscoveredTokensResponse = await KeychainApi.get(
-    `evm/light-node/discovery/tokens/${id}/${encodeURIComponent(address)}`,
+  const reponse: DiscoveredTokensResponse = await EvmLightNodeApi.get(
+    `discovery/tokens/${id}/${encodeURIComponent(address)}`,
   );
 
   return reponse;
@@ -257,19 +275,20 @@ const getDiscoveredNfts = async (
   address: string,
 ): Promise<DiscoveredNftsResponse> => {
   const id = evmChainIdToDecimalPathSegment(chainId);
-  const response: DiscoveredNftsResponse = await KeychainApi.get(
-    `evm/light-node/discovery/nfts/${id}/${encodeURIComponent(address)}`,
+  const response: DiscoveredNftsResponse = await EvmLightNodeApi.get(
+    `discovery/nfts/${id}/${encodeURIComponent(address)}`,
   );
   return response;
 };
 
 const getNftDetail = async (
-  chainId: string | number,
-  nftId: string,
+  collectionAddress: string,
+  tokenId: string,
 ): Promise<unknown> => {
-  const id = evmChainIdToDecimalPathSegment(chainId);
-  return KeychainApi.get(
-    `evm/light-node/nft/detail/${id}/${encodeURIComponent(nftId)}`,
+  return EvmLightNodeApi.get(
+    `nft/detail/${encodeURIComponent(collectionAddress)}/${encodeURIComponent(
+      tokenId,
+    )}`,
   );
 };
 
@@ -279,10 +298,8 @@ const getHistory = async (
   query: string,
 ): Promise<{ items: HistoryItem[]; nextCursor: string | null }> => {
   const id = evmChainIdToDecimalPathSegment(chainId);
-  return await KeychainApi.get(
-    `evm/light-node/history/${id}/${encodeURIComponent(address)}${
-      query && query.length > 0 ? `?${query}` : ''
-    }`,
+  return await EvmLightNodeApi.get(
+    `history/${id}/${encodeURIComponent(address)}${buildHistoryQuery(query)}`,
   );
 };
 
@@ -291,8 +308,8 @@ const getHistoryDetail = async (
   txId: string,
 ): Promise<unknown> => {
   const id = evmChainIdToDecimalPathSegment(chainId);
-  return KeychainApi.get(
-    `evm/light-node/history/detail/${id}/${encodeURIComponent(txId)}`,
+  return EvmLightNodeApi.get(
+    `history/detail/${id}/${encodeURIComponent(txId)}`,
   );
 };
 
@@ -301,15 +318,15 @@ const getContract = async (
   contractAddress: string,
 ): Promise<EvmLightNodeContractResponse> => {
   const id = evmChainIdToDecimalPathSegment(chainId);
-  const response = await KeychainApi.get(
-    `evm/light-node/contract/${id}/${encodeURIComponent(contractAddress)}`,
+  const response = await EvmLightNodeApi.get(
+    `contract/${id}/${encodeURIComponent(contractAddress)}`,
   );
   return normalizeContract(response as EvmLightNodeContractResponse);
 };
 
 const getGasFee = async (chainId: string | number): Promise<unknown> => {
   const id = evmChainIdToDecimalPathSegment(chainId);
-  return KeychainApi.get(`evm/light-node/gas-fee/${id}`);
+  return EvmLightNodeApi.get(`gas-oracle/${id}`);
 };
 
 const getPrice = async (
@@ -317,8 +334,10 @@ const getPrice = async (
   tokenAddress?: string,
 ): Promise<number> => {
   const id = evmChainIdToDecimalPathSegment(chainId);
-  const response = await KeychainApi.get(
-    `evm/light-node/price/${id}/${tokenAddress ? encodeURIComponent(tokenAddress) : ''}`,
+  const response = await EvmLightNodeApi.get(
+    tokenAddress
+      ? `price/${id}/${encodeURIComponent(tokenAddress)}`
+      : `price/${id}`,
   );
   return response.priceUsd ?? 0;
 };
@@ -369,8 +388,9 @@ const registerAddress = async (
   registeredAddresses[chainId].push(address);
 
   const id = evmChainIdToDecimalPathSegment(chainId);
-  await KeychainApi.get(
-    `evm/light-node/register-address/${id}/${encodeURIComponent(address)}/${newAddress}`,
+  await EvmLightNodeApi.post(
+    `register/${id}/${encodeURIComponent(address)}/${newAddress}`,
+    {},
   );
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_LIGHT_NODE_REGISTERED_ADDRESSES,

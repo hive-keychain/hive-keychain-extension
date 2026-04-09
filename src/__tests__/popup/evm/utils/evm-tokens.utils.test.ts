@@ -1,4 +1,4 @@
-import { KeychainApi } from '@api/keychain';
+import { EvmLightNodeApi } from '@api/evm-light-node';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import {
   EVMSmartContractType,
@@ -17,7 +17,7 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
   });
 
   it('preserves backend proxy fields on proxy contracts', async () => {
-    jest.spyOn(KeychainApi, 'get').mockResolvedValue({
+    jest.spyOn(EvmLightNodeApi, 'get').mockResolvedValue({
       abi: [],
       address: '0x00000000000000000000000000000000000000aa',
       chainId: 1,
@@ -52,7 +52,7 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
   });
 
   it('defaults proxy fields for non-proxy contracts', async () => {
-    jest.spyOn(KeychainApi, 'get').mockResolvedValue({
+    jest.spyOn(EvmLightNodeApi, 'get').mockResolvedValue({
       abi: [],
       address: '0x00000000000000000000000000000000000000cc',
       chainId: 1,
@@ -84,7 +84,7 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
   });
 
   it('normalizes structured proxy target payloads on token info responses', async () => {
-    jest.spyOn(KeychainApi, 'get').mockResolvedValue({
+    jest.spyOn(EvmLightNodeApi, 'get').mockResolvedValue({
       abi: [],
       address: '0x00000000000000000000000000000000000000aa',
       chainId: 1,
@@ -117,6 +117,40 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
     expect(tokenInfo.proxyTarget).toBe(
       '0x00000000000000000000000000000000000000bb',
     );
+  });
+
+  it('loads native token info from the direct light-node API', async () => {
+    jest.spyOn(EvmLightNodeApi, 'get').mockResolvedValue({
+      chainId: 1,
+      metadata: {
+        name: 'Ethereum',
+        symbol: 'ETH',
+        decimals: 18,
+        logoUrl: 'https://cdn.example/eth.svg',
+        wrappedNativeTokenAddress:
+          '0x0000000000000000000000000000000000000001',
+      },
+      price: {
+        fetchedAt: '2026-01-01T00:00:00.000Z',
+        priceUsd: 321.09,
+      },
+    });
+
+    await expect(
+      EvmTokensUtils.getMainTokenInfo({ chainId: '0x1' } as any),
+    ).resolves.toEqual({
+      type: EVMSmartContractType.NATIVE,
+      name: 'Ethereum',
+      symbol: 'ETH',
+      logo: 'https://cdn.example/eth.svg',
+      chainId: '0x1',
+      backgroundColor: '',
+      coingeckoId: '',
+      priceUsd: 321.09,
+      createdAt: '2026-01-01T00:00:00.000Z',
+      categories: [],
+    });
+    expect(EvmLightNodeApi.get).toHaveBeenCalledWith('native/1');
   });
 
   it('detects token type from a serialized abi string', () => {

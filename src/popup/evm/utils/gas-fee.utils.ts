@@ -2,6 +2,7 @@ import {
   EvmTransactionType,
   ProviderTransactionData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
+import { EvmLightNodeApi } from '@api/evm-light-node';
 import {
   EvmFeeTrend,
   FullGasFeeEstimation,
@@ -13,12 +14,13 @@ import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
 import { ethers, HDNodeWallet } from 'ethers';
-import { KeychainApi } from 'src/api/keychain';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import Logger from 'src/utils/logger.utils';
 
 const getGasFeeEstimations = async (chain: Chain) => {
-  const result = await KeychainApi.get(`evm/gasPriceEstimate/${chain.chainId}`);
+  const result = await EvmLightNodeApi.get(
+    `gas-oracle/${Number(chain.chainId)}`,
+  );
   return result;
 };
 
