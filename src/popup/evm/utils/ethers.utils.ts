@@ -77,7 +77,14 @@ const getGasLimit = async (
     };
     return getGasLimitFromRawTx(tx, provider);
   } else {
-    return 21000;
+    return getGasLimitFromRawTx(
+      {
+        from: wallet.address,
+        to: to,
+        value: value,
+      },
+      provider,
+    );
   }
 };
 

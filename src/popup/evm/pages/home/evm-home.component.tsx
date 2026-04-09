@@ -18,7 +18,6 @@ import { EvmDappStatusComponent } from '@popup/evm/pages/home/evm-dapp-status/ev
 import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section.component';
 import { EvmWalletInfoSectionComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
-import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
@@ -227,12 +226,6 @@ const Home = ({
 
     setStateIfMounted(setPendingTransactionsInfo, pendingTransactionsInfo);
   };
-
-  const code = EthersUtils.getProvider(chain).then((provider) =>
-    provider
-      .getCode('0xB06Ea6E48A317Db352fA161c8140e8e0791EbB58')
-      .then((code) => console.log('code:', code)),
-  );
 
   //TODO : move survey and whatsnew logic in a hook since its called on both evm and hive
   const initSurvey = async () => {
