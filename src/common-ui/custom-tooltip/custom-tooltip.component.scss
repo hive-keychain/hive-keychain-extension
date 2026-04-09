@@ -9,18 +9,31 @@ $tooltip-arrow-size: 6px;
   display: inline-block;
   position: relative;
   .tooltip {
-    position: absolute;
+    --tooltip-arrow-offset-x: calc(50% - 6px);
+    --tooltip-arrow-offset-y: calc(50% - 6px);
+
     border-radius: 4px;
-    padding: 6px;
     color: var(--tooltip-text-color);
     background: var(--tooltip-background-color);
-    line-height: 1;
+    line-height: 1.2;
     z-index: 100;
     padding: 12px;
     width: 150px;
+    max-width: calc(100vw - 16px);
+    box-sizing: border-box;
+    overflow: visible;
     text-align: center;
 
     @include inter400(14px);
+
+    .tooltip-inner {
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
     &::before {
       content: ' ';
       border: solid transparent;
@@ -32,42 +45,33 @@ $tooltip-arrow-size: 6px;
     }
 
     &.top {
-      transform: translateX(-50%);
       &::before {
-        left: calc(50% - 6px);
+        left: var(--tooltip-arrow-offset-x);
         top: 100%;
         border-top-color: var(--tooltip-background-color);
       }
     }
     &.right {
-      transform: translateY(-50%);
       &::before {
-        margin-left: -6px;
         left: calc(var(--tooltip-arrow-size) * -1);
-        top: 50%;
-        transform: translateX(0) translateY(-50%);
+        top: var(--tooltip-arrow-offset-y);
         border-right-color: var(--tooltip-background-color);
       }
     }
 
     &.bottom {
-      transform: translateX(-50%);
-
       &::before {
-        left: calc(50% - 6px);
+        left: var(--tooltip-arrow-offset-x);
         bottom: 100%;
         border-bottom-color: var(--tooltip-background-color);
       }
     }
 
     &.left {
-      transform: translateY(-50%);
-
       &::before {
         left: auto;
         right: calc(var(--tooltip-arrow-size) * -2);
-        top: 50%;
-        transform: translateX(0) translateY(-50%);
+        top: var(--tooltip-arrow-offset-y);
         border-left-color: var(--tooltip-background-color);
       }
     }
