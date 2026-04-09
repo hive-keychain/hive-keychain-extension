@@ -109,23 +109,39 @@ const EvmNftTransfer = ({
   const [autocompleteValues, setAutocompleteValues] =
     useState<AutoCompleteValues>();
 
+  const loadAutocomplete = async (isCancelled: () => boolean) => {
+    const values = await EvmAddressesUtils.getWhiteListAutocomplete(
+      chain,
+      localAccounts,
+      activeAccount.wallet.address,
+    );
+
+    if (isCancelled()) return;
+
+    setAutocompleteValues(values);
+
+    const enrichedValues = await EvmAddressesUtils.enrichWhiteListAutocomplete(
+      values,
+    );
+
+    if (isCancelled()) return;
+
+    setAutocompleteValues(enrichedValues);
+  };
+
   useEffect(() => {
     setTitleContainerProperties({
       title: 'evm_nft_transfer',
       isBackButtonEnabled: true,
     });
-    init();
-  }, []);
 
-  const init = async () => {
-    setAutocompleteValues(
-      await EvmAddressesUtils.getWhiteListAutocomplete(
-        chain,
-        localAccounts,
-        activeAccount.wallet.address,
-      ),
-    );
-  };
+    let cancelled = false;
+    void loadAutocomplete(() => cancelled);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeAccount, chain, localAccounts]);
 
   const handleClickOnSend = async (form: EvmNftTransferForm) => {
     // encode data

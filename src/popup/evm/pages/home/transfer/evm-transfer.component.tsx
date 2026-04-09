@@ -113,28 +113,28 @@ const EvmTransfer = ({
   const [autocompleteValues, setAutocompleteValues] =
     useState<AutoCompleteValues>();
 
-  useEffect(() => {
-    setTitleContainerProperties({
-      title: 'popup_html_transfer_funds',
-      isBackButtonEnabled: true,
-    });
-  }, []);
+  const prefillReceiverAddress = (values: AutoCompleteValues) => {
+    if (!formParams.receiverAddress) return;
 
-  useEffect(() => {
-    if (activeAccount) {
-      init();
+    const prefilledValue = values.categories
+      .flatMap((category) => category.values)
+      .find(
+        (value) =>
+          value.value.toLowerCase() === formParams.receiverAddress.toLowerCase(),
+      )?.value;
+
+    if (prefilledValue) {
+      setValue('receiverAddress', prefilledValue);
     }
-  }, [activeAccount]);
+  };
 
-  useEffect(() => {
-    if (watch('selectedToken'))
-      setBalance(watch('selectedToken').balanceInteger);
-  }, [watch('selectedToken')]);
-
-  const init = async () => {
+  const loadTokenOptions = async (isCancelled: () => boolean) => {
     const filteredTokens = (await EvmTokensUtils.filterTokensBasedOnSettings(
       activeAccount.nativeAndErc20Tokens.value,
     )) as NativeAndErc20Token[];
+
+    if (isCancelled()) return;
+
     setTokenOptions(
       filteredTokens.map((tokenBalance, index) => {
         return {
@@ -146,6 +146,7 @@ const EvmTransfer = ({
         };
       }),
     );
+
     if (!watch('selectedToken')) {
       setValue(
         'selectedToken',
@@ -154,28 +155,64 @@ const EvmTransfer = ({
         )!,
       );
     }
+  };
+
+  const loadAutocomplete = async (isCancelled: () => boolean) => {
     const values = await EvmAddressesUtils.getWhiteListAutocomplete(
       chain,
       localAccounts,
       activeAccount.wallet.address,
     );
+
+    if (isCancelled()) return;
+
     setAutocompleteValues(values);
-    if (formParams.receiverAddress) {
-      let prefilledValue;
-      for (const category of values.categories) {
-        for (const value of category.values) {
-          if (
-            value.value.toLowerCase() ===
-            formParams.receiverAddress.toLowerCase()
-          ) {
-            prefilledValue = value.value;
-            break;
-          }
-        }
-      }
-      if (prefilledValue) setValue('receiverAddress', prefilledValue);
-    }
+    prefillReceiverAddress(values);
+
+    const enrichedValues = await EvmAddressesUtils.enrichWhiteListAutocomplete(
+      values,
+    );
+
+    if (isCancelled()) return;
+
+    setAutocompleteValues(enrichedValues);
   };
+
+  useEffect(() => {
+    setTitleContainerProperties({
+      title: 'popup_html_transfer_funds',
+      isBackButtonEnabled: true,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (activeAccount) {
+      let cancelled = false;
+
+      void loadTokenOptions(() => cancelled);
+
+      return () => {
+        cancelled = true;
+      };
+    }
+  }, [activeAccount]);
+
+  useEffect(() => {
+    if (activeAccount) {
+      let cancelled = false;
+
+      void loadAutocomplete(() => cancelled);
+
+      return () => {
+        cancelled = true;
+      };
+    }
+  }, [activeAccount, chain, localAccounts, formParams.receiverAddress]);
+
+  useEffect(() => {
+    if (watch('selectedToken'))
+      setBalance(watch('selectedToken').balanceInteger);
+  }, [watch('selectedToken')]);
 
   const handleClickOnSend = async (form: TransferForm) => {
     if (form.amount <= 0) {
