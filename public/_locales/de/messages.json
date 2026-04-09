@@ -4556,5 +4556,77 @@
   "error_granularity": {
     "message": "Dieser Vorgang ist unter Granularitätsregeln nicht zulässig",
     "description": "Error message if granularity failed has been used already"
+  },
+  "evm_insufficient_token_balance": {
+    "message": "Unzureichendes $1-Guthaben.",
+    "description": "Insufficient token balance message on EVM balance change card"
+  },
+  "evm_transaction_result_error_message_insufficient_funds": {
+    "message": "Unzureichende Mittel, um diese Transaktion abzuschließen",
+    "description": "Transaction result error message insufficient funds"
+  },
+  "evm_transaction_result_error_message_user_rejected": {
+    "message": "Die Transaktion wurde vom Benutzer abgelehnt",
+    "description": "Transaction result error message user rejected"
+  },
+  "evm_transaction_result_error_message_transaction_replaced": {
+    "message": "Die Transaktion wurde durch eine andere Transaktion ersetzt",
+    "description": "Transaction result error message transaction replaced"
+  },
+  "evm_transaction_result_error_message_network": {
+    "message": "Ein Netzwerkfehler ist aufgetreten. Bitte versuchen Sie es erneut",
+    "description": "Transaction result error message network"
+  },
+  "evm_transaction_result_error_message_bad_data": {
+    "message": "Das RPC hat ungültige Daten zurückgegeben",
+    "description": "Transaction result error message bad data"
+  },
+  "evm_transaction_result_error_message_invalid_parameters": {
+    "message": "Die Transaktionsanfrage enthält ungültige Parameter",
+    "description": "Transaction result error message invalid parameters"
+  },
+  "evm_transaction_result_error_message_unsupported_operation": {
+    "message": "Dieser Vorgang wird vom RPC oder Vertrag nicht unterstützt",
+    "description": "Transaction result error message unsupported operation"
+  },
+  "evm_transaction_result_error_message_execution_reverted": {
+    "message": "Die Transaktion wurde vom Vertrag rückgängig gemacht",
+    "description": "Transaction result error message execution reverted"
+  },
+  "evm_transaction_result_error_message_call_exception": {
+    "message": "Die Transaktion ist während der Vertragsausführung fehlgeschlagen",
+    "description": "Transaction result error message call exception"
+  },
+  "evm_error_message_insufficient_token_balance": {
+    "message": "Unzureichendes Token-Guthaben",
+    "description": "Transaction result error message insufficient token balance"
+  },
+  "evm_transaction_result_error_message_gas_required_exceeds_allowance": {
+    "message": "Die Gas-Schätzung ist fehlgeschlagen, weil die Transaktion wahrscheinlich rückgängig gemacht würde",
+    "description": "Transaction result error message gas required exceeds allowance"
+  },
+  "evm_transaction_result_error_message_missing_revert_data": {
+    "message": "Die Transaktion ist ohne Revert-Details fehlgeschlagen",
+    "description": "Transaction result error message missing revert data"
+  },
+  "evm_transaction_result_error_message_access_denied": {
+    "message": "Diese Aktion ist für das aktuelle Konto nicht erlaubt",
+    "description": "Transaction result error message access denied"
+  },
+  "evm_transaction_result_error_message_paused": {
+    "message": "Dieser Vertrag ist derzeit pausiert",
+    "description": "Transaction result error message paused"
+  },
+  "evm_transaction_result_error_message_blacklisted": {
+    "message": "Diese Adresse wird vom Vertrag blockiert",
+    "description": "Transaction result error message blacklisted"
+  },
+  "evm_transaction_result_error_message_transaction_expired": {
+    "message": "Die Transaktion ist abgelaufen oder hat ihre Frist überschritten",
+    "description": "Transaction result error message transaction expired"
+  },
+  "evm_transaction_result_error_message_slippage": {
+    "message": "Die Transaktion ist fehlgeschlagen, weil die Slippage-Toleranz überschritten wurde",
+    "description": "Transaction result error message slippage"
   }
 }

@@ -293,6 +293,7 @@ const getPendingTransactionsDetails = async (
       transactionResponse: pendingTx,
     };
   }
+  console.log(pendingTransactionDetail, 'pendingTransactionDetail');
 
   return pendingTransactionDetail;
 };

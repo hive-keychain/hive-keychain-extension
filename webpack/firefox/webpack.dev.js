@@ -39,7 +39,7 @@ module.exports = merge(common, {
   plugins: [
     new DefinePlugin({
       'process.env': JSON.stringify({
-        ...dotenv.config().parsed,
+        ...(dotenv.config().parsed || {}),
         IS_FIREFOX: true,
       }),
     }),

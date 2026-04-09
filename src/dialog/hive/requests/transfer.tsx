@@ -95,6 +95,7 @@ const Transfer = (props: Props) => {
             <BalanceChangeCard
               balanceInfo={{
                 mainBalance: {
+                  symbol: currencyLabel,
                   before: beforeBalance,
                   estimatedAfter: afterBalance,
                   insufficientBalance,

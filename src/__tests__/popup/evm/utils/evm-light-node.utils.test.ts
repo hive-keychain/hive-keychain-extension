@@ -1,14 +1,15 @@
-import { KeychainApi } from '@api/keychain';
+import { EvmLightNodeApi } from '@api/evm-light-node';
 import {
   EvmLightNodeUtils,
   evmChainIdToDecimalPathSegment,
 } from '@popup/evm/utils/evm-light-node.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 describe('evm-light-node.utils tests:\n', () => {
   it('uses decimal chain id in light-node URLs when chainId is hex', async () => {
-    const getSpy = jest.spyOn(KeychainApi, 'get').mockResolvedValue({});
+    const getSpy = jest.spyOn(EvmLightNodeApi, 'get').mockResolvedValue({});
     await EvmLightNodeUtils.getGasFee('0x89');
-    expect(getSpy).toHaveBeenCalledWith('evm/light-node/gas-fee/137');
+    expect(getSpy).toHaveBeenCalledWith('gas-oracle/137');
   });
 
   it('evmChainIdToDecimalPathSegment maps hex and decimal strings', () => {
@@ -27,7 +28,7 @@ describe('evm-light-node.utils tests:\n', () => {
     const targetAddress = '0x00000000000000000000000000000000000000bb';
     const targetAbi = [{ type: 'function', name: 'approve', inputs: [] }];
     const getSpy = jest
-      .spyOn(KeychainApi, 'get')
+      .spyOn(EvmLightNodeApi, 'get')
       .mockResolvedValueOnce({
         abi: [{ type: 'function', name: 'fallback', inputs: [] }],
         address: proxyAddress,
@@ -64,17 +65,17 @@ describe('evm-light-node.utils tests:\n', () => {
     expect(abi).toEqual(targetAbi);
     expect(getSpy).toHaveBeenNthCalledWith(
       1,
-      `evm/light-node/contract/1/${encodeURIComponent(proxyAddress)}`,
+      `contract/1/${encodeURIComponent(proxyAddress)}`,
     );
     expect(getSpy).toHaveBeenNthCalledWith(
       2,
-      `evm/light-node/contract/1/${encodeURIComponent(targetAddress)}`,
+      `contract/1/${encodeURIComponent(targetAddress)}`,
     );
   });
 
   it('returns null when the proxy target has no abi', async () => {
     jest
-      .spyOn(KeychainApi, 'get')
+      .spyOn(EvmLightNodeApi, 'get')
       .mockResolvedValueOnce({
         abi: [{ type: 'function', name: 'fallback', inputs: [] }],
         address: '0x00000000000000000000000000000000000000aa',
@@ -116,7 +117,7 @@ describe('evm-light-node.utils tests:\n', () => {
     const targetAddress = '0x00000000000000000000000000000000000000bb';
     const targetAbi = [{ type: 'function', name: 'approve', inputs: [] }];
     const getSpy = jest
-      .spyOn(KeychainApi, 'get')
+      .spyOn(EvmLightNodeApi, 'get')
       .mockResolvedValueOnce({
         abi: [{ type: 'function', name: 'fallback', inputs: [] }],
         address: proxyAddress,
@@ -153,13 +154,13 @@ describe('evm-light-node.utils tests:\n', () => {
     );
     expect(getSpy).toHaveBeenNthCalledWith(
       2,
-      `evm/light-node/contract/1/${encodeURIComponent(targetAddress)}`,
+      `contract/1/${encodeURIComponent(targetAddress)}`,
     );
   });
 
   it('returns the contract abi directly when the contract is not a proxy', async () => {
     const abi = [{ type: 'function', name: 'transfer', inputs: [] }];
-    jest.spyOn(KeychainApi, 'get').mockResolvedValue({
+    jest.spyOn(EvmLightNodeApi, 'get').mockResolvedValue({
       abi,
       address: '0x00000000000000000000000000000000000000cc',
       chainId: 1,
@@ -178,5 +179,42 @@ describe('evm-light-node.utils tests:\n', () => {
     await expect(
       EvmLightNodeUtils.getAbi('1', '0x00000000000000000000000000000000000000cc'),
     ).resolves.toEqual(abi);
+  });
+
+  it('forwards only cursor and limit when fetching history directly from the light node', async () => {
+    const getSpy = jest
+      .spyOn(EvmLightNodeApi, 'get')
+      .mockResolvedValue({ items: [], nextCursor: null });
+
+    await EvmLightNodeUtils.getHistory(
+      '0x89',
+      '0x00000000000000000000000000000000000000aa',
+      'cursor=abc&limit=50&showPossibleSpam=true&showUnverified=true',
+    );
+
+    expect(getSpy).toHaveBeenCalledWith(
+      'history/137/0x00000000000000000000000000000000000000aa?cursor=abc&limit=50',
+    );
+  });
+
+  it('registers addresses with POST on the direct light-node API', async () => {
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockResolvedValue(undefined as any);
+    jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockResolvedValue(undefined as any);
+    const postSpy = jest.spyOn(EvmLightNodeApi, 'post').mockResolvedValue({});
+
+    await EvmLightNodeUtils.registerAddress(
+      '0x1',
+      '0x00000000000000000000000000000000000000aa',
+      false,
+    );
+
+    expect(postSpy).toHaveBeenCalledWith(
+      'register/1/0x00000000000000000000000000000000000000aa/false',
+      {},
+    );
   });
 });

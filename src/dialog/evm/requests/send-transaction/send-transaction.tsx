@@ -77,10 +77,16 @@ export const SendTransaction = (props: Props) => {
   }, [request]);
 
   useEffect(() => {
-    if (tokenInfo && selectedAccount && transferAmount !== undefined) {
-      initBalance(tokenInfo);
+    if (tokenInfo && selectedAccount && chain && transferAmount !== undefined) {
+      void initBalance(tokenInfo);
     }
-  }, [tokenInfo, selectedAccount, transferAmount]);
+  }, [
+    chain,
+    selectedAccount,
+    tokenInfo,
+    transactionHook.selectedFee,
+    transferAmount,
+  ]);
 
   const handleCopyAddress = (address: string) => {
     void copyTextWithToast(address, COPY_GENERIC_MESSAGE_KEY);
@@ -726,14 +732,14 @@ export const SendTransaction = (props: Props) => {
   };
 
   const initBalance = async (tokenInfo: EvmSmartContractInfo) => {
-    const balance = await EvmTokensUtils.getTokenBalance(
-      selectedAccount?.wallet.address!,
-      chain!,
-      tokenInfo,
-    );
-
     setBalanceInfo(
-      EvmTokensUtils.getBalanceInfo(balance!, transferAmount!, tokenInfo),
+      await EvmTokensUtils.getBalanceInfo(
+        selectedAccount?.wallet.address!,
+        chain!,
+        tokenInfo,
+        transferAmount!,
+        transactionHook.selectedFee,
+      ),
     );
   };
 

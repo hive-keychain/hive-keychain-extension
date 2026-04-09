@@ -7,8 +7,12 @@ import {
   EvmCustomToken,
   EvmSavedCustomTokens,
 } from '@popup/evm/interfaces/evm-custom-tokens.interface';
+import { EvmLightNodeApi } from '@api/evm-light-node';
 import { EvmLightNodeContractResponse } from '@popup/evm/interfaces/evm-light-node.interface';
-import type { BalanceInfo } from '@dialog/components/balance-change-card/balance-change-card.interface';
+import type {
+  BalanceDetails,
+  BalanceInfo,
+} from '@dialog/components/balance-change-card/balance-change-card.interface';
 import {
   EvmSmartContractInfo,
   EvmSmartContractInfoErc1155,
@@ -17,6 +21,7 @@ import {
   EvmSmartContractInfoNative,
   EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
+import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import {
   AbiList,
   ERC1155Abi,
@@ -359,8 +364,8 @@ type NativeTokenApiResponse = {
 const getMainTokenInfo = async (
   chain: EvmChain,
 ): Promise<EvmSmartContractInfoNative> => {
-  const response = (await KeychainApi.get(
-    `evm/light-node/native/${Number(chain.chainId)}`,
+  const response = (await EvmLightNodeApi.get(
+    `native/${Number(chain.chainId)}`,
   )) as NativeTokenApiResponse;
   return {
     type: EVMSmartContractType.NATIVE,
@@ -582,25 +587,90 @@ const getAllowance = async (
   return allowance;
 };
 
-const getBalanceInfo = (
+const getBalanceDecimals = (
+  tokenInfo: EvmSmartContractInfoNative | EvmSmartContractInfoErc20,
+) => {
+  return tokenInfo.type === EVMSmartContractType.ERC20 ? tokenInfo.decimals : 8;
+};
+
+const buildBalanceDetails = (
   balance: EvmTokenBalanceResult,
   amount: number,
-  tokenInfo: EvmSmartContractInfo,
-): BalanceInfo => {
+  tokenInfo: EvmSmartContractInfoNative | EvmSmartContractInfoErc20,
+): BalanceDetails => {
+  const estimatedAfterBalance = new Decimal(balance.balanceInteger).sub(amount);
+
   return {
-    mainBalance: {
-      before: `${balance?.formattedBalance!} ${tokenInfo.symbol}`,
-      estimatedAfter: `${FormatUtils.withCommas(
-        new Decimal(balance?.balanceInteger!).sub(amount!).toString(),
-        tokenInfo.type === EVMSmartContractType.ERC20
-          ? (tokenInfo as EvmSmartContractInfoErc20).decimals
-          : 8,
-        true,
-      )}  ${tokenInfo?.symbol}`,
-      insufficientBalance:
-        new Decimal(balance?.balanceInteger!).sub(amount!).toNumber() < 0,
-    },
+    symbol: tokenInfo.symbol,
+    before: `${balance.formattedBalance} ${tokenInfo.symbol}`,
+    estimatedAfter: `${FormatUtils.withCommas(
+      estimatedAfterBalance.toString(),
+      getBalanceDecimals(tokenInfo),
+      true,
+    )}  ${tokenInfo.symbol}`,
+    insufficientBalance: estimatedAfterBalance.toNumber() < 0,
   };
+};
+
+const getEstimatedGasFee = (selectedFee?: GasFeeEstimationBase) => {
+  if (!selectedFee || selectedFee.estimatedFeeInEth.equals(-1)) return undefined;
+  return new Decimal(selectedFee.estimatedFeeInEth.toString());
+};
+
+const getBalanceInfo = async (
+  walletAddress: string,
+  chain: EvmChain,
+  tokenInfo: EvmSmartContractInfo,
+  amount: number,
+  selectedFee?: GasFeeEstimationBase,
+): Promise<BalanceInfo> => {
+  const balance = (await EvmTokensUtils.getTokenBalance(
+    walletAddress,
+    chain,
+    tokenInfo,
+  )) as EvmTokenBalanceResult;
+  const transferAmount = new Decimal(amount);
+  const estimatedGasFee = getEstimatedGasFee(selectedFee);
+
+  if (tokenInfo.type === EVMSmartContractType.NATIVE) {
+    return {
+      mainBalance: buildBalanceDetails(
+        balance,
+        estimatedGasFee
+          ? transferAmount.add(estimatedGasFee).toNumber()
+          : transferAmount.toNumber(),
+        tokenInfo as EvmSmartContractInfoNative,
+      ),
+    };
+  }
+
+  const transferTokenInfo = tokenInfo as EvmSmartContractInfoErc20;
+  const balanceInfo: BalanceInfo = {
+    mainBalance: buildBalanceDetails(
+      balance,
+      transferAmount.toNumber(),
+      transferTokenInfo,
+    ),
+  };
+
+  if (!estimatedGasFee) return balanceInfo;
+
+  const mainTokenInfo = (await EvmTokensUtils.getMainTokenInfo(
+    chain,
+  )) as EvmSmartContractInfoNative;
+  const mainTokenBalance = (await EvmTokensUtils.getTokenBalance(
+    walletAddress,
+    chain,
+    mainTokenInfo,
+  )) as EvmTokenBalanceResult;
+
+  balanceInfo.feeBalance = buildBalanceDetails(
+    mainTokenBalance,
+    estimatedGasFee.toNumber(),
+    mainTokenInfo,
+  );
+
+  return balanceInfo;
 };
 
 export const EvmTokensUtils = {

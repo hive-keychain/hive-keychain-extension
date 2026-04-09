@@ -71,6 +71,19 @@ const ConfirmationPage = ({
     initConfirmationPage();
   }, []);
 
+  useEffect(() => {
+    if (
+      chain &&
+      tokenInfo &&
+      selectedAccount &&
+      amount !== undefined &&
+      (tokenInfo.type === EVMSmartContractType.ERC20 ||
+        tokenInfo.type === EVMSmartContractType.NATIVE)
+    ) {
+      void initBalance(tokenInfo);
+    }
+  }, [amount, chain, selectedAccount, selectedFee, tokenInfo]);
+
   const initConfirmationPage = async () => {
     setTitleContainerProperties({
       title: title ?? 'popup_html_confirm',
@@ -87,8 +100,6 @@ const ConfirmationPage = ({
         }
       },
     });
-
-    initBalance(tokenInfo);
     transactionHook.initPendingTransactionWarning(wallet, chain as EvmChain);
     transactionHook.setConfirmationPageFields(fields);
   };
@@ -122,20 +133,15 @@ const ConfirmationPage = ({
   };
 
   const initBalance = async (tokenInfo: EvmSmartContractInfo) => {
-    const balance = await EvmTokensUtils.getTokenBalance(
-      selectedAccount?.wallet.address!,
-      chain!,
-      tokenInfo,
+    setBalanceInfo(
+      await EvmTokensUtils.getBalanceInfo(
+        selectedAccount?.wallet.address!,
+        chain!,
+        tokenInfo,
+        amount!,
+        selectedFee,
+      ),
     );
-
-    if (
-      tokenInfo.type === EVMSmartContractType.ERC20 ||
-      tokenInfo.type === EVMSmartContractType.NATIVE
-    ) {
-      setBalanceInfo(
-        EvmTokensUtils.getBalanceInfo(balance!, amount!, tokenInfo),
-      );
-    }
   };
 
   const handleOnWarningClicked = (

@@ -1,4 +1,4 @@
-import { KeychainApi } from '@api/keychain';
+import { EvmLightNodeApi } from '@api/evm-light-node';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import {
   EVMSmartContractType,
@@ -7,6 +7,7 @@ import {
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import Decimal from 'decimal.js';
 import { ethers } from 'ethers';
 
 describe('evm-tokens.utils proxy metadata tests:\n', () => {
@@ -16,7 +17,7 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
   });
 
   it('preserves backend proxy fields on proxy contracts', async () => {
-    jest.spyOn(KeychainApi, 'get').mockResolvedValue({
+    jest.spyOn(EvmLightNodeApi, 'get').mockResolvedValue({
       abi: [],
       address: '0x00000000000000000000000000000000000000aa',
       chainId: 1,
@@ -51,7 +52,7 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
   });
 
   it('defaults proxy fields for non-proxy contracts', async () => {
-    jest.spyOn(KeychainApi, 'get').mockResolvedValue({
+    jest.spyOn(EvmLightNodeApi, 'get').mockResolvedValue({
       abi: [],
       address: '0x00000000000000000000000000000000000000cc',
       chainId: 1,
@@ -83,7 +84,7 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
   });
 
   it('normalizes structured proxy target payloads on token info responses', async () => {
-    jest.spyOn(KeychainApi, 'get').mockResolvedValue({
+    jest.spyOn(EvmLightNodeApi, 'get').mockResolvedValue({
       abi: [],
       address: '0x00000000000000000000000000000000000000aa',
       chainId: 1,
@@ -116,6 +117,40 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
     expect(tokenInfo.proxyTarget).toBe(
       '0x00000000000000000000000000000000000000bb',
     );
+  });
+
+  it('loads native token info from the direct light-node API', async () => {
+    jest.spyOn(EvmLightNodeApi, 'get').mockResolvedValue({
+      chainId: 1,
+      metadata: {
+        name: 'Ethereum',
+        symbol: 'ETH',
+        decimals: 18,
+        logoUrl: 'https://cdn.example/eth.svg',
+        wrappedNativeTokenAddress:
+          '0x0000000000000000000000000000000000000001',
+      },
+      price: {
+        fetchedAt: '2026-01-01T00:00:00.000Z',
+        priceUsd: 321.09,
+      },
+    });
+
+    await expect(
+      EvmTokensUtils.getMainTokenInfo({ chainId: '0x1' } as any),
+    ).resolves.toEqual({
+      type: EVMSmartContractType.NATIVE,
+      name: 'Ethereum',
+      symbol: 'ETH',
+      logo: 'https://cdn.example/eth.svg',
+      chainId: '0x1',
+      backgroundColor: '',
+      coingeckoId: '',
+      priceUsd: 321.09,
+      createdAt: '2026-01-01T00:00:00.000Z',
+      categories: [],
+    });
+    expect(EvmLightNodeApi.get).toHaveBeenCalledWith('native/1');
   });
 
   it('detects token type from a serialized abi string', () => {
@@ -182,5 +217,187 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
     );
 
     expect(balance?.shortFormattedBalance).toBe('1.23457');
+  });
+
+  it('includes the estimated gas fee in mainBalance for native transfers', async () => {
+    const nativeToken = {
+      name: 'Ether',
+      symbol: 'ETH',
+      logo: '',
+      chainId: '1',
+      backgroundColor: '#000000',
+      coingeckoId: 'ethereum',
+      priceUsd: 3000,
+      createdAt: '',
+      categories: [],
+      type: EVMSmartContractType.NATIVE,
+    } as EvmSmartContractInfoNative;
+
+    jest.spyOn(EvmTokensUtils, 'getTokenBalance').mockResolvedValue({
+      balance: 5n,
+      balanceInteger: 5,
+      formattedBalance: '5',
+      shortFormattedBalance: '5',
+      tokenInfo: nativeToken,
+    } as any);
+
+    const balanceInfo = await EvmTokensUtils.getBalanceInfo(
+      '0x1234567890123456789012345678901234567890',
+      { chainId: '1' } as any,
+      nativeToken,
+      1,
+      { estimatedFeeInEth: new Decimal('0.1') } as any,
+    );
+
+    expect(balanceInfo).toEqual({
+      mainBalance: {
+        symbol: 'ETH',
+        before: '5 ETH',
+        estimatedAfter: '3.9  ETH',
+        insufficientBalance: false,
+      },
+    });
+  });
+
+  it('adds a feeBalance row for ERC20 transfers when a gas fee is selected', async () => {
+    const nativeToken = {
+      name: 'Ether',
+      symbol: 'ETH',
+      logo: '',
+      chainId: '1',
+      backgroundColor: '#000000',
+      coingeckoId: 'ethereum',
+      priceUsd: 3000,
+      createdAt: '',
+      categories: [],
+      type: EVMSmartContractType.NATIVE,
+    } as EvmSmartContractInfoNative;
+    const erc20Token = {
+      name: 'USD Coin',
+      symbol: 'USDC',
+      decimals: 6,
+      logo: '',
+      chainId: '1',
+      contractAddress: '0x00000000000000000000000000000000000000aa',
+      backgroundColor: '#000000',
+      coingeckoId: 'usd-coin',
+      priceUsd: 1,
+      possibleSpam: false,
+      verifiedContract: true,
+      isProxy: false,
+      proxyTarget: null,
+      type: EVMSmartContractType.ERC20,
+    } as EvmSmartContractInfoErc20;
+
+    jest
+      .spyOn(EvmTokensUtils, 'getTokenBalance')
+      .mockImplementation(async (_walletAddress, _chain, token) => {
+        if (token.type === EVMSmartContractType.NATIVE) {
+          return {
+            balance: 1n,
+            balanceInteger: 1,
+            formattedBalance: '1',
+            shortFormattedBalance: '1',
+            tokenInfo: nativeToken,
+          } as any;
+        }
+
+        return {
+          balance: 100n,
+          balanceInteger: 100,
+          formattedBalance: '100',
+          shortFormattedBalance: '100',
+          tokenInfo: erc20Token,
+        } as any;
+      });
+    jest.spyOn(EvmTokensUtils, 'getMainTokenInfo').mockResolvedValue(nativeToken);
+
+    const balanceInfo = await EvmTokensUtils.getBalanceInfo(
+      '0x1234567890123456789012345678901234567890',
+      { chainId: '1' } as any,
+      erc20Token,
+      25,
+      { estimatedFeeInEth: new Decimal('0.1') } as any,
+    );
+
+    expect(balanceInfo).toEqual({
+      mainBalance: {
+        symbol: 'USDC',
+        before: '100 USDC',
+        estimatedAfter: '75  USDC',
+        insufficientBalance: false,
+      },
+      feeBalance: {
+        symbol: 'ETH',
+        before: '1 ETH',
+        estimatedAfter: '0.9  ETH',
+        insufficientBalance: false,
+      },
+    });
+  });
+
+  it('marks the balance as insufficient when the selected gas fee exceeds the native balance', async () => {
+    const nativeToken = {
+      name: 'Ether',
+      symbol: 'ETH',
+      logo: '',
+      chainId: '1',
+      backgroundColor: '#000000',
+      coingeckoId: 'ethereum',
+      priceUsd: 3000,
+      createdAt: '',
+      categories: [],
+      type: EVMSmartContractType.NATIVE,
+    } as EvmSmartContractInfoNative;
+    const erc20Token = {
+      name: 'USD Coin',
+      symbol: 'USDC',
+      decimals: 6,
+      logo: '',
+      chainId: '1',
+      contractAddress: '0x00000000000000000000000000000000000000aa',
+      backgroundColor: '#000000',
+      coingeckoId: 'usd-coin',
+      priceUsd: 1,
+      possibleSpam: false,
+      verifiedContract: true,
+      isProxy: false,
+      proxyTarget: null,
+      type: EVMSmartContractType.ERC20,
+    } as EvmSmartContractInfoErc20;
+
+    jest
+      .spyOn(EvmTokensUtils, 'getTokenBalance')
+      .mockImplementation(async (_walletAddress, _chain, token) => {
+        if (token.type === EVMSmartContractType.NATIVE) {
+          return {
+            balance: 0n,
+            balanceInteger: 0.05,
+            formattedBalance: '0.05',
+            shortFormattedBalance: '0.05',
+            tokenInfo: nativeToken,
+          } as any;
+        }
+
+        return {
+          balance: 100n,
+          balanceInteger: 100,
+          formattedBalance: '100',
+          shortFormattedBalance: '100',
+          tokenInfo: erc20Token,
+        } as any;
+      });
+    jest.spyOn(EvmTokensUtils, 'getMainTokenInfo').mockResolvedValue(nativeToken);
+
+    const balanceInfo = await EvmTokensUtils.getBalanceInfo(
+      '0x1234567890123456789012345678901234567890',
+      { chainId: '1' } as any,
+      erc20Token,
+      25,
+      { estimatedFeeInEth: new Decimal('0.1') } as any,
+    );
+
+    expect(balanceInfo.feeBalance?.insufficientBalance).toBe(true);
+    expect(balanceInfo.mainBalance.insufficientBalance).toBe(false);
   });
 });

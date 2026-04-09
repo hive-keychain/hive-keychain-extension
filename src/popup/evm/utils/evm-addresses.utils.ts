@@ -37,6 +37,120 @@ export interface EvmAddressDetail {
   avatar?: string;
 }
 
+const EVM_WALLET_AUTOCOMPLETE_CATEGORY = 'evm_wallets';
+const LOCAL_ACCOUNTS_AUTOCOMPLETE_CATEGORY = 'local_accounts';
+
+const getEnsExpirationDate = () =>
+  Date.now() + Number(process.env.EVM_DATA_EXPIRATION_TIME);
+
+const getSavedEnsMap = (savedEnsList: SavedEns[]) =>
+  new Map(
+    savedEnsList
+      .filter((savedEns) => !!savedEns.address)
+      .map((savedEns) => [savedEns.address.toLowerCase(), savedEns] as const),
+  );
+
+const upsertSavedEnsEntries = (
+  savedEnsList: SavedEns[],
+  newEntries: SavedEns[],
+): SavedEns[] => {
+  const nextSavedEnsList = [...savedEnsList];
+
+  for (const newEntry of newEntries) {
+    const normalizedAddress = newEntry.address.toLowerCase();
+    const normalizedEns = newEntry.ens?.toLowerCase();
+    const entryWithExpiration = {
+      ...newEntry,
+      expirationDate: getEnsExpirationDate(),
+    };
+
+    const existingIndex = nextSavedEnsList.findIndex((savedEns) => {
+      const sameAddress =
+        savedEns.address.toLowerCase() === normalizedAddress;
+      const sameEns =
+        !!normalizedEns && savedEns.ens?.toLowerCase() === normalizedEns;
+      return sameAddress || sameEns;
+    });
+
+    if (existingIndex !== -1) {
+      nextSavedEnsList[existingIndex] = entryWithExpiration;
+    } else {
+      nextSavedEnsList.push(entryWithExpiration);
+    }
+  }
+
+  return nextSavedEnsList;
+};
+
+const getIdenticonDataUri = (address: string) =>
+  `data:image/svg+xml;utf8,${encodeURIComponent(
+    getIdenticonFromAddress(address).svg,
+  )}`;
+
+const getAutocompleteImage = (address: string, savedEns?: SavedEns) =>
+  savedEns?.avatar ?? getIdenticonDataUri(address);
+
+const getAutocompleteLabel = (address: string, label?: string, ens?: string) =>
+  label?.length && label.length > 0
+    ? label
+    : ens?.length
+      ? ens
+      : EvmFormatUtils.formatAddress(address);
+
+const getAutocompleteSubLabel = (
+  address: string,
+  label?: string,
+  ens?: string,
+) => {
+  if ((label?.length && label.length > 0) || ens?.length) {
+    return EvmFormatUtils.formatAddress(address);
+  }
+
+  return '';
+};
+
+const buildWalletAutocompleteValue = (
+  wallet: FavoriteAddress,
+  savedEns?: SavedEns,
+): AutoCompleteValue => ({
+  value: wallet.address,
+  label: getAutocompleteLabel(wallet.address, wallet.label, savedEns?.ens),
+  subLabel: getAutocompleteSubLabel(wallet.address, wallet.label, savedEns?.ens),
+  img: getAutocompleteImage(wallet.address, savedEns),
+});
+
+const buildLocalAccountAutocompleteValue = (
+  localAccount: EvmAccount,
+  savedEns?: SavedEns,
+): AutoCompleteValue => ({
+  value: localAccount.wallet.address,
+  label: EvmAccountUtils.getAccountFullname(localAccount),
+  subLabel: EvmFormatUtils.formatAddress(localAccount.wallet.address),
+  img: getAutocompleteImage(localAccount.wallet.address, savedEns),
+});
+
+const mergeEnsIntoAutocompleteItem = (
+  autocompleteItem: AutoCompleteValue,
+  savedEns: SavedEns,
+): AutoCompleteValue => {
+  const formattedAddress = EvmFormatUtils.formatAddress(autocompleteItem.value);
+  const shouldUpdateLabel =
+    !autocompleteItem.subLabel || autocompleteItem.label === formattedAddress;
+
+  return {
+    ...autocompleteItem,
+    label:
+      shouldUpdateLabel && savedEns.ens
+        ? savedEns.ens
+        : autocompleteItem.label,
+    subLabel:
+      shouldUpdateLabel && savedEns.ens
+        ? formattedAddress
+        : autocompleteItem.subLabel,
+    img: savedEns.avatar ?? autocompleteItem.img,
+  };
+};
+
 const getSavedEnsFromStorage = async (): Promise<SavedEns[]> => {
   let savedEnsList = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.EVM_ENS,
@@ -60,13 +174,10 @@ const getEnsDataFromEns = async (ensName: string) => {
 
 const addEnsToLocalStorage = async (newEns: SavedEns) => {
   const savedEns = await getSavedEnsFromStorage();
-  savedEns.push({
-    ...newEns,
-    expirationDate: Date.now() + Number(process.env.EVM_DATA_EXPIRATION_TIME),
-  });
+  const nextSavedEns = upsertSavedEnsEntries(savedEns, [newEns]);
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_ENS,
-    savedEns,
+    nextSavedEns,
   );
 };
 
@@ -431,7 +542,11 @@ const getWhiteListAutocomplete = async (
   localAccounts: EvmAccount[],
   walletAddress: string,
 ) => {
-  const wallets = await getWalletAddresses(chain.chainId);
+  const [wallets, savedEnsList] = await Promise.all([
+    getWalletAddresses(chain.chainId),
+    getSavedEnsFromStorage(),
+  ]);
+  const savedEnsMap = getSavedEnsMap(savedEnsList);
 
   const localAddresses = localAccounts.map((localAccount) =>
     localAccount.wallet.address.toLowerCase(),
@@ -442,12 +557,12 @@ const getWhiteListAutocomplete = async (
   } as AutoCompleteValues;
 
   const walletCategory: AutoCompleteCategory = {
-    title: 'evm_wallets',
+    title: EVM_WALLET_AUTOCOMPLETE_CATEGORY,
     translateTitle: true,
     values: [],
   };
   const localAccountCategory: AutoCompleteCategory = {
-    title: 'local_accounts',
+    title: LOCAL_ACCOUNTS_AUTOCOMPLETE_CATEGORY,
     translateTitle: true,
     values: [],
   };
@@ -459,57 +574,100 @@ const getWhiteListAutocomplete = async (
     (la) => walletAddress.toLowerCase() !== la.wallet.address.toLowerCase(),
   );
 
-  // Fetch address details in parallel instead of sequentially
-  const [walletDetails, localAccountDetails] = await Promise.all([
-    Promise.all(
-      filteredWallets.map((w) => getAddressDetails(w.address, chain.chainId)),
+  walletCategory.values = filteredWallets.map((wallet) =>
+    buildWalletAutocompleteValue(
+      wallet,
+      savedEnsMap.get(wallet.address.toLowerCase()),
     ),
-    Promise.all(
-      filteredLocalAccounts.map((la) =>
-        getAddressDetails(la.wallet.address, chain.chainId),
-      ),
+  );
+
+  localAccountCategory.values = filteredLocalAccounts.map((localAccount) =>
+    buildLocalAccountAutocompleteValue(
+      localAccount,
+      savedEnsMap.get(localAccount.wallet.address.toLowerCase()),
     ),
-  ]);
-
-  for (let i = 0; i < filteredWallets.length; i++) {
-    const wallet = filteredWallets[i];
-    const details = walletDetails[i];
-    walletCategory.values.push({
-      value: wallet.address,
-      label:
-        wallet.label?.length && wallet.label.length > 0
-          ? wallet.label
-          : EvmFormatUtils.formatAddress(wallet.address),
-      subLabel:
-        wallet.label?.length && wallet.label.length > 0
-          ? EvmFormatUtils.formatAddress(wallet.address)
-          : '',
-      img:
-        details.avatar ??
-        `data:image/svg+xml;utf8,${encodeURIComponent(
-          getIdenticonFromAddress(wallet.address).svg,
-        )}`,
-    } as AutoCompleteValue);
-  }
-
-  for (let i = 0; i < filteredLocalAccounts.length; i++) {
-    const localAccount = filteredLocalAccounts[i];
-    const details = localAccountDetails[i];
-    localAccountCategory.values.push({
-      value: localAccount.wallet.address,
-      label: EvmAccountUtils.getAccountFullname(localAccount),
-      subLabel: EvmFormatUtils.formatAddress(localAccount.wallet.address),
-      img:
-        details.avatar ??
-        `data:image/svg+xml;utf8,${encodeURIComponent(
-          getIdenticonFromAddress(localAccount.wallet.address).svg,
-        )}`,
-    } as AutoCompleteValue);
-  }
+  );
 
   autocomplete.categories.push(walletCategory);
   autocomplete.categories.push(localAccountCategory);
   return autocomplete;
+};
+
+const enrichWhiteListAutocomplete = async (
+  autocomplete: AutoCompleteValues,
+): Promise<AutoCompleteValues> => {
+  const savedEnsList = await getSavedEnsFromStorage();
+  const savedEnsMap = getSavedEnsMap(savedEnsList);
+  const walletCategory = autocomplete.categories.find(
+    (category) => category.title === EVM_WALLET_AUTOCOMPLETE_CATEGORY,
+  );
+
+  if (!walletCategory || walletCategory.values.length === 0) {
+    return autocomplete;
+  }
+
+  const uncachedWalletAddresses = walletCategory.values
+    .map((value) => value.value)
+    .filter(
+      (value, index, list) =>
+        ethers.isAddress(value) &&
+        !savedEnsMap.has(value.toLowerCase()) &&
+        list.indexOf(value) === index,
+    );
+
+  if (uncachedWalletAddresses.length === 0) {
+    return autocomplete;
+  }
+
+  const newEnsEntries = (
+    await Promise.all(
+      uncachedWalletAddresses.map(async (address) => {
+        try {
+          const ens = await EvmRequestsUtils.getEnsForAddress(address);
+          if (!ens) return null;
+
+          const ensData = await EvmRequestsUtils.getDataForEns(ens);
+          return {
+            address,
+            ens,
+            avatar: ensData?.avatar ?? undefined,
+          } as SavedEns;
+        } catch (err) {
+          return null;
+        }
+      }),
+    )
+  ).filter((value): value is SavedEns => !!value);
+
+  if (newEnsEntries.length === 0) {
+    return autocomplete;
+  }
+
+  const nextSavedEnsList = upsertSavedEnsEntries(savedEnsList, newEnsEntries);
+  const nextSavedEnsMap = getSavedEnsMap(nextSavedEnsList);
+
+  try {
+    await LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.EVM_ENS,
+      nextSavedEnsList,
+    );
+  } catch (err) {}
+
+  return {
+    categories: autocomplete.categories.map((category) => {
+      if (category.title !== EVM_WALLET_AUTOCOMPLETE_CATEGORY) {
+        return category;
+      }
+
+      return {
+        ...category,
+        values: category.values.map((value) => {
+          const savedEns = nextSavedEnsMap.get(value.value.toLowerCase());
+          return savedEns ? mergeEnsIntoAutocompleteItem(value, savedEns) : value;
+        }),
+      };
+    }),
+  };
 };
 
 export const EvmAddressesUtils = {
@@ -529,6 +687,7 @@ export const EvmAddressesUtils = {
   getEnsDataFromAddress,
   getEnsDataFromEns,
   getWhiteListAutocomplete,
+  enrichWhiteListAutocomplete,
   getWhitelistedAddresses,
   saveWhitelistedAddresses,
   updateAddress,

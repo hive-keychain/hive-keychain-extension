@@ -1,4 +1,4 @@
-import { KeychainApi } from '@api/keychain';
+import { EvmLightNodeApi } from '@api/evm-light-node';
 import {
   Chain,
   ChainType,
@@ -14,7 +14,7 @@ let previousChain: Chain;
 let defaultChains: Chain[];
 let defaultChainsPromise: Promise<Chain[]> | null = null;
 
-const isValidChain = (chain: Partial<Chain> | null | undefined) => {
+const isStoredChainValid = (chain: Partial<Chain> | null | undefined) => {
   return (
     !!chain &&
     typeof chain.chainId === 'string' &&
@@ -23,8 +23,12 @@ const isValidChain = (chain: Partial<Chain> | null | undefined) => {
   );
 };
 
-const isValidChainList = (chains: unknown): chains is Chain[] => {
-  return Array.isArray(chains) && chains.length > 0 && chains.every(isValidChain);
+const isValidStoredChainList = (chains: unknown): chains is Chain[] => {
+  return (
+    Array.isArray(chains) &&
+    chains.length > 0 &&
+    chains.every(isStoredChainValid)
+  );
 };
 
 const cloneChains = (chains: Chain[]) => {
@@ -162,24 +166,19 @@ const initChains = async (): Promise<Chain[]> => {
 
   defaultChainsPromise = (async () => {
     try {
-      const apiChains = await KeychainApi.get('chains');
-      if (isValidChainList(apiChains)) {
-        const normalizedChains = cloneChains(apiChains);
-        setDefaultChains(normalizedChains);
-        try {
-          await LocalStorageUtils.saveValueInLocalStorage(
-            LocalStorageKeyEnum.DEFAULT_CHAINS,
-            normalizedChains,
-          );
-        } catch (err) {
-          Logger.error('Error while caching default chains', err);
-        }
-        Logger.info('Initialized chains from api');
-        return normalizedChains;
+      const apiChains = await EvmLightNodeApi.get('chains');
+      const normalizedChains = cloneChains(apiChains as Chain[]);
+      setDefaultChains(normalizedChains);
+      try {
+        await LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.DEFAULT_CHAINS,
+          normalizedChains,
+        );
+      } catch (err) {
+        Logger.error('Error while caching default chains', err);
       }
-      Logger.warn(
-        'Chains API returned an invalid or empty payload, using fallback source',
-      );
+      Logger.info('Initialized chains from api');
+      return normalizedChains;
     } catch (err) {
       Logger.error('Error while fetching chains from api', err);
     }
@@ -187,7 +186,7 @@ const initChains = async (): Promise<Chain[]> => {
     const cachedChains = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.DEFAULT_CHAINS,
     );
-    if (isValidChainList(cachedChains)) {
+    if (isValidStoredChainList(cachedChains)) {
       const normalizedChains = cloneChains(cachedChains);
       setDefaultChains(normalizedChains);
       Logger.info('Initialized chains from cache');

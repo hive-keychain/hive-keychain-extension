@@ -186,7 +186,12 @@ const EvmTransactionResult = ({
       }
     } catch (err: any) {
       console.log('Catch in send transaction cancel', { err });
-      const error = EthersUtils.getErrorMessage(err.code, err.reason);
+      const error = EthersUtils.getErrorMessage(
+        err.code,
+        err.reason,
+        err.shortMessage,
+        err.message,
+      );
       setErrorMessage(error.message);
       setCanceling(false);
       if (err.code === 'REPLACEMENT_UNDERPRICED') {
@@ -230,7 +235,12 @@ const EvmTransactionResult = ({
       }
     } catch (err: any) {
       console.log('Catch in send transaction speed up', { err });
-      const error = EthersUtils.getErrorMessage(err.code, err.reason);
+      const error = EthersUtils.getErrorMessage(
+        err.code,
+        err.reason,
+        err.shortMessage,
+        err.message,
+      );
       setErrorMessage(error.message);
       setTransactionSpeedingUp(false);
     }
