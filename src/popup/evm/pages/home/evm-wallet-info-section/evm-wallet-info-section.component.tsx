@@ -2,10 +2,7 @@ import {
   EvmActiveAccount,
   EvmErc721Token,
 } from '@popup/evm/interfaces/active-account.interface';
-import {
-  EvmUserHistory,
-  EvmUserHistoryItem,
-} from '@popup/evm/interfaces/evm-tokens-history.interface';
+import { EvmUserHistory } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import { EvmWalletNftGalleryComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-nft-gallery/evm-wallet-nft-gallery.component';
 import { EvmWalletTokensComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-tokens/evm-wallet-tokens.component';
 import { EvmHistoryComponent } from '@popup/evm/pages/home/token-history/evm-history.component';
@@ -24,7 +21,6 @@ interface EvmWalletInfoSectionProps {
     screen: EvmScreen,
   ) => void;
   loadEvmHistory: Function;
-  pendingTransactionsItems?: EvmUserHistoryItem[];
   loadEvmActiveAccountNfts: (chain: EvmChain, wallet: HDNodeWallet) => void;
 }
 
@@ -39,7 +35,6 @@ export const EvmWalletInfoSectionComponent = ({
   chain,
   onClickOnNftPreview,
   loadEvmHistory,
-  pendingTransactionsItems,
   loadEvmActiveAccountNfts,
 }: EvmWalletInfoSectionProps) => {
   const [displayedSection, setDisplayedSection] = useState<EvmDisplayedPage>(
@@ -78,7 +73,6 @@ export const EvmWalletInfoSectionComponent = ({
             history={activeAccount.history.value}
             onClickOnLoadMore={loadHistory}
             loading={activeAccount.history.loading}
-            pendingTransactionsItems={pendingTransactionsItems}
           />
         );
       }

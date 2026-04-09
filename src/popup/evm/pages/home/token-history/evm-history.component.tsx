@@ -1,5 +1,4 @@
 import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.component';
-import { Separator } from '@common-ui/separator/separator.component';
 import { loadEvmHistory } from '@popup/evm/actions/active-account.actions';
 import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface';
 import {
@@ -24,7 +23,6 @@ interface Props {
   history?: EvmUserHistory;
   loading: boolean;
   onClickOnLoadMore: () => void;
-  pendingTransactionsItems?: EvmUserHistoryItem[];
 }
 
 export const EvmHistory = ({
@@ -35,7 +33,6 @@ export const EvmHistory = ({
   onClickOnLoadMore,
   navigateToWithParams,
   loadEvmHistory,
-  pendingTransactionsItems,
 }: PropsFromRedux) => {
   const historyItemList = useRef<HTMLDivElement>(null);
 
@@ -64,7 +61,7 @@ export const EvmHistory = ({
     <>
       {history && (
         <>
-          {pendingTransactionsItems && pendingTransactionsItems.length > 0 && (
+          {/* {pendingTransactionsItems && pendingTransactionsItems.length > 0 && (
             <>
               {pendingTransactionsItems.map((item, index) => (
                 <EvmTokenHistoryItemComponent
@@ -79,7 +76,7 @@ export const EvmHistory = ({
               ))}
               <Separator type="horizontal" />
             </>
-          )}
+          )} */}
           {history && history.events && (
             <FlatList
               ref={historyItemList}
@@ -119,16 +116,19 @@ export const EvmHistory = ({
           <RotatingLogoComponent />
         </div>
       )}
-      {!loading && history && history.fullyFetch && (
-        <div className="empty-history-panel evm-history-empty-panel">
-          <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
-          <div className="text">
-            <div>
-              {chrome.i18n.getMessage('popup_html_transaction_list_is_empty')}
+      {!loading &&
+        history &&
+        history.fullyFetch &&
+        history.events.length === 0 && (
+          <div className="empty-history-panel evm-history-empty-panel">
+            <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
+            <div className="text">
+              <div>
+                {chrome.i18n.getMessage('popup_html_transaction_list_is_empty')}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
     </>
   );
 };

@@ -13,6 +13,7 @@ import {
 } from '@interfaces/evm-provider.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
+import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -26,6 +27,7 @@ const initializeServiceWorker = async () => {
 
   Logger.info('Starting EVM service worker');
   initializeEvmProviderRegistration();
+  void EvmTransactionsUtils.rehydratePendingTransactions();
 
   chrome.webNavigation.onBeforeNavigate.addListener((details: any) => {
     if (details.url?.endsWith('.eth/')) {

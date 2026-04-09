@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { act, cleanup } from '@testing-library/react';
+import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
@@ -9,10 +9,12 @@ import React from 'react';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 import { EvmHomeComponent } from 'src/popup/evm/pages/home/evm-home.component';
+import { EvmScreen } from 'src/popup/evm/reference-data/evm-screen.enum';
 import { SurveyUtils } from 'src/popup/hive/utils/survey.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { VersionLogUtils } from 'src/utils/version-log.utils';
 import { ChainType } from 'src/popup/multichain/interfaces/chains.interface';
+import { Screen } from '@interfaces/screen.interface';
 
 jest.mock(
   'src/common-ui/_containers/homepage-container/homepage-container.component',
@@ -282,5 +284,123 @@ describe('evm-home unmount behavior', () => {
     });
 
     expect(hasUnmountedStateUpdateWarning(consoleError)).toBe(false);
+  });
+
+  it('passes the pending nonce through the home cancel fallback flow', async () => {
+    const wallet = {
+      address: '0x1234567890123456789012345678901234567890',
+      signingKey: {},
+    } as any;
+    const gasFee = { gasLimit: 21000, type: EvmTransactionType.EIP_1559 } as any;
+    const sendSpy = jest
+      .spyOn(EvmTransactionsUtils, 'send')
+      .mockResolvedValue({ hash: '0xcancel' } as any);
+
+    jest.spyOn(EvmTransactionsUtils, 'hasPendingTransaction').mockResolvedValue({
+      hasPending: true,
+      pendingTransactionsCount: 1,
+      queuedTransactionsCount: 0,
+      pendingTransactionDetails: {
+        nonce: 7,
+        title: 'evm_pending_queued_transactions',
+        label: 'Pending fallback',
+      },
+    });
+    jest.spyOn(SurveyUtils, 'getSurvey').mockResolvedValue(undefined);
+    jest.spyOn(EvmRpcUtils, 'getActiveRpc').mockResolvedValue({
+      url: 'https://rpc.example',
+      isDefault: true,
+    } as any);
+    jest.spyOn(EvmRpcUtils, 'checkRpcStatus').mockResolvedValue(true);
+    jest.spyOn(EvmRpcUtils, 'getSwitchRpcAuto').mockResolvedValue(false);
+    jest.spyOn(LocalStorageUtils, 'getValueFromLocalStorage').mockResolvedValue(
+      undefined,
+    );
+
+    const { store } = customRender(<EvmHomeComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        chain: {
+          ...initialEmptyStateStore.chain,
+          type: ChainType.EVM,
+          chainId: '1',
+          name: 'Ethereum',
+          logo: '',
+          rpcs: [{ url: 'https://rpc.example', isDefault: true }],
+          mainToken: 'ETH',
+          defaultTransactionType: EvmTransactionType.EIP_1559,
+        },
+        evm: {
+          ...initialEmptyStateStore.evm,
+          accounts: [
+            {
+              id: 0,
+              path: "m/44'/60'/0'/0/0",
+              seedId: 1,
+              seedNickname: 'Main seed',
+              nickname: 'Account 1',
+              wallet,
+            },
+          ],
+          activeAccount: {
+            ...initialEmptyStateStore.evm.activeAccount,
+            address: wallet.address,
+            wallet,
+            isReady: true,
+            nativeAndErc20Tokens: {
+              value: [
+                {
+                  formattedBalance: '1',
+                  shortFormattedBalance: '1',
+                  balance: 1000000000000000000n,
+                  balanceInteger: 1,
+                  tokenInfo: {
+                    name: 'Ether',
+                    symbol: 'ETH',
+                    logo: '',
+                    chainId: '1',
+                    backgroundColor: '#000000',
+                    coingeckoId: 'ethereum',
+                    priceUsd: 3000,
+                    createdAt: '',
+                    categories: [],
+                    type: EVMSmartContractType.NATIVE,
+                  },
+                },
+              ],
+              loading: false,
+            },
+          },
+        },
+      },
+    });
+
+    await waitFor(() =>
+      expect(screen.getByText('Pending fallback')).toBeInTheDocument(),
+    );
+
+    fireEvent.click(screen.getByText('Pending fallback'));
+
+    const confirmationParams = store.getState().navigation.params;
+    expect(store.getState().navigation.stack[0].currentPage).toBe(
+      Screen.CONFIRMATION_PAGE,
+    );
+
+    await act(async () => {
+      await confirmationParams.afterConfirmAction(gasFee);
+    });
+
+    expect(sendSpy).toHaveBeenCalledWith(
+      wallet,
+      expect.objectContaining({
+        nonce: 7,
+      }),
+      gasFee,
+      '1',
+      7,
+    );
+    expect(store.getState().navigation.stack[0].currentPage).toBe(
+      EvmScreen.EVM_TRANSFER_RESULT_PAGE,
+    );
   });
 });

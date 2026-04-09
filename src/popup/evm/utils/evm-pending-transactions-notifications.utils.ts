@@ -2,12 +2,26 @@ import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { TransactionResponse } from 'ethers';
+import Logger from 'src/utils/logger.utils';
 
 const waitForTransaction = async (transactionResponse: TransactionResponse) => {
-  const transactionReceipt = await transactionResponse.wait();
-  if (transactionReceipt) {
-    EvmTransactionsUtils.deleteFromPendingTransactions(transactionReceipt.hash);
-    createNotification(transactionResponse);
+  try {
+    const transactionReceipt = await transactionResponse.wait();
+    if (transactionReceipt) {
+      await EvmTransactionsUtils.deleteFromPendingTransactions(
+        transactionReceipt.hash,
+      );
+      await createNotification(transactionResponse);
+    }
+  } catch (error: any) {
+    if (error?.code === 'TRANSACTION_REPLACED') {
+      await EvmTransactionsUtils.deleteFromPendingTransactions(
+        transactionResponse.hash,
+      );
+      return;
+    }
+
+    Logger.error('Error in waitForTransaction', error);
   }
 };
 

@@ -4,7 +4,7 @@ import {
   EvmWalletDomainPermissions,
   EvmWalletPermissions,
 } from '@interfaces/evm-provider.interface';
-import { UserPendingTransactions } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmPendingTransaction } from '@popup/evm/interfaces/evm-tokens.interface';
 import { UserCanceledTransactions } from '@popup/evm/interfaces/evm-transactions.interface';
 import {
   EvmAccount,
@@ -263,19 +263,27 @@ const deleteSeed = async (
     LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
   ]);
 
-  let userPendingTransactions: UserPendingTransactions =
-    values[LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS];
+  const seedAccounts = accounts.filter((account) => account.seedId === seedId);
+  let pendingTransactions: EvmPendingTransaction[] = Array.isArray(
+    values[LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS],
+  )
+    ? values[LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS]
+    : [];
   let canceledTransactions: UserCanceledTransactions =
     values[LocalStorageKeyEnum.EVM_CANCELED_TRANSACTIONS];
   let walletPermissions: EvmWalletPermissions =
     values[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS];
 
-  for (const account of accounts.filter(
-    (account) => account.seedId === seedId,
-  )) {
-    if (userPendingTransactions)
-      delete userPendingTransactions[account.wallet.address];
+  pendingTransactions = pendingTransactions.filter(
+    (transaction) =>
+      !seedAccounts.some(
+        (account) =>
+          account.wallet.address.toLowerCase() ===
+          transaction.walletAddress.toLowerCase(),
+      ),
+  );
 
+  for (const account of seedAccounts) {
     if (canceledTransactions)
       for (const chainId of Object.keys(canceledTransactions)) {
         delete canceledTransactions[chainId][account.wallet.address];
@@ -294,7 +302,7 @@ const deleteSeed = async (
 
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
-    userPendingTransactions,
+    pendingTransactions,
   );
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_CANCELED_TRANSACTIONS,

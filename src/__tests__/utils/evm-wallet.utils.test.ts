@@ -12,6 +12,9 @@ describe('evm wallet utils', () => {
     'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
 
   let storedAccounts: { list: any[] };
+  let pendingTransactionsStorage: any[];
+  let canceledTransactionsStorage: Record<string, any>;
+  let walletPermissionsStorage: Record<string, any>;
 
   beforeEach(() => {
     storedAccounts = {
@@ -53,6 +56,9 @@ describe('evm wallet utils', () => {
         },
       ],
     };
+    pendingTransactionsStorage = [];
+    canceledTransactionsStorage = {};
+    walletPermissionsStorage = {};
 
     jest
       .spyOn(EncryptUtils, 'decryptToJsonWithLegacySupport')
@@ -73,10 +79,37 @@ describe('evm wallet utils', () => {
       });
 
     jest
+      .spyOn(LocalStorageUtils, 'getMultipleValueFromLocalStorage')
+      .mockImplementation(async (keys) =>
+        keys.reduce((result, key) => {
+          switch (key) {
+            case LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS:
+              result[key] = pendingTransactionsStorage;
+              break;
+            case LocalStorageKeyEnum.EVM_CANCELED_TRANSACTIONS:
+              result[key] = canceledTransactionsStorage;
+              break;
+            case LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS:
+              result[key] = walletPermissionsStorage;
+              break;
+            default:
+              result[key] = undefined;
+          }
+          return result;
+        }, {} as Record<LocalStorageKeyEnum, any>),
+      );
+
+    jest
       .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
       .mockImplementation(async (key, value) => {
         if (key === LocalStorageKeyEnum.EVM_ACCOUNTS) {
           storedAccounts = value;
+        } else if (key === LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS) {
+          pendingTransactionsStorage = value;
+        } else if (key === LocalStorageKeyEnum.EVM_CANCELED_TRANSACTIONS) {
+          canceledTransactionsStorage = value;
+        } else if (key === LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS) {
+          walletPermissionsStorage = value;
         }
       });
 
@@ -164,5 +197,41 @@ describe('evm wallet utils', () => {
 
     const storedSeeds = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
     expect(storedSeeds[0].accounts[1].nickname).toBe('');
+  });
+
+  it('removes only the deleted seed addresses from pending transactions', async () => {
+    const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+    const seedOneAccounts = accounts.filter((account) => account.seedId === 1);
+    const remainingAccount = accounts.find((account) => account.seedId === 2)!;
+
+    pendingTransactionsStorage = [
+      {
+        txResponseParams: { hash: '0xseed1a', nonce: 1 },
+        walletAddress: seedOneAccounts[0].wallet.address,
+        chainId: '0x1',
+        broadcastDate: 1,
+      },
+      {
+        txResponseParams: { hash: '0xseed1b', nonce: 2 },
+        walletAddress: seedOneAccounts[1].wallet.address,
+        chainId: '0x1',
+        broadcastDate: 2,
+      },
+      {
+        txResponseParams: { hash: '0xseed2', nonce: 3 },
+        walletAddress: remainingAccount.wallet.address,
+        chainId: '0x1',
+        broadcastDate: 3,
+      },
+    ];
+
+    await EvmWalletUtils.deleteSeed(1, accounts, mk);
+
+    expect(pendingTransactionsStorage).toEqual([
+      expect.objectContaining({
+        txResponseParams: expect.objectContaining({ hash: '0xseed2' }),
+        walletAddress: remainingAccount.wallet.address,
+      }),
+    ]);
   });
 });
