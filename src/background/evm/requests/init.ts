@@ -26,6 +26,7 @@ import {
   EvmRequest,
   getEvmProviderRpcFullError,
 } from '@interfaces/evm-provider.interface';
+import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import {
   ChainType,
@@ -55,7 +56,9 @@ export const initEvmRequestHandler = async (
     // check if chain is valid (within keychain allowed chains)
     chainId = request.params[0].chainId;
   } else {
-    chainId = request.chainId as string;
+    chainId =
+      (request.chainId as string) ??
+      (await EvmChainUtils.getLastEvmChainIdForOrigin(dappInfo.origin));
   }
   let chain: EvmChain | null = null;
   if (chainId) {
@@ -122,7 +125,7 @@ export const initEvmRequestHandler = async (
       requestAddEvmChain(requestHandler, tab!, request, dappInfo);
     } else if (EvmNeedPermissionMethods.includes(request.method)) {
       const hasPermission = await EvmWalletUtils.hasPermission(
-        dappInfo.domain,
+        dappInfo.origin,
         EvmMethodPermissionMap[request.method]!,
       );
       if (hasPermission) {
@@ -135,7 +138,7 @@ export const initEvmRequestHandler = async (
       if (request.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
         if (
           await EvmWalletUtils.hasPermission(
-            dappInfo.domain,
+            dappInfo.origin,
             EvmRequestPermission.ETH_ACCOUNTS,
           )
         ) {

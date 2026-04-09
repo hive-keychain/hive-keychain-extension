@@ -17,6 +17,7 @@ import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transactio
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 import { CommunicationUtils } from 'src/utils/communication.utils';
+import { normalizeEvmAccounts } from 'src/utils/evm-provider-value.utils';
 
 interface Props {
   request: EvmRequest;
@@ -48,7 +49,7 @@ export const ConnectAccounts = (props: Props) => {
     transactionHook.setFields(transactionConfirmationFields);
 
     const connected = await EvmWalletUtils.getConnectedWallets(
-      data.dappInfo.domain,
+      data.dappInfo.origin,
     );
     setConnectedAccounts(connected);
 
@@ -86,16 +87,13 @@ export const ConnectAccounts = (props: Props) => {
       for (const address of Object.keys(accountsToConnect)) {
         if (accountsToConnect[address]) addresses.push(address);
       }
-      await EvmWalletUtils.connectMultipleWallet(
-        addresses,
-        data.dappInfo.domain,
-      );
       await EvmAddressesUtils.saveDomainAddress(data.dappInfo.domain);
+      const normalizedAddresses = normalizeEvmAccounts(addresses);
 
       let result;
 
       if (request.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
-        result = addresses.map((add) => add.toLowerCase());
+        result = normalizedAddresses;
       } else if (
         request.method === EvmRequestMethod.WALLET_REQUEST_PERMISSIONS
       ) {
@@ -107,6 +105,9 @@ export const ConnectAccounts = (props: Props) => {
         value: {
           requestId: request.request_id,
           result: result,
+          providerState: {
+            accounts: normalizedAddresses,
+          },
         },
       });
     }

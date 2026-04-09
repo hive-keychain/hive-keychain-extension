@@ -1,7 +1,9 @@
+import { initializeEvmProviderRegistration } from '@background/evm/evm-provider-registration';
+import { setAccountsForOrigin } from '@background/evm/evm-provider-state.utils';
+import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { initEvmRequestHandler } from '@background/evm/requests/init';
 import { performEvmOperation } from '@background/evm/requests/operations/perform-operation';
-import { initializeEvmProviderRegistration } from '@background/evm/evm-provider-registration';
 import MkModule from '@background/hive/modules/mk.module';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import {
@@ -18,6 +20,7 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { TransactionResponse } from 'ethers';
+import { getOriginFromUrl } from 'src/utils/browser-origin.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -47,11 +50,11 @@ const sendEvmEventToTab = (tabId: number, event: RoutedEvmEvent) => {
   });
 };
 
-const isDomainMatch = (tabUrl: string | undefined, domain: string) => {
+const isOriginMatch = (tabUrl: string | undefined, origin: string) => {
   if (!tabUrl) return false;
 
   try {
-    return new URL(tabUrl).hostname === domain;
+    return getOriginFromUrl(tabUrl) === origin;
   } catch (error) {
     return false;
   }
@@ -62,11 +65,11 @@ const routeEvmEvent = (event: RoutedEvmEvent) => {
     case 'tab':
       sendEvmEventToTab(event.scope.tabId, event);
       break;
-    case 'domain':
-      const targetDomain = event.scope.domain;
+    case 'origin':
+      const targetOrigin = event.scope.origin;
       chrome.tabs.query({}, (tabs) => {
         for (const tab of tabs) {
-          if (tab.id && isDomainMatch(tab.url, targetDomain)) {
+          if (tab.id && isOriginMatch(tab.url, targetOrigin)) {
             sendEvmEventToTab(tab.id, event);
           }
         }
@@ -143,11 +146,27 @@ const chromeMessageHandler = async (
       if (requestData?.tab === null || requestData?.tab === undefined) {
         break;
       }
+
+      if (
+        requestData?.dappInfo?.origin &&
+        requestData.request &&
+        message.providerState?.accounts &&
+        [
+          EvmRequestMethod.REQUEST_ACCOUNTS,
+          EvmRequestMethod.WALLET_REQUEST_PERMISSIONS,
+        ].includes(requestData.request.method)
+      ) {
+        await setAccountsForOrigin(
+          requestData.dappInfo.origin,
+          message.providerState.accounts,
+        );
+      }
+
       CommunicationUtils.tabsSendMessage(requestData?.tab!, {
         command: BackgroundCommand.SEND_EVM_RESPONSE,
         value: {
-          ...message,
           requestId,
+          result: message.result,
         },
       });
 
@@ -180,33 +199,27 @@ const chromeMessageHandler = async (
       break;
     }
     case BackgroundCommand.GET_CHAIN_FROM_PROVIDER: {
-      // from background to content script
-      chrome.tabs.query({}, (tabs) => {
-        for (const tab of tabs) {
-          if (tab.id) {
-            CommunicationUtils.tabsSendMessage(
-              tab.id,
-              {
-                command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
-                value: { eventType: EvmEventName.GET_CHAIN_FROM_PROVIDER },
-              },
-              () => {
-                CommunicationUtils.runtimeSendMessage({
-                  command: BackgroundCommand.SEND_BACK_CHAIN_FROM_PROVIDER,
-                  value: { chainId: null },
-                });
-              },
-            );
-          }
+      // Query the active tab only to avoid broadcasting the bootstrap request
+      // across every provider-enabled page.
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        const [activeTab] = tabs;
+        if (!activeTab?.id) {
+          return;
         }
+
+        CommunicationUtils.tabsSendMessage(
+          activeTab.id,
+          {
+            command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
+            value: { eventType: EvmEventName.GET_CHAIN_FROM_PROVIDER },
+          },
+        );
       });
       break;
     }
     case BackgroundCommand.SEND_BACK_CHAIN_FROM_PROVIDER: {
-      // from content script to popup
-      CommunicationUtils.runtimeSendMessage({
-        ...backgroundMessage,
-      });
+      // Content scripts already publish this extension-wide runtime message.
+      // Forwarding it from the service worker loops the same command back here.
       break;
     }
     case BackgroundCommand.WAIT_FOR_EVM_TRANSACTION_CONFIRMATION: {

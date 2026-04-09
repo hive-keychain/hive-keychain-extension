@@ -15,10 +15,6 @@ export interface EIP6963ProviderInfo {
   rdns: string;
 }
 
-export interface EvmConnectedWallets {
-  [domain: string]: string[];
-}
-
 export interface EvmRequest<T = any> {
   request_id: number;
   method: EvmRequestMethod;
@@ -37,7 +33,7 @@ export enum EvmEventName {
 
 export type EvmEventScope =
   | { kind: 'tab'; tabId: number }
-  | { kind: 'domain'; domain: string }
+  | { kind: 'origin'; origin: string }
   | { kind: 'global' };
 
 export interface RoutedEvmEvent {
@@ -47,6 +43,7 @@ export interface RoutedEvmEvent {
 }
 
 export interface EvmDappInfo {
+  origin: string;
   domain: string;
   protocol: string;
   logo: string;
@@ -191,10 +188,10 @@ export const getEvmProviderRpcFullError = (
 };
 
 export interface EvmWalletPermissions {
-  [domain: string]: EvmWalletDomainPermissions;
+  [origin: string]: EvmWalletOriginPermissions;
 }
 
-export type EvmWalletDomainPermissions = {
+export type EvmWalletOriginPermissions = {
   [key in EvmRequestPermission]?: string[];
 };
 

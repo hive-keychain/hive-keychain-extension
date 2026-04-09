@@ -130,10 +130,10 @@ export const isEvmDialogVisibleRequest = async (requestData: EvmRequestData) => 
 
   if (
     request.method === EvmRequestMethod.REQUEST_ACCOUNTS &&
-    requestData.dappInfo?.domain
+    requestData.dappInfo?.origin
   ) {
     const hasPermission = await EvmWalletUtils.hasPermission(
-      requestData.dappInfo.domain,
+      requestData.dappInfo.origin,
       EvmMethodPermissionMap[request.method]!,
     );
     return !hasPermission;
@@ -397,11 +397,11 @@ const buildEvmConfirmationMessage = async (
 
   if (
     EvmMethodPermissionMap[request.method] &&
-    requestData.dappInfo.domain &&
+    requestData.dappInfo.origin &&
     request.method !== EvmRequestMethod.REQUEST_ACCOUNTS
   ) {
     const hasPermission = await EvmWalletUtils.hasPermission(
-      requestData.dappInfo.domain,
+      requestData.dappInfo.origin,
       EvmMethodPermissionMap[request.method]!,
     );
     if (!hasPermission) return null;
@@ -409,10 +409,10 @@ const buildEvmConfirmationMessage = async (
 
   if (
     request.method === EvmRequestMethod.REQUEST_ACCOUNTS &&
-    requestData.dappInfo.domain
+    requestData.dappInfo.origin
   ) {
     const hasPermission = await EvmWalletUtils.hasPermission(
-      requestData.dappInfo.domain,
+      requestData.dappInfo.origin,
       EvmMethodPermissionMap[request.method]!,
     );
     if (hasPermission) return null;

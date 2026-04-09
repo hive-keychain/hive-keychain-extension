@@ -1,4 +1,3 @@
-import { EvmEventName } from '@interfaces/evm-provider.interface';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { resetChain, setChain } from '@popup/multichain/actions/chain.actions';
@@ -14,7 +13,6 @@ import {
   ComplexeCustomSelect,
   OptionItem,
 } from 'src/common-ui/custom-select/custom-select.component';
-import { sendEvmEventGlobal } from 'src/content-scripts/hive/web-interface/response.logic';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
@@ -60,7 +58,6 @@ const ChainDropdown = ({
         false,
       );
     }
-    sendEvmEventGlobal(EvmEventName.CHAIN_CHANGED, chain.chainId);
     setChain(chain);
   };
 

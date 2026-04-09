@@ -11,6 +11,10 @@ import {
   KeychainRequest,
   RequestResponse,
 } from 'src/interfaces/keychain.interface';
+import {
+  getWindowHostname,
+  getWindowOrigin,
+} from 'src/utils/browser-origin.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import KeychainifyUtils from 'src/utils/keychainify.utils';
 
@@ -33,7 +37,7 @@ export const sendRequestToBackground = (
   CommunicationUtils.runtimeSendMessage({
     command: BackgroundCommand.SEND_REQUEST,
     request: req,
-    domain: window.location.hostname,
+    domain: getWindowHostname(),
     request_id: req.request_id,
   });
 };
@@ -48,7 +52,8 @@ export const sendEvmRequestToBackground = async (
     command: 'sendEvmRequest',
     request: req,
     dappInfo: {
-      domain: window.location.hostname,
+      origin: getWindowOrigin(),
+      domain: getWindowHostname(),
       protocol: window.location.protocol,
       logo: (link as any)?.href,
     },
@@ -56,12 +61,12 @@ export const sendEvmRequestToBackground = async (
   } as KeychainEvmRequestWrapper);
 };
 export const sendEvmChainToBackground = async (
-  chainId: string,
+  chainData: string | { chainId: string | null } | null,
   chrome: typeof globalThis.chrome,
 ) => {
   CommunicationUtils.runtimeSendMessage({
     command: BackgroundCommand.SEND_BACK_CHAIN_FROM_PROVIDER,
-    value: chainId,
+    value: chainData,
   });
 };
 
@@ -97,7 +102,7 @@ export const sendResponse = (response: RequestResponse) => {
           type: 'hive_keychain_response',
           response,
         },
-        window.location.origin,
+        getWindowOrigin(),
       );
     } catch (err) {
       console.log('send response', err);
@@ -121,7 +126,7 @@ export const sendResponseToEvm = (response: any) => {
           type: 'evm_keychain_response',
           response,
         },
-        window.location.origin,
+        getWindowOrigin(),
       );
     } catch (err) {
       console.log('send response to evm', err);
@@ -145,7 +150,7 @@ export const sendErrorToEvm = (response: any) => {
           type: 'evm_keychain_error',
           response,
         },
-        window.location.origin,
+        getWindowOrigin(),
       );
     } catch (err) {
       console.log('senderrortoEvm', err);
@@ -160,7 +165,7 @@ export const sendEventToEvm = (event: any) => {
         type: 'evm_keychain_event',
         event,
       },
-      window.location.origin,
+      getWindowOrigin(),
     );
   } catch (err) {
     console.log('sendeventtoevm', err);
@@ -186,22 +191,14 @@ export const sendEvmEventToTab = (
   });
 };
 
-export const sendEvmEventToDomain = (
-  domain: string,
+export const sendEvmEventToOrigin = (
+  origin: string,
   eventType: EvmEventName,
   args?: any,
 ) => {
   sendEvmEvent({
     eventType,
     args,
-    scope: { kind: 'domain', domain },
-  });
-};
-
-export const sendEvmEventGlobal = (eventType: EvmEventName, args?: any) => {
-  sendEvmEvent({
-    eventType,
-    args,
-    scope: { kind: 'global' },
+    scope: { kind: 'origin', origin },
   });
 };
