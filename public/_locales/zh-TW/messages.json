@@ -2362,5 +2362,73 @@
   "evm_insufficient_token_balance": {
     "message": "$1 餘額不足。",
     "description": "Insufficient token balance message on EVM balance change card"
+  },
+  "evm_transaction_result_error_message_insufficient_funds": {
+    "message": "餘額不足，無法完成此交易",
+    "description": "Transaction result error message insufficient funds"
+  },
+  "evm_transaction_result_error_message_user_rejected": {
+    "message": "交易已被使用者拒絕",
+    "description": "Transaction result error message user rejected"
+  },
+  "evm_transaction_result_error_message_transaction_replaced": {
+    "message": "交易已被另一筆交易取代",
+    "description": "Transaction result error message transaction replaced"
+  },
+  "evm_transaction_result_error_message_network": {
+    "message": "發生網路錯誤，請再試一次",
+    "description": "Transaction result error message network"
+  },
+  "evm_transaction_result_error_message_bad_data": {
+    "message": "RPC 回傳了無效資料",
+    "description": "Transaction result error message bad data"
+  },
+  "evm_transaction_result_error_message_invalid_parameters": {
+    "message": "交易請求包含無效參數",
+    "description": "Transaction result error message invalid parameters"
+  },
+  "evm_transaction_result_error_message_unsupported_operation": {
+    "message": "此操作不受 RPC 或合約支援",
+    "description": "Transaction result error message unsupported operation"
+  },
+  "evm_transaction_result_error_message_execution_reverted": {
+    "message": "交易執行已被合約還原",
+    "description": "Transaction result error message execution reverted"
+  },
+  "evm_transaction_result_error_message_call_exception": {
+    "message": "交易在合約執行期間失敗",
+    "description": "Transaction result error message call exception"
+  },
+  "evm_error_message_insufficient_token_balance": {
+    "message": "代幣餘額不足",
+    "description": "Transaction result error message insufficient token balance"
+  },
+  "evm_transaction_result_error_message_gas_required_exceeds_allowance": {
+    "message": "Gas 預估失敗，因為這筆交易很可能會被還原",
+    "description": "Transaction result error message gas required exceeds allowance"
+  },
+  "evm_transaction_result_error_message_missing_revert_data": {
+    "message": "交易失敗，且沒有返回還原細節",
+    "description": "Transaction result error message missing revert data"
+  },
+  "evm_transaction_result_error_message_access_denied": {
+    "message": "目前帳戶無權執行此操作",
+    "description": "Transaction result error message access denied"
+  },
+  "evm_transaction_result_error_message_paused": {
+    "message": "此合約目前已暫停",
+    "description": "Transaction result error message paused"
+  },
+  "evm_transaction_result_error_message_blacklisted": {
+    "message": "此地址已被合約封鎖",
+    "description": "Transaction result error message blacklisted"
+  },
+  "evm_transaction_result_error_message_transaction_expired": {
+    "message": "交易已過期或錯過截止時間",
+    "description": "Transaction result error message transaction expired"
+  },
+  "evm_transaction_result_error_message_slippage": {
+    "message": "交易失敗，因為滑點容忍度已超出",
+    "description": "Transaction result error message slippage"
   }
 }

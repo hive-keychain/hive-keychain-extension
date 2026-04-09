@@ -189,7 +189,12 @@ export const GasFeePanel = ({
     } catch (err: any) {
       Logger.error('Catch in gas fee Panel', { err });
       console.log('err', err);
-      const error = EthersUtils.getErrorMessage(err.code, err.reason);
+      const error = EthersUtils.getErrorMessage(
+        err.code,
+        err.reason,
+        err.shortMessage,
+        err.message,
+      );
       setErrorMessage(error);
     }
   };

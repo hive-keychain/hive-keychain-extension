@@ -6046,5 +6046,73 @@
   "evm_insufficient_token_balance": {
     "message": "Insufficient $1 balance.",
     "description": "Insufficient token balance message on EVM balance change card"
+  },
+  "evm_transaction_result_error_message_insufficient_funds": {
+    "message": "Insufficient funds to complete this transaction",
+    "description": "Transaction result error message insufficient funds"
+  },
+  "evm_transaction_result_error_message_user_rejected": {
+    "message": "Transaction was rejected by the user",
+    "description": "Transaction result error message user rejected"
+  },
+  "evm_transaction_result_error_message_transaction_replaced": {
+    "message": "Transaction was replaced by another transaction",
+    "description": "Transaction result error message transaction replaced"
+  },
+  "evm_transaction_result_error_message_network": {
+    "message": "A network error occurred. Please try again",
+    "description": "Transaction result error message network"
+  },
+  "evm_transaction_result_error_message_bad_data": {
+    "message": "The RPC returned invalid data",
+    "description": "Transaction result error message bad data"
+  },
+  "evm_transaction_result_error_message_invalid_parameters": {
+    "message": "The transaction request contains invalid parameters",
+    "description": "Transaction result error message invalid parameters"
+  },
+  "evm_transaction_result_error_message_unsupported_operation": {
+    "message": "This operation is not supported by the RPC or contract",
+    "description": "Transaction result error message unsupported operation"
+  },
+  "evm_transaction_result_error_message_execution_reverted": {
+    "message": "Transaction execution was reverted by the contract",
+    "description": "Transaction result error message execution reverted"
+  },
+  "evm_transaction_result_error_message_call_exception": {
+    "message": "Transaction failed during contract execution",
+    "description": "Transaction result error message call exception"
+  },
+  "evm_error_message_insufficient_token_balance": {
+    "message": "Insufficient token balance",
+    "description": "Transaction result error message insufficient token balance"
+  },
+  "evm_transaction_result_error_message_gas_required_exceeds_allowance": {
+    "message": "Gas estimation failed because the transaction would likely revert",
+    "description": "Transaction result error message gas required exceeds allowance"
+  },
+  "evm_transaction_result_error_message_missing_revert_data": {
+    "message": "Transaction failed without revert details",
+    "description": "Transaction result error message missing revert data"
+  },
+  "evm_transaction_result_error_message_access_denied": {
+    "message": "This action is not allowed for the current account",
+    "description": "Transaction result error message access denied"
+  },
+  "evm_transaction_result_error_message_paused": {
+    "message": "This contract is currently paused",
+    "description": "Transaction result error message paused"
+  },
+  "evm_transaction_result_error_message_blacklisted": {
+    "message": "This address is blocked by the contract",
+    "description": "Transaction result error message blacklisted"
+  },
+  "evm_transaction_result_error_message_transaction_expired": {
+    "message": "Transaction expired or missed its deadline",
+    "description": "Transaction result error message transaction expired"
+  },
+  "evm_transaction_result_error_message_slippage": {
+    "message": "Transaction failed because slippage tolerance was exceeded",
+    "description": "Transaction result error message slippage"
   }
 }

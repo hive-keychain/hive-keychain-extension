@@ -2374,5 +2374,73 @@
   "evm_insufficient_token_balance": {
     "message": "Solde $1 insuffisant.",
     "description": "Insufficient token balance message on EVM balance change card"
+  },
+  "evm_transaction_result_error_message_insufficient_funds": {
+    "message": "Fonds insuffisants pour effectuer cette transaction",
+    "description": "Transaction result error message insufficient funds"
+  },
+  "evm_transaction_result_error_message_user_rejected": {
+    "message": "La transaction a été rejetée par l'utilisateur",
+    "description": "Transaction result error message user rejected"
+  },
+  "evm_transaction_result_error_message_transaction_replaced": {
+    "message": "La transaction a été remplacée par une autre transaction",
+    "description": "Transaction result error message transaction replaced"
+  },
+  "evm_transaction_result_error_message_network": {
+    "message": "Une erreur réseau s'est produite. Veuillez réessayer",
+    "description": "Transaction result error message network"
+  },
+  "evm_transaction_result_error_message_bad_data": {
+    "message": "Le RPC a renvoyé des données invalides",
+    "description": "Transaction result error message bad data"
+  },
+  "evm_transaction_result_error_message_invalid_parameters": {
+    "message": "La demande de transaction contient des paramètres invalides",
+    "description": "Transaction result error message invalid parameters"
+  },
+  "evm_transaction_result_error_message_unsupported_operation": {
+    "message": "Cette opération n'est pas prise en charge par le RPC ou le contrat",
+    "description": "Transaction result error message unsupported operation"
+  },
+  "evm_transaction_result_error_message_execution_reverted": {
+    "message": "L'exécution de la transaction a été annulée par le contrat",
+    "description": "Transaction result error message execution reverted"
+  },
+  "evm_transaction_result_error_message_call_exception": {
+    "message": "La transaction a échoué pendant l'exécution du contrat",
+    "description": "Transaction result error message call exception"
+  },
+  "evm_error_message_insufficient_token_balance": {
+    "message": "Solde de tokens insuffisant",
+    "description": "Transaction result error message insufficient token balance"
+  },
+  "evm_transaction_result_error_message_gas_required_exceeds_allowance": {
+    "message": "L'estimation du gas a échoué car la transaction serait probablement annulée",
+    "description": "Transaction result error message gas required exceeds allowance"
+  },
+  "evm_transaction_result_error_message_missing_revert_data": {
+    "message": "La transaction a échoué sans détails de revert",
+    "description": "Transaction result error message missing revert data"
+  },
+  "evm_transaction_result_error_message_access_denied": {
+    "message": "Cette action n'est pas autorisée pour le compte actuel",
+    "description": "Transaction result error message access denied"
+  },
+  "evm_transaction_result_error_message_paused": {
+    "message": "Ce contrat est actuellement en pause",
+    "description": "Transaction result error message paused"
+  },
+  "evm_transaction_result_error_message_blacklisted": {
+    "message": "Cette adresse est bloquée par le contrat",
+    "description": "Transaction result error message blacklisted"
+  },
+  "evm_transaction_result_error_message_transaction_expired": {
+    "message": "La transaction a expiré ou a dépassé sa date limite",
+    "description": "Transaction result error message transaction expired"
+  },
+  "evm_transaction_result_error_message_slippage": {
+    "message": "La transaction a échoué car la tolérance de slippage a été dépassée",
+    "description": "Transaction result error message slippage"
   }
 }
