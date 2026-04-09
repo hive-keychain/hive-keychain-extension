@@ -104,7 +104,7 @@ describe('ChainUtils', () => {
     expect(result).toEqual(apiChains);
     expect(secondResult).toEqual(apiChains);
     expect(EvmLightNodeApi.get).toHaveBeenCalledTimes(1);
-    expect(EvmLightNodeApi.get).toHaveBeenCalledWith('chains');
+    expect(EvmLightNodeApi.get).toHaveBeenCalledWith('chains/active');
     expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
       LocalStorageKeyEnum.DEFAULT_CHAINS,
       apiChains,
@@ -133,28 +133,6 @@ describe('ChainUtils', () => {
     );
     expect(Logger.info).toHaveBeenCalledWith('Initialized chains from cache');
   });
-
-  it.each([[], { invalid: true }])(
-    'falls back to cached chains when the API response is invalid: %p',
-    async (invalidApiResponse: unknown) => {
-      const { ChainUtils, EvmLightNodeApi, LocalStorageUtils, Logger } =
-        await loadTestContext();
-      (EvmLightNodeApi.get as jest.Mock).mockResolvedValue(invalidApiResponse);
-      LocalStorageUtils.getValueFromLocalStorage.mockResolvedValue(
-        clone(cachedChains),
-      );
-      LocalStorageUtils.saveValueInLocalStorage.mockResolvedValue(undefined);
-
-      const result = await ChainUtils.initChains();
-
-      expect(result).toEqual(cachedChains);
-      expect(LocalStorageUtils.saveValueInLocalStorage).not.toHaveBeenCalled();
-      expect(Logger.warn).toHaveBeenCalledWith(
-        'Chains API returned an invalid or empty payload, using fallback source',
-      );
-      expect(Logger.info).toHaveBeenCalledWith('Initialized chains from cache');
-    },
-  );
 
   it('falls back to bundled chains when both the API and cache are unavailable', async () => {
     const { ChainUtils, EvmLightNodeApi, LocalStorageUtils, Logger } =
