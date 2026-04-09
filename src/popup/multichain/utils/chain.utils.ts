@@ -166,7 +166,7 @@ const initChains = async (): Promise<Chain[]> => {
 
   defaultChainsPromise = (async () => {
     try {
-      const apiChains = await EvmLightNodeApi.get('chains/active');
+      const apiChains = await EvmLightNodeApi.get('chains');
       const normalizedChains = cloneChains(apiChains as Chain[]);
       setDefaultChains(normalizedChains);
       try {
