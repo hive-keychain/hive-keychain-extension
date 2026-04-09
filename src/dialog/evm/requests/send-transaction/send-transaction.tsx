@@ -1,4 +1,5 @@
 import { BalanceChangeCard } from '@dialog/components/balance-change-card/balance-change-card.component';
+import type { BalanceInfo } from '@dialog/components/balance-change-card/balance-change-card.interface';
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import {
@@ -47,12 +48,6 @@ interface Props {
   accounts: EvmAccount[];
   data: EvmRequestMessage;
   afterCancel: (requestId: number, tab: number) => void;
-}
-
-interface BalanceInfo {
-  before: string;
-  estimatedAfter: string;
-  insufficientBalance?: boolean;
 }
 
 export const SendTransaction = (props: Props) => {
@@ -737,17 +732,9 @@ export const SendTransaction = (props: Props) => {
       tokenInfo,
     );
 
-    setBalanceInfo({
-      before: `${balance?.formattedBalance!} ${tokenInfo.symbol}`,
-      estimatedAfter: `${FormatUtils.withCommas(
-        new Decimal(balance?.balanceInteger!).sub(transferAmount!).toString(),
-        (tokenInfo as EvmSmartContractInfoErc20).decimals || 8,
-        true,
-      )}  ${tokenInfo?.symbol}`,
-      insufficientBalance:
-        new Decimal(balance?.balanceInteger!).sub(transferAmount!).toNumber() <
-        0,
-    });
+    setBalanceInfo(
+      EvmTokensUtils.getBalanceInfo(balance!, transferAmount!, tokenInfo),
+    );
   };
 
   const handleClickOnConfirm = () => {
@@ -800,13 +787,9 @@ export const SendTransaction = (props: Props) => {
                 )}
               {shouldDisplayBalanceChange &&
                 balanceInfo &&
-                balanceInfo.before &&
-                balanceInfo.estimatedAfter && (
-                  <BalanceChangeCard
-                    beforeBalance={balanceInfo.before}
-                    afterBalance={balanceInfo.estimatedAfter}
-                    insufficientBalance={balanceInfo.insufficientBalance}
-                  />
+                balanceInfo.mainBalance.before &&
+                balanceInfo.mainBalance.estimatedAfter && (
+                  <BalanceChangeCard balanceInfo={balanceInfo} />
                 )}
             </>
           }

@@ -22,7 +22,7 @@ let evmProvider: EvmProvider;
 
 export class EvmProvider extends EventEmitter {
   chainId: string | undefined;
-  isMetaMask: boolean = false;
+  isMetaMask: boolean = true;
   private _accounts: string[] = [];
   private _current_id = 1;
   private _requests = {} as { [id: number]: any };
@@ -67,9 +67,10 @@ export class EvmProvider extends EventEmitter {
         params: [],
       }),
     ])) as [string, string[]];
+    console.log('chainId', chainId);
+    console.log('accounts', accounts);
     this.updateAccounts(accounts);
     this.chainId = chainId;
-    // this.emit('accountsChanged', []);
   };
 
   private normalizeAccounts = (accounts: unknown): string[] => {
@@ -141,10 +142,7 @@ export class EvmProvider extends EventEmitter {
           const result = event.data.response.result;
           const requestId =
             event.data.response.requestId ?? event.data.response.request_id;
-          if (
-            requestId !== null &&
-            requestId !== undefined
-          ) {
+          if (requestId !== null && requestId !== undefined) {
             if (this._requests[requestId]) {
               this._requests[requestId]({ result: result });
               delete this._requests[requestId];
@@ -214,10 +212,13 @@ export class EvmProvider extends EventEmitter {
 
   async request(args: RequestArguments): Promise<any> {
     try {
+      console.log('request', args);
       validateRequest(args.method, args.params);
       switch (args.method) {
         case EvmRequestMethod.GET_CHAIN: {
+          console.log('GET_CHAIN');
           const chainId = (await this.processRequest(args)) as string;
+          console.log('chainId', chainId);
           this.chainId = chainId;
           if (this._initialized) {
             this.setConnected(chainId);

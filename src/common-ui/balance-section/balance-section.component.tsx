@@ -7,6 +7,7 @@ interface Props {
   label?: string;
   decimals?: number;
   skipLabelTranslation?: boolean;
+  skipFormat?: boolean;
 }
 
 export const BalanceSectionComponent = ({
@@ -14,12 +15,14 @@ export const BalanceSectionComponent = ({
   unit,
   label,
   skipLabelTranslation,
+  skipFormat,
   decimals = 3,
 }: Props) => {
   return (
     <div className="balance-section">
       <div className="value">
-        {FormatUtils.formatCurrencyValue(value, decimals)} {unit}
+        {skipFormat ? value : FormatUtils.formatCurrencyValue(value, decimals)}{' '}
+        {unit}
       </div>
       {label && (
         <div className="label">

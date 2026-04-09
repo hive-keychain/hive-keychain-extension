@@ -86,7 +86,7 @@ const SelectAccountSection = ({
   ): EvmAddressDetail => ({
     fullAddress: account.wallet.address,
     formattedAddress: EvmFormatUtils.formatAddress(account.wallet.address),
-    label: account.nickname ?? EvmAccountUtils.getAccountFullname(account),
+    label: EvmAccountUtils.getAccountName(account),
     avatar: undefined,
   });
 
@@ -129,6 +129,7 @@ const SelectAccountSection = ({
             addressDetails: await EvmAddressesUtils.getAddressDetails(
               account.wallet.address,
               chain!.chainId,
+              false,
             ),
           },
         })),
@@ -161,10 +162,7 @@ const SelectAccountSection = ({
   };
 
   const onDragEnd = async (result: DropResult) => {
-    if (
-      !result.destination ||
-      result.destination.index === result.source.index
-    )
+    if (!result.destination || result.destination.index === result.source.index)
       return;
 
     const list = Array.from(options);
@@ -203,8 +201,8 @@ const SelectAccountSection = ({
             {EvmAccountUtils.getSeedName(selectedAddress?.account!)}
           </div>
           <div className="address-name">
-            {selectedAddress?.account.nickname ??
-              selectedAddress?.addressDetails.label ??
+            {selectedAddress?.addressDetails.label ??
+              EvmAccountUtils.getAccountName(selectedAddress?.account!) ??
               'No name'}
           </div>
           <div className="address">
@@ -291,9 +289,7 @@ const SelectAccountSection = ({
         <div
           className={`evm-select-account-section ${
             fullSize ? 'fullsize' : ''
-          } ${isOpened ? 'opened' : 'closed'} ${
-            isOnMain ? 'main-page' : ''
-          }`}>
+          } ${isOpened ? 'opened' : 'closed'} ${isOnMain ? 'main-page' : ''}`}>
           <Select
             keepOpen
             values={[selectedAddress as any]}

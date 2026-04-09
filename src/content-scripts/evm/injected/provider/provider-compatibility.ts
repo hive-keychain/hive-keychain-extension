@@ -9,7 +9,7 @@ export type LegacyEthereumProvider = EvmProvider & {
 export type InjectedWindow = Window & {
   ethereum?: LegacyEthereumProvider;
   hiveKeychain?: { ethereum: EvmProvider };
-  hiveKeychainEthereum?: EvmProvider;
+  // hiveKeychainEthereum?: EvmProvider;
 };
 
 const DEFAULT_LEGACY_PROVIDER_MODE: LegacyProviderMode = 'preferred';
@@ -55,7 +55,7 @@ const syncKnownNamespaces = (
     ...(injectedWindow.hiveKeychain ?? {}),
     ethereum: provider,
   };
-  injectedWindow.hiveKeychainEthereum = provider;
+  // injectedWindow.hiveKeychainEthereum = provider;
 };
 
 const getPrimaryExternalProvider = (
@@ -133,7 +133,10 @@ const registerPreferredProvider = (
   injectedWindow: InjectedWindow,
   legacyProvider: LegacyEthereumProvider,
 ) => {
-  let trackedProviders = mergeProviders(legacyProvider, injectedWindow.ethereum);
+  let trackedProviders = mergeProviders(
+    legacyProvider,
+    injectedWindow.ethereum,
+  );
 
   const sync = () => {
     trackedProviders = syncTrackedProviders(
@@ -180,7 +183,10 @@ const registerPreferredProvider = (
 
   [0, 25, 100, 500].forEach((delay) => {
     setTimeout(() => {
-      if (injectedWindow.ethereum && injectedWindow.ethereum !== legacyProvider) {
+      if (
+        injectedWindow.ethereum &&
+        injectedWindow.ethereum !== legacyProvider
+      ) {
         captureProvider(injectedWindow.ethereum);
       }
       reclaimProvider();
@@ -192,7 +198,10 @@ const registerYieldingProvider = (
   injectedWindow: InjectedWindow,
   legacyProvider: LegacyEthereumProvider,
 ) => {
-  let trackedProviders = mergeProviders(legacyProvider, injectedWindow.ethereum);
+  let trackedProviders = mergeProviders(
+    legacyProvider,
+    injectedWindow.ethereum,
+  );
   let fallbackActive = false;
 
   const sync = () => {
@@ -263,7 +272,10 @@ const registerYieldingProvider = (
 
   YIELDING_FALLBACK_DELAYS.forEach((delay) => {
     setTimeout(() => {
-      if (injectedWindow.ethereum && injectedWindow.ethereum !== legacyProvider) {
+      if (
+        injectedWindow.ethereum &&
+        injectedWindow.ethereum !== legacyProvider
+      ) {
         captureProvider(injectedWindow.ethereum);
         return;
       }

@@ -30,7 +30,6 @@ describe('provider-compatibility tests:\n', () => {
     );
 
     expect(injectedWindow.ethereum).toBe(existingProvider);
-    expect(injectedWindow.hiveKeychainEthereum).toBe(keychainProvider);
     expect(injectedWindow.hiveKeychain?.ethereum).toBe(keychainProvider);
     expect(existingProvider.providers).toEqual([
       existingProvider,

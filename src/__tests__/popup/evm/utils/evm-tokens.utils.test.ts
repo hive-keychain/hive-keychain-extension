@@ -1,10 +1,13 @@
 import { KeychainApi } from '@api/keychain';
+import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import {
   EVMSmartContractType,
   EvmSmartContractInfoErc20,
+  EvmSmartContractInfoNative,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import { ethers } from 'ethers';
 
 describe('evm-tokens.utils proxy metadata tests:\n', () => {
   afterEach(() => {
@@ -119,5 +122,65 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
     expect(EvmTokensUtils.getTokenType(JSON.stringify(Erc20Abi))).toBe(
       EVMSmartContractType.ERC20,
     );
+  });
+
+  it('formats native short balances with up to 5 decimals', async () => {
+    jest.spyOn(EthersUtils, 'getProvider').mockResolvedValue({
+      getBalance: jest.fn().mockResolvedValue(1234567891234567890n),
+    } as any);
+
+    const balance = await EvmTokensUtils.getTokenBalance(
+      '0x1234567890123456789012345678901234567890',
+      { chainId: '1' } as any,
+      {
+        name: 'Ether',
+        symbol: 'ETH',
+        logo: '',
+        chainId: '1',
+        backgroundColor: '#000000',
+        coingeckoId: 'ethereum',
+        priceUsd: 3000,
+        createdAt: '',
+        categories: [],
+        type: EVMSmartContractType.NATIVE,
+      } as EvmSmartContractInfoNative,
+    );
+
+    expect(balance?.shortFormattedBalance).toBe('1.23457');
+  });
+
+  it('formats ERC20 short balances with up to 5 decimals', async () => {
+    jest.spyOn(EthersUtils, 'getProvider').mockResolvedValue({} as any);
+    jest.spyOn(ethers, 'Contract').mockImplementation(
+      () =>
+        ({
+          balanceOf: jest.fn().mockResolvedValue(1234567n),
+        }) as any,
+    );
+
+    const balance = await EvmTokensUtils.getTokenBalance(
+      '0x1234567890123456789012345678901234567890',
+      { chainId: '1' } as any,
+      {
+        name: 'USD Coin',
+        symbol: 'USDC',
+        decimals: 6,
+        logo: '',
+        chainId: '1',
+        contractAddress: '0x00000000000000000000000000000000000000aa',
+        backgroundColor: '#000000',
+        coingeckoId: 'usd-coin',
+        priceUsd: 1,
+        possibleSpam: false,
+        verifiedContract: true,
+        isProxy: false,
+        proxyTarget: null,
+        createdAt: '',
+        categories: [],
+        type: EVMSmartContractType.ERC20,
+      } as EvmSmartContractInfoErc20,
+    );
+
+    expect(balance?.shortFormattedBalance).toBe('1.23457');
   });
 });

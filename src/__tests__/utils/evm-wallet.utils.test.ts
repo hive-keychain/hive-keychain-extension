@@ -1,16 +1,15 @@
 import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import { EvmEventName } from '@interfaces/evm-provider.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
+import { HDNodeWallet } from 'ethers';
 import * as responseLogic from 'src/content-scripts/hive/web-interface/response.logic';
 import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
+import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import { HDNodeWallet } from 'ethers';
 
 describe('evm wallet utils', () => {
   const mk = 'test-master-password';
-  const seedOne =
-    'test test test test test test test test test test test junk';
+  const seedOne = 'test test test test test test test test test test test junk';
   const seedTwo =
     'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
 
@@ -78,7 +77,10 @@ describe('evm wallet utils', () => {
       .spyOn(LocalStorageUtils, 'getMultipleValueFromLocalStorage')
       .mockImplementation(async (keys) =>
         Object.fromEntries(
-          keys.map((key) => [key, localStorageState[key as LocalStorageKeyEnum]]),
+          keys.map((key) => [
+            key,
+            localStorageState[key as LocalStorageKeyEnum],
+          ]),
         ),
       );
 
@@ -97,6 +99,11 @@ describe('evm wallet utils', () => {
           address: `${phrase.slice(0, 12)}-${path}`,
           mnemonic: { phrase },
           path,
+          deriveChild: (index: number) => ({
+            address: `${phrase.slice(0, 12)}-${path}/${index}`,
+            path: `${path}/${index}`,
+            index,
+          }),
         }) as HDNodeWallet,
     );
   });
@@ -127,9 +134,8 @@ describe('evm wallet utils', () => {
       'Seed One Account 2',
     ]);
 
-    const rebuiltAccounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(
-      mk,
-    );
+    const rebuiltAccounts =
+      await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
 
     expect(rebuiltAccounts.map((account) => account.nickname)).toEqual([
       'Seed Two Account 2',
@@ -176,16 +182,16 @@ describe('evm wallet utils', () => {
     expect(
       await EvmWalletUtils.getConnectedWallets('http://localhost:5173'),
     ).toEqual(['0xbbb']);
-    expect(localStorageState[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS]).toEqual(
-      {
-        'http://localhost:3000': {
-          [EvmRequestPermission.ETH_ACCOUNTS]: ['0xaaa'],
-        },
-        'http://localhost:5173': {
-          [EvmRequestPermission.ETH_ACCOUNTS]: ['0xbbb'],
-        },
+    expect(
+      localStorageState[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS],
+    ).toEqual({
+      'http://localhost:3000': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: ['0xaaa'],
       },
-    );
+      'http://localhost:5173': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: ['0xbbb'],
+      },
+    });
   });
 
   it('stores wallet permissions separately for http and https origins on the same host', async () => {
@@ -229,9 +235,9 @@ describe('evm wallet utils', () => {
       '0x1': '0xbbb',
     };
 
-    expect(await EvmWalletUtils.getConnectedWallets('https://app.test')).toEqual(
-      ['0xbbb', '0xaaa', '0xccc'],
-    );
+    expect(
+      await EvmWalletUtils.getConnectedWallets('https://app.test'),
+    ).toEqual(['0xbbb', '0xaaa', '0xccc']);
   });
 
   it('emits accountsChanged once after the first successful connect persists', async () => {
@@ -309,9 +315,9 @@ describe('evm wallet utils', () => {
       EvmRequestPermission.ETH_ACCOUNTS,
     );
 
-    expect(await EvmWalletUtils.getConnectedWallets('https://app.test')).toEqual(
-      [],
-    );
+    expect(
+      await EvmWalletUtils.getConnectedWallets('https://app.test'),
+    ).toEqual([]);
     expect(
       await EvmWalletUtils.getConnectedWallets('https://other.test'),
     ).toEqual(['0xbbb']);
@@ -392,5 +398,19 @@ describe('evm wallet utils', () => {
     expect(
       await EvmWalletUtils.getConnectedWallets('https://unaffected.test'),
     ).toEqual([remainingAccount.wallet.address]);
+  });
+
+  it('stores an empty nickname when adding a new address without a name', async () => {
+    await EvmWalletUtils.addAddressToSeed(1, mk, '');
+
+    const storedSeeds = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
+    expect(storedSeeds[0].accounts[2].nickname).toBe('');
+  });
+
+  it('keeps an address nickname empty when clearing it', async () => {
+    await EvmWalletUtils.updateAddressName(1, 1, '', mk);
+
+    const storedSeeds = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
+    expect(storedSeeds[0].accounts[1].nickname).toBe('');
   });
 });
