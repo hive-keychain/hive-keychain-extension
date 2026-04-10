@@ -197,11 +197,13 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
     let isMounted = true;
 
     const init = async () => {
-      const storagePromise = LocalStorageUtils.getMultipleValueFromLocalStorage([
-        LocalStorageKeyEnum.ACTIVE_THEME,
-        LocalStorageKeyEnum.ACTIVE_CHAIN,
-        LocalStorageKeyEnum.SHORTCUTS,
-      ]);
+      const storagePromise = LocalStorageUtils.getMultipleValueFromLocalStorage(
+        [
+          LocalStorageKeyEnum.ACTIVE_THEME,
+          LocalStorageKeyEnum.ACTIVE_CHAIN,
+          LocalStorageKeyEnum.SHORTCUTS,
+        ],
+      );
       const providerChainPromise = getProviderChainWithTimeout();
 
       const res = await storagePromise;
@@ -211,7 +213,9 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
       setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
 
       const shortcutsValue = res[LocalStorageKeyEnum.SHORTCUTS];
-      shortcutsRef.current = Array.isArray(shortcutsValue) ? shortcutsValue : [];
+      shortcutsRef.current = Array.isArray(shortcutsValue)
+        ? shortcutsValue
+        : [];
       registerShortcuts(shortcutsRef.current);
       setHasHydratedSettings(true);
 
