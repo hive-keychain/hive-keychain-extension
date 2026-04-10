@@ -33,8 +33,9 @@ const hasValidAccountOrders = (savedSeeds: StoredSeed[]) => {
     .flat();
 
   return (
-    orders.every((order) => typeof order === 'number' && Number.isFinite(order)) &&
-    new Set(orders).size === orders.length
+    orders.every(
+      (order) => typeof order === 'number' && Number.isFinite(order),
+    ) && new Set(orders).size === orders.length
   );
 };
 
@@ -286,8 +287,7 @@ const deleteSeed = async (
         for (const key of Object.keys(walletPermissions[origin])) {
           walletPermissions[origin][key as EvmRequestPermission] =
             walletPermissions[origin][key as EvmRequestPermission]!.filter(
-              (address) =>
-                address !== account.wallet.address.toLowerCase(),
+              (address) => address !== account.wallet.address.toLowerCase(),
             );
         }
       }
@@ -342,7 +342,9 @@ const getAccountsFromLocalStorage = async (mk: string) => {
 };
 
 const rebuildAccountsFromLocalStorage = async (mk: string) => {
-  const seeds = normalizeSeedAccountOrders(await getAccountsFromLocalStorage(mk));
+  const seeds = normalizeSeedAccountOrders(
+    await getAccountsFromLocalStorage(mk),
+  );
   return seeds
     .map((seed) =>
       seed.accounts.map((account) => ({
@@ -439,7 +441,9 @@ const getStoredWalletPermissions = async (): Promise<EvmWalletPermissions> => {
   );
 };
 
-const saveWalletPermissions = async (walletPermissions: EvmWalletPermissions) => {
+const saveWalletPermissions = async (
+  walletPermissions: EvmWalletPermissions,
+) => {
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
     walletPermissions,
@@ -529,10 +533,7 @@ const getOriginPermissionEntry = (
   return { permissions: walletPermissions[origin], shouldSave: true };
 };
 
-const connectWallet = async (
-  walletAddress: string,
-  origin: string,
-) => {
+const connectWallet = async (walletAddress: string, origin: string) => {
   return addWalletPermission(
     origin,
     EvmRequestPermission.ETH_ACCOUNTS,
@@ -572,7 +573,10 @@ const setWalletPermissionAddresses = async (
   return originPermissions[permission] ?? [];
 };
 
-const setConnectedWallets = async (origin: string, walletAddresses: string[]) => {
+const setConnectedWallets = async (
+  origin: string,
+  walletAddresses: string[],
+) => {
   return setWalletPermissionAddresses(
     origin,
     EvmRequestPermission.ETH_ACCOUNTS,
@@ -582,7 +586,11 @@ const setConnectedWallets = async (origin: string, walletAddresses: string[]) =>
 
 const getConnectedWallets = async (origin: string): Promise<string[]> => {
   const permissions = await getWalletPermissionFull(origin);
-  return permissions[EvmRequestPermission.ETH_ACCOUNTS] ?? [];
+  return (
+    permissions[EvmRequestPermission.ETH_ACCOUNTS]?.map((address) =>
+      address.toLowerCase(),
+    ) ?? []
+  );
 };
 
 const connectMultipleWallet = async (
@@ -630,14 +638,10 @@ const addWalletPermission = async (
   address?: string,
 ) => {
   const walletPermissions = await getStoredWalletPermissions();
-  const { permissions: originPermissions, shouldSave } = getOriginPermissionEntry(
-    origin,
-    walletPermissions,
-  );
+  const { permissions: originPermissions, shouldSave } =
+    getOriginPermissionEntry(origin, walletPermissions);
   const currentAddresses = originPermissions[permission] ?? [];
-  const normalizedAddress = normalizeEvmAccounts(
-    address ? [address] : [],
-  )[0];
+  const normalizedAddress = normalizeEvmAccounts(address ? [address] : [])[0];
   const nextAddresses = normalizedAddress
     ? [...currentAddresses, normalizedAddress]
     : currentAddresses;
@@ -658,14 +662,10 @@ const removeWalletPermission = async (
   address?: string,
 ) => {
   const walletPermissions = await getStoredWalletPermissions();
-  const { permissions: originPermissions, shouldSave } = getOriginPermissionEntry(
-    origin,
-    walletPermissions,
-  );
+  const { permissions: originPermissions, shouldSave } =
+    getOriginPermissionEntry(origin, walletPermissions);
   const currentAddresses = originPermissions[permission] ?? [];
-  const normalizedAddress = normalizeEvmAccounts(
-    address ? [address] : [],
-  )[0];
+  const normalizedAddress = normalizeEvmAccounts(address ? [address] : [])[0];
 
   if (normalizedAddress) {
     originPermissions[permission] = currentAddresses.filter(
@@ -680,7 +680,11 @@ const removeWalletPermission = async (
   }
 
   walletPermissions[origin] = originPermissions;
-  if (shouldSave || normalizedAddress !== undefined || currentAddresses.length) {
+  if (
+    shouldSave ||
+    normalizedAddress !== undefined ||
+    currentAddresses.length
+  ) {
     await saveWalletPermissions(walletPermissions);
   }
 

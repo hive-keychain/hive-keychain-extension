@@ -28,7 +28,7 @@ interface Props {
 
 export const ConnectAccounts = (props: Props) => {
   const { accounts, data, request, afterCancel } = props;
-  const [accountsToConnect, setAccountsToConnect] = useState<any>({});
+  const [accountsToConnect, setAccountsToConnect] = useState<any>();
   const [connectedAccounts, setConnectedAccounts] = useState<any>();
 
   const transactionHook = useTransactionHook(data, request);
@@ -55,7 +55,9 @@ export const ConnectAccounts = (props: Props) => {
 
     const accs: any = {};
     for (const account of accounts) {
-      accs[account.wallet.address] = connected.includes(account.wallet.address);
+      accs[account.wallet.address.toLowerCase()] = connected.includes(
+        account.wallet.address.toLowerCase(),
+      );
     }
     setAccountsToConnect(accs);
 
@@ -74,6 +76,7 @@ export const ConnectAccounts = (props: Props) => {
   };
 
   const toggleAccount = (address: string) => {
+    address = address.toLowerCase();
     const oldState = { ...accountsToConnect };
     oldState[address] = !oldState[address];
     setAccountsToConnect(oldState);
@@ -116,13 +119,23 @@ export const ConnectAccounts = (props: Props) => {
   const getStatus = (account: EvmAccount): DappStatusEnum => {
     if (connectedAccounts[0] === account.wallet.address)
       return DappStatusEnum.SELECTED;
-    else if (connectedAccounts.includes(account.wallet.address))
+    else if (
+      connectedAccounts
+        .map((account: string) => account.toLowerCase())
+        .includes(account.wallet.address.toLowerCase())
+    )
       return DappStatusEnum.CONNECTED;
     else return DappStatusEnum.DISCONNECTED;
   };
 
   const handleCancel = () => {
     afterCancel(request.request_id, data.tab);
+  };
+
+  const isChecked = (address: string) => {
+    address = address.toLowerCase();
+    if (!accountsToConnect) return false;
+    return accountsToConnect[address];
   };
 
   return (
@@ -148,7 +161,7 @@ export const ConnectAccounts = (props: Props) => {
             <CheckboxPanelComponent
               key={`account-${account.wallet.address}`}
               onChange={() => toggleAccount(account.wallet.address)}
-              checked={accountsToConnect[account.wallet.address]}>
+              checked={isChecked(account.wallet.address)}>
               <EvmAccountDisplayComponent
                 account={account}
                 status={getStatus(account)}
