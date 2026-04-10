@@ -70,8 +70,11 @@ export const initEvmRequestHandler = async (
   const setupChains = await ChainUtils.getAllSetupChainsForType<EvmChain>(
     ChainType.EVM,
   );
-  if (chainId && chain === null) {
-    handleNonSupportedChain(requestHandler, tab!, request, request.chainId!);
+
+  console.log(chainId, chain, 'chainId, chain');
+
+  if (chainId && !chain) {
+    handleNonSupportedChain(requestHandler, tab!, request, chainId);
   } else if (EvmDeprecatedMethods.includes(request.method)) {
     handleDeprecatedMethods(requestHandler, tab!, request, dappInfo);
   } else if (!doesMethodExist(request.method)) {

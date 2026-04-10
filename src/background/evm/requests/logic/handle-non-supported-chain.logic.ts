@@ -32,9 +32,7 @@ export const handleNonSupportedChain = async (
     CommunicationUtils.runtimeSendMessage({
       command: DialogCommand.SEND_DIALOG_ERROR,
       msg: {
-        display_msg: await chrome.i18n.getMessage(errorMessage, [
-          request.method,
-        ]),
+        display_msg: await chrome.i18n.getMessage(errorMessage, [chainId]),
         tab,
       },
     });
