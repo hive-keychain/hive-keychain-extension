@@ -4,6 +4,12 @@ import {
   MultisigDialogMessage,
 } from '@background/multichain/background-message.interface';
 
+const isNoReceiverError = (error: unknown) => {
+  const message = error instanceof Error ? error.message : `${error ?? ''}`;
+  return message.includes('Could not establish connection') ||
+    message.includes('Receiving end does not exist');
+};
+
 const tabsSendMessage = async (
   tabId: number,
   message: BackgroundMessage | DialogMessage,
@@ -12,7 +18,9 @@ const tabsSendMessage = async (
   try {
     const res = await chrome.tabs.sendMessage(tabId, message);
   } catch (err) {
-    console.log(err, 'error in tabsSendMessage');
+    if (!isNoReceiverError(err)) {
+      console.log(err, 'error in tabsSendMessage');
+    }
     if (onFail) onFail();
   }
 };
@@ -24,7 +32,9 @@ const runtimeSendMessage = async (
   try {
     const res = await chrome.runtime.sendMessage(message);
   } catch (err) {
-    console.log(err, 'error in runtimeSendMessage');
+    if (!isNoReceiverError(err)) {
+      console.log(err, 'error in runtimeSendMessage');
+    }
     if (onFail) onFail();
   }
 };

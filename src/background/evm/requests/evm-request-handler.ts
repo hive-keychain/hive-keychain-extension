@@ -13,6 +13,10 @@ import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
+import {
+  getHostnameFromMessageSender,
+  getOriginFromMessageSender,
+} from 'src/utils/browser-origin.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
@@ -76,17 +80,34 @@ export class EvmRequestHandler {
     sender: chrome.runtime.MessageSender,
     msg: KeychainEvmRequestWrapper,
   ) {
+    const canonicalOrigin =
+      getOriginFromMessageSender(sender) ?? msg.dappInfo.origin;
+    const canonicalDomain =
+      getHostnameFromMessageSender(sender) ?? msg.dappInfo.domain ?? '';
     const arrivalOrder = await getNextDialogRequestOrder();
     this.requestsData.push({
       tab: sender.tab!.id,
       request: msg.request,
       request_id: msg.request_id,
-      dappInfo: msg.dappInfo,
+      dappInfo: {
+        ...msg.dappInfo,
+        origin: canonicalOrigin,
+        domain: canonicalDomain,
+      },
       arrivalOrder,
     });
     await this.saveInLocalStorage();
 
-    await initEvmRequestHandler(msg.request, sender.tab!.id, msg.dappInfo, this);
+    await initEvmRequestHandler(
+      msg.request,
+      sender.tab!.id,
+      {
+        ...msg.dappInfo,
+        origin: canonicalOrigin,
+        domain: canonicalDomain,
+      },
+      this,
+    );
 
     // AnalyticsModule.sendData(msg.request.type, msg.domain);
   }

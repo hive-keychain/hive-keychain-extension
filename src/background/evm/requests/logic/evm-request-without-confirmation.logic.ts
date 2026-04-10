@@ -7,7 +7,6 @@ import MkModule from '@background/hive/modules/mk.module';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import {
   EvmDappInfo,
-  EvmEventName,
   EvmRequest,
   getErrorFromEtherJS,
 } from '@interfaces/evm-provider.interface';
@@ -15,7 +14,11 @@ import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
-import { sendEvmEventToDomain } from 'src/content-scripts/hive/web-interface/response.logic';
+import {
+  emitAccountsChangedIfNeeded,
+  getAccountsForOrigin,
+  setChainIdForOrigin,
+} from 'src/background/evm/evm-provider-state.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -40,12 +43,12 @@ export const evmRequestWithoutConfirmation = async (
         break;
       }
       const hasPermission = await EvmWalletUtils.hasPermission(
-        dappInfo.domain,
+        dappInfo.origin,
         EvmMethodPermissionMap[request.method]!,
       );
       if (hasPermission) {
         message.value.result = await EvmWalletUtils.getConnectedWallets(
-          dappInfo.domain,
+          dappInfo.origin,
         );
       }
       break;
@@ -55,30 +58,40 @@ export const evmRequestWithoutConfirmation = async (
       break;
     }
     case EvmRequestMethod.GET_CHAIN: {
-      message.value.result = await EvmChainUtils.getLastEvmChainId();
+      message.value.result = await EvmChainUtils.getLastEvmChainIdForOrigin(
+        dappInfo.origin,
+      );
       break;
     }
     case EvmRequestMethod.GET_NETWORK: {
-      message.value.result = Number(await EvmChainUtils.getLastEvmChainId());
+      message.value.result = Number(
+        await EvmChainUtils.getLastEvmChainIdForOrigin(dappInfo.origin),
+      );
       break;
     }
     case EvmRequestMethod.REQUEST_ACCOUNTS: {
       message.value.result = [];
       const hasPermission = await EvmWalletUtils.hasPermission(
-        dappInfo.domain,
+        dappInfo.origin,
         EvmMethodPermissionMap[request.method]!,
       );
       if (hasPermission) {
         const connectedWallets = await EvmWalletUtils.getConnectedWallets(
-          dappInfo.domain,
+          dappInfo.origin,
         );
         message.value.result = connectedWallets;
       }
-      sendEvmEventToDomain(
-        dappInfo.domain,
-        EvmEventName.ACCOUNT_CHANGED,
-        message.value.result,
+      await emitAccountsChangedIfNeeded(
+        dappInfo.origin,
+        [],
+        message.value.result as string[],
       );
+      break;
+    }
+    case EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN: {
+      const requestedChainId = (request.params[0] as { chainId: string }).chainId;
+      await setChainIdForOrigin(dappInfo.origin, requestedChainId);
+      message.value.result = null;
       break;
     }
 
@@ -91,10 +104,10 @@ export const evmRequestWithoutConfirmation = async (
     }
 
     case EvmRequestMethod.WALLET_REVOKE_PERMISSION: {
-      await EvmWalletUtils.disconnectAllWallets(dappInfo.domain);
-      await EvmWalletUtils.revokeAllPermissions(dappInfo.domain);
+      const prevAccounts = await getAccountsForOrigin(dappInfo.origin);
+      await EvmWalletUtils.revokeAllPermissions(dappInfo.origin);
       message.value.result = null;
-      sendEvmEventToDomain(dappInfo.domain, EvmEventName.ACCOUNT_CHANGED, []);
+      await emitAccountsChangedIfNeeded(dappInfo.origin, prevAccounts, []);
       break;
     }
 
@@ -108,7 +121,7 @@ export const evmRequestWithoutConfirmation = async (
 
     case EvmRequestMethod.WALLET_GET_PERMISSIONS: {
       const permissions = await EvmWalletUtils.getWalletPermission(
-        dappInfo.domain,
+        dappInfo.origin,
       );
       message.value.result = permissions.map((perm) => {
         return { parentCapability: perm };

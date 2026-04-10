@@ -21,6 +21,7 @@ type ScriptingApi = {
 };
 
 let isProviderRegistrationInitialized = false;
+let providerRegistrationSyncPromise: Promise<void> | null = null;
 
 const getScriptingApi = (): ScriptingApi | undefined => {
   const globalScope = globalThis as typeof globalThis & {
@@ -67,35 +68,68 @@ const areEquivalentScripts = (
 };
 
 export const syncEvmProviderContentScriptRegistration = async () => {
-  const scripting = getScriptingApi();
-
-  if (!scripting) {
-    Logger.warn('Scripting API unavailable. Skipping EVM provider registration.');
-    return;
+  if (providerRegistrationSyncPromise) {
+    return providerRegistrationSyncPromise;
   }
 
-  const settings = await EvmSettingsUtils.getSettings();
-  const desiredScript = getDesiredContentScript(
-    settings.providerCompatibility.preferOnLegacyDapps,
-  );
-  const existingScripts = await scripting.getRegisteredContentScripts({
-    ids: [EVM_MAIN_PROVIDER_CONTENT_SCRIPT_ID],
-  });
-  const currentScript = existingScripts.find(
-    (script) => script.id === EVM_MAIN_PROVIDER_CONTENT_SCRIPT_ID,
-  );
+  providerRegistrationSyncPromise = (async () => {
+    const scripting = getScriptingApi();
 
-  if (areEquivalentScripts(currentScript, desiredScript)) {
-    return;
-  }
+    if (!scripting) {
+      Logger.warn('Scripting API unavailable. Skipping EVM provider registration.');
+      return;
+    }
 
-  if (currentScript) {
-    await scripting.unregisterContentScripts({
+    const settings = await EvmSettingsUtils.getSettings();
+    const desiredScript = getDesiredContentScript(
+      settings.providerCompatibility.preferOnLegacyDapps,
+    );
+    const existingScripts = await scripting.getRegisteredContentScripts({
       ids: [EVM_MAIN_PROVIDER_CONTENT_SCRIPT_ID],
     });
-  }
+    const currentScript = existingScripts.find(
+      (script) => script.id === EVM_MAIN_PROVIDER_CONTENT_SCRIPT_ID,
+    );
 
-  await scripting.registerContentScripts([desiredScript]);
+    if (areEquivalentScripts(currentScript, desiredScript)) {
+      return;
+    }
+
+    if (currentScript) {
+      await scripting.unregisterContentScripts({
+        ids: [EVM_MAIN_PROVIDER_CONTENT_SCRIPT_ID],
+      });
+    }
+
+    try {
+      await scripting.registerContentScripts([desiredScript]);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : `${error}`;
+      if (!errorMessage.includes(`Duplicate script ID '${EVM_MAIN_PROVIDER_CONTENT_SCRIPT_ID}'`)) {
+        throw error;
+      }
+
+      const latestScripts = await scripting.getRegisteredContentScripts({
+        ids: [EVM_MAIN_PROVIDER_CONTENT_SCRIPT_ID],
+      });
+      const latestScript = latestScripts.find(
+        (script) => script.id === EVM_MAIN_PROVIDER_CONTENT_SCRIPT_ID,
+      );
+
+      if (areEquivalentScripts(latestScript, desiredScript)) {
+        return;
+      }
+
+      await scripting.unregisterContentScripts({
+        ids: [EVM_MAIN_PROVIDER_CONTENT_SCRIPT_ID],
+      });
+      await scripting.registerContentScripts([desiredScript]);
+    }
+  })().finally(() => {
+    providerRegistrationSyncPromise = null;
+  });
+
+  return providerRegistrationSyncPromise;
 };
 
 const syncRegisteredProviderScriptWithLogging = async () => {
@@ -139,5 +173,6 @@ export const __TEST_ONLY__ = {
   getScriptingApi,
   resetInitialization: () => {
     isProviderRegistrationInitialized = false;
+    providerRegistrationSyncPromise = null;
   },
 };

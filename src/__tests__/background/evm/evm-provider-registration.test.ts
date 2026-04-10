@@ -148,4 +148,39 @@ describe('evm-provider-registration tests:\n', () => {
       }),
     ]);
   });
+
+  it('treats duplicate script registration as a benign concurrent sync when the desired script is already active', async () => {
+    getSettingsMock.mockResolvedValue({
+      smartContracts: {
+        displayPossibleSpam: false,
+        displayNonVerifiedContracts: false,
+      },
+      providerCompatibility: {
+        preferOnLegacyDapps: true,
+      },
+    });
+
+    chrome.scripting.getRegisteredContentScripts = jest
+      .fn()
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([
+        {
+          id: 'evm-main-provider',
+          js: ['evmKeychainLegacyPreferredBundle.js'],
+          matches: ['https://*/*', 'http://0.0.0.0:1337/*', 'http://*/*'],
+          world: 'MAIN',
+          runAt: 'document_start',
+          allFrames: true,
+        },
+      ]) as any;
+    chrome.scripting.registerContentScripts = jest
+      .fn()
+      .mockRejectedValueOnce(new Error("Duplicate script ID 'evm-main-provider'")) as any;
+
+    await expect(
+      syncEvmProviderContentScriptRegistration(),
+    ).resolves.toBeUndefined();
+
+    expect(chrome.scripting.unregisterContentScripts).not.toHaveBeenCalled();
+  });
 });

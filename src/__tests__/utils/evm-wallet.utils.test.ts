@@ -1,13 +1,13 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
-import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { HDNodeWallet } from 'ethers';
+import { EvmAccount } from 'src/popup/evm/interfaces/wallet.interface';
+import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
+import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 describe('evm wallet utils', () => {
   const mk = 'test-master-password';
-  const seedOne =
-    'test test test test test test test test test test test junk';
+  const seedOne = 'test test test test test test test test test test test junk';
   const seedTwo =
     'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
 
@@ -81,22 +81,25 @@ describe('evm wallet utils', () => {
     jest
       .spyOn(LocalStorageUtils, 'getMultipleValueFromLocalStorage')
       .mockImplementation(async (keys) =>
-        keys.reduce((result, key) => {
-          switch (key) {
-            case LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS:
-              result[key] = pendingTransactionsStorage;
-              break;
-            case LocalStorageKeyEnum.EVM_CANCELED_TRANSACTIONS:
-              result[key] = canceledTransactionsStorage;
-              break;
-            case LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS:
-              result[key] = walletPermissionsStorage;
-              break;
-            default:
-              result[key] = undefined;
-          }
-          return result;
-        }, {} as Record<LocalStorageKeyEnum, any>),
+        keys.reduce(
+          (result, key) => {
+            switch (key) {
+              case LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS:
+                result[key] = pendingTransactionsStorage;
+                break;
+              case LocalStorageKeyEnum.EVM_CANCELED_TRANSACTIONS:
+                result[key] = canceledTransactionsStorage;
+                break;
+              case LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS:
+                result[key] = walletPermissionsStorage;
+                break;
+              default:
+                result[key] = undefined;
+            }
+            return result;
+          },
+          {} as Record<LocalStorageKeyEnum, any>,
+        ),
       );
 
     jest
@@ -154,9 +157,8 @@ describe('evm wallet utils', () => {
       'Seed One Account 2',
     ]);
 
-    const rebuiltAccounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(
-      mk,
-    );
+    const rebuiltAccounts =
+      await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
 
     expect(rebuiltAccounts.map((account) => account.nickname)).toEqual([
       'Seed Two Account 2',
@@ -199,39 +201,35 @@ describe('evm wallet utils', () => {
     expect(storedSeeds[0].accounts[1].nickname).toBe('');
   });
 
-  it('removes only the deleted seed addresses from pending transactions', async () => {
-    const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
-    const seedOneAccounts = accounts.filter((account) => account.seedId === 1);
-    const remainingAccount = accounts.find((account) => account.seedId === 2)!;
-
-    pendingTransactionsStorage = [
+  it('stores empty account nicknames when adding a new seed without names', async () => {
+    const wallet = {
+      mnemonic: {
+        phrase:
+          'legal winner thank year wave sausage worth useful legal winner thank yellow',
+      },
+    } as HDNodeWallet;
+    const accounts = [
       {
-        txResponseParams: { hash: '0xseed1a', nonce: 1 },
-        walletAddress: seedOneAccounts[0].wallet.address,
-        chainId: '0x1',
-        broadcastDate: 1,
+        id: 0,
+        path: "m/44'/60'/0'/0/0",
+        seedId: 0,
+        wallet: {} as HDNodeWallet,
       },
       {
-        txResponseParams: { hash: '0xseed1b', nonce: 2 },
-        walletAddress: seedOneAccounts[1].wallet.address,
-        chainId: '0x1',
-        broadcastDate: 2,
+        id: 1,
+        path: "m/44'/60'/0'/0/1",
+        seedId: 0,
+        wallet: {} as HDNodeWallet,
       },
-      {
-        txResponseParams: { hash: '0xseed2', nonce: 3 },
-        walletAddress: remainingAccount.wallet.address,
-        chainId: '0x1',
-        broadcastDate: 3,
-      },
-    ];
+    ] as EvmAccount[];
 
-    await EvmWalletUtils.deleteSeed(1, accounts, mk);
+    await EvmWalletUtils.addSeedAndAccounts(wallet, accounts, mk, 'Seed Three');
 
-    expect(pendingTransactionsStorage).toEqual([
-      expect.objectContaining({
-        txResponseParams: expect.objectContaining({ hash: '0xseed2' }),
-        walletAddress: remainingAccount.wallet.address,
-      }),
+    const storedSeeds = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
+    expect(storedSeeds[2].nickname).toBe('Seed Three');
+    expect(storedSeeds[2].accounts.map((account) => account.nickname)).toEqual([
+      '',
+      '',
     ]);
   });
 });

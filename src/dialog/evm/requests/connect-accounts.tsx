@@ -17,6 +17,7 @@ import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transactio
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 import { CommunicationUtils } from 'src/utils/communication.utils';
+import { normalizeEvmAccounts } from 'src/utils/evm-provider-value.utils';
 
 interface Props {
   request: EvmRequest;
@@ -27,7 +28,7 @@ interface Props {
 
 export const ConnectAccounts = (props: Props) => {
   const { accounts, data, request, afterCancel } = props;
-  const [accountsToConnect, setAccountsToConnect] = useState<any>({});
+  const [accountsToConnect, setAccountsToConnect] = useState<any>();
   const [connectedAccounts, setConnectedAccounts] = useState<any>();
 
   const transactionHook = useTransactionHook(data, request);
@@ -48,13 +49,15 @@ export const ConnectAccounts = (props: Props) => {
     transactionHook.setFields(transactionConfirmationFields);
 
     const connected = await EvmWalletUtils.getConnectedWallets(
-      data.dappInfo.domain,
+      data.dappInfo.origin,
     );
     setConnectedAccounts(connected);
 
     const accs: any = {};
     for (const account of accounts) {
-      accs[account.wallet.address] = connected.includes(account.wallet.address);
+      accs[account.wallet.address.toLowerCase()] = connected.includes(
+        account.wallet.address.toLowerCase(),
+      );
     }
     setAccountsToConnect(accs);
 
@@ -73,6 +76,7 @@ export const ConnectAccounts = (props: Props) => {
   };
 
   const toggleAccount = (address: string) => {
+    address = address.toLowerCase();
     const oldState = { ...accountsToConnect };
     oldState[address] = !oldState[address];
     setAccountsToConnect(oldState);
@@ -86,16 +90,13 @@ export const ConnectAccounts = (props: Props) => {
       for (const address of Object.keys(accountsToConnect)) {
         if (accountsToConnect[address]) addresses.push(address);
       }
-      await EvmWalletUtils.connectMultipleWallet(
-        addresses,
-        data.dappInfo.domain,
-      );
       await EvmAddressesUtils.saveDomainAddress(data.dappInfo.domain);
+      const normalizedAddresses = normalizeEvmAccounts(addresses);
 
       let result;
 
       if (request.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
-        result = addresses.map((add) => add.toLowerCase());
+        result = normalizedAddresses;
       } else if (
         request.method === EvmRequestMethod.WALLET_REQUEST_PERMISSIONS
       ) {
@@ -107,6 +108,9 @@ export const ConnectAccounts = (props: Props) => {
         value: {
           requestId: request.request_id,
           result: result,
+          providerState: {
+            accounts: normalizedAddresses,
+          },
         },
       });
     }
@@ -115,13 +119,23 @@ export const ConnectAccounts = (props: Props) => {
   const getStatus = (account: EvmAccount): DappStatusEnum => {
     if (connectedAccounts[0] === account.wallet.address)
       return DappStatusEnum.SELECTED;
-    else if (connectedAccounts.includes(account.wallet.address))
+    else if (
+      connectedAccounts
+        .map((account: string) => account.toLowerCase())
+        .includes(account.wallet.address.toLowerCase())
+    )
       return DappStatusEnum.CONNECTED;
     else return DappStatusEnum.DISCONNECTED;
   };
 
   const handleCancel = () => {
     afterCancel(request.request_id, data.tab);
+  };
+
+  const isChecked = (address: string) => {
+    address = address.toLowerCase();
+    if (!accountsToConnect) return false;
+    return accountsToConnect[address];
   };
 
   return (
@@ -147,7 +161,7 @@ export const ConnectAccounts = (props: Props) => {
             <CheckboxPanelComponent
               key={`account-${account.wallet.address}`}
               onChange={() => toggleAccount(account.wallet.address)}
-              checked={accountsToConnect[account.wallet.address]}>
+              checked={isChecked(account.wallet.address)}>
               <EvmAccountDisplayComponent
                 account={account}
                 status={getStatus(account)}
