@@ -155,7 +155,7 @@ describe('evm-select-account-section unmount behavior', () => {
     jest.spyOn(EvmAddressesUtils, 'getAddressDetails').mockResolvedValue({
       fullAddress: wallet.address,
       formattedAddress: '0x1234...7890',
-      label: 'Seed One - dialog_account 1',
+      label: 'dialog_account 1',
       avatar: undefined,
     });
 
@@ -184,9 +184,7 @@ describe('evm-select-account-section unmount behavior', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Main seed')).toBeInTheDocument();
-      expect(
-        screen.getByText('Main seed - dialog_account 1'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('dialog_account 1')).toBeInTheDocument();
     });
   });
 });

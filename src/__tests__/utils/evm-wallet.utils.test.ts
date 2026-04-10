@@ -1,4 +1,5 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { EvmAccount } from 'src/popup/evm/interfaces/wallet.interface';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -164,5 +165,37 @@ describe('evm wallet utils', () => {
 
     const storedSeeds = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
     expect(storedSeeds[0].accounts[1].nickname).toBe('');
+  });
+
+  it('stores empty account nicknames when adding a new seed without names', async () => {
+    const wallet = {
+      mnemonic: {
+        phrase:
+          'legal winner thank year wave sausage worth useful legal winner thank yellow',
+      },
+    } as HDNodeWallet;
+    const accounts = [
+      {
+        id: 0,
+        path: "m/44'/60'/0'/0/0",
+        seedId: 0,
+        wallet: {} as HDNodeWallet,
+      },
+      {
+        id: 1,
+        path: "m/44'/60'/0'/0/1",
+        seedId: 0,
+        wallet: {} as HDNodeWallet,
+      },
+    ] as EvmAccount[];
+
+    await EvmWalletUtils.addSeedAndAccounts(wallet, accounts, mk, 'Seed Three');
+
+    const storedSeeds = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
+    expect(storedSeeds[2].nickname).toBe('Seed Three');
+    expect(storedSeeds[2].accounts.map((account) => account.nickname)).toEqual([
+      '',
+      '',
+    ]);
   });
 });

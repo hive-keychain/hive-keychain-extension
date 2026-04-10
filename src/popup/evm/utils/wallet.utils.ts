@@ -217,15 +217,14 @@ const addSeedAndAccounts = async (
     seed: wallet.mnemonic!.phrase,
     nickname: nickname,
     id,
-    accounts: accounts.map((derivedWallet, index) => ({
+    accounts: accounts.map((derivedWallet) => ({
       id: derivedWallet.id,
       path: derivedWallet.path!,
       order: nextOrder++,
-      nickname: `${chrome.i18n.getMessage('dialog_account')} ${index + 1}`,
+      nickname: derivedWallet.nickname ?? '',
     })),
   };
   const allAccounts = [...previousAccounts, newAccounts];
-  console.log('allAccounts', allAccounts);
   await encryptAccountsInLocalStorage(mk, allAccounts);
   return newAccounts.accounts;
 };
