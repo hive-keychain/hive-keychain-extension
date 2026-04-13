@@ -126,6 +126,7 @@ const chromeMessageHandler = async (
         tab,
         domain,
         keep,
+        'dialog',
         options,
       );
       break;
@@ -189,14 +190,14 @@ export const performOperationFromIndex = async (
   requestHandler: HiveRequestsHandler,
   tab: number,
   request: KeychainRequest,
-  noConfirm: boolean,
 ) => {
   await performHiveOperation(
     requestHandler,
     request,
     tab!,
     request.domain,
-    noConfirm,
+    true,
+    'silent',
   );
 };
 

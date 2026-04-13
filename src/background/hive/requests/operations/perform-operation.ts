@@ -45,12 +45,15 @@ import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 import { addToWhitelist } from 'src/utils/preferences.utils';
 
+export type HiveOperationDelivery = 'dialog' | 'silent';
+
 export const performHiveOperation = async (
   requestHandler: HiveRequestsHandler,
   request: KeychainRequest,
   tab: number,
   domain: string,
-  no_confirm: boolean,
+  shouldWhitelist: boolean,
+  delivery: HiveOperationDelivery,
   options?: TransactionOptions,
 ) => {
   let message = null;
@@ -179,13 +182,12 @@ export const performHiveOperation = async (
         break;
     }
     if (message) {
-      if (no_confirm) {
-        message.command = DialogCommand.SEND_HIVE_RESPONSE;
-      }
-      CommunicationUtils.tabsSendMessage(tab, message);
-      if (!no_confirm) {
-        await requestHandler.removeRequestById(request.request_id, tab);
-      }
+      const tabMessage =
+        delivery === 'silent'
+          ? { ...message, command: DialogCommand.SEND_HIVE_RESPONSE }
+          : message;
+      await CommunicationUtils.tabsSendMessage(tab, tabMessage);
+      await requestHandler.removeRequestById(request.request_id, tab);
     }
   } catch (e) {
     Logger.error(e);
@@ -196,12 +198,13 @@ export const performHiveOperation = async (
       await chrome.i18n.getMessage('unknown_error'),
       request,
     );
-    if (!no_confirm) {
-      await requestHandler.removeRequestById(request.request_id, tab);
-    }
+    await requestHandler.removeRequestById(request.request_id, tab);
   } finally {
-    if (no_confirm) {
-      addToWhitelist(request.username!, domain, request.type);
-    } else if (message) CommunicationUtils.runtimeSendMessage(message);
+    if (shouldWhitelist) {
+      await addToWhitelist(request.username!, domain, request.type);
+    }
+    if (delivery === 'dialog' && message) {
+      await CommunicationUtils.runtimeSendMessage(message);
+    }
   }
 };

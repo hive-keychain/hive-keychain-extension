@@ -7,9 +7,8 @@ export const requestWithoutConfirmation = async (
   tab: number,
   request: KeychainRequest,
 ) => {
-  await performOperationFromIndex(requestHandler, tab, request, true);
+  await performOperationFromIndex(requestHandler, tab, request);
   // if ((await RequestHandlerUtils.countPendingRequest()) === 1) {
   //   requestHandler.closeWindow();
   // }
-  requestHandler.removeRequestById(request.request_id, tab);
 };
