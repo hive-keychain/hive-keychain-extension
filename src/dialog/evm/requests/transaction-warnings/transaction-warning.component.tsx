@@ -55,6 +55,18 @@ export const EvmTransactionWarningsComponent = ({
           }
         />
       )}
+      {warningHook.eip7702WarningField !== undefined && (
+        <EvmRequestItem
+          field={warningHook.eip7702WarningField}
+          onWarningClicked={() =>
+            warningHook.openSingleWarningPopup(
+              -1,
+              -1,
+              warningHook.eip7702WarningField!.warnings![0],
+            )
+          }
+        />
+      )}
 
       {warningHook.fields &&
         warningHook.fields.otherFields?.map((f, index) => {

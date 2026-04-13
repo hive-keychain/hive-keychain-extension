@@ -5,7 +5,7 @@
     align-items: center;
     row-gap: 8px;
     .title {
-      @include poppins400(14px);
+      @include poppins400(16px);
       color: var(--main-font-color);
     }
 

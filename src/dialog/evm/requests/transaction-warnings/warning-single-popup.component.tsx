@@ -28,6 +28,7 @@ export const EvmSinglePopupComponent = ({ warningHook }: Props) => {
       onClickOutside={warningHook.closePopup}>
       <div className="warning-top-panel">
         <SVGIcon className="icon" icon={SVGIcons.MESSAGE_ERROR} />
+        <div className={`title`}>{chrome.i18n.getMessage('evm_warning')}</div>
       </div>
       <div className="warnings">
         {warningHook.selectedSingleWarning && (

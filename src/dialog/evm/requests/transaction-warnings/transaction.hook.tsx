@@ -3,6 +3,7 @@ import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { Message } from '@interfaces/message.interface';
 import { EtherRPCCustomError } from '@popup/evm/interfaces/evm-errors.interface';
 import {
+  EvmTransactionType,
   EvmTransactionVerificationInformation,
   EvmTransactionWarning,
   EvmTransactionWarningLevel,
@@ -21,7 +22,6 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { MessageType } from '@reference-data/message-type.enum';
 import { HDNodeWallet } from 'ethers';
-import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ConfirmationPageEvmFields } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
@@ -71,6 +71,9 @@ export const useTransactionHook = (
   const [shouldDisplayBlockButton, setShouldDisplayBlockButton] =
     useState<boolean>();
 
+  const [eip7702WarningField, setEip7702WarningField] =
+    useState<TransactionConfirmationField>();
+
   const [unableToReachBackend, setUnableToReachBackend] = useState(false);
 
   const [message, setMessage] = useState<Message>();
@@ -79,6 +82,8 @@ export const useTransactionHook = (
 
   useEffect(() => {
     initDuplicateRequestWarningField();
+    initEip7702WarningField();
+
     initShouldDiplayBlockButton();
   }, [request]);
 
@@ -167,6 +172,14 @@ export const useTransactionHook = (
           }
           break;
         }
+        case 'eip7702': {
+          if (eip7702WarningField) {
+            const newEip7702 = { ...eip7702WarningField };
+            newEip7702.warnings![0].ignored = true;
+            setEip7702WarningField(newEip7702);
+          }
+          break;
+        }
       }
     } else if (fields) {
       const newFields: TransactionConfirmationFields = { ...fields! };
@@ -202,6 +215,11 @@ export const useTransactionHook = (
         const newPending = { ...pendingTransactionWarningField };
         newPending.warnings![0].ignored = true;
         setPendingTransactionWarningField(newPending);
+      }
+      if (eip7702WarningField) {
+        const newEip7702 = { ...eip7702WarningField };
+        newEip7702.warnings![0].ignored = true;
+        setEip7702WarningField(newEip7702);
       }
 
       const newFields: TransactionConfirmationFields = { ...fields! };
@@ -327,6 +345,11 @@ export const useTransactionHook = (
       pendingTransactionWarningField.warnings !== undefined &&
       pendingTransactionWarningField.warnings[0].ignored === false;
 
+    const hasEip7702Warning =
+      eip7702WarningField !== undefined &&
+      eip7702WarningField.warnings !== undefined &&
+      eip7702WarningField.warnings[0].ignored === false;
+
     if (localFields)
       return (
         localFields?.some(
@@ -336,7 +359,8 @@ export const useTransactionHook = (
             field.warnings.some((warning) => warning.ignored === false),
         ) ||
         hasDuplicatedWarning ||
-        hasPendingTransactionWarning
+        hasPendingTransactionWarning ||
+        hasEip7702Warning
       );
 
     return false;
@@ -418,12 +442,7 @@ export const useTransactionHook = (
         type: EvmInputDisplayType.LONG_TEXT,
         value: (
           <div>
-            <b>
-              {chrome.i18n.getMessage(
-                'evm_warning_possible_duplicated_transaction_sent_at',
-                [moment(savedRequest.timestamp).format('YYYY-MM-DD HH:mm:ss')],
-              )}
-            </b>
+            <b>{chrome.i18n.getMessage('evm_warning_eip7702_title')}</b>
             <div>{JSON.stringify(savedRequest.request)}</div>
           </div>
         ),
@@ -438,6 +457,31 @@ export const useTransactionHook = (
         ],
       };
       setDuplicatedTransactionWarning(field);
+    }
+  };
+
+  const initEip7702WarningField = async () => {
+    if (!request.method) return;
+    if (
+      request.params &&
+      request.params[0] &&
+      request.params[0].type &&
+      request.params[0].type === EvmTransactionType.EIP_7702
+    ) {
+      setEip7702WarningField({
+        name: 'evm_warning_eip7702_title',
+        type: EvmInputDisplayType.LONG_TEXT,
+        value: null,
+        warnings: [
+          {
+            ignored: false,
+            level: EvmTransactionWarningLevel.HIGH,
+            type: EvmTransactionWarningType.BASE,
+            message: 'evm_warning_eip7702_message',
+            warningKey: 'eip7702',
+          } as EvmTransactionWarning,
+        ],
+      });
     }
   };
 
@@ -492,6 +536,7 @@ export const useTransactionHook = (
     setHasBlockingError,
     initPendingTransactionWarning,
     pendingTransactionWarningField,
+    eip7702WarningField,
   };
 };
 

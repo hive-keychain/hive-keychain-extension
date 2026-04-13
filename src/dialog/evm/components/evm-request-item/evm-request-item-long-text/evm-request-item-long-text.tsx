@@ -20,13 +20,15 @@ export const EvmRequestItemLongText = ({
           className={`header ${isOpened ? 'open' : 'closed'}`}
           onClick={() => setIsOpened(!isOpened)}>
           <div className="title">{fieldTitle}</div>
-          <SVGIcon
-            icon={SVGIcons.GLOBAL_EXPAND_COLLAPSE}
-            className="expand-collapse-icon"
-          />
+          {value && (
+            <SVGIcon
+              icon={SVGIcons.GLOBAL_EXPAND_COLLAPSE}
+              className="expand-collapse-icon"
+            />
+          )}
         </div>
       )}
-      {isOpened && (
+      {isOpened && value && (
         <div className="expandable-panel">
           <div className="expandable-panel-content">{value}</div>
         </div>

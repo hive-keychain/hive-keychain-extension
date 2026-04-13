@@ -5296,6 +5296,10 @@
     "message": "This ENS doesn't seem to be linked to a wallet",
     "description": "Evm ens not matching"
   },
+  "evm_warning": {
+    "message": "Warning",
+    "description": "Evm warning"
+  },
   "evm_warning_possible_duplicated_transaction_title": {
     "message": "Possible duplicate",
     "description": "Possible duplicated malicious transaction title"
@@ -5307,6 +5311,14 @@
   "evm_warning_possible_duplicated_transaction_sent_at": {
     "message": "Sent on $1",
     "description": "Possible duplicated malicious transaction sent on"
+  },
+  "evm_warning_eip7702_title": {
+    "message": "This action can give another contract control over your wallet",
+    "description": "EIP-7702 warning title"
+  },
+  "evm_warning_eip7702_message": {
+    "message": "This action can give another contract control over your wallet. Review with extreme caution as this could lead to a loss of funds.",
+    "description": "EIP-7702 warning message"
   },
   "evm_too_many_transaction_button": {
     "message": "Block this app for $1 minute(s)",

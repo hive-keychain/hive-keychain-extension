@@ -50,20 +50,27 @@ export const EvmRequestItem = ({
     const highestWarning =
       EvmTransactionParserUtils.getHighestWarning(warnings);
 
+    const toggleShowWarnings = () => {
+      if (field.warnings && field.warnings.length > 1) {
+        setShowWarnings(!showWarnings);
+      } else if (field.warnings && field.warnings.length === 1) {
+        if (onWarningClicked) onWarningClicked(0);
+      }
+    };
     return (
       <>
         {!highestWarning.ignored && (
           <SVGIcon
             className={`warning-icon ${highestWarning.level}`}
             icon={SVGIcons.GLOBAL_WARNING}
-            onClick={() => setShowWarnings(!showWarnings)}
+            onClick={() => toggleShowWarnings()}
           />
         )}
         {highestWarning.ignored && (
           <SVGIcon
             className={`warning-icon`}
             icon={SVGIcons.GLOBAL_CHECK}
-            onClick={() => setShowWarnings(!showWarnings)}
+            onClick={() => toggleShowWarnings()}
           />
         )}
       </>

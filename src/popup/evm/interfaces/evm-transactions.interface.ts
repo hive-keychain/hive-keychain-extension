@@ -20,6 +20,7 @@ export enum EvmTransactionType {
   EIP_155 = '0x1',
   EIP_1559 = '0x2',
   EIP_4844 = '0x3',
+  EIP_7702 = '0x4',
 }
 
 export const getAllTransactionTypes = () => {
