@@ -14,7 +14,14 @@
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
     line-height: 24px;
+    width: 100%;
     @include poppins400(14px);
+    .balance-after {
+      text-align: right;
+    }
+    .balance-before {
+      text-align: left;
+    }
 
     .icon {
       --triangle-arrow-color: #{$red};
