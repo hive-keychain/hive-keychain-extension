@@ -5,9 +5,19 @@ import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { isPasswordValid } from 'src/popup/hive/utils/password.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+const safelyLoadAccounts = async <T>(loader: () => Promise<T>) => {
+  try {
+    return await loader();
+  } catch (error) {
+    return undefined;
+  }
+};
+
 const login = async (password: string): Promise<boolean> => {
-  let accounts = await AccountUtils.getAccountsFromLocalStorage(password);
-  let evmAccounts = await EvmWalletUtils.getAccountsFromLocalStorage(password);
+  const [accounts, evmAccounts] = await Promise.all([
+    safelyLoadAccounts(() => AccountUtils.getAccountsFromLocalStorage(password)),
+    safelyLoadAccounts(() => EvmWalletUtils.getAccountsFromLocalStorage(password)),
+  ]);
   if (!!accounts || !!evmAccounts) return true;
   const storage = await LocalStorageUtils.getMultipleValueFromLocalStorage([
     LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED,
