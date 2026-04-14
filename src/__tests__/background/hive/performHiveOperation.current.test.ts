@@ -45,6 +45,9 @@ describe('performHiveOperation current delivery flow', () => {
     const removeRequestSpy = jest
       .spyOn(requestHandler, 'removeRequestById')
       .mockResolvedValue(undefined);
+    const reprocessPendingRequestsSpy = jest
+      .spyOn(requestHandler, 'reprocessPendingRequests')
+      .mockResolvedValue(undefined);
     const whitelistSpy = jest
       .spyOn(PreferencesUtils, 'addToWhitelist')
       .mockResolvedValue(undefined);
@@ -67,6 +70,7 @@ describe('performHiveOperation current delivery flow', () => {
       request.domain,
       request.type,
     );
+    expect(reprocessPendingRequestsSpy).toHaveBeenCalledTimes(1);
   });
 
   it('uses sendHiveResponse only for silent requests and still cleans up once', async () => {
@@ -94,6 +98,9 @@ describe('performHiveOperation current delivery flow', () => {
       .mockResolvedValue(undefined);
     const removeRequestSpy = jest
       .spyOn(requestHandler, 'removeRequestById')
+      .mockResolvedValue(undefined);
+    const reprocessPendingRequestsSpy = jest
+      .spyOn(requestHandler, 'reprocessPendingRequests')
       .mockResolvedValue(undefined);
     const whitelistSpy = jest
       .spyOn(PreferencesUtils, 'addToWhitelist')
@@ -123,6 +130,7 @@ describe('performHiveOperation current delivery flow', () => {
       request.domain,
       request.type,
     );
+    expect(reprocessPendingRequestsSpy).not.toHaveBeenCalled();
     expect(operationMessage.command).toBe(DialogCommand.ANSWER_REQUEST);
   });
 });

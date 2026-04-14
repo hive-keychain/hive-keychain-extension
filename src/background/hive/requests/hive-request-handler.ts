@@ -275,6 +275,40 @@ export class HiveRequestsHandler {
     }
   }
 
+  async reprocessPendingRequests() {
+    const pendingRequestsSnapshot = [...this.requestsData];
+
+    for (const requestData of pendingRequestsSnapshot) {
+      if (
+        requestData.confirmed ||
+        requestData.tab === undefined ||
+        !requestData.request ||
+        !requestData.domain
+      ) {
+        continue;
+      }
+
+      const isStillPending = this.requestsData.some(
+        (currentRequestData) =>
+          currentRequestData.request_id === requestData.request_id &&
+          currentRequestData.tab === requestData.tab,
+      );
+
+      if (!isStillPending) {
+        continue;
+      }
+
+      await initHiveRequestHandler(
+        requestData.request,
+        requestData.tab,
+        requestData.domain,
+        this,
+      );
+    }
+
+    await syncSharedDialogWindow({ hiveRequestHandler: this });
+  }
+
   static async getFromLocalStorage() {
     const windowId = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.DIALOG_WINDOW_ID,

@@ -206,5 +206,8 @@ export const performHiveOperation = async (
     if (delivery === 'dialog' && message) {
       await CommunicationUtils.runtimeSendMessage(message);
     }
+    if (shouldWhitelist && delivery === 'dialog') {
+      await requestHandler.reprocessPendingRequests();
+    }
   }
 };
