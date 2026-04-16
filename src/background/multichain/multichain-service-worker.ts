@@ -5,6 +5,7 @@ import MkModule from '@background/hive/modules/mk.module';
 import VaultModule from '@background/vault.module';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { VaultCommand } from '@reference-data/vault-message-key.enum';
+import { ensureEcosystemDappsCached } from 'src/utils/ecosystem-dapps-cache.utils';
 import Logger from 'src/utils/logger.utils';
 
 Object.assign(global, { contextType: 'service_worker' });
@@ -18,6 +19,7 @@ EvmServiceWorker.initializeServiceWorker();
     VaultModule.init();
   }
   await ChainUtils.initChains();
+  void ensureEcosystemDappsCached();
 })();
 
 const chromeMessageHandler = async (backgroundMessage: BackgroundMessage) => {

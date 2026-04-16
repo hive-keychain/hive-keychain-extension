@@ -22,9 +22,14 @@ const getProviderChainId = (value: unknown) => {
   return null;
 };
 
-export const getProviderChainWithTimeout = async (
+export interface ProviderChainBootstrapResult {
+  resolvedChain: EvmChain | null;
+  rawChainId: string | null;
+}
+
+export const getProviderChainBootstrapResult = async (
   timeoutMs = PROVIDER_CHAIN_BOOTSTRAP_TIMEOUT_MS,
-): Promise<EvmChain | null> => {
+): Promise<ProviderChainBootstrapResult> => {
   return new Promise((resolve) => {
     let settled = false;
     let timeoutId: number | undefined;
@@ -36,11 +41,11 @@ export const getProviderChainWithTimeout = async (
       }
     };
 
-    const settle = (chain: EvmChain | null) => {
+    const settle = (result: ProviderChainBootstrapResult) => {
       if (settled) return;
       settled = true;
       cleanup();
-      resolve(chain);
+      resolve(result);
     };
 
     const handleMessage = async (message: BackgroundMessage) => {
@@ -55,22 +60,38 @@ export const getProviderChainWithTimeout = async (
 
       try {
         const chain = await ChainUtils.getChain<EvmChain>(chainId);
-        settle(chain ?? null);
+        settle({
+          resolvedChain: chain ?? null,
+          rawChainId: chainId,
+        });
       } catch {
-        settle(null);
+        settle({
+          resolvedChain: null,
+          rawChainId: chainId,
+        });
       }
     };
 
     chrome.runtime.onMessage.addListener(handleMessage);
-    timeoutId = window.setTimeout(() => settle(null), timeoutMs);
+    timeoutId = window.setTimeout(
+      () => settle({ resolvedChain: null, rawChainId: null }),
+      timeoutMs,
+    );
 
     CommunicationUtils.runtimeSendMessage(
       {
         command: BackgroundCommand.GET_CHAIN_FROM_PROVIDER,
       } as BackgroundMessage,
-      () => settle(null),
+      () => settle({ resolvedChain: null, rawChainId: null }),
     );
   });
+};
+
+export const getProviderChainWithTimeout = async (
+  timeoutMs = PROVIDER_CHAIN_BOOTSTRAP_TIMEOUT_MS,
+): Promise<EvmChain | null> => {
+  const result = await getProviderChainBootstrapResult(timeoutMs);
+  return result.resolvedChain;
 };
 
 export { PROVIDER_CHAIN_BOOTSTRAP_TIMEOUT_MS };

@@ -1,4 +1,4 @@
-import { DApp, DAppCategory } from '@popup/hive/pages/app-container/home/ecosystem/ecosystem-category/ecosystem-category.component';
+import { DApp, DAppCategory } from 'src/interfaces/ecosystem-dapps.interface';
 import {
   Chain,
   ChainType,

@@ -95,4 +95,7 @@ export enum LocalStorageKeyEnum {
   KEYLESS_KEYCHAIN_AUTH_DATA_USER_DICT = 'KEYLESS_KEYCHAIN_AUTH_DATA_USER_DICT',
 
   DEFAULT_CHAINS = 'DEFAULT_CHAINS',
+
+  /** Ecosystem directory: `{ categories, fetchedAt }` with hourly TTL */
+  ECOSYSTEM_DAPPS_CACHE = 'ECOSYSTEM_DAPPS_CACHE',
 }

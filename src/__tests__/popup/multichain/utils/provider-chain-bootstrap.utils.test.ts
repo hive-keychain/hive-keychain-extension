@@ -106,6 +106,29 @@ describe('provider chain bootstrap', () => {
     expect(ChainUtils.getChain).not.toHaveBeenCalled();
   });
 
+
+  it('returns raw chain id when the chain is not in setup', async () => {
+    const { getProviderChainBootstrapResult, CommunicationUtils, ChainUtils } =
+      await loadTestContext();
+    const addListenerMock = jest.spyOn(chrome.runtime.onMessage, 'addListener');
+
+    const bootstrapPromise = getProviderChainBootstrapResult(1000);
+    const listener = addListenerMock.mock.calls[0][0];
+
+    ChainUtils.getChain.mockResolvedValue(null);
+
+    await listener({
+      command: BackgroundCommand.SEND_BACK_CHAIN_FROM_PROVIDER,
+      value: { chainId: '0x999' },
+    });
+
+    await expect(bootstrapPromise).resolves.toEqual({
+      resolvedChain: null,
+      rawChainId: '0x999',
+    });
+    expect(ChainUtils.getChain).toHaveBeenCalledWith('0x999');
+  });
+
   it('falls back immediately when the bootstrap request cannot be sent', async () => {
     const { getProviderChainWithTimeout, CommunicationUtils } =
       await loadTestContext();

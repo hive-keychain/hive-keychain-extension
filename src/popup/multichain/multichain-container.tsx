@@ -1,3 +1,4 @@
+import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
 import { setChain } from '@popup/multichain/actions/chain.actions';
 import { ChainComponentWithBoundary } from '@popup/multichain/chain.component';
@@ -5,7 +6,7 @@ import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { RootState, store } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
-import { getProviderChainWithTimeout } from '@popup/multichain/utils/provider-chain-bootstrap.utils';
+import { getProviderChainBootstrapResult } from '@popup/multichain/utils/provider-chain-bootstrap.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import hotkeys from 'hotkeys-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -24,6 +25,11 @@ import {
   navigateToWithParams,
 } from 'src/popup/multichain/actions/navigation.actions';
 import { Theme, ThemeContext } from 'src/popup/theme.context';
+import {
+  ensureEcosystemDappsCached,
+  findDappByTabOrigin,
+  getActiveTabOrigin,
+} from 'src/utils/ecosystem-dapps-cache.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import ShortcutsUtils from 'src/utils/shortcuts.utils';
 
@@ -204,7 +210,8 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
           LocalStorageKeyEnum.SHORTCUTS,
         ],
       );
-      const providerChainPromise = getProviderChainWithTimeout();
+      const ecosystemPromise = ensureEcosystemDappsCached();
+      const providerBootstrapPromise = getProviderChainBootstrapResult();
 
       const res = await storagePromise;
 
@@ -220,21 +227,53 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
       setHasHydratedSettings(true);
 
       const storedChain = res.ACTIVE_CHAIN
-        ? await ChainUtils.getChain<EvmChain>(res.ACTIVE_CHAIN)
+        ? await ChainUtils.getChain<Chain>(res.ACTIVE_CHAIN)
         : null;
 
       if (!isMounted) return;
 
-      let chainFromProvider: EvmChain | null = null;
-      try {
-        chainFromProvider = await providerChainPromise;
-      } catch {
-        chainFromProvider = null;
-      }
+      const [categories, providerBootstrap] = await Promise.all([
+        ecosystemPromise,
+        providerBootstrapPromise,
+      ]);
 
       if (!isMounted) return;
 
-      const initialChain = chainFromProvider ?? storedChain;
+      const tabOrigin = await getActiveTabOrigin();
+
+      if (!isMounted) return;
+
+      const ecosystemDapp = findDappByTabOrigin(categories, tabOrigin);
+      console.log('ecosystemDapp', ecosystemDapp);
+
+      let initialChain: Chain | null = null;
+
+      if (ecosystemDapp?.chainId) {
+        initialChain =
+          (await ChainUtils.getChain<Chain>(ecosystemDapp.chainId)) ?? null;
+      }
+
+      if (!initialChain) {
+        if (providerBootstrap.resolvedChain) {
+          initialChain = providerBootstrap.resolvedChain;
+        } else if (providerBootstrap.rawChainId) {
+          const originChainId = await EvmChainUtils.getLastEvmChainIdForOrigin(
+            tabOrigin ?? undefined,
+          );
+          let fromOrigin: Chain | null = null;
+          if (originChainId) {
+            fromOrigin =
+              (await ChainUtils.getChain<EvmChain>(originChainId)) ?? null;
+          }
+          initialChain =
+            fromOrigin ??
+            (await EvmChainUtils.getLastEvmChain()) ??
+            storedChain;
+        } else {
+          initialChain = (await EvmChainUtils.getLastEvmChain()) ?? storedChain;
+        }
+      }
+
       if (initialChain) {
         setChain(initialChain);
       }
