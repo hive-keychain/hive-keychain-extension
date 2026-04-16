@@ -5389,6 +5389,30 @@
     "message": "Currency symbol",
     "description": "Custom chain form field"
   },
+  "evm_custom_chains_field_default_tx_type": {
+    "message": "Default transaction type",
+    "description": "Custom chain form: EIP-1559 / legacy / etc."
+  },
+  "evm_custom_chains_tx_type_legacy": {
+    "message": "Legacy (type 0)",
+    "description": "EvmTransactionType"
+  },
+  "evm_custom_chains_tx_type_eip155": {
+    "message": "EIP-155 (type 1)",
+    "description": "EvmTransactionType"
+  },
+  "evm_custom_chains_tx_type_eip1559": {
+    "message": "EIP-1559 (type 2)",
+    "description": "EvmTransactionType"
+  },
+  "evm_custom_chains_tx_type_eip4844": {
+    "message": "EIP-4844 (type 3)",
+    "description": "EvmTransactionType"
+  },
+  "evm_custom_chains_tx_type_eip7702": {
+    "message": "EIP-7702 (type 4)",
+    "description": "EvmTransactionType"
+  },
   "evm_custom_chains_field_rpc": {
     "message": "RPC URLs",
     "description": "Custom chain form section (one or more endpoints)"

@@ -23,6 +23,8 @@ export interface Chain {
   type: ChainType;
   logo: string;
   chainId: string;
+  /** Present on chains from the API / stored config; not user-edited in custom-chain form. */
+  active?: boolean;
   testnet?: boolean;
   blockExplorer?: BlockExplorer;
   blockExplorerApi?: BlockExplorer;
@@ -39,7 +41,8 @@ export enum BlockExplorerType {
 
 export interface BlockExplorer {
   url: string;
-  type: BlockExplorerType;
+  /** When omitted (e.g. API payloads), callers may infer explorer behavior from the URL. */
+  type?: BlockExplorerType;
 }
 
 export interface EvmChain extends Chain {

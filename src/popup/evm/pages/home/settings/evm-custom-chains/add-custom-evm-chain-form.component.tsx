@@ -2,16 +2,16 @@ import ButtonComponent, {
   ButtonType,
 } from '@common-ui/button/button.component';
 import CheckboxComponent from '@common-ui/checkbox/checkbox/checkbox.component';
+import {
+  ComplexeCustomSelect,
+  OptionItem,
+} from '@common-ui/custom-select/custom-select.component';
 import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
-import {
-  BlockExplorerType,
-  ChainType,
-  EvmChain,
-} from '@popup/multichain/interfaces/chains.interface';
+import { ChainType, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -45,6 +45,29 @@ interface OwnProps {
 
 const ADD_RPC_FALLBACK = 'Add another RPC URL';
 
+const TX_TYPE_ORDER: EvmTransactionType[] = [
+  EvmTransactionType.LEGACY,
+  EvmTransactionType.EIP_155,
+  EvmTransactionType.EIP_1559,
+  EvmTransactionType.EIP_4844,
+  EvmTransactionType.EIP_7702,
+];
+
+const TX_TYPE_LABEL_KEY: Record<EvmTransactionType, string> = {
+  [EvmTransactionType.LEGACY]: 'evm_custom_chains_tx_type_legacy',
+  [EvmTransactionType.EIP_155]: 'evm_custom_chains_tx_type_eip155',
+  [EvmTransactionType.EIP_1559]: 'evm_custom_chains_tx_type_eip1559',
+  [EvmTransactionType.EIP_4844]: 'evm_custom_chains_tx_type_eip4844',
+  [EvmTransactionType.EIP_7702]: 'evm_custom_chains_tx_type_eip7702',
+};
+
+const getTxTypeOptionLabel = (t: EvmTransactionType): string => {
+  const key = TX_TYPE_LABEL_KEY[t];
+  if (!key) return String(t);
+  const msg = chrome.i18n.getMessage(key);
+  return msg || key;
+};
+
 const AddCustomEvmChainFormInner = ({
   onSuccess,
   onCancel,
@@ -61,8 +84,17 @@ const AddCustomEvmChainFormInner = ({
   const [rpcUrls, setRpcUrls] = useState<string[]>(['']);
   const [explorer, setExplorer] = useState('');
   const [logo, setLogo] = useState('');
+  const [txType, setTxType] = useState<EvmTransactionType>(
+    EvmTransactionType.EIP_1559,
+  );
   const [testnet, setTestnet] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  const txTypeOptions: OptionItem[] = TX_TYPE_ORDER.map((value) => ({
+    value,
+    label: getTxTypeOptionLabel(value),
+    key: value,
+  }));
 
   const setRpcAt = (index: number, value: string) => {
     setRpcUrls((prev) => {
@@ -119,6 +151,7 @@ const AddCustomEvmChainFormInner = ({
 
     const chain: EvmChain = {
       type: ChainType.EVM,
+      active: true,
       name: name.trim(),
       chainId,
       mainToken: symbol.trim(),
@@ -128,15 +161,15 @@ const AddCustomEvmChainFormInner = ({
         url,
         isDefault: i === 0,
       })),
-      defaultTransactionType: EvmTransactionType.EIP_1559,
-      blockExplorer: explorer.trim()
-        ? { url: explorer.trim(), type: BlockExplorerType.BLOCKSCOUT }
-        : { url: '', type: BlockExplorerType.BLOCKSCOUT },
-      blockExplorerApi: { url: '', type: BlockExplorerType.BLOCKSCOUT },
+      defaultTransactionType: txType,
       disableTokensAndHistoryAutoLoading: true,
       addTokensManually: true,
       manualDiscoverAvailable: false,
     };
+
+    if (explorer.trim()) {
+      chain.blockExplorer = { url: explorer.trim() };
+    }
 
     setSaving(true);
     try {
@@ -179,6 +212,17 @@ const AddCustomEvmChainFormInner = ({
         label="evm_custom_chains_field_symbol"
         value={symbol}
         onChange={(v) => setSymbol(v)}
+      />
+      <ComplexeCustomSelect
+        label="evm_custom_chains_field_default_tx_type"
+        options={txTypeOptions}
+        selectedItem={{
+          label: getTxTypeOptionLabel(txType),
+          value: txType,
+          key: txType,
+        }}
+        setSelectedItem={(item) => setTxType(item.value as EvmTransactionType)}
+        background="white"
       />
       <div className="add-custom-evm-chain-form__rpc-block">
         <div className="add-custom-evm-chain-form__rpc-label">
