@@ -91,6 +91,7 @@ const setChainIdForOrigin = async (origin: string, chainId: string) => {
 export const EvmChainUtils = {
   getLastEvmChainId,
   getLastEvmChainIdForOrigin,
+  getStoredChainIdForOrigin,
   getEthChain,
   getEthChainId,
   getLastEvmChain,

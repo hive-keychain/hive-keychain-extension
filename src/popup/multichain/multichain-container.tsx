@@ -2,10 +2,11 @@ import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
 import { setChain } from '@popup/multichain/actions/chain.actions';
 import { ChainComponentWithBoundary } from '@popup/multichain/chain.component';
-import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { Chain } from '@popup/multichain/interfaces/chains.interface';
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { RootState, store } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { resolvePopupInitialChain } from '@popup/multichain/utils/popup-initial-chain.utils';
 import { getProviderChainBootstrapResult } from '@popup/multichain/utils/provider-chain-bootstrap.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import hotkeys from 'hotkeys-js';
@@ -244,35 +245,18 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
       if (!isMounted) return;
 
       const ecosystemDapp = findDappByTabOrigin(categories, tabOrigin);
-      console.log('ecosystemDapp', ecosystemDapp);
-
-      let initialChain: Chain | null = null;
-
-      if (ecosystemDapp?.chainId) {
-        initialChain =
-          (await ChainUtils.getChain<Chain>(ecosystemDapp.chainId)) ?? null;
-      }
-
-      if (!initialChain) {
-        if (providerBootstrap.resolvedChain) {
-          initialChain = providerBootstrap.resolvedChain;
-        } else if (providerBootstrap.rawChainId) {
-          const originChainId = await EvmChainUtils.getLastEvmChainIdForOrigin(
-            tabOrigin ?? undefined,
-          );
-          let fromOrigin: Chain | null = null;
-          if (originChainId) {
-            fromOrigin =
-              (await ChainUtils.getChain<EvmChain>(originChainId)) ?? null;
-          }
-          initialChain =
-            fromOrigin ??
-            (await EvmChainUtils.getLastEvmChain()) ??
-            storedChain;
-        } else {
-          initialChain = (await EvmChainUtils.getLastEvmChain()) ?? storedChain;
-        }
-      }
+      const ecosystemChain = ecosystemDapp?.chainId
+        ? ((await ChainUtils.getChain<Chain>(ecosystemDapp.chainId)) ?? null)
+        : null;
+      const hasRequestedProviderChain = !!(
+        tabOrigin && (await EvmChainUtils.getStoredChainIdForOrigin(tabOrigin))
+      );
+      const initialChain = resolvePopupInitialChain({
+        providerChain: providerBootstrap.resolvedChain,
+        hasRequestedProviderChain,
+        ecosystemChain,
+        storedChain,
+      });
 
       if (initialChain) {
         setChain(initialChain);

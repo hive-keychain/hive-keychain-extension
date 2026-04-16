@@ -383,7 +383,8 @@ const registerAddress = async (
   if (!registeredAddresses) registeredAddresses = {};
   if (!registeredAddresses[chainId]) registeredAddresses[chainId] = [];
   if (registeredAddresses[chainId].includes(address)) {
-    return;
+    // TODO remove after testing period
+    // return;
   }
   registeredAddresses[chainId].push(address);
 
