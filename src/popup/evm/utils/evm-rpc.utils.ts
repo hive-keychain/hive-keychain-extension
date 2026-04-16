@@ -169,11 +169,12 @@ const checkRpcStatus = async (uri: string) => {
   const rpcProvider = new EtherJsonRpcProvider(uri);
   try {
     await rpcProvider.send('eth_blockNumber', []);
+    rpcProvider.destroy();
     return true;
   } catch (err) {
-    return false;
-  } finally {
+    console.log('checkRpcStatus error', err);
     rpcProvider.destroy();
+    return false;
   }
 };
 

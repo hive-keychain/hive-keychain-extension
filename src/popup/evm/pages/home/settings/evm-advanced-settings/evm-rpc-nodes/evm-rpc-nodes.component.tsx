@@ -111,8 +111,8 @@ const EvmRpcNodes = ({
       setErrorMessage('evm_rpc_already_in_list');
       return;
     }
-
-    if (!(await EvmRpcUtils.checkRpcStatus(newRpc.url))) {
+    const isRpcWorking = await EvmRpcUtils.checkRpcStatus(newRpc.url);
+    if (!isRpcWorking) {
       setWarningMessage('evm_add_rpc_not_working_warning', [], false, {
         onConfirm: async () => {
           await EvmRpcUtils.addCustomRpc(newRpc, selectedChain);
@@ -129,6 +129,17 @@ const EvmRpcNodes = ({
         onCancel: () => {},
       });
       return;
+    } else {
+      await EvmRpcUtils.addCustomRpc(newRpc, selectedChain);
+      if (setNewRpcAsActive) {
+        await selectRpc(newRpc);
+      }
+      setNewRpc(EMPTY_RPC);
+      setSetNewRpcAsActive(false);
+      setIsAddRpcPanelDisplayed(false);
+      setTimeout(() => {
+        initChain();
+      }, 500);
     }
   };
 
