@@ -17,6 +17,7 @@ import EvmProviderSettingsComponent from '@popup/evm/pages/home/settings/evm-adv
 import { EvmRpcNodesComponent } from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-rpc-nodes/evm-rpc-nodes.component';
 import { EvmSecuritySettingsComponent } from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-security/evm-security.component';
 import { EvmContactsComponent } from '@popup/evm/pages/home/settings/evm-contacts/evm-contacts.component';
+import { EvmCustomChainsComponent } from '@popup/evm/pages/home/settings/evm-custom-chains/evm-custom-chains.component';
 import { EvmSettingPage } from '@popup/evm/pages/home/settings/evm-settings.component';
 import { EvmTransactionResultComponent } from '@popup/evm/pages/home/transaction-result/transaction-result.component';
 import { EvmTransferComponent } from '@popup/evm/pages/home/transfer/evm-transfer.component';
@@ -83,6 +84,8 @@ const EvmAppRouter = ({
         return <EvmAdvancedSettingsComponent />;
       case EvmScreen.EVM_CONTACTS:
         return <EvmContactsComponent />;
+      case EvmScreen.EVM_CUSTOM_CHAINS:
+        return <EvmCustomChainsComponent />;
       case EvmScreen.EVM_RPC_NODES_SETTINGS:
         return <EvmRpcNodesComponent />;
       case EvmScreen.EVM_SECURITY_SETTINGS:

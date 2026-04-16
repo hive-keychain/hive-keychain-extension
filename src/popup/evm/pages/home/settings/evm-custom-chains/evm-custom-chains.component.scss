@@ -1,0 +1,165 @@
+.evm-custom-chains-page {
+  .evm-custom-chains-card {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    margin: 0 24px;
+  }
+
+  .evm-custom-chains-caption {
+    font-size: 13px;
+    line-height: 1.45;
+    margin: 0;
+    opacity: 0.85;
+  }
+
+  .evm-custom-chains-empty {
+    margin: 0;
+    font-size: 13px;
+    opacity: 0.85;
+  }
+
+  .evm-custom-chains-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 360px;
+    overflow: auto;
+  }
+
+  .evm-custom-chains-list__item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px;
+    border-radius: 8px;
+    background: var(--card-subtle-background, rgba(128, 128, 128, 0.12));
+  }
+
+  .evm-custom-chains-list__logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .evm-custom-chains-list__text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .evm-custom-chains-list__name {
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .evm-custom-chains-list__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 12px;
+    opacity: 0.9;
+    word-break: break-all;
+  }
+
+  .evm-custom-chains-list__testnet {
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+
+  .evm-custom-chains-list__rpc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .evm-custom-chains-list__rpc {
+    font-size: 11px;
+    opacity: 0.8;
+    word-break: break-all;
+  }
+}
+
+.add-custom-evm-chain-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 280px;
+
+  .add-custom-evm-chain-form__rpc-block {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .add-custom-evm-chain-form__rpc-label {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .add-custom-evm-chain-form__rpc-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .custom-input {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  .add-custom-evm-chain-form__rpc-add-icon,
+  .add-custom-evm-chain-form__rpc-remove-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: var(--button-alternative-background-color);
+    cursor: pointer;
+    color: var(--main-font-color);
+
+    &:hover:not(:disabled) {
+      opacity: 0.9;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    .svg-icon {
+      width: 22px;
+      height: 22px;
+    }
+  }
+
+  .add-custom-evm-chain-form__rpc-remove-icon {
+    color: $red;
+  }
+
+  .add-custom-evm-chain-form__actions {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 8px;
+    margin-top: 8px;
+
+    .submit-button {
+      flex: 1 1 0;
+      width: auto;
+      min-width: 0;
+    }
+  }
+}

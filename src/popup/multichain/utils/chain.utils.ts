@@ -151,13 +151,42 @@ const removeChainFromSetupChains = async (chain: Chain) => {
   );
 };
 
-const getCustomChains = async () => {
-  // TODO implement
-  return [];
+const isStoredEvmChain = (c: unknown): c is EvmChain => {
+  if (!c || typeof c !== 'object') return false;
+  const ch = c as Record<string, unknown>;
+  return (
+    ch.type === ChainType.EVM &&
+    typeof ch.chainId === 'string' &&
+    typeof ch.name === 'string' &&
+    typeof ch.mainToken === 'string' &&
+    typeof ch.defaultTransactionType === 'string' &&
+    Array.isArray(ch.rpcs)
+  );
 };
 
-const addCustomChain = async (chain: EvmChain) => {
-  const customChains = await getCustomChains();
+const getCustomChains = async (): Promise<EvmChain[]> => {
+  const stored = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.CUSTOM_CHAINS,
+  );
+  if (!Array.isArray(stored)) return [];
+  return stored.filter(isStoredEvmChain).map((c) => ({ ...c } as EvmChain));
+};
+
+const addCustomChain = async (chain: EvmChain): Promise<void> => {
+  const custom = await getCustomChains();
+  const normalizedId = chain.chainId.toLowerCase();
+  if (custom.some((c) => c.chainId.toLowerCase() === normalizedId)) {
+    throw new Error('duplicate_custom_chain');
+  }
+  const defaults = await getDefaultChains();
+  if (defaults.some((c) => c.chainId.toLowerCase() === normalizedId)) {
+    throw new Error('chain_exists_in_defaults');
+  }
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.CUSTOM_CHAINS,
+    [...custom, chain],
+  );
+  await addChainToSetupChains(chain);
 };
 
 const initChains = async (): Promise<Chain[]> => {
@@ -219,6 +248,7 @@ export const ChainUtils = {
   removeChainFromSetupChains,
   getNonSetupChains,
   getCustomChains,
+  addCustomChain,
   getChain,
   setPreviousChain,
   getPreviousChain,

@@ -5357,6 +5357,102 @@
     "message": "Contacts",
     "description": "Contact menu item"
   },
+  "evm_menu_custom_chains": {
+    "message": "Custom chains",
+    "description": "EVM settings: custom networks"
+  },
+  "evm_custom_chains_caption": {
+    "message": "Custom networks have limited support. Features such as token discovery and automatic history loading may be unavailable.",
+    "description": "Custom chains info caption"
+  },
+  "evm_custom_chains_add": {
+    "message": "Add custom chain",
+    "description": "Button to add a custom EVM chain"
+  },
+  "evm_custom_chains_modal_title": {
+    "message": "Add custom chain",
+    "description": "Modal title for adding custom chain"
+  },
+  "evm_custom_chains_empty": {
+    "message": "No custom chains yet. Add one to connect to a network that is not in the default list.",
+    "description": "Empty state for custom chains list"
+  },
+  "evm_custom_chains_field_name": {
+    "message": "Network name",
+    "description": "Custom chain form field"
+  },
+  "evm_custom_chains_field_chain_id": {
+    "message": "Chain ID",
+    "description": "Custom chain form field"
+  },
+  "evm_custom_chains_field_symbol": {
+    "message": "Currency symbol",
+    "description": "Custom chain form field"
+  },
+  "evm_custom_chains_field_rpc": {
+    "message": "RPC URLs",
+    "description": "Custom chain form section (one or more endpoints)"
+  },
+  "evm_custom_chains_field_rpc_placeholder": {
+    "message": "https://…",
+    "description": "Placeholder for RPC URL inputs"
+  },
+  "evm_custom_chains_add_rpc": {
+    "message": "Add another RPC URL",
+    "description": "Add another RPC row in custom chain form"
+  },
+  "evm_custom_chains_remove_rpc": {
+    "message": "Remove",
+    "description": "Remove an RPC row in custom chain form"
+  },
+  "evm_custom_chains_field_explorer": {
+    "message": "Block explorer URL (optional)",
+    "description": "Custom chain form field"
+  },
+  "evm_custom_chains_field_logo": {
+    "message": "Logo URL (optional)",
+    "description": "Custom chain form field"
+  },
+  "evm_custom_chains_field_testnet": {
+    "message": "This is a testnet",
+    "description": "Custom chain form checkbox"
+  },
+  "evm_custom_chains_save": {
+    "message": "Save chain",
+    "description": "Save custom chain button"
+  },
+  "evm_custom_chains_error_name": {
+    "message": "Please enter a network name.",
+    "description": "Custom chain validation"
+  },
+  "evm_custom_chains_error_symbol": {
+    "message": "Please enter a currency symbol.",
+    "description": "Custom chain validation"
+  },
+  "evm_custom_chains_error_rpc": {
+    "message": "Please enter at least one valid HTTP or HTTPS RPC URL.",
+    "description": "Custom chain validation"
+  },
+  "evm_custom_chains_error_rpc_duplicate": {
+    "message": "Each RPC URL must be unique.",
+    "description": "Custom chain validation duplicate RPC"
+  },
+  "evm_custom_chains_error_chain_id": {
+    "message": "Please enter a valid chain ID (decimal or 0x hex).",
+    "description": "Custom chain validation"
+  },
+  "evm_custom_chains_error_duplicate": {
+    "message": "A custom chain with this ID is already added.",
+    "description": "Custom chain validation"
+  },
+  "evm_custom_chains_error_default_exists": {
+    "message": "This chain is already available as a default network. Enable it from the chain list instead.",
+    "description": "Custom chain validation"
+  },
+  "evm_custom_chains_error_generic": {
+    "message": "Could not save this chain. Please check your entries and try again.",
+    "description": "Custom chain generic error"
+  },
   "evm_menu_advanced": {
     "message": "Advanced",
     "description": "Evm Advanced menu"
