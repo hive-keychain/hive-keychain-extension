@@ -31,6 +31,8 @@ export interface Chain {
   network?: string;
   rpcs: MultichainRpc[];
   isPopular?: boolean;
+  /** When `true`, the chain was added by the user (custom EVM chains list). Omitted on default/API chains. */
+  isCustom?: boolean;
 }
 
 export enum BlockExplorerType {

@@ -173,7 +173,9 @@ const getCustomChains = async (): Promise<EvmChain[]> => {
     LocalStorageKeyEnum.CUSTOM_CHAINS,
   );
   if (!Array.isArray(stored)) return [];
-  return stored.filter(isStoredEvmChain).map((c) => ({ ...c } as EvmChain));
+  return stored
+    .filter(isStoredEvmChain)
+    .map((c) => ({ ...c, isCustom: true } as EvmChain));
 };
 
 const addCustomChain = async (chain: EvmChain): Promise<void> => {
@@ -186,9 +188,10 @@ const addCustomChain = async (chain: EvmChain): Promise<void> => {
   if (defaults.some((c) => c.chainId.toLowerCase() === normalizedId)) {
     throw new Error('chain_exists_in_defaults');
   }
+  const toSave: EvmChain = { ...chain, isCustom: true };
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.CUSTOM_CHAINS,
-    [...custom, chain],
+    [...custom, toSave],
   );
   await addChainToSetupChains(chain);
 };
@@ -501,7 +504,7 @@ const updateCustomChain = async (
   }
 
   const next = [...custom];
-  next[idx] = chain;
+  next[idx] = { ...chain, isCustom: true };
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.CUSTOM_CHAINS,
     next,

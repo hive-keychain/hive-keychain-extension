@@ -180,6 +180,7 @@ const AddCustomEvmChainFormInner = ({
 
     const chain: EvmChain = {
       type: ChainType.EVM,
+      isCustom: true,
       active: true,
       name: name.trim(),
       chainId,
