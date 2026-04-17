@@ -93,8 +93,8 @@ $autoCompleteItemHeight: 30px;
         display: none;
       }
 
-      &:hover,
-      &.focused {
+      &.has-value:hover,
+      &.has-value.focused {
         input {
           padding-right: 36px;
         }

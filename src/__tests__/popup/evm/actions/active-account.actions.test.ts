@@ -51,6 +51,7 @@ describe('EVM active-account.actions (custom chain)', () => {
       catchupStatus: CatchupStatus.DONE,
       pricingStatus: PricingStatus.READY,
     });
+    jest.spyOn(EvmTokensUtils, 'getCustomErc20TokenInfos').mockResolvedValue([]);
     jest.spyOn(EvmTokensUtils, 'getTokenBalances').mockResolvedValue([]);
   });
 
@@ -91,6 +92,44 @@ describe('EVM active-account.actions (custom chain)', () => {
 
     expect(EvmLightNodeUtils.registerAddress).toHaveBeenCalled();
     expect(EvmLightNodeUtils.getDiscoveredTokens).toHaveBeenCalled();
+    expect(EvmTokensUtils.getCustomErc20TokenInfos).not.toHaveBeenCalled();
+  });
+
+  it('loadEvmActiveAccount includes saved custom ERC20 tokens for custom chains', async () => {
+    (EvmTokensUtils.getCustomErc20TokenInfos as jest.Mock).mockResolvedValue([
+      {
+        type: 'ERC20',
+        name: 'USD Coin',
+        symbol: 'USDC',
+        decimals: 6,
+        logo: '',
+        chainId: customEvmChain.chainId,
+        contractAddress: '0x00000000000000000000000000000000000000aa',
+        backgroundColor: '',
+        priceUsd: 0,
+        possibleSpam: false,
+        verifiedContract: true,
+        isProxy: false,
+        proxyTarget: null,
+        validated: 0,
+      },
+    ]);
+
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      chain: customEvmChain,
+    });
+
+    await store.dispatch<any>(loadEvmActiveAccount(customEvmChain, wallet));
+
+    const tokenBalancesCall = (EvmTokensUtils.getTokenBalances as jest.Mock).mock
+      .calls[0];
+    expect(tokenBalancesCall[2]).toHaveLength(2);
+    expect(tokenBalancesCall[2][0].type).toBe('NATIVE');
+    expect(tokenBalancesCall[2][1]).toMatchObject({
+      type: 'ERC20',
+      contractAddress: '0x00000000000000000000000000000000000000aa',
+    });
   });
 
   it('loadEvmHistory does not call fetchHistory2 for custom chains', async () => {

@@ -136,12 +136,25 @@ const mapDiscoveredNftsResponseToActiveAccountNfts = async (
   });
 };
 
+const getTokenInfosWithCustomErc20 = async (
+  chain: EvmChain,
+  wallet: HDNodeWallet,
+  tokenInfos: NativeAndErc20Token['tokenInfo'][],
+) => {
+  const customTokenInfos = await EvmTokensUtils.getCustomErc20TokenInfos(
+    chain,
+    process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
+  );
+
+  return EvmTokensUtils.mergeCustomErc20TokenInfos(
+    tokenInfos,
+    customTokenInfos,
+  );
+};
+
 export const loadEvmHistory = (): AppThunk => async (dispatch, getState) => {
   const chain = getState().chain as Chain;
-  if (
-    chain.type === ChainType.EVM &&
-    (chain as EvmChain).isCustom === true
-  ) {
+  if (chain.type === ChainType.EVM && (chain as EvmChain).isCustom === true) {
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: {
@@ -256,10 +269,13 @@ export const loadEvmActiveAccount =
       });
 
       const nativeMeta = EvmTokensUtils.buildFallbackNativeTokenInfo(chain);
+      const tokenInfos = await getTokenInfosWithCustomErc20(chain, wallet, [
+        nativeMeta,
+      ]);
       const balances = await EvmTokensUtils.getTokenBalances(
         process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
         chain,
-        [nativeMeta],
+        tokenInfos,
       );
 
       dispatch({

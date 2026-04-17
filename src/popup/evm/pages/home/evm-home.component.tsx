@@ -466,6 +466,7 @@ const Home = ({
           chain={chain}
           loadEvmHistory={loadEvmHistory}
           loadEvmActiveAccountNfts={loadEvmActiveAccountNfts}
+          reloadEvmActiveAccount={refresh}
         />
       </div>
       <ActionsSectionComponent

@@ -5,7 +5,11 @@ import {
   EvmActiveAccount,
   NativeAndErc20Token,
 } from '@popup/evm/interfaces/active-account.interface';
-import { EvmAddCustomTokenPopup } from '@popup/evm/pages/home/evm-add-custom-token-popup/evm-add-custom-token-popup.component';
+import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
+import {
+  EvmAddCustomAssetPopup,
+  EvmCustomErc20FormData,
+} from '@popup/evm/pages/home/evm-add-custom-asset-popup/evm-add-custom-asset-popup.component';
 import { EVMWalletInfoSectionItemComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section-item/evm-wallet-info-section-item.component';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -14,9 +18,14 @@ import React, { useEffect, useState } from 'react';
 interface Props {
   chain: EvmChain;
   activeAccount: EvmActiveAccount;
+  reloadEvmActiveAccount: () => Promise<void>;
 }
 
-export const EvmWalletTokensComponent = ({ chain, activeAccount }: Props) => {
+export const EvmWalletTokensComponent = ({
+  chain,
+  activeAccount,
+  reloadEvmActiveAccount,
+}: Props) => {
   const [displayedTokens, setDisplayedTokens] = useState<NativeAndErc20Token[]>(
     [],
   );
@@ -63,9 +72,21 @@ export const EvmWalletTokensComponent = ({ chain, activeAccount }: Props) => {
     setShowAddCustomTokenPopup(true);
   };
 
-  const saveCustomToken = (tokenAddress: string) => {
+  const saveCustomToken = async (form: EvmCustomErc20FormData) => {
+    await EvmTokensUtils.addCustomToken(chain, activeAccount.wallet.address, {
+      address: form.contractAddress,
+      type: EVMSmartContractType.ERC20,
+      metadata: {
+        erc20: {
+          name: form.name,
+          symbol: form.symbol,
+          decimals: form.decimals,
+          logo: form.logo,
+        },
+      },
+    });
     setShowAddCustomTokenPopup(false);
-    // TODO: save custom token
+    await reloadEvmActiveAccount();
   };
 
   return (
@@ -99,8 +120,13 @@ export const EvmWalletTokensComponent = ({ chain, activeAccount }: Props) => {
         </>
       )}
       {showAddCustomTokenPopup && (
-        <EvmAddCustomTokenPopup
+        <EvmAddCustomAssetPopup
           chain={chain}
+          mode="erc20"
+          walletAddress={activeAccount.wallet.address}
+          existingAddresses={activeAccount.nativeAndErc20Tokens.value
+            .filter((token) => token.tokenInfo.type === EVMSmartContractType.ERC20)
+            .map((token) => token.tokenInfo.contractAddress)}
           onClose={() => setShowAddCustomTokenPopup(false)}
           onSave={saveCustomToken}
         />

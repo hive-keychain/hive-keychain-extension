@@ -6,7 +6,7 @@ import {
   EvmErc1155Token,
   EvmErc721Token,
 } from '@popup/evm/interfaces/active-account.interface';
-import { EvmAddCustomTokenPopup } from '@popup/evm/pages/home/evm-add-custom-token-popup/evm-add-custom-token-popup.component';
+import { EvmAddCustomAssetPopup } from '@popup/evm/pages/home/evm-add-custom-asset-popup/evm-add-custom-asset-popup.component';
 import { EvmWalletNftPreviewComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-nft-gallery/evm-wallet-nft-preview/evm-wallet-nft-preview.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
@@ -82,11 +82,6 @@ export const EvmWalletNftGalleryComponent = ({
     setShowAddCustomTokenPopup(true);
   };
 
-  const saveCustomToken = (tokenAddress: string) => {
-    setShowAddCustomTokenPopup(false);
-    // TODO: save custom token
-  };
-
   return (
     <div className="nft-gallery">
       {displayedCollections && !activeAccount.nfts.loading && (
@@ -131,10 +126,10 @@ export const EvmWalletNftGalleryComponent = ({
       )}
 
       {showAddCustomTokenPopup && (
-        <EvmAddCustomTokenPopup
+        <EvmAddCustomAssetPopup
           chain={chain}
+          mode="nft"
           onClose={() => setShowAddCustomTokenPopup(false)}
-          onSave={saveCustomToken}
         />
       )}
 

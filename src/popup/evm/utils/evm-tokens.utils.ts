@@ -1,18 +1,19 @@
+import { EvmLightNodeApi } from '@api/evm-light-node';
+import type {
+  BalanceDetails,
+  BalanceInfo,
+} from '@dialog/components/balance-change-card/balance-change-card.interface';
 import {
   EvmErc1155Token,
   EvmErc721Token,
   NativeAndErc20Token,
 } from '@popup/evm/interfaces/active-account.interface';
 import {
+  EvmCustomErc20TokenMetadata,
   EvmCustomToken,
   EvmSavedCustomTokens,
 } from '@popup/evm/interfaces/evm-custom-tokens.interface';
-import { EvmLightNodeApi } from '@api/evm-light-node';
 import { EvmLightNodeContractResponse } from '@popup/evm/interfaces/evm-light-node.interface';
-import type {
-  BalanceDetails,
-  BalanceInfo,
-} from '@dialog/components/balance-change-card/balance-change-card.interface';
 import {
   EvmSmartContractInfo,
   EvmSmartContractInfoErc1155,
@@ -60,6 +61,20 @@ const formatShortBalance = (balanceInteger: number) => {
   }${short}`;
 };
 
+const normalizeCustomTokenAddress = (address: string) => {
+  const trimmedAddress = address.trim();
+  if (!trimmedAddress.length) {
+    return '';
+  }
+
+  return ethers.isAddress(trimmedAddress)
+    ? ethers.getAddress(trimmedAddress)
+    : trimmedAddress;
+};
+
+const normalizeCustomWalletKey = (walletAddress: string) =>
+  walletAddress.toLowerCase();
+
 /** Native token metadata from chain fields only (no EvmLightNode), for custom chains. */
 const buildFallbackNativeTokenInfo = (
   chain: EvmChain,
@@ -74,6 +89,27 @@ const buildFallbackNativeTokenInfo = (
   priceUsd: 0,
   createdAt: new Date(0).toISOString(),
   categories: [],
+});
+
+const buildCustomErc20TokenInfo = (
+  chain: EvmChain,
+  address: string,
+  metadata: EvmCustomErc20TokenMetadata,
+): EvmSmartContractInfoErc20 => ({
+  type: EVMSmartContractType.ERC20,
+  name: metadata.name.trim(),
+  symbol: metadata.symbol.trim(),
+  decimals: metadata.decimals,
+  logo: metadata.logo?.trim() ?? '',
+  chainId: chain.chainId,
+  contractAddress: normalizeCustomTokenAddress(address),
+  backgroundColor: '',
+  priceUsd: 0,
+  possibleSpam: false,
+  verifiedContract: true,
+  isProxy: false,
+  proxyTarget: null,
+  validated: 0,
 });
 
 const getTotalBalanceInUsd = (tokens: NativeAndErc20Token[]) => {
@@ -132,6 +168,7 @@ const getTokenBalances = async (
     );
 
   const result = await Promise.all(balancesPromises);
+  console.log('result', result);
   return result.filter(
     (balance) =>
       !!balance &&
@@ -336,6 +373,27 @@ const getTokenInfo = async (
   return mapLightNodeContractToTokenInfo(chainId, result);
 };
 
+const mergeCustomErc20TokenInfos = (
+  tokenInfos: (EvmSmartContractInfoNative | EvmSmartContractInfoErc20)[],
+  customTokenInfos: EvmSmartContractInfoErc20[],
+) => {
+  const existingAddresses = new Set(
+    tokenInfos
+      .filter((tokenInfo) => tokenInfo.type === EVMSmartContractType.ERC20)
+      .map((tokenInfo) =>
+        (tokenInfo as EvmSmartContractInfoErc20).contractAddress.toLowerCase(),
+      ),
+  );
+
+  return [
+    ...tokenInfos,
+    ...customTokenInfos.filter(
+      (tokenInfo) =>
+        !existingAddresses.has(tokenInfo.contractAddress.toLowerCase()),
+    ),
+  ];
+};
+
 const sortTokens = (tokens: NativeAndErc20Token[]) => {
   return tokens.sort((tokenA, tokenB) => {
     const priceA = tokenA.tokenInfo.priceUsd ?? 0;
@@ -529,17 +587,13 @@ const getTokenType = (abi: any) => {
   return null;
 };
 
-const getPopularTokensForChain = async (chain: EvmChain) => {
-  const res = await KeychainApi.get(`evm/token/${chain.chainId}/popular`);
-  return res;
-};
-
 const addCustomToken = async (
   chain: EvmChain,
   walletAddress: string,
   toAdd: EvmCustomToken | EvmCustomToken[],
   batch?: boolean,
 ) => {
+  const normalizedWalletAddress = normalizeCustomWalletKey(walletAddress);
   let savedCustomTokens: EvmSavedCustomTokens =
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
@@ -551,24 +605,59 @@ const addCustomToken = async (
     savedCustomTokens[chain.chainId] = {};
   }
 
-  if (!savedCustomTokens[chain.chainId][walletAddress]) {
-    savedCustomTokens[chain.chainId][walletAddress] = [];
+  const legacyWalletEntries =
+    walletAddress !== normalizedWalletAddress
+      ? savedCustomTokens[chain.chainId][walletAddress]
+      : undefined;
+  const normalizedWalletEntries =
+    savedCustomTokens[chain.chainId][normalizedWalletAddress];
+
+  const mergedWalletEntries = [
+    ...(normalizedWalletEntries ?? []),
+    ...(legacyWalletEntries ?? []),
+  ];
+
+  if (!savedCustomTokens[chain.chainId][normalizedWalletAddress]) {
+    savedCustomTokens[chain.chainId][normalizedWalletAddress] = [];
   }
-  const allAddresses = savedCustomTokens[chain.chainId][walletAddress].map(
-    (t: EvmCustomToken) => t.address,
+
+  const allAddresses = new Set(
+    mergedWalletEntries.map(
+      (token: EvmCustomToken) =>
+        `${token.type}:${normalizeCustomTokenAddress(token.address).toLowerCase()}`,
+    ),
   );
+
+  const nextEntries = [...mergedWalletEntries];
+
   if (batch) {
     for (const token of toAdd as EvmCustomToken[]) {
-      if (!allAddresses.includes(token.address)) {
-        savedCustomTokens[chain.chainId][walletAddress].push(token);
+      const normalizedAddress = normalizeCustomTokenAddress(token.address);
+      const key = `${token.type}:${normalizedAddress.toLowerCase()}`;
+      if (!allAddresses.has(key)) {
+        nextEntries.push({
+          ...token,
+          address: normalizedAddress,
+        });
+        allAddresses.add(key);
       }
     }
   } else {
-    if (!allAddresses.includes((toAdd as EvmCustomToken).address)) {
-      savedCustomTokens[chain.chainId][walletAddress].push(
-        toAdd as EvmCustomToken,
-      );
+    const normalizedAddress = normalizeCustomTokenAddress(
+      (toAdd as EvmCustomToken).address,
+    );
+    const key = `${(toAdd as EvmCustomToken).type}:${normalizedAddress.toLowerCase()}`;
+    if (!allAddresses.has(key)) {
+      nextEntries.push({
+        ...(toAdd as EvmCustomToken),
+        address: normalizedAddress,
+      });
     }
+  }
+
+  savedCustomTokens[chain.chainId][normalizedWalletAddress] = nextEntries;
+  if (walletAddress !== normalizedWalletAddress) {
+    delete savedCustomTokens[chain.chainId][walletAddress];
   }
 
   await LocalStorageUtils.saveValueInLocalStorage(
@@ -578,6 +667,7 @@ const addCustomToken = async (
 };
 
 const getCustomTokens = async (chain: EvmChain, walletAddress: string) => {
+  const normalizedWalletAddress = normalizeCustomWalletKey(walletAddress);
   const savedCustomTokens: EvmSavedCustomTokens =
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
@@ -585,10 +675,63 @@ const getCustomTokens = async (chain: EvmChain, walletAddress: string) => {
 
   if (!savedCustomTokens) return [] as EvmCustomToken[];
   if (!savedCustomTokens[chain.chainId]) return [] as EvmCustomToken[];
-  if (!savedCustomTokens[chain.chainId][walletAddress])
-    return [] as EvmCustomToken[];
 
-  return savedCustomTokens[chain.chainId][walletAddress];
+  const tokens = [
+    ...(savedCustomTokens[chain.chainId][normalizedWalletAddress] ?? []),
+    ...(walletAddress !== normalizedWalletAddress
+      ? (savedCustomTokens[chain.chainId][walletAddress] ?? [])
+      : []),
+  ];
+
+  const dedupedTokens: EvmCustomToken[] = [];
+  const seen = new Set<string>();
+
+  for (const token of tokens) {
+    const normalizedAddress = normalizeCustomTokenAddress(token.address);
+    const key = `${token.type}:${normalizedAddress.toLowerCase()}`;
+    if (seen.has(key)) {
+      continue;
+    }
+
+    dedupedTokens.push({
+      ...token,
+      address: normalizedAddress,
+    });
+    seen.add(key);
+  }
+
+  return dedupedTokens;
+};
+
+const getCustomErc20TokenInfos = async (
+  chain: EvmChain,
+  walletAddress: string,
+) => {
+  const customTokens = await getCustomTokens(chain, walletAddress);
+  const tokenInfos = await Promise.all(
+    customTokens
+      .filter((token) => token.type === EVMSmartContractType.ERC20)
+      .map(async (token) => {
+        if (token.metadata?.erc20) {
+          return buildCustomErc20TokenInfo(
+            chain,
+            token.address,
+            token.metadata.erc20,
+          );
+        }
+
+        if (chain.isCustom === true) {
+          return undefined;
+        }
+
+        const tokenInfo = await getTokenInfo(chain.chainId, token.address);
+        return tokenInfo.type === EVMSmartContractType.ERC20
+          ? (tokenInfo as EvmSmartContractInfoErc20)
+          : undefined;
+      }),
+  );
+
+  return tokenInfos.filter(Boolean) as EvmSmartContractInfoErc20[];
 };
 
 const getAllowance = async (
@@ -629,7 +772,8 @@ const buildBalanceDetails = (
 };
 
 const getEstimatedGasFee = (selectedFee?: GasFeeEstimationBase) => {
-  if (!selectedFee || selectedFee.estimatedFeeInEth.equals(-1)) return undefined;
+  if (!selectedFee || selectedFee.estimatedFeeInEth.equals(-1))
+    return undefined;
   return new Decimal(selectedFee.estimatedFeeInEth.toString());
 };
 
@@ -704,11 +848,12 @@ export const EvmTokensUtils = {
   getTokenType,
   normalizeAbi,
   filterTokensBasedOnSettings,
-  getPopularTokensForChain,
   manualDiscoverErc20Tokens,
   manualDiscoverNfts,
   addCustomToken,
   getCustomTokens,
+  getCustomErc20TokenInfos,
+  mergeCustomErc20TokenInfos,
   getAllowance,
   getBalanceInfo,
 };

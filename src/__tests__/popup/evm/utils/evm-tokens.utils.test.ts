@@ -5,10 +5,12 @@ import {
   EvmSmartContractInfoErc20,
   EvmSmartContractInfoNative,
 } from '@popup/evm/interfaces/evm-tokens.interface';
+import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import Decimal from 'decimal.js';
 import { ethers } from 'ethers';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 describe('evm-tokens.utils proxy metadata tests:\n', () => {
   afterEach(() => {
@@ -399,5 +401,56 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
 
     expect(balanceInfo.feeBalance?.insufficientBalance).toBe(true);
     expect(balanceInfo.mainBalance.insufficientBalance).toBe(false);
+  });
+
+  it('persists normalized custom ERC20 tokens with metadata', async () => {
+    let storageValue: any;
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockImplementation(async () => storageValue);
+    jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockImplementation(async (_key, value) => {
+        storageValue = value;
+      });
+
+    const chain = {
+      type: ChainType.EVM,
+      chainId: '0x1',
+    } as any;
+    const walletAddress = '0x1111111111111111111111111111111111111111';
+
+    await EvmTokensUtils.addCustomToken(chain, walletAddress, {
+      address: '0x00000000000000000000000000000000000000aa',
+      type: EVMSmartContractType.ERC20,
+      metadata: {
+        erc20: {
+          name: 'USD Coin',
+          symbol: 'USDC',
+          decimals: 6,
+          logo: 'https://cdn.example/usdc.svg',
+        },
+      },
+    });
+
+    const savedTokens = await EvmTokensUtils.getCustomTokens(
+      chain,
+      walletAddress.toUpperCase(),
+    );
+
+    expect(savedTokens).toEqual([
+      {
+        address: '0x00000000000000000000000000000000000000AA',
+        type: EVMSmartContractType.ERC20,
+        metadata: {
+          erc20: {
+            name: 'USD Coin',
+            symbol: 'USDC',
+            decimals: 6,
+            logo: 'https://cdn.example/usdc.svg',
+          },
+        },
+      },
+    ]);
   });
 });

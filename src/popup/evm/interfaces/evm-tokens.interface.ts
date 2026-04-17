@@ -97,10 +97,3 @@ export interface EvmCustomTokens {
   erc20: string[]; // address
   nft: string[];
 }
-
-export interface PopularToken {
-  contractAddress: string;
-  symbol: string;
-  name: string;
-  logo: string;
-}
