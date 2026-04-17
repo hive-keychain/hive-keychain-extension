@@ -424,12 +424,11 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
       address: '0x00000000000000000000000000000000000000aa',
       type: EVMSmartContractType.ERC20,
       metadata: {
-        erc20: {
-          name: 'USD Coin',
-          symbol: 'USDC',
-          decimals: 6,
-          logo: 'https://cdn.example/usdc.svg',
-        },
+        type: EVMSmartContractType.ERC20,
+        name: 'USD Coin',
+        symbol: 'USDC',
+        decimals: 6,
+        logo: 'https://cdn.example/usdc.svg',
       },
     });
 
@@ -443,14 +442,49 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
         address: '0x00000000000000000000000000000000000000AA',
         type: EVMSmartContractType.ERC20,
         metadata: {
-          erc20: {
-            name: 'USD Coin',
-            symbol: 'USDC',
-            decimals: 6,
-            logo: 'https://cdn.example/usdc.svg',
-          },
+          type: EVMSmartContractType.ERC20,
+          name: 'USD Coin',
+          symbol: 'USDC',
+          decimals: 6,
+          logo: 'https://cdn.example/usdc.svg',
         },
       },
     ]);
+  });
+
+  it('normalizes legacy erc20-nested metadata when reading from storage', async () => {
+    jest.spyOn(LocalStorageUtils, 'getValueFromLocalStorage').mockResolvedValue({
+      '0x1': {
+        '0x1111111111111111111111111111111111111111': [
+          {
+            address: '0x00000000000000000000000000000000000000aa',
+            type: EVMSmartContractType.ERC20,
+            metadata: {
+              erc20: {
+                name: 'Legacy',
+                symbol: 'LEG',
+                decimals: 18,
+                logo: '',
+              },
+            },
+          },
+        ],
+      },
+    });
+
+    const chain = {
+      type: ChainType.EVM,
+      chainId: '0x1',
+    } as any;
+    const walletAddress = '0x1111111111111111111111111111111111111111';
+
+    const tokens = await EvmTokensUtils.getCustomTokens(chain, walletAddress);
+    expect(tokens[0].metadata).toEqual({
+      type: EVMSmartContractType.ERC20,
+      name: 'Legacy',
+      symbol: 'LEG',
+      decimals: 18,
+      logo: '',
+    });
   });
 });

@@ -11,6 +11,7 @@ import {
 import {
   EvmCustomErc20TokenMetadata,
   EvmCustomToken,
+  EvmCustomTokenMetadataErc20,
   EvmSavedCustomTokens,
 } from '@popup/evm/interfaces/evm-custom-tokens.interface';
 import { EvmLightNodeContractResponse } from '@popup/evm/interfaces/evm-light-node.interface';
@@ -89,6 +90,43 @@ const buildFallbackNativeTokenInfo = (
   priceUsd: 0,
   createdAt: new Date(0).toISOString(),
   categories: [],
+});
+
+/** Legacy storage: metadata nested under `erc20` */
+interface LegacyEvmCustomTokenMetadata {
+  erc20?: EvmCustomErc20TokenMetadata;
+}
+
+const normalizeCustomTokenMetadata = (
+  token: EvmCustomToken,
+): EvmCustomTokenMetadataErc20 | undefined => {
+  const { metadata, type } = token;
+  if (!metadata || type !== EVMSmartContractType.ERC20) {
+    return undefined;
+  }
+  if (
+    'type' in metadata &&
+    (metadata as EvmCustomTokenMetadataErc20).type ===
+      EVMSmartContractType.ERC20
+  ) {
+    return metadata as EvmCustomTokenMetadataErc20;
+  }
+  const legacy = metadata as LegacyEvmCustomTokenMetadata;
+  if (legacy.erc20) {
+    return {
+      type: EVMSmartContractType.ERC20,
+      name: legacy.erc20.name,
+      symbol: legacy.erc20.symbol,
+      decimals: legacy.erc20.decimals,
+      logo: legacy.erc20.logo,
+    };
+  }
+  return undefined;
+};
+
+const normalizeCustomToken = (token: EvmCustomToken): EvmCustomToken => ({
+  ...token,
+  metadata: normalizeCustomTokenMetadata(token),
 });
 
 const buildCustomErc20TokenInfo = (
@@ -655,7 +693,8 @@ const addCustomToken = async (
     }
   }
 
-  savedCustomTokens[chain.chainId][normalizedWalletAddress] = nextEntries;
+  savedCustomTokens[chain.chainId][normalizedWalletAddress] =
+    nextEntries.map(normalizeCustomToken);
   if (walletAddress !== normalizedWalletAddress) {
     delete savedCustomTokens[chain.chainId][walletAddress];
   }
@@ -693,10 +732,12 @@ const getCustomTokens = async (chain: EvmChain, walletAddress: string) => {
       continue;
     }
 
-    dedupedTokens.push({
-      ...token,
-      address: normalizedAddress,
-    });
+    dedupedTokens.push(
+      normalizeCustomToken({
+        ...token,
+        address: normalizedAddress,
+      }),
+    );
     seen.add(key);
   }
 
@@ -712,12 +753,14 @@ const getCustomErc20TokenInfos = async (
     customTokens
       .filter((token) => token.type === EVMSmartContractType.ERC20)
       .map(async (token) => {
-        if (token.metadata?.erc20) {
-          return buildCustomErc20TokenInfo(
-            chain,
-            token.address,
-            token.metadata.erc20,
-          );
+        if (token.metadata?.type === EVMSmartContractType.ERC20) {
+          const m = token.metadata;
+          return buildCustomErc20TokenInfo(chain, token.address, {
+            name: m.name,
+            symbol: m.symbol,
+            decimals: m.decimals,
+            logo: m.logo,
+          });
         }
 
         if (chain.isCustom === true) {

@@ -54,12 +54,11 @@ const EvmCustomTokensPage = ({
       address: form.contractAddress,
       type: EVMSmartContractType.ERC20,
       metadata: {
-        erc20: {
-          name: form.name,
-          symbol: form.symbol,
-          decimals: form.decimals,
-          logo: form.logo,
-        },
+        type: EVMSmartContractType.ERC20,
+        name: form.name,
+        symbol: form.symbol,
+        decimals: form.decimals,
+        logo: form.logo,
       },
     });
     setShowAddPopup(false);
@@ -90,7 +89,10 @@ const EvmCustomTokensPage = ({
         ) : (
           <ul className="evm-custom-tokens-list">
             {customTokens.map((token) => {
-              const meta = token.metadata?.erc20;
+              const meta =
+                token.metadata?.type === EVMSmartContractType.ERC20
+                  ? token.metadata
+                  : undefined;
               const label = meta?.symbol?.length
                 ? meta.symbol
                 : EvmFormatUtils.formatAddress(token.address);
