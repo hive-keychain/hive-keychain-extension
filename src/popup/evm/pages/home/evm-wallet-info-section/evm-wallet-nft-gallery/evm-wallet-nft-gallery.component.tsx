@@ -40,6 +40,7 @@ export const EvmWalletNftGalleryComponent = ({
   const [filterValue, setFilterValue] = useState('');
 
   const [showAddCustomTokenPopup, setShowAddCustomTokenPopup] = useState(false);
+  const isCustomChainSelected = chain.isCustom === true;
 
   useEffect(() => {
     if (!activeAccount.nfts.initialized) {
@@ -90,12 +91,12 @@ export const EvmWalletNftGalleryComponent = ({
     <div className="nft-gallery">
       {displayedCollections && !activeAccount.nfts.loading && (
         <>
-          {displayedCollections.length > 0 && (
+          {(displayedCollections.length > 0 || isCustomChainSelected) && (
             <SeparatorWithFilter
               setFilterValue={setFilterValue}
               filterValue={filterValue}
               rightAction={
-                chain.manualDiscoverAvailable || chain.addTokensManually
+                isCustomChainSelected
                   ? {
                       icon: SVGIcons.WALLET_ADD,
                       onClick: openAddCustomTokenPanel,
