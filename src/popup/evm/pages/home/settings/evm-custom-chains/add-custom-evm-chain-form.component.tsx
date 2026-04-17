@@ -13,7 +13,7 @@ import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { ChainType, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -41,6 +41,8 @@ const isValidRpcUrl = (url: string) => {
 interface OwnProps {
   onSuccess: () => void;
   onCancel: () => void;
+  /** When set, form loads this chain and saves with `updateCustomChain(originalChainId, chain)`. */
+  chainToEdit?: EvmChain;
 }
 
 const ADD_RPC_FALLBACK = 'Add another RPC URL';
@@ -68,11 +70,18 @@ const getTxTypeOptionLabel = (t: EvmTransactionType): string => {
   return msg || key;
 };
 
+const parseTxType = (raw: string): EvmTransactionType => {
+  const v = raw as EvmTransactionType;
+  return TX_TYPE_ORDER.includes(v) ? v : EvmTransactionType.EIP_1559;
+};
+
 const AddCustomEvmChainFormInner = ({
   onSuccess,
   onCancel,
+  chainToEdit,
   setErrorMessage,
 }: OwnProps & PropsFromRedux) => {
+  const isEdit = !!chainToEdit;
   const addRpcAriaLabel =
     chrome.i18n.getMessage('evm_custom_chains_add_rpc') || ADD_RPC_FALLBACK;
   const removeRpcAriaLabel =
@@ -89,6 +98,26 @@ const AddCustomEvmChainFormInner = ({
   );
   const [testnet, setTestnet] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!chainToEdit) {
+      return;
+    }
+    setName(chainToEdit.name);
+    setChainIdInput(chainToEdit.chainId);
+    setSymbol(chainToEdit.mainToken);
+    setRpcUrls(
+      chainToEdit.rpcs?.length
+        ? chainToEdit.rpcs.map((r) => r.url)
+        : [''],
+    );
+    setExplorer(chainToEdit.blockExplorer?.url ?? '');
+    setLogo(chainToEdit.logo ?? '');
+    setTxType(
+      parseTxType(chainToEdit.defaultTransactionType ?? ''),
+    );
+    setTestnet(!!chainToEdit.testnet);
+  }, [chainToEdit]);
 
   const txTypeOptions: OptionItem[] = TX_TYPE_ORDER.map((value) => ({
     value,
@@ -173,7 +202,11 @@ const AddCustomEvmChainFormInner = ({
 
     setSaving(true);
     try {
-      await ChainUtils.addCustomChain(chain);
+      if (isEdit && chainToEdit) {
+        await ChainUtils.updateCustomChain(chainToEdit.chainId, chain);
+      } else {
+        await ChainUtils.addCustomChain(chain);
+      }
       await EvmRpcUtils.setActiveRpc(
         { url: cleanedRpcs[0], isDefault: false },
         chain,
@@ -185,6 +218,8 @@ const AddCustomEvmChainFormInner = ({
         setErrorMessage('evm_custom_chains_error_duplicate');
       } else if (msg === 'chain_exists_in_defaults') {
         setErrorMessage('evm_custom_chains_error_default_exists');
+      } else if (msg === 'custom_chain_not_found') {
+        setErrorMessage('evm_custom_chains_error_not_found');
       } else {
         setErrorMessage('evm_custom_chains_error_generic');
       }
@@ -290,7 +325,9 @@ const AddCustomEvmChainFormInner = ({
           disabled={saving}
         />
         <ButtonComponent
-          label="evm_custom_chains_save"
+          label={
+            isEdit ? 'evm_custom_chains_update' : 'evm_custom_chains_save'
+          }
           onClick={() => submit()}
           disabled={saving}
         />

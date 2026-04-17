@@ -1,6 +1,7 @@
 /// <reference types="jest" />
 
 import { ChainType } from '@popup/multichain/interfaces/chains.interface';
+import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 
@@ -200,5 +201,71 @@ describe('ChainUtils', () => {
       'beeab0de00000000000000000000000000000000000000000000000000000000',
     );
     expect(result.find((chain) => chain.type === ChainType.EVM)).toBeUndefined();
+  });
+
+  it('removeCustomChain deletes the chain, setup entry, and clears keyed EVM storage', async () => {
+    const { ChainUtils, LocalStorageUtils } = await loadTestContext();
+    const customChain = {
+      type: ChainType.EVM,
+      chainId: '0x539',
+      name: 'Local',
+      mainToken: 'ETH',
+      defaultTransactionType: EvmTransactionType.EIP_1559,
+      rpcs: [{ url: 'http://127.0.0.1:8545', isDefault: true }],
+      testnet: false,
+    };
+    LocalStorageUtils.getValueFromLocalStorage.mockImplementation(
+      async (key: LocalStorageKeyEnum) => {
+        if (key === LocalStorageKeyEnum.CUSTOM_CHAINS) {
+          return [customChain];
+        }
+        if (key === LocalStorageKeyEnum.SETUP_CHAINS) {
+          return ['0x539', '0x1'];
+        }
+        if (key === LocalStorageKeyEnum.EVM_ACTIVE_RPCS) {
+          return { '0x539': 'https://rpc.example' };
+        }
+        if (key === LocalStorageKeyEnum.EVM_LAST_CHAIN_USED) {
+          return '0x539';
+        }
+        return undefined;
+      },
+    );
+    LocalStorageUtils.saveValueInLocalStorage.mockResolvedValue(undefined);
+
+    await ChainUtils.removeCustomChain('0x539');
+
+    expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.CUSTOM_CHAINS,
+      [],
+    );
+    expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.SETUP_CHAINS,
+      ['0x1'],
+    );
+    expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.EVM_LAST_CHAIN_USED,
+      '0x1',
+    );
+    expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.EVM_ACTIVE_RPCS,
+      {},
+    );
+  });
+
+  it('removeCustomChain throws when the chain is not in custom list', async () => {
+    const { ChainUtils, LocalStorageUtils } = await loadTestContext();
+    LocalStorageUtils.getValueFromLocalStorage.mockImplementation(
+      async (key: LocalStorageKeyEnum) => {
+        if (key === LocalStorageKeyEnum.CUSTOM_CHAINS) {
+          return [];
+        }
+        return undefined;
+      },
+    );
+
+    await expect(ChainUtils.removeCustomChain('0x539')).rejects.toThrow(
+      'custom_chain_not_found',
+    );
   });
 });

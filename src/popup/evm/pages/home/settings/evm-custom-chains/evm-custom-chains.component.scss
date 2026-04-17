@@ -31,12 +31,69 @@
   }
 
   .evm-custom-chains-list__item {
-    display: flex;
+    @include small-card();
+    margin: 0;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: nowrap;
     gap: 12px;
-    align-items: flex-start;
-    padding: 12px;
-    border-radius: 8px;
-    background: var(--card-subtle-background, rgba(128, 128, 128, 0.12));
+    box-sizing: border-box;
+
+    .evm-custom-chains-list__delete {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      margin: 0;
+      padding: 0;
+      border: 1px solid var(--card-border);
+      border-radius: 50%;
+      background: var(--card-background);
+      cursor: pointer;
+      color: var(--main-font-color);
+      box-sizing: border-box;
+      transition: opacity 0.15s ease;
+
+      .svg-icon {
+        width: 22px;
+        height: 22px;
+      }
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .evm-custom-chains-list__item {
+      .evm-custom-chains-list__delete {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      &:hover .evm-custom-chains-list__delete,
+      &:focus-within .evm-custom-chains-list__delete {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+  }
+
+  .evm-custom-chains-list__item-main {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+    min-width: 0;
+    flex: 1 1 auto;
+
+    &--clickable {
+      cursor: pointer;
+      outline: none;
+
+      &:focus-visible {
+        box-shadow: 0 0 0 2px var(--button-background-color, #c6354a);
+      }
+    }
   }
 
   .evm-custom-chains-list__logo {
@@ -47,42 +104,33 @@
     flex-shrink: 0;
   }
 
-  .evm-custom-chains-list__text {
+  .evm-custom-chains-list__line {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    gap: 10px;
     min-width: 0;
+    flex: 1 1 auto;
+    font-size: 14px;
+    line-height: 1.3;
+    overflow: hidden;
   }
 
   .evm-custom-chains-list__name {
-    font-weight: 600;
-    font-size: 14px;
+    @include poppins600(14px);
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  .evm-custom-chains-list__meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    font-size: 12px;
+  .evm-custom-chains-list__chain-id {
+    @include poppins400(14px);
+    flex-shrink: 0;
     opacity: 0.9;
-    word-break: break-all;
-  }
-
-  .evm-custom-chains-list__testnet {
-    font-size: 11px;
-    text-transform: uppercase;
-  }
-
-  .evm-custom-chains-list__rpc-list {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .evm-custom-chains-list__rpc {
-    font-size: 11px;
-    opacity: 0.8;
-    word-break: break-all;
+    white-space: nowrap;
   }
 }
 

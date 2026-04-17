@@ -5365,6 +5365,14 @@
     "message": "Custom networks have limited support. Features such as token discovery and automatic history loading may be unavailable.",
     "description": "Custom chains info caption"
   },
+  "evm_custom_chains_delete": {
+    "message": "Delete",
+    "description": "Remove an added custom EVM network"
+  },
+  "evm_custom_chains_delete_confirm": {
+    "message": "Remove \"$1\" from your custom networks? This cannot be undone.",
+    "description": "Confirmation before deleting a custom EVM chain; $1 is the network name"
+  },
   "evm_custom_chains_add": {
     "message": "Add custom chain",
     "description": "Button to add a custom EVM chain"
@@ -5372,6 +5380,18 @@
   "evm_custom_chains_modal_title": {
     "message": "Add custom chain",
     "description": "Modal title for adding custom chain"
+  },
+  "evm_custom_chains_modal_title_edit": {
+    "message": "Edit custom chain",
+    "description": "Modal title for editing a custom chain"
+  },
+  "evm_custom_chains_update": {
+    "message": "Save changes",
+    "description": "Save button when editing custom chain"
+  },
+  "evm_custom_chains_error_not_found": {
+    "message": "This custom chain could not be found. Try refreshing the list.",
+    "description": "When update targets a missing custom chain"
   },
   "evm_custom_chains_empty": {
     "message": "No custom chains yet. Add one to connect to a network that is not in the default list.",
