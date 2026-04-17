@@ -60,7 +60,8 @@ const ChainSelector = ({
     if (
       !!activeAccount &&
       activeAccount.address &&
-      chain.type === ChainType.EVM
+      chain.type === ChainType.EVM &&
+      !(chain as EvmChain).isCustom
     ) {
       await EvmLightNodeUtils.registerAddress(
         chain.chainId,

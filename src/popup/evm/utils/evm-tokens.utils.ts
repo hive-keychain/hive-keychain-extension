@@ -60,6 +60,22 @@ const formatShortBalance = (balanceInteger: number) => {
   }${short}`;
 };
 
+/** Native token metadata from chain fields only (no EvmLightNode), for custom chains. */
+const buildFallbackNativeTokenInfo = (
+  chain: EvmChain,
+): EvmSmartContractInfoNative => ({
+  type: EVMSmartContractType.NATIVE,
+  name: chain.name,
+  symbol: chain.mainToken,
+  logo: chain.logo ?? '',
+  chainId: chain.chainId,
+  backgroundColor: '',
+  coingeckoId: '',
+  priceUsd: 0,
+  createdAt: new Date(0).toISOString(),
+  categories: [],
+});
+
 const getTotalBalanceInUsd = (tokens: NativeAndErc20Token[]) => {
   return tokens.reduce((a, b) => {
     let price = b.tokenInfo.priceUsd ?? 0;
@@ -682,6 +698,7 @@ export const EvmTokensUtils = {
   formatTokenValue,
   formatEtherValue,
   getMainTokenInfo,
+  buildFallbackNativeTokenInfo,
   displayValue,
   getTokenInfo,
   getTokenType,

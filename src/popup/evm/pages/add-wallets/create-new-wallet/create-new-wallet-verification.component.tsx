@@ -81,11 +81,13 @@ const CreateNewWalletVerification = ({
     };
     await EvmWalletUtils.addSeedAndAccounts(wallet, [account], mk, nickname);
 
-    await EvmLightNodeUtils.registerAddress(
-      chain.chainId,
-      derivedWallet.address,
-      true,
-    );
+    if (!chain.isCustom) {
+      await EvmLightNodeUtils.registerAddress(
+        chain.chainId,
+        derivedWallet.address,
+        true,
+      );
+    }
 
     const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
     setEvmAccounts(accounts);

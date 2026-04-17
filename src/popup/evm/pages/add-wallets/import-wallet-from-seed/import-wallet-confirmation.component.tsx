@@ -76,12 +76,14 @@ const ImportWalletConfirmation = ({
 
       await ChainUtils.addChainToSetupChains(chain);
       const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
-      for (const acc of accounts) {
-        await EvmLightNodeUtils.registerAddress(
-          (chain as EvmChain).chainId,
-          acc.wallet.address,
-          false,
-        );
+      if (!(chain as EvmChain).isCustom) {
+        for (const acc of accounts) {
+          await EvmLightNodeUtils.registerAddress(
+            (chain as EvmChain).chainId,
+            acc.wallet.address,
+            false,
+          );
+        }
       }
       setEvmAccounts(accounts);
       await loadEvmActiveAccount(chain, accounts[0].wallet);
