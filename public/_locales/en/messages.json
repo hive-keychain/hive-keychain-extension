@@ -4813,7 +4813,7 @@
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_fee_estimate_duration": {
-    "message": "< $1 seconds",
+    "message": "<br $1 seconds",
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_max_fee_label": {
@@ -6001,7 +6001,7 @@
     "description": "Empty state on custom tokens page"
   },
   "evm_custom_erc20_empty_card_message": {
-    "message": "You don't have any custom tokens yet. To get started, click the settings wheel, then add your first token.",
+    "message": "You don't have any custom tokens yet.</br> To get started, click the settings wheel.",
     "description": "Hint on wallet tokens tab when there are no custom ERC20 tokens"
   },
   "evm_custom_erc20_empty_card_hide": {

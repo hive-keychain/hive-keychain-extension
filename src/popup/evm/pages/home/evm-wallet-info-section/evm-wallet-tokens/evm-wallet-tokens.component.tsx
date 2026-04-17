@@ -7,17 +7,17 @@ import {
   NativeAndErc20Token,
 } from '@popup/evm/interfaces/active-account.interface';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EVMWalletInfoSectionItemComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section-item/evm-wallet-info-section-item.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import {
   isCustomErc20EmptyCardHiddenForChain,
   setCustomErc20EmptyCardHiddenForChain,
 } from '@popup/evm/utils/evm-custom-erc20-empty-card.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
-import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { EVMWalletInfoSectionItemComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section-item/evm-wallet-info-section-item.component';
 
 interface OwnProps {
   chain: EvmChain;
@@ -152,15 +152,19 @@ const EvmWalletTokensInner = ({
           />
           {emptyCardState.ready && emptyCardState.showCard && (
             <Card className="evm-custom-erc20-empty-card">
+              <p
+                className="evm-custom-erc20-empty-card__message"
+                dangerouslySetInnerHTML={{
+                  __html: chrome.i18n.getMessage(
+                    'evm_custom_erc20_empty_card_message',
+                  ),
+                }}></p>
               <button
                 type="button"
                 className="evm-custom-erc20-empty-card__hide"
                 onClick={() => void handleHideEmptyCard()}>
                 {chrome.i18n.getMessage('evm_custom_erc20_empty_card_hide')}
               </button>
-              <p className="evm-custom-erc20-empty-card__message">
-                {chrome.i18n.getMessage('evm_custom_erc20_empty_card_message')}
-              </p>
             </Card>
           )}
           {displayedTokens.map((token, index) => (
