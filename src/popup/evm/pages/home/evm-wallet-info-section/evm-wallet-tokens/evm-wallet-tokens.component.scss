@@ -1,0 +1,33 @@
+.evm-custom-erc20-empty-card {
+  position: relative;
+  width: calc(100% - 60px);
+  margin: 0 30px 0 30px;
+  padding: 12px 36px 12px 12px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  border: 1px solid var(--card-border);
+  background: var(--card-background);
+  align-items: flex-start;
+  flex-direction: column;
+
+  &__message {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--main-font-color);
+    opacity: 0.9;
+  }
+
+  &__hide {
+    @include link;
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-size: 12px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+  }
+}

@@ -5992,6 +5992,22 @@
     "message": "Add custom token",
     "description": "Add custom tokens"
   },
+  "evm_custom_tokens_page_title": {
+    "message": "Custom tokens",
+    "description": "Title for the custom ERC20 tokens management page"
+  },
+  "evm_custom_tokens_page_empty": {
+    "message": "No custom tokens yet. Use Add to register one for this network.",
+    "description": "Empty state on custom tokens page"
+  },
+  "evm_custom_erc20_empty_card_message": {
+    "message": "You don't have any custom tokens yet. To get started, click the settings wheel, then add your first token.",
+    "description": "Hint on wallet tokens tab when there are no custom ERC20 tokens"
+  },
+  "evm_custom_erc20_empty_card_hide": {
+    "message": "Hide",
+    "description": "Dismiss the custom ERC20 empty-state hint card"
+  },
   "evm_add_custom_token_popup_title": {
     "message": "Add custom token",
     "description": "Add custom token popup title"

@@ -1,0 +1,62 @@
+.evm-custom-tokens-page {
+  .evm-custom-tokens-card {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    margin: 0 24px;
+  }
+
+  .evm-custom-tokens-empty {
+    margin: 0;
+    font-size: 13px;
+    opacity: 0.85;
+  }
+
+  .evm-custom-tokens-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 420px;
+    overflow: auto;
+  }
+
+  .evm-custom-tokens-list__item {
+    @include small-card();
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    box-sizing: border-box;
+  }
+
+  .evm-custom-tokens-list__line {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .evm-custom-tokens-list__symbol {
+    @include poppins500(14px);
+    color: var(--main-font-color);
+  }
+
+  .evm-custom-tokens-list__name {
+    @include caption();
+    font-size: 12px;
+    opacity: 0.85;
+    word-break: break-word;
+  }
+
+  .evm-custom-tokens-list__address {
+    @include caption();
+    font-size: 11px;
+    opacity: 0.65;
+    font-family: monospace;
+  }
+}
