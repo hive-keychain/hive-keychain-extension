@@ -31,17 +31,13 @@ interface Props {
 
 interface Erc20FormState {
   contractAddress: string;
-  name: string;
   symbol: string;
-  decimals: string;
   logo: string;
 }
 
 interface Erc20FormErrors {
   contractAddress?: string;
-  name?: string;
   symbol?: string;
-  decimals?: string;
   save?: string;
 }
 
@@ -57,9 +53,7 @@ const normalizeAddress = (address: string) => {
 
 const INITIAL_ERC20_FORM: Erc20FormState = {
   contractAddress: '',
-  name: '',
   symbol: '',
-  decimals: '',
   logo: '',
 };
 
@@ -147,18 +141,8 @@ export const EvmAddCustomAssetPopup = ({
       errors.contractAddress = 'This contract address is already added.';
     }
 
-    if (!erc20Form.name.trim()) {
-      errors.name = 'Name is required.';
-    }
-
     if (!erc20Form.symbol.trim()) {
       errors.symbol = 'Symbol is required.';
-    }
-
-    if (!erc20Form.decimals.trim()) {
-      errors.decimals = 'Decimals are required.';
-    } else if (!/^\d+$/.test(erc20Form.decimals.trim())) {
-      errors.decimals = 'Decimals must be a whole number.';
     }
 
     return {
@@ -181,18 +165,33 @@ export const EvmAddCustomAssetPopup = ({
 
     setIsSaving(true);
     try {
-      await onSave({
-        contractAddress: normalizedAddress,
-        name: erc20Form.name.trim(),
-        symbol: erc20Form.symbol.trim(),
-        decimals: Number(erc20Form.decimals.trim()),
-        logo: erc20Form.logo.trim(),
-      });
-    } catch (error) {
+      const { name, decimals } =
+        await EvmTokensUtils.fetchErc20NameAndDecimalsFromChain(
+          chain,
+          normalizedAddress,
+        );
+      try {
+        await onSave({
+          contractAddress: normalizedAddress,
+          name,
+          symbol: erc20Form.symbol.trim(),
+          decimals,
+          logo: erc20Form.logo.trim(),
+        });
+      } catch {
+        if (isMountedRef.current) {
+          setErc20Errors((current) => ({
+            ...current,
+            save: 'Unable to save this token right now.',
+          }));
+        }
+      }
+    } catch {
       if (isMountedRef.current) {
         setErc20Errors((current) => ({
           ...current,
-          save: 'Unable to save this token right now.',
+          save:
+            'Could not read token name and decimals from the chain. Check the address and that it is a standard ERC20 contract.',
         }));
       }
     } finally {
@@ -206,7 +205,8 @@ export const EvmAddCustomAssetPopup = ({
     <>
       <div className="popup-title">Add Custom Token</div>
       <div className="popup-caption">
-        Enter the ERC20 contract details manually for {chain.name}.
+        Enter the contract address for {chain.name}. Name and decimals are read
+        from the token contract.
       </div>
 
       <div className="custom-asset-form">
@@ -227,21 +227,6 @@ export const EvmAddCustomAssetPopup = ({
 
         <div className="field">
           <InputComponent
-            label="Name"
-            skipLabelTranslation
-            value={erc20Form.name}
-            type={InputType.TEXT}
-            onChange={(value) => setErc20Field('name', value)}
-            dataTestId="custom-asset-name"
-            classname="custom-asset-input"
-          />
-          {erc20Errors.name && (
-            <div className="error-message">{erc20Errors.name}</div>
-          )}
-        </div>
-
-        <div className="field">
-          <InputComponent
             label="Symbol"
             skipLabelTranslation
             value={erc20Form.symbol}
@@ -252,23 +237,6 @@ export const EvmAddCustomAssetPopup = ({
           />
           {erc20Errors.symbol && (
             <div className="error-message">{erc20Errors.symbol}</div>
-          )}
-        </div>
-
-        <div className="field">
-          <InputComponent
-            label="Decimals"
-            skipLabelTranslation
-            value={erc20Form.decimals}
-            type={InputType.NUMBER}
-            min={0}
-            step={1}
-            onChange={(value) => setErc20Field('decimals', value)}
-            dataTestId="custom-asset-decimals"
-            classname="custom-asset-input"
-          />
-          {erc20Errors.decimals && (
-            <div className="error-message">{erc20Errors.decimals}</div>
           )}
         </div>
 

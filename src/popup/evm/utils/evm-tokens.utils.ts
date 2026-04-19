@@ -411,6 +411,28 @@ const getTokenInfo = async (
   return mapLightNodeContractToTokenInfo(chainId, result);
 };
 
+const fetchErc20NameAndDecimalsFromChain = async (
+  chain: EvmChain,
+  contractAddress: string,
+): Promise<{ name: string; decimals: number }> => {
+  const provider = await EthersUtils.getProvider(chain);
+  const contract = new ethers.Contract(
+    ethers.getAddress(contractAddress),
+    Erc20Abi,
+    provider,
+  );
+  const [nameResult, decimalsResult] = await Promise.all([
+    contract.name(),
+    contract.decimals(),
+  ]);
+  const name = String(nameResult ?? '').trim();
+  const decimals = Number(decimalsResult);
+  if (!Number.isFinite(decimals) || decimals < 0 || decimals > 255) {
+    throw new Error('Invalid ERC20 decimals from contract');
+  }
+  return { name, decimals };
+};
+
 const mergeCustomErc20TokenInfos = (
   tokenInfos: (EvmSmartContractInfoNative | EvmSmartContractInfoErc20)[],
   customTokenInfos: EvmSmartContractInfoErc20[],
@@ -888,6 +910,7 @@ export const EvmTokensUtils = {
   buildFallbackNativeTokenInfo,
   displayValue,
   getTokenInfo,
+  fetchErc20NameAndDecimalsFromChain,
   getTokenType,
   normalizeAbi,
   filterTokensBasedOnSettings,

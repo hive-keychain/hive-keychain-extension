@@ -21,6 +21,9 @@ describe('EvmAddCustomAssetPopup', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
     jest.spyOn(EvmTokensUtils, 'getCustomTokens').mockResolvedValue([]);
+    jest
+      .spyOn(EvmTokensUtils, 'fetchErc20NameAndDecimalsFromChain')
+      .mockResolvedValue({ name: 'USD Coin', decimals: 6 });
   });
 
   it('renders the manual ERC20 form without calling the popular token API', async () => {
@@ -44,9 +47,9 @@ describe('EvmAddCustomAssetPopup', () => {
     expect(
       screen.getByTestId('custom-asset-contract-address'),
     ).toBeInTheDocument();
-    expect(screen.getByTestId('custom-asset-name')).toBeInTheDocument();
     expect(screen.getByTestId('custom-asset-symbol')).toBeInTheDocument();
-    expect(screen.getByTestId('custom-asset-decimals')).toBeInTheDocument();
+    expect(screen.queryByTestId('custom-asset-name')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('custom-asset-decimals')).not.toBeInTheDocument();
     expect(keychainGetSpy).not.toHaveBeenCalled();
   });
 
@@ -68,13 +71,14 @@ describe('EvmAddCustomAssetPopup', () => {
     expect(
       await screen.findByText('Enter a valid contract address.'),
     ).toBeInTheDocument();
-    expect(screen.getByText('Name is required.')).toBeInTheDocument();
     expect(screen.getByText('Symbol is required.')).toBeInTheDocument();
-    expect(screen.getByText('Decimals are required.')).toBeInTheDocument();
+    expect(screen.queryByText('Name is required.')).not.toBeInTheDocument();
+    expect(screen.queryByText('Decimals are required.')).not.toBeInTheDocument();
     expect(onSave).not.toHaveBeenCalled();
+    expect(EvmTokensUtils.fetchErc20NameAndDecimalsFromChain).not.toHaveBeenCalled();
   });
 
-  it('blocks save for invalid decimals and duplicate addresses', async () => {
+  it('blocks save for duplicate addresses', async () => {
     const onSave = jest.fn();
 
     render(
@@ -91,14 +95,8 @@ describe('EvmAddCustomAssetPopup', () => {
     fireEvent.change(screen.getByTestId('custom-asset-contract-address'), {
       target: { value: '0x00000000000000000000000000000000000000aa' },
     });
-    fireEvent.change(screen.getByTestId('custom-asset-name'), {
-      target: { value: 'USD Coin' },
-    });
     fireEvent.change(screen.getByTestId('custom-asset-symbol'), {
       target: { value: 'USDC' },
-    });
-    fireEvent.change(screen.getByTestId('custom-asset-decimals'), {
-      target: { value: '1.5' },
     });
 
     fireEvent.click(screen.getByTestId('custom-asset-save'));
@@ -106,8 +104,39 @@ describe('EvmAddCustomAssetPopup', () => {
     expect(
       await screen.findByText('This contract address is already added.'),
     ).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+    expect(EvmTokensUtils.fetchErc20NameAndDecimalsFromChain).not.toHaveBeenCalled();
+  });
+
+  it('shows an error when name and decimals cannot be read from the chain', async () => {
+    const onSave = jest.fn();
+    jest
+      .spyOn(EvmTokensUtils, 'fetchErc20NameAndDecimalsFromChain')
+      .mockRejectedValue(new Error('revert'));
+
+    render(
+      <EvmAddCustomAssetPopup
+        chain={chain}
+        mode="erc20"
+        walletAddress="0x1111111111111111111111111111111111111111"
+        onClose={jest.fn()}
+        onSave={onSave}
+      />,
+    );
+
+    fireEvent.change(screen.getByTestId('custom-asset-contract-address'), {
+      target: { value: '0x00000000000000000000000000000000000000aa' },
+    });
+    fireEvent.change(screen.getByTestId('custom-asset-symbol'), {
+      target: { value: 'USDC' },
+    });
+
+    fireEvent.click(screen.getByTestId('custom-asset-save'));
+
     expect(
-      screen.getByText('Decimals must be a whole number.'),
+      await screen.findByText(
+        'Could not read token name and decimals from the chain. Check the address and that it is a standard ERC20 contract.',
+      ),
     ).toBeInTheDocument();
     expect(onSave).not.toHaveBeenCalled();
   });
@@ -128,20 +157,21 @@ describe('EvmAddCustomAssetPopup', () => {
     fireEvent.change(screen.getByTestId('custom-asset-contract-address'), {
       target: { value: '0x00000000000000000000000000000000000000aa' },
     });
-    fireEvent.change(screen.getByTestId('custom-asset-name'), {
-      target: { value: 'USD Coin' },
-    });
     fireEvent.change(screen.getByTestId('custom-asset-symbol'), {
       target: { value: 'USDC' },
-    });
-    fireEvent.change(screen.getByTestId('custom-asset-decimals'), {
-      target: { value: '6' },
     });
     fireEvent.change(screen.getByTestId('custom-asset-logo'), {
       target: { value: 'https://cdn.example/usdc.svg' },
     });
 
     fireEvent.click(screen.getByTestId('custom-asset-save'));
+
+    await waitFor(() => {
+      expect(EvmTokensUtils.fetchErc20NameAndDecimalsFromChain).toHaveBeenCalledWith(
+        chain,
+        '0x00000000000000000000000000000000000000AA',
+      );
+    });
 
     await waitFor(() => {
       expect(onSave).toHaveBeenCalledWith({
@@ -157,7 +187,6 @@ describe('EvmAddCustomAssetPopup', () => {
   it('shows the NFT placeholder without a save action', () => {
     render(
       <EvmAddCustomAssetPopup
-        chain={chain}
         mode="nft"
         onClose={jest.fn()}
       />,

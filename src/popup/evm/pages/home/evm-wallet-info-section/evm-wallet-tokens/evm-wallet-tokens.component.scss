@@ -5,9 +5,9 @@
   border-radius: 12px;
   border: 1px solid var(--card-border);
   background: var(--card-background);
-  align-items: flex-start;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   column-gap: 12px;
 
   &__message {
