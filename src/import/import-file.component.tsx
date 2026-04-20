@@ -55,13 +55,14 @@ const ImportFile = ({
     if (selectedFile) {
       const base64 = await FileUtils.toBase64(selectedFile);
       const fileData = atob(base64);
+      if (callBackCommand) {
+        chrome.runtime.onMessage.addListener(onCallBackCommandeMessageListener);
+      }
       chrome.runtime.sendMessage({
         command: command,
         value: fileData,
       });
-      if (callBackCommand) {
-        chrome.runtime.onMessage.addListener(onCallBackCommandeMessageListener);
-      } else {
+      if (!callBackCommand) {
         window.close();
       }
     }

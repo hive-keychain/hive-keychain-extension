@@ -50,7 +50,6 @@ const sendBackImportedAccounts = async (fileContent: string) => {
         account.keys.posting?.startsWith('#') ||
         account.keys.memo?.startsWith('#'),
     );
-    const extensionId = (await chrome.management.getSelf()).id;
     chrome.runtime.sendMessage({
       command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
       value: {
@@ -58,7 +57,7 @@ const sendBackImportedAccounts = async (fileContent: string) => {
         feedback: useLedger
           ? {
               message: 'ledger_import_account_has_ledger',
-              params: [extensionId],
+              params: [chrome.runtime.getURL('link-ledger-device.html')],
             }
           : null,
       },
