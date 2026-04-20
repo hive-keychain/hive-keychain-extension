@@ -14,6 +14,7 @@ import {
   EvmLightNodeUtils,
   PricingStatus,
 } from '@popup/evm/utils/evm-light-node.utils';
+import { EvmLocalHistoryUtils } from '@popup/evm/utils/evm-local-history.utils';
 import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
@@ -29,12 +30,6 @@ const EMPTY_EVM_HISTORY: EvmUserHistory = {
   events: [],
   nextCursor: '',
   fullyFetch: false,
-};
-
-const CUSTOM_CHAIN_EMPTY_HISTORY: EvmUserHistory = {
-  events: [],
-  nextCursor: null,
-  fullyFetch: true,
 };
 
 const LOAD_MORE_TOKENS_INITIAL_DELAY_MS = 1000;
@@ -162,12 +157,35 @@ const getCustomChainNfts = async (chain: EvmChain, wallet: HDNodeWallet) => {
 export const loadEvmHistory = (): AppThunk => async (dispatch, getState) => {
   const chain = getState().chain as Chain;
   if (chain.type === ChainType.EVM && (chain as EvmChain).isCustom === true) {
+    const evmChain = chain as EvmChain;
+    const walletAddress =
+      process.env.FORCED_EVM_WALLET_ADDRESS ??
+      getState().evm.activeAccount.wallet.address;
+
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: {
         ...getState().evm.activeAccount,
         history: {
-          value: CUSTOM_CHAIN_EMPTY_HISTORY,
+          value: getState().evm.activeAccount.history.value,
+          loading: true,
+          initialized: false,
+        },
+      } as EvmActiveAccount,
+    });
+
+    const newHistory =
+      await EvmLocalHistoryUtils.getLocalUserHistoryForCustomChain(
+        evmChain.chainId,
+        walletAddress,
+      );
+
+    dispatch({
+      type: EvmActionType.SET_ACTIVE_ACCOUNT,
+      payload: {
+        ...getState().evm.activeAccount,
+        history: {
+          value: newHistory,
           loading: false,
           initialized: true,
         },
@@ -266,9 +284,9 @@ export const loadEvmActiveAccount =
             initialized: false,
           },
           history: {
-            value: CUSTOM_CHAIN_EMPTY_HISTORY,
+            value: EMPTY_EVM_HISTORY,
             loading: false,
-            initialized: true,
+            initialized: false,
           },
           wallet: wallet,
           isReady: false,

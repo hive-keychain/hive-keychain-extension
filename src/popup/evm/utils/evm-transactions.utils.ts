@@ -13,6 +13,7 @@ import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
+import { EvmLocalHistoryUtils } from '@popup/evm/utils/evm-local-history.utils';
 import { EvmTokensHistoryParserUtils } from '@popup/evm/utils/evm-tokens-history-parser.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
@@ -147,6 +148,13 @@ const send = async (
       transactionResponse,
       chain,
     );
+    if (chain.isCustom) {
+      await EvmLocalHistoryUtils.appendBroadcastRecord(
+        chain,
+        connectedWallet.address,
+        transactionResponse,
+      );
+    }
   }
   return transactionResponse;
 };

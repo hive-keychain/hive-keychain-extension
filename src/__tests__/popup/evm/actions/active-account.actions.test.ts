@@ -80,8 +80,8 @@ describe('EVM active-account.actions (custom chain)', () => {
     const { activeAccount } = store.getState().evm;
     expect(activeAccount.nfts.initialized).toBe(true);
     expect(activeAccount.nfts.loading).toBe(false);
-    expect(activeAccount.history.initialized).toBe(true);
-    expect(activeAccount.history.value.fullyFetch).toBe(true);
+    expect(activeAccount.history.initialized).toBe(false);
+    expect(activeAccount.history.value.fullyFetch).toBe(false);
     expect(activeAccount.isReady).toBe(true);
   });
 
