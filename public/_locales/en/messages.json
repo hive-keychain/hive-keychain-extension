@@ -6080,6 +6080,10 @@
     "message": "Add an NFT contract and the token IDs you own. Keychain will detect whether the contract is ERC721 or ERC1155.",
     "description": "Add custom NFT popup caption"
   },
+  "evm_custom_nfts_field_collection_name": {
+    "message": "Collection name (optional)",
+    "description": "Label for optional custom NFT collection display name"
+  },
   "evm_custom_nfts_field_token_ids": {
     "message": "Token IDs",
     "description": "Label for NFT token IDs field"

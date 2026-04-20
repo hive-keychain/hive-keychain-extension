@@ -29,6 +29,8 @@ export interface EvmCustomNftFormData {
   contractAddress: string;
   type: EVMSmartContractType.ERC721 | EVMSmartContractType.ERC1155;
   tokenIds: string[];
+  /** Optional display name for this collection in the wallet. */
+  collectionName?: string;
 }
 
 interface Props {
@@ -60,6 +62,7 @@ interface Erc20FormErrors {
 
 interface NftFormState {
   contractAddress: string;
+  collectionName: string;
   tokenIds: string;
 }
 
@@ -117,6 +120,7 @@ const INITIAL_ERC20_FORM: Erc20FormState = {
 
 const INITIAL_NFT_FORM: NftFormState = {
   contractAddress: '',
+  collectionName: '',
   tokenIds: '',
 };
 
@@ -209,6 +213,7 @@ export const EvmAddCustomAssetPopup = ({
     if (tokenToEdit && 'tokenIds' in tokenToEdit) {
       setNftForm({
         contractAddress: tokenToEdit.address,
+        collectionName: tokenToEdit.collectionName ?? '',
         tokenIds: formatTokenIds(tokenToEdit.tokenIds),
       });
     } else {
@@ -419,11 +424,16 @@ export const EvmAddCustomAssetPopup = ({
         return;
       }
 
+      const trimmedCollectionName = nftForm.collectionName.trim();
+
       try {
         await onSave({
           contractAddress: normalizedAddress,
           type,
           tokenIds: normalizedTokenIds,
+          ...(trimmedCollectionName
+            ? { collectionName: trimmedCollectionName }
+            : {}),
         } as EvmCustomNftFormData);
       } catch {
         if (isMountedRef.current) {
@@ -555,6 +565,17 @@ export const EvmAddCustomAssetPopup = ({
           {nftErrors.contractAddress && (
             <div className="error-message">{nftErrors.contractAddress}</div>
           )}
+        </div>
+
+        <div className="field">
+          <InputComponent
+            label="evm_custom_nfts_field_collection_name"
+            value={nftForm.collectionName}
+            type={InputType.TEXT}
+            onChange={(value) => setNftField('collectionName', value)}
+            dataTestId="custom-asset-collection-name"
+            classname="custom-asset-input"
+          />
         </div>
 
         <div className="field">

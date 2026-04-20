@@ -176,13 +176,19 @@ const normalizeCustomToken = (token: EvmCustomToken): EvmCustomToken => ({
   metadata: normalizeCustomTokenMetadata(token),
 });
 
-const normalizeCustomNft = (nft: EvmCustomNft): EvmCustomNft => ({
-  ...nft,
-  address: normalizeCustomTokenAddress(nft.address),
-  tokenIds: Array.from(
-    new Set(nft.tokenIds.map(normalizeCustomNftTokenId).filter(Boolean)),
-  ),
-});
+const normalizeCustomNft = (nft: EvmCustomNft): EvmCustomNft => {
+  const trimmedCollectionName = nft.collectionName?.trim();
+  return {
+    address: normalizeCustomTokenAddress(nft.address),
+    type: nft.type,
+    tokenIds: Array.from(
+      new Set(nft.tokenIds.map(normalizeCustomNftTokenId).filter(Boolean)),
+    ),
+    ...(trimmedCollectionName
+      ? { collectionName: trimmedCollectionName }
+      : {}),
+  };
+};
 
 const buildCustomErc20TokenInfo = (
   chain: EvmChain,
@@ -1118,6 +1124,7 @@ const updateCustomNft = async (
   contractAddress: string,
   type: EVMSmartContractType.ERC721 | EVMSmartContractType.ERC1155,
   tokenIds: string[],
+  collectionName?: string,
 ) => {
   const normalizedWalletAddress = normalizeCustomWalletKey(walletAddress);
   const normalizedAddress = normalizeCustomTokenAddress(contractAddress);
@@ -1141,6 +1148,7 @@ const updateCustomNft = async (
           address: normalizedAddress,
           type,
           tokenIds,
+          collectionName,
         });
       }
       return normalizeCustomNft(entry);
@@ -1314,6 +1322,7 @@ const getCustomNftCollectionsForWallet = async (
       const tokenInfo = {
         type: normalizedNft.type,
         name:
+          normalizedNft.collectionName?.trim() ||
           name ||
           (normalizedNft.type === EVMSmartContractType.ERC1155
             ? 'ERC1155'

@@ -114,12 +114,14 @@ const EvmCustomNftsPage = ({
         editingNft.address,
         editingNft.type,
         form.tokenIds,
+        form.collectionName,
       );
     } else {
       await EvmTokensUtils.addCustomNft(chain, activeAccount.wallet.address, {
         address: form.contractAddress,
         type: form.type,
         tokenIds: form.tokenIds,
+        collectionName: form.collectionName,
       });
     }
     closeNftPopup();
@@ -170,12 +172,19 @@ const EvmCustomNftsPage = ({
                     <div className="evm-custom-nfts-list__line-group">
                       <div className="evm-custom-tokens-list__line">
                         <span className="evm-custom-tokens-list__name">
-                          {EvmFormatUtils.formatAddress(nft.address)}
+                          {nft.collectionName?.trim()
+                            ? nft.collectionName.trim()
+                            : EvmFormatUtils.formatAddress(nft.address)}
                         </span>
                         <span className="evm-custom-tokens-list__contract-address">
                           {typeLabel}
                         </span>
                       </div>
+                      {Boolean(nft.collectionName?.trim()) && (
+                        <div className="evm-custom-nfts-list__collection-address">
+                          {EvmFormatUtils.formatAddress(nft.address)}
+                        </div>
+                      )}
                       <div className="evm-custom-nfts-list__meta">
                         {chrome.i18n.getMessage('evm_custom_nfts_token_count', [
                           String(nft.tokenIds.length),

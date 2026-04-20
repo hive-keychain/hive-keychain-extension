@@ -11,4 +11,10 @@
     @include poppins400(13px);
     opacity: 0.85;
   }
+
+  .evm-custom-nfts-list__collection-address {
+    @include poppins400(12px);
+    opacity: 0.75;
+    word-break: break-all;
+  }
 }

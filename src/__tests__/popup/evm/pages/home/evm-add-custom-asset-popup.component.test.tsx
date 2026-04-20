@@ -339,11 +339,13 @@ describe('EvmAddCustomAssetPopup', () => {
     });
 
     await waitFor(() => {
-      expect(onSave).toHaveBeenCalledWith({
-        contractAddress: '0x00000000000000000000000000000000000000AA',
-        type: EVMSmartContractType.ERC1155,
-        tokenIds: ['1', '2'],
-      });
+      expect(onSave).toHaveBeenCalledWith(
+        expect.objectContaining({
+          contractAddress: '0x00000000000000000000000000000000000000AA',
+          type: EVMSmartContractType.ERC1155,
+          tokenIds: ['1', '2'],
+        }),
+      );
     });
   });
 });

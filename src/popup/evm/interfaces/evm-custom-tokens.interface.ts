@@ -41,4 +41,6 @@ export interface EvmCustomNft {
   address: string;
   type: EVMSmartContractType.ERC721 | EVMSmartContractType.ERC1155;
   tokenIds: string[];
+  /** Optional label shown in the wallet instead of the contract name when set. */
+  collectionName?: string;
 }
