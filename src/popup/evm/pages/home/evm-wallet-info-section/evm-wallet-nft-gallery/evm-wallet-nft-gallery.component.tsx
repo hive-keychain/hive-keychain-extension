@@ -6,14 +6,15 @@ import {
   EvmErc1155Token,
   EvmErc721Token,
 } from '@popup/evm/interfaces/active-account.interface';
-import { EvmAddCustomAssetPopup } from '@popup/evm/pages/home/evm-add-custom-asset-popup/evm-add-custom-asset-popup.component';
 import { EvmWalletNftPreviewComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-nft-gallery/evm-wallet-nft-preview/evm-wallet-nft-preview.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { HDNodeWallet } from 'ethers';
 import FlatList from 'flatlist-react';
 import React, { useEffect, useState } from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 
 interface Props {
@@ -26,20 +27,19 @@ interface Props {
   loadEvmActiveAccountNfts: (chain: EvmChain, wallet: HDNodeWallet) => void;
 }
 
-export const EvmWalletNftGalleryComponent = ({
+const EvmWalletNftGallery = ({
   activeAccount,
   chain,
   onClickOnNftPreview,
   loadEvmActiveAccountNfts,
-}: Props) => {
+  navigateTo,
+}: Props & PropsFromRedux) => {
   const [displayedCollections, setDisplayedCollections] =
     useState<(EvmErc721Token | EvmErc1155Token)[]>();
   const [filteredCollections, setFilteredCollections] =
     useState<(EvmErc721Token | EvmErc1155Token)[]>();
 
   const [filterValue, setFilterValue] = useState('');
-
-  const [showAddCustomTokenPopup, setShowAddCustomTokenPopup] = useState(false);
   const isCustomChainSelected = chain.isCustom === true;
 
   useEffect(() => {
@@ -79,7 +79,7 @@ export const EvmWalletNftGalleryComponent = ({
   };
 
   const openAddCustomTokenPanel = () => {
-    setShowAddCustomTokenPopup(true);
+    navigateTo(EvmScreen.EVM_CUSTOM_NFTS_PAGE);
   };
 
   return (
@@ -125,14 +125,6 @@ export const EvmWalletNftGalleryComponent = ({
         </>
       )}
 
-      {showAddCustomTokenPopup && (
-        <EvmAddCustomAssetPopup
-          chain={chain}
-          mode="nft"
-          onClose={() => setShowAddCustomTokenPopup(false)}
-        />
-      )}
-
       {activeAccount.nfts.loading && (
         <div className="rotating-logo-container">
           <RotatingLogoComponent />
@@ -141,3 +133,8 @@ export const EvmWalletNftGalleryComponent = ({
     </div>
   );
 };
+
+const connector = connect(null, { navigateTo });
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export const EvmWalletNftGalleryComponent = connector(EvmWalletNftGallery);

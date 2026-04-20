@@ -11,6 +11,7 @@ import {
 import {
   EvmAddCustomAssetPopup,
   EvmCustomErc20FormData,
+  EvmCustomNftFormData,
 } from '@popup/evm/pages/home/evm-add-custom-asset-popup/evm-add-custom-asset-popup.component';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
@@ -247,7 +248,11 @@ const EvmCustomTokensPage = ({
           existingAddresses={erc20AddressesFromBalances}
           tokenToEdit={editingToken}
           onClose={closeTokenPopup}
-          onSave={saveCustomToken}
+          onSave={
+            saveCustomToken as (
+              form: EvmCustomErc20FormData | EvmCustomNftFormData,
+            ) => Promise<void>
+          }
         />
       )}
     </div>

@@ -7,6 +7,7 @@ import {
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
+import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import Decimal from 'decimal.js';
 import { ethers } from 'ethers';
@@ -486,5 +487,152 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
       decimals: 18,
       logo: '',
     });
+  });
+
+  it('persists normalized custom NFTs with deduplicated token IDs', async () => {
+    let storageValue: any;
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockImplementation(async () => storageValue);
+    jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockImplementation(async (_key, value) => {
+        storageValue = value;
+      });
+
+    const chain = {
+      type: ChainType.EVM,
+      chainId: '0x1',
+    } as any;
+    const walletAddress = '0x1111111111111111111111111111111111111111';
+
+    await EvmTokensUtils.addCustomNft(chain, walletAddress, {
+      address: '0x00000000000000000000000000000000000000aa',
+      type: EVMSmartContractType.ERC721,
+      tokenIds: ['1', '0x2', '2'],
+    });
+
+    const savedNfts = await EvmTokensUtils.getCustomNfts(
+      chain,
+      walletAddress.toUpperCase(),
+    );
+
+    expect(savedNfts).toEqual([
+      {
+        address: '0x00000000000000000000000000000000000000AA',
+        type: EVMSmartContractType.ERC721,
+        tokenIds: ['1', '2'],
+      },
+    ]);
+  });
+
+  it('updates and removes saved custom NFT entries', async () => {
+    let storageValue: any;
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockImplementation(async () => storageValue);
+    jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockImplementation(async (_key, value) => {
+        storageValue = value;
+      });
+
+    const chain = {
+      type: ChainType.EVM,
+      chainId: '0x1',
+    } as any;
+    const walletAddress = '0x1111111111111111111111111111111111111111';
+
+    await EvmTokensUtils.addCustomNft(chain, walletAddress, {
+      address: '0x00000000000000000000000000000000000000aa',
+      type: EVMSmartContractType.ERC721,
+      tokenIds: ['1'],
+    });
+    await EvmTokensUtils.updateCustomNft(
+      chain,
+      walletAddress,
+      '0x00000000000000000000000000000000000000aa',
+      EVMSmartContractType.ERC721,
+      ['3', '4'],
+    );
+
+    expect(await EvmTokensUtils.getCustomNfts(chain, walletAddress)).toEqual([
+      {
+        address: '0x00000000000000000000000000000000000000AA',
+        type: EVMSmartContractType.ERC721,
+        tokenIds: ['3', '4'],
+      },
+    ]);
+
+    await EvmTokensUtils.removeCustomNft(
+      chain,
+      walletAddress,
+      '0x00000000000000000000000000000000000000aa',
+      EVMSmartContractType.ERC721,
+    );
+
+    expect(await EvmTokensUtils.getCustomNfts(chain, walletAddress)).toEqual(
+      [],
+    );
+  });
+
+  it('builds custom NFT collections from owned token IDs only', async () => {
+    jest.spyOn(LocalStorageUtils, 'getValueFromLocalStorage').mockResolvedValue({
+      '0x1': {
+        '0x1111111111111111111111111111111111111111': [
+          {
+            address: '0x00000000000000000000000000000000000000aa',
+            type: EVMSmartContractType.ERC721,
+            tokenIds: ['1', '2'],
+          },
+        ],
+      },
+    });
+    jest.spyOn(EthersUtils, 'getProvider').mockResolvedValue({} as any);
+    jest.spyOn(EvmNFTUtils, 'getMetadata').mockImplementation(
+      async (_type, tokenId) =>
+        ({
+          name: `NFT #${tokenId}`,
+          description: '',
+          image: `https://cdn.example/${tokenId}.png`,
+          attributes: [],
+        }) as any,
+    );
+    jest.spyOn(ethers, 'Contract').mockImplementation(
+      () =>
+        ({
+          name: jest.fn().mockResolvedValue('Custom Collection'),
+          symbol: jest.fn().mockResolvedValue('CNFT'),
+          ownerOf: jest.fn().mockImplementation((tokenId: string) =>
+            tokenId === '1'
+              ? '0x1111111111111111111111111111111111111111'
+              : '0x2222222222222222222222222222222222222222',
+          ),
+          tokenURI: jest.fn(),
+          balanceOf: jest.fn().mockResolvedValue(1n),
+          uri: jest.fn(),
+        }) as any,
+    );
+
+    const collections = await EvmTokensUtils.getCustomNftCollectionsForWallet(
+      {
+        type: ChainType.EVM,
+        chainId: '0x1',
+      } as any,
+      '0x1111111111111111111111111111111111111111',
+    );
+
+    expect(collections).toHaveLength(1);
+    expect(collections[0].collection).toEqual([
+      {
+        id: '1',
+        metadata: {
+          name: 'NFT #1',
+          description: '',
+          image: 'https://cdn.example/1.png',
+          attributes: [],
+        },
+      },
+    ]);
   });
 });

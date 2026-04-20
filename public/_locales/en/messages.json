@@ -5992,33 +5992,65 @@
     "message": "Add custom token",
     "description": "Add custom tokens"
   },
+  "evm_add_custom_nft": {
+    "message": "Add custom NFT",
+    "description": "Add a custom NFT"
+  },
   "evm_custom_tokens_page_title": {
     "message": "Custom tokens",
     "description": "Title for the custom ERC20 tokens management page"
+  },
+  "evm_custom_nfts_page_title": {
+    "message": "Custom NFTs",
+    "description": "Title for the custom NFT management page"
   },
   "evm_custom_tokens_page_empty": {
     "message": "No custom tokens yet. Add one to register an ERC20 contract for this network.",
     "description": "Empty state on custom tokens page"
   },
+  "evm_custom_nfts_page_empty": {
+    "message": "No custom NFTs yet. Add one to register NFT token IDs for this network.",
+    "description": "Empty state on custom NFT page"
+  },
   "evm_custom_tokens_page_caption": {
     "message": "Custom tokens are stored per wallet and network. You can remove them from this list at any time.",
     "description": "Intro caption on custom tokens page"
+  },
+  "evm_custom_nfts_page_caption": {
+    "message": "Custom NFTs are stored per wallet and network. Saved entries stay here even if you no longer own those token IDs.",
+    "description": "Intro caption on custom NFT page"
   },
   "evm_custom_tokens_delete": {
     "message": "Delete",
     "description": "Remove a custom ERC20 token from the list"
   },
+  "evm_custom_nfts_delete": {
+    "message": "Delete",
+    "description": "Remove a custom NFT entry from the list"
+  },
   "evm_custom_tokens_delete_confirm": {
     "message": "Remove \"$1\" from your custom tokens? This cannot be undone.",
     "description": "Confirmation before deleting a custom token; $1 is symbol or name"
+  },
+  "evm_custom_nfts_delete_confirm": {
+    "message": "Remove \"$1\" from your custom NFTs? This cannot be undone.",
+    "description": "Confirmation before deleting a custom NFT entry; $1 is the contract address"
   },
   "evm_custom_tokens_modal_title_edit": {
     "message": "Edit custom token",
     "description": "Title when editing a saved custom ERC20 token"
   },
+  "evm_custom_nfts_modal_title_edit": {
+    "message": "Edit custom NFT",
+    "description": "Title when editing a saved custom NFT entry"
+  },
   "evm_custom_tokens_modal_caption_edit": {
     "message": "Change the symbol or logo. Name and decimals are read from the contract when you save.",
     "description": "Caption when editing a custom ERC20 token"
+  },
+  "evm_custom_nfts_modal_caption_edit": {
+    "message": "Replace the token ID list for this NFT contract. The NFT type stays the same.",
+    "description": "Caption when editing a custom NFT entry"
   },
   "evm_custom_erc20_empty_card_message": {
     "message": "You don't have any custom tokens yet.</br> To get started, click the settings wheel.",
@@ -6032,6 +6064,10 @@
     "message": "Add custom token",
     "description": "Add custom token popup title"
   },
+  "evm_add_custom_nft_popup_title": {
+    "message": "Add custom NFT",
+    "description": "Add custom NFT popup title"
+  },
   "evm_smart_contract_address": {
     "message": "Smart contract address",
     "description": "Smart contract address"
@@ -6039,6 +6075,26 @@
   "evm_add_custom_token_popup_caption": {
     "message": "Add a custom token to your wallet. If you don't find the token you're looking for, you can add it manually.",
     "description": "Add custom token popup caption"
+  },
+  "evm_add_custom_nft_popup_caption": {
+    "message": "Add an NFT contract and the token IDs you own. Keychain will detect whether the contract is ERC721 or ERC1155.",
+    "description": "Add custom NFT popup caption"
+  },
+  "evm_custom_nfts_field_token_ids": {
+    "message": "Token IDs",
+    "description": "Label for NFT token IDs field"
+  },
+  "evm_custom_nfts_type_auto_detected": {
+    "message": "The NFT type will be detected automatically when you save.",
+    "description": "Message explaining NFT type auto detection"
+  },
+  "evm_custom_nfts_type_detected": {
+    "message": "This saved entry uses the $1 standard.",
+    "description": "Message explaining the detected NFT type; $1 is ERC721 or ERC1155"
+  },
+  "evm_custom_nfts_token_count": {
+    "message": "$1 saved token IDs",
+    "description": "Custom NFT token count label; $1 is the number of saved token IDs"
   },
   "evm_add_manually_discover": {
     "message": "Discover tokens",

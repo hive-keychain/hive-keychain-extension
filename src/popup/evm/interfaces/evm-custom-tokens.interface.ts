@@ -8,6 +8,14 @@ export interface EvmUserSavedCustomTokens {
   [walletAddress: string]: EvmCustomToken[];
 }
 
+export interface EvmSavedCustomNfts {
+  [chainId: string]: EvmUserSavedCustomNfts;
+}
+
+export interface EvmUserSavedCustomNfts {
+  [walletAddress: string]: EvmCustomNft[];
+}
+
 /** ERC20 fields without discriminant; used for builders and legacy migration */
 export interface EvmCustomErc20TokenMetadata {
   name: string;
@@ -27,4 +35,10 @@ export interface EvmCustomToken {
   address: string;
   type: EVMSmartContractType;
   metadata?: EvmCustomTokenMetadata;
+}
+
+export interface EvmCustomNft {
+  address: string;
+  type: EVMSmartContractType.ERC721 | EVMSmartContractType.ERC1155;
+  tokenIds: string[];
 }

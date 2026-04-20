@@ -17,6 +17,7 @@ import EvmProviderSettingsComponent from '@popup/evm/pages/home/settings/evm-adv
 import { EvmRpcNodesComponent } from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-rpc-nodes/evm-rpc-nodes.component';
 import { EvmSecuritySettingsComponent } from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-security/evm-security.component';
 import { EvmContactsComponent } from '@popup/evm/pages/home/settings/evm-contacts/evm-contacts.component';
+import { EvmCustomNftsPageComponent } from '@popup/evm/pages/home/evm-custom-nfts-page/evm-custom-nfts-page.component';
 import { EvmCustomTokensPageComponent } from '@popup/evm/pages/home/evm-custom-tokens-page/evm-custom-tokens-page.component';
 import { EvmCustomChainsComponent } from '@popup/evm/pages/home/settings/evm-custom-chains/evm-custom-chains.component';
 import { EvmSettingPage } from '@popup/evm/pages/home/settings/evm-settings.component';
@@ -89,6 +90,8 @@ const EvmAppRouter = ({
         return <EvmCustomChainsComponent />;
       case EvmScreen.EVM_CUSTOM_TOKENS_PAGE:
         return <EvmCustomTokensPageComponent />;
+      case EvmScreen.EVM_CUSTOM_NFTS_PAGE:
+        return <EvmCustomNftsPageComponent />;
       case EvmScreen.EVM_RPC_NODES_SETTINGS:
         return <EvmRpcNodesComponent />;
       case EvmScreen.EVM_SECURITY_SETTINGS:

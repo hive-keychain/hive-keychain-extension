@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { KeychainApi } from '@api/keychain';
+import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import {
   fireEvent,
@@ -21,6 +22,7 @@ describe('EvmAddCustomAssetPopup', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
     jest.spyOn(EvmTokensUtils, 'getCustomTokens').mockResolvedValue([]);
+    jest.spyOn(EvmTokensUtils, 'getCustomNfts').mockResolvedValue([]);
     jest
       .spyOn(EvmTokensUtils, 'fetchErc20NameAndDecimalsFromChain')
       .mockResolvedValue({ name: 'USD Coin', decimals: 6 });
@@ -184,17 +186,164 @@ describe('EvmAddCustomAssetPopup', () => {
     });
   });
 
-  it('shows the NFT placeholder without a save action', () => {
+  it('blocks NFT save when contract address or token IDs are invalid', async () => {
     render(
       <EvmAddCustomAssetPopup
+        chain={chain}
         mode="nft"
+        walletAddress="0x1111111111111111111111111111111111111111"
         onClose={jest.fn()}
+        onSave={jest.fn()}
       />,
     );
 
+    fireEvent.click(screen.getByTestId('custom-asset-save'));
+
     expect(
-      screen.getByText('NFT manual add is not implemented yet in this pass.'),
+      await screen.findByText('Enter a valid contract address.'),
     ).toBeInTheDocument();
-    expect(screen.queryByTestId('custom-asset-save')).not.toBeInTheDocument();
+    expect(screen.getByText('Enter at least one token ID.')).toBeInTheDocument();
+  });
+
+  it('blocks NFT save for duplicate addresses', async () => {
+    const onSave = jest.fn();
+
+    render(
+      <EvmAddCustomAssetPopup
+        chain={chain}
+        mode="nft"
+        walletAddress="0x1111111111111111111111111111111111111111"
+        existingAddresses={['0x00000000000000000000000000000000000000AA']}
+        onClose={jest.fn()}
+        onSave={onSave}
+      />,
+    );
+
+    fireEvent.change(screen.getByTestId('custom-asset-contract-address'), {
+      target: { value: '0x00000000000000000000000000000000000000aa' },
+    });
+    fireEvent.change(screen.getByTestId('custom-asset-token-ids'), {
+      target: { value: '1,2' },
+    });
+
+    fireEvent.click(screen.getByTestId('custom-asset-save'));
+
+    expect(
+      await screen.findByText('This contract address is already added.'),
+    ).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it('shows an error when NFT type detection fails', async () => {
+    const onSave = jest.fn();
+    jest
+      .spyOn(EvmTokensUtils, 'detectCustomNftType')
+      .mockRejectedValue(new Error('unsupported'));
+
+    render(
+      <EvmAddCustomAssetPopup
+        chain={chain}
+        mode="nft"
+        walletAddress="0x1111111111111111111111111111111111111111"
+        onClose={jest.fn()}
+        onSave={onSave}
+      />,
+    );
+
+    fireEvent.change(screen.getByTestId('custom-asset-contract-address'), {
+      target: { value: '0x00000000000000000000000000000000000000aa' },
+    });
+    fireEvent.change(screen.getByTestId('custom-asset-token-ids'), {
+      target: { value: '1,2' },
+    });
+
+    fireEvent.click(screen.getByTestId('custom-asset-save'));
+
+    expect(
+      await screen.findByText(
+        'Could not detect a supported NFT contract at this address. Only ERC721 and ERC1155 contracts are supported.',
+      ),
+    ).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it('shows an ownership error when not all NFT token IDs are owned', async () => {
+    const onSave = jest.fn();
+    jest
+      .spyOn(EvmTokensUtils, 'detectCustomNftType')
+      .mockResolvedValue(EVMSmartContractType.ERC721);
+    jest
+      .spyOn(EvmTokensUtils, 'getOwnedCustomNftTokenIds')
+      .mockResolvedValue(['1']);
+
+    render(
+      <EvmAddCustomAssetPopup
+        chain={chain}
+        mode="nft"
+        walletAddress="0x1111111111111111111111111111111111111111"
+        onClose={jest.fn()}
+        onSave={onSave}
+      />,
+    );
+
+    fireEvent.change(screen.getByTestId('custom-asset-contract-address'), {
+      target: { value: '0x00000000000000000000000000000000000000aa' },
+    });
+    fireEvent.change(screen.getByTestId('custom-asset-token-ids'), {
+      target: { value: '1,2' },
+    });
+
+    fireEvent.click(screen.getByTestId('custom-asset-save'));
+
+    expect(
+      await screen.findByText('One or more token IDs are not owned by this wallet.'),
+    ).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it('submits normalized NFT form values', async () => {
+    const onSave = jest.fn().mockResolvedValue(undefined);
+    jest
+      .spyOn(EvmTokensUtils, 'detectCustomNftType')
+      .mockResolvedValue(EVMSmartContractType.ERC1155);
+    jest
+      .spyOn(EvmTokensUtils, 'getOwnedCustomNftTokenIds')
+      .mockResolvedValue(['1', '2']);
+
+    render(
+      <EvmAddCustomAssetPopup
+        chain={chain}
+        mode="nft"
+        walletAddress="0x1111111111111111111111111111111111111111"
+        onClose={jest.fn()}
+        onSave={onSave}
+      />,
+    );
+
+    fireEvent.change(screen.getByTestId('custom-asset-contract-address'), {
+      target: { value: '0x00000000000000000000000000000000000000aa' },
+    });
+    fireEvent.change(screen.getByTestId('custom-asset-token-ids'), {
+      target: { value: '1, 0x2, 2' },
+    });
+
+    fireEvent.click(screen.getByTestId('custom-asset-save'));
+
+    await waitFor(() => {
+      expect(EvmTokensUtils.detectCustomNftType).toHaveBeenCalledWith(
+        chain,
+        '0x1111111111111111111111111111111111111111',
+        '0x00000000000000000000000000000000000000AA',
+        ['1', '2'],
+      );
+    });
+
+    await waitFor(() => {
+      expect(onSave).toHaveBeenCalledWith({
+        contractAddress: '0x00000000000000000000000000000000000000AA',
+        type: EVMSmartContractType.ERC1155,
+        tokenIds: ['1', '2'],
+      });
+    });
   });
 });

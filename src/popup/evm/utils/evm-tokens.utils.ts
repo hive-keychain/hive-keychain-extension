@@ -5,13 +5,17 @@ import type {
 } from '@dialog/components/balance-change-card/balance-change-card.interface';
 import {
   EvmErc1155Token,
+  EvmErc1155TokenCollectionItem,
   EvmErc721Token,
+  EvmErc721TokenCollectionItem,
   NativeAndErc20Token,
 } from '@popup/evm/interfaces/active-account.interface';
 import {
+  EvmCustomNft,
   EvmCustomErc20TokenMetadata,
   EvmCustomToken,
   EvmCustomTokenMetadataErc20,
+  EvmSavedCustomNfts,
   EvmSavedCustomTokens,
 } from '@popup/evm/interfaces/evm-custom-tokens.interface';
 import { EvmLightNodeContractResponse } from '@popup/evm/interfaces/evm-light-node.interface';
@@ -44,6 +48,36 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
 const SHORT_BALANCE_DECIMALS = 5;
+const ERC721_INTERFACE_ID = '0x80ac58cd';
+const ERC1155_INTERFACE_ID = '0xd9b67a26';
+const ERC165Abi = [
+  {
+    inputs: [{ name: 'interfaceId', type: 'bytes4' }],
+    name: 'supportsInterface',
+    outputs: [{ name: '', type: 'bool' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+] as const;
+const ContractMetadataAbi = [
+  {
+    inputs: [],
+    name: 'name',
+    outputs: [{ name: '', type: 'string' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'symbol',
+    outputs: [{ name: '', type: 'string' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+] as const;
+
+type ContractProbeResult = 'success' | 'reverted' | 'missing';
+
 const SHORT_BALANCE_ZERO_DISPLAY = FormatUtils.withCommas(
   0,
   SHORT_BALANCE_DECIMALS,
@@ -75,6 +109,19 @@ const normalizeCustomTokenAddress = (address: string) => {
 
 const normalizeCustomWalletKey = (walletAddress: string) =>
   walletAddress.toLowerCase();
+
+const normalizeCustomNftTokenId = (tokenId: string) => {
+  const trimmedTokenId = tokenId.trim();
+  if (!trimmedTokenId.length) {
+    return '';
+  }
+
+  try {
+    return BigInt(trimmedTokenId).toString(10);
+  } catch {
+    return trimmedTokenId;
+  }
+};
 
 /** Native token metadata from chain fields only (no EvmLightNode), for custom chains. */
 const buildFallbackNativeTokenInfo = (
@@ -129,6 +176,14 @@ const normalizeCustomToken = (token: EvmCustomToken): EvmCustomToken => ({
   metadata: normalizeCustomTokenMetadata(token),
 });
 
+const normalizeCustomNft = (nft: EvmCustomNft): EvmCustomNft => ({
+  ...nft,
+  address: normalizeCustomTokenAddress(nft.address),
+  tokenIds: Array.from(
+    new Set(nft.tokenIds.map(normalizeCustomNftTokenId).filter(Boolean)),
+  ),
+});
+
 const buildCustomErc20TokenInfo = (
   chain: EvmChain,
   address: string,
@@ -149,6 +204,143 @@ const buildCustomErc20TokenInfo = (
   proxyTarget: null,
   validated: 0,
 });
+
+const getContractProbeResult = async (
+  callback: () => Promise<unknown>,
+): Promise<ContractProbeResult> => {
+  try {
+    await callback();
+    return 'success';
+  } catch (error: unknown) {
+    const err = error as { code?: string; shortMessage?: string; message?: string };
+    const message = String(err?.shortMessage ?? err?.message ?? '').toLowerCase();
+    if (
+      err?.code === 'BAD_DATA' ||
+      message.includes('could not decode result data') ||
+      message.includes('returned no data') ||
+      message.includes('missing revert data')
+    ) {
+      return 'missing';
+    }
+    return 'reverted';
+  }
+};
+
+const safeGetContractTextValue = async (
+  contract: ethers.Contract,
+  method: 'name' | 'symbol',
+) => {
+  try {
+    const value = await contract[method]();
+    return String(value ?? '').trim();
+  } catch {
+    return '';
+  }
+};
+
+const detectCustomNftType = async (
+  chain: EvmChain,
+  walletAddress: string,
+  contractAddress: string,
+  tokenIds: string[],
+): Promise<EVMSmartContractType.ERC721 | EVMSmartContractType.ERC1155> => {
+  const normalizedAddress = normalizeCustomTokenAddress(contractAddress);
+  const provider = await EthersUtils.getProvider(chain);
+  const erc165Contract = new ethers.Contract(
+    normalizedAddress,
+    ERC165Abi,
+    provider,
+  );
+
+  try {
+    if (await erc165Contract.supportsInterface(ERC721_INTERFACE_ID)) {
+      return EVMSmartContractType.ERC721;
+    }
+    if (await erc165Contract.supportsInterface(ERC1155_INTERFACE_ID)) {
+      return EVMSmartContractType.ERC1155;
+    }
+  } catch {
+    // Continue with method probes when ERC165 is unavailable.
+  }
+
+  const probeTokenId = tokenIds[0];
+  const erc1155Contract = new ethers.Contract(
+    normalizedAddress,
+    ERC1155Abi,
+    provider,
+  );
+  const [erc1155BalanceProbe, erc1155UriProbe] = await Promise.all([
+    getContractProbeResult(() =>
+      erc1155Contract.balanceOf(walletAddress, probeTokenId),
+    ),
+    getContractProbeResult(() => erc1155Contract.uri(probeTokenId)),
+  ]);
+
+  if (
+    erc1155BalanceProbe === 'success' ||
+    erc1155UriProbe === 'success' ||
+    (erc1155BalanceProbe !== 'missing' && erc1155UriProbe !== 'missing')
+  ) {
+    return EVMSmartContractType.ERC1155;
+  }
+
+  const erc721Contract = new ethers.Contract(
+    normalizedAddress,
+    ERC721Abi,
+    provider,
+  );
+  const [erc721OwnerProbe, erc721UriProbe] = await Promise.all([
+    getContractProbeResult(() => erc721Contract.ownerOf(probeTokenId)),
+    getContractProbeResult(() => erc721Contract.tokenURI(probeTokenId)),
+  ]);
+
+  if (
+    erc721OwnerProbe === 'success' ||
+    erc721UriProbe === 'success' ||
+    (erc721OwnerProbe !== 'missing' && erc721UriProbe !== 'missing')
+  ) {
+    return EVMSmartContractType.ERC721;
+  }
+
+  throw new Error('custom_nft_unknown_type');
+};
+
+const getOwnedCustomNftTokenIds = async (
+  chain: EvmChain,
+  walletAddress: string,
+  contractAddress: string,
+  type: EVMSmartContractType.ERC721 | EVMSmartContractType.ERC1155,
+  tokenIds: string[],
+) => {
+  const normalizedAddress = normalizeCustomTokenAddress(contractAddress);
+  const normalizedWalletAddress = walletAddress.toLowerCase();
+  const provider = await EthersUtils.getProvider(chain);
+  const contract = new ethers.Contract(
+    normalizedAddress,
+    type === EVMSmartContractType.ERC1155 ? ERC1155Abi : ERC721Abi,
+    provider,
+  );
+
+  const ownershipChecks = await Promise.all(
+    tokenIds.map(async (tokenId) => {
+      try {
+        if (type === EVMSmartContractType.ERC721) {
+          const owner = await contract.ownerOf(tokenId);
+          return String(owner).toLowerCase() === normalizedWalletAddress
+            ? tokenId
+            : null;
+        }
+
+        const balance = await contract.balanceOf(walletAddress, tokenId);
+        return BigInt(balance) > BigInt(0) ? tokenId : null;
+      } catch {
+        return null;
+      }
+    }),
+  );
+
+  return ownershipChecks.filter(Boolean) as string[];
+};
 
 const getTotalBalanceInUsd = (tokens: NativeAndErc20Token[]) => {
   return tokens.reduce((a, b) => {
@@ -869,6 +1061,292 @@ const getCustomTokens = async (chain: EvmChain, walletAddress: string) => {
   return dedupedTokens;
 };
 
+const addCustomNft = async (
+  chain: EvmChain,
+  walletAddress: string,
+  nftToAdd: EvmCustomNft,
+) => {
+  const normalizedWalletAddress = normalizeCustomWalletKey(walletAddress);
+  let savedCustomNfts: EvmSavedCustomNfts =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_CUSTOM_NFTS,
+    );
+
+  if (!savedCustomNfts) {
+    savedCustomNfts = {};
+  }
+  if (!savedCustomNfts[chain.chainId]) {
+    savedCustomNfts[chain.chainId] = {};
+  }
+
+  const legacyWalletEntries =
+    walletAddress !== normalizedWalletAddress
+      ? savedCustomNfts[chain.chainId][walletAddress]
+      : undefined;
+  const normalizedWalletEntries =
+    savedCustomNfts[chain.chainId][normalizedWalletAddress];
+
+  const mergedWalletEntries = [
+    ...(normalizedWalletEntries ?? []),
+    ...(legacyWalletEntries ?? []),
+  ];
+  const normalizedNft = normalizeCustomNft(nftToAdd);
+  const upsertKey = `${normalizedNft.type}:${normalizedNft.address.toLowerCase()}`;
+  const nextEntries = mergedWalletEntries.filter(
+    (entry) =>
+      `${entry.type}:${normalizeCustomTokenAddress(entry.address).toLowerCase()}` !==
+      upsertKey,
+  );
+
+  nextEntries.push(normalizedNft);
+  savedCustomNfts[chain.chainId][normalizedWalletAddress] = nextEntries.map(
+    normalizeCustomNft,
+  );
+  if (walletAddress !== normalizedWalletAddress) {
+    delete savedCustomNfts[chain.chainId][walletAddress];
+  }
+
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_CUSTOM_NFTS,
+    savedCustomNfts,
+  );
+};
+
+const updateCustomNft = async (
+  chain: EvmChain,
+  walletAddress: string,
+  contractAddress: string,
+  type: EVMSmartContractType.ERC721 | EVMSmartContractType.ERC1155,
+  tokenIds: string[],
+) => {
+  const normalizedWalletAddress = normalizeCustomWalletKey(walletAddress);
+  const normalizedAddress = normalizeCustomTokenAddress(contractAddress);
+  const matchKey = `${type}:${normalizedAddress.toLowerCase()}`;
+
+  let savedCustomNfts: EvmSavedCustomNfts =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_CUSTOM_NFTS,
+    );
+  if (!savedCustomNfts?.[chain.chainId]) {
+    return;
+  }
+
+  const replaceInList = (entries: EvmCustomNft[]) =>
+    entries.map((entry) => {
+      if (
+        `${entry.type}:${normalizeCustomTokenAddress(entry.address).toLowerCase()}` ===
+        matchKey
+      ) {
+        return normalizeCustomNft({
+          address: normalizedAddress,
+          type,
+          tokenIds,
+        });
+      }
+      return normalizeCustomNft(entry);
+    });
+
+  const applyToKey = (addr: string) => {
+    const entries = savedCustomNfts![chain.chainId][addr];
+    if (!entries?.length) {
+      return;
+    }
+    savedCustomNfts![chain.chainId][addr] = replaceInList(entries);
+  };
+
+  applyToKey(normalizedWalletAddress);
+  if (walletAddress !== normalizedWalletAddress) {
+    applyToKey(walletAddress);
+  }
+
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_CUSTOM_NFTS,
+    savedCustomNfts,
+  );
+};
+
+const removeCustomNft = async (
+  chain: EvmChain,
+  walletAddress: string,
+  contractAddress: string,
+  type: EVMSmartContractType.ERC721 | EVMSmartContractType.ERC1155,
+) => {
+  const normalizedWalletAddress = normalizeCustomWalletKey(walletAddress);
+  const normalizedAddress = normalizeCustomTokenAddress(contractAddress);
+  const removeKey = `${type}:${normalizedAddress.toLowerCase()}`;
+
+  let savedCustomNfts: EvmSavedCustomNfts =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_CUSTOM_NFTS,
+    );
+  if (!savedCustomNfts?.[chain.chainId]) {
+    return;
+  }
+
+  const filterOut = (entries: EvmCustomNft[]) =>
+    entries.filter(
+      (entry) =>
+        `${entry.type}:${normalizeCustomTokenAddress(entry.address).toLowerCase()}` !==
+        removeKey,
+    );
+
+  const applyToKey = (addr: string) => {
+    const entries = savedCustomNfts![chain.chainId][addr];
+    if (!entries?.length) {
+      return;
+    }
+    const next = filterOut(entries);
+    if (next.length === 0) {
+      delete savedCustomNfts![chain.chainId][addr];
+    } else {
+      savedCustomNfts![chain.chainId][addr] = next.map(normalizeCustomNft);
+    }
+  };
+
+  applyToKey(normalizedWalletAddress);
+  if (walletAddress !== normalizedWalletAddress) {
+    applyToKey(walletAddress);
+  }
+
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_CUSTOM_NFTS,
+    savedCustomNfts,
+  );
+};
+
+const getCustomNfts = async (chain: EvmChain, walletAddress: string) => {
+  const normalizedWalletAddress = normalizeCustomWalletKey(walletAddress);
+  const savedCustomNfts: EvmSavedCustomNfts =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_CUSTOM_NFTS,
+    );
+
+  if (!savedCustomNfts?.[chain.chainId]) {
+    return [] as EvmCustomNft[];
+  }
+
+  const nfts = [
+    ...(savedCustomNfts[chain.chainId][normalizedWalletAddress] ?? []),
+    ...(walletAddress !== normalizedWalletAddress
+      ? (savedCustomNfts[chain.chainId][walletAddress] ?? [])
+      : []),
+  ];
+
+  const dedupedNfts: EvmCustomNft[] = [];
+  const seen = new Set<string>();
+
+  for (const nft of nfts) {
+    const normalizedNft = normalizeCustomNft(nft);
+    const key = `${normalizedNft.type}:${normalizedNft.address.toLowerCase()}`;
+    if (seen.has(key)) {
+      continue;
+    }
+    dedupedNfts.push(normalizedNft);
+    seen.add(key);
+  }
+
+  return dedupedNfts;
+};
+
+const getCustomNftCollectionsForWallet = async (
+  chain: EvmChain,
+  walletAddress: string,
+) => {
+  const customNfts = await getCustomNfts(chain, walletAddress);
+  const provider = await EthersUtils.getProvider(chain);
+
+  const collections = await Promise.all(
+    customNfts.map(async (nft) => {
+      const normalizedNft = normalizeCustomNft(nft);
+      const ownedTokenIds = await getOwnedCustomNftTokenIds(
+        chain,
+        walletAddress,
+        normalizedNft.address,
+        normalizedNft.type,
+        normalizedNft.tokenIds,
+      );
+
+      if (!ownedTokenIds.length) {
+        return undefined;
+      }
+
+      const metadataContract = new ethers.Contract(
+        normalizedNft.address,
+        ContractMetadataAbi,
+        provider,
+      );
+      const [name, symbol] = await Promise.all([
+        safeGetContractTextValue(metadataContract, 'name'),
+        safeGetContractTextValue(metadataContract, 'symbol'),
+      ]);
+      const nftContract = new ethers.Contract(
+        normalizedNft.address,
+        normalizedNft.type === EVMSmartContractType.ERC1155
+          ? ERC1155Abi
+          : ERC721Abi,
+        provider,
+      );
+
+      const collectionItems = await Promise.all(
+        ownedTokenIds.map(async (tokenId) => {
+          const metadata = await EvmNFTUtils.getMetadata(
+            normalizedNft.type,
+            tokenId,
+            nftContract,
+          );
+
+          if (normalizedNft.type === EVMSmartContractType.ERC1155) {
+            const balance = await nftContract.balanceOf(walletAddress, tokenId);
+            return {
+              id: tokenId,
+              balance: Number(balance),
+              metadata,
+            } as EvmErc1155TokenCollectionItem;
+          }
+
+          return {
+            id: tokenId,
+            metadata,
+          } as EvmErc721TokenCollectionItem;
+        }),
+      );
+
+      const tokenInfo = {
+        type: normalizedNft.type,
+        name:
+          name ||
+          (normalizedNft.type === EVMSmartContractType.ERC1155
+            ? 'ERC1155'
+            : 'ERC721'),
+        symbol,
+        logo: '',
+        chainId: chain.chainId,
+        backgroundColor: '',
+        priceUsd: 0,
+        contractAddress: normalizedNft.address,
+        possibleSpam: false,
+        verifiedContract: true,
+        isProxy: false,
+        proxyTarget: null,
+      };
+
+      if (normalizedNft.type === EVMSmartContractType.ERC1155) {
+        return {
+          tokenInfo: tokenInfo as EvmSmartContractInfoErc1155,
+          collection: collectionItems as EvmErc1155TokenCollectionItem[],
+        } as EvmErc1155Token;
+      }
+
+      return {
+        tokenInfo: tokenInfo as EvmSmartContractInfoErc721,
+        collection: collectionItems as EvmErc721TokenCollectionItem[],
+      } as EvmErc721Token;
+    }),
+  );
+
+  return collections.filter(Boolean) as (EvmErc721Token | EvmErc1155Token)[];
+};
+
 const getCustomErc20TokenInfos = async (
   chain: EvmChain,
   walletAddress: string,
@@ -1023,6 +1501,13 @@ export const EvmTokensUtils = {
   removeCustomToken,
   updateCustomToken,
   getCustomTokens,
+  addCustomNft,
+  updateCustomNft,
+  removeCustomNft,
+  getCustomNfts,
+  detectCustomNftType,
+  getOwnedCustomNftTokenIds,
+  getCustomNftCollectionsForWallet,
   getCustomErc20TokenInfos,
   mergeCustomErc20TokenInfos,
   getAllowance,

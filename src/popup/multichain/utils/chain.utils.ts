@@ -322,6 +322,7 @@ const STORAGE_RECORDS_KEYED_BY_CHAIN_ID: LocalStorageKeyEnum[] = [
   LocalStorageKeyEnum.EVM_SWITCH_RPC_AUTO,
   LocalStorageKeyEnum.EVM_WHITELISTED_ADDRESSES,
   LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
+  LocalStorageKeyEnum.EVM_CUSTOM_NFTS,
   LocalStorageKeyEnum.EVM_MANUAL_DISCOVERED_NFTS,
   LocalStorageKeyEnum.EVM_LIGHT_NODE_REGISTERED_ADDRESSES,
   LocalStorageKeyEnum.EVM_ACTIVE_ACCOUNT_WALLET,

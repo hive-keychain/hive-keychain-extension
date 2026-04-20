@@ -1,0 +1,14 @@
+.evm-custom-nfts-page {
+  .evm-custom-nfts-list__line-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .evm-custom-nfts-list__meta {
+    @include poppins400(13px);
+    opacity: 0.85;
+  }
+}

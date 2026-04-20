@@ -4,7 +4,11 @@ import ButtonComponent, {
 import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
 import { PopupContainer } from '@common-ui/popup-container/popup-container.component';
-import { EvmCustomToken } from '@popup/evm/interfaces/evm-custom-tokens.interface';
+import { TextAreaComponent } from '@common-ui/text-area/textarea.component';
+import {
+  EvmCustomNft,
+  EvmCustomToken,
+} from '@popup/evm/interfaces/evm-custom-tokens.interface';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -21,15 +25,25 @@ export interface EvmCustomErc20FormData {
   logo: string;
 }
 
+export interface EvmCustomNftFormData {
+  contractAddress: string;
+  type: EVMSmartContractType.ERC721 | EVMSmartContractType.ERC1155;
+  tokenIds: string[];
+}
+
 interface Props {
   chain: EvmChain;
   mode: EvmCustomAssetMode;
   walletAddress?: string;
   existingAddresses?: string[];
   /** When set, the form is pre-filled and the contract address cannot be changed. */
-  tokenToEdit?: EvmCustomToken | null;
+  tokenToEdit?: EvmCustomToken | EvmCustomNft | null;
   onClose: () => void;
-  onSave?: (form: EvmCustomErc20FormData) => Promise<void> | void;
+  onSave?:
+    | ((
+        form: EvmCustomErc20FormData | EvmCustomNftFormData,
+      ) => Promise<void> | void)
+    | undefined;
 }
 
 interface Erc20FormState {
@@ -44,6 +58,17 @@ interface Erc20FormErrors {
   save?: string;
 }
 
+interface NftFormState {
+  contractAddress: string;
+  tokenIds: string;
+}
+
+interface NftFormErrors {
+  contractAddress?: string;
+  tokenIds?: string;
+  save?: string;
+}
+
 const normalizeAddress = (address: string) => {
   const trimmedAddress = address.trim();
   if (!trimmedAddress.length) {
@@ -54,10 +79,45 @@ const normalizeAddress = (address: string) => {
     : trimmedAddress;
 };
 
+const isValidTokenId = (value: string) =>
+  /^(0x[0-9a-fA-F]+|[0-9]+)$/.test(value.trim());
+
+const normalizeTokenId = (value: string) => {
+  try {
+    return BigInt(value.trim()).toString(10);
+  } catch {
+    return value.trim();
+  }
+};
+
+const parseTokenIdsInput = (value: string) =>
+  value
+    .split(/[\s,]+/)
+    .map((tokenId) => tokenId.trim())
+    .filter(Boolean);
+
+const formatTokenIds = (tokenIds: string[]) => tokenIds.join(', ');
+
+const getNftTypeMessage = (type?: EVMSmartContractType) => {
+  switch (type) {
+    case EVMSmartContractType.ERC1155:
+      return 'ERC1155';
+    case EVMSmartContractType.ERC721:
+      return 'ERC721';
+    default:
+      return '';
+  }
+};
+
 const INITIAL_ERC20_FORM: Erc20FormState = {
   contractAddress: '',
   symbol: '',
   logo: '',
+};
+
+const INITIAL_NFT_FORM: NftFormState = {
+  contractAddress: '',
+  tokenIds: '',
 };
 
 export const EvmAddCustomAssetPopup = ({
@@ -72,10 +132,13 @@ export const EvmAddCustomAssetPopup = ({
   const [erc20Form, setErc20Form] = useState<Erc20FormState>(
     INITIAL_ERC20_FORM,
   );
+  const [nftForm, setNftForm] = useState<NftFormState>(INITIAL_NFT_FORM);
   const [erc20Errors, setErc20Errors] = useState<Erc20FormErrors>({});
+  const [nftErrors, setNftErrors] = useState<NftFormErrors>({});
   const [savedCustomTokens, setSavedCustomTokens] = useState<EvmCustomToken[]>(
     [],
   );
+  const [savedCustomNfts, setSavedCustomNfts] = useState<EvmCustomNft[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const isMountedRef = useRef(true);
 
@@ -86,35 +149,44 @@ export const EvmAddCustomAssetPopup = ({
   }, []);
 
   useEffect(() => {
-    if (mode !== 'erc20' || !walletAddress) {
+    if (!walletAddress) {
       setSavedCustomTokens([]);
+      setSavedCustomNfts([]);
       return;
     }
 
     let mounted = true;
 
-    const loadCustomTokens = async () => {
-      const customTokens = await EvmTokensUtils.getCustomTokens(
-        chain,
-        walletAddress,
-      );
-      if (mounted) {
-        setSavedCustomTokens(customTokens);
+    const loadCustomAssets = async () => {
+      const [customTokens, customNfts] = await Promise.all([
+        EvmTokensUtils.getCustomTokens(chain, walletAddress),
+        EvmTokensUtils.getCustomNfts(chain, walletAddress),
+      ]);
+
+      if (!mounted) {
+        return;
       }
+
+      setSavedCustomTokens(customTokens);
+      setSavedCustomNfts(customNfts);
     };
 
-    void loadCustomTokens();
+    void loadCustomAssets();
 
     return () => {
       mounted = false;
     };
-  }, [chain, mode, walletAddress]);
+  }, [chain, walletAddress]);
 
   useEffect(() => {
     if (mode !== 'erc20') {
       return;
     }
-    if (tokenToEdit) {
+    if (
+      tokenToEdit &&
+      'metadata' in tokenToEdit &&
+      tokenToEdit.type === EVMSmartContractType.ERC20
+    ) {
       const meta =
         tokenToEdit.metadata?.type === EVMSmartContractType.ERC20
           ? tokenToEdit.metadata
@@ -130,21 +202,53 @@ export const EvmAddCustomAssetPopup = ({
     setErc20Errors({});
   }, [mode, tokenToEdit]);
 
+  useEffect(() => {
+    if (mode !== 'nft') {
+      return;
+    }
+    if (tokenToEdit && 'tokenIds' in tokenToEdit) {
+      setNftForm({
+        contractAddress: tokenToEdit.address,
+        tokenIds: formatTokenIds(tokenToEdit.tokenIds),
+      });
+    } else {
+      setNftForm(INITIAL_NFT_FORM);
+    }
+    setNftErrors({});
+  }, [mode, tokenToEdit]);
+
+  const currentEditAddress = useMemo(() => {
+    if (!tokenToEdit) {
+      return '';
+    }
+    return normalizeAddress(tokenToEdit.address);
+  }, [tokenToEdit]);
+
   const normalizedExistingAddresses = useMemo(() => {
+    const savedAddresses =
+      mode === 'erc20'
+        ? savedCustomTokens.map((token) => token.address)
+        : savedCustomNfts.map((nft) => nft.address);
+
     const set = new Set(
-      [...existingAddresses, ...savedCustomTokens.map((token) => token.address)]
+      [...existingAddresses, ...savedAddresses]
         .map(normalizeAddress)
         .filter(Boolean)
         .map((address) => address.toLowerCase()),
     );
-    if (tokenToEdit) {
-      const addr = normalizeAddress(tokenToEdit.address);
-      if (addr) {
-        set.delete(addr.toLowerCase());
-      }
+
+    if (currentEditAddress) {
+      set.delete(currentEditAddress.toLowerCase());
     }
+
     return set;
-  }, [existingAddresses, savedCustomTokens, tokenToEdit]);
+  }, [
+    currentEditAddress,
+    existingAddresses,
+    mode,
+    savedCustomNfts,
+    savedCustomTokens,
+  ]);
 
   const setErc20Field = (field: keyof Erc20FormState, value: string) => {
     setErc20Form((current) => ({
@@ -153,6 +257,19 @@ export const EvmAddCustomAssetPopup = ({
     }));
 
     setErc20Errors((current) => ({
+      ...current,
+      [field]: undefined,
+      save: undefined,
+    }));
+  };
+
+  const setNftField = (field: keyof NftFormState, value: string) => {
+    setNftForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+
+    setNftErrors((current) => ({
       ...current,
       [field]: undefined,
       save: undefined,
@@ -183,6 +300,38 @@ export const EvmAddCustomAssetPopup = ({
     };
   };
 
+  const validateNftForm = () => {
+    const errors: NftFormErrors = {};
+    const normalizedAddress = normalizeAddress(nftForm.contractAddress);
+    const rawTokenIds = parseTokenIdsInput(nftForm.tokenIds);
+    const invalidTokenIds = rawTokenIds.filter((tokenId) => !isValidTokenId(tokenId));
+    const normalizedTokenIds = Array.from(
+      new Set(rawTokenIds.map(normalizeTokenId).filter(Boolean)),
+    );
+
+    if (!normalizedAddress || !ethers.isAddress(normalizedAddress)) {
+      errors.contractAddress = 'Enter a valid contract address.';
+    } else if (
+      normalizedExistingAddresses.has(normalizedAddress.toLowerCase())
+    ) {
+      errors.contractAddress = 'This contract address is already added.';
+    }
+
+    if (!rawTokenIds.length) {
+      errors.tokenIds = 'Enter at least one token ID.';
+    } else if (invalidTokenIds.length) {
+      errors.tokenIds =
+        'Token IDs must be decimal numbers or 0x-prefixed hex values.';
+    }
+
+    return {
+      errors,
+      isValid: Object.keys(errors).length === 0,
+      normalizedAddress,
+      normalizedTokenIds,
+    };
+  };
+
   const handleSaveErc20 = async () => {
     if (!onSave) {
       return;
@@ -208,7 +357,7 @@ export const EvmAddCustomAssetPopup = ({
           symbol: erc20Form.symbol.trim(),
           decimals,
           logo: erc20Form.logo.trim(),
-        });
+        } as EvmCustomErc20FormData);
       } catch {
         if (isMountedRef.current) {
           setErc20Errors((current) => ({
@@ -232,7 +381,76 @@ export const EvmAddCustomAssetPopup = ({
     }
   };
 
+  const handleSaveNft = async () => {
+    if (!onSave || !walletAddress) {
+      return;
+    }
+
+    const { errors, isValid, normalizedAddress, normalizedTokenIds } =
+      validateNftForm();
+    if (!isValid) {
+      setNftErrors(errors);
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const type = await EvmTokensUtils.detectCustomNftType(
+        chain,
+        walletAddress,
+        normalizedAddress,
+        normalizedTokenIds,
+      );
+      const ownedTokenIds = await EvmTokensUtils.getOwnedCustomNftTokenIds(
+        chain,
+        walletAddress,
+        normalizedAddress,
+        type,
+        normalizedTokenIds,
+      );
+
+      if (ownedTokenIds.length !== normalizedTokenIds.length) {
+        if (isMountedRef.current) {
+          setNftErrors((current) => ({
+            ...current,
+            tokenIds: 'One or more token IDs are not owned by this wallet.',
+          }));
+        }
+        return;
+      }
+
+      try {
+        await onSave({
+          contractAddress: normalizedAddress,
+          type,
+          tokenIds: normalizedTokenIds,
+        } as EvmCustomNftFormData);
+      } catch {
+        if (isMountedRef.current) {
+          setNftErrors((current) => ({
+            ...current,
+            save: 'Unable to save this NFT right now.',
+          }));
+        }
+      }
+    } catch {
+      if (isMountedRef.current) {
+        setNftErrors((current) => ({
+          ...current,
+          save:
+            'Could not detect a supported NFT contract at this address. Only ERC721 and ERC1155 contracts are supported.',
+        }));
+      }
+    } finally {
+      if (isMountedRef.current) {
+        setIsSaving(false);
+      }
+    }
+  };
+
   const isEditing = Boolean(tokenToEdit);
+  const editedNftType =
+    tokenToEdit && 'tokenIds' in tokenToEdit ? tokenToEdit.type : undefined;
 
   const renderErc20Form = () => (
     <>
@@ -310,20 +528,74 @@ export const EvmAddCustomAssetPopup = ({
     </>
   );
 
-  const renderNftPlaceholder = () => (
+  const renderNftForm = () => (
     <>
-      <div className="popup-title">Add Custom NFT</div>
+      <div className="popup-title">
+        {isEditing
+          ? chrome.i18n.getMessage('evm_custom_nfts_modal_title_edit')
+          : chrome.i18n.getMessage('evm_add_custom_nft_popup_title')}
+      </div>
       <div className="popup-caption">
-        Manual NFT entry will use this shared popup later.
+        {isEditing
+          ? chrome.i18n.getMessage('evm_custom_nfts_modal_caption_edit')
+          : chrome.i18n.getMessage('evm_add_custom_nft_popup_caption')}
       </div>
-      <div className="popup-note">
-        NFT manual add is not implemented yet in this pass.
+
+      <div className="custom-asset-form">
+        <div className="field">
+          <InputComponent
+            label="evm_smart_contract_address"
+            value={nftForm.contractAddress}
+            type={InputType.TEXT}
+            readOnly={isEditing}
+            onChange={(value) => setNftField('contractAddress', value)}
+            dataTestId="custom-asset-contract-address"
+            classname="custom-asset-input"
+          />
+          {nftErrors.contractAddress && (
+            <div className="error-message">{nftErrors.contractAddress}</div>
+          )}
+        </div>
+
+        <div className="field">
+          <TextAreaComponent
+            label="evm_custom_nfts_field_token_ids"
+            value={nftForm.tokenIds}
+            rows={4}
+            onChange={(value) => setNftField('tokenIds', value)}
+            dataTestId="custom-asset-token-ids"
+            classname="custom-asset-input"
+          />
+          {nftErrors.tokenIds && (
+            <div className="error-message">{nftErrors.tokenIds}</div>
+          )}
+        </div>
+
+        <div className="popup-note">
+          {chrome.i18n.getMessage(
+            isEditing && editedNftType
+              ? 'evm_custom_nfts_type_detected'
+              : 'evm_custom_nfts_type_auto_detected',
+            isEditing && editedNftType
+              ? [getNftTypeMessage(editedNftType)]
+              : undefined,
+          )}
+        </div>
       </div>
+
+      {nftErrors.save && <div className="error-message">{nftErrors.save}</div>}
+
       <div className="popup-footer">
         <ButtonComponent
           type={ButtonType.ALTERNATIVE}
           onClick={onClose}
           label="popup_html_button_label_cancel"
+        />
+        <ButtonComponent
+          onClick={() => void handleSaveNft()}
+          label="popup_html_operation_button_save"
+          dataTestId="custom-asset-save"
+          disabled={isSaving}
         />
       </div>
     </>
@@ -334,7 +606,7 @@ export const EvmAddCustomAssetPopup = ({
       className="evm-add-custom-asset-popup"
       dataTestId="custom-asset-popup"
       onClickOutside={onClose}>
-      {mode === 'erc20' ? renderErc20Form() : renderNftPlaceholder()}
+      {mode === 'erc20' ? renderErc20Form() : renderNftForm()}
     </PopupContainer>
   );
 };

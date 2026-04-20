@@ -52,6 +52,9 @@ describe('EVM active-account.actions (custom chain)', () => {
       pricingStatus: PricingStatus.READY,
     });
     jest.spyOn(EvmTokensUtils, 'getCustomErc20TokenInfos').mockResolvedValue([]);
+    jest
+      .spyOn(EvmTokensUtils, 'getCustomNftCollectionsForWallet')
+      .mockResolvedValue([]);
     jest.spyOn(EvmTokensUtils, 'getTokenBalances').mockResolvedValue([]);
   });
 
@@ -80,6 +83,50 @@ describe('EVM active-account.actions (custom chain)', () => {
     expect(activeAccount.history.initialized).toBe(true);
     expect(activeAccount.history.value.fullyFetch).toBe(true);
     expect(activeAccount.isReady).toBe(true);
+  });
+
+  it('loadEvmActiveAccount includes saved custom NFTs for custom chains', async () => {
+    (EvmTokensUtils.getCustomNftCollectionsForWallet as jest.Mock).mockResolvedValue([
+      {
+        tokenInfo: {
+          type: 'ERC721',
+          name: 'Custom Collection',
+          symbol: 'NFT',
+          logo: '',
+          chainId: customEvmChain.chainId,
+          backgroundColor: '',
+          priceUsd: 0,
+          contractAddress: '0x00000000000000000000000000000000000000cc',
+          possibleSpam: false,
+          verifiedContract: true,
+          isProxy: false,
+          proxyTarget: null,
+        },
+        collection: [
+          {
+            id: '1',
+            metadata: {
+              name: 'NFT #1',
+              description: '',
+              image: 'https://cdn.example/nft.png',
+              attributes: [],
+            },
+          },
+        ],
+      },
+    ]);
+
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      chain: customEvmChain,
+    });
+
+    await store.dispatch<any>(loadEvmActiveAccount(customEvmChain, wallet));
+
+    expect(store.getState().evm.activeAccount.nfts.value).toHaveLength(1);
+    expect(
+      store.getState().evm.activeAccount.nfts.value[0].tokenInfo.contractAddress,
+    ).toBe('0x00000000000000000000000000000000000000cc');
   });
 
   it('loadEvmActiveAccount uses Light Node for default chains', async () => {
@@ -167,6 +214,10 @@ describe('EVM active-account.actions (custom chain)', () => {
     );
 
     expect(EvmLightNodeUtils.getDiscoveredNfts).not.toHaveBeenCalled();
+    expect(EvmTokensUtils.getCustomNftCollectionsForWallet).toHaveBeenCalledWith(
+      customEvmChain,
+      wallet.address,
+    );
     expect(store.getState().evm.activeAccount.nfts.initialized).toBe(true);
     expect(store.getState().evm.activeAccount.nfts.loading).toBe(false);
   });
