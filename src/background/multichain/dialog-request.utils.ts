@@ -12,6 +12,7 @@ import {
   HiveRequestsHandler,
 } from '@background/hive/requests/hive-request-handler';
 import {
+  RequestAddCustomEvmChainDialogMessage,
   SendConfirmEvmMessage,
   SendConfirmHiveMessage,
 } from '@background/multichain/background-message.interface';
@@ -49,12 +50,19 @@ export type VisibleDialogRequest =
     };
 
 export type CurrentDialogItem = {
-  message: SendConfirmHiveMessage | SendConfirmEvmMessage | null;
+  message:
+    | SendConfirmHiveMessage
+    | SendConfirmEvmMessage
+    | RequestAddCustomEvmChainDialogMessage
+    | null;
   height: number;
   visibleRequests: VisibleDialogRequest[];
 };
 
-type ConfirmDialogMessage = SendConfirmHiveMessage | SendConfirmEvmMessage;
+type ConfirmDialogMessage =
+  | SendConfirmHiveMessage
+  | SendConfirmEvmMessage
+  | RequestAddCustomEvmChainDialogMessage;
 
 const DEFAULT_DIALOG_HEIGHT = 600;
 const EVM_TRANSACTION_DIALOG_HEIGHT = 800;
@@ -219,10 +227,15 @@ const isSameDialogMessage = (
   left: ConfirmDialogMessage,
   right: ConfirmDialogMessage,
 ) => {
+  const getRequestId = (message: ConfirmDialogMessage) =>
+    message.command === DialogCommand.REQUEST_ADD_CUSTOM_EVM_CHAIN
+      ? message.msg.request.request_id
+      : (message.request as any).request_id;
+
   return (
     left.command === right.command &&
     left.tab === right.tab &&
-    (left.request as any).request_id === (right.request as any).request_id
+    getRequestId(left) === getRequestId(right)
   );
 };
 
@@ -389,9 +402,28 @@ const buildEvmConfirmationMessage = async (
   requestData: EvmRequestData,
   queueSize: number,
   evmRequestHandler: EvmRequestHandler,
-): Promise<SendConfirmEvmMessage | null> => {
+): Promise<SendConfirmEvmMessage | RequestAddCustomEvmChainDialogMessage | null> => {
   const request = requestData.request;
   if (!request || !requestData.tab || !requestData.dappInfo) return null;
+
+  if (requestData.dialogCommand === DialogCommand.REQUEST_ADD_CUSTOM_EVM_CHAIN) {
+    const requestedChainId =
+      typeof requestData.dialogData?.requestedChainId === 'string'
+        ? requestData.dialogData.requestedChainId
+        : '';
+    return {
+      command: DialogCommand.REQUEST_ADD_CUSTOM_EVM_CHAIN,
+      msg: {
+        request,
+        dappInfo: requestData.dappInfo,
+        requestedChainId,
+        initialChain: {
+          chainId: requestedChainId,
+        },
+      },
+      tab: requestData.tab,
+    };
+  }
 
   if (EvmUnrestrictedMethods.includes(request.method)) return null;
 

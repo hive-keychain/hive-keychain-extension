@@ -2430,5 +2430,13 @@
   "evm_transaction_result_error_message_slippage": {
     "message": "交易失败，因为滑点容忍度已超出",
     "description": "Transaction result error message slippage"
+  },
+  "evm_request_add_custom_chain_title": {
+    "message": "Add a custom chain",
+    "description": "Request to add a custom chain title"
+  },
+  "evm_request_add_custom_chain_caption": {
+    "message": "$1 requested a switch to chain $2, but Keychain doesn't know this chain yet. Add the custom chain details below to continue.",
+    "description": "Request to add a custom chain caption"
   }
 }

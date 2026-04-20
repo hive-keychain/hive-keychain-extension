@@ -148,6 +148,11 @@
   gap: 12px;
   min-width: 280px;
 
+  .add-custom-evm-chain-form__error {
+    @include poppins500(13px);
+    color: $red;
+  }
+
   .add-custom-evm-chain-form__rpc-block {
     display: flex;
     flex-direction: column;

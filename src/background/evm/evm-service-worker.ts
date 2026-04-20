@@ -15,6 +15,7 @@ import {
 } from '@interfaces/evm-provider.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
+import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
@@ -247,6 +248,24 @@ const chromeMessageHandler = async (
         dappInfo,
         await EvmRequestHandler.getFromLocalStorage(),
       );
+      break;
+    }
+    case BackgroundCommand.ACCEPT_ADD_CUSTOM_EVM_CHAIN: {
+      const { request, tab, dappInfo, requestedChain } =
+        backgroundMessage.value as {
+          request: KeychainEvmRequestWrapper['request'];
+          tab: number;
+          dappInfo: KeychainEvmRequestWrapper['dappInfo'];
+          requestedChain: EvmChain;
+        };
+      const requestHandler = await EvmRequestHandler.getFromLocalStorage();
+
+      await ChainUtils.addCustomChain(requestedChain);
+      if (requestedChain.rpcs.length > 0) {
+        await EvmRpcUtils.setActiveRpc(requestedChain.rpcs[0], requestedChain);
+      }
+      requestHandler?.setRequestDialog(request.request_id, tab, undefined, undefined);
+      await initEvmRequestHandler(request, tab, dappInfo, requestHandler);
       break;
     }
   }

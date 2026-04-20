@@ -6108,6 +6108,14 @@
     "message": "$1 has requested to make an action on a chain you haven't setup yet. Do you want to add it to Keychain and proceed with that transaction?",
     "description": "Request to add chain caption"
   },
+  "evm_request_add_custom_chain_title": {
+    "message": "Add a custom chain",
+    "description": "Request to add a custom chain title"
+  },
+  "evm_request_add_custom_chain_caption": {
+    "message": "$1 requested a switch to chain $2, but Keychain doesn't know this chain yet. Add the custom chain details below to continue.",
+    "description": "Request to add a custom chain caption"
+  },
   "evm_link_to_other_receiver": {
     "message": "Click here to change the receiver",
     "description": "Link to other receiver"

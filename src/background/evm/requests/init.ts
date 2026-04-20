@@ -16,6 +16,8 @@ import { handleEvmError } from '@background/evm/requests/logic/handle-evm-error.
 import { handleNonExistingMethod } from '@background/evm/requests/logic/handle-non-existing-methods.logic';
 import { handleNonSupportedChain } from '@background/evm/requests/logic/handle-non-supported-chain.logic';
 import { requestAddEvmChain } from '@background/evm/requests/logic/request-add-evm-chain.logic';
+import { requestAddCustomEvmChain } from '@background/evm/requests/logic/request-add-custom-evm-chain.logic';
+import { resolveRequestChainId } from '@background/evm/requests/logic/resolve-request-chain-id.logic';
 import MkModule from '@background/hive/modules/mk.module';
 import {
   initializeWallet,
@@ -48,33 +50,33 @@ export const initEvmRequestHandler = async (
   Logger.info('Initializing EVM request logic');
 
   const allChains = await ChainUtils.getDefaultChains();
-  let chainId: string;
-  if (
-    request.method === EvmRequestMethod.WALLET_ADD_ETH_CHAIN ||
-    request.method === EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN
-  ) {
-    // check if chain is valid (within keychain allowed chains)
-    chainId = request.params[0].chainId;
-  } else {
-    chainId =
-      (request.chainId as string) ??
-      (await EvmChainUtils.getLastEvmChainIdForOrigin(dappInfo.origin));
-  }
-  let chain: EvmChain | null = null;
-  if (chainId) {
-    chain = allChains.find(
-      (c) => c.chainId.toLowerCase() === chainId.toLowerCase(),
-    ) as EvmChain;
-  }
-
   const setupChains = await ChainUtils.getAllSetupChainsForType<EvmChain>(
     ChainType.EVM,
   );
+  const resolvedRequestChainId = resolveRequestChainId(request);
+  const chainId =
+    resolvedRequestChainId ??
+    (await EvmChainUtils.getLastEvmChainIdForOrigin(dappInfo.origin));
+  let chain: EvmChain | null = null;
+  if (chainId) {
+    const normalizedChainId = chainId.toLowerCase();
+    chain =
+      (allChains.find(
+        (c) => c.chainId.toLowerCase() === normalizedChainId,
+      ) as EvmChain) ??
+      (setupChains.find(
+        (c) => c.chainId.toLowerCase() === normalizedChainId,
+      ) as EvmChain);
+  }
 
   console.log(chainId, chain, 'chainId, chain');
 
   if (chainId && !chain) {
-    handleNonSupportedChain(requestHandler, tab!, request, chainId);
+    if (request.method === EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN) {
+      requestAddCustomEvmChain(requestHandler, tab!, request, dappInfo, chainId);
+    } else {
+      handleNonSupportedChain(requestHandler, tab!, request, chainId);
+    }
   } else if (EvmDeprecatedMethods.includes(request.method)) {
     handleDeprecatedMethods(requestHandler, tab!, request, dappInfo);
   } else if (!doesMethodExist(request.method)) {
@@ -123,7 +125,11 @@ export const initEvmRequestHandler = async (
         DialogCommand.UNLOCK_EVM,
       );
     } else if (
-      !setupChains.find((c: EvmChain) => c.chainId === request.chainId)
+      resolvedRequestChainId &&
+      !setupChains.find(
+        (c: EvmChain) =>
+          c.chainId.toLowerCase() === resolvedRequestChainId.toLowerCase(),
+      )
     ) {
       requestAddEvmChain(requestHandler, tab!, request, dappInfo);
     } else if (EvmNeedPermissionMethods.includes(request.method)) {

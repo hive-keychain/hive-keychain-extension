@@ -3,6 +3,7 @@ import { EvmDappInfo, EvmRequest } from '@interfaces/evm-provider.interface';
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import {
   DialogCommand,
   MultisigDialogCommand,
@@ -75,6 +76,17 @@ export type SendConfirmEvmMessage = {
   queue?: (SendConfirmHiveMessage | SendConfirmEvmMessage)[];
 };
 
+export type RequestAddCustomEvmChainDialogMessage = {
+  command: DialogCommand.REQUEST_ADD_CUSTOM_EVM_CHAIN;
+  msg: {
+    request: EvmRequest;
+    dappInfo: EvmDappInfo;
+    requestedChainId: string;
+    initialChain?: Partial<EvmChain>;
+  };
+  tab: number;
+};
+
 export type UnlockEvmDialogMessage = {
   command: DialogCommand.UNLOCK_EVM;
   msg: any;
@@ -115,6 +127,7 @@ export type DialogMessage =
   | ReturnLedgerSignatureMessage
   | SendConfirmEvmMessage
   | SendConfirmHiveMessage
+  | RequestAddCustomEvmChainDialogMessage
   | SendDialogErrorMessage
   | UnlockDialogMessage
   | UnlockEvmDialogMessage

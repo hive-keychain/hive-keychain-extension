@@ -12,6 +12,7 @@ export enum DialogCommand {
   ANSWER_EVM_REQUEST = 'answerEvmRequest',
   READY = 'broadcastReady',
   REQUEST_ADD_EVM_CHAIN = 'requestAddEvmChain',
+  REQUEST_ADD_CUSTOM_EVM_CHAIN = 'requestAddCustomEvmChain',
 
   // Ledger messages
   SIGN_WITH_LEDGER = 'SIGN_WITH_LEDGER',

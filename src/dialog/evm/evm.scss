@@ -2,7 +2,9 @@
 @import './evm-operation/evm-operation.scss';
 @import '../../popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component.scss';
 @import '../../popup/evm/pages/home/evm-token-logo/evm-token-logo.component.scss';
+@import '../../popup/evm/pages/home/settings/evm-custom-chains/evm-custom-chains.component.scss';
 @import './requests/send-transaction/send-transaction.scss';
 @import './components/evm.components.scss';
 @import './requests/add-chain/add-chain.scss';
 @import './requests/request-add-chain/request-add-chain.scss';
+@import './requests/request-add-custom-chain/request-add-custom-chain.scss';

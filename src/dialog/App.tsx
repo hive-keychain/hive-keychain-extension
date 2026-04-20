@@ -1,4 +1,5 @@
 import { RequestAddEvmChain } from '@dialog/evm/requests/request-add-chain/request-add-chain';
+import { RequestAddCustomEvmChain } from '@dialog/evm/requests/request-add-custom-chain/request-add-custom-chain';
 import { FeedbackMessage } from '@dialog/interfaces/messages.interface';
 import { DialogConfirmationPage } from '@dialog/multichain/dialog-confirmation-page/dialog-confirmation-page.component';
 import { DialogError } from '@dialog/multichain/error/error';
@@ -144,6 +145,16 @@ const App = () => {
             requestedChain={data.msg.chain}
             dappInfo={data.msg.dappInfo}
             tab={data.tab}
+          />
+        );
+      case DialogCommand.REQUEST_ADD_CUSTOM_EVM_CHAIN:
+        return (
+          <RequestAddCustomEvmChain
+            request={data.msg.request}
+            dappInfo={data.msg.dappInfo}
+            tab={data.tab}
+            requestedChainId={data.msg.requestedChainId}
+            initialChain={data.msg.initialChain}
           />
         );
 

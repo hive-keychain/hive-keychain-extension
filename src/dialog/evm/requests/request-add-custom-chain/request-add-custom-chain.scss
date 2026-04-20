@@ -1,0 +1,23 @@
+.request-add-custom-chain-page {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+
+  .request-add-custom-chain-card {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+
+    .title {
+      @include dmSans400(20px);
+    }
+
+    .caption {
+      @include caption();
+      padding: unset;
+    }
+  }
+}

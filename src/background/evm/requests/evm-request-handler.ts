@@ -11,6 +11,7 @@ import {
 } from '@interfaces/evm-provider.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
 import {
@@ -31,6 +32,8 @@ export type EvmRequestData = {
   request_id?: number;
   dappInfo?: EvmDappInfo;
   arrivalOrder?: number;
+  dialogCommand?: DialogCommand;
+  dialogData?: Record<string, unknown>;
 };
 export class EvmRequestHandler {
   requestsData: EvmRequestData[];
@@ -127,6 +130,22 @@ export class EvmRequestHandler {
     for (const requestData of this.requestsData) {
       if (requestData.request_id === requestId) {
         requestData.request = request;
+        break;
+      }
+    }
+    this.saveInLocalStorage();
+  }
+
+  setRequestDialog(
+    requestId: number,
+    tab: number,
+    dialogCommand?: DialogCommand,
+    dialogData?: Record<string, unknown>,
+  ) {
+    for (const requestData of this.requestsData) {
+      if (requestData.request_id === requestId && requestData.tab === tab) {
+        requestData.dialogCommand = dialogCommand;
+        requestData.dialogData = dialogData;
         break;
       }
     }
