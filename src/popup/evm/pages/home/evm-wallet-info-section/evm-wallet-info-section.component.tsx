@@ -101,7 +101,9 @@ export const EvmWalletInfoSectionComponent = ({
                   value: EvmDisplayedPage.NTFS,
                 },
                 {
-                  label: `evm_tab_${EvmDisplayedPage.HISTORY}`,
+                  label: chain.isCustom
+                    ? 'evm_activity_tab'
+                    : `evm_tab_${EvmDisplayedPage.HISTORY}`,
                   value: EvmDisplayedPage.HISTORY,
                 },
               ]}

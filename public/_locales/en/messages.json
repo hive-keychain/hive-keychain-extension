@@ -6374,5 +6374,9 @@
   "evm_transaction_result_error_message_slippage": {
     "message": "Transaction failed because slippage tolerance was exceeded",
     "description": "Transaction result error message slippage"
+  },
+  "evm_activity_tab": {
+    "message": "Activity",
+    "description": "Activity tab"
   }
 }
