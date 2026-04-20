@@ -113,6 +113,11 @@
     flex-shrink: 0;
   }
 
+  .evm-custom-chains-list__logo.chain-logo-initials {
+    @include poppins600(12px);
+    object-fit: unset;
+  }
+
   .evm-custom-chains-list__line {
     display: flex;
     flex-direction: row;

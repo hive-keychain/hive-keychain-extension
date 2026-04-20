@@ -39,10 +39,14 @@
           align-items: center;
           column-gap: 8px;
 
-          img {
+          img,
+          .chain-logo {
             height: 24px;
             width: 24px;
             border-radius: 50%;
+          }
+          .chain-logo.chain-logo-initials {
+            @include poppins600(10px);
           }
           .shimmer {
             @include icon-size(24px);

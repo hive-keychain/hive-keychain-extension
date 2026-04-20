@@ -1,10 +1,10 @@
+import { ExtendedChain } from '@lifi/types';
 import { RootState } from '@popup/multichain/store';
 import Config from 'src/config';
 
 import { SVGIcons } from '@common-ui/icons.enum';
 import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
-import { ExtendedChain } from '@lifi/types';
 import { LiFiHistoryItem } from '@popup/evm/pages/home/evm-lifi-swap/lifi-history-page/lifi-history-item/lifi-history-item.component';
 import { LiFiUtils } from '@popup/evm/utils/lifi.utils';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -110,18 +110,20 @@ const LiFiHistoryPage = ({
         {lifiData &&
           history.length > 0 &&
           history.map((item, index) => {
-            const sendingChainLogoURI = lifiData.chains.find(
-              (chain: any) => chain.id === item.sending?.chainId!,
-            )?.logoURI;
-            const receivingChainLogoURI = lifiData.chains.find(
-              (chain: any) => chain.id === item.receiving?.chainId!,
-            )?.logoURI;
+            const sendingChain = lifiData.chains.find(
+              (chain: ExtendedChain) => chain.id === item.sending?.chainId!,
+            );
+            const receivingChain = lifiData.chains.find(
+              (chain: ExtendedChain) => chain.id === item.receiving?.chainId!,
+            );
             return (
               <LiFiHistoryItem
                 key={`lifi-history-${index}`}
                 historyItem={item}
-                sendingChainLogoURI={sendingChainLogoURI}
-                receivingChainLogoURI={receivingChainLogoURI}
+                sendingChainLogoURI={sendingChain?.logoURI}
+                sendingChainName={sendingChain?.name ?? ''}
+                receivingChainLogoURI={receivingChain?.logoURI}
+                receivingChainName={receivingChain?.name ?? ''}
               />
             );
           })}

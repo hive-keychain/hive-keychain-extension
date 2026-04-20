@@ -144,6 +144,7 @@ const Contacts = ({ chain, setTitleContainerProperties }: PropsType) => {
             }}
             setSelectedItem={(item) => updateSelectedChain(item.value)}
             additionalClassname="chain-custom-select"
+            generateImageIfNull
           />
         )}
 

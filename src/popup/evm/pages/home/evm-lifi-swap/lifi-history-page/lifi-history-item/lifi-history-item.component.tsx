@@ -10,19 +10,24 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
 
+import { ChainLogo } from '@common-ui/chain-logo/chain-logo.component';
 import { CustomTooltip } from '@common-ui/custom-tooltip/custom-tooltip.component';
 import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 
 interface Props {
   historyItem: LifiHistoryItem;
-  sendingChainLogoURI: string;
-  receivingChainLogoURI: string;
+  sendingChainLogoURI?: string;
+  sendingChainName: string;
+  receivingChainLogoURI?: string;
+  receivingChainName: string;
 }
 
 const LiFiHistoryItemComponent = ({
   historyItem,
   sendingChainLogoURI,
+  sendingChainName,
   receivingChainLogoURI,
+  receivingChainName,
   setInfoMessage,
 }: PropsFromRedux) => {
   const getStatusMessage = (status: string) => {
@@ -137,7 +142,11 @@ const LiFiHistoryItemComponent = ({
                   src={historyItem.sending?.token?.logoURI}
                   className="token-logo"
                 />
-                <img src={sendingChainLogoURI} className="chain-logo" />
+                <ChainLogo
+                  chainName={sendingChainName}
+                  logoUri={sendingChainLogoURI}
+                  className="chain-logo"
+                />
               </div>
               {formatAmount(historyItem.sending)} {sendingSymbol}
             </div>
@@ -153,7 +162,11 @@ const LiFiHistoryItemComponent = ({
                   src={historyItem.receiving?.token?.logoURI}
                   className="token-logo"
                 />
-                <img src={receivingChainLogoURI} className="chain-logo" />
+                <ChainLogo
+                  chainName={receivingChainName}
+                  logoUri={receivingChainLogoURI}
+                  className="chain-logo"
+                />
               </div>
               {formatAmount(historyItem.receiving)} {receivingSymbol}
             </div>

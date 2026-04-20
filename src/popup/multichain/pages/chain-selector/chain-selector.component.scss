@@ -63,8 +63,13 @@
             @include icon-size(45px);
           }
         }
-        img {
+        .chain-card__logo {
           @include icon-size(45px);
+          border-radius: 50%;
+        }
+
+        .chain-card__logo.chain-logo-initials {
+          @include poppins600(14px);
         }
 
         &.add-custom-chain {

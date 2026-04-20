@@ -75,6 +75,10 @@
             height: 14px;
             border-radius: 50%;
           }
+
+          .chain-logo.chain-logo-initials {
+            @include poppins600(6px);
+          }
         }
         &.token-from {
           flex: 2;

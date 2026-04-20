@@ -7,6 +7,7 @@ import { EvmDappInfo, EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmInputDisplayType } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { ChainLogo } from 'src/common-ui/chain-logo/chain-logo.component';
 import React from 'react';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
@@ -62,7 +63,11 @@ export const RequestAddEvmChain = (props: Props) => {
               type: EvmInputDisplayType.STRING,
               value: (
                 <div className="value-content">
-                  <img src={requestedChain.logo} className="chain-logo" />
+                  <ChainLogo
+                    chainName={requestedChain.name}
+                    logoUri={requestedChain.logo}
+                    className="chain-logo"
+                  />
                   <div className="chain-name">{requestedChain.name}</div>
                 </div>
               ),

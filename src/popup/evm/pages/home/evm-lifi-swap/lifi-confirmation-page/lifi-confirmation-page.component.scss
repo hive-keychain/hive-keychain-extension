@@ -22,6 +22,10 @@
         right: -4px;
         border-radius: 50%;
       }
+
+      .currency-icon-chip.chain-logo-initials {
+        @include poppins600(7px);
+      }
     }
 
     .lifi-operation-name {

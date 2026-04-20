@@ -6,8 +6,10 @@ import { CustomSelectItemComponent } from 'src/common-ui/custom-select/custom-se
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { ChainLogo } from 'src/common-ui/chain-logo/chain-logo.component';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { ColorsUtils } from 'src/utils/colors.utils';
 import { EnumUtils } from 'src/utils/enum.utils';
 
 export interface OptionItem {
@@ -18,6 +20,8 @@ export interface OptionItem {
   subLabelHover?: string;
   img?: string;
   imgChip?: SVGIcons | string;
+  /** When `imgChip` is a chain logo URL, used for initials if the URL is empty or fails to load. */
+  imgChipChainName?: string;
   imgBackup?: string;
   key?: string;
 }
@@ -79,20 +83,35 @@ export function ComplexeCustomSelect<T extends OptionItem>(
         onClick={() => {
           selectProps.methods.dropDown('close');
         }}>
-        {itemProps.selectedItem.img && (
+        {((itemProps.selectedItem.img ||
+          (itemProps.generateImageIfNull && !itemProps.selectedItem.img)) ||
+          itemProps.selectedItem.imgChip) && (
           <>
-            {EnumUtils.isValueOf(itemProps.selectedItem.img, SVGIcons) && (
-              <SVGIcon
-                className="left-svg"
-                icon={itemProps.selectedItem.img as SVGIcons}
-              />
-            )}
-            {!EnumUtils.isValueOf(itemProps.selectedItem.img, SVGIcons) && (
-              <PreloadedImage
-                className="left-image"
-                src={itemProps.selectedItem.img}
-              />
-            )}
+            {itemProps.selectedItem.img &&
+              EnumUtils.isValueOf(itemProps.selectedItem.img, SVGIcons) && (
+                <SVGIcon
+                  className="left-svg"
+                  icon={itemProps.selectedItem.img as SVGIcons}
+                />
+              )}
+            {itemProps.selectedItem.img &&
+              !EnumUtils.isValueOf(itemProps.selectedItem.img, SVGIcons) && (
+                <PreloadedImage
+                  className="left-image"
+                  src={itemProps.selectedItem.img}
+                />
+              )}
+            {!itemProps.selectedItem.img &&
+              itemProps.generateImageIfNull && (
+                <div
+                  className="left-image chain-logo-initials"
+                  style={{
+                    backgroundColor: `${ColorsUtils.stringToColor(itemProps.selectedItem.label)}2b`,
+                    color: ColorsUtils.stringToColor(itemProps.selectedItem.label),
+                  }}>
+                  {itemProps.selectedItem.label.slice(0, 2)}
+                </div>
+              )}
             {itemProps.selectedItem.imgChip && (
               <>
                 {EnumUtils.isValueOf(
@@ -107,12 +126,24 @@ export function ComplexeCustomSelect<T extends OptionItem>(
                 {!EnumUtils.isValueOf(
                   itemProps.selectedItem.imgChip,
                   SVGIcons,
-                ) && (
-                  <PreloadedImage
-                    className="left-svg-chip"
-                    src={itemProps.selectedItem.imgChip as string}
-                  />
-                )}
+                ) &&
+                  itemProps.selectedItem.imgChipChainName && (
+                    <ChainLogo
+                      className="left-svg-chip"
+                      logoUri={itemProps.selectedItem.imgChip as string}
+                      chainName={itemProps.selectedItem.imgChipChainName}
+                    />
+                  )}
+                {!EnumUtils.isValueOf(
+                  itemProps.selectedItem.imgChip,
+                  SVGIcons,
+                ) &&
+                  !itemProps.selectedItem.imgChipChainName && (
+                    <PreloadedImage
+                      className="left-svg-chip"
+                      src={itemProps.selectedItem.imgChip as string}
+                    />
+                  )}
               </>
             )}
           </>

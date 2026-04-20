@@ -1,3 +1,4 @@
+import { ChainLogo } from '@common-ui/chain-logo/chain-logo.component';
 import { PreloadedImage } from '@common-ui/preloaded-image/preloaded-image.component';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import { OptionItem } from 'src/common-ui/custom-select/custom-select.component';
@@ -52,13 +53,25 @@ export function CustomSelectItemComponent<T extends OptionItem>({
           handleItemClicked();
           closeDropdown();
         }}>
-        {item.img && (
+        {((item.img ||
+          (generateImageIfNull && !item.img)) ||
+          item.imgChip) && (
           <>
-            {EnumUtils.isValueOf(item.img, SVGIcons) && (
+            {item.img && EnumUtils.isValueOf(item.img, SVGIcons) && (
               <SVGIcon className="left-svg" icon={item.img as SVGIcons} />
             )}
-            {!EnumUtils.isValueOf(item.img, SVGIcons) && (
+            {item.img && !EnumUtils.isValueOf(item.img, SVGIcons) && (
               <img className="left-image" src={item.img} />
+            )}
+            {!item.img && generateImageIfNull && (
+              <div
+                className="currency-icon add-background"
+                style={{
+                  backgroundColor: `${color}2b`,
+                  color: `${color}`,
+                }}>
+                {item.label.slice(0, 2)}
+              </div>
             )}
             {item.imgChip && (
               <>
@@ -68,25 +81,24 @@ export function CustomSelectItemComponent<T extends OptionItem>({
                     icon={item.imgChip as SVGIcons}
                   />
                 )}
-                {!EnumUtils.isValueOf(item.imgChip, SVGIcons) && (
-                  <PreloadedImage
-                    className="left-svg-chip"
-                    src={item.imgChip as string}
-                  />
-                )}
+                {!EnumUtils.isValueOf(item.imgChip, SVGIcons) &&
+                  item.imgChipChainName && (
+                    <ChainLogo
+                      className="left-svg-chip"
+                      logoUri={item.imgChip as string}
+                      chainName={item.imgChipChainName}
+                    />
+                  )}
+                {!EnumUtils.isValueOf(item.imgChip, SVGIcons) &&
+                  !item.imgChipChainName && (
+                    <PreloadedImage
+                      className="left-svg-chip"
+                      src={item.imgChip as string}
+                    />
+                  )}
               </>
             )}
           </>
-        )}
-        {!item.img && generateImageIfNull && (
-          <div
-            className="currency-icon add-background"
-            style={{
-              backgroundColor: `${color}2b`,
-              color: `${color}`,
-            }}>
-            {item.label.slice(0, 2)}
-          </div>
         )}
         <div className="item-label">
           {item.label}

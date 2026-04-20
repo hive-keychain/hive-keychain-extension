@@ -8,6 +8,7 @@ import { setTitleContainerProperties } from '@popup/multichain/actions/title-con
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { ChainLogo } from '@common-ui/chain-logo/chain-logo.component';
 import React, { useCallback, useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -136,13 +137,11 @@ const EvmCustomChains = ({
                       openEditModal(c);
                     }
                   }}>
-                  {c.logo?.length > 0 && (
-                    <img
-                      className="evm-custom-chains-list__logo"
-                      src={c.logo}
-                      alt=""
-                    />
-                  )}
+                  <ChainLogo
+                    chainName={c.name}
+                    logoUri={c.logo}
+                    className="evm-custom-chains-list__logo"
+                  />
                   <div className="evm-custom-chains-list__line">
                     <span className="evm-custom-chains-list__name">{c.name}</span>
                     <span className="evm-custom-chains-list__chain-id">

@@ -13,6 +13,7 @@ import { SVGIcons } from '@common-ui/icons.enum';
 import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
 import { LabelComponent } from '@common-ui/label/label.component';
+import { ChainLogo } from '@common-ui/chain-logo/chain-logo.component';
 import { PreloadedImage } from '@common-ui/preloaded-image/preloaded-image.component';
 import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.component';
 import ServiceUnavailablePage from '@common-ui/service-unavailable-page/service-unavailable-page.component';
@@ -433,9 +434,10 @@ export const EvmLifiSwap = ({
                   className="currency-icon"
                   src={form.toSelectedToken?.logoURI as string}
                 />
-                <PreloadedImage
+                <ChainLogo
                   className="currency-icon-chip"
-                  src={form.toSelectedChain?.logoURI as string}
+                  chainName={form.toSelectedChain?.name ?? ''}
+                  logoUri={form.toSelectedChain?.logoURI}
                 />
               </div>
             )}

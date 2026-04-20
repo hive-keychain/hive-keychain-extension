@@ -175,6 +175,7 @@ const EvmRpcNodes = ({
                 setSelectedChain(item.value)
               }
               background="white"
+              generateImageIfNull
             />
           )}
 

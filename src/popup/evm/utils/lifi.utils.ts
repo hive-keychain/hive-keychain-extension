@@ -52,6 +52,7 @@ const getTokenOptionItem = (
     value: token,
     img: token.logoURI,
     imgChip: chain.logoURI,
+    imgChipChainName: chain.name,
     key: `${chain.id}-${token.address}`,
   };
 };

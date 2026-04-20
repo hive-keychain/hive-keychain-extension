@@ -3,6 +3,7 @@ import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import React, { Fragment } from 'react';
+import { ChainLogo } from 'src/common-ui/chain-logo/chain-logo.component';
 import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
 import { EvmRequestItem } from 'src/dialog/evm/components/evm-request-item/evm-request-item';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
@@ -33,7 +34,11 @@ export const EvmTransactionWarningsComponent = ({
 
           <div className="chain-info">
             <div className="chain-name">{chain.name}</div>
-            <img className="chain-logo" src={chain.logo} />
+            <ChainLogo
+              className="chain-logo"
+              chainName={chain.name}
+              logoUri={chain.logo}
+            />
           </div>
         </div>
       )}

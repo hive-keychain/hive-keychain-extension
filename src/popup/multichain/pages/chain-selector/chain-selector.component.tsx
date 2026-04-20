@@ -13,6 +13,7 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { Badge, BadgeType } from 'src/common-ui/badge/badge.component';
+import { ChainLogo } from 'src/common-ui/chain-logo/chain-logo.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 
 interface ChainSelectorProps {}
@@ -127,7 +128,11 @@ const ChainSelector = ({
                     onClick={() => {
                       selectChain(chain);
                     }}>
-                    <img src={chain.logo} />
+                    <ChainLogo
+                      chainName={chain.name}
+                      logoUri={chain.logo}
+                      className="chain-card__logo"
+                    />
                     <div className="chain-name">{chain.name}</div>
                     <Badge
                       small
@@ -154,7 +159,11 @@ const ChainSelector = ({
                     onClick={() => {
                       selectChain(chain);
                     }}>
-                    <img src={chain.logo} />
+                    <ChainLogo
+                      chainName={chain.name}
+                      logoUri={chain.logo}
+                      className="chain-card__logo"
+                    />
                     <div className="chain-name">{chain.name}</div>
                     <Badge
                       small
