@@ -93,7 +93,7 @@ const EvmWalletNftGallery = ({
               rightAction={
                 isCustomChainSelected
                   ? {
-                      icon: SVGIcons.WALLET_ADD,
+                      icon: SVGIcons.WALLET_SETTINGS,
                       onClick: openAddCustomTokenPanel,
                     }
                   : undefined
