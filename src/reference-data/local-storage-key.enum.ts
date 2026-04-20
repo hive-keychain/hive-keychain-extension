@@ -87,6 +87,9 @@ export enum LocalStorageKeyEnum {
   /** Per-chain: user dismissed the "no custom ERC20" hint card on the wallet home tab */
   EVM_CUSTOM_ERC20_EMPTY_CARD_HIDDEN = 'EVM_CUSTOM_ERC20_EMPTY_CARD_HIDDEN',
 
+  /** Per-chain: user dismissed the "no custom NFT" hint card on the wallet NFT tab */
+  EVM_CUSTOM_NFT_EMPTY_CARD_HIDDEN = 'EVM_CUSTOM_NFT_EMPTY_CARD_HIDDEN',
+
   EVM_LIGHT_NODE_REGISTERED_ADDRESSES = 'EVM_LIGHT_NODE_REGISTERED_ADDRESSES',
 
   //Auto Stake Engine Tokens

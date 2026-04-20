@@ -6060,6 +6060,10 @@
     "message": "Hide",
     "description": "Dismiss the custom ERC20 empty-state hint card"
   },
+  "evm_custom_nft_empty_card_message": {
+    "message": "You don't have any custom NFTs yet.</br> To get started, click the settings wheel.",
+    "description": "Hint on wallet NFT tab when there are no custom NFTs on a custom chain"
+  },
   "evm_add_custom_token_popup_title": {
     "message": "Add custom token",
     "description": "Add custom token popup title"
