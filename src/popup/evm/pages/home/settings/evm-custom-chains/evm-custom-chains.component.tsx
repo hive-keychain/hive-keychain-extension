@@ -1,4 +1,6 @@
-import ButtonComponent from '@common-ui/button/button.component';
+import ButtonComponent, {
+  ButtonType,
+} from '@common-ui/button/button.component';
 import { Card } from '@common-ui/card/card.component';
 import { AddCustomEvmChainForm } from '@popup/evm/pages/home/settings/evm-custom-chains/add-custom-evm-chain-form.component';
 import { closeModal, openModal } from '@popup/multichain/actions/modal.actions';
@@ -64,18 +66,43 @@ const EvmCustomChains = ({
     });
   };
 
-  const confirmDeleteCustomChain = async (chain: EvmChain) => {
-    const confirmed = window.confirm(
-      chrome.i18n.getMessage('evm_custom_chains_delete_confirm', [chain.name]),
-    );
-    if (!confirmed) return;
-    try {
-      await ChainUtils.removeCustomChain(chain.chainId);
-      await loadChains();
-    } catch {
-      // Storage race or list out of sync; refresh list
-      await loadChains();
-    }
+  const openDeleteChainConfirmModal = (chain: EvmChain) => {
+    openModal({
+      title: 'evm_custom_chains_delete',
+      children: (
+        <div className="evm-delete-confirm-modal">
+          <p className="evm-delete-confirm-modal__message">
+            {chrome.i18n.getMessage('evm_custom_chains_delete_confirm', [
+              chain.name,
+            ])}
+          </p>
+          <div className="evm-delete-confirm-modal__actions">
+            <ButtonComponent
+              dataTestId="evm-custom-chain-delete-cancel"
+              label="dialog_cancel"
+              type={ButtonType.ALTERNATIVE}
+              onClick={() => closeModal()}
+              height="small"
+            />
+            <ButtonComponent
+              dataTestId="evm-custom-chain-delete-confirm"
+              label="popup_html_confirm"
+              type={ButtonType.IMPORTANT}
+              height="small"
+              onClick={async () => {
+                closeModal();
+                try {
+                  await ChainUtils.removeCustomChain(chain.chainId);
+                  await loadChains();
+                } catch {
+                  await loadChains();
+                }
+              }}
+            />
+          </div>
+        </div>
+      ),
+    });
   };
 
   return (
@@ -84,11 +111,12 @@ const EvmCustomChains = ({
         <p className="evm-custom-chains-caption">
           {chrome.i18n.getMessage('evm_custom_chains_caption')}
         </p>
-        <ButtonComponent
-          label="evm_custom_chains_add"
-          onClick={openAddModal}
-          dataTestId="btn-add-custom-chain"
-        />
+        <div
+          className="add-custom-chain-link"
+          data-testid="btn-add-custom-chain"
+          onClick={openAddModal}>
+          {chrome.i18n.getMessage('evm_custom_chains_add')}
+        </div>
         {customChains.length === 0 ? (
           <p className="evm-custom-chains-empty">
             {chrome.i18n.getMessage('evm_custom_chains_empty')}
@@ -128,9 +156,9 @@ const EvmCustomChains = ({
                   data-testid={`btn-delete-custom-chain-${c.chainId}`}
                   title={chrome.i18n.getMessage('evm_custom_chains_delete')}
                   aria-label={chrome.i18n.getMessage('evm_custom_chains_delete')}
-                  onClick={(e) => {
+                    onClick={(e) => {
                     e.stopPropagation();
-                    confirmDeleteCustomChain(c);
+                    openDeleteChainConfirmModal(c);
                   }}>
                   <SVGIcon icon={SVGIcons.GLOBAL_DELETE} className="svg-icon" />
                 </button>

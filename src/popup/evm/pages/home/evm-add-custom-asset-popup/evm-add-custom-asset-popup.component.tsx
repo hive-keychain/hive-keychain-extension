@@ -5,6 +5,7 @@ import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
 import { PopupContainer } from '@common-ui/popup-container/popup-container.component';
 import { EvmCustomToken } from '@popup/evm/interfaces/evm-custom-tokens.interface';
+import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ethers } from 'ethers';
@@ -25,6 +26,8 @@ interface Props {
   mode: EvmCustomAssetMode;
   walletAddress?: string;
   existingAddresses?: string[];
+  /** When set, the form is pre-filled and the contract address cannot be changed. */
+  tokenToEdit?: EvmCustomToken | null;
   onClose: () => void;
   onSave?: (form: EvmCustomErc20FormData) => Promise<void> | void;
 }
@@ -62,6 +65,7 @@ export const EvmAddCustomAssetPopup = ({
   mode,
   walletAddress,
   existingAddresses = [],
+  tokenToEdit = null,
   onClose,
   onSave,
 }: Props) => {
@@ -106,14 +110,41 @@ export const EvmAddCustomAssetPopup = ({
     };
   }, [chain, mode, walletAddress]);
 
+  useEffect(() => {
+    if (mode !== 'erc20') {
+      return;
+    }
+    if (tokenToEdit) {
+      const meta =
+        tokenToEdit.metadata?.type === EVMSmartContractType.ERC20
+          ? tokenToEdit.metadata
+          : undefined;
+      setErc20Form({
+        contractAddress: tokenToEdit.address,
+        symbol: meta?.symbol ?? '',
+        logo: meta?.logo ?? '',
+      });
+    } else {
+      setErc20Form(INITIAL_ERC20_FORM);
+    }
+    setErc20Errors({});
+  }, [mode, tokenToEdit]);
+
   const normalizedExistingAddresses = useMemo(() => {
-    return new Set(
+    const set = new Set(
       [...existingAddresses, ...savedCustomTokens.map((token) => token.address)]
         .map(normalizeAddress)
         .filter(Boolean)
         .map((address) => address.toLowerCase()),
     );
-  }, [existingAddresses, savedCustomTokens]);
+    if (tokenToEdit) {
+      const addr = normalizeAddress(tokenToEdit.address);
+      if (addr) {
+        set.delete(addr.toLowerCase());
+      }
+    }
+    return set;
+  }, [existingAddresses, savedCustomTokens, tokenToEdit]);
 
   const setErc20Field = (field: keyof Erc20FormState, value: string) => {
     setErc20Form((current) => ({
@@ -201,12 +232,19 @@ export const EvmAddCustomAssetPopup = ({
     }
   };
 
+  const isEditing = Boolean(tokenToEdit);
+
   const renderErc20Form = () => (
     <>
-      <div className="popup-title">Add Custom Token</div>
+      <div className="popup-title">
+        {isEditing
+          ? chrome.i18n.getMessage('evm_custom_tokens_modal_title_edit')
+          : chrome.i18n.getMessage('evm_add_custom_token_popup_title')}
+      </div>
       <div className="popup-caption">
-        Enter the contract address for {chain.name}. Name and decimals are read
-        from the token contract.
+        {isEditing
+          ? chrome.i18n.getMessage('evm_custom_tokens_modal_caption_edit')
+          : chrome.i18n.getMessage('evm_add_custom_token_popup_caption')}
       </div>
 
       <div className="custom-asset-form">
@@ -216,6 +254,7 @@ export const EvmAddCustomAssetPopup = ({
             skipLabelTranslation
             value={erc20Form.contractAddress}
             type={InputType.TEXT}
+            readOnly={isEditing}
             onChange={(value) => setErc20Field('contractAddress', value)}
             dataTestId="custom-asset-contract-address"
             classname="custom-asset-input"

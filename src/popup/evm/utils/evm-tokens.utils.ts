@@ -727,6 +727,109 @@ const addCustomToken = async (
   );
 };
 
+const removeCustomToken = async (
+  chain: EvmChain,
+  walletAddress: string,
+  tokenAddress: string,
+  tokenType: EVMSmartContractType,
+) => {
+  const normalizedWalletAddress = normalizeCustomWalletKey(walletAddress);
+  const normalizedAddress = normalizeCustomTokenAddress(tokenAddress);
+  const removeKey = `${tokenType}:${normalizedAddress.toLowerCase()}`;
+
+  let savedCustomTokens: EvmSavedCustomTokens =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
+    );
+  if (!savedCustomTokens?.[chain.chainId]) {
+    return;
+  }
+
+  const filterOut = (tokens: EvmCustomToken[]) =>
+    tokens.filter(
+      (t) =>
+        `${t.type}:${normalizeCustomTokenAddress(t.address).toLowerCase()}` !==
+        removeKey,
+    );
+
+  const applyToWalletKey = (addr: string) => {
+    const entries = savedCustomTokens![chain.chainId][addr];
+    if (!entries?.length) {
+      return;
+    }
+    const next = filterOut(entries);
+    if (next.length === 0) {
+      delete savedCustomTokens![chain.chainId][addr];
+    } else {
+      savedCustomTokens![chain.chainId][addr] = next.map(normalizeCustomToken);
+    }
+  };
+
+  applyToWalletKey(normalizedWalletAddress);
+  if (walletAddress !== normalizedWalletAddress) {
+    applyToWalletKey(walletAddress);
+  }
+
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
+    savedCustomTokens,
+  );
+};
+
+const updateCustomToken = async (
+  chain: EvmChain,
+  walletAddress: string,
+  tokenAddress: string,
+  tokenType: EVMSmartContractType,
+  metadata: EvmCustomTokenMetadataErc20,
+) => {
+  const normalizedWalletAddress = normalizeCustomWalletKey(walletAddress);
+  const normalizedAddress = normalizeCustomTokenAddress(tokenAddress);
+  const matchKey = `${tokenType}:${normalizedAddress.toLowerCase()}`;
+
+  let savedCustomTokens: EvmSavedCustomTokens =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
+    );
+  if (!savedCustomTokens?.[chain.chainId]) {
+    return;
+  }
+
+  const replaceInList = (tokens: EvmCustomToken[]): EvmCustomToken[] =>
+    tokens.map((t) => {
+      if (
+        `${t.type}:${normalizeCustomTokenAddress(t.address).toLowerCase()}` ===
+        matchKey
+      ) {
+        return normalizeCustomToken({
+          ...t,
+          address: normalizedAddress,
+          type: tokenType,
+          metadata,
+        });
+      }
+      return t;
+    });
+
+  const applyToKey = (addr: string) => {
+    const entries = savedCustomTokens![chain.chainId][addr];
+    if (!entries?.length) {
+      return;
+    }
+    savedCustomTokens![chain.chainId][addr] = replaceInList(entries);
+  };
+
+  applyToKey(normalizedWalletAddress);
+  if (walletAddress !== normalizedWalletAddress) {
+    applyToKey(walletAddress);
+  }
+
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
+    savedCustomTokens,
+  );
+};
+
 const getCustomTokens = async (chain: EvmChain, walletAddress: string) => {
   const normalizedWalletAddress = normalizeCustomWalletKey(walletAddress);
   const savedCustomTokens: EvmSavedCustomTokens =
@@ -917,6 +1020,8 @@ export const EvmTokensUtils = {
   manualDiscoverErc20Tokens,
   manualDiscoverNfts,
   addCustomToken,
+  removeCustomToken,
+  updateCustomToken,
   getCustomTokens,
   getCustomErc20TokenInfos,
   mergeCustomErc20TokenInfos,

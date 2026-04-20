@@ -1,4 +1,9 @@
 .evm-custom-chains-page {
+  .add-custom-chain-link {
+    @include link;
+    align-self: flex-end;
+  }
+
   .evm-custom-chains-card {
     display: flex;
     flex-direction: column;
@@ -28,16 +33,20 @@
     gap: 12px;
     max-height: 360px;
     overflow: auto;
+    width: 100%;
   }
 
   .evm-custom-chains-list__item {
     @include small-card();
     margin: 0;
+    width: 100%;
+    min-width: 0;
     align-items: center;
     flex-direction: row;
     flex-wrap: nowrap;
     gap: 12px;
     box-sizing: border-box;
+    padding: 8px;
 
     .evm-custom-chains-list__delete {
       flex-shrink: 0;
@@ -119,7 +128,6 @@
 
   .evm-custom-chains-list__name {
     @include poppins600(14px);
-    flex: 1 1 auto;
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -207,6 +215,49 @@
     .submit-button {
       flex: 1 1 0;
       width: auto;
+      min-width: 0;
+    }
+  }
+}
+
+/* Modal content is rendered at router level (not under .evm-custom-chains-page). */
+.modal-container .modal-content:has(.evm-delete-confirm-modal) {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-height: 0;
+  width: 100%;
+}
+
+.evm-delete-confirm-modal {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 260px;
+  min-height: 0;
+
+  .evm-delete-confirm-modal__message {
+    font-size: 13px;
+    line-height: 1.45;
+    margin: 0;
+    opacity: 0.9;
+    flex-shrink: 0;
+  }
+
+  .evm-delete-confirm-modal__actions {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    align-self: stretch;
+    gap: 8px;
+    margin-top: auto;
+    flex-shrink: 0;
+
+    .submit-button {
+      flex: 1 1 0;
       min-width: 0;
     }
   }

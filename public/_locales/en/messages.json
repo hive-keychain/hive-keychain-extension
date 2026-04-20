@@ -5997,8 +5997,28 @@
     "description": "Title for the custom ERC20 tokens management page"
   },
   "evm_custom_tokens_page_empty": {
-    "message": "No custom tokens yet. Use Add to register one for this network.",
+    "message": "No custom tokens yet. Add one to register an ERC20 contract for this network.",
     "description": "Empty state on custom tokens page"
+  },
+  "evm_custom_tokens_page_caption": {
+    "message": "Custom tokens are stored per wallet and network. You can remove them from this list at any time.",
+    "description": "Intro caption on custom tokens page"
+  },
+  "evm_custom_tokens_delete": {
+    "message": "Delete",
+    "description": "Remove a custom ERC20 token from the list"
+  },
+  "evm_custom_tokens_delete_confirm": {
+    "message": "Remove \"$1\" from your custom tokens? This cannot be undone.",
+    "description": "Confirmation before deleting a custom token; $1 is symbol or name"
+  },
+  "evm_custom_tokens_modal_title_edit": {
+    "message": "Edit custom token",
+    "description": "Title when editing a saved custom ERC20 token"
+  },
+  "evm_custom_tokens_modal_caption_edit": {
+    "message": "Change the symbol or logo. Name and decimals are read from the contract when you save.",
+    "description": "Caption when editing a custom ERC20 token"
   },
   "evm_custom_erc20_empty_card_message": {
     "message": "You don't have any custom tokens yet.</br> To get started, click the settings wheel.",

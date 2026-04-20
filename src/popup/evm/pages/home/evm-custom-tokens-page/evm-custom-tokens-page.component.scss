@@ -1,9 +1,21 @@
 .evm-custom-tokens-page {
+  .add-custom-token-link {
+    @include link;
+    align-self: flex-end;
+  }
+
   .evm-custom-tokens-card {
     display: flex;
     flex-direction: column;
     row-gap: 16px;
     margin: 0 24px;
+  }
+
+  .evm-custom-tokens-caption {
+    font-size: 13px;
+    line-height: 1.45;
+    margin: 0;
+    opacity: 0.85;
   }
 
   .evm-custom-tokens-empty {
@@ -19,44 +31,156 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    max-height: 420px;
+    max-height: 360px;
     overflow: auto;
+    width: 100%;
   }
 
   .evm-custom-tokens-list__item {
     @include small-card();
     margin: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
+    width: 100%;
+    min-width: 0;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 12px;
     box-sizing: border-box;
+    padding: 8px;
+
+    .evm-custom-tokens-list__delete {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      margin: 0;
+      padding: 0;
+      border: 1px solid var(--card-border);
+      border-radius: 50%;
+      background: var(--card-background);
+      cursor: pointer;
+      color: var(--main-font-color);
+      box-sizing: border-box;
+      transition: opacity 0.15s ease;
+
+      .svg-icon {
+        width: 22px;
+        height: 22px;
+      }
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .evm-custom-tokens-list__item {
+      .evm-custom-tokens-list__delete {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      &:hover .evm-custom-tokens-list__delete,
+      &:focus-within .evm-custom-tokens-list__delete {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+  }
+
+  .evm-custom-tokens-list__item-main {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+    min-width: 0;
+    flex: 1 1 auto;
+
+    &--clickable {
+      cursor: pointer;
+      outline: none;
+
+      &:focus-visible {
+        box-shadow: 0 0 0 2px var(--button-background-color, #c6354a);
+      }
+    }
+  }
+
+  .evm-custom-tokens-list__logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    object-fit: contain;
+    flex-shrink: 0;
   }
 
   .evm-custom-tokens-list__line {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    gap: 10px;
     min-width: 0;
-    width: 100%;
-  }
-
-  .evm-custom-tokens-list__symbol {
-    @include poppins500(14px);
-    color: var(--main-font-color);
+    flex: 1 1 auto;
+    font-size: 14px;
+    line-height: 1.3;
+    overflow: hidden;
   }
 
   .evm-custom-tokens-list__name {
-    @include caption();
-    font-size: 12px;
-    opacity: 0.85;
-    word-break: break-word;
+    @include poppins600(14px);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  .evm-custom-tokens-list__address {
-    @include caption();
-    font-size: 11px;
-    opacity: 0.65;
-    font-family: monospace;
+  .evm-custom-tokens-list__contract-address {
+    @include poppins400(14px);
+    flex-shrink: 0;
+    opacity: 0.9;
+    white-space: nowrap;
+  }
+}
+
+/* Modal content is rendered at router level (not under .evm-custom-tokens-page). */
+.modal-container .modal-content:has(.evm-delete-confirm-modal) {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-height: 0;
+  width: 100%;
+}
+
+.evm-delete-confirm-modal {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 260px;
+  min-height: 0;
+
+  .evm-delete-confirm-modal__message {
+    font-size: 13px;
+    line-height: 1.45;
+    margin: 0;
+    opacity: 0.9;
+    flex-shrink: 0;
+  }
+
+  .evm-delete-confirm-modal__actions {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    align-self: stretch;
+    gap: 8px;
+    margin-top: auto;
+    flex-shrink: 0;
+
+    .submit-button {
+      flex: 1 1 0;
+      min-width: 0;
+    }
   }
 }
