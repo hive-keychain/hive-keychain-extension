@@ -22,6 +22,7 @@ export interface EvmCustomErc20TokenMetadata {
   symbol: string;
   decimals: number;
   logo?: string;
+  coingeckoId?: string;
 }
 
 /** Stored custom token metadata: discriminated by contract type */

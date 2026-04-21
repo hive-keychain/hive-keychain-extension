@@ -18,6 +18,47 @@ describe('evm-light-node.utils tests:\n', () => {
     expect(evmChainIdToDecimalPathSegment(56)).toBe('56');
   });
 
+  it('normalizes custom chain Coingecko responses from either payload shape', async () => {
+    const getSpy = jest
+      .spyOn(EvmLightNodeApi, 'get')
+      .mockResolvedValueOnce({ native_coin_id: 'ethereum' })
+      .mockResolvedValueOnce('matic-network');
+
+    await expect(
+      EvmLightNodeUtils.getCoingeckoNativeCoinId('0x1'),
+    ).resolves.toBe('ethereum');
+    await expect(
+      EvmLightNodeUtils.getCoingeckoNativeCoinId('0x89'),
+    ).resolves.toBe('matic-network');
+
+    expect(getSpy).toHaveBeenNthCalledWith(1, 'coingecko/1');
+    expect(getSpy).toHaveBeenNthCalledWith(2, 'coingecko/137');
+  });
+
+  it('normalizes custom token Coingecko responses from either payload shape', async () => {
+    const tokenAddress = '0x00000000000000000000000000000000000000aa';
+    const getSpy = jest
+      .spyOn(EvmLightNodeApi, 'get')
+      .mockResolvedValueOnce({ coingecko_id: 'usd-coin' })
+      .mockResolvedValueOnce({ coingeckoId: 'dai' });
+
+    await expect(
+      EvmLightNodeUtils.getCoingeckoTokenId('0x1', tokenAddress),
+    ).resolves.toBe('usd-coin');
+    await expect(
+      EvmLightNodeUtils.getCoingeckoTokenId('1', tokenAddress),
+    ).resolves.toBe('dai');
+
+    expect(getSpy).toHaveBeenNthCalledWith(
+      1,
+      `coingecko/1/${encodeURIComponent(tokenAddress)}`,
+    );
+    expect(getSpy).toHaveBeenNthCalledWith(
+      2,
+      `coingecko/1/${encodeURIComponent(tokenAddress)}`,
+    );
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
     jest.restoreAllMocks();

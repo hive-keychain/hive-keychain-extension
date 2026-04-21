@@ -1,4 +1,5 @@
 import { EvmLightNodeApi } from '@api/evm-light-node';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import {
   Chain,
   ChainType,
@@ -178,6 +179,28 @@ const getCustomChains = async (): Promise<EvmChain[]> => {
     .map((c) => ({ ...c, isCustom: true } as EvmChain));
 };
 
+const enrichCustomChainWithNativeCoinId = async (
+  chain: EvmChain,
+  previousChain?: EvmChain,
+): Promise<EvmChain> => {
+  try {
+    const nativeCoinId = await EvmLightNodeUtils.getCoingeckoNativeCoinId(
+      chain.chainId,
+    );
+    if (nativeCoinId) {
+      return { ...chain, nativeCoinId };
+    }
+  } catch (error) {
+    Logger.warn('Error while fetching custom chain native CoinGecko id', error);
+  }
+
+  const preservedNativeCoinId =
+    chain.nativeCoinId ?? previousChain?.nativeCoinId;
+  return preservedNativeCoinId
+    ? { ...chain, nativeCoinId: preservedNativeCoinId }
+    : chain;
+};
+
 const addCustomChain = async (chain: EvmChain): Promise<void> => {
   const custom = await getCustomChains();
   const normalizedId = chain.chainId.toLowerCase();
@@ -188,12 +211,13 @@ const addCustomChain = async (chain: EvmChain): Promise<void> => {
   if (defaults.some((c) => c.chainId.toLowerCase() === normalizedId)) {
     throw new Error('chain_exists_in_defaults');
   }
-  const toSave: EvmChain = { ...chain, isCustom: true };
+  const enrichedChain = await enrichCustomChainWithNativeCoinId(chain);
+  const toSave: EvmChain = { ...enrichedChain, isCustom: true };
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.CUSTOM_CHAINS,
     [...custom, toSave],
   );
-  await addChainToSetupChains(chain);
+  await addChainToSetupChains(toSave);
 };
 
 const rekeyRecordByChainIdKey = <T>(
@@ -505,8 +529,9 @@ const updateCustomChain = async (
     await migrateEvmStorageKeysForChainIdChange(previous.chainId, chain.chainId);
   }
 
+  const enrichedChain = await enrichCustomChainWithNativeCoinId(chain, previous);
   const next = [...custom];
-  next[idx] = { ...chain, isCustom: true };
+  next[idx] = { ...enrichedChain, isCustom: true };
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.CUSTOM_CHAINS,
     next,

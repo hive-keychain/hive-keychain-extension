@@ -50,6 +50,7 @@ export interface BlockExplorer {
 export interface EvmChain extends Chain {
   type: ChainType.EVM;
   mainToken: EvmMainToken;
+  nativeCoinId?: string;
   providers?: EvmProviders;
   isEth?: boolean;
   defaultTransactionType: EvmTransactionType;

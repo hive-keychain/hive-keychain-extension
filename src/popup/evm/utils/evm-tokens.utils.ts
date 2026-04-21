@@ -107,6 +107,11 @@ const normalizeCustomTokenAddress = (address: string) => {
     : trimmedAddress;
 };
 
+const normalizeOptionalCoingeckoId = (value: string | undefined) => {
+  const normalizedValue = value?.trim();
+  return normalizedValue?.length ? normalizedValue : undefined;
+};
+
 const normalizeCustomWalletKey = (walletAddress: string) =>
   walletAddress.toLowerCase();
 
@@ -133,7 +138,7 @@ const buildFallbackNativeTokenInfo = (
   logo: chain.logo ?? '',
   chainId: chain.chainId,
   backgroundColor: '',
-  coingeckoId: '',
+  coingeckoId: chain.nativeCoinId ?? '',
   priceUsd: 0,
   createdAt: new Date(0).toISOString(),
   categories: [],
@@ -166,6 +171,7 @@ const normalizeCustomTokenMetadata = (
       symbol: legacy.erc20.symbol,
       decimals: legacy.erc20.decimals,
       logo: legacy.erc20.logo,
+      coingeckoId: normalizeOptionalCoingeckoId(legacy.erc20.coingeckoId),
     };
   }
   return undefined;
@@ -203,6 +209,7 @@ const buildCustomErc20TokenInfo = (
   chainId: chain.chainId,
   contractAddress: normalizeCustomTokenAddress(address),
   backgroundColor: '',
+  coingeckoId: normalizeOptionalCoingeckoId(metadata.coingeckoId),
   priceUsd: 0,
   possibleSpam: false,
   verifiedContract: true,
@@ -696,6 +703,10 @@ type NativeTokenApiResponse = {
 const getMainTokenInfo = async (
   chain: EvmChain,
 ): Promise<EvmSmartContractInfoNative> => {
+  if (chain.isCustom === true) {
+    return buildFallbackNativeTokenInfo(chain);
+  }
+
   const response = (await EvmLightNodeApi.get(
     `native/${Number(chain.chainId)}`,
   )) as NativeTokenApiResponse;
@@ -711,6 +722,59 @@ const getMainTokenInfo = async (
     createdAt: response.price?.fetchedAt ?? Date.now(),
     categories: [],
   };
+};
+
+const getStoredCustomTokenCoingeckoId = (
+  tokens: EvmCustomToken[],
+  tokenType: EVMSmartContractType,
+  tokenAddress: string,
+) => {
+  const matchKey = `${tokenType}:${normalizeCustomTokenAddress(
+    tokenAddress,
+  ).toLowerCase()}`;
+
+  for (const token of tokens) {
+    if (
+      `${token.type}:${normalizeCustomTokenAddress(token.address).toLowerCase()}` ===
+        matchKey &&
+      token.metadata?.type === EVMSmartContractType.ERC20
+    ) {
+      return normalizeOptionalCoingeckoId(token.metadata.coingeckoId);
+    }
+  }
+
+  return undefined;
+};
+
+const enrichCustomErc20MetadataWithCoingeckoId = async (
+  chain: EvmChain,
+  tokenAddress: string,
+  metadata: EvmCustomTokenMetadataErc20,
+  existingTokens: EvmCustomToken[] = [],
+): Promise<EvmCustomTokenMetadataErc20> => {
+  let coingeckoId: string | undefined;
+
+  try {
+    coingeckoId = await EvmLightNodeUtils.getCoingeckoTokenId(
+      chain.chainId,
+      tokenAddress,
+    );
+  } catch (error) {
+    Logger.warn('Error while fetching custom token CoinGecko id', error);
+  }
+
+  const resolvedCoingeckoId =
+    normalizeOptionalCoingeckoId(coingeckoId) ??
+    getStoredCustomTokenCoingeckoId(
+      existingTokens,
+      EVMSmartContractType.ERC20,
+      tokenAddress,
+    ) ??
+    normalizeOptionalCoingeckoId(metadata.coingeckoId);
+
+  return resolvedCoingeckoId
+    ? { ...metadata, coingeckoId: resolvedCoingeckoId }
+    : metadata;
 };
 
 const mapLightNodeContractToTokenInfo = (
@@ -901,14 +965,29 @@ const addCustomToken = async (
       }
     }
   } else {
-    const normalizedAddress = normalizeCustomTokenAddress(
-      (toAdd as EvmCustomToken).address,
-    );
-    const key = `${(toAdd as EvmCustomToken).type}:${normalizedAddress.toLowerCase()}`;
+    const tokenToAdd = toAdd as EvmCustomToken;
+    const normalizedAddress = normalizeCustomTokenAddress(tokenToAdd.address);
+    const key = `${tokenToAdd.type}:${normalizedAddress.toLowerCase()}`;
     if (!allAddresses.has(key)) {
+      const normalizedToken =
+        tokenToAdd.type === EVMSmartContractType.ERC20 &&
+        tokenToAdd.metadata?.type === EVMSmartContractType.ERC20
+          ? {
+              ...tokenToAdd,
+              address: normalizedAddress,
+              metadata: await enrichCustomErc20MetadataWithCoingeckoId(
+                chain,
+                normalizedAddress,
+                tokenToAdd.metadata,
+                mergedWalletEntries,
+              ),
+            }
+          : {
+              ...tokenToAdd,
+              address: normalizedAddress,
+            };
       nextEntries.push({
-        ...(toAdd as EvmCustomToken),
-        address: normalizedAddress,
+        ...normalizedToken,
       });
     }
   }
@@ -993,6 +1072,22 @@ const updateCustomToken = async (
     return;
   }
 
+  const mergedExistingEntries = [
+    ...(savedCustomTokens[chain.chainId][normalizedWalletAddress] ?? []),
+    ...(walletAddress !== normalizedWalletAddress
+      ? (savedCustomTokens[chain.chainId][walletAddress] ?? [])
+      : []),
+  ];
+  const nextMetadata =
+    tokenType === EVMSmartContractType.ERC20
+      ? await enrichCustomErc20MetadataWithCoingeckoId(
+          chain,
+          normalizedAddress,
+          metadata,
+          mergedExistingEntries,
+        )
+      : metadata;
+
   const replaceInList = (tokens: EvmCustomToken[]): EvmCustomToken[] =>
     tokens.map((t) => {
       if (
@@ -1003,7 +1098,7 @@ const updateCustomToken = async (
           ...t,
           address: normalizedAddress,
           type: tokenType,
-          metadata,
+          metadata: nextMetadata,
         });
       }
       return t;
@@ -1372,6 +1467,7 @@ const getCustomErc20TokenInfos = async (
             symbol: m.symbol,
             decimals: m.decimals,
             logo: m.logo,
+            coingeckoId: m.coingeckoId,
           });
         }
 

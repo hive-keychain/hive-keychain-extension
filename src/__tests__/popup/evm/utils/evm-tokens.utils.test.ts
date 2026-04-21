@@ -1,5 +1,6 @@
 import { EvmLightNodeApi } from '@api/evm-light-node';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import {
   EVMSmartContractType,
   EvmSmartContractInfoErc20,
@@ -154,6 +155,33 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
       categories: [],
     });
     expect(EvmLightNodeApi.get).toHaveBeenCalledWith('native/1');
+  });
+
+  it('returns fallback native token info for custom chains', async () => {
+    const getSpy = jest.spyOn(EvmLightNodeApi, 'get');
+
+    await expect(
+      EvmTokensUtils.getMainTokenInfo({
+        chainId: '0x539',
+        isCustom: true,
+        name: 'Local Chain',
+        mainToken: 'ETH',
+        nativeCoinId: 'ethereum',
+        logo: 'https://cdn.example/eth.svg',
+      } as any),
+    ).resolves.toEqual({
+      type: EVMSmartContractType.NATIVE,
+      name: 'Local Chain',
+      symbol: 'ETH',
+      logo: 'https://cdn.example/eth.svg',
+      chainId: '0x539',
+      backgroundColor: '',
+      coingeckoId: 'ethereum',
+      priceUsd: 0,
+      createdAt: new Date(0).toISOString(),
+      categories: [],
+    });
+    expect(getSpy).not.toHaveBeenCalled();
   });
 
   it('detects token type from a serialized abi string', () => {
@@ -414,6 +442,9 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
       .mockImplementation(async (_key, value) => {
         storageValue = value;
       });
+    jest
+      .spyOn(EvmLightNodeUtils, 'getCoingeckoTokenId')
+      .mockResolvedValue('usd-coin');
 
     const chain = {
       type: ChainType.EVM,
@@ -448,8 +479,162 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
           symbol: 'USDC',
           decimals: 6,
           logo: 'https://cdn.example/usdc.svg',
+          coingeckoId: 'usd-coin',
         },
       },
+    ]);
+  });
+
+  it('updates custom ERC20 metadata with a resolved Coingecko id and preserves the stored id on failure', async () => {
+    let storageValue: any = {
+      '0x1': {
+        '0x1111111111111111111111111111111111111111': [
+          {
+            address: '0x00000000000000000000000000000000000000AA',
+            type: EVMSmartContractType.ERC20,
+            metadata: {
+              type: EVMSmartContractType.ERC20,
+              name: 'USD Coin',
+              symbol: 'USDC',
+              decimals: 6,
+              logo: 'https://cdn.example/usdc.svg',
+              coingeckoId: 'usd-coin',
+            },
+          },
+        ],
+      },
+    };
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockImplementation(async () => storageValue);
+    jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockImplementation(async (_key, value) => {
+        storageValue = value;
+      });
+
+    const chain = {
+      type: ChainType.EVM,
+      chainId: '0x1',
+    } as any;
+    const walletAddress = '0x1111111111111111111111111111111111111111';
+
+    jest
+      .spyOn(EvmLightNodeUtils, 'getCoingeckoTokenId')
+      .mockResolvedValueOnce('dai');
+
+    await EvmTokensUtils.updateCustomToken(
+      chain,
+      walletAddress,
+      '0x00000000000000000000000000000000000000aa',
+      EVMSmartContractType.ERC20,
+      {
+        type: EVMSmartContractType.ERC20,
+        name: 'Dai Stablecoin',
+        symbol: 'DAI',
+        decimals: 18,
+        logo: 'https://cdn.example/dai.svg',
+      },
+    );
+
+    expect(storageValue['0x1'][walletAddress][0].metadata).toEqual({
+      type: EVMSmartContractType.ERC20,
+      name: 'Dai Stablecoin',
+      symbol: 'DAI',
+      decimals: 18,
+      logo: 'https://cdn.example/dai.svg',
+      coingeckoId: 'dai',
+    });
+
+    (EvmLightNodeUtils.getCoingeckoTokenId as jest.Mock).mockRejectedValueOnce(
+      new Error('offline'),
+    );
+
+    await EvmTokensUtils.updateCustomToken(
+      chain,
+      walletAddress,
+      '0x00000000000000000000000000000000000000aa',
+      EVMSmartContractType.ERC20,
+      {
+        type: EVMSmartContractType.ERC20,
+        name: 'Dai Stablecoin',
+        symbol: 'DAI',
+        decimals: 18,
+        logo: 'https://cdn.example/dai.svg',
+      },
+    );
+
+    expect(storageValue['0x1'][walletAddress][0].metadata.coingeckoId).toBe(
+      'dai',
+    );
+  });
+
+  it('skips Coingecko lookup for batch custom token saves', async () => {
+    let storageValue: any;
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockImplementation(async () => storageValue);
+    jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockImplementation(async (_key, value) => {
+        storageValue = value;
+      });
+    const coingeckoSpy = jest.spyOn(EvmLightNodeUtils, 'getCoingeckoTokenId');
+
+    const chain = {
+      type: ChainType.EVM,
+      chainId: '0x1',
+    } as any;
+    const walletAddress = '0x1111111111111111111111111111111111111111';
+
+    await EvmTokensUtils.addCustomToken(
+      chain,
+      walletAddress,
+      [
+        {
+          address: '0x00000000000000000000000000000000000000aa',
+          type: EVMSmartContractType.ERC20,
+        },
+      ],
+      true,
+    );
+
+    expect(coingeckoSpy).not.toHaveBeenCalled();
+  });
+
+  it('exposes stored Coingecko ids on custom ERC20 token infos', async () => {
+    jest.spyOn(LocalStorageUtils, 'getValueFromLocalStorage').mockResolvedValue({
+      '0x1': {
+        '0x1111111111111111111111111111111111111111': [
+          {
+            address: '0x00000000000000000000000000000000000000aa',
+            type: EVMSmartContractType.ERC20,
+            metadata: {
+              type: EVMSmartContractType.ERC20,
+              name: 'USD Coin',
+              symbol: 'USDC',
+              decimals: 6,
+              logo: 'https://cdn.example/usdc.svg',
+              coingeckoId: 'usd-coin',
+            },
+          },
+        ],
+      },
+    });
+
+    await expect(
+      EvmTokensUtils.getCustomErc20TokenInfos(
+        {
+          type: ChainType.EVM,
+          chainId: '0x1',
+        } as any,
+        '0x1111111111111111111111111111111111111111',
+      ),
+    ).resolves.toEqual([
+      expect.objectContaining({
+        contractAddress: '0x00000000000000000000000000000000000000AA',
+        coingeckoId: 'usd-coin',
+      }),
     ]);
   });
 

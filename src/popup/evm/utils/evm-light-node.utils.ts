@@ -32,6 +32,39 @@ export function evmChainIdToDecimalPathSegment(
   return s;
 }
 
+const normalizeNonEmptyString = (value: unknown): string | undefined => {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+
+  const normalizedValue = value.trim();
+  return normalizedValue.length ? normalizedValue : undefined;
+};
+
+const normalizeCoingeckoIdFromPayload = (
+  payload: unknown,
+  keys: string[],
+): string | undefined => {
+  const directValue = normalizeNonEmptyString(payload);
+  if (directValue) {
+    return directValue;
+  }
+
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return undefined;
+  }
+
+  const record = payload as Record<string, unknown>;
+  for (const key of keys) {
+    const value = normalizeNonEmptyString(record[key]);
+    if (value) {
+      return value;
+    }
+  }
+
+  return undefined;
+};
+
 const normalizeProxyTarget = (
   proxyTarget: unknown,
   depth = 0,
@@ -329,6 +362,32 @@ const getGasFee = async (chainId: string | number): Promise<unknown> => {
   return EvmLightNodeApi.get(`gas-oracle/${id}`);
 };
 
+const getCoingeckoNativeCoinId = async (
+  chainId: string | number,
+): Promise<string | undefined> => {
+  const id = evmChainIdToDecimalPathSegment(chainId);
+  const response = await EvmLightNodeApi.get(`coingecko/${id}`);
+  return normalizeCoingeckoIdFromPayload(response, [
+    'native_coin_id',
+    'nativeCoinId',
+    'coingeckoId',
+  ]);
+};
+
+const getCoingeckoTokenId = async (
+  chainId: string | number,
+  tokenAddress: string,
+): Promise<string | undefined> => {
+  const id = evmChainIdToDecimalPathSegment(chainId);
+  const response = await EvmLightNodeApi.get(
+    `coingecko/${id}/${encodeURIComponent(tokenAddress)}`,
+  );
+  return normalizeCoingeckoIdFromPayload(response, [
+    'coingeckoId',
+    'coingecko_id',
+  ]);
+};
+
 const getPrice = async (
   chainId: string | number,
   tokenAddress?: string,
@@ -408,6 +467,8 @@ export const EvmLightNodeUtils = {
   getHistoryDetail,
   getContract,
   getGasFee,
+  getCoingeckoNativeCoinId,
+  getCoingeckoTokenId,
   getPrice,
   getAbi,
   getMetadata,
