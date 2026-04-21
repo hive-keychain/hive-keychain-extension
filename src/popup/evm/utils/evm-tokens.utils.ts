@@ -34,6 +34,7 @@ import {
   Erc20Abi,
   ERC721Abi,
 } from '@popup/evm/reference-data/abi.data';
+import { CoingeckoUtils } from '@popup/evm/utils/coingecko.utils';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
@@ -415,8 +416,34 @@ const getTokenBalances = async (
     );
 
   const result = await Promise.all(balancesPromises);
-  console.log('result', result);
-  return result.filter(
+
+  const needCoingeckoPrices = result.filter(
+    (balance) =>
+      !!balance!.tokenInfo.coingeckoId && balance!.tokenInfo.priceUsd === null,
+  );
+  const coingeckoPrices = await CoingeckoUtils.fetchCoingeckoPrices(
+    needCoingeckoPrices.map((balance) => balance!.tokenInfo.coingeckoId!),
+  );
+
+  const updatedBalances = result.map((balance) => {
+    if (balance?.tokenInfo.coingeckoId && balance.tokenInfo.priceUsd === null) {
+      return {
+        ...balance,
+        tokenInfo: {
+          ...balance.tokenInfo,
+          priceUsd:
+            coingeckoPrices &&
+            coingeckoPrices[balance.tokenInfo.coingeckoId] &&
+            coingeckoPrices[balance.tokenInfo.coingeckoId]?.usd
+              ? coingeckoPrices[balance.tokenInfo.coingeckoId].usd
+              : 0,
+        },
+      };
+    }
+    return balance;
+  });
+
+  return updatedBalances.filter(
     (balance) =>
       !!balance &&
       (balance.balance > 0 ||
@@ -462,7 +489,9 @@ const getTokenBalance = async (
     switch (token.type) {
       case EVMSmartContractType.NATIVE: {
         balance = await provider.getBalance(walletAddress);
+        balance = ethers.parseEther('1');
         balanceInteger = Number(parseFloat(ethers.formatEther(balance)));
+
         formattedBalance = FormatUtils.withCommas(balanceInteger, 8, true);
         shortFormattedBalance = formatShortBalance(balanceInteger);
 

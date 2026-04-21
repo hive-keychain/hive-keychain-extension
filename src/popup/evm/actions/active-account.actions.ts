@@ -7,7 +7,6 @@ import {
 } from '@popup/evm/interfaces/active-account.interface';
 import { EvmUserHistory } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
-import { CoingeckoUtils } from '@popup/evm/utils/coingecko.utils';
 import {
   CatchupStatus,
   DiscoveredNftsResponse,
@@ -305,37 +304,11 @@ export const loadEvmActiveAccount =
         tokenInfos,
       );
 
-      const needCoingeckoPrices = balances.filter(
-        (balance) =>
-          !!balance!.tokenInfo.coingeckoId &&
-          balance!.tokenInfo.priceUsd === null,
-      );
-      const coingeckoPrices = await CoingeckoUtils.fetchCoingeckoPrices(
-        needCoingeckoPrices.map((balance) => balance!.tokenInfo.coingeckoId!),
-      );
-
-      const updatedBalances = balances.map((balance) => {
-        if (
-          balance?.tokenInfo.coingeckoId &&
-          balance.tokenInfo.priceUsd === null
-        ) {
-          return {
-            ...balance,
-            tokenInfo: {
-              ...balance.tokenInfo,
-              priceUsd:
-                coingeckoPrices[balance.tokenInfo.coingeckoId]?.usd ?? 0,
-            },
-          };
-        }
-        return balance;
-      });
-
       dispatch({
         type: EvmActionType.SET_ACTIVE_ACCOUNT,
         payload: {
           nativeAndErc20Tokens: {
-            value: updatedBalances,
+            value: balances,
             loading: false,
             initialized: true,
           },
