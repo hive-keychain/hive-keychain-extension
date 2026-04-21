@@ -11,8 +11,8 @@ import {
   NativeAndErc20Token,
 } from '@popup/evm/interfaces/active-account.interface';
 import {
-  EvmCustomNft,
   EvmCustomErc20TokenMetadata,
+  EvmCustomNft,
   EvmCustomToken,
   EvmCustomTokenMetadataErc20,
   EvmSavedCustomNfts,
@@ -139,7 +139,7 @@ const buildFallbackNativeTokenInfo = (
   chainId: chain.chainId,
   backgroundColor: '',
   coingeckoId: chain.nativeCoinId ?? '',
-  priceUsd: 0,
+  priceUsd: null,
   createdAt: new Date(0).toISOString(),
   categories: [],
 });
@@ -190,9 +190,7 @@ const normalizeCustomNft = (nft: EvmCustomNft): EvmCustomNft => {
     tokenIds: Array.from(
       new Set(nft.tokenIds.map(normalizeCustomNftTokenId).filter(Boolean)),
     ),
-    ...(trimmedCollectionName
-      ? { collectionName: trimmedCollectionName }
-      : {}),
+    ...(trimmedCollectionName ? { collectionName: trimmedCollectionName } : {}),
   };
 };
 
@@ -210,7 +208,7 @@ const buildCustomErc20TokenInfo = (
   contractAddress: normalizeCustomTokenAddress(address),
   backgroundColor: '',
   coingeckoId: normalizeOptionalCoingeckoId(metadata.coingeckoId),
-  priceUsd: 0,
+  priceUsd: null,
   possibleSpam: false,
   verifiedContract: true,
   isProxy: false,
@@ -225,8 +223,14 @@ const getContractProbeResult = async (
     await callback();
     return 'success';
   } catch (error: unknown) {
-    const err = error as { code?: string; shortMessage?: string; message?: string };
-    const message = String(err?.shortMessage ?? err?.message ?? '').toLowerCase();
+    const err = error as {
+      code?: string;
+      shortMessage?: string;
+      message?: string;
+    };
+    const message = String(
+      err?.shortMessage ?? err?.message ?? '',
+    ).toLowerCase();
     if (
       err?.code === 'BAD_DATA' ||
       message.includes('could not decode result data') ||
@@ -1200,9 +1204,8 @@ const addCustomNft = async (
   );
 
   nextEntries.push(normalizedNft);
-  savedCustomNfts[chain.chainId][normalizedWalletAddress] = nextEntries.map(
-    normalizeCustomNft,
-  );
+  savedCustomNfts[chain.chainId][normalizedWalletAddress] =
+    nextEntries.map(normalizeCustomNft);
   if (walletAddress !== normalizedWalletAddress) {
     delete savedCustomNfts[chain.chainId][walletAddress];
   }
