@@ -2,6 +2,7 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
 import { setHasFinishedSignup } from '@popup/multichain/actions/has-finished-signup.actions';
 import {
+  Chain,
   ChainType,
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
@@ -87,8 +88,9 @@ if (store.getState().hive) {
 
 if (store.getState().evm) {
   let previousAccounts = store.getState().evm.accounts;
-  let previousChainId = store.getState().chain?.chainId;
-  let previousActiveAccountAddress = store.getState().evm.activeAccount?.address;
+  let previousChainId = (store.getState().chain as Chain)?.chainId;
+  let previousActiveAccountAddress =
+    store.getState().evm.activeAccount?.address;
 
   /* istanbul ignore next */
 

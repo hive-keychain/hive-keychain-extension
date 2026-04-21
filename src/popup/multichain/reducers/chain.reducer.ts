@@ -13,16 +13,22 @@ export const ChainReducer = (
     chainId: '',
     rpcs: [],
   },
-  { type, payload }: ActionPayload<Partial<Chain>>,
+  { type, payload }: ActionPayload<Chain>,
 ) => {
   switch (type) {
     case MultichainActionType.SET_CHAIN: {
-      return payload;
+      return payload as Chain;
     }
     case MultichainActionType.RESET_CHAIN: {
-      return { name: '', type: undefined, logo: '', rpc: [] };
+      return {
+        name: '',
+        type: ChainType.NONE,
+        logo: '',
+        rpcs: [],
+        chainId: '',
+      } as Chain;
     }
     default:
-      return state;
+      return state! as Chain;
   }
 };

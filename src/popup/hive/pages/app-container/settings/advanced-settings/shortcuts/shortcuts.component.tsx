@@ -11,6 +11,7 @@ import {
   setSuccessMessage,
 } from '@popup/multichain/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, {
@@ -507,7 +508,7 @@ const Shortcuts = ({
 
   return (
     <div
-      data-testid={`${HiveScreen.SETTINGS_SHORTCUTS}-page`}
+      data-testid={`${MultichainScreen.SETTINGS_SHORTCUTS}-page`}
       className="shortcuts-page">
       <div className="shortcuts-header">
         <div className="shortcuts-intro">

@@ -176,7 +176,7 @@ const getCustomChains = async (): Promise<EvmChain[]> => {
   if (!Array.isArray(stored)) return [];
   return stored
     .filter(isStoredEvmChain)
-    .map((c) => ({ ...c, isCustom: true } as EvmChain));
+    .map((c) => ({ ...c, isCustom: true }) as EvmChain);
 };
 
 const enrichCustomChainWithNativeCoinId = async (
@@ -191,7 +191,7 @@ const enrichCustomChainWithNativeCoinId = async (
       return { ...chain, nativeCoinId };
     }
   } catch (error) {
-    Logger.warn('Error while fetching custom chain native CoinGecko id', error);
+    Logger.warn('Error while fetching custom chain native CoinGecko id');
   }
 
   const preservedNativeCoinId =
@@ -526,10 +526,16 @@ const updateCustomChain = async (
     if (defaults.some((c) => c.chainId.toLowerCase() === normalizedNew)) {
       throw new Error('chain_exists_in_defaults');
     }
-    await migrateEvmStorageKeysForChainIdChange(previous.chainId, chain.chainId);
+    await migrateEvmStorageKeysForChainIdChange(
+      previous.chainId,
+      chain.chainId,
+    );
   }
 
-  const enrichedChain = await enrichCustomChainWithNativeCoinId(chain, previous);
+  const enrichedChain = await enrichCustomChainWithNativeCoinId(
+    chain,
+    previous,
+  );
   const next = [...custom];
   next[idx] = { ...enrichedChain, isCustom: true };
   await LocalStorageUtils.saveValueInLocalStorage(

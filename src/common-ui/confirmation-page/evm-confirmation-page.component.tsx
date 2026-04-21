@@ -136,7 +136,7 @@ const ConfirmationPage = ({
     setBalanceInfo(
       await EvmTokensUtils.getBalanceInfo(
         selectedAccount?.wallet.address!,
-        chain!,
+        chain as EvmChain,
         tokenInfo,
         amount!,
         selectedFee,
@@ -232,7 +232,7 @@ const ConfirmationPage = ({
 
         {hasGasFee && (
           <GasFeePanel
-            chain={chain}
+            chain={chain as EvmChain}
             wallet={wallet}
             selectedFee={selectedFee}
             onSelectFee={setSelectedFee}
@@ -243,9 +243,7 @@ const ConfirmationPage = ({
           />
         )}
 
-        {balanceInfo && (
-          <BalanceChangeCard balanceInfo={balanceInfo} />
-        )}
+        {balanceInfo && <BalanceChangeCard balanceInfo={balanceInfo} />}
       </div>
       <div className="evm-bottom-panel">
         <ButtonComponent

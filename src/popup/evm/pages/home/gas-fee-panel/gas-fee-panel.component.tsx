@@ -117,14 +117,14 @@ export const GasFeePanel = ({
     const mainTokenInfo = await EvmTokensUtils.getMainTokenInfo(
       chain as EvmChain,
     );
-    setMainTokenPrice(mainTokenInfo.priceUsd);
+    setMainTokenPrice(mainTokenInfo.priceUsd ?? undefined);
 
     try {
       estimate = await GasFeeUtils.estimate(
         chain,
         wallet,
         transactionType,
-        mainTokenInfo.priceUsd,
+        mainTokenInfo.priceUsd ?? 0,
         transactionData?.gasLimit
           ? Number(transactionData.gasLimit)
           : undefined,

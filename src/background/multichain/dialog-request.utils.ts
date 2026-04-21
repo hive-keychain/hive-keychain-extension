@@ -16,15 +16,24 @@ import {
   SendConfirmEvmMessage,
   SendConfirmHiveMessage,
 } from '@background/multichain/background-message.interface';
-import { KeychainRequestTypes, RequestTransfer } from '@interfaces/keychain.interface';
+import {
+  KeychainRequestTypes,
+  RequestTransfer,
+} from '@interfaces/keychain.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
-import { ChainType, EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import {
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import { anonymousRequests, getRequiredWifType } from 'src/utils/requests.utils';
 import { isWhitelisted } from 'src/utils/preferences.utils';
+import {
+  anonymousRequests,
+  getRequiredWifType,
+} from 'src/utils/requests.utils';
 
 export type RequestHandlers = {
   hiveRequestHandler: HiveRequestsHandler;
@@ -80,7 +89,9 @@ const sortVisibleRequests = (
   left: VisibleDialogRequest,
   right: VisibleDialogRequest,
 ) => {
-  return left.arrivalOrder - right.arrivalOrder || left.requestId - right.requestId;
+  return (
+    left.arrivalOrder - right.arrivalOrder || left.requestId - right.requestId
+  );
 };
 
 const getRequestArrivalOrder = (
@@ -102,7 +113,8 @@ export const isHiveDialogVisibleRequest = async (
 
   if (request.type === KeychainRequestTypes.addAccount) return true;
   if (request.type === KeychainRequestTypes.transfer) return true;
-  if (anonymousRequests.includes(request.type) && !request.username) return true;
+  if (anonymousRequests.includes(request.type) && !request.username)
+    return true;
 
   if (
     !requestData.accounts ||
@@ -113,7 +125,9 @@ export const isHiveDialogVisibleRequest = async (
     return true;
   }
 
-  const account = requestData.accounts.find((acc) => acc.name === request.username);
+  const account = requestData.accounts.find(
+    (acc) => acc.name === request.username,
+  );
   if (!account) return true;
 
   const typeWif = getRequiredWifType(request);
@@ -130,7 +144,9 @@ export const isHiveDialogVisibleRequest = async (
   );
 };
 
-export const isEvmDialogVisibleRequest = async (requestData: EvmRequestData) => {
+export const isEvmDialogVisibleRequest = async (
+  requestData: EvmRequestData,
+) => {
   const request = requestData.request;
   if (!request) return false;
 
@@ -253,7 +269,8 @@ const buildHiveTransferMessage = (
     .filter((account) => hasActiveKey(account))
     .map((account) => account.name);
 
-  const encode = !!request.memo && request.memo.length > 0 && request.memo[0] === '#';
+  const encode =
+    !!request.memo && request.memo.length > 0 && request.memo[0] === '#';
   const enforced = request.enforce || encode;
   const selectedAccount = request.username
     ? requestData.accounts?.find((account) => account.name === request.username)
@@ -344,11 +361,7 @@ const buildHiveConfirmationMessage = (
   }
 
   if (request.type === KeychainRequestTypes.transfer) {
-    return buildHiveTransferMessage(
-      requestData,
-      queueSize,
-      hiveRequestHandler,
-    );
+    return buildHiveTransferMessage(requestData, queueSize, hiveRequestHandler);
   }
 
   if (anonymousRequests.includes(request.type) && !request.username) {
@@ -359,15 +372,13 @@ const buildHiveConfirmationMessage = (
     );
   }
 
-  if (
-    !requestData.accounts ||
-    !requestData.preferences ||
-    !requestData.rpc
-  ) {
+  if (!requestData.accounts || !requestData.preferences || !requestData.rpc) {
     return null;
   }
 
-  const account = requestData.accounts.find((acc) => acc.name === request.username);
+  const account = requestData.accounts.find(
+    (acc) => acc.name === request.username,
+  );
   if (!account) return null;
 
   const typeWif = getRequiredWifType(request);
@@ -402,11 +413,15 @@ const buildEvmConfirmationMessage = async (
   requestData: EvmRequestData,
   queueSize: number,
   evmRequestHandler: EvmRequestHandler,
-): Promise<SendConfirmEvmMessage | RequestAddCustomEvmChainDialogMessage | null> => {
+): Promise<
+  SendConfirmEvmMessage | RequestAddCustomEvmChainDialogMessage | null
+> => {
   const request = requestData.request;
   if (!request || !requestData.tab || !requestData.dappInfo) return null;
 
-  if (requestData.dialogCommand === DialogCommand.REQUEST_ADD_CUSTOM_EVM_CHAIN) {
+  if (
+    requestData.dialogCommand === DialogCommand.REQUEST_ADD_CUSTOM_EVM_CHAIN
+  ) {
     const requestedChainId =
       typeof requestData.dialogData?.requestedChainId === 'string'
         ? requestData.dialogData.requestedChainId
@@ -534,10 +549,9 @@ export const getCurrentDialogItem = async (
     );
 
     return {
-      message:
-        queueMessages.find((message) =>
-          isSameDialogMessage(message, currentMessage),
-        ) ?? currentMessage,
+      message: (queueMessages.find((message) =>
+        isSameDialogMessage(message as any, currentMessage),
+      ) ?? currentMessage) as any,
       height: DEFAULT_DIALOG_HEIGHT,
       visibleRequests,
     };
@@ -562,10 +576,9 @@ export const getCurrentDialogItem = async (
   );
   const request = currentRequest.data.request;
   return {
-    message:
-      queueMessages.find((message) =>
-        isSameDialogMessage(message, currentMessage),
-      ) ?? currentMessage,
+    message: (queueMessages.find((message) =>
+      isSameDialogMessage(message as any, currentMessage),
+    ) ?? currentMessage) as any,
     height:
       request?.method === EvmRequestMethod.SEND_TRANSACTION
         ? EVM_TRANSACTION_DIALOG_HEIGHT

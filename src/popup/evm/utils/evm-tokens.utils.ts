@@ -764,7 +764,7 @@ const enrichCustomErc20MetadataWithCoingeckoId = async (
       tokenAddress,
     );
   } catch (error) {
-    Logger.warn('Error while fetching custom token CoinGecko id', error);
+    Logger.warn('Error while fetching custom token CoinGecko id');
   }
 
   const resolvedCoingeckoId =

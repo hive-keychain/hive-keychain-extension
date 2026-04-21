@@ -210,7 +210,7 @@ export const loadEvmHistory = (): AppThunk => async (dispatch, getState) => {
   const newHistory = await EvmTokensHistoryUtils.fetchHistory2(
     process.env.FORCED_EVM_WALLET_ADDRESS ??
       getState().evm.activeAccount.wallet.address,
-    getState().chain,
+    getState().chain as EvmChain,
     getState().evm.activeAccount.history.value ?? null,
   );
 

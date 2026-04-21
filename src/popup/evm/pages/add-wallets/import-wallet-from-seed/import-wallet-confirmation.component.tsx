@@ -86,7 +86,7 @@ const ImportWalletConfirmation = ({
         }
       }
       setEvmAccounts(accounts);
-      await loadEvmActiveAccount(chain, accounts[0].wallet);
+      await loadEvmActiveAccount(chain as EvmChain, accounts[0].wallet);
       navigateTo(Screen.HOME_PAGE, true);
     }
   };

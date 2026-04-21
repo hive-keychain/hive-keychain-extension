@@ -1,8 +1,8 @@
+import { EvmLightNodeApi } from '@api/evm-light-node';
 import {
   EvmTransactionType,
   ProviderTransactionData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
-import { EvmLightNodeApi } from '@api/evm-light-node';
 import {
   EvmFeeTrend,
   FullGasFeeEstimation,
@@ -330,7 +330,7 @@ const createDAppSuggestionFromTransactionData = async (
     }
   }
 
-  maxFee = maxFee
+  maxFee = maxFee!
     .mul(Decimal.div(Number(transactionData.gasLimit), 1000000))
     .div(1000);
 

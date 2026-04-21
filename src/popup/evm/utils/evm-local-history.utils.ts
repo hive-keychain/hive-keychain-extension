@@ -85,10 +85,10 @@ export const buildHistoryItemFromBroadcast = async (
     };
   }
 
-  const valueWei = tx.value ?? 0n;
+  const valueWei = tx.value ?? BigInt(0);
   const emptyData = isCalldataEmpty(tx.data);
 
-  if (emptyData && valueWei > 0n) {
+  if (emptyData && valueWei > BigInt(0)) {
     const amountS = FormatUtils.withCommas(
       ethers.formatEther(valueWei),
       18,
