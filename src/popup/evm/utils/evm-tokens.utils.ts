@@ -489,7 +489,6 @@ const getTokenBalance = async (
     switch (token.type) {
       case EVMSmartContractType.NATIVE: {
         balance = await provider.getBalance(walletAddress);
-        balance = ethers.parseEther('1');
         balanceInteger = Number(parseFloat(ethers.formatEther(balance)));
 
         formattedBalance = FormatUtils.withCommas(balanceInteger, 8, true);
