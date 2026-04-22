@@ -89,15 +89,17 @@ const inferTxTypeFromChainListFeatures = (
 };
 
 const applyChainListOrgToFormState = async (chain: ChainListOrgChain) => {
-  const httpRpcs = [];
-  for (const rpc of chain.rpc) {
-    if (
-      !rpc.url.startsWith('wss://') &&
-      (await EvmRpcUtils.checkRpcStatus(rpc.url))
-    ) {
-      httpRpcs.push(rpc.url);
-    }
-  }
+  const httpCandidateUrls = chain.rpc
+    .filter((rpc) => !rpc.url.startsWith('wss://'))
+    .map((rpc) => rpc.url);
+
+  const statusByUrl = await Promise.all(
+    httpCandidateUrls.map((url) =>
+      EvmRpcUtils.checkRpcStatus(url).then((ok) => ({ url, ok })),
+    ),
+  );
+
+  const httpRpcs = statusByUrl.filter((r) => r.ok).map((r) => r.url);
 
   return {
     name: chain.name,
