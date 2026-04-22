@@ -5481,6 +5481,10 @@
     "message": "Each RPC URL must be unique.",
     "description": "Custom chain validation duplicate RPC"
   },
+  "evm_custom_chains_error_rpc_unreachable": {
+    "message": "We could not reach every RPC. Each URL must respond to JSON-RPC (e.g. eth_blockNumber) over HTTP or HTTPS. Fix or remove failing endpoints and try again.",
+    "description": "Custom chain save: an RPC check failed"
+  },
   "evm_custom_chains_error_chain_id": {
     "message": "Please enter a valid chain ID (decimal or 0x hex).",
     "description": "Custom chain validation"

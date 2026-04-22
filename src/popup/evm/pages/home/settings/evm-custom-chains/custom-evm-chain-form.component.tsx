@@ -147,6 +147,8 @@ export const CustomEvmChainForm = ({
   const [testnet, setTestnet] = useState(false);
   const [saving, setSaving] = useState(false);
   const [localError, setLocalError] = useState<string>();
+  /** Row indices that failed the pre-save `checkRpcStatus` (red borders). */
+  const [failedRpcRowIndices, setFailedRpcRowIndices] = useState<number[]>([]);
   const [logoPreviewErrored, setLogoPreviewErrored] = useState(false);
   const [chainListMatch, setChainListMatch] =
     useState<ChainListOrgChain | null>(null);
@@ -288,7 +290,10 @@ export const CustomEvmChainForm = ({
     }
   };
 
-  const clearError = () => setLocalError(undefined);
+  const clearError = () => {
+    setLocalError(undefined);
+    setFailedRpcRowIndices([]);
+  };
 
   const applyChainListPreload = async () => {
     if (!chainListMatch) {
@@ -367,31 +372,50 @@ export const CustomEvmChainForm = ({
       return;
     }
 
-    const chain: EvmChain = {
-      type: ChainType.EVM,
-      isCustom: true,
-      active: true,
-      name: name.trim(),
-      chainId,
-      mainToken: symbol.trim(),
-      logo: logo.trim(),
-      testnet,
-      rpcs: cleanedRpcs.map((url, i) => ({
-        url,
-        isDefault: i === 0,
-      })),
-      defaultTransactionType: txType,
-      disableTokensAndHistoryAutoLoading: true,
-      addTokensManually: true,
-      manualDiscoverAvailable: false,
-    };
-
-    if (explorer.trim()) {
-      chain.blockExplorer = { url: explorer.trim() };
-    }
-
     setSaving(true);
     try {
+      const rpcCheckRows = rpcUrls
+        .map((u, index) => ({ index, url: u.trim() }))
+        .filter(({ url }) => url.length > 0);
+
+      const rpcCheckResults = await Promise.all(
+        rpcCheckRows.map(({ index, url }) =>
+          EvmRpcUtils.checkRpcStatus(url).then((ok) => ({ index, ok })),
+        ),
+      );
+
+      const failedIndices = rpcCheckResults
+        .filter((r) => !r.ok)
+        .map((r) => r.index);
+      if (failedIndices.length > 0) {
+        setFailedRpcRowIndices(failedIndices);
+        reportError('evm_custom_chains_error_rpc_unreachable');
+        return;
+      }
+
+      const chain: EvmChain = {
+        type: ChainType.EVM,
+        isCustom: true,
+        active: true,
+        name: name.trim(),
+        chainId,
+        mainToken: symbol.trim(),
+        logo: logo.trim(),
+        testnet,
+        rpcs: cleanedRpcs.map((url, i) => ({
+          url,
+          isDefault: i === 0,
+        })),
+        defaultTransactionType: txType,
+        disableTokensAndHistoryAutoLoading: true,
+        addTokensManually: true,
+        manualDiscoverAvailable: false,
+      };
+
+      if (explorer.trim()) {
+        chain.blockExplorer = { url: explorer.trim() };
+      }
+
       await onSubmit(chain);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : '';
@@ -404,10 +428,9 @@ export const CustomEvmChainForm = ({
       } else {
         reportError('evm_custom_chains_error_generic');
       }
+    } finally {
       setSaving(false);
-      return;
     }
-    setSaving(false);
   };
 
   return (
@@ -490,6 +513,11 @@ export const CustomEvmChainForm = ({
               value={rpcUrl}
               onChange={(v) => setRpcAt(index, v)}
               dataTestId={`custom-evm-chain-rpc-${index}`}
+              classname={
+                failedRpcRowIndices.includes(index)
+                  ? 'add-custom-evm-chain-form__rpc-input--invalid'
+                  : undefined
+              }
             />
             {index === 0 && (
               <button

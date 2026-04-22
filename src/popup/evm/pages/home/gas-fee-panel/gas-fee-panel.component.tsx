@@ -178,11 +178,12 @@ export const GasFeePanel = ({
         estimate.custom &&
         !estimate.suggestedByDApp &&
         !estimate.suggested &&
-        !chain.onlyCustomFee
+        !chain.onlyCustomFee &&
+        !chain.isCustom
       ) {
         // Backend data not available so we display a warning
         setgasFeeWarning('evm_gas_fee_warning_not_available');
-      } else if (chain.onlyCustomFee) {
+      } else if (chain.onlyCustomFee || chain.isCustom) {
         setgasFeeWarning('evm_gas_fee_warning_not_available_for_chain');
       }
       setFeeEstimation(estimate);
@@ -392,6 +393,7 @@ export const GasFeePanel = ({
     }
     if (
       chain.onlyCustomFee ||
+      chain.isCustom ||
       (feeEstimation &&
         !feeEstimation.suggestedByDApp &&
         !feeEstimation.suggested)

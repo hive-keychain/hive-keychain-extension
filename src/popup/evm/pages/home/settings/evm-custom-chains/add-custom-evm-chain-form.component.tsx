@@ -1,9 +1,7 @@
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
-import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React from 'react';
-import { connect, ConnectedProps } from 'react-redux';
 import { CustomEvmChainForm } from '@popup/evm/pages/home/settings/evm-custom-chains/custom-evm-chain-form.component';
 
 interface OwnProps {
@@ -13,17 +11,16 @@ interface OwnProps {
   chainToEdit?: EvmChain;
 }
 
-const AddCustomEvmChainFormInner = ({
+/** Errors are shown inside the form so they stay above the modal content (global setErrorMessage renders behind the modal). */
+export const AddCustomEvmChainForm = ({
   onSuccess,
   onCancel,
   chainToEdit,
-  setErrorMessage,
-}: OwnProps & PropsFromRedux) => {
+}: OwnProps) => {
   return (
     <CustomEvmChainForm
       onCancel={onCancel}
       chainToEdit={chainToEdit}
-      setErrorMessage={setErrorMessage}
       onSubmit={async (chain) => {
         if (chainToEdit) {
           await ChainUtils.updateCustomChain(chainToEdit.chainId, chain);
@@ -38,8 +35,3 @@ const AddCustomEvmChainFormInner = ({
     />
   );
 };
-
-const connector = connect(null, { setErrorMessage });
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-export const AddCustomEvmChainForm = connector(AddCustomEvmChainFormInner);

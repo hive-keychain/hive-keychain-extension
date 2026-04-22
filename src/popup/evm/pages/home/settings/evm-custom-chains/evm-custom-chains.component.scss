@@ -157,6 +157,17 @@
   .add-custom-evm-chain-form__error {
     @include poppins500(13px);
     color: $red;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 10px 12px;
+    line-height: 1.45;
+    border-radius: 8px;
+    background: var(--card-background);
+    border: 1px solid rgba(198, 53, 74, 0.4);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   }
 
   .add-custom-evm-chain-form__chainlist-hint {
@@ -216,6 +227,13 @@
     .custom-input {
       flex: 1;
       min-width: 0;
+    }
+  }
+
+  .custom-input.add-custom-evm-chain-form__rpc-input--invalid {
+    .custom-input-content {
+      border-color: $red !important;
+      box-shadow: 0 0 0 1px $red;
     }
   }
 
