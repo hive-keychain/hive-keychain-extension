@@ -99,6 +99,15 @@ export const CustomEvmChainForm = ({
   const [testnet, setTestnet] = useState(false);
   const [saving, setSaving] = useState(false);
   const [localError, setLocalError] = useState<string>();
+  const [logoPreviewErrored, setLogoPreviewErrored] = useState(false);
+
+  const logoTrimmed = logo.trim();
+  const logoPreviewSrc =
+    logoTrimmed && isValidRpcUrl(logoTrimmed) ? logoTrimmed : undefined;
+
+  useEffect(() => {
+    setLogoPreviewErrored(false);
+  }, [logo]);
 
   useEffect(() => {
     if (chainToEdit) {
@@ -346,16 +355,29 @@ export const CustomEvmChainForm = ({
         }}
         dataTestId="custom-evm-chain-explorer"
       />
-      <InputComponent
-        type={InputType.TEXT}
-        label="evm_custom_chains_field_logo"
-        value={logo}
-        onChange={(v) => {
-          clearError();
-          setLogo(v);
-        }}
-        dataTestId="custom-evm-chain-logo"
-      />
+      <div className="add-custom-evm-chain-form__logo-row">
+        <div className="add-custom-evm-chain-form__logo-input-wrap">
+          <InputComponent
+            type={InputType.TEXT}
+            label="evm_custom_chains_field_logo"
+            value={logo}
+            onChange={(v) => {
+              clearError();
+              setLogo(v);
+            }}
+            dataTestId="custom-evm-chain-logo"
+          />
+        </div>
+        {logoPreviewSrc && !logoPreviewErrored && (
+          <img
+            className="add-custom-evm-chain-form__logo-preview"
+            src={logoPreviewSrc}
+            alt=""
+            onError={() => setLogoPreviewErrored(true)}
+            data-testid="custom-evm-chain-logo-preview"
+          />
+        )}
+      </div>
       <CheckboxComponent
         title="evm_custom_chains_field_testnet"
         checked={testnet}

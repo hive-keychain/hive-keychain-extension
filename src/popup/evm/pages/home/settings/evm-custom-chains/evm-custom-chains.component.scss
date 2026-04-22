@@ -214,6 +214,34 @@
     color: $red;
   }
 
+  .add-custom-evm-chain-form__logo-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .add-custom-evm-chain-form__logo-input-wrap {
+    flex: 1;
+    min-width: 0;
+
+    .custom-input {
+      width: 100%;
+    }
+  }
+
+  .add-custom-evm-chain-form__logo-preview {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    object-fit: contain;
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    box-sizing: border-box;
+    align-self: flex-end;
+    margin-bottom: 10px;
+  }
+
   .add-custom-evm-chain-form__actions {
     display: flex;
     flex-direction: row;
