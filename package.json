@@ -71,7 +71,7 @@
     "jsonwebtoken": "^9.0.2",
     "keychain-sdk": "0.7.0",
     "locate-path": "7.1.1",
-    "lodash": "4.17.23",
+    "lodash": "4.18.1",
     "moment": "2.29.4",
     "node-fetch": "3.2.10",
     "node-polyfill-webpack-plugin": "1.1.4",
