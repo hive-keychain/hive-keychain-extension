@@ -152,6 +152,7 @@
   flex-direction: column;
   gap: 12px;
   min-width: 280px;
+  width: 100%;
 
   .add-custom-evm-chain-form__error {
     @include poppins500(13px);
