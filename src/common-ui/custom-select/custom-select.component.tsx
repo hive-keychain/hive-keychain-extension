@@ -1,7 +1,7 @@
 import FlatList from 'flatlist-react';
 import React, { useEffect, useRef, useState } from 'react';
-import Select, { SelectRenderer } from 'react-dropdown-select';
 import type { SelectMethods } from 'react-dropdown-select';
+import Select, { SelectRenderer } from 'react-dropdown-select';
 import { CustomSelectItemComponent } from 'src/common-ui/custom-select/custom-select-item.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';

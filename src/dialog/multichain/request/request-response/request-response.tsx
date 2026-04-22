@@ -1,9 +1,7 @@
+import { ResultMessagePageComponent } from '@common-ui/result-message-page/result-message-page.component';
 import { ResultMessage } from '@dialog/interfaces/messages.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React from 'react';
-import ButtonComponent from 'src/common-ui/button/button.component';
-import { SVGIcons } from 'src/common-ui/icons.enum';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 type Props = {
   data: ResultMessage;
@@ -20,12 +18,6 @@ export const RequestResponse = ({ data, onClose }: Props) => {
       }
     }, 3000);
   }
-
-  const handleOnCloseClicked = () => {
-    if (onClose) {
-      onClose();
-    }
-  };
 
   const getErrorMessage = () => {
     switch (data.command) {
@@ -47,27 +39,17 @@ export const RequestResponse = ({ data, onClose }: Props) => {
   };
 
   return (
-    <>
-      <div className="response-message-container">
-        <SVGIcon
-          icon={
-            data.msg.success ? SVGIcons.MESSAGE_SUCCESS : SVGIcons.MESSAGE_ERROR
-          }
-        />
-        <div className={`title ${data.msg.success ? 'success' : ''}`}>
-          {chrome.i18n.getMessage(
-            data.msg.success
-              ? 'message_container_title_success'
-              : 'message_container_title_fail',
-          )}
-        </div>
-        <div className="message">{getErrorMessage()}</div>
-      </div>
-      <ButtonComponent
-        additionalClass={data.msg.success ? 'success-button' : ''}
-        label="message_container_close_button"
-        onClick={handleOnCloseClicked}
-      />
-    </>
+    <ResultMessagePageComponent
+      type={data.msg.success ? 'success' : 'error'}
+      title={
+        data.msg.success
+          ? 'message_container_title_success'
+          : 'message_container_title_fail'
+      }
+      message={getErrorMessage() as unknown as string}
+      skipMessageTranslation={true}
+      autoCloseDelayMs={data.msg.success ? 3000 : undefined}
+      onClose={() => window.close()}
+    />
   );
 };

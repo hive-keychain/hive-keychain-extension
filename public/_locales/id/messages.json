@@ -3814,7 +3814,7 @@
     "description": "link device error"
   },
   "ledger_import_account_has_ledger": {
-    "message": "Ledger terdeteksi dari akun Anda. Tautkan <a target='_blank' href='chrome-extension://$1/link-ledger-device.html'>disini</a> untuk mulai menggunakannya",
+    "message": "Ledger terdeteksi dari akun Anda. Tautkan <a target='_blank' href='$1'>disini</a> untuk mulai menggunakannya",
     "description": "link device error"
   },
   "portfolio": {

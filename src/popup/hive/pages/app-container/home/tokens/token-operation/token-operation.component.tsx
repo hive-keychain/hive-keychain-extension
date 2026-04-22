@@ -88,12 +88,12 @@ const TokensOperation = ({
         receiverUsername: formParams.receiverUsername
           ? formParams.receiverUsername
           : operationType === TokenOperationType.DELEGATE
-          ? ''
-          : activeAccount.name,
+            ? ''
+            : activeAccount.name,
         amount: formParams.amount ? formParams.amount : '',
         symbol: formParams.symbol
           ? formParams.symbol
-          : tokenBalance?.symbol ?? '',
+          : (tokenBalance?.symbol ?? ''),
       },
       resolver: (values, context, options) => {
         const resolver = joiResolver<Joi.ObjectSchema<TokenOperationForm>>(

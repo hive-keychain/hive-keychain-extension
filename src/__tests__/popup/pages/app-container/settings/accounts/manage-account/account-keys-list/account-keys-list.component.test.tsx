@@ -15,8 +15,8 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { COPY_TOAST_AUTO_CLOSE_MS } from 'src/common-ui/toast/copy-toast.component';
 import { Icons } from 'src/common-ui/icons.enum';
+import { COPY_TOAST_AUTO_CLOSE_MS } from 'src/common-ui/toast/copy-toast.component';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
 /** Matches `AccountKeysListItemComponent` private key display (SUBSTRING_LENGTH = 15). */

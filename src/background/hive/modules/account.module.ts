@@ -1,5 +1,6 @@
 import MkModule from '@background/hive/modules/mk.module';
 import BgdAccountsUtils from '@background/hive/utils/accounts.utils';
+import { ImportCallbackPayload } from '@interfaces/import-callback.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
@@ -16,9 +17,13 @@ const sendBackImportedAccounts = async (fileContent: string) => {
         mk,
       );
     } catch (e) {
+      const response: ImportCallbackPayload = {
+        success: false,
+        message: 'import_html_error',
+      };
       CommunicationUtils.runtimeSendMessage({
         command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
-        value: { feedback: { message: 'import_html_error' } },
+        value: response,
       });
       return;
     }
@@ -51,18 +56,20 @@ const sendBackImportedAccounts = async (fileContent: string) => {
         account.keys.posting?.startsWith('#') ||
         account.keys.memo?.startsWith('#'),
     );
-    const extensionId = (await chrome.management.getSelf()).id;
+    const response: ImportCallbackPayload = {
+      success: true,
+      message: 'import_html_success',
+      accounts: newAccounts,
+      warning: useLedger
+        ? {
+            message: 'ledger_import_account_has_ledger',
+            params: [chrome.runtime.getURL('link-ledger-device.html')],
+          }
+        : null,
+    };
     CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
-      value: {
-        accounts: newAccounts,
-        feedback: useLedger
-          ? {
-              message: 'ledger_import_account_has_ledger',
-              params: [extensionId],
-            }
-          : null,
-      },
+      value: response,
     });
   }
 };

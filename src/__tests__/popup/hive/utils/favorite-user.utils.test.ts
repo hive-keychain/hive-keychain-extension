@@ -29,9 +29,11 @@ describe('FavoriteUserUtils', () => {
 
   describe('getAutocompleteList', () => {
     it('returns other local accounts and favorite users not matching exchange or local names', async () => {
-      jest.spyOn(LocalStorageUtils, 'getValueFromLocalStorage').mockResolvedValue({
-        alice: ['bob', 'blocked_exchange', 'carol'],
-      });
+      jest
+        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+        .mockResolvedValue({
+          alice: ['bob', 'blocked_exchange', 'carol'],
+        });
 
       const list = await FavoriteUserUtils.getAutocompleteList('alice', [
         { name: 'alice', keys: {} },
@@ -44,7 +46,9 @@ describe('FavoriteUserUtils', () => {
     });
 
     it('adds exchanges when addExchanges is true, optionally filtered by token', async () => {
-      jest.spyOn(LocalStorageUtils, 'getValueFromLocalStorage').mockResolvedValue(null);
+      jest
+        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+        .mockResolvedValue(null);
 
       const all = await FavoriteUserUtils.getAutocompleteList(
         'alice',
@@ -64,13 +68,18 @@ describe('FavoriteUserUtils', () => {
 
   describe('getAutocompleteListByCategories', () => {
     it('groups favorites, locals, and exchanges into categories', async () => {
-      jest.spyOn(LocalStorageUtils, 'getValueFromLocalStorage').mockResolvedValue({
-        alice: ['fav1'],
-      });
+      jest
+        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+        .mockResolvedValue({
+          alice: ['fav1'],
+        });
 
       const out = await FavoriteUserUtils.getAutocompleteListByCategories(
         'alice',
-        [{ name: 'alice', keys: {} }, { name: 'other', keys: {} }] as any,
+        [
+          { name: 'alice', keys: {} },
+          { name: 'other', keys: {} },
+        ] as any,
         { addExchanges: true, token: 'HIVE' },
       );
 
@@ -96,15 +105,21 @@ describe('FavoriteUserUtils', () => {
       expect(save).toHaveBeenCalledWith(
         LocalStorageKeyEnum.FAVORITE_USERS,
         expect.objectContaining({
-          u1: expect.arrayContaining([expect.objectContaining({ value: 'plain' })]),
+          u1: expect.arrayContaining([
+            expect.objectContaining({ value: 'plain' }),
+          ]),
         }),
       );
     });
 
     it('ensures each user key maps to an array', async () => {
-      jest.spyOn(LocalStorageUtils, 'saveValueInLocalStorage').mockResolvedValue(undefined);
+      jest
+        .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+        .mockResolvedValue(undefined);
 
-      const fixed = await FavoriteUserUtils.fixFavoriteList({ u: 'not-array' as any });
+      const fixed = await FavoriteUserUtils.fixFavoriteList({
+        u: 'not-array' as any,
+      });
 
       expect(Array.isArray((fixed as any).u)).toBe(true);
     });
@@ -113,12 +128,14 @@ describe('FavoriteUserUtils', () => {
   describe('saveFavoriteUser', () => {
     it('appends username when not already favorited and not exchange/local account', async () => {
       jest.spyOn(VaultUtils, 'getValueFromVault').mockResolvedValue('mk');
-      jest.spyOn(BgdAccountsUtils, 'getAccountsFromLocalStorage').mockResolvedValue([
-        { name: 'alice' },
-      ] as any);
-      jest.spyOn(LocalStorageUtils, 'getValueFromLocalStorage').mockResolvedValue({
-        alice: [],
-      });
+      jest
+        .spyOn(BgdAccountsUtils, 'getAccountsFromLocalStorage')
+        .mockResolvedValue([{ name: 'alice' }] as any);
+      jest
+        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+        .mockResolvedValue({
+          alice: [],
+        });
       const save = jest
         .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
         .mockResolvedValue(undefined);
@@ -136,13 +153,20 @@ describe('FavoriteUserUtils', () => {
 
     it('does not duplicate an existing favorite', async () => {
       jest.spyOn(VaultUtils, 'getValueFromVault').mockResolvedValue('mk');
-      jest.spyOn(BgdAccountsUtils, 'getAccountsFromLocalStorage').mockResolvedValue([]);
-      jest.spyOn(LocalStorageUtils, 'getValueFromLocalStorage').mockResolvedValue({
-        alice: [{ value: 'dup', subLabel: '' }],
-      });
+      jest
+        .spyOn(BgdAccountsUtils, 'getAccountsFromLocalStorage')
+        .mockResolvedValue([]);
+      jest
+        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+        .mockResolvedValue({
+          alice: [{ value: 'dup', subLabel: '' }],
+        });
       const save = jest.spyOn(LocalStorageUtils, 'saveValueInLocalStorage');
 
-      await FavoriteUserUtils.saveFavoriteUser('dup', { name: 'alice', keys: {} } as any);
+      await FavoriteUserUtils.saveFavoriteUser('dup', {
+        name: 'alice',
+        keys: {},
+      } as any);
 
       expect(save).toHaveBeenCalledWith(
         LocalStorageKeyEnum.FAVORITE_USERS,

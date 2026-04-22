@@ -14,7 +14,6 @@ import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user'
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-import { Screen } from '@interfaces/screen.interface';
 import { TokenOperationType } from 'src/popup/hive/pages/app-container/home/tokens/token-operation/token-operation.component';
 
 describe('token-operation No Active key tests:\n', () => {
