@@ -71,6 +71,8 @@ const parseTxType = (raw: string): EvmTransactionType => {
 };
 
 const CHAIN_ID_LOOKUP_DEBOUNCE_MS = 400;
+/** Chains like Ethereum have 100+ RPCs; only probe the first N when preloading from ChainList.org. */
+const CHAINLIST_PRELOAD_MAX_RPCS_TO_CHECK = 24;
 
 /** From ChainList.org `features` — if EIP-1559 is listed, prefer EIP-1559; else legacy. */
 const inferTxTypeFromChainListFeatures = (
@@ -93,18 +95,21 @@ const applyChainListOrgToFormState = async (chain: ChainListOrgChain) => {
     .filter((rpc) => !rpc.url.startsWith('wss://'))
     .map((rpc) => rpc.url);
 
+  const urlsToProbe = httpCandidateUrls.slice(0, CHAINLIST_PRELOAD_MAX_RPCS_TO_CHECK);
+
   const statusByUrl = await Promise.all(
-    httpCandidateUrls.map((url) =>
-      EvmRpcUtils.checkRpcStatus(url).then((ok) => {
-        console.log({ url, ok });
-        return { url, ok };
-      }),
+    urlsToProbe.map((url) =>
+      EvmRpcUtils.checkRpcStatus(url)
+        .then((ok) => ({ url, ok: !!ok }))
+        .catch(() => ({ url, ok: false })),
     ),
   );
 
-  const httpRpcs = statusByUrl.filter((r) => r.ok).map((r) => r.url);
-  console.log({ httpRpcs });
-  console.log({ statusByUrl });
+  let httpRpcs = statusByUrl.filter((r) => r.ok).map((r) => r.url);
+  if (httpRpcs.length === 0 && httpCandidateUrls.length > 0) {
+    // None of the probed endpoints responded; prefill a few so the form is usable. Save will re-check.
+    httpRpcs = httpCandidateUrls.slice(0, 3);
+  }
 
   return {
     name: chain.name,
@@ -327,7 +332,6 @@ export const CustomEvmChainForm = ({
     setChainListPreloadLoading(true);
     try {
       const v = await applyChainListOrgToFormState(chainListMatch);
-      console.log({ v });
       setName(v.name);
       setChainIdInput(v.chainIdInput);
       setSymbol(v.symbol);

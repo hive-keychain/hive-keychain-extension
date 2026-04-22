@@ -165,22 +165,37 @@ const saveSwitchRpcAuto = async (chain: EvmChain, switchRpcAuto: boolean) => {
   );
 };
 
-const checkRpcStatus = async (uri: string) => {
+const checkRpcStatus = async (uri: string): Promise<boolean> => {
   const rpcProvider = new EtherJsonRpcProvider(uri, undefined, {});
   try {
-    return Promise.race([
-      rpcProvider.send('eth_blockNumber', []).then(() => true),
-      new Promise((resolve) => {
+    const ok = await Promise.race([
+      rpcProvider
+        .send('eth_blockNumber', [])
+        .then(() => true)
+        .catch(() => false),
+      new Promise<boolean>((resolve) => {
         setTimeout(() => {
-          rpcProvider.destroy();
-          console.log('destroyed');
+          try {
+            rpcProvider.destroy();
+          } catch {
+            // ignore
+          }
           resolve(false);
         }, 1000);
       }),
     ]);
-  } catch (err) {
-    // console.log('checkRpcStatus error', err);
-    rpcProvider.destroy();
+    try {
+      rpcProvider.destroy();
+    } catch {
+      // ignore
+    }
+    return ok;
+  } catch {
+    try {
+      rpcProvider.destroy();
+    } catch {
+      // ignore
+    }
     return false;
   }
 };
