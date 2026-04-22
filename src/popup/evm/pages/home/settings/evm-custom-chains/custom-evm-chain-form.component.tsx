@@ -63,10 +63,28 @@ const getTxTypeOptionLabel = (t: EvmTransactionType): string => {
 
 const parseTxType = (raw: string): EvmTransactionType => {
   const v = raw as EvmTransactionType;
-  return TX_TYPE_ORDER.includes(v) ? v : EvmTransactionType.EIP_1559;
+  return TX_TYPE_ORDER.includes(v) ? v : EvmTransactionType.LEGACY;
 };
 
 const CHAIN_ID_LOOKUP_DEBOUNCE_MS = 400;
+
+/** From ChainList.org `features` — if EIP-1559 is listed, prefer EIP-1559; else legacy. */
+const inferTxTypeFromChainListFeatures = (
+  chain: ChainListOrgChain,
+): EvmTransactionType => {
+  for (const f of chain.features ?? []) {
+    const n = (f.name ?? '')
+      .toLowerCase()
+      .replace(/[\s_]/g, '-');
+    if (n.includes('eip-1559') || n.replace(/-/g, '') === 'eip1559') {
+      return EvmTransactionType.EIP_1559;
+    }
+    if (n.includes('eip') && n.includes('1559')) {
+      return EvmTransactionType.EIP_1559;
+    }
+  }
+  return EvmTransactionType.LEGACY;
+};
 
 const applyChainListOrgToFormState = (chain: ChainListOrgChain) => {
   const httpRpcs = chain.rpc
@@ -115,7 +133,7 @@ export const CustomEvmChainForm = ({
   const [explorer, setExplorer] = useState('');
   const [logo, setLogo] = useState('');
   const [txType, setTxType] = useState<EvmTransactionType>(
-    EvmTransactionType.EIP_1559,
+    EvmTransactionType.LEGACY,
   );
   const [testnet, setTestnet] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -124,6 +142,8 @@ export const CustomEvmChainForm = ({
   const [chainListMatch, setChainListMatch] = useState<ChainListOrgChain | null>(
     null,
   );
+  /** After user preloads from ChainList, we keep tx hidden like when a match is present. */
+  const [addChainListPreloaded, setAddChainListPreloaded] = useState(false);
   const chainIdInputRef = useRef(chainIdInput);
   chainIdInputRef.current = chainIdInput;
 
@@ -146,6 +166,7 @@ export const CustomEvmChainForm = ({
       return;
     }
     setChainListMatch(null);
+    setAddChainListPreloaded(false);
     const trimmed = chainIdInput.trim();
     if (!trimmed) {
       return;
@@ -181,10 +202,17 @@ export const CustomEvmChainForm = ({
           if (currentId !== requestedChainId) {
             return;
           }
-          setChainListMatch(found ?? null);
+          if (found) {
+            setTxType(inferTxTypeFromChainListFeatures(found));
+            setChainListMatch(found);
+          } else {
+            setChainListMatch(null);
+            setTxType(EvmTransactionType.LEGACY);
+          }
         } catch {
           if (!cancelled) {
             setChainListMatch(null);
+            setTxType(EvmTransactionType.LEGACY);
           }
         }
       })();
@@ -220,11 +248,33 @@ export const CustomEvmChainForm = ({
     setTestnet(!!initialChain?.testnet);
   }, [chainToEdit, initialChain]);
 
-  const txTypeOptions: OptionItem[] = TX_TYPE_ORDER.map((value) => ({
+  const addTxTypeHidden = !isEdit && (!!chainListMatch || addChainListPreloaded);
+  const addTxTypeChoiceOrder: EvmTransactionType[] = [
+    EvmTransactionType.LEGACY,
+    EvmTransactionType.EIP_1559,
+  ];
+  const txTypeOptions: OptionItem[] = (isEdit
+    ? TX_TYPE_ORDER
+    : addTxTypeChoiceOrder
+  ).map((value) => ({
     value,
     label: getTxTypeOptionLabel(value),
     key: value,
   }));
+  const txTypeForSelect = isEdit
+    ? txType
+    : addTxTypeChoiceOrder.includes(txType)
+      ? txType
+      : EvmTransactionType.LEGACY;
+
+  useEffect(() => {
+    if (isEdit || addTxTypeHidden) {
+      return;
+    }
+    if (!addTxTypeChoiceOrder.includes(txType)) {
+      setTxType(EvmTransactionType.LEGACY);
+    }
+  }, [isEdit, addTxTypeHidden, txType]);
 
   const reportError = (key: string) => {
     if (setErrorMessage) {
@@ -249,7 +299,8 @@ export const CustomEvmChainForm = ({
     setExplorer(v.explorer);
     setLogo(v.logo);
     setTestnet(v.testnet);
-    setTxType(EvmTransactionType.EIP_1559);
+    setTxType(inferTxTypeFromChainListFeatures(chainListMatch));
+    setAddChainListPreloaded(true);
     setChainListMatch(null);
   };
 
@@ -407,20 +458,22 @@ export const CustomEvmChainForm = ({
         }}
         dataTestId="custom-evm-chain-symbol"
       />
-      <ComplexeCustomSelect
-        label="evm_custom_chains_field_default_tx_type"
-        options={txTypeOptions}
-        selectedItem={{
-          label: getTxTypeOptionLabel(txType),
-          value: txType,
-          key: txType,
-        }}
-        setSelectedItem={(item) => {
-          clearError();
-          setTxType(item.value as EvmTransactionType);
-        }}
-        background="white"
-      />
+      {(isEdit || !addTxTypeHidden) && (
+        <ComplexeCustomSelect
+          label="evm_custom_chains_field_default_tx_type"
+          options={txTypeOptions}
+          selectedItem={{
+            label: getTxTypeOptionLabel(txTypeForSelect),
+            value: txTypeForSelect,
+            key: txTypeForSelect,
+          }}
+          setSelectedItem={(item) => {
+            clearError();
+            setTxType(item.value as EvmTransactionType);
+          }}
+          background="white"
+        />
+      )}
       <div className="add-custom-evm-chain-form__rpc-block">
         <div className="add-custom-evm-chain-form__rpc-label">
           {chrome.i18n.getMessage('evm_custom_chains_field_rpc')}
