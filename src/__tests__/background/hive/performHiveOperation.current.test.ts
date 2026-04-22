@@ -8,6 +8,7 @@ import {
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { performHiveOperation } from '@background/hive/requests/operations/perform-operation';
 import * as DecodeMemoOps from '@background/hive/requests/operations/ops/decode-memo';
+import * as DialogRequestUtils from '@background/multichain/dialog-request.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
 import { CommunicationUtils } from 'src/utils/communication.utils';
@@ -51,6 +52,12 @@ describe('performHiveOperation current delivery flow', () => {
     const whitelistSpy = jest
       .spyOn(PreferencesUtils, 'addToWhitelist')
       .mockResolvedValue(undefined);
+    jest
+      .spyOn(
+        DialogRequestUtils,
+        'willCloseDialogWindowAfterRemovingRequest',
+      )
+      .mockResolvedValue(false);
 
     await performHiveOperation(
       requestHandler,
@@ -63,6 +70,9 @@ describe('performHiveOperation current delivery flow', () => {
 
     expect(tabsSpy).toHaveBeenCalledWith(9, operationMessage);
     expect(runtimeSpy).toHaveBeenCalledWith(operationMessage);
+    expect(runtimeSpy.mock.invocationCallOrder[0]).toBeLessThan(
+      removeRequestSpy.mock.invocationCallOrder[0]!,
+    );
     expect(removeRequestSpy).toHaveBeenCalledTimes(1);
     expect(removeRequestSpy).toHaveBeenCalledWith(request.request_id, 9);
     expect(whitelistSpy).toHaveBeenCalledWith(

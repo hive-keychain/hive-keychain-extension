@@ -223,6 +223,22 @@ export const getVisibleDialogRequests = async (
   return [...hiveRequests, ...evmRequests].sort(sortVisibleRequests);
 };
 
+/**
+ * True when removing this request would leave no visible requests, so
+ * `syncSharedDialogWindow` will close the dialog window. The caller should
+ * wait `DIALOG_FEEDBACK_DISPLAY_MS` before removing that request.
+ */
+export const willCloseDialogWindowAfterRemovingRequest = async (
+  handlers: RequestHandlers,
+  requestId: number,
+  tab: number,
+): Promise<boolean> => {
+  const visible = await getVisibleDialogRequests(handlers);
+  if (visible.length !== 1) return false;
+  const only = visible[0];
+  return only.requestId === requestId && only.tab === tab;
+};
+
 const attachQueueMetadata = (messages: ConfirmDialogMessage[]) => {
   const baseQueue = messages.map((message) => ({
     ...message,

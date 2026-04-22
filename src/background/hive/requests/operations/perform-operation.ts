@@ -36,10 +36,18 @@ import { broadcastVote } from '@background/hive/requests/operations/ops/vote';
 import { broadcastWitnessVote } from '@background/hive/requests/operations/ops/witness-vote';
 import sendErrors from '@background/multichain/errors';
 import {
+  getRequestHandlers,
+  willCloseDialogWindowAfterRemovingRequest,
+} from '@background/multichain/dialog-request.utils';
+import {
   KeychainRequest,
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
 import { TransactionOptions } from '@interfaces/keys.interface';
+import {
+  DIALOG_FEEDBACK_DISPLAY_MS,
+  delayMs,
+} from '@reference-data/dialog-feedback.constants';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
@@ -187,24 +195,44 @@ export const performHiveOperation = async (
           ? { ...message, command: DialogCommand.SEND_HIVE_RESPONSE }
           : message;
       await CommunicationUtils.tabsSendMessage(tab, tabMessage);
+      if (delivery === 'dialog') {
+        await CommunicationUtils.runtimeSendMessage(message);
+        const handlers = await getRequestHandlers();
+        if (
+          await willCloseDialogWindowAfterRemovingRequest(
+            handlers,
+            request.request_id,
+            tab,
+          )
+        ) {
+          await delayMs(DIALOG_FEEDBACK_DISPLAY_MS);
+        }
+      }
       await requestHandler.removeRequestById(request.request_id, tab);
     }
   } catch (e) {
     Logger.error(e);
-    sendErrors(
+    await sendErrors(
       tab,
       e + '',
       await chrome.i18n.getMessage('unknown_error'),
       await chrome.i18n.getMessage('unknown_error'),
       request,
     );
+    const handlers = await getRequestHandlers();
+    if (
+      await willCloseDialogWindowAfterRemovingRequest(
+        handlers,
+        request.request_id,
+        tab,
+      )
+    ) {
+      await delayMs(DIALOG_FEEDBACK_DISPLAY_MS);
+    }
     await requestHandler.removeRequestById(request.request_id, tab);
   } finally {
     if (shouldWhitelist) {
       await addToWhitelist(request.username!, domain, request.type);
-    }
-    if (delivery === 'dialog' && message) {
-      await CommunicationUtils.runtimeSendMessage(message);
     }
     if (shouldWhitelist && delivery === 'dialog') {
       await requestHandler.reprocessPendingRequests();

@@ -1,4 +1,5 @@
 import { ResultMessage } from '@dialog/interfaces/messages.interface';
+import { DIALOG_FEEDBACK_DISPLAY_MS } from '@reference-data/dialog-feedback.constants';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -18,7 +19,7 @@ export const RequestResponse = ({ data, onClose }: Props) => {
       } else {
         close();
       }
-    }, 3000);
+    }, DIALOG_FEEDBACK_DISPLAY_MS);
   }
 
   const handleOnCloseClicked = () => {
