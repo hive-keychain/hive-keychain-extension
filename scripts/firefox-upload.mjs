@@ -21,7 +21,8 @@ const { FIREFOX_AMO_ISSUER, FIREFOX_AMO_SECRET, FIREFOX_ADDON_ID } =
 const addonId = FIREFOX_ADDON_ID.replace(/[{}]/g, '');
 
 // Get version from package.json
-import pkg from '../package.json' assert { type: 'json' };
+const packageJsonPath = path.join(__dirname, '../package.json');
+const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
 const version = pkg.version;
 
 // Paths to ZIP files
