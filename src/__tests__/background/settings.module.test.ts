@@ -32,7 +32,7 @@ describe('settings.module tests:\n', () => {
     await SettingsModule.sendBackImportedFileContent(settings.all);
     expect(sSendMessage).toHaveBeenCalledWith({
       command: BackgroundCommand.IMPORT_SETTINGS_CALLBACK,
-      value: 'html_popup_import_settings_error',
+      value: { success: false, message: 'html_popup_import_settings_error' },
     });
   });
 
@@ -47,7 +47,10 @@ describe('settings.module tests:\n', () => {
       );
       expect(sSendMessage).toHaveBeenCalledWith({
         command: BackgroundCommand.IMPORT_SETTINGS_CALLBACK,
-        value: 'html_popup_import_settings_error',
+        value: {
+          success: false,
+          message: 'html_popup_import_settings_error',
+        },
       });
     }
   });
@@ -64,7 +67,10 @@ describe('settings.module tests:\n', () => {
     await SettingsModule.sendBackImportedFileContent({});
     expect(sSendMessage).toHaveBeenCalledWith({
       command: BackgroundCommand.IMPORT_SETTINGS_CALLBACK,
-      value: 'html_popup_import_settings_successful',
+      value: {
+        success: true,
+        message: 'html_popup_import_settings_successful',
+      },
     });
   });
 
@@ -77,7 +83,10 @@ describe('settings.module tests:\n', () => {
     await SettingsModule.sendBackImportedFileContent(settings.all);
     expect(sSendMessage).toHaveBeenCalledWith({
       command: BackgroundCommand.IMPORT_SETTINGS_CALLBACK,
-      value: 'html_popup_import_settings_successful',
+      value: {
+        success: true,
+        message: 'html_popup_import_settings_successful',
+      },
     });
     expect(sSaveValueInLocalStorage).toHaveBeenCalledTimes(9);
   });

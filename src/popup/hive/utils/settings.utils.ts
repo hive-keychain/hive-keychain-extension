@@ -56,7 +56,7 @@ const onSettingsUploadSuccessfulListener = (
 ) => {
   if (
     backgroundMessage.command === BackgroundCommand.IMPORT_SETTINGS_CALLBACK &&
-    backgroundMessage.value === 'html_popup_import_settings_successful'
+    backgroundMessage.value?.success
   ) {
     window.close();
     chrome.runtime.onMessage.removeListener(onSettingsUploadSuccessfulListener);
