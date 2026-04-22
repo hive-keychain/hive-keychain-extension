@@ -298,19 +298,28 @@ const EvmTransactionResult = ({
   };
 
   const openBlock = (blockNumber: number) => {
+    if (!chain.blockExplorer?.url) {
+      return;
+    }
     chrome.tabs.create({
-      url: `${chain.blockExplorer?.url}/block/${blockNumber}`,
+      url: `${chain.blockExplorer.url}/block/${blockNumber}`,
     });
   };
 
   const openWallet = (walletAddress: string) => {
+    if (!chain.blockExplorer?.url) {
+      return;
+    }
     chrome.tabs.create({
-      url: `${chain.blockExplorer?.url}/address/${walletAddress}`,
+      url: `${chain.blockExplorer.url}/address/${walletAddress}`,
     });
   };
 
   const openTransaction = (tx: string) => {
-    chrome.tabs.create({ url: `${chain.blockExplorer?.url}/tx/${tx}` });
+    if (!chain.blockExplorer?.url) {
+      return;
+    }
+    chrome.tabs.create({ url: `${chain.blockExplorer.url}/tx/${tx}` });
   };
 
   const confirmNewFee = () => {

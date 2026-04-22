@@ -47,7 +47,10 @@ const onNotificationClicked = async (notificationId: string) => {
   const [hash, chainId] = notificationId.split('-');
   const chainIdHex = `0x${parseInt(chainId).toString(16)}`;
   const chain = await ChainUtils.getChain<EvmChain>(chainIdHex);
-  chrome.tabs.create({ url: `${chain.blockExplorer?.url}/tx/${hash}` });
+  if (!chain.blockExplorer?.url) {
+    return;
+  }
+  chrome.tabs.create({ url: `${chain.blockExplorer.url}/tx/${hash}` });
 };
 
 chrome.notifications.onClicked.addListener(onNotificationClicked);

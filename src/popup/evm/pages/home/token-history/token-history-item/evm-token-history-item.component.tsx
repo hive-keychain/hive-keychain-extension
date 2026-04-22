@@ -54,8 +54,11 @@ export const EvmTokenHistoryItemComponent = ({
 
   const goToBlockchainExplorer = (event: BaseSyntheticEvent) => {
     event.stopPropagation();
+    if (!chain.blockExplorer?.url) {
+      return;
+    }
     window.open(
-      `${chain.blockExplorer?.url}/tx/${historyItem.transactionHash}`,
+      `${chain.blockExplorer.url}/tx/${historyItem.transactionHash}`,
     );
   };
 
