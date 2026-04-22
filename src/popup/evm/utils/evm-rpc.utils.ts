@@ -166,13 +166,20 @@ const saveSwitchRpcAuto = async (chain: EvmChain, switchRpcAuto: boolean) => {
 };
 
 const checkRpcStatus = async (uri: string) => {
-  const rpcProvider = new EtherJsonRpcProvider(uri);
+  const rpcProvider = new EtherJsonRpcProvider(uri, undefined, {});
   try {
-    await rpcProvider.send('eth_blockNumber', []);
-    rpcProvider.destroy();
-    return true;
+    return Promise.race([
+      rpcProvider.send('eth_blockNumber', []).then(() => true),
+      new Promise((resolve) => {
+        setTimeout(() => {
+          rpcProvider.destroy();
+          console.log('destroyed');
+          resolve(false);
+        }, 1000);
+      }),
+    ]);
   } catch (err) {
-    console.log('checkRpcStatus error', err);
+    // console.log('checkRpcStatus error', err);
     rpcProvider.destroy();
     return false;
   }

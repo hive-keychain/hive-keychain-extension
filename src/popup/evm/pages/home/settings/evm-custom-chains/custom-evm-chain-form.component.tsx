@@ -95,11 +95,16 @@ const applyChainListOrgToFormState = async (chain: ChainListOrgChain) => {
 
   const statusByUrl = await Promise.all(
     httpCandidateUrls.map((url) =>
-      EvmRpcUtils.checkRpcStatus(url).then((ok) => ({ url, ok })),
+      EvmRpcUtils.checkRpcStatus(url).then((ok) => {
+        console.log({ url, ok });
+        return { url, ok };
+      }),
     ),
   );
 
   const httpRpcs = statusByUrl.filter((r) => r.ok).map((r) => r.url);
+  console.log({ httpRpcs });
+  console.log({ statusByUrl });
 
   return {
     name: chain.name,
@@ -160,6 +165,8 @@ export const CustomEvmChainForm = ({
   const [chainListPreloadLoading, setChainListPreloadLoading] = useState(false);
   /** After user preloads from ChainList, we keep tx hidden like when a match is present. */
   const [addChainListPreloaded, setAddChainListPreloaded] = useState(false);
+  /** When preloaded with ≥1 RPC, start with the RPC block collapsed (user can expand). */
+  const [rpcPanelCollapsed, setRpcPanelCollapsed] = useState(false);
   const chainIdInputRef = useRef(chainIdInput);
   chainIdInputRef.current = chainIdInput;
 
@@ -183,6 +190,7 @@ export const CustomEvmChainForm = ({
     }
     setChainListMatch(null);
     setAddChainListPreloaded(false);
+    setRpcPanelCollapsed(false);
     setChainListLookupLoading(false);
     const trimmed = chainIdInput.trim();
     if (!trimmed) {
@@ -319,6 +327,7 @@ export const CustomEvmChainForm = ({
     setChainListPreloadLoading(true);
     try {
       const v = await applyChainListOrgToFormState(chainListMatch);
+      console.log({ v });
       setName(v.name);
       setChainIdInput(v.chainIdInput);
       setSymbol(v.symbol);
@@ -328,6 +337,10 @@ export const CustomEvmChainForm = ({
       setTestnet(v.testnet);
       setTxType(inferTxTypeFromChainListFeatures(chainListMatch));
       setAddChainListPreloaded(true);
+      const preloadedRpcCount = v.rpcUrls.filter((u) => u.trim()).length;
+      if (preloadedRpcCount > 0) {
+        setRpcPanelCollapsed(true);
+      }
       setChainListMatch(null);
     } finally {
       setChainListPreloadLoading(false);
@@ -410,6 +423,7 @@ export const CustomEvmChainForm = ({
         .map((r) => r.index);
       if (failedIndices.length > 0) {
         setFailedRpcRowIndices(failedIndices);
+        setRpcPanelCollapsed(false);
         reportError('evm_custom_chains_error_rpc_unreachable');
         return;
       }
@@ -454,11 +468,63 @@ export const CustomEvmChainForm = ({
     }
   };
 
+  const rpcFilledCount = rpcUrls.filter((u) => u.trim()).length;
+  const rpcPanelCollapsible = addChainListPreloaded && rpcFilledCount > 0;
+  const showRpcInputs = !rpcPanelCollapsible || !rpcPanelCollapsed;
+
   return (
     <div className="add-custom-evm-chain-form">
       {localError && (
         <div className="add-custom-evm-chain-form__error">
           {chrome.i18n.getMessage(localError)}
+        </div>
+      )}
+      <InputComponent
+        type={InputType.TEXT}
+        label="evm_custom_chains_field_chain_id"
+        value={chainIdInput}
+        onChange={(v) => {
+          clearError();
+          setChainIdInput(v);
+        }}
+        dataTestId="custom-evm-chain-id"
+      />
+      {!isEdit && (chainListLookupLoading || chainListMatch) && (
+        <div
+          className="add-custom-evm-chain-form__chainlist-hint"
+          aria-busy={chainListLookupLoading || chainListPreloadLoading}>
+          <div className="add-custom-evm-chain-form__chainlist-hint-main">
+            {chainListMatch ? (
+              <>
+                <span className="add-custom-evm-chain-form__chainlist-hint-text">
+                  {chrome.i18n.getMessage('evm_custom_chains_chainlist_found')}
+                </span>{' '}
+                <button
+                  type="button"
+                  className="add-custom-evm-chain-form__chainlist-preload"
+                  onClick={applyChainListPreload}
+                  disabled={saving || chainListPreloadLoading}
+                  data-testid="custom-evm-chain-chainlist-preload">
+                  {chrome.i18n.getMessage(
+                    'evm_custom_chains_chainlist_preload_link',
+                  )}
+                </button>
+              </>
+            ) : (
+              <span className="add-custom-evm-chain-form__chainlist-hint-text">
+                {chrome.i18n.getMessage(
+                  'evm_custom_chains_chainlist_looking_up',
+                )}
+              </span>
+            )}
+          </div>
+          {(chainListLookupLoading || chainListPreloadLoading) && (
+            <div
+              className="add-custom-evm-chain-form__chainlist-hint-spinner"
+              aria-hidden={true}
+              data-testid="custom-evm-chain-chainlist-hint-spinner"
+            />
+          )}
         </div>
       )}
       <InputComponent
@@ -473,55 +539,6 @@ export const CustomEvmChainForm = ({
       />
       <InputComponent
         type={InputType.TEXT}
-        label="evm_custom_chains_field_chain_id"
-        value={chainIdInput}
-        onChange={(v) => {
-          clearError();
-          setChainIdInput(v);
-        }}
-        dataTestId="custom-evm-chain-id"
-      />
-      {!isEdit &&
-        (chainListLookupLoading || chainListMatch) && (
-          <div
-            className="add-custom-evm-chain-form__chainlist-hint"
-            aria-busy={chainListLookupLoading || chainListPreloadLoading}>
-            <div className="add-custom-evm-chain-form__chainlist-hint-main">
-              {chainListMatch ? (
-                <>
-                  <span className="add-custom-evm-chain-form__chainlist-hint-text">
-                    {chrome.i18n.getMessage('evm_custom_chains_chainlist_found')}
-                  </span>{' '}
-                  <button
-                    type="button"
-                    className="add-custom-evm-chain-form__chainlist-preload"
-                    onClick={applyChainListPreload}
-                    disabled={saving || chainListPreloadLoading}
-                    data-testid="custom-evm-chain-chainlist-preload">
-                    {chrome.i18n.getMessage(
-                      'evm_custom_chains_chainlist_preload_link',
-                    )}
-                  </button>
-                </>
-              ) : (
-                <span className="add-custom-evm-chain-form__chainlist-hint-text">
-                  {chrome.i18n.getMessage(
-                    'evm_custom_chains_chainlist_looking_up',
-                  )}
-                </span>
-              )}
-            </div>
-            {(chainListLookupLoading || chainListPreloadLoading) && (
-              <div
-                className="add-custom-evm-chain-form__chainlist-hint-spinner"
-                aria-hidden={true}
-                data-testid="custom-evm-chain-chainlist-hint-spinner"
-              />
-            )}
-          </div>
-        )}
-      <InputComponent
-        type={InputType.TEXT}
         label="evm_custom_chains_field_symbol"
         value={symbol}
         onChange={(v) => {
@@ -529,77 +546,6 @@ export const CustomEvmChainForm = ({
           setSymbol(v);
         }}
         dataTestId="custom-evm-chain-symbol"
-      />
-      {(isEdit || !addTxTypeHidden) && (
-        <ComplexeCustomSelect
-          label="evm_custom_chains_field_default_tx_type"
-          options={txTypeOptions}
-          selectedItem={{
-            label: getTxTypeOptionLabel(txTypeForSelect),
-            value: txTypeForSelect,
-            key: txTypeForSelect,
-          }}
-          setSelectedItem={(item) => {
-            clearError();
-            setTxType(item.value as EvmTransactionType);
-          }}
-          background="white"
-        />
-      )}
-      <div className="add-custom-evm-chain-form__rpc-block">
-        <div className="add-custom-evm-chain-form__rpc-label">
-          {chrome.i18n.getMessage('evm_custom_chains_field_rpc')}
-        </div>
-        {rpcUrls.map((rpcUrl, index) => (
-          <div key={index} className="add-custom-evm-chain-form__rpc-row">
-            <InputComponent
-              type={InputType.TEXT}
-              placeholder="evm_custom_chains_field_rpc_placeholder"
-              value={rpcUrl}
-              onChange={(v) => setRpcAt(index, v)}
-              dataTestId={`custom-evm-chain-rpc-${index}`}
-              classname={
-                failedRpcRowIndices.includes(index)
-                  ? 'add-custom-evm-chain-form__rpc-input--invalid'
-                  : undefined
-              }
-            />
-            {index === 0 && (
-              <button
-                type="button"
-                className="add-custom-evm-chain-form__rpc-add-icon"
-                onClick={addRpcRow}
-                disabled={saving}
-                aria-label={addRpcAriaLabel}
-                title={addRpcAriaLabel}
-                data-testid="add-custom-chain-rpc-row">
-                <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE} />
-              </button>
-            )}
-            {index > 0 && (
-              <button
-                type="button"
-                className="add-custom-evm-chain-form__rpc-remove-icon"
-                onClick={() => removeRpcRow(index)}
-                disabled={saving}
-                aria-label={removeRpcAriaLabel}
-                title={removeRpcAriaLabel}
-                data-testid={`remove-custom-chain-rpc-row-${index}`}>
-                <SVGIcon icon={SVGIcons.EVM_ACCOUNT_DELETE} />
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
-      <InputComponent
-        type={InputType.TEXT}
-        label="evm_custom_chains_field_explorer"
-        value={explorer}
-        onChange={(v) => {
-          clearError();
-          setExplorer(v);
-        }}
-        dataTestId="custom-evm-chain-explorer"
       />
       <div className="add-custom-evm-chain-form__logo-row">
         <div className="add-custom-evm-chain-form__logo-input-wrap">
@@ -624,6 +570,101 @@ export const CustomEvmChainForm = ({
           />
         )}
       </div>
+      <InputComponent
+        type={InputType.TEXT}
+        label="evm_custom_chains_field_explorer"
+        value={explorer}
+        onChange={(v) => {
+          clearError();
+          setExplorer(v);
+        }}
+        dataTestId="custom-evm-chain-explorer"
+      />
+      <div
+        className={
+          'add-custom-evm-chain-form__rpc-block' +
+          (rpcPanelCollapsible
+            ? ' add-custom-evm-chain-form__rpc-block--collapsible'
+            : '')
+        }>
+        <div className="add-custom-evm-chain-form__rpc-header">
+          {rpcPanelCollapsible ? (
+            <button
+              type="button"
+              className="add-custom-evm-chain-form__rpc-header-toggle"
+              onClick={() => setRpcPanelCollapsed((c) => !c)}
+              aria-expanded={!rpcPanelCollapsed}
+              data-testid="custom-evm-chain-rpc-toggle">
+              <span className="add-custom-evm-chain-form__rpc-label">
+                {chrome.i18n.getMessage('evm_custom_chains_field_rpc')}
+              </span>
+              <span className="add-custom-evm-chain-form__rpc-header-right">
+                {rpcPanelCollapsed && (
+                  <span className="add-custom-evm-chain-form__rpc-collapsed-hint">
+                    {chrome.i18n.getMessage(
+                      'evm_custom_chains_rpc_collapsed_summary',
+                      [String(rpcFilledCount)],
+                    )}
+                  </span>
+                )}
+                <SVGIcon
+                  className="add-custom-evm-chain-form__rpc-toggle-chevron"
+                  icon={
+                    rpcPanelCollapsed
+                      ? SVGIcons.SELECT_ARROW_DOWN
+                      : SVGIcons.SELECT_ARROW_UP
+                  }
+                />
+              </span>
+            </button>
+          ) : (
+            <div className="add-custom-evm-chain-form__rpc-label">
+              {chrome.i18n.getMessage('evm_custom_chains_field_rpc')}
+            </div>
+          )}
+        </div>
+        {showRpcInputs &&
+          rpcUrls.map((rpcUrl, index) => (
+            <div key={index} className="add-custom-evm-chain-form__rpc-row">
+              <InputComponent
+                type={InputType.TEXT}
+                placeholder="evm_custom_chains_field_rpc_placeholder"
+                value={rpcUrl}
+                onChange={(v) => setRpcAt(index, v)}
+                dataTestId={`custom-evm-chain-rpc-${index}`}
+                classname={
+                  failedRpcRowIndices.includes(index)
+                    ? 'add-custom-evm-chain-form__rpc-input--invalid'
+                    : undefined
+                }
+              />
+              {index === 0 && (
+                <button
+                  type="button"
+                  className="add-custom-evm-chain-form__rpc-add-icon"
+                  onClick={addRpcRow}
+                  disabled={saving}
+                  aria-label={addRpcAriaLabel}
+                  title={addRpcAriaLabel}
+                  data-testid="add-custom-chain-rpc-row">
+                  <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE} />
+                </button>
+              )}
+              {index > 0 && (
+                <button
+                  type="button"
+                  className="add-custom-evm-chain-form__rpc-remove-icon"
+                  onClick={() => removeRpcRow(index)}
+                  disabled={saving}
+                  aria-label={removeRpcAriaLabel}
+                  title={removeRpcAriaLabel}
+                  data-testid={`remove-custom-chain-rpc-row-${index}`}>
+                  <SVGIcon icon={SVGIcons.EVM_ACCOUNT_DELETE} />
+                </button>
+              )}
+            </div>
+          ))}
+      </div>
       <CheckboxComponent
         title="evm_custom_chains_field_testnet"
         checked={testnet}
@@ -633,6 +674,22 @@ export const CustomEvmChainForm = ({
         }}
         dataTestId="custom-evm-chain-testnet"
       />
+      {(isEdit || !addTxTypeHidden) && (
+        <ComplexeCustomSelect
+          label="evm_custom_chains_field_default_tx_type"
+          options={txTypeOptions}
+          selectedItem={{
+            label: getTxTypeOptionLabel(txTypeForSelect),
+            value: txTypeForSelect,
+            key: txTypeForSelect,
+          }}
+          setSelectedItem={(item) => {
+            clearError();
+            setTxType(item.value as EvmTransactionType);
+          }}
+          background="white"
+        />
+      )}
       <div className="add-custom-evm-chain-form__actions">
         <ButtonComponent
           label="popup_html_button_label_cancel"

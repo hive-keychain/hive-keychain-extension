@@ -235,6 +235,58 @@
     gap: 8px;
   }
 
+  .add-custom-evm-chain-form__rpc-header {
+    flex-shrink: 0;
+  }
+
+  .add-custom-evm-chain-form__rpc-header-toggle {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font: inherit;
+    color: var(--main-font-color);
+    box-sizing: border-box;
+    text-align: left;
+
+    &:hover {
+      opacity: 0.92;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-background-color, #c6354a);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+  }
+
+  .add-custom-evm-chain-form__rpc-header-right {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .add-custom-evm-chain-form__rpc-collapsed-hint {
+    @include poppins400(12px);
+    opacity: 0.85;
+    white-space: nowrap;
+  }
+
+  .add-custom-evm-chain-form__rpc-toggle-chevron {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+  }
+
   .add-custom-evm-chain-form__rpc-label {
     font-size: 13px;
     font-weight: 600;

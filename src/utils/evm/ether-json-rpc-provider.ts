@@ -16,12 +16,12 @@ export class EtherJsonRpcProvider extends ethers.JsonRpcProvider {
 
   async send(method: string, params: any[]): Promise<any> {
     return super.send(method, params).catch((err) => {
-      console.log(
-        'catch err in custom ether json rpc provider',
-        { err },
-        method,
-        params,
-      );
+      // console.log(
+      //   'catch err in custom ether json rpc provider',
+      //   { err },
+      //   method,
+      //   params,
+      // );
 
       // switch () {
 

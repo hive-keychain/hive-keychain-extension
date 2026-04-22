@@ -5513,6 +5513,10 @@
     "message": "Looking up public chain data…",
     "description": "While ChainList.org data is being fetched for the chain ID"
   },
+  "evm_custom_chains_rpc_collapsed_summary": {
+    "message": "$1 RPC URL(s)",
+    "description": "Collapsed RPC panel after ChainList preload; $1 is the number of endpoints"
+  },
   "evm_menu_advanced": {
     "message": "Advanced",
     "description": "Evm Advanced menu"
