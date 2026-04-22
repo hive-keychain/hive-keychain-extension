@@ -11,7 +11,11 @@ import InputComponent from '@common-ui/input/input.component';
 import { ChainListOrgChain } from '@popup/evm/interfaces/chain-list-org.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { ChainListOrgUtils } from '@popup/evm/utils/chain-list-org.utils';
-import { ChainType, EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
+import {
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
 import React, { useEffect, useRef, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -73,9 +77,7 @@ const inferTxTypeFromChainListFeatures = (
   chain: ChainListOrgChain,
 ): EvmTransactionType => {
   for (const f of chain.features ?? []) {
-    const n = (f.name ?? '')
-      .toLowerCase()
-      .replace(/[\s_]/g, '-');
+    const n = (f.name ?? '').toLowerCase().replace(/[\s_]/g, '-');
     if (n.includes('eip-1559') || n.replace(/-/g, '') === 'eip1559') {
       return EvmTransactionType.EIP_1559;
     }
@@ -86,10 +88,17 @@ const inferTxTypeFromChainListFeatures = (
   return EvmTransactionType.LEGACY;
 };
 
-const applyChainListOrgToFormState = (chain: ChainListOrgChain) => {
-  const httpRpcs = chain.rpc
-    .filter((rpc) => !rpc.url.startsWith('wss://'))
-    .map((r) => r.url);
+const applyChainListOrgToFormState = async (chain: ChainListOrgChain) => {
+  const httpRpcs = [];
+  for (const rpc of chain.rpc) {
+    if (
+      !rpc.url.startsWith('wss://') &&
+      (await EvmRpcUtils.checkRpcStatus(rpc.url))
+    ) {
+      httpRpcs.push(rpc.url);
+    }
+  }
+
   return {
     name: chain.name,
     chainIdInput: '0x' + BigInt(chain.chainId).toString(16),
@@ -139,9 +148,8 @@ export const CustomEvmChainForm = ({
   const [saving, setSaving] = useState(false);
   const [localError, setLocalError] = useState<string>();
   const [logoPreviewErrored, setLogoPreviewErrored] = useState(false);
-  const [chainListMatch, setChainListMatch] = useState<ChainListOrgChain | null>(
-    null,
-  );
+  const [chainListMatch, setChainListMatch] =
+    useState<ChainListOrgChain | null>(null);
   /** After user preloads from ChainList, we keep tx hidden like when a match is present. */
   const [addChainListPreloaded, setAddChainListPreloaded] = useState(false);
   const chainIdInputRef = useRef(chainIdInput);
@@ -173,9 +181,7 @@ export const CustomEvmChainForm = ({
     }
     let requestedChainId: number;
     try {
-      requestedChainId = Number(
-        BigInt(normalizeEvmChainIdInput(chainIdInput)),
-      );
+      requestedChainId = Number(BigInt(normalizeEvmChainIdInput(chainIdInput)));
     } catch {
       return;
     }
@@ -183,18 +189,14 @@ export const CustomEvmChainForm = ({
     const handle = window.setTimeout(() => {
       void (async () => {
         try {
-          const found = await ChainListOrgUtils.findByChainId(
-            requestedChainId,
-          );
+          const found = await ChainListOrgUtils.findByChainId(requestedChainId);
           if (cancelled) {
             return;
           }
           let currentId: number;
           try {
             currentId = Number(
-              BigInt(
-                normalizeEvmChainIdInput(chainIdInputRef.current),
-              ),
+              BigInt(normalizeEvmChainIdInput(chainIdInputRef.current)),
             );
           } catch {
             return;
@@ -228,7 +230,9 @@ export const CustomEvmChainForm = ({
       setName(chainToEdit.name);
       setChainIdInput(chainToEdit.chainId);
       setSymbol(chainToEdit.mainToken);
-      setRpcUrls(chainToEdit.rpcs?.length ? chainToEdit.rpcs.map((r) => r.url) : ['']);
+      setRpcUrls(
+        chainToEdit.rpcs?.length ? chainToEdit.rpcs.map((r) => r.url) : [''],
+      );
       setExplorer(chainToEdit.blockExplorer?.url ?? '');
       setLogo(chainToEdit.logo ?? '');
       setTxType(parseTxType(chainToEdit.defaultTransactionType ?? ''));
@@ -248,14 +252,14 @@ export const CustomEvmChainForm = ({
     setTestnet(!!initialChain?.testnet);
   }, [chainToEdit, initialChain]);
 
-  const addTxTypeHidden = !isEdit && (!!chainListMatch || addChainListPreloaded);
+  const addTxTypeHidden =
+    !isEdit && (!!chainListMatch || addChainListPreloaded);
   const addTxTypeChoiceOrder: EvmTransactionType[] = [
     EvmTransactionType.LEGACY,
     EvmTransactionType.EIP_1559,
   ];
-  const txTypeOptions: OptionItem[] = (isEdit
-    ? TX_TYPE_ORDER
-    : addTxTypeChoiceOrder
+  const txTypeOptions: OptionItem[] = (
+    isEdit ? TX_TYPE_ORDER : addTxTypeChoiceOrder
   ).map((value) => ({
     value,
     label: getTxTypeOptionLabel(value),
@@ -286,12 +290,12 @@ export const CustomEvmChainForm = ({
 
   const clearError = () => setLocalError(undefined);
 
-  const applyChainListPreload = () => {
+  const applyChainListPreload = async () => {
     if (!chainListMatch) {
       return;
     }
     clearError();
-    const v = applyChainListOrgToFormState(chainListMatch);
+    const v = await applyChainListOrgToFormState(chainListMatch);
     setName(v.name);
     setChainIdInput(v.chainIdInput);
     setSymbol(v.symbol);
@@ -479,9 +483,7 @@ export const CustomEvmChainForm = ({
           {chrome.i18n.getMessage('evm_custom_chains_field_rpc')}
         </div>
         {rpcUrls.map((rpcUrl, index) => (
-          <div
-            key={index}
-            className="add-custom-evm-chain-form__rpc-row">
+          <div key={index} className="add-custom-evm-chain-form__rpc-row">
             <InputComponent
               type={InputType.TEXT}
               placeholder="evm_custom_chains_field_rpc_placeholder"
