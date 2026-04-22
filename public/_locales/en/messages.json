@@ -5497,6 +5497,14 @@
     "message": "Could not save this chain. Please check your entries and try again.",
     "description": "Custom chain generic error"
   },
+  "evm_custom_chains_chainlist_found": {
+    "message": "A matching network was found in the public chain list (ChainList.org).",
+    "description": "When chain ID matches ChainList.org data for add-custom-chain form"
+  },
+  "evm_custom_chains_chainlist_preload_link": {
+    "message": "Load details into the form",
+    "description": "Button to prefill add-custom-chain form from ChainList.org"
+  },
   "evm_menu_advanced": {
     "message": "Advanced",
     "description": "Evm Advanced menu"

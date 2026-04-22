@@ -159,6 +159,44 @@
     color: $red;
   }
 
+  .add-custom-evm-chain-form__chainlist-hint {
+    @include poppins400(13px);
+    line-height: 1.45;
+    margin: 0;
+    margin-top: -4px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: var(--button-alternative-background-color);
+    border: 1px solid var(--card-border);
+  }
+
+  .add-custom-evm-chain-form__chainlist-hint-text {
+    opacity: 0.95;
+  }
+
+  .add-custom-evm-chain-form__chainlist-preload {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font: inherit;
+    @include poppins600(13px);
+    color: var(--button-background-color, #c6354a);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:hover:not(:disabled) {
+      opacity: 0.9;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+
   .add-custom-evm-chain-form__rpc-block {
     display: flex;
     flex-direction: column;
