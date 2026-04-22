@@ -171,6 +171,11 @@
   }
 
   .add-custom-evm-chain-form__chainlist-hint {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
     @include poppins400(13px);
     line-height: 1.45;
     margin: 0;
@@ -181,8 +186,24 @@
     border: 1px solid var(--card-border);
   }
 
+  .add-custom-evm-chain-form__chainlist-hint-main {
+    flex: 1;
+    min-width: 0;
+  }
+
   .add-custom-evm-chain-form__chainlist-hint-text {
     opacity: 0.95;
+  }
+
+  .add-custom-evm-chain-form__chainlist-hint-spinner {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--card-border);
+    border-top-color: var(--button-background-color, #c6354a);
+    border-radius: 50%;
+    box-sizing: border-box;
+    animation: add-custom-evm-chain-form-chainlist-spin 0.75s linear infinite;
   }
 
   .add-custom-evm-chain-form__chainlist-preload {
@@ -312,6 +333,12 @@
       width: auto;
       min-width: 0;
     }
+  }
+}
+
+@keyframes add-custom-evm-chain-form-chainlist-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 

@@ -5509,6 +5509,10 @@
     "message": "Load details into the form",
     "description": "Button to prefill add-custom-chain form from ChainList.org"
   },
+  "evm_custom_chains_chainlist_looking_up": {
+    "message": "Looking up public chain data…",
+    "description": "While ChainList.org data is being fetched for the chain ID"
+  },
   "evm_menu_advanced": {
     "message": "Advanced",
     "description": "Evm Advanced menu"

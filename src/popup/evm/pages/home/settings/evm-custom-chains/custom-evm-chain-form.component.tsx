@@ -154,6 +154,10 @@ export const CustomEvmChainForm = ({
   const [logoPreviewErrored, setLogoPreviewErrored] = useState(false);
   const [chainListMatch, setChainListMatch] =
     useState<ChainListOrgChain | null>(null);
+  /** ChainList.org fetch in progress (after debounce). */
+  const [chainListLookupLoading, setChainListLookupLoading] = useState(false);
+  /** Preload click: parallel RPC checks in `applyChainListOrgToFormState`. */
+  const [chainListPreloadLoading, setChainListPreloadLoading] = useState(false);
   /** After user preloads from ChainList, we keep tx hidden like when a match is present. */
   const [addChainListPreloaded, setAddChainListPreloaded] = useState(false);
   const chainIdInputRef = useRef(chainIdInput);
@@ -179,6 +183,7 @@ export const CustomEvmChainForm = ({
     }
     setChainListMatch(null);
     setAddChainListPreloaded(false);
+    setChainListLookupLoading(false);
     const trimmed = chainIdInput.trim();
     if (!trimmed) {
       return;
@@ -192,6 +197,10 @@ export const CustomEvmChainForm = ({
     let cancelled = false;
     const handle = window.setTimeout(() => {
       void (async () => {
+        if (cancelled) {
+          return;
+        }
+        setChainListLookupLoading(true);
         try {
           const found = await ChainListOrgUtils.findByChainId(requestedChainId);
           if (cancelled) {
@@ -220,12 +229,17 @@ export const CustomEvmChainForm = ({
             setChainListMatch(null);
             setTxType(EvmTransactionType.LEGACY);
           }
+        } finally {
+          if (!cancelled) {
+            setChainListLookupLoading(false);
+          }
         }
       })();
     }, CHAIN_ID_LOOKUP_DEBOUNCE_MS);
     return () => {
       cancelled = true;
       window.clearTimeout(handle);
+      setChainListLookupLoading(false);
     };
   }, [chainIdInput, isEdit]);
 
@@ -302,17 +316,22 @@ export const CustomEvmChainForm = ({
       return;
     }
     clearError();
-    const v = await applyChainListOrgToFormState(chainListMatch);
-    setName(v.name);
-    setChainIdInput(v.chainIdInput);
-    setSymbol(v.symbol);
-    setRpcUrls(v.rpcUrls);
-    setExplorer(v.explorer);
-    setLogo(v.logo);
-    setTestnet(v.testnet);
-    setTxType(inferTxTypeFromChainListFeatures(chainListMatch));
-    setAddChainListPreloaded(true);
-    setChainListMatch(null);
+    setChainListPreloadLoading(true);
+    try {
+      const v = await applyChainListOrgToFormState(chainListMatch);
+      setName(v.name);
+      setChainIdInput(v.chainIdInput);
+      setSymbol(v.symbol);
+      setRpcUrls(v.rpcUrls);
+      setExplorer(v.explorer);
+      setLogo(v.logo);
+      setTestnet(v.testnet);
+      setTxType(inferTxTypeFromChainListFeatures(chainListMatch));
+      setAddChainListPreloaded(true);
+      setChainListMatch(null);
+    } finally {
+      setChainListPreloadLoading(false);
+    }
   };
 
   const setRpcAt = (index: number, value: string) => {
@@ -462,21 +481,45 @@ export const CustomEvmChainForm = ({
         }}
         dataTestId="custom-evm-chain-id"
       />
-      {!isEdit && chainListMatch && (
-        <div className="add-custom-evm-chain-form__chainlist-hint">
-          <span className="add-custom-evm-chain-form__chainlist-hint-text">
-            {chrome.i18n.getMessage('evm_custom_chains_chainlist_found')}
-          </span>{' '}
-          <button
-            type="button"
-            className="add-custom-evm-chain-form__chainlist-preload"
-            onClick={applyChainListPreload}
-            disabled={saving}
-            data-testid="custom-evm-chain-chainlist-preload">
-            {chrome.i18n.getMessage('evm_custom_chains_chainlist_preload_link')}
-          </button>
-        </div>
-      )}
+      {!isEdit &&
+        (chainListLookupLoading || chainListMatch) && (
+          <div
+            className="add-custom-evm-chain-form__chainlist-hint"
+            aria-busy={chainListLookupLoading || chainListPreloadLoading}>
+            <div className="add-custom-evm-chain-form__chainlist-hint-main">
+              {chainListMatch ? (
+                <>
+                  <span className="add-custom-evm-chain-form__chainlist-hint-text">
+                    {chrome.i18n.getMessage('evm_custom_chains_chainlist_found')}
+                  </span>{' '}
+                  <button
+                    type="button"
+                    className="add-custom-evm-chain-form__chainlist-preload"
+                    onClick={applyChainListPreload}
+                    disabled={saving || chainListPreloadLoading}
+                    data-testid="custom-evm-chain-chainlist-preload">
+                    {chrome.i18n.getMessage(
+                      'evm_custom_chains_chainlist_preload_link',
+                    )}
+                  </button>
+                </>
+              ) : (
+                <span className="add-custom-evm-chain-form__chainlist-hint-text">
+                  {chrome.i18n.getMessage(
+                    'evm_custom_chains_chainlist_looking_up',
+                  )}
+                </span>
+              )}
+            </div>
+            {(chainListLookupLoading || chainListPreloadLoading) && (
+              <div
+                className="add-custom-evm-chain-form__chainlist-hint-spinner"
+                aria-hidden={true}
+                data-testid="custom-evm-chain-chainlist-hint-spinner"
+              />
+            )}
+          </div>
+        )}
       <InputComponent
         type={InputType.TEXT}
         label="evm_custom_chains_field_symbol"
