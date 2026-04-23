@@ -3713,7 +3713,7 @@
     "description": "link device error"
   },
   "ledger_import_account_has_ledger": {
-    "message": "Detectamos uma conta usando a Ledger nas contas que você importou. Para poder usá-la, clique em <a target='_blank' href='chrome-extension://$1/link-ledger-device.html'>aqui</a> para vincular sua Ledger.",
+    "message": "Detectamos uma conta usando a Ledger nas contas que você importou. Para poder usá-la, clique em <a target='_blank' href='$1'>aqui</a> para vincular sua Ledger.",
     "description": "link device error"
   },
   "portfolio": {

@@ -35,12 +35,16 @@ describe('shortcuts.utils', () => {
       expect(ShortcutsUtils.normalizeShortcutCombo('shift+ctrl+a')).toBe(
         'ctrl+shift+a',
       );
-      expect(ShortcutsUtils.normalizeShortcutCombo('⌘+⇧+W')).toBe('shift+command+w');
+      expect(ShortcutsUtils.normalizeShortcutCombo('⌘+⇧+W')).toBe(
+        'shift+command+w',
+      );
       expect(ShortcutsUtils.normalizeShortcutCombo('')).toBe('');
     });
 
     it('normalizes space and arrow keys', () => {
-      expect(ShortcutsUtils.normalizeShortcutCombo('alt+Space')).toBe('alt+space');
+      expect(ShortcutsUtils.normalizeShortcutCombo('alt+Space')).toBe(
+        'alt+space',
+      );
       expect(ShortcutsUtils.normalizeShortcutCombo('meta+ArrowUp')).toBe(
         'command+up',
       );
@@ -50,7 +54,9 @@ describe('shortcuts.utils', () => {
   describe('formatShortcutCombo', () => {
     it('formats modifiers with symbols and title-cases keys', () => {
       expect(ShortcutsUtils.formatShortcutCombo('ctrl+shift+a')).toBe('⌃+⇧+A');
-      expect(ShortcutsUtils.formatShortcutCombo('command+space')).toBe('⌘+Space');
+      expect(ShortcutsUtils.formatShortcutCombo('command+space')).toBe(
+        '⌘+Space',
+      );
     });
   });
 
@@ -61,7 +67,9 @@ describe('shortcuts.utils', () => {
         ctrlKey: true,
         shiftKey: true,
       });
-      expect(ShortcutsUtils.buildShortcutComboFromEvent(ev)).toBe('ctrl+shift+b');
+      expect(ShortcutsUtils.buildShortcutComboFromEvent(ev)).toBe(
+        'ctrl+shift+b',
+      );
     });
 
     it('returns null for bare modifier keys', () => {
@@ -92,7 +100,9 @@ describe('shortcuts.utils', () => {
       expect(ShortcutsUtils.CURRENCY_REQUIRED_SCREENS).toContain(
         Screen.TRANSFER_FUND_PAGE,
       );
-      expect(ShortcutsUtils.TOKEN_REQUIRED_SCREENS).toContain(Screen.TOKENS_HISTORY);
+      expect(ShortcutsUtils.TOKEN_REQUIRED_SCREENS).toContain(
+        Screen.TOKENS_HISTORY,
+      );
     });
   });
 });

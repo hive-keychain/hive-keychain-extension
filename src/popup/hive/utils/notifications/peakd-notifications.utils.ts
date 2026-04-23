@@ -704,11 +704,11 @@ const getNotifications = async (
             payload.parent_permlink,
           ];
           linkUrl = buildNotificationPostUrl(
-            payload.author,
+            payload.parent_author,
             payload.parent_permlink,
           );
           linkLabel = buildNotificationPostLabel(
-            payload.author,
+            payload.parent_author,
             payload.parent_permlink,
           );
         } else {
@@ -726,7 +726,10 @@ const getNotifications = async (
             payload.permlink,
           );
         }
-        externalUrl = buildNotificationPostUrl(payload.author, payload.permlink);
+        externalUrl = buildNotificationPostUrl(
+          payload.author,
+          payload.permlink,
+        );
         break;
       }
       case 'delegate_vesting_shares': {
@@ -791,7 +794,10 @@ const getNotifications = async (
       case 'vote': {
         message = 'notification_vote';
         messageParams = [payload.voter, payload.author, payload.permlink];
-        externalUrl = buildNotificationPostUrl(payload.author, payload.permlink);
+        externalUrl = buildNotificationPostUrl(
+          payload.author,
+          payload.permlink,
+        );
         linkUrl = externalUrl;
         linkLabel = buildNotificationPostLabel(
           payload.author,
@@ -844,7 +850,10 @@ const getNotifications = async (
           ),
           payload.permlink,
         ];
-        externalUrl = buildNotificationPostUrl(payload.author, payload.permlink);
+        externalUrl = buildNotificationPostUrl(
+          payload.author,
+          payload.permlink,
+        );
         linkUrl = externalUrl;
         linkLabel = buildNotificationPostLabel(
           payload.author,
@@ -883,7 +892,10 @@ const getNotifications = async (
           FormatUtils.withCommas(payload.payout, 3),
           payload.permlink,
         ];
-        externalUrl = buildNotificationPostUrl(payload.author, payload.permlink);
+        externalUrl = buildNotificationPostUrl(
+          payload.author,
+          payload.permlink,
+        );
         linkUrl = externalUrl;
         linkLabel = buildNotificationPostLabel(
           payload.author,
@@ -968,7 +980,10 @@ const getNotifications = async (
           payload.author,
           payload.permlink,
         ];
-        externalUrl = buildNotificationPostUrl(payload.author, payload.permlink);
+        externalUrl = buildNotificationPostUrl(
+          payload.author,
+          payload.permlink,
+        );
         linkUrl = externalUrl;
         linkLabel = buildNotificationPostLabel(
           payload.author,

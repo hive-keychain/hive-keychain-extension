@@ -1,13 +1,15 @@
-import { ResultMessagePageComponent } from '@common-ui/result-message-page/result-message-page.component';
-import { ErrorMessage } from '@dialog/interfaces/messages.interface';
 import React from 'react';
+import { ResultMessagePageComponent } from 'src/common-ui/result-message-page/result-message-page.component';
 
 type Props = {
   data: ErrorMessage;
-  onClose?: () => void;
 };
 
-export const DialogError = ({ data }: Props) => {
+type ErrorMessage = {
+  msg: { display_msg: string };
+};
+
+const DialogError = ({ data }: Props) => {
   return (
     <ResultMessagePageComponent
       type="error"
@@ -18,3 +20,5 @@ export const DialogError = ({ data }: Props) => {
     />
   );
 };
+
+export default DialogError;

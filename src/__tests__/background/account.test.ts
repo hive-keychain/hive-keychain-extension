@@ -27,14 +27,11 @@ describe('account tests:\n', () => {
     await AccountModule.sendBackImportedAccounts('Wrong_FileContent0000');
     expect(sSendMessage).toHaveBeenCalledWith({
       command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
-      value: { feedback: { message: 'import_html_error' } },
+      value: { success: false, message: 'import_html_error' },
     });
   });
 
   it('Must import and save accounts', async () => {
-    chrome.management.getSelf = jest
-      .fn()
-      .mockResolvedValueOnce({ id: 'unique-ID' });
     jest
       .spyOn(MkModule, 'getMk')
       .mockResolvedValue(accounts.encrypted.noHash.oneAccount.mkUsed);
@@ -50,12 +47,14 @@ describe('account tests:\n', () => {
     expect(sSendMessage).toHaveBeenCalledWith({
       command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
       value: expect.objectContaining({
+        success: true,
+        message: 'import_html_success',
         accounts: expect.arrayContaining([
           expect.objectContaining({
             name: accounts.encrypted.noHash.oneAccount.original.list[0].name,
           }),
         ]),
-        feedback: null,
+        warning: null,
       }),
     });
   });

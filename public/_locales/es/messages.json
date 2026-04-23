@@ -3814,7 +3814,7 @@
     "description": "link device error"
   },
   "ledger_import_account_has_ledger": {
-    "message": "Hemos detectado una cuenta usando Ledger dentro de las cuentas que importaste. Para poder usarlo, por favor haz clic <a target='_blank' href='chrome-extension://$1/link-ledger-device.html'>aquí</a> para vincular tu Ledger.",
+    "message": "Hemos detectado una cuenta usando Ledger dentro de las cuentas que importaste. Para poder usarlo, por favor haz clic <a target='_blank' href='$1'>aquí</a> para vincular tu Ledger.",
     "description": "link device error"
   },
   "portfolio": {

@@ -1,8 +1,9 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { Screen } from '@interfaces/screen.interface';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { waitFor } from '@testing-library/react';
 import { ReactElement } from 'react';
 import { Store } from 'redux';
-import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import accountsFixture from 'src/__tests__/utils-for-testing/data/accounts';
 import {
   LoadingValuesConfiguration,
@@ -11,7 +12,6 @@ import {
 } from 'src/__tests__/utils-for-testing/loading-values-configuration/loading-values-configuration';
 import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 import { RootState } from 'src/popup/multichain/store';
-import { Screen } from '@interfaces/screen.interface';
 
 /**
  * Mirrors `initApplication` account load + `selectComponent` in HiveApp (empty nav stack).
@@ -74,7 +74,9 @@ const renderWithConfiguration = async (
   },
 ): Promise<Store<RootState>> => {
   LoadingValuesConfiguration.set(params);
-  const { store } = customRender(reactComponent, { initialState: initialState });
+  const { store } = customRender(reactComponent, {
+    initialState: initialState,
+  });
   //Necessary line bellow. It will wait for promises/timers to execute and render after all async processes.
   //Reference: https://github.com/jestjs/jest/issues/2157#issuecomment-279171856
   await waitFor(() => {});

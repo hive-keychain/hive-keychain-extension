@@ -210,12 +210,27 @@ export const GasFeePanel = ({
     setIsAdvancedPanelOpen(false);
   };
 
+  const getDecimalValue = (rawValue?: string) => {
+    if (!rawValue?.length) return new Decimal(0);
+
+    try {
+      return new Decimal(rawValue);
+    } catch {
+      return new Decimal(0);
+    }
+  };
+
+  const getCustomFeeInEth = (gweiValue?: string, gasLimitValue?: string) => {
+    return getDecimalValue(gweiValue)
+      .mul(getDecimalValue(gasLimitValue))
+      .div(EvmFormatUtils.GWEI);
+  };
+
   const updateCustomFee = (
     key: 'maxBaseFee' | 'priorityFee' | 'gasPrice' | 'gasLimit',
     value: string,
   ) => {
-    const valueNumber = value.length > 0 ? new Decimal(value) : new Decimal(0);
-
+    console.log({ key, value });
     const newState = { ...customGasFeeForm };
     switch (key) {
       case 'maxBaseFee': {
@@ -223,32 +238,32 @@ export const GasFeePanel = ({
 
         // newState.maxBaseFeeInEth = new Decimal()
 
-        newState.maxBaseFeeInEth = new Decimal(
-          ethers.formatUnits(
-            valueNumber.mul(customGasFeeForm.gasLimit!).toNumber(),
-            'gwei',
-          ),
+        newState.maxBaseFeeInEth = getCustomFeeInEth(
+          value,
+          customGasFeeForm.gasLimit,
         );
+        console.log({ newState });
+        console.log({ maxBaseFeeInEth: newState.maxBaseFeeInEth.toString() });
         break;
       }
       case 'priorityFee': {
         newState.priorityFeeInGwei = value;
-        newState.priorityFeeInEth = new Decimal(
-          ethers.formatUnits(
-            valueNumber.mul(customGasFeeForm.gasLimit!).toNumber(),
-            'gwei',
-          ),
+        newState.priorityFeeInEth = getCustomFeeInEth(
+          value,
+          customGasFeeForm.gasLimit,
         );
+        console.log({ newState });
+        console.log({ priorityFeeInEth: newState.priorityFeeInEth.toString() });
         break;
       }
       case 'gasPrice': {
         newState.gasPriceInGwei = value;
-        newState.gasPriceInEth = new Decimal(
-          ethers.formatUnits(
-            valueNumber.mul(customGasFeeForm.gasLimit!).toNumber(),
-            'gwei',
-          ),
+        newState.gasPriceInEth = getCustomFeeInEth(
+          value,
+          customGasFeeForm.gasLimit,
         );
+        console.log({ newState });
+        console.log({ gasPriceInEth: newState.gasPriceInEth.toString() });
         break;
       }
       case 'gasLimit': {
@@ -258,27 +273,38 @@ export const GasFeePanel = ({
           customGasFeeForm.gasPriceInGwei &&
           !isNaN(parseFloat(customGasFeeForm.gasPriceInGwei))
         ) {
-          newState.gasPriceInEth = new Decimal(
-            ethers.formatUnits(customGasFeeForm.gasPriceInGwei!, 'gwei'),
-          ).mul(valueNumber);
+          newState.gasPriceInEth = getCustomFeeInEth(
+            customGasFeeForm.gasPriceInGwei,
+            value,
+          );
+          console.log({ newState });
+          console.log({ gasPriceInEth: newState.gasPriceInEth.toString() });
         }
 
         if (
           customGasFeeForm.priorityFeeInGwei &&
           !isNaN(parseFloat(customGasFeeForm.priorityFeeInGwei))
         ) {
-          newState.priorityFeeInEth = new Decimal(
-            ethers.formatUnits(customGasFeeForm.priorityFeeInGwei!, 'gwei'),
-          ).mul(valueNumber);
+          newState.priorityFeeInEth = getCustomFeeInEth(
+            customGasFeeForm.priorityFeeInGwei,
+            value,
+          );
+          console.log({ newState });
+          console.log({
+            priorityFeeInEth: newState.priorityFeeInEth.toString(),
+          });
         }
 
         if (
           customGasFeeForm.maxBaseFeeInGwei &&
           !isNaN(parseFloat(customGasFeeForm.maxBaseFeeInGwei))
         ) {
-          newState.maxBaseFeeInEth = new Decimal(
-            ethers.formatUnits(customGasFeeForm.maxBaseFeeInGwei!, 'gwei'),
-          ).mul(valueNumber);
+          newState.maxBaseFeeInEth = getCustomFeeInEth(
+            customGasFeeForm.maxBaseFeeInGwei,
+            value,
+          );
+          console.log({ newState });
+          console.log({ maxBaseFeeInEth: newState.maxBaseFeeInEth.toString() });
         }
 
         break;

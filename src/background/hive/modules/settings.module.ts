@@ -1,4 +1,5 @@
 import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
+import { ImportCallbackPayload } from '@interfaces/import-callback.interface';
 import { LocalStorageClaimItem } from '@interfaces/local-storage-claim-item.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
@@ -204,15 +205,23 @@ const sendBackImportedFileContent = async (fileContent: any) => {
         );
       }
     }
+    const response: ImportCallbackPayload = {
+      success: true,
+      message: 'html_popup_import_settings_successful',
+    };
     CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.IMPORT_SETTINGS_CALLBACK,
-      value: 'html_popup_import_settings_successful',
+      value: response,
     });
   } catch (err) {
     Logger.error(err);
+    const response: ImportCallbackPayload = {
+      success: false,
+      message: 'html_popup_import_settings_error',
+    };
     CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.IMPORT_SETTINGS_CALLBACK,
-      value: 'html_popup_import_settings_error',
+      value: response,
     });
   }
 };
