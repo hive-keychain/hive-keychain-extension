@@ -232,11 +232,13 @@ export const SendTransaction = (props: Props) => {
 
               for (let index = 0; index < parsedData.inputs.length; index++) {
                 const input = parsedData.inputs[index];
+                console.log(input, 'input');
 
                 let value;
                 const inputDisplayType = input.type;
 
                 switch (inputDisplayType) {
+                  case EvmInputDisplayType.ADDRESS:
                   case EvmInputDisplayType.WALLET_ADDRESS:
                   case EvmInputDisplayType.CONTRACT_ADDRESS:
                     value = EvmFormatUtils.formatAddress(input.value);
@@ -261,10 +263,11 @@ export const SendTransaction = (props: Props) => {
                     value = FormatUtils.withCommas(input.value);
                     break;
                   case EvmInputDisplayType.STRING:
+                  case EvmInputDisplayType.BYTES:
                     value = String(input.value);
                     break;
                   default:
-                    value = '';
+                    value = 'default value';
                 }
                 transactionConfirmationFields.otherFields.push({
                   name: `param ${index + 1}`,
