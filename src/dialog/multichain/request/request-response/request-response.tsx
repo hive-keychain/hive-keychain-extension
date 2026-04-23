@@ -9,6 +9,32 @@ type Props = {
   onClose?: () => void;
 };
 
+const escapeHtml = (text: string) =>
+  text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+const feedbackMessageHtml = (data: ResultMessage): string => {
+  const raw = String(data.msg.message ?? '');
+  switch (data.command) {
+    case DialogCommand.ANSWER_EVM_REQUEST:
+      return escapeHtml(raw);
+    case DialogCommand.ANSWER_REQUEST:
+      return raw
+        .split(/<br\s?\/?>/g)
+        .map(
+          (part) =>
+            `<p style="word-break:break-word">${escapeHtml(part)}</p>`,
+        )
+        .join('');
+    default:
+      return escapeHtml(raw);
+  }
+};
+
 export const RequestResponse = ({ data, onClose }: Props) => {
   if (data.msg.success) {
     setTimeout(() => {
@@ -20,25 +46,6 @@ export const RequestResponse = ({ data, onClose }: Props) => {
     }, DIALOG_FEEDBACK_DISPLAY_MS);
   }
 
-  const getErrorMessage = () => {
-    switch (data.command) {
-      case DialogCommand.ANSWER_EVM_REQUEST: {
-        return <>{data.msg.message}</>;
-      }
-      case DialogCommand.ANSWER_REQUEST: {
-        return (
-          <>
-            {data.msg.message.split(/<br\s?\/?>/g).map((msg, index) => (
-              <p key={`p-${index}`} style={{ wordBreak: 'break-word' }}>
-                {msg}
-              </p>
-            ))}
-          </>
-        );
-      }
-    }
-  };
-
   return (
     <ResultMessagePageComponent
       type={data.msg.success ? 'success' : 'error'}
@@ -47,7 +54,7 @@ export const RequestResponse = ({ data, onClose }: Props) => {
           ? 'message_container_title_success'
           : 'message_container_title_fail'
       }
-      message={getErrorMessage() as unknown as string}
+      message={feedbackMessageHtml(data)}
       skipMessageTranslation={true}
       autoCloseDelayMs={data.msg.success ? 3000 : undefined}
       onClose={() => window.close()}
