@@ -1088,6 +1088,7 @@ var hive_keychain = {
     data = Object.assign(
       {
         request_id: this.current_id,
+        extension_id: 'keychain',
       },
       data,
     );
