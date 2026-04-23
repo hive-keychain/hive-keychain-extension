@@ -4813,7 +4813,7 @@
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_fee_estimate_duration": {
-    "message": "<br $1 seconds",
+    "message": "~$1 seconds",
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_max_fee_label": {
