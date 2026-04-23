@@ -65,8 +65,7 @@ const upsertSavedEnsEntries = (
     };
 
     const existingIndex = nextSavedEnsList.findIndex((savedEns) => {
-      const sameAddress =
-        savedEns.address.toLowerCase() === normalizedAddress;
+      const sameAddress = savedEns.address.toLowerCase() === normalizedAddress;
       const sameEns =
         !!normalizedEns && savedEns.ens?.toLowerCase() === normalizedEns;
       return sameAddress || sameEns;
@@ -115,7 +114,11 @@ const buildWalletAutocompleteValue = (
 ): AutoCompleteValue => ({
   value: wallet.address,
   label: getAutocompleteLabel(wallet.address, wallet.label, savedEns?.ens),
-  subLabel: getAutocompleteSubLabel(wallet.address, wallet.label, savedEns?.ens),
+  subLabel: getAutocompleteSubLabel(
+    wallet.address,
+    wallet.label,
+    savedEns?.ens,
+  ),
   img: getAutocompleteImage(wallet.address, savedEns),
 });
 
@@ -140,9 +143,7 @@ const mergeEnsIntoAutocompleteItem = (
   return {
     ...autocompleteItem,
     label:
-      shouldUpdateLabel && savedEns.ens
-        ? savedEns.ens
-        : autocompleteItem.label,
+      shouldUpdateLabel && savedEns.ens ? savedEns.ens : autocompleteItem.label,
     subLabel:
       shouldUpdateLabel && savedEns.ens
         ? formattedAddress
@@ -663,7 +664,9 @@ const enrichWhiteListAutocomplete = async (
         ...category,
         values: category.values.map((value) => {
           const savedEns = nextSavedEnsMap.get(value.value.toLowerCase());
-          return savedEns ? mergeEnsIntoAutocompleteItem(value, savedEns) : value;
+          return savedEns
+            ? mergeEnsIntoAutocompleteItem(value, savedEns)
+            : value;
         }),
       };
     }),

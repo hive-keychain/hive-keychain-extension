@@ -25,6 +25,7 @@ import {
   EvmTransactionParserUtils,
 } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import Decimal from 'decimal.js';
@@ -241,7 +242,45 @@ export const SendTransaction = (props: Props) => {
                   case EvmInputDisplayType.ADDRESS:
                   case EvmInputDisplayType.WALLET_ADDRESS:
                   case EvmInputDisplayType.CONTRACT_ADDRESS:
-                    value = EvmFormatUtils.formatAddress(input.value);
+                    const isWalletAddress =
+                      await EvmWalletUtils.isWalletAddress(
+                        input.value,
+                        chainTmp as EvmChain,
+                      );
+                    if (isWalletAddress) {
+                      const inputDisplay =
+                        await transactionHook.getWalletAddressInput(
+                          input.value,
+                          chainTmp.chainId,
+                          transactionInfo,
+                          accounts,
+                        );
+                      value = inputDisplay.value;
+                    } else {
+                      const tokenInfo = await EvmTokensUtils.getTokenInfo(
+                        chainTmp.chainId,
+                        input.value,
+                      );
+                      value =
+                        tokenInfo && tokenInfo.symbol.length > 0 ? (
+                          <div className="value-content">
+                            {usedToken && (
+                              <EvmTokenLogo tokenInfo={tokenInfo} />
+                            )}
+                            <div>{tokenInfo.symbol}</div>
+                          </div>
+                        ) : (
+                          (
+                            await transactionHook.getWalletAddressInput(
+                              input.value,
+                              chainTmp.chainId,
+                              transactionInfo,
+                              accounts,
+                            )
+                          ).value
+                        );
+                    }
+
                     break;
 
                   case EvmInputDisplayType.BALANCE: {
