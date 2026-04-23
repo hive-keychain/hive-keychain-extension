@@ -121,6 +121,7 @@ const estimate = async (
         transactionData,
         gasLimit!,
         feeResult,
+        price,
       );
     }
 
@@ -280,6 +281,7 @@ const estimate = async (
         transactionData,
         gasLimit!,
         fullEstimation,
+        price,
       );
   }
   return fullEstimation;
@@ -289,6 +291,7 @@ const createDAppSuggestionFromTransactionData = async (
   transactionData: ProviderTransactionData,
   gasLimit: number,
   estimates: FullGasFeeEstimation,
+  mainTokenPrice: Decimal,
 ) => {
   if (!transactionData.gasLimit) {
     transactionData.gasLimit = gasLimit;
@@ -368,7 +371,9 @@ const createDAppSuggestionFromTransactionData = async (
       Number(transactionData.maxPriorityFeePerGas),
     ).div(EvmFormatUtils.GWEI),
     estimatedFeeInEth: estimatedFee,
+    estimatedFeeUSD: estimatedFee.mul(mainTokenPrice),
     maxFeeInEth: maxFee,
+    maxFeeUSD: maxFee.mul(mainTokenPrice),
     estimatedMaxDuration: estimatedMaxDuration,
     icon: SVGIcons.EVM_GAS_FEE_SUGGESTED,
     name: 'popup_html_evm_suggested_by_dapp_gas_fee_custom',

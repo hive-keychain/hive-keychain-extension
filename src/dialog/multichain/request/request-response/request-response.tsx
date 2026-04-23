@@ -26,8 +26,7 @@ const feedbackMessageHtml = (data: ResultMessage): string => {
       return raw
         .split(/<br\s?\/?>/g)
         .map(
-          (part) =>
-            `<p style="word-break:break-word">${escapeHtml(part)}</p>`,
+          (part) => `<p style="word-break:break-word">${escapeHtml(part)}</p>`,
         )
         .join('');
     default:
