@@ -1125,3 +1125,26 @@ window.addEventListener(
   },
   false,
 );
+
+// ---------------------------------------------------------------------------
+// Hive Unified Wallet Protocol
+// Registers on the shared window.hive namespace so dApps can use a single
+// API (window.hive) regardless of which wallet extension is installed.
+// See: https://ecency.github.io/browser-extension/hive-wallet-discovery.html
+// ---------------------------------------------------------------------------
+
+// Identity flag
+hive_keychain.isKeychain = true;
+
+// Register on shared namespace
+if (!window.hive) {
+  window.hive = hive_keychain;
+}
+if (!window.hive.providers) {
+  window.hive.providers = [];
+}
+window.hive.providers.push({
+  name: 'Hive Keychain',
+  rdns: 'com.hivekeychain',
+  provider: hive_keychain,
+});
