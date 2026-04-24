@@ -4,7 +4,7 @@ import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
@@ -30,6 +30,30 @@ export const SendTransaction = (props: Props) => {
     balanceInfo,
     forceOpenGasFeePanelEvent,
   } = useSendTransaction(request, data, accounts);
+
+  const needsGasFeePanel = Boolean(
+    transactionHook.ready &&
+      transactionHook.fields &&
+      chain &&
+      selectedAccount &&
+      transactionData &&
+      transactionData.type !== EvmTransactionType.EIP_155,
+  );
+
+  const [gasFeePanelReady, setGasFeePanelReady] = useState(false);
+
+  useEffect(() => {
+    if (needsGasFeePanel) {
+      setGasFeePanelReady(false);
+    }
+  }, [needsGasFeePanel, transactionData]);
+
+  const onGasFeePanelInitialEstimationComplete = useCallback(() => {
+    setGasFeePanelReady(true);
+  }, []);
+
+  const showLoading =
+    transactionHook.loading || (needsGasFeePanel && !gasFeePanelReady);
 
   const handleClickOnConfirm = () => {
     if (
@@ -62,22 +86,20 @@ export const SendTransaction = (props: Props) => {
           }
           bottomPanel={
             <>
-              {transactionHook.ready &&
-                transactionHook.fields &&
-                chain &&
-                selectedAccount &&
-                transactionData &&
-                transactionData.type !== EvmTransactionType.EIP_155 && (
-                  <GasFeePanel
-                    chain={chain}
-                    wallet={selectedAccount.wallet}
-                    selectedFee={transactionHook.selectedFee}
-                    onSelectFee={transactionHook.setSelectedFee}
-                    transactionType={transactionData.type}
-                    transactionData={transactionData}
-                    setErrorMessage={transactionHook.setErrorMessage}
-                  />
-                )}
+              {needsGasFeePanel && (
+                <GasFeePanel
+                  chain={chain!}
+                  wallet={selectedAccount!.wallet}
+                  selectedFee={transactionHook.selectedFee}
+                  onSelectFee={transactionHook.setSelectedFee}
+                  transactionType={transactionData!.type}
+                  transactionData={transactionData}
+                  setErrorMessage={transactionHook.setErrorMessage}
+                  onInitialEstimationComplete={
+                    onGasFeePanelInitialEstimationComplete
+                  }
+                />
+              )}
               {shouldDisplayBalanceChange &&
                 balanceInfo &&
                 balanceInfo.mainBalance.before &&
@@ -90,7 +112,7 @@ export const SendTransaction = (props: Props) => {
           transactionHook={transactionHook}
         />
       )}
-      <LoadingComponent hide={!transactionHook.loading} />
+      <LoadingComponent hide={!showLoading} />
     </>
   );
 };
