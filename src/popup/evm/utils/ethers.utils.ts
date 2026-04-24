@@ -229,6 +229,15 @@ const getCallExceptionMessage = (
     };
   }
 
+  if (reason) {
+    return {
+      message:
+        'evm_transaction_result_error_message_execution_reverted_with_reason',
+      params: [reason],
+      isBlocking: true,
+    };
+  }
+
   return {
     message: 'evm_transaction_result_error_message_call_exception',
     isBlocking: true,

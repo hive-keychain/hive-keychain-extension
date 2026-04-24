@@ -363,7 +363,7 @@ const EvmTransactionResult = ({
 
   const handleErrors = (error: EtherRPCCustomError | undefined) => {
     if (error) {
-      setErrorMessage(error.message);
+      setErrorMessage(error.message, error.params ?? []);
     }
   };
 
