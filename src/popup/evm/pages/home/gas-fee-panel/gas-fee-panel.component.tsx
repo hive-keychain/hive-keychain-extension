@@ -15,7 +15,7 @@ import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
-import { ethers, HDNodeWallet } from 'ethers';
+import { HDNodeWallet } from 'ethers';
 import EventEmitter from 'events';
 import React, { useEffect, useRef, useState } from 'react';
 import ButtonComponent, {
@@ -102,15 +102,9 @@ export const GasFeePanel = ({
         maxBaseFeeInGwei: maxBaseFeeInGwei.toFixed(),
         priorityFeeInGwei: priorityFeeInGwei.toFixed(),
 
-        gasPriceInEth: new Decimal(
-          ethers.formatUnits(Number(gasLimit.toFixed(0)), 'gwei'),
-        ).mul(gasPriceInGwei),
-        priorityFeeInEth: new Decimal(
-          ethers.formatUnits(Number(gasLimit.toFixed(0)), 'gwei'),
-        ).mul(priorityFeeInGwei),
-        maxBaseFeeInEth: new Decimal(
-          ethers.formatUnits(Number(gasLimit.toFixed(0)), 'gwei'),
-        ).mul(maxBaseFeeInGwei),
+        gasPriceInEth: gasLimit.mul(gasPriceInGwei).div(1e9),
+        priorityFeeInEth: gasLimit.mul(priorityFeeInGwei).div(1e9),
+        maxBaseFeeInEth: gasLimit.mul(maxBaseFeeInGwei).div(1e9),
       });
     }
   }, [selectedFee]);
