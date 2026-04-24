@@ -48,6 +48,19 @@ html {
       box-sizing: border-box;
       font-size: 16px;
 
+      .loading-container {
+        .overlay {
+          background: var(--background-color);
+          opacity: 1;
+        }
+
+        .loading-text,
+        .loading-caption,
+        .loading-operation span {
+          color: var(--main-font-color);
+        }
+      }
+
       @include dialogs-title-panel();
 
       .caption {
