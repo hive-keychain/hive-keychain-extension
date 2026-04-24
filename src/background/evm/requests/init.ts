@@ -138,7 +138,12 @@ export const initEvmRequestHandler = async (
         EvmMethodPermissionMap[request.method]!,
       );
       if (hasPermission) {
-        evmRequestWithConfirmation(requestHandler, tab!, request, dappInfo);
+        await evmRequestWithConfirmation(
+          requestHandler,
+          tab!,
+          request,
+          dappInfo,
+        );
       } else {
         // return error ?
         console.log('return error ? (Init L82)');
@@ -158,10 +163,20 @@ export const initEvmRequestHandler = async (
             dappInfo,
           );
         } else {
-          evmRequestWithConfirmation(requestHandler, tab!, request, dappInfo);
+          await evmRequestWithConfirmation(
+          requestHandler,
+          tab!,
+          request,
+          dappInfo,
+        );
         }
       } else {
-        evmRequestWithConfirmation(requestHandler, tab!, request, dappInfo);
+        await evmRequestWithConfirmation(
+          requestHandler,
+          tab!,
+          request,
+          dappInfo,
+        );
       }
     }
   } else {

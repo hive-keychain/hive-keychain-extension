@@ -1,35 +1,14 @@
-import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
-import { createOrUpdateDialog } from '@background/multichain/dialog-lifecycle';
+import { syncSharedDialogWindow } from '@background/multichain/dialog-coordinator';
 import { EvmDappInfo, EvmRequest } from '@interfaces/evm-provider.interface';
-import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import { CommunicationUtils } from 'src/utils/communication.utils';
 
-export const evmRequestWithConfirmation = (
+export const evmRequestWithConfirmation = async (
   requestHandler: EvmRequestHandler,
-  tab: number,
-  request: EvmRequest,
-  dappInfo: EvmDappInfo,
+  _tab: number,
+  _request: EvmRequest,
+  _dappInfo: EvmDappInfo,
 ) => {
-  const callback = () => {
-    CommunicationUtils.runtimeSendMessage({
-      command: DialogCommand.SEND_DIALOG_CONFIRM_EVM,
-      request,
-      dappInfo,
-      tab,
-      accounts: requestHandler.accounts,
-    });
-  };
-
-  let height = 600;
-  if (
-    request.method === EvmRequestMethod.SEND_TRANSACTION ||
-    request.method === EvmRequestMethod.SEND_RAW_TRANSACTION
-  ) {
-    height = 800;
-  }
-
-  createOrUpdateDialog(callback, requestHandler, undefined, height);
+  await syncSharedDialogWindow({ evmRequestHandler: requestHandler });
 };
 
 /* istanbul ignore next */
