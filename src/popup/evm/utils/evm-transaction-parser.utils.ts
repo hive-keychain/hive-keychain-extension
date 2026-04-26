@@ -385,6 +385,11 @@ const getAddressWarning = async (
   localAccounts: EvmAccount[],
 ) => {
   const warnings: EvmTransactionWarning[] = [];
+  const isAddress = ethers.isAddress(address);
+  const resolvedEnsAddress = !isAddress
+    ? await EvmRequestsUtils.resolveEns(address)
+    : '';
+
   if (verifyTransactionInformation?.to?.isBlacklisted) {
     warnings.push({
       ignored: false,
@@ -396,6 +401,17 @@ const getAddressWarning = async (
   if (
     !(await EvmAddressesUtils.isWhitelisted(address, chainId, localAccounts))
   ) {
+    const savedEns = isAddress
+      ? await EvmAddressesUtils.getEnsDataFromAddress(address)
+      : await EvmAddressesUtils.getEnsDataFromEns(address);
+    const ensName =
+      savedEns?.ens ??
+      (isAddress
+        ? await EvmRequestsUtils.getEnsForAddress(address)
+        : resolvedEnsAddress
+          ? address
+          : undefined);
+
     warnings.push({
       ignored: false,
       level: EvmTransactionWarningLevel.LOW,
@@ -403,6 +419,7 @@ const getAddressWarning = async (
       type: EvmTransactionWarningType.WHITELIST_ADDRESS,
       extraData: {
         placeholder: 'evm_transaction_receiver_favorite_label',
+        ...(ensName ? { defaultLabel: ensName } : {}),
       },
       onConfirm: (label: string) => {
         EvmAddressesUtils.saveWalletAddress(address, chainId, label);
@@ -422,8 +439,8 @@ const getAddressWarning = async (
     });
   }
 
-  if (!ethers.isAddress(address)) {
-    if ((await EvmRequestsUtils.resolveEns(address)) === '') {
+  if (!isAddress) {
+    if (resolvedEnsAddress === '') {
       warnings.push({
         ignored: false,
         level: EvmTransactionWarningLevel.MEDIUM,

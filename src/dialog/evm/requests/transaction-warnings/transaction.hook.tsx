@@ -98,6 +98,11 @@ export const useTransactionHook = (
     warningIndex: number,
     warning: EvmTransactionWarning,
   ) => {
+    setWhitelistLabel(
+      warning.type === EvmTransactionWarningType.WHITELIST_ADDRESS
+        ? (warning.extraData?.defaultLabel ?? '')
+        : '',
+    );
     setSelectedSingleWarning({
       warning,
       fieldIndex,
