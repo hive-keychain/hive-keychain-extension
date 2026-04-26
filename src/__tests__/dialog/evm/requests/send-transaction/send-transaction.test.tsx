@@ -90,12 +90,13 @@ describe('send-transaction proxy tests:\n', () => {
       .fn()
       .mockImplementation(
         async (
-          _address: string,
+          address: string,
           _chainId: string,
           _transactionInfo: unknown,
           _accounts: unknown[],
           name = '',
         ) => ({
+          address,
           name,
           type: 'wallet-address',
           value: '0x0000...00ff',
@@ -292,7 +293,7 @@ describe('send-transaction proxy tests:\n', () => {
     expect(EvmLightNodeUtils.getAbi).not.toHaveBeenCalled();
   });
 
-  it('places the used account right after the domain when there is no smart contract field', async () => {
+  it('omits From when it matches Account with different casing', async () => {
     render(
       <SendTransaction
         accounts={[
@@ -310,7 +311,7 @@ describe('send-transaction proxy tests:\n', () => {
             chainId: '1',
             params: [
               {
-                from: '0x00000000000000000000000000000000000000ff',
+                from: '0x00000000000000000000000000000000000000FF',
                 gasLimit: 21000,
                 maxFeePerGas: '1',
                 maxPriorityFeePerGas: '1',
@@ -333,7 +334,6 @@ describe('send-transaction proxy tests:\n', () => {
       'evm_chain',
       'dialog_evm_domain',
       'dialog_account',
-      'evm_operation_from',
       'evm_operation_to',
     ]);
   });

@@ -1,5 +1,8 @@
 import { TransactionConfirmationField } from '@popup/evm/interfaces/evm-transactions.interface';
 
+const ACCOUNT_FIELD_NAME = 'dialog_account';
+const FROM_FIELD_NAMES = ['evm_operation_from', 'from'];
+
 const PRIORITY_FIELD_NAMES = [
   ['evm_chain'],
   ['dialog_evm_domain'],
@@ -9,6 +12,28 @@ const PRIORITY_FIELD_NAMES = [
   ],
   ['dialog_account', 'evm_target_account'],
 ];
+
+const normalizeEvmAddress = (address?: string) => address?.toLowerCase();
+
+export const removeMatchingFromField = (
+  fields: TransactionConfirmationField[] = [],
+) => {
+  const accountAddress = normalizeEvmAddress(
+    fields.find((field) => field.name === ACCOUNT_FIELD_NAME)?.address,
+  );
+
+  if (!accountAddress) {
+    return fields;
+  }
+
+  return fields.filter((field) => {
+    if (!FROM_FIELD_NAMES.includes(field.name)) {
+      return true;
+    }
+
+    return normalizeEvmAddress(field.address) !== accountAddress;
+  });
+};
 
 export const reorderEvmConfirmationFields = (
   fields: TransactionConfirmationField[] = [],

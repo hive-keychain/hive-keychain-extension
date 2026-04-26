@@ -24,7 +24,10 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import Decimal from 'decimal.js';
 import { ethers, HDNodeWallet, Wallet } from 'ethers';
 import React from 'react';
-import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
+import {
+  removeMatchingFromField,
+  reorderEvmConfirmationFields,
+} from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
 import {
   formatDecodedArgumentDisplayValue,
   formatFallbackParsedInputValue,
@@ -402,6 +405,12 @@ export async function runSendTransactionInit(
                   input.name,
                   usedToken,
                 );
+              const fieldAddress = [
+                EvmInputDisplayType.ADDRESS,
+                EvmInputDisplayType.WALLET_ADDRESS,
+              ].includes(inputDisplayType)
+                ? String(argumentValue)
+                : undefined;
               const value = await formatDecodedArgumentDisplayValue(
                 inputDisplayType,
                 argumentValue,
@@ -415,6 +424,7 @@ export async function runSendTransactionInit(
                 name: input.name,
                 type: inputDisplayType,
                 value: value,
+                ...(fieldAddress ? { address: fieldAddress } : {}),
                 warnings: await EvmTransactionParserUtils.getFieldWarnings(
                   normalizedAbi,
                   decodedTransactionData.name,
@@ -610,7 +620,7 @@ export async function runSendTransactionInit(
     }
     setTransactionData(tData);
     transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
-      transactionConfirmationFields.otherFields,
+      removeMatchingFromField(transactionConfirmationFields.otherFields),
     );
     transactionHook.setFields(transactionConfirmationFields);
     if (lastTransactionInfo) {

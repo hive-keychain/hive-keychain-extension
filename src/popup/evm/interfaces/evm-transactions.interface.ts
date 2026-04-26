@@ -82,6 +82,7 @@ export interface TransactionConfirmationField {
   name: string;
   value: any;
   type: string;
+  address?: string;
   warnings?: EvmTransactionWarning[];
   information?: EvmTransactionInfo[];
   style?: any;

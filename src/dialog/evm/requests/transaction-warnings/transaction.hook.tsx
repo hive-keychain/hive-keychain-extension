@@ -417,6 +417,7 @@ export const useTransactionHook = (
     return {
       name: name,
       type: EvmInputDisplayType.WALLET_ADDRESS,
+      address,
       value: (
         <EvmAddressComponent
           address={address}

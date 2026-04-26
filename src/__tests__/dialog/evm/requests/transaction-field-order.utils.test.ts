@@ -1,4 +1,7 @@
-import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
+import {
+  removeMatchingFromField,
+  reorderEvmConfirmationFields,
+} from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
 
 describe('reorderEvmConfirmationFields', () => {
   it('moves typed-data contract and account rows into the shared priority order', () => {
@@ -34,6 +37,58 @@ describe('reorderEvmConfirmationFields', () => {
       'dialog_account',
       'random_a',
       'random_b',
+    ]);
+  });
+});
+
+describe('removeMatchingFromField', () => {
+  it('removes EVM From when it matches Account case-insensitively', () => {
+    const fields = [
+      {
+        address: '0x00000000000000000000000000000000000000ff',
+        name: 'dialog_account',
+        type: 'wallet-address',
+        value: 'Account',
+      },
+      {
+        address: '0x00000000000000000000000000000000000000FF',
+        name: 'evm_operation_from',
+        type: 'wallet-address',
+        value: 'From',
+      },
+      {
+        address: '0x00000000000000000000000000000000000000ab',
+        name: 'evm_operation_to',
+        type: 'wallet-address',
+        value: 'To',
+      },
+    ] as any[];
+
+    expect(removeMatchingFromField(fields).map((field) => field.name)).toEqual([
+      'dialog_account',
+      'evm_operation_to',
+    ]);
+  });
+
+  it('keeps From when it differs from Account', () => {
+    const fields = [
+      {
+        address: '0x00000000000000000000000000000000000000ff',
+        name: 'dialog_account',
+        type: 'wallet-address',
+        value: 'Account',
+      },
+      {
+        address: '0x00000000000000000000000000000000000000aa',
+        name: 'from',
+        type: 'wallet-address',
+        value: 'From',
+      },
+    ] as any[];
+
+    expect(removeMatchingFromField(fields).map((field) => field.name)).toEqual([
+      'dialog_account',
+      'from',
     ]);
   });
 });
