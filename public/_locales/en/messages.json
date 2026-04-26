@@ -6359,6 +6359,10 @@
     "message": "Transaction execution was reverted by the contract",
     "description": "Transaction result error message execution reverted"
   },
+  "evm_transaction_result_error_message_execution_reverted_with_reason": {
+    "message": "Transaction execution was reverted by the contract : $1",
+    "description": "Transaction result error message execution reverted"
+  },
   "evm_transaction_result_error_message_call_exception": {
     "message": "Transaction failed during contract execution",
     "description": "Transaction result error message call exception"

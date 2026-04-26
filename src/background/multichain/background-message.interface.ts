@@ -85,6 +85,9 @@ export type RequestAddCustomEvmChainDialogMessage = {
     initialChain?: Partial<EvmChain>;
   };
   tab: number;
+  queueSize?: number;
+  queuePosition?: number;
+  queue?: (SendConfirmHiveMessage | SendConfirmEvmMessage)[];
 };
 
 export type UnlockEvmDialogMessage = {

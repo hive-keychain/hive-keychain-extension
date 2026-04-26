@@ -33,6 +33,7 @@ const EvmApp = ({
 }: PropsFromRedux) => {
   const [displaySplashscreen, setDisplaySplashscreen] = useState(true);
   const [isAppReady, setIsAppReady] = useState(false);
+
   useEffect(() => {
     if (!isAppReady) {
       return;

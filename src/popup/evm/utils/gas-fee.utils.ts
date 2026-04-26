@@ -13,9 +13,22 @@ import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
-import { ethers, HDNodeWallet } from 'ethers';
+import { HDNodeWallet } from 'ethers';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import Logger from 'src/utils/logger.utils';
+
+/** Above ~200M is never a real per-tx gas limit; larger values are usually mis-encoded or malicious. */
+const MAX_PLAUSIBLE_DAPP_GAS_LIMIT = 200_000_000;
+const MIN_PLAUSIBLE_DAPP_GAS_LIMIT = 21_000;
+
+const isPlausibleGasLimit = (n: number | undefined | null): n is number => {
+  return (
+    n != null &&
+    Number.isFinite(n) &&
+    n >= MIN_PLAUSIBLE_DAPP_GAS_LIMIT &&
+    n <= MAX_PLAUSIBLE_DAPP_GAS_LIMIT
+  );
+};
 
 const getGasFeeEstimations = async (chain: Chain) => {
   const result = await EvmLightNodeApi.get(
@@ -40,6 +53,9 @@ const estimate = async (
   }
 
   const price = new Decimal(mainTokenPrice);
+  if (gasLimit != null && !isPlausibleGasLimit(gasLimit)) {
+    gasLimit = undefined;
+  }
   if (!gasLimit) {
     gasLimit = Number(
       await EthersUtils.getGasLimit(
@@ -88,9 +104,9 @@ const estimate = async (
 
     const maxFeePerGasInWei = EvmFormatUtils.gweiToWei(maxFeePerGasInGwei);
 
-    const maxFee = new Decimal(
-      ethers.formatEther(maxFeePerGasInWei.mul(gasLimit).toNumber()),
-    );
+    const maxFee = maxFeePerGasInWei
+      .mul(gasLimit)
+      .div(new Decimal(EvmFormatUtils.WEI));
 
     const valueUSD = maxFee.mul(price);
 
@@ -293,9 +309,14 @@ const createDAppSuggestionFromTransactionData = async (
   estimates: FullGasFeeEstimation,
   mainTokenPrice: Decimal,
 ) => {
-  if (!transactionData.gasLimit) {
+  const dappGasRaw =
+    transactionData.gasLimit != null
+      ? Number(transactionData.gasLimit)
+      : undefined;
+  if (transactionData.gasLimit == null || !isPlausibleGasLimit(dappGasRaw)) {
     transactionData.gasLimit = gasLimit;
   }
+  const gasLimitToUse = Number(transactionData.gasLimit);
 
   let maxFee: Decimal;
   let estimatedFee: Decimal = new Decimal(0);
@@ -334,11 +355,11 @@ const createDAppSuggestionFromTransactionData = async (
   }
 
   maxFee = maxFee!
-    .mul(Decimal.div(Number(transactionData.gasLimit), 1000000))
+    .mul(Decimal.div(gasLimitToUse, 1000000))
     .div(1000);
 
   estimatedFee = new Decimal(Number(estimatedFee ?? 0))
-    .mul(Decimal.div(Number(transactionData.gasLimit), 1000000))
+    .mul(Decimal.div(gasLimitToUse, 1000000))
     .div(1000);
   let estimatedMaxDuration = new Decimal(-1);
   if (
@@ -360,7 +381,7 @@ const createDAppSuggestionFromTransactionData = async (
 
   return {
     type: transactionData.type,
-    gasLimit: new Decimal(transactionData.gasLimit),
+    gasLimit: new Decimal(gasLimitToUse),
     gasPriceInGwei: new Decimal(Number(transactionData.gasPrice)).div(
       EvmFormatUtils.GWEI,
     ),

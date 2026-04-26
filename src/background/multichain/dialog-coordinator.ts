@@ -4,13 +4,18 @@ import {
   removeWindow,
 } from '@background/multichain/dialog-lifecycle';
 import {
+  ConfirmDialogMessage,
   getCurrentDialogItem,
   getRequestHandlers,
+  isEquivalentDialogDispatch,
+  isQueueGrowthOnlyDispatch,
   RequestHandlers,
 } from '@background/multichain/dialog-request.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+
+let lastDispatchedDialogMessage: ConfirmDialogMessage | null = null;
 
 export const getNextDialogRequestOrder = async () => {
   const currentOrder =
@@ -41,6 +46,7 @@ export const syncSharedDialogWindow = async (
     handlers,
   );
   if (!visibleRequests.length) {
+    lastDispatchedDialogMessage = null;
     const windowId = await getDialogWindowId();
     if (windowId) {
       removeWindow(windowId);
@@ -50,10 +56,29 @@ export const syncSharedDialogWindow = async (
 
   if (!message) return;
 
+  const windowId = await getDialogWindowId();
+  const confirmMessage = message as ConfirmDialogMessage;
+
+  if (
+    windowId &&
+    isEquivalentDialogDispatch(lastDispatchedDialogMessage, confirmMessage)
+  ) {
+    return;
+  }
+
+  const queueGrowthOnly = isQueueGrowthOnlyDispatch(
+    lastDispatchedDialogMessage,
+    confirmMessage,
+  );
+
   await createOrUpdateDialog(
-    () => CommunicationUtils.runtimeSendMessage(message),
+    () => {
+      CommunicationUtils.runtimeSendMessage(message);
+      lastDispatchedDialogMessage = confirmMessage;
+    },
     undefined,
     'dialog.html',
     height,
+    { focus: !queueGrowthOnly },
   );
 };

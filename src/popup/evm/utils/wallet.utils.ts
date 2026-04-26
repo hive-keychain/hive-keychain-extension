@@ -434,7 +434,8 @@ const isWalletAddress = async (address: string, chain: EvmChain) => {
   try {
     const provider = await EthersUtils.getProvider(chain);
     const code = await provider.getCode(address);
-    if (code !== '0x') return false;
+    if (code === '0x' || code.startsWith('0xef0100')) return true;
+    else return false;
   } catch (error) {}
   // if it comes here, then it's not a contract.
   return true;

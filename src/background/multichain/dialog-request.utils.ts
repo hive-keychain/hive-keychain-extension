@@ -68,7 +68,7 @@ export type CurrentDialogItem = {
   visibleRequests: VisibleDialogRequest[];
 };
 
-type ConfirmDialogMessage =
+export type ConfirmDialogMessage =
   | SendConfirmHiveMessage
   | SendConfirmEvmMessage
   | RequestAddCustomEvmChainDialogMessage;
@@ -269,6 +269,37 @@ const isSameDialogMessage = (
     left.tab === right.tab &&
     getRequestId(left) === getRequestId(right)
   );
+};
+
+/** Same visible head request (command, tab, request_id). Queue size may differ. */
+export const isSameDialogQueueHead = (
+  left: ConfirmDialogMessage | null,
+  right: ConfirmDialogMessage,
+): boolean => {
+  if (!left) return false;
+  return isSameDialogMessage(left, right);
+};
+
+/** Head + queue position/size match — skip redundant dialog push and focus. */
+export const isEquivalentDialogDispatch = (
+  left: ConfirmDialogMessage | null,
+  right: ConfirmDialogMessage,
+): boolean => {
+  if (!left) return false;
+  if (!isSameDialogMessage(left, right)) return false;
+  if (left.queueSize !== right.queueSize) return false;
+  if (left.queuePosition !== right.queuePosition) return false;
+  return true;
+};
+
+/** Same head, but queue length changed — refresh UI without stealing focus. */
+export const isQueueGrowthOnlyDispatch = (
+  previous: ConfirmDialogMessage | null,
+  next: ConfirmDialogMessage,
+): boolean => {
+  if (!previous) return false;
+  if (!isSameDialogMessage(previous, next)) return false;
+  return previous.queueSize !== next.queueSize;
 };
 
 const buildHiveTransferMessage = (
@@ -596,7 +627,8 @@ export const getCurrentDialogItem = async (
       isSameDialogMessage(message as any, currentMessage),
     ) ?? currentMessage) as any,
     height:
-      request?.method === EvmRequestMethod.SEND_TRANSACTION
+      request?.method === EvmRequestMethod.SEND_TRANSACTION ||
+      request?.method === EvmRequestMethod.SEND_RAW_TRANSACTION
         ? EVM_TRANSACTION_DIALOG_HEIGHT
         : DEFAULT_DIALOG_HEIGHT,
     visibleRequests,

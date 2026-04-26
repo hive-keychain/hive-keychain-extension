@@ -15,9 +15,9 @@ import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
-import { ethers, HDNodeWallet } from 'ethers';
+import { HDNodeWallet } from 'ethers';
 import EventEmitter from 'events';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -40,6 +40,8 @@ interface GasFeePanelProps {
   transactionData?: ProviderTransactionData;
   forceOpenGasFeePanelEvent?: EventEmitter;
   setErrorMessage: (error: EtherRPCCustomError) => void;
+  /** Fires when the initial gas estimate request finishes (success or error). */
+  onInitialEstimationComplete?: () => void;
 }
 
 export const GasFeePanel = ({
@@ -52,7 +54,9 @@ export const GasFeePanel = ({
   transactionData,
   forceOpenGasFeePanelEvent,
   setErrorMessage,
+  onInitialEstimationComplete,
 }: GasFeePanelProps) => {
+  const initGenerationRef = useRef(0);
   const [isAdvancedPanelOpen, setIsAdvancedPanelOpen] = useState(false);
   const [feeEstimation, setFeeEstimation] = useState<FullGasFeeEstimation>();
 
@@ -98,20 +102,15 @@ export const GasFeePanel = ({
         maxBaseFeeInGwei: maxBaseFeeInGwei.toFixed(),
         priorityFeeInGwei: priorityFeeInGwei.toFixed(),
 
-        gasPriceInEth: new Decimal(
-          ethers.formatUnits(Number(gasLimit.toFixed(0)), 'gwei'),
-        ).mul(gasPriceInGwei),
-        priorityFeeInEth: new Decimal(
-          ethers.formatUnits(Number(gasLimit.toFixed(0)), 'gwei'),
-        ).mul(priorityFeeInGwei),
-        maxBaseFeeInEth: new Decimal(
-          ethers.formatUnits(Number(gasLimit.toFixed(0)), 'gwei'),
-        ).mul(maxBaseFeeInGwei),
+        gasPriceInEth: gasLimit.mul(gasPriceInGwei).div(1e9),
+        priorityFeeInEth: gasLimit.mul(priorityFeeInGwei).div(1e9),
+        maxBaseFeeInEth: gasLimit.mul(maxBaseFeeInGwei).div(1e9),
       });
     }
   }, [selectedFee]);
 
   const init = async () => {
+    const generation = ++initGenerationRef.current;
     let estimate;
 
     const mainTokenInfo = await EvmTokensUtils.getMainTokenInfo(
@@ -197,6 +196,10 @@ export const GasFeePanel = ({
         err.message,
       );
       setErrorMessage(error);
+    } finally {
+      if (generation === initGenerationRef.current) {
+        onInitialEstimationComplete?.();
+      }
     }
   };
 

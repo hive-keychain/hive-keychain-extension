@@ -46,14 +46,23 @@ export const getDialogWindowId = async () => {
   );
 };
 
-const updateExistingDialog = async (windowId: number, height: number) => {
+export type CreateOrUpdateDialogOptions = {
+  /** When false, skip chrome.windows.update so the dialog does not steal focus (e.g. queue-only refresh). */
+  focus?: boolean;
+};
+
+const updateExistingDialog = async (
+  windowId: number,
+  height: number,
+  focus: boolean,
+) => {
   const currentWindow = await getCurrentWindow();
 
   return new Promise<void>((resolve, reject) => {
     chrome.windows.update(
       windowId,
       {
-        focused: true,
+        focused: focus,
         height,
         width: DIALOG_WIDTH,
         left: currentWindow.width! - DIALOG_WIDTH + currentWindow.left!,
@@ -75,12 +84,16 @@ export const createOrUpdateDialog = async (
   requestHandler?: HiveRequestsHandler | EvmRequestHandler,
   popupHtml = 'dialog.html',
   height = 600,
+  options?: CreateOrUpdateDialogOptions,
 ) => {
+  const focus = options?.focus !== false;
   const windowId = (await getDialogWindowId()) ?? requestHandler?.windowId;
 
   if (windowId) {
     try {
-      await updateExistingDialog(windowId, height);
+      if (focus) {
+        await updateExistingDialog(windowId, height, true);
+      }
       requestHandler?.setWindowId(windowId);
       await saveDialogWindowId(windowId);
       waitForDialogReady(callback);

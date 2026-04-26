@@ -120,7 +120,7 @@ export const useTransactionHook = (
       setMessage({
         key: error.message,
         type: MessageType.ERROR,
-        params: [],
+        params: error.params ?? [],
       });
     } else {
       setMessage(undefined);
