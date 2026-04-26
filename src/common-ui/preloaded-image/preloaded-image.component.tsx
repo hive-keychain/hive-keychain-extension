@@ -1,5 +1,5 @@
 import { useThemeContext } from '@popup/theme.context';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Shimmer, Image as ShimmerImage } from 'react-shimmer';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -16,6 +16,15 @@ interface PreloadedImageProps {
   useDefaultSVG?: SVGIcons;
 }
 
+function isImageSrcLoadedSync(url: string): boolean {
+  if (typeof window === 'undefined' || !url) {
+    return false;
+  }
+  const probe = new Image();
+  probe.src = url;
+  return probe.complete && probe.naturalWidth > 0;
+}
+
 export const PreloadedImage = ({
   src,
   alt,
@@ -27,7 +36,14 @@ export const PreloadedImage = ({
   useDefaultSVG,
 }: PreloadedImageProps) => {
   const [background, setBackground] = useState<string>('transparent');
+  const [cachedPathError, setCachedPathError] = useState(false);
   const { theme } = useThemeContext();
+
+  const skipShimmer = useMemo(() => isImageSrcLoadedSync(src), [src]);
+
+  useEffect(() => {
+    setCachedPathError(false);
+  }, [src]);
 
   useEffect(() => {
     if (!src) {
@@ -99,6 +115,41 @@ export const PreloadedImage = ({
     useDefaultSVG,
   ]);
 
+  const errorFallback = (
+    <>
+      {useDefaultSVG && (
+        <SVGIcon
+          icon={useDefaultSVG}
+          className={`currency-icon is-svg ${
+            addBackground ? 'add-background' : ''
+          }`}
+          background={background}
+        />
+      )}
+      {!useDefaultSVG && placeholder && (
+        <img
+          src={placeholder}
+          className={`${className} ${addBackground ? 'add-background' : ''}`}
+          style={{ background: background }}
+        />
+      )}
+    </>
+  );
+
+  if (skipShimmer) {
+    if (cachedPathError) {
+      return <>{errorFallback}</>;
+    }
+    return (
+      <img
+        src={src}
+        className={`${className} ${addBackground ? 'add-background' : ''}`}
+        style={{ background: background }}
+        onError={() => setCachedPathError(true)}
+      />
+    );
+  }
+
   return (
     <>
       <ShimmerImage
@@ -115,28 +166,7 @@ export const PreloadedImage = ({
           className: `${className} ${addBackground ? 'add-background' : ''}`,
           style: { background: background },
         }}
-        errorFallback={() => (
-          <>
-            {useDefaultSVG && (
-              <SVGIcon
-                icon={useDefaultSVG}
-                className={`currency-icon is-svg ${
-                  addBackground ? 'add-background' : ''
-                }`}
-                background={background}
-              />
-            )}
-            {!useDefaultSVG && placeholder && (
-              <img
-                src={placeholder}
-                className={`${className} ${
-                  addBackground ? 'add-background' : ''
-                }`}
-                style={{ background: background }}
-              />
-            )}
-          </>
-        )}
+        errorFallback={() => errorFallback}
       />
     </>
   );
