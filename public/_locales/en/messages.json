@@ -2077,7 +2077,7 @@
     "description": "Text on rpc node settings page"
   },
   "popup_html_rpc_missing_fields": {
-    "message": "You need to at least fill RPC Node",
+    "message": "You need to enter an RPC Node",
     "description": "Error message on rpc node settings page"
   },
 
