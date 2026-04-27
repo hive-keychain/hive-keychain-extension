@@ -30,7 +30,7 @@
     }
   }
 
-  .add-blockchain-panel {
+  .manage-chains-panel {
     display: flex;
     flex-direction: row !important;
     align-items: center;
@@ -38,6 +38,7 @@
     padding: 10px 6px;
     box-sizing: border-box;
     @include poppins500(14px);
+    cursor: pointer;
     --add-icon-color: #{$red};
     .text {
       color: var(--main-font-color);
@@ -45,14 +46,22 @@
     &:hover {
       background: $red;
       --add-icon-color: white;
+      --menu-icon-color: white;
       .text {
         color: white;
       }
+      .svg-icon {
+        --menu-icon-color: white;
+      }
     }
     .svg-icon {
-      @include icon-size(20px);
+      @include icon-size(32px);
+      --menu-icon-border-width: 0;
+      --menu-icon-color: #{$red};
       svg {
-        @include icon-size(20px);
+        @include icon-size(32px);
+        transform: scale(1.45);
+        transform-origin: center;
       }
     }
   }

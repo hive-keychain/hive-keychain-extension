@@ -3,14 +3,19 @@
   flex: 1;
   flex-direction: column;
   align-items: center;
-  height: calc(100% - 92px);
+  height: calc(100% - 80px);
   overflow: auto;
   row-gap: 16px;
+
+  &.chain-selector-page--embedded {
+    height: 100%;
+  }
 
   .search-container {
     display: flex;
     column-gap: 8px;
     width: 85%;
+    align-items: center;
     .custom-checkbox {
       border-color: white;
     }
@@ -21,6 +26,19 @@
     flex-direction: column;
     row-gap: 8px;
     width: 100%;
+
+    &::after {
+      content: '';
+      display: block;
+      flex: 0 0 48px;
+    }
+
+    .chain-selector-empty {
+      margin: 0 24px;
+      font-size: 13px;
+      opacity: 0.85;
+      color: var(--main-font-color);
+    }
 
     .chain-cards-container {
       display: flex;
@@ -56,11 +74,13 @@
         text-align: center;
         justify-content: space-between;
         height: 130px;
+        position: relative;
+        outline: none;
 
         .svg-icon {
-          @include icon-size(45px);
+          @include icon-size(24px);
           svg {
-            @include icon-size(45px);
+            @include icon-size(24px);
           }
         }
         .chain-card__logo {
@@ -70,6 +90,71 @@
 
         .chain-card__logo.chain-logo-initials {
           @include poppins600(14px);
+        }
+
+        .chain-card__meta-row {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          column-gap: 8px;
+          min-height: 24px;
+          position: relative;
+        }
+
+        .add-icon {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.9);
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transition:
+            opacity 120ms ease,
+            transform 120ms ease;
+        }
+
+        &.chain-card--disabled:hover .chain-card__badge,
+        &.chain-card--disabled:focus-within .chain-card__badge,
+        &.chain-card--disabled:focus-visible .chain-card__badge {
+          opacity: 0;
+        }
+
+        &:hover .add-icon,
+        &:focus-within .add-icon,
+        &:focus-visible .add-icon {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+        }
+
+        .check-icon,
+        .custom-chain-settings-icon {
+          opacity: 1;
+        }
+
+        .check-icon {
+          @include icon-size(16px);
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          color: #35b779;
+
+          svg {
+            @include icon-size(16px);
+          }
+        }
+
+        .custom-chain-settings-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          margin: 0;
+          padding: 0;
+          border: none;
+          background: transparent;
+          color: var(--main-font-color);
+          cursor: pointer;
         }
 
         &.add-custom-chain {

@@ -3,10 +3,48 @@
     width: 100%;
     min-height: 200px;
 
-    .modal-title {
-      @include poppins400(16px);
-      color: var(--main-font-color);
+    .modal-header {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 28px;
+      width: 100%;
+
+      .modal-title {
+        @include poppins500(20px);
+        color: var(--main-font-color);
+        line-height: 28px;
+        padding: 0 32px;
+        text-align: center;
+        width: 100%;
+      }
+
+      .modal-close-button {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+        border: none;
+        background: transparent;
+        color: var(--main-font-color);
+        cursor: pointer;
+
+        .svg-icon {
+          @include icon-size(16px);
+
+          svg {
+            @include icon-size(16px);
+          }
+        }
+      }
     }
+
     .modal-content {
       width: 100%;
       color: var(--main-font-color);

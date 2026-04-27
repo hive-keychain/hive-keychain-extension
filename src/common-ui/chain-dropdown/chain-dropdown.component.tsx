@@ -1,10 +1,7 @@
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { resetChain, setChain } from '@popup/multichain/actions/chain.actions';
-import {
-  Chain,
-  ChainType,
-} from '@popup/multichain/interfaces/chains.interface';
+import { Chain, ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useState } from 'react';
@@ -34,7 +31,7 @@ const ChainDropdown = ({
     if (!chains.find((e) => e.chainId === chain.chainId)) {
       chains.push(chain);
     }
-    let optionItems: OptionItem[] = chains.map((c) => {
+    const optionItems: OptionItem[] = chains.map((c) => {
       return {
         key: c.chainId,
         label: c.name,
@@ -46,7 +43,7 @@ const ChainDropdown = ({
     setOptions(optionItems);
   };
 
-  const handleOnAddBlockchainClicked = () => {
+  const handleOnManageChainsClicked = () => {
     resetChain();
   };
 
@@ -79,11 +76,11 @@ const ChainDropdown = ({
           background="white"
           footer={
             <div
-              className="add-blockchain-panel"
-              onClick={handleOnAddBlockchainClicked}>
-              <SVGIcon icon={SVGIcons.SELECT_ADD} />
+              className="manage-chains-panel"
+              onClick={handleOnManageChainsClicked}>
+              <SVGIcon icon={SVGIcons.MENU_ADVANCED_SETTINGS_RPC_NODE} />
               <div className="text">
-                {chrome.i18n.getMessage('html_popup_add_blockchain')}
+                {chrome.i18n.getMessage('html_popup_manage_chains')}
               </div>
             </div>
           }

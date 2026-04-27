@@ -18,6 +18,7 @@ interface ISVGIconProps {
   tooltipPosition?: TooltipProps['position'];
   tooltipDelayShow?: number;
   background?: string;
+  svgViewBox?: string;
 }
 
 export const SVGIcon = ({
@@ -31,6 +32,7 @@ export const SVGIcon = ({
   tooltipMessage,
   tooltipPosition,
   tooltipDelayShow,
+  svgViewBox,
 }: ISVGIconProps) => {
   const [hovered, setHovered] = useState(false);
 
@@ -48,6 +50,7 @@ export const SVGIcon = ({
     hoverable,
     forceHover,
     background,
+    svgViewBox,
   }: ISVGIconProps) => {
     return (
       <ReactSVG
@@ -62,6 +65,11 @@ export const SVGIcon = ({
         }`}
         src={`/assets/images/${icon}.svg`}
         style={{ background: background }}
+        afterInjection={(svg) => {
+          if (svgViewBox) {
+            svg.setAttribute('viewBox', svgViewBox);
+          }
+        }}
       />
     );
   };
@@ -80,6 +88,7 @@ export const SVGIcon = ({
           icon,
           hoverable,
           forceHover,
+          svgViewBox,
         })}
       </CustomTooltip>
     );
@@ -91,6 +100,7 @@ export const SVGIcon = ({
       icon,
       hoverable,
       forceHover,
+      svgViewBox,
     });
   }
 };
