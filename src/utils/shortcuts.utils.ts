@@ -3,6 +3,81 @@ import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 
+type ShortcutNavigationScreen = MultichainScreen | HiveScreen | EvmScreen;
+
+/** `chrome.i18n` message keys; reuse existing settings/page titles where possible. */
+const SHORTCUT_NAVIGATION_SCREEN_MESSAGE_KEYS: Partial<
+  Record<ShortcutNavigationScreen, string>
+> = {
+  [MultichainScreen.HOME_PAGE]: 'popup_html_shortcut_nav_HOME_PAGE',
+  [MultichainScreen.TRANSFER_FUND_PAGE]: 'popup_html_transfer_funds',
+  [MultichainScreen.BUY_COINS_PAGE]: 'popup_html_buy',
+  [MultichainScreen.TOKEN_SWAP_PAGE]: 'dialog_title_swap',
+  [MultichainScreen.TOKENS_SWAP_HISTORY]: 'html_popup_token_swaps_history',
+  [MultichainScreen.SETTINGS_ABOUT]: 'popup_html_about',
+  [MultichainScreen.SETTINGS_SHORTCUTS]: 'popup_html_shortcuts',
+
+  [HiveScreen.RECURRENT_TRANSFERS_PAGE]: 'popup_html_recurrent_transfers',
+  [HiveScreen.WALLET_HISTORY_PAGE]: 'popup_html_wallet_history',
+  [HiveScreen.POWER_UP_PAGE]: 'popup_html_pu',
+  [HiveScreen.POWER_DOWN_PAGE]: 'popup_html_pd',
+  [HiveScreen.SAVINGS_PAGE]: 'popup_html_savings',
+  [HiveScreen.CONVERSION_PAGE]: 'popup_html_convert',
+  [HiveScreen.DELEGATION_PAGE]: 'popup_html_delegation',
+  [HiveScreen.RC_DELEGATIONS_PAGE]: 'popup_html_rc_delegation_title',
+  [HiveScreen.GOVERNANCE_PAGE]: 'popup_html_governance',
+  [HiveScreen.TOKENS_HISTORY]: 'popup_html_tokens_history',
+  [HiveScreen.TOKENS_TRANSFER]: 'popup_html_transfer_tokens',
+  [HiveScreen.TOKENS_DELEGATIONS]: 'popup_html_delegations',
+  [HiveScreen.TOKENS_PENDING_UNSTAKE]: 'popup_html_token_pending_unstake',
+  [HiveScreen.CREATE_ACCOUNT_PAGE_STEP_ONE]: 'popup_html_create_account',
+  [HiveScreen.SETTINGS_MAIN_PAGE]: 'popup_html_settings',
+  [HiveScreen.SETTINGS_ACCOUNTS]: 'popup_html_accounts',
+  [HiveScreen.SETTINGS_EXPORT_ACCOUNTS]: 'popup_html_export_accounts',
+  [HiveScreen.SETTINGS_EXPORT_ALL_ACCOUNTS_QR]:
+    'popup_html_export_all_accounts_as_QR',
+  [HiveScreen.SETTINGS_ADD_ACCOUNT]: 'popup_html_add_account',
+  [HiveScreen.SETTINGS_MANAGE_ACCOUNTS]: 'popup_html_manage_accounts',
+  [HiveScreen.SETTINGS_MANAGE_ACCOUNTS_AUTHORITIES]:
+    'popup_html_manage_accounts_authorities',
+  [HiveScreen.SETTINGS_ADD_KEY]: 'popup_html_add_key',
+  [HiveScreen.SETTINGS_ADVANCED]: 'popup_html_advanced_settings',
+  [HiveScreen.SETTINGS_CHANGE_PASSWORD]: 'popup_html_change_password',
+  [HiveScreen.SETTINGS_RPC_NODES]: 'popup_html_rpc_node',
+  [HiveScreen.SETTINGS_AUTO_LOCK]: 'popup_html_autolock',
+  [HiveScreen.SETTINGS_KEYCHAINIFY]: 'popup_html_keychainify',
+  [HiveScreen.SETTINGS_CLEAR_ALL_DATA]: 'popup_html_clear',
+  [HiveScreen.SETTINGS_IMPORT_EXPORT]: 'popup_html_import_export_settings',
+  [HiveScreen.SETTINGS_USER_PREFERENCES]: 'popup_html_user_preferences',
+  [HiveScreen.SETTINGS_AUTOMATED_TASKS]: 'popup_html_automated_tasks',
+  [HiveScreen.SETTINGS_AUTHORIZED_OPERATIONS]: 'popup_html_operations',
+  [HiveScreen.SETTINGS_EXPORT_TRANSACTIONS]: 'popup_html_export_transactions',
+  [HiveScreen.SETTINGS_FAVORITE_ACCOUNTS]: 'popup_html_favorite_accounts',
+  [HiveScreen.SETTINGS_MULTISIG]: 'popup_html_multisig',
+  [HiveScreen.SETTINGS_OPERATION_POPUP]: 'popup_html_operation_popup',
+  [HiveScreen.SETTINGS_NOTIFICATIONS_CONFIGURATION]:
+    'html_popup_settings_notifications',
+  [HiveScreen.SETTINGS_HELP]: 'popup_html_help',
+
+  [EvmScreen.LIFI_HISTORY_PAGE]: 'html_popup_token_swaps_history',
+  [EvmScreen.EVM_SETTINGS]: 'popup_html_settings',
+  [EvmScreen.EVM_ACCOUNTS_SETTINGS]: 'evm_seeds_and_accounts',
+  [EvmScreen.EVM_ADVANCED_SETTINGS]: 'popup_html_advanced_settings',
+  [EvmScreen.EVM_CONTACTS]: 'evm_menu_contacts',
+  [EvmScreen.EVM_CUSTOM_CHAINS]: 'evm_menu_custom_chains',
+  [EvmScreen.EVM_CUSTOM_TOKENS_PAGE]: 'evm_custom_tokens_page_title',
+  [EvmScreen.EVM_CUSTOM_NFTS_PAGE]: 'evm_custom_nfts_page_title',
+  [EvmScreen.EVM_RPC_NODES_SETTINGS]: 'evm_menu_rpc_node',
+  [EvmScreen.EVM_SECURITY_SETTINGS]: 'evm_menu_security',
+  [EvmScreen.EVM_PROVIDER_SETTINGS]: 'evm_menu_provider_compatibility',
+};
+
+const getShortcutNavigationScreenMessageKey = (
+  screen: ShortcutNavigationScreen,
+): string =>
+  SHORTCUT_NAVIGATION_SCREEN_MESSAGE_KEYS[screen] ??
+  `popup_html_shortcut_nav_${screen}`;
+
 const MODIFIER_KEYS = ['Shift', 'Control', 'Alt', 'Meta'];
 const MODIFIER_ORDER = ['ctrl', 'alt', 'shift', 'command'];
 
@@ -287,6 +362,7 @@ const ShortcutsUtils = {
   TOKEN_REQUIRED_SCREENS,
   DELEGATION_REQUIRED_SCREENS,
   formatScreenLabel,
+  getShortcutNavigationScreenMessageKey,
   createShortcutId,
   buildShortcutAccountTarget,
   parseShortcutAccountTarget,
@@ -304,6 +380,7 @@ export {
   EVM_NAVIGATION_SCREENS,
   formatScreenLabel,
   formatShortcutCombo,
+  getShortcutNavigationScreenMessageKey,
   HIVE_NAVIGATION_SCREENS,
   isEditableTarget,
   isEvmNavigationScreen,

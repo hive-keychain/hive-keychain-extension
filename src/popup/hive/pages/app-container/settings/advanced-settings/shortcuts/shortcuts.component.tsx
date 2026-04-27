@@ -61,6 +61,13 @@ import ShortcutsUtils from 'src/utils/shortcuts.utils';
 
 const LAST_USED_EVM_CHAIN_TARGET = 'last_used_evm_chain';
 
+const localizedShortcutScreenLabel = (
+  screen: MultichainScreen | HiveScreen | EvmScreen,
+) =>
+  chrome.i18n.getMessage(
+    ShortcutsUtils.getShortcutNavigationScreenMessageKey(screen),
+  ) || ShortcutsUtils.formatScreenLabel(screen);
+
 const buildEvmTokenKey = (token: NativeAndErc20Token) => {
   if (token.tokenInfo.type === EVMSmartContractType.NATIVE) {
     return `${EVMSmartContractType.NATIVE}:${token.tokenInfo.symbol}`;
@@ -185,7 +192,7 @@ const Shortcuts = ({
       new Set(ShortcutsUtils.NAVIGATION_SCREENS),
     );
     return uniqueScreens.map((screen) => ({
-      label: ShortcutsUtils.formatScreenLabel(screen),
+      label: localizedShortcutScreenLabel(screen),
       value: screen,
     }));
   }, []);
@@ -199,7 +206,9 @@ const Shortcuts = ({
         ShortcutAccountType.HIVE,
         account.name,
       ),
-      subLabel: 'Hive',
+      subLabel: chrome.i18n.getMessage(
+        'popup_html_shortcut_account_type_hive',
+      ),
     }));
     const evmOptions =
       evmLocalAccounts
@@ -226,7 +235,12 @@ const Shortcuts = ({
 
   const transferChainOptions = useMemo<OptionItem[]>(() => {
     if (!setupChains.length) {
-      return [{ label: 'No chains available', value: '' }];
+      return [
+        {
+          label: chrome.i18n.getMessage('popup_html_shortcut_no_chains'),
+          value: '',
+        },
+      ];
     }
     return setupChains.map((chain) => ({
       label: chain.name,
@@ -242,7 +256,9 @@ const Shortcuts = ({
       !options.some((option) => option.value === LAST_USED_EVM_CHAIN_TARGET)
     ) {
       options.push({
-        label: 'Last used EVM chain',
+        label: chrome.i18n.getMessage(
+          'popup_html_shortcut_last_used_evm_chain',
+        ),
         value: LAST_USED_EVM_CHAIN_TARGET,
         img: SVGIcons.BLOCKCHAIN_ETHEREUM,
       });
@@ -258,12 +274,12 @@ const Shortcuts = ({
   const currencyOptions = useMemo<OptionItem[]>(
     () => [
       {
-        label: 'HIVE',
+        label: chrome.i18n.getMessage('popup_html_shortcut_currency_hive'),
         value: 'hive',
         img: '/assets/images/wallet/hive-logo.svg',
       },
       {
-        label: 'HBD',
+        label: chrome.i18n.getMessage('popup_html_shortcut_currency_hbd'),
         value: 'hbd',
         img: '/assets/images/wallet/hbd-logo.svg',
       },
@@ -297,7 +313,12 @@ const Shortcuts = ({
   const transferTokenOptions = useMemo<OptionItem[]>(() => {
     if (selectedTransferChain?.type === ChainType.EVM) {
       if (!evmTransferTokens.length) {
-        return [{ label: 'No tokens available', value: '' }];
+        return [
+          {
+            label: chrome.i18n.getMessage('popup_html_shortcut_no_tokens'),
+            value: '',
+          },
+        ];
       }
       return evmTransferTokens.map((token) => ({
         label: token.tokenInfo.symbol,
@@ -336,9 +357,9 @@ const Shortcuts = ({
         value: ShortcutActionType.CHANGE_ACCOUNT,
       },
       {
-        label:
-          chrome.i18n.getMessage('popup_html_shortcuts_action_change_chain') ||
-          'Change chain',
+        label: chrome.i18n.getMessage(
+          'popup_html_shortcuts_action_change_chain',
+        ),
         value: ShortcutActionType.CHANGE_CHAIN,
       },
     ];
@@ -790,9 +811,8 @@ const Shortcuts = ({
       );
     }
     if (action === ShortcutActionType.CHANGE_CHAIN) {
-      return (
-        chrome.i18n.getMessage('popup_html_shortcuts_action_change_chain') ||
-        'Change chain'
+      return chrome.i18n.getMessage(
+        'popup_html_shortcuts_action_change_chain',
       );
     }
     return chrome.i18n.getMessage('popup_html_shortcuts_action_navigate');
@@ -800,7 +820,9 @@ const Shortcuts = ({
 
   const getChainLabel = (shortcut: ShortcutDefinition) => {
     if (shortcut.target === LAST_USED_EVM_CHAIN_TARGET) {
-      return 'Last used EVM chain';
+      return chrome.i18n.getMessage(
+        'popup_html_shortcut_last_used_evm_chain',
+      );
     }
     const chainId = shortcut.params?.chainId ?? shortcut.target;
     const chain = setupChains.find((chain) => chain.chainId === chainId);
@@ -832,7 +854,7 @@ const Shortcuts = ({
     }
 
     const actionLabel = getShortcutActionLabel(shortcut.actionType);
-    const screenLabel = ShortcutsUtils.formatScreenLabel(
+    const screenLabel = localizedShortcutScreenLabel(
       shortcut.target as HiveScreen | MultichainScreen | EvmScreen,
     );
     const extraLabel = getShortcutExtraLabel(shortcut);
@@ -955,8 +977,8 @@ const Shortcuts = ({
           />
           {requiresTransferChain && (
             <ComplexeCustomSelect
-              label="Chain"
-              skipLabelTranslation
+              label="popup_html_shortcut_transfer_chain_label"
+              skipLabelTranslation={false}
               options={transferChainOptions}
               selectedItem={selectedTransferChainOption}
               setSelectedItem={(option) =>

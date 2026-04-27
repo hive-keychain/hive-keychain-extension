@@ -1,7 +1,9 @@
 import { Screen } from '@interfaces/screen.interface';
 import { ShortcutAccountType } from '@interfaces/shortcut.interface';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
-import ShortcutsUtils from 'src/utils/shortcuts.utils';
+import ShortcutsUtils, {
+  getShortcutNavigationScreenMessageKey,
+} from 'src/utils/shortcuts.utils';
 
 describe('shortcuts.utils', () => {
   describe('isEditableTarget', () => {
@@ -108,6 +110,13 @@ describe('shortcuts.utils', () => {
       expect(ShortcutsUtils.TOKEN_REQUIRED_SCREENS).toContain(
         Screen.TOKENS_HISTORY,
       );
+    });
+
+    it('resolves an i18n message key for every shortcut navigation screen', () => {
+      for (const screen of ShortcutsUtils.NAVIGATION_SCREENS) {
+        const key = getShortcutNavigationScreenMessageKey(screen);
+        expect(key).toMatch(/^popup_html_|^html_popup_|^evm_|^dialog_/);
+      }
     });
   });
 

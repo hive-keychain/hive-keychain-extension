@@ -2036,6 +2036,42 @@
     "message": "No accounts available.",
     "description": "No accounts available for shortcuts"
   },
+  "popup_html_shortcuts_action_change_chain": {
+    "message": "Change chain",
+    "description": "Shortcut action change chain"
+  },
+  "popup_html_shortcut_transfer_chain_label": {
+    "message": "Chain",
+    "description": "Shortcuts form: transfer chain selector label"
+  },
+  "popup_html_shortcut_account_type_hive": {
+    "message": "Hive",
+    "description": "Shortcuts: Hive account row subtitle in account picker"
+  },
+  "popup_html_shortcut_no_chains": {
+    "message": "No chains available",
+    "description": "Shortcuts: empty chain list"
+  },
+  "popup_html_shortcut_last_used_evm_chain": {
+    "message": "Last used EVM chain",
+    "description": "Shortcuts: switch to last used EVM network"
+  },
+  "popup_html_shortcut_no_tokens": {
+    "message": "No tokens available",
+    "description": "Shortcuts: empty token list for transfer"
+  },
+  "popup_html_shortcut_currency_hive": {
+    "message": "HIVE",
+    "description": "Shortcuts: native transfer currency label"
+  },
+  "popup_html_shortcut_currency_hbd": {
+    "message": "HBD",
+    "description": "Shortcuts: HBD transfer currency label"
+  },
+  "popup_html_shortcut_nav_HOME_PAGE": {
+    "message": "Home",
+    "description": "Shortcut navigation target: home"
+  },
   "popup_html_rpc_node_text": {
     "message": "You can choose which RPC node is used to read information and broadcast transactions from/to the Hive Blockchain.",
     "description": "Text on rpc node settings page"
