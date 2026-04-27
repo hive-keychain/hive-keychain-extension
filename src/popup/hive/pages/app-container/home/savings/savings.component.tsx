@@ -136,6 +136,9 @@ const SavingsPage = ({
     });
   }, [watch('currency')]);
 
+  const watchedCurrency = watch('currency');
+  const watchedType = watch('type');
+
   useEffect(() => {
     if (activeAccount.account.savings_withdraw_requests > 0) {
       fetchCurrentWithdrawingList();
@@ -151,18 +154,26 @@ const SavingsPage = ({
     );
     const hive = FormatUtils.toNumber(activeAccount.account.balance as string);
 
-    const liquidValue = watch('currency') === 'hive' ? hive : hbd;
+    const liquidValue = watchedCurrency === 'hive' ? hive : hbd;
     const savingsValue =
-      watch('currency') === 'hive' ? hiveSavings : hbdSavings;
+      watchedCurrency === 'hive' ? hiveSavings : hbdSavings;
 
     setLiquid(liquidValue);
     setSavings(savingsValue);
     setMaxAmount(
-      watch('type') === SavingOperationType.DEPOSIT
+      watchedType === SavingOperationType.DEPOSIT
         ? Number(liquidValue)
         : Number(savingsValue),
     );
-  }, [watch('currency')]);
+  }, [
+    watchedCurrency,
+    watchedType,
+    activeAccount.account.balance,
+    activeAccount.account.hbd_balance,
+    activeAccount.account.savings_balance,
+    activeAccount.account.savings_hbd_balance,
+    activeAccount.account.savings_withdraw_requests,
+  ]);
 
   useEffect(() => {
     let text = '';

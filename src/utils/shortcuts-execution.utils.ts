@@ -301,7 +301,9 @@ export const isShortcutTargetChainReady = (
   }
   if (targetChain.type === ChainType.HIVE) {
     return (
-      !!state.hive.activeAccount?.name && state.hive.activeRpc?.uri !== 'NULL'
+      !!state.hive.activeAccount?.name &&
+      state.hive.activeRpc?.uri !== 'NULL' &&
+      !!state.hive.activeAccount.account?.name
     );
   }
   return true;

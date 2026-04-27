@@ -157,13 +157,19 @@ const TransferFunds = ({
     });
   }, []);
 
+  const selectedCurrency = watch('selectedCurrency');
+
   useEffect(() => {
-    if (!watch('selectedCurrency')) setValue('selectedCurrency', 'hive');
+    if (!selectedCurrency) setValue('selectedCurrency', 'hive');
     else {
-      setBalance(balances[watch('selectedCurrency')]);
+      setBalance(balances[selectedCurrency as keyof CurrencyLabels]);
       loadAutocompleteTransferUsernames();
     }
-  }, [watch('selectedCurrency')]);
+  }, [
+    selectedCurrency,
+    activeAccount.account.balance,
+    activeAccount.account.hbd_balance,
+  ]);
 
   useEffect(() => {
     const memo = watch('memo');

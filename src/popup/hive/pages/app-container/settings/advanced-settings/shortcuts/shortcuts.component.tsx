@@ -4,6 +4,7 @@ import {
   ShortcutDefinition,
   ShortcutParams,
 } from '@interfaces/shortcut.interface';
+import { LocalAccount } from '@interfaces/local-account.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import { NativeAndErc20Token } from '@popup/evm/interfaces/active-account.interface';
 import {
@@ -53,6 +54,7 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import { PowerType } from 'src/popup/hive/pages/app-container/home/power-up-down/power-type.enum';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import ShortcutsUtils from 'src/utils/shortcuts.utils';
@@ -106,6 +108,9 @@ const Shortcuts = ({
     NativeAndErc20Token[]
   >([]);
   const [evmLocalAccounts, setEvmLocalAccounts] = useState<EvmAccount[]>([]);
+  const [hiveLocalAccounts, setHiveLocalAccounts] = useState<LocalAccount[]>(
+    [],
+  );
   const [setupChains, setSetupChains] = useState<Chain[]>([]);
 
   // `combo` is stored normalized for binding (e.g. "shift+command+w").
@@ -121,6 +126,26 @@ const Shortcuts = ({
     });
     init();
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadHiveAccounts = async () => {
+      if (!mk) {
+        if (!cancelled) setHiveLocalAccounts([]);
+        return;
+      }
+      try {
+        const list = await AccountUtils.getAccountsFromLocalStorage(mk);
+        if (!cancelled) setHiveLocalAccounts(Array.isArray(list) ? list : []);
+      } catch {
+        if (!cancelled) setHiveLocalAccounts([]);
+      }
+    };
+    void loadHiveAccounts();
+    return () => {
+      cancelled = true;
+    };
+  }, [mk]);
 
   useEffect(() => {
     if (!isFormVisible) return;
@@ -166,15 +191,16 @@ const Shortcuts = ({
   }, []);
 
   const accountOptions = useMemo<OptionItem[]>(() => {
-    const hiveOptions =
-      accounts?.map((account) => ({
-        label: account.name,
-        value: ShortcutsUtils.buildShortcutAccountTarget(
-          ShortcutAccountType.HIVE,
-          account.name,
-        ),
-        subLabel: 'Hive',
-      })) ?? [];
+    const hiveAccountsList =
+      hiveLocalAccounts.length > 0 ? hiveLocalAccounts : accounts ?? [];
+    const hiveOptions = hiveAccountsList.map((account) => ({
+      label: `@${account.name}`,
+      value: ShortcutsUtils.buildShortcutAccountTarget(
+        ShortcutAccountType.HIVE,
+        account.name,
+      ),
+      subLabel: 'Hive',
+    }));
     const evmOptions =
       evmLocalAccounts
         ?.filter((account) => !account.hide)
@@ -196,7 +222,7 @@ const Shortcuts = ({
       ];
     }
     return [...hiveOptions, ...evmOptions];
-  }, [accounts, evmLocalAccounts]);
+  }, [accounts, evmLocalAccounts, hiveLocalAccounts]);
 
   const transferChainOptions = useMemo<OptionItem[]>(() => {
     if (!setupChains.length) {
@@ -205,9 +231,7 @@ const Shortcuts = ({
     return setupChains.map((chain) => ({
       label: chain.name,
       value: chain.chainId,
-      subLabel: chain.type,
-      imgChip: chain.logo,
-      imgChipChainName: chain.name,
+      img: chain.logo,
     }));
   }, [setupChains]);
 
@@ -220,7 +244,7 @@ const Shortcuts = ({
       options.push({
         label: 'Last used EVM chain',
         value: LAST_USED_EVM_CHAIN_TARGET,
-        subLabel: ChainType.EVM,
+        img: SVGIcons.BLOCKCHAIN_ETHEREUM,
       });
     }
     return options;
@@ -925,6 +949,9 @@ const Shortcuts = ({
             options={targetOptions}
             selectedItem={selectedTargetOption}
             setSelectedItem={(option) => setTarget(option.value)}
+            generateImageIfNull={
+              actionType === ShortcutActionType.CHANGE_CHAIN
+            }
           />
           {requiresTransferChain && (
             <ComplexeCustomSelect
@@ -935,6 +962,7 @@ const Shortcuts = ({
               setSelectedItem={(option) =>
                 setSelectedTransferChainId(option.value)
               }
+              generateImageIfNull
             />
           )}
           {requiresTransferChain && (
@@ -950,6 +978,9 @@ const Shortcuts = ({
                   setSelectedCurrency(option.value as 'hive' | 'hbd');
                 }
               }}
+              generateImageIfNull={
+                selectedTransferChain?.type === ChainType.EVM
+              }
             />
           )}
           {requiresCurrency && (
