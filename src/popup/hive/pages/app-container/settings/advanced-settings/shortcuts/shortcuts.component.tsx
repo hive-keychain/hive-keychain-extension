@@ -1,18 +1,36 @@
 import {
+  ShortcutAccountType,
   ShortcutActionType,
   ShortcutDefinition,
   ShortcutParams,
 } from '@interfaces/shortcut.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
-import { SelectAccountSectionComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section.component';
+import { NativeAndErc20Token } from '@popup/evm/interfaces/active-account.interface';
+import {
+  EVMSmartContractType,
+  EvmSmartContractInfoErc20,
+} from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
+import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
+import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
 import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/multichain/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import {
+  Chain,
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { RootState } from '@popup/multichain/store';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, {
   useCallback,
@@ -33,19 +51,34 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { LocalAccount } from 'src/interfaces/local-account.interface';
-import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import { PowerType } from 'src/popup/hive/pages/app-container/home/power-up-down/power-type.enum';
+import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import ShortcutsUtils from 'src/utils/shortcuts.utils';
 
+const LAST_USED_EVM_CHAIN_TARGET = 'last_used_evm_chain';
+
+const buildEvmTokenKey = (token: NativeAndErc20Token) => {
+  if (token.tokenInfo.type === EVMSmartContractType.NATIVE) {
+    return `${EVMSmartContractType.NATIVE}:${token.tokenInfo.symbol}`;
+  }
+  return `${EVMSmartContractType.ERC20}:${token.tokenInfo.chainId}:${(
+    token.tokenInfo as EvmSmartContractInfoErc20
+  ).contractAddress.toLowerCase()}`;
+};
+
+const getEvmTokenContractAddress = (token: NativeAndErc20Token) =>
+  token.tokenInfo.type === EVMSmartContractType.ERC20
+    ? (token.tokenInfo as EvmSmartContractInfoErc20).contractAddress
+    : undefined;
+
 const Shortcuts = ({
   accounts,
-  activeAccount,
+  evmAccounts,
+  mk,
   userTokens,
   tokens,
-  loadActiveAccount,
   setErrorMessage,
   setSuccessMessage,
   setTitleContainerProperties,
@@ -67,6 +100,13 @@ const Shortcuts = ({
   const [selectedTokenSymbol, setSelectedTokenSymbol] = useState('');
   const [selectedDelegationType, setSelectedDelegationType] =
     useState<DelegationType>(DelegationType.OUTGOING);
+  const [selectedTransferChainId, setSelectedTransferChainId] = useState('');
+  const [selectedEvmTokenKey, setSelectedEvmTokenKey] = useState('');
+  const [evmTransferTokens, setEvmTransferTokens] = useState<
+    NativeAndErc20Token[]
+  >([]);
+  const [evmLocalAccounts, setEvmLocalAccounts] = useState<EvmAccount[]>([]);
+  const [setupChains, setSetupChains] = useState<Chain[]>([]);
 
   // `combo` is stored normalized for binding (e.g. "shift+command+w").
   // We format it only for display (e.g. "⇧+⌘+W").
@@ -105,11 +145,14 @@ const Shortcuts = ({
   }, [isFormVisible]);
 
   const init = async () => {
-    const storedShortcuts =
-      (await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.SHORTCUTS,
-      )) || [];
+    const [storedShortcuts, chains, rebuiltEvmAccounts] = await Promise.all([
+      LocalStorageUtils.getValueFromLocalStorage(LocalStorageKeyEnum.SHORTCUTS),
+      ChainUtils.getSetupChains(true),
+      mk ? EvmWalletUtils.rebuildAccountsFromLocalStorage(mk) : evmAccounts,
+    ]);
     setShortcuts(Array.isArray(storedShortcuts) ? storedShortcuts : []);
+    setSetupChains(chains);
+    setEvmLocalAccounts(rebuiltEvmAccounts ?? evmAccounts ?? []);
   };
 
   const screenOptions = useMemo<OptionItem[]>(() => {
@@ -123,7 +166,28 @@ const Shortcuts = ({
   }, []);
 
   const accountOptions = useMemo<OptionItem[]>(() => {
-    if (!accounts || accounts.length === 0) {
+    const hiveOptions =
+      accounts?.map((account) => ({
+        label: account.name,
+        value: ShortcutsUtils.buildShortcutAccountTarget(
+          ShortcutAccountType.HIVE,
+          account.name,
+        ),
+        subLabel: 'Hive',
+      })) ?? [];
+    const evmOptions =
+      evmLocalAccounts
+        ?.filter((account) => !account.hide)
+        .map((account) => ({
+          label: EvmAccountUtils.getAccountFullname(account),
+          value: ShortcutsUtils.buildShortcutAccountTarget(
+            ShortcutAccountType.EVM,
+            account.wallet.address,
+          ),
+          subLabel: FormatUtils.shortenString(account.wallet.address, 6),
+        })) ?? [];
+
+    if (hiveOptions.length === 0 && evmOptions.length === 0) {
       return [
         {
           label: chrome.i18n.getMessage('popup_html_shortcuts_no_accounts'),
@@ -131,11 +195,41 @@ const Shortcuts = ({
         },
       ];
     }
-    return accounts.map((account) => ({
-      label: account.name,
-      value: account.name,
+    return [...hiveOptions, ...evmOptions];
+  }, [accounts, evmLocalAccounts]);
+
+  const transferChainOptions = useMemo<OptionItem[]>(() => {
+    if (!setupChains.length) {
+      return [{ label: 'No chains available', value: '' }];
+    }
+    return setupChains.map((chain) => ({
+      label: chain.name,
+      value: chain.chainId,
+      subLabel: chain.type,
+      imgChip: chain.logo,
+      imgChipChainName: chain.name,
     }));
-  }, [accounts]);
+  }, [setupChains]);
+
+  const chainOptions = useMemo<OptionItem[]>(() => {
+    const options: OptionItem[] = [...transferChainOptions];
+    if (
+      setupChains.some((chain) => chain.type === ChainType.EVM) &&
+      !options.some((option) => option.value === LAST_USED_EVM_CHAIN_TARGET)
+    ) {
+      options.push({
+        label: 'Last used EVM chain',
+        value: LAST_USED_EVM_CHAIN_TARGET,
+        subLabel: ChainType.EVM,
+      });
+    }
+    return options;
+  }, [setupChains, transferChainOptions]);
+
+  const selectedTransferChain = useMemo(
+    () => setupChains.find((chain) => chain.chainId === selectedTransferChainId),
+    [selectedTransferChainId, setupChains],
+  );
 
   const currencyOptions = useMemo<OptionItem[]>(
     () => [
@@ -176,6 +270,21 @@ const Shortcuts = ({
     });
   }, [userTokens, tokens]);
 
+  const transferTokenOptions = useMemo<OptionItem[]>(() => {
+    if (selectedTransferChain?.type === ChainType.EVM) {
+      if (!evmTransferTokens.length) {
+        return [{ label: 'No tokens available', value: '' }];
+      }
+      return evmTransferTokens.map((token) => ({
+        label: token.tokenInfo.symbol,
+        value: buildEvmTokenKey(token),
+        subLabel: token.tokenInfo.name,
+        img: token.tokenInfo.logo,
+      }));
+    }
+    return currencyOptions;
+  }, [currencyOptions, evmTransferTokens, selectedTransferChain]);
+
   const delegationOptions = useMemo<OptionItem[]>(
     () => [
       {
@@ -202,18 +311,25 @@ const Shortcuts = ({
         ),
         value: ShortcutActionType.CHANGE_ACCOUNT,
       },
+      {
+        label:
+          chrome.i18n.getMessage('popup_html_shortcuts_action_change_chain') ||
+          'Change chain',
+        value: ShortcutActionType.CHANGE_CHAIN,
+      },
     ];
   }, []);
 
   const targetOptions = useMemo<OptionItem[]>(() => {
-    return actionType === ShortcutActionType.NAVIGATE
-      ? screenOptions
-      : accountOptions;
-  }, [actionType, screenOptions, accountOptions]);
+    if (actionType === ShortcutActionType.NAVIGATE) return screenOptions;
+    if (actionType === ShortcutActionType.CHANGE_ACCOUNT) return accountOptions;
+    return chainOptions;
+  }, [actionType, screenOptions, accountOptions, chainOptions]);
 
   const requiresCurrency = useMemo(
     () =>
       actionType === ShortcutActionType.NAVIGATE &&
+      target !== MultichainScreen.TRANSFER_FUND_PAGE &&
       ShortcutsUtils.CURRENCY_REQUIRED_SCREENS.includes(target as HiveScreen),
     [actionType, target],
   );
@@ -232,26 +348,35 @@ const Shortcuts = ({
     [actionType, target],
   );
 
+  const requiresTransferChain = useMemo(
+    () =>
+      actionType === ShortcutActionType.NAVIGATE &&
+      target === MultichainScreen.TRANSFER_FUND_PAGE,
+    [actionType, target],
+  );
+
   useEffect(() => {
     const optionMatch = targetOptions.find((item) => item.value === target);
     if (!optionMatch) {
+      if (actionType === ShortcutActionType.CHANGE_ACCOUNT && target) {
+        const accountTarget = ShortcutsUtils.parseShortcutAccountTarget(target);
+        const normalizedTarget = ShortcutsUtils.buildShortcutAccountTarget(
+          accountTarget.accountType,
+          accountTarget.accountId,
+        );
+        if (targetOptions.some((item) => item.value === normalizedTarget)) {
+          setTarget(normalizedTarget);
+          return;
+        }
+      }
       setTarget(targetOptions[0]?.value ?? '');
     }
-  }, [actionType, targetOptions]);
+  }, [actionType, target, targetOptions]);
 
-  // Sync activeAccount to target when in CHANGE_ACCOUNT mode
   useEffect(() => {
-    if (
-      actionType === ShortcutActionType.CHANGE_ACCOUNT &&
-      isFormVisible &&
-      activeAccount?.name &&
-      activeAccount.name !== target
-    ) {
-      setTarget(activeAccount.name);
+    if (requiresTransferChain && !selectedTransferChainId) {
+      setSelectedTransferChainId(setupChains[0]?.chainId ?? '');
     }
-  }, [actionType, activeAccount?.name, isFormVisible, target]);
-
-  useEffect(() => {
     if (requiresCurrency && !selectedCurrency) {
       setSelectedCurrency('hive');
     }
@@ -265,10 +390,95 @@ const Shortcuts = ({
     requiresCurrency,
     requiresToken,
     requiresDelegationType,
+    requiresTransferChain,
+    selectedTransferChainId,
+    setupChains,
     tokenOptions,
     selectedCurrency,
     selectedTokenSymbol,
     selectedDelegationType,
+  ]);
+
+  useEffect(() => {
+    let isCancelled = false;
+    const loadEvmTransferTokens = async () => {
+      try {
+        if (
+          !requiresTransferChain ||
+          selectedTransferChain?.type !== ChainType.EVM
+        ) {
+          setEvmTransferTokens([]);
+          return;
+        }
+        if (!evmLocalAccounts.some((account) => !account.hide)) {
+          setEvmTransferTokens([]);
+          return;
+        }
+        const chain = selectedTransferChain as EvmChain;
+        const wallet = await EvmActiveAccountUtils.getSavedActiveAccountWallet(
+          chain,
+          evmLocalAccounts,
+        );
+        let tokenInfos: NativeAndErc20Token['tokenInfo'][];
+        if (chain.isCustom === true) {
+          tokenInfos = [EvmTokensUtils.buildFallbackNativeTokenInfo(chain)];
+        } else {
+          const discoveredTokens = await EvmLightNodeUtils.getDiscoveredTokens(
+            chain.chainId,
+            wallet.address,
+          );
+          tokenInfos = discoveredTokens.tokens.filter(
+            (token) =>
+              token.type === EVMSmartContractType.ERC20 ||
+              token.type === EVMSmartContractType.NATIVE,
+          ) as NativeAndErc20Token['tokenInfo'][];
+        }
+        const customTokenInfos = await EvmTokensUtils.getCustomErc20TokenInfos(
+          chain,
+          wallet.address,
+        );
+        const tokens = await EvmTokensUtils.getTokenBalances(
+          wallet.address,
+          chain,
+          EvmTokensUtils.mergeCustomErc20TokenInfos(
+            tokenInfos,
+            customTokenInfos,
+          ),
+        );
+        if (isCancelled) return;
+        const filteredTokens =
+          (await EvmTokensUtils.filterTokensBasedOnSettings(
+            tokens as NativeAndErc20Token[],
+          )) as NativeAndErc20Token[];
+        if (isCancelled) return;
+        setEvmTransferTokens(filteredTokens);
+        if (
+          !selectedEvmTokenKey ||
+          !filteredTokens.some(
+            (token) => buildEvmTokenKey(token) === selectedEvmTokenKey,
+          )
+        ) {
+          setSelectedEvmTokenKey(
+            filteredTokens[0] ? buildEvmTokenKey(filteredTokens[0]) : '',
+          );
+        }
+      } catch {
+        if (!isCancelled) {
+          setEvmTransferTokens([]);
+          setSelectedEvmTokenKey('');
+        }
+      }
+    };
+
+    void loadEvmTransferTokens();
+    return () => {
+      isCancelled = true;
+    };
+  }, [
+    evmLocalAccounts,
+    requiresTransferChain,
+    selectedEvmTokenKey,
+    selectedTransferChain,
   ]);
 
   const selectedActionOption = useMemo<OptionItem>(() => {
@@ -313,6 +523,30 @@ const Shortcuts = ({
     );
   }, [delegationOptions, selectedDelegationType]);
 
+  const selectedTransferChainOption = useMemo<OptionItem>(() => {
+    return (
+      transferChainOptions.find(
+        (option) => option.value === selectedTransferChainId,
+      ) ?? transferChainOptions[0]
+    );
+  }, [transferChainOptions, selectedTransferChainId]);
+
+  const selectedTransferTokenOption = useMemo<OptionItem>(() => {
+    const value =
+      selectedTransferChain?.type === ChainType.EVM
+        ? selectedEvmTokenKey
+        : selectedCurrency;
+    return (
+      transferTokenOptions.find((option) => option.value === value) ??
+      transferTokenOptions[0]
+    );
+  }, [
+    selectedCurrency,
+    selectedEvmTokenKey,
+    selectedTransferChain,
+    transferTokenOptions,
+  ]);
+
   const resetForm = useCallback(() => {
     setCombo('');
     setActionType(ShortcutActionType.NAVIGATE);
@@ -320,6 +554,8 @@ const Shortcuts = ({
     setSelectedCurrency('hive');
     setSelectedTokenSymbol('');
     setSelectedDelegationType(DelegationType.OUTGOING);
+    setSelectedTransferChainId('');
+    setSelectedEvmTokenKey('');
     setEditingShortcutId(null);
     setFormVisible(false);
   }, []);
@@ -349,6 +585,18 @@ const Shortcuts = ({
       setErrorMessage('popup_html_shortcuts_missing_target');
       return false;
     }
+    if (requiresTransferChain && !selectedTransferChainId) {
+      setErrorMessage('popup_html_shortcuts_missing_target');
+      return false;
+    }
+    if (
+      requiresTransferChain &&
+      selectedTransferChain?.type === ChainType.EVM &&
+      !selectedEvmTokenKey
+    ) {
+      setErrorMessage('popup_html_shortcuts_missing_target');
+      return false;
+    }
     const normalizedCombo = ShortcutsUtils.normalizeShortcutCombo(combo);
     const isDuplicate = shortcuts.some(
       (shortcut) =>
@@ -366,6 +614,22 @@ const Shortcuts = ({
     if (!validateForm()) return;
     const normalizedCombo = ShortcutsUtils.normalizeShortcutCombo(combo);
     const params: ShortcutParams = {};
+    if (requiresTransferChain) {
+      params.chainId = selectedTransferChainId;
+      if (selectedTransferChain?.type === ChainType.HIVE) {
+        params.selectedCurrency = selectedCurrency;
+      }
+      if (selectedTransferChain?.type === ChainType.EVM) {
+        const token = evmTransferTokens.find(
+          (token) => buildEvmTokenKey(token) === selectedEvmTokenKey,
+        );
+        if (token) {
+          params.tokenSymbol = token.tokenInfo.symbol;
+          params.evmTokenType = token.tokenInfo.type;
+          params.evmTokenContractAddress = getEvmTokenContractAddress(token);
+        }
+      }
+    }
     if (requiresCurrency) {
       params.selectedCurrency = selectedCurrency;
     }
@@ -374,6 +638,21 @@ const Shortcuts = ({
     }
     if (requiresDelegationType) {
       params.delegationType = selectedDelegationType;
+    }
+    if (actionType === ShortcutActionType.CHANGE_ACCOUNT) {
+      const accountTarget = ShortcutsUtils.parseShortcutAccountTarget(target);
+      params.accountType = accountTarget.accountType;
+      params.accountId = accountTarget.accountId;
+    }
+    if (actionType === ShortcutActionType.CHANGE_CHAIN) {
+      if (target === LAST_USED_EVM_CHAIN_TARGET) {
+        params.chainId = undefined;
+      } else {
+        const chain = setupChains.find((chain) => chain.chainId === target);
+        if (chain) {
+          params.chainId = chain.chainId;
+        }
+      }
     }
     if (target === HiveScreen.POWER_UP_PAGE) {
       params.powerType = PowerType.POWER_UP;
@@ -408,13 +687,21 @@ const Shortcuts = ({
       (shortcut.params?.delegationType as DelegationType) ??
         DelegationType.OUTGOING,
     );
-    if (shortcut.actionType === ShortcutActionType.CHANGE_ACCOUNT) {
-      const account = accounts?.find(
-        (item: LocalAccount) => item.name === shortcut.target,
+    setSelectedTransferChainId(shortcut.params?.chainId ?? '');
+    if (shortcut.params?.evmTokenType === EVMSmartContractType.NATIVE) {
+      setSelectedEvmTokenKey(
+        `${EVMSmartContractType.NATIVE}:${shortcut.params.tokenSymbol ?? ''}`,
       );
-      if (account) {
-        loadActiveAccount(account);
-      }
+    } else if (
+      shortcut.params?.evmTokenType === EVMSmartContractType.ERC20 &&
+      shortcut.params?.evmTokenContractAddress
+    ) {
+      setSelectedEvmTokenKey(
+        `${EVMSmartContractType.ERC20}:${shortcut.params.chainId}:` +
+          shortcut.params.evmTokenContractAddress.toLowerCase(),
+      );
+    } else {
+      setSelectedEvmTokenKey('');
     }
     setFormVisible(true);
     setTimeout(() => keyInputRef.current?.focus(), 0);
@@ -435,6 +722,8 @@ const Shortcuts = ({
     setSelectedCurrency('hive');
     setSelectedTokenSymbol(tokenOptions[0]?.value ?? '');
     setSelectedDelegationType(DelegationType.OUTGOING);
+    setSelectedTransferChainId(setupChains[0]?.chainId ?? '');
+    setSelectedEvmTokenKey('');
     setFormVisible(true);
     setTimeout(() => keyInputRef.current?.focus(), 0);
   };
@@ -458,25 +747,69 @@ const Shortcuts = ({
     if (shortcut.params.selectedCurrency) {
       return shortcut.params.selectedCurrency.toUpperCase();
     }
+    if (shortcut.params.chainId) {
+      const chain = setupChains.find(
+        (chain) => chain.chainId === shortcut.params?.chainId,
+      );
+      const token = shortcut.params.tokenSymbol
+        ? ` · ${shortcut.params.tokenSymbol}`
+        : '';
+      return `${chain?.name ?? shortcut.params.chainId}${token}`;
+    }
     return '';
+  };
+
+  const getShortcutActionLabel = (action: ShortcutActionType) => {
+    if (action === ShortcutActionType.CHANGE_ACCOUNT) {
+      return chrome.i18n.getMessage(
+        'popup_html_shortcuts_action_change_account',
+      );
+    }
+    if (action === ShortcutActionType.CHANGE_CHAIN) {
+      return (
+        chrome.i18n.getMessage('popup_html_shortcuts_action_change_chain') ||
+        'Change chain'
+      );
+    }
+    return chrome.i18n.getMessage('popup_html_shortcuts_action_navigate');
+  };
+
+  const getChainLabel = (shortcut: ShortcutDefinition) => {
+    if (shortcut.target === LAST_USED_EVM_CHAIN_TARGET) {
+      return 'Last used EVM chain';
+    }
+    const chainId = shortcut.params?.chainId ?? shortcut.target;
+    const chain = setupChains.find((chain) => chain.chainId === chainId);
+    if (chain) return chain.name;
+    return shortcut.target;
   };
 
   const getShortcutDisplayParts = (shortcut: ShortcutDefinition) => {
     if (shortcut.actionType === ShortcutActionType.CHANGE_ACCOUNT) {
+      const accountTarget = ShortcutsUtils.parseShortcutAccountTarget(
+        shortcut.target,
+        shortcut.params?.accountType,
+        shortcut.params?.accountId,
+      );
       return {
-        firstLine: chrome.i18n.getMessage(
-          'popup_html_shortcuts_action_change_account',
-        ),
-        secondLine: `@${shortcut.target}`,
+        firstLine: getShortcutActionLabel(shortcut.actionType),
+        secondLine:
+          accountTarget.accountType === ShortcutAccountType.EVM
+            ? FormatUtils.shortenString(accountTarget.accountId, 6)
+            : `@${accountTarget.accountId}`,
       };
     }
 
-    // For NAVIGATE actions
-    const actionLabel = chrome.i18n.getMessage(
-      'popup_html_shortcuts_action_navigate',
-    );
+    if (shortcut.actionType === ShortcutActionType.CHANGE_CHAIN) {
+      return {
+        firstLine: getShortcutActionLabel(shortcut.actionType),
+        secondLine: getChainLabel(shortcut),
+      };
+    }
+
+    const actionLabel = getShortcutActionLabel(shortcut.actionType);
     const screenLabel = ShortcutsUtils.formatScreenLabel(
-      shortcut.target as HiveScreen,
+      shortcut.target as HiveScreen | MultichainScreen | EvmScreen,
     );
     const extraLabel = getShortcutExtraLabel(shortcut);
 
@@ -586,20 +919,37 @@ const Shortcuts = ({
               setActionType(option.value as ShortcutActionType)
             }
           />
-          {actionType === ShortcutActionType.CHANGE_ACCOUNT ? (
-            <div className="shortcuts-account-selector">
-              <div className="label">
-                {chrome.i18n.getMessage('popup_html_shortcuts_target')}
-              </div>
-              <SelectAccountSectionComponent fullSize background="white" />
-            </div>
-          ) : (
+          <ComplexeCustomSelect
+            label="popup_html_shortcuts_target"
+            skipLabelTranslation={false}
+            options={targetOptions}
+            selectedItem={selectedTargetOption}
+            setSelectedItem={(option) => setTarget(option.value)}
+          />
+          {requiresTransferChain && (
             <ComplexeCustomSelect
-              label="popup_html_shortcuts_target"
+              label="Chain"
+              skipLabelTranslation
+              options={transferChainOptions}
+              selectedItem={selectedTransferChainOption}
+              setSelectedItem={(option) =>
+                setSelectedTransferChainId(option.value)
+              }
+            />
+          )}
+          {requiresTransferChain && (
+            <ComplexeCustomSelect
+              label="popup_html_tokens"
               skipLabelTranslation={false}
-              options={targetOptions}
-              selectedItem={selectedTargetOption}
-              setSelectedItem={(option) => setTarget(option.value)}
+              options={transferTokenOptions}
+              selectedItem={selectedTransferTokenOption}
+              setSelectedItem={(option) => {
+                if (selectedTransferChain?.type === ChainType.EVM) {
+                  setSelectedEvmTokenKey(option.value);
+                } else {
+                  setSelectedCurrency(option.value as 'hive' | 'hbd');
+                }
+              }}
             />
           )}
           {requiresCurrency && (
@@ -656,7 +1006,8 @@ const Shortcuts = ({
 const mapStateToProps = (state: RootState) => {
   return {
     accounts: state.hive.accounts,
-    activeAccount: state.hive.activeAccount,
+    evmAccounts: state.evm.accounts,
+    mk: state.mk,
     userTokens: state.hive.userTokens,
     tokens: state.hive.tokens,
   };
@@ -666,7 +1017,6 @@ const connector = connect(mapStateToProps, {
   setErrorMessage,
   setSuccessMessage,
   setTitleContainerProperties,
-  loadActiveAccount,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

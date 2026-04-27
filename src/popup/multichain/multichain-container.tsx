@@ -1,9 +1,7 @@
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
-import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
 import { setChain } from '@popup/multichain/actions/chain.actions';
 import { ChainComponentWithBoundary } from '@popup/multichain/chain.component';
 import { Chain } from '@popup/multichain/interfaces/chains.interface';
-import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { RootState, store } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { resolvePopupInitialChain } from '@popup/multichain/utils/popup-initial-chain.utils';
@@ -13,18 +11,7 @@ import hotkeys from 'hotkeys-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';
-import {
-  ShortcutActionType,
-  ShortcutDefinition,
-} from 'src/interfaces/shortcut.interface';
-import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
-import { ConversionType } from 'src/popup/hive/pages/app-container/home/conversion/conversion-type.enum';
-import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
-import { PowerType } from 'src/popup/hive/pages/app-container/home/power-up-down/power-type.enum';
-import {
-  navigateTo,
-  navigateToWithParams,
-} from 'src/popup/multichain/actions/navigation.actions';
+import { ShortcutDefinition } from 'src/interfaces/shortcut.interface';
 import { Theme, ThemeContext } from 'src/popup/theme.context';
 import {
   ensureEcosystemDappsCached,
@@ -32,14 +19,31 @@ import {
   getActiveTabOrigin,
 } from 'src/utils/ecosystem-dapps-cache.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import {
+  executeShortcut,
+  isShortcutTargetChainReady,
+} from 'src/utils/shortcuts-execution.utils';
 import ShortcutsUtils from 'src/utils/shortcuts.utils';
 
-const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
+interface PendingShortcut {
+  shortcut: ShortcutDefinition;
+  targetChain: Chain;
+  executeAfter: number;
+}
+
+const MultichainContainer = ({
+  chain,
+  evmActiveAccountReady,
+  hiveActiveAccountName,
+  hiveActiveRpcUri,
+  setChain,
+}: PropsFromRedux) => {
   const [theme, setTheme] = useState<Theme>(Theme.LIGHT);
   const [hasHydratedSettings, setHasHydratedSettings] = useState(false);
   const [isBootstrapping, setIsBootstrapping] = useState(true);
   const shortcutsRef = useRef<ShortcutDefinition[]>([]);
   const registeredCombosRef = useRef<string[]>([]);
+  const pendingShortcutRef = useRef<PendingShortcut | null>(null);
 
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     // console.log({ event }, event.key, event.ctrlKey);
@@ -72,114 +76,56 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
     });
   }, []);
 
-  const executeShortcut = useCallback((shortcut: ShortcutDefinition) => {
-    if (shortcut.actionType === ShortcutActionType.CHANGE_ACCOUNT) {
-      const account = store
-        .getState()
-        .hive.accounts.find((item) => item.name === shortcut.target);
-      if (account) store.dispatch(loadActiveAccount(account));
-      return;
-    }
+  const executeRegisteredShortcut = useCallback(
+    async (shortcut: ShortcutDefinition) => {
+      const result = await executeShortcut(shortcut);
+      if (result.deferred && result.targetChain) {
+        pendingShortcutRef.current = {
+          shortcut,
+          targetChain: result.targetChain,
+          executeAfter: Date.now() + 700,
+        };
+      }
+    },
+    [],
+  );
 
-    if (shortcut.actionType !== ShortcutActionType.NAVIGATE) return;
-
-    const targetScreen = shortcut.target as MultichainScreen | HiveScreen;
-    const params = shortcut.params ?? {};
-
+  useEffect(() => {
+    const pendingShortcut = pendingShortcutRef.current;
+    if (!pendingShortcut) return;
     if (
-      targetScreen === MultichainScreen.TRANSFER_FUND_PAGE ||
-      targetScreen === HiveScreen.SAVINGS_PAGE
+      !isShortcutTargetChainReady(
+        pendingShortcut.shortcut,
+        store.getState(),
+        pendingShortcut.targetChain,
+      )
     ) {
-      if (params.selectedCurrency) {
-        store.dispatch(
-          navigateToWithParams(targetScreen, {
-            selectedCurrency: params.selectedCurrency,
-          }),
-        );
-        return;
-      }
-    }
-
-    if (targetScreen === HiveScreen.CONVERSION_PAGE) {
-      if (params.selectedCurrency) {
-        const conversionType =
-          params.selectedCurrency === 'hive'
-            ? ConversionType.CONVERT_HIVE_TO_HBD
-            : ConversionType.CONVERT_HBD_TO_HIVE;
-        store.dispatch(
-          navigateToWithParams(targetScreen, {
-            conversionType,
-          }),
-        );
-        return;
-      }
-    }
-
-    if (targetScreen === HiveScreen.POWER_UP_PAGE) {
-      store.dispatch(
-        navigateToWithParams(targetScreen, {
-          powerType: PowerType.POWER_UP,
-        }),
-      );
       return;
     }
-
-    if (targetScreen === HiveScreen.POWER_DOWN_PAGE) {
-      store.dispatch(
-        navigateToWithParams(targetScreen, {
-          powerType: PowerType.POWER_DOWN,
-        }),
-      );
-      return;
+    const delay = pendingShortcut.executeAfter - Date.now();
+    if (delay > 0) {
+      const timeoutId = window.setTimeout(() => {
+        const latestPendingShortcut = pendingShortcutRef.current;
+        if (!latestPendingShortcut) return;
+        if (
+          !isShortcutTargetChainReady(
+            latestPendingShortcut.shortcut,
+            store.getState(),
+            latestPendingShortcut.targetChain,
+          )
+        ) {
+          return;
+        }
+        pendingShortcutRef.current = null;
+        void executeShortcut(latestPendingShortcut.shortcut, {
+          skipChainSwitch: true,
+        });
+      }, delay);
+      return () => window.clearTimeout(timeoutId);
     }
-
-    if (
-      targetScreen === HiveScreen.TOKENS_HISTORY ||
-      targetScreen === HiveScreen.TOKENS_TRANSFER ||
-      targetScreen === HiveScreen.TOKENS_DELEGATIONS
-    ) {
-      if (!params.tokenSymbol) return;
-      const tokenBalance = store
-        .getState()
-        .hive.userTokens.list.find(
-          (item) => item.symbol === params.tokenSymbol,
-        );
-      const tokenInfo = store
-        .getState()
-        .hive.tokens.find((item) => item.symbol === params.tokenSymbol);
-      if (!tokenBalance) return;
-      if (targetScreen === HiveScreen.TOKENS_HISTORY) {
-        store.dispatch(
-          navigateToWithParams(targetScreen, {
-            tokenBalance,
-          }),
-        );
-        return;
-      }
-      if (!tokenInfo) return;
-      if (targetScreen === HiveScreen.TOKENS_TRANSFER) {
-        store.dispatch(
-          navigateToWithParams(targetScreen, {
-            tokenBalance,
-            tokenInfo,
-          }),
-        );
-        return;
-      }
-      const delegationType =
-        (params.delegationType as DelegationType) ?? DelegationType.OUTGOING;
-      store.dispatch(
-        navigateToWithParams(targetScreen, {
-          tokenBalance,
-          tokenInfo,
-          delegationType,
-        }),
-      );
-      return;
-    }
-
-    store.dispatch(navigateTo(targetScreen));
-  }, []);
+    pendingShortcutRef.current = null;
+    void executeShortcut(pendingShortcut.shortcut, { skipChainSwitch: true });
+  }, [chain, evmActiveAccountReady, hiveActiveAccountName, hiveActiveRpcUri]);
 
   const registerShortcuts = useCallback(
     (shortcuts: ShortcutDefinition[]) => {
@@ -193,11 +139,11 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
         hotkeys(combo, (event) => {
           if (ShortcutsUtils.isEditableTarget(event.target)) return;
           event.preventDefault();
-          executeShortcut(shortcut);
+          void executeRegisteredShortcut(shortcut);
         });
       });
     },
-    [executeShortcut],
+    [executeRegisteredShortcut],
   );
 
   useEffect(() => {
@@ -349,6 +295,9 @@ const MultichainContainer = ({ chain, setChain }: PropsFromRedux) => {
 const mapStateToProps = (state: RootState) => {
   return {
     chain: state.chain as Chain,
+    evmActiveAccountReady: state.evm.activeAccount?.isReady,
+    hiveActiveAccountName: state.hive.activeAccount?.name,
+    hiveActiveRpcUri: state.hive.activeRpc?.uri,
   };
 };
 type PropsFromRedux = ConnectedProps<typeof connector>;

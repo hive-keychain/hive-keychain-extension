@@ -1,4 +1,6 @@
 import { Screen } from '@interfaces/screen.interface';
+import { ShortcutAccountType } from '@interfaces/shortcut.interface';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import ShortcutsUtils from 'src/utils/shortcuts.utils';
 
 describe('shortcuts.utils', () => {
@@ -97,12 +99,37 @@ describe('shortcuts.utils', () => {
   describe('screen lists', () => {
     it('includes core navigation targets', () => {
       expect(ShortcutsUtils.NAVIGATION_SCREENS).toContain(Screen.HOME_PAGE);
+      expect(ShortcutsUtils.NAVIGATION_SCREENS).toContain(
+        EvmScreen.EVM_ACCOUNTS_SETTINGS,
+      );
       expect(ShortcutsUtils.CURRENCY_REQUIRED_SCREENS).toContain(
         Screen.TRANSFER_FUND_PAGE,
       );
       expect(ShortcutsUtils.TOKEN_REQUIRED_SCREENS).toContain(
         Screen.TOKENS_HISTORY,
       );
+    });
+  });
+
+  describe('account target compatibility', () => {
+    it('builds typed account targets', () => {
+      expect(
+        ShortcutsUtils.buildShortcutAccountTarget(
+          ShortcutAccountType.EVM,
+          '0xabc',
+        ),
+      ).toBe('evm:0xabc');
+    });
+
+    it('parses typed and legacy account targets', () => {
+      expect(ShortcutsUtils.parseShortcutAccountTarget('evm:0xabc')).toEqual({
+        accountType: ShortcutAccountType.EVM,
+        accountId: '0xabc',
+      });
+      expect(ShortcutsUtils.parseShortcutAccountTarget('alice')).toEqual({
+        accountType: ShortcutAccountType.HIVE,
+        accountId: 'alice',
+      });
     });
   });
 });

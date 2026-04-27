@@ -1,3 +1,5 @@
+import { ShortcutAccountType } from '@interfaces/shortcut.interface';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 
@@ -120,10 +122,18 @@ const buildShortcutComboFromEvent = (event: KeyboardEvent) => {
   return normalizeShortcutCombo(parts.join('+'));
 };
 
-const NAVIGATION_SCREENS: (MultichainScreen | HiveScreen)[] = [
+const SHARED_NAVIGATION_SCREENS: MultichainScreen[] = [
   MultichainScreen.HOME_PAGE,
   MultichainScreen.TRANSFER_FUND_PAGE,
-  // Screen.RECURRENT_TRANSFERS_PAGE,
+  MultichainScreen.BUY_COINS_PAGE,
+  MultichainScreen.TOKEN_SWAP_PAGE,
+  MultichainScreen.TOKENS_SWAP_HISTORY,
+  MultichainScreen.SETTINGS_ABOUT,
+  MultichainScreen.SETTINGS_SHORTCUTS,
+];
+
+const HIVE_NAVIGATION_SCREENS: HiveScreen[] = [
+  HiveScreen.RECURRENT_TRANSFERS_PAGE,
   HiveScreen.WALLET_HISTORY_PAGE,
 
   HiveScreen.POWER_UP_PAGE,
@@ -133,18 +143,13 @@ const NAVIGATION_SCREENS: (MultichainScreen | HiveScreen)[] = [
   HiveScreen.DELEGATION_PAGE,
   HiveScreen.RC_DELEGATIONS_PAGE,
 
-  MultichainScreen.BUY_COINS_PAGE,
   HiveScreen.GOVERNANCE_PAGE,
 
-  // Screen.TOKENS_PAGE,
+  HiveScreen.TOKENS_HISTORY,
+  HiveScreen.TOKENS_TRANSFER,
+  HiveScreen.TOKENS_DELEGATIONS,
+  HiveScreen.TOKENS_PENDING_UNSTAKE,
 
-  // Screen.TOKENS_SETTINGS,
-  // Screen.TOKENS_OPERATION,
-  // Screen.TOKENS_DELEGATIONS,
-  // Screen.TOKENS_PENDING_UNSTAKE,
-
-  // Screen.PENDING_CONVERSION_PAGE,
-  // Screen.PENDING_SAVINGS_WITHDRAWAL_PAGE,
   // Screen.INCOMING_OUTGOING_PAGE,
   // Screen.RC_DELEGATIONS_INCOMING_OUTGOING_PAGE,
 
@@ -171,11 +176,28 @@ const NAVIGATION_SCREENS: (MultichainScreen | HiveScreen)[] = [
   HiveScreen.SETTINGS_FAVORITE_ACCOUNTS,
   HiveScreen.SETTINGS_MULTISIG,
   HiveScreen.SETTINGS_OPERATION_POPUP,
-  MultichainScreen.SETTINGS_ABOUT,
-  MultichainScreen.SETTINGS_ANALYTICS,
-  MultichainScreen.SETTINGS_SHORTCUTS,
   HiveScreen.SETTINGS_NOTIFICATIONS_CONFIGURATION,
   HiveScreen.SETTINGS_HELP,
+];
+
+const EVM_NAVIGATION_SCREENS: EvmScreen[] = [
+  EvmScreen.LIFI_HISTORY_PAGE,
+  EvmScreen.EVM_SETTINGS,
+  EvmScreen.EVM_ACCOUNTS_SETTINGS,
+  EvmScreen.EVM_ADVANCED_SETTINGS,
+  EvmScreen.EVM_CONTACTS,
+  EvmScreen.EVM_CUSTOM_CHAINS,
+  EvmScreen.EVM_CUSTOM_TOKENS_PAGE,
+  EvmScreen.EVM_CUSTOM_NFTS_PAGE,
+  EvmScreen.EVM_RPC_NODES_SETTINGS,
+  EvmScreen.EVM_SECURITY_SETTINGS,
+  EvmScreen.EVM_PROVIDER_SETTINGS,
+];
+
+const NAVIGATION_SCREENS: (MultichainScreen | HiveScreen | EvmScreen)[] = [
+  ...SHARED_NAVIGATION_SCREENS,
+  ...HIVE_NAVIGATION_SCREENS,
+  ...EVM_NAVIGATION_SCREENS,
 ];
 
 const CURRENCY_REQUIRED_SCREENS: (MultichainScreen | HiveScreen)[] = [
@@ -194,7 +216,9 @@ const DELEGATION_REQUIRED_SCREENS: (MultichainScreen | HiveScreen)[] = [
   HiveScreen.TOKENS_DELEGATIONS,
 ];
 
-const formatScreenLabel = (screen: MultichainScreen | HiveScreen) => {
+const formatScreenLabel = (
+  screen: MultichainScreen | HiveScreen | EvmScreen,
+) => {
   return screen
     .split('_')
     .map((part) => part.charAt(0) + part.slice(1).toLowerCase())
@@ -205,17 +229,91 @@ const formatScreenLabel = (screen: MultichainScreen | HiveScreen) => {
 const createShortcutId = () =>
   `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 
+const buildShortcutAccountTarget = (
+  accountType: ShortcutAccountType,
+  accountId: string,
+) => `${accountType.toLowerCase()}:${accountId}`;
+
+const parseShortcutAccountTarget = (
+  target: string,
+  accountType?: ShortcutAccountType,
+  accountId?: string,
+) => {
+  if (accountType && accountId) {
+    return { accountType, accountId };
+  }
+
+  const separatorIndex = target.indexOf(':');
+  if (separatorIndex > 0) {
+    const prefix = target.slice(0, separatorIndex).toUpperCase();
+    const id = target.slice(separatorIndex + 1);
+    if (
+      (prefix === ShortcutAccountType.HIVE ||
+        prefix === ShortcutAccountType.EVM) &&
+      id
+    ) {
+      return {
+        accountType: prefix as ShortcutAccountType,
+        accountId: id,
+      };
+    }
+  }
+
+  return {
+    accountType: ShortcutAccountType.HIVE,
+    accountId: target,
+  };
+};
+
+const isHiveNavigationScreen = (screen: string) =>
+  (HIVE_NAVIGATION_SCREENS as string[]).includes(screen);
+
+const isEvmNavigationScreen = (screen: string) =>
+  (EVM_NAVIGATION_SCREENS as string[]).includes(screen);
+
+const isSharedNavigationScreen = (screen: string) =>
+  (SHARED_NAVIGATION_SCREENS as string[]).includes(screen);
+
 const ShortcutsUtils = {
   isEditableTarget,
   normalizeShortcutCombo,
   formatShortcutCombo,
   buildShortcutComboFromEvent,
   NAVIGATION_SCREENS,
+  HIVE_NAVIGATION_SCREENS,
+  EVM_NAVIGATION_SCREENS,
+  SHARED_NAVIGATION_SCREENS,
   CURRENCY_REQUIRED_SCREENS,
   TOKEN_REQUIRED_SCREENS,
   DELEGATION_REQUIRED_SCREENS,
   formatScreenLabel,
   createShortcutId,
+  buildShortcutAccountTarget,
+  parseShortcutAccountTarget,
+  isHiveNavigationScreen,
+  isEvmNavigationScreen,
+  isSharedNavigationScreen,
+};
+
+export {
+  buildShortcutAccountTarget,
+  buildShortcutComboFromEvent,
+  createShortcutId,
+  CURRENCY_REQUIRED_SCREENS,
+  DELEGATION_REQUIRED_SCREENS,
+  EVM_NAVIGATION_SCREENS,
+  formatScreenLabel,
+  formatShortcutCombo,
+  HIVE_NAVIGATION_SCREENS,
+  isEditableTarget,
+  isEvmNavigationScreen,
+  isHiveNavigationScreen,
+  isSharedNavigationScreen,
+  NAVIGATION_SCREENS,
+  normalizeShortcutCombo,
+  parseShortcutAccountTarget,
+  SHARED_NAVIGATION_SCREENS,
+  TOKEN_REQUIRED_SCREENS,
 };
 
 export default ShortcutsUtils;
