@@ -1,5 +1,9 @@
 import { Screen } from '@interfaces/screen.interface';
-import { setErrorMessage } from '@popup/multichain/actions/message.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
@@ -21,6 +25,8 @@ const SelectKeys = ({
   addAccount,
   setErrorMessage,
   setTitleContainerProperties,
+  navigateTo,
+  setSuccessMessage,
 }: PropsFromRedux) => {
   const [importActive, setImportActive] = useState(keys.active ? true : false);
   const [importPosting, setImportPosting] = useState(
@@ -54,6 +60,10 @@ const SelectKeys = ({
       setErrorMessage('popup_accounts_no_key_selected');
     } else {
       addAccount({ name: username, keys: keysToImport });
+      setSuccessMessage('popup_html_import_success');
+      setTimeout(() => {
+        navigateTo(Screen.HOME_PAGE, true);
+      }, 3000);
     }
   };
 
@@ -120,8 +130,10 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   setErrorMessage,
+  setSuccessMessage,
   addAccount,
   setTitleContainerProperties,
+  navigateTo,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
