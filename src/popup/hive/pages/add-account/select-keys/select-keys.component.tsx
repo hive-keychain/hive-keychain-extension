@@ -41,7 +41,9 @@ const SelectKeys = ({
     });
   });
 
-  const importKeys = (): void => {
+  const importKeys = (event: React.MouseEvent<HTMLButtonElement>): void => {
+    event.preventDefault();
+    event.stopPropagation();
     let keysToImport: Keys = {};
     if (importActive) {
       keysToImport.active = keys.active;
@@ -115,7 +117,9 @@ const SelectKeys = ({
       <ButtonComponent
         dataTestId="button-save"
         label="popup_html_save"
-        onClick={() => importKeys()}
+        onClick={(event: React.MouseEvent<HTMLButtonElement>) =>
+          importKeys(event)
+        }
       />
     </div>
   );
