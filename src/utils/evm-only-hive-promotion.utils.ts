@@ -15,7 +15,7 @@ const getHivePromotionMinInstallAgeDays = () => {
   const configuredDays = Number(
     process.env.HIVE_PROMOTION_MIN_INSTALL_AGE_DAYS,
   );
-  return Number.isFinite(configuredDays) && configuredDays > 0
+  return Number.isFinite(configuredDays)
     ? configuredDays
     : DEFAULT_HIVE_PROMOTION_MIN_INSTALL_AGE_DAYS;
 };
@@ -55,15 +55,16 @@ const shouldShowEvmOnlyHivePromotion = ({
   sensitiveFlowActive,
   now = new Date(),
 }: EvmOnlyHivePromotionEligibilityInput) => {
-  return true;
-  // isOldEnough(installDate, now)
-  // evmAccountsCount > 0 &&
-  // hiveAccountsCount === 0 &&
-  // pendingHiveAccountCreationCount === 0 &&
-  // !dismissedPermanently &&
-  // !isSnoozed(snoozedUntil, now) &&
-  // walletUnlocked &&
-  // !sensitiveFlowActive
+  return (
+    isOldEnough(installDate, now) &&
+    evmAccountsCount > 0 &&
+    hiveAccountsCount === 0 &&
+    pendingHiveAccountCreationCount === 0 &&
+    !dismissedPermanently &&
+    !isSnoozed(snoozedUntil, now) &&
+    walletUnlocked &&
+    !sensitiveFlowActive
+  );
 };
 
 const getEvmOnlyHivePromotionStorage =
