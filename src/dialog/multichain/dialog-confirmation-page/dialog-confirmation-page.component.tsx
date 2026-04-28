@@ -1,5 +1,5 @@
 import { SVGIcons } from '@common-ui/icons.enum';
-import { ModalComponent } from '@common-ui/modal/modal.component';
+import { ModalPresentation } from '@common-ui/modal/modal.component';
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import SignTransaction, {
   SignFromLedgerRequestMessage,
@@ -236,9 +236,9 @@ export const DialogConfirmationPage = ({
       )}
       {displayedMessage && displayRequest(displayedMessage)}
       {feedBackMessage && (
-        <ModalComponent>
+        <ModalPresentation onClose={closeFeedBackMessage}>
           {displayFeedBackMessage(feedBackMessage)}
-        </ModalComponent>
+        </ModalPresentation>
       )}
     </div>
   );
