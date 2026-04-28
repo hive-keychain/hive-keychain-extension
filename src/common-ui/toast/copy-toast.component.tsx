@@ -32,7 +32,7 @@ export const CopyToastContainer = () => {
       newestOnTop={false}
       pauseOnFocusLoss={false}
       pauseOnHover={false}
-      position="top-center"
+      position="bottom-center"
       toastClassName="copy-toast copy-toast--success"
       transition={CopyToastTransition}
     />
