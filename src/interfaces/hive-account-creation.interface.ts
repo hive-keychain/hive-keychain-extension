@@ -26,10 +26,12 @@ export interface CreateHiveAccountCreationQuoteRequest {
   authorities: HiveAccountCreationAuthorities;
 }
 
+export type HiveAccountCreationPaymentCurrency = 'HIVE' | 'HBD';
+
 export interface HiveAccountCreationPayment {
   account: string;
   amount: string;
-  asset: 'HIVE' | 'HBD';
+  asset: HiveAccountCreationPaymentCurrency;
   memo: string;
 }
 
@@ -54,3 +56,24 @@ export interface HiveAccountCreationStatusResponse {
   updatedAt?: string;
   error?: string;
 }
+
+export interface PendingHiveAccountCreationRequest {
+  requestId: string;
+  username: string;
+  encryptedAccount: string;
+  paymentCurrency: HiveAccountCreationPaymentCurrency;
+  paymentAddress: string;
+  memo?: string;
+  amount: string;
+  expiresAt: string;
+  status: HiveAccountCreationStatus;
+  createdAt: string;
+  updatedAt: string;
+  lastCheckedAt?: string;
+}
+
+export type SavePendingHiveAccountCreationRequest = Omit<
+  PendingHiveAccountCreationRequest,
+  'createdAt' | 'updatedAt'
+> &
+  Partial<Pick<PendingHiveAccountCreationRequest, 'createdAt' | 'updatedAt'>>;
