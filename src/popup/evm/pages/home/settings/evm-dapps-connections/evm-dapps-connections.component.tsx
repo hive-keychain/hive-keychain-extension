@@ -54,6 +54,25 @@ export const getEvmDappFaviconUrl = (subdomain: string) => {
   )}&sz=256`;
 };
 
+const parseEvmDappsLogoMap = (raw: unknown): Record<string, string> => {
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) {
+    return {};
+  }
+  return raw as Record<string, string>;
+};
+
+/** Prefer logo stored at connect time (`EVM_DAPPS_LOGO`), else Google favicon URL. */
+export const getEvmDappConnectionIconUrl = (
+  subdomain: string,
+  savedLogos?: Record<string, string> | null,
+) => {
+  const saved = savedLogos?.[subdomain]?.trim();
+  if (saved) {
+    return saved;
+  }
+  return getEvmDappFaviconUrl(subdomain);
+};
+
 export const removeEvmDappConnectionAccounts = (
   walletPermissions: EvmWalletPermissions | undefined,
   subdomain: string,
@@ -165,6 +184,7 @@ const EvmDappsConnections = ({
   setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [connections, setConnections] = useState<EvmDappConnection[]>([]);
+  const [dappLogos, setDappLogos] = useState<Record<string, string>>({});
   const [selectedConnection, setSelectedConnection] =
     useState<EvmDappConnection>();
 
@@ -181,10 +201,13 @@ const EvmDappsConnections = ({
   }, [accounts]);
 
   const initConnections = async () => {
+    const storage = await LocalStorageUtils.getMultipleValueFromLocalStorage([
+      LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
+      LocalStorageKeyEnum.EVM_DAPPS_LOGO,
+    ]);
     const walletPermissions =
-      await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
-      );
+      storage[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS];
+    setDappLogos(parseEvmDappsLogoMap(storage[LocalStorageKeyEnum.EVM_DAPPS_LOGO]));
 
     const nextConnections = getEvmDappConnections(walletPermissions, accounts);
     setConnections(nextConnections);
@@ -251,7 +274,7 @@ const EvmDappsConnections = ({
                 <img
                   className="evm-dapps-connections-favicon"
                   data-testid="evm-dapps-connection-favicon"
-                  src={getEvmDappFaviconUrl(connection.subdomain)}
+                  src={getEvmDappConnectionIconUrl(connection.subdomain, dappLogos)}
                   alt=""
                 />
                 <div
@@ -276,7 +299,14 @@ const EvmDappsConnections = ({
           onClickOutside={() => setSelectedConnection(undefined)}>
           <div className="dapp-status-details-wrapper">
             <div className="popup-title">
-              <div></div>
+              <img
+                className="evm-dapps-connections-favicon"
+                alt=""
+                src={getEvmDappConnectionIconUrl(
+                  selectedConnection.subdomain,
+                  dappLogos,
+                )}
+              />
               <div className="domain">{selectedConnection.subdomain}</div>
               <SVGIcon
                 icon={SVGIcons.TOP_BAR_CLOSE_BTN}

@@ -5,9 +5,11 @@ import { EvmWalletPermissions } from '@interfaces/evm-provider.interface';
 import {
   EvmDappsConnectionsComponent,
   getEvmDappConnections,
+  getEvmDappConnectionIconUrl,
   getEvmDappFaviconUrl,
   removeEvmDappConnectionAccounts,
 } from '@popup/evm/pages/home/settings/evm-dapps-connections/evm-dapps-connections.component';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
@@ -185,6 +187,19 @@ describe('EvmDappsConnectionsComponent', () => {
     );
   });
 
+  it('prefers a saved logo URL when present', () => {
+    const saved =
+      'https://example.com/icon.png';
+    expect(
+      getEvmDappConnectionIconUrl('app.example.com', {
+        'app.example.com': saved,
+      }),
+    ).toBe(saved);
+    expect(getEvmDappConnectionIconUrl('app.example.com', {})).toBe(
+      getEvmDappFaviconUrl('app.example.com'),
+    );
+  });
+
   it('renders subdomains only and opens connected addresses in a modal', async () => {
     const user = userEvent.setup();
     const localAccount = createAccount(
@@ -196,13 +211,18 @@ describe('EvmDappsConnectionsComponent', () => {
     const staleAddress = '0x2222222222222222222222222222222222222222';
 
     jest
-      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .spyOn(LocalStorageUtils, 'getMultipleValueFromLocalStorage')
       .mockResolvedValueOnce({
-        'zeta.example': {
-          [EvmRequestPermission.ETH_ACCOUNTS]: [staleAddress],
+        [LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS]: {
+          'zeta.example': {
+            [EvmRequestPermission.ETH_ACCOUNTS]: [staleAddress],
+          },
+          'https://alpha.example': {
+            [EvmRequestPermission.ETH_ACCOUNTS]: [localAccount.wallet.address],
+          },
         },
-        'https://alpha.example': {
-          [EvmRequestPermission.ETH_ACCOUNTS]: [localAccount.wallet.address],
+        [LocalStorageKeyEnum.EVM_DAPPS_LOGO]: {
+          'alpha.example': 'https://saved.cdn/wallet-alpha.png',
         },
       });
 
@@ -230,7 +250,11 @@ describe('EvmDappsConnectionsComponent', () => {
     ]);
     expect(screen.getAllByTestId('evm-dapps-connection-favicon')[0]).toHaveAttribute(
       'src',
-      'https://www.google.com/s2/favicons?domain=alpha.example&sz=256',
+      'https://saved.cdn/wallet-alpha.png',
+    );
+    expect(screen.getAllByTestId('evm-dapps-connection-favicon')[1]).toHaveAttribute(
+      'src',
+      'https://www.google.com/s2/favicons?domain=zeta.example&sz=256',
     );
     expect(screen.queryByTestId('evm-account-display')).not.toBeInTheDocument();
 
@@ -281,6 +305,12 @@ describe('EvmDappsConnectionsComponent', () => {
       },
     };
 
+    jest
+      .spyOn(LocalStorageUtils, 'getMultipleValueFromLocalStorage')
+      .mockImplementation(async () => ({
+        [LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS]: walletPermissions,
+        [LocalStorageKeyEnum.EVM_DAPPS_LOGO]: {},
+      }));
     jest
       .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
       .mockImplementation(async () => walletPermissions);
@@ -353,8 +383,11 @@ describe('EvmDappsConnectionsComponent', () => {
     );
 
     jest
-      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
-      .mockResolvedValueOnce({});
+      .spyOn(LocalStorageUtils, 'getMultipleValueFromLocalStorage')
+      .mockResolvedValueOnce({
+        [LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS]: {},
+        [LocalStorageKeyEnum.EVM_DAPPS_LOGO]: {},
+      });
 
     const emptyStore = getFakeStore({
       ...initialEmptyStateStore,

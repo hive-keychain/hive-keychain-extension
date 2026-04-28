@@ -1,5 +1,8 @@
 import { initializeEvmProviderRegistration } from '@background/evm/evm-provider-registration';
-import { setAccountsForOrigin } from '@background/evm/evm-provider-state.utils';
+import {
+  persistEvmDappLogoForDomain,
+  setAccountsForOrigin,
+} from '@background/evm/evm-provider-state.utils';
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { initEvmRequestHandler } from '@background/evm/requests/init';
@@ -159,9 +162,13 @@ const chromeMessageHandler = async (
           EvmRequestMethod.WALLET_REQUEST_PERMISSIONS,
         ].includes(requestData.request.method)
       ) {
-        await setAccountsForOrigin(
+        const accounts = await setAccountsForOrigin(
           requestData.dappInfo.origin,
           message.providerState.accounts,
+        );
+        await persistEvmDappLogoForDomain(
+          requestData.dappInfo,
+          accounts.length,
         );
       }
 
