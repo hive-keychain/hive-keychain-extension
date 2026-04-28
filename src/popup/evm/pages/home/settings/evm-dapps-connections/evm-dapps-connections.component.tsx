@@ -1,6 +1,6 @@
-import { Card } from '@common-ui/card/card.component';
-import { emitAccountsChangedIfNeeded } from '@background/evm/evm-provider-state.utils';
 import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
+import { emitAccountsChangedIfNeeded } from '@background/evm/evm-provider-state.utils';
+import { Card } from '@common-ui/card/card.component';
 import { EvmWalletPermissions } from '@interfaces/evm-provider.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
@@ -14,8 +14,8 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { DappStatusComponent } from 'src/common-ui/evm/dapp-status/dapp-status.component';
 import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
-import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
+import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import {
   getHostnameFromUrl,
@@ -207,15 +207,16 @@ const EvmDappsConnections = ({
     ]);
     const walletPermissions =
       storage[LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS];
-    setDappLogos(parseEvmDappsLogoMap(storage[LocalStorageKeyEnum.EVM_DAPPS_LOGO]));
+    setDappLogos(
+      parseEvmDappsLogoMap(storage[LocalStorageKeyEnum.EVM_DAPPS_LOGO]),
+    );
 
     const nextConnections = getEvmDappConnections(walletPermissions, accounts);
     setConnections(nextConnections);
     setSelectedConnection((currentConnection) => {
       if (!currentConnection) return undefined;
       return nextConnections.find(
-        (connection) =>
-          connection.subdomain === currentConnection.subdomain,
+        (connection) => connection.subdomain === currentConnection.subdomain,
       );
     });
   };
@@ -223,10 +224,9 @@ const EvmDappsConnections = ({
   const updateConnectionsForSelectedSubdomain = async (address?: string) => {
     if (!selectedConnection) return;
 
-    const walletPermissions =
-      await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
-      );
+    const walletPermissions = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
+    );
     const { walletPermissions: updatedWalletPermissions, affectedOrigins } =
       removeEvmDappConnectionAccounts(
         walletPermissions,
@@ -251,8 +251,7 @@ const EvmDappsConnections = ({
     setConnections(nextConnections);
     setSelectedConnection(
       nextConnections.find(
-        (connection) =>
-          connection.subdomain === selectedConnection.subdomain,
+        (connection) => connection.subdomain === selectedConnection.subdomain,
       ),
     );
   };
@@ -274,7 +273,10 @@ const EvmDappsConnections = ({
                 <img
                   className="evm-dapps-connections-favicon"
                   data-testid="evm-dapps-connection-favicon"
-                  src={getEvmDappConnectionIconUrl(connection.subdomain, dappLogos)}
+                  src={getEvmDappConnectionIconUrl(
+                    connection.subdomain,
+                    dappLogos,
+                  )}
                   alt=""
                 />
                 <div
@@ -356,9 +358,10 @@ const EvmDappsConnections = ({
                 </div>
               ))}
             </div>
+            <div className="fill-space" />
             <ButtonComponent
               type={ButtonType.IMPORTANT}
-              height="tall"
+              height="small"
               label="popup_html_evm_dapp_status_disconnect_all"
               onClick={() => updateConnectionsForSelectedSubdomain()}
               dataTestId="evm-dapps-disconnect-all"
