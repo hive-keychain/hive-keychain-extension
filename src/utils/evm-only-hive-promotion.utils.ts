@@ -12,7 +12,9 @@ const DEFAULT_HIVE_PROMOTION_MIN_INSTALL_AGE_DAYS = 7;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 const getHivePromotionMinInstallAgeDays = () => {
-  const configuredDays = Number(process.env.HIVE_PROMOTION_MIN_INSTALL_AGE_DAYS);
+  const configuredDays = Number(
+    process.env.HIVE_PROMOTION_MIN_INSTALL_AGE_DAYS,
+  );
   return Number.isFinite(configuredDays) && configuredDays > 0
     ? configuredDays
     : DEFAULT_HIVE_PROMOTION_MIN_INSTALL_AGE_DAYS;
@@ -23,7 +25,7 @@ const getTime = (date: string | number | Date | null | undefined) => {
   return date instanceof Date ? date.getTime() : new Date(date).getTime();
 };
 
-const isAtLeastSevenDaysOld = (
+const isOldEnough = (
   installDate: EvmOnlyHivePromotionEligibilityInput['installDate'],
   now: Date,
 ) => {
@@ -53,16 +55,15 @@ const shouldShowEvmOnlyHivePromotion = ({
   sensitiveFlowActive,
   now = new Date(),
 }: EvmOnlyHivePromotionEligibilityInput) => {
-  return (
-    isAtLeastSevenDaysOld(installDate, now) &&
-    evmAccountsCount > 0 &&
-    hiveAccountsCount === 0 &&
-    pendingHiveAccountCreationCount === 0 &&
-    !dismissedPermanently &&
-    !isSnoozed(snoozedUntil, now) &&
-    walletUnlocked &&
-    !sensitiveFlowActive
-  );
+  return true;
+  // isOldEnough(installDate, now)
+  // evmAccountsCount > 0 &&
+  // hiveAccountsCount === 0 &&
+  // pendingHiveAccountCreationCount === 0 &&
+  // !dismissedPermanently &&
+  // !isSnoozed(snoozedUntil, now) &&
+  // walletUnlocked &&
+  // !sensitiveFlowActive
 };
 
 const getEvmOnlyHivePromotionStorage =
@@ -95,9 +96,7 @@ const snoozeEvmOnlyHivePromotion = async (snoozedUntil: string | Date) => {
   await saveEvmOnlyHivePromotionStorage({
     ...storage,
     snoozedUntil:
-      snoozedUntil instanceof Date
-        ? snoozedUntil.toISOString()
-        : snoozedUntil,
+      snoozedUntil instanceof Date ? snoozedUntil.toISOString() : snoozedUntil,
   });
 };
 
@@ -132,7 +131,8 @@ const getEncryptedListCount = async (
   withLegacySupport = false,
 ) => {
   try {
-    const encryptedValue = await LocalStorageUtils.getValueFromLocalStorage(key);
+    const encryptedValue =
+      await LocalStorageUtils.getValueFromLocalStorage(key);
     const decryptedValue = withLegacySupport
       ? await EncryptUtils.decryptToJsonWithLegacySupport(encryptedValue, mk)
       : await EncryptUtils.decryptToJson(encryptedValue, mk);

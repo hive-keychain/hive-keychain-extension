@@ -47,6 +47,7 @@ import { WalletHistoryComponent } from 'src/popup/hive/pages/app-container/home/
 import { AccountSubMenuComponent } from 'src/popup/hive/pages/app-container/settings/accounts/account-sub-menu.component';
 import { CreateAccountStepOneComponent } from 'src/popup/hive/pages/app-container/settings/accounts/create-account/create-account-step-one/create-account-step-one.component';
 import { CreateAccountStepTwoComponent } from 'src/popup/hive/pages/app-container/settings/accounts/create-account/create-account-step-two/create-account-step-two.component';
+import { PendingAccountCreationPaymentComponent } from 'src/popup/hive/pages/app-container/settings/accounts/create-account/pending-account-creation-payment/pending-account-creation-payment.component';
 import { ManageAccountAuthoritiesComponent } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account-authorities/manage-account-authorities.component';
 import { AddKeyComponent } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/add-key/add-key.component';
 import { ManageAccountComponent } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/manage-account.component';
@@ -190,6 +191,8 @@ const AppRouter = ({
         return <CreateAccountStepOneComponent />;
       case HiveScreen.CREATE_ACCOUNT_PAGE_STEP_TWO:
         return <CreateAccountStepTwoComponent />;
+      case HiveScreen.PENDING_ACCOUNT_CREATION_PAYMENT:
+        return <PendingAccountCreationPaymentComponent />;
       default:
         return globalRouter(page);
     }

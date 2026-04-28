@@ -1,3 +1,4 @@
+import { HiveAccountCreationPaymentCurrency } from '@interfaces/hive-account-creation.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Screen } from '@interfaces/screen.interface';
 import {
@@ -24,13 +25,24 @@ import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
+import {
+  ComplexeCustomSelect,
+  OptionItem,
+} from 'src/common-ui/custom-select/custom-select.component';
 import { copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
 import { addAccount } from 'src/popup/hive/actions/account.actions';
+import { PaidAccountCreationUtils } from 'src/popup/hive/utils/paid-account-creation.utils';
 import FormatUtils from 'src/utils/format.utils';
 
 const SUBSTRING_LENGTH = 15;
+const PAYMENT_CURRENCY_OPTIONS: OptionItem[] = [
+  { label: 'HIVE', value: 'HIVE', key: 'hive' },
+  { label: 'HBD', value: 'HBD', key: 'hbd' },
+];
+
 const CreateAccountStepTwo = ({
   navParams,
+  mk,
   setErrorMessage,
   setSuccessMessage,
   setTitleContainerProperties,
@@ -55,6 +67,8 @@ const CreateAccountStepTwo = ({
   const creationType = navParams?.creationType;
   const accountCreationMode =
     navParams?.mode ?? AccountCreationMode.DEFAULT;
+  const isPaidBackendCreation =
+    accountCreationMode === AccountCreationMode.PAID_BACKEND_CREATION;
   const selectedAccount = navParams?.usedAccount as LocalAccount;
 
   const [paymentUnderstanding, setPaymentUnderstanding] = useState(false);
@@ -62,6 +76,8 @@ const CreateAccountStepTwo = ({
   const [notPrimaryStorageUnderstanding, setNotPrimaryStorageUnderstanding] =
     useState(false);
   const [hasCopied, setHasCopied] = useState(false);
+  const [selectedPaymentCurrency, setSelectedPaymentCurrency] =
+    useState<OptionItem>(PAYMENT_CURRENCY_OPTIONS[0]);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -184,6 +200,17 @@ const CreateAccountStepTwo = ({
     ) {
       addToLoadingList('html_popup_creating_account');
       try {
+        if (isPaidBackendCreation) {
+          await PaidAccountCreationUtils.createPendingPaidHiveAccountCreation(
+            accountName,
+            generatedKeys,
+            selectedPaymentCurrency.value as HiveAccountCreationPaymentCurrency,
+            mk,
+          );
+          navigateTo(Screen.PENDING_ACCOUNT_CREATION_PAYMENT, true);
+          return;
+        }
+
         const result = await AccountCreationUtils.createAccount(
           creationType,
           accountName,
@@ -216,6 +243,11 @@ const CreateAccountStepTwo = ({
 
   const getPaymentCheckboxLabel = () => {
     switch (creationType) {
+      case undefined:
+        if (isPaidBackendCreation) {
+          return 'I understand I must complete payment before this Hive account can be created';
+        }
+        return '';
       case AccountCreationType.BUYING:
         return chrome.i18n.getMessage(
           'html_popup_create_account_buy_method_message',
@@ -332,6 +364,16 @@ const CreateAccountStepTwo = ({
             </div>
           </div>
           <div className="agree-section">
+            {isPaidBackendCreation && (
+              <ComplexeCustomSelect<OptionItem>
+                label="Payment currency"
+                skipLabelTranslation
+                selectedItem={selectedPaymentCurrency}
+                options={PAYMENT_CURRENCY_OPTIONS}
+                setSelectedItem={setSelectedPaymentCurrency}
+                background="white"
+              />
+            )}
             <CheckboxPanelComponent
               title={getPaymentCheckboxLabel()}
               skipTranslation
@@ -376,6 +418,7 @@ const mapStateToProps = (state: RootState) => {
     activeAccount: state.hive.activeAccount,
     accounts: state.hive.accounts,
     navParams: state.navigation.params,
+    mk: state.mk,
   };
 };
 

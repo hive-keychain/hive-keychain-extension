@@ -24,6 +24,7 @@ export interface HiveAccountCreationAuthorities {
 export interface CreateHiveAccountCreationQuoteRequest {
   username: string;
   authorities: HiveAccountCreationAuthorities;
+  paymentCurrency: HiveAccountCreationPaymentCurrency;
 }
 
 export type HiveAccountCreationPaymentCurrency = 'HIVE' | 'HBD';

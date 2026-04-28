@@ -44,13 +44,17 @@ const CreateAccountStepOne = ({
   const [creationType, setCreationType] = useState<AccountCreationType>();
   const accountCreationMode =
     navParams?.mode ?? AccountCreationMode.DEFAULT;
+  const isPaidBackendCreation =
+    accountCreationMode === AccountCreationMode.PAID_BACKEND_CREATION;
 
   useEffect(() => {
     setTitleContainerProperties({
       title: 'popup_html_create_account',
       isBackButtonEnabled: true,
     });
-    initPrice();
+    if (!isPaidBackendCreation) {
+      initPrice();
+    }
   }, []);
 
   const initPrice = async () => {
@@ -58,6 +62,9 @@ const CreateAccountStepOne = ({
   };
 
   useEffect(() => {
+    if (isPaidBackendCreation) {
+      return;
+    }
     setSelectedAccount({
       label: `@${activeAccount.name!}`,
       value: activeAccount.name!,
@@ -145,6 +152,14 @@ const CreateAccountStepOne = ({
 
   const goToNextPage = async () => {
     if (await validateAccountName()) {
+      if (isPaidBackendCreation) {
+        navigateToWithParams(Screen.CREATE_ACCOUNT_PAGE_STEP_TWO, {
+          newUsername: accountName,
+          mode: accountCreationMode,
+        });
+        return;
+      }
+
       const account = await AccountUtils.getExtendedAccount(
         selectedAccount?.value!,
       );
@@ -173,7 +188,7 @@ const CreateAccountStepOne = ({
     <div
       data-testid={`${Screen.CREATE_ACCOUNT_PAGE_STEP_ONE}-page`}
       className="create-account-step-one">
-      {selectedAccount && accountOptions && (
+      {!isPaidBackendCreation && selectedAccount && accountOptions && (
         <ComplexeCustomSelect<AccountItemOption>
           selectedItem={selectedAccount}
           options={accountOptions}
@@ -183,12 +198,12 @@ const CreateAccountStepOne = ({
           background="white"
         />
       )}
-      <div className="price-panel">
+      {!isPaidBackendCreation && <div className="price-panel">
         <span className="label">
           {chrome.i18n.getMessage('html_popup_price')}
         </span>
         <span className="price">{getPriceLabel()}</span>
-      </div>
+      </div>}
       <InputComponent
         onChange={setAccountName}
         value={accountName}

@@ -8,8 +8,10 @@ import {
 const buildQuoteRequestBody = ({
   username,
   authorities,
+  paymentCurrency,
 }: CreateHiveAccountCreationQuoteRequest): CreateHiveAccountCreationQuoteRequest => ({
   username,
+  paymentCurrency,
   authorities: {
     owner: authorities.owner,
     active: authorities.active,

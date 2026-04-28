@@ -33,6 +33,7 @@ describe('Hive account creation API', () => {
 
     const quoteRequest = {
       username: 'new-account',
+      paymentCurrency: 'HIVE',
       authorities: {
         owner: authority,
         active: authority,
@@ -56,6 +57,7 @@ describe('Hive account creation API', () => {
       'hive/account-creation/quote',
       {
         username: 'new-account',
+        paymentCurrency: 'HIVE',
         authorities: {
           owner: authority,
           active: authority,
