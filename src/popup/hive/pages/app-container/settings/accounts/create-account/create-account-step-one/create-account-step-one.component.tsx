@@ -3,6 +3,7 @@ import { Screen } from '@interfaces/screen.interface';
 import {
   AccountCreationType,
   AccountCreationUtils,
+  AccountCreationMode,
 } from '@popup/hive/utils/account-creation.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
@@ -34,12 +35,15 @@ const CreateAccountStepOne = ({
   setTitleContainerProperties,
   navigateToWithParams,
   setErrorMessage,
+  navParams,
 }: PropsFromRedux) => {
   const [accountOptions, setAccountOptions] = useState<AccountItemOption[]>();
   const [selectedAccount, setSelectedAccount] = useState<AccountItemOption>();
   const [accountName, setAccountName] = useState('');
   const [price, setPrice] = useState(3);
   const [creationType, setCreationType] = useState<AccountCreationType>();
+  const accountCreationMode =
+    navParams?.mode ?? AccountCreationMode.DEFAULT;
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -156,6 +160,7 @@ const CreateAccountStepOne = ({
           ),
           newUsername: accountName,
           creationType: creationType,
+          mode: accountCreationMode,
           price: price,
         });
       } else {
@@ -203,6 +208,7 @@ const mapStateToProps = (state: RootState) => {
     activeAccount: state.hive.activeAccount,
     accounts: state.hive.accounts,
     currencyLabels: (state.chain as HiveChain).mainTokens,
+    navParams: state.navigation.params,
   };
 };
 

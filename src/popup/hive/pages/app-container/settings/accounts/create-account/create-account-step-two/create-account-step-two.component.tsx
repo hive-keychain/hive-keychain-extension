@@ -3,6 +3,7 @@ import { Screen } from '@interfaces/screen.interface';
 import {
   AccountCreationType,
   AccountCreationUtils,
+  AccountCreationMode,
   GeneratedKeys,
 } from '@popup/hive/utils/account-creation.utils';
 import {
@@ -52,6 +53,8 @@ const CreateAccountStepTwo = ({
   const accountName = navParams?.newUsername;
   const price = navParams?.price;
   const creationType = navParams?.creationType;
+  const accountCreationMode =
+    navParams?.mode ?? AccountCreationMode.DEFAULT;
   const selectedAccount = navParams?.usedAccount as LocalAccount;
 
   const [paymentUnderstanding, setPaymentUnderstanding] = useState(false);
@@ -189,6 +192,8 @@ const CreateAccountStepTwo = ({
           AccountCreationUtils.generateAccountAuthorities(generatedKeys),
           price,
           generatedKeys,
+          undefined,
+          accountCreationMode,
         );
 
         if (result) {
