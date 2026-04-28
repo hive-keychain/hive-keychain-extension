@@ -20,6 +20,7 @@ import { EvmContactsComponent } from '@popup/evm/pages/home/settings/evm-contact
 import { EvmCustomNftsPageComponent } from '@popup/evm/pages/home/evm-custom-nfts-page/evm-custom-nfts-page.component';
 import { EvmCustomTokensPageComponent } from '@popup/evm/pages/home/evm-custom-tokens-page/evm-custom-tokens-page.component';
 import { EvmCustomChainsComponent } from '@popup/evm/pages/home/settings/evm-custom-chains/evm-custom-chains.component';
+import { EvmDappsConnectionsComponent } from '@popup/evm/pages/home/settings/evm-dapps-connections/evm-dapps-connections.component';
 import { EvmSettingPage } from '@popup/evm/pages/home/settings/evm-settings.component';
 import { EvmTransactionResultComponent } from '@popup/evm/pages/home/transaction-result/transaction-result.component';
 import { EvmTransferComponent } from '@popup/evm/pages/home/transfer/evm-transfer.component';
@@ -88,6 +89,8 @@ const EvmAppRouter = ({
         return <EvmContactsComponent />;
       case EvmScreen.EVM_CUSTOM_CHAINS:
         return <EvmCustomChainsComponent />;
+      case EvmScreen.EVM_DAPPS_CONNECTIONS:
+        return <EvmDappsConnectionsComponent />;
       case EvmScreen.EVM_CUSTOM_TOKENS_PAGE:
         return <EvmCustomTokensPageComponent />;
       case EvmScreen.EVM_CUSTOM_NFTS_PAGE:

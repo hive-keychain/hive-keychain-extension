@@ -5397,6 +5397,18 @@
     "message": "Manage chains",
     "description": "EVM settings: chain management"
   },
+  "evm_menu_dapps_connections": {
+    "message": "dApps connections",
+    "description": "EVM settings: connected dapps"
+  },
+  "evm_dapps_connections_empty": {
+    "message": "No dApps connections yet.",
+    "description": "Empty state for EVM dapps connections page"
+  },
+  "evm_dapps_connections_unknown_account": {
+    "message": "Unknown account",
+    "description": "Fallback label for an EVM dapp connection address that is not in the local wallet"
+  },
   "evm_custom_chains_caption": {
     "message": "Custom chains have limited support. Features such as token discovery and automatic history loading may be unavailable.",
     "description": "Custom chains info caption"
