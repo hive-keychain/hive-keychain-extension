@@ -6458,5 +6458,9 @@
   "evm_activity_tab": {
     "message": "Activity",
     "description": "Activity tab"
+  },
+  "manage_accounts": {
+    "message": "Manage accounts",
+    "description": "Manage accounts"
   }
 }

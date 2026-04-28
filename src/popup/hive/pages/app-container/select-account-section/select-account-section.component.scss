@@ -79,6 +79,41 @@
             }
           }
         }
+        .manage-accounts-panel {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          column-gap: 12px;
+          padding: 10px 6px;
+          box-sizing: border-box;
+          @include poppins500(14px);
+          color: var(--main-font-color);
+          cursor: pointer;
+          --add-icon-color: #{$red};
+          .text {
+            color: var(--select-font-color);
+          }
+          &:hover {
+            background: $red;
+            --add-icon-color: white;
+
+            .text {
+              color: white;
+            }
+
+            .svg-icon {
+              --menu-icon-color: white;
+            }
+          }
+          .svg-icon {
+            width: 32px;
+            height: 32px;
+            margin-top: -4px;
+            margin-left: -4px;
+            --menu-icon-border-width: 0;
+            --menu-icon-color: #e31337;
+          }
+        }
       }
       width: auto;
       border: 1px solid var(--select-border-color);
