@@ -5398,11 +5398,11 @@
     "description": "EVM settings: chain management"
   },
   "evm_menu_dapps_connections": {
-    "message": "dApps connections",
+    "message": "Connected dApps",
     "description": "EVM settings: connected dapps"
   },
   "evm_dapps_connections_empty": {
-    "message": "No dApps connections yet.",
+    "message": "No connected dApp yet.",
     "description": "Empty state for EVM dapps connections page"
   },
   "evm_dapps_connections_unknown_account": {

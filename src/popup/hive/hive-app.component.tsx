@@ -131,7 +131,7 @@ const HiveApp = ({
     if (
       isAppReady &&
       (navigationStack.length === 0 || isOnAccountSetupFlow) &&
-      hasFinishedSignup
+      (hasFinishedSignup || accounts.length > 0)
     ) {
       if (accounts.length > 0) {
         initActiveAccount(accounts);
@@ -146,6 +146,7 @@ const HiveApp = ({
     accounts,
     hasFinishedSignup,
     appStatus.processingDecryptAccount,
+    navigationStack,
   ]);
 
   useEffect(() => {
