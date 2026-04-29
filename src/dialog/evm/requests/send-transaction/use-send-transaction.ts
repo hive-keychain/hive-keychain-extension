@@ -1,7 +1,11 @@
 import type { BalanceInfo } from '@dialog/components/balance-change-card/balance-change-card.interface';
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
-import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
+import {
+  EvmSmartContractInfo,
+  EvmSmartContractInfoNative,
+  EVMSmartContractType,
+} from '@popup/evm/interfaces/evm-tokens.interface';
 import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -33,6 +37,8 @@ export function useSendTransaction(
     useState(false);
   const [transactionData, setTransactionData] =
     useState<ProviderTransactionData>();
+  const [prefetchedMainTokenFromInit, setPrefetchedMainTokenFromInit] =
+    useState<EvmSmartContractInfo>();
 
   const forceOpenGasFeePanelEvent = useMemo(() => new EventEmitter(), []);
 
@@ -54,6 +60,7 @@ export function useSendTransaction(
         setTransferAmount,
         setShouldDisplayBalanceChange,
         setTransactionData,
+        setPrefetchedMainTokenFromInit,
       },
     });
   }, [request]);
@@ -68,6 +75,10 @@ export function useSendTransaction(
             tokenInfo,
             transferAmount,
             transactionHook.selectedFee,
+            prefetchedMainTokenFromInit &&
+              tokenInfo.type === EVMSmartContractType.ERC20
+              ? (prefetchedMainTokenFromInit as EvmSmartContractInfoNative)
+              : undefined,
           ),
         );
       })();
@@ -78,6 +89,7 @@ export function useSendTransaction(
     tokenInfo,
     transactionHook.selectedFee,
     transferAmount,
+    prefetchedMainTokenFromInit,
   ]);
 
   return {
@@ -89,5 +101,6 @@ export function useSendTransaction(
     shouldDisplayBalanceChange,
     balanceInfo,
     forceOpenGasFeePanelEvent,
+    prefetchedMainTokenFromInit,
   };
 }

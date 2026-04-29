@@ -29,6 +29,7 @@ export const SendTransaction = (props: Props) => {
     shouldDisplayBalanceChange,
     balanceInfo,
     forceOpenGasFeePanelEvent,
+    prefetchedMainTokenFromInit,
   } = useSendTransaction(request, data, accounts);
 
   const needsGasFeePanel = Boolean(
@@ -90,6 +91,7 @@ export const SendTransaction = (props: Props) => {
                 <GasFeePanel
                   chain={chain!}
                   wallet={selectedAccount!.wallet}
+                  prefetchedMainTokenInfo={prefetchedMainTokenFromInit}
                   selectedFee={transactionHook.selectedFee}
                   onSelectFee={transactionHook.setSelectedFee}
                   transactionType={transactionData!.type}

@@ -50,6 +50,7 @@ export async function runSendTransactionInit(
     setTransferAmount,
     setShouldDisplayBalanceChange,
     setTransactionData,
+    setPrefetchedMainTokenFromInit,
   } = setters;
 
   transactionHook.setLoading(true);
@@ -64,6 +65,7 @@ export async function runSendTransactionInit(
   const mainToken = (await EvmTokensUtils.getMainTokenInfo(
     (chainTmp as EvmChain)!,
   )) as EvmSmartContractInfo;
+  setPrefetchedMainTokenFromInit(mainToken);
 
   const params = request.params[0];
   let resolvedReceiver: string | null = null;
@@ -523,11 +525,7 @@ export async function runSendTransactionInit(
         !!(transactionInfo && transactionInfo.unableToReach),
       );
 
-      setTokenInfo(
-        (await EvmTokensUtils.getMainTokenInfo(
-          chainTmp as EvmChain,
-        )) as EvmSmartContractInfo,
-      );
+      setTokenInfo(mainToken);
 
       setShouldDisplayBalanceChange(true);
 
@@ -580,12 +578,6 @@ export async function runSendTransactionInit(
         receiverAddress: resolvedReceiver!,
         amount: resolvedTransferAmount,
       };
-
-      setTokenInfo(
-        (await EvmTokensUtils.getMainTokenInfo(
-          chainTmp as EvmChain,
-        )) as EvmSmartContractInfo,
-      );
 
       tData.from = params.from;
       tData.value = params.value;

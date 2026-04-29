@@ -31,6 +31,10 @@ export interface SendTransactionInitSetters {
   setTransactionData: Dispatch<
     SetStateAction<ProviderTransactionData | undefined>
   >;
+  /** Native token meta from early init; avoids duplicate native/* requests in GasFeePanel/balance */
+  setPrefetchedMainTokenFromInit: Dispatch<
+    SetStateAction<EvmSmartContractInfo | undefined>
+  >;
 }
 
 export interface RunSendTransactionInitParams {
