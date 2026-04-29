@@ -140,9 +140,14 @@ export async function runSendTransactionInit(
       tokenAddress = params.to;
       // Case of the execution of a smart contract
       if (params.to) {
+        const fetchedContractOnce = await EvmLightNodeUtils.getContract(
+          chainTmp.chainId,
+          params.to,
+        );
         const usedToken = await EvmTokensUtils.getTokenInfo(
           chainTmp.chainId,
           tokenAddress!,
+          fetchedContractOnce,
         );
         const proxyTarget =
           usedToken.type !== EVMSmartContractType.NATIVE
@@ -222,7 +227,11 @@ export async function runSendTransactionInit(
         };
 
         let abiSource: 'light-node' | 'signature-registry' = 'light-node';
-        let abi = await EvmLightNodeUtils.getAbi(chainTmp.chainId, params.to);
+        let abi = await EvmLightNodeUtils.getAbi(
+          chainTmp.chainId,
+          params.to,
+          fetchedContractOnce,
+        );
 
         if (!abi) {
           abiSource = 'signature-registry';

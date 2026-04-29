@@ -1,4 +1,3 @@
-import { EvmLightNodeApi } from '@api/evm-light-node';
 import {
   EvmTransactionType,
   ProviderTransactionData,
@@ -12,6 +11,7 @@ import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { fetchGasOracle } from '@popup/evm/utils/evm-gas-oracle.utils';
 import Decimal from 'decimal.js';
 import { HDNodeWallet } from 'ethers';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -31,10 +31,7 @@ const isPlausibleGasLimit = (n: number | undefined | null): n is number => {
 };
 
 const getGasFeeEstimations = async (chain: Chain) => {
-  const result = await EvmLightNodeApi.get(
-    `gas-oracle/${Number(chain.chainId)}`,
-  );
-  return result;
+  return fetchGasOracle(chain.chainId) as Promise<any>;
 };
 
 const estimate = async (

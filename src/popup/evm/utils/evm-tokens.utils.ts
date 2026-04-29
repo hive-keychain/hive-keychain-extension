@@ -643,8 +643,12 @@ const manualDiscoverNfts = async (walletAddress: string, chain: EvmChain) => {
 const getTokenInfo = async (
   chainId: EvmChain['chainId'],
   address: string,
+  /** When callers already fetched contract metadata; avoids duplicate light-node contract GET */
+  preFetchedContract?: EvmLightNodeContractResponse,
 ): Promise<EvmSmartContractInfo> => {
-  const result = await EvmLightNodeUtils.getContract(chainId, address);
+  const result =
+    preFetchedContract ??
+    (await EvmLightNodeUtils.getContract(chainId, address));
   return mapLightNodeContractToTokenInfo(chainId, result);
 };
 
@@ -732,6 +736,11 @@ type NativeTokenApiResponse = {
   price: { priceUsd: number; fetchedAt: string };
 };
 
+const mainTokenInfoInflight = new Map<
+  string,
+  Promise<EvmSmartContractInfoNative>
+>();
+
 const getMainTokenInfo = async (
   chain: EvmChain,
 ): Promise<EvmSmartContractInfoNative> => {
@@ -739,21 +748,32 @@ const getMainTokenInfo = async (
     return buildFallbackNativeTokenInfo(chain);
   }
 
-  const response = (await EvmLightNodeApi.get(
-    `native/${Number(chain.chainId)}`,
-  )) as NativeTokenApiResponse;
-  return {
-    type: EVMSmartContractType.NATIVE,
-    name: response.metadata.name,
-    symbol: response.metadata.symbol,
-    logo: response.metadata.logoUrl,
-    chainId: chain.chainId,
-    backgroundColor: '',
-    coingeckoId: '',
-    priceUsd: response.price?.priceUsd ?? 0,
-    createdAt: response.price?.fetchedAt ?? Date.now(),
-    categories: [],
-  };
+  const key = String(Number(chain.chainId));
+  let pending = mainTokenInfoInflight.get(key);
+  if (!pending) {
+    const run = async (): Promise<EvmSmartContractInfoNative> => {
+      const response = (await EvmLightNodeApi.get(
+        `native/${Number(chain.chainId)}`,
+      )) as NativeTokenApiResponse;
+      return {
+        type: EVMSmartContractType.NATIVE,
+        name: response.metadata.name,
+        symbol: response.metadata.symbol,
+        logo: response.metadata.logoUrl,
+        chainId: chain.chainId,
+        backgroundColor: '',
+        coingeckoId: '',
+        priceUsd: response.price?.priceUsd ?? 0,
+        createdAt: response.price?.fetchedAt ?? Date.now(),
+        categories: [],
+      };
+    };
+    pending = run().finally(() => {
+      mainTokenInfoInflight.delete(key);
+    });
+    mainTokenInfoInflight.set(key, pending);
+  }
+  return pending!;
 };
 
 const getStoredCustomTokenCoingeckoId = (

@@ -14,6 +14,8 @@ import {
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { fetchGasOracle } from '@popup/evm/utils/evm-gas-oracle.utils';
+
 /** Direct light-node routes expect a decimal chain id in the path, not hex (`0x…`). */
 export function evmChainIdToDecimalPathSegment(
   chainId: string | number,
@@ -357,10 +359,7 @@ const getContract = async (
   return normalizeContract(response as EvmLightNodeContractResponse);
 };
 
-const getGasFee = async (chainId: string | number): Promise<unknown> => {
-  const id = evmChainIdToDecimalPathSegment(chainId);
-  return EvmLightNodeApi.get(`gas-oracle/${id}`);
-};
+const getGasFee = fetchGasOracle;
 
 const getCoingeckoNativeCoinId = async (
   chainId: string | number,
@@ -401,8 +400,14 @@ const getPrice = async (
   return response.priceUsd ?? 0;
 };
 
-const getAbi = async (chainId: string, contractAddress: string) => {
-  const contractInfo = await getContract(chainId, contractAddress);
+const getAbi = async (
+  chainId: string,
+  contractAddress: string,
+  /** When callers already fetched `contract/...` (e.g. send-transaction + getTokenInfo); avoids duplicate light-node contract GET */
+  preFetchedContract?: EvmLightNodeContractResponse | null,
+) => {
+  const contractInfo =
+    preFetchedContract ?? (await getContract(chainId, contractAddress));
   if (!contractInfo) {
     return null;
   }
