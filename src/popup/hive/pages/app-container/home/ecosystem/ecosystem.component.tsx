@@ -6,7 +6,7 @@ import {
 } from '@popup/hive/pages/app-container/home/ecosystem/ecosystem-category/ecosystem-category.component';
 import { EcosystemUtils } from '@popup/hive/utils/ecosystem.utils';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
-import { Chain } from '@popup/multichain/multichain.context';
+import { Chain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -55,7 +55,7 @@ export const Ecosystem = ({
     } else {
       setHasError(true);
     }
-    setTimeout(() => setLoading(false), 1000);
+    setLoading(false);
   };
 
   return (
