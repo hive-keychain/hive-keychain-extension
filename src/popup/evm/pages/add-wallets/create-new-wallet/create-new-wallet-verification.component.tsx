@@ -2,6 +2,7 @@ import { Screen } from '@interfaces/screen.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
@@ -28,6 +29,7 @@ const CreateNewWalletVerification = ({
   mk,
   chain,
   setEvmAccounts,
+  accounts,
 }: PropsType) => {
   const [hiddenWordIndexes, setHiddenWordIndexes] = useState<number[]>([]);
   const [currentWord, setCurrentWord] = useState('');
@@ -40,7 +42,9 @@ const CreateNewWalletVerification = ({
   const [notPrimaryStorageUnderstanding, setNotPrimaryStorageUnderstanding] =
     useState(false);
 
-  const [nickname, setNickname] = useState<string>('');
+  const [nickname, setNickname] = useState<string>(() =>
+    EvmAccountUtils.getDefaultSeedName(accounts),
+  );
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -127,8 +131,8 @@ const CreateNewWalletVerification = ({
           value={nickname}
           onChange={setNickname}
           type={InputType.TEXT}
-          label="evm_address_nickname"
-          placeholder="evm_address_nickname"
+          label="evm_seed_nickname"
+          placeholder="evm_seed_nickname"
         />
         <div className="mnemonic-container">
           <div className={`words-container`}>
@@ -204,6 +208,7 @@ const mapStateToProps = (state: RootState) => {
     mk: state.mk,
     activeAccount: state.evm.activeAccount,
     chain: state.chain as EvmChain,
+    accounts: state.evm.accounts,
   };
 };
 

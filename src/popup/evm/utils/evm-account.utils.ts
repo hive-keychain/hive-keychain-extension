@@ -23,6 +23,21 @@ const getAccountName = (account: EvmAccount) => {
   return `${chrome.i18n.getMessage('dialog_account')} ${account.id + 1}`;
 };
 
+const getDefaultSeedName = (
+  accounts: Pick<EvmAccount, 'seedNickname'>[],
+) => {
+  const defaultSeedNamePrefix = `${chrome.i18n.getMessage('common_seed')} #`;
+  const maxDefaultSeedNameId = accounts.reduce((max, account) => {
+    const seedName = account.seedNickname;
+    if (!seedName?.startsWith(defaultSeedNamePrefix)) return max;
+
+    const seedNameId = Number(seedName.slice(defaultSeedNamePrefix.length));
+    return Number.isInteger(seedNameId) && seedNameId > max ? seedNameId : max;
+  }, 0);
+
+  return `${defaultSeedNamePrefix}${maxDefaultSeedNameId + 1}`;
+};
+
 const getSeedName = (account: EvmAccount) => {
   return account.seedNickname && account.seedNickname.length > 0
     ? account.seedNickname
@@ -33,5 +48,6 @@ export const EvmAccountUtils = {
   filterSpamTokens,
   getAccountFullname,
   getAccountName,
+  getDefaultSeedName,
   getSeedName,
 };

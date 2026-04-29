@@ -5841,6 +5841,10 @@
     "message": "Nickname",
     "description": "Nickname"
   },
+  "evm_seed_nickname": {
+    "message": "Seed Name",
+    "description": "Nickname"
+  },
   "evm_edit_seed_nickname": {
     "message": "Edit name",
     "decription": "Edit seed nickname"

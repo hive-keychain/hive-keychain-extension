@@ -97,7 +97,7 @@ const EvmAccounts = ({
       );
   };
 
-  const initializeOptions = () => {
+  const buildSeedOptions = (accounts: EvmAccount[]) => {
     const options: OptionItem[] = [];
     for (const account of accounts) {
       if (!options.some((option) => option.value === account.seedId)) {
@@ -110,6 +110,11 @@ const EvmAccounts = ({
       }
     }
 
+    return options;
+  };
+
+  const initializeOptions = () => {
+    const options = buildSeedOptions(accounts);
     setSeedsOptions(options);
     setSelectedSeed(options[0]);
   };
@@ -214,8 +219,34 @@ const EvmAccounts = ({
   const handleDeleteSeedClick = async () => {
     const seed = getCurrentSeed();
     if (!seed) return;
-    await EvmWalletUtils.deleteSeed(seed.seedId, accounts, mk);
-    setLocalAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
+
+    const selectedSeedIndex =
+      seedsOptions?.findIndex((option) => option.value === seed.seedId) ?? 0;
+
+    await EvmWalletUtils.deleteSeed(seed.seedId, localAccounts, mk);
+    const updatedAccounts =
+      await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+    const updatedSeedOptions = buildSeedOptions(updatedAccounts);
+    const nextSelectedSeed =
+      updatedSeedOptions[selectedSeedIndex] ??
+      updatedSeedOptions[selectedSeedIndex - 1] ??
+      updatedSeedOptions[0];
+
+    setLocalAccounts(updatedAccounts);
+    setSeedsOptions(updatedSeedOptions);
+    setSelectedSeed(nextSelectedSeed);
+    setEvmAccounts(updatedAccounts);
+
+    const nextActiveAccount =
+      updatedAccounts.find(
+        (account) => account.seedId === nextSelectedSeed?.value && !account.hide,
+      ) ??
+      updatedAccounts.find((account) => !account.hide) ??
+      updatedAccounts[0];
+
+    if (nextActiveAccount) {
+      await loadEvmActiveAccount(chain, nextActiveAccount.wallet);
+    }
   };
 
   const handleEditSeedClick = () => {
@@ -233,7 +264,7 @@ const EvmAccounts = ({
 
   const getCurrentSeed = () => {
     if (!selectedSeed) return;
-    const seed = accounts.find(
+    const seed = localAccounts.find(
       (account) => account.seedId === selectedSeed.value,
     );
     return seed;

@@ -5,6 +5,7 @@ import {
   EvmAccount,
   WalletWithBalance,
 } from '@popup/evm/interfaces/wallet.interface';
+import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
@@ -34,10 +35,14 @@ const ImportWalletConfirmation = ({
   activeAccount,
   loadEvmActiveAccount,
   navigateTo,
+  accounts,
+  hasImportParams,
 }: PropsType) => {
   const [wallets, setWallets] = useState<WalletWithBalance[]>([]);
 
-  const [nickname, setNickname] = useState<string>('');
+  const [nickname, setNickname] = useState<string>(() =>
+    EvmAccountUtils.getDefaultSeedName(accounts),
+  );
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -46,6 +51,12 @@ const ImportWalletConfirmation = ({
       isCloseButtonDisabled: true,
     });
   }, []);
+
+  useEffect(() => {
+    if (!hasImportParams) {
+      navigateTo(Screen.IMPORT_EVM_WALLET, true);
+    }
+  }, [hasImportParams]);
 
   useEffect(() => {
     setWallets(walletsWithBalance);
@@ -61,6 +72,11 @@ const ImportWalletConfirmation = ({
     if (!checkedWallets.length) {
       setErrorMessage('html_popup_evm_error_select_account');
     } else {
+      if (!wallet) {
+        navigateTo(Screen.IMPORT_EVM_WALLET, true);
+        return;
+      }
+
       const evmAccounts: EvmAccount[] = checkedWallets.map((derivedWallet) => ({
         id: derivedWallet.wallet.index,
         path: derivedWallet.wallet.path!,
@@ -142,13 +158,16 @@ const ImportWalletConfirmation = ({
 };
 
 const mapStateToProps = (state: RootState) => {
+  const params = state.navigation.stack[0]?.params;
+
   return {
-    walletsWithBalance: state.navigation.stack[0]?.params
-      ?.derivedWallets as WalletWithBalance[],
-    wallet: state.navigation.stack[0].params.wallet as HDNodeWallet,
+    walletsWithBalance: (params?.derivedWallets ?? []) as WalletWithBalance[],
+    wallet: params?.wallet as HDNodeWallet | undefined,
+    hasImportParams: !!params?.wallet && Array.isArray(params?.derivedWallets),
     mk: state.mk,
     chain: state.chain,
     activeAccount: state.evm.activeAccount,
+    accounts: state.evm.accounts,
   };
 };
 
