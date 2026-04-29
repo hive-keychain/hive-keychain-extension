@@ -59,6 +59,6 @@ export const getHiveAccountCreationStatus = async (
   requestId: string,
 ): Promise<HiveAccountCreationStatusResponse> => {
   return await KeychainApi.get(
-    `hive/account-creation/status/${encodeURIComponent(requestId)}`,
+    `hive/account-creation/${encodeURIComponent(requestId)}`,
   );
 };

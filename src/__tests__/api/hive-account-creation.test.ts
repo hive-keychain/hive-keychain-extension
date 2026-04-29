@@ -134,7 +134,7 @@ describe('Hive account creation API', () => {
     });
 
     expect(KeychainApi.get).toHaveBeenCalledWith(
-      'hive/account-creation/status/request%2F1',
+      'hive/account-creation/request%2F1',
     );
   });
 });
