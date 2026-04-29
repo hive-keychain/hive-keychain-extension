@@ -4848,6 +4848,10 @@
     "message": "Gas fee",
     "description": "Evm Gas fee estimate label"
   },
+  "popup_html_evm_gas_fee_estimated": {
+    "message": "Estimated gas fee",
+    "description": "EVM transaction result pending fee label"
+  },
   "popup_html_evm_gas_fee_estimate_duration": {
     "message": "~$1 seconds",
     "description": "Evm Gas fee estimate label"

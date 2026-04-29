@@ -48,6 +48,25 @@ enum ReplacedTransactionReason {
   REPLACED = 'replaced',
 }
 
+/** Recipient address from standard ERC-20 `transfer(address,uint256)` calldata, if applicable. */
+function decodeErc20TransferRecipient(data: string | null): string | undefined {
+  if (!data || data === '0x' || !data.startsWith('0xa9059cbb')) {
+    return undefined;
+  }
+  try {
+    const iface = new ethers.Interface([
+      'function transfer(address to, uint256 amount)',
+    ]);
+    const parsed = iface.parseTransaction({ data });
+    if (parsed?.name === 'transfer') {
+      return parsed.args[0] as string;
+    }
+  } catch {
+    /* calldata is not a standard ERC-20 transfer */
+  }
+  return undefined;
+}
+
 const EvmTransactionResult = ({
   activeAccount,
   chain,
@@ -367,6 +386,87 @@ const EvmTransactionResult = ({
     }
   };
 
+  const displayTx = txResult ?? transactionResponse;
+  const hasMinedReceipt = Boolean(txReceipt?.gasUsed != null);
+
+  const getMinedGasFeeDisplay = (): string => {
+    if (!txReceipt?.gasUsed) {
+      return chrome.i18n.getMessage('popup_html_pending');
+    }
+    const pricePerGas = txReceipt.gasPrice;
+    if (pricePerGas != null) {
+      return `${ethers.formatEther(pricePerGas * txReceipt.gasUsed)} ${chain.mainToken}`;
+    }
+    return chrome.i18n.getMessage('popup_html_pending');
+  };
+
+  const getPendingGasFeeDisplay = (): string => {
+    if (
+      gasFee?.estimatedFeeInEth &&
+      !gasFee.estimatedFeeInEth.equals(-1)
+    ) {
+      return `${gasFee.estimatedFeeInEth.toFixed()} ${chain.mainToken}`;
+    }
+    const gl = displayTx.gasLimit;
+    const maxFeePerGas = displayTx.maxFeePerGas ?? displayTx.gasPrice;
+    if (
+      gl != null &&
+      maxFeePerGas != null &&
+      gl > BigInt(0) &&
+      maxFeePerGas > BigInt(0)
+    ) {
+      return `${ethers.formatEther(gl * maxFeePerGas)} ${chain.mainToken}`;
+    }
+    return chrome.i18n.getMessage('popup_html_pending');
+  };
+
+  const gasFeeLabelKey = hasMinedReceipt
+    ? 'popup_html_evm_gas_fee'
+    : 'popup_html_evm_gas_fee_estimated';
+
+  const gasFeeValueDisplay = hasMinedReceipt
+    ? getMinedGasFeeDisplay()
+    : getPendingGasFeeDisplay();
+
+  const blockNumberDisplay =
+    displayTx.blockNumber != null
+      ? String(displayTx.blockNumber)
+      : chrome.i18n.getMessage('popup_html_pending');
+
+  const showLegacyGasPriceRow =
+    displayTx.gasPrice != null &&
+    displayTx.maxFeePerGas == null &&
+    displayTx.maxPriorityFeePerGas == null;
+
+  const showEip1559FeeRows =
+    displayTx.maxFeePerGas != null || displayTx.maxPriorityFeePerGas != null;
+
+  const txDataHex =
+    displayTx.data == null
+      ? ''
+      : typeof displayTx.data === 'string'
+        ? displayTx.data
+        : ethers.hexlify(displayTx.data);
+
+  const erc20TransferRecipient =
+    decodeErc20TransferRecipient(txDataHex || null);
+
+  const detailFieldsIncludeTo = detailFields?.some(
+    (d: EvmUserHistoryItemDetail) =>
+      d.label === 'popup_html_transfer_to' ||
+      d.label === 'popup_html_evm_transaction_info_to',
+  );
+
+  const syntheticToAddress =
+    receiverAddress ??
+    erc20TransferRecipient ??
+    (!txDataHex.startsWith('0xa9059cbb')
+      ? displayTx.to ?? undefined
+      : undefined);
+
+  const showSyntheticToRow =
+    syntheticToAddress != null && !detailFieldsIncludeTo;
+
   return (
     <div className="evm-transaction-result">
       <div className="tx-card">
@@ -433,7 +533,7 @@ const EvmTransactionResult = ({
           />
         </PopupContainer>
       )}
-      {txResult && (
+      {transactionResponse && (
         <div className="transaction-info">
           {detailFields &&
             detailFields.map(
@@ -478,48 +578,68 @@ const EvmTransactionResult = ({
                 </React.Fragment>
               ),
             )}
+          {showSyntheticToRow && (
+            <SmallDataCardComponent
+              label="popup_html_evm_transaction_info_to"
+              value={
+                <EvmAddressComponent
+                  address={syntheticToAddress!}
+                  chainId={chain.chainId}
+                />
+              }
+              valueOnClickAction={() => openWallet(syntheticToAddress!)}
+            />
+          )}
           <SmallDataCardComponent
             label="evm_nft_token_type"
             value={transactionTokenType ?? 'unknown'}
           />
           <SmallDataCardComponent
             label="popup_html_evm_transaction_info_block_number"
-            value={txResult.blockNumber!}
-            valueOnClickAction={() => openBlock(txResult.blockNumber!)}
+            value={blockNumberDisplay}
+            valueOnClickAction={
+              displayTx.blockNumber != null
+                ? () => openBlock(Number(displayTx.blockNumber))
+                : undefined
+            }
           />
           <SmallDataCardComponent
             label="popup_html_evm_transaction_info_tx_hash"
-            value={EvmFormatUtils.formatAddress(txResult.hash)}
-            valueOnClickAction={() => openTransaction(txResult.hash)}
+            value={EvmFormatUtils.formatAddress(displayTx.hash)}
+            valueOnClickAction={() => openTransaction(displayTx.hash)}
           />
           <SmallDataCardComponent
-            label="popup_html_evm_gas_fee"
-            value={`${ethers.formatEther(
-              txReceipt?.gasPrice! * txReceipt?.gasUsed!,
-            )} ${chain.mainToken}`}
+            label={gasFeeLabelKey}
+            value={gasFeeValueDisplay}
           />
           <SmallDataCardComponent
             label="popup_html_evm_transaction_info_gas_limit"
-            value={txResult.gasLimit.toString()!}
+            value={displayTx.gasLimit.toString()}
           />
-          <SmallDataCardComponent
-            label="popup_html_evm_transaction_info_gas_price"
-            value={`${new Decimal(
-              EvmFormatUtils.etherToGwei(txResult.gasPrice!),
-            ).toFixed()} Gwei`}
-          />
-          <SmallDataCardComponent
-            label="popup_html_evm_transaction_info_priority_fee"
-            value={`${new Decimal(
-              EvmFormatUtils.etherToGwei(txResult.maxPriorityFeePerGas!),
-            ).toFixed()} Gwei`}
-          />
-          <SmallDataCardComponent
-            label="popup_html_evm_transaction_info_total_fee_per_gas"
-            value={`${new Decimal(
-              EvmFormatUtils.etherToGwei(txResult.maxFeePerGas!),
-            ).toFixed()} Gwei`}
-          />
+          {showLegacyGasPriceRow && (
+            <SmallDataCardComponent
+              label="popup_html_evm_transaction_info_gas_price"
+              value={`${new Decimal(
+                EvmFormatUtils.etherToGwei(displayTx.gasPrice!),
+              ).toFixed()} Gwei`}
+            />
+          )}
+          {showEip1559FeeRows && displayTx.maxPriorityFeePerGas != null && (
+            <SmallDataCardComponent
+              label="popup_html_evm_transaction_info_priority_fee"
+              value={`${new Decimal(
+                EvmFormatUtils.etherToGwei(displayTx.maxPriorityFeePerGas),
+              ).toFixed()} Gwei`}
+            />
+          )}
+          {showEip1559FeeRows && displayTx.maxFeePerGas != null && (
+            <SmallDataCardComponent
+              label="popup_html_evm_transaction_info_total_fee_per_gas"
+              value={`${new Decimal(
+                EvmFormatUtils.etherToGwei(displayTx.maxFeePerGas),
+              ).toFixed()} Gwei`}
+            />
+          )}
         </div>
       )}
     </div>
