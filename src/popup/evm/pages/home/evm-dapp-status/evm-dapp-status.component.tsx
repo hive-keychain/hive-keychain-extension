@@ -1,5 +1,7 @@
 import { setAccountsForOrigin } from '@background/evm/evm-provider-state.utils';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -20,7 +22,11 @@ import {
 } from 'src/utils/browser-origin.utils';
 import Logger from 'src/utils/logger.utils';
 
-const EvmDappStatus = ({ activeAccount, accounts }: PropsFromRedux) => {
+const EvmDappStatus = ({
+  activeAccount,
+  accounts,
+  navigateTo,
+}: PropsFromRedux) => {
   const [dapp, setDapp] = useState<chrome.tabs.Tab>();
   const [status, setStatus] = useState<DappStatusEnum>(
     DappStatusEnum.DISCONNECTED,
@@ -182,19 +188,34 @@ const EvmDappStatus = ({ activeAccount, accounts }: PropsFromRedux) => {
                 </div>
               ))}
             </div>
-            {connectedAccounts.length > 0 && (
-              <ButtonComponent
-                type={ButtonType.IMPORTANT}
-                label="popup_html_evm_dapp_status_disconnect_all"
-                onClick={async () => {
-                  const origin = getCurrentOrigin();
-                  if (!origin) return;
+            <div className="dapp-status-details-footer">
+              <button
+                type="button"
+                className="dapp-status-show-all-connected"
+                data-testid="evm-dapp-status-show-all-connected"
+                onClick={() => {
+                  setShowDetail(false);
+                  navigateTo(EvmScreen.EVM_DAPPS_CONNECTIONS);
+                }}>
+                {chrome.i18n.getMessage(
+                  'popup_html_evm_dapp_status_show_all_connected',
+                )}
+              </button>
+              {connectedAccounts.length > 0 && (
+                <ButtonComponent
+                  type={ButtonType.IMPORTANT}
+                  height="small"
+                  label="popup_html_evm_dapp_status_disconnect_all"
+                  onClick={async () => {
+                    const origin = getCurrentOrigin();
+                    if (!origin) return;
 
-                  await setAccountsForOrigin(origin, []);
-                  onAddressLoaded();
-                }}
-              />
-            )}
+                    await setAccountsForOrigin(origin, []);
+                    onAddressLoaded();
+                  }}
+                />
+              )}
+            </div>
           </div>
         </PopupContainer>
       )}
@@ -202,12 +223,15 @@ const EvmDappStatus = ({ activeAccount, accounts }: PropsFromRedux) => {
   );
 };
 
-const connector = connect((state: RootState) => {
-  return {
-    activeAccount: state.evm.activeAccount,
-    accounts: state.evm.accounts,
-  };
-});
+const connector = connect(
+  (state: RootState) => {
+    return {
+      activeAccount: state.evm.activeAccount,
+      accounts: state.evm.accounts,
+    };
+  },
+  { navigateTo },
+);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

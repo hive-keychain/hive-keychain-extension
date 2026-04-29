@@ -5048,6 +5048,10 @@
     "message": "Connecting an account to this dApp will give it permission to see your address, account balance and activity, and to suggest transactions to approve.",
     "description": "Evm dapp status"
   },
+  "popup_html_evm_dapp_status_show_all_connected": {
+    "message": "Show all connected dApps",
+    "description": "Link from EVM dapp status popup to Connected dApps settings"
+  },
   "dialog_evm_dapp_status_caption": {
     "message": "Select which accounts you want to connect to $1. It will give it permission to see your address, account balance and activity, and to suggest transactions to approve.",
     "description": "Evm dapp status"
