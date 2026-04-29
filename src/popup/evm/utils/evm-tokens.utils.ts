@@ -1565,6 +1565,8 @@ const getBalanceInfo = async (
   tokenInfo: EvmSmartContractInfo,
   amount: number,
   selectedFee?: GasFeeEstimationBase,
+  /** When ERC20 pays gas in native currency; skips duplicate native/light-node fetch when already loaded (e.g. send-tx dialog) */
+  prefetchedNativeForGasFee?: EvmSmartContractInfoNative,
 ): Promise<BalanceInfo> => {
   const balance = (await EvmTokensUtils.getTokenBalance(
     walletAddress,
@@ -1597,9 +1599,11 @@ const getBalanceInfo = async (
 
   if (!estimatedGasFee) return balanceInfo;
 
-  const mainTokenInfo = (await EvmTokensUtils.getMainTokenInfo(
-    chain,
-  )) as EvmSmartContractInfoNative;
+  const mainTokenInfo =
+    prefetchedNativeForGasFee ??
+    ((await EvmTokensUtils.getMainTokenInfo(
+      chain,
+    )) as EvmSmartContractInfoNative);
   const mainTokenBalance = (await EvmTokensUtils.getTokenBalance(
     walletAddress,
     chain,

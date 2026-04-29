@@ -3,6 +3,7 @@ import {
   EvmTransactionType,
   ProviderTransactionData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
+import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   CustomGasFeeForm,
   FullGasFeeEstimation,
@@ -33,6 +34,8 @@ import Logger from 'src/utils/logger.utils';
 interface GasFeePanelProps {
   chain: EvmChain;
   wallet: HDNodeWallet;
+  /** When set (e.g. send-tx dialog pre-fetched native metadata), skips duplicate native/light-node fetch */
+  prefetchedMainTokenInfo?: EvmSmartContractInfo;
   selectedFee?: GasFeeEstimationBase;
   onSelectFee: (fee: GasFeeEstimationBase) => void;
   multiplier?: number;
@@ -47,6 +50,7 @@ interface GasFeePanelProps {
 export const GasFeePanel = ({
   chain,
   wallet,
+  prefetchedMainTokenInfo,
   selectedFee,
   onSelectFee,
   multiplier,
@@ -113,9 +117,9 @@ export const GasFeePanel = ({
     const generation = ++initGenerationRef.current;
     let estimate;
 
-    const mainTokenInfo = await EvmTokensUtils.getMainTokenInfo(
-      chain as EvmChain,
-    );
+    const mainTokenInfo =
+      prefetchedMainTokenInfo ??
+      (await EvmTokensUtils.getMainTokenInfo(chain as EvmChain));
     setMainTokenPrice(mainTokenInfo.priceUsd ?? undefined);
 
     try {
