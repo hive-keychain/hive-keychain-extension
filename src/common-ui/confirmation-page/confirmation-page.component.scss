@@ -98,18 +98,22 @@
         align-self: flex-start;
       }
 
-      .balance-panel {
-        display: flex;
-        flex: 1;
-        column-gap: 8px;
+      .balance-change-rows {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 32px minmax(0, 1fr);
         align-items: center;
-        line-height: 24px;
-        justify-content: space-between;
+        align-self: stretch;
         width: 100%;
+        min-width: 0;
+        column-gap: 8px;
+        row-gap: 8px;
+        line-height: 24px;
         @include poppins400(14px);
 
         .icon {
           --triangle-arrow-color: #{$red};
+          justify-self: center;
+          align-self: center;
           @include icon-size(24px);
         }
 
