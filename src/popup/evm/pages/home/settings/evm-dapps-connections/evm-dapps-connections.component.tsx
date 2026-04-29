@@ -358,14 +358,15 @@ const EvmDappsConnections = ({
                 </div>
               ))}
             </div>
-            <div className="fill-space" />
-            <ButtonComponent
-              type={ButtonType.IMPORTANT}
-              height="small"
-              label="popup_html_evm_dapp_status_disconnect_all"
-              onClick={() => updateConnectionsForSelectedSubdomain()}
-              dataTestId="evm-dapps-disconnect-all"
-            />
+            <div className="dapp-status-details-footer">
+              <ButtonComponent
+                type={ButtonType.IMPORTANT}
+                height="small"
+                label="popup_html_evm_dapp_status_disconnect_all"
+                onClick={() => updateConnectionsForSelectedSubdomain()}
+                dataTestId="evm-dapps-disconnect-all"
+              />
+            </div>
           </div>
         </PopupContainer>
       )}
