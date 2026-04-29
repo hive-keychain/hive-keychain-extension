@@ -18,6 +18,11 @@ export const EvmOnlyHivePromotionPopupComponent = ({
     <div
       className="evm-only-hive-promotion-popup"
       data-testid="evm-only-hive-promotion-popup">
+      <img
+        className="evm-only-hive-promotion-popup__image"
+        src="/assets/images/discover-hive-cta.png"
+        alt="Discover Hive ecosystem"
+      />
       <div className="evm-only-hive-promotion-popup__title">
         Discover Hive with Keychain
       </div>

@@ -45,7 +45,7 @@ describe('paid-account-creation.utils tests:\n', () => {
     await PaidAccountCreationUtils.createPendingPaidHiveAccountCreation(
       'new-account',
       generatedKeys,
-      'HIVE',
+      { paymentCurrency: 'HIVE' },
       mk,
     );
 
@@ -54,24 +54,12 @@ describe('paid-account-creation.utils tests:\n', () => {
       {
         username: 'new-account',
         paymentCurrency: 'HIVE',
-        authorities: {
-          owner: {
-            weight_threshold: 1,
-            account_auths: [],
-            key_auths: [['STMownerPublic', 1]],
-          },
-          active: {
-            weight_threshold: 1,
-            account_auths: [],
-            key_auths: [['STMactivePublic', 1]],
-          },
-          posting: {
-            weight_threshold: 1,
-            account_auths: [],
-            key_auths: [['STMpostingPublic', 1]],
-          },
-          memo_key: 'STMmemoPublic',
-        },
+        paymentChainId: undefined,
+        paymentTokenAddress: undefined,
+        ownerPublicKey: 'STMownerPublic',
+        activePublicKey: 'STMactivePublic',
+        postingPublicKey: 'STMpostingPublic',
+        memoPublicKey: 'STMmemoPublic',
       },
     );
     expect(JSON.stringify((KeychainApi.post as jest.Mock).mock.calls[0][1])).not.toContain(
@@ -109,6 +97,59 @@ describe('paid-account-creation.utils tests:\n', () => {
           },
         ],
       },
+    );
+  });
+
+  it('quotes and stores EVM token payment metadata', async () => {
+    jest.spyOn(KeychainApi, 'post').mockResolvedValue({
+      requestId: 'request-evm',
+      username: 'new-account',
+      status: 'payment_pending',
+      amount: '2',
+      currency: 'EVM:1:0xabc',
+      chainId: '1',
+      tokenAddress: '0xabc',
+      priceUsd: '1.5',
+      address: '0x1111111111111111111111111111111111111111',
+      memo: 'account-creation:request-evm',
+      expiresAt: '2026-04-28T00:00:00.000Z',
+    });
+    const saveSpy = jest
+      .spyOn(
+        PendingHiveAccountCreationUtils,
+        'savePendingHiveAccountCreationRequest',
+      )
+      .mockImplementation(
+        async (request) => request as SavePendingHiveAccountCreationRequest as any,
+      );
+
+    await PaidAccountCreationUtils.createPendingPaidHiveAccountCreation(
+      'new-account',
+      generatedKeys,
+      { paymentChainId: '1', paymentTokenAddress: '0xabc' },
+      mk,
+    );
+
+    expect(KeychainApi.post).toHaveBeenCalledWith(
+      'hive/account-creation/quote',
+      expect.objectContaining({
+        paymentCurrency: undefined,
+        paymentChainId: '1',
+        paymentTokenAddress: '0xabc',
+      }),
+    );
+    expect(saveSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        requestId: 'request-evm',
+        paymentCurrency: 'EVM:1:0xabc',
+        paymentAddress: '0x1111111111111111111111111111111111111111',
+        memo: 'account-creation:request-evm',
+        amount: '2',
+        paymentChainId: '1',
+        paymentTokenAddress: '0xabc',
+        paymentPriceUsd: '1.5',
+      }),
+      mk,
     );
   });
 });

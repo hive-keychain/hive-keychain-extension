@@ -11,6 +11,13 @@ describe('hive-promotion.actions tests:\n', () => {
   const hiveChain = defaultChainList.find(
     (chain) => chain.type === ChainType.HIVE,
   )!;
+  const evmChain = {
+    name: 'Ethereum',
+    type: ChainType.EVM,
+    logo: '',
+    chainId: '0x1',
+    rpcs: [],
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -22,10 +29,15 @@ describe('hive-promotion.actions tests:\n', () => {
     const addChainSpy = jest
       .spyOn(ChainUtils, 'addChainToSetupChains')
       .mockResolvedValue(undefined);
-    const fakeStore = getFakeStore(initialEmptyStateStore);
+    const setPreviousChainSpy = jest.spyOn(ChainUtils, 'setPreviousChain');
+    const fakeStore = getFakeStore({
+      ...initialEmptyStateStore,
+      chain: evmChain,
+    });
 
     await fakeStore.dispatch<any>(navigateToPaidHiveAccountCreation());
 
+    expect(setPreviousChainSpy).toHaveBeenCalledWith(evmChain);
     expect(addChainSpy).toHaveBeenCalledWith(hiveChain);
     expect(fakeStore.getState().chain).toEqual(hiveChain);
     expect(fakeStore.getState().navigation).toEqual({

@@ -58,13 +58,64 @@ describe('Hive account creation API', () => {
       {
         username: 'new-account',
         paymentCurrency: 'HIVE',
+        paymentChainId: undefined,
+        paymentTokenAddress: undefined,
+        ownerPublicKey: 'STMpublicKey',
+        activePublicKey: 'STMpublicKey',
+        postingPublicKey: 'STMpublicKey',
+        memoPublicKey: 'STMmemoPublicKey',
+      },
+    );
+  });
+
+  it('creates an EVM paid account creation quote and normalizes the backend response', async () => {
+    jest.spyOn(KeychainApi, 'post').mockResolvedValue({
+      requestId: 'request-1',
+      username: 'new-account',
+      status: 'payment_pending',
+      amount: '2',
+      currency: 'EVM:1:0xabc',
+      chainId: '1',
+      tokenAddress: '0xabc',
+      priceUsd: '1.5',
+      address: '0x1111111111111111111111111111111111111111',
+      memo: 'account-creation:request-1',
+      expiresAt: '2026-04-28T00:00:00.000Z',
+    });
+
+    await expect(
+      createHiveAccountCreationQuote({
+        username: 'new-account',
+        paymentChainId: '1',
+        paymentTokenAddress: '0xabc',
         authorities: {
           owner: authority,
           active: authority,
           posting: authority,
           memo_key: 'STMmemoPublicKey',
         },
+      }),
+    ).resolves.toMatchObject({
+      requestId: 'request-1',
+      payment: {
+        amount: '2',
+        asset: 'EVM:1:0xabc',
+        account: '0x1111111111111111111111111111111111111111',
+        chainId: '1',
+        tokenAddress: '0xabc',
+        priceUsd: '1.5',
       },
+    });
+
+    expect(KeychainApi.post).toHaveBeenCalledWith(
+      'hive/account-creation/quote',
+      expect.objectContaining({
+        username: 'new-account',
+        paymentCurrency: undefined,
+        paymentChainId: '1',
+        paymentTokenAddress: '0xabc',
+        ownerPublicKey: 'STMpublicKey',
+      }),
     );
   });
 

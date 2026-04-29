@@ -24,23 +24,34 @@ export interface HiveAccountCreationAuthorities {
 export interface CreateHiveAccountCreationQuoteRequest {
   username: string;
   authorities: HiveAccountCreationAuthorities;
-  paymentCurrency: HiveAccountCreationPaymentCurrency;
+  paymentCurrency?: HiveAccountCreationPaymentCurrency;
+  paymentChainId?: string | number;
+  paymentTokenAddress?: string | null;
 }
 
-export type HiveAccountCreationPaymentCurrency = 'HIVE' | 'HBD';
+export type HiveAccountCreationPaymentCurrency = 'HIVE';
 
 export interface HiveAccountCreationPayment {
   account: string;
   amount: string;
-  asset: HiveAccountCreationPaymentCurrency;
-  memo: string;
+  asset: string;
+  memo?: string | null;
+  chainId?: string | null;
+  tokenAddress?: string | null;
+  priceUsd?: string | null;
+}
+
+export interface HiveAccountCreationPaymentSelection {
+  paymentCurrency?: HiveAccountCreationPaymentCurrency;
+  paymentChainId?: string | number;
+  paymentTokenAddress?: string | null;
 }
 
 export interface HiveAccountCreationQuoteResponse {
   requestId: string;
   username: string;
   status: HiveAccountCreationStatus;
-  fee: string;
+  fee?: string;
   payment: HiveAccountCreationPayment;
   expiresAt: string;
 }
@@ -62,10 +73,13 @@ export interface PendingHiveAccountCreationRequest {
   requestId: string;
   username: string;
   encryptedAccount: string;
-  paymentCurrency: HiveAccountCreationPaymentCurrency;
+  paymentCurrency: string;
   paymentAddress: string;
-  memo?: string;
+  memo?: string | null;
   amount: string;
+  paymentChainId?: string | null;
+  paymentTokenAddress?: string | null;
+  paymentPriceUsd?: string | null;
   expiresAt: string;
   status: HiveAccountCreationStatus;
   createdAt: string;

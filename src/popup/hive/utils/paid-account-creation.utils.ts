@@ -1,7 +1,7 @@
 import { createHiveAccountCreationQuote } from '@api/hive-account-creation';
 import {
   HiveAccountCreationPayment,
-  HiveAccountCreationPaymentCurrency,
+  HiveAccountCreationPaymentSelection,
   PendingHiveAccountCreationRequest,
 } from '@interfaces/hive-account-creation.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
@@ -15,7 +15,7 @@ import { PendingHiveAccountCreationUtils } from 'src/utils/pending-hive-account-
 const createPendingPaidHiveAccountCreation = async (
   username: string,
   generatedKeys: GeneratedKeys,
-  paymentCurrency: HiveAccountCreationPaymentCurrency,
+  paymentSelection: HiveAccountCreationPaymentSelection,
   mk: string,
 ): Promise<PendingHiveAccountCreationRequest> => {
   const authorities =
@@ -23,7 +23,7 @@ const createPendingPaidHiveAccountCreation = async (
   const quote = await createHiveAccountCreationQuote({
     username,
     authorities,
-    paymentCurrency,
+    ...paymentSelection,
   });
   const pendingAccount = {
     name: username,
@@ -51,6 +51,9 @@ const createPendingPaidHiveAccountCreation = async (
       paymentAddress: payment.account,
       memo: payment.memo,
       amount: payment.amount,
+      paymentChainId: payment.chainId,
+      paymentTokenAddress: payment.tokenAddress,
+      paymentPriceUsd: payment.priceUsd,
       expiresAt: quote.expiresAt,
       status: quote.status,
     },

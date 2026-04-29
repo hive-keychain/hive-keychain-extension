@@ -1,4 +1,4 @@
-import { HiveAccountCreationPaymentCurrency } from '@interfaces/hive-account-creation.interface';
+import { HiveAccountCreationPaymentSelection } from '@interfaces/hive-account-creation.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Screen } from '@interfaces/screen.interface';
 import {
@@ -15,9 +15,14 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/multichain/actions/message.actions';
-import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { setChain } from '@popup/multichain/actions/chain.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { PrivateKey } from 'hive-tx';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -25,20 +30,12 @@ import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
-import {
-  ComplexeCustomSelect,
-  OptionItem,
-} from 'src/common-ui/custom-select/custom-select.component';
 import { copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
 import { addAccount } from 'src/popup/hive/actions/account.actions';
 import { PaidAccountCreationUtils } from 'src/popup/hive/utils/paid-account-creation.utils';
 import FormatUtils from 'src/utils/format.utils';
 
 const SUBSTRING_LENGTH = 15;
-const PAYMENT_CURRENCY_OPTIONS: OptionItem[] = [
-  { label: 'HIVE', value: 'HIVE', key: 'hive' },
-  { label: 'HBD', value: 'HBD', key: 'hbd' },
-];
 
 const CreateAccountStepTwo = ({
   navParams,
@@ -50,6 +47,8 @@ const CreateAccountStepTwo = ({
   addToLoadingList,
   removeFromLoadingList,
   navigateTo,
+  navigateToWithParams,
+  setChain,
 }: PropsFromRedux) => {
   const emptyKeys = {
     owner: { public: '', private: '' },
@@ -69,6 +68,11 @@ const CreateAccountStepTwo = ({
     navParams?.mode ?? AccountCreationMode.DEFAULT;
   const isPaidBackendCreation =
     accountCreationMode === AccountCreationMode.PAID_BACKEND_CREATION;
+  const paymentSelection = navParams?.paymentSelection as
+    | HiveAccountCreationPaymentSelection
+    | undefined;
+  const isEvmPaymentCreation = !!paymentSelection?.paymentChainId;
+  const isPaidCreation = isPaidBackendCreation || isEvmPaymentCreation;
   const selectedAccount = navParams?.usedAccount as LocalAccount;
 
   const [paymentUnderstanding, setPaymentUnderstanding] = useState(false);
@@ -76,16 +80,23 @@ const CreateAccountStepTwo = ({
   const [notPrimaryStorageUnderstanding, setNotPrimaryStorageUnderstanding] =
     useState(false);
   const [hasCopied, setHasCopied] = useState(false);
-  const [selectedPaymentCurrency, setSelectedPaymentCurrency] =
-    useState<OptionItem>(PAYMENT_CURRENCY_OPTIONS[0]);
-
   useEffect(() => {
     setTitleContainerProperties({
       title: 'popup_html_create_account',
       isBackButtonEnabled: true,
+      onCloseAdditional: () => {
+        restorePreviousChain();
+      },
     });
     generateMasterKey();
   }, []);
+
+  const restorePreviousChain = () => {
+    const previousChain = ChainUtils.getPreviousChain();
+    if (previousChain) {
+      void setChain(previousChain);
+    }
+  };
 
   useEffect(() => {
     if (masterKey === '') {
@@ -200,14 +211,23 @@ const CreateAccountStepTwo = ({
     ) {
       addToLoadingList('html_popup_creating_account');
       try {
-        if (isPaidBackendCreation) {
-          await PaidAccountCreationUtils.createPendingPaidHiveAccountCreation(
-            accountName,
-            generatedKeys,
-            selectedPaymentCurrency.value as HiveAccountCreationPaymentCurrency,
-            mk,
+        if (isPaidCreation) {
+          if (!paymentSelection?.paymentChainId) {
+            setErrorMessage('Unable to select an EVM payment token.');
+            return;
+          }
+          const pendingRequest =
+            await PaidAccountCreationUtils.createPendingPaidHiveAccountCreation(
+              accountName,
+              generatedKeys,
+              paymentSelection,
+              mk,
+            );
+          navigateToWithParams(
+            Screen.PENDING_ACCOUNT_CREATION_PAYMENT,
+            { requestId: pendingRequest.requestId },
+            true,
           );
-          navigateTo(Screen.PENDING_ACCOUNT_CREATION_PAYMENT, true);
           return;
         }
 
@@ -244,7 +264,7 @@ const CreateAccountStepTwo = ({
   const getPaymentCheckboxLabel = () => {
     switch (creationType) {
       case undefined:
-        if (isPaidBackendCreation) {
+        if (isPaidCreation) {
           return 'I understand I must complete payment before this Hive account can be created';
         }
         return '';
@@ -364,16 +384,6 @@ const CreateAccountStepTwo = ({
             </div>
           </div>
           <div className="agree-section">
-            {isPaidBackendCreation && (
-              <ComplexeCustomSelect<OptionItem>
-                label="Payment currency"
-                skipLabelTranslation
-                selectedItem={selectedPaymentCurrency}
-                options={PAYMENT_CURRENCY_OPTIONS}
-                setSelectedItem={setSelectedPaymentCurrency}
-                background="white"
-              />
-            )}
             <CheckboxPanelComponent
               title={getPaymentCheckboxLabel()}
               skipTranslation
@@ -428,6 +438,8 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   addAccount,
   navigateTo,
+  navigateToWithParams,
+  setChain,
   addToLoadingList,
   removeFromLoadingList,
 });

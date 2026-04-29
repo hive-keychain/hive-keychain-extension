@@ -12,6 +12,17 @@ describe('evm-light-node.utils tests:\n', () => {
     expect(getSpy).toHaveBeenCalledWith('gas-oracle/137');
   });
 
+  it('loads discovered tokens for all registered chains for an address', async () => {
+    const payload = { address: '0xabc', chains: [] };
+    const getSpy = jest.spyOn(EvmLightNodeApi, 'get').mockResolvedValue(payload);
+
+    await expect(
+      EvmLightNodeUtils.getDiscoveredTokensForAllRegisteredChains('0xabc'),
+    ).resolves.toEqual(payload);
+
+    expect(getSpy).toHaveBeenCalledWith('discovery/tokens/address/0xabc');
+  });
+
   it('evmChainIdToDecimalPathSegment maps hex and decimal strings', () => {
     expect(evmChainIdToDecimalPathSegment('0x1')).toBe('1');
     expect(evmChainIdToDecimalPathSegment('137')).toBe('137');

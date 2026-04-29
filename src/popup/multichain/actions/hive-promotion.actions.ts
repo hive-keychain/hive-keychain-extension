@@ -24,7 +24,12 @@ const getHiveChain = async (): Promise<HiveChain> => {
 };
 
 export const navigateToPaidHiveAccountCreation =
-  (): AppThunk<Promise<void>> => async (dispatch) => {
+  (): AppThunk<Promise<void>> => async (dispatch, getState) => {
+    const currentChain = getState().chain as Chain;
+    if (currentChain?.chainId) {
+      ChainUtils.setPreviousChain(currentChain);
+    }
+
     const hiveChain = await getHiveChain();
     await ChainUtils.addChainToSetupChains(hiveChain);
     await dispatch(setChain(hiveChain));

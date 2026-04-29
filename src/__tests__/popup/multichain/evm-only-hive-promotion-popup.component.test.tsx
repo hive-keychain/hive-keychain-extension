@@ -16,6 +16,9 @@ describe('evm-only-hive-promotion-popup.component tests:\n', () => {
 
     expect(screen.getByText('Discover Hive with Keychain')).toBeInTheDocument();
     expect(
+      screen.getByRole('img', { name: 'Discover Hive ecosystem' }),
+    ).toHaveAttribute('src', '/assets/images/discover-hive-cta.png');
+    expect(
       screen.getByText(
         'You already use Keychain for EVM. Hive gives you fast feeless transactions, social apps, games, and account-based identity.',
       ),

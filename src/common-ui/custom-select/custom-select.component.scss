@@ -113,6 +113,8 @@
       @include radius-bound-dropdown-scrollbar;
       @include poppins500(14px);
       .custom-select-dropdown {
+        width: 100%;
+
         .filter-input {
           border: unset !important;
           border-radius: unset !important;
@@ -127,7 +129,8 @@
         .option {
           display: flex;
           flex-direction: column;
-          max-width: 320px;
+          width: 100%;
+          box-sizing: border-box;
           &:hover {
             background-color: $red;
             color: white;
@@ -154,6 +157,7 @@
           padding: 10px 6px;
           box-sizing: border-box;
           position: relative;
+          width: 100%;
 
           .left-image {
             @include icon-size(24px);

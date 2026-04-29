@@ -9,24 +9,50 @@ const buildQuoteRequestBody = ({
   username,
   authorities,
   paymentCurrency,
-}: CreateHiveAccountCreationQuoteRequest): CreateHiveAccountCreationQuoteRequest => ({
+  paymentChainId,
+  paymentTokenAddress,
+}: CreateHiveAccountCreationQuoteRequest) => ({
   username,
   paymentCurrency,
-  authorities: {
-    owner: authorities.owner,
-    active: authorities.active,
-    posting: authorities.posting,
-    memo_key: authorities.memo_key,
-  },
+  paymentChainId,
+  paymentTokenAddress,
+  ownerPublicKey: authorities.owner.key_auths[0][0],
+  activePublicKey: authorities.active.key_auths[0][0],
+  postingPublicKey: authorities.posting.key_auths[0][0],
+  memoPublicKey: authorities.memo_key,
 });
+
+const normalizeQuoteResponse = (response: any): HiveAccountCreationQuoteResponse => {
+  if (response.payment) {
+    return response as HiveAccountCreationQuoteResponse;
+  }
+
+  return {
+    requestId: response.requestId,
+    username: response.username,
+    status: response.status,
+    expiresAt: response.expiresAt,
+    fee: response.currency === 'HIVE' ? `${response.amount} HIVE` : undefined,
+    payment: {
+      account: response.address,
+      amount: response.amount,
+      asset: response.currency,
+      memo: response.memo,
+      chainId: response.chainId,
+      tokenAddress: response.tokenAddress,
+      priceUsd: response.priceUsd,
+    },
+  };
+};
 
 export const createHiveAccountCreationQuote = async (
   request: CreateHiveAccountCreationQuoteRequest,
 ): Promise<HiveAccountCreationQuoteResponse> => {
-  return await KeychainApi.post(
+  const response = await KeychainApi.post(
     'hive/account-creation/quote',
     buildQuoteRequestBody(request),
   );
+  return normalizeQuoteResponse(response);
 };
 
 export const getHiveAccountCreationStatus = async (
