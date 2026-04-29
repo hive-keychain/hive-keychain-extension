@@ -37,6 +37,9 @@
         font-style: italic;
         line-height: 0.7;
       }
+      .seed-name {
+        margin-bottom: -2px;
+      }
     }
     .account-name {
       @include poppins500(14px);
