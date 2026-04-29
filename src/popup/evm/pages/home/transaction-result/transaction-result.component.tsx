@@ -110,17 +110,26 @@ const EvmTransactionResult = ({
   useEffect(() => {
     if (tokenInfo) {
       setTransactionTokenType(tokenInfo.type);
-    } else {
-      EvmTokensHistoryParserUtils.getTransactionTokenKind(
-        chain.chainId,
-        transactionResponse.hash,
-      ).then((type: TransactionTokenKind | null) => {
-        if (type) {
-          setTransactionTokenType(type as string);
-        }
-      });
+      return;
     }
-  }, [tokenInfo]);
+
+    const inferred =
+      EvmTokensHistoryParserUtils.inferTransactionTokenKindFromTx(
+        transactionResponse,
+      );
+    if (inferred) {
+      setTransactionTokenType(inferred);
+    }
+
+    EvmTokensHistoryParserUtils.getTransactionTokenKind(
+      chain.chainId,
+      transactionResponse.hash,
+    ).then((type: TransactionTokenKind | null) => {
+      if (type) {
+        setTransactionTokenType(type as string);
+      }
+    });
+  }, [tokenInfo, chain.chainId, transactionResponse]);
 
   const getTransactionStatus = async () => {
     const provider = await EthersUtils.getProvider(chain);
