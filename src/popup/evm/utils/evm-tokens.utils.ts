@@ -658,7 +658,7 @@ const fetchErc20NameAndDecimalsFromChain = async (
 ): Promise<{ name: string; decimals: number }> => {
   const provider = await EthersUtils.getProvider(chain);
   const contract = new ethers.Contract(
-    ethers.getAddress(contractAddress),
+    contractAddress.toLowerCase(),
     Erc20Abi,
     provider,
   );
@@ -1175,6 +1175,40 @@ const updateCustomToken = async (
   );
 };
 
+const getCustomTokensForAllWallets = async (chain: EvmChain) => {
+  const savedCustomTokens: EvmSavedCustomTokens =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
+    );
+
+  if (!savedCustomTokens) return [] as EvmCustomToken[];
+  const byChain = savedCustomTokens[chain.chainId];
+  if (!byChain) return [] as EvmCustomToken[];
+
+  const dedupedTokens: EvmCustomToken[] = [];
+  const seen = new Set<string>();
+
+  for (const tokens of Object.values(byChain)) {
+    if (!tokens?.length) continue;
+    for (const token of tokens) {
+      const normalizedAddress = normalizeCustomTokenAddress(token.address);
+      const key = `${token.type}:${normalizedAddress.toLowerCase()}`;
+      if (seen.has(key)) {
+        continue;
+      }
+      dedupedTokens.push(
+        normalizeCustomToken({
+          ...token,
+          address: normalizedAddress,
+        }),
+      );
+      seen.add(key);
+    }
+  }
+
+  return dedupedTokens;
+};
+
 const getCustomTokens = async (chain: EvmChain, walletAddress: string) => {
   const normalizedWalletAddress = normalizeCustomWalletKey(walletAddress);
   const savedCustomTokens: EvmSavedCustomTokens =
@@ -1672,4 +1706,5 @@ export const EvmTokensUtils = {
   mergeCustomErc20TokenInfos,
   getAllowance,
   getBalanceInfo,
+  getCustomTokensForAllWallets,
 };

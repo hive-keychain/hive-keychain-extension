@@ -50,13 +50,18 @@ interface Props {
 
 interface Erc20FormState {
   contractAddress: string;
+  name: string;
   symbol: string;
+  /** Raw input for the decimals field (validated on save). */
+  decimals: string;
   logo: string;
 }
 
 interface Erc20FormErrors {
   contractAddress?: string;
+  name?: string;
   symbol?: string;
+  decimals?: string;
   save?: string;
 }
 
@@ -114,7 +119,9 @@ const getNftTypeMessage = (type?: EVMSmartContractType) => {
 
 const INITIAL_ERC20_FORM: Erc20FormState = {
   contractAddress: '',
+  name: '',
   symbol: '',
+  decimals: '',
   logo: '',
 };
 
@@ -133,9 +140,8 @@ export const EvmAddCustomAssetPopup = ({
   onClose,
   onSave,
 }: Props) => {
-  const [erc20Form, setErc20Form] = useState<Erc20FormState>(
-    INITIAL_ERC20_FORM,
-  );
+  const [erc20Form, setErc20Form] =
+    useState<Erc20FormState>(INITIAL_ERC20_FORM);
   const [nftForm, setNftForm] = useState<NftFormState>(INITIAL_NFT_FORM);
   const [erc20Errors, setErc20Errors] = useState<Erc20FormErrors>({});
   const [nftErrors, setNftErrors] = useState<NftFormErrors>({});
@@ -144,7 +150,15 @@ export const EvmAddCustomAssetPopup = ({
   );
   const [savedCustomNfts, setSavedCustomNfts] = useState<EvmCustomNft[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [isResolvingContract, setIsResolvingContract] = useState(false);
   const isMountedRef = useRef(true);
+  const erc20FormRef = useRef(erc20Form);
+  const normalizedExistingErc20Ref = useRef(
+    new Set<string>(),
+  );
+  const contractBlurGenerationRef = useRef(0);
+
+  erc20FormRef.current = erc20Form;
 
   useEffect(() => {
     return () => {
@@ -197,7 +211,10 @@ export const EvmAddCustomAssetPopup = ({
           : undefined;
       setErc20Form({
         contractAddress: tokenToEdit.address,
+        name: meta?.name ?? '',
         symbol: meta?.symbol ?? '',
+        decimals:
+          meta?.decimals !== undefined ? String(meta.decimals) : '',
         logo: meta?.logo ?? '',
       });
     } else {
@@ -255,6 +272,10 @@ export const EvmAddCustomAssetPopup = ({
     savedCustomTokens,
   ]);
 
+  if (mode === 'erc20') {
+    normalizedExistingErc20Ref.current = normalizedExistingAddresses;
+  }
+
   const setErc20Field = (field: keyof Erc20FormState, value: string) => {
     setErc20Form((current) => ({
       ...current,
@@ -266,6 +287,115 @@ export const EvmAddCustomAssetPopup = ({
       [field]: undefined,
       save: undefined,
     }));
+  };
+
+  const setErc20ContractAddress = (value: string) => {
+    if (isEditing) {
+      setErc20Field('contractAddress', value);
+      return;
+    }
+    setErc20Form((current) => ({
+      ...current,
+      contractAddress: value,
+      name: '',
+      decimals: '',
+    }));
+    setErc20Errors((current) => ({
+      ...current,
+      contractAddress: undefined,
+      save: undefined,
+    }));
+  };
+
+  const handleErc20ContractBlur = () => {
+    void (async () => {
+      if (isEditing) {
+        return;
+      }
+
+      const trimmed = erc20FormRef.current.contractAddress.trim();
+
+      setErc20Errors((current) => ({
+        ...current,
+        contractAddress: undefined,
+        save: undefined,
+      }));
+
+      if (!trimmed.length) {
+        return;
+      }
+
+      const normalizedAddress = normalizeAddress(trimmed);
+
+      if (!normalizedAddress || !ethers.isAddress(normalizedAddress)) {
+        if (isMountedRef.current) {
+          setErc20Errors((current) => ({
+            ...current,
+            contractAddress: chrome.i18n.getMessage(
+              'evm_add_custom_asset_error_contract_address_invalid',
+            ),
+          }));
+        }
+        return;
+      }
+
+      if (
+        normalizedExistingErc20Ref.current.has(normalizedAddress.toLowerCase())
+      ) {
+        if (isMountedRef.current) {
+          setErc20Errors((current) => ({
+            ...current,
+            contractAddress: chrome.i18n.getMessage(
+              'evm_add_custom_asset_error_contract_address_duplicate',
+            ),
+          }));
+        }
+        return;
+      }
+
+      contractBlurGenerationRef.current += 1;
+      const runId = contractBlurGenerationRef.current;
+
+      setIsResolvingContract(true);
+      try {
+        const { name, decimals } =
+          await EvmTokensUtils.fetchErc20NameAndDecimalsFromChain(
+            chain,
+            normalizedAddress,
+          );
+        if (
+          !isMountedRef.current ||
+          runId !== contractBlurGenerationRef.current
+        ) {
+          return;
+        }
+        setErc20Form((current) => ({
+          ...current,
+          contractAddress: normalizedAddress,
+          ...(name.trim().length ? { name: name.trim() } : {}),
+          decimals: String(decimals),
+        }));
+      } catch {
+        if (
+          isMountedRef.current &&
+          runId === contractBlurGenerationRef.current
+        ) {
+          setErc20Errors((current) => ({
+            ...current,
+            contractAddress: chrome.i18n.getMessage(
+              'evm_add_custom_token_error_fetch_erc20_metadata',
+            ),
+          }));
+        }
+      } finally {
+        if (
+          isMountedRef.current &&
+          runId === contractBlurGenerationRef.current
+        ) {
+          setIsResolvingContract(false);
+        }
+      }
+    })();
   };
 
   const setNftField = (field: keyof NftFormState, value: string) => {
@@ -287,21 +417,47 @@ export const EvmAddCustomAssetPopup = ({
     const normalizedAddress = normalizeAddress(erc20Form.contractAddress);
 
     if (!normalizedAddress || !ethers.isAddress(normalizedAddress)) {
-      errors.contractAddress = 'Enter a valid contract address.';
+      errors.contractAddress = chrome.i18n.getMessage(
+        'evm_add_custom_asset_error_contract_address_invalid',
+      );
     } else if (
       normalizedExistingAddresses.has(normalizedAddress.toLowerCase())
     ) {
-      errors.contractAddress = 'This contract address is already added.';
+      errors.contractAddress = chrome.i18n.getMessage(
+        'evm_add_custom_asset_error_contract_address_duplicate',
+      );
     }
 
     if (!erc20Form.symbol.trim()) {
-      errors.symbol = 'Symbol is required.';
+      errors.symbol = chrome.i18n.getMessage(
+        'evm_add_custom_token_error_symbol_required',
+      );
+    }
+
+    if (!erc20Form.name.trim()) {
+      errors.name = chrome.i18n.getMessage(
+        'evm_add_custom_token_error_name_required',
+      );
+    }
+
+    const decimalsTrimmed = erc20Form.decimals.trim();
+    const decimalsParsed = Number.parseInt(decimalsTrimmed, 10);
+    if (
+      !decimalsTrimmed.length ||
+      !Number.isInteger(decimalsParsed) ||
+      decimalsParsed < 0 ||
+      decimalsParsed > 255
+    ) {
+      errors.decimals = chrome.i18n.getMessage(
+        'evm_add_custom_token_error_decimals_invalid',
+      );
     }
 
     return {
       errors,
       isValid: Object.keys(errors).length === 0,
       normalizedAddress,
+      decimalsParsed: errors.decimals ? NaN : decimalsParsed,
     };
   };
 
@@ -309,24 +465,33 @@ export const EvmAddCustomAssetPopup = ({
     const errors: NftFormErrors = {};
     const normalizedAddress = normalizeAddress(nftForm.contractAddress);
     const rawTokenIds = parseTokenIdsInput(nftForm.tokenIds);
-    const invalidTokenIds = rawTokenIds.filter((tokenId) => !isValidTokenId(tokenId));
+    const invalidTokenIds = rawTokenIds.filter(
+      (tokenId) => !isValidTokenId(tokenId),
+    );
     const normalizedTokenIds = Array.from(
       new Set(rawTokenIds.map(normalizeTokenId).filter(Boolean)),
     );
 
     if (!normalizedAddress || !ethers.isAddress(normalizedAddress)) {
-      errors.contractAddress = 'Enter a valid contract address.';
+      errors.contractAddress = chrome.i18n.getMessage(
+        'evm_add_custom_asset_error_contract_address_invalid',
+      );
     } else if (
       normalizedExistingAddresses.has(normalizedAddress.toLowerCase())
     ) {
-      errors.contractAddress = 'This contract address is already added.';
+      errors.contractAddress = chrome.i18n.getMessage(
+        'evm_add_custom_asset_error_contract_address_duplicate',
+      );
     }
 
     if (!rawTokenIds.length) {
-      errors.tokenIds = 'Enter at least one token ID.';
+      errors.tokenIds = chrome.i18n.getMessage(
+        'evm_add_custom_nft_error_token_ids_required',
+      );
     } else if (invalidTokenIds.length) {
-      errors.tokenIds =
-        'Token IDs must be decimal numbers or 0x-prefixed hex values.';
+      errors.tokenIds = chrome.i18n.getMessage(
+        'evm_add_custom_nft_error_token_ids_format',
+      );
     }
 
     return {
@@ -342,7 +507,8 @@ export const EvmAddCustomAssetPopup = ({
       return;
     }
 
-    const { errors, isValid, normalizedAddress } = validateErc20Form();
+    const { errors, isValid, normalizedAddress, decimalsParsed } =
+      validateErc20Form();
     if (!isValid) {
       setErc20Errors(errors);
       return;
@@ -350,33 +516,20 @@ export const EvmAddCustomAssetPopup = ({
 
     setIsSaving(true);
     try {
-      const { name, decimals } =
-        await EvmTokensUtils.fetchErc20NameAndDecimalsFromChain(
-          chain,
-          normalizedAddress,
-        );
-      try {
-        await onSave({
-          contractAddress: normalizedAddress,
-          name,
-          symbol: erc20Form.symbol.trim(),
-          decimals,
-          logo: erc20Form.logo.trim(),
-        } as EvmCustomErc20FormData);
-      } catch {
-        if (isMountedRef.current) {
-          setErc20Errors((current) => ({
-            ...current,
-            save: 'Unable to save this token right now.',
-          }));
-        }
-      }
+      await onSave({
+        contractAddress: normalizedAddress,
+        name: erc20Form.name.trim(),
+        symbol: erc20Form.symbol.trim(),
+        decimals: decimalsParsed,
+        logo: erc20Form.logo.trim(),
+      } as EvmCustomErc20FormData);
     } catch {
       if (isMountedRef.current) {
         setErc20Errors((current) => ({
           ...current,
-          save:
-            'Could not read token name and decimals from the chain. Check the address and that it is a standard ERC20 contract.',
+          save: chrome.i18n.getMessage(
+            'evm_add_custom_token_error_save_failed',
+          ),
         }));
       }
     } finally {
@@ -418,7 +571,9 @@ export const EvmAddCustomAssetPopup = ({
         if (isMountedRef.current) {
           setNftErrors((current) => ({
             ...current,
-            tokenIds: 'One or more token IDs are not owned by this wallet.',
+            tokenIds: chrome.i18n.getMessage(
+              'evm_add_custom_nft_error_token_ids_not_owned',
+            ),
           }));
         }
         return;
@@ -439,7 +594,9 @@ export const EvmAddCustomAssetPopup = ({
         if (isMountedRef.current) {
           setNftErrors((current) => ({
             ...current,
-            save: 'Unable to save this NFT right now.',
+            save: chrome.i18n.getMessage(
+              'evm_add_custom_nft_error_save_failed',
+            ),
           }));
         }
       }
@@ -447,8 +604,9 @@ export const EvmAddCustomAssetPopup = ({
       if (isMountedRef.current) {
         setNftErrors((current) => ({
           ...current,
-          save:
-            'Could not detect a supported NFT contract at this address. Only ERC721 and ERC1155 contracts are supported.',
+          save: chrome.i18n.getMessage(
+            'evm_add_custom_nft_error_unsupported_contract',
+          ),
         }));
       }
     } finally {
@@ -483,12 +641,29 @@ export const EvmAddCustomAssetPopup = ({
             value={erc20Form.contractAddress}
             type={InputType.TEXT}
             readOnly={isEditing}
-            onChange={(value) => setErc20Field('contractAddress', value)}
+            disabled={isResolvingContract}
+            onChange={(value) => setErc20ContractAddress(value)}
+            onBlur={handleErc20ContractBlur}
             dataTestId="custom-asset-contract-address"
             classname="custom-asset-input"
           />
           {erc20Errors.contractAddress && (
             <div className="error-message">{erc20Errors.contractAddress}</div>
+          )}
+        </div>
+
+        <div className="field">
+          <InputComponent
+            label="Name"
+            skipLabelTranslation
+            value={erc20Form.name}
+            type={InputType.TEXT}
+            onChange={(value) => setErc20Field('name', value)}
+            dataTestId="custom-asset-name"
+            classname="custom-asset-input"
+          />
+          {erc20Errors.name && (
+            <div className="error-message">{erc20Errors.name}</div>
           )}
         </div>
 
@@ -509,6 +684,21 @@ export const EvmAddCustomAssetPopup = ({
 
         <div className="field">
           <InputComponent
+            label="Decimals"
+            skipLabelTranslation
+            value={erc20Form.decimals}
+            type={InputType.TEXT}
+            onChange={(value) => setErc20Field('decimals', value)}
+            dataTestId="custom-asset-decimals"
+            classname="custom-asset-input"
+          />
+          {erc20Errors.decimals && (
+            <div className="error-message">{erc20Errors.decimals}</div>
+          )}
+        </div>
+
+        <div className="field">
+          <InputComponent
             label="Logo URL (optional)"
             skipLabelTranslation
             value={erc20Form.logo}
@@ -520,7 +710,9 @@ export const EvmAddCustomAssetPopup = ({
         </div>
       </div>
 
-      {erc20Errors.save && <div className="error-message">{erc20Errors.save}</div>}
+      {erc20Errors.save && (
+        <div className="error-message">{erc20Errors.save}</div>
+      )}
 
       <div className="popup-footer">
         <ButtonComponent
@@ -532,7 +724,7 @@ export const EvmAddCustomAssetPopup = ({
           onClick={() => void handleSaveErc20()}
           label="popup_html_operation_button_save"
           dataTestId="custom-asset-save"
-          disabled={isSaving}
+          disabled={isSaving || isResolvingContract}
         />
       </div>
     </>
