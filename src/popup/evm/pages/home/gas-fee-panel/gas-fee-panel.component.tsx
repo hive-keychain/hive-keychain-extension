@@ -1,9 +1,9 @@
 import { EtherRPCCustomError } from '@popup/evm/interfaces/evm-errors.interface';
+import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   EvmTransactionType,
   ProviderTransactionData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
-import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   CustomGasFeeForm,
   FullGasFeeEstimation,
@@ -133,6 +133,8 @@ export const GasFeePanel = ({
           : undefined,
         transactionData,
       );
+
+      console.log(JSON.stringify(estimate, null, 2));
 
       if (!!multiplier && selectedFee) {
         const increasedFee: GasFeeEstimationBase = {
