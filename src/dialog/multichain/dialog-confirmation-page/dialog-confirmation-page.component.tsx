@@ -136,6 +136,15 @@ export const DialogConfirmationPage = ({
   }, [requestQueue, selectedIndex]);
 
   const afterCancel = (requestId: number, tab: number) => {
+    const hasRemainingRequests = requestQueue.some(
+      (item) => item.request.request_id !== requestId || item.tab !== tab,
+    );
+
+    if (!hasRemainingRequests) {
+      window.close();
+      return;
+    }
+
     removeRequestFromQueue(requestId, tab);
   };
 
@@ -146,7 +155,19 @@ export const DialogConfirmationPage = ({
     const tab = (feedBackMessage as any)?.msg?.tab;
 
     if (requestId !== undefined && tab !== undefined) {
+      const hasRemainingRequests = requestQueue.some(
+        (item) => item.request.request_id !== requestId || item.tab !== tab,
+      );
+
+      if (!hasRemainingRequests) {
+        window.close();
+        return;
+      }
+
       removeRequestFromQueue(requestId, tab);
+    } else if (!requestQueue.length) {
+      window.close();
+      return;
     }
 
     setFeedBackMessage(null);
