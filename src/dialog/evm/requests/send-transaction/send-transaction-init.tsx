@@ -58,7 +58,9 @@ export async function runSendTransactionInit(
   let transactionConfirmationFields = {} as TransactionConfirmationFields;
   let lastTransactionInfo: EvmTransactionVerificationInformation | undefined;
 
-  const chainTmp = await ChainUtils.getChain<EvmChain>(request.chainId!);
+  const chainTmp = await ChainUtils.getChain<EvmChain>(
+    request.params[0].chainId ?? request.chainId!,
+  );
 
   setChain(chainTmp as EvmChain);
 
