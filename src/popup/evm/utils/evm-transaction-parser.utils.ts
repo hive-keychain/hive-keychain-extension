@@ -192,7 +192,6 @@ const shouldDisplayBalanceChange = (abi: any, methodName: string) => {
   switch (tokenType) {
     case EVMSmartContractType.ERC20: {
       switch (methodName) {
-        case 'approve':
         case 'transfer': {
           return true;
         }

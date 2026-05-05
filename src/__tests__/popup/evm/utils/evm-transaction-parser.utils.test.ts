@@ -1,6 +1,30 @@
 import { KeychainApi } from '@api/keychain';
+import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
+import { getAbiFromType } from '@popup/evm/reference-data/abi.data';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
+
+describe('shouldDisplayBalanceChange', () => {
+  const erc20Abi = getAbiFromType(EVMSmartContractType.ERC20)!;
+
+  it('returns false for ERC20 approve (allowance only, no balance change)', () => {
+    expect(
+      EvmTransactionParserUtils.shouldDisplayBalanceChange(
+        erc20Abi,
+        'approve',
+      ),
+    ).toBe(false);
+  });
+
+  it('returns true for ERC20 transfer', () => {
+    expect(
+      EvmTransactionParserUtils.shouldDisplayBalanceChange(
+        erc20Abi,
+        'transfer',
+      ),
+    ).toBe(true);
+  });
+});
 
 describe('evm-transaction-parser.utils proxy tests:\n', () => {
   afterEach(() => {
