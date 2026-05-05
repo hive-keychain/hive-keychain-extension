@@ -157,6 +157,11 @@ export class EvmRequestHandler {
     tab: number,
     shouldSyncDialog = true,
   ) {
+    // Reconcile with latest persisted queue to avoid dropping requests that were
+    // added by another concurrent handler instance while feedback delay is active.
+    const latestHandler = await EvmRequestHandler.getFromLocalStorage();
+    this.requestsData = latestHandler.requestsData;
+
     this.requestsData = this.requestsData.filter(
       (requestData: EvmRequestData) => {
         if (requestData.request_id === requestId && requestData.tab === tab) {

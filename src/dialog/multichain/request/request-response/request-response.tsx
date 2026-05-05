@@ -2,7 +2,7 @@ import { ResultMessagePageComponent } from '@common-ui/result-message-page/resul
 import { ResultMessage } from '@dialog/interfaces/messages.interface';
 import { DIALOG_FEEDBACK_DISPLAY_MS } from '@reference-data/dialog-feedback.constants';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 type Props = {
   data: ResultMessage;
@@ -35,15 +35,27 @@ const feedbackMessageHtml = (data: ResultMessage): string => {
 };
 
 export const RequestResponse = ({ data, onClose }: Props) => {
-  if (data.msg.success) {
-    setTimeout(() => {
-      if (onClose) {
-        onClose();
-      } else {
-        close();
-      }
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+      return;
+    }
+    window.close();
+  };
+
+  useEffect(() => {
+    if (!data.msg.success) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      handleClose();
     }, DIALOG_FEEDBACK_DISPLAY_MS);
-  }
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [data.msg.success, onClose]);
 
   return (
     <ResultMessagePageComponent
@@ -55,8 +67,7 @@ export const RequestResponse = ({ data, onClose }: Props) => {
       }
       message={feedbackMessageHtml(data)}
       skipMessageTranslation={true}
-      autoCloseDelayMs={data.msg.success ? 3000 : undefined}
-      onClose={() => window.close()}
+      onClose={handleClose}
     />
   );
 };
