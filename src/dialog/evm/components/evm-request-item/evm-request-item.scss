@@ -133,6 +133,14 @@
           }
         }
       }
+
+      &.warning-only {
+        .value {
+          max-width: unset;
+          @include poppins400(12px);
+          text-align: left;
+        }
+      }
     }
   }
 }

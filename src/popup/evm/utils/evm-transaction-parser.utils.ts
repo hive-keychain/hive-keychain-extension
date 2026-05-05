@@ -40,6 +40,7 @@ export enum EvmInputDisplayType {
   IMAGE = 'image',
   UINT256 = 'uint256',
   HTML_ELEMENT = 'html-element',
+  WARNING_ONLY = 'warning-only',
 }
 
 const getDisplayInputType = (

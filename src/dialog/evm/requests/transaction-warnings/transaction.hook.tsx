@@ -287,8 +287,8 @@ export const useTransactionHook = (
     if (pendingTransactionsInfo?.hasPending) {
       setPendingTransactionWarningField({
         name: '',
-        type: EvmInputDisplayType.STRING,
-        value: <div className="value-content"></div>,
+        type: EvmInputDisplayType.WARNING_ONLY,
+        value: chrome.i18n.getMessage('evm_pending_transaction_warning'),
         warnings: [
           {
             ignored: false,
