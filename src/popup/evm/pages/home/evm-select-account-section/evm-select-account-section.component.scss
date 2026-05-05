@@ -278,6 +278,15 @@
   }
 }
 
-.css-wmy1p7-ReactDropdownSelect {
-  box-shadow: none !important;
+// react-dropdown-select's root is focusable (tabIndex 0) and applies :focus / :focus-within
+// box-shadow + border from its default `color` prop — focus changes when clicking elsewhere
+// in the popup. Override with theme border and no ring (emotion class hash is unstable).
+.evm-select-account-section .react-dropdown-select.select-account-select {
+  &:hover,
+  &:focus,
+  &:focus-within {
+    border-color: var(--select-border-color) !important;
+    box-shadow: none !important;
+    outline: none;
+  }
 }
