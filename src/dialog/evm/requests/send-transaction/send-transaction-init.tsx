@@ -25,14 +25,14 @@ import Decimal from 'decimal.js';
 import { ethers, HDNodeWallet, Wallet } from 'ethers';
 import React from 'react';
 import {
-  removeMatchingFromField,
-  reorderEvmConfirmationFields,
-} from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
-import {
   formatDecodedArgumentDisplayValue,
   formatFallbackParsedInputValue,
 } from 'src/dialog/evm/requests/send-transaction/send-transaction-argument-format';
 import type { RunSendTransactionInitParams } from 'src/dialog/evm/requests/send-transaction/send-transaction.types';
+import {
+  removeMatchingFromField,
+  reorderEvmConfirmationFields,
+} from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -58,7 +58,9 @@ export async function runSendTransactionInit(
   let transactionConfirmationFields = {} as TransactionConfirmationFields;
   let lastTransactionInfo: EvmTransactionVerificationInformation | undefined;
 
-  const chainTmp = await ChainUtils.getChain<EvmChain>(request.chainId!);
+  const chainTmp = await ChainUtils.getChain<EvmChain>(
+    request.params[0].chainId ?? request.chainId!,
+  );
 
   setChain(chainTmp as EvmChain);
 
@@ -184,6 +186,7 @@ export async function runSendTransactionInit(
               chainTmp.chainId,
               transactionInfo,
               accounts,
+              usedToken,
             )),
           });
 
@@ -344,8 +347,7 @@ export async function runSendTransactionInit(
             value: (
               <div
                 className="value-content address-content"
-                onClick={() => onCopyAddress(tokenAddress!)}
-              >
+                onClick={() => onCopyAddress(tokenAddress!)}>
                 {usedToken && <EvmTokenLogo tokenInfo={usedToken} />}
                 <div>{EvmFormatUtils.formatAddress(tokenAddress!)}</div>
               </div>
@@ -355,6 +357,7 @@ export async function runSendTransactionInit(
               chainTmp.chainId,
               transactionInfo,
               accounts,
+              usedToken,
             )),
           });
 

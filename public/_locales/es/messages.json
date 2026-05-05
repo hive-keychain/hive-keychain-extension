@@ -4636,5 +4636,53 @@
   "evm_request_add_custom_chain_caption": {
     "message": "$1 requested a switch to chain $2, but Keychain doesn't know this chain yet. Add the custom chain details below to continue.",
     "description": "Request to add a custom chain caption"
+  },
+  "evm_add_custom_asset_error_contract_address_invalid": {
+    "message": "Enter a valid contract address.",
+    "description": "Validation error when adding a custom EVM token or NFT with an invalid contract address"
+  },
+  "evm_add_custom_asset_error_contract_address_duplicate": {
+    "message": "This contract address is already added.",
+    "description": "Validation error when the contract address is already in custom tokens or NFTs"
+  },
+  "evm_add_custom_token_error_symbol_required": {
+    "message": "Symbol is required.",
+    "description": "Validation error when saving a custom ERC20 without a symbol"
+  },
+  "evm_add_custom_token_error_name_required": {
+    "message": "Token name is required.",
+    "description": "Validation error when saving a custom ERC20 without a name"
+  },
+  "evm_add_custom_token_error_decimals_invalid": {
+    "message": "Enter a valid decimal count between 0 and 255.",
+    "description": "Validation error when custom ERC20 decimals are missing or out of range"
+  },
+  "evm_add_custom_nft_error_token_ids_required": {
+    "message": "Enter at least one token ID.",
+    "description": "Validation error when saving a custom NFT without token IDs"
+  },
+  "evm_add_custom_nft_error_token_ids_format": {
+    "message": "Token IDs must be decimal numbers or 0x-prefixed hex values.",
+    "description": "Validation error when custom NFT token IDs use an invalid format"
+  },
+  "evm_add_custom_token_error_save_failed": {
+    "message": "Unable to save this token right now.",
+    "description": "Error when persisting a custom ERC20 token fails"
+  },
+  "evm_add_custom_token_error_fetch_erc20_metadata": {
+    "message": "Could not read token name and decimals from the chain. Check the address and that it is a standard ERC20 contract.",
+    "description": "Error when fetching ERC20 name and decimals from chain fails"
+  },
+  "evm_add_custom_nft_error_token_ids_not_owned": {
+    "message": "One or more token IDs are not owned by this wallet.",
+    "description": "Error when listed NFT token IDs are not owned by the current wallet"
+  },
+  "evm_add_custom_nft_error_save_failed": {
+    "message": "Unable to save this NFT right now.",
+    "description": "Error when persisting a custom NFT entry fails"
+  },
+  "evm_add_custom_nft_error_unsupported_contract": {
+    "message": "Could not detect a supported NFT contract at this address. Only ERC721 and ERC1155 contracts are supported.",
+    "description": "Error when the address is not a supported ERC721 or ERC1155 contract"
   }
 }

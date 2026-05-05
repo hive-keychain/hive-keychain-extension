@@ -448,7 +448,11 @@ export const useTransactionHook = (
         type: EvmInputDisplayType.LONG_TEXT,
         value: (
           <div>
-            <b>{chrome.i18n.getMessage('evm_warning_eip7702_title')}</b>
+            <b>
+              {chrome.i18n.getMessage(
+                'evm_warning_possible_duplicated_transaction',
+              )}
+            </b>
             <div>{JSON.stringify(savedRequest.request)}</div>
           </div>
         ),

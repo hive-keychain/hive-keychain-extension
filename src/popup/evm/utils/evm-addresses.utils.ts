@@ -12,8 +12,10 @@ import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
+import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { ethers } from 'ethers';
 import * as jdenticon from 'jdenticon';
@@ -472,17 +474,26 @@ const isWhitelisted = async (
 ) => {
   const whitelisted = await getWhitelistedAddresses(chainId);
 
-  return (
-    localAccounts
-      .map((localAccount) => localAccount.wallet.address.toLowerCase())
-      .includes(address.toLowerCase()) ||
-    whitelisted[EvmAddressType.SMART_CONTRACT]
-      .map((item) => item.address.toLowerCase())
-      .includes(address.toLowerCase()) ||
-    whitelisted[EvmAddressType.WALLET_ADDRESS]
-      .map((item) => item.address.toLowerCase())
-      .includes(address.toLowerCase())
-  );
+  const chain = await ChainUtils.getChain<EvmChain>(chainId);
+  if (chain && chain.isCustom) {
+    const customTokens =
+      await EvmTokensUtils.getCustomTokensForAllWallets(chain);
+    return customTokens.some(
+      (token) => token.address.toLowerCase() === address.toLowerCase(),
+    );
+  } else {
+    return (
+      localAccounts
+        .map((localAccount) => localAccount.wallet.address.toLowerCase())
+        .includes(address.toLowerCase()) ||
+      whitelisted[EvmAddressType.SMART_CONTRACT]
+        .map((item) => item.address.toLowerCase())
+        .includes(address.toLowerCase()) ||
+      whitelisted[EvmAddressType.WALLET_ADDRESS]
+        .map((item) => item.address.toLowerCase())
+        .includes(address.toLowerCase())
+    );
+  }
 };
 
 const getAddressLabel = async (address: string, chainId: string) => {

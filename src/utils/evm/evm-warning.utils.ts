@@ -3,6 +3,9 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import * as ObjectHash from 'object-hash';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+const EXPIRATION_TIME_IN_MINUTES =
+  Number(process.env.DUPLICATE_REQUEST_EXPIRATION_TIME_IN_MINUTES) || 60;
+
 export interface SavedRequest {
   request: EvmRequest;
   timestamp: number;
@@ -28,6 +31,8 @@ export const checkRequestHash = async (request: EvmRequest, domain: string) => {
     LocalStorageKeyEnum.EVM_LAST_HASH,
   );
 
+  let foundHash;
+
   if (lastHashes) {
     if (!lastHashes[hash]) {
       lastHashes[hash] = {
@@ -36,7 +41,12 @@ export const checkRequestHash = async (request: EvmRequest, domain: string) => {
         domain,
       };
     } else {
-      if (lastHashes[hash].domain === domain) return lastHashes[hash];
+      if (
+        lastHashes[hash].domain === domain &&
+        lastHashes[hash].timestamp >
+          Date.now() - EXPIRATION_TIME_IN_MINUTES * 60 * 1000
+      )
+        foundHash = lastHashes[hash];
     }
   } else {
     lastHashes = {
@@ -47,10 +57,23 @@ export const checkRequestHash = async (request: EvmRequest, domain: string) => {
       },
     };
   }
+
+  // clear expired requests
+  for (const key in lastHashes) {
+    if (
+      lastHashes[key].timestamp <
+      Date.now() - EXPIRATION_TIME_IN_MINUTES * 60 * 1000
+    ) {
+      delete lastHashes[key];
+    }
+  }
+
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_LAST_HASH,
     lastHashes,
   );
+
+  return foundHash;
 };
 
 export const EvmWarningUtils = { checkRequestHash };

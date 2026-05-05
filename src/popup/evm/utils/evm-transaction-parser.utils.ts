@@ -458,6 +458,7 @@ const getSmartContractWarningAndInfo = async (
   chainId: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
   localAccounts: EvmAccount[],
+  usedToken: EvmSmartContractInfo,
 ) => {
   const warningAndInfo: Partial<TransactionConfirmationField> = {
     warnings: [],
@@ -474,6 +475,15 @@ const getSmartContractWarningAndInfo = async (
   if (
     !(await EvmAddressesUtils.isWhitelisted(address, chainId, localAccounts))
   ) {
+    if (
+      usedToken &&
+      usedToken.type !== EVMSmartContractType.NATIVE &&
+      usedToken.verifiedContract &&
+      !usedToken.possibleSpam
+    ) {
+      return warningAndInfo;
+    }
+
     warningAndInfo.warnings?.push({
       ignored: false,
       level: EvmTransactionWarningLevel.LOW,
@@ -495,7 +505,7 @@ const normalizeVerificationInformation = (
   const normalizedProxyTarget =
     typeof verificationInformation.contract?.proxy === 'string'
       ? verificationInformation.contract.proxy
-      : verificationInformation.contract?.proxy?.target ?? proxyTarget;
+      : (verificationInformation.contract?.proxy?.target ?? proxyTarget);
 
   return {
     ...verificationInformation,
@@ -539,9 +549,8 @@ const findAbiFromData = async (data: string, chain: EvmChain) => {
 
   const functionNameInHex = data.substring(0, 8);
 
-  const foundSignature = await EvmDataParser.getMethodFromSignature(
-    functionNameInHex,
-  );
+  const foundSignature =
+    await EvmDataParser.getMethodFromSignature(functionNameInHex);
 
   if (foundSignature) {
     const name = foundSignature.split('(')[0];
@@ -572,9 +581,8 @@ const parseData = async (
 ): Promise<EvmTransactionDecodedData | undefined> => {
   const functionNameInHex = data.slice(0, 10);
 
-  const foundSignature = await EvmDataParser.getMethodFromSignature(
-    functionNameInHex,
-  );
+  const foundSignature =
+    await EvmDataParser.getMethodFromSignature(functionNameInHex);
 
   if (foundSignature) {
     let registry;
