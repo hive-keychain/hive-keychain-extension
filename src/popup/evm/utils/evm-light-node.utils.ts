@@ -348,15 +348,34 @@ const getHistoryDetail = async (
   );
 };
 
+const contractInflight = new Map<string, Promise<EvmLightNodeContractResponse>>();
+
+const getContractCacheKey = (
+  chainId: string | number,
+  contractAddress: string,
+) =>
+  `${evmChainIdToDecimalPathSegment(chainId)}:${contractAddress.toLowerCase()}`;
+
 const getContract = async (
   chainId: string | number,
   contractAddress: string,
 ): Promise<EvmLightNodeContractResponse> => {
   const id = evmChainIdToDecimalPathSegment(chainId);
-  const response = await EvmLightNodeApi.get(
-    `contract/${id}/${encodeURIComponent(contractAddress)}`,
-  );
-  return normalizeContract(response as EvmLightNodeContractResponse);
+  const key = getContractCacheKey(chainId, contractAddress);
+  let pending = contractInflight.get(key);
+  if (!pending) {
+    pending = EvmLightNodeApi.get(
+      `contract/${id}/${encodeURIComponent(contractAddress)}`,
+    )
+      .then((response) =>
+        normalizeContract(response as EvmLightNodeContractResponse),
+      )
+      .finally(() => {
+        contractInflight.delete(key);
+      });
+    contractInflight.set(key, pending);
+  }
+  return pending;
 };
 
 const getGasFee = fetchGasOracle;

@@ -31,6 +31,7 @@ type Props = {
   fields?: any;
   bottomPanel?: any;
   transactionHook?: useTransactionHook;
+  confirmDisabled?: boolean;
   afterCancel: (requestId: number, tab: number) => void;
 };
 
@@ -46,6 +47,7 @@ export const EvmOperation = ({
   fields,
   bottomPanel,
   transactionHook,
+  confirmDisabled,
   afterCancel,
 }: Props) => {
   const [keep, setKeep] = useState(false);
@@ -156,6 +158,7 @@ export const EvmOperation = ({
                 label="dialog_confirm"
                 onClick={onConfirm || genericOnConfirm}
                 height="small"
+                disabled={confirmDisabled}
               />
             )}
           </div>

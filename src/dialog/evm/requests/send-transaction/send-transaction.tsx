@@ -53,10 +53,14 @@ export const SendTransaction = (props: Props) => {
     setGasFeePanelReady(true);
   }, []);
 
-  const showLoading =
-    transactionHook.loading || (needsGasFeePanel && !gasFeePanelReady);
+  const feeSelectionPending = needsGasFeePanel && !gasFeePanelReady;
+  const showLoading = transactionHook.loading;
 
   const handleClickOnConfirm = () => {
+    if (feeSelectionPending) {
+      return;
+    }
+
     if (
       transactionHook.selectedFee?.maxFeeInEth.equals(-1) ||
       transactionHook.selectedFee?.estimatedFeeInEth.equals(-1) ||
@@ -112,6 +116,7 @@ export const SendTransaction = (props: Props) => {
           }
           onConfirm={() => handleClickOnConfirm()}
           transactionHook={transactionHook}
+          confirmDisabled={feeSelectionPending}
         />
       )}
       <LoadingComponent hide={!showLoading} />
