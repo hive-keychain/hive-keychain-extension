@@ -5365,7 +5365,7 @@
     "description": "EIP-7702 warning message"
   },
   "evm_too_many_transaction_button": {
-    "message": "Block this app for $1 minute(s)",
+    "message": "Block this app for $1 minute",
     "description": "Label for block dapp button"
   },
   "evm_all_nft_collections": {
@@ -5594,11 +5594,11 @@
     "description": "Evm Advanced smart contracts"
   },
   "evm_provider_compatibility_prefer_title": {
-    "message": "Prefer Keychain on legacy dapps",
+    "message": "Prefer Keychain on legacy dApps",
     "description": "Evm provider compatibility legacy preference title"
   },
   "evm_provider_compatibility_prefer_hint": {
-    "message": "Keychain will try to stay on <code>window.ethereum</code> for older dapps while still announcing itself through EIP-6963.",
+    "message": "Prioritize the use of Keychain over other wallets on websites that do not list all available wallets.",
     "description": "Evm provider compatibility legacy preference hint"
   },
   "evm_provider_compatibility_warning": {
@@ -5606,7 +5606,7 @@
     "description": "Evm provider compatibility warning"
   },
   "evm_provider_compatibility_reload_note": {
-    "message": "Reload open dapp tabs after changing this setting so websites pick up the new provider order.",
+    "message": "Reload open dApp tabs after changing this setting so websites pick up the new provider order.",
     "description": "Evm provider compatibility reload note"
   },
   "evm_menu_advanced_smart_contracts_display_spam_title": {
