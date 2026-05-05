@@ -53,7 +53,7 @@
 
   .gas-fee-warning {
     @include poppins400(12px);
-    color: $red;
+    color: var(--main-font-color);
     font-style: italic;
   }
 
@@ -142,7 +142,9 @@
     row-gap: 16px;
 
     .gas-fee-warning {
-      color: $red;
+      @include poppins400(12px);
+      color: var(--main-font-color);
+      font-style: italic;
     }
 
     .data-panel {
