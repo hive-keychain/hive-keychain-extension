@@ -134,8 +134,6 @@ export const GasFeePanel = ({
         transactionData,
       );
 
-      console.log(JSON.stringify(estimate, null, 2));
-
       if (!!multiplier && selectedFee) {
         const increasedFee: GasFeeEstimationBase = {
           ...selectedFee,
@@ -194,7 +192,6 @@ export const GasFeePanel = ({
       setFeeEstimation(estimate);
     } catch (err: any) {
       Logger.error('Catch in gas fee Panel', { err });
-      console.log('err', err);
       const error = EthersUtils.getErrorMessage(
         err.code,
         err.reason,
@@ -221,7 +218,6 @@ export const GasFeePanel = ({
 
   const getDecimalValue = (rawValue?: string) => {
     if (!rawValue?.length) return new Decimal(0);
-
     try {
       return new Decimal(rawValue);
     } catch {
@@ -239,7 +235,6 @@ export const GasFeePanel = ({
     key: 'maxBaseFee' | 'priorityFee' | 'gasPrice' | 'gasLimit',
     value: string,
   ) => {
-    console.log({ key, value });
     const newState = { ...customGasFeeForm };
     switch (key) {
       case 'maxBaseFee': {
@@ -251,8 +246,6 @@ export const GasFeePanel = ({
           value,
           customGasFeeForm.gasLimit,
         );
-        console.log({ newState });
-        console.log({ maxBaseFeeInEth: newState.maxBaseFeeInEth.toString() });
         break;
       }
       case 'priorityFee': {
@@ -261,8 +254,6 @@ export const GasFeePanel = ({
           value,
           customGasFeeForm.gasLimit,
         );
-        console.log({ newState });
-        console.log({ priorityFeeInEth: newState.priorityFeeInEth.toString() });
         break;
       }
       case 'gasPrice': {
@@ -271,8 +262,6 @@ export const GasFeePanel = ({
           value,
           customGasFeeForm.gasLimit,
         );
-        console.log({ newState });
-        console.log({ gasPriceInEth: newState.gasPriceInEth.toString() });
         break;
       }
       case 'gasLimit': {
@@ -286,8 +275,6 @@ export const GasFeePanel = ({
             customGasFeeForm.gasPriceInGwei,
             value,
           );
-          console.log({ newState });
-          console.log({ gasPriceInEth: newState.gasPriceInEth.toString() });
         }
 
         if (
@@ -298,10 +285,6 @@ export const GasFeePanel = ({
             customGasFeeForm.priorityFeeInGwei,
             value,
           );
-          console.log({ newState });
-          console.log({
-            priorityFeeInEth: newState.priorityFeeInEth.toString(),
-          });
         }
 
         if (
@@ -312,8 +295,6 @@ export const GasFeePanel = ({
             customGasFeeForm.maxBaseFeeInGwei,
             value,
           );
-          console.log({ newState });
-          console.log({ maxBaseFeeInEth: newState.maxBaseFeeInEth.toString() });
         }
 
         break;
@@ -848,13 +829,11 @@ export const GasFeePanel = ({
                         label="popup_html_evm_gas_fee_form_gas_price"
                         placeholder="popup_html_evm_gas_fee_form_gas_price"
                         type={InputType.NUMBER}
-                        value={new Decimal(
-                          customGasFeeForm.gasPriceInGwei,
-                        ).toFixed()}
+                        value={customGasFeeForm.gasPriceInGwei}
                         onChange={(value) => updateCustomFee('gasPrice', value)}
                         hint={`≈${
-                          customGasFeeForm.gasPriceInGwei
-                            ? customGasFeeForm.gasPriceInGwei?.toString()
+                          customGasFeeForm.gasPriceInEth
+                            ? customGasFeeForm.gasPriceInEth?.toString()
                             : 0
                         } ${chain.mainToken}`}
                         skipHintTranslation
