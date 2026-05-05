@@ -134,8 +134,6 @@ export const GasFeePanel = ({
         transactionData,
       );
 
-      console.log(JSON.stringify(estimate, null, 2));
-
       if (!!multiplier && selectedFee) {
         const increasedFee: GasFeeEstimationBase = {
           ...selectedFee,
@@ -194,7 +192,6 @@ export const GasFeePanel = ({
       setFeeEstimation(estimate);
     } catch (err: any) {
       Logger.error('Catch in gas fee Panel', { err });
-      console.log('err', err);
       const error = EthersUtils.getErrorMessage(
         err.code,
         err.reason,
@@ -220,9 +217,7 @@ export const GasFeePanel = ({
   };
 
   const getDecimalValue = (rawValue?: string) => {
-    console.log({ rawValue });
     if (!rawValue?.length) return new Decimal(0);
-    console.log('has alue');
     try {
       return new Decimal(rawValue);
     } catch {
