@@ -29,7 +29,7 @@ export const handleNonExistingMethod = async (
     command: BackgroundCommand.SEND_EVM_ERROR,
     value: {
       requestId: request.request_id,
-      result: ProviderRpcErrorList.nonExistingMethod,
+      error: ProviderRpcErrorList.nonExistingMethod,
     },
   };
   CommunicationUtils.tabsSendMessage(tab, message);
