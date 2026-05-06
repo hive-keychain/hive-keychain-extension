@@ -222,7 +222,7 @@ describe('evm-light-node.utils tests:\n', () => {
     ).resolves.toEqual(abi);
   });
 
-  it('forwards only cursor and limit when fetching history directly from the light node', async () => {
+  it('forwards cursor, limit, and display flags when fetching history from the light node', async () => {
     const getSpy = jest
       .spyOn(EvmLightNodeApi, 'get')
       .mockResolvedValue({ items: [], nextCursor: null });
@@ -234,7 +234,7 @@ describe('evm-light-node.utils tests:\n', () => {
     );
 
     expect(getSpy).toHaveBeenCalledWith(
-      'history/137/0x00000000000000000000000000000000000000aa?cursor=abc&limit=50',
+      'history/137/0x00000000000000000000000000000000000000aa?cursor=abc&limit=50&showPossibleSpam=true&showUnverified=true',
     );
   });
 

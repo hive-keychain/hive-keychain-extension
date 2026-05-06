@@ -281,7 +281,12 @@ const buildHistoryQuery = (query: string) => {
 
   const source = new URLSearchParams(query);
   const allowed = new URLSearchParams();
-  for (const key of ['cursor', 'limit']) {
+  for (const key of [
+    'cursor',
+    'limit',
+    'showPossibleSpam',
+    'showUnverified',
+  ]) {
     const value = source.get(key);
     if (value != null && value.length > 0) {
       allowed.set(key, value);
