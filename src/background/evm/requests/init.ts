@@ -164,11 +164,11 @@ export const initEvmRequestHandler = async (
           );
         } else {
           await evmRequestWithConfirmation(
-          requestHandler,
-          tab!,
-          request,
-          dappInfo,
-        );
+            requestHandler,
+            tab!,
+            request,
+            dappInfo,
+          );
         }
       } else {
         await evmRequestWithConfirmation(

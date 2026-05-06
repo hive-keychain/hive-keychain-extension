@@ -10,7 +10,7 @@ import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import EventEmitter from 'events';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   COPY_GENERIC_MESSAGE_KEY,
   copyTextWithToast,
@@ -41,8 +41,15 @@ export function useSendTransaction(
     useState<EvmSmartContractInfo>();
 
   const forceOpenGasFeePanelEvent = useMemo(() => new EventEmitter(), []);
+  const initializedRequestKeyRef = useRef<string>();
 
   useEffect(() => {
+    const requestKey = `${data.tab}:${request.request_id}:${request.method}`;
+    if (initializedRequestKeyRef.current === requestKey) {
+      return;
+    }
+    initializedRequestKeyRef.current = requestKey;
+
     void runSendTransactionInit({
       request,
       data,
@@ -63,7 +70,7 @@ export function useSendTransaction(
         setPrefetchedMainTokenFromInit,
       },
     });
-  }, [request]);
+  }, [accounts, data, request, transactionHook]);
 
   useEffect(() => {
     if (tokenInfo && selectedAccount && chain && transferAmount !== undefined) {

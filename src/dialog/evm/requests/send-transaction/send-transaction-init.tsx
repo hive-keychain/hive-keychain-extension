@@ -64,11 +64,6 @@ export async function runSendTransactionInit(
 
   setChain(chainTmp as EvmChain);
 
-  const mainToken = (await EvmTokensUtils.getMainTokenInfo(
-    (chainTmp as EvmChain)!,
-  )) as EvmSmartContractInfo;
-  setPrefetchedMainTokenFromInit(mainToken);
-
   const params = request.params[0];
   let resolvedReceiver: string | null = null;
   let resolvedTransferAmount: number | undefined;
@@ -78,17 +73,40 @@ export async function runSendTransactionInit(
       account.wallet.address.toLowerCase() === params.from.toLowerCase(),
   );
 
-  await transactionHook.initPendingTransactionWarning(
-    usedAccount?.wallet!,
-    chainTmp as EvmChain,
-  );
+  const contractPromise =
+    params.data && params.to
+      ? EvmLightNodeUtils.getContract(chainTmp.chainId, params.to)
+      : undefined;
+  const providerPromise = EthersUtils.getProvider(chainTmp as EvmChain);
+  const mainTokenPromise = EvmTokensUtils.getMainTokenInfo(
+    (chainTmp as EvmChain)!,
+  ) as Promise<EvmSmartContractInfo>;
+  const pendingTransactionWarningPromise =
+    transactionHook.initPendingTransactionWarning(
+      usedAccount?.wallet!,
+      chainTmp as EvmChain,
+    );
+  const usedAccountInputPromise = usedAccount
+    ? transactionHook.getWalletAddressInput(
+        usedAccount.wallet.address,
+        chainTmp.chainId,
+        {} as EvmTransactionVerificationInformation,
+        accounts,
+        'dialog_account',
+      )
+    : Promise.resolve(null);
+
+  const mainToken = await mainTokenPromise;
+  setPrefetchedMainTokenFromInit(mainToken);
+
+  await pendingTransactionWarningPromise;
 
   setSelectedAccount({
     ...usedAccount!,
     wallet: HDNodeWallet.fromPhrase(usedAccount?.wallet.mnemonic?.phrase!),
   });
 
-  const provider = await EthersUtils.getProvider(chainTmp as EvmChain);
+  const provider = await providerPromise;
   const connectedWallet = new Wallet(
     HDNodeWallet.fromPhrase(usedAccount?.wallet.mnemonic?.phrase!).signingKey,
     provider,
@@ -124,16 +142,12 @@ export async function runSendTransactionInit(
   transactionHook.setFields({ ...transactionConfirmationFields });
 
   if (usedAccount) {
-    const usedAccountInput = await transactionHook.getWalletAddressInput(
-      usedAccount.wallet.address,
-      chainTmp.chainId,
-      {} as EvmTransactionVerificationInformation,
-      accounts,
-      'dialog_account',
-    );
-    transactionConfirmationFields.otherFields.push({
-      ...usedAccountInput,
-    });
+    const usedAccountInput = await usedAccountInputPromise;
+    if (usedAccountInput) {
+      transactionConfirmationFields.otherFields.push({
+        ...usedAccountInput,
+      });
+    }
 
     // Case with data
     if (params.data) {
@@ -142,30 +156,38 @@ export async function runSendTransactionInit(
       tokenAddress = params.to;
       // Case of the execution of a smart contract
       if (params.to) {
-        const fetchedContractOnce = await EvmLightNodeUtils.getContract(
-          chainTmp.chainId,
-          params.to,
-        );
-        const usedToken = await EvmTokensUtils.getTokenInfo(
+        const fetchedContractOnce = await contractPromise!;
+        const usedTokenPromise = EvmTokensUtils.getTokenInfo(
           chainTmp.chainId,
           tokenAddress!,
           fetchedContractOnce,
         );
+        let abiSource: 'light-node' | 'signature-registry' = 'light-node';
+        const lightNodeAbiPromise = EvmLightNodeUtils.getAbi(
+          chainTmp.chainId,
+          params.to,
+          fetchedContractOnce,
+        );
+        const [usedToken, lightNodeAbi] = await Promise.all([
+          usedTokenPromise,
+          lightNodeAbiPromise,
+        ]);
         const proxyTarget =
           usedToken.type !== EVMSmartContractType.NATIVE
             ? usedToken.proxyTarget
             : null;
+        const transactionInfoPromise =
+          EvmTransactionParserUtils.verifyTransactionInformation(
+            data.dappInfo.domain,
+            params.to,
+            usedAccount.wallet.address,
+            proxyTarget,
+          );
 
         setTokenInfo(usedToken);
 
         const populateFallbackParsedDataFields = async (reason: string) => {
-          const transactionInfo =
-            await EvmTransactionParserUtils.verifyTransactionInformation(
-              data.dappInfo.domain,
-              params.to,
-              usedAccount.wallet.address,
-              proxyTarget,
-            );
+          const transactionInfo = await transactionInfoPromise;
           lastTransactionInfo = transactionInfo;
 
           transactionHook.setUnableToReachBackend(
@@ -229,12 +251,7 @@ export async function runSendTransactionInit(
           }
         };
 
-        let abiSource: 'light-node' | 'signature-registry' = 'light-node';
-        let abi = await EvmLightNodeUtils.getAbi(
-          chainTmp.chainId,
-          params.to,
-          fetchedContractOnce,
-        );
+        let abi = lightNodeAbi;
 
         if (!abi) {
           abiSource = 'signature-registry';
@@ -328,13 +345,7 @@ export async function runSendTransactionInit(
               ? translatedOperationName
               : decodedTransactionData.name;
 
-          const transactionInfo =
-            await EvmTransactionParserUtils.verifyTransactionInformation(
-              data.dappInfo.domain,
-              params.to,
-              usedAccount.wallet.address,
-              proxyTarget,
-            );
+          const transactionInfo = await transactionInfoPromise;
           lastTransactionInfo = transactionInfo;
 
           transactionHook.setUnableToReachBackend(
@@ -557,8 +568,8 @@ export async function runSendTransactionInit(
         )} ${(chainTmp as EvmChain)?.mainToken}`,
       };
 
-      transactionConfirmationFields.otherFields.push(
-        await transactionHook.getWalletAddressInput(
+      const [fromInput, toInput] = await Promise.all([
+        transactionHook.getWalletAddressInput(
           params.from,
           chainTmp.chainId,
           transactionInfo,
@@ -566,17 +577,16 @@ export async function runSendTransactionInit(
           'evm_operation_from',
           true,
         ),
-      );
-
-      transactionConfirmationFields.otherFields.push(
-        await transactionHook.getWalletAddressInput(
+        transactionHook.getWalletAddressInput(
           params.to,
           chainTmp.chainId,
           transactionInfo,
           accounts,
           'evm_operation_to',
         ),
-      );
+      ]);
+
+      transactionConfirmationFields.otherFields.push(fromInput, toInput);
 
       resolvedReceiver = params.to;
       resolvedTransferAmount = new Decimal(
@@ -633,8 +643,6 @@ export async function runSendTransactionInit(
   } else {
     Logger.error('No corresponding account found');
   }
-  setTimeout(() => {
-    transactionHook.setReady(true);
-    transactionHook.setLoading(false);
-  }, 250);
+  transactionHook.setReady(true);
+  transactionHook.setLoading(false);
 }
