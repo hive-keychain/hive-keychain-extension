@@ -79,7 +79,7 @@ export const initEvmRequestHandler = async (
         chainId,
       );
     } else {
-      handleNonSupportedChain(requestHandler, tab!, request, chainId);
+      await handleNonSupportedChain(requestHandler, tab!, request, chainId);
     }
   } else if (EvmDeprecatedMethods.includes(request.method)) {
     handleDeprecatedMethods(requestHandler, tab!, request, dappInfo);
