@@ -13,6 +13,7 @@ import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
 import React from 'react';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import type { SendTransactionHookApi } from 'src/dialog/evm/requests/send-transaction/send-transaction.types';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -111,8 +112,17 @@ export async function formatDecodedArgumentDisplayValue(
       );
       return inputDisplay.value;
     }
-    case EvmInputDisplayType.CONTRACT_ADDRESS:
-      return EvmFormatUtils.formatAddress(argumentValue as string);
+    case EvmInputDisplayType.CONTRACT_ADDRESS: {
+      const address = argumentValue as string;
+      return (
+        <CustomTooltip
+          message={address}
+          skipTranslation
+          additionalClassName="evm-address-tooltip">
+          <span>{EvmFormatUtils.formatAddress(address)}</span>
+        </CustomTooltip>
+      );
+    }
     case EvmInputDisplayType.BALANCE: {
       const decimals = erc20LikeDecimals(usedToken);
       return `${FormatUtils.withCommas(

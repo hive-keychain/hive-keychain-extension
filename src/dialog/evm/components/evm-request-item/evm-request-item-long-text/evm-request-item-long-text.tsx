@@ -6,9 +6,11 @@ import { useFieldTitle } from 'src/dialog/evm/components/use-field-title.hook';
 export const EvmRequestItemLongText = ({
   title,
   value,
+  titleSuffix,
 }: {
   title?: string;
   value: string;
+  titleSuffix?: React.ReactNode;
 }) => {
   const fieldTitle = useFieldTitle(title);
   const [isOpened, setIsOpened] = useState(false);
@@ -19,7 +21,10 @@ export const EvmRequestItemLongText = ({
         <div
           className={`header ${isOpened ? 'open' : 'closed'}`}
           onClick={() => setIsOpened(!isOpened)}>
-          <div className="title">{fieldTitle}</div>
+          <div className="title">
+            {fieldTitle}
+            {titleSuffix}
+          </div>
           {value && (
             <SVGIcon
               icon={SVGIcons.GLOBAL_EXPAND_COLLAPSE}

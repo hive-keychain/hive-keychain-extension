@@ -40,24 +40,23 @@ export const EvmAddressComponent = ({
     }
   };
 
-  const hasDistinctWhitelistedLabel =
-    !!addressDetail?.whitelistedLabel &&
-    addressDetail.whitelistedLabel.trim().toLowerCase() !==
-      addressDetail.fullAddress.trim().toLowerCase();
-
   const renderAddressContent = () => {
     if (!addressDetail) return null;
+    const visibleAddress = addressDetail.label ?? addressDetail.formattedAddress;
+    const shouldShowAddressTooltip =
+      visibleAddress.trim().toLowerCase() !==
+      addressDetail.fullAddress.trim().toLowerCase();
     const content = (
       <span
         className={`value-content evm-address-content ${
           canCopy ? 'address-content' : ''
         }`}
         onClick={handleCopyAddress}>
-        {addressDetail.label ?? addressDetail.formattedAddress}
+        {visibleAddress}
       </span>
     );
 
-    if (!hasDistinctWhitelistedLabel) return content;
+    if (!shouldShowAddressTooltip) return content;
 
     return (
       <CustomTooltip

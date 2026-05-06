@@ -29,12 +29,21 @@ export const EvmRequestItem = ({
     switch (field.type) {
       case EvmInputDisplayType.LONG_TEXT:
         return (
-          <EvmRequestItemLongText title={field.name} value={field.value} />
+          <EvmRequestItemLongText
+            title={field.name}
+            value={field.value}
+            titleSuffix={warningIcon}
+          />
         );
       default: {
         return (
           <>
-            {fieldTitle && <div className="label">{fieldTitle}</div>}
+            {fieldTitle && (
+              <div className="label">
+                {fieldTitle}
+                {warningIcon}
+              </div>
+            )}
             <div className="value">{field.value}</div>
           </>
         );
@@ -77,12 +86,14 @@ export const EvmRequestItem = ({
     );
   };
 
+  const warningIcon =
+    field.warnings && field.warnings.length > 0
+      ? displayWarningIcon(field.warnings)
+      : null;
+
   return (
     <div className="field-container" style={field.style}>
       <div className="field-content">
-        {field.warnings && field.warnings.length > 0 && (
-          <div className="warning">{displayWarningIcon(field.warnings)}</div>
-        )}
         <div className={`field ${sanitize(field.type)}`}>{renderField()}</div>
       </div>
       {showWarnings && field.warnings && field.warnings.length > 0 && (
