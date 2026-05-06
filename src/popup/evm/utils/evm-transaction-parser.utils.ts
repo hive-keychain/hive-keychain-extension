@@ -420,10 +420,11 @@ const getAddressWarning = async (
       type: EvmTransactionWarningType.WHITELIST_ADDRESS,
       extraData: {
         placeholder: 'evm_transaction_receiver_favorite_label',
-        ...(ensName ? { defaultLabel: ensName } : {}),
+        resolveAllLabel: address,
+        ...(ensName ? { ensName } : {}),
       },
       onConfirm: (label: string) => {
-        EvmAddressesUtils.saveWalletAddress(address, chainId, label);
+        return EvmAddressesUtils.saveWalletAddress(chainId, address, label);
       },
     });
   }
@@ -485,13 +486,19 @@ const getSmartContractWarningAndInfo = async (
       return warningAndInfo;
     }
 
+    const defaultLabel = usedToken?.name?.trim();
+
     warningAndInfo.warnings?.push({
       ignored: false,
       level: EvmTransactionWarningLevel.LOW,
       type: EvmTransactionWarningType.WHITELIST_ADDRESS,
       message: 'evm_transaction_contract_not_used',
+      extraData: {
+        ...(defaultLabel ? { defaultLabel } : {}),
+        resolveAllLabel: defaultLabel || address,
+      },
       onConfirm: (label: string) => {
-        EvmAddressesUtils.saveContractAddress(address, chainId, label);
+        return EvmAddressesUtils.saveContractAddress(address, chainId, label);
       },
     });
   }

@@ -126,7 +126,7 @@ export const useTransactionHook = (
     }
   };
 
-  const handleSingleWarningIgnore = (
+  const handleSingleWarningIgnore = async (
     selectedSingleWarning: SelectedWarning,
   ) => {
     if (
@@ -136,19 +136,46 @@ export const useTransactionHook = (
     ) {
       //TODO  display error message
     } else {
-      if (selectedSingleWarning.warning.onConfirm) {
-        switch (selectedSingleWarning.warning.type) {
-          case EvmTransactionWarningType.WHITELIST_ADDRESS: {
-            selectedSingleWarning.warning.onConfirm(whitelistLabel);
-            break;
-          }
-        }
-      }
+      await confirmWarningResolution(
+        selectedSingleWarning.warning,
+        whitelistLabel,
+      );
       setBypassWarning(false);
       ignoreWarning(
         selectedSingleWarning.fieldIndex!,
         selectedSingleWarning.warningIndex,
         selectedSingleWarning.warning.warningKey,
+      );
+    }
+  };
+
+  const confirmWarningResolution = async (
+    warning: EvmTransactionWarning,
+    label?: string,
+  ) => {
+    if (!warning.onConfirm) return;
+
+    switch (warning.type) {
+      case EvmTransactionWarningType.WHITELIST_ADDRESS:
+      case EvmTransactionWarningType.WHITELIST_ADDRESS_NO_LABEL: {
+        await warning.onConfirm(label ?? warning.extraData?.defaultLabel ?? '');
+        break;
+      }
+      default: {
+        await warning.onConfirm();
+      }
+    }
+  };
+
+  const confirmAllWarningResolutions = async (
+    warnings?: EvmTransactionWarning[],
+  ) => {
+    for (const warning of warnings?.filter(
+      (warning) => warning.ignored === false,
+    ) ?? []) {
+      await confirmWarningResolution(
+        warning,
+        warning.extraData?.resolveAllLabel ?? warning.extraData?.defaultLabel,
       );
     }
   };
@@ -208,7 +235,7 @@ export const useTransactionHook = (
     closePopup();
   };
 
-  const ignoreAllWarnings = () => {
+  const ignoreAllWarnings = async () => {
     if (fields) {
       if (duplicatedTransactionField) {
         const newDuplicated = { ...duplicatedTransactionField };
@@ -228,10 +255,12 @@ export const useTransactionHook = (
 
       const newFields: TransactionConfirmationFields = { ...fields! };
       for (const fields of newFields.otherFields) {
-        if (fields.warnings)
+        if (fields.warnings) {
+          await confirmAllWarningResolutions(fields.warnings);
           fields.warnings.forEach((warning) => {
             warning.ignored = true;
           });
+        }
       }
       setFields(newFields);
     } else if (confirmationPageFields) {
@@ -240,10 +269,12 @@ export const useTransactionHook = (
       ];
 
       for (const fields of newFields) {
-        if (fields.warnings)
+        if (fields.warnings) {
+          await confirmAllWarningResolutions(fields.warnings);
           fields.warnings.forEach((warning) => {
             warning.ignored = true;
           });
+        }
       }
       setConfirmationPageFields(newFields);
     }
