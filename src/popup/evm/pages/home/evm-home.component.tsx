@@ -219,7 +219,7 @@ const Home = ({
   const loadPendingTransactions = async (wallet: HDNodeWallet) => {
     const currentRequestId = ++pendingTransactionsRequestId.current;
     const pendingTransactionsInfo =
-      await EvmTransactionsUtils.hasPendingTransaction(wallet, chain);
+      await EvmTransactionsUtils.hasPendingTransaction(wallet.address, chain);
     if (pendingTransactionsRequestId.current !== currentRequestId) {
       return;
     }

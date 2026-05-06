@@ -68,7 +68,7 @@ describe('GasFeeUtils', () => {
 
     const result = await GasFeeUtils.estimate(
       chain,
-      {} as any,
+      transactionData.from!,
       EvmTransactionType.EIP_1559,
       2500,
       21000,

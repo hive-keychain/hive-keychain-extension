@@ -4,7 +4,7 @@ import {
   TransactionConfirmationField,
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import {
   EvmInputDisplayType,
@@ -20,7 +20,7 @@ import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings
 
 interface Props {
   request: EvmRequest;
-  accounts: EvmAccount[];
+  accounts: EvmAccountPublic[];
   data: EvmRequestMessage;
   afterCancel: (requestId: number, tab: number) => void;
 }

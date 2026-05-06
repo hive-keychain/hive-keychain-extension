@@ -1,11 +1,10 @@
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { TransactionConfirmationFields } from '@popup/evm/interfaces/evm-transactions.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
-import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
-import { HDNodeWallet } from 'ethers';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -16,7 +15,7 @@ import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings
 
 interface Props {
   request: EvmRequest;
-  accounts: EvmAccount[];
+  accounts: EvmAccountPublic[];
   data: EvmRequestMessage;
   afterCancel: (requestId: number, tab: number) => void;
 }
@@ -55,11 +54,10 @@ export const DecryptMessage = (props: Props) => {
     const chain = await EvmChainUtils.getLastEvmChain();
     const usedAccount = accounts.find(
       (account) =>
-        account.wallet.address.toLowerCase() ===
-        request.params[1].toLowerCase(),
+        account.address.toLowerCase() === request.params[1].toLowerCase(),
     );
     const usedAccountInput = await transactionHook.getWalletAddressInput(
-      usedAccount!.wallet.address,
+      usedAccount!.address,
       chain.chainId,
       {} as any,
       accounts,
@@ -79,19 +77,15 @@ export const DecryptMessage = (props: Props) => {
     }, 250);
   };
 
-  const decryptMessage = () => {
-    const account = accounts.find(
-      (acc) =>
-        acc.wallet.address.toLowerCase() === request.params[1].toLowerCase(),
-    );
-    account!.wallet = HDNodeWallet.fromPhrase(
-      account!.wallet.mnemonic?.phrase!,
-      undefined,
-      account!.path,
-    );
-    setDecryptedMessage(
-      EvmRequestsUtils.decryptMessage(account!, request.params[0]),
-    );
+  const decryptMessage = async () => {
+    const response = (await chrome.runtime.sendMessage({
+      command: BackgroundCommand.PREVIEW_EVM_DECRYPT,
+      value: { request_id: request.request_id },
+    })) as { success?: boolean; plaintext?: string; error?: string };
+
+    if (response?.success && response.plaintext != null) {
+      setDecryptedMessage(response.plaintext);
+    }
   };
 
   const handleCancel = () => {
@@ -115,14 +109,16 @@ export const DecryptMessage = (props: Props) => {
             className={`encrypted-message-container ${
               decryptedMessage ? 'display' : 'hidden'
             }`}
-            onClick={decryptMessage}>
+            onClick={() => void decryptMessage()}>
             <div className="encrypted-message">
               <div className="message">
                 {decryptedMessage ?? request.params[0]}
               </div>
             </div>
             {!decryptedMessage && (
-              <div className="display-message-icon" onClick={decryptMessage}>
+              <div
+                className="display-message-icon"
+                onClick={() => void decryptMessage()}>
                 <SVGIcon icon={SVGIcons.EVM_SETUP_DISPLAY_MNEMONIC} />
                 <div>
                   {chrome.i18n.getMessage('dialog_evm_decrypt_show_message')}

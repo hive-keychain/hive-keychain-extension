@@ -527,7 +527,7 @@ const EvmTransactionResult = ({
           </div>
           <GasFeePanel
             chain={chain}
-            wallet={localAccounts[0].wallet}
+            fromAddress={localAccounts[0].wallet.address}
             onSelectFee={(value) => setIncreasedGasFee(value)}
             selectedFee={increasedGasFee}
             multiplier={1.5}

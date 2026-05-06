@@ -12,7 +12,7 @@ import {
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmAccountOrPublic } from '@popup/evm/interfaces/wallet.interface';
 import {
   EvmInputDisplayType,
   EvmTransactionParserUtils,
@@ -21,7 +21,6 @@ import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { MessageType } from '@reference-data/message-type.enum';
-import { HDNodeWallet } from 'ethers';
 import React, { useEffect, useState } from 'react';
 import { ConfirmationPageEvmFields } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
@@ -279,11 +278,11 @@ export const useTransactionHook = (
   };
 
   const initPendingTransactionWarning = async (
-    wallet: HDNodeWallet,
+    fromAddress: string,
     chain: EvmChain,
   ) => {
     const pendingTransactionsInfo =
-      await EvmTransactionsUtils.hasPendingTransaction(wallet, chain);
+      await EvmTransactionsUtils.hasPendingTransaction(fromAddress, chain);
     if (pendingTransactionsInfo?.hasPending) {
       setPendingTransactionWarningField({
         name: '',
@@ -410,7 +409,7 @@ export const useTransactionHook = (
     address: string,
     chainId: string,
     transactionInfo: EvmTransactionVerificationInformation,
-    localAccounts: EvmAccount[],
+    localAccounts: EvmAccountOrPublic[],
     name: string = '',
     skipWarnings: boolean = false,
   ) => {

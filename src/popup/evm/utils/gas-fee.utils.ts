@@ -13,7 +13,6 @@ import { fetchGasOracle } from '@popup/evm/utils/evm-gas-oracle.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
-import { HDNodeWallet } from 'ethers';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import Logger from 'src/utils/logger.utils';
 
@@ -36,7 +35,7 @@ const getGasFeeEstimations = async (chain: Chain) => {
 
 const estimate = async (
   chain: EvmChain,
-  wallet: HDNodeWallet,
+  fromAddress: string,
   type: EvmTransactionType,
   mainTokenPrice: number,
   gasLimit?: number,
@@ -57,7 +56,7 @@ const estimate = async (
     gasLimit = Number(
       await EthersUtils.getGasLimit(
         chain,
-        wallet,
+        fromAddress,
         transactionData?.abi,
         transactionData?.signature ?? transactionData?.method,
         transactionData?.args,

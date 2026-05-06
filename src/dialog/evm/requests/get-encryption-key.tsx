@@ -1,7 +1,7 @@
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { TransactionConfirmationFields } from '@popup/evm/interfaces/evm-transactions.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import React, { useEffect } from 'react';
@@ -12,7 +12,7 @@ import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings
 
 interface Props {
   request: EvmRequest;
-  accounts: EvmAccount[];
+  accounts: EvmAccountPublic[];
   data: EvmRequestMessage;
   afterCancel: (requestId: number, tab: number) => void;
 }
@@ -47,11 +47,11 @@ export const GetEncryptionKey = (props: Props) => {
     const chain = await EvmChainUtils.getLastEvmChain();
     const usedAccount = accounts.find(
       (account) =>
-        account.wallet.address.toLowerCase() ===
+        account.address.toLowerCase() ===
         request.params[0].toLowerCase(),
     );
     const usedAccountInput = await transactionHook.getWalletAddressInput(
-      usedAccount!.wallet.address,
+      usedAccount!.address,
       chain.chainId,
       {} as any,
       accounts,

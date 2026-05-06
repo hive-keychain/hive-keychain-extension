@@ -113,7 +113,7 @@ const send = async (
     data: request.data,
     to: request.to,
     from: wallet.address,
-    nonce: forceNounce ?? (await EvmRequestsUtils.getNonce(wallet, chain)),
+    nonce: forceNounce ?? (await EvmRequestsUtils.getNonce(wallet.address, chain)),
     gasLimit: gasFee ? BigInt(gasFee.gasLimit.toFixed(0)) : null,
     chainId: chain.chainId,
     type: request.type,
@@ -213,15 +213,18 @@ const deleteFromPendingTransactions = async (txHash: string) => {
   await persistPendingTransactions(transactions);
 };
 
-const hasPendingTransaction = async (wallet: HDNodeWallet, chain: EvmChain) => {
+const hasPendingTransaction = async (
+  fromAddress: string,
+  chain: EvmChain,
+) => {
   try {
     const pendingNonce = await EvmRequestsUtils.getNonce(
-      wallet,
+      fromAddress,
       chain,
       'pending',
     );
     const latestNonce = await EvmRequestsUtils.getNonce(
-      wallet,
+      fromAddress,
       chain,
       'latest',
     );
@@ -232,7 +235,7 @@ const hasPendingTransaction = async (wallet: HDNodeWallet, chain: EvmChain) => {
       pendingTransactionsCount: hasPending ? 1 : 0,
       queuedTransactionsCount: hasPending ? pendingNonce - latestNonce - 1 : 0,
       pendingTransactionDetails: await getPendingTransactionsDetails(
-        wallet.address,
+        fromAddress,
         chain,
         hasPending ? latestNonce : undefined,
       ),

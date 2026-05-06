@@ -541,6 +541,7 @@ describe('send-transaction proxy tests:\n', () => {
         expect.objectContaining({ symbol: 'ETH' }),
         expect.any(Number),
         undefined,
+        undefined,
       ),
     );
     await waitFor(() => expect(screen.getByTestId('balance-card')).toBeTruthy());
@@ -561,6 +562,7 @@ describe('send-transaction proxy tests:\n', () => {
         expect.objectContaining({ symbol: 'ETH' }),
         expect.any(Number),
         selectedGasFee,
+        undefined,
       ),
     );
 

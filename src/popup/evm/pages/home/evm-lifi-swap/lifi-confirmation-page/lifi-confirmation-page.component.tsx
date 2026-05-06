@@ -165,7 +165,7 @@ const LiFiConfirmationPage = ({
               ))}
               <GasFeePanel
                 chain={approveTransactionData.chain!}
-                wallet={activeAccount.wallet}
+                fromAddress={activeAccount.wallet.address}
                 selectedFee={approveSelectedFee}
                 onSelectFee={setApproveSelectedFee}
                 transactionType={
@@ -214,7 +214,7 @@ const LiFiConfirmationPage = ({
           ))}
           <GasFeePanel
             chain={swapTransactionData.chain!}
-            wallet={activeAccount.wallet}
+            fromAddress={activeAccount.wallet.address}
             selectedFee={swapSelectedFee}
             onSelectFee={setSwapSelectedFee}
             transactionType={

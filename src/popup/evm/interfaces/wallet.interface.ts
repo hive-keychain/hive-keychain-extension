@@ -26,6 +26,15 @@ export type EvmAccount = StoredEvmWalletAddress & {
   seedNickname?: string;
 };
 
+/** Dialog IPC / UI row: same metadata as EvmAccount but no signing material. */
+export type EvmAccountPublic = StoredEvmWalletAddress & {
+  address: string;
+  seedId: number;
+  seedNickname?: string;
+};
+
+export type EvmAccountOrPublic = EvmAccount | EvmAccountPublic;
+
 export interface SavedAddresses {
   [address: string]: EvmAddressType;
 }

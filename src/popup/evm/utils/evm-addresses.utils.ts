@@ -8,7 +8,10 @@ import {
   EvmAddressType,
   EvmWhitelistedAddresses,
 } from '@popup/evm/interfaces/evm-addresses.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import {
+  EvmAccount,
+  EvmAccountOrPublic,
+} from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
@@ -471,7 +474,7 @@ const getDomainAddresses = async () => {
 const isWhitelisted = async (
   address: string,
   chainId: string,
-  localAccounts: EvmAccount[],
+  localAccounts: EvmAccountOrPublic[],
 ) => {
   const whitelisted = await getWhitelistedAddresses(chainId);
 
@@ -485,7 +488,9 @@ const isWhitelisted = async (
   } else {
     return (
       localAccounts
-        .map((localAccount) => localAccount.wallet.address.toLowerCase())
+        .map((localAccount) =>
+          EvmAccountUtils.getEvmAccountAddress(localAccount).toLowerCase(),
+        )
         .includes(address.toLowerCase()) ||
       whitelisted[EvmAddressType.SMART_CONTRACT]
         .map((item) => item.address.toLowerCase())

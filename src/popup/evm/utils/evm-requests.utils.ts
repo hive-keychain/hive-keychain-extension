@@ -12,7 +12,7 @@ import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
-import { BlockTag, ethers, HDNodeWallet } from 'ethers';
+import { BlockTag, ethers } from 'ethers';
 import Logger from 'src/utils/logger.utils';
 
 const instanciateProvider = async (chain?: EvmChain) => {
@@ -186,12 +186,12 @@ const decryptMessage = (account: EvmAccount, message: string) => {
 };
 
 const getNonce = async (
-  wallet: HDNodeWallet,
+  fromAddress: string,
   chain: EvmChain,
   blocktag: string = 'pending',
 ) => {
   const provider = await instanciateProvider(chain);
-  const nonce = await provider.getTransactionCount(wallet.address, blocktag);
+  const nonce = await provider.getTransactionCount(fromAddress, blocktag);
 
   return nonce;
 };

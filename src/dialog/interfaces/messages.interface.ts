@@ -1,7 +1,7 @@
 import { EvmDappInfo, EvmRequest } from '@interfaces/evm-provider.interface';
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import { Rpc } from '@interfaces/rpc.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { KeychainRequest } from 'hive-keychain-commons';
@@ -26,7 +26,7 @@ export type EvmRequestMessage = {
   request: EvmRequest;
   tab: number;
   dappInfo: EvmDappInfo;
-  accounts?: EvmAccount[];
+  accounts?: EvmAccountPublic[];
   queueSize?: number;
   queuePosition?: number;
   queue?: DialogQueueMessage[];

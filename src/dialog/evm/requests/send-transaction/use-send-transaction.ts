@@ -7,7 +7,7 @@ import {
   EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import EventEmitter from 'events';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -22,14 +22,14 @@ import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 export function useSendTransaction(
   request: EvmRequest,
   data: EvmRequestMessage,
-  accounts: EvmAccount[],
+  accounts: EvmAccountPublic[],
 ) {
   const transactionHook = useTransactionHook(data, request);
 
   const [caption, setCaption] = useState<string>();
   const [chain, setChain] = useState<EvmChain>();
   const [tokenInfo, setTokenInfo] = useState<EvmSmartContractInfo>();
-  const [selectedAccount, setSelectedAccount] = useState<EvmAccount>();
+  const [selectedAccount, setSelectedAccount] = useState<EvmAccountPublic>();
   const [receiver, setReceiver] = useState<string | null>(null);
   const [transferAmount, setTransferAmount] = useState<number>();
   const [balanceInfo, setBalanceInfo] = useState<BalanceInfo>();
@@ -77,7 +77,7 @@ export function useSendTransaction(
       void (async () => {
         setBalanceInfo(
           await EvmTokensUtils.getBalanceInfo(
-            selectedAccount.wallet.address,
+            selectedAccount.address,
             chain,
             tokenInfo,
             transferAmount,

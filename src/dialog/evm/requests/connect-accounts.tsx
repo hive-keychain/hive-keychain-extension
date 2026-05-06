@@ -3,7 +3,7 @@ import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { TransactionConfirmationFields } from '@popup/evm/interfaces/evm-transactions.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
@@ -21,7 +21,7 @@ import { normalizeEvmAccounts } from 'src/utils/evm-provider-value.utils';
 
 interface Props {
   request: EvmRequest;
-  accounts: EvmAccount[];
+  accounts: EvmAccountPublic[];
   data: EvmRequestMessage;
   afterCancel: (requestId: number, tab: number) => void;
 }
@@ -55,8 +55,8 @@ export const ConnectAccounts = (props: Props) => {
 
     const accs: any = {};
     for (const account of accounts) {
-      accs[account.wallet.address.toLowerCase()] = connected.includes(
-        account.wallet.address.toLowerCase(),
+      accs[account.address.toLowerCase()] = connected.includes(
+        account.address.toLowerCase(),
       );
     }
     setAccountsToConnect(accs);
@@ -117,13 +117,13 @@ export const ConnectAccounts = (props: Props) => {
     }
   };
 
-  const getStatus = (account: EvmAccount): DappStatusEnum => {
-    if (connectedAccounts[0] === account.wallet.address)
+  const getStatus = (account: EvmAccountPublic): DappStatusEnum => {
+    if (connectedAccounts[0] === account.address)
       return DappStatusEnum.SELECTED;
     else if (
       connectedAccounts
         .map((account: string) => account.toLowerCase())
-        .includes(account.wallet.address.toLowerCase())
+        .includes(account.address.toLowerCase())
     )
       return DappStatusEnum.CONNECTED;
     else return DappStatusEnum.DISCONNECTED;
@@ -160,9 +160,9 @@ export const ConnectAccounts = (props: Props) => {
           accountsToConnect &&
           accounts.map((account) => (
             <CheckboxPanelComponent
-              key={`account-${account.wallet.address}`}
-              onChange={() => toggleAccount(account.wallet.address)}
-              checked={isChecked(account.wallet.address)}>
+              key={`account-${account.address}`}
+              onChange={() => toggleAccount(account.address)}
+              checked={isChecked(account.address)}>
               <EvmAccountDisplayComponent
                 account={account}
                 status={getStatus(account)}

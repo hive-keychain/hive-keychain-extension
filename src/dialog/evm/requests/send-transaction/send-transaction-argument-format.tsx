@@ -4,7 +4,7 @@ import {
   EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmTransactionVerificationInformation } from '@popup/evm/interfaces/evm-transactions.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
@@ -28,7 +28,7 @@ export async function formatFallbackParsedInputValue(
   chainTmp: EvmChain,
   usedToken: EvmSmartContractInfo,
   transactionInfo: EvmTransactionVerificationInformation,
-  accounts: EvmAccount[],
+  accounts: EvmAccountPublic[],
   transactionHook: SendTransactionHookApi,
 ): Promise<unknown> {
   const inputDisplayType = input.type as EvmInputDisplayType;
@@ -98,7 +98,7 @@ export async function formatDecodedArgumentDisplayValue(
   usedToken: EvmSmartContractInfo,
   chainTmp: EvmChain,
   transactionInfo: EvmTransactionVerificationInformation,
-  accounts: EvmAccount[],
+  accounts: EvmAccountPublic[],
   transactionHook: SendTransactionHookApi,
 ): Promise<unknown> {
   switch (inputDisplayType) {

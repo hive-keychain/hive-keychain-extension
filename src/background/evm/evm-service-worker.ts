@@ -16,9 +16,11 @@ import {
   ProviderRpcErrorList,
   RoutedEvmEvent,
 } from '@interfaces/evm-provider.interface';
+import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
+import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
@@ -281,6 +283,54 @@ const chromeMessageHandler = async (
   }
 };
 
-chrome.runtime.onMessage.addListener(chromeMessageHandler);
+const previewEvmDecryptMessage = async (
+  request_id: number,
+): Promise<string> => {
+  const requestHandler = await EvmRequestHandler.getFromLocalStorage();
+  if (!requestHandler) {
+    throw new Error('No request handler');
+  }
+  const requestData = requestHandler.getRequestData(request_id);
+  const request = requestData?.request;
+  if (!request?.params?.[0] || !request?.params?.[1]) {
+    throw new Error('Invalid decrypt request');
+  }
+  const account = requestHandler.accounts.find((account: EvmAccount) => {
+    return (
+      account.wallet.address.toLowerCase() ===
+      String(request.params[1]).toLowerCase()
+    );
+  });
+  if (!account) {
+    throw new Error('Account not found');
+  }
+  return EvmRequestsUtils.decryptMessage(account, request.params[0]);
+};
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (
+    message &&
+    typeof message === 'object' &&
+    (message as BackgroundMessage).command ===
+      BackgroundCommand.PREVIEW_EVM_DECRYPT
+  ) {
+    const request_id = (message as { value?: { request_id?: number } }).value
+      ?.request_id;
+    if (request_id == null) {
+      sendResponse({ success: false, error: 'Missing request_id' });
+      return true;
+    }
+    void previewEvmDecryptMessage(request_id)
+      .then((plaintext) => sendResponse({ success: true, plaintext }))
+      .catch((err) =>
+        sendResponse({
+          success: false,
+          error: err instanceof Error ? err.message : String(err),
+        }),
+      );
+    return true;
+  }
+  void chromeMessageHandler(message as BackgroundMessage, sender, sendResponse);
+});
 
 export const EvmServiceWorker = { initializeServiceWorker };

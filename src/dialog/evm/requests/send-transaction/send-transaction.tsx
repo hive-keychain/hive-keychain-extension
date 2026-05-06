@@ -2,7 +2,7 @@ import { BalanceChangeCard } from '@dialog/components/balance-change-card/balanc
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
 import React, { useCallback, useEffect, useState } from 'react';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
@@ -12,7 +12,7 @@ import { useSendTransaction } from 'src/dialog/evm/requests/send-transaction/use
 
 interface Props {
   request: EvmRequest;
-  accounts: EvmAccount[];
+  accounts: EvmAccountPublic[];
   data: EvmRequestMessage;
   afterCancel: (requestId: number, tab: number) => void;
 }
@@ -94,7 +94,7 @@ export const SendTransaction = (props: Props) => {
               {needsGasFeePanel && (
                 <GasFeePanel
                   chain={chain!}
-                  wallet={selectedAccount!.wallet}
+                  fromAddress={selectedAccount!.address}
                   prefetchedMainTokenInfo={prefetchedMainTokenFromInit}
                   selectedFee={transactionHook.selectedFee}
                   onSelectFee={transactionHook.setSelectedFee}

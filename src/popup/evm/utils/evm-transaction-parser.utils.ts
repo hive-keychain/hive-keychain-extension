@@ -13,7 +13,7 @@ import {
   TransactionConfirmationField,
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmAccountOrPublic } from '@popup/evm/interfaces/wallet.interface';
 import { AbiList } from '@popup/evm/reference-data/abi.data';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmDataParser } from '@popup/evm/utils/evm-data-parser.utils';
@@ -219,7 +219,7 @@ const getFieldWarnings = async (
   value: string,
   chainId: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
-  localAccounts: EvmAccount[],
+  localAccounts: EvmAccountOrPublic[],
 ): Promise<EvmTransactionWarning[]> => {
   if (!abi) return [];
   const tokenType = EvmTokensUtils.getTokenType(abi);
@@ -259,7 +259,7 @@ const getAllWarnings = async (
   domain: string,
   chainId: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
-  localAccounts: EvmAccount[],
+  localAccounts: EvmAccountOrPublic[],
 ) => {
   for (const field of fields.otherFields) {
     field.warnings = await getFieldWarnings(
@@ -383,7 +383,7 @@ const getAddressWarning = async (
   address: string,
   chainId: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
-  localAccounts: EvmAccount[],
+  localAccounts: EvmAccountOrPublic[],
 ) => {
   const warnings: EvmTransactionWarning[] = [];
   const isAddress = ethers.isAddress(address);
@@ -458,7 +458,7 @@ const getSmartContractWarningAndInfo = async (
   address: string,
   chainId: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
-  localAccounts: EvmAccount[],
+  localAccounts: EvmAccountOrPublic[],
   usedToken: EvmSmartContractInfo,
 ) => {
   const warningAndInfo: Partial<TransactionConfirmationField> = {

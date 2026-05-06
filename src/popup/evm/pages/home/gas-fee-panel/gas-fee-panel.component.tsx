@@ -16,7 +16,6 @@ import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
-import { HDNodeWallet } from 'ethers';
 import EventEmitter from 'events';
 import React, { useEffect, useRef, useState } from 'react';
 import ButtonComponent, {
@@ -33,7 +32,7 @@ import Logger from 'src/utils/logger.utils';
 
 interface GasFeePanelProps {
   chain: EvmChain;
-  wallet: HDNodeWallet;
+  fromAddress: string;
   /** When set (e.g. send-tx dialog pre-fetched native metadata), skips duplicate native/light-node fetch */
   prefetchedMainTokenInfo?: EvmSmartContractInfo;
   selectedFee?: GasFeeEstimationBase;
@@ -49,7 +48,7 @@ interface GasFeePanelProps {
 
 export const GasFeePanel = ({
   chain,
-  wallet,
+  fromAddress,
   prefetchedMainTokenInfo,
   selectedFee,
   onSelectFee,
@@ -125,7 +124,7 @@ export const GasFeePanel = ({
     try {
       estimate = await GasFeeUtils.estimate(
         chain,
-        wallet,
+        fromAddress,
         transactionType,
         mainTokenInfo.priceUsd ?? 0,
         transactionData?.gasLimit

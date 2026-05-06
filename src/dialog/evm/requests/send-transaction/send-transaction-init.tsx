@@ -9,7 +9,9 @@ import {
   ProviderTransactionData,
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
+import { EvmAccountOrPublic } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
+import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
@@ -22,7 +24,7 @@ import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import Decimal from 'decimal.js';
-import { ethers, HDNodeWallet, Wallet } from 'ethers';
+import { ethers } from 'ethers';
 import React from 'react';
 import {
   formatDecodedArgumentDisplayValue,
@@ -70,8 +72,12 @@ export async function runSendTransactionInit(
 
   const usedAccount = accounts.find(
     (account) =>
-      account.wallet.address.toLowerCase() === params.from.toLowerCase(),
+      EvmAccountUtils.getEvmAccountAddress(account as EvmAccountOrPublic).toLowerCase() ===
+      params.from.toLowerCase(),
   );
+  const usedAccountAddress = usedAccount
+    ? EvmAccountUtils.getEvmAccountAddress(usedAccount as EvmAccountOrPublic)
+    : undefined;
 
   const contractPromise =
     params.data && params.to
@@ -83,12 +89,12 @@ export async function runSendTransactionInit(
   ) as Promise<EvmSmartContractInfo>;
   const pendingTransactionWarningPromise =
     transactionHook.initPendingTransactionWarning(
-      usedAccount?.wallet!,
+      usedAccountAddress ?? params.from,
       chainTmp as EvmChain,
     );
-  const usedAccountInputPromise = usedAccount
+  const usedAccountInputPromise = usedAccountAddress
     ? transactionHook.getWalletAddressInput(
-        usedAccount.wallet.address,
+        usedAccountAddress,
         chainTmp.chainId,
         {} as EvmTransactionVerificationInformation,
         accounts,
@@ -101,16 +107,12 @@ export async function runSendTransactionInit(
 
   await pendingTransactionWarningPromise;
 
-  setSelectedAccount({
-    ...usedAccount!,
-    wallet: HDNodeWallet.fromPhrase(usedAccount?.wallet.mnemonic?.phrase!),
-  });
+  if (usedAccount && usedAccountAddress) {
+    const { wallet: _omitWallet, ...rest } = usedAccount as any;
+    setSelectedAccount({ ...rest, address: usedAccountAddress });
+  }
 
   const provider = await providerPromise;
-  const connectedWallet = new Wallet(
-    HDNodeWallet.fromPhrase(usedAccount?.wallet.mnemonic?.phrase!).signingKey,
-    provider,
-  );
   let tokenAddress: string | null = null;
 
   let tData = {
@@ -180,7 +182,7 @@ export async function runSendTransactionInit(
           EvmTransactionParserUtils.verifyTransactionInformation(
             data.dappInfo.domain,
             params.to,
-            usedAccount.wallet.address,
+            usedAccountAddress,
             proxyTarget,
           );
 
@@ -275,7 +277,7 @@ export async function runSendTransactionInit(
             const contract = new ethers.Contract(
               params.to,
               abiToDecode,
-              connectedWallet,
+              provider,
             );
             const decoded = contract.interface.parseTransaction({
               data: params.data,
@@ -323,7 +325,7 @@ export async function runSendTransactionInit(
           const contract = new ethers.Contract(
             params.to,
             normalizedAbi,
-            connectedWallet,
+            provider,
           );
 
           tData.method = decodedTransactionData.name;
@@ -521,7 +523,7 @@ export async function runSendTransactionInit(
           await EvmTransactionParserUtils.verifyTransactionInformation(
             data.dappInfo.domain,
             params.to,
-            usedAccount.wallet.address,
+            usedAccountAddress,
           );
         lastTransactionInfo = transactionInfo;
         transactionHook.setUnableToReachBackend(
@@ -536,12 +538,12 @@ export async function runSendTransactionInit(
       }
     } else {
       // Classic transfer
-      const transactionInfo =
-        await EvmTransactionParserUtils.verifyTransactionInformation(
-          data.dappInfo.domain,
-          params.to,
-          usedAccount.wallet.address,
-        );
+        const transactionInfo =
+          await EvmTransactionParserUtils.verifyTransactionInformation(
+            data.dappInfo.domain,
+            params.to,
+            usedAccountAddress,
+          );
       lastTransactionInfo = transactionInfo;
 
       transactionHook.setUnableToReachBackend(

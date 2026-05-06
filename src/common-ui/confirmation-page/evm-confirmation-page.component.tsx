@@ -233,7 +233,7 @@ const ConfirmationPage = ({
         {hasGasFee && (
           <GasFeePanel
             chain={chain as EvmChain}
-            wallet={wallet}
+            fromAddress={wallet.address}
             selectedFee={selectedFee}
             onSelectFee={setSelectedFee}
             transactionType={(chain as EvmChain).defaultTransactionType}

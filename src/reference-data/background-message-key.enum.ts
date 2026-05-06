@@ -32,6 +32,7 @@ export enum BackgroundCommand {
   SEND_EVM_EVENT_TO_CONTENT_SCRIPT = 'sendEvmEventToContentScript',
   SEND_BACK_CONNECTED_WALLETS = 'sendBackConnectedWallets',
   ACCEPT_EVM_TRANSACTION = 'acceptEvmTransaction',
+  PREVIEW_EVM_DECRYPT = 'previewEvmDecrypt',
   REJECT_EVM_TRANSACTION = 'rejectEvmTransaction',
   GET_CHAIN_FROM_PROVIDER = 'getChainFromProvider',
   SEND_BACK_CHAIN_FROM_PROVIDER = 'sendBackChainFromProvider',

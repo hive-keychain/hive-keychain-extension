@@ -112,7 +112,7 @@ describe('evm transactions utils', () => {
       .mockResolvedValueOnce(0);
 
     const result = await EvmTransactionsUtils.hasPendingTransaction(
-      { address: walletAddress } as any,
+      walletAddress,
       chain,
     );
 
@@ -147,7 +147,7 @@ describe('evm transactions utils', () => {
       .mockResolvedValueOnce(0);
 
     const result = await EvmTransactionsUtils.hasPendingTransaction(
-      { address: walletAddress } as any,
+      walletAddress,
       chain,
     );
 

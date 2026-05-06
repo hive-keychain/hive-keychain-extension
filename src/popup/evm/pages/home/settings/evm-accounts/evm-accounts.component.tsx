@@ -1,7 +1,10 @@
 import { ContextualMenu } from '@interfaces/contextual-menu.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import {
+  EvmAccount,
+  EvmAccountOrPublic,
+} from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountsContextualMenu } from '@popup/evm/pages/home/settings/evm-accounts/evm-accounts.contextual-menu';
 import {
   EditAccountParams,
@@ -9,6 +12,7 @@ import {
 } from '@popup/evm/pages/home/settings/evm-accounts/evm-edit-account-popup/evm-edit-account-popup.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
+import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
@@ -119,8 +123,11 @@ const EvmAccounts = ({
     setSelectedSeed(options[0]);
   };
 
-  const onCopyAddress = (account: EvmAccount) => {
-    void copyTextWithToast(account.wallet.address, COPY_GENERIC_MESSAGE_KEY);
+  const onCopyAddress = (account: EvmAccountOrPublic) => {
+    void copyTextWithToast(
+      EvmAccountUtils.getEvmAccountAddress(account),
+      COPY_GENERIC_MESSAGE_KEY,
+    );
   };
 
   const handleAddAddressClick = () => {
@@ -283,7 +290,8 @@ const EvmAccounts = ({
     }
   };
 
-  const handleOnEditAddress = async (account: EvmAccount) => {
+  const handleOnEditAddress = async (account: EvmAccountOrPublic) => {
+    if (!('wallet' in account)) return;
     setEditParams({
       initialValue: account.nickname ?? '',
       onSubmit: (newAddressNickname: string) =>
