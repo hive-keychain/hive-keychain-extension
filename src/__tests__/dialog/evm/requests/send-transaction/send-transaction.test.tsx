@@ -124,6 +124,9 @@ describe('send-transaction proxy tests:\n', () => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
     mockBalanceChangeCard.mockClear();
+    transactionHook.fields = undefined;
+    transactionHook.ready = false;
+    transactionHook.selectedFee = undefined;
     (useTransactionHook as jest.Mock).mockReturnValue(transactionHook);
     jest.spyOn(ChainUtils, 'getChain').mockResolvedValue({
       chainId: '1',
@@ -474,6 +477,73 @@ describe('send-transaction proxy tests:\n', () => {
       true,
     );
     expect((ethers.Contract as jest.Mock).mock.calls[1][1]).toEqual(fallbackAbi);
+  });
+
+  it('shows the native balance card for contract calls without token balance changes', async () => {
+    transactionHook.fields = {
+      operationName: 'evm_operation_approve',
+    } as any;
+    transactionHook.ready = true;
+    transactionHook.selectedFee = {
+      estimatedFeeInEth: new Decimal('0.01'),
+      gasLimit: new Decimal(21000),
+      maxFeeInEth: new Decimal('0.02'),
+      priorityFeeInGwei: new Decimal('1'),
+    } as any;
+
+    const getBalanceInfoSpy = jest
+      .spyOn(EvmTokensUtils, 'getBalanceInfo')
+      .mockResolvedValue({
+        mainBalance: {
+          before: '1 ETH',
+          estimatedAfter: '0.99  ETH',
+        },
+      } as any);
+
+    render(
+      <SendTransaction
+        accounts={[
+          {
+            wallet: {
+              address: '0x00000000000000000000000000000000000000ff',
+              mnemonic: { phrase: 'test phrase' },
+            },
+          } as any,
+        ]}
+        afterCancel={jest.fn()}
+        data={{ dappInfo: { domain: 'app.example' }, tab: 1 } as any}
+        request={
+          {
+            chainId: '1',
+            params: [
+              {
+                data: '0x095ea7b3',
+                from: '0x00000000000000000000000000000000000000ff',
+                gasLimit: 21000,
+                maxFeePerGas: '1',
+                maxPriorityFeePerGas: '1',
+                to: proxyAddress,
+                type: EvmTransactionType.EIP_1559,
+                value: '0',
+              },
+            ],
+            request_id: 1,
+          } as any
+        }
+      />,
+    );
+
+    await waitFor(() =>
+      expect(getBalanceInfoSpy).toHaveBeenCalledWith(
+        '0x00000000000000000000000000000000000000ff',
+        expect.objectContaining({ chainId: '1' }),
+        expect.objectContaining({ symbol: 'ETH' }),
+        0,
+        transactionHook.selectedFee,
+        undefined,
+      ),
+    );
+    await waitFor(() => expect(screen.getByTestId('balance-card')).toBeTruthy());
   });
 
   it('recomputes the balance card when a selected gas fee becomes available', async () => {

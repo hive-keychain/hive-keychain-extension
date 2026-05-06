@@ -104,6 +104,13 @@ export async function runSendTransactionInit(
 
   const mainToken = await mainTokenPromise;
   setPrefetchedMainTokenFromInit(mainToken);
+  setTokenInfo(mainToken);
+  setTransferAmount(
+    new Decimal(ethers.toBigInt(params?.value ?? '0').toString())
+      .div(new Decimal(EvmFormatUtils.WEI))
+      .toNumber(),
+  );
+  setShouldDisplayBalanceChange(true);
 
   await pendingTransactionWarningPromise;
 
@@ -185,9 +192,6 @@ export async function runSendTransactionInit(
             usedAccountAddress,
             proxyTarget,
           );
-
-        setTokenInfo(usedToken);
-
         const populateFallbackParsedDataFields = async (reason: string) => {
           const transactionInfo = await transactionInfoPromise;
           lastTransactionInfo = transactionInfo;
@@ -336,12 +340,17 @@ export async function runSendTransactionInit(
           tData.args = parsedArgs;
           tData.signature = decodedTransactionData.signature;
 
-          setShouldDisplayBalanceChange(
+          const shouldDisplayTokenBalance =
             EvmTransactionParserUtils.shouldDisplayBalanceChange(
               normalizedAbi,
               decodedTransactionData.name,
-            ),
-          );
+            );
+
+          if (shouldDisplayTokenBalance) {
+            setTokenInfo(usedToken);
+          }
+
+          setShouldDisplayBalanceChange(true);
 
           const translatedOperationName = chrome.i18n.getMessage(
             `evm_operation_${decodedTransactionData.name}`,
