@@ -172,6 +172,8 @@ const chromeMessageHandler = async (
         );
       }
 
+      await requestHandler.removeRequestById(requestId, requestData?.tab!);
+
       CommunicationUtils.tabsSendMessage(requestData?.tab!, {
         command: BackgroundCommand.SEND_EVM_RESPONSE,
         value: {
@@ -180,7 +182,6 @@ const chromeMessageHandler = async (
         },
       });
 
-      await requestHandler.removeRequestById(requestId, requestData?.tab!);
       break;
     }
     case BackgroundCommand.ACCEPT_EVM_TRANSACTION:

@@ -107,6 +107,7 @@ export const ConnectAccounts = (props: Props) => {
         command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
         value: {
           requestId: request.request_id,
+          tab: data.tab,
           result: result,
           providerState: {
             accounts: normalizedAddresses,
