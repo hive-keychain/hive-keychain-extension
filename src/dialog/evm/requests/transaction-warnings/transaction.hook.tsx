@@ -388,7 +388,7 @@ export const useTransactionHook = (
     transactionInfo: EvmTransactionVerificationInformation,
   ) => {
     const warnings = await EvmTransactionParserUtils.getDomainWarnings(
-      data.dappInfo.domain,
+      data.dappInfo.origin,
       data.dappInfo.protocol,
       transactionInfo,
     );

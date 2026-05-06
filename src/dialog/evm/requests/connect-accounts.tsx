@@ -90,7 +90,7 @@ export const ConnectAccounts = (props: Props) => {
       for (const address of Object.keys(accountsToConnect)) {
         if (accountsToConnect[address]) addresses.push(address);
       }
-      await EvmAddressesUtils.saveDomainAddress(data.dappInfo.domain);
+      await EvmAddressesUtils.saveDomainAddress(data.dappInfo.origin);
       const normalizedAddresses = normalizeEvmAccounts(addresses);
 
       let result;

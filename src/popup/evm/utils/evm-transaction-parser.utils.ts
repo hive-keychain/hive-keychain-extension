@@ -333,7 +333,7 @@ const getHighestWarningLevel = (warnings: EvmTransactionWarning[]) => {
 };
 
 const getDomainWarnings = async (
-  domain: string,
+  origin: string,
   protocol: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
 ) => {
@@ -341,22 +341,23 @@ const getDomainWarnings = async (
 
   const knownDomains = await EvmAddressesUtils.getDomainAddresses();
 
-  if (!knownDomains.includes(domain)) {
+  if (!knownDomains.includes(origin)) {
     warnings.push({
       ignored: false,
       level: EvmTransactionWarningLevel.LOW,
       message: 'evm_domain_never_visited',
       type: EvmTransactionWarningType.BASE,
     });
+    if (protocol.replace(':', '') === 'http') {
+      warnings.push({
+        ignored: false,
+        level: EvmTransactionWarningLevel.MEDIUM,
+        message: 'evm_protocol_not_secured',
+        type: EvmTransactionWarningType.BASE,
+      });
+    }
   }
-  if (protocol.replace(':', '') === 'http') {
-    warnings.push({
-      ignored: false,
-      level: EvmTransactionWarningLevel.MEDIUM,
-      message: 'evm_protocol_not_secured',
-      type: EvmTransactionWarningType.BASE,
-    });
-  }
+
   if (verifyTransactionInformation?.domain?.isBlacklisted) {
     warnings.push({
       ignored: false,

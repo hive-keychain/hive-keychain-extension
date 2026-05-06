@@ -453,6 +453,7 @@ const getWalletAddresses = async (chainId: string) => {
 
 const saveDomainAddress = async (domainAddress: string) => {
   let domains = await getDomainAddresses();
+  if (domains.includes(domainAddress)) return;
   domains.push(domainAddress);
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_KNOWN_DOMAINS,
