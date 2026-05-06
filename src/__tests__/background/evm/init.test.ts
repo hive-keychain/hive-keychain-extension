@@ -6,6 +6,16 @@ const requestAddCustomEvmChainMock = jest.fn();
 const handleNonSupportedChainMock = jest.fn();
 const evmRequestWithoutConfirmationMock = jest.fn();
 
+const createDeferred = () => {
+  let resolve!: () => void;
+  const promise = new Promise<void>((res) => {
+    resolve = res;
+  });
+  return { promise, resolve };
+};
+
+const flushAsync = () => new Promise((resolve) => setTimeout(resolve, 0));
+
 jest.mock('@background/evm/evm-methods/evm-deprecated-methods.list', () => ({
   EvmDeprecatedMethods: [],
 }));
@@ -96,6 +106,7 @@ describe('initEvmRequestHandler', () => {
     const { ChainUtils } = await import('@popup/multichain/utils/chain.utils');
     (ChainUtils.getDefaultChains as jest.Mock).mockResolvedValue([]);
     (ChainUtils.getAllSetupChainsForType as jest.Mock).mockResolvedValue([]);
+    evmRequestWithoutConfirmationMock.mockResolvedValue(undefined);
   });
 
   it('opens the custom chain dialog for unsupported wallet_switchEthereumChain requests', async () => {
@@ -172,5 +183,65 @@ describe('initEvmRequestHandler', () => {
       request,
       dappInfo,
     );
+  });
+
+  it('awaits the silent eth_requestAccounts response when permission already exists', async () => {
+    const cleanup = createDeferred();
+    const MkModule = (await import('@background/hive/modules/mk.module'))
+      .default;
+    const { EvmWalletUtils } = await import('@popup/evm/utils/wallet.utils');
+    const LocalStorageUtils = (await import('src/utils/localStorage.utils'))
+      .default;
+    (MkModule.getMk as jest.Mock).mockResolvedValue('mk');
+    (LocalStorageUtils.getValueFromLocalStorage as jest.Mock).mockResolvedValue([
+      { address: '0xabc123' },
+    ]);
+    (EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
+    (EvmWalletUtils.hasPermission as jest.Mock).mockResolvedValue(true);
+    evmRequestWithoutConfirmationMock.mockReturnValue(cleanup.promise);
+
+    const request = {
+      request_id: 44,
+      method: EvmRequestMethod.REQUEST_ACCOUNTS,
+      params: [],
+    } as any;
+    const dappInfo = {
+      origin: 'https://example.app',
+      domain: 'example.app',
+      protocol: 'https:',
+      logo: '',
+    };
+    const requestHandler = {
+      accounts: [],
+      saveInLocalStorage: jest.fn(),
+    } as any;
+
+    let settled = false;
+    const result = initEvmRequestHandler(
+      request,
+      7,
+      dappInfo,
+      requestHandler,
+    ).then(() => {
+      settled = true;
+    });
+
+    await flushAsync();
+
+    expect(evmRequestWithoutConfirmationMock).toHaveBeenCalledWith(
+      requestHandler,
+      7,
+      request,
+      dappInfo,
+    );
+    expect(settled).toBe(false);
+
+    cleanup.resolve();
+    await result;
+
+    expect(settled).toBe(true);
+    expect(requestHandler.saveInLocalStorage).toHaveBeenCalled();
   });
 });

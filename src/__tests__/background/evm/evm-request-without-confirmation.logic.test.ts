@@ -44,6 +44,16 @@ jest.mock('src/utils/communication.utils', () => ({
   },
 }));
 
+const createDeferred = () => {
+  let resolve!: () => void;
+  const promise = new Promise<void>((res) => {
+    resolve = res;
+  });
+  return { promise, resolve };
+};
+
+const flushAsync = () => new Promise((resolve) => setTimeout(resolve, 0));
+
 const loadTestContext = async () => {
   const { EvmWalletUtils } = await import('@popup/evm/utils/wallet.utils');
   const providerStateUtils = await import(
@@ -82,7 +92,7 @@ describe('evm request without confirmation', () => {
       '0xabc123',
     ]);
     const requestHandler = {
-      removeRequestById: jest.fn(),
+      removeRequestById: jest.fn().mockResolvedValue(undefined),
     } as any;
 
     await evmRequestWithoutConfirmation(
@@ -124,7 +134,7 @@ describe('evm request without confirmation', () => {
     providerStateUtils.getAccountsForOrigin.mockResolvedValue(['0xabc123']);
     providerStateUtils.emitAccountsChangedIfNeeded.mockResolvedValue([]);
     const requestHandler = {
-      removeRequestById: jest.fn(),
+      removeRequestById: jest.fn().mockResolvedValue(undefined),
     } as any;
 
     await evmRequestWithoutConfirmation(
@@ -160,5 +170,56 @@ describe('evm request without confirmation', () => {
       },
     });
     expect(requestHandler.removeRequestById).toHaveBeenCalledWith(2, 6);
+  });
+
+  it('waits for request cleanup before sending the provider response', async () => {
+    const { EvmWalletUtils, providerStateUtils, CommunicationUtils } =
+      await loadTestContext();
+    const cleanup = createDeferred();
+    EvmWalletUtils.hasPermission.mockResolvedValue(true);
+    EvmWalletUtils.getConnectedWallets.mockResolvedValue(['0xabc123']);
+    providerStateUtils.emitAccountsChangedIfNeeded.mockResolvedValue([
+      '0xabc123',
+    ]);
+    const requestHandler = {
+      removeRequestById: jest.fn().mockReturnValue(cleanup.promise),
+    } as any;
+
+    let settled = false;
+    const result = evmRequestWithoutConfirmation(
+      requestHandler,
+      5,
+      {
+        request_id: 3,
+        method: EvmRequestMethod.REQUEST_ACCOUNTS,
+        params: [],
+      } as any,
+      {
+        origin: 'http://localhost:3000',
+        domain: 'localhost',
+        protocol: 'http:',
+        logo: '',
+      },
+    ).then(() => {
+      settled = true;
+    });
+
+    await flushAsync();
+
+    expect(requestHandler.removeRequestById).toHaveBeenCalledWith(3, 5);
+    expect(CommunicationUtils.tabsSendMessage).not.toHaveBeenCalled();
+    expect(settled).toBe(false);
+
+    cleanup.resolve();
+    await result;
+
+    expect(settled).toBe(true);
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(5, {
+      command: BackgroundCommand.SEND_EVM_RESPONSE,
+      value: {
+        requestId: 3,
+        result: ['0xabc123'],
+      },
+    });
   });
 });
