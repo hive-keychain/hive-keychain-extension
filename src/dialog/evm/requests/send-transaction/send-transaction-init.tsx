@@ -26,6 +26,7 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import Decimal from 'decimal.js';
 import { ethers } from 'ethers';
 import React from 'react';
+import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
 import {
   formatDecodedArgumentDisplayValue,
   formatFallbackParsedInputValue,
@@ -41,8 +42,7 @@ import Logger from 'src/utils/logger.utils';
 export async function runSendTransactionInit(
   initParams: RunSendTransactionInitParams,
 ): Promise<void> {
-  const { request, data, accounts, transactionHook, onCopyAddress, setters } =
-    initParams;
+  const { request, data, accounts, transactionHook, setters } = initParams;
   const {
     setChain,
     setSelectedAccount,
@@ -200,10 +200,14 @@ export async function runSendTransactionInit(
             name: 'evm_operation_smart_contract_address',
             type: EvmInputDisplayType.CONTRACT_ADDRESS,
             value: (
-              <div className="value-content">
-                {usedToken && <EvmTokenLogo tokenInfo={usedToken} />}
-                <div>{EvmFormatUtils.formatAddress(tokenAddress!)}</div>
-              </div>
+              <EvmAddressComponent
+                address={tokenAddress!}
+                chainId={chainTmp.chainId}
+                canCopy={true}
+                prefix={
+                  usedToken ? <EvmTokenLogo tokenInfo={usedToken} /> : undefined
+                }
+              />
             ),
             ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
               params.to,
@@ -358,12 +362,14 @@ export async function runSendTransactionInit(
             name: 'evm_operation_smart_contract_address',
             type: EvmInputDisplayType.CONTRACT_ADDRESS,
             value: (
-              <div
-                className="value-content address-content"
-                onClick={() => onCopyAddress(tokenAddress!)}>
-                {usedToken && <EvmTokenLogo tokenInfo={usedToken} />}
-                <div>{EvmFormatUtils.formatAddress(tokenAddress!)}</div>
-              </div>
+              <EvmAddressComponent
+                address={tokenAddress!}
+                chainId={chainTmp.chainId}
+                canCopy={true}
+                prefix={
+                  usedToken ? <EvmTokenLogo tokenInfo={usedToken} /> : undefined
+                }
+              />
             ),
             ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
               params.to,

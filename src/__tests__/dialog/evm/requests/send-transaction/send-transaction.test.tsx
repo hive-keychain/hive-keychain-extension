@@ -5,7 +5,6 @@ import { SendTransaction } from '@dialog/evm/requests/send-transaction/send-tran
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
-import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
@@ -14,6 +13,7 @@ import Decimal from 'decimal.js';
 import { ethers } from 'ethers';
 import { EthersUtils } from 'src/popup/evm/utils/ethers.utils';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
+import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
 
 const mockParseTransaction = jest.fn();
 const mockBalanceChangeCard = jest.fn(({ balanceInfo }) => (
@@ -250,9 +250,9 @@ describe('send-transaction proxy tests:\n', () => {
         messageParams: [proxyTarget],
       },
     ]);
-    expect(contractField.value.props.children[1].props.children).toBe(
-      EvmFormatUtils.formatAddress(proxyAddress),
-    );
+    expect(contractField.value.type).toBe(EvmAddressComponent);
+    expect(contractField.value.props.address).toBe(proxyAddress);
+    expect(contractField.value.props.canCopy).toBe(true);
   });
 
   it('does not request an abi for deployment transactions', async () => {
