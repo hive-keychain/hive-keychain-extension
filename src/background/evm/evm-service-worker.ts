@@ -1,9 +1,9 @@
+import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { initializeEvmProviderRegistration } from '@background/evm/evm-provider-registration';
 import {
   persistEvmDappLogoForDomain,
   setAccountsForOrigin,
 } from '@background/evm/evm-provider-state.utils';
-import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { initEvmRequestHandler } from '@background/evm/requests/init';
 import { performEvmOperation } from '@background/evm/requests/operations/perform-operation';
@@ -180,12 +180,12 @@ const chromeMessageHandler = async (
         },
       });
 
-      requestHandler.removeRequestById(requestId, requestData?.tab!);
+      await requestHandler.removeRequestById(requestId, requestData?.tab!);
       break;
     }
     case BackgroundCommand.ACCEPT_EVM_TRANSACTION:
       const { request, tab, domain, extraData } = backgroundMessage.value;
-      performEvmOperation(
+      await performEvmOperation(
         await EvmRequestHandler.getFromLocalStorage(),
         request,
         tab,
@@ -205,7 +205,7 @@ const chromeMessageHandler = async (
           error: ProviderRpcErrorList.userReject as ProviderRpcError,
         },
       });
-      requestHandler.removeRequestById(request.request_id, tab);
+      await requestHandler.removeRequestById(request.request_id, tab);
       break;
     }
     case BackgroundCommand.GET_CHAIN_FROM_PROVIDER: {
@@ -217,13 +217,10 @@ const chromeMessageHandler = async (
           return;
         }
 
-        CommunicationUtils.tabsSendMessage(
-          activeTab.id,
-          {
-            command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
-            value: { eventType: EvmEventName.GET_CHAIN_FROM_PROVIDER },
-          },
-        );
+        CommunicationUtils.tabsSendMessage(activeTab.id, {
+          command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
+          value: { eventType: EvmEventName.GET_CHAIN_FROM_PROVIDER },
+        });
       });
       break;
     }
@@ -271,7 +268,12 @@ const chromeMessageHandler = async (
       if (requestedChain.rpcs.length > 0) {
         await EvmRpcUtils.setActiveRpc(requestedChain.rpcs[0], requestedChain);
       }
-      requestHandler?.setRequestDialog(request.request_id, tab, undefined, undefined);
+      requestHandler?.setRequestDialog(
+        request.request_id,
+        tab,
+        undefined,
+        undefined,
+      );
       await initEvmRequestHandler(request, tab, dappInfo, requestHandler);
       break;
     }

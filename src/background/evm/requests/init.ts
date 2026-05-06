@@ -15,8 +15,8 @@ import { handleDeprecatedMethods } from '@background/evm/requests/logic/handle-d
 import { handleEvmError } from '@background/evm/requests/logic/handle-evm-error.logic';
 import { handleNonExistingMethod } from '@background/evm/requests/logic/handle-non-existing-methods.logic';
 import { handleNonSupportedChain } from '@background/evm/requests/logic/handle-non-supported-chain.logic';
-import { requestAddEvmChain } from '@background/evm/requests/logic/request-add-evm-chain.logic';
 import { requestAddCustomEvmChain } from '@background/evm/requests/logic/request-add-custom-evm-chain.logic';
+import { requestAddEvmChain } from '@background/evm/requests/logic/request-add-evm-chain.logic';
 import { resolveRequestChainId } from '@background/evm/requests/logic/resolve-request-chain-id.logic';
 import MkModule from '@background/hive/modules/mk.module';
 import {
@@ -69,11 +69,15 @@ export const initEvmRequestHandler = async (
       ) as EvmChain);
   }
 
-  console.log(chainId, chain, 'chainId, chain');
-
   if (chainId && !chain) {
     if (request.method === EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN) {
-      requestAddCustomEvmChain(requestHandler, tab!, request, dappInfo, chainId);
+      requestAddCustomEvmChain(
+        requestHandler,
+        tab!,
+        request,
+        dappInfo,
+        chainId,
+      );
     } else {
       handleNonSupportedChain(requestHandler, tab!, request, chainId);
     }
@@ -82,7 +86,12 @@ export const initEvmRequestHandler = async (
   } else if (!doesMethodExist(request.method)) {
     handleNonExistingMethod(requestHandler, tab!, request, dappInfo);
   } else if (EvmUnrestrictedMethods.includes(request.method)) {
-    evmRequestWithoutConfirmation(requestHandler, tab!, request, dappInfo);
+    await evmRequestWithoutConfirmation(
+      requestHandler,
+      tab!,
+      request,
+      dappInfo,
+    );
   } else if (
     EvmRestrictedMethods.includes(request.method) ||
     EvmNeedPermissionMethods.includes(request.method)
@@ -117,7 +126,7 @@ export const initEvmRequestHandler = async (
     if (!accounts) {
       initializeWallet(requestHandler, tab!, request);
     } else if (!mk) {
-      unlockWallet(
+      await unlockWallet(
         requestHandler,
         tab!,
         request,
@@ -156,7 +165,7 @@ export const initEvmRequestHandler = async (
             EvmRequestPermission.ETH_ACCOUNTS,
           )
         ) {
-          evmRequestWithoutConfirmation(
+          await evmRequestWithoutConfirmation(
             requestHandler,
             tab!,
             request,

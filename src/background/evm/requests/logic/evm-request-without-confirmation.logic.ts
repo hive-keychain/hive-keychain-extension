@@ -199,6 +199,6 @@ export const evmRequestWithoutConfirmation = async (
   // if ((await RequestHandlerUtils.countPendingRequest()) === 1) {
   //   requestHandler.closeWindow();
   // }
-  requestHandler.removeRequestById(request.request_id, tab);
+  await requestHandler.removeRequestById(request.request_id, tab);
   CommunicationUtils.tabsSendMessage(tab, message);
 };

@@ -6,7 +6,7 @@ import { KeychainRequest } from '@interfaces/keychain.interface';
 import { UnlockDialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
-export const unlockWallet = (
+export const unlockWallet = async (
   requestHandler: HiveRequestsHandler | EvmRequestHandler,
   tab: number,
   request: KeychainRequest | EvmRequest,
@@ -14,7 +14,7 @@ export const unlockWallet = (
   unlockCommand: UnlockDialogCommand,
 ) => {
   /* istanbul ignore next */
-  createOrUpdateDialog(async () => {
+  await createOrUpdateDialog(() => {
     CommunicationUtils.runtimeSendMessage({
       command: unlockCommand as UnlockDialogCommand,
       msg: {
@@ -22,8 +22,8 @@ export const unlockWallet = (
         error: 'locked',
         result: null,
         data: request,
-        message: await chrome.i18n.getMessage('bgd_auth_locked'),
-        display_msg: await chrome.i18n.getMessage('bgd_auth_locked_desc'),
+        message: chrome.i18n.getMessage('bgd_auth_locked'),
+        display_msg: chrome.i18n.getMessage('bgd_auth_locked_desc'),
       },
       // @ts-ignore
       tab,
