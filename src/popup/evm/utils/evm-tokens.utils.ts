@@ -440,6 +440,7 @@ const getTokenBalances = async (
         },
       };
     }
+
     return balance;
   });
 
@@ -967,7 +968,7 @@ const addCustomToken = async (
   toAdd: EvmCustomToken | EvmCustomToken[],
   batch?: boolean,
 ) => {
-  const normalizedWalletAddress = normalizeCustomWalletKey(walletAddress);
+  void walletAddress;
   let savedCustomTokens: EvmSavedCustomTokens =
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
@@ -976,33 +977,18 @@ const addCustomToken = async (
     savedCustomTokens = {};
   }
   if (!savedCustomTokens[chain.chainId]) {
-    savedCustomTokens[chain.chainId] = {};
+    savedCustomTokens[chain.chainId] = [];
   }
 
-  const legacyWalletEntries =
-    walletAddress !== normalizedWalletAddress
-      ? savedCustomTokens[chain.chainId][walletAddress]
-      : undefined;
-  const normalizedWalletEntries =
-    savedCustomTokens[chain.chainId][normalizedWalletAddress];
-
-  const mergedWalletEntries = [
-    ...(normalizedWalletEntries ?? []),
-    ...(legacyWalletEntries ?? []),
-  ];
-
-  if (!savedCustomTokens[chain.chainId][normalizedWalletAddress]) {
-    savedCustomTokens[chain.chainId][normalizedWalletAddress] = [];
-  }
-
+  const savedChainTokens = savedCustomTokens[chain.chainId];
   const allAddresses = new Set(
-    mergedWalletEntries.map(
+    savedChainTokens.map(
       (token: EvmCustomToken) =>
         `${token.type}:${normalizeCustomTokenAddress(token.address).toLowerCase()}`,
     ),
   );
 
-  const nextEntries = [...mergedWalletEntries];
+  const nextEntries = [...savedChainTokens];
 
   if (batch) {
     for (const token of toAdd as EvmCustomToken[]) {
@@ -1031,7 +1017,7 @@ const addCustomToken = async (
                 chain,
                 normalizedAddress,
                 tokenToAdd.metadata,
-                mergedWalletEntries,
+                savedChainTokens,
               ),
             }
           : {
@@ -1044,11 +1030,7 @@ const addCustomToken = async (
     }
   }
 
-  savedCustomTokens[chain.chainId][normalizedWalletAddress] =
-    nextEntries.map(normalizeCustomToken);
-  if (walletAddress !== normalizedWalletAddress) {
-    delete savedCustomTokens[chain.chainId][walletAddress];
-  }
+  savedCustomTokens[chain.chainId] = nextEntries.map(normalizeCustomToken);
 
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
@@ -1062,7 +1044,7 @@ const removeCustomToken = async (
   tokenAddress: string,
   tokenType: EVMSmartContractType,
 ) => {
-  const normalizedWalletAddress = normalizeCustomWalletKey(walletAddress);
+  void walletAddress;
   const normalizedAddress = normalizeCustomTokenAddress(tokenAddress);
   const removeKey = `${tokenType}:${normalizedAddress.toLowerCase()}`;
 
@@ -1074,30 +1056,13 @@ const removeCustomToken = async (
     return;
   }
 
-  const filterOut = (tokens: EvmCustomToken[]) =>
-    tokens.filter(
+  savedCustomTokens[chain.chainId] = savedCustomTokens[chain.chainId]
+    .filter(
       (t) =>
         `${t.type}:${normalizeCustomTokenAddress(t.address).toLowerCase()}` !==
         removeKey,
-    );
-
-  const applyToWalletKey = (addr: string) => {
-    const entries = savedCustomTokens![chain.chainId][addr];
-    if (!entries?.length) {
-      return;
-    }
-    const next = filterOut(entries);
-    if (next.length === 0) {
-      delete savedCustomTokens![chain.chainId][addr];
-    } else {
-      savedCustomTokens![chain.chainId][addr] = next.map(normalizeCustomToken);
-    }
-  };
-
-  applyToWalletKey(normalizedWalletAddress);
-  if (walletAddress !== normalizedWalletAddress) {
-    applyToWalletKey(walletAddress);
-  }
+    )
+    .map(normalizeCustomToken);
 
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
@@ -1112,7 +1077,7 @@ const updateCustomToken = async (
   tokenType: EVMSmartContractType,
   metadata: EvmCustomTokenMetadataErc20,
 ) => {
-  const normalizedWalletAddress = normalizeCustomWalletKey(walletAddress);
+  void walletAddress;
   const normalizedAddress = normalizeCustomTokenAddress(tokenAddress);
   const matchKey = `${tokenType}:${normalizedAddress.toLowerCase()}`;
 
@@ -1124,50 +1089,31 @@ const updateCustomToken = async (
     return;
   }
 
-  const mergedExistingEntries = [
-    ...(savedCustomTokens[chain.chainId][normalizedWalletAddress] ?? []),
-    ...(walletAddress !== normalizedWalletAddress
-      ? (savedCustomTokens[chain.chainId][walletAddress] ?? [])
-      : []),
-  ];
+  const savedChainTokens = savedCustomTokens[chain.chainId];
   const nextMetadata =
     tokenType === EVMSmartContractType.ERC20
       ? await enrichCustomErc20MetadataWithCoingeckoId(
           chain,
           normalizedAddress,
           metadata,
-          mergedExistingEntries,
+          savedChainTokens,
         )
       : metadata;
 
-  const replaceInList = (tokens: EvmCustomToken[]): EvmCustomToken[] =>
-    tokens.map((t) => {
-      if (
-        `${t.type}:${normalizeCustomTokenAddress(t.address).toLowerCase()}` ===
-        matchKey
-      ) {
-        return normalizeCustomToken({
-          ...t,
-          address: normalizedAddress,
-          type: tokenType,
-          metadata: nextMetadata,
-        });
-      }
-      return t;
-    });
-
-  const applyToKey = (addr: string) => {
-    const entries = savedCustomTokens![chain.chainId][addr];
-    if (!entries?.length) {
-      return;
+  savedCustomTokens[chain.chainId] = savedChainTokens.map((t) => {
+    if (
+      `${t.type}:${normalizeCustomTokenAddress(t.address).toLowerCase()}` ===
+      matchKey
+    ) {
+      return normalizeCustomToken({
+        ...t,
+        address: normalizedAddress,
+        type: tokenType,
+        metadata: nextMetadata,
+      });
     }
-    savedCustomTokens![chain.chainId][addr] = replaceInList(entries);
-  };
-
-  applyToKey(normalizedWalletAddress);
-  if (walletAddress !== normalizedWalletAddress) {
-    applyToKey(walletAddress);
-  }
+    return normalizeCustomToken(t);
+  });
 
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
@@ -1175,56 +1121,16 @@ const updateCustomToken = async (
   );
 };
 
-const getCustomTokensForAllWallets = async (chain: EvmChain) => {
-  const savedCustomTokens: EvmSavedCustomTokens =
-    await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
-    );
-
-  if (!savedCustomTokens) return [] as EvmCustomToken[];
-  const byChain = savedCustomTokens[chain.chainId];
-  if (!byChain) return [] as EvmCustomToken[];
-
-  const dedupedTokens: EvmCustomToken[] = [];
-  const seen = new Set<string>();
-
-  for (const tokens of Object.values(byChain)) {
-    if (!tokens?.length) continue;
-    for (const token of tokens) {
-      const normalizedAddress = normalizeCustomTokenAddress(token.address);
-      const key = `${token.type}:${normalizedAddress.toLowerCase()}`;
-      if (seen.has(key)) {
-        continue;
-      }
-      dedupedTokens.push(
-        normalizeCustomToken({
-          ...token,
-          address: normalizedAddress,
-        }),
-      );
-      seen.add(key);
-    }
-  }
-
-  return dedupedTokens;
-};
-
 const getCustomTokens = async (chain: EvmChain, walletAddress: string) => {
-  const normalizedWalletAddress = normalizeCustomWalletKey(walletAddress);
+  void walletAddress;
   const savedCustomTokens: EvmSavedCustomTokens =
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
     );
 
   if (!savedCustomTokens) return [] as EvmCustomToken[];
-  if (!savedCustomTokens[chain.chainId]) return [] as EvmCustomToken[];
-
-  const tokens = [
-    ...(savedCustomTokens[chain.chainId][normalizedWalletAddress] ?? []),
-    ...(walletAddress !== normalizedWalletAddress
-      ? (savedCustomTokens[chain.chainId][walletAddress] ?? [])
-      : []),
-  ];
+  const tokens = savedCustomTokens[chain.chainId];
+  if (!tokens) return [] as EvmCustomToken[];
 
   const dedupedTokens: EvmCustomToken[] = [];
   const seen = new Set<string>();
@@ -1246,6 +1152,10 @@ const getCustomTokens = async (chain: EvmChain, walletAddress: string) => {
   }
 
   return dedupedTokens;
+};
+
+const getCustomTokensForAllWallets = async (chain: EvmChain) => {
+  return getCustomTokens(chain, '');
 };
 
 const addCustomNft = async (
