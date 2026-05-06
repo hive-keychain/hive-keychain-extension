@@ -23,7 +23,7 @@ export const handleNonSupportedChain = async (
     command: BackgroundCommand.SEND_EVM_ERROR,
     value: {
       requestId: request.request_id,
-      result: ProviderRpcErrorList.invalidMethodParams,
+      error: ProviderRpcErrorList.invalidMethodParams,
     },
   };
   CommunicationUtils.tabsSendMessage(tab, message);

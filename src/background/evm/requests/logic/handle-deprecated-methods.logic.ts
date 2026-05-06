@@ -24,7 +24,7 @@ export const handleDeprecatedMethods = async (
     command: BackgroundCommand.SEND_EVM_ERROR,
     value: {
       requestId: request.request_id,
-      result: ProviderRpcErrorList.unsupportedMethod,
+      error: ProviderRpcErrorList.unsupportedMethod,
     },
   };
   CommunicationUtils.tabsSendMessage(tab, message);
