@@ -15,6 +15,7 @@ interface Props {
   chainId: string;
   canCopy?: boolean;
   prefix?: React.ReactNode;
+  forceFormattedAddress?: boolean;
 }
 
 export const EvmAddressComponent = ({
@@ -22,6 +23,7 @@ export const EvmAddressComponent = ({
   chainId,
   canCopy,
   prefix,
+  forceFormattedAddress,
 }: Props) => {
   const [addressDetail, setAddressDetail] = useState<EvmAddressDetail>();
 
@@ -42,7 +44,9 @@ export const EvmAddressComponent = ({
 
   const renderAddressContent = () => {
     if (!addressDetail) return null;
-    const visibleAddress = addressDetail.label ?? addressDetail.formattedAddress;
+    const visibleAddress = forceFormattedAddress
+      ? addressDetail.formattedAddress
+      : addressDetail.label ?? addressDetail.formattedAddress;
     const shouldShowAddressTooltip =
       visibleAddress.trim().toLowerCase() !==
       addressDetail.fullAddress.trim().toLowerCase();

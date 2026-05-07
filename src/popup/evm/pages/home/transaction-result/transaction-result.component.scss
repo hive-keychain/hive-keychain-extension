@@ -51,6 +51,13 @@
     grid-auto-rows: 80px;
     gap: 12px;
     margin: 12px;
+
+    .gas-fee-value {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
   .popup-container {
     .title-panel {

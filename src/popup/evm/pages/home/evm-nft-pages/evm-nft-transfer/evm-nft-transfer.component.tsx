@@ -176,6 +176,7 @@ const EvmNftTransfer = ({
           <EvmAddressComponent
             address={form.receiverAddress}
             chainId={chain.chainId}
+            forceFormattedAddress
           />
         ),
         warnings: await EvmTransactionParserUtils.getAddressWarning(
