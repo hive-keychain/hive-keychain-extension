@@ -16,6 +16,10 @@
     justify-content: flex-end;
     column-gap: 6px;
     min-width: 0;
+
+    &.address-content {
+      cursor: url('assets/images/global/copy-icon.png'), copy;
+    }
   }
 }
 

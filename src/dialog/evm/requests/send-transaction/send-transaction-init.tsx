@@ -11,8 +11,8 @@ import {
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccountOrPublic } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
-import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
@@ -26,7 +26,7 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import Decimal from 'decimal.js';
 import { ethers } from 'ethers';
 import React from 'react';
-import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import {
   formatDecodedArgumentDisplayValue,
   formatFallbackParsedInputValue,
@@ -39,10 +39,110 @@ import {
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
+const renderCopyableFormattedAddress = (
+  address: string,
+  onCopyAddress: (address: string) => void,
+  prefix?: React.ReactNode,
+) => (
+  <div className="value-content-horizontal">
+    {prefix}
+    <CustomTooltip
+      message={address}
+      skipTranslation
+      additionalClassName="evm-address-tooltip">
+      <span
+        className="evm-address-content address-content"
+        onClick={() => onCopyAddress(address)}>
+        {EvmFormatUtils.formatAddress(address)}
+      </span>
+    </CustomTooltip>
+  </div>
+);
+
+const getDecodedFieldName = (
+  tokenType: EVMSmartContractType | null,
+  methodName: string,
+  inputName: string,
+  inputType: string,
+  inputIndex: number,
+) => {
+  const normalizedMethodName = methodName.toLowerCase();
+  const normalizedTokenType = `${tokenType ?? ''}`.toUpperCase();
+  const normalizedInputType = `${inputType ?? ''}`.toLowerCase();
+  const isErc721Like =
+    normalizedTokenType.includes('ERC721') ||
+    normalizedTokenType.includes('ERC721_ENUMERABLE');
+  const isNft = isErc721Like || normalizedTokenType.includes('ERC1155');
+
+  if (inputName === 'numberOfTokens') {
+    return 'evm_nft_number_of_tokens';
+  }
+
+  if (isErc721Like && normalizedMethodName === 'approve' && inputIndex === 0) {
+    return 'evm_operation_to';
+  }
+
+  if (
+    isErc721Like &&
+    normalizedMethodName === 'approve' &&
+    (inputIndex === 1 ||
+      normalizedInputType.startsWith('uint') ||
+      ['amount', 'tokenid', 'id'].includes(inputName.toLowerCase()))
+  ) {
+    return 'evm_nft_token_id';
+  }
+
+  if (
+    isNft &&
+    normalizedMethodName === 'setapprovalforall' &&
+    (inputName === 'approved' || inputName === '_approved')
+  ) {
+    return 'evm_nft_approve_all';
+  }
+
+  return inputName;
+};
+
+const shouldDisplayDecodedField = (
+  tokenType: EVMSmartContractType | null,
+  methodName: string,
+  inputIndex: number,
+) => {
+  const normalizedMethodName = methodName.toLowerCase();
+  const normalizedTokenType = `${tokenType ?? ''}`.toUpperCase();
+  const isErc721Like =
+    normalizedTokenType.includes('ERC721') ||
+    normalizedTokenType.includes('ERC721_ENUMERABLE');
+
+  if (isErc721Like && normalizedMethodName === 'approve') {
+    return inputIndex <= 1;
+  }
+
+  return true;
+};
+
+const isNftTokenType = (tokenType?: EVMSmartContractType | null) => {
+  const normalizedTokenType = `${tokenType ?? ''}`.toUpperCase();
+  return (
+    normalizedTokenType.includes('ERC721') ||
+    normalizedTokenType.includes('ERC721_ENUMERABLE') ||
+    normalizedTokenType.includes('ERC1155')
+  );
+};
+
+const getDecodedFieldTokenType = (
+  contractType: EVMSmartContractType | null,
+  usedTokenType: EVMSmartContractType,
+) => {
+  if (isNftTokenType(usedTokenType)) return usedTokenType;
+  return contractType ?? usedTokenType;
+};
+
 export async function runSendTransactionInit(
   initParams: RunSendTransactionInitParams,
 ): Promise<void> {
-  const { request, data, accounts, transactionHook, setters } = initParams;
+  const { request, data, accounts, transactionHook, onCopyAddress, setters } =
+    initParams;
   const {
     setChain,
     setSelectedAccount,
@@ -72,8 +172,9 @@ export async function runSendTransactionInit(
 
   const usedAccount = accounts.find(
     (account) =>
-      EvmAccountUtils.getEvmAccountAddress(account as EvmAccountOrPublic).toLowerCase() ===
-      params.from.toLowerCase(),
+      EvmAccountUtils.getEvmAccountAddress(
+        account as EvmAccountOrPublic,
+      ).toLowerCase() === params.from.toLowerCase(),
   );
   const usedAccountAddress = usedAccount
     ? EvmAccountUtils.getEvmAccountAddress(usedAccount as EvmAccountOrPublic)
@@ -203,15 +304,10 @@ export async function runSendTransactionInit(
           transactionConfirmationFields.otherFields.push({
             name: 'evm_operation_smart_contract_address',
             type: EvmInputDisplayType.CONTRACT_ADDRESS,
-            value: (
-              <EvmAddressComponent
-                address={tokenAddress!}
-                chainId={chainTmp.chainId}
-                canCopy={true}
-                prefix={
-                  usedToken ? <EvmTokenLogo tokenInfo={usedToken} /> : undefined
-                }
-              />
+            value: renderCopyableFormattedAddress(
+              tokenAddress!,
+              onCopyAddress,
+              usedToken ? <EvmTokenLogo tokenInfo={usedToken} /> : undefined,
             ),
             ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
               params.to,
@@ -345,6 +441,7 @@ export async function runSendTransactionInit(
               normalizedAbi,
               decodedTransactionData.name,
             );
+          const shouldUseDecodedAmountForBalance = shouldDisplayTokenBalance;
 
           if (shouldDisplayTokenBalance) {
             setTokenInfo(usedToken);
@@ -370,15 +467,10 @@ export async function runSendTransactionInit(
           transactionConfirmationFields.otherFields.push({
             name: 'evm_operation_smart_contract_address',
             type: EvmInputDisplayType.CONTRACT_ADDRESS,
-            value: (
-              <EvmAddressComponent
-                address={tokenAddress!}
-                chainId={chainTmp.chainId}
-                canCopy={true}
-                prefix={
-                  usedToken ? <EvmTokenLogo tokenInfo={usedToken} /> : undefined
-                }
-              />
+            value: renderCopyableFormattedAddress(
+              tokenAddress!,
+              onCopyAddress,
+              usedToken ? <EvmTokenLogo tokenInfo={usedToken} /> : undefined,
             ),
             ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
               params.to,
@@ -422,6 +514,7 @@ export async function runSendTransactionInit(
                 tData.to = argumentValue;
               }
               if (
+                shouldUseDecodedAmountForBalance &&
                 EvmTransactionParserUtils.amountInputNameList.includes(
                   input.name,
                 )
@@ -447,6 +540,26 @@ export async function runSendTransactionInit(
                   input.name,
                   usedToken,
                 );
+              const decodedFieldTokenType = getDecodedFieldTokenType(
+                contractType,
+                usedToken.type,
+              );
+              const fieldName = getDecodedFieldName(
+                decodedFieldTokenType,
+                decodedTransactionData.name,
+                input.name,
+                input.type,
+                index,
+              );
+              if (
+                !shouldDisplayDecodedField(
+                  decodedFieldTokenType,
+                  decodedTransactionData.name,
+                  index,
+                )
+              ) {
+                continue;
+              }
               const fieldAddress = [
                 EvmInputDisplayType.ADDRESS,
                 EvmInputDisplayType.WALLET_ADDRESS,
@@ -463,7 +576,7 @@ export async function runSendTransactionInit(
                 transactionHook,
               );
               transactionConfirmationFields.otherFields.push({
-                name: input.name,
+                name: fieldName,
                 type: inputDisplayType,
                 value: value,
                 ...(fieldAddress ? { address: fieldAddress } : {}),
@@ -553,12 +666,12 @@ export async function runSendTransactionInit(
       }
     } else {
       // Classic transfer
-        const transactionInfo =
-          await EvmTransactionParserUtils.verifyTransactionInformation(
-            data.dappInfo.domain,
-            params.to,
-            usedAccountAddress,
-          );
+      const transactionInfo =
+        await EvmTransactionParserUtils.verifyTransactionInformation(
+          data.dappInfo.domain,
+          params.to,
+          usedAccountAddress,
+        );
       lastTransactionInfo = transactionInfo;
 
       transactionHook.setUnableToReachBackend(

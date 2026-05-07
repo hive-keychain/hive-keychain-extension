@@ -5376,6 +5376,14 @@
     "message": "Token ID",
     "description": "NFT token id"
   },
+  "evm_nft_approve_all": {
+    "message": "Approve All",
+    "description": "NFT approve all value"
+  },
+  "evm_nft_number_of_tokens": {
+    "message": "Number of Tokens",
+    "description": "NFT number of tokens"
+  },
   "evm_nft_token_type": {
     "message": "Token type",
     "description": "Token type"
