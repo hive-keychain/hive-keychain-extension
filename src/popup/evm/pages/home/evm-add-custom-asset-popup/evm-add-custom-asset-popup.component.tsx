@@ -5,6 +5,7 @@ import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
 import { PopupContainer } from '@common-ui/popup-container/popup-container.component';
 import { TextAreaComponent } from '@common-ui/text-area/textarea.component';
+import { EvmCustomErc20Form } from '@popup/evm/pages/home/evm-add-custom-asset-popup/evm-custom-erc20-form.component';
 import {
   EvmCustomNft,
   EvmCustomToken,
@@ -167,7 +168,7 @@ export const EvmAddCustomAssetPopup = ({
   }, []);
 
   useEffect(() => {
-    if (!walletAddress) {
+    if (!walletAddress || mode !== 'nft') {
       setSavedCustomTokens([]);
       setSavedCustomNfts([]);
       return;
@@ -176,16 +177,15 @@ export const EvmAddCustomAssetPopup = ({
     let mounted = true;
 
     const loadCustomAssets = async () => {
-      const [customTokens, customNfts] = await Promise.all([
-        EvmTokensUtils.getCustomTokens(chain, walletAddress),
-        EvmTokensUtils.getCustomNfts(chain, walletAddress),
-      ]);
+      const customNfts = await EvmTokensUtils.getCustomNfts(
+        chain,
+        walletAddress,
+      );
 
       if (!mounted) {
         return;
       }
 
-      setSavedCustomTokens(customTokens);
       setSavedCustomNfts(customNfts);
     };
 
@@ -194,7 +194,7 @@ export const EvmAddCustomAssetPopup = ({
     return () => {
       mounted = false;
     };
-  }, [chain, walletAddress]);
+  }, [chain, mode, walletAddress]);
 
   useEffect(() => {
     if (mode !== 'erc20') {
@@ -621,113 +621,30 @@ export const EvmAddCustomAssetPopup = ({
     tokenToEdit && 'tokenIds' in tokenToEdit ? tokenToEdit.type : undefined;
 
   const renderErc20Form = () => (
-    <>
-      <div className="popup-title">
-        {isEditing
+    <EvmCustomErc20Form
+      chain={chain}
+      walletAddress={walletAddress}
+      existingAddresses={existingAddresses}
+      tokenToEdit={
+        tokenToEdit &&
+        'metadata' in tokenToEdit &&
+        tokenToEdit.type === EVMSmartContractType.ERC20
+          ? tokenToEdit
+          : null
+      }
+      title={
+        isEditing
           ? chrome.i18n.getMessage('evm_custom_tokens_modal_title_edit')
-          : chrome.i18n.getMessage('evm_add_custom_token_popup_title')}
-      </div>
-      <div className="popup-caption">
-        {isEditing
+          : chrome.i18n.getMessage('evm_add_custom_token_popup_title')
+      }
+      caption={
+        isEditing
           ? chrome.i18n.getMessage('evm_custom_tokens_modal_caption_edit')
-          : chrome.i18n.getMessage('evm_add_custom_token_popup_caption')}
-      </div>
-
-      <div className="custom-asset-form">
-        <div className="field">
-          <InputComponent
-            label="Contract address"
-            skipLabelTranslation
-            value={erc20Form.contractAddress}
-            type={InputType.TEXT}
-            readOnly={isEditing}
-            disabled={isResolvingContract}
-            onChange={(value) => setErc20ContractAddress(value)}
-            onBlur={handleErc20ContractBlur}
-            dataTestId="custom-asset-contract-address"
-            classname="custom-asset-input"
-          />
-          {erc20Errors.contractAddress && (
-            <div className="error-message">{erc20Errors.contractAddress}</div>
-          )}
-        </div>
-
-        <div className="field">
-          <InputComponent
-            label="Name"
-            skipLabelTranslation
-            value={erc20Form.name}
-            type={InputType.TEXT}
-            onChange={(value) => setErc20Field('name', value)}
-            dataTestId="custom-asset-name"
-            classname="custom-asset-input"
-          />
-          {erc20Errors.name && (
-            <div className="error-message">{erc20Errors.name}</div>
-          )}
-        </div>
-
-        <div className="field">
-          <InputComponent
-            label="Symbol"
-            skipLabelTranslation
-            value={erc20Form.symbol}
-            type={InputType.TEXT}
-            onChange={(value) => setErc20Field('symbol', value)}
-            dataTestId="custom-asset-symbol"
-            classname="custom-asset-input"
-          />
-          {erc20Errors.symbol && (
-            <div className="error-message">{erc20Errors.symbol}</div>
-          )}
-        </div>
-
-        <div className="field">
-          <InputComponent
-            label="Decimals"
-            skipLabelTranslation
-            value={erc20Form.decimals}
-            type={InputType.TEXT}
-            onChange={(value) => setErc20Field('decimals', value)}
-            dataTestId="custom-asset-decimals"
-            classname="custom-asset-input"
-          />
-          {erc20Errors.decimals && (
-            <div className="error-message">{erc20Errors.decimals}</div>
-          )}
-        </div>
-
-        <div className="field">
-          <InputComponent
-            label="Logo URL (optional)"
-            skipLabelTranslation
-            value={erc20Form.logo}
-            type={InputType.TEXT}
-            onChange={(value) => setErc20Field('logo', value)}
-            dataTestId="custom-asset-logo"
-            classname="custom-asset-input"
-          />
-        </div>
-      </div>
-
-      {erc20Errors.save && (
-        <div className="error-message">{erc20Errors.save}</div>
-      )}
-
-      <div className="popup-footer">
-        <ButtonComponent
-          type={ButtonType.ALTERNATIVE}
-          onClick={onClose}
-          label="popup_html_button_label_cancel"
-        />
-        <ButtonComponent
-          onClick={() => void handleSaveErc20()}
-          label="popup_html_operation_button_save"
-          dataTestId="custom-asset-save"
-          disabled={isSaving || isResolvingContract}
-        />
-      </div>
-    </>
+          : chrome.i18n.getMessage('evm_add_custom_token_popup_caption')
+      }
+      onClose={onClose}
+      onSave={onSave as (form: EvmCustomErc20FormData) => Promise<void> | void}
+    />
   );
 
   const renderNftForm = () => (

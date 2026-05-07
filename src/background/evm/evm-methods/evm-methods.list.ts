@@ -97,6 +97,7 @@ export const doesMethodExist = (method: string) => {
 export const EvmRestrictedMethods = [
   EvmRequestMethod.WALLET_ADD_ETH_CHAIN,
   EvmRequestMethod.WALLET_REQUEST_PERMISSIONS,
+  EvmRequestMethod.MM_WATCH_ASSET,
   EvmRequestMethod.WALLET_WATCH_ASSETS,
   EvmRequestMethod.REQUEST_ACCOUNTS,
   EvmRequestMethod.GET_ENCRYPTION_KEY,

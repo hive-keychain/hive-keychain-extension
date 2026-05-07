@@ -6184,6 +6184,14 @@
     "message": "Add a custom token to your wallet. If you don't find the token you're looking for, you can add it manually.",
     "description": "Add custom token popup caption"
   },
+  "evm_watch_asset_title": {
+    "message": "Add custom token",
+    "description": "Title when a dApp requests wallet_watchAsset"
+  },
+  "evm_watch_asset_caption": {
+    "message": "$1 is asking you to add a custom token to Keychain.",
+    "description": "Caption when a dApp requests wallet_watchAsset; $1 is the dApp domain"
+  },
   "evm_add_custom_nft_popup_caption": {
     "message": "Add an NFT contract and the token IDs you own. Keychain will detect whether the contract is ERC721 or ERC1155.",
     "description": "Add custom NFT popup caption"

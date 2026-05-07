@@ -18,9 +18,32 @@ const chain = {
   chainId: '0x1',
 } as any;
 
+const i18nMessages: Record<string, string> = {
+  evm_add_custom_asset_error_contract_address_invalid:
+    'Enter a valid contract address.',
+  evm_add_custom_asset_error_contract_address_duplicate:
+    'This contract address is already added.',
+  evm_add_custom_token_error_symbol_required: 'Symbol is required.',
+  evm_add_custom_token_error_name_required: 'Token name is required.',
+  evm_add_custom_token_error_decimals_invalid:
+    'Enter a valid decimal count between 0 and 255.',
+  evm_add_custom_token_error_fetch_erc20_metadata:
+    'Could not read token name and decimals from the chain. Check the address and that it is a standard ERC20 contract.',
+  evm_add_custom_nft_error_token_ids_required: 'Enter at least one token ID.',
+  evm_add_custom_nft_error_token_ids_format:
+    'Token IDs must be decimal numbers or 0x-prefixed hex values.',
+  evm_add_custom_nft_error_unsupported_contract:
+    'Could not detect a supported NFT contract at this address. Only ERC721 and ERC1155 contracts are supported.',
+  evm_add_custom_nft_error_token_ids_not_owned:
+    'One or more token IDs are not owned by this wallet.',
+};
+
 describe('EvmAddCustomAssetPopup', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
+    global.chrome.i18n.getMessage = jest.fn(
+      (key: string) => i18nMessages[key] ?? key,
+    );
     jest.spyOn(EvmTokensUtils, 'getCustomTokens').mockResolvedValue([]);
     jest.spyOn(EvmTokensUtils, 'getCustomNfts').mockResolvedValue([]);
     jest

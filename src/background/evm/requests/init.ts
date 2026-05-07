@@ -27,6 +27,7 @@ import {
   EvmDappInfo,
   EvmRequest,
   getEvmProviderRpcFullError,
+  ProviderRpcErrorList,
 } from '@interfaces/evm-provider.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
@@ -40,6 +41,86 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { DappRequestUtils } from 'src/utils/dapp-request.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+import { ethers } from 'ethers';
+
+const WATCH_ASSET_CUSTOM_CHAIN_ERROR =
+  'wallet_watchAsset is only supported on custom chains in Keychain';
+
+const WATCH_ASSET_INVALID_PARAMS_ERROR =
+  'Invalid wallet_watchAsset parameters. Keychain only supports ERC20 assets';
+
+const isWatchAssetRequest = (request: EvmRequest) =>
+  request.method === EvmRequestMethod.WALLET_WATCH_ASSETS ||
+  request.method === EvmRequestMethod.MM_WATCH_ASSET;
+
+const isValidWatchAssetRequest = (request: EvmRequest) => {
+  const params = request.params?.[0] as
+    | {
+        type?: unknown;
+        options?: {
+          address?: unknown;
+          symbol?: unknown;
+          decimals?: unknown;
+          image?: unknown;
+        };
+      }
+    | undefined;
+
+  if (
+    !params ||
+    params.type !== 'ERC20' ||
+    !params.options ||
+    typeof params.options.address !== 'string' ||
+    !ethers.isAddress(params.options.address)
+  ) {
+    return false;
+  }
+
+  if (
+    params.options.symbol !== undefined &&
+    typeof params.options.symbol !== 'string'
+  ) {
+    return false;
+  }
+
+  if (
+    params.options.image !== undefined &&
+    typeof params.options.image !== 'string'
+  ) {
+    return false;
+  }
+
+  if (params.options.decimals === undefined) {
+    return true;
+  }
+
+  return (
+    typeof params.options.decimals === 'number' &&
+    Number.isInteger(params.options.decimals) &&
+    params.options.decimals >= 0 &&
+    params.options.decimals <= 255
+  );
+};
+
+const rejectWatchAssetRequest = async (
+  requestHandler: EvmRequestHandler,
+  tab: number,
+  request: EvmRequest,
+  message: string,
+) => {
+  await handleEvmError(
+    requestHandler,
+    tab,
+    request,
+    {
+      ...ProviderRpcErrorList.invalidMethodParams,
+      message,
+    },
+    message,
+    [],
+    true,
+  );
+};
 
 export const initEvmRequestHandler = async (
   request: EvmRequest,
@@ -67,6 +148,28 @@ export const initEvmRequestHandler = async (
       (setupChains.find(
         (c) => c.chainId.toLowerCase() === normalizedChainId,
       ) as EvmChain);
+  }
+
+  if (isWatchAssetRequest(request)) {
+    if (!isValidWatchAssetRequest(request)) {
+      await rejectWatchAssetRequest(
+        requestHandler,
+        tab!,
+        request,
+        WATCH_ASSET_INVALID_PARAMS_ERROR,
+      );
+      return;
+    }
+
+    if (!chain || chain.isCustom !== true) {
+      await rejectWatchAssetRequest(
+        requestHandler,
+        tab!,
+        request,
+        WATCH_ASSET_CUSTOM_CHAIN_ERROR,
+      );
+      return;
+    }
   }
 
   if (chainId && !chain) {
