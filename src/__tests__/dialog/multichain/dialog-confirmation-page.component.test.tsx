@@ -1,7 +1,13 @@
 import '@testing-library/jest-dom';
 import { DialogConfirmationPage } from '@dialog/multichain/dialog-confirmation-page/dialog-confirmation-page.component';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import React from 'react';
 
 jest.mock(
@@ -21,11 +27,25 @@ jest.mock(
 );
 
 jest.mock('@common-ui/svg-icon/svg-icon.component', () => ({
-  SVGIcon: () => <span data-testid="svg-icon" />,
+  SVGIcon: ({ className, onClick }: any) => (
+    <button
+      className={className}
+      data-testid={className}
+      type="button"
+      onClick={onClick}
+    />
+  ),
 }));
 
 jest.mock('src/common-ui/svg-icon/svg-icon.component', () => ({
-  SVGIcon: () => <span data-testid="svg-icon" />,
+  SVGIcon: ({ className, onClick }: any) => (
+    <button
+      className={className}
+      data-testid={className}
+      type="button"
+      onClick={onClick}
+    />
+  ),
 }));
 
 const createMessage = (requestId: number, tab = 1): any => ({
@@ -52,6 +72,14 @@ const createFeedbackMessage = (requestId: number, tab = 1): any => ({
     tab,
   },
 });
+
+const cancelRequest = (requestId: number) => {
+  fireEvent.click(
+    within(screen.getByTestId(`request-${requestId}`)).getByText(
+      'cancel request',
+    ),
+  );
+};
 
 describe('DialogConfirmationPage', () => {
   beforeEach(() => {
@@ -112,7 +140,7 @@ describe('DialogConfirmationPage', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText('cancel request'));
+    cancelRequest(1);
 
     expect(window.close).toHaveBeenCalled();
     expect(screen.getByTestId('request-1')).toBeInTheDocument();
@@ -134,10 +162,106 @@ describe('DialogConfirmationPage', () => {
       expect(screen.getByText('1 / 2')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText('cancel request'));
+    cancelRequest(1);
 
     expect(window.close).not.toHaveBeenCalled();
     expect(screen.queryByTestId('request-1')).not.toBeInTheDocument();
     expect(screen.getByTestId('request-2')).toBeInTheDocument();
+  });
+
+  it('mounts every queued request while only the selected slide is active', async () => {
+    const firstMessage = createMessage(1);
+    const secondMessage = createMessage(2);
+
+    render(
+      <DialogConfirmationPage
+        message={{ ...firstMessage, queue: [firstMessage, secondMessage] }}
+        feedBackMessage={null}
+        setFeedBackMessage={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('request-1')).toBeInTheDocument();
+      expect(screen.getByTestId('request-2')).toBeInTheDocument();
+    });
+
+    const firstSlide = screen.getByTestId('dialog-request-slide-0');
+    const secondSlide = screen.getByTestId('dialog-request-slide-1');
+
+    expect(firstSlide).toHaveClass('active');
+    expect(firstSlide).toHaveAttribute('aria-hidden', 'false');
+    expect(firstSlide).not.toHaveAttribute('inert');
+    expect(firstSlide).toHaveStyle('transform: translateX(0)');
+
+    expect(secondSlide).toHaveClass('inactive');
+    expect(secondSlide).toHaveAttribute('aria-hidden', 'true');
+    expect(secondSlide).toHaveAttribute('inert');
+    expect(secondSlide).toHaveStyle('transform: translateX(100%)');
+  });
+
+  it('switches slides without unmounting queued requests', async () => {
+    const firstMessage = createMessage(1);
+    const secondMessage = createMessage(2);
+
+    render(
+      <DialogConfirmationPage
+        message={{ ...firstMessage, queue: [firstMessage, secondMessage] }}
+        feedBackMessage={null}
+        setFeedBackMessage={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('1 / 2')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId('next-button'));
+
+    expect(screen.getByText('2 / 2')).toBeInTheDocument();
+    expect(screen.getByTestId('request-1')).toBeInTheDocument();
+    expect(screen.getByTestId('request-2')).toBeInTheDocument();
+    expect(screen.getByTestId('dialog-request-slide-0')).toHaveClass(
+      'inactive',
+    );
+    expect(screen.getByTestId('dialog-request-slide-0')).toHaveStyle(
+      'transform: translateX(-100%)',
+    );
+    expect(screen.getByTestId('dialog-request-slide-1')).toHaveClass('active');
+    expect(screen.getByTestId('dialog-request-slide-1')).toHaveStyle(
+      'transform: translateX(0)',
+    );
+  });
+
+  it('keeps the next remaining request active after canceling the selected request', async () => {
+    const firstMessage = createMessage(1);
+    const secondMessage = createMessage(2);
+    const thirdMessage = createMessage(3);
+
+    render(
+      <DialogConfirmationPage
+        message={{
+          ...firstMessage,
+          queue: [firstMessage, secondMessage, thirdMessage],
+        }}
+        feedBackMessage={null}
+        setFeedBackMessage={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('1 / 3')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId('next-button'));
+    expect(screen.getByText('2 / 3')).toBeInTheDocument();
+
+    cancelRequest(2);
+
+    expect(window.close).not.toHaveBeenCalled();
+    expect(screen.queryByTestId('request-2')).not.toBeInTheDocument();
+    expect(screen.getByText('2 / 2')).toBeInTheDocument();
+    expect(screen.getByTestId('request-3')).toBeInTheDocument();
+    expect(screen.getByTestId('dialog-request-slide-1')).toHaveClass('active');
   });
 });
