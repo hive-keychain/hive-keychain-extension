@@ -18,6 +18,7 @@ import { handleNonSupportedChain } from '@background/evm/requests/logic/handle-n
 import { requestAddCustomEvmChain } from '@background/evm/requests/logic/request-add-custom-evm-chain.logic';
 import { requestAddEvmChain } from '@background/evm/requests/logic/request-add-evm-chain.logic';
 import { resolveRequestChainId } from '@background/evm/requests/logic/resolve-request-chain-id.logic';
+import { EvmWatchAssetUtils } from '@background/evm/utils/watch-asset.utils';
 import MkModule from '@background/hive/modules/mk.module';
 import {
   initializeWallet,
@@ -67,6 +68,28 @@ export const initEvmRequestHandler = async (
       (setupChains.find(
         (c) => c.chainId.toLowerCase() === normalizedChainId,
       ) as EvmChain);
+  }
+
+  if (EvmWatchAssetUtils.isWatchAssetRequest(request)) {
+    if (!EvmWatchAssetUtils.isValidWatchAssetRequest(request)) {
+      await EvmWatchAssetUtils.rejectWatchAssetRequest(
+        requestHandler,
+        tab!,
+        request,
+        EvmWatchAssetUtils.WATCH_ASSET_INVALID_PARAMS_ERROR,
+      );
+      return;
+    }
+
+    if (!chain || chain.isCustom !== true) {
+      await EvmWatchAssetUtils.rejectWatchAssetRequest(
+        requestHandler,
+        tab!,
+        request,
+        EvmWatchAssetUtils.WATCH_ASSET_CUSTOM_CHAIN_ERROR,
+      );
+      return;
+    }
   }
 
   if (chainId && !chain) {

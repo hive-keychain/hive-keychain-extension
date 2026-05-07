@@ -5,6 +5,7 @@ import {
   sendErrorToEvm,
   sendEventToEvm,
   sendEvmChainToBackground,
+  sendEvmInitializeProviderRequest,
   sendEvmRequestToBackground,
   sendResponseToEvm,
 } from 'src/content-scripts/hive/web-interface/response.logic';
@@ -17,6 +18,13 @@ document.addEventListener(
   EvmEventName.SEND_BACK_CHAIN_TO_BACKGROUND,
   (event: any) => {
     sendEvmChainToBackground(event.detail, chrome);
+  },
+);
+
+document.addEventListener(
+  EvmEventName.INITIALIZE_PROVIDER_REQUEST,
+  async (request: any) => {
+    sendEvmInitializeProviderRequest();
   },
 );
 

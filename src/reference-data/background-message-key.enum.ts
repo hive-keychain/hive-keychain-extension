@@ -40,6 +40,8 @@ export enum BackgroundCommand {
   ACCEPT_ADD_EVM_CHAIN = 'acceptAddEvmChain',
   ACCEPT_ADD_CUSTOM_EVM_CHAIN = 'acceptAddCustomEvmChain',
 
+  SEND_EVM_INITIALIZE_PROVIDER_REQUEST = 'sendEvmInitializeProviderRequest',
+
   // User preferences
   UPDATE_CLAIMS = 'updateClaims',
   UPDATE_AUTOLOCK = 'updateAutoLock',
