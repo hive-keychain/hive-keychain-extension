@@ -1,6 +1,7 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { initializeEvmProviderRegistration } from '@background/evm/evm-provider-registration';
 import {
+  getAccountsForOrigin,
   persistEvmDappLogoForDomain,
   setAccountsForOrigin,
 } from '@background/evm/evm-provider-state.utils';
@@ -18,9 +19,10 @@ import {
 } from '@interfaces/evm-provider.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
-import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
+import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
@@ -103,6 +105,23 @@ const chromeMessageHandler = async (
   Logger.log('Background message evm service worker', backgroundMessage);
 
   switch (backgroundMessage.command) {
+    case BackgroundCommand.SEND_EVM_INITIALIZE_PROVIDER_REQUEST: {
+      const origin = getOriginFromUrl(sender.tab?.url);
+      if (sender?.tab?.url && origin) {
+        sendEvmEventToTab(sender.tab!.id!, {
+          eventType: EvmEventName.INITIALIZE_PROVIDER_RESPONSE,
+          scope: {
+            kind: 'tab',
+            tabId: sender.tab!.id!,
+          },
+          args: {
+            chainId: await EvmChainUtils.getLastEvmChainIdForOrigin(origin),
+            accounts: await getAccountsForOrigin(origin),
+          },
+        });
+      }
+      break;
+    }
     case BackgroundCommand.SEND_EVM_REQUEST: {
       let requestHandler = await EvmRequestHandler.getFromLocalStorage();
       if (!requestHandler) {

@@ -53,18 +53,11 @@ export class EvmProvider extends EventEmitter {
   };
 
   initiateProviderInformation = async () => {
-    const [chainId, accounts] = (await Promise.all([
-      this.processRequest({
-        method: EvmRequestMethod.GET_CHAIN,
-        params: [],
-      }),
-      this.processRequest({
-        method: EvmRequestMethod.GET_ACCOUNTS,
-        params: [],
-      }),
-    ])) as [string, string[]];
-    this.applyChainId(chainId, { emit: true });
-    this.applyAccounts(accounts, { emit: true });
+    this.dispatchCustomEvent(
+      EvmEventName.INITIALIZE_PROVIDER_REQUEST,
+      {},
+      () => {},
+    );
   };
 
   private applyChainId = (
@@ -170,6 +163,11 @@ export class EvmProvider extends EventEmitter {
               );
               return;
             }
+            case EvmEventName.INITIALIZE_PROVIDER_RESPONSE: {
+              this.applyChainId(eventData.event.args.chainId, { emit: true });
+              this.applyAccounts(eventData.event.args.accounts, { emit: true });
+              return;
+            }
           }
         }
       },
@@ -186,7 +184,6 @@ export class EvmProvider extends EventEmitter {
           return this.applyAccounts(await this.processRequest(args));
         }
         case EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN: {
-          console.log('switch chain');
           return this.processRequest(args);
         }
       }
