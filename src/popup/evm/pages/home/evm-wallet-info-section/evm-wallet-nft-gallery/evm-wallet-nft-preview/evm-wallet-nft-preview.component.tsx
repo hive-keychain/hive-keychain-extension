@@ -5,6 +5,7 @@ import {
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import React from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
+import { EvmNftMedia } from 'src/common-ui/evm/nft-media/nft-media.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
@@ -34,14 +35,9 @@ export const EvmWalletNftPreviewComponent = ({ token, onClick }: Props) => {
                 message={collectionItem.metadata.name}
                 skipTranslation>
                 <>
-                  <img
+                  <EvmNftMedia
                     className="nft-preview"
                     src={collectionItem.metadata.image}
-                    onError={({ currentTarget }) => {
-                      currentTarget.onerror = null;
-                      currentTarget.src =
-                        '/assets/images/placeholder-image.svg';
-                    }}
                   />
                   {(collectionItem as EvmErc1155TokenCollectionItem).balance >
                     1 && (

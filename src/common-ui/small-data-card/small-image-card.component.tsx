@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { EvmNftMedia } from 'src/common-ui/evm/nft-media/nft-media.component';
 
 interface SmallImageCardProps {
   name?: string;
@@ -40,7 +41,7 @@ export const SmallImageCardComponent = ({
       <div
         className={`value ${valueOnClickAction ? 'clickable' : ''}`}
         onClick={handleOnValueClick}>
-        {image && <img className="image" src={image} />}
+        {image && <EvmNftMedia className="image" src={image} />}
       </div>
       {name && <div className="label">{name}</div>}
       {extraInfo && (

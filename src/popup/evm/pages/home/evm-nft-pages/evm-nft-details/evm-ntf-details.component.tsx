@@ -8,6 +8,7 @@ import React, { BaseSyntheticEvent } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import { EvmNftMedia } from 'src/common-ui/evm/nft-media/nft-media.component';
 
 interface Props {
   nft: EvmErc721TokenCollectionItem | EvmErc1155TokenCollectionItem;
@@ -40,14 +41,9 @@ export const EvmNftDetails = ({
       key={`${collection.tokenInfo.contractAddress}-${nft.id}`}
       className={`detailed-nft ${expanded ? 'expanded' : ''}`}
       onClick={handleOnClick}>
-      <img
+      <EvmNftMedia
         className={`${nftSize ?? 'normal'}`}
         src={nft.metadata.image}
-        onError={({ currentTarget }) => {
-          currentTarget.onerror = null;
-          currentTarget.src = '/assets/images/placeholder-image.svg';
-          currentTarget.classList.add('placeholder');
-        }}
       />
       <div className="name">
         {nft.metadata.name ?? `${collection.tokenInfo.name} #${nft.id}`}

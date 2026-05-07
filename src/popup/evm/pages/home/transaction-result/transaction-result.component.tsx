@@ -102,7 +102,7 @@ const EvmTransactionResult = ({
   useEffect(() => {
     setTitleContainerProperties({
       title: pageTitle,
-      isBackButtonEnabled: true,
+      isBackButtonEnabled: false,
     });
     getTransactionStatus();
   }, []);
@@ -567,6 +567,7 @@ const EvmTransactionResult = ({
                         <EvmAddressComponent
                           address={detail.value!}
                           chainId={chain.chainId}
+                          forceFormattedAddress
                         />
                       }
                       valueOnClickAction={() => openWallet(detail.value!)}
@@ -594,6 +595,7 @@ const EvmTransactionResult = ({
                 <EvmAddressComponent
                   address={syntheticToAddress!}
                   chainId={chain.chainId}
+                  forceFormattedAddress
                 />
               }
               valueOnClickAction={() => openWallet(syntheticToAddress!)}
@@ -620,6 +622,7 @@ const EvmTransactionResult = ({
           <SmallDataCardComponent
             label={gasFeeLabelKey}
             value={gasFeeValueDisplay}
+            valueClassName="gas-fee-value"
           />
           <SmallDataCardComponent
             label="popup_html_evm_transaction_info_gas_limit"
