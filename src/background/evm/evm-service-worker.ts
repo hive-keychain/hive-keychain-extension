@@ -145,7 +145,7 @@ const chromeMessageHandler = async (
         const login = await MkModule.login(mk);
         if (login) {
           MkModule.saveMk(mk);
-          initEvmRequestHandler(
+          await initEvmRequestHandler(
             data.msg.data,
             tab,
             data.dappInfo,
@@ -268,7 +268,7 @@ const chromeMessageHandler = async (
 
       await ChainUtils.addChainToSetupChains(requestedChain);
 
-      initEvmRequestHandler(
+      await initEvmRequestHandler(
         request,
         tab,
         dappInfo,
@@ -290,7 +290,7 @@ const chromeMessageHandler = async (
       if (requestedChain.rpcs.length > 0) {
         await EvmRpcUtils.setActiveRpc(requestedChain.rpcs[0], requestedChain);
       }
-      requestHandler?.setRequestDialog(
+      await requestHandler?.setRequestDialog(
         request.request_id,
         tab,
         undefined,
@@ -349,7 +349,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       );
     return true;
   }
-  void chromeMessageHandler(message as BackgroundMessage, sender, sendResponse);
+  return chromeMessageHandler(
+    message as BackgroundMessage,
+    sender,
+    sendResponse,
+  );
 });
 
 export const EvmServiceWorker = { initializeServiceWorker };

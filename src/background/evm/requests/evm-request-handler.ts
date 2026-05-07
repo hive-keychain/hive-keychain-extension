@@ -26,6 +26,8 @@ if (!process.env.IS_FIREFOX) {
   global.window = { crypto };
 }
 
+let evmRequestHandlerMutationQueue: Promise<void> = Promise.resolve();
+
 export type EvmRequestData = {
   tab?: number;
   request?: EvmRequest;
@@ -62,14 +64,13 @@ export class EvmRequestHandler {
     }
   }
 
-  reset(resetWinId: boolean) {
+  async reset(resetWinId: boolean) {
     if (resetWinId) {
-      EvmRequestHandler.removeFromLocalStorage();
+      await EvmRequestHandler.removeFromLocalStorage();
     } else {
-      this.requestsData = [];
       this.accounts = [];
 
-      this.saveInLocalStorage();
+      await EvmRequestHandler.withPersistedRequestsData(this, () => []);
     }
   }
 
@@ -87,19 +88,26 @@ export class EvmRequestHandler {
       getOriginFromMessageSender(sender) ?? msg.dappInfo.origin;
     const canonicalDomain =
       getHostnameFromMessageSender(sender) ?? msg.dappInfo.domain ?? '';
-    const arrivalOrder = await getNextDialogRequestOrder();
-    this.requestsData.push({
-      tab: sender.tab!.id,
-      request: msg.request,
-      request_id: msg.request_id,
-      dappInfo: {
-        ...msg.dappInfo,
-        origin: canonicalOrigin,
-        domain: canonicalDomain,
+    await EvmRequestHandler.withPersistedRequestsData(
+      this,
+      async (requestsData) => {
+        const arrivalOrder = await getNextDialogRequestOrder();
+        return [
+          ...requestsData,
+          {
+            tab: sender.tab!.id,
+            request: msg.request,
+            request_id: msg.request_id,
+            dappInfo: {
+              ...msg.dappInfo,
+              origin: canonicalOrigin,
+              domain: canonicalDomain,
+            },
+            arrivalOrder,
+          },
+        ];
       },
-      arrivalOrder,
-    });
-    await this.saveInLocalStorage();
+    );
 
     await initEvmRequestHandler(
       msg.request,
@@ -126,30 +134,29 @@ export class EvmRequestHandler {
     return requestData?.request;
   }
 
-  setRequest(requestId: number, request: EvmRequest) {
-    for (const requestData of this.requestsData) {
-      if (requestData.request_id === requestId) {
-        requestData.request = request;
-        break;
-      }
-    }
-    this.saveInLocalStorage();
+  async setRequest(requestId: number, request: EvmRequest) {
+    await EvmRequestHandler.withPersistedRequestsData(this, (requestsData) =>
+      requestsData.map((requestData) =>
+        requestData.request_id === requestId
+          ? { ...requestData, request }
+          : requestData,
+      ),
+    );
   }
 
-  setRequestDialog(
+  async setRequestDialog(
     requestId: number,
     tab: number,
     dialogCommand?: DialogCommand,
     dialogData?: Record<string, unknown>,
   ) {
-    for (const requestData of this.requestsData) {
-      if (requestData.request_id === requestId && requestData.tab === tab) {
-        requestData.dialogCommand = dialogCommand;
-        requestData.dialogData = dialogData;
-        break;
-      }
-    }
-    this.saveInLocalStorage();
+    await EvmRequestHandler.withPersistedRequestsData(this, (requestsData) =>
+      requestsData.map((requestData) =>
+        requestData.request_id === requestId && requestData.tab === tab
+          ? { ...requestData, dialogCommand, dialogData }
+          : requestData,
+      ),
+    );
   }
 
   async removeRequestById(
@@ -157,21 +164,12 @@ export class EvmRequestHandler {
     tab: number,
     shouldSyncDialog = true,
   ) {
-    // Reconcile with latest persisted queue to avoid dropping requests that were
-    // added by another concurrent handler instance while feedback delay is active.
-    const latestHandler = await EvmRequestHandler.getFromLocalStorage();
-    this.requestsData = latestHandler.requestsData;
-
-    this.requestsData = this.requestsData.filter(
-      (requestData: EvmRequestData) => {
-        if (requestData.request_id === requestId && requestData.tab === tab) {
-          return false;
-        }
-        return true;
-      },
+    await EvmRequestHandler.withPersistedRequestsData(this, (requestsData) =>
+      requestsData.filter(
+        (requestData: EvmRequestData) =>
+          requestData.request_id !== requestId || requestData.tab !== tab,
+      ),
     );
-
-    await this.saveInLocalStorage();
     if (shouldSyncDialog) {
       await syncSharedDialogWindow();
     }
@@ -205,6 +203,7 @@ export class EvmRequestHandler {
   }
 
   async saveInLocalStorage() {
+    console.log(this.requestsData, 'saving requests data');
     await LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
       {
@@ -214,8 +213,41 @@ export class EvmRequestHandler {
   }
 
   static async removeFromLocalStorage() {
-    await LocalStorageUtils.removeFromLocalStorage(
-      LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
+    await EvmRequestHandler.enqueueStorageMutation(async () => {
+      await LocalStorageUtils.removeFromLocalStorage(
+        LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
+      );
+    });
+  }
+
+  private static async withPersistedRequestsData(
+    handler: EvmRequestHandler,
+    mutate: (
+      requestsData: EvmRequestData[],
+    ) => EvmRequestData[] | Promise<EvmRequestData[]>,
+  ) {
+    await EvmRequestHandler.enqueueStorageMutation(async () => {
+      const requestHandlersParams =
+        await LocalStorageUtils.getValueFromLocalStorage(
+          LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
+        );
+      const requestsData = requestHandlersParams?.requestsData ?? [];
+      const nextRequestsData = await mutate(requestsData);
+
+      handler.requestsData = nextRequestsData;
+      await handler.saveInLocalStorage();
+    });
+  }
+
+  private static enqueueStorageMutation<T>(mutation: () => Promise<T>) {
+    const runMutation = evmRequestHandlerMutationQueue.then(
+      mutation,
+      mutation,
     );
+    evmRequestHandlerMutationQueue = runMutation.then(
+      () => undefined,
+      () => undefined,
+    );
+    return runMutation;
   }
 }

@@ -1,10 +1,6 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { handleEvmError } from '@background/evm/requests/logic/handle-evm-error.logic';
-import {
-  getRequestHandlers,
-  willCloseDialogWindowAfterRemovingRequest,
-} from '@background/multichain/dialog-request.utils';
 import { decryptMessage } from '@background/evm/requests/operations/ops/decrypt-message';
 import { getEncryptionKey } from '@background/evm/requests/operations/ops/get-encryption-key';
 import { personalSign } from '@background/evm/requests/operations/ops/personal-sign';
@@ -16,10 +12,6 @@ import {
 } from '@interfaces/evm-provider.interface';
 import { SignTypedDataVersion } from '@metamask/eth-sig-util';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
-import {
-  DIALOG_FEEDBACK_DISPLAY_MS,
-  delayMs,
-} from '@reference-data/dialog-feedback.constants';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -85,24 +77,11 @@ export const performEvmOperation = async (
         break;
       }
     }
+    await requestHandler.removeRequestById(request.request_id, tab);
     CommunicationUtils.tabsSendMessage(tab, {
       command: BackgroundCommand.SEND_EVM_RESPONSE,
       value: { requestId: request.request_id, result: result },
     });
-    if (message) {
-      await CommunicationUtils.runtimeSendMessage(message);
-      const handlers = await getRequestHandlers();
-      if (
-        await willCloseDialogWindowAfterRemovingRequest(
-          handlers,
-          request.request_id,
-          tab,
-        )
-      ) {
-        await delayMs(DIALOG_FEEDBACK_DISPLAY_MS);
-      }
-    }
-    await requestHandler.removeRequestById(request.request_id, tab);
   } catch (err) {
     const error = err as any;
     const etherJSError = getErrorFromEtherJS(error.code);

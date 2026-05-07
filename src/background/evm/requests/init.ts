@@ -94,7 +94,7 @@ export const initEvmRequestHandler = async (
 
   if (chainId && !chain) {
     if (request.method === EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN) {
-      requestAddCustomEvmChain(
+      await requestAddCustomEvmChain(
         requestHandler,
         tab!,
         request,
@@ -105,9 +105,9 @@ export const initEvmRequestHandler = async (
       await handleNonSupportedChain(requestHandler, tab!, request, chainId);
     }
   } else if (EvmDeprecatedMethods.includes(request.method)) {
-    handleDeprecatedMethods(requestHandler, tab!, request, dappInfo);
+    await handleDeprecatedMethods(requestHandler, tab!, request, dappInfo);
   } else if (!doesMethodExist(request.method)) {
-    handleNonExistingMethod(requestHandler, tab!, request, dappInfo);
+    await handleNonExistingMethod(requestHandler, tab!, request, dappInfo);
   } else if (EvmUnrestrictedMethods.includes(request.method)) {
     await evmRequestWithoutConfirmation(
       requestHandler,
@@ -124,7 +124,7 @@ export const initEvmRequestHandler = async (
       (await DappRequestUtils.isDappLocked(dappInfo.domain))
     ) {
       const providerError = getEvmProviderRpcFullError('userReject');
-      handleEvmError(
+      await handleEvmError(
         requestHandler,
         tab!,
         request,
@@ -144,7 +144,6 @@ export const initEvmRequestHandler = async (
       const rebuiltAccounts =
         await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
       requestHandler.accounts = rebuiltAccounts;
-      requestHandler.saveInLocalStorage();
     }
     if (!accounts) {
       initializeWallet(requestHandler, tab!, request);
@@ -163,7 +162,7 @@ export const initEvmRequestHandler = async (
           c.chainId.toLowerCase() === resolvedRequestChainId.toLowerCase(),
       )
     ) {
-      requestAddEvmChain(requestHandler, tab!, request, dappInfo);
+      await requestAddEvmChain(requestHandler, tab!, request, dappInfo);
     } else if (EvmNeedPermissionMethods.includes(request.method)) {
       const hasPermission = await EvmWalletUtils.hasPermission(
         dappInfo.origin,
@@ -214,6 +213,4 @@ export const initEvmRequestHandler = async (
   } else {
     console.log('no case ??');
   }
-
-  requestHandler.saveInLocalStorage();
 };

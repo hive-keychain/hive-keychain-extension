@@ -247,7 +247,7 @@ describe('initEvmRequestHandler', () => {
     await result;
 
     expect(settled).toBe(true);
-    expect(requestHandler.saveInLocalStorage).toHaveBeenCalled();
+    expect(requestHandler.saveInLocalStorage).not.toHaveBeenCalled();
   });
 
   it('rejects wallet_watchAsset on default chains', async () => {
