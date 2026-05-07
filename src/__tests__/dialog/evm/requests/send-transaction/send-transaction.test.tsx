@@ -14,6 +14,7 @@ import { ethers } from 'ethers';
 import { EthersUtils } from 'src/popup/evm/utils/ethers.utils';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
+import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 
 const mockParseTransaction = jest.fn();
 const mockBalanceChangeCard = jest.fn(({ balanceInfo }) => (
@@ -253,9 +254,15 @@ describe('send-transaction proxy tests:\n', () => {
         messageParams: [proxyTarget],
       },
     ]);
-    expect(contractField.value.type).toBe(EvmAddressComponent);
-    expect(contractField.value.props.address).toBe(proxyAddress);
-    expect(contractField.value.props.canCopy).toBe(true);
+    expect(contractField.value.props.children[1].props.message).toBe(
+      proxyAddress,
+    );
+    expect(
+      contractField.value.props.children[1].props.children.props.children,
+    ).toBe('0x00000...000aa');
+    expect(
+      contractField.value.props.children[1].props.children.props.className,
+    ).toContain('address-content');
   });
 
   it('does not request an abi for deployment transactions', async () => {
@@ -544,6 +551,534 @@ describe('send-transaction proxy tests:\n', () => {
       ),
     );
     await waitFor(() => expect(screen.getByTestId('balance-card')).toBeTruthy());
+  });
+
+  it('does not subtract ERC20 approve allowance from native balance', async () => {
+    transactionHook.fields = {
+      operationName: 'evm_operation_approve',
+    } as any;
+    transactionHook.ready = true;
+    transactionHook.selectedFee = {
+      estimatedFeeInEth: new Decimal('0.01'),
+      gasLimit: new Decimal(21000),
+      maxFeeInEth: new Decimal('0.02'),
+      priorityFeeInGwei: new Decimal('1'),
+    } as any;
+
+    const spenderAddress = '0x00000000000000000000000000000000000000ab';
+    const allowanceAmount = 1000000000n;
+    const approveAbi = [
+      {
+        inputs: [
+          { name: 'spender', type: 'address' },
+          { name: 'amount', type: 'uint256' },
+        ],
+        name: 'approve',
+        outputs: [],
+        type: 'function',
+      },
+    ];
+
+    jest.spyOn(EvmLightNodeUtils, 'getAbi').mockResolvedValue(approveAbi);
+    jest.spyOn(EvmTransactionParserUtils, 'parseArgs').mockReturnValue([
+      spenderAddress,
+      allowanceAmount,
+    ]);
+    mockParseTransaction.mockReturnValue({
+      args: {
+        0: spenderAddress,
+        1: allowanceAmount,
+        toArray: () => [spenderAddress, allowanceAmount],
+      },
+      fragment: {
+        inputs: [
+          { name: 'spender', type: 'address' },
+          { name: 'amount', type: 'uint256' },
+        ],
+      },
+      name: 'approve',
+      signature: 'approve(address,uint256)',
+      value: 0,
+    });
+
+    const getBalanceInfoSpy = jest
+      .spyOn(EvmTokensUtils, 'getBalanceInfo')
+      .mockResolvedValue({
+        mainBalance: {
+          before: '1 ETH',
+          estimatedAfter: '0.99  ETH',
+        },
+      } as any);
+
+    render(
+      <SendTransaction
+        accounts={[
+          {
+            wallet: {
+              address: '0x00000000000000000000000000000000000000ff',
+              mnemonic: { phrase: 'test phrase' },
+            },
+          } as any,
+        ]}
+        afterCancel={jest.fn()}
+        data={{ dappInfo: { domain: 'app.example' }, tab: 1 } as any}
+        request={
+          {
+            chainId: '1',
+            params: [
+              {
+                data: '0x095ea7b3',
+                from: '0x00000000000000000000000000000000000000ff',
+                gasLimit: 21000,
+                maxFeePerGas: '1',
+                maxPriorityFeePerGas: '1',
+                to: proxyAddress,
+                type: EvmTransactionType.EIP_1559,
+                value: '0',
+              },
+            ],
+            request_id: 1,
+          } as any
+        }
+      />,
+    );
+
+    await waitFor(() =>
+      expect(getBalanceInfoSpy).toHaveBeenCalledWith(
+        '0x00000000000000000000000000000000000000ff',
+        expect.objectContaining({ chainId: '1' }),
+        expect.objectContaining({ symbol: 'ETH' }),
+        0,
+        transactionHook.selectedFee,
+        undefined,
+      ),
+    );
+    await waitFor(() => expect(screen.getByTestId('balance-card')).toBeTruthy());
+
+    const fields = lastSetFieldsPayload();
+    const amountField = fields.otherFields.find(
+      (field: any) => field.name === 'amount',
+    );
+    expect(amountField.value).toBe('1,000  USDC');
+  });
+
+  it('formats decoded NFT request addresses with the copyable address component', async () => {
+    const senderAddress = '0x00000000000000000000000000000000000000ff';
+    const fromAddress = '0x00000000000000000000000000000000000000ee';
+    const toAddress = '0x00000000000000000000000000000000000000ab';
+    const tokenId = 123n;
+    const nftAbi = [
+      {
+        inputs: [
+          { name: 'from', type: 'address' },
+          { name: 'to', type: 'address' },
+          { name: 'tokenId', type: 'uint256' },
+        ],
+        name: 'safeTransferFrom',
+        outputs: [],
+        type: 'function',
+      },
+    ];
+
+    jest.spyOn(EvmLightNodeUtils, 'getAbi').mockResolvedValue(nftAbi);
+    jest
+      .spyOn(EvmTokensUtils, 'getTokenInfo')
+      .mockResolvedValue({
+        backgroundColor: '',
+        chainId: '1',
+        contractAddress: proxyAddress,
+        logo: '',
+        name: 'Test NFT',
+        possibleSpam: false,
+        priceUsd: 0,
+        symbol: 'TNFT',
+        type: EVMSmartContractType.ERC721,
+        verifiedContract: true,
+      } as any);
+    jest
+      .spyOn(EvmTokensUtils, 'getTokenType')
+      .mockReturnValue(null as any);
+    jest.spyOn(EvmNFTUtils, 'getMetadata').mockResolvedValue({
+      image: '',
+      name: 'Test NFT #123',
+    } as any);
+    jest.spyOn(EvmTransactionParserUtils, 'parseArgs').mockReturnValue([
+      fromAddress,
+      toAddress,
+      tokenId,
+    ]);
+    mockParseTransaction.mockReturnValue({
+      args: {
+        0: fromAddress,
+        1: toAddress,
+        2: tokenId,
+        toArray: () => [fromAddress, toAddress, tokenId],
+      },
+      fragment: {
+        inputs: [
+          { name: 'from', type: 'address' },
+          { name: 'to', type: 'address' },
+          { name: 'tokenId', type: 'uint256' },
+        ],
+      },
+      name: 'safeTransferFrom',
+      signature: 'safeTransferFrom(address,address,uint256)',
+      value: 0,
+    });
+
+    render(
+      <SendTransaction
+        accounts={[
+          {
+            wallet: {
+              address: senderAddress,
+              mnemonic: { phrase: 'test phrase' },
+            },
+          } as any,
+        ]}
+        afterCancel={jest.fn()}
+        data={{ dappInfo: { domain: 'app.example' }, tab: 1 } as any}
+        request={
+          {
+            chainId: '1',
+            params: [
+              {
+                data: '0x42842e0e',
+                from: senderAddress,
+                gasLimit: 21000,
+                maxFeePerGas: '1',
+                maxPriorityFeePerGas: '1',
+                to: proxyAddress,
+                type: EvmTransactionType.EIP_1559,
+                value: '0',
+              },
+            ],
+            request_id: 1,
+          } as any
+        }
+      />,
+    );
+
+    await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
+
+    const fields = lastSetFieldsPayload();
+    const fromField = fields.otherFields.find(
+      (field: any) => field.name === 'from',
+    );
+    const toField = fields.otherFields.find((field: any) => field.name === 'to');
+    const contractField = fields.otherFields.find(
+      (field: any) => field.name === 'evm_operation_smart_contract_address',
+    );
+
+    expect(contractField.value.props.children[1].props.message).toBe(
+      proxyAddress,
+    );
+    expect(
+      contractField.value.props.children[1].props.children.props.children,
+    ).toBe('0x00000...000aa');
+    expect(
+      contractField.value.props.children[1].props.children.props.className,
+    ).toContain('address-content');
+    expect(fromField.value.type).toBe(EvmAddressComponent);
+    expect(fromField.value.props.address).toBe(fromAddress);
+    expect(fromField.value.props.canCopy).toBe(true);
+    expect(toField.value.type).toBe(EvmAddressComponent);
+    expect(toField.value.props.address).toBe(toAddress);
+    expect(toField.value.props.canCopy).toBe(true);
+  });
+
+  it('labels ERC721 approve second argument as token ID when approve ABI is detected as ERC20', async () => {
+    const approvedAddress = '0x00000000000000000000000000000000000000ab';
+    const tokenId = 123n;
+    const nftApproveAbi = [
+      {
+        inputs: [
+          { name: 'approved', type: 'address' },
+          { name: 'amount', type: 'uint256' },
+        ],
+        name: 'approve',
+        outputs: [],
+        type: 'function',
+      },
+    ];
+
+    jest.spyOn(EvmLightNodeUtils, 'getAbi').mockResolvedValue(nftApproveAbi);
+    jest
+      .spyOn(EvmTokensUtils, 'getTokenInfo')
+      .mockResolvedValue({
+        backgroundColor: '',
+        chainId: '1',
+        contractAddress: proxyAddress,
+        logo: '',
+        name: 'Test NFT',
+        possibleSpam: false,
+        priceUsd: 0,
+        symbol: 'TNFT',
+        type: EVMSmartContractType.ERC721,
+        verifiedContract: true,
+      } as any);
+    jest
+      .spyOn(EvmTokensUtils, 'getTokenType')
+      .mockReturnValue(EVMSmartContractType.ERC20);
+    jest.spyOn(EvmTransactionParserUtils, 'parseArgs').mockReturnValue([
+      approvedAddress,
+      tokenId,
+    ]);
+    mockParseTransaction.mockReturnValue({
+      args: {
+        0: approvedAddress,
+        1: tokenId,
+        toArray: () => [approvedAddress, tokenId],
+      },
+      fragment: {
+        inputs: [
+          { name: 'approved', type: 'address' },
+          { name: 'amount', type: 'uint256' },
+        ],
+      },
+      name: 'approve',
+      signature: 'approve(address,uint256)',
+      value: 0,
+    });
+
+    render(
+      <SendTransaction
+        accounts={[
+          {
+            wallet: {
+              address: '0x00000000000000000000000000000000000000ff',
+              mnemonic: { phrase: 'test phrase' },
+            },
+          } as any,
+        ]}
+        afterCancel={jest.fn()}
+        data={{ dappInfo: { domain: 'app.example' }, tab: 1 } as any}
+        request={
+          {
+            chainId: '1',
+            params: [
+              {
+                data: '0x095ea7b3',
+                from: '0x00000000000000000000000000000000000000ff',
+                gasLimit: 21000,
+                maxFeePerGas: '1',
+                maxPriorityFeePerGas: '1',
+                to: proxyAddress,
+                type: EvmTransactionType.EIP_1559,
+                value: '0',
+              },
+            ],
+            request_id: 1,
+          } as any
+        }
+      />,
+    );
+
+    await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
+
+    const fields = lastSetFieldsPayload();
+
+    const decodedArgumentFields = fields.otherFields.filter(
+      (field: any) =>
+        ![
+          'evm_chain',
+          'dialog_evm_domain',
+          'evm_operation_smart_contract_address',
+          'dialog_account',
+        ].includes(field.name),
+    );
+
+    expect(decodedArgumentFields.map((field: any) => field.name)).toEqual([
+      'evm_operation_to',
+      'evm_nft_token_id',
+    ]);
+    expect(decodedArgumentFields[0].value.type).toBe(EvmAddressComponent);
+    expect(decodedArgumentFields[0].value.props.address).toBe(approvedAddress);
+    expect(decodedArgumentFields[1].value).toBe(tokenId.toString());
+  });
+
+  it('labels NFT setApprovalForAll boolean as Approve All', async () => {
+    const operatorAddress = '0x00000000000000000000000000000000000000ab';
+    const nftApproveAllAbi = [
+      {
+        inputs: [
+          { name: 'operator', type: 'address' },
+          { name: 'approved', type: 'bool' },
+        ],
+        name: 'setApprovalForAll',
+        outputs: [],
+        type: 'function',
+      },
+    ];
+
+    jest.spyOn(EvmLightNodeUtils, 'getAbi').mockResolvedValue(nftApproveAllAbi);
+    jest
+      .spyOn(EvmTokensUtils, 'getTokenInfo')
+      .mockResolvedValue({
+        backgroundColor: '',
+        chainId: '1',
+        contractAddress: proxyAddress,
+        logo: '',
+        name: 'Test NFT',
+        possibleSpam: false,
+        priceUsd: 0,
+        symbol: 'TNFT',
+        type: EVMSmartContractType.ERC721,
+        verifiedContract: true,
+      } as any);
+    jest
+      .spyOn(EvmTokensUtils, 'getTokenType')
+      .mockReturnValue(EVMSmartContractType.ERC721);
+    jest.spyOn(EvmTransactionParserUtils, 'parseArgs').mockReturnValue([
+      operatorAddress,
+      true,
+    ]);
+    mockParseTransaction.mockReturnValue({
+      args: {
+        0: operatorAddress,
+        1: true,
+        toArray: () => [operatorAddress, true],
+      },
+      fragment: {
+        inputs: [
+          { name: 'operator', type: 'address' },
+          { name: 'approved', type: 'bool' },
+        ],
+      },
+      name: 'SetApprovalForAll',
+      signature: 'SetApprovalForAll(address,bool)',
+      value: 0,
+    });
+
+    render(
+      <SendTransaction
+        accounts={[
+          {
+            wallet: {
+              address: '0x00000000000000000000000000000000000000ff',
+              mnemonic: { phrase: 'test phrase' },
+            },
+          } as any,
+        ]}
+        afterCancel={jest.fn()}
+        data={{ dappInfo: { domain: 'app.example' }, tab: 1 } as any}
+        request={
+          {
+            chainId: '1',
+            params: [
+              {
+                data: '0xa22cb465',
+                from: '0x00000000000000000000000000000000000000ff',
+                gasLimit: 21000,
+                maxFeePerGas: '1',
+                maxPriorityFeePerGas: '1',
+                to: proxyAddress,
+                type: EvmTransactionType.EIP_1559,
+                value: '0',
+              },
+            ],
+            request_id: 1,
+          } as any
+        }
+      />,
+    );
+
+    await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
+
+    const fields = lastSetFieldsPayload();
+
+    expect(
+      fields.otherFields.some((field: any) => field.name === 'approved'),
+    ).toBe(false);
+    expect(
+      fields.otherFields.some(
+        (field: any) =>
+          field.name === 'evm_nft_approve_all' && field.value === 'true',
+      ),
+    ).toBe(true);
+  });
+
+  it('localizes numberOfTokens as Number of Tokens', async () => {
+    const mintAbi = [
+      {
+        inputs: [{ name: 'numberOfTokens', type: 'uint256' }],
+        name: 'mintNFTs',
+        outputs: [],
+        type: 'function',
+      },
+    ];
+
+    jest.spyOn(EvmLightNodeUtils, 'getAbi').mockResolvedValue(mintAbi);
+    jest
+      .spyOn(EvmTokensUtils, 'getTokenInfo')
+      .mockResolvedValue({
+        backgroundColor: '',
+        chainId: '1',
+        contractAddress: proxyAddress,
+        logo: '',
+        name: 'Test NFT',
+        possibleSpam: false,
+        priceUsd: 0,
+        symbol: 'TNFT',
+        type: EVMSmartContractType.ERC721,
+        verifiedContract: true,
+      } as any);
+    jest.spyOn(EvmTokensUtils, 'getTokenType').mockReturnValue(null as any);
+    jest.spyOn(EvmTransactionParserUtils, 'parseArgs').mockReturnValue([2n]);
+    mockParseTransaction.mockReturnValue({
+      args: {
+        0: 2n,
+        toArray: () => [2n],
+      },
+      fragment: {
+        inputs: [{ name: 'numberOfTokens', type: 'uint256' }],
+      },
+      name: 'mintNFTs',
+      signature: 'mintNFTs(uint256)',
+      value: 0,
+    });
+
+    render(
+      <SendTransaction
+        accounts={[
+          {
+            wallet: {
+              address: '0x00000000000000000000000000000000000000ff',
+              mnemonic: { phrase: 'test phrase' },
+            },
+          } as any,
+        ]}
+        afterCancel={jest.fn()}
+        data={{ dappInfo: { domain: 'app.example' }, tab: 1 } as any}
+        request={
+          {
+            chainId: '1',
+            params: [
+              {
+                data: '0x12345678',
+                from: '0x00000000000000000000000000000000000000ff',
+                gasLimit: 21000,
+                maxFeePerGas: '1',
+                maxPriorityFeePerGas: '1',
+                to: proxyAddress,
+                type: EvmTransactionType.EIP_1559,
+                value: '0',
+              },
+            ],
+            request_id: 1,
+          } as any
+        }
+      />,
+    );
+
+    await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
+
+    const fields = lastSetFieldsPayload();
+    const numberOfTokensField = fields.otherFields.find(
+      (field: any) => field.name === 'evm_nft_number_of_tokens',
+    );
+
+    expect(numberOfTokensField.value).toBe('2');
   });
 
   it('recomputes the balance card when a selected gas fee becomes available', async () => {

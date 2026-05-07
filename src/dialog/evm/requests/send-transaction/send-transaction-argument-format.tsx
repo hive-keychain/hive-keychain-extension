@@ -6,14 +6,13 @@ import {
 import { EvmTransactionVerificationInformation } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
-import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmInputDisplayType } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
 import React from 'react';
-import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
+import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
 import type { SendTransactionHookApi } from 'src/dialog/evm/requests/send-transaction/send-transaction.types';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -112,15 +111,14 @@ export async function formatDecodedArgumentDisplayValue(
       );
       return inputDisplay.value;
     }
+    case EvmInputDisplayType.ADDRESS:
     case EvmInputDisplayType.CONTRACT_ADDRESS: {
-      const address = argumentValue as string;
       return (
-        <CustomTooltip
-          message={address}
-          skipTranslation
-          additionalClassName="evm-address-tooltip">
-          <span>{EvmFormatUtils.formatAddress(address)}</span>
-        </CustomTooltip>
+        <EvmAddressComponent
+          address={argumentValue as string}
+          chainId={chainTmp.chainId}
+          canCopy={true}
+        />
       );
     }
     case EvmInputDisplayType.BALANCE: {
@@ -133,6 +131,8 @@ export async function formatDecodedArgumentDisplayValue(
         true,
       )}  ${usedToken?.symbol}`;
     }
+    case EvmInputDisplayType.UINT256:
+      return FormatUtils.withCommas(argumentValue!.toString(), 0, true);
     case EvmInputDisplayType.NUMBER:
       return FormatUtils.withCommas(argumentValue as string | number);
     case EvmInputDisplayType.STRING:
