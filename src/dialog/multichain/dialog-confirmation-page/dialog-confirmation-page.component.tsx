@@ -57,6 +57,18 @@ export const DialogConfirmationPage = ({
     );
   };
 
+  const getMessageKey = (queuedMessage: Props['message'], index: number) => {
+    if (!('command' in queuedMessage)) {
+      return `ledger-${index}`;
+    }
+
+    if (isConfirmMessage(queuedMessage)) {
+      return `${queuedMessage.command}-${queuedMessage.tab}-${queuedMessage.request.request_id}`;
+    }
+
+    return `${queuedMessage.command}-${index}`;
+  };
+
   const removeRequestFromQueue = (requestId: number, tab: number) => {
     setHasQueueState(true);
     setRequestQueue((previousQueue) => {
@@ -227,10 +239,6 @@ export const DialogConfirmationPage = ({
       ? requestQueue
       : [message]
     : [message];
-  const displayedMessage =
-    queueItems.length > 0
-      ? ((queueItems[selectedIndex] as Props['message']) ?? queueItems[0])
-      : null;
   const queueSize = queueItems.length;
   const queuePosition = queueSize > 1 ? selectedIndex + 1 : 1;
 
@@ -255,7 +263,33 @@ export const DialogConfirmationPage = ({
           )}
         </div>
       )}
-      {displayedMessage && displayRequest(displayedMessage)}
+      <div className="dialog-request-carousel">
+        {queueItems.map((queuedMessage, index) => {
+          const isActive = index === selectedIndex;
+
+          return (
+            <div
+              key={getMessageKey(queuedMessage as Props['message'], index)}
+              className={`dialog-request-slide ${
+                isActive ? 'active' : 'inactive'
+              }`}
+              data-testid={`dialog-request-slide-${index}`}
+              aria-hidden={!isActive}
+              {...(!isActive ? { inert: '' } : {})}
+              style={{
+                transform: `translateX(${
+                  index < selectedIndex
+                    ? '-100%'
+                    : index > selectedIndex
+                    ? '100%'
+                    : '0'
+                })`,
+              }}>
+              {displayRequest(queuedMessage as Props['message'])}
+            </div>
+          );
+        })}
+      </div>
       {feedBackMessage && (
         <ModalPresentation onClose={closeFeedBackMessage}>
           {displayFeedBackMessage(feedBackMessage)}
