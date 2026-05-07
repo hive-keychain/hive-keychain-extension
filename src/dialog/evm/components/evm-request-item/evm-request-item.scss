@@ -19,7 +19,31 @@
       }
       .label {
         @include poppins500(14px);
+        display: flex;
+        align-items: center;
+        column-gap: 6px;
         text-transform: capitalize;
+      }
+      .label,
+      .title {
+        .warning-icon {
+          height: 16px;
+          width: 16px;
+          flex-shrink: 0;
+          svg {
+            height: 16px;
+            width: 16px;
+          }
+          &.high {
+            --warning-color: #{$red};
+          }
+          &.medium {
+            --warning-color: #{$orange};
+          }
+          &.low {
+            --warning-color: #{$yellow};
+          }
+        }
       }
       .value {
         @include poppins400(14px);
@@ -112,6 +136,9 @@
           font-size: 13px;
         }
         .title {
+          display: flex;
+          align-items: center;
+          column-gap: 6px;
           font-weight: 500;
         }
       }

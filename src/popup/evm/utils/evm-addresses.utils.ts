@@ -37,6 +37,7 @@ export interface SavedEns {
 
 export interface EvmAddressDetail {
   label?: string;
+  whitelistedLabel?: string;
   fullAddress: string;
   formattedAddress: string;
   avatar?: string;
@@ -266,6 +267,7 @@ const getAddressDetails = async (
   const localLabel = await EvmAddressesUtils.getAddressLabel(address, chainId);
   if (localLabel) {
     details.label = localLabel;
+    details.whitelistedLabel = localLabel;
   }
 
   // check local accounts
@@ -504,13 +506,18 @@ const isWhitelisted = async (
 
 const getAddressLabel = async (address: string, chainId: string) => {
   const whitelistedAddresses = await getWhitelistedAddresses(chainId);
+  const normalizedAddress = address.toLowerCase();
   let whitelistedItem = whitelistedAddresses[
     EvmAddressType.SMART_CONTRACT
-  ].find((whitelistedAddress) => whitelistedAddress.address === address);
+  ].find(
+    (whitelistedAddress) =>
+      whitelistedAddress.address.toLowerCase() === normalizedAddress,
+  );
   if (whitelistedItem) return whitelistedItem.label;
   else
     whitelistedItem = whitelistedAddresses[EvmAddressType.WALLET_ADDRESS].find(
-      (whitelistedAddress) => whitelistedAddress.address === address,
+      (whitelistedAddress) =>
+        whitelistedAddress.address.toLowerCase() === normalizedAddress,
     );
   return whitelistedItem?.label;
 };

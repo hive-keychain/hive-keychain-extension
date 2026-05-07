@@ -9,4 +9,27 @@
       padding: unset;
     }
   }
+
+  .evm-address-content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    column-gap: 6px;
+    min-width: 0;
+  }
+}
+
+.tooltip-container.evm-address-tooltip {
+  .tooltip {
+    width: auto;
+    max-width: calc(100vw - 16px);
+
+    .tooltip-inner {
+      max-height: none;
+      overflow: visible;
+      overflow-wrap: normal;
+      white-space: nowrap;
+      word-break: normal;
+    }
+  }
 }

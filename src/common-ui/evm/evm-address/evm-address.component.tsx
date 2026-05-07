@@ -14,14 +14,20 @@ interface Props {
   address: string;
   chainId: string;
   canCopy?: boolean;
+  prefix?: React.ReactNode;
 }
 
-export const EvmAddressComponent = ({ address, chainId, canCopy }: Props) => {
+export const EvmAddressComponent = ({
+  address,
+  chainId,
+  canCopy,
+  prefix,
+}: Props) => {
   const [addressDetail, setAddressDetail] = useState<EvmAddressDetail>();
 
   useEffect(() => {
     initComponent();
-  }, []);
+  }, [address, chainId]);
 
   const initComponent = async () => {
     const details = await EvmAddressesUtils.getAddressDetails(address, chainId);
@@ -34,22 +40,46 @@ export const EvmAddressComponent = ({ address, chainId, canCopy }: Props) => {
     }
   };
 
+  const renderAddressContent = () => {
+    if (!addressDetail) return null;
+    const visibleAddress = addressDetail.label ?? addressDetail.formattedAddress;
+    const shouldShowAddressTooltip =
+      visibleAddress.trim().toLowerCase() !==
+      addressDetail.fullAddress.trim().toLowerCase();
+    const content = (
+      <span
+        className={`value-content evm-address-content ${
+          canCopy ? 'address-content' : ''
+        }`}
+        onClick={handleCopyAddress}>
+        {visibleAddress}
+      </span>
+    );
+
+    if (!shouldShowAddressTooltip) return content;
+
+    return (
+      <CustomTooltip
+        message={addressDetail.fullAddress}
+        skipTranslation
+        additionalClassName="evm-address-tooltip">
+        {content}
+      </CustomTooltip>
+    );
+  };
+
   return (
     <>
       {addressDetail && (
         <div className="value-content-horizontal">
-          <EvmAccountImage
-            address={addressDetail.fullAddress}
-            avatar={addressDetail.avatar}
-            small
-          />
-          <CustomTooltip message={addressDetail.fullAddress} skipTranslation>
-            <span
-              className={`value-content ${canCopy ? 'address-content' : ''}`}
-              onClick={handleCopyAddress}>
-              {addressDetail.label ?? addressDetail.formattedAddress}
-            </span>
-          </CustomTooltip>
+          {prefix ?? (
+            <EvmAccountImage
+              address={addressDetail.fullAddress}
+              avatar={addressDetail.avatar}
+              small
+            />
+          )}
+          {renderAddressContent()}
         </div>
       )}
     </>

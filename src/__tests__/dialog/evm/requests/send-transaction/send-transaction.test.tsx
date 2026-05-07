@@ -5,7 +5,6 @@ import { SendTransaction } from '@dialog/evm/requests/send-transaction/send-tran
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
-import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
@@ -14,6 +13,7 @@ import Decimal from 'decimal.js';
 import { ethers } from 'ethers';
 import { EthersUtils } from 'src/popup/evm/utils/ethers.utils';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
+import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
 
 const mockParseTransaction = jest.fn();
 const mockBalanceChangeCard = jest.fn(({ balanceInfo }) => (
@@ -124,6 +124,9 @@ describe('send-transaction proxy tests:\n', () => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
     mockBalanceChangeCard.mockClear();
+    transactionHook.fields = undefined;
+    transactionHook.ready = false;
+    transactionHook.selectedFee = undefined;
     (useTransactionHook as jest.Mock).mockReturnValue(transactionHook);
     jest.spyOn(ChainUtils, 'getChain').mockResolvedValue({
       chainId: '1',
@@ -250,9 +253,9 @@ describe('send-transaction proxy tests:\n', () => {
         messageParams: [proxyTarget],
       },
     ]);
-    expect(contractField.value.props.children[1].props.children).toBe(
-      EvmFormatUtils.formatAddress(proxyAddress),
-    );
+    expect(contractField.value.type).toBe(EvmAddressComponent);
+    expect(contractField.value.props.address).toBe(proxyAddress);
+    expect(contractField.value.props.canCopy).toBe(true);
   });
 
   it('does not request an abi for deployment transactions', async () => {
@@ -474,6 +477,73 @@ describe('send-transaction proxy tests:\n', () => {
       true,
     );
     expect((ethers.Contract as jest.Mock).mock.calls[1][1]).toEqual(fallbackAbi);
+  });
+
+  it('shows the native balance card for contract calls without token balance changes', async () => {
+    transactionHook.fields = {
+      operationName: 'evm_operation_approve',
+    } as any;
+    transactionHook.ready = true;
+    transactionHook.selectedFee = {
+      estimatedFeeInEth: new Decimal('0.01'),
+      gasLimit: new Decimal(21000),
+      maxFeeInEth: new Decimal('0.02'),
+      priorityFeeInGwei: new Decimal('1'),
+    } as any;
+
+    const getBalanceInfoSpy = jest
+      .spyOn(EvmTokensUtils, 'getBalanceInfo')
+      .mockResolvedValue({
+        mainBalance: {
+          before: '1 ETH',
+          estimatedAfter: '0.99  ETH',
+        },
+      } as any);
+
+    render(
+      <SendTransaction
+        accounts={[
+          {
+            wallet: {
+              address: '0x00000000000000000000000000000000000000ff',
+              mnemonic: { phrase: 'test phrase' },
+            },
+          } as any,
+        ]}
+        afterCancel={jest.fn()}
+        data={{ dappInfo: { domain: 'app.example' }, tab: 1 } as any}
+        request={
+          {
+            chainId: '1',
+            params: [
+              {
+                data: '0x095ea7b3',
+                from: '0x00000000000000000000000000000000000000ff',
+                gasLimit: 21000,
+                maxFeePerGas: '1',
+                maxPriorityFeePerGas: '1',
+                to: proxyAddress,
+                type: EvmTransactionType.EIP_1559,
+                value: '0',
+              },
+            ],
+            request_id: 1,
+          } as any
+        }
+      />,
+    );
+
+    await waitFor(() =>
+      expect(getBalanceInfoSpy).toHaveBeenCalledWith(
+        '0x00000000000000000000000000000000000000ff',
+        expect.objectContaining({ chainId: '1' }),
+        expect.objectContaining({ symbol: 'ETH' }),
+        0,
+        transactionHook.selectedFee,
+        undefined,
+      ),
+    );
+    await waitFor(() => expect(screen.getByTestId('balance-card')).toBeTruthy());
   });
 
   it('recomputes the balance card when a selected gas fee becomes available', async () => {
