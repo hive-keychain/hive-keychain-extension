@@ -51,6 +51,7 @@ const EvmWalletNftGallery = ({
     ready: boolean;
     showCard: boolean;
   }>({ ready: false, showCard: false });
+  const hasFilterableCollections = Boolean(filteredCollections?.length);
 
   useEffect(() => {
     if (!activeAccount.nfts.initialized) {
@@ -78,7 +79,7 @@ const EvmWalletNftGallery = ({
         ),
       );
     }
-  }, [filterValue]);
+  }, [filterValue, filteredCollections]);
 
   useEffect(() => {
     let cancelled = false;
@@ -140,7 +141,7 @@ const EvmWalletNftGallery = ({
     <div className="nft-gallery">
       {displayedCollections && !activeAccount.nfts.loading && (
         <>
-          {(displayedCollections.length > 0 || isCustomChainSelected) && (
+          {(hasFilterableCollections || isCustomChainSelected) && (
             <SeparatorWithFilter
               setFilterValue={setFilterValue}
               filterValue={filterValue}
