@@ -26,6 +26,19 @@
     .title {
       @include poppins500(14px);
       color: var(--main-font-color);
+      display: inline-flex;
+      align-items: center;
+      column-gap: 6px;
+
+      .gas-fee-refresh-spinner {
+        width: 10px;
+        height: 10px;
+        border: 2px solid rgba(128, 128, 128, 0.35);
+        border-top-color: var(--main-font-color);
+        border-radius: 50%;
+        animation: gas-fee-refresh-spin 0.75s linear infinite;
+        flex: 0 0 auto;
+      }
     }
 
     .gas-fee-estimate {
@@ -81,6 +94,12 @@
         }
       }
     }
+  }
+}
+
+@keyframes gas-fee-refresh-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 .edit-gas-fee-popup {

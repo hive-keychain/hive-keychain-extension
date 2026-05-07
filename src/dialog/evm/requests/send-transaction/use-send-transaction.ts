@@ -23,6 +23,10 @@ export function useSendTransaction(
   request: EvmRequest,
   data: EvmRequestMessage,
   accounts: EvmAccountPublic[],
+  {
+    isActive = true,
+    activationKey,
+  }: { isActive?: boolean; activationKey?: string } = {},
 ) {
   const transactionHook = useTransactionHook(data, request);
 
@@ -33,6 +37,7 @@ export function useSendTransaction(
   const [receiver, setReceiver] = useState<string | null>(null);
   const [transferAmount, setTransferAmount] = useState<number>();
   const [balanceInfo, setBalanceInfo] = useState<BalanceInfo>();
+  const [balanceInfoRefreshing, setBalanceInfoRefreshing] = useState(false);
   const [shouldDisplayBalanceChange, setShouldDisplayBalanceChange] =
     useState(false);
   const [transactionData, setTransactionData] =
@@ -42,9 +47,22 @@ export function useSendTransaction(
 
   const forceOpenGasFeePanelEvent = useMemo(() => new EventEmitter(), []);
   const initializedRequestKeyRef = useRef<string>();
+  const balanceRefreshGenerationRef = useRef(0);
+  const latestRequestKeyRef = useRef<string>();
+  const latestIsActiveRef = useRef(isActive);
+  const pendingWarningWasActiveRef = useRef(isActive);
+
+  const requestKey = `${data.tab}:${request.request_id}:${request.method}`;
 
   useEffect(() => {
-    const requestKey = `${data.tab}:${request.request_id}:${request.method}`;
+    latestRequestKeyRef.current = requestKey;
+  }, [requestKey]);
+
+  useEffect(() => {
+    latestIsActiveRef.current = isActive;
+  }, [isActive]);
+
+  useEffect(() => {
     if (initializedRequestKeyRef.current === requestKey) {
       return;
     }
@@ -70,13 +88,22 @@ export function useSendTransaction(
         setPrefetchedMainTokenFromInit,
       },
     });
-  }, [accounts, data, request, transactionHook]);
+  }, [accounts, data, request, requestKey, transactionHook]);
 
   useEffect(() => {
+    if (!isActive && activationKey !== undefined) {
+      return;
+    }
     if (tokenInfo && selectedAccount && chain && transferAmount !== undefined) {
+      const generation = ++balanceRefreshGenerationRef.current;
+      const refreshRequestKey = requestKey;
+      const isActivationRefresh = isActive && activationKey !== undefined;
+      if (balanceInfo) {
+        setBalanceInfoRefreshing(true);
+      }
       void (async () => {
-        setBalanceInfo(
-          await EvmTokensUtils.getBalanceInfo(
+        try {
+          const refreshedBalanceInfo = await EvmTokensUtils.getBalanceInfo(
             selectedAccount.address,
             chain,
             tokenInfo,
@@ -86,18 +113,50 @@ export function useSendTransaction(
               tokenInfo.type === EVMSmartContractType.ERC20
               ? (prefetchedMainTokenFromInit as EvmSmartContractInfoNative)
               : undefined,
-          ),
-        );
+          );
+          if (
+            generation !== balanceRefreshGenerationRef.current ||
+            latestRequestKeyRef.current !== refreshRequestKey ||
+            (isActivationRefresh && !latestIsActiveRef.current)
+          ) {
+            return;
+          }
+          setBalanceInfo(refreshedBalanceInfo);
+        } finally {
+          if (generation === balanceRefreshGenerationRef.current) {
+            setBalanceInfoRefreshing(false);
+          }
+        }
       })();
     }
   }, [
+    activationKey,
     chain,
+    isActive,
     selectedAccount,
     tokenInfo,
     transactionHook.selectedFee,
     transferAmount,
     prefetchedMainTokenFromInit,
   ]);
+
+  useEffect(() => {
+    if (!isActive || !activationKey || !chain || !selectedAccount?.address) {
+      if (activationKey && chain && selectedAccount?.address) {
+        pendingWarningWasActiveRef.current = isActive;
+      }
+      return;
+    }
+    const becameActive = isActive && !pendingWarningWasActiveRef.current;
+    pendingWarningWasActiveRef.current = isActive;
+    if (!becameActive) {
+      return;
+    }
+    void transactionHook.initPendingTransactionWarning(
+      selectedAccount.address,
+      chain,
+    );
+  }, [activationKey, chain, isActive, selectedAccount?.address]);
 
   return {
     transactionHook,
@@ -107,6 +166,7 @@ export function useSendTransaction(
     transactionData,
     shouldDisplayBalanceChange,
     balanceInfo,
+    balanceInfoRefreshing,
     forceOpenGasFeePanelEvent,
     prefetchedMainTokenFromInit,
   };

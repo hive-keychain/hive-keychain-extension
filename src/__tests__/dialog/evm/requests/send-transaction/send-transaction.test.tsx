@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { KeychainApi } from '@api/keychain';
 import { SendTransaction } from '@dialog/evm/requests/send-transaction/send-transaction';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
@@ -20,19 +20,33 @@ const mockParseTransaction = jest.fn();
 const mockBalanceChangeCard = jest.fn(({ balanceInfo }) => (
   <div data-testid="balance-card">{JSON.stringify(balanceInfo)}</div>
 ));
+const mockGasFeePanel = jest.fn((props: any) => {
+  React.useEffect(() => {
+    props.onInitialEstimationComplete?.();
+  }, [props.transactionData]);
+  return <div data-testid="gas-fee-panel" />;
+});
 
 jest.mock('src/dialog/evm/requests/transaction-warnings/transaction.hook', () => ({
   useTransactionHook: jest.fn(),
 }));
 
 jest.mock('src/dialog/evm/evm-operation/evm-operation', () => ({
-  EvmOperation: ({ bottomPanel }: any) => (
-    <div data-testid="evm-operation">{bottomPanel}</div>
+  EvmOperation: ({ bottomPanel, confirmDisabled, onConfirm }: any) => (
+    <div data-testid="evm-operation">
+      {bottomPanel}
+      <button
+        data-testid="dialog-confirm"
+        disabled={confirmDisabled}
+        onClick={onConfirm}
+      />
+    </div>
   ),
 }));
 
 jest.mock('src/common-ui/loading/loading.component', () => ({
-  LoadingComponent: () => <div data-testid="loading" />,
+  LoadingComponent: ({ hide }: any) =>
+    hide ? null : <div data-testid="loading" />,
 }));
 
 jest.mock('@dialog/components/balance-change-card/balance-change-card.component', () => ({
@@ -40,7 +54,7 @@ jest.mock('@dialog/components/balance-change-card/balance-change-card.component'
 }));
 
 jest.mock('@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component', () => ({
-  GasFeePanel: () => <div data-testid="gas-fee-panel" />,
+  GasFeePanel: (props: any) => mockGasFeePanel(props),
 }));
 
 jest.mock('src/dialog/evm/requests/transaction-warnings/transaction-warning.component', () => ({
@@ -116,6 +130,42 @@ describe('send-transaction proxy tests:\n', () => {
     setUnableToReachBackend: jest.fn(),
   };
 
+  const createDeferred = <T,>() => {
+    let resolve!: (value: T) => void;
+    const promise = new Promise<T>((res) => {
+      resolve = res;
+    });
+    return { promise, resolve };
+  };
+
+  const buildSendTransactionProps = () => ({
+    accounts: [
+      {
+        wallet: {
+          address: '0x00000000000000000000000000000000000000ff',
+          mnemonic: { phrase: 'test phrase' },
+        },
+      } as any,
+    ],
+    afterCancel: jest.fn(),
+    data: { dappInfo: { domain: 'app.example' }, tab: 1 } as any,
+    request: {
+      chainId: '1',
+      params: [
+        {
+          from: '0x00000000000000000000000000000000000000ff',
+          gasLimit: 21000,
+          maxFeePerGas: '1',
+          maxPriorityFeePerGas: '1',
+          to: '0x00000000000000000000000000000000000000ab',
+          type: EvmTransactionType.EIP_1559,
+          value: '1000000000000000000',
+        },
+      ],
+      request_id: 1,
+    } as any,
+  });
+
   const lastSetFieldsPayload = () => {
     const calls = transactionHook.setFields.mock.calls;
     return calls[calls.length - 1][0];
@@ -129,6 +179,7 @@ describe('send-transaction proxy tests:\n', () => {
     transactionHook.ready = false;
     transactionHook.selectedFee = undefined;
     (useTransactionHook as jest.Mock).mockReturnValue(transactionHook);
+    mockGasFeePanel.mockClear();
     jest.spyOn(ChainUtils, 'getChain').mockResolvedValue({
       chainId: '1',
       defaultTransactionType: EvmTransactionType.EIP_1559,
@@ -1178,5 +1229,124 @@ describe('send-transaction proxy tests:\n', () => {
         ][0];
       expect(latestCall.balanceInfo.mainBalance.estimatedAfter).toBe('0.49  ETH');
     });
+  });
+
+  it('requests a quiet gas refresh when an inactive queued transaction becomes active', async () => {
+    transactionHook.fields = {
+      operationName: 'evm_operation_transfer',
+    } as any;
+    transactionHook.ready = true;
+
+    const props = buildSendTransactionProps();
+    const { rerender } = render(
+      <SendTransaction {...props} isActive={false} activationKey="0" />,
+    );
+
+    await waitFor(() => expect(mockGasFeePanel).toHaveBeenCalled());
+    expect(
+      mockGasFeePanel.mock.calls[mockGasFeePanel.mock.calls.length - 1][0]
+        .refreshKey,
+    ).toBeUndefined();
+
+    rerender(<SendTransaction {...props} isActive activationKey="1" />);
+
+    await waitFor(() =>
+      expect(
+        mockGasFeePanel.mock.calls[mockGasFeePanel.mock.calls.length - 1][0]
+          .refreshKey,
+      ).toBe(1),
+    );
+  });
+
+  it('keeps the old balance visible with a tiny spinner during activation refresh', async () => {
+    transactionHook.fields = {
+      operationName: 'evm_operation_transfer',
+    } as any;
+    transactionHook.ready = true;
+
+    const refreshDeferred = createDeferred<any>();
+    jest
+      .spyOn(EvmTokensUtils, 'getBalanceInfo')
+      .mockResolvedValueOnce({
+        mainBalance: {
+          before: '1 ETH',
+          estimatedAfter: '0.5  ETH',
+        },
+      } as any)
+      .mockReturnValueOnce(refreshDeferred.promise);
+
+    const props = buildSendTransactionProps();
+    const { rerender } = render(
+      <SendTransaction {...props} isActive activationKey="0" />,
+    );
+
+    await waitFor(() => expect(screen.getByTestId('balance-card')).toBeTruthy());
+    expect(screen.getByTestId('balance-card').textContent).toContain('0.5  ETH');
+
+    rerender(<SendTransaction {...props} isActive={false} activationKey="0" />);
+    rerender(<SendTransaction {...props} isActive activationKey="1" />);
+
+    await waitFor(() =>
+      expect(screen.getByTestId('balance-refresh-spinner')).toBeTruthy(),
+    );
+    expect(screen.getByTestId('balance-card').textContent).toContain('0.5  ETH');
+    expect(screen.queryByTestId('loading')).toBeNull();
+
+    await act(async () => {
+      refreshDeferred.resolve({
+        mainBalance: {
+          before: '0.9 ETH',
+          estimatedAfter: '0.4  ETH',
+        },
+      });
+      await Promise.resolve();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('balance-card').textContent).toContain(
+        '0.4  ETH',
+      );
+      expect(screen.queryByTestId('balance-refresh-spinner')).toBeNull();
+    });
+  });
+
+  it('does not confirm while a quiet gas refresh is in progress', async () => {
+    transactionHook.fields = {
+      operationName: 'evm_operation_transfer',
+    } as any;
+    transactionHook.ready = true;
+
+    render(<SendTransaction {...buildSendTransactionProps()} />);
+
+    await waitFor(() => expect(mockGasFeePanel).toHaveBeenCalled());
+    act(() => {
+      mockGasFeePanel.mock.calls[mockGasFeePanel.mock.calls.length - 1][0]
+        .onInitialEstimationComplete();
+    });
+    await waitFor(() =>
+      expect((screen.getByTestId('dialog-confirm') as HTMLButtonElement).disabled)
+        .toBe(false),
+    );
+
+    act(() => {
+      mockGasFeePanel.mock.calls[mockGasFeePanel.mock.calls.length - 1][0]
+        .onRefreshStateChange(true);
+    });
+
+    expect((screen.getByTestId('dialog-confirm') as HTMLButtonElement).disabled)
+      .toBe(true);
+    fireEvent.click(screen.getByTestId('dialog-confirm'));
+    expect(transactionHook.handleOnConfirmClick).not.toHaveBeenCalled();
+    expect(screen.queryByTestId('loading')).toBeNull();
+
+    act(() => {
+      mockGasFeePanel.mock.calls[mockGasFeePanel.mock.calls.length - 1][0]
+        .onRefreshStateChange(false);
+    });
+
+    await waitFor(() =>
+      expect((screen.getByTestId('dialog-confirm') as HTMLButtonElement).disabled)
+        .toBe(false),
+    );
   });
 });

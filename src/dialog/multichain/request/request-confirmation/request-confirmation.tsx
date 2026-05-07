@@ -52,9 +52,16 @@ import WitnessVote from 'src/dialog/hive/requests/witness-vote';
 type Props = {
   message: HiveRequestMessage | EvmRequestMessage;
   afterCancel: (requestId: number, tab: number) => void;
+  isActive?: boolean;
+  activationKey?: string;
 };
 
-export const RequestConfirmation = ({ message, afterCancel }: Props) => {
+export const RequestConfirmation = ({
+  message,
+  afterCancel,
+  isActive = true,
+  activationKey,
+}: Props) => {
   const displayRequest = (
     displayedMessage: HiveRequestMessage | EvmRequestMessage,
   ) => {
@@ -365,6 +372,8 @@ export const RequestConfirmation = ({ message, afterCancel }: Props) => {
               data={displayedMessage}
               accounts={displayedMessage.accounts!}
               afterCancel={afterCancel}
+              isActive={isActive}
+              activationKey={activationKey}
             />
           );
         }

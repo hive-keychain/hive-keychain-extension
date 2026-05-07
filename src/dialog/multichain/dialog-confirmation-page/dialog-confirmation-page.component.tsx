@@ -197,6 +197,8 @@ export const DialogConfirmationPage = ({
           <RequestConfirmation
             message={displayedMessage as HiveRequestMessage | EvmRequestMessage}
             afterCancel={afterCancel}
+            isActive={displayedMessage === queueItems[selectedIndex]}
+            activationKey={`${selectedIndex}-${queuePosition}-${queueSize}`}
           />
         );
       case DialogCommand.ANONYMOUS_KEYLESS_OP:

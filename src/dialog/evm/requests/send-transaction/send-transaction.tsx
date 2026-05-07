@@ -4,7 +4,7 @@ import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
@@ -15,10 +15,19 @@ interface Props {
   accounts: EvmAccountPublic[];
   data: EvmRequestMessage;
   afterCancel: (requestId: number, tab: number) => void;
+  isActive?: boolean;
+  activationKey?: string;
 }
 
 export const SendTransaction = (props: Props) => {
-  const { accounts, data, request, afterCancel } = props;
+  const {
+    accounts,
+    data,
+    request,
+    afterCancel,
+    isActive = true,
+    activationKey,
+  } = props;
 
   const {
     transactionHook,
@@ -28,9 +37,10 @@ export const SendTransaction = (props: Props) => {
     transactionData,
     shouldDisplayBalanceChange,
     balanceInfo,
+    balanceInfoRefreshing,
     forceOpenGasFeePanelEvent,
     prefetchedMainTokenFromInit,
-  } = useSendTransaction(request, data, accounts);
+  } = useSendTransaction(request, data, accounts, { isActive, activationKey });
 
   const needsGasFeePanel = Boolean(
     transactionHook.ready &&
@@ -42,6 +52,9 @@ export const SendTransaction = (props: Props) => {
   );
 
   const [gasFeePanelReady, setGasFeePanelReady] = useState(false);
+  const [gasRefreshKey, setGasRefreshKey] = useState<number>();
+  const [gasFeeRefreshing, setGasFeeRefreshing] = useState(false);
+  const wasActiveRef = useRef(isActive);
 
   useEffect(() => {
     if (needsGasFeePanel) {
@@ -49,15 +62,24 @@ export const SendTransaction = (props: Props) => {
     }
   }, [needsGasFeePanel, transactionData]);
 
+  useEffect(() => {
+    const becameActive = isActive && !wasActiveRef.current;
+    wasActiveRef.current = isActive;
+    if (becameActive && activationKey && needsGasFeePanel) {
+      setGasRefreshKey((currentKey) => (currentKey ?? 0) + 1);
+    }
+  }, [activationKey, isActive, needsGasFeePanel]);
+
   const onGasFeePanelInitialEstimationComplete = useCallback(() => {
     setGasFeePanelReady(true);
   }, []);
 
   const feeSelectionPending = needsGasFeePanel && !gasFeePanelReady;
+  const quietRefreshPending = gasFeeRefreshing || balanceInfoRefreshing;
   const showLoading = transactionHook.loading;
 
   const handleClickOnConfirm = () => {
-    if (feeSelectionPending) {
+    if (feeSelectionPending || quietRefreshPending) {
       return;
     }
 
@@ -100,23 +122,34 @@ export const SendTransaction = (props: Props) => {
                   onSelectFee={transactionHook.setSelectedFee}
                   transactionType={transactionData!.type}
                   transactionData={transactionData}
+                  refreshKey={gasRefreshKey}
+                  isActive={isActive}
                   setErrorMessage={transactionHook.setErrorMessage}
                   onInitialEstimationComplete={
                     onGasFeePanelInitialEstimationComplete
                   }
+                  onRefreshStateChange={setGasFeeRefreshing}
                 />
               )}
               {shouldDisplayBalanceChange &&
                 balanceInfo &&
                 balanceInfo.mainBalance.before &&
                 balanceInfo.mainBalance.estimatedAfter && (
-                  <BalanceChangeCard balanceInfo={balanceInfo} />
+                  <div className="balance-change-refresh-wrapper">
+                    <BalanceChangeCard balanceInfo={balanceInfo} />
+                    {balanceInfoRefreshing && (
+                      <span
+                        className="dialog-refresh-spinner"
+                        data-testid="balance-refresh-spinner"
+                      />
+                    )}
+                  </div>
                 )}
             </>
           }
           onConfirm={() => handleClickOnConfirm()}
           transactionHook={transactionHook}
-          confirmDisabled={feeSelectionPending}
+          confirmDisabled={feeSelectionPending || quietRefreshPending}
         />
       )}
       <LoadingComponent hide={!showLoading} />

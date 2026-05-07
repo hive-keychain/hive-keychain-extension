@@ -44,6 +44,10 @@ interface GasFeePanelProps {
   setErrorMessage: (error: EtherRPCCustomError) => void;
   /** Fires when the initial gas estimate request finishes (success or error). */
   onInitialEstimationComplete?: () => void;
+  /** Re-runs gas estimation while preserving visible values. */
+  refreshKey?: string | number;
+  onRefreshStateChange?: (refreshing: boolean) => void;
+  isActive?: boolean;
 }
 
 export const GasFeePanel = ({
@@ -58,10 +62,17 @@ export const GasFeePanel = ({
   forceOpenGasFeePanelEvent,
   setErrorMessage,
   onInitialEstimationComplete,
+  refreshKey,
+  onRefreshStateChange,
+  isActive = true,
 }: GasFeePanelProps) => {
   const initGenerationRef = useRef(0);
+  const lastRefreshKeyRef = useRef<string | number>();
+  const customFeeWasSavedRef = useRef(false);
+  const latestIsActiveRef = useRef(isActive);
   const [isAdvancedPanelOpen, setIsAdvancedPanelOpen] = useState(false);
   const [feeEstimation, setFeeEstimation] = useState<FullGasFeeEstimation>();
+  const [isRefreshing, setRefreshing] = useState(false);
 
   const [gasFeeWarning, setgasFeeWarning] = useState<string>();
   const [customFeeFormWarning, setCustomFeeFormWarning] = useState<string>();
@@ -81,14 +92,37 @@ export const GasFeePanel = ({
   const [mainTokenPrice, setMainTokenPrice] = useState<number>();
 
   useEffect(() => {
-    forceOpenGasFeePanelEvent?.addListener('forceOpenCustomFeePanel', () => {
-      openCustomFeePanel();
-    });
-  }, []);
+    latestIsActiveRef.current = isActive;
+  }, [isActive]);
 
   useEffect(() => {
-    if (transactionData) init();
+    const handler = () => {
+      openCustomFeePanel();
+    };
+    forceOpenGasFeePanelEvent?.addListener('forceOpenCustomFeePanel', handler);
+    return () => {
+      forceOpenGasFeePanelEvent?.removeListener(
+        'forceOpenCustomFeePanel',
+        handler,
+      );
+    };
+  }, [forceOpenGasFeePanelEvent]);
+
+  useEffect(() => {
+    if (transactionData) void init(false);
   }, [transactionData]);
+
+  useEffect(() => {
+    if (
+      !transactionData ||
+      refreshKey === undefined ||
+      lastRefreshKeyRef.current === refreshKey
+    ) {
+      return;
+    }
+    lastRefreshKeyRef.current = refreshKey;
+    void init(true);
+  }, [refreshKey]);
 
   useEffect(() => {
     if (selectedFee) {
@@ -112,9 +146,15 @@ export const GasFeePanel = ({
     }
   }, [selectedFee]);
 
-  const init = async () => {
+  const init = async (silentRefresh: boolean) => {
     const generation = ++initGenerationRef.current;
     let estimate;
+    const shouldShowRefreshIndicator =
+      silentRefresh && !!feeEstimation && !!selectedFee;
+    if (shouldShowRefreshIndicator) {
+      setRefreshing(true);
+      onRefreshStateChange?.(true);
+    }
 
     const mainTokenInfo =
       prefetchedMainTokenInfo ??
@@ -132,6 +172,10 @@ export const GasFeePanel = ({
           : undefined,
         transactionData,
       );
+
+      if (silentRefresh && !latestIsActiveRef.current) {
+        return;
+      }
 
       if (!!multiplier && selectedFee) {
         const increasedFee: GasFeeEstimationBase = {
@@ -165,7 +209,7 @@ export const GasFeePanel = ({
 
         onSelectFee(increasedFee);
         estimate.increased = increasedFee;
-      } else {
+      } else if (!customFeeWasSavedRef.current) {
         if (estimate?.suggestedByDApp) {
           onSelectFee(estimate.suggestedByDApp);
         } else if (estimate.suggested) {
@@ -201,6 +245,10 @@ export const GasFeePanel = ({
     } finally {
       if (generation === initGenerationRef.current) {
         onInitialEstimationComplete?.();
+        if (shouldShowRefreshIndicator) {
+          setRefreshing(false);
+          onRefreshStateChange?.(false);
+        }
       }
     }
   };
@@ -211,6 +259,7 @@ export const GasFeePanel = ({
   };
 
   const selectGasFee = (gasFee: GasFeeEstimationBase) => {
+    customFeeWasSavedRef.current = false;
     onSelectFee(gasFee);
     setIsAdvancedPanelOpen(false);
   };
@@ -377,6 +426,7 @@ export const GasFeePanel = ({
         name: 'popup_html_evm_custom_gas_fee_custom',
         icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
       } as GasFeeEstimationBase;
+      customFeeWasSavedRef.current = true;
       onSelectFee(custom);
 
       const fullGasFeeEstimation = {
@@ -436,6 +486,12 @@ export const GasFeePanel = ({
             <div className="title">
               {chrome.i18n.getMessage('popup_html_evm_gas_fee')} :{' '}
               {chrome.i18n.getMessage(selectedFee.name)}
+              {isRefreshing && (
+                <span
+                  className="gas-fee-refresh-spinner"
+                  data-testid="gas-fee-refresh-spinner"
+                />
+              )}
             </div>
             {!isExpandablePanelOpened && (
               <div className="gas-fee-estimate">
