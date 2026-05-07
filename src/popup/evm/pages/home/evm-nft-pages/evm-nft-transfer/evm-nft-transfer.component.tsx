@@ -50,6 +50,7 @@ import { useForm } from 'react-hook-form';
 import { connect, ConnectedProps } from 'react-redux';
 import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import ButtonComponent from 'src/common-ui/button/button.component';
+import { EvmNftMedia } from 'src/common-ui/evm/nft-media/nft-media.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -152,7 +153,7 @@ const EvmNftTransfer = ({
     let fields = [
       {
         label: '',
-        value: <img src={collectionItem.item.metadata.image} />,
+        value: <EvmNftMedia src={collectionItem.item.metadata.image} />,
         valueClassName: 'nft-image',
       },
       {
