@@ -4,6 +4,7 @@ import {
   EvmNftCollectionListItem,
 } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-collection/evm-nft-collection.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
@@ -16,8 +17,12 @@ const EvmNftCollectionPage = ({
   navigateToWithParams,
 }: PropsFromRedux) => {
   useEffect(() => {
+    const collectionTitle =
+      collection.tokenInfo.name?.trim() ||
+      EvmFormatUtils.formatAddress(collection.tokenInfo.contractAddress);
+
     setTitleContainerProperties({
-      title: collection.tokenInfo.name ?? 'No name',
+      title: collectionTitle,
       isBackButtonEnabled: true,
       skipTitleTranslation: true,
     });
