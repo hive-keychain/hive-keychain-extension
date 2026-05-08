@@ -7,6 +7,7 @@ import { Screen } from '@interfaces/screen.interface';
 import { EtherRPCCustomError } from '@popup/evm/interfaces/evm-errors.interface';
 import {
   EvmSmartContractInfo,
+  EvmSmartContractInfoNative,
   EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
@@ -48,9 +49,11 @@ const ConfirmationPage = ({
   hasGasFee,
   chain,
   tokenInfo,
+  prefetchedMainTokenInfo,
   receiverAddress,
   amount,
   wallet,
+  activeAccount,
   selectedAccount,
   transactionData,
   goBack,
@@ -66,6 +69,17 @@ const ConfirmationPage = ({
   );
 
   const forceOpenGasFeePanelEvent = useMemo(() => new EventEmitter(), []);
+  const mainTokenInfo = useMemo(
+    () =>
+      prefetchedMainTokenInfo ??
+      (activeAccount?.nativeAndErc20Tokens?.value.find(
+        ({ tokenInfo }) =>
+          tokenInfo.type === EVMSmartContractType.NATIVE ||
+          tokenInfo.symbol.toLowerCase() ===
+            (chain as EvmChain)?.mainToken?.toLowerCase(),
+      )?.tokenInfo as EvmSmartContractInfoNative | undefined),
+    [activeAccount?.nativeAndErc20Tokens?.value, chain, prefetchedMainTokenInfo],
+  );
 
   useEffect(() => {
     initConfirmationPage();
@@ -140,6 +154,9 @@ const ConfirmationPage = ({
         tokenInfo,
         amount!,
         selectedFee,
+        tokenInfo.type === EVMSmartContractType.ERC20
+          ? mainTokenInfo
+          : undefined,
       ),
     );
   };
@@ -234,6 +251,7 @@ const ConfirmationPage = ({
           <GasFeePanel
             chain={chain as EvmChain}
             fromAddress={wallet.address}
+            prefetchedMainTokenInfo={mainTokenInfo}
             selectedFee={selectedFee}
             onSelectFee={setSelectedFee}
             transactionType={(chain as EvmChain).defaultTransactionType}
@@ -281,6 +299,8 @@ const mapStateToProps = (state: RootState) => {
     hasGasFee: state.navigation.stack[0].params.hasGasFee,
     chain: state.chain,
     tokenInfo: state.navigation.stack[0].params.tokenInfo,
+    prefetchedMainTokenInfo:
+      state.navigation.stack[0].params.prefetchedMainTokenInfo,
     receiverAddress: state.navigation.stack[0].params.receiverAddress,
     amount: state.navigation.stack[0].params.amount,
     wallet: state.navigation.stack[0].params.wallet,

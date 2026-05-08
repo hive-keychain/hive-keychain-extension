@@ -156,12 +156,12 @@ export const GasFeePanel = ({
       onRefreshStateChange?.(true);
     }
 
-    const mainTokenInfo =
-      prefetchedMainTokenInfo ??
-      (await EvmTokensUtils.getMainTokenInfo(chain as EvmChain));
-    setMainTokenPrice(mainTokenInfo.priceUsd ?? undefined);
-
     try {
+      const mainTokenInfo =
+        prefetchedMainTokenInfo ??
+        (await EvmTokensUtils.getMainTokenInfo(chain as EvmChain));
+      setMainTokenPrice(mainTokenInfo.priceUsd ?? undefined);
+
       estimate = await GasFeeUtils.estimate(
         chain,
         fromAddress,

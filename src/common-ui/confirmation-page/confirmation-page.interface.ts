@@ -3,6 +3,7 @@ import {
   EvmTransactionInfo,
   EvmTransactionWarning,
 } from '@popup/evm/interfaces/evm-transactions.interface';
+import { EvmSmartContractInfoNative } from '@popup/evm/interfaces/evm-tokens.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 
 export type TransactionWarning = EvmTransactionWarning;
@@ -23,6 +24,7 @@ export interface ConfirmationPageParams {
 
 export interface EVMConfirmationPageParams extends ConfirmationPageParams {
   hasGasFee?: boolean;
+  prefetchedMainTokenInfo?: EvmSmartContractInfoNative;
 }
 
 export interface HiveConfirmationPageParams extends ConfirmationPageParams {
