@@ -4,11 +4,13 @@ import {
   loadEvmHistory,
   loadMoreTokensInActiveAccount,
 } from '@popup/evm/actions/active-account.actions';
+import { EvmActionType } from '@popup/evm/actions/action-type.evm.enum';
 import {
   CatchupStatus,
   EvmLightNodeUtils,
   PricingStatus,
 } from '@popup/evm/utils/evm-light-node.utils';
+import { EvmLocalHistoryUtils } from '@popup/evm/utils/evm-local-history.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import {
   ChainType,
@@ -39,6 +41,9 @@ const customEvmChain: EvmChain = {
 };
 
 const wallet = { address: '0x1111111111111111111111111111111111111111' } as HDNodeWallet;
+const otherWallet = {
+  address: '0x2222222222222222222222222222222222222222',
+} as HDNodeWallet;
 
 describe('EVM active-account.actions (custom chain)', () => {
   beforeEach(() => {
@@ -180,6 +185,13 @@ describe('EVM active-account.actions (custom chain)', () => {
   });
 
   it('loadEvmHistory does not call fetchHistory2 for custom chains', async () => {
+    jest
+      .spyOn(EvmLocalHistoryUtils, 'getLocalUserHistoryForCustomChain')
+      .mockResolvedValue({
+        events: [],
+        nextCursor: null,
+        fullyFetch: true,
+      });
     jest.spyOn(EvmTokensHistoryUtils, 'fetchHistory2').mockResolvedValue({
       events: [],
       nextCursor: null,
@@ -189,6 +201,14 @@ describe('EVM active-account.actions (custom chain)', () => {
     const store = getFakeStore({
       ...initialEmptyStateStore,
       chain: customEvmChain,
+      evm: {
+        ...initialEmptyStateStore.evm,
+        activeAccount: {
+          ...initialEmptyStateStore.evm.activeAccount,
+          address: wallet.address,
+          wallet,
+        },
+      },
     });
 
     await store.dispatch<any>(loadEvmHistory());
@@ -207,6 +227,14 @@ describe('EVM active-account.actions (custom chain)', () => {
     const store = getFakeStore({
       ...initialEmptyStateStore,
       chain: customEvmChain,
+      evm: {
+        ...initialEmptyStateStore.evm,
+        activeAccount: {
+          ...initialEmptyStateStore.evm.activeAccount,
+          address: wallet.address,
+          wallet,
+        },
+      },
     });
 
     await store.dispatch<any>(
@@ -233,5 +261,94 @@ describe('EVM active-account.actions (custom chain)', () => {
     );
 
     expect(EvmLightNodeUtils.getDiscoveredTokens).not.toHaveBeenCalled();
+  });
+
+  it('loadMoreTokensInActiveAccount stops loading when discovery is complete with no balances', async () => {
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      chain: baseEvmChain,
+      evm: {
+        ...initialEmptyStateStore.evm,
+        activeAccount: {
+          ...initialEmptyStateStore.evm.activeAccount,
+          address: wallet.address,
+          wallet,
+          nativeAndErc20Tokens: {
+            value: [],
+            loading: true,
+          },
+        },
+      },
+    });
+
+    await store.dispatch<any>(
+      loadMoreTokensInActiveAccount(baseEvmChain, wallet),
+    );
+
+    expect(store.getState().evm.activeAccount.nativeAndErc20Tokens).toEqual({
+      value: [],
+      loading: false,
+      initialized: true,
+    });
+  });
+
+  it('loadMoreTokensInActiveAccount ignores stale responses for a previous wallet', async () => {
+    let resolveDiscovery!: (value: Awaited<ReturnType<typeof EvmLightNodeUtils.getDiscoveredTokens>>) => void;
+    (EvmLightNodeUtils.getDiscoveredTokens as jest.Mock).mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveDiscovery = resolve;
+      }),
+    );
+
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      chain: baseEvmChain,
+      evm: {
+        ...initialEmptyStateStore.evm,
+        activeAccount: {
+          ...initialEmptyStateStore.evm.activeAccount,
+          address: wallet.address,
+          wallet,
+          nativeAndErc20Tokens: {
+            value: [],
+            loading: true,
+          },
+        },
+      },
+    });
+
+    const loadPromise = store.dispatch<any>(
+      loadMoreTokensInActiveAccount(baseEvmChain, wallet),
+    );
+
+    store.dispatch({
+      type: EvmActionType.SET_ACTIVE_ACCOUNT,
+      payload: {
+        address: otherWallet.address,
+        wallet: otherWallet,
+        nativeAndErc20Tokens: {
+          value: [],
+          loading: true,
+        },
+      },
+    });
+
+    resolveDiscovery({
+      address: wallet.address,
+      chainId: '1',
+      tokens: [],
+      catchupStatus: CatchupStatus.DONE,
+      pricingStatus: PricingStatus.READY,
+    });
+    await loadPromise;
+
+    expect(EvmTokensUtils.getTokenBalances).not.toHaveBeenCalled();
+    expect(store.getState().evm.activeAccount.wallet.address).toBe(
+      otherWallet.address,
+    );
+    expect(store.getState().evm.activeAccount.nativeAndErc20Tokens).toEqual({
+      value: [],
+      loading: true,
+    });
   });
 });

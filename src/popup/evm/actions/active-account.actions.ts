@@ -57,6 +57,58 @@ const shouldLoadMoreDiscoveredAssets = (
   return shouldLoadMoreCatchup;
 };
 
+const isSameEvmChain = (currentChain: Chain, chain: EvmChain) => {
+  return (
+    currentChain.type === ChainType.EVM &&
+    (currentChain as EvmChain).chainId === chain.chainId
+  );
+};
+
+const isActiveAccountRequestCurrent = (
+  currentChain: Chain,
+  activeAccount: EvmActiveAccount,
+  chain: EvmChain,
+  wallet: HDNodeWallet,
+) => {
+  return (
+    isSameEvmChain(currentChain, chain) &&
+    activeAccount.wallet?.address?.toLowerCase() === wallet.address.toLowerCase()
+  );
+};
+
+const getHistoryEventKey = (event: EvmUserHistory['events'][number]) => {
+  return `${event.transactionHash.toLowerCase()}-${event.transactionIndex}`;
+};
+
+const sortHistoryEvents = (events: EvmUserHistory['events']) => {
+  return [...events].sort((a, b) => {
+    if (a.timestamp !== b.timestamp) return b.timestamp - a.timestamp;
+    if (a.blockNumber !== b.blockNumber) return b.blockNumber - a.blockNumber;
+    return b.transactionIndex - a.transactionIndex;
+  });
+};
+
+const mergeEvmHistory = (
+  currentHistory: EvmUserHistory,
+  nextHistory: EvmUserHistory,
+) => {
+  const currentEvents = currentHistory?.events ?? [];
+  const mergedEvents = [...currentEvents];
+  const eventKeys = new Set(currentEvents.map(getHistoryEventKey));
+
+  for (const event of nextHistory.events ?? []) {
+    const eventKey = getHistoryEventKey(event);
+    if (eventKeys.has(eventKey)) continue;
+    eventKeys.add(eventKey);
+    mergedEvents.push(event);
+  }
+
+  return {
+    ...nextHistory,
+    events: sortHistoryEvents(mergedEvents),
+  };
+};
+
 const mapDiscoveredNftsResponseToActiveAccountNfts = async (
   response: DiscoveredNftsResponse,
 ): Promise<(EvmErc721Token | EvmErc1155Token)[]> => {
@@ -156,11 +208,13 @@ const getCustomChainNfts = async (chain: EvmChain, wallet: HDNodeWallet) => {
 
 export const loadEvmHistory = (): AppThunk => async (dispatch, getState) => {
   const chain = getState().chain as Chain;
+  const initialWallet = getState().evm.activeAccount.wallet;
+  const initialHistory = getState().evm.activeAccount.history.value;
   if (chain.type === ChainType.EVM && (chain as EvmChain).isCustom === true) {
     const evmChain = chain as EvmChain;
     const walletAddress =
       process.env.FORCED_EVM_WALLET_ADDRESS ??
-      getState().evm.activeAccount.wallet.address;
+      initialWallet.address;
 
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
@@ -180,12 +234,26 @@ export const loadEvmHistory = (): AppThunk => async (dispatch, getState) => {
         walletAddress,
       );
 
+    if (
+      !isActiveAccountRequestCurrent(
+        getState().chain as Chain,
+        getState().evm.activeAccount,
+        evmChain,
+        initialWallet,
+      )
+    ) {
+      return;
+    }
+
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: {
         ...getState().evm.activeAccount,
         history: {
-          value: newHistory,
+          value: mergeEvmHistory(
+            getState().evm.activeAccount.history.value ?? initialHistory,
+            newHistory,
+          ),
           loading: false,
           initialized: true,
         },
@@ -206,19 +274,33 @@ export const loadEvmHistory = (): AppThunk => async (dispatch, getState) => {
     } as EvmActiveAccount,
   });
 
+  const evmChain = chain as EvmChain;
   const newHistory = await EvmTokensHistoryUtils.fetchHistory2(
-    process.env.FORCED_EVM_WALLET_ADDRESS ??
-      getState().evm.activeAccount.wallet.address,
-    getState().chain as EvmChain,
-    getState().evm.activeAccount.history.value ?? null,
+    process.env.FORCED_EVM_WALLET_ADDRESS ?? initialWallet.address,
+    evmChain,
+    initialHistory ?? null,
   );
+
+  if (
+    !isActiveAccountRequestCurrent(
+      getState().chain as Chain,
+      getState().evm.activeAccount,
+      evmChain,
+      initialWallet,
+    )
+  ) {
+    return;
+  }
 
   dispatch({
     type: EvmActionType.SET_ACTIVE_ACCOUNT,
     payload: {
       ...getState().evm.activeAccount,
       history: {
-        value: newHistory,
+        value: mergeEvmHistory(
+          getState().evm.activeAccount.history.value ?? initialHistory,
+          newHistory,
+        ),
         loading: false,
         initialized: true,
       },
@@ -232,10 +314,30 @@ export const loadMoreTokensInActiveAccount =
     if (chain.isCustom === true) {
       return;
     }
+    if (
+      !isActiveAccountRequestCurrent(
+        getState().chain as Chain,
+        getState().evm.activeAccount,
+        chain,
+        wallet,
+      )
+    ) {
+      return;
+    }
     const result = await EvmLightNodeUtils.getDiscoveredTokens(
       chain.chainId,
       process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
     );
+    if (
+      !isActiveAccountRequestCurrent(
+        getState().chain as Chain,
+        getState().evm.activeAccount,
+        chain,
+        wallet,
+      )
+    ) {
+      return;
+    }
     const balances = await EvmTokensUtils.getTokenBalances(
       process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
       chain,
@@ -245,13 +347,30 @@ export const loadMoreTokensInActiveAccount =
           token.type === EVMSmartContractType.NATIVE,
       ),
     );
+    if (
+      !isActiveAccountRequestCurrent(
+        getState().chain as Chain,
+        getState().evm.activeAccount,
+        chain,
+        wallet,
+      )
+    ) {
+      return;
+    }
+    const currentTokens = getState().evm.activeAccount.nativeAndErc20Tokens;
+    const nextBalances =
+      balances.length === 0 && currentTokens.value.length > 0
+        ? currentTokens.value
+        : balances;
 
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT_TOKENS,
       payload: {
         nativeAndErc20Tokens: {
-          value: balances,
-          loading: balances.length > 0 ? false : true,
+          value: nextBalances,
+          loading: shouldLoadMoreDiscoveredAssets(result)
+            ? nextBalances.length === 0
+            : false,
           initialized: true,
         },
       },
@@ -303,6 +422,16 @@ export const loadEvmActiveAccount =
         chain,
         tokenInfos,
       );
+      if (
+        !isActiveAccountRequestCurrent(
+          getState().chain as Chain,
+          getState().evm.activeAccount,
+          chain,
+          wallet,
+        )
+      ) {
+        return;
+      }
 
       dispatch({
         type: EvmActionType.SET_ACTIVE_ACCOUNT,
@@ -333,6 +462,9 @@ export const loadEvmActiveAccount =
       wallet.address,
       false,
     );
+    if (!isSameEvmChain(getState().chain as Chain, chain)) {
+      return;
+    }
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: {
@@ -362,6 +494,16 @@ export const loadEvmActiveAccount =
         chain.chainId,
         process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
       );
+    if (
+      !isActiveAccountRequestCurrent(
+        getState().chain as Chain,
+        getState().evm.activeAccount,
+        chain,
+        wallet,
+      )
+    ) {
+      return;
+    }
 
     const balances = await EvmTokensUtils.getTokenBalances(
       process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
@@ -372,6 +514,16 @@ export const loadEvmActiveAccount =
           token.type === EVMSmartContractType.NATIVE,
       ),
     );
+    if (
+      !isActiveAccountRequestCurrent(
+        getState().chain as Chain,
+        getState().evm.activeAccount,
+        chain,
+        wallet,
+      )
+    ) {
+      return;
+    }
 
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT_TOKENS,
@@ -401,19 +553,44 @@ export const loadMoreNftsInActiveAccount =
     if (chain.isCustom === true) {
       return;
     }
+    if (
+      !isActiveAccountRequestCurrent(
+        getState().chain as Chain,
+        getState().evm.activeAccount,
+        chain,
+        wallet,
+      )
+    ) {
+      return;
+    }
     const result = await EvmLightNodeUtils.getDiscoveredNfts(
       chain.chainId,
       process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
     );
     const nfts = await mapDiscoveredNftsResponseToActiveAccountNfts(result);
     const shouldLoadMore = shouldLoadMoreDiscoveredAssets(result);
+    if (
+      !isActiveAccountRequestCurrent(
+        getState().chain as Chain,
+        getState().evm.activeAccount,
+        chain,
+        wallet,
+      )
+    ) {
+      return;
+    }
+    const currentNfts = getState().evm.activeAccount.nfts;
+    const nextNfts =
+      nfts.length === 0 && currentNfts.value.length > 0
+        ? currentNfts.value
+        : nfts;
 
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: {
         nfts: {
-          value: nfts,
-          loading: shouldLoadMore ? nfts.length === 0 : false,
+          value: nextNfts,
+          loading: shouldLoadMore ? nextNfts.length === 0 : false,
           initialized: true,
         },
       },
@@ -442,6 +619,16 @@ export const loadEvmActiveAccountNfts =
         },
       });
       const nfts = await getCustomChainNfts(chain, wallet);
+      if (
+        !isActiveAccountRequestCurrent(
+          getState().chain as Chain,
+          getState().evm.activeAccount,
+          chain,
+          wallet,
+        )
+      ) {
+        return;
+      }
       dispatch({
         type: EvmActionType.SET_ACTIVE_ACCOUNT,
         payload: {
@@ -464,6 +651,16 @@ export const loadEvmActiveAccountNfts =
     );
     const nfts = await mapDiscoveredNftsResponseToActiveAccountNfts(result);
     const shouldLoadMore = shouldLoadMoreDiscoveredAssets(result);
+    if (
+      !isActiveAccountRequestCurrent(
+        getState().chain as Chain,
+        getState().evm.activeAccount,
+        chain,
+        wallet,
+      )
+    ) {
+      return;
+    }
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: {
