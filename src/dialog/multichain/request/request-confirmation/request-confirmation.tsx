@@ -416,6 +416,7 @@ export const RequestConfirmation = ({
         }
 
         default: {
+          // TODO remove before production
           return <div>{JSON.stringify(displayedMessage)}</div>;
         }
       }

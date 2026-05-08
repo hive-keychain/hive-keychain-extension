@@ -10,6 +10,7 @@ export interface ModalProps {
   title?: string;
   closeOnOverlayClick?: boolean;
   showCloseButton?: boolean;
+  showOverlay?: boolean;
 }
 
 export type ModalPresentationProps = ModalProps & {
@@ -21,11 +22,13 @@ export const ModalPresentation = ({
   title,
   closeOnOverlayClick,
   showCloseButton,
+  showOverlay,
   onClose,
 }: ModalPresentationProps) => {
   return (
     <PopupContainer
       className="modal-container"
+      showOverlay={showOverlay}
       onClickOutside={closeOnOverlayClick ? onClose : undefined}>
       {(title || showCloseButton) && (
         <div className="modal-header">
