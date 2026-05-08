@@ -8,6 +8,7 @@ export interface EvmUserHistory {
   events: EvmUserHistoryItem[];
   nextCursor: string | null;
   fullyFetch: boolean;
+  catchupStatus?: string | null;
 }
 
 export interface EvmLocalHistory {
