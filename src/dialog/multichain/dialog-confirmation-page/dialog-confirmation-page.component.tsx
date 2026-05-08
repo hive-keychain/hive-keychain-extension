@@ -293,7 +293,7 @@ export const DialogConfirmationPage = ({
         })}
       </div>
       {feedBackMessage && (
-        <ModalPresentation onClose={closeFeedBackMessage}>
+        <ModalPresentation onClose={closeFeedBackMessage} showOverlay={false}>
           {displayFeedBackMessage(feedBackMessage)}
         </ModalPresentation>
       )}
