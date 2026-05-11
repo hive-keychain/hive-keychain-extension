@@ -15,6 +15,12 @@ interface Props {
 }
 
 export const EvmWalletNftPreviewComponent = ({ token, onClick }: Props) => {
+  const formattedAddress = EvmFormatUtils.formatAddress(
+    token.tokenInfo.contractAddress,
+  );
+  const shouldShowAddress =
+    token.tokenInfo.name?.trim().toLowerCase() !== formattedAddress;
+
   return (
     <div
       className="nft-collection-preview-card"
@@ -22,9 +28,9 @@ export const EvmWalletNftPreviewComponent = ({ token, onClick }: Props) => {
       key={`collection-${token.tokenInfo.contractAddress}`}>
       <div className="nft-collection-name-panel">
         <span className="ntf-collection-name">{token.tokenInfo.name}</span>
-        <span className="nft-collection-address">
-          {EvmFormatUtils.formatAddress(token.tokenInfo.contractAddress)}
-        </span>
+        {shouldShowAddress && (
+          <span className="nft-collection-address">{formattedAddress}</span>
+        )}
       </div>
       <div className="nft-collection-preview">
         <div className="nft-preview-container">

@@ -57,14 +57,19 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        column-gap: 12px;
         .label {
           @include poppins500(14px);
           display: flex;
           align-items: center;
-          justify-content: center;
+          justify-content: flex-start;
+          flex: 1;
+          min-width: 0;
+          line-height: 18px;
         }
         .value {
           max-width: 70%;
+          flex-shrink: 0;
           text-align: right;
           user-select: text;
           @include poppins400(14px);

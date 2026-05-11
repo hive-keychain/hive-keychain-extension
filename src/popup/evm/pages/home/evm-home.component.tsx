@@ -79,6 +79,7 @@ const Home = ({
   removeFromLoadingList,
   setSuccessMessage,
   loadEvmActiveAccountNfts,
+  returningFromNftPage,
 }: PropsFromRedux) => {
   const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
   const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
@@ -467,6 +468,7 @@ const Home = ({
           loadEvmHistory={loadEvmHistory}
           loadEvmActiveAccountNfts={loadEvmActiveAccountNfts}
           reloadEvmActiveAccount={refresh}
+          initialDisplayNfts={returningFromNftPage}
         />
       </div>
       <ActionsSectionComponent
@@ -487,6 +489,10 @@ const mapStateToProps = (state: RootState) => {
     chain: state.chain as EvmChain,
     accounts: state.evm.accounts,
     activeAccount: state.evm.activeAccount,
+    returningFromNftPage: Boolean(
+      state.navigation.stack[0]?.previousParams?.collection ||
+        state.navigation.stack[0]?.previousParams?.collections,
+    ),
   };
 };
 

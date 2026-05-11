@@ -305,15 +305,10 @@ describe('send-transaction proxy tests:\n', () => {
         messageParams: [proxyTarget],
       },
     ]);
-    expect(contractField.value.props.children[1].props.message).toBe(
-      proxyAddress,
-    );
-    expect(
-      contractField.value.props.children[1].props.children.props.children,
-    ).toBe('0x00000...000aa');
-    expect(
-      contractField.value.props.children[1].props.children.props.className,
-    ).toContain('address-content');
+    expect(contractField.value.type).toBe(EvmAddressComponent);
+    expect(contractField.value.props.address).toBe(proxyAddress);
+    expect(contractField.value.props.canCopy).toBe(true);
+    expect(contractField.value.props.prefix).toBeDefined();
   });
 
   it('does not request an abi for deployment transactions', async () => {
@@ -989,15 +984,10 @@ describe('send-transaction proxy tests:\n', () => {
       (field: any) => field.name === 'evm_operation_smart_contract_address',
     );
 
-    expect(contractField.value.props.children[1].props.message).toBe(
-      proxyAddress,
-    );
-    expect(
-      contractField.value.props.children[1].props.children.props.children,
-    ).toBe('0x00000...000aa');
-    expect(
-      contractField.value.props.children[1].props.children.props.className,
-    ).toContain('address-content');
+    expect(contractField.value.type).toBe(EvmAddressComponent);
+    expect(contractField.value.props.address).toBe(proxyAddress);
+    expect(contractField.value.props.canCopy).toBe(true);
+    expect(contractField.value.props.prefix).toBeDefined();
     expect(fromField.value.type).toBe(EvmAddressComponent);
     expect(fromField.value.props.address).toBe(fromAddress);
     expect(fromField.value.props.canCopy).toBe(true);

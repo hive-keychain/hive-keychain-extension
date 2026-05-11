@@ -15,6 +15,7 @@ import {
   PricingStatus,
 } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmLocalHistoryUtils } from '@popup/evm/utils/evm-local-history.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
@@ -122,7 +123,7 @@ const mapDiscoveredNftsResponseToActiveAccountNfts = async (
     return (
       collection.name?.trim() ||
       collection.symbol?.trim() ||
-      collection.contractAddress
+      EvmFormatUtils.formatAddress(collection.contractAddress)
     );
   };
 

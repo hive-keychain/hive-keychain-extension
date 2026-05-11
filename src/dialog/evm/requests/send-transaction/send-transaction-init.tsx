@@ -26,7 +26,7 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import Decimal from 'decimal.js';
 import { ethers } from 'ethers';
 import React from 'react';
-import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
+import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
 import { formatDecodedArgumentDisplayValue } from 'src/dialog/evm/requests/send-transaction/send-transaction-argument-format';
 import type { RunSendTransactionInitParams } from 'src/dialog/evm/requests/send-transaction/send-transaction.types';
 import {
@@ -38,22 +38,15 @@ import Logger from 'src/utils/logger.utils';
 
 const renderCopyableFormattedAddress = (
   address: string,
-  onCopyAddress: (address: string) => void,
+  chainId: string,
   prefix?: React.ReactNode,
 ) => (
-  <div className="value-content-horizontal">
-    {prefix}
-    <CustomTooltip
-      message={address}
-      skipTranslation
-      additionalClassName="evm-address-tooltip">
-      <span
-        className="evm-address-content address-content"
-        onClick={() => onCopyAddress(address)}>
-        {EvmFormatUtils.formatAddress(address)}
-      </span>
-    </CustomTooltip>
-  </div>
+  <EvmAddressComponent
+    address={address}
+    chainId={chainId}
+    canCopy
+    prefix={prefix}
+  />
 );
 
 const getDecodedFieldName = (
@@ -353,7 +346,7 @@ export async function runSendTransactionInit(
               type: EvmInputDisplayType.CONTRACT_ADDRESS,
               value: renderCopyableFormattedAddress(
                 tokenAddress!,
-                onCopyAddress,
+                chainTmp.chainId,
                 usedToken ? <EvmTokenLogo tokenInfo={usedToken} /> : undefined,
               ),
               ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
@@ -471,7 +464,7 @@ export async function runSendTransactionInit(
               type: EvmInputDisplayType.CONTRACT_ADDRESS,
               value: renderCopyableFormattedAddress(
                 tokenAddress!,
-                onCopyAddress,
+                chainTmp.chainId,
                 usedToken ? <EvmTokenLogo tokenInfo={usedToken} /> : undefined,
               ),
               ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(

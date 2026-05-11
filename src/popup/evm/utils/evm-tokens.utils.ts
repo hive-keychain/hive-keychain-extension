@@ -36,6 +36,7 @@ import {
 } from '@popup/evm/reference-data/abi.data';
 import { CoingeckoUtils } from '@popup/evm/utils/coingecko.utils';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
@@ -1466,9 +1467,7 @@ const getCustomNftCollectionsForWallet = async (
         name:
           normalizedNft.collectionName?.trim() ||
           name ||
-          (normalizedNft.type === EVMSmartContractType.ERC1155
-            ? 'ERC1155'
-            : 'ERC721'),
+          EvmFormatUtils.formatAddress(normalizedNft.address),
         symbol,
         logo: '',
         chainId: chain.chainId,

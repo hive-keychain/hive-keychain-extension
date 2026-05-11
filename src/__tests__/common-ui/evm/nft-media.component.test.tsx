@@ -30,4 +30,12 @@ describe('EvmNftMedia', () => {
       'https://cdn.example/nft.png',
     );
   });
+
+  it('marks the shared placeholder URL as placeholder media', () => {
+    render(<EvmNftMedia src="/assets/images/placeholder-image.svg" />);
+
+    expect(screen.getByRole('img').classList.contains('placeholder')).toBe(
+      true,
+    );
+  });
 });
