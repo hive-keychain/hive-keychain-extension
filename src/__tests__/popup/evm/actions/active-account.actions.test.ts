@@ -57,6 +57,24 @@ describe('EVM active-account.actions (custom chain)', () => {
       catchupStatus: CatchupStatus.DONE,
       pricingStatus: PricingStatus.READY,
     });
+    jest.spyOn(EvmLightNodeUtils, 'getDiscoveredNfts').mockResolvedValue({
+      address: wallet.address,
+      chainId: 1,
+      collections: [],
+      catchupStatus: CatchupStatus.DONE,
+    });
+    jest.spyOn(EvmTokensHistoryUtils, 'fetchHistory2').mockResolvedValue({
+      events: [],
+      nextCursor: null,
+      fullyFetch: true,
+    });
+    jest
+      .spyOn(EvmLocalHistoryUtils, 'getLocalUserHistoryForCustomChain')
+      .mockResolvedValue({
+        events: [],
+        nextCursor: null,
+        fullyFetch: true,
+      });
     jest.spyOn(EvmTokensUtils, 'getCustomErc20TokenInfos').mockResolvedValue([]);
     jest
       .spyOn(EvmTokensUtils, 'getCustomNftCollectionsForWallet')
@@ -76,6 +94,10 @@ describe('EVM active-account.actions (custom chain)', () => {
 
     expect(EvmLightNodeUtils.registerAddress).not.toHaveBeenCalled();
     expect(EvmLightNodeUtils.getDiscoveredTokens).not.toHaveBeenCalled();
+    expect(EvmLightNodeUtils.getDiscoveredNfts).not.toHaveBeenCalled();
+    expect(
+      EvmLocalHistoryUtils.getLocalUserHistoryForCustomChain,
+    ).toHaveBeenCalledWith(customEvmChain.chainId, wallet.address);
     expect(EvmTokensUtils.getTokenBalances).toHaveBeenCalled();
     const tokenBalancesCall = (EvmTokensUtils.getTokenBalances as jest.Mock).mock
       .calls[0];
@@ -86,8 +108,9 @@ describe('EVM active-account.actions (custom chain)', () => {
     const { activeAccount } = store.getState().evm;
     expect(activeAccount.nfts.initialized).toBe(true);
     expect(activeAccount.nfts.loading).toBe(false);
-    expect(activeAccount.history.initialized).toBe(false);
-    expect(activeAccount.history.value.fullyFetch).toBe(false);
+    expect(activeAccount.history.initialized).toBe(true);
+    expect(activeAccount.history.loading).toBe(false);
+    expect(activeAccount.history.value.fullyFetch).toBe(true);
     expect(activeAccount.isReady).toBe(true);
   });
 
@@ -145,7 +168,11 @@ describe('EVM active-account.actions (custom chain)', () => {
 
     expect(EvmLightNodeUtils.registerAddress).toHaveBeenCalled();
     expect(EvmLightNodeUtils.getDiscoveredTokens).toHaveBeenCalled();
+    expect(EvmLightNodeUtils.getDiscoveredNfts).toHaveBeenCalled();
+    expect(EvmTokensHistoryUtils.fetchHistory2).toHaveBeenCalled();
     expect(EvmTokensUtils.getCustomErc20TokenInfos).not.toHaveBeenCalled();
+    expect(store.getState().evm.activeAccount.nfts.initialized).toBe(true);
+    expect(store.getState().evm.activeAccount.history.initialized).toBe(true);
   });
 
   it('loadEvmActiveAccount includes saved custom ERC20 tokens for custom chains', async () => {
