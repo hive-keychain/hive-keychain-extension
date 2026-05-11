@@ -29,7 +29,6 @@ import React from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import {
   formatDecodedArgumentDisplayValue,
-  formatFallbackParsedInputValue,
 } from 'src/dialog/evm/requests/send-transaction/send-transaction-argument-format';
 import type { RunSendTransactionInitParams } from 'src/dialog/evm/requests/send-transaction/send-transaction.types';
 import {
@@ -272,7 +271,6 @@ export async function runSendTransactionInit(
           tokenAddress!,
           fetchedContractOnce,
         );
-        let abiSource: 'light-node' | 'signature-registry' = 'light-node';
         const lightNodeAbiPromise = EvmLightNodeUtils.getAbi(
           chainTmp.chainId,
           params.to,
@@ -318,61 +316,23 @@ export async function runSendTransactionInit(
             )),
           });
 
-          const parsedData = await EvmTransactionParserUtils.parseData(
-            params.data,
-            chainTmp as EvmChain,
-          );
+          transactionConfirmationFields.operationName =
+            chrome.i18n.getMessage(
+              'dialog_evm_decrypt_send_transaction_title',
+            );
 
-          if (parsedData?.inputs && parsedData?.operationName) {
-            transactionConfirmationFields.operationName =
-              parsedData.operationName;
-
-            for (let index = 0; index < parsedData.inputs.length; index++) {
-              const input = parsedData.inputs[index];
-              const value = await formatFallbackParsedInputValue(
-                input,
-                chainTmp as EvmChain,
-                usedToken,
-                transactionInfo,
-                accounts,
-                transactionHook,
-              );
-              transactionConfirmationFields.otherFields.push({
-                name: `param ${index + 1}`,
-                type: input.type,
-                value,
-              });
-            }
-          } else {
-            transactionConfirmationFields.operationName =
-              chrome.i18n.getMessage(
-                'dialog_evm_decrypt_send_transaction_title',
-              );
-
-            transactionConfirmationFields.otherFields.push({
-              name: 'evm_transaction_data',
-              type: EvmInputDisplayType.LONG_TEXT,
-              value: params.data,
-            });
-          }
+          transactionConfirmationFields.otherFields.push({
+            name: 'evm_transaction_data',
+            type: EvmInputDisplayType.LONG_TEXT,
+            value: params.data,
+          });
         };
 
-        let abi = lightNodeAbi;
-
-        if (!abi) {
-          abiSource = 'signature-registry';
-          abi = await EvmTransactionParserUtils.findAbiFromData(
-            params.data,
-            chainTmp as EvmChain,
-          );
-        }
+        const abi = lightNodeAbi;
 
         let normalizedAbi = EvmTokensUtils.normalizeAbi(abi);
 
-        const decodeTransactionData = (
-          abiToDecode: any[] | null,
-          decodeSource: 'light-node' | 'signature-registry',
-        ) => {
+        const decodeTransactionData = (abiToDecode: any[] | null) => {
           if (!abiToDecode) {
             return null;
           }
@@ -394,30 +354,7 @@ export async function runSendTransactionInit(
           }
         };
 
-        let decodedTransactionData = decodeTransactionData(
-          normalizedAbi,
-          abiSource,
-        );
-
-        if (!decodedTransactionData && abiSource !== 'signature-registry') {
-          const fallbackAbi = EvmTokensUtils.normalizeAbi(
-            await EvmTransactionParserUtils.findAbiFromData(
-              params.data,
-              chainTmp as EvmChain,
-            ),
-          );
-
-          const fallbackDecodedTransactionData = decodeTransactionData(
-            fallbackAbi,
-            'signature-registry',
-          );
-
-          if (fallbackDecodedTransactionData) {
-            abiSource = 'signature-registry';
-            normalizedAbi = fallbackAbi;
-            decodedTransactionData = fallbackDecodedTransactionData;
-          }
-        }
+        const decodedTransactionData = decodeTransactionData(normalizedAbi);
 
         tData.abi = normalizedAbi ?? undefined;
 

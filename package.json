@@ -76,7 +76,6 @@
     "chrome-webstore-upload": "^4.0.3",
     "crypto-js": "4.2",
     "decimal.js": "10.4.3",
-    "eth-method-registry": "^4.0.0",
     "ethers": "^6.11.1",
     "flatlist-react": "1.5.0",
     "hive-keychain-commons": "^1.14.0",
@@ -88,8 +87,8 @@
     "jsonwebtoken": "^9.0.2",
     "keychain-sdk": "0.7.0",
     "locate-path": "7.1.1",
-    "minidenticons": "^2.0.0",
     "lodash": "4.17.23",
+    "minidenticons": "^2.0.0",
     "moment": "2.29.4",
     "node-fetch": "3.2.10",
     "node-polyfill-webpack-plugin": "1.1.4",
@@ -189,9 +188,6 @@
     },
     "sass-graph": {
       "scss-tokenizer": "$scss-tokenizer"
-    },
-    "jest-chrome": {
-      "jest": "$jest"
     },
     "ws": "^8.18.3"
   },
