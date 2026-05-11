@@ -336,7 +336,11 @@ const getHistory = async (
   chainId: string | number,
   address: string,
   query: string,
-): Promise<{ items: HistoryItem[]; nextCursor: string | null }> => {
+): Promise<{
+  items: HistoryItem[];
+  nextCursor: string | null;
+  catchupStatus?: CatchupStatus | null;
+}> => {
   const id = evmChainIdToDecimalPathSegment(chainId);
   return await EvmLightNodeApi.get(
     `history/${id}/${encodeURIComponent(address)}${buildHistoryQuery(query)}`,

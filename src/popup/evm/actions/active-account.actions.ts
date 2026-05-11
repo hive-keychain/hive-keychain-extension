@@ -46,7 +46,7 @@ const shouldLoadMoreDiscoveredAssets = (
   result: DiscoveredTokensResponse | DiscoveredNftsResponse,
 ): boolean => {
   const shouldLoadMoreCatchup =
-    !result.catchupStatus || result.catchupStatus !== CatchupStatus.DONE;
+    result.catchupStatus === CatchupStatus.RUNNING;
   if ('pricingStatus' in result) {
     return (
       shouldLoadMoreCatchup ||
@@ -55,6 +55,10 @@ const shouldLoadMoreDiscoveredAssets = (
     );
   }
   return shouldLoadMoreCatchup;
+};
+
+const shouldLoadMoreHistory = (history: EvmUserHistory): boolean => {
+  return history.catchupStatus === CatchupStatus.RUNNING;
 };
 
 const isSameEvmChain = (currentChain: Chain, chain: EvmChain) => {
@@ -112,11 +116,35 @@ const mergeEvmHistory = (
 const mapDiscoveredNftsResponseToActiveAccountNfts = async (
   response: DiscoveredNftsResponse,
 ): Promise<(EvmErc721Token | EvmErc1155Token)[]> => {
+  const getCollectionDisplayName = (
+    collection: (typeof response.collections)[number],
+  ) => {
+    return (
+      collection.name?.trim() ||
+      collection.symbol?.trim() ||
+      collection.contractAddress
+    );
+  };
+
+  const getFallbackContractType = (
+    collection: (typeof response.collections)[number],
+  ) => {
+    if (collection.contractType === 'ERC721') {
+      return EVMSmartContractType.ERC721;
+    }
+    if (collection.contractType === 'ERC1155') {
+      return EVMSmartContractType.ERC1155;
+    }
+    return collection.nfts.some((nft) => Number.parseInt(nft.balance, 10) > 1)
+      ? EVMSmartContractType.ERC1155
+      : EVMSmartContractType.ERC721;
+  };
+
   const getMetadata = (
     nft: (typeof response.collections)[number]['nfts'][number],
   ) => {
     const metadata = {
-      name: nft.name ?? '',
+      name: nft.name?.trim() || `#${nft.tokenId}`,
       description: '',
       image: nft.imageUrl ?? '',
       attributes: [],
@@ -128,12 +156,13 @@ const mapDiscoveredNftsResponseToActiveAccountNfts = async (
   };
 
   return response.collections.flatMap((collection) => {
-    if (collection.contractType === 'ERC721') {
+    const contractType = getFallbackContractType(collection);
+    if (contractType === EVMSmartContractType.ERC721) {
       return [
         {
           tokenInfo: {
             type: EVMSmartContractType.ERC721,
-            name: collection.name ?? '',
+            name: getCollectionDisplayName(collection),
             symbol: collection.symbol ?? '',
             logo: '',
             chainId: String(response.chainId),
@@ -153,12 +182,12 @@ const mapDiscoveredNftsResponseToActiveAccountNfts = async (
       ];
     }
 
-    if (collection.contractType === 'ERC1155') {
+    if (contractType === EVMSmartContractType.ERC1155) {
       return [
         {
           tokenInfo: {
             type: EVMSmartContractType.ERC1155,
-            name: collection.name ?? '',
+            name: getCollectionDisplayName(collection),
             symbol: collection.symbol ?? '',
             logo: '',
             chainId: String(response.chainId),
@@ -206,15 +235,62 @@ const getCustomChainNfts = async (chain: EvmChain, wallet: HDNodeWallet) => {
   );
 };
 
-export const loadEvmHistory = (): AppThunk => async (dispatch, getState) => {
-  const chain = getState().chain as Chain;
-  const initialWallet = getState().evm.activeAccount.wallet;
-  const initialHistory = getState().evm.activeAccount.history.value;
-  if (chain.type === ChainType.EVM && (chain as EvmChain).isCustom === true) {
-    const evmChain = chain as EvmChain;
-    const walletAddress =
-      process.env.FORCED_EVM_WALLET_ADDRESS ??
-      initialWallet.address;
+export const loadEvmHistory =
+  (retryCount = 0): AppThunk =>
+  async (dispatch, getState) => {
+    const chain = getState().chain as Chain;
+    const initialWallet = getState().evm.activeAccount.wallet;
+    const initialHistory = getState().evm.activeAccount.history.value;
+    if (chain.type === ChainType.EVM && (chain as EvmChain).isCustom === true) {
+      const evmChain = chain as EvmChain;
+      const walletAddress =
+        process.env.FORCED_EVM_WALLET_ADDRESS ?? initialWallet.address;
+
+      dispatch({
+        type: EvmActionType.SET_ACTIVE_ACCOUNT,
+        payload: {
+          ...getState().evm.activeAccount,
+          history: {
+            value: getState().evm.activeAccount.history.value,
+            loading: true,
+            initialized: false,
+          },
+        } as EvmActiveAccount,
+      });
+
+      const newHistory =
+        await EvmLocalHistoryUtils.getLocalUserHistoryForCustomChain(
+          evmChain.chainId,
+          walletAddress,
+        );
+
+      if (
+        !isActiveAccountRequestCurrent(
+          getState().chain as Chain,
+          getState().evm.activeAccount,
+          evmChain,
+          initialWallet,
+        )
+      ) {
+        return;
+      }
+
+      dispatch({
+        type: EvmActionType.SET_ACTIVE_ACCOUNT,
+        payload: {
+          ...getState().evm.activeAccount,
+          history: {
+            value: mergeEvmHistory(
+              getState().evm.activeAccount.history.value ?? initialHistory,
+              newHistory,
+            ),
+            loading: false,
+            initialized: true,
+          },
+        } as EvmActiveAccount,
+      });
+      return;
+    }
 
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
@@ -228,11 +304,12 @@ export const loadEvmHistory = (): AppThunk => async (dispatch, getState) => {
       } as EvmActiveAccount,
     });
 
-    const newHistory =
-      await EvmLocalHistoryUtils.getLocalUserHistoryForCustomChain(
-        evmChain.chainId,
-        walletAddress,
-      );
+    const evmChain = chain as EvmChain;
+    const newHistory = await EvmTokensHistoryUtils.fetchHistory2(
+      process.env.FORCED_EVM_WALLET_ADDRESS ?? initialWallet.address,
+      evmChain,
+      initialHistory ?? null,
+    );
 
     if (
       !isActiveAccountRequestCurrent(
@@ -245,68 +322,31 @@ export const loadEvmHistory = (): AppThunk => async (dispatch, getState) => {
       return;
     }
 
+    const mergedHistory = mergeEvmHistory(
+      getState().evm.activeAccount.history.value ?? initialHistory,
+      newHistory,
+    );
+    const shouldLoadMore = shouldLoadMoreHistory(newHistory);
+
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: {
         ...getState().evm.activeAccount,
         history: {
-          value: mergeEvmHistory(
-            getState().evm.activeAccount.history.value ?? initialHistory,
-            newHistory,
-          ),
-          loading: false,
+          value: mergedHistory,
+          loading: shouldLoadMore ? mergedHistory.events.length === 0 : false,
           initialized: true,
         },
       } as EvmActiveAccount,
     });
-    return;
-  }
 
-  dispatch({
-    type: EvmActionType.SET_ACTIVE_ACCOUNT,
-    payload: {
-      ...getState().evm.activeAccount,
-      history: {
-        value: getState().evm.activeAccount.history.value,
-        loading: true,
-        initialized: false,
-      },
-    } as EvmActiveAccount,
-  });
-
-  const evmChain = chain as EvmChain;
-  const newHistory = await EvmTokensHistoryUtils.fetchHistory2(
-    process.env.FORCED_EVM_WALLET_ADDRESS ?? initialWallet.address,
-    evmChain,
-    initialHistory ?? null,
-  );
-
-  if (
-    !isActiveAccountRequestCurrent(
-      getState().chain as Chain,
-      getState().evm.activeAccount,
-      evmChain,
-      initialWallet,
-    )
-  ) {
-    return;
-  }
-
-  dispatch({
-    type: EvmActionType.SET_ACTIVE_ACCOUNT,
-    payload: {
-      ...getState().evm.activeAccount,
-      history: {
-        value: mergeEvmHistory(
-          getState().evm.activeAccount.history.value ?? initialHistory,
-          newHistory,
-        ),
-        loading: false,
-        initialized: true,
-      },
-    } as EvmActiveAccount,
-  });
-};
+    if (shouldLoadMore) {
+      const retryDelay = getLoadMoreTokensRetryDelay(retryCount);
+      setTimeout(() => {
+        dispatch(loadEvmHistory(retryCount + 1));
+      }, retryDelay);
+    }
+  };
 
 export const loadMoreTokensInActiveAccount =
   (chain: EvmChain, wallet: HDNodeWallet, retryCount = 0): AppThunk =>

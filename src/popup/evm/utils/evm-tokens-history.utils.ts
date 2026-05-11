@@ -8,6 +8,7 @@ import {
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import {
+  CatchupStatus,
   EvmLightNodeUtils,
   LightNodeHistoryFlow,
   LightNodeHistoryItem,
@@ -876,7 +877,9 @@ const fetchHistory2 = async (
   return {
     events: sortEvents(merged),
     nextCursor: response.nextCursor,
-    fullyFetch: !response.nextCursor,
+    fullyFetch:
+      !response.nextCursor && response.catchupStatus !== CatchupStatus.RUNNING,
+    catchupStatus: response.catchupStatus,
   } as EvmUserHistory;
 };
 
