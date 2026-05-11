@@ -28,7 +28,6 @@ import { ERC1155Abi, ERC721Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
-import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import {
@@ -50,7 +49,6 @@ import { useForm } from 'react-hook-form';
 import { connect, ConnectedProps } from 'react-redux';
 import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { EvmNftMedia } from 'src/common-ui/evm/nft-media/nft-media.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -152,14 +150,13 @@ const EvmNftTransfer = ({
 
     let fields = [
       {
-        label: '',
-        value: <EvmNftMedia src={collectionItem.item.metadata.image} />,
-        valueClassName: 'nft-image',
-      },
-      {
         label: 'evm_operation_smart_contract_address',
-        value: EvmFormatUtils.formatAddress(
-          collectionItem.collection.tokenInfo.contractAddress,
+        value: (
+          <EvmAddressComponent
+            address={collectionItem.collection.tokenInfo.contractAddress}
+            chainId={chain.chainId}
+            forceFormattedAddress
+          />
         ),
       },
       {
@@ -177,7 +174,6 @@ const EvmNftTransfer = ({
           <EvmAddressComponent
             address={form.receiverAddress}
             chainId={chain.chainId}
-            forceFormattedAddress
           />
         ),
         warnings: await EvmTransactionParserUtils.getAddressWarning(

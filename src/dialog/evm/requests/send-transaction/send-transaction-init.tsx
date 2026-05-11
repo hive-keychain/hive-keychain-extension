@@ -26,7 +26,7 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import Decimal from 'decimal.js';
 import { ethers } from 'ethers';
 import React from 'react';
-import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
+import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
 import {
   formatDecodedArgumentDisplayValue,
   formatFallbackParsedInputValue,
@@ -41,22 +41,16 @@ import Logger from 'src/utils/logger.utils';
 
 const renderCopyableFormattedAddress = (
   address: string,
+  chainId: string,
   onCopyAddress: (address: string) => void,
   prefix?: React.ReactNode,
 ) => (
-  <div className="value-content-horizontal">
-    {prefix}
-    <CustomTooltip
-      message={address}
-      skipTranslation
-      additionalClassName="evm-address-tooltip">
-      <span
-        className="evm-address-content address-content"
-        onClick={() => onCopyAddress(address)}>
-        {EvmFormatUtils.formatAddress(address)}
-      </span>
-    </CustomTooltip>
-  </div>
+  <EvmAddressComponent
+    address={address}
+    chainId={chainId}
+    canCopy
+    prefix={prefix}
+  />
 );
 
 const getDecodedFieldName = (
@@ -306,6 +300,7 @@ export async function runSendTransactionInit(
             type: EvmInputDisplayType.CONTRACT_ADDRESS,
             value: renderCopyableFormattedAddress(
               tokenAddress!,
+              chainTmp.chainId,
               onCopyAddress,
               usedToken ? <EvmTokenLogo tokenInfo={usedToken} /> : undefined,
             ),
@@ -469,6 +464,7 @@ export async function runSendTransactionInit(
             type: EvmInputDisplayType.CONTRACT_ADDRESS,
             value: renderCopyableFormattedAddress(
               tokenAddress!,
+              chainTmp.chainId,
               onCopyAddress,
               usedToken ? <EvmTokenLogo tokenInfo={usedToken} /> : undefined,
             ),
