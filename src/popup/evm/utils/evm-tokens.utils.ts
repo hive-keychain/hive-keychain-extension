@@ -955,12 +955,16 @@ const displayValue = (value: number, tokenInfo: EvmSmartContractInfo) => {
   switch (tokenInfo.type) {
     case EVMSmartContractType.NATIVE:
       decimals = 18;
+      break;
     case EVMSmartContractType.ERC20:
       decimals = (tokenInfo as EvmSmartContractInfoErc20).decimals;
+      break;
     case EVMSmartContractType.ERC721:
     case EVMSmartContractType.ERC721Enumerable:
-    case EVMSmartContractType.ERC1155: {
+    case EVMSmartContractType.ERC1155:
+    case EVMSmartContractType.PROTOCOL: {
       decimals = 0;
+      break;
     }
   }
 
@@ -996,6 +1000,9 @@ const getTokenType = (abi: any) => {
     .filter(Boolean);
 
   for (const referenceAbi of AbiList) {
+    if (referenceAbi.decodeOnly) {
+      continue;
+    }
     if (
       referenceAbi.methods.every((method: string) =>
         abiMethods.includes(method),

@@ -8,6 +8,7 @@ import {
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
+import { UniswapV2RouterAbiMinimal } from '@popup/evm/reference-data/abi-protocol-decode.data';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import {
   EvmTokensUtils,
@@ -271,6 +272,10 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
     expect(EvmTokensUtils.getTokenType(JSON.stringify(Erc20Abi))).toBe(
       EVMSmartContractType.ERC20,
     );
+  });
+
+  it('does not classify decode-only protocol ABIs as token types', () => {
+    expect(EvmTokensUtils.getTokenType(UniswapV2RouterAbiMinimal)).toBeNull();
   });
 
   it('formats native short balances with up to 5 decimals', async () => {

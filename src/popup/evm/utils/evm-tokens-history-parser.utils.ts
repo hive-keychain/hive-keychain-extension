@@ -160,6 +160,9 @@ const parseEvent = async (
             );
             break;
           }
+          case EVMSmartContractType.PROTOCOL: {
+            break;
+          }
         }
 
         historyItem.pageTitle = 'popup_html_transfer_funds';

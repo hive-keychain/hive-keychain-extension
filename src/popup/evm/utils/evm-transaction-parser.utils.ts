@@ -130,6 +130,9 @@ const getDisplayInputType = (
       }
       break;
     }
+    case EVMSmartContractType.PROTOCOL: {
+      break;
+    }
     case EVMSmartContractType.ERC1155: {
       if (['from', 'to'].includes(name))
         return EvmInputDisplayType.WALLET_ADDRESS;
@@ -561,12 +564,16 @@ const findAbiFromDataBySelector = (data: string): string | undefined => {
   for (const entry of AbiList) {
     try {
       const iface = new Interface(entry.abi as any);
+      let fn;
       try {
-        iface.getFunction(selector);
-        return JSON.stringify(entry.abi);
+        fn = iface.getFunction(selector);
       } catch {
         continue;
       }
+      if (fn == null) {
+        continue;
+      }
+      return JSON.stringify(entry.abi);
     } catch {
       continue;
     }
@@ -579,6 +586,18 @@ const findAbiFromData = async (
   _chain?: EvmChain,
 ): Promise<string | undefined> => {
   return findAbiFromDataBySelector(data);
+};
+
+const getBundledAbiByDataSelector = (data: string): any[] | null => {
+  const abiJson = findAbiFromDataBySelector(data);
+  if (!abiJson) {
+    return null;
+  }
+  try {
+    return JSON.parse(abiJson);
+  } catch {
+    return null;
+  }
 };
 
 const parseData = async (
@@ -595,6 +614,9 @@ const parseData = async (
   try {
     const iface = new Interface(JSON.parse(abiJson));
     const parsed = iface.parseTransaction({ data });
+    if (parsed == null) {
+      return undefined;
+    }
     const inputs: EvmTransactionDecodedDataInput[] =
       parsed.fragment.inputs.map((input, index) => ({
         name: input.name,
@@ -637,6 +659,7 @@ export const EvmTransactionParserUtils = {
   getSmartContractWarningAndInfo,
   parseData,
   findAbiFromData,
+  getBundledAbiByDataSelector,
   recipientInputNameList,
   amountInputNameList,
   parseArgs,

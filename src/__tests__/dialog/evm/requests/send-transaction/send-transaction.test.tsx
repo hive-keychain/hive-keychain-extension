@@ -446,10 +446,77 @@ describe('send-transaction proxy tests:\n', () => {
     );
   });
 
-  it('falls back to raw transaction data when the backend abi does not decode the transaction', async () => {
-    const recipient = '0x00000000000000000000000000000000000000ab';
-    const transferData =
-      '0xa9059cbb00000000000000000000000000000000000000000000000000000000000000ab00000000000000000000000000000000000000000000000000000000000003e8';
+  it('falls back to bundled ABI decoding when light-node ABI cannot decode the transaction', async () => {
+    const mintData =
+      '0xa0712d680000000000000000000000000000000000000000000000000000000000000002';
+
+    jest.spyOn(EvmLightNodeUtils, 'getAbi').mockResolvedValue([
+      { inputs: [], name: 'approve', outputs: [], type: 'function' },
+    ]);
+    jest.spyOn(EvmTransactionParserUtils, 'parseArgs').mockReturnValue([2n]);
+    mockParseTransaction
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce({
+        args: {
+          0: 2n,
+          toArray: () => [2n],
+        },
+        fragment: { inputs: [{ name: 'quantity', type: 'uint256' }] },
+        name: 'mint',
+        signature: 'mint(uint256)',
+        value: 0,
+      });
+
+    render(
+      <SendTransaction
+        accounts={[
+          {
+            wallet: {
+              address: '0x00000000000000000000000000000000000000ff',
+              mnemonic: { phrase: 'test phrase' },
+            },
+          } as any,
+        ]}
+        afterCancel={jest.fn()}
+        data={{ dappInfo: { domain: 'app.example' }, tab: 1 } as any}
+        request={
+          {
+            chainId: '1',
+            params: [
+              {
+                data: mintData,
+                from: '0x00000000000000000000000000000000000000ff',
+                gasLimit: 21000,
+                maxFeePerGas: '1',
+                maxPriorityFeePerGas: '1',
+                to: proxyAddress,
+                type: EvmTransactionType.EIP_1559,
+                value: '0',
+              },
+            ],
+            request_id: 1,
+          } as any
+        }
+      />,
+    );
+
+    await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
+
+    const fields = lastSetFieldsPayload();
+    expect(fields.operationName).toBe('evm_operation_mint');
+    expect(
+      fields.otherFields.some((field: any) => field.name === 'evm_transaction_data'),
+    ).toBe(false);
+    expect(
+      fields.otherFields.some(
+        (field: any) => field.name === 'quantity' && field.value === '2',
+      ),
+    ).toBe(true);
+  });
+
+  it('falls back to raw transaction data when both light-node and bundled ABIs cannot decode', async () => {
+    const unknownData =
+      '0xdeadbeef00000000000000000000000000000000000000000000000000000000000003e8';
 
     jest.spyOn(EvmLightNodeUtils, 'getAbi').mockResolvedValue([
       { inputs: [], name: 'approve', outputs: [], type: 'function' },
@@ -473,7 +540,7 @@ describe('send-transaction proxy tests:\n', () => {
             chainId: '1',
             params: [
               {
-                data: transferData,
+                data: unknownData,
                 from: '0x00000000000000000000000000000000000000ff',
                 gasLimit: 21000,
                 maxFeePerGas: '1',
@@ -492,13 +559,148 @@ describe('send-transaction proxy tests:\n', () => {
     await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
 
     const fields = lastSetFieldsPayload();
-    expect(
-      fields.operationName,
-    ).toBe('dialog_evm_decrypt_send_transaction_title');
+    expect(fields.operationName).toBe('dialog_evm_decrypt_send_transaction_title');
     expect(
       fields.otherFields.some(
         (field: any) =>
-          field.name === 'evm_transaction_data' && field.value === transferData,
+          field.name === 'evm_transaction_data' && field.value === unknownData,
+      ),
+    ).toBe(true);
+  });
+
+  it('clears the loading state and falls back to bundled ABI decoding when the light node is unreachable', async () => {
+    const mintData =
+      '0xa0712d680000000000000000000000000000000000000000000000000000000000000002';
+
+    const lightNodeError = new Error('Light node unreachable');
+    jest
+      .spyOn(EvmLightNodeUtils, 'getContract')
+      .mockRejectedValue(lightNodeError);
+    jest.spyOn(EvmLightNodeUtils, 'getAbi').mockRejectedValue(lightNodeError);
+    jest
+      .spyOn(EvmTokensUtils, 'getTokenInfo')
+      .mockRejectedValue(lightNodeError);
+    jest.spyOn(EvmTransactionParserUtils, 'parseArgs').mockReturnValue([2n]);
+    mockParseTransaction.mockReturnValueOnce({
+      args: {
+        0: 2n,
+        toArray: () => [2n],
+      },
+      fragment: { inputs: [{ name: 'quantity', type: 'uint256' }] },
+      name: 'mint',
+      signature: 'mint(uint256)',
+      value: 0,
+    });
+
+    render(
+      <SendTransaction
+        accounts={[
+          {
+            wallet: {
+              address: '0x00000000000000000000000000000000000000ff',
+              mnemonic: { phrase: 'test phrase' },
+            },
+          } as any,
+        ]}
+        afterCancel={jest.fn()}
+        data={{ dappInfo: { domain: 'app.example' }, tab: 1 } as any}
+        request={
+          {
+            chainId: '1',
+            params: [
+              {
+                data: mintData,
+                from: '0x00000000000000000000000000000000000000ff',
+                gasLimit: 21000,
+                maxFeePerGas: '1',
+                maxPriorityFeePerGas: '1',
+                to: proxyAddress,
+                type: EvmTransactionType.EIP_1559,
+                value: '0',
+              },
+            ],
+            request_id: 1,
+          } as any
+        }
+      />,
+    );
+
+    await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
+    await waitFor(() =>
+      expect(transactionHook.setLoading).toHaveBeenCalledWith(false),
+    );
+    expect(transactionHook.setReady).toHaveBeenCalledWith(true);
+
+    const fields = lastSetFieldsPayload();
+    expect(fields.operationName).toBe('evm_operation_mint');
+    expect(
+      fields.otherFields.some(
+        (field: any) => field.name === 'quantity' && field.value === '2',
+      ),
+    ).toBe(true);
+  });
+
+  it('clears the loading state when light-node and bundled ABI both fail to decode', async () => {
+    const unknownData =
+      '0xdeadbeef00000000000000000000000000000000000000000000000000000000000003e8';
+
+    const lightNodeError = new Error('Light node unreachable');
+    jest
+      .spyOn(EvmLightNodeUtils, 'getContract')
+      .mockRejectedValue(lightNodeError);
+    jest.spyOn(EvmLightNodeUtils, 'getAbi').mockRejectedValue(lightNodeError);
+    jest
+      .spyOn(EvmTokensUtils, 'getTokenInfo')
+      .mockRejectedValue(lightNodeError);
+    mockParseTransaction.mockReturnValue(null);
+
+    render(
+      <SendTransaction
+        accounts={[
+          {
+            wallet: {
+              address: '0x00000000000000000000000000000000000000ff',
+              mnemonic: { phrase: 'test phrase' },
+            },
+          } as any,
+        ]}
+        afterCancel={jest.fn()}
+        data={{ dappInfo: { domain: 'app.example' }, tab: 1 } as any}
+        request={
+          {
+            chainId: '1',
+            params: [
+              {
+                data: unknownData,
+                from: '0x00000000000000000000000000000000000000ff',
+                gasLimit: 21000,
+                maxFeePerGas: '1',
+                maxPriorityFeePerGas: '1',
+                to: proxyAddress,
+                type: EvmTransactionType.EIP_1559,
+                value: '0',
+              },
+            ],
+            request_id: 1,
+          } as any
+        }
+      />,
+    );
+
+    await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
+    await waitFor(() =>
+      expect(transactionHook.setLoading).toHaveBeenCalledWith(false),
+    );
+    expect(transactionHook.setReady).toHaveBeenCalledWith(true);
+
+    const fields = lastSetFieldsPayload();
+    expect(fields.operationName).toBe(
+      'dialog_evm_decrypt_send_transaction_title',
+    );
+    expect(
+      fields.otherFields.some(
+        (field: any) =>
+          field.name === 'evm_transaction_data' && field.value === unknownData,
       ),
     ).toBe(true);
   });

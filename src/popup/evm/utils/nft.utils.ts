@@ -86,6 +86,8 @@ const getMetadata = async (
     case EVMSmartContractType.ERC1155:
       uri = await contract.uri(tokenId);
       break;
+    case EVMSmartContractType.PROTOCOL:
+      break;
   }
 
   return await getMetadataFromURI(uri, tokenId);
@@ -113,6 +115,8 @@ const getMetadataFromTokenId = async (
         break;
       case EVMSmartContractType.ERC1155:
         uri = await contract.uri(tokenId);
+        break;
+      case EVMSmartContractType.PROTOCOL:
         break;
     }
     if (uri.includes('api.opensea.io')) {

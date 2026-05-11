@@ -4,6 +4,7 @@ import { getAbiFromType } from '@popup/evm/reference-data/abi.data';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
+import { ethers } from 'ethers';
 
 describe('shouldDisplayBalanceChange', () => {
   const erc20Abi = getAbiFromType(EVMSmartContractType.ERC20)!;
@@ -207,5 +208,62 @@ describe('evm-transaction-parser.utils proxy tests:\n', () => {
       address,
       'Saved wallet',
     );
+  });
+});
+
+describe('findAbiFromData bundled selectors', () => {
+  it('returns ABI JSON for EIP-2612 permit calldata', async () => {
+    const iface = new ethers.Interface([
+      'function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s)',
+    ]);
+    const data = iface.encodeFunctionData('permit', [
+      ethers.ZeroAddress,
+      ethers.ZeroAddress,
+      1n,
+      1n,
+      27,
+      ethers.ZeroHash,
+      ethers.ZeroHash,
+    ]);
+    const abiJson = await EvmTransactionParserUtils.findAbiFromData(data);
+    expect(abiJson).toBeDefined();
+    expect(abiJson!).toContain('"name":"permit"');
+  });
+
+  it('returns ABI JSON for Uniswap V2 swapExactTokensForTokens', async () => {
+    const iface = new ethers.Interface([
+      'function swapExactTokensForTokens(uint256 amountIn, uint256 amountOutMin, address[] path, address to, uint256 deadline)',
+    ]);
+    const path = [ethers.ZeroAddress, ethers.ZeroAddress];
+    const data = iface.encodeFunctionData('swapExactTokensForTokens', [
+      1n,
+      1n,
+      path,
+      ethers.ZeroAddress,
+      1n,
+    ]);
+    const abiJson = await EvmTransactionParserUtils.findAbiFromData(data);
+    expect(abiJson).toBeDefined();
+  });
+
+  it('returns ABI JSON for WETH deposit', async () => {
+    const iface = new ethers.Interface(['function deposit() payable']);
+    const data = iface.encodeFunctionData('deposit', []);
+    const abiJson = await EvmTransactionParserUtils.findAbiFromData(data);
+    expect(abiJson).toBeDefined();
+  });
+
+  it('returns parsed bundled ABI from selector helper', () => {
+    const iface = new ethers.Interface(['function mint(uint256)']);
+    const data = iface.encodeFunctionData('mint', [2n]);
+    const abi = EvmTransactionParserUtils.getBundledAbiByDataSelector(data);
+    expect(Array.isArray(abi)).toBe(true);
+    expect(
+      abi?.some((item: any) => item.type === 'function' && item.name === 'mint'),
+    ).toBe(true);
+  });
+
+  it('getAbiFromType ignores PROTOCOL decode-only bucket', () => {
+    expect(getAbiFromType(EVMSmartContractType.PROTOCOL)).toBeUndefined();
   });
 });
