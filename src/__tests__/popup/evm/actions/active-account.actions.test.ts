@@ -394,7 +394,7 @@ describe('EVM active-account.actions (custom chain)', () => {
       '0x00000000000000000000000000000000000000bb',
     );
     expect(collection.tokenInfo.name).toBe(
-      '0x00000000000000000000000000000000000000bb',
+      '0x00000...000bb',
     );
     expect(collection.collection[0].metadata.name).toBe('#42');
     expect(store.getState().evm.activeAccount.nfts.loading).toBe(false);

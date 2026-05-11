@@ -14,9 +14,10 @@ interface Props {
 
 export const EvmNftMedia = ({ src, className }: Props) => {
   const [hasError, setHasError] = useState(false);
-  const mediaSrc = hasError || !src ? NFT_PLACEHOLDER : src;
+  const isPlaceholder = hasError || !src || src === NFT_PLACEHOLDER;
+  const mediaSrc = isPlaceholder ? NFT_PLACEHOLDER : src;
   const mediaClassName = `nft-media ${className ?? ''} ${
-    hasError || !src ? 'placeholder' : ''
+    isPlaceholder ? 'placeholder' : ''
   }`.trim();
 
   if (!hasError && isNftVideoMedia(src)) {
