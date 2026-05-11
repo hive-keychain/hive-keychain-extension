@@ -445,13 +445,14 @@ export const loadEvmActiveAccount =
           },
           history: {
             value: EMPTY_EVM_HISTORY,
-            loading: false,
+            loading: true,
             initialized: false,
           },
           wallet: wallet,
           isReady: false,
         } as EvmActiveAccount,
       });
+      const additionalAssetLoadPromises = [dispatch(loadEvmHistory())];
 
       const nativeMeta = EvmTokensUtils.buildFallbackNativeTokenInfo(chain);
       const [tokenInfos, customNfts] = await Promise.all([
@@ -494,6 +495,7 @@ export const loadEvmActiveAccount =
         type: EvmActionType.SET_ACTIVE_ACCOUNT,
         payload: { isReady: true },
       });
+      await Promise.all(additionalAssetLoadPromises);
       return;
     }
 
@@ -529,6 +531,10 @@ export const loadEvmActiveAccount =
         isReady: false,
       } as EvmActiveAccount,
     });
+    const additionalAssetLoadPromises = [
+      dispatch(loadEvmActiveAccountNfts(chain, wallet)),
+      dispatch(loadEvmHistory()),
+    ];
 
     const result: DiscoveredTokensResponse =
       await EvmLightNodeUtils.getDiscoveredTokens(
@@ -586,6 +592,7 @@ export const loadEvmActiveAccount =
         dispatch(loadMoreTokensInActiveAccount(chain, wallet));
       }, 1000);
     }
+    await Promise.all(additionalAssetLoadPromises);
   };
 
 export const loadMoreNftsInActiveAccount =
