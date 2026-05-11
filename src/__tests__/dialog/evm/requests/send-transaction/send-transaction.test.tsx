@@ -441,49 +441,15 @@ describe('send-transaction proxy tests:\n', () => {
     );
   });
 
-  it('falls back to a signature-derived abi when the backend abi does not decode the transaction', async () => {
+  it('falls back to raw transaction data when the backend abi does not decode the transaction', async () => {
     const recipient = '0x00000000000000000000000000000000000000ab';
-    const fallbackAbi = [
-      {
-        inputs: [
-          { internalType: 'address', name: 'recipient', type: 'address' },
-          { internalType: 'uint256', name: 'amount', type: 'uint256' },
-        ],
-        name: 'transfer',
-        outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-    ];
+    const transferData =
+      '0xa9059cbb00000000000000000000000000000000000000000000000000000000000000ab00000000000000000000000000000000000000000000000000000000000003e8';
 
     jest.spyOn(EvmLightNodeUtils, 'getAbi').mockResolvedValue([
       { inputs: [], name: 'approve', outputs: [], type: 'function' },
     ]);
-    jest
-      .spyOn(EvmTransactionParserUtils, 'findAbiFromData')
-      .mockResolvedValue(fallbackAbi as any);
-    jest.spyOn(EvmTransactionParserUtils, 'parseArgs').mockReturnValue([
-      recipient,
-      1000n,
-    ]);
-    mockParseTransaction
-      .mockReturnValueOnce(null)
-      .mockReturnValueOnce({
-        args: {
-          0: recipient,
-          1: 1000n,
-          toArray: () => [recipient, 1000n],
-        },
-        fragment: {
-          inputs: [
-            { name: 'recipient', type: 'address' },
-            { name: 'amount', type: 'uint256' },
-          ],
-        },
-        name: 'transfer',
-        signature: 'transfer(address,uint256)',
-        value: 0,
-      });
+    mockParseTransaction.mockReturnValue(null);
 
     render(
       <SendTransaction
@@ -502,7 +468,7 @@ describe('send-transaction proxy tests:\n', () => {
             chainId: '1',
             params: [
               {
-                data: '0xa9059cbb00000000000000000000000000000000000000000000000000000000000000ab00000000000000000000000000000000000000000000000000000000000003e8',
+                data: transferData,
                 from: '0x00000000000000000000000000000000000000ff',
                 gasLimit: 21000,
                 maxFeePerGas: '1',
@@ -521,15 +487,15 @@ describe('send-transaction proxy tests:\n', () => {
     await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
 
     const fields = lastSetFieldsPayload();
-    expect(EvmTransactionParserUtils.findAbiFromData).toHaveBeenCalled();
-    expect(fields.operationName).toBe('evm_operation_transfer');
     expect(
-      fields.otherFields.some((field: any) => field.name === 'recipient'),
+      fields.operationName,
+    ).toBe('dialog_evm_decrypt_send_transaction_title');
+    expect(
+      fields.otherFields.some(
+        (field: any) =>
+          field.name === 'evm_transaction_data' && field.value === transferData,
+      ),
     ).toBe(true);
-    expect(fields.otherFields.some((field: any) => field.name === 'amount')).toBe(
-      true,
-    );
-    expect((ethers.Contract as jest.Mock).mock.calls[1][1]).toEqual(fallbackAbi);
   });
 
   it('shows the native balance card for contract calls without token balance changes', async () => {

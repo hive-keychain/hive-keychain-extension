@@ -1,4 +1,3 @@
-import { Interface } from '@ethersproject/abi';
 import {
   EvmSmartContractInfo,
   EVMSmartContractType,
@@ -16,13 +15,11 @@ import {
 import { EvmAccountOrPublic } from '@popup/evm/interfaces/wallet.interface';
 import { AbiList } from '@popup/evm/reference-data/abi.data';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
-import { EvmDataParser } from '@popup/evm/utils/evm-data-parser.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
-import { MethodRegistry } from 'eth-method-registry';
-import { ethers, Result } from 'ethers';
+import { ethers, Interface, Result } from 'ethers';
 import { KeychainApi } from 'src/api/keychain';
 import Logger from 'src/utils/logger.utils';
 
@@ -552,185 +549,67 @@ const verifyTransactionInformation = async (
   }
 };
 
-const findAbiFromData = async (data: string, chain: EvmChain) => {
-  data = data.substring(2);
-
-  const functionNameInHex = data.substring(0, 8);
-
-  const foundSignature =
-    await EvmDataParser.getMethodFromSignature(functionNameInHex);
-
-  if (foundSignature) {
-    const name = foundSignature.split('(')[0];
-    const inputs = parseSignature(foundSignature);
-
-    if (name && inputs)
-      for (const abi of AbiList) {
-        const foundFunction = abi.abi.find(
-          (f) => f.name === name && inputs.length === f.inputs.length,
-        );
-        if (foundFunction) {
-          let allMatch = true;
-          for (let i = 0; i < inputs.length; i++) {
-            if (foundFunction.inputs[i].type !== inputs[i].type) {
-              allMatch = false;
-              break;
-            }
-          }
-          if (allMatch) return JSON.stringify(abi.abi);
-        }
-      }
+/**
+ * Resolves bundled ABI from `AbiList` by matching the 4-byte selector to a
+ * known function fragment. No external signature registry.
+ */
+const findAbiFromDataBySelector = (data: string): string | undefined => {
+  if (!data || data.length < 10) {
+    return undefined;
   }
+  const selector = data.slice(0, 10);
+  for (const entry of AbiList) {
+    try {
+      const iface = new Interface(entry.abi as any);
+      try {
+        iface.getFunction(selector);
+        return JSON.stringify(entry.abi);
+      } catch {
+        continue;
+      }
+    } catch {
+      continue;
+    }
+  }
+  return undefined;
+};
+
+const findAbiFromData = async (
+  data: string,
+  _chain?: EvmChain,
+): Promise<string | undefined> => {
+  return findAbiFromDataBySelector(data);
 };
 
 const parseData = async (
   data: string,
-  chain: EvmChain,
+  _chain: EvmChain,
 ): Promise<EvmTransactionDecodedData | undefined> => {
-  const functionNameInHex = data.slice(0, 10);
-
-  const foundSignature =
-    await EvmDataParser.getMethodFromSignature(functionNameInHex);
-
-  if (foundSignature) {
-    let registry;
-    try {
-      registry = new MethodRegistry({
-        provider: {
-          host: `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
-          timeout: 30000,
-        },
-        network: chain.chainId,
-      });
-      console.log({ registry });
-      if (registry) {
-        const parsedRegistry = registry.parse(foundSignature);
-        console.log(parsedRegistry);
-        if (parsedRegistry.name && parsedRegistry.args)
-          return {
-            operationName: parsedRegistry.name,
-            inputs: parsedRegistry.args as EvmTransactionDecodedDataInput[],
-          };
-      } else {
-        const name = foundSignature.split('(')[0];
-        const inputs = parseSignature(foundSignature);
-
-        const valueData = EvmFormatUtils.addHexPrefix(data.slice(10));
-        const values = Interface.getAbiCoder().decode(
-          inputs,
-          valueData,
-        ) as any[];
-        const params = inputs.map((input, index) =>
-          decodeParam(input, index, values),
-        );
-        return { operationName: name, inputs: params };
-      }
-    } catch (e) {
-      const name = foundSignature.split('(')[0];
-      const inputs = parseSignature(foundSignature);
-      const valueData = EvmFormatUtils.addHexPrefix(data.slice(10));
-
-      let values: any;
-      values = Interface.getAbiCoder().decode(
-        inputs,
-        valueData.toString(),
-      ) as any[];
-      const params = inputs.map((input, index) =>
-        decodeParam(input, index, values),
-      );
-      return { operationName: name, inputs: params };
-    }
+  if (!data || data.length < 10) {
+    return undefined;
+  }
+  const abiJson = findAbiFromDataBySelector(data);
+  if (!abiJson) {
+    return undefined;
+  }
+  try {
+    const iface = new Interface(JSON.parse(abiJson));
+    const parsed = iface.parseTransaction({ data });
+    const inputs: EvmTransactionDecodedDataInput[] =
+      parsed.fragment.inputs.map((input, index) => ({
+        name: input.name,
+        type: input.type,
+        value: parsed.args[index],
+        components: input.components,
+      }));
+    return {
+      operationName: parsed.name,
+      inputs,
+    };
+  } catch {
+    return undefined;
   }
 };
-
-function decodeParam(input: any, index: number, values: any[]): any {
-  const value = values[index] as any[];
-  const { type, name } = input;
-
-  let children = input.components?.map((child: any, childIndex: number) =>
-    decodeParam(child, childIndex, value),
-  );
-
-  if (type.endsWith('[]')) {
-    const childType = type.slice(0, -2);
-
-    children = value.map((_arrayItem, arrayIndex) => {
-      const childName = `Item ${arrayIndex + 1}`;
-
-      return decodeParam(
-        { ...input, name: childName, type: childType } as any,
-        arrayIndex,
-        value,
-      );
-    });
-  }
-
-  return {
-    name,
-    type,
-    value,
-    children,
-  };
-}
-
-function parseSignature(signature: string): any[] {
-  let typeString = signature.slice(signature.indexOf('(') + 1, -1);
-  const nested = [];
-
-  while (typeString.includes('(')) {
-    const nestedBrackets = findFirstNestedBrackets(typeString);
-
-    if (!nestedBrackets) {
-      break;
-    }
-
-    nested.push(nestedBrackets.value);
-
-    typeString = `${typeString.slice(0, nestedBrackets.start)}${
-      nested.length - 1
-    }#${typeString.slice(nestedBrackets.end + 1)}`;
-  }
-
-  return createInput(typeString, nested);
-}
-
-function createInput(typeString: string, nested: string[]): any[] {
-  return typeString.split(',').map((value) => {
-    const parts = value.split('#');
-    const nestedIndex = parts.length > 1 ? parseInt(parts[0], 10) : undefined;
-    const type = nestedIndex === undefined ? value : `tuple${parts[1] ?? ''}`;
-
-    const components =
-      nestedIndex === undefined
-        ? undefined
-        : createInput(nested[nestedIndex], nested);
-
-    return {
-      type,
-      components,
-    };
-  });
-}
-
-function findFirstNestedBrackets(
-  value: string,
-): { start: number; end: number; value: string } | undefined {
-  let start = -1;
-
-  for (let i = 0; i < value.length; i++) {
-    if (value[i] === '(') {
-      start = i;
-    } else if (value[i] === ')' && start !== -1) {
-      return {
-        start,
-        end: i,
-        value: value.slice(start + 1, i),
-      };
-    }
-  }
-
-  return undefined;
-}
 
 const recipientInputNameList = ['recipient', 'spender'];
 const amountInputNameList = ['amount'];

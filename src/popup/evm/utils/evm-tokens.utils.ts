@@ -738,6 +738,30 @@ type NativeTokenApiResponse = {
   price: { priceUsd: number; fetchedAt: string };
 };
 
+/** Light-node `native/{chainId}` timeout before using local chain metadata. */
+export const MAIN_TOKEN_LIGHT_NODE_TIMEOUT_MS = 5000;
+
+const rejectAfterMs = (ms: number, reason: string) =>
+  new Promise<never>((_, reject) => {
+    setTimeout(() => reject(new Error(reason)), ms);
+  });
+
+const isValidNativeTokenApiResponse = (
+  response: unknown,
+): response is NativeTokenApiResponse => {
+  if (!response || typeof response !== 'object') return false;
+  const meta = (response as { metadata?: unknown }).metadata;
+  if (!meta || typeof meta !== 'object') return false;
+  const name = (meta as { name?: unknown }).name;
+  const symbol = (meta as { symbol?: unknown }).symbol;
+  return (
+    typeof name === 'string' &&
+    name.length > 0 &&
+    typeof symbol === 'string' &&
+    symbol.length > 0
+  );
+};
+
 const mainTokenInfoInflight = new Map<
   string,
   Promise<EvmSmartContractInfoNative>
@@ -754,21 +778,42 @@ const getMainTokenInfo = async (
   let pending = mainTokenInfoInflight.get(key);
   if (!pending) {
     const run = async (): Promise<EvmSmartContractInfoNative> => {
-      const response = (await EvmLightNodeApi.get(
-        `native/${Number(chain.chainId)}`,
-      )) as NativeTokenApiResponse;
-      return {
-        type: EVMSmartContractType.NATIVE,
-        name: response.metadata.name,
-        symbol: response.metadata.symbol,
-        logo: response.metadata.logoUrl,
-        chainId: chain.chainId,
-        backgroundColor: '',
-        coingeckoId: '',
-        priceUsd: response.price?.priceUsd ?? 0,
-        createdAt: response.price?.fetchedAt ?? Date.now(),
-        categories: [],
-      };
+      try {
+        const response = await Promise.race([
+          EvmLightNodeApi.get(`native/${Number(chain.chainId)}`),
+          rejectAfterMs(
+            MAIN_TOKEN_LIGHT_NODE_TIMEOUT_MS,
+            'main_token_native_fetch_timeout',
+          ),
+        ]);
+
+        if (!isValidNativeTokenApiResponse(response)) {
+          Logger.warn(
+            `Native token metadata invalid or missing for chain ${chain.chainId}; using local fallback`,
+          );
+          return buildFallbackNativeTokenInfo(chain);
+        }
+
+        const logoUrl = response.metadata.logoUrl;
+        return {
+          type: EVMSmartContractType.NATIVE,
+          name: response.metadata.name,
+          symbol: response.metadata.symbol,
+          logo: typeof logoUrl === 'string' ? logoUrl : '',
+          chainId: chain.chainId,
+          backgroundColor: '',
+          coingeckoId: '',
+          priceUsd: response.price?.priceUsd ?? 0,
+          createdAt: response.price?.fetchedAt ?? Date.now(),
+          categories: [],
+        };
+      } catch (err) {
+        const detail = err instanceof Error ? err.message : String(err);
+        Logger.warn(
+          `Native token metadata fetch failed for chain ${chain.chainId} (${detail}); using local fallback`,
+        );
+        return buildFallbackNativeTokenInfo(chain);
+      }
     };
     pending = run().finally(() => {
       mainTokenInfoInflight.delete(key);
