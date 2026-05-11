@@ -44,9 +44,14 @@ export const EvmAddressComponent = ({
 
   const renderAddressContent = () => {
     if (!addressDetail) return null;
-    const visibleAddress = forceFormattedAddress
+    const resolvedAddress = forceFormattedAddress
       ? addressDetail.formattedAddress
       : addressDetail.label ?? addressDetail.formattedAddress;
+    const visibleAddress =
+      resolvedAddress.trim().toLowerCase() ===
+      addressDetail.fullAddress.trim().toLowerCase()
+        ? addressDetail.formattedAddress
+        : resolvedAddress;
     const shouldShowAddressTooltip =
       visibleAddress.trim().toLowerCase() !==
       addressDetail.fullAddress.trim().toLowerCase();
