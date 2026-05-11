@@ -9,10 +9,14 @@ import {
 import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
-import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import {
+  EvmTokensUtils,
+  MAIN_TOKEN_LIGHT_NODE_TIMEOUT_MS,
+} from '@popup/evm/utils/evm-tokens.utils';
 import Decimal from 'decimal.js';
 import { ethers } from 'ethers';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 
 describe('evm-tokens.utils proxy metadata tests:\n', () => {
   afterEach(() => {
@@ -182,6 +186,85 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
       categories: [],
     });
     expect(getSpy).not.toHaveBeenCalled();
+  });
+
+  describe('getMainTokenInfo light-node fallback', () => {
+    const defaultChainFixture = {
+      chainId: '0x1',
+      name: 'Ethereum',
+      mainToken: 'ETH',
+      logo: 'https://cdn.example/eth-local.svg',
+      nativeCoinId: 'ethereum',
+    } as const;
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('falls back to local chain metadata when the API rejects', async () => {
+      jest.spyOn(EvmLightNodeApi, 'get').mockRejectedValue(new Error('network'));
+      const warnSpy = jest.spyOn(Logger, 'warn').mockImplementation(() => {});
+
+      const chain = { ...defaultChainFixture } as any;
+      await expect(EvmTokensUtils.getMainTokenInfo(chain)).resolves.toEqual(
+        EvmTokensUtils.buildFallbackNativeTokenInfo(chain),
+      );
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Native token metadata fetch failed'),
+      );
+      warnSpy.mockRestore();
+    });
+
+    it('falls back when the API resolves undefined (non-200)', async () => {
+      jest.spyOn(EvmLightNodeApi, 'get').mockResolvedValue(undefined);
+      const warnSpy = jest.spyOn(Logger, 'warn').mockImplementation(() => {});
+
+      const chain = { ...defaultChainFixture } as any;
+      await expect(EvmTokensUtils.getMainTokenInfo(chain)).resolves.toEqual(
+        EvmTokensUtils.buildFallbackNativeTokenInfo(chain),
+      );
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('invalid or missing'),
+      );
+      warnSpy.mockRestore();
+    });
+
+    it('falls back when the payload metadata is invalid', async () => {
+      jest.spyOn(EvmLightNodeApi, 'get').mockResolvedValue({
+        metadata: { name: '', symbol: 'ETH' },
+      });
+      const warnSpy = jest.spyOn(Logger, 'warn').mockImplementation(() => {});
+
+      const chain = { ...defaultChainFixture } as any;
+      await expect(EvmTokensUtils.getMainTokenInfo(chain)).resolves.toEqual(
+        EvmTokensUtils.buildFallbackNativeTokenInfo(chain),
+      );
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('invalid or missing'),
+      );
+      warnSpy.mockRestore();
+    });
+
+    it('falls back when the light-node request does not settle before timeout', async () => {
+      jest.useFakeTimers();
+      jest.spyOn(EvmLightNodeApi, 'get').mockImplementation(
+        () => new Promise(() => {}),
+      );
+      const warnSpy = jest.spyOn(Logger, 'warn').mockImplementation(() => {});
+
+      const chain = { ...defaultChainFixture } as any;
+      const resultPromise = EvmTokensUtils.getMainTokenInfo(chain);
+
+      await jest.advanceTimersByTimeAsync(MAIN_TOKEN_LIGHT_NODE_TIMEOUT_MS);
+
+      await expect(resultPromise).resolves.toEqual(
+        EvmTokensUtils.buildFallbackNativeTokenInfo(chain),
+      );
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringMatching(/main_token_native_fetch_timeout/),
+      );
+      warnSpy.mockRestore();
+    });
   });
 
   it('detects token type from a serialized abi string', () => {
