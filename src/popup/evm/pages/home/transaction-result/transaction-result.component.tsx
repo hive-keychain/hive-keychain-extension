@@ -80,6 +80,7 @@ const EvmTransactionResult = ({
   gasFee,
   localAccounts,
   isCanceled,
+  isSuccess,
   pageTitle,
   detailFields,
   transactionData,
@@ -121,7 +122,11 @@ const EvmTransactionResult = ({
       isBackButtonEnabled: false,
       closeNavigationParams,
     });
-    getTransactionStatus();
+    if (isSuccess || isCanceled) {
+      setWaitingForTx(false);
+    } else {
+      getTransactionStatus();
+    }
   }, []);
 
   useEffect(() => {
@@ -346,6 +351,7 @@ const EvmTransactionResult = ({
   };
 
   const getStatus = () => {
+    if (isSuccess) return 'success';
     if (isCanceled) return 'canceled';
     if (waitingForTx) {
       if (isCanceling) {
@@ -452,11 +458,16 @@ const EvmTransactionResult = ({
   };
 
   const getPendingGasFeeDisplay = (): string => {
+<<<<<<< HEAD
     if (
       gasFee?.estimatedFeeInEth &&
       !gasFee.estimatedFeeInEth.equals(-1)
     ) {
       return EvmFormatUtils.formatGweiFromEth(gasFee.estimatedFeeInEth);
+=======
+    if (gasFee?.estimatedFeeInEth && !gasFee.estimatedFeeInEth.equals(-1)) {
+      return `${gasFee.estimatedFeeInEth.toFixed()} ${chain.mainToken}`;
+>>>>>>> 527f609c8b96d46d3700b4a82545abde534e2b32
     }
     const gl = displayTx.gasLimit;
     const maxFeePerGas = displayTx.maxFeePerGas ?? displayTx.gasPrice;
@@ -499,8 +510,9 @@ const EvmTransactionResult = ({
         ? displayTx.data
         : ethers.hexlify(displayTx.data);
 
-  const erc20TransferRecipient =
-    decodeErc20TransferRecipient(txDataHex || null);
+  const erc20TransferRecipient = decodeErc20TransferRecipient(
+    txDataHex || null,
+  );
 
   const detailFieldsIncludeTo = detailFields?.some(
     (d: EvmUserHistoryItemDetail) =>
@@ -512,7 +524,7 @@ const EvmTransactionResult = ({
     receiverAddress ??
     erc20TransferRecipient ??
     (!txDataHex.startsWith('0xa9059cbb')
-      ? displayTx.to ?? undefined
+      ? (displayTx.to ?? undefined)
       : undefined);
 
   const isCanceledHistoryOperation =
@@ -718,6 +730,7 @@ const mapStateToProps = (state: RootState) => {
     localAccounts: state.evm.accounts,
     chain: state.chain as EvmChain,
     isCanceled: state.navigation.stack[0].params.isCanceled,
+    isSuccess: state.navigation.stack[0].params.isSuccess,
     pageTitle: state.navigation.stack[0].params.pageTitle,
     detailFields: state.navigation.stack[0].params.detailFields,
     transactionData: state.navigation.stack[0].params.transactionData,
