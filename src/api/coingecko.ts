@@ -1,7 +1,12 @@
 import { BaseApi } from 'src/api/base';
 
 const buildUrl = (url: string, params?: string) => {
-  return `https://api.coingecko.com/api/v3/${url}?${params}`;
+  const path = url.replace(/^\/+/, '');
+  const query =
+    params === undefined || params === null || params === ''
+      ? ''
+      : `?${params}`;
+  return `https://api.coingecko.com/api/v3/${path}${query}`;
 };
 
 const get = async (url: string, params?: string): Promise<any> => {

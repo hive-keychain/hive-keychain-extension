@@ -24,6 +24,7 @@ import Decimal from 'decimal.js';
 import {
   ethers,
   HDNodeWallet,
+  Provider,
   TransactionRequest,
   TransactionResponse,
   Wallet,
@@ -218,16 +219,15 @@ const hasPendingTransaction = async (
   chain: EvmChain,
 ) => {
   try {
-    const pendingNonce = await EvmRequestsUtils.getNonce(
-      fromAddress,
-      chain,
-      'pending',
-    );
-    const latestNonce = await EvmRequestsUtils.getNonce(
-      fromAddress,
-      chain,
-      'latest',
-    );
+    const provider = await EthersUtils.getProvider(chain);
+    const [[pendingNonce, latestNonce], localPendingTransactions] =
+      await Promise.all([
+        Promise.all([
+          provider.getTransactionCount(fromAddress, 'pending'),
+          provider.getTransactionCount(fromAddress, 'latest'),
+        ]),
+        getPendingTransactionsForWallet(fromAddress, chain.chainId),
+      ]);
 
     const hasPending = pendingNonce > latestNonce;
     return {
@@ -238,6 +238,7 @@ const hasPendingTransaction = async (
         fromAddress,
         chain,
         hasPending ? latestNonce : undefined,
+        { provider, localPendingTransactions },
       ),
     };
   } catch (error) {
@@ -269,6 +270,10 @@ const getPendingTransactionsDetails = async (
   walletAddress: string,
   chain: EvmChain,
   nonce?: number,
+  preloaded?: {
+    provider: Provider;
+    localPendingTransactions: EvmPendingTransaction[];
+  },
 ): Promise<EvmPendingTransactionDetails> => {
   let pendingTransactionDetail: EvmPendingTransactionDetails = {
     label: chrome.i18n.getMessage('evm_unknown_pending_transaction'),
@@ -278,11 +283,14 @@ const getPendingTransactionsDetails = async (
 
   let pendingTx: any;
 
-  const provider = await EthersUtils.getProvider(chain);
-  const localPendingTransactions = await getPendingTransactionsForWallet(
-    walletAddress,
-    chain.chainId,
-  );
+  const provider =
+    preloaded?.provider ?? (await EthersUtils.getProvider(chain));
+  const localPendingTransactions =
+    preloaded?.localPendingTransactions ??
+    (await getPendingTransactionsForWallet(
+      walletAddress,
+      chain.chainId,
+    ));
 
   if (nonce !== undefined) {
     const tx = localPendingTransactions.find(

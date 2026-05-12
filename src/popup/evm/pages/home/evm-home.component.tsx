@@ -138,7 +138,7 @@ const Home = ({
     if (activeAccount.wallet.address) {
       void loadPendingTransactions(activeAccount.wallet);
     }
-  }, [activeAccount.wallet.address]);
+  }, [activeAccount.wallet.address, chain.chainId]);
 
   useEffect(() => {
     const usdValue = `$${FormatUtils.withCommas(

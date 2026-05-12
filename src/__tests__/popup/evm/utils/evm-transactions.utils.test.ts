@@ -1,5 +1,4 @@
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
-import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmTokensHistoryParserUtils } from '@popup/evm/utils/evm-tokens-history-parser.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
@@ -106,10 +105,9 @@ describe('evm transactions utils', () => {
       },
     ];
 
-    jest
-      .spyOn(EvmRequestsUtils, 'getNonce')
-      .mockResolvedValueOnce(2)
-      .mockResolvedValueOnce(0);
+    provider.getTransactionCount.mockImplementation((_addr: string, tag: string) =>
+      Promise.resolve(tag === 'pending' ? 2 : 0),
+    );
 
     const result = await EvmTransactionsUtils.hasPendingTransaction(
       walletAddress,
@@ -141,10 +139,9 @@ describe('evm transactions utils', () => {
       },
     ];
 
-    jest
-      .spyOn(EvmRequestsUtils, 'getNonce')
-      .mockResolvedValueOnce(2)
-      .mockResolvedValueOnce(0);
+    provider.getTransactionCount.mockImplementation((_addr: string, tag: string) =>
+      Promise.resolve(tag === 'pending' ? 2 : 0),
+    );
 
     const result = await EvmTransactionsUtils.hasPendingTransaction(
       walletAddress,
