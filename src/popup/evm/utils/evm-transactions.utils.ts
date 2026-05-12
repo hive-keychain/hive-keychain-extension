@@ -11,9 +11,9 @@ import {
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmLocalHistoryUtils } from '@popup/evm/utils/evm-local-history.utils';
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
-import { EvmLocalHistoryUtils } from '@popup/evm/utils/evm-local-history.utils';
 import { EvmTokensHistoryParserUtils } from '@popup/evm/utils/evm-tokens-history-parser.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
@@ -114,7 +114,8 @@ const send = async (
     data: request.data,
     to: request.to,
     from: wallet.address,
-    nonce: forceNounce ?? (await EvmRequestsUtils.getNonce(wallet.address, chain)),
+    nonce:
+      forceNounce ?? (await EvmRequestsUtils.getNonce(wallet.address, chain)),
     gasLimit: gasFee ? BigInt(gasFee.gasLimit.toFixed(0)) : null,
     chainId: chain.chainId,
     type: request.type,
@@ -214,10 +215,7 @@ const deleteFromPendingTransactions = async (txHash: string) => {
   await persistPendingTransactions(transactions);
 };
 
-const hasPendingTransaction = async (
-  fromAddress: string,
-  chain: EvmChain,
-) => {
+const hasPendingTransaction = async (fromAddress: string, chain: EvmChain) => {
   try {
     const provider = await EthersUtils.getProvider(chain);
     const [[pendingNonce, latestNonce], localPendingTransactions] =
@@ -247,10 +245,9 @@ const hasPendingTransaction = async (
 };
 
 const getAllPendingTransactions = async () => {
-  const transactions =
-    await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
-    );
+  const transactions = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
+  );
   return normalizePendingTransactions(transactions);
 };
 
@@ -287,10 +284,7 @@ const getPendingTransactionsDetails = async (
     preloaded?.provider ?? (await EthersUtils.getProvider(chain));
   const localPendingTransactions =
     preloaded?.localPendingTransactions ??
-    (await getPendingTransactionsForWallet(
-      walletAddress,
-      chain.chainId,
-    ));
+    (await getPendingTransactionsForWallet(walletAddress, chain.chainId));
 
   if (nonce !== undefined) {
     const tx = localPendingTransactions.find(
@@ -343,7 +337,11 @@ const getHighestNonceInPendingTransaction = async (
   );
 
   return transactions.length > 0
-    ? Math.max(...transactions.map((pendingTx) => getPendingTransactionNonce(pendingTx)))
+    ? Math.max(
+        ...transactions.map((pendingTx) =>
+          getPendingTransactionNonce(pendingTx),
+        ),
+      )
     : 0;
 };
 
@@ -418,7 +416,9 @@ const rehydratePendingTransactions = async () => {
 
   for (const pendingTransaction of pendingTransactions) {
     try {
-      const chain = await ChainUtils.getChain<EvmChain>(pendingTransaction.chainId);
+      const chain = await ChainUtils.getChain<EvmChain>(
+        pendingTransaction.chainId,
+      );
       const provider = await EthersUtils.getProvider(chain);
       const transactionResponse = new TransactionResponse(
         pendingTransaction.txResponseParams,

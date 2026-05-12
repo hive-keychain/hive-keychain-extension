@@ -16,16 +16,9 @@
   @include small-card();
   display: flex;
   flex-direction: column;
-  row-gap: 8px;
   cursor: pointer;
   .pending-transactions-info-title {
     @include poppins500(12px);
     color: var(--main-font-color);
-  }
-  .pending-transactions-info-item {
-    @include poppins300(12px);
-    color: var(--main-font-color);
-    opacity: 0.8;
-    font-style: italic;
   }
 }
