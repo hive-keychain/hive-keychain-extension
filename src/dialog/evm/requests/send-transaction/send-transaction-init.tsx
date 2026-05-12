@@ -28,6 +28,11 @@ import { ethers } from 'ethers';
 import React from 'react';
 import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
 import { formatDecodedArgumentDisplayValue } from 'src/dialog/evm/requests/send-transaction/send-transaction-argument-format';
+import {
+  formatDecodedTupleForConfirmationField,
+  isTupleAbiInput,
+  type AbiParamFragment,
+} from 'src/dialog/evm/requests/send-transaction/send-transaction-decoded-tuple';
 import type { RunSendTransactionInitParams } from 'src/dialog/evm/requests/send-transaction/send-transaction.types';
 import {
   removeMatchingFromField,
@@ -501,17 +506,24 @@ export async function runSendTransactionInit(
                 if (
                   EvmTransactionParserUtils.recipientInputNameList.includes(
                     input.name,
-                  )
+                  ) &&
+                  (typeof argumentValue === 'string' ||
+                    typeof argumentValue === 'bigint')
                 ) {
                   resolvedReceiver = String(argumentValue);
                   setReceiver(resolvedReceiver);
-                  tData.to = argumentValue;
+                  if (typeof argumentValue === 'string') {
+                    tData.to = argumentValue;
+                  }
                 }
                 if (
                   shouldUseDecodedAmountForBalance &&
                   EvmTransactionParserUtils.amountInputNameList.includes(
                     input.name,
-                  )
+                  ) &&
+                  (typeof argumentValue === 'bigint' ||
+                    typeof argumentValue === 'number' ||
+                    typeof argumentValue === 'string')
                 ) {
                   const decimals =
                     usedToken.type === EVMSmartContractType.ERC20
@@ -534,6 +546,9 @@ export async function runSendTransactionInit(
                     input.name,
                     usedToken,
                   );
+                const resolvedDisplayType = isTupleAbiInput(input as AbiParamFragment)
+                  ? EvmInputDisplayType.TUPLE
+                  : inputDisplayType;
                 const decodedFieldTokenType = getDecodedFieldTokenType(
                   contractType,
                   usedToken.type,
@@ -557,21 +572,33 @@ export async function runSendTransactionInit(
                 const fieldAddress = [
                   EvmInputDisplayType.ADDRESS,
                   EvmInputDisplayType.WALLET_ADDRESS,
-                ].includes(inputDisplayType)
+                ].includes(resolvedDisplayType)
                   ? String(argumentValue)
                   : undefined;
-                const value = await formatDecodedArgumentDisplayValue(
-                  inputDisplayType,
-                  argumentValue,
-                  usedToken,
-                  chainTmp as EvmChain,
-                  transactionInfo,
-                  accounts,
-                  transactionHook,
-                );
+                const value = isTupleAbiInput(input as AbiParamFragment)
+                  ? await formatDecodedTupleForConfirmationField(
+                      input as AbiParamFragment,
+                      argumentValue,
+                      usedToken,
+                      chainTmp as EvmChain,
+                      transactionInfo,
+                      accounts,
+                      transactionHook,
+                      normalizedAbi,
+                      decodedTransactionData.name,
+                    )
+                  : await formatDecodedArgumentDisplayValue(
+                      inputDisplayType,
+                      argumentValue,
+                      usedToken,
+                      chainTmp as EvmChain,
+                      transactionInfo,
+                      accounts,
+                      transactionHook,
+                    );
                 transactionConfirmationFields.otherFields.push({
                   name: fieldName,
-                  type: inputDisplayType,
+                  type: resolvedDisplayType,
                   value: value,
                   ...(fieldAddress ? { address: fieldAddress } : {}),
                   warnings: await EvmTransactionParserUtils.getFieldWarnings(

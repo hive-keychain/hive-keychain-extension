@@ -148,6 +148,89 @@
         }
       }
 
+      &.tuple {
+        align-items: flex-start;
+
+        .value.value--tuple-block {
+          max-width: 100%;
+          flex: 1;
+          min-width: 0;
+          text-align: left;
+        }
+
+        .expandable-panel-content {
+          justify-content: flex-start !important;
+          align-items: stretch !important;
+          width: 100%;
+        }
+
+        .decoded-tuple-rows {
+          display: flex;
+          flex-direction: column;
+          row-gap: 10px;
+          width: 100%;
+        }
+
+        .decoded-tuple-row {
+          display: grid;
+          grid-template-columns: minmax(0, 34%) 1fr;
+          column-gap: 12px;
+          align-items: start;
+        }
+
+        .decoded-tuple-row__label {
+          @include poppins500(13px);
+          color: var(--main-font-color);
+          opacity: 0.9;
+          overflow-wrap: anywhere;
+        }
+
+        .decoded-tuple-row__value {
+          min-width: 0;
+          overflow-wrap: anywhere;
+          @include poppins400(13px);
+        }
+
+        .decoded-tuple-array {
+          display: flex;
+          flex-direction: column;
+          row-gap: 14px;
+          width: 100%;
+        }
+
+        .decoded-tuple-array__item {
+          padding-bottom: 10px;
+          border-bottom: 1px solid var(--card-border, rgba(255, 255, 255, 0.08));
+
+          &:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+          }
+        }
+
+        .decoded-tuple-array__heading {
+          @include poppins600(12px);
+          margin-bottom: 6px;
+          opacity: 0.85;
+        }
+
+        .decoded-tuple--nested {
+          width: 100%;
+
+          .long-text-container {
+            width: 100%;
+          }
+
+          .header {
+            @include poppins500(12px);
+          }
+        }
+
+        .decoded-tuple--top .long-text-container {
+          width: 100%;
+        }
+      }
+
       .long-text-container {
         @include expandable-panel();
 

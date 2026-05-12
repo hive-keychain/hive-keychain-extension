@@ -7,10 +7,13 @@ export const EvmRequestItemLongText = ({
   title,
   value,
   titleSuffix,
+  allowExpandWithoutTitle = false,
 }: {
   title?: string;
   value: React.ReactNode;
   titleSuffix?: React.ReactNode;
+  /** When true, show expand/collapse header even if `title` is empty and `value` is not a string. */
+  allowExpandWithoutTitle?: boolean;
 }) => {
   const fieldTitle = useFieldTitle(title);
   const [isOpened, setIsOpened] = useState(false);
@@ -20,7 +23,7 @@ export const EvmRequestItemLongText = ({
   const showHeader =
     value != null &&
     value !== '' &&
-    (hasTitle || typeof value === 'string');
+    (hasTitle || typeof value === 'string' || allowExpandWithoutTitle);
 
   return (
     <div className="long-text-container">

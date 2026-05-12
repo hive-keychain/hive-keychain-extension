@@ -38,6 +38,8 @@ export enum EvmInputDisplayType {
   UINT256 = 'uint256',
   HTML_ELEMENT = 'html-element',
   WARNING_ONLY = 'warning-only',
+  /** Decoded ABI `tuple` / `tuple[]` — custom collapsible renderer */
+  TUPLE = 'tuple',
 }
 
 const getDisplayInputType = (

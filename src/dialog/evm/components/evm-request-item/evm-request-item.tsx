@@ -43,6 +43,7 @@ export const EvmRequestItem = ({
         const useCollapsibleString =
           typeof raw === 'string' &&
           raw.length >= COLLAPSIBLE_STRING_VALUE_MIN_LENGTH;
+        const widenTupleBlock = field.type === EvmInputDisplayType.TUPLE;
 
         return (
           <>
@@ -53,7 +54,7 @@ export const EvmRequestItem = ({
               </div>
             )}
             <div
-              className={`value${useCollapsibleString ? ' value--collapsible' : ''}`}>
+              className={`value${useCollapsibleString ? ' value--collapsible' : ''}${widenTupleBlock ? ' value--tuple-block' : ''}`}>
               {useCollapsibleString ? (
                 <EvmRequestItemLongText value={raw} />
               ) : (
