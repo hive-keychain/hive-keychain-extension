@@ -2,11 +2,19 @@ import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler'
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { createOrUpdateDialog } from '@background/multichain/dialog-lifecycle';
 import {
+  getRequestHandlers,
+  willCloseDialogWindowAfterRemovingRequest,
+} from '@background/multichain/dialog-request.utils';
+import {
   EvmDappInfo,
   EvmRequest,
   ProviderRpcErrorList,
 } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import {
+  DIALOG_FEEDBACK_DISPLAY_MS,
+  delayMs,
+} from '@reference-data/dialog-feedback.constants';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
@@ -45,6 +53,16 @@ export const handleNonExistingMethod = async (
         tab,
       },
     });
+    const handlers = await getRequestHandlers();
+    if (
+      await willCloseDialogWindowAfterRemovingRequest(
+        handlers,
+        request.request_id,
+        tab,
+      )
+    ) {
+      await delayMs(DIALOG_FEEDBACK_DISPLAY_MS);
+    }
     await requestHandler.removeRequestById(request.request_id, tab);
   };
   createOrUpdateDialog(callback, requestHandler);
