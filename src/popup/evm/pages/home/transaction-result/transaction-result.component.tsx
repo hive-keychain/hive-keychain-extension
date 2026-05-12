@@ -572,6 +572,7 @@ const EvmTransactionResult = ({
                           address={detail.value!}
                           chainId={chain.chainId}
                           forceFormattedAddress
+                          canCopy
                         />
                       }
                       valueOnClickAction={() => openWallet(detail.value!)}
@@ -600,6 +601,7 @@ const EvmTransactionResult = ({
                   address={syntheticToAddress!}
                   chainId={chain.chainId}
                   forceFormattedAddress
+                  canCopy
                 />
               }
               valueOnClickAction={() => openWallet(syntheticToAddress!)}

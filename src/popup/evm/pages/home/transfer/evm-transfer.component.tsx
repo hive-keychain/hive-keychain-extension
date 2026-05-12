@@ -23,7 +23,6 @@ import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
-import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
@@ -42,6 +41,7 @@ import {
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
+import Decimal from 'decimal.js';
 import { ethers, parseUnits, Wallet } from 'ethers';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
@@ -60,20 +60,55 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import { FormUtils } from 'src/utils/form.utils';
-import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
 interface TransferForm {
   receiverAddress: string;
   selectedToken: NativeAndErc20Token;
-  amount: number;
+  amount: string;
 }
 
 const transferFormRules = FormUtils.createRules<TransferForm>({
   receiverAddress: Joi.string().required(),
-  amount: Joi.number().required().positive().max(Joi.ref('$balance')),
+  amount: Joi.string()
+    .required()
+    .custom((value, helpers) => {
+      try {
+        new Decimal(value);
+        return value;
+      } catch {
+        return helpers.error('number.base');
+      }
+    }),
   selectedToken: Joi.object().required(),
 });
+
+const formatExactDecimalWithCommas = (
+  value: string,
+  decimals: number,
+  removeTrailingZeros = false,
+) => {
+  const parts = new Decimal(value).toFixed(decimals).split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  let finalNumber = parts.join('.');
+
+  if (removeTrailingZeros) {
+    finalNumber = finalNumber.replace(
+      /^([\d,]+)$|^([\d,]+)\.0*$|^([\d,]+\.[0-9]*?)0*$/,
+      '$1$2$3',
+    );
+  }
+
+  return finalNumber;
+};
+
+const toDecimalString = (amount: string | number) =>
+  new Decimal(amount).toFixed();
+
+export const getEvmTransferValueHex = (
+  amount: string | number,
+  decimals: number,
+) => ethers.toQuantity(parseUnits(toDecimalString(amount), decimals));
 
 const EvmTransfer = ({
   formParams,
@@ -97,7 +132,7 @@ const EvmTransfer = ({
       selectedToken: formParams?.selectedToken
         ? formParams?.selectedToken
         : navParams?.selectedCurrency,
-      amount: formParams.amount ? formParams.amount : '',
+      amount: formParams.amount ? formParams.amount.toString() : '',
     },
     resolver: (values, context, options) => {
       const resolver = joiResolver<Joi.ObjectSchema<TransferForm>>(
@@ -215,12 +250,14 @@ const EvmTransfer = ({
   }, [watch('selectedToken')]);
 
   const handleClickOnSend = async (form: TransferForm) => {
-    if (form.amount <= 0) {
+    const amount = new Decimal(form.amount);
+
+    if (amount.lessThanOrEqualTo(0)) {
       setErrorMessage('popup_html_need_positive_amount');
       return;
     }
 
-    if (parseFloat(form.amount.toString()) > parseFloat(balance.toString())) {
+    if (amount.greaterThan(new Decimal(balance.toString()))) {
       setErrorMessage('popup_html_power_up_down_error');
       return;
     }
@@ -240,6 +277,7 @@ const EvmTransfer = ({
           <EvmAddressComponent
             address={activeAccount.address}
             chainId={chain.chainId}
+            canCopy
           />
         ),
       },
@@ -249,6 +287,7 @@ const EvmTransfer = ({
           <EvmAddressComponent
             address={form.receiverAddress}
             chainId={chain.chainId}
+            canCopy
           />
         ),
         warnings: await EvmTransactionParserUtils.getAddressWarning(
@@ -265,7 +304,11 @@ const EvmTransfer = ({
             {form.selectedToken.tokenInfo && (
               <EvmTokenLogo tokenInfo={form.selectedToken.tokenInfo} />
             )}
-            <span>{`${FormatUtils.withCommas(form.amount, decimals, true)} ${
+            <span>{`${formatExactDecimalWithCommas(
+              form.amount,
+              decimals,
+              true,
+            )} ${
               form.selectedToken.tokenInfo.symbol
             }`}</span>
           </div>
@@ -273,29 +316,35 @@ const EvmTransfer = ({
       },
     ];
 
-    let transactionData: ProviderTransactionData = {
-      from: activeAccount.address,
-      type: EvmTransactionType.EIP_1559,
-      to:
-        form.selectedToken.tokenInfo.type === EVMSmartContractType.NATIVE
-          ? form.receiverAddress
-          : form.selectedToken.tokenInfo.contractAddress,
-      data:
-        form.selectedToken.tokenInfo.type === EVMSmartContractType.NATIVE
-          ? ''
-          : await encodeTransferData(
-              form.selectedToken.tokenInfo,
-              activeAccount,
-              form.receiverAddress,
-              form.amount,
-            ),
-      value:
-        form.selectedToken.tokenInfo.type === EVMSmartContractType.NATIVE
-          ? EvmFormatUtils.addHexPrefix(
-              (form.amount * EvmFormatUtils.WEI).toString(16),
-            )
-          : '0x0',
-    };
+    let transactionData: ProviderTransactionData;
+    try {
+      transactionData = {
+        from: activeAccount.address,
+        type: EvmTransactionType.EIP_1559,
+        to:
+          form.selectedToken.tokenInfo.type === EVMSmartContractType.NATIVE
+            ? form.receiverAddress
+            : form.selectedToken.tokenInfo.contractAddress,
+        data:
+          form.selectedToken.tokenInfo.type === EVMSmartContractType.NATIVE
+            ? ''
+            : await encodeTransferData(
+                form.selectedToken.tokenInfo,
+                activeAccount,
+                form.receiverAddress,
+                form.amount,
+              ),
+        value:
+          form.selectedToken.tokenInfo.type === EVMSmartContractType.NATIVE
+            ? getEvmTransferValueHex(form.amount, decimals)
+            : '0x0',
+      };
+    } catch {
+      setErrorMessage('transaction_wrong_format_decimal_error', [
+        decimals.toString(),
+      ]);
+      return;
+    }
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: null,
@@ -360,14 +409,14 @@ const EvmTransfer = ({
   };
 
   const setAmountToMaxValue = () => {
-    setValue('amount', Number(balance));
+    setValue('amount', balance.toString());
   };
 
   const encodeTransferData = async (
     tokenInfo: EvmSmartContractInfoErc20,
     selectedAccount: EvmActiveAccount,
     receiverAddress: string,
-    amount: number,
+    amount: string,
   ) => {
     const provider = await EthersUtils.getProvider(chain);
     const connectedWallet = new Wallet(
@@ -381,7 +430,7 @@ const EvmTransfer = ({
     );
 
     const finalAmount = parseUnits(
-      amount.toString(),
+      toDecimalString(amount),
       (tokenInfo as EvmSmartContractInfoErc20).decimals,
     );
     return contract.interface.encodeFunctionData('transfer', [

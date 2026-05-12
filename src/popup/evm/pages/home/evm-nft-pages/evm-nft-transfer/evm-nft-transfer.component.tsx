@@ -156,6 +156,7 @@ const EvmNftTransfer = ({
             address={collectionItem.collection.tokenInfo.contractAddress}
             chainId={chain.chainId}
             forceFormattedAddress
+            canCopy
           />
         ),
       },
@@ -165,6 +166,7 @@ const EvmNftTransfer = ({
           <EvmAddressComponent
             address={activeAccount.address}
             chainId={chain.chainId}
+            canCopy
           />
         ),
       },
@@ -174,6 +176,7 @@ const EvmNftTransfer = ({
           <EvmAddressComponent
             address={form.receiverAddress}
             chainId={chain.chainId}
+            canCopy
           />
         ),
         warnings: await EvmTransactionParserUtils.getAddressWarning(

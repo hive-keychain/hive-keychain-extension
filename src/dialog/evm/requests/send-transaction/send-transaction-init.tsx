@@ -54,6 +54,35 @@ const renderCopyableFormattedAddress = (
   />
 );
 
+const formatExactDecimalWithCommas = (
+  value: string,
+  decimals: number,
+  removeTrailingZeros = false,
+) => {
+  const parts = new Decimal(value).toFixed(decimals).split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  let finalNumber = parts.join('.');
+
+  if (removeTrailingZeros) {
+    finalNumber = finalNumber.replace(
+      /^([\d,]+)$|^([\d,]+)\.0*$|^([\d,]+\.[0-9]*?)0*$/,
+      '$1$2$3',
+    );
+  }
+
+  return finalNumber;
+};
+
+export const formatMainTokenWeiAmount = (
+  value: ethers.BigNumberish,
+  symbol?: string,
+) =>
+  `${formatExactDecimalWithCommas(
+    ethers.formatEther(value),
+    18,
+    true,
+  )} ${symbol ?? ''}`.trim();
+
 const getDecodedFieldName = (
   tokenType: EVMSmartContractType | null,
   methodName: string,
@@ -480,15 +509,14 @@ export async function runSendTransactionInit(
               )),
             });
 
-            if (Number(decodedTransactionData.value) > 0) {
+            if (ethers.toBigInt(decodedTransactionData.value) > BigInt(0)) {
               transactionConfirmationFields.mainTokenAmount = {
                 name: 'evm_main_token_amount',
                 type: EvmInputDisplayType.BALANCE,
-                value: `${FormatUtils.withCommas(
-                  ethers.formatEther(Number(decodedTransactionData.value)),
-                  18,
-                  true,
-                )}  ${chainTmp?.mainToken}`,
+                value: formatMainTokenWeiAmount(
+                  decodedTransactionData.value,
+                  chainTmp?.mainToken,
+                ),
               };
             }
 
@@ -712,13 +740,10 @@ export async function runSendTransactionInit(
         transactionConfirmationFields.mainTokenAmount = {
           name: 'evm_main_token_amount',
           type: EvmInputDisplayType.BALANCE,
-          value: `${FormatUtils.withCommas(
-            new Decimal(Number(params.value))
-              .div(new Decimal(EvmFormatUtils.WEI))
-              .toNumber(),
-            8,
-            true,
-          )} ${(chainTmp as EvmChain)?.mainToken}`,
+          value: formatMainTokenWeiAmount(
+            params.value,
+            (chainTmp as EvmChain)?.mainToken,
+          ),
         };
 
         const [fromInput, toInput] = await Promise.all([

@@ -36,8 +36,9 @@ export const EvmAddressComponent = ({
     setAddressDetail(details);
   };
 
-  const handleCopyAddress = () => {
+  const handleCopyAddress = (event: React.MouseEvent) => {
     if (canCopy) {
+      event.stopPropagation();
       void copyTextWithToast(address, COPY_GENERIC_MESSAGE_KEY);
     }
   };
