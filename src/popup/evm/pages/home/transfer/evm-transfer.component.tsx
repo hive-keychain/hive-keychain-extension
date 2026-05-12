@@ -26,6 +26,7 @@ import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
+import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -106,6 +107,11 @@ export const getEvmTransferValueHex = (
   amount: string | number,
   decimals: number,
 ) => ethers.toQuantity(parseUnits(toDecimalString(amount), decimals));
+
+export const getEvmTransferMaxAmount = (
+  balance: string | number,
+  feeToReserve?: Decimal.Value,
+) => Decimal.max(new Decimal(balance).sub(feeToReserve ?? 0), 0).toFixed();
 
 const EvmTransfer = ({
   formParams,
@@ -403,8 +409,48 @@ const EvmTransfer = ({
     } as EVMConfirmationPageParams);
   };
 
-  const setAmountToMaxValue = () => {
-    setValue('amount', balance.toString());
+  const getNativeTransferFeeToReserve = async () => {
+    const receiverAddress = watch('receiverAddress');
+    const to = ethers.isAddress(receiverAddress)
+      ? receiverAddress
+      : activeAccount.address;
+    const estimate = await GasFeeUtils.estimate(
+      chain,
+      activeAccount.address,
+      EvmTransactionType.EIP_1559,
+      watch('selectedToken').tokenInfo.priceUsd ?? 0,
+      undefined,
+      {
+        from: activeAccount.address,
+        type: EvmTransactionType.EIP_1559,
+        to,
+        data: '',
+        value: '0x0',
+      },
+    );
+
+    return (
+      estimate.aggressive?.estimatedFeeInEth ??
+      estimate.suggested?.estimatedFeeInEth ??
+      estimate.custom?.estimatedFeeInEth
+    );
+  };
+
+  const setAmountToMaxValue = async () => {
+    const selectedToken = watch('selectedToken');
+
+    if (selectedToken.tokenInfo.type !== EVMSmartContractType.NATIVE) {
+      setValue('amount', balance.toString());
+      return;
+    }
+
+    try {
+      const feeToReserve = await getNativeTransferFeeToReserve();
+      setValue('amount', getEvmTransferMaxAmount(balance, feeToReserve));
+    } catch (error) {
+      Logger.error('Error while estimating native transfer max amount', error);
+      setErrorMessage('evm_gas_fee_warning_not_available');
+    }
   };
 
   const encodeTransferData = async (
