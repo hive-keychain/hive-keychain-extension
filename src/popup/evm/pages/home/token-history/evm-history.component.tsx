@@ -56,6 +56,7 @@ export const EvmHistory = ({
       ...historyItem,
       isSuccess: historyItem.isCanceled ? false : true,
       isCanceled: historyItem.isCanceled,
+      initialDisplayHistory: true,
     });
   };
 
