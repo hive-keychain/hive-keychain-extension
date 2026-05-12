@@ -41,6 +41,7 @@ export const EvmRequestItem = ({
       default: {
         const raw = field.value;
         const useCollapsibleString =
+          field.type !== EvmInputDisplayType.WARNING_ONLY &&
           typeof raw === 'string' &&
           raw.length >= COLLAPSIBLE_STRING_VALUE_MIN_LENGTH;
         const widenTupleBlock = field.type === EvmInputDisplayType.TUPLE;
