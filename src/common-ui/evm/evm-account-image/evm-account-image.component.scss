@@ -1,8 +1,18 @@
 .user-picture {
+  overflow: hidden;
+
   &.normal {
     @include user-avatar;
   }
   &.small {
     @include user-avatar-small;
+  }
+
+  &.normal,
+  &.small {
+    svg {
+      display: block;
+      border: none;
+    }
   }
 }
