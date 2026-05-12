@@ -254,7 +254,9 @@ const ConfirmationPage = ({
             prefetchedMainTokenInfo={mainTokenInfo}
             selectedFee={selectedFee}
             onSelectFee={setSelectedFee}
-            transactionType={(chain as EvmChain).defaultTransactionType}
+            transactionType={
+              transactionData?.type ?? (chain as EvmChain).defaultTransactionType
+            }
             transactionData={transactionData}
             forceOpenGasFeePanelEvent={forceOpenGasFeePanelEvent}
             setErrorMessage={handleErrors}

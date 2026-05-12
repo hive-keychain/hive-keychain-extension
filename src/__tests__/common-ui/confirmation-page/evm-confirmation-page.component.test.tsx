@@ -138,6 +138,26 @@ describe('EVMConfirmationPageComponent', () => {
     expect(getMainTokenInfoSpy).not.toHaveBeenCalled();
   });
 
+  it('passes transaction type to GasFeePanel instead of chain default', async () => {
+    renderConfirmationPage({
+      transactionData: {
+        data: '0x',
+        from: '0x00000000000000000000000000000000000000aa',
+        to: '0x00000000000000000000000000000000000000bb',
+        type: EvmTransactionType.LEGACY,
+        value: '0x0',
+      },
+    });
+
+    await waitFor(() => expect(mockGasFeePanel).toHaveBeenCalled());
+
+    expect(mockGasFeePanel).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        transactionType: EvmTransactionType.LEGACY,
+      }),
+    );
+  });
+
   it('passes popup native token metadata to ERC20 balance-change calculation', async () => {
     const getBalanceInfoSpy = jest
       .spyOn(EvmTokensUtils, 'getBalanceInfo')
