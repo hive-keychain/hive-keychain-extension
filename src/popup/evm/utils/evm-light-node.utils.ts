@@ -146,6 +146,7 @@ type HistoryFlowWithMeta =
       collectionName: string | null;
       tokenId: string;
       quantity: string;
+      imageUrl?: string | null;
       verified: boolean;
       possibleSpam: boolean;
       collection?: {
@@ -167,8 +168,8 @@ type HistoryItem = {
   blockTime: string; // ISO
   opIndex: string; // bigint as string
   opName: string; // derived from OpType enum key
-  in: HistoryFlow[];
-  out: HistoryFlow[];
+  in: HistoryFlowWithMeta[];
+  out: HistoryFlowWithMeta[];
   status: 'SUCCESS' | 'REVERTED' | null;
   fromAddress: string | null;
   toAddress: string | null;
@@ -198,6 +199,7 @@ type HistoryFlow =
       collectionName: string | null;
       tokenId: string;
       quantity: '1';
+      imageUrl?: string | null;
       verified: boolean;
       possibleSpam: boolean;
     }
@@ -207,6 +209,7 @@ type HistoryFlow =
       collectionName: string | null;
       tokenId: string;
       quantity: string;
+      imageUrl?: string | null;
       verified: boolean;
       possibleSpam: boolean;
     };
@@ -222,6 +225,13 @@ export enum CatchupStatus {
   PARTIAL = 'PARTIAL',
   ERROR = 'ERROR',
 }
+
+export const isCatchupStatusPending = (
+  catchupStatus?: CatchupStatus | string | null,
+) =>
+  catchupStatus !== CatchupStatus.DONE &&
+  catchupStatus !== CatchupStatus.ERROR;
+
 export enum PricingStatus {
   READY = 'READY',
   PARTIAL = 'PARTIAL',

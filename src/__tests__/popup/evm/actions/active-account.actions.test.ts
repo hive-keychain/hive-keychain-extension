@@ -470,6 +470,62 @@ describe('EVM active-account.actions (custom chain)', () => {
     expect(global.setTimeout).toHaveBeenCalled();
   });
 
+  it('loadEvmHistory retries while catchup is partial', async () => {
+    jest.spyOn(global, 'setTimeout').mockImplementation((() => 1) as any);
+    jest.spyOn(EvmTokensHistoryUtils, 'fetchHistory2').mockResolvedValue({
+      events: [],
+      nextCursor: null,
+      fullyFetch: false,
+      catchupStatus: CatchupStatus.PARTIAL,
+    });
+
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      chain: baseEvmChain,
+      evm: {
+        ...initialEmptyStateStore.evm,
+        activeAccount: {
+          ...initialEmptyStateStore.evm.activeAccount,
+          address: wallet.address,
+          wallet,
+        },
+      },
+    });
+
+    await store.dispatch<any>(loadEvmHistory());
+
+    expect(store.getState().evm.activeAccount.history.loading).toBe(true);
+    expect(global.setTimeout).toHaveBeenCalled();
+  });
+
+  it('loadEvmHistory stops retrying when catchup errored', async () => {
+    jest.spyOn(global, 'setTimeout').mockImplementation((() => 1) as any);
+    jest.spyOn(EvmTokensHistoryUtils, 'fetchHistory2').mockResolvedValue({
+      events: [],
+      nextCursor: null,
+      fullyFetch: true,
+      catchupStatus: CatchupStatus.ERROR,
+    });
+
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      chain: baseEvmChain,
+      evm: {
+        ...initialEmptyStateStore.evm,
+        activeAccount: {
+          ...initialEmptyStateStore.evm.activeAccount,
+          address: wallet.address,
+          wallet,
+        },
+      },
+    });
+
+    await store.dispatch<any>(loadEvmHistory());
+
+    expect(store.getState().evm.activeAccount.history.loading).toBe(false);
+    expect(global.setTimeout).not.toHaveBeenCalled();
+  });
+
   it('loadMoreTokensInActiveAccount ignores stale responses for a previous wallet', async () => {
     let resolveDiscovery!: (value: Awaited<ReturnType<typeof EvmLightNodeUtils.getDiscoveredTokens>>) => void;
     (EvmLightNodeUtils.getDiscoveredTokens as jest.Mock).mockReturnValueOnce(

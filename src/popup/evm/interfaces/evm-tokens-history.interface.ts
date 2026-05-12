@@ -40,6 +40,7 @@ export interface EvmUserHistoryItemDetail {
   label: string;
   value: string;
   type: EvmUserHistoryItemDetailType;
+  imageUrl?: string | null;
 }
 
 export enum EvmUserHistoryItemDetailType {

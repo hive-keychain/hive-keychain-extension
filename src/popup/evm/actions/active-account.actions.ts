@@ -12,6 +12,7 @@ import {
   DiscoveredNftsResponse,
   DiscoveredTokensResponse,
   EvmLightNodeUtils,
+  isCatchupStatusPending,
   PricingStatus,
 } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmLocalHistoryUtils } from '@popup/evm/utils/evm-local-history.utils';
@@ -59,7 +60,7 @@ const shouldLoadMoreDiscoveredAssets = (
 };
 
 const shouldLoadMoreHistory = (history: EvmUserHistory): boolean => {
-  return history.catchupStatus === CatchupStatus.RUNNING;
+  return isCatchupStatusPending(history.catchupStatus);
 };
 
 const isSameEvmChain = (currentChain: Chain, chain: EvmChain) => {

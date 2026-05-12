@@ -366,6 +366,10 @@ const EvmTransactionResult = ({
   };
 
   const getImage = async (value: string) => {
+    if (!tokenInfo || !(tokenInfo as any).contractAddress) {
+      return undefined;
+    }
+
     const connectedWallet = new Wallet(
       HDNodeWallet.fromPhrase(activeAccount?.wallet.mnemonic?.phrase!)
         .signingKey,
@@ -556,7 +560,7 @@ const EvmTransactionResult = ({
                   )}
                   {detail.type === EvmUserHistoryItemDetailType.IMAGE && (
                     <SmallImageCardComponent
-                      value={getImage(detail.value!)}
+                      value={detail.imageUrl ?? getImage(detail.value!)}
                       name={detail.label}
                     />
                   )}
