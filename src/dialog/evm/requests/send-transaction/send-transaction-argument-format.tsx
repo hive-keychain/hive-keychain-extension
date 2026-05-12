@@ -103,6 +103,9 @@ export async function formatDecodedArgumentDisplayValue(
 ): Promise<unknown> {
   switch (inputDisplayType) {
     case EvmInputDisplayType.WALLET_ADDRESS: {
+      if (argumentValue == null || argumentValue === '') {
+        return '—';
+      }
       const inputDisplay = await transactionHook.getWalletAddressInput(
         argumentValue as string,
         chainTmp.chainId,
@@ -113,6 +116,9 @@ export async function formatDecodedArgumentDisplayValue(
     }
     case EvmInputDisplayType.ADDRESS:
     case EvmInputDisplayType.CONTRACT_ADDRESS: {
+      if (argumentValue == null || argumentValue === '') {
+        return '—';
+      }
       return (
         <EvmAddressComponent
           address={argumentValue as string}
@@ -122,6 +128,9 @@ export async function formatDecodedArgumentDisplayValue(
       );
     }
     case EvmInputDisplayType.BALANCE: {
+      if (argumentValue == null) {
+        return '—';
+      }
       const decimals = erc20LikeDecimals(usedToken);
       return `${FormatUtils.withCommas(
         new Decimal(argumentValue!.toString())
@@ -132,6 +141,9 @@ export async function formatDecodedArgumentDisplayValue(
       )}  ${usedToken?.symbol}`;
     }
     case EvmInputDisplayType.UINT256:
+      if (argumentValue == null) {
+        return '—';
+      }
       return FormatUtils.withCommas(argumentValue!.toString(), 0, true);
     case EvmInputDisplayType.NUMBER:
       return FormatUtils.withCommas(argumentValue as string | number);

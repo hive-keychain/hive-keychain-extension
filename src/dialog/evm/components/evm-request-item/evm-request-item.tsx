@@ -14,6 +14,9 @@ import { useFieldTitle } from 'src/dialog/evm/components/use-field-title.hook';
 
 import sanitize from 'sanitize-html';
 
+/** Collapsible value row when decoded args (e.g. bytes32) render as long hex strings. */
+const COLLAPSIBLE_STRING_VALUE_MIN_LENGTH = 48;
+
 export interface EvmRequestItemProps {
   field: TransactionConfirmationField;
   onWarningClicked?: (warningIndex: number) => void;
@@ -36,6 +39,12 @@ export const EvmRequestItem = ({
           />
         );
       default: {
+        const raw = field.value;
+        const useCollapsibleString =
+          typeof raw === 'string' &&
+          raw.length >= COLLAPSIBLE_STRING_VALUE_MIN_LENGTH;
+        const widenTupleBlock = field.type === EvmInputDisplayType.TUPLE;
+
         return (
           <>
             {fieldTitle && (
@@ -44,7 +53,14 @@ export const EvmRequestItem = ({
                 {warningIcon}
               </div>
             )}
-            <div className="value">{field.value}</div>
+            <div
+              className={`value${useCollapsibleString ? ' value--collapsible' : ''}${widenTupleBlock ? ' value--tuple-block' : ''}`}>
+              {useCollapsibleString ? (
+                <EvmRequestItemLongText value={raw} />
+              ) : (
+                raw
+              )}
+            </div>
           </>
         );
       }
