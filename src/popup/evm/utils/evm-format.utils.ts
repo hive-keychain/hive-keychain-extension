@@ -51,6 +51,44 @@ const formatTokenValue = (value: number, decimals: number) => {
   return new Decimal(value).mul(new Decimal(10).pow(new Decimal(decimals)));
 };
 
+const addCommas = (value: string) => {
+  const [integerPart, decimalPart] = value.split('.');
+  const sign = integerPart.startsWith('-') ? '-' : '';
+  const unsignedInteger = sign ? integerPart.slice(1) : integerPart;
+  const formattedInteger = unsignedInteger.replace(
+    /\B(?=(\d{3})+(?!\d))/g,
+    ',',
+  );
+  return `${sign}${formattedInteger}${decimalPart ? `.${decimalPart}` : ''}`;
+};
+
+const formatTokenBalance = (
+  value: string | number | Decimal,
+  decimals: number,
+) => {
+  const decimalValue = new Decimal(value || 0);
+  const roundedValue = decimalValue.toDecimalPlaces(decimals);
+  const formattedValue = addCommas(
+    roundedValue
+      .toFixed(decimals)
+      .replace(/\.0*$|(\.[0-9]*?)0*$/, '$1'),
+  );
+
+  return decimalValue.abs().gt(0) && roundedValue.isZero()
+    ? '~0'
+    : formattedValue;
+};
+
+const formatGweiFromWei = (value: string | number | bigint | Decimal) => {
+  const valueInGwei = weiToGwei(new Decimal(value.toString()));
+  return `${formatTokenBalance(valueInGwei, 9)} Gwei`;
+};
+
+const formatGweiFromEth = (value: string | number | Decimal) => {
+  const valueInGwei = new Decimal(value.toString()).mul(GWEI);
+  return `${formatTokenBalance(valueInGwei, 9)} Gwei`;
+};
+
 export const EvmFormatUtils = {
   addHexPrefix,
   formatAddress,
@@ -61,4 +99,7 @@ export const EvmFormatUtils = {
   GWEI,
   WEI,
   formatTokenValue,
+  formatTokenBalance,
+  formatGweiFromWei,
+  formatGweiFromEth,
 };

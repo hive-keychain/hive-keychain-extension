@@ -80,24 +80,6 @@ const ContractMetadataAbi = [
 
 type ContractProbeResult = 'success' | 'reverted' | 'missing';
 
-const SHORT_BALANCE_ZERO_DISPLAY = FormatUtils.withCommas(
-  0,
-  SHORT_BALANCE_DECIMALS,
-  false,
-);
-
-const formatShortBalance = (balanceInteger: number) => {
-  const short = FormatUtils.withCommas(
-    balanceInteger,
-    SHORT_BALANCE_DECIMALS,
-    false,
-  );
-
-  return `${
-    balanceInteger > 0 && short === SHORT_BALANCE_ZERO_DISPLAY ? '~' : ''
-  }${short}`;
-};
-
 const normalizeCustomTokenAddress = (address: string) => {
   const trimmedAddress = address.trim();
   if (!trimmedAddress.length) {
@@ -491,10 +473,14 @@ const getTokenBalance = async (
     switch (token.type) {
       case EVMSmartContractType.NATIVE: {
         balance = await provider.getBalance(walletAddress);
-        balanceInteger = Number(parseFloat(ethers.formatEther(balance)));
+        const balanceValue = ethers.formatEther(balance);
+        balanceInteger = Number(balanceValue);
 
-        formattedBalance = FormatUtils.withCommas(balanceInteger, 8, true);
-        shortFormattedBalance = formatShortBalance(balanceInteger);
+        formattedBalance = EvmFormatUtils.formatTokenBalance(balanceValue, 8);
+        shortFormattedBalance = EvmFormatUtils.formatTokenBalance(
+          balanceValue,
+          SHORT_BALANCE_DECIMALS,
+        );
 
         tokenInfo = token as EvmSmartContractInfoNative;
         break;
@@ -507,20 +493,17 @@ const getTokenBalance = async (
           provider,
         );
         balance = await contract.balanceOf(walletAddress);
-        balanceInteger = Number(
-          parseFloat(
-            ethers.formatUnits(
-              balance,
-              Number((token as EvmSmartContractInfoErc20).decimals),
-            ),
-          ),
+        const decimals = Number((token as EvmSmartContractInfoErc20).decimals);
+        const balanceValue = ethers.formatUnits(balance, decimals);
+        balanceInteger = Number(balanceValue);
+        formattedBalance = EvmFormatUtils.formatTokenBalance(
+          balanceValue,
+          decimals,
         );
-        formattedBalance = FormatUtils.withCommas(
-          balanceInteger,
-          Number((token as EvmSmartContractInfoErc20).decimals),
-          true,
+        shortFormattedBalance = EvmFormatUtils.formatTokenBalance(
+          balanceValue,
+          SHORT_BALANCE_DECIMALS,
         );
-        shortFormattedBalance = formatShortBalance(balanceInteger);
 
         tokenInfo = token as EvmSmartContractInfoErc20;
         break;
@@ -716,14 +699,13 @@ const sortTokens = (tokens: NativeAndErc20Token[]) => {
 };
 
 const formatTokenValue = (value: number, decimals = 18) => {
-  return FormatUtils.withCommas(
+  return EvmFormatUtils.formatTokenBalance(
     ethers.formatUnits(value, decimals),
     decimals,
-    true,
   );
 };
 const formatEtherValue = (value: string) => {
-  return FormatUtils.withCommas(ethers.formatEther(value), 18, true);
+  return EvmFormatUtils.formatTokenBalance(ethers.formatEther(value), 18);
 };
 
 type NativeTokenApiResponse = {
@@ -969,7 +951,7 @@ const displayValue = (value: number, tokenInfo: EvmSmartContractInfo) => {
     }
   }
 
-  return FormatUtils.withCommas(value, decimals, true);
+  return EvmFormatUtils.formatTokenBalance(value, decimals);
 };
 
 const normalizeAbi = (abi: any): any[] | null => {
@@ -1559,10 +1541,9 @@ const buildBalanceDetails = (
   return {
     symbol: tokenInfo.symbol,
     before: `${balance.formattedBalance} ${tokenInfo.symbol}`,
-    estimatedAfter: `${FormatUtils.withCommas(
+    estimatedAfter: `${EvmFormatUtils.formatTokenBalance(
       estimatedAfterBalance.toString(),
       getBalanceDecimals(tokenInfo),
-      true,
     )}  ${tokenInfo.symbol}`,
     insufficientBalance: estimatedAfterBalance.toNumber() < 0,
   };
