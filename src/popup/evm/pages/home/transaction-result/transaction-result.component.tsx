@@ -6,7 +6,10 @@ import {
   EvmUserHistoryItemDetail,
   EvmUserHistoryItemDetailType,
 } from '@popup/evm/interfaces/evm-tokens-history.interface';
-import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
+import {
+  EVMSmartContractType,
+  EvmSmartContractInfo,
+} from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
@@ -24,7 +27,6 @@ import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
-import Decimal from 'decimal.js';
 import {
   HDNodeWallet,
   TransactionReceipt,
@@ -103,6 +105,10 @@ const EvmTransactionResult = ({
   const [transactionTokenType, setTransactionTokenType] = useState<
     string | null
   >(null);
+  const shouldShowTokenType =
+    transactionTokenType === EVMSmartContractType.ERC20 ||
+    transactionTokenType === EVMSmartContractType.ERC721 ||
+    transactionTokenType === EVMSmartContractType.ERC1155;
 
   useEffect(() => {
     const closeNavigationParams = initialDisplayNfts
@@ -440,7 +446,7 @@ const EvmTransactionResult = ({
     }
     const pricePerGas = txReceipt.gasPrice;
     if (pricePerGas != null) {
-      return `${ethers.formatEther(pricePerGas * txReceipt.gasUsed)} ${chain.mainToken}`;
+      return EvmFormatUtils.formatGweiFromWei(pricePerGas * txReceipt.gasUsed);
     }
     return chrome.i18n.getMessage('popup_html_pending');
   };
@@ -450,7 +456,7 @@ const EvmTransactionResult = ({
       gasFee?.estimatedFeeInEth &&
       !gasFee.estimatedFeeInEth.equals(-1)
     ) {
-      return `${gasFee.estimatedFeeInEth.toFixed()} ${chain.mainToken}`;
+      return EvmFormatUtils.formatGweiFromEth(gasFee.estimatedFeeInEth);
     }
     const gl = displayTx.gasLimit;
     const maxFeePerGas = displayTx.maxFeePerGas ?? displayTx.gasPrice;
@@ -460,7 +466,7 @@ const EvmTransactionResult = ({
       gl > BigInt(0) &&
       maxFeePerGas > BigInt(0)
     ) {
-      return `${ethers.formatEther(gl * maxFeePerGas)} ${chain.mainToken}`;
+      return EvmFormatUtils.formatGweiFromWei(gl * maxFeePerGas);
     }
     return chrome.i18n.getMessage('popup_html_pending');
   };
@@ -644,10 +650,10 @@ const EvmTransactionResult = ({
               valueOnClickAction={() => openWallet(syntheticToAddress!)}
             />
           )}
-          {!isCanceledHistoryOperation && (
+          {!isCanceledHistoryOperation && shouldShowTokenType && (
             <SmallDataCardComponent
               label="evm_nft_token_type"
-              value={transactionTokenType ?? 'unknown'}
+              value={transactionTokenType}
             />
           )}
           <SmallDataCardComponent
@@ -676,25 +682,21 @@ const EvmTransactionResult = ({
           {showLegacyGasPriceRow && (
             <SmallDataCardComponent
               label="popup_html_evm_transaction_info_gas_price"
-              value={`${new Decimal(
-                EvmFormatUtils.etherToGwei(displayTx.gasPrice!),
-              ).toFixed()} Gwei`}
+              value={EvmFormatUtils.formatGweiFromWei(displayTx.gasPrice!)}
             />
           )}
           {showEip1559FeeRows && displayTx.maxPriorityFeePerGas != null && (
             <SmallDataCardComponent
               label="popup_html_evm_transaction_info_priority_fee"
-              value={`${new Decimal(
-                EvmFormatUtils.etherToGwei(displayTx.maxPriorityFeePerGas),
-              ).toFixed()} Gwei`}
+              value={EvmFormatUtils.formatGweiFromWei(
+                displayTx.maxPriorityFeePerGas,
+              )}
             />
           )}
           {showEip1559FeeRows && displayTx.maxFeePerGas != null && (
             <SmallDataCardComponent
               label="popup_html_evm_transaction_info_total_fee_per_gas"
-              value={`${new Decimal(
-                EvmFormatUtils.etherToGwei(displayTx.maxFeePerGas),
-              ).toFixed()} Gwei`}
+              value={EvmFormatUtils.formatGweiFromWei(displayTx.maxFeePerGas)}
             />
           )}
         </div>

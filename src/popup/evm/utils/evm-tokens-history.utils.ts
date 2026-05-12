@@ -16,7 +16,6 @@ import {
 } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
-import FormatUtils from 'src/utils/format.utils';
 
 const LIMIT = 50;
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -213,7 +212,7 @@ const toKnownOpName = (opName: string): KnownOpName => {
 };
 
 const formatTokenAmount = (amount: string) =>
-  FormatUtils.withCommas(amount, 8, true);
+  EvmFormatUtils.formatTokenBalance(amount, 8);
 
 const formatFlow = (flow: HistoryFlow, chain: EvmChain) => {
   if (flow.kind === 'ERC721') {

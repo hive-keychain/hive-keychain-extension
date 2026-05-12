@@ -29,7 +29,6 @@ import {
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
 import { ethers, TransactionResponse } from 'ethers';
-import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
 const parseEvent = async (
@@ -73,10 +72,9 @@ const parseEvent = async (
               event.value,
               event.token.decimals,
             );
-            const amountS = FormatUtils.withCommas(
+            const amountS = EvmFormatUtils.formatTokenBalance(
               amount,
               event.token.decimals,
-              true,
             );
 
             details.push({
@@ -175,7 +173,7 @@ const parseEvent = async (
             const amount = EvmFormatUtils.etherToWei(
               Number(event.value),
             ).toString();
-            const amountS = FormatUtils.withCommas(amount, 18, true);
+            const amountS = EvmFormatUtils.formatTokenBalance(amount, 18);
 
             const token = {} as EvmSmartContractInfo;
 
@@ -642,7 +640,7 @@ const getNativeTransferData = async (
 ) => {
   // native event
   const amount = EvmFormatUtils.etherToWei(Number(event.value)).toString();
-  const amountS = FormatUtils.withCommas(amount, 18, true);
+  const amountS = EvmFormatUtils.formatTokenBalance(amount, 18);
 
   const addressDetails = await EvmAddressesUtils.getAddressDetails(
     event.from.toLowerCase() === walletAddress.toLowerCase()
