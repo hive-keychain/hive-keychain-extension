@@ -505,8 +505,13 @@ const EvmTransactionResult = ({
       ? displayTx.to ?? undefined
       : undefined);
 
+  const isCanceledHistoryOperation =
+    pageTitle === 'evm_history_canceled_transaction';
+
   const showSyntheticToRow =
-    syntheticToAddress != null && !detailFieldsIncludeTo;
+    syntheticToAddress != null &&
+    !detailFieldsIncludeTo &&
+    !isCanceledHistoryOperation;
 
   return (
     <div className="evm-transaction-result">
@@ -635,10 +640,12 @@ const EvmTransactionResult = ({
               valueOnClickAction={() => openWallet(syntheticToAddress!)}
             />
           )}
-          <SmallDataCardComponent
-            label="evm_nft_token_type"
-            value={transactionTokenType ?? 'unknown'}
-          />
+          {!isCanceledHistoryOperation && (
+            <SmallDataCardComponent
+              label="evm_nft_token_type"
+              value={transactionTokenType ?? 'unknown'}
+            />
+          )}
           <SmallDataCardComponent
             label="popup_html_evm_transaction_info_block_number"
             value={blockNumberDisplay}

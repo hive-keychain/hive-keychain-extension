@@ -5993,6 +5993,10 @@
     "message": "Canceled transaction",
     "description": "Transaction canceled"
   },
+  "evm_history_operation_canceled": {
+    "message": "You have canceled an operation",
+    "description": "EVM history message for CANCELED_OP operations"
+  },
   "evm_transaction_result_error_message_nonce_expired": {
     "message": "Nonce expired, please try again",
     "description": "Transaction result error message nonce expired"

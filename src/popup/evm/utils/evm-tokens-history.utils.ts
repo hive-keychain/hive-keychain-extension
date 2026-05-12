@@ -776,6 +776,20 @@ const parseItem = async (
   const base = makeCommonItem(item);
   const hasFlows = item.in.length > 0 || item.out.length > 0;
 
+  if (item.opName === 'CANCELED_OP') {
+    const details: EvmUserHistoryItemDetail[] = [];
+    pushAddressDetails(details, item.fromAddress, null);
+
+    return {
+      ...base,
+      pageTitle: 'evm_history_canceled_transaction',
+      type: EvmUserHistoryItemType.SMART_CONTRACT,
+      label: chrome.i18n.getMessage('evm_history_operation_canceled'),
+      detailFields: details,
+      isCanceled: true,
+    };
+  }
+
   if (
     opName === 'CONTRACT_DEPLOY' ||
     isOpLike(item.opName, ['contract_creation', 'create_contract']) ||
