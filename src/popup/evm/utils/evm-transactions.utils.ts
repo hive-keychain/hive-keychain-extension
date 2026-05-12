@@ -227,7 +227,18 @@ const hasPendingTransaction = async (fromAddress: string, chain: EvmChain) => {
         getPendingTransactionsForWallet(fromAddress, chain.chainId),
       ]);
 
-    const hasPending = pendingNonce > latestNonce;
+    let hasPending = pendingNonce > latestNonce;
+
+    if (!hasPending && localPendingTransactions.length > 0) {
+      const provider = await EthersUtils.getProvider(chain);
+      const res = await provider.getTransaction(
+        localPendingTransactions[0].txResponseParams.hash,
+      );
+      if (res && !res.blockHash && !res.blockNumber) {
+        hasPending = true;
+      }
+    }
+
     return {
       hasPending,
       pendingTransactionsCount: hasPending ? 1 : 0,

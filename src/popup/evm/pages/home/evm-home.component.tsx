@@ -137,6 +137,7 @@ const Home = ({
 
   useEffect(() => {
     if (activeAccount.wallet.address) {
+      console.log('activeAccount.wallet.address');
       void loadPendingTransactions(activeAccount.wallet);
     }
   }, [activeAccount.wallet.address, chain.chainId]);
@@ -485,8 +486,8 @@ const mapStateToProps = (state: RootState) => {
     activeAccount: state.evm.activeAccount,
     returningFromNftPage: Boolean(
       state.navigation.stack[0]?.params?.initialDisplayNfts ||
-        state.navigation.stack[0]?.previousParams?.collection ||
-        state.navigation.stack[0]?.previousParams?.collections,
+      state.navigation.stack[0]?.previousParams?.collection ||
+      state.navigation.stack[0]?.previousParams?.collections,
     ),
     returningFromHistoryDetails: Boolean(
       state.navigation.stack[0]?.params?.initialDisplayHistory,
