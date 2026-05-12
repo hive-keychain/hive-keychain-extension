@@ -29,13 +29,18 @@ export const BalanceChangeCard = ({ balanceInfo }: Props) => {
           ])}
         </span>
       ) : (
-        balanceRows.map((balance, index) => (
-          <div className="balance-panel" key={`${balance.before}-${index}`}>
-            <div className="balance-before">{balance.before}</div>
-            <SVGIcon icon={SVGIcons.GLOBAL_TRIANGLE_ARROW} className="icon" />
-            <div className="balance-after">{balance.estimatedAfter}</div>
-          </div>
-        ))
+        <div className="balance-change-rows">
+          {balanceRows.map((balance, index) => (
+            <React.Fragment key={`${balance.before}-${index}`}>
+              <div className="balance-before">{balance.before}</div>
+              <SVGIcon
+                icon={SVGIcons.GLOBAL_TRIANGLE_ARROW}
+                className="icon"
+              />
+              <div className="balance-after">{balance.estimatedAfter}</div>
+            </React.Fragment>
+          ))}
+        </div>
       )}
     </Card>
   );

@@ -1,4 +1,3 @@
-import { EvmLightNodeApi } from '@api/evm-light-node';
 import {
   EvmTransactionType,
   ProviderTransactionData,
@@ -10,10 +9,10 @@ import {
 } from '@popup/evm/interfaces/gas-fee.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
+import { fetchGasOracle } from '@popup/evm/utils/evm-gas-oracle.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
-import { HDNodeWallet } from 'ethers';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import Logger from 'src/utils/logger.utils';
 
@@ -31,15 +30,12 @@ const isPlausibleGasLimit = (n: number | undefined | null): n is number => {
 };
 
 const getGasFeeEstimations = async (chain: Chain) => {
-  const result = await EvmLightNodeApi.get(
-    `gas-oracle/${Number(chain.chainId)}`,
-  );
-  return result;
+  return fetchGasOracle(chain.chainId) as Promise<any>;
 };
 
 const estimate = async (
   chain: EvmChain,
-  wallet: HDNodeWallet,
+  fromAddress: string,
   type: EvmTransactionType,
   mainTokenPrice: number,
   gasLimit?: number,
@@ -60,7 +56,7 @@ const estimate = async (
     gasLimit = Number(
       await EthersUtils.getGasLimit(
         chain,
-        wallet,
+        fromAddress,
         transactionData?.abi,
         transactionData?.signature ?? transactionData?.method,
         transactionData?.args,
@@ -345,7 +341,7 @@ const createDAppSuggestionFromTransactionData = async (
       maxFee = new Decimal(Number(transactionData.gasPrice!)).div(
         EvmFormatUtils.GWEI,
       );
-      estimatedFee = new Decimal(0);
+      estimatedFee = maxFee;
       break;
     }
     case EvmTransactionType.EIP_4844: {
@@ -354,9 +350,7 @@ const createDAppSuggestionFromTransactionData = async (
     }
   }
 
-  maxFee = maxFee!
-    .mul(Decimal.div(gasLimitToUse, 1000000))
-    .div(1000);
+  maxFee = maxFee!.mul(Decimal.div(gasLimitToUse, 1000000)).div(1000);
 
   estimatedFee = new Decimal(Number(estimatedFee ?? 0))
     .mul(Decimal.div(gasLimitToUse, 1000000))

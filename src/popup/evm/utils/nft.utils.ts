@@ -24,12 +24,20 @@ const getImgFromMetadata = (metadata: EvmNFTMetadata): string => {
   return metadata.image;
 };
 
+const getTokenIdForUriTemplate = (tokenId: string): string => {
+  try {
+    return BigInt(tokenId).toString(16).padStart(64, '0');
+  } catch {
+    return tokenId;
+  }
+};
+
 const getMetadataFromURI = async (
   uri: string,
   tokenId: string,
 ): Promise<EvmNFTMetadata> => {
   if (uri && uri.includes('{id}')) {
-    uri = uri.replace('{id}', tokenId);
+    uri = uri.replace('{id}', getTokenIdForUriTemplate(tokenId));
   }
   let metadata;
   try {
@@ -48,6 +56,7 @@ const getMetadataFromURI = async (
       metadata = JSON.parse(json);
     }
 
+    metadata.image = getImgFromMetadata(metadata);
     return metadata;
   } catch (err) {
     console.log('error', { err });
@@ -77,6 +86,8 @@ const getMetadata = async (
     case EVMSmartContractType.ERC1155:
       uri = await contract.uri(tokenId);
       break;
+    case EVMSmartContractType.PROTOCOL:
+      break;
   }
 
   return await getMetadataFromURI(uri, tokenId);
@@ -104,6 +115,8 @@ const getMetadataFromTokenId = async (
         break;
       case EVMSmartContractType.ERC1155:
         uri = await contract.uri(tokenId);
+        break;
+      case EVMSmartContractType.PROTOCOL:
         break;
     }
     if (uri.includes('api.opensea.io')) {
@@ -140,12 +153,14 @@ const getMetadataFromOpenSea = async (
   const res = await KeychainApi.get(
     `evm/${chain.openSeaChainId}/nft/${contractAddress}/${tokenId}`,
   );
-  return {
+  const metadata = {
     name: res.nft.name,
     description: res.nft.description,
     image: res.nft.image_url,
     attributes: [],
   };
+  metadata.image = getImgFromMetadata(metadata);
+  return metadata;
 };
 
 export const EvmNFTUtils = {

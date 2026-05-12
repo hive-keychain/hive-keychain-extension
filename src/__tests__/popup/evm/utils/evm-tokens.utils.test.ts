@@ -8,11 +8,16 @@ import {
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
+import { UniswapV2RouterAbiMinimal } from '@popup/evm/reference-data/abi-protocol-decode.data';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
-import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import {
+  EvmTokensUtils,
+  MAIN_TOKEN_LIGHT_NODE_TIMEOUT_MS,
+} from '@popup/evm/utils/evm-tokens.utils';
 import Decimal from 'decimal.js';
 import { ethers } from 'ethers';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 
 describe('evm-tokens.utils proxy metadata tests:\n', () => {
   afterEach(() => {
@@ -177,17 +182,100 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
       chainId: '0x539',
       backgroundColor: '',
       coingeckoId: 'ethereum',
-      priceUsd: 0,
+      priceUsd: null,
       createdAt: new Date(0).toISOString(),
       categories: [],
     });
     expect(getSpy).not.toHaveBeenCalled();
   });
 
+  describe('getMainTokenInfo light-node fallback', () => {
+    const defaultChainFixture = {
+      chainId: '0x1',
+      name: 'Ethereum',
+      mainToken: 'ETH',
+      logo: 'https://cdn.example/eth-local.svg',
+      nativeCoinId: 'ethereum',
+    } as const;
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('falls back to local chain metadata when the API rejects', async () => {
+      jest.spyOn(EvmLightNodeApi, 'get').mockRejectedValue(new Error('network'));
+      const warnSpy = jest.spyOn(Logger, 'warn').mockImplementation(() => {});
+
+      const chain = { ...defaultChainFixture } as any;
+      await expect(EvmTokensUtils.getMainTokenInfo(chain)).resolves.toEqual(
+        EvmTokensUtils.buildFallbackNativeTokenInfo(chain),
+      );
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Native token metadata fetch failed'),
+      );
+      warnSpy.mockRestore();
+    });
+
+    it('falls back when the API resolves undefined (non-200)', async () => {
+      jest.spyOn(EvmLightNodeApi, 'get').mockResolvedValue(undefined);
+      const warnSpy = jest.spyOn(Logger, 'warn').mockImplementation(() => {});
+
+      const chain = { ...defaultChainFixture } as any;
+      await expect(EvmTokensUtils.getMainTokenInfo(chain)).resolves.toEqual(
+        EvmTokensUtils.buildFallbackNativeTokenInfo(chain),
+      );
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('invalid or missing'),
+      );
+      warnSpy.mockRestore();
+    });
+
+    it('falls back when the payload metadata is invalid', async () => {
+      jest.spyOn(EvmLightNodeApi, 'get').mockResolvedValue({
+        metadata: { name: '', symbol: 'ETH' },
+      });
+      const warnSpy = jest.spyOn(Logger, 'warn').mockImplementation(() => {});
+
+      const chain = { ...defaultChainFixture } as any;
+      await expect(EvmTokensUtils.getMainTokenInfo(chain)).resolves.toEqual(
+        EvmTokensUtils.buildFallbackNativeTokenInfo(chain),
+      );
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('invalid or missing'),
+      );
+      warnSpy.mockRestore();
+    });
+
+    it('falls back when the light-node request does not settle before timeout', async () => {
+      jest.useFakeTimers();
+      jest.spyOn(EvmLightNodeApi, 'get').mockImplementation(
+        () => new Promise(() => {}),
+      );
+      const warnSpy = jest.spyOn(Logger, 'warn').mockImplementation(() => {});
+
+      const chain = { ...defaultChainFixture } as any;
+      const resultPromise = EvmTokensUtils.getMainTokenInfo(chain);
+
+      await jest.advanceTimersByTimeAsync(MAIN_TOKEN_LIGHT_NODE_TIMEOUT_MS);
+
+      await expect(resultPromise).resolves.toEqual(
+        EvmTokensUtils.buildFallbackNativeTokenInfo(chain),
+      );
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringMatching(/main_token_native_fetch_timeout/),
+      );
+      warnSpy.mockRestore();
+    });
+  });
+
   it('detects token type from a serialized abi string', () => {
     expect(EvmTokensUtils.getTokenType(JSON.stringify(Erc20Abi))).toBe(
       EVMSmartContractType.ERC20,
     );
+  });
+
+  it('does not classify decode-only protocol ABIs as token types', () => {
+    expect(EvmTokensUtils.getTokenType(UniswapV2RouterAbiMinimal)).toBeNull();
   });
 
   it('formats native short balances with up to 5 decimals', async () => {
@@ -463,10 +551,42 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
         logo: 'https://cdn.example/usdc.svg',
       },
     });
+    await EvmTokensUtils.addCustomToken(
+      chain,
+      '0x2222222222222222222222222222222222222222',
+      {
+        address: '0x00000000000000000000000000000000000000AA',
+        type: EVMSmartContractType.ERC20,
+        metadata: {
+          type: EVMSmartContractType.ERC20,
+          name: 'USD Coin',
+          symbol: 'USDC',
+          decimals: 6,
+          logo: 'https://cdn.example/usdc.svg',
+        },
+      },
+    );
+
+    expect(storageValue).toEqual({
+      '0x1': [
+        {
+          address: '0x00000000000000000000000000000000000000AA',
+          type: EVMSmartContractType.ERC20,
+          metadata: {
+            type: EVMSmartContractType.ERC20,
+            name: 'USD Coin',
+            symbol: 'USDC',
+            decimals: 6,
+            logo: 'https://cdn.example/usdc.svg',
+            coingeckoId: 'usd-coin',
+          },
+        },
+      ],
+    });
 
     const savedTokens = await EvmTokensUtils.getCustomTokens(
       chain,
-      walletAddress.toUpperCase(),
+      '0x2222222222222222222222222222222222222222',
     );
 
     expect(savedTokens).toEqual([
@@ -487,22 +607,20 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
 
   it('updates custom ERC20 metadata with a resolved Coingecko id and preserves the stored id on failure', async () => {
     let storageValue: any = {
-      '0x1': {
-        '0x1111111111111111111111111111111111111111': [
-          {
-            address: '0x00000000000000000000000000000000000000AA',
+      '0x1': [
+        {
+          address: '0x00000000000000000000000000000000000000AA',
+          type: EVMSmartContractType.ERC20,
+          metadata: {
             type: EVMSmartContractType.ERC20,
-            metadata: {
-              type: EVMSmartContractType.ERC20,
-              name: 'USD Coin',
-              symbol: 'USDC',
-              decimals: 6,
-              logo: 'https://cdn.example/usdc.svg',
-              coingeckoId: 'usd-coin',
-            },
+            name: 'USD Coin',
+            symbol: 'USDC',
+            decimals: 6,
+            logo: 'https://cdn.example/usdc.svg',
+            coingeckoId: 'usd-coin',
           },
-        ],
-      },
+        },
+      ],
     };
     jest
       .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
@@ -537,7 +655,7 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
       },
     );
 
-    expect(storageValue['0x1'][walletAddress][0].metadata).toEqual({
+    expect(storageValue['0x1'][0].metadata).toEqual({
       type: EVMSmartContractType.ERC20,
       name: 'Dai Stablecoin',
       symbol: 'DAI',
@@ -564,8 +682,17 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
       },
     );
 
-    expect(storageValue['0x1'][walletAddress][0].metadata.coingeckoId).toBe(
-      'dai',
+    expect(storageValue['0x1'][0].metadata.coingeckoId).toBe('dai');
+
+    await EvmTokensUtils.removeCustomToken(
+      chain,
+      '0x2222222222222222222222222222222222222222',
+      '0x00000000000000000000000000000000000000aa',
+      EVMSmartContractType.ERC20,
+    );
+
+    expect(await EvmTokensUtils.getCustomTokens(chain, walletAddress)).toEqual(
+      [],
     );
   });
 
@@ -604,22 +731,20 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
 
   it('exposes stored Coingecko ids on custom ERC20 token infos', async () => {
     jest.spyOn(LocalStorageUtils, 'getValueFromLocalStorage').mockResolvedValue({
-      '0x1': {
-        '0x1111111111111111111111111111111111111111': [
-          {
-            address: '0x00000000000000000000000000000000000000aa',
+      '0x1': [
+        {
+          address: '0x00000000000000000000000000000000000000aa',
+          type: EVMSmartContractType.ERC20,
+          metadata: {
             type: EVMSmartContractType.ERC20,
-            metadata: {
-              type: EVMSmartContractType.ERC20,
-              name: 'USD Coin',
-              symbol: 'USDC',
-              decimals: 6,
-              logo: 'https://cdn.example/usdc.svg',
-              coingeckoId: 'usd-coin',
-            },
+            name: 'USD Coin',
+            symbol: 'USDC',
+            decimals: 6,
+            logo: 'https://cdn.example/usdc.svg',
+            coingeckoId: 'usd-coin',
           },
-        ],
-      },
+        },
+      ],
     });
 
     await expect(
@@ -640,22 +765,20 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
 
   it('normalizes legacy erc20-nested metadata when reading from storage', async () => {
     jest.spyOn(LocalStorageUtils, 'getValueFromLocalStorage').mockResolvedValue({
-      '0x1': {
-        '0x1111111111111111111111111111111111111111': [
-          {
-            address: '0x00000000000000000000000000000000000000aa',
-            type: EVMSmartContractType.ERC20,
-            metadata: {
-              erc20: {
-                name: 'Legacy',
-                symbol: 'LEG',
-                decimals: 18,
-                logo: '',
-              },
+      '0x1': [
+        {
+          address: '0x00000000000000000000000000000000000000aa',
+          type: EVMSmartContractType.ERC20,
+          metadata: {
+            erc20: {
+              name: 'Legacy',
+              symbol: 'LEG',
+              decimals: 18,
+              logo: '',
             },
           },
-        ],
-      },
+        },
+      ],
     });
 
     const chain = {

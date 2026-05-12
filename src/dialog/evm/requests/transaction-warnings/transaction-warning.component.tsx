@@ -1,6 +1,6 @@
 import { Separator } from '@common-ui/separator/separator.component';
 import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmAccountOrPublic } from '@popup/evm/interfaces/wallet.interface';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import React, { Fragment } from 'react';
 import { ChainLogo } from 'src/common-ui/chain-logo/chain-logo.component';
@@ -10,7 +10,7 @@ import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings
 
 interface Props {
   warningHook: useTransactionHook;
-  selectedAccount?: EvmAccount;
+  selectedAccount?: EvmAccountOrPublic;
   chain?: EvmChain;
   tokenInfo?: EvmSmartContractInfo;
 }
@@ -43,11 +43,6 @@ export const EvmTransactionWarningsComponent = ({
         </div>
       )}
 
-      {warningHook.fields?.mainTokenAmount !== undefined &&
-        warningHook.fields?.mainTokenAmount !== null && (
-          <EvmRequestItem field={warningHook.fields.mainTokenAmount} />
-        )}
-
       {warningHook.duplicatedTransactionField !== undefined && (
         <EvmRequestItem
           field={warningHook.duplicatedTransactionField}
@@ -72,6 +67,14 @@ export const EvmTransactionWarningsComponent = ({
           }
         />
       )}
+
+      {warningHook.fields?.mainTokenAmount !== undefined &&
+        warningHook.fields?.mainTokenAmount !== null && (
+          <>
+            <EvmRequestItem field={warningHook.fields.mainTokenAmount} />
+            <Separator type="horizontal" fullSize />
+          </>
+        )}
 
       {warningHook.fields &&
         warningHook.fields.otherFields?.map((f, index) => {

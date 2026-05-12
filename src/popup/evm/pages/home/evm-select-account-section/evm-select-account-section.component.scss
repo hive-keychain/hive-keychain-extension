@@ -37,6 +37,9 @@
         font-style: italic;
         line-height: 0.7;
       }
+      .seed-name {
+        margin-bottom: -2px;
+      }
     }
     .account-name {
       @include poppins500(14px);
@@ -87,6 +90,40 @@
             .active-icon {
               color: white !important;
             }
+          }
+        }
+        .manage-accounts-panel {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          column-gap: 12px;
+          padding: 10px 6px;
+          box-sizing: border-box;
+          @include poppins500(14px);
+          color: var(--select-font-color);
+          cursor: pointer;
+          --add-icon-color: #{$red};
+          .text {
+            color: var(--select-font-color);
+          }
+          &:hover {
+            background: $red;
+            --add-icon-color: white;
+
+            .text {
+              color: white;
+            }
+
+            .svg-icon {
+              --menu-icon-color: white;
+            }
+          }
+          .svg-icon {
+            width: 32px;
+            height: 32px;
+            margin-top: -4px;
+            --menu-icon-border-width: 0;
+            --menu-icon-color: #e31337;
           }
         }
       }
@@ -241,6 +278,15 @@
   }
 }
 
-.css-wmy1p7-ReactDropdownSelect {
-  box-shadow: none !important;
+// react-dropdown-select's root is focusable (tabIndex 0) and applies :focus / :focus-within
+// box-shadow + border from its default `color` prop — focus changes when clicking elsewhere
+// in the popup. Override with theme border and no ring (emotion class hash is unstable).
+.evm-select-account-section .react-dropdown-select.select-account-select {
+  &:hover,
+  &:focus,
+  &:focus-within {
+    border-color: var(--select-border-color) !important;
+    box-shadow: none !important;
+    outline: none;
+  }
 }

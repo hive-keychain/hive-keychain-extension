@@ -2,6 +2,7 @@ import { Card } from '@common-ui/card/card.component';
 import { SVGIcons } from '@common-ui/icons.enum';
 import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.component';
 import { SeparatorWithFilter } from '@common-ui/separator-with-filter/separator-with-filter.component';
+import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import {
   EvmActiveAccount,
   NativeAndErc20Token,
@@ -46,24 +47,22 @@ const EvmWalletTokensInner = ({
   }>({ ready: false, showCard: false });
 
   useEffect(() => {
-    init();
+    void init();
   }, [activeAccount.nativeAndErc20Tokens]);
 
   useEffect(() => {
-    if (filteredTokens) {
-      setDisplayedTokens(
-        filteredTokens.filter(
-          (token) =>
-            token.tokenInfo.name
-              ?.toLowerCase()
-              .includes(tokenFilter.toLowerCase()) ||
-            token.tokenInfo.symbol
-              ?.toLowerCase()
-              .includes(tokenFilter.toLowerCase()),
-        ),
-      );
-    }
-  }, [tokenFilter]);
+    const q = tokenFilter.trim().toLowerCase();
+    setDisplayedTokens(
+      filteredTokens.filter((token) => {
+        if (!q) {
+          return true;
+        }
+        const nameMatch = token.tokenInfo.name?.toLowerCase().includes(q);
+        const symbolMatch = token.tokenInfo.symbol?.toLowerCase().includes(q);
+        return Boolean(nameMatch || symbolMatch);
+      }),
+    );
+  }, [filteredTokens, tokenFilter]);
 
   useEffect(() => {
     let cancelled = false;
@@ -116,7 +115,6 @@ const EvmWalletTokensInner = ({
       )) as NativeAndErc20Token[];
     const sortedTokens = EvmTokensUtils.sortTokens(tokens);
     setFilteredTokens(sortedTokens);
-    setDisplayedTokens(sortedTokens);
   };
 
   const openCustomTokensPage = () => {
@@ -167,6 +165,16 @@ const EvmWalletTokensInner = ({
               </button>
             </Card>
           )}
+          {Boolean(tokenFilter.trim()) &&
+            displayedTokens.length === 0 &&
+            filteredTokens.length > 0 && (
+              <div className="empty-history-panel evm-wallet-tokens-filter-empty-panel">
+                <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
+                <span className="text">
+                  {chrome.i18n.getMessage('evm_wallet_tokens_filter_no_results')}
+                </span>
+              </div>
+            )}
           {displayedTokens.map((token, index) => (
             <EVMWalletInfoSectionItemComponent
               key={`${token.tokenInfo.name}-${index}`}

@@ -1,11 +1,15 @@
 import { EvmAddressComponent } from '@common-ui/evm/evm-address/evm-address.component';
 import { SmallImageCardComponent } from '@common-ui/small-data-card/small-image-card.component';
+import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EtherRPCCustomError } from '@popup/evm/interfaces/evm-errors.interface';
 import {
   EvmUserHistoryItemDetail,
   EvmUserHistoryItemDetailType,
 } from '@popup/evm/interfaces/evm-tokens-history.interface';
-import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
+import {
+  EVMSmartContractType,
+  EvmSmartContractInfo,
+} from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
@@ -23,7 +27,6 @@ import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
-import Decimal from 'decimal.js';
 import {
   HDNodeWallet,
   TransactionReceipt,
@@ -31,7 +34,7 @@ import {
   Wallet,
   ethers,
 } from 'ethers';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
@@ -48,6 +51,25 @@ enum ReplacedTransactionReason {
   REPLACED = 'replaced',
 }
 
+/** Recipient address from standard ERC-20 `transfer(address,uint256)` calldata, if applicable. */
+function decodeErc20TransferRecipient(data: string | null): string | undefined {
+  if (!data || data === '0x' || !data.startsWith('0xa9059cbb')) {
+    return undefined;
+  }
+  try {
+    const iface = new ethers.Interface([
+      'function transfer(address to, uint256 amount)',
+    ]);
+    const parsed = iface.parseTransaction({ data });
+    if (parsed?.name === 'transfer') {
+      return parsed.args[0] as string;
+    }
+  } catch {
+    /* calldata is not a standard ERC-20 transfer */
+  }
+  return undefined;
+}
+
 const EvmTransactionResult = ({
   activeAccount,
   chain,
@@ -58,16 +80,21 @@ const EvmTransactionResult = ({
   gasFee,
   localAccounts,
   isCanceled,
+  isSuccess,
   pageTitle,
   detailFields,
   transactionData,
   warningMessage,
+  initialDisplayNfts,
+  initialDisplayHistory,
   setTitleContainerProperties,
   setErrorMessage,
+  loadEvmActiveAccount,
 }: PropsFromRedux) => {
   const [waitingForTx, setWaitingForTx] = useState(true);
   const [txReceipt, setTxReceipt] = useState<TransactionReceipt>();
   const [txResult, setTxResult] = useState<TransactionResponse>();
+  const hasRefreshedAccountAfterSuccess = useRef(false);
 
   const [isCanceling, setCanceling] = useState<boolean>(false);
   const [isTransactionSpeedingUp, setTransactionSpeedingUp] =
@@ -79,29 +106,73 @@ const EvmTransactionResult = ({
   const [transactionTokenType, setTransactionTokenType] = useState<
     string | null
   >(null);
+  const shouldShowTokenType =
+    transactionTokenType === EVMSmartContractType.ERC20 ||
+    transactionTokenType === EVMSmartContractType.ERC721 ||
+    transactionTokenType === EVMSmartContractType.ERC1155;
 
   useEffect(() => {
+    const closeNavigationParams = initialDisplayNfts
+      ? { initialDisplayNfts: true }
+      : initialDisplayHistory
+        ? { initialDisplayHistory: true }
+        : undefined;
     setTitleContainerProperties({
       title: pageTitle,
-      isBackButtonEnabled: true,
+      isBackButtonEnabled: false,
+      closeNavigationParams,
     });
-    getTransactionStatus();
+    if (isSuccess || isCanceled) {
+      setWaitingForTx(false);
+    } else {
+      getTransactionStatus();
+    }
   }, []);
+
+  useEffect(() => {
+    if (
+      waitingForTx ||
+      !txReceipt?.status ||
+      isCanceling ||
+      hasRefreshedAccountAfterSuccess.current
+    ) {
+      return;
+    }
+
+    hasRefreshedAccountAfterSuccess.current = true;
+    loadEvmActiveAccount(chain, activeAccount.wallet);
+  }, [
+    activeAccount.wallet,
+    chain,
+    isCanceling,
+    loadEvmActiveAccount,
+    txReceipt?.status,
+    waitingForTx,
+  ]);
 
   useEffect(() => {
     if (tokenInfo) {
       setTransactionTokenType(tokenInfo.type);
-    } else {
-      EvmTokensHistoryParserUtils.getTransactionTokenKind(
-        chain.chainId,
-        transactionResponse.hash,
-      ).then((type: TransactionTokenKind | null) => {
-        if (type) {
-          setTransactionTokenType(type as string);
-        }
-      });
+      return;
     }
-  }, [tokenInfo]);
+
+    const inferred =
+      EvmTokensHistoryParserUtils.inferTransactionTokenKindFromTx(
+        transactionResponse,
+      );
+    if (inferred) {
+      setTransactionTokenType(inferred);
+    }
+
+    EvmTokensHistoryParserUtils.getTransactionTokenKind(
+      chain.chainId,
+      transactionResponse.hash,
+    ).then((type: TransactionTokenKind | null) => {
+      if (type) {
+        setTransactionTokenType(type as string);
+      }
+    });
+  }, [tokenInfo, chain.chainId, transactionResponse]);
 
   const getTransactionStatus = async () => {
     const provider = await EthersUtils.getProvider(chain);
@@ -280,6 +351,7 @@ const EvmTransactionResult = ({
   };
 
   const getStatus = () => {
+    if (isSuccess) return 'success';
     if (isCanceled) return 'canceled';
     if (waitingForTx) {
       if (isCanceling) {
@@ -338,6 +410,10 @@ const EvmTransactionResult = ({
   };
 
   const getImage = async (value: string) => {
+    if (!tokenInfo || !(tokenInfo as any).contractAddress) {
+      return undefined;
+    }
+
     const connectedWallet = new Wallet(
       HDNodeWallet.fromPhrase(activeAccount?.wallet.mnemonic?.phrase!)
         .signingKey,
@@ -366,6 +442,90 @@ const EvmTransactionResult = ({
       setErrorMessage(error.message, error.params ?? []);
     }
   };
+
+  const displayTx = txResult ?? transactionResponse;
+  const hasMinedReceipt = Boolean(txReceipt?.gasUsed != null);
+
+  const getMinedGasFeeDisplay = (): string => {
+    if (!txReceipt?.gasUsed) {
+      return chrome.i18n.getMessage('popup_html_pending');
+    }
+    const pricePerGas = txReceipt.gasPrice;
+    if (pricePerGas != null) {
+      return EvmFormatUtils.formatGweiFromWei(pricePerGas * txReceipt.gasUsed);
+    }
+    return chrome.i18n.getMessage('popup_html_pending');
+  };
+
+  const getPendingGasFeeDisplay = (): string => {
+    if (gasFee?.estimatedFeeInEth && !gasFee.estimatedFeeInEth.equals(-1)) {
+      return EvmFormatUtils.formatGweiFromEth(gasFee.estimatedFeeInEth);
+    }
+    const gl = displayTx.gasLimit;
+    const maxFeePerGas = displayTx.maxFeePerGas ?? displayTx.gasPrice;
+    if (
+      gl != null &&
+      maxFeePerGas != null &&
+      gl > BigInt(0) &&
+      maxFeePerGas > BigInt(0)
+    ) {
+      return EvmFormatUtils.formatGweiFromWei(gl * maxFeePerGas);
+    }
+    return chrome.i18n.getMessage('popup_html_pending');
+  };
+
+  const gasFeeLabelKey = hasMinedReceipt
+    ? 'popup_html_evm_gas_fee'
+    : 'popup_html_evm_gas_fee_estimated';
+
+  const gasFeeValueDisplay = hasMinedReceipt
+    ? getMinedGasFeeDisplay()
+    : getPendingGasFeeDisplay();
+
+  const blockNumberDisplay =
+    displayTx.blockNumber != null
+      ? String(displayTx.blockNumber)
+      : chrome.i18n.getMessage('popup_html_pending');
+
+  const showLegacyGasPriceRow =
+    displayTx.gasPrice != null &&
+    displayTx.maxFeePerGas == null &&
+    displayTx.maxPriorityFeePerGas == null;
+
+  const showEip1559FeeRows =
+    displayTx.maxFeePerGas != null || displayTx.maxPriorityFeePerGas != null;
+
+  const txDataHex =
+    displayTx.data == null
+      ? ''
+      : typeof displayTx.data === 'string'
+        ? displayTx.data
+        : ethers.hexlify(displayTx.data);
+
+  const erc20TransferRecipient = decodeErc20TransferRecipient(
+    txDataHex || null,
+  );
+
+  const detailFieldsIncludeTo = detailFields?.some(
+    (d: EvmUserHistoryItemDetail) =>
+      d.label === 'popup_html_transfer_to' ||
+      d.label === 'popup_html_evm_transaction_info_to',
+  );
+
+  const syntheticToAddress =
+    receiverAddress ??
+    erc20TransferRecipient ??
+    (!txDataHex.startsWith('0xa9059cbb')
+      ? (displayTx.to ?? undefined)
+      : undefined);
+
+  const isCanceledHistoryOperation =
+    pageTitle === 'evm_history_canceled_transaction';
+
+  const showSyntheticToRow =
+    syntheticToAddress != null &&
+    !detailFieldsIncludeTo &&
+    !isCanceledHistoryOperation;
 
   return (
     <div className="evm-transaction-result">
@@ -418,7 +578,7 @@ const EvmTransactionResult = ({
           </div>
           <GasFeePanel
             chain={chain}
-            wallet={localAccounts[0].wallet}
+            fromAddress={localAccounts[0].wallet.address}
             onSelectFee={(value) => setIncreasedGasFee(value)}
             selectedFee={increasedGasFee}
             multiplier={1.5}
@@ -433,7 +593,7 @@ const EvmTransactionResult = ({
           />
         </PopupContainer>
       )}
-      {txResult && (
+      {transactionResponse && (
         <div className="transaction-info">
           {detailFields &&
             detailFields.map(
@@ -447,7 +607,7 @@ const EvmTransactionResult = ({
                   )}
                   {detail.type === EvmUserHistoryItemDetailType.IMAGE && (
                     <SmallImageCardComponent
-                      value={getImage(detail.value!)}
+                      value={detail.imageUrl ?? getImage(detail.value!)}
                       name={detail.label}
                     />
                   )}
@@ -458,6 +618,8 @@ const EvmTransactionResult = ({
                         <EvmAddressComponent
                           address={detail.value!}
                           chainId={chain.chainId}
+                          forceFormattedAddress
+                          canCopy
                         />
                       }
                       valueOnClickAction={() => openWallet(detail.value!)}
@@ -478,48 +640,69 @@ const EvmTransactionResult = ({
                 </React.Fragment>
               ),
             )}
-          <SmallDataCardComponent
-            label="evm_nft_token_type"
-            value={transactionTokenType ?? 'unknown'}
-          />
+          {showSyntheticToRow && (
+            <SmallDataCardComponent
+              label="popup_html_evm_transaction_info_to"
+              value={
+                <EvmAddressComponent
+                  address={syntheticToAddress!}
+                  chainId={chain.chainId}
+                  forceFormattedAddress
+                  canCopy
+                />
+              }
+              valueOnClickAction={() => openWallet(syntheticToAddress!)}
+            />
+          )}
+          {!isCanceledHistoryOperation && shouldShowTokenType && (
+            <SmallDataCardComponent
+              label="evm_nft_token_type"
+              value={transactionTokenType}
+            />
+          )}
           <SmallDataCardComponent
             label="popup_html_evm_transaction_info_block_number"
-            value={txResult.blockNumber!}
-            valueOnClickAction={() => openBlock(txResult.blockNumber!)}
+            value={blockNumberDisplay}
+            valueOnClickAction={
+              displayTx.blockNumber != null
+                ? () => openBlock(Number(displayTx.blockNumber))
+                : undefined
+            }
           />
           <SmallDataCardComponent
             label="popup_html_evm_transaction_info_tx_hash"
-            value={EvmFormatUtils.formatAddress(txResult.hash)}
-            valueOnClickAction={() => openTransaction(txResult.hash)}
+            value={EvmFormatUtils.formatAddress(displayTx.hash)}
+            valueOnClickAction={() => openTransaction(displayTx.hash)}
           />
           <SmallDataCardComponent
-            label="popup_html_evm_gas_fee"
-            value={`${ethers.formatEther(
-              txReceipt?.gasPrice! * txReceipt?.gasUsed!,
-            )} ${chain.mainToken}`}
+            label={gasFeeLabelKey}
+            value={gasFeeValueDisplay}
+            valueClassName="gas-fee-value"
           />
           <SmallDataCardComponent
             label="popup_html_evm_transaction_info_gas_limit"
-            value={txResult.gasLimit.toString()!}
+            value={displayTx.gasLimit.toString()}
           />
-          <SmallDataCardComponent
-            label="popup_html_evm_transaction_info_gas_price"
-            value={`${new Decimal(
-              EvmFormatUtils.etherToGwei(txResult.gasPrice!),
-            ).toFixed()} Gwei`}
-          />
-          <SmallDataCardComponent
-            label="popup_html_evm_transaction_info_priority_fee"
-            value={`${new Decimal(
-              EvmFormatUtils.etherToGwei(txResult.maxPriorityFeePerGas!),
-            ).toFixed()} Gwei`}
-          />
-          <SmallDataCardComponent
-            label="popup_html_evm_transaction_info_total_fee_per_gas"
-            value={`${new Decimal(
-              EvmFormatUtils.etherToGwei(txResult.maxFeePerGas!),
-            ).toFixed()} Gwei`}
-          />
+          {showLegacyGasPriceRow && (
+            <SmallDataCardComponent
+              label="popup_html_evm_transaction_info_gas_price"
+              value={EvmFormatUtils.formatGweiFromWei(displayTx.gasPrice!)}
+            />
+          )}
+          {showEip1559FeeRows && displayTx.maxPriorityFeePerGas != null && (
+            <SmallDataCardComponent
+              label="popup_html_evm_transaction_info_priority_fee"
+              value={EvmFormatUtils.formatGweiFromWei(
+                displayTx.maxPriorityFeePerGas,
+              )}
+            />
+          )}
+          {showEip1559FeeRows && displayTx.maxFeePerGas != null && (
+            <SmallDataCardComponent
+              label="popup_html_evm_transaction_info_total_fee_per_gas"
+              value={EvmFormatUtils.formatGweiFromWei(displayTx.maxFeePerGas)}
+            />
+          )}
         </div>
       )}
     </div>
@@ -539,16 +722,21 @@ const mapStateToProps = (state: RootState) => {
     localAccounts: state.evm.accounts,
     chain: state.chain as EvmChain,
     isCanceled: state.navigation.stack[0].params.isCanceled,
+    isSuccess: state.navigation.stack[0].params.isSuccess,
     pageTitle: state.navigation.stack[0].params.pageTitle,
     detailFields: state.navigation.stack[0].params.detailFields,
     transactionData: state.navigation.stack[0].params.transactionData,
     warningMessage: state.navigation.stack[0].params.warningMessage,
+    initialDisplayNfts: state.navigation.stack[0].params.initialDisplayNfts,
+    initialDisplayHistory:
+      state.navigation.stack[0].params.initialDisplayHistory,
   };
 };
 
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   setErrorMessage,
+  loadEvmActiveAccount,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

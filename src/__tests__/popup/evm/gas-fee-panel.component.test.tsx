@@ -1,0 +1,151 @@
+import React from 'react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
+import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
+import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
+import Decimal from 'decimal.js';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+
+describe('GasFeePanel', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    global.chrome.i18n.getMessage = jest.fn((key: string) => key);
+  });
+
+  it('reports native token metadata failures through the existing error callback', async () => {
+    const setErrorMessage = jest.fn();
+    const onInitialEstimationComplete = jest.fn();
+    const expectedError = {
+      message: 'popup_html_evm_service_unavailable',
+      params: [],
+    };
+
+    jest
+      .spyOn(EvmTokensUtils, 'getMainTokenInfo')
+      .mockRejectedValue(new Error('light node unavailable'));
+    jest.spyOn(GasFeeUtils, 'estimate');
+    jest.spyOn(EthersUtils, 'getErrorMessage').mockReturnValue(expectedError);
+
+    render(
+      <GasFeePanel
+        chain={
+          {
+            chainId: '1',
+            defaultTransactionType: EvmTransactionType.EIP_1559,
+            mainToken: 'ETH',
+            name: 'Ethereum',
+          } as any
+        }
+        fromAddress="0x00000000000000000000000000000000000000aa"
+        onInitialEstimationComplete={onInitialEstimationComplete}
+        onSelectFee={jest.fn()}
+        selectedFee={undefined}
+        setErrorMessage={setErrorMessage}
+        transactionData={{
+          data: '0x',
+          from: '0x00000000000000000000000000000000000000aa',
+          to: '0x00000000000000000000000000000000000000bb',
+          type: EvmTransactionType.EIP_1559,
+          value: '0x0',
+        }}
+        transactionType={EvmTransactionType.EIP_1559}
+      />,
+    );
+
+    await waitFor(() => expect(setErrorMessage).toHaveBeenCalledWith(expectedError));
+
+    expect(onInitialEstimationComplete).toHaveBeenCalled();
+    expect(GasFeeUtils.estimate).not.toHaveBeenCalled();
+  });
+
+  it('saves a custom fee even when native token USD price is unavailable', async () => {
+    const onSelectFee = jest.fn();
+    const selectedFee = {
+      type: EvmTransactionType.EIP_1559,
+      estimatedFeeInEth: new Decimal('0.00042'),
+      estimatedFeeUSD: new Decimal(0),
+      maxFeeInEth: new Decimal('0.00063'),
+      maxFeeUSD: new Decimal(0),
+      estimatedMaxDuration: new Decimal(30),
+      priorityFeeInGwei: new Decimal(1),
+      maxFeePerGasInGwei: new Decimal(30),
+      gasPriceInGwei: new Decimal(30),
+      gasLimit: new Decimal(21000),
+      icon: SVGIcons.EVM_GAS_FEE_LOW,
+      name: 'popup_html_evm_custom_gas_fee_low',
+    };
+
+    jest.spyOn(GasFeeUtils, 'estimate').mockResolvedValue({
+      suggested: selectedFee,
+      low: selectedFee,
+      custom: {
+        ...selectedFee,
+        estimatedFeeInEth: new Decimal(-1),
+        maxFeeInEth: new Decimal(-1),
+        estimatedMaxDuration: new Decimal(-1),
+        priorityFeeInGwei: new Decimal(-1),
+        maxFeePerGasInGwei: new Decimal(-1),
+        gasPriceInGwei: new Decimal(-1),
+        icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
+        name: 'popup_html_evm_custom_gas_fee_custom',
+      },
+      extraInfo: {
+        baseFee: {
+          estimated: '20',
+          baseFeeRange: { min: '10', max: '30' },
+        },
+        priorityFee: {
+          latest: { min: '1', max: '2' },
+          history: { min: '1', max: '3' },
+        },
+        trends: { baseFee: 'up' as any, priorityFee: 'down' as any },
+      },
+    });
+
+    render(
+      <GasFeePanel
+        chain={
+          {
+            chainId: '1',
+            defaultTransactionType: EvmTransactionType.EIP_1559,
+            isCustom: true,
+            mainToken: 'ETH',
+            name: 'Ethereum',
+          } as any
+        }
+        fromAddress="0x00000000000000000000000000000000000000aa"
+        onSelectFee={onSelectFee}
+        prefetchedMainTokenInfo={
+          {
+            symbol: 'ETH',
+            type: 'NATIVE',
+          } as any
+        }
+        selectedFee={selectedFee}
+        setErrorMessage={jest.fn()}
+        transactionData={{
+          data: '0x',
+          from: '0x00000000000000000000000000000000000000aa',
+          to: '0x00000000000000000000000000000000000000bb',
+          type: EvmTransactionType.EIP_1559,
+          value: '0x0',
+        }}
+        transactionType={EvmTransactionType.EIP_1559}
+      />,
+    );
+
+    await waitFor(() => expect(GasFeeUtils.estimate).toHaveBeenCalled());
+
+    fireEvent.click(screen.getByText('popup_html_evm_gas_fee', { exact: false }));
+    fireEvent.click(screen.getByText('popup_html_operation_button_save'));
+
+    expect(onSelectFee).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        name: 'popup_html_evm_custom_gas_fee_custom',
+        maxFeeUSD: new Decimal(0),
+      }),
+    );
+  });
+});

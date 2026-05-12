@@ -5,6 +5,7 @@ import {
   EvmAccount,
   WalletWithBalance,
 } from '@popup/evm/interfaces/wallet.interface';
+import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
@@ -15,7 +16,7 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { HDNodeWallet } from 'ethers';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -34,10 +35,14 @@ const ImportWalletConfirmation = ({
   activeAccount,
   loadEvmActiveAccount,
   navigateTo,
+  accounts,
+  hasImportParams,
 }: PropsType) => {
   const [wallets, setWallets] = useState<WalletWithBalance[]>([]);
 
-  const [nickname, setNickname] = useState<string>('');
+  const [nickname, setNickname] = useState<string>(() =>
+    EvmAccountUtils.getDefaultSeedName(accounts),
+  );
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -45,6 +50,16 @@ const ImportWalletConfirmation = ({
       isBackButtonEnabled: true,
       isCloseButtonDisabled: true,
     });
+  }, []);
+
+  /** Mount-only: do not subscribe to param changes — they can flicker mid-submit and wrongly
+   * send users back to the seed phrase screen. */
+  useLayoutEffect(() => {
+    if (!hasImportParams) {
+      navigateTo(Screen.IMPORT_EVM_WALLET, true);
+    }
+    // Runs once on landing; subscribing to param changes causes import-seed flicker mid-submit.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -61,6 +76,11 @@ const ImportWalletConfirmation = ({
     if (!checkedWallets.length) {
       setErrorMessage('html_popup_evm_error_select_account');
     } else {
+      if (!wallet) {
+        navigateTo(Screen.IMPORT_EVM_WALLET, true);
+        return;
+      }
+
       const evmAccounts: EvmAccount[] = checkedWallets.map((derivedWallet) => ({
         id: derivedWallet.wallet.index,
         path: derivedWallet.wallet.path!,
@@ -86,8 +106,8 @@ const ImportWalletConfirmation = ({
         }
       }
       setEvmAccounts(accounts);
-      await loadEvmActiveAccount(chain as EvmChain, accounts[0].wallet);
       navigateTo(Screen.HOME_PAGE, true);
+      await loadEvmActiveAccount(chain as EvmChain, accounts[0].wallet);
     }
   };
 
@@ -142,13 +162,16 @@ const ImportWalletConfirmation = ({
 };
 
 const mapStateToProps = (state: RootState) => {
+  const params = state.navigation.stack[0]?.params;
+
   return {
-    walletsWithBalance: state.navigation.stack[0]?.params
-      ?.derivedWallets as WalletWithBalance[],
-    wallet: state.navigation.stack[0].params.wallet as HDNodeWallet,
+    walletsWithBalance: (params?.derivedWallets ?? []) as WalletWithBalance[],
+    wallet: params?.wallet as HDNodeWallet | undefined,
+    hasImportParams: !!params?.wallet && Array.isArray(params?.derivedWallets),
     mk: state.mk,
     chain: state.chain,
     activeAccount: state.evm.activeAccount,
+    accounts: state.evm.accounts,
   };
 };
 

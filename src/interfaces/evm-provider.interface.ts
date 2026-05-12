@@ -29,6 +29,8 @@ export enum EvmEventName {
   CHAIN_CHANGED = 'chainChanged',
   GET_CHAIN_FROM_PROVIDER = 'getChainFromProvider',
   SEND_BACK_CHAIN_TO_BACKGROUND = 'sendBackChainToBackground',
+  INITIALIZE_PROVIDER_REQUEST = 'initializeProviderRequest',
+  INITIALIZE_PROVIDER_RESPONSE = 'initializeProviderResponse',
 }
 
 export type EvmEventScope =

@@ -5,19 +5,22 @@ import {
   EvmUserHistoryItemDetailType,
   EvmUserHistoryItemType,
 } from '@popup/evm/interfaces/evm-tokens-history.interface';
+import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import {
   EvmLightNodeUtils,
+  isCatchupStatusPending,
   LightNodeHistoryFlow,
+  LightNodeHistoryFlowWithMeta,
   LightNodeHistoryItem,
 } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
-import FormatUtils from 'src/utils/format.utils';
 
 const LIMIT = 50;
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
-type NftFlow = Extract<LightNodeHistoryFlow, { kind: 'ERC721' | 'ERC1155' }>;
+type HistoryFlow = LightNodeHistoryFlowWithMeta;
+type NftFlow = Extract<HistoryFlow, { kind: 'ERC721' | 'ERC1155' }>;
 type KnownOpName =
   | 'NATIVE_SEND'
   | 'NATIVE_RECEIVE'
@@ -114,8 +117,11 @@ const isOpLike = (opName: string, values: string[]) => {
   return values.some((value) => normalized.includes(value));
 };
 
-const isFlowNft = (flow: LightNodeHistoryFlow): flow is NftFlow =>
+const isFlowNft = (flow: HistoryFlow): flow is NftFlow =>
   flow.kind === 'ERC721' || flow.kind === 'ERC1155';
+
+const getNftImageUrl = (flow: NftFlow) =>
+  flow.imageUrl ?? ('nft' in flow ? flow.nft?.imageUrl ?? null : null);
 
 const toTimestamp = (blockTime: string) => {
   const value = Date.parse(blockTime);
@@ -127,7 +133,7 @@ const toTransactionIndex = (opIndex: string) => {
   return Number.isFinite(value) ? value : 0;
 };
 
-const getFlowAmount = (flow: LightNodeHistoryFlow) => {
+const getFlowAmount = (flow: HistoryFlow) => {
   switch (flow.kind) {
     case 'NATIVE':
       return flow.amount;
@@ -142,7 +148,7 @@ const getFlowAmount = (flow: LightNodeHistoryFlow) => {
   }
 };
 
-const getFlowSymbol = (flow: LightNodeHistoryFlow, chain: EvmChain) => {
+const getFlowSymbol = (flow: HistoryFlow, chain: EvmChain) => {
   switch (flow.kind) {
     case 'NATIVE':
       return chain.mainToken;
@@ -156,9 +162,18 @@ const getFlowSymbol = (flow: LightNodeHistoryFlow, chain: EvmChain) => {
   }
 };
 
-const getDisplayAddress = (address?: string | null) => {
+/** Resolves ENS (and contact / local account labels) for history copy, matching EvmAddressComponent. */
+const getHistoryAddressDisplayLabel = async (
+  address: string | null | undefined,
+  chain: EvmChain,
+): Promise<string> => {
   if (!address) return '';
-  return EvmFormatUtils.formatAddress(address);
+  const details = await EvmAddressesUtils.getAddressDetails(
+    address,
+    chain.chainId,
+    true,
+  );
+  return details.label ?? details.formattedAddress;
 };
 
 const toKnownOpName = (opName: string): KnownOpName => {
@@ -197,9 +212,9 @@ const toKnownOpName = (opName: string): KnownOpName => {
 };
 
 const formatTokenAmount = (amount: string) =>
-  FormatUtils.withCommas(amount, 8, true);
+  EvmFormatUtils.formatTokenBalance(amount, 8);
 
-const formatFlow = (flow: LightNodeHistoryFlow, chain: EvmChain) => {
+const formatFlow = (flow: HistoryFlow, chain: EvmChain) => {
   if (flow.kind === 'ERC721') {
     return `${getFlowSymbol(flow, chain)}#${flow.tokenId}`;
   }
@@ -306,7 +321,7 @@ const pushAddressDetails = (
 const getPreferredFlow = (
   item: LightNodeHistoryItem,
   isOutgoing: boolean,
-): LightNodeHistoryFlow | undefined => {
+): HistoryFlow | undefined => {
   const preferred = isOutgoing ? item.out : item.in;
   const fallback = isOutgoing ? item.in : item.out;
   return preferred[0] ?? fallback[0];
@@ -338,6 +353,7 @@ const parseTransfer = (
           : `${flow.quantity} ${collectionName}#${tokenId}`,
       value: tokenId,
       type: EvmUserHistoryItemDetailType.IMAGE,
+      imageUrl: getNftImageUrl(flow),
     });
 
     const labelKey =
@@ -447,6 +463,7 @@ const parseApprove = (
       label: `${symbol}#${flow.tokenId}`,
       value: flow.tokenId,
       type: EvmUserHistoryItemDetailType.IMAGE,
+      imageUrl: getNftImageUrl(flow),
     });
   }
 
@@ -489,6 +506,7 @@ const parseMint = (
       label: `${getFlowSymbol(flow, chain)}#${flow.tokenId}`,
       value: flow.tokenId,
       type: EvmUserHistoryItemDetailType.IMAGE,
+      imageUrl: getNftImageUrl(flow),
     });
   }
   pushAddressDetails(details, item.fromAddress, item.toAddress);
@@ -560,15 +578,15 @@ const parseErc20Mint = (
   };
 };
 
-const parseBurn = (
+const parseBurn = async (
   historyItem: EvmUserHistoryItem,
   item: LightNodeHistoryItem,
   chain: EvmChain,
-): EvmUserHistoryItem => {
+): Promise<EvmUserHistoryItem> => {
   const details: EvmUserHistoryItemDetail[] = [];
   const flow = item.out[0] ?? item.in[0];
   if (!flow) {
-    return parseSmartContractOperation(historyItem, item, true);
+    return parseSmartContractOperation(historyItem, item, true, chain);
   }
 
   let labelKey = 'evm_history_generic_message';
@@ -592,6 +610,7 @@ const parseBurn = (
       label: `${symbol}#${flow.tokenId}`,
       value: flow.tokenId,
       type: EvmUserHistoryItemDetailType.IMAGE,
+      imageUrl: getNftImageUrl(flow),
     });
   } else if (flow.kind === 'ERC1155') {
     const symbol = flow.collectionName ?? 'NFT';
@@ -601,6 +620,7 @@ const parseBurn = (
       label: `${flow.quantity} ${symbol}#${flow.tokenId}`,
       value: flow.tokenId,
       type: EvmUserHistoryItemDetailType.IMAGE,
+      imageUrl: getNftImageUrl(flow),
     });
   } else {
     details.push({
@@ -641,6 +661,7 @@ const parseComplexOperation = (
         label: formatFlow(flow, chain),
         value: flow.tokenId,
         type: EvmUserHistoryItemDetailType.IMAGE,
+        imageUrl: getNftImageUrl(flow),
       });
     } else {
       details.push({
@@ -694,11 +715,12 @@ const parseComplexOperation = (
   };
 };
 
-const parseSmartContractOperation = (
+const parseSmartContractOperation = async (
   historyItem: EvmUserHistoryItem,
   item: LightNodeHistoryItem,
   isOutgoing: boolean,
-): EvmUserHistoryItem => {
+  chain: EvmChain,
+): Promise<EvmUserHistoryItem> => {
   const details: EvmUserHistoryItemDetail[] = [];
   if (item.toAddress) {
     details.push({
@@ -710,7 +732,10 @@ const parseSmartContractOperation = (
     pushAddressDetails(details, item.fromAddress, item.toAddress);
   }
 
-  const contractAddress = getDisplayAddress(item.toAddress ?? item.fromAddress);
+  const contractAddress = await getHistoryAddressDisplayLabel(
+    item.toAddress ?? item.fromAddress,
+    chain,
+  );
   const operationName = item.action || item.opName || 'operation';
   const labelKey = isOutgoing
     ? 'evm_history_operation_generic_smart_contract_messages_out'
@@ -729,11 +754,11 @@ const parseSmartContractOperation = (
   };
 };
 
-const parseItem = (
+const parseItem = async (
   item: LightNodeHistoryItem,
   chain: EvmChain,
   walletAddress: string,
-): EvmUserHistoryItem => {
+): Promise<EvmUserHistoryItem> => {
   const opName = toKnownOpName(item.opName);
   const walletAddressLower = walletAddress.toLowerCase();
   const fromAddress = item.fromAddress?.toLowerCase();
@@ -742,12 +767,27 @@ const parseItem = (
     : INCOMING_OPS.has(opName)
       ? false
       : fromAddress === walletAddressLower;
-  const counterpartyLabel = getDisplayAddress(
+  const counterpartyLabel = await getHistoryAddressDisplayLabel(
     isOutgoing ? item.toAddress : item.fromAddress,
+    chain,
   );
 
   const base = makeCommonItem(item);
   const hasFlows = item.in.length > 0 || item.out.length > 0;
+
+  if (item.opName === 'CANCELED_OP') {
+    const details: EvmUserHistoryItemDetail[] = [];
+    pushAddressDetails(details, item.fromAddress, null);
+
+    return {
+      ...base,
+      pageTitle: 'evm_history_canceled_transaction',
+      type: EvmUserHistoryItemType.SMART_CONTRACT,
+      label: chrome.i18n.getMessage('evm_history_operation_canceled'),
+      detailFields: details,
+      isCanceled: true,
+    };
+  }
 
   if (
     opName === 'CONTRACT_DEPLOY' ||
@@ -757,6 +797,10 @@ const parseItem = (
     const details: EvmUserHistoryItemDetail[] = [];
     pushAddressDetails(details, item.fromAddress, item.toAddress);
 
+    const createdLabel = item.toAddress
+      ? await getHistoryAddressDisplayLabel(item.toAddress, chain)
+      : '';
+
     return {
       ...base,
       pageTitle: 'evm_history_smart_contract_creation',
@@ -765,7 +809,7 @@ const parseItem = (
         item.toAddress
           ? 'evm_history_smart_contract_creation_message'
           : 'evm_history_smart_contract_creation_message_no_address',
-        item.toAddress ? [getDisplayAddress(item.toAddress)] : [],
+        item.toAddress ? [createdLabel] : [],
       ),
       detailFields: details,
     };
@@ -795,7 +839,7 @@ const parseItem = (
     return parseTransfer(base, item, chain, isOutgoing, counterpartyLabel);
   }
 
-  return parseSmartContractOperation(base, item, isOutgoing);
+  return parseSmartContractOperation(base, item, isOutgoing, chain);
 };
 
 const sortEvents = (events: EvmUserHistoryItem[]) =>
@@ -839,8 +883,10 @@ const fetchHistory2 = async (
     params.toString(),
   );
 
-  const parsedItems = response.items.map((item) =>
-    applyStatusLabel(parseItem(item, chain, walletAddress), item),
+  const parsedItems = await Promise.all(
+    response.items.map(async (item) =>
+      applyStatusLabel(await parseItem(item, chain, walletAddress), item),
+    ),
   );
   const dedupSet = new Set(previousHistory.events.map(getEventKey));
   const merged = [...previousHistory.events];
@@ -855,7 +901,9 @@ const fetchHistory2 = async (
   return {
     events: sortEvents(merged),
     nextCursor: response.nextCursor,
-    fullyFetch: !response.nextCursor,
+    fullyFetch:
+      !response.nextCursor && !isCatchupStatusPending(response.catchupStatus),
+    catchupStatus: response.catchupStatus,
   } as EvmUserHistory;
 };
 

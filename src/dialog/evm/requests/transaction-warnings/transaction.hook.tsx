@@ -12,7 +12,7 @@ import {
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmAccountOrPublic } from '@popup/evm/interfaces/wallet.interface';
 import {
   EvmInputDisplayType,
   EvmTransactionParserUtils,
@@ -21,7 +21,6 @@ import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { MessageType } from '@reference-data/message-type.enum';
-import { HDNodeWallet } from 'ethers';
 import React, { useEffect, useState } from 'react';
 import { ConfirmationPageEvmFields } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
@@ -127,7 +126,7 @@ export const useTransactionHook = (
     }
   };
 
-  const handleSingleWarningIgnore = (
+  const handleSingleWarningIgnore = async (
     selectedSingleWarning: SelectedWarning,
   ) => {
     if (
@@ -137,19 +136,46 @@ export const useTransactionHook = (
     ) {
       //TODO  display error message
     } else {
-      if (selectedSingleWarning.warning.onConfirm) {
-        switch (selectedSingleWarning.warning.type) {
-          case EvmTransactionWarningType.WHITELIST_ADDRESS: {
-            selectedSingleWarning.warning.onConfirm(whitelistLabel);
-            break;
-          }
-        }
-      }
+      await confirmWarningResolution(
+        selectedSingleWarning.warning,
+        whitelistLabel,
+      );
       setBypassWarning(false);
       ignoreWarning(
         selectedSingleWarning.fieldIndex!,
         selectedSingleWarning.warningIndex,
         selectedSingleWarning.warning.warningKey,
+      );
+    }
+  };
+
+  const confirmWarningResolution = async (
+    warning: EvmTransactionWarning,
+    label?: string,
+  ) => {
+    if (!warning.onConfirm) return;
+
+    switch (warning.type) {
+      case EvmTransactionWarningType.WHITELIST_ADDRESS:
+      case EvmTransactionWarningType.WHITELIST_ADDRESS_NO_LABEL: {
+        await warning.onConfirm(label ?? warning.extraData?.defaultLabel ?? '');
+        break;
+      }
+      default: {
+        await warning.onConfirm();
+      }
+    }
+  };
+
+  const confirmAllWarningResolutions = async (
+    warnings?: EvmTransactionWarning[],
+  ) => {
+    for (const warning of warnings?.filter(
+      (warning) => warning.ignored === false,
+    ) ?? []) {
+      await confirmWarningResolution(
+        warning,
+        warning.extraData?.resolveAllLabel ?? warning.extraData?.defaultLabel,
       );
     }
   };
@@ -209,7 +235,7 @@ export const useTransactionHook = (
     closePopup();
   };
 
-  const ignoreAllWarnings = () => {
+  const ignoreAllWarnings = async () => {
     if (fields) {
       if (duplicatedTransactionField) {
         const newDuplicated = { ...duplicatedTransactionField };
@@ -229,10 +255,12 @@ export const useTransactionHook = (
 
       const newFields: TransactionConfirmationFields = { ...fields! };
       for (const fields of newFields.otherFields) {
-        if (fields.warnings)
+        if (fields.warnings) {
+          await confirmAllWarningResolutions(fields.warnings);
           fields.warnings.forEach((warning) => {
             warning.ignored = true;
           });
+        }
       }
       setFields(newFields);
     } else if (confirmationPageFields) {
@@ -241,10 +269,12 @@ export const useTransactionHook = (
       ];
 
       for (const fields of newFields) {
-        if (fields.warnings)
+        if (fields.warnings) {
+          await confirmAllWarningResolutions(fields.warnings);
           fields.warnings.forEach((warning) => {
             warning.ignored = true;
           });
+        }
       }
       setConfirmationPageFields(newFields);
     }
@@ -279,16 +309,16 @@ export const useTransactionHook = (
   };
 
   const initPendingTransactionWarning = async (
-    wallet: HDNodeWallet,
+    fromAddress: string,
     chain: EvmChain,
   ) => {
     const pendingTransactionsInfo =
-      await EvmTransactionsUtils.hasPendingTransaction(wallet, chain);
+      await EvmTransactionsUtils.hasPendingTransaction(fromAddress, chain);
     if (pendingTransactionsInfo?.hasPending) {
       setPendingTransactionWarningField({
         name: '',
-        type: EvmInputDisplayType.STRING,
-        value: <div className="value-content"></div>,
+        type: EvmInputDisplayType.WARNING_ONLY,
+        value: chrome.i18n.getMessage('evm_pending_transaction_warning'),
         warnings: [
           {
             ignored: false,
@@ -299,6 +329,8 @@ export const useTransactionHook = (
           },
         ],
       });
+    } else {
+      setPendingTransactionWarningField(undefined);
     }
   };
 
@@ -388,7 +420,7 @@ export const useTransactionHook = (
     transactionInfo: EvmTransactionVerificationInformation,
   ) => {
     const warnings = await EvmTransactionParserUtils.getDomainWarnings(
-      data.dappInfo.domain,
+      data.dappInfo.origin,
       data.dappInfo.protocol,
       transactionInfo,
     );
@@ -410,7 +442,7 @@ export const useTransactionHook = (
     address: string,
     chainId: string,
     transactionInfo: EvmTransactionVerificationInformation,
-    localAccounts: EvmAccount[],
+    localAccounts: EvmAccountOrPublic[],
     name: string = '',
     skipWarnings: boolean = false,
   ) => {
@@ -448,7 +480,11 @@ export const useTransactionHook = (
         type: EvmInputDisplayType.LONG_TEXT,
         value: (
           <div>
-            <b>{chrome.i18n.getMessage('evm_warning_eip7702_title')}</b>
+            <b>
+              {chrome.i18n.getMessage(
+                'evm_warning_possible_duplicated_transaction',
+              )}
+            </b>
             <div>{JSON.stringify(savedRequest.request)}</div>
           </div>
         ),

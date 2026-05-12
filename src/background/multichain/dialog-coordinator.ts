@@ -16,20 +16,35 @@ import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 let lastDispatchedDialogMessage: ConfirmDialogMessage | null = null;
+let dialogRequestOrderMutationQueue: Promise<void> = Promise.resolve();
+
+const enqueueDialogRequestOrderMutation = <T>(mutation: () => Promise<T>) => {
+  const runMutation = dialogRequestOrderMutationQueue.then(
+    mutation,
+    mutation,
+  );
+  dialogRequestOrderMutationQueue = runMutation.then(
+    () => undefined,
+    () => undefined,
+  );
+  return runMutation;
+};
 
 export const getNextDialogRequestOrder = async () => {
-  const currentOrder =
-    (await LocalStorageUtils.getValueFromLocalStorage(
+  return enqueueDialogRequestOrderMutation(async () => {
+    const currentOrder =
+      (await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.DIALOG_REQUEST_ORDER,
+      )) ?? 0;
+    const nextOrder = currentOrder + 1;
+
+    await LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.DIALOG_REQUEST_ORDER,
-    )) ?? 0;
-  const nextOrder = currentOrder + 1;
+      nextOrder,
+    );
 
-  await LocalStorageUtils.saveValueInLocalStorage(
-    LocalStorageKeyEnum.DIALOG_REQUEST_ORDER,
-    nextOrder,
-  );
-
-  return nextOrder;
+    return nextOrder;
+  });
 };
 
 export const syncSharedDialogWindow = async (

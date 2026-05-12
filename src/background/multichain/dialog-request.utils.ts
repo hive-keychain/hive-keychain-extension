@@ -528,7 +528,10 @@ const buildEvmConfirmationMessage = async (
     request,
     dappInfo: requestData.dappInfo,
     tab: requestData.tab,
-    accounts: evmRequestHandler.accounts,
+    accounts: evmRequestHandler.accounts.map(({ wallet, ...rest }) => ({
+      ...rest,
+      address: wallet.address,
+    })),
     queuePosition: 1,
     queueSize,
   };

@@ -23,6 +23,8 @@ interface EvmWalletInfoSectionProps {
   loadEvmHistory: Function;
   loadEvmActiveAccountNfts: (chain: EvmChain, wallet: HDNodeWallet) => void;
   reloadEvmActiveAccount: () => Promise<void>;
+  initialDisplayNfts?: boolean;
+  initialDisplayHistory?: boolean;
 }
 
 enum EvmDisplayedPage {
@@ -38,9 +40,16 @@ export const EvmWalletInfoSectionComponent = ({
   loadEvmHistory,
   loadEvmActiveAccountNfts,
   reloadEvmActiveAccount,
+  initialDisplayNfts,
+  initialDisplayHistory,
 }: EvmWalletInfoSectionProps) => {
+  const getInitialDisplayedSection = (): EvmDisplayedPage => {
+    if (initialDisplayHistory) return EvmDisplayedPage.HISTORY;
+    if (initialDisplayNfts) return EvmDisplayedPage.NTFS;
+    return EvmDisplayedPage.TOKENS;
+  };
   const [displayedSection, setDisplayedSection] = useState<EvmDisplayedPage>(
-    EvmDisplayedPage.TOKENS,
+    getInitialDisplayedSection(),
   );
 
   const loadHistory = async (reset?: boolean) => {

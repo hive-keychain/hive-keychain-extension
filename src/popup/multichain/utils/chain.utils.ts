@@ -40,6 +40,27 @@ const getBundledDefaultChains = (): Chain[] => {
   return cloneChains(defaultChainList as Chain[]);
 };
 
+const mergeWithBundledDefaultChains = (chains: Chain[]): Chain[] => {
+  const bundledChains = getBundledDefaultChains();
+  const normalizedChains = cloneChains(chains);
+  const normalizedChainIds = new Set(
+    bundledChains.map((chain) => chain.chainId.toLowerCase()),
+  );
+
+  return [
+    ...bundledChains.map((bundledChain) => {
+      const matchingChain = normalizedChains.find(
+        (chain) =>
+          chain.chainId.toLowerCase() === bundledChain.chainId.toLowerCase(),
+      );
+      return matchingChain ?? bundledChain;
+    }),
+    ...normalizedChains.filter(
+      (chain) => !normalizedChainIds.has(chain.chainId.toLowerCase()),
+    ),
+  ];
+};
+
 const setPreviousChain = (chain: Chain) => {
   previousChain = chain;
 };
@@ -551,7 +572,9 @@ const initChains = async (): Promise<Chain[]> => {
   defaultChainsPromise = (async () => {
     try {
       const apiChains = await EvmLightNodeApi.get('chains');
-      const normalizedChains = cloneChains(apiChains as Chain[]);
+      const normalizedChains = mergeWithBundledDefaultChains(
+        apiChains as Chain[],
+      );
       setDefaultChains(normalizedChains);
       try {
         await LocalStorageUtils.saveValueInLocalStorage(
@@ -571,7 +594,7 @@ const initChains = async (): Promise<Chain[]> => {
       LocalStorageKeyEnum.DEFAULT_CHAINS,
     );
     if (isValidStoredChainList(cachedChains)) {
-      const normalizedChains = cloneChains(cachedChains);
+      const normalizedChains = mergeWithBundledDefaultChains(cachedChains);
       setDefaultChains(normalizedChains);
       Logger.info('Initialized chains from cache');
       return normalizedChains;

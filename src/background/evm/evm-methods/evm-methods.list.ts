@@ -68,10 +68,8 @@ export enum EvmRequestMethod {
   WALLET_ADD_ETH_CHAIN = 'wallet_addEthereumChain',
   WALLET_GET_PERMISSIONS = 'wallet_getPermissions',
   WALLET_REQUEST_PERMISSIONS = 'wallet_requestPermissions',
-  WALLET_REGISTER_ON_BOARDING = 'wallet_registerOnboarding',
   WALLET_SWITCH_ETHEREUM_CHAIN = 'wallet_switchEthereumChain',
   WALLET_WATCH_ASSETS = 'wallet_watchAsset',
-  WALLET_INVOKE_KEYRING = 'wallet_invokeKeyring',
   WEB3_CLIENT_VERSION = 'web3_clientVersion',
   WEB3_SHA3 = 'web3_sha3',
   WALLET_GET_CAPABILITIES = 'wallet_getCapabilities',
@@ -87,6 +85,9 @@ export enum EvmRequestMethod {
   // Custom Keychain
   KC_RESOLVE_ENS = 'kc_resolveEns',
   KC_LOOKUP_ENS = 'kc_lookupEns',
+
+  // EvmRequestMethod.WALLET_REGISTER_ON_BOARDING,
+  // EvmRequestMethod.WALLET_INVOKE_KEYRING,
 }
 
 export const doesMethodExist = (method: string) => {
@@ -96,9 +97,8 @@ export const doesMethodExist = (method: string) => {
 export const EvmRestrictedMethods = [
   EvmRequestMethod.WALLET_ADD_ETH_CHAIN,
   EvmRequestMethod.WALLET_REQUEST_PERMISSIONS,
-  EvmRequestMethod.WALLET_REGISTER_ON_BOARDING,
+  EvmRequestMethod.MM_WATCH_ASSET,
   EvmRequestMethod.WALLET_WATCH_ASSETS,
-  EvmRequestMethod.WALLET_INVOKE_KEYRING,
   EvmRequestMethod.REQUEST_ACCOUNTS,
   EvmRequestMethod.GET_ENCRYPTION_KEY,
   EvmRequestMethod.SEND_TRANSACTION,

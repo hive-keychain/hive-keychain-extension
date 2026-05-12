@@ -21,6 +21,11 @@ export const EvmSettingsMenuItems = (logout: () => void): MenuItem[] => {
       nextScreen: EvmScreen.EVM_CUSTOM_CHAINS,
     },
     {
+      label: 'evm_menu_dapps_connections',
+      icon: SVGIcons.MENU_PLUGINS,
+      nextScreen: EvmScreen.EVM_DAPPS_CONNECTIONS,
+    },
+    {
       label: 'evm_menu_advanced',
       icon: SVGIcons.MENU_ADVANCED_SETTINGS,
       nextScreen: EvmScreen.EVM_ADVANCED_SETTINGS,

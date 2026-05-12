@@ -1,5 +1,5 @@
 import { SVGIcons } from '@common-ui/icons.enum';
-import { ModalComponent } from '@common-ui/modal/modal.component';
+import { ModalPresentation } from '@common-ui/modal/modal.component';
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import SignTransaction, {
   SignFromLedgerRequestMessage,
@@ -55,6 +55,18 @@ export const DialogConfirmationPage = ({
       (currentMessage.command === DialogCommand.SEND_DIALOG_CONFIRM ||
         currentMessage.command === DialogCommand.SEND_DIALOG_CONFIRM_EVM)
     );
+  };
+
+  const getMessageKey = (queuedMessage: Props['message'], index: number) => {
+    if (!('command' in queuedMessage)) {
+      return `ledger-${index}`;
+    }
+
+    if (isConfirmMessage(queuedMessage)) {
+      return `${queuedMessage.command}-${queuedMessage.tab}-${queuedMessage.request.request_id}`;
+    }
+
+    return `${queuedMessage.command}-${index}`;
   };
 
   const removeRequestFromQueue = (requestId: number, tab: number) => {
@@ -136,6 +148,15 @@ export const DialogConfirmationPage = ({
   }, [requestQueue, selectedIndex]);
 
   const afterCancel = (requestId: number, tab: number) => {
+    const hasRemainingRequests = requestQueue.some(
+      (item) => item.request.request_id !== requestId || item.tab !== tab,
+    );
+
+    if (!hasRemainingRequests) {
+      window.close();
+      return;
+    }
+
     removeRequestFromQueue(requestId, tab);
   };
 
@@ -146,7 +167,19 @@ export const DialogConfirmationPage = ({
     const tab = (feedBackMessage as any)?.msg?.tab;
 
     if (requestId !== undefined && tab !== undefined) {
+      const hasRemainingRequests = requestQueue.some(
+        (item) => item.request.request_id !== requestId || item.tab !== tab,
+      );
+
+      if (!hasRemainingRequests) {
+        window.close();
+        return;
+      }
+
       removeRequestFromQueue(requestId, tab);
+    } else if (!requestQueue.length) {
+      window.close();
+      return;
     }
 
     setFeedBackMessage(null);
@@ -164,6 +197,8 @@ export const DialogConfirmationPage = ({
           <RequestConfirmation
             message={displayedMessage as HiveRequestMessage | EvmRequestMessage}
             afterCancel={afterCancel}
+            isActive={displayedMessage === queueItems[selectedIndex]}
+            activationKey={`${selectedIndex}-${queuePosition}-${queueSize}`}
           />
         );
       case DialogCommand.ANONYMOUS_KEYLESS_OP:
@@ -206,10 +241,6 @@ export const DialogConfirmationPage = ({
       ? requestQueue
       : [message]
     : [message];
-  const displayedMessage =
-    queueItems.length > 0
-      ? ((queueItems[selectedIndex] as Props['message']) ?? queueItems[0])
-      : null;
   const queueSize = queueItems.length;
   const queuePosition = queueSize > 1 ? selectedIndex + 1 : 1;
 
@@ -234,11 +265,37 @@ export const DialogConfirmationPage = ({
           )}
         </div>
       )}
-      {displayedMessage && displayRequest(displayedMessage)}
+      <div className="dialog-request-carousel">
+        {queueItems.map((queuedMessage, index) => {
+          const isActive = index === selectedIndex;
+
+          return (
+            <div
+              key={getMessageKey(queuedMessage as Props['message'], index)}
+              className={`dialog-request-slide ${
+                isActive ? 'active' : 'inactive'
+              }`}
+              data-testid={`dialog-request-slide-${index}`}
+              aria-hidden={!isActive}
+              {...(!isActive ? { inert: '' } : {})}
+              style={{
+                transform: `translateX(${
+                  index < selectedIndex
+                    ? '-100%'
+                    : index > selectedIndex
+                    ? '100%'
+                    : '0'
+                })`,
+              }}>
+              {displayRequest(queuedMessage as Props['message'])}
+            </div>
+          );
+        })}
+      </div>
       {feedBackMessage && (
-        <ModalComponent>
+        <ModalPresentation onClose={closeFeedBackMessage} showOverlay={false}>
           {displayFeedBackMessage(feedBackMessage)}
-        </ModalComponent>
+        </ModalPresentation>
       )}
     </div>
   );

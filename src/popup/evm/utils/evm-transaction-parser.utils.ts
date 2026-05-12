@@ -1,4 +1,3 @@
-import { Interface } from '@ethersproject/abi';
 import {
   EvmSmartContractInfo,
   EVMSmartContractType,
@@ -13,16 +12,14 @@ import {
   TransactionConfirmationField,
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmAccountOrPublic } from '@popup/evm/interfaces/wallet.interface';
 import { AbiList } from '@popup/evm/reference-data/abi.data';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
-import { EvmDataParser } from '@popup/evm/utils/evm-data-parser.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
-import { MethodRegistry } from 'eth-method-registry';
-import { ethers, Result } from 'ethers';
+import { ethers, Interface, Result } from 'ethers';
 import { KeychainApi } from 'src/api/keychain';
 import Logger from 'src/utils/logger.utils';
 
@@ -40,6 +37,9 @@ export enum EvmInputDisplayType {
   IMAGE = 'image',
   UINT256 = 'uint256',
   HTML_ELEMENT = 'html-element',
+  WARNING_ONLY = 'warning-only',
+  /** Decoded ABI `tuple` / `tuple[]` — custom collapsible renderer */
+  TUPLE = 'tuple',
 }
 
 const getDisplayInputType = (
@@ -132,6 +132,9 @@ const getDisplayInputType = (
       }
       break;
     }
+    case EVMSmartContractType.PROTOCOL: {
+      break;
+    }
     case EVMSmartContractType.ERC1155: {
       if (['from', 'to'].includes(name))
         return EvmInputDisplayType.WALLET_ADDRESS;
@@ -191,7 +194,6 @@ const shouldDisplayBalanceChange = (abi: any, methodName: string) => {
   switch (tokenType) {
     case EVMSmartContractType.ERC20: {
       switch (methodName) {
-        case 'approve':
         case 'transfer': {
           return true;
         }
@@ -219,7 +221,7 @@ const getFieldWarnings = async (
   value: string,
   chainId: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
-  localAccounts: EvmAccount[],
+  localAccounts: EvmAccountOrPublic[],
 ): Promise<EvmTransactionWarning[]> => {
   if (!abi) return [];
   const tokenType = EvmTokensUtils.getTokenType(abi);
@@ -259,7 +261,7 @@ const getAllWarnings = async (
   domain: string,
   chainId: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
-  localAccounts: EvmAccount[],
+  localAccounts: EvmAccountOrPublic[],
 ) => {
   for (const field of fields.otherFields) {
     field.warnings = await getFieldWarnings(
@@ -333,7 +335,7 @@ const getHighestWarningLevel = (warnings: EvmTransactionWarning[]) => {
 };
 
 const getDomainWarnings = async (
-  domain: string,
+  origin: string,
   protocol: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
 ) => {
@@ -341,22 +343,23 @@ const getDomainWarnings = async (
 
   const knownDomains = await EvmAddressesUtils.getDomainAddresses();
 
-  if (!knownDomains.includes(domain)) {
+  if (!knownDomains.includes(origin)) {
     warnings.push({
       ignored: false,
       level: EvmTransactionWarningLevel.LOW,
       message: 'evm_domain_never_visited',
       type: EvmTransactionWarningType.BASE,
     });
+    if (protocol.replace(':', '') === 'http') {
+      warnings.push({
+        ignored: false,
+        level: EvmTransactionWarningLevel.MEDIUM,
+        message: 'evm_protocol_not_secured',
+        type: EvmTransactionWarningType.BASE,
+      });
+    }
   }
-  if (protocol.replace(':', '') === 'http') {
-    warnings.push({
-      ignored: false,
-      level: EvmTransactionWarningLevel.MEDIUM,
-      message: 'evm_protocol_not_secured',
-      type: EvmTransactionWarningType.BASE,
-    });
-  }
+
   if (verifyTransactionInformation?.domain?.isBlacklisted) {
     warnings.push({
       ignored: false,
@@ -382,7 +385,7 @@ const getAddressWarning = async (
   address: string,
   chainId: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
-  localAccounts: EvmAccount[],
+  localAccounts: EvmAccountOrPublic[],
 ) => {
   const warnings: EvmTransactionWarning[] = [];
   const isAddress = ethers.isAddress(address);
@@ -419,10 +422,11 @@ const getAddressWarning = async (
       type: EvmTransactionWarningType.WHITELIST_ADDRESS,
       extraData: {
         placeholder: 'evm_transaction_receiver_favorite_label',
-        ...(ensName ? { defaultLabel: ensName } : {}),
+        resolveAllLabel: address,
+        ...(ensName ? { ensName } : {}),
       },
       onConfirm: (label: string) => {
-        EvmAddressesUtils.saveWalletAddress(address, chainId, label);
+        return EvmAddressesUtils.saveWalletAddress(chainId, address, label);
       },
     });
   }
@@ -457,7 +461,8 @@ const getSmartContractWarningAndInfo = async (
   address: string,
   chainId: string,
   verifyTransactionInformation: EvmTransactionVerificationInformation,
-  localAccounts: EvmAccount[],
+  localAccounts: EvmAccountOrPublic[],
+  usedToken: EvmSmartContractInfo,
 ) => {
   const warningAndInfo: Partial<TransactionConfirmationField> = {
     warnings: [],
@@ -474,13 +479,28 @@ const getSmartContractWarningAndInfo = async (
   if (
     !(await EvmAddressesUtils.isWhitelisted(address, chainId, localAccounts))
   ) {
+    if (
+      usedToken &&
+      usedToken.type !== EVMSmartContractType.NATIVE &&
+      usedToken.verifiedContract &&
+      !usedToken.possibleSpam
+    ) {
+      return warningAndInfo;
+    }
+
+    const defaultLabel = usedToken?.name?.trim();
+
     warningAndInfo.warnings?.push({
       ignored: false,
       level: EvmTransactionWarningLevel.LOW,
       type: EvmTransactionWarningType.WHITELIST_ADDRESS,
       message: 'evm_transaction_contract_not_used',
+      extraData: {
+        ...(defaultLabel ? { defaultLabel } : {}),
+        resolveAllLabel: defaultLabel || address,
+      },
       onConfirm: (label: string) => {
-        EvmAddressesUtils.saveContractAddress(address, chainId, label);
+        return EvmAddressesUtils.saveContractAddress(address, chainId, label);
       },
     });
   }
@@ -495,7 +515,7 @@ const normalizeVerificationInformation = (
   const normalizedProxyTarget =
     typeof verificationInformation.contract?.proxy === 'string'
       ? verificationInformation.contract.proxy
-      : verificationInformation.contract?.proxy?.target ?? proxyTarget;
+      : (verificationInformation.contract?.proxy?.target ?? proxyTarget);
 
   return {
     ...verificationInformation,
@@ -534,187 +554,86 @@ const verifyTransactionInformation = async (
   }
 };
 
-const findAbiFromData = async (data: string, chain: EvmChain) => {
-  data = data.substring(2);
-
-  const functionNameInHex = data.substring(0, 8);
-
-  const foundSignature = await EvmDataParser.getMethodFromSignature(
-    functionNameInHex,
-  );
-
-  if (foundSignature) {
-    const name = foundSignature.split('(')[0];
-    const inputs = parseSignature(foundSignature);
-
-    if (name && inputs)
-      for (const abi of AbiList) {
-        const foundFunction = abi.abi.find(
-          (f) => f.name === name && inputs.length === f.inputs.length,
-        );
-        if (foundFunction) {
-          let allMatch = true;
-          for (let i = 0; i < inputs.length; i++) {
-            if (foundFunction.inputs[i].type !== inputs[i].type) {
-              allMatch = false;
-              break;
-            }
-          }
-          if (allMatch) return JSON.stringify(abi.abi);
-        }
+/**
+ * Resolves bundled ABI from `AbiList` by matching the 4-byte selector to a
+ * known function fragment. No external signature registry.
+ */
+const findAbiFromDataBySelector = (data: string): string | undefined => {
+  if (!data || data.length < 10) {
+    return undefined;
+  }
+  const selector = data.slice(0, 10);
+  for (const entry of AbiList) {
+    try {
+      const iface = new Interface(entry.abi as any);
+      let fn;
+      try {
+        fn = iface.getFunction(selector);
+      } catch {
+        continue;
       }
+      if (fn == null) {
+        continue;
+      }
+      return JSON.stringify(entry.abi);
+    } catch {
+      continue;
+    }
+  }
+  return undefined;
+};
+
+const findAbiFromData = async (
+  data: string,
+  _chain?: EvmChain,
+): Promise<string | undefined> => {
+  return findAbiFromDataBySelector(data);
+};
+
+const getBundledAbiByDataSelector = (data: string): any[] | null => {
+  const abiJson = findAbiFromDataBySelector(data);
+  if (!abiJson) {
+    return null;
+  }
+  try {
+    return JSON.parse(abiJson);
+  } catch {
+    return null;
   }
 };
 
 const parseData = async (
   data: string,
-  chain: EvmChain,
+  _chain: EvmChain,
 ): Promise<EvmTransactionDecodedData | undefined> => {
-  const functionNameInHex = data.slice(0, 10);
-
-  const foundSignature = await EvmDataParser.getMethodFromSignature(
-    functionNameInHex,
-  );
-
-  if (foundSignature) {
-    let registry;
-    try {
-      registry = new MethodRegistry({
-        provider: {
-          host: `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
-          timeout: 30000,
-        },
-        network: chain.chainId,
-      });
-      console.log({ registry });
-      if (registry) {
-        const parsedRegistry = registry.parse(foundSignature);
-        console.log(parsedRegistry);
-        if (parsedRegistry.name && parsedRegistry.args)
-          return {
-            operationName: parsedRegistry.name,
-            inputs: parsedRegistry.args as EvmTransactionDecodedDataInput[],
-          };
-      } else {
-        const name = foundSignature.split('(')[0];
-        const inputs = parseSignature(foundSignature);
-
-        const valueData = EvmFormatUtils.addHexPrefix(data.slice(10));
-        const values = Interface.getAbiCoder().decode(
-          inputs,
-          valueData,
-        ) as any[];
-        const params = inputs.map((input, index) =>
-          decodeParam(input, index, values),
-        );
-        return { operationName: name, inputs: params };
-      }
-    } catch (e) {
-      const name = foundSignature.split('(')[0];
-      const inputs = parseSignature(foundSignature);
-      const valueData = EvmFormatUtils.addHexPrefix(data.slice(10));
-
-      let values: any;
-      values = Interface.getAbiCoder().decode(
-        inputs,
-        valueData.toString(),
-      ) as any[];
-      const params = inputs.map((input, index) =>
-        decodeParam(input, index, values),
-      );
-      return { operationName: name, inputs: params };
+  if (!data || data.length < 10) {
+    return undefined;
+  }
+  const abiJson = findAbiFromDataBySelector(data);
+  if (!abiJson) {
+    return undefined;
+  }
+  try {
+    const iface = new Interface(JSON.parse(abiJson));
+    const parsed = iface.parseTransaction({ data });
+    if (parsed == null) {
+      return undefined;
     }
+    const inputs: EvmTransactionDecodedDataInput[] =
+      parsed.fragment.inputs.map((input, index) => ({
+        name: input.name,
+        type: input.type,
+        value: parsed.args[index],
+        components: input.components,
+      }));
+    return {
+      operationName: parsed.name,
+      inputs,
+    };
+  } catch {
+    return undefined;
   }
 };
-
-function decodeParam(input: any, index: number, values: any[]): any {
-  const value = values[index] as any[];
-  const { type, name } = input;
-
-  let children = input.components?.map((child: any, childIndex: number) =>
-    decodeParam(child, childIndex, value),
-  );
-
-  if (type.endsWith('[]')) {
-    const childType = type.slice(0, -2);
-
-    children = value.map((_arrayItem, arrayIndex) => {
-      const childName = `Item ${arrayIndex + 1}`;
-
-      return decodeParam(
-        { ...input, name: childName, type: childType } as any,
-        arrayIndex,
-        value,
-      );
-    });
-  }
-
-  return {
-    name,
-    type,
-    value,
-    children,
-  };
-}
-
-function parseSignature(signature: string): any[] {
-  let typeString = signature.slice(signature.indexOf('(') + 1, -1);
-  const nested = [];
-
-  while (typeString.includes('(')) {
-    const nestedBrackets = findFirstNestedBrackets(typeString);
-
-    if (!nestedBrackets) {
-      break;
-    }
-
-    nested.push(nestedBrackets.value);
-
-    typeString = `${typeString.slice(0, nestedBrackets.start)}${
-      nested.length - 1
-    }#${typeString.slice(nestedBrackets.end + 1)}`;
-  }
-
-  return createInput(typeString, nested);
-}
-
-function createInput(typeString: string, nested: string[]): any[] {
-  return typeString.split(',').map((value) => {
-    const parts = value.split('#');
-    const nestedIndex = parts.length > 1 ? parseInt(parts[0], 10) : undefined;
-    const type = nestedIndex === undefined ? value : `tuple${parts[1] ?? ''}`;
-
-    const components =
-      nestedIndex === undefined
-        ? undefined
-        : createInput(nested[nestedIndex], nested);
-
-    return {
-      type,
-      components,
-    };
-  });
-}
-
-function findFirstNestedBrackets(
-  value: string,
-): { start: number; end: number; value: string } | undefined {
-  let start = -1;
-
-  for (let i = 0; i < value.length; i++) {
-    if (value[i] === '(') {
-      start = i;
-    } else if (value[i] === ')' && start !== -1) {
-      return {
-        start,
-        end: i,
-        value: value.slice(start + 1, i),
-      };
-    }
-  }
-
-  return undefined;
-}
 
 const recipientInputNameList = ['recipient', 'spender'];
 const amountInputNameList = ['amount'];
@@ -742,6 +661,7 @@ export const EvmTransactionParserUtils = {
   getSmartContractWarningAndInfo,
   parseData,
   findAbiFromData,
+  getBundledAbiByDataSelector,
   recipientInputNameList,
   amountInputNameList,
   parseArgs,

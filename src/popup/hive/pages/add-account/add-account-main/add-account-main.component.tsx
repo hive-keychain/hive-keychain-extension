@@ -2,7 +2,10 @@ import { BackgroundMessage } from '@background/multichain/background-message.int
 import { Screen } from '@interfaces/screen.interface';
 import { resetChain } from '@popup/multichain/actions/chain.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
-import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import {
+  resetTitleContainerProperties,
+  setTitleContainerProperties,
+} from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect } from 'react';
@@ -10,6 +13,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { setAccounts } from 'src/popup/hive/actions/account.actions';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -19,8 +23,10 @@ const AddAccountMain = ({
   accounts,
   setAccounts,
   setTitleContainerProperties,
+  resetTitleContainerProperties,
   isLedgerSupported,
   resetChain,
+  loadActiveAccount,
 }: PropsFromRedux) => {
   useEffect(() => {
     setTitleContainerProperties({
@@ -30,7 +36,7 @@ const AddAccountMain = ({
         !accounts || !accounts.length ? () => resetChain() : undefined,
       isCloseButtonDisabled: !accounts || !accounts.length,
     });
-  });
+  }, []);
 
   const handleAddByKeys = (): void => {
     navigateTo(Screen.ACCOUNT_PAGE_ADD_BY_KEYS);
@@ -64,6 +70,9 @@ const AddAccountMain = ({
         message.value?.accounts.length
       ) {
         setAccounts(message.value.accounts);
+        resetTitleContainerProperties();
+        loadActiveAccount(message.value.accounts[0]);
+        navigateTo(Screen.HOME_PAGE, true);
       }
       chrome.runtime.onMessage.removeListener(onSentBackAccountsListener);
     }
@@ -148,7 +157,9 @@ const connector = connect(mapStateToProps, {
   navigateTo,
   setAccounts,
   setTitleContainerProperties,
+  resetTitleContainerProperties,
   resetChain,
+  loadActiveAccount,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

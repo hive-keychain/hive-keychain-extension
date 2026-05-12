@@ -28,17 +28,13 @@ import { ERC1155Abi, ERC721Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
-import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import {
   addToLoadingList,
   removeFromLoadingList,
 } from '@popup/multichain/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from '@popup/multichain/actions/message.actions';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -78,7 +74,6 @@ const EvmNftTransfer = ({
   setTitleContainerProperties,
   addToLoadingList,
   removeFromLoadingList,
-  setSuccessMessage,
   setErrorMessage,
   navigateToWithParams,
 }: PropsFromRedux) => {
@@ -151,14 +146,14 @@ const EvmNftTransfer = ({
 
     let fields = [
       {
-        label: '',
-        value: <img src={collectionItem.item.metadata.image} />,
-        valueClassName: 'nft-image',
-      },
-      {
         label: 'evm_operation_smart_contract_address',
-        value: EvmFormatUtils.formatAddress(
-          collectionItem.collection.tokenInfo.contractAddress,
+        value: (
+          <EvmAddressComponent
+            address={collectionItem.collection.tokenInfo.contractAddress}
+            chainId={chain.chainId}
+            forceFormattedAddress
+            canCopy
+          />
         ),
       },
       {
@@ -167,6 +162,7 @@ const EvmNftTransfer = ({
           <EvmAddressComponent
             address={activeAccount.address}
             chainId={chain.chainId}
+            canCopy
           />
         ),
       },
@@ -176,6 +172,7 @@ const EvmNftTransfer = ({
           <EvmAddressComponent
             address={form.receiverAddress}
             chainId={chain.chainId}
+            canCopy
           />
         ),
         warnings: await EvmTransactionParserUtils.getAddressWarning(
@@ -247,11 +244,16 @@ const EvmNftTransfer = ({
 
           navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
             pageTitle: 'evm_nft_transfer',
+            initialDisplayNfts: true,
             transactionResponse: transactionResponse,
             detailFields: [
               {
+                label:
+                  collectionItem.item.metadata.name ??
+                  `${collectionItem.collection.tokenInfo.name} #${form.nftId}`,
                 value: form.nftId,
                 type: EvmUserHistoryItemDetailType.IMAGE,
+                imageUrl: collectionItem.item.metadata.image,
               },
               {
                 label: 'popup_html_transfer_from',
@@ -278,7 +280,6 @@ const EvmNftTransfer = ({
             transactionData: transactionData,
             gasFee: gasFee,
           });
-          setSuccessMessage('evm_transaction_broadcasted');
         } catch (error) {
           Logger.error('Error during transfer', error);
           setErrorMessage('popup_html_transfer_failed');
@@ -387,7 +388,6 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   addToLoadingList,
   removeFromLoadingList,
-  setSuccessMessage,
   setErrorMessage,
   navigateToWithParams,
 });

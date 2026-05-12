@@ -1,0 +1,80 @@
+.evm-dapps-connections-page {
+  .evm-dapps-connections-card {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    margin: 0 24px;
+    max-height: 420px;
+    overflow: hidden;
+  }
+
+  .evm-dapps-connections-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    overflow: auto;
+  }
+
+  .evm-dapps-connections-item {
+    @include small-card();
+    align-items: center;
+    flex-direction: row;
+    gap: 8px;
+    margin: 0;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+    padding: 6px;
+  }
+
+  .evm-dapps-connections-favicon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .evm-dapps-connections-subdomain {
+    @include poppins600(14px);
+    color: var(--main-font-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .evm-dapps-connections-stale-account {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    align-items: center;
+    width: 100%;
+  }
+
+  .evm-dapps-connections-stale-account-info {
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+    min-width: 0;
+  }
+
+  .evm-dapps-connections-stale-account-name {
+    @include poppins600(14px);
+    color: var(--main-font-color);
+  }
+
+  .evm-dapps-connections-stale-account-address {
+    @include poppins400(14px);
+    color: var(--main-font-color);
+  }
+
+  .evm-dapps-connections-empty {
+    @include poppins400(13px);
+    color: var(--main-font-color);
+    opacity: 0.85;
+  }
+}

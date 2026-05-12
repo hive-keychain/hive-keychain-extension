@@ -95,14 +95,13 @@ const ChainSelector = ({
     );
   };
 
-  const builtInEvmChains = defaultChains.filter(
-    (defaultChain) =>
-      defaultChain.type === ChainType.EVM && !defaultChain.isCustom,
+  const builtInChains = defaultChains.filter(
+    (defaultChain) => !defaultChain.isCustom,
   );
-  const popularChains = builtInEvmChains
+  const popularChains = builtInChains
     .filter((defaultChain) => !defaultChain.testnet)
     .filter(filterChains);
-  const testnetChains = builtInEvmChains
+  const testnetChains = builtInChains
     .filter((defaultChain) => !!defaultChain.testnet)
     .filter(filterChains);
   const filteredCustomChains = customChains.filter(filterChains);

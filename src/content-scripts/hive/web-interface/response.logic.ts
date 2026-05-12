@@ -70,6 +70,12 @@ export const sendEvmChainToBackground = async (
   });
 };
 
+export const sendEvmInitializeProviderRequest = async () => {
+  CommunicationUtils.runtimeSendMessage({
+    command: BackgroundCommand.SEND_EVM_INITIALIZE_PROVIDER_REQUEST,
+  });
+};
+
 export const sendIncompleteDataResponse = (
   value: KeychainRequest,
   error: string | Joi.ValidationError,

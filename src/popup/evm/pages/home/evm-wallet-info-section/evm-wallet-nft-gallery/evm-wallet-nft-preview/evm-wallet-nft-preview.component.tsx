@@ -5,6 +5,7 @@ import {
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import React from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
+import { EvmNftMedia } from 'src/common-ui/evm/nft-media/nft-media.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
@@ -14,6 +15,12 @@ interface Props {
 }
 
 export const EvmWalletNftPreviewComponent = ({ token, onClick }: Props) => {
+  const formattedAddress = EvmFormatUtils.formatAddress(
+    token.tokenInfo.contractAddress,
+  );
+  const shouldShowAddress =
+    token.tokenInfo.name?.trim().toLowerCase() !== formattedAddress;
+
   return (
     <div
       className="nft-collection-preview-card"
@@ -21,9 +28,9 @@ export const EvmWalletNftPreviewComponent = ({ token, onClick }: Props) => {
       key={`collection-${token.tokenInfo.contractAddress}`}>
       <div className="nft-collection-name-panel">
         <span className="ntf-collection-name">{token.tokenInfo.name}</span>
-        <span className="nft-collection-address">
-          {EvmFormatUtils.formatAddress(token.tokenInfo.contractAddress)}
-        </span>
+        {shouldShowAddress && (
+          <span className="nft-collection-address">{formattedAddress}</span>
+        )}
       </div>
       <div className="nft-collection-preview">
         <div className="nft-preview-container">
@@ -34,14 +41,9 @@ export const EvmWalletNftPreviewComponent = ({ token, onClick }: Props) => {
                 message={collectionItem.metadata.name}
                 skipTranslation>
                 <>
-                  <img
+                  <EvmNftMedia
                     className="nft-preview"
                     src={collectionItem.metadata.image}
-                    onError={({ currentTarget }) => {
-                      currentTarget.onerror = null;
-                      currentTarget.src =
-                        '/assets/images/placeholder-image.svg';
-                    }}
                   />
                   {(collectionItem as EvmErc1155TokenCollectionItem).balance >
                     1 && (

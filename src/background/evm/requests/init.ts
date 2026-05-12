@@ -15,9 +15,10 @@ import { handleDeprecatedMethods } from '@background/evm/requests/logic/handle-d
 import { handleEvmError } from '@background/evm/requests/logic/handle-evm-error.logic';
 import { handleNonExistingMethod } from '@background/evm/requests/logic/handle-non-existing-methods.logic';
 import { handleNonSupportedChain } from '@background/evm/requests/logic/handle-non-supported-chain.logic';
-import { requestAddEvmChain } from '@background/evm/requests/logic/request-add-evm-chain.logic';
 import { requestAddCustomEvmChain } from '@background/evm/requests/logic/request-add-custom-evm-chain.logic';
+import { requestAddEvmChain } from '@background/evm/requests/logic/request-add-evm-chain.logic';
 import { resolveRequestChainId } from '@background/evm/requests/logic/resolve-request-chain-id.logic';
+import { EvmWatchAssetUtils } from '@background/evm/utils/watch-asset.utils';
 import MkModule from '@background/hive/modules/mk.module';
 import {
   initializeWallet,
@@ -69,20 +70,51 @@ export const initEvmRequestHandler = async (
       ) as EvmChain);
   }
 
-  console.log(chainId, chain, 'chainId, chain');
+  if (EvmWatchAssetUtils.isWatchAssetRequest(request)) {
+    if (!EvmWatchAssetUtils.isValidWatchAssetRequest(request)) {
+      await EvmWatchAssetUtils.rejectWatchAssetRequest(
+        requestHandler,
+        tab!,
+        request,
+        EvmWatchAssetUtils.WATCH_ASSET_INVALID_PARAMS_ERROR,
+      );
+      return;
+    }
+
+    if (!chain || chain.isCustom !== true) {
+      await EvmWatchAssetUtils.rejectWatchAssetRequest(
+        requestHandler,
+        tab!,
+        request,
+        EvmWatchAssetUtils.WATCH_ASSET_CUSTOM_CHAIN_ERROR,
+      );
+      return;
+    }
+  }
 
   if (chainId && !chain) {
     if (request.method === EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN) {
-      requestAddCustomEvmChain(requestHandler, tab!, request, dappInfo, chainId);
+      await requestAddCustomEvmChain(
+        requestHandler,
+        tab!,
+        request,
+        dappInfo,
+        chainId,
+      );
     } else {
-      handleNonSupportedChain(requestHandler, tab!, request, chainId);
+      await handleNonSupportedChain(requestHandler, tab!, request, chainId);
     }
   } else if (EvmDeprecatedMethods.includes(request.method)) {
-    handleDeprecatedMethods(requestHandler, tab!, request, dappInfo);
+    await handleDeprecatedMethods(requestHandler, tab!, request, dappInfo);
   } else if (!doesMethodExist(request.method)) {
-    handleNonExistingMethod(requestHandler, tab!, request, dappInfo);
+    await handleNonExistingMethod(requestHandler, tab!, request, dappInfo);
   } else if (EvmUnrestrictedMethods.includes(request.method)) {
-    evmRequestWithoutConfirmation(requestHandler, tab!, request, dappInfo);
+    await evmRequestWithoutConfirmation(
+      requestHandler,
+      tab!,
+      request,
+      dappInfo,
+    );
   } else if (
     EvmRestrictedMethods.includes(request.method) ||
     EvmNeedPermissionMethods.includes(request.method)
@@ -92,7 +124,7 @@ export const initEvmRequestHandler = async (
       (await DappRequestUtils.isDappLocked(dappInfo.domain))
     ) {
       const providerError = getEvmProviderRpcFullError('userReject');
-      handleEvmError(
+      await handleEvmError(
         requestHandler,
         tab!,
         request,
@@ -112,12 +144,11 @@ export const initEvmRequestHandler = async (
       const rebuiltAccounts =
         await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
       requestHandler.accounts = rebuiltAccounts;
-      requestHandler.saveInLocalStorage();
     }
     if (!accounts) {
       initializeWallet(requestHandler, tab!, request);
     } else if (!mk) {
-      unlockWallet(
+      await unlockWallet(
         requestHandler,
         tab!,
         request,
@@ -131,7 +162,7 @@ export const initEvmRequestHandler = async (
           c.chainId.toLowerCase() === resolvedRequestChainId.toLowerCase(),
       )
     ) {
-      requestAddEvmChain(requestHandler, tab!, request, dappInfo);
+      await requestAddEvmChain(requestHandler, tab!, request, dappInfo);
     } else if (EvmNeedPermissionMethods.includes(request.method)) {
       const hasPermission = await EvmWalletUtils.hasPermission(
         dappInfo.origin,
@@ -156,7 +187,7 @@ export const initEvmRequestHandler = async (
             EvmRequestPermission.ETH_ACCOUNTS,
           )
         ) {
-          evmRequestWithoutConfirmation(
+          await evmRequestWithoutConfirmation(
             requestHandler,
             tab!,
             request,
@@ -164,11 +195,11 @@ export const initEvmRequestHandler = async (
           );
         } else {
           await evmRequestWithConfirmation(
-          requestHandler,
-          tab!,
-          request,
-          dappInfo,
-        );
+            requestHandler,
+            tab!,
+            request,
+            dappInfo,
+          );
         }
       } else {
         await evmRequestWithConfirmation(
@@ -182,6 +213,4 @@ export const initEvmRequestHandler = async (
   } else {
     console.log('no case ??');
   }
-
-  requestHandler.saveInLocalStorage();
 };

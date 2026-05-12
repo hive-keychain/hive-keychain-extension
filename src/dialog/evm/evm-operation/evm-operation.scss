@@ -26,11 +26,11 @@
       margin: unset;
       column-gap: 8px;
       .svg-icon {
-        @include icon-size(30px);
+        @include icon-size(16px);
         --warning-color: #{$red};
       }
       .text {
-        @include poppins400(14px);
+        @include poppins400(12px);
         color: var(--main-font-color);
       }
     }

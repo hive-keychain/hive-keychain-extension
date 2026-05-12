@@ -2,7 +2,7 @@
 import { EvmDappInfo, EvmRequest } from '@interfaces/evm-provider.interface';
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import { Rpc } from '@interfaces/rpc.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import {
   DialogCommand,
@@ -70,7 +70,7 @@ export type SendConfirmEvmMessage = {
   request: EvmRequest;
   dappInfo: EvmDappInfo;
   tab: number;
-  accounts: EvmAccount[];
+  accounts: EvmAccountPublic[];
   queueSize?: number;
   queuePosition?: number;
   queue?: (SendConfirmHiveMessage | SendConfirmEvmMessage)[];

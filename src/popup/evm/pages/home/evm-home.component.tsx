@@ -27,10 +27,7 @@ import {
   addToLoadingList,
   removeFromLoadingList,
 } from '@popup/multichain/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from '@popup/multichain/actions/message.actions';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import {
   navigateTo,
   navigateToWithParams,
@@ -77,8 +74,9 @@ const Home = ({
   setErrorMessage,
   addToLoadingList,
   removeFromLoadingList,
-  setSuccessMessage,
   loadEvmActiveAccountNfts,
+  returningFromNftPage,
+  returningFromHistoryDetails,
 }: PropsFromRedux) => {
   const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
   const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
@@ -141,7 +139,7 @@ const Home = ({
     if (activeAccount.wallet.address) {
       void loadPendingTransactions(activeAccount.wallet);
     }
-  }, [activeAccount.wallet.address]);
+  }, [activeAccount.wallet.address, chain.chainId]);
 
   useEffect(() => {
     const usdValue = `$${FormatUtils.withCommas(
@@ -219,7 +217,7 @@ const Home = ({
   const loadPendingTransactions = async (wallet: HDNodeWallet) => {
     const currentRequestId = ++pendingTransactionsRequestId.current;
     const pendingTransactionsInfo =
-      await EvmTransactionsUtils.hasPendingTransaction(wallet, chain);
+      await EvmTransactionsUtils.hasPendingTransaction(wallet.address, chain);
     if (pendingTransactionsRequestId.current !== currentRequestId) {
       return;
     }
@@ -404,7 +402,6 @@ const Home = ({
               gasFee: gasFee,
               transactionData: transactionData,
             });
-            setSuccessMessage('evm_transaction_broadcasted');
           } catch (err) {
             Logger.error('Error during cancel transaction', err);
             setErrorMessage('evm_cancel_transaction_error');
@@ -455,9 +452,6 @@ const Home = ({
                 [pendingTransactionsInfo.queuedTransactionsCount.toString()],
               )}
             </div>
-            <div className="pending-transactions-info-item">
-              {pendingTransactionsInfo.pendingTransactionDetails.label}
-            </div>
           </div>
         )}
         <EvmWalletInfoSectionComponent
@@ -467,6 +461,8 @@ const Home = ({
           loadEvmHistory={loadEvmHistory}
           loadEvmActiveAccountNfts={loadEvmActiveAccountNfts}
           reloadEvmActiveAccount={refresh}
+          initialDisplayNfts={returningFromNftPage}
+          initialDisplayHistory={returningFromHistoryDetails}
         />
       </div>
       <ActionsSectionComponent
@@ -487,6 +483,14 @@ const mapStateToProps = (state: RootState) => {
     chain: state.chain as EvmChain,
     accounts: state.evm.accounts,
     activeAccount: state.evm.activeAccount,
+    returningFromNftPage: Boolean(
+      state.navigation.stack[0]?.params?.initialDisplayNfts ||
+        state.navigation.stack[0]?.previousParams?.collection ||
+        state.navigation.stack[0]?.previousParams?.collections,
+    ),
+    returningFromHistoryDetails: Boolean(
+      state.navigation.stack[0]?.params?.initialDisplayHistory,
+    ),
   };
 };
 
@@ -500,7 +504,6 @@ const connector = connect(mapStateToProps, {
   loadEvmHistory,
   addToLoadingList,
   removeFromLoadingList,
-  setSuccessMessage,
   loadEvmActiveAccountNfts,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;

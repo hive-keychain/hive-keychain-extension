@@ -1,6 +1,10 @@
-import { initializeEvmProviderRegistration } from '@background/evm/evm-provider-registration';
-import { setAccountsForOrigin } from '@background/evm/evm-provider-state.utils';
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
+import { initializeEvmProviderRegistration } from '@background/evm/evm-provider-registration';
+import {
+  getAccountsForOrigin,
+  persistEvmDappLogoForDomain,
+  setAccountsForOrigin,
+} from '@background/evm/evm-provider-state.utils';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { initEvmRequestHandler } from '@background/evm/requests/init';
 import { performEvmOperation } from '@background/evm/requests/operations/perform-operation';
@@ -13,8 +17,11 @@ import {
   ProviderRpcErrorList,
   RoutedEvmEvent,
 } from '@interfaces/evm-provider.interface';
+import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
+import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -98,6 +105,23 @@ const chromeMessageHandler = async (
   Logger.log('Background message evm service worker', backgroundMessage);
 
   switch (backgroundMessage.command) {
+    case BackgroundCommand.SEND_EVM_INITIALIZE_PROVIDER_REQUEST: {
+      const origin = getOriginFromUrl(sender.tab?.url);
+      if (sender?.tab?.url && origin) {
+        sendEvmEventToTab(sender.tab!.id!, {
+          eventType: EvmEventName.INITIALIZE_PROVIDER_RESPONSE,
+          scope: {
+            kind: 'tab',
+            tabId: sender.tab!.id!,
+          },
+          args: {
+            chainId: await EvmChainUtils.getLastEvmChainIdForOrigin(origin),
+            accounts: await getAccountsForOrigin(origin),
+          },
+        });
+      }
+      break;
+    }
     case BackgroundCommand.SEND_EVM_REQUEST: {
       let requestHandler = await EvmRequestHandler.getFromLocalStorage();
       if (!requestHandler) {
@@ -121,7 +145,7 @@ const chromeMessageHandler = async (
         const login = await MkModule.login(mk);
         if (login) {
           MkModule.saveMk(mk);
-          initEvmRequestHandler(
+          await initEvmRequestHandler(
             data.msg.data,
             tab,
             data.dappInfo,
@@ -159,11 +183,17 @@ const chromeMessageHandler = async (
           EvmRequestMethod.WALLET_REQUEST_PERMISSIONS,
         ].includes(requestData.request.method)
       ) {
-        await setAccountsForOrigin(
+        const accounts = await setAccountsForOrigin(
           requestData.dappInfo.origin,
           message.providerState.accounts,
         );
+        await persistEvmDappLogoForDomain(
+          requestData.dappInfo,
+          accounts.length,
+        );
       }
+
+      await requestHandler.removeRequestById(requestId, requestData?.tab!);
 
       CommunicationUtils.tabsSendMessage(requestData?.tab!, {
         command: BackgroundCommand.SEND_EVM_RESPONSE,
@@ -173,12 +203,11 @@ const chromeMessageHandler = async (
         },
       });
 
-      requestHandler.removeRequestById(requestId, requestData?.tab!);
       break;
     }
     case BackgroundCommand.ACCEPT_EVM_TRANSACTION:
       const { request, tab, domain, extraData } = backgroundMessage.value;
-      performEvmOperation(
+      await performEvmOperation(
         await EvmRequestHandler.getFromLocalStorage(),
         request,
         tab,
@@ -198,7 +227,7 @@ const chromeMessageHandler = async (
           error: ProviderRpcErrorList.userReject as ProviderRpcError,
         },
       });
-      requestHandler.removeRequestById(request.request_id, tab);
+      await requestHandler.removeRequestById(request.request_id, tab);
       break;
     }
     case BackgroundCommand.GET_CHAIN_FROM_PROVIDER: {
@@ -210,13 +239,10 @@ const chromeMessageHandler = async (
           return;
         }
 
-        CommunicationUtils.tabsSendMessage(
-          activeTab.id,
-          {
-            command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
-            value: { eventType: EvmEventName.GET_CHAIN_FROM_PROVIDER },
-          },
-        );
+        CommunicationUtils.tabsSendMessage(activeTab.id, {
+          command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
+          value: { eventType: EvmEventName.GET_CHAIN_FROM_PROVIDER },
+        });
       });
       break;
     }
@@ -242,7 +268,7 @@ const chromeMessageHandler = async (
 
       await ChainUtils.addChainToSetupChains(requestedChain);
 
-      initEvmRequestHandler(
+      await initEvmRequestHandler(
         request,
         tab,
         dappInfo,
@@ -264,13 +290,70 @@ const chromeMessageHandler = async (
       if (requestedChain.rpcs.length > 0) {
         await EvmRpcUtils.setActiveRpc(requestedChain.rpcs[0], requestedChain);
       }
-      requestHandler?.setRequestDialog(request.request_id, tab, undefined, undefined);
+      await requestHandler?.setRequestDialog(
+        request.request_id,
+        tab,
+        undefined,
+        undefined,
+      );
       await initEvmRequestHandler(request, tab, dappInfo, requestHandler);
       break;
     }
   }
 };
 
-chrome.runtime.onMessage.addListener(chromeMessageHandler);
+const previewEvmDecryptMessage = async (
+  request_id: number,
+): Promise<string> => {
+  const requestHandler = await EvmRequestHandler.getFromLocalStorage();
+  if (!requestHandler) {
+    throw new Error('No request handler');
+  }
+  const requestData = requestHandler.getRequestData(request_id);
+  const request = requestData?.request;
+  if (!request?.params?.[0] || !request?.params?.[1]) {
+    throw new Error('Invalid decrypt request');
+  }
+  const account = requestHandler.accounts.find((account: EvmAccount) => {
+    return (
+      account.wallet.address.toLowerCase() ===
+      String(request.params[1]).toLowerCase()
+    );
+  });
+  if (!account) {
+    throw new Error('Account not found');
+  }
+  return EvmRequestsUtils.decryptMessage(account, request.params[0]);
+};
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (
+    message &&
+    typeof message === 'object' &&
+    (message as BackgroundMessage).command ===
+      BackgroundCommand.PREVIEW_EVM_DECRYPT
+  ) {
+    const request_id = (message as { value?: { request_id?: number } }).value
+      ?.request_id;
+    if (request_id == null) {
+      sendResponse({ success: false, error: 'Missing request_id' });
+      return true;
+    }
+    void previewEvmDecryptMessage(request_id)
+      .then((plaintext) => sendResponse({ success: true, plaintext }))
+      .catch((err) =>
+        sendResponse({
+          success: false,
+          error: err instanceof Error ? err.message : String(err),
+        }),
+      );
+    return true;
+  }
+  return chromeMessageHandler(
+    message as BackgroundMessage,
+    sender,
+    sendResponse,
+  );
+});
 
 export const EvmServiceWorker = { initializeServiceWorker };

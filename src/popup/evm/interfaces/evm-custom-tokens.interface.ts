@@ -1,11 +1,7 @@
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 
 export interface EvmSavedCustomTokens {
-  [chainId: string]: EvmUserSavedCustomTokens;
-}
-
-export interface EvmUserSavedCustomTokens {
-  [walletAddress: string]: EvmCustomToken[];
+  [chainId: string]: EvmCustomToken[];
 }
 
 export interface EvmSavedCustomNfts {

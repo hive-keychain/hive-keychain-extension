@@ -6,6 +6,17 @@ export enum EVMSmartContractType {
   ERC721 = 'ERC721',
   ERC721Enumerable = 'ERC721Enumerable',
   ERC1155 = 'ERC1155',
+  /** Bundled protocol ABIs for calldata decoding only; never returned as on-chain token classification. */
+  PROTOCOL = 'PROTOCOL',
+}
+
+/** Reference ABI bundle for `AbiList` (classification + optional decode-only protocol rows). */
+export interface EvmAbi {
+  type: EVMSmartContractType;
+  abi: any[];
+  methods: string[];
+  /** When true, skipped by token classification and `getAbiFromType`; still used for selector decoding. */
+  decodeOnly?: boolean;
 }
 
 export interface EvmSmartContractInfoBase {

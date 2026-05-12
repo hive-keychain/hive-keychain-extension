@@ -2,13 +2,16 @@ import {
   loadEvmActiveAccount,
   loadEvmActiveAccountNfts,
   loadEvmHistory,
+  loadMoreNftsInActiveAccount,
   loadMoreTokensInActiveAccount,
 } from '@popup/evm/actions/active-account.actions';
+import { EvmActionType } from '@popup/evm/actions/action-type.evm.enum';
 import {
   CatchupStatus,
   EvmLightNodeUtils,
   PricingStatus,
 } from '@popup/evm/utils/evm-light-node.utils';
+import { EvmLocalHistoryUtils } from '@popup/evm/utils/evm-local-history.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import {
   ChainType,
@@ -39,6 +42,9 @@ const customEvmChain: EvmChain = {
 };
 
 const wallet = { address: '0x1111111111111111111111111111111111111111' } as HDNodeWallet;
+const otherWallet = {
+  address: '0x2222222222222222222222222222222222222222',
+} as HDNodeWallet;
 
 describe('EVM active-account.actions (custom chain)', () => {
   beforeEach(() => {
@@ -51,6 +57,24 @@ describe('EVM active-account.actions (custom chain)', () => {
       catchupStatus: CatchupStatus.DONE,
       pricingStatus: PricingStatus.READY,
     });
+    jest.spyOn(EvmLightNodeUtils, 'getDiscoveredNfts').mockResolvedValue({
+      address: wallet.address,
+      chainId: 1,
+      collections: [],
+      catchupStatus: CatchupStatus.DONE,
+    });
+    jest.spyOn(EvmTokensHistoryUtils, 'fetchHistory2').mockResolvedValue({
+      events: [],
+      nextCursor: null,
+      fullyFetch: true,
+    });
+    jest
+      .spyOn(EvmLocalHistoryUtils, 'getLocalUserHistoryForCustomChain')
+      .mockResolvedValue({
+        events: [],
+        nextCursor: null,
+        fullyFetch: true,
+      });
     jest.spyOn(EvmTokensUtils, 'getCustomErc20TokenInfos').mockResolvedValue([]);
     jest
       .spyOn(EvmTokensUtils, 'getCustomNftCollectionsForWallet')
@@ -70,6 +94,10 @@ describe('EVM active-account.actions (custom chain)', () => {
 
     expect(EvmLightNodeUtils.registerAddress).not.toHaveBeenCalled();
     expect(EvmLightNodeUtils.getDiscoveredTokens).not.toHaveBeenCalled();
+    expect(EvmLightNodeUtils.getDiscoveredNfts).not.toHaveBeenCalled();
+    expect(
+      EvmLocalHistoryUtils.getLocalUserHistoryForCustomChain,
+    ).toHaveBeenCalledWith(customEvmChain.chainId, wallet.address);
     expect(EvmTokensUtils.getTokenBalances).toHaveBeenCalled();
     const tokenBalancesCall = (EvmTokensUtils.getTokenBalances as jest.Mock).mock
       .calls[0];
@@ -80,8 +108,9 @@ describe('EVM active-account.actions (custom chain)', () => {
     const { activeAccount } = store.getState().evm;
     expect(activeAccount.nfts.initialized).toBe(true);
     expect(activeAccount.nfts.loading).toBe(false);
-    expect(activeAccount.history.initialized).toBe(false);
-    expect(activeAccount.history.value.fullyFetch).toBe(false);
+    expect(activeAccount.history.initialized).toBe(true);
+    expect(activeAccount.history.loading).toBe(false);
+    expect(activeAccount.history.value.fullyFetch).toBe(true);
     expect(activeAccount.isReady).toBe(true);
   });
 
@@ -139,7 +168,11 @@ describe('EVM active-account.actions (custom chain)', () => {
 
     expect(EvmLightNodeUtils.registerAddress).toHaveBeenCalled();
     expect(EvmLightNodeUtils.getDiscoveredTokens).toHaveBeenCalled();
+    expect(EvmLightNodeUtils.getDiscoveredNfts).toHaveBeenCalled();
+    expect(EvmTokensHistoryUtils.fetchHistory2).toHaveBeenCalled();
     expect(EvmTokensUtils.getCustomErc20TokenInfos).not.toHaveBeenCalled();
+    expect(store.getState().evm.activeAccount.nfts.initialized).toBe(true);
+    expect(store.getState().evm.activeAccount.history.initialized).toBe(true);
   });
 
   it('loadEvmActiveAccount includes saved custom ERC20 tokens for custom chains', async () => {
@@ -180,6 +213,13 @@ describe('EVM active-account.actions (custom chain)', () => {
   });
 
   it('loadEvmHistory does not call fetchHistory2 for custom chains', async () => {
+    jest
+      .spyOn(EvmLocalHistoryUtils, 'getLocalUserHistoryForCustomChain')
+      .mockResolvedValue({
+        events: [],
+        nextCursor: null,
+        fullyFetch: true,
+      });
     jest.spyOn(EvmTokensHistoryUtils, 'fetchHistory2').mockResolvedValue({
       events: [],
       nextCursor: null,
@@ -189,6 +229,14 @@ describe('EVM active-account.actions (custom chain)', () => {
     const store = getFakeStore({
       ...initialEmptyStateStore,
       chain: customEvmChain,
+      evm: {
+        ...initialEmptyStateStore.evm,
+        activeAccount: {
+          ...initialEmptyStateStore.evm.activeAccount,
+          address: wallet.address,
+          wallet,
+        },
+      },
     });
 
     await store.dispatch<any>(loadEvmHistory());
@@ -207,6 +255,14 @@ describe('EVM active-account.actions (custom chain)', () => {
     const store = getFakeStore({
       ...initialEmptyStateStore,
       chain: customEvmChain,
+      evm: {
+        ...initialEmptyStateStore.evm,
+        activeAccount: {
+          ...initialEmptyStateStore.evm.activeAccount,
+          address: wallet.address,
+          wallet,
+        },
+      },
     });
 
     await store.dispatch<any>(
@@ -233,5 +289,300 @@ describe('EVM active-account.actions (custom chain)', () => {
     );
 
     expect(EvmLightNodeUtils.getDiscoveredTokens).not.toHaveBeenCalled();
+  });
+
+  it('loadMoreTokensInActiveAccount stops loading when discovery is complete with no balances', async () => {
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      chain: baseEvmChain,
+      evm: {
+        ...initialEmptyStateStore.evm,
+        activeAccount: {
+          ...initialEmptyStateStore.evm.activeAccount,
+          address: wallet.address,
+          wallet,
+          nativeAndErc20Tokens: {
+            value: [],
+            loading: true,
+          },
+        },
+      },
+    });
+
+    await store.dispatch<any>(
+      loadMoreTokensInActiveAccount(baseEvmChain, wallet),
+    );
+
+    expect(store.getState().evm.activeAccount.nativeAndErc20Tokens).toEqual({
+      value: [],
+      loading: false,
+      initialized: true,
+    });
+  });
+
+  it('loadMoreNftsInActiveAccount keeps discovered NFTs visible while catchup is running', async () => {
+    jest.spyOn(global, 'setTimeout').mockImplementation((() => 1) as any);
+    jest.spyOn(EvmLightNodeUtils, 'getDiscoveredNfts').mockResolvedValue({
+      chainId: 1,
+      address: wallet.address,
+      catchupStatus: CatchupStatus.RUNNING,
+      collections: [
+        {
+          contractAddress: '0x00000000000000000000000000000000000000aa',
+          contractType: 'ERC721',
+          name: 'Collection',
+          symbol: 'NFT',
+          verifiedContract: true,
+          possibleSpam: false,
+          nfts: [
+            {
+              tokenId: '1',
+              balance: '1',
+              name: 'NFT #1',
+              imageUrl: 'https://cdn.example/nft.png',
+            },
+          ],
+        },
+      ],
+    });
+
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      chain: baseEvmChain,
+      evm: {
+        ...initialEmptyStateStore.evm,
+        activeAccount: {
+          ...initialEmptyStateStore.evm.activeAccount,
+          address: wallet.address,
+          wallet,
+          nfts: {
+            value: [],
+            loading: true,
+            initialized: false,
+          },
+        },
+      },
+    });
+
+    await store.dispatch<any>(loadMoreNftsInActiveAccount(baseEvmChain, wallet));
+
+    expect(store.getState().evm.activeAccount.nfts.value).toHaveLength(1);
+    expect(store.getState().evm.activeAccount.nfts.loading).toBe(false);
+    expect(global.setTimeout).toHaveBeenCalled();
+  });
+
+  it('loadMoreNftsInActiveAccount displays NFTs with unknown collection metadata', async () => {
+    jest.spyOn(EvmLightNodeUtils, 'getDiscoveredNfts').mockResolvedValue({
+      chainId: 1,
+      address: wallet.address,
+      catchupStatus: CatchupStatus.DONE,
+      collections: [
+        {
+          contractAddress: '0x00000000000000000000000000000000000000bb',
+          contractType: 'UNKNOWN',
+          name: null,
+          symbol: null,
+          verifiedContract: false,
+          possibleSpam: false,
+          nfts: [
+            {
+              tokenId: '42',
+              balance: '1',
+              name: null,
+              imageUrl: null,
+            },
+          ],
+        },
+      ],
+    });
+
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      chain: baseEvmChain,
+      evm: {
+        ...initialEmptyStateStore.evm,
+        activeAccount: {
+          ...initialEmptyStateStore.evm.activeAccount,
+          address: wallet.address,
+          wallet,
+          nfts: {
+            value: [],
+            loading: true,
+            initialized: false,
+          },
+        },
+      },
+    });
+
+    await store.dispatch<any>(loadMoreNftsInActiveAccount(baseEvmChain, wallet));
+
+    const [collection] = store.getState().evm.activeAccount.nfts.value;
+    expect(collection.tokenInfo.contractAddress).toBe(
+      '0x00000000000000000000000000000000000000bb',
+    );
+    expect(collection.tokenInfo.name).toBe(
+      '0x00000...000bb',
+    );
+    expect(collection.collection[0].metadata.name).toBe('#42');
+    expect(store.getState().evm.activeAccount.nfts.loading).toBe(false);
+  });
+
+  it('loadEvmHistory keeps fetched events visible and retries while catchup is running', async () => {
+    jest.spyOn(global, 'setTimeout').mockImplementation((() => 1) as any);
+    jest.spyOn(EvmTokensHistoryUtils, 'fetchHistory2').mockResolvedValue({
+      events: [
+        {
+          pageTitle: 'evm_history_smart_contract',
+          type: 'SMART_CONTRACT' as any,
+          blockNumber: 10,
+          transactionHash:
+            '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+          transactionIndex: 0,
+          timestamp: 100,
+          label: 'Transaction',
+          nonce: 1,
+        },
+      ],
+      nextCursor: null,
+      fullyFetch: false,
+      catchupStatus: CatchupStatus.RUNNING,
+    });
+
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      chain: baseEvmChain,
+      evm: {
+        ...initialEmptyStateStore.evm,
+        activeAccount: {
+          ...initialEmptyStateStore.evm.activeAccount,
+          address: wallet.address,
+          wallet,
+        },
+      },
+    });
+
+    await store.dispatch<any>(loadEvmHistory());
+
+    expect(store.getState().evm.activeAccount.history.value.events).toHaveLength(
+      1,
+    );
+    expect(store.getState().evm.activeAccount.history.loading).toBe(false);
+    expect(global.setTimeout).toHaveBeenCalled();
+  });
+
+  it('loadEvmHistory retries while catchup is partial', async () => {
+    jest.spyOn(global, 'setTimeout').mockImplementation((() => 1) as any);
+    jest.spyOn(EvmTokensHistoryUtils, 'fetchHistory2').mockResolvedValue({
+      events: [],
+      nextCursor: null,
+      fullyFetch: false,
+      catchupStatus: CatchupStatus.PARTIAL,
+    });
+
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      chain: baseEvmChain,
+      evm: {
+        ...initialEmptyStateStore.evm,
+        activeAccount: {
+          ...initialEmptyStateStore.evm.activeAccount,
+          address: wallet.address,
+          wallet,
+        },
+      },
+    });
+
+    await store.dispatch<any>(loadEvmHistory());
+
+    expect(store.getState().evm.activeAccount.history.loading).toBe(true);
+    expect(global.setTimeout).toHaveBeenCalled();
+  });
+
+  it('loadEvmHistory stops retrying when catchup errored', async () => {
+    jest.spyOn(global, 'setTimeout').mockImplementation((() => 1) as any);
+    jest.spyOn(EvmTokensHistoryUtils, 'fetchHistory2').mockResolvedValue({
+      events: [],
+      nextCursor: null,
+      fullyFetch: true,
+      catchupStatus: CatchupStatus.ERROR,
+    });
+
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      chain: baseEvmChain,
+      evm: {
+        ...initialEmptyStateStore.evm,
+        activeAccount: {
+          ...initialEmptyStateStore.evm.activeAccount,
+          address: wallet.address,
+          wallet,
+        },
+      },
+    });
+
+    await store.dispatch<any>(loadEvmHistory());
+
+    expect(store.getState().evm.activeAccount.history.loading).toBe(false);
+    expect(global.setTimeout).not.toHaveBeenCalled();
+  });
+
+  it('loadMoreTokensInActiveAccount ignores stale responses for a previous wallet', async () => {
+    let resolveDiscovery!: (value: Awaited<ReturnType<typeof EvmLightNodeUtils.getDiscoveredTokens>>) => void;
+    (EvmLightNodeUtils.getDiscoveredTokens as jest.Mock).mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveDiscovery = resolve;
+      }),
+    );
+
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      chain: baseEvmChain,
+      evm: {
+        ...initialEmptyStateStore.evm,
+        activeAccount: {
+          ...initialEmptyStateStore.evm.activeAccount,
+          address: wallet.address,
+          wallet,
+          nativeAndErc20Tokens: {
+            value: [],
+            loading: true,
+          },
+        },
+      },
+    });
+
+    const loadPromise = store.dispatch<any>(
+      loadMoreTokensInActiveAccount(baseEvmChain, wallet),
+    );
+
+    store.dispatch({
+      type: EvmActionType.SET_ACTIVE_ACCOUNT,
+      payload: {
+        address: otherWallet.address,
+        wallet: otherWallet,
+        nativeAndErc20Tokens: {
+          value: [],
+          loading: true,
+        },
+      },
+    });
+
+    resolveDiscovery({
+      address: wallet.address,
+      chainId: '1',
+      tokens: [],
+      catchupStatus: CatchupStatus.DONE,
+      pricingStatus: PricingStatus.READY,
+    });
+    await loadPromise;
+
+    expect(EvmTokensUtils.getTokenBalances).not.toHaveBeenCalled();
+    expect(store.getState().evm.activeAccount.wallet.address).toBe(
+      otherWallet.address,
+    );
+    expect(store.getState().evm.activeAccount.nativeAndErc20Tokens).toEqual({
+      value: [],
+      loading: true,
+    });
   });
 });

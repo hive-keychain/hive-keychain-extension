@@ -36,6 +36,7 @@ import {
 } from '@popup/evm/reference-data/abi.data';
 import { CoingeckoUtils } from '@popup/evm/utils/coingecko.utils';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
@@ -78,24 +79,6 @@ const ContractMetadataAbi = [
 ] as const;
 
 type ContractProbeResult = 'success' | 'reverted' | 'missing';
-
-const SHORT_BALANCE_ZERO_DISPLAY = FormatUtils.withCommas(
-  0,
-  SHORT_BALANCE_DECIMALS,
-  false,
-);
-
-const formatShortBalance = (balanceInteger: number) => {
-  const short = FormatUtils.withCommas(
-    balanceInteger,
-    SHORT_BALANCE_DECIMALS,
-    false,
-  );
-
-  return `${
-    balanceInteger > 0 && short === SHORT_BALANCE_ZERO_DISPLAY ? '~' : ''
-  }${short}`;
-};
 
 const normalizeCustomTokenAddress = (address: string) => {
   const trimmedAddress = address.trim();
@@ -440,6 +423,7 @@ const getTokenBalances = async (
         },
       };
     }
+
     return balance;
   });
 
@@ -489,10 +473,14 @@ const getTokenBalance = async (
     switch (token.type) {
       case EVMSmartContractType.NATIVE: {
         balance = await provider.getBalance(walletAddress);
-        balanceInteger = Number(parseFloat(ethers.formatEther(balance)));
+        const balanceValue = ethers.formatEther(balance);
+        balanceInteger = Number(balanceValue);
 
-        formattedBalance = FormatUtils.withCommas(balanceInteger, 8, true);
-        shortFormattedBalance = formatShortBalance(balanceInteger);
+        formattedBalance = EvmFormatUtils.formatTokenBalance(balanceValue, 8);
+        shortFormattedBalance = EvmFormatUtils.formatTokenBalance(
+          balanceValue,
+          SHORT_BALANCE_DECIMALS,
+        );
 
         tokenInfo = token as EvmSmartContractInfoNative;
         break;
@@ -505,20 +493,17 @@ const getTokenBalance = async (
           provider,
         );
         balance = await contract.balanceOf(walletAddress);
-        balanceInteger = Number(
-          parseFloat(
-            ethers.formatUnits(
-              balance,
-              Number((token as EvmSmartContractInfoErc20).decimals),
-            ),
-          ),
+        const decimals = Number((token as EvmSmartContractInfoErc20).decimals);
+        const balanceValue = ethers.formatUnits(balance, decimals);
+        balanceInteger = Number(balanceValue);
+        formattedBalance = EvmFormatUtils.formatTokenBalance(
+          balanceValue,
+          decimals,
         );
-        formattedBalance = FormatUtils.withCommas(
-          balanceInteger,
-          Number((token as EvmSmartContractInfoErc20).decimals),
-          true,
+        shortFormattedBalance = EvmFormatUtils.formatTokenBalance(
+          balanceValue,
+          SHORT_BALANCE_DECIMALS,
         );
-        shortFormattedBalance = formatShortBalance(balanceInteger);
 
         tokenInfo = token as EvmSmartContractInfoErc20;
         break;
@@ -643,8 +628,12 @@ const manualDiscoverNfts = async (walletAddress: string, chain: EvmChain) => {
 const getTokenInfo = async (
   chainId: EvmChain['chainId'],
   address: string,
+  /** When callers already fetched contract metadata; avoids duplicate light-node contract GET */
+  preFetchedContract?: EvmLightNodeContractResponse,
 ): Promise<EvmSmartContractInfo> => {
-  const result = await EvmLightNodeUtils.getContract(chainId, address);
+  const result =
+    preFetchedContract ??
+    (await EvmLightNodeUtils.getContract(chainId, address));
   return mapLightNodeContractToTokenInfo(chainId, result);
 };
 
@@ -654,7 +643,7 @@ const fetchErc20NameAndDecimalsFromChain = async (
 ): Promise<{ name: string; decimals: number }> => {
   const provider = await EthersUtils.getProvider(chain);
   const contract = new ethers.Contract(
-    ethers.getAddress(contractAddress),
+    contractAddress.toLowerCase(),
     Erc20Abi,
     provider,
   );
@@ -710,14 +699,13 @@ const sortTokens = (tokens: NativeAndErc20Token[]) => {
 };
 
 const formatTokenValue = (value: number, decimals = 18) => {
-  return FormatUtils.withCommas(
+  return EvmFormatUtils.formatTokenBalance(
     ethers.formatUnits(value, decimals),
     decimals,
-    true,
   );
 };
 const formatEtherValue = (value: string) => {
-  return FormatUtils.withCommas(ethers.formatEther(value), 18, true);
+  return EvmFormatUtils.formatTokenBalance(ethers.formatEther(value), 18);
 };
 
 type NativeTokenApiResponse = {
@@ -732,6 +720,35 @@ type NativeTokenApiResponse = {
   price: { priceUsd: number; fetchedAt: string };
 };
 
+/** Light-node `native/{chainId}` timeout before using local chain metadata. */
+export const MAIN_TOKEN_LIGHT_NODE_TIMEOUT_MS = 5000;
+
+const rejectAfterMs = (ms: number, reason: string) =>
+  new Promise<never>((_, reject) => {
+    setTimeout(() => reject(new Error(reason)), ms);
+  });
+
+const isValidNativeTokenApiResponse = (
+  response: unknown,
+): response is NativeTokenApiResponse => {
+  if (!response || typeof response !== 'object') return false;
+  const meta = (response as { metadata?: unknown }).metadata;
+  if (!meta || typeof meta !== 'object') return false;
+  const name = (meta as { name?: unknown }).name;
+  const symbol = (meta as { symbol?: unknown }).symbol;
+  return (
+    typeof name === 'string' &&
+    name.length > 0 &&
+    typeof symbol === 'string' &&
+    symbol.length > 0
+  );
+};
+
+const mainTokenInfoInflight = new Map<
+  string,
+  Promise<EvmSmartContractInfoNative>
+>();
+
 const getMainTokenInfo = async (
   chain: EvmChain,
 ): Promise<EvmSmartContractInfoNative> => {
@@ -739,21 +756,53 @@ const getMainTokenInfo = async (
     return buildFallbackNativeTokenInfo(chain);
   }
 
-  const response = (await EvmLightNodeApi.get(
-    `native/${Number(chain.chainId)}`,
-  )) as NativeTokenApiResponse;
-  return {
-    type: EVMSmartContractType.NATIVE,
-    name: response.metadata.name,
-    symbol: response.metadata.symbol,
-    logo: response.metadata.logoUrl,
-    chainId: chain.chainId,
-    backgroundColor: '',
-    coingeckoId: '',
-    priceUsd: response.price?.priceUsd ?? 0,
-    createdAt: response.price?.fetchedAt ?? Date.now(),
-    categories: [],
-  };
+  const key = String(Number(chain.chainId));
+  let pending = mainTokenInfoInflight.get(key);
+  if (!pending) {
+    const run = async (): Promise<EvmSmartContractInfoNative> => {
+      try {
+        const response = await Promise.race([
+          EvmLightNodeApi.get(`native/${Number(chain.chainId)}`),
+          rejectAfterMs(
+            MAIN_TOKEN_LIGHT_NODE_TIMEOUT_MS,
+            'main_token_native_fetch_timeout',
+          ),
+        ]);
+
+        if (!isValidNativeTokenApiResponse(response)) {
+          Logger.warn(
+            `Native token metadata invalid or missing for chain ${chain.chainId}; using local fallback`,
+          );
+          return buildFallbackNativeTokenInfo(chain);
+        }
+
+        const logoUrl = response.metadata.logoUrl;
+        return {
+          type: EVMSmartContractType.NATIVE,
+          name: response.metadata.name,
+          symbol: response.metadata.symbol,
+          logo: typeof logoUrl === 'string' ? logoUrl : '',
+          chainId: chain.chainId,
+          backgroundColor: '',
+          coingeckoId: '',
+          priceUsd: response.price?.priceUsd ?? 0,
+          createdAt: response.price?.fetchedAt ?? Date.now(),
+          categories: [],
+        };
+      } catch (err) {
+        const detail = err instanceof Error ? err.message : String(err);
+        Logger.warn(
+          `Native token metadata fetch failed for chain ${chain.chainId} (${detail}); using local fallback`,
+        );
+        return buildFallbackNativeTokenInfo(chain);
+      }
+    };
+    pending = run().finally(() => {
+      mainTokenInfoInflight.delete(key);
+    });
+    mainTokenInfoInflight.set(key, pending);
+  }
+  return pending!;
 };
 
 const getStoredCustomTokenCoingeckoId = (
@@ -889,16 +938,20 @@ const displayValue = (value: number, tokenInfo: EvmSmartContractInfo) => {
   switch (tokenInfo.type) {
     case EVMSmartContractType.NATIVE:
       decimals = 18;
+      break;
     case EVMSmartContractType.ERC20:
       decimals = (tokenInfo as EvmSmartContractInfoErc20).decimals;
+      break;
     case EVMSmartContractType.ERC721:
     case EVMSmartContractType.ERC721Enumerable:
-    case EVMSmartContractType.ERC1155: {
+    case EVMSmartContractType.ERC1155:
+    case EVMSmartContractType.PROTOCOL: {
       decimals = 0;
+      break;
     }
   }
 
-  return FormatUtils.withCommas(value, decimals, true);
+  return EvmFormatUtils.formatTokenBalance(value, decimals);
 };
 
 const normalizeAbi = (abi: any): any[] | null => {
@@ -930,6 +983,9 @@ const getTokenType = (abi: any) => {
     .filter(Boolean);
 
   for (const referenceAbi of AbiList) {
+    if (referenceAbi.decodeOnly) {
+      continue;
+    }
     if (
       referenceAbi.methods.every((method: string) =>
         abiMethods.includes(method),
@@ -947,7 +1003,7 @@ const addCustomToken = async (
   toAdd: EvmCustomToken | EvmCustomToken[],
   batch?: boolean,
 ) => {
-  const normalizedWalletAddress = normalizeCustomWalletKey(walletAddress);
+  void walletAddress;
   let savedCustomTokens: EvmSavedCustomTokens =
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
@@ -956,33 +1012,18 @@ const addCustomToken = async (
     savedCustomTokens = {};
   }
   if (!savedCustomTokens[chain.chainId]) {
-    savedCustomTokens[chain.chainId] = {};
+    savedCustomTokens[chain.chainId] = [];
   }
 
-  const legacyWalletEntries =
-    walletAddress !== normalizedWalletAddress
-      ? savedCustomTokens[chain.chainId][walletAddress]
-      : undefined;
-  const normalizedWalletEntries =
-    savedCustomTokens[chain.chainId][normalizedWalletAddress];
-
-  const mergedWalletEntries = [
-    ...(normalizedWalletEntries ?? []),
-    ...(legacyWalletEntries ?? []),
-  ];
-
-  if (!savedCustomTokens[chain.chainId][normalizedWalletAddress]) {
-    savedCustomTokens[chain.chainId][normalizedWalletAddress] = [];
-  }
-
+  const savedChainTokens = savedCustomTokens[chain.chainId];
   const allAddresses = new Set(
-    mergedWalletEntries.map(
+    savedChainTokens.map(
       (token: EvmCustomToken) =>
         `${token.type}:${normalizeCustomTokenAddress(token.address).toLowerCase()}`,
     ),
   );
 
-  const nextEntries = [...mergedWalletEntries];
+  const nextEntries = [...savedChainTokens];
 
   if (batch) {
     for (const token of toAdd as EvmCustomToken[]) {
@@ -1011,7 +1052,7 @@ const addCustomToken = async (
                 chain,
                 normalizedAddress,
                 tokenToAdd.metadata,
-                mergedWalletEntries,
+                savedChainTokens,
               ),
             }
           : {
@@ -1024,11 +1065,7 @@ const addCustomToken = async (
     }
   }
 
-  savedCustomTokens[chain.chainId][normalizedWalletAddress] =
-    nextEntries.map(normalizeCustomToken);
-  if (walletAddress !== normalizedWalletAddress) {
-    delete savedCustomTokens[chain.chainId][walletAddress];
-  }
+  savedCustomTokens[chain.chainId] = nextEntries.map(normalizeCustomToken);
 
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
@@ -1042,7 +1079,7 @@ const removeCustomToken = async (
   tokenAddress: string,
   tokenType: EVMSmartContractType,
 ) => {
-  const normalizedWalletAddress = normalizeCustomWalletKey(walletAddress);
+  void walletAddress;
   const normalizedAddress = normalizeCustomTokenAddress(tokenAddress);
   const removeKey = `${tokenType}:${normalizedAddress.toLowerCase()}`;
 
@@ -1054,30 +1091,13 @@ const removeCustomToken = async (
     return;
   }
 
-  const filterOut = (tokens: EvmCustomToken[]) =>
-    tokens.filter(
+  savedCustomTokens[chain.chainId] = savedCustomTokens[chain.chainId]
+    .filter(
       (t) =>
         `${t.type}:${normalizeCustomTokenAddress(t.address).toLowerCase()}` !==
         removeKey,
-    );
-
-  const applyToWalletKey = (addr: string) => {
-    const entries = savedCustomTokens![chain.chainId][addr];
-    if (!entries?.length) {
-      return;
-    }
-    const next = filterOut(entries);
-    if (next.length === 0) {
-      delete savedCustomTokens![chain.chainId][addr];
-    } else {
-      savedCustomTokens![chain.chainId][addr] = next.map(normalizeCustomToken);
-    }
-  };
-
-  applyToWalletKey(normalizedWalletAddress);
-  if (walletAddress !== normalizedWalletAddress) {
-    applyToWalletKey(walletAddress);
-  }
+    )
+    .map(normalizeCustomToken);
 
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
@@ -1092,7 +1112,7 @@ const updateCustomToken = async (
   tokenType: EVMSmartContractType,
   metadata: EvmCustomTokenMetadataErc20,
 ) => {
-  const normalizedWalletAddress = normalizeCustomWalletKey(walletAddress);
+  void walletAddress;
   const normalizedAddress = normalizeCustomTokenAddress(tokenAddress);
   const matchKey = `${tokenType}:${normalizedAddress.toLowerCase()}`;
 
@@ -1104,50 +1124,31 @@ const updateCustomToken = async (
     return;
   }
 
-  const mergedExistingEntries = [
-    ...(savedCustomTokens[chain.chainId][normalizedWalletAddress] ?? []),
-    ...(walletAddress !== normalizedWalletAddress
-      ? (savedCustomTokens[chain.chainId][walletAddress] ?? [])
-      : []),
-  ];
+  const savedChainTokens = savedCustomTokens[chain.chainId];
   const nextMetadata =
     tokenType === EVMSmartContractType.ERC20
       ? await enrichCustomErc20MetadataWithCoingeckoId(
           chain,
           normalizedAddress,
           metadata,
-          mergedExistingEntries,
+          savedChainTokens,
         )
       : metadata;
 
-  const replaceInList = (tokens: EvmCustomToken[]): EvmCustomToken[] =>
-    tokens.map((t) => {
-      if (
-        `${t.type}:${normalizeCustomTokenAddress(t.address).toLowerCase()}` ===
-        matchKey
-      ) {
-        return normalizeCustomToken({
-          ...t,
-          address: normalizedAddress,
-          type: tokenType,
-          metadata: nextMetadata,
-        });
-      }
-      return t;
-    });
-
-  const applyToKey = (addr: string) => {
-    const entries = savedCustomTokens![chain.chainId][addr];
-    if (!entries?.length) {
-      return;
+  savedCustomTokens[chain.chainId] = savedChainTokens.map((t) => {
+    if (
+      `${t.type}:${normalizeCustomTokenAddress(t.address).toLowerCase()}` ===
+      matchKey
+    ) {
+      return normalizeCustomToken({
+        ...t,
+        address: normalizedAddress,
+        type: tokenType,
+        metadata: nextMetadata,
+      });
     }
-    savedCustomTokens![chain.chainId][addr] = replaceInList(entries);
-  };
-
-  applyToKey(normalizedWalletAddress);
-  if (walletAddress !== normalizedWalletAddress) {
-    applyToKey(walletAddress);
-  }
+    return normalizeCustomToken(t);
+  });
 
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
@@ -1156,21 +1157,15 @@ const updateCustomToken = async (
 };
 
 const getCustomTokens = async (chain: EvmChain, walletAddress: string) => {
-  const normalizedWalletAddress = normalizeCustomWalletKey(walletAddress);
+  void walletAddress;
   const savedCustomTokens: EvmSavedCustomTokens =
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
     );
 
   if (!savedCustomTokens) return [] as EvmCustomToken[];
-  if (!savedCustomTokens[chain.chainId]) return [] as EvmCustomToken[];
-
-  const tokens = [
-    ...(savedCustomTokens[chain.chainId][normalizedWalletAddress] ?? []),
-    ...(walletAddress !== normalizedWalletAddress
-      ? (savedCustomTokens[chain.chainId][walletAddress] ?? [])
-      : []),
-  ];
+  const tokens = savedCustomTokens[chain.chainId];
+  if (!tokens) return [] as EvmCustomToken[];
 
   const dedupedTokens: EvmCustomToken[] = [];
   const seen = new Set<string>();
@@ -1192,6 +1187,10 @@ const getCustomTokens = async (chain: EvmChain, walletAddress: string) => {
   }
 
   return dedupedTokens;
+};
+
+const getCustomTokensForAllWallets = async (chain: EvmChain) => {
+  return getCustomTokens(chain, '');
 };
 
 const addCustomNft = async (
@@ -1450,9 +1449,7 @@ const getCustomNftCollectionsForWallet = async (
         name:
           normalizedNft.collectionName?.trim() ||
           name ||
-          (normalizedNft.type === EVMSmartContractType.ERC1155
-            ? 'ERC1155'
-            : 'ERC721'),
+          EvmFormatUtils.formatAddress(normalizedNft.address),
         symbol,
         logo: '',
         chainId: chain.chainId,
@@ -1544,10 +1541,9 @@ const buildBalanceDetails = (
   return {
     symbol: tokenInfo.symbol,
     before: `${balance.formattedBalance} ${tokenInfo.symbol}`,
-    estimatedAfter: `${FormatUtils.withCommas(
+    estimatedAfter: `${EvmFormatUtils.formatTokenBalance(
       estimatedAfterBalance.toString(),
       getBalanceDecimals(tokenInfo),
-      true,
     )}  ${tokenInfo.symbol}`,
     insufficientBalance: estimatedAfterBalance.toNumber() < 0,
   };
@@ -1565,6 +1561,8 @@ const getBalanceInfo = async (
   tokenInfo: EvmSmartContractInfo,
   amount: number,
   selectedFee?: GasFeeEstimationBase,
+  /** When ERC20 pays gas in native currency; skips duplicate native/light-node fetch when already loaded (e.g. send-tx dialog) */
+  prefetchedNativeForGasFee?: EvmSmartContractInfoNative,
 ): Promise<BalanceInfo> => {
   const balance = (await EvmTokensUtils.getTokenBalance(
     walletAddress,
@@ -1597,9 +1595,11 @@ const getBalanceInfo = async (
 
   if (!estimatedGasFee) return balanceInfo;
 
-  const mainTokenInfo = (await EvmTokensUtils.getMainTokenInfo(
-    chain,
-  )) as EvmSmartContractInfoNative;
+  const mainTokenInfo =
+    prefetchedNativeForGasFee ??
+    ((await EvmTokensUtils.getMainTokenInfo(
+      chain,
+    )) as EvmSmartContractInfoNative);
   const mainTokenBalance = (await EvmTokensUtils.getTokenBalance(
     walletAddress,
     chain,
@@ -1648,4 +1648,5 @@ export const EvmTokensUtils = {
   mergeCustomErc20TokenInfos,
   getAllowance,
   getBalanceInfo,
+  getCustomTokensForAllWallets,
 };

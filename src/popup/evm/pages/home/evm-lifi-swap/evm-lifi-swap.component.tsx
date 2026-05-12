@@ -331,6 +331,7 @@ export const EvmLifiSwap = ({
             <EvmAddressComponent
               address={activeAccount.address}
               chainId={activeChain.chainId}
+              canCopy
             />
           ),
           name: 'popup_html_transfer_from',
@@ -341,6 +342,7 @@ export const EvmLifiSwap = ({
             <EvmAddressComponent
               address={lifiQuote?.estimate.approvalAddress!}
               chainId={activeChain.chainId}
+              canCopy
             />
           ),
           name: 'popup_html_transfer_to',
@@ -387,6 +389,7 @@ export const EvmLifiSwap = ({
           <EvmAddressComponent
             address={activeAccount.address}
             chainId={activeChain.chainId}
+            canCopy
           />
         ),
         name: 'popup_html_transfer_from',
@@ -397,6 +400,7 @@ export const EvmLifiSwap = ({
           <EvmAddressComponent
             address={lifiQuote?.estimate.approvalAddress!}
             chainId={activeChain.chainId}
+            canCopy
           />
         ),
         name: 'popup_html_transfer_to',

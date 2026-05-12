@@ -57,9 +57,7 @@ export const EvmTokenHistoryItemComponent = ({
     if (!chain.blockExplorer?.url) {
       return;
     }
-    window.open(
-      `${chain.blockExplorer.url}/tx/${historyItem.transactionHash}`,
-    );
+    window.open(`${chain.blockExplorer.url}/tx/${historyItem.transactionHash}`);
   };
 
   return (
@@ -81,9 +79,7 @@ export const EvmTokenHistoryItemComponent = ({
               onClick={goToBlockchainExplorer}
             />
             <div className={`right-panel ${hasDetails ? 'has-details' : ''}`}>
-              <div className="detail">
-                {index} -{historyItem.label}
-              </div>
+              <div className="detail">{historyItem.label}</div>
               {!historyItem.isPending && (
                 <CustomTooltip
                   dataTestId="scustom-tool-tip"

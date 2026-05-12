@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { EvmNftMedia } from 'src/common-ui/evm/nft-media/nft-media.component';
 
 interface SmallImageCardProps {
   name?: string;
-  value: string | Promise<string>;
+  value?: string | Promise<string | undefined>;
   valueOnClickAction?: (...params: any[]) => any;
   extraInfo?: string;
   extraInfoAdditionalClass?: string;
@@ -18,16 +19,25 @@ export const SmallImageCardComponent = ({
   const [image, setImage] = useState<string>();
 
   useEffect(() => {
-    init();
-  }, []);
+    let isMounted = true;
+    const init = async () => {
+      if (typeof value === 'string') {
+        setImage(value);
+      } else if (value) {
+        const resolvedImage = await value;
+        if (isMounted) {
+          setImage(resolvedImage);
+        }
+      } else {
+        setImage(undefined);
+      }
+    };
 
-  const init = async () => {
-    if (typeof value === 'string') {
-      setImage(value);
-    } else if (typeof value === 'object') {
-      setImage(await value);
-    }
-  };
+    init();
+    return () => {
+      isMounted = false;
+    };
+  }, [value]);
 
   const handleOnValueClick = () => {
     if (valueOnClickAction) {
@@ -40,7 +50,7 @@ export const SmallImageCardComponent = ({
       <div
         className={`value ${valueOnClickAction ? 'clickable' : ''}`}
         onClick={handleOnValueClick}>
-        {image && <img className="image" src={image} />}
+        <EvmNftMedia className="image" src={image} />
       </div>
       {name && <div className="label">{name}</div>}
       {extraInfo && (

@@ -8,6 +8,7 @@ export interface EvmUserHistory {
   events: EvmUserHistoryItem[];
   nextCursor: string | null;
   fullyFetch: boolean;
+  catchupStatus?: string | null;
 }
 
 export interface EvmLocalHistory {
@@ -39,6 +40,7 @@ export interface EvmUserHistoryItemDetail {
   label: string;
   value: string;
   type: EvmUserHistoryItemDetailType;
+  imageUrl?: string | null;
 }
 
 export enum EvmUserHistoryItemDetailType {

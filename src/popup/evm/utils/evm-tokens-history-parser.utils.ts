@@ -28,8 +28,7 @@ import {
   BlockExplorerType,
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
-import { ethers } from 'ethers';
-import FormatUtils from 'src/utils/format.utils';
+import { ethers, TransactionResponse } from 'ethers';
 import Logger from 'src/utils/logger.utils';
 
 const parseEvent = async (
@@ -73,10 +72,9 @@ const parseEvent = async (
               event.value,
               event.token.decimals,
             );
-            const amountS = FormatUtils.withCommas(
+            const amountS = EvmFormatUtils.formatTokenBalance(
               amount,
               event.token.decimals,
-              true,
             );
 
             details.push({
@@ -160,6 +158,9 @@ const parseEvent = async (
             );
             break;
           }
+          case EVMSmartContractType.PROTOCOL: {
+            break;
+          }
         }
 
         historyItem.pageTitle = 'popup_html_transfer_funds';
@@ -172,7 +173,7 @@ const parseEvent = async (
             const amount = EvmFormatUtils.etherToWei(
               Number(event.value),
             ).toString();
-            const amountS = FormatUtils.withCommas(amount, 18, true);
+            const amountS = EvmFormatUtils.formatTokenBalance(amount, 18);
 
             const token = {} as EvmSmartContractInfo;
 
@@ -639,7 +640,7 @@ const getNativeTransferData = async (
 ) => {
   // native event
   const amount = EvmFormatUtils.etherToWei(Number(event.value)).toString();
-  const amountS = FormatUtils.withCommas(amount, 18, true);
+  const amountS = EvmFormatUtils.formatTokenBalance(amount, 18);
 
   const addressDetails = await EvmAddressesUtils.getAddressDetails(
     event.from.toLowerCase() === walletAddress.toLowerCase()
@@ -1168,7 +1169,100 @@ const getSpecificData = async (
   return result;
 };
 
+/** UI / inference union for transaction token category (v1 — swaps grouped under ERC20). */
 export type TransactionTokenKind = 'NATIVE' | 'ERC20' | 'ERC721' | 'ERC1155';
+
+/** Nested ERC-20 `transfer` / `transferFrom` selectors inside router meta-calldata (swap paths). */
+function calldataEmbedsStandardErc20TransferOps(dataHex: string): boolean {
+  const chunk = dataHex.slice(2).toLowerCase();
+  return chunk.includes('a9059cbb') || chunk.includes('23b872dd');
+}
+
+/**
+ * Top-level function selectors commonly used by ERC-20 swap / aggregation routers (extend over time).
+ * Classifies complex swaps as {@link TransactionTokenKind} `ERC20` per product convention.
+ */
+const TOP_LEVEL_ERC20_SWAPLIKE_SELECTORS = new Set<string>([
+  '0x5f3bd1c8', // LiFi-style aggregators / multi-hop swaps (observed production txs)
+  '0x38ed1739', // Uniswap V2 swapExactTokensForTokens
+  '0x7ff36ab5', // swapExactETHForTokens
+  '0x18cbafe5', // swapExactTokensForETH
+  '0x414bf389', // Uniswap V3 exactInputSingle
+  '0xad7d9e09', // Uniswap V3 exactInput
+]);
+
+/** ERC-721 safeTransferFrom(address,address,uint256) */
+const SEL721_SAFE_TRANSFER_FROM_3 = '0x42842e0e';
+/** ERC-721 safeTransferFrom(address,address,uint256,bytes) */
+const SEL721_SAFE_TRANSFER_FROM_DATA = '0xb88d4fde';
+
+const erc1155Iface = new ethers.Interface([
+  'function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes data)',
+  'function safeBatchTransferFrom(address from, address to, uint256[] ids, uint256[] amounts, bytes data)',
+]);
+
+/**
+ * Best-effort token kind from signed tx calldata (works before history/light-node indexes the tx).
+ *
+ * Supported {@link TransactionTokenKind}:
+ * - **NATIVE** — plain value transfer with no calldata
+ * - **ERC20** — direct `transfer`; nested `transfer`/`transferFrom` in router calldata; common DEX swap selectors
+ * - **ERC721** / **ERC1155** — NFT `safeTransferFrom` shapes
+ *
+ * Router swaps and similar are labeled **ERC20** (not a separate “swap” type). Ambiguous selectors
+ * shared by ERC-20 / ERC-721 (e.g. standalone `transferFrom`, `approve`) are not classified here.
+ */
+export const inferTransactionTokenKindFromTx = (
+  tx: Pick<TransactionResponse, 'data' | 'value'>,
+): TransactionTokenKind | null => {
+  const dataHex =
+    tx.data == null
+      ? ''
+      : typeof tx.data === 'string'
+        ? tx.data
+        : ethers.hexlify(tx.data);
+
+  const value = tx.value ?? BigInt(0);
+
+  if (!dataHex || dataHex === '0x') {
+    return value > BigInt(0) ? 'NATIVE' : null;
+  }
+
+  const selector = dataHex.slice(0, 10).toLowerCase();
+
+  if (selector === '0xa9059cbb') {
+    return 'ERC20';
+  }
+
+  if (
+    selector === SEL721_SAFE_TRANSFER_FROM_3 ||
+    selector === SEL721_SAFE_TRANSFER_FROM_DATA
+  ) {
+    return 'ERC721';
+  }
+
+  try {
+    const parsed = erc1155Iface.parseTransaction({ data: dataHex });
+    if (
+      parsed?.name === 'safeTransferFrom' ||
+      parsed?.name === 'safeBatchTransferFrom'
+    ) {
+      return 'ERC1155';
+    }
+  } catch {
+    /* not ERC-1155 batch/single transfer */
+  }
+
+  if (TOP_LEVEL_ERC20_SWAPLIKE_SELECTORS.has(selector)) {
+    return 'ERC20';
+  }
+
+  if (calldataEmbedsStandardErc20TransferOps(dataHex)) {
+    return 'ERC20';
+  }
+
+  return null;
+};
 
 const getTransactionTokenKind = async (
   chainId: string | number,
@@ -1220,6 +1314,7 @@ const getCommonHistoryItem = (e: any) => {
 export const EvmTokensHistoryParserUtils = {
   parseEvent,
   getTransactionTokenKind,
+  inferTransactionTokenKindFromTx,
 };
 
 interface EvmHistoryItemSpecificData {

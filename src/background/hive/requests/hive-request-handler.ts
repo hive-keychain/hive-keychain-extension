@@ -260,6 +260,11 @@ export class HiveRequestsHandler {
     tabId: number,
     shouldSyncDialog = true,
   ) {
+    // Reconcile with latest persisted queue to avoid dropping requests that were
+    // added by another concurrent handler instance while feedback delay is active.
+    const latestHandler = await HiveRequestsHandler.getFromLocalStorage();
+    this.requestsData = latestHandler.requestsData;
+
     this.requestsData = this.requestsData.filter(
       (requestData: HiveRequestData) => {
         if (requestData.request_id === requestId && requestData.tab! === tabId) {

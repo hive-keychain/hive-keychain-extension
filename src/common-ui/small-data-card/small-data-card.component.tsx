@@ -4,6 +4,7 @@ interface SmallDataCardProps {
   label: string;
   skipLabelTranslation?: boolean;
   value: any;
+  valueClassName?: string;
   valueOnClickAction?: (...params: any[]) => any;
   extraInfo?: string;
   extraInfoAdditionalClass?: string;
@@ -13,6 +14,7 @@ export const SmallDataCardComponent = ({
   label,
   skipLabelTranslation,
   value,
+  valueClassName,
   valueOnClickAction,
   extraInfo,
   extraInfoAdditionalClass,
@@ -29,7 +31,9 @@ export const SmallDataCardComponent = ({
         {skipLabelTranslation ? label : chrome.i18n.getMessage(label)}
       </div>
       <div
-        className={`value ${valueOnClickAction ? 'clickable' : ''}`}
+        className={`value ${valueClassName ?? ''} ${
+          valueOnClickAction ? 'clickable' : ''
+        }`}
         onClick={handleOnValueClick}>
         {value}
       </div>

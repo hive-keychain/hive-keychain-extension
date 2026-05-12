@@ -14,6 +14,9 @@ import { useFieldTitle } from 'src/dialog/evm/components/use-field-title.hook';
 
 import sanitize from 'sanitize-html';
 
+/** Collapsible value row when decoded args (e.g. bytes32) render as long hex strings. */
+const COLLAPSIBLE_STRING_VALUE_MIN_LENGTH = 48;
+
 export interface EvmRequestItemProps {
   field: TransactionConfirmationField;
   onWarningClicked?: (warningIndex: number) => void;
@@ -29,13 +32,36 @@ export const EvmRequestItem = ({
     switch (field.type) {
       case EvmInputDisplayType.LONG_TEXT:
         return (
-          <EvmRequestItemLongText title={field.name} value={field.value} />
+          <EvmRequestItemLongText
+            title={field.name}
+            value={field.value}
+            titleSuffix={warningIcon}
+          />
         );
       default: {
+        const raw = field.value;
+        const useCollapsibleString =
+          field.type !== EvmInputDisplayType.WARNING_ONLY &&
+          typeof raw === 'string' &&
+          raw.length >= COLLAPSIBLE_STRING_VALUE_MIN_LENGTH;
+        const widenTupleBlock = field.type === EvmInputDisplayType.TUPLE;
+
         return (
           <>
-            {fieldTitle && <div className="label">{fieldTitle}</div>}
-            <div className="value">{field.value}</div>
+            {fieldTitle && (
+              <div className="label">
+                {fieldTitle}
+                {warningIcon}
+              </div>
+            )}
+            <div
+              className={`value${useCollapsibleString ? ' value--collapsible' : ''}${widenTupleBlock ? ' value--tuple-block' : ''}`}>
+              {useCollapsibleString ? (
+                <EvmRequestItemLongText value={raw} />
+              ) : (
+                raw
+              )}
+            </div>
           </>
         );
       }
@@ -77,12 +103,14 @@ export const EvmRequestItem = ({
     );
   };
 
+  const warningIcon =
+    field.warnings && field.warnings.length > 0
+      ? displayWarningIcon(field.warnings)
+      : null;
+
   return (
     <div className="field-container" style={field.style}>
       <div className="field-content">
-        {field.warnings && field.warnings.length > 0 && (
-          <div className="warning">{displayWarningIcon(field.warnings)}</div>
-        )}
         <div className={`field ${sanitize(field.type)}`}>{renderField()}</div>
       </div>
       {showWarnings && field.warnings && field.warnings.length > 0 && (

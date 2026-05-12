@@ -19,6 +19,7 @@ import { GetEncryptionKey } from 'src/dialog/evm/requests/get-encryption-key';
 import { PersonalSign } from 'src/dialog/evm/requests/personal-sign';
 import { SendTransaction } from 'src/dialog/evm/requests/send-transaction/send-transaction';
 import { SignTypedData } from 'src/dialog/evm/requests/sign-typed-data';
+import { WatchAsset } from 'src/dialog/evm/requests/watch-asset/watch-asset';
 import AddAccount from 'src/dialog/hive/requests/add-account';
 import AddAccountAuthority from 'src/dialog/hive/requests/authority/add-account-authority';
 import AddKeyAuthority from 'src/dialog/hive/requests/authority/add-key-authority';
@@ -51,9 +52,16 @@ import WitnessVote from 'src/dialog/hive/requests/witness-vote';
 type Props = {
   message: HiveRequestMessage | EvmRequestMessage;
   afterCancel: (requestId: number, tab: number) => void;
+  isActive?: boolean;
+  activationKey?: string;
 };
 
-export const RequestConfirmation = ({ message, afterCancel }: Props) => {
+export const RequestConfirmation = ({
+  message,
+  afterCancel,
+  isActive = true,
+  activationKey,
+}: Props) => {
   const displayRequest = (
     displayedMessage: HiveRequestMessage | EvmRequestMessage,
   ) => {
@@ -364,6 +372,8 @@ export const RequestConfirmation = ({ message, afterCancel }: Props) => {
               data={displayedMessage}
               accounts={displayedMessage.accounts!}
               afterCancel={afterCancel}
+              isActive={isActive}
+              activationKey={activationKey}
             />
           );
         }
@@ -394,7 +404,19 @@ export const RequestConfirmation = ({ message, afterCancel }: Props) => {
           );
         }
 
+        case EvmRequestMethod.WALLET_WATCH_ASSETS:
+        case EvmRequestMethod.MM_WATCH_ASSET: {
+          return (
+            <WatchAsset
+              request={request}
+              data={displayedMessage}
+              afterCancel={afterCancel}
+            />
+          );
+        }
+
         default: {
+          // TODO remove before production
           return <div>{JSON.stringify(displayedMessage)}</div>;
         }
       }

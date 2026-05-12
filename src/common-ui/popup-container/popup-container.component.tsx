@@ -4,6 +4,7 @@ interface PopupContainerProps {
   children: any;
   className?: string;
   onClickOutside?: () => void;
+  showOverlay?: boolean;
   dataTestId?: string;
   'data-testid'?: string;
 }
@@ -12,6 +13,7 @@ export const PopupContainer = ({
   children,
   className,
   onClickOutside,
+  showOverlay = true,
   dataTestId,
   'data-testid': dataTestIdAttr,
 }: PopupContainerProps) => {
@@ -19,11 +21,13 @@ export const PopupContainer = ({
     <div
       data-testid={dataTestId ?? dataTestIdAttr}
       className={`popup-container ${className ?? ''}`}>
-      <div
-        className="overlay"
-        onClick={() => {
-          onClickOutside?.();
-        }}></div>
+      {showOverlay && (
+        <div
+          className="overlay"
+          onClick={() => {
+            onClickOutside?.();
+          }}></div>
+      )}
       <div className="popup-content">{children}</div>
     </div>
   );

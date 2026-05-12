@@ -1,7 +1,10 @@
 import { ContextualMenu } from '@interfaces/contextual-menu.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import {
+  EvmAccount,
+  EvmAccountOrPublic,
+} from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountsContextualMenu } from '@popup/evm/pages/home/settings/evm-accounts/evm-accounts.contextual-menu';
 import {
   EditAccountParams,
@@ -9,6 +12,7 @@ import {
 } from '@popup/evm/pages/home/settings/evm-accounts/evm-edit-account-popup/evm-edit-account-popup.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
+import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
@@ -97,7 +101,7 @@ const EvmAccounts = ({
       );
   };
 
-  const initializeOptions = () => {
+  const buildSeedOptions = (accounts: EvmAccount[]) => {
     const options: OptionItem[] = [];
     for (const account of accounts) {
       if (!options.some((option) => option.value === account.seedId)) {
@@ -110,12 +114,20 @@ const EvmAccounts = ({
       }
     }
 
+    return options;
+  };
+
+  const initializeOptions = () => {
+    const options = buildSeedOptions(accounts);
     setSeedsOptions(options);
     setSelectedSeed(options[0]);
   };
 
-  const onCopyAddress = (account: EvmAccount) => {
-    void copyTextWithToast(account.wallet.address, COPY_GENERIC_MESSAGE_KEY);
+  const onCopyAddress = (account: EvmAccountOrPublic) => {
+    void copyTextWithToast(
+      EvmAccountUtils.getEvmAccountAddress(account),
+      COPY_GENERIC_MESSAGE_KEY,
+    );
   };
 
   const handleAddAddressClick = () => {
@@ -214,8 +226,34 @@ const EvmAccounts = ({
   const handleDeleteSeedClick = async () => {
     const seed = getCurrentSeed();
     if (!seed) return;
-    await EvmWalletUtils.deleteSeed(seed.seedId, accounts, mk);
-    setLocalAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
+
+    const selectedSeedIndex =
+      seedsOptions?.findIndex((option) => option.value === seed.seedId) ?? 0;
+
+    await EvmWalletUtils.deleteSeed(seed.seedId, localAccounts, mk);
+    const updatedAccounts =
+      await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+    const updatedSeedOptions = buildSeedOptions(updatedAccounts);
+    const nextSelectedSeed =
+      updatedSeedOptions[selectedSeedIndex] ??
+      updatedSeedOptions[selectedSeedIndex - 1] ??
+      updatedSeedOptions[0];
+
+    setLocalAccounts(updatedAccounts);
+    setSeedsOptions(updatedSeedOptions);
+    setSelectedSeed(nextSelectedSeed);
+    setEvmAccounts(updatedAccounts);
+
+    const nextActiveAccount =
+      updatedAccounts.find(
+        (account) => account.seedId === nextSelectedSeed?.value && !account.hide,
+      ) ??
+      updatedAccounts.find((account) => !account.hide) ??
+      updatedAccounts[0];
+
+    if (nextActiveAccount) {
+      await loadEvmActiveAccount(chain, nextActiveAccount.wallet);
+    }
   };
 
   const handleEditSeedClick = () => {
@@ -233,7 +271,7 @@ const EvmAccounts = ({
 
   const getCurrentSeed = () => {
     if (!selectedSeed) return;
-    const seed = accounts.find(
+    const seed = localAccounts.find(
       (account) => account.seedId === selectedSeed.value,
     );
     return seed;
@@ -252,7 +290,8 @@ const EvmAccounts = ({
     }
   };
 
-  const handleOnEditAddress = async (account: EvmAccount) => {
+  const handleOnEditAddress = async (account: EvmAccountOrPublic) => {
+    if (!('wallet' in account)) return;
     setEditParams({
       initialValue: account.nickname ?? '',
       onSubmit: (newAddressNickname: string) =>

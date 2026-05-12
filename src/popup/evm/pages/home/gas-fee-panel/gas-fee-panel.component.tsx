@@ -1,4 +1,5 @@
 import { EtherRPCCustomError } from '@popup/evm/interfaces/evm-errors.interface';
+import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   EvmTransactionType,
   ProviderTransactionData,
@@ -15,7 +16,6 @@ import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
-import { HDNodeWallet } from 'ethers';
 import EventEmitter from 'events';
 import React, { useEffect, useRef, useState } from 'react';
 import ButtonComponent, {
@@ -32,7 +32,9 @@ import Logger from 'src/utils/logger.utils';
 
 interface GasFeePanelProps {
   chain: EvmChain;
-  wallet: HDNodeWallet;
+  fromAddress: string;
+  /** When set (e.g. send-tx dialog pre-fetched native metadata), skips duplicate native/light-node fetch */
+  prefetchedMainTokenInfo?: EvmSmartContractInfo;
   selectedFee?: GasFeeEstimationBase;
   onSelectFee: (fee: GasFeeEstimationBase) => void;
   multiplier?: number;
@@ -42,11 +44,16 @@ interface GasFeePanelProps {
   setErrorMessage: (error: EtherRPCCustomError) => void;
   /** Fires when the initial gas estimate request finishes (success or error). */
   onInitialEstimationComplete?: () => void;
+  /** Re-runs gas estimation while preserving visible values. */
+  refreshKey?: string | number;
+  onRefreshStateChange?: (refreshing: boolean) => void;
+  isActive?: boolean;
 }
 
 export const GasFeePanel = ({
   chain,
-  wallet,
+  fromAddress,
+  prefetchedMainTokenInfo,
   selectedFee,
   onSelectFee,
   multiplier,
@@ -55,10 +62,17 @@ export const GasFeePanel = ({
   forceOpenGasFeePanelEvent,
   setErrorMessage,
   onInitialEstimationComplete,
+  refreshKey,
+  onRefreshStateChange,
+  isActive = true,
 }: GasFeePanelProps) => {
   const initGenerationRef = useRef(0);
+  const lastRefreshKeyRef = useRef<string | number>();
+  const customFeeWasSavedRef = useRef(false);
+  const latestIsActiveRef = useRef(isActive);
   const [isAdvancedPanelOpen, setIsAdvancedPanelOpen] = useState(false);
   const [feeEstimation, setFeeEstimation] = useState<FullGasFeeEstimation>();
+  const [isRefreshing, setRefreshing] = useState(false);
 
   const [gasFeeWarning, setgasFeeWarning] = useState<string>();
   const [customFeeFormWarning, setCustomFeeFormWarning] = useState<string>();
@@ -78,14 +92,37 @@ export const GasFeePanel = ({
   const [mainTokenPrice, setMainTokenPrice] = useState<number>();
 
   useEffect(() => {
-    forceOpenGasFeePanelEvent?.addListener('forceOpenCustomFeePanel', () => {
-      openCustomFeePanel();
-    });
-  }, []);
+    latestIsActiveRef.current = isActive;
+  }, [isActive]);
 
   useEffect(() => {
-    if (transactionData) init();
+    const handler = () => {
+      openCustomFeePanel();
+    };
+    forceOpenGasFeePanelEvent?.addListener('forceOpenCustomFeePanel', handler);
+    return () => {
+      forceOpenGasFeePanelEvent?.removeListener(
+        'forceOpenCustomFeePanel',
+        handler,
+      );
+    };
+  }, [forceOpenGasFeePanelEvent]);
+
+  useEffect(() => {
+    if (transactionData) void init(false);
   }, [transactionData]);
+
+  useEffect(() => {
+    if (
+      !transactionData ||
+      refreshKey === undefined ||
+      lastRefreshKeyRef.current === refreshKey
+    ) {
+      return;
+    }
+    lastRefreshKeyRef.current = refreshKey;
+    void init(true);
+  }, [refreshKey]);
 
   useEffect(() => {
     if (selectedFee) {
@@ -109,19 +146,25 @@ export const GasFeePanel = ({
     }
   }, [selectedFee]);
 
-  const init = async () => {
+  const init = async (silentRefresh: boolean) => {
     const generation = ++initGenerationRef.current;
     let estimate;
-
-    const mainTokenInfo = await EvmTokensUtils.getMainTokenInfo(
-      chain as EvmChain,
-    );
-    setMainTokenPrice(mainTokenInfo.priceUsd ?? undefined);
+    const shouldShowRefreshIndicator =
+      silentRefresh && !!feeEstimation && !!selectedFee;
+    if (shouldShowRefreshIndicator) {
+      setRefreshing(true);
+      onRefreshStateChange?.(true);
+    }
 
     try {
+      const mainTokenInfo =
+        prefetchedMainTokenInfo ??
+        (await EvmTokensUtils.getMainTokenInfo(chain as EvmChain));
+      setMainTokenPrice(mainTokenInfo.priceUsd ?? undefined);
+
       estimate = await GasFeeUtils.estimate(
         chain,
-        wallet,
+        fromAddress,
         transactionType,
         mainTokenInfo.priceUsd ?? 0,
         transactionData?.gasLimit
@@ -129,6 +172,10 @@ export const GasFeePanel = ({
           : undefined,
         transactionData,
       );
+
+      if (silentRefresh && !latestIsActiveRef.current) {
+        return;
+      }
 
       if (!!multiplier && selectedFee) {
         const increasedFee: GasFeeEstimationBase = {
@@ -162,7 +209,7 @@ export const GasFeePanel = ({
 
         onSelectFee(increasedFee);
         estimate.increased = increasedFee;
-      } else {
+      } else if (!customFeeWasSavedRef.current) {
         if (estimate?.suggestedByDApp) {
           onSelectFee(estimate.suggestedByDApp);
         } else if (estimate.suggested) {
@@ -188,7 +235,6 @@ export const GasFeePanel = ({
       setFeeEstimation(estimate);
     } catch (err: any) {
       Logger.error('Catch in gas fee Panel', { err });
-      console.log('err', err);
       const error = EthersUtils.getErrorMessage(
         err.code,
         err.reason,
@@ -199,6 +245,10 @@ export const GasFeePanel = ({
     } finally {
       if (generation === initGenerationRef.current) {
         onInitialEstimationComplete?.();
+        if (shouldShowRefreshIndicator) {
+          setRefreshing(false);
+          onRefreshStateChange?.(false);
+        }
       }
     }
   };
@@ -209,13 +259,13 @@ export const GasFeePanel = ({
   };
 
   const selectGasFee = (gasFee: GasFeeEstimationBase) => {
+    customFeeWasSavedRef.current = false;
     onSelectFee(gasFee);
     setIsAdvancedPanelOpen(false);
   };
 
   const getDecimalValue = (rawValue?: string) => {
     if (!rawValue?.length) return new Decimal(0);
-
     try {
       return new Decimal(rawValue);
     } catch {
@@ -233,7 +283,6 @@ export const GasFeePanel = ({
     key: 'maxBaseFee' | 'priorityFee' | 'gasPrice' | 'gasLimit',
     value: string,
   ) => {
-    console.log({ key, value });
     const newState = { ...customGasFeeForm };
     switch (key) {
       case 'maxBaseFee': {
@@ -245,8 +294,6 @@ export const GasFeePanel = ({
           value,
           customGasFeeForm.gasLimit,
         );
-        console.log({ newState });
-        console.log({ maxBaseFeeInEth: newState.maxBaseFeeInEth.toString() });
         break;
       }
       case 'priorityFee': {
@@ -255,8 +302,6 @@ export const GasFeePanel = ({
           value,
           customGasFeeForm.gasLimit,
         );
-        console.log({ newState });
-        console.log({ priorityFeeInEth: newState.priorityFeeInEth.toString() });
         break;
       }
       case 'gasPrice': {
@@ -265,8 +310,6 @@ export const GasFeePanel = ({
           value,
           customGasFeeForm.gasLimit,
         );
-        console.log({ newState });
-        console.log({ gasPriceInEth: newState.gasPriceInEth.toString() });
         break;
       }
       case 'gasLimit': {
@@ -280,8 +323,6 @@ export const GasFeePanel = ({
             customGasFeeForm.gasPriceInGwei,
             value,
           );
-          console.log({ newState });
-          console.log({ gasPriceInEth: newState.gasPriceInEth.toString() });
         }
 
         if (
@@ -292,10 +333,6 @@ export const GasFeePanel = ({
             customGasFeeForm.priorityFeeInGwei,
             value,
           );
-          console.log({ newState });
-          console.log({
-            priorityFeeInEth: newState.priorityFeeInEth.toString(),
-          });
         }
 
         if (
@@ -306,8 +343,6 @@ export const GasFeePanel = ({
             customGasFeeForm.maxBaseFeeInGwei,
             value,
           );
-          console.log({ newState });
-          console.log({ maxBaseFeeInEth: newState.maxBaseFeeInEth.toString() });
         }
 
         break;
@@ -319,33 +354,51 @@ export const GasFeePanel = ({
 
   const saveCustomFee = () => {
     try {
+      const gasLimit = getDecimalValue(customGasFeeForm.gasLimit);
+      const gasPriceInGwei = getDecimalValue(customGasFeeForm.gasPriceInGwei);
+      const maxBaseFeeInGwei = getDecimalValue(
+        customGasFeeForm.maxBaseFeeInGwei,
+      );
+      const priorityFeeInGwei = getDecimalValue(
+        customGasFeeForm.priorityFeeInGwei,
+      );
+      const maxBaseFeeInEth = getCustomFeeInEth(
+        customGasFeeForm.maxBaseFeeInGwei,
+        customGasFeeForm.gasLimit,
+      );
+      const priorityFeeInEth = getCustomFeeInEth(
+        customGasFeeForm.priorityFeeInGwei,
+        customGasFeeForm.gasLimit,
+      );
+      const gasPriceInEth = getCustomFeeInEth(
+        customGasFeeForm.gasPriceInGwei,
+        customGasFeeForm.gasLimit,
+      );
+      const price = new Decimal(mainTokenPrice ?? 0);
       let customMaxFee = new Decimal(0);
       let customEstimatedFee = new Decimal(0);
 
       switch (transactionType) {
         case EvmTransactionType.EIP_1559: {
-          customMaxFee = Decimal.add(
-            customGasFeeForm.maxBaseFeeInEth!,
-            customGasFeeForm.priorityFeeInEth!,
-          );
+          customMaxFee = Decimal.add(maxBaseFeeInEth, priorityFeeInEth);
           if (feeEstimation?.extraInfo) {
             customEstimatedFee = Decimal.add(
               Decimal.div(
                 new Decimal(feeEstimation?.extraInfo.baseFee.estimated!),
                 EvmFormatUtils.GWEI,
               ),
-              customGasFeeForm.priorityFeeInEth!,
+              priorityFeeInEth,
             );
           } else customEstimatedFee = customMaxFee;
           break;
         }
         case EvmTransactionType.LEGACY: {
-          customMaxFee = customGasFeeForm.gasPriceInEth!;
+          customMaxFee = gasPriceInEth;
           break;
         }
       }
 
-      if (customGasFeeForm.priorityFeeInEth?.greaterThan(customMaxFee)) {
+      if (priorityFeeInEth.greaterThan(customMaxFee)) {
         setCustomFeeFormWarning(
           'evm_gas_fee_warning_priority_fee_higher_than_max_fee',
         );
@@ -379,18 +432,17 @@ export const GasFeePanel = ({
         estimatedFeeInEth: customEstimatedFee,
         maxFeeInEth: customMaxFee,
         estimatedMaxDuration: customDuration,
-        gasLimit: new Decimal(customGasFeeForm.gasLimit),
+        gasLimit,
         type: customGasFeeForm.type,
-        gasPriceInGwei: new Decimal(customGasFeeForm.gasPriceInGwei),
-        maxFeePerGasInGwei: new Decimal(customGasFeeForm.maxBaseFeeInGwei).add(
-          new Decimal(customGasFeeForm.priorityFeeInGwei),
-        ),
-        priorityFeeInGwei: new Decimal(customGasFeeForm.priorityFeeInGwei),
-        estimatedFeeUSD: customEstimatedFee.mul(new Decimal(mainTokenPrice!)),
-        maxFeeUSD: customMaxFee.mul(new Decimal(mainTokenPrice!)),
+        gasPriceInGwei,
+        maxFeePerGasInGwei: maxBaseFeeInGwei.add(priorityFeeInGwei),
+        priorityFeeInGwei,
+        estimatedFeeUSD: customEstimatedFee.mul(price),
+        maxFeeUSD: customMaxFee.mul(price),
         name: 'popup_html_evm_custom_gas_fee_custom',
         icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
       } as GasFeeEstimationBase;
+      customFeeWasSavedRef.current = true;
       onSelectFee(custom);
 
       const fullGasFeeEstimation = {
@@ -450,6 +502,12 @@ export const GasFeePanel = ({
             <div className="title">
               {chrome.i18n.getMessage('popup_html_evm_gas_fee')} :{' '}
               {chrome.i18n.getMessage(selectedFee.name)}
+              {isRefreshing && (
+                <span
+                  className="gas-fee-refresh-spinner"
+                  data-testid="gas-fee-refresh-spinner"
+                />
+              )}
             </div>
             {!isExpandablePanelOpened && (
               <div className="gas-fee-estimate">
@@ -842,13 +900,11 @@ export const GasFeePanel = ({
                         label="popup_html_evm_gas_fee_form_gas_price"
                         placeholder="popup_html_evm_gas_fee_form_gas_price"
                         type={InputType.NUMBER}
-                        value={new Decimal(
-                          customGasFeeForm.gasPriceInGwei,
-                        ).toFixed()}
+                        value={customGasFeeForm.gasPriceInGwei}
                         onChange={(value) => updateCustomFee('gasPrice', value)}
                         hint={`≈${
-                          customGasFeeForm.gasPriceInGwei
-                            ? customGasFeeForm.gasPriceInGwei?.toString()
+                          customGasFeeForm.gasPriceInEth
+                            ? customGasFeeForm.gasPriceInEth?.toString()
                             : 0
                         } ${chain.mainToken}`}
                         skipHintTranslation

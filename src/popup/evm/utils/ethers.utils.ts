@@ -2,7 +2,7 @@ import { EtherRPCCustomError } from '@popup/evm/interfaces/evm-errors.interface'
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
-import { ethers, HDNodeWallet, TransactionRequest } from 'ethers';
+import { ethers, TransactionRequest } from 'ethers';
 import { EtherJsonRpcProvider } from 'src/utils/evm/ether-json-rpc-provider';
 
 let jsonRpcProvider: ethers.JsonRpcApiProvider;
@@ -40,7 +40,7 @@ const setProvider = async (chain: EvmChain, rpcUrl: string) => {
 
 const getGasLimit = async (
   chain: EvmChain,
-  wallet: HDNodeWallet,
+  fromAddress: string,
   abi?: any,
   method?: string,
   args?: any[],
@@ -52,16 +52,18 @@ const getGasLimit = async (
 
   if (abi && to && method && args) {
     try {
-      const contract = new ethers.Contract(to, abi, wallet);
+      const contract = new ethers.Contract(to, abi, provider);
 
-      const estimation = await contract[method].estimateGas(...args);
+      const estimation = await contract[method].estimateGas(...args, {
+        from: fromAddress,
+      });
 
       // let multiplier = chain.isEth ? 1 : 1.5;
       let multiplier = 1.5;
       return Decimal.mul(Number(estimation), multiplier).toNumber();
     } catch (e) {
       const tx: TransactionRequest = {
-        from: wallet.address,
+        from: fromAddress,
         data: data,
         to: to,
         value: value,
@@ -70,7 +72,7 @@ const getGasLimit = async (
     }
   } else if (data) {
     const tx: TransactionRequest = {
-      from: wallet.address,
+      from: fromAddress,
       data: data,
       to: to,
       value: value,
@@ -79,7 +81,7 @@ const getGasLimit = async (
   } else {
     return getGasLimitFromRawTx(
       {
-        from: wallet.address,
+        from: fromAddress,
         to: to,
         value: value,
       },

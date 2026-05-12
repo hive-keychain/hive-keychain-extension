@@ -14,42 +14,82 @@ interface Props {
   address: string;
   chainId: string;
   canCopy?: boolean;
+  prefix?: React.ReactNode;
+  forceFormattedAddress?: boolean;
 }
 
-export const EvmAddressComponent = ({ address, chainId, canCopy }: Props) => {
+export const EvmAddressComponent = ({
+  address,
+  chainId,
+  canCopy,
+  prefix,
+  forceFormattedAddress,
+}: Props) => {
   const [addressDetail, setAddressDetail] = useState<EvmAddressDetail>();
 
   useEffect(() => {
     initComponent();
-  }, []);
+  }, [address, chainId]);
 
   const initComponent = async () => {
     const details = await EvmAddressesUtils.getAddressDetails(address, chainId);
     setAddressDetail(details);
   };
 
-  const handleCopyAddress = () => {
+  const handleCopyAddress = (event: React.MouseEvent) => {
     if (canCopy) {
+      event.stopPropagation();
       void copyTextWithToast(address, COPY_GENERIC_MESSAGE_KEY);
     }
+  };
+
+  const renderAddressContent = () => {
+    if (!addressDetail) return null;
+    const resolvedAddress = forceFormattedAddress
+      ? addressDetail.formattedAddress
+      : addressDetail.label ?? addressDetail.formattedAddress;
+    const visibleAddress =
+      resolvedAddress.trim().toLowerCase() ===
+      addressDetail.fullAddress.trim().toLowerCase()
+        ? addressDetail.formattedAddress
+        : resolvedAddress;
+    const shouldShowAddressTooltip =
+      visibleAddress.trim().toLowerCase() !==
+      addressDetail.fullAddress.trim().toLowerCase();
+    const content = (
+      <span
+        className={`value-content evm-address-content ${
+          canCopy ? 'address-content' : ''
+        }`}
+        onClick={handleCopyAddress}>
+        {visibleAddress}
+      </span>
+    );
+
+    if (!shouldShowAddressTooltip) return content;
+
+    return (
+      <CustomTooltip
+        message={addressDetail.fullAddress}
+        skipTranslation
+        additionalClassName="evm-address-tooltip">
+        {content}
+      </CustomTooltip>
+    );
   };
 
   return (
     <>
       {addressDetail && (
         <div className="value-content-horizontal">
-          <EvmAccountImage
-            address={addressDetail.fullAddress}
-            avatar={addressDetail.avatar}
-            small
-          />
-          <CustomTooltip message={addressDetail.fullAddress} skipTranslation>
-            <span
-              className={`value-content ${canCopy ? 'address-content' : ''}`}
-              onClick={handleCopyAddress}>
-              {addressDetail.label ?? addressDetail.formattedAddress}
-            </span>
-          </CustomTooltip>
+          {prefix ?? (
+            <EvmAccountImage
+              address={addressDetail.fullAddress}
+              avatar={addressDetail.avatar}
+              small
+            />
+          )}
+          {renderAddressContent()}
         </div>
       )}
     </>

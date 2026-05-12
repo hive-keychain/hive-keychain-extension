@@ -8,12 +8,17 @@ import {
   EvmAddressType,
   EvmWhitelistedAddresses,
 } from '@popup/evm/interfaces/evm-addresses.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import {
+  EvmAccount,
+  EvmAccountOrPublic,
+} from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
+import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { ethers } from 'ethers';
 import * as jdenticon from 'jdenticon';
@@ -32,6 +37,7 @@ export interface SavedEns {
 
 export interface EvmAddressDetail {
   label?: string;
+  whitelistedLabel?: string;
   fullAddress: string;
   formattedAddress: string;
   avatar?: string;
@@ -261,6 +267,7 @@ const getAddressDetails = async (
   const localLabel = await EvmAddressesUtils.getAddressLabel(address, chainId);
   if (localLabel) {
     details.label = localLabel;
+    details.whitelistedLabel = localLabel;
   }
 
   // check local accounts
@@ -451,6 +458,7 @@ const getWalletAddresses = async (chainId: string) => {
 
 const saveDomainAddress = async (domainAddress: string) => {
   let domains = await getDomainAddresses();
+  if (domains.includes(domainAddress)) return;
   domains.push(domainAddress);
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_KNOWN_DOMAINS,
@@ -468,32 +476,48 @@ const getDomainAddresses = async () => {
 const isWhitelisted = async (
   address: string,
   chainId: string,
-  localAccounts: EvmAccount[],
+  localAccounts: EvmAccountOrPublic[],
 ) => {
   const whitelisted = await getWhitelistedAddresses(chainId);
 
-  return (
-    localAccounts
-      .map((localAccount) => localAccount.wallet.address.toLowerCase())
-      .includes(address.toLowerCase()) ||
-    whitelisted[EvmAddressType.SMART_CONTRACT]
-      .map((item) => item.address.toLowerCase())
-      .includes(address.toLowerCase()) ||
-    whitelisted[EvmAddressType.WALLET_ADDRESS]
-      .map((item) => item.address.toLowerCase())
-      .includes(address.toLowerCase())
-  );
+  const chain = await ChainUtils.getChain<EvmChain>(chainId);
+  if (chain && chain.isCustom) {
+    const customTokens =
+      await EvmTokensUtils.getCustomTokensForAllWallets(chain);
+    return customTokens.some(
+      (token) => token.address.toLowerCase() === address.toLowerCase(),
+    );
+  } else {
+    return (
+      localAccounts
+        .map((localAccount) =>
+          EvmAccountUtils.getEvmAccountAddress(localAccount).toLowerCase(),
+        )
+        .includes(address.toLowerCase()) ||
+      whitelisted[EvmAddressType.SMART_CONTRACT]
+        .map((item) => item.address.toLowerCase())
+        .includes(address.toLowerCase()) ||
+      whitelisted[EvmAddressType.WALLET_ADDRESS]
+        .map((item) => item.address.toLowerCase())
+        .includes(address.toLowerCase())
+    );
+  }
 };
 
 const getAddressLabel = async (address: string, chainId: string) => {
   const whitelistedAddresses = await getWhitelistedAddresses(chainId);
+  const normalizedAddress = address.toLowerCase();
   let whitelistedItem = whitelistedAddresses[
     EvmAddressType.SMART_CONTRACT
-  ].find((whitelistedAddress) => whitelistedAddress.address === address);
+  ].find(
+    (whitelistedAddress) =>
+      whitelistedAddress.address.toLowerCase() === normalizedAddress,
+  );
   if (whitelistedItem) return whitelistedItem.label;
   else
     whitelistedItem = whitelistedAddresses[EvmAddressType.WALLET_ADDRESS].find(
-      (whitelistedAddress) => whitelistedAddress.address === address,
+      (whitelistedAddress) =>
+        whitelistedAddress.address.toLowerCase() === normalizedAddress,
     );
   return whitelistedItem?.label;
 };

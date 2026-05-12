@@ -9,8 +9,10 @@ import {
   ProviderTransactionData,
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
+import { EvmAccountOrPublic } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
@@ -22,19 +24,157 @@ import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import Decimal from 'decimal.js';
-import { ethers, HDNodeWallet, Wallet } from 'ethers';
+import { ethers } from 'ethers';
 import React from 'react';
+import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
+import { formatDecodedArgumentDisplayValue } from 'src/dialog/evm/requests/send-transaction/send-transaction-argument-format';
+import {
+  formatDecodedTupleForConfirmationField,
+  isTupleAbiInput,
+  type AbiParamFragment,
+} from 'src/dialog/evm/requests/send-transaction/send-transaction-decoded-tuple';
+import type { RunSendTransactionInitParams } from 'src/dialog/evm/requests/send-transaction/send-transaction.types';
 import {
   removeMatchingFromField,
   reorderEvmConfirmationFields,
 } from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
-import {
-  formatDecodedArgumentDisplayValue,
-  formatFallbackParsedInputValue,
-} from 'src/dialog/evm/requests/send-transaction/send-transaction-argument-format';
-import type { RunSendTransactionInitParams } from 'src/dialog/evm/requests/send-transaction/send-transaction.types';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
+
+const renderCopyableFormattedAddress = (
+  address: string,
+  chainId: string,
+  prefix?: React.ReactNode,
+) => (
+  <EvmAddressComponent
+    address={address}
+    chainId={chainId}
+    canCopy
+    prefix={prefix}
+  />
+);
+
+const formatExactDecimalWithCommas = (
+  value: string,
+  decimals: number,
+  removeTrailingZeros = false,
+) => {
+  const parts = new Decimal(value).toFixed(decimals).split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  let finalNumber = parts.join('.');
+
+  if (removeTrailingZeros) {
+    finalNumber = finalNumber.replace(
+      /^([\d,]+)$|^([\d,]+)\.0*$|^([\d,]+\.[0-9]*?)0*$/,
+      '$1$2$3',
+    );
+  }
+
+  return finalNumber;
+};
+
+export const formatMainTokenWeiAmount = (
+  value: ethers.BigNumberish,
+  symbol?: string,
+) =>
+  `${formatExactDecimalWithCommas(
+    ethers.formatEther(value),
+    18,
+    true,
+  )} ${symbol ?? ''}`.trim();
+
+const getDecodedFieldName = (
+  tokenType: EVMSmartContractType | null,
+  methodName: string,
+  inputName: string,
+  inputType: string,
+  inputIndex: number,
+) => {
+  console.log(
+    'getDecodedFieldName',
+    tokenType,
+    methodName,
+    inputName,
+    inputType,
+    inputIndex,
+  );
+  const normalizedMethodName = methodName.toLowerCase();
+  const normalizedTokenType = `${tokenType ?? ''}`.toUpperCase();
+  const normalizedInputType = `${inputType ?? ''}`.toLowerCase();
+  const isErc721Like =
+    normalizedTokenType.includes('ERC721') ||
+    normalizedTokenType.includes('ERC721_ENUMERABLE');
+  const isNft = isErc721Like || normalizedTokenType.includes('ERC1155');
+
+  console.log('normalizedMethodName', normalizedMethodName);
+  console.log('normalizedTokenType', normalizedTokenType);
+  console.log('normalizedInputType', normalizedInputType);
+  console.log('isErc721Like', isErc721Like);
+  console.log('isNft', isNft);
+
+  if (inputName === 'numberOfTokens') {
+    return 'evm_nft_number_of_tokens';
+  }
+
+  if (isErc721Like && normalizedMethodName === 'approve' && inputIndex === 0) {
+    return 'evm_operation_to';
+  }
+
+  if (
+    isErc721Like &&
+    normalizedMethodName === 'approve' &&
+    (inputIndex === 1 ||
+      normalizedInputType.startsWith('uint') ||
+      ['amount', 'tokenid', 'id'].includes(inputName.toLowerCase()))
+  ) {
+    return 'evm_nft_token_id';
+  }
+
+  if (
+    isNft &&
+    normalizedMethodName === 'setapprovalforall' &&
+    (inputName === 'approved' || inputName === '_approved')
+  ) {
+    return 'evm_nft_approve_all';
+  }
+
+  return inputName?.trim() ? inputName : `param ${inputIndex + 1}`;
+};
+
+const shouldDisplayDecodedField = (
+  tokenType: EVMSmartContractType | null,
+  methodName: string,
+  inputIndex: number,
+) => {
+  const normalizedMethodName = methodName.toLowerCase();
+  const normalizedTokenType = `${tokenType ?? ''}`.toUpperCase();
+  const isErc721Like =
+    normalizedTokenType.includes('ERC721') ||
+    normalizedTokenType.includes('ERC721_ENUMERABLE');
+
+  if (isErc721Like && normalizedMethodName === 'approve') {
+    return inputIndex <= 1;
+  }
+
+  return true;
+};
+
+const isNftTokenType = (tokenType?: EVMSmartContractType | null) => {
+  const normalizedTokenType = `${tokenType ?? ''}`.toUpperCase();
+  return (
+    normalizedTokenType.includes('ERC721') ||
+    normalizedTokenType.includes('ERC721_ENUMERABLE') ||
+    normalizedTokenType.includes('ERC1155')
+  );
+};
+
+const getDecodedFieldTokenType = (
+  contractType: EVMSmartContractType | null,
+  usedTokenType: EVMSmartContractType,
+) => {
+  if (isNftTokenType(usedTokenType)) return usedTokenType;
+  return contractType ?? usedTokenType;
+};
 
 export async function runSendTransactionInit(
   initParams: RunSendTransactionInitParams,
@@ -50,6 +190,7 @@ export async function runSendTransactionInit(
     setTransferAmount,
     setShouldDisplayBalanceChange,
     setTransactionData,
+    setPrefetchedMainTokenFromInit,
   } = setters;
 
   transactionHook.setLoading(true);
@@ -57,155 +198,200 @@ export async function runSendTransactionInit(
   let transactionConfirmationFields = {} as TransactionConfirmationFields;
   let lastTransactionInfo: EvmTransactionVerificationInformation | undefined;
 
-  const chainTmp = await ChainUtils.getChain<EvmChain>(request.chainId!);
-
-  setChain(chainTmp as EvmChain);
-
-  const mainToken = (await EvmTokensUtils.getMainTokenInfo(
-    (chainTmp as EvmChain)!,
-  )) as EvmSmartContractInfo;
-
-  const params = request.params[0];
-  let resolvedReceiver: string | null = null;
-  let resolvedTransferAmount: number | undefined;
-
-  const usedAccount = accounts.find(
-    (account) =>
-      account.wallet.address.toLowerCase() === params.from.toLowerCase(),
-  );
-
-  await transactionHook.initPendingTransactionWarning(
-    usedAccount?.wallet!,
-    chainTmp as EvmChain,
-  );
-
-  setSelectedAccount({
-    ...usedAccount!,
-    wallet: HDNodeWallet.fromPhrase(usedAccount?.wallet.mnemonic?.phrase!),
-  });
-
-  const provider = await EthersUtils.getProvider(chainTmp as EvmChain);
-  const connectedWallet = new Wallet(
-    HDNodeWallet.fromPhrase(usedAccount?.wallet.mnemonic?.phrase!).signingKey,
-    provider,
-  );
-  let tokenAddress: string | null = null;
-
-  let tData = {
-    gasLimit: params.gasLimit,
-    gasPrice: params.gasPrice,
-    maxFeePerGas: params.maxFeePerGas,
-    maxPriorityFeePerGas: params.maxPriorityFeePerGas,
-    accessList: params.accessList,
-  } as ProviderTransactionData;
-
-  transactionConfirmationFields.otherFields = [];
-  if (chainTmp) {
-    transactionConfirmationFields.otherFields.push({
-      type: EvmInputDisplayType.STRING,
-      name: 'evm_chain',
-      value: (
-        <div className="value-content">
-          <EvmTokenLogo tokenInfo={mainToken} />
-          <div className="chain-container">
-            <div className="chain-name">{chainTmp.name}</div>
-          </div>
-        </div>
-      ),
-    });
-  }
-  transactionConfirmationFields.otherFields.push(
-    transactionHook.buildInitialDomainField(),
-  );
-  transactionHook.setFields({ ...transactionConfirmationFields });
-
-  if (usedAccount) {
-    const usedAccountInput = await transactionHook.getWalletAddressInput(
-      usedAccount.wallet.address,
-      chainTmp.chainId,
-      {} as EvmTransactionVerificationInformation,
-      accounts,
-      'dialog_account',
+  try {
+    const chainTmp = await ChainUtils.getChain<EvmChain>(
+      request.params[0].chainId ?? request.chainId!,
     );
-    transactionConfirmationFields.otherFields.push({
-      ...usedAccountInput,
-    });
 
-    // Case with data
-    if (params.data) {
-      tData.value = params.value;
+    setChain(chainTmp as EvmChain);
 
-      tokenAddress = params.to;
-      // Case of the execution of a smart contract
-      if (params.to) {
-        const usedToken = await EvmTokensUtils.getTokenInfo(
+    const params = request.params[0];
+    let resolvedReceiver: string | null = null;
+    let resolvedTransferAmount: number | undefined;
+
+    const usedAccount = accounts.find(
+      (account) =>
+        EvmAccountUtils.getEvmAccountAddress(
+          account as EvmAccountOrPublic,
+        ).toLowerCase() === params.from.toLowerCase(),
+    );
+    const usedAccountAddress = usedAccount
+      ? EvmAccountUtils.getEvmAccountAddress(usedAccount as EvmAccountOrPublic)
+      : undefined;
+
+    const contractPromise =
+      params.data && params.to
+        ? EvmLightNodeUtils.getContract(chainTmp.chainId, params.to).catch(
+            (error) => {
+              Logger.error(
+                'Failed to fetch contract metadata from light node; falling back to bundled decoding',
+                error,
+              );
+              return null;
+            },
+          )
+        : undefined;
+    const providerPromise = EthersUtils.getProvider(chainTmp as EvmChain);
+    const mainTokenPromise = EvmTokensUtils.getMainTokenInfo(
+      (chainTmp as EvmChain)!,
+    ) as Promise<EvmSmartContractInfo>;
+    const pendingTransactionWarningPromise =
+      transactionHook.initPendingTransactionWarning(
+        usedAccountAddress ?? params.from,
+        chainTmp as EvmChain,
+      );
+    const usedAccountInputPromise = usedAccountAddress
+      ? transactionHook.getWalletAddressInput(
+          usedAccountAddress,
           chainTmp.chainId,
-          tokenAddress!,
-        );
-        const proxyTarget =
-          usedToken.type !== EVMSmartContractType.NATIVE
-            ? usedToken.proxyTarget
-            : null;
+          {} as EvmTransactionVerificationInformation,
+          accounts,
+          'dialog_account',
+        )
+      : Promise.resolve(null);
 
-        setTokenInfo(usedToken);
+    const mainToken = await mainTokenPromise;
+    setPrefetchedMainTokenFromInit(mainToken);
+    setTokenInfo(mainToken);
+    setTransferAmount(
+      new Decimal(ethers.toBigInt(params?.value ?? '0').toString())
+        .div(new Decimal(EvmFormatUtils.WEI))
+        .toNumber(),
+    );
+    setShouldDisplayBalanceChange(true);
 
-        const populateFallbackParsedDataFields = async (reason: string) => {
-          const transactionInfo =
-            await EvmTransactionParserUtils.verifyTransactionInformation(
+    await pendingTransactionWarningPromise;
+
+    if (usedAccount && usedAccountAddress) {
+      const { wallet: _omitWallet, ...rest } = usedAccount as any;
+      setSelectedAccount({ ...rest, address: usedAccountAddress });
+    }
+
+    const provider = await providerPromise;
+    let tokenAddress: string | null = null;
+
+    let tData = {
+      gasLimit: params.gasLimit,
+      gasPrice: params.gasPrice,
+      maxFeePerGas: params.maxFeePerGas,
+      maxPriorityFeePerGas: params.maxPriorityFeePerGas,
+      accessList: params.accessList,
+    } as ProviderTransactionData;
+
+    transactionConfirmationFields.otherFields = [];
+    if (chainTmp) {
+      transactionConfirmationFields.otherFields.push({
+        type: EvmInputDisplayType.STRING,
+        name: 'evm_chain',
+        value: (
+          <div className="value-content">
+            <EvmTokenLogo tokenInfo={mainToken} />
+            <div className="chain-container">
+              <div className="chain-name">{chainTmp.name}</div>
+            </div>
+          </div>
+        ),
+      });
+    }
+    transactionConfirmationFields.otherFields.push(
+      transactionHook.buildInitialDomainField(),
+    );
+    transactionHook.setFields({ ...transactionConfirmationFields });
+
+    if (usedAccount) {
+      const usedAccountInput = await usedAccountInputPromise;
+      if (usedAccountInput) {
+        transactionConfirmationFields.otherFields.push({
+          ...usedAccountInput,
+        });
+      }
+
+      // Case with data
+      if (params.data) {
+        tData.value = params.value;
+
+        tokenAddress = params.to;
+        // Case of the execution of a smart contract
+        if (params.to) {
+          const fetchedContractOnce = (await contractPromise!) ?? undefined;
+          const fallbackTokenInfo: EvmSmartContractInfoErc20 = {
+            type: EVMSmartContractType.ERC20,
+            chainId: String(chainTmp.chainId),
+            contractAddress: tokenAddress!,
+            name: '',
+            symbol: '',
+            logo: '',
+            backgroundColor: '',
+            priceUsd: 0,
+            decimals: 18,
+            validated: 0,
+            isProxy: false,
+            proxyTarget: null,
+            possibleSpam: false,
+            verifiedContract: false,
+          };
+          const usedTokenPromise = EvmTokensUtils.getTokenInfo(
+            chainTmp.chainId,
+            tokenAddress!,
+            fetchedContractOnce,
+          ).catch((error) => {
+            Logger.error(
+              'Failed to resolve token info from light node; using minimal fallback',
+              error,
+            );
+            return fallbackTokenInfo as EvmSmartContractInfo;
+          });
+          const lightNodeAbiPromise = EvmLightNodeUtils.getAbi(
+            chainTmp.chainId,
+            params.to,
+            fetchedContractOnce,
+          ).catch((error) => {
+            Logger.error(
+              'Failed to fetch ABI from light node; bundled-ABI fallback will be used if applicable',
+              error,
+            );
+            return null;
+          });
+          const [usedToken, lightNodeAbi] = await Promise.all([
+            usedTokenPromise,
+            lightNodeAbiPromise,
+          ]);
+          const proxyTarget =
+            usedToken.type !== EVMSmartContractType.NATIVE
+              ? usedToken.proxyTarget
+              : null;
+          const transactionInfoPromise =
+            EvmTransactionParserUtils.verifyTransactionInformation(
               data.dappInfo.domain,
               params.to,
-              usedAccount.wallet.address,
+              usedAccountAddress,
               proxyTarget,
             );
-          lastTransactionInfo = transactionInfo;
+          const populateFallbackParsedDataFields = async (reason: string) => {
+            const transactionInfo = await transactionInfoPromise;
+            lastTransactionInfo = transactionInfo;
 
-          transactionHook.setUnableToReachBackend(
-            !!(transactionInfo && transactionInfo.unableToReach),
-          );
+            transactionHook.setUnableToReachBackend(
+              !!(transactionInfo && transactionInfo.unableToReach),
+            );
 
-          transactionConfirmationFields.otherFields.push({
-            name: 'evm_operation_smart_contract_address',
-            type: EvmInputDisplayType.CONTRACT_ADDRESS,
-            value: (
-              <div className="value-content">
-                {usedToken && <EvmTokenLogo tokenInfo={usedToken} />}
-                <div>{EvmFormatUtils.formatAddress(tokenAddress!)}</div>
-              </div>
-            ),
-            ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
-              params.to,
-              chainTmp.chainId,
-              transactionInfo,
-              accounts,
-            )),
-          });
-
-          const parsedData = await EvmTransactionParserUtils.parseData(
-            params.data,
-            chainTmp as EvmChain,
-          );
-
-          if (parsedData?.inputs && parsedData?.operationName) {
-            transactionConfirmationFields.operationName =
-              parsedData.operationName;
-
-            for (let index = 0; index < parsedData.inputs.length; index++) {
-              const input = parsedData.inputs[index];
-              const value = await formatFallbackParsedInputValue(
-                input,
-                chainTmp as EvmChain,
-                usedToken,
+            transactionConfirmationFields.otherFields.push({
+              name: 'evm_operation_smart_contract_address',
+              type: EvmInputDisplayType.CONTRACT_ADDRESS,
+              value: renderCopyableFormattedAddress(
+                tokenAddress!,
+                chainTmp.chainId,
+                usedToken ? <EvmTokenLogo tokenInfo={usedToken} /> : undefined,
+              ),
+              ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
+                params.to,
+                chainTmp.chainId,
                 transactionInfo,
                 accounts,
-                transactionHook,
-              );
-              transactionConfirmationFields.otherFields.push({
-                name: `param ${index + 1}`,
-                type: input.type,
-                value,
-              });
-            }
-          } else {
+                usedToken,
+              )),
+            });
+
             transactionConfirmationFields.operationName =
               chrome.i18n.getMessage(
                 'dialog_evm_decrypt_send_transaction_title',
@@ -216,421 +402,433 @@ export async function runSendTransactionInit(
               type: EvmInputDisplayType.LONG_TEXT,
               value: params.data,
             });
-          }
-        };
+          };
 
-        let abiSource: 'light-node' | 'signature-registry' = 'light-node';
-        let abi = await EvmLightNodeUtils.getAbi(chainTmp.chainId, params.to);
+          const abi = lightNodeAbi;
 
-        if (!abi) {
-          abiSource = 'signature-registry';
-          abi = await EvmTransactionParserUtils.findAbiFromData(
-            params.data,
-            chainTmp as EvmChain,
+          let normalizedAbi = EvmTokensUtils.normalizeAbi(abi);
+          const normalizedBundledAbi = EvmTokensUtils.normalizeAbi(
+            EvmTransactionParserUtils.getBundledAbiByDataSelector(params.data),
           );
-        }
+          const hasAnyAbi = !!normalizedAbi || !!normalizedBundledAbi;
 
-        let normalizedAbi = EvmTokensUtils.normalizeAbi(abi);
+          const decodeTransactionData = (abiToDecode: any[] | null) => {
+            if (!abiToDecode) {
+              return null;
+            }
 
-        const decodeTransactionData = (
-          abiToDecode: any[] | null,
-          decodeSource: 'light-node' | 'signature-registry',
-        ) => {
-          if (!abiToDecode) {
-            return null;
+            try {
+              const contract = new ethers.Contract(
+                params.to,
+                abiToDecode,
+                provider,
+              );
+              const decoded = contract.interface.parseTransaction({
+                data: params.data,
+                value: params.value,
+              });
+              console.log(decoded, 'decoded');
+              return decoded;
+            } catch (error) {
+              return null;
+            }
+          };
+
+          let decodedTransactionData = decodeTransactionData(normalizedAbi);
+          if (
+            (!normalizedAbi || !decodedTransactionData) &&
+            normalizedBundledAbi
+          ) {
+            const bundledDecodedTransactionData =
+              decodeTransactionData(normalizedBundledAbi);
+            if (bundledDecodedTransactionData) {
+              normalizedAbi = normalizedBundledAbi;
+              decodedTransactionData = bundledDecodedTransactionData;
+            }
           }
 
-          try {
+          tData.abi = normalizedAbi ?? undefined;
+
+          if (normalizedAbi && decodedTransactionData) {
+            const contractType = EvmTokensUtils.getTokenType(normalizedAbi);
+            const parsedArgs = decodedTransactionData.args
+              ? EvmTransactionParserUtils.parseArgs(decodedTransactionData.args)
+              : [];
             const contract = new ethers.Contract(
               params.to,
-              abiToDecode,
-              connectedWallet,
+              normalizedAbi,
+              provider,
             );
-            const decoded = contract.interface.parseTransaction({
-              data: params.data,
-              value: params.value,
+
+            tData.method = decodedTransactionData.name;
+            tData.args = parsedArgs;
+            tData.signature = decodedTransactionData.signature;
+
+            const shouldDisplayTokenBalance =
+              EvmTransactionParserUtils.shouldDisplayBalanceChange(
+                normalizedAbi,
+                decodedTransactionData.name,
+              );
+            const shouldUseDecodedAmountForBalance = shouldDisplayTokenBalance;
+
+            if (shouldDisplayTokenBalance) {
+              setTokenInfo(usedToken);
+            }
+
+            setShouldDisplayBalanceChange(true);
+
+            const translatedOperationName = chrome.i18n.getMessage(
+              `evm_operation_${decodedTransactionData.name}`,
+            );
+            transactionConfirmationFields.operationName =
+              translatedOperationName && translatedOperationName.length > 0
+                ? translatedOperationName
+                : decodedTransactionData.name;
+
+            const transactionInfo = await transactionInfoPromise;
+            lastTransactionInfo = transactionInfo;
+
+            transactionHook.setUnableToReachBackend(
+              !!(transactionInfo && transactionInfo.unableToReach),
+            );
+
+            transactionConfirmationFields.otherFields.push({
+              name: 'evm_operation_smart_contract_address',
+              type: EvmInputDisplayType.CONTRACT_ADDRESS,
+              value: renderCopyableFormattedAddress(
+                tokenAddress!,
+                chainTmp.chainId,
+                usedToken ? <EvmTokenLogo tokenInfo={usedToken} /> : undefined,
+              ),
+              ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
+                params.to,
+                chainTmp.chainId,
+                transactionInfo,
+                accounts,
+                usedToken,
+              )),
             });
 
-            return decoded;
-          } catch (error) {
-            return null;
+            if (ethers.toBigInt(decodedTransactionData.value) > BigInt(0)) {
+              transactionConfirmationFields.mainTokenAmount = {
+                name: 'evm_main_token_amount',
+                type: EvmInputDisplayType.BALANCE,
+                value: formatMainTokenWeiAmount(
+                  decodedTransactionData.value,
+                  chainTmp?.mainToken,
+                ),
+              };
+            }
+
+            let tokenId;
+
+            if (decodedTransactionData.fragment.inputs) {
+              for (
+                let index = 0;
+                index < decodedTransactionData.fragment.inputs.length;
+                index++
+              ) {
+                const input = decodedTransactionData.fragment.inputs[index];
+                const argumentValue = decodedTransactionData.args[index];
+
+                if (
+                  EvmTransactionParserUtils.recipientInputNameList.includes(
+                    input.name,
+                  ) &&
+                  (typeof argumentValue === 'string' ||
+                    typeof argumentValue === 'bigint')
+                ) {
+                  resolvedReceiver = String(argumentValue);
+                  setReceiver(resolvedReceiver);
+                  if (typeof argumentValue === 'string') {
+                    tData.to = argumentValue;
+                  }
+                }
+                if (
+                  shouldUseDecodedAmountForBalance &&
+                  EvmTransactionParserUtils.amountInputNameList.includes(
+                    input.name,
+                  ) &&
+                  (typeof argumentValue === 'bigint' ||
+                    typeof argumentValue === 'number' ||
+                    typeof argumentValue === 'string')
+                ) {
+                  const decimals =
+                    usedToken.type === EVMSmartContractType.ERC20
+                      ? (usedToken as EvmSmartContractInfoErc20).decimals
+                      : 18;
+                  resolvedTransferAmount = new Decimal(argumentValue.toString())
+                    .div(new Decimal(10).pow(decimals ?? 18))
+                    .toNumber();
+                  setTransferAmount(resolvedTransferAmount);
+                }
+                if (input.name === 'tokenId' || input.name === 'id') {
+                  tokenId = argumentValue;
+                }
+
+                const inputDisplayType =
+                  EvmTransactionParserUtils.getDisplayInputType(
+                    normalizedAbi,
+                    decodedTransactionData.name,
+                    input.type,
+                    input.name,
+                    usedToken,
+                  );
+                const resolvedDisplayType = isTupleAbiInput(input as AbiParamFragment)
+                  ? EvmInputDisplayType.TUPLE
+                  : inputDisplayType;
+                const decodedFieldTokenType = getDecodedFieldTokenType(
+                  contractType,
+                  usedToken.type,
+                );
+                const fieldName = getDecodedFieldName(
+                  decodedFieldTokenType,
+                  decodedTransactionData.name,
+                  input.name,
+                  input.type,
+                  index,
+                );
+                if (
+                  !shouldDisplayDecodedField(
+                    decodedFieldTokenType,
+                    decodedTransactionData.name,
+                    index,
+                  )
+                ) {
+                  continue;
+                }
+                const fieldAddress = [
+                  EvmInputDisplayType.ADDRESS,
+                  EvmInputDisplayType.WALLET_ADDRESS,
+                ].includes(resolvedDisplayType)
+                  ? String(argumentValue)
+                  : undefined;
+                const value = isTupleAbiInput(input as AbiParamFragment)
+                  ? await formatDecodedTupleForConfirmationField(
+                      input as AbiParamFragment,
+                      argumentValue,
+                      usedToken,
+                      chainTmp as EvmChain,
+                      transactionInfo,
+                      accounts,
+                      transactionHook,
+                      normalizedAbi,
+                      decodedTransactionData.name,
+                    )
+                  : await formatDecodedArgumentDisplayValue(
+                      inputDisplayType,
+                      argumentValue,
+                      usedToken,
+                      chainTmp as EvmChain,
+                      transactionInfo,
+                      accounts,
+                      transactionHook,
+                    );
+                transactionConfirmationFields.otherFields.push({
+                  name: fieldName,
+                  type: resolvedDisplayType,
+                  value: value,
+                  ...(fieldAddress ? { address: fieldAddress } : {}),
+                  warnings: await EvmTransactionParserUtils.getFieldWarnings(
+                    normalizedAbi,
+                    decodedTransactionData.name,
+                    input.type,
+                    input.name,
+                    argumentValue,
+                    chainTmp.chainId,
+                    transactionInfo,
+                    accounts,
+                  ),
+                });
+              }
+              if (
+                (contractType === EVMSmartContractType.ERC721 ||
+                  contractType === EVMSmartContractType.ERC1155) &&
+                tokenId
+              ) {
+                const metadata = await EvmNFTUtils.getMetadata(
+                  contractType,
+                  tokenId,
+                  contract,
+                );
+                const src = metadata.image;
+                transactionConfirmationFields.otherFields.push({
+                  name: '',
+                  type: EvmInputDisplayType.STRING_CENTERED,
+                  value: <div className="nft-name">{metadata.name}</div>,
+                });
+                transactionConfirmationFields.otherFields.push({
+                  name: '',
+                  type: EvmInputDisplayType.IMAGE,
+                  value: <img src={src} />,
+                });
+              }
+            }
+
+            if (resolvedReceiver && resolvedTransferAmount !== undefined) {
+              tData.decodedData = {
+                receiverAddress: resolvedReceiver,
+                amount: resolvedTransferAmount,
+              };
+            }
+          } else {
+            await populateFallbackParsedDataFields(
+              hasAnyAbi ? 'decode-failed' : 'missing-abi',
+            );
           }
-        };
 
-        let decodedTransactionData = decodeTransactionData(
-          normalizedAbi,
-          abiSource,
-        );
-
-        if (!decodedTransactionData && abiSource !== 'signature-registry') {
-          const fallbackAbi = EvmTokensUtils.normalizeAbi(
-            await EvmTransactionParserUtils.findAbiFromData(
-              params.data,
-              chainTmp as EvmChain,
+          tData.from = params.from;
+          tData.value = params.value;
+          tData.to = tokenAddress!;
+          tData.data = params.data;
+        } else {
+          // Case of smart contract deployment
+          // Unknown ABI
+          setCaption(
+            chrome.i18n.getMessage(
+              'evm_contract_deployment_transaction_caption',
             ),
           );
 
-          const fallbackDecodedTransactionData = decodeTransactionData(
-            fallbackAbi,
-            'signature-registry',
+          setReceiver('');
+
+          tData.data = params.data;
+
+          transactionConfirmationFields.operationName = chrome.i18n.getMessage(
+            `evm_operation_contract_deployment_transaction`,
           );
-
-          if (fallbackDecodedTransactionData) {
-            abiSource = 'signature-registry';
-            normalizedAbi = fallbackAbi;
-            decodedTransactionData = fallbackDecodedTransactionData;
-          }
-        }
-
-        tData.abi = normalizedAbi ?? undefined;
-
-        if (normalizedAbi && decodedTransactionData) {
-          const contractType = EvmTokensUtils.getTokenType(normalizedAbi);
-          const parsedArgs = decodedTransactionData.args
-            ? EvmTransactionParserUtils.parseArgs(decodedTransactionData.args)
-            : [];
-          const contract = new ethers.Contract(
-            params.to,
-            normalizedAbi,
-            connectedWallet,
-          );
-
-          tData.method = decodedTransactionData.name;
-          tData.args = parsedArgs;
-          tData.signature = decodedTransactionData.signature;
-
-          setShouldDisplayBalanceChange(
-            EvmTransactionParserUtils.shouldDisplayBalanceChange(
-              normalizedAbi,
-              decodedTransactionData.name,
-            ),
-          );
-
-          const translatedOperationName = chrome.i18n.getMessage(
-            `evm_operation_${decodedTransactionData.name}`,
-          );
-          transactionConfirmationFields.operationName =
-            translatedOperationName && translatedOperationName.length > 0
-              ? translatedOperationName
-              : decodedTransactionData.name;
 
           const transactionInfo =
             await EvmTransactionParserUtils.verifyTransactionInformation(
               data.dappInfo.domain,
               params.to,
-              usedAccount.wallet.address,
-              proxyTarget,
+              usedAccountAddress,
             );
           lastTransactionInfo = transactionInfo;
-
           transactionHook.setUnableToReachBackend(
             !!(transactionInfo && transactionInfo.unableToReach),
           );
 
           transactionConfirmationFields.otherFields.push({
-            name: 'evm_operation_smart_contract_address',
-            type: EvmInputDisplayType.CONTRACT_ADDRESS,
-            value: (
-              <div
-                className="value-content address-content"
-                onClick={() => onCopyAddress(tokenAddress!)}
-              >
-                {usedToken && <EvmTokenLogo tokenInfo={usedToken} />}
-                <div>{EvmFormatUtils.formatAddress(tokenAddress!)}</div>
-              </div>
-            ),
-            ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
-              params.to,
-              chainTmp.chainId,
-              transactionInfo,
-              accounts,
-            )),
+            name: 'evm_smart_contract_data',
+            type: EvmInputDisplayType.LONG_TEXT,
+            value: params.data,
           });
-
-          if (Number(decodedTransactionData.value) > 0) {
-            transactionConfirmationFields.mainTokenAmount = {
-              name: 'evm_main_token_amount',
-              type: EvmInputDisplayType.BALANCE,
-              value: `${FormatUtils.withCommas(
-                ethers.formatEther(Number(decodedTransactionData.value)),
-                18,
-                true,
-              )}  ${chainTmp?.mainToken}`,
-            };
-          }
-
-          let tokenId;
-
-          if (decodedTransactionData.fragment.inputs) {
-            for (
-              let index = 0;
-              index < decodedTransactionData.fragment.inputs.length;
-              index++
-            ) {
-              const input = decodedTransactionData.fragment.inputs[index];
-              const argumentValue = decodedTransactionData.args[index];
-
-              if (
-                EvmTransactionParserUtils.recipientInputNameList.includes(
-                  input.name,
-                )
-              ) {
-                resolvedReceiver = String(argumentValue);
-                setReceiver(resolvedReceiver);
-                tData.to = argumentValue;
-              }
-              if (
-                EvmTransactionParserUtils.amountInputNameList.includes(
-                  input.name,
-                )
-              ) {
-                const decimals =
-                  usedToken.type === EVMSmartContractType.ERC20
-                    ? (usedToken as EvmSmartContractInfoErc20).decimals
-                    : 18;
-                resolvedTransferAmount = new Decimal(argumentValue.toString())
-                  .div(new Decimal(10).pow(decimals ?? 18))
-                  .toNumber();
-                setTransferAmount(resolvedTransferAmount);
-              }
-              if (input.name === 'tokenId' || input.name === 'id') {
-                tokenId = argumentValue;
-              }
-
-              const inputDisplayType =
-                EvmTransactionParserUtils.getDisplayInputType(
-                  normalizedAbi,
-                  decodedTransactionData.name,
-                  input.type,
-                  input.name,
-                  usedToken,
-                );
-              const fieldAddress = [
-                EvmInputDisplayType.ADDRESS,
-                EvmInputDisplayType.WALLET_ADDRESS,
-              ].includes(inputDisplayType)
-                ? String(argumentValue)
-                : undefined;
-              const value = await formatDecodedArgumentDisplayValue(
-                inputDisplayType,
-                argumentValue,
-                usedToken,
-                chainTmp as EvmChain,
-                transactionInfo,
-                accounts,
-                transactionHook,
-              );
-              transactionConfirmationFields.otherFields.push({
-                name: input.name,
-                type: inputDisplayType,
-                value: value,
-                ...(fieldAddress ? { address: fieldAddress } : {}),
-                warnings: await EvmTransactionParserUtils.getFieldWarnings(
-                  normalizedAbi,
-                  decodedTransactionData.name,
-                  input.type,
-                  input.name,
-                  argumentValue,
-                  chainTmp.chainId,
-                  transactionInfo,
-                  accounts,
-                ),
-              });
-            }
-            if (
-              (contractType === EVMSmartContractType.ERC721 ||
-                contractType === EVMSmartContractType.ERC1155) &&
-              tokenId
-            ) {
-              const metadata = await EvmNFTUtils.getMetadata(
-                contractType,
-                tokenId,
-                contract,
-              );
-              const src = metadata.image;
-              transactionConfirmationFields.otherFields.push({
-                name: '',
-                type: EvmInputDisplayType.STRING_CENTERED,
-                value: <div className="nft-name">{metadata.name}</div>,
-              });
-              transactionConfirmationFields.otherFields.push({
-                name: '',
-                type: EvmInputDisplayType.IMAGE,
-                value: <img src={src} />,
-              });
-            }
-          }
-
-          if (resolvedReceiver && resolvedTransferAmount !== undefined) {
-            tData.decodedData = {
-              receiverAddress: resolvedReceiver,
-              amount: resolvedTransferAmount,
-            };
-          }
-        } else {
-          await populateFallbackParsedDataFields(
-            normalizedAbi ? 'decode-failed' : 'missing-abi',
-          );
         }
-
-        tData.from = params.from;
-        tData.value = params.value;
-        tData.to = tokenAddress!;
-        tData.data = params.data;
       } else {
-        // Case of smart contract deployment
-        // Unknown ABI
-        setCaption(
-          chrome.i18n.getMessage('evm_contract_deployment_transaction_caption'),
-        );
-
-        setReceiver('');
-
-        tData.data = params.data;
-
-        transactionConfirmationFields.operationName = chrome.i18n.getMessage(
-          `evm_operation_contract_deployment_transaction`,
-        );
-
+        // Classic transfer
         const transactionInfo =
           await EvmTransactionParserUtils.verifyTransactionInformation(
             data.dappInfo.domain,
             params.to,
-            usedAccount.wallet.address,
+            usedAccountAddress,
           );
         lastTransactionInfo = transactionInfo;
+
         transactionHook.setUnableToReachBackend(
           !!(transactionInfo && transactionInfo.unableToReach),
         );
 
-        transactionConfirmationFields.otherFields.push({
-          name: 'evm_smart_contract_data',
-          type: EvmInputDisplayType.LONG_TEXT,
-          value: params.data,
-        });
+        setTokenInfo(mainToken);
+
+        setShouldDisplayBalanceChange(true);
+
+        transactionConfirmationFields.operationName = chrome.i18n.getMessage(
+          'evm_operation_transfer',
+        );
+
+        transactionConfirmationFields.mainTokenAmount = {
+          name: 'evm_main_token_amount',
+          type: EvmInputDisplayType.BALANCE,
+          value: formatMainTokenWeiAmount(
+            params.value,
+            (chainTmp as EvmChain)?.mainToken,
+          ),
+        };
+
+        const [fromInput, toInput] = await Promise.all([
+          transactionHook.getWalletAddressInput(
+            params.from,
+            chainTmp.chainId,
+            transactionInfo,
+            accounts,
+            'evm_operation_from',
+            true,
+          ),
+          transactionHook.getWalletAddressInput(
+            params.to,
+            chainTmp.chainId,
+            transactionInfo,
+            accounts,
+            'evm_operation_to',
+          ),
+        ]);
+
+        transactionConfirmationFields.otherFields.push(fromInput, toInput);
+
+        resolvedReceiver = params.to;
+        resolvedTransferAmount = new Decimal(
+          ethers.toBigInt(params?.value ?? '0').toString(),
+        )
+          .div(new Decimal(EvmFormatUtils.WEI))
+          .toNumber();
+        setReceiver(resolvedReceiver);
+        setTransferAmount(resolvedTransferAmount);
+        tData.decodedData = {
+          receiverAddress: resolvedReceiver!,
+          amount: resolvedTransferAmount,
+        };
+
+        tData.from = params.from;
+        tData.value = params.value;
+        tData.to = params.to;
+      }
+
+      tData.type =
+        params.type ?? (chainTmp as EvmChain)?.defaultTransactionType;
+
+      switch (tData.type) {
+        case EvmTransactionType.EIP_1559: {
+          if (!tData.maxFeePerGas) tData.maxFeePerGas = tData.gasPrice;
+          if (!tData.maxPriorityFeePerGas)
+            tData.maxPriorityFeePerGas = tData.gasPrice;
+          break;
+        }
+        case EvmTransactionType.LEGACY: {
+          if (!tData.gasPrice) {
+            tData.gasPrice = tData.maxFeePerGas;
+          }
+          break;
+        }
+        case EvmTransactionType.EIP_155: {
+          transactionConfirmationFields.otherFields.push({
+            name: 'evm_access_list',
+            type: EvmInputDisplayType.LONG_TEXT,
+            value: JSON.stringify(params.accessList),
+            style: { fontWeight: 500 },
+          });
+          setCaption(chrome.i18n.getMessage('evm_access_list_caption_message'));
+          break;
+        }
+      }
+      setTransactionData(tData);
+      transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
+        removeMatchingFromField(transactionConfirmationFields.otherFields),
+      );
+      transactionHook.setFields(transactionConfirmationFields);
+      if (lastTransactionInfo) {
+        void transactionHook.hydrateDomainFieldWarnings(lastTransactionInfo);
       }
     } else {
-      // Classic transfer
-      const transactionInfo =
-        await EvmTransactionParserUtils.verifyTransactionInformation(
-          data.dappInfo.domain,
-          params.to,
-          usedAccount.wallet.address,
-        );
-      lastTransactionInfo = transactionInfo;
-
-      transactionHook.setUnableToReachBackend(
-        !!(transactionInfo && transactionInfo.unableToReach),
-      );
-
-      setTokenInfo(
-        (await EvmTokensUtils.getMainTokenInfo(
-          chainTmp as EvmChain,
-        )) as EvmSmartContractInfo,
-      );
-
-      setShouldDisplayBalanceChange(true);
-
-      transactionConfirmationFields.operationName = chrome.i18n.getMessage(
-        'evm_operation_transfer',
-      );
-
-      transactionConfirmationFields.mainTokenAmount = {
-        name: 'evm_main_token_amount',
-        type: EvmInputDisplayType.BALANCE,
-        value: `${FormatUtils.withCommas(
-          new Decimal(Number(params.value))
-            .div(new Decimal(EvmFormatUtils.WEI))
-            .toNumber(),
-          8,
-          true,
-        )} ${(chainTmp as EvmChain)?.mainToken}`,
-      };
-
-      transactionConfirmationFields.otherFields.push(
-        await transactionHook.getWalletAddressInput(
-          params.from,
-          chainTmp.chainId,
-          transactionInfo,
-          accounts,
-          'evm_operation_from',
-          true,
-        ),
-      );
-
-      transactionConfirmationFields.otherFields.push(
-        await transactionHook.getWalletAddressInput(
-          params.to,
-          chainTmp.chainId,
-          transactionInfo,
-          accounts,
-          'evm_operation_to',
-        ),
-      );
-
-      resolvedReceiver = params.to;
-      resolvedTransferAmount = new Decimal(
-        ethers.toBigInt(params?.value ?? '0').toString(),
-      )
-        .div(new Decimal(EvmFormatUtils.WEI))
-        .toNumber();
-      setReceiver(resolvedReceiver);
-      setTransferAmount(resolvedTransferAmount);
-      tData.decodedData = {
-        receiverAddress: resolvedReceiver!,
-        amount: resolvedTransferAmount,
-      };
-
-      setTokenInfo(
-        (await EvmTokensUtils.getMainTokenInfo(
-          chainTmp as EvmChain,
-        )) as EvmSmartContractInfo,
-      );
-
-      tData.from = params.from;
-      tData.value = params.value;
-      tData.to = params.to;
+      Logger.error('No corresponding account found');
     }
-
-    tData.type = params.type ?? (chainTmp as EvmChain)?.defaultTransactionType;
-
-    switch (tData.type) {
-      case EvmTransactionType.EIP_1559: {
-        if (!tData.maxFeePerGas) tData.maxFeePerGas = tData.gasPrice;
-        if (!tData.maxPriorityFeePerGas)
-          tData.maxPriorityFeePerGas = tData.gasPrice;
-        break;
-      }
-      case EvmTransactionType.LEGACY: {
-        if (!tData.gasPrice) {
-          tData.gasPrice = tData.maxFeePerGas;
-        }
-        break;
-      }
-      case EvmTransactionType.EIP_155: {
-        transactionConfirmationFields.otherFields.push({
-          name: 'evm_access_list',
-          type: EvmInputDisplayType.LONG_TEXT,
-          value: JSON.stringify(params.accessList),
-          style: { fontWeight: 500 },
-        });
-        setCaption(chrome.i18n.getMessage('evm_access_list_caption_message'));
-        break;
-      }
-    }
-    setTransactionData(tData);
-    transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
-      removeMatchingFromField(transactionConfirmationFields.otherFields),
+  } catch (error) {
+    Logger.error(
+      'Unhandled error while initializing send-transaction dialog; clearing loading state to avoid hang',
+      error,
     );
-    transactionHook.setFields(transactionConfirmationFields);
-    if (lastTransactionInfo) {
-      void transactionHook.hydrateDomainFieldWarnings(lastTransactionInfo);
-    }
-  } else {
-    Logger.error('No corresponding account found');
-  }
-  setTimeout(() => {
+  } finally {
     transactionHook.setReady(true);
     transactionHook.setLoading(false);
-  }, 250);
+  }
 }

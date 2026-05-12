@@ -7,7 +7,7 @@
   row-gap: 8px;
   position: relative;
 
-  img {
+  .nft-media {
     height: 160px;
     width: 160px;
   }
@@ -52,7 +52,7 @@
     grid-column-start: 1;
     grid-column-end: -1;
 
-    img {
+    .nft-media {
       height: auto;
       align-self: center;
       &.normal {

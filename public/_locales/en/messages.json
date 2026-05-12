@@ -4848,6 +4848,10 @@
     "message": "Gas fee",
     "description": "Evm Gas fee estimate label"
   },
+  "popup_html_evm_gas_fee_estimated": {
+    "message": "Estimated gas fee",
+    "description": "EVM transaction result pending fee label"
+  },
   "popup_html_evm_gas_fee_estimate_duration": {
     "message": "~$1 seconds",
     "description": "Evm Gas fee estimate label"
@@ -5043,6 +5047,10 @@
   "popup_html_evm_dapp_status_caption": {
     "message": "Connecting an account to this dApp will give it permission to see your address, account balance and activity, and to suggest transactions to approve.",
     "description": "Evm dapp status"
+  },
+  "popup_html_evm_dapp_status_show_all_connected": {
+    "message": "Show all connected dApps",
+    "description": "Link from EVM dapp status popup to Connected dApps settings"
   },
   "dialog_evm_dapp_status_caption": {
     "message": "Select which accounts you want to connect to $1. It will give it permission to see your address, account balance and activity, and to suggest transactions to approve.",
@@ -5357,7 +5365,7 @@
     "description": "EIP-7702 warning message"
   },
   "evm_too_many_transaction_button": {
-    "message": "Block this app for $1 minute(s)",
+    "message": "Block this app for $1 minute",
     "description": "Label for block dapp button"
   },
   "evm_all_nft_collections": {
@@ -5367,6 +5375,14 @@
   "evm_nft_token_id": {
     "message": "Token ID",
     "description": "NFT token id"
+  },
+  "evm_nft_approve_all": {
+    "message": "Approve All",
+    "description": "NFT approve all value"
+  },
+  "evm_nft_number_of_tokens": {
+    "message": "Number of Tokens",
+    "description": "NFT number of tokens"
   },
   "evm_nft_token_type": {
     "message": "Token type",
@@ -5396,6 +5412,18 @@
   "evm_menu_custom_chains": {
     "message": "Manage chains",
     "description": "EVM settings: chain management"
+  },
+  "evm_menu_dapps_connections": {
+    "message": "Connected dApps",
+    "description": "EVM settings: connected dapps"
+  },
+  "evm_dapps_connections_empty": {
+    "message": "No connected dApp yet.",
+    "description": "Empty state for EVM dapps connections page"
+  },
+  "evm_dapps_connections_unknown_account": {
+    "message": "Unknown account",
+    "description": "Fallback label for an EVM dapp connection address that is not in the local wallet"
   },
   "evm_custom_chains_caption": {
     "message": "Custom chains have limited support. Features such as token discovery and automatic history loading may be unavailable.",
@@ -5574,11 +5602,11 @@
     "description": "Evm Advanced smart contracts"
   },
   "evm_provider_compatibility_prefer_title": {
-    "message": "Prefer Keychain on legacy dapps",
+    "message": "Prefer Keychain on legacy dApps",
     "description": "Evm provider compatibility legacy preference title"
   },
   "evm_provider_compatibility_prefer_hint": {
-    "message": "Keychain will try to stay on <code>window.ethereum</code> for older dapps while still announcing itself through EIP-6963.",
+    "message": "Prioritize the use of Keychain over other wallets on websites that do not list all available wallets.",
     "description": "Evm provider compatibility legacy preference hint"
   },
   "evm_provider_compatibility_warning": {
@@ -5586,7 +5614,7 @@
     "description": "Evm provider compatibility warning"
   },
   "evm_provider_compatibility_reload_note": {
-    "message": "Reload open dapp tabs after changing this setting so websites pick up the new provider order.",
+    "message": "Reload open dApp tabs after changing this setting so websites pick up the new provider order.",
     "description": "Evm provider compatibility reload note"
   },
   "evm_menu_advanced_smart_contracts_display_spam_title": {
@@ -5825,6 +5853,10 @@
     "message": "Nickname",
     "description": "Nickname"
   },
+  "evm_seed_nickname": {
+    "message": "Seed Name",
+    "description": "Nickname"
+  },
   "evm_edit_seed_nickname": {
     "message": "Edit name",
     "decription": "Edit seed nickname"
@@ -5961,6 +5993,10 @@
     "message": "Canceled transaction",
     "description": "Transaction canceled"
   },
+  "evm_history_operation_canceled": {
+    "message": "You have canceled an operation",
+    "description": "EVM history message for CANCELED_OP operations"
+  },
   "evm_transaction_result_error_message_nonce_expired": {
     "message": "Nonce expired, please try again",
     "description": "Transaction result error message nonce expired"
@@ -6089,7 +6125,7 @@
     "description": "Empty state on custom NFT page"
   },
   "evm_custom_tokens_page_caption": {
-    "message": "Custom tokens are stored per wallet and network. You can remove them from this list at any time.",
+    "message": "Custom tokens are stored per network. You can remove them from this list at any time.",
     "description": "Intro caption on custom tokens page"
   },
   "evm_custom_nfts_page_caption": {
@@ -6128,6 +6164,10 @@
     "message": "Replace the token ID list for this NFT contract. The NFT type stays the same.",
     "description": "Caption when editing a custom NFT entry"
   },
+  "evm_wallet_tokens_filter_no_results": {
+    "message": "No token found",
+    "description": "Shown on wallet tokens tab when the search/filter has no matching tokens"
+  },
   "evm_custom_erc20_empty_card_message": {
     "message": "You don't have any custom tokens yet.</br> To get started, click the settings wheel.",
     "description": "Hint on wallet tokens tab when there are no custom ERC20 tokens"
@@ -6156,6 +6196,14 @@
     "message": "Add a custom token to your wallet. If you don't find the token you're looking for, you can add it manually.",
     "description": "Add custom token popup caption"
   },
+  "evm_watch_asset_title": {
+    "message": "Add custom token",
+    "description": "Title when a dApp requests wallet_watchAsset"
+  },
+  "evm_watch_asset_caption": {
+    "message": "$1 is asking you to add a custom token to Keychain.",
+    "description": "Caption when a dApp requests wallet_watchAsset; $1 is the dApp domain"
+  },
   "evm_add_custom_nft_popup_caption": {
     "message": "Add an NFT contract and the token IDs you own. Keychain will detect whether the contract is ERC721 or ERC1155.",
     "description": "Add custom NFT popup caption"
@@ -6179,6 +6227,54 @@
   "evm_custom_nfts_token_count": {
     "message": "$1 saved token IDs",
     "description": "Custom NFT token count label; $1 is the number of saved token IDs"
+  },
+  "evm_add_custom_asset_error_contract_address_invalid": {
+    "message": "Enter a valid contract address.",
+    "description": "Validation error when adding a custom EVM token or NFT with an invalid contract address"
+  },
+  "evm_add_custom_asset_error_contract_address_duplicate": {
+    "message": "This contract address is already added.",
+    "description": "Validation error when the contract address is already in custom tokens or NFTs"
+  },
+  "evm_add_custom_token_error_symbol_required": {
+    "message": "Symbol is required.",
+    "description": "Validation error when saving a custom ERC20 without a symbol"
+  },
+  "evm_add_custom_token_error_name_required": {
+    "message": "Token name is required.",
+    "description": "Validation error when saving a custom ERC20 without a name"
+  },
+  "evm_add_custom_token_error_decimals_invalid": {
+    "message": "Enter a valid decimal count between 0 and 255.",
+    "description": "Validation error when custom ERC20 decimals are missing or out of range"
+  },
+  "evm_add_custom_nft_error_token_ids_required": {
+    "message": "Enter at least one token ID.",
+    "description": "Validation error when saving a custom NFT without token IDs"
+  },
+  "evm_add_custom_nft_error_token_ids_format": {
+    "message": "Token IDs must be decimal numbers or 0x-prefixed hex values.",
+    "description": "Validation error when custom NFT token IDs use an invalid format"
+  },
+  "evm_add_custom_token_error_save_failed": {
+    "message": "Unable to save this token right now.",
+    "description": "Error when persisting a custom ERC20 token fails"
+  },
+  "evm_add_custom_token_error_fetch_erc20_metadata": {
+    "message": "Could not read token name and decimals from the chain. Check the address and that it is a standard ERC20 contract.",
+    "description": "Error when fetching ERC20 name and decimals from chain fails"
+  },
+  "evm_add_custom_nft_error_token_ids_not_owned": {
+    "message": "One or more token IDs are not owned by this wallet.",
+    "description": "Error when listed NFT token IDs are not owned by the current wallet"
+  },
+  "evm_add_custom_nft_error_save_failed": {
+    "message": "Unable to save this NFT right now.",
+    "description": "Error when persisting a custom NFT entry fails"
+  },
+  "evm_add_custom_nft_error_unsupported_contract": {
+    "message": "Could not detect a supported NFT contract at this address. Only ERC721 and ERC1155 contracts are supported.",
+    "description": "Error when the address is not a supported ERC721 or ERC1155 contract"
   },
   "evm_add_manually_discover": {
     "message": "Discover tokens",
@@ -6458,5 +6554,9 @@
   "evm_activity_tab": {
     "message": "Activity",
     "description": "Activity tab"
+  },
+  "manage_accounts": {
+    "message": "Manage accounts",
+    "description": "Manage accounts"
   }
 }

@@ -1,12 +1,20 @@
 import { Screen } from '@interfaces/screen.interface';
-import { setErrorMessage } from '@popup/multichain/actions/message.actions';
-import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import {
+  resetTitleContainerProperties,
+  setTitleContainerProperties,
+} from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { Keys } from 'src/interfaces/keys.interface';
+import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { addAccount } from 'src/popup/hive/actions/account.actions';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 
@@ -21,6 +29,10 @@ const SelectKeys = ({
   addAccount,
   setErrorMessage,
   setTitleContainerProperties,
+  navigateTo,
+  setSuccessMessage,
+  resetTitleContainerProperties,
+  loadActiveAccount,
 }: PropsFromRedux) => {
   const [importActive, setImportActive] = useState(keys.active ? true : false);
   const [importPosting, setImportPosting] = useState(
@@ -33,9 +45,11 @@ const SelectKeys = ({
       title: 'popup_html_import_keys',
       isBackButtonEnabled: true,
     });
-  });
+  }, []);
 
-  const importKeys = (): void => {
+  const importKeys = (event: React.MouseEvent<HTMLButtonElement>): void => {
+    event.preventDefault();
+    event.stopPropagation();
     let keysToImport: Keys = {};
     if (importActive) {
       keysToImport.active = keys.active;
@@ -53,7 +67,12 @@ const SelectKeys = ({
     if (!KeysUtils.hasKeys(keysToImport)) {
       setErrorMessage('popup_accounts_no_key_selected');
     } else {
-      addAccount({ name: username, keys: keysToImport });
+      const account = { name: username, keys: keysToImport };
+      addAccount(account);
+      setSuccessMessage('popup_html_import_success');
+      resetTitleContainerProperties();
+      loadActiveAccount(account);
+      navigateTo(Screen.HOME_PAGE, true);
     }
   };
 
@@ -105,7 +124,9 @@ const SelectKeys = ({
       <ButtonComponent
         dataTestId="button-save"
         label="popup_html_save"
-        onClick={() => importKeys()}
+        onClick={(event: React.MouseEvent<HTMLButtonElement>) =>
+          importKeys(event)
+        }
       />
     </div>
   );
@@ -120,8 +141,12 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   setErrorMessage,
+  setSuccessMessage,
   addAccount,
   setTitleContainerProperties,
+  navigateTo,
+  resetTitleContainerProperties,
+  loadActiveAccount,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

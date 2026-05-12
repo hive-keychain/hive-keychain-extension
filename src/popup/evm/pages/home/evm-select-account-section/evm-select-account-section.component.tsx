@@ -6,6 +6,7 @@ import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmSelectAccountSectionItemComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section-item.component';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import {
   EvmAddressDetail,
@@ -14,6 +15,7 @@ import {
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useRef, useState } from 'react';
@@ -46,6 +48,7 @@ const SelectAccountSection = ({
   mk,
   loadEvmActiveAccount,
   setEvmAccounts,
+  navigateTo,
   isOnMain = false,
   removeBorder,
 }: PropsFromRedux & Props) => {
@@ -280,8 +283,20 @@ const SelectAccountSection = ({
             )}
           </Droppable>
         </DragDropContext>
+        <div
+          className="manage-accounts-panel"
+          onClick={handleOnManageAccountsClicked}>
+          <SVGIcon icon={SVGIcons.MENU_ACCOUNTS_MANAGE_ACCOUNTS} />
+          <div className="text">
+            {chrome.i18n.getMessage('manage_accounts')}
+          </div>
+        </div>
       </div>
     );
+  };
+
+  const handleOnManageAccountsClicked = () => {
+    navigateTo(EvmScreen.EVM_ACCOUNTS_SETTINGS);
   };
   return (
     <>
@@ -325,6 +340,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   loadEvmActiveAccount,
   setEvmAccounts,
+  navigateTo,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

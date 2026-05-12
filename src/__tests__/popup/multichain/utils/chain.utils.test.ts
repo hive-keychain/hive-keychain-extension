@@ -120,7 +120,7 @@ describe('ChainUtils', () => {
     expect(result).toEqual(apiChains);
     expect(secondResult).toEqual(apiChains);
     expect(EvmLightNodeApi.get).toHaveBeenCalledTimes(1);
-    expect(EvmLightNodeApi.get).toHaveBeenCalledWith('chains/active');
+    expect(EvmLightNodeApi.get).toHaveBeenCalledWith('chains');
     expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
       LocalStorageKeyEnum.DEFAULT_CHAINS,
       apiChains,
@@ -148,6 +148,28 @@ describe('ChainUtils', () => {
       LocalStorageKeyEnum.DEFAULT_CHAINS,
     );
     expect(Logger.info).toHaveBeenCalledWith('Initialized chains from cache');
+  });
+
+  it('keeps bundled Hive first when API defaults only include EVM chains', async () => {
+    const { ChainUtils, EvmLightNodeApi, LocalStorageUtils } =
+      await loadTestContext();
+    const evmOnlyApiChains = apiChains.filter(
+      (chain) => chain.type === ChainType.EVM,
+    );
+    (EvmLightNodeApi.get as jest.Mock).mockResolvedValue(
+      clone(evmOnlyApiChains),
+    );
+    LocalStorageUtils.getValueFromLocalStorage.mockResolvedValue(undefined);
+    LocalStorageUtils.saveValueInLocalStorage.mockResolvedValue(undefined);
+
+    const result = await ChainUtils.initChains();
+
+    expect(result[0]).toEqual(defaultChainList[0]);
+    expect(result.slice(1)).toEqual(evmOnlyApiChains);
+    expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.DEFAULT_CHAINS,
+      [defaultChainList[0], ...evmOnlyApiChains],
+    );
   });
 
   it('falls back to bundled chains when both the API and cache are unavailable', async () => {

@@ -1,7 +1,9 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import { SelectAccountSectionItemComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section-item.component';
+import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
 import AccountUtils from '@popup/hive/utils/account.utils';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -39,6 +41,7 @@ const SelectAccountSection = ({
   setAccounts,
   activeAccount,
   loadActiveAccount,
+  navigateTo,
   isOnMain = false,
 }: PropsFromRedux & Props) => {
   const [isOpened, setIsOpened] = useState(false);
@@ -194,18 +197,29 @@ const SelectAccountSection = ({
             )}
           </Droppable>
         </DragDropContext>
+        <div
+          className="manage-accounts-panel"
+          onClick={handleOnManageAccountsClicked}>
+          <SVGIcon icon={SVGIcons.MENU_ACCOUNTS_MANAGE_ACCOUNTS} />
+          <div className="text">
+            {chrome.i18n.getMessage('manage_accounts')}
+          </div>
+        </div>
       </div>
     );
   };
+
+  const handleOnManageAccountsClicked = () => {
+    navigateTo(HiveScreen.SETTINGS_MANAGE_ACCOUNTS);
+  };
+
   return (
     <>
       {selectedLocalAccount && options && (
         <div
           className={`hive-select-account-section ${
             fullSize ? 'fullsize' : ''
-          } ${isOpened ? 'opened' : 'closed'} ${
-            isOnMain ? 'main-page' : ''
-          }`}>
+          } ${isOpened ? 'opened' : 'closed'} ${isOnMain ? 'main-page' : ''}`}>
           <Select
             keepOpen
             values={[selectedLocalAccount as any]}
@@ -237,6 +251,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   loadActiveAccount,
   setAccounts,
+  navigateTo,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

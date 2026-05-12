@@ -14,6 +14,8 @@ import {
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { fetchGasOracle } from '@popup/evm/utils/evm-gas-oracle.utils';
+
 /** Direct light-node routes expect a decimal chain id in the path, not hex (`0x…`). */
 export function evmChainIdToDecimalPathSegment(
   chainId: string | number,
@@ -144,6 +146,7 @@ type HistoryFlowWithMeta =
       collectionName: string | null;
       tokenId: string;
       quantity: string;
+      imageUrl?: string | null;
       verified: boolean;
       possibleSpam: boolean;
       collection?: {
@@ -165,8 +168,8 @@ type HistoryItem = {
   blockTime: string; // ISO
   opIndex: string; // bigint as string
   opName: string; // derived from OpType enum key
-  in: HistoryFlow[];
-  out: HistoryFlow[];
+  in: HistoryFlowWithMeta[];
+  out: HistoryFlowWithMeta[];
   status: 'SUCCESS' | 'REVERTED' | null;
   fromAddress: string | null;
   toAddress: string | null;
@@ -196,6 +199,7 @@ type HistoryFlow =
       collectionName: string | null;
       tokenId: string;
       quantity: '1';
+      imageUrl?: string | null;
       verified: boolean;
       possibleSpam: boolean;
     }
@@ -205,6 +209,7 @@ type HistoryFlow =
       collectionName: string | null;
       tokenId: string;
       quantity: string;
+      imageUrl?: string | null;
       verified: boolean;
       possibleSpam: boolean;
     };
@@ -220,6 +225,13 @@ export enum CatchupStatus {
   PARTIAL = 'PARTIAL',
   ERROR = 'ERROR',
 }
+
+export const isCatchupStatusPending = (
+  catchupStatus?: CatchupStatus | string | null,
+) =>
+  catchupStatus !== CatchupStatus.DONE &&
+  catchupStatus !== CatchupStatus.ERROR;
+
 export enum PricingStatus {
   READY = 'READY',
   PARTIAL = 'PARTIAL',
@@ -303,7 +315,12 @@ const buildHistoryQuery = (query: string) => {
 
   const source = new URLSearchParams(query);
   const allowed = new URLSearchParams();
-  for (const key of ['cursor', 'limit']) {
+  for (const key of [
+    'cursor',
+    'limit',
+    'showPossibleSpam',
+    'showUnverified',
+  ]) {
     const value = source.get(key);
     if (value != null && value.length > 0) {
       allowed.set(key, value);
@@ -361,7 +378,11 @@ const getHistory = async (
   chainId: string | number,
   address: string,
   query: string,
-): Promise<{ items: HistoryItem[]; nextCursor: string | null }> => {
+): Promise<{
+  items: HistoryItem[];
+  nextCursor: string | null;
+  catchupStatus?: CatchupStatus | null;
+}> => {
   const id = evmChainIdToDecimalPathSegment(chainId);
   return await EvmLightNodeApi.get(
     `history/${id}/${encodeURIComponent(address)}${buildHistoryQuery(query)}`,
@@ -378,21 +399,37 @@ const getHistoryDetail = async (
   );
 };
 
+const contractInflight = new Map<string, Promise<EvmLightNodeContractResponse>>();
+
+const getContractCacheKey = (
+  chainId: string | number,
+  contractAddress: string,
+) =>
+  `${evmChainIdToDecimalPathSegment(chainId)}:${contractAddress.toLowerCase()}`;
+
 const getContract = async (
   chainId: string | number,
   contractAddress: string,
 ): Promise<EvmLightNodeContractResponse> => {
   const id = evmChainIdToDecimalPathSegment(chainId);
-  const response = await EvmLightNodeApi.get(
-    `contract/${id}/${encodeURIComponent(contractAddress)}`,
-  );
-  return normalizeContract(response as EvmLightNodeContractResponse);
+  const key = getContractCacheKey(chainId, contractAddress);
+  let pending = contractInflight.get(key);
+  if (!pending) {
+    pending = EvmLightNodeApi.get(
+      `contract/${id}/${encodeURIComponent(contractAddress)}`,
+    )
+      .then((response) =>
+        normalizeContract(response as EvmLightNodeContractResponse),
+      )
+      .finally(() => {
+        contractInflight.delete(key);
+      });
+    contractInflight.set(key, pending);
+  }
+  return pending;
 };
 
-const getGasFee = async (chainId: string | number): Promise<unknown> => {
-  const id = evmChainIdToDecimalPathSegment(chainId);
-  return EvmLightNodeApi.get(`gas-oracle/${id}`);
-};
+const getGasFee = fetchGasOracle;
 
 const getCoingeckoNativeCoinId = async (
   chainId: string | number,
@@ -433,8 +470,14 @@ const getPrice = async (
   return response.priceUsd ?? 0;
 };
 
-const getAbi = async (chainId: string, contractAddress: string) => {
-  const contractInfo = await getContract(chainId, contractAddress);
+const getAbi = async (
+  chainId: string,
+  contractAddress: string,
+  /** When callers already fetched `contract/...` (e.g. send-transaction + getTokenInfo); avoids duplicate light-node contract GET */
+  preFetchedContract?: EvmLightNodeContractResponse | null,
+) => {
+  const contractInfo =
+    preFetchedContract ?? (await getContract(chainId, contractAddress));
   if (!contractInfo) {
     return null;
   }

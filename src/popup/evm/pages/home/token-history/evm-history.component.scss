@@ -21,6 +21,7 @@
   }
 }
 
-.evm-history-empty-panel {
+.evm-history-empty-panel,
+.evm-wallet-tokens-filter-empty-panel {
   width: calc(100% - 64px);
 }

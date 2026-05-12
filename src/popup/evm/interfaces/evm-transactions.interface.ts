@@ -60,6 +60,7 @@ export enum EvmTransactionWarningLevel {
 export enum EvmTransactionWarningType {
   BASE = 'BASE',
   WHITELIST_ADDRESS = 'WHITELIST_ADDRESS',
+  WHITELIST_ADDRESS_NO_LABEL = 'WHITELIST_ADDRESS_NO_LABEL',
 }
 
 export interface EvmTransactionWarning {

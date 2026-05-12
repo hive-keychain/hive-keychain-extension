@@ -1,12 +1,15 @@
 import {
+  EvmDappInfo,
   EvmEventName,
   RoutedEvmEvent,
 } from '@interfaces/evm-provider.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { getOriginFromUrl } from 'src/utils/browser-origin.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import {
   areEvmAccountsEqual,
   areEvmChainIdsEqual,
@@ -74,6 +77,33 @@ export const setAccountsForOrigin = async (
 
   await EvmWalletUtils.setConnectedWallets(origin, nextAccounts);
   return emitAccountsChangedIfNeeded(origin, prevAccounts, nextAccounts);
+};
+
+/** Merges `{ [domain]: logoUrl }` when at least one account is connected. */
+export const persistEvmDappLogoForDomain = async (
+  dappInfo: Pick<EvmDappInfo, 'domain' | 'logo'>,
+  connectedAccountCount: number,
+): Promise<void> => {
+  const domain = dappInfo.domain?.trim();
+  const logo = dappInfo.logo?.trim();
+  if (!domain || !logo || connectedAccountCount < 1) {
+    return;
+  }
+
+  const stored = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_DAPPS_LOGO,
+  );
+  const base =
+    typeof stored === 'object' &&
+    stored !== null &&
+    !Array.isArray(stored)
+      ? (stored as Record<string, string>)
+      : {};
+  const next: Record<string, string> = { ...base, [domain]: logo };
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_DAPPS_LOGO,
+    next,
+  );
 };
 
 export const getChainIdForOrigin = async (

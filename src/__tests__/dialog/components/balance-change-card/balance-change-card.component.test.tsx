@@ -34,7 +34,8 @@ describe('BalanceChangeCard', () => {
     expect(
       screen.queryByText('insufficient_balance_warning'),
     ).not.toBeInTheDocument();
-    expect(container.querySelectorAll('.balance-panel')).toHaveLength(1);
+    expect(container.querySelectorAll('.balance-change-rows')).toHaveLength(1);
+    expect(container.querySelectorAll('.balance-before')).toHaveLength(1);
   });
 
   it('renders a second fee row and warns when any row is insufficient', () => {
@@ -69,6 +70,6 @@ describe('BalanceChangeCard', () => {
     expect(screen.queryByText('8 ETH')).not.toBeInTheDocument();
     expect(screen.queryByText('1 ETH')).not.toBeInTheDocument();
     expect(screen.queryByText('0.9 ETH')).not.toBeInTheDocument();
-    expect(container.querySelectorAll('.balance-panel')).toHaveLength(0);
+    expect(container.querySelector('.balance-change-rows')).toBeNull();
   });
 });
