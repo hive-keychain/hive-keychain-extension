@@ -27,10 +27,7 @@ import {
   addToLoadingList,
   removeFromLoadingList,
 } from '@popup/multichain/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from '@popup/multichain/actions/message.actions';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import {
   navigateTo,
   navigateToWithParams,
@@ -77,7 +74,6 @@ const Home = ({
   setErrorMessage,
   addToLoadingList,
   removeFromLoadingList,
-  setSuccessMessage,
   loadEvmActiveAccountNfts,
   returningFromNftPage,
 }: PropsFromRedux) => {
@@ -405,7 +401,6 @@ const Home = ({
               gasFee: gasFee,
               transactionData: transactionData,
             });
-            setSuccessMessage('evm_transaction_broadcasted');
           } catch (err) {
             Logger.error('Error during cancel transaction', err);
             setErrorMessage('evm_cancel_transaction_error');
@@ -506,7 +501,6 @@ const connector = connect(mapStateToProps, {
   loadEvmHistory,
   addToLoadingList,
   removeFromLoadingList,
-  setSuccessMessage,
   loadEvmActiveAccountNfts,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;

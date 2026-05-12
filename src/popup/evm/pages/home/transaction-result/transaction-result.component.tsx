@@ -1,5 +1,6 @@
 import { EvmAddressComponent } from '@common-ui/evm/evm-address/evm-address.component';
 import { SmallImageCardComponent } from '@common-ui/small-data-card/small-image-card.component';
+import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EtherRPCCustomError } from '@popup/evm/interfaces/evm-errors.interface';
 import {
   EvmUserHistoryItemDetail,
@@ -31,7 +32,7 @@ import {
   Wallet,
   ethers,
 } from 'ethers';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
@@ -83,10 +84,12 @@ const EvmTransactionResult = ({
   warningMessage,
   setTitleContainerProperties,
   setErrorMessage,
+  loadEvmActiveAccount,
 }: PropsFromRedux) => {
   const [waitingForTx, setWaitingForTx] = useState(true);
   const [txReceipt, setTxReceipt] = useState<TransactionReceipt>();
   const [txResult, setTxResult] = useState<TransactionResponse>();
+  const hasRefreshedAccountAfterSuccess = useRef(false);
 
   const [isCanceling, setCanceling] = useState<boolean>(false);
   const [isTransactionSpeedingUp, setTransactionSpeedingUp] =
@@ -106,6 +109,27 @@ const EvmTransactionResult = ({
     });
     getTransactionStatus();
   }, []);
+
+  useEffect(() => {
+    if (
+      waitingForTx ||
+      !txReceipt?.status ||
+      isCanceling ||
+      hasRefreshedAccountAfterSuccess.current
+    ) {
+      return;
+    }
+
+    hasRefreshedAccountAfterSuccess.current = true;
+    loadEvmActiveAccount(chain, activeAccount.wallet);
+  }, [
+    activeAccount.wallet,
+    chain,
+    isCanceling,
+    loadEvmActiveAccount,
+    txReceipt?.status,
+    waitingForTx,
+  ]);
 
   useEffect(() => {
     if (tokenInfo) {
@@ -572,6 +596,7 @@ const EvmTransactionResult = ({
                           address={detail.value!}
                           chainId={chain.chainId}
                           forceFormattedAddress
+                          canCopy
                         />
                       }
                       valueOnClickAction={() => openWallet(detail.value!)}
@@ -600,6 +625,7 @@ const EvmTransactionResult = ({
                   address={syntheticToAddress!}
                   chainId={chain.chainId}
                   forceFormattedAddress
+                  canCopy
                 />
               }
               valueOnClickAction={() => openWallet(syntheticToAddress!)}
@@ -685,6 +711,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   setErrorMessage,
+  loadEvmActiveAccount,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

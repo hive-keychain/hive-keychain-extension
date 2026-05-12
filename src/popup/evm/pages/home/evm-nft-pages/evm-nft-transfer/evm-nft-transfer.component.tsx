@@ -34,10 +34,7 @@ import {
   addToLoadingList,
   removeFromLoadingList,
 } from '@popup/multichain/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from '@popup/multichain/actions/message.actions';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -77,7 +74,6 @@ const EvmNftTransfer = ({
   setTitleContainerProperties,
   addToLoadingList,
   removeFromLoadingList,
-  setSuccessMessage,
   setErrorMessage,
   navigateToWithParams,
 }: PropsFromRedux) => {
@@ -156,6 +152,7 @@ const EvmNftTransfer = ({
             address={collectionItem.collection.tokenInfo.contractAddress}
             chainId={chain.chainId}
             forceFormattedAddress
+            canCopy
           />
         ),
       },
@@ -165,6 +162,7 @@ const EvmNftTransfer = ({
           <EvmAddressComponent
             address={activeAccount.address}
             chainId={chain.chainId}
+            canCopy
           />
         ),
       },
@@ -174,6 +172,7 @@ const EvmNftTransfer = ({
           <EvmAddressComponent
             address={form.receiverAddress}
             chainId={chain.chainId}
+            canCopy
           />
         ),
         warnings: await EvmTransactionParserUtils.getAddressWarning(
@@ -276,7 +275,6 @@ const EvmNftTransfer = ({
             transactionData: transactionData,
             gasFee: gasFee,
           });
-          setSuccessMessage('evm_transaction_broadcasted');
         } catch (error) {
           Logger.error('Error during transfer', error);
           setErrorMessage('popup_html_transfer_failed');
@@ -385,7 +383,6 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   addToLoadingList,
   removeFromLoadingList,
-  setSuccessMessage,
   setErrorMessage,
   navigateToWithParams,
 });
