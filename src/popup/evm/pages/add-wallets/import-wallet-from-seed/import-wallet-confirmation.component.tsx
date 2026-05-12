@@ -16,7 +16,7 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { HDNodeWallet } from 'ethers';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -52,11 +52,15 @@ const ImportWalletConfirmation = ({
     });
   }, []);
 
-  useEffect(() => {
+  /** Mount-only: do not subscribe to param changes — they can flicker mid-submit and wrongly
+   * send users back to the seed phrase screen. */
+  useLayoutEffect(() => {
     if (!hasImportParams) {
       navigateTo(Screen.IMPORT_EVM_WALLET, true);
     }
-  }, [hasImportParams]);
+    // Runs once on landing; subscribing to param changes causes import-seed flicker mid-submit.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     setWallets(walletsWithBalance);
@@ -102,8 +106,8 @@ const ImportWalletConfirmation = ({
         }
       }
       setEvmAccounts(accounts);
-      await loadEvmActiveAccount(chain as EvmChain, accounts[0].wallet);
       navigateTo(Screen.HOME_PAGE, true);
+      await loadEvmActiveAccount(chain as EvmChain, accounts[0].wallet);
     }
   };
 
