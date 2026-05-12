@@ -451,9 +451,6 @@ const Home = ({
                 [pendingTransactionsInfo.queuedTransactionsCount.toString()],
               )}
             </div>
-            <div className="pending-transactions-info-item">
-              {pendingTransactionsInfo.pendingTransactionDetails.label}
-            </div>
           </div>
         )}
         <EvmWalletInfoSectionComponent
