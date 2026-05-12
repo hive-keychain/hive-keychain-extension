@@ -8,9 +8,10 @@ import {
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import {
-  CatchupStatus,
   EvmLightNodeUtils,
+  isCatchupStatusPending,
   LightNodeHistoryFlow,
+  LightNodeHistoryFlowWithMeta,
   LightNodeHistoryItem,
 } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
@@ -19,7 +20,8 @@ import FormatUtils from 'src/utils/format.utils';
 
 const LIMIT = 50;
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
-type NftFlow = Extract<LightNodeHistoryFlow, { kind: 'ERC721' | 'ERC1155' }>;
+type HistoryFlow = LightNodeHistoryFlowWithMeta;
+type NftFlow = Extract<HistoryFlow, { kind: 'ERC721' | 'ERC1155' }>;
 type KnownOpName =
   | 'NATIVE_SEND'
   | 'NATIVE_RECEIVE'
@@ -116,8 +118,11 @@ const isOpLike = (opName: string, values: string[]) => {
   return values.some((value) => normalized.includes(value));
 };
 
-const isFlowNft = (flow: LightNodeHistoryFlow): flow is NftFlow =>
+const isFlowNft = (flow: HistoryFlow): flow is NftFlow =>
   flow.kind === 'ERC721' || flow.kind === 'ERC1155';
+
+const getNftImageUrl = (flow: NftFlow) =>
+  flow.imageUrl ?? ('nft' in flow ? flow.nft?.imageUrl ?? null : null);
 
 const toTimestamp = (blockTime: string) => {
   const value = Date.parse(blockTime);
@@ -129,7 +134,7 @@ const toTransactionIndex = (opIndex: string) => {
   return Number.isFinite(value) ? value : 0;
 };
 
-const getFlowAmount = (flow: LightNodeHistoryFlow) => {
+const getFlowAmount = (flow: HistoryFlow) => {
   switch (flow.kind) {
     case 'NATIVE':
       return flow.amount;
@@ -144,7 +149,7 @@ const getFlowAmount = (flow: LightNodeHistoryFlow) => {
   }
 };
 
-const getFlowSymbol = (flow: LightNodeHistoryFlow, chain: EvmChain) => {
+const getFlowSymbol = (flow: HistoryFlow, chain: EvmChain) => {
   switch (flow.kind) {
     case 'NATIVE':
       return chain.mainToken;
@@ -210,7 +215,7 @@ const toKnownOpName = (opName: string): KnownOpName => {
 const formatTokenAmount = (amount: string) =>
   FormatUtils.withCommas(amount, 8, true);
 
-const formatFlow = (flow: LightNodeHistoryFlow, chain: EvmChain) => {
+const formatFlow = (flow: HistoryFlow, chain: EvmChain) => {
   if (flow.kind === 'ERC721') {
     return `${getFlowSymbol(flow, chain)}#${flow.tokenId}`;
   }
@@ -317,7 +322,7 @@ const pushAddressDetails = (
 const getPreferredFlow = (
   item: LightNodeHistoryItem,
   isOutgoing: boolean,
-): LightNodeHistoryFlow | undefined => {
+): HistoryFlow | undefined => {
   const preferred = isOutgoing ? item.out : item.in;
   const fallback = isOutgoing ? item.in : item.out;
   return preferred[0] ?? fallback[0];
@@ -349,6 +354,7 @@ const parseTransfer = (
           : `${flow.quantity} ${collectionName}#${tokenId}`,
       value: tokenId,
       type: EvmUserHistoryItemDetailType.IMAGE,
+      imageUrl: getNftImageUrl(flow),
     });
 
     const labelKey =
@@ -458,6 +464,7 @@ const parseApprove = (
       label: `${symbol}#${flow.tokenId}`,
       value: flow.tokenId,
       type: EvmUserHistoryItemDetailType.IMAGE,
+      imageUrl: getNftImageUrl(flow),
     });
   }
 
@@ -500,6 +507,7 @@ const parseMint = (
       label: `${getFlowSymbol(flow, chain)}#${flow.tokenId}`,
       value: flow.tokenId,
       type: EvmUserHistoryItemDetailType.IMAGE,
+      imageUrl: getNftImageUrl(flow),
     });
   }
   pushAddressDetails(details, item.fromAddress, item.toAddress);
@@ -603,6 +611,7 @@ const parseBurn = async (
       label: `${symbol}#${flow.tokenId}`,
       value: flow.tokenId,
       type: EvmUserHistoryItemDetailType.IMAGE,
+      imageUrl: getNftImageUrl(flow),
     });
   } else if (flow.kind === 'ERC1155') {
     const symbol = flow.collectionName ?? 'NFT';
@@ -612,6 +621,7 @@ const parseBurn = async (
       label: `${flow.quantity} ${symbol}#${flow.tokenId}`,
       value: flow.tokenId,
       type: EvmUserHistoryItemDetailType.IMAGE,
+      imageUrl: getNftImageUrl(flow),
     });
   } else {
     details.push({
@@ -652,6 +662,7 @@ const parseComplexOperation = (
         label: formatFlow(flow, chain),
         value: flow.tokenId,
         type: EvmUserHistoryItemDetailType.IMAGE,
+        imageUrl: getNftImageUrl(flow),
       });
     } else {
       details.push({
@@ -878,7 +889,7 @@ const fetchHistory2 = async (
     events: sortEvents(merged),
     nextCursor: response.nextCursor,
     fullyFetch:
-      !response.nextCursor && response.catchupStatus !== CatchupStatus.RUNNING,
+      !response.nextCursor && !isCatchupStatusPending(response.catchupStatus),
     catchupStatus: response.catchupStatus,
   } as EvmUserHistory;
 };

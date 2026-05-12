@@ -1,7 +1,9 @@
 import { EvmLightNodeApi } from '@api/evm-light-node';
 import {
+  CatchupStatus,
   EvmLightNodeUtils,
   evmChainIdToDecimalPathSegment,
+  isCatchupStatusPending,
 } from '@popup/evm/utils/evm-light-node.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -16,6 +18,15 @@ describe('evm-light-node.utils tests:\n', () => {
     expect(evmChainIdToDecimalPathSegment('0x1')).toBe('1');
     expect(evmChainIdToDecimalPathSegment('137')).toBe('137');
     expect(evmChainIdToDecimalPathSegment(56)).toBe('56');
+  });
+
+  it('treats only DONE and ERROR catchup statuses as terminal', () => {
+    expect(isCatchupStatusPending(CatchupStatus.DONE)).toBe(false);
+    expect(isCatchupStatusPending(CatchupStatus.ERROR)).toBe(false);
+    expect(isCatchupStatusPending(CatchupStatus.RUNNING)).toBe(true);
+    expect(isCatchupStatusPending(CatchupStatus.PARTIAL)).toBe(true);
+    expect(isCatchupStatusPending(CatchupStatus.SKIPPED)).toBe(true);
+    expect(isCatchupStatusPending(null)).toBe(true);
   });
 
   it('normalizes custom chain Coingecko responses from either payload shape', async () => {
