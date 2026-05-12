@@ -82,6 +82,7 @@ const EvmTransactionResult = ({
   detailFields,
   transactionData,
   warningMessage,
+  initialDisplayNfts,
   setTitleContainerProperties,
   setErrorMessage,
   loadEvmActiveAccount,
@@ -106,6 +107,9 @@ const EvmTransactionResult = ({
     setTitleContainerProperties({
       title: pageTitle,
       isBackButtonEnabled: false,
+      closeNavigationParams: initialDisplayNfts
+        ? { initialDisplayNfts: true }
+        : undefined,
     });
     getTransactionStatus();
   }, []);
@@ -705,6 +709,7 @@ const mapStateToProps = (state: RootState) => {
     detailFields: state.navigation.stack[0].params.detailFields,
     transactionData: state.navigation.stack[0].params.transactionData,
     warningMessage: state.navigation.stack[0].params.warningMessage,
+    initialDisplayNfts: state.navigation.stack[0].params.initialDisplayNfts,
   };
 };
 

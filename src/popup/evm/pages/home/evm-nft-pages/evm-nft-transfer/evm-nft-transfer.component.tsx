@@ -244,11 +244,16 @@ const EvmNftTransfer = ({
 
           navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
             pageTitle: 'evm_nft_transfer',
+            initialDisplayNfts: true,
             transactionResponse: transactionResponse,
             detailFields: [
               {
+                label:
+                  collectionItem.item.metadata.name ??
+                  `${collectionItem.collection.tokenInfo.name} #${form.nftId}`,
                 value: form.nftId,
                 type: EvmUserHistoryItemDetailType.IMAGE,
+                imageUrl: collectionItem.item.metadata.image,
               },
               {
                 label: 'popup_html_transfer_from',

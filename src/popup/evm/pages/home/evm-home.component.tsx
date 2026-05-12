@@ -485,7 +485,8 @@ const mapStateToProps = (state: RootState) => {
     accounts: state.evm.accounts,
     activeAccount: state.evm.activeAccount,
     returningFromNftPage: Boolean(
-      state.navigation.stack[0]?.previousParams?.collection ||
+      state.navigation.stack[0]?.params?.initialDisplayNfts ||
+        state.navigation.stack[0]?.previousParams?.collection ||
         state.navigation.stack[0]?.previousParams?.collections,
     ),
   };

@@ -1,7 +1,7 @@
 import { Screen } from '@interfaces/screen.interface';
 import {
   goBack,
-  navigateTo,
+  navigateToWithParams,
   resetNav,
 } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
@@ -22,6 +22,7 @@ export interface PageTitleProps {
     callback: () => void;
     className?: string;
   };
+  closeNavigationParams?: any;
   onCloseAdditional?: () => void;
   onBackAdditional?: () => void;
 }
@@ -33,10 +34,11 @@ const PageTitle = ({
   isBackButtonEnabled,
   isCloseButtonDisabled,
   rightAction,
+  closeNavigationParams,
   onBackAdditional,
   onCloseAdditional,
   goBack,
-  navigateTo,
+  navigateToWithParams,
   canGoBack,
   resetNav,
   showDetachWindowOption,
@@ -53,7 +55,7 @@ const PageTitle = ({
     }
 
     resetNav();
-    navigateTo(Screen.HOME_PAGE, true);
+    navigateToWithParams(Screen.HOME_PAGE, closeNavigationParams, true);
   };
 
   const handleRightActionButtonClick = () => {
@@ -124,7 +126,11 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const connector = connect(mapStateToProps, { goBack, navigateTo, resetNav });
+const connector = connect(mapStateToProps, {
+  goBack,
+  navigateToWithParams,
+  resetNav,
+});
 type PropsType = ConnectedProps<typeof connector> & PageTitleProps;
 
 export const PageTitleComponent = connector(PageTitle);
