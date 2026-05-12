@@ -30,10 +30,7 @@ import {
   addToLoadingList,
   removeFromLoadingList,
 } from '@popup/multichain/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from '@popup/multichain/actions/message.actions';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import {
   navigateTo,
   navigateToWithParams,
@@ -121,7 +118,6 @@ const EvmTransfer = ({
   removeFromLoadingList,
   setTitleContainerProperties,
   setErrorMessage,
-  setSuccessMessage,
   navigateToWithParams,
 }: PropsFromRedux) => {
   const { control, handleSubmit, setValue, watch } = useForm<TransferForm>({
@@ -397,7 +393,6 @@ const EvmTransfer = ({
             gasFee: gasFee,
             transactionData: transactionData,
           });
-          setSuccessMessage('evm_transaction_broadcasted');
         } catch (err) {
           Logger.error('Error during transfer', err);
           setErrorMessage('popup_html_transfer_failed');
@@ -526,7 +521,6 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   setErrorMessage,
-  setSuccessMessage,
   navigateToWithParams,
   navigateTo,
   addToLoadingList,
