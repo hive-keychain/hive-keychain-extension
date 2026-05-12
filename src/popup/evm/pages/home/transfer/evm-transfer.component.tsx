@@ -111,7 +111,11 @@ export const getEvmTransferValueHex = (
 export const getEvmTransferMaxAmount = (
   balance: string | number,
   feeToReserve?: Decimal.Value,
-) => Decimal.max(new Decimal(balance).sub(feeToReserve ?? 0), 0).toFixed();
+  decimals = 18,
+) =>
+  Decimal.max(new Decimal(balance).sub(feeToReserve ?? 0), 0)
+    .toDecimalPlaces(decimals, Decimal.ROUND_DOWN)
+    .toFixed();
 
 const EvmTransfer = ({
   formParams,
@@ -446,7 +450,7 @@ const EvmTransfer = ({
 
     try {
       const feeToReserve = await getNativeTransferFeeToReserve();
-      setValue('amount', getEvmTransferMaxAmount(balance, feeToReserve));
+      setValue('amount', getEvmTransferMaxAmount(balance, feeToReserve, 18));
     } catch (error) {
       Logger.error('Error while estimating native transfer max amount', error);
       setErrorMessage('evm_gas_fee_warning_not_available');

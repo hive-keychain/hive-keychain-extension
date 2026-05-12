@@ -27,5 +27,18 @@ describe('EvmTransferComponent helpers', () => {
         '0',
       );
     });
+
+    it('rounds down to the token precision after reserving the native transfer fee', () => {
+      const maxAmount = getEvmTransferMaxAmount(
+        '1',
+        new Decimal('0.0000000000000000001'),
+        18,
+      );
+
+      expect(maxAmount).toBe('0.999999999999999999');
+      expect(getEvmTransferValueHex(maxAmount, 18)).toBe(
+        '0xde0b6b3a763ffff',
+      );
+    });
   });
 });
