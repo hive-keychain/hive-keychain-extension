@@ -9,20 +9,27 @@ export const EvmRequestItemLongText = ({
   titleSuffix,
 }: {
   title?: string;
-  value: string;
+  value: React.ReactNode;
   titleSuffix?: React.ReactNode;
 }) => {
   const fieldTitle = useFieldTitle(title);
   const [isOpened, setIsOpened] = useState(false);
 
+  const hasTitle = Boolean(title?.trim());
+
+  const showHeader =
+    value != null &&
+    value !== '' &&
+    (hasTitle || typeof value === 'string');
+
   return (
     <div className="long-text-container">
-      {title && (
+      {showHeader && (
         <div
-          className={`header ${isOpened ? 'open' : 'closed'}`}
+          className={`header ${isOpened ? 'open' : 'closed'}${!hasTitle ? ' header--value-only' : ''}`}
           onClick={() => setIsOpened(!isOpened)}>
           <div className="title">
-            {fieldTitle}
+            {hasTitle ? (fieldTitle ?? title) : null}
             {titleSuffix}
           </div>
           {value && (

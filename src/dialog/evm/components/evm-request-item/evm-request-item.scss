@@ -51,6 +51,27 @@
         max-width: 70%;
         text-align: right;
         user-select: text;
+
+        &.value--collapsible {
+          max-width: 100%;
+          flex: 1;
+          min-width: 0;
+          text-align: left;
+
+          .long-text-container {
+            width: 100%;
+          }
+
+          .header.header--value-only {
+            justify-content: flex-end;
+          }
+
+          .expandable-panel-content {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+              'Liberation Mono', 'Courier New', monospace;
+            font-size: 12px;
+          }
+        }
         ul {
           margin: 0;
         }

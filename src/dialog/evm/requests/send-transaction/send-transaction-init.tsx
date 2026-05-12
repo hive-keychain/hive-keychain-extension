@@ -104,7 +104,7 @@ const getDecodedFieldName = (
     return 'evm_nft_approve_all';
   }
 
-  return inputName;
+  return inputName?.trim() ? inputName : `param ${inputIndex + 1}`;
 };
 
 const shouldDisplayDecodedField = (
@@ -376,7 +376,6 @@ export async function runSendTransactionInit(
           const normalizedBundledAbi = EvmTokensUtils.normalizeAbi(
             EvmTransactionParserUtils.getBundledAbiByDataSelector(params.data),
           );
-          console.log(normalizedBundledAbi);
           const hasAnyAbi = !!normalizedAbi || !!normalizedBundledAbi;
 
           const decodeTransactionData = (abiToDecode: any[] | null) => {
@@ -394,7 +393,7 @@ export async function runSendTransactionInit(
                 data: params.data,
                 value: params.value,
               });
-
+              console.log(decoded, 'decoded');
               return decoded;
             } catch (error) {
               return null;
