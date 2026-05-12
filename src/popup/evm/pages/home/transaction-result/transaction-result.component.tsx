@@ -98,6 +98,8 @@ const EvmTransactionResult = ({
   const [isTransactionSpeedingUp, setTransactionSpeedingUp] =
     useState<boolean>(false);
   const [isGasPanelOpened, setGasPanelOpened] = useState<boolean>(false);
+  const [isGasFeeEstimateLoading, setGasFeeEstimateLoading] =
+    useState<boolean>(false);
   const [increasedGasFee, setIncreasedGasFee] =
     useState<GasFeeEstimationBase>(gasFee);
 
@@ -168,6 +170,12 @@ const EvmTransactionResult = ({
     });
   }, [tokenInfo, chain.chainId, transactionResponse]);
 
+  useEffect(() => {
+    if (!isGasPanelOpened) {
+      setGasFeeEstimateLoading(false);
+    }
+  }, [isGasPanelOpened]);
+
   const getTransactionStatus = async () => {
     const provider = await EthersUtils.getProvider(chain);
     try {
@@ -194,14 +202,14 @@ const EvmTransactionResult = ({
                 break;
             }
           } else {
-            console.log('Catch in getTransactionStatus', { err });
+            Logger.error('Unexpected error in getTransactionStatus', err);
           }
         })
         .finally(() => {
           setWaitingForTx(false);
         });
     } catch (err: any) {
-      console.log('catch in get transaction status', err);
+      Logger.error('getTransactionStatus failed', err);
     }
   };
 
@@ -229,7 +237,6 @@ const EvmTransactionResult = ({
         cancelTransactionResponse
           .wait()
           .then(async (cancelTransactionReceipt: TransactionReceipt | null) => {
-            console.log('cancelTransactionReceipt', cancelTransactionReceipt);
             if (cancelTransactionReceipt) {
               const cancelTransactionResult = await provider.getTransaction(
                 cancelTransactionReceipt.hash,
@@ -239,10 +246,11 @@ const EvmTransactionResult = ({
             }
           })
           .catch((err) => {
-            console.log('Catch in transaction cancel', { err });
             if (err.code === 'TRANSACTION_REPLACED') {
               setCanceling(false);
               setErrorMessage('evm_transaction_not_canceled_error');
+            } else {
+              Logger.error('cancelTransaction wait failed', err);
             }
           })
           .finally(() => {
@@ -250,7 +258,6 @@ const EvmTransactionResult = ({
           });
       }
     } catch (err: any) {
-      console.log('Catch in send transaction cancel', { err });
       const error = EthersUtils.getErrorMessage(
         err.code,
         err.reason,
@@ -260,6 +267,7 @@ const EvmTransactionResult = ({
       setErrorMessage(error.message);
       setCanceling(false);
       if (err.code === 'REPLACEMENT_UNDERPRICED') {
+        setGasFeeEstimateLoading(Boolean(transactionData));
         setGasPanelOpened(true);
       }
     }
@@ -295,11 +303,10 @@ const EvmTransactionResult = ({
             },
           )
           .catch((err) => {
-            console.log('Catch in transaction speed up', { err });
+            Logger.error('speedUpTransaction wait failed', err);
           });
       }
     } catch (err: any) {
-      console.log('Catch in send transaction speed up', { err });
       const error = EthersUtils.getErrorMessage(
         err.code,
         err.reason,
@@ -400,6 +407,7 @@ const EvmTransactionResult = ({
   const closeFeePopup = () => {
     setTransactionSpeedingUp(false);
     setCanceling(false);
+    setGasFeeEstimateLoading(false);
     setGasPanelOpened(false);
   };
 
@@ -542,6 +550,7 @@ const EvmTransactionResult = ({
               dataTestId="dialog_cancel-button"
               label={'dialog_cancel'}
               onClick={() => {
+                setGasFeeEstimateLoading(Boolean(transactionData));
                 setGasPanelOpened(true);
                 setCanceling(true);
               }}
@@ -551,6 +560,7 @@ const EvmTransactionResult = ({
               dataTestId="dialog_confirm-button"
               label={'popup_html_evm_speed_up_transaction'}
               onClick={() => {
+                setGasFeeEstimateLoading(Boolean(transactionData));
                 setGasPanelOpened(true);
                 setTransactionSpeedingUp(true);
               }}
@@ -570,6 +580,16 @@ const EvmTransactionResult = ({
               onClick={() => closeFeePopup()}
             />
           </div>
+          {isGasFeeEstimateLoading && (
+            <div
+              className="gas-fee-estimate-loading-row"
+              data-testid="tx-result-gas-fee-loading">
+              <div className="gas-fee-estimate-spinner" aria-hidden />
+              <span>
+                {chrome.i18n.getMessage('popup_html_evm_gas_fee_loading')}
+              </span>
+            </div>
+          )}
           <GasFeePanel
             chain={chain}
             fromAddress={localAccounts[0].wallet.address}
@@ -579,11 +599,13 @@ const EvmTransactionResult = ({
             transactionType={chain.defaultTransactionType}
             transactionData={transactionData}
             setErrorMessage={handleErrors}
+            onInitialEstimationComplete={() => setGasFeeEstimateLoading(false)}
           />
           <ButtonComponent
             label="popup_html_confirm"
             onClick={() => confirmNewFee()}
             height="small"
+            disabled={isGasFeeEstimateLoading}
           />
         </PopupContainer>
       )}

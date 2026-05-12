@@ -228,7 +228,7 @@ const hasPendingTransaction = async (fromAddress: string, chain: EvmChain) => {
       ]);
 
     let hasPending = pendingNonce > latestNonce;
-
+    let hasPendingFromLocal = false;
     if (!hasPending && localPendingTransactions.length > 0) {
       const provider = await EthersUtils.getProvider(chain);
       const res = await provider.getTransaction(
@@ -236,13 +236,21 @@ const hasPendingTransaction = async (fromAddress: string, chain: EvmChain) => {
       );
       if (res && !res.blockHash && !res.blockNumber) {
         hasPending = true;
+        hasPendingFromLocal = true;
       }
+    }
+
+    let queuedTransactionsCount = 0;
+    if (hasPendingFromLocal) {
+      queuedTransactionsCount = localPendingTransactions.length;
+    } else if (hasPending) {
+      queuedTransactionsCount = pendingNonce - latestNonce - 1;
     }
 
     return {
       hasPending,
       pendingTransactionsCount: hasPending ? 1 : 0,
-      queuedTransactionsCount: hasPending ? pendingNonce - latestNonce - 1 : 0,
+      queuedTransactionsCount: queuedTransactionsCount,
       pendingTransactionDetails: await getPendingTransactionsDetails(
         fromAddress,
         chain,

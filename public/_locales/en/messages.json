@@ -5004,6 +5004,10 @@
     "message": "Select fee",
     "description": "Evm transaction info"
   },
+  "popup_html_evm_gas_fee_loading": {
+    "message": "Loading gas fees…",
+    "description": "Shown while cancel/speed-up fee options are estimated"
+  },
   "popup_html_evm_transaction_fee": {
     "message": "Fee",
     "description": "Evm fee"
