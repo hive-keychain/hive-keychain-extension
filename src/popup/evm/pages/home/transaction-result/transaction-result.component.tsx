@@ -458,16 +458,8 @@ const EvmTransactionResult = ({
   };
 
   const getPendingGasFeeDisplay = (): string => {
-<<<<<<< HEAD
-    if (
-      gasFee?.estimatedFeeInEth &&
-      !gasFee.estimatedFeeInEth.equals(-1)
-    ) {
-      return EvmFormatUtils.formatGweiFromEth(gasFee.estimatedFeeInEth);
-=======
     if (gasFee?.estimatedFeeInEth && !gasFee.estimatedFeeInEth.equals(-1)) {
-      return `${gasFee.estimatedFeeInEth.toFixed()} ${chain.mainToken}`;
->>>>>>> 527f609c8b96d46d3700b4a82545abde534e2b32
+      return EvmFormatUtils.formatGweiFromEth(gasFee.estimatedFeeInEth);
     }
     const gl = displayTx.gasLimit;
     const maxFeePerGas = displayTx.maxFeePerGas ?? displayTx.gasPrice;
@@ -736,7 +728,8 @@ const mapStateToProps = (state: RootState) => {
     transactionData: state.navigation.stack[0].params.transactionData,
     warningMessage: state.navigation.stack[0].params.warningMessage,
     initialDisplayNfts: state.navigation.stack[0].params.initialDisplayNfts,
-    initialDisplayHistory: state.navigation.stack[0].params.initialDisplayHistory,
+    initialDisplayHistory:
+      state.navigation.stack[0].params.initialDisplayHistory,
   };
 };
 
