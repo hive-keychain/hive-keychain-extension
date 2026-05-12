@@ -83,6 +83,7 @@ const EvmTransactionResult = ({
   transactionData,
   warningMessage,
   initialDisplayNfts,
+  initialDisplayHistory,
   setTitleContainerProperties,
   setErrorMessage,
   loadEvmActiveAccount,
@@ -104,12 +105,15 @@ const EvmTransactionResult = ({
   >(null);
 
   useEffect(() => {
+    const closeNavigationParams = initialDisplayNfts
+      ? { initialDisplayNfts: true }
+      : initialDisplayHistory
+        ? { initialDisplayHistory: true }
+        : undefined;
     setTitleContainerProperties({
       title: pageTitle,
       isBackButtonEnabled: false,
-      closeNavigationParams: initialDisplayNfts
-        ? { initialDisplayNfts: true }
-        : undefined,
+      closeNavigationParams,
     });
     getTransactionStatus();
   }, []);
@@ -717,6 +721,7 @@ const mapStateToProps = (state: RootState) => {
     transactionData: state.navigation.stack[0].params.transactionData,
     warningMessage: state.navigation.stack[0].params.warningMessage,
     initialDisplayNfts: state.navigation.stack[0].params.initialDisplayNfts,
+    initialDisplayHistory: state.navigation.stack[0].params.initialDisplayHistory,
   };
 };
 

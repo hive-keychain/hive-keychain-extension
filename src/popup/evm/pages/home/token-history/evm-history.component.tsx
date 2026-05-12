@@ -54,6 +54,7 @@ export const EvmHistory = ({
     navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
       transactionResponse: transactionResponse,
       ...historyItem,
+      initialDisplayHistory: true,
     });
   };
 
