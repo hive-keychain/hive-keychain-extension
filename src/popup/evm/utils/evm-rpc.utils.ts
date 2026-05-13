@@ -172,7 +172,9 @@ const checkRpcStatus = async (uri: string): Promise<boolean> => {
       rpcProvider
         .send('eth_blockNumber', [])
         .then(() => true)
-        .catch(() => false),
+        .catch((err) => {
+          return false;
+        }),
       new Promise<boolean>((resolve) => {
         setTimeout(() => {
           try {

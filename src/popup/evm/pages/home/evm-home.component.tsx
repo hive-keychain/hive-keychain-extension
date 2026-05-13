@@ -69,8 +69,7 @@ function providerTransactionDataFromResponse(
   const rawData = tx.data;
   let data = '';
   if (rawData != null && rawData !== '0x') {
-    data =
-      typeof rawData === 'string' ? rawData : ethers.hexlify(rawData);
+    data = typeof rawData === 'string' ? rawData : ethers.hexlify(rawData);
   }
 
   const txType = tx.type;
@@ -168,7 +167,11 @@ const Home = ({
     resetTitleContainerProperties();
     void initWhatsNew();
     void initSurvey();
-    void checkActiveRpc();
+    EvmRpcUtils.getSwitchRpcAuto(chain).then((switchRpcAuto) => {
+      if (!switchRpcAuto) {
+        void checkActiveRpc();
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -303,6 +306,7 @@ const Home = ({
 
   const refresh = async () => {
     await loadActiveAccount();
+    void loadPendingTransactions(activeAccount.wallet);
   };
 
   const handleCloseWhatsNew = () => {

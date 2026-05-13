@@ -7,6 +7,7 @@ import {
 } from '@popup/evm/interfaces/active-account.interface';
 import { EvmUserHistory } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import {
   CatchupStatus,
   DiscoveredNftsResponse,
@@ -16,7 +17,6 @@ import {
   PricingStatus,
 } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmLocalHistoryUtils } from '@popup/evm/utils/evm-local-history.utils';
-import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
@@ -47,8 +47,7 @@ const getLoadMoreTokensRetryDelay = (retryCount: number): number => {
 const shouldLoadMoreDiscoveredAssets = (
   result: DiscoveredTokensResponse | DiscoveredNftsResponse,
 ): boolean => {
-  const shouldLoadMoreCatchup =
-    result.catchupStatus === CatchupStatus.RUNNING;
+  const shouldLoadMoreCatchup = result.catchupStatus === CatchupStatus.RUNNING;
   if ('pricingStatus' in result) {
     return (
       shouldLoadMoreCatchup ||
@@ -78,7 +77,8 @@ const isActiveAccountRequestCurrent = (
 ) => {
   return (
     isSameEvmChain(currentChain, chain) &&
-    activeAccount.wallet?.address?.toLowerCase() === wallet.address.toLowerCase()
+    activeAccount.wallet?.address?.toLowerCase() ===
+      wallet.address.toLowerCase()
   );
 };
 
