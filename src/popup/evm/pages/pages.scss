@@ -1,2 +1,4 @@
 @import './add-wallets/add-wallets-main.component';
 @import './home/home.module.scss';
+// EVMConfirmationPage (popup) renders EvmRequestItem; dialog bundle loads this via evm.scss.
+@import '../../../dialog/evm/components/evm-request-item/evm-request-item.scss';

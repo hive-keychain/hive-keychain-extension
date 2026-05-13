@@ -330,7 +330,6 @@ export const useTransactionHook = (
         ],
       });
     } else {
-      setPendingTransactionWarningField(undefined);
     }
   };
 

@@ -78,7 +78,11 @@ const ConfirmationPage = ({
           tokenInfo.symbol.toLowerCase() ===
             (chain as EvmChain)?.mainToken?.toLowerCase(),
       )?.tokenInfo as EvmSmartContractInfoNative | undefined),
-    [activeAccount?.nativeAndErc20Tokens?.value, chain, prefetchedMainTokenInfo],
+    [
+      activeAccount?.nativeAndErc20Tokens?.value,
+      chain,
+      prefetchedMainTokenInfo,
+    ],
   );
 
   useEffect(() => {
@@ -114,7 +118,10 @@ const ConfirmationPage = ({
         }
       },
     });
-    transactionHook.initPendingTransactionWarning(wallet, chain as EvmChain);
+    transactionHook.initPendingTransactionWarning(
+      wallet.address,
+      chain as EvmChain,
+    );
     transactionHook.setConfirmationPageFields(fields);
   };
 
@@ -255,7 +262,8 @@ const ConfirmationPage = ({
             selectedFee={selectedFee}
             onSelectFee={setSelectedFee}
             transactionType={
-              transactionData?.type ?? (chain as EvmChain).defaultTransactionType
+              transactionData?.type ??
+              (chain as EvmChain).defaultTransactionType
             }
             transactionData={transactionData}
             forceOpenGasFeePanelEvent={forceOpenGasFeePanelEvent}

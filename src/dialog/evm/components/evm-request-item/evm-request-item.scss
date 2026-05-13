@@ -25,7 +25,8 @@
         text-transform: capitalize;
       }
       .label,
-      .title {
+      .title,
+      .value.value--leading-warning-icon {
         .warning-icon {
           height: 16px;
           width: 16px;
@@ -77,6 +78,22 @@
         }
         &.xs-font {
           font-size: 11px;
+        }
+
+        &.value--leading-warning-icon {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          column-gap: 8px;
+          max-width: 100%;
+          flex: 1;
+          min-width: 0;
+          text-align: left;
+
+          .value__body {
+            flex: 1;
+            min-width: 0;
+          }
         }
 
         .value-content {
