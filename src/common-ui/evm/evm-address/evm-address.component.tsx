@@ -2,7 +2,9 @@ import {
   EvmAddressDetail,
   EvmAddressesUtils,
 } from '@popup/evm/utils/evm-addresses.utils';
+import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
 import {
@@ -25,16 +27,42 @@ export const EvmAddressComponent = ({
   prefix,
   forceFormattedAddress,
 }: Props) => {
-  const [addressDetail, setAddressDetail] = useState<EvmAddressDetail>();
+  const localAccounts = useSelector((state: RootState) => state.evm.accounts);
+  const [addressDetail, setAddressDetail] = useState<EvmAddressDetail>(() =>
+    EvmAddressesUtils.getFallbackAddressDetails(address, localAccounts),
+  );
 
   useEffect(() => {
+    let cancelled = false;
+    setAddressDetail(
+      EvmAddressesUtils.getFallbackAddressDetails(address, localAccounts),
+    );
     initComponent();
-  }, [address, chainId]);
 
-  const initComponent = async () => {
-    const details = await EvmAddressesUtils.getAddressDetails(address, chainId);
-    setAddressDetail(details);
-  };
+    return () => {
+      cancelled = true;
+    };
+
+    async function initComponent() {
+      const details = await EvmAddressesUtils.getAddressDetails(
+        address,
+        chainId,
+      );
+      const localDetails = EvmAddressesUtils.getFallbackAddressDetails(
+        address,
+        localAccounts,
+      );
+      const shouldPreferLocalLabel =
+        localDetails.label !== localDetails.formattedAddress;
+      if (!cancelled) {
+        setAddressDetail(
+          shouldPreferLocalLabel
+            ? { ...details, label: localDetails.label }
+            : details,
+        );
+      }
+    }
+  }, [address, chainId, localAccounts]);
 
   const handleCopyAddress = (event: React.MouseEvent) => {
     if (canCopy) {

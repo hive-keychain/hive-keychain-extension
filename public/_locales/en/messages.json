@@ -6288,6 +6288,10 @@
     "message": "You have 1 pending transaction and $1 queued transactions",
     "description": "Pending and queued transactions"
   },
+  "evm_one_pending_transaction": {
+    "message": "You have 1 pending transaction",
+    "description": "Pending transaction"
+  },
   "evm_unknown_pending_transaction": {
     "message": "Unknown pending transaction",
     "description": "Unknown pending transaction"

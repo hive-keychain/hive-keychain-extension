@@ -290,16 +290,24 @@ const hasPendingTransaction = async (fromAddress: string, chain: EvmChain) => {
       queuedTransactionsCount = pendingNonce - latestNonce - 1;
     }
 
+    const pendingTransactionDetails = await getPendingTransactionsDetails(
+      fromAddress,
+      chain,
+      hasPending ? latestNonce : undefined,
+      { provider, localPendingTransactions },
+    );
+
     return {
       hasPending,
       pendingTransactionsCount: hasPending ? 1 : 0,
       queuedTransactionsCount: queuedTransactionsCount,
-      pendingTransactionDetails: await getPendingTransactionsDetails(
-        fromAddress,
-        chain,
-        hasPending ? latestNonce : undefined,
-        { provider, localPendingTransactions },
-      ),
+      pendingTransactionDetails: {
+        ...pendingTransactionDetails,
+        title:
+          queuedTransactionsCount > 0
+            ? 'evm_pending_queued_transactions'
+            : 'evm_one_pending_transaction',
+      },
     };
   } catch (error) {
     Logger.error('Error in hasPendingTransaction', error);
