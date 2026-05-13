@@ -45,6 +45,7 @@ export interface EvmAddressDetail {
 
 const EVM_WALLET_AUTOCOMPLETE_CATEGORY = 'evm_wallets';
 const LOCAL_ACCOUNTS_AUTOCOMPLETE_CATEGORY = 'local_accounts';
+const addressDetailsCache = new Map<string, Promise<EvmAddressDetail>>();
 
 const getEnsExpirationDate = () =>
   Date.now() + Number(process.env.EVM_DATA_EXPIRATION_TIME);
@@ -188,15 +189,85 @@ const addEnsToLocalStorage = async (newEns: SavedEns) => {
   );
 };
 
-const getAddressDetails = async (
+const clearAddressDetailsCache = () => {
+  addressDetailsCache.clear();
+};
+
+const getAddressDetailsCacheKey = (
+  address: string,
+  chainId: string,
+  fullName: boolean = true,
+): string =>
+  `${chainId}:${address.toLowerCase()}:${fullName ? 'full' : 'short'}`;
+
+const getFallbackAddressDetails = (
+  address: string,
+  localAccounts: EvmAccountOrPublic[] = [],
+  fullName: boolean = true,
+): EvmAddressDetail => {
+  const formattedAddress = EvmFormatUtils.formatAddress(address);
+  const details: EvmAddressDetail = {
+    fullAddress: address,
+    formattedAddress,
+    label: formattedAddress,
+  };
+
+  const localAccount = localAccounts.find(
+    (account) =>
+      EvmAccountUtils.getEvmAccountAddress(account).toLowerCase() ===
+      address.toLowerCase(),
+  );
+
+  if (localAccount) {
+    details.label = fullName
+      ? EvmAccountUtils.getAccountFullname(localAccount)
+      : EvmAccountUtils.getAccountName(localAccount);
+  }
+
+  return details;
+};
+
+const getLocalAddressDetails = async (
+  address: string,
+  chainId: string,
+  fullName: boolean = true,
+) => {
+  if (!ethers.isAddress(address)) return;
+
+  const details = getFallbackAddressDetails(address, [], fullName);
+  const [localLabel, localAccounts] = await Promise.all([
+    EvmAddressesUtils.getAddressLabel(address, chainId),
+    EvmWalletUtils.getAllLocalAccounts(),
+  ]);
+  const localAccount = localAccounts.find((account) => {
+    return account.wallet.address.toLowerCase() === address.toLowerCase();
+  });
+
+  if (localLabel) {
+    details.label = localLabel;
+    details.whitelistedLabel = localLabel;
+  }
+
+  if (localAccount) {
+    if (localAccount.nickname) {
+      details.label = localAccount.nickname;
+    } else {
+      details.label = fullName
+        ? EvmAccountUtils.getAccountFullname(localAccount)
+        : EvmAccountUtils.getAccountName(localAccount);
+    }
+  }
+
+  return localLabel || localAccount ? details : undefined;
+};
+
+const loadAddressDetails = async (
   address: string,
   chainId: string,
   fullName: boolean = true,
 ): Promise<EvmAddressDetail> => {
-  const details: EvmAddressDetail = {
-    fullAddress: '',
-    formattedAddress: '',
-  };
+  const details = getFallbackAddressDetails(address, [], fullName);
+  const isAddress = ethers.isAddress(address);
 
   let newEns: SavedEns = {
     address: '',
@@ -206,7 +277,6 @@ const getAddressDetails = async (
     EvmAddressesUtils.getEnsDataFromAddress(address),
     EvmAddressesUtils.getEnsDataFromEns(address),
   ]);
-  const isAddress = ethers.isAddress(address);
   let ensDetected = false;
   if (!savedEnsDataFromAddress && !savedEnsDataFromEns) {
     details.fullAddress = address;
@@ -286,6 +356,32 @@ const getAddressDetails = async (
   }
 
   return details;
+};
+
+const getAddressDetails = async (
+  address: string,
+  chainId: string,
+  fullName: boolean = true,
+): Promise<EvmAddressDetail> => {
+  const localDetails = await getLocalAddressDetails(address, chainId, fullName);
+  if (localDetails) {
+    return localDetails;
+  }
+
+  const cacheKey = getAddressDetailsCacheKey(address, chainId, fullName);
+  let cachedDetails = addressDetailsCache.get(cacheKey);
+
+  if (!cachedDetails) {
+    cachedDetails = loadAddressDetails(address, chainId, fullName).catch(
+      (error) => {
+        addressDetailsCache.delete(cacheKey);
+        throw error;
+      },
+    );
+    addressDetailsCache.set(cacheKey, cachedDetails);
+  }
+
+  return cachedDetails;
 };
 
 const getAddressType = async (
@@ -385,6 +481,7 @@ const saveWhitelistedAddresses = async (
     LocalStorageKeyEnum.EVM_WHITELISTED_ADDRESSES,
     allChainWhitelistedAddresses,
   );
+  clearAddressDetailsCache();
 };
 
 const saveContractAddress = async (
@@ -710,6 +807,8 @@ export const EvmAddressesUtils = {
   getAddressLabel,
   isPotentialSpoofing,
   getAddressDetails,
+  getFallbackAddressDetails,
+  clearAddressDetailsCache,
   addEnsToLocalStorage,
   getEnsDataFromAddress,
   getEnsDataFromEns,
