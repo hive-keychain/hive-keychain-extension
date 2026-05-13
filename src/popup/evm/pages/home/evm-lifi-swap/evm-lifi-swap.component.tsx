@@ -3,6 +3,7 @@ import ButtonComponent, {
   ButtonType,
 } from '@common-ui/button/button.component';
 import { Card } from '@common-ui/card/card.component';
+import { ChainLogo } from '@common-ui/chain-logo/chain-logo.component';
 import { ConfirmationPageEvmFields } from '@common-ui/confirmation-page/confirmation-page.interface';
 import {
   ComplexeCustomSelect,
@@ -13,7 +14,6 @@ import { SVGIcons } from '@common-ui/icons.enum';
 import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
 import { LabelComponent } from '@common-ui/label/label.component';
-import { ChainLogo } from '@common-ui/chain-logo/chain-logo.component';
 import { PreloadedImage } from '@common-ui/preloaded-image/preloaded-image.component';
 import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.component';
 import ServiceUnavailablePage from '@common-ui/service-unavailable-page/service-unavailable-page.component';
@@ -245,8 +245,12 @@ export const EvmLifiSwap = ({
     );
     setForm((prev) => ({
       ...prev,
-      fromSelectedChain: chainItem!.value,
-      toSelectedChain: chainItem!.value,
+      fromSelectedChain: chainItem
+        ? chainItem.value
+        : optionsLists.chains[0].value,
+      toSelectedChain: chainItem
+        ? chainItem.value
+        : optionsLists.chains[0].value,
     }));
 
     setLoading(false);
