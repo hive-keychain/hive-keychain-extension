@@ -538,6 +538,43 @@ const EvmTransactionResult = ({
     !detailFieldsIncludeTo &&
     !isCanceledHistoryOperation;
 
+  const shouldShowStatusAmount =
+    tokenInfo !== undefined && amount !== undefined && amount !== null;
+
+  const getTokenInfoFromAmount = (value?: string) => {
+    if (tokenInfo) return tokenInfo;
+    const symbol = value?.trim().split(/\s+/).pop();
+    if (!symbol) return undefined;
+    return activeAccount.nativeAndErc20Tokens.value.find(
+      (token) =>
+        token.tokenInfo.symbol.toLowerCase() === symbol.toLowerCase(),
+    )?.tokenInfo;
+  };
+
+  const isAmountDetail = (detail: EvmUserHistoryItemDetail) =>
+    detail.label === 'popup_html_transfer_amount' ||
+    detail.type === EvmUserHistoryItemDetailType.TOKEN_AMOUNT;
+
+  const renderTokenAmount = (value: string | number) => {
+    const amountValue = value.toString().trim();
+    const amountTokenInfo = getTokenInfoFromAmount(amountValue);
+    const symbol = amountTokenInfo?.symbol;
+    const displayedAmount =
+      symbol && amountValue.endsWith(` ${symbol}`)
+        ? amountValue.slice(0, -symbol.length).trim()
+        : amountValue;
+
+    return (
+      <div className="value-content-horizontal">
+        {amountTokenInfo && <EvmTokenLogo tokenInfo={amountTokenInfo} />}
+        <span>
+          {displayedAmount}
+          {symbol ? ` ${symbol}` : ''}
+        </span>
+      </div>
+    );
+  };
+
   return (
     <div className="evm-transaction-result">
       <div className="tx-card">
@@ -550,6 +587,9 @@ const EvmTransactionResult = ({
             <div className="status">
               {chrome.i18n.getMessage(getStatusLabel(getStatus()))}
             </div>
+            {shouldShowStatusAmount && (
+              renderTokenAmount(amount)
+            )}
             {warningMessage && <div className="warning">{warningMessage}</div>}
           </div>
         </div>
@@ -625,12 +665,13 @@ const EvmTransactionResult = ({
             detailFields.map(
               (detail: EvmUserHistoryItemDetail, index: number) => (
                 <React.Fragment key={`card-${index}`}>
-                  {detail.type === EvmUserHistoryItemDetailType.BASE && (
-                    <SmallDataCardComponent
-                      label={detail.label}
-                      value={detail.value!}
-                    />
-                  )}
+                  {detail.type === EvmUserHistoryItemDetailType.BASE &&
+                    !isAmountDetail(detail) && (
+                      <SmallDataCardComponent
+                        label={detail.label}
+                        value={detail.value!}
+                      />
+                    )}
                   {detail.type === EvmUserHistoryItemDetailType.IMAGE && (
                     <SmallImageCardComponent
                       value={detail.imageUrl ?? getImage(detail.value!)}
@@ -650,16 +691,10 @@ const EvmTransactionResult = ({
                       valueOnClickAction={() => openWallet(detail.value!)}
                     />
                   )}
-                  {detail.type ===
-                    EvmUserHistoryItemDetailType.TOKEN_AMOUNT && (
+                  {isAmountDetail(detail) && (
                     <SmallDataCardComponent
                       label={detail.label}
-                      value={
-                        <div className="value-content-horizontal">
-                          {tokenInfo && <EvmTokenLogo tokenInfo={tokenInfo} />}
-                          {detail.value}
-                        </div>
-                      }
+                      value={renderTokenAmount(detail.value)}
                     />
                   )}
                 </React.Fragment>

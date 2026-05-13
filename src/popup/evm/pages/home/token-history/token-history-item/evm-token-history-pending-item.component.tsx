@@ -1,4 +1,5 @@
 import { PendingTransactionData } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { TransactionResponse } from 'ethers';
@@ -75,8 +76,13 @@ export const EvmTokenHistoryPendingItemComponent = ({
               />
               <div className="right-panel">
                 <div className="detail">
-                  {pendingTransactionData.amount}{' '}
-                  {pendingTransactionData.tokenInfo.symbol}
+                  <div className="value-content-horizontal">
+                    <EvmTokenLogo tokenInfo={pendingTransactionData.tokenInfo} />
+                    <span>
+                      {pendingTransactionData.amount}{' '}
+                      {pendingTransactionData.tokenInfo.symbol}
+                    </span>
+                  </div>
                 </div>
                 <CustomTooltip
                   dataTestId="scustom-tool-tip"
