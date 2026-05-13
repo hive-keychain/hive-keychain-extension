@@ -34,6 +34,7 @@ import {
   Wallet,
   ethers,
 } from 'ethers';
+import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
@@ -87,6 +88,7 @@ const EvmTransactionResult = ({
   warningMessage,
   initialDisplayNfts,
   initialDisplayHistory,
+  timestamp,
   setTitleContainerProperties,
   setErrorMessage,
   loadEvmActiveAccount,
@@ -308,6 +310,9 @@ const EvmTransactionResult = ({
           )
           .catch((err) => {
             Logger.error('speedUpTransaction wait failed', err);
+          })
+          .finally(() => {
+            setWaitingForTx(false);
           });
       }
     } catch (err: any) {
@@ -639,7 +644,6 @@ const EvmTransactionResult = ({
                         <EvmAddressComponent
                           address={detail.value!}
                           chainId={chain.chainId}
-                          forceFormattedAddress
                           canCopy
                         />
                       }
@@ -668,11 +672,17 @@ const EvmTransactionResult = ({
                 <EvmAddressComponent
                   address={syntheticToAddress!}
                   chainId={chain.chainId}
-                  forceFormattedAddress
                   canCopy
                 />
               }
               valueOnClickAction={() => openWallet(syntheticToAddress!)}
+            />
+          )}
+          {timestamp && (
+            <SmallDataCardComponent
+              label="Time"
+              skipLabelTranslation
+              value={moment(timestamp).format('YYYY/MM/DD, hh:mm:ss a')}
             />
           )}
           {!isCanceledHistoryOperation && shouldShowTokenType && (
@@ -751,6 +761,7 @@ const mapStateToProps = (state: RootState) => {
     initialDisplayNfts: state.navigation.stack[0].params.initialDisplayNfts,
     initialDisplayHistory:
       state.navigation.stack[0].params.initialDisplayHistory,
+    timestamp: state.navigation.stack[0].params.timestamp,
   };
 };
 
