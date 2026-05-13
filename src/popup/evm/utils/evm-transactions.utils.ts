@@ -242,7 +242,7 @@ const hasPendingTransaction = async (fromAddress: string, chain: EvmChain) => {
 
     let queuedTransactionsCount = 0;
     if (hasPendingFromLocal) {
-      queuedTransactionsCount = localPendingTransactions.length;
+      queuedTransactionsCount = localPendingTransactions.length - 1;
     } else if (hasPending) {
       queuedTransactionsCount = pendingNonce - latestNonce - 1;
     }
