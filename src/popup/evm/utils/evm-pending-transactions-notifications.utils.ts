@@ -1,7 +1,9 @@
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { TransactionResponse } from 'ethers';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 
 const waitForTransaction = async (transactionResponse: TransactionResponse) => {
@@ -11,6 +13,7 @@ const waitForTransaction = async (transactionResponse: TransactionResponse) => {
       await EvmTransactionsUtils.deleteFromPendingTransactions(
         transactionReceipt.hash,
       );
+      await sendTransactionResolvedMessage(transactionResponse);
       await createNotification(transactionResponse);
     }
   } catch (error: any) {
@@ -23,6 +26,19 @@ const waitForTransaction = async (transactionResponse: TransactionResponse) => {
 
     Logger.error('Error in waitForTransaction', error);
   }
+};
+
+const sendTransactionResolvedMessage = async (
+  transactionResponse: TransactionResponse,
+) => {
+  await CommunicationUtils.runtimeSendMessage({
+    command: BackgroundCommand.EVM_TRANSACTION_RESOLVED,
+    value: {
+      chainId: transactionResponse.chainId?.toString(),
+      from: transactionResponse.from,
+      hash: transactionResponse.hash,
+    },
+  });
 };
 
 const createNotification = async (transactionResponse: TransactionResponse) => {

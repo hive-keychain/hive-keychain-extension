@@ -11,7 +11,8 @@ import {
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LoadingState } from '@popup/multichain/reducers/loading.reducer';
 import { RootState } from '@popup/multichain/store';
-import React, { useEffect, useState } from 'react';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';
@@ -20,6 +21,7 @@ import Logger from 'src/utils/logger.utils';
 
 const EvmApp = ({
   accounts,
+  activeAccount,
   mk,
   isCurrentPageHomePage,
   appStatus,
@@ -33,6 +35,8 @@ const EvmApp = ({
 }: PropsFromRedux) => {
   const [displaySplashscreen, setDisplaySplashscreen] = useState(true);
   const [isAppReady, setIsAppReady] = useState(false);
+  const transactionResolutionRefreshInFlight = useRef(false);
+  const transactionResolutionRefreshQueued = useRef(false);
 
   useEffect(() => {
     if (!isAppReady) {
@@ -51,6 +55,52 @@ const EvmApp = ({
     setIsAppReady(false);
     init();
   }, [chain]);
+
+  useEffect(() => {
+    const onResolvedEvmTransaction = (message: any) => {
+      if (message.command !== BackgroundCommand.EVM_TRANSACTION_RESOLVED) {
+        return;
+      }
+
+      const resolvedChainId = Number(message.value?.chainId);
+      const currentChainId = Number(chain.chainId);
+      const resolvedWallet = message.value?.from?.toLowerCase();
+      const currentWallet = activeAccount.wallet?.address?.toLowerCase();
+
+      if (
+        resolvedChainId !== currentChainId ||
+        !resolvedWallet ||
+        resolvedWallet !== currentWallet
+      ) {
+        return;
+      }
+
+      void refreshActiveAccountAfterResolvedTransaction();
+    };
+
+    const refreshActiveAccountAfterResolvedTransaction = async () => {
+      if (transactionResolutionRefreshInFlight.current) {
+        transactionResolutionRefreshQueued.current = true;
+        return;
+      }
+
+      transactionResolutionRefreshInFlight.current = true;
+      try {
+        do {
+          transactionResolutionRefreshQueued.current = false;
+          await loadEvmActiveAccount(chain, activeAccount.wallet);
+        } while (transactionResolutionRefreshQueued.current);
+      } finally {
+        transactionResolutionRefreshInFlight.current = false;
+      }
+    };
+
+    chrome.runtime.onMessage.addListener(onResolvedEvmTransaction);
+
+    return () => {
+      chrome.runtime.onMessage.removeListener(onResolvedEvmTransaction);
+    };
+  }, [activeAccount.wallet, chain, loadEvmActiveAccount]);
 
   useEffect(() => {
     if (!displaySplashscreen || !isAppReady) {
@@ -109,6 +159,7 @@ const EvmApp = ({
 const mapStateToProps = (state: RootState) => {
   return {
     accounts: state.evm.accounts,
+    activeAccount: state.evm.activeAccount,
     mk: state.mk,
     isCurrentPageHomePage:
       state.navigation.stack[0]?.currentPage === Screen.HOME_PAGE,
