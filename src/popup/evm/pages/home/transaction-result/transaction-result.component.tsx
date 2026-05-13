@@ -94,7 +94,7 @@ const EvmTransactionResult = ({
   const [waitingForTx, setWaitingForTx] = useState(true);
   const [txReceipt, setTxReceipt] = useState<TransactionReceipt>();
   const [txResult, setTxResult] = useState<TransactionResponse>();
-  const hasRefreshedAccountAfterSuccess = useRef(false);
+  const hasRefreshedAccountAfterResolution = useRef(false);
 
   const [isCanceling, setCanceling] = useState<boolean>(false);
   const [isTransactionSpeedingUp, setTransactionSpeedingUp] =
@@ -135,18 +135,16 @@ const EvmTransactionResult = ({
     if (
       waitingForTx ||
       !txReceipt?.status ||
-      isCanceling ||
-      hasRefreshedAccountAfterSuccess.current
+      hasRefreshedAccountAfterResolution.current
     ) {
       return;
     }
 
-    hasRefreshedAccountAfterSuccess.current = true;
+    hasRefreshedAccountAfterResolution.current = true;
     loadEvmActiveAccount(chain, activeAccount.wallet);
   }, [
     activeAccount.wallet,
     chain,
-    isCanceling,
     loadEvmActiveAccount,
     txReceipt?.status,
     waitingForTx,
@@ -576,7 +574,7 @@ const EvmTransactionResult = ({
         )}
       </div>
       {isGasPanelOpened && (
-        <PopupContainer>
+        <PopupContainer className="transaction-gas-fee-popup">
           <div className="title-panel">
             <div className="title">
               {chrome.i18n.getMessage('popup_html_evm_transaction_select_fee')}
@@ -601,6 +599,7 @@ const EvmTransactionResult = ({
             fromAddress={localAccounts[0].wallet.address}
             onSelectFee={(value) => setIncreasedGasFee(value)}
             selectedFee={increasedGasFee}
+            defaultFeeLevel="aggressive"
             multiplier={1.5}
             transactionType={chain.defaultTransactionType}
             transactionData={transactionData}

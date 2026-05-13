@@ -48,6 +48,7 @@ interface GasFeePanelProps {
   refreshKey?: string | number;
   onRefreshStateChange?: (refreshing: boolean) => void;
   isActive?: boolean;
+  defaultFeeLevel?: 'low' | 'medium' | 'aggressive';
 }
 
 export const GasFeePanel = ({
@@ -65,6 +66,7 @@ export const GasFeePanel = ({
   refreshKey,
   onRefreshStateChange,
   isActive = true,
+  defaultFeeLevel,
 }: GasFeePanelProps) => {
   const initGenerationRef = useRef(0);
   const lastRefreshKeyRef = useRef<string | number>();
@@ -146,6 +148,70 @@ export const GasFeePanel = ({
     }
   }, [selectedFee]);
 
+  const getInitialFeeSelection = (estimate: FullGasFeeEstimation) => {
+    if (defaultFeeLevel && estimate[defaultFeeLevel]) {
+      return estimate[defaultFeeLevel];
+    }
+    if (estimate.suggestedByDApp) {
+      return estimate.suggestedByDApp;
+    }
+    if (estimate.suggested) {
+      return estimate.suggested;
+    }
+    return estimate.custom;
+  };
+
+  const multiplyDecimal = (value: Decimal | undefined, multiplier: number) => {
+    return value ? new Decimal(value).mul(multiplier) : undefined;
+  };
+
+  const getFeeComparisonValue = (fee: GasFeeEstimationBase) => {
+    return fee.maxFeePerGasInGwei ?? fee.gasPriceInGwei ?? fee.maxFeeInEth;
+  };
+
+  const isAtLeastMultiplierAboveCurrent = (
+    fee: GasFeeEstimationBase | undefined,
+    currentFee: GasFeeEstimationBase,
+    multiplier: number,
+  ) => {
+    const feeValue = fee ? getFeeComparisonValue(fee) : undefined;
+    const currentValue = getFeeComparisonValue(currentFee);
+
+    return (
+      !!feeValue && feeValue.greaterThanOrEqualTo(currentValue.mul(multiplier))
+    );
+  };
+
+  const getMultipliedCustomFee = (
+    currentFee: GasFeeEstimationBase,
+    multiplier: number,
+  ): GasFeeEstimationBase => {
+    return {
+      ...currentFee,
+      estimatedFeeInEth: new Decimal(currentFee.estimatedFeeInEth).mul(
+        multiplier,
+      ),
+      estimatedFeeUSD: new Decimal(currentFee.estimatedFeeUSD).mul(multiplier),
+      maxFeeInEth: new Decimal(currentFee.maxFeeInEth).mul(multiplier),
+      maxFeeUSD: new Decimal(currentFee.maxFeeUSD).mul(multiplier),
+      baseFeePerGasInGwei: multiplyDecimal(
+        currentFee.baseFeePerGasInGwei,
+        multiplier,
+      ),
+      gasPriceInGwei: multiplyDecimal(currentFee.gasPriceInGwei, multiplier),
+      maxFeePerGasInGwei: multiplyDecimal(
+        currentFee.maxFeePerGasInGwei,
+        multiplier,
+      ),
+      priorityFeeInGwei: multiplyDecimal(
+        currentFee.priorityFeeInGwei,
+        multiplier,
+      ),
+      icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
+      name: 'popup_html_evm_custom_gas_fee_custom',
+    };
+  };
+
   const init = async (silentRefresh: boolean) => {
     const generation = ++initGenerationRef.current;
     let estimate;
@@ -178,46 +244,28 @@ export const GasFeePanel = ({
       }
 
       if (!!multiplier && selectedFee) {
-        const increasedFee: GasFeeEstimationBase = {
-          ...selectedFee,
-          estimatedFeeInEth: new Decimal(selectedFee.estimatedFeeInEth).mul(
-            multiplier,
-          ),
-          estimatedFeeUSD: new Decimal(selectedFee.estimatedFeeUSD).mul(
-            multiplier,
-          ),
-          maxFeeInEth: new Decimal(selectedFee.maxFeeInEth).mul(multiplier),
-          maxFeeUSD: new Decimal(selectedFee.maxFeeUSD).mul(multiplier),
-          maxFeePerGasInGwei: selectedFee.maxFeePerGasInGwei
-            ? new Decimal(selectedFee.maxFeePerGasInGwei).mul(multiplier)
-            : undefined,
-          priorityFeeInGwei: selectedFee.priorityFeeInGwei
-            ? new Decimal(selectedFee.priorityFeeInGwei).mul(multiplier)
-            : undefined,
-        };
+        const multipliedCustomFee = getMultipliedCustomFee(
+          selectedFee,
+          multiplier,
+        );
+        const preferredFee = defaultFeeLevel
+          ? estimate[defaultFeeLevel]
+          : undefined;
 
         if (
-          estimate?.aggressive?.estimatedFeeInEth &&
-          estimate.aggressive.estimatedFeeInEth < increasedFee.estimatedFeeInEth
-        )
-          estimate.aggressive.deactivated = true;
-        if (
-          estimate?.medium?.estimatedFeeInEth &&
-          estimate.medium.estimatedFeeInEth < increasedFee.estimatedFeeInEth
-        )
-          estimate.medium.deactivated = true;
-
-        onSelectFee(increasedFee);
-        estimate.increased = increasedFee;
-      } else if (!customFeeWasSavedRef.current) {
-        if (estimate?.suggestedByDApp) {
-          onSelectFee(estimate.suggestedByDApp);
-        } else if (estimate.suggested) {
-          onSelectFee(estimate.suggested);
+          isAtLeastMultiplierAboveCurrent(
+            preferredFee,
+            selectedFee,
+            multiplier,
+          )
+        ) {
+          onSelectFee(preferredFee!);
         } else {
-          // No suggested by dapp, no suggested, so we select the custom fee
-          onSelectFee(estimate.custom!);
+          estimate.custom = multipliedCustomFee;
+          onSelectFee(multipliedCustomFee);
         }
+      } else if (!customFeeWasSavedRef.current) {
+        onSelectFee(getInitialFeeSelection(estimate)!);
       }
 
       if (

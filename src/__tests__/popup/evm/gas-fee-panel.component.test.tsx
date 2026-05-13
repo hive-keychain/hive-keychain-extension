@@ -60,6 +60,174 @@ describe('GasFeePanel', () => {
     expect(GasFeeUtils.estimate).not.toHaveBeenCalled();
   });
 
+  it('prefers the configured default fee level when it satisfies the multiplier', async () => {
+    const onSelectFee = jest.fn();
+    const lowFee = {
+      type: EvmTransactionType.EIP_1559,
+      estimatedFeeInEth: new Decimal('0.00042'),
+      estimatedFeeUSD: new Decimal(1),
+      maxFeeInEth: new Decimal('0.00063'),
+      maxFeeUSD: new Decimal(1.5),
+      estimatedMaxDuration: new Decimal(30),
+      priorityFeeInGwei: new Decimal(1),
+      maxFeePerGasInGwei: new Decimal(30),
+      gasPriceInGwei: new Decimal(30),
+      gasLimit: new Decimal(21000),
+      icon: SVGIcons.EVM_GAS_FEE_LOW,
+      name: 'popup_html_evm_custom_gas_fee_low',
+    };
+    const aggressiveFee = {
+      ...lowFee,
+      estimatedFeeInEth: new Decimal('0.00084'),
+      estimatedFeeUSD: new Decimal(2),
+      maxFeeInEth: new Decimal('0.00126'),
+      maxFeeUSD: new Decimal(3),
+      estimatedMaxDuration: new Decimal(10),
+      maxFeePerGasInGwei: new Decimal(45),
+      icon: SVGIcons.EVM_GAS_FEE_HIGH,
+      name: 'popup_html_evm_custom_gas_fee_aggressive',
+    };
+
+    jest.spyOn(GasFeeUtils, 'estimate').mockResolvedValue({
+      suggested: lowFee,
+      low: lowFee,
+      aggressive: aggressiveFee,
+      custom: {
+        ...lowFee,
+        estimatedFeeInEth: new Decimal(-1),
+        maxFeeInEth: new Decimal(-1),
+        estimatedMaxDuration: new Decimal(-1),
+        priorityFeeInGwei: new Decimal(-1),
+        maxFeePerGasInGwei: new Decimal(-1),
+        gasPriceInGwei: new Decimal(-1),
+        icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
+        name: 'popup_html_evm_custom_gas_fee_custom',
+      },
+    });
+
+    render(
+      <GasFeePanel
+        chain={
+          {
+            chainId: '1',
+            defaultTransactionType: EvmTransactionType.EIP_1559,
+            mainToken: 'ETH',
+            name: 'Ethereum',
+          } as any
+        }
+        defaultFeeLevel="aggressive"
+        fromAddress="0x00000000000000000000000000000000000000aa"
+        multiplier={1.5}
+        onSelectFee={onSelectFee}
+        prefetchedMainTokenInfo={
+          {
+            priceUsd: 2400,
+            symbol: 'ETH',
+            type: 'NATIVE',
+          } as any
+        }
+        selectedFee={lowFee}
+        setErrorMessage={jest.fn()}
+        transactionData={{
+          data: '0x',
+          from: '0x00000000000000000000000000000000000000aa',
+          to: '0x00000000000000000000000000000000000000bb',
+          type: EvmTransactionType.EIP_1559,
+          value: '0x0',
+        }}
+        transactionType={EvmTransactionType.EIP_1559}
+      />,
+    );
+
+    await waitFor(() => expect(onSelectFee).toHaveBeenCalledWith(aggressiveFee));
+  });
+
+  it('uses a custom 50% fee bump when the preferred fee level is below the multiplier', async () => {
+    const onSelectFee = jest.fn();
+    const currentFee = {
+      type: EvmTransactionType.EIP_1559,
+      estimatedFeeInEth: new Decimal('0.00042'),
+      estimatedFeeUSD: new Decimal(1),
+      maxFeeInEth: new Decimal('0.00063'),
+      maxFeeUSD: new Decimal(1.5),
+      estimatedMaxDuration: new Decimal(30),
+      baseFeePerGasInGwei: new Decimal(29),
+      priorityFeeInGwei: new Decimal(1),
+      maxFeePerGasInGwei: new Decimal(30),
+      gasPriceInGwei: new Decimal(30),
+      gasLimit: new Decimal(21000),
+      icon: SVGIcons.EVM_GAS_FEE_LOW,
+      name: 'popup_html_evm_custom_gas_fee_low',
+    };
+    const aggressiveFee = {
+      ...currentFee,
+      maxFeePerGasInGwei: new Decimal(40),
+      name: 'popup_html_evm_custom_gas_fee_aggressive',
+    };
+
+    jest.spyOn(GasFeeUtils, 'estimate').mockResolvedValue({
+      suggested: currentFee,
+      low: currentFee,
+      aggressive: aggressiveFee,
+      custom: {
+        ...currentFee,
+        estimatedFeeInEth: new Decimal(-1),
+        maxFeeInEth: new Decimal(-1),
+        estimatedMaxDuration: new Decimal(-1),
+        priorityFeeInGwei: new Decimal(-1),
+        maxFeePerGasInGwei: new Decimal(-1),
+        gasPriceInGwei: new Decimal(-1),
+        icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
+        name: 'popup_html_evm_custom_gas_fee_custom',
+      },
+    });
+
+    render(
+      <GasFeePanel
+        chain={
+          {
+            chainId: '1',
+            defaultTransactionType: EvmTransactionType.EIP_1559,
+            mainToken: 'ETH',
+            name: 'Ethereum',
+          } as any
+        }
+        defaultFeeLevel="aggressive"
+        fromAddress="0x00000000000000000000000000000000000000aa"
+        multiplier={1.5}
+        onSelectFee={onSelectFee}
+        prefetchedMainTokenInfo={
+          {
+            priceUsd: 2400,
+            symbol: 'ETH',
+            type: 'NATIVE',
+          } as any
+        }
+        selectedFee={currentFee}
+        setErrorMessage={jest.fn()}
+        transactionData={{
+          data: '0x',
+          from: '0x00000000000000000000000000000000000000aa',
+          to: '0x00000000000000000000000000000000000000bb',
+          type: EvmTransactionType.EIP_1559,
+          value: '0x0',
+        }}
+        transactionType={EvmTransactionType.EIP_1559}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(onSelectFee).toHaveBeenCalledWith(
+        expect.objectContaining({
+          icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
+          name: 'popup_html_evm_custom_gas_fee_custom',
+          maxFeePerGasInGwei: new Decimal(45),
+          priorityFeeInGwei: new Decimal(1.5),
+        }),
+      ),
+    );
+  });
+
   it('saves a custom fee even when native token USD price is unavailable', async () => {
     const onSelectFee = jest.fn();
     const selectedFee = {
