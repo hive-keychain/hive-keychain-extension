@@ -194,6 +194,7 @@ const EvmTransactionResult = ({
             );
             setTxReceipt(transactionReceipt);
             if (transactionResult) setTxResult(transactionResult);
+            setWaitingForTx(false);
           }
         })
         .catch((err) => {
@@ -201,18 +202,17 @@ const EvmTransactionResult = ({
             switch (err.reason) {
               case ReplacedTransactionReason.REPRICED:
                 Logger.info('Transaction successfully sped up');
+                setWaitingForTx(false);
                 break;
               case ReplacedTransactionReason.CANCELLED:
               case ReplacedTransactionReason.REPLACED:
                 Logger.info('Transaction successfully canceled');
+                setWaitingForTx(false);
                 break;
             }
           } else {
             Logger.error('Unexpected error in getTransactionStatus', err);
           }
-        })
-        .finally(() => {
-          setWaitingForTx(false);
         });
     } catch (err: any) {
       Logger.error('getTransactionStatus failed', err);

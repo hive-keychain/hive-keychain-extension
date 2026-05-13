@@ -1,27 +1,60 @@
 import { EtherRPCCustomError } from '@popup/evm/interfaces/evm-errors.interface';
-import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
+import {
+  EvmRpcUtils,
+  isEvmRpcInfrastructureFailure,
+} from '@popup/evm/utils/evm-rpc.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
 import { ethers, TransactionRequest } from 'ethers';
-import { EtherJsonRpcProvider } from 'src/utils/evm/ether-json-rpc-provider';
+import {
+  EtherJsonRpcFailoverContext,
+  EtherJsonRpcProvider,
+} from 'src/utils/evm/ether-json-rpc-provider';
+import Logger from 'src/utils/logger.utils';
 
 let jsonRpcProvider: ethers.JsonRpcApiProvider;
 let chainId: EvmChain['chainId'];
 
+const buildRpcFailover = (chain: EvmChain): EtherJsonRpcFailoverContext => ({
+  network: ethers.Network.from(Number(chain.chainId)),
+  isSwitchRpcAuto: () => EvmRpcUtils.getSwitchRpcAuto(chain),
+  getAlternateRpcUrls: async (currentUrl: string) => {
+    const rpcs = await EvmRpcUtils.getRpcListForChain(chain);
+    return rpcs.map((r) => r.url).filter((u) => u !== currentUrl);
+  },
+  onSwitchedToRpcUrl: async (newUrl: string) => {
+    const rpcs = await EvmRpcUtils.getRpcListForChain(chain);
+    const rpc = rpcs.find((r) => r.url === newUrl);
+    if (rpc) {
+      Logger.info('EVM RPC switched after request failover: ' + newUrl);
+      await EvmRpcUtils.setActiveRpc(rpc, chain);
+    }
+  },
+  isInfrastructureFailure: isEvmRpcInfrastructureFailure,
+});
+
 const getProvider = async (chain: EvmChain, rpcUrl?: string) => {
+  const resolvedUrl =
+    rpcUrl ?? (await EvmRpcUtils.getActiveRpc(chain)).url;
+  const failoverOpts = {
+    currentRpcUrl: resolvedUrl,
+    failover: buildRpcFailover(chain),
+  };
   if (chainId !== chain.chainId) {
     return new EtherJsonRpcProvider(
-      rpcUrl ?? (await EvmRpcUtils.getActiveRpc(chain)).url,
+      resolvedUrl,
       undefined,
       { staticNetwork: ethers.Network.from(Number(chain.chainId)) },
+      failoverOpts,
     );
   } else {
     if (!jsonRpcProvider) {
       chainId = chain.chainId;
       jsonRpcProvider = new EtherJsonRpcProvider(
-        rpcUrl ?? (await EvmRpcUtils.getActiveRpc(chain)).url,
+        resolvedUrl,
         undefined,
         { staticNetwork: ethers.Network.from(Number(chain.chainId)) },
+        failoverOpts,
       );
     }
 
@@ -33,9 +66,17 @@ const getProvider = async (chain: EvmChain, rpcUrl?: string) => {
 };
 
 const setProvider = async (chain: EvmChain, rpcUrl: string) => {
-  jsonRpcProvider = new EtherJsonRpcProvider(rpcUrl, undefined, {
-    staticNetwork: ethers.Network.from(Number(chain.chainId)),
-  });
+  jsonRpcProvider = new EtherJsonRpcProvider(
+    rpcUrl,
+    undefined,
+    {
+      staticNetwork: ethers.Network.from(Number(chain.chainId)),
+    },
+    {
+      currentRpcUrl: rpcUrl,
+      failover: buildRpcFailover(chain),
+    },
+  );
 };
 
 const getGasLimit = async (

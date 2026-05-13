@@ -42,7 +42,7 @@ import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { ethers, HDNodeWallet, TransactionResponse } from 'ethers';
+import { ethers, HDNodeWallet } from 'ethers';
 import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
@@ -61,48 +61,6 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { VersionLogUtils } from 'src/utils/version-log.utils';
 import { WhatsNewUtils } from 'src/utils/whats-new.utils';
-
-/** For cancel/speed-up fee UI: GasFeePanel only runs estimates when `transactionData` is set. */
-function providerTransactionDataFromResponse(
-  tx: TransactionResponse,
-): ProviderTransactionData {
-  const rawData = tx.data;
-  let data = '';
-  if (rawData != null && rawData !== '0x') {
-    data = typeof rawData === 'string' ? rawData : ethers.hexlify(rawData);
-  }
-
-  const txType = tx.type;
-  const isEip1559 =
-    txType === 2 ||
-    (tx.maxFeePerGas != null && tx.maxPriorityFeePerGas != null);
-
-  const out: ProviderTransactionData = {
-    from: tx.from,
-    data,
-    type: isEip1559 ? EvmTransactionType.EIP_1559 : EvmTransactionType.LEGACY,
-    value: ethers.toBeHex(tx.value),
-    nonce: Number(tx.nonce),
-  };
-
-  if (tx.to) {
-    out.to = tx.to;
-  }
-  if (tx.gasLimit != null) {
-    out.gasLimit = Number(tx.gasLimit);
-  }
-  if (tx.maxFeePerGas != null) {
-    out.maxFeePerGas = ethers.toBeHex(tx.maxFeePerGas);
-  }
-  if (tx.maxPriorityFeePerGas != null) {
-    out.maxPriorityFeePerGas = ethers.toBeHex(tx.maxPriorityFeePerGas);
-  }
-  if (tx.gasPrice != null && tx.maxFeePerGas == null) {
-    out.gasPrice = ethers.toBeHex(tx.gasPrice);
-  }
-
-  return out;
-}
 
 const Home = ({
   chain,
@@ -392,7 +350,9 @@ const Home = ({
         transactionResponse,
         pageTitle: 'evm_pending_transaction',
         transactionData:
-          providerTransactionDataFromResponse(transactionResponse),
+          EvmTransactionsUtils.providerTransactionDataFromResponse(
+            transactionResponse,
+          ),
       } as NavigationParams);
     } else {
       const transactionData: ProviderTransactionData = {
