@@ -16,7 +16,6 @@ import {
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
-import { HDNodeWallet } from 'ethers';
 import FlatList from 'flatlist-react';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -29,14 +28,12 @@ interface Props {
     screen: EvmScreen,
   ) => void;
   chain: EvmChain;
-  loadEvmActiveAccountNfts: (chain: EvmChain, wallet: HDNodeWallet) => void;
 }
 
 const EvmWalletNftGallery = ({
   activeAccount,
   chain,
   onClickOnNftPreview,
-  loadEvmActiveAccountNfts,
   navigateTo,
 }: Props & PropsFromRedux) => {
   const [displayedCollections, setDisplayedCollections] =
@@ -52,12 +49,6 @@ const EvmWalletNftGallery = ({
     showCard: boolean;
   }>({ ready: false, showCard: false });
   const hasFilterableCollections = Boolean(filteredCollections?.length);
-
-  useEffect(() => {
-    if (!activeAccount.nfts.initialized) {
-      loadEvmActiveAccountNfts(chain, activeAccount.wallet);
-    }
-  }, []);
 
   useEffect(() => {
     if (!activeAccount.nfts.loading) {

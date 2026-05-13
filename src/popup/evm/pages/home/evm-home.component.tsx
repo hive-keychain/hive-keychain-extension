@@ -3,7 +3,6 @@ import { EVMConfirmationPageParams } from '@common-ui/confirmation-page/confirma
 import { Screen } from '@interfaces/screen.interface';
 import {
   loadEvmActiveAccount,
-  loadEvmActiveAccountNfts,
   loadEvmHistory,
 } from '@popup/evm/actions/active-account.actions';
 import { EvmErc721Token } from '@popup/evm/interfaces/active-account.interface';
@@ -74,7 +73,6 @@ const Home = ({
   setErrorMessage,
   addToLoadingList,
   removeFromLoadingList,
-  loadEvmActiveAccountNfts,
   returningFromNftPage,
   returningFromHistoryDetails,
 }: PropsFromRedux) => {
@@ -469,7 +467,6 @@ const Home = ({
           onClickOnNftPreview={handleClickOnNftCollection}
           chain={chain}
           loadEvmHistory={loadEvmHistory}
-          loadEvmActiveAccountNfts={loadEvmActiveAccountNfts}
           reloadEvmActiveAccount={refresh}
           initialDisplayNfts={returningFromNftPage}
           initialDisplayHistory={returningFromHistoryDetails}
@@ -514,7 +511,6 @@ const connector = connect(mapStateToProps, {
   loadEvmHistory,
   addToLoadingList,
   removeFromLoadingList,
-  loadEvmActiveAccountNfts,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
