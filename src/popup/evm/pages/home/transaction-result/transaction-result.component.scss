@@ -59,12 +59,23 @@
       white-space: nowrap;
     }
   }
-  .popup-container {
+  .transaction-gas-fee-popup {
+    .popup-content {
+      row-gap: 16px;
+      border-color: var(--wallet-card-border);
+      box-shadow: 0px 4px 9px 0px var(--button-alternative-shadow-color);
+    }
+
     .gas-fee-estimate-loading-row {
       display: flex;
       align-items: center;
       column-gap: 8px;
       width: 100%;
+      box-sizing: border-box;
+      padding: 12px;
+      border: 1px solid var(--wallet-card-border);
+      border-radius: 16px;
+      background: var(--button-alternative-background-color);
       @include poppins400(12px);
       color: var(--main-font-color);
       opacity: 0.9;
@@ -73,7 +84,7 @@
         width: 12px;
         height: 12px;
         border: 2px solid rgba(128, 128, 128, 0.35);
-        border-top-color: var(--main-font-color);
+        border-top-color: var(--button-background-color);
         border-radius: 50%;
         animation: tx-result-gas-fee-spin 0.75s linear infinite;
         flex-shrink: 0;
@@ -84,11 +95,18 @@
       display: flex;
       justify-content: space-between;
       width: 100%;
+      align-items: center;
+
       .title {
         @include poppins500(16px);
         color: var(--main-font-color);
       }
+
+      .svg-icon {
+        cursor: pointer;
+      }
     }
+
     .gas-fee-panel {
       width: 100%;
       border: unset;

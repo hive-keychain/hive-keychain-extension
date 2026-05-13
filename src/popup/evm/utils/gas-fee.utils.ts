@@ -241,7 +241,7 @@ const estimate = async (
       gasPriceInGwei: new Decimal(estimates.high.suggestedMaxFeePerGas),
       gasLimit: new Decimal(gasLimit),
       icon: SVGIcons.EVM_GAS_FEE_HIGH,
-      name: 'popup_html_evm_custom_gas_fee_aggresive',
+      name: 'popup_html_evm_custom_gas_fee_aggressive',
     },
     custom: {
       type: type,
