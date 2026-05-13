@@ -7,6 +7,7 @@ import {
   CanceledTransactionData,
   EvmPendingTransactionDetails,
   EvmTransactionType,
+  ProviderTransactionData,
   UserCanceledTransactions,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
@@ -49,6 +50,48 @@ const persistPendingTransactions = async (
     LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
     transactions,
   );
+};
+
+/** For cancel/speed-up fee UI: GasFeePanel only runs estimates when `transactionData` is set. */
+const providerTransactionDataFromResponse = (
+  tx: TransactionResponse,
+): ProviderTransactionData => {
+  const rawData = tx.data;
+  let data = '';
+  if (rawData != null && rawData !== '0x') {
+    data = typeof rawData === 'string' ? rawData : ethers.hexlify(rawData);
+  }
+
+  const txType = tx.type;
+  const isEip1559 =
+    txType === 2 ||
+    (tx.maxFeePerGas != null && tx.maxPriorityFeePerGas != null);
+
+  const out: ProviderTransactionData = {
+    from: tx.from,
+    data,
+    type: isEip1559 ? EvmTransactionType.EIP_1559 : EvmTransactionType.LEGACY,
+    value: ethers.toBeHex(tx.value),
+    nonce: Number(tx.nonce),
+  };
+
+  if (tx.to) {
+    out.to = tx.to;
+  }
+  if (tx.gasLimit != null) {
+    out.gasLimit = Number(tx.gasLimit);
+  }
+  if (tx.maxFeePerGas != null) {
+    out.maxFeePerGas = ethers.toBeHex(tx.maxFeePerGas);
+  }
+  if (tx.maxPriorityFeePerGas != null) {
+    out.maxPriorityFeePerGas = ethers.toBeHex(tx.maxPriorityFeePerGas);
+  }
+  if (tx.gasPrice != null && tx.maxFeePerGas == null) {
+    out.gasPrice = ethers.toBeHex(tx.gasPrice);
+  }
+
+  return out;
 };
 
 const trackPendingTransactionConfirmation = async (
@@ -484,5 +527,6 @@ export const EvmTransactionsUtils = {
   send,
   hasPendingTransaction,
   getPendingTransactionsDetails,
+  providerTransactionDataFromResponse,
   rehydratePendingTransactions,
 };
