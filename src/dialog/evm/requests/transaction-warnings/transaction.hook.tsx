@@ -236,23 +236,22 @@ export const useTransactionHook = (
   };
 
   const ignoreAllWarnings = async () => {
+    if (duplicatedTransactionField) {
+      const newDuplicated = { ...duplicatedTransactionField };
+      newDuplicated.warnings![0].ignored = true;
+      setDuplicatedTransactionWarning(newDuplicated);
+    }
+    if (pendingTransactionWarningField) {
+      const newPending = { ...pendingTransactionWarningField };
+      newPending.warnings![0].ignored = true;
+      setPendingTransactionWarningField(newPending);
+    }
+    if (eip7702WarningField) {
+      const newEip7702 = { ...eip7702WarningField };
+      newEip7702.warnings![0].ignored = true;
+      setEip7702WarningField(newEip7702);
+    }
     if (fields) {
-      if (duplicatedTransactionField) {
-        const newDuplicated = { ...duplicatedTransactionField };
-        newDuplicated.warnings![0].ignored = true;
-        setDuplicatedTransactionWarning(newDuplicated);
-      }
-      if (pendingTransactionWarningField) {
-        const newPending = { ...pendingTransactionWarningField };
-        newPending.warnings![0].ignored = true;
-        setPendingTransactionWarningField(newPending);
-      }
-      if (eip7702WarningField) {
-        const newEip7702 = { ...eip7702WarningField };
-        newEip7702.warnings![0].ignored = true;
-        setEip7702WarningField(newEip7702);
-      }
-
       const newFields: TransactionConfirmationFields = { ...fields! };
       for (const fields of newFields.otherFields) {
         if (fields.warnings) {
@@ -322,7 +321,7 @@ export const useTransactionHook = (
         warnings: [
           {
             ignored: false,
-            level: EvmTransactionWarningLevel.HIGH,
+            level: EvmTransactionWarningLevel.MEDIUM,
             message: 'evm_pending_transaction_warning',
             type: EvmTransactionWarningType.BASE,
             warningKey: 'pendingTransaction',
