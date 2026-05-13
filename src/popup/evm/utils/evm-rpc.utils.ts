@@ -8,6 +8,45 @@ import { EtherJsonRpcProvider } from 'src/utils/evm/ether-json-rpc-provider';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
+/** True when retrying the same JSON-RPC on another endpoint may help (transport / node issues). */
+export const isEvmRpcInfrastructureFailure = (err: unknown): boolean => {
+  if (err == null) {
+    return false;
+  }
+  if (typeof err !== 'object') {
+    return true;
+  }
+  const e = err as { code?: string; message?: string; shortMessage?: string };
+  switch (e.code) {
+    case 'NETWORK_ERROR':
+    case 'SERVER_ERROR':
+    case 'TIMEOUT':
+    case 'UNKNOWN_ERROR':
+      return true;
+    default:
+      break;
+  }
+  const text = [e.message, e.shortMessage]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+  if (!text) {
+    return false;
+  }
+  return (
+    text.includes('fetch') ||
+    text.includes('failed to fetch') ||
+    text.includes('network') ||
+    text.includes('econnrefused') ||
+    text.includes('etimedout') ||
+    text.includes('socket') ||
+    text.includes('timeout') ||
+    text.includes('503') ||
+    text.includes('502') ||
+    text.includes('504')
+  );
+};
+
 const call = async (method: string, params: any[], rpcUrl: string) => {
   const body = JSON.stringify({
     jsonrpc: '2.0',
@@ -241,4 +280,5 @@ export const EvmRpcUtils = {
   switchToWorkingRpc,
   automaticallySwitchToWorkingRpc,
   addCustomRpcsFromList,
+  isEvmRpcInfrastructureFailure,
 };
