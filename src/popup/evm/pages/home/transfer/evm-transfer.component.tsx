@@ -293,6 +293,7 @@ const EvmTransfer = ({
             address={activeAccount.address}
             chainId={chain.chainId}
             canCopy
+            localAccounts={localAccounts}
           />
         ),
       },
@@ -303,6 +304,7 @@ const EvmTransfer = ({
             address={form.receiverAddress}
             chainId={chain.chainId}
             canCopy
+            localAccounts={localAccounts}
           />
         ),
         warnings: await EvmTransactionParserUtils.getAddressWarning(

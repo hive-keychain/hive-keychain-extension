@@ -1,10 +1,9 @@
+import { EvmAccountOrPublic } from '@popup/evm/interfaces/wallet.interface';
 import {
   EvmAddressDetail,
   EvmAddressesUtils,
 } from '@popup/evm/utils/evm-addresses.utils';
-import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
 import {
@@ -15,6 +14,7 @@ import {
 interface Props {
   address: string;
   chainId: string;
+  localAccounts: EvmAccountOrPublic[];
   canCopy?: boolean;
   prefix?: React.ReactNode;
   forceFormattedAddress?: boolean;
@@ -23,11 +23,11 @@ interface Props {
 export const EvmAddressComponent = ({
   address,
   chainId,
+  localAccounts,
   canCopy,
   prefix,
   forceFormattedAddress,
 }: Props) => {
-  const localAccounts = useSelector((state: RootState) => state.evm.accounts);
   const [addressDetail, setAddressDetail] = useState<EvmAddressDetail>(() =>
     EvmAddressesUtils.getFallbackAddressDetails(address, localAccounts),
   );

@@ -153,6 +153,7 @@ const EvmNftTransfer = ({
             chainId={chain.chainId}
             forceFormattedAddress
             canCopy
+            localAccounts={localAccounts}
           />
         ),
       },
@@ -163,6 +164,7 @@ const EvmNftTransfer = ({
             address={activeAccount.address}
             chainId={chain.chainId}
             canCopy
+            localAccounts={localAccounts}
           />
         ),
       },
@@ -173,6 +175,7 @@ const EvmNftTransfer = ({
             address={form.receiverAddress}
             chainId={chain.chainId}
             canCopy
+            localAccounts={localAccounts}
           />
         ),
         warnings: await EvmTransactionParserUtils.getAddressWarning(

@@ -453,6 +453,7 @@ export const useTransactionHook = (
           address={address}
           chainId={chainId}
           canCopy={true}
+          localAccounts={localAccounts}
         />
       ),
       warnings: skipWarnings

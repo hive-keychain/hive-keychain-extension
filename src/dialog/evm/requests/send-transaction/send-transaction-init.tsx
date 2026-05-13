@@ -44,6 +44,7 @@ import Logger from 'src/utils/logger.utils';
 const renderCopyableFormattedAddress = (
   address: string,
   chainId: string,
+  localAccounts: EvmAccountOrPublic[],
   prefix?: React.ReactNode,
 ) => (
   <EvmAddressComponent
@@ -51,6 +52,7 @@ const renderCopyableFormattedAddress = (
     chainId={chainId}
     canCopy
     prefix={prefix}
+    localAccounts={localAccounts}
   />
 );
 
@@ -381,6 +383,7 @@ export async function runSendTransactionInit(
               value: renderCopyableFormattedAddress(
                 tokenAddress!,
                 chainTmp.chainId,
+                accounts,
                 usedToken ? <EvmTokenLogo tokenInfo={usedToken} /> : undefined,
               ),
               ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
@@ -498,6 +501,7 @@ export async function runSendTransactionInit(
               value: renderCopyableFormattedAddress(
                 tokenAddress!,
                 chainTmp.chainId,
+                accounts,
                 usedToken ? <EvmTokenLogo tokenInfo={usedToken} /> : undefined,
               ),
               ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(

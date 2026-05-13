@@ -79,6 +79,7 @@ export const EvmLifiSwap = ({
   resetLoading,
   activeChain,
   activeAccount,
+  localAccounts,
 }: PropsFromRedux) => {
   const [form, setForm] = useState<EvmSwapForm>({
     fromSelectedToken: null,
@@ -336,6 +337,7 @@ export const EvmLifiSwap = ({
               address={activeAccount.address}
               chainId={activeChain.chainId}
               canCopy
+              localAccounts={localAccounts}
             />
           ),
           name: 'popup_html_transfer_from',
@@ -347,6 +349,7 @@ export const EvmLifiSwap = ({
               address={lifiQuote?.estimate.approvalAddress!}
               chainId={activeChain.chainId}
               canCopy
+              localAccounts={localAccounts}
             />
           ),
           name: 'popup_html_transfer_to',
@@ -394,6 +397,7 @@ export const EvmLifiSwap = ({
             address={activeAccount.address}
             chainId={activeChain.chainId}
             canCopy
+            localAccounts={localAccounts}
           />
         ),
         name: 'popup_html_transfer_from',
@@ -405,6 +409,7 @@ export const EvmLifiSwap = ({
             address={lifiQuote?.estimate.approvalAddress!}
             chainId={activeChain.chainId}
             canCopy
+            localAccounts={localAccounts}
           />
         ),
         name: 'popup_html_transfer_to',
@@ -811,6 +816,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.evm.activeAccount,
     activeChain: state.chain as EvmChain,
+    localAccounts: state.evm.accounts,
   };
 };
 
