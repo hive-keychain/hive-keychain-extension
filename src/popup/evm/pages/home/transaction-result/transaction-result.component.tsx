@@ -675,7 +675,9 @@ const EvmTransactionResult = ({
         )}
       </div>
       {isGasPanelOpened && (
-        <PopupContainer className="transaction-gas-fee-popup">
+        <PopupContainer
+          useBodyPortal
+          className="transaction-gas-fee-popup">
           <div className="title-panel">
             <div className="title">
               {chrome.i18n.getMessage('popup_html_evm_transaction_select_fee')}

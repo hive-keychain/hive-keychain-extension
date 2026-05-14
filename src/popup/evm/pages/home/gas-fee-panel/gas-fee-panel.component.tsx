@@ -693,6 +693,7 @@ export const GasFeePanel = ({
       )}
       {isAdvancedPanelOpen && feeEstimation && (
         <PopupContainer
+          useBodyPortal
           className="edit-gas-fee-popup"
           children={
             <div className="edit-gas-fee-content">
