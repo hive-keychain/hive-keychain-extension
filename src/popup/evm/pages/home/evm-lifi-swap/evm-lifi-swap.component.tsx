@@ -55,6 +55,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import Config from 'src/config';
 import { KeychainError } from 'src/keychain-error';
+import Logger from 'src/utils/logger.utils';
 
 interface EvmSwapForm {
   fromSelectedToken: TokenExtended | null;
@@ -236,25 +237,30 @@ export const EvmLifiSwap = ({
   };
 
   const initList = async () => {
-    const optionsLists = await LiFiUtils.getLiFiSwapOptionLists();
+    try {
+      const optionsLists = await LiFiUtils.getLiFiSwapOptionLists();
 
-    setTokenList(optionsLists.tokens);
-    setChainList(optionsLists.chains);
+      setTokenList(optionsLists.tokens);
+      setChainList(optionsLists.chains);
 
-    const chainItem = optionsLists.chains.find(
-      (chainOption) => chainOption.value.id === Number(activeChain.chainId),
-    );
-    setForm((prev) => ({
-      ...prev,
-      fromSelectedChain: chainItem
-        ? chainItem.value
-        : optionsLists.chains[0].value,
-      toSelectedChain: chainItem
-        ? chainItem.value
-        : optionsLists.chains[0].value,
-    }));
-
-    setLoading(false);
+      const chainItem = optionsLists.chains.find(
+        (chainOption) => chainOption.value.id === Number(activeChain.chainId),
+      );
+      setForm((prev) => ({
+        ...prev,
+        fromSelectedChain: chainItem
+          ? chainItem.value
+          : optionsLists.chains[0].value,
+        toSelectedChain: chainItem
+          ? chainItem.value
+          : optionsLists.chains[0].value,
+      }));
+    } catch (err: unknown) {
+      Logger.error(err);
+      setServiceUnavailable(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const filterTokenList = (chain: ExtendedChain, query: string) => {
@@ -564,250 +570,260 @@ export const EvmLifiSwap = ({
 
   return (
     <div className="evm-lifi-swap-page">
-      <FormContainer>
-        {!loading && (
-          <div className="evm-lifi-swap-page-content">
-            <div className="countdown">
-              {!!autoRefreshCountdown && (
-                <>
-                  {
-                    <span>
-                      {chrome.i18n.getMessage(
-                        'swap_autorefresh',
-                        autoRefreshCountdown + '',
-                      )}
-                    </span>
-                  }
-                </>
-              )}
-            </div>
-            <div className="top-row">
-              <SVGIcon
-                className="swap-history-button"
-                icon={SVGIcons.SWAPS_HISTORY}
-                onClick={() => navigateTo(EvmScreen.LIFI_HISTORY_PAGE)}
-              />
-            </div>
-            {lifiQuote && (
-              <Card className="tool-details-card">
-                <div className="tool-details-title">
-                  <img
-                    src={`https://docs.li.fi/mintlify-assets/_mintlify/favicons/lifi/luYFsl4agEbmIn0Z/_generated/favicon/favicon-32x32.png`}
-                    className="tool-logo"
+      {loading && !serviceUnavailable ? (
+        <div className="rotating-logo-wrapper">
+          <RotatingLogoComponent />
+        </div>
+      ) : (
+        <>
+          {!serviceUnavailable && !underMaintenance && (
+            <FormContainer>
+              <div className="evm-lifi-swap-page-content">
+                <div className="countdown">
+                  {!!autoRefreshCountdown && (
+                    <>
+                      {
+                        <span>
+                          {chrome.i18n.getMessage(
+                            'swap_autorefresh',
+                            autoRefreshCountdown + '',
+                          )}
+                        </span>
+                      }
+                    </>
+                  )}
+                </div>
+                <div className="top-row">
+                  <SVGIcon
+                    className="swap-history-button"
+                    icon={SVGIcons.SWAPS_HISTORY}
+                    onClick={() => navigateTo(EvmScreen.LIFI_HISTORY_PAGE)}
                   />
-                  <div className="tool-name">
-                    {chrome.i18n.getMessage('evm_processed_by', ['LiFi'])}
+                </div>
+                {lifiQuote && (
+                  <Card className="tool-details-card">
+                    <div className="tool-details-title">
+                      <img
+                        src={`https://docs.li.fi/mintlify-assets/_mintlify/favicons/lifi/luYFsl4agEbmIn0Z/_generated/favicon/favicon-32x32.png`}
+                        className="tool-logo"
+                      />
+                      <div className="tool-name">
+                        {chrome.i18n.getMessage('evm_processed_by', ['LiFi'])}
+                      </div>
+                    </div>
+                  </Card>
+                )}
+
+                <LabelComponent
+                  value="html_popup_swap_swap_from"
+                  className="swap-label"
+                />
+                {form && form.fromSelectedToken && form.fromSelectedChain && (
+                  <div className="evm-lifi-swap-chain-token-selectors">
+                    <ComplexeCustomSelect
+                      options={fromTokenList}
+                      selectedItem={LiFiUtils.getTokenOptionItem(
+                        form.fromSelectedToken!,
+                        form.fromSelectedChain!,
+                      )}
+                      setSelectedItem={(value) =>
+                        setForm((prev) => ({
+                          ...prev,
+                          fromSelectedToken: value.value,
+                        }))
+                      }
+                      generateImageIfNull
+                      filterable
+                      customFilter={
+                        <>
+                          {form.fromSelectedChain && (
+                            <LiFiTokenFilter
+                              options={chainList}
+                              selectedItem={LiFiUtils.getChainOptionItem(
+                                form.fromSelectedChain!,
+                              )}
+                              setSelectedItem={(value) =>
+                                setForm((prev) => ({
+                                  ...prev,
+                                  fromSelectedChain: value.value,
+                                }))
+                              }
+                              onQueryChanged={(query) => {
+                                setFromTokenList(
+                                  filterTokenList(
+                                    form.fromSelectedChain!,
+                                    query,
+                                  ),
+                                );
+                              }}
+                            />
+                          )}
+                        </>
+                      }
+                    />
+                    <InputComponent
+                      type={InputType.NUMBER}
+                      value={form.amount}
+                      onChange={(value) =>
+                        setForm((prev) => ({ ...prev, amount: value }))
+                      }
+                      placeholder="popup_html_transfer_amount"
+                    />
                   </div>
-                </div>
-              </Card>
-            )}
+                )}
 
-            <LabelComponent
-              value="html_popup_swap_swap_from"
-              className="swap-label"
-            />
-            {form && form.fromSelectedToken && form.fromSelectedChain && (
-              <div className="evm-lifi-swap-chain-token-selectors">
-                <ComplexeCustomSelect
-                  options={fromTokenList}
-                  selectedItem={LiFiUtils.getTokenOptionItem(
-                    form.fromSelectedToken!,
-                    form.fromSelectedChain!,
-                  )}
-                  setSelectedItem={(value) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      fromSelectedToken: value.value,
-                    }))
-                  }
-                  generateImageIfNull
-                  filterable
-                  customFilter={
-                    <>
-                      {form.fromSelectedChain && (
-                        <LiFiTokenFilter
-                          options={chainList}
-                          selectedItem={LiFiUtils.getChainOptionItem(
-                            form.fromSelectedChain!,
-                          )}
-                          setSelectedItem={(value) =>
-                            setForm((prev) => ({
-                              ...prev,
-                              fromSelectedChain: value.value,
-                            }))
-                          }
-                          onQueryChanged={(query) => {
-                            setFromTokenList(
-                              filterTokenList(form.fromSelectedChain!, query),
-                            );
-                          }}
-                        />
+                <SVGIcon icon={SVGIcons.SWAPS_SWITCH} className="swap-icon" />
+
+                <LabelComponent
+                  value="html_popup_swap_swap_to"
+                  className="swap-label"
+                />
+                {form && form.toSelectedChain && form.toSelectedToken && (
+                  <div className="evm-lifi-swap-chain-token-selectors">
+                    <ComplexeCustomSelect
+                      options={toTokenList}
+                      selectedItem={LiFiUtils.getTokenOptionItem(
+                        form.toSelectedToken!,
+                        form.toSelectedChain!,
                       )}
-                    </>
-                  }
-                />
-                <InputComponent
-                  type={InputType.NUMBER}
-                  value={form.amount}
-                  onChange={(value) =>
-                    setForm((prev) => ({ ...prev, amount: value }))
-                  }
-                  placeholder="popup_html_transfer_amount"
-                />
-              </div>
-            )}
-
-            <SVGIcon icon={SVGIcons.SWAPS_SWITCH} className="swap-icon" />
-
-            <LabelComponent
-              value="html_popup_swap_swap_to"
-              className="swap-label"
-            />
-            {form && form.toSelectedChain && form.toSelectedToken && (
-              <div className="evm-lifi-swap-chain-token-selectors">
-                <ComplexeCustomSelect
-                  options={toTokenList}
-                  selectedItem={LiFiUtils.getTokenOptionItem(
-                    form.toSelectedToken!,
-                    form.toSelectedChain!,
-                  )}
-                  setSelectedItem={(value) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      toSelectedToken: value.value,
-                    }))
-                  }
-                  generateImageIfNull
-                  filterable
-                  customFilter={
-                    <>
-                      {form.toSelectedChain && (
-                        <LiFiTokenFilter
-                          options={chainList}
-                          selectedItem={LiFiUtils.getChainOptionItem(
-                            form.toSelectedChain!,
+                      setSelectedItem={(value) =>
+                        setForm((prev) => ({
+                          ...prev,
+                          toSelectedToken: value.value,
+                        }))
+                      }
+                      generateImageIfNull
+                      filterable
+                      customFilter={
+                        <>
+                          {form.toSelectedChain && (
+                            <LiFiTokenFilter
+                              options={chainList}
+                              selectedItem={LiFiUtils.getChainOptionItem(
+                                form.toSelectedChain!,
+                              )}
+                              setSelectedItem={(value) =>
+                                setForm((prev) => ({
+                                  ...prev,
+                                  toSelectedChain: value.value,
+                                }))
+                              }
+                              onQueryChanged={(query) => {
+                                setToTokenList(
+                                  filterTokenList(form.toSelectedChain!, query),
+                                );
+                              }}
+                            />
                           )}
-                          setSelectedItem={(value) =>
-                            setForm((prev) => ({
-                              ...prev,
-                              toSelectedChain: value.value,
-                            }))
-                          }
-                          onQueryChanged={(query) => {
-                            setToTokenList(
-                              filterTokenList(form.toSelectedChain!, query),
-                            );
-                          }}
-                        />
-                      )}
-                    </>
-                  }
-                />
-                <InputComponent
-                  type={InputType.NUMBER}
-                  value={lifiQuote?.estimate.toAmount ?? 0}
-                  onChange={() => {}}
-                  placeholder="popup_html_transfer_amount"
-                  disabled
-                />
-              </div>
-            )}
+                        </>
+                      }
+                    />
+                    <InputComponent
+                      type={InputType.NUMBER}
+                      value={lifiQuote?.estimate.toAmount ?? 0}
+                      onChange={() => {}}
+                      placeholder="popup_html_transfer_amount"
+                      disabled
+                    />
+                  </div>
+                )}
 
-            <div className="advanced-parameters">
-              <div
-                className="title-panel"
-                onClick={() =>
-                  setAdvancedParametersPanelOpened(
-                    !advancedParametersPanelOpened,
-                  )
-                }>
-                <div className="title">
-                  {chrome.i18n.getMessage('swap_advanced_parameters')}
-                </div>
-                <SVGIcon
-                  icon={SVGIcons.GLOBAL_ARROW}
-                  onClick={() =>
-                    setAdvancedParametersPanelOpened(
-                      !advancedParametersPanelOpened,
-                    )
-                  }
-                  className={`advanced-parameters-toggle ${
-                    advancedParametersPanelOpened ? 'open' : 'closed'
-                  }`}
-                />
-              </div>
-              {advancedParametersPanelOpened && (
-                <div className="advanced-parameters-container">
-                  <InputComponent
-                    label="evm_swap_receiver_address"
-                    type={InputType.TEXT}
-                    value={form.receiverAddress}
-                    onChange={(value) =>
-                      setForm((prev) => ({ ...prev, receiverAddress: value }))
+                <div className="advanced-parameters">
+                  <div
+                    className="title-panel"
+                    onClick={() =>
+                      setAdvancedParametersPanelOpened(
+                        !advancedParametersPanelOpened,
+                      )
                     }
-                  />
-                  <InputComponent
-                    type={InputType.NUMBER}
-                    min={5}
-                    step={1}
-                    value={form.slippage}
-                    onChange={(value) =>
-                      setForm((prev) => ({ ...prev, slippage: value }))
-                    }
-                    label="html_popup_swaps_slipperage"
-                    placeholder="html_popup_swaps_slipperage"
-                  />
-                  {form.fromSelectedToken &&
-                    form.fromSelectedToken.address !==
-                      '0x0000000000000000000000000000000000000000' && (
+                  >
+                    <div className="title">
+                      {chrome.i18n.getMessage('swap_advanced_parameters')}
+                    </div>
+                    <SVGIcon
+                      icon={SVGIcons.GLOBAL_ARROW}
+                      onClick={() =>
+                        setAdvancedParametersPanelOpened(
+                          !advancedParametersPanelOpened,
+                        )
+                      }
+                      className={`advanced-parameters-toggle ${
+                        advancedParametersPanelOpened ? 'open' : 'closed'
+                      }`}
+                    />
+                  </div>
+                  {advancedParametersPanelOpened && (
+                    <div className="advanced-parameters-container">
                       <InputComponent
-                        type={InputType.NUMBER}
-                        value={form.approvalAmount}
+                        label="evm_swap_receiver_address"
+                        type={InputType.TEXT}
+                        value={form.receiverAddress}
                         onChange={(value) =>
                           setForm((prev) => ({
                             ...prev,
-                            approvalAmount: value,
+                            receiverAddress: value,
                           }))
                         }
-                        label="evm_swap_approval_amount"
-                        placeholder="evm_swap_approval_amount"
                       />
-                    )}
+                      <InputComponent
+                        type={InputType.NUMBER}
+                        min={5}
+                        step={1}
+                        value={form.slippage}
+                        onChange={(value) =>
+                          setForm((prev) => ({ ...prev, slippage: value }))
+                        }
+                        label="html_popup_swaps_slipperage"
+                        placeholder="html_popup_swaps_slipperage"
+                      />
+                      {form.fromSelectedToken &&
+                        form.fromSelectedToken.address !==
+                          '0x0000000000000000000000000000000000000000' && (
+                          <InputComponent
+                            type={InputType.NUMBER}
+                            value={form.approvalAmount}
+                            onChange={(value) =>
+                              setForm((prev) => ({
+                                ...prev,
+                                approvalAmount: value,
+                              }))
+                            }
+                            label="evm_swap_approval_amount"
+                            placeholder="evm_swap_approval_amount"
+                          />
+                        )}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
 
-            <div className="fill-space"></div>
+                <div className="fill-space"></div>
 
-            <div className="evm-lifi-swap-page-content-buttons">
-              <ButtonComponent
-                type={ButtonType.ALTERNATIVE}
-                label="popup_html_button_label_cancel"
-                onClick={processCancel}
-              />
-              <ButtonComponent
-                type={ButtonType.IMPORTANT}
-                label="html_popup_swaps_process_swap"
-                onClick={processSwap}
-              />
+                <div className="evm-lifi-swap-page-content-buttons">
+                  <ButtonComponent
+                    type={ButtonType.ALTERNATIVE}
+                    label="popup_html_button_label_cancel"
+                    onClick={processCancel}
+                  />
+                  <ButtonComponent
+                    type={ButtonType.IMPORTANT}
+                    label="html_popup_swaps_process_swap"
+                    onClick={processSwap}
+                  />
+                </div>
+              </div>
+            </FormContainer>
+          )}
+          {underMaintenance && (
+            <div className="maintenance-mode">
+              <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
+              <div className="text">
+                {chrome.i18n.getMessage('swap_under_maintenance')}
+              </div>
             </div>
-          </div>
-        )}
-        {loading && (
-          <div className="evm-lifi-swap-page-loading">
-            <RotatingLogoComponent />
-          </div>
-        )}
-      </FormContainer>
-      {underMaintenance && (
-        <div className="maintenance-mode">
-          <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
-          <div className="text">
-            {chrome.i18n.getMessage('swap_under_maintenance')}
-          </div>
-        </div>
+          )}
+          {serviceUnavailable && <ServiceUnavailablePage />}
+        </>
       )}
-      {serviceUnavailable && <ServiceUnavailablePage />}
     </div>
   );
 };
