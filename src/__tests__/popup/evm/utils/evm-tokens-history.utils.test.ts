@@ -277,4 +277,140 @@ describe('evm-tokens-history.utils tests:\n', () => {
       ]),
     );
   });
+
+  it('keeps a contract call with native paid as a smart contract operation', async () => {
+    jest.spyOn(EvmLightNodeUtils, 'getHistory').mockResolvedValue({
+      items: [
+        {
+          txId: '0xcontractpaid',
+          blockNumber: 127,
+          blockTime: '2026-01-01T00:00:00.000Z',
+          opIndex: '0',
+          opName: 'CONTRACT_CALL',
+          status: 'SUCCESS',
+          fromAddress: '0x1111111111111111111111111111111111111111',
+          toAddress: '0x2222222222222222222222222222222222222222',
+          action: 'deposit',
+          in: [],
+          out: [
+            {
+              kind: 'NATIVE',
+              amountWei: '50000000000000000',
+              amount: '0.05',
+              verified: true,
+              possibleSpam: false,
+            },
+          ],
+        },
+      ],
+      nextCursor: null,
+      catchupStatus: CatchupStatus.DONE,
+    } as any);
+
+    const history = await EvmTokensHistoryUtils.fetchHistory2(
+      '0x1111111111111111111111111111111111111111',
+      chain,
+    );
+
+    expect(history.events[0]).toMatchObject({
+      pageTitle: 'evm_history_smart_contract',
+      type: 'SMART_CONTRACT',
+      label: 'evm_history_operation_generic_smart_contract_messages_out',
+    });
+    expect(history.events[0].detailFields).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: 'evm_history_native_amount_paid',
+          type: 'TOKEN_AMOUNT',
+          value: '0.05 ETH',
+        }),
+        expect.objectContaining({
+          label: 'evm_operation_smart_contract_address',
+          type: 'ADDRESS',
+          value: '0x2222222222222222222222222222222222222222',
+        }),
+      ]),
+    );
+    expect(history.events[0].detailFields?.slice(0, 3)).toEqual([
+      expect.objectContaining({
+        label: 'evm_operation_smart_contract_address',
+      }),
+      expect.objectContaining({
+        label: 'evm_history_native_amount_paid',
+      }),
+      expect.objectContaining({
+        label: 'evm_operation_action',
+        type: 'BASE',
+        value: 'Deposit',
+      }),
+    ]);
+  });
+
+  it('keeps a contract call with native received as a smart contract operation', async () => {
+    jest.spyOn(EvmLightNodeUtils, 'getHistory').mockResolvedValue({
+      items: [
+        {
+          txId: '0xcontractreceived',
+          blockNumber: 128,
+          blockTime: '2026-01-01T00:00:00.000Z',
+          opIndex: '0',
+          opName: 'CONTRACT_CALL',
+          status: 'SUCCESS',
+          fromAddress: '0x1111111111111111111111111111111111111111',
+          toAddress: '0x2222222222222222222222222222222222222222',
+          action: 'withdraw',
+          in: [
+            {
+              kind: 'NATIVE',
+              amountWei: '75000000000000000',
+              amount: '0.075',
+              verified: true,
+              possibleSpam: false,
+            },
+          ],
+          out: [],
+        },
+      ],
+      nextCursor: null,
+      catchupStatus: CatchupStatus.DONE,
+    } as any);
+
+    const history = await EvmTokensHistoryUtils.fetchHistory2(
+      '0x1111111111111111111111111111111111111111',
+      chain,
+    );
+
+    expect(history.events[0]).toMatchObject({
+      pageTitle: 'evm_history_smart_contract',
+      type: 'SMART_CONTRACT',
+      label: 'evm_history_operation_generic_smart_contract_messages_out',
+    });
+    expect(history.events[0].detailFields).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: 'evm_history_native_amount_received',
+          type: 'TOKEN_AMOUNT',
+          value: '0.075 ETH',
+        }),
+        expect.objectContaining({
+          label: 'evm_operation_smart_contract_address',
+          type: 'ADDRESS',
+          value: '0x2222222222222222222222222222222222222222',
+        }),
+      ]),
+    );
+    expect(history.events[0].detailFields?.slice(0, 3)).toEqual([
+      expect.objectContaining({
+        label: 'evm_operation_smart_contract_address',
+      }),
+      expect.objectContaining({
+        label: 'evm_history_native_amount_received',
+      }),
+      expect.objectContaining({
+        label: 'evm_operation_action',
+        type: 'BASE',
+        value: 'Withdraw',
+      }),
+    ]);
+  });
 });

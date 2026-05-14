@@ -578,18 +578,20 @@ const EvmTransactionResult = ({
     txDataHex || null,
   );
 
-  const detailFieldsIncludeTo = detailFields?.some(
-    (d: EvmUserHistoryItemDetail) =>
-      d.label === 'popup_html_transfer_to' ||
-      d.label === 'popup_html_evm_transaction_info_to',
-  );
-
   const syntheticToAddress =
     receiverAddress ??
     erc20TransferRecipient ??
     (!txDataHex.startsWith('0xa9059cbb')
       ? (displayTx.to ?? undefined)
       : undefined);
+
+  const detailFieldsIncludeTo = detailFields?.some(
+    (d: EvmUserHistoryItemDetail) =>
+      d.label === 'popup_html_transfer_to' ||
+      d.label === 'popup_html_evm_transaction_info_to' ||
+      (d.label === 'evm_operation_smart_contract_address' &&
+        d.value?.toLowerCase() === syntheticToAddress?.toLowerCase()),
+  );
 
   const isCanceledHistoryOperation =
     pageTitle === 'evm_history_canceled_transaction';

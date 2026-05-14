@@ -289,6 +289,57 @@ const pushNativeAmountPaidDetails = (
   });
 };
 
+const getNativeAmountReceived = (
+  item: LightNodeHistoryItem,
+  chain: EvmChain,
+): string | null => {
+  const nativeInFlow = item.in.find((flow) => flow.kind === 'NATIVE');
+  if (nativeInFlow?.kind === 'NATIVE') {
+    return `${formatTokenAmount(nativeInFlow.amount)} ${chain.mainToken}`;
+  }
+
+  return null;
+};
+
+const pushNativeAmountReceivedDetails = (
+  details: EvmUserHistoryItemDetail[],
+  item: LightNodeHistoryItem,
+  chain: EvmChain,
+) => {
+  const nativeAmountReceived = getNativeAmountReceived(item, chain);
+  if (!nativeAmountReceived) {
+    return;
+  }
+
+  details.push({
+    label: 'evm_history_native_amount_received',
+    value: nativeAmountReceived,
+    type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+  });
+};
+
+const pushNativeValueMovementDetails = (
+  details: EvmUserHistoryItemDetail[],
+  item: LightNodeHistoryItem,
+  chain: EvmChain,
+) => {
+  pushNativeAmountPaidDetails(details, item, chain);
+  pushNativeAmountReceivedDetails(details, item, chain);
+};
+
+const formatActionName = (action: string) => {
+  const spacedAction = action
+    .replace(/_/g, ' ')
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .trim();
+
+  if (!spacedAction) {
+    return 'Operation';
+  }
+
+  return spacedAction.charAt(0).toUpperCase() + spacedAction.slice(1);
+};
+
 const getRevertedOperationName = (opName: KnownOpName) => {
   if (
     opName === 'NATIVE_SEND' ||
@@ -793,21 +844,31 @@ const parseSmartContractOperation = async (
   chain: EvmChain,
 ): Promise<EvmUserHistoryItem> => {
   const details: EvmUserHistoryItemDetail[] = [];
-  if (item.toAddress) {
+  const smartContractAddress = isOutgoing ? item.toAddress : item.fromAddress;
+
+  if (smartContractAddress) {
     details.push({
       label: 'evm_operation_smart_contract_address',
-      value: item.toAddress,
+      value: smartContractAddress,
       type: EvmUserHistoryItemDetailType.ADDRESS,
     });
   } else {
     pushAddressDetails(details, item.fromAddress, item.toAddress);
   }
 
+  pushNativeValueMovementDetails(details, item, chain);
+
   const contractAddress = await getHistoryAddressDisplayLabel(
-    item.toAddress ?? item.fromAddress,
+    smartContractAddress,
     chain,
   );
   const operationName = item.action || item.opName || 'operation';
+  details.push({
+    label: 'evm_operation_action',
+    value: formatActionName(operationName),
+    type: EvmUserHistoryItemDetailType.BASE,
+  });
+
   const labelKey = isOutgoing
     ? 'evm_history_operation_generic_smart_contract_messages_out'
     : 'evm_history_operation_generic_smart_contract_messages_in';
@@ -904,6 +965,10 @@ const parseItem = async (
 
   if (COMPLEX_OPS.has(opName)) {
     return parseComplexOperation(base, item, chain, opName);
+  }
+
+  if (opName === 'CONTRACT_CALL') {
+    return parseSmartContractOperation(base, item, isOutgoing, chain);
   }
 
   if (isOpLike(item.opName, ['transfer']) || hasFlows) {
