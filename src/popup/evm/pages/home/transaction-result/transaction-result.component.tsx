@@ -44,7 +44,9 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SmallDataCardComponent } from 'src/common-ui/small-data-card/small-data-card.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
+import Decimal from 'decimal.js';
 
 enum ReplacedTransactionReason {
   REPRICED = 'repriced',
@@ -69,6 +71,32 @@ function decodeErc20TransferRecipient(data: string | null): string | undefined {
     /* calldata is not a standard ERC-20 transfer */
   }
   return undefined;
+}
+
+const TOTAL_FEE_FRACTION_DIGITS = 8;
+const PER_GAS_FRACTION_DIGITS = 10;
+
+function formatNativeAmountFromWei(
+  wei: bigint | string | number | Decimal,
+  fractionDigits: number,
+): string {
+  const inMainToken = new Decimal(wei.toString()).div(EvmFormatUtils.WEI);
+  return EvmFormatUtils.formatTokenBalance(inMainToken, fractionDigits);
+}
+
+function formatNativeFeeFromWei(
+  wei: bigint | string | number | Decimal,
+  fractionDigits: number,
+  mainToken: string,
+): string {
+  return `${formatNativeAmountFromWei(wei, fractionDigits)} ${mainToken}`;
+}
+
+function formatEstimatedNativeFeeFromEth(
+  ethAmount: Decimal,
+  mainToken: string,
+): string {
+  return `${FormatUtils.formatCurrencyValue(ethAmount.toFixed(), TOTAL_FEE_FRACTION_DIGITS)} ${mainToken}`;
 }
 
 const EvmTransactionResult = ({
@@ -461,16 +489,27 @@ const EvmTransactionResult = ({
     if (!txReceipt?.gasUsed) {
       return chrome.i18n.getMessage('popup_html_pending');
     }
-    const pricePerGas = txReceipt.gasPrice;
-    if (pricePerGas != null) {
-      return EvmFormatUtils.formatGweiFromWei(pricePerGas * txReceipt.gasUsed);
+    const receipt = txReceipt as TransactionReceipt & {
+      effectiveGasPrice?: bigint | null;
+    };
+    const pricePerGas =
+      receipt.gasPrice ?? receipt.effectiveGasPrice ?? undefined;
+    if (pricePerGas != null && pricePerGas > BigInt(0)) {
+      return formatNativeFeeFromWei(
+        pricePerGas * txReceipt.gasUsed,
+        TOTAL_FEE_FRACTION_DIGITS,
+        chain.mainToken,
+      );
     }
     return chrome.i18n.getMessage('popup_html_pending');
   };
 
   const getPendingGasFeeDisplay = (): string => {
     if (gasFee?.estimatedFeeInEth && !gasFee.estimatedFeeInEth.equals(-1)) {
-      return EvmFormatUtils.formatGweiFromEth(gasFee.estimatedFeeInEth);
+      return formatEstimatedNativeFeeFromEth(
+        gasFee.estimatedFeeInEth,
+        chain.mainToken,
+      );
     }
     const gl = displayTx.gasLimit;
     const maxFeePerGas = displayTx.maxFeePerGas ?? displayTx.gasPrice;
@@ -480,14 +519,22 @@ const EvmTransactionResult = ({
       gl > BigInt(0) &&
       maxFeePerGas > BigInt(0)
     ) {
-      return EvmFormatUtils.formatGweiFromWei(gl * maxFeePerGas);
+      return formatNativeFeeFromWei(
+        gl * maxFeePerGas,
+        TOTAL_FEE_FRACTION_DIGITS,
+        chain.mainToken,
+      );
     }
     return chrome.i18n.getMessage('popup_html_pending');
   };
 
-  const gasFeeLabelKey = hasMinedReceipt
-    ? 'popup_html_evm_gas_fee'
-    : 'popup_html_evm_gas_fee_estimated';
+  const statusForGasFeeLabel = getStatus();
+  const gasFeeLabelKey =
+    statusForGasFeeLabel === 'pending' ||
+    statusForGasFeeLabel === 'speeding' ||
+    statusForGasFeeLabel === 'canceling'
+      ? 'popup_html_evm_gas_fee_estimated'
+      : 'popup_html_evm_gas_fee';
 
   const gasFeeValueDisplay = hasMinedReceipt
     ? getMinedGasFeeDisplay()
@@ -754,21 +801,31 @@ const EvmTransactionResult = ({
           {showLegacyGasPriceRow && (
             <SmallDataCardComponent
               label="popup_html_evm_transaction_info_gas_price"
-              value={EvmFormatUtils.formatGweiFromWei(displayTx.gasPrice!)}
+              value={formatNativeFeeFromWei(
+                displayTx.gasPrice!,
+                PER_GAS_FRACTION_DIGITS,
+                chain.mainToken,
+              )}
             />
           )}
           {showEip1559FeeRows && displayTx.maxPriorityFeePerGas != null && (
             <SmallDataCardComponent
               label="popup_html_evm_transaction_info_priority_fee"
-              value={EvmFormatUtils.formatGweiFromWei(
+              value={formatNativeFeeFromWei(
                 displayTx.maxPriorityFeePerGas,
+                PER_GAS_FRACTION_DIGITS,
+                chain.mainToken,
               )}
             />
           )}
           {showEip1559FeeRows && displayTx.maxFeePerGas != null && (
             <SmallDataCardComponent
               label="popup_html_evm_transaction_info_total_fee_per_gas"
-              value={EvmFormatUtils.formatGweiFromWei(displayTx.maxFeePerGas)}
+              value={formatNativeFeeFromWei(
+                displayTx.maxFeePerGas,
+                PER_GAS_FRACTION_DIGITS,
+                chain.mainToken,
+              )}
             />
           )}
         </div>
