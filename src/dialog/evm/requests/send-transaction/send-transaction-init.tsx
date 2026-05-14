@@ -85,6 +85,21 @@ export const formatMainTokenWeiAmount = (
     true,
   )} ${symbol ?? ''}`.trim();
 
+const getNativePaymentValue = (
+  decodedValue: ethers.BigNumberish | null | undefined,
+  requestValue: ethers.BigNumberish | null | undefined,
+) => {
+  const decodedValueIsPositive =
+    decodedValue != null && ethers.toBigInt(decodedValue) > BigInt(0);
+  const value = decodedValueIsPositive ? decodedValue : requestValue;
+
+  if (value == null || ethers.toBigInt(value) <= BigInt(0)) {
+    return null;
+  }
+
+  return value;
+};
+
 const getDecodedFieldName = (
   tokenType: EVMSmartContractType | null,
   methodName: string,
@@ -513,12 +528,17 @@ export async function runSendTransactionInit(
               )),
             });
 
-            if (ethers.toBigInt(decodedTransactionData.value) > BigInt(0)) {
+            const nativePaymentValue = getNativePaymentValue(
+              decodedTransactionData.value,
+              params.value,
+            );
+
+            if (nativePaymentValue) {
               transactionConfirmationFields.mainTokenAmount = {
                 name: 'evm_main_token_amount',
                 type: EvmInputDisplayType.BALANCE,
                 value: formatMainTokenWeiAmount(
-                  decodedTransactionData.value,
+                  nativePaymentValue,
                   chainTmp?.mainToken,
                 ),
               };

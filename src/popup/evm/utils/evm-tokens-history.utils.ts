@@ -16,11 +16,16 @@ import {
 } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import Decimal from 'decimal.js';
 
 const LIMIT = 50;
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 type HistoryFlow = LightNodeHistoryFlowWithMeta;
 type NftFlow = Extract<HistoryFlow, { kind: 'ERC721' | 'ERC1155' }>;
+type MintHistoryItemWithNativeAmountPaid = LightNodeHistoryItem & {
+  nativeAmountPaid?: string | null;
+  nativeAmountPaidWei?: string | null;
+};
 type KnownOpName =
   | 'NATIVE_SEND'
   | 'NATIVE_RECEIVE'
@@ -222,6 +227,47 @@ const formatFlow = (flow: HistoryFlow, chain: EvmChain) => {
     return `${flow.quantity} ${getFlowSymbol(flow, chain)}#${flow.tokenId}`;
   }
   return `${formatTokenAmount(getFlowAmount(flow))} ${getFlowSymbol(flow, chain)}`;
+};
+
+const getNativeAmountPaid = (
+  item: LightNodeHistoryItem,
+  chain: EvmChain,
+): string | null => {
+  const nativeOutFlow = item.out.find((flow) => flow.kind === 'NATIVE');
+  if (nativeOutFlow?.kind === 'NATIVE') {
+    return `${formatTokenAmount(nativeOutFlow.amount)} ${chain.mainToken}`;
+  }
+
+  const mintItem = item as MintHistoryItemWithNativeAmountPaid;
+  if (mintItem.nativeAmountPaid) {
+    return `${formatTokenAmount(mintItem.nativeAmountPaid)} ${chain.mainToken}`;
+  }
+
+  if (mintItem.nativeAmountPaidWei) {
+    const amount = new Decimal(mintItem.nativeAmountPaidWei).div(
+      new Decimal(EvmFormatUtils.WEI),
+    );
+    return `${formatTokenAmount(amount.toString())} ${chain.mainToken}`;
+  }
+
+  return null;
+};
+
+const pushNativeAmountPaidDetails = (
+  details: EvmUserHistoryItemDetail[],
+  item: LightNodeHistoryItem,
+  chain: EvmChain,
+) => {
+  const nativeAmountPaid = getNativeAmountPaid(item, chain);
+  if (!nativeAmountPaid) {
+    return;
+  }
+
+  details.push({
+    label: 'evm_history_native_amount_paid',
+    value: nativeAmountPaid,
+    type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+  });
 };
 
 const getRevertedOperationName = (opName: KnownOpName) => {
@@ -488,6 +534,7 @@ const parseMint = (
   const mintedFlows = [...item.in, ...item.out].filter(isFlowNft);
 
   if (!mintedFlows.length) {
+    pushNativeAmountPaidDetails(details, item, chain);
     pushAddressDetails(details, item.fromAddress, item.toAddress);
     return {
       ...historyItem,
@@ -509,6 +556,7 @@ const parseMint = (
       imageUrl: getNftImageUrl(flow),
     });
   }
+  pushNativeAmountPaidDetails(details, item, chain);
   pushAddressDetails(details, item.fromAddress, item.toAddress);
 
   if (mintedFlows.length > 1 || isOpLike(item.opName, ['mint_batch'])) {
@@ -563,6 +611,7 @@ const parseErc20Mint = (
     value: `${amount} ${symbol}`,
     type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
   });
+  pushNativeAmountPaidDetails(details, item, chain);
   pushAddressDetails(details, item.fromAddress, item.toAddress);
 
   return {

@@ -509,6 +509,70 @@ describe('send-transaction proxy tests:\n', () => {
     ).toBe(true);
   });
 
+  it('displays native value paid for a decoded mint transaction', async () => {
+    const mintData =
+      '0xa0712d680000000000000000000000000000000000000000000000000000000000000002';
+
+    jest.spyOn(EvmLightNodeUtils, 'getAbi').mockResolvedValue([
+      { inputs: [], name: 'approve', outputs: [], type: 'function' },
+    ]);
+    jest.spyOn(EvmTransactionParserUtils, 'parseArgs').mockReturnValue([2n]);
+    mockParseTransaction
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce({
+        args: {
+          0: 2n,
+          toArray: () => [2n],
+        },
+        fragment: { inputs: [{ name: 'quantity', type: 'uint256' }] },
+        name: 'mint',
+        signature: 'mint(uint256)',
+        value: 0,
+      });
+
+    render(
+      <SendTransaction
+        accounts={[
+          {
+            wallet: {
+              address: '0x00000000000000000000000000000000000000ff',
+              mnemonic: { phrase: 'test phrase' },
+            },
+          } as any,
+        ]}
+        afterCancel={jest.fn()}
+        data={{ dappInfo: { domain: 'app.example' }, tab: 1 } as any}
+        request={
+          {
+            chainId: '1',
+            params: [
+              {
+                data: mintData,
+                from: '0x00000000000000000000000000000000000000ff',
+                gasLimit: 21000,
+                maxFeePerGas: '1',
+                maxPriorityFeePerGas: '1',
+                to: proxyAddress,
+                type: EvmTransactionType.EIP_1559,
+                value: '25000000000000000',
+              },
+            ],
+            request_id: 1,
+          } as any
+        }
+      />,
+    );
+
+    await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
+
+    const fields = lastSetFieldsPayload();
+    expect(fields.operationName).toBe('evm_operation_mint');
+    expect(fields.mainTokenAmount).toMatchObject({
+      name: 'evm_main_token_amount',
+      value: '0.025 ETH',
+    });
+  });
+
   it('falls back to raw transaction data when both light-node and bundled ABIs cannot decode', async () => {
     const unknownData =
       '0xdeadbeef00000000000000000000000000000000000000000000000000000000000003e8';

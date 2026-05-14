@@ -5725,6 +5725,10 @@
     "message": "Minting $1 tokens from the $2 collection",
     "description": "Batch mint operation"
   },
+  "evm_history_native_amount_paid": {
+    "message": "Amount paid",
+    "description": "Native token amount paid for a mint"
+  },
   "evm_history_operation_approve_out_erc20": {
     "message": "You approved $1 to use up to $2 $3",
     "description": "Approve history item"

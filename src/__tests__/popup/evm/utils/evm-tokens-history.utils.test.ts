@@ -111,4 +111,60 @@ describe('evm-tokens-history.utils tests:\n', () => {
       imageUrl: 'https://cdn.example/nft-7.png',
     });
   });
+
+  it('displays native amount paid on mint history items', async () => {
+    jest.spyOn(EvmLightNodeUtils, 'getHistory').mockResolvedValue({
+      items: [
+        {
+          txId: '0xmint',
+          blockNumber: 124,
+          blockTime: '2026-01-01T00:00:00.000Z',
+          opIndex: '0',
+          opName: 'ERC721_MINT',
+          status: 'SUCCESS',
+          fromAddress: '0x1111111111111111111111111111111111111111',
+          toAddress: '0x3333333333333333333333333333333333333333',
+          action: null,
+          in: [
+            {
+              kind: 'ERC721',
+              collectionAddress: '0x3333333333333333333333333333333333333333',
+              collectionName: 'Collection',
+              tokenId: '7',
+              quantity: '1',
+              imageUrl: 'https://cdn.example/nft-7.png',
+              verified: true,
+              possibleSpam: false,
+            },
+          ],
+          out: [
+            {
+              kind: 'NATIVE',
+              amountWei: '25000000000000000',
+              amount: '0.025',
+              verified: true,
+              possibleSpam: false,
+            },
+          ],
+        },
+      ],
+      nextCursor: null,
+      catchupStatus: CatchupStatus.DONE,
+    } as any);
+
+    const history = await EvmTokensHistoryUtils.fetchHistory2(
+      '0x1111111111111111111111111111111111111111',
+      chain,
+    );
+
+    expect(history.events[0].detailFields).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: 'evm_history_native_amount_paid',
+          type: 'TOKEN_AMOUNT',
+          value: '0.025 ETH',
+        }),
+      ]),
+    );
+  });
 });
