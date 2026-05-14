@@ -3,7 +3,7 @@ import { RequestAddCustomEvmChain } from '@dialog/evm/requests/request-add-custo
 import { FeedbackMessage } from '@dialog/interfaces/messages.interface';
 import { DialogConfirmationPage } from '@dialog/multichain/dialog-confirmation-page/dialog-confirmation-page.component';
 import { DialogError } from '@dialog/multichain/error/error';
-import { Theme } from '@popup/theme.context';
+import { Theme, ThemeContext } from '@popup/theme.context';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -36,6 +36,21 @@ const App = () => {
     ]);
 
     setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
+  };
+
+  useEffect(() => {
+    if (theme !== undefined) {
+      LocalStorageUtils.saveValueInLocalStorage(
+        LocalStorageKeyEnum.ACTIVE_THEME,
+        theme,
+      );
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((old) =>
+      (old ?? Theme.LIGHT) === Theme.DARK ? Theme.LIGHT : Theme.DARK,
+    );
   };
 
   const initGoogleAnalytics = () => {
@@ -163,12 +178,19 @@ const App = () => {
     }
   };
 
+  const resolvedTheme = theme ?? Theme.LIGHT;
+
   return (
-    <div className={`theme ${theme} dialog`}>
-      {renderDialogContent(globalData)}
-      {globalError && <DialogError data={globalError} onClose={closeGlobalError} />}
-      <CopyToastContainer />
-    </div>
+    <ThemeContext.Provider
+      value={{ theme: resolvedTheme, setTheme, toggleTheme }}>
+      <div className={`theme ${resolvedTheme} dialog`}>
+        {renderDialogContent(globalData)}
+        {globalError && (
+          <DialogError data={globalError} onClose={closeGlobalError} />
+        )}
+        <CopyToastContainer />
+      </div>
+    </ThemeContext.Provider>
   );
 };
 

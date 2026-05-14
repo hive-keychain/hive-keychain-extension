@@ -57,6 +57,7 @@ export const EvmMultipleWarningsPopup = ({ warningHook }: Props) => {
 
   return (
     <PopupContainer
+      useBodyPortal
       className="transaction-warning-content"
       onClickOutside={warningHook.closePopup}>
       <div className="warning-top-panel">
