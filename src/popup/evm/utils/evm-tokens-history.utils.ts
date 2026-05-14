@@ -329,7 +329,7 @@ const getRevertedOperationName = (opName: KnownOpName) => {
     case 'CONTRACT_DEPLOY':
       return 'contract deployment';
     case 'CONTRACT_CALL':
-      return 'contract call';
+      return 'A contract call';
     default:
       return 'operation';
   }
@@ -348,6 +348,11 @@ const applyStatusLabel = (
     label: chrome.i18n.getMessage('evm_history_operation_reverted', [
       getRevertedOperationName(toKnownOpName(sourceItem.opName)),
     ]),
+    detailFields: parsedItem.detailFields?.filter(
+      (detail) => detail.label !== 'popup_html_evm_transaction_info_to',
+    ),
+    receiverAddress: undefined,
+    isReverted: true,
   };
 };
 

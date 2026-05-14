@@ -23,6 +23,17 @@ const chain: EvmChain = {
 describe('evm-tokens-history.utils tests:\n', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
+    jest
+      .spyOn(chrome.i18n, 'getMessage')
+      .mockImplementation((key: string, substitutions?: string | string[]) => {
+        if (key === 'evm_history_operation_reverted') {
+          const operation = Array.isArray(substitutions)
+            ? substitutions[0]
+            : substitutions;
+          return `${operation} has been reverted`;
+        }
+        return key;
+      });
     jest.spyOn(EvmSettingsUtils, 'getSettings').mockResolvedValue({
       smartContracts: {
         displayPossibleSpam: false,
@@ -218,5 +229,52 @@ describe('evm-tokens-history.utils tests:\n', () => {
       value: '1',
       imageUrl: 'https://cdn.example/nft-1.png',
     });
+  });
+
+  it('marks reverted contract calls and removes the to detail', async () => {
+    jest.spyOn(EvmLightNodeUtils, 'getHistory').mockResolvedValue({
+      items: [
+        {
+          txId: '0xreverted',
+          blockNumber: 126,
+          blockTime: '2026-01-01T00:00:00.000Z',
+          opIndex: '0',
+          opName: 'CONTRACT_CALL',
+          status: 'REVERTED',
+          fromAddress: '0x1111111111111111111111111111111111111111',
+          toAddress: '0x2222222222222222222222222222222222222222',
+          action: null,
+          in: [
+            {
+              kind: 'NATIVE',
+              amountWei: '1000000000000000000',
+              amount: '1',
+              verified: true,
+              possibleSpam: false,
+            },
+          ],
+          out: [],
+        },
+      ],
+      nextCursor: null,
+      catchupStatus: CatchupStatus.DONE,
+    } as any);
+
+    const history = await EvmTokensHistoryUtils.fetchHistory2(
+      '0x1111111111111111111111111111111111111111',
+      chain,
+    );
+
+    expect(history.events[0]).toMatchObject({
+      label: 'A contract call has been reverted',
+      isReverted: true,
+    });
+    expect(history.events[0].detailFields).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: 'popup_html_evm_transaction_info_to',
+        }),
+      ]),
+    );
   });
 });

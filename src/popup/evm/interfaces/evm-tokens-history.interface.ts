@@ -35,6 +35,7 @@ export interface EvmUserHistoryItem {
   tokenInfo?: EvmSmartContractInfo;
 
   isPending?: boolean;
+  isReverted?: boolean;
   warningMessage?: string;
 }
 

@@ -110,6 +110,7 @@ const EvmTransactionResult = ({
   gasFee,
   localAccounts,
   isCanceled,
+  isReverted,
   isSuccess,
   pageTitle,
   detailFields,
@@ -163,7 +164,7 @@ const EvmTransactionResult = ({
       isBackButtonEnabled: false,
       closeNavigationParams,
     });
-    if (isSuccess || isCanceled) {
+    if (isSuccess || isCanceled || isReverted) {
       setWaitingForTx(false);
     } else {
       getTransactionStatus();
@@ -372,6 +373,7 @@ const EvmTransactionResult = ({
       case 'canceling':
         return SVGIcons.EVM_TRANSACTION_STATUS_PROCESSING;
       case 'failed':
+      case 'reverted':
       case 'canceled':
         return SVGIcons.EVM_TRANSACTION_STATUS_CANCELED;
       default:
@@ -388,6 +390,8 @@ const EvmTransactionResult = ({
         return 'popup_html_evm_transfer_status_speeding_up';
       case 'failed':
         return 'popup_html_evm_transfer_status_failed';
+      case 'reverted':
+        return 'evm_history_operation_reverted_status';
       case 'canceling':
         return 'popup_html_evm_transfer_status_canceling';
       case 'canceled':
@@ -399,6 +403,7 @@ const EvmTransactionResult = ({
 
   const getStatus = () => {
     if (isSuccess) return 'success';
+    if (isReverted) return 'reverted';
     if (isCanceled) return 'canceled';
     if (waitingForTx) {
       if (isCanceling) {
@@ -592,7 +597,8 @@ const EvmTransactionResult = ({
   const showSyntheticToRow =
     syntheticToAddress != null &&
     !detailFieldsIncludeTo &&
-    !isCanceledHistoryOperation;
+    !isCanceledHistoryOperation &&
+    !isReverted;
 
   const shouldShowStatusAmount =
     tokenInfo !== undefined && amount !== undefined && amount !== null;
@@ -856,6 +862,7 @@ const mapStateToProps = (state: RootState) => {
     localAccounts: state.evm.accounts,
     chain: state.chain as EvmChain,
     isCanceled: state.navigation.stack[0].params.isCanceled,
+    isReverted: state.navigation.stack[0].params.isReverted,
     isSuccess: state.navigation.stack[0].params.isSuccess,
     pageTitle: state.navigation.stack[0].params.pageTitle,
     detailFields: state.navigation.stack[0].params.detailFields,

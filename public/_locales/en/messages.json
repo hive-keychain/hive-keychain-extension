@@ -4948,6 +4948,10 @@
     "message": "Failed",
     "description": "Evm transfer status"
   },
+  "evm_history_operation_reverted_status": {
+    "message": "REVERTED",
+    "description": "Reverted EVM transaction status"
+  },
   "popup_html_evm_transfer_status_canceling": {
     "message": "Canceling...",
     "description": "Evm transfer status"

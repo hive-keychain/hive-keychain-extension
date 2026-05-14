@@ -42,7 +42,8 @@ export const EvmHistory = ({
     navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
       transactionResponse: transactionResponse,
       ...historyItem,
-      isSuccess: historyItem.isCanceled ? false : true,
+      isSuccess:
+        historyItem.isCanceled || historyItem.isReverted ? false : true,
       isCanceled: historyItem.isCanceled,
       initialDisplayHistory: true,
     });
