@@ -17,6 +17,8 @@ export interface EvmLocalHistory {
 
 export interface EvmUserHistoryItem {
   pageTitle: string;
+  /** Light-node operation name; used as detail page title when opening from history. */
+  opName?: string;
   type: EvmUserHistoryItemType;
   blockNumber: number;
   transactionHash: string;

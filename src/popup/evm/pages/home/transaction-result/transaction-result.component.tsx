@@ -22,6 +22,7 @@ import {
   TransactionTokenKind,
 } from '@popup/evm/utils/evm-tokens-history-parser.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
+import { getEvmLightNodeOpTitleMessageKey } from '@popup/evm/utils/evm-light-node-op-title.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -116,6 +117,7 @@ const EvmTransactionResult = ({
   warningMessage,
   initialDisplayNfts,
   initialDisplayHistory,
+  opName,
   timestamp,
   setTitleContainerProperties,
   setErrorMessage,
@@ -149,8 +151,15 @@ const EvmTransactionResult = ({
       : initialDisplayHistory
         ? { initialDisplayHistory: true }
         : undefined;
+    const historyOpTitle = opName?.trim() ?? '';
+    const useHistoryOpTitle =
+      Boolean(initialDisplayHistory) && historyOpTitle.length > 0;
+    const titleFromHistoryOp = useHistoryOpTitle
+      ? getEvmLightNodeOpTitleMessageKey(opName)
+      : undefined;
     setTitleContainerProperties({
-      title: pageTitle,
+      title: titleFromHistoryOp ?? pageTitle,
+      skipTitleTranslation: false,
       isBackButtonEnabled: false,
       closeNavigationParams,
     });
@@ -855,6 +864,7 @@ const mapStateToProps = (state: RootState) => {
     initialDisplayNfts: state.navigation.stack[0].params.initialDisplayNfts,
     initialDisplayHistory:
       state.navigation.stack[0].params.initialDisplayHistory,
+    opName: state.navigation.stack[0].params.opName as string | undefined,
     timestamp: state.navigation.stack[0].params.timestamp,
   };
 };

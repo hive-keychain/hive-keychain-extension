@@ -181,7 +181,7 @@ const getHistoryAddressDisplayLabel = async (
   return details.formattedAddress;
 };
 
-const toKnownOpName = (opName: string): KnownOpName => {
+export const toKnownOpName = (opName: string): KnownOpName => {
   const value = (opName || 'UNKNOWN').toUpperCase();
   const known: KnownOpName[] = [
     'NATIVE_SEND',
@@ -353,6 +353,7 @@ const applyStatusLabel = (
 
 const makeCommonItem = (item: LightNodeHistoryItem): EvmUserHistoryItem => ({
   pageTitle: 'evm_history_smart_contract',
+  opName: item.opName?.trim() || undefined,
   type: EvmUserHistoryItemType.BASE_TRANSACTION,
   blockNumber: item.blockNumber,
   transactionHash: item.txId,
