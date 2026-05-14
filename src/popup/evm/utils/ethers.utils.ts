@@ -34,8 +34,7 @@ const buildRpcFailover = (chain: EvmChain): EtherJsonRpcFailoverContext => ({
 });
 
 const getProvider = async (chain: EvmChain, rpcUrl?: string) => {
-  const resolvedUrl =
-    rpcUrl ?? (await EvmRpcUtils.getActiveRpc(chain)).url;
+  const resolvedUrl = rpcUrl ?? (await EvmRpcUtils.getActiveRpc(chain)).url;
   const failoverOpts = {
     currentRpcUrl: resolvedUrl,
     failover: buildRpcFailover(chain),
@@ -97,6 +96,8 @@ const getGasLimit = async (
 
       const estimation = await contract[method].estimateGas(...args, {
         from: fromAddress,
+        value: value ?? '0x0',
+        data: data ?? '0x',
       });
 
       // let multiplier = chain.isEth ? 1 : 1.5;
