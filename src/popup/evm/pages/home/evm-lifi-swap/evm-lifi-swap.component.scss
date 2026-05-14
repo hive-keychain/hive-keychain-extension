@@ -1,6 +1,19 @@
 .evm-lifi-swap-page {
+  @include pageLayoutRowGap;
+  row-gap: 4px;
+  overflow: hidden;
   flex: 1;
-  display: flex;
+  flex-flow: column wrap;
+
+  > .rotating-logo-wrapper,
+  > .service-unavailable-page,
+  > .maintenance-mode {
+    min-height: 0;
+  }
+
+  .maintenance-mode {
+    @include no-data-panel();
+  }
 
   .form-container {
     align-items: center;

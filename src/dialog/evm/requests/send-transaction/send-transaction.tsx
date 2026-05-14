@@ -4,6 +4,7 @@ import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
@@ -69,6 +70,21 @@ export const SendTransaction = (props: Props) => {
       setGasRefreshKey((currentKey) => (currentKey ?? 0) + 1);
     }
   }, [activationKey, isActive, needsGasFeePanel]);
+
+  useEffect(() => {
+    const onRuntimeMessage = (msg: {
+      command?: string;
+      msg?: { request_id?: number };
+    }) => {
+      if (msg?.command !== DialogCommand.ANSWER_EVM_REQUEST) return;
+      if (msg.msg?.request_id !== request.request_id) return;
+      transactionHook.setLoading(false);
+    };
+    chrome.runtime.onMessage.addListener(onRuntimeMessage);
+    return () => {
+      chrome.runtime.onMessage.removeListener(onRuntimeMessage);
+    };
+  }, [request.request_id, transactionHook.setLoading]);
 
   const onGasFeePanelInitialEstimationComplete = useCallback(() => {
     setGasFeePanelReady(true);
