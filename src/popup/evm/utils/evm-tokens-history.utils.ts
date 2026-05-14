@@ -167,7 +167,7 @@ const getFlowSymbol = (flow: HistoryFlow, chain: EvmChain) => {
   }
 };
 
-/** Resolves ENS (and contact / local account labels) for history copy, matching EvmAddressComponent. */
+/** Formats history addresses consistently for compact transaction copy. */
 const getHistoryAddressDisplayLabel = async (
   address: string | null | undefined,
   chain: EvmChain,
@@ -178,7 +178,7 @@ const getHistoryAddressDisplayLabel = async (
     chain.chainId,
     true,
   );
-  return details.label ?? details.formattedAddress;
+  return details.formattedAddress;
 };
 
 const toKnownOpName = (opName: string): KnownOpName => {
@@ -227,6 +227,25 @@ const formatFlow = (flow: HistoryFlow, chain: EvmChain) => {
     return `${flow.quantity} ${getFlowSymbol(flow, chain)}#${flow.tokenId}`;
   }
   return `${formatTokenAmount(getFlowAmount(flow))} ${getFlowSymbol(flow, chain)}`;
+};
+
+const escapeRegExp = (value: string) =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+const formatNftImageLabel = (flow: NftFlow, chain: EvmChain) => {
+  const apiNftName = 'name' in flow ? flow.name?.trim() : undefined;
+  const nestedNftName = 'nft' in flow ? flow.nft?.name?.trim() : undefined;
+  const nftName = apiNftName || nestedNftName || getFlowSymbol(flow, chain);
+  const hasTokenIdSuffix = new RegExp(
+    `#\\s*${escapeRegExp(flow.tokenId)}$`,
+    'i',
+  ).test(nftName);
+  const tokenLabel = hasTokenIdSuffix
+    ? nftName
+    : `${nftName} #${flow.tokenId}`;
+  return flow.kind === 'ERC1155'
+    ? `${flow.quantity} ${tokenLabel}`
+    : tokenLabel;
 };
 
 const getNativeAmountPaid = (
@@ -393,10 +412,7 @@ const parseTransfer = (
     const tokenId = flow.tokenId;
     const collectionName = getFlowSymbol(flow, chain);
     details.push({
-      label:
-        flow.kind === 'ERC721'
-          ? `${collectionName}#${tokenId}`
-          : `${flow.quantity} ${collectionName}#${tokenId}`,
+      label: formatNftImageLabel(flow, chain),
       value: tokenId,
       type: EvmUserHistoryItemDetailType.IMAGE,
       imageUrl: getNftImageUrl(flow),
@@ -506,7 +522,7 @@ const parseApprove = (
     labelKey = 'evm_history_operation_approve_out_erc721';
     labelArgs = [counterpartyLabel, symbol, flow.tokenId];
     details.push({
-      label: `${symbol}#${flow.tokenId}`,
+      label: formatNftImageLabel(flow, chain),
       value: flow.tokenId,
       type: EvmUserHistoryItemDetailType.IMAGE,
       imageUrl: getNftImageUrl(flow),
@@ -550,7 +566,7 @@ const parseMint = (
 
   for (const flow of mintedFlows) {
     details.push({
-      label: `${getFlowSymbol(flow, chain)}#${flow.tokenId}`,
+      label: formatNftImageLabel(flow, chain),
       value: flow.tokenId,
       type: EvmUserHistoryItemDetailType.IMAGE,
       imageUrl: getNftImageUrl(flow),
@@ -656,7 +672,7 @@ const parseBurn = async (
     labelKey = 'evm_history_operation_burn_erc721';
     labelArgs = [symbol, flow.tokenId];
     details.push({
-      label: `${symbol}#${flow.tokenId}`,
+      label: formatNftImageLabel(flow, chain),
       value: flow.tokenId,
       type: EvmUserHistoryItemDetailType.IMAGE,
       imageUrl: getNftImageUrl(flow),
@@ -666,7 +682,7 @@ const parseBurn = async (
     labelKey = 'evm_history_operation_burn_erc1155';
     labelArgs = [flow.quantity, symbol, flow.tokenId];
     details.push({
-      label: `${flow.quantity} ${symbol}#${flow.tokenId}`,
+      label: formatNftImageLabel(flow, chain),
       value: flow.tokenId,
       type: EvmUserHistoryItemDetailType.IMAGE,
       imageUrl: getNftImageUrl(flow),
@@ -707,7 +723,7 @@ const parseComplexOperation = (
   for (const flow of [...item.out, ...item.in]) {
     if (flow.kind === 'ERC721' || flow.kind === 'ERC1155') {
       details.push({
-        label: formatFlow(flow, chain),
+        label: formatNftImageLabel(flow, chain),
         value: flow.tokenId,
         type: EvmUserHistoryItemDetailType.IMAGE,
         imageUrl: getNftImageUrl(flow),

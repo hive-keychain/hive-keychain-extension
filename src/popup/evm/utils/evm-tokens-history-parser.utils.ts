@@ -104,7 +104,7 @@ const parseEvent = async (
               [
                 amountS,
                 event.token!.symbol,
-                addressDetails.label ?? addressDetails.formattedAddress,
+                addressDetails.formattedAddress,
               ],
             );
 
@@ -128,7 +128,7 @@ const parseEvent = async (
               [
                 event.token!.symbol,
                 event.token!.tokenId,
-                addressDetails.label ?? addressDetails.formattedAddress,
+                addressDetails.formattedAddress,
               ],
             );
 
@@ -153,7 +153,7 @@ const parseEvent = async (
                 event.value,
                 event.token!.symbol,
                 event.token!.tokenId,
-                addressDetails.label ?? addressDetails.formattedAddress,
+                addressDetails.formattedAddress,
               ],
             );
             break;
@@ -693,7 +693,7 @@ const getNativeTransferData = async (
       [
         amountS,
         mainTokenMetadata!.symbol,
-        addressDetails.label ?? addressDetails.formattedAddress,
+        addressDetails.formattedAddress,
       ],
     ),
     detailFields: details,
@@ -792,7 +792,7 @@ const getSpecificData = async (
                   decodedData.inputs[3].value,
                   name,
                   decodedData.inputs[2].value,
-                  fromDetails.label ?? fromDetails.formattedAddress,
+                  fromDetails.formattedAddress,
                 ],
               ),
               pageTitle: 'evm_transfer',
@@ -827,7 +827,7 @@ const getSpecificData = async (
                   decodedData.inputs[3].value,
                   name,
                   decodedData.inputs[2].value,
-                  toDetails.label ?? toDetails.formattedAddress,
+                  toDetails.formattedAddress,
                   ,
                 ],
               ),
@@ -861,7 +861,7 @@ const getSpecificData = async (
                 [
                   name,
                   decodedData.inputs[2].value,
-                  fromDetails.label ?? fromDetails.formattedAddress,
+                  fromDetails.formattedAddress,
                 ],
               ),
               pageTitle: 'evm_transfer',
@@ -892,7 +892,7 @@ const getSpecificData = async (
                 [
                   name,
                   decodedData.inputs[2].value,
-                  toDetails.label ?? toDetails.formattedAddress,
+                  toDetails.formattedAddress,
                 ],
               ),
               pageTitle: 'evm_transfer',
@@ -944,9 +944,8 @@ const getSpecificData = async (
               amount,
               symbol,
               isTransferIn
-                ? (broadcasterDetails.label ??
-                  broadcasterDetails.formattedAddress)
-                : (toDetails.label ?? toDetails.formattedAddress),
+                ? broadcasterDetails.formattedAddress
+                : toDetails.formattedAddress,
             ],
           ),
           pageTitle: 'evm_transfer',
@@ -997,8 +996,8 @@ const getSpecificData = async (
               amount,
               symbol,
               isTransferIn
-                ? (fromDetails.label ?? fromDetails.formattedAddress)
-                : (toDetails.label ?? toDetails.formattedAddress),
+                ? fromDetails.formattedAddress
+                : toDetails.formattedAddress,
             ],
           ),
           pageTitle: 'evm_transfer',

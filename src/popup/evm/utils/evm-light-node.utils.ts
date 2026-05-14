@@ -144,6 +144,7 @@ type HistoryFlowWithMeta =
       kind: 'ERC721' | 'ERC1155';
       collectionAddress: string;
       collectionName: string | null;
+      name?: string | null;
       tokenId: string;
       quantity: string;
       imageUrl?: string | null;

@@ -106,6 +106,7 @@ describe('evm-tokens-history.utils tests:\n', () => {
     );
 
     expect(history.events[0].detailFields?.[0]).toMatchObject({
+      label: 'Collection #7',
       type: 'IMAGE',
       value: '7',
       imageUrl: 'https://cdn.example/nft-7.png',
@@ -166,5 +167,56 @@ describe('evm-tokens-history.utils tests:\n', () => {
         }),
       ]),
     );
+  });
+
+  it('displays ERC1155 mint quantity and API NFT name in image card labels', async () => {
+    jest.spyOn(EvmLightNodeUtils, 'getHistory').mockResolvedValue({
+      items: [
+        {
+          txId: '0xmint1155',
+          blockNumber: 125,
+          blockTime: '2026-01-01T00:00:00.000Z',
+          opIndex: '0',
+          opName: 'ERC1155_MINT',
+          status: 'SUCCESS',
+          fromAddress: '0x0000000000000000000000000000000000000000',
+          toAddress: '0x1111111111111111111111111111111111111111',
+          action: null,
+          in: [
+            {
+              kind: 'ERC1155',
+              collectionAddress: '0x3333333333333333333333333333333333333333',
+              collectionName: 'NFT',
+              name: 'Golden Key',
+              tokenId: '1',
+              quantity: '2',
+              imageUrl: 'https://cdn.example/nft-1.png',
+              verified: true,
+              possibleSpam: false,
+              nft: {
+                name: 'Nested Golden Key',
+                imageUrl: 'https://cdn.example/nft-1.png',
+                traits: null,
+              },
+            },
+          ],
+          out: [],
+        },
+      ],
+      nextCursor: null,
+      catchupStatus: CatchupStatus.DONE,
+    } as any);
+
+    const history = await EvmTokensHistoryUtils.fetchHistory2(
+      '0x1111111111111111111111111111111111111111',
+      chain,
+    );
+
+    expect(history.events[0].detailFields?.[0]).toMatchObject({
+      label: '2 Golden Key #1',
+      type: 'IMAGE',
+      value: '1',
+      imageUrl: 'https://cdn.example/nft-1.png',
+    });
   });
 });
