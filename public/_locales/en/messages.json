@@ -5645,6 +5645,118 @@
     "message": "Address",
     "description": "NFT Address"
   },
+  "evm_history_op_native_send": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for NATIVE_SEND (native token)"
+  },
+  "evm_history_op_native_receive": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for NATIVE_RECEIVE (native token)"
+  },
+  "evm_history_op_erc20_send": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for ERC20_SEND (ERC-20)"
+  },
+  "evm_history_op_erc20_receive": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for ERC20_RECEIVE (ERC-20)"
+  },
+  "evm_history_op_erc20_approve": {
+    "message": "Approve",
+    "description": "EVM light-node history: page title for ERC20_APPROVE (ERC-20)"
+  },
+  "evm_history_op_erc20_mint": {
+    "message": "Mint",
+    "description": "EVM light-node history: page title for ERC20_MINT (ERC-20)"
+  },
+  "evm_history_op_erc20_burn": {
+    "message": "Burn",
+    "description": "EVM light-node history: page title for ERC20_BURN (ERC-20)"
+  },
+  "evm_history_op_erc721_send": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for ERC721_SEND (ERC-721)"
+  },
+  "evm_history_op_erc721_receive": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for ERC721_RECEIVE (ERC-721)"
+  },
+  "evm_history_op_erc721_approve": {
+    "message": "Approve",
+    "description": "EVM light-node history: page title for ERC721_APPROVE (ERC-721)"
+  },
+  "evm_history_op_erc721_approve_for_all": {
+    "message": "Approve for all",
+    "description": "EVM light-node history: page title for ERC721_APPROVE_FOR_ALL (ERC-721)"
+  },
+  "evm_history_op_erc721_mint": {
+    "message": "Mint",
+    "description": "EVM light-node history: page title for ERC721_MINT (ERC-721)"
+  },
+  "evm_history_op_erc721_burn": {
+    "message": "Burn",
+    "description": "EVM light-node history: page title for ERC721_BURN (ERC-721)"
+  },
+  "evm_history_op_erc1155_send": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for ERC1155_SEND (ERC-1155)"
+  },
+  "evm_history_op_erc1155_receive": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for ERC1155_RECEIVE (ERC-1155)"
+  },
+  "evm_history_op_erc1155_approve_for_all": {
+    "message": "Approve for all",
+    "description": "EVM light-node history: page title for ERC1155_APPROVE_FOR_ALL (ERC-1155)"
+  },
+  "evm_history_op_erc1155_mint": {
+    "message": "Mint",
+    "description": "EVM light-node history: page title for ERC1155_MINT (ERC-1155)"
+  },
+  "evm_history_op_erc1155_burn": {
+    "message": "Burn",
+    "description": "EVM light-node history: page title for ERC1155_BURN (ERC-1155)"
+  },
+  "evm_history_op_swap": {
+    "message": "Swap",
+    "description": "EVM light-node history: page title for SWAP"
+  },
+  "evm_history_op_airdrop_receive": {
+    "message": "Airdrop",
+    "description": "EVM light-node history: page title for AIRDROP_RECEIVE (airdrop / incoming tokens)"
+  },
+  "evm_history_op_contract_call": {
+    "message": "Contract call",
+    "description": "EVM light-node history: page title for CONTRACT_CALL"
+  },
+  "evm_history_op_contract_deploy": {
+    "message": "Contract deploy",
+    "description": "EVM light-node history: page title for CONTRACT_DEPLOY"
+  },
+  "evm_history_op_add_liquidity": {
+    "message": "Add liquidity",
+    "description": "EVM light-node history: page title for ADD_LIQUIDITY"
+  },
+  "evm_history_op_remove_liquidity": {
+    "message": "Remove liquidity",
+    "description": "EVM light-node history: page title for REMOVE_LIQUIDITY"
+  },
+  "evm_history_op_wrap": {
+    "message": "Wrap",
+    "description": "EVM light-node history: page title for WRAP"
+  },
+  "evm_history_op_unwrap": {
+    "message": "Unwrap",
+    "description": "EVM light-node history: page title for UNWRAP"
+  },
+  "evm_history_op_canceled_op": {
+    "message": "Canceled transaction",
+    "description": "EVM light-node history: page title for CANCELED_OP"
+  },
+  "evm_history_op_unknown": {
+    "message": "Transaction",
+    "description": "EVM light-node history: page title for unknown or unrecognized op types"
+  },
   "evm_history_generic_message": {
     "message": "Transaction sent",
     "description": "Evm history generic message in case there in not enough information"
