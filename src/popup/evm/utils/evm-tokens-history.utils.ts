@@ -858,30 +858,33 @@ const parseSmartContractOperation = async (
 
   pushNativeValueMovementDetails(details, item, chain);
 
-  const contractAddress = await getHistoryAddressDisplayLabel(
-    smartContractAddress,
-    chain,
-  );
-  const operationName = item.action || item.opName || 'operation';
-  details.push({
-    label: 'evm_operation_action',
-    value: formatActionName(operationName),
-    type: EvmUserHistoryItemDetailType.BASE,
-  });
+  const actionName = item.action?.trim();
+  const formattedActionName = actionName ? formatActionName(actionName) : null;
 
-  const labelKey = isOutgoing
-    ? 'evm_history_operation_generic_smart_contract_messages_out'
-    : 'evm_history_operation_generic_smart_contract_messages_in';
+  if (formattedActionName) {
+    details.push({
+      label: 'evm_operation_action',
+      value: formattedActionName,
+      type: EvmUserHistoryItemDetailType.BASE,
+    });
+  }
+
+  const labelKey = formattedActionName
+    ? isOutgoing
+      ? 'evm_history_operation_generic_smart_contract_messages_out'
+      : 'evm_history_operation_generic_smart_contract_messages_in'
+    : isOutgoing
+      ? 'evm_history_default_out_smart_contract_operation'
+      : 'evm_history_default_in_smart_contract_operation';
 
   return {
     ...historyItem,
     pageTitle: 'evm_history_smart_contract',
     type: EvmUserHistoryItemType.SMART_CONTRACT,
-    label: chrome.i18n.getMessage(labelKey, [
-      operationName,
-      'Smart Contract',
-      contractAddress,
-    ]),
+    label: chrome.i18n.getMessage(
+      labelKey,
+      formattedActionName ? [formattedActionName] : [],
+    ),
     detailFields: details,
   };
 };
