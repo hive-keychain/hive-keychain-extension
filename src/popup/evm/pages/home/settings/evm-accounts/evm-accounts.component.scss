@@ -24,6 +24,19 @@
     column-gap: 8px;
     .seeds-dropdown {
       flex: 1;
+
+      .custom-select,
+      .react-dropdown-select-dropdown {
+        width: 100%;
+      }
+
+      .react-dropdown-select-dropdown {
+        min-width: unset;
+
+        .option {
+          max-width: unset;
+        }
+      }
     }
     .svg-icon {
       height: 26px;
