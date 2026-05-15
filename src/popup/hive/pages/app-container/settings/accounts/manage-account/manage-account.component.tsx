@@ -52,7 +52,11 @@ const ManageAccount = ({
     <div
       data-testid={`${Screen.SETTINGS_MANAGE_ACCOUNTS}-page`}
       className="settings-manage-account">
-      <SelectAccountSectionComponent background="white" fullSize />
+      <SelectAccountSectionComponent
+        background="white"
+        fullSize
+        hideManageAccountsOption
+      />
       <AccountKeysListComponent wrongKeysFound={wrongKeysFound} />
     </div>
   );

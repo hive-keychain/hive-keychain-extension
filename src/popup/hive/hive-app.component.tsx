@@ -85,6 +85,9 @@ const HiveApp = ({
   const [displaySplashscreen, setDisplaySplashscreen] = useState(true);
   const [isKeylessKeychainEnabled, setIsKeylessKeychainEnabled] =
     useState<boolean>(false);
+  const previousAccountsCountRef = React.useRef<number | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     initApplication();
@@ -128,9 +131,14 @@ const HiveApp = ({
 
   useEffect(() => {
     const isOnAccountSetupFlow = stackHasAccountSetupPage(navigationStack);
+    const previousAccountsCount = previousAccountsCountRef.current;
+    const didAddFirstAccount =
+      previousAccountsCount === 0 && accounts.length > 0;
+
     if (
       isAppReady &&
-      (navigationStack.length === 0 || isOnAccountSetupFlow) &&
+      (navigationStack.length === 0 ||
+        (isOnAccountSetupFlow && didAddFirstAccount)) &&
       (hasFinishedSignup || accounts.length > 0)
     ) {
       if (accounts.length > 0) {
@@ -140,6 +148,7 @@ const HiveApp = ({
         selectComponent(mk, accounts);
       }
     }
+    previousAccountsCountRef.current = accounts.length;
   }, [
     isAppReady,
     mk,

@@ -24,6 +24,14 @@ interface Props {
   background?: 'white';
   fullSize?: boolean;
   isOnMain?: boolean;
+  hideManageAccountsOption?: boolean;
+}
+
+interface AccountActionLink {
+  icon: SVGIcons;
+  label: string;
+  screen: HiveScreen;
+  testId: string;
 }
 
 const buildAccountOptions = (
@@ -43,6 +51,7 @@ const SelectAccountSection = ({
   loadActiveAccount,
   navigateTo,
   isOnMain = false,
+  hideManageAccountsOption = false,
 }: PropsFromRedux & Props) => {
   const [isOpened, setIsOpened] = useState(false);
   const isMountedRef = useRef(false);
@@ -156,6 +165,31 @@ const SelectAccountSection = ({
     state,
     methods,
   }: SelectRenderer<LocalAccountListItem>) => {
+    const accountActionLinks: AccountActionLink[] = [
+      {
+        icon: SVGIcons.MENU_ACCOUNTS_ADD_ACCOUNT,
+        label: 'popup_html_add_account',
+        screen: HiveScreen.SETTINGS_ADD_ACCOUNT,
+        testId: 'add-account-dropdown-option',
+      },
+      {
+        icon: SVGIcons.MENU_ACCOUNTS_CREATE_ACCOUNT,
+        label: 'popup_html_create_account',
+        screen: HiveScreen.CREATE_ACCOUNT_PAGE_STEP_ONE,
+        testId: 'create-account-dropdown-option',
+      },
+      ...(hideManageAccountsOption
+        ? []
+        : [
+            {
+              icon: SVGIcons.MENU_ACCOUNTS_MANAGE_ACCOUNTS,
+              label: 'manage_accounts',
+              screen: HiveScreen.SETTINGS_MANAGE_ACCOUNTS,
+              testId: 'manage-accounts-dropdown-option',
+            },
+          ]),
+    ];
+
     return (
       <div className="custom-select-dropdown">
         <DragDropContext onDragEnd={onDragEnd}>
@@ -197,20 +231,22 @@ const SelectAccountSection = ({
             )}
           </Droppable>
         </DragDropContext>
-        <div
-          className="manage-accounts-panel"
-          onClick={handleOnManageAccountsClicked}>
-          <SVGIcon icon={SVGIcons.MENU_ACCOUNTS_MANAGE_ACCOUNTS} />
-          <div className="text">
-            {chrome.i18n.getMessage('manage_accounts')}
+        {accountActionLinks.map((actionLink) => (
+          <div
+            key={actionLink.testId}
+            className="manage-accounts-panel"
+            data-testid={actionLink.testId}
+            onClick={() => {
+              navigateTo(actionLink.screen);
+            }}>
+            <SVGIcon icon={actionLink.icon} />
+            <div className="text">
+              {chrome.i18n.getMessage(actionLink.label)}
+            </div>
           </div>
-        </div>
+        ))}
       </div>
     );
-  };
-
-  const handleOnManageAccountsClicked = () => {
-    navigateTo(HiveScreen.SETTINGS_MANAGE_ACCOUNTS);
   };
 
   return (

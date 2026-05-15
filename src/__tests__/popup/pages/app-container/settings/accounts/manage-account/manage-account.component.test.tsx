@@ -47,6 +47,44 @@ describe('manage-account.component tests:\n', () => {
       ).toBeInTheDocument();
     });
 
+    it('Must not show manage accounts in account dropdown', async () => {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByLabelText(dataTestIdSelect.accountSelector),
+        );
+      });
+      expect(
+        await screen.findByTestId(
+          dataTestIdSelect.itemSelectorPreFix + mk.user.two,
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByTestId('add-account-dropdown-option'),
+      ).toHaveTextContent(chrome.i18n.getMessage('popup_html_add_account'));
+      expect(
+        screen.getByTestId('create-account-dropdown-option'),
+      ).toHaveTextContent(
+        chrome.i18n.getMessage('popup_html_create_account'),
+      );
+      expect(
+        screen.queryByTestId('manage-accounts-dropdown-option'),
+      ).not.toBeInTheDocument();
+    });
+
+    it('Must navigate to add account from account dropdown', async () => {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByLabelText(dataTestIdSelect.accountSelector),
+        );
+        await userEvent.click(
+          screen.getByTestId('add-account-dropdown-option'),
+        );
+      });
+      expect(
+        await screen.findByTestId(`${Screen.ACCOUNT_PAGE_INIT_ACCOUNT}-page`),
+      ).toBeInTheDocument();
+    });
+
     it('Must change to selected account', async () => {
       AccountUtils.getAccount = jest.fn().mockResolvedValue([
         {
