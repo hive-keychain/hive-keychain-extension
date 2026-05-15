@@ -11,6 +11,7 @@ import { LiFiHistoryPageComponent } from '@popup/evm/pages/home/evm-lifi-swap/li
 import { EvmNftAllCollectionsPageComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-all-collections-page/evm-nft-all-collections-page.component';
 import { EvmNFTTransferComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-transfer/evm-nft-transfer.component';
 import { EvmNftCollectionPageComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-ntf-collection-page/evm-ntf-collection-page.component';
+import { EvmReceiveComponent } from '@popup/evm/pages/home/receive/evm-receive.component';
 import { EvmAccountsComponent } from '@popup/evm/pages/home/settings/evm-accounts/evm-accounts.component';
 import { EvmAdvancedSettingsComponent } from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-advanced-settings.component';
 import EvmProviderSettingsComponent from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-provider/evm-provider.component';
@@ -62,6 +63,8 @@ const EvmAppRouter = ({
         return <>EVM on ramp</>;
       case MultichainScreen.TRANSFER_FUND_PAGE:
         return <EvmTransferComponent />;
+      case EvmScreen.EVM_RECEIVE_PAGE:
+        return <EvmReceiveComponent />;
       case EvmScreen.EVM_TRANSFER_RESULT_PAGE:
         return <EvmTransactionResultComponent />;
       case MultichainScreen.CONFIRMATION_PAGE:

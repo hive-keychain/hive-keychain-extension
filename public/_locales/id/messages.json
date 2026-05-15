@@ -1598,6 +1598,12 @@
   "popup_html_send_transfer": {
     "message": "Kirim"
   },
+  "popup_html_receive": {
+    "message": "Terima"
+  },
+  "popup_html_evm_receive_view_explorer": {
+    "message": "Lihat alamat di block explorer"
+  },
   "dialog_title_add_key_auth": {
     "message": "Tambahkan Kunci"
   },

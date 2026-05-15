@@ -7,6 +7,7 @@ export enum SVGIcons {
 
   BOTTOM_BAR_BUY = 'bottom-bar/buy',
   BOTTOM_BAR_ECOSYSTEM = 'bottom-bar/ecosystem',
+  BOTTOM_BAR_RECEIVE = 'bottom-bar/receive',
   BOTTOM_BAR_SEND = 'bottom-bar/send',
   BOTTOM_BAR_SWAPS = 'bottom-bar/swaps',
 

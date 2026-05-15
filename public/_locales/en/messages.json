@@ -1624,6 +1624,12 @@
   "popup_html_send_transfer": {
     "message": "Send"
   },
+  "popup_html_receive": {
+    "message": "Receive"
+  },
+  "popup_html_evm_receive_view_explorer": {
+    "message": "View address on block explorer"
+  },
   "dialog_title_add_key_auth": {
     "message": "Add Key"
   },

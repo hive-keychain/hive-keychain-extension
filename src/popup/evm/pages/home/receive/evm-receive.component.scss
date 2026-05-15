@@ -1,0 +1,136 @@
+.evm-receive-page {
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  padding: 0 24px 24px;
+  box-sizing: border-box;
+
+  .evm-receive-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 20px;
+    width: 100%;
+    max-width: 352px;
+  }
+
+  .evm-receive-account {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 8px;
+    width: 100%;
+  }
+
+  .evm-receive-chain {
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+    color: $lighter-grey;
+    @include poppins500(13px);
+  }
+
+  .evm-receive-chain-inline-logo {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+  }
+
+  .evm-receive-address-row {
+    @include small-card;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 24px;
+    align-items: center;
+    column-gap: 12px;
+    width: 100%;
+    border: 0;
+    margin: 0;
+    padding: 14px 16px;
+    appearance: none;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .evm-receive-address {
+    color: var(--main-font-color);
+    font-family: monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    word-break: break-all;
+
+    strong {
+      font-weight: 700;
+    }
+  }
+
+  .evm-receive-copy-icon {
+    display: flex;
+    justify-content: center;
+
+    svg {
+      width: 22px;
+      height: 22px;
+    }
+  }
+
+  .evm-receive-qr-frame {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 260px;
+    max-width: 100%;
+    aspect-ratio: 1;
+    padding: 20px;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+  }
+
+  .evm-receive-qr-code {
+    width: 100%;
+    height: 100%;
+  }
+
+  .evm-receive-qr-logo {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 0 0 7px #ffffff;
+  }
+
+  .evm-receive-chain-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+
+  .evm-receive-explorer-button {
+    margin-top: 4px;
+    font-size: 14px;
+
+    .button-label {
+      padding: 0 36px 0 12px;
+      line-height: 1.2;
+    }
+
+    .logo {
+      top: 50%;
+      bottom: auto;
+      transform: translateY(-50%);
+      color: var(--main-font-color);
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+}

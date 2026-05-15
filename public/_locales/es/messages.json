@@ -1598,6 +1598,12 @@
   "popup_html_send_transfer": {
     "message": "Enviar"
   },
+  "popup_html_receive": {
+    "message": "Recibir"
+  },
+  "popup_html_evm_receive_view_explorer": {
+    "message": "Ver dirección en el explorador de bloques"
+  },
   "dialog_title_add_key_auth": {
     "message": "Añadir Llave"
   },

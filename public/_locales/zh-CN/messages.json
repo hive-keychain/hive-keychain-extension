@@ -1177,6 +1177,12 @@
   "popup_html_send_transfer": {
     "message": "送出"
   },
+  "popup_html_receive": {
+    "message": "接收"
+  },
+  "popup_html_evm_receive_view_explorer": {
+    "message": "在区块浏览器中查看地址"
+  },
   "dialog_title_add_key_auth": {
     "message": "新增密钥"
   },
