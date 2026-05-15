@@ -176,6 +176,7 @@ const CreateAccountStepOne = ({
             setSelectedAccount(item)
           }
           background="white"
+          additionalClassname="create-account-user-dropdown"
         />
       )}
       <div className="price-panel">

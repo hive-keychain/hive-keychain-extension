@@ -61,6 +61,23 @@
     }
   }
 
+  .create-account-user-dropdown {
+    .custom-select,
+    .react-dropdown-select-dropdown {
+      width: 100%;
+    }
+
+    .react-dropdown-select-dropdown {
+      min-width: unset;
+
+      .custom-select-dropdown {
+        .option {
+          max-width: unset;
+        }
+      }
+    }
+  }
+
   .react-dropdown-select-dropdown {
     border: unset !important;
     .select-account-item {
