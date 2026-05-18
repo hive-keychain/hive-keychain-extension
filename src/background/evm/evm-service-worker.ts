@@ -32,6 +32,7 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { TransactionResponse } from 'ethers';
+import { validateEvmRequest } from 'src/content-scripts/evm/evm-request-validation';
 import { getOriginFromUrl } from 'src/utils/browser-origin.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
@@ -126,14 +127,30 @@ const chromeMessageHandler = async (
       break;
     }
     case BackgroundCommand.SEND_EVM_REQUEST: {
+      const evmMessage = backgroundMessage as KeychainEvmRequestWrapper;
+      try {
+        evmMessage.request = validateEvmRequest(evmMessage.request);
+        evmMessage.request_id = evmMessage.request.request_id;
+      } catch (error) {
+        if (sender.tab?.id !== undefined) {
+          const requestId = evmMessage.request?.request_id;
+          CommunicationUtils.tabsSendMessage(sender.tab.id, {
+            command: BackgroundCommand.SEND_EVM_ERROR,
+            value: {
+              requestId,
+              request_id: requestId,
+              error,
+            },
+          });
+        }
+        break;
+      }
+
       let requestHandler = await EvmRequestHandler.getFromLocalStorage();
       if (!requestHandler) {
         requestHandler = new EvmRequestHandler();
       }
-      await requestHandler.sendRequest(
-        sender,
-        backgroundMessage as KeychainEvmRequestWrapper,
-      );
+      await requestHandler.sendRequest(sender, evmMessage);
 
       break;
     }
