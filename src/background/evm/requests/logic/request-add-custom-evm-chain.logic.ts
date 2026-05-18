@@ -11,9 +11,17 @@ export const requestAddCustomEvmChain = async (
   dappInfo: EvmDappInfo,
   requestedChainId: string,
 ) => {
-  await requestHandler.setRequestDialog(request.request_id, tab, DialogCommand.REQUEST_ADD_CUSTOM_EVM_CHAIN, {
-    requestedChainId,
-  });
+  await requestHandler.setRequestDialogByLocator(
+    {
+      requestId: request.request_id,
+      tab,
+      origin: dappInfo.origin,
+    },
+    DialogCommand.REQUEST_ADD_CUSTOM_EVM_CHAIN,
+    {
+      requestedChainId,
+    },
+  );
 
   /* istanbul ignore next */
   createOrUpdateDialog(async () => {

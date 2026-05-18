@@ -92,7 +92,7 @@ describe('evm request without confirmation', () => {
       '0xabc123',
     ]);
     const requestHandler = {
-      removeRequestById: jest.fn().mockResolvedValue(undefined),
+      removeRequestByLocator: jest.fn().mockResolvedValue(undefined),
     } as any;
 
     await evmRequestWithoutConfirmation(
@@ -124,7 +124,11 @@ describe('evm request without confirmation', () => {
         result: ['0xabc123'],
       },
     });
-    expect(requestHandler.removeRequestById).toHaveBeenCalledWith(1, 5);
+    expect(requestHandler.removeRequestByLocator).toHaveBeenCalledWith({
+      requestId: 1,
+      tab: 5,
+      origin: 'http://localhost:3000',
+    });
   });
 
   it('emits one accountsChanged([]) path for wallet_revokePermissions', async () => {
@@ -134,7 +138,7 @@ describe('evm request without confirmation', () => {
     providerStateUtils.getAccountsForOrigin.mockResolvedValue(['0xabc123']);
     providerStateUtils.emitAccountsChangedIfNeeded.mockResolvedValue([]);
     const requestHandler = {
-      removeRequestById: jest.fn().mockResolvedValue(undefined),
+      removeRequestByLocator: jest.fn().mockResolvedValue(undefined),
     } as any;
 
     await evmRequestWithoutConfirmation(
@@ -169,7 +173,11 @@ describe('evm request without confirmation', () => {
         result: null,
       },
     });
-    expect(requestHandler.removeRequestById).toHaveBeenCalledWith(2, 6);
+    expect(requestHandler.removeRequestByLocator).toHaveBeenCalledWith({
+      requestId: 2,
+      tab: 6,
+      origin: 'http://localhost:3000',
+    });
   });
 
   it('waits for request cleanup before sending the provider response', async () => {
@@ -182,7 +190,7 @@ describe('evm request without confirmation', () => {
       '0xabc123',
     ]);
     const requestHandler = {
-      removeRequestById: jest.fn().mockReturnValue(cleanup.promise),
+      removeRequestByLocator: jest.fn().mockReturnValue(cleanup.promise),
     } as any;
 
     let settled = false;
@@ -206,7 +214,11 @@ describe('evm request without confirmation', () => {
 
     await flushAsync();
 
-    expect(requestHandler.removeRequestById).toHaveBeenCalledWith(3, 5);
+    expect(requestHandler.removeRequestByLocator).toHaveBeenCalledWith({
+      requestId: 3,
+      tab: 5,
+      origin: 'http://localhost:3000',
+    });
     expect(CommunicationUtils.tabsSendMessage).not.toHaveBeenCalled();
     expect(settled).toBe(false);
 

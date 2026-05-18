@@ -46,7 +46,7 @@ describe('unsupported EVM methods', () => {
     const { createOrUpdateDialog, CommunicationUtils } =
       await loadTestContext();
     const requestHandler = {
-      removeRequestById: jest.fn().mockResolvedValue(undefined),
+      removeRequestByLocator: jest.fn().mockResolvedValue(undefined),
     } as any;
     const request = {
       request_id: 12,
@@ -65,14 +65,18 @@ describe('unsupported EVM methods', () => {
     });
     expect(CommunicationUtils.runtimeSendMessage).not.toHaveBeenCalled();
     expect(createOrUpdateDialog).not.toHaveBeenCalled();
-    expect(requestHandler.removeRequestById).toHaveBeenCalledWith(12, 7);
+    expect(requestHandler.removeRequestByLocator).toHaveBeenCalledWith({
+      requestId: 12,
+      tab: 7,
+      origin: 'https://example.app',
+    });
   });
 
   it('answers deprecated methods to the dapp without showing dialog feedback', async () => {
     const { createOrUpdateDialog, CommunicationUtils } =
       await loadTestContext();
     const requestHandler = {
-      removeRequestById: jest.fn().mockResolvedValue(undefined),
+      removeRequestByLocator: jest.fn().mockResolvedValue(undefined),
     } as any;
     const request = {
       request_id: 13,
@@ -91,6 +95,10 @@ describe('unsupported EVM methods', () => {
     });
     expect(CommunicationUtils.runtimeSendMessage).not.toHaveBeenCalled();
     expect(createOrUpdateDialog).not.toHaveBeenCalled();
-    expect(requestHandler.removeRequestById).toHaveBeenCalledWith(13, 8);
+    expect(requestHandler.removeRequestByLocator).toHaveBeenCalledWith({
+      requestId: 13,
+      tab: 8,
+      origin: 'https://example.app',
+    });
   });
 });

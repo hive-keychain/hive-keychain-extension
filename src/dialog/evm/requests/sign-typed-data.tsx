@@ -286,6 +286,7 @@ export const SignTypedData = (props: Props) => {
     <EvmOperation
       request={request}
       domain={data.dappInfo.domain}
+      origin={data.dappInfo.origin}
       tab={data.tab}
       title={chrome.i18n.getMessage('dialog_evm_sign_data_title')}
       fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}

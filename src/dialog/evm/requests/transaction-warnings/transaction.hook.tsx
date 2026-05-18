@@ -345,6 +345,7 @@ export const useTransactionHook = (
             request: request,
             tab: data.tab,
             domain: data.dappInfo.domain,
+            origin: data.dappInfo.origin,
             extraData: {
               gasFee: selectedFee,
             },

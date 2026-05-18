@@ -23,6 +23,7 @@ export const handleNonSupportedChain = async (
   tab: number,
   request: EvmRequest,
   chainId: string,
+  origin: string,
   errorMessage: string = 'evm_chain_non_supported',
 ) => {
   Logger.warn(`Chain ${chainId} is not supported, rawError: ${errorMessage}`);
@@ -51,11 +52,16 @@ export const handleNonSupportedChain = async (
         handlers,
         request.request_id,
         tab,
+        origin,
       )
     ) {
       await delayMs(DIALOG_FEEDBACK_DISPLAY_MS);
     }
-    await requestHandler.removeRequestById(request.request_id, tab);
+    await requestHandler.removeRequestByLocator({
+      requestId: request.request_id,
+      tab,
+      origin,
+    });
   };
   createOrUpdateDialog(callback, requestHandler);
 };

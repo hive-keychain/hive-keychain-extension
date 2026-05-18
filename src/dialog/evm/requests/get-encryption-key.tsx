@@ -80,6 +80,7 @@ export const GetEncryptionKey = (props: Props) => {
       afterCancel={handleCancel}
       request={request}
       domain={data.dappInfo.domain}
+      origin={data.dappInfo.origin}
       tab={data.tab}
       title={chrome.i18n.getMessage('dialog_evm_get_encryption_key_title')}
       fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}

@@ -55,6 +55,7 @@ export type VisibleDialogRequest =
       arrivalOrder: number;
       requestId: number;
       tab: number;
+      origin: string;
       data: EvmRequestData;
     };
 
@@ -214,6 +215,7 @@ export const getVisibleDialogRequests = async (
           ),
           requestId: requestData.request_id,
           tab: requestData.tab,
+          origin: requestData.dappInfo?.origin ?? '',
           data: requestData,
         };
       }),
@@ -232,11 +234,16 @@ export const willCloseDialogWindowAfterRemovingRequest = async (
   handlers: RequestHandlers,
   requestId: number,
   tab: number,
+  origin?: string,
 ): Promise<boolean> => {
   const visible = await getVisibleDialogRequests(handlers);
   if (visible.length !== 1) return false;
   const only = visible[0];
-  return only.requestId === requestId && only.tab === tab;
+  return (
+    only.requestId === requestId &&
+    only.tab === tab &&
+    (only.chain !== 'evm' || origin === undefined || only.origin === origin)
+  );
 };
 
 const attachQueueMetadata = (messages: ConfirmDialogMessage[]) => {
@@ -267,6 +274,12 @@ const isSameDialogMessage = (
   return (
     left.command === right.command &&
     left.tab === right.tab &&
+    (left.command !== DialogCommand.SEND_DIALOG_CONFIRM_EVM ||
+      right.command !== DialogCommand.SEND_DIALOG_CONFIRM_EVM ||
+      left.dappInfo.origin === right.dappInfo.origin) &&
+    (left.command !== DialogCommand.REQUEST_ADD_CUSTOM_EVM_CHAIN ||
+      right.command !== DialogCommand.REQUEST_ADD_CUSTOM_EVM_CHAIN ||
+      left.msg.dappInfo.origin === right.msg.dappInfo.origin) &&
     getRequestId(left) === getRequestId(right)
   );
 };

@@ -50,7 +50,7 @@ jest.mock('@background/evm/requests/logic/handle-evm-error.logic', () => ({
 }));
 
 describe('performEvmOperation', () => {
-  const removeRequestById = jest.fn();
+  const removeRequestByLocator = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -84,7 +84,7 @@ describe('performEvmOperation', () => {
     runtimeSendMessageMock.mockImplementation(async () => {
       callOrder.push('runtime');
     });
-    removeRequestById.mockImplementation(async () => {
+    removeRequestByLocator.mockImplementation(async () => {
       callOrder.push('remove');
     });
 
@@ -92,7 +92,7 @@ describe('performEvmOperation', () => {
       '@background/evm/requests/operations/perform-operation'
     );
 
-    const requestHandler = { removeRequestById } as any;
+    const requestHandler = { removeRequestByLocator } as any;
     const request = {
       request_id: 42,
       method: EvmRequestMethod.SEND_TRANSACTION,
@@ -104,6 +104,7 @@ describe('performEvmOperation', () => {
       request as any,
       7,
       'example.com',
+      'https://example.com',
       { gasFee: {} },
     );
 
@@ -113,7 +114,11 @@ describe('performEvmOperation', () => {
       value: { requestId: 42, result: '0xabc' },
     });
     expect(runtimeSendMessageMock).toHaveBeenCalledWith(answerMessage);
-    expect(removeRequestById).toHaveBeenCalledWith(42, 7);
+    expect(removeRequestByLocator).toHaveBeenCalledWith({
+      requestId: 42,
+      tab: 7,
+      origin: 'https://example.com',
+    });
     expect(delayMsMock).not.toHaveBeenCalled();
   });
 
@@ -144,7 +149,7 @@ describe('performEvmOperation', () => {
     delayMsMock.mockImplementation(async () => {
       callOrder.push('delay');
     });
-    removeRequestById.mockImplementation(async () => {
+    removeRequestByLocator.mockImplementation(async () => {
       callOrder.push('remove');
     });
 
@@ -153,7 +158,7 @@ describe('performEvmOperation', () => {
     );
 
     await performEvmOperation(
-      { removeRequestById } as any,
+      { removeRequestByLocator } as any,
       {
         request_id: 99,
         method: EvmRequestMethod.SEND_TRANSACTION,
@@ -161,6 +166,7 @@ describe('performEvmOperation', () => {
       } as any,
       3,
       'example.com',
+      'https://example.com',
       { gasFee: {} },
     );
 
@@ -176,7 +182,7 @@ describe('performEvmOperation', () => {
     );
 
     await performEvmOperation(
-      { removeRequestById } as any,
+      { removeRequestByLocator } as any,
       {
         request_id: 1,
         method: EvmRequestMethod.SEND_TRANSACTION,
@@ -184,11 +190,12 @@ describe('performEvmOperation', () => {
       } as any,
       2,
       'example.com',
+      'https://example.com',
       { gasFee: {} },
     );
 
     expect(runtimeSendMessageMock).not.toHaveBeenCalled();
     expect(tabsSendMessageMock).toHaveBeenCalled();
-    expect(removeRequestById).toHaveBeenCalled();
+    expect(removeRequestByLocator).toHaveBeenCalled();
   });
 });

@@ -1,5 +1,8 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
-import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
+import {
+  EvmRequestHandler,
+  EvmRequestLocator,
+} from '@background/evm/requests/evm-request-handler';
 import { handleEvmError } from '@background/evm/requests/logic/handle-evm-error.logic';
 import {
   getRequestHandlers,
@@ -28,10 +31,16 @@ export const performEvmOperation = async (
   request: EvmRequest,
   tab: number,
   domain: string,
+  origin: string,
   extraData: any,
 ) => {
   let message = null;
   let result = null;
+  const locator: EvmRequestLocator = {
+    requestId: request.request_id,
+    tab,
+    origin,
+  };
 
   Logger.info('Perform evm operation');
 
@@ -41,6 +50,7 @@ export const performEvmOperation = async (
         message = await signData(
           requestHandler,
           request,
+          locator,
           SignTypedDataVersion.V4,
         );
         result = message?.msg.result;
@@ -50,6 +60,7 @@ export const performEvmOperation = async (
         message = await signData(
           requestHandler,
           request,
+          locator,
           SignTypedDataVersion.V3,
         );
         result = message?.msg.result;
@@ -59,28 +70,34 @@ export const performEvmOperation = async (
         message = await signData(
           requestHandler,
           request,
+          locator,
           SignTypedDataVersion.V1,
         );
         result = message?.msg.result;
         break;
       }
       case EvmRequestMethod.PERSONAL_SIGN: {
-        message = await personalSign(requestHandler, request);
+        message = await personalSign(requestHandler, request, locator);
         result = message?.msg.result;
         break;
       }
       case EvmRequestMethod.GET_ENCRYPTION_KEY: {
-        message = await getEncryptionKey(requestHandler, request);
+        message = await getEncryptionKey(requestHandler, request, locator);
         result = message?.msg.result;
         break;
       }
       case EvmRequestMethod.ETH_DECRYPT: {
-        message = await decryptMessage(requestHandler, request);
+        message = await decryptMessage(requestHandler, request, locator);
         result = message?.msg.result;
         break;
       }
       case EvmRequestMethod.SEND_TRANSACTION: {
-        message = await sendEvmTransaction(requestHandler, request, extraData);
+        message = await sendEvmTransaction(
+          requestHandler,
+          request,
+          locator,
+          extraData,
+        );
         result = message?.msg.result;
         break;
       }
@@ -97,12 +114,13 @@ export const performEvmOperation = async (
           handlers,
           request.request_id,
           tab,
+          origin,
         )
       ) {
         await delayMs(DIALOG_FEEDBACK_DISPLAY_MS);
       }
     }
-    await requestHandler.removeRequestById(request.request_id, tab);
+    await requestHandler.removeRequestByLocator(locator);
   } catch (err) {
     const error = err as any;
     const etherJSError = getErrorFromEtherJS(error.code);
@@ -115,6 +133,7 @@ export const performEvmOperation = async (
       etherJSError,
       etherJSError.message,
       [],
+      origin,
     );
   }
 };

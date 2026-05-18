@@ -124,6 +124,7 @@ export const SendTransaction = (props: Props) => {
           afterCancel={handleCancel}
           request={request}
           domain={data.dappInfo.domain}
+          origin={data.dappInfo.origin}
           tab={data.tab}
           title={transactionHook.fields.operationName!}
           caption={caption}
