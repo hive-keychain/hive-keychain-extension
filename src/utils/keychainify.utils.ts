@@ -15,36 +15,38 @@ const isLocalhostHostname = (hostname: string) => {
 
 const isRedirectUriAcceptable = (
   redirectUri: string,
-  _requesterUrl: string,
+  requesterUrl: string,
   options: RedirectUriValidationOptions = {},
 ) => {
   const { allowLocalhostHttp = false } = options;
 
-  if (!redirectUri) {
+  if (!redirectUri || !requesterUrl) {
     return false;
   }
 
   let parsedRedirectUri: URL;
+  let parsedRequesterUrl: URL;
 
   try {
     parsedRedirectUri = new URL(redirectUri);
+    parsedRequesterUrl = new URL(requesterUrl);
   } catch {
     return false;
   }
 
-  if (
-    allowLocalhostHttp &&
-    ['http:', 'https:'].includes(parsedRedirectUri.protocol) &&
-    isLocalhostHostname(parsedRedirectUri.hostname)
-  ) {
-    return true;
-  }
-
-  if (parsedRedirectUri.protocol !== 'https:') {
+  if (parsedRedirectUri.origin !== parsedRequesterUrl.origin) {
     return false;
   }
 
-  return true;
+  if (parsedRedirectUri.protocol === 'https:') {
+    return true;
+  }
+
+  return (
+    allowLocalhostHttp &&
+    parsedRedirectUri.protocol === 'http:' &&
+    isLocalhostHostname(parsedRedirectUri.hostname)
+  );
 };
 
 const KeychainifyUtils = {
