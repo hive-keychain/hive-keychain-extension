@@ -184,6 +184,7 @@ export const EvmOperation = ({
         {transactionHook?.message && (
           <MessageContainerComponent
             message={transactionHook.message}
+            useBodyPortal
             onResetMessage={() => transactionHook.setErrorMessage(undefined)}
           />
         )}

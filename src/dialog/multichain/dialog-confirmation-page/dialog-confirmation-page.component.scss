@@ -49,9 +49,4 @@
     }
   }
 
-  /* Success feedback only: solid theme background on full modal shell */
-  .popup-container.modal-container:has(.result-message-page .title.success) {
-    background-color: var(--background-color);
-    background: var(--background-color);
-  }
 }

@@ -7,14 +7,22 @@ type Props = {
   onClose?: () => void;
 };
 
-export const DialogError = ({ data }: Props) => {
+export const DialogError = ({ data, onClose }: Props) => {
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+      return;
+    }
+    window.close();
+  };
+
   return (
     <ResultMessagePageComponent
       type="error"
       title="message_container_title_fail"
       message={data.msg.display_msg}
       skipMessageTranslation={true}
-      onClose={() => window.close()}
+      onClose={handleClose}
     />
   );
 };
