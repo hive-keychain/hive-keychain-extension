@@ -1,11 +1,11 @@
 const { merge } = require('webpack-merge');
 const common = require('./webpack.chromium.js');
 const path = require('path');
-const dotenv = require('dotenv');
 const { DefinePlugin } = require('webpack');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const BundleAnalyzerPlugin =
   require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const { toDefinePluginEnv } = require('../env');
 
 module.exports = merge(common, {
   mode: 'production',
@@ -15,9 +15,7 @@ module.exports = merge(common, {
     filename: '[name]Bundle.js',
   },
   plugins: [
-    new DefinePlugin({
-      'process.env': JSON.stringify(dotenv.config().parsed || {}),
-    }),
+    new DefinePlugin(toDefinePluginEnv({ IS_FIREFOX: false })),
     new ESLintPlugin({
       extensions: ['ts', 'tsx'],
       fix: false,
