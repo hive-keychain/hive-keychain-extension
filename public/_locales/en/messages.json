@@ -5431,6 +5431,34 @@
     "message": "Unknown account",
     "description": "Fallback label for an EVM dapp connection address that is not in the local wallet"
   },
+  "evm_dapps_connections_addresses_option": {
+    "message": "Addresses",
+    "description": "Option to manage connected addresses for an EVM dapp"
+  },
+  "evm_dapps_connections_chains_option": {
+    "message": "Chains",
+    "description": "Option to manage allowed chains for an EVM dapp"
+  },
+  "evm_dapps_connections_chains_caption": {
+    "message": "Allowed chains let this dApp request activity on the selected networks.",
+    "description": "Caption for EVM dapp allowed chains popup"
+  },
+  "evm_dapps_connections_allowed_chains": {
+    "message": "Allowed Chains",
+    "description": "Title for EVM dapp allowed chains list"
+  },
+  "evm_dapps_connections_unknown_chain": {
+    "message": "Unknown chain",
+    "description": "Fallback label for an EVM dapp allowed chain missing local metadata"
+  },
+  "evm_dapps_connections_no_chains": {
+    "message": "No allowed chains.",
+    "description": "Empty state for an EVM dapp allowed chains popup"
+  },
+  "evm_dapps_connections_remove_all_chains": {
+    "message": "Remove all chains",
+    "description": "Button label to remove every allowed chain for an EVM dapp"
+  },
   "evm_custom_chains_caption": {
     "message": "Custom chains have limited support. Features such as token discovery and automatic history loading may be unavailable.",
     "description": "Custom chains info caption"
