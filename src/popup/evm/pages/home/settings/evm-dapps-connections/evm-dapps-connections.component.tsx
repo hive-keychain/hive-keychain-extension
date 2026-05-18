@@ -370,16 +370,7 @@ const EvmDappsConnections = ({
       ),
     );
 
-    const nextConnections = getEvmDappConnections(
-      updatedWalletPermissions,
-      accounts,
-    );
-    setConnections(nextConnections);
-    setSelectedConnection(
-      nextConnections.find(
-        (connection) => connection.subdomain === selectedConnection.subdomain,
-      ),
-    );
+    await initConnections();
   };
 
   const updateChainsForSelectedSubdomain = async (chainId?: string) => {
@@ -465,28 +456,26 @@ const EvmDappsConnections = ({
                 </div>
                 {expandedSubdomain === connection.subdomain && (
                   <div className="evm-dapps-connections-actions">
-                    <button
-                      type="button"
-                      data-testid="evm-dapps-open-addresses"
+                    <ButtonComponent
+                      type={ButtonType.ALTERNATIVE}
+                      height="small"
+                      dataTestId="evm-dapps-open-addresses"
+                      label="evm_dapps_connections_addresses_option"
                       onClick={(event) => {
                         event.stopPropagation();
                         openPopup(connection, 'addresses');
-                      }}>
-                      {chrome.i18n.getMessage(
-                        'evm_dapps_connections_addresses_option',
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      data-testid="evm-dapps-open-chains"
+                      }}
+                    />
+                    <ButtonComponent
+                      type={ButtonType.ALTERNATIVE}
+                      height="small"
+                      dataTestId="evm-dapps-open-chains"
+                      label="evm_dapps_connections_chains_option"
                       onClick={(event) => {
                         event.stopPropagation();
                         openPopup(connection, 'chains');
-                      }}>
-                      {chrome.i18n.getMessage(
-                        'evm_dapps_connections_chains_option',
-                      )}
-                    </button>
+                      }}
+                    />
                   </div>
                 )}
               </div>
