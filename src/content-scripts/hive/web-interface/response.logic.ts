@@ -49,7 +49,7 @@ export const sendEvmRequestToBackground = async (
   const link = document.querySelector("link[rel='icon']");
 
   CommunicationUtils.runtimeSendMessage({
-    command: 'sendEvmRequest',
+    command: BackgroundCommand.SEND_EVM_REQUEST,
     request: req,
     dappInfo: {
       origin: getWindowOrigin(),
