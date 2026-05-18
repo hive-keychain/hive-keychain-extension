@@ -11,6 +11,8 @@ export interface ModalProps {
   closeOnOverlayClick?: boolean;
   showCloseButton?: boolean;
   showOverlay?: boolean;
+  useBodyPortal?: boolean;
+  containerClassName?: string;
 }
 
 export type ModalPresentationProps = ModalProps & {
@@ -23,12 +25,15 @@ export const ModalPresentation = ({
   closeOnOverlayClick,
   showCloseButton,
   showOverlay,
+  useBodyPortal,
+  containerClassName,
   onClose,
 }: ModalPresentationProps) => {
   return (
     <PopupContainer
-      className="modal-container"
+      className={`modal-container${containerClassName ? ` ${containerClassName}` : ''}`}
       showOverlay={showOverlay}
+      useBodyPortal={useBodyPortal}
       onClickOutside={closeOnOverlayClick ? onClose : undefined}>
       {(title || showCloseButton) && (
         <div className="modal-header">

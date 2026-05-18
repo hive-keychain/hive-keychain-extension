@@ -293,7 +293,11 @@ export const DialogConfirmationPage = ({
         })}
       </div>
       {feedBackMessage && (
-        <ModalPresentation onClose={closeFeedBackMessage} showOverlay={false}>
+        <ModalPresentation
+          onClose={closeFeedBackMessage}
+          showOverlay={false}
+          useBodyPortal
+          containerClassName="dialog-feedback-modal">
           {displayFeedBackMessage(feedBackMessage)}
         </ModalPresentation>
       )}

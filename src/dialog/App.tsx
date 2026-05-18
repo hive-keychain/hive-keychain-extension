@@ -1,6 +1,7 @@
 import { RequestAddEvmChain } from '@dialog/evm/requests/request-add-chain/request-add-chain';
 import { RequestAddCustomEvmChain } from '@dialog/evm/requests/request-add-custom-chain/request-add-custom-chain';
 import { FeedbackMessage } from '@dialog/interfaces/messages.interface';
+import { ModalPresentation } from '@common-ui/modal/modal.component';
 import { DialogConfirmationPage } from '@dialog/multichain/dialog-confirmation-page/dialog-confirmation-page.component';
 import { DialogError } from '@dialog/multichain/error/error';
 import { Theme, ThemeContext } from '@popup/theme.context';
@@ -186,7 +187,13 @@ const App = () => {
       <div className={`theme ${resolvedTheme} dialog`}>
         {renderDialogContent(globalData)}
         {globalError && (
-          <DialogError data={globalError} onClose={closeGlobalError} />
+          <ModalPresentation
+            onClose={closeGlobalError}
+            showOverlay={false}
+            useBodyPortal
+            containerClassName="dialog-feedback-modal">
+            <DialogError data={globalError} onClose={closeGlobalError} />
+          </ModalPresentation>
         )}
         <CopyToastContainer />
       </div>

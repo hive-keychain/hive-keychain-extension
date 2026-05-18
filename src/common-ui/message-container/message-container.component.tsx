@@ -1,6 +1,8 @@
 import { Message } from '@interfaces/message.interface';
+import { Theme, useThemeContext } from '@popup/theme.context';
 import { MessageType } from '@reference-data/message-type.enum';
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import sanitizeHTML from 'sanitize-html';
 import ButtonComponent, {
   ButtonType,
@@ -13,12 +15,18 @@ const DEFAULT_TIMEOUT = 3000;
 interface MessageContainerProps {
   message: Message;
   onResetMessage: () => void;
+  /** Renders at document.body so the overlay covers the full dialog viewport. */
+  useBodyPortal?: boolean;
 }
 
 const MessageContainer = ({
   message,
   onResetMessage,
+  useBodyPortal = false,
 }: MessageContainerProps) => {
+  const { theme: contextTheme } = useThemeContext();
+  const portalTheme = contextTheme ?? Theme.DARK;
+
   useEffect(() => {
     if (
       message.type !== MessageType.ERROR &&
@@ -71,9 +79,12 @@ const MessageContainer = ({
     }
   };
 
-  return (
-    <div className="message-container">
-      <div className="overlay"></div>
+  const content = (
+    <div
+      className={`message-container${
+        useBodyPortal ? ' message-container--viewport' : ''
+      }`}>
+      <div className="overlay" />
       <div className="message-card">
         <SVGIcon icon={getIcon(message.type)} />
         <div
@@ -91,7 +102,8 @@ const MessageContainer = ({
                 : chrome.i18n.getMessage(message.key, message.params),
               { allowedTags: ['b', 'br', 'i', 'p', 'span', 'div'] },
             ),
-          }}></div>
+          }}
+        />
         {message.confirmation === undefined && (
           <ButtonComponent
             additionalClass={
@@ -117,6 +129,15 @@ const MessageContainer = ({
       </div>
     </div>
   );
+
+  if (useBodyPortal) {
+    return createPortal(
+      <div className={`theme ${portalTheme}`}>{content}</div>,
+      document.body,
+    );
+  }
+
+  return content;
 };
 
 export const MessageContainerComponent = MessageContainer;
