@@ -26,6 +26,7 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import Decimal from 'decimal.js';
 import { ethers } from 'ethers';
 import React from 'react';
+import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
 import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
 import { formatDecodedArgumentDisplayValue } from 'src/dialog/evm/requests/send-transaction/send-transaction-argument-format';
 import {
@@ -399,7 +400,7 @@ export async function runSendTransactionInit(
                 tokenAddress!,
                 chainTmp.chainId,
                 accounts,
-                usedToken ? <EvmTokenLogo tokenInfo={usedToken} /> : undefined,
+                <EvmAccountImage address={tokenAddress!} small />,
               ),
               ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
                 params.to,
@@ -472,6 +473,18 @@ export async function runSendTransactionInit(
             const parsedArgs = decodedTransactionData.args
               ? EvmTransactionParserUtils.parseArgs(decodedTransactionData.args)
               : [];
+            console.log('dialog decoded parameters', {
+              method: decodedTransactionData.name,
+              signature: decodedTransactionData.signature,
+              inputs: decodedTransactionData.fragment.inputs.map(
+                (input, index) => ({
+                  index,
+                  name: input.name,
+                  type: input.type,
+                  value: parsedArgs[index],
+                }),
+              ),
+            });
             const contract = new ethers.Contract(
               params.to,
               normalizedAbi,
@@ -517,7 +530,7 @@ export async function runSendTransactionInit(
                 tokenAddress!,
                 chainTmp.chainId,
                 accounts,
-                usedToken ? <EvmTokenLogo tokenInfo={usedToken} /> : undefined,
+                <EvmAccountImage address={tokenAddress!} small />,
               ),
               ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
                 params.to,
