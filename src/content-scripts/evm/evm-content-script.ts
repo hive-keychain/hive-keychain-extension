@@ -1,6 +1,7 @@
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { EvmEventName } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { validateEvmRequest } from 'src/content-scripts/evm/evm-request-validation';
 import {
   sendErrorToEvm,
   sendEventToEvm,
@@ -11,7 +12,17 @@ import {
 } from 'src/content-scripts/hive/web-interface/response.logic';
 
 document.addEventListener(EvmEventName.REQUEST, async (request: any) => {
-  sendEvmRequestToBackground(request.detail, chrome);
+  try {
+    const validatedRequest = validateEvmRequest(request.detail);
+    sendEvmRequestToBackground(validatedRequest, chrome);
+  } catch (error) {
+    const requestId = request.detail?.request_id;
+    sendErrorToEvm({
+      requestId,
+      request_id: requestId,
+      error,
+    });
+  }
 });
 
 document.addEventListener(

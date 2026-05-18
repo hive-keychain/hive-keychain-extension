@@ -1,5 +1,9 @@
-import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import {
+  doesMethodExist,
+  EvmRequestMethod,
+} from '@background/evm/evm-methods/evm-methods.list';
+import {
+  EvmRequest,
   ProviderRpcError,
   ProviderRpcErrorList,
 } from '@interfaces/evm-provider.interface';
@@ -10,13 +14,81 @@ import {
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { ethers } from 'ethers';
 
+const getProviderRpcError = (
+  error: keyof typeof ProviderRpcErrorList,
+  message?: string,
+) =>
+  ({
+    ...ProviderRpcErrorList[error],
+    ...(message ? { message } : {}),
+  }) as ProviderRpcError;
+
+const assertParamsArray = (params: unknown): unknown[] => {
+  if (!Array.isArray(params)) {
+    throw getProviderRpcError(
+      'invalidMethodParams',
+      'Invalid parameter. Params must be an array.',
+    );
+  }
+
+  return params;
+};
+
+export const validateEvmRequest = (request: unknown): EvmRequest => {
+  if (!request || typeof request !== 'object') {
+    throw getProviderRpcError('nonValidRequest', 'Missing request.');
+  }
+
+  const evmRequest = request as Partial<EvmRequest>;
+  if (
+    typeof evmRequest.request_id !== 'number' ||
+    !Number.isFinite(evmRequest.request_id)
+  ) {
+    throw getProviderRpcError(
+      'nonValidRequest',
+      'Invalid request. Missing or invalid request_id.',
+    );
+  }
+
+  if (typeof evmRequest.method !== 'string') {
+    throw getProviderRpcError(
+      'nonValidRequest',
+      'Invalid request. Missing or invalid method.',
+    );
+  }
+
+  if (!doesMethodExist(evmRequest.method)) {
+    throw getProviderRpcError('nonExistingMethod');
+  }
+
+  const params = evmRequest.params ?? [];
+  assertParamsArray(params);
+  validateRequest(evmRequest.method as EvmRequestMethod, params);
+
+  return {
+    ...evmRequest,
+    method: evmRequest.method as EvmRequestMethod,
+    params,
+  } as EvmRequest;
+};
+
 export const validateRequest = (
   method: EvmRequestMethod,
   params: any,
 ): boolean => {
   switch (method) {
     case EvmRequestMethod.SEND_TRANSACTION: {
-      const transactionParams = params[0] as ProviderTransactionData;
+      const requestParams = assertParamsArray(params ?? []);
+      const transactionParams = requestParams[0] as
+        | ProviderTransactionData
+        | undefined;
+
+      if (!transactionParams || typeof transactionParams !== 'object') {
+        throw {
+          ...ProviderRpcErrorList.invalidMethodParams,
+          message: 'Invalid parameter. Missing transaction parameters.',
+        } as ProviderRpcError;
+      }
 
       if (transactionParams.type === EvmTransactionType.LEGACY) {
         if (
@@ -80,22 +152,27 @@ export const validateRequest = (
       break;
     }
     case EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN: {
-      if (!params[0]) {
+      const requestParams = assertParamsArray(params ?? []);
+      const switchParams = requestParams[0] as
+        | { chainId?: unknown }
+        | undefined;
+
+      if (!switchParams) {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
           message: `Invalid parameters. Missing chainId`,
         } as ProviderRpcError;
       }
-      if (typeof params[0].chainId !== 'string') {
+      if (typeof switchParams.chainId !== 'string') {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
           message: `Invalid parameter. ChainId must be a string`,
         } as ProviderRpcError;
       }
-      if (!params[0].chainId.startsWith('0x')) {
+      if (!switchParams.chainId.startsWith('0x')) {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
-          message: `Invalid parameter. ${params[0].chainId} is not a valid chainId. It must be using hexadecimal format`,
+          message: `Invalid parameter. ${switchParams.chainId} is not a valid chainId. It must be using hexadecimal format`,
         } as ProviderRpcError;
       }
       // if (
