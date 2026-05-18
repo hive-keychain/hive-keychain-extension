@@ -1,5 +1,6 @@
 import { BalanceChangeCard } from '@dialog/components/balance-change-card/balance-change-card.component';
 import type { BalanceInfo } from '@dialog/components/balance-change-card/balance-change-card.interface';
+import { BalanceChangeCardUtils } from '@dialog/components/balance-change-card/balance-change-card.utils';
 import { EvmRequestItem } from '@dialog/evm/components/evm-request-item/evm-request-item';
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
@@ -124,6 +125,8 @@ const ConfirmationPage = ({
     );
     transactionHook.setConfirmationPageFields(fields);
   };
+
+  const hideConfirm = BalanceChangeCardUtils.hasInsufficientBalance(balanceInfo);
 
   const handleClickOnConfirm = () => {
     if (
@@ -279,13 +282,15 @@ const ConfirmationPage = ({
           label={'dialog_cancel'}
           onClick={handleClickOnCancel}
           type={ButtonType.ALTERNATIVE}></ButtonComponent>
-        <ButtonComponent
-          dataTestId="dialog_confirm-button"
-          label={'popup_html_confirm'}
-          onClick={($event: BaseSyntheticEvent) => {
-            handleClickOnConfirm();
-          }}
-          type={ButtonType.IMPORTANT}></ButtonComponent>
+        {!hideConfirm && (
+          <ButtonComponent
+            dataTestId="dialog_confirm-button"
+            label={'popup_html_confirm'}
+            onClick={($event: BaseSyntheticEvent) => {
+              handleClickOnConfirm();
+            }}
+            type={ButtonType.IMPORTANT}></ButtonComponent>
+        )}
       </div>
       <ConfirmationPopup transactionHook={transactionHook} />
     </div>

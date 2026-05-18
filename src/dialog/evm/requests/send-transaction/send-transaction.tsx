@@ -1,4 +1,5 @@
 import { BalanceChangeCard } from '@dialog/components/balance-change-card/balance-change-card.component';
+import { BalanceChangeCardUtils } from '@dialog/components/balance-change-card/balance-change-card.utils';
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
@@ -92,6 +93,8 @@ export const SendTransaction = (props: Props) => {
 
   const feeSelectionPending = needsGasFeePanel && !gasFeePanelReady;
   const quietRefreshPending = gasFeeRefreshing || balanceInfoRefreshing;
+  const insufficientBalancePending =
+    BalanceChangeCardUtils.hasInsufficientBalance(balanceInfo);
   const showLoading = transactionHook.loading;
 
   const handleClickOnConfirm = () => {
@@ -166,6 +169,7 @@ export const SendTransaction = (props: Props) => {
           onConfirm={() => handleClickOnConfirm()}
           transactionHook={transactionHook}
           confirmDisabled={feeSelectionPending || quietRefreshPending}
+          hideConfirm={insufficientBalancePending}
         />
       )}
       <LoadingComponent hide={!showLoading} />

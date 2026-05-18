@@ -32,14 +32,16 @@ jest.mock('src/dialog/evm/requests/transaction-warnings/transaction.hook', () =>
 }));
 
 jest.mock('src/dialog/evm/evm-operation/evm-operation', () => ({
-  EvmOperation: ({ bottomPanel, confirmDisabled, onConfirm }: any) => (
+  EvmOperation: ({ bottomPanel, confirmDisabled, hideConfirm, onConfirm }: any) => (
     <div data-testid="evm-operation">
       {bottomPanel}
-      <button
-        data-testid="dialog-confirm"
-        disabled={confirmDisabled}
-        onClick={onConfirm}
-      />
+      {!hideConfirm && (
+        <button
+          data-testid="dialog-confirm"
+          disabled={confirmDisabled}
+          onClick={onConfirm}
+        />
+      )}
     </div>
   ),
 }));
@@ -1570,5 +1572,33 @@ describe('send-transaction proxy tests:\n', () => {
       expect((screen.getByTestId('dialog-confirm') as HTMLButtonElement).disabled)
         .toBe(false),
     );
+  });
+
+  it('hides confirm when balance is insufficient', async () => {
+    transactionHook.fields = {
+      operationName: 'evm_operation_transfer',
+    } as any;
+    transactionHook.ready = true;
+
+    jest.spyOn(EvmTokensUtils, 'getBalanceInfo').mockResolvedValue({
+      mainBalance: {
+        before: '0.1 ETH',
+        estimatedAfter: '-0.1 ETH',
+        insufficientBalance: true,
+      },
+    } as any);
+
+    render(<SendTransaction {...buildSendTransactionProps()} />);
+
+    await waitFor(() => expect(mockGasFeePanel).toHaveBeenCalled());
+    act(() => {
+      mockGasFeePanel.mock.calls[mockGasFeePanel.mock.calls.length - 1][0]
+        .onInitialEstimationComplete();
+    });
+
+    await waitFor(() =>
+      expect(screen.queryByTestId('dialog-confirm')).toBeNull(),
+    );
+    expect(transactionHook.handleOnConfirmClick).not.toHaveBeenCalled();
   });
 });

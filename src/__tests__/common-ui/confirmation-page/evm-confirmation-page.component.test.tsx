@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { Screen } from '@interfaces/screen.interface';
 import { EVMConfirmationPageComponent } from 'src/common-ui/confirmation-page/evm-confirmation-page.component';
@@ -192,6 +192,51 @@ describe('EVMConfirmationPageComponent', () => {
       5,
       undefined,
       nativeToken,
+    );
+  });
+
+  it('hides confirm when balance is insufficient', async () => {
+    const afterConfirmAction = jest.fn();
+    jest.spyOn(EvmTokensUtils, 'getBalanceInfo').mockResolvedValue({
+      mainBalance: {
+        symbol: 'ETH',
+        before: '0.1 ETH',
+        estimatedAfter: '-0.1 ETH',
+        insufficientBalance: true,
+      },
+    });
+
+    renderConfirmationPage({
+      amount: 1,
+      afterConfirmAction,
+      tokenInfo: nativeToken,
+    });
+
+    await waitFor(() =>
+      expect(screen.queryByTestId('dialog_confirm-button')).toBeNull(),
+    );
+    expect(afterConfirmAction).not.toHaveBeenCalled();
+  });
+
+  it('shows confirm when balance is sufficient', async () => {
+    const afterConfirmAction = jest.fn();
+    jest.spyOn(EvmTokensUtils, 'getBalanceInfo').mockResolvedValue({
+      mainBalance: {
+        symbol: 'ETH',
+        before: '1 ETH',
+        estimatedAfter: '0.5 ETH',
+        insufficientBalance: false,
+      },
+    });
+
+    renderConfirmationPage({
+      amount: 0.5,
+      afterConfirmAction,
+      tokenInfo: nativeToken,
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('dialog_confirm-button')).toBeTruthy(),
     );
   });
 });

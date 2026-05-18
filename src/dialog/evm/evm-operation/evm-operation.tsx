@@ -32,6 +32,7 @@ type Props = {
   bottomPanel?: any;
   transactionHook?: useTransactionHook;
   confirmDisabled?: boolean;
+  hideConfirm?: boolean;
   afterCancel: (requestId: number, tab: number) => void;
 };
 
@@ -48,6 +49,7 @@ export const EvmOperation = ({
   bottomPanel,
   transactionHook,
   confirmDisabled,
+  hideConfirm,
   afterCancel,
 }: Props) => {
   const [keep, setKeep] = useState(false);
@@ -152,7 +154,7 @@ export const EvmOperation = ({
               onClick={onClose}
               height="small"
             />
-            {!transactionHook?.hasBlockingError && (
+            {!transactionHook?.hasBlockingError && !hideConfirm && (
               <ButtonComponent
                 type={ButtonType.IMPORTANT}
                 label="dialog_confirm"
