@@ -9,6 +9,8 @@ const sendEvmTransactionMock = jest.fn();
 const getRequestHandlersMock = jest.fn();
 const willCloseDialogWindowAfterRemovingRequestMock = jest.fn();
 const delayMsMock = jest.fn();
+const addWhitelistedChainForOriginMock = jest.fn();
+const setChainIdForOriginMock = jest.fn();
 
 jest.mock('src/utils/communication.utils', () => ({
   CommunicationUtils: {
@@ -49,6 +51,12 @@ jest.mock('@background/evm/requests/logic/handle-evm-error.logic', () => ({
   handleEvmError: jest.fn(),
 }));
 
+jest.mock('@background/evm/evm-provider-state.utils', () => ({
+  addWhitelistedChainForOrigin: (...args: unknown[]) =>
+    addWhitelistedChainForOriginMock(...args),
+  setChainIdForOrigin: (...args: unknown[]) => setChainIdForOriginMock(...args),
+}));
+
 describe('performEvmOperation', () => {
   const removeRequestByLocator = jest.fn();
 
@@ -59,6 +67,8 @@ describe('performEvmOperation', () => {
     getRequestHandlersMock.mockResolvedValue({});
     willCloseDialogWindowAfterRemovingRequestMock.mockResolvedValue(false);
     delayMsMock.mockResolvedValue(undefined);
+    addWhitelistedChainForOriginMock.mockResolvedValue(['0x539']);
+    setChainIdForOriginMock.mockResolvedValue('0x539');
   });
 
   it('sends tab response then ANSWER_EVM_REQUEST to runtime then removes request', async () => {
@@ -197,5 +207,42 @@ describe('performEvmOperation', () => {
     expect(runtimeSendMessageMock).not.toHaveBeenCalled();
     expect(tabsSendMessageMock).toHaveBeenCalled();
     expect(removeRequestByLocator).toHaveBeenCalled();
+  });
+
+  it('whitelists and switches chain when wallet_switchEthereumChain is approved', async () => {
+    const { performEvmOperation } = await import(
+      '@background/evm/requests/operations/perform-operation'
+    );
+
+    await performEvmOperation(
+      { removeRequestByLocator } as any,
+      {
+        request_id: 10,
+        method: EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN,
+        params: [{ chainId: '0x539' }],
+      } as any,
+      4,
+      'example.com',
+      'https://example.com',
+      undefined,
+    );
+
+    expect(addWhitelistedChainForOriginMock).toHaveBeenCalledWith(
+      'https://example.com',
+      '0x539',
+    );
+    expect(setChainIdForOriginMock).toHaveBeenCalledWith(
+      'https://example.com',
+      '0x539',
+    );
+    expect(tabsSendMessageMock).toHaveBeenCalledWith(4, {
+      command: BackgroundCommand.SEND_EVM_RESPONSE,
+      value: { requestId: 10, result: null },
+    });
+    expect(removeRequestByLocator).toHaveBeenCalledWith({
+      requestId: 10,
+      tab: 4,
+      origin: 'https://example.com',
+    });
   });
 });

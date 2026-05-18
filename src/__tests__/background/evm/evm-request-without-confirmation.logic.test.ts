@@ -35,6 +35,7 @@ jest.mock('@popup/evm/utils/evm-requests.utils', () => ({
 jest.mock('src/background/evm/evm-provider-state.utils', () => ({
   emitAccountsChangedIfNeeded: jest.fn(),
   getAccountsForOrigin: jest.fn(),
+  removeWhitelistedChainsForOrigin: jest.fn(),
   setChainIdForOrigin: jest.fn(),
 }));
 
@@ -70,6 +71,7 @@ const loadTestContext = async () => {
     providerStateUtils: providerStateUtils as {
       emitAccountsChangedIfNeeded: jest.Mock;
       getAccountsForOrigin: jest.Mock;
+      removeWhitelistedChainsForOrigin: jest.Mock;
     },
     CommunicationUtils: CommunicationUtils as {
       tabsSendMessage: jest.Mock;
@@ -160,6 +162,9 @@ describe('evm request without confirmation', () => {
     expect(EvmWalletUtils.revokeAllPermissions).toHaveBeenCalledWith(
       'http://localhost:3000',
     );
+    expect(
+      providerStateUtils.removeWhitelistedChainsForOrigin,
+    ).toHaveBeenCalledWith('http://localhost:3000');
     expect(providerStateUtils.emitAccountsChangedIfNeeded).toHaveBeenCalledTimes(1);
     expect(providerStateUtils.emitAccountsChangedIfNeeded).toHaveBeenCalledWith(
       'http://localhost:3000',

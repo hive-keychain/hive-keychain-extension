@@ -21,6 +21,8 @@ type OriginScopedRoutedEvmEvent = RoutedEvmEvent & {
   scope: { kind: 'origin'; origin: string };
 };
 
+type OriginChainWhitelist = Record<string, string[]>;
+
 export const getAccountsForOrigin = async (origin: string): Promise<string[]> => {
   return EvmWalletUtils.getConnectedWallets(origin);
 };
@@ -150,4 +152,77 @@ export const setChainIdForOrigin = async (
 
   await EvmChainUtils.setChainIdForOrigin(origin, normalizedChainId);
   return emitChainChangedIfNeeded(origin, prevChainId, normalizedChainId);
+};
+
+const getOriginChainWhitelist = async (): Promise<OriginChainWhitelist> => {
+  const stored = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_ORIGIN_CHAIN_WHITELIST,
+  );
+
+  if (!stored || typeof stored !== 'object' || Array.isArray(stored)) {
+    return {};
+  }
+
+  const normalizedWhitelist: OriginChainWhitelist = {};
+  for (const [origin, chainIds] of Object.entries(
+    stored as Record<string, unknown>,
+  )) {
+    if (!Array.isArray(chainIds)) continue;
+
+    const normalizedChainIds = chainIds
+      .map((chainId) => normalizeEvmChainId(chainId))
+      .filter((chainId): chainId is string => !!chainId);
+
+    if (normalizedChainIds.length) {
+      normalizedWhitelist[origin] = [...new Set(normalizedChainIds)];
+    }
+  }
+
+  return normalizedWhitelist;
+};
+
+const saveOriginChainWhitelist = async (
+  whitelist: OriginChainWhitelist,
+): Promise<void> => {
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_ORIGIN_CHAIN_WHITELIST,
+    whitelist,
+  );
+};
+
+export const isChainWhitelistedForOrigin = async (
+  origin: string,
+  chainId: string,
+): Promise<boolean> => {
+  const normalizedChainId = normalizeEvmChainId(chainId);
+  if (!origin || !normalizedChainId) return false;
+
+  const whitelist = await getOriginChainWhitelist();
+  return whitelist[origin]?.includes(normalizedChainId) ?? false;
+};
+
+export const addWhitelistedChainForOrigin = async (
+  origin: string,
+  chainId: string,
+): Promise<string[]> => {
+  const normalizedChainId = normalizeEvmChainId(chainId);
+  if (!origin || !normalizedChainId) {
+    throw new Error('Invalid chain whitelist entry');
+  }
+
+  const whitelist = await getOriginChainWhitelist();
+  const originChainIds = whitelist[origin] ?? [];
+  whitelist[origin] = [...new Set([...originChainIds, normalizedChainId])];
+  await saveOriginChainWhitelist(whitelist);
+  return whitelist[origin];
+};
+
+export const removeWhitelistedChainsForOrigin = async (
+  origin: string,
+): Promise<void> => {
+  if (!origin) return;
+
+  const whitelist = await getOriginChainWhitelist();
+  delete whitelist[origin];
+  await saveOriginChainWhitelist(whitelist);
 };

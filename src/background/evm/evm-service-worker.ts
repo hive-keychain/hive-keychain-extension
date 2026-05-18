@@ -1,7 +1,9 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { initializeEvmProviderRegistration } from '@background/evm/evm-provider-registration';
 import {
+  addWhitelistedChainForOrigin,
   getAccountsForOrigin,
+  getChainIdForOrigin,
   persistEvmDappLogoForDomain,
   setAccountsForOrigin,
 } from '@background/evm/evm-provider-state.utils';
@@ -197,6 +199,11 @@ const chromeMessageHandler = async (
         const accounts = await setAccountsForOrigin(
           requestData.dappInfo.origin,
           message.providerState.accounts,
+        );
+        await addWhitelistedChainForOrigin(
+          requestData.dappInfo.origin,
+          requestData.request.chainId ??
+            (await getChainIdForOrigin(requestData.dappInfo.origin)),
         );
         await persistEvmDappLogoForDomain(
           requestData.dappInfo,

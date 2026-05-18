@@ -735,7 +735,6 @@
     "message": "Votes remaining: $1",
     "description": "On witness page"
   },
-
   "popup_html_witness_information_signing_key_label": {
     "message": "Signing key",
     "description": "On My witness page"
@@ -1116,7 +1115,6 @@
     "message": "ID",
     "description": "When website request a custom json"
   },
-
   "dialog_slippage": {
     "message": "Slippage",
     "description": "When website requests a swap"
@@ -1752,7 +1750,6 @@
     "message": "Your HBD will take 3.5 days to get converted to approximately 1 USD worth of HIVE tokens, based on its 3.5 days median price.",
     "description": "When clicking on the Hbd arrow menu"
   },
-
   "popup_html_convert_hive_intro": {
     "message": "You deposit collateral (HIVE), then you are given HBD up front worth half of the collateral amount (minus a 5% fee). Your official final payment is in 3.5 days. At that point remaining collateral (HIVE) is returned.",
     "description": "When clicking on the HIVE arrow menu"
@@ -1853,7 +1850,6 @@
     "message": "Welcome to Keychain",
     "description": "When registering from request"
   },
-
   "dialog_register_keyless_title": {
     "message": "Register Keyless Keychain",
     "description": "When registering from request"
@@ -2086,7 +2082,6 @@
     "message": "You need to enter an RPC Node",
     "description": "Error message on rpc node settings page"
   },
-
   "popup_html_rpc_uri_already_existing": {
     "message": "Rpc Node already existing",
     "description": "Error message on rpc node settings page"
@@ -2747,12 +2742,10 @@
     "message": "Claimed account @$1",
     "description": "Wallet information created claimed account"
   },
-
   "popup_html_wallet_info_account_create": {
     "message": "Paid $1 to create @$2",
     "description": "Wallet information create account"
   },
-
   "popup_html_wallet_info_escrow_transfer_out": {
     "message": "Sending $1 escrow to @$2",
     "description": "Wallet information escrow transfer outgoing"
@@ -2797,7 +2790,6 @@
     "message": "@$1 released $2 escrow to @$3 (#$4)",
     "description": "Wallet information escrow release other"
   },
-
   "popup_html_filter_in": {
     "message": "In",
     "description": "Wallet filters"
@@ -3751,12 +3743,10 @@
     "message": "Keyless Keychain",
     "description": "Keychain is in keyless mode and will use HiveAuth to request transactions to be signed on your mobile device"
   },
-
   "add_key_from_ledger": {
     "message": "Link key",
     "description": "Title of add key from ledger page"
   },
-
   "add_accounts_from_ledger": {
     "message": "Add accounts from Ledger",
     "description": "Title of add accounts from ledger page"
@@ -4817,7 +4807,6 @@
     "message": "Logo",
     "description": "Blockchain logo"
   },
-
   "popup_html_create_blockchain_chain_id": {
     "message": "Chain ID",
     "description": "Blockchain chain id"
@@ -5414,7 +5403,6 @@
     "message": "Tokens",
     "description": "Tokens tab"
   },
-
   "evm_tab_nfts": {
     "message": "NFTs",
     "description": "NFTs tab"
@@ -6700,5 +6688,19 @@
   "manage_accounts": {
     "message": "Manage accounts",
     "description": "Manage accounts"
+  },
+  "evm_switch_chain": {
+    "message": "Switch chain",
+    "description": "Title for EVM switch chain confirmation dialog"
+  },
+  "evm_switch_chain_caption": {
+    "message": "$DOMAIN$ wants to use a different chain with your wallet.",
+    "description": "Caption for EVM switch chain confirmation dialog",
+    "placeholders": {
+      "domain": {
+        "content": "$1",
+        "example": "app.example.com"
+      }
+    }
   }
 }

@@ -4,6 +4,11 @@ import {
   EvmRequestLocator,
 } from '@background/evm/requests/evm-request-handler';
 import { handleEvmError } from '@background/evm/requests/logic/handle-evm-error.logic';
+import { resolveRequestChainId } from '@background/evm/requests/logic/resolve-request-chain-id.logic';
+import {
+  addWhitelistedChainForOrigin,
+  setChainIdForOrigin,
+} from '@background/evm/evm-provider-state.utils';
 import {
   getRequestHandlers,
   willCloseDialogWindowAfterRemovingRequest,
@@ -99,6 +104,16 @@ export const performEvmOperation = async (
           extraData,
         );
         result = message?.msg.result;
+        break;
+      }
+      case EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN: {
+        const requestedChainId = resolveRequestChainId(request);
+        if (!requestedChainId) {
+          throw new Error('Missing chainId');
+        }
+        await addWhitelistedChainForOrigin(origin, requestedChainId);
+        await setChainIdForOrigin(origin, requestedChainId);
+        result = null;
         break;
       }
     }

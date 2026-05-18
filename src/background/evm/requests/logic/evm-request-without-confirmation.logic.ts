@@ -17,6 +17,7 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import {
   emitAccountsChangedIfNeeded,
   getAccountsForOrigin,
+  removeWhitelistedChainsForOrigin,
   setChainIdForOrigin,
 } from 'src/background/evm/evm-provider-state.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
@@ -106,6 +107,7 @@ export const evmRequestWithoutConfirmation = async (
     case EvmRequestMethod.WALLET_REVOKE_PERMISSION: {
       const prevAccounts = await getAccountsForOrigin(dappInfo.origin);
       await EvmWalletUtils.revokeAllPermissions(dappInfo.origin);
+      await removeWhitelistedChainsForOrigin(dappInfo.origin);
       message.value.result = null;
       await emitAccountsChangedIfNeeded(dappInfo.origin, prevAccounts, []);
       break;

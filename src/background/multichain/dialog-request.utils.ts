@@ -525,7 +525,12 @@ const buildEvmConfirmationMessage = async (
     if (hasPermission) return null;
   }
 
-  if (!evmRequestHandler.accounts.length) return null;
+  if (
+    !evmRequestHandler.accounts.length &&
+    request.method !== EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN
+  ) {
+    return null;
+  }
 
   if (request.chainId) {
     const setupChains = await ChainUtils.getAllSetupChainsForType<EvmChain>(

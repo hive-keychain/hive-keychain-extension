@@ -38,6 +38,7 @@ import {
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { isChainWhitelistedForOrigin } from 'src/background/evm/evm-provider-state.utils';
 import { DappRequestUtils } from 'src/utils/dapp-request.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
@@ -116,6 +117,30 @@ export const initEvmRequestHandler = async (
     await handleDeprecatedMethods(requestHandler, tab!, request, dappInfo);
   } else if (!doesMethodExist(request.method)) {
     await handleNonExistingMethod(requestHandler, tab!, request, dappInfo);
+  } else if (
+    request.method === EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN
+  ) {
+    if (
+      resolvedRequestChainId &&
+      (await isChainWhitelistedForOrigin(
+        dappInfo.origin,
+        resolvedRequestChainId,
+      ))
+    ) {
+      await evmRequestWithoutConfirmation(
+        requestHandler,
+        tab!,
+        request,
+        dappInfo,
+      );
+    } else {
+      await evmRequestWithConfirmation(
+        requestHandler,
+        tab!,
+        request,
+        dappInfo,
+      );
+    }
   } else if (EvmUnrestrictedMethods.includes(request.method)) {
     await evmRequestWithoutConfirmation(
       requestHandler,

@@ -2504,5 +2504,19 @@
   "evm_add_custom_nft_error_unsupported_contract": {
     "message": "Could not detect a supported NFT contract at this address. Only ERC721 and ERC1155 contracts are supported.",
     "description": "Error when the address is not a supported ERC721 or ERC1155 contract"
+  },
+  "evm_switch_chain": {
+    "message": "Switch chain",
+    "description": "Title for EVM switch chain confirmation dialog"
+  },
+  "evm_switch_chain_caption": {
+    "message": "$DOMAIN$ wants to use a different chain with your wallet.",
+    "description": "Caption for EVM switch chain confirmation dialog",
+    "placeholders": {
+      "domain": {
+        "content": "$1",
+        "example": "app.example.com"
+      }
+    }
   }
 }

@@ -8,6 +8,8 @@ const initEvmRequestHandlerMock = jest.fn();
 const getFromLocalStorageMock = jest.fn();
 const performEvmOperationMock = jest.fn();
 const setAccountsForOriginMock = jest.fn();
+const addWhitelistedChainForOriginMock = jest.fn();
+const getChainIdForOriginMock = jest.fn();
 const persistEvmDappLogoForDomainMock = jest.fn();
 const tabsSendMessageMock = jest.fn();
 
@@ -36,6 +38,9 @@ jest.mock('@background/evm/requests/evm-request-handler', () => ({
 }));
 
 jest.mock('@background/evm/evm-provider-state.utils', () => ({
+  addWhitelistedChainForOrigin: (...args: any[]) =>
+    addWhitelistedChainForOriginMock(...args),
+  getChainIdForOrigin: (...args: any[]) => getChainIdForOriginMock(...args),
   setAccountsForOrigin: (...args: any[]) => setAccountsForOriginMock(...args),
   persistEvmDappLogoForDomain: (...args: any[]) =>
     persistEvmDappLogoForDomainMock(...args),
@@ -66,6 +71,8 @@ describe('evm service worker', () => {
     initEvmRequestHandlerMock.mockResolvedValue(undefined);
     performEvmOperationMock.mockResolvedValue(undefined);
     setAccountsForOriginMock.mockResolvedValue([]);
+    addWhitelistedChainForOriginMock.mockResolvedValue(['0x1']);
+    getChainIdForOriginMock.mockResolvedValue('0x1');
     persistEvmDappLogoForDomainMock.mockResolvedValue(undefined);
   });
 
@@ -206,6 +213,10 @@ describe('evm service worker', () => {
     expect(setAccountsForOriginMock).toHaveBeenCalledWith(
       'https://example.app',
       ['0xabc123'],
+    );
+    expect(addWhitelistedChainForOriginMock).toHaveBeenCalledWith(
+      'https://example.app',
+      '0x1',
     );
     expect(persistEvmDappLogoForDomainMock).toHaveBeenCalledWith(
       expect.objectContaining({ domain: 'example.app' }),

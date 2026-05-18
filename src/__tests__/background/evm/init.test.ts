@@ -7,6 +7,7 @@ const handleNonSupportedChainMock = jest.fn();
 const handleEvmErrorMock = jest.fn();
 const evmRequestWithConfirmationMock = jest.fn();
 const evmRequestWithoutConfirmationMock = jest.fn();
+const isChainWhitelistedForOriginMock = jest.fn();
 
 const createDeferred = () => {
   let resolve!: () => void;
@@ -56,6 +57,11 @@ jest.mock('@background/evm/requests/logic/handle-evm-error.logic', () => ({
 
 jest.mock('@background/evm/requests/logic/handle-non-existing-methods.logic', () => ({
   handleNonExistingMethod: jest.fn(),
+}));
+
+jest.mock('src/background/evm/evm-provider-state.utils', () => ({
+  isChainWhitelistedForOrigin: (...args: any[]) =>
+    isChainWhitelistedForOriginMock(...args),
 }));
 
 jest.mock('@background/hive/modules/mk.module', () => ({
@@ -112,6 +118,7 @@ describe('initEvmRequestHandler', () => {
     handleEvmErrorMock.mockResolvedValue(undefined);
     evmRequestWithConfirmationMock.mockResolvedValue(undefined);
     evmRequestWithoutConfirmationMock.mockResolvedValue(undefined);
+    isChainWhitelistedForOriginMock.mockResolvedValue(false);
   });
 
   it('opens the custom chain dialog for unsupported wallet_switchEthereumChain requests', async () => {
@@ -144,7 +151,7 @@ describe('initEvmRequestHandler', () => {
     expect(handleNonSupportedChainMock).not.toHaveBeenCalled();
   });
 
-  it('accepts wallet_switchEthereumChain for a configured custom chain', async () => {
+  it('opens confirmation for a configured custom chain not whitelisted for the origin', async () => {
     const { ChainUtils } = await import('@popup/multichain/utils/chain.utils');
     (ChainUtils.getDefaultChains as jest.Mock).mockResolvedValue([
       {
@@ -182,12 +189,62 @@ describe('initEvmRequestHandler', () => {
 
     expect(requestAddCustomEvmChainMock).not.toHaveBeenCalled();
     expect(handleNonSupportedChainMock).not.toHaveBeenCalled();
+    expect(isChainWhitelistedForOriginMock).toHaveBeenCalledWith(
+      'https://example.app',
+      '0x539',
+    );
+    expect(evmRequestWithConfirmationMock).toHaveBeenCalledWith(
+      requestHandler,
+      7,
+      request,
+      dappInfo,
+    );
+  });
+
+  it('accepts wallet_switchEthereumChain silently for a whitelisted configured custom chain', async () => {
+    const { ChainUtils } = await import('@popup/multichain/utils/chain.utils');
+    (ChainUtils.getDefaultChains as jest.Mock).mockResolvedValue([
+      {
+        chainId: '0x1',
+        type: 'EVM',
+        name: 'Ethereum',
+      },
+    ]);
+    (ChainUtils.getAllSetupChainsForType as jest.Mock).mockResolvedValue([
+      {
+        chainId: '0x539',
+        type: 'EVM',
+        name: 'Local Custom Chain',
+      },
+    ]);
+    isChainWhitelistedForOriginMock.mockResolvedValue(true);
+
+    const request = {
+      request_id: 43,
+      method: EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN,
+      params: [{ chainId: '0x539' }],
+      chainId: '0x1',
+    } as any;
+    const dappInfo = {
+      origin: 'https://example.app',
+      domain: 'example.app',
+      protocol: 'https:',
+      logo: '',
+    };
+    const requestHandler = {
+      accounts: [],
+      saveInLocalStorage: jest.fn(),
+    } as any;
+
+    await initEvmRequestHandler(request, 7, dappInfo, requestHandler);
+
     expect(evmRequestWithoutConfirmationMock).toHaveBeenCalledWith(
       requestHandler,
       7,
       request,
       dappInfo,
     );
+    expect(evmRequestWithConfirmationMock).not.toHaveBeenCalled();
   });
 
   it('awaits the silent eth_requestAccounts response when permission already exists', async () => {
