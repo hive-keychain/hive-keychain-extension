@@ -76,6 +76,7 @@ export const initEvmRequestHandler = async (
         requestHandler,
         tab!,
         request,
+        dappInfo.origin,
         EvmWatchAssetUtils.WATCH_ASSET_INVALID_PARAMS_ERROR,
       );
       return;
@@ -86,6 +87,7 @@ export const initEvmRequestHandler = async (
         requestHandler,
         tab!,
         request,
+        dappInfo.origin,
         EvmWatchAssetUtils.WATCH_ASSET_CUSTOM_CHAIN_ERROR,
       );
       return;
@@ -102,7 +104,13 @@ export const initEvmRequestHandler = async (
         chainId,
       );
     } else {
-      await handleNonSupportedChain(requestHandler, tab!, request, chainId);
+      await handleNonSupportedChain(
+        requestHandler,
+        tab!,
+        request,
+        chainId,
+        dappInfo.origin,
+      );
     }
   } else if (EvmDeprecatedMethods.includes(request.method)) {
     await handleDeprecatedMethods(requestHandler, tab!, request, dappInfo);
@@ -131,6 +139,7 @@ export const initEvmRequestHandler = async (
         providerError,
         providerError.message,
         [],
+        dappInfo.origin,
         true,
       );
       return;

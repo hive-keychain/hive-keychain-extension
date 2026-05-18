@@ -151,6 +151,7 @@ describe('WatchAsset', () => {
       value: {
         requestId: 99,
         tab: 7,
+        origin: 'https://example.app',
         result: true,
       },
     });

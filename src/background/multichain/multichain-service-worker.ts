@@ -4,7 +4,7 @@ import { HiveServiceWorker } from '@background/hive/hive-service-worker';
 import MkModule from '@background/hive/modules/mk.module';
 import VaultModule from '@background/vault.module';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
-import { VaultCommand } from '@reference-data/vault-message-key.enum';
+import { VaultCommand, VaultKey } from '@reference-data/vault-message-key.enum';
 import { ensureEcosystemDappsCached } from 'src/utils/ecosystem-dapps-cache.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -22,7 +22,29 @@ EvmServiceWorker.initializeServiceWorker();
   void ensureEcosystemDappsCached();
 })();
 
-const chromeMessageHandler = async (backgroundMessage: BackgroundMessage) => {
+const isInternalExtensionSender = (sender: chrome.runtime.MessageSender) => {
+  return (
+    sender.id === chrome.runtime.id &&
+    !!sender.url &&
+    sender.url.startsWith(chrome.runtime.getURL(''))
+  );
+};
+
+const chromeMessageHandler = async (
+  backgroundMessage: BackgroundMessage,
+  sender: chrome.runtime.MessageSender,
+) => {
+  if (
+    process.env.IS_FIREFOX &&
+    Object.values(VaultCommand).includes(backgroundMessage.command as VaultCommand)
+  ) {
+    if (
+      backgroundMessage.key !== VaultKey.__MK ||
+      !isInternalExtensionSender(sender)
+    )
+      return;
+  }
+
   switch (backgroundMessage.command) {
     // Replace vault by persistent data storage for Firefox
     case VaultCommand.GET_VALUE:

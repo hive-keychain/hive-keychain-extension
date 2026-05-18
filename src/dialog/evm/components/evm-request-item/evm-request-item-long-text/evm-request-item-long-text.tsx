@@ -19,31 +19,37 @@ export const EvmRequestItemLongText = ({
   const [isOpened, setIsOpened] = useState(false);
 
   const hasTitle = Boolean(title?.trim());
+  const hasContent =
+    value != null &&
+    value !== false &&
+    value !== '' &&
+    (!Array.isArray(value) || value.length > 0);
 
   const showHeader =
-    value != null &&
-    value !== '' &&
-    (hasTitle || typeof value === 'string' || allowExpandWithoutTitle);
+    hasTitle ||
+    (hasContent && (typeof value === 'string' || allowExpandWithoutTitle));
 
   return (
     <div className="long-text-container">
       {showHeader && (
         <div
           className={`header ${isOpened ? 'open' : 'closed'}${!hasTitle ? ' header--value-only' : ''}`}
-          onClick={() => setIsOpened(!isOpened)}>
+          onClick={() => hasContent && setIsOpened(!isOpened)}>
           <div className="title">
             {hasTitle ? (fieldTitle ?? title) : null}
             {titleSuffix}
           </div>
-          {value && (
+          {hasContent && (
             <SVGIcon
               icon={SVGIcons.GLOBAL_EXPAND_COLLAPSE}
-              className="expand-collapse-icon"
+              className={`expand-collapse-icon ${
+                isOpened ? 'open' : 'closed'
+              }`}
             />
           )}
         </div>
       )}
-      {isOpened && value && (
+      {isOpened && hasContent && (
         <div className="expandable-panel">
           <div className="expandable-panel-content">{value}</div>
         </div>

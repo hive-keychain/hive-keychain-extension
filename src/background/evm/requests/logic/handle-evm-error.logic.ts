@@ -24,6 +24,7 @@ export const handleEvmError = async (
   providerError: ProviderRpcErrorItem,
   errorMessage: string,
   errorMessageParams: string[],
+  origin: string,
   hideDialog?: boolean,
 ) => {
   const message: BackgroundMessage = {
@@ -53,14 +54,23 @@ export const handleEvmError = async (
           handlers,
           request.request_id,
           tab,
+          origin,
         )
       ) {
         await delayMs(DIALOG_FEEDBACK_DISPLAY_MS);
       }
-      await requestHandler.removeRequestById(request.request_id, tab);
+      await requestHandler.removeRequestByLocator({
+        requestId: request.request_id,
+        tab,
+        origin,
+      });
     };
     createOrUpdateDialog(callback, requestHandler);
   } else {
-    await requestHandler.removeRequestById(request.request_id, tab);
+    await requestHandler.removeRequestByLocator({
+      requestId: request.request_id,
+      tab,
+      origin,
+    });
   }
 };

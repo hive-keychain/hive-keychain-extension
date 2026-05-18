@@ -24,6 +24,7 @@ export const handleNonAuthorizedMethods = async (
   tab: number,
   request: EvmRequest,
   domain: string,
+  origin: string,
 ) => {
   Logger.warn(
     `${
@@ -70,7 +71,11 @@ export const handleNonAuthorizedMethods = async (
     ) {
       await delayMs(DIALOG_FEEDBACK_DISPLAY_MS);
     }
-    await requestHandler.removeRequestById(request.request_id, tab);
+    await requestHandler.removeRequestByLocator({
+      requestId: request.request_id,
+      tab,
+      origin,
+    });
   };
   createOrUpdateDialog(callback, requestHandler);
 };

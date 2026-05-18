@@ -80,7 +80,11 @@ export const DecryptMessage = (props: Props) => {
   const decryptMessage = async () => {
     const response = (await chrome.runtime.sendMessage({
       command: BackgroundCommand.PREVIEW_EVM_DECRYPT,
-      value: { request_id: request.request_id },
+      value: {
+        request_id: request.request_id,
+        tab: data.tab,
+        origin: data.dappInfo.origin,
+      },
     })) as { success?: boolean; plaintext?: string; error?: string };
 
     if (response?.success && response.plaintext != null) {
@@ -97,6 +101,7 @@ export const DecryptMessage = (props: Props) => {
       afterCancel={handleCancel}
       request={request}
       domain={data.dappInfo.domain}
+      origin={data.dappInfo.origin}
       tab={data.tab}
       title={chrome.i18n.getMessage('dialog_evm_decrypt_message_title')}
       caption={chrome.i18n.getMessage('dialog_evm_decrypt_message_caption', [

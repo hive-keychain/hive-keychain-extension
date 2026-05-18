@@ -74,6 +74,7 @@ export const RequestAddCustomEvmChain = ({
         request,
         tab,
         domain: dappInfo.domain,
+        origin: dappInfo.origin,
       },
     });
     window.close();

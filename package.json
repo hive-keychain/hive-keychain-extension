@@ -72,7 +72,7 @@
     "@types/sanitize-html": "^2.13.0",
     "@types/yargs": "17.0.11",
     "@victr/geopattern": "1.2.10",
-    "axios": "1.13.6",
+    "axios": "1.16.1",
     "chrome-webstore-upload": "^4.0.3",
     "crypto-js": "4.2",
     "decimal.js": "10.4.3",
@@ -87,7 +87,7 @@
     "jsonwebtoken": "^9.0.2",
     "keychain-sdk": "0.7.0",
     "locate-path": "7.1.1",
-    "lodash": "4.17.23",
+    "lodash": "4.18.1",
     "minidenticons": "^2.0.0",
     "moment": "2.29.4",
     "node-fetch": "3.2.10",
@@ -189,7 +189,22 @@
     "sass-graph": {
       "scss-tokenizer": "$scss-tokenizer"
     },
-    "ws": "^8.18.3"
+    "ws": "^8.18.3",
+    "@typescript-eslint/typescript-estree": {
+      "minimatch": "9.0.7"
+    },
+    "@metamask/ethjs": {
+      "bn.js": "5.2.3"
+    },
+    "@metamask/number-to-bn": {
+      "bn.js": "5.2.3"
+    },
+    "ethjs-abi": {
+      "bn.js": "4.12.3"
+    },
+    "number-to-bn": {
+      "bn.js": "4.12.3"
+    }
   },
   "browser": {
     "crypto": false

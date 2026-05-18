@@ -31,5 +31,9 @@ export const handleNonExistingMethod = async (
     },
   };
   CommunicationUtils.tabsSendMessage(tab, message);
-  await requestHandler.removeRequestById(request.request_id, tab);
+  await requestHandler.removeRequestByLocator({
+    requestId: request.request_id,
+    tab,
+    origin: dappInfo.origin,
+  });
 };

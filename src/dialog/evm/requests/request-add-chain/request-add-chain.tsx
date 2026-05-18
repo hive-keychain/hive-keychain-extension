@@ -40,6 +40,7 @@ export const RequestAddEvmChain = (props: Props) => {
         request,
         tab,
         domain: dappInfo.domain,
+        origin: dappInfo.origin,
       },
     });
     window.close();

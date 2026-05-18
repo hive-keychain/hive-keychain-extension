@@ -128,6 +128,7 @@ export const WatchAsset = ({ request, data, afterCancel }: Props) => {
       value: {
         requestId: request.request_id,
         tab: data.tab,
+        origin: data.dappInfo.origin,
         result: true,
       },
     });
@@ -138,6 +139,7 @@ export const WatchAsset = ({ request, data, afterCancel }: Props) => {
       afterCancel={handleCancel}
       request={request}
       domain={data.dappInfo.domain}
+      origin={data.dappInfo.origin}
       tab={data.tab}
       title={chrome.i18n.getMessage('evm_watch_asset_title')}
       caption={chrome.i18n.getMessage('evm_watch_asset_caption', [

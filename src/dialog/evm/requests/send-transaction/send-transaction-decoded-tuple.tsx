@@ -140,16 +140,6 @@ async function formatLeafForTupleComponent(
     return <span className="decoded-tuple-value--empty">—</span>;
   }
 
-  const nestedComponents = resolveTupleShapeComponents(component);
-  if (nestedComponents?.length) {
-    const innerRows = await renderTupleRows(nestedComponents, val, ctx);
-    return (
-      <div className="decoded-tuple decoded-tuple--nested">
-        <EvmRequestItemLongText allowExpandWithoutTitle value={innerRows} />
-      </div>
-    );
-  }
-
   const displayType = EvmTransactionParserUtils.getDisplayInputType(
     ctx.abi,
     ctx.methodName,
@@ -193,6 +183,33 @@ async function renderTupleRows(
     components.map(async (comp, i) => {
       const v = readTupleMember(tupleValue, i, comp.name);
       const label = comp.name?.trim() ? comp.name : `field ${i + 1}`;
+      const nestedComponents = resolveTupleShapeComponents(comp);
+
+      if (nestedComponents?.length) {
+        const body = isTupleArrayParam(comp)
+          ? await renderTupleArrayBody(nestedComponents, v, ctx)
+          : await renderTupleRows(nestedComponents, v, ctx);
+
+        if (body == null) {
+          return (
+            <div className="decoded-tuple-row" key={`${label}-${i}`}>
+              <span className="decoded-tuple-row__label">{label}</span>
+              <div className="decoded-tuple-row__value">
+                <span className="decoded-tuple-value--empty">—</span>
+              </div>
+            </div>
+          );
+        }
+
+        return (
+          <div
+            className="decoded-tuple-row decoded-tuple-row--collapsible"
+            key={`${label}-${i}`}>
+            <EvmRequestItemLongText title={label} value={body} />
+          </div>
+        );
+      }
+
       const cell = await formatLeafForTupleComponent(comp, v, ctx);
       return (
         <div className="decoded-tuple-row" key={`${label}-${i}`}>
@@ -212,6 +229,10 @@ async function renderTupleArrayBody(
   ctx: TupleFormatContext,
 ): Promise<React.ReactNode> {
   const rows = normalizeToArray(argumentValue);
+  if (rows.length === 0) {
+    return null;
+  }
+
   const blocks = await Promise.all(
     rows.map(async (row, idx) => {
       const inner = await renderTupleRows(components, row, ctx);
@@ -263,11 +284,11 @@ export async function formatDecodedTupleForConfirmationField(
       ? await renderTupleArrayBody(components, argumentValue, ctx)
       : await renderTupleRows(components, argumentValue, ctx);
 
-    return (
-      <div className="decoded-tuple decoded-tuple--top">
-        <EvmRequestItemLongText allowExpandWithoutTitle value={body} />
-      </div>
-    );
+    if (body == null) {
+      return null;
+    }
+
+    return <div className="decoded-tuple decoded-tuple--top">{body}</div>;
   } catch {
     return (
       <span className="decoded-tuple-value--fallback">

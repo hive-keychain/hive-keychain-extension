@@ -307,6 +307,7 @@ describe('initEvmRequestHandler', () => {
       },
       'wallet_watchAsset is only supported on custom chains in Keychain',
       [],
+      'https://example.app',
       true,
     );
     expect(evmRequestWithConfirmationMock).not.toHaveBeenCalled();
@@ -422,6 +423,7 @@ describe('initEvmRequestHandler', () => {
       },
       'Invalid wallet_watchAsset parameters. Keychain only supports ERC20 assets',
       [],
+      'https://example.app',
       true,
     );
     expect(evmRequestWithConfirmationMock).not.toHaveBeenCalled();

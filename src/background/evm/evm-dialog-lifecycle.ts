@@ -27,11 +27,16 @@ export const onRemoveEvm = async (winId: number) => {
           error: ProviderRpcErrorList.userReject as ProviderRpcError,
         },
       });
-      await requestHandler.removeRequestById(
-        requestData.request.request_id,
-        requestData.tab,
-        false,
-      );
+      if (requestData.dappInfo?.origin) {
+        await requestHandler.removeRequestByLocator(
+          {
+            requestId: requestData.request.request_id,
+            tab: requestData.tab,
+            origin: requestData.dappInfo.origin,
+          },
+          false,
+        );
+      }
     }
   }
 };

@@ -44,9 +44,18 @@ export const EvmRequestItem = ({
           field.type !== EvmInputDisplayType.WARNING_ONLY &&
           typeof raw === 'string' &&
           raw.length >= COLLAPSIBLE_STRING_VALUE_MIN_LENGTH;
-        const widenTupleBlock = field.type === EvmInputDisplayType.TUPLE;
 
-        const valueClassName = `value${useCollapsibleString ? ' value--collapsible' : ''}${widenTupleBlock ? ' value--tuple-block' : ''}`;
+        if (field.type === EvmInputDisplayType.TUPLE) {
+          return (
+            <EvmRequestItemLongText
+              title={field.name}
+              value={raw}
+              titleSuffix={warningIcon}
+            />
+          );
+        }
+
+        const valueClassName = `value${useCollapsibleString ? ' value--collapsible' : ''}`;
         const valueBody = useCollapsibleString ? (
           <EvmRequestItemLongText value={raw} />
         ) : (

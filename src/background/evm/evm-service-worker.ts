@@ -5,7 +5,10 @@ import {
   persistEvmDappLogoForDomain,
   setAccountsForOrigin,
 } from '@background/evm/evm-provider-state.utils';
-import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
+import {
+  EvmRequestHandler,
+  EvmRequestLocator,
+} from '@background/evm/requests/evm-request-handler';
 import { initEvmRequestHandler } from '@background/evm/requests/init';
 import { performEvmOperation } from '@background/evm/requests/operations/perform-operation';
 import MkModule from '@background/hive/modules/mk.module';
@@ -165,11 +168,19 @@ const chromeMessageHandler = async (
     case BackgroundCommand.SEND_EVM_RESPONSE_TO_SW: {
       const message = backgroundMessage.value;
       const requestId = message.requestId ?? message.request_id;
-      if (requestId === null || requestId === undefined) {
+      const { tab, origin } = message;
+      if (
+        requestId === null ||
+        requestId === undefined ||
+        tab === null ||
+        tab === undefined ||
+        !origin
+      ) {
         break;
       }
+      const locator: EvmRequestLocator = { requestId, tab, origin };
       const requestHandler = await EvmRequestHandler.getFromLocalStorage();
-      const requestData = requestHandler?.getRequestData(requestId);
+      const requestData = requestHandler?.getRequestDataByLocator(locator);
       if (requestData?.tab === null || requestData?.tab === undefined) {
         break;
       }
@@ -193,7 +204,7 @@ const chromeMessageHandler = async (
         );
       }
 
-      await requestHandler.removeRequestById(requestId, requestData?.tab!);
+      await requestHandler.removeRequestByLocator(locator);
 
       CommunicationUtils.tabsSendMessage(requestData?.tab!, {
         command: BackgroundCommand.SEND_EVM_RESPONSE,
@@ -206,19 +217,27 @@ const chromeMessageHandler = async (
       break;
     }
     case BackgroundCommand.ACCEPT_EVM_TRANSACTION:
-      const { request, tab, domain, extraData } = backgroundMessage.value;
+      const { request, tab, domain, origin, extraData } =
+        backgroundMessage.value;
+      if (!origin) {
+        break;
+      }
       await performEvmOperation(
         await EvmRequestHandler.getFromLocalStorage(),
         request,
         tab,
         domain,
+        origin,
         extraData,
       );
 
       break;
 
     case BackgroundCommand.REJECT_EVM_TRANSACTION: {
-      const { request, tab, domain } = backgroundMessage.value;
+      const { request, tab, domain, origin } = backgroundMessage.value;
+      if (!origin) {
+        break;
+      }
       const requestHandler = await EvmRequestHandler.getFromLocalStorage();
       CommunicationUtils.tabsSendMessage(tab, {
         command: BackgroundCommand.SEND_EVM_ERROR,
@@ -227,7 +246,11 @@ const chromeMessageHandler = async (
           error: ProviderRpcErrorList.userReject as ProviderRpcError,
         },
       });
-      await requestHandler.removeRequestById(request.request_id, tab);
+      await requestHandler.removeRequestByLocator({
+        requestId: request.request_id,
+        tab,
+        origin,
+      });
       break;
     }
     case BackgroundCommand.GET_CHAIN_FROM_PROVIDER: {
@@ -290,9 +313,12 @@ const chromeMessageHandler = async (
       if (requestedChain.rpcs.length > 0) {
         await EvmRpcUtils.setActiveRpc(requestedChain.rpcs[0], requestedChain);
       }
-      await requestHandler?.setRequestDialog(
-        request.request_id,
-        tab,
+      await requestHandler?.setRequestDialogByLocator(
+        {
+          requestId: request.request_id,
+          tab,
+          origin: dappInfo.origin,
+        },
         undefined,
         undefined,
       );
@@ -303,13 +329,13 @@ const chromeMessageHandler = async (
 };
 
 const previewEvmDecryptMessage = async (
-  request_id: number,
+  locator: EvmRequestLocator,
 ): Promise<string> => {
   const requestHandler = await EvmRequestHandler.getFromLocalStorage();
   if (!requestHandler) {
     throw new Error('No request handler');
   }
-  const requestData = requestHandler.getRequestData(request_id);
+  const requestData = requestHandler.getRequestDataByLocator(locator);
   const request = requestData?.request;
   if (!request?.params?.[0] || !request?.params?.[1]) {
     throw new Error('Invalid decrypt request');
@@ -333,13 +359,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     (message as BackgroundMessage).command ===
       BackgroundCommand.PREVIEW_EVM_DECRYPT
   ) {
-    const request_id = (message as { value?: { request_id?: number } }).value
-      ?.request_id;
-    if (request_id == null) {
-      sendResponse({ success: false, error: 'Missing request_id' });
+    const value = (
+      message as {
+        value?: { request_id?: number; tab?: number; origin?: string };
+      }
+    ).value;
+    const request_id = value?.request_id;
+    if (request_id == null || value?.tab == null || !value.origin) {
+      sendResponse({ success: false, error: 'Missing request locator' });
       return true;
     }
-    void previewEvmDecryptMessage(request_id)
+    void previewEvmDecryptMessage({
+      requestId: request_id,
+      tab: value.tab,
+      origin: value.origin,
+    })
       .then((plaintext) => sendResponse({ success: true, plaintext }))
       .catch((err) =>
         sendResponse({

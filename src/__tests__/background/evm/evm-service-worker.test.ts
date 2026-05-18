@@ -78,7 +78,7 @@ describe('evm service worker', () => {
 
   it('persists a custom chain and retries the original switch request', async () => {
     const requestHandler = {
-      setRequestDialog: jest.fn(),
+      setRequestDialogByLocator: jest.fn(),
     };
     getFromLocalStorageMock.mockResolvedValue(requestHandler);
 
@@ -126,9 +126,12 @@ describe('evm service worker', () => {
       requestedChain.rpcs[0],
       requestedChain,
     );
-    expect(requestHandler.setRequestDialog).toHaveBeenCalledWith(
-      99,
-      12,
+    expect(requestHandler.setRequestDialogByLocator).toHaveBeenCalledWith(
+      {
+        requestId: 99,
+        tab: 12,
+        origin: 'https://example.app',
+      },
       undefined,
       undefined,
     );
@@ -148,7 +151,7 @@ describe('evm service worker', () => {
       params: [],
     };
     const requestHandler = {
-      getRequestData: jest.fn().mockReturnValue({
+      getRequestDataByLocator: jest.fn().mockReturnValue({
         tab: 12,
         request,
         dappInfo: {
@@ -158,7 +161,7 @@ describe('evm service worker', () => {
           logo: 'https://example.app/icon.png',
         },
       }),
-      removeRequestById: jest.fn().mockReturnValue(cleanup.promise),
+      removeRequestByLocator: jest.fn().mockReturnValue(cleanup.promise),
     };
     getFromLocalStorageMock.mockResolvedValue(requestHandler);
     setAccountsForOriginMock.mockResolvedValue(['0xabc123']);
@@ -170,6 +173,8 @@ describe('evm service worker', () => {
         command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
         value: {
           requestId: 101,
+          tab: 12,
+          origin: 'https://example.app',
           result: ['0xabc123'],
           providerState: { accounts: ['0xabc123'] },
         },
@@ -182,7 +187,16 @@ describe('evm service worker', () => {
 
     await flushAsync();
 
-    expect(requestHandler.removeRequestById).toHaveBeenCalledWith(101, 12);
+    expect(requestHandler.getRequestDataByLocator).toHaveBeenCalledWith({
+      requestId: 101,
+      tab: 12,
+      origin: 'https://example.app',
+    });
+    expect(requestHandler.removeRequestByLocator).toHaveBeenCalledWith({
+      requestId: 101,
+      tab: 12,
+      origin: 'https://example.app',
+    });
     expect(settled).toBe(false);
 
     cleanup.resolve();
@@ -206,10 +220,61 @@ describe('evm service worker', () => {
     });
   });
 
+  it('ignores EVM responses without a complete request locator', async () => {
+    const listener = await importListener();
+
+    await listener(
+      {
+        command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
+        value: {
+          requestId: 101,
+          tab: 12,
+          result: ['0xabc123'],
+        },
+      } as any,
+      {} as any,
+      jest.fn(),
+    );
+
+    expect(getFromLocalStorageMock).not.toHaveBeenCalled();
+    expect(tabsSendMessageMock).not.toHaveBeenCalled();
+  });
+
+  it('does not resolve an EVM response when the locator does not match', async () => {
+    const requestHandler = {
+      getRequestDataByLocator: jest.fn().mockReturnValue(undefined),
+      removeRequestByLocator: jest.fn(),
+    };
+    getFromLocalStorageMock.mockResolvedValue(requestHandler);
+    const listener = await importListener();
+
+    await listener(
+      {
+        command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
+        value: {
+          requestId: 101,
+          tab: 12,
+          origin: 'https://wrong.example',
+          result: ['0xabc123'],
+        },
+      } as any,
+      {} as any,
+      jest.fn(),
+    );
+
+    expect(requestHandler.getRequestDataByLocator).toHaveBeenCalledWith({
+      requestId: 101,
+      tab: 12,
+      origin: 'https://wrong.example',
+    });
+    expect(requestHandler.removeRequestByLocator).not.toHaveBeenCalled();
+    expect(tabsSendMessageMock).not.toHaveBeenCalled();
+  });
+
   it('awaits cleanup after rejecting a connect request', async () => {
     const cleanup = createDeferred();
     const requestHandler = {
-      removeRequestById: jest.fn().mockReturnValue(cleanup.promise),
+      removeRequestByLocator: jest.fn().mockReturnValue(cleanup.promise),
     };
     getFromLocalStorageMock.mockResolvedValue(requestHandler);
     const listener = await importListener();
@@ -226,6 +291,7 @@ describe('evm service worker', () => {
           },
           tab: 12,
           domain: 'example.app',
+          origin: 'https://example.app',
         },
       } as any,
       {} as any,
@@ -236,7 +302,11 @@ describe('evm service worker', () => {
 
     await flushAsync();
 
-    expect(requestHandler.removeRequestById).toHaveBeenCalledWith(102, 12);
+    expect(requestHandler.removeRequestByLocator).toHaveBeenCalledWith({
+      requestId: 102,
+      tab: 12,
+      origin: 'https://example.app',
+    });
     expect(settled).toBe(false);
 
     cleanup.resolve();
@@ -272,6 +342,7 @@ describe('evm service worker', () => {
           request,
           tab: 12,
           domain: 'example.app',
+          origin: 'https://example.app',
           extraData: { gasLimit: '0x5208' },
         },
       } as any,
@@ -288,6 +359,7 @@ describe('evm service worker', () => {
       request,
       12,
       'example.app',
+      'https://example.app',
       { gasLimit: '0x5208' },
     );
     expect(settled).toBe(false);

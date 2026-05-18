@@ -24,6 +24,7 @@ type Props = {
   onConfirm?: () => void;
   request: EvmRequest;
   domain: string;
+  origin: string;
   tab: number;
   header?: string;
   redHeader?: boolean;
@@ -40,6 +41,7 @@ export const EvmOperation = ({
   title,
   onConfirm,
   domain,
+  origin,
   tab,
   request,
   header,
@@ -71,6 +73,7 @@ export const EvmOperation = ({
           request: request,
           tab: tab,
           domain: domain,
+          origin,
           keep,
         },
       });
@@ -85,6 +88,7 @@ export const EvmOperation = ({
         request,
         tab,
         domain,
+        origin,
       },
     });
   };

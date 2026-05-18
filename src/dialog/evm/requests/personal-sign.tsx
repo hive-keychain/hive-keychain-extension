@@ -92,6 +92,7 @@ export const PersonalSign = (props: Props) => {
       afterCancel={handleCancel}
       request={request}
       domain={data.dappInfo.domain}
+      origin={data.dappInfo.origin}
       tab={data.tab}
       title={chrome.i18n.getMessage('dialog_evm_sign_request')}
       caption={chrome.i18n.getMessage('dialog_signature_request_caption', [

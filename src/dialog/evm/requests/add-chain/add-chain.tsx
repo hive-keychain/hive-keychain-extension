@@ -137,6 +137,8 @@ export const AddChain = (props: Props) => {
       command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
       value: {
         requestId: request.request_id,
+        tab: data.tab,
+        origin: data.dappInfo.origin,
         result: true,
       },
     });
@@ -146,7 +148,8 @@ export const AddChain = (props: Props) => {
     <EvmOperation
       request={request}
       domain={data.dappInfo.domain}
-      tab={0}
+      origin={data.dappInfo.origin}
+      tab={data.tab}
       afterCancel={handleCancel}
       title={chrome.i18n.getMessage(
         isUpdatingChain ? 'evm_update_chain' : 'evm_add_chain',

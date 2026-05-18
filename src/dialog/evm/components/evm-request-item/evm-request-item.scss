@@ -166,13 +166,21 @@
       }
 
       &.tuple {
-        align-items: flex-start;
+        align-items: stretch;
+        flex-direction: column;
 
-        .value.value--tuple-block {
-          max-width: 100%;
-          flex: 1;
-          min-width: 0;
-          text-align: left;
+        > .long-text-container {
+          width: 100%;
+
+          > .header {
+            @include poppins500(14px);
+            width: 100%;
+          }
+
+          > .expandable-panel {
+            padding-left: 8px;
+            padding-right: 8px;
+          }
         }
 
         .expandable-panel-content {
@@ -190,9 +198,35 @@
 
         .decoded-tuple-row {
           display: grid;
-          grid-template-columns: minmax(0, 34%) 1fr;
+          grid-template-columns: minmax(120px, 34%) minmax(0, 1fr);
           column-gap: 12px;
           align-items: start;
+          width: 100%;
+
+          &.decoded-tuple-row--collapsible {
+            display: block;
+            padding-left: 0;
+            padding-right: 8px;
+
+            .long-text-container {
+              width: 100%;
+            }
+
+            > .long-text-container > .header {
+              @include poppins500(13px);
+              width: 100%;
+            }
+
+            > .long-text-container > .expandable-panel {
+              padding-left: 0;
+              padding-right: 0;
+              padding-top: 8px;
+
+              > .expandable-panel-content {
+                display: block;
+              }
+            }
+          }
         }
 
         .decoded-tuple-row__label {
@@ -203,9 +237,19 @@
         }
 
         .decoded-tuple-row__value {
+          display: flex;
+          justify-content: flex-end;
+          align-items: flex-start;
           min-width: 0;
           overflow-wrap: anywhere;
+          text-align: right;
           @include poppins400(13px);
+
+          .value-content-horizontal,
+          .long-text-container {
+            max-width: 100%;
+            justify-content: flex-end;
+          }
         }
 
         .decoded-tuple-array {
@@ -231,19 +275,11 @@
           opacity: 0.85;
         }
 
-        .decoded-tuple--nested {
+        .decoded-tuple--top .long-text-container {
           width: 100%;
-
-          .long-text-container {
-            width: 100%;
-          }
-
-          .header {
-            @include poppins500(12px);
-          }
         }
 
-        .decoded-tuple--top .long-text-container {
+        .decoded-tuple--top {
           width: 100%;
         }
       }
