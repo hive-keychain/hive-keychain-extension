@@ -253,11 +253,7 @@ export const GasFeePanel = ({
           : undefined;
 
         if (
-          isAtLeastMultiplierAboveCurrent(
-            preferredFee,
-            selectedFee,
-            multiplier,
-          )
+          isAtLeastMultiplierAboveCurrent(preferredFee, selectedFee, multiplier)
         ) {
           onSelectFee(preferredFee!);
         } else {
@@ -283,13 +279,20 @@ export const GasFeePanel = ({
       setFeeEstimation(estimate);
     } catch (err: any) {
       Logger.error('Catch in gas fee Panel', { err });
+
       const error = EthersUtils.getErrorMessage(
         err.code,
         err.reason,
         err.shortMessage,
         err.message,
       );
-      setErrorMessage(error);
+      console.log('error', error.message);
+      if (
+        error.message !==
+        'evm_transaction_result_error_message_insufficient_funds'
+      ) {
+        setErrorMessage(error);
+      }
     } finally {
       if (generation === initGenerationRef.current) {
         onInitialEstimationComplete?.();
