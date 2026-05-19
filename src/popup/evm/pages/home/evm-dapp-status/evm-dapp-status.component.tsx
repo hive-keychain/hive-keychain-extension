@@ -16,6 +16,7 @@ import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-displa
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { getEvmDappFaviconUrl } from 'src/popup/evm/utils/evm-dapp.utils';
 import {
   getHostnameFromUrl,
   getOriginFromUrl,
@@ -90,10 +91,29 @@ const EvmDappStatus = ({
 
   if (!dapp?.url) return null;
 
+  const dappHostname = getHostnameFromUrl(dapp.url);
+  const fallbackDappIconUrl = dappHostname
+    ? getEvmDappFaviconUrl(dappHostname)
+    : undefined;
+
+  const handleDappIconError = (
+    event: React.SyntheticEvent<HTMLImageElement>,
+  ) => {
+    if (
+      fallbackDappIconUrl &&
+      event.currentTarget.src !== fallbackDappIconUrl
+    ) {
+      event.currentTarget.src = fallbackDappIconUrl;
+      return;
+    }
+    event.currentTarget.style.display = 'none';
+  };
+
   return (
     <div className="dapp-status-wrapper">
       <DappStatusComponent
         imageUrl={dapp?.favIconUrl}
+        fallbackImageUrl={fallbackDappIconUrl}
         onClick={() => setShowDetail(true)}
         status={status}
       />
@@ -103,8 +123,13 @@ const EvmDappStatus = ({
           onClickOutside={() => setShowDetail(false)}>
           <div className="dapp-status-details-wrapper">
             <div className="popup-title">
-              <img src={dapp?.favIconUrl} />
-              <div className="domain">{getHostnameFromUrl(dapp.url)}</div>
+              {(dapp?.favIconUrl || fallbackDappIconUrl) && (
+                <img
+                  src={dapp?.favIconUrl || fallbackDappIconUrl}
+                  onError={handleDappIconError}
+                />
+              )}
+              <div className="domain">{dappHostname}</div>
               <SVGIcon
                 icon={SVGIcons.TOP_BAR_CLOSE_BTN}
                 onClick={() => setShowDetail(false)}
