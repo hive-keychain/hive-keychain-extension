@@ -28,12 +28,8 @@ import {
   normalizeEvmChainId,
 } from 'src/utils/evm-provider-value.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import { getEvmDappConnectionIconUrl } from 'src/popup/evm/utils/evm-dapp.utils';
 
-export {
-  getEvmDappConnectionIconUrl,
-  getEvmDappFaviconUrl,
-} from 'src/popup/evm/utils/evm-dapp.utils';
+import { EvmDappUtils } from 'src/popup/evm/utils/evm-dapp.utils';
 
 export type EvmDappConnectionAccount = {
   address: string;
@@ -262,7 +258,9 @@ export const removeEvmDappConnectionChains = (
     }
 
     const nextChainIds = normalizedChainId
-      ? chainIds.filter((allowedChainId) => allowedChainId !== normalizedChainId)
+      ? chainIds.filter(
+          (allowedChainId) => allowedChainId !== normalizedChainId,
+        )
       : [];
 
     if (nextChainIds.length) {
@@ -430,7 +428,7 @@ const EvmDappsConnections = ({
                   <img
                     className="evm-dapps-connections-favicon"
                     data-testid="evm-dapps-connection-favicon"
-                    src={getEvmDappConnectionIconUrl(
+                    src={EvmDappUtils.getEvmDappConnectionIconUrl(
                       connection.subdomain,
                       dappLogos,
                     )}
@@ -486,16 +484,13 @@ const EvmDappsConnections = ({
               <img
                 className="evm-dapps-connections-favicon"
                 alt=""
-                src={getEvmDappConnectionIconUrl(
+                src={EvmDappUtils.getEvmDappConnectionIconUrl(
                   selectedConnection.subdomain,
                   dappLogos,
                 )}
               />
               <div className="domain">{selectedConnection.subdomain}</div>
-              <SVGIcon
-                icon={SVGIcons.TOP_BAR_CLOSE_BTN}
-                onClick={closePopup}
-              />
+              <SVGIcon icon={SVGIcons.TOP_BAR_CLOSE_BTN} onClick={closePopup} />
             </div>
             {selectedModalType === 'addresses' ? (
               <>
@@ -514,7 +509,10 @@ const EvmDappsConnections = ({
                       data-testid="evm-dapps-modal-connected-account"
                       key={address}>
                       {account ? (
-                        <EvmAccountDisplayComponent account={account} fullName />
+                        <EvmAccountDisplayComponent
+                          account={account}
+                          fullName
+                        />
                       ) : (
                         <div
                           className="evm-dapps-connections-stale-account"

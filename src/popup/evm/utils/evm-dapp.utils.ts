@@ -1,11 +1,11 @@
-export const getEvmDappFaviconUrl = (subdomain: string) => {
+const getEvmDappFaviconUrl = (subdomain: string) => {
   return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(
     subdomain,
   )}&sz=256`;
 };
 
 /** Prefer logo stored at connect time (`EVM_DAPPS_LOGO`), else Google favicon URL. */
-export const getEvmDappConnectionIconUrl = (
+const getEvmDappConnectionIconUrl = (
   subdomain: string,
   savedLogos?: Record<string, string> | null,
 ) => {
@@ -14,4 +14,9 @@ export const getEvmDappConnectionIconUrl = (
     return saved;
   }
   return getEvmDappFaviconUrl(subdomain);
+};
+
+export const EvmDappUtils = {
+  getEvmDappConnectionIconUrl,
+  getEvmDappFaviconUrl,
 };

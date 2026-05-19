@@ -16,7 +16,7 @@ import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-displa
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { getEvmDappFaviconUrl } from 'src/popup/evm/utils/evm-dapp.utils';
+import { EvmDappUtils } from 'src/popup/evm/utils/evm-dapp.utils';
 import {
   getHostnameFromUrl,
   getOriginFromUrl,
@@ -68,9 +68,8 @@ const EvmDappStatus = ({
     }
 
     const normalizedActiveAddress = activeAccount.address.toLowerCase();
-    const connectedOriginWallets = await EvmWalletUtils.getConnectedWallets(
-      origin,
-    );
+    const connectedOriginWallets =
+      await EvmWalletUtils.getConnectedWallets(origin);
 
     setConnectedWallets(connectedOriginWallets);
     if (connectedOriginWallets.includes(normalizedActiveAddress)) {
@@ -86,14 +85,15 @@ const EvmDappStatus = ({
     connectedWallets.includes(account.wallet.address.toLowerCase()),
   );
   const unconnectedAccounts = accounts.filter(
-    (account) => !connectedWallets.includes(account.wallet.address.toLowerCase()),
+    (account) =>
+      !connectedWallets.includes(account.wallet.address.toLowerCase()),
   );
 
   if (!dapp?.url) return null;
 
   const dappHostname = getHostnameFromUrl(dapp.url);
   const fallbackDappIconUrl = dappHostname
-    ? getEvmDappFaviconUrl(dappHostname)
+    ? EvmDappUtils.getEvmDappFaviconUrl(dappHostname)
     : undefined;
 
   const handleDappIconError = (
