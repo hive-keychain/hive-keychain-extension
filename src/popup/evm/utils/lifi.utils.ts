@@ -231,10 +231,13 @@ const getTokenOptionItem = (
   chains: OptionItem[] = [],
 ): OptionItem => {
   const resolvedChain = resolveChain(chain, token, chains);
+  const isNativeToken = token.address.toLowerCase() === ethers.ZeroAddress;
   return {
     label: token.symbol ?? '',
-    subLabel: token.name,
-    subLabelHover: EvmFormatUtils.formatAddress(token.address),
+    subLabel: isNativeToken ? '' : token.name,
+    subLabelHover: isNativeToken
+      ? ''
+      : EvmFormatUtils.formatAddress(token.address),
     value: token,
     img: token.logoURI,
     imgChip: resolvedChain.logoURI,
