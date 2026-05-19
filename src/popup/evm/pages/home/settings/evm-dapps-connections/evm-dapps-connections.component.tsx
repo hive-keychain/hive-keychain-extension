@@ -28,6 +28,12 @@ import {
   normalizeEvmChainId,
 } from 'src/utils/evm-provider-value.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { getEvmDappConnectionIconUrl } from 'src/popup/evm/utils/evm-dapp.utils';
+
+export {
+  getEvmDappConnectionIconUrl,
+  getEvmDappFaviconUrl,
+} from 'src/popup/evm/utils/evm-dapp.utils';
 
 export type EvmDappConnectionAccount = {
   address: string;
@@ -60,12 +66,6 @@ type EvmDappConnectionModalType = 'addresses' | 'chains';
 
 const getSubdomainFromPermissionKey = (permissionKey: string) => {
   return getHostnameFromUrl(permissionKey) ?? permissionKey;
-};
-
-export const getEvmDappFaviconUrl = (subdomain: string) => {
-  return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(
-    subdomain,
-  )}&sz=256`;
 };
 
 const parseEvmDappsLogoMap = (raw: unknown): Record<string, string> => {
@@ -109,18 +109,6 @@ const parseEvmChains = (raw: unknown): Chain[] => {
       typeof (chain as Chain).chainId === 'string' &&
       typeof (chain as Chain).name === 'string',
   );
-};
-
-/** Prefer logo stored at connect time (`EVM_DAPPS_LOGO`), else Google favicon URL. */
-export const getEvmDappConnectionIconUrl = (
-  subdomain: string,
-  savedLogos?: Record<string, string> | null,
-) => {
-  const saved = savedLogos?.[subdomain]?.trim();
-  if (saved) {
-    return saved;
-  }
-  return getEvmDappFaviconUrl(subdomain);
 };
 
 export const removeEvmDappConnectionAccounts = (
