@@ -69,9 +69,7 @@ const formatTokenBalance = (
   const decimalValue = new Decimal(value || 0);
   const roundedValue = decimalValue.toDecimalPlaces(decimals);
   const formattedValue = addCommas(
-    roundedValue
-      .toFixed(decimals)
-      .replace(/\.0*$|(\.[0-9]*?)0*$/, '$1'),
+    roundedValue.toFixed(decimals).replace(/\.0*$|(\.[0-9]*?)0*$/, '$1'),
   );
 
   return decimalValue.abs().gt(0) && roundedValue.isZero()

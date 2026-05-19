@@ -310,16 +310,17 @@ export const EvmLifiSwap = ({
         amount,
         fromAddress,
         toAddress,
+        slippage: form.slippage,
       });
-      if (quote) {
-        setLifiQuote(quote);
-      } else {
-        setErrorMessage('swap_error_getting_estimate');
-      }
+      setLifiQuote(quote);
     } catch (error) {
-      setErrorMessage(
-        (error as KeychainError).message ?? 'swap_error_getting_estimate',
-      );
+      setLifiQuote(undefined);
+      const messageKey =
+        (error as KeychainError).message ?? 'swap_error_getting_estimate';
+      setErrorMessage(messageKey);
+      if (messageKey === 'evm_lifi_swap_error_rate_limited') {
+        setAutoRefreshCountdown(null);
+      }
     }
   };
 
@@ -567,11 +568,7 @@ export const EvmLifiSwap = ({
           });
         } catch (error) {
           resetLoading();
-          setErrorMessage(
-            (error as KeychainError).message ?? 'swap_error_getting_estimate',
-          );
-          // catch error and display message
-          // not enough funds to pay for gas etc
+          setErrorMessage(LiFiUtils.getTransactionErrorMessage(error));
         }
       },
     });
@@ -840,11 +837,13 @@ export const EvmLifiSwap = ({
                     label="popup_html_button_label_cancel"
                     onClick={processCancel}
                   />
-                  <ButtonComponent
-                    type={ButtonType.IMPORTANT}
-                    label="html_popup_swaps_process_swap"
-                    onClick={processSwap}
-                  />
+                  {lifiQuote && (
+                    <ButtonComponent
+                      type={ButtonType.IMPORTANT}
+                      label="html_popup_swaps_process_swap"
+                      onClick={processSwap}
+                    />
+                  )}
                 </div>
               </div>
             </FormContainer>

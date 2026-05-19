@@ -6629,6 +6629,34 @@
     "message": "The same token cannot be used as source and destination",
     "description": "The same token cannot be used as source and destination"
   },
+  "evm_lifi_swap_error_build_transaction": {
+    "message": "Unable to build the swap transaction. Please try again or adjust your parameters.",
+    "description": "LiFi failed to build transaction error"
+  },
+  "evm_lifi_swap_error_amount_too_low": {
+    "message": "Amount is too low for this swap. Try increasing the amount.",
+    "description": "LiFi amount too low error"
+  },
+  "evm_lifi_swap_error_amount_too_high": {
+    "message": "Amount is too high or liquidity is insufficient. Try a smaller amount.",
+    "description": "LiFi amount too high or insufficient liquidity error"
+  },
+  "evm_lifi_swap_error_fees_exceed_amount": {
+    "message": "Network fees exceed the swap amount. Try a larger amount.",
+    "description": "LiFi fees higher than amount error"
+  },
+  "evm_lifi_swap_error_rate_limited": {
+    "message": "Too many requests. Please wait a moment before trying again.",
+    "description": "LiFi rate limit error"
+  },
+  "evm_lifi_swap_error_service_unavailable": {
+    "message": "Swap service is temporarily unavailable. Please try again shortly.",
+    "description": "LiFi service unavailable error"
+  },
+  "evm_lifi_swap_error_invalid_request": {
+    "message": "Invalid swap parameters. Please check your selection and try again.",
+    "description": "LiFi invalid request error"
+  },
   "evm_lifi_swap_approving_smart_contract": {
     "message": "Approving smart contract",
     "description": "Approving smart contract"
