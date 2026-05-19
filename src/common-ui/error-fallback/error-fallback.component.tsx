@@ -1,10 +1,12 @@
 import React from 'react';
-import ButtonComponent from 'src/common-ui/button/button.component';
+import ButtonComponent, {
+  ButtonType,
+} from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
 
-export const ErrorFallback = ({ error, theme, chain }: any) => {
+export const ErrorFallback = ({ error, resetErrorBoundary }: any) => {
   const formattedErrorMessage = `
     \`\`\` 
     ${error.message} \n\r
@@ -15,6 +17,10 @@ export const ErrorFallback = ({ error, theme, chain }: any) => {
   const handleClickOnCopy = async () => {
     await navigator.clipboard.writeText(formattedErrorMessage);
     chrome.tabs.create({ url: Config.social.discord });
+  };
+
+  const handleClickOnReset = async () => {
+    await resetErrorBoundary();
   };
 
   return (
@@ -28,10 +34,20 @@ export const ErrorFallback = ({ error, theme, chain }: any) => {
         <div className="message">{error.message.toString()}</div>
         <div className="stack">{error.stack.toString()}</div>
       </div>
-      <ButtonComponent
-        onClick={() => handleClickOnCopy()}
-        label="html_popup_copy_error"
-      />
+      <div className="buttons-container">
+        <ButtonComponent
+          onClick={() => handleClickOnCopy()}
+          label="html_popup_copy_error"
+          type={ButtonType.ALTERNATIVE}
+          height="small"
+        />
+        <ButtonComponent
+          onClick={() => handleClickOnReset()}
+          label="reload_extension"
+          type={ButtonType.IMPORTANT}
+          height="small"
+        />
+      </div>
     </div>
   );
 };

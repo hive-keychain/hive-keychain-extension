@@ -11,4 +11,7 @@ const ChainComponent = ({ chain }: { theme: Theme; chain?: Chain }) => {
 
 export const ChainComponentWithBoundary = withErrorBoundary(ChainComponent, {
   FallbackComponent: ErrorFallback,
+  onReset: () => {
+    window.location.reload();
+  },
 });

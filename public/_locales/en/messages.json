@@ -4220,7 +4220,7 @@
     "description": "Copy error message"
   },
   "error_message_title": {
-    "message": "Oops! There was an error",
+    "message": "Oops! Something went wrong",
     "description": "there was an error"
   },
   "popup_html_currency": {
@@ -6738,5 +6738,9 @@
         "example": "app.example.com"
       }
     }
+  },
+  "reload_extension": {
+    "message": "Reload extension",
+    "description": "Button label to reload the extension"
   }
 }
