@@ -183,6 +183,7 @@ const send = async (
   const transactionResponse: TransactionResponse = await connectedWallet
     .sendTransaction(transactionRequest)
     .catch((err) => {
+      console.log(err);
       Logger.error('Error in send', err);
       throw err;
     })

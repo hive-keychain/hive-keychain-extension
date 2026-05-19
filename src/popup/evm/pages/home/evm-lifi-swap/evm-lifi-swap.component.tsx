@@ -221,11 +221,7 @@ export const EvmLifiSwap = ({
   }, [lifiQuote]);
 
   const refreshAllowance = async () => {
-    if (
-      form.fromSelectedToken &&
-      form.fromSelectedChain &&
-      form.amount > 0
-    ) {
+    if (form.fromSelectedToken && form.fromSelectedChain && form.amount > 0) {
       const resolvedFromChain = resolveChainForToken(
         form.fromSelectedChain,
         form.fromSelectedToken,
@@ -415,7 +411,7 @@ export const EvmLifiSwap = ({
       type: EvmTransactionType.EIP_1559,
       to: lifiQuote!.transactionRequest!.to,
       data: lifiQuote!.transactionRequest!.data!,
-      value: '0x0',
+      value: lifiQuote!.transactionRequest!.value ?? '0x0',
       gasLimit: Number(lifiQuote!.estimate!.gasCosts![0].limit!),
     };
 
@@ -776,8 +772,7 @@ export const EvmLifiSwap = ({
                       setAdvancedParametersPanelOpened(
                         !advancedParametersPanelOpened,
                       )
-                    }
-                  >
+                    }>
                     <div className="title">
                       {chrome.i18n.getMessage('swap_advanced_parameters')}
                     </div>
