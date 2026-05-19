@@ -14,17 +14,17 @@ const waitForTransaction = async (transactionResponse: TransactionResponse) => {
         transactionReceipt.hash,
       );
       await sendTransactionResolvedMessage(transactionResponse);
-      await createNotification(transactionResponse);
+      await createSuccessNotification(transactionResponse);
     }
   } catch (error: any) {
-    if (error?.code === 'TRANSACTION_REPLACED') {
-      await EvmTransactionsUtils.deleteFromPendingTransactions(
-        transactionResponse.hash,
-      );
+    Logger.error('Error in waitForTransaction', error);
+    await EvmTransactionsUtils.deleteFromPendingTransactions(
+      transactionResponse.hash,
+    );
+    if (error?.code !== 'TRANSACTION_REPLACED') {
+      await createFailedNotification(transactionResponse);
       return;
     }
-
-    Logger.error('Error in waitForTransaction', error);
   }
 };
 
@@ -41,7 +41,9 @@ const sendTransactionResolvedMessage = async (
   });
 };
 
-const createNotification = async (transactionResponse: TransactionResponse) => {
+const createSuccessNotification = async (
+  transactionResponse: TransactionResponse,
+) => {
   chrome.notifications.create(
     `${transactionResponse.hash}-${transactionResponse.chainId}`,
     {
@@ -52,6 +54,24 @@ const createNotification = async (transactionResponse: TransactionResponse) => {
       ),
       message: await chrome.i18n.getMessage(
         'evm_tx_completed_notification_message',
+        [transactionResponse.hash],
+      ),
+      priority: 0,
+    },
+  );
+};
+
+const createFailedNotification = async (
+  transactionResponse: TransactionResponse,
+) => {
+  chrome.notifications.create(
+    `${transactionResponse.hash}-${transactionResponse.chainId}`,
+    {
+      type: 'basic',
+      iconUrl: '/assets/images/iconhive.png',
+      title: await chrome.i18n.getMessage('evm_tx_failed_notification_title'),
+      message: await chrome.i18n.getMessage(
+        'evm_tx_failed_notification_message',
         [transactionResponse.hash],
       ),
       priority: 0,

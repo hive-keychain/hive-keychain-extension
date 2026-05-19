@@ -6075,8 +6075,16 @@
     "message": "Tx #$1 was completed",
     "description": "Transaction completed message"
   },
+  "evm_tx_failed_notification_message": {
+    "message": "Tx #$1 has failed. For more details, click here.",
+    "description": "Transaction completed message"
+  },
   "evm_tx_completed_notification_title": {
     "message": "Transaction completed",
+    "description": "Transaction completed title"
+  },
+  "evm_tx_failed_notification_title": {
+    "message": "Transaction failed",
     "description": "Transaction completed title"
   },
   "evm_wallets": {
