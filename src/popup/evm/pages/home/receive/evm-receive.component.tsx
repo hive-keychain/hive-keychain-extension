@@ -11,6 +11,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import {
@@ -139,11 +140,7 @@ const EvmReceive = ({
             className="evm-receive-qr-code"
           />
           <div className="evm-receive-qr-logo">
-            <ChainLogo
-              chainName={chain.name}
-              logoUri={chain.logo}
-              className="evm-receive-chain-logo"
-            />
+            <EvmAccountImage address={address} />
           </div>
         </div>
 
