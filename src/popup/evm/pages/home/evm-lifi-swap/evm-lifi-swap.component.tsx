@@ -112,6 +112,12 @@ export const EvmLifiSwap = ({
 
   const [lifiQuote, setLifiQuote] = useState<LiFiStep>();
 
+  const resolveChainForToken = (
+    chain: ExtendedChain,
+    token: TokenExtended | null | undefined,
+  ): ExtendedChain =>
+    LiFiUtils.resolveChain(chain, token ?? undefined, chainList);
+
   const throttledRefresh = useMemo(() => {
     return throttle(
       (newAmount, newEndToken, newStartToken, newToChain, newFromChain) => {
@@ -148,7 +154,9 @@ export const EvmLifiSwap = ({
     if (form.fromSelectedChain) {
       const tokens = filterTokenList(form.fromSelectedChain, '');
       setFromTokenList(tokens);
-      setForm((prev) => ({ ...prev, fromSelectedToken: tokens[0].value }));
+      if (tokens.length > 0) {
+        setForm((prev) => ({ ...prev, fromSelectedToken: tokens[0].value }));
+      }
     }
   }, [form.fromSelectedChain]);
 
@@ -156,7 +164,12 @@ export const EvmLifiSwap = ({
     if (form.toSelectedChain) {
       const tokens = filterTokenList(form.toSelectedChain, '');
       setToTokenList(tokens);
-      setForm((prev) => ({ ...prev, toSelectedToken: tokens[1].value }));
+      if (tokens.length > 0) {
+        setForm((prev) => ({
+          ...prev,
+          toSelectedToken: tokens[1]?.value ?? tokens[0].value,
+        }));
+      }
     }
   }, [form.toSelectedChain]);
 
@@ -208,9 +221,17 @@ export const EvmLifiSwap = ({
   }, [lifiQuote]);
 
   const refreshAllowance = async () => {
-    if (form.fromSelectedToken && form.amount > 0) {
+    if (
+      form.fromSelectedToken &&
+      form.fromSelectedChain &&
+      form.amount > 0
+    ) {
+      const resolvedFromChain = resolveChainForToken(
+        form.fromSelectedChain,
+        form.fromSelectedToken,
+      );
       const chain: EvmChain = await ChainUtils.getChain<EvmChain>(
-        `0x${form.fromSelectedChain!.id.toString(16)}`,
+        `0x${resolvedFromChain.id.toString(16)}`,
       );
       const allowance = await EvmTokensUtils.getAllowance(
         chain,
@@ -246,14 +267,16 @@ export const EvmLifiSwap = ({
       const chainItem = optionsLists.chains.find(
         (chainOption) => chainOption.value.id === Number(activeChain.chainId),
       );
+      const defaultChain =
+        chainItem?.value ??
+        optionsLists.chains.find(
+          (chainOption) => !LiFiUtils.isAllChains(chainOption.value),
+        )?.value ??
+        optionsLists.chains[0].value;
       setForm((prev) => ({
         ...prev,
-        fromSelectedChain: chainItem
-          ? chainItem.value
-          : optionsLists.chains[0].value,
-        toSelectedChain: chainItem
-          ? chainItem.value
-          : optionsLists.chains[0].value,
+        fromSelectedChain: defaultChain,
+        toSelectedChain: defaultChain,
       }));
     } catch (err: unknown) {
       Logger.error(err);
@@ -264,16 +287,7 @@ export const EvmLifiSwap = ({
   };
 
   const filterTokenList = (chain: ExtendedChain, query: string) => {
-    if (chain.id === 0) {
-      return tokenList;
-    } else {
-      return tokenList.filter(
-        (token) =>
-          token.value.chainId === chain.id &&
-          (token.label.toLowerCase().includes(query.toLowerCase()) ||
-            token.subLabel?.toLowerCase().includes(query.toLowerCase())),
-      );
-    }
+    return LiFiUtils.filterTokensByChainAndQuery(tokenList, chain, query);
   };
 
   const getEstimate = async (
@@ -285,11 +299,17 @@ export const EvmLifiSwap = ({
     fromAddress: string,
     toAddress: string,
   ) => {
+    const resolvedFromChain = LiFiUtils.resolveChain(
+      fromChain,
+      fromToken,
+      chainList,
+    );
+    const resolvedToChain = LiFiUtils.resolveChain(toChain, toToken, chainList);
     try {
       const quote = await LiFiUtils.getQuote({
-        fromChain,
+        fromChain: resolvedFromChain,
         fromToken,
-        toChain,
+        toChain: resolvedToChain,
         toToken,
         amount,
         fromAddress,
@@ -317,8 +337,12 @@ export const EvmLifiSwap = ({
     let approveTransactionData: ProviderTransactionData =
       {} as ProviderTransactionData;
 
+    const resolvedFromChain = resolveChainForToken(
+      form.fromSelectedChain!,
+      form.fromSelectedToken,
+    );
     const fromChain = await ChainUtils.getChain<EvmChain>(
-      `0x${form.fromSelectedChain!.id.toString(16)}`,
+      `0x${resolvedFromChain.id.toString(16)}`,
     );
 
     if (form.approvalAmount && form.approvalAmount > 0) {
@@ -432,7 +456,12 @@ export const EvmLifiSwap = ({
                 />
                 <PreloadedImage
                   className="currency-icon-chip"
-                  src={form.fromSelectedChain?.logoURI as string}
+                  src={
+                    resolveChainForToken(
+                      form.fromSelectedChain,
+                      form.fromSelectedToken,
+                    ).logoURI as string
+                  }
                 />
               </div>
             )}
@@ -455,8 +484,18 @@ export const EvmLifiSwap = ({
                 />
                 <ChainLogo
                   className="currency-icon-chip"
-                  chainName={form.toSelectedChain?.name ?? ''}
-                  logoUri={form.toSelectedChain?.logoURI}
+                  chainName={
+                    resolveChainForToken(
+                      form.toSelectedChain!,
+                      form.toSelectedToken,
+                    ).name ?? ''
+                  }
+                  logoUri={
+                    resolveChainForToken(
+                      form.toSelectedChain!,
+                      form.toSelectedToken,
+                    ).logoURI
+                  }
                 />
               </div>
             )}
@@ -505,7 +544,7 @@ export const EvmLifiSwap = ({
                 type: Number(approveTransactionData.type),
               },
               approveGasFee,
-              `0x${form.fromSelectedChain!.id.toString(16)}`,
+              `0x${resolvedFromChain.id.toString(16)}`,
             );
             await approveTransactionResponse.wait();
 
@@ -519,7 +558,7 @@ export const EvmLifiSwap = ({
               type: Number(swapTransactionData.type),
             },
             swapGasFee,
-            `0x${form.fromSelectedChain!.id.toString(16)}`,
+            `0x${resolvedFromChain.id.toString(16)}`,
             approveTransactionResponse?.nonce
               ? approveTransactionResponse.nonce + 1
               : undefined,
@@ -625,6 +664,7 @@ export const EvmLifiSwap = ({
                       selectedItem={LiFiUtils.getTokenOptionItem(
                         form.fromSelectedToken!,
                         form.fromSelectedChain!,
+                        chainList,
                       )}
                       setSelectedItem={(value) =>
                         setForm((prev) => ({
@@ -685,6 +725,7 @@ export const EvmLifiSwap = ({
                       selectedItem={LiFiUtils.getTokenOptionItem(
                         form.toSelectedToken!,
                         form.toSelectedChain!,
+                        chainList,
                       )}
                       setSelectedItem={(value) =>
                         setForm((prev) => ({

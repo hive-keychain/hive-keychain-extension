@@ -39,7 +39,7 @@ export function CustomSelectItemComponent<T extends OptionItem>({
   };
 
   useEffect(() => {
-    if (!item.img) {
+    if (!item.img && item.label) {
       setColor(ColorsUtils.stringToColor(item.label));
     }
   }, [item]);
@@ -63,7 +63,7 @@ export function CustomSelectItemComponent<T extends OptionItem>({
             {item.img && !EnumUtils.isValueOf(item.img, SVGIcons) && (
               <img className="left-image" src={item.img} />
             )}
-            {!item.img && generateImageIfNull && (
+            {!item.img && generateImageIfNull && item.label && (
               <div
                 className="currency-icon add-background"
                 style={{

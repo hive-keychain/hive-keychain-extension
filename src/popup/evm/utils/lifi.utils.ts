@@ -6,6 +6,28 @@ import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { LifiHistoryItem, LifiHistoryResponse } from 'hive-keychain-commons';
 import { KeychainError } from 'src/keychain-error';
 
+const ALL_CHAINS_ID = 0;
+
+const isAllChains = (chain: ExtendedChain): boolean =>
+  chain.id === ALL_CHAINS_ID;
+
+const resolveChain = (
+  chain: ExtendedChain,
+  token: TokenExtended | undefined,
+  chains: OptionItem[],
+): ExtendedChain => {
+  if (!isAllChains(chain)) {
+    return chain;
+  }
+  if (token?.chainId != null) {
+    const match = chains.find((c) => c.value.id === token.chainId);
+    if (match) {
+      return match.value as ExtendedChain;
+    }
+  }
+  return chain;
+};
+
 const getLifiData = async (): Promise<any> => {
   return await KeychainApi.get(`evm/lifi/data`);
 };
@@ -44,26 +66,59 @@ const getLiFiSwapOptionLists = async (): Promise<{
 const getTokenOptionItem = (
   token: TokenExtended,
   chain: ExtendedChain,
+  chains: OptionItem[] = [],
 ): OptionItem => {
+  const resolvedChain = resolveChain(chain, token, chains);
   return {
-    label: token.symbol,
+    label: token.symbol ?? '',
     subLabel: token.name,
     subLabelHover: EvmFormatUtils.formatAddress(token.address),
     value: token,
     img: token.logoURI,
-    imgChip: chain.logoURI,
-    imgChipChainName: chain.name,
-    key: `${chain.id}-${token.address}`,
+    imgChip: resolvedChain.logoURI,
+    imgChipChainName: resolvedChain.name,
+    key: `${resolvedChain.id}-${token.address}`,
   };
 };
 
 const getChainOptionItem = (chain: ExtendedChain): OptionItem => {
+  if (isAllChains(chain)) {
+    return {
+      label: 'All',
+      value: chain,
+      img: SVGIcons.HIVE_ENGINE,
+      key: 'all-chains',
+    };
+  }
   return {
     label: chain.name,
     value: chain,
     img: chain.logoURI,
     key: `chain-${chain.id}`,
   };
+};
+
+const matchesTokenQuery = (token: OptionItem, query: string): boolean => {
+  const normalizedQuery = query.toLowerCase();
+  if (!normalizedQuery) {
+    return true;
+  }
+  return (
+    token.label?.toLowerCase().includes(normalizedQuery) ||
+    !!token.subLabel?.toLowerCase().includes(normalizedQuery)
+  );
+};
+
+const filterTokensByChainAndQuery = (
+  tokens: OptionItem[],
+  chain: ExtendedChain,
+  query: string,
+): OptionItem[] => {
+  return tokens.filter(
+    (token) =>
+      (isAllChains(chain) || token.value.chainId === chain.id) &&
+      matchesTokenQuery(token, query),
+  );
 };
 
 const retrieveLiFiHistory = async (
@@ -143,10 +198,14 @@ const getLiFiErrorMessage = (errorCode: number) => {
 };
 
 export const LiFiUtils = {
+  ALL_CHAINS_ID,
+  isAllChains,
+  resolveChain,
   getLifiData,
   getLiFiSwapOptionLists,
   getTokenOptionItem,
   getChainOptionItem,
+  filterTokensByChainAndQuery,
   retrieveLiFiHistory,
   getQuote,
   getLiFiErrorMessage,

@@ -70,7 +70,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
     }
     return itemProps.options.filter(
       (option) =>
-        option.label.toLowerCase().includes(query.toLowerCase()) ||
+        option.label?.toLowerCase().includes(query.toLowerCase()) ||
         option.subLabel?.toLowerCase().includes(query.toLowerCase()),
     );
   };
@@ -102,7 +102,8 @@ export function ComplexeCustomSelect<T extends OptionItem>(
                 />
               )}
             {!itemProps.selectedItem.img &&
-              itemProps.generateImageIfNull && (
+              itemProps.generateImageIfNull &&
+              itemProps.selectedItem.label && (
                 <div
                   className="left-image chain-logo-initials"
                   style={{
