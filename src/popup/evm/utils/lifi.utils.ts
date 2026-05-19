@@ -4,6 +4,7 @@ import { SVGIcons } from '@common-ui/icons.enum';
 import { ExtendedChain, TokenExtended } from '@lifi/types';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
+import { ethers } from 'ethers';
 import { LifiHistoryItem, LifiHistoryResponse } from 'hive-keychain-commons';
 import { KeychainError } from 'src/keychain-error';
 
@@ -212,7 +213,15 @@ const getLiFiSwapOptionLists = async (): Promise<{
       }
     }
   }
-  tokensOptions.sort((a, b) => b.value.fdvUSD - a.value.fdvUSD);
+  tokensOptions.sort((a, b) => {
+    if (a.value.address.toLowerCase() === ethers.ZeroAddress) {
+      return -1;
+    }
+    if (b.value.address.toLowerCase() === ethers.ZeroAddress) {
+      return 1;
+    }
+    return b.value.fdvUSD - a.value.fdvUSD;
+  });
   return { tokens: tokensOptions, chains: chainsOptions };
 };
 
