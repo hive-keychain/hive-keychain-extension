@@ -37,6 +37,10 @@ export const isEvmRpcInfrastructureFailure = (err: unknown): boolean => {
     text.includes('fetch') ||
     text.includes('failed to fetch') ||
     text.includes('network') ||
+    text.includes('429') ||
+    text.includes('too many requests') ||
+    text.includes('rate limit') ||
+    text.includes('ratelimit') ||
     text.includes('econnrefused') ||
     text.includes('etimedout') ||
     text.includes('socket') ||
