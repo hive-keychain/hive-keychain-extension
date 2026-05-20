@@ -576,29 +576,34 @@ const isWhitelisted = async (
   localAccounts: EvmAccountOrPublic[],
 ) => {
   const whitelisted = await getWhitelistedAddresses(chainId);
+  const normalizedAddress = address.toLowerCase();
+  const isLocalAccount = localAccounts
+    .map((localAccount) =>
+      EvmAccountUtils.getEvmAccountAddress(localAccount).toLowerCase(),
+    )
+    .includes(normalizedAddress);
 
   const chain = await ChainUtils.getChain<EvmChain>(chainId);
   if (chain && chain.isCustom) {
+    if (isLocalAccount) {
+      return true;
+    }
     const customTokens =
       await EvmTokensUtils.getCustomTokensForAllWallets(chain);
     return customTokens.some(
-      (token) => token.address.toLowerCase() === address.toLowerCase(),
-    );
-  } else {
-    return (
-      localAccounts
-        .map((localAccount) =>
-          EvmAccountUtils.getEvmAccountAddress(localAccount).toLowerCase(),
-        )
-        .includes(address.toLowerCase()) ||
-      whitelisted[EvmAddressType.SMART_CONTRACT]
-        .map((item) => item.address.toLowerCase())
-        .includes(address.toLowerCase()) ||
-      whitelisted[EvmAddressType.WALLET_ADDRESS]
-        .map((item) => item.address.toLowerCase())
-        .includes(address.toLowerCase())
+      (token) => token.address.toLowerCase() === normalizedAddress,
     );
   }
+
+  return (
+    isLocalAccount ||
+    whitelisted[EvmAddressType.SMART_CONTRACT]
+      .map((item) => item.address.toLowerCase())
+      .includes(normalizedAddress) ||
+    whitelisted[EvmAddressType.WALLET_ADDRESS]
+      .map((item) => item.address.toLowerCase())
+      .includes(normalizedAddress)
+  );
 };
 
 const getAddressLabel = async (address: string, chainId: string) => {

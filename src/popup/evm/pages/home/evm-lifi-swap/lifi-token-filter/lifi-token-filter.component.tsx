@@ -39,6 +39,7 @@ export const LiFiTokenFilter = <T extends OptionItem>({
         selectedItem={selectedItem}
         setSelectedItem={setSelectedItem}
         generateImageIfNull
+        filterable
       />
       <InputComponent
         type={InputType.TEXT}

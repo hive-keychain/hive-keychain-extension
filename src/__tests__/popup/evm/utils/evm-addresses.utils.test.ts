@@ -3,8 +3,10 @@ import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.inter
 import { EvmAddressesUtils, SavedEns } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
+import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { ChainType, EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -186,6 +188,36 @@ describe('evm-addresses.utils tests:\n', () => {
         avatar: 'https://example.com/contact.png',
       }),
     ]);
+  });
+
+  it('treats local accounts as whitelisted on custom chains', async () => {
+    const customChain = {
+      ...chain,
+      chainId: '0x539',
+      isCustom: true,
+    } as EvmChain;
+
+    jest.spyOn(ChainUtils, 'getChain').mockResolvedValue(customChain);
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockResolvedValue({
+        [customChain.chainId]: {
+          SMART_CONTRACT: [],
+          WALLET_ADDRESS: [],
+        },
+      });
+    jest
+      .spyOn(EvmTokensUtils, 'getCustomTokensForAllWallets')
+      .mockResolvedValue([]);
+
+    await expect(
+      EvmAddressesUtils.isWhitelisted(
+        localAccountAddress,
+        customChain.chainId,
+        localAccounts,
+      ),
+    ).resolves.toBe(true);
+    expect(EvmTokensUtils.getCustomTokensForAllWallets).not.toHaveBeenCalled();
   });
 
   it('keeps the base autocomplete when ENS enrichment fails', async () => {

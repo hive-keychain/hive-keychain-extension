@@ -38,6 +38,29 @@ export interface LiFiErrorResponse {
 const isAllChains = (chain: ExtendedChain): boolean =>
   chain.id === ALL_CHAINS_ID;
 
+const evmChainIdToLifiId = (chainId: string): number =>
+  Number.parseInt(
+    chainId.startsWith('0x') || chainId.startsWith('0X')
+      ? chainId
+      : `0x${chainId}`,
+    16,
+  );
+
+const filterChainsByLifiIds = (
+  chains: OptionItem[],
+  lifiChainIds: Set<number>,
+): OptionItem[] =>
+  chains.filter((option) => {
+    const chain = option.value as ExtendedChain;
+    return isAllChains(chain) || lifiChainIds.has(chain.id);
+  });
+
+const filterTokensByLifiChainIds = (
+  tokens: OptionItem[],
+  lifiChainIds: Set<number>,
+): OptionItem[] =>
+  tokens.filter((option) => lifiChainIds.has(option.value.chainId));
+
 const resolveChain = (
   chain: ExtendedChain,
   token: TokenExtended | undefined,
@@ -384,6 +407,9 @@ export const LiFiUtils = {
   isAllChains,
   isSameToken,
   resolveChain,
+  evmChainIdToLifiId,
+  filterChainsByLifiIds,
+  filterTokensByLifiChainIds,
   getLifiData,
   getLiFiSwapOptionLists,
   getTokenOptionItem,
