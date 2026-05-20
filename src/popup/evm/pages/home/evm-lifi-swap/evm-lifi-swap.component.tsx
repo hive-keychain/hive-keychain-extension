@@ -46,7 +46,10 @@ import {
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
-import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import {
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { ethers, TransactionResponse, Wallet } from 'ethers';
@@ -98,7 +101,11 @@ export const EvmLifiSwap = ({
   const [fromTokenList, setFromTokenList] = useState<OptionItem[]>([]);
   const [toTokenList, setToTokenList] = useState<OptionItem[]>([]);
   const [chainList, setChainList] = useState<OptionItem[]>([]);
+  const [fromChainList, setFromChainList] = useState<OptionItem[]>([]);
   const [tokenList, setTokenList] = useState<OptionItem[]>([]);
+  const [fromTokenListSource, setFromTokenListSource] = useState<OptionItem[]>(
+    [],
+  );
   const [fromTokenFilterChain, setFromTokenFilterChain] =
     useState<ExtendedChain | null>(null);
   const [toTokenFilterChain, setToTokenFilterChain] =
@@ -126,8 +133,9 @@ export const EvmLifiSwap = ({
   const resolveChainForToken = (
     chain: ExtendedChain,
     token: TokenExtended | null | undefined,
+    chains: OptionItem[] = fromChainList,
   ): ExtendedChain =>
-    LiFiUtils.resolveChain(chain, token ?? undefined, chainList);
+    LiFiUtils.resolveChain(chain, token ?? undefined, chains);
 
   const throttledRefresh = useMemo(() => {
     return throttle(
@@ -173,7 +181,7 @@ export const EvmLifiSwap = ({
 
   const handleFromTokenFilterChainChange = (chain: ExtendedChain) => {
     setFromTokenFilterChain(chain);
-    const tokens = filterTokenList(chain, '');
+    const tokens = filterFromTokenList(chain, '');
     setFromTokenList(tokens);
   };
 
@@ -316,22 +324,38 @@ export const EvmLifiSwap = ({
   const initList = async () => {
     try {
       const optionsLists = await LiFiUtils.getLiFiSwapOptionLists();
+      const setupEvmChains =
+        await ChainUtils.getAllSetupChainsForType<EvmChain>(ChainType.EVM);
+      const setupLifiChainIds = new Set(
+        setupEvmChains.map((chain) => LiFiUtils.evmChainIdToLifiId(chain.chainId)),
+      );
+      const fromChains = LiFiUtils.filterChainsByLifiIds(
+        optionsLists.chains,
+        setupLifiChainIds,
+      );
+      const fromTokens = LiFiUtils.filterTokensByLifiChainIds(
+        optionsLists.tokens,
+        setupLifiChainIds,
+      );
 
       setTokenList(optionsLists.tokens);
       setChainList(optionsLists.chains);
+      setFromChainList(fromChains);
+      setFromTokenListSource(fromTokens);
 
-      const chainItem = optionsLists.chains.find(
-        (chainOption) => chainOption.value.id === Number(activeChain.chainId),
+      const activeChainLifiId = LiFiUtils.evmChainIdToLifiId(activeChain.chainId);
+      const chainItem = fromChains.find(
+        (chainOption) => chainOption.value.id === activeChainLifiId,
       );
       const defaultChain =
         chainItem?.value ??
-        optionsLists.chains.find(
+        fromChains.find(
           (chainOption) => !LiFiUtils.isAllChains(chainOption.value),
         )?.value ??
-        optionsLists.chains[0].value;
+        fromChains[0].value;
 
       const list = LiFiUtils.filterTokensByChainAndQuery(
-        optionsLists.tokens,
+        fromTokens,
         defaultChain,
         '',
       );
@@ -363,11 +387,20 @@ export const EvmLifiSwap = ({
     return LiFiUtils.filterTokensByChainAndQuery(tokenList, chain, query);
   };
 
+  const filterFromTokenList = (chain: ExtendedChain, query: string) => {
+    return LiFiUtils.filterTokensByChainAndQuery(
+      fromTokenListSource,
+      chain,
+      query,
+    );
+  };
+
   const getTokenSelectedChain = (
     chain: ExtendedChain,
     token: TokenExtended,
+    chains: OptionItem[] = chainList,
   ) => {
-    return LiFiUtils.resolveChain(chain, token, chainList);
+    return LiFiUtils.resolveChain(chain, token, chains);
   };
 
   const getEstimate = async (
@@ -382,7 +415,7 @@ export const EvmLifiSwap = ({
     const resolvedFromChain = LiFiUtils.resolveChain(
       fromChain,
       fromToken,
-      chainList,
+      fromChainList,
     );
     const resolvedToChain = LiFiUtils.resolveChain(toChain, toToken, chainList);
     try {
@@ -591,12 +624,14 @@ export const EvmLifiSwap = ({
                     resolveChainForToken(
                       form.toSelectedChain!,
                       form.toSelectedToken,
+                      chainList,
                     ).name ?? ''
                   }
                   logoUri={
                     resolveChainForToken(
                       form.toSelectedChain!,
                       form.toSelectedToken,
+                      chainList,
                     ).logoURI
                   }
                 />
@@ -715,15 +750,30 @@ export const EvmLifiSwap = ({
     }
   };
 
+  const isFromTokenOnSetupChain = (token: TokenExtended | null) =>
+    !!token &&
+    fromTokenListSource.some(
+      (option) =>
+        option.value.address.toLowerCase() === token.address.toLowerCase() &&
+        option.value.chainId === token.chainId,
+    );
+
   const handleClickOnSwitchTokens = () => {
-    setForm((prev) => ({
-      ...prev,
-      fromSelectedToken: prev.toSelectedToken,
-      toSelectedToken: prev.fromSelectedToken,
-      fromSelectedChain: prev.toSelectedChain,
-      toSelectedChain: prev.fromSelectedChain,
-      amount: 0,
-    }));
+    setForm((prev) => {
+      const canSwapFrom = isFromTokenOnSetupChain(prev.toSelectedToken);
+      return {
+        ...prev,
+        toSelectedToken: prev.fromSelectedToken,
+        toSelectedChain: prev.fromSelectedChain,
+        fromSelectedToken: canSwapFrom
+          ? prev.toSelectedToken
+          : prev.fromSelectedToken,
+        fromSelectedChain: canSwapFrom
+          ? prev.toSelectedChain
+          : prev.fromSelectedChain,
+        amount: 0,
+      };
+    });
     setLifiQuote(undefined);
   };
 
@@ -759,12 +809,13 @@ export const EvmLifiSwap = ({
                         selectedItem={LiFiUtils.getTokenOptionItem(
                           form.fromSelectedToken!,
                           form.fromSelectedChain!,
-                          chainList,
+                          fromChainList,
                         )}
                         setSelectedItem={(value) => {
                           const selectedChain = getTokenSelectedChain(
                             fromTokenFilterChain ?? form.fromSelectedChain!,
                             value.value,
+                            fromChainList,
                           );
                           setLifiQuote(undefined);
                           setForm((prev) => ({
@@ -781,7 +832,7 @@ export const EvmLifiSwap = ({
                             {(fromTokenFilterChain ??
                               form.fromSelectedChain) && (
                               <LiFiTokenFilter
-                                options={chainList}
+                                options={fromChainList}
                                 selectedItem={LiFiUtils.getChainOptionItem(
                                   fromTokenFilterChain ??
                                     form.fromSelectedChain!,
@@ -791,7 +842,7 @@ export const EvmLifiSwap = ({
                                 }
                                 onQueryChanged={(query) => {
                                   setFromTokenList(
-                                    filterTokenList(
+                                    filterFromTokenList(
                                       fromTokenFilterChain ??
                                         form.fromSelectedChain!,
                                       query,
