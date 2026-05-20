@@ -212,6 +212,24 @@ export const GasFeePanel = ({
     };
   };
 
+  const buildFallbackCustomFee = (): GasFeeEstimationBase => {
+    const fallbackGasLimit = Number(transactionData?.gasLimit ?? 21000);
+    return {
+      type: transactionType,
+      estimatedFeeInEth: new Decimal(-1),
+      maxFeeInEth: new Decimal(-1),
+      estimatedFeeUSD: new Decimal(0),
+      maxFeeUSD: new Decimal(0),
+      estimatedMaxDuration: new Decimal(-1),
+      gasLimit: new Decimal(fallbackGasLimit),
+      priorityFeeInGwei: new Decimal(-1),
+      maxFeePerGasInGwei: new Decimal(-1),
+      gasPriceInGwei: new Decimal(-1),
+      icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
+      name: 'popup_html_evm_custom_gas_fee_custom',
+    };
+  };
+
   const init = async (silentRefresh: boolean) => {
     const generation = ++initGenerationRef.current;
     let estimate;
@@ -279,6 +297,10 @@ export const GasFeePanel = ({
       setFeeEstimation(estimate);
     } catch (err: any) {
       Logger.error('Catch in gas fee Panel', { err });
+      const fallbackCustomFee = buildFallbackCustomFee();
+      setFeeEstimation({ custom: fallbackCustomFee });
+      onSelectFee(fallbackCustomFee);
+      setgasFeeWarning('evm_gas_fee_warning_not_available_for_chain');
 
       const error = EthersUtils.getErrorMessage(
         err.code,

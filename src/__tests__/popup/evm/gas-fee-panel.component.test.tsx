@@ -316,4 +316,74 @@ describe('GasFeePanel', () => {
       }),
     );
   });
+
+  it('shows the panel with fallback custom fee when estimate fails', async () => {
+    const setErrorMessage = jest.fn();
+    const expectedError = {
+      message: 'popup_html_evm_service_unavailable',
+      params: [],
+    };
+
+    jest
+      .spyOn(GasFeeUtils, 'estimate')
+      .mockRejectedValue(new Error('estimation unavailable'));
+    jest.spyOn(EthersUtils, 'getErrorMessage').mockReturnValue(expectedError);
+    const transactionData = {
+      data: '0x',
+      from: '0x00000000000000000000000000000000000000aa',
+      to: '0x00000000000000000000000000000000000000bb',
+      type: EvmTransactionType.EIP_1559,
+      value: '0x0',
+    };
+
+    const onSelectFeeSpy = jest.fn();
+    const ControlledPanel = () => {
+      const [selectedFee, setSelectedFee] = React.useState<any>();
+      return (
+        <GasFeePanel
+          chain={
+            {
+              chainId: '1',
+              defaultTransactionType: EvmTransactionType.EIP_1559,
+              mainToken: 'ETH',
+              name: 'Ethereum',
+            } as any
+          }
+          fromAddress="0x00000000000000000000000000000000000000aa"
+          onSelectFee={(fee) => {
+            onSelectFeeSpy(fee);
+            setSelectedFee(fee);
+          }}
+          prefetchedMainTokenInfo={
+            {
+              priceUsd: 2400,
+              symbol: 'ETH',
+              type: 'NATIVE',
+            } as any
+          }
+          selectedFee={selectedFee}
+          setErrorMessage={setErrorMessage}
+          transactionData={transactionData}
+          transactionType={EvmTransactionType.EIP_1559}
+        />
+      );
+    };
+
+    render(
+      <ControlledPanel />,
+    );
+
+    await waitFor(() =>
+      expect(onSelectFeeSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'popup_html_evm_custom_gas_fee_custom',
+          gasLimit: new Decimal(21000),
+        }),
+      ),
+    );
+    expect(
+      screen.getByText('popup_html_evm_gas_fee', { exact: false }),
+    ).toBeTruthy();
+    expect(setErrorMessage).toHaveBeenCalledWith(expectedError);
+  });
 });
