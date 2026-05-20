@@ -220,7 +220,7 @@ const getLiFiSwapOptionLists = async (): Promise<{
     if (b.value.address.toLowerCase() === ethers.ZeroAddress) {
       return 1;
     }
-    return b.value.fdvUSD - a.value.fdvUSD;
+    return b.value.marketCapUSD - a.value.marketCapUSD;
   });
   return { tokens: tokensOptions, chains: chainsOptions };
 };
