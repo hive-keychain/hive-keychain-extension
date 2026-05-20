@@ -128,7 +128,17 @@ export const EvmLifiSwap = ({
   const throttledRefresh = useMemo(() => {
     return throttle(
       (newAmount, newEndToken, newStartToken, newToChain, newFromChain) => {
-        if (parseFloat(newAmount) > 0 && newEndToken && newStartToken) {
+        if (
+          parseFloat(newAmount) > 0 &&
+          newEndToken &&
+          newStartToken &&
+          !LiFiUtils.isSameToken(
+            newFromChain,
+            newStartToken,
+            newToChain,
+            newEndToken,
+          )
+        ) {
           getEstimate(
             newAmount,
             newEndToken,
