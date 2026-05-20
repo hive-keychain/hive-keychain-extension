@@ -20,6 +20,23 @@
     justify-content: center;
   }
 
+  .top-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    .swap-history-button {
+      cursor: pointer;
+      margin-right: 16px;
+    }
+
+    .swap-history-button:hover {
+      --swap-history-button-icon-color: white;
+      --swap-history-button-border-color: #{$red};
+      --swap-history-button-background: #{$red};
+    }
+  }
+
   .evm-lifi-swap-page-content {
     display: flex;
     flex-direction: column;
@@ -33,22 +50,6 @@
       color: $red;
       text-align: right;
       margin-right: 18px;
-    }
-
-    .top-row {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-
-      .swap-history-button {
-        cursor: pointer;
-      }
-
-      .swap-history-button:hover {
-        --swap-history-button-icon-color: white;
-        --swap-history-button-border-color: #{$red};
-        --swap-history-button-background: #{$red};
-      }
     }
 
     .swap-label {

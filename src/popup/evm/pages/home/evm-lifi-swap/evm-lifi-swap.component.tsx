@@ -408,6 +408,28 @@ export const EvmLifiSwap = ({
     }
   };
 
+  const refreshEstimate = () => {
+    if (
+      !lifiQuote ||
+      !form.fromSelectedToken ||
+      !form.toSelectedToken ||
+      !form.fromSelectedChain ||
+      !form.toSelectedChain
+    ) {
+      return;
+    }
+    getEstimate(
+      form.amount,
+      form.fromSelectedToken,
+      form.toSelectedToken,
+      form.toSelectedChain,
+      form.fromSelectedChain,
+      activeAccount.wallet.address,
+      form.receiverAddress,
+    );
+    setAutoRefreshCountdown(Config.swaps.autoRefreshPeriodSec);
+  };
+
   const processCancel = () => {
     goBack();
   };
@@ -714,15 +736,16 @@ export const EvmLifiSwap = ({
       ) : (
         <>
           {!serviceUnavailable && !underMaintenance && (
-            <FormContainer>
-              <div className="evm-lifi-swap-page-content">
-                <div className="top-row">
-                  <SVGIcon
-                    className="swap-history-button"
-                    icon={SVGIcons.SWAPS_HISTORY}
-                    onClick={() => navigateTo(EvmScreen.LIFI_HISTORY_PAGE)}
-                  />
-                </div>
+            <>
+              <div className="top-row">
+                <SVGIcon
+                  className="swap-history-button"
+                  icon={SVGIcons.SWAPS_HISTORY}
+                  onClick={() => navigateTo(EvmScreen.LIFI_HISTORY_PAGE)}
+                />
+              </div>
+              <FormContainer>
+                <div className="evm-lifi-swap-page-content">
 
                 <LabelComponent
                   value="html_popup_swap_swap_from"
@@ -868,6 +891,12 @@ export const EvmLifiSwap = ({
                         onChange={() => {}}
                         placeholder="popup_html_transfer_amount"
                         disabled
+                        rightActionIcon={
+                          lifiQuote ? SVGIcons.SWAPS_ESTIMATE_REFRESH : undefined
+                        }
+                        rightActionClicked={
+                          lifiQuote ? refreshEstimate : undefined
+                        }
                       />
                     </div>
                     <div className="countdown">
@@ -980,8 +1009,9 @@ export const EvmLifiSwap = ({
                     />
                   )}
                 </div>
-              </div>
-            </FormContainer>
+                </div>
+              </FormContainer>
+            </>
           )}
           {underMaintenance && (
             <div className="maintenance-mode">
