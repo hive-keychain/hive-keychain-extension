@@ -6331,7 +6331,7 @@
     "description": "Shown on wallet tokens tab when the search/filter has no matching tokens"
   },
   "evm_custom_erc20_empty_card_message": {
-    "message": "You don't have any custom tokens yet.</br> To get started, click the settings wheel.",
+    "message": "You don't have any custom tokens yet.</br> To get started, click on the settings wheel.",
     "description": "Hint on wallet tokens tab when there are no custom ERC20 tokens"
   },
   "evm_custom_erc20_empty_card_hide": {
@@ -6339,8 +6339,12 @@
     "description": "Dismiss the custom ERC20 empty-state hint card"
   },
   "evm_custom_nft_empty_card_message": {
-    "message": "You don't have any custom NFTs yet.</br> To get started, click the settings wheel.",
+    "message": "You don't have any custom NFTs yet.</br> To get started, click on the settings wheel.",
     "description": "Hint on wallet NFT tab when there are no custom NFTs on a custom chain"
+  },
+  "evm_custom_history_info_card_message": {
+    "message": "On this custom chain, only transactions broadcasted by Keychain will be displayed",
+    "description": "Hint on wallet history tab for custom EVM chains"
   },
   "evm_add_custom_token_popup_title": {
     "message": "Add custom token",

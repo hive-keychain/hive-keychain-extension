@@ -1,3 +1,4 @@
+import { Card } from '@common-ui/card/card.component';
 import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.component';
 import {
   EvmUserHistory,
@@ -5,11 +6,12 @@ import {
 } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import { EvmTokenHistoryItemComponent } from '@popup/evm/pages/home/token-history/token-history-item/evm-token-history-item.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { EvmCustomHistoryInfoCardUtils } from '@popup/evm/utils/evm-custom-history-info-card.utils';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import FlatList from 'flatlist-react';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -31,6 +33,36 @@ export const EvmHistory = ({
   const historyItemList = useRef<HTMLDivElement>(null);
 
   const [displayScrollToTop, setDisplayedScrollToTop] = useState(false);
+  const [infoCardState, setInfoCardState] = useState<{
+    ready: boolean;
+    showCard: boolean;
+  }>({ ready: false, showCard: false });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const refreshInfoCard = async () => {
+      if (!chain.isCustom) {
+        if (!cancelled) {
+          setInfoCardState({ ready: true, showCard: false });
+        }
+        return;
+      }
+
+      const hidden = await EvmCustomHistoryInfoCardUtils.isHiddenForChain(
+        chain.chainId,
+      );
+      if (!cancelled) {
+        setInfoCardState({ ready: true, showCard: !hidden });
+      }
+    };
+
+    void refreshInfoCard();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [chain.chainId, chain.isCustom]);
 
   const goToDetailsPage = async (
     transactionHash: string,
@@ -49,8 +81,26 @@ export const EvmHistory = ({
     });
   };
 
+  const handleHideInfoCard = async () => {
+    await EvmCustomHistoryInfoCardUtils.setHiddenForChain(chain.chainId);
+    setInfoCardState((prev) => ({ ...prev, showCard: false }));
+  };
+
   return (
     <>
+      {!loading && infoCardState.ready && infoCardState.showCard && (
+        <Card className="evm-custom-erc20-empty-card evm-custom-history-info-card">
+          <p className="evm-custom-erc20-empty-card__message">
+            {chrome.i18n.getMessage('evm_custom_history_info_card_message')}
+          </p>
+          <button
+            type="button"
+            className="evm-custom-erc20-empty-card__hide"
+            onClick={() => void handleHideInfoCard()}>
+            {chrome.i18n.getMessage('evm_custom_erc20_empty_card_hide')}
+          </button>
+        </Card>
+      )}
       {history && (
         <>
           {/* {pendingTransactionsItems && pendingTransactionsItems.length > 0 && (
