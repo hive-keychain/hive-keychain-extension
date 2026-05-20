@@ -4,7 +4,16 @@
   row-gap: 12px;
   @include small-card-no-padding();
   color: var(--main-font-color);
+  position: relative;
 
+  .swap-date {
+    position: absolute;
+    top: 4px;
+    right: 8px;
+    font-size: 12px;
+    color: var(--main-font-color);
+    opacity: 0.7;
+  }
   .expand-panel {
     &.opened {
       transform: rotate(0deg);

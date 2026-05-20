@@ -13,6 +13,7 @@ import FormatUtils from 'src/utils/format.utils';
 import { ChainLogo } from '@common-ui/chain-logo/chain-logo.component';
 import { CustomTooltip } from '@common-ui/custom-tooltip/custom-tooltip.component';
 import { setInfoMessage } from '@popup/multichain/actions/message.actions';
+import moment from 'moment';
 
 interface Props {
   historyItem: LifiHistoryItem;
@@ -127,6 +128,9 @@ const LiFiHistoryItemComponent = ({
   return (
     <div className="lifi-history-item">
       <div className="lifi-history-item-information">
+        <div className="swap-date">
+          {moment(historyItem.timestamp).format('YYYY-MM-DD HH:mm:ss')}
+        </div>
         <div className="swap-details">
           <div className="swap-item-icon-container">
             <SVGIcon

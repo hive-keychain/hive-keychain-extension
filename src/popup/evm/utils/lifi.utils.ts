@@ -293,7 +293,12 @@ const retrieveLiFiHistory = async (
   const historyResponse = (await KeychainApi.get(
     `evm/lifi/history?wallet=${encodeURIComponent(wallet)}`,
   )) as LifiHistoryResponse;
-  return historyResponse?.transfers ?? [];
+  return historyResponse?.transfers
+    ? historyResponse.transfers.map((item) => ({
+        ...item,
+        timestamp: item.sending?.timestamp,
+      }))
+    : [];
 };
 
 const getQuote = async ({
