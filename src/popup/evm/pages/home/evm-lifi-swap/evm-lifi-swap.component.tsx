@@ -30,6 +30,7 @@ import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-log
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { LiFiUtils } from '@popup/evm/utils/lifi.utils';
@@ -112,6 +113,12 @@ export const EvmLifiSwap = ({
 
   const [lifiQuote, setLifiQuote] = useState<LiFiStep>();
 
+  const [availableBalance, setAvailableBalance] = useState<{
+    formattedBalance: string;
+    balanceInteger: number;
+    balanceValue: string;
+  } | null>(null);
+
   const resolveChainForToken = (
     chain: ExtendedChain,
     token: TokenExtended | null | undefined,
@@ -184,6 +191,12 @@ export const EvmLifiSwap = ({
   }, [form.amount, form.fromSelectedToken, form.toSelectedToken]);
 
   useEffect(() => {
+    if (form.fromSelectedChain && form.fromSelectedToken) {
+      getAvailableBalance(form.fromSelectedChain, form.fromSelectedToken);
+    }
+  }, [form.fromSelectedToken]);
+
+  useEffect(() => {
     if (autoRefreshCountdown === null) {
       return;
     }
@@ -219,6 +232,50 @@ export const EvmLifiSwap = ({
   useEffect(() => {
     refreshAllowance();
   }, [lifiQuote]);
+
+  const getAvailableBalance = async (
+    selectedChain: ExtendedChain,
+    selectedToken: TokenExtended,
+  ) => {
+    const chain = await ChainUtils.getChain<EvmChain>(
+      `0x${selectedChain.id.toString(16)}`,
+    );
+    const provider = await EthersUtils.getProvider(chain);
+    if (selectedToken.address.toLowerCase() === ethers.ZeroAddress) {
+      const balance = await provider.getBalance(activeAccount.wallet.address);
+      const balanceValue = ethers.formatEther(balance);
+      const balanceInteger = Number(balanceValue);
+
+      const formattedBalance = EvmFormatUtils.formatTokenBalance(
+        balanceValue,
+        8,
+      );
+      return setAvailableBalance({
+        formattedBalance,
+        balanceInteger,
+        balanceValue,
+      });
+    } else {
+      const contract = new ethers.Contract(
+        selectedToken.address,
+        Erc20Abi,
+        provider,
+      );
+      const balance = await contract.balanceOf(activeAccount.wallet.address);
+      const balanceValue = ethers.formatEther(balance);
+      const balanceInteger = Number(balanceValue);
+
+      const formattedBalance = EvmFormatUtils.formatTokenBalance(
+        balanceValue,
+        8,
+      );
+      setAvailableBalance({
+        formattedBalance,
+        balanceInteger,
+        balanceValue,
+      });
+    }
+  };
 
   const refreshAllowance = async () => {
     if (form.fromSelectedToken && form.fromSelectedChain && form.amount > 0) {
@@ -600,6 +657,15 @@ export const EvmLifiSwap = ({
     ]);
   };
 
+  const handleClickOnAvailableBalance = () => {
+    if (availableBalance) {
+      setForm((prev) => ({
+        ...prev,
+        amount: Number(availableBalance.balanceValue),
+      }));
+    }
+  };
+
   return (
     <div className="evm-lifi-swap-page">
       {loading && !serviceUnavailable ? (
@@ -652,56 +718,68 @@ export const EvmLifiSwap = ({
                 />
                 {form && form.fromSelectedToken && form.fromSelectedChain && (
                   <div className="evm-lifi-swap-chain-token-selectors">
-                    <ComplexeCustomSelect
-                      options={fromTokenList}
-                      selectedItem={LiFiUtils.getTokenOptionItem(
-                        form.fromSelectedToken!,
-                        form.fromSelectedChain!,
-                        chainList,
+                    <div className="selectors-panel">
+                      <ComplexeCustomSelect
+                        options={fromTokenList}
+                        selectedItem={LiFiUtils.getTokenOptionItem(
+                          form.fromSelectedToken!,
+                          form.fromSelectedChain!,
+                          chainList,
+                        )}
+                        setSelectedItem={(value) =>
+                          setForm((prev) => ({
+                            ...prev,
+                            fromSelectedToken: value.value,
+                          }))
+                        }
+                        generateImageIfNull
+                        filterable
+                        customFilter={
+                          <>
+                            {form.fromSelectedChain && (
+                              <LiFiTokenFilter
+                                options={chainList}
+                                selectedItem={LiFiUtils.getChainOptionItem(
+                                  form.fromSelectedChain!,
+                                )}
+                                setSelectedItem={(value) =>
+                                  setForm((prev) => ({
+                                    ...prev,
+                                    fromSelectedChain: value.value,
+                                  }))
+                                }
+                                onQueryChanged={(query) => {
+                                  setFromTokenList(
+                                    filterTokenList(
+                                      form.fromSelectedChain!,
+                                      query,
+                                    ),
+                                  );
+                                }}
+                              />
+                            )}
+                          </>
+                        }
+                      />
+                      <InputComponent
+                        type={InputType.NUMBER}
+                        value={form.amount}
+                        onChange={(value) =>
+                          setForm((prev) => ({ ...prev, amount: value }))
+                        }
+                        placeholder="popup_html_transfer_amount"
+                      />
+                    </div>
+                    <div
+                      className="available-balance"
+                      onClick={handleClickOnAvailableBalance}>
+                      {availableBalance && (
+                        <span>
+                          {availableBalance.formattedBalance}{' '}
+                          {form.fromSelectedToken?.symbol ?? ''}
+                        </span>
                       )}
-                      setSelectedItem={(value) =>
-                        setForm((prev) => ({
-                          ...prev,
-                          fromSelectedToken: value.value,
-                        }))
-                      }
-                      generateImageIfNull
-                      filterable
-                      customFilter={
-                        <>
-                          {form.fromSelectedChain && (
-                            <LiFiTokenFilter
-                              options={chainList}
-                              selectedItem={LiFiUtils.getChainOptionItem(
-                                form.fromSelectedChain!,
-                              )}
-                              setSelectedItem={(value) =>
-                                setForm((prev) => ({
-                                  ...prev,
-                                  fromSelectedChain: value.value,
-                                }))
-                              }
-                              onQueryChanged={(query) => {
-                                setFromTokenList(
-                                  filterTokenList(
-                                    form.fromSelectedChain!,
-                                    query,
-                                  ),
-                                );
-                              }}
-                            />
-                          )}
-                        </>
-                      }
-                    />
-                    <InputComponent
-                      type={InputType.NUMBER}
-                      value={form.amount}
-                      onChange={(value) =>
-                        setForm((prev) => ({ ...prev, amount: value }))
-                      }
-                      placeholder="popup_html_transfer_amount"
-                    />
+                    </div>
                   </div>
                 )}
 
@@ -713,52 +791,57 @@ export const EvmLifiSwap = ({
                 />
                 {form && form.toSelectedChain && form.toSelectedToken && (
                   <div className="evm-lifi-swap-chain-token-selectors">
-                    <ComplexeCustomSelect
-                      options={toTokenList}
-                      selectedItem={LiFiUtils.getTokenOptionItem(
-                        form.toSelectedToken!,
-                        form.toSelectedChain!,
-                        chainList,
-                      )}
-                      setSelectedItem={(value) =>
-                        setForm((prev) => ({
-                          ...prev,
-                          toSelectedToken: value.value,
-                        }))
-                      }
-                      generateImageIfNull
-                      filterable
-                      customFilter={
-                        <>
-                          {form.toSelectedChain && (
-                            <LiFiTokenFilter
-                              options={chainList}
-                              selectedItem={LiFiUtils.getChainOptionItem(
-                                form.toSelectedChain!,
-                              )}
-                              setSelectedItem={(value) =>
-                                setForm((prev) => ({
-                                  ...prev,
-                                  toSelectedChain: value.value,
-                                }))
-                              }
-                              onQueryChanged={(query) => {
-                                setToTokenList(
-                                  filterTokenList(form.toSelectedChain!, query),
-                                );
-                              }}
-                            />
-                          )}
-                        </>
-                      }
-                    />
-                    <InputComponent
-                      type={InputType.NUMBER}
-                      value={lifiQuote?.estimate.toAmount ?? 0}
-                      onChange={() => {}}
-                      placeholder="popup_html_transfer_amount"
-                      disabled
-                    />
+                    <div className="selectors-panel">
+                      <ComplexeCustomSelect
+                        options={toTokenList}
+                        selectedItem={LiFiUtils.getTokenOptionItem(
+                          form.toSelectedToken!,
+                          form.toSelectedChain!,
+                          chainList,
+                        )}
+                        setSelectedItem={(value) =>
+                          setForm((prev) => ({
+                            ...prev,
+                            toSelectedToken: value.value,
+                          }))
+                        }
+                        generateImageIfNull
+                        filterable
+                        customFilter={
+                          <>
+                            {form.toSelectedChain && (
+                              <LiFiTokenFilter
+                                options={chainList}
+                                selectedItem={LiFiUtils.getChainOptionItem(
+                                  form.toSelectedChain!,
+                                )}
+                                setSelectedItem={(value) =>
+                                  setForm((prev) => ({
+                                    ...prev,
+                                    toSelectedChain: value.value,
+                                  }))
+                                }
+                                onQueryChanged={(query) => {
+                                  setToTokenList(
+                                    filterTokenList(
+                                      form.toSelectedChain!,
+                                      query,
+                                    ),
+                                  );
+                                }}
+                              />
+                            )}
+                          </>
+                        }
+                      />
+                      <InputComponent
+                        type={InputType.NUMBER}
+                        value={lifiQuote?.estimate.toAmount ?? 0}
+                        onChange={() => {}}
+                        placeholder="popup_html_transfer_amount"
+                        disabled
+                      />
+                    </div>
                   </div>
                 )}
 
