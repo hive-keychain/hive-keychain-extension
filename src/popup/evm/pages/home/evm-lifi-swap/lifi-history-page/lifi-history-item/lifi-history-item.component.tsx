@@ -128,9 +128,6 @@ const LiFiHistoryItemComponent = ({
   return (
     <div className="lifi-history-item">
       <div className="lifi-history-item-information">
-        <div className="swap-date">
-          {moment(historyItem.timestamp).format('YYYY-MM-DD HH:mm:ss')}
-        </div>
         <div className="swap-details">
           <div className="swap-item-icon-container">
             <SVGIcon
@@ -178,7 +175,7 @@ const LiFiHistoryItemComponent = ({
           <CustomTooltip
             position="left"
             skipTranslation
-            message={getStatusMessage(historyItem.substatus!)}
+            message={moment(historyItem.timestamp).format('YYYY-MM-DD HH:mm')}
             delayShow={500}>
             <SVGIcon
               icon={getStatusIcon(historyItem.status)}
