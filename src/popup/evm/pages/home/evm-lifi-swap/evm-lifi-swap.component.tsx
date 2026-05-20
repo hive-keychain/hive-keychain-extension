@@ -99,6 +99,10 @@ export const EvmLifiSwap = ({
   const [toTokenList, setToTokenList] = useState<OptionItem[]>([]);
   const [chainList, setChainList] = useState<OptionItem[]>([]);
   const [tokenList, setTokenList] = useState<OptionItem[]>([]);
+  const [fromTokenFilterChain, setFromTokenFilterChain] =
+    useState<ExtendedChain | null>(null);
+  const [toTokenFilterChain, setToTokenFilterChain] =
+    useState<ExtendedChain | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [underMaintenance, setUnderMaintenance] = useState(false);
@@ -167,28 +171,17 @@ export const EvmLifiSwap = ({
     };
   }, []);
 
-  useEffect(() => {
-    if (form.fromSelectedChain) {
-      const tokens = filterTokenList(form.fromSelectedChain, '');
-      setFromTokenList(tokens);
-      if (tokens.length > 0) {
-        setForm((prev) => ({ ...prev, fromSelectedToken: tokens[0].value }));
-      }
-    }
-  }, [form.fromSelectedChain]);
+  const handleFromTokenFilterChainChange = (chain: ExtendedChain) => {
+    setFromTokenFilterChain(chain);
+    const tokens = filterTokenList(chain, '');
+    setFromTokenList(tokens);
+  };
 
-  useEffect(() => {
-    if (form.toSelectedChain) {
-      const tokens = filterTokenList(form.toSelectedChain, '');
-      setToTokenList(tokens);
-      if (tokens.length > 0) {
-        setForm((prev) => ({
-          ...prev,
-          toSelectedToken: tokens[1]?.value ?? tokens[0].value,
-        }));
-      }
-    }
-  }, [form.toSelectedChain]);
+  const handleToTokenFilterChainChange = (chain: ExtendedChain) => {
+    setToTokenFilterChain(chain);
+    const tokens = filterTokenList(chain, '');
+    setToTokenList(tokens);
+  };
 
   useEffect(() => {
     throttledRefresh(
@@ -336,10 +329,27 @@ export const EvmLifiSwap = ({
           (chainOption) => !LiFiUtils.isAllChains(chainOption.value),
         )?.value ??
         optionsLists.chains[0].value;
+
+      const list = LiFiUtils.filterTokensByChainAndQuery(
+        optionsLists.tokens,
+        defaultChain,
+        '',
+      );
+
+      const defaultFromToken = list[0].value;
+      const defaultToToken = list[1]?.value ?? defaultFromToken;
+
+      setFromTokenList(list);
+      setToTokenList(list);
+      setFromTokenFilterChain(defaultChain);
+      setToTokenFilterChain(defaultChain);
+
       setForm((prev) => ({
         ...prev,
         fromSelectedChain: defaultChain,
         toSelectedChain: defaultChain,
+        fromSelectedToken: defaultFromToken,
+        toSelectedToken: defaultToToken,
       }));
     } catch (err: unknown) {
       Logger.error(err);
@@ -351,6 +361,13 @@ export const EvmLifiSwap = ({
 
   const filterTokenList = (chain: ExtendedChain, query: string) => {
     return LiFiUtils.filterTokensByChainAndQuery(tokenList, chain, query);
+  };
+
+  const getTokenSelectedChain = (
+    chain: ExtendedChain,
+    token: TokenExtended,
+  ) => {
+    return LiFiUtils.resolveChain(chain, token, chainList);
   };
 
   const getEstimate = async (
@@ -676,6 +693,18 @@ export const EvmLifiSwap = ({
     }
   };
 
+  const handleClickOnSwitchTokens = () => {
+    setForm((prev) => ({
+      ...prev,
+      fromSelectedToken: prev.toSelectedToken,
+      toSelectedToken: prev.fromSelectedToken,
+      fromSelectedChain: prev.toSelectedChain,
+      toSelectedChain: prev.fromSelectedChain,
+      amount: 0,
+    }));
+    setLifiQuote(undefined);
+  };
+
   return (
     <div className="evm-lifi-swap-page">
       {loading && !serviceUnavailable ? (
@@ -687,20 +716,6 @@ export const EvmLifiSwap = ({
           {!serviceUnavailable && !underMaintenance && (
             <FormContainer>
               <div className="evm-lifi-swap-page-content">
-                <div className="countdown">
-                  {!!autoRefreshCountdown && (
-                    <>
-                      {
-                        <span>
-                          {chrome.i18n.getMessage(
-                            'swap_autorefresh',
-                            autoRefreshCountdown + '',
-                          )}
-                        </span>
-                      }
-                    </>
-                  )}
-                </div>
                 <div className="top-row">
                   <SVGIcon
                     className="swap-history-button"
@@ -708,19 +723,6 @@ export const EvmLifiSwap = ({
                     onClick={() => navigateTo(EvmScreen.LIFI_HISTORY_PAGE)}
                   />
                 </div>
-                {lifiQuote && (
-                  <Card className="tool-details-card">
-                    <div className="tool-details-title">
-                      <img
-                        src={`https://docs.li.fi/mintlify-assets/_mintlify/favicons/lifi/luYFsl4agEbmIn0Z/_generated/favicon/favicon-32x32.png`}
-                        className="tool-logo"
-                      />
-                      <div className="tool-name">
-                        {chrome.i18n.getMessage('evm_processed_by', ['LiFi'])}
-                      </div>
-                    </div>
-                  </Card>
-                )}
 
                 <LabelComponent
                   value="html_popup_swap_swap_from"
@@ -736,32 +738,39 @@ export const EvmLifiSwap = ({
                           form.fromSelectedChain!,
                           chainList,
                         )}
-                        setSelectedItem={(value) =>
+                        setSelectedItem={(value) => {
+                          const selectedChain = getTokenSelectedChain(
+                            fromTokenFilterChain ?? form.fromSelectedChain!,
+                            value.value,
+                          );
+                          setLifiQuote(undefined);
                           setForm((prev) => ({
                             ...prev,
+                            fromSelectedChain: selectedChain,
                             fromSelectedToken: value.value,
-                          }))
-                        }
+                            amount: 0,
+                          }));
+                        }}
                         generateImageIfNull
                         filterable
                         customFilter={
                           <>
-                            {form.fromSelectedChain && (
+                            {(fromTokenFilterChain ??
+                              form.fromSelectedChain) && (
                               <LiFiTokenFilter
                                 options={chainList}
                                 selectedItem={LiFiUtils.getChainOptionItem(
-                                  form.fromSelectedChain!,
+                                  fromTokenFilterChain ??
+                                    form.fromSelectedChain!,
                                 )}
                                 setSelectedItem={(value) =>
-                                  setForm((prev) => ({
-                                    ...prev,
-                                    fromSelectedChain: value.value,
-                                  }))
+                                  handleFromTokenFilterChainChange(value.value)
                                 }
                                 onQueryChanged={(query) => {
                                   setFromTokenList(
                                     filterTokenList(
-                                      form.fromSelectedChain!,
+                                      fromTokenFilterChain ??
+                                        form.fromSelectedChain!,
                                       query,
                                     ),
                                   );
@@ -778,6 +787,8 @@ export const EvmLifiSwap = ({
                           setForm((prev) => ({ ...prev, amount: value }))
                         }
                         placeholder="popup_html_transfer_amount"
+                        rightActionClicked={handleClickOnAvailableBalance}
+                        rightActionIcon={SVGIcons.INPUT_MAX}
                       />
                     </div>
                     <div
@@ -793,7 +804,11 @@ export const EvmLifiSwap = ({
                   </div>
                 )}
 
-                <SVGIcon icon={SVGIcons.SWAPS_SWITCH} className="swap-icon" />
+                <SVGIcon
+                  icon={SVGIcons.SWAPS_SWITCH}
+                  className="swap-icon"
+                  onClick={handleClickOnSwitchTokens}
+                />
 
                 <LabelComponent
                   value="html_popup_swap_swap_to"
@@ -809,32 +824,35 @@ export const EvmLifiSwap = ({
                           form.toSelectedChain!,
                           chainList,
                         )}
-                        setSelectedItem={(value) =>
+                        setSelectedItem={(value) => {
+                          const selectedChain = getTokenSelectedChain(
+                            toTokenFilterChain ?? form.toSelectedChain!,
+                            value.value,
+                          );
                           setForm((prev) => ({
                             ...prev,
+                            toSelectedChain: selectedChain,
                             toSelectedToken: value.value,
-                          }))
-                        }
+                          }));
+                        }}
                         generateImageIfNull
                         filterable
                         customFilter={
                           <>
-                            {form.toSelectedChain && (
+                            {(toTokenFilterChain ?? form.toSelectedChain) && (
                               <LiFiTokenFilter
                                 options={chainList}
                                 selectedItem={LiFiUtils.getChainOptionItem(
-                                  form.toSelectedChain!,
+                                  toTokenFilterChain ?? form.toSelectedChain!,
                                 )}
                                 setSelectedItem={(value) =>
-                                  setForm((prev) => ({
-                                    ...prev,
-                                    toSelectedChain: value.value,
-                                  }))
+                                  handleToTokenFilterChainChange(value.value)
                                 }
                                 onQueryChanged={(query) => {
                                   setToTokenList(
                                     filterTokenList(
-                                      form.toSelectedChain!,
+                                      toTokenFilterChain ??
+                                        form.toSelectedChain!,
                                       query,
                                     ),
                                   );
@@ -851,6 +869,16 @@ export const EvmLifiSwap = ({
                         placeholder="popup_html_transfer_amount"
                         disabled
                       />
+                    </div>
+                    <div className="countdown">
+                      {!!autoRefreshCountdown && (
+                        <span>
+                          {chrome.i18n.getMessage(
+                            'swap_autorefresh',
+                            autoRefreshCountdown + '',
+                          )}
+                        </span>
+                      )}
                     </div>
                   </div>
                 )}
@@ -923,6 +951,20 @@ export const EvmLifiSwap = ({
                 </div>
 
                 <div className="fill-space"></div>
+
+                {lifiQuote && (
+                  <Card className="tool-details-card">
+                    <div className="tool-details-title">
+                      <img
+                        src={`https://docs.li.fi/mintlify-assets/_mintlify/favicons/lifi/luYFsl4agEbmIn0Z/_generated/favicon/favicon-32x32.png`}
+                        className="tool-logo"
+                      />
+                      <div className="tool-name">
+                        {chrome.i18n.getMessage('evm_processed_by', ['LiFi'])}
+                      </div>
+                    </div>
+                  </Card>
+                )}
 
                 <div className="evm-lifi-swap-page-content-buttons">
                   <ButtonComponent

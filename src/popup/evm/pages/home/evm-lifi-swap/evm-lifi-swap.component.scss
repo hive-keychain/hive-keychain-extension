@@ -28,12 +28,11 @@
     width: 100%;
 
     .countdown {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      margin-top: 10px;
-      font-size: 13px;
+      font-size: 12px;
+      font-style: italic;
       color: $red;
+      text-align: right;
+      margin-right: 18px;
     }
 
     .top-row {
