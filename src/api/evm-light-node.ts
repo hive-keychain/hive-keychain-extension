@@ -1,18 +1,13 @@
 import { BaseApi } from 'src/api/base';
 
+const EVM_LIGHT_NODE_DEFAULT_URL = 'https://evm.hive-keychain.com';
+
 const sanitizeBaseUrl = (url: string) => url.replace(/\/+$/, '');
 
-const getEvmLightNodeBaseUrl = () => {
-  const baseURL = process.env.EVM_LIGHT_NODE_API_URL;
-
-  if (!baseURL) {
-    throw new Error(
-      'Missing EVM light node base URL. Set EVM_LIGHT_NODE_API_URL.',
-    );
-  }
-
-  return sanitizeBaseUrl(baseURL);
-};
+const getEvmLightNodeBaseUrl = () =>
+  sanitizeBaseUrl(
+    process.env.EVM_LIGHT_NODE_API_URL || EVM_LIGHT_NODE_DEFAULT_URL,
+  );
 
 const buildUrl = (url: string) =>
   `${getEvmLightNodeBaseUrl()}/${url.replace(/^\/+/, '')}`;
