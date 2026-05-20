@@ -521,7 +521,7 @@ Unless the surrounding code strongly suggests otherwise, new code should default
 
 - **lowercase hyphenated filenames**;
 - **explicitly named arrow functions**;
-- **named exports for utils**;
+- **named exports for utils**; Generally we will prefer a single exported module containing all the different functions. see `nft.utils.ts` for reference for example
 - **default exports for React components only when consistent locally**;
 - **absolute imports via alias or `src/...`**;
 - **strict typing**;
