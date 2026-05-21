@@ -1,4 +1,5 @@
 import { EvmLightNodeApi } from '@api/evm-light-node';
+import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import {
   EvmTransactionType,
   ProviderTransactionData,
@@ -8,6 +9,8 @@ import {
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
 import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
+import Decimal from 'decimal.js';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 
 jest.mock('@api/evm-light-node', () => ({
   EvmLightNodeApi: {
@@ -15,9 +18,91 @@ jest.mock('@api/evm-light-node', () => ({
   },
 }));
 
+const validEip1559Fee = (): GasFeeEstimationBase => ({
+  type: EvmTransactionType.EIP_1559,
+  estimatedFeeInEth: new Decimal('0.001'),
+  estimatedFeeUSD: new Decimal(1),
+  maxFeeInEth: new Decimal('0.002'),
+  maxFeeUSD: new Decimal(2),
+  estimatedMaxDuration: new Decimal(30),
+  gasLimit: new Decimal(21000),
+  priorityFeeInGwei: new Decimal(1),
+  maxFeePerGasInGwei: new Decimal(30),
+  icon: SVGIcons.EVM_GAS_FEE_LOW,
+  name: 'popup_html_evm_custom_gas_fee_low',
+});
+
+const fallbackShapedFee = (): GasFeeEstimationBase => ({
+  type: EvmTransactionType.EIP_1559,
+  estimatedFeeInEth: new Decimal(0),
+  estimatedFeeUSD: new Decimal(0),
+  maxFeeInEth: new Decimal(0),
+  maxFeeUSD: new Decimal(0),
+  estimatedMaxDuration: new Decimal(0),
+  gasLimit: new Decimal(21000),
+  priorityFeeInGwei: new Decimal(0),
+  maxFeePerGasInGwei: new Decimal(0),
+  gasPriceInGwei: new Decimal(0),
+  icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
+  name: 'popup_html_evm_custom_gas_fee_custom',
+});
+
 describe('GasFeeUtils', () => {
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe('gas fee validation helpers', () => {
+    it('treats undefined fee as invalid', () => {
+      expect(GasFeeUtils.isGasFeeEstimateInvalid(undefined)).toBe(true);
+    });
+
+    it('treats fallback-shaped zero fees as invalid', () => {
+      expect(GasFeeUtils.isGasFeeEstimateInvalid(fallbackShapedFee())).toBe(
+        true,
+      );
+      expect(
+        GasFeeUtils.hasDisplayableEstimatedFee(fallbackShapedFee()),
+      ).toBe(false);
+      expect(GasFeeUtils.hasDisplayableMaxFee(fallbackShapedFee())).toBe(
+        false,
+      );
+      expect(GasFeeUtils.hasDisplayableDuration(fallbackShapedFee())).toBe(
+        false,
+      );
+    });
+
+    it('treats valid EIP-1559 fees as displayable and not invalid', () => {
+      const fee = validEip1559Fee();
+      expect(GasFeeUtils.isGasFeeEstimateInvalid(fee)).toBe(false);
+      expect(GasFeeUtils.hasDisplayableEstimatedFee(fee)).toBe(true);
+      expect(GasFeeUtils.hasDisplayableMaxFee(fee)).toBe(true);
+      expect(GasFeeUtils.hasDisplayableDuration(fee)).toBe(true);
+    });
+
+    it('treats legacy fees with zero gas price as invalid', () => {
+      const fee: GasFeeEstimationBase = {
+        ...validEip1559Fee(),
+        type: EvmTransactionType.LEGACY,
+        gasPriceInGwei: new Decimal(0),
+        priorityFeeInGwei: undefined,
+        maxFeePerGasInGwei: undefined,
+      };
+      expect(GasFeeUtils.isGasFeeEstimateInvalid(fee)).toBe(true);
+    });
+
+    it('still treats legacy -1 sentinel values as invalid', () => {
+      const fee: GasFeeEstimationBase = {
+        ...fallbackShapedFee(),
+        type: EvmTransactionType.LEGACY,
+        estimatedFeeInEth: new Decimal(-1),
+        maxFeeInEth: new Decimal(-1),
+        gasPriceInGwei: new Decimal(-1),
+        priorityFeeInGwei: undefined,
+        maxFeePerGasInGwei: undefined,
+      };
+      expect(GasFeeUtils.isGasFeeEstimateInvalid(fee)).toBe(true);
+    });
   });
 
   it('adds USD fee values to dApp gas suggestions', async () => {

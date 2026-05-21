@@ -5,6 +5,7 @@ import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
+import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
@@ -102,12 +103,7 @@ export const SendTransaction = (props: Props) => {
       return;
     }
 
-    if (
-      transactionHook.selectedFee?.maxFeeInEth.equals(-1) ||
-      transactionHook.selectedFee?.estimatedFeeInEth.equals(-1) ||
-      transactionHook.selectedFee?.gasLimit.equals(-1) ||
-      transactionHook.selectedFee?.priorityFeeInGwei?.equals(-1)
-    ) {
+    if (GasFeeUtils.isGasFeeEstimateInvalid(transactionHook.selectedFee)) {
       forceOpenGasFeePanelEvent.emit('forceOpenCustomFeePanel');
     }
     transactionHook.handleOnConfirmClick();

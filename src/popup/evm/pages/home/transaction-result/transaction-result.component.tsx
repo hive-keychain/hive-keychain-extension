@@ -14,6 +14,7 @@ import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.inter
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
+import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import { getAbiFromType } from '@popup/evm/reference-data/abi.data';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
@@ -550,7 +551,7 @@ const EvmTransactionResult = ({
   };
 
   const getPendingGasFeeDisplay = (): string => {
-    if (gasFee?.estimatedFeeInEth && !gasFee.estimatedFeeInEth.equals(-1)) {
+    if (gasFee && GasFeeUtils.hasDisplayableEstimatedFee(gasFee)) {
       return formatEstimatedNativeFeeFromEth(
         gasFee.estimatedFeeInEth,
         chain.mainToken,

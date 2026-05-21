@@ -14,6 +14,7 @@ import {
 import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
+import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { goBack } from '@popup/multichain/actions/navigation.actions';
@@ -129,13 +130,7 @@ const ConfirmationPage = ({
   const hideConfirm = BalanceChangeCardUtils.hasInsufficientBalance(balanceInfo);
 
   const handleClickOnConfirm = () => {
-    if (
-      hasGasFee &&
-      (selectedFee?.maxFeeInEth.equals(-1) ||
-        selectedFee?.estimatedFeeInEth.equals(-1) ||
-        selectedFee?.gasLimit.equals(-1) ||
-        selectedFee?.priorityFeeInGwei?.equals(-1))
-    ) {
+    if (hasGasFee && GasFeeUtils.isGasFeeEstimateInvalid(selectedFee)) {
       forceOpenGasFeePanelEvent.emit('forceOpenCustomFeePanel');
       return;
     }

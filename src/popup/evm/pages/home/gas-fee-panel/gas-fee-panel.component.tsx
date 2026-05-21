@@ -216,15 +216,15 @@ export const GasFeePanel = ({
     const fallbackGasLimit = Number(transactionData?.gasLimit ?? 21000);
     return {
       type: transactionType,
-      estimatedFeeInEth: new Decimal(-1),
-      maxFeeInEth: new Decimal(-1),
+      estimatedFeeInEth: new Decimal(0),
+      maxFeeInEth: new Decimal(0),
       estimatedFeeUSD: new Decimal(0),
       maxFeeUSD: new Decimal(0),
-      estimatedMaxDuration: new Decimal(-1),
+      estimatedMaxDuration: new Decimal(0),
       gasLimit: new Decimal(fallbackGasLimit),
-      priorityFeeInGwei: new Decimal(-1),
-      maxFeePerGasInGwei: new Decimal(-1),
-      gasPriceInGwei: new Decimal(-1),
+      priorityFeeInGwei: new Decimal(0),
+      maxFeePerGasInGwei: new Decimal(0),
+      gasPriceInGwei: new Decimal(0),
       icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
       name: 'popup_html_evm_custom_gas_fee_custom',
     };
@@ -467,6 +467,7 @@ export const GasFeePanel = ({
         }
         case EvmTransactionType.LEGACY: {
           customMaxFee = gasPriceInEth;
+          customEstimatedFee = customMaxFee;
           break;
         }
       }
@@ -483,7 +484,7 @@ export const GasFeePanel = ({
         return;
       }
 
-      let customDuration = new Decimal(-1);
+      let customDuration = new Decimal(0);
       if (
         feeEstimation?.aggressive?.maxFeeInEth &&
         customMaxFee >= feeEstimation.aggressive.maxFeeInEth
@@ -501,12 +502,12 @@ export const GasFeePanel = ({
         customDuration = feeEstimation.low.estimatedMaxDuration;
       }
 
-      const custom: GasFeeEstimationBase = {
+      const customFeeCandidate = {
         estimatedFeeInEth: customEstimatedFee,
         maxFeeInEth: customMaxFee,
         estimatedMaxDuration: customDuration,
         gasLimit,
-        type: customGasFeeForm.type,
+        type: customGasFeeForm.type ?? transactionType,
         gasPriceInGwei,
         maxFeePerGasInGwei: maxBaseFeeInGwei.add(priorityFeeInGwei),
         priorityFeeInGwei,
@@ -515,6 +516,13 @@ export const GasFeePanel = ({
         name: 'popup_html_evm_custom_gas_fee_custom',
         icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
       } as GasFeeEstimationBase;
+
+      if (GasFeeUtils.isGasFeeEstimateInvalid(customFeeCandidate)) {
+        setCustomFeeFormWarning('evm_gas_fee_warning_not_available_for_chain');
+        return;
+      }
+
+      const custom: GasFeeEstimationBase = customFeeCandidate;
       customFeeWasSavedRef.current = true;
       onSelectFee(custom);
 
@@ -585,7 +593,7 @@ export const GasFeePanel = ({
             {!isExpandablePanelOpened && (
               <div className="gas-fee-estimate">
                 <div className="gas-fee-value">
-                  {!selectedFee.estimatedFeeInEth.equals(-1) ? (
+                  {GasFeeUtils.hasDisplayableEstimatedFee(selectedFee) ? (
                     <>
                       {FormatUtils.formatCurrencyValue(
                         selectedFee.estimatedFeeInEth.toFixed(),
@@ -640,7 +648,7 @@ export const GasFeePanel = ({
                     </div>
                     <div className="label gas-fee">
                       <div>
-                        {!selectedFee.estimatedFeeInEth.equals(-1) ? (
+                        {GasFeeUtils.hasDisplayableEstimatedFee(selectedFee) ? (
                           <>
                             {FormatUtils.formatCurrencyValue(
                               selectedFee.estimatedFeeInEth.toFixed(),
@@ -652,7 +660,7 @@ export const GasFeePanel = ({
                           '-'
                         )}
                       </div>
-                      {!selectedFee.estimatedFeeInEth.equals(-1) &&
+                      {GasFeeUtils.hasDisplayableEstimatedFee(selectedFee) &&
                         !!selectedFee.estimatedFeeUSD && (
                           <div className="label usd-value">
                             {selectedFee.estimatedFeeUSD.toFixed(2)}
@@ -672,7 +680,7 @@ export const GasFeePanel = ({
                 <div className="label gas-fee">
                   <div className="label gas-fee">
                     <div>
-                      {!selectedFee.maxFeeInEth.equals(-1) ? (
+                      {GasFeeUtils.hasDisplayableMaxFee(selectedFee) ? (
                         <>
                           {FormatUtils.formatCurrencyValue(
                             selectedFee.maxFeeInEth.toFixed(),
@@ -684,7 +692,7 @@ export const GasFeePanel = ({
                         '-'
                       )}
                     </div>
-                    {!selectedFee.maxFeeInEth.equals(-1) &&
+                    {GasFeeUtils.hasDisplayableMaxFee(selectedFee) &&
                       !!selectedFee.maxFeeUSD && (
                         <div className="label usd-value">
                           {selectedFee.maxFeeUSD.toFixed(2)}
@@ -694,7 +702,7 @@ export const GasFeePanel = ({
                   </div>
                 </div>
               </div>
-              {!selectedFee.estimatedMaxDuration.equals(-1) && (
+              {GasFeeUtils.hasDisplayableDuration(selectedFee) && (
                 <>
                   <Separator fullSize type="horizontal" />
                   <div className="gas-fee-top-row">
@@ -793,7 +801,7 @@ export const GasFeePanel = ({
                     </div>
                     <div className="label duration">
                       {feeEstimation.custom &&
-                      !feeEstimation.custom.estimatedMaxDuration.equals(-1)
+                      GasFeeUtils.hasDisplayableDuration(feeEstimation.custom)
                         ? chrome.i18n.getMessage(
                             'popup_html_evm_gas_fee_estimate_duration',
                             [
@@ -804,7 +812,7 @@ export const GasFeePanel = ({
                     </div>
                     <div className="label gas-fee">
                       {feeEstimation.custom &&
-                      !feeEstimation.custom.maxFeeInEth.equals(-1)
+                      GasFeeUtils.hasDisplayableMaxFee(feeEstimation.custom)
                         ? FormatUtils.formatCurrencyValue(
                             feeEstimation.custom.maxFeeInEth.toFixed(),
                             8,
@@ -827,7 +835,9 @@ export const GasFeePanel = ({
                         </div>
                         <div className="label duration">
                           {feeEstimation.suggestedByDApp &&
-                          !feeEstimation.suggestedByDApp.maxFeeInEth.equals(-1)
+                          GasFeeUtils.hasDisplayableMaxFee(
+                            feeEstimation.suggestedByDApp,
+                          )
                             ? chrome.i18n.getMessage(
                                 'popup_html_evm_gas_fee_estimate_duration',
                                 [
@@ -838,7 +848,9 @@ export const GasFeePanel = ({
                         </div>
                         <div className="label gas-fee">
                           {feeEstimation.suggestedByDApp &&
-                          !feeEstimation.suggestedByDApp.maxFeeInEth.equals(-1)
+                          GasFeeUtils.hasDisplayableMaxFee(
+                            feeEstimation.suggestedByDApp,
+                          )
                             ? FormatUtils.formatCurrencyValue(
                                 feeEstimation.suggestedByDApp.maxFeeInEth.toFixed(),
                                 8,

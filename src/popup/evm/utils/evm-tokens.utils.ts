@@ -28,6 +28,7 @@ import {
   EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
+import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import {
   AbiList,
   ERC1155Abi,
@@ -1594,8 +1595,9 @@ const buildBalanceDetails = (
 };
 
 const getEstimatedGasFee = (selectedFee?: GasFeeEstimationBase) => {
-  if (!selectedFee || selectedFee.estimatedFeeInEth.equals(-1))
+  if (!selectedFee || GasFeeUtils.isGasFeeEstimateInvalid(selectedFee)) {
     return undefined;
+  }
   return new Decimal(selectedFee.estimatedFeeInEth.toString());
 };
 

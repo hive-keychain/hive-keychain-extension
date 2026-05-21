@@ -33,6 +33,45 @@ const getGasFeeEstimations = async (chain: Chain) => {
   return fetchGasOracle(chain.chainId) as Promise<any>;
 };
 
+const isInvalidDecimal = (value?: Decimal) => !value || value.lte(0);
+
+const isGasFeeEstimateInvalid = (fee?: GasFeeEstimationBase): boolean => {
+  if (!fee) {
+    return true;
+  }
+  if (
+    isInvalidDecimal(fee.gasLimit) ||
+    isInvalidDecimal(fee.estimatedFeeInEth) ||
+    isInvalidDecimal(fee.maxFeeInEth)
+  ) {
+    return true;
+  }
+
+  switch (fee.type) {
+    case EvmTransactionType.EIP_1559:
+      return (
+        isInvalidDecimal(fee.priorityFeeInGwei) ||
+        isInvalidDecimal(fee.maxFeePerGasInGwei)
+      );
+    case EvmTransactionType.LEGACY:
+    case EvmTransactionType.EIP_155:
+      return isInvalidDecimal(fee.gasPriceInGwei);
+    default:
+      return (
+        isInvalidDecimal(fee.priorityFeeInGwei) ||
+        isInvalidDecimal(fee.gasPriceInGwei)
+      );
+  }
+};
+
+const hasDisplayableEstimatedFee = (fee: GasFeeEstimationBase) =>
+  fee.estimatedFeeInEth.gt(0);
+
+const hasDisplayableMaxFee = (fee: GasFeeEstimationBase) => fee.maxFeeInEth.gt(0);
+
+const hasDisplayableDuration = (fee: GasFeeEstimationBase) =>
+  fee.estimatedMaxDuration.gt(0);
+
 const estimate = async (
   chain: EvmChain,
   fromAddress: string,
@@ -113,7 +152,7 @@ const estimate = async (
         maxFeeInEth: maxFee,
         estimatedFeeUSD: valueUSD,
         maxFeeUSD: valueUSD,
-        estimatedMaxDuration: new Decimal(-1),
+        estimatedMaxDuration: new Decimal(0),
         priorityFeeInGwei: new Decimal(maxPriorityFeePerGasInGwei),
         maxFeePerGasInGwei: new Decimal(maxFeePerGasInGwei),
         baseFeePerGasInGwei: new Decimal(baseFeeInGwei),
@@ -245,14 +284,14 @@ const estimate = async (
     },
     custom: {
       type: type,
-      estimatedFeeInEth: new Decimal(-1),
-      maxFeeInEth: new Decimal(-1),
+      estimatedFeeInEth: new Decimal(0),
+      maxFeeInEth: new Decimal(0),
       estimatedFeeUSD: new Decimal(0),
       maxFeeUSD: new Decimal(0),
-      estimatedMaxDuration: new Decimal(-1),
-      priorityFeeInGwei: new Decimal(-1),
-      maxFeePerGasInGwei: new Decimal(-1),
-      gasPriceInGwei: new Decimal(-1),
+      estimatedMaxDuration: new Decimal(0),
+      priorityFeeInGwei: new Decimal(0),
+      maxFeePerGasInGwei: new Decimal(0),
+      gasPriceInGwei: new Decimal(0),
       gasLimit: new Decimal(gasLimit),
       icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
       name: 'popup_html_evm_custom_gas_fee_custom',
@@ -355,7 +394,7 @@ const createDAppSuggestionFromTransactionData = async (
   estimatedFee = new Decimal(Number(estimatedFee ?? 0))
     .mul(Decimal.div(gasLimitToUse, 1000000))
     .div(1000);
-  let estimatedMaxDuration = new Decimal(-1);
+  let estimatedMaxDuration = new Decimal(0);
   if (
     estimates?.aggressive?.maxFeeInEth &&
     maxFee.greaterThanOrEqualTo(estimates.aggressive.maxFeeInEth)
@@ -397,4 +436,8 @@ const createDAppSuggestionFromTransactionData = async (
 
 export const GasFeeUtils = {
   estimate,
+  isGasFeeEstimateInvalid,
+  hasDisplayableEstimatedFee,
+  hasDisplayableMaxFee,
+  hasDisplayableDuration,
 };
