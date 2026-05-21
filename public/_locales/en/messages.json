@@ -6690,8 +6690,8 @@
     "description": "Transaction result error message transaction replaced"
   },
   "evm_transaction_result_error_message_network": {
-    "message": "A network error occurred. Please try again",
-    "description": "Transaction result error message network"
+    "message": "This RPC doesn't seem to work correctly. Please consider changing it in Advanced Settings",
+    "description": "Transaction result error when RPC/network fails; suggests changing RPC in Advanced Settings"
   },
   "evm_transaction_result_error_message_bad_data": {
     "message": "The RPC returned invalid data",

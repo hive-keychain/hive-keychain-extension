@@ -4580,8 +4580,8 @@
     "description": "Transaction result error message transaction replaced"
   },
   "evm_transaction_result_error_message_network": {
-    "message": "Terjadi kesalahan jaringan. Silakan coba lagi",
-    "description": "Transaction result error message network"
+    "message": "RPC ini sepertinya tidak berfungsi dengan benar. Pertimbangkan untuk mengubahnya di Pengaturan lanjutan",
+    "description": "Transaction result error when RPC/network fails; suggests changing RPC in Advanced Settings"
   },
   "evm_transaction_result_error_message_bad_data": {
     "message": "RPC mengembalikan data yang tidak valid",

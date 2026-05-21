@@ -4580,8 +4580,8 @@
     "description": "Transaction result error message transaction replaced"
   },
   "evm_transaction_result_error_message_network": {
-    "message": "Ein Netzwerkfehler ist aufgetreten. Bitte versuchen Sie es erneut",
-    "description": "Transaction result error message network"
+    "message": "Dieser RPC scheint nicht richtig zu funktionieren. Bitte erwägen Sie, ihn in den Erweiterten Einstellungen zu ändern",
+    "description": "Transaction result error when RPC/network fails; suggests changing RPC in Advanced Settings"
   },
   "evm_transaction_result_error_message_bad_data": {
     "message": "Das RPC hat ungültige Daten zurückgegeben",
