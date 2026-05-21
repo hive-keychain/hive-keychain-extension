@@ -308,8 +308,8 @@ export const GasFeePanel = ({
         err.shortMessage,
         err.message,
       );
-      console.log('error', error.message);
-      forceOpenGasFeePanelEvent?.emit('forceOpenCustomFeePanel');
+      // console.log('error', error.message);
+      // forceOpenGasFeePanelEvent?.emit('forceOpenCustomFeePanel');
       // if (
       //   error.message !==
       //   'evm_transaction_result_error_message_insufficient_funds'

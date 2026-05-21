@@ -103,9 +103,14 @@ export const SendTransaction = (props: Props) => {
       return;
     }
 
-    if (GasFeeUtils.isGasFeeEstimateInvalid(transactionHook.selectedFee)) {
+    if (
+      needsGasFeePanel &&
+      GasFeeUtils.isGasFeeEstimateInvalid(transactionHook.selectedFee)
+    ) {
       forceOpenGasFeePanelEvent.emit('forceOpenCustomFeePanel');
+      return;
     }
+
     transactionHook.handleOnConfirmClick();
   };
 
@@ -145,6 +150,7 @@ export const SendTransaction = (props: Props) => {
                     onGasFeePanelInitialEstimationComplete
                   }
                   onRefreshStateChange={setGasFeeRefreshing}
+                  forceOpenGasFeePanelEvent={forceOpenGasFeePanelEvent}
                 />
               )}
               {shouldDisplayBalanceChange &&

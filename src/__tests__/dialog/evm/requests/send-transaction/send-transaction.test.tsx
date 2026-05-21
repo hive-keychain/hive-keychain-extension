@@ -1574,6 +1574,53 @@ describe('send-transaction proxy tests:\n', () => {
     );
   });
 
+  it('opens custom gas panel and blocks confirm when selected fee is invalid', async () => {
+    transactionHook.fields = {
+      operationName: 'evm_operation_transfer',
+    } as any;
+    transactionHook.ready = true;
+    transactionHook.selectedFee = {
+      type: EvmTransactionType.EIP_1559,
+      estimatedFeeInEth: new Decimal(0),
+      estimatedFeeUSD: new Decimal(0),
+      maxFeeInEth: new Decimal(0),
+      maxFeeUSD: new Decimal(0),
+      estimatedMaxDuration: new Decimal(0),
+      gasLimit: new Decimal(21000),
+      priorityFeeInGwei: new Decimal(0),
+      maxFeePerGasInGwei: new Decimal(0),
+    } as any;
+
+    render(<SendTransaction {...buildSendTransactionProps()} />);
+
+    await waitFor(() => expect(mockGasFeePanel).toHaveBeenCalled());
+    expect(mockGasFeePanel).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        forceOpenGasFeePanelEvent: expect.anything(),
+      }),
+    );
+
+    act(() => {
+      mockGasFeePanel.mock.calls[mockGasFeePanel.mock.calls.length - 1][0]
+        .onInitialEstimationComplete();
+    });
+    await waitFor(() =>
+      expect((screen.getByTestId('dialog-confirm') as HTMLButtonElement).disabled)
+        .toBe(false),
+    );
+
+    const forceOpenEvent =
+      mockGasFeePanel.mock.calls[mockGasFeePanel.mock.calls.length - 1][0]
+        .forceOpenGasFeePanelEvent;
+    const forceOpenListener = jest.fn();
+    forceOpenEvent.addListener('forceOpenCustomFeePanel', forceOpenListener);
+
+    fireEvent.click(screen.getByTestId('dialog-confirm'));
+
+    expect(forceOpenListener).toHaveBeenCalled();
+    expect(transactionHook.handleOnConfirmClick).not.toHaveBeenCalled();
+  });
+
   it('hides confirm when balance is insufficient', async () => {
     transactionHook.fields = {
       operationName: 'evm_operation_transfer',
