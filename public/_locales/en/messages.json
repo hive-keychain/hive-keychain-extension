@@ -6774,5 +6774,9 @@
   "reload_extension": {
     "message": "Reload extension",
     "description": "Button label to reload the extension"
+  },
+  "evm_error_gas_estimate": {
+    "message": "Gas estimation failed. You will need to enter a custom gas fee.",
+    "description": "Gas estimation failed. You will need to enter a custom gas fee."
   }
 }

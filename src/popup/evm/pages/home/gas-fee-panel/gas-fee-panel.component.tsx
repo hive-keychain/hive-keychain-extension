@@ -309,12 +309,17 @@ export const GasFeePanel = ({
         err.message,
       );
       console.log('error', error.message);
-      if (
-        error.message !==
-        'evm_transaction_result_error_message_insufficient_funds'
-      ) {
-        setErrorMessage(error);
-      }
+      forceOpenGasFeePanelEvent?.emit('forceOpenCustomFeePanel');
+      // if (
+      //   error.message !==
+      //   'evm_transaction_result_error_message_insufficient_funds'
+      // ) {
+      //   // setErrorMessage(error);
+      //   // setErrorMessage({
+      //   //   message: 'evm_error_gas_estimate',
+      //   // } as EtherRPCCustomError);
+
+      // }
     } finally {
       if (generation === initGenerationRef.current) {
         onInitialEstimationComplete?.();
