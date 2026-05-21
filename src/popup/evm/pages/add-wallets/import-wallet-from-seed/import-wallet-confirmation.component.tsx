@@ -59,7 +59,6 @@ const ImportWalletConfirmation = ({
       navigateTo(Screen.IMPORT_EVM_WALLET, true);
     }
     // Runs once on landing; subscribing to param changes causes import-seed flicker mid-submit.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

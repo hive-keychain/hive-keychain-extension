@@ -22,13 +22,13 @@ import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { MetadataPopup } from 'src/common-ui/metadata-popup/metadata-popup.component';
-import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
+import { Screen } from '@interfaces/screen.interface';
+import { SelectAccountSectionComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { loadGlobalProperties } from 'src/popup/hive/actions/global-properties.actions';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import { RewardsUtils } from 'src/popup/hive/utils/rewards.utils';
-import { Screen } from 'src/reference-data/screen.enum';
 import { AsyncUtils } from 'src/utils/async.utils';
 import FormatUtils from 'src/utils/format.utils';
 

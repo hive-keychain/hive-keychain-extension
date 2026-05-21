@@ -139,7 +139,6 @@ const Home = ({
 
   useEffect(() => {
     if (activeAccount.wallet.address) {
-      console.log('activeAccount.wallet.address');
       void loadPendingTransactions(activeAccount.wallet);
     }
   }, [activeAccount.wallet.address, chain.chainId]);
@@ -332,7 +331,6 @@ const Home = ({
         navigateToWithParams(EvmScreen.EVM_NFT_ALL_NFTS_PAGE, {
           collections: params,
         } as NavigationParams);
-        console.log('params', params);
         break;
       }
     }

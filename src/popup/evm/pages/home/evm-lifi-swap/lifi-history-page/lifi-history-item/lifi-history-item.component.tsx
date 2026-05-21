@@ -175,7 +175,9 @@ const LiFiHistoryItemComponent = ({
           <CustomTooltip
             position="left"
             skipTranslation
-            message={moment(historyItem.timestamp).format('YYYY-MM-DD HH:mm')}
+            message={moment(historyItem.sending?.timestamp).format(
+              'YYYY-MM-DD HH:mm',
+            )}
             delayShow={500}>
             <SVGIcon
               icon={getStatusIcon(historyItem.status)}

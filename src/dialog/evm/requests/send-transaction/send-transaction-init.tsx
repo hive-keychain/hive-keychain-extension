@@ -108,14 +108,6 @@ const getDecodedFieldName = (
   inputType: string,
   inputIndex: number,
 ) => {
-  console.log(
-    'getDecodedFieldName',
-    tokenType,
-    methodName,
-    inputName,
-    inputType,
-    inputIndex,
-  );
   const normalizedMethodName = methodName.toLowerCase();
   const normalizedTokenType = `${tokenType ?? ''}`.toUpperCase();
   const normalizedInputType = `${inputType ?? ''}`.toLowerCase();
@@ -123,12 +115,6 @@ const getDecodedFieldName = (
     normalizedTokenType.includes('ERC721') ||
     normalizedTokenType.includes('ERC721_ENUMERABLE');
   const isNft = isErc721Like || normalizedTokenType.includes('ERC1155');
-
-  console.log('normalizedMethodName', normalizedMethodName);
-  console.log('normalizedTokenType', normalizedTokenType);
-  console.log('normalizedInputType', normalizedInputType);
-  console.log('isErc721Like', isErc721Like);
-  console.log('isNft', isNft);
 
   if (inputName === 'numberOfTokens') {
     return 'evm_nft_number_of_tokens';
@@ -446,7 +432,6 @@ export async function runSendTransactionInit(
                 data: params.data,
                 value: params.value,
               });
-              console.log(decoded, 'decoded');
               return decoded;
             } catch (error) {
               return null;
@@ -473,18 +458,6 @@ export async function runSendTransactionInit(
             const parsedArgs = decodedTransactionData.args
               ? EvmTransactionParserUtils.parseArgs(decodedTransactionData.args)
               : [];
-            console.log('dialog decoded parameters', {
-              method: decodedTransactionData.name,
-              signature: decodedTransactionData.signature,
-              inputs: decodedTransactionData.fragment.inputs.map(
-                (input, index) => ({
-                  index,
-                  name: input.name,
-                  type: input.type,
-                  value: parsedArgs[index],
-                }),
-              ),
-            });
             const contract = new ethers.Contract(
               params.to,
               normalizedAbi,

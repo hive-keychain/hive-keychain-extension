@@ -3,6 +3,7 @@ import {
   DialogMessage,
   MultisigDialogMessage,
 } from '@background/multichain/background-message.interface';
+import Logger from 'src/utils/logger.utils';
 
 const isNoReceiverError = (error: unknown) => {
   const message = error instanceof Error ? error.message : `${error ?? ''}`;
@@ -19,7 +20,7 @@ const tabsSendMessage = async (
     const res = await chrome.tabs.sendMessage(tabId, message);
   } catch (err) {
     if (!isNoReceiverError(err)) {
-      console.log(err, 'error in tabsSendMessage');
+      Logger.error(err, 'error in tabsSendMessage');
     }
     if (onFail) onFail();
   }
@@ -33,7 +34,7 @@ const runtimeSendMessage = async (
     const res = await chrome.runtime.sendMessage(message);
   } catch (err) {
     if (!isNoReceiverError(err)) {
-      console.log(err, 'error in runtimeSendMessage');
+      Logger.error(err, 'error in runtimeSendMessage');
     }
     if (onFail) onFail();
   }

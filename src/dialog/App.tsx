@@ -77,7 +77,6 @@ const App = () => {
     initGoogleAnalytics();
     chrome.runtime.onMessage.addListener(
       async function (data, sender, sendResp) {
-        console.log(data);
         if (data.command === DialogCommand.READY) {
           return BrowserUtils.sendResponse(true, sendResp);
         } else if (

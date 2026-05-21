@@ -209,9 +209,6 @@ export const initEvmRequestHandler = async (
           request,
           dappInfo,
         );
-      } else {
-        // return error ?
-        console.log('return error ? (Init L82)');
       }
     } else if (EvmRestrictedMethods.includes(request.method)) {
       if (request.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
@@ -244,7 +241,5 @@ export const initEvmRequestHandler = async (
         );
       }
     }
-  } else {
-    console.log('no case ??');
   }
 };

@@ -6,6 +6,7 @@ import { waitUntilDialogIsReady } from '@background/utils/window.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
+import Logger from 'src/utils/logger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
@@ -99,7 +100,7 @@ export const createOrUpdateDialog = async (
       waitForDialogReady(callback);
       return;
     } catch (error) {
-      console.log('error in update window', error);
+      Logger.error('error in update window', error);
     }
   }
 

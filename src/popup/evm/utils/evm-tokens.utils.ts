@@ -555,7 +555,6 @@ const getTokenBalance = async (
       }
 
       default:
-        console.log(token, 'token in default');
         return undefined;
     }
 

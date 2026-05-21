@@ -13,7 +13,6 @@ const FormValidationError: Record<string, string> = {
 
 const parseJoiError = (error: FieldError) => {
   Logger.error('Error in form: ', error);
-  console.log(error);
   if (error.type === 'number.min')
     return capitalize(error.message?.replace(/"/g, ''));
   let errMessage = chrome.i18n.getMessage(
@@ -52,7 +51,6 @@ const setNestedValue = <T extends object>(
   if (typeof current === 'object' && current !== null) {
     current[lastKey] = value;
   }
-  console.log(obj);
   return obj;
 };
 

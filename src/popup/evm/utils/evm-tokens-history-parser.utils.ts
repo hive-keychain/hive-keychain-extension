@@ -583,7 +583,6 @@ const parseEvent = async (
           historyItem.detailFields = specificData.detailFields;
           historyItem.tokenInfo = specificData.tokenInfo;
         } catch (err) {
-          console.log(event);
           Logger.error(err as string);
           const defaultLabel =
             event.from.toLowerCase() === walletAddress.toLowerCase()
@@ -610,7 +609,6 @@ const parseEvent = async (
           isPending,
         );
       } else {
-        console.log('no match', event);
         Logger.error(`${event.hash} match no condition`);
         const defaultLabel =
           event.from.toLowerCase() === walletAddress.toLowerCase()
