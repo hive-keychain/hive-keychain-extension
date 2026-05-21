@@ -1,0 +1,79 @@
+name: Multichain Beta
+description: Report a Multichain Beta issue.
+title: "[Multichain Beta]: "
+labels:
+  - multichain-beta
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for testing the Multichain Beta. Please keep the report short and remove any private keys, seed phrases, or sensitive wallet data.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Briefly describe the issue and the user impact.
+      placeholder: "Example: Switching from Hive to Ethereum keeps showing the Hive balance."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where did it happen?
+      options:
+        - Popup
+        - Dialog or signing flow
+        - Side panel
+        - dApp connection
+        - Chain management
+        - Build or install
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: How can we reproduce it?
+      description: Add the shortest steps that show the problem.
+      placeholder: |
+        1. Open Keychain.
+        2. Select ...
+        3. See ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should happen instead?
+      placeholder: "Example: The selected chain should show its own balance and account state."
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and build
+      description: Browser, beta version, branch, or commit if known.
+      placeholder: "Example: Chrome, feature/evm @ 50830db9e"
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else?
+      description: Add screenshots, logs, dApp URL, RPC/provider details, or related issues if useful.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety check
+      options:
+        - label: I removed private keys, seed phrases, raw signed payloads, and other sensitive wallet data.
+          required: true
