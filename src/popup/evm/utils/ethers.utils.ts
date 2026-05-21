@@ -7,6 +7,7 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
 import { ethers, TransactionRequest } from 'ethers';
 import {
+  createRpcFetchRequest,
   EtherJsonRpcFailoverContext,
   EtherJsonRpcProvider,
 } from 'src/utils/evm/ether-json-rpc-provider';
@@ -41,7 +42,7 @@ const getProvider = async (chain: EvmChain, rpcUrl?: string) => {
   };
   if (chainId !== chain.chainId) {
     return new EtherJsonRpcProvider(
-      resolvedUrl,
+      createRpcFetchRequest(resolvedUrl),
       undefined,
       { staticNetwork: ethers.Network.from(Number(chain.chainId)) },
       failoverOpts,
@@ -50,7 +51,7 @@ const getProvider = async (chain: EvmChain, rpcUrl?: string) => {
     if (!jsonRpcProvider) {
       chainId = chain.chainId;
       jsonRpcProvider = new EtherJsonRpcProvider(
-        resolvedUrl,
+        createRpcFetchRequest(resolvedUrl),
         undefined,
         { staticNetwork: ethers.Network.from(Number(chain.chainId)) },
         failoverOpts,
@@ -66,7 +67,7 @@ const getProvider = async (chain: EvmChain, rpcUrl?: string) => {
 
 const setProvider = async (chain: EvmChain, rpcUrl: string) => {
   jsonRpcProvider = new EtherJsonRpcProvider(
-    rpcUrl,
+    createRpcFetchRequest(rpcUrl),
     undefined,
     {
       staticNetwork: ethers.Network.from(Number(chain.chainId)),

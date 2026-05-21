@@ -13,7 +13,6 @@ const buildUrl = (url: string) =>
   `${getEvmLightNodeBaseUrl()}/${url.replace(/^\/+/, '')}`;
 
 const get = async (url: string): Promise<any> => {
-  console.log('get', buildUrl(url));
   return await BaseApi.get(buildUrl(url));
 };
 

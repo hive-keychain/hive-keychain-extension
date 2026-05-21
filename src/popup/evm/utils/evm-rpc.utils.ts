@@ -4,7 +4,10 @@ import {
   MultichainRpc,
 } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { EtherJsonRpcProvider } from 'src/utils/evm/ether-json-rpc-provider';
+import {
+  createRpcFetchRequest,
+  EtherJsonRpcProvider,
+} from 'src/utils/evm/ether-json-rpc-provider';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -209,13 +212,17 @@ const saveSwitchRpcAuto = async (chain: EvmChain, switchRpcAuto: boolean) => {
 };
 
 const checkRpcStatus = async (uri: string): Promise<boolean> => {
-  const rpcProvider = new EtherJsonRpcProvider(uri, undefined, {});
+  const rpcProvider = new EtherJsonRpcProvider(
+    createRpcFetchRequest(uri),
+    undefined,
+    {},
+  );
   try {
     const ok = await Promise.race([
       rpcProvider
         .send('eth_blockNumber', [])
         .then(() => true)
-        .catch((err) => {
+        .catch(() => {
           return false;
         }),
       new Promise<boolean>((resolve) => {
