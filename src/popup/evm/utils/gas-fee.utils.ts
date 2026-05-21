@@ -30,6 +30,9 @@ const isPlausibleGasLimit = (n: number | undefined | null): n is number => {
 };
 
 const getGasFeeEstimations = async (chain: Chain) => {
+  if (chain.isCustom) {
+    return null;
+  }
   return fetchGasOracle(chain.chainId) as Promise<any>;
 };
 

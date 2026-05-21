@@ -4,6 +4,8 @@ import {
   EvmTransactionType,
   ProviderTransactionData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
+import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import {
   ChainType,
   EvmChain,
@@ -162,5 +164,42 @@ describe('GasFeeUtils', () => {
 
     expect(result.suggestedByDApp?.estimatedFeeUSD.toFixed(4)).toBe('0.5775');
     expect(result.suggestedByDApp?.maxFeeUSD.toFixed(2)).toBe('1.05');
+  });
+
+  it('does not call the gas oracle for custom chains', async () => {
+    jest.spyOn(EthersUtils, 'getGasLimit').mockResolvedValue(21000);
+    jest.spyOn(EthersUtils, 'getProvider').mockResolvedValue({
+      getFeeData: jest.fn().mockResolvedValue({
+        toJSON: () => ({
+          gasPrice: 20_000_000_000n,
+          maxFeePerGas: 30_000_000_000n,
+          maxPriorityFeePerGas: 1_000_000_000n,
+        }),
+      }),
+    } as any);
+    jest
+      .spyOn(EvmRequestsUtils, 'getMaxPriorityFeePerGas')
+      .mockResolvedValue(1_000_000_000n);
+
+    const chain = {
+      chainId: '0x539',
+      defaultTransactionType: EvmTransactionType.EIP_1559,
+      isCustom: true,
+      logo: '',
+      mainToken: 'ETH',
+      name: 'Local Custom Chain',
+      rpcs: [{ url: 'http://127.0.0.1:8545' }],
+      type: ChainType.EVM,
+    } as EvmChain;
+
+    await GasFeeUtils.estimate(
+      chain,
+      '0x0000000000000000000000000000000000000001',
+      EvmTransactionType.EIP_1559,
+      2500,
+      21000,
+    );
+
+    expect(EvmLightNodeApi.get).not.toHaveBeenCalled();
   });
 });
