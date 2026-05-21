@@ -195,7 +195,6 @@ const getCallExceptionMessage = (
   }
 
   if (reasonIncludes(normalizedReason, ['missing revert data'])) {
-    console.log(normalizedReason, 'normalizedReason');
     return {
       message: 'evm_transaction_result_error_message_missing_revert_data',
       isBlocking: true,
