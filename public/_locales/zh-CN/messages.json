@@ -2382,8 +2382,8 @@
     "description": "Transaction result error message transaction replaced"
   },
   "evm_transaction_result_error_message_network": {
-    "message": "发生网络错误，请重试",
-    "description": "Transaction result error message network"
+    "message": "此 RPC 似乎无法正常工作。请在高级设置中考虑更换",
+    "description": "Transaction result error when RPC/network fails; suggests changing RPC in Advanced Settings"
   },
   "evm_transaction_result_error_message_bad_data": {
     "message": "RPC 返回了无效数据",

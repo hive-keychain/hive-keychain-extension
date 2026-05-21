@@ -4479,8 +4479,8 @@
     "description": "Transaction result error message transaction replaced"
   },
   "evm_transaction_result_error_message_network": {
-    "message": "Ocorreu um erro de rede. Tente novamente",
-    "description": "Transaction result error message network"
+    "message": "Este RPC não parece funcionar corretamente. Considere alterá-lo em Configurações avançadas",
+    "description": "Transaction result error when RPC/network fails; suggests changing RPC in Advanced Settings"
   },
   "evm_transaction_result_error_message_bad_data": {
     "message": "O RPC retornou dados inválidos",
