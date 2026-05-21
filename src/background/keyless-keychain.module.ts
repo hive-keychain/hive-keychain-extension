@@ -17,7 +17,6 @@ const handleOperation = async (
   domain: string,
   tab: number,
 ) => {
-  console.log('handleOperation', requestHandler);
   await HiveAuthUtils.connect();
 
   switch (request.type) {

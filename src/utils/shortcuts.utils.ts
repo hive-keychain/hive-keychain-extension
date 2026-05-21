@@ -6,15 +6,14 @@ import { MultichainScreen } from '@popup/multichain/reference-data/multichain-sc
 type ShortcutNavigationScreen = MultichainScreen | HiveScreen | EvmScreen;
 
 /** `chrome.i18n` message keys; reuse existing settings/page titles where possible. */
-const SHORTCUT_NAVIGATION_SCREEN_MESSAGE_KEYS: Partial<
-  Record<ShortcutNavigationScreen, string>
-> = {
+const SHORTCUT_NAVIGATION_SCREEN_MESSAGE_KEYS = {
   [MultichainScreen.HOME_PAGE]: 'popup_html_shortcut_nav_HOME_PAGE',
   [MultichainScreen.TRANSFER_FUND_PAGE]: 'popup_html_transfer_funds',
   [MultichainScreen.BUY_COINS_PAGE]: 'popup_html_buy',
   [MultichainScreen.TOKEN_SWAP_PAGE]: 'dialog_title_swap',
   [MultichainScreen.TOKENS_SWAP_HISTORY]: 'html_popup_token_swaps_history',
   [MultichainScreen.SETTINGS_ABOUT]: 'popup_html_about',
+  [MultichainScreen.SETTINGS_CHANGE_PASSWORD]: 'popup_html_change_password',
   [MultichainScreen.SETTINGS_SHORTCUTS]: 'popup_html_shortcuts',
 
   [HiveScreen.RECURRENT_TRANSFERS_PAGE]: 'popup_html_recurrent_transfers',
@@ -42,7 +41,6 @@ const SHORTCUT_NAVIGATION_SCREEN_MESSAGE_KEYS: Partial<
     'popup_html_manage_accounts_authorities',
   [HiveScreen.SETTINGS_ADD_KEY]: 'popup_html_add_key',
   [HiveScreen.SETTINGS_ADVANCED]: 'popup_html_advanced_settings',
-  [HiveScreen.SETTINGS_CHANGE_PASSWORD]: 'popup_html_change_password',
   [HiveScreen.SETTINGS_RPC_NODES]: 'popup_html_rpc_node',
   [HiveScreen.SETTINGS_AUTO_LOCK]: 'popup_html_autolock',
   [HiveScreen.SETTINGS_KEYCHAINIFY]: 'popup_html_keychainify',
@@ -70,13 +68,14 @@ const SHORTCUT_NAVIGATION_SCREEN_MESSAGE_KEYS: Partial<
   [EvmScreen.EVM_RPC_NODES_SETTINGS]: 'evm_menu_rpc_node',
   [EvmScreen.EVM_SECURITY_SETTINGS]: 'evm_menu_security',
   [EvmScreen.EVM_PROVIDER_SETTINGS]: 'evm_menu_provider_compatibility',
-};
+} as Partial<Record<ShortcutNavigationScreen, string>>;
 
 const getShortcutNavigationScreenMessageKey = (
   screen: ShortcutNavigationScreen,
 ): string =>
-  SHORTCUT_NAVIGATION_SCREEN_MESSAGE_KEYS[screen] ??
-  `popup_html_shortcut_nav_${screen}`;
+  (SHORTCUT_NAVIGATION_SCREEN_MESSAGE_KEYS as Partial<Record<string, string>>)[
+    screen
+  ] ?? `popup_html_shortcut_nav_${screen}`;
 
 const MODIFIER_KEYS = ['Shift', 'Control', 'Alt', 'Meta'];
 const MODIFIER_ORDER = ['ctrl', 'alt', 'shift', 'command'];
@@ -204,6 +203,7 @@ const SHARED_NAVIGATION_SCREENS: MultichainScreen[] = [
   MultichainScreen.TOKEN_SWAP_PAGE,
   MultichainScreen.TOKENS_SWAP_HISTORY,
   MultichainScreen.SETTINGS_ABOUT,
+  MultichainScreen.SETTINGS_CHANGE_PASSWORD,
   MultichainScreen.SETTINGS_SHORTCUTS,
 ];
 
@@ -238,7 +238,6 @@ const HIVE_NAVIGATION_SCREENS: HiveScreen[] = [
   HiveScreen.SETTINGS_MANAGE_ACCOUNTS_AUTHORITIES,
   HiveScreen.SETTINGS_ADD_KEY,
   HiveScreen.SETTINGS_ADVANCED,
-  HiveScreen.SETTINGS_CHANGE_PASSWORD,
   HiveScreen.SETTINGS_RPC_NODES,
   HiveScreen.SETTINGS_AUTO_LOCK,
   HiveScreen.SETTINGS_KEYCHAINIFY,

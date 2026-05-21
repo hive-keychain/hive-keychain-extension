@@ -538,8 +538,8 @@ export const GasFeePanel = ({
 
       setFeeEstimation(fullGasFeeEstimation as FullGasFeeEstimation);
       closeCustomFeePanel();
-    } catch (err) {
-      console.log('catch in saveCustomFee', { err });
+    } catch (_err) {
+      // Custom fee validation failed; keep the panel open for correction.
     }
   };
 

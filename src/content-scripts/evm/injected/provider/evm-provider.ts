@@ -143,10 +143,6 @@ export class EvmProvider extends EventEmitter {
           }
           switch (eventData.event.eventType) {
             case EvmEventName.CHAIN_CHANGED: {
-              console.log(
-                eventData.event.args,
-                'eventData.event.args chainchanged',
-              );
               this.applyChainId(eventData.event.args, { emit: true });
               return;
             }
@@ -155,7 +151,6 @@ export class EvmProvider extends EventEmitter {
               return;
             }
             case EvmEventName.GET_CHAIN_FROM_PROVIDER: {
-              console.log(this.chainId, 'this.chainId getchainfromprovider');
               this.dispatchCustomEvent(
                 EvmEventName.SEND_BACK_CHAIN_TO_BACKGROUND,
                 { chainId: this.chainId ?? null },
@@ -176,7 +171,6 @@ export class EvmProvider extends EventEmitter {
   };
 
   async request(args: RequestArguments): Promise<any> {
-    console.log(args, 'args');
     try {
       validateRequest(args.method, args.params);
       switch (args.method) {
@@ -204,9 +198,6 @@ export class EvmProvider extends EventEmitter {
         EvmEventName.REQUEST,
         { ...args, chainId: this.chainId },
         (response: any) => {
-          console.log(response, 'response');
-          console.log(args, 'args');
-          console.log(this.chainId, 'this.chainId processrequest');
           if (response?.hasResult) {
             resolve(response.result);
           } else {

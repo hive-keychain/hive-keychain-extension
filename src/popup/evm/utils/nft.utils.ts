@@ -10,6 +10,7 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ethers } from 'ethers';
 import { BaseApi } from 'src/api/base';
 import { IpfsUtils } from 'src/utils/ipfs.utils';
+import Logger from 'src/utils/logger.utils';
 
 const getImgFromMetadata = (metadata: EvmNFTMetadata): string => {
   if (!metadata || !metadata.image)
@@ -48,7 +49,7 @@ const getMetadataFromURI = async (
     metadata.image = getImgFromMetadata(metadata);
     return metadata;
   } catch (err) {
-    console.log('error', { err });
+    Logger.error('error', err);
   } finally {
     return (
       metadata ?? {
@@ -122,7 +123,7 @@ const getMetadataFromTokenId = async (
       (collectionItem as EvmErc1155TokenCollectionItem).balance = balance;
     }
   } catch (err) {
-    console.log(err);
+    Logger.error(err);
     collectionItem.metadata = {
       name: 'No name',
       description: 'No description',

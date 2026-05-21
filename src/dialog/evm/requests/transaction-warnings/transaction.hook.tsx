@@ -353,7 +353,6 @@ export const useTransactionHook = (
         });
       } else if (confirmationPageFields) {
         //TODO see what to do here
-        console.log('on confirmation page');
       }
     }
   };

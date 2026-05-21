@@ -245,7 +245,6 @@ export class EvmRequestHandler {
   }
 
   async saveInLocalStorage() {
-    console.log(this.requestsData, 'saving requests data');
     await LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
       {
