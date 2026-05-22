@@ -206,6 +206,56 @@ describe('initEvmRequestHandler', () => {
     );
   });
 
+  it('rejects wallet_switchEthereumChain for a default chain that is not setup', async () => {
+    const { ChainUtils } = await import('@popup/multichain/utils/chain.utils');
+    (ChainUtils.getDefaultChains as jest.Mock).mockResolvedValue([
+      {
+        chainId: '0x2105',
+        type: 'EVM',
+        name: 'Base',
+      },
+    ]);
+    (ChainUtils.getAllSetupChainsForType as jest.Mock).mockResolvedValue([]);
+
+    const request = {
+      request_id: 43,
+      method: EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN,
+      params: [{ chainId: '0x2105' }],
+      chainId: '0x1',
+    } as any;
+    const dappInfo = {
+      origin: 'https://example.app',
+      domain: 'example.app',
+      protocol: 'https:',
+      logo: '',
+    };
+    const requestHandler = {
+      accounts: [],
+      saveInLocalStorage: jest.fn(),
+    } as any;
+
+    await initEvmRequestHandler(request, 7, dappInfo, requestHandler);
+
+    expect(requestAddCustomEvmChainMock).not.toHaveBeenCalled();
+    expect(handleNonSupportedChainMock).not.toHaveBeenCalled();
+    expect(evmRequestWithConfirmationMock).not.toHaveBeenCalled();
+    expect(evmRequestWithoutConfirmationMock).not.toHaveBeenCalled();
+    expect(handleEvmErrorMock).toHaveBeenCalledWith(
+      requestHandler,
+      7,
+      request,
+      {
+        code: 4902,
+        message:
+          'Unrecognized chain ID "0x2105". Try adding the chain using wallet_addEthereumChain first.',
+      },
+      'Unrecognized chain ID "0x2105". Try adding the chain using wallet_addEthereumChain first.',
+      [],
+      'https://example.app',
+      true,
+    );
+  });
+
   it('opens confirmation for wallet_addEthereumChain when the requested chain is not configured', async () => {
     const MkModule = (await import('@background/hive/modules/mk.module'))
       .default;

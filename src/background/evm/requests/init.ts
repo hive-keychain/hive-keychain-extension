@@ -128,7 +128,26 @@ export const initEvmRequestHandler = async (
   } else if (
     request.method === EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN
   ) {
-    if (
+    const isSetupChain =
+      resolvedRequestChainId &&
+      setupChains.find(
+        (c: EvmChain) =>
+          c.chainId.toLowerCase() === resolvedRequestChainId.toLowerCase(),
+      );
+
+    if (resolvedRequestChainId && !isSetupChain) {
+      const providerError = getUnrecognizedChainIdError(resolvedRequestChainId);
+      await handleEvmError(
+        requestHandler,
+        tab!,
+        request,
+        providerError,
+        providerError.message,
+        [],
+        dappInfo.origin,
+        true,
+      );
+    } else if (
       resolvedRequestChainId &&
       (await isChainWhitelistedForOrigin(
         dappInfo.origin,
