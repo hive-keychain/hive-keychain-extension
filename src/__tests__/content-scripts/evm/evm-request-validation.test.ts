@@ -127,7 +127,36 @@ describe('evm-request-validation tests:\n', () => {
     });
   });
 
-  it('rejects invalid wallet_switchEthereumChain params', () => {
+  it('rejects missing wallet_switchEthereumChain params', () => {
+    expect(
+      getThrownError(() =>
+        validateRequest(
+          EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN,
+          undefined,
+        ),
+      ),
+    ).toMatchObject({
+      code: -32602,
+      message: 'Invalid parameter. Params must be an array.',
+    });
+  });
+
+  it('rejects wallet_switchEthereumChain params without chainId', () => {
+    expect(
+      getThrownError(() =>
+        validateEvmRequest({
+          request_id: 1,
+          method: EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN,
+          params: [{}],
+        }),
+      ),
+    ).toMatchObject({
+      code: -32602,
+      message: 'Invalid parameter. ChainId must be a string',
+    });
+  });
+
+  it('rejects decimal wallet_switchEthereumChain chainId params', () => {
     expect(
       getThrownError(() =>
         validateEvmRequest({
@@ -140,6 +169,32 @@ describe('evm-request-validation tests:\n', () => {
       code: -32602,
       message:
         'Invalid parameter. 1 is not a valid chainId. It must be using hexadecimal format',
+    });
+  });
+
+  it('accepts valid wallet_switchEthereumChain hex chainId params and ignores extra fields', () => {
+    expect(
+      validateEvmRequest({
+        request_id: 1,
+        method: EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN,
+        params: [
+          {
+            chainId: '0x14a34',
+            rpcUrls: ['https://sepolia.base.org'],
+            chainName: 'Base Sepolia',
+          },
+        ],
+      }),
+    ).toEqual({
+      request_id: 1,
+      method: EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN,
+      params: [
+        {
+          chainId: '0x14a34',
+          rpcUrls: ['https://sepolia.base.org'],
+          chainName: 'Base Sepolia',
+        },
+      ],
     });
   });
 

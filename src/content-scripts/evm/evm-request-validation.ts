@@ -156,12 +156,16 @@ export const validateRequest = (
       break;
     }
     case EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN: {
-      const requestParams = assertParamsArray(params ?? []);
+      const requestParams = assertParamsArray(params);
       const switchParams = requestParams[0] as
         | { chainId?: unknown }
         | undefined;
 
-      if (!switchParams) {
+      if (
+        !switchParams ||
+        typeof switchParams !== 'object' ||
+        Array.isArray(switchParams)
+      ) {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
           message: `Invalid parameters. Missing chainId`,
@@ -173,7 +177,7 @@ export const validateRequest = (
           message: `Invalid parameter. ChainId must be a string`,
         } as ProviderRpcError;
       }
-      if (!switchParams.chainId.startsWith('0x')) {
+      if (!EVM_CHAIN_ID_REGEX.test(switchParams.chainId)) {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
           message: `Invalid parameter. ${switchParams.chainId} is not a valid chainId. It must be using hexadecimal format`,

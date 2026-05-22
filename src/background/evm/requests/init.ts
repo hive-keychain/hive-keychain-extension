@@ -15,7 +15,6 @@ import { handleDeprecatedMethods } from '@background/evm/requests/logic/handle-d
 import { handleEvmError } from '@background/evm/requests/logic/handle-evm-error.logic';
 import { handleNonExistingMethod } from '@background/evm/requests/logic/handle-non-existing-methods.logic';
 import { handleNonSupportedChain } from '@background/evm/requests/logic/handle-non-supported-chain.logic';
-import { requestAddCustomEvmChain } from '@background/evm/requests/logic/request-add-custom-evm-chain.logic';
 import { requestAddEvmChain } from '@background/evm/requests/logic/request-add-evm-chain.logic';
 import { resolveRequestChainId } from '@background/evm/requests/logic/resolve-request-chain-id.logic';
 import { EvmWatchAssetUtils } from '@background/evm/utils/watch-asset.utils';
@@ -28,6 +27,7 @@ import {
   EvmDappInfo,
   EvmRequest,
   getEvmProviderRpcFullError,
+  getUnrecognizedChainIdError,
 } from '@interfaces/evm-provider.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
@@ -101,12 +101,16 @@ export const initEvmRequestHandler = async (
     request.method !== EvmRequestMethod.WALLET_ADD_ETH_CHAIN
   ) {
     if (request.method === EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN) {
-      await requestAddCustomEvmChain(
+      const providerError = getUnrecognizedChainIdError(chainId);
+      await handleEvmError(
         requestHandler,
         tab!,
         request,
-        dappInfo,
-        chainId,
+        providerError,
+        providerError.message,
+        [],
+        dappInfo.origin,
+        true,
       );
     } else {
       await handleNonSupportedChain(

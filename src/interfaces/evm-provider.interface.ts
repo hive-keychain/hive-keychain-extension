@@ -189,6 +189,13 @@ export const getEvmProviderRpcFullError = (
   return error ?? ProviderRpcErrorList.unknownError;
 };
 
+export const getUnrecognizedChainIdError = (
+  chainId: string,
+): ProviderRpcErrorItem => ({
+  code: ProviderRpcErrorList.chainNotAdded.code,
+  message: `Unrecognized chain ID "${chainId}". Try adding the chain using wallet_addEthereumChain first.`,
+});
+
 export interface EvmWalletPermissions {
   [origin: string]: EvmWalletOriginPermissions;
 }
