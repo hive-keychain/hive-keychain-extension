@@ -50,15 +50,17 @@ export const PersonalSign = (props: Props) => {
     );
     transactionHook.setFields(transactionConfirmationFields);
 
+    const lastChain = await EvmChainUtils.getLastEvmChain();
+
     const transactionInfo =
-      await EvmTransactionParserUtils.verifyTransactionInformation(
-        data.dappInfo.domain,
-      );
+      await EvmTransactionParserUtils.verifyTransactionInformation({
+        domain: data.dappInfo.domain,
+        origin: data.dappInfo.origin,
+        chainId: lastChain.chainId,
+      });
     transactionHook.setUnableToReachBackend(
       !!(transactionInfo && transactionInfo.unableToReach),
     );
-
-    const lastChain = await EvmChainUtils.getLastEvmChain();
 
     const accountDisplay = await transactionHook.getWalletAddressInput(
       target,

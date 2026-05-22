@@ -365,12 +365,38 @@ export async function runSendTransactionInit(
               ? usedToken.proxyTarget
               : null;
           const transactionInfoPromise =
-            EvmTransactionParserUtils.verifyTransactionInformation(
-              data.dappInfo.domain,
-              params.to,
-              usedAccountAddress,
+            EvmTransactionParserUtils.verifyTransactionInformation({
+              domain: data.dappInfo.domain,
+              origin: data.dappInfo.origin,
+              contract: usedAccountAddress,
+              tokenContract: tokenAddress,
               proxyTarget,
-            );
+              chainId: chainTmp.chainId,
+              tokenType: usedToken.type,
+            });
+          const resolveDecodedTransactionInfo = async (
+            inputs: ReadonlyArray<{ name: string }>,
+            args: ReadonlyArray<unknown>,
+          ) => {
+            let transactionInfo = await transactionInfoPromise;
+            const recipientAddresses =
+              EvmTransactionParserUtils.collectRecipientAddressesFromDecodedArgs(
+                inputs,
+                args,
+              );
+            if (recipientAddresses.length > 0) {
+              transactionInfo =
+                await EvmTransactionParserUtils.enrichVerificationForAddresses(
+                  transactionInfo,
+                  recipientAddresses,
+                  {
+                    chainId: chainTmp.chainId,
+                    domain: data.dappInfo.domain,
+                  },
+                );
+            }
+            return transactionInfo;
+          };
           const populateFallbackParsedDataFields = async (reason: string) => {
             const transactionInfo = await transactionInfoPromise;
             lastTransactionInfo = transactionInfo;
@@ -489,7 +515,10 @@ export async function runSendTransactionInit(
                 ? translatedOperationName
                 : decodedTransactionData.name;
 
-            const transactionInfo = await transactionInfoPromise;
+            const transactionInfo = await resolveDecodedTransactionInfo(
+              decodedTransactionData.fragment.inputs,
+              decodedTransactionData.args,
+            );
             lastTransactionInfo = transactionInfo;
 
             transactionHook.setUnableToReachBackend(
@@ -709,11 +738,13 @@ export async function runSendTransactionInit(
           );
 
           const transactionInfo =
-            await EvmTransactionParserUtils.verifyTransactionInformation(
-              data.dappInfo.domain,
-              params.to,
-              usedAccountAddress,
-            );
+            await EvmTransactionParserUtils.verifyTransactionInformation({
+              domain: data.dappInfo.domain,
+              origin: data.dappInfo.origin,
+              to: params.to,
+              contract: usedAccountAddress,
+              chainId: chainTmp.chainId,
+            });
           lastTransactionInfo = transactionInfo;
           transactionHook.setUnableToReachBackend(
             !!(transactionInfo && transactionInfo.unableToReach),
@@ -728,11 +759,14 @@ export async function runSendTransactionInit(
       } else {
         // Classic transfer
         const transactionInfo =
-          await EvmTransactionParserUtils.verifyTransactionInformation(
-            data.dappInfo.domain,
-            params.to,
-            usedAccountAddress,
-          );
+          await EvmTransactionParserUtils.verifyTransactionInformation({
+            domain: data.dappInfo.domain,
+            origin: data.dappInfo.origin,
+            to: params.to,
+            contract: usedAccountAddress,
+            chainId: chainTmp.chainId,
+            tokenType: mainToken?.type,
+          });
         lastTransactionInfo = transactionInfo;
 
         transactionHook.setUnableToReachBackend(

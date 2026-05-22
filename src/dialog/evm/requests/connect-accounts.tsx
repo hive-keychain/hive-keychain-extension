@@ -4,6 +4,7 @@ import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { TransactionConfirmationFields } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
+import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
@@ -61,10 +62,14 @@ export const ConnectAccounts = (props: Props) => {
     }
     setAccountsToConnect(accs);
 
+    const chain = await EvmChainUtils.getLastEvmChain();
+
     const transactionInfo =
-      await EvmTransactionParserUtils.verifyTransactionInformation(
-        data.dappInfo.domain,
-      );
+      await EvmTransactionParserUtils.verifyTransactionInformation({
+        domain: data.dappInfo.domain,
+        origin: data.dappInfo.origin,
+        chainId: chain.chainId,
+      });
     transactionHook.setUnableToReachBackend(
       !!(transactionInfo && transactionInfo.unableToReach),
     );

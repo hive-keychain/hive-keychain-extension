@@ -5259,9 +5259,17 @@
     "message": "This domain seems to be very similar to $1. Make sure that your are on the correct website",
     "description": "Domain is blacklisted"
   },
+  "evm_transaction_domain_phishing": {
+    "message": "This website has been flagged as a potential phishing site",
+    "description": "Domain flagged by GoPlus phishing detection"
+  },
   "evm_transaction_receiver_blacklisted": {
     "message": "This address has been flagged for suspicious behavior",
     "description": "Receiver is blacklisted"
+  },
+  "evm_transaction_receiver_malicious": {
+    "message": "This address has been flagged as malicious",
+    "description": "Receiver flagged by GoPlus address security"
   },
   "evm_transaction_warning_high_level_bypass_message": {
     "message": "I know what I'm doing",
@@ -5294,6 +5302,30 @@
   "evm_transaction_contract_not_used": {
     "message": "You haven't whitelisted this smart contract yet",
     "description": "Not used yet"
+  },
+  "evm_transaction_contract_honeypot": {
+    "message": "This token has been flagged as a potential honeypot",
+    "description": "Token honeypot warning from GoPlus"
+  },
+  "evm_transaction_contract_cannot_sell": {
+    "message": "This token may not be sellable",
+    "description": "Token cannot sell all warning from GoPlus"
+  },
+  "evm_transaction_contract_high_tax": {
+    "message": "This token has high buy or sell tax",
+    "description": "Token high tax warning from GoPlus"
+  },
+  "evm_transaction_contract_rug_pull": {
+    "message": "This contract has been flagged for potential rug-pull risk",
+    "description": "Rug pull warning from GoPlus"
+  },
+  "evm_transaction_nft_restricted_approval": {
+    "message": "This NFT collection has restricted approval risks",
+    "description": "NFT restricted approval warning from GoPlus"
+  },
+  "evm_transaction_nft_transfer_without_approval": {
+    "message": "This NFT collection may allow transfers without approval",
+    "description": "NFT transfer without approval warning from GoPlus"
   },
   "evm_domain_never_visited": {
     "message": "We detected that this is the first time you visit this domain",

@@ -283,7 +283,19 @@ const EvmTransfer = ({
         : 18;
 
     const transactionInfo =
-      await EvmTransactionParserUtils.verifyTransactionInformation();
+      await EvmTransactionParserUtils.verifyTransactionInformation({
+        to: form.receiverAddress,
+        contract:
+          form.selectedToken.tokenInfo.type === EVMSmartContractType.ERC20
+            ? form.selectedToken.tokenInfo.contractAddress
+            : undefined,
+        tokenContract:
+          form.selectedToken.tokenInfo.type === EVMSmartContractType.ERC20
+            ? form.selectedToken.tokenInfo.contractAddress
+            : undefined,
+        chainId: chain.chainId,
+        tokenType: form.selectedToken.tokenInfo.type,
+      });
 
     let fields = [
       {

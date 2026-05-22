@@ -1,4 +1,10 @@
-import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
+import {
+  GoPlusVerificationData,
+} from '@popup/evm/interfaces/evm-verification.interface';
+import {
+  EvmSmartContractInfo,
+  EVMSmartContractType,
+} from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { TransactionResponse } from 'ethers';
 
@@ -95,29 +101,62 @@ export interface TransactionConfirmationFields {
   otherFields: TransactionConfirmationField[];
 }
 
+export interface VerifyTransactionParams {
+  domain?: string;
+  to?: string;
+  /** Passed to Keychain `evm/verify-transaction` */
+  contract?: string;
+  /** Token/collection address for GoPlus security checks when different from `contract` */
+  tokenContract?: string;
+  proxyTarget?: string | null;
+  chainId?: string;
+  tokenType?: EVMSmartContractType;
+  nftTokenId?: string;
+  /** Full origin URL for GoPlus phishing check (e.g. data.dappInfo.origin) */
+  origin?: string;
+  /** Wallet addresses to verify (decoded recipient, spender, etc.) */
+  recipients?: string[];
+}
+
+export interface EvmAddressVerificationFlags {
+  isBlacklisted?: boolean;
+  isMalicious?: boolean;
+  isWhitelisted?: boolean;
+}
+
 export interface EvmTransactionVerificationInformation {
   unableToReach?: boolean;
+  goPlus?: GoPlusVerificationData;
   contract: {
-    hasBeenUsedBefore: boolean;
-    isBlacklisted: boolean;
+    hasBeenUsedBefore?: boolean;
+    isBlacklisted?: boolean;
+    isHoneypot?: boolean;
+    cannotSellAll?: boolean;
+    highSellTax?: boolean;
+    highBuyTax?: boolean;
+    rugPullRisk?: boolean;
     proxy: {
       target?: string;
     };
-    verifiedBy: {
+    verifiedBy?: {
       icon: string;
       name: string;
     }[];
   };
   domain: {
-    isBlacklisted: boolean;
+    isBlacklisted?: boolean;
+    isPhishing?: boolean;
     isTrusted?: boolean;
-    isWhitelisted: boolean;
+    isWhitelisted?: boolean;
     fuzzy?: string;
   };
   to: {
-    isBlacklisted: boolean;
-    isWhitelisted: boolean;
+    isBlacklisted?: boolean;
+    isMalicious?: boolean;
+    isWhitelisted?: boolean;
   };
+  /** Per-address verification (recipient, spender, etc.) keyed by lowercase address */
+  addresses?: Record<string, EvmAddressVerificationFlags>;
 }
 
 export interface EvmTransactionDecodedData {

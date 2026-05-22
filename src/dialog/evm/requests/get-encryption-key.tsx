@@ -36,15 +36,17 @@ export const GetEncryptionKey = (props: Props) => {
     );
     transactionHook.setFields(transactionConfirmationFields);
 
+    const chain = await EvmChainUtils.getLastEvmChain();
+
     const transactionInfo =
-      await EvmTransactionParserUtils.verifyTransactionInformation(
-        data.dappInfo.domain,
-      );
+      await EvmTransactionParserUtils.verifyTransactionInformation({
+        domain: data.dappInfo.domain,
+        origin: data.dappInfo.origin,
+        chainId: chain.chainId,
+      });
     transactionHook.setUnableToReachBackend(
       !!(transactionInfo && transactionInfo.unableToReach),
     );
-
-    const chain = await EvmChainUtils.getLastEvmChain();
     const usedAccount = accounts.find(
       (account) =>
         account.address.toLowerCase() ===

@@ -5,13 +5,7 @@ export interface GoPlusApiResponse<T = unknown> {
 }
 
 export interface GoPlusRequestOptions {
-  accessToken?: string;
   signal?: AbortSignal;
-}
-
-export interface GoPlusAccessTokenResult {
-  access_token: string;
-  expires_in: number;
 }
 
 export interface GoPlusOwnerRisk {
@@ -112,6 +106,16 @@ export interface GoPlusPhishingSiteInfo {
     nft_risk?: Record<string, unknown>;
     standard?: string;
   }>;
+}
+
+export interface GoPlusVerificationData {
+  phishingSite?: GoPlusPhishingSiteInfo;
+  addressSecurity?: GoPlusAddressSecurityInfo;
+  addressSecurityByAddress?: Record<string, GoPlusAddressSecurityInfo>;
+  tokenSecurity?: GoPlusTokenSecurityInfo;
+  nftSecurity?: GoPlusNftSecurityInfo;
+  rugPull?: GoPlusRugPullDetectionInfo;
+  unavailable?: boolean;
 }
 
 export interface GoPlusRugPullDetectionInfo {

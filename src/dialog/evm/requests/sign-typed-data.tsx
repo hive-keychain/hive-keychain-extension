@@ -74,10 +74,15 @@ export const SignTypedData = (props: Props) => {
     );
     transactionHook.setFields(transactionConfirmationFields);
 
+    const lastChain = await EvmChainUtils.getLastEvmChain();
+
     const transactionInfo =
-      await EvmTransactionParserUtils.verifyTransactionInformation(
-        data.dappInfo.domain,
-      );
+      await EvmTransactionParserUtils.verifyTransactionInformation({
+        domain: data.dappInfo.domain,
+        origin: data.dappInfo.origin,
+        chainId: lastChain.chainId,
+        tokenContract: message.domain?.verifyingContract,
+      });
     transactionHook.setUnableToReachBackend(
       !!(transactionInfo && transactionInfo.unableToReach),
     );
@@ -112,8 +117,6 @@ export const SignTypedData = (props: Props) => {
         name: 'evm_domain_version',
         value: formatValue(message.domain.version, EvmInputDisplayType.STRING),
       });
-
-    const lastChain = await EvmChainUtils.getLastEvmChain();
 
     const accountDisplay = await transactionHook.getWalletAddressInput(
       target,

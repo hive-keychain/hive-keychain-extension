@@ -2,9 +2,20 @@ import { KeychainApi } from '@api/keychain';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { getAbiFromType } from '@popup/evm/reference-data/abi.data';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
+import { EvmVerificationUtils } from '@popup/evm/utils/evm-verification.utils';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { ethers } from 'ethers';
+
+jest.mock('@popup/evm/utils/evm-verification.utils', () => {
+  const actual = jest.requireActual('@popup/evm/utils/evm-verification.utils');
+  return {
+    EvmVerificationUtils: {
+      ...actual.EvmVerificationUtils,
+      fetchGoPlusVerificationData: jest.fn().mockResolvedValue({}),
+    },
+  };
+});
 
 describe('shouldDisplayBalanceChange', () => {
   const erc20Abi = getAbiFromType(EVMSmartContractType.ERC20)!;
@@ -41,11 +52,11 @@ describe('evm-transaction-parser.utils proxy tests:\n', () => {
       to: {},
     });
 
-    const result = await EvmTransactionParserUtils.verifyTransactionInformation(
-      'app.example',
-      '0x00000000000000000000000000000000000000aa',
-      '0x00000000000000000000000000000000000000cc',
-    );
+    const result = await EvmTransactionParserUtils.verifyTransactionInformation({
+      domain: 'app.example',
+      to: '0x00000000000000000000000000000000000000aa',
+      contract: '0x00000000000000000000000000000000000000cc',
+    });
 
     expect(result.contract.proxy).toEqual({
       target: '0x00000000000000000000000000000000000000bb',
@@ -59,12 +70,12 @@ describe('evm-transaction-parser.utils proxy tests:\n', () => {
       to: {},
     });
 
-    const result = await EvmTransactionParserUtils.verifyTransactionInformation(
-      'app.example',
-      '0x00000000000000000000000000000000000000aa',
-      '0x00000000000000000000000000000000000000cc',
-      '0x00000000000000000000000000000000000000dd',
-    );
+    const result = await EvmTransactionParserUtils.verifyTransactionInformation({
+      domain: 'app.example',
+      to: '0x00000000000000000000000000000000000000aa',
+      contract: '0x00000000000000000000000000000000000000cc',
+      proxyTarget: '0x00000000000000000000000000000000000000dd',
+    });
 
     expect(result.contract.proxy).toEqual({
       target: '0x00000000000000000000000000000000000000dd',
@@ -208,6 +219,74 @@ describe('evm-transaction-parser.utils proxy tests:\n', () => {
       address,
       'Saved wallet',
     );
+  });
+
+  it('merges GoPlus honeypot data into verification result', async () => {
+    jest.spyOn(KeychainApi, 'get').mockResolvedValue({
+      contract: {},
+      domain: {},
+      to: {},
+    });
+    (
+      EvmVerificationUtils.fetchGoPlusVerificationData as jest.Mock
+    ).mockResolvedValue({
+      tokenSecurity: { is_honeypot: '1' },
+    });
+
+    const result = await EvmTransactionParserUtils.verifyTransactionInformation({
+      domain: 'app.example',
+      chainId: '1',
+      tokenContract: '0x00000000000000000000000000000000000000cc',
+    });
+
+    expect(result.contract.isHoneypot).toBe(true);
+    expect(result.goPlus?.tokenSecurity?.is_honeypot).toBe('1');
+  });
+
+  it('getAddressWarning uses per-address verification flags for recipients', async () => {
+    jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(true);
+    jest
+      .spyOn(EvmAddressesUtils, 'isPotentialSpoofing')
+      .mockResolvedValue(undefined);
+
+    const warnings = await EvmTransactionParserUtils.getAddressWarning(
+      '0x00000000000000000000000000000000000000aa',
+      '1',
+      {
+        contract: { proxy: {}, verifiedBy: [] },
+        domain: {},
+        to: {},
+        addresses: {
+          '0x00000000000000000000000000000000000000aa': {
+            isMalicious: true,
+          },
+        },
+      },
+      [],
+    );
+
+    expect(warnings.some((w) => w.message === 'evm_transaction_receiver_malicious')).toBe(
+      true,
+    );
+  });
+
+  it('does not set unableToReach when GoPlus fails but Keychain succeeds', async () => {
+    jest.spyOn(KeychainApi, 'get').mockResolvedValue({
+      contract: {},
+      domain: {},
+      to: {},
+    });
+    (
+      EvmVerificationUtils.fetchGoPlusVerificationData as jest.Mock
+    ).mockRejectedValue(new Error('GoPlus down'));
+
+    const result = await EvmTransactionParserUtils.verifyTransactionInformation({
+      domain: 'app.example',
+      chainId: '1',
+    });
+
+    expect(result.unableToReach).toBeUndefined();
+    expect(result.goPlus?.unavailable).toBe(true);
   });
 });
 

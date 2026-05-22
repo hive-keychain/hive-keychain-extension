@@ -142,7 +142,13 @@ const EvmNftTransfer = ({
     // encode data
 
     const transactionInfo =
-      await EvmTransactionParserUtils.verifyTransactionInformation();
+      await EvmTransactionParserUtils.verifyTransactionInformation({
+        to: form.receiverAddress,
+        tokenContract: collectionItem.collection.tokenInfo.contractAddress,
+        chainId: chain.chainId,
+        tokenType: collectionItem.collection.tokenInfo.type,
+        nftTokenId: collectionItem.tokenId,
+      });
 
     let fields = [
       {
