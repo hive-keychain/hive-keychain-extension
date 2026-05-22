@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import { CustomEvmChainForm } from '@popup/evm/pages/home/settings/evm-custom-chains/custom-evm-chain-form.component';
+import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 
 describe('CustomEvmChainForm', () => {
   let consoleErrorSpy: jest.SpiedFunction<typeof console.error>;
@@ -9,10 +10,11 @@ describe('CustomEvmChainForm', () => {
   beforeEach(() => {
     chrome.i18n.getMessage = jest.fn((key: string) => key);
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(EvmRpcUtils, 'checkRpcStatus').mockResolvedValue(true);
   });
 
   afterEach(() => {
-    consoleErrorSpy.mockRestore();
+    jest.restoreAllMocks();
   });
 
   it('prefills the requested chain id and validates required RPC data before submit', async () => {

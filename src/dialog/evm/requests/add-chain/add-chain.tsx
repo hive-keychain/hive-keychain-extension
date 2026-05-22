@@ -119,10 +119,6 @@ export const AddChain = (props: Props) => {
     const chain = await ChainUtils.getChain<EvmChain>(addChainRequest.chainId);
     if (addChainRequest.rpcUrls.length > 0) {
       await EvmRpcUtils.addCustomRpcsFromList(addChainRequest.rpcUrls, chain);
-      await EvmRpcUtils.setActiveRpc(
-        { url: addChainRequest.rpcUrls[0], isDefault: false },
-        chain,
-      );
     }
   };
 

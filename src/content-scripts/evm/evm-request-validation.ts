@@ -12,7 +12,11 @@ import {
   getAllTransactionTypes,
   ProviderTransactionData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
+import { AddChainRequest } from '@popup/evm/interfaces/evm-requests.interfaces';
+import { EvmRpcUrlUtils } from '@popup/evm/utils/evm-rpc-url.utils';
 import { ethers } from 'ethers';
+
+const EVM_CHAIN_ID_REGEX = /^0x[0-9a-fA-F]+$/;
 
 const getProviderRpcError = (
   error: keyof typeof ProviderRpcErrorList,
@@ -187,20 +191,57 @@ export const validateRequest = (
       // }
       break;
     }
-    // case EvmRequestMethod.WALLET_ADD_ETH_CHAIN: {
-    //   if (
-    //     !(await ChainUtils.getDefaultChains()).find(
-    //       (chain) =>
-    //         params[0].chainId.toLowerCase() === chain.chainId.toLowerCase(),
-    //     )
-    //   ) {
-    //     throw {
-    //       ...ProviderRpcErrorList.invalidMethodParams,
-    //       message: `Chain ${params[0].chainId} is not compatible with Keychain`,
-    //     } as ProviderRpcError;
-    //   }
-    //   break;
-    // }
+    case EvmRequestMethod.WALLET_ADD_ETH_CHAIN: {
+      const requestParams = assertParamsArray(params ?? []);
+      const addChainParams = requestParams[0] as
+        | Partial<AddChainRequest>
+        | undefined;
+
+      if (
+        !addChainParams ||
+        typeof addChainParams !== 'object' ||
+        Array.isArray(addChainParams)
+      ) {
+        throw getProviderRpcError(
+          'invalidMethodParams',
+          'Invalid parameter. Missing chain parameters.',
+        );
+      }
+
+      if (
+        typeof addChainParams.chainId !== 'string' ||
+        !EVM_CHAIN_ID_REGEX.test(addChainParams.chainId)
+      ) {
+        throw getProviderRpcError(
+          'invalidMethodParams',
+          'Invalid parameter. ChainId must be a hexadecimal string.',
+        );
+      }
+
+      if (
+        !Array.isArray(addChainParams.rpcUrls) ||
+        addChainParams.rpcUrls.length === 0
+      ) {
+        throw getProviderRpcError(
+          'invalidMethodParams',
+          'Invalid parameter. Missing RPC URLs.',
+        );
+      }
+
+      if (
+        addChainParams.rpcUrls.some(
+          (rpcUrl) =>
+            typeof rpcUrl !== 'string' ||
+            !EvmRpcUrlUtils.isValidHttpsRpcUrl(rpcUrl),
+        )
+      ) {
+        throw getProviderRpcError(
+          'invalidMethodParams',
+          'Invalid parameter. RPC URLs must use HTTPS.',
+        );
+      }
+      break;
+    }
   }
   return true;
 };

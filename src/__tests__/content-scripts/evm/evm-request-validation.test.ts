@@ -29,6 +29,17 @@ const validTransaction = {
   maxPriorityFeePerGas: '0x1',
 } as ProviderTransactionData;
 
+const validAddChainRequest = {
+  chainId: '0x539',
+  chainName: 'Local Chain',
+  rpcUrls: ['https://rpc.example.com'],
+  nativeCurrency: {
+    name: 'Ether',
+    symbol: 'ETH',
+    decimals: 18,
+  },
+};
+
 describe('evm-request-validation tests:\n', () => {
   it('normalizes missing params to an empty array', () => {
     expect(
@@ -128,6 +139,70 @@ describe('evm-request-validation tests:\n', () => {
       code: -32602,
       message:
         'Invalid parameter. 1 is not a valid chainId. It must be using hexadecimal format',
+    });
+  });
+
+  it('accepts wallet_addEthereumChain with HTTPS RPC URLs', () => {
+    expect(
+      validateEvmRequest({
+        request_id: 1,
+        method: EvmRequestMethod.WALLET_ADD_ETH_CHAIN,
+        params: [validAddChainRequest],
+      }),
+    ).toEqual({
+      request_id: 1,
+      method: EvmRequestMethod.WALLET_ADD_ETH_CHAIN,
+      params: [validAddChainRequest],
+    });
+  });
+
+  it('rejects wallet_addEthereumChain with HTTP RPC URLs', () => {
+    expect(
+      getThrownError(() =>
+        validateEvmRequest({
+          request_id: 1,
+          method: EvmRequestMethod.WALLET_ADD_ETH_CHAIN,
+          params: [
+            {
+              ...validAddChainRequest,
+              rpcUrls: ['http://rpc.example.com'],
+            },
+          ],
+        }),
+      ),
+    ).toMatchObject({
+      code: -32602,
+      message: 'Invalid parameter. RPC URLs must use HTTPS.',
+    });
+  });
+
+  it('rejects wallet_addEthereumChain with missing RPC URLs', () => {
+    expect(
+      getThrownError(() =>
+        validateEvmRequest({
+          request_id: 1,
+          method: EvmRequestMethod.WALLET_ADD_ETH_CHAIN,
+          params: [{ ...validAddChainRequest, rpcUrls: [] }],
+        }),
+      ),
+    ).toMatchObject({
+      code: -32602,
+      message: 'Invalid parameter. Missing RPC URLs.',
+    });
+  });
+
+  it('rejects wallet_addEthereumChain with non-hex chainId', () => {
+    expect(
+      getThrownError(() =>
+        validateEvmRequest({
+          request_id: 1,
+          method: EvmRequestMethod.WALLET_ADD_ETH_CHAIN,
+          params: [{ ...validAddChainRequest, chainId: '1' }],
+        }),
+      ),
+    ).toMatchObject({
+      code: -32602,
+      message: 'Invalid parameter. ChainId must be a hexadecimal string.',
     });
   });
 });

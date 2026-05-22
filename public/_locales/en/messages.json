@@ -6252,7 +6252,7 @@
     "description": "Add chain caption"
   },
   "evm_update_chain_caption": {
-    "message": "$1 is asking to update an existing chain. This will add the RPC urls to the ones already existing and set the first one of the list as active.",
+    "message": "$1 is asking to update an existing chain. This will add the RPC URLs to the existing list, but they will not become active automatically.",
     "description": "Update chain caption"
   },
   "html_popup_popular_chains": {

@@ -1,4 +1,5 @@
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmRpcUrlUtils } from '@popup/evm/utils/evm-rpc-url.utils';
 import {
   EvmChain,
   MultichainRpc,
@@ -83,13 +84,24 @@ const call = async (method: string, params: any[], rpcUrl: string) => {
   });
 };
 
+const getRpcUrlsForChain = (
+  chain: EvmChain,
+  allCustomRpcs: Record<string, MultichainRpc[]>,
+): string[] => [
+  ...chain.rpcs.map((rpc) => rpc.url),
+  ...(allCustomRpcs[chain.chainId] ?? []).map(
+    (rpc: MultichainRpc) => rpc.url,
+  ),
+];
+
 const addCustomRpc = async (rpc: MultichainRpc, chain: EvmChain) => {
-  let allCustomRpcs = await LocalStorageUtils.getValueFromLocalStorage(
-    LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
-  );
-  if (!allCustomRpcs) {
-    allCustomRpcs = {};
-  }
+  EvmRpcUrlUtils.assertValidHttpsRpcUrl(rpc.url);
+  const allCustomRpcs =
+    ((await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
+    )) as Record<string, MultichainRpc[]>) ?? {};
+  if (getRpcUrlsForChain(chain, allCustomRpcs).includes(rpc.url)) return;
+
   if (!allCustomRpcs[chain.chainId]) {
     allCustomRpcs[chain.chainId] = [];
   }
@@ -101,27 +113,27 @@ const addCustomRpc = async (rpc: MultichainRpc, chain: EvmChain) => {
 };
 
 const addCustomRpcsFromList = async (rpcs: string[], chain: EvmChain) => {
-  let allCustomRpcs = await LocalStorageUtils.getValueFromLocalStorage(
-    LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
-  );
-  if (!allCustomRpcs) {
-    allCustomRpcs = {};
-  }
+  EvmRpcUrlUtils.assertValidHttpsRpcUrls(rpcs);
+  const allCustomRpcs =
+    ((await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
+    )) as Record<string, MultichainRpc[]>) ?? {};
   if (!allCustomRpcs[chain.chainId]) {
     allCustomRpcs[chain.chainId] = [];
   }
+  const rpcUrlsForChain = getRpcUrlsForChain(chain, allCustomRpcs);
+  let hasNewRpc = false;
   for (const rpc of rpcs) {
-    if (
-      !allCustomRpcs[chain.chainId]
-        .map((rpc: MultichainRpc) => rpc.url)
-        .includes(rpc)
-    ) {
+    if (!rpcUrlsForChain.includes(rpc)) {
       allCustomRpcs[chain.chainId].push({
         url: rpc,
         isDefault: false,
       });
+      rpcUrlsForChain.push(rpc);
+      hasNewRpc = true;
     }
   }
+  if (!hasNewRpc) return;
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
     allCustomRpcs,
@@ -155,6 +167,7 @@ const getActiveRpc = async (chain: EvmChain): Promise<MultichainRpc> => {
 };
 
 const setActiveRpc = async (rpc: MultichainRpc, chain: EvmChain) => {
+  EvmRpcUrlUtils.assertValidHttpsRpcUrl(rpc.url);
   let activeRpcs = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.EVM_ACTIVE_RPCS,
   );
