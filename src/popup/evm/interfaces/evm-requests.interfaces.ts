@@ -1,8 +1,8 @@
 export interface AddChainRequest {
-  chainName: string;
+  chainName?: string;
   chainId: string;
   rpcUrls: string[];
-  nativeCurrency: {
+  nativeCurrency?: {
     name: string;
     symbol: string;
     decimals: number;

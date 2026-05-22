@@ -30,14 +30,15 @@ const validTransaction = {
 } as ProviderTransactionData;
 
 const validAddChainRequest = {
-  chainId: '0x539',
-  chainName: 'Local Chain',
-  rpcUrls: ['https://rpc.example.com'],
+  chainId: '0x14a34',
+  chainName: 'Base Sepolia',
+  rpcUrls: ['https://sepolia.base.org'],
   nativeCurrency: {
     name: 'Ether',
     symbol: 'ETH',
     decimals: 18,
   },
+  blockExplorerUrls: ['https://sepolia.basescan.org'],
 };
 
 describe('evm-request-validation tests:\n', () => {
@@ -142,7 +143,7 @@ describe('evm-request-validation tests:\n', () => {
     });
   });
 
-  it('accepts wallet_addEthereumChain with HTTPS RPC URLs', () => {
+  it('accepts wallet_addEthereumChain new-chain requests with HTTPS RPC URLs', () => {
     expect(
       validateEvmRequest({
         request_id: 1,
@@ -176,13 +177,31 @@ describe('evm-request-validation tests:\n', () => {
     });
   });
 
-  it('rejects wallet_addEthereumChain with missing RPC URLs', () => {
+  it('rejects wallet_addEthereumChain with missing or empty RPC URLs', () => {
     expect(
       getThrownError(() =>
         validateEvmRequest({
           request_id: 1,
           method: EvmRequestMethod.WALLET_ADD_ETH_CHAIN,
           params: [{ ...validAddChainRequest, rpcUrls: [] }],
+        }),
+      ),
+    ).toMatchObject({
+      code: -32602,
+      message: 'Invalid parameter. Missing RPC URLs.',
+    });
+
+    const requestWithoutRpcs = {
+      chainId: validAddChainRequest.chainId,
+      chainName: validAddChainRequest.chainName,
+      nativeCurrency: validAddChainRequest.nativeCurrency,
+    };
+    expect(
+      getThrownError(() =>
+        validateEvmRequest({
+          request_id: 1,
+          method: EvmRequestMethod.WALLET_ADD_ETH_CHAIN,
+          params: [requestWithoutRpcs],
         }),
       ),
     ).toMatchObject({

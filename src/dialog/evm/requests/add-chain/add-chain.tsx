@@ -1,13 +1,16 @@
+import { Card } from '@common-ui/card/card.component';
 import { EvmOperation } from '@dialog/evm/evm-operation/evm-operation';
 import { EvmTransactionWarningsComponent } from '@dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from '@dialog/evm/requests/transaction-warnings/transaction.hook';
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { AddChainRequest } from '@popup/evm/interfaces/evm-requests.interfaces';
+import { CustomEvmChainForm } from '@popup/evm/pages/home/settings/evm-custom-chains/custom-evm-chain-form.component';
 import {
   EvmTransactionType,
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
+import { EvmRpcUrlUtils } from '@popup/evm/utils/evm-rpc-url.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EvmInputDisplayType } from '@popup/evm/utils/evm-transaction-parser.utils';
 import {
@@ -31,26 +34,29 @@ export const AddChain = (props: Props) => {
   const transactionHook = useTransactionHook(data, request);
 
   const addChainRequest = request.params[0] as AddChainRequest;
+  const chainName = addChainRequest.chainName ?? '';
+  const nativeCurrencySymbol = addChainRequest.nativeCurrency?.symbol ?? '';
 
-  const [isUpdatingChain, setIsUpdatingChain] = useState(false);
+  const [isUpdatingChain, setIsUpdatingChain] = useState<boolean>();
+  const [defaultChainToAdd, setDefaultChainToAdd] = useState<EvmChain>();
 
-  const [newChain, setNewChain] = useState<EvmChain>({
-    name: addChainRequest.chainName,
+  const initialChain: EvmChain = {
+    name: chainName,
     type: ChainType.EVM,
-    mainToken: addChainRequest.nativeCurrency.symbol,
+    mainToken: nativeCurrencySymbol,
     defaultTransactionType: EvmTransactionType.EIP_1559,
     logo: addChainRequest.iconUrls?.[0] || '',
     chainId: addChainRequest.chainId,
-    rpcs: addChainRequest.rpcUrls.map((url) => ({
-      url: url,
-      isDefault: false,
-    })), // TODO will need to merge with existing rpcs (add to customs)
+    rpcs: addChainRequest.rpcUrls.map((url, index) => ({
+      url,
+      isDefault: index === 0,
+    })),
     blockExplorer: {
       url: addChainRequest.blockExplorerUrls?.[0] || '',
       type: BlockExplorerType.BLOCKSCOUT,
     },
     blockExplorerApi: { url: '', type: BlockExplorerType.BLOCKSCOUT },
-  });
+  };
 
   useEffect(() => {
     init();
@@ -68,14 +74,20 @@ export const AddChain = (props: Props) => {
       setupChains.find((chain) => chain.chainId === addChainRequest.chainId)
     ) {
       setIsUpdatingChain(true);
+      setDefaultChainToAdd(undefined);
     } else {
+      setDefaultChainToAdd(
+        await ChainUtils.getChainFromDefaultChains<EvmChain>(
+          addChainRequest.chainId,
+        ),
+      );
       setIsUpdatingChain(false);
     }
     const fields: TransactionConfirmationFields = { otherFields: [] };
 
     fields.otherFields.push({
       name: 'evm_chain_name',
-      value: addChainRequest.chainName,
+      value: chainName,
       type: EvmInputDisplayType.STRING,
     });
     fields.otherFields.push({
@@ -85,7 +97,7 @@ export const AddChain = (props: Props) => {
     });
     fields.otherFields.push({
       name: 'evm_chain_symbol',
-      value: addChainRequest.nativeCurrency.symbol,
+      value: nativeCurrencySymbol,
       type: EvmInputDisplayType.STRING,
     });
     fields.otherFields.push({
@@ -101,16 +113,12 @@ export const AddChain = (props: Props) => {
     }, 250);
   };
 
-  const saveNewChain = async () => {
-    const chain = await ChainUtils.getChainFromDefaultChains<EvmChain>(
-      addChainRequest.chainId,
-    );
-    await ChainUtils.addChainToSetupChains(chain);
-    if (addChainRequest.rpcUrls.length > 0) {
-      await EvmRpcUtils.addCustomRpcsFromList(addChainRequest.rpcUrls, chain);
-      await EvmRpcUtils.setActiveRpc(
-        { url: addChainRequest.rpcUrls[0], isDefault: false },
-        chain,
+  const addDefaultChain = async () => {
+    if (defaultChainToAdd) {
+      await ChainUtils.addChainToSetupChains(defaultChainToAdd);
+      await EvmRpcUtils.addCustomRpcsFromList(
+        addChainRequest.rpcUrls,
+        defaultChainToAdd,
       );
     }
   };
@@ -122,13 +130,7 @@ export const AddChain = (props: Props) => {
     }
   };
 
-  const handleConfirm = async () => {
-    if (isUpdatingChain) {
-      await updateChain();
-    } else {
-      await saveNewChain();
-    }
-
+  const sendSuccessResponse = () => {
     CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
       value: {
@@ -139,6 +141,53 @@ export const AddChain = (props: Props) => {
       },
     });
   };
+
+  const handleSubmitNewChain = async (chain: EvmChain) => {
+    const rpcUrls = chain.rpcs.map((rpc) => rpc.url);
+    EvmRpcUrlUtils.assertValidHttpsRpcUrls(rpcUrls);
+
+    await ChainUtils.addCustomChain(chain);
+    await EvmRpcUtils.addCustomRpcsFromList(rpcUrls, chain);
+    await EvmRpcUtils.setActiveRpc(chain.rpcs[0], chain);
+    sendSuccessResponse();
+  };
+
+  const handleConfirm = async () => {
+    if (isUpdatingChain) {
+      await updateChain();
+    } else {
+      await addDefaultChain();
+    }
+
+    sendSuccessResponse();
+  };
+
+  if (isUpdatingChain === false && !defaultChainToAdd) {
+    return (
+      <div className="request-add-custom-chain-page">
+        <Card className="request-add-custom-chain-card">
+          <div className="title">
+            {chrome.i18n.getMessage('evm_add_chain')}
+          </div>
+          <div className="caption">
+            {chrome.i18n.getMessage('evm_add_chain_caption', [
+              data.dappInfo.domain,
+            ])}
+          </div>
+          <CustomEvmChainForm
+            onCancel={handleCancel}
+            onSubmit={handleSubmitNewChain}
+            initialChain={initialChain}
+            submitLabel="dialog_confirm"
+          />
+        </Card>
+      </div>
+    );
+  }
+
+  if (isUpdatingChain === undefined) {
+    return null;
+  }
 
   return (
     <EvmOperation
@@ -156,50 +205,7 @@ export const AddChain = (props: Props) => {
         [data.dappInfo.domain],
       )}
       fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}
-      bottomPanel={
-        <></>
-        // <FormContainer onSubmit={saveNewChain}>
-        //   <InputComponent
-        //     type={InputType.TEXT}
-        //     label="Chain Name"
-        //     skipLabelTranslation
-        //     value={newChain.name}
-        //     onChange={(value) => updateNewChain('name', value)}
-        //   />
-        //   <InputComponent
-        //     type={InputType.TEXT}
-        //     label="Chain ID"
-        //     skipLabelTranslation
-        //     value={newChain.chainId}
-        //     onChange={(value) => updateNewChain('chainId', value)}
-        //   />
-        //   {newChain.rpcs.map((rpc, index) => (
-        //     <InputComponent
-        //       type={InputType.TEXT}
-        //       label="RPC URL"
-        //       skipLabelTranslation
-        //       value={rpc.url}
-        //       onChange={(value) => updateNewChain(`rpcs.url.${index}`, value)}
-        //     />
-        //   ))}
-        //   {newChain.blockExplorer && (
-        //     <InputComponent
-        //       type={InputType.TEXT}
-        //       label="Block explorer URL"
-        //       skipLabelTranslation
-        //       value={newChain.blockExplorer.url}
-        //       onChange={(value) => updateNewChain('blockExplorer.url', value)}
-        //     />
-        //   )}
-        //   <InputComponent
-        //     type={InputType.TEXT}
-        //     label="Symbol"
-        //     skipLabelTranslation
-        //     value={newChain.mainToken}
-        //     onChange={(value) => updateNewChain('mainToken', value)}
-        //   />
-        // </FormContainer>
-      }
+      bottomPanel={<></>}
       transactionHook={transactionHook}></EvmOperation>
   );
 };

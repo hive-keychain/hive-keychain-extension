@@ -95,7 +95,11 @@ export const initEvmRequestHandler = async (
     }
   }
 
-  if (chainId && !chain) {
+  if (
+    chainId &&
+    !chain &&
+    request.method !== EvmRequestMethod.WALLET_ADD_ETH_CHAIN
+  ) {
     if (request.method === EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN) {
       await requestAddCustomEvmChain(
         requestHandler,
@@ -190,6 +194,7 @@ export const initEvmRequestHandler = async (
         DialogCommand.UNLOCK_EVM,
       );
     } else if (
+      request.method !== EvmRequestMethod.WALLET_ADD_ETH_CHAIN &&
       resolvedRequestChainId &&
       !setupChains.find(
         (c: EvmChain) =>

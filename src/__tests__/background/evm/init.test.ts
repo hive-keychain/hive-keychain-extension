@@ -151,6 +151,61 @@ describe('initEvmRequestHandler', () => {
     expect(handleNonSupportedChainMock).not.toHaveBeenCalled();
   });
 
+  it('opens confirmation for wallet_addEthereumChain when the requested chain is not configured', async () => {
+    const MkModule = (await import('@background/hive/modules/mk.module'))
+      .default;
+    const LocalStorageUtils = (await import('src/utils/localStorage.utils'))
+      .default;
+    const { EvmWalletUtils } = await import('@popup/evm/utils/wallet.utils');
+    (MkModule.getMk as jest.Mock).mockResolvedValue('mk');
+    (LocalStorageUtils.getValueFromLocalStorage as jest.Mock).mockResolvedValue([
+      { address: '0xabc123' },
+    ]);
+    (EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
+
+    const request = {
+      request_id: 43,
+      method: EvmRequestMethod.WALLET_ADD_ETH_CHAIN,
+      params: [
+        {
+          chainId: '0x14a34',
+          chainName: 'Base Sepolia',
+          nativeCurrency: {
+            name: 'Ether',
+            symbol: 'ETH',
+            decimals: 18,
+          },
+          rpcUrls: ['https://sepolia.base.org'],
+          blockExplorerUrls: ['https://sepolia.basescan.org'],
+        },
+      ],
+      chainId: '0x1',
+    } as any;
+    const dappInfo = {
+      origin: 'https://example.app',
+      domain: 'example.app',
+      protocol: 'https:',
+      logo: '',
+    };
+    const requestHandler = {
+      accounts: [],
+      saveInLocalStorage: jest.fn(),
+    } as any;
+
+    await initEvmRequestHandler(request, 7, dappInfo, requestHandler);
+
+    expect(handleNonSupportedChainMock).not.toHaveBeenCalled();
+    expect(requestAddCustomEvmChainMock).not.toHaveBeenCalled();
+    expect(evmRequestWithConfirmationMock).toHaveBeenCalledWith(
+      requestHandler,
+      7,
+      request,
+      dappInfo,
+    );
+  });
+
   it('opens confirmation for a configured custom chain not whitelisted for the origin', async () => {
     const { ChainUtils } = await import('@popup/multichain/utils/chain.utils');
     (ChainUtils.getDefaultChains as jest.Mock).mockResolvedValue([
