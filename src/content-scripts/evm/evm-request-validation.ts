@@ -15,6 +15,7 @@ import {
 import { AddChainRequest } from '@popup/evm/interfaces/evm-requests.interfaces';
 import { EvmRpcUrlUtils } from '@popup/evm/utils/evm-rpc-url.utils';
 import { ethers } from 'ethers';
+import { EvmEncryptedMessageUtils } from 'src/utils/evm/evm-encrypted-message.utils';
 
 const EVM_CHAIN_ID_REGEX = /^0x[1-9a-fA-F][0-9a-fA-F]*$/;
 
@@ -257,6 +258,38 @@ export const validateRequest = (
         throw getProviderRpcError(
           'invalidMethodParams',
           'Invalid parameter. Block explorer URLs must use HTTPS.',
+        );
+      }
+      break;
+    }
+    case EvmRequestMethod.ETH_DECRYPT: {
+      const requestParams = assertParamsArray(params);
+      const encryptedMessage = requestParams[0];
+      const accountAddress = requestParams[1];
+
+      if (requestParams.length < 2) {
+        throw getProviderRpcError(
+          'invalidMethodParams',
+          'Invalid parameter. Missing decrypt parameters.',
+        );
+      }
+
+      try {
+        EvmEncryptedMessageUtils.parseEncryptedMessage(encryptedMessage);
+      } catch (err) {
+        throw getProviderRpcError(
+          'invalidMethodParams',
+          'Invalid parameter. Encrypted message is invalid.',
+        );
+      }
+
+      if (
+        typeof accountAddress !== 'string' ||
+        !ethers.isAddress(accountAddress)
+      ) {
+        throw getProviderRpcError(
+          'invalidMethodParams',
+          'Invalid parameter. Account address is not valid.',
         );
       }
       break;

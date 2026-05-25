@@ -1,6 +1,5 @@
 import {
   decrypt,
-  EthEncryptedData,
   getEncryptionPublicKey,
   personalSign,
   recoverPersonalSignature,
@@ -13,6 +12,7 @@ import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BlockTag, ethers } from 'ethers';
+import { EvmEncryptedMessageUtils } from 'src/utils/evm/evm-encrypted-message.utils';
 import Logger from 'src/utils/logger.utils';
 
 const instanciateProvider = async (chain?: EvmChain) => {
@@ -176,13 +176,17 @@ const getEncryptionKey = async (account: EvmAccount) => {
 };
 
 const decryptMessage = (account: EvmAccount, message: string) => {
-  const stripped = message.substring(2);
-  const buff = Buffer.from(stripped, 'hex');
-  const encryptedData: EthEncryptedData = JSON.parse(buff.toString('utf8'));
-  return decrypt({
-    encryptedData: encryptedData,
-    privateKey: account.wallet.signingKey.privateKey.substring(2),
-  });
+  const encryptedData = EvmEncryptedMessageUtils.parseEncryptedMessage(message);
+
+  try {
+    return decrypt({
+      encryptedData: encryptedData,
+      privateKey: account.wallet.signingKey.privateKey.substring(2),
+    });
+  } catch (err) {
+    Logger.error('Error in decryptMessage', err);
+    throw new Error('Unable to decrypt message');
+  }
 };
 
 const getNonce = async (

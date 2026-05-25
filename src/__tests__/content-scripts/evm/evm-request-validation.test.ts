@@ -41,6 +41,23 @@ const validAddChainRequest = {
   blockExplorerUrls: ['https://sepolia.basescan.org'],
 };
 
+const validEncryptedData = {
+  version: 'x25519-xsalsa20-poly1305',
+  nonce: 'nonce',
+  ephemPublicKey: 'ephem-public-key',
+  ciphertext: 'ciphertext',
+};
+
+const validDecryptAddress = '0x0000000000000000000000000000000000000001';
+
+const encodeJson = (value: unknown) => {
+  return `0x${Buffer.from(JSON.stringify(value), 'utf8').toString('hex')}`;
+};
+
+const encodeText = (value: string) => {
+  return `0x${Buffer.from(value, 'utf8').toString('hex')}`;
+};
+
 describe('evm-request-validation tests:\n', () => {
   it('normalizes missing params to an empty array', () => {
     expect(
@@ -312,6 +329,78 @@ describe('evm-request-validation tests:\n', () => {
     ).toMatchObject({
       code: -32602,
       message: 'Invalid parameter. ChainId must be a hexadecimal string.',
+    });
+  });
+
+  it('accepts eth_decrypt with valid encrypted message params', () => {
+    expect(
+      validateEvmRequest({
+        request_id: 1,
+        method: EvmRequestMethod.ETH_DECRYPT,
+        params: [encodeJson(validEncryptedData), validDecryptAddress],
+      }),
+    ).toEqual({
+      request_id: 1,
+      method: EvmRequestMethod.ETH_DECRYPT,
+      params: [encodeJson(validEncryptedData), validDecryptAddress],
+    });
+  });
+
+  it('rejects eth_decrypt with missing params', () => {
+    expect(
+      getThrownError(() =>
+        validateEvmRequest({
+          request_id: 1,
+          method: EvmRequestMethod.ETH_DECRYPT,
+          params: [],
+        }),
+      ),
+    ).toMatchObject({
+      code: -32602,
+      message: 'Invalid parameter. Missing decrypt parameters.',
+    });
+  });
+
+  it.each([
+    ['missing hex prefix', '1234'],
+    ['odd-length hex payload', '0x123'],
+    ['non-hex payload', '0xzz'],
+    ['malformed JSON', encodeText('{invalid-json')],
+    [
+      'unsupported version',
+      encodeJson({ ...validEncryptedData, version: 'unsupported-version' }),
+    ],
+    [
+      'missing ciphertext',
+      encodeJson({ ...validEncryptedData, ciphertext: undefined }),
+    ],
+  ])('rejects eth_decrypt with %s', (_label, encryptedMessage) => {
+    expect(
+      getThrownError(() =>
+        validateEvmRequest({
+          request_id: 1,
+          method: EvmRequestMethod.ETH_DECRYPT,
+          params: [encryptedMessage, validDecryptAddress],
+        }),
+      ),
+    ).toMatchObject({
+      code: -32602,
+      message: 'Invalid parameter. Encrypted message is invalid.',
+    });
+  });
+
+  it('rejects eth_decrypt with invalid account address', () => {
+    expect(
+      getThrownError(() =>
+        validateEvmRequest({
+          request_id: 1,
+          method: EvmRequestMethod.ETH_DECRYPT,
+          params: [encodeJson(validEncryptedData), 'not-an-address'],
+        }),
+      ),
+    ).toMatchObject({
+      code: -32602,
+      message: 'Invalid parameter. Account address is not valid.',
     });
   });
 });

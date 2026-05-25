@@ -13,22 +13,30 @@ export const decryptMessage = async (
   locator: EvmRequestLocator,
 ) => {
   const requestData = requestHandler.getRequestDataByLocator(locator);
+  const encryptedMessage = request.params?.[0];
+  const accountAddress = request.params?.[1];
+  if (
+    typeof encryptedMessage !== 'string' ||
+    typeof accountAddress !== 'string'
+  ) {
+    throw new Error('Invalid decrypt request');
+  }
+
   const account = requestHandler.accounts.find((account: EvmAccount) => {
     return (
-      account.wallet.address.toLowerCase() === request.params[1].toLowerCase()
+      account.wallet.address.toLowerCase() === accountAddress.toLowerCase()
     );
   });
-  if (account) {
-    const res = await EvmRequestsUtils.decryptMessage(
-      account,
-      request.params[0],
-    );
-    return await createEvmMessage(
-      null,
-      res,
-      request,
-      requestData?.tab!,
-      await chrome.i18n.getMessage('dialog_evm_decrypt_message_success'),
-    );
+  if (!account) {
+    throw new Error('Account not found');
   }
+
+  const res = await EvmRequestsUtils.decryptMessage(account, encryptedMessage);
+  return await createEvmMessage(
+    null,
+    res,
+    request,
+    requestData?.tab!,
+    await chrome.i18n.getMessage('dialog_evm_decrypt_message_success'),
+  );
 };

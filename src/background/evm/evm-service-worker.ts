@@ -372,19 +372,24 @@ const previewEvmDecryptMessage = async (
   }
   const requestData = requestHandler.getRequestDataByLocator(locator);
   const request = requestData?.request;
-  if (!request?.params?.[0] || !request?.params?.[1]) {
+  const encryptedMessage = request?.params?.[0];
+  const accountAddress = request?.params?.[1];
+  if (
+    typeof encryptedMessage !== 'string' ||
+    typeof accountAddress !== 'string'
+  ) {
     throw new Error('Invalid decrypt request');
   }
   const account = requestHandler.accounts.find((account: EvmAccount) => {
     return (
       account.wallet.address.toLowerCase() ===
-      String(request.params[1]).toLowerCase()
+      accountAddress.toLowerCase()
     );
   });
   if (!account) {
     throw new Error('Account not found');
   }
-  return EvmRequestsUtils.decryptMessage(account, request.params[0]);
+  return EvmRequestsUtils.decryptMessage(account, encryptedMessage);
 };
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
