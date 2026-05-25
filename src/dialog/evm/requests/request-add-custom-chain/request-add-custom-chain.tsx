@@ -1,12 +1,8 @@
 import { Card } from '@common-ui/card/card.component';
 import { EvmDappInfo, EvmRequest } from '@interfaces/evm-provider.interface';
-import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { CustomEvmChainForm } from '@popup/evm/pages/home/settings/evm-custom-chains/custom-evm-chain-form.component';
 import { ChainListOrgUtils } from '@popup/evm/utils/chain-list-org.utils';
-import {
-  ChainType,
-  EvmChain,
-} from '@popup/multichain/interfaces/chains.interface';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import { CommunicationUtils } from 'src/utils/communication.utils';
@@ -35,33 +31,12 @@ export const RequestAddCustomEvmChain = ({
       ChainListOrgUtils.findByChainId(Number(requestedChainId)).then(
         (chain) => {
           if (chain) {
-            setDefaultChain({
-              chainId: requestedChainId,
-              defaultTransactionType: EvmTransactionType.EIP_1559,
-              logo: chain.icon
-                ? `https://icons.llamao.fi/icons/chains/rsz_${chain.icon}.jpg`
-                : undefined,
-              rpcs: chain.rpc
-                .filter((rpc) => !rpc.url.startsWith('wss://'))
-                .map((rpc) => ({
-                  url: rpc.url,
-                  isDefault: false,
-                })),
-              mainToken: chain.nativeCurrency.symbol.toUpperCase(),
-              name: chain.name,
-              type: ChainType.EVM,
-              blockExplorer: chain.explorers?.[0]?.url
-                ? { url: chain.explorers?.[0]?.url }
-                : undefined,
-              testnet: chain.isTestnet,
-              isCustom: true,
-              active: true,
-              disableTokensAndHistoryAutoLoading: true,
-              addTokensManually: true,
-              manualDiscoverAvailable: false,
-              manualLoadHistory: false,
-              onlyCustomFee: true,
-            } as EvmChain);
+            setDefaultChain(
+              ChainListOrgUtils.getEvmChain(chain, requestedChainId, {
+                manualLoadHistory: false,
+                onlyCustomFee: true,
+              }),
+            );
           }
         },
       );

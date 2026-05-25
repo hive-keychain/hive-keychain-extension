@@ -16,7 +16,7 @@ import { AddChainRequest } from '@popup/evm/interfaces/evm-requests.interfaces';
 import { EvmRpcUrlUtils } from '@popup/evm/utils/evm-rpc-url.utils';
 import { ethers } from 'ethers';
 
-const EVM_CHAIN_ID_REGEX = /^0x[0-9a-fA-F]+$/;
+const EVM_CHAIN_ID_REGEX = /^0x[1-9a-fA-F][0-9a-fA-F]*$/;
 
 const getProviderRpcError = (
   error: keyof typeof ProviderRpcErrorList,
@@ -242,6 +242,21 @@ export const validateRequest = (
         throw getProviderRpcError(
           'invalidMethodParams',
           'Invalid parameter. RPC URLs must use HTTPS.',
+        );
+      }
+
+      if (
+        addChainParams.blockExplorerUrls !== undefined &&
+        (!Array.isArray(addChainParams.blockExplorerUrls) ||
+          addChainParams.blockExplorerUrls.some(
+            (blockExplorerUrl) =>
+              typeof blockExplorerUrl !== 'string' ||
+              !EvmRpcUrlUtils.isValidHttpsRpcUrl(blockExplorerUrl),
+          ))
+      ) {
+        throw getProviderRpcError(
+          'invalidMethodParams',
+          'Invalid parameter. Block explorer URLs must use HTTPS.',
         );
       }
       break;

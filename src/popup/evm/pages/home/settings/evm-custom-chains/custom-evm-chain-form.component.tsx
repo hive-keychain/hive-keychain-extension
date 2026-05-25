@@ -91,15 +91,19 @@ const inferTxTypeFromChainListFeatures = (
 };
 
 const applyChainListOrgToFormState = async (chain: ChainListOrgChain) => {
+  const expectedChainId = '0x' + BigInt(chain.chainId).toString(16);
   const httpCandidateUrls = chain.rpc
     .filter((rpc) => !rpc.url.startsWith('wss://'))
     .map((rpc) => rpc.url);
 
-  const urlsToProbe = httpCandidateUrls.slice(0, CHAINLIST_PRELOAD_MAX_RPCS_TO_CHECK);
+  const urlsToProbe = httpCandidateUrls.slice(
+    0,
+    CHAINLIST_PRELOAD_MAX_RPCS_TO_CHECK,
+  );
 
   const statusByUrl = await Promise.all(
     urlsToProbe.map((url) =>
-      EvmRpcUtils.checkRpcStatus(url)
+      EvmRpcUtils.isValidRpcForChainId(url, expectedChainId)
         .then((ok) => ({ url, ok: !!ok }))
         .catch(() => ({ url, ok: false })),
     ),
@@ -113,7 +117,7 @@ const applyChainListOrgToFormState = async (chain: ChainListOrgChain) => {
 
   return {
     name: chain.name,
-    chainIdInput: '0x' + BigInt(chain.chainId).toString(16),
+    chainIdInput: expectedChainId,
     symbol: chain.nativeCurrency.symbol.toUpperCase(),
     rpcUrls: httpRpcs.length > 0 ? httpRpcs : [''],
     explorer: chain.explorers?.[0]?.url?.trim() ?? '',
@@ -159,7 +163,7 @@ export const CustomEvmChainForm = ({
   const [testnet, setTestnet] = useState(false);
   const [saving, setSaving] = useState(false);
   const [localError, setLocalError] = useState<string>();
-  /** Row indices that failed the pre-save `checkRpcStatus` (red borders). */
+  /** Row indices that failed the pre-save chain id RPC check (red borders). */
   const [failedRpcRowIndices, setFailedRpcRowIndices] = useState<number[]>([]);
   const [logoPreviewErrored, setLogoPreviewErrored] = useState(false);
   const [chainListMatch, setChainListMatch] =
@@ -418,7 +422,10 @@ export const CustomEvmChainForm = ({
 
       const rpcCheckResults = await Promise.all(
         rpcCheckRows.map(({ index, url }) =>
-          EvmRpcUtils.checkRpcStatus(url).then((ok) => ({ index, ok })),
+          EvmRpcUtils.isValidRpcForChainId(url, chainId).then((ok) => ({
+            index,
+            ok,
+          })),
         ),
       );
 

@@ -7,6 +7,23 @@ import {
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+const mockJsonRpcProviderSend = jest.fn();
+const mockJsonRpcProviderDestroy = jest.fn();
+
+jest.mock('ethers', () => {
+  const actual = jest.requireActual('ethers');
+  return {
+    ...actual,
+    ethers: {
+      ...actual.ethers,
+      JsonRpcProvider: jest.fn(() => ({
+        send: mockJsonRpcProviderSend,
+        destroy: mockJsonRpcProviderDestroy,
+      })),
+    },
+  };
+});
+
 const chain = {
   chainId: '0x1',
   name: 'Ethereum',
@@ -18,7 +35,13 @@ const chain = {
 } as EvmChain;
 
 describe('EvmRpcUtils HTTPS validation', () => {
+  beforeEach(() => {
+    mockJsonRpcProviderSend.mockReset();
+    mockJsonRpcProviderDestroy.mockReset();
+  });
+
   afterEach(() => {
+    jest.useRealTimers();
     jest.restoreAllMocks();
   });
 
@@ -166,5 +189,90 @@ describe('EvmRpcUtils HTTPS validation', () => {
         ],
       },
     );
+  });
+
+  it('accepts HTTPS RPCs returning the expected eth_chainId', async () => {
+    mockJsonRpcProviderSend.mockResolvedValue('0x1');
+
+    await expect(
+      EvmRpcUtils.isValidRpcForChainId('https://rpc.example.com', '0x1'),
+    ).resolves.toBe(true);
+
+    expect(mockJsonRpcProviderSend).toHaveBeenCalledWith('eth_chainId', []);
+  });
+
+  it('accepts HTTPS RPCs returning the expected eth_chainId before timeout', async () => {
+    jest.useFakeTimers();
+    mockJsonRpcProviderSend.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => resolve('0x1'), 500);
+        }),
+    );
+
+    const result = EvmRpcUtils.isValidRpcForChainId(
+      'https://rpc.example.com',
+      '0x1',
+    );
+
+    jest.advanceTimersByTime(500);
+    await expect(result).resolves.toBe(true);
+  });
+
+  it('rejects HTTPS RPCs when eth_chainId times out', async () => {
+    jest.useFakeTimers();
+    mockJsonRpcProviderSend.mockReturnValue(new Promise(() => undefined));
+
+    const result = EvmRpcUtils.isValidRpcForChainId(
+      'https://rpc.example.com',
+      '0x1',
+    );
+
+    jest.advanceTimersByTime(1000);
+    await expect(result).resolves.toBe(false);
+  });
+
+  it('rejects HTTPS RPCs returning a different eth_chainId', async () => {
+    mockJsonRpcProviderSend.mockResolvedValue('0x2');
+
+    await expect(
+      EvmRpcUtils.isValidRpcForChainId('https://rpc.example.com', '0x1'),
+    ).resolves.toBe(false);
+  });
+
+  it('rejects HTTPS RPCs that throw while reading eth_chainId', async () => {
+    mockJsonRpcProviderSend.mockRejectedValue(new Error('network error'));
+
+    await expect(
+      EvmRpcUtils.isValidRpcForChainId('https://rpc.example.com', '0x1'),
+    ).resolves.toBe(false);
+  });
+
+  it('rejects HTTP RPCs without calling eth_chainId', async () => {
+    await expect(
+      EvmRpcUtils.isValidRpcForChainId('http://rpc.example.com', '0x1'),
+    ).resolves.toBe(false);
+
+    expect(mockJsonRpcProviderSend).not.toHaveBeenCalled();
+  });
+
+  it('filters mixed RPC lists to matching HTTPS RPCs', async () => {
+    mockJsonRpcProviderSend
+      .mockResolvedValueOnce('0x1')
+      .mockResolvedValueOnce('0x2')
+      .mockRejectedValueOnce(new Error('network error'));
+
+    await expect(
+      EvmRpcUtils.filterValidRpcsForChainId(
+        [
+          'https://valid.rpc',
+          'https://wrong-chain.rpc',
+          'https://throwing.rpc',
+          'http://invalid.rpc',
+          'https://valid.rpc',
+        ],
+        '0x1',
+      ),
+    ).resolves.toEqual(['https://valid.rpc']);
   });
 });

@@ -2,6 +2,7 @@ import '@testing-library/jest-dom';
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { AddChain } from '@dialog/evm/requests/add-chain/add-chain';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
+import { ChainListOrgUtils } from '@popup/evm/utils/chain-list-org.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import {
   BlockExplorerType,
@@ -16,6 +17,7 @@ import { CommunicationUtils } from 'src/utils/communication.utils';
 
 const mockCustomEvmChainForm = jest.fn();
 const mockCustomEvmChainFormSubmitError = jest.fn();
+const mockEvmOperationConfirmError = jest.fn();
 let mockSubmittedChain: EvmChain;
 
 const mockTransactionHook = {
@@ -37,7 +39,13 @@ jest.mock('@dialog/evm/evm-operation/evm-operation', () => {
           'button',
           {
             'data-testid': 'dialog-confirm',
-            onClick: () => void onConfirm(),
+            onClick: async () => {
+              try {
+                await onConfirm();
+              } catch (error) {
+                mockEvmOperationConfirmError(error);
+              }
+            },
           },
           'confirm',
         ),
@@ -102,6 +110,28 @@ const chain = {
   defaultTransactionType: 'EIP_1559',
 } as EvmChain;
 
+const chainListChain = {
+  name: 'Chainlist Chain',
+  chain: 'chainlist',
+  icon: 'chainlist',
+  rpc: [
+    { url: 'https://chainlist.rpc' },
+    { url: 'https://chainlist-backup.rpc' },
+  ],
+  faucets: [],
+  nativeCurrency: {
+    name: 'Chainlist Ether',
+    symbol: 'CLT',
+    decimals: 18,
+  },
+  infoURL: 'https://chainlist.example',
+  shortName: 'clt',
+  chainId: 1337,
+  networkId: 1337,
+  explorers: [{ name: 'Explorer', url: 'https://explorer.chainlist' }],
+  isTestnet: true,
+};
+
 const request = {
   request_id: 99,
   method: EvmRequestMethod.WALLET_ADD_ETH_CHAIN,
@@ -146,12 +176,16 @@ describe('AddChain', () => {
     );
     jest.spyOn(EvmRpcUtils, 'addCustomRpcsFromList').mockResolvedValue();
     jest.spyOn(EvmRpcUtils, 'setActiveRpc').mockResolvedValue();
+    jest
+      .spyOn(EvmRpcUtils, 'filterValidRpcsForChainId')
+      .mockImplementation(async (rpcUrls) => rpcUrls);
     jest.spyOn(ChainUtils, 'getChain').mockResolvedValue(chain);
     jest
       .spyOn(ChainUtils, 'getChainFromDefaultChains')
       .mockResolvedValue(undefined);
     jest.spyOn(ChainUtils, 'addChainToSetupChains').mockResolvedValue();
     jest.spyOn(ChainUtils, 'addCustomChain').mockResolvedValue();
+    jest.spyOn(ChainListOrgUtils, 'findByChainId').mockResolvedValue(undefined);
   });
 
   afterEach(() => {
@@ -189,8 +223,33 @@ describe('AddChain', () => {
     });
   });
 
-  it('preloads dapp chain data into the custom chain form for a new chain', async () => {
+  it('rejects an existing-chain add request when no dapp RPC matches the chainId', async () => {
+    jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([chain]);
+    jest.spyOn(EvmRpcUtils, 'filterValidRpcsForChainId').mockResolvedValue([]);
+
+    render(<AddChain request={request} data={data} afterCancel={jest.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('evm_update_chain')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId('dialog-confirm'));
+
+    await waitFor(() => {
+      expect(mockEvmOperationConfirmError).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'no_valid_rpc_for_chain_id' }),
+      );
+    });
+    expect(EvmRpcUtils.addCustomRpcsFromList).not.toHaveBeenCalled();
+    expect(EvmRpcUtils.setActiveRpc).not.toHaveBeenCalled();
+    expect(CommunicationUtils.runtimeSendMessage).not.toHaveBeenCalled();
+  });
+
+  it('preloads Chainlist metadata into the custom chain form for a new Chainlist-backed chain', async () => {
     jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([]);
+    jest
+      .spyOn(ChainListOrgUtils, 'findByChainId')
+      .mockResolvedValue(chainListChain);
 
     render(<AddChain request={request} data={data} afterCancel={jest.fn()} />);
 
@@ -201,20 +260,115 @@ describe('AddChain', () => {
     expect(mockCustomEvmChainForm).toHaveBeenCalledWith(
       expect.objectContaining({
         initialChain: {
-          name: 'Local Chain',
+          name: 'Chainlist Chain',
           type: ChainType.EVM,
-          mainToken: 'ETH',
+          mainToken: 'CLT',
           defaultTransactionType: EvmTransactionType.EIP_1559,
-          logo: '',
+          logo: 'https://icons.llamao.fi/icons/chains/rsz_chainlist.jpg',
+          chainId: '0x539',
+          rpcs: [
+            { url: 'https://chainlist.rpc', isDefault: true },
+            { url: 'https://chainlist-backup.rpc', isDefault: false },
+          ],
+          blockExplorer: {
+            url: 'https://explorer.chainlist',
+            type: BlockExplorerType.BLOCKSCOUT,
+          },
+          blockExplorerApi: { url: '', type: BlockExplorerType.BLOCKSCOUT },
+          testnet: true,
+          isCustom: true,
+          active: true,
+          disableTokensAndHistoryAutoLoading: true,
+          addTokensManually: true,
+          manualDiscoverAvailable: false,
+        },
+        submitLabel: 'dialog_confirm',
+      }),
+    );
+  });
+
+  it('uses Keychain canonical metadata when the requested chain exists in defaults', async () => {
+    jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([]);
+    jest.spyOn(ChainUtils, 'getChainFromDefaultChains').mockResolvedValue({
+      ...chain,
+      name: 'Canonical Chain',
+      mainToken: 'CAN',
+    });
+
+    render(<AddChain request={request} data={data} afterCancel={jest.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('evm_add_chain')).toBeInTheDocument();
+    });
+
+    expect(mockTransactionHook.setFields).toHaveBeenCalledWith({
+      otherFields: expect.arrayContaining([
+        expect.objectContaining({
+          name: 'evm_chain_name',
+          value: 'Canonical Chain',
+        }),
+        expect.objectContaining({
+          name: 'evm_chain_symbol',
+          value: 'CAN',
+        }),
+      ]),
+    });
+    expect(mockCustomEvmChainForm).not.toHaveBeenCalled();
+  });
+
+  it('preloads dapp chain data into the custom chain form when Keychain and Chainlist have no match', async () => {
+    jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([]);
+
+    render(<AddChain request={request} data={data} afterCancel={jest.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('custom-evm-chain-form')).toBeInTheDocument();
+    });
+
+    expect(mockCustomEvmChainForm).toHaveBeenCalledWith(
+      expect.objectContaining({
+        initialChain: expect.objectContaining({
+          name: 'Local Chain',
+          mainToken: 'ETH',
           chainId: '0x539',
           rpcs: [{ url: 'https://rpc.example.com', isDefault: true }],
+        }),
+      }),
+    );
+  });
+
+  it('omits non-HTTPS dapp block explorer URLs from the custom chain form', async () => {
+    jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([]);
+    const requestWithHttpExplorer = {
+      ...request,
+      params: [
+        {
+          ...request.params[0],
+          blockExplorerUrls: ['http://explorer.example.com'],
+        },
+      ],
+    } as any;
+
+    render(
+      <AddChain
+        request={requestWithHttpExplorer}
+        data={data}
+        afterCancel={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('custom-evm-chain-form')).toBeInTheDocument();
+    });
+
+    expect(mockCustomEvmChainForm).toHaveBeenCalledWith(
+      expect.objectContaining({
+        initialChain: expect.objectContaining({
           blockExplorer: {
             url: '',
             type: BlockExplorerType.BLOCKSCOUT,
           },
-          blockExplorerApi: { url: '', type: BlockExplorerType.BLOCKSCOUT },
-        },
-        submitLabel: 'dialog_confirm',
+        }),
       }),
     );
   });
@@ -255,7 +409,7 @@ describe('AddChain', () => {
     );
   });
 
-  it('adds the chain and activates the first HTTPS RPC from the custom chain form', async () => {
+  it('adds a dapp-only chain and activates the first valid dapp RPC from the custom chain form', async () => {
     jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([]);
 
     render(<AddChain request={request} data={data} afterCancel={jest.fn()} />);
@@ -286,6 +440,125 @@ describe('AddChain', () => {
         result: true,
       },
     });
+  });
+
+  it('adds a Chainlist-backed chain and prefers a valid Chainlist RPC for activation', async () => {
+    jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([]);
+    jest
+      .spyOn(ChainListOrgUtils, 'findByChainId')
+      .mockResolvedValue(chainListChain);
+    jest
+      .spyOn(EvmRpcUtils, 'filterValidRpcsForChainId')
+      .mockImplementation(async (rpcUrls) => {
+        if (rpcUrls.includes('https://chainlist.rpc')) {
+          return ['https://chainlist.rpc'];
+        }
+        return ['https://rpc.example.com'];
+      });
+
+    render(<AddChain request={request} data={data} afterCancel={jest.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('custom-evm-chain-form')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId('custom-evm-chain-submit'));
+
+    await waitFor(() => {
+      expect(ChainUtils.addCustomChain).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Chainlist Chain',
+          mainToken: 'CLT',
+          rpcs: [
+            { url: 'https://chainlist.rpc', isDefault: true },
+            { url: 'https://rpc.example.com', isDefault: false },
+          ],
+        }),
+      );
+    });
+    expect(EvmRpcUtils.addCustomRpcsFromList).toHaveBeenCalledWith(
+      ['https://chainlist.rpc', 'https://rpc.example.com'],
+      expect.objectContaining({ name: 'Chainlist Chain' }),
+    );
+    expect(EvmRpcUtils.setActiveRpc).toHaveBeenCalledWith(
+      { url: 'https://chainlist.rpc', isDefault: true },
+      expect.objectContaining({ name: 'Chainlist Chain' }),
+    );
+  });
+
+  it('uses a valid dapp RPC for a Chainlist-backed chain when Chainlist RPCs do not validate', async () => {
+    jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([]);
+    jest
+      .spyOn(ChainListOrgUtils, 'findByChainId')
+      .mockResolvedValue(chainListChain);
+    jest
+      .spyOn(EvmRpcUtils, 'filterValidRpcsForChainId')
+      .mockImplementation(async (rpcUrls) => {
+        if (rpcUrls.includes('https://chainlist.rpc')) {
+          return [];
+        }
+        return ['https://rpc.example.com'];
+      });
+
+    render(<AddChain request={request} data={data} afterCancel={jest.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('custom-evm-chain-form')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId('custom-evm-chain-submit'));
+
+    await waitFor(() => {
+      expect(EvmRpcUtils.setActiveRpc).toHaveBeenCalledWith(
+        { url: 'https://rpc.example.com', isDefault: true },
+        expect.objectContaining({ name: 'Chainlist Chain' }),
+      );
+    });
+  });
+
+  it('rejects a Chainlist-backed chain when no Chainlist or dapp RPC matches the chainId', async () => {
+    jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([]);
+    jest
+      .spyOn(ChainListOrgUtils, 'findByChainId')
+      .mockResolvedValue(chainListChain);
+    jest.spyOn(EvmRpcUtils, 'filterValidRpcsForChainId').mockResolvedValue([]);
+
+    render(<AddChain request={request} data={data} afterCancel={jest.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('custom-evm-chain-form')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId('custom-evm-chain-submit'));
+
+    await waitFor(() => {
+      expect(mockCustomEvmChainFormSubmitError).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'no_valid_rpc_for_chain_id' }),
+      );
+    });
+    expect(ChainUtils.addCustomChain).not.toHaveBeenCalled();
+    expect(EvmRpcUtils.setActiveRpc).not.toHaveBeenCalled();
+  });
+
+  it('rejects a dapp-only chain when no dapp RPC matches the chainId', async () => {
+    jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([]);
+    jest.spyOn(EvmRpcUtils, 'filterValidRpcsForChainId').mockResolvedValue([]);
+
+    render(<AddChain request={request} data={data} afterCancel={jest.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('custom-evm-chain-form')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId('custom-evm-chain-submit'));
+
+    await waitFor(() => {
+      expect(mockCustomEvmChainFormSubmitError).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'no_valid_rpc_for_chain_id' }),
+      );
+    });
+    expect(ChainUtils.addCustomChain).not.toHaveBeenCalled();
+    expect(EvmRpcUtils.setActiveRpc).not.toHaveBeenCalled();
   });
 
   it('rejects non-HTTPS RPC edits from the custom chain form before saving', async () => {

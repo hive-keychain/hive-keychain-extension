@@ -9,8 +9,11 @@ import {
   createRpcFetchRequest,
   EtherJsonRpcProvider,
 } from 'src/utils/evm/ether-json-rpc-provider';
+import { ethers } from 'ethers';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+
+const RPC_STATUS_CHECK_TIMEOUT_MS = 1000;
 
 /** True when retrying the same JSON-RPC on another endpoint may help (transport / node issues). */
 export const isEvmRpcInfrastructureFailure = (err: unknown): boolean => {
@@ -246,7 +249,7 @@ const checkRpcStatus = async (uri: string): Promise<boolean> => {
             // ignore
           }
           resolve(false);
-        }, 1000);
+        }, RPC_STATUS_CHECK_TIMEOUT_MS);
       }),
     ]);
     try {
@@ -263,6 +266,71 @@ const checkRpcStatus = async (uri: string): Promise<boolean> => {
     }
     return false;
   }
+};
+
+const getRpcChainIdWithTimeout = async (
+  provider: ethers.JsonRpcProvider,
+): Promise<unknown> => {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      provider.send('eth_chainId', []),
+      new Promise<null>((resolve) => {
+        timeoutId = setTimeout(
+          () => resolve(null),
+          RPC_STATUS_CHECK_TIMEOUT_MS,
+        );
+      }),
+    ]);
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+  }
+};
+
+export const isValidRpcForChainId = async (
+  rpcUrl: string,
+  expectedChainId: string,
+): Promise<boolean> => {
+  if (!EvmRpcUrlUtils.isValidHttpsRpcUrl(rpcUrl)) {
+    return false;
+  }
+
+  const provider = new ethers.JsonRpcProvider(rpcUrl);
+  try {
+    const chainId = await getRpcChainIdWithTimeout(provider);
+    return (
+      typeof chainId === 'string' &&
+      chainId.toLowerCase() === expectedChainId.toLowerCase()
+    );
+  } catch {
+    return false;
+  } finally {
+    try {
+      provider.destroy();
+    } catch {
+      // ignore
+    }
+  }
+};
+
+export const filterValidRpcsForChainId = async (
+  rpcUrls: string[],
+  expectedChainId: string,
+): Promise<string[]> => {
+  const uniqueRpcUrls = [...new Set(rpcUrls)];
+
+  const checks = await Promise.all(
+    uniqueRpcUrls.map(async (rpcUrl) => ({
+      rpcUrl,
+      isValid: await isValidRpcForChainId(rpcUrl, expectedChainId),
+    })),
+  );
+
+  return checks
+    .filter(({ isValid }) => isValid)
+    .map(({ rpcUrl }) => rpcUrl);
 };
 
 // Returning null, it means that no rpc is working
@@ -305,4 +373,6 @@ export const EvmRpcUtils = {
   automaticallySwitchToWorkingRpc,
   addCustomRpcsFromList,
   isEvmRpcInfrastructureFailure,
+  isValidRpcForChainId,
+  filterValidRpcsForChainId,
 };

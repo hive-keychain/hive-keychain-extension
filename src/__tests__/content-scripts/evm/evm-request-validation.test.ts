@@ -232,6 +232,26 @@ describe('evm-request-validation tests:\n', () => {
     });
   });
 
+  it('rejects wallet_addEthereumChain with HTTP block explorer URLs', () => {
+    expect(
+      getThrownError(() =>
+        validateEvmRequest({
+          request_id: 1,
+          method: EvmRequestMethod.WALLET_ADD_ETH_CHAIN,
+          params: [
+            {
+              ...validAddChainRequest,
+              blockExplorerUrls: ['http://explorer.example.com'],
+            },
+          ],
+        }),
+      ),
+    ).toMatchObject({
+      code: -32602,
+      message: 'Invalid parameter. Block explorer URLs must use HTTPS.',
+    });
+  });
+
   it('rejects wallet_addEthereumChain with missing or empty RPC URLs', () => {
     expect(
       getThrownError(() =>
@@ -272,6 +292,21 @@ describe('evm-request-validation tests:\n', () => {
           request_id: 1,
           method: EvmRequestMethod.WALLET_ADD_ETH_CHAIN,
           params: [{ ...validAddChainRequest, chainId: '1' }],
+        }),
+      ),
+    ).toMatchObject({
+      code: -32602,
+      message: 'Invalid parameter. ChainId must be a hexadecimal string.',
+    });
+  });
+
+  it('rejects wallet_addEthereumChain with zero chainId', () => {
+    expect(
+      getThrownError(() =>
+        validateEvmRequest({
+          request_id: 1,
+          method: EvmRequestMethod.WALLET_ADD_ETH_CHAIN,
+          params: [{ ...validAddChainRequest, chainId: '0x0' }],
         }),
       ),
     ).toMatchObject({

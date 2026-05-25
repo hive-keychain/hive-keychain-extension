@@ -10,7 +10,7 @@ describe('CustomEvmChainForm', () => {
   beforeEach(() => {
     chrome.i18n.getMessage = jest.fn((key: string) => key);
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest.spyOn(EvmRpcUtils, 'checkRpcStatus').mockResolvedValue(true);
+    jest.spyOn(EvmRpcUtils, 'isValidRpcForChainId').mockResolvedValue(true);
   });
 
   afterEach(() => {
