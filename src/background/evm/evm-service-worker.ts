@@ -246,11 +246,22 @@ const chromeMessageHandler = async (
       if (!origin) {
         break;
       }
-      await performEvmOperation(
-        await EvmRequestHandler.getFromLocalStorage(),
-        request,
+      const requestHandler = await EvmRequestHandler.getFromLocalStorage();
+      const locator: EvmRequestLocator = {
+        requestId: request.request_id,
         tab,
-        domain,
+        origin,
+      };
+      const requestData = requestHandler.getRequestDataByLocator(locator);
+      if (!requestData?.request) {
+        Logger.warn('Cannot perform EVM operation: pending request not found');
+        break;
+      }
+      await performEvmOperation(
+        requestHandler,
+        requestData.request,
+        tab,
+        requestData.dappInfo?.domain ?? domain,
         origin,
         extraData,
       );

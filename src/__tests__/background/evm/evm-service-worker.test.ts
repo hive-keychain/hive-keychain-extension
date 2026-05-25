@@ -335,11 +335,19 @@ describe('evm service worker', () => {
 
   it('awaits the EVM operation after confirming a transaction request', async () => {
     const operation = createDeferred();
-    const requestHandler = { requestsData: [] };
     const request = {
       request_id: 103,
       method: EvmRequestMethod.SEND_TRANSACTION,
       params: [],
+    };
+    const requestHandler = {
+      getRequestDataByLocator: jest.fn().mockReturnValue({
+        request,
+        dappInfo: {
+          origin: 'https://example.app',
+          domain: 'stored.example.app',
+        },
+      }),
     };
     getFromLocalStorageMock.mockResolvedValue(requestHandler);
     performEvmOperationMock.mockReturnValue(operation.promise);
@@ -365,11 +373,16 @@ describe('evm service worker', () => {
 
     await flushAsync();
 
+    expect(requestHandler.getRequestDataByLocator).toHaveBeenCalledWith({
+      requestId: 103,
+      tab: 12,
+      origin: 'https://example.app',
+    });
     expect(performEvmOperationMock).toHaveBeenCalledWith(
       requestHandler,
       request,
       12,
-      'example.app',
+      'stored.example.app',
       'https://example.app',
       { gasLimit: '0x5208' },
     );
@@ -379,5 +392,95 @@ describe('evm service worker', () => {
     await result;
 
     expect(settled).toBe(true);
+  });
+
+  it('uses the persisted request when the accepted dialog request was changed', async () => {
+    const persistedRequest = {
+      request_id: 104,
+      method: EvmRequestMethod.SEND_TRANSACTION,
+      params: [{ from: '0xabc', to: '0xdef', value: '0x1' }],
+    };
+    const tamperedDialogRequest = {
+      request_id: 104,
+      method: EvmRequestMethod.SEND_TRANSACTION,
+      params: [{ from: '0xabc', to: '0xattacker', value: '0xffff' }],
+    };
+    const requestHandler = {
+      getRequestDataByLocator: jest.fn().mockReturnValue({
+        request: persistedRequest,
+        dappInfo: {
+          origin: 'https://example.app',
+          domain: 'example.app',
+        },
+      }),
+    };
+    getFromLocalStorageMock.mockResolvedValue(requestHandler);
+    const listener = await importListener();
+
+    await listener(
+      {
+        command: BackgroundCommand.ACCEPT_EVM_TRANSACTION,
+        value: {
+          request: tamperedDialogRequest,
+          tab: 12,
+          domain: 'example.app',
+          origin: 'https://example.app',
+          extraData: { gasLimit: '0x5208' },
+        },
+      } as any,
+      {} as any,
+      jest.fn(),
+    );
+
+    expect(performEvmOperationMock).toHaveBeenCalledWith(
+      requestHandler,
+      persistedRequest,
+      12,
+      'example.app',
+      'https://example.app',
+      { gasLimit: '0x5208' },
+    );
+    expect(performEvmOperationMock).not.toHaveBeenCalledWith(
+      expect.anything(),
+      tamperedDialogRequest,
+      expect.anything(),
+      expect.anything(),
+      expect.anything(),
+      expect.anything(),
+    );
+  });
+
+  it('does not perform an EVM operation when the accepted request locator does not match', async () => {
+    const requestHandler = {
+      getRequestDataByLocator: jest.fn().mockReturnValue(undefined),
+    };
+    getFromLocalStorageMock.mockResolvedValue(requestHandler);
+    const listener = await importListener();
+
+    await listener(
+      {
+        command: BackgroundCommand.ACCEPT_EVM_TRANSACTION,
+        value: {
+          request: {
+            request_id: 105,
+            method: EvmRequestMethod.SEND_TRANSACTION,
+            params: [],
+          },
+          tab: 12,
+          domain: 'example.app',
+          origin: 'https://example.app',
+          extraData: { gasLimit: '0x5208' },
+        },
+      } as any,
+      {} as any,
+      jest.fn(),
+    );
+
+    expect(requestHandler.getRequestDataByLocator).toHaveBeenCalledWith({
+      requestId: 105,
+      tab: 12,
+      origin: 'https://example.app',
+    });
+    expect(performEvmOperationMock).not.toHaveBeenCalled();
   });
 });
