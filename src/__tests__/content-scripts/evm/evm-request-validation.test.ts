@@ -48,7 +48,7 @@ const validEncryptedData = {
   ciphertext: 'ciphertext',
 };
 
-const validDecryptAddress = '0x0000000000000000000000000000000000000001';
+const validEvmAddress = '0x0000000000000000000000000000000000000001';
 
 const encodeJson = (value: unknown) => {
   return `0x${Buffer.from(JSON.stringify(value), 'utf8').toString('hex')}`;
@@ -337,12 +337,12 @@ describe('evm-request-validation tests:\n', () => {
       validateEvmRequest({
         request_id: 1,
         method: EvmRequestMethod.ETH_DECRYPT,
-        params: [encodeJson(validEncryptedData), validDecryptAddress],
+        params: [encodeJson(validEncryptedData), validEvmAddress],
       }),
     ).toEqual({
       request_id: 1,
       method: EvmRequestMethod.ETH_DECRYPT,
-      params: [encodeJson(validEncryptedData), validDecryptAddress],
+      params: [encodeJson(validEncryptedData), validEvmAddress],
     });
   });
 
@@ -380,7 +380,7 @@ describe('evm-request-validation tests:\n', () => {
         validateEvmRequest({
           request_id: 1,
           method: EvmRequestMethod.ETH_DECRYPT,
-          params: [encryptedMessage, validDecryptAddress],
+          params: [encryptedMessage, validEvmAddress],
         }),
       ),
     ).toMatchObject({
@@ -396,6 +396,50 @@ describe('evm-request-validation tests:\n', () => {
           request_id: 1,
           method: EvmRequestMethod.ETH_DECRYPT,
           params: [encodeJson(validEncryptedData), 'not-an-address'],
+        }),
+      ),
+    ).toMatchObject({
+      code: -32602,
+      message: 'Invalid parameter. Account address is not valid.',
+    });
+  });
+
+  it('accepts eth_getEncryptionPublicKey with a valid account address', () => {
+    expect(
+      validateEvmRequest({
+        request_id: 1,
+        method: EvmRequestMethod.GET_ENCRYPTION_KEY,
+        params: [validEvmAddress],
+      }),
+    ).toEqual({
+      request_id: 1,
+      method: EvmRequestMethod.GET_ENCRYPTION_KEY,
+      params: [validEvmAddress],
+    });
+  });
+
+  it('rejects eth_getEncryptionPublicKey with missing account address', () => {
+    expect(
+      getThrownError(() =>
+        validateEvmRequest({
+          request_id: 1,
+          method: EvmRequestMethod.GET_ENCRYPTION_KEY,
+          params: [],
+        }),
+      ),
+    ).toMatchObject({
+      code: -32602,
+      message: 'Invalid parameter. Missing account address.',
+    });
+  });
+
+  it('rejects eth_getEncryptionPublicKey with invalid account address', () => {
+    expect(
+      getThrownError(() =>
+        validateEvmRequest({
+          request_id: 1,
+          method: EvmRequestMethod.GET_ENCRYPTION_KEY,
+          params: ['not-an-address'],
         }),
       ),
     ).toMatchObject({

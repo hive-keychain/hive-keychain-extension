@@ -39,6 +39,15 @@ const assertParamsArray = (params: unknown): unknown[] => {
   return params;
 };
 
+const assertEvmAddressParam = (address: unknown) => {
+  if (typeof address !== 'string' || !ethers.isAddress(address)) {
+    throw getProviderRpcError(
+      'invalidMethodParams',
+      'Invalid parameter. Account address is not valid.',
+    );
+  }
+};
+
 export const validateEvmRequest = (request: unknown): EvmRequest => {
   if (!request || typeof request !== 'object') {
     throw getProviderRpcError('nonValidRequest', 'Missing request.');
@@ -262,6 +271,19 @@ export const validateRequest = (
       }
       break;
     }
+    case EvmRequestMethod.GET_ENCRYPTION_KEY: {
+      const requestParams = assertParamsArray(params);
+
+      if (requestParams.length < 1) {
+        throw getProviderRpcError(
+          'invalidMethodParams',
+          'Invalid parameter. Missing account address.',
+        );
+      }
+
+      assertEvmAddressParam(requestParams[0]);
+      break;
+    }
     case EvmRequestMethod.ETH_DECRYPT: {
       const requestParams = assertParamsArray(params);
       const encryptedMessage = requestParams[0];
@@ -283,15 +305,7 @@ export const validateRequest = (
         );
       }
 
-      if (
-        typeof accountAddress !== 'string' ||
-        !ethers.isAddress(accountAddress)
-      ) {
-        throw getProviderRpcError(
-          'invalidMethodParams',
-          'Invalid parameter. Account address is not valid.',
-        );
-      }
+      assertEvmAddressParam(accountAddress);
       break;
     }
   }
