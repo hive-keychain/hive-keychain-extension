@@ -7,7 +7,13 @@ import {
   MultichainRpc,
 } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
 import {
@@ -19,12 +25,23 @@ jest.mock('@common-ui/custom-select/custom-select.component', () => ({
   ComplexeCustomSelect: ({
     options,
     selectedItem,
+    setSelectedItem,
   }: {
-    options: { label: string; value: unknown }[];
+    options: { canDelete?: boolean; label: string; value: unknown }[];
     selectedItem: { label: string; value: unknown };
+    setSelectedItem: (option: { label: string; value: unknown }) => void;
   }) => (
     <div data-testid="evm-rpc-select">
       {selectedItem.label}
+      {options.map((option) => (
+        <button
+          data-can-delete={String(!!option.canDelete)}
+          data-testid={`evm-rpc-option-${option.label}`}
+          key={option.label}
+          onClick={() => setSelectedItem(option)}>
+          {option.label}
+        </button>
+      ))}
       {options
         .filter((option) => option.value === selectedItem.value)
         .map((option) => (
@@ -167,6 +184,46 @@ describe('EvmRpcNodesComponent', () => {
     });
   });
 
+  it('allows deleting the previously active custom RPC after switching RPCs', async () => {
+    const activeCustomRpc = {
+      url: 'https://custom.rpc',
+      isDefault: false,
+    };
+    jest.spyOn(EvmRpcUtils, 'getActiveRpc').mockResolvedValue(activeCustomRpc);
+    jest.spyOn(EvmRpcUtils, 'getRpcListForChain').mockResolvedValue([
+      defaultRpc,
+      activeCustomRpc,
+    ]);
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      chain,
+    });
+
+    render(
+      <Provider store={store}>
+        <EvmRpcNodesComponent />
+      </Provider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('evm-rpc-option-custom.rpc')).toHaveAttribute(
+        'data-can-delete',
+        'false',
+      );
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('evm-rpc-option-default.rpc'));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('evm-rpc-option-custom.rpc')).toHaveAttribute(
+        'data-can-delete',
+        'true',
+      );
+    });
+  });
+
   it('asks for confirmation before saving an HTTP RPC from the popup', async () => {
     const store = getFakeStore({
       ...initialEmptyStateStore,
@@ -194,7 +251,9 @@ describe('EvmRpcNodesComponent', () => {
 
     const confirmHttpRpc = store.getState().message.confirmation
       ?.onConfirm as () => Promise<void>;
-    await confirmHttpRpc();
+    await act(async () => {
+      await confirmHttpRpc();
+    });
 
     expect(EvmRpcUtils.isValidRpcForChainId).toHaveBeenCalledWith(
       'http://localhost:8545',

@@ -103,6 +103,12 @@ const EvmRpcNodes = ({
   const selectRpc = async (rpc: MultichainRpc) => {
     await EvmRpcUtils.setActiveRpc(rpc, selectedChain);
     setActiveRpc(rpc);
+    setRpcOptions((options) =>
+      options?.map((option) => ({
+        ...option,
+        canDelete: !option.rpc.isDefault && option.rpc.url !== rpc.url,
+      })),
+    );
   };
 
   const saveCustomRpc = async () => {
