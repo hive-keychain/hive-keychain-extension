@@ -45,7 +45,7 @@ describe('EvmRpcUtils HTTPS validation', () => {
     jest.restoreAllMocks();
   });
 
-  it('rejects non-HTTPS active RPCs before storage or provider updates', async () => {
+  it('rejects invalid active RPCs before storage or provider updates', async () => {
     const getStorageSpy = jest.spyOn(
       LocalStorageUtils,
       'getValueFromLocalStorage',
@@ -58,10 +58,10 @@ describe('EvmRpcUtils HTTPS validation', () => {
 
     await expect(
       EvmRpcUtils.setActiveRpc(
-        { url: 'http://rpc.example.com', isDefault: false },
+        { url: 'file:///tmp/rpc', isDefault: false },
         chain,
       ),
-    ).rejects.toThrow('RPC URL must use HTTPS');
+    ).rejects.toThrow('RPC URL must use HTTP or HTTPS');
 
     expect(getStorageSpy).not.toHaveBeenCalled();
     expect(saveStorageSpy).not.toHaveBeenCalled();
@@ -89,7 +89,7 @@ describe('EvmRpcUtils HTTPS validation', () => {
     expect(saveStorageSpy).not.toHaveBeenCalled();
   });
 
-  it('rejects non-HTTPS custom RPCs before saving', async () => {
+  it('rejects invalid custom RPCs before saving', async () => {
     const getStorageSpy = jest.spyOn(
       LocalStorageUtils,
       'getValueFromLocalStorage',
@@ -104,10 +104,31 @@ describe('EvmRpcUtils HTTPS validation', () => {
         { url: 'file:///tmp/rpc', isDefault: false },
         chain,
       ),
-    ).rejects.toThrow('RPC URL must use HTTPS');
+    ).rejects.toThrow('RPC URL must use HTTP or HTTPS');
 
     expect(getStorageSpy).not.toHaveBeenCalled();
     expect(saveStorageSpy).not.toHaveBeenCalled();
+  });
+
+  it('saves HTTP custom RPCs', async () => {
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockResolvedValue({});
+    const saveStorageSpy = jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockResolvedValue(undefined);
+
+    await EvmRpcUtils.addCustomRpc(
+      { url: 'http://rpc.example.com', isDefault: false },
+      chain,
+    );
+
+    expect(saveStorageSpy).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
+      {
+        '0x1': [{ url: 'http://rpc.example.com', isDefault: false }],
+      },
+    );
   });
 
   it('saves HTTPS custom RPCs', async () => {
@@ -254,6 +275,20 @@ describe('EvmRpcUtils HTTPS validation', () => {
     ).resolves.toBe(false);
 
     expect(mockJsonRpcProviderSend).not.toHaveBeenCalled();
+  });
+
+  it('accepts HTTP RPCs returning the expected eth_chainId when HTTP is allowed', async () => {
+    mockJsonRpcProviderSend.mockResolvedValue('0x1');
+
+    await expect(
+      EvmRpcUtils.isValidRpcForChainId(
+        'http://rpc.example.com',
+        '0x1',
+        true,
+      ),
+    ).resolves.toBe(true);
+
+    expect(mockJsonRpcProviderSend).toHaveBeenCalledWith('eth_chainId', []);
   });
 
   it('filters mixed RPC lists to matching HTTPS RPCs', async () => {

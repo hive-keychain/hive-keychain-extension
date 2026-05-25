@@ -6211,6 +6211,14 @@
     "message": "This RPC doesn't seem to be working. Are you sure you want to add it ?",
     "description": "RPC not working warning message while adding new rpc"
   },
+  "evm_add_http_rpc_warning": {
+    "message": "This RPC uses HTTP and is not encrypted. Only add it if you trust this endpoint.",
+    "description": "HTTP RPC warning message while adding a new EVM RPC from the popup"
+  },
+  "evm_add_rpc_invalid_chain_error": {
+    "message": "This RPC is not responding for the selected chain.",
+    "description": "Invalid chain error message while adding a new EVM RPC"
+  },
   "evm_history_warning_potential_zero_amount_scam": {
     "message": "This transaction might be a zero-amount scam. Be careful when transacting to this address.",
     "description": "Potential zero amount scam warning message"

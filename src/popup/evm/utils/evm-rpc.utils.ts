@@ -98,7 +98,7 @@ const getRpcUrlsForChain = (
 ];
 
 const addCustomRpc = async (rpc: MultichainRpc, chain: EvmChain) => {
-  EvmRpcUrlUtils.assertValidHttpsRpcUrl(rpc.url);
+  EvmRpcUrlUtils.assertValidHttpOrHttpsRpcUrl(rpc.url);
   const allCustomRpcs =
     ((await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
@@ -170,7 +170,7 @@ const getActiveRpc = async (chain: EvmChain): Promise<MultichainRpc> => {
 };
 
 const setActiveRpc = async (rpc: MultichainRpc, chain: EvmChain) => {
-  EvmRpcUrlUtils.assertValidHttpsRpcUrl(rpc.url);
+  EvmRpcUrlUtils.assertValidHttpOrHttpsRpcUrl(rpc.url);
   let activeRpcs = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.EVM_ACTIVE_RPCS,
   );
@@ -292,8 +292,12 @@ const getRpcChainIdWithTimeout = async (
 export const isValidRpcForChainId = async (
   rpcUrl: string,
   expectedChainId: string,
+  allowHttp: boolean = false,
 ): Promise<boolean> => {
-  if (!EvmRpcUrlUtils.isValidHttpsRpcUrl(rpcUrl)) {
+  const isValidUrl = allowHttp
+    ? EvmRpcUrlUtils.isValidHttpOrHttpsRpcUrl(rpcUrl)
+    : EvmRpcUrlUtils.isValidHttpsRpcUrl(rpcUrl);
+  if (!isValidUrl) {
     return false;
   }
 

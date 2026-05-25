@@ -20,6 +20,26 @@
         color: var(--main-font-color);
       }
 
+      .custom-select-container {
+        .custom-select {
+          width: 100%;
+
+          .react-dropdown-select-dropdown {
+            box-sizing: border-box;
+            min-width: 100%;
+            width: 100%;
+
+            .custom-select-dropdown,
+            .option,
+            .custom-select-item {
+              box-sizing: border-box;
+              max-width: unset;
+              width: 100%;
+            }
+          }
+        }
+      }
+
       .select-rpc-panel {
         display: flex;
         align-items: center;

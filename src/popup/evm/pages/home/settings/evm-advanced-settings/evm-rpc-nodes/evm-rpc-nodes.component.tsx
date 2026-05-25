@@ -9,6 +9,7 @@ import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
 import { Separator } from '@common-ui/separator/separator.component';
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
+import { EvmRpcUrlUtils } from '@popup/evm/utils/evm-rpc-url.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import {
   setErrorMessage,
@@ -30,6 +31,11 @@ const EMPTY_RPC: MultichainRpc = {
   url: '',
 };
 
+interface RpcOptionItem extends OptionItem {
+  rpc: MultichainRpc;
+  value: string;
+}
+
 const EvmRpcNodes = ({
   chain,
   setTitleContainerProperties,
@@ -39,7 +45,7 @@ const EvmRpcNodes = ({
   const [switchAuto, setSwitchAuto] = useState(true);
   const [activeRpc, setActiveRpc] = useState<MultichainRpc>();
 
-  const [rpcOptions, setRpcOptions] = useState<OptionItem[]>();
+  const [rpcOptions, setRpcOptions] = useState<RpcOptionItem[]>();
 
   const [newRpc, setNewRpc] = useState<MultichainRpc>(EMPTY_RPC);
 
@@ -86,9 +92,10 @@ const EvmRpcNodes = ({
       rpcList.map((rpc) => {
         return {
           label: rpc.url.replace('http://', '').replace('https://', ''),
-          value: rpc,
+          value: rpc.url,
+          rpc,
           canDelete: !rpc.isDefault && savedActiveRpc?.url !== rpc.url,
-        } as OptionItem;
+        } as RpcOptionItem;
       }),
     );
   };
@@ -98,10 +105,37 @@ const EvmRpcNodes = ({
     setActiveRpc(rpc);
   };
 
+  const saveCustomRpc = async () => {
+    await EvmRpcUtils.addCustomRpc(newRpc, selectedChain);
+    if (setNewRpcAsActive) {
+      await selectRpc(newRpc);
+    }
+    setNewRpc(EMPTY_RPC);
+    setSetNewRpcAsActive(false);
+    setIsAddRpcPanelDisplayed(false);
+    setTimeout(() => {
+      initChain();
+    }, 500);
+  };
+
+  const validateAndSaveCustomRpc = async () => {
+    if (
+      !(await EvmRpcUtils.isValidRpcForChainId(
+        newRpc.url,
+        selectedChain.chainId,
+        true,
+      ))
+    ) {
+      setErrorMessage('evm_add_rpc_invalid_chain_error');
+      return;
+    }
+    await saveCustomRpc();
+  };
+
   const addCustomRpc = async () => {
     // Before adding new rpc, check if it is already in the list
     const isRpcAlreadyInList = rpcOptions?.some(
-      (option) => option.value.url === newRpc.url,
+      (option) => option.value === newRpc.url,
     );
 
     if (!newRpc.url) {
@@ -111,36 +145,14 @@ const EvmRpcNodes = ({
       setErrorMessage('evm_rpc_already_in_list');
       return;
     }
-    const isRpcWorking = await EvmRpcUtils.checkRpcStatus(newRpc.url);
-    if (!isRpcWorking) {
-      setWarningMessage('evm_add_rpc_not_working_warning', [], false, {
-        onConfirm: async () => {
-          await EvmRpcUtils.addCustomRpc(newRpc, selectedChain);
-          if (setNewRpcAsActive) {
-            await selectRpc(newRpc);
-          }
-          setNewRpc(EMPTY_RPC);
-          setSetNewRpcAsActive(false);
-          setIsAddRpcPanelDisplayed(false);
-          setTimeout(() => {
-            initChain();
-          }, 500);
-        },
+    if (EvmRpcUrlUtils.isHttpRpcUrl(newRpc.url)) {
+      setWarningMessage('evm_add_http_rpc_warning', [], false, {
+        onConfirm: validateAndSaveCustomRpc,
         onCancel: () => {},
       });
       return;
-    } else {
-      await EvmRpcUtils.addCustomRpc(newRpc, selectedChain);
-      if (setNewRpcAsActive) {
-        await selectRpc(newRpc);
-      }
-      setNewRpc(EMPTY_RPC);
-      setSetNewRpcAsActive(false);
-      setIsAddRpcPanelDisplayed(false);
-      setTimeout(() => {
-        initChain();
-      }, 500);
     }
+    await validateAndSaveCustomRpc();
   };
 
   const deleteRpc = async (rpc: MultichainRpc) => {
@@ -191,15 +203,16 @@ const EvmRpcNodes = ({
               <ComplexeCustomSelect
                 options={rpcOptions}
                 selectedItem={{
-                  value: activeRpc,
+                  value: activeRpc.url,
+                  rpc: activeRpc,
                   label: activeRpc.url
                     .replace('http://', '')
                     .replace('https://', ''),
                   canDelete: false,
                 }}
-                setSelectedItem={(item: OptionItem) => selectRpc(item.value)}
+                setSelectedItem={(item: RpcOptionItem) => selectRpc(item.rpc)}
                 background="white"
-                onDelete={(item: OptionItem) => deleteRpc(item.value)}
+                onDelete={(item: RpcOptionItem) => deleteRpc(item.rpc)}
               />
               <div
                 className={`round-button ${
