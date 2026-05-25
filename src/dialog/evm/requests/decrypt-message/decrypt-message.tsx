@@ -4,7 +4,6 @@ import { TransactionConfirmationFields } from '@popup/evm/interfaces/evm-transac
 import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
-import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -24,11 +23,10 @@ export const DecryptMessage = (props: Props) => {
   const { accounts, data, request, afterCancel } = props;
   const transactionHook = useTransactionHook(data, request);
 
-  const [decryptedMessage, setDecryptedMessage] = useState<
-    string | undefined
-  >();
+  const [showEncryptedMessage, setShowEncryptedMessage] = useState(false);
 
   useEffect(() => {
+    setShowEncryptedMessage(false);
     init();
   }, [request]);
 
@@ -79,19 +77,9 @@ export const DecryptMessage = (props: Props) => {
     }, 250);
   };
 
-  const decryptMessage = async () => {
-    const response = (await chrome.runtime.sendMessage({
-      command: BackgroundCommand.PREVIEW_EVM_DECRYPT,
-      value: {
-        request_id: request.request_id,
-        tab: data.tab,
-        origin: data.dappInfo.origin,
-      },
-    })) as { success?: boolean; plaintext?: string; error?: string };
-
-    if (response?.success && response.plaintext != null) {
-      setDecryptedMessage(response.plaintext);
-    }
+  const showMessage = (event?: React.MouseEvent) => {
+    event?.stopPropagation();
+    setShowEncryptedMessage(true);
   };
 
   const handleCancel = () => {
@@ -114,18 +102,16 @@ export const DecryptMessage = (props: Props) => {
         <>
           <div
             className={`encrypted-message-container ${
-              decryptedMessage ? 'display' : 'hidden'
+              showEncryptedMessage ? 'display' : 'hidden'
             }`}
-            onClick={() => void decryptMessage()}>
+            onClick={showMessage}>
             <div className="encrypted-message">
-              <div className="message">
-                {decryptedMessage ?? request.params[0]}
-              </div>
+              <div className="message">{request.params[0]}</div>
             </div>
-            {!decryptedMessage && (
+            {!showEncryptedMessage && (
               <div
                 className="display-message-icon"
-                onClick={() => void decryptMessage()}>
+                onClick={showMessage}>
                 <SVGIcon icon={SVGIcons.EVM_SETUP_DISPLAY_MNEMONIC} />
                 <div>
                   {chrome.i18n.getMessage('dialog_evm_decrypt_show_message')}
