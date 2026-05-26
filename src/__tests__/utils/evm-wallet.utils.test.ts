@@ -1,6 +1,10 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { HDNodeWallet } from 'ethers';
-import { EvmAccount } from 'src/popup/evm/interfaces/wallet.interface';
+import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
+import {
+  EvmAccount,
+  EvmAccountSource,
+} from 'src/popup/evm/interfaces/wallet.interface';
 import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -231,5 +235,207 @@ describe('evm wallet utils', () => {
       '',
       '',
     ]);
+  });
+
+  it('rebuilds mixed legacy seed and ledger accounts in stored order', async () => {
+    storedAccounts = {
+      list: [
+        {
+          seed: seedOne,
+          id: 1,
+          nickname: 'Seed One',
+          accounts: [
+            {
+              id: 0,
+              path: "m/44'/60'/0'/0/0",
+              order: 2,
+              nickname: 'Seed Account',
+            },
+          ],
+        },
+        {
+          type: EvmAccountSource.LEDGER,
+          id: 3,
+          nickname: 'Ledger',
+          accounts: [
+            {
+              id: 0,
+              address: '0xLedger000000000000000000000000000000000001',
+              path: "m/44'/60'/0'/0/0",
+              order: 0,
+              nickname: 'Ledger Account 1',
+            },
+            {
+              id: 1,
+              address: '0xLedger000000000000000000000000000000000002',
+              path: "m/44'/60'/0'/0/1",
+              order: 1,
+              nickname: 'Ledger Account 2',
+            },
+          ],
+        },
+      ],
+    };
+
+    const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+
+    expect(accounts.map((account) => account.nickname)).toEqual([
+      'Ledger Account 1',
+      'Ledger Account 2',
+      'Seed Account',
+    ]);
+    expect(accounts[0]).toMatchObject({
+      source: EvmAccountSource.LEDGER,
+      seedId: 3,
+      seedNickname: 'Ledger',
+      wallet: {
+        source: EvmAccountSource.LEDGER,
+        address: '0xLedger000000000000000000000000000000000001',
+        path: "m/44'/60'/0'/0/0",
+      },
+    });
+    expect(accounts[2]).toMatchObject({
+      source: EvmAccountSource.SEED,
+      seedId: 1,
+      seedNickname: 'Seed One',
+    });
+  });
+
+  it('stores ledger accounts without seed material after existing account orders', async () => {
+    await EvmWalletUtils.addLedgerAccounts(
+      [
+        {
+          id: 0,
+          address: '0xLedger000000000000000000000000000000000001',
+          path: "m/44'/60'/0'/0/0",
+        },
+        {
+          id: 1,
+          address: '0xLedger000000000000000000000000000000000002',
+          path: "m/44'/60'/0'/0/1",
+          nickname: 'Ledger Two',
+        },
+      ],
+      mk,
+      'Ledger Source',
+    );
+
+    const storedSeeds = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
+    expect(storedSeeds[2]).toEqual({
+      type: EvmAccountSource.LEDGER,
+      id: 3,
+      nickname: 'Ledger Source',
+      accounts: [
+        {
+          id: 0,
+          address: '0xLedger000000000000000000000000000000000001',
+          path: "m/44'/60'/0'/0/0",
+          order: 4,
+          nickname: '',
+        },
+        {
+          id: 1,
+          address: '0xLedger000000000000000000000000000000000002',
+          path: "m/44'/60'/0'/0/1",
+          order: 5,
+          nickname: 'Ledger Two',
+        },
+      ],
+    });
+  });
+
+  it('rejects deriving a software address from a ledger source', async () => {
+    storedAccounts = {
+      list: [
+        {
+          type: EvmAccountSource.LEDGER,
+          id: 1,
+          nickname: 'Ledger',
+          accounts: [
+            {
+              id: 0,
+              address: '0xLedger000000000000000000000000000000000001',
+              path: "m/44'/60'/0'/0/0",
+            },
+          ],
+        },
+      ],
+    };
+
+    await expect(EvmWalletUtils.addAddressToSeed(1, mk, '')).rejects.toThrow(
+      'Cannot add a derived address to a Ledger source',
+    );
+  });
+
+  it('deletes ledger sources and cleans pending transactions and permissions', async () => {
+    storedAccounts = {
+      list: [
+        {
+          seed: seedOne,
+          id: 1,
+          nickname: 'Seed One',
+          accounts: [
+            {
+              id: 0,
+              path: "m/44'/60'/0'/0/0",
+              order: 0,
+              nickname: 'Seed Account',
+            },
+          ],
+        },
+        {
+          type: EvmAccountSource.LEDGER,
+          id: 3,
+          nickname: 'Ledger',
+          accounts: [
+            {
+              id: 0,
+              address: '0xLedger000000000000000000000000000000000001',
+              path: "m/44'/60'/0'/0/0",
+              order: 1,
+              nickname: 'Ledger Account',
+            },
+          ],
+        },
+      ],
+    };
+    const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+    const seedAddress = EvmWalletUtils.getAccountAddress(accounts[0]);
+    const ledgerAddress = EvmWalletUtils.getAccountAddress(accounts[1]);
+    pendingTransactionsStorage = [
+      { walletAddress: seedAddress },
+      { walletAddress: ledgerAddress },
+    ];
+    canceledTransactionsStorage = {
+      '0x1': {
+        [seedAddress]: {},
+        [ledgerAddress]: {},
+      },
+    };
+    walletPermissionsStorage = {
+      'https://example.com': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: [
+          seedAddress.toLowerCase(),
+          ledgerAddress.toLowerCase(),
+        ],
+      },
+    };
+
+    await EvmWalletUtils.deleteSeed(3, accounts, mk);
+
+    const storedSeeds = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
+    expect(storedSeeds).toHaveLength(1);
+    expect(storedSeeds[0].id).toBe(1);
+    expect(pendingTransactionsStorage).toEqual([{ walletAddress: seedAddress }]);
+    expect(canceledTransactionsStorage).toEqual({
+      '0x1': {
+        [seedAddress]: {},
+      },
+    });
+    expect(walletPermissionsStorage).toEqual({
+      'https://example.com': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: [seedAddress.toLowerCase()],
+      },
+    });
   });
 });

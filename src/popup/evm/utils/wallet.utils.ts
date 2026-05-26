@@ -7,6 +7,11 @@ import { EvmPendingTransaction } from '@popup/evm/interfaces/evm-tokens.interfac
 import { UserCanceledTransactions } from '@popup/evm/interfaces/evm-transactions.interface';
 import {
   EvmAccount,
+  EvmAccountSource,
+  EvmLedgerWallet,
+  StoredEvmAccountSource,
+  StoredEvmLedgerAccount,
+  StoredEvmLedgerWalletSource,
   StoredEvmWalletAddress,
   StoredSeed,
   WalletWithBalance,
@@ -27,9 +32,33 @@ const INITIAL_PATH = "44'/60'/0'/0";
 const getEvmAccountOrderKey = (seedId: number, addressId: number) =>
   `${seedId}-${addressId}`;
 
-const hasValidAccountOrders = (savedSeeds: StoredSeed[]) => {
-  const orders = savedSeeds
-    .map((seed) => seed.accounts.map((account) => account.order))
+const isSeedSource = (source: StoredEvmAccountSource): source is StoredSeed =>
+  !source.type || source.type === EvmAccountSource.SEED;
+
+const isLedgerSource = (
+  source: StoredEvmAccountSource,
+): source is StoredEvmLedgerWalletSource =>
+  source.type === EvmAccountSource.LEDGER;
+
+const isLedgerAccount = (
+  account: EvmAccount,
+): account is EvmAccount & {
+  wallet: EvmLedgerWallet;
+  source: EvmAccountSource.LEDGER;
+} =>
+  account.source === EvmAccountSource.LEDGER;
+
+const isSeedAccount = (
+  account: EvmAccount,
+): account is EvmAccount & {
+  wallet: HDNodeWallet;
+  source: EvmAccountSource.SEED;
+} =>
+  account.source === EvmAccountSource.SEED;
+
+const hasValidAccountOrders = (savedSources: StoredEvmAccountSource[]) => {
+  const orders = savedSources
+    .map((source) => source.accounts.map((account) => account.order))
     .flat();
 
   return (
@@ -39,27 +68,58 @@ const hasValidAccountOrders = (savedSeeds: StoredSeed[]) => {
   );
 };
 
-const normalizeSeedAccountOrders = (savedSeeds: StoredSeed[]) => {
-  if (hasValidAccountOrders(savedSeeds)) {
-    return savedSeeds;
+const normalizeSeedAccountOrders = (
+  savedSources: StoredEvmAccountSource[],
+): StoredEvmAccountSource[] => {
+  if (hasValidAccountOrders(savedSources)) {
+    return savedSources;
   }
 
   let order = 0;
-  return savedSeeds.map((seed) => ({
-    ...seed,
-    accounts: seed.accounts.map((account) => ({
-      ...account,
-      order: order++,
-    })),
-  }));
+  return savedSources.map((source): StoredEvmAccountSource => {
+    if (isLedgerSource(source)) {
+      return {
+        ...source,
+        accounts: source.accounts.map((account) => ({
+          ...account,
+          order: order++,
+        })),
+      };
+    }
+
+    return {
+      ...source,
+      accounts: source.accounts.map((account) => ({
+        ...account,
+        order: order++,
+      })),
+    };
+  });
 };
 
-const getMaxAccountOrder = (savedSeeds: StoredSeed[]) => {
-  return savedSeeds
-    .map((seed) => seed.accounts.map((account) => account.order ?? -1))
+const getMaxAccountOrder = (savedSources: StoredEvmAccountSource[]) => {
+  return savedSources
+    .map((source) => source.accounts.map((account) => account.order ?? -1))
     .flat()
     .reduce((max, current) => Math.max(max, current), -1);
 };
+
+const getMaxSourceId = (savedSources: StoredEvmAccountSource[]) => {
+  return savedSources
+    .map((source) => source.id)
+    .reduce((max, current) => Math.max(max, current), 0);
+};
+
+const buildLedgerWallet = (account: StoredEvmLedgerAccount): EvmLedgerWallet => {
+  return {
+    address: account.address,
+    path: account.path,
+    index: account.id,
+    source: EvmAccountSource.LEDGER,
+  };
+};
+
+const getAccountAddress = (account: EvmAccount) => account.wallet.address;
 
 const getWalletFromSeedPhrase = (seed: string) => {
   let wallet: HDNodeWallet | undefined, error;
@@ -177,26 +237,30 @@ const addAddressToSeed = async (
   );
 
   const seedIndex = savedSeeds.findIndex((account) => account.id === seedId);
+  const savedSource = savedSeeds[seedIndex];
+  if (!savedSource || !isSeedSource(savedSource)) {
+    throw new Error('Cannot add a derived address to a Ledger source');
+  }
 
   const wallet = HDNodeWallet.fromPhrase(
-    savedSeeds[seedIndex].seed,
+    savedSource.seed,
     undefined,
     INITIAL_PATH,
   );
 
-  const savedSeed = savedSeeds[seedIndex];
+  const savedSeed = savedSource;
 
   const newAccountIndex =
     savedSeed.accounts.map((e) => e.id).reduce((a, b) => Math.max(a, b), 0) + 1;
 
   const derivedWallet = wallet.deriveChild(newAccountIndex);
 
-  savedSeeds[seedIndex].accounts.push({
+  savedSource.accounts.push({
     id: derivedWallet.index,
-    path: derivedWallet.path,
+    path: derivedWallet.path!,
     order: getMaxAccountOrder(savedSeeds) + 1,
     nickname: addressNickname,
-  } as StoredEvmWalletAddress);
+  });
   await encryptAccountsInLocalStorage(mk, savedSeeds);
   return savedSeeds;
 };
@@ -210,10 +274,10 @@ const addSeedAndAccounts = async (
   const previousAccounts = normalizeSeedAccountOrders(
     await getAccountsFromLocalStorage(mk),
   );
-  const id =
-    previousAccounts.map((e) => e.id).reduce((a, b) => Math.max(a, b), 0) + 1;
+  const id = getMaxSourceId(previousAccounts) + 1;
   let nextOrder = getMaxAccountOrder(previousAccounts) + 1;
   const newAccounts: StoredSeed = {
+    type: EvmAccountSource.SEED,
     seed: wallet.mnemonic!.phrase,
     nickname: nickname,
     id,
@@ -222,6 +286,33 @@ const addSeedAndAccounts = async (
       path: derivedWallet.path!,
       order: nextOrder++,
       nickname: derivedWallet.nickname ?? '',
+    })),
+  };
+  const allAccounts = [...previousAccounts, newAccounts];
+  await encryptAccountsInLocalStorage(mk, allAccounts);
+  return newAccounts.accounts;
+};
+
+const addLedgerAccounts = async (
+  accounts: StoredEvmLedgerAccount[],
+  mk: string,
+  nickname?: string,
+) => {
+  const previousAccounts = normalizeSeedAccountOrders(
+    await getAccountsFromLocalStorage(mk),
+  );
+  const id = getMaxSourceId(previousAccounts) + 1;
+  let nextOrder = getMaxAccountOrder(previousAccounts) + 1;
+  const newAccounts: StoredEvmLedgerWalletSource = {
+    type: EvmAccountSource.LEDGER,
+    nickname,
+    id,
+    accounts: accounts.map((account) => ({
+      id: account.id,
+      address: account.address,
+      path: account.path,
+      order: nextOrder++,
+      nickname: account.nickname ?? '',
     })),
   };
   const allAccounts = [...previousAccounts, newAccounts];
@@ -278,7 +369,7 @@ const deleteSeed = async (
     (transaction) =>
       !seedAccounts.some(
         (account) =>
-          account.wallet.address.toLowerCase() ===
+          getAccountAddress(account).toLowerCase() ===
           transaction.walletAddress.toLowerCase(),
       ),
   );
@@ -286,7 +377,7 @@ const deleteSeed = async (
   for (const account of seedAccounts) {
     if (canceledTransactions)
       for (const chainId of Object.keys(canceledTransactions)) {
-        delete canceledTransactions[chainId][account.wallet.address];
+        delete canceledTransactions[chainId][getAccountAddress(account)];
       }
 
     if (walletPermissions)
@@ -294,7 +385,7 @@ const deleteSeed = async (
         for (const key of Object.keys(walletPermissions[origin])) {
           walletPermissions[origin][key as EvmRequestPermission] =
             walletPermissions[origin][key as EvmRequestPermission]!.filter(
-              (address) => address !== account.wallet.address.toLowerCase(),
+              (address) => address !== getAccountAddress(account).toLowerCase(),
             );
         }
       }
@@ -319,7 +410,7 @@ const deleteSeed = async (
 
 const encryptAccountsInLocalStorage = async (
   mk: string,
-  evmAccountObject: StoredSeed[],
+  evmAccountObject: StoredEvmAccountSource[],
 ) => {
   const encryptedAccounts = await EncryptUtils.encryptJson(
     { list: evmAccountObject },
@@ -343,7 +434,8 @@ const getAccountsFromLocalStorage = async (mk: string) => {
       wallets,
       mk,
     );
-    const decryptedAccounts = (decryptResult?.list ?? []) as StoredSeed[];
+    const decryptedAccounts = (decryptResult?.list ??
+      []) as StoredEvmAccountSource[];
     return decryptedAccounts;
   }
 };
@@ -353,17 +445,31 @@ const rebuildAccountsFromLocalStorage = async (mk: string) => {
     await getAccountsFromLocalStorage(mk),
   );
   return seeds
-    .map((seed) =>
-      seed.accounts.map((account) => ({
+    .map((seed) => {
+      if (isLedgerSource(seed)) {
+        return seed.accounts.map((account) => ({
+          order: account.order ?? 0,
+          account: {
+            ...account,
+            wallet: buildLedgerWallet(account),
+            seedId: seed.id,
+            seedNickname: seed.nickname,
+            source: EvmAccountSource.LEDGER,
+          } as EvmAccount,
+        }));
+      }
+
+      return seed.accounts.map((account) => ({
         order: account.order ?? 0,
         account: {
           ...account,
           wallet: HDNodeWallet.fromPhrase(seed.seed, undefined, account.path),
           seedId: seed.id,
           seedNickname: seed.nickname,
+          source: EvmAccountSource.SEED,
         } as EvmAccount,
-      })),
-    )
+      }));
+    })
     .flat()
     .sort((first, second) => first.order - second.order)
     .map(({ account }) => account);
@@ -405,21 +511,39 @@ const reorderAccounts = async (
     mergedOrder.map((key, index) => [key, index] as const),
   );
 
-  const reorderedSeeds = savedSeeds.map((seed) => ({
-    ...seed,
-    accounts: seed.accounts.map((account) => ({
-      ...account,
-      order:
-        accountOrderByKey.get(getEvmAccountOrderKey(seed.id, account.id)) ??
-        account.order,
-    })),
-  }));
+  const reorderedSeeds = savedSeeds.map((seed): StoredEvmAccountSource => {
+    if (isLedgerSource(seed)) {
+      return {
+        ...seed,
+        accounts: seed.accounts.map((account) => ({
+          ...account,
+          order:
+            accountOrderByKey.get(getEvmAccountOrderKey(seed.id, account.id)) ??
+            account.order,
+        })),
+      };
+    }
+
+    return {
+      ...seed,
+      accounts: seed.accounts.map((account) => ({
+        ...account,
+        order:
+          accountOrderByKey.get(getEvmAccountOrderKey(seed.id, account.id)) ??
+          account.order,
+      })),
+    };
+  });
 
   await encryptAccountsInLocalStorage(mk, reorderedSeeds);
   return rebuildAccountsFromLocalStorage(mk);
 };
 
 const rebuildAccount = (account: EvmAccount) => {
+  if (!isSeedAccount(account)) {
+    return account;
+  }
+
   return {
     ...account,
     wallet: HDNodeWallet.fromPhrase(
@@ -711,7 +835,7 @@ const getAllLocalAddresses = async () => {
   const accounts = await rebuildAccountsFromLocalStorage(
     await VaultUtils.getValueFromVault(VaultKey.__MK),
   );
-  return accounts.map((account) => account.wallet.address.toLowerCase());
+  return accounts.map((account) => getAccountAddress(account).toLowerCase());
 };
 const getAllLocalAccounts = async () => {
   const accounts = await rebuildAccountsFromLocalStorage(
@@ -725,6 +849,7 @@ export const EvmWalletUtils = {
   deriveWallets,
   createWallet,
   addSeedAndAccounts,
+  addLedgerAccounts,
   getAccountsFromLocalStorage,
   rebuildAccountsFromLocalStorage,
   isWalletAddress,
@@ -749,4 +874,7 @@ export const EvmWalletUtils = {
   updateSeedNickname,
   updateAddressName,
   getAllLocalAccounts,
+  getAccountAddress,
+  isLedgerAccount,
+  isSeedAccount,
 };

@@ -1,5 +1,6 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { getEncryptionKey } from '@background/evm/requests/operations/ops/get-encryption-key';
+import { EvmAccountSource } from '@popup/evm/interfaces/wallet.interface';
 
 const getEncryptionKeyMock = jest.fn();
 
@@ -90,6 +91,39 @@ describe('getEncryptionKey operation', () => {
         locator,
       ),
     ).rejects.toThrow('Account not found');
+
+    expect(getEncryptionKeyMock).not.toHaveBeenCalled();
+  });
+
+  it('returns a deterministic unsupported error for Ledger accounts', async () => {
+    const ledgerRequestHandler = {
+      accounts: [
+        {
+          wallet: {
+            source: EvmAccountSource.LEDGER,
+            address: '0x0000000000000000000000000000000000000001',
+            path: "m/44'/60'/0'/0/0",
+            index: 0,
+          },
+        },
+      ],
+      getRequestDataByLocator: jest.fn(() => ({ tab: 12 })),
+    };
+
+    await expect(
+      getEncryptionKey(
+        ledgerRequestHandler as any,
+        {
+          request_id: 1,
+          method: EvmRequestMethod.GET_ENCRYPTION_KEY,
+          params: ['0x0000000000000000000000000000000000000001'],
+        },
+        locator,
+      ),
+    ).rejects.toMatchObject({
+      code: 'UNSUPPORTED_OPERATION',
+      message: 'Ledger does not support encryption key requests',
+    });
 
     expect(getEncryptionKeyMock).not.toHaveBeenCalled();
   });

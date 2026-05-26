@@ -1,6 +1,9 @@
 import { SVGIcons } from '@common-ui/icons.enum';
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
-import { EvmAccountOrPublic } from '@popup/evm/interfaces/wallet.interface';
+import {
+  EvmAccountOrPublic,
+  EvmAccountSource,
+} from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import React from 'react';
@@ -41,9 +44,12 @@ export const EvmAccountInfo = ({
       </div>
       <div className="bottom-line">
         <div className={`account-address ${fullAddress ? 'full-address' : ''}`}>
-          {fullAddress
-            ? addr
-            : EvmFormatUtils.formatAddress(addr)}
+          {fullAddress ? addr : EvmFormatUtils.formatAddress(addr)}
+          {account.source === EvmAccountSource.LEDGER && (
+            <span className="ledger-source">
+              {chrome.i18n.getMessage('html_popup_using_ledger')}
+            </span>
+          )}
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@ import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import {
   EvmAccount,
+  EvmAccountSource,
   WalletWithBalance,
 } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
@@ -85,6 +86,7 @@ const ImportWalletConfirmation = ({
         path: derivedWallet.wallet.path!,
         wallet: derivedWallet.wallet,
         seedId: 0,
+        source: EvmAccountSource.SEED,
       }));
       await EvmWalletUtils.addSeedAndAccounts(
         wallet,

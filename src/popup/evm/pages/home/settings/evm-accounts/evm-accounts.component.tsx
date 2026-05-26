@@ -4,6 +4,7 @@ import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions'
 import {
   EvmAccount,
   EvmAccountOrPublic,
+  EvmAccountSource,
 } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountsContextualMenu } from '@popup/evm/pages/home/settings/evm-accounts/evm-accounts.contextual-menu';
 import {
@@ -97,8 +98,14 @@ const EvmAccounts = ({
           onCreateClicked: handleCreateSeedClick,
           onImportClicked: handleImportSeedClick,
           onCopyClicked: handleCopySeedClick,
+          isLedgerSource: isCurrentSourceLedger(),
         }),
       );
+  };
+
+  const isCurrentSourceLedger = () => {
+    const currentSeed = getCurrentSeed();
+    return currentSeed?.source === EvmAccountSource.LEDGER;
   };
 
   const buildSeedOptions = (accounts: EvmAccount[]) => {
@@ -207,7 +214,12 @@ const EvmAccounts = ({
     const seed = accounts.find(
       (account) => account.seedId === selectedSeed?.value,
     );
-    if (!seed?.wallet.mnemonic?.phrase) return;
+    if (
+      !seed ||
+      !EvmWalletUtils.isSeedAccount(seed) ||
+      !seed.wallet.mnemonic?.phrase
+    )
+      return;
 
     closePopup();
     await copyTextWithToast(
@@ -365,12 +377,14 @@ const EvmAccounts = ({
             ))}
       </div>
       <div className="button-panel">
-        <ButtonComponent
-          type={ButtonType.ALTERNATIVE}
-          height="small"
-          label="evm_add_wallet_address_button"
-          onClick={handleAddAddressClick}
-        />
+        {!isCurrentSourceLedger() && (
+          <ButtonComponent
+            type={ButtonType.ALTERNATIVE}
+            height="small"
+            label="evm_add_wallet_address_button"
+            onClick={handleAddAddressClick}
+          />
+        )}
       </div>
       {editParams && <EvmEditAccountPopup editParams={editParams} />}
     </div>

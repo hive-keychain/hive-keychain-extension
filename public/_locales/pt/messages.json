@@ -3570,6 +3570,10 @@
     "message": "Adicionar contas da Ledger",
     "description": "Title of add accounts from ledger page"
   },
+  "evm_add_accounts_from_ledger": {
+    "message": "Add EVM accounts from Ledger",
+    "description": "Title of add EVM accounts from ledger page"
+  },
   "add_accounts_from_ledger_finished": {
     "message": "Adicionar contas da Ledger",
     "description": "Title of add accounts from ledger page"
@@ -3613,6 +3617,14 @@
   "ledger_account_discovery_caption": {
     "message": "Vincule sua Ledger para usar suas contas no Keychain",
     "description": "synchronize ledger caption"
+  },
+  "evm_ledger_account_discovery_caption": {
+    "message": "Connect and unlock your Ledger, open the Ethereum app, then discover EVM accounts.",
+    "description": "EVM Ledger account discovery caption"
+  },
+  "ledger_source_name": {
+    "message": "Ledger",
+    "description": "Default EVM Ledger wallet source name"
   },
   "no_account_found_on_ledger_error": {
     "message": "Nenhuma conta encontrada na sua Ledger. Certifique-se de que você adicionou pelo menos uma e tente novamente.",

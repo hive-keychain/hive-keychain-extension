@@ -21,7 +21,6 @@ import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
-import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
@@ -40,7 +39,7 @@ import { setTitleContainerProperties } from '@popup/multichain/actions/title-con
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import Decimal from 'decimal.js';
-import { ethers, parseUnits, Wallet } from 'ethers';
+import { ethers, parseUnits } from 'ethers';
 import Joi from 'joi';
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
@@ -588,22 +587,13 @@ const EvmTransfer = ({
     receiverAddress: string,
     amount: string,
   ) => {
-    const provider = await EthersUtils.getProvider(chain);
-    const connectedWallet = new Wallet(
-      selectedAccount.wallet.signingKey,
-      provider,
-    );
-    const contract = new ethers.Contract(
-      tokenInfo.contractAddress!,
-      Erc20Abi,
-      connectedWallet,
-    );
+    const contractInterface = new ethers.Interface(Erc20Abi);
 
     const finalAmount = parseUnits(
       toDecimalString(amount),
       (tokenInfo as EvmSmartContractInfoErc20).decimals,
     );
-    return contract.interface.encodeFunctionData('transfer', [
+    return contractInterface.encodeFunctionData('transfer', [
       receiverAddress,
       finalAmount,
     ]);

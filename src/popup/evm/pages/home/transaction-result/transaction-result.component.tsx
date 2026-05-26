@@ -29,13 +29,7 @@ import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
-import {
-  HDNodeWallet,
-  TransactionReceipt,
-  TransactionResponse,
-  Wallet,
-  ethers,
-} from 'ethers';
+import { TransactionReceipt, TransactionResponse, ethers } from 'ethers';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -491,16 +485,10 @@ const EvmTransactionResult = ({
       return undefined;
     }
 
-    const connectedWallet = new Wallet(
-      HDNodeWallet.fromPhrase(activeAccount?.wallet.mnemonic?.phrase!)
-        .signingKey,
-      await EthersUtils.getProvider(chain),
-    );
-
     const contract = new ethers.Contract(
       (tokenInfo as any).contractAddress,
       getAbiFromType(tokenInfo.type)!,
-      connectedWallet,
+      await EthersUtils.getProvider(chain),
     );
 
     const metadata = await EvmNFTUtils.getMetadataFromTokenId(

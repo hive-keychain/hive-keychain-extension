@@ -12,6 +12,7 @@ import {
   ProviderTransactionData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
+import { EvmWallet } from '@popup/evm/interfaces/wallet.interface';
 import { EvmActionButtonList } from '@popup/evm/pages/home/evm-action-section/evm-action-section.list';
 import { EvmDappStatusComponent } from '@popup/evm/pages/home/evm-dapp-status/evm-dapp-status.component';
 import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section.component';
@@ -41,7 +42,7 @@ import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { ethers, HDNodeWallet } from 'ethers';
+import { ethers } from 'ethers';
 import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
@@ -216,7 +217,7 @@ const Home = ({
     }
   };
 
-  const loadPendingTransactions = async (wallet: HDNodeWallet) => {
+  const loadPendingTransactions = async (wallet: EvmWallet) => {
     const currentRequestId = ++pendingTransactionsRequestId.current;
     const pendingTransactionsInfo =
       await EvmTransactionsUtils.hasPendingTransaction(wallet.address, chain);

@@ -47,8 +47,14 @@
         flex-direction: row;
         display: flex;
         column-gap: 6px;
+        align-items: center;
         &.full-address {
           @include poppins400(11px);
+        }
+        .ledger-source {
+          @include poppins400(10px);
+          color: var(--main-font-color);
+          opacity: 0.7;
         }
       }
     }

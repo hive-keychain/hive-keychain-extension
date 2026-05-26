@@ -7,7 +7,7 @@ import { createEvmMessage } from '@background/hive/requests/operations/operation
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { SignTypedDataVersion } from '@metamask/eth-sig-util';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
-import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
+import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const signData = async (
@@ -33,8 +33,8 @@ export const signData = async (
       : request.params[1];
   if (account) {
     try {
-      const res = await EvmRequestsUtils.signData(
-        account.wallet.privateKey,
+      const res = await EvmSignerUtils.signTypedMessage(
+        account.wallet,
         message,
         version,
       );
@@ -47,6 +47,7 @@ export const signData = async (
       );
     } catch (e) {
       Logger.error('sign error', e);
+      throw e;
     }
   }
 };

@@ -26,7 +26,6 @@ import { EvmNftCollectionListItem } from '@popup/evm/pages/home/evm-nft-pages/ev
 import { EvmNftDetails } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-details/evm-ntf-details.component';
 import { ERC1155Abi, ERC721Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
-import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
@@ -39,7 +38,7 @@ import { navigateToWithParams } from '@popup/multichain/actions/navigation.actio
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
-import { ethers, Wallet } from 'ethers';
+import { ethers } from 'ethers';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -305,19 +304,12 @@ const EvmNftTransfer = ({
     amount: number,
     tokenId: string,
   ) => {
-    const provider = await EthersUtils.getProvider(chain);
-    const connectedWallet = new Wallet(
-      activeAccount.wallet.signingKey,
-      provider,
-    );
-    const contract = new ethers.Contract(
-      tokenInfo.contractAddress!,
+    const contractInterface = new ethers.Interface(
       tokenInfo.type === EVMSmartContractType.ERC1155 ? ERC1155Abi : ERC721Abi,
-      connectedWallet,
     );
 
     if (tokenInfo.type === EVMSmartContractType.ERC1155) {
-      return contract.interface.encodeFunctionData('safeTransferFrom', [
+      return contractInterface.encodeFunctionData('safeTransferFrom', [
         activeAccount.address,
         receiverAddress,
         Number(tokenId),
@@ -325,7 +317,7 @@ const EvmNftTransfer = ({
         '0x',
       ]);
     } else if (tokenInfo.type === EVMSmartContractType.ERC721) {
-      return contract.interface.encodeFunctionData(
+      return contractInterface.encodeFunctionData(
         'safeTransferFrom(address,address,uint256)',
         [activeAccount.address, receiverAddress, Number(tokenId)],
       );

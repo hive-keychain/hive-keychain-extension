@@ -11,10 +11,12 @@ import {
   UserCanceledTransactions,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
+import { EvmWallet } from '@popup/evm/interfaces/wallet.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmLocalHistoryUtils } from '@popup/evm/utils/evm-local-history.utils';
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
+import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
 import { EvmTokensHistoryParserUtils } from '@popup/evm/utils/evm-tokens-history-parser.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
@@ -24,11 +26,9 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Decimal from 'decimal.js';
 import {
   ethers,
-  HDNodeWallet,
   Provider,
   TransactionRequest,
   TransactionResponse,
-  Wallet,
 } from 'ethers';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -116,13 +116,14 @@ const trackPendingTransactionConfirmation = async (
 };
 
 const send = async (
-  wallet: HDNodeWallet,
+  wallet: EvmWallet,
   request: Partial<TransactionRequest>,
   gasFee: GasFeeEstimationBase,
   chainId: string,
   forceNounce?: number,
 ) => {
   const chain = await ChainUtils.getChain<EvmChain>(chainId);
+  const walletAddress = EvmSignerUtils.getWalletAddress(wallet);
   let feeData = {};
   if (gasFee)
     switch (gasFee.type) {
@@ -156,15 +157,14 @@ const send = async (
     value: request.value ?? '0x0',
     data: request.data,
     to: request.to,
-    from: wallet.address,
+    from: walletAddress,
     nonce:
-      forceNounce ?? (await EvmRequestsUtils.getNonce(wallet.address, chain)),
+      forceNounce ?? (await EvmRequestsUtils.getNonce(walletAddress, chain)),
     gasLimit: gasFee ? BigInt(gasFee.gasLimit.toFixed(0)) : null,
     chainId: chain.chainId,
     type: request.type,
     ...feeData,
   };
-
 
   if (
     request.type &&
@@ -177,25 +177,20 @@ const send = async (
   }
 
   const provider = await EthersUtils.getProvider(chain as EvmChain);
-  const connectedWallet = new Wallet(wallet.signingKey, provider);
 
-  const transactionResponse: TransactionResponse = await connectedWallet
-    .sendTransaction(transactionRequest)
+  const transactionResponse: TransactionResponse = await EvmSignerUtils
+    .sendTransaction(wallet, transactionRequest, provider)
     .catch((err) => {
       Logger.error('Error in send', err);
       throw err;
     })
     .then((transaction) => transaction);
   if (transactionResponse) {
-    await addPendingTransaction(
-      connectedWallet.address,
-      transactionResponse,
-      chain,
-    );
+    await addPendingTransaction(walletAddress, transactionResponse, chain);
     if (chain.isCustom) {
       await EvmLocalHistoryUtils.appendBroadcastRecord(
         chain,
-        connectedWallet.address,
+        walletAddress,
         transactionResponse,
       );
     }

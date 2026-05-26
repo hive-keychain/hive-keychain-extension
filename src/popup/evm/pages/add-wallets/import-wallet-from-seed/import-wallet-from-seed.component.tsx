@@ -36,8 +36,9 @@ const ImportWalletFromSeed = ({
     if (
       accounts.some(
         (account) =>
+          EvmWalletUtils.isSeedAccount(account) &&
           account.wallet.mnemonic?.phrase.trim().toLowerCase() ===
-          seed.join(' ').trim().toLowerCase(),
+            seed.join(' ').trim().toLowerCase(),
       )
     ) {
       setErrorMessage('evm_seeds_already_in_keychain');

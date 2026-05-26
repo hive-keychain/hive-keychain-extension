@@ -1,7 +1,10 @@
 import { Screen } from '@interfaces/screen.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import {
+  EvmAccount,
+  EvmAccountSource,
+} from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
@@ -82,6 +85,7 @@ const CreateNewWalletVerification = ({
       path: derivedWallet.path!,
       wallet: derivedWallet,
       seedId: 0,
+      source: EvmAccountSource.SEED,
     };
     await EvmWalletUtils.addSeedAndAccounts(wallet, [account], mk, nickname);
 
