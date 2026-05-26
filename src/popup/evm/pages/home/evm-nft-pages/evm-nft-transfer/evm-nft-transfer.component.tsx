@@ -115,9 +115,8 @@ const EvmNftTransfer = ({
 
     setAutocompleteValues(values);
 
-    const enrichedValues = await EvmAddressesUtils.enrichWhiteListAutocomplete(
-      values,
-    );
+    const enrichedValues =
+      await EvmAddressesUtils.enrichWhiteListAutocomplete(values);
 
     if (isCancelled()) return;
 
@@ -147,7 +146,7 @@ const EvmNftTransfer = ({
         tokenContract: collectionItem.collection.tokenInfo.contractAddress,
         chainId: chain.chainId,
         tokenType: collectionItem.collection.tokenInfo.type,
-        nftTokenId: collectionItem.tokenId,
+        nftTokenId: collectionItem.item.id,
       });
 
     let fields = [

@@ -39,7 +39,6 @@ import {
   removeMatchingFromField,
   reorderEvmConfirmationFields,
 } from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
-import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
 const renderCopyableFormattedAddress = (
@@ -369,7 +368,7 @@ export async function runSendTransactionInit(
               domain: data.dappInfo.domain,
               origin: data.dappInfo.origin,
               contract: usedAccountAddress,
-              tokenContract: tokenAddress,
+              tokenContract: tokenAddress ?? undefined,
               proxyTarget,
               chainId: chainTmp.chainId,
               tokenType: usedToken.type,
@@ -613,7 +612,9 @@ export async function runSendTransactionInit(
                     input.name,
                     usedToken,
                   );
-                const resolvedDisplayType = isTupleAbiInput(input as AbiParamFragment)
+                const resolvedDisplayType = isTupleAbiInput(
+                  input as AbiParamFragment,
+                )
                   ? EvmInputDisplayType.TUPLE
                   : inputDisplayType;
                 const decodedFieldTokenType = getDecodedFieldTokenType(
