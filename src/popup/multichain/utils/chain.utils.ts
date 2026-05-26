@@ -374,6 +374,8 @@ const STORAGE_RECORDS_KEYED_BY_CHAIN_ID: LocalStorageKeyEnum[] = [
   LocalStorageKeyEnum.EVM_CANCELED_TRANSACTIONS,
   LocalStorageKeyEnum.EVM_LOCAL_HISTORY,
   LocalStorageKeyEnum.EVM_CUSTOM_HISTORY_INFO_CARD_HIDDEN,
+  LocalStorageKeyEnum.EVM_CUSTOM_ERC20_EMPTY_CARD_HIDDEN,
+  LocalStorageKeyEnum.EVM_CUSTOM_NFT_EMPTY_CARD_HIDDEN,
 ];
 
 const DEFAULT_EVM_CHAIN_AFTER_CUSTOM_REMOVED = '0x1';
@@ -393,6 +395,36 @@ const removeChainIdFromKeyedRecord = (
   const next = { ...(record as Record<string, unknown>) };
   delete next[existingKey];
   return next;
+};
+
+const removeChainIdFromOriginChainWhitelist = (
+  whitelist: Record<string, unknown> | null | undefined,
+  chainIdToRemove: string,
+): Record<string, string[]> | undefined => {
+  if (whitelist == null || typeof whitelist !== 'object' || Array.isArray(whitelist)) {
+    return undefined;
+  }
+  const removeLower = chainIdToRemove.toLowerCase();
+  const next: Record<string, string[]> = {};
+  let changed = false;
+
+  for (const [origin, chainIds] of Object.entries(whitelist)) {
+    if (!Array.isArray(chainIds)) {
+      continue;
+    }
+    const filtered = chainIds.filter(
+      (chainId): chainId is string =>
+        typeof chainId === 'string' && chainId.toLowerCase() !== removeLower,
+    );
+    if (filtered.length !== chainIds.length) {
+      changed = true;
+    }
+    if (filtered.length > 0) {
+      next[origin] = filtered;
+    }
+  }
+
+  return changed ? next : undefined;
 };
 
 const clearEvmStorageForRemovedCustomChain = async (
@@ -455,6 +487,23 @@ const clearEvmStorageForRemovedCustomChain = async (
         next,
       );
     }
+  }
+
+  const originChainWhitelist = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_ORIGIN_CHAIN_WHITELIST,
+  );
+  const cleanedWhitelist = removeChainIdFromOriginChainWhitelist(
+    originChainWhitelist as Record<string, unknown> | null | undefined,
+    chainId,
+  );
+  if (
+    cleanedWhitelist !== undefined &&
+    cleanedWhitelist !== originChainWhitelist
+  ) {
+    await LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.EVM_ORIGIN_CHAIN_WHITELIST,
+      cleanedWhitelist,
+    );
   }
 
   const txs = await LocalStorageUtils.getValueFromLocalStorage(

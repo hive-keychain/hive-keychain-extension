@@ -265,6 +265,18 @@ describe('ChainUtils', () => {
         if (key === LocalStorageKeyEnum.EVM_LAST_CHAIN_USED) {
           return '0x539';
         }
+        if (key === LocalStorageKeyEnum.EVM_ORIGIN_CHAIN_WHITELIST) {
+          return {
+            'https://dapp.example': ['0x539', '0x1'],
+            'https://other.example': ['0xa'],
+          };
+        }
+        if (key === LocalStorageKeyEnum.EVM_CUSTOM_ERC20_EMPTY_CARD_HIDDEN) {
+          return { '0x539': true, '0x1': true };
+        }
+        if (key === LocalStorageKeyEnum.EVM_CUSTOM_NFT_EMPTY_CARD_HIDDEN) {
+          return { '0x539': true };
+        }
         return undefined;
       },
     );
@@ -286,6 +298,21 @@ describe('ChainUtils', () => {
     );
     expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
       LocalStorageKeyEnum.EVM_ACTIVE_RPCS,
+      {},
+    );
+    expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.EVM_ORIGIN_CHAIN_WHITELIST,
+      {
+        'https://dapp.example': ['0x1'],
+        'https://other.example': ['0xa'],
+      },
+    );
+    expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.EVM_CUSTOM_ERC20_EMPTY_CARD_HIDDEN,
+      { '0x1': true },
+    );
+    expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.EVM_CUSTOM_NFT_EMPTY_CARD_HIDDEN,
       {},
     );
   });

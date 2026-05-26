@@ -1,3 +1,6 @@
+import ButtonComponent, {
+  ButtonType,
+} from '@common-ui/button/button.component';
 import CheckboxComponent from '@common-ui/checkbox/checkbox/checkbox.component';
 import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
@@ -152,6 +155,58 @@ const ChainSelector = ({
     });
   };
 
+  const deleteCustomChain = async (customChain: EvmChain) => {
+    const isActiveChain =
+      chain?.chainId?.toLowerCase() === customChain.chainId.toLowerCase();
+    await ChainUtils.removeCustomChain(customChain.chainId);
+    if (isActiveChain) {
+      const remainingSetup = await ChainUtils.getSetupChains();
+      if (remainingSetup?.length) {
+        setChain(remainingSetup[0]);
+      } else {
+        const previousChain = ChainUtils.getPreviousChain();
+        if (previousChain) setChain(previousChain);
+      }
+    }
+    await init();
+  };
+
+  const openDeleteConfirmModal = (customChain: EvmChain) => {
+    openModal({
+      title: 'evm_custom_chains_delete',
+      closeOnOverlayClick: true,
+      showCloseButton: true,
+      children: (
+        <div className="evm-delete-confirm-modal">
+          <p className="evm-delete-confirm-modal__message">
+            {chrome.i18n.getMessage('evm_custom_chains_delete_confirm', [
+              customChain.name,
+            ])}
+          </p>
+          <div className="evm-delete-confirm-modal__actions">
+            <ButtonComponent
+              dataTestId="custom-chain-delete-cancel"
+              label="dialog_cancel"
+              type={ButtonType.ALTERNATIVE}
+              onClick={() => closeModal()}
+              height="small"
+            />
+            <ButtonComponent
+              dataTestId="custom-chain-delete-confirm"
+              label="popup_html_confirm"
+              type={ButtonType.IMPORTANT}
+              height="small"
+              onClick={async () => {
+                closeModal();
+                await deleteCustomChain(customChain);
+              }}
+            />
+          </div>
+        </div>
+      ),
+    });
+  };
+
   const toggleBuiltInChain = async (selectedChain: Chain) => {
     const enabled = isChainEnabled(selectedChain);
     if (enabled) {
@@ -226,11 +281,25 @@ const ChainSelector = ({
       />
       <button
         type="button"
+        className="custom-chain-delete-icon"
+        data-testid={`btn-delete-custom-chain-${customChain.chainId}`}
+        aria-label={chrome.i18n.getMessage('evm_custom_chains_delete')}
+        onClick={(event) => {
+          event.stopPropagation();
+          openDeleteConfirmModal(customChain);
+        }}>
+        <SVGIcon icon={SVGIcons.GLOBAL_DELETE} className="svg-icon" />
+      </button>
+      <button
+        type="button"
         className="custom-chain-settings-icon"
         aria-label={chrome.i18n.getMessage(
           'evm_custom_chains_modal_title_edit',
         )}
-        onClick={() => openEditModal(customChain)}>
+        onClick={(event) => {
+          event.stopPropagation();
+          openEditModal(customChain);
+        }}>
         <SVGIcon icon={SVGIcons.WALLET_SETTINGS} svgViewBox="10 10 24 24" />
       </button>
       <div className="chain-name">{customChain.name}</div>

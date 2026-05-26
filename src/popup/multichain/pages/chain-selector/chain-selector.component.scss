@@ -126,6 +126,7 @@
         }
 
         .check-icon,
+        .custom-chain-delete-icon,
         .custom-chain-settings-icon {
           opacity: 1;
         }
@@ -142,19 +143,49 @@
           }
         }
 
+        .custom-chain-delete-icon,
         .custom-chain-settings-icon {
           display: flex;
           align-items: center;
           justify-content: center;
           position: absolute;
           top: 8px;
-          right: 8px;
           margin: 0;
           padding: 0;
           border: none;
           background: transparent;
           color: var(--main-font-color);
           cursor: pointer;
+
+          .svg-icon {
+            @include icon-size(16px);
+            svg {
+              @include icon-size(16px);
+            }
+          }
+        }
+
+        .custom-chain-delete-icon {
+          left: 8px;
+        }
+
+        .custom-chain-settings-icon {
+          right: 8px;
+        }
+
+        &.chain-card--custom {
+          @media (hover: hover) and (pointer: fine) {
+            .custom-chain-delete-icon {
+              opacity: 0;
+              pointer-events: none;
+            }
+
+            &:hover .custom-chain-delete-icon,
+            &:focus-within .custom-chain-delete-icon {
+              opacity: 1;
+              pointer-events: auto;
+            }
+          }
         }
 
         &.add-custom-chain {
@@ -167,6 +198,49 @@
           }
         }
       }
+    }
+  }
+}
+
+/* Delete confirmation modal (rendered at router level). */
+.modal-container .modal-content:has(.evm-delete-confirm-modal) {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-height: 0;
+  width: 100%;
+}
+
+.evm-delete-confirm-modal {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 260px;
+  min-height: 0;
+
+  .evm-delete-confirm-modal__message {
+    font-size: 13px;
+    line-height: 1.45;
+    margin: 0;
+    opacity: 0.9;
+    flex-shrink: 0;
+  }
+
+  .evm-delete-confirm-modal__actions {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    align-self: stretch;
+    gap: 8px;
+    margin-top: auto;
+    flex-shrink: 0;
+
+    .submit-button {
+      flex: 1 1 0;
+      min-width: 0;
     }
   }
 }

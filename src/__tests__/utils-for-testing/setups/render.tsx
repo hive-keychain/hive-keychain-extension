@@ -42,10 +42,7 @@ const render = (
       <Provider store={fakeStore}>
         {children}
         <TestMessageOverlay />
-<<<<<<< HEAD
         <CopyToastContainer />
-=======
->>>>>>> dev
       </Provider>
     );
   };
