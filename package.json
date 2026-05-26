@@ -60,7 +60,6 @@
   "homepage": "https://github.com/stoodkev/hive-keychain#readme",
   "dependencies": {
     "@engrave/ledger-app-hive": "3.5.6",
-    "@ethersproject/abi": "^5.7.0",
     "@hiveio/hive-js": "2.0.8",
     "@hookform/resolvers": "3.1.1",
     "@ledgerhq/hw-transport": "6.28.8",
@@ -91,7 +90,7 @@
     "minidenticons": "^2.0.0",
     "moment": "2.29.4",
     "node-fetch": "3.2.10",
-    "node-polyfill-webpack-plugin": "1.1.4",
+    "node-polyfill-webpack-plugin": "4.1.0",
     "object-hash": "^3.0.0",
     "pretty-checkbox": "3.0.3",
     "pretty-checkbox-react": "3.2.0",
