@@ -81,7 +81,7 @@ const ImportWalletFromSeed = ({
           placeholder="html_popup_evm_seed_phrase_placeholder"
           rows={4}
           useChips
-          maxChips={12}
+          maxChips={24}
         />
         <div className="fill-space"></div>
         <ButtonComponent

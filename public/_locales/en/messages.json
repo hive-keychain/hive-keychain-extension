@@ -4612,7 +4612,7 @@
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_setup_import_text": {
-    "message": "Use your 12-words seed phrase to import your accounts into Keychain<br/>",
+    "message": "Use your 12 or 24 words seed phrase to import your accounts into Keychain<br/>",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_seed_phrase": {
@@ -4620,11 +4620,11 @@
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_seed_phrase_placeholder": {
-    "message": "12-words seed phrase, separated by whitespace",
+    "message": "12 or 24 words seed phrase, separated by whitespace",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_invalid_mnemonic_length": {
-    "message": "Your seedphrase should be 12 words long.",
+    "message": "Your seedphrase should be 12 or 24 words long.",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_invalid_mnemonic_word": {
