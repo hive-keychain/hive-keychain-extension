@@ -1,5 +1,7 @@
 import { EvmAddressType } from '@popup/evm/interfaces/evm-addresses.interface';
-import { HDNodeWallet } from 'ethers';
+import { HDNodeWallet, Wallet } from 'ethers';
+
+export type EvmWallet = HDNodeWallet | Wallet;
 
 export type WalletWithBalance = {
   wallet: HDNodeWallet;
@@ -21,7 +23,7 @@ export type StoredEvmWalletAddress = {
 };
 
 export type EvmAccount = StoredEvmWalletAddress & {
-  wallet: HDNodeWallet;
+  wallet: EvmWallet;
   seedId: number;
   seedNickname?: string;
 };

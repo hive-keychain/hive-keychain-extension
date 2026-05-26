@@ -1,4 +1,5 @@
 import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface';
+import { EvmWallet } from '@popup/evm/interfaces/wallet.interface';
 import {
   EvmPendingTransaction,
   EvmSmartContractInfo,
@@ -24,7 +25,6 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Decimal from 'decimal.js';
 import {
   ethers,
-  HDNodeWallet,
   Provider,
   TransactionRequest,
   TransactionResponse,
@@ -116,7 +116,7 @@ const trackPendingTransactionConfirmation = async (
 };
 
 const send = async (
-  wallet: HDNodeWallet,
+  wallet: EvmWallet,
   request: Partial<TransactionRequest>,
   gasFee: GasFeeEstimationBase,
   chainId: string,
@@ -177,7 +177,7 @@ const send = async (
   }
 
   const provider = await EthersUtils.getProvider(chain as EvmChain);
-  const connectedWallet = new Wallet(wallet.signingKey, provider);
+  const connectedWallet = wallet.connect(provider);
 
   const transactionResponse: TransactionResponse = await connectedWallet
     .sendTransaction(transactionRequest)

@@ -6,7 +6,7 @@ import {
   EvmSmartContractInfoErc721,
   EvmSmartContractInfoNative,
 } from '@popup/evm/interfaces/evm-tokens.interface';
-import { HDNodeWallet } from 'ethers';
+import { EvmWallet } from '@popup/evm/interfaces/wallet.interface';
 
 export interface EvmActiveAccount {
   address: string;
@@ -24,7 +24,7 @@ export interface EvmActiveAccount {
     loading: boolean;
     initialized: boolean;
   };
-  wallet: HDNodeWallet;
+  wallet: EvmWallet;
   isReady: boolean;
 }
 

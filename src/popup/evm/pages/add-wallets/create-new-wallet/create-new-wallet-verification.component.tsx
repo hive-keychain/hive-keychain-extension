@@ -6,7 +6,7 @@ import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
-import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
@@ -21,7 +21,7 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { MathUtils } from 'src/utils/math.utils';
 
 const CreateNewWalletVerification = ({
-  navigateToWithParams,
+  navigateTo,
   setTitleContainerProperties,
   setErrorMessage,
   loadEvmActiveAccount,
@@ -95,6 +95,7 @@ const CreateNewWalletVerification = ({
 
     const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
     setEvmAccounts(accounts);
+    navigateTo(Screen.HOME_PAGE, true);
     await loadEvmActiveAccount(chain, accounts[0].wallet);
   };
 
@@ -213,7 +214,7 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const connector = connect(mapStateToProps, {
-  navigateToWithParams,
+  navigateTo,
   setTitleContainerProperties,
   setErrorMessage,
   setEvmAccounts,

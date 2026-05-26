@@ -204,14 +204,14 @@ const EvmAccounts = ({
       return;
     }
 
-    const seed = accounts.find(
-      (account) => account.seedId === selectedSeed?.value,
+    const seed = (await EvmWalletUtils.getAccountsFromLocalStorage(mk)).find(
+      (account) => account.id === selectedSeed?.value,
     );
-    if (!seed?.wallet.mnemonic?.phrase) return;
+    if (!seed?.seed) return;
 
     closePopup();
     await copyTextWithToast(
-      seed.wallet.mnemonic.phrase,
+      seed.seed,
       'html_popup_evm_create_wallet_copied_mnemonic',
     );
   };

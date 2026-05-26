@@ -30,7 +30,6 @@ import { setTitleContainerProperties } from '@popup/multichain/actions/title-con
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import {
-  HDNodeWallet,
   TransactionReceipt,
   TransactionResponse,
   Wallet,
@@ -492,8 +491,7 @@ const EvmTransactionResult = ({
     }
 
     const connectedWallet = new Wallet(
-      HDNodeWallet.fromPhrase(activeAccount?.wallet.mnemonic?.phrase!)
-        .signingKey,
+      activeAccount.wallet.signingKey,
       await EthersUtils.getProvider(chain),
     );
 

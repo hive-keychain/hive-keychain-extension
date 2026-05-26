@@ -1,8 +1,8 @@
 import { EvmActionType } from '@popup/evm/actions/action-type.evm.enum';
 import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface';
 import { EvmUserHistory } from '@popup/evm/interfaces/evm-tokens-history.interface';
+import { EvmWallet } from '@popup/evm/interfaces/wallet.interface';
 import { ActionPayload } from '@popup/multichain/actions/interfaces';
-import { HDNodeWallet } from 'ethers';
 
 const EMPTY_EVM_HISTORY: EvmUserHistory = {
   events: [],
@@ -13,7 +13,7 @@ const EMPTY_EVM_HISTORY: EvmUserHistory = {
 export const EvmActiveAccountReducer = (
   state: EvmActiveAccount = {
     address: '',
-    wallet: {} as HDNodeWallet,
+    wallet: {} as EvmWallet,
     nativeAndErc20Tokens: {
       value: [],
       loading: true,

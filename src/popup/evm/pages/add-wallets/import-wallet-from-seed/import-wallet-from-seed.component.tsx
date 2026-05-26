@@ -19,7 +19,7 @@ const ImportWalletFromSeed = ({
   setTitleContainerProperties,
   setErrorMessage,
   hasFinishedSignup,
-  accounts,
+  mk,
 }: PropsType) => {
   const [seed, setSeed] = useState<string[]>([]);
   const [isLoading, setLoading] = useState(false);
@@ -33,11 +33,11 @@ const ImportWalletFromSeed = ({
   }, []);
 
   const submitForm = async (): Promise<void> => {
+    const normalizedSeed = seed.join(' ').trim().toLowerCase();
+    const storedSeeds = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
     if (
-      accounts.some(
-        (account) =>
-          account.wallet.mnemonic?.phrase.trim().toLowerCase() ===
-          seed.join(' ').trim().toLowerCase(),
+      storedSeeds.some(
+        (storedSeed) => storedSeed.seed.trim().toLowerCase() === normalizedSeed,
       )
     ) {
       setErrorMessage('evm_seeds_already_in_keychain');
@@ -99,7 +99,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     hasFinishedSignup: state.hasFinishedSignup,
     chain: state.chain as EvmChain,
-    accounts: state.evm.accounts,
+    mk: state.mk,
   };
 };
 

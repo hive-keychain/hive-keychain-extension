@@ -16,7 +16,7 @@ import EncryptUtils from '@popup/hive/utils/encrypt.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
-import { EthersError, HDNodeWallet, ethers } from 'ethers';
+import { EthersError, HDNodeWallet, Wallet, ethers } from 'ethers';
 import { getHostnameFromUrl } from 'src/utils/browser-origin.utils';
 import { normalizeEvmAccounts } from 'src/utils/evm-provider-value.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -59,6 +59,15 @@ const getMaxAccountOrder = (savedSeeds: StoredSeed[]) => {
     .map((seed) => seed.accounts.map((account) => account.order ?? -1))
     .flat()
     .reduce((max, current) => Math.max(max, current), -1);
+};
+
+const getWalletWithoutMnemonic = (seed: string, path: string) => {
+  const derivedWallet = HDNodeWallet.fromPhrase(seed, undefined, path);
+  return new Wallet(derivedWallet.privateKey);
+};
+
+const getMnemonicPhraseFromWallet = (wallet: EvmAccount['wallet']) => {
+  return 'mnemonic' in wallet ? wallet.mnemonic?.phrase : undefined;
 };
 
 const getWalletFromSeedPhrase = (seed: string) => {
@@ -358,7 +367,7 @@ const rebuildAccountsFromLocalStorage = async (mk: string) => {
         order: account.order ?? 0,
         account: {
           ...account,
-          wallet: HDNodeWallet.fromPhrase(seed.seed, undefined, account.path),
+          wallet: getWalletWithoutMnemonic(seed.seed, account.path),
           seedId: seed.id,
           seedNickname: seed.nickname,
         } as EvmAccount,
@@ -420,13 +429,13 @@ const reorderAccounts = async (
 };
 
 const rebuildAccount = (account: EvmAccount) => {
+  const mnemonicPhrase = getMnemonicPhraseFromWallet(account.wallet);
+
   return {
     ...account,
-    wallet: HDNodeWallet.fromPhrase(
-      account.wallet.mnemonic?.phrase!,
-      undefined,
-      account.path,
-    ),
+    wallet: mnemonicPhrase
+      ? getWalletWithoutMnemonic(mnemonicPhrase, account.path)
+      : account.wallet,
   };
 };
 
