@@ -1,4 +1,7 @@
-import type { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import {
+  EvmAccount,
+  EvmAccountSource,
+} from '@popup/evm/interfaces/wallet.interface';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 
 const mockDecrypt = jest.fn();
@@ -88,5 +91,25 @@ describe('EvmRequestsUtils.decryptMessage', () => {
     ).toThrow('Unable to decrypt message');
 
     expect(mockLoggerError).toHaveBeenCalled();
+  });
+
+  it('rejects Ledger accounts before trying to decrypt', () => {
+    const ledgerAccount = {
+      wallet: {
+        source: EvmAccountSource.LEDGER,
+        address: '0x0000000000000000000000000000000000000001',
+        path: "m/44'/60'/0'/0/0",
+        index: 0,
+      },
+    } as EvmAccount;
+
+    expect(() =>
+      EvmRequestsUtils.decryptMessage(
+        ledgerAccount,
+        encodeJson(validEncryptedData),
+      ),
+    ).toThrow('Ledger wallet does not expose a private key');
+
+    expect(mockDecrypt).not.toHaveBeenCalled();
   });
 });
