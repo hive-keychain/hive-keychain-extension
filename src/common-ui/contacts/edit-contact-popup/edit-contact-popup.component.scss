@@ -20,10 +20,18 @@
         border-radius: 50%;
       }
     }
-    .delete-contact-link {
-      @include link;
-    }
   }
+
+  .address-error {
+    @include poppins400(12px);
+    color: $red;
+    margin-top: -4px;
+  }
+
+  .custom-input:has(+ .address-error) .custom-input-content {
+    border-color: $red !important;
+  }
+
   .action-buttons {
     margin-top: 12px;
     display: flex;

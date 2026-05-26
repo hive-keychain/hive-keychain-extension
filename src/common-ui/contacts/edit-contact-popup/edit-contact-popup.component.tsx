@@ -9,13 +9,13 @@ import { TextAreaComponent } from '@common-ui/text-area/textarea.component';
 import { UsernameAvatar } from '@common-ui/username-with-avatar/username-with-avatar';
 import { FavoriteAddress } from '@interfaces/contacts.interface';
 import { ChainType } from '@popup/multichain/interfaces/chains.interface';
+import { ethers } from 'ethers';
 import React, { useState } from 'react';
 
 interface Props {
   isNew?: boolean;
   favoriteAddress: FavoriteAddress;
   onSaveClicked: (newAddressSaved: FavoriteAddress) => void;
-  onDeleteClicked?: (favoriteAddress: FavoriteAddress) => void;
   closePopup: () => void;
   chainType: ChainType;
 }
@@ -24,19 +24,43 @@ export const EditContactPopupComponent = ({
   isNew,
   favoriteAddress,
   onSaveClicked,
-  onDeleteClicked,
   closePopup,
   chainType,
 }: Props) => {
   const [contactLabel, setContactLabel] = useState(favoriteAddress.label);
   const [contactAddress, setContactAddress] = useState(favoriteAddress.address);
+  const [addressError, setAddressError] = useState<string | undefined>();
 
   const save = () => {
+    if (chainType === ChainType.EVM) {
+      const trimmedAddress = contactAddress.trim();
+      if (!trimmedAddress || !ethers.isAddress(trimmedAddress)) {
+        setAddressError(
+          chrome.i18n.getMessage('evm_contact_address_invalid'),
+        );
+        return;
+      }
+
+      onSaveClicked({
+        id: favoriteAddress.id,
+        label: contactLabel,
+        address: ethers.getAddress(trimmedAddress),
+      });
+      return;
+    }
+
     onSaveClicked({
       id: favoriteAddress.id,
       label: contactLabel,
       address: contactAddress,
     });
+  };
+
+  const updateContactAddress = (value: string) => {
+    setContactAddress(value);
+    if (addressError) {
+      setAddressError(undefined);
+    }
   };
 
   return (
@@ -66,13 +90,6 @@ export const EditContactPopupComponent = ({
               </>
             )}
           </div>
-          {onDeleteClicked && (
-            <div
-              className="delete-contact-link"
-              onClick={() => onDeleteClicked(favoriteAddress)}>
-              {chrome.i18n.getMessage('evm_delete_contact_link')}
-            </div>
-          )}
         </div>
 
         <InputComponent
@@ -83,12 +100,17 @@ export const EditContactPopupComponent = ({
         />
 
         {chainType === ChainType.EVM && (
-          <TextAreaComponent
-            label={'evm_contact_address'}
-            value={contactAddress}
-            onChange={setContactAddress}
-            useChips={false}
-          />
+          <>
+            <TextAreaComponent
+              label={'evm_contact_address'}
+              value={contactAddress}
+              onChange={updateContactAddress}
+              useChips={false}
+            />
+            {addressError && (
+              <div className="address-error">{addressError}</div>
+            )}
+          </>
         )}
         {chainType === ChainType.HIVE && (
           <InputComponent

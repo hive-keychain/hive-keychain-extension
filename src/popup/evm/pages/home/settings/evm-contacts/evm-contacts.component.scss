@@ -1,34 +1,107 @@
 .evm-contacts-page {
-  .add-contact-link {
-    @include link;
-    align-self: flex-end;
+  @include pageLayoutRowGap;
+  row-gap: 16px;
+  justify-content: flex-start;
+  overflow-y: auto;
+
+  .chain-select-panel {
+    margin: 0 20px;
+
+    .custom-select-container {
+      .custom-select {
+        width: 100%;
+
+        .react-dropdown-select-dropdown {
+          box-sizing: border-box;
+          min-width: 100%;
+          width: 100%;
+
+          .custom-select-dropdown,
+          .option,
+          .custom-select-item {
+            box-sizing: border-box;
+            max-width: unset;
+            width: 100%;
+          }
+        }
+      }
+    }
   }
 
-  .card-container {
+  .addresses-list {
     display: flex;
     flex-direction: column;
     row-gap: 24px;
-    margin: 0 24px;
+    padding-top: 12px;
+    scroll-behavior: smooth;
   }
 
-  .evm-contacts-card {
-    overflow: hidden;
-    max-height: 420px;
-    .chain-custom-select {
-      width: 100%;
+  .contact-category {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+
+    .category-header {
+      display: grid;
+      grid-template-columns: 5fr 1fr;
+      align-items: center;
+      padding: 0 20px;
+
+      .category-title {
+        @include poppins400(14px);
+        color: var(--main-font-color);
+      }
+
+      .add-contact-link {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        column-gap: 4px;
+        cursor: pointer;
+        white-space: nowrap;
+        color: var(--main-font-color);
+
+        .add-icon {
+          @include icon-size(18px);
+          flex-shrink: 0;
+
+          svg path {
+            stroke: $red;
+          }
+        }
+      }
     }
-    .edit-contacts-panel {
+
+    .addresses-list-items {
       display: flex;
       flex-direction: column;
       row-gap: 8px;
-      width: 100%;
       overflow: auto;
 
-      .right-action-logo {
-        div {
-          display: flex;
-          align-items: center;
-          justify-content: center;
+      .edit-contact-item {
+        @include small-card-no-padding;
+
+        .contact-label-panel {
+          width: 100%;
+          padding: 0 8px;
+          box-sizing: border-box;
+
+          .contact-label {
+            flex: 1;
+            min-width: 0;
+            padding: 8px 0;
+          }
+
+          .contact-actions {
+            padding-right: 8px;
+
+            .edit-icon,
+            .delete-icon {
+              @include icon-size(24px);
+              --favorite-account-btn-border: #{$red};
+              --favorite-account-btn-icon: #{$red};
+            }
+          }
         }
       }
     }

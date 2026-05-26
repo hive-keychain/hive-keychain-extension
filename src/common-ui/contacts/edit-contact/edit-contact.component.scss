@@ -1,8 +1,4 @@
 .edit-contact-item {
-  .delete-icon {
-    display: none;
-    @include icon-size(16px);
-  }
   .contact-label-panel {
     display: flex;
     align-items: center;
@@ -13,15 +9,26 @@
       column-gap: 8px;
       color: var(--main-font-color);
       @include poppins500($input-font-size);
-      cursor: pointer;
       .user-picture {
         @include user-avatar;
       }
     }
 
-    &:hover {
+    .contact-actions {
+      display: none;
+      align-items: center;
+      column-gap: 8px;
+
+      .edit-icon,
       .delete-icon {
-        display: block;
+        @include icon-size(16px);
+        cursor: pointer;
+      }
+    }
+
+    &:hover {
+      .contact-actions {
+        display: flex;
       }
     }
     @include hint;

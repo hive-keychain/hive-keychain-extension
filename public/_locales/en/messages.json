@@ -5444,8 +5444,8 @@
     "description": "History tab"
   },
   "evm_menu_contacts": {
-    "message": "Contacts",
-    "description": "Contact menu item"
+    "message": "Addresses",
+    "description": "Addresses menu item"
   },
   "evm_menu_custom_chains": {
     "message": "Manage chains",
@@ -6135,6 +6135,10 @@
     "message": "Address",
     "description": "Evm address"
   },
+  "evm_contact_address_invalid": {
+    "message": "Enter a valid address.",
+    "description": "Validation error when saving a contact with an invalid EVM address"
+  },
   "evm_contact_label": {
     "message": "Label",
     "description": "Evm label"
@@ -6146,6 +6150,14 @@
   "evm_add_contact_link": {
     "message": "Add contact",
     "description": "Evm add contact link"
+  },
+  "evm_contacts_section": {
+    "message": "Contacts",
+    "description": "Contacts section on the addresses settings page"
+  },
+  "evm_addresses_add": {
+    "message": "Add",
+    "description": "Add link on the addresses settings page"
   },
   "evm_contact_new_contact": {
     "message": "New contact",
