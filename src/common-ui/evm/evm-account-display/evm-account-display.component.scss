@@ -25,7 +25,8 @@
         color: var(--main-font-color);
       }
       .edit-icon {
-        display: none;
+        visibility: hidden;
+        flex-shrink: 0;
         margin-top: -9px;
         margin-right: 8px;
         svg {
@@ -76,7 +77,7 @@
       }
     }
     .edit-icon {
-      display: block !important;
+      visibility: visible;
     }
   }
 }

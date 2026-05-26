@@ -90,16 +90,24 @@ $autoCompleteItemHeight: 30px;
       }
 
       .erase {
-        display: none;
+        display: block;
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      &.has-value {
+        input {
+          padding-right: 36px;
+        }
       }
 
       &.has-value:hover,
       &.has-value.focused {
-        input {
-          padding-right: 36px;
-        }
         .erase {
-          display: block;
+          visibility: visible;
+          opacity: 1;
+          pointer-events: auto;
         }
       }
     }

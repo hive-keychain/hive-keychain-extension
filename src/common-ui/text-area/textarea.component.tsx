@@ -141,7 +141,14 @@ export const TextAreaComponent = React.forwardRef(
               props.logo
                 ? `has-${props.logoPosition ?? 'left'}-logo`
                 : 'no-logo'
-            }  ${isFocused ? 'focused' : ''}`}>
+            } ${isFocused ? 'focused' : ''} ${
+              !props.disabled &&
+              !!props.value &&
+              props.value.length > 0 &&
+              !props.useChips
+                ? 'has-value'
+                : ''
+            }`}>
             {chips.map((chip) => (
               <div className="chip" key={`chip-${chip}`}>
                 <div className="chip-label">{chip}</div>

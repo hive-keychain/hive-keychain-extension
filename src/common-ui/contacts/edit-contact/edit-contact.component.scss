@@ -15,9 +15,11 @@
     }
 
     .contact-actions {
-      display: none;
+      display: flex;
       align-items: center;
       column-gap: 8px;
+      visibility: hidden;
+      flex-shrink: 0;
 
       .edit-icon,
       .delete-icon {
@@ -28,7 +30,7 @@
 
     &:hover {
       .contact-actions {
-        display: flex;
+        visibility: visible;
       }
     }
     @include hint;

@@ -127,15 +127,24 @@ $autoCompleteItemHeight: 30px;
       }
 
       .erase {
-        display: none;
+        display: block;
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
       }
 
-      &:hover {
-        .erase {
-          display: block;
-        }
+      &.has-value {
         textarea {
           padding-right: 32px !important;
+        }
+      }
+
+      &.has-value:hover,
+      &.has-value.focused {
+        .erase {
+          visibility: visible;
+          opacity: 1;
+          pointer-events: auto;
         }
       }
     }
