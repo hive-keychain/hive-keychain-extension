@@ -146,6 +146,8 @@ export const CustomEvmChainForm = ({
   submitLabel,
 }: CustomEvmChainFormProps) => {
   const isEdit = !!chainToEdit;
+  /** Locked when editing a saved chain or when the caller fixed the id (e.g. dapp add-chain request). */
+  const isChainIdDisabled = isEdit || !!initialChain?.chainId?.trim();
   const addRpcAriaLabel =
     chrome.i18n.getMessage('evm_custom_chains_add_rpc') || ADD_RPC_FALLBACK;
   const removeRpcAriaLabel =
@@ -498,9 +500,10 @@ export const CustomEvmChainForm = ({
           clearError();
           setChainIdInput(v);
         }}
+        disabled={isChainIdDisabled}
         dataTestId="custom-evm-chain-id"
       />
-      {!isEdit && (chainListLookupLoading || chainListMatch) && (
+      {/* {!isEdit && (chainListLookupLoading || chainListMatch) && (
         <div
           className="add-custom-evm-chain-form__chainlist-hint"
           aria-busy={chainListLookupLoading || chainListPreloadLoading}>
@@ -537,7 +540,7 @@ export const CustomEvmChainForm = ({
             />
           )}
         </div>
-      )}
+      )} */}
       <InputComponent
         type={InputType.TEXT}
         label="evm_custom_chains_field_name"

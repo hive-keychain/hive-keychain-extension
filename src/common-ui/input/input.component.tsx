@@ -68,7 +68,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
     <div
       className={`custom-input ${props.classname ?? ''} ${
         props.size ? props.size : ''
-      }`}>
+      } ${props.disabled ? 'disabled' : ''}`}>
       {(props.label || props.hint) && (
         <div className="label">
           {props.label && (

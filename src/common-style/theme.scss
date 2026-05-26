@@ -61,6 +61,9 @@ $dark: (
   // Inputs
   --input-background: $darker-blue,
   --input-border: $blue-border,
+  --input-disabled-background: $dark-blue,
+  --input-disabled-color: $lighter-grey,
+  --input-disabled-border: $blue-border,
   --checkbox-color: white,
   --checkbox-background: transparent,
   --autocomplete-background: $darker-blue,
@@ -170,6 +173,9 @@ $light: (
   // Inputs
   --input-background: white,
   --input-border: $lighter-grey-border,
+  --input-disabled-background: $extra-light-grey,
+  --input-disabled-color: $light-grey,
+  --input-disabled-border: $light-grey-border,
   --checkbox-color: $darker-blue,
   --checkbox-background: #e6eef6,
   --autocomplete-background: #f7f8f9,

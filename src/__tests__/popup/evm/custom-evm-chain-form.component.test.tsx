@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
+import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { CustomEvmChainForm } from '@popup/evm/pages/home/settings/evm-custom-chains/custom-evm-chain-form.component';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 
@@ -17,7 +19,7 @@ describe('CustomEvmChainForm', () => {
     jest.restoreAllMocks();
   });
 
-  it('prefills the requested chain id and validates required RPC data before submit', async () => {
+  it('prefills a dapp-requested chain id as disabled and validates required RPC data before submit', async () => {
     const onSubmit = jest.fn().mockResolvedValue(undefined);
 
     render(
@@ -31,6 +33,9 @@ describe('CustomEvmChainForm', () => {
     expect(
       (screen.getByTestId('custom-evm-chain-id') as HTMLInputElement).value,
     ).toBe('0x539');
+    expect(
+      (screen.getByTestId('custom-evm-chain-id') as HTMLInputElement).disabled,
+    ).toBe(true);
 
     fireEvent.change(screen.getByTestId('custom-evm-chain-name'), {
       target: { value: 'Local Chain' },
@@ -60,5 +65,38 @@ describe('CustomEvmChainForm', () => {
         rpcs: [{ url: 'https://rpc.local', isDefault: true }],
       }),
     );
+  });
+
+  it('keeps the chain id field editable when adding a chain manually', () => {
+    render(
+      <CustomEvmChainForm onCancel={jest.fn()} onSubmit={jest.fn()} />,
+    );
+
+    expect(
+      (screen.getByTestId('custom-evm-chain-id') as HTMLInputElement).disabled,
+    ).toBe(false);
+  });
+
+  it('disables the chain id field when editing an existing chain', () => {
+    render(
+      <CustomEvmChainForm
+        onCancel={jest.fn()}
+        onSubmit={jest.fn()}
+        chainToEdit={{
+          type: ChainType.EVM,
+          chainId: '0x539',
+          name: 'Local Chain',
+          mainToken: 'ETH',
+          defaultTransactionType: EvmTransactionType.EIP_1559,
+          rpcs: [{ url: 'https://rpc.local', isDefault: true }],
+          testnet: false,
+          isCustom: true,
+        }}
+      />,
+    );
+
+    expect(
+      (screen.getByTestId('custom-evm-chain-id') as HTMLInputElement).disabled,
+    ).toBe(true);
   });
 });

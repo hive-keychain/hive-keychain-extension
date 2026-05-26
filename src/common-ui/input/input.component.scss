@@ -127,6 +127,27 @@ $autoCompleteItemHeight: 30px;
       border-color: $red !important;
     }
   }
+
+  &.disabled {
+    .label {
+      opacity: 0.75;
+    }
+
+    .custom-input-content {
+      background: var(--input-disabled-background);
+      border-color: var(--input-disabled-border);
+      cursor: not-allowed;
+
+      .input-container input:disabled {
+        background: var(--input-disabled-background);
+        color: var(--input-disabled-color);
+        cursor: not-allowed;
+        -webkit-text-fill-color: var(--input-disabled-color);
+        opacity: 1;
+      }
+    }
+  }
+
   .error {
     @include poppins400(12px);
     color: $red;
