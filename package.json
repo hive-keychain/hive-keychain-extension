@@ -188,6 +188,7 @@
     "sass-graph": {
       "scss-tokenizer": "$scss-tokenizer"
     },
+    "uuid": "$uuid",
     "ws": "^8.20.1",
     "@typescript-eslint/typescript-estree": {
       "minimatch": "9.0.7"
