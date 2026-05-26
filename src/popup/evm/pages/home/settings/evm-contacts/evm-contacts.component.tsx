@@ -188,7 +188,7 @@ const Contacts = ({ chain, setTitleContainerProperties }: PropsType) => {
   );
 
   return (
-    <div className="evm-contacts-page">
+    <div className="evm-contacts-page contacts-settings-page">
       {chainOptions && selectedChain && (
         <div className="chain-select-panel">
           <ComplexeCustomSelect

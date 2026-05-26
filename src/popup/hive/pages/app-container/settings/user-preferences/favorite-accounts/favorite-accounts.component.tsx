@@ -1,4 +1,3 @@
-import { Card } from '@common-ui/card/card.component';
 import { EditContactPopupComponent } from '@common-ui/contacts/edit-contact-popup/edit-contact-popup.component';
 import { EditContactComponent } from '@common-ui/contacts/edit-contact/edit-contact.component';
 import { LabelComponent } from '@common-ui/label/label.component';
@@ -14,6 +13,8 @@ import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -22,7 +23,6 @@ import { v4 } from 'uuid';
 const FavoriteAccounts = ({
   accounts,
   activeAccount,
-  localAccounts,
   loadActiveAccount,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
@@ -138,37 +138,55 @@ const FavoriteAccounts = ({
     init();
   };
 
+  const openAddContactPopup = () => {
+    setNewFavoriteAddress({
+      address: '',
+      label: '',
+      id: v4(),
+    });
+    setIsPopupOpen(true);
+  };
+
   return (
     <div
       data-testid={`${Screen.SETTINGS_FAVORITE_ACCOUNTS}-page`}
-      className="favorite-accounts-page">
-      <Card>
-        <div className="intro">
-          {chrome.i18n.getMessage('popup_html_favorite_accounts_intro')}
-        </div>
-      </Card>
-      <Card className="favorite-accounts-card">
-        <SelectAccountSectionComponent background="white" fullSize />
-        <div className="add-contact-link" onClick={() => setIsPopupOpen(true)}>
-          {chrome.i18n.getMessage('evm_add_contact_link')}
-        </div>
+      className="favorite-accounts-page contacts-settings-page">
+      <div className="intro">
+        {chrome.i18n.getMessage('popup_html_favorite_accounts_intro')}
+      </div>
 
-        {favoriteAccountsList && favoriteAccountsList.length > 0 && (
-          <div className="edit-contacts-panel">
-            <LabelComponent value="popup_html_accounts" />
+      <div className="account-select-panel">
+        <SelectAccountSectionComponent background="white" fullSize />
+      </div>
+
+      <div className="addresses-list">
+        <div className="contact-category">
+          <div className="category-header">
+            <LabelComponent
+              value="evm_contacts_section"
+              className="category-title"
+            />
+            <div className="add-contact-link" onClick={openAddContactPopup}>
+              <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE} className="add-icon" />
+              {chrome.i18n.getMessage('evm_addresses_add')}
+            </div>
+          </div>
+          <div className="addresses-list-items">
             {favoriteAccountsList.map((favorite) => (
               <EditContactComponent
                 key={`${favorite.address}-${favorite.id}`}
                 shortAddress={false}
                 favoriteAddress={favorite}
+                maxLabelLength={12}
                 onSaveClicked={(item) => handleEditFavoriteLabel(item)}
                 onDeleteClicked={(item) => handleDeleteFavorite(item)}
                 chainType={ChainType.HIVE}
               />
             ))}
           </div>
-        )}
-      </Card>
+        </div>
+      </div>
+
       {isPopupOpen && (
         <EditContactPopupComponent
           isNew={true}
