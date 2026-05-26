@@ -40,8 +40,23 @@ import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { isChainWhitelistedForOrigin } from 'src/background/evm/evm-provider-state.utils';
 import { DappRequestUtils } from 'src/utils/dapp-request.utils';
+import { areEvmChainIdsEqual } from 'src/utils/evm-provider-value.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+
+type ChainIdParam = { chainId?: unknown };
+
+const getRequestArgumentChainId = (request: EvmRequest): string | undefined => {
+  if (
+    request.method === EvmRequestMethod.WALLET_ADD_ETH_CHAIN ||
+    request.method === EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN
+  ) {
+    return undefined;
+  }
+
+  const chainId = (request.params?.[0] as ChainIdParam | undefined)?.chainId;
+  return typeof chainId === 'string' ? chainId : undefined;
+};
 
 export const initEvmRequestHandler = async (
   request: EvmRequest,
@@ -51,14 +66,57 @@ export const initEvmRequestHandler = async (
 ) => {
   Logger.info('Initializing EVM request logic');
 
+  const resolvedRequestChainId = resolveRequestChainId(request);
+  const currentProviderChainId = await EvmChainUtils.getLastEvmChainIdForOrigin(
+    dappInfo.origin,
+  );
+  const requestArgumentChainId = getRequestArgumentChainId(request);
+  const providerChainId = request.chainId ?? currentProviderChainId;
+
+  if (
+    request.chainId &&
+    currentProviderChainId &&
+    !areEvmChainIdsEqual(request.chainId, currentProviderChainId)
+  ) {
+    const providerError = getEvmProviderRpcFullError('mismatchedChainId');
+    await handleEvmError(
+      requestHandler,
+      tab!,
+      request,
+      providerError,
+      providerError.message,
+      [],
+      dappInfo.origin,
+      true,
+    );
+    return;
+  }
+
+  if (
+    requestArgumentChainId &&
+    providerChainId &&
+    !areEvmChainIdsEqual(requestArgumentChainId, providerChainId)
+  ) {
+    const providerError = getEvmProviderRpcFullError('mismatchedChainId');
+    await handleEvmError(
+      requestHandler,
+      tab!,
+      request,
+      providerError,
+      providerError.message,
+      [],
+      dappInfo.origin,
+      true,
+    );
+    return;
+  }
+
   const allChains = await ChainUtils.getDefaultChains();
   const setupChains = await ChainUtils.getAllSetupChainsForType<EvmChain>(
     ChainType.EVM,
   );
-  const resolvedRequestChainId = resolveRequestChainId(request);
   const chainId =
-    resolvedRequestChainId ??
-    (await EvmChainUtils.getLastEvmChainIdForOrigin(dappInfo.origin));
+    resolvedRequestChainId ?? currentProviderChainId;
   let chain: EvmChain | null = null;
   if (chainId) {
     const normalizedChainId = chainId.toLowerCase();

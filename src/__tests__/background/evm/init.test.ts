@@ -113,12 +113,109 @@ describe('initEvmRequestHandler', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     const { ChainUtils } = await import('@popup/multichain/utils/chain.utils');
+    const { EvmChainUtils } = await import('@popup/evm/utils/evm-chain.utils');
     (ChainUtils.getDefaultChains as jest.Mock).mockResolvedValue([]);
     (ChainUtils.getAllSetupChainsForType as jest.Mock).mockResolvedValue([]);
+    (EvmChainUtils.getLastEvmChainIdForOrigin as jest.Mock).mockResolvedValue(
+      undefined,
+    );
     handleEvmErrorMock.mockResolvedValue(undefined);
     evmRequestWithConfirmationMock.mockResolvedValue(undefined);
     evmRequestWithoutConfirmationMock.mockResolvedValue(undefined);
     isChainWhitelistedForOriginMock.mockResolvedValue(false);
+  });
+
+  it('rejects requests when the provided chainId differs from the current provider chainId', async () => {
+    const { EvmChainUtils } = await import('@popup/evm/utils/evm-chain.utils');
+    const { ChainUtils } = await import('@popup/multichain/utils/chain.utils');
+    (EvmChainUtils.getLastEvmChainIdForOrigin as jest.Mock).mockResolvedValue(
+      '0x1',
+    );
+
+    const request = {
+      request_id: 41,
+      method: EvmRequestMethod.GET_CHAIN,
+      params: [],
+      chainId: '0x539',
+    } as any;
+    const dappInfo = {
+      origin: 'https://example.app',
+      domain: 'example.app',
+      protocol: 'https:',
+      logo: '',
+    };
+    const requestHandler = {
+      accounts: [],
+      saveInLocalStorage: jest.fn(),
+      removeRequestByLocator: jest.fn(),
+    } as any;
+
+    await initEvmRequestHandler(request, 7, dappInfo, requestHandler);
+
+    expect(handleEvmErrorMock).toHaveBeenCalledWith(
+      requestHandler,
+      7,
+      request,
+      {
+        code: -32602,
+        message: 'chainId should be same as current chainId',
+      },
+      'chainId should be same as current chainId',
+      [],
+      'https://example.app',
+      true,
+    );
+    expect(ChainUtils.getDefaultChains).not.toHaveBeenCalled();
+    expect(evmRequestWithConfirmationMock).not.toHaveBeenCalled();
+    expect(evmRequestWithoutConfirmationMock).not.toHaveBeenCalled();
+  });
+
+  it('rejects transfer requests when params chainId differs from the current provider chainId', async () => {
+    const { ChainUtils } = await import('@popup/multichain/utils/chain.utils');
+
+    const request = {
+      request_id: 42,
+      method: EvmRequestMethod.SEND_TRANSACTION,
+      params: [
+        {
+          from: '0x0000000000000000000000000000000000000001',
+          to: '0x0000000000000000000000000000000000000002',
+          value: '0x1',
+          chainId: '0x1',
+        },
+      ],
+      chainId: '0xaa36a7',
+    } as any;
+    const dappInfo = {
+      origin: 'https://example.app',
+      domain: 'example.app',
+      protocol: 'https:',
+      logo: '',
+    };
+    const requestHandler = {
+      accounts: [],
+      saveInLocalStorage: jest.fn(),
+      removeRequestByLocator: jest.fn(),
+    } as any;
+
+    await initEvmRequestHandler(request, 7, dappInfo, requestHandler);
+
+    expect(handleEvmErrorMock).toHaveBeenCalledWith(
+      requestHandler,
+      7,
+      request,
+      {
+        code: -32602,
+        message: 'chainId should be same as current chainId',
+      },
+      'chainId should be same as current chainId',
+      [],
+      'https://example.app',
+      true,
+    );
+    expect(ChainUtils.getDefaultChains).not.toHaveBeenCalled();
+    expect(evmRequestWithConfirmationMock).not.toHaveBeenCalled();
+    expect(evmRequestWithoutConfirmationMock).not.toHaveBeenCalled();
   });
 
   it('rejects unsupported wallet_switchEthereumChain requests without opening the custom chain dialog', async () => {

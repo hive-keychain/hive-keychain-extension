@@ -111,6 +111,10 @@ export const ProviderRpcErrorList: { [key: string]: ProviderRpcErrorItem } = {
     code: -32602,
     message: 'Invalid method parameter(s).',
   },
+  mismatchedChainId: {
+    code: -32602,
+    message: 'chainId should be same as current chainId',
+  },
   unconfiguredEns: {
     code: -32602,
     message: 'The address uses an ENS but this one was not configured.',
