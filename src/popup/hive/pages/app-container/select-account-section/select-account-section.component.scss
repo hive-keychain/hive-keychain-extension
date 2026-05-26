@@ -208,10 +208,10 @@
 
   &.fullsize {
     margin: 0px 20px;
-    height: 68px;
+    height: 52px;
     // width: calc(100% - 40px);
     .select-account-select {
-      height: 68px;
+      height: 52px;
     }
     .selected-account-name,
     .account-name {
@@ -230,7 +230,7 @@
       }
     }
     .react-dropdown-select-dropdown {
-      top: 72px;
+      top: calc(100% + 4px);
       width: 100%;
     }
   }
