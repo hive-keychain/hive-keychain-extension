@@ -42,10 +42,14 @@ export const AddChain = (props: Props) => {
   const [isUpdatingChain, setIsUpdatingChain] = useState<boolean>();
   const [defaultChainToAdd, setDefaultChainToAdd] = useState<EvmChain>();
   const [chainListChainToAdd, setChainListChainToAdd] = useState<EvmChain>();
+  const [validatedDappRpcUrls, setValidatedDappRpcUrls] = useState<
+    string[] | undefined
+  >();
   const dappBlockExplorerUrl = addChainRequest.blockExplorerUrls?.find((url) =>
     EvmRpcUrlUtils.isValidHttpsRpcUrl(url),
   );
 
+  const dappRpcUrlsForDisplay = validatedDappRpcUrls ?? [];
   const initialChain: EvmChain = {
     name: chainName,
     type: ChainType.EVM,
@@ -53,7 +57,7 @@ export const AddChain = (props: Props) => {
     defaultTransactionType: EvmTransactionType.EIP_1559,
     logo: addChainRequest.iconUrls?.[0] || '',
     chainId: addChainRequest.chainId,
-    rpcs: addChainRequest.rpcUrls.map((url, index) => ({
+    rpcs: dappRpcUrlsForDisplay.map((url, index) => ({
       url,
       isDefault: index === 0,
     })),
@@ -72,11 +76,18 @@ export const AddChain = (props: Props) => {
     return Number(BigInt(addChainRequest.chainId));
   };
 
-  const getValidDappRpcUrls = async (): Promise<string[]> => {
-    return EvmRpcUtils.filterValidRpcsForChainId(
+  const getValidDappRpcUrls = async (
+    forceRefresh: boolean = false,
+  ): Promise<string[]> => {
+    if (!forceRefresh && validatedDappRpcUrls !== undefined) {
+      return validatedDappRpcUrls;
+    }
+    const rpcUrls = await EvmRpcUtils.filterValidRpcsForChainId(
       addChainRequest.rpcUrls,
       addChainRequest.chainId,
     );
+    setValidatedDappRpcUrls(rpcUrls);
+    return rpcUrls;
   };
 
   const assertHasValidRpcUrls = (rpcUrls: string[]): void => {
@@ -95,6 +106,21 @@ export const AddChain = (props: Props) => {
     return [...new Set(rpcUrls)];
   };
 
+  const getChainWithValidatedRpcs = async (
+    evmChain: EvmChain,
+    dappRpcUrls: string[],
+  ): Promise<EvmChain> => {
+    const validChainRpcUrls = await EvmRpcUtils.filterValidRpcsForChainId(
+      evmChain.rpcs.map((rpc) => rpc.url),
+      addChainRequest.chainId,
+    );
+    const rpcUrls = getUniqueRpcUrls([...validChainRpcUrls, ...dappRpcUrls]);
+    return {
+      ...evmChain,
+      rpcs: getRpcs(rpcUrls),
+    };
+  };
+
   const handleCancel = () => {
     props.afterCancel(request.request_id, data.tab);
   };
@@ -102,6 +128,8 @@ export const AddChain = (props: Props) => {
   const init = async () => {
     transactionHook.setLoading(true);
     transactionHook.setReady(false);
+    setValidatedDappRpcUrls(undefined);
+    const validDappRpcUrls = await getValidDappRpcUrls(true);
     const setupChains = await ChainUtils.getSetupChains();
     setDefaultChainToAdd(undefined);
     setChainListChainToAdd(undefined);
@@ -135,8 +163,11 @@ export const AddChain = (props: Props) => {
               addChainRequest.chainId,
             )
           : undefined;
-        setChainListChainToAdd(chainListEvmChain);
-        displayChain = chainListEvmChain;
+        const chainListChainForForm = chainListEvmChain
+          ? await getChainWithValidatedRpcs(chainListEvmChain, validDappRpcUrls)
+          : undefined;
+        setChainListChainToAdd(chainListChainForForm);
+        displayChain = chainListChainForForm;
       }
       setIsUpdatingChain(false);
     }
@@ -159,7 +190,9 @@ export const AddChain = (props: Props) => {
     });
     fields.otherFields.push({
       name: 'evm_chain_rpcs',
-      value: addChainRequest.rpcUrls.join(', '),
+      value: (displayChain?.rpcs ?? getRpcs(validDappRpcUrls))
+        .map((rpc) => rpc.url)
+        .join(', '),
       type: EvmInputDisplayType.LONG_TEXT,
     });
 
@@ -205,18 +238,21 @@ export const AddChain = (props: Props) => {
     let rpcUrls: string[];
     let chainToSave = chain;
     if (chainListChainToAdd) {
-      const validChainListRpcUrls = await EvmRpcUtils.filterValidRpcsForChainId(
-        chainListChainToAdd.rpcs.map((rpc) => rpc.url),
-        addChainRequest.chainId,
+      rpcUrls = await EvmRpcUtils.filterValidRpcsForChainId(
+        chain.rpcs.map((rpc) => rpc.url),
+        chain.chainId,
       );
-      const validDappRpcUrls = await getValidDappRpcUrls();
-      rpcUrls = getUniqueRpcUrls([
-        ...validChainListRpcUrls,
-        ...validDappRpcUrls,
-      ]);
       assertHasValidRpcUrls(rpcUrls);
       chainToSave = {
         ...chainListChainToAdd,
+        name: chain.name,
+        mainToken: chain.mainToken,
+        logo: chain.logo,
+        testnet: chain.testnet,
+        defaultTransactionType: chain.defaultTransactionType,
+        ...(chain.blockExplorer
+          ? { blockExplorer: chain.blockExplorer }
+          : {}),
         rpcs: getRpcs(rpcUrls),
       };
     } else {
