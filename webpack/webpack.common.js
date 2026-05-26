@@ -1,6 +1,7 @@
 const CopyPlugin = require('copy-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
+const webpack = require('webpack');
 
 const useFastDev = process.env.WEBPACK_FS_CACHE === 'true';
 
@@ -96,6 +97,11 @@ const config = {
   },
   resolve: {
     extensions: ['.js', '.jsx', '.tsx', '.ts'],
+    fallback: {
+      buffer: require.resolve('buffer/'),
+      crypto: false,
+      process: require.resolve('process/browser'),
+    },
     plugins: [new TsconfigPathsPlugin({ configFile: './tsconfig.json' })],
   },
   plugins: [
@@ -103,7 +109,13 @@ const config = {
       patterns: [{ from: 'public', to: '.' }],
     }),
 
-    new NodePolyfillPlugin(),
+    new NodePolyfillPlugin({
+      excludeAliases: ['Buffer', 'crypto'],
+    }),
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer/', 'Buffer'],
+      process: require.resolve('process/browser'),
+    }),
   ],
 };
 
