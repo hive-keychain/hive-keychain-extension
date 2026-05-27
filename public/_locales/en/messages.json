@@ -6107,6 +6107,14 @@
     "message": "Are you sure you want to delete this seed ?",
     "description": "Delete seed button"
   },
+  "evm_delete_all_ledger_accounts_confirmation_message": {
+    "message": "Are you sure you want to delete all Ledger accounts?",
+    "description": "Delete all Ledger accounts confirmation message"
+  },
+  "evm_delete_all_imported_accounts_confirmation_message": {
+    "message": "Are you sure you want to delete all imported accounts?",
+    "description": "Delete all imported accounts confirmation message"
+  },
   "evm_delete_account_confirmation_message": {
     "message": "Are you sure you want to delete this account ?",
     "description": "Delete EVM account button"

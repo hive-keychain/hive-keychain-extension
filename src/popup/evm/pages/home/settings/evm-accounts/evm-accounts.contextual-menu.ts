@@ -14,6 +14,19 @@ interface EvmAccountContextualMenuParams {
   isImportedSource?: boolean;
 }
 
+const getDeleteSeedConfirmationMessage = (
+  isLedgerSource?: boolean,
+  isImportedSource?: boolean,
+): string => {
+  if (isLedgerSource) {
+    return 'evm_delete_all_ledger_accounts_confirmation_message';
+  }
+  if (isImportedSource) {
+    return 'evm_delete_all_imported_accounts_confirmation_message';
+  }
+  return 'evm_delete_seed_confirmation_message';
+};
+
 export const EvmAccountsContextualMenu = ({
   activeSeedName,
   onEditClicked,
@@ -31,7 +44,10 @@ export const EvmAccountsContextualMenu = ({
     label: 'evm_delete_seed_button',
     onClick: onDeleteClicked,
     needsConfirmation: true,
-    confirmationMessage: 'evm_delete_seed_confirmation_message',
+    confirmationMessage: getDeleteSeedConfirmationMessage(
+      isLedgerSource,
+      isImportedSource,
+    ),
   };
 
   const seedItems = [

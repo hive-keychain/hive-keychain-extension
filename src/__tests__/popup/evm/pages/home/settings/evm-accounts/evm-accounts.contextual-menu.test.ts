@@ -25,6 +25,9 @@ describe('EvmAccountsContextualMenu', () => {
     expect(menu.sections[0].items.map((item) => item.label)).toEqual([
       'evm_delete_seed_button',
     ]);
+    expect(menu.sections[0].items[0].confirmationMessage).toBe(
+      'evm_delete_all_ledger_accounts_confirmation_message',
+    );
   });
 
   it('removes seed edit and copy actions for Imported sources', () => {
@@ -33,6 +36,19 @@ describe('EvmAccountsContextualMenu', () => {
     expect(menu.sections[0].items.map((item) => item.label)).toEqual([
       'evm_delete_seed_button',
     ]);
+    expect(menu.sections[0].items[0].confirmationMessage).toBe(
+      'evm_delete_all_imported_accounts_confirmation_message',
+    );
+  });
+
+  it('uses the seed delete confirmation message for seed sources', () => {
+    const menu = getMenu();
+
+    expect(
+      menu.sections[0].items.find(
+        (item) => item.label === 'evm_delete_seed_button',
+      )?.confirmationMessage,
+    ).toBe('evm_delete_seed_confirmation_message');
   });
 
   it('uses the EVM-sized Ledger icon for the Connect Ledger action', () => {
