@@ -7,6 +7,7 @@ interface EvmAccountContextualMenuParams {
   onDeleteClicked: Function;
   onCreateClicked: Function;
   onImportClicked: Function;
+  onConnectLedgerClicked: Function;
   onCopyClicked: Function;
   isLedgerSource?: boolean;
 }
@@ -17,22 +18,25 @@ export const EvmAccountsContextualMenu = ({
   onDeleteClicked,
   onCreateClicked,
   onImportClicked,
+  onConnectLedgerClicked,
   onCopyClicked,
   isLedgerSource,
 }: EvmAccountContextualMenuParams): ContextualMenu => {
+  const deleteSeedItem = {
+    icon: SVGIcons.EVM_ACCOUNT_DELETE,
+    label: 'evm_delete_seed_button',
+    onClick: onDeleteClicked,
+    needsConfirmation: true,
+    confirmationMessage: 'evm_delete_seed_confirmation_message',
+  };
+
   const seedItems = [
     {
       icon: SVGIcons.EVM_ACCOUNT_EDIT,
       label: 'evm_edit_seed_nickname',
       onClick: onEditClicked,
     },
-    {
-      icon: SVGIcons.EVM_ACCOUNT_DELETE,
-      label: 'evm_delete_seed_button',
-      onClick: onDeleteClicked,
-      needsConfirmation: true,
-      confirmationMessage: 'evm_delete_seed_confirmation_message',
-    },
+    deleteSeedItem,
   ];
 
   return {
@@ -41,11 +45,11 @@ export const EvmAccountsContextualMenu = ({
         title: activeSeedName,
         skipTranslation: true,
         items: isLedgerSource
-          ? seedItems
+          ? [deleteSeedItem]
           : [
               {
                 icon: SVGIcons.EVM_ACCOUNT_COPY,
-                label: 'html_popup_evm_create_wallet_copy_mnemonic',
+                label: 'evm_copy_seed',
                 onClick: onCopyClicked,
               },
               ...seedItems,
@@ -60,9 +64,14 @@ export const EvmAccountsContextualMenu = ({
             onClick: onCreateClicked,
           },
           {
-            icon: SVGIcons.EVM_ACCOUNT_ADD,
+            icon: SVGIcons.EVM_ACCOUNT_IMPORT,
             label: 'evm_import_seed',
             onClick: onImportClicked,
+          },
+          {
+            icon: SVGIcons.EVM_ACCOUNT_LEDGER,
+            label: 'evm_connect_ledger_wallet',
+            onClick: onConnectLedgerClicked,
           },
         ],
       },

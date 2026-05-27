@@ -8,9 +8,8 @@ import {
 } from '@popup/evm/interfaces/wallet.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
-import { KeychainError } from 'src/keychain-error';
-import { ErrorUtils } from 'src/popup/hive/utils/error.utils';
 import { ethers } from 'ethers';
+import { KeychainError } from 'src/keychain-error';
 
 const INITIAL_LEDGER_PATH = "m/44'/60'/0'/0";
 const DEFAULT_EMPTY_ACCOUNT_LIMIT = 2;
@@ -28,6 +27,75 @@ const getLedgerPath = (path: string) => path.replace(/^m\//, '');
 const buildDerivationPath = (accountIndex: number) =>
   `${INITIAL_LEDGER_PATH}/${accountIndex}`;
 
+const getLedgerStatusCode = (error: any) => {
+  const statusCode = Number(error?.statusCode);
+
+  if (!Number.isFinite(statusCode)) {
+    return undefined;
+  }
+
+  return `0x${statusCode.toString(16).toLowerCase()}`;
+};
+
+const getLedgerErrorMessage = (error: any) => {
+  if (typeof error?.message === 'string') {
+    return error.message;
+  }
+
+  if (typeof error?.toString === 'function') {
+    return error.toString();
+  }
+
+  return '';
+};
+
+const isLedgerConnectionError = (error: any, message: string) => {
+  const normalizedMessage = message.toLowerCase();
+
+  return (
+    error?.name === 'DisconnectedDeviceDuringOperation' ||
+    error?.name === 'TransportOpenUserCancelled' ||
+    error?.name === 'TransportInterfaceNotAvailable' ||
+    error?.id === 'NoDeviceSelected' ||
+    normalizedMessage.includes('no device selected') ||
+    normalizedMessage.includes('device disconnected')
+  );
+};
+
+const parseLedgerError = (error: any) => {
+  if (error instanceof KeychainError) {
+    return error;
+  }
+
+  const message = getLedgerErrorMessage(error);
+  switch (getLedgerStatusCode(error)) {
+    case '0x530c':
+    case '0x5515':
+    case '0x6982':
+      return new KeychainError('evm_ledger_unlock_device');
+    case '0x6d00':
+    case '0x6e00':
+      return new KeychainError('evm_ledger_open_ethereum_app');
+    case '0x5501':
+    case '0x6985':
+      return new KeychainError('error_ledger_denied_by_user', [], error);
+  }
+
+  if (error?.name === 'LockedDeviceError') {
+    return new KeychainError('evm_ledger_unlock_device');
+  }
+
+  if (error?.name === 'EthAppPleaseEnableContractData') {
+    return new KeychainError('evm_ledger_enable_blind_signing');
+  }
+
+  if (isLedgerConnectionError(error, message)) {
+    return new KeychainError('evm_ledger_connect_device');
+  }
+  console.log('error', error);
+  return new KeychainError('evm_ledger_unknown_error', [], error);
+};
+
 const init = async (fromTab: boolean): Promise<boolean> => {
   if (!(await EvmLedgerUtils.isLedgerSupported())) {
     throw new KeychainError('html_ledger_not_supported');
@@ -39,7 +107,7 @@ const init = async (fromTab: boolean): Promise<boolean> => {
     if (fromTab) {
       transport = await TransportWebUSB.request();
     } else {
-      throw new KeychainError('html_ledger_not_detected');
+      throw new KeychainError('evm_ledger_connect_device');
     }
   }
 
@@ -72,7 +140,7 @@ const getAddressFromDerivationPath = async (path: string) => {
     const address = await ledger.getAddress(getLedgerPath(path));
     return address.address;
   } catch (error) {
-    throw ErrorUtils.parseLedger(error);
+    throw EvmLedgerUtils.parseLedgerError(error);
   }
 };
 
@@ -132,7 +200,10 @@ const toStoredLedgerAccount = (
   };
 };
 
-const signTransaction = async (path: string, unsignedTransactionHex: string) => {
+const signTransaction = async (
+  path: string,
+  unsignedTransactionHex: string,
+) => {
   try {
     const ledger = await EvmLedgerUtils.getLedgerInstance();
     return await ledger.signTransaction(
@@ -141,7 +212,7 @@ const signTransaction = async (path: string, unsignedTransactionHex: string) => 
       null,
     );
   } catch (error) {
-    throw ErrorUtils.parseLedger(error);
+    throw EvmLedgerUtils.parseLedgerError(error);
   }
 };
 
@@ -153,7 +224,7 @@ const signPersonalMessage = async (path: string, messageHex: string) => {
       messageHex.replace(/^0x/, ''),
     );
   } catch (error) {
-    throw ErrorUtils.parseLedger(error);
+    throw EvmLedgerUtils.parseLedgerError(error);
   }
 };
 
@@ -170,7 +241,7 @@ const signEIP712HashedMessage = async (
       hashStructMessageHex.replace(/^0x/, ''),
     );
   } catch (error) {
-    throw ErrorUtils.parseLedger(error);
+    throw EvmLedgerUtils.parseLedgerError(error);
   }
 };
 
@@ -182,6 +253,7 @@ export const EvmLedgerUtils = {
   getAddressFromDerivationPath,
   discoverAccounts,
   toStoredLedgerAccount,
+  parseLedgerError,
   signTransaction,
   signPersonalMessage,
   signEIP712HashedMessage,

@@ -3732,7 +3732,7 @@
     "description": "automated tasks => need more RC to claim account"
   },
   "popup_html_validate_transaction_on_ledger": {
-    "message": "Confirm the transaction on your Ledger",
+    "message": "Please confirm the transaction on your Ledger",
     "description": "Message to remind user to accept transaction on his Ledger device"
   },
   "popup_html_add_account_with_ledger": {
@@ -3806,6 +3806,26 @@
   "ledger_source_name": {
     "message": "Ledger",
     "description": "Default EVM Ledger wallet source name"
+  },
+  "evm_ledger_connect_device": {
+    "message": "Please connect your Ledger",
+    "description": "EVM Ledger connection error"
+  },
+  "evm_ledger_unlock_device": {
+    "message": "Please unlock your Ledger",
+    "description": "EVM Ledger locked device error"
+  },
+  "evm_ledger_open_ethereum_app": {
+    "message": "Please open the Ethereum App on your Ledger",
+    "description": "EVM Ledger wrong or closed app error"
+  },
+  "evm_ledger_enable_blind_signing": {
+    "message": "Please enable blind signing in the Ethereum App settings on your Ledger",
+    "description": "EVM Ledger blind signing disabled error"
+  },
+  "evm_ledger_unknown_error": {
+    "message": "An unknown Ledger error occurred. Please reconnect your Ledger, make sure you are in the Ethereum App and try again.",
+    "description": "EVM Ledger unknown error"
   },
   "no_account_found_on_ledger_error": {
     "message": "No account found on your Ledger. Make sure your added at least one and try again.",
@@ -5256,7 +5276,7 @@
     "description": "Data field"
   },
   "evm_send_transaction_success": {
-    "message": "Succesfully sent transaction",
+    "message": "The transaction has been broadcasted successfully",
     "description": "SuccesFully sent evm transaction"
   },
   "evm_send_transaction_failed": {
@@ -6070,6 +6090,14 @@
   "evm_create_seed": {
     "message": "Create",
     "description": "Create seed"
+  },
+  "evm_connect_ledger_wallet": {
+    "message": "Connect Ledger",
+    "description": "Open Ledger EVM wallet connection flow"
+  },
+  "evm_copy_seed": {
+    "message": "Copy seed",
+    "description": "Copy EVM seed menu item"
   },
   "evm_seeds_and_accounts": {
     "message": "Seeds & Accounts",

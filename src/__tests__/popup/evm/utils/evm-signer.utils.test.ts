@@ -111,11 +111,13 @@ describe('evm signer utils', () => {
     const response = await EvmSignerUtils.sendTransaction(
       ledgerWallet,
       {
+        from: ledgerWallet.address,
         to: '0x0000000000000000000000000000000000000002',
         nonce: 0,
         gasLimit: 21000n,
         gasPrice: 1n,
         chainId: 1,
+        data: '',
         value: 0n,
       },
       provider,

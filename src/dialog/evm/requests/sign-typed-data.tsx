@@ -15,6 +15,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
+import { EvmLedgerDialogUtils } from 'src/dialog/evm/evm-ledger-dialog.utils';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
@@ -284,6 +285,11 @@ export const SignTypedData = (props: Props) => {
   const handleCancel = () => {
     afterCancel(request.request_id, data.tab);
   };
+  const loadingCaption =
+    EvmLedgerDialogUtils.getLedgerConfirmationCaptionForAddress(
+      accounts,
+      target,
+    );
 
   return (
     <EvmOperation
@@ -294,6 +300,7 @@ export const SignTypedData = (props: Props) => {
       title={chrome.i18n.getMessage('dialog_evm_sign_data_title')}
       fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}
       transactionHook={transactionHook}
+      loadingCaption={loadingCaption}
       afterCancel={handleCancel}></EvmOperation>
   );
 };

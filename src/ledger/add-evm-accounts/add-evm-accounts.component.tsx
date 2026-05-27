@@ -20,7 +20,6 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { KeychainError } from 'src/keychain-error';
 import { EvmChainUtils } from 'src/popup/evm/utils/evm-chain.utils';
 import { EvmFormatUtils } from 'src/popup/evm/utils/evm-format.utils';
-import { ErrorUtils } from 'src/popup/hive/utils/error.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import VaultUtils from 'src/utils/vault.utils';
@@ -68,7 +67,7 @@ const AddEvmAccountsComponent = () => {
     if (error instanceof KeychainError) {
       return error.message;
     }
-    return ErrorUtils.parseLedger(error).message;
+    return EvmLedgerUtils.parseLedgerError(error).message;
   };
 
   const filterFromExistingAccounts = async (

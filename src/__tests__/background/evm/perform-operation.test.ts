@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { KeychainError } from 'src/keychain-error';
 
 const tabsSendMessageMock = jest.fn();
 const runtimeSendMessageMock = jest.fn();
@@ -244,5 +245,42 @@ describe('performEvmOperation', () => {
       tab: 4,
       origin: 'https://example.com',
     });
+  });
+
+  it('passes KeychainError message keys to the dialog error handler', async () => {
+    sendEvmTransactionMock.mockRejectedValue(
+      new KeychainError('evm_ledger_unlock_device'),
+    );
+    const { handleEvmError } = await import(
+      '@background/evm/requests/logic/handle-evm-error.logic'
+    );
+    const { performEvmOperation } = await import(
+      '@background/evm/requests/operations/perform-operation'
+    );
+    const request = {
+      request_id: 7,
+      method: EvmRequestMethod.SEND_TRANSACTION,
+      params: [{ from: '0x' }],
+    };
+    const requestHandler = { removeRequestByLocator } as any;
+
+    await performEvmOperation(
+      requestHandler,
+      request as any,
+      8,
+      'example.com',
+      'https://example.com',
+      { gasFee: {} },
+    );
+
+    expect(handleEvmError).toHaveBeenCalledWith(
+      requestHandler,
+      8,
+      request,
+      expect.any(Object),
+      'evm_ledger_unlock_device',
+      [],
+      'https://example.com',
+    );
   });
 });

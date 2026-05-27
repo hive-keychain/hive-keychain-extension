@@ -97,6 +97,7 @@ const EvmAccounts = ({
           onDeleteClicked: handleDeleteSeedClick,
           onCreateClicked: handleCreateSeedClick,
           onImportClicked: handleImportSeedClick,
+          onConnectLedgerClicked: handleConnectLedgerWalletClick,
           onCopyClicked: handleCopySeedClick,
           isLedgerSource: isCurrentSourceLedger(),
         }),
@@ -233,6 +234,12 @@ const EvmAccounts = ({
   };
   const handleImportSeedClick = () => {
     navigateTo(EvmScreen.IMPORT_EVM_WALLET);
+  };
+  const handleConnectLedgerWalletClick = async () => {
+    const extensionId = (await chrome.management.getSelf()).id;
+    chrome.tabs.create({
+      url: `chrome-extension://${extensionId}/add-evm-accounts-from-ledger.html?chainId=${chain.chainId}`,
+    });
   };
 
   const handleDeleteSeedClick = async () => {

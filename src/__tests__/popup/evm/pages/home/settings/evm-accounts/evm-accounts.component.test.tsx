@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { customRender, screen, waitFor } from 'src/__tests__/utils-for-testing/setups/render';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import { copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
+import { EvmAccountSource } from 'src/popup/evm/interfaces/wallet.interface';
 import { EvmAccountsComponent } from 'src/popup/evm/pages/home/settings/evm-accounts/evm-accounts.component';
 import { ChainType } from 'src/popup/multichain/interfaces/chains.interface';
 
@@ -60,6 +61,7 @@ describe('EvmAccountsComponent', () => {
               seedId: 1,
               seedNickname: 'Main seed',
               nickname: 'Account 1',
+              source: EvmAccountSource.SEED,
               wallet,
             },
           ],
@@ -72,9 +74,7 @@ describe('EvmAccountsComponent', () => {
     ) as HTMLElement;
 
     await user.click(menuButton);
-    await user.click(
-      screen.getByText('html_popup_evm_create_wallet_copy_mnemonic'),
-    );
+    await user.click(screen.getByText('evm_copy_seed'));
 
     expect(
       screen.getByText('evm_copy_seed_phrase_password_caption'),
@@ -103,6 +103,53 @@ describe('EvmAccountsComponent', () => {
     });
     await waitFor(() => {
       expect(screen.queryByText('wrong_password')).not.toBeInTheDocument();
+    });
+  });
+
+  it('opens the EVM Ledger import flow from the seed menu', async () => {
+    const user = userEvent.setup();
+    chrome.management.getSelf = jest.fn().mockResolvedValue({
+      id: 'extension-id',
+    });
+    chrome.tabs.create = jest.fn();
+    const { container } = customRender(<EvmAccountsComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk,
+        chain: {
+          ...initialEmptyStateStore.chain,
+          type: ChainType.EVM,
+          chainId: '0x1',
+          name: 'Ethereum',
+        },
+        evm: {
+          ...initialEmptyStateStore.evm,
+          accounts: [
+            {
+              id: 0,
+              path: "m/44'/60'/0'/0/0",
+              seedId: 1,
+              seedNickname: 'Main seed',
+              nickname: 'Account 1',
+              source: EvmAccountSource.SEED,
+              wallet,
+            },
+          ],
+        },
+      },
+    });
+
+    const menuButton = container.querySelector(
+      '.contextual-menu > .svg-icon.clickable',
+    ) as HTMLElement;
+
+    await user.click(menuButton);
+    await user.click(screen.getByText('evm_connect_ledger_wallet'));
+
+    await waitFor(() => {
+      expect(chrome.tabs.create).toHaveBeenCalledWith({
+        url: 'chrome-extension://extension-id/add-evm-accounts-from-ledger.html?chainId=0x1',
+      });
     });
   });
 });

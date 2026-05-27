@@ -1,8 +1,10 @@
 import {
+  getEvmTransferErrorMessage,
   getEvmTransferMaxAmount,
   getEvmTransferValueHex,
 } from '@popup/evm/pages/home/transfer/evm-transfer.component';
 import Decimal from 'decimal.js';
+import { KeychainError } from 'src/keychain-error';
 
 describe('EvmTransferComponent helpers', () => {
   describe('getEvmTransferValueHex', () => {
@@ -39,6 +41,26 @@ describe('EvmTransferComponent helpers', () => {
       expect(getEvmTransferValueHex(maxAmount, 18)).toBe(
         '0xde0b6b3a763ffff',
       );
+    });
+  });
+
+  describe('getEvmTransferErrorMessage', () => {
+    it('keeps specific Keychain errors from Ledger signing', () => {
+      expect(
+        getEvmTransferErrorMessage(
+          new KeychainError('evm_ledger_open_ethereum_app'),
+        ),
+      ).toEqual({
+        key: 'evm_ledger_open_ethereum_app',
+        params: [],
+      });
+    });
+
+    it('uses the generic transfer failure for unknown errors', () => {
+      expect(getEvmTransferErrorMessage(new Error('boom'))).toEqual({
+        key: 'popup_html_transfer_failed',
+        params: [],
+      });
     });
   });
 });

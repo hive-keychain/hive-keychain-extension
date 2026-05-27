@@ -344,6 +344,110 @@ describe('evm wallet utils', () => {
     });
   });
 
+  it('adds later Ledger imports under the existing Ledger source', async () => {
+    await EvmWalletUtils.addLedgerAccounts(
+      [
+        {
+          id: 0,
+          address: '0xLedger000000000000000000000000000000000001',
+          path: "m/44'/60'/0'/0/0",
+        },
+      ],
+      mk,
+      'Ledger',
+    );
+
+    await EvmWalletUtils.addLedgerAccounts(
+      [
+        {
+          id: 0,
+          address: '0xLedger000000000000000000000000000000000001',
+          path: "m/44'/60'/0'/0/0",
+        },
+        {
+          id: 2,
+          address: '0xLedger000000000000000000000000000000000003',
+          path: "m/44'/60'/0'/0/2",
+          nickname: 'Ledger Three',
+        },
+      ],
+      mk,
+      'Ledger',
+    );
+
+    const storedSeeds = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
+    const ledgerSources = storedSeeds.filter(
+      (source) => source.type === EvmAccountSource.LEDGER,
+    );
+
+    expect(ledgerSources).toHaveLength(1);
+    expect(ledgerSources[0]).toMatchObject({
+      type: EvmAccountSource.LEDGER,
+      id: 3,
+      nickname: 'Ledger',
+      accounts: [
+        {
+          id: 0,
+          address: '0xLedger000000000000000000000000000000000001',
+          path: "m/44'/60'/0'/0/0",
+          order: 4,
+          nickname: '',
+        },
+        {
+          id: 2,
+          address: '0xLedger000000000000000000000000000000000003',
+          path: "m/44'/60'/0'/0/2",
+          order: 5,
+          nickname: 'Ledger Three',
+        },
+      ],
+    });
+  });
+
+  it('merges previously separate Ledger sources under the first Ledger source', async () => {
+    storedAccounts = {
+      list: [
+        {
+          type: EvmAccountSource.LEDGER,
+          id: 3,
+          nickname: 'Ledger',
+          accounts: [
+            {
+              id: 0,
+              address: '0xLedger000000000000000000000000000000000001',
+              path: "m/44'/60'/0'/0/0",
+              order: 0,
+              nickname: 'Ledger Account 1',
+            },
+          ],
+        },
+        {
+          type: EvmAccountSource.LEDGER,
+          id: 4,
+          nickname: 'Ledger',
+          accounts: [
+            {
+              id: 2,
+              address: '0xLedger000000000000000000000000000000000003',
+              path: "m/44'/60'/0'/0/2",
+              order: 1,
+              nickname: 'Ledger Account 3',
+            },
+          ],
+        },
+      ],
+    };
+
+    const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+
+    expect(accounts).toHaveLength(2);
+    expect(accounts.map((account) => account.seedId)).toEqual([3, 3]);
+    expect(accounts.map((account) => account.nickname)).toEqual([
+      'Ledger Account 1',
+      'Ledger Account 3',
+    ]);
+  });
+
   it('rejects deriving a software address from a ledger source', async () => {
     storedAccounts = {
       list: [

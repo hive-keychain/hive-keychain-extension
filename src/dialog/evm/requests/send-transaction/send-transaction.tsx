@@ -10,6 +10,7 @@ import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
+import { EvmLedgerDialogUtils } from 'src/dialog/evm/evm-ledger-dialog.utils';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useSendTransaction } from 'src/dialog/evm/requests/send-transaction/use-send-transaction';
 
@@ -57,6 +58,8 @@ export const SendTransaction = (props: Props) => {
   const [gasFeePanelReady, setGasFeePanelReady] = useState(false);
   const [gasRefreshKey, setGasRefreshKey] = useState<number>();
   const [gasFeeRefreshing, setGasFeeRefreshing] = useState(false);
+  const [isPostConfirmationLoading, setPostConfirmationLoading] =
+    useState(false);
   const wasActiveRef = useRef(isActive);
 
   useEffect(() => {
@@ -74,12 +77,17 @@ export const SendTransaction = (props: Props) => {
   }, [activationKey, isActive, needsGasFeePanel]);
 
   useEffect(() => {
+    setPostConfirmationLoading(false);
+  }, [request.request_id]);
+
+  useEffect(() => {
     const onRuntimeMessage = (msg: {
       command?: string;
       msg?: { request_id?: number };
     }) => {
       if (msg?.command !== DialogCommand.ANSWER_EVM_REQUEST) return;
       if (msg.msg?.request_id !== request.request_id) return;
+      setPostConfirmationLoading(false);
       transactionHook.setLoading(false);
     };
     chrome.runtime.onMessage.addListener(onRuntimeMessage);
@@ -97,6 +105,9 @@ export const SendTransaction = (props: Props) => {
   const insufficientBalancePending =
     BalanceChangeCardUtils.hasInsufficientBalance(balanceInfo);
   const showLoading = transactionHook.loading;
+  const loadingCaption = isPostConfirmationLoading
+    ? EvmLedgerDialogUtils.getLedgerConfirmationCaption(selectedAccount)
+    : undefined;
 
   const handleClickOnConfirm = () => {
     if (feeSelectionPending || quietRefreshPending) {
@@ -111,6 +122,9 @@ export const SendTransaction = (props: Props) => {
       return;
     }
 
+    if (!transactionHook.hasWarning()) {
+      setPostConfirmationLoading(true);
+    }
     transactionHook.handleOnConfirmClick();
   };
 
@@ -175,7 +189,7 @@ export const SendTransaction = (props: Props) => {
           hideConfirm={insufficientBalancePending}
         />
       )}
-      <LoadingComponent hide={!showLoading} />
+      <LoadingComponent hide={!showLoading} caption={loadingCaption} />
     </>
   );
 };

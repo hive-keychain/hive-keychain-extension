@@ -34,6 +34,7 @@ type Props = {
   transactionHook?: useTransactionHook;
   confirmDisabled?: boolean;
   hideConfirm?: boolean;
+  loadingCaption?: string;
   afterCancel: (requestId: number, tab: number) => void;
 };
 
@@ -52,6 +53,7 @@ export const EvmOperation = ({
   transactionHook,
   confirmDisabled,
   hideConfirm,
+  loadingCaption,
   afterCancel,
 }: Props) => {
   const [keep, setKeep] = useState(false);
@@ -180,7 +182,7 @@ export const EvmOperation = ({
           />
         )}
 
-        <LoadingComponent hide={!loading} />
+        <LoadingComponent hide={!loading} caption={loadingCaption} />
         {transactionHook?.message && (
           <MessageContainerComponent
             message={transactionHook.message}

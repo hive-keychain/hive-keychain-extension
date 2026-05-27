@@ -5,6 +5,7 @@ import { EvmLedgerUtils } from '@popup/evm/utils/evm-ledger.utils';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { HDNodeWallet } from 'ethers';
+import { KeychainError } from 'src/keychain-error';
 
 const mockLedgerApp = {
   getAppConfiguration: jest.fn(),
@@ -124,6 +125,35 @@ describe('evm ledger utils', () => {
       "44'/60'/0'/0/2",
       'abcdef',
       null,
+    );
+  });
+
+  it('maps disconnected Ledger errors to the EVM connect message', () => {
+    expect(
+      EvmLedgerUtils.parseLedgerError({
+        name: 'DisconnectedDeviceDuringOperation',
+      }),
+    ).toEqual(new KeychainError('evm_ledger_connect_device'));
+  });
+
+  it('maps locked Ledger errors to the EVM unlock message', () => {
+    expect(EvmLedgerUtils.parseLedgerError({ statusCode: 0x5515 })).toEqual(
+      new KeychainError('evm_ledger_unlock_device'),
+    );
+    expect(EvmLedgerUtils.parseLedgerError({ statusCode: 0x530c })).toEqual(
+      new KeychainError('evm_ledger_unlock_device'),
+    );
+    expect(
+      EvmLedgerUtils.parseLedgerError({ name: 'LockedDeviceError' }),
+    ).toEqual(new KeychainError('evm_ledger_unlock_device'));
+  });
+
+  it('maps wrong app Ledger errors to the EVM Ethereum app message', () => {
+    expect(EvmLedgerUtils.parseLedgerError({ statusCode: 0x6d00 })).toEqual(
+      new KeychainError('evm_ledger_open_ethereum_app'),
+    );
+    expect(EvmLedgerUtils.parseLedgerError({ statusCode: 0x6e00 })).toEqual(
+      new KeychainError('evm_ledger_open_ethereum_app'),
     );
   });
 

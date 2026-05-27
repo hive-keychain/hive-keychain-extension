@@ -1,3 +1,4 @@
+import { PrivateKeyType } from '@interfaces/keys.interface';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import * as loadingActions from 'src/popup/multichain/actions/loading.actions';
@@ -25,6 +26,20 @@ describe('loading.actions tests:/n', () => {
       );
       expect(fakeStore.getState().loading).toEqual({
         loadingOperations: itemMarkedDone,
+      });
+    });
+
+    test('Must show the Ledger confirmation caption for Ledger operations', () => {
+      const fakeStore = getFakeStore(initialEmptyStateStore);
+      fakeStore.dispatch<any>(
+        loadingActions.addToLoadingList(
+          'ledger item',
+          PrivateKeyType.LEDGER,
+        ),
+      );
+      expect(fakeStore.getState().loading).toEqual({
+        caption: 'popup_html_validate_transaction_on_ledger',
+        loadingOperations: [{ done: false, name: 'ledger item' }],
       });
     });
   });

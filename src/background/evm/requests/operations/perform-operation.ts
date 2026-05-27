@@ -28,6 +28,7 @@ import {
   DIALOG_FEEDBACK_DISPLAY_MS,
   delayMs,
 } from '@reference-data/dialog-feedback.constants';
+import { KeychainError } from 'src/keychain-error';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -139,6 +140,10 @@ export const performEvmOperation = async (
   } catch (err) {
     const error = err as any;
     const etherJSError = getErrorFromEtherJS(error.code);
+    const errorMessage =
+      error instanceof KeychainError ? error.message : etherJSError.message;
+    const errorMessageParams =
+      error instanceof KeychainError ? error.messageParams ?? [] : [];
     Logger.log('etherJSError', etherJSError);
     Logger.log('error', error);
     await handleEvmError(
@@ -146,8 +151,8 @@ export const performEvmOperation = async (
       tab,
       request,
       etherJSError,
-      etherJSError.message,
-      [],
+      errorMessage,
+      errorMessageParams,
       origin,
     );
   }

@@ -25,6 +25,8 @@ export enum SVGIcons {
   EVM_ACCOUNT_COPY = 'evm-account/copy-circle',
   EVM_ACCOUNT_DELETE = 'evm-account/delete-circle',
   EVM_ACCOUNT_EDIT = 'evm-account/edit-circle',
+  EVM_ACCOUNT_IMPORT = 'evm-account/import-circle',
+  EVM_ACCOUNT_LEDGER = 'evm-account/ledger-circle',
 
   EVM_CHAIN_TESTNET = 'evm-chains/testnet',
 

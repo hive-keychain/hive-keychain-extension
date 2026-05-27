@@ -68,15 +68,49 @@ const hasValidAccountOrders = (savedSources: StoredEvmAccountSource[]) => {
   );
 };
 
+const mergeLedgerSources = (
+  savedSources: StoredEvmAccountSource[],
+): StoredEvmAccountSource[] => {
+  let mergedLedgerSource: StoredEvmLedgerWalletSource | undefined;
+  const ledgerAddresses = new Set<string>();
+
+  return savedSources.reduce<StoredEvmAccountSource[]>((sources, source) => {
+    if (!isLedgerSource(source)) {
+      sources.push(source);
+      return sources;
+    }
+
+    if (!mergedLedgerSource) {
+      mergedLedgerSource = {
+        ...source,
+        accounts: [],
+      };
+      sources.push(mergedLedgerSource);
+    }
+
+    for (const account of source.accounts) {
+      const address = account.address.toLowerCase();
+      if (ledgerAddresses.has(address)) continue;
+
+      ledgerAddresses.add(address);
+      mergedLedgerSource.accounts.push(account);
+    }
+
+    return sources;
+  }, []);
+};
+
 const normalizeSeedAccountOrders = (
   savedSources: StoredEvmAccountSource[],
 ): StoredEvmAccountSource[] => {
-  if (hasValidAccountOrders(savedSources)) {
-    return savedSources;
+  const mergedSources = mergeLedgerSources(savedSources);
+
+  if (hasValidAccountOrders(mergedSources)) {
+    return mergedSources;
   }
 
   let order = 0;
-  return savedSources.map((source): StoredEvmAccountSource => {
+  return mergedSources.map((source): StoredEvmAccountSource => {
     if (isLedgerSource(source)) {
       return {
         ...source,
@@ -301,23 +335,38 @@ const addLedgerAccounts = async (
   const previousAccounts = normalizeSeedAccountOrders(
     await getAccountsFromLocalStorage(mk),
   );
-  const id = getMaxSourceId(previousAccounts) + 1;
+  const existingLedgerSource = previousAccounts.find(isLedgerSource);
   let nextOrder = getMaxAccountOrder(previousAccounts) + 1;
-  const newAccounts: StoredEvmLedgerWalletSource = {
-    type: EvmAccountSource.LEDGER,
-    nickname,
-    id,
-    accounts: accounts.map((account) => ({
+  const existingAddresses = new Set(
+    existingLedgerSource?.accounts.map((account) =>
+      account.address.toLowerCase(),
+    ) ?? [],
+  );
+  const newStoredAccounts = accounts
+    .filter((account) => !existingAddresses.has(account.address.toLowerCase()))
+    .map((account) => ({
       id: account.id,
       address: account.address,
       path: account.path,
       order: nextOrder++,
       nickname: account.nickname ?? '',
-    })),
+    }));
+
+  if (existingLedgerSource) {
+    existingLedgerSource.accounts.push(...newStoredAccounts);
+    await encryptAccountsInLocalStorage(mk, previousAccounts);
+    return newStoredAccounts;
+  }
+
+  const newLedgerSource: StoredEvmLedgerWalletSource = {
+    type: EvmAccountSource.LEDGER,
+    nickname,
+    id: getMaxSourceId(previousAccounts) + 1,
+    accounts: newStoredAccounts,
   };
-  const allAccounts = [...previousAccounts, newAccounts];
+  const allAccounts = [...previousAccounts, newLedgerSource];
   await encryptAccountsInLocalStorage(mk, allAccounts);
-  return newAccounts.accounts;
+  return newLedgerSource.accounts;
 };
 
 const updateSeedNickname = async (

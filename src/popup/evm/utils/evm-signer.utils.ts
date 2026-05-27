@@ -84,6 +84,27 @@ const getTypedDataMessage = (message: string | object) => {
   return typeof message === 'string' ? JSON.parse(message) : message;
 };
 
+const getLedgerTransactionData = (data: TransactionRequest['data']) => {
+  if (data == null || data === '') {
+    return '0x';
+  }
+
+  return ethers.hexlify(data);
+};
+
+const getLedgerSerializableTransaction = (
+  transactionRequest: TransactionRequest,
+) => {
+  const serializableTransaction = { ...transactionRequest };
+  const data = serializableTransaction.data;
+  delete serializableTransaction.from;
+
+  return {
+    ...serializableTransaction,
+    data: getLedgerTransactionData(data),
+  } as ethers.TransactionLike<string>;
+};
+
 const signTypedMessage = async (
   wallet: EvmWallet,
   message: string | object,
@@ -139,7 +160,7 @@ const sendTransaction = async (
   }
 
   const unsignedTransaction = ethers.Transaction.from(
-    transactionRequest as ethers.TransactionLike<string>,
+    getLedgerSerializableTransaction(transactionRequest),
   );
   const signature = await EvmLedgerUtils.signTransaction(
     wallet.path,
