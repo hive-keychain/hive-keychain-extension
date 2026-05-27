@@ -1,4 +1,5 @@
 import { Screen } from '@interfaces/screen.interface';
+import { EvmWalletSetupTabUtils } from '@popup/evm/utils/evm-wallet-setup-tab.utils';
 import { resetChain, setChain } from '@popup/multichain/actions/chain.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -40,7 +41,9 @@ const AddWalletMain = ({
   };
 
   const handleCreateEvmWallet = (): void => {
-    navigateTo(Screen.CREATE_EVM_WALLET);
+    EvmWalletSetupTabUtils.startEvmCreateWalletFromToolbarPopup(() => {
+      navigateTo(Screen.CREATE_EVM_WALLET);
+    });
   };
   const handleImportEvmWallet = (): void => {
     navigateTo(Screen.IMPORT_EVM_WALLET);

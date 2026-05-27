@@ -4,6 +4,7 @@ import { ChainComponentWithBoundary } from '@popup/multichain/chain.component';
 import { Chain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState, store } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
 import { resolvePopupInitialChain } from '@popup/multichain/utils/popup-initial-chain.utils';
 import { getProviderChainBootstrapResult } from '@popup/multichain/utils/provider-chain-bootstrap.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -71,9 +72,7 @@ const MultichainContainer = ({
   }, [handleKeyPress]);
 
   const handleDetachWindow = useCallback(() => {
-    chrome.tabs.create({
-      url: `detached_window.html`,
-    });
+    DetachedExtensionTabUtils.openDetachedExtensionTab();
   }, []);
 
   const executeRegisteredShortcut = useCallback(

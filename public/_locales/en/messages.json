@@ -4771,6 +4771,18 @@
     "message": "You need to accept the conditions before creating an account.",
     "description": "checkbox content on create account page"
   },
+  "html_popup_evm_create_wallet_success_title": {
+    "message": "Wallet created",
+    "description": "Title shown after successfully creating an EVM wallet in a detached tab"
+  },
+  "html_popup_evm_create_wallet_success_message": {
+    "message": "Your wallet has been successfully created and added to Keychain.",
+    "description": "Message shown after successfully creating an EVM wallet in a detached tab"
+  },
+  "html_popup_evm_creating_wallet": {
+    "message": "Creating wallet...",
+    "description": "Loading caption while creating an EVM wallet"
+  },
   "multisig_bot_two_fa_code": {
     "message": "@$1 One Time Password:",
     "description": "Two fa code label"

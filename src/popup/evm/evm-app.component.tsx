@@ -3,6 +3,7 @@ import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmRouterComponent } from '@popup/evm/evm-router.component';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
+import { EvmWalletSetupTabUtils } from '@popup/evm/utils/evm-wallet-setup-tab.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import {
   navigateTo,
@@ -37,22 +38,39 @@ const EvmApp = ({
   const [isAppReady, setIsAppReady] = useState(false);
   const transactionResolutionRefreshInFlight = useRef(false);
   const transactionResolutionRefreshQueued = useRef(false);
+  const initialNavigationApplied = useRef(false);
 
   useEffect(() => {
-    if (!isAppReady) {
+    if (!isAppReady || initialNavigationApplied.current) {
       return;
     }
 
-    if (!accounts.length) {
-      navigateToWithParams(Screen.EVM_ADD_WALLET_MAIN, { resetOnBack: true });
-    } else {
-      navigateTo(Screen.HOME_PAGE, true);
+    initialNavigationApplied.current = true;
+
+    const navigationTarget =
+      EvmWalletSetupTabUtils.resolveEvmAppNavigationOnReady(
+        window.location.hash,
+        accounts.length,
+      );
+
+    if (navigationTarget === 'create_wallet') {
+      EvmWalletSetupTabUtils.clearEvmWalletSetupHash();
+      navigateTo(Screen.CREATE_EVM_WALLET);
+      return;
     }
-  }, [accounts.length, isAppReady]);
+
+    if (navigationTarget === 'add_wallet_main') {
+      navigateToWithParams(Screen.EVM_ADD_WALLET_MAIN, { resetOnBack: true });
+      return;
+    }
+
+    navigateTo(Screen.HOME_PAGE, true);
+  }, [accounts.length, isAppReady, navigateTo, navigateToWithParams]);
 
   useEffect(() => {
     setDisplaySplashscreen(true);
     setIsAppReady(false);
+    initialNavigationApplied.current = false;
     init();
   }, [chain]);
 

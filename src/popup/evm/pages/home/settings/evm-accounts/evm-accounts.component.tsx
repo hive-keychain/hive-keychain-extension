@@ -14,6 +14,7 @@ import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
+import { EvmWalletSetupTabUtils } from '@popup/evm/utils/evm-wallet-setup-tab.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -217,7 +218,9 @@ const EvmAccounts = ({
   };
 
   const handleCreateSeedClick = () => {
-    navigateTo(EvmScreen.CREATE_EVM_WALLET);
+    EvmWalletSetupTabUtils.startEvmCreateWalletFromToolbarPopup(() => {
+      navigateTo(EvmScreen.CREATE_EVM_WALLET);
+    });
   };
   const handleImportSeedClick = () => {
     navigateTo(EvmScreen.IMPORT_EVM_WALLET);

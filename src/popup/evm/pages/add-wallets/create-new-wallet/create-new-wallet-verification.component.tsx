@@ -4,10 +4,18 @@ import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions'
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
+import { EvmWalletSetupTabUtils } from '@popup/evm/utils/evm-wallet-setup-tab.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
-import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import {
+  resetTitleContainerProperties,
+  setTitleContainerProperties,
+} from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { HDNodeWallet } from 'ethers';
@@ -15,14 +23,18 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import ButtonComponent from 'src/common-ui/button/button.component';
+import { ResultMessagePageComponent } from 'src/common-ui/result-message-page/result-message-page.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { MathUtils } from 'src/utils/math.utils';
 
+const EVM_CREATE_WALLET_LOADING_OPERATION = 'html_popup_evm_creating_wallet';
+
 const CreateNewWalletVerification = ({
   navigateTo,
   setTitleContainerProperties,
+  resetTitleContainerProperties,
   setErrorMessage,
   loadEvmActiveAccount,
   wallet,
@@ -30,6 +42,8 @@ const CreateNewWalletVerification = ({
   chain,
   setEvmAccounts,
   accounts,
+  addToLoadingList,
+  removeFromLoadingList,
 }: PropsType) => {
   const [hiddenWordIndexes, setHiddenWordIndexes] = useState<number[]>([]);
   const [currentWord, setCurrentWord] = useState('');
@@ -45,6 +59,9 @@ const CreateNewWalletVerification = ({
   const [nickname, setNickname] = useState<string>(() =>
     EvmAccountUtils.getDefaultSeedName(accounts),
   );
+  const [isWalletCreatedSuccessfully, setIsWalletCreatedSuccessfully] =
+    useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -81,27 +98,45 @@ const CreateNewWalletVerification = ({
       return;
     }
 
-    // const derivedWallet = wallet.deriveChild(0);
-    const account: EvmAccount = {
-      id: wallet.index,
-      path: wallet.path!,
-      wallet: wallet,
-      seedId: 0,
-    };
-    await EvmWalletUtils.addSeedAndAccounts(wallet, [account], mk, nickname);
+    setIsSubmitting(true);
+    addToLoadingList(EVM_CREATE_WALLET_LOADING_OPERATION, undefined, undefined, true);
+    try {
+      const account: EvmAccount = {
+        id: wallet.index,
+        path: wallet.path!,
+        wallet: wallet,
+        seedId: 0,
+      };
+      await EvmWalletUtils.addSeedAndAccounts(wallet, [account], mk, nickname);
 
-    if (!chain.isCustom) {
-      await EvmLightNodeUtils.registerAddress(
-        chain.chainId,
-        wallet.address,
-        true,
-      );
+      if (!chain.isCustom) {
+        await EvmLightNodeUtils.registerAddress(
+          chain.chainId,
+          wallet.address,
+          true,
+        );
+      }
+
+      const rebuiltAccounts =
+        await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+      setEvmAccounts(rebuiltAccounts);
+      await loadEvmActiveAccount(chain, rebuiltAccounts[0].wallet);
+
+      if (EvmWalletSetupTabUtils.shouldShowDetachedTabCreationSuccess()) {
+        resetTitleContainerProperties();
+        setIsWalletCreatedSuccessfully(true);
+        return;
+      }
+
+      navigateTo(Screen.HOME_PAGE, true);
+    } finally {
+      removeFromLoadingList(EVM_CREATE_WALLET_LOADING_OPERATION);
+      setIsSubmitting(false);
     }
+  };
 
-    const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
-    setEvmAccounts(accounts);
-    navigateTo(Screen.HOME_PAGE, true);
-    await loadEvmActiveAccount(chain, accounts[0].wallet);
+  const handleCloseDetachedTabAfterSuccess = (): void => {
+    EvmWalletSetupTabUtils.closeDetachedExtensionTab();
   };
 
   const verifyWord = () => {
@@ -122,6 +157,21 @@ const CreateNewWalletVerification = ({
       );
     }
   };
+
+  if (isWalletCreatedSuccessfully) {
+    return (
+      <div
+        data-testid={`${Screen.CREATE_EVM_WALLET_VERIFICATION}-success-page`}
+        className="create-new-wallet-verification-page">
+        <ResultMessagePageComponent
+          type="success"
+          title="html_popup_evm_create_wallet_success_title"
+          message="html_popup_evm_create_wallet_success_message"
+          onClose={handleCloseDetachedTabAfterSuccess}
+        />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -201,6 +251,7 @@ const CreateNewWalletVerification = ({
             dataTestId="submit-button"
             label={'popup_html_submit'}
             onClick={submitForm}
+            disabled={isSubmitting}
           />
         )}
       </FormContainer>
@@ -221,9 +272,12 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   navigateTo,
   setTitleContainerProperties,
+  resetTitleContainerProperties,
   setErrorMessage,
   setEvmAccounts,
   loadEvmActiveAccount,
+  addToLoadingList,
+  removeFromLoadingList,
 });
 type PropsType = ConnectedProps<typeof connector>;
 

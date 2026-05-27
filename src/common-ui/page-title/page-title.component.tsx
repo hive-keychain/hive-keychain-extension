@@ -7,6 +7,7 @@ import {
 import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
@@ -65,9 +66,7 @@ const PageTitle = ({
   };
 
   const handleDetachWindow = () => {
-    chrome.tabs.create({
-      url: `detached_window.html`,
-    });
+    DetachedExtensionTabUtils.openDetachedExtensionTab();
   };
 
   return (
