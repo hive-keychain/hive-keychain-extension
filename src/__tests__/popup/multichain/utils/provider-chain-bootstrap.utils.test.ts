@@ -146,4 +146,46 @@ describe('provider chain bootstrap', () => {
     await expect(getProviderChainWithTimeout(1000)).resolves.toBeNull();
     expect(removeListenerMock).toHaveBeenCalledTimes(1);
   });
+
+  it('skips provider bootstrap when the active tab has no stored origin chain', async () => {
+    const { getProviderBootstrapForPopup, CommunicationUtils } =
+      await loadTestContext();
+
+    await expect(getProviderBootstrapForPopup(null)).resolves.toEqual({
+      resolvedChain: null,
+      rawChainId: null,
+    });
+    expect(CommunicationUtils.runtimeSendMessage).not.toHaveBeenCalled();
+  });
+
+  it('awaits provider bootstrap when the active tab has a stored origin chain', async () => {
+    const {
+      getProviderBootstrapForPopup,
+      CommunicationUtils,
+      ChainUtils,
+    } = await loadTestContext();
+    const addListenerMock = jest.spyOn(chrome.runtime.onMessage, 'addListener');
+    const expectedChain = {
+      chainId: '0x1',
+      name: 'Ethereum',
+      type: 'EVM',
+      logo: '',
+      rpcs: [],
+    };
+    ChainUtils.getChain.mockResolvedValue(expectedChain);
+
+    const bootstrapPromise = getProviderBootstrapForPopup('0x1', 1000);
+    const listener = addListenerMock.mock.calls[0][0];
+
+    await listener({
+      command: BackgroundCommand.SEND_BACK_CHAIN_FROM_PROVIDER,
+      value: { chainId: '0x1' },
+    });
+
+    await expect(bootstrapPromise).resolves.toEqual({
+      resolvedChain: expectedChain,
+      rawChainId: '0x1',
+    });
+    expect(CommunicationUtils.runtimeSendMessage).toHaveBeenCalledTimes(1);
+  });
 });

@@ -6,7 +6,7 @@ import { RootState, store } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
 import { resolvePopupInitialChain } from '@popup/multichain/utils/popup-initial-chain.utils';
-import { getProviderChainBootstrapResult } from '@popup/multichain/utils/provider-chain-bootstrap.utils';
+import { getProviderBootstrapForPopup } from '@popup/multichain/utils/provider-chain-bootstrap.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import hotkeys from 'hotkeys-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -18,6 +18,7 @@ import {
   ensureEcosystemDappsCached,
   findDappByTabOrigin,
   getActiveTabOrigin,
+  getCachedEcosystemDapps,
 } from 'src/utils/ecosystem-dapps-cache.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import {
@@ -156,8 +157,9 @@ const MultichainContainer = ({
           LocalStorageKeyEnum.SHORTCUTS,
         ],
       );
-      const ecosystemPromise = ensureEcosystemDappsCached();
-      const providerBootstrapPromise = getProviderChainBootstrapResult();
+      const tabOriginPromise = getActiveTabOrigin();
+      const ecosystemPromise = getCachedEcosystemDapps();
+      void ensureEcosystemDappsCached();
 
       const res = await storagePromise;
 
@@ -172,20 +174,22 @@ const MultichainContainer = ({
       registerShortcuts(shortcutsRef.current);
       setHasHydratedSettings(true);
 
-      const storedChain = res.ACTIVE_CHAIN
-        ? await ChainUtils.getChain<Chain>(res.ACTIVE_CHAIN)
-        : null;
-
-      if (!isMounted) return;
-
-      const [categories, providerBootstrap] = await Promise.all([
+      const [storedChain, tabOrigin, categories] = await Promise.all([
+        res.ACTIVE_CHAIN
+          ? ChainUtils.getChain<Chain>(res.ACTIVE_CHAIN)
+          : Promise.resolve(null),
+        tabOriginPromise,
         ecosystemPromise,
-        providerBootstrapPromise,
       ]);
 
       if (!isMounted) return;
 
-      const tabOrigin = await getActiveTabOrigin();
+      const storedOriginChainId = tabOrigin
+        ? await EvmChainUtils.getStoredChainIdForOrigin(tabOrigin)
+        : null;
+      const providerBootstrap = await getProviderBootstrapForPopup(
+        storedOriginChainId,
+      );
 
       if (!isMounted) return;
 
@@ -194,7 +198,7 @@ const MultichainContainer = ({
         ? ((await ChainUtils.getChain<Chain>(ecosystemDapp.chainId)) ?? null)
         : null;
       const hasRequestedProviderChain = !!(
-        tabOrigin && (await EvmChainUtils.getStoredChainIdForOrigin(tabOrigin))
+        tabOrigin && storedOriginChainId
       );
       const initialChain = resolvePopupInitialChain({
         providerChain: providerBootstrap.resolvedChain,

@@ -38,6 +38,14 @@ const readCachePayload =
   };
 
 /**
+ * Returns the locally cached ecosystem dapps without triggering a network refresh.
+ */
+export const getCachedEcosystemDapps = async (): Promise<DAppCategory[]> => {
+  const existing = await readCachePayload();
+  return existing?.categories ?? [];
+};
+
+/**
  * Ensures ecosystem dapps are cached in local storage with a 1h TTL.
  * On network failure, keeps existing cache if any.
  */

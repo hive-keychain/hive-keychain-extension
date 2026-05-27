@@ -94,4 +94,20 @@ export const getProviderChainWithTimeout = async (
   return result.resolvedChain;
 };
 
+const EMPTY_PROVIDER_CHAIN_BOOTSTRAP_RESULT: ProviderChainBootstrapResult = {
+  resolvedChain: null,
+  rawChainId: null,
+};
+
+export const getProviderBootstrapForPopup = async (
+  storedOriginChainId: string | null,
+  timeoutMs = PROVIDER_CHAIN_BOOTSTRAP_TIMEOUT_MS,
+): Promise<ProviderChainBootstrapResult> => {
+  if (!storedOriginChainId) {
+    return EMPTY_PROVIDER_CHAIN_BOOTSTRAP_RESULT;
+  }
+
+  return getProviderChainBootstrapResult(timeoutMs);
+};
+
 export { PROVIDER_CHAIN_BOOTSTRAP_TIMEOUT_MS };
