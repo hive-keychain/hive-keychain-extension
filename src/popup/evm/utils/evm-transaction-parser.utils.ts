@@ -529,7 +529,10 @@ const getAddressWarning = async (
     });
   }
 
-  const spoofingAddress = await EvmAddressesUtils.isPotentialSpoofing(address);
+  const spoofingAddress = await EvmAddressesUtils.isPotentialSpoofing(
+    address,
+    localAccounts,
+  );
 
   if (!!spoofingAddress) {
     warnings.push({

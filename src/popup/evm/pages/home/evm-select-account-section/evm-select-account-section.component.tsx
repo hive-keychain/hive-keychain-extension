@@ -82,7 +82,7 @@ const SelectAccountSection = ({
 
   useEffect(() => {
     void init();
-  }, [accounts, activeAccount]);
+  }, [accounts, activeAccount.address, activeAccount.wallet?.address, chain?.chainId]);
 
   const buildPlaceholderAddressDetail = (
     account: EvmAccount,
@@ -133,6 +133,7 @@ const SelectAccountSection = ({
               account.wallet.address,
               chain!.chainId,
               false,
+              { localAccounts: accounts },
             ),
           },
         })),

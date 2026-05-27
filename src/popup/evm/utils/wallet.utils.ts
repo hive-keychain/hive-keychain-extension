@@ -751,10 +751,23 @@ const deleteAddress = async (
   return savedSeeds;
 };
 
+let rebuildAccountsCache:
+  | {
+      mk: string;
+      accounts: Promise<EvmAccount[]>;
+    }
+  | undefined;
+
+const invalidateRebuildAccountsCache = () => {
+  rebuildAccountsCache = undefined;
+};
+
 const encryptAccountsInLocalStorage = async (
   mk: string,
   evmAccountObject: StoredEvmAccountSource[],
 ) => {
+  invalidateRebuildAccountsCache();
+
   const encryptedAccounts = await EncryptUtils.encryptJson(
     { list: evmAccountObject },
     mk,
@@ -783,7 +796,7 @@ const getAccountsFromLocalStorage = async (mk: string) => {
   }
 };
 
-const rebuildAccountsFromLocalStorage = async (mk: string) => {
+const rebuildAccountsFromLocalStorageUncached = async (mk: string) => {
   const seeds = normalizeSeedAccountOrders(
     await getAccountsFromLocalStorage(mk),
   );
@@ -832,6 +845,24 @@ const rebuildAccountsFromLocalStorage = async (mk: string) => {
     .flat()
     .sort((first, second) => first.order - second.order)
     .map(({ account }) => account);
+};
+
+const rebuildAccountsFromLocalStorage = async (mk: string) => {
+  if (rebuildAccountsCache?.mk === mk) {
+    return rebuildAccountsCache.accounts;
+  }
+
+  const accountsPromise = rebuildAccountsFromLocalStorageUncached(mk);
+  rebuildAccountsCache = { mk, accounts: accountsPromise };
+
+  try {
+    return await accountsPromise;
+  } catch (error) {
+    if (rebuildAccountsCache?.accounts === accountsPromise) {
+      invalidateRebuildAccountsCache();
+    }
+    throw error;
+  }
 };
 
 const reorderAccounts = async (
@@ -1223,6 +1254,7 @@ export const EvmWalletUtils = {
   addImportedWallet,
   getAccountsFromLocalStorage,
   rebuildAccountsFromLocalStorage,
+  invalidateRebuildAccountsCache,
   isWalletAddress,
   getConnectedWallets,
   setConnectedWallets,

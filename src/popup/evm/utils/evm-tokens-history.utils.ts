@@ -5,7 +5,9 @@ import {
   EvmUserHistoryItemDetailType,
   EvmUserHistoryItemType,
 } from '@popup/evm/interfaces/evm-tokens-history.interface';
+import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import {
   EvmLightNodeUtils,
@@ -171,12 +173,14 @@ const getFlowSymbol = (flow: HistoryFlow, chain: EvmChain) => {
 const getHistoryAddressDisplayLabel = async (
   address: string | null | undefined,
   chain: EvmChain,
+  localAccounts?: EvmAccount[],
 ): Promise<string> => {
   if (!address) return '';
   const details = await EvmAddressesUtils.getAddressDetails(
     address,
     chain.chainId,
     true,
+    localAccounts ? { localAccounts } : undefined,
   );
   const resolvedLabel = details.label ?? details.formattedAddress;
   const fullAddress = details.fullAddress ?? address;
@@ -968,6 +972,7 @@ const parseItem = async (
   item: LightNodeHistoryItem,
   chain: EvmChain,
   walletAddress: string,
+  localAccounts?: EvmAccount[],
 ): Promise<EvmUserHistoryItem> => {
   const opName = toKnownOpName(item.opName);
   const walletAddressLower = walletAddress.toLowerCase();
@@ -980,6 +985,7 @@ const parseItem = async (
   const counterpartyLabel = await getHistoryAddressDisplayLabel(
     isOutgoing ? item.toAddress : item.fromAddress,
     chain,
+    localAccounts,
   );
 
   const base = makeCommonItem(item);
@@ -1008,7 +1014,11 @@ const parseItem = async (
     pushAddressDetails(details, item.fromAddress, item.toAddress);
 
     const createdLabel = item.toAddress
-      ? await getHistoryAddressDisplayLabel(item.toAddress, chain)
+      ? await getHistoryAddressDisplayLabel(
+          item.toAddress,
+          chain,
+          localAccounts,
+        )
       : '';
 
     return {
@@ -1097,9 +1107,14 @@ const fetchHistory2 = async (
     params.toString(),
   );
 
+  const localAccounts = await EvmWalletUtils.getAllLocalAccounts();
+
   const parsedItems = await Promise.all(
     response.items.map(async (item) =>
-      applyStatusLabel(await parseItem(item, chain, walletAddress), item),
+      applyStatusLabel(
+        await parseItem(item, chain, walletAddress, localAccounts),
+        item,
+      ),
     ),
   );
   const dedupSet = new Set(previousHistory.events.map(getEventKey));

@@ -1,4 +1,7 @@
-import { EvmAccountOrPublic } from '@popup/evm/interfaces/wallet.interface';
+import {
+  EvmAccount,
+  EvmAccountOrPublic,
+} from '@popup/evm/interfaces/wallet.interface';
 import {
   EvmAddressDetail,
   EvmAddressesUtils,
@@ -44,9 +47,17 @@ export const EvmAddressComponent = ({
     };
 
     async function initComponent() {
+      const walletLocalAccounts = localAccounts.filter(
+        (account): account is EvmAccount =>
+          'wallet' in account && !!account.wallet,
+      );
       const details = await EvmAddressesUtils.getAddressDetails(
         address,
         chainId,
+        true,
+        walletLocalAccounts.length > 0
+          ? { localAccounts: walletLocalAccounts }
+          : undefined,
       );
       const localDetails = EvmAddressesUtils.getFallbackAddressDetails(
         address,

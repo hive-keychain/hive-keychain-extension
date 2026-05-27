@@ -43,6 +43,10 @@ export interface EvmAddressDetail {
   avatar?: string;
 }
 
+export type GetAddressDetailsOptions = {
+  localAccounts?: EvmAccount[];
+};
+
 const EVM_WALLET_AUTOCOMPLETE_CATEGORY = 'evm_wallets';
 const LOCAL_ACCOUNTS_AUTOCOMPLETE_CATEGORY = 'local_accounts';
 const addressDetailsCache = new Map<string, Promise<EvmAddressDetail>>();
@@ -200,6 +204,16 @@ const getAddressDetailsCacheKey = (
 ): string =>
   `${chainId}:${address.toLowerCase()}:${fullName ? 'full' : 'short'}`;
 
+const resolveLocalAccounts = async (
+  localAccounts?: EvmAccount[],
+): Promise<EvmAccount[]> => {
+  if (localAccounts) {
+    return localAccounts;
+  }
+
+  return EvmWalletUtils.getAllLocalAccounts();
+};
+
 const getFallbackAddressDetails = (
   address: string,
   localAccounts: EvmAccountOrPublic[] = [],
@@ -231,15 +245,16 @@ const getLocalAddressDetails = async (
   address: string,
   chainId: string,
   fullName: boolean = true,
+  localAccounts?: EvmAccount[],
 ) => {
   if (!ethers.isAddress(address)) return;
 
   const details = getFallbackAddressDetails(address, [], fullName);
-  const [localLabel, localAccounts] = await Promise.all([
+  const [localLabel, resolvedLocalAccounts] = await Promise.all([
     EvmAddressesUtils.getAddressLabel(address, chainId),
-    EvmWalletUtils.getAllLocalAccounts(),
+    resolveLocalAccounts(localAccounts),
   ]);
-  const localAccount = localAccounts.find((account) => {
+  const localAccount = resolvedLocalAccounts.find((account) => {
     return account.wallet.address.toLowerCase() === address.toLowerCase();
   });
 
@@ -265,6 +280,7 @@ const loadAddressDetails = async (
   address: string,
   chainId: string,
   fullName: boolean = true,
+  localAccounts?: EvmAccount[],
 ): Promise<EvmAddressDetail> => {
   const details = getFallbackAddressDetails(address, [], fullName);
   const isAddress = ethers.isAddress(address);
@@ -341,8 +357,8 @@ const loadAddressDetails = async (
   }
 
   // check local accounts
-  const localAccounts = await EvmWalletUtils.getAllLocalAccounts();
-  const localAccount = localAccounts.find((account) => {
+  const resolvedLocalAccounts = await resolveLocalAccounts(localAccounts);
+  const localAccount = resolvedLocalAccounts.find((account) => {
     return account.wallet.address.toLowerCase() === address.toLowerCase();
   });
   if (localAccount) {
@@ -362,8 +378,15 @@ const getAddressDetails = async (
   address: string,
   chainId: string,
   fullName: boolean = true,
+  options?: GetAddressDetailsOptions,
 ): Promise<EvmAddressDetail> => {
-  const localDetails = await getLocalAddressDetails(address, chainId, fullName);
+  const localAccounts = options?.localAccounts;
+  const localDetails = await getLocalAddressDetails(
+    address,
+    chainId,
+    fullName,
+    localAccounts,
+  );
   if (localDetails) {
     return localDetails;
   }
@@ -372,12 +395,15 @@ const getAddressDetails = async (
   let cachedDetails = addressDetailsCache.get(cacheKey);
 
   if (!cachedDetails) {
-    cachedDetails = loadAddressDetails(address, chainId, fullName).catch(
-      (error) => {
-        addressDetailsCache.delete(cacheKey);
-        throw error;
-      },
-    );
+    cachedDetails = loadAddressDetails(
+      address,
+      chainId,
+      fullName,
+      localAccounts,
+    ).catch((error) => {
+      addressDetailsCache.delete(cacheKey);
+      throw error;
+    });
     addressDetailsCache.set(cacheKey, cachedDetails);
   }
 
@@ -624,7 +650,10 @@ const getAddressLabel = async (address: string, chainId: string) => {
   return whitelistedItem?.label;
 };
 
-const isPotentialSpoofing = async (address: string) => {
+const isPotentialSpoofing = async (
+  address: string,
+  localAccounts?: EvmAccountOrPublic[],
+) => {
   const whitelistedAddresses = await getAllWhitelistedAddresses();
   const myAddressStart = address.substring(0, 6).toLowerCase();
   const myAddressEnd = address.substring(address.length - 4).toLowerCase();
@@ -645,7 +674,11 @@ const isPotentialSpoofing = async (address: string) => {
       };
   }
 
-  const localAddresses = await EvmWalletUtils.getAllLocalAddresses();
+  const localAddresses = localAccounts
+    ? localAccounts.map((account) =>
+        EvmAccountUtils.getEvmAccountAddress(account).toLowerCase(),
+      )
+    : await EvmWalletUtils.getAllLocalAddresses();
 
   for (const localAddress of localAddresses) {
     const addressStart = localAddress.substring(0, 4).toLowerCase();

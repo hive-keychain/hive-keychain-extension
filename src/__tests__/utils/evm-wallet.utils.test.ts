@@ -141,7 +141,30 @@ describe('evm wallet utils', () => {
   });
 
   afterEach(() => {
+    EvmWalletUtils.invalidateRebuildAccountsCache();
     jest.restoreAllMocks();
+  });
+
+  it('reuses rebuild cache until encrypted accounts storage changes', async () => {
+    const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+    const cachedAccounts =
+      await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+
+    expect(cachedAccounts).toBe(accounts);
+
+    const visibleAccounts = accounts.filter((account) => !account.hide);
+    const reorderedAccounts = [
+      visibleAccounts[1],
+      visibleAccounts[0],
+      ...accounts.filter((account) => account.hide),
+    ];
+
+    const updatedAccounts = await EvmWalletUtils.reorderAccounts(
+      reorderedAccounts,
+      mk,
+    );
+
+    expect(updatedAccounts).not.toBe(accounts);
   });
 
   it('persists reordered visible accounts while keeping hidden accounts in place', async () => {
