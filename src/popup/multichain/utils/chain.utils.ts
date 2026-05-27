@@ -84,6 +84,54 @@ const getAllSetupChainsForType = async <T>(type: ChainType): Promise<T[]> => {
   return chains.filter((c: Chain) => c.type === type) as unknown as T[];
 };
 
+const buildChainByIdMap = (chains: Chain[]): Map<string, Chain> => {
+  const chainById = new Map<string, Chain>();
+  for (const chain of chains) {
+    chainById.set(chain.chainId.toLowerCase(), chain);
+  }
+  return chainById;
+};
+
+const getChainsInSetupOrder = (
+  chainIds: Chain['chainId'][],
+  chainById: Map<string, Chain>,
+): Chain[] => {
+  const chains: Chain[] = [];
+  const seen = new Set<string>();
+
+  for (const chainId of chainIds) {
+    if (typeof chainId !== 'string') continue;
+    const normalized = chainId.toLowerCase();
+    if (seen.has(normalized)) continue;
+    const chain = chainById.get(normalized);
+    if (!chain) continue;
+    seen.add(normalized);
+    chains.push(chain);
+  }
+
+  return chains;
+};
+
+const reorderChainIds = (
+  chainIds: Chain['chainId'][],
+  startIndex: number,
+  endIndex: number,
+): Chain['chainId'][] => {
+  const list = Array.from(chainIds);
+  const [removed] = list.splice(startIndex, 1);
+  list.splice(endIndex, 0, removed);
+  return list;
+};
+
+const reorderSetupChains = async (
+  orderedChainIds: Chain['chainId'][],
+): Promise<void> => {
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.SETUP_CHAINS,
+    orderedChainIds,
+  );
+};
+
 const getSetupChains = async (forceBaseChains?: boolean): Promise<Chain[]> => {
   let chainIds: Chain['chainId'][] =
     await LocalStorageUtils.getValueFromLocalStorage(
@@ -91,10 +139,11 @@ const getSetupChains = async (forceBaseChains?: boolean): Promise<Chain[]> => {
     );
   if (!chainIds) chainIds = [];
 
-  const chains = [
+  const chainById = buildChainByIdMap([
     ...(await getDefaultChains()),
     ...(await getCustomChains()),
-  ].filter((c: Chain) => chainIds.includes(c.chainId));
+  ]);
+  const chains = getChainsInSetupOrder(chainIds, chainById);
 
   if (forceBaseChains) {
     if (!chains.some((c: Chain) => c.type === ChainType.HIVE)) {
@@ -672,6 +721,8 @@ const initChains = async (): Promise<Chain[]> => {
 export const ChainUtils = {
   getDefaultChains,
   getSetupChains,
+  reorderChainIds,
+  reorderSetupChains,
   addChainToSetupChains,
   removeChainFromSetupChains,
   getNonSetupChains,

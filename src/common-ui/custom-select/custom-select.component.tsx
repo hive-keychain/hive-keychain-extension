@@ -1,5 +1,11 @@
 import FlatList from 'flatlist-react';
 import React, { useEffect, useRef, useState } from 'react';
+import {
+  DragDropContext,
+  Draggable,
+  DropResult,
+  Droppable,
+} from 'react-beautiful-dnd';
 import type { SelectMethods } from 'react-dropdown-select';
 import Select, { SelectRenderer } from 'react-dropdown-select';
 import { CustomSelectItemComponent } from 'src/common-ui/custom-select/custom-select-item.component';
@@ -48,6 +54,9 @@ export interface CustomSelectProps<T> {
   selectHandleDataTestId?: string;
   showOverlay?: boolean;
   ariaLabel?: string;
+  enableDragAndDrop?: boolean;
+  onOptionsReorder?: (options: T[]) => void;
+  droppableId?: string;
 }
 
 export function ComplexeCustomSelect<T extends OptionItem>(
@@ -177,11 +186,107 @@ export function ComplexeCustomSelect<T extends OptionItem>(
     );
   };
 
-  const customDropdownRenderer = ({
-    props,
-    state,
-    methods,
-  }: SelectRenderer<T>) => {
+  const isDragAndDropEnabled =
+    !!itemProps.enableDragAndDrop &&
+    !!itemProps.onOptionsReorder &&
+    !(itemProps.filterable && query.length > 0) &&
+    !process.env.IS_FIREFOX;
+
+  const getOptionDraggableId = (option: T) => {
+    return option.key ?? `option-${option.label}`;
+  };
+
+  const renderSelectOption = (
+    option: T,
+    index: number,
+    optionsLength: number,
+    closeDropdown: () => void,
+    dragHandle?: React.ComponentProps<
+      typeof CustomSelectItemComponent
+    >['dragHandle'],
+  ) => (
+    <CustomSelectItemComponent
+      key={getOptionDraggableId(option)}
+      isLast={index === optionsLength - 1}
+      item={option}
+      isSelected={option.value === itemProps.selectedItem.value}
+      handleItemClicked={() => {
+        itemProps.setSelectedItem(option);
+      }}
+      closeDropdown={closeDropdown}
+      onDelete={itemProps.onDelete}
+      canDelete={
+        option.canDelete && itemProps.selectedItem.value !== option.value
+      }
+      generateImageIfNull={itemProps.generateImageIfNull}
+      enableDragAndDrop={isDragAndDropEnabled}
+      dragHandle={dragHandle}
+    />
+  );
+
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination || !itemProps.onOptionsReorder) return;
+    if (result.destination.index === result.source.index) return;
+
+    const list = Array.from(filteredOptions);
+    const [removed] = list.splice(result.source.index, 1);
+    list.splice(result.destination.index, 0, removed);
+    itemProps.onOptionsReorder(list);
+  };
+
+  const renderOptionsList = (closeDropdown: () => void) => {
+    if (!isDragAndDropEnabled) {
+      return (
+        <FlatList
+          list={filteredOptions}
+          renderItem={(option: T, index: number) =>
+            renderSelectOption(
+              option,
+              index,
+              filteredOptions.length,
+              closeDropdown,
+            )
+          }
+        />
+      );
+    }
+
+    const droppableId = itemProps.droppableId ?? 'custom-select-options';
+
+    return (
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId={droppableId} type="custom-select-option">
+          {(provided) => (
+            <div {...provided.droppableProps} ref={provided.innerRef}>
+              {filteredOptions.map((option, index) => (
+                <Draggable
+                  key={getOptionDraggableId(option)}
+                  draggableId={getOptionDraggableId(option)}
+                  index={index}>
+                  {(draggableProvided) => (
+                    <div
+                      ref={draggableProvided.innerRef}
+                      {...draggableProvided.draggableProps}>
+                      {renderSelectOption(
+                        option,
+                        index,
+                        filteredOptions.length,
+                        closeDropdown,
+                        draggableProvided.dragHandleProps,
+                      )}
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
+    );
+  };
+
+  const customDropdownRenderer = ({ methods }: SelectRenderer<T>) => {
     methodsRef.current = methods;
     setTimeout(() => {
       ref.current?.focus();
@@ -206,27 +311,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
           !!itemProps.customFilter &&
           itemProps.customFilter}
 
-        <FlatList
-          list={filteredOptions}
-          renderItem={(option: T, index: number) => (
-            <CustomSelectItemComponent
-              key={option.key ?? `option-${option.label}`}
-              isLast={props.options.length === index}
-              item={option}
-              isSelected={option.value === itemProps.selectedItem.value}
-              handleItemClicked={() => {
-                itemProps.setSelectedItem(option);
-              }}
-              closeDropdown={() => methods.dropDown('close')}
-              onDelete={itemProps.onDelete}
-              canDelete={
-                option.canDelete &&
-                itemProps.selectedItem.value !== option.value
-              }
-              generateImageIfNull={itemProps.generateImageIfNull}
-            />
-          )}
-        />
+        {renderOptionsList(() => methods.dropDown('close'))}
         {itemProps.footer && itemProps.footer}
       </div>
     );
