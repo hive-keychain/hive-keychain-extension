@@ -6275,6 +6275,14 @@
     "message": "Add",
     "description": "Add link on the addresses settings page"
   },
+  "evm_addresses_no_whitelisted_account_yet": {
+    "message": "No whitelisted account yet.",
+    "description": "Empty state on the contacts section of the addresses settings page"
+  },
+  "evm_addresses_no_whitelisted_smart_contract_yet": {
+    "message": "No whitelisted smart contract yet.",
+    "description": "Empty state on the smart contracts section of the addresses settings page"
+  },
   "evm_contact_new_contact": {
     "message": "New contact",
     "description": "Evm new contact"

@@ -161,6 +161,11 @@ const Contacts = ({ chain, setTitleContainerProperties }: PropsType) => {
     </div>
   );
 
+  const getEmptyStateMessageKey = (type: EvmAddressType): string =>
+    type === EvmAddressType.WALLET_ADDRESS
+      ? 'evm_addresses_no_whitelisted_account_yet'
+      : 'evm_addresses_no_whitelisted_smart_contract_yet';
+
   const renderAddressCategory = (
     titleKey: string,
     type: EvmAddressType,
@@ -172,17 +177,29 @@ const Contacts = ({ chain, setTitleContainerProperties }: PropsType) => {
         {renderAddLink(type)}
       </div>
       <div className="addresses-list-items">
-        {addresses.map((savedAddress, index) => (
-          <EditContactComponent
-            key={`${savedAddress.address}-${index}`}
-            shortAddress={true}
-            favoriteAddress={savedAddress}
-            maxLabelLength={12}
-            onSaveClicked={(item) => updateWhitelistedAddresses(item, type)}
-            onDeleteClicked={(item) => deleteWhitelistedAddresses(item, type)}
-            chainType={ChainType.EVM}
-          />
-        ))}
+        {addresses.length === 0 ? (
+          <div className="edit-contact-item empty-address-item">
+            <div className="contact-label-panel">
+              <div className="contact-label">
+                {chrome.i18n.getMessage(getEmptyStateMessageKey(type))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          addresses.map((savedAddress, index) => (
+            <EditContactComponent
+              key={`${savedAddress.address}-${index}`}
+              shortAddress={true}
+              favoriteAddress={savedAddress}
+              maxLabelLength={12}
+              onSaveClicked={(item) => updateWhitelistedAddresses(item, type)}
+              onDeleteClicked={(item) =>
+                deleteWhitelistedAddresses(item, type)
+              }
+              chainType={ChainType.EVM}
+            />
+          ))
+        )}
       </div>
     </div>
   );

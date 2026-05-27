@@ -15,6 +15,7 @@
     flex-direction: column;
     row-gap: 24px;
     scroll-behavior: smooth;
+    margin-top: 20px;
   }
 
   .contact-category {
@@ -30,6 +31,7 @@
 
       .category-title {
         @include poppins400(14px);
+        font-weight: 600;
         color: var(--main-font-color);
       }
 
@@ -61,7 +63,7 @@
 
       .edit-contact-item {
         @include small-card-no-padding;
-
+        margin: 0;
         .contact-label-panel {
           width: 100%;
           padding: 0 8px;

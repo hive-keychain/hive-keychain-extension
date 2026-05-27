@@ -1,6 +1,22 @@
 @import 'src/common-ui/contacts/contacts-settings-page/contacts-settings-page.scss';
 
 .evm-contacts-page {
+  .category-title {
+    @include poppins500(14px);
+  }
+
+  .empty-address-item {
+    .contact-label-panel {
+      align-items: center;
+      min-height: 48px;
+    }
+
+    .contact-label {
+      @include poppins400(14px);
+      padding: 8px 0 8px 40px;
+    }
+  }
+
   .chain-select-panel {
     margin: 0;
 
