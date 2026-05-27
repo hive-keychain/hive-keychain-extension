@@ -4655,6 +4655,18 @@
     "message": "12-words seed phrase, separated by whitespace",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
+  "popup_html_import_wallet_from_key": {
+    "message": "Import key",
+    "description": "EVM > Add wallet main page > Import private key"
+  },
+  "html_popup_evm_setup_import_key_text": {
+    "message": "Enter the private key of the EVM account you want to import.",
+    "description": "EVM > Add wallet main page > Import private key"
+  },
+  "evm_invalid_private_key": {
+    "message": "This private key is invalid.",
+    "description": "EVM > Add wallet main page > Import private key"
+  },
   "html_popup_evm_invalid_mnemonic_length": {
     "message": "Your seedphrase should be 12 words long.",
     "description": "EVM > Add wallet main page > Import seed phrase"
@@ -6055,6 +6067,10 @@
     "message": "Are you sure you want to delete this seed ?",
     "description": "Delete seed button"
   },
+  "evm_delete_account_confirmation_message": {
+    "message": "Are you sure you want to delete this account ?",
+    "description": "Delete EVM account button"
+  },
   "evm_add_wallet_seed_button": {
     "message": "Add seed",
     "description": "Add seed button"
@@ -6087,6 +6103,14 @@
     "message": "Import",
     "description": "Import existing seed"
   },
+  "evm_import_key": {
+    "message": "Import key",
+    "description": "Import existing private key"
+  },
+  "evm_imported_seed": {
+    "message": "Imported",
+    "description": "Imported private key source name"
+  },
   "evm_create_seed": {
     "message": "Create",
     "description": "Create seed"
@@ -6110,6 +6134,10 @@
   "evm_seeds_already_in_keychain": {
     "message": "This seed was already added in Keychain",
     "description": "Seed already added in Keychain"
+  },
+  "evm_private_key_already_in_keychain": {
+    "message": "This EVM account was already added in Keychain",
+    "description": "Private key already added in Keychain"
   },
   "evm_transfer": {
     "message": "Transfer",

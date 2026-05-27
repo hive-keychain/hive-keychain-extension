@@ -1,9 +1,10 @@
 import { EvmAddressType } from '@popup/evm/interfaces/evm-addresses.interface';
-import { HDNodeWallet } from 'ethers';
+import { HDNodeWallet, Wallet } from 'ethers';
 
 export enum EvmAccountSource {
   SEED = 'seed',
   LEDGER = 'ledger',
+  IMPORTED = 'imported',
 }
 
 export type EvmLedgerWallet = {
@@ -13,7 +14,9 @@ export type EvmLedgerWallet = {
   source: EvmAccountSource.LEDGER;
 };
 
-export type EvmWallet = HDNodeWallet | EvmLedgerWallet;
+export type EvmImportedWallet = Wallet;
+
+export type EvmWallet = HDNodeWallet | EvmLedgerWallet | EvmImportedWallet;
 
 export type WalletWithBalance = {
   wallet: HDNodeWallet;
@@ -47,7 +50,22 @@ export type StoredEvmLedgerWalletSource = {
   accounts: StoredEvmLedgerAccount[];
 };
 
-export type StoredEvmAccountSource = StoredSeed | StoredEvmLedgerWalletSource;
+export type StoredEvmImportedAccount = StoredEvmWalletAddress & {
+  address: string;
+  privateKey: string;
+};
+
+export type StoredEvmImportedWalletSource = {
+  type: EvmAccountSource.IMPORTED;
+  id: number;
+  nickname?: string;
+  accounts: StoredEvmImportedAccount[];
+};
+
+export type StoredEvmAccountSource =
+  | StoredSeed
+  | StoredEvmLedgerWalletSource
+  | StoredEvmImportedWalletSource;
 
 export type EvmAccount = StoredEvmWalletAddress & {
   wallet: EvmWallet;

@@ -32,6 +32,7 @@ import {
 } from 'src/common-ui/custom-select/custom-select.component';
 import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
+import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import {
   COPY_GENERIC_MESSAGE_KEY,
   copyTextWithToast,
@@ -50,6 +51,7 @@ const EvmAccounts = ({
   const [seedsOptions, setSeedsOptions] = useState<OptionItem[]>();
 
   const [editParams, setEditParams] = useState<EditAccountParams>();
+  const [accountToDelete, setAccountToDelete] = useState<EvmAccount>();
 
   const [menu, setMenu] = useState<ContextualMenu>();
 
@@ -97,9 +99,11 @@ const EvmAccounts = ({
           onDeleteClicked: handleDeleteSeedClick,
           onCreateClicked: handleCreateSeedClick,
           onImportClicked: handleImportSeedClick,
+          onImportKeyClicked: handleImportKeyClick,
           onConnectLedgerClicked: handleConnectLedgerWalletClick,
           onCopyClicked: handleCopySeedClick,
           isLedgerSource: isCurrentSourceLedger(),
+          isImportedSource: isCurrentSourceImported(),
         }),
       );
   };
@@ -109,15 +113,34 @@ const EvmAccounts = ({
     return currentSeed?.source === EvmAccountSource.LEDGER;
   };
 
+  const isCurrentSourceImported = () => {
+    const currentSeed = getCurrentSeed();
+    return currentSeed?.source === EvmAccountSource.IMPORTED;
+  };
+
+  const isCurrentSourceSeed = () => {
+    const currentSeed = getCurrentSeed();
+    return currentSeed?.source === EvmAccountSource.SEED;
+  };
+
+  const getSeedOptionLabel = (account: EvmAccount) => {
+    if (account.source === EvmAccountSource.IMPORTED) {
+      return chrome.i18n.getMessage('evm_imported_seed');
+    }
+
+    return (
+      account.seedNickname ||
+      `${chrome.i18n.getMessage('common_seed')} #${account.seedId}`
+    );
+  };
+
   const buildSeedOptions = (accounts: EvmAccount[]) => {
     const options: OptionItem[] = [];
     for (const account of accounts) {
       if (!options.some((option) => option.value === account.seedId)) {
         options.push({
           value: account.seedId,
-          label:
-            account.seedNickname ||
-            `${chrome.i18n.getMessage('common_seed')} #${account.seedId}`,
+          label: getSeedOptionLabel(account),
         });
       }
     }
@@ -235,6 +258,9 @@ const EvmAccounts = ({
   const handleImportSeedClick = () => {
     navigateTo(EvmScreen.IMPORT_EVM_WALLET);
   };
+  const handleImportKeyClick = () => {
+    navigateTo(EvmScreen.IMPORT_EVM_WALLET_FROM_KEY);
+  };
   const handleConnectLedgerWalletClick = async () => {
     const extensionId = (await chrome.management.getSelf()).id;
     chrome.tabs.create({
@@ -273,6 +299,55 @@ const EvmAccounts = ({
     if (nextActiveAccount) {
       await loadEvmActiveAccount(chain, nextActiveAccount.wallet);
     }
+  };
+
+  const handleDeleteAddress = (account: EvmAccountOrPublic) => {
+    if ('wallet' in account) {
+      setAccountToDelete(account);
+    }
+  };
+
+  const handleConfirmDeleteAddress = async () => {
+    if (!accountToDelete) return;
+
+    const selectedSeedIndex =
+      seedsOptions?.findIndex(
+        (option) => option.value === accountToDelete.seedId,
+      ) ?? 0;
+
+    await EvmWalletUtils.deleteAddress(
+      accountToDelete.seedId,
+      accountToDelete.id,
+      localAccounts,
+      mk,
+    );
+    const updatedAccounts =
+      await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+    const updatedSeedOptions = buildSeedOptions(updatedAccounts);
+    const nextSelectedSeed =
+      updatedSeedOptions.find(
+        (option) => option.value === accountToDelete.seedId,
+      ) ??
+      updatedSeedOptions[selectedSeedIndex] ??
+      updatedSeedOptions[selectedSeedIndex - 1] ??
+      updatedSeedOptions[0];
+
+    setLocalAccounts(updatedAccounts);
+    setSeedsOptions(updatedSeedOptions);
+    setSelectedSeed(nextSelectedSeed);
+    setEvmAccounts(updatedAccounts);
+
+    const nextActiveAccount =
+      updatedAccounts.find(
+        (account) => account.seedId === nextSelectedSeed?.value && !account.hide,
+      ) ??
+      updatedAccounts.find((account) => !account.hide) ??
+      updatedAccounts[0];
+
+    if (nextActiveAccount) {
+      await loadEvmActiveAccount(chain, nextActiveAccount.wallet);
+    }
+    setAccountToDelete(undefined);
   };
 
   const handleEditSeedClick = () => {
@@ -374,9 +449,12 @@ const EvmAccounts = ({
                 <EvmAccountDisplayComponent
                   account={account}
                   editable
+                  hideable={account.source === EvmAccountSource.SEED}
+                  deletable={account.source !== EvmAccountSource.SEED}
                   copiable
                   onCopy={onCopyAddress}
                   onHideOrShow={handleHideOrShowAddress}
+                  onDelete={handleDeleteAddress}
                   onEdit={handleOnEditAddress}
                   fullAddress
                 />
@@ -384,7 +462,7 @@ const EvmAccounts = ({
             ))}
       </div>
       <div className="button-panel">
-        {!isCurrentSourceLedger() && (
+        {isCurrentSourceSeed() && (
           <ButtonComponent
             type={ButtonType.ALTERNATIVE}
             height="small"
@@ -394,6 +472,30 @@ const EvmAccounts = ({
         )}
       </div>
       {editParams && <EvmEditAccountPopup editParams={editParams} />}
+      {accountToDelete && (
+        <PopupContainer className="seed-nickname-popup">
+          <div className="popup-title">
+            {chrome.i18n.getMessage('evm_delete_seed_button')}
+          </div>
+          <div className="caption">
+            {chrome.i18n.getMessage('evm_delete_account_confirmation_message')}
+          </div>
+          <div className="popup-footer">
+            <ButtonComponent
+              label="dialog_cancel"
+              type={ButtonType.ALTERNATIVE}
+              onClick={() => setAccountToDelete(undefined)}
+              height="small"
+            />
+            <ButtonComponent
+              type={ButtonType.IMPORTANT}
+              label="popup_html_confirm"
+              onClick={handleConfirmDeleteAddress}
+              height="small"
+            />
+          </div>
+        </PopupContainer>
+      )}
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { HDNodeWallet } from 'ethers';
+import { HDNodeWallet, Wallet } from 'ethers';
 import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import {
   EvmAccount,
@@ -19,6 +19,9 @@ describe('evm wallet utils', () => {
   let pendingTransactionsStorage: any[];
   let canceledTransactionsStorage: Record<string, any>;
   let walletPermissionsStorage: Record<string, any>;
+
+  const getWalletFromTestPrivateKey = (privateKeyByte: string) =>
+    new Wallet(`0x${privateKeyByte.repeat(32)}`);
 
   beforeEach(() => {
     storedAccounts = {
@@ -402,6 +405,159 @@ describe('evm wallet utils', () => {
         },
       ],
     });
+  });
+
+  it('stores imported private keys under one Imported source', async () => {
+    const firstWallet = getWalletFromTestPrivateKey('11');
+    const secondWallet = getWalletFromTestPrivateKey('22');
+
+    await EvmWalletUtils.addImportedWallet(firstWallet, mk);
+    await EvmWalletUtils.addImportedWallet(secondWallet, mk, 'Imported Two');
+
+    const storedSeeds = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
+    const importedSources = storedSeeds.filter(
+      (source) => source.type === EvmAccountSource.IMPORTED,
+    );
+
+    expect(importedSources).toHaveLength(1);
+    expect(importedSources[0]).toMatchObject({
+      type: EvmAccountSource.IMPORTED,
+      id: 3,
+      nickname: 'Imported',
+      accounts: [
+        {
+          id: 0,
+          address: firstWallet.address,
+          privateKey: firstWallet.privateKey,
+          path: '',
+          order: 4,
+          nickname: '',
+        },
+        {
+          id: 1,
+          address: secondWallet.address,
+          privateKey: secondWallet.privateKey,
+          path: '',
+          order: 5,
+          nickname: 'Imported Two',
+        },
+      ],
+    });
+  });
+
+  it('rejects imported private keys already present as a seed account', async () => {
+    const wallet = getWalletFromTestPrivateKey('33');
+    (HDNodeWallet.fromPhrase as jest.Mock).mockReturnValue({
+      address: wallet.address,
+    } as HDNodeWallet);
+
+    await expect(EvmWalletUtils.addImportedWallet(wallet, mk)).rejects.toThrow(
+      'evm_private_key_already_in_keychain',
+    );
+  });
+
+  it('rejects imported private keys already present as an imported account', async () => {
+    const wallet = getWalletFromTestPrivateKey('44');
+
+    await EvmWalletUtils.addImportedWallet(wallet, mk);
+
+    await expect(EvmWalletUtils.addImportedWallet(wallet, mk)).rejects.toThrow(
+      'evm_private_key_already_in_keychain',
+    );
+  });
+
+  it('rebuilds imported private keys as EVM accounts', async () => {
+    const wallet = getWalletFromTestPrivateKey('55');
+    storedAccounts = {
+      list: [
+        {
+          type: EvmAccountSource.IMPORTED,
+          id: 3,
+          accounts: [
+            {
+              id: 0,
+              address: wallet.address,
+              privateKey: wallet.privateKey,
+              path: '',
+              order: 0,
+              nickname: 'Imported Account',
+            },
+          ],
+        },
+      ],
+    };
+
+    const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+
+    expect(accounts).toHaveLength(1);
+    expect(accounts[0]).toMatchObject({
+      source: EvmAccountSource.IMPORTED,
+      seedId: 3,
+      seedNickname: 'Imported',
+      nickname: 'Imported Account',
+      wallet: {
+        address: wallet.address,
+        privateKey: wallet.privateKey,
+      },
+    });
+  });
+
+  it('deletes imported accounts individually', async () => {
+    const firstWallet = getWalletFromTestPrivateKey('66');
+    const secondWallet = getWalletFromTestPrivateKey('77');
+    storedAccounts = {
+      list: [
+        {
+          type: EvmAccountSource.IMPORTED,
+          id: 3,
+          nickname: 'Imported',
+          accounts: [
+            {
+              id: 0,
+              address: firstWallet.address,
+              privateKey: firstWallet.privateKey,
+              path: '',
+              order: 0,
+              nickname: 'Imported One',
+            },
+            {
+              id: 1,
+              address: secondWallet.address,
+              privateKey: secondWallet.privateKey,
+              path: '',
+              order: 1,
+              nickname: 'Imported Two',
+            },
+          ],
+        },
+      ],
+    };
+    const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+
+    await EvmWalletUtils.deleteAddress(3, 0, accounts, mk);
+
+    let storedSeeds = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
+    expect(storedSeeds).toHaveLength(1);
+    expect(storedSeeds[0].accounts).toEqual([
+      {
+        id: 1,
+        address: secondWallet.address,
+        privateKey: secondWallet.privateKey,
+        path: '',
+        order: 1,
+        nickname: 'Imported Two',
+      },
+    ]);
+
+    await EvmWalletUtils.deleteAddress(
+      3,
+      1,
+      await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk),
+      mk,
+    );
+
+    storedSeeds = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
+    expect(storedSeeds).toEqual([]);
   });
 
   it('merges previously separate Ledger sources under the first Ledger source', async () => {

@@ -7,9 +7,11 @@ interface EvmAccountContextualMenuParams {
   onDeleteClicked: Function;
   onCreateClicked: Function;
   onImportClicked: Function;
+  onImportKeyClicked: Function;
   onConnectLedgerClicked: Function;
   onCopyClicked: Function;
   isLedgerSource?: boolean;
+  isImportedSource?: boolean;
 }
 
 export const EvmAccountsContextualMenu = ({
@@ -18,9 +20,11 @@ export const EvmAccountsContextualMenu = ({
   onDeleteClicked,
   onCreateClicked,
   onImportClicked,
+  onImportKeyClicked,
   onConnectLedgerClicked,
   onCopyClicked,
   isLedgerSource,
+  isImportedSource,
 }: EvmAccountContextualMenuParams): ContextualMenu => {
   const deleteSeedItem = {
     icon: SVGIcons.EVM_ACCOUNT_DELETE,
@@ -39,21 +43,24 @@ export const EvmAccountsContextualMenu = ({
     deleteSeedItem,
   ];
 
+  const activeSeedItems =
+    isLedgerSource || isImportedSource
+      ? [deleteSeedItem]
+      : [
+          {
+            icon: SVGIcons.EVM_ACCOUNT_COPY,
+            label: 'evm_copy_seed',
+            onClick: onCopyClicked,
+          },
+          ...seedItems,
+        ];
+
   return {
     sections: [
       {
         title: activeSeedName,
         skipTranslation: true,
-        items: isLedgerSource
-          ? [deleteSeedItem]
-          : [
-              {
-                icon: SVGIcons.EVM_ACCOUNT_COPY,
-                label: 'evm_copy_seed',
-                onClick: onCopyClicked,
-              },
-              ...seedItems,
-            ],
+        items: activeSeedItems,
       },
       {
         title: 'common_seeds',
@@ -67,6 +74,11 @@ export const EvmAccountsContextualMenu = ({
             icon: SVGIcons.EVM_ACCOUNT_IMPORT,
             label: 'evm_import_seed',
             onClick: onImportClicked,
+          },
+          {
+            icon: SVGIcons.EVM_ACCOUNT_KEY,
+            label: 'evm_import_key',
+            onClick: onImportKeyClicked,
           },
           {
             icon: SVGIcons.EVM_ACCOUNT_LEDGER,
