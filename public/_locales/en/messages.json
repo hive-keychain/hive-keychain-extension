@@ -4652,7 +4652,7 @@
     "description": "Portfolio fetching message"
   },
   "html_popup_evm_add_wallet_method": {
-    "message": "Import your existing EVM wallet or create a new one",
+    "message": "Import an existing EVM wallet, add an account with a private key, connect a Ledger, or create a new wallet",
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_import_wallet": {

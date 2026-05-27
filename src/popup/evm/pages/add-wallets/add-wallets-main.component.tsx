@@ -1,4 +1,5 @@
 import { Screen } from '@interfaces/screen.interface';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmWalletSetupTabUtils } from '@popup/evm/utils/evm-wallet-setup-tab.utils';
 import { resetChain, setChain } from '@popup/multichain/actions/chain.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
@@ -19,7 +20,6 @@ const AddWalletMain = ({
   resetChain,
   setChain,
   resetOnBack,
-  isLedgerSupported,
 }: PropsFromRedux) => {
   useEffect(() => {
     init();
@@ -48,6 +48,10 @@ const AddWalletMain = ({
   };
   const handleImportEvmWallet = (): void => {
     navigateTo(Screen.IMPORT_EVM_WALLET);
+  };
+
+  const handleImportEvmWalletFromKey = (): void => {
+    navigateTo(EvmScreen.IMPORT_EVM_WALLET_FROM_KEY);
   };
 
   // const handleImportKeys = (): void => {
@@ -106,6 +110,12 @@ const AddWalletMain = ({
           type={ButtonType.ALTERNATIVE}
         />
         <ButtonComponent
+          dataTestId="import-evm-wallet-from-key-button"
+          label={'popup_html_import_wallet_from_key'}
+          onClick={handleImportEvmWalletFromKey}
+          type={ButtonType.ALTERNATIVE}
+        />
+        <ButtonComponent
           dataTestId="create-evm-wallet-button"
           label={'html_popup_evm_create_wallet'}
           onClick={handleCreateEvmWallet}
@@ -117,14 +127,12 @@ const AddWalletMain = ({
           onClick={handleImportKeys}
           type={ButtonType.ALTERNATIVE}
         /> */}
-        {isLedgerSupported && (
-          <ButtonComponent
-            dataTestId="add-evm-wallet-from-ledger-button"
-            label={'popup_html_add_account_with_ledger'}
-            onClick={handleAddFromLedger}
-            type={ButtonType.ALTERNATIVE}
-          />
-        )}
+        <ButtonComponent
+          dataTestId="add-evm-wallet-from-ledger-button"
+          label={'popup_html_add_account_with_ledger'}
+          onClick={handleAddFromLedger}
+          type={ButtonType.ALTERNATIVE}
+        />
       </div>
     </div>
   );
@@ -135,7 +143,6 @@ const mapStateToProps = (state: RootState) => {
     hasFinishedSignup: state.hasFinishedSignup,
     chain: state.chain,
     resetOnBack: state.navigation.stack[0]?.params?.resetOnBack,
-    isLedgerSupported: state.evm.appStatus.isLedgerSupported,
   };
 };
 
