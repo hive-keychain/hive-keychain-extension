@@ -1,4 +1,3 @@
-import { ContextualMenu } from '@interfaces/contextual-menu.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import {
@@ -53,13 +52,13 @@ const EvmAccounts = ({
   const [editParams, setEditParams] = useState<EditAccountParams>();
   const [accountToDelete, setAccountToDelete] = useState<EvmAccount>();
 
-  const [menu, setMenu] = useState<ContextualMenu>();
-
   const [localAccounts, setLocalAccounts] = useState<EvmAccount[]>(accounts);
 
   const accountListDiv = useRef(null);
+  const isMountedRef = useRef(false);
 
   useEffect(() => {
+    isMountedRef.current = true;
     setTitleContainerProperties({
       title: 'evm_seeds_and_accounts',
       isBackButtonEnabled: true,
@@ -71,6 +70,10 @@ const EvmAccounts = ({
         await onLeavePage();
       },
     });
+
+    return () => {
+      isMountedRef.current = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -78,34 +81,12 @@ const EvmAccounts = ({
     setLocalAccounts(accounts);
   }, []);
 
-  useEffect(() => {
-    initializeMenu();
-  }, [selectedSeed]);
-
   const onLeavePage = async () => {
     const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
     setEvmAccounts(accounts);
     const newActiveAccount =
       await EvmActiveAccountUtils.getSavedActiveAccountWallet(chain, accounts);
     loadEvmActiveAccount(chain, newActiveAccount);
-  };
-
-  const initializeMenu = () => {
-    if (selectedSeed)
-      setMenu(
-        EvmAccountsContextualMenu({
-          activeSeedName: selectedSeed.label,
-          onEditClicked: handleEditSeedClick,
-          onDeleteClicked: handleDeleteSeedClick,
-          onCreateClicked: handleCreateSeedClick,
-          onImportClicked: handleImportSeedClick,
-          onImportKeyClicked: handleImportKeyClick,
-          onConnectLedgerClicked: handleConnectLedgerWalletClick,
-          onCopyClicked: handleCopySeedClick,
-          isLedgerSource: isCurrentSourceLedger(),
-          isImportedSource: isCurrentSourceImported(),
-        }),
-      );
   };
 
   const isCurrentSourceLedger = () => {
@@ -181,6 +162,8 @@ const EvmAccounts = ({
     const account = accounts.find(
       (account) => account.seedId === selectedSeed!.value,
     );
+    if (!isMountedRef.current) return;
+
     // setEvmAccounts(accounts);
     setLocalAccounts(accounts);
     setEditParams(undefined);
@@ -278,6 +261,8 @@ const EvmAccounts = ({
     await EvmWalletUtils.deleteSeed(seed.seedId, localAccounts, mk);
     const updatedAccounts =
       await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+    if (!isMountedRef.current) return;
+
     const updatedSeedOptions = buildSeedOptions(updatedAccounts);
     const nextSelectedSeed =
       updatedSeedOptions[selectedSeedIndex] ??
@@ -309,24 +294,28 @@ const EvmAccounts = ({
 
   const handleConfirmDeleteAddress = async () => {
     if (!accountToDelete) return;
+    const deletedAccount = accountToDelete;
+    setAccountToDelete(undefined);
 
     const selectedSeedIndex =
       seedsOptions?.findIndex(
-        (option) => option.value === accountToDelete.seedId,
+        (option) => option.value === deletedAccount.seedId,
       ) ?? 0;
 
     await EvmWalletUtils.deleteAddress(
-      accountToDelete.seedId,
-      accountToDelete.id,
+      deletedAccount.seedId,
+      deletedAccount.id,
       localAccounts,
       mk,
     );
     const updatedAccounts =
       await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+    if (!isMountedRef.current) return;
+
     const updatedSeedOptions = buildSeedOptions(updatedAccounts);
     const nextSelectedSeed =
       updatedSeedOptions.find(
-        (option) => option.value === accountToDelete.seedId,
+        (option) => option.value === deletedAccount.seedId,
       ) ??
       updatedSeedOptions[selectedSeedIndex] ??
       updatedSeedOptions[selectedSeedIndex - 1] ??
@@ -347,7 +336,6 @@ const EvmAccounts = ({
     if (nextActiveAccount) {
       await loadEvmActiveAccount(chain, nextActiveAccount.wallet);
     }
-    setAccountToDelete(undefined);
   };
 
   const handleEditSeedClick = () => {
@@ -377,9 +365,10 @@ const EvmAccounts = ({
         seedNickname,
         mk,
       );
-      setLocalAccounts(
-        await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk),
-      );
+      const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+      if (!isMountedRef.current) return;
+
+      setLocalAccounts(accounts);
       setEditParams(undefined);
     }
   };
@@ -406,7 +395,10 @@ const EvmAccounts = ({
       newAddressNickname,
       mk,
     );
-    setLocalAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
+    const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+    if (!isMountedRef.current) return;
+
+    setLocalAccounts(accounts);
     setEditParams(undefined);
   };
 
@@ -420,8 +412,26 @@ const EvmAccounts = ({
     hide: boolean,
   ) => {
     await EvmWalletUtils.hideOrShowAddress(seedId, mk, addressId, hide);
-    setLocalAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
+    const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+    if (!isMountedRef.current) return;
+
+    setLocalAccounts(accounts);
   };
+
+  const menu = selectedSeed
+    ? EvmAccountsContextualMenu({
+        activeSeedName: selectedSeed.label,
+        onEditClicked: handleEditSeedClick,
+        onDeleteClicked: handleDeleteSeedClick,
+        onCreateClicked: handleCreateSeedClick,
+        onImportClicked: handleImportSeedClick,
+        onImportKeyClicked: handleImportKeyClick,
+        onConnectLedgerClicked: handleConnectLedgerWalletClick,
+        onCopyClicked: handleCopySeedClick,
+        isLedgerSource: isCurrentSourceLedger(),
+        isImportedSource: isCurrentSourceImported(),
+      })
+    : undefined;
 
   return (
     <div className="evm-accounts-page">

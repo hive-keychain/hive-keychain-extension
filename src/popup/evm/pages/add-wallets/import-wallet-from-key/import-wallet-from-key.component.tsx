@@ -4,7 +4,7 @@ import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
-import { goBack } from '@popup/multichain/actions/navigation.actions';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
@@ -20,9 +20,9 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 const ImportWalletFromKey = ({
   accounts,
   chain,
-  goBack,
   loadEvmActiveAccount,
   mk,
+  navigateTo,
   setEvmAccounts,
   setErrorMessage,
   setTitleContainerProperties,
@@ -77,7 +77,7 @@ const ImportWalletFromKey = ({
       await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
     setEvmAccounts(updatedAccounts);
     await loadEvmActiveAccount(chain, wallet);
-    goBack();
+    navigateTo(Screen.HOME_PAGE, true);
   };
 
   return (
@@ -122,8 +122,8 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const connector = connect(mapStateToProps, {
-  goBack,
   loadEvmActiveAccount,
+  navigateTo,
   setEvmAccounts,
   setErrorMessage,
   setTitleContainerProperties,

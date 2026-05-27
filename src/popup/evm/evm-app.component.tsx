@@ -37,20 +37,30 @@ const EvmApp = ({
   const [isAppReady, setIsAppReady] = useState(false);
   const transactionResolutionRefreshInFlight = useRef(false);
   const transactionResolutionRefreshQueued = useRef(false);
+  const hasHandledBootstrapNavigation = useRef(false);
 
   useEffect(() => {
     if (!isAppReady) {
       return;
     }
 
+    if (!hasHandledBootstrapNavigation.current) {
+      hasHandledBootstrapNavigation.current = true;
+      if (!accounts.length) {
+        navigateToWithParams(Screen.EVM_ADD_WALLET_MAIN, { resetOnBack: true });
+      } else {
+        navigateTo(Screen.HOME_PAGE, true);
+      }
+      return;
+    }
+
     if (!accounts.length) {
       navigateToWithParams(Screen.EVM_ADD_WALLET_MAIN, { resetOnBack: true });
-    } else {
-      navigateTo(Screen.HOME_PAGE, true);
     }
   }, [accounts.length, isAppReady]);
 
   useEffect(() => {
+    hasHandledBootstrapNavigation.current = false;
     setDisplaySplashscreen(true);
     setIsAppReady(false);
     init();
