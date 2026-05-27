@@ -59,59 +59,62 @@
       white-space: nowrap;
     }
   }
-  .transaction-gas-fee-popup {
-    .popup-content {
-      row-gap: 16px;
-      border-color: var(--wallet-card-border);
-      box-shadow: 0px 4px 9px 0px var(--button-alternative-shadow-color);
-    }
+}
 
-    .gas-fee-estimate-loading-row {
-      display: flex;
-      align-items: center;
-      column-gap: 8px;
-      width: 100%;
-      box-sizing: border-box;
-      padding: 12px;
-      border: 1px solid var(--wallet-card-border);
-      border-radius: 16px;
-      background: var(--button-alternative-background-color);
-      @include poppins400(12px);
+// Portaled to document.body — must not be nested under .evm-transaction-result
+.transaction-gas-fee-popup {
+  .popup-content {
+    row-gap: 16px;
+    border-color: var(--wallet-card-border);
+    box-shadow: 0px 4px 9px 0px var(--button-alternative-shadow-color);
+  }
+
+  .gas-fee-estimate-loading-row {
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid var(--wallet-card-border);
+    border-radius: 16px;
+    background: var(--button-alternative-background-color);
+    @include poppins400(12px);
+    color: var(--main-font-color);
+    opacity: 0.9;
+
+    .gas-fee-estimate-spinner {
+      width: 12px;
+      height: 12px;
+      border: 2px solid rgba(128, 128, 128, 0.35);
+      border-top-color: var(--button-background-color);
+      border-radius: 50%;
+      animation: tx-result-gas-fee-spin 0.75s linear infinite;
+      flex-shrink: 0;
+    }
+  }
+
+  .title-panel {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+
+    .title {
+      @include poppins500(16px);
       color: var(--main-font-color);
-      opacity: 0.9;
-
-      .gas-fee-estimate-spinner {
-        width: 12px;
-        height: 12px;
-        border: 2px solid rgba(128, 128, 128, 0.35);
-        border-top-color: var(--button-background-color);
-        border-radius: 50%;
-        animation: tx-result-gas-fee-spin 0.75s linear infinite;
-        flex-shrink: 0;
-      }
     }
 
-    .title-panel {
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      align-items: center;
-
-      .title {
-        @include poppins500(16px);
-        color: var(--main-font-color);
-      }
-
-      .svg-icon {
-        cursor: pointer;
-      }
+    .svg-icon {
+      cursor: pointer;
+      flex-shrink: 0;
     }
+  }
 
-    .gas-fee-panel {
-      width: 100%;
-      border: unset;
-      padding: unset;
-    }
+  .gas-fee-panel {
+    width: 100%;
+    border: unset;
+    padding: unset;
   }
 }
 
