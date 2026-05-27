@@ -81,11 +81,11 @@ const CreateNewWalletVerification = ({
       return;
     }
 
-    const derivedWallet = wallet.deriveChild(0);
+    // const derivedWallet = wallet.deriveChild(0);
     const account: EvmAccount = {
-      id: derivedWallet.index,
-      path: derivedWallet.path!,
-      wallet: derivedWallet,
+      id: wallet.index,
+      path: wallet.path!,
+      wallet: wallet,
       seedId: 0,
     };
     await EvmWalletUtils.addSeedAndAccounts(wallet, [account], mk, nickname);
@@ -93,7 +93,7 @@ const CreateNewWalletVerification = ({
     if (!chain.isCustom) {
       await EvmLightNodeUtils.registerAddress(
         chain.chainId,
-        derivedWallet.address,
+        wallet.address,
         true,
       );
     }

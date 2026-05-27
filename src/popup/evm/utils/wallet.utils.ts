@@ -98,27 +98,34 @@ const getWalletFromSeedPhrase = (seed: string) => {
 };
 
 const deriveWallets = async (
-  wallet: HDNodeWallet,
+  mnemonic: ethers.Mnemonic,
+
   chain: EvmChain,
 ): Promise<WalletWithBalance[]> => {
   const provider = await EthersUtils.getProvider(chain);
-  const wallets = [];
-  let i = 0,
-    consecutiveEmptyWallets = 0;
-  while (1) {
-    const derivedWallet: HDNodeWallet = wallet.deriveChild(i);
+  const wallets: WalletWithBalance[] = [];
+  let consecutiveEmptyWallets = 0;
+
+  for (let i = 0; ; i++) {
+    const derivedWallet = ethers.HDNodeWallet.fromMnemonic(
+      mnemonic,
+      `${INITIAL_PATH}/${i}`,
+    );
 
     const wei = await provider.getBalance(derivedWallet.address);
-    const balance = Number(parseFloat(ethers.formatEther(wei)).toFixed(6));
+    const balance = Number(Number(ethers.formatEther(wei)).toFixed(6));
     wallets.push({
       wallet: derivedWallet,
       balance,
       selected: true,
     });
+
     if (balance === 0) consecutiveEmptyWallets++;
+    else consecutiveEmptyWallets = 0;
+
     if (consecutiveEmptyWallets === 2) break;
-    i++;
   }
+
   return wallets.map((e, i) => {
     const length = wallets.length;
     e.selected = i < length - 2 || i === 0;
@@ -126,8 +133,15 @@ const deriveWallets = async (
   });
 };
 
-const createWallet = () => {
-  return ethers.Wallet.createRandom();
+const createWallet = (seedLength: number) => {
+  if (seedLength === 12) {
+    return ethers.Wallet.createRandom();
+  } else {
+    const entropy = ethers.randomBytes(32);
+
+    const mnemonic = ethers.Mnemonic.fromEntropy(entropy);
+    return ethers.HDNodeWallet.fromMnemonic(mnemonic);
+  }
 };
 
 const hideOrShowAddress = async (
