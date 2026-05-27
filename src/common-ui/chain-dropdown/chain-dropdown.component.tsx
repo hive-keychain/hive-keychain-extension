@@ -66,6 +66,18 @@ const ChainDropdown = ({
     setChain(chain);
   };
 
+  const getChainIdsFromOptions = (optionItems: OptionItem[]) => {
+    return optionItems.map((option) => {
+      const chainValue = option.value as Chain;
+      return option.key ?? chainValue.chainId;
+    });
+  };
+
+  const handleOptionsReorder = async (reorderedOptions: OptionItem[]) => {
+    setOptions(reorderedOptions);
+    await ChainUtils.reorderSetupChains(getChainIdsFromOptions(reorderedOptions));
+  };
+
   return (
     <>
       {options && chain && (
@@ -95,6 +107,9 @@ const ChainDropdown = ({
           renderOnlyIcon
           showOverlay
           generateImageIfNull
+          enableDragAndDrop
+          droppableId="chain-dropdown-options"
+          onOptionsReorder={handleOptionsReorder}
         />
       )}
     </>

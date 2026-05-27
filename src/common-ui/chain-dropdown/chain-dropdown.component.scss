@@ -28,6 +28,12 @@
         width: 20px !important;
       }
     }
+
+    .custom-select-item.draggable {
+      .item-label {
+        flex: 1;
+      }
+    }
   }
 
   .manage-chains-panel {
