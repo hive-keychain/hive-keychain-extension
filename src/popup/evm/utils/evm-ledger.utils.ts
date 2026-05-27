@@ -177,7 +177,6 @@ const parseLedgerError = (error: any) => {
   if (isLedgerConnectionError(error, message)) {
     return new KeychainError('evm_ledger_connect_device');
   }
-  console.log('error', error);
   return new KeychainError('evm_ledger_unknown_error', [], error);
 };
 
