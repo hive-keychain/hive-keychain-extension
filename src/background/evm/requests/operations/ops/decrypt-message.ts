@@ -6,6 +6,13 @@ import { createEvmMessage } from '@background/hive/requests/operations/operation
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
+import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
+
+const getUnsupportedLedgerDecryptError = () => {
+  const error = new Error('Ledger does not support decrypt requests');
+  (error as any).code = 'UNSUPPORTED_OPERATION';
+  return error;
+};
 
 export const decryptMessage = async (
   requestHandler: EvmRequestHandler,
@@ -29,6 +36,9 @@ export const decryptMessage = async (
   });
   if (!account) {
     throw new Error('Account not found');
+  }
+  if (EvmSignerUtils.isLedgerWallet(account.wallet)) {
+    throw getUnsupportedLedgerDecryptError();
   }
 
   const res = await EvmRequestsUtils.decryptMessage(account, encryptedMessage);

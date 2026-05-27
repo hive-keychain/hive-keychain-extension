@@ -10,8 +10,8 @@
     display: none;
     margin: 0px;
     z-index: 2;
-    padding: 12px;
-    min-width: 120px;
+    padding: 14px;
+    min-width: 140px;
     box-shadow: 0px 4px 9px 0px var(--button-alternative-shadow-color);
 
     .contextual-menu-section {
@@ -39,12 +39,13 @@
         row-gap: 4px;
         .section-item {
           display: flex;
-          column-gap: 4px;
+          column-gap: 8px;
           cursor: pointer;
-          margin: 0px -12px;
-          padding: 2px 12px;
+          margin: 0px -14px;
+          padding: 4px 14px;
+          align-items: center;
           .section-item-icon {
-            @include icon-size(16px);
+            @include icon-size(20px);
           }
           .label {
             @include poppins300(13px);

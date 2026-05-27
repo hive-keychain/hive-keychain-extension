@@ -48,6 +48,7 @@
         flex-direction: row;
         display: flex;
         column-gap: 6px;
+        align-items: center;
         &.full-address {
           @include poppins400(11px);
         }
@@ -57,7 +58,7 @@
   .action-panel {
     display: flex;
     flex-direction: column;
-    row-gap: 8px;
+    row-gap: 5px;
 
     .copy-icon {
       visibility: hidden;
@@ -68,11 +69,26 @@
         stroke: var(--main-font-color);
       }
     }
+    .hide-token {
+      visibility: visible;
+    }
+    .delete-account {
+      color: $red;
+      svg path {
+        stroke: $red;
+      }
+      svg * {
+        stroke-width: 1;
+      }
+    }
   }
 
   &:hover {
     .action-panel {
       .copy-icon {
+        visibility: visible !important;
+      }
+      .delete-account {
         visibility: visible !important;
       }
     }

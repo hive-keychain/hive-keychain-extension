@@ -52,7 +52,7 @@ import {
 } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
-import { ethers, TransactionResponse, Wallet } from 'ethers';
+import { ethers, TransactionResponse } from 'ethers';
 import { FormatUtils } from 'hive-keychain-commons';
 import { throttle, ThrottleSettings } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -721,21 +721,12 @@ export const EvmLifiSwap = ({
     decimals: number,
     approvalAddress: string,
   ) => {
-    const provider = await EthersUtils.getProvider(activeChain);
-    const connectedWallet = new Wallet(
-      activeAccount.wallet.signingKey,
-      provider,
-    );
-    const contract = new ethers.Contract(
-      contractAddress,
-      Erc20Abi,
-      connectedWallet,
-    );
+    const contractInterface = new ethers.Interface(Erc20Abi);
     const amountInRawUnits = ethers.parseUnits(
       approvalAmount.toString(),
       decimals,
     );
-    return contract.interface.encodeFunctionData('approve', [
+    return contractInterface.encodeFunctionData('approve', [
       approvalAddress,
       amountInRawUnits,
     ]);

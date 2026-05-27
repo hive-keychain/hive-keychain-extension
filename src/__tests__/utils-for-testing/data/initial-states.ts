@@ -28,10 +28,7 @@ const iniStateAs = {
   defaultExistent: {
     ...initialEmptyStateStore,
     mk: mk.user.one,
-<<<<<<< HEAD
     chain: defaultChainList[0],
-=======
->>>>>>> dev
     hasFinishedSignup: true,
     hive: {
       ...initialEmptyStateStore.hive,
@@ -42,10 +39,7 @@ const iniStateAs = {
   defaultExistentAllKeys: {
     ...initialEmptyStateStore,
     mk: mk.user.one,
-<<<<<<< HEAD
     chain: defaultChainList[0],
-=======
->>>>>>> dev
     hasFinishedSignup: true,
     hive: {
       ...initialEmptyStateStore.hive,

@@ -23,25 +23,33 @@ const ChainDropdown = ({
   const [options, setOptions] = useState<OptionItem[]>([]);
 
   useEffect(() => {
-    if (chain.name.length > 0) init();
-  }, [chain]);
+    let cancelled = false;
 
-  const init = async () => {
-    const chains = await ChainUtils.getSetupChains(true);
-    if (!chains.find((e) => e.chainId === chain.chainId)) {
-      chains.push(chain);
-    }
-    const optionItems: OptionItem[] = chains.map((c) => {
-      return {
-        key: c.chainId,
-        label: c.name,
-        value: c,
-        img: c.logo,
-        imgChip: c.testnet ? SVGIcons.EVM_CHAIN_TESTNET : undefined,
-      };
-    });
-    setOptions(optionItems);
-  };
+    const init = async () => {
+      const chains = await ChainUtils.getSetupChains(true);
+      if (cancelled) return;
+
+      if (!chains.find((e) => e.chainId === chain.chainId)) {
+        chains.push(chain);
+      }
+      const optionItems: OptionItem[] = chains.map((c) => {
+        return {
+          key: c.chainId,
+          label: c.name,
+          value: c,
+          img: c.logo,
+          imgChip: c.testnet ? SVGIcons.EVM_CHAIN_TESTNET : undefined,
+        };
+      });
+      setOptions(optionItems);
+    };
+
+    if (chain.name.length > 0) void init();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [chain]);
 
   const handleOnManageChainsClicked = () => {
     resetChain();

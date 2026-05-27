@@ -1,5 +1,6 @@
 import { joiResolver } from '@hookform/resolvers/joi';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
+import { PrivateKeyType } from '@interfaces/keys.interface';
 import { Screen } from '@interfaces/screen.interface';
 import {
   EvmActiveAccount,
@@ -21,8 +22,8 @@ import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
-import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
+import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
@@ -40,7 +41,7 @@ import { setTitleContainerProperties } from '@popup/multichain/actions/title-con
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import Decimal from 'decimal.js';
-import { ethers, parseUnits, Wallet } from 'ethers';
+import { ethers, parseUnits } from 'ethers';
 import Joi from 'joi';
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
@@ -57,6 +58,7 @@ import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.c
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
+import { KeychainError } from 'src/keychain-error';
 import { FormUtils } from 'src/utils/form.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -118,6 +120,20 @@ export const getEvmTransferMaxAmount = (
   Decimal.max(new Decimal(balance).sub(feeToReserve ?? 0), 0)
     .toDecimalPlaces(decimals, Decimal.ROUND_DOWN)
     .toFixed();
+
+export const getEvmTransferErrorMessage = (error: unknown) => {
+  if (error instanceof KeychainError) {
+    return {
+      key: error.message,
+      params: error.messageParams ?? [],
+    };
+  }
+
+  return {
+    key: 'popup_html_transfer_failed',
+    params: [],
+  };
+};
 
 const EvmTransfer = ({
   formParams,
@@ -388,7 +404,12 @@ const EvmTransfer = ({
       wallet: activeAccount.wallet,
       transactionData: transactionData,
       afterConfirmAction: async (gasFee: GasFeeEstimationBase) => {
-        addToLoadingList('html_popup_transfer_fund_operation');
+        addToLoadingList(
+          'html_popup_transfer_fund_operation',
+          EvmSignerUtils.isLedgerWallet(activeAccount.wallet)
+            ? PrivateKeyType.LEDGER
+            : undefined,
+        );
         try {
           const transactionResponse = await EvmTransactionsUtils.send(
             activeAccount.wallet,
@@ -428,7 +449,8 @@ const EvmTransfer = ({
           });
         } catch (err) {
           Logger.error('Error during transfer', err);
-          setErrorMessage('popup_html_transfer_failed');
+          const errorMessage = getEvmTransferErrorMessage(err);
+          setErrorMessage(errorMessage.key, errorMessage.params);
         } finally {
           removeFromLoadingList('html_popup_transfer_fund_operation');
         }
@@ -588,22 +610,13 @@ const EvmTransfer = ({
     receiverAddress: string,
     amount: string,
   ) => {
-    const provider = await EthersUtils.getProvider(chain);
-    const connectedWallet = new Wallet(
-      selectedAccount.wallet.signingKey,
-      provider,
-    );
-    const contract = new ethers.Contract(
-      tokenInfo.contractAddress!,
-      Erc20Abi,
-      connectedWallet,
-    );
+    const contractInterface = new ethers.Interface(Erc20Abi);
 
     const finalAmount = parseUnits(
       toDecimalString(amount),
       (tokenInfo as EvmSmartContractInfoErc20).decimals,
     );
-    return contract.interface.encodeFunctionData('transfer', [
+    return contractInterface.encodeFunctionData('transfer', [
       receiverAddress,
       finalAmount,
     ]);

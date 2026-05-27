@@ -1,7 +1,10 @@
 import { Screen } from '@interfaces/screen.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import {
+  EvmAccount,
+  EvmAccountSource,
+} from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletSetupTabUtils } from '@popup/evm/utils/evm-wallet-setup-tab.utils';
@@ -23,10 +26,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { ResultMessagePageComponent } from 'src/common-ui/result-message-page/result-message-page.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { ResultMessagePageComponent } from 'src/common-ui/result-message-page/result-message-page.component';
 import { MathUtils } from 'src/utils/math.utils';
 
 const EVM_CREATE_WALLET_LOADING_OPERATION = 'html_popup_evm_creating_wallet';
@@ -99,13 +102,19 @@ const CreateNewWalletVerification = ({
     }
 
     setIsSubmitting(true);
-    addToLoadingList(EVM_CREATE_WALLET_LOADING_OPERATION, undefined, undefined, true);
+    addToLoadingList(
+      EVM_CREATE_WALLET_LOADING_OPERATION,
+      undefined,
+      undefined,
+      true,
+    );
     try {
       const account: EvmAccount = {
         id: wallet.index,
         path: wallet.path!,
         wallet: wallet,
         seedId: 0,
+        source: EvmAccountSource.SEED,
       };
       await EvmWalletUtils.addSeedAndAccounts(wallet, [account], mk, nickname);
 

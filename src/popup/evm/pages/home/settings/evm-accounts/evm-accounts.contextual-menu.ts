@@ -7,7 +7,11 @@ interface EvmAccountContextualMenuParams {
   onDeleteClicked: Function;
   onCreateClicked: Function;
   onImportClicked: Function;
+  onImportKeyClicked: Function;
+  onConnectLedgerClicked: Function;
   onCopyClicked: Function;
+  isLedgerSource?: boolean;
+  isImportedSource?: boolean;
 }
 
 export const EvmAccountsContextualMenu = ({
@@ -16,32 +20,47 @@ export const EvmAccountsContextualMenu = ({
   onDeleteClicked,
   onCreateClicked,
   onImportClicked,
+  onImportKeyClicked,
+  onConnectLedgerClicked,
   onCopyClicked,
+  isLedgerSource,
+  isImportedSource,
 }: EvmAccountContextualMenuParams): ContextualMenu => {
+  const deleteSeedItem = {
+    icon: SVGIcons.EVM_ACCOUNT_DELETE,
+    label: 'evm_delete_seed_button',
+    onClick: onDeleteClicked,
+    needsConfirmation: true,
+    confirmationMessage: 'evm_delete_seed_confirmation_message',
+  };
+
+  const seedItems = [
+    {
+      icon: SVGIcons.EVM_ACCOUNT_EDIT,
+      label: 'evm_edit_seed_nickname',
+      onClick: onEditClicked,
+    },
+    deleteSeedItem,
+  ];
+
+  const activeSeedItems =
+    isLedgerSource || isImportedSource
+      ? [deleteSeedItem]
+      : [
+          {
+            icon: SVGIcons.EVM_ACCOUNT_COPY,
+            label: 'evm_copy_seed',
+            onClick: onCopyClicked,
+          },
+          ...seedItems,
+        ];
+
   return {
     sections: [
       {
         title: activeSeedName,
         skipTranslation: true,
-        items: [
-          {
-            icon: SVGIcons.EVM_ACCOUNT_COPY,
-            label: 'html_popup_evm_create_wallet_copy_mnemonic',
-            onClick: onCopyClicked,
-          },
-          {
-            icon: SVGIcons.EVM_ACCOUNT_EDIT,
-            label: 'evm_edit_seed_nickname',
-            onClick: onEditClicked,
-          },
-          {
-            icon: SVGIcons.EVM_ACCOUNT_DELETE,
-            label: 'evm_delete_seed_button',
-            onClick: onDeleteClicked,
-            needsConfirmation: true,
-            confirmationMessage: 'evm_delete_seed_confirmation_message',
-          },
-        ],
+        items: activeSeedItems,
       },
       {
         title: 'common_seeds',
@@ -52,9 +71,19 @@ export const EvmAccountsContextualMenu = ({
             onClick: onCreateClicked,
           },
           {
-            icon: SVGIcons.EVM_ACCOUNT_ADD,
+            icon: SVGIcons.EVM_ACCOUNT_IMPORT,
             label: 'evm_import_seed',
             onClick: onImportClicked,
+          },
+          {
+            icon: SVGIcons.EVM_ACCOUNT_KEY,
+            label: 'evm_import_key',
+            onClick: onImportKeyClicked,
+          },
+          {
+            icon: SVGIcons.EVM_ACCOUNT_LEDGER,
+            label: 'evm_connect_ledger_wallet',
+            onClick: onConnectLedgerClicked,
           },
         ],
       },

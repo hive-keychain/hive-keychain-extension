@@ -2,6 +2,7 @@ import { Screen } from '@interfaces/screen.interface';
 import { AddWalletMainComponent } from '@popup/evm/pages/add-wallets/add-wallets-main.component';
 import { CreateNewWalletVerificationComponent } from '@popup/evm/pages/add-wallets/create-new-wallet/create-new-wallet-verification.component';
 import { CreateNewWalletComponent } from '@popup/evm/pages/add-wallets/create-new-wallet/create-new-wallet.component';
+import { ImportWalletFromKeyComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-key/import-wallet-from-key.component';
 import { ImportWalletConfirmationComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-seed/import-wallet-confirmation.component';
 import { ImportWalletFromSeedComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-seed/import-wallet-from-seed.component';
 import { EvmHomeComponent } from '@popup/evm/pages/home/evm-home.component';
@@ -46,6 +47,8 @@ const EvmAppRouter = ({
         return <AddWalletMainComponent />;
       case EvmScreen.IMPORT_EVM_WALLET:
         return <ImportWalletFromSeedComponent />;
+      case EvmScreen.IMPORT_EVM_WALLET_FROM_KEY:
+        return <ImportWalletFromKeyComponent />;
       case EvmScreen.IMPORT_EVM_WALLET_CONFIRMATION:
         return <ImportWalletConfirmationComponent />;
       case EvmScreen.CREATE_EVM_WALLET:

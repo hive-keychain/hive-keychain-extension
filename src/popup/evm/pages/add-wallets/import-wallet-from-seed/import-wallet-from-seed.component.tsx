@@ -37,7 +37,9 @@ const ImportWalletFromSeed = ({
     const storedSeeds = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
     if (
       storedSeeds.some(
-        (storedSeed) => storedSeed.seed.trim().toLowerCase() === normalizedSeed,
+        (storedSeed) =>
+          'seed' in storedSeed &&
+          storedSeed.seed.trim().toLowerCase() === normalizedSeed,
       )
     ) {
       setErrorMessage('evm_seeds_already_in_keychain');

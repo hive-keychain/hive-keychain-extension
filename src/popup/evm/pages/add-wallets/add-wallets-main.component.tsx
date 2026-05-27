@@ -19,6 +19,7 @@ const AddWalletMain = ({
   resetChain,
   setChain,
   resetOnBack,
+  isLedgerSupported,
 }: PropsFromRedux) => {
   useEffect(() => {
     init();
@@ -80,12 +81,12 @@ const AddWalletMain = ({
   //   }
   // };
 
-  // const handleAddFromLedger = async () => {
-  //   const extensionId = (await chrome.management.getSelf()).id;
-  //   chrome.tabs.create({
-  //     url: `chrome-extension://${extensionId}/add-accounts-from-ledger.html`,
-  //   });
-  // };
+  const handleAddFromLedger = async () => {
+    const extensionId = (await chrome.management.getSelf()).id;
+    chrome.tabs.create({
+      url: `chrome-extension://${extensionId}/add-evm-accounts-from-ledger.html?chainId=${chain.chainId}`,
+    });
+  };
 
   return (
     <div
@@ -116,14 +117,14 @@ const AddWalletMain = ({
           onClick={handleImportKeys}
           type={ButtonType.ALTERNATIVE}
         /> */}
-        {/* {isLedgerSupported && (
+        {isLedgerSupported && (
           <ButtonComponent
-            dataTestId="import-keys-button"
+            dataTestId="add-evm-wallet-from-ledger-button"
             label={'popup_html_add_account_with_ledger'}
             onClick={handleAddFromLedger}
             type={ButtonType.ALTERNATIVE}
           />
-        )} */}
+        )}
       </div>
     </div>
   );
@@ -134,6 +135,7 @@ const mapStateToProps = (state: RootState) => {
     hasFinishedSignup: state.hasFinishedSignup,
     chain: state.chain,
     resetOnBack: state.navigation.stack[0]?.params?.resetOnBack,
+    isLedgerSupported: state.evm.appStatus.isLedgerSupported,
   };
 };
 

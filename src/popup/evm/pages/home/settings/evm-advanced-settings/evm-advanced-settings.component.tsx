@@ -32,7 +32,7 @@ const EvmAdvancedSettings = ({
 const mapStateToProps = (state: RootState) => {
   return {
     accounts: state.evm.accounts,
-    isLedgerSupported: false,
+    isLedgerSupported: state.evm.appStatus.isLedgerSupported,
   };
 };
 const connector = connect(mapStateToProps, {

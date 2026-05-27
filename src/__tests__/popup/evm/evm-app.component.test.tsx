@@ -7,6 +7,8 @@ import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 import { EvmActiveAccountUtils } from 'src/popup/evm/utils/evm-active-account.utils';
 import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
 import { EvmAppComponent } from 'src/popup/evm/evm-app.component';
+import { EvmActionType } from 'src/popup/evm/actions/action-type.evm.enum';
+import { navigateTo } from 'src/popup/multichain/actions/navigation.actions';
 
 jest.mock('@popup/evm/evm-router.component', () => {
   const React = require('react');
@@ -99,5 +101,66 @@ describe('EvmApp startup', () => {
         Screen.HOME_PAGE,
       );
     });
+  });
+
+  it('does not reset navigation when an account is added after startup', async () => {
+    const firstAccount = {
+      id: 0,
+      path: "m/44'/60'/0'/0/0",
+      seedId: 1,
+      wallet: { address: '0x123' },
+    };
+    const secondAccount = {
+      id: 0,
+      path: '',
+      seedId: 2,
+      wallet: { address: '0x456' },
+    };
+
+    jest
+      .spyOn(EvmWalletUtils, 'rebuildAccountsFromLocalStorage')
+      .mockResolvedValue([firstAccount] as any);
+    jest
+      .spyOn(EvmActiveAccountUtils, 'getSavedActiveAccountWallet')
+      .mockResolvedValue(firstAccount.wallet as any);
+
+    const { store } = customRender(<EvmAppComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk: 'mk',
+        chain: evmChainFixture,
+      },
+    });
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    await waitFor(() => {
+      expect(store.getState().navigation.stack[0]?.currentPage).toBe(
+        Screen.HOME_PAGE,
+      );
+    });
+
+    await act(async () => {
+      await store.dispatch<any>(navigateTo(Screen.EVM_ACCOUNTS_SETTINGS));
+    });
+
+    await waitFor(() => {
+      expect(store.getState().navigation.stack[0]?.currentPage).toBe(
+        Screen.EVM_ACCOUNTS_SETTINGS,
+      );
+    });
+
+    await act(async () => {
+      store.dispatch({
+        type: EvmActionType.SET_ACCOUNTS,
+        payload: [firstAccount, secondAccount],
+      });
+    });
+
+    expect(store.getState().navigation.stack[0]?.currentPage).toBe(
+      Screen.EVM_ACCOUNTS_SETTINGS,
+    );
   });
 });

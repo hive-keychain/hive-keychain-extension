@@ -1,6 +1,7 @@
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { ActionButton } from '@interfaces/action-button.interface';
 import { Autolock, AutoLockType } from '@interfaces/autolock.interface';
+import { setStatus as setEvmStatus } from '@popup/evm/actions/app-status.actions';
 import { EvmAppComponent } from '@popup/evm/evm-app.component';
 import { setIsLedgerSupported } from '@popup/hive/actions/app-status.actions';
 import { HiveAppComponent } from '@popup/hive/hive-app.component';
@@ -40,6 +41,7 @@ const ChainRouter = ({
   mk,
   setMk,
   setIsLedgerSupported,
+  setEvmStatus,
   hasFinishedSignup,
   setHasFinishedSignup,
   nav,
@@ -58,6 +60,7 @@ const ChainRouter = ({
     initMk();
     LedgerUtils.isLedgerSupported().then((res) => {
       setIsLedgerSupported(res);
+      setEvmStatus({ isLedgerSupported: res });
       LocalStorageUtils.saveValueInLocalStorage(
         LocalStorageKeyEnum.IS_LEDGER_SUPPORTED,
         res,
@@ -175,6 +178,7 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   setIsLedgerSupported,
+  setEvmStatus,
   setMk,
   setHasFinishedSignup,
   resetMessage,

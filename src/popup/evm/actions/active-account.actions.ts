@@ -7,6 +7,7 @@ import {
 } from '@popup/evm/interfaces/active-account.interface';
 import { EvmUserHistory } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmWallet } from '@popup/evm/interfaces/wallet.interface';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import {
   CatchupStatus,
@@ -26,7 +27,6 @@ import {
   ChainType,
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
-import { EvmWallet } from '@popup/evm/interfaces/wallet.interface';
 
 const EMPTY_EVM_HISTORY: EvmUserHistory = {
   events: [],

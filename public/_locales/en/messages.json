@@ -3732,7 +3732,7 @@
     "description": "automated tasks => need more RC to claim account"
   },
   "popup_html_validate_transaction_on_ledger": {
-    "message": "Confirm the transaction on your Ledger",
+    "message": "Please confirm the transaction on your Ledger",
     "description": "Message to remind user to accept transaction on his Ledger device"
   },
   "popup_html_add_account_with_ledger": {
@@ -3750,6 +3750,10 @@
   "add_accounts_from_ledger": {
     "message": "Add accounts from Ledger",
     "description": "Title of add accounts from ledger page"
+  },
+  "evm_add_accounts_from_ledger": {
+    "message": "Add EVM accounts from Ledger",
+    "description": "Title of add EVM accounts from ledger page"
   },
   "add_accounts_from_ledger_finished": {
     "message": "Add accounts from Ledger",
@@ -3794,6 +3798,54 @@
   "ledger_account_discovery_caption": {
     "message": "Link your Ledger to use your accounts on Keychain",
     "description": "synchronize ledger caption"
+  },
+  "evm_ledger_account_discovery_caption": {
+    "message": "Connect and unlock your Ledger, open the Ethereum app, then discover EVM accounts.",
+    "description": "EVM Ledger account discovery caption"
+  },
+  "evm_ledger_derivation_path_bip44": {
+    "message": "MetaMask / BIP44",
+    "description": "EVM Ledger BIP44 derivation path label"
+  },
+  "evm_ledger_derivation_path_ledger_live": {
+    "message": "Ledger Live",
+    "description": "EVM Ledger Live derivation path label"
+  },
+  "evm_ledger_derivation_path_legacy": {
+    "message": "Legacy / MEW",
+    "description": "EVM Ledger legacy derivation path label"
+  },
+  "evm_ledger_derivation_next_index": {
+    "message": "Starts at index $1",
+    "description": "EVM Ledger derivation path next discovery index"
+  },
+  "evm_ledger_account_path_hint": {
+    "message": "$1 #$2 - $3",
+    "description": "EVM Ledger account derivation path hint"
+  },
+  "ledger_source_name": {
+    "message": "Ledger",
+    "description": "Default EVM Ledger wallet source name"
+  },
+  "evm_ledger_connect_device": {
+    "message": "Please connect your Ledger",
+    "description": "EVM Ledger connection error"
+  },
+  "evm_ledger_unlock_device": {
+    "message": "Please unlock your Ledger",
+    "description": "EVM Ledger locked device error"
+  },
+  "evm_ledger_open_ethereum_app": {
+    "message": "Please open the Ethereum App on your Ledger",
+    "description": "EVM Ledger wrong or closed app error"
+  },
+  "evm_ledger_enable_blind_signing": {
+    "message": "Please enable blind signing in the Ethereum App settings on your Ledger",
+    "description": "EVM Ledger blind signing disabled error"
+  },
+  "evm_ledger_unknown_error": {
+    "message": "An unknown Ledger error occurred. Please reconnect your Ledger, make sure you are in the Ethereum App and try again.",
+    "description": "EVM Ledger unknown error"
   },
   "no_account_found_on_ledger_error": {
     "message": "No account found on your Ledger. Make sure your added at least one and try again.",
@@ -4623,6 +4675,18 @@
     "message": "12 or 24 words seed phrase, separated by whitespace",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
+  "popup_html_import_wallet_from_key": {
+    "message": "Import key",
+    "description": "EVM > Add wallet main page > Import private key"
+  },
+  "html_popup_evm_setup_import_key_text": {
+    "message": "Enter the private key of the EVM account you want to import.",
+    "description": "EVM > Add wallet main page > Import private key"
+  },
+  "evm_invalid_private_key": {
+    "message": "This private key is invalid.",
+    "description": "EVM > Add wallet main page > Import private key"
+  },
   "html_popup_evm_invalid_mnemonic_length": {
     "message": "Your seedphrase should be 12 or 24 words long.",
     "description": "EVM > Add wallet main page > Import seed phrase"
@@ -5264,7 +5328,7 @@
     "description": "Data field"
   },
   "evm_send_transaction_success": {
-    "message": "Succesfully sent transaction",
+    "message": "The transaction has been broadcasted successfully",
     "description": "SuccesFully sent evm transaction"
   },
   "evm_send_transaction_failed": {
@@ -6043,6 +6107,10 @@
     "message": "Are you sure you want to delete this seed ?",
     "description": "Delete seed button"
   },
+  "evm_delete_account_confirmation_message": {
+    "message": "Are you sure you want to delete this account ?",
+    "description": "Delete EVM account button"
+  },
   "evm_add_wallet_seed_button": {
     "message": "Add seed",
     "description": "Add seed button"
@@ -6075,9 +6143,25 @@
     "message": "Import",
     "description": "Import existing seed"
   },
+  "evm_import_key": {
+    "message": "Import key",
+    "description": "Import existing private key"
+  },
+  "evm_imported_seed": {
+    "message": "Imported",
+    "description": "Imported private key source name"
+  },
   "evm_create_seed": {
     "message": "Create",
     "description": "Create seed"
+  },
+  "evm_connect_ledger_wallet": {
+    "message": "Connect Ledger",
+    "description": "Open Ledger EVM wallet connection flow"
+  },
+  "evm_copy_seed": {
+    "message": "Copy seed",
+    "description": "Copy EVM seed menu item"
   },
   "evm_seeds_and_accounts": {
     "message": "Seeds & Accounts",
@@ -6090,6 +6174,10 @@
   "evm_seeds_already_in_keychain": {
     "message": "This seed was already added in Keychain",
     "description": "Seed already added in Keychain"
+  },
+  "evm_private_key_already_in_keychain": {
+    "message": "This EVM account was already added in Keychain",
+    "description": "Private key already added in Keychain"
   },
   "evm_transfer": {
     "message": "Transfer",

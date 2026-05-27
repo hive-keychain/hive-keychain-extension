@@ -17,7 +17,7 @@ import {
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 interface OwnProps {
@@ -45,9 +45,35 @@ const EvmWalletTokensInner = ({
     ready: boolean;
     showCard: boolean;
   }>({ ready: false, showCard: false });
+  const isMountedRef = useRef(false);
 
   useEffect(() => {
+    isMountedRef.current = true;
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const init = async () => {
+      const tokens: NativeAndErc20Token[] =
+        (await EvmTokensUtils.filterTokensBasedOnSettings(
+          activeAccount.nativeAndErc20Tokens.value,
+        )) as NativeAndErc20Token[];
+      const sortedTokens = EvmTokensUtils.sortTokens(tokens);
+      if (!cancelled) {
+        setFilteredTokens(sortedTokens);
+      }
+    };
+
     void init();
+
+    return () => {
+      cancelled = true;
+    };
   }, [activeAccount.nativeAndErc20Tokens]);
 
   useEffect(() => {
@@ -108,22 +134,15 @@ const EvmWalletTokensInner = ({
     activeAccount.nativeAndErc20Tokens.loading,
   ]);
 
-  const init = async () => {
-    const tokens: NativeAndErc20Token[] =
-      (await EvmTokensUtils.filterTokensBasedOnSettings(
-        activeAccount.nativeAndErc20Tokens.value,
-      )) as NativeAndErc20Token[];
-    const sortedTokens = EvmTokensUtils.sortTokens(tokens);
-    setFilteredTokens(sortedTokens);
-  };
-
   const openCustomTokensPage = () => {
     navigateTo(EvmScreen.EVM_CUSTOM_TOKENS_PAGE);
   };
 
   const handleHideEmptyCard = async () => {
     await setCustomErc20EmptyCardHiddenForChain(chain.chainId);
-    setEmptyCardState((prev) => ({ ...prev, showCard: false }));
+    if (isMountedRef.current) {
+      setEmptyCardState((prev) => ({ ...prev, showCard: false }));
+    }
   };
 
   const canManageCustomTokens =

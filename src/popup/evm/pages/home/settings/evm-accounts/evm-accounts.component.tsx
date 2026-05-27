@@ -1,9 +1,9 @@
-import { ContextualMenu } from '@interfaces/contextual-menu.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import {
   EvmAccount,
   EvmAccountOrPublic,
+  EvmAccountSource,
 } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountsContextualMenu } from '@popup/evm/pages/home/settings/evm-accounts/evm-accounts.contextual-menu';
 import {
@@ -32,6 +32,7 @@ import {
 } from 'src/common-ui/custom-select/custom-select.component';
 import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
+import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import {
   COPY_GENERIC_MESSAGE_KEY,
   copyTextWithToast,
@@ -50,14 +51,15 @@ const EvmAccounts = ({
   const [seedsOptions, setSeedsOptions] = useState<OptionItem[]>();
 
   const [editParams, setEditParams] = useState<EditAccountParams>();
-
-  const [menu, setMenu] = useState<ContextualMenu>();
+  const [accountToDelete, setAccountToDelete] = useState<EvmAccount>();
 
   const [localAccounts, setLocalAccounts] = useState<EvmAccount[]>(accounts);
 
   const accountListDiv = useRef(null);
+  const isMountedRef = useRef(false);
 
   useEffect(() => {
+    isMountedRef.current = true;
     setTitleContainerProperties({
       title: 'evm_seeds_and_accounts',
       isBackButtonEnabled: true,
@@ -69,16 +71,16 @@ const EvmAccounts = ({
         await onLeavePage();
       },
     });
+
+    return () => {
+      isMountedRef.current = false;
+    };
   }, []);
 
   useEffect(() => {
     initializeOptions();
     setLocalAccounts(accounts);
   }, []);
-
-  useEffect(() => {
-    initializeMenu();
-  }, [selectedSeed]);
 
   const onLeavePage = async () => {
     const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
@@ -88,18 +90,30 @@ const EvmAccounts = ({
     loadEvmActiveAccount(chain, newActiveAccount);
   };
 
-  const initializeMenu = () => {
-    if (selectedSeed)
-      setMenu(
-        EvmAccountsContextualMenu({
-          activeSeedName: selectedSeed.label,
-          onEditClicked: handleEditSeedClick,
-          onDeleteClicked: handleDeleteSeedClick,
-          onCreateClicked: handleCreateSeedClick,
-          onImportClicked: handleImportSeedClick,
-          onCopyClicked: handleCopySeedClick,
-        }),
-      );
+  const isCurrentSourceLedger = () => {
+    const currentSeed = getCurrentSeed();
+    return currentSeed?.source === EvmAccountSource.LEDGER;
+  };
+
+  const isCurrentSourceImported = () => {
+    const currentSeed = getCurrentSeed();
+    return currentSeed?.source === EvmAccountSource.IMPORTED;
+  };
+
+  const isCurrentSourceSeed = () => {
+    const currentSeed = getCurrentSeed();
+    return currentSeed?.source === EvmAccountSource.SEED;
+  };
+
+  const getSeedOptionLabel = (account: EvmAccount) => {
+    if (account.source === EvmAccountSource.IMPORTED) {
+      return chrome.i18n.getMessage('evm_imported_seed');
+    }
+
+    return (
+      account.seedNickname ||
+      `${chrome.i18n.getMessage('common_seed')} #${account.seedId}`
+    );
   };
 
   const buildSeedOptions = (accounts: EvmAccount[]) => {
@@ -108,9 +122,7 @@ const EvmAccounts = ({
       if (!options.some((option) => option.value === account.seedId)) {
         options.push({
           value: account.seedId,
-          label:
-            account.seedNickname ||
-            `${chrome.i18n.getMessage('common_seed')} #${account.seedId}`,
+          label: getSeedOptionLabel(account),
         });
       }
     }
@@ -151,6 +163,8 @@ const EvmAccounts = ({
     const account = accounts.find(
       (account) => account.seedId === selectedSeed!.value,
     );
+    if (!isMountedRef.current) return;
+
     // setEvmAccounts(accounts);
     setLocalAccounts(accounts);
     setEditParams(undefined);
@@ -208,7 +222,7 @@ const EvmAccounts = ({
     const seed = (await EvmWalletUtils.getAccountsFromLocalStorage(mk)).find(
       (account) => account.id === selectedSeed?.value,
     );
-    if (!seed?.seed) return;
+    if (!seed || !('seed' in seed) || !seed.seed) return;
 
     closePopup();
     await copyTextWithToast(
@@ -225,6 +239,15 @@ const EvmAccounts = ({
   const handleImportSeedClick = () => {
     navigateTo(EvmScreen.IMPORT_EVM_WALLET);
   };
+  const handleImportKeyClick = () => {
+    navigateTo(EvmScreen.IMPORT_EVM_WALLET_FROM_KEY);
+  };
+  const handleConnectLedgerWalletClick = async () => {
+    const extensionId = (await chrome.management.getSelf()).id;
+    chrome.tabs.create({
+      url: `chrome-extension://${extensionId}/add-evm-accounts-from-ledger.html?chainId=${chain.chainId}`,
+    });
+  };
 
   const handleDeleteSeedClick = async () => {
     const seed = getCurrentSeed();
@@ -236,8 +259,62 @@ const EvmAccounts = ({
     await EvmWalletUtils.deleteSeed(seed.seedId, localAccounts, mk);
     const updatedAccounts =
       await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+    if (!isMountedRef.current) return;
+
     const updatedSeedOptions = buildSeedOptions(updatedAccounts);
     const nextSelectedSeed =
+      updatedSeedOptions[selectedSeedIndex] ??
+      updatedSeedOptions[selectedSeedIndex - 1] ??
+      updatedSeedOptions[0];
+
+    setLocalAccounts(updatedAccounts);
+    setSeedsOptions(updatedSeedOptions);
+    setSelectedSeed(nextSelectedSeed);
+    setEvmAccounts(updatedAccounts);
+
+    const nextActiveAccount =
+      updatedAccounts.find(
+        (account) => account.seedId === nextSelectedSeed?.value && !account.hide,
+      ) ??
+      updatedAccounts.find((account) => !account.hide) ??
+      updatedAccounts[0];
+
+    if (nextActiveAccount) {
+      await loadEvmActiveAccount(chain, nextActiveAccount.wallet);
+    }
+  };
+
+  const handleDeleteAddress = (account: EvmAccountOrPublic) => {
+    if ('wallet' in account) {
+      setAccountToDelete(account);
+    }
+  };
+
+  const handleConfirmDeleteAddress = async () => {
+    if (!accountToDelete) return;
+    const deletedAccount = accountToDelete;
+    setAccountToDelete(undefined);
+
+    const selectedSeedIndex =
+      seedsOptions?.findIndex(
+        (option) => option.value === deletedAccount.seedId,
+      ) ?? 0;
+
+    await EvmWalletUtils.deleteAddress(
+      deletedAccount.seedId,
+      deletedAccount.id,
+      localAccounts,
+      mk,
+    );
+    const updatedAccounts =
+      await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+    if (!isMountedRef.current) return;
+
+    const updatedSeedOptions = buildSeedOptions(updatedAccounts);
+    const nextSelectedSeed =
+      updatedSeedOptions.find(
+        (option) => option.value === deletedAccount.seedId,
+      ) ??
       updatedSeedOptions[selectedSeedIndex] ??
       updatedSeedOptions[selectedSeedIndex - 1] ??
       updatedSeedOptions[0];
@@ -286,9 +363,10 @@ const EvmAccounts = ({
         seedNickname,
         mk,
       );
-      setLocalAccounts(
-        await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk),
-      );
+      const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+      if (!isMountedRef.current) return;
+
+      setLocalAccounts(accounts);
       setEditParams(undefined);
     }
   };
@@ -315,7 +393,10 @@ const EvmAccounts = ({
       newAddressNickname,
       mk,
     );
-    setLocalAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
+    const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+    if (!isMountedRef.current) return;
+
+    setLocalAccounts(accounts);
     setEditParams(undefined);
   };
 
@@ -329,8 +410,26 @@ const EvmAccounts = ({
     hide: boolean,
   ) => {
     await EvmWalletUtils.hideOrShowAddress(seedId, mk, addressId, hide);
-    setLocalAccounts(await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk));
+    const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+    if (!isMountedRef.current) return;
+
+    setLocalAccounts(accounts);
   };
+
+  const menu = selectedSeed
+    ? EvmAccountsContextualMenu({
+        activeSeedName: selectedSeed.label,
+        onEditClicked: handleEditSeedClick,
+        onDeleteClicked: handleDeleteSeedClick,
+        onCreateClicked: handleCreateSeedClick,
+        onImportClicked: handleImportSeedClick,
+        onImportKeyClicked: handleImportKeyClick,
+        onConnectLedgerClicked: handleConnectLedgerWalletClick,
+        onCopyClicked: handleCopySeedClick,
+        isLedgerSource: isCurrentSourceLedger(),
+        isImportedSource: isCurrentSourceImported(),
+      })
+    : undefined;
 
   return (
     <div className="evm-accounts-page">
@@ -358,9 +457,12 @@ const EvmAccounts = ({
                 <EvmAccountDisplayComponent
                   account={account}
                   editable
+                  hideable={account.source === EvmAccountSource.SEED}
+                  deletable={account.source !== EvmAccountSource.SEED}
                   copiable
                   onCopy={onCopyAddress}
                   onHideOrShow={handleHideOrShowAddress}
+                  onDelete={handleDeleteAddress}
                   onEdit={handleOnEditAddress}
                   fullAddress
                 />
@@ -368,14 +470,40 @@ const EvmAccounts = ({
             ))}
       </div>
       <div className="button-panel">
-        <ButtonComponent
-          type={ButtonType.ALTERNATIVE}
-          height="small"
-          label="evm_add_wallet_address_button"
-          onClick={handleAddAddressClick}
-        />
+        {isCurrentSourceSeed() && (
+          <ButtonComponent
+            type={ButtonType.ALTERNATIVE}
+            height="small"
+            label="evm_add_wallet_address_button"
+            onClick={handleAddAddressClick}
+          />
+        )}
       </div>
       {editParams && <EvmEditAccountPopup editParams={editParams} />}
+      {accountToDelete && (
+        <PopupContainer className="seed-nickname-popup">
+          <div className="popup-title">
+            {chrome.i18n.getMessage('evm_delete_seed_button')}
+          </div>
+          <div className="caption">
+            {chrome.i18n.getMessage('evm_delete_account_confirmation_message')}
+          </div>
+          <div className="popup-footer">
+            <ButtonComponent
+              label="dialog_cancel"
+              type={ButtonType.ALTERNATIVE}
+              onClick={() => setAccountToDelete(undefined)}
+              height="small"
+            />
+            <ButtonComponent
+              type={ButtonType.IMPORTANT}
+              label="popup_html_confirm"
+              onClick={handleConfirmDeleteAddress}
+              height="small"
+            />
+          </div>
+        </PopupContainer>
+      )}
     </div>
   );
 };

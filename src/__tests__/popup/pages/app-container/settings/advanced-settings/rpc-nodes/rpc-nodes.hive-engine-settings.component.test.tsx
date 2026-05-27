@@ -41,7 +41,6 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
   };
 
   const openHiveEngineDropdown = () => {
-<<<<<<< HEAD
     fireEvent.click(
       screen
         .getByTestId('hive-engine-rpc-select-handle')
@@ -55,13 +54,6 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
         .getByTestId('hive-account-history-api-select-handle')
         .closest('[aria-label="Dropdown select"]') as HTMLElement,
     );
-=======
-    fireEvent.click(screen.getByTestId('hive-engine-rpc-select-handle'));
-  };
-
-  const openAccountHistoryDropdown = () => {
-    fireEvent.click(screen.getByTestId('hive-account-history-api-select-handle'));
->>>>>>> dev
   };
 
   describe('Hive-Engine RPC selector:\n', () => {

@@ -6,7 +6,14 @@ import { createEvmMessage } from '@background/hive/requests/operations/operation
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
+import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
 import { ethers } from 'ethers';
+
+const getUnsupportedLedgerEncryptionError = () => {
+  const error = new Error('Ledger does not support encryption key requests');
+  (error as any).code = 'UNSUPPORTED_OPERATION';
+  return error;
+};
 
 export const getEncryptionKey = async (
   requestHandler: EvmRequestHandler,
@@ -26,6 +33,9 @@ export const getEncryptionKey = async (
   });
   if (!account) {
     throw new Error('Account not found');
+  }
+  if (EvmSignerUtils.isLedgerWallet(account.wallet)) {
+    throw getUnsupportedLedgerEncryptionError();
   }
 
   const res = await EvmRequestsUtils.getEncryptionKey(account);

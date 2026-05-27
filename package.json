@@ -62,6 +62,7 @@
     "@engrave/ledger-app-hive": "3.5.6",
     "@hiveio/hive-js": "2.0.8",
     "@hookform/resolvers": "3.1.1",
+    "@ledgerhq/hw-app-eth": "6.28.2",
     "@ledgerhq/hw-transport": "6.28.8",
     "@ledgerhq/hw-transport-webusb": "6.27.19",
     "@lifi/types": "^17.59.0",

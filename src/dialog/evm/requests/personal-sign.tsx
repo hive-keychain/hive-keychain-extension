@@ -13,6 +13,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { Card } from 'src/common-ui/card/card.component';
 import { DisplayText } from 'src/dialog/components/display-text/display-text';
+import { EvmLedgerDialogUtils } from 'src/dialog/evm/evm-ledger-dialog.utils';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
@@ -88,6 +89,11 @@ export const PersonalSign = (props: Props) => {
   const handleCancel = () => {
     afterCancel(request.request_id, data.tab);
   };
+  const loadingCaption =
+    EvmLedgerDialogUtils.getLedgerConfirmationCaptionForAddress(
+      accounts,
+      target,
+    );
 
   return (
     <EvmOperation
@@ -109,6 +115,7 @@ export const PersonalSign = (props: Props) => {
           />
         </Card>
       }
+      loadingCaption={loadingCaption}
       transactionHook={transactionHook}></EvmOperation>
   );
 };

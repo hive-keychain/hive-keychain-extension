@@ -5,7 +5,7 @@ import {
 import { createEvmMessage } from '@background/hive/requests/operations/operations.utils';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
-import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
+import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
 
 export const personalSign = async (
   requestHandler: EvmRequestHandler,
@@ -19,8 +19,8 @@ export const personalSign = async (
     );
   });
   if (account) {
-    const res = await EvmRequestsUtils.signMessage(
-      account.wallet.privateKey,
+    const res = await EvmSignerUtils.signMessage(
+      account.wallet,
       request.params[0],
     );
     return await createEvmMessage(

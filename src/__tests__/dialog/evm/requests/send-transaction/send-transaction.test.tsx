@@ -4,6 +4,7 @@ import { KeychainApi } from '@api/keychain';
 import { SendTransaction } from '@dialog/evm/requests/send-transaction/send-transaction';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmAccountSource } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
@@ -47,8 +48,8 @@ jest.mock('src/dialog/evm/evm-operation/evm-operation', () => ({
 }));
 
 jest.mock('src/common-ui/loading/loading.component', () => ({
-  LoadingComponent: ({ hide }: any) =>
-    hide ? null : <div data-testid="loading" />,
+  LoadingComponent: ({ hide, caption }: any) =>
+    hide ? null : <div data-testid="loading">{caption}</div>,
 }));
 
 jest.mock('@dialog/components/balance-change-card/balance-change-card.component', () => ({
@@ -120,6 +121,7 @@ describe('send-transaction proxy tests:\n', () => {
         }),
       ),
     handleOnConfirmClick: jest.fn(),
+    hasWarning: jest.fn().mockReturnValue(false),
     initPendingTransactionWarning: jest.fn().mockResolvedValue(undefined),
     loading: false,
     ready: false,
@@ -178,8 +180,10 @@ describe('send-transaction proxy tests:\n', () => {
     jest.restoreAllMocks();
     mockBalanceChangeCard.mockClear();
     transactionHook.fields = undefined;
+    transactionHook.loading = false;
     transactionHook.ready = false;
     transactionHook.selectedFee = undefined;
+    transactionHook.hasWarning.mockReturnValue(false);
     (useTransactionHook as jest.Mock).mockReturnValue(transactionHook);
     mockGasFeePanel.mockClear();
     jest.spyOn(ChainUtils, 'getChain').mockResolvedValue({
@@ -311,6 +315,44 @@ describe('send-transaction proxy tests:\n', () => {
     expect(contractField.value.props.address).toBe(proxyAddress);
     expect(contractField.value.props.canCopy).toBe(true);
     expect(contractField.value.props.prefix).toBeDefined();
+  });
+
+  it('does not show the Ledger confirmation caption during pre-confirmation loading', async () => {
+    transactionHook.loading = true;
+
+    render(
+      <SendTransaction
+        accounts={[
+          {
+            address: '0x00000000000000000000000000000000000000ff',
+            source: EvmAccountSource.LEDGER,
+          } as any,
+        ]}
+        afterCancel={jest.fn()}
+        data={{ dappInfo: { domain: 'app.example' }, tab: 1 } as any}
+        request={
+          {
+            chainId: '1',
+            params: [
+              {
+                from: '0x00000000000000000000000000000000000000ff',
+                gasLimit: 21000,
+                maxFeePerGas: '1',
+                maxPriorityFeePerGas: '1',
+                to: '0x00000000000000000000000000000000000000ab',
+                type: EvmTransactionType.EIP_1559,
+                value: '1000000000000000000',
+              },
+            ],
+            request_id: 1,
+          } as any
+        }
+      />,
+    );
+
+    expect(screen.getByTestId('loading').textContent).toBe('');
+
+    await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
   });
 
   it('does not request an abi for deployment transactions', async () => {

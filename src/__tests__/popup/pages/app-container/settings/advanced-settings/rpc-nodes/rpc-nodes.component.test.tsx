@@ -160,15 +160,11 @@ describe('rpc-nodes.component tests:\n', () => {
           'https://saturno.hive.com/rpc',
         );
         await userEvent.click(screen.getByTestId(dataTestIdButton.save));
-<<<<<<< HEAD
         fireEvent.click(
           screen
             .getByTestId(dataTestIdSelect.rpcNode.selected)
             .closest('[aria-label="Dropdown select"]') as HTMLElement,
         );
-=======
-        fireEvent.click(screen.getByTestId(dataTestIdSelect.rpcNode.selected));
->>>>>>> dev
       });
       expect(
         await screen.findByText('https://saturno.hive.com/rpc', {
@@ -191,7 +187,6 @@ describe('rpc-nodes.component tests:\n', () => {
           screen.getByTestId(dataTestIdCheckbox.rpcNodes.select.setAsActive),
         );
         await userEvent.click(screen.getByTestId(dataTestIdButton.save));
-<<<<<<< HEAD
         fireEvent.click(
           screen
             .getByTestId(dataTestIdSelect.rpcNode.selected)
@@ -199,15 +194,6 @@ describe('rpc-nodes.component tests:\n', () => {
         );
       });
       expect(sSetRpc).toHaveBeenCalled();
-=======
-        fireEvent.click(screen.getByTestId(dataTestIdSelect.rpcNode.selected));
-      });
-      expect(
-        screen.getByTestId(
-          'custom-select-item-https://saturno.hive.com/rpc',
-        ),
-      ).toBeInTheDocument();
->>>>>>> dev
       sSetRpc.mockRestore();
     });
   });

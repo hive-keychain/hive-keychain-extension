@@ -182,7 +182,7 @@ describe('evm transactions utils', () => {
       queuedTransactionsCount: 0,
       pendingTransactionDetails: {
         label: 'Pending swap',
-        title: 'evm_pending_transaction',
+        title: 'evm_one_pending_transaction',
         nonce: 0,
       },
     });

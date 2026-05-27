@@ -41,9 +41,7 @@ export const EvmAccountInfo = ({
       </div>
       <div className="bottom-line">
         <div className={`account-address ${fullAddress ? 'full-address' : ''}`}>
-          {fullAddress
-            ? addr
-            : EvmFormatUtils.formatAddress(addr)}
+          {fullAddress ? addr : EvmFormatUtils.formatAddress(addr)}
         </div>
       </div>
     </div>
