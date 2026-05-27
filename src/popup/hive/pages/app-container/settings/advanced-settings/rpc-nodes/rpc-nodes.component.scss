@@ -1,14 +1,18 @@
 .rpc-nodes-page {
   @include pageLayoutRowGap;
+  row-gap: 10px;
+  padding: 0 24px;
+
   .introduction {
-    @include caption();
+    @include settings-page-note();
+    margin: 0;
   }
 
   .rpc-form-container {
     display: flex;
     flex-direction: column;
     row-gap: 8px;
-    margin: 0px 32px;
+    margin: 0;
     padding-bottom: 24px;
 
     .rpc-section {

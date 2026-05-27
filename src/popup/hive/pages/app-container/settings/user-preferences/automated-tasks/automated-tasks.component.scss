@@ -7,7 +7,15 @@
   padding-bottom: 16px;
 
   .intro {
-    @include caption();
+    @include settings-page-note();
+
+    &.title-list {
+      background: unset;
+      border: unset;
+      border-radius: unset;
+      padding: 0 0 0 8px;
+      @include poppins500(14px);
+    }
   }
   .section {
     padding: 0 20px;
@@ -79,7 +87,6 @@
       }
 
       .title-list {
-        @include poppins500(14px);
         padding: 0px;
         padding-left: 8px;
       }

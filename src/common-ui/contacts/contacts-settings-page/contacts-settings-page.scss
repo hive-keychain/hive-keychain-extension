@@ -1,18 +1,19 @@
 .contacts-settings-page {
   @include pageLayoutRowGap;
-  row-gap: 16px;
+  row-gap: 10px;
   justify-content: flex-start;
   overflow-y: auto;
+  padding: 0 24px;
 
   .intro {
-    @include caption();
+    @include settings-page-note();
+    margin: 0;
   }
 
   .addresses-list {
     display: flex;
     flex-direction: column;
     row-gap: 24px;
-    padding-top: 12px;
     scroll-behavior: smooth;
   }
 
@@ -25,7 +26,7 @@
       display: grid;
       grid-template-columns: 5fr 1fr;
       align-items: center;
-      padding: 0 20px;
+      padding: 0;
 
       .category-title {
         @include poppins400(14px);

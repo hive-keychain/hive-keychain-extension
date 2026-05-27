@@ -3,8 +3,11 @@
   flex-direction: column;
   row-gap: 12px;
   height: 100%;
+  padding: 0 24px;
+
   .caption {
-    @include caption();
+    @include settings-page-note();
+    margin: 0;
     font-size: a {
       color: $red;
     }

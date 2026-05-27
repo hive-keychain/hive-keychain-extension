@@ -55,3 +55,9 @@
     row-gap: 8px;
   }
 }
+
+.popup-container.seed-nickname-popup {
+  .popup-content .caption:not(.error-message) {
+    @include settings-page-note();
+  }
+}

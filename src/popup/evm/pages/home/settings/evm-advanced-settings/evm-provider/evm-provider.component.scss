@@ -22,12 +22,7 @@
   }
 
   .provider-note {
-    @include poppins400(14px);
-    color: var(--main-font-color);
-    background: var(--card-background);
-    border-radius: 16px;
-    padding: 12px 16px;
-    line-height: 1.4;
+    @include provider-note-base();
   }
 
   .warning-note {

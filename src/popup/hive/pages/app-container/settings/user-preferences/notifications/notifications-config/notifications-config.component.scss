@@ -6,7 +6,7 @@
   padding: 0px 16px;
   padding-bottom: 16px;
   .caption {
-    @include caption();
+    @include settings-page-note();
   }
 
   .link-to-advanced-settings {

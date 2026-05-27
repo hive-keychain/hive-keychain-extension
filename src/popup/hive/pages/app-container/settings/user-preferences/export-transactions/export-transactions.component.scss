@@ -5,6 +5,6 @@
   row-gap: 16px;
   flex: 1;
   .introduction {
-    @include caption();
+    @include settings-page-note();
   }
 }

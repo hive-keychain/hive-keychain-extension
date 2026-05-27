@@ -14,7 +14,7 @@
       line-height: 147%;
 
       .caption {
-        padding: 0px;
+        @include settings-page-note();
       }
 
       .popup-title {

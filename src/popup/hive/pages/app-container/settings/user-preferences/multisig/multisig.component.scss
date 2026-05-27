@@ -6,6 +6,6 @@
   padding: 0px 24px;
   padding-bottom: 16px;
   .intro {
-    @include caption();
+    @include settings-page-note();
   }
 }

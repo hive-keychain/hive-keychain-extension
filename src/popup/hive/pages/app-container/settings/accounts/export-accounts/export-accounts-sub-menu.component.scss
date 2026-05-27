@@ -5,6 +5,6 @@
   overflow-y: auto;
 
   .text {
-    @include caption();
+    @include settings-page-note();
   }
 }

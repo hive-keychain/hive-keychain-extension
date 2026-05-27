@@ -3,7 +3,7 @@
   padding: 0px 24px;
   padding-bottom: 24px;
   .caption {
-    @include caption;
+    @include settings-page-note();
   }
 
   .add-using-ledger {
@@ -22,7 +22,7 @@
     flex-direction: column;
     row-gap: 8px;
     .caption {
-      @include caption();
+      @include settings-page-note();
     }
     .auths {
       @include poppins500(14px);

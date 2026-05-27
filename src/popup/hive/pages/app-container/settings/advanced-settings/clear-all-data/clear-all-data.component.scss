@@ -2,7 +2,7 @@
   @include pageLayoutRowGap;
   padding: 0px 24px;
   .introduction {
-    @include caption();
+    @include settings-page-note();
   }
 
   .bottom-panel {
