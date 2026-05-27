@@ -7,10 +7,17 @@ export enum EvmAccountSource {
   IMPORTED = 'imported',
 }
 
+export enum EvmLedgerDerivationMode {
+  BIP44 = 'bip44',
+  LEDGER_LIVE = 'ledger_live',
+  LEGACY = 'legacy',
+}
+
 export type EvmLedgerWallet = {
   address: string;
   path: string;
   index: number;
+  derivationMode?: EvmLedgerDerivationMode;
   source: EvmAccountSource.LEDGER;
 };
 
@@ -41,6 +48,8 @@ export type StoredEvmWalletAddress = {
 
 export type StoredEvmLedgerAccount = StoredEvmWalletAddress & {
   address: string;
+  derivationMode?: EvmLedgerDerivationMode;
+  ledgerIndex?: number;
 };
 
 export type StoredEvmLedgerWalletSource = {
@@ -71,6 +80,7 @@ export type EvmAccount = StoredEvmWalletAddress & {
   wallet: EvmWallet;
   seedId: number;
   seedNickname?: string;
+  derivationMode?: EvmLedgerDerivationMode;
   source: EvmAccountSource;
 };
 
@@ -79,6 +89,7 @@ export type EvmAccountPublic = StoredEvmWalletAddress & {
   address: string;
   seedId: number;
   seedNickname?: string;
+  derivationMode?: EvmLedgerDerivationMode;
   source: EvmAccountSource;
 };
 

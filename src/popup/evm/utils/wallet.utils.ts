@@ -20,6 +20,7 @@ import {
   WalletWithBalance,
 } from '@popup/evm/interfaces/wallet.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmLedgerUtils } from '@popup/evm/utils/evm-ledger.utils';
 import EncryptUtils from '@popup/hive/utils/encrypt.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -203,11 +204,36 @@ const getMaxSourceId = (savedSources: StoredEvmAccountSource[]) => {
     .reduce((max, current) => Math.max(max, current), 0);
 };
 
+const getAvailableLedgerAccountId = (
+  requestedId: number,
+  usedIds: Set<number>,
+) => {
+  if (!usedIds.has(requestedId)) {
+    usedIds.add(requestedId);
+    return requestedId;
+  }
+
+  let nextId = requestedId;
+  while (usedIds.has(nextId)) {
+    nextId++;
+  }
+  usedIds.add(nextId);
+  return nextId;
+};
+
 const buildLedgerWallet = (account: StoredEvmLedgerAccount): EvmLedgerWallet => {
+  const derivationMode =
+    account.derivationMode ??
+    EvmLedgerUtils.getDerivationModeFromPath(account.path);
+
   return {
     address: account.address,
     path: account.path,
-    index: account.id,
+    index:
+      account.ledgerIndex ??
+      EvmLedgerUtils.getDerivationIndexFromPath(account.path) ??
+      account.id,
+    derivationMode,
     source: EvmAccountSource.LEDGER,
   };
 };
@@ -411,19 +437,45 @@ const addLedgerAccounts = async (
   const existingLedgerSource = previousAccounts.find(isLedgerSource);
   let nextOrder = getMaxAccountOrder(previousAccounts) + 1;
   const existingAddresses = new Set(
-    existingLedgerSource?.accounts.map((account) =>
-      account.address.toLowerCase(),
-    ) ?? [],
+    previousAccounts
+      .map((source) =>
+        getStoredSourceAccountAddress(source).map((address) =>
+          address.toLowerCase(),
+        ),
+      )
+      .flat(),
+  );
+  const usedLedgerAccountIds = new Set(
+    existingLedgerSource?.accounts.map((account) => account.id) ?? [],
   );
   const newStoredAccounts = accounts
-    .filter((account) => !existingAddresses.has(account.address.toLowerCase()))
-    .map((account) => ({
-      id: account.id,
-      address: account.address,
-      path: account.path,
-      order: nextOrder++,
-      nickname: account.nickname ?? '',
-    }));
+    .filter((account) => {
+      const address = account.address.toLowerCase();
+      if (existingAddresses.has(address)) {
+        return false;
+      }
+      existingAddresses.add(address);
+      return true;
+    })
+    .map((account) => {
+      const derivationMode =
+        account.derivationMode ??
+        EvmLedgerUtils.getDerivationModeFromPath(account.path);
+      const ledgerIndex =
+        account.ledgerIndex ??
+        EvmLedgerUtils.getDerivationIndexFromPath(account.path) ??
+        account.id;
+
+      return {
+        id: getAvailableLedgerAccountId(account.id, usedLedgerAccountIds),
+        address: account.address,
+        path: account.path,
+        derivationMode,
+        ledgerIndex,
+        order: nextOrder++,
+        nickname: account.nickname ?? '',
+      };
+    });
 
   if (existingLedgerSource) {
     existingLedgerSource.accounts.push(...newStoredAccounts);
@@ -724,6 +776,9 @@ const rebuildAccountsFromLocalStorage = async (mk: string) => {
             wallet: buildLedgerWallet(account),
             seedId: seed.id,
             seedNickname: seed.nickname,
+            derivationMode:
+              account.derivationMode ??
+              EvmLedgerUtils.getDerivationModeFromPath(account.path),
             source: EvmAccountSource.LEDGER,
           } as EvmAccount,
         }));

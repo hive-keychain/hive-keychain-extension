@@ -4,6 +4,7 @@ import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission
 import {
   EvmAccount,
   EvmAccountSource,
+  EvmLedgerDerivationMode,
 } from 'src/popup/evm/interfaces/wallet.interface';
 import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
@@ -291,10 +292,13 @@ describe('evm wallet utils', () => {
       source: EvmAccountSource.LEDGER,
       seedId: 3,
       seedNickname: 'Ledger',
+      derivationMode: EvmLedgerDerivationMode.BIP44,
       wallet: {
         source: EvmAccountSource.LEDGER,
         address: '0xLedger000000000000000000000000000000000001',
         path: "m/44'/60'/0'/0/0",
+        derivationMode: EvmLedgerDerivationMode.BIP44,
+        index: 0,
       },
     });
     expect(accounts[2]).toMatchObject({
@@ -333,6 +337,8 @@ describe('evm wallet utils', () => {
           id: 0,
           address: '0xLedger000000000000000000000000000000000001',
           path: "m/44'/60'/0'/0/0",
+          derivationMode: EvmLedgerDerivationMode.BIP44,
+          ledgerIndex: 0,
           order: 4,
           nickname: '',
         },
@@ -340,6 +346,8 @@ describe('evm wallet utils', () => {
           id: 1,
           address: '0xLedger000000000000000000000000000000000002',
           path: "m/44'/60'/0'/0/1",
+          derivationMode: EvmLedgerDerivationMode.BIP44,
+          ledgerIndex: 1,
           order: 5,
           nickname: 'Ledger Two',
         },
@@ -405,6 +413,109 @@ describe('evm wallet utils', () => {
         },
       ],
     });
+  });
+
+  it('stores later Ledger imports from another derivation preset under the existing Ledger source', async () => {
+    await EvmWalletUtils.addLedgerAccounts(
+      [
+        {
+          id: 0,
+          address: '0xLedger000000000000000000000000000000000001',
+          path: "m/44'/60'/0'/0/0",
+          derivationMode: EvmLedgerDerivationMode.BIP44,
+          ledgerIndex: 0,
+        },
+        {
+          id: 1,
+          address: '0xLedger000000000000000000000000000000000002',
+          path: "m/44'/60'/0'/0/1",
+          derivationMode: EvmLedgerDerivationMode.BIP44,
+          ledgerIndex: 1,
+        },
+      ],
+      mk,
+      'Ledger',
+    );
+
+    await EvmWalletUtils.addLedgerAccounts(
+      [
+        {
+          id: 1,
+          address: '0xLedgerLive00000000000000000000000000000003',
+          path: "m/44'/60'/1'/0/0",
+          derivationMode: EvmLedgerDerivationMode.LEDGER_LIVE,
+          ledgerIndex: 1,
+          nickname: 'Ledger Live One',
+        },
+      ],
+      mk,
+      'Ledger',
+    );
+
+    const storedSeeds = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
+    const ledgerSources = storedSeeds.filter(
+      (source) => source.type === EvmAccountSource.LEDGER,
+    );
+
+    expect(ledgerSources).toHaveLength(1);
+    expect(ledgerSources[0].accounts).toEqual([
+      expect.objectContaining({
+        id: 0,
+        path: "m/44'/60'/0'/0/0",
+        derivationMode: EvmLedgerDerivationMode.BIP44,
+        ledgerIndex: 0,
+      }),
+      expect.objectContaining({
+        id: 1,
+        path: "m/44'/60'/0'/0/1",
+        derivationMode: EvmLedgerDerivationMode.BIP44,
+        ledgerIndex: 1,
+      }),
+      expect.objectContaining({
+        id: 2,
+        path: "m/44'/60'/1'/0/0",
+        derivationMode: EvmLedgerDerivationMode.LEDGER_LIVE,
+        ledgerIndex: 1,
+        nickname: 'Ledger Live One',
+      }),
+    ]);
+  });
+
+  it('skips duplicate Ledger addresses across derivation presets', async () => {
+    await EvmWalletUtils.addLedgerAccounts(
+      [
+        {
+          id: 0,
+          address: '0xLedger000000000000000000000000000000000001',
+          path: "m/44'/60'/0'/0/0",
+          derivationMode: EvmLedgerDerivationMode.BIP44,
+          ledgerIndex: 0,
+        },
+      ],
+      mk,
+      'Ledger',
+    );
+
+    await EvmWalletUtils.addLedgerAccounts(
+      [
+        {
+          id: 0,
+          address: '0xLedger000000000000000000000000000000000001',
+          path: "m/44'/60'/0'/0/0",
+          derivationMode: EvmLedgerDerivationMode.LEDGER_LIVE,
+          ledgerIndex: 0,
+        },
+      ],
+      mk,
+      'Ledger',
+    );
+
+    const storedSeeds = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
+    const ledgerSource = storedSeeds.find(
+      (source) => source.type === EvmAccountSource.LEDGER,
+    );
+
+    expect(ledgerSource?.accounts).toHaveLength(1);
   });
 
   it('stores imported private keys under one Imported source', async () => {

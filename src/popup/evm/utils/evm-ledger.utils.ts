@@ -2,6 +2,7 @@ import LedgerEthApp from '@ledgerhq/hw-app-eth';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import {
   EvmAccountSource,
+  EvmLedgerDerivationMode,
   EvmLedgerWallet,
   EvmWallet,
   StoredEvmLedgerAccount,
@@ -11,10 +12,26 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ethers } from 'ethers';
 import { KeychainError } from 'src/keychain-error';
 
-const INITIAL_LEDGER_PATH = "m/44'/60'/0'/0";
 const DEFAULT_EMPTY_ACCOUNT_LIMIT = 2;
 
 let evmLedger: LedgerEthApp;
+
+interface EvmLedgerDerivationConfig {
+  labelKey: string;
+  buildPath: (accountIndex: number) => string;
+  matchPath: (path: string) => RegExpMatchArray | null;
+}
+
+interface EvmLedgerPathMetadata {
+  path: string;
+  derivationMode?: EvmLedgerDerivationMode;
+}
+
+interface EvmLedgerDiscoveryOptions {
+  derivationMode?: EvmLedgerDerivationMode;
+  startIndex?: number;
+  emptyAccountLimit?: number;
+}
 
 export type EvmLedgerWalletWithBalance = {
   wallet: EvmLedgerWallet;
@@ -22,10 +39,78 @@ export type EvmLedgerWalletWithBalance = {
   selected: boolean;
 };
 
+const LEDGER_DERIVATION_CONFIGS: Record<
+  EvmLedgerDerivationMode,
+  EvmLedgerDerivationConfig
+> = {
+  [EvmLedgerDerivationMode.BIP44]: {
+    labelKey: 'evm_ledger_derivation_path_bip44',
+    buildPath: (accountIndex: number) => `m/44'/60'/0'/0/${accountIndex}`,
+    matchPath: (path: string) => path.match(/^m\/44'\/60'\/0'\/0\/(\d+)$/),
+  },
+  [EvmLedgerDerivationMode.LEDGER_LIVE]: {
+    labelKey: 'evm_ledger_derivation_path_ledger_live',
+    buildPath: (accountIndex: number) => `m/44'/60'/${accountIndex}'/0/0`,
+    matchPath: (path: string) => path.match(/^m\/44'\/60'\/(\d+)'\/0\/0$/),
+  },
+  [EvmLedgerDerivationMode.LEGACY]: {
+    labelKey: 'evm_ledger_derivation_path_legacy',
+    buildPath: (accountIndex: number) => `m/44'/60'/0'/${accountIndex}`,
+    matchPath: (path: string) => path.match(/^m\/44'\/60'\/0'\/(\d+)$/),
+  },
+};
+
+const LEDGER_DERIVATION_MODES = [
+  EvmLedgerDerivationMode.BIP44,
+  EvmLedgerDerivationMode.LEDGER_LIVE,
+  EvmLedgerDerivationMode.LEGACY,
+];
+
 const getLedgerPath = (path: string) => path.replace(/^m\//, '');
 
-const buildDerivationPath = (accountIndex: number) =>
-  `${INITIAL_LEDGER_PATH}/${accountIndex}`;
+const buildDerivationPath = (
+  accountIndex: number,
+  derivationMode = EvmLedgerDerivationMode.BIP44,
+) => LEDGER_DERIVATION_CONFIGS[derivationMode].buildPath(accountIndex);
+
+const getDerivationModeFromPath = (path: string) => {
+  return LEDGER_DERIVATION_MODES.find(
+    (derivationMode) =>
+      LEDGER_DERIVATION_CONFIGS[derivationMode].matchPath(path) !== null,
+  );
+};
+
+const getDerivationIndexFromPath = (path: string) => {
+  for (const derivationMode of LEDGER_DERIVATION_MODES) {
+    const match = LEDGER_DERIVATION_CONFIGS[derivationMode].matchPath(path);
+    if (!match) continue;
+
+    return Number(match[1]);
+  }
+};
+
+const getDerivationModeLabelKey = (derivationMode: EvmLedgerDerivationMode) =>
+  LEDGER_DERIVATION_CONFIGS[derivationMode].labelKey;
+
+const getNextDerivationIndex = (
+  accounts: EvmLedgerPathMetadata[],
+  derivationMode: EvmLedgerDerivationMode,
+) => {
+  const indexes = accounts
+    .filter(
+      (account) =>
+        (account.derivationMode ??
+          EvmLedgerUtils.getDerivationModeFromPath(account.path)) ===
+        derivationMode,
+    )
+    .map((account) => EvmLedgerUtils.getDerivationIndexFromPath(account.path))
+    .filter(
+      (index): index is number =>
+        typeof index === 'number' && Number.isFinite(index),
+    );
+
+  return indexes.length === 0 ? 0 : Math.max(...indexes) + 1;
+};
 
 const getLedgerStatusCode = (error: any) => {
   const statusCode = Number(error?.statusCode);
@@ -146,15 +231,22 @@ const getAddressFromDerivationPath = async (path: string) => {
 
 const discoverAccounts = async (
   chain: EvmChain,
-  emptyAccountLimit = DEFAULT_EMPTY_ACCOUNT_LIMIT,
+  options: EvmLedgerDiscoveryOptions = {},
 ): Promise<EvmLedgerWalletWithBalance[]> => {
   const provider = await EthersUtils.getProvider(chain);
   const wallets: EvmLedgerWalletWithBalance[] = [];
-  let accountIndex = 0;
+  const derivationMode =
+    options.derivationMode ?? EvmLedgerDerivationMode.BIP44;
+  const emptyAccountLimit =
+    options.emptyAccountLimit ?? DEFAULT_EMPTY_ACCOUNT_LIMIT;
+  let accountIndex = options.startIndex ?? 0;
   let consecutiveEmptyWallets = 0;
 
   while (consecutiveEmptyWallets < emptyAccountLimit) {
-    const path = EvmLedgerUtils.buildDerivationPath(accountIndex);
+    const path = EvmLedgerUtils.buildDerivationPath(
+      accountIndex,
+      derivationMode,
+    );
     const address = await EvmLedgerUtils.getAddressFromDerivationPath(path);
     const wei = await provider.getBalance(address);
     const balance = Number(parseFloat(ethers.formatEther(wei)).toFixed(6));
@@ -164,6 +256,7 @@ const discoverAccounts = async (
         address,
         path,
         index: accountIndex,
+        derivationMode,
         source: EvmAccountSource.LEDGER,
       },
       balance,
@@ -196,6 +289,10 @@ const toStoredLedgerAccount = (
     id: wallet.index,
     address: wallet.address,
     path: wallet.path,
+    derivationMode:
+      wallet.derivationMode ??
+      EvmLedgerUtils.getDerivationModeFromPath(wallet.path),
+    ledgerIndex: wallet.index,
     nickname,
   };
 };
@@ -249,6 +346,10 @@ export const EvmLedgerUtils = {
   init,
   isLedgerSupported,
   getLedgerInstance,
+  getDerivationModeLabelKey,
+  getDerivationModeFromPath,
+  getDerivationIndexFromPath,
+  getNextDerivationIndex,
   buildDerivationPath,
   getAddressFromDerivationPath,
   discoverAccounts,

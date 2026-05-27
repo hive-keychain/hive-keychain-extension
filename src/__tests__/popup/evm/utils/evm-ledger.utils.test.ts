@@ -1,6 +1,9 @@
 import LedgerEthApp from '@ledgerhq/hw-app-eth';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { EvmAccountSource } from '@popup/evm/interfaces/wallet.interface';
+import {
+  EvmAccountSource,
+  EvmLedgerDerivationMode,
+} from '@popup/evm/interfaces/wallet.interface';
 import { EvmLedgerUtils } from '@popup/evm/utils/evm-ledger.utils';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -49,6 +52,61 @@ describe('evm ledger utils', () => {
     expect(EvmLedgerUtils.buildDerivationPath(3)).toBe("m/44'/60'/0'/0/3");
   });
 
+  it('builds standard Ledger derivation preset paths', () => {
+    expect(
+      EvmLedgerUtils.buildDerivationPath(3, EvmLedgerDerivationMode.BIP44),
+    ).toBe("m/44'/60'/0'/0/3");
+    expect(
+      EvmLedgerUtils.buildDerivationPath(
+        3,
+        EvmLedgerDerivationMode.LEDGER_LIVE,
+      ),
+    ).toBe("m/44'/60'/3'/0/0");
+    expect(
+      EvmLedgerUtils.buildDerivationPath(3, EvmLedgerDerivationMode.LEGACY),
+    ).toBe("m/44'/60'/0'/3");
+  });
+
+  it('infers derivation preset metadata from stored paths', () => {
+    expect(
+      EvmLedgerUtils.getDerivationModeFromPath("m/44'/60'/0'/0/0"),
+    ).toBe(EvmLedgerDerivationMode.BIP44);
+    expect(EvmLedgerUtils.getDerivationModeFromPath("m/44'/60'/2'/0/0")).toBe(
+      EvmLedgerDerivationMode.LEDGER_LIVE,
+    );
+    expect(EvmLedgerUtils.getDerivationModeFromPath("m/44'/60'/0'/7")).toBe(
+      EvmLedgerDerivationMode.LEGACY,
+    );
+    expect(EvmLedgerUtils.getDerivationModeFromPath("m/44'/60'/bad")).toBe(
+      undefined,
+    );
+    expect(
+      EvmLedgerUtils.getDerivationIndexFromPath("m/44'/60'/2'/0/0"),
+    ).toBe(2);
+  });
+
+  it('computes the next discovery index for the selected derivation preset', () => {
+    expect(
+      EvmLedgerUtils.getNextDerivationIndex(
+        [
+          { path: "m/44'/60'/0'/0/0" },
+          { path: "m/44'/60'/0'/0/2" },
+          { path: "m/44'/60'/5'/0/0" },
+        ],
+        EvmLedgerDerivationMode.BIP44,
+      ),
+    ).toBe(3);
+    expect(
+      EvmLedgerUtils.getNextDerivationIndex(
+        [
+          { path: "m/44'/60'/0'/0/0" },
+          { path: "m/44'/60'/5'/0/0" },
+        ],
+        EvmLedgerDerivationMode.LEDGER_LIVE,
+      ),
+    ).toBe(6);
+  });
+
   it('strips the m prefix before requesting Ledger addresses', async () => {
     mockLedgerApp.getAddress.mockResolvedValue({
       address: '0x0000000000000000000000000000000000000001',
@@ -75,7 +133,7 @@ describe('evm ledger utils', () => {
 
     const accounts = await EvmLedgerUtils.discoverAccounts(
       { mainToken: 'ETH' } as EvmChain,
-      2,
+      { emptyAccountLimit: 2 },
     );
 
     expect(accounts).toEqual([
@@ -85,6 +143,7 @@ describe('evm ledger utils', () => {
           address: '0x0000000000000000000000000000000000000000',
           path: "m/44'/60'/0'/0/0",
           index: 0,
+          derivationMode: EvmLedgerDerivationMode.BIP44,
         },
         balance: 1,
         selected: true,
@@ -95,6 +154,7 @@ describe('evm ledger utils', () => {
           address: '0x0000000000000000000000000000000000000001',
           path: "m/44'/60'/0'/0/1",
           index: 1,
+          derivationMode: EvmLedgerDerivationMode.BIP44,
         },
         balance: 0,
         selected: false,
@@ -105,10 +165,42 @@ describe('evm ledger utils', () => {
           address: '0x0000000000000000000000000000000000000002',
           path: "m/44'/60'/0'/0/2",
           index: 2,
+          derivationMode: EvmLedgerDerivationMode.BIP44,
         },
         balance: 0,
         selected: false,
       },
+    ]);
+  });
+
+  it('discovers ledger live addresses from the requested start index', async () => {
+    mockLedgerApp.getAddress.mockImplementation(async (path: string) => ({
+      address: `0x${path.split('/')[2].replace("'", '').padStart(40, '0')}`,
+    }));
+    (EthersUtils.getProvider as jest.Mock).mockResolvedValue({
+      getBalance: jest.fn(async () => 0n),
+    });
+
+    const accounts = await EvmLedgerUtils.discoverAccounts(
+      { mainToken: 'ETH' } as EvmChain,
+      {
+        derivationMode: EvmLedgerDerivationMode.LEDGER_LIVE,
+        startIndex: 4,
+        emptyAccountLimit: 2,
+      },
+    );
+
+    expect(mockLedgerApp.getAddress).toHaveBeenNthCalledWith(
+      1,
+      "44'/60'/4'/0/0",
+    );
+    expect(mockLedgerApp.getAddress).toHaveBeenNthCalledWith(
+      2,
+      "44'/60'/5'/0/0",
+    );
+    expect(accounts.map((account) => account.wallet.path)).toEqual([
+      "m/44'/60'/4'/0/0",
+      "m/44'/60'/5'/0/0",
     ]);
   });
 
@@ -161,5 +253,24 @@ describe('evm ledger utils', () => {
     expect(() =>
       EvmLedgerUtils.toStoredLedgerAccount({} as HDNodeWallet),
     ).toThrow('Cannot store a software wallet as a Ledger account');
+  });
+
+  it('stores Ledger derivation metadata for imported accounts', () => {
+    expect(
+      EvmLedgerUtils.toStoredLedgerAccount({
+        address: '0x0000000000000000000000000000000000000001',
+        path: "m/44'/60'/3'/0/0",
+        index: 3,
+        source: EvmAccountSource.LEDGER,
+        derivationMode: EvmLedgerDerivationMode.LEDGER_LIVE,
+      }),
+    ).toEqual({
+      id: 3,
+      address: '0x0000000000000000000000000000000000000001',
+      path: "m/44'/60'/3'/0/0",
+      derivationMode: EvmLedgerDerivationMode.LEDGER_LIVE,
+      ledgerIndex: 3,
+      nickname: '',
+    });
   });
 });

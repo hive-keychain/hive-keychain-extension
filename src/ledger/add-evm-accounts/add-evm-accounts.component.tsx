@@ -1,6 +1,11 @@
 import { Theme } from '@popup/theme.context';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import {
+  EvmAccount,
+  EvmAccountSource,
+  EvmLedgerDerivationMode,
+} from '@popup/evm/interfaces/wallet.interface';
+import {
   EvmLedgerUtils,
   EvmLedgerWalletWithBalance,
 } from '@popup/evm/utils/evm-ledger.utils';
@@ -30,6 +35,12 @@ enum AddEvmAccountsFromLedgerStep {
   FINISHED = 'add_accounts_from_ledger_finished',
 }
 
+const LEDGER_DERIVATION_MODES = [
+  EvmLedgerDerivationMode.BIP44,
+  EvmLedgerDerivationMode.LEDGER_LIVE,
+  EvmLedgerDerivationMode.LEGACY,
+];
+
 const AddEvmAccountsComponent = () => {
   const [loading, setLoading] = useState(false);
   const [selectableAccounts, setSelectableAccounts] = useState<
@@ -44,6 +55,9 @@ const AddEvmAccountsComponent = () => {
   const [message, setMessage] = useState('');
   const [theme, setTheme] = useState<Theme>();
   const [chain, setChain] = useState<EvmChain>();
+  const [localAccounts, setLocalAccounts] = useState<EvmAccount[]>([]);
+  const [selectedDerivationMode, setSelectedDerivationMode] =
+    useState<EvmLedgerDerivationMode>(EvmLedgerDerivationMode.BIP44);
 
   useEffect(() => {
     void init();
@@ -61,6 +75,7 @@ const AddEvmAccountsComponent = () => {
       ? await ChainUtils.getChain<EvmChain>(chainId)
       : await EvmChainUtils.getLastEvmChain();
     setChain(loadedChain);
+    setLocalAccounts(await loadLocalAccounts());
   };
 
   const getErrorMessage = (error: any) => {
@@ -70,14 +85,33 @@ const AddEvmAccountsComponent = () => {
     return EvmLedgerUtils.parseLedgerError(error).message;
   };
 
-  const filterFromExistingAccounts = async (
-    discoveredAccounts: EvmLedgerWalletWithBalance[],
-  ) => {
+  const loadLocalAccounts = async () => {
     const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
-    const localAccounts = mk
-      ? await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk)
-      : [];
-    const existingAddresses = localAccounts.map((account) =>
+    return mk ? await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk) : [];
+  };
+
+  const getLedgerPathMetadata = (accounts: EvmAccount[]) =>
+    accounts
+      .filter((account) => account.source === EvmAccountSource.LEDGER)
+      .map((account) => ({
+        path: account.path,
+        derivationMode: account.derivationMode,
+      }));
+
+  const getStartIndex = (
+    derivationMode: EvmLedgerDerivationMode = selectedDerivationMode,
+    accounts: EvmAccount[] = localAccounts,
+  ) =>
+    EvmLedgerUtils.getNextDerivationIndex(
+      getLedgerPathMetadata(accounts),
+      derivationMode,
+    );
+
+  const filterFromExistingAccounts = (
+    discoveredAccounts: EvmLedgerWalletWithBalance[],
+    existingAccounts: EvmAccount[],
+  ) => {
+    const existingAddresses = existingAccounts.map((account) =>
       EvmWalletUtils.getAccountAddress(account).toLowerCase(),
     );
 
@@ -87,6 +121,13 @@ const AddEvmAccountsComponent = () => {
     );
   };
 
+  const selectDerivationMode = (derivationMode: EvmLedgerDerivationMode) => {
+    setSelectedDerivationMode(derivationMode);
+    setSelectableAccounts([]);
+    setSelectedAccounts([]);
+    setMessage('');
+  };
+
   const discoverAccounts = async () => {
     if (!chain) return;
 
@@ -94,9 +135,18 @@ const AddEvmAccountsComponent = () => {
     setLoading(true);
     try {
       await EvmLedgerUtils.init(true);
-      const discoveredAccounts = await EvmLedgerUtils.discoverAccounts(chain);
-      const filteredDiscoveredAccounts = await filterFromExistingAccounts(
+      const refreshedLocalAccounts = await loadLocalAccounts();
+      setLocalAccounts(refreshedLocalAccounts);
+      const discoveredAccounts = await EvmLedgerUtils.discoverAccounts(chain, {
+        derivationMode: selectedDerivationMode,
+        startIndex: getStartIndex(
+          selectedDerivationMode,
+          refreshedLocalAccounts,
+        ),
+      });
+      const filteredDiscoveredAccounts = filterFromExistingAccounts(
         discoveredAccounts,
+        refreshedLocalAccounts,
       );
 
       setSelectableAccounts(filteredDiscoveredAccounts);
@@ -183,6 +233,22 @@ const AddEvmAccountsComponent = () => {
     } ${chain?.mainToken ?? ''}`;
   };
 
+  const getAccountPathHint = (account: EvmLedgerWalletWithBalance) => {
+    const derivationMode =
+      account.wallet.derivationMode ??
+      EvmLedgerUtils.getDerivationModeFromPath(account.wallet.path) ??
+      EvmLedgerDerivationMode.BIP44;
+    const derivationModeLabel = chrome.i18n.getMessage(
+      EvmLedgerUtils.getDerivationModeLabelKey(derivationMode),
+    );
+
+    return chrome.i18n.getMessage('evm_ledger_account_path_hint', [
+      derivationModeLabel,
+      account.wallet.index.toString(),
+      account.wallet.path,
+    ]);
+  };
+
   return (
     <div className={`theme ${theme} connect-ledger`}>
       <div className="title-panel">
@@ -194,6 +260,29 @@ const AddEvmAccountsComponent = () => {
         <div className="account-discovery">
           <div className="caption">
             {chrome.i18n.getMessage('evm_ledger_account_discovery_caption')}
+          </div>
+          <div className="derivation-mode-selector">
+            {LEDGER_DERIVATION_MODES.map((derivationMode) => (
+              <button
+                type="button"
+                key={derivationMode}
+                data-testid={`evm-ledger-derivation-${derivationMode}`}
+                className={`derivation-mode-option ${
+                  selectedDerivationMode === derivationMode ? 'selected' : ''
+                }`}
+                onClick={() => selectDerivationMode(derivationMode)}>
+                <span>
+                  {chrome.i18n.getMessage(
+                    EvmLedgerUtils.getDerivationModeLabelKey(derivationMode),
+                  )}
+                </span>
+                <span className="derivation-mode-start-index">
+                  {chrome.i18n.getMessage('evm_ledger_derivation_next_index', [
+                    getStartIndex(derivationMode).toString(),
+                  ])}
+                </span>
+              </button>
+            ))}
           </div>
           <div className="error">{chrome.i18n.getMessage(message)}</div>
           <div className="fill-space"></div>
@@ -216,8 +305,11 @@ const AddEvmAccountsComponent = () => {
                 title={getAccountTitle(account)}
                 skipTranslation
                 checked={isSelected(account)}
-                onChange={() => toggleAccount(account)}
-              />
+                onChange={() => toggleAccount(account)}>
+                <div className="ledger-account-path">
+                  {getAccountPathHint(account)}
+                </div>
+              </CheckboxPanelComponent>
             ))}
           </div>
           <div className="fill-space"></div>

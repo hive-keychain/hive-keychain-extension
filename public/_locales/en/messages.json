@@ -3803,6 +3803,26 @@
     "message": "Connect and unlock your Ledger, open the Ethereum app, then discover EVM accounts.",
     "description": "EVM Ledger account discovery caption"
   },
+  "evm_ledger_derivation_path_bip44": {
+    "message": "MetaMask / BIP44",
+    "description": "EVM Ledger BIP44 derivation path label"
+  },
+  "evm_ledger_derivation_path_ledger_live": {
+    "message": "Ledger Live",
+    "description": "EVM Ledger Live derivation path label"
+  },
+  "evm_ledger_derivation_path_legacy": {
+    "message": "Legacy / MEW",
+    "description": "EVM Ledger legacy derivation path label"
+  },
+  "evm_ledger_derivation_next_index": {
+    "message": "Starts at index $1",
+    "description": "EVM Ledger derivation path next discovery index"
+  },
+  "evm_ledger_account_path_hint": {
+    "message": "$1 #$2 - $3",
+    "description": "EVM Ledger account derivation path hint"
+  },
   "ledger_source_name": {
     "message": "Ledger",
     "description": "Default EVM Ledger wallet source name"
