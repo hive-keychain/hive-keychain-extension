@@ -1,3 +1,4 @@
+import { SlidingBarComponent } from '@common-ui/switch-bar/sliding-bar.component';
 import { Screen } from '@interfaces/screen.interface';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
@@ -18,6 +19,13 @@ const CreateNewWallet = ({
   setErrorMessage,
 }: PropsType) => {
   const [wallet, setWallet] = useState<HDNodeWallet | undefined>(undefined);
+  const [wallet12Words, setWallet12Words] = useState<HDNodeWallet | undefined>(
+    undefined,
+  );
+  const [wallet24Words, setWallet24Words] = useState<HDNodeWallet | undefined>(
+    undefined,
+  );
+  const [selectedWalletType, setSelectedWalletType] = useState<number>(12);
 
   const [isMnemonicDisplayed, setMnemonicDisplayed] = useState(false);
   const [hasCopiedSeedPhrase, setHasCopiedSeedPhrase] = useState(false);
@@ -29,7 +37,12 @@ const CreateNewWallet = ({
       isCloseButtonDisabled: true,
     });
 
-    setWallet(EvmWalletUtils.createWallet());
+    const wallet12 = EvmWalletUtils.createWallet(12);
+    const wallet24 = EvmWalletUtils.createWallet(24);
+    setWallet12Words(wallet12);
+    setWallet24Words(wallet24);
+
+    setWallet(wallet12);
   }, []);
 
   const submitForm = async (): Promise<void> => {
@@ -54,6 +67,17 @@ const CreateNewWallet = ({
     }
   };
 
+  const onTabChange = (tab: number) => {
+    setSelectedWalletType(tab);
+    if (tab === 12) {
+      setWallet(wallet12Words);
+    } else {
+      setWallet(wallet24Words);
+    }
+    setMnemonicDisplayed(false);
+    setHasCopiedSeedPhrase(false);
+  };
+
   return (
     <div
       data-testid={`${Screen.CREATE_EVM_WALLET}-page`}
@@ -65,6 +89,15 @@ const CreateNewWallet = ({
         <div className="caption">
           {chrome.i18n.getMessage('html_popup_evm_create_wallet_tips')}
         </div>
+        <SlidingBarComponent
+          id="wallet-type"
+          onChange={onTabChange}
+          selectedValue={selectedWalletType}
+          values={[
+            { value: 12, label: 'html_popup_evm_12_words' },
+            { value: 24, label: 'html_popup_evm_24_words' },
+          ]}
+        />
         <div className="mnemonic-container">
           {!isMnemonicDisplayed && (
             <div className="mnemonic-overlay">

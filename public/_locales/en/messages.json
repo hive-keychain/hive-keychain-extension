@@ -4680,8 +4680,16 @@
     "description": "text on overlay while creating evm account"
   },
   "html_popup_evm_create_wallet_caption": {
-    "message": "Write down this 12-word secret recovery phrase and save it in a place that you trust and only you can access",
+    "message": "Write down this secret recovery phrase and save it in a place that you trust and only you can access",
     "description": "evm account creation caption"
+  },
+  "html_popup_evm_12_words": {
+    "message": "12-words",
+    "description": "12 words"
+  },
+  "html_popup_evm_24_words": {
+    "message": "24-words",
+    "description": "24 words"
   },
   "html_popup_evm_create_wallet_verification_title": {
     "message": "Seed phrase verification",

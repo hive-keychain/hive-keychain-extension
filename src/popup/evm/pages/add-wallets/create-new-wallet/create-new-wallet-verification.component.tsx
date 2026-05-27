@@ -53,7 +53,12 @@ const CreateNewWalletVerification = ({
       isCloseButtonDisabled: true,
     });
 
-    const randoms = MathUtils.generateOrderedRandomWithoutDuplicates(0, 11, 3);
+    const listLength = wallet.mnemonic!.phrase.split(' ').length;
+    const randoms = MathUtils.generateOrderedRandomWithoutDuplicates(
+      0,
+      listLength - 1,
+      3,
+    );
     setHiddenWordIndexes(randoms);
     if (wallet.mnemonic) {
       const displayedWords = wallet.mnemonic?.phrase
