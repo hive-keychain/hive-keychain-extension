@@ -42,6 +42,7 @@ describe('evm-tokens-history.utils tests:\n', () => {
     } as any);
     jest.spyOn(EvmAddressesUtils, 'getAddressDetails').mockResolvedValue({
       formattedAddress: '0x2222...2222',
+      fullAddress: '0x2222222222222222222222222222222222222222',
       label: undefined,
     } as any);
   });
@@ -229,6 +230,73 @@ describe('evm-tokens-history.utils tests:\n', () => {
       value: '1',
       imageUrl: 'https://cdn.example/nft-1.png',
     });
+  });
+
+  it('uses resolved address labels in history list copy and adds token contract details', async () => {
+    jest.spyOn(EvmAddressesUtils, 'getAddressDetails').mockResolvedValue({
+      formattedAddress: '0x2222...2222',
+      fullAddress: '0x2222222222222222222222222222222222222222',
+      label: 'Alice',
+    } as any);
+
+    jest.spyOn(EvmLightNodeUtils, 'getHistory').mockResolvedValue({
+      items: [
+        {
+          txId: '0xerc20send',
+          blockNumber: 129,
+          blockTime: '2026-01-01T00:00:00.000Z',
+          opIndex: '0',
+          opName: 'ERC20_SEND',
+          status: 'SUCCESS',
+          fromAddress: '0x1111111111111111111111111111111111111111',
+          toAddress: '0x2222222222222222222222222222222222222222',
+          action: null,
+          in: [],
+          out: [
+            {
+              kind: 'ERC20',
+              tokenAddress: '0x3333333333333333333333333333333333333333',
+              symbol: 'USDC',
+              amount: '10',
+              verified: true,
+              possibleSpam: false,
+            },
+          ],
+        },
+      ],
+      nextCursor: null,
+      catchupStatus: CatchupStatus.DONE,
+    } as any);
+
+    const history = await EvmTokensHistoryUtils.fetchHistory2(
+      '0x1111111111111111111111111111111111111111',
+      chain,
+    );
+
+    expect(history.events[0].label).toBe(
+      'evm_history_operation_transfer_out',
+    );
+    expect(chrome.i18n.getMessage).toHaveBeenCalledWith(
+      'evm_history_operation_transfer_out',
+      ['10', 'USDC', 'Alice'],
+    );
+    expect(history.events[0].detailFields).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: 'popup_html_transfer_amount',
+          type: 'TOKEN_AMOUNT',
+          value: '10 USDC',
+          contractAddress: '0x3333333333333333333333333333333333333333',
+        }),
+      ]),
+    );
+    expect(history.events[0].detailFields).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: 'evm_operation_smart_contract_address',
+        }),
+      ]),
+    );
   });
 
   it('marks reverted contract calls and removes the to detail', async () => {

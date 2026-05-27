@@ -167,7 +167,7 @@ const getFlowSymbol = (flow: HistoryFlow, chain: EvmChain) => {
   }
 };
 
-/** Formats history addresses consistently for compact transaction copy. */
+/** Resolves history counterparty labels (name, nickname, ENS, or formatted address). */
 const getHistoryAddressDisplayLabel = async (
   address: string | null | undefined,
   chain: EvmChain,
@@ -178,7 +178,37 @@ const getHistoryAddressDisplayLabel = async (
     chain.chainId,
     true,
   );
-  return details.formattedAddress;
+  const resolvedLabel = details.label ?? details.formattedAddress;
+  const fullAddress = details.fullAddress ?? address;
+  if (
+    resolvedLabel.trim().toLowerCase() === fullAddress.trim().toLowerCase()
+  ) {
+    return details.formattedAddress;
+  }
+  return resolvedLabel;
+};
+
+const getFlowContractAddress = (flow: HistoryFlow): string | null => {
+  switch (flow.kind) {
+    case 'ERC20':
+      return flow.tokenAddress;
+    case 'ERC721':
+    case 'ERC1155':
+      return flow.collectionAddress;
+    default:
+      return null;
+  }
+};
+
+const attachFlowContractAddress = (
+  detail: EvmUserHistoryItemDetail,
+  flow: HistoryFlow | undefined,
+): EvmUserHistoryItemDetail => {
+  const contractAddress = flow ? getFlowContractAddress(flow) : null;
+  if (!contractAddress) {
+    return detail;
+  }
+  return { ...detail, contractAddress };
 };
 
 export const toKnownOpName = (opName: string): KnownOpName => {
@@ -468,12 +498,17 @@ const parseTransfer = (
   if (flow.kind === 'ERC721' || flow.kind === 'ERC1155') {
     const tokenId = flow.tokenId;
     const collectionName = getFlowSymbol(flow, chain);
-    details.push({
-      label: formatNftImageLabel(flow, chain),
-      value: tokenId,
-      type: EvmUserHistoryItemDetailType.IMAGE,
-      imageUrl: getNftImageUrl(flow),
-    });
+    details.push(
+      attachFlowContractAddress(
+        {
+          label: formatNftImageLabel(flow, chain),
+          value: tokenId,
+          type: EvmUserHistoryItemDetailType.IMAGE,
+          imageUrl: getNftImageUrl(flow),
+        },
+        flow,
+      ),
+    );
 
     const labelKey =
       flow.kind === 'ERC721'
@@ -511,11 +546,16 @@ const parseTransfer = (
     };
   }
 
-  details.push({
-    label: 'popup_html_transfer_amount',
-    value: `${amount} ${symbol}`,
-    type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
-  });
+  details.push(
+    attachFlowContractAddress(
+      {
+        label: 'popup_html_transfer_amount',
+        value: `${amount} ${symbol}`,
+        type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+      },
+      flow,
+    ),
+  );
   pushAddressDetails(details, fromAddress, toAddress);
 
   const labelKey = isOutgoing
@@ -562,15 +602,20 @@ const parseApprove = (
       labelKey = 'evm_history_operation_approve_out_erc20';
       labelArgs = [counterpartyLabel, amount, flow.symbol ?? 'ERC20'];
     }
-    details.push({
-      label: 'popup_html_transfer_amount',
-      value: flow.infinite
-        ? chrome.i18n.getMessage('evm_history_unlimited_approval_value', [
-            flow.symbol ?? 'ERC20',
-          ])
-        : `${amount} ${flow.symbol ?? 'ERC20'}`,
-      type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
-    });
+    details.push(
+      attachFlowContractAddress(
+        {
+          label: 'popup_html_transfer_amount',
+          value: flow.infinite
+            ? chrome.i18n.getMessage('evm_history_unlimited_approval_value', [
+                flow.symbol ?? 'ERC20',
+              ])
+            : `${amount} ${flow.symbol ?? 'ERC20'}`,
+          type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+        },
+        flow,
+      ),
+    );
   } else if (
     flow &&
     (flow.kind === 'ERC721' || flow.kind === 'ERC1155') &&
@@ -578,12 +623,17 @@ const parseApprove = (
   ) {
     labelKey = 'evm_history_operation_approve_out_erc721';
     labelArgs = [counterpartyLabel, symbol, flow.tokenId];
-    details.push({
-      label: formatNftImageLabel(flow, chain),
-      value: flow.tokenId,
-      type: EvmUserHistoryItemDetailType.IMAGE,
-      imageUrl: getNftImageUrl(flow),
-    });
+    details.push(
+      attachFlowContractAddress(
+        {
+          label: formatNftImageLabel(flow, chain),
+          value: flow.tokenId,
+          type: EvmUserHistoryItemDetailType.IMAGE,
+          imageUrl: getNftImageUrl(flow),
+        },
+        flow,
+      ),
+    );
   }
 
   pushAddressDetails(details, item.fromAddress, item.toAddress);
@@ -622,12 +672,17 @@ const parseMint = (
   }
 
   for (const flow of mintedFlows) {
-    details.push({
-      label: formatNftImageLabel(flow, chain),
-      value: flow.tokenId,
-      type: EvmUserHistoryItemDetailType.IMAGE,
-      imageUrl: getNftImageUrl(flow),
-    });
+    details.push(
+      attachFlowContractAddress(
+        {
+          label: formatNftImageLabel(flow, chain),
+          value: flow.tokenId,
+          type: EvmUserHistoryItemDetailType.IMAGE,
+          imageUrl: getNftImageUrl(flow),
+        },
+        flow,
+      ),
+    );
   }
   pushNativeAmountPaidDetails(details, item, chain);
   pushAddressDetails(details, item.fromAddress, item.toAddress);
@@ -679,11 +734,16 @@ const parseErc20Mint = (
 
   const amount = formatTokenAmount(flow.amount);
   const symbol = flow.symbol ?? 'ERC20';
-  details.push({
-    label: 'popup_html_transfer_amount',
-    value: `${amount} ${symbol}`,
-    type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
-  });
+  details.push(
+    attachFlowContractAddress(
+      {
+        label: 'popup_html_transfer_amount',
+        value: `${amount} ${symbol}`,
+        type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+      },
+      flow,
+    ),
+  );
   pushNativeAmountPaidDetails(details, item, chain);
   pushAddressDetails(details, item.fromAddress, item.toAddress);
 
@@ -719,31 +779,46 @@ const parseBurn = async (
     const symbol = flow.symbol ?? 'ERC20';
     labelKey = 'evm_history_operation_burn_erc20';
     labelArgs = [amount, symbol];
-    details.push({
-      label: 'popup_html_transfer_amount',
-      value: `${amount} ${symbol}`,
-      type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
-    });
+    details.push(
+      attachFlowContractAddress(
+        {
+          label: 'popup_html_transfer_amount',
+          value: `${amount} ${symbol}`,
+          type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+        },
+        flow,
+      ),
+    );
   } else if (flow.kind === 'ERC721') {
     const symbol = flow.collectionName ?? 'NFT';
     labelKey = 'evm_history_operation_burn_erc721';
     labelArgs = [symbol, flow.tokenId];
-    details.push({
-      label: formatNftImageLabel(flow, chain),
-      value: flow.tokenId,
-      type: EvmUserHistoryItemDetailType.IMAGE,
-      imageUrl: getNftImageUrl(flow),
-    });
+    details.push(
+      attachFlowContractAddress(
+        {
+          label: formatNftImageLabel(flow, chain),
+          value: flow.tokenId,
+          type: EvmUserHistoryItemDetailType.IMAGE,
+          imageUrl: getNftImageUrl(flow),
+        },
+        flow,
+      ),
+    );
   } else if (flow.kind === 'ERC1155') {
     const symbol = flow.collectionName ?? 'NFT';
     labelKey = 'evm_history_operation_burn_erc1155';
     labelArgs = [flow.quantity, symbol, flow.tokenId];
-    details.push({
-      label: formatNftImageLabel(flow, chain),
-      value: flow.tokenId,
-      type: EvmUserHistoryItemDetailType.IMAGE,
-      imageUrl: getNftImageUrl(flow),
-    });
+    details.push(
+      attachFlowContractAddress(
+        {
+          label: formatNftImageLabel(flow, chain),
+          value: flow.tokenId,
+          type: EvmUserHistoryItemDetailType.IMAGE,
+          imageUrl: getNftImageUrl(flow),
+        },
+        flow,
+      ),
+    );
   } else {
     details.push({
       label: 'popup_html_transfer_amount',

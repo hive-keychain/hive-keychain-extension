@@ -44,6 +44,8 @@ export interface EvmUserHistoryItemDetail {
   value: string;
   type: EvmUserHistoryItemDetailType;
   imageUrl?: string | null;
+  /** ERC-20 / NFT collection contract; enables copy + tooltip on token name in amount/image rows. */
+  contractAddress?: string;
 }
 
 export enum EvmUserHistoryItemDetailType {

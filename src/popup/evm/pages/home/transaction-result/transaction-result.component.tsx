@@ -36,10 +36,15 @@ import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SmallDataCardComponent } from 'src/common-ui/small-data-card/small-data-card.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import {
+  COPY_GENERIC_MESSAGE_KEY,
+  copyTextWithToast,
+} from 'src/common-ui/toast/copy-toast.utils';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 import Decimal from 'decimal.js';
@@ -650,22 +655,104 @@ const EvmTransactionResult = ({
     detail.label === 'popup_html_transfer_amount' ||
     detail.type === EvmUserHistoryItemDetailType.TOKEN_AMOUNT;
 
-  const renderTokenAmount = (value: string | number) => {
+  const smartContractAddressLabels = new Set([
+    'evm_operation_smart_contract_address',
+    'evm_history_smart_contract',
+    'evm_created_smart_contract',
+    'evm_smart_contract_address',
+  ]);
+
+  const isSmartContractAddressDetail = (detail: EvmUserHistoryItemDetail) =>
+    detail.type === EvmUserHistoryItemDetailType.ADDRESS &&
+    smartContractAddressLabels.has(detail.label);
+
+  const renderCopiableAddress = (address: string) => (
+    <EvmAddressComponent
+      address={address}
+      chainId={chain.chainId}
+      canCopy
+      localAccounts={localAccounts}
+    />
+  );
+
+  const getAddressDetailClickAction = (detail: EvmUserHistoryItemDetail) => {
+    if (isSmartContractAddressDetail(detail)) {
+      return undefined;
+    }
+    return () => openWallet(detail.value!);
+  };
+
+  const tokenContractAddress =
+    tokenInfo &&
+    tokenInfo.type !== EVMSmartContractType.NATIVE &&
+    'contractAddress' in tokenInfo
+      ? tokenInfo.contractAddress
+      : undefined;
+
+  const renderCopiableContractLabel = (
+    visibleLabel: string,
+    contractAddress: string,
+  ) => (
+    <CustomTooltip
+      message={contractAddress}
+      skipTranslation
+      additionalClassName="evm-address-tooltip">
+      <span
+        className="value-content evm-address-content address-content"
+        onClick={(event) => {
+          event.stopPropagation();
+          void copyTextWithToast(contractAddress, COPY_GENERIC_MESSAGE_KEY);
+        }}>
+        {visibleLabel}
+      </span>
+    </CustomTooltip>
+  );
+
+  const renderTokenAmount = (
+    value: string | number,
+    contractAddress?: string,
+  ) => {
     const amountValue = value.toString().trim();
     const amountTokenInfo = getTokenInfoFromAmount(amountValue);
     const symbol = amountTokenInfo?.symbol;
-    const displayedAmount =
-      symbol && amountValue.endsWith(` ${symbol}`)
-        ? amountValue.slice(0, -symbol.length).trim()
-        : amountValue;
+    const resolvedContractAddress =
+      contractAddress ??
+      (amountTokenInfo && 'contractAddress' in amountTokenInfo
+        ? amountTokenInfo.contractAddress
+        : undefined);
+
+    let displayedAmount = amountValue;
+    let tokenLabel = symbol;
+    if (symbol && amountValue.endsWith(` ${symbol}`)) {
+      displayedAmount = amountValue.slice(0, -(` ${symbol}`).length);
+      tokenLabel = symbol;
+    }
+
+    const isNativeToken =
+      amountTokenInfo?.type === EVMSmartContractType.NATIVE ||
+      Boolean(
+        tokenLabel &&
+          tokenLabel.toLowerCase() === chain.mainToken.toLowerCase(),
+      );
+
+    const showCopiableToken =
+      Boolean(resolvedContractAddress) &&
+      Boolean(tokenLabel) &&
+      amountValue.includes(tokenLabel!) &&
+      !isNativeToken;
 
     return (
       <div className="value-content-horizontal">
         {amountTokenInfo && <EvmTokenLogo tokenInfo={amountTokenInfo} />}
-        <span>
-          {displayedAmount}
-          {symbol ? ` ${symbol}` : ''}
-        </span>
+        {showCopiableToken ? (
+          <>
+            <span>{displayedAmount}</span>
+            {displayedAmount.length > 0 ? ' ' : null}
+            {renderCopiableContractLabel(tokenLabel!, resolvedContractAddress!)}
+          </>
+        ) : (
+          <span>{amountValue}</span>
+        )}
       </div>
     );
   };
@@ -683,7 +770,7 @@ const EvmTransactionResult = ({
               {chrome.i18n.getMessage(getStatusLabel(getStatus()))}
             </div>
             {shouldShowStatusAmount && (
-              renderTokenAmount(amount)
+              renderTokenAmount(amount, tokenContractAddress)
             )}
             {warningMessage && <div className="warning">{warningMessage}</div>}
           </div>
@@ -776,26 +863,23 @@ const EvmTransactionResult = ({
                     <SmallImageCardComponent
                       value={detail.imageUrl ?? getImage(detail.value!)}
                       name={detail.label}
+                      contractAddress={detail.contractAddress}
                     />
                   )}
                   {detail.type === EvmUserHistoryItemDetailType.ADDRESS && (
                     <SmallDataCardComponent
                       label={detail.label}
-                      value={
-                        <EvmAddressComponent
-                          address={detail.value!}
-                          chainId={chain.chainId}
-                          canCopy
-                          localAccounts={localAccounts}
-                        />
-                      }
-                      valueOnClickAction={() => openWallet(detail.value!)}
+                      value={renderCopiableAddress(detail.value!)}
+                      valueOnClickAction={getAddressDetailClickAction(detail)}
                     />
                   )}
                   {isAmountDetail(detail) && (
                     <SmallDataCardComponent
                       label={detail.label}
-                      value={renderTokenAmount(detail.value)}
+                      value={renderTokenAmount(
+                        detail.value,
+                        detail.contractAddress,
+                      )}
                     />
                   )}
                 </React.Fragment>
@@ -804,14 +888,7 @@ const EvmTransactionResult = ({
           {showSyntheticToRow && (
             <SmallDataCardComponent
               label="popup_html_evm_transaction_info_to"
-              value={
-                <EvmAddressComponent
-                  address={syntheticToAddress!}
-                  chainId={chain.chainId}
-                  canCopy
-                  localAccounts={localAccounts}
-                />
-              }
+              value={renderCopiableAddress(syntheticToAddress!)}
               valueOnClickAction={() => openWallet(syntheticToAddress!)}
             />
           )}
