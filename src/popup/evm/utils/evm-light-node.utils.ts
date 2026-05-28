@@ -4,8 +4,6 @@ import {
   EvmLightNodeRegisteredAddresses,
   EvmLightNodeSecurityCheck,
 } from '@popup/evm/interfaces/evm-light-node.interface';
-import { BaseApi } from 'src/api/base';
-import Logger from 'src/utils/logger.utils';
 import {
   EvmLpV2Pair,
   EvmSmartContractInfo,
@@ -15,7 +13,9 @@ import {
   EvmSmartContractInfoNative,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { BaseApi } from 'src/api/base';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 
 import { fetchGasOracle } from '@popup/evm/utils/evm-gas-oracle.utils';
 
@@ -110,7 +110,9 @@ const normalizeSecurityCheck = (
     return undefined;
   }
   const reasons = Array.isArray(record.reasons)
-    ? record.reasons.filter((reason): reason is string => typeof reason === 'string')
+    ? record.reasons.filter(
+        (reason): reason is string => typeof reason === 'string',
+      )
     : [];
   const isRugPullReason = Array.isArray(record.isRugPullReason)
     ? record.isRugPullReason.filter(
@@ -339,8 +341,7 @@ export enum CatchupStatus {
 export const isCatchupStatusPending = (
   catchupStatus?: CatchupStatus | string | null,
 ) =>
-  catchupStatus !== CatchupStatus.DONE &&
-  catchupStatus !== CatchupStatus.ERROR;
+  catchupStatus !== CatchupStatus.DONE && catchupStatus !== CatchupStatus.ERROR;
 
 export enum PricingStatus {
   READY = 'READY',
@@ -401,12 +402,7 @@ const buildHistoryQuery = (query: string) => {
 
   const source = new URLSearchParams(query);
   const allowed = new URLSearchParams();
-  for (const key of [
-    'cursor',
-    'limit',
-    'showPossibleSpam',
-    'showUnverified',
-  ]) {
+  for (const key of ['cursor', 'limit', 'showPossibleSpam', 'showUnverified']) {
     const value = source.get(key);
     if (value != null && value.length > 0) {
       allowed.set(key, value);
@@ -477,7 +473,10 @@ const getHistoryDetail = async (
   );
 };
 
-const contractInflight = new Map<string, Promise<EvmLightNodeContractResponse>>();
+const contractInflight = new Map<
+  string,
+  Promise<EvmLightNodeContractResponse>
+>();
 
 const getContractCacheKey = (
   chainId: string | number,

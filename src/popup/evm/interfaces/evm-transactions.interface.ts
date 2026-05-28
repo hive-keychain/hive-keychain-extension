@@ -65,7 +65,18 @@ export enum EvmTransactionWarningType {
   BASE = 'BASE',
   WHITELIST_ADDRESS = 'WHITELIST_ADDRESS',
   WHITELIST_ADDRESS_NO_LABEL = 'WHITELIST_ADDRESS_NO_LABEL',
+  /** Summary message with optional `extraData.detailReasons` expandable list */
+  GROUPED_SECURITY = 'GROUPED_SECURITY',
 }
+
+export type EvmGroupedSecurityWarningDetail = {
+  message: string;
+  messageParams?: string[];
+};
+
+export type EvmGroupedSecurityWarningExtraData = {
+  detailReasons: EvmGroupedSecurityWarningDetail[];
+};
 
 export interface EvmTransactionWarning {
   level: EvmTransactionWarningLevel;

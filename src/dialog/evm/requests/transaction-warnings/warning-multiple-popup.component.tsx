@@ -3,8 +3,10 @@ import {
   EvmTransactionWarningLevel,
   TransactionConfirmationField,
 } from '@popup/evm/interfaces/evm-transactions.interface';
+import { isGroupedSecurityWarning } from '@popup/evm/utils/evm-grouped-security-warning.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import React, { Fragment } from 'react';
+import { GroupedSecurityWarningMessage } from 'src/common-ui/evm/grouped-security-warning-message/grouped-security-warning-message.component';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -39,16 +41,26 @@ export const EvmMultipleWarningsPopup = ({ warningHook }: Props) => {
                 <div
                   className="warning"
                   key={`warning-${field.name}-warning-${warningIndex}`}>
-                  <SVGIcon
-                    className={`warning-icon ${warning?.level}`}
-                    icon={SVGIcons.GLOBAL_WARNING}
-                  />
-                  <div className="warning-message">
-                    {chrome.i18n.getMessage(
-                      warning?.message!,
-                      warning.messageParams ?? [],
-                    )}
-                  </div>
+                  {isGroupedSecurityWarning(warning) ? (
+                    <GroupedSecurityWarningMessage
+                      warning={warning}
+                      showLeadingIcon={true}
+                      defaultDetailsExpanded={true}
+                    />
+                  ) : (
+                    <>
+                      <SVGIcon
+                        className={`warning-icon ${warning?.level}`}
+                        icon={SVGIcons.GLOBAL_WARNING}
+                      />
+                      <div className="warning-message">
+                        {chrome.i18n.getMessage(
+                          warning?.message!,
+                          warning.messageParams ?? [],
+                        )}
+                      </div>
+                    </>
+                  )}
                 </div>
               );
             }

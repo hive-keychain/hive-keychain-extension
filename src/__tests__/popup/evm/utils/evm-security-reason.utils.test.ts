@@ -81,7 +81,7 @@ describe('EvmSecurityReasonUtils', () => {
     ).toEqual([]);
   });
 
-  it('builds rug-pull warnings from isRugPullReason keys', () => {
+  it('builds rug-pull detail messages from isRugPullReason keys', () => {
     expect(
       EvmSecurityReasonUtils.buildWarningsForRugPullReasons(
         ['approval_abuse', 'blacklist'],

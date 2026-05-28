@@ -5399,28 +5399,44 @@
     "message": "This address has been linked to phishing activity",
     "description": "Light-node address security reason"
   },
+  "evm_security_reason_grouped_address_risk": {
+    "message": "This address has been flagged for security risks",
+    "description": "Grouped light-node address security summary"
+  },
+  "evm_security_reason_grouped_domain_risk": {
+    "message": "This website has been flagged for security risks",
+    "description": "Grouped light-node domain security summary"
+  },
+  "evm_security_warning_show_details": {
+    "message": "Show details",
+    "description": "Expand grouped security warning reasons"
+  },
+  "evm_security_warning_hide_details": {
+    "message": "Hide details",
+    "description": "Collapse grouped security warning reasons"
+  },
   "evm_security_reason_rug_pull": {
-    "message": "This contract has been flagged for rug pull risk",
-    "description": "Light-node rug-pull fallback when isRugPull is true without specific reasons"
+    "message": "This contract is flagged as a rug-pull risk.",
+    "description": "Light-node rug-pull summary when isRugPull is true"
   },
   "evm_security_reason_rug_pull_privilege_withdraw": {
-    "message": "This contract has been flagged for privileged withdrawal (rug pull risk)",
+    "message": "This contract can withdraw your funds.",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_rug_pull_withdraw_missing": {
-    "message": "This contract has been flagged for missing withdrawal function (rug pull risk)",
+    "message": "This contract may let others deposit, but can prevent withdrawals.",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_rug_pull_blacklist": {
-    "message": "This contract has been flagged for blacklist-related rug pull risk",
+    "message": "This contract can blacklist wallets and block selling or transfers.",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_rug_pull_selfdestruct": {
-    "message": "This contract has been flagged for self-destruct capability (rug pull risk)",
+    "message": "This contract can self-destruct and break token functionality.",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_rug_pull_approval_abuse": {
-    "message": "This contract has been flagged for approval abuse (rug pull risk)",
+    "message": "This contract can abuse token approvals to move your funds.",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_reinit": {

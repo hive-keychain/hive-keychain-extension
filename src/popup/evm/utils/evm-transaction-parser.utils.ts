@@ -27,6 +27,7 @@ import {
   EvmSecurityReasonUtils,
   EvmSecurityReasonWarningContext,
 } from '@popup/evm/utils/evm-security-reason.utils';
+import { createGroupedSecurityWarning } from '@popup/evm/utils/evm-grouped-security-warning.utils';
 import { EvmVerificationUtils } from '@popup/evm/utils/evm-verification.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ethers, Interface, Result } from 'ethers';
@@ -475,26 +476,56 @@ const applyLightNodeContractSecurity = (
   }
 };
 
+const ADDRESS_SECURITY_SUMMARY_MESSAGE = 'evm_security_reason_grouped_address_risk';
+const DOMAIN_SECURITY_SUMMARY_MESSAGE = 'evm_security_reason_grouped_domain_risk';
+const RUG_PULL_SUMMARY_MESSAGE = 'evm_security_reason_rug_pull';
+const ADDRESS_MALICIOUS_FALLBACK_MESSAGE = 'evm_transaction_receiver_malicious';
+const DOMAIN_PHISHING_FALLBACK_MESSAGE = 'evm_transaction_domain_phishing';
+
 const appendSecurityReasonWarnings = (
   warnings: EvmTransactionWarning[],
   securityReasons: string[] | undefined,
   isMalicious: boolean,
   context: EvmSecurityReasonWarningContext,
 ) => {
-  const reasonWarnings = EvmSecurityReasonUtils.buildWarningsForSecurityReasons(
+  const detailReasons = EvmSecurityReasonUtils.buildWarningsForSecurityReasons(
     securityReasons ?? [],
     isMalicious,
     context,
   );
-  for (const reasonWarning of reasonWarnings) {
+  if (detailReasons.length === 0) {
+    return;
+  }
+
+  const fallbackMessage =
+    context === 'domain'
+      ? DOMAIN_PHISHING_FALLBACK_MESSAGE
+      : ADDRESS_MALICIOUS_FALLBACK_MESSAGE;
+  const onlyFallback =
+    detailReasons.length === 1 && detailReasons[0].message === fallbackMessage;
+
+  if (onlyFallback) {
     warnings.push({
       ignored: false,
       level: EvmTransactionWarningLevel.HIGH,
-      message: reasonWarning.message,
-      messageParams: reasonWarning.messageParams,
+      message: detailReasons[0].message,
+      messageParams: detailReasons[0].messageParams,
       type: EvmTransactionWarningType.BASE,
     });
+    return;
   }
+
+  const summaryMessage =
+    context === 'domain'
+      ? DOMAIN_SECURITY_SUMMARY_MESSAGE
+      : ADDRESS_SECURITY_SUMMARY_MESSAGE;
+  warnings.push(
+    createGroupedSecurityWarning(
+      summaryMessage,
+      detailReasons,
+      context === 'domain' ? 'domainSecurity' : 'addressSecurity',
+    ),
+  );
 };
 
 const appendRugPullReasonWarnings = (
@@ -502,19 +533,41 @@ const appendRugPullReasonWarnings = (
   rugPullReasons: string[] | undefined,
   isRugPull: boolean,
 ) => {
-  const reasonWarnings = EvmSecurityReasonUtils.buildWarningsForRugPullReasons(
+  if (!isRugPull) {
+    return;
+  }
+
+  const detailReasons = EvmSecurityReasonUtils.buildWarningsForRugPullReasons(
     rugPullReasons ?? [],
-    isRugPull,
+    true,
   );
-  for (const reasonWarning of reasonWarnings) {
+  if (detailReasons.length === 0) {
+    return;
+  }
+
+  const onlyFallback =
+    detailReasons.length === 1 &&
+    detailReasons[0].message === RUG_PULL_SUMMARY_MESSAGE &&
+    (rugPullReasons?.length ?? 0) === 0;
+
+  if (onlyFallback) {
     warnings.push({
       ignored: false,
       level: EvmTransactionWarningLevel.HIGH,
-      message: reasonWarning.message,
-      messageParams: reasonWarning.messageParams,
+      message: RUG_PULL_SUMMARY_MESSAGE,
       type: EvmTransactionWarningType.BASE,
+      warningKey: 'rugPull',
     });
+    return;
   }
+
+  warnings.push(
+    createGroupedSecurityWarning(
+      RUG_PULL_SUMMARY_MESSAGE,
+      detailReasons,
+      'rugPull',
+    ),
+  );
 };
 
 const isDomainPhishing = (security?: EvmLightNodeSecurityCheck): boolean => {
