@@ -160,7 +160,7 @@ const FavoriteAccounts = ({
       </div>
 
       <div className="addresses-list">
-        <div className="contact-category">
+        <div className="contact-category section-card">
           <div className="category-header">
             <LabelComponent
               value="evm_contacts_section"
@@ -171,19 +171,23 @@ const FavoriteAccounts = ({
               {chrome.i18n.getMessage('evm_addresses_add')}
             </div>
           </div>
-          <div className="addresses-list-items">
-            {favoriteAccountsList.map((favorite) => (
-              <EditContactComponent
-                key={`${favorite.address}-${favorite.id}`}
-                shortAddress={false}
-                favoriteAddress={favorite}
-                maxLabelLength={12}
-                onSaveClicked={(item) => handleEditFavoriteLabel(item)}
-                onDeleteClicked={(item) => handleDeleteFavorite(item)}
-                chainType={ChainType.HIVE}
-              />
-            ))}
-          </div>
+          {favoriteAccountsList.length > 0 ? (
+            <div className="addresses-list-items">
+              {favoriteAccountsList.map((favorite) => (
+                <EditContactComponent
+                  key={`${favorite.address}-${favorite.id}`}
+                  shortAddress={false}
+                  favoriteAddress={favorite}
+                  maxLabelLength={12}
+                  onSaveClicked={(item) => handleEditFavoriteLabel(item)}
+                  onDeleteClicked={(item) => handleDeleteFavorite(item)}
+                  chainType={ChainType.HIVE}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="addresses-list-items" />
+          )}
         </div>
       </div>
 

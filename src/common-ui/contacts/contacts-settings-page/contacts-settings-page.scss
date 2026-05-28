@@ -21,13 +21,15 @@
   .contact-category {
     display: flex;
     flex-direction: column;
-    row-gap: 8px;
+    row-gap: 12px;
 
     .category-header {
       display: grid;
       grid-template-columns: 5fr 1fr;
       align-items: center;
-      padding: 0;
+      width: 100%;
+      padding: 0 8px;
+      box-sizing: border-box;
 
       .category-title {
         @include poppins400(14px);
@@ -60,9 +62,9 @@
       flex-direction: column;
       row-gap: 8px;
       overflow: auto;
+      width: 100%;
 
       .edit-contact-item {
-        @include small-card-no-padding;
         margin: 0;
         .contact-label-panel {
           width: 100%;
@@ -76,8 +78,6 @@
           }
 
           .contact-actions {
-            padding-right: 8px;
-
             .edit-icon,
             .delete-icon {
               @include icon-size(24px);
@@ -86,6 +86,16 @@
             }
           }
         }
+      }
+    }
+
+    &.section-card {
+      @include small-card-no-padding;
+      padding: 8px;
+      margin: 0;
+
+      .addresses-list-items {
+        row-gap: 6px;
       }
     }
   }

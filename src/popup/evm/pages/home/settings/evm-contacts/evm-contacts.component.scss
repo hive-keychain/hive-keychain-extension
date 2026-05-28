@@ -6,15 +6,11 @@
   }
 
   .empty-address-item {
-    .contact-label-panel {
-      align-items: center;
-      min-height: 48px;
-    }
-
-    .contact-label {
-      @include poppins400(14px);
-      padding: 8px 0 8px 40px;
-    }
+    @include poppins400(14px);
+    color: var(--main-font-color);
+    display: flex;
+    align-items: center;
+    padding: 8px 0 8px 8px;
   }
 
   .chain-select-panel {
