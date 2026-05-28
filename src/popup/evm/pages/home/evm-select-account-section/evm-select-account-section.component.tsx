@@ -159,6 +159,7 @@ const SelectAccountSection = ({
       (account: EvmAccount) => account.wallet.address === address,
     );
     if (itemClicked) {
+      await EvmWalletUtils.promoteConnectedWalletAddress(address);
       await EvmLightNodeUtils.registerAddress(chain.chainId, address, false);
       loadEvmActiveAccount(chain, itemClicked?.wallet);
       handleClickOnSelector();

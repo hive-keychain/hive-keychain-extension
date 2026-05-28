@@ -2,8 +2,10 @@ import { afterEach, describe, expect, it, jest } from '@jest/globals';
 import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import EncryptUtils from '@popup/hive/utils/encrypt.utils';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { HDNodeWallet } from 'ethers';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 describe('evm wallet utils', () => {
@@ -119,5 +121,94 @@ describe('evm wallet utils', () => {
     );
     expect(accounts[0].wallet.privateKey).toEqual(expect.any(String));
     expect(accounts[0].wallet.mnemonic?.phrase).toBeUndefined();
+  });
+
+  it('moves the selected account first in provider account lists only', async () => {
+    let walletPermissions: Record<string, any> = {
+      'https://alpha.example': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: [
+          '0x1111111111111111111111111111111111111111',
+          '0x2222222222222222222222222222222222222222',
+        ],
+      },
+      'https://beta.example': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: [
+          '0x3333333333333333333333333333333333333333',
+          '0x2222222222222222222222222222222222222222',
+        ],
+      },
+      'https://gamma.example': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: [
+          '0x2222222222222222222222222222222222222222',
+          '0x4444444444444444444444444444444444444444',
+        ],
+      },
+    };
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockImplementation(async (key) =>
+        key === LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS
+          ? walletPermissions
+          : undefined,
+      );
+    const saveSpy = jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockImplementation(async (key, value) => {
+        if (key === LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS) {
+          walletPermissions = value;
+        }
+      });
+    const runtimeSendMessageSpy = jest
+      .spyOn(CommunicationUtils, 'runtimeSendMessage')
+      .mockResolvedValue(undefined);
+
+    await EvmWalletUtils.promoteConnectedWalletAddress(
+      '0x2222222222222222222222222222222222222222',
+    );
+
+    expect(saveSpy).toHaveBeenCalledTimes(1);
+    expect(runtimeSendMessageSpy).toHaveBeenCalledTimes(2);
+    expect(runtimeSendMessageSpy).toHaveBeenNthCalledWith(1, {
+      command: BackgroundCommand.SEND_EVM_EVENT,
+      value: {
+        eventType: 'accountsChanged',
+        args: [
+          '0x2222222222222222222222222222222222222222',
+          '0x1111111111111111111111111111111111111111',
+        ],
+        scope: { kind: 'origin', origin: 'https://alpha.example' },
+      },
+    });
+    expect(runtimeSendMessageSpy).toHaveBeenNthCalledWith(2, {
+      command: BackgroundCommand.SEND_EVM_EVENT,
+      value: {
+        eventType: 'accountsChanged',
+        args: [
+          '0x2222222222222222222222222222222222222222',
+          '0x3333333333333333333333333333333333333333',
+        ],
+        scope: { kind: 'origin', origin: 'https://beta.example' },
+      },
+    });
+    expect(walletPermissions).toEqual({
+      'https://alpha.example': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: [
+          '0x2222222222222222222222222222222222222222',
+          '0x1111111111111111111111111111111111111111',
+        ],
+      },
+      'https://beta.example': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: [
+          '0x2222222222222222222222222222222222222222',
+          '0x3333333333333333333333333333333333333333',
+        ],
+      },
+      'https://gamma.example': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: [
+          '0x2222222222222222222222222222222222222222',
+          '0x4444444444444444444444444444444444444444',
+        ],
+      },
+    });
   });
 });

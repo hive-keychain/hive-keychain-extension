@@ -1,7 +1,9 @@
 import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import {
+  EvmEventName,
   EvmWalletOriginPermissions,
   EvmWalletPermissions,
+  RoutedEvmEvent,
 } from '@interfaces/evm-provider.interface';
 import { EvmPendingTransaction } from '@popup/evm/interfaces/evm-tokens.interface';
 import { UserCanceledTransactions } from '@popup/evm/interfaces/evm-transactions.interface';
@@ -23,9 +25,14 @@ import { EvmLedgerUtils } from '@popup/evm/utils/evm-ledger.utils';
 import EncryptUtils from '@popup/hive/utils/encrypt.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { EthersError, HDNodeWallet, Wallet, ethers } from 'ethers';
-import { getHostnameFromUrl } from 'src/utils/browser-origin.utils';
+import {
+  getHostnameFromUrl,
+  getOriginFromUrl,
+} from 'src/utils/browser-origin.utils';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import { normalizeEvmAccounts } from 'src/utils/evm-provider-value.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import VaultUtils from 'src/utils/vault.utils';
@@ -1138,6 +1145,57 @@ const disconnectAllWallets = async (origin: string) => {
   return setConnectedWallets(origin, []);
 };
 
+const promoteConnectedWalletAddress = async (walletAddress: string) => {
+  const normalizedAddress = normalizeEvmAccounts([walletAddress])[0];
+  if (!normalizedAddress) {
+    return;
+  }
+
+  const walletPermissions = await getStoredWalletPermissions();
+  const accountChangeEvents: RoutedEvmEvent[] = [];
+  let shouldPersist = false;
+
+  for (const [originKey, permissionEntry] of Object.entries(walletPermissions)) {
+    if (!permissionEntry) {
+      continue;
+    }
+    const currentAddresses =
+      permissionEntry[EvmRequestPermission.ETH_ACCOUNTS] ?? [];
+    const normalizedAddresses = normalizeEvmAccounts(currentAddresses);
+    const selectedAddressIndex = normalizedAddresses.indexOf(normalizedAddress);
+
+    if (selectedAddressIndex <= 0) {
+      continue;
+    }
+
+    permissionEntry[EvmRequestPermission.ETH_ACCOUNTS] = [
+      normalizedAddress,
+      ...normalizedAddresses.filter((address) => address !== normalizedAddress),
+    ];
+    const origin = getOriginFromUrl(originKey);
+    if (origin) {
+      accountChangeEvents.push({
+        eventType: EvmEventName.ACCOUNT_CHANGED,
+        args: permissionEntry[EvmRequestPermission.ETH_ACCOUNTS],
+        scope: { kind: 'origin', origin },
+      });
+    }
+    shouldPersist = true;
+  }
+
+  if (shouldPersist) {
+    await saveWalletPermissions(walletPermissions);
+    await Promise.all(
+      accountChangeEvents.map((event) =>
+        CommunicationUtils.runtimeSendMessage({
+          command: BackgroundCommand.SEND_EVM_EVENT,
+          value: event,
+        }),
+      ),
+    );
+  }
+};
+
 const getWalletPermissionFull = async (origin: string) => {
   const walletPermissions = await getStoredWalletPermissions();
   const { permissions, shouldSave } = getOriginPermissionEntry(
@@ -1262,6 +1320,7 @@ export const EvmWalletUtils = {
   connectMultipleWallet,
   disconnectWallet,
   disconnectAllWallets,
+  promoteConnectedWalletAddress,
   hasPermission,
   addWalletPermission,
   removeWalletPermission,

@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { act, cleanup } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
 import React from 'react';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import {
@@ -9,6 +10,12 @@ import {
 } from 'src/__tests__/utils-for-testing/setups/render';
 import { EvmSelectAccountSectionComponent } from 'src/popup/evm/pages/home/evm-select-account-section/evm-select-account-section.component';
 import { EvmAddressesUtils } from 'src/popup/evm/utils/evm-addresses.utils';
+import {
+  CatchupStatus,
+  EvmLightNodeUtils,
+  PricingStatus,
+} from 'src/popup/evm/utils/evm-light-node.utils';
+import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
 import { ChainType } from 'src/popup/multichain/interfaces/chains.interface';
 
 jest.mock('src/common-ui/evm/evm-account-image/evm-account-image.component', () => ({
@@ -20,12 +27,25 @@ jest.mock('src/common-ui/evm/evm-account-image/evm-account-image.component', () 
 
 jest.mock('react-dropdown-select', () => ({
   __esModule: true,
-  default: ({ contentRenderer }: any) => {
+  default: ({ contentRenderer, dropdownRenderer }: any) => {
     const React = require('react');
     return React.createElement(
-      'div',
-      { 'aria-label': 'Dropdown select' },
-      contentRenderer({}),
+      React.Fragment,
+      null,
+      React.createElement(
+        'div',
+        { 'aria-label': 'Dropdown select' },
+        contentRenderer({}),
+      ),
+      React.createElement(
+        'div',
+        { 'data-testid': 'dropdown-content' },
+        dropdownRenderer({
+          props: {},
+          state: {},
+          methods: { dropDown: jest.fn() },
+        }),
+      ),
     );
   },
 }));
@@ -183,8 +203,92 @@ describe('evm-select-account-section unmount behavior', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText('Main seed')).toBeInTheDocument();
-      expect(screen.getByText('dialog_account 1')).toBeInTheDocument();
+      expect(screen.getAllByText('Main seed').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('dialog_account 1').length).toBeGreaterThan(0);
+    });
+  });
+
+  it('promotes selected account in provider permissions without reordering dropdown', async () => {
+    const firstWallet = {
+      address: '0x1234567890123456789012345678901234567890',
+    } as any;
+    const secondWallet = {
+      address: '0x2234567890123456789012345678901234567890',
+    } as any;
+    const firstAccount = {
+      id: 0,
+      path: "m/44'/60'/0'/0/0",
+      seedId: 1,
+      seedNickname: 'Main seed',
+      nickname: 'Account 1',
+      wallet: firstWallet,
+    } as any;
+    const secondAccount = {
+      id: 1,
+      path: "m/44'/60'/0'/0/1",
+      seedId: 1,
+      seedNickname: 'Main seed',
+      nickname: 'Account 2',
+      wallet: secondWallet,
+    } as any;
+
+    jest
+      .spyOn(EvmAddressesUtils, 'getAddressDetails')
+      .mockImplementation(async (address: string) => ({
+        fullAddress: address,
+        formattedAddress: `${address.slice(0, 6)}...${address.slice(-4)}`,
+        label: address === firstWallet.address ? 'Account 1' : 'Account 2',
+        avatar: undefined,
+      }));
+    jest
+      .spyOn(EvmLightNodeUtils, 'registerAddress')
+      .mockResolvedValue(undefined as never);
+    jest.spyOn(EvmLightNodeUtils, 'getDiscoveredTokens').mockResolvedValue({
+      tokens: [],
+      pricingStatus: PricingStatus.READY,
+      catchupStatus: CatchupStatus.IDLE,
+    } as never);
+    jest.spyOn(EvmLightNodeUtils, 'getDiscoveredNfts').mockResolvedValue({
+      collections: [],
+      catchupStatus: CatchupStatus.IDLE,
+    } as never);
+    const promoteConnectedWalletAddressSpy = jest
+      .spyOn(EvmWalletUtils, 'promoteConnectedWalletAddress')
+      .mockResolvedValue(undefined);
+
+    customRender(<EvmSelectAccountSectionComponent isOnMain />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk: 'my-password',
+        chain: {
+          ...initialEmptyStateStore.chain,
+          type: ChainType.EVM,
+          chainId: '1',
+          name: 'Ethereum',
+        },
+        evm: {
+          ...initialEmptyStateStore.evm,
+          accounts: [firstAccount, secondAccount],
+          activeAccount: {
+            ...initialEmptyStateStore.evm.activeAccount,
+            address: firstWallet.address,
+            wallet: firstWallet,
+            isReady: true,
+          },
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Account 2')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Account 2'));
+
+    await waitFor(() => {
+      expect(promoteConnectedWalletAddressSpy).toHaveBeenCalledWith(
+        secondWallet.address,
+      );
     });
   });
 });
