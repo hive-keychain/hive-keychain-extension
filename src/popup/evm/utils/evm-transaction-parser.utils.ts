@@ -640,7 +640,14 @@ const getAddressWarning = async (
       true,
     );
   }
+  const hasLightNodeSecurityRisk =
+    !!addressFlags.isBlacklisted ||
+    !!addressFlags.isMalicious ||
+    !!addressFlags.rugPullRisk ||
+    !!addressFlags.securityReasons?.length ||
+    !!addressFlags.rugPullReasons?.length;
   if (
+    !hasLightNodeSecurityRisk &&
     !(await EvmAddressesUtils.isWhitelisted(address, chainId, localAccounts))
   ) {
     const savedEns = isAddress
@@ -710,6 +717,13 @@ const getSmartContractWarningAndInfo = async (
     warnings: [],
     information: [],
   };
+  const contractInfo = verifyTransactionInformation?.contract;
+  const hasLightNodeContractSecurityRisk =
+    !!contractInfo?.isBlacklisted ||
+    !!contractInfo?.isMalicious ||
+    !!contractInfo?.rugPullRisk ||
+    !!contractInfo?.securityReasons?.length ||
+    !!contractInfo?.rugPullReasons?.length;
 
   if (verifyTransactionInformation?.contract?.proxy?.target) {
     warningAndInfo.information!.push({
@@ -719,6 +733,7 @@ const getSmartContractWarningAndInfo = async (
   }
 
   if (
+    !hasLightNodeContractSecurityRisk &&
     !(await EvmAddressesUtils.isWhitelisted(address, chainId, localAccounts))
   ) {
     if (
@@ -747,7 +762,6 @@ const getSmartContractWarningAndInfo = async (
     });
   }
 
-  const contractInfo = verifyTransactionInformation?.contract;
   if (contractInfo?.isMalicious) {
     appendSecurityReasonWarnings(
       warningAndInfo.warnings!,
