@@ -30,7 +30,6 @@ import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-log
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
-import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { LiFiUtils } from '@popup/evm/utils/lifi.utils';
@@ -254,18 +253,9 @@ export const EvmLifiSwap = ({
     const provider = await EthersUtils.getProvider(chain);
     if (selectedToken.address.toLowerCase() === ethers.ZeroAddress) {
       const balance = await provider.getBalance(activeAccount.wallet.address);
-      const balanceValue = ethers.formatEther(balance);
-      const balanceInteger = Number(balanceValue);
-
-      const formattedBalance = EvmFormatUtils.formatTokenBalance(
-        balanceValue,
-        8,
+      return setAvailableBalance(
+        LiFiUtils.getTokenBalanceFromRawUnits(balance, 18),
       );
-      return setAvailableBalance({
-        formattedBalance,
-        balanceInteger,
-        balanceValue,
-      });
     } else {
       const contract = new ethers.Contract(
         selectedToken.address,
@@ -273,18 +263,12 @@ export const EvmLifiSwap = ({
         provider,
       );
       const balance = await contract.balanceOf(activeAccount.wallet.address);
-      const balanceValue = ethers.formatEther(balance);
-      const balanceInteger = Number(balanceValue);
-
-      const formattedBalance = EvmFormatUtils.formatTokenBalance(
-        balanceValue,
-        8,
+      setAvailableBalance(
+        LiFiUtils.getTokenBalanceFromRawUnits(
+          balance,
+          selectedToken.decimals ?? 18,
+        ),
       );
-      setAvailableBalance({
-        formattedBalance,
-        balanceInteger,
-        balanceValue,
-      });
     }
   };
 
