@@ -12,6 +12,7 @@ interface EvmAccountContextualMenuParams {
   onCopyClicked: Function;
   isLedgerSource?: boolean;
   isImportedSource?: boolean;
+  isLedgerSupported: boolean;
 }
 
 const getDeleteSeedConfirmationMessage = (
@@ -38,6 +39,7 @@ export const EvmAccountsContextualMenu = ({
   onCopyClicked,
   isLedgerSource,
   isImportedSource,
+  isLedgerSupported,
 }: EvmAccountContextualMenuParams): ContextualMenu => {
   const deleteSeedItem = {
     icon: SVGIcons.EVM_ACCOUNT_DELETE,
@@ -71,6 +73,32 @@ export const EvmAccountsContextualMenu = ({
           ...seedItems,
         ];
 
+  const commonSeedItems = [
+    {
+      icon: SVGIcons.EVM_ACCOUNT_ADD,
+      label: 'evm_create_seed',
+      onClick: onCreateClicked,
+    },
+    {
+      icon: SVGIcons.EVM_ACCOUNT_IMPORT,
+      label: 'evm_import_seed',
+      onClick: onImportClicked,
+    },
+    {
+      icon: SVGIcons.EVM_ACCOUNT_KEY,
+      label: 'evm_import_key',
+      onClick: onImportKeyClicked,
+    },
+  ];
+
+  if (isLedgerSupported) {
+    commonSeedItems.push({
+      icon: SVGIcons.EVM_ACCOUNT_LEDGER,
+      label: 'evm_connect_ledger_wallet',
+      onClick: onConnectLedgerClicked,
+    });
+  }
+
   return {
     sections: [
       {
@@ -80,28 +108,7 @@ export const EvmAccountsContextualMenu = ({
       },
       {
         title: 'common_seeds',
-        items: [
-          {
-            icon: SVGIcons.EVM_ACCOUNT_ADD,
-            label: 'evm_create_seed',
-            onClick: onCreateClicked,
-          },
-          {
-            icon: SVGIcons.EVM_ACCOUNT_IMPORT,
-            label: 'evm_import_seed',
-            onClick: onImportClicked,
-          },
-          {
-            icon: SVGIcons.EVM_ACCOUNT_KEY,
-            label: 'evm_import_key',
-            onClick: onImportKeyClicked,
-          },
-          {
-            icon: SVGIcons.EVM_ACCOUNT_LEDGER,
-            label: 'evm_connect_ledger_wallet',
-            onClick: onConnectLedgerClicked,
-          },
-        ],
+        items: commonSeedItems,
       },
     ],
   };

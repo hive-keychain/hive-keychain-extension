@@ -20,6 +20,7 @@ const AddWalletMain = ({
   resetChain,
   setChain,
   resetOnBack,
+  isLedgerSupported,
 }: PropsFromRedux) => {
   useEffect(() => {
     init();
@@ -127,12 +128,14 @@ const AddWalletMain = ({
           onClick={handleImportKeys}
           type={ButtonType.ALTERNATIVE}
         /> */}
-        <ButtonComponent
-          dataTestId="add-evm-wallet-from-ledger-button"
-          label={'popup_html_add_account_with_ledger'}
-          onClick={handleAddFromLedger}
-          type={ButtonType.ALTERNATIVE}
-        />
+        {isLedgerSupported && (
+          <ButtonComponent
+            dataTestId="add-evm-wallet-from-ledger-button"
+            label={'popup_html_add_account_with_ledger'}
+            onClick={handleAddFromLedger}
+            type={ButtonType.ALTERNATIVE}
+          />
+        )}
       </div>
     </div>
   );
@@ -143,6 +146,7 @@ const mapStateToProps = (state: RootState) => {
     hasFinishedSignup: state.hasFinishedSignup,
     chain: state.chain,
     resetOnBack: state.navigation.stack[0]?.params?.resetOnBack,
+    isLedgerSupported: state.evm.appStatus.isLedgerSupported,
   };
 };
 

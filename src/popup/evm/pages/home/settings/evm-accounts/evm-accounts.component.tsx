@@ -46,6 +46,7 @@ const EvmAccounts = ({
   navigateTo,
   setEvmAccounts,
   loadEvmActiveAccount,
+  isLedgerSupported,
 }: PropsType) => {
   const [selectedSeed, setSelectedSeed] = useState<OptionItem>();
   const [seedsOptions, setSeedsOptions] = useState<OptionItem[]>();
@@ -428,6 +429,7 @@ const EvmAccounts = ({
         onCopyClicked: handleCopySeedClick,
         isLedgerSource: isCurrentSourceLedger(),
         isImportedSource: isCurrentSourceImported(),
+        isLedgerSupported,
       })
     : undefined;
 
@@ -514,6 +516,7 @@ const mapStateToProps = (state: RootState) => {
     accounts: state.evm.accounts,
     mk: state.mk,
     chain: state.chain as EvmChain,
+    isLedgerSupported: state.evm.appStatus.isLedgerSupported,
   };
 };
 const connector = connect(mapStateToProps, {

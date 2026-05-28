@@ -22,7 +22,7 @@ describe('AddWalletMainComponent', () => {
     jest.clearAllMocks();
   });
 
-  const renderSetupPage = () =>
+  const renderSetupPage = (isLedgerSupported = true) =>
     customRender(<AddWalletMainComponent />, {
       initialState: {
         ...initialEmptyStateStore,
@@ -31,6 +31,13 @@ describe('AddWalletMainComponent', () => {
           type: ChainType.EVM,
           chainId: '0x1',
           name: 'Ethereum',
+        },
+        evm: {
+          ...initialEmptyStateStore.evm,
+          appStatus: {
+            ...initialEmptyStateStore.evm.appStatus,
+            isLedgerSupported,
+          },
         },
       },
     });
@@ -44,6 +51,14 @@ describe('AddWalletMainComponent', () => {
     expect(
       screen.getByTestId('add-evm-wallet-from-ledger-button'),
     ).toBeInTheDocument();
+  });
+
+  it('hides the ledger option when Ledger is not supported', () => {
+    renderSetupPage(false);
+
+    expect(
+      screen.queryByTestId('add-evm-wallet-from-ledger-button'),
+    ).not.toBeInTheDocument();
   });
 
   it('navigates to import wallet from private key', async () => {

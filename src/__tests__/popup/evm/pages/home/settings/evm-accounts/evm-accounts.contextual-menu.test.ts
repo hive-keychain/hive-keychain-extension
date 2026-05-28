@@ -5,6 +5,7 @@ describe('EvmAccountsContextualMenu', () => {
   const getMenu = (params?: {
     isLedgerSource?: boolean;
     isImportedSource?: boolean;
+    isLedgerSupported?: boolean;
   }) =>
     EvmAccountsContextualMenu({
       activeSeedName: 'Ledger',
@@ -17,6 +18,7 @@ describe('EvmAccountsContextualMenu', () => {
       onCopyClicked: jest.fn(),
       isLedgerSource: params?.isLedgerSource,
       isImportedSource: params?.isImportedSource,
+      isLedgerSupported: params?.isLedgerSupported ?? true,
     });
 
   it('removes seed edit and copy actions for Ledger sources', () => {
@@ -58,6 +60,14 @@ describe('EvmAccountsContextualMenu', () => {
     );
 
     expect(connectLedgerItem?.icon).toBe(SVGIcons.EVM_ACCOUNT_LEDGER);
+  });
+
+  it('removes the Connect Ledger action when Ledger is not supported', () => {
+    const menu = getMenu({ isLedgerSupported: false });
+
+    expect(menu.sections[1].items.map((item) => item.label)).not.toContain(
+      'evm_connect_ledger_wallet',
+    );
   });
 
   it('uses a distinct import icon for the Import seed action', () => {

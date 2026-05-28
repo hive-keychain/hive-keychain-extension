@@ -89,6 +89,10 @@ describe('EvmAccountsComponent', () => {
         },
         evm: {
           ...initialEmptyStateStore.evm,
+          appStatus: {
+            ...initialEmptyStateStore.evm.appStatus,
+            isLedgerSupported: true,
+          },
           accounts: [
             {
               id: 0,
@@ -141,6 +145,50 @@ describe('EvmAccountsComponent', () => {
     });
   });
 
+  it('hides the EVM Ledger import flow from the seed menu when unsupported', async () => {
+    const user = userEvent.setup();
+    const { container } = customRender(<EvmAccountsComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk,
+        chain: {
+          ...initialEmptyStateStore.chain,
+          type: ChainType.EVM,
+          chainId: '0x1',
+          name: 'Ethereum',
+        },
+        evm: {
+          ...initialEmptyStateStore.evm,
+          appStatus: {
+            ...initialEmptyStateStore.evm.appStatus,
+            isLedgerSupported: false,
+          },
+          accounts: [
+            {
+              id: 0,
+              path: "m/44'/60'/0'/0/0",
+              seedId: 1,
+              seedNickname: 'Main seed',
+              nickname: 'Account 1',
+              source: EvmAccountSource.SEED,
+              wallet,
+            },
+          ],
+        },
+      },
+    });
+
+    const menuButton = container.querySelector(
+      '.contextual-menu > .svg-icon.clickable',
+    ) as HTMLElement;
+
+    await user.click(menuButton);
+
+    expect(
+      screen.queryByText('evm_connect_ledger_wallet'),
+    ).not.toBeInTheDocument();
+  });
+
   it('opens the EVM Ledger import flow from the seed menu', async () => {
     const user = userEvent.setup();
     chrome.management.getSelf = jest.fn().mockResolvedValue({
@@ -159,6 +207,10 @@ describe('EvmAccountsComponent', () => {
         },
         evm: {
           ...initialEmptyStateStore.evm,
+          appStatus: {
+            ...initialEmptyStateStore.evm.appStatus,
+            isLedgerSupported: true,
+          },
           accounts: [
             {
               id: 0,
