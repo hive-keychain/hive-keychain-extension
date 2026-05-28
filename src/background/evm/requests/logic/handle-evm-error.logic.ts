@@ -46,6 +46,7 @@ export const handleEvmError = async (
             errorMessageParams,
           ),
           tab,
+          request_id: request.request_id,
         },
       });
       const handlers = await getRequestHandlers();

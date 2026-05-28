@@ -81,18 +81,25 @@ export const SendTransaction = (props: Props) => {
   }, [request.request_id]);
 
   useEffect(() => {
-    const onRuntimeMessage = (msg: {
+    const clearPostConfirmationLoading = (msg: {
       command?: string;
       msg?: { request_id?: number };
     }) => {
-      if (msg?.command !== DialogCommand.ANSWER_EVM_REQUEST) return;
-      if (msg.msg?.request_id !== request.request_id) return;
+      if (
+        msg?.command !== DialogCommand.ANSWER_EVM_REQUEST &&
+        msg?.command !== DialogCommand.SEND_DIALOG_ERROR
+      ) {
+        return;
+      }
+      if (msg.msg?.request_id !== request.request_id) {
+        return;
+      }
       setPostConfirmationLoading(false);
       transactionHook.setLoading(false);
     };
-    chrome.runtime.onMessage.addListener(onRuntimeMessage);
+    chrome.runtime.onMessage.addListener(clearPostConfirmationLoading);
     return () => {
-      chrome.runtime.onMessage.removeListener(onRuntimeMessage);
+      chrome.runtime.onMessage.removeListener(clearPostConfirmationLoading);
     };
   }, [request.request_id, transactionHook.setLoading]);
 

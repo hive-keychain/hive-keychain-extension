@@ -91,6 +91,27 @@ describe('DialogConfirmationPage', () => {
     jest.restoreAllMocks();
   });
 
+  it('closes the window when dismissing a dialog error for the last request', () => {
+    render(
+      <DialogConfirmationPage
+        message={createMessage(1)}
+        feedBackMessage={{
+          command: DialogCommand.SEND_DIALOG_ERROR,
+          msg: {
+            display_msg: 'Transaction rejected on Ledger',
+            tab: 1,
+            request_id: 1,
+          },
+        }}
+        setFeedBackMessage={jest.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByText('message_container_close_button'));
+
+    expect(window.close).toHaveBeenCalled();
+  });
+
   it('closes the window without clearing final feedback for the last request', () => {
     const setFeedBackMessage = jest.fn();
 

@@ -5,6 +5,7 @@ import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import { EvmRequestItem } from '@dialog/evm/components/evm-request-item/evm-request-item';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
@@ -62,6 +63,28 @@ export const EvmOperation = ({
   useEffect(() => {
     setLoading(false);
   }, [request]);
+
+  useEffect(() => {
+    const clearConfirmLoading = (msg: {
+      command?: string;
+      msg?: { request_id?: number };
+    }) => {
+      if (
+        msg?.command !== DialogCommand.ANSWER_EVM_REQUEST &&
+        msg?.command !== DialogCommand.SEND_DIALOG_ERROR
+      ) {
+        return;
+      }
+      if (msg.msg?.request_id !== request.request_id) {
+        return;
+      }
+      setLoading(false);
+    };
+    chrome.runtime.onMessage.addListener(clearConfirmLoading);
+    return () => {
+      chrome.runtime.onMessage.removeListener(clearConfirmLoading);
+    };
+  }, [request.request_id]);
 
   const genericOnConfirm = () => {
     if (transactionHook && transactionHook.hasWarning()) {
