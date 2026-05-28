@@ -1,4 +1,3 @@
-import { KeychainApi } from '@api/keychain';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { getAbiFromType } from '@popup/evm/reference-data/abi.data';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
@@ -45,31 +44,7 @@ describe('evm-transaction-parser.utils proxy tests:\n', () => {
     jest.restoreAllMocks();
   });
 
-  it('normalizes a raw proxy string from verification data', async () => {
-    jest.spyOn(KeychainApi, 'get').mockResolvedValue({
-      contract: { proxy: '0x00000000000000000000000000000000000000bb' },
-      domain: {},
-      to: {},
-    });
-
-    const result = await EvmTransactionParserUtils.verifyTransactionInformation({
-      domain: 'app.example',
-      to: '0x00000000000000000000000000000000000000aa',
-      contract: '0x00000000000000000000000000000000000000cc',
-    });
-
-    expect(result.contract.proxy).toEqual({
-      target: '0x00000000000000000000000000000000000000bb',
-    });
-  });
-
-  it('injects backend proxy target into normalized verification data', async () => {
-    jest.spyOn(KeychainApi, 'get').mockResolvedValue({
-      contract: {},
-      domain: {},
-      to: {},
-    });
-
+  it('injects proxy target into normalized verification data', async () => {
     const result = await EvmTransactionParserUtils.verifyTransactionInformation({
       domain: 'app.example',
       to: '0x00000000000000000000000000000000000000aa',
@@ -222,11 +197,6 @@ describe('evm-transaction-parser.utils proxy tests:\n', () => {
   });
 
   it('merges light-node contract security into verification result', async () => {
-    jest.spyOn(KeychainApi, 'get').mockResolvedValue({
-      contract: {},
-      domain: {},
-      to: {},
-    });
     (
       EvmVerificationUtils.fetchLightNodeVerificationData as jest.Mock
     ).mockResolvedValue({
@@ -310,12 +280,7 @@ describe('evm-transaction-parser.utils proxy tests:\n', () => {
     );
   });
 
-  it('does not set unableToReach when light-node fails but Keychain succeeds', async () => {
-    jest.spyOn(KeychainApi, 'get').mockResolvedValue({
-      contract: {},
-      domain: {},
-      to: {},
-    });
+  it('sets lightNodeSecurityUnavailable when light-node fails', async () => {
     (
       EvmVerificationUtils.fetchLightNodeVerificationData as jest.Mock
     ).mockRejectedValue(new Error('light-node down'));

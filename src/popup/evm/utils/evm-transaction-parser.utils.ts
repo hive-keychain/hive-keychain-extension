@@ -30,7 +30,6 @@ import {
 import { EvmVerificationUtils } from '@popup/evm/utils/evm-verification.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ethers, Interface, Result } from 'ethers';
-import { KeychainApi } from 'src/api/keychain';
 import Logger from 'src/utils/logger.utils';
 
 const recipientInputNameList = ['recipient', 'spender'];
@@ -723,27 +722,10 @@ const mergeLightNodeSecurityIntoVerification = (
   return merged;
 };
 
-const fetchKeychainVerification = async (
-  params: VerifyTransactionParams = {},
-): Promise<Partial<EvmTransactionVerificationInformation>> => {
-  let url = `evm/verify-transaction?`;
-  if (params.domain) {
-    url += `domain=${encodeURIComponent(params.domain)}`;
-  }
-  if (params.to) {
-    url += `${params.domain ? '&' : ''}to=${encodeURIComponent(params.to)}`;
-  }
-  if (params.contract) {
-    url += `${params.domain || params.to ? '&' : ''}contract=${encodeURIComponent(params.contract)}`;
-  }
-
-  return await KeychainApi.get(url);
-};
-
 const enrichVerificationForAddresses = async (
   verification: EvmTransactionVerificationInformation,
   addresses: string[],
-  params: { chainId: string; domain?: string },
+  _params: { chainId: string; domain?: string },
 ): Promise<EvmTransactionVerificationInformation> => {
   const uniqueAddresses = [
     ...new Set(
@@ -759,22 +741,9 @@ const enrichVerificationForAddresses = async (
 
   await Promise.all(
     uniqueAddresses.map(async (address) => {
-      const [keychainResult, receiverSecurity] = await Promise.all([
-        fetchKeychainVerification({
-          domain: params.domain,
-          to: address,
-        }).catch(
-          () => ({}) as Partial<EvmTransactionVerificationInformation>,
-        ),
-        EvmLightNodeUtils.getReceiverSecurity(address).catch(() => undefined),
-      ]);
-
-      if (keychainResult.to) {
-        setAddressVerificationFlags(verification, address, {
-          isBlacklisted: keychainResult.to.isBlacklisted,
-          isWhitelisted: keychainResult.to.isWhitelisted,
-        });
-      }
+      const receiverSecurity = await EvmLightNodeUtils.getReceiverSecurity(
+        address,
+      ).catch(() => undefined);
 
       applyLightNodeReceiverSecurity(verification, address, receiverSecurity);
     }),
@@ -786,28 +755,16 @@ const enrichVerificationForAddresses = async (
 const verifyTransactionInformation = async (
   params: VerifyTransactionParams = {},
 ): Promise<EvmTransactionVerificationInformation> => {
-  const [keychainResult, lightNodeResult] = await Promise.allSettled([
-    fetchKeychainVerification(params),
-    EvmVerificationUtils.fetchLightNodeVerificationData(params),
-  ]);
+  const verification = normalizeVerificationInformation(
+    {},
+    params.proxyTarget,
+  );
 
-  let verification: EvmTransactionVerificationInformation;
-
-  if (keychainResult.status === 'fulfilled') {
-    verification = normalizeVerificationInformation(
-      keychainResult.value,
-      params.proxyTarget,
-    );
-  } else {
-    Logger.error(
-      'Error while fetching transaction information',
-      keychainResult.reason,
-    );
-    verification = normalizeVerificationInformation(
-      { unableToReach: true },
-      params.proxyTarget,
-    );
-  }
+  const lightNodeResult = await EvmVerificationUtils.fetchLightNodeVerificationData(
+    params,
+  )
+    .then((value) => ({ status: 'fulfilled', value }) as const)
+    .catch((reason) => ({ status: 'rejected', reason }) as const);
 
   const lightNodeData =
     lightNodeResult.status === 'fulfilled'
