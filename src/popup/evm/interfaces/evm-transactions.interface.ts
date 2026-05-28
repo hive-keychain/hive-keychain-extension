@@ -102,7 +102,7 @@ export interface TransactionConfirmationFields {
 export interface VerifyTransactionParams {
   domain?: string;
   to?: string;
-  /** Passed to Keychain `evm/verify-transaction` */
+  /** Contract address used for verification context */
   contract?: string;
   /** Token/collection address for light-node contract security when different from `contract` */
   tokenContract?: string;

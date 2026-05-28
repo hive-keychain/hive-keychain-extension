@@ -1,6 +1,5 @@
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { KeychainApi } from '@api/keychain';
 import { SendTransaction } from '@dialog/evm/requests/send-transaction/send-transaction';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
@@ -236,11 +235,6 @@ describe('send-transaction proxy tests:\n', () => {
     jest.spyOn(EvmLightNodeUtils, 'getAbi').mockResolvedValue([
       { inputs: [], name: 'approve', outputs: [], type: 'function' },
     ]);
-    jest.spyOn(KeychainApi, 'get').mockResolvedValue({
-      contract: {},
-      domain: {},
-      to: {},
-    });
     jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(true);
     jest.spyOn(EvmAddressesUtils, 'isPotentialSpoofing').mockResolvedValue(
       null as any,
@@ -258,7 +252,7 @@ describe('send-transaction proxy tests:\n', () => {
     });
   });
 
-  it('keeps the proxy address as the main contract field and shows the backend proxy target as info', async () => {
+  it('keeps the proxy address as the main contract field and shows the proxy target as info', async () => {
     render(
       <SendTransaction
         accounts={[

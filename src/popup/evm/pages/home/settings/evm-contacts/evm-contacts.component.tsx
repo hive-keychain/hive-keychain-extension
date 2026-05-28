@@ -171,22 +171,20 @@ const Contacts = ({ chain, setTitleContainerProperties }: PropsType) => {
     type: EvmAddressType,
     addresses: FavoriteAddress[],
   ) => (
-    <div className="contact-category">
+    <div className="contact-category section-card">
       <div className="category-header">
         <LabelComponent value={titleKey} className="category-title" />
         {renderAddLink(type)}
       </div>
-      <div className="addresses-list-items">
-        {addresses.length === 0 ? (
-          <div className="edit-contact-item empty-address-item">
-            <div className="contact-label-panel">
-              <div className="contact-label">
-                {chrome.i18n.getMessage(getEmptyStateMessageKey(type))}
-              </div>
-            </div>
+      {addresses.length === 0 ? (
+        <div className="addresses-list-items">
+          <div className="empty-address-item">
+            {chrome.i18n.getMessage(getEmptyStateMessageKey(type))}
           </div>
-        ) : (
-          addresses.map((savedAddress, index) => (
+        </div>
+      ) : (
+        <div className="addresses-list-items">
+          {addresses.map((savedAddress, index) => (
             <EditContactComponent
               key={`${savedAddress.address}-${index}`}
               shortAddress={true}
@@ -198,9 +196,9 @@ const Contacts = ({ chain, setTitleContainerProperties }: PropsType) => {
               }
               chainType={ChainType.EVM}
             />
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 
