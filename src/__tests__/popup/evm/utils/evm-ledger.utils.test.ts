@@ -14,6 +14,7 @@ import { KeychainError } from 'src/keychain-error';
 const mockLedgerApp = {
   getAppConfiguration: jest.fn(),
   getAddress: jest.fn(),
+  clearSignTransaction: jest.fn(),
   signTransaction: jest.fn(),
   signPersonalMessage: jest.fn(),
   signEIP712HashedMessage: jest.fn(),
@@ -305,8 +306,8 @@ describe('evm ledger utils', () => {
     ]);
   });
 
-  it('formats Ledger signing paths and hex payloads', async () => {
-    mockLedgerApp.signTransaction.mockResolvedValue({
+  it('formats Ledger signing paths and hex payloads for clear signing', async () => {
+    mockLedgerApp.clearSignTransaction.mockResolvedValue({
       r: '1'.padStart(64, '0'),
       s: '2'.padStart(64, '0'),
       v: '1b',
@@ -314,11 +315,52 @@ describe('evm ledger utils', () => {
 
     await EvmLedgerUtils.signTransaction("m/44'/60'/0'/0/2", '0xabcdef');
 
-    expect(mockLedgerApp.signTransaction).toHaveBeenCalledWith(
+    expect(mockLedgerApp.clearSignTransaction).toHaveBeenCalledWith(
       "44'/60'/0'/0/2",
       'abcdef',
-      null,
+      { erc20: true, nft: true },
+      false,
     );
+  });
+
+  it('detects common token operations for Ledger clear-signing warnings', () => {
+    expect(EvmLedgerUtils.isCommonTokenOperationData('0xa9059cbb')).toBe(true);
+    expect(EvmLedgerUtils.isCommonTokenOperationData('0x095ea7b3')).toBe(true);
+    expect(EvmLedgerUtils.isCommonTokenOperationData('0x23b872dd')).toBe(true);
+    expect(EvmLedgerUtils.isCommonTokenOperationData('0x42842e0e')).toBe(true);
+    expect(EvmLedgerUtils.isCommonTokenOperationData('0xb88d4fde')).toBe(true);
+    expect(EvmLedgerUtils.isCommonTokenOperationData('0xa22cb465')).toBe(true);
+    expect(EvmLedgerUtils.isCommonTokenOperationData('0xf242432a')).toBe(true);
+    expect(EvmLedgerUtils.isCommonTokenOperationData('0x2eb2c2d6')).toBe(true);
+    expect(EvmLedgerUtils.isCommonTokenOperationData('0x')).toBe(false);
+    expect(EvmLedgerUtils.isCommonTokenOperationData('0xdeadbeef')).toBe(false);
+    expect(EvmLedgerUtils.isCommonTokenOperationData(undefined)).toBe(false);
+  });
+
+  it('builds clear-signing fallback warnings only for Ledger token operations', () => {
+    expect(
+      EvmLedgerUtils.getClearSigningFallbackWarning(
+        { source: EvmAccountSource.LEDGER },
+        '0xa9059cbb',
+      ),
+    ).toEqual({
+      ignored: false,
+      level: 'medium',
+      message: 'evm_ledger_clear_signing_fallback_warning',
+      type: 'BASE',
+    });
+    expect(
+      EvmLedgerUtils.getClearSigningFallbackWarning(
+        { source: EvmAccountSource.SEED },
+        '0xa9059cbb',
+      ),
+    ).toBeUndefined();
+    expect(
+      EvmLedgerUtils.getClearSigningFallbackWarning(
+        { source: EvmAccountSource.LEDGER },
+        '0xdeadbeef',
+      ),
+    ).toBeUndefined();
   });
 
   it('maps disconnected Ledger errors to the EVM connect message', () => {

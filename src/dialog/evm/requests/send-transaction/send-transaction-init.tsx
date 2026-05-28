@@ -7,6 +7,7 @@ import {
   EvmTransactionType,
   EvmTransactionVerificationInformation,
   ProviderTransactionData,
+  TransactionConfirmationField,
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccountOrPublic } from '@popup/evm/interfaces/wallet.interface';
@@ -14,6 +15,7 @@ import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-log
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
+import { EvmLedgerUtils } from '@popup/evm/utils/evm-ledger.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import {
@@ -177,6 +179,20 @@ const getDecodedFieldTokenType = (
 ) => {
   if (isNftTokenType(usedTokenType)) return usedTokenType;
   return contractType ?? usedTokenType;
+};
+
+const appendLedgerClearSigningWarning = (
+  field: TransactionConfirmationField,
+  account: EvmAccountOrPublic | undefined,
+  data: string | undefined,
+): TransactionConfirmationField => {
+  const warning = EvmLedgerUtils.getClearSigningFallbackWarning(account, data);
+  if (!warning) return field;
+
+  return {
+    ...field,
+    warnings: [...(field.warnings ?? []), warning],
+  };
 };
 
 export async function runSendTransactionInit(
@@ -405,23 +421,29 @@ export async function runSendTransactionInit(
               !!(transactionInfo && transactionInfo.unableToReach),
             );
 
-            transactionConfirmationFields.otherFields.push({
-              name: 'evm_operation_smart_contract_address',
-              type: EvmInputDisplayType.CONTRACT_ADDRESS,
-              value: renderCopyableFormattedAddress(
-                tokenAddress!,
-                chainTmp.chainId,
-                accounts,
-                <EvmAccountImage address={tokenAddress!} small />,
+            transactionConfirmationFields.otherFields.push(
+              appendLedgerClearSigningWarning(
+                {
+                  name: 'evm_operation_smart_contract_address',
+                  type: EvmInputDisplayType.CONTRACT_ADDRESS,
+                  value: renderCopyableFormattedAddress(
+                    tokenAddress!,
+                    chainTmp.chainId,
+                    accounts,
+                    <EvmAccountImage address={tokenAddress!} small />,
+                  ),
+                  ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
+                    params.to,
+                    chainTmp.chainId,
+                    transactionInfo,
+                    accounts,
+                    usedToken,
+                  )),
+                },
+                usedAccount,
+                params.data,
               ),
-              ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
-                params.to,
-                chainTmp.chainId,
-                transactionInfo,
-                accounts,
-                usedToken,
-              )),
-            });
+            );
 
             transactionConfirmationFields.operationName =
               chrome.i18n.getMessage(
@@ -525,23 +547,29 @@ export async function runSendTransactionInit(
               !!(transactionInfo && transactionInfo.unableToReach),
             );
 
-            transactionConfirmationFields.otherFields.push({
-              name: 'evm_operation_smart_contract_address',
-              type: EvmInputDisplayType.CONTRACT_ADDRESS,
-              value: renderCopyableFormattedAddress(
-                tokenAddress!,
-                chainTmp.chainId,
-                accounts,
-                <EvmAccountImage address={tokenAddress!} small />,
+            transactionConfirmationFields.otherFields.push(
+              appendLedgerClearSigningWarning(
+                {
+                  name: 'evm_operation_smart_contract_address',
+                  type: EvmInputDisplayType.CONTRACT_ADDRESS,
+                  value: renderCopyableFormattedAddress(
+                    tokenAddress!,
+                    chainTmp.chainId,
+                    accounts,
+                    <EvmAccountImage address={tokenAddress!} small />,
+                  ),
+                  ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
+                    params.to,
+                    chainTmp.chainId,
+                    transactionInfo,
+                    accounts,
+                    usedToken,
+                  )),
+                },
+                usedAccount,
+                params.data,
               ),
-              ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
-                params.to,
-                chainTmp.chainId,
-                transactionInfo,
-                accounts,
-                usedToken,
-              )),
-            });
+            );
 
             const nativePaymentValue = getNativePaymentValue(
               decodedTransactionData.value,

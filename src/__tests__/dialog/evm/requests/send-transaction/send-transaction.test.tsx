@@ -311,6 +311,99 @@ describe('send-transaction proxy tests:\n', () => {
     expect(contractField.value.props.prefix).toBeDefined();
   });
 
+  it('adds a Ledger clear-signing fallback warning for Ledger token transactions', async () => {
+    render(
+      <SendTransaction
+        accounts={[
+          {
+            address: '0x00000000000000000000000000000000000000ff',
+            source: EvmAccountSource.LEDGER,
+          } as any,
+        ]}
+        afterCancel={jest.fn()}
+        data={{ dappInfo: { domain: 'app.example' }, tab: 1 } as any}
+        request={
+          {
+            chainId: '1',
+            params: [
+              {
+                data: '0x095ea7b3',
+                from: '0x00000000000000000000000000000000000000ff',
+                gasLimit: 21000,
+                maxFeePerGas: '1',
+                maxPriorityFeePerGas: '1',
+                to: proxyAddress,
+                type: EvmTransactionType.EIP_1559,
+                value: '0',
+              },
+            ],
+            request_id: 1,
+          } as any
+        }
+      />,
+    );
+
+    await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
+
+    const fields = lastSetFieldsPayload();
+    const contractField = fields.otherFields.find(
+      (field: any) => field.name === 'evm_operation_smart_contract_address',
+    );
+
+    expect(contractField.warnings).toContainEqual({
+      ignored: false,
+      level: 'medium',
+      message: 'evm_ledger_clear_signing_fallback_warning',
+      type: 'BASE',
+    });
+  });
+
+  it('does not add a Ledger clear-signing fallback warning for software token transactions', async () => {
+    render(
+      <SendTransaction
+        accounts={[
+          {
+            address: '0x00000000000000000000000000000000000000ff',
+            source: EvmAccountSource.SEED,
+          } as any,
+        ]}
+        afterCancel={jest.fn()}
+        data={{ dappInfo: { domain: 'app.example' }, tab: 1 } as any}
+        request={
+          {
+            chainId: '1',
+            params: [
+              {
+                data: '0x095ea7b3',
+                from: '0x00000000000000000000000000000000000000ff',
+                gasLimit: 21000,
+                maxFeePerGas: '1',
+                maxPriorityFeePerGas: '1',
+                to: proxyAddress,
+                type: EvmTransactionType.EIP_1559,
+                value: '0',
+              },
+            ],
+            request_id: 1,
+          } as any
+        }
+      />,
+    );
+
+    await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
+
+    const fields = lastSetFieldsPayload();
+    const contractField = fields.otherFields.find(
+      (field: any) => field.name === 'evm_operation_smart_contract_address',
+    );
+
+    expect(contractField.warnings ?? []).not.toContainEqual(
+      expect.objectContaining({
+        message: 'evm_ledger_clear_signing_fallback_warning',
+      }),
+    );
+  });
+
   it('does not show the Ledger confirmation caption during pre-confirmation loading', async () => {
     transactionHook.loading = true;
 

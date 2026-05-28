@@ -9,12 +9,28 @@ import {
   EvmWallet,
   StoredEvmLedgerAccount,
 } from '@popup/evm/interfaces/wallet.interface';
+import {
+  EvmTransactionWarning,
+  EvmTransactionWarningLevel,
+  EvmTransactionWarningType,
+} from '@popup/evm/interfaces/evm-transactions.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ethers } from 'ethers';
 import { KeychainError } from 'src/keychain-error';
 
 const DEFAULT_EMPTY_ACCOUNT_LIMIT = 2;
+const CLEAR_SIGNING_RESOLUTION_CONFIG = { erc20: true, nft: true };
+const COMMON_TOKEN_OPERATION_SELECTORS = new Set([
+  '0xa9059cbb', // ERC-20 transfer(address,uint256)
+  '0x095ea7b3', // ERC-20/ERC-721 approve(...)
+  '0x23b872dd', // ERC-20/ERC-721 transferFrom(...)
+  '0x42842e0e', // ERC-721 safeTransferFrom(address,address,uint256)
+  '0xb88d4fde', // ERC-721 safeTransferFrom(address,address,uint256,bytes)
+  '0xa22cb465', // ERC-721/ERC-1155 setApprovalForAll(address,bool)
+  '0xf242432a', // ERC-1155 safeTransferFrom(...)
+  '0x2eb2c2d6', // ERC-1155 safeBatchTransferFrom(...)
+]);
 
 let evmLedger: LedgerEthApp;
 let activeTransportType: EvmLedgerTransportType | undefined;
@@ -85,6 +101,53 @@ const LEDGER_DERIVATION_MODES = [
 ];
 
 const getLedgerPath = (path: string) => path.replace(/^m\//, '');
+
+const getTransactionDataSelector = (data?: ethers.BytesLike | null) => {
+  if (!data) return;
+
+  try {
+    const dataHex = ethers.hexlify(data).toLowerCase();
+    return dataHex.length >= 10 ? dataHex.slice(0, 10) : undefined;
+  } catch {
+    return;
+  }
+};
+
+const isCommonTokenOperationData = (data?: ethers.BytesLike | null) => {
+  const selector = getTransactionDataSelector(data);
+  return selector ? COMMON_TOKEN_OPERATION_SELECTORS.has(selector) : false;
+};
+
+const buildClearSigningFallbackWarning = (): EvmTransactionWarning => ({
+  ignored: false,
+  level: EvmTransactionWarningLevel.MEDIUM,
+  message: 'evm_ledger_clear_signing_fallback_warning',
+  type: EvmTransactionWarningType.BASE,
+});
+
+const isLedgerSource = (account?: unknown) => {
+  return (
+    typeof account === 'object' &&
+    account !== null &&
+    'source' in account &&
+    (account as { source?: EvmAccountSource }).source ===
+      EvmAccountSource.LEDGER
+  );
+};
+
+const getClearSigningFallbackWarning = (
+  account?: unknown,
+  data?: ethers.BytesLike | null,
+) => {
+  if (
+    !isLedgerSource(account) ||
+    !EvmLedgerUtils.isCommonTokenOperationData(data)
+  ) {
+    return;
+  }
+
+  return EvmLedgerUtils.buildClearSigningFallbackWarning();
+};
 
 const buildDerivationPath = (
   accountIndex: number,
@@ -376,10 +439,11 @@ const signTransaction = async (
 ) => {
   try {
     const ledger = await EvmLedgerUtils.getLedgerInstance();
-    return await ledger.signTransaction(
+    return await ledger.clearSignTransaction(
       getLedgerPath(path),
       unsignedTransactionHex.replace(/^0x/, ''),
-      null,
+      CLEAR_SIGNING_RESOLUTION_CONFIG,
+      false,
     );
   } catch (error) {
     throw EvmLedgerUtils.parseLedgerError(error);
@@ -426,6 +490,9 @@ export const EvmLedgerUtils = {
   getDerivationIndexFromPath,
   getNextDerivationIndex,
   buildDerivationPath,
+  isCommonTokenOperationData,
+  buildClearSigningFallbackWarning,
+  getClearSigningFallbackWarning,
   getAddressFromDerivationPath,
   discoverAccounts,
   toStoredLedgerAccount,

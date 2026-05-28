@@ -23,6 +23,7 @@ import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-log
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
+import { EvmLedgerUtils } from '@popup/evm/utils/evm-ledger.utils';
 import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
@@ -389,6 +390,22 @@ const EvmTransfer = ({
         decimals.toString(),
       ]);
       return;
+    }
+    const ledgerClearSigningWarning =
+      EvmLedgerUtils.getClearSigningFallbackWarning(
+        activeAccount.wallet,
+        transactionData.data,
+      );
+    if (ledgerClearSigningWarning) {
+      const smartContractField = fields.find(
+        (field) => field.label === 'evm_operation_smart_contract_address',
+      );
+      if (smartContractField) {
+        smartContractField.warnings = [
+          ...(smartContractField.warnings ?? []),
+          ledgerClearSigningWarning,
+        ];
+      }
     }
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {

@@ -3843,6 +3843,10 @@
     "message": "Please enable blind signing in the Ethereum App settings on your Ledger",
     "description": "EVM Ledger blind signing disabled error"
   },
+  "evm_ledger_clear_signing_fallback_warning": {
+    "message": "Ledger clear signing will be attempted for this token operation. If token metadata is unavailable, your Ledger may show a blind-signing confirmation.",
+    "description": "Warning shown before signing an EVM token transaction with a Ledger"
+  },
   "evm_ledger_unknown_error": {
     "message": "An unknown Ledger error occurred. Please reconnect your Ledger, make sure you are in the Ethereum App and try again.",
     "description": "EVM Ledger unknown error"

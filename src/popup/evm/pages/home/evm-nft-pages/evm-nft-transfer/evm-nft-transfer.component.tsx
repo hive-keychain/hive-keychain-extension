@@ -27,6 +27,7 @@ import { EvmNftDetails } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-detai
 import { ERC1155Abi, ERC721Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
+import { EvmLedgerUtils } from '@popup/evm/utils/evm-ledger.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import {
@@ -222,6 +223,23 @@ const EvmNftTransfer = ({
       ),
       value: '0x0',
     };
+    const ledgerClearSigningWarning =
+      EvmLedgerUtils.getClearSigningFallbackWarning(
+        activeAccount.wallet,
+        transactionData.data,
+      );
+    if (ledgerClearSigningWarning) {
+      const smartContractField = fields.find(
+        (field) => field.label === 'evm_operation_smart_contract_address',
+      );
+      if (smartContractField) {
+        smartContractField.warnings = [
+          ...(smartContractField.warnings ?? []),
+          ledgerClearSigningWarning,
+        ];
+      }
+    }
+
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: null,
       message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
