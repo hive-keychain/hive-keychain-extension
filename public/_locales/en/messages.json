@@ -5403,6 +5403,46 @@
     "message": "This address has been linked to phishing activity",
     "description": "Light-node address security reason"
   },
+  "evm_security_reason_grouped_address_risk": {
+    "message": "This address has been flagged for security risks",
+    "description": "Grouped light-node address security summary"
+  },
+  "evm_security_reason_grouped_domain_risk": {
+    "message": "This website has been flagged for security risks",
+    "description": "Grouped light-node domain security summary"
+  },
+  "evm_security_warning_show_details": {
+    "message": "Show details",
+    "description": "Expand grouped security warning reasons"
+  },
+  "evm_security_warning_hide_details": {
+    "message": "Hide details",
+    "description": "Collapse grouped security warning reasons"
+  },
+  "evm_security_reason_rug_pull": {
+    "message": "This is a deceptive request to a known rug-pull contract",
+    "description": "Light-node rug-pull summary when isRugPull is true"
+  },
+  "evm_security_reason_rug_pull_privilege_withdraw": {
+    "message": "This contract can withdraw your funds.",
+    "description": "Light-node GoPlus rug-pull reason"
+  },
+  "evm_security_reason_rug_pull_withdraw_missing": {
+    "message": "This contract may let others deposit, but can prevent withdrawals.",
+    "description": "Light-node GoPlus rug-pull reason"
+  },
+  "evm_security_reason_rug_pull_blacklist": {
+    "message": "This contract can blacklist wallets and block selling or transfers.",
+    "description": "Light-node GoPlus rug-pull reason"
+  },
+  "evm_security_reason_rug_pull_selfdestruct": {
+    "message": "This contract can self-destruct and break token functionality.",
+    "description": "Light-node GoPlus rug-pull reason"
+  },
+  "evm_security_reason_rug_pull_approval_abuse": {
+    "message": "This contract can abuse token approvals to move your funds.",
+    "description": "Light-node GoPlus rug-pull reason"
+  },
   "evm_security_reason_reinit": {
     "message": "This address has been flagged for suspicious reinitialization behavior",
     "description": "Light-node address security reason"

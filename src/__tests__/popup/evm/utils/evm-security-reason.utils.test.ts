@@ -12,6 +12,22 @@ describe('EvmSecurityReasonUtils', () => {
     });
   });
 
+  it('maps GoPlus rug-pull reason keys from light-node isRugPullReason', () => {
+    expect(
+      EvmSecurityReasonUtils.getWarningForRugPullReason('approval_abuse'),
+    ).toEqual({
+      message: 'evm_security_reason_rug_pull_approval_abuse',
+    });
+    expect(EvmSecurityReasonUtils.getWarningForRugPullReason('blacklist')).toEqual({
+      message: 'evm_security_reason_rug_pull_blacklist',
+    });
+    expect(
+      EvmSecurityReasonUtils.getWarningForRugPullReason('privilege_withdraw'),
+    ).toEqual({
+      message: 'evm_security_reason_rug_pull_privilege_withdraw',
+    });
+  });
+
   it('maps domain prefixed reasons with message params', () => {
     expect(
       EvmSecurityReasonUtils.getWarningForReason('address_risk:high'),
@@ -63,5 +79,23 @@ describe('EvmSecurityReasonUtils', () => {
     expect(
       EvmSecurityReasonUtils.buildWarningsForSecurityReasons([], false, 'address'),
     ).toEqual([]);
+  });
+
+  it('builds rug-pull detail messages from isRugPullReason keys', () => {
+    expect(
+      EvmSecurityReasonUtils.buildWarningsForRugPullReasons(
+        ['approval_abuse', 'blacklist'],
+        true,
+      ),
+    ).toEqual([
+      { message: 'evm_security_reason_rug_pull_approval_abuse' },
+      { message: 'evm_security_reason_rug_pull_blacklist' },
+    ]);
+  });
+
+  it('returns rug-pull fallback when isRugPull is true without reasons', () => {
+    expect(EvmSecurityReasonUtils.buildWarningsForRugPullReasons([], true)).toEqual([
+      { message: 'evm_security_reason_rug_pull' },
+    ]);
   });
 });

@@ -1,5 +1,7 @@
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { getAbiFromType } from '@popup/evm/reference-data/abi.data';
+import { EvmTransactionWarningType } from '@popup/evm/interfaces/evm-transactions.interface';
+import { getGroupedSecurityDetailReasons } from '@popup/evm/utils/evm-grouped-security-warning.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmVerificationUtils } from '@popup/evm/utils/evm-verification.utils';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
@@ -196,6 +198,110 @@ describe('evm-transaction-parser.utils proxy tests:\n', () => {
     );
   });
 
+  it('does not add wallet whitelist warning when address has security risk', async () => {
+    jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(false);
+    jest
+      .spyOn(EvmAddressesUtils, 'isPotentialSpoofing')
+      .mockResolvedValue(undefined);
+
+    const warnings = await EvmTransactionParserUtils.getAddressWarning(
+      '0x00000000000000000000000000000000000000aa',
+      '1',
+      {
+        contract: { proxy: {}, verifiedBy: [] },
+        domain: {},
+        to: {},
+        addresses: {
+          '0x00000000000000000000000000000000000000aa': {
+            isMalicious: true,
+            securityReasons: ['mixer'],
+          },
+        },
+      },
+      [],
+    );
+
+    expect(
+      warnings.some(
+        (w) => w.type === EvmTransactionWarningType.WHITELIST_ADDRESS,
+      ),
+    ).toBe(false);
+  });
+
+  it('keeps wallet whitelist warning when no light-node security risk exists', async () => {
+    jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(false);
+    jest
+      .spyOn(EvmAddressesUtils, 'getEnsDataFromAddress')
+      .mockResolvedValue(undefined);
+    jest
+      .spyOn(EvmAddressesUtils, 'isPotentialSpoofing')
+      .mockResolvedValue(undefined);
+    jest.spyOn(EvmRequestsUtils, 'getEnsForAddress').mockResolvedValue('');
+
+    const warnings = await EvmTransactionParserUtils.getAddressWarning(
+      '0x00000000000000000000000000000000000000aa',
+      '1',
+      {
+        contract: { proxy: {}, verifiedBy: [] },
+        domain: {},
+        to: {},
+        addresses: {
+          '0x00000000000000000000000000000000000000aa': {},
+        },
+      },
+      [],
+    );
+
+    expect(
+      warnings.some(
+        (w) => w.type === EvmTransactionWarningType.WHITELIST_ADDRESS,
+      ),
+    ).toBe(true);
+  });
+
+  it('does not add contract whitelist warning when contract has security risk', async () => {
+    jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(false);
+
+    const warningAndInfo =
+      await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
+        '0x00000000000000000000000000000000000000aa',
+        '1',
+        {
+          contract: {
+            proxy: {},
+            verifiedBy: [],
+            rugPullRisk: true,
+            rugPullReasons: ['approval_abuse'],
+          },
+          domain: {},
+          to: {},
+        },
+        [],
+        {
+          type: EVMSmartContractType.ERC20,
+          name: 'Risk Token',
+          symbol: 'RISK',
+          logo: '',
+          chainId: '1',
+          backgroundColor: '',
+          priceUsd: null,
+          contractAddress: '0x00000000000000000000000000000000000000aa',
+          possibleSpam: true,
+          verifiedContract: false,
+          isProxy: false,
+          proxyTarget: null,
+          decimals: 18,
+          validated: 1,
+        },
+      );
+
+    expect(
+      warningAndInfo.warnings?.some(
+        (w) => w.type === EvmTransactionWarningType.WHITELIST_ADDRESS,
+      ),
+    ).toBe(false);
+  });
+
   it('merges light-node contract security into verification result', async () => {
     (
       EvmVerificationUtils.fetchLightNodeVerificationData as jest.Mock
@@ -217,7 +323,123 @@ describe('evm-transaction-parser.utils proxy tests:\n', () => {
     expect(result.contract.securityReasons).toEqual(['phishing_activities']);
   });
 
-  it('shows per-reason address warnings from securityReasons', async () => {
+  it('sets rugPullRisk from light-node security.isRugPull and isRugPullReason', async () => {
+    (
+      EvmVerificationUtils.fetchLightNodeVerificationData as jest.Mock
+    ).mockResolvedValue({
+      contractSecurity: {
+        isMalicious: false,
+        reasons: [],
+        stale: false,
+        isRugPull: true,
+        isRugPullReason: ['approval_abuse', 'blacklist'],
+      },
+    });
+
+    const result = await EvmTransactionParserUtils.verifyTransactionInformation({
+      domain: 'app.example',
+      chainId: '1',
+      tokenContract: '0x00000000000000000000000000000000000000cc',
+    });
+
+    expect(result.contract.isMalicious).toBeUndefined();
+    expect(result.contract.rugPullRisk).toBe(true);
+    expect(result.contract.rugPullReasons).toEqual(['approval_abuse', 'blacklist']);
+  });
+
+  it('emits one grouped rug-pull warning with detail reasons', async () => {
+    jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(true);
+
+    const warningAndInfo =
+      await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
+        '0x00000000000000000000000000000000000000aa',
+        '1',
+        {
+          contract: {
+            proxy: {},
+            verifiedBy: [],
+            rugPullRisk: true,
+            rugPullReasons: ['approval_abuse', 'blacklist'],
+          },
+          domain: {},
+          to: {},
+        },
+        [],
+        {
+          type: EVMSmartContractType.ERC20,
+          name: 'Risk Token',
+          symbol: 'RISK',
+          logo: '',
+          chainId: '1',
+          backgroundColor: '',
+          priceUsd: null,
+          contractAddress: '0x00000000000000000000000000000000000000aa',
+          possibleSpam: true,
+          verifiedContract: false,
+          isProxy: false,
+          proxyTarget: null,
+          decimals: 18,
+          validated: 1,
+        },
+      );
+
+    const rugPullWarnings =
+      warningAndInfo.warnings?.filter((w) => w.warningKey === 'rugPull') ?? [];
+    expect(rugPullWarnings).toHaveLength(1);
+    expect(rugPullWarnings[0].type).toBe(EvmTransactionWarningType.GROUPED_SECURITY);
+    expect(rugPullWarnings[0].message).toBe('evm_security_reason_rug_pull');
+    expect(getGroupedSecurityDetailReasons(rugPullWarnings[0])).toEqual([
+      { message: 'evm_security_reason_rug_pull_approval_abuse' },
+      { message: 'evm_security_reason_rug_pull_blacklist' },
+    ]);
+  });
+
+  it('shows rug-pull warnings on contract field from isRugPullReason', async () => {
+    jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(true);
+
+    const warningAndInfo =
+      await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
+        '0x00000000000000000000000000000000000000aa',
+        '1',
+        {
+          contract: {
+            proxy: {},
+            verifiedBy: [],
+            rugPullRisk: true,
+            rugPullReasons: ['approval_abuse'],
+          },
+          domain: {},
+          to: {},
+        },
+        [],
+        {
+          type: EVMSmartContractType.ERC20,
+          name: 'Risk Token',
+          symbol: 'RISK',
+          logo: '',
+          chainId: '1',
+          backgroundColor: '',
+          priceUsd: null,
+          contractAddress: '0x00000000000000000000000000000000000000aa',
+          possibleSpam: true,
+          verifiedContract: false,
+          isProxy: false,
+          proxyTarget: null,
+          decimals: 18,
+          validated: 1,
+        },
+      );
+
+    const rugPullWarning = warningAndInfo.warnings?.find(
+      (w) => w.warningKey === 'rugPull',
+    );
+    expect(rugPullWarning?.message).toBe('evm_security_reason_rug_pull');
+    expect(getGroupedSecurityDetailReasons(rugPullWarning!)).toEqual([
+      { message: 'evm_security_reason_rug_pull_approval_abuse' },
+    ]);
+  });
+
+  it('emits one grouped address security warning for multiple malicious reasons', async () => {
     jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(true);
     jest
       .spyOn(EvmAddressesUtils, 'isPotentialSpoofing')
@@ -240,16 +462,16 @@ describe('evm-transaction-parser.utils proxy tests:\n', () => {
       [],
     );
 
+    const grouped = warnings.find(
+      (w) => w.type === EvmTransactionWarningType.GROUPED_SECURITY,
+    );
+    expect(grouped?.message).toBe('evm_security_reason_grouped_address_risk');
+    expect(getGroupedSecurityDetailReasons(grouped!)).toEqual([
+      { message: 'evm_security_reason_mixer' },
+      { message: 'evm_security_reason_phishing_activities' },
+    ]);
     expect(
       warnings.some((w) => w.message === 'evm_security_reason_mixer'),
-    ).toBe(true);
-    expect(
-      warnings.some(
-        (w) => w.message === 'evm_security_reason_phishing_activities',
-      ),
-    ).toBe(true);
-    expect(
-      warnings.some((w) => w.message === 'evm_transaction_receiver_malicious'),
     ).toBe(false);
   });
 

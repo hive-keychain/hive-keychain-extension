@@ -2,7 +2,9 @@ import {
   EvmTransactionWarningLevel,
   EvmTransactionWarningType,
 } from '@popup/evm/interfaces/evm-transactions.interface';
+import { isGroupedSecurityWarning } from '@popup/evm/utils/evm-grouped-security-warning.utils';
 import React from 'react';
+import { GroupedSecurityWarningMessage } from 'src/common-ui/evm/grouped-security-warning-message/grouped-security-warning-message.component';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -32,20 +34,31 @@ export const EvmSinglePopupComponent = ({ warningHook }: Props) => {
         <div className={`title`}>{chrome.i18n.getMessage('evm_warning')}</div>
       </div>
       <div className="warnings">
-        {warningHook.selectedSingleWarning && (
-          <div className="warning">
-            <SVGIcon
-              className={`warning-icon ${warningHook.selectedSingleWarning.warning.level}`}
-              icon={SVGIcons.GLOBAL_WARNING}
-            />
-            <div className="warning-message">
-              {chrome.i18n.getMessage(
-                warningHook.selectedSingleWarning.warning.message!,
-                warningHook.selectedSingleWarning.warning.messageParams ?? [],
-              )}
+        {warningHook.selectedSingleWarning &&
+          (isGroupedSecurityWarning(
+            warningHook.selectedSingleWarning.warning,
+          ) ? (
+            <div className="warning">
+              <GroupedSecurityWarningMessage
+                warning={warningHook.selectedSingleWarning.warning}
+                showLeadingIcon={true}
+                defaultDetailsExpanded={true}
+              />
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="warning">
+              <SVGIcon
+                className={`warning-icon ${warningHook.selectedSingleWarning.warning.level}`}
+                icon={SVGIcons.GLOBAL_WARNING}
+              />
+              <div className="warning-message">
+                {chrome.i18n.getMessage(
+                  warningHook.selectedSingleWarning.warning.message!,
+                  warningHook.selectedSingleWarning.warning.messageParams ?? [],
+                )}
+              </div>
+            </div>
+          ))}
       </div>
       {warningHook.selectedSingleWarning &&
         warningHook.selectedSingleWarning.warning.level ===
