@@ -5399,6 +5399,30 @@
     "message": "This address has been linked to phishing activity",
     "description": "Light-node address security reason"
   },
+  "evm_security_reason_rug_pull": {
+    "message": "This contract has been flagged for rug pull risk",
+    "description": "Light-node rug-pull fallback when isRugPull is true without specific reasons"
+  },
+  "evm_security_reason_rug_pull_privilege_withdraw": {
+    "message": "This contract has been flagged for privileged withdrawal (rug pull risk)",
+    "description": "Light-node GoPlus rug-pull reason"
+  },
+  "evm_security_reason_rug_pull_withdraw_missing": {
+    "message": "This contract has been flagged for missing withdrawal function (rug pull risk)",
+    "description": "Light-node GoPlus rug-pull reason"
+  },
+  "evm_security_reason_rug_pull_blacklist": {
+    "message": "This contract has been flagged for blacklist-related rug pull risk",
+    "description": "Light-node GoPlus rug-pull reason"
+  },
+  "evm_security_reason_rug_pull_selfdestruct": {
+    "message": "This contract has been flagged for self-destruct capability (rug pull risk)",
+    "description": "Light-node GoPlus rug-pull reason"
+  },
+  "evm_security_reason_rug_pull_approval_abuse": {
+    "message": "This contract has been flagged for approval abuse (rug pull risk)",
+    "description": "Light-node GoPlus rug-pull reason"
+  },
   "evm_security_reason_reinit": {
     "message": "This address has been flagged for suspicious reinitialization behavior",
     "description": "Light-node address security reason"

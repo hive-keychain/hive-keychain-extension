@@ -6,6 +6,10 @@ export type EvmLightNodeSecurityCheck = {
   isMalicious: boolean;
   reasons: string[];
   stale: boolean;
+  /** Present on GET /address/:receiver and GET /contract security when rug-pull was checked */
+  isRugPull?: boolean;
+  /** GoPlus rug-pull risk keys; present only when isRugPull === true */
+  isRugPullReason?: string[];
 };
 
 export type EvmLightNodeContractMetadataBase = {

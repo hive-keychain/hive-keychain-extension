@@ -26,8 +26,18 @@ const ADDRESS_REASON_MESSAGE_KEYS: Record<string, string> = {
   phishing_site: 'evm_security_reason_phishing_site',
 };
 
+/** GoPlus rug-pull keys from light-node `isRugPullReason` (see evm-light-node docs/APIs.md) */
+const RUG_PULL_REASON_MESSAGE_KEYS: Record<string, string> = {
+  privilege_withdraw: 'evm_security_reason_rug_pull_privilege_withdraw',
+  withdraw_missing: 'evm_security_reason_rug_pull_withdraw_missing',
+  blacklist: 'evm_security_reason_rug_pull_blacklist',
+  selfdestruct: 'evm_security_reason_rug_pull_selfdestruct',
+  approval_abuse: 'evm_security_reason_rug_pull_approval_abuse',
+};
+
 const ADDRESS_FALLBACK_MESSAGE = 'evm_transaction_receiver_malicious';
 const DOMAIN_FALLBACK_MESSAGE = 'evm_transaction_domain_phishing';
+const RUG_PULL_FALLBACK_MESSAGE = 'evm_security_reason_rug_pull';
 
 const getWarningForReason = (reason: string): EvmSecurityReasonWarningMessage => {
   const normalizedReason = reason.trim();
@@ -50,6 +60,25 @@ const getWarningForReason = (reason: string): EvmSecurityReasonWarningMessage =>
   }
 
   const messageKey = ADDRESS_REASON_MESSAGE_KEYS[normalizedReason];
+  if (messageKey) {
+    return { message: messageKey };
+  }
+
+  return {
+    message: 'evm_security_reason_unknown',
+    messageParams: [normalizedReason],
+  };
+};
+
+const getWarningForRugPullReason = (
+  reason: string,
+): EvmSecurityReasonWarningMessage => {
+  const normalizedReason = reason.trim();
+  if (!normalizedReason) {
+    return { message: 'evm_security_reason_unknown', messageParams: [reason] };
+  }
+
+  const messageKey = RUG_PULL_REASON_MESSAGE_KEYS[normalizedReason];
   if (messageKey) {
     return { message: messageKey };
   }
@@ -87,7 +116,30 @@ const buildWarningsForSecurityReasons = (
   ];
 };
 
+const buildWarningsForRugPullReasons = (
+  reasons: string[] = [],
+  isRugPull = true,
+): EvmSecurityReasonWarningMessage[] => {
+  if (!isRugPull) {
+    return [];
+  }
+
+  const dedupedReasons = [
+    ...new Set(
+      reasons.map((reason) => reason.trim()).filter((reason) => reason.length > 0),
+    ),
+  ].sort((a, b) => a.localeCompare(b));
+
+  if (dedupedReasons.length > 0) {
+    return dedupedReasons.map((reason) => getWarningForRugPullReason(reason));
+  }
+
+  return [{ message: RUG_PULL_FALLBACK_MESSAGE }];
+};
+
 export const EvmSecurityReasonUtils = {
   getWarningForReason,
+  getWarningForRugPullReason,
   buildWarningsForSecurityReasons,
+  buildWarningsForRugPullReasons,
 };

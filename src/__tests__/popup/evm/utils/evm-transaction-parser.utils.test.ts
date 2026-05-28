@@ -217,6 +217,73 @@ describe('evm-transaction-parser.utils proxy tests:\n', () => {
     expect(result.contract.securityReasons).toEqual(['phishing_activities']);
   });
 
+  it('sets rugPullRisk from light-node security.isRugPull and isRugPullReason', async () => {
+    (
+      EvmVerificationUtils.fetchLightNodeVerificationData as jest.Mock
+    ).mockResolvedValue({
+      contractSecurity: {
+        isMalicious: false,
+        reasons: [],
+        stale: false,
+        isRugPull: true,
+        isRugPullReason: ['approval_abuse', 'blacklist'],
+      },
+    });
+
+    const result = await EvmTransactionParserUtils.verifyTransactionInformation({
+      domain: 'app.example',
+      chainId: '1',
+      tokenContract: '0x00000000000000000000000000000000000000cc',
+    });
+
+    expect(result.contract.isMalicious).toBeUndefined();
+    expect(result.contract.rugPullRisk).toBe(true);
+    expect(result.contract.rugPullReasons).toEqual(['approval_abuse', 'blacklist']);
+  });
+
+  it('shows rug-pull warnings on contract field from isRugPullReason', async () => {
+    jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(true);
+
+    const warningAndInfo =
+      await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
+        '0x00000000000000000000000000000000000000aa',
+        '1',
+        {
+          contract: {
+            proxy: {},
+            verifiedBy: [],
+            rugPullRisk: true,
+            rugPullReasons: ['approval_abuse'],
+          },
+          domain: {},
+          to: {},
+        },
+        [],
+        {
+          type: EVMSmartContractType.ERC20,
+          name: 'Risk Token',
+          symbol: 'RISK',
+          logo: '',
+          chainId: '1',
+          backgroundColor: '',
+          priceUsd: null,
+          contractAddress: '0x00000000000000000000000000000000000000aa',
+          possibleSpam: true,
+          verifiedContract: false,
+          isProxy: false,
+          proxyTarget: null,
+          decimals: 18,
+          validated: 1,
+        },
+      );
+
+    expect(
+      warningAndInfo.warnings?.some(
+        (w) => w.message === 'evm_security_reason_rug_pull_approval_abuse',
+      ),
+    ).toBe(true);
+  });
+
   it('shows per-reason address warnings from securityReasons', async () => {
     jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(true);
     jest

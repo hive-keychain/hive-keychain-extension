@@ -436,7 +436,7 @@ const setAddressVerificationFlags = (
   };
 };
 
-const applyLightNodeReceiverSecurity = (
+const applyLightNodeSecurityCheck = (
   verification: EvmTransactionVerificationInformation,
   address: string,
   security?: EvmLightNodeSecurityCheck,
@@ -447,7 +447,32 @@ const applyLightNodeReceiverSecurity = (
   setAddressVerificationFlags(verification, address, {
     isMalicious: security.isMalicious,
     securityReasons: security.reasons.length ? [...security.reasons] : undefined,
+    rugPullRisk: security.isRugPull === true ? true : undefined,
+    rugPullReasons: security.isRugPullReason?.length
+      ? [...security.isRugPullReason]
+      : undefined,
   });
+};
+
+const applyLightNodeContractSecurity = (
+  contract: EvmTransactionVerificationInformation['contract'],
+  security?: EvmLightNodeSecurityCheck,
+) => {
+  if (!security) {
+    return;
+  }
+  if (security.isMalicious) {
+    contract.isMalicious = true;
+  }
+  if (security.reasons.length) {
+    contract.securityReasons = [...security.reasons];
+  }
+  if (security.isRugPull === true) {
+    contract.rugPullRisk = true;
+    if (security.isRugPullReason?.length) {
+      contract.rugPullReasons = [...security.isRugPullReason];
+    }
+  }
 };
 
 const appendSecurityReasonWarnings = (
@@ -460,6 +485,26 @@ const appendSecurityReasonWarnings = (
     securityReasons ?? [],
     isMalicious,
     context,
+  );
+  for (const reasonWarning of reasonWarnings) {
+    warnings.push({
+      ignored: false,
+      level: EvmTransactionWarningLevel.HIGH,
+      message: reasonWarning.message,
+      messageParams: reasonWarning.messageParams,
+      type: EvmTransactionWarningType.BASE,
+    });
+  }
+};
+
+const appendRugPullReasonWarnings = (
+  warnings: EvmTransactionWarning[],
+  rugPullReasons: string[] | undefined,
+  isRugPull: boolean,
+) => {
+  const reasonWarnings = EvmSecurityReasonUtils.buildWarningsForRugPullReasons(
+    rugPullReasons ?? [],
+    isRugPull,
   );
   for (const reasonWarning of reasonWarnings) {
     warnings.push({
@@ -533,6 +578,13 @@ const getAddressWarning = async (
       addressFlags.securityReasons,
       true,
       'address',
+    );
+  }
+  if (addressFlags.rugPullRisk) {
+    appendRugPullReasonWarnings(
+      warnings,
+      addressFlags.rugPullReasons,
+      true,
     );
   }
   if (
@@ -651,6 +703,13 @@ const getSmartContractWarningAndInfo = async (
       'address',
     );
   }
+  if (contractInfo?.rugPullRisk) {
+    appendRugPullReasonWarnings(
+      warningAndInfo.warnings!,
+      contractInfo.rugPullReasons,
+      true,
+    );
+  }
 
   return warningAndInfo;
 };
@@ -706,18 +765,11 @@ const mergeLightNodeSecurityIntoVerification = (
     for (const [address, security] of Object.entries(
       lightNodeData.addressSecurityByAddress,
     )) {
-      applyLightNodeReceiverSecurity(merged, address, security);
+      applyLightNodeSecurityCheck(merged, address, security);
     }
   }
 
-  if (lightNodeData.contractSecurity?.isMalicious) {
-    merged.contract.isMalicious = true;
-    if (lightNodeData.contractSecurity.reasons.length) {
-      merged.contract.securityReasons = [
-        ...lightNodeData.contractSecurity.reasons,
-      ];
-    }
-  }
+  applyLightNodeContractSecurity(merged.contract, lightNodeData.contractSecurity);
 
   return merged;
 };
@@ -745,7 +797,7 @@ const enrichVerificationForAddresses = async (
         address,
       ).catch(() => undefined);
 
-      applyLightNodeReceiverSecurity(verification, address, receiverSecurity);
+      applyLightNodeSecurityCheck(verification, address, receiverSecurity);
     }),
   );
 
@@ -796,7 +848,7 @@ const verifyTransactionInformation = async (
     }
     const receiverSecurity =
       lightNodeData.addressSecurityByAddress?.[recipient.toLowerCase()];
-    applyLightNodeReceiverSecurity(merged, recipient, receiverSecurity);
+    applyLightNodeSecurityCheck(merged, recipient, receiverSecurity);
   }
 
   return merged;

@@ -303,6 +303,30 @@ describe('evm-light-node.utils tests:\n', () => {
     );
   });
 
+  it('getReceiverSecurity preserves isRugPull fields from light-node', async () => {
+    const receiver = '0x00000000000000000000000000000000000000bb';
+    (BaseApi.getWithResponse as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: {
+        isMalicious: false,
+        reasons: [],
+        stale: false,
+        isRugPull: true,
+        isRugPullReason: ['approval_abuse', 'blacklist'],
+      },
+    });
+
+    const result = await EvmLightNodeUtils.getReceiverSecurity(receiver);
+
+    expect(result).toEqual({
+      isMalicious: false,
+      reasons: [],
+      stale: false,
+      isRugPull: true,
+      isRugPullReason: ['approval_abuse', 'blacklist'],
+    });
+  });
+
   it('getContract preserves security from the light-node payload', async () => {
     const contractAddress = '0x00000000000000000000000000000000000000cc';
     jest.spyOn(EvmLightNodeApi, 'get').mockResolvedValue({
@@ -333,6 +357,43 @@ describe('evm-light-node.utils tests:\n', () => {
       isMalicious: true,
       reasons: ['phishing_activities'],
       stale: true,
+    });
+  });
+
+  it('getContract preserves rug-pull security fields from the light-node payload', async () => {
+    const contractAddress = '0x00000000000000000000000000000000000000dd';
+    jest.spyOn(EvmLightNodeApi, 'get').mockResolvedValue({
+      id: 1,
+      chainId: 1,
+      address: contractAddress,
+      firstSeenBlock: 1,
+      lastSeenBlock: null,
+      abi: null,
+      contractType: 'ERC20',
+      verified: false,
+      isProxy: false,
+      proxyTargetAddress: null,
+      proxyTarget: null,
+      possibleSpam: true,
+      metadata: null,
+      price: null,
+      security: {
+        isMalicious: false,
+        reasons: [],
+        stale: false,
+        isRugPull: true,
+        isRugPullReason: ['selfdestruct'],
+      },
+    });
+
+    const result = await EvmLightNodeUtils.getContract('1', contractAddress);
+
+    expect(result.security).toEqual({
+      isMalicious: false,
+      reasons: [],
+      stale: false,
+      isRugPull: true,
+      isRugPullReason: ['selfdestruct'],
     });
   });
 

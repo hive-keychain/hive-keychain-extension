@@ -112,10 +112,17 @@ const normalizeSecurityCheck = (
   const reasons = Array.isArray(record.reasons)
     ? record.reasons.filter((reason): reason is string => typeof reason === 'string')
     : [];
+  const isRugPullReason = Array.isArray(record.isRugPullReason)
+    ? record.isRugPullReason.filter(
+        (reason): reason is string => typeof reason === 'string',
+      )
+    : undefined;
   return {
     isMalicious: record.isMalicious,
     reasons,
     stale: record.stale === true,
+    ...(record.isRugPull === true ? { isRugPull: true } : {}),
+    ...(isRugPullReason?.length ? { isRugPullReason } : {}),
   };
 };
 

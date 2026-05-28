@@ -123,6 +123,8 @@ export interface EvmAddressVerificationFlags {
   isMalicious?: boolean;
   isWhitelisted?: boolean;
   securityReasons?: string[];
+  rugPullRisk?: boolean;
+  rugPullReasons?: string[];
 }
 
 export interface EvmTransactionVerificationInformation {
@@ -138,6 +140,7 @@ export interface EvmTransactionVerificationInformation {
     highSellTax?: boolean;
     highBuyTax?: boolean;
     rugPullRisk?: boolean;
+    rugPullReasons?: string[];
     proxy: {
       target?: string;
     };
