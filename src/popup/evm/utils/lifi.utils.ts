@@ -35,6 +35,12 @@ export interface LiFiErrorResponse {
   errors?: LiFiToolError[];
 }
 
+export interface LiFiTokenBalance {
+  formattedBalance: string;
+  balanceInteger: number;
+  balanceValue: string;
+}
+
 const isAllChains = (chain: ExtendedChain): boolean =>
   chain.id === ALL_CHAINS_ID;
 
@@ -324,6 +330,19 @@ const retrieveLiFiHistory = async (
     : [];
 };
 
+const getTokenBalanceFromRawUnits = (
+  rawBalance: bigint | string | number,
+  decimals: number,
+): LiFiTokenBalance => {
+  const balanceValue = ethers.formatUnits(rawBalance, decimals);
+
+  return {
+    formattedBalance: EvmFormatUtils.formatTokenBalance(balanceValue, 8),
+    balanceInteger: Number(balanceValue),
+    balanceValue,
+  };
+};
+
 const getQuote = async ({
   fromChain,
   fromToken,
@@ -416,6 +435,7 @@ export const LiFiUtils = {
   getChainOptionItem,
   filterTokensByChainAndQuery,
   retrieveLiFiHistory,
+  getTokenBalanceFromRawUnits,
   getQuote,
   getLiFiErrorMessage,
   getTransactionErrorMessage,

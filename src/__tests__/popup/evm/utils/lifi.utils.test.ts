@@ -61,3 +61,13 @@ describe('LiFiUtils.isSameToken', () => {
     );
   });
 });
+
+describe('LiFiUtils.getTokenBalanceFromRawUnits', () => {
+  it('formats ERC-20 balances with token decimals', () => {
+    expect(LiFiUtils.getTokenBalanceFromRawUnits(1000000n, 6)).toEqual({
+      formattedBalance: '1',
+      balanceInteger: 1,
+      balanceValue: '1.0',
+    });
+  });
+});
