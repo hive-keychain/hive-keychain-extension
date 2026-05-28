@@ -14,16 +14,19 @@ import {
   TransactionConfirmationFields,
   VerifyTransactionParams,
 } from '@popup/evm/interfaces/evm-transactions.interface';
-import {
-  GoPlusAddressSecurityInfo,
-  GoPlusVerificationData,
-} from '@popup/evm/interfaces/evm-verification.interface';
+import { EvmLightNodeSecurityCheck } from '@popup/evm/interfaces/evm-light-node.interface';
+import { LightNodeVerificationData } from '@popup/evm/interfaces/evm-verification.interface';
 import { EvmAccountOrPublic } from '@popup/evm/interfaces/wallet.interface';
 import { AbiList } from '@popup/evm/reference-data/abi.data';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
+import {
+  EvmSecurityReasonUtils,
+  EvmSecurityReasonWarningContext,
+} from '@popup/evm/utils/evm-security-reason.utils';
 import { EvmVerificationUtils } from '@popup/evm/utils/evm-verification.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ethers, Interface, Result } from 'ethers';
@@ -386,12 +389,12 @@ const getDomainWarnings = async (
     verifyTransactionInformation?.domain?.isPhishing &&
     !verifyTransactionInformation?.domain?.isBlacklisted
   ) {
-    warnings.push({
-      ignored: false,
-      level: EvmTransactionWarningLevel.HIGH,
-      message: 'evm_transaction_domain_phishing',
-      type: EvmTransactionWarningType.BASE,
-    });
+    appendSecurityReasonWarnings(
+      warnings,
+      verifyTransactionInformation.domain.securityReasons,
+      true,
+      'domain',
+    );
   }
 
   return warnings;
@@ -434,17 +437,51 @@ const setAddressVerificationFlags = (
   };
 };
 
-const applyGoPlusAddressSecurity = (
+const applyLightNodeReceiverSecurity = (
   verification: EvmTransactionVerificationInformation,
   address: string,
-  addressSecurity?: GoPlusAddressSecurityInfo,
+  security?: EvmLightNodeSecurityCheck,
 ) => {
-  if (!addressSecurity) {
+  if (!security) {
     return;
   }
   setAddressVerificationFlags(verification, address, {
-    isMalicious: EvmVerificationUtils.isAddressMalicious(addressSecurity),
+    isMalicious: security.isMalicious,
+    securityReasons: security.reasons.length ? [...security.reasons] : undefined,
   });
+};
+
+const appendSecurityReasonWarnings = (
+  warnings: EvmTransactionWarning[],
+  securityReasons: string[] | undefined,
+  isMalicious: boolean,
+  context: EvmSecurityReasonWarningContext,
+) => {
+  const reasonWarnings = EvmSecurityReasonUtils.buildWarningsForSecurityReasons(
+    securityReasons ?? [],
+    isMalicious,
+    context,
+  );
+  for (const reasonWarning of reasonWarnings) {
+    warnings.push({
+      ignored: false,
+      level: EvmTransactionWarningLevel.HIGH,
+      message: reasonWarning.message,
+      messageParams: reasonWarning.messageParams,
+      type: EvmTransactionWarningType.BASE,
+    });
+  }
+};
+
+const isDomainPhishing = (security?: EvmLightNodeSecurityCheck): boolean => {
+  if (!security) {
+    return false;
+  }
+  return (
+    security.isMalicious ||
+    security.reasons.includes('phishing_site') ||
+    security.reasons.includes('scamsniffer_blacklist')
+  );
 };
 
 const collectRecipientAddressesFromDecodedArgs = (
@@ -492,12 +529,12 @@ const getAddressWarning = async (
     });
   }
   if (addressFlags.isMalicious && !addressFlags.isBlacklisted) {
-    warnings.push({
-      ignored: false,
-      level: EvmTransactionWarningLevel.HIGH,
-      message: 'evm_transaction_receiver_malicious',
-      type: EvmTransactionWarningType.BASE,
-    });
+    appendSecurityReasonWarnings(
+      warnings,
+      addressFlags.securityReasons,
+      true,
+      'address',
+    );
   }
   if (
     !(await EvmAddressesUtils.isWhitelisted(address, chainId, localAccounts))
@@ -607,61 +644,13 @@ const getSmartContractWarningAndInfo = async (
   }
 
   const contractInfo = verifyTransactionInformation?.contract;
-  if (contractInfo?.isHoneypot) {
-    warningAndInfo.warnings?.push({
-      ignored: false,
-      level: EvmTransactionWarningLevel.HIGH,
-      message: 'evm_transaction_contract_honeypot',
-      type: EvmTransactionWarningType.BASE,
-    });
-  }
-  if (contractInfo?.cannotSellAll) {
-    warningAndInfo.warnings?.push({
-      ignored: false,
-      level: EvmTransactionWarningLevel.HIGH,
-      message: 'evm_transaction_contract_cannot_sell',
-      type: EvmTransactionWarningType.BASE,
-    });
-  }
-  if (contractInfo?.highSellTax || contractInfo?.highBuyTax) {
-    warningAndInfo.warnings?.push({
-      ignored: false,
-      level: EvmTransactionWarningLevel.MEDIUM,
-      message: 'evm_transaction_contract_high_tax',
-      type: EvmTransactionWarningType.BASE,
-    });
-  }
-  if (contractInfo?.rugPullRisk) {
-    warningAndInfo.warnings?.push({
-      ignored: false,
-      level: EvmTransactionWarningLevel.HIGH,
-      message: 'evm_transaction_contract_rug_pull',
-      type: EvmTransactionWarningType.BASE,
-    });
-  }
-
-  const nftSecurity = verifyTransactionInformation?.goPlus?.nftSecurity;
-  if (nftSecurity) {
-    if (EvmVerificationUtils.isGoPlusTruthy(nftSecurity.restricted_approval)) {
-      warningAndInfo.warnings?.push({
-        ignored: false,
-        level: EvmTransactionWarningLevel.HIGH,
-        message: 'evm_transaction_nft_restricted_approval',
-        type: EvmTransactionWarningType.BASE,
-      });
-    }
-    if (
-      EvmVerificationUtils.isGoPlusTruthy(
-        nftSecurity.transfer_without_approval?.value,
-      )
-    ) {
-      warningAndInfo.warnings?.push({
-        ignored: false,
-        level: EvmTransactionWarningLevel.MEDIUM,
-        message: 'evm_transaction_nft_transfer_without_approval',
-        type: EvmTransactionWarningType.BASE,
-      });
-    }
+  if (contractInfo?.isMalicious) {
+    appendSecurityReasonWarnings(
+      warningAndInfo.warnings!,
+      contractInfo.securityReasons,
+      true,
+      'address',
+    );
   }
 
   return warningAndInfo;
@@ -687,64 +676,47 @@ const normalizeVerificationInformation = (
   } as EvmTransactionVerificationInformation;
 };
 
-const mergeGoPlusIntoVerification = (
+const mergeLightNodeSecurityIntoVerification = (
   verification: EvmTransactionVerificationInformation,
-  goPlusData: GoPlusVerificationData,
+  lightNodeData: LightNodeVerificationData,
 ): EvmTransactionVerificationInformation => {
-  if (!goPlusData || Object.keys(goPlusData).length === 0) {
+  if (!lightNodeData || Object.keys(lightNodeData).length === 0) {
     return verification;
   }
 
   const merged: EvmTransactionVerificationInformation = {
     ...verification,
-    goPlus: goPlusData,
     domain: { ...verification.domain },
     to: { ...verification.to },
     contract: { ...verification.contract },
   };
 
-  if (goPlusData.phishingSite?.phishing_site === 1) {
+  if (lightNodeData.unavailable) {
+    merged.lightNodeSecurityUnavailable = true;
+  }
+
+  const domainSecurity = lightNodeData.domainSecurity;
+  if (isDomainPhishing(domainSecurity)) {
     merged.domain.isPhishing = true;
+    if (domainSecurity?.reasons.length) {
+      merged.domain.securityReasons = [...domainSecurity.reasons];
+    }
   }
 
-  if (goPlusData.addressSecurityByAddress) {
-    for (const [address, addressSecurity] of Object.entries(
-      goPlusData.addressSecurityByAddress,
+  if (lightNodeData.addressSecurityByAddress) {
+    for (const [address, security] of Object.entries(
+      lightNodeData.addressSecurityByAddress,
     )) {
-      applyGoPlusAddressSecurity(merged, address, addressSecurity);
-    }
-  } else if (goPlusData.addressSecurity) {
-    if (EvmVerificationUtils.isAddressMalicious(goPlusData.addressSecurity)) {
-      merged.to.isMalicious = true;
+      applyLightNodeReceiverSecurity(merged, address, security);
     }
   }
 
-  const tokenSecurity = goPlusData.tokenSecurity;
-  if (tokenSecurity) {
-    if (EvmVerificationUtils.isGoPlusTruthy(tokenSecurity.is_honeypot)) {
-      merged.contract.isHoneypot = true;
-    }
-    if (EvmVerificationUtils.isGoPlusTruthy(tokenSecurity.cannot_sell_all)) {
-      merged.contract.cannotSellAll = true;
-    }
-    if (EvmVerificationUtils.isHighTax(tokenSecurity.sell_tax)) {
-      merged.contract.highSellTax = true;
-    }
-    if (EvmVerificationUtils.isHighTax(tokenSecurity.buy_tax)) {
-      merged.contract.highBuyTax = true;
-    }
-  }
-
-  const rugPull = goPlusData.rugPull;
-  if (rugPull) {
-    const hasRugPullRisk =
-      EvmVerificationUtils.isGoPlusTruthy(rugPull.blacklist) ||
-      EvmVerificationUtils.isGoPlusTruthy(rugPull.selfdestruct) ||
-      EvmVerificationUtils.isGoPlusTruthy(rugPull.approval_abuse) ||
-      EvmVerificationUtils.isGoPlusTruthy(rugPull.privilege_withdraw) ||
-      EvmVerificationUtils.isGoPlusTruthy(rugPull.withdraw_missing);
-    if (hasRugPullRisk) {
-      merged.contract.rugPullRisk = true;
+  if (lightNodeData.contractSecurity?.isMalicious) {
+    merged.contract.isMalicious = true;
+    if (lightNodeData.contractSecurity.reasons.length) {
+      merged.contract.securityReasons = [
+        ...lightNodeData.contractSecurity.reasons,
+      ];
     }
   }
 
@@ -785,26 +757,16 @@ const enrichVerificationForAddresses = async (
     return verification;
   }
 
-  const goPlusChainId = EvmVerificationUtils.toGoPlusChainId(params.chainId);
-
   await Promise.all(
     uniqueAddresses.map(async (address) => {
-      const [keychainResult, goPlusSecurity] = await Promise.all([
+      const [keychainResult, receiverSecurity] = await Promise.all([
         fetchKeychainVerification({
           domain: params.domain,
           to: address,
         }).catch(
           () => ({}) as Partial<EvmTransactionVerificationInformation>,
         ),
-        goPlusChainId
-          ? EvmVerificationUtils.getAddressSecurity(address, goPlusChainId)
-              .then((response) =>
-                response.code === EvmVerificationUtils.GOPLUS_SUCCESS_CODE
-                  ? response.result
-                  : undefined,
-              )
-              .catch(() => undefined)
-          : Promise.resolve(undefined),
+        EvmLightNodeUtils.getReceiverSecurity(address).catch(() => undefined),
       ]);
 
       if (keychainResult.to) {
@@ -814,7 +776,7 @@ const enrichVerificationForAddresses = async (
         });
       }
 
-      applyGoPlusAddressSecurity(verification, address, goPlusSecurity);
+      applyLightNodeReceiverSecurity(verification, address, receiverSecurity);
     }),
   );
 
@@ -824,9 +786,9 @@ const enrichVerificationForAddresses = async (
 const verifyTransactionInformation = async (
   params: VerifyTransactionParams = {},
 ): Promise<EvmTransactionVerificationInformation> => {
-  const [keychainResult, goPlusResult] = await Promise.allSettled([
+  const [keychainResult, lightNodeResult] = await Promise.allSettled([
     fetchKeychainVerification(params),
-    EvmVerificationUtils.fetchGoPlusVerificationData(params),
+    EvmVerificationUtils.fetchLightNodeVerificationData(params),
   ]);
 
   let verification: EvmTransactionVerificationInformation;
@@ -847,19 +809,26 @@ const verifyTransactionInformation = async (
     );
   }
 
-  const goPlusData =
-    goPlusResult.status === 'fulfilled' ? goPlusResult.value : { unavailable: true };
+  const lightNodeData =
+    lightNodeResult.status === 'fulfilled'
+      ? lightNodeResult.value
+      : { unavailable: true };
 
-  if (goPlusResult.status === 'rejected') {
-    Logger.error('GoPlus verification failed', goPlusResult.reason);
+  if (lightNodeResult.status === 'rejected') {
+    Logger.error('Light-node security verification failed', lightNodeResult.reason);
   }
 
-  const merged = mergeGoPlusIntoVerification(verification, goPlusData);
+  const merged = mergeLightNodeSecurityIntoVerification(
+    verification,
+    lightNodeData,
+  );
 
   if (params.to && ethers.isAddress(params.to)) {
+    const toKey = params.to.toLowerCase();
+    const receiverFlags = merged.addresses?.[toKey];
     setAddressVerificationFlags(merged, params.to, {
       isBlacklisted: merged.to?.isBlacklisted,
-      isMalicious: merged.to?.isMalicious,
+      isMalicious: receiverFlags?.isMalicious ?? merged.to?.isMalicious,
       isWhitelisted: merged.to?.isWhitelisted,
     });
   }
@@ -868,9 +837,9 @@ const verifyTransactionInformation = async (
     if (!ethers.isAddress(recipient)) {
       continue;
     }
-    const goPlusSecurity =
-      goPlusData.addressSecurityByAddress?.[recipient.toLowerCase()];
-    applyGoPlusAddressSecurity(merged, recipient, goPlusSecurity);
+    const receiverSecurity =
+      lightNodeData.addressSecurityByAddress?.[recipient.toLowerCase()];
+    applyLightNodeReceiverSecurity(merged, recipient, receiverSecurity);
   }
 
   return merged;

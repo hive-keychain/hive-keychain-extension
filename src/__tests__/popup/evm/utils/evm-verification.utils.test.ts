@@ -1,64 +1,120 @@
+import {
+  EvmLightNodeUtils,
+  normalizeDomainForLightNode,
+} from '@popup/evm/utils/evm-light-node.utils';
 import { EvmVerificationUtils } from '@popup/evm/utils/evm-verification.utils';
+import { BaseApi } from 'src/api/base';
 
-describe('EvmVerificationUtils helpers', () => {
-  it('toGoPlusChainId normalizes hex chain ids', () => {
-    expect(EvmVerificationUtils.toGoPlusChainId('0x1')).toBe('1');
-    expect(EvmVerificationUtils.toGoPlusChainId('1')).toBe('1');
-    expect(EvmVerificationUtils.toGoPlusChainId('')).toBeNull();
+jest.mock('src/api/base', () => ({
+  BaseApi: {
+    getWithResponse: jest.fn(),
+    get: jest.fn(),
+    post: jest.fn(),
+  },
+}));
+
+describe('normalizeDomainForLightNode', () => {
+  it('normalizes full URLs to hostnames', () => {
+    expect(normalizeDomainForLightNode('https://App.Example.com/path')).toBe(
+      'app.example.com',
+    );
   });
 
-  it('isGoPlusTruthy treats 1 and "1" as true', () => {
-    expect(EvmVerificationUtils.isGoPlusTruthy('1')).toBe(true);
-    expect(EvmVerificationUtils.isGoPlusTruthy(1)).toBe(true);
-    expect(EvmVerificationUtils.isGoPlusTruthy('0')).toBe(false);
-  });
-
-  it('isAddressMalicious detects flagged address security fields', () => {
-    expect(
-      EvmVerificationUtils.isAddressMalicious({
-        phishing_activities: '1',
-      }),
-    ).toBe(true);
-    expect(
-      EvmVerificationUtils.isAddressMalicious({
-        phishing_activities: '0',
-      }),
-    ).toBe(false);
-  });
-
-  it('isHighTax returns true above 10 percent', () => {
-    expect(EvmVerificationUtils.isHighTax('15')).toBe(true);
-    expect(EvmVerificationUtils.isHighTax('5')).toBe(false);
+  it('normalizes bare hostnames', () => {
+    expect(normalizeDomainForLightNode('app.example.com')).toBe('app.example.com');
   });
 });
 
-describe('fetchGoPlusVerificationData', () => {
+describe('fetchLightNodeVerificationData', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   afterEach(() => {
     jest.restoreAllMocks();
   });
 
-  it('returns empty object when chain id is missing', async () => {
-    const result = await EvmVerificationUtils.fetchGoPlusVerificationData({
-      origin: 'https://app.example',
-    });
+  it('returns empty object when there is nothing to check', async () => {
+    const result = await EvmVerificationUtils.fetchLightNodeVerificationData({});
 
     expect(result).toEqual({});
   });
 
-  it('fetches phishing site data without authentication', async () => {
-    jest.spyOn(EvmVerificationUtils, 'getPhishingSite').mockResolvedValue({
-      code: 1,
-      result: { phishing_site: 0 },
-    });
+  it('fetches domain and receiver security from light-node', async () => {
+    (BaseApi.getWithResponse as jest.Mock)
+      .mockResolvedValueOnce({
+        status: 200,
+        data: {
+          isMalicious: true,
+          reasons: ['phishing_site'],
+          stale: false,
+        },
+      })
+      .mockResolvedValueOnce({
+        status: 200,
+        data: {
+          isMalicious: true,
+          reasons: ['mixer'],
+          stale: false,
+        },
+      });
 
-    const result = await EvmVerificationUtils.fetchGoPlusVerificationData({
-      chainId: '1',
+    const result = await EvmVerificationUtils.fetchLightNodeVerificationData({
       origin: 'https://app.example',
+      to: '0x00000000000000000000000000000000000000aa',
     });
 
-    expect(result.phishingSite).toEqual({ phishing_site: 0 });
-    expect(EvmVerificationUtils.getPhishingSite).toHaveBeenCalledWith(
-      'https://app.example',
-    );
+    expect(result.domainSecurity?.isMalicious).toBe(true);
+    expect(
+      result.addressSecurityByAddress?.[
+        '0x00000000000000000000000000000000000000aa'
+      ]?.reasons,
+    ).toEqual(['mixer']);
+    expect(BaseApi.getWithResponse).toHaveBeenCalledTimes(2);
+  });
+
+  it('uses prefetched contract security without a duplicate contract GET', async () => {
+    const getContractSpy = jest.spyOn(EvmLightNodeUtils, 'getContract');
+
+    const result = await EvmVerificationUtils.fetchLightNodeVerificationData({
+      chainId: '1',
+      tokenContract: '0x00000000000000000000000000000000000000cc',
+      prefetchedContract: {
+        id: 1,
+        chainId: 1,
+        address: '0x00000000000000000000000000000000000000cc',
+        firstSeenBlock: 1,
+        lastSeenBlock: null,
+        abi: null,
+        contractType: 'ERC20',
+        verified: false,
+        isProxy: false,
+        proxyTarget: null,
+        possibleSpam: true,
+        metadata: null,
+        price: null,
+        security: {
+          isMalicious: true,
+          reasons: ['phishing_activities'],
+          stale: false,
+        },
+      },
+    });
+
+    expect(result.contractSecurity?.isMalicious).toBe(true);
+    expect(getContractSpy).not.toHaveBeenCalled();
+    getContractSpy.mockRestore();
+  });
+
+  it('marks unavailable when all security calls fail', async () => {
+    (BaseApi.getWithResponse as jest.Mock).mockResolvedValue({ status: 502 });
+
+    const result = await EvmVerificationUtils.fetchLightNodeVerificationData({
+      origin: 'https://app.example',
+      to: '0x00000000000000000000000000000000000000aa',
+    });
+
+    expect(result.unavailable).toBe(true);
+    expect(BaseApi.getWithResponse).toHaveBeenCalledTimes(2);
   });
 });

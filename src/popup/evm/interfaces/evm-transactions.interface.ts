@@ -1,6 +1,4 @@
-import {
-  GoPlusVerificationData,
-} from '@popup/evm/interfaces/evm-verification.interface';
+import { EvmLightNodeContractResponse } from '@popup/evm/interfaces/evm-light-node.interface';
 import {
   EvmSmartContractInfo,
   EVMSmartContractType,
@@ -106,30 +104,35 @@ export interface VerifyTransactionParams {
   to?: string;
   /** Passed to Keychain `evm/verify-transaction` */
   contract?: string;
-  /** Token/collection address for GoPlus security checks when different from `contract` */
+  /** Token/collection address for light-node contract security when different from `contract` */
   tokenContract?: string;
   proxyTarget?: string | null;
   chainId?: string;
   tokenType?: EVMSmartContractType;
   nftTokenId?: string;
-  /** Full origin URL for GoPlus phishing check (e.g. data.dappInfo.origin) */
+  /** Full origin URL for light-node domain check (e.g. data.dappInfo.origin) */
   origin?: string;
   /** Wallet addresses to verify (decoded recipient, spender, etc.) */
   recipients?: string[];
+  /** Avoid duplicate GET /contract when the dialog already fetched metadata */
+  prefetchedContract?: EvmLightNodeContractResponse | null;
 }
 
 export interface EvmAddressVerificationFlags {
   isBlacklisted?: boolean;
   isMalicious?: boolean;
   isWhitelisted?: boolean;
+  securityReasons?: string[];
 }
 
 export interface EvmTransactionVerificationInformation {
   unableToReach?: boolean;
-  goPlus?: GoPlusVerificationData;
+  lightNodeSecurityUnavailable?: boolean;
   contract: {
     hasBeenUsedBefore?: boolean;
     isBlacklisted?: boolean;
+    isMalicious?: boolean;
+    securityReasons?: string[];
     isHoneypot?: boolean;
     cannotSellAll?: boolean;
     highSellTax?: boolean;
@@ -149,6 +152,7 @@ export interface EvmTransactionVerificationInformation {
     isTrusted?: boolean;
     isWhitelisted?: boolean;
     fuzzy?: string;
+    securityReasons?: string[];
   };
   to: {
     isBlacklisted?: boolean;

@@ -12,7 +12,7 @@ jest.mock('@popup/evm/utils/evm-verification.utils', () => {
   return {
     EvmVerificationUtils: {
       ...actual.EvmVerificationUtils,
-      fetchGoPlusVerificationData: jest.fn().mockResolvedValue({}),
+      fetchLightNodeVerificationData: jest.fn().mockResolvedValue({}),
     },
   };
 });
@@ -221,16 +221,20 @@ describe('evm-transaction-parser.utils proxy tests:\n', () => {
     );
   });
 
-  it('merges GoPlus honeypot data into verification result', async () => {
+  it('merges light-node contract security into verification result', async () => {
     jest.spyOn(KeychainApi, 'get').mockResolvedValue({
       contract: {},
       domain: {},
       to: {},
     });
     (
-      EvmVerificationUtils.fetchGoPlusVerificationData as jest.Mock
+      EvmVerificationUtils.fetchLightNodeVerificationData as jest.Mock
     ).mockResolvedValue({
-      tokenSecurity: { is_honeypot: '1' },
+      contractSecurity: {
+        isMalicious: true,
+        reasons: ['phishing_activities'],
+        stale: false,
+      },
     });
 
     const result = await EvmTransactionParserUtils.verifyTransactionInformation({
@@ -239,8 +243,44 @@ describe('evm-transaction-parser.utils proxy tests:\n', () => {
       tokenContract: '0x00000000000000000000000000000000000000cc',
     });
 
-    expect(result.contract.isHoneypot).toBe(true);
-    expect(result.goPlus?.tokenSecurity?.is_honeypot).toBe('1');
+    expect(result.contract.isMalicious).toBe(true);
+    expect(result.contract.securityReasons).toEqual(['phishing_activities']);
+  });
+
+  it('shows per-reason address warnings from securityReasons', async () => {
+    jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(true);
+    jest
+      .spyOn(EvmAddressesUtils, 'isPotentialSpoofing')
+      .mockResolvedValue(undefined);
+
+    const warnings = await EvmTransactionParserUtils.getAddressWarning(
+      '0x00000000000000000000000000000000000000aa',
+      '1',
+      {
+        contract: { proxy: {}, verifiedBy: [] },
+        domain: {},
+        to: {},
+        addresses: {
+          '0x00000000000000000000000000000000000000aa': {
+            isMalicious: true,
+            securityReasons: ['mixer', 'phishing_activities'],
+          },
+        },
+      },
+      [],
+    );
+
+    expect(
+      warnings.some((w) => w.message === 'evm_security_reason_mixer'),
+    ).toBe(true);
+    expect(
+      warnings.some(
+        (w) => w.message === 'evm_security_reason_phishing_activities',
+      ),
+    ).toBe(true);
+    expect(
+      warnings.some((w) => w.message === 'evm_transaction_receiver_malicious'),
+    ).toBe(false);
   });
 
   it('getAddressWarning uses per-address verification flags for recipients', async () => {
@@ -270,15 +310,15 @@ describe('evm-transaction-parser.utils proxy tests:\n', () => {
     );
   });
 
-  it('does not set unableToReach when GoPlus fails but Keychain succeeds', async () => {
+  it('does not set unableToReach when light-node fails but Keychain succeeds', async () => {
     jest.spyOn(KeychainApi, 'get').mockResolvedValue({
       contract: {},
       domain: {},
       to: {},
     });
     (
-      EvmVerificationUtils.fetchGoPlusVerificationData as jest.Mock
-    ).mockRejectedValue(new Error('GoPlus down'));
+      EvmVerificationUtils.fetchLightNodeVerificationData as jest.Mock
+    ).mockRejectedValue(new Error('light-node down'));
 
     const result = await EvmTransactionParserUtils.verifyTransactionInformation({
       domain: 'app.example',
@@ -286,7 +326,7 @@ describe('evm-transaction-parser.utils proxy tests:\n', () => {
     });
 
     expect(result.unableToReach).toBeUndefined();
-    expect(result.goPlus?.unavailable).toBe(true);
+    expect(result.lightNodeSecurityUnavailable).toBe(true);
   });
 });
 

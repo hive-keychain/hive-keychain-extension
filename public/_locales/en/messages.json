@@ -5345,7 +5345,91 @@
   },
   "evm_transaction_domain_phishing": {
     "message": "This website has been flagged as a potential phishing site",
-    "description": "Domain flagged by GoPlus phishing detection"
+    "description": "Domain flagged by light-node security"
+  },
+  "evm_security_reason_blacklist_doubt": {
+    "message": "This address has been flagged for blacklist-related risk",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_blackmail_activities": {
+    "message": "This address has been linked to blackmail activities",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_cybercrime": {
+    "message": "This address has been linked to cybercrime",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_darkweb_transactions": {
+    "message": "This address has been linked to dark web transactions",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_fake_kyc": {
+    "message": "This address has been linked to fake KYC activity",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_fake_token": {
+    "message": "This address has been linked to fake token activity",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_financial_crime": {
+    "message": "This address has been linked to financial crime",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_gas_abuse": {
+    "message": "This address has been linked to gas abuse",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_honeypot_related_address": {
+    "message": "This address has been linked to honeypot-related activity",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_malicious_mining_activities": {
+    "message": "This address has been linked to malicious mining",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_mixer": {
+    "message": "This address has been linked to a mixer",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_money_laundering": {
+    "message": "This address has been linked to money laundering",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_phishing_activities": {
+    "message": "This address has been linked to phishing activity",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_reinit": {
+    "message": "This address has been flagged for suspicious reinitialization behavior",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_sanctioned": {
+    "message": "This address appears on sanctions lists",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_stealing_attack": {
+    "message": "This address has been linked to stealing attacks",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_scamsniffer_blacklist": {
+    "message": "This has been flagged by the ScamSniffer blacklist",
+    "description": "Light-node security reason"
+  },
+  "evm_security_reason_phishing_site": {
+    "message": "This website has been flagged as a phishing site",
+    "description": "Light-node domain security reason"
+  },
+  "evm_security_reason_address_risk": {
+    "message": "This website has been flagged for address risk: $1",
+    "description": "Light-node domain security reason with dynamic risk value"
+  },
+  "evm_security_reason_nft_risk": {
+    "message": "This website has been flagged for NFT risk: $1",
+    "description": "Light-node domain security reason with dynamic NFT risk key"
+  },
+  "evm_security_reason_unknown": {
+    "message": "A security risk was detected: $1",
+    "description": "Fallback light-node security reason"
   },
   "evm_transaction_receiver_blacklisted": {
     "message": "This address has been flagged for suspicious behavior",
@@ -5353,7 +5437,7 @@
   },
   "evm_transaction_receiver_malicious": {
     "message": "This address has been flagged as malicious",
-    "description": "Receiver flagged by GoPlus address security"
+    "description": "Receiver flagged by light-node address security"
   },
   "evm_transaction_warning_high_level_bypass_message": {
     "message": "I know what I'm doing",

@@ -44,7 +44,10 @@ export const EvmMultipleWarningsPopup = ({ warningHook }: Props) => {
                     icon={SVGIcons.GLOBAL_WARNING}
                   />
                   <div className="warning-message">
-                    {chrome.i18n.getMessage(warning?.message!)}
+                    {chrome.i18n.getMessage(
+                      warning?.message!,
+                      warning.messageParams ?? [],
+                    )}
                   </div>
                 </div>
               );

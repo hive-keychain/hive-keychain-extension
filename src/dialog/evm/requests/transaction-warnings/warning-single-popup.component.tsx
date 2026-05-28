@@ -41,6 +41,7 @@ export const EvmSinglePopupComponent = ({ warningHook }: Props) => {
             <div className="warning-message">
               {chrome.i18n.getMessage(
                 warningHook.selectedSingleWarning.warning.message!,
+                warningHook.selectedSingleWarning.warning.messageParams ?? [],
               )}
             </div>
           </div>

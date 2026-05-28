@@ -369,6 +369,7 @@ export async function runSendTransactionInit(
               origin: data.dappInfo.origin,
               contract: usedAccountAddress,
               tokenContract: tokenAddress ?? undefined,
+              prefetchedContract: fetchedContractOnce ?? undefined,
               proxyTarget,
               chainId: chainTmp.chainId,
               tokenType: usedToken.type,
