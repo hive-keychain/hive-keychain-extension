@@ -29,6 +29,7 @@ import { MessageContainerComponent } from 'src/common-ui/message-container/messa
 import { ModalComponent } from 'src/common-ui/modal/modal.component';
 import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';
 import { CopyToastContainer } from 'src/common-ui/toast/copy-toast.component';
+import { EvmLedgerUtils } from 'src/popup/evm/utils/evm-ledger.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import PopupUtils from 'src/utils/popup.utils';
@@ -58,12 +59,15 @@ const ChainRouter = ({
     initAutoLock();
     checkIfHasFinishedSignup();
     initMk();
-    LedgerUtils.isLedgerSupported().then((res) => {
-      setIsLedgerSupported(res);
-      setEvmStatus({ isLedgerSupported: res });
+    Promise.all([
+      LedgerUtils.isLedgerSupported(),
+      EvmLedgerUtils.isLedgerSupported(),
+    ]).then(([isHiveLedgerSupported, isEvmLedgerSupported]) => {
+      setIsLedgerSupported(isHiveLedgerSupported);
+      setEvmStatus({ isLedgerSupported: isEvmLedgerSupported });
       LocalStorageUtils.saveValueInLocalStorage(
         LocalStorageKeyEnum.IS_LEDGER_SUPPORTED,
-        res,
+        isHiveLedgerSupported,
       );
     });
     LocalStorageUtils.getValueFromLocalStorage(

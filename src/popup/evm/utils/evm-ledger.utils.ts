@@ -1,4 +1,6 @@
 import LedgerEthApp from '@ledgerhq/hw-app-eth';
+import type Transport from '@ledgerhq/hw-transport';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import {
   EvmAccountSource,
@@ -15,6 +17,12 @@ import { KeychainError } from 'src/keychain-error';
 const DEFAULT_EMPTY_ACCOUNT_LIMIT = 2;
 
 let evmLedger: LedgerEthApp;
+let activeTransportType: EvmLedgerTransportType | undefined;
+
+enum EvmLedgerTransportType {
+  WEBHID = 'webhid',
+  WEBUSB = 'webusb',
+}
 
 interface EvmLedgerDerivationConfig {
   labelKey: string;
@@ -31,6 +39,16 @@ interface EvmLedgerDiscoveryOptions {
   derivationMode?: EvmLedgerDerivationMode;
   startIndex?: number;
   emptyAccountLimit?: number;
+}
+
+interface EvmLedgerTransportCandidate {
+  type: EvmLedgerTransportType;
+  transport: {
+    isSupported: () => Promise<boolean>;
+    list: () => Promise<unknown[]>;
+    request: () => Promise<Transport>;
+    create: () => Promise<Transport>;
+  };
 }
 
 export type EvmLedgerWalletWithBalance = {
@@ -138,11 +156,15 @@ const isLedgerConnectionError = (error: any, message: string) => {
   const normalizedMessage = message.toLowerCase();
 
   return (
+    error?.id === 'HIDNotSupported' ||
     error?.name === 'DisconnectedDeviceDuringOperation' ||
+    error?.name === 'DisconnectedDevice' ||
     error?.name === 'TransportOpenUserCancelled' ||
     error?.name === 'TransportInterfaceNotAvailable' ||
+    error?.name === 'TransportRaceCondition' ||
     error?.id === 'NoDeviceSelected' ||
     normalizedMessage.includes('no device selected') ||
+    normalizedMessage.includes('access denied to use ledger device') ||
     normalizedMessage.includes('device disconnected')
   );
 };
@@ -180,28 +202,80 @@ const parseLedgerError = (error: any) => {
   return new KeychainError('evm_ledger_unknown_error', [], error);
 };
 
+const getTransportCandidates = (): EvmLedgerTransportCandidate[] => [
+  {
+    type: EvmLedgerTransportType.WEBHID,
+    transport: TransportWebHID,
+  },
+  {
+    type: EvmLedgerTransportType.WEBUSB,
+    transport: TransportWebUSB,
+  },
+];
+
+const isTransportSupported = async (candidate: EvmLedgerTransportCandidate) => {
+  try {
+    return await candidate.transport.isSupported();
+  } catch {
+    return false;
+  }
+};
+
+const getSupportedTransportCandidates = async () => {
+  const candidates = await Promise.all(
+    getTransportCandidates().map(async (candidate) => ({
+      ...candidate,
+      supported: await isTransportSupported(candidate),
+    })),
+  );
+  return candidates.filter(({ supported }) => supported);
+};
+
+const createTransport = async (
+  candidate: EvmLedgerTransportCandidate,
+  fromTab: boolean,
+) => {
+  const connectedDevices = await candidate.transport.list();
+  if (connectedDevices.length === 0) {
+    if (fromTab) {
+      return await candidate.transport.request();
+    }
+    throw new KeychainError('evm_ledger_connect_device');
+  }
+
+  return await candidate.transport.create();
+};
+
 const init = async (fromTab: boolean): Promise<boolean> => {
-  if (!(await EvmLedgerUtils.isLedgerSupported())) {
+  const supportedCandidates = await getSupportedTransportCandidates();
+  if (supportedCandidates.length === 0) {
     throw new KeychainError('html_ledger_not_supported');
   }
 
-  const connectedDevices = await TransportWebUSB.list();
-  let transport;
-  if (connectedDevices.length === 0) {
-    if (fromTab) {
-      transport = await TransportWebUSB.request();
-    } else {
-      throw new KeychainError('evm_ledger_connect_device');
+  const errors: any[] = [];
+  for (const candidate of supportedCandidates) {
+    try {
+      const transport = await createTransport(candidate, fromTab);
+      activeTransportType = candidate.type;
+      evmLedger = new LedgerEthApp(transport);
+      return true;
+    } catch (error) {
+      errors.push(error);
     }
   }
 
-  transport = transport ?? (await TransportWebUSB.create());
-  evmLedger = new LedgerEthApp(transport);
-  return true;
+  throw EvmLedgerUtils.parseLedgerError(errors[errors.length - 1]);
 };
 
+const getActiveTransportType = () => activeTransportType;
+
 const isLedgerSupported = async () => {
-  return await TransportWebUSB.isSupported();
+  return (await getSupportedTransportCandidates()).length > 0;
+};
+
+const resetLedgerInstance = () => {
+  evmLedger = undefined as unknown as LedgerEthApp;
+  activeTransportType = undefined;
 };
 
 const getLedgerInstance = async (): Promise<LedgerEthApp> => {
@@ -345,6 +419,8 @@ export const EvmLedgerUtils = {
   init,
   isLedgerSupported,
   getLedgerInstance,
+  getActiveTransportType,
+  resetLedgerInstance,
   getDerivationModeLabelKey,
   getDerivationModeFromPath,
   getDerivationIndexFromPath,

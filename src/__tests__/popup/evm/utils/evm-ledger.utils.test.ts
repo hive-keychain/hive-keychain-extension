@@ -1,4 +1,5 @@
 import LedgerEthApp from '@ledgerhq/hw-app-eth';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import {
   EvmAccountSource,
@@ -17,13 +18,24 @@ const mockLedgerApp = {
   signPersonalMessage: jest.fn(),
   signEIP712HashedMessage: jest.fn(),
 };
-const mockTransport = {};
+const mockWebHidTransport = { type: 'webhid' };
+const mockWebUsbTransport = { type: 'webusb' };
 
 jest.mock('@ledgerhq/hw-app-eth', () =>
   jest.fn(() => mockLedgerApp),
 );
 
 jest.mock('@ledgerhq/hw-transport-webusb', () => ({
+  __esModule: true,
+  default: {
+    isSupported: jest.fn(),
+    list: jest.fn(),
+    request: jest.fn(),
+    create: jest.fn(),
+  },
+}));
+
+jest.mock('@ledgerhq/hw-transport-webhid', () => ({
   __esModule: true,
   default: {
     isSupported: jest.fn(),
@@ -42,10 +54,99 @@ jest.mock('@popup/evm/utils/ethers.utils', () => ({
 describe('evm ledger utils', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    EvmLedgerUtils.resetLedgerInstance();
+    (TransportWebHID.isSupported as jest.Mock).mockResolvedValue(false);
+    (TransportWebHID.list as jest.Mock).mockResolvedValue([]);
+    (TransportWebHID.request as jest.Mock).mockResolvedValue(
+      mockWebHidTransport,
+    );
+    (TransportWebHID.create as jest.Mock).mockResolvedValue(
+      mockWebHidTransport,
+    );
     (TransportWebUSB.isSupported as jest.Mock).mockResolvedValue(true);
     (TransportWebUSB.list as jest.Mock).mockResolvedValue([{}]);
-    (TransportWebUSB.create as jest.Mock).mockResolvedValue(mockTransport);
+    (TransportWebUSB.request as jest.Mock).mockResolvedValue(
+      mockWebUsbTransport,
+    );
+    (TransportWebUSB.create as jest.Mock).mockResolvedValue(
+      mockWebUsbTransport,
+    );
     mockLedgerApp.getAppConfiguration.mockResolvedValue({});
+  });
+
+  it('reports Ledger support when WebHID or WebUSB is supported', async () => {
+    (TransportWebHID.isSupported as jest.Mock).mockResolvedValue(true);
+    (TransportWebUSB.isSupported as jest.Mock).mockResolvedValue(false);
+
+    expect(await EvmLedgerUtils.isLedgerSupported()).toBe(true);
+
+    (TransportWebHID.isSupported as jest.Mock).mockResolvedValue(false);
+    (TransportWebUSB.isSupported as jest.Mock).mockResolvedValue(false);
+
+    expect(await EvmLedgerUtils.isLedgerSupported()).toBe(false);
+  });
+
+  it('prefers WebHID when it is supported and already connected', async () => {
+    (TransportWebHID.isSupported as jest.Mock).mockResolvedValue(true);
+    (TransportWebHID.list as jest.Mock).mockResolvedValue([{}]);
+
+    await EvmLedgerUtils.init(false);
+
+    expect(TransportWebHID.create).toHaveBeenCalled();
+    expect(TransportWebUSB.create).not.toHaveBeenCalled();
+    expect(LedgerEthApp).toHaveBeenCalledWith(mockWebHidTransport);
+    expect(EvmLedgerUtils.getActiveTransportType()).toBe('webhid');
+  });
+
+  it('falls back to WebUSB when WebHID is unsupported', async () => {
+    await EvmLedgerUtils.init(false);
+
+    expect(TransportWebHID.create).not.toHaveBeenCalled();
+    expect(TransportWebUSB.create).toHaveBeenCalled();
+    expect(LedgerEthApp).toHaveBeenCalledWith(mockWebUsbTransport);
+    expect(EvmLedgerUtils.getActiveTransportType()).toBe('webusb');
+  });
+
+  it('falls back to WebUSB when WebHID has no authorized device during silent reconnect', async () => {
+    (TransportWebHID.isSupported as jest.Mock).mockResolvedValue(true);
+    (TransportWebHID.list as jest.Mock).mockResolvedValue([]);
+
+    await EvmLedgerUtils.init(false);
+
+    expect(TransportWebHID.request).not.toHaveBeenCalled();
+    expect(TransportWebHID.create).not.toHaveBeenCalled();
+    expect(TransportWebUSB.create).toHaveBeenCalled();
+    expect(LedgerEthApp).toHaveBeenCalledWith(mockWebUsbTransport);
+    expect(EvmLedgerUtils.getActiveTransportType()).toBe('webusb');
+  });
+
+  it('falls back to WebUSB when the WebHID permission flow is canceled', async () => {
+    (TransportWebHID.isSupported as jest.Mock).mockResolvedValue(true);
+    (TransportWebHID.list as jest.Mock).mockResolvedValue([]);
+    (TransportWebHID.request as jest.Mock).mockRejectedValue({
+      name: 'TransportOpenUserCancelled',
+    });
+    (TransportWebUSB.list as jest.Mock).mockResolvedValue([]);
+
+    await EvmLedgerUtils.init(true);
+
+    expect(TransportWebHID.request).toHaveBeenCalled();
+    expect(TransportWebUSB.request).toHaveBeenCalled();
+    expect(LedgerEthApp).toHaveBeenCalledWith(mockWebUsbTransport);
+    expect(EvmLedgerUtils.getActiveTransportType()).toBe('webusb');
+  });
+
+  it('does not open a browser device picker during silent reconnect', async () => {
+    (TransportWebHID.isSupported as jest.Mock).mockResolvedValue(true);
+    (TransportWebHID.list as jest.Mock).mockResolvedValue([]);
+    (TransportWebUSB.list as jest.Mock).mockResolvedValue([]);
+
+    await expect(EvmLedgerUtils.init(false)).rejects.toEqual(
+      new KeychainError('evm_ledger_connect_device'),
+    );
+
+    expect(TransportWebHID.request).not.toHaveBeenCalled();
+    expect(TransportWebUSB.request).not.toHaveBeenCalled();
   });
 
   it('builds MetaMask-style derivation paths', () => {
@@ -116,7 +217,7 @@ describe('evm ledger utils', () => {
       "m/44'/60'/0'/0/1",
     );
 
-    expect(LedgerEthApp).toHaveBeenCalledWith(mockTransport);
+    expect(LedgerEthApp).toHaveBeenCalledWith(mockWebUsbTransport);
     expect(mockLedgerApp.getAddress).toHaveBeenCalledWith("44'/60'/0'/0/1");
     expect(address).toBe('0x0000000000000000000000000000000000000001');
   });
