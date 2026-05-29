@@ -1,35 +1,53 @@
+.confirmation-field-warning-icon {
+  flex-shrink: 0;
+  margin-left: 6px;
+  cursor: pointer;
+
+  &.high {
+    --warning-color: #{$red};
+  }
+
+  &.medium {
+    --warning-color: #{$orange};
+  }
+
+  &.low {
+    --warning-color: #{$yellow};
+
+    svg path {
+      stroke: var(--warning-color);
+    }
+  }
+}
+
+.confirmation-page .fields .label,
+.lifi-confirmation-page .fields .label {
+  display: flex;
+  align-items: center;
+}
+
 .warning-container,
-.information-container,
-.field-content {
+.information-container {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  row-gap: 4px;
+  row-gap: 6px;
+  width: 100%;
 
-  .warning,
   .information {
     font-size: 13px;
     display: flex;
     align-items: center;
     column-gap: 8px;
     font-style: italic;
-    .warning-icon,
+
     .information-icon {
       height: 16px;
       width: 16px;
       svg {
         height: 16px;
         width: 16px;
-      }
-      &.high {
-        --warning-color: #{$red};
-      }
-      &.medium {
-        --warning-color: #{$orange};
-      }
-      &.low {
-        --warning-color: #{$yellow};
       }
     }
   }

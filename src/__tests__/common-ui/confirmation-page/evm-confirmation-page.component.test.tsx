@@ -7,7 +7,11 @@ import {
   EvmSmartContractInfoNative,
   EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
-import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
+import {
+  EvmTransactionType,
+  EvmTransactionWarningLevel,
+  EvmTransactionWarningType,
+} from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
@@ -116,10 +120,9 @@ describe('EVMConfirmationPageComponent', () => {
     (useTransactionHook as jest.Mock).mockReturnValue({
       hasWarning: jest.fn().mockReturnValue(false),
       initPendingTransactionWarning: jest.fn(),
-      openSingleWarningPopup: jest.fn(),
       pendingTransactionWarningField: undefined,
       setConfirmationPageFields: jest.fn(),
-      setWarningsPopupOpened: jest.fn(),
+      openWarningsPopup: jest.fn(),
     });
   });
 
@@ -216,6 +219,30 @@ describe('EVMConfirmationPageComponent', () => {
       expect(screen.queryByTestId('dialog_confirm-button')).toBeNull(),
     );
     expect(afterConfirmAction).not.toHaveBeenCalled();
+  });
+
+  it('renders risk alert banner when fields contain active warnings', async () => {
+    renderConfirmationPage({
+      fields: [
+        {
+          label: 'popup_html_to',
+          value: '0xabc',
+          name: 'to',
+          warnings: [
+            {
+              level: EvmTransactionWarningLevel.HIGH,
+              message: 'evm_transaction_warning_possible_scam',
+              ignored: false,
+              type: EvmTransactionWarningType.BASE,
+            },
+          ],
+        },
+      ],
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('evm-risk-alert-banner')).toBeTruthy(),
+    );
   });
 
   it('shows confirm when balance is sufficient', async () => {

@@ -89,7 +89,7 @@ export const ConnectAccounts = (props: Props) => {
 
   const saveInStorage = async () => {
     if (transactionHook.hasWarning()) {
-      transactionHook.setWarningsPopupOpened(true);
+      transactionHook.openWarningsPopup();
     } else {
       const addresses: string[] = [];
       for (const address of Object.keys(accountsToConnect)) {

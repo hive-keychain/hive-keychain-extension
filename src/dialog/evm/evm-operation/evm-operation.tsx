@@ -1,8 +1,4 @@
-import { Card } from '@common-ui/card/card.component';
-import { SVGIcons } from '@common-ui/icons.enum';
 import { MessageContainerComponent } from '@common-ui/message-container/message-container.component';
-import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
-import { EvmRequestItem } from '@dialog/evm/components/evm-request-item/evm-request-item';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
@@ -11,6 +7,12 @@ import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import { ConfirmationPopup } from 'src/common-ui/confirmation-warning-info/confirmation-popups/confirmation-popups.component';
+import {
+  EvmRiskAlertBanner,
+  EvmRiskStaticAlert,
+  EvmRiskWarningAlert,
+} from 'src/common-ui/evm/evm-risk-warning/evm-risk-alert-banner.component';
+import { EvmTransactionWarning } from '@popup/evm/interfaces/evm-transactions.interface';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { DialogCaption } from 'src/dialog/components/dialog-caption/dialog-caption.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
@@ -88,7 +90,7 @@ export const EvmOperation = ({
 
   const genericOnConfirm = () => {
     if (transactionHook && transactionHook.hasWarning()) {
-      transactionHook.setWarningsPopupOpened(true);
+      transactionHook.openWarningsPopup();
       return;
     } else {
       setLoading(true);
@@ -123,6 +125,15 @@ export const EvmOperation = ({
     await DappRequestUtils.lockDomain(domain);
   };
 
+  const duplicateWarning =
+    transactionHook?.duplicatedTransactionField?.warnings?.find(
+      (warning) => !warning.ignored,
+    );
+
+  const bannerWarningCount =
+    transactionHook?.getAllFieldsWithNotIgnoredWarnings().length ?? 0;
+  const bannerWarnings = transactionHook?.getAllNotIgnoredWarnings() ?? [];
+
   return (
     <>
       <div className={`operation ${caption ? 'has-caption' : ''}`}>
@@ -138,33 +149,32 @@ export const EvmOperation = ({
           )}
 
           {transactionHook?.unableToReachBackend && (
-            <div className="unable-to-reach-panel">
-              <SVGIcon icon={SVGIcons.GLOBAL_WARNING} />{' '}
-              <span className="text">
-                {chrome.i18n.getMessage(
-                  'evm_unable_to_reach_verify_transaction',
-                )}
-              </span>
-            </div>
+            <EvmRiskStaticAlert message="evm_unable_to_reach_verify_transaction" />
           )}
+
+          {transactionHook &&
+            (bannerWarningCount > 0 || duplicateWarning) && (
+              <div className="evm-risk-alerts-stack">
+                {bannerWarningCount > 0 && (
+                  <EvmRiskAlertBanner
+                    warnings={bannerWarnings}
+                    warningCount={bannerWarningCount}
+                    onReviewClick={() => transactionHook.openWarningsPopup()}
+                  />
+                )}
+                {duplicateWarning && (
+                  <EvmRiskWarningAlert
+                    warning={duplicateWarning}
+                    onReviewClick={() =>
+                      transactionHook.openWarningsPopup({ type: 'duplicate' })
+                    }
+                    dataTestId="evm-duplicate-transaction-alert"
+                  />
+                )}
+              </div>
+            )}
 
           {caption && <DialogCaption text={caption} />}
-
-          {transactionHook?.pendingTransactionWarningField && (
-            <Card>
-              <EvmRequestItem
-                field={transactionHook.pendingTransactionWarningField}
-                onWarningClicked={() =>
-                  transactionHook.openSingleWarningPopup(
-                    -1,
-                    -1,
-                    transactionHook.pendingTransactionWarningField!
-                      .warnings![0],
-                  )
-                }
-              />
-            </Card>
-          )}
 
           {fields && (
             <div className="operation-body">

@@ -4615,5 +4615,45 @@
         "example": "app.example.com"
       }
     }
+  },
+  "evm_send_transaction_ignore_warning": {
+    "message": "Proceed anyway",
+    "description": "Acknowledge warning and continue"
+  },
+  "evm_risk_banner_message": {
+    "message": "$1 security issue(s) — highest risk: $2. Tap to review before confirming.",
+    "description": "Clickable risk banner on EVM confirmation pages"
+  },
+  "evm_risk_severity_high": {
+    "message": "Critical",
+    "description": "High severity warning label"
+  },
+  "evm_risk_severity_medium": {
+    "message": "Warning",
+    "description": "Medium severity warning label"
+  },
+  "evm_risk_severity_low": {
+    "message": "Notice",
+    "description": "Low severity warning label"
+  },
+  "evm_risk_banner_review": {
+    "message": "Review warnings",
+    "description": "CTA on the risk alert banner"
+  },
+  "evm_risk_modal_title_high": {
+    "message": "Critical security issue(s)",
+    "description": "Title for high severity warning modal"
+  },
+  "evm_risk_modal_title_medium": {
+    "message": "Security warning",
+    "description": "Title for medium severity warning modal"
+  },
+  "evm_risk_modal_title_low": {
+    "message": "Security notice",
+    "description": "Title for low severity warning modal"
+  },
+  "evm_risk_warning_reviewed": {
+    "message": "Reviewed",
+    "description": "Label shown when a warning was acknowledged"
   }
 }

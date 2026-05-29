@@ -304,6 +304,40 @@ describe('evm-transaction-parser.utils proxy tests:\n', () => {
     ).toBe(false);
   });
 
+  it('prefills wallet whitelist defaultLabel from ENS when available', async () => {
+    jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(false);
+    jest
+      .spyOn(EvmAddressesUtils, 'getEnsDataFromAddress')
+      .mockResolvedValue(undefined);
+    jest
+      .spyOn(EvmAddressesUtils, 'isPotentialSpoofing')
+      .mockResolvedValue(undefined);
+    jest
+      .spyOn(EvmRequestsUtils, 'getEnsForAddress')
+      .mockResolvedValue('vitalik.eth');
+
+    const warnings = await EvmTransactionParserUtils.getAddressWarning(
+      '0x00000000000000000000000000000000000000aa',
+      '1',
+      {
+        contract: { proxy: {}, verifiedBy: [] },
+        domain: {},
+        to: {},
+        addresses: {
+          '0x00000000000000000000000000000000000000aa': {},
+        },
+      },
+      [],
+    );
+
+    const whitelistWarning = warnings.find(
+      (warning) => warning.type === EvmTransactionWarningType.WHITELIST_ADDRESS,
+    );
+
+    expect(whitelistWarning?.extraData?.ensName).toBe('vitalik.eth');
+    expect(whitelistWarning?.extraData?.defaultLabel).toBe('vitalik.eth');
+  });
+
   it('keeps wallet whitelist warning when no light-node security risk exists', async () => {
     jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(false);
     jest

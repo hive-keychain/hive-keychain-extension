@@ -2,7 +2,11 @@ import ButtonComponent, {
   ButtonType,
 } from '@common-ui/button/button.component';
 import { ConfirmationPageEvmFields } from '@common-ui/confirmation-page/confirmation-page.interface';
-import { ConfirmationWarnings } from '@common-ui/confirmation-warning-info/confirmation-warnings/confirmation-warnings.component';
+import { ConfirmationPopup } from '@common-ui/confirmation-warning-info/confirmation-popups/confirmation-popups.component';
+import { ConfirmationFieldWarningIcon } from '@common-ui/confirmation-warning-info/confirmation-field-warning-icon/confirmation-field-warning-icon.component';
+import { EvmRiskAlertBanner } from '@common-ui/evm/evm-risk-warning/evm-risk-alert-banner.component';
+import { EvmRiskWarningUtils } from '@common-ui/evm/evm-risk-warning/evm-risk-warning.utils';
+import { EvmTransactionWarning } from '@popup/evm/interfaces/evm-transactions.interface';
 import { LabelComponent } from '@common-ui/label/label.component';
 import { Separator } from '@common-ui/separator/separator.component';
 import { useTransactionHook } from '@dialog/evm/requests/transaction-warnings/transaction.hook';
@@ -74,9 +78,24 @@ const LiFiConfirmationPage = ({
         if (afterCancelAction) afterCancelAction();
       },
     });
+    transactionHook.setConfirmationPageFields([
+      ...approveFields,
+      ...swapFields,
+    ]);
   }, []);
 
+  useEffect(() => {
+    transactionHook.setConfirmationPageFields([
+      ...approveFields,
+      ...swapFields,
+    ]);
+  }, [approveFields, swapFields]);
+
   const handleClickOnConfirm = () => {
+    if (transactionHook.hasWarning()) {
+      transactionHook.openWarningsPopup();
+      return;
+    }
     if (swapSelectedFee) {
       if (
         (approveTransactionData && approveSelectedFee) ||
@@ -99,23 +118,19 @@ const LiFiConfirmationPage = ({
     goBack();
   };
 
-  const handleOnWarningClicked = (
-    field: ConfirmationPageEvmFields,
-    warningIndex: number,
-    fieldIndex: number,
-  ) => {
-    transactionHook.openSingleWarningPopup(
-      fieldIndex,
-      warningIndex,
-      field.warnings![warningIndex],
-    );
-  };
-
   const handleErrors = (error: EtherRPCCustomError | undefined) => {
     if (error) {
       setErrorMessage(error.message, error.params ?? []);
     }
   };
+
+  const lifiConfirmationFields = [...approveFields, ...swapFields];
+  const bannerWarnings: EvmTransactionWarning[] =
+    EvmRiskWarningUtils.collectWarningsFromConfirmationFields(
+      lifiConfirmationFields,
+    );
+  const bannerWarningCount =
+    EvmRiskWarningUtils.countFieldsWithActiveWarnings(lifiConfirmationFields);
 
   return (
     <div className="confirmation-page lifi-confirmation-page">
@@ -127,6 +142,15 @@ const LiFiConfirmationPage = ({
               __html: message,
             }}></div>
         )}
+
+        {bannerWarningCount > 0 && (
+          <EvmRiskAlertBanner
+            warnings={bannerWarnings}
+            warningCount={bannerWarningCount}
+            onReviewClick={() => transactionHook.openWarningsPopup()}
+          />
+        )}
+
         {approveTransactionData && (
           <>
             <div className="fields">
@@ -140,20 +164,23 @@ const LiFiConfirmationPage = ({
                     {field.label && (
                       <div className="label">
                         {chrome.i18n.getMessage(field.label)}
+                        {field.warnings && field.warnings.length > 0 && (
+                          <ConfirmationFieldWarningIcon
+                            warnings={field.warnings}
+                            onClick={() =>
+                              transactionHook.openWarningsPopup({
+                                type: 'confirmation',
+                                index,
+                              })
+                            }
+                          />
+                        )}
                       </div>
                     )}
                     <div className={`value ${field.valueClassName ?? ''}`}>
                       {field.value}
                     </div>
                   </div>
-                  {field.warnings && field.warnings.length > 0 && (
-                    <ConfirmationWarnings
-                      warnings={field.warnings}
-                      onWarningClicked={(warningIndex) =>
-                        handleOnWarningClicked(field, warningIndex, index)
-                      }
-                    />
-                  )}
                   {index !== approveFields.length - 1 && (
                     <Separator
                       key={`separator-${field.label}`}
@@ -189,20 +216,23 @@ const LiFiConfirmationPage = ({
                 {field.label && (
                   <div className="label">
                     {chrome.i18n.getMessage(field.label)}
+                    {field.warnings && field.warnings.length > 0 && (
+                      <ConfirmationFieldWarningIcon
+                        warnings={field.warnings}
+                        onClick={() =>
+                          transactionHook.openWarningsPopup({
+                            type: 'confirmation',
+                            index: approveFields.length + index,
+                          })
+                        }
+                      />
+                    )}
                   </div>
                 )}
                 <div className={`value ${field.valueClassName ?? ''}`}>
                   {field.value}
                 </div>
               </div>
-              {field.warnings && field.warnings.length > 0 && (
-                <ConfirmationWarnings
-                  warnings={field.warnings}
-                  onWarningClicked={(warningIndex) =>
-                    handleOnWarningClicked(field, warningIndex, index)
-                  }
-                />
-              )}
               {index !== swapFields.length - 1 && (
                 <Separator
                   key={`separator-${field.label}`}
@@ -238,6 +268,7 @@ const LiFiConfirmationPage = ({
           onClick={handleClickOnConfirm}
           type={ButtonType.IMPORTANT}></ButtonComponent>
       </div>
+      <ConfirmationPopup transactionHook={transactionHook} />
     </div>
   );
 };

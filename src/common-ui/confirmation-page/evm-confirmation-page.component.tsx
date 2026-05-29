@@ -1,7 +1,6 @@
 import { BalanceChangeCard } from '@dialog/components/balance-change-card/balance-change-card.component';
 import type { BalanceInfo } from '@dialog/components/balance-change-card/balance-change-card.interface';
 import { BalanceChangeCardUtils } from '@dialog/components/balance-change-card/balance-change-card.utils';
-import { EvmRequestItem } from '@dialog/evm/components/evm-request-item/evm-request-item';
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { Screen } from '@interfaces/screen.interface';
@@ -27,14 +26,19 @@ import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
-import { Card } from 'src/common-ui/card/card.component';
 import {
   ConfirmationPageEvmFields,
   ConfirmationPageFields,
   EVMConfirmationPageParams,
 } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { ConfirmationPopup } from 'src/common-ui/confirmation-warning-info/confirmation-popups/confirmation-popups.component';
-import { ConfirmationWarnings } from 'src/common-ui/confirmation-warning-info/confirmation-warnings/confirmation-warnings.component';
+import { ConfirmationFieldWarningIcon } from 'src/common-ui/confirmation-warning-info/confirmation-field-warning-icon/confirmation-field-warning-icon.component';
+import {
+  EvmRiskAlertBanner,
+  EvmRiskStaticAlert,
+} from 'src/common-ui/evm/evm-risk-warning/evm-risk-alert-banner.component';
+import { EvmRiskWarningUtils } from 'src/common-ui/evm/evm-risk-warning/evm-risk-warning.utils';
+import { EvmTransactionWarning } from '@popup/evm/interfaces/evm-transactions.interface';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 
@@ -92,6 +96,10 @@ const ConfirmationPage = ({
   }, []);
 
   useEffect(() => {
+    transactionHook.setConfirmationPageFields(fields);
+  }, [fields]);
+
+  useEffect(() => {
     if (
       chain &&
       tokenInfo &&
@@ -136,7 +144,7 @@ const ConfirmationPage = ({
     }
 
     if (transactionHook && transactionHook.hasWarning()) {
-      transactionHook.setWarningsPopupOpened(true);
+      transactionHook.openWarningsPopup();
       return;
     }
     if ((hasGasFee && !!selectedFee) || !hasGasFee)
@@ -166,23 +174,38 @@ const ConfirmationPage = ({
     );
   };
 
-  const handleOnWarningClicked = (
-    field: ConfirmationPageFields,
-    warningIndex: number,
-    fieldIndex: number,
-  ) => {
-    transactionHook.openSingleWarningPopup(
-      fieldIndex,
-      warningIndex,
-      field.warnings![warningIndex],
-    );
-  };
-
   const handleErrors = (error: EtherRPCCustomError | undefined) => {
     if (error) {
       setErrorMessage(error.message, error.params ?? []);
     }
   };
+
+  const getBannerWarnings = (): EvmTransactionWarning[] => {
+    const confirmationFields = [
+      ...(fields ?? []),
+      ...(transactionHook.pendingTransactionWarningField
+        ? [transactionHook.pendingTransactionWarningField]
+        : []),
+    ];
+    return EvmRiskWarningUtils.collectWarningsFromConfirmationFields(
+      confirmationFields,
+    ).filter((warning) => !warning.ignored);
+  };
+
+  const getBannerWarningCount = (): number => {
+    const confirmationFields = [
+      ...(fields ?? []),
+      ...(transactionHook.pendingTransactionWarningField
+        ? [transactionHook.pendingTransactionWarningField]
+        : []),
+    ];
+    return EvmRiskWarningUtils.countFieldsWithActiveWarnings(
+      confirmationFields,
+    );
+  };
+
+  const bannerWarnings = getBannerWarnings();
+  const bannerWarningCount = getBannerWarningCount();
 
   return (
     <div
@@ -196,26 +219,20 @@ const ConfirmationPage = ({
           }}></div>
 
         {warningMessage && (
-          <div data-testid="warning-message" className="warning-message-panel">
-            {skipWarningTranslation
-              ? warningMessage
-              : chrome.i18n.getMessage(warningMessage, warningParams)}
-          </div>
+          <EvmRiskStaticAlert
+            message={warningMessage}
+            messageParams={warningParams}
+            skipTranslation={skipWarningTranslation}
+            dataTestId="warning-message"
+          />
         )}
 
-        {transactionHook.pendingTransactionWarningField && (
-          <Card>
-            <EvmRequestItem
-              field={transactionHook.pendingTransactionWarningField}
-              onWarningClicked={() =>
-                transactionHook.openSingleWarningPopup(
-                  -1,
-                  -1,
-                  transactionHook.pendingTransactionWarningField!.warnings![0],
-                )
-              }
-            />
-          </Card>
+        {bannerWarningCount > 0 && (
+          <EvmRiskAlertBanner
+            warnings={bannerWarnings}
+            warningCount={bannerWarningCount}
+            onReviewClick={() => transactionHook.openWarningsPopup()}
+          />
         )}
 
         {hasField && (
@@ -226,20 +243,23 @@ const ConfirmationPage = ({
                   {field.label && (
                     <div className="label">
                       {chrome.i18n.getMessage(field.label)}
+                      {field.warnings && field.warnings.length > 0 && (
+                        <ConfirmationFieldWarningIcon
+                          warnings={field.warnings}
+                          onClick={() =>
+                            transactionHook.openWarningsPopup({
+                              type: 'confirmation',
+                              index,
+                            })
+                          }
+                        />
+                      )}
                     </div>
                   )}
                   <div className={`value ${field.valueClassName ?? ''}`}>
                     {field.value}
                   </div>
                 </div>
-                {field.warnings && field.warnings.length > 0 && (
-                  <ConfirmationWarnings
-                    warnings={field.warnings}
-                    onWarningClicked={(warningIndex) =>
-                      handleOnWarningClicked(field, warningIndex, index)
-                    }
-                  />
-                )}
                 {index !== fields.length - 1 && (
                   <Separator
                     key={`separator-${field.label}`}

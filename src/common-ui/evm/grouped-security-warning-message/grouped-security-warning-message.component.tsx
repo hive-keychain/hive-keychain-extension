@@ -3,81 +3,111 @@ import {
   getGroupedSecurityDetailReasons,
   hasGroupedSecurityDetails,
 } from '@popup/evm/utils/evm-grouped-security-warning.utils';
-import React, { useState } from 'react';
+import React from 'react';
+import { EvmRiskWarningUtils } from 'src/common-ui/evm/evm-risk-warning/evm-risk-warning.utils';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+
+export type GroupedSecurityWarningVariant = 'tag' | 'panel';
 
 interface Props {
   warning: EvmTransactionWarning;
   onIconClick?: () => void;
   showLeadingIcon?: boolean;
-  defaultDetailsExpanded?: boolean;
+  variant?: GroupedSecurityWarningVariant;
 }
 
 export const GroupedSecurityWarningMessage = ({
   warning,
   onIconClick,
   showLeadingIcon = true,
-  defaultDetailsExpanded = false,
+  variant = 'tag',
 }: Props) => {
   const detailReasons = getGroupedSecurityDetailReasons(warning);
   const hasDetails = hasGroupedSecurityDetails(warning);
-  const [detailsExpanded, setDetailsExpanded] = useState(defaultDetailsExpanded);
+  const levelClass = EvmRiskWarningUtils.getLevelModifierClass(warning.level);
+  const severityLabel = chrome.i18n.getMessage(
+    EvmRiskWarningUtils.getSeverityLabelKey(warning.level),
+  );
+  const summaryMessage = chrome.i18n.getMessage(
+    warning.message,
+    warning.messageParams ?? [],
+  );
 
-  const toggleDetails = () => {
-    setDetailsExpanded((expanded) => !expanded);
-  };
+  if (variant === 'panel') {
+    const PanelWrapper = onIconClick ? 'button' : 'div';
+
+    return (
+      <PanelWrapper
+        type={onIconClick ? 'button' : undefined}
+        className={`evm-risk-warning-panel ${levelClass}${
+          onIconClick ? ' evm-risk-warning-panel--clickable' : ''
+        }${warning.ignored ? ' evm-risk-warning-panel--acknowledged' : ''}`}
+        onClick={onIconClick}>
+        <div className="evm-risk-warning-panel__header">
+          {showLeadingIcon && (
+            <SVGIcon
+              className="evm-risk-warning-panel__icon"
+              icon={
+                warning.ignored
+                  ? SVGIcons.GLOBAL_CHECK
+                  : EvmRiskWarningUtils.getWarningIcon(warning.level)
+              }
+            />
+          )}
+          <span className="evm-risk-warning-panel__level">{severityLabel}</span>
+        </div>
+        <div className="evm-risk-warning-panel__message">{summaryMessage}</div>
+        {hasDetails && (
+          <ul className="evm-risk-warning-panel__details">
+            {detailReasons.map((detail, index) => (
+              <li key={`${detail.message}-${index}`}>
+                {chrome.i18n.getMessage(
+                  detail.message,
+                  detail.messageParams ?? [],
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </PanelWrapper>
+    );
+  }
+
+  const TagWrapper = onIconClick ? 'button' : 'div';
 
   return (
-    <div className="grouped-security-warning">
-      <div className="grouped-security-warning__summary">
+    <div className="evm-risk-tag-group">
+      <TagWrapper
+        type={onIconClick ? 'button' : undefined}
+        className={`evm-risk-tag ${levelClass}${
+          onIconClick ? ' evm-risk-tag--clickable' : ''
+        }${warning.ignored ? ' evm-risk-tag--acknowledged' : ''}`}
+        onClick={onIconClick}>
         {showLeadingIcon && (
-          <>
-            {!warning.ignored && (
-              <SVGIcon
-                className={`warning-icon ${warning.level}`}
-                icon={SVGIcons.GLOBAL_WARNING}
-                onClick={onIconClick}
-              />
-            )}
-            {warning.ignored && (
-              <SVGIcon
-                className="warning-icon"
-                icon={SVGIcons.GLOBAL_CHECK}
-                onClick={onIconClick}
-              />
-            )}
-          </>
+          <SVGIcon
+            className="evm-risk-tag__icon"
+            icon={
+              warning.ignored
+                ? SVGIcons.GLOBAL_CHECK
+                : EvmRiskWarningUtils.getWarningIcon(warning.level)
+            }
+          />
         )}
-        <div className="grouped-security-warning__summary-text">
-          {chrome.i18n.getMessage(warning.message, warning.messageParams ?? [])}
-        </div>
-      </div>
+        <span className="evm-risk-tag__level">{severityLabel}</span>
+        <span className="evm-risk-tag__message">{summaryMessage}</span>
+      </TagWrapper>
       {hasDetails && (
-        <>
-          {!detailsExpanded && (
-            <button
-              type="button"
-              className="grouped-security-warning__toggle"
-              onClick={toggleDetails}>
-              {chrome.i18n.getMessage('evm_security_warning_show_details')}
-            </button>
-          )}
-          {detailsExpanded && (
-            <ul
-              className="grouped-security-warning__details"
-              onClick={toggleDetails}>
-              {detailReasons.map((detail, index) => (
-                <li key={`${detail.message}-${index}`}>
-                  {chrome.i18n.getMessage(
-                    detail.message,
-                    detail.messageParams ?? [],
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </>
+        <ul className="evm-risk-tag-group__details">
+          {detailReasons.map((detail, index) => (
+            <li key={`${detail.message}-${index}`}>
+              {chrome.i18n.getMessage(
+                detail.message,
+                detail.messageParams ?? [],
+              )}
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );

@@ -770,7 +770,7 @@ const getAddressWarning = async (
       extraData: {
         placeholder: 'evm_transaction_receiver_favorite_label',
         resolveAllLabel: address,
-        ...(ensName ? { ensName } : {}),
+        ...(ensName ? { ensName, defaultLabel: ensName } : {}),
       },
       onConfirm: (label: string) => {
         return EvmAddressesUtils.saveWalletAddress(chainId, address, label);
@@ -846,7 +846,10 @@ const getSmartContractWarningAndInfo = async (
       return warningAndInfo;
     }
 
-    const defaultLabel = usedToken?.name?.trim();
+    const defaultLabel =
+      usedToken?.type !== EVMSmartContractType.NATIVE
+        ? usedToken?.name?.trim()
+        : undefined;
 
     warningAndInfo.warnings?.push({
       ignored: false,
@@ -854,6 +857,7 @@ const getSmartContractWarningAndInfo = async (
       type: EvmTransactionWarningType.WHITELIST_ADDRESS,
       message: 'evm_transaction_contract_not_used',
       extraData: {
+        placeholder: 'evm_transaction_receiver_favorite_label',
         ...(defaultLabel ? { defaultLabel } : {}),
         resolveAllLabel: defaultLabel || address,
       },
