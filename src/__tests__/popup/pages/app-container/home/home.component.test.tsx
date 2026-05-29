@@ -131,7 +131,7 @@ describe('home.component tests:\n', () => {
     expect(rcHTMLElement).toHaveTextContent(resourceReadyInValue);
   });
 
-  it('Must show accounts in the account selector overlay without changing active account', async () => {
+  it('Must switch active account when selecting another account in the account selector overlay', async () => {
     await act(async () => {
       await userEvent.click(screen.getByTestId('account-selector-trigger'));
     });
@@ -147,8 +147,11 @@ describe('home.component tests:\n', () => {
     });
 
     expect(screen.getByTestId(dataTestIdDiv.selectedAccount)).toHaveTextContent(
-      mk.user.one,
+      mk.user.two,
     );
+    expect(
+      screen.queryByTestId('account-selector-backdrop'),
+    ).not.toBeInTheDocument();
   });
 
   it('Must refresh data when click on logo and show new estimated account value', async () => {

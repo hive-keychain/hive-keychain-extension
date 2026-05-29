@@ -111,6 +111,7 @@
       border: 1px solid var(--card-border);
       border-radius: 16px;
       background: var(--card-background);
+      cursor: pointer;
       transition: background 0.15s ease, border-color 0.15s ease,
         color 0.15s ease;
 

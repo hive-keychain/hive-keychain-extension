@@ -1,6 +1,17 @@
+import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
+import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
+import { setChain } from '@popup/multichain/actions/chain.actions';
+import {
+  Chain,
+  ChainType,
+  EvmChain,
+  HiveChain,
+} from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useState } from 'react';
 import {
   DragDropContext,
@@ -59,6 +70,38 @@ const buildAccountSelectorListItems = (
 const getAccountSelectorListItemId = (item: AccountSelectorListItem) =>
   item.id.replace(/[^a-zA-Z0-9-_]/g, '-');
 
+const isSameChain = (left: Chain, right: Chain) =>
+  left.chainId.toLowerCase() === right.chainId.toLowerCase();
+
+const resolveHiveChain = async (): Promise<HiveChain | undefined> => {
+  const setupHiveChains =
+    await ChainUtils.getAllSetupChainsForType<HiveChain>(ChainType.HIVE);
+  if (setupHiveChains[0]) {
+    return setupHiveChains[0];
+  }
+  const setupChains = await ChainUtils.getSetupChains(true);
+  return setupChains.find((chain) => chain.type === ChainType.HIVE) as
+    | HiveChain
+    | undefined;
+};
+
+const resolveEvmTargetChain = async (
+  currentChain: Chain,
+): Promise<EvmChain | undefined> => {
+  if (currentChain.type === ChainType.EVM) {
+    return currentChain as EvmChain;
+  }
+  return (
+    (await EvmChainUtils.getLastEvmChain()) ?? (await EvmChainUtils.getEthChain())
+  );
+};
+
+const stopListItemActionPropagation = (
+  event: React.MouseEvent<HTMLElement>,
+) => {
+  event.stopPropagation();
+};
+
 const AccountSelector = ({
   selectedAccountType,
   background,
@@ -68,6 +111,10 @@ const AccountSelector = ({
   evmAccounts,
   activeEvmAccountAddress,
   mk,
+  chain,
+  loadActiveAccount,
+  loadEvmActiveAccount,
+  setChain,
 }: PropsFromRedux & Props) => {
   const [isOpened, setIsOpened] = useState(false);
   const [accountListItems, setAccountListItems] = useState<
@@ -181,6 +228,41 @@ const AccountSelector = ({
     );
   };
 
+  const handleAccountListItemClick = async (item: AccountSelectorListItem) => {
+    if (isAccountListItemSelected(item)) {
+      setIsOpened(false);
+      return;
+    }
+
+    if (item.type === 'hive') {
+      const targetChain = await resolveHiveChain();
+      if (!targetChain) {
+        return;
+      }
+      if (!isSameChain(chain, targetChain)) {
+        await setChain(targetChain);
+      }
+      loadActiveAccount(item.account);
+      setIsOpened(false);
+      return;
+    }
+
+    const walletAddress = getEvmAccountAddress(item.account);
+    if (!walletAddress) {
+      return;
+    }
+
+    const targetChain = await resolveEvmTargetChain(chain);
+    if (!targetChain) {
+      return;
+    }
+    if (!isSameChain(chain, targetChain)) {
+      await setChain(targetChain);
+    }
+    loadEvmActiveAccount(targetChain, item.account.wallet);
+    setIsOpened(false);
+  };
+
   const renderAccountListItemActions = (
     item: AccountSelectorListItem,
     dragHandle?: DraggableProvidedDragHandleProps | null,
@@ -189,26 +271,32 @@ const AccountSelector = ({
     const selected = isAccountListItemSelected(item);
 
     return (
-      <div className="account-selector-list-item-actions">
+      <div
+        className="account-selector-list-item-actions"
+        onClick={stopListItemActionPropagation}>
         {selected && (
           <SVGIcon
             className="account-selector-list-action active-icon"
             dataTestId={`account-selector-selected-${itemId}`}
             icon={SVGIcons.SELECT_ACTIVE}
+            onClick={stopListItemActionPropagation}
           />
         )}
         <SVGIcon
           className="account-selector-list-action edit-icon"
           dataTestId={`account-selector-edit-${itemId}`}
           icon={SVGIcons.GLOBAL_EDIT}
-          onClick={() => {}}
+          onClick={stopListItemActionPropagation}
         />
         <SVGIcon
           className="account-selector-list-action copy-icon"
           dataTestId={`account-selector-copy-${itemId}`}
           icon={SVGIcons.SELECT_COPY}
+          onClick={stopListItemActionPropagation}
         />
-        {renderDragHandle(dragHandle)}
+        <span onClick={stopListItemActionPropagation}>
+          {renderDragHandle(dragHandle)}
+        </span>
       </div>
     );
   };
@@ -223,7 +311,8 @@ const AccountSelector = ({
       <div
         className="account-selector-list-item"
         data-testid={`account-selector-hive-account-${account.name}`}
-        key={`hive-${account.name}`}>
+        key={`hive-${account.name}`}
+        onClick={() => void handleAccountListItemClick(item)}>
         <PreloadedImage
           className="user-picture"
           src={`https://images.hive.blog/u/${account.name}/avatar`}
@@ -250,7 +339,8 @@ const AccountSelector = ({
       <div
         className="account-selector-list-item"
         data-testid={`account-selector-evm-account-${address}`}
-        key={`evm-${address}`}>
+        key={`evm-${address}`}
+        onClick={() => void handleAccountListItemClick(item)}>
         <EvmAccountImage address={address} />
         <div className="selected-account-name">
           <div className="seed-name">
@@ -389,10 +479,15 @@ const mapStateToProps = (state: RootState) => {
     activeHiveAccountName: state.hive.activeAccount.name,
     evmAccounts: state.evm.accounts.filter((account) => !account.hide),
     activeEvmAccountAddress,
+    chain: state.chain as Chain,
   };
 };
 
-const connector = connect(mapStateToProps, {});
+const connector = connect(mapStateToProps, {
+  loadActiveAccount,
+  loadEvmActiveAccount,
+  setChain,
+});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const AccountSelectorComponent = connector(AccountSelector);

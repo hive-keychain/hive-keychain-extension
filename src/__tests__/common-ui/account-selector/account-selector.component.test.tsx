@@ -1,7 +1,14 @@
 import '@testing-library/jest-dom';
-import { act, cleanup, screen, within } from '@testing-library/react';
+import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
+import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import {
+  ChainType,
+  EvmChain,
+  HiveChain,
+} from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { localAccounts } from 'src/__tests__/utils-for-testing/data/local-accounts';
 import mkData from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
@@ -23,6 +30,28 @@ jest.mock(
     },
   }),
 );
+
+const mockLoadEvmActiveAccount = jest.fn();
+
+jest.mock('@popup/evm/utils/evm-rpc.utils', () => ({
+  EvmRpcUtils: {
+    setActiveRpc: jest.fn().mockResolvedValue(undefined),
+    getActiveRpc: jest.fn().mockResolvedValue({ url: 'http://localhost:8545' }),
+  },
+}));
+
+jest.mock('@popup/evm/actions/active-account.actions', () => {
+  const actual = jest.requireActual(
+    '@popup/evm/actions/active-account.actions',
+  );
+  return {
+    ...actual,
+    loadEvmActiveAccount: jest.fn((chain: unknown, wallet: unknown) => {
+      mockLoadEvmActiveAccount(chain, wallet);
+      return () => async () => {};
+    }),
+  };
+});
 
 jest.mock('react-beautiful-dnd', () => ({
   DragDropContext: ({ children, onDragEnd }: any) => {
@@ -56,6 +85,24 @@ jest.mock('react-beautiful-dnd', () => ({
     }),
 }));
 
+const hiveChain = {
+  name: 'HIVE',
+  type: ChainType.HIVE,
+  chainId:
+    'beeab0de00000000000000000000000000000000000000000000000000000000',
+  logo: '',
+  rpcs: [],
+} as HiveChain;
+
+const evmChain = {
+  name: 'Ethereum',
+  type: ChainType.EVM,
+  chainId: '0x1',
+  logo: '',
+  rpcs: [],
+  mainToken: 'ETH',
+} as EvmChain;
+
 const firstEvmAddress = '0x1234567890123456789012345678901234567890';
 const secondEvmAddress = '0x2234567890123456789012345678901234567890';
 const hiddenEvmAddress = '0x3234567890123456789012345678901234567890';
@@ -79,12 +126,18 @@ const createEvmAccount = (
 const buildState = (
   hiveAccounts = [localAccounts.user1, localAccounts.user2],
   mk = mkData.user.one,
+  chain: HiveChain | EvmChain = hiveChain,
 ) => ({
   ...initialEmptyStateStore,
   mk,
+  chain,
   hive: {
     ...initialEmptyStateStore.hive,
     accounts: hiveAccounts,
+    activeRpc: {
+      uri: 'https://api.hive.blog',
+      testnet: false,
+    },
     activeAccount: {
       ...initialEmptyStateStore.hive.activeAccount,
       name: userData.one.username,
@@ -117,6 +170,16 @@ const getAccountSelectorRowTestIds = () =>
 describe('AccountSelectorComponent', () => {
   beforeEach(() => {
     chrome.i18n.getMessage = jest.fn((key: string) => key);
+    jest
+      .spyOn(ChainUtils, 'getAllSetupChainsForType')
+      .mockResolvedValue([hiveChain]);
+    jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([hiveChain]);
+    jest.spyOn(EvmChainUtils, 'getLastEvmChain').mockResolvedValue(evmChain);
+    jest.spyOn(EvmChainUtils, 'getEthChain').mockResolvedValue(evmChain);
+    AccountUtils.getExtendedAccount = jest
+      .fn()
+      .mockImplementation(async (name: string) => ({ name }));
+    AccountUtils.getRCMana = jest.fn().mockResolvedValue({});
   });
 
   afterEach(() => {
@@ -241,14 +304,13 @@ describe('AccountSelectorComponent', () => {
     );
   });
 
-  it('does not dispatch an account change when clicking a list row', async () => {
+  it('switches the active Hive account when clicking another Hive account on Hive chain', async () => {
     const { store } = customRender(
       <AccountSelectorComponent selectedAccountType="hive" />,
       {
         initialState: buildState(),
       },
     );
-    const dispatchSpy = jest.spyOn(store, 'dispatch');
 
     await userEvent.click(screen.getByTestId('account-selector-trigger'));
     await userEvent.click(
@@ -257,10 +319,66 @@ describe('AccountSelectorComponent', () => {
       ),
     );
 
-    expect(dispatchSpy).not.toHaveBeenCalled();
-    expect(screen.getByTestId('selected-account-name')).toHaveTextContent(
-      userData.one.username,
+    await waitFor(() => {
+      expect(store.getState().hive.activeAccount.name).toBe(
+        userData.two.username,
+      );
+    });
+    expect(store.getState().chain.chainId).toBe(hiveChain.chainId);
+    expect(
+      screen.queryByTestId('account-selector-backdrop'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('switches chain and EVM account when clicking an EVM account from Hive chain', async () => {
+    mockLoadEvmActiveAccount.mockClear();
+    const { store } = customRender(
+      <AccountSelectorComponent selectedAccountType="hive" />,
+      {
+        initialState: buildState(),
+      },
     );
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+    await userEvent.click(
+      screen.getByTestId(`account-selector-evm-account-${secondEvmAddress}`),
+    );
+
+    await waitFor(() => {
+      expect(store.getState().chain.type).toBe(ChainType.EVM);
+    });
+    expect(mockLoadEvmActiveAccount).toHaveBeenCalledWith(
+      evmChain,
+      expect.objectContaining({
+        address: secondEvmAddress,
+      }),
+    );
+    expect(
+      screen.queryByTestId('account-selector-backdrop'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('closes the overlay without changing account when clicking the already selected account', async () => {
+    mockLoadEvmActiveAccount.mockClear();
+    const { store } = customRender(
+      <AccountSelectorComponent selectedAccountType="hive" />,
+      {
+        initialState: buildState(),
+      },
+    );
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+    await userEvent.click(
+      screen.getByTestId(
+        `account-selector-hive-account-${userData.one.username}`,
+      ),
+    );
+
+    expect(store.getState().hive.activeAccount.name).toBe(userData.one.username);
+    expect(mockLoadEvmActiveAccount).not.toHaveBeenCalled();
+    expect(
+      screen.queryByTestId('account-selector-backdrop'),
+    ).not.toBeInTheDocument();
   });
 
   it('refreshes Hive accounts when reopening the account list', async () => {
