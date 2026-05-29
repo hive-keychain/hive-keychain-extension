@@ -352,27 +352,24 @@ const AccountSelector = ({
     );
   };
 
+  const getAccountListItemClassName = (item: AccountSelectorListItem) => {
+    const classNames = ['account-selector-list-item'];
+    if (isAccountListItemSelected(item)) {
+      classNames.push('account-selector-list-item--selected');
+    }
+    return classNames.join(' ');
+  };
+
   const renderAccountListItemActions = (
     item: AccountSelectorListItem,
     dragHandle?: DraggableProvidedDragHandleProps | null,
   ) => {
     const itemId = getAccountSelectorListItemId(item);
-    const selected = isAccountListItemSelected(item);
 
     return (
       <div
         className="account-selector-list-item-actions"
         onClick={stopListItemActionPropagation}>
-        <span className="account-selector-list-action active-icon-slot">
-          {selected && (
-            <SVGIcon
-              className="account-selector-list-action active-icon"
-              dataTestId={`account-selector-selected-${itemId}`}
-              icon={SVGIcons.SELECT_ACTIVE}
-              onClick={stopListItemActionPropagation}
-            />
-          )}
-        </span>
         <SVGIcon
           className="account-selector-list-action manage-icon"
           dataTestId={`account-selector-manage-${itemId}`}
@@ -413,7 +410,7 @@ const AccountSelector = ({
 
     return (
       <div
-        className="account-selector-list-item"
+        className={getAccountListItemClassName(item)}
         data-testid={`account-selector-hive-account-${account.name}`}
         key={`hive-${account.name}`}
         onClick={() => void handleAccountListItemClick(item)}>
@@ -444,7 +441,7 @@ const AccountSelector = ({
 
     return (
       <div
-        className="account-selector-list-item"
+        className={getAccountListItemClassName(item)}
         data-testid={`account-selector-evm-account-${address}`}
         key={`evm-${address}`}
         onClick={() => void handleAccountListItemClick(item)}>

@@ -114,6 +114,28 @@
       }
     }
 
+    @mixin account-selector-list-item-highlighted {
+      background: $red;
+      border-color: $red;
+
+      .account-selector-list-item-label,
+      .selected-account-name {
+        color: white;
+      }
+
+      .selected-account-name {
+        .seed-name,
+        .address {
+          opacity: 1;
+        }
+      }
+
+      .account-selector-list-action {
+        color: white;
+        opacity: 1;
+      }
+    }
+
     .account-selector-list-item {
       display: flex;
       align-items: center;
@@ -160,7 +182,6 @@
         flex-shrink: 0;
         margin-left: auto;
         justify-content: flex-end;
-        min-width: 108px;
       }
 
       .account-selector-list-item-chains {
@@ -199,12 +220,11 @@
       }
 
       .account-selector-list-item-actions {
-        display: flex;
+        display: none;
         align-items: center;
         column-gap: 8px;
         flex-shrink: 0;
         justify-content: flex-end;
-        min-width: 20px;
       }
 
       .account-selector-list-action {
@@ -215,10 +235,6 @@
         justify-content: center;
         flex-shrink: 0;
         opacity: 0.7;
-
-        &.active-icon-slot {
-          opacity: 1;
-        }
 
         &.copy-icon,
         &.drag-handle,
@@ -235,16 +251,10 @@
           }
         }
 
-        &.active-icon,
         &.copy-icon,
         &.manage-icon,
         .drag-icon {
           @include icon-size(20px);
-        }
-
-        &.active-icon {
-          color: $red;
-          opacity: 1;
         }
 
         &.manage-icon {
@@ -252,37 +262,25 @@
         }
       }
 
+      &--selected {
+        @include account-selector-list-item-highlighted;
+
+        .account-selector-list-item-chains--stacked {
+          .account-selector-list-item-chain-logo {
+            border-color: $red;
+          }
+        }
+      }
+
       &:hover {
-        background: $red;
-        border-color: $red;
+        @include account-selector-list-item-highlighted;
 
         .account-selector-list-item-chains {
           display: none;
         }
 
-        .account-selector-list-item-label,
-        .selected-account-name {
-          color: white;
-        }
-
-        .selected-account-name {
-          .seed-name,
-          .address {
-            opacity: 1;
-          }
-        }
-
-        .account-selector-list-action {
-          color: white;
-          opacity: 1;
-        }
-
-        .account-selector-list-action.active-icon {
-          display: none;
-        }
-
-        .account-selector-list-action.active-icon-slot {
-          display: none;
+        .account-selector-list-item-actions {
+          display: flex;
         }
 
         .account-selector-list-action.copy-icon,

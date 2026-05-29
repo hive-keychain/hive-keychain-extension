@@ -303,12 +303,10 @@ describe('AccountSelectorComponent', () => {
       ),
     ).toBeInTheDocument();
     expect(
-      within(
-        screen.getByTestId(
-          `account-selector-hive-account-${userData.one.username}`,
-        ),
-      ).getByTestId(/^account-selector-selected-/),
-    ).toBeInTheDocument();
+      screen.getByTestId(
+        `account-selector-hive-account-${userData.one.username}`,
+      ),
+    ).toHaveClass('account-selector-list-item--selected');
     expect(
       within(
         screen.getByTestId(
@@ -329,12 +327,10 @@ describe('AccountSelectorComponent', () => {
       ),
     ).toBeInTheDocument();
     expect(
-      within(
-        screen.getByTestId(
-          `account-selector-hive-account-${userData.two.username}`,
-        ),
-      ).queryByTestId(/^account-selector-selected-/),
-    ).not.toBeInTheDocument();
+      screen.getByTestId(
+        `account-selector-hive-account-${userData.two.username}`,
+      ),
+    ).not.toHaveClass('account-selector-list-item--selected');
     expect(
       screen.getByTestId(`account-selector-evm-account-${firstEvmAddress}`),
     ).toHaveTextContent('Main seed');
@@ -355,10 +351,8 @@ describe('AccountSelectorComponent', () => {
       ).getByTestId(/^account-selector-copy-/),
     ).toBeInTheDocument();
     expect(
-      within(
-        screen.getByTestId(`account-selector-evm-account-${firstEvmAddress}`),
-      ).queryByTestId(/^account-selector-selected-/),
-    ).not.toBeInTheDocument();
+      screen.getByTestId(`account-selector-evm-account-${firstEvmAddress}`),
+    ).not.toHaveClass('account-selector-list-item--selected');
     expect(
       screen.getByTestId(`account-selector-evm-account-${secondEvmAddress}`),
     ).toHaveTextContent('Main seed');
