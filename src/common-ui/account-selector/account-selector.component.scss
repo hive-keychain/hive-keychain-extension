@@ -111,6 +111,8 @@
       border: 1px solid var(--card-border);
       border-radius: 16px;
       background: var(--card-background);
+      transition: background 0.15s ease, border-color 0.15s ease,
+        color 0.15s ease;
 
       .user-picture {
         @include icon-size(32px);
@@ -139,17 +141,27 @@
         align-items: center;
         column-gap: 8px;
         flex-shrink: 0;
+        justify-content: flex-end;
+        width: 76px;
       }
 
       .account-selector-list-action {
         @include icon-size(20px);
         color: var(--main-font-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
         flex-shrink: 0;
         opacity: 0.7;
 
         &.edit-icon {
           cursor: pointer;
-          opacity: 0;
+        }
+
+        &.copy-icon,
+        &.drag-handle,
+        &.edit-icon {
+          display: none;
           pointer-events: none;
         }
 
@@ -162,15 +174,56 @@
         }
 
         &.active-icon,
+        &.copy-icon,
         &.edit-icon,
         .drag-icon {
           @include icon-size(20px);
         }
+
+        &.active-icon {
+          color: $red;
+          opacity: 1;
+        }
+
+        &.edit-icon {
+          svg {
+            path,
+            rect {
+              stroke: currentColor;
+            }
+          }
+        }
       }
 
       &:hover {
+        background: $red;
+        border-color: $red;
+
+        .account-selector-list-item-label,
+        .selected-account-name {
+          color: white;
+        }
+
+        .selected-account-name {
+          .seed-name,
+          .address {
+            opacity: 1;
+          }
+        }
+
+        .account-selector-list-action {
+          color: white;
+          opacity: 1;
+        }
+
+        .account-selector-list-action.active-icon {
+          display: none;
+        }
+
+        .account-selector-list-action.copy-icon,
+        .account-selector-list-action.drag-handle,
         .account-selector-list-action.edit-icon {
-          opacity: 0.7;
+          display: flex;
           pointer-events: auto;
         }
       }

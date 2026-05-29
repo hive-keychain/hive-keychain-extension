@@ -15,6 +15,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
 import FormatUtils from 'src/utils/format.utils';
 
 interface Props {
@@ -66,6 +67,7 @@ const AccountSelector = ({
   activeHiveAccountName,
   evmAccounts,
   activeEvmAccountAddress,
+  mk,
 }: PropsFromRedux & Props) => {
   const [isOpened, setIsOpened] = useState(false);
   const [accountListItems, setAccountListItems] = useState<
@@ -86,6 +88,24 @@ const AccountSelector = ({
       buildAccountSelectorListItems(hiveAccounts, evmAccounts),
     );
   }, [hiveAccounts, evmAccounts]);
+
+  const openAccountSelector = async () => {
+    let selectableHiveAccounts = hiveAccounts;
+
+    if (!hiveAccounts.length && mk) {
+      const storedHiveAccounts =
+        await AccountUtils.getAccountsFromLocalStorage(mk);
+
+      if (storedHiveAccounts?.length) {
+        selectableHiveAccounts = storedHiveAccounts;
+      }
+    }
+
+    setAccountListItems(
+      buildAccountSelectorListItems(selectableHiveAccounts, evmAccounts),
+    );
+    setIsOpened(true);
+  };
 
   const renderHiveSelectedAccount = () => {
     if (!selectedHiveAccount) {
@@ -127,9 +147,7 @@ const AccountSelector = ({
           <div className="address-name">
             {EvmAccountUtils.getAccountName(selectedEvmAccount)}
           </div>
-          <div className="address">
-            {FormatUtils.shortenString(address, 4)}
-          </div>
+          <div className="address">{FormatUtils.shortenString(address, 4)}</div>
         </div>
       </>
     );
@@ -183,6 +201,12 @@ const AccountSelector = ({
           className="account-selector-list-action edit-icon"
           dataTestId={`account-selector-edit-${itemId}`}
           icon={SVGIcons.GLOBAL_EDIT}
+          onClick={() => {}}
+        />
+        <SVGIcon
+          className="account-selector-list-action copy-icon"
+          dataTestId={`account-selector-copy-${itemId}`}
+          icon={SVGIcons.SELECT_COPY}
         />
         {renderDragHandle(dragHandle)}
       </div>
@@ -235,9 +259,7 @@ const AccountSelector = ({
           <div className="address-name">
             {EvmAccountUtils.getAccountName(account) ?? 'No name'}
           </div>
-          <div className="address">
-            {FormatUtils.shortenString(address, 4)}
-          </div>
+          <div className="address">{FormatUtils.shortenString(address, 4)}</div>
         </div>
         {renderAccountListItemActions(item, dragHandle)}
       </div>
@@ -253,7 +275,10 @@ const AccountSelector = ({
       : renderEvmAccount(item, dragHandle);
 
   const onDragEnd = (result: DropResult) => {
-    if (!result.destination || result.destination.index === result.source.index) {
+    if (
+      !result.destination ||
+      result.destination.index === result.source.index
+    ) {
       return;
     }
 
@@ -287,7 +312,7 @@ const AccountSelector = ({
           removeBorder ? 'remove-border' : ''
         }`}
         data-testid="account-selector-trigger"
-        onClick={() => setIsOpened(true)}>
+        onClick={openAccountSelector}>
         {renderSelectedAccount()}
       </div>
       {isOpened && (
@@ -359,6 +384,7 @@ const mapStateToProps = (state: RootState) => {
     state.evm.activeAccount.wallet?.address ?? state.evm.activeAccount.address;
 
   return {
+    mk: state.mk,
     hiveAccounts: state.hive.accounts,
     activeHiveAccountName: state.hive.activeAccount.name,
     evmAccounts: state.evm.accounts.filter((account) => !account.hide),
@@ -366,7 +392,7 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const connector = connect(mapStateToProps);
+const connector = connect(mapStateToProps, {});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const AccountSelectorComponent = connector(AccountSelector);

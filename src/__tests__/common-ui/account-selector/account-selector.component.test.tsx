@@ -1,13 +1,16 @@
 import '@testing-library/jest-dom';
-import { cleanup, screen, within } from '@testing-library/react';
+import { act, cleanup, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { localAccounts } from 'src/__tests__/utils-for-testing/data/local-accounts';
+import mkData from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 import { AccountSelectorComponent } from 'src/common-ui/account-selector/account-selector.component';
 import { EvmAccountSource } from 'src/popup/evm/interfaces/wallet.interface';
+import { setAccounts } from 'src/popup/hive/actions/account.actions';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
 
 jest.mock(
   'src/common-ui/evm/evm-account-image/evm-account-image.component',
@@ -73,11 +76,15 @@ const createEvmAccount = (
   hide,
 });
 
-const buildState = () => ({
+const buildState = (
+  hiveAccounts = [localAccounts.user1, localAccounts.user2],
+  mk = mkData.user.one,
+) => ({
   ...initialEmptyStateStore,
+  mk,
   hive: {
     ...initialEmptyStateStore.hive,
-    accounts: [localAccounts.user1, localAccounts.user2],
+    accounts: hiveAccounts,
     activeAccount: {
       ...initialEmptyStateStore.hive.activeAccount,
       name: userData.one.username,
@@ -114,6 +121,7 @@ describe('AccountSelectorComponent', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+    jest.restoreAllMocks();
     cleanup();
   });
 
@@ -173,6 +181,13 @@ describe('AccountSelectorComponent', () => {
       ).getByTestId(/^account-selector-edit-/),
     ).toBeInTheDocument();
     expect(
+      within(
+        screen.getByTestId(
+          `account-selector-hive-account-${userData.one.username}`,
+        ),
+      ).getByTestId(/^account-selector-copy-/),
+    ).toBeInTheDocument();
+    expect(
       screen.getByTestId(
         `account-selector-hive-account-${userData.two.username}`,
       ),
@@ -197,6 +212,11 @@ describe('AccountSelectorComponent', () => {
       within(
         screen.getByTestId(`account-selector-evm-account-${firstEvmAddress}`),
       ).getByTestId(/^account-selector-edit-/),
+    ).toBeInTheDocument();
+    expect(
+      within(
+        screen.getByTestId(`account-selector-evm-account-${firstEvmAddress}`),
+      ).getByTestId(/^account-selector-copy-/),
     ).toBeInTheDocument();
     expect(
       within(
@@ -240,6 +260,69 @@ describe('AccountSelectorComponent', () => {
     expect(dispatchSpy).not.toHaveBeenCalled();
     expect(screen.getByTestId('selected-account-name')).toHaveTextContent(
       userData.one.username,
+    );
+  });
+
+  it('refreshes Hive accounts when reopening the account list', async () => {
+    const { store } = customRender(
+      <AccountSelectorComponent selectedAccountType="evm" />,
+      {
+        initialState: buildState([], mkData.empty),
+      },
+    );
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+    expect(
+      screen.queryByTestId(
+        `account-selector-hive-account-${userData.one.username}`,
+      ),
+    ).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByTestId('account-selector-backdrop'));
+
+    act(() => {
+      store.dispatch(
+        setAccounts([localAccounts.user1, localAccounts.user2]) as any,
+      );
+    });
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+
+    expect(
+      screen.getByTestId(
+        `account-selector-hive-account-${userData.one.username}`,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId(
+        `account-selector-hive-account-${userData.two.username}`,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('loads Hive accounts from storage when opening the account list without Hive accounts in state', async () => {
+    const getAccountsFromLocalStorageSpy = jest
+      .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
+      .mockResolvedValue([localAccounts.user1, localAccounts.user2]);
+
+    customRender(<AccountSelectorComponent selectedAccountType="evm" />, {
+      initialState: buildState([]),
+    });
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+
+    expect(
+      await screen.findByTestId(
+        `account-selector-hive-account-${userData.one.username}`,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId(
+        `account-selector-hive-account-${userData.two.username}`,
+      ),
+    ).toBeInTheDocument();
+    expect(getAccountsFromLocalStorageSpy).toHaveBeenCalledWith(
+      mkData.user.one,
     );
   });
 
