@@ -12,12 +12,14 @@ export type SendTransactionHookApi = Pick<
   useTransactionHook,
   | 'setLoading'
   | 'setReady'
+  | 'setSecurityCheckPending'
   | 'setFields'
   | 'buildInitialDomainField'
   | 'getWalletAddressInput'
   | 'initPendingTransactionWarning'
   | 'setUnableToReachBackend'
   | 'hydrateDomainFieldWarnings'
+  | 'setErrorMessage'
 >;
 
 export interface SendTransactionInitSetters {

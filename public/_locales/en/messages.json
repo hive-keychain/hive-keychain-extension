@@ -5271,6 +5271,10 @@
     "message": "To",
     "description": "Evm transaction operation field to"
   },
+  "evm_operation_spender": {
+    "message": "Spender",
+    "description": "Evm transaction operation field spender (ERC-20 approve)"
+  },
   "evm_operation_from": {
     "message": "From",
     "description": "Evm transaction operation field from"

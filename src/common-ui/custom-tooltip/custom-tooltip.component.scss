@@ -8,6 +8,17 @@ $tooltip-arrow-size: 6px;
 .tooltip-container {
   display: inline-block;
   position: relative;
+
+  &.tooltip-portal {
+    display: block;
+    position: static;
+    pointer-events: none;
+
+    .tooltip {
+      pointer-events: auto;
+      z-index: 10000;
+    }
+  }
   .tooltip {
     --tooltip-arrow-offset-x: calc(50% - 6px);
     --tooltip-arrow-offset-y: calc(50% - 6px);

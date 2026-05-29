@@ -130,6 +130,8 @@ describe('send-transaction proxy tests:\n', () => {
     setFields: jest.fn(),
     setLoading: jest.fn(),
     setReady: jest.fn(),
+    securityCheckPending: false,
+    setSecurityCheckPending: jest.fn(),
     setSelectedFee: jest.fn(),
     setUnableToReachBackend: jest.fn(),
   };
@@ -182,6 +184,7 @@ describe('send-transaction proxy tests:\n', () => {
     transactionHook.fields = undefined;
     transactionHook.loading = false;
     transactionHook.ready = false;
+    transactionHook.securityCheckPending = false;
     transactionHook.selectedFee = undefined;
     transactionHook.hasWarning.mockReturnValue(false);
     (useTransactionHook as jest.Mock).mockReturnValue(transactionHook);
@@ -251,6 +254,98 @@ describe('send-transaction proxy tests:\n', () => {
       signature: 'approve()',
       value: 0,
     });
+  });
+
+  it('renders base transaction fields before contract enrichment resolves', async () => {
+    const contractDeferred = createDeferred<any>();
+    jest.spyOn(EvmLightNodeUtils, 'getContract').mockReturnValue(
+      contractDeferred.promise,
+    );
+
+    render(
+      <SendTransaction
+        accounts={[
+          {
+            wallet: {
+              address: '0x00000000000000000000000000000000000000ff',
+              mnemonic: { phrase: 'test phrase' },
+            },
+          } as any,
+        ]}
+        afterCancel={jest.fn()}
+        data={{ dappInfo: { domain: 'app.example' }, tab: 1 } as any}
+        request={
+          {
+            chainId: '1',
+            params: [
+              {
+                data: '0x095ea7b3',
+                from: '0x00000000000000000000000000000000000000ff',
+                gasLimit: 21000,
+                maxFeePerGas: '1',
+                maxPriorityFeePerGas: '1',
+                to: proxyAddress,
+                type: EvmTransactionType.EIP_1559,
+                value: '0',
+              },
+            ],
+            request_id: 1,
+          } as any
+        }
+      />,
+    );
+
+    await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
+
+    const firstFields = transactionHook.setFields.mock.calls[0][0];
+    expect(firstFields.operationName).toBe(
+      'dialog_evm_decrypt_send_transaction_title',
+    );
+    expect(firstFields.otherFields.map((field: any) => field.name)).toEqual([
+      'evm_chain',
+      'dialog_evm_domain',
+      'dialog_account',
+      'evm_operation_smart_contract_address',
+      'evm_transaction_data',
+    ]);
+    expect(transactionHook.setLoading).toHaveBeenCalledWith(false);
+    expect(transactionHook.setSecurityCheckPending).toHaveBeenCalledWith(true);
+
+    await act(async () => {
+      contractDeferred.resolve({
+        abi: [{ inputs: [], name: 'approve', outputs: [], type: 'function' }],
+      });
+      await Promise.resolve();
+    });
+    await waitFor(() =>
+      expect(transactionHook.setSecurityCheckPending).toHaveBeenCalledWith(
+        false,
+      ),
+    );
+  });
+
+  it('blocks confirm while transaction security checks are pending', async () => {
+    transactionHook.fields = {
+      operationName: 'evm_operation_transfer',
+    } as any;
+    transactionHook.ready = true;
+    transactionHook.securityCheckPending = true;
+
+    render(<SendTransaction {...buildSendTransactionProps()} />);
+
+    await waitFor(() => expect(mockGasFeePanel).toHaveBeenCalled());
+    act(() => {
+      mockGasFeePanel.mock.calls[mockGasFeePanel.mock.calls.length - 1][0]
+        .onInitialEstimationComplete();
+    });
+
+    await waitFor(() =>
+      expect((screen.getByTestId('dialog-confirm') as HTMLButtonElement).disabled)
+        .toBe(true),
+    );
+
+    fireEvent.click(screen.getByTestId('dialog-confirm'));
+    expect(transactionHook.handleOnConfirmClick).not.toHaveBeenCalled();
   });
 
   it('keeps the proxy address as the main contract field and shows the proxy target as info', async () => {
@@ -1066,11 +1161,13 @@ describe('send-transaction proxy tests:\n', () => {
     );
     await waitFor(() => expect(screen.getByTestId('balance-card')).toBeTruthy());
 
-    const fields = lastSetFieldsPayload();
-    const amountField = fields.otherFields.find(
-      (field: any) => field.name === 'amount',
-    );
-    expect(amountField.value).toBe('1,000  USDC');
+    await waitFor(() => {
+      const fields = lastSetFieldsPayload();
+      const amountField = fields.otherFields.find(
+        (field: any) => field.name === 'evm_operation_amount',
+      );
+      expect(amountField.value).toBe('1,000  USDC');
+    });
   });
 
   it('formats decoded NFT request addresses with the copyable address component', async () => {
@@ -1283,25 +1380,27 @@ describe('send-transaction proxy tests:\n', () => {
 
     await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
 
-    const fields = lastSetFieldsPayload();
+    await waitFor(() => {
+      const fields = lastSetFieldsPayload();
 
-    const decodedArgumentFields = fields.otherFields.filter(
-      (field: any) =>
-        ![
-          'evm_chain',
-          'dialog_evm_domain',
-          'evm_operation_smart_contract_address',
-          'dialog_account',
-        ].includes(field.name),
-    );
+      const decodedArgumentFields = fields.otherFields.filter(
+        (field: any) =>
+          ![
+            'evm_chain',
+            'dialog_evm_domain',
+            'evm_operation_smart_contract_address',
+            'dialog_account',
+          ].includes(field.name),
+      );
 
-    expect(decodedArgumentFields.map((field: any) => field.name)).toEqual([
-      'evm_operation_to',
-      'evm_nft_token_id',
-    ]);
-    expect(decodedArgumentFields[0].value.type).toBe(EvmAddressComponent);
-    expect(decodedArgumentFields[0].value.props.address).toBe(approvedAddress);
-    expect(decodedArgumentFields[1].value).toBe(tokenId.toString());
+      expect(decodedArgumentFields.map((field: any) => field.name)).toEqual([
+        'evm_operation_to',
+        'evm_nft_token_id',
+      ]);
+      expect(decodedArgumentFields[0].value.type).toBe(EvmAddressComponent);
+      expect(decodedArgumentFields[0].value.props.address).toBe(approvedAddress);
+      expect(decodedArgumentFields[1].value).toBe(tokenId.toString());
+    });
   });
 
   it('labels NFT setApprovalForAll boolean as Approve All', async () => {

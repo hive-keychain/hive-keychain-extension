@@ -4,7 +4,6 @@ import {
   EvmTransactionWarningType,
   TransactionConfirmationField,
 } from '@popup/evm/interfaces/evm-transactions.interface';
-import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import React, { Fragment } from 'react';
 import ButtonComponent, {
   ButtonType,
@@ -29,7 +28,8 @@ interface Props {
 export const EvmMultipleWarningsPopup = ({ warningHook }: Props) => {
   const activeWarnings = warningHook.getPopupNotIgnoredWarnings();
   const highestLevel =
-    EvmTransactionParserUtils.getHighestWarningLevel(activeWarnings);
+    EvmRiskWarningUtils.getHighestLevelFromWarnings(activeWarnings) ??
+    EvmTransactionWarningLevel.LOW;
   const levelClass = EvmRiskWarningUtils.getLevelModifierClass(highestLevel);
 
   const fieldWarningTemplate = (

@@ -28,6 +28,10 @@ import { v4 } from 'uuid';
 
 // const ENS_EXPIRATION_TIME = 60000;
 
+export type EvmTransferRecipientValidationResult =
+  | { valid: true; address: string }
+  | { valid: false; messageKey: string; messageParams?: string[] };
+
 export interface SavedEns {
   ens?: string;
   address: string;
@@ -650,6 +654,108 @@ const getAddressLabel = async (address: string, chainId: string) => {
   return whitelistedItem?.label;
 };
 
+/**
+ * Short label for addresses embedded in warning copy: whitelist nickname, wallet
+ * nickname/name, then standard `0xabc...def12` shortening.
+ */
+const getAddressDisplayForWarning = async (
+  address: string,
+  chainId: string,
+  localAccounts: EvmAccountOrPublic[] = [],
+): Promise<string> => {
+  if (!ethers.isAddress(address)) {
+    return address;
+  }
+
+  const whitelistLabel = await getAddressLabel(address, chainId);
+  if (whitelistLabel?.trim()) {
+    return whitelistLabel.trim();
+  }
+
+  const walletLocalAccounts = localAccounts.filter(
+    (account): account is EvmAccount => 'wallet' in account && !!account.wallet,
+  );
+  const accountsToSearch =
+    walletLocalAccounts.length > 0
+      ? walletLocalAccounts
+      : await resolveLocalAccounts();
+  const matchingLocalAccount = accountsToSearch.find(
+    (account) =>
+      EvmAccountUtils.getEvmAccountAddress(account).toLowerCase() ===
+      address.toLowerCase(),
+  );
+
+  if (matchingLocalAccount) {
+    if (matchingLocalAccount.nickname?.trim()) {
+      return matchingLocalAccount.nickname.trim();
+    }
+    return EvmAccountUtils.getAccountName(matchingLocalAccount);
+  }
+
+  return EvmFormatUtils.formatAddress(address);
+};
+
+const resolveTransferRecipientAddress = async (
+  recipient: string,
+): Promise<string | null> => {
+  const trimmed = recipient.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  try {
+    return ethers.getAddress(trimmed);
+  } catch {
+    const ensResolved = await EvmRequestsUtils.resolveEns(trimmed);
+    if (!ensResolved) {
+      return null;
+    }
+    try {
+      return ethers.getAddress(ensResolved);
+    } catch {
+      return null;
+    }
+  }
+};
+
+const validateTransferRecipient = async (
+  recipient: string,
+  chainId: string,
+  localAccounts: EvmAccountOrPublic[] = [],
+): Promise<EvmTransferRecipientValidationResult> => {
+  const trimmed = recipient.trim();
+  if (!trimmed) {
+    return { valid: false, messageKey: 'evm_contact_address_invalid' };
+  }
+
+  const resolvedAddress = await resolveTransferRecipientAddress(trimmed);
+  if (!resolvedAddress) {
+    return {
+      valid: false,
+      messageKey: trimmed.includes('.')
+        ? 'evm_ens_recipient_not_existing'
+        : 'evm_contact_address_invalid',
+    };
+  }
+
+  const spoofing = await isPotentialSpoofing(resolvedAddress, localAccounts);
+  if (spoofing) {
+    return {
+      valid: false,
+      messageKey: spoofing.errorMessage,
+      messageParams: [
+        await getAddressDisplayForWarning(
+          spoofing.address,
+          chainId,
+          localAccounts,
+        ),
+      ],
+    };
+  }
+
+  return { valid: true, address: ethers.getAddress(resolvedAddress) };
+};
+
 const isPotentialSpoofing = async (
   address: string,
   localAccounts?: EvmAccountOrPublic[],
@@ -843,6 +949,9 @@ export const EvmAddressesUtils = {
   saveDomainAddress,
   isWhitelisted,
   getAddressLabel,
+  getAddressDisplayForWarning,
+  resolveTransferRecipientAddress,
+  validateTransferRecipient,
   isPotentialSpoofing,
   getAddressDetails,
   getFallbackAddressDetails,

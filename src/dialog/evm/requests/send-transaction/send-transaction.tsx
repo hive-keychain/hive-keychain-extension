@@ -47,8 +47,7 @@ export const SendTransaction = (props: Props) => {
   } = useSendTransaction(request, data, accounts, { isActive, activationKey });
 
   const needsGasFeePanel = Boolean(
-    transactionHook.ready &&
-      transactionHook.fields &&
+    transactionHook.fields &&
       chain &&
       selectedAccount &&
       transactionData &&
@@ -108,6 +107,7 @@ export const SendTransaction = (props: Props) => {
   }, []);
 
   const feeSelectionPending = needsGasFeePanel && !gasFeePanelReady;
+  const securityCheckPending = transactionHook.securityCheckPending;
   const quietRefreshPending = gasFeeRefreshing || balanceInfoRefreshing;
   const insufficientBalancePending =
     BalanceChangeCardUtils.hasInsufficientBalance(balanceInfo);
@@ -117,7 +117,7 @@ export const SendTransaction = (props: Props) => {
     : undefined;
 
   const handleClickOnConfirm = () => {
-    if (feeSelectionPending || quietRefreshPending) {
+    if (securityCheckPending || feeSelectionPending || quietRefreshPending) {
       return;
     }
 
@@ -192,7 +192,9 @@ export const SendTransaction = (props: Props) => {
           }
           onConfirm={() => handleClickOnConfirm()}
           transactionHook={transactionHook}
-          confirmDisabled={feeSelectionPending || quietRefreshPending}
+          confirmDisabled={
+            securityCheckPending || feeSelectionPending || quietRefreshPending
+          }
           hideConfirm={insufficientBalancePending}
         />
       )}

@@ -57,6 +57,7 @@ export const useTransactionHook = (
 
   const [loading, setLoading] = useState(true);
   const [ready, setReady] = useState(false);
+  const [securityCheckPending, setSecurityCheckPending] = useState(false);
 
   const [duplicatedTransactionField, setDuplicatedTransactionWarning] =
     useState<TransactionConfirmationField>();
@@ -752,6 +753,8 @@ export const useTransactionHook = (
     ignorePopupWarnings,
     loading,
     setLoading,
+    securityCheckPending,
+    setSecurityCheckPending,
     closePopup,
     ignoreAllWarnings,
     getAllFieldsWithNotIgnoredWarnings,
