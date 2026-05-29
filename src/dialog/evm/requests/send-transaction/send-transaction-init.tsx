@@ -28,7 +28,6 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import Decimal from 'decimal.js';
 import { ethers } from 'ethers';
 import React from 'react';
-import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
 import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
 import { formatDecodedArgumentDisplayValue } from 'src/dialog/evm/requests/send-transaction/send-transaction-argument-format';
 import {
@@ -119,6 +118,14 @@ const getDecodedFieldName = (
 
   if (inputName === 'numberOfTokens') {
     return 'evm_nft_number_of_tokens';
+  }
+
+  const erc20FieldName = EvmTransactionParserUtils.getErc20DecodedFieldName(
+    methodName,
+    inputName,
+  );
+  if (erc20FieldName) {
+    return erc20FieldName;
   }
 
   if (isErc721Like && normalizedMethodName === 'approve' && inputIndex === 0) {
@@ -430,7 +437,7 @@ export async function runSendTransactionInit(
                     tokenAddress!,
                     chainTmp.chainId,
                     accounts,
-                    <EvmAccountImage address={tokenAddress!} small />,
+                    <EvmTokenLogo tokenInfo={usedToken} />,
                   ),
                   ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
                     params.to,
@@ -556,7 +563,7 @@ export async function runSendTransactionInit(
                     tokenAddress!,
                     chainTmp.chainId,
                     accounts,
-                    <EvmAccountImage address={tokenAddress!} small />,
+                    <EvmTokenLogo tokenInfo={usedToken} />,
                   ),
                   ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
                     params.to,
@@ -599,9 +606,13 @@ export async function runSendTransactionInit(
                 const argumentValue = decodedTransactionData.args[index];
 
                 if (
-                  EvmTransactionParserUtils.recipientInputNameList.includes(
+                  (EvmTransactionParserUtils.isErc20TransferRecipientArg(
+                    decodedTransactionData.name,
                     input.name,
-                  ) &&
+                  ) ||
+                    EvmTransactionParserUtils.recipientInputNameList.includes(
+                      input.name,
+                    )) &&
                   (typeof argumentValue === 'string' ||
                     typeof argumentValue === 'bigint')
                 ) {
@@ -613,9 +624,13 @@ export async function runSendTransactionInit(
                 }
                 if (
                   shouldUseDecodedAmountForBalance &&
-                  EvmTransactionParserUtils.amountInputNameList.includes(
+                  (EvmTransactionParserUtils.isErc20TransferAmountArg(
+                    decodedTransactionData.name,
                     input.name,
-                  ) &&
+                  ) ||
+                    EvmTransactionParserUtils.amountInputNameList.includes(
+                      input.name,
+                    )) &&
                   (typeof argumentValue === 'bigint' ||
                     typeof argumentValue === 'number' ||
                     typeof argumentValue === 'string')
@@ -731,6 +746,35 @@ export async function runSendTransactionInit(
                   type: EvmInputDisplayType.IMAGE,
                   value: <img src={src} />,
                 });
+              }
+            }
+
+            if (
+              shouldUseDecodedAmountForBalance &&
+              (resolvedReceiver == null ||
+                resolvedTransferAmount === undefined) &&
+              decodedTransactionData.fragment.inputs
+            ) {
+              const resolvedTransfer =
+                EvmTransactionParserUtils.resolveErc20TransferFromDecodedArgs(
+                  decodedTransactionData.name,
+                  decodedTransactionData.fragment.inputs,
+                  decodedTransactionData.args,
+                );
+              if (resolvedTransfer) {
+                resolvedReceiver = resolvedTransfer.receiverAddress;
+                setReceiver(resolvedReceiver);
+                tData.to = resolvedTransfer.receiverAddress;
+                const decimals =
+                  usedToken.type === EVMSmartContractType.ERC20
+                    ? (usedToken as EvmSmartContractInfoErc20).decimals
+                    : 18;
+                resolvedTransferAmount = new Decimal(
+                  resolvedTransfer.amountRaw.toString(),
+                )
+                  .div(new Decimal(10).pow(decimals ?? 18))
+                  .toNumber();
+                setTransferAmount(resolvedTransferAmount);
               }
             }
 

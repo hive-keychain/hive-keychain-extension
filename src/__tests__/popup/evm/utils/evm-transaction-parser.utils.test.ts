@@ -40,6 +40,82 @@ describe('shouldDisplayBalanceChange', () => {
   });
 });
 
+describe('getErc20DecodedFieldName', () => {
+  it.each([
+    ['transfer', 'to', 'evm_operation_to'],
+    ['transfer', '_to', 'evm_operation_to'],
+    ['transfer', 'recipient', 'evm_operation_to'],
+    ['transfer', 'value', 'evm_operation_amount'],
+    ['transfer', '_value', 'evm_operation_amount'],
+    ['transfer', 'amount', 'evm_operation_amount'],
+    ['transferFrom', 'sender', 'evm_operation_from'],
+    ['transferFrom', 'recipient', 'evm_operation_to'],
+    ['transferFrom', '_to', 'evm_operation_to'],
+    ['transferFrom', '_value', 'evm_operation_amount'],
+    ['transferFrom', 'amount', 'evm_operation_amount'],
+  ])('maps %s.%s to %s', (methodName, inputName, expectedFieldName) => {
+    expect(
+      EvmTransactionParserUtils.getErc20DecodedFieldName(
+        methodName,
+        inputName,
+      ),
+    ).toBe(expectedFieldName);
+  });
+
+  it('returns undefined for unrelated ERC20 methods', () => {
+    expect(
+      EvmTransactionParserUtils.getErc20DecodedFieldName('approve', 'spender'),
+    ).toBeUndefined();
+  });
+});
+
+describe('resolveErc20TransferFromDecodedArgs', () => {
+  const recipient = '0x00000000000000000000000000000000000000ab';
+  const usdtTransferInputs = [
+    { name: '_to', type: 'address' },
+    { name: '_value', type: 'uint256' },
+  ];
+
+  it('maps USDT-style _to and _value argument names', () => {
+    const result = EvmTransactionParserUtils.resolveErc20TransferFromDecodedArgs(
+      'transfer',
+      usdtTransferInputs,
+      [recipient, 1000n],
+    );
+
+    expect(result).toEqual({
+      receiverAddress: recipient,
+      amountRaw: 1000n,
+    });
+  });
+
+  it('falls back to positional args for standard transfer(address,uint256)', () => {
+    const result = EvmTransactionParserUtils.resolveErc20TransferFromDecodedArgs(
+      'transfer',
+      [
+        { name: 'dst', type: 'address' },
+        { name: 'wad', type: 'uint256' },
+      ],
+      [recipient, 1000n],
+    );
+
+    expect(result).toEqual({
+      receiverAddress: recipient,
+      amountRaw: 1000n,
+    });
+  });
+
+  it('returns null for non-transfer methods', () => {
+    expect(
+      EvmTransactionParserUtils.resolveErc20TransferFromDecodedArgs(
+        'approve',
+        usdtTransferInputs,
+        [recipient, 1000n],
+      ),
+    ).toBeNull();
+  });
+});
+
 describe('evm-transaction-parser.utils proxy tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();

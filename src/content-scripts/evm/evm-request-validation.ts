@@ -14,7 +14,7 @@ import {
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { AddChainRequest } from '@popup/evm/interfaces/evm-requests.interfaces';
 import { EvmRpcUrlUtils } from '@popup/evm/utils/evm-rpc-url.utils';
-import { ethers } from 'ethers';
+import { EvmAddressUtils } from 'src/utils/evm/evm-address.utils';
 import { EvmEncryptedMessageUtils } from 'src/utils/evm/evm-encrypted-message.utils';
 
 const EVM_CHAIN_ID_REGEX = /^0x[1-9a-fA-F][0-9a-fA-F]*$/;
@@ -40,7 +40,7 @@ const assertParamsArray = (params: unknown): unknown[] => {
 };
 
 const assertEvmAddressParam = (address: unknown) => {
-  if (typeof address !== 'string' || !ethers.isAddress(address)) {
+  if (!EvmAddressUtils.isValidEvmAddress(address)) {
     throw getProviderRpcError(
       'invalidMethodParams',
       'Invalid parameter. Account address is not valid.',
@@ -122,7 +122,10 @@ export const validateRequest = (
           message: `Invalid parameter. Value is not a valid number (value: ${transactionParams.value})`,
         } as ProviderRpcError;
       }
-      if (transactionParams.to && !ethers.isAddress(transactionParams.to)) {
+      if (
+        transactionParams.to &&
+        !EvmAddressUtils.isValidEvmAddress(transactionParams.to)
+      ) {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
           message: `Invalid parameter. Receiver address is not valid (receiver: ${transactionParams.to})`,

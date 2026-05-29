@@ -49,6 +49,10 @@ const validEncryptedData = {
 };
 
 const validEvmAddress = '0x0000000000000000000000000000000000000001';
+const usdcContractAddressLowercase =
+  '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
+const usdcContractAddressMixedCase =
+  '0xA0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
 
 const encodeJson = (value: unknown) => {
   return `0x${Buffer.from(JSON.stringify(value), 'utf8').toString('hex')}`;
@@ -125,6 +129,36 @@ describe('evm-request-validation tests:\n', () => {
     ).toMatchObject({
       code: -32602,
       message: 'Invalid parameter. Params must be an array.',
+    });
+  });
+
+  it('accepts eth_sendTransaction with mixed-case receiver addresses', () => {
+    expect(
+      validateEvmRequest({
+        request_id: 1,
+        method: EvmRequestMethod.SEND_TRANSACTION,
+        params: [
+          { ...validTransaction, to: usdcContractAddressMixedCase },
+        ],
+      }),
+    ).toEqual({
+      request_id: 1,
+      method: EvmRequestMethod.SEND_TRANSACTION,
+      params: [{ ...validTransaction, to: usdcContractAddressMixedCase }],
+    });
+
+    expect(
+      validateEvmRequest({
+        request_id: 1,
+        method: EvmRequestMethod.SEND_TRANSACTION,
+        params: [
+          { ...validTransaction, to: usdcContractAddressLowercase },
+        ],
+      }),
+    ).toEqual({
+      request_id: 1,
+      method: EvmRequestMethod.SEND_TRANSACTION,
+      params: [{ ...validTransaction, to: usdcContractAddressLowercase }],
     });
   });
 
@@ -415,6 +449,18 @@ describe('evm-request-validation tests:\n', () => {
       request_id: 1,
       method: EvmRequestMethod.GET_ENCRYPTION_KEY,
       params: [validEvmAddress],
+    });
+
+    expect(
+      validateEvmRequest({
+        request_id: 1,
+        method: EvmRequestMethod.GET_ENCRYPTION_KEY,
+        params: [usdcContractAddressMixedCase],
+      }),
+    ).toEqual({
+      request_id: 1,
+      method: EvmRequestMethod.GET_ENCRYPTION_KEY,
+      params: [usdcContractAddressMixedCase],
     });
   });
 

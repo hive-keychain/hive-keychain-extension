@@ -5275,6 +5275,10 @@
     "message": "From",
     "description": "Evm transaction operation field from"
   },
+  "evm_operation_amount": {
+    "message": "Amount",
+    "description": "Evm transaction operation field amount"
+  },
   "evm_operation_smart_contract_address": {
     "message": "Smart contract",
     "description": "Evm smart contract address"

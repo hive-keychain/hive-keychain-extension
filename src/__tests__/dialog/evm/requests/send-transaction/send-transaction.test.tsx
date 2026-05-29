@@ -14,6 +14,7 @@ import { ethers } from 'ethers';
 import { EthersUtils } from 'src/popup/evm/utils/ethers.utils';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
+import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 
 const mockParseTransaction = jest.fn();
@@ -308,7 +309,8 @@ describe('send-transaction proxy tests:\n', () => {
     expect(contractField.value.type).toBe(EvmAddressComponent);
     expect(contractField.value.props.address).toBe(proxyAddress);
     expect(contractField.value.props.canCopy).toBe(true);
-    expect(contractField.value.props.prefix).toBeDefined();
+    expect(contractField.value.props.prefix.type).toBe(EvmTokenLogo);
+    expect(contractField.value.props.prefix.props.tokenInfo.symbol).toBe('USDC');
   });
 
   it('adds a Ledger clear-signing fallback warning for Ledger token transactions', async () => {
@@ -1182,7 +1184,8 @@ describe('send-transaction proxy tests:\n', () => {
     expect(contractField.value.type).toBe(EvmAddressComponent);
     expect(contractField.value.props.address).toBe(proxyAddress);
     expect(contractField.value.props.canCopy).toBe(true);
-    expect(contractField.value.props.prefix).toBeDefined();
+    expect(contractField.value.props.prefix.type).toBe(EvmTokenLogo);
+    expect(contractField.value.props.prefix.props.tokenInfo.symbol).toBe('TNFT');
     expect(fromField.value.type).toBe(EvmAddressComponent);
     expect(fromField.value.props.address).toBe(fromAddress);
     expect(fromField.value.props.canCopy).toBe(true);

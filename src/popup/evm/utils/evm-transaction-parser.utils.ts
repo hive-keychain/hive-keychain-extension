@@ -36,6 +36,103 @@ import Logger from 'src/utils/logger.utils';
 const recipientInputNameList = ['recipient', 'spender'];
 const amountInputNameList = ['amount'];
 
+const erc20TransferRecipientArgNames = ['recipient', 'to', '_to'];
+const erc20TransferAmountArgNames = ['amount', 'value', '_value'];
+const erc20TransferFromSenderArgNames = ['sender', 'from'];
+
+const isErc20TransferRecipientArg = (
+  methodName: string,
+  inputName: string,
+): boolean =>
+  methodName === 'transfer' &&
+  erc20TransferRecipientArgNames.includes(inputName.toLowerCase());
+
+const isErc20TransferAmountArg = (
+  methodName: string,
+  inputName: string,
+): boolean =>
+  methodName === 'transfer' &&
+  erc20TransferAmountArgNames.includes(inputName.toLowerCase());
+
+const getErc20DecodedFieldName = (
+  methodName: string,
+  inputName: string,
+): string | undefined => {
+  const normalizedMethodName = methodName.toLowerCase();
+  const normalizedInputName = inputName.toLowerCase();
+
+  if (normalizedMethodName === 'transfer') {
+    if (isErc20TransferRecipientArg(methodName, inputName)) {
+      return 'evm_operation_to';
+    }
+    if (isErc20TransferAmountArg(methodName, inputName)) {
+      return 'evm_operation_amount';
+    }
+    return undefined;
+  }
+
+  if (normalizedMethodName === 'transferfrom') {
+    if (erc20TransferFromSenderArgNames.includes(normalizedInputName)) {
+      return 'evm_operation_from';
+    }
+    if (erc20TransferRecipientArgNames.includes(normalizedInputName)) {
+      return 'evm_operation_to';
+    }
+    if (erc20TransferAmountArgNames.includes(normalizedInputName)) {
+      return 'evm_operation_amount';
+    }
+  }
+
+  return undefined;
+};
+
+const resolveErc20TransferFromDecodedArgs = (
+  methodName: string,
+  inputs: ReadonlyArray<{ name: string }>,
+  args: ReadonlyArray<unknown>,
+): { receiverAddress: string; amountRaw: bigint } | null => {
+  if (methodName !== 'transfer' || args.length < 2) {
+    return null;
+  }
+
+  let receiverIndex = inputs.findIndex((input) =>
+    isErc20TransferRecipientArg(methodName, input.name),
+  );
+  let amountIndex = inputs.findIndex((input) =>
+    isErc20TransferAmountArg(methodName, input.name),
+  );
+
+  if (receiverIndex < 0) {
+    receiverIndex = 0;
+  }
+  if (amountIndex < 0) {
+    amountIndex = 1;
+  }
+
+  const receiverValue = args[receiverIndex];
+  const amountValue = args[amountIndex];
+
+  if (
+    (typeof receiverValue !== 'string' && typeof receiverValue !== 'bigint') ||
+    !ethers.isAddress(String(receiverValue))
+  ) {
+    return null;
+  }
+
+  if (
+    typeof amountValue !== 'bigint' &&
+    typeof amountValue !== 'number' &&
+    typeof amountValue !== 'string'
+  ) {
+    return null;
+  }
+
+  return {
+    receiverAddress: String(receiverValue),
+    amountRaw: BigInt(amountValue.toString()),
+  };
+};
+
 export enum EvmInputDisplayType {
   BYTES = 'bytes',
   ADDRESS = 'address',
@@ -73,10 +170,14 @@ const getDisplayInputType = (
       switch (methodName) {
         case 'transferFrom':
         case 'transfer': {
-          switch (name) {
+          switch (name.toLowerCase()) {
             case 'amount':
+            case 'value':
+            case '_value':
               return EvmInputDisplayType.BALANCE;
             case 'recipient':
+            case 'to':
+            case '_to':
               return EvmInputDisplayType.WALLET_ADDRESS;
           }
         }
@@ -1028,6 +1129,10 @@ export const EvmTransactionParserUtils = {
   parseData,
   findAbiFromData,
   getBundledAbiByDataSelector,
+  isErc20TransferRecipientArg,
+  isErc20TransferAmountArg,
+  getErc20DecodedFieldName,
+  resolveErc20TransferFromDecodedArgs,
   recipientInputNameList,
   amountInputNameList,
   parseArgs,
