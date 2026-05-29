@@ -784,6 +784,20 @@ const encryptAccountsInLocalStorage = async (
     LocalStorageKeyEnum.EVM_ACCOUNTS,
     encryptedAccounts,
   );
+
+  const { default: AccountSelectorOrderUtils } = await import(
+    '@popup/multichain/utils/account-selector-order.utils'
+  );
+  const AccountUtils = (await import('@popup/hive/utils/account.utils')).default;
+  const hiveAccounts = await AccountUtils.getAccountsFromLocalStorage(mk);
+  const evmVisibleAccounts = (
+    await rebuildAccountsFromLocalStorage(mk)
+  ).filter((account) => !account.hide);
+  await AccountSelectorOrderUtils.syncDisplayOrderWithAccounts(
+    mk,
+    hiveAccounts ?? [],
+    evmVisibleAccounts,
+  );
 };
 
 const getAccountsFromLocalStorage = async (mk: string) => {

@@ -1,9 +1,14 @@
+import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { setAccounts } from '@popup/hive/actions/account.actions';
 import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
 import { setChain } from '@popup/multichain/actions/chain.actions';
+import AccountSelectorOrderUtils, {
+  AccountSelectorListItem,
+} from '@popup/multichain/utils/account-selector-order.utils';
 import {
   Chain,
   ChainType,
@@ -30,6 +35,7 @@ import {
   COPY_GENERIC_MESSAGE_KEY,
   copyTextWithToast,
 } from 'src/common-ui/toast/copy-toast.utils';
+import { AccountSelectorOrderRef } from '@interfaces/account-selector-order.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import FormatUtils from 'src/utils/format.utils';
@@ -40,37 +46,19 @@ interface Props {
   removeBorder?: boolean;
 }
 
-type AccountSelectorListItem =
-  | {
-      account: LocalAccount;
-      id: string;
-      type: ChainType.HIVE;
-    }
-  | {
-      account: EvmAccount;
-      id: string;
-      type: ChainType.EVM;
-    };
-
 const getEvmAccountAddress = (account?: EvmAccount) => {
   return account ? EvmAccountUtils.getEvmAccountAddress(account) : undefined;
 };
 
-const buildAccountSelectorListItems = (
-  hiveAccounts: LocalAccount[],
-  evmAccounts: EvmAccount[],
-): AccountSelectorListItem[] => [
-  ...hiveAccounts.map((account) => ({
-    account,
-    id: `hive-${account.name}`,
-    type: ChainType.HIVE,
-  })),
-  ...evmAccounts.map((account) => ({
-    account,
-    id: `evm-${getEvmAccountAddress(account)}`,
-    type: ChainType.EVM,
-  })),
-];
+const areDisplayOrdersEqual = (
+  left: AccountSelectorOrderRef[],
+  right: AccountSelectorOrderRef[],
+) =>
+  left.length === right.length &&
+  left.every(
+    (ref, index) =>
+      JSON.stringify(ref) === JSON.stringify(right[index]),
+  );
 
 const getAccountSelectorListItemId = (item: AccountSelectorListItem) =>
   item.id.replace(/[^a-zA-Z0-9-_]/g, '-');
@@ -139,14 +127,25 @@ const AccountSelector = ({
   loadActiveAccount,
   loadEvmActiveAccount,
   setChain,
+  setAccounts,
+  setEvmAccounts,
 }: PropsFromRedux & Props) => {
   const [isOpened, setIsOpened] = useState(false);
+  const [isPersistingOrder, setIsPersistingOrder] = useState(false);
+  const [displayOrder, setDisplayOrder] = useState<AccountSelectorOrderRef[]>(
+    [],
+  );
   const [activeEvmMainnetChains, setActiveEvmMainnetChains] = useState<
     EvmChain[]
   >([]);
   const [accountListItems, setAccountListItems] = useState<
     AccountSelectorListItem[]
-  >(() => buildAccountSelectorListItems(hiveAccounts, evmAccounts));
+  >(() =>
+    AccountSelectorOrderUtils.buildAccountSelectorListItems(
+      hiveAccounts,
+      evmAccounts,
+    ),
+  );
   const selectedHiveAccount =
     hiveAccounts.find((account) => account.name === activeHiveAccountName) ??
     hiveAccounts[0];
@@ -157,11 +156,66 @@ const AccountSelector = ({
         activeEvmAccountAddress?.toLowerCase(),
     ) ?? evmAccounts[0];
 
+  const rebuildAccountListItems = async (
+    selectableHiveAccounts: LocalAccount[],
+    selectableEvmAccounts: EvmAccount[],
+  ) => {
+    if (!mk) {
+      setDisplayOrder([]);
+      setAccountListItems(
+        AccountSelectorOrderUtils.buildAccountSelectorListItems(
+          selectableHiveAccounts,
+          selectableEvmAccounts,
+        ),
+      );
+      return;
+    }
+
+    const { displayOrder: loadedOrder, listItems } =
+      await AccountSelectorOrderUtils.loadOrderedListItems(
+        mk,
+        selectableHiveAccounts,
+        selectableEvmAccounts,
+      );
+    setDisplayOrder(loadedOrder);
+    setAccountListItems(listItems);
+  };
+
   useEffect(() => {
-    setAccountListItems(
-      buildAccountSelectorListItems(hiveAccounts, evmAccounts),
-    );
-  }, [hiveAccounts, evmAccounts]);
+    if (isPersistingOrder) {
+      return;
+    }
+
+    void (async () => {
+      if (!mk) {
+        await rebuildAccountListItems(hiveAccounts, evmAccounts);
+        return;
+      }
+
+      if (displayOrder.length > 0) {
+        const mergedOrder = AccountSelectorOrderUtils.mergeDisplayOrder(
+          displayOrder,
+          hiveAccounts,
+          evmAccounts,
+        );
+        if (!areDisplayOrdersEqual(mergedOrder, displayOrder)) {
+          setDisplayOrder(mergedOrder);
+        }
+        setAccountListItems(
+          AccountSelectorOrderUtils.buildOrderedListItems(
+            hiveAccounts,
+            evmAccounts,
+            mergedOrder,
+          ),
+        );
+        return;
+      }
+
+      await rebuildAccountListItems(hiveAccounts, evmAccounts);
+    })();
+    // displayOrder is read when hive/evm accounts change after a persisted reorder
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hiveAccounts, evmAccounts, mk, isPersistingOrder]);
 
   const openAccountSelector = async () => {
     let selectableHiveAccounts = hiveAccounts;
@@ -175,9 +229,7 @@ const AccountSelector = ({
       }
     }
 
-    setAccountListItems(
-      buildAccountSelectorListItems(selectableHiveAccounts, evmAccounts),
-    );
+    await rebuildAccountListItems(selectableHiveAccounts, evmAccounts);
     setActiveEvmMainnetChains(await getActiveEvmMainnetChains());
     setIsOpened(true);
   };
@@ -468,10 +520,11 @@ const AccountSelector = ({
       ? renderHiveAccount(item, dragHandle)
       : renderEvmAccount(item, dragHandle);
 
-  const onDragEnd = (result: DropResult) => {
+  const onDragEnd = async (result: DropResult) => {
     if (
       !result.destination ||
-      result.destination.index === result.source.index
+      result.destination.index === result.source.index ||
+      !mk
     ) {
       return;
     }
@@ -479,7 +532,49 @@ const AccountSelector = ({
     const list = Array.from(accountListItems);
     const [removed] = list.splice(result.source.index, 1);
     list.splice(result.destination.index, 0, removed);
+    const orderedRefs = AccountSelectorOrderUtils.toOrderRefs(list);
+
+    if (areDisplayOrdersEqual(displayOrder, orderedRefs)) {
+      return;
+    }
+
     setAccountListItems(list);
+    setIsPersistingOrder(true);
+
+    try {
+      let selectableHiveAccounts = hiveAccounts;
+      if (!hiveAccounts.length) {
+        const storedHiveAccounts =
+          await AccountUtils.getAccountsFromLocalStorage(mk);
+        if (storedHiveAccounts?.length) {
+          selectableHiveAccounts = storedHiveAccounts;
+        }
+      }
+
+      const {
+        displayOrder: persistedOrder,
+        hiveAccounts: persistedHiveAccounts,
+        evmAccounts: persistedEvmAccounts,
+      } = await AccountSelectorOrderUtils.applyDisplayOrder(
+        mk,
+        orderedRefs,
+        selectableHiveAccounts,
+        evmAccounts,
+      );
+
+      setDisplayOrder(persistedOrder);
+      setAccounts(persistedHiveAccounts);
+      setEvmAccounts(persistedEvmAccounts);
+      setAccountListItems(
+        AccountSelectorOrderUtils.buildOrderedListItems(
+          persistedHiveAccounts,
+          persistedEvmAccounts,
+          persistedOrder,
+        ),
+      );
+    } finally {
+      setIsPersistingOrder(false);
+    }
   };
 
   const renderCreateButton = (icon: SVGIcons, testId: string) => (
@@ -533,7 +628,7 @@ const AccountSelector = ({
             <div
               className="account-selector-list"
               data-testid="account-selector-list">
-              <DragDropContext onDragEnd={onDragEnd}>
+              <DragDropContext onDragEnd={(dragResult) => void onDragEnd(dragResult)}>
                 <Droppable
                   droppableId="account-selector-list"
                   type="account-selector-list-item">
@@ -600,6 +695,8 @@ const connector = connect(mapStateToProps, {
   loadActiveAccount,
   loadEvmActiveAccount,
   setChain,
+  setAccounts,
+  setEvmAccounts,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

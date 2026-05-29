@@ -15,8 +15,9 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 import { AccountSelectorComponent } from 'src/common-ui/account-selector/account-selector.component';
+import AccountSelectorOrderUtils from '@popup/multichain/utils/account-selector-order.utils';
 import { EvmAccountSource } from 'src/popup/evm/interfaces/wallet.interface';
-import { setAccounts } from 'src/popup/hive/actions/account.actions';
+import * as AccountActions from 'src/popup/hive/actions/account.actions';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 
 const mockCopyTextWithToast = jest.fn().mockResolvedValue(true);
@@ -229,6 +230,29 @@ const getAccountSelectorRowTestIds = () =>
     .map((element) => element.getAttribute('data-testid'));
 
 describe('AccountSelectorComponent', () => {
+  beforeEach(() => {
+    jest.spyOn(AccountSelectorOrderUtils, 'loadOrderedListItems').mockImplementation(
+      async (_mk, hiveAccounts, evmVisibleAccounts) => {
+        const displayOrder = AccountSelectorOrderUtils.buildDefaultDisplayOrder(
+          hiveAccounts,
+          evmVisibleAccounts,
+        );
+        return {
+          displayOrder,
+          listItems: AccountSelectorOrderUtils.buildOrderedListItems(
+            hiveAccounts,
+            evmVisibleAccounts,
+            displayOrder,
+          ),
+        };
+      },
+    );
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   beforeEach(() => {
     chrome.i18n.getMessage = jest.fn((key: string) => key);
     mockCopyTextWithToast.mockClear();
@@ -561,7 +585,10 @@ describe('AccountSelectorComponent', () => {
 
     act(() => {
       store.dispatch(
-        setAccounts([localAccounts.user1, localAccounts.user2]) as any,
+        AccountActions.setAccounts([
+          localAccounts.user1,
+          localAccounts.user2,
+        ]) as any,
       );
     });
 
@@ -605,14 +632,30 @@ describe('AccountSelectorComponent', () => {
     );
   });
 
-  it('reorders the account list locally after drag and drop', async () => {
-    const { store } = customRender(
-      <AccountSelectorComponent selectedAccountType={ChainType.HIVE} />,
-      {
-        initialState: buildState(),
-      },
+  it('persists cross-chain order after drag and drop', async () => {
+    const initialState = buildState();
+    const visibleEvmAccounts = initialState.evm.accounts.filter(
+      (account) => !account.hide,
     );
-    const dispatchSpy = jest.spyOn(store, 'dispatch');
+    const applyDisplayOrderSpy = jest
+      .spyOn(AccountSelectorOrderUtils, 'applyDisplayOrder')
+      .mockResolvedValue({
+        displayOrder: [
+          { type: 'evm', seedId: 1, accountId: 1 },
+          { type: 'hive', name: userData.one.username },
+          { type: 'hive', name: userData.two.username },
+          { type: 'evm', seedId: 1, accountId: 0 },
+        ],
+        hiveAccounts: initialState.hive.accounts,
+        evmAccounts: [
+          visibleEvmAccounts[1],
+          visibleEvmAccounts[0],
+        ],
+      });
+
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
+      initialState,
+    });
 
     await userEvent.click(screen.getByTestId('account-selector-trigger'));
 
@@ -627,13 +670,25 @@ describe('AccountSelectorComponent', () => {
       screen.getByTestId('account-selector-mock-drag-last-to-first'),
     );
 
-    expect(getAccountSelectorRowTestIds()).toEqual([
+    await waitFor(() => {
+      expect(applyDisplayOrderSpy).toHaveBeenCalledWith(
+        mkData.user.one,
+        [
+          { type: 'evm', seedId: 1, accountId: 1 },
+          { type: 'hive', name: userData.one.username },
+          { type: 'hive', name: userData.two.username },
+          { type: 'evm', seedId: 1, accountId: 0 },
+        ],
+        initialState.hive.accounts,
+        visibleEvmAccounts,
+      );
+      expect(getAccountSelectorRowTestIds()).toEqual([
       `account-selector-evm-account-${secondEvmAddress}`,
       `account-selector-hive-account-${userData.one.username}`,
       `account-selector-hive-account-${userData.two.username}`,
       `account-selector-evm-account-${firstEvmAddress}`,
-    ]);
-    expect(dispatchSpy).not.toHaveBeenCalled();
+      ]);
+    });
   });
 
   it('closes the bottom sheet when clicking the backdrop', async () => {

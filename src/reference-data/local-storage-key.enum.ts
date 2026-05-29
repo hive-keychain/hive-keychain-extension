@@ -57,6 +57,8 @@ export enum LocalStorageKeyEnum {
 
   // To check if some account (regardless of chain) has been setup
   HAS_FINISHED_SIGNUP = 'HAS_FINISHED_SIGNUP',
+  /** Encrypted cross-chain home account selector order: `{ list: AccountSelectorOrderRef[] }` */
+  ACCOUNT_SELECTOR_DISPLAY_ORDER = 'ACCOUNT_SELECTOR_DISPLAY_ORDER',
   EVM_ACCOUNTS = 'EVM_ACCOUNTS',
 
   // EVM

@@ -115,9 +115,22 @@ const verifyAccount = async (
 const saveAccounts = async (localAccounts: LocalAccount[], mk: string) => {
   const accounts: Accounts = { list: localAccounts };
   const encyptedAccounts = await AccountUtils.encryptAccounts(accounts, mk);
-  LocalStorageUtils.saveValueInLocalStorage(
+  await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.ACCOUNTS,
     encyptedAccounts,
+  );
+
+  const { default: AccountSelectorOrderUtils } = await import(
+    '@popup/multichain/utils/account-selector-order.utils'
+  );
+  const { EvmWalletUtils } = await import('@popup/evm/utils/wallet.utils');
+  const evmVisibleAccounts = (
+    await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk)
+  ).filter((account) => !account.hide);
+  await AccountSelectorOrderUtils.syncDisplayOrderWithAccounts(
+    mk,
+    localAccounts,
+    evmVisibleAccounts,
   );
 };
 
