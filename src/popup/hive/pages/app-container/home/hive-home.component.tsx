@@ -40,6 +40,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
 import { TopBarComponent } from 'src/common-ui/_containers/top-bar/top-bar.component';
 import { AccountSelectorComponent } from 'src/common-ui/account-selector/account-selector.component';
+import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { EstimatedAccountValueSectionComponent } from 'src/common-ui/estimated-account-value-section/estimated-account-value-section.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { MetadataPopup } from 'src/common-ui/metadata-popup/metadata-popup.component';
@@ -464,7 +465,7 @@ const Home = ({
               }
               accountSelector={
                 <AccountSelectorComponent
-                  selectedAccountType="hive"
+                  selectedAccountType={ChainType.HIVE}
                   background="white"
                 />
               }

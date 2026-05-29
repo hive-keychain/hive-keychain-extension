@@ -26,12 +26,16 @@ import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import {
+  COPY_GENERIC_MESSAGE_KEY,
+  copyTextWithToast,
+} from 'src/common-ui/toast/copy-toast.utils';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import FormatUtils from 'src/utils/format.utils';
 
 interface Props {
-  selectedAccountType: 'hive' | 'evm';
+  selectedAccountType: ChainType.HIVE | ChainType.EVM;
   background?: 'white';
   removeBorder?: boolean;
 }
@@ -40,12 +44,12 @@ type AccountSelectorListItem =
   | {
       account: LocalAccount;
       id: string;
-      type: 'hive';
+      type: ChainType.HIVE;
     }
   | {
       account: EvmAccount;
       id: string;
-      type: 'evm';
+      type: ChainType.EVM;
     };
 
 const getEvmAccountAddress = (account?: EvmAccount) => {
@@ -59,12 +63,12 @@ const buildAccountSelectorListItems = (
   ...hiveAccounts.map((account) => ({
     account,
     id: `hive-${account.name}`,
-    type: 'hive' as const,
+    type: ChainType.HIVE,
   })),
   ...evmAccounts.map((account) => ({
     account,
     id: `evm-${getEvmAccountAddress(account)}`,
-    type: 'evm' as const,
+    type: ChainType.EVM,
   })),
 ];
 
@@ -112,6 +116,14 @@ const stopListItemActionPropagation = (
   event: React.MouseEvent<HTMLElement>,
 ) => {
   event.stopPropagation();
+};
+
+const getAccountSelectorCopyValue = (item: AccountSelectorListItem) => {
+  if (item.type === ChainType.HIVE) {
+    return item.account.name;
+  }
+
+  return getEvmAccountAddress(item.account) ?? '';
 };
 
 const AccountSelector = ({
@@ -217,7 +229,7 @@ const AccountSelector = ({
   };
 
   const renderSelectedAccount = () =>
-    selectedAccountType === 'hive'
+    selectedAccountType === ChainType.HIVE
       ? renderHiveSelectedAccount()
       : renderEvmSelectedAccount();
 
@@ -230,16 +242,16 @@ const AccountSelector = ({
   );
 
   const isAccountListItemSelected = (item: AccountSelectorListItem) => {
-    if (item.type === 'hive') {
+    if (item.type === ChainType.HIVE) {
       return (
-        selectedAccountType === 'hive' &&
+        selectedAccountType === ChainType.HIVE &&
         item.account.name === selectedHiveAccount?.name
       );
     }
 
     const address = getEvmAccountAddress(item.account);
     return (
-      selectedAccountType === 'evm' &&
+      selectedAccountType === ChainType.EVM &&
       address?.toLowerCase() === activeEvmAccountAddress?.toLowerCase()
     );
   };
@@ -250,7 +262,7 @@ const AccountSelector = ({
       return;
     }
 
-    if (item.type === 'hive') {
+    if (item.type === ChainType.HIVE) {
       const targetChain = await resolveHiveChain();
       if (!targetChain) {
         return;
@@ -279,10 +291,25 @@ const AccountSelector = ({
     setIsOpened(false);
   };
 
+  const handleAccountListItemCopy = async (
+    event: React.MouseEvent<HTMLElement>,
+    item: AccountSelectorListItem,
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const copyValue = getAccountSelectorCopyValue(item);
+    if (!copyValue) {
+      return;
+    }
+
+    await copyTextWithToast(copyValue, COPY_GENERIC_MESSAGE_KEY);
+  };
+
   const renderAccountListItemChainIndicator = (
     item: AccountSelectorListItem,
   ) => {
-    if (item.type === 'hive') {
+    if (item.type === ChainType.HIVE) {
       return (
         <div
           className="account-selector-list-item-chains"
@@ -356,7 +383,7 @@ const AccountSelector = ({
           className="account-selector-list-action copy-icon"
           dataTestId={`account-selector-copy-${itemId}`}
           icon={SVGIcons.SELECT_COPY}
-          onClick={stopListItemActionPropagation}
+          onClick={(event) => void handleAccountListItemCopy(event, item)}
         />
         <span onClick={stopListItemActionPropagation}>
           {renderDragHandle(dragHandle)}
@@ -376,7 +403,10 @@ const AccountSelector = ({
   );
 
   const renderHiveAccount = (
-    item: Extract<AccountSelectorListItem, { type: 'hive' }>,
+    item: Extract<
+      AccountSelectorListItem,
+      { type: ChainType.HIVE }
+    >,
     dragHandle?: DraggableProvidedDragHandleProps | null,
   ) => {
     const account = item.account;
@@ -400,7 +430,10 @@ const AccountSelector = ({
   };
 
   const renderEvmAccount = (
-    item: Extract<AccountSelectorListItem, { type: 'evm' }>,
+    item: Extract<
+      AccountSelectorListItem,
+      { type: ChainType.EVM }
+    >,
     dragHandle?: DraggableProvidedDragHandleProps | null,
   ) => {
     const account = item.account;
@@ -434,7 +467,7 @@ const AccountSelector = ({
     item: AccountSelectorListItem,
     dragHandle?: DraggableProvidedDragHandleProps | null,
   ) =>
-    item.type === 'hive'
+    item.type === ChainType.HIVE
       ? renderHiveAccount(item, dragHandle)
       : renderEvmAccount(item, dragHandle);
 
@@ -463,8 +496,10 @@ const AccountSelector = ({
   );
 
   if (
-    (selectedAccountType === 'hive' && !selectedHiveAccount) ||
-    (selectedAccountType === 'evm' && !selectedEvmAccount)
+    (selectedAccountType === ChainType.HIVE &&
+      !selectedHiveAccount) ||
+    (selectedAccountType === ChainType.EVM &&
+      !selectedEvmAccount)
   ) {
     return null;
   }

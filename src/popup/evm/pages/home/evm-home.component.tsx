@@ -47,6 +47,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
 import { TopBarComponent } from 'src/common-ui/_containers/top-bar/top-bar.component';
 import { AccountSelectorComponent } from 'src/common-ui/account-selector/account-selector.component';
+import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { EstimatedAccountValueSectionComponent } from 'src/common-ui/estimated-account-value-section/estimated-account-value-section.component';
 import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
 import { ActionsSectionComponent } from 'src/popup/hive/pages/app-container/home/actions-section/actions-section.component';
@@ -429,7 +430,7 @@ const Home = ({
         onRefreshButtonClicked={refresh}
         accountSelector={
           <AccountSelectorComponent
-            selectedAccountType="evm"
+            selectedAccountType={ChainType.EVM}
             background="white"
             removeBorder
           />

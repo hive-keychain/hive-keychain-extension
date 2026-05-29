@@ -19,6 +19,13 @@ import { EvmAccountSource } from 'src/popup/evm/interfaces/wallet.interface';
 import { setAccounts } from 'src/popup/hive/actions/account.actions';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 
+const mockCopyTextWithToast = jest.fn().mockResolvedValue(true);
+
+jest.mock('src/common-ui/toast/copy-toast.utils', () => ({
+  COPY_GENERIC_MESSAGE_KEY: 'swap_copied_to_clipboard',
+  copyTextWithToast: (...args: unknown[]) => mockCopyTextWithToast(...args),
+}));
+
 jest.mock(
   'src/common-ui/evm/evm-account-image/evm-account-image.component',
   () => ({
@@ -224,6 +231,7 @@ const getAccountSelectorRowTestIds = () =>
 describe('AccountSelectorComponent', () => {
   beforeEach(() => {
     chrome.i18n.getMessage = jest.fn((key: string) => key);
+    mockCopyTextWithToast.mockClear();
     jest
       .spyOn(ChainUtils, 'getAllSetupChainsForType')
       .mockImplementation(async (type) => {
@@ -251,7 +259,7 @@ describe('AccountSelectorComponent', () => {
   });
 
   it('renders the active Hive account trigger', () => {
-    customRender(<AccountSelectorComponent selectedAccountType="hive" />, {
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
       initialState: buildState(),
     });
 
@@ -264,7 +272,7 @@ describe('AccountSelectorComponent', () => {
   });
 
   it('renders the active EVM account trigger', () => {
-    customRender(<AccountSelectorComponent selectedAccountType="evm" />, {
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.EVM} />, {
       initialState: buildState(),
     });
 
@@ -280,7 +288,7 @@ describe('AccountSelectorComponent', () => {
   });
 
   it('opens the bottom sheet and lists Hive names and formatted visible EVM accounts', async () => {
-    customRender(<AccountSelectorComponent selectedAccountType="hive" />, {
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
       initialState: buildState(),
     });
 
@@ -370,7 +378,7 @@ describe('AccountSelectorComponent', () => {
   });
 
   it('shows Hive icon on Hive rows and stacked mainnet EVM chain logos on EVM rows', async () => {
-    customRender(<AccountSelectorComponent selectedAccountType="hive" />, {
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
       initialState: buildState(),
     });
 
@@ -402,7 +410,7 @@ describe('AccountSelectorComponent', () => {
   });
 
   it('shows at most five EVM chain logos when more chains are active', async () => {
-    customRender(<AccountSelectorComponent selectedAccountType="hive" />, {
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
       initialState: buildState(),
     });
 
@@ -423,9 +431,49 @@ describe('AccountSelectorComponent', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('copies the Hive username when clicking the copy icon', async () => {
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
+      initialState: buildState(),
+    });
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+    await userEvent.click(
+      within(
+        screen.getByTestId(
+          `account-selector-hive-account-${userData.two.username}`,
+        ),
+      ).getByTestId(/^account-selector-copy-/),
+    );
+
+    expect(mockCopyTextWithToast).toHaveBeenCalledWith(
+      userData.two.username,
+      'swap_copied_to_clipboard',
+    );
+    expect(screen.getByTestId('account-selector-backdrop')).toBeInTheDocument();
+  });
+
+  it('copies the EVM address when clicking the copy icon', async () => {
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.EVM} />, {
+      initialState: buildState(),
+    });
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+    await userEvent.click(
+      within(
+        screen.getByTestId(`account-selector-evm-account-${secondEvmAddress}`),
+      ).getByTestId(/^account-selector-copy-/),
+    );
+
+    expect(mockCopyTextWithToast).toHaveBeenCalledWith(
+      secondEvmAddress,
+      'swap_copied_to_clipboard',
+    );
+    expect(screen.getByTestId('account-selector-backdrop')).toBeInTheDocument();
+  });
+
   it('switches the active Hive account when clicking another Hive account on Hive chain', async () => {
     const { store } = customRender(
-      <AccountSelectorComponent selectedAccountType="hive" />,
+      <AccountSelectorComponent selectedAccountType={ChainType.HIVE} />,
       {
         initialState: buildState(),
       },
@@ -452,7 +500,7 @@ describe('AccountSelectorComponent', () => {
   it('switches chain and EVM account when clicking an EVM account from Hive chain', async () => {
     mockLoadEvmActiveAccount.mockClear();
     const { store } = customRender(
-      <AccountSelectorComponent selectedAccountType="hive" />,
+      <AccountSelectorComponent selectedAccountType={ChainType.HIVE} />,
       {
         initialState: buildState(),
       },
@@ -480,7 +528,7 @@ describe('AccountSelectorComponent', () => {
   it('closes the overlay without changing account when clicking the already selected account', async () => {
     mockLoadEvmActiveAccount.mockClear();
     const { store } = customRender(
-      <AccountSelectorComponent selectedAccountType="hive" />,
+      <AccountSelectorComponent selectedAccountType={ChainType.HIVE} />,
       {
         initialState: buildState(),
       },
@@ -502,7 +550,7 @@ describe('AccountSelectorComponent', () => {
 
   it('refreshes Hive accounts when reopening the account list', async () => {
     const { store } = customRender(
-      <AccountSelectorComponent selectedAccountType="evm" />,
+      <AccountSelectorComponent selectedAccountType={ChainType.EVM} />,
       {
         initialState: buildState([], mkData.empty),
       },
@@ -542,7 +590,7 @@ describe('AccountSelectorComponent', () => {
       .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
       .mockResolvedValue([localAccounts.user1, localAccounts.user2]);
 
-    customRender(<AccountSelectorComponent selectedAccountType="evm" />, {
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.EVM} />, {
       initialState: buildState([]),
     });
 
@@ -565,7 +613,7 @@ describe('AccountSelectorComponent', () => {
 
   it('reorders the account list locally after drag and drop', async () => {
     const { store } = customRender(
-      <AccountSelectorComponent selectedAccountType="hive" />,
+      <AccountSelectorComponent selectedAccountType={ChainType.HIVE} />,
       {
         initialState: buildState(),
       },
@@ -595,7 +643,7 @@ describe('AccountSelectorComponent', () => {
   });
 
   it('closes the bottom sheet when clicking the backdrop', async () => {
-    customRender(<AccountSelectorComponent selectedAccountType="evm" />, {
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.EVM} />, {
       initialState: buildState(),
     });
 
