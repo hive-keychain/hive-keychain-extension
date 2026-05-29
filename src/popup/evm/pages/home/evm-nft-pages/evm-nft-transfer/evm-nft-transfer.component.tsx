@@ -138,11 +138,24 @@ const EvmNftTransfer = ({
   }, [activeAccount, chain, localAccounts]);
 
   const handleClickOnSend = async (form: EvmNftTransferForm) => {
-    // encode data
+    const recipientValidation =
+      await EvmAddressesUtils.validateTransferRecipient(
+        form.receiverAddress,
+        chain.chainId,
+        localAccounts,
+      );
+    if (!recipientValidation.valid) {
+      setErrorMessage(
+        recipientValidation.messageKey,
+        recipientValidation.messageParams ?? [],
+      );
+      return;
+    }
+    const receiverAddress = recipientValidation.address;
 
     const transactionInfo =
       await EvmTransactionParserUtils.verifyTransactionInformation({
-        to: form.receiverAddress,
+        to: receiverAddress,
         tokenContract: collectionItem.collection.tokenInfo.contractAddress,
         chainId: chain.chainId,
         tokenType: collectionItem.collection.tokenInfo.type,
@@ -177,14 +190,14 @@ const EvmNftTransfer = ({
         label: 'popup_html_transfer_to',
         value: (
           <EvmAddressComponent
-            address={form.receiverAddress}
+            address={receiverAddress}
             chainId={chain.chainId}
             canCopy
             localAccounts={localAccounts}
           />
         ),
         warnings: await EvmTransactionParserUtils.getAddressWarning(
-          form.receiverAddress,
+          receiverAddress,
           chain.chainId,
           transactionInfo,
           localAccounts,
@@ -217,7 +230,7 @@ const EvmNftTransfer = ({
           | EvmSmartContractInfoErc1155
           | EvmSmartContractInfoErc721,
         activeAccount,
-        form.receiverAddress,
+        receiverAddress,
         form.amount,
         form.nftId,
       ),
@@ -248,7 +261,7 @@ const EvmNftTransfer = ({
       formParams: watch(),
       hasGasFee: true,
       tokenInfo: form.selectedToken,
-      receiverAddress: form.receiverAddress,
+      receiverAddress,
       amount: form.amount,
       wallet: activeAccount.wallet,
       transactionData: transactionData,
@@ -287,7 +300,7 @@ const EvmNftTransfer = ({
               } as EvmUserHistoryItemDetail,
               {
                 label: 'popup_html_transfer_to',
-                value: form.receiverAddress,
+                value: receiverAddress,
                 type: EvmUserHistoryItemDetailType.ADDRESS,
               } as EvmUserHistoryItemDetail,
               {

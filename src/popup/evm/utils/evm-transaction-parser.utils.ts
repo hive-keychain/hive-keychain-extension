@@ -33,12 +33,24 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ethers, Interface, Result } from 'ethers';
 import Logger from 'src/utils/logger.utils';
 
-const recipientInputNameList = ['recipient', 'spender'];
-const amountInputNameList = ['amount'];
+const recipientInputNameList = [
+  'recipient',
+  'spender',
+  '_spender',
+  'usr',
+  'guy',
+  'to',
+  '_to',
+  'dst',
+];
+const amountInputNameList = ['amount', 'value', '_value', 'wad'];
 
-const erc20TransferRecipientArgNames = ['recipient', 'to', '_to'];
-const erc20TransferAmountArgNames = ['amount', 'value', '_value'];
-const erc20TransferFromSenderArgNames = ['sender', 'from'];
+/** Includes Maker/DAI-style `dst` / `wad` / `src` names from verified contract ABIs. */
+const erc20TransferRecipientArgNames = ['recipient', 'to', '_to', 'dst'];
+const erc20TransferAmountArgNames = ['amount', 'value', '_value', 'wad'];
+const erc20TransferFromSenderArgNames = ['sender', 'from', 'src', '_from'];
+const erc20ApproveSpenderArgNames = ['spender', '_spender', 'usr', 'guy'];
+const erc20ApproveAmountArgNames = ['amount', 'value', '_value', 'wad'];
 
 const isErc20TransferRecipientArg = (
   methodName: string,
@@ -79,6 +91,15 @@ const getErc20DecodedFieldName = (
       return 'evm_operation_to';
     }
     if (erc20TransferAmountArgNames.includes(normalizedInputName)) {
+      return 'evm_operation_amount';
+    }
+  }
+
+  if (normalizedMethodName === 'approve') {
+    if (erc20ApproveSpenderArgNames.includes(normalizedInputName)) {
+      return 'evm_operation_spender';
+    }
+    if (erc20ApproveAmountArgNames.includes(normalizedInputName)) {
       return 'evm_operation_amount';
     }
   }
@@ -174,31 +195,45 @@ const getDisplayInputType = (
             case 'amount':
             case 'value':
             case '_value':
+            case 'wad':
               return EvmInputDisplayType.BALANCE;
             case 'recipient':
             case 'to':
             case '_to':
+            case 'dst':
               return EvmInputDisplayType.WALLET_ADDRESS;
           }
         }
         case 'approve': {
-          switch (name) {
-            case 'spender': {
+          switch (name.toLowerCase()) {
+            case 'spender':
+            case '_spender':
+            case 'usr':
+            case 'guy':
               return EvmInputDisplayType.WALLET_ADDRESS;
-            }
             case 'amount':
+            case 'value':
+            case '_value':
+            case 'wad':
               return EvmInputDisplayType.BALANCE;
           }
         }
         case 'transferFrom': {
-          switch (name) {
-            case 'value': {
+          switch (name.toLowerCase()) {
+            case 'value':
+            case '_value':
+            case 'amount':
+            case 'wad':
               return EvmInputDisplayType.BALANCE;
-            }
             case 'sender':
-            case 'recipient': {
+            case 'from':
+            case 'src':
+            case '_from':
+            case 'recipient':
+            case 'to':
+            case '_to':
+            case 'dst':
               return EvmInputDisplayType.WALLET_ADDRESS;
-            }
           }
         }
       }
@@ -784,11 +819,17 @@ const getAddressWarning = async (
   );
 
   if (!!spoofingAddress) {
+    const similarAddressDisplay =
+      await EvmAddressesUtils.getAddressDisplayForWarning(
+        spoofingAddress.address,
+        chainId,
+        localAccounts,
+      );
     warnings.push({
       ignored: false,
       level: EvmTransactionWarningLevel.MEDIUM,
       message: spoofingAddress.errorMessage,
-      messageParams: [spoofingAddress.address],
+      messageParams: [similarAddressDisplay],
       type: EvmTransactionWarningType.BASE,
     });
   }

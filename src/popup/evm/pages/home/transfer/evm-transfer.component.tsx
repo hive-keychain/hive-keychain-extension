@@ -294,6 +294,21 @@ const EvmTransfer = ({
       return;
     }
 
+    const recipientValidation =
+      await EvmAddressesUtils.validateTransferRecipient(
+        form.receiverAddress,
+        chain.chainId,
+        localAccounts,
+      );
+    if (!recipientValidation.valid) {
+      setErrorMessage(
+        recipientValidation.messageKey,
+        recipientValidation.messageParams ?? [],
+      );
+      return;
+    }
+    const receiverAddress = recipientValidation.address;
+
     const decimals =
       form.selectedToken.tokenInfo.type === EVMSmartContractType.ERC20
         ? form.selectedToken.tokenInfo.decimals
@@ -301,7 +316,7 @@ const EvmTransfer = ({
 
     const transactionInfo =
       await EvmTransactionParserUtils.verifyTransactionInformation({
-        to: form.receiverAddress,
+        to: receiverAddress,
         contract:
           form.selectedToken.tokenInfo.type === EVMSmartContractType.ERC20
             ? form.selectedToken.tokenInfo.contractAddress
@@ -330,14 +345,14 @@ const EvmTransfer = ({
         label: 'popup_html_transfer_to',
         value: (
           <EvmAddressComponent
-            address={form.receiverAddress}
+            address={receiverAddress}
             chainId={chain.chainId}
             canCopy
             localAccounts={localAccounts}
           />
         ),
         warnings: await EvmTransactionParserUtils.getAddressWarning(
-          form.receiverAddress,
+          receiverAddress,
           chain.chainId,
           transactionInfo,
           localAccounts,
@@ -369,7 +384,7 @@ const EvmTransfer = ({
         type: EvmTransactionType.EIP_1559,
         to:
           form.selectedToken.tokenInfo.type === EVMSmartContractType.NATIVE
-            ? form.receiverAddress
+            ? receiverAddress
             : form.selectedToken.tokenInfo.contractAddress,
         data:
           form.selectedToken.tokenInfo.type === EVMSmartContractType.NATIVE
@@ -377,7 +392,7 @@ const EvmTransfer = ({
             : await encodeTransferData(
                 form.selectedToken.tokenInfo,
                 activeAccount,
-                form.receiverAddress,
+                receiverAddress,
                 form.amount,
               ),
         value:
@@ -416,7 +431,7 @@ const EvmTransfer = ({
       formParams: watch(),
       hasGasFee: true,
       tokenInfo: form.selectedToken.tokenInfo,
-      receiverAddress: form.receiverAddress,
+      receiverAddress,
       amount: form.amount,
       wallet: activeAccount.wallet,
       transactionData: transactionData,
@@ -451,7 +466,7 @@ const EvmTransfer = ({
               } as EvmUserHistoryItemDetail,
               {
                 label: 'popup_html_transfer_to',
-                value: form.receiverAddress,
+                value: receiverAddress,
                 type: EvmUserHistoryItemDetailType.ADDRESS,
               } as EvmUserHistoryItemDetail,
               {
