@@ -819,11 +819,17 @@ const getAddressWarning = async (
   );
 
   if (!!spoofingAddress) {
+    const similarAddressDisplay =
+      await EvmAddressesUtils.getAddressDisplayForWarning(
+        spoofingAddress.address,
+        chainId,
+        localAccounts,
+      );
     warnings.push({
       ignored: false,
       level: EvmTransactionWarningLevel.MEDIUM,
       message: spoofingAddress.errorMessage,
-      messageParams: [spoofingAddress.address],
+      messageParams: [similarAddressDisplay],
       type: EvmTransactionWarningType.BASE,
     });
   }

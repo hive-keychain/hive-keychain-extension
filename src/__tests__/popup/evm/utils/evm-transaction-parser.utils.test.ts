@@ -392,6 +392,42 @@ describe('evm-transaction-parser.utils proxy tests:\n', () => {
     expect(whitelistWarning?.extraData?.defaultLabel).toBe('vitalik.eth');
   });
 
+  it('formats similar address in poisoning warning with nickname or shortening', async () => {
+    const similarAddress = '0x00000000000000000000000000000000000000bb';
+    jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(true);
+    jest.spyOn(EvmAddressesUtils, 'isPotentialSpoofing').mockResolvedValue({
+      errorMessage: 'evm_transaction_receiver_potential_spoofing_local_accounts',
+      address: similarAddress,
+    });
+    jest
+      .spyOn(EvmAddressesUtils, 'getAddressDisplayForWarning')
+      .mockResolvedValue('My wallet');
+
+    const warnings = await EvmTransactionParserUtils.getAddressWarning(
+      '0x00000000000000000000000000000000000000aa',
+      '1',
+      {
+        contract: { proxy: {}, verifiedBy: [] },
+        domain: {},
+        to: {},
+      },
+      [],
+    );
+
+    const spoofingWarning = warnings.find(
+      (warning) =>
+        warning.message ===
+        'evm_transaction_receiver_potential_spoofing_local_accounts',
+    );
+
+    expect(spoofingWarning?.messageParams).toEqual(['My wallet']);
+    expect(EvmAddressesUtils.getAddressDisplayForWarning).toHaveBeenCalledWith(
+      similarAddress,
+      '1',
+      [],
+    );
+  });
+
   it('keeps wallet whitelist warning when no light-node security risk exists', async () => {
     jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(false);
     jest

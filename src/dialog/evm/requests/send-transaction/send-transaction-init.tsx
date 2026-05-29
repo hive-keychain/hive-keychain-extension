@@ -14,6 +14,7 @@ import { EvmAccountOrPublic } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
+import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmLedgerUtils } from '@popup/evm/utils/evm-ledger.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
@@ -1008,6 +1009,25 @@ export async function runSendTransactionInit(
           break;
         }
       }
+      const recipientToValidate =
+        resolvedReceiver ??
+        (!params.data && ethers.isAddress(params.to) ? params.to : null);
+      if (recipientToValidate) {
+        const recipientValidation =
+          await EvmAddressesUtils.validateTransferRecipient(
+            recipientToValidate,
+            chainTmp.chainId,
+            accounts,
+          );
+        if (!recipientValidation.valid) {
+          transactionHook.setErrorMessage({
+            message: recipientValidation.messageKey,
+            params: recipientValidation.messageParams,
+            isBlocking: true,
+          });
+        }
+      }
+
       setTransactionData(tData);
       transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
         removeMatchingFromField(transactionConfirmationFields.otherFields),
