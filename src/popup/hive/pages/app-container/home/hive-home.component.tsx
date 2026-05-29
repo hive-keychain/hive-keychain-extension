@@ -10,7 +10,6 @@ import { loadUserTokens } from '@popup/hive/actions/token.actions';
 import { ActionButtonList } from '@popup/hive/pages/app-container/home/actions-section/action-button.list';
 import { HiveWalletInfoSectionComponent } from '@popup/hive/pages/app-container/home/hive-wallet-info-section/hive-wallet-info-section.component';
 import { NotificationsComponent } from '@popup/hive/pages/app-container/home/notifications/notifications.component';
-import { SelectAccountSectionComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section.component';
 import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component';
 import { VestingRoutesPopupComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-routes-popup.component';
 import { HiveEngineUtils } from '@popup/hive/utils/hive-engine.utils';
@@ -40,6 +39,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
 import { TopBarComponent } from 'src/common-ui/_containers/top-bar/top-bar.component';
+import { AccountSelectorComponent } from 'src/common-ui/account-selector/account-selector.component';
 import { EstimatedAccountValueSectionComponent } from 'src/common-ui/estimated-account-value-section/estimated-account-value-section.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { MetadataPopup } from 'src/common-ui/metadata-popup/metadata-popup.component';
@@ -463,7 +463,10 @@ const Home = ({
                 </>
               }
               accountSelector={
-                <SelectAccountSectionComponent isOnMain background="white" />
+                <AccountSelectorComponent
+                  selectedAccountType="hive"
+                  background="white"
+                />
               }
             />
 

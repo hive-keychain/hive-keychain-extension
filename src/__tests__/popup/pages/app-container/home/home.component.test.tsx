@@ -1,6 +1,5 @@
 import AccountUtils from '@hiveapp/utils/account.utils';
 import HiveUtils from '@hiveapp/utils/hive.utils';
-import { ExtendedAccount } from '@hiveio/dhive';
 import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -9,7 +8,6 @@ import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
 import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
 import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
-import dataTestIdSelect from 'src/__tests__/utils-for-testing/data-testid/data-testid-select';
 import dataTestIdToolTip from 'src/__tests__/utils-for-testing/data-testid/data-testid-tool-tip';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import currencies from 'src/__tests__/utils-for-testing/data/currencies';
@@ -55,7 +53,7 @@ describe('home.component tests:\n', () => {
     expect(screen.getByTestId(dataTestIdIcon.refreshHome)).toBeInTheDocument();
     expect(screen.getByTestId(dataTestIdButton.menu)).toBeInTheDocument();
 
-    //SelectAccountSectionComponent
+    //AccountSelectorComponent
     const selectedAccountHTMLElement = screen.getByTestId(
       dataTestIdDiv.selectedAccount,
     );
@@ -133,25 +131,24 @@ describe('home.component tests:\n', () => {
     expect(rcHTMLElement).toHaveTextContent(resourceReadyInValue);
   });
 
-  it('Must change active account to the selected one', async () => {
-    AccountUtils.getAccount = jest.fn().mockResolvedValue([
-      {
-        ...accounts.extended,
-        name: mk.user.two,
-      } as ExtendedAccount,
-    ]);
+  it('Must show accounts in the account selector overlay without changing active account', async () => {
     await act(async () => {
-      //bellow the only element using an actual aria-label.
+      await userEvent.click(screen.getByTestId('account-selector-trigger'));
+    });
+
+    expect(
+      await screen.findByTestId(`account-selector-hive-account-${mk.user.two}`),
+    ).toBeInTheDocument();
+
+    await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(dataTestIdSelect.accountSelector),
-      );
-      await userEvent.click(
-        screen.getByTestId(dataTestIdSelect.itemSelectorPreFix + mk.user.two),
+        screen.getByTestId(`account-selector-hive-account-${mk.user.two}`),
       );
     });
-    expect(
-      await screen.findByTestId(dataTestIdDiv.selectedAccount),
-    ).toHaveTextContent(mk.user.two);
+
+    expect(screen.getByTestId(dataTestIdDiv.selectedAccount)).toHaveTextContent(
+      mk.user.one,
+    );
   });
 
   it('Must refresh data when click on logo and show new estimated account value', async () => {

@@ -70,15 +70,12 @@ jest.mock(
   }),
 );
 
-jest.mock(
-  '@popup/hive/pages/app-container/select-account-section/select-account-section.component',
-  () => ({
-    SelectAccountSectionComponent: () => {
-      const React = require('react');
-      return React.createElement('div', { 'data-testid': 'account-selector' });
-    },
-  }),
-);
+jest.mock('src/common-ui/account-selector/account-selector.component', () => ({
+  AccountSelectorComponent: () => {
+    const React = require('react');
+    return React.createElement('div', { 'data-testid': 'account-selector' });
+  },
+}));
 
 jest.mock(
   '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component',

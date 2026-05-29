@@ -15,7 +15,6 @@ import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmWallet } from '@popup/evm/interfaces/wallet.interface';
 import { EvmActionButtonList } from '@popup/evm/pages/home/evm-action-section/evm-action-section.list';
 import { EvmDappStatusComponent } from '@popup/evm/pages/home/evm-dapp-status/evm-dapp-status.component';
-import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section.component';
 import { EvmWalletInfoSectionComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
@@ -47,6 +46,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
 import { TopBarComponent } from 'src/common-ui/_containers/top-bar/top-bar.component';
+import { AccountSelectorComponent } from 'src/common-ui/account-selector/account-selector.component';
 import { EstimatedAccountValueSectionComponent } from 'src/common-ui/estimated-account-value-section/estimated-account-value-section.component';
 import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
 import { ActionsSectionComponent } from 'src/popup/hive/pages/app-container/home/actions-section/actions-section.component';
@@ -428,10 +428,10 @@ const Home = ({
         }}
         onRefreshButtonClicked={refresh}
         accountSelector={
-          <EvmSelectAccountSectionComponent
+          <AccountSelectorComponent
+            selectedAccountType="evm"
             background="white"
             removeBorder
-            isOnMain
           />
         }
       />

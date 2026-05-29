@@ -33,17 +33,14 @@ jest.mock('src/common-ui/_containers/top-bar/top-bar.component', () => ({
   },
 }));
 
-jest.mock(
-  '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section.component',
-  () => ({
-    EvmSelectAccountSectionComponent: () => {
-      const React = require('react');
-      return React.createElement('div', {
-        'data-testid': 'evm-account-selector',
-      });
-    },
-  }),
-);
+jest.mock('src/common-ui/account-selector/account-selector.component', () => ({
+  AccountSelectorComponent: () => {
+    const React = require('react');
+    return React.createElement('div', {
+      'data-testid': 'evm-account-selector',
+    });
+  },
+}));
 
 jest.mock(
   '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section.component',
@@ -376,10 +373,12 @@ describe('evm-home unmount behavior', () => {
     });
 
     await waitFor(() =>
-      expect(screen.getByText('Pending fallback')).toBeInTheDocument(),
+      expect(
+        screen.getByText('evm_pending_queued_transactions'),
+      ).toBeInTheDocument(),
     );
 
-    fireEvent.click(screen.getByText('Pending fallback'));
+    fireEvent.click(screen.getByText('evm_pending_queued_transactions'));
 
     const confirmationParams = store.getState().navigation.params;
     expect(store.getState().navigation.stack[0].currentPage).toBe(
