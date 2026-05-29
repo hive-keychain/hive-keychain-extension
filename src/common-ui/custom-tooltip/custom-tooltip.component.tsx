@@ -1,4 +1,6 @@
+import { Theme, useThemeContext } from '@popup/theme.context';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import sanitizeHTML from 'sanitize-html';
 
 export type CustomTooltipPosition = 'top' | 'bottom' | 'left' | 'right';
@@ -176,6 +178,8 @@ export const CustomTooltip = ({
   customKey,
 }: TooltipProps) => {
   const preferredPlacement = position ?? 'top';
+  const { theme: contextTheme } = useThemeContext();
+  const portalTheme = contextTheme ?? Theme.DARK;
   const anchor = useRef<HTMLDivElement>(null);
   const tooltip = useRef<HTMLDivElement>(null);
   const isHoverRef = useRef(false);
@@ -309,37 +313,53 @@ export const CustomTooltip = ({
     tooltipStyle['--tooltip-arrow-offset-y'] = `${coordinates.arrowOffsetY}px`;
   }
 
+  const tooltipMarkup =
+    isOpen && message ? (
+      <div
+        ref={tooltip}
+        data-testid="tooltip-content"
+        className={`tooltip ${coordinates?.placement ?? preferredPlacement} ${
+          color ? color : ''
+        }`}
+        style={tooltipStyle}>
+        <div
+          className="tooltip-inner"
+          dangerouslySetInnerHTML={{
+            __html: sanitizeHTML(
+              skipTranslation
+                ? message
+                : chrome.i18n.getMessage(message, messageParams),
+              { allowedTags: ['b', 'br', 'i', 'p', 'span', 'div'] },
+            ),
+          }}></div>
+      </div>
+    ) : null;
+
   return (
-    <div
-      data-testid={dataTestId}
-      className={`tooltip-container ${additionalClassName}`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      key={customKey?.toString()}>
-      <div className="tooltip-anchor" ref={anchor}>
-        {children}
+    <>
+      <div
+        data-testid={dataTestId}
+        className={`tooltip-container ${additionalClassName ?? ''}`.trim()}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        key={customKey?.toString()}>
+        <div className="tooltip-anchor" ref={anchor}>
+          {children}
+        </div>
       </div>
 
-      {isOpen && message && (
-        <div
-          ref={tooltip}
-          data-testid="tooltip-content"
-          className={`tooltip ${coordinates?.placement ?? preferredPlacement} ${
-            color ? color : ''
-          }`}
-          style={tooltipStyle}>
-          <div
-            className="tooltip-inner"
-            dangerouslySetInnerHTML={{
-              __html: sanitizeHTML(
-                skipTranslation
-                  ? message
-                  : chrome.i18n.getMessage(message, messageParams),
-                { allowedTags: ['b', 'br', 'i', 'p', 'span', 'div'] },
-              ),
-            }}></div>
-        </div>
-      )}
-    </div>
+      {tooltipMarkup &&
+        createPortal(
+          <div className={`theme ${portalTheme}`}>
+            <div
+              className={`tooltip-container tooltip-portal ${
+                additionalClassName ?? ''
+              }`.trim()}>
+              {tooltipMarkup}
+            </div>
+          </div>,
+          document.body,
+        )}
+    </>
   );
 };

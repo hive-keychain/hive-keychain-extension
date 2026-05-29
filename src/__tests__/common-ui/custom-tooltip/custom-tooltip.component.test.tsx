@@ -214,4 +214,31 @@ describe('custom-tooltip.component', () => {
       '128px',
     );
   });
+
+  it('renders the tooltip in a body portal so it is not clipped by overflow containers', () => {
+    jest.useFakeTimers();
+    mockTooltipRects({
+      anchorRect: { left: 100, top: 200, width: 40, height: 20 },
+      tooltipRect: { left: 0, top: 0, width: 150, height: 60 },
+    });
+
+    const { container } = render(
+      <div style={{ overflow: 'hidden', width: 120 }}>
+        <CustomTooltip dataTestId="tooltip" message="tooltip_message">
+          <button type="button">hover me</button>
+        </CustomTooltip>
+      </div>,
+    );
+
+    fireEvent.mouseEnter(screen.getByTestId('tooltip'));
+    act(() => {
+      jest.advanceTimersByTime(251);
+    });
+
+    const tooltip = screen.getByTestId('tooltip-content');
+    expect(tooltip).toBeInTheDocument();
+    expect(container).not.toContainElement(tooltip);
+    expect(document.body).toContainElement(tooltip);
+    expect(tooltip.closest('.tooltip-portal')).not.toBeNull();
+  });
 });
