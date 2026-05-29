@@ -11,6 +11,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
 const DIALOG_WIDTH = 435;
+const DIALOG_READY_RETRY_MS = 25;
 
 const getCurrentWindow = () =>
   new Promise<chrome.windows.Window>((resolve) => {
@@ -18,7 +19,7 @@ const getCurrentWindow = () =>
   });
 
 const waitForDialogReady = (callback: () => void) => {
-  waitUntilDialogIsReady(100, DialogCommand.READY, callback);
+  waitUntilDialogIsReady(DIALOG_READY_RETRY_MS, DialogCommand.READY, callback);
 };
 
 const saveDialogWindowId = async (windowId?: number) => {
