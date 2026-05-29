@@ -181,6 +181,7 @@ export enum SVGIcons {
   SELECT_ACTIVE = 'select/active',
   SELECT_COPY = 'select/copy',
   SELECT_DRAG = 'select/drag',
+  SELECT_MANAGE_ACCOUNT = 'select/manage-account',
   SELECT_DELETE = 'select/delete',
   SELECT_ADD = 'select/add-circle',
 

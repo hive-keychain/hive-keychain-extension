@@ -306,7 +306,7 @@ describe('AccountSelectorComponent', () => {
         screen.getByTestId(
           `account-selector-hive-account-${userData.one.username}`,
         ),
-      ).getByTestId(/^account-selector-edit-/),
+      ).getByTestId(/^account-selector-manage-/),
     ).toBeInTheDocument();
     expect(
       within(
@@ -339,7 +339,7 @@ describe('AccountSelectorComponent', () => {
     expect(
       within(
         screen.getByTestId(`account-selector-evm-account-${firstEvmAddress}`),
-      ).getByTestId(/^account-selector-edit-/),
+      ).getByTestId(/^account-selector-manage-/),
     ).toBeInTheDocument();
     expect(
       within(

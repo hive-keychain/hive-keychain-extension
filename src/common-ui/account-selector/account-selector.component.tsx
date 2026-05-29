@@ -75,8 +75,9 @@ const isSameChain = (left: Chain, right: Chain) =>
   left.chainId.toLowerCase() === right.chainId.toLowerCase();
 
 const resolveHiveChain = async (): Promise<HiveChain | undefined> => {
-  const setupHiveChains =
-    await ChainUtils.getAllSetupChainsForType<HiveChain>(ChainType.HIVE);
+  const setupHiveChains = await ChainUtils.getAllSetupChainsForType<HiveChain>(
+    ChainType.HIVE,
+  );
   if (setupHiveChains[0]) {
     return setupHiveChains[0];
   }
@@ -93,13 +94,15 @@ const resolveEvmTargetChain = async (
     return currentChain as EvmChain;
   }
   return (
-    (await EvmChainUtils.getLastEvmChain()) ?? (await EvmChainUtils.getEthChain())
+    (await EvmChainUtils.getLastEvmChain()) ??
+    (await EvmChainUtils.getEthChain())
   );
 };
 
 const getActiveEvmMainnetChains = async (): Promise<EvmChain[]> => {
-  const setupEvmChains =
-    await ChainUtils.getAllSetupChainsForType<EvmChain>(ChainType.EVM);
+  const setupEvmChains = await ChainUtils.getAllSetupChainsForType<EvmChain>(
+    ChainType.EVM,
+  );
   return setupEvmChains.filter((chain) => !chain.testnet);
 };
 
@@ -344,9 +347,9 @@ const AccountSelector = ({
           )}
         </span>
         <SVGIcon
-          className="account-selector-list-action edit-icon"
-          dataTestId={`account-selector-edit-${itemId}`}
-          icon={SVGIcons.GLOBAL_EDIT}
+          className="account-selector-list-action manage-icon"
+          dataTestId={`account-selector-manage-${itemId}`}
+          icon={SVGIcons.SELECT_MANAGE_ACCOUNT}
           onClick={stopListItemActionPropagation}
         />
         <SVGIcon

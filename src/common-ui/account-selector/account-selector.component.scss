@@ -220,13 +220,9 @@
           opacity: 1;
         }
 
-        &.edit-icon {
-          cursor: pointer;
-        }
-
         &.copy-icon,
         &.drag-handle,
-        &.edit-icon {
+        &.manage-icon {
           display: none;
           pointer-events: none;
         }
@@ -241,7 +237,7 @@
 
         &.active-icon,
         &.copy-icon,
-        &.edit-icon,
+        &.manage-icon,
         .drag-icon {
           @include icon-size(20px);
         }
@@ -251,13 +247,8 @@
           opacity: 1;
         }
 
-        &.edit-icon {
-          svg {
-            path,
-            rect {
-              stroke: currentColor;
-            }
-          }
+        &.manage-icon {
+          cursor: pointer;
         }
       }
 
@@ -296,7 +287,7 @@
 
         .account-selector-list-action.copy-icon,
         .account-selector-list-action.drag-handle,
-        .account-selector-list-action.edit-icon {
+        .account-selector-list-action.manage-icon {
           display: flex;
           pointer-events: auto;
         }
