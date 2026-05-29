@@ -196,6 +196,9 @@ describe('AccountSelectorComponent', () => {
     expect(screen.getByTestId('selected-account-name')).toHaveTextContent(
       userData.one.username,
     );
+    expect(
+      screen.getByTestId('account-selector-dropdown-handle'),
+    ).toBeInTheDocument();
   });
 
   it('renders the active EVM account trigger', () => {

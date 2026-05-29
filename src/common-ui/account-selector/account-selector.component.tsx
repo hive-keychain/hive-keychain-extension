@@ -404,6 +404,13 @@ const AccountSelector = ({
         data-testid="account-selector-trigger"
         onClick={openAccountSelector}>
         {renderSelectedAccount()}
+        <SVGIcon
+          className="account-selector-dropdown-handle"
+          dataTestId="account-selector-dropdown-handle"
+          icon={
+            isOpened ? SVGIcons.SELECT_ARROW_UP : SVGIcons.SELECT_ARROW_DOWN
+          }
+        />
       </div>
       {isOpened && (
         <div className="account-selector-overlay">

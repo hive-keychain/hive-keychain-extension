@@ -30,6 +30,11 @@
     }
   }
 
+  .selected-account-panel .selected-account-name {
+    flex: 1;
+    min-width: 0;
+  }
+
   .selected-account-panel {
     min-height: 50px;
     border: 1px solid var(--select-border-color);
@@ -42,6 +47,14 @@
     box-sizing: border-box;
     cursor: pointer;
     user-select: none;
+
+    .account-selector-dropdown-handle {
+      @include icon-size(10px);
+      flex-shrink: 0;
+      width: 24px;
+      margin-top: -2px;
+      margin-left: auto;
+    }
 
     &.white {
       background: var(--select-background-color);
