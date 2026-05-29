@@ -2,7 +2,10 @@ import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface
 import { getAbiFromType } from '@popup/evm/reference-data/abi.data';
 import { EvmTransactionWarningType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { getGroupedSecurityDetailReasons } from '@popup/evm/utils/evm-grouped-security-warning.utils';
-import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
+import {
+  EvmInputDisplayType,
+  EvmTransactionParserUtils,
+} from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmVerificationUtils } from '@popup/evm/utils/evm-verification.utils';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
@@ -48,11 +51,24 @@ describe('getErc20DecodedFieldName', () => {
     ['transfer', 'value', 'evm_operation_amount'],
     ['transfer', '_value', 'evm_operation_amount'],
     ['transfer', 'amount', 'evm_operation_amount'],
+    ['transfer', 'dst', 'evm_operation_to'],
+    ['transfer', 'wad', 'evm_operation_amount'],
     ['transferFrom', 'sender', 'evm_operation_from'],
+    ['transferFrom', 'src', 'evm_operation_from'],
+    ['transferFrom', '_from', 'evm_operation_from'],
     ['transferFrom', 'recipient', 'evm_operation_to'],
     ['transferFrom', '_to', 'evm_operation_to'],
+    ['transferFrom', 'dst', 'evm_operation_to'],
     ['transferFrom', '_value', 'evm_operation_amount'],
+    ['transferFrom', 'wad', 'evm_operation_amount'],
     ['transferFrom', 'amount', 'evm_operation_amount'],
+    ['approve', 'spender', 'evm_operation_spender'],
+    ['approve', '_spender', 'evm_operation_spender'],
+    ['approve', 'usr', 'evm_operation_spender'],
+    ['approve', 'guy', 'evm_operation_spender'],
+    ['approve', 'amount', 'evm_operation_amount'],
+    ['approve', '_value', 'evm_operation_amount'],
+    ['approve', 'wad', 'evm_operation_amount'],
   ])('maps %s.%s to %s', (methodName, inputName, expectedFieldName) => {
     expect(
       EvmTransactionParserUtils.getErc20DecodedFieldName(
@@ -62,11 +78,43 @@ describe('getErc20DecodedFieldName', () => {
     ).toBe(expectedFieldName);
   });
 
-  it('returns undefined for unrelated ERC20 methods', () => {
+  it('returns undefined for unrelated ERC20 argument names', () => {
     expect(
-      EvmTransactionParserUtils.getErc20DecodedFieldName('approve', 'spender'),
+      EvmTransactionParserUtils.getErc20DecodedFieldName(
+        'balanceOf',
+        'account',
+      ),
     ).toBeUndefined();
   });
+});
+
+describe('getDisplayInputType for non-standard ERC20 argument names', () => {
+  const erc20Abi = getAbiFromType(EVMSmartContractType.ERC20)!;
+
+  it.each([
+    ['transfer', 'dst', 'address', EvmInputDisplayType.WALLET_ADDRESS],
+    ['transfer', 'wad', 'uint256', EvmInputDisplayType.BALANCE],
+    ['transferFrom', 'src', 'address', EvmInputDisplayType.WALLET_ADDRESS],
+    ['transferFrom', '_from', 'address', EvmInputDisplayType.WALLET_ADDRESS],
+    ['transferFrom', 'dst', 'address', EvmInputDisplayType.WALLET_ADDRESS],
+    ['transferFrom', 'wad', 'uint256', EvmInputDisplayType.BALANCE],
+    ['approve', '_spender', 'address', EvmInputDisplayType.WALLET_ADDRESS],
+    ['approve', 'usr', 'address', EvmInputDisplayType.WALLET_ADDRESS],
+    ['approve', '_value', 'uint256', EvmInputDisplayType.BALANCE],
+    ['approve', 'wad', 'uint256', EvmInputDisplayType.BALANCE],
+  ])(
+    'uses %s display for %s.%s',
+    (methodName, argName, argType, expectedType) => {
+      expect(
+        EvmTransactionParserUtils.getDisplayInputType(
+          erc20Abi,
+          methodName,
+          argType,
+          argName,
+        ),
+      ).toBe(expectedType);
+    },
+  );
 });
 
 describe('resolveErc20TransferFromDecodedArgs', () => {
@@ -89,7 +137,7 @@ describe('resolveErc20TransferFromDecodedArgs', () => {
     });
   });
 
-  it('falls back to positional args for standard transfer(address,uint256)', () => {
+  it('maps Maker/DAI-style dst and wad argument names', () => {
     const result = EvmTransactionParserUtils.resolveErc20TransferFromDecodedArgs(
       'transfer',
       [
@@ -103,6 +151,12 @@ describe('resolveErc20TransferFromDecodedArgs', () => {
       receiverAddress: recipient,
       amountRaw: 1000n,
     });
+    expect(
+      EvmTransactionParserUtils.isErc20TransferRecipientArg('transfer', 'dst'),
+    ).toBe(true);
+    expect(
+      EvmTransactionParserUtils.isErc20TransferAmountArg('transfer', 'wad'),
+    ).toBe(true);
   });
 
   it('returns null for non-transfer methods', () => {
