@@ -19,6 +19,7 @@ export type SendTransactionHookApi = Pick<
   | 'initPendingTransactionWarning'
   | 'setUnableToReachBackend'
   | 'hydrateDomainFieldWarnings'
+  | 'setErrorMessage'
 >;
 
 export interface SendTransactionInitSetters {
