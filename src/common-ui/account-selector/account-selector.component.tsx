@@ -21,6 +21,7 @@ import {
   Droppable,
 } from 'react-beautiful-dnd';
 import { ConnectedProps, connect } from 'react-redux';
+import { ChainLogo } from 'src/common-ui/chain-logo/chain-logo.component';
 import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
@@ -96,6 +97,14 @@ const resolveEvmTargetChain = async (
   );
 };
 
+const getActiveEvmMainnetChains = async (): Promise<EvmChain[]> => {
+  const setupEvmChains =
+    await ChainUtils.getAllSetupChainsForType<EvmChain>(ChainType.EVM);
+  return setupEvmChains.filter((chain) => !chain.testnet);
+};
+
+const MAX_DISPLAYED_EVM_CHAINS = 5;
+
 const stopListItemActionPropagation = (
   event: React.MouseEvent<HTMLElement>,
 ) => {
@@ -117,6 +126,9 @@ const AccountSelector = ({
   setChain,
 }: PropsFromRedux & Props) => {
   const [isOpened, setIsOpened] = useState(false);
+  const [activeEvmMainnetChains, setActiveEvmMainnetChains] = useState<
+    EvmChain[]
+  >([]);
   const [accountListItems, setAccountListItems] = useState<
     AccountSelectorListItem[]
   >(() => buildAccountSelectorListItems(hiveAccounts, evmAccounts));
@@ -151,6 +163,7 @@ const AccountSelector = ({
     setAccountListItems(
       buildAccountSelectorListItems(selectableHiveAccounts, evmAccounts),
     );
+    setActiveEvmMainnetChains(await getActiveEvmMainnetChains());
     setIsOpened(true);
   };
 
@@ -263,6 +276,52 @@ const AccountSelector = ({
     setIsOpened(false);
   };
 
+  const renderAccountListItemChainIndicator = (
+    item: AccountSelectorListItem,
+  ) => {
+    if (item.type === 'hive') {
+      return (
+        <div
+          className="account-selector-list-item-chains"
+          data-testid="account-selector-hive-chain-indicator">
+          <SVGIcon
+            className="account-selector-list-item-chain-icon"
+            icon={SVGIcons.BLOCKCHAIN_HIVE}
+          />
+        </div>
+      );
+    }
+
+    if (!activeEvmMainnetChains.length) {
+      return null;
+    }
+
+    const displayedEvmChains = activeEvmMainnetChains.slice(
+      0,
+      MAX_DISPLAYED_EVM_CHAINS,
+    );
+
+    return (
+      <div
+        className="account-selector-list-item-chains account-selector-list-item-chains--stacked"
+        data-testid="account-selector-evm-chains-indicator">
+        {displayedEvmChains.map((evmChain, index) => (
+          <span
+            key={evmChain.chainId}
+            className="account-selector-list-item-chain-logo-wrapper"
+            data-testid={`account-selector-evm-chain-${evmChain.chainId}`}
+            style={{ zIndex: displayedEvmChains.length - index }}>
+            <ChainLogo
+              chainName={evmChain.name}
+              logoUri={evmChain.logo}
+              className="account-selector-list-item-chain-logo"
+            />
+          </span>
+        ))}
+      </div>
+    );
+  };
+
   const renderAccountListItemActions = (
     item: AccountSelectorListItem,
     dragHandle?: DraggableProvidedDragHandleProps | null,
@@ -274,14 +333,16 @@ const AccountSelector = ({
       <div
         className="account-selector-list-item-actions"
         onClick={stopListItemActionPropagation}>
-        {selected && (
-          <SVGIcon
-            className="account-selector-list-action active-icon"
-            dataTestId={`account-selector-selected-${itemId}`}
-            icon={SVGIcons.SELECT_ACTIVE}
-            onClick={stopListItemActionPropagation}
-          />
-        )}
+        <span className="account-selector-list-action active-icon-slot">
+          {selected && (
+            <SVGIcon
+              className="account-selector-list-action active-icon"
+              dataTestId={`account-selector-selected-${itemId}`}
+              icon={SVGIcons.SELECT_ACTIVE}
+              onClick={stopListItemActionPropagation}
+            />
+          )}
+        </span>
         <SVGIcon
           className="account-selector-list-action edit-icon"
           dataTestId={`account-selector-edit-${itemId}`}
@@ -300,6 +361,16 @@ const AccountSelector = ({
       </div>
     );
   };
+
+  const renderAccountListItemTrailing = (
+    item: AccountSelectorListItem,
+    dragHandle?: DraggableProvidedDragHandleProps | null,
+  ) => (
+    <div className="account-selector-list-item-trailing">
+      {renderAccountListItemChainIndicator(item)}
+      {renderAccountListItemActions(item, dragHandle)}
+    </div>
+  );
 
   const renderHiveAccount = (
     item: Extract<AccountSelectorListItem, { type: 'hive' }>,
@@ -320,7 +391,7 @@ const AccountSelector = ({
           placeholder={'/assets/images/placeholders/account-placeholder.png'}
         />
         <div className="account-selector-list-item-label">{account.name}</div>
-        {renderAccountListItemActions(item, dragHandle)}
+        {renderAccountListItemTrailing(item, dragHandle)}
       </div>
     );
   };
@@ -351,7 +422,7 @@ const AccountSelector = ({
           </div>
           <div className="address">{FormatUtils.shortenString(address, 4)}</div>
         </div>
-        {renderAccountListItemActions(item, dragHandle)}
+        {renderAccountListItemTrailing(item, dragHandle)}
       </div>
     );
   };

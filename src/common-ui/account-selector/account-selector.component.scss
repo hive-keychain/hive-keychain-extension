@@ -125,7 +125,9 @@
       border-radius: 16px;
       background: var(--card-background);
       cursor: pointer;
-      transition: background 0.15s ease, border-color 0.15s ease,
+      transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
         color 0.15s ease;
 
       .user-picture {
@@ -148,6 +150,52 @@
 
       .selected-account-name {
         flex: 1;
+        min-width: 0;
+      }
+
+      .account-selector-list-item-trailing {
+        display: flex;
+        align-items: center;
+        column-gap: 8px;
+        flex-shrink: 0;
+        margin-left: auto;
+        justify-content: flex-end;
+        min-width: 108px;
+      }
+
+      .account-selector-list-item-chains {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        min-width: 80px;
+        justify-content: flex-end;
+
+        .account-selector-list-item-chain-icon {
+          @include icon-size(24px);
+        }
+
+        &--stacked {
+          .account-selector-list-item-chain-logo-wrapper {
+            display: flex;
+
+            &:not(:first-child) {
+              margin-left: -8px;
+            }
+          }
+
+          .account-selector-list-item-chain-logo {
+            @include icon-size(20px);
+            border-radius: 50%;
+            background-color: white;
+            border: 2px solid var(--card-background);
+            object-fit: cover;
+            box-sizing: border-box;
+
+            &.chain-logo-initials {
+              @include poppins600(8px);
+            }
+          }
+        }
       }
 
       .account-selector-list-item-actions {
@@ -156,7 +204,7 @@
         column-gap: 8px;
         flex-shrink: 0;
         justify-content: flex-end;
-        width: 76px;
+        min-width: 20px;
       }
 
       .account-selector-list-action {
@@ -167,6 +215,10 @@
         justify-content: center;
         flex-shrink: 0;
         opacity: 0.7;
+
+        &.active-icon-slot {
+          opacity: 1;
+        }
 
         &.edit-icon {
           cursor: pointer;
@@ -213,6 +265,10 @@
         background: $red;
         border-color: $red;
 
+        .account-selector-list-item-chains {
+          display: none;
+        }
+
         .account-selector-list-item-label,
         .selected-account-name {
           color: white;
@@ -231,6 +287,10 @@
         }
 
         .account-selector-list-action.active-icon {
+          display: none;
+        }
+
+        .account-selector-list-action.active-icon-slot {
           display: none;
         }
 

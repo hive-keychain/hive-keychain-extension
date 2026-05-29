@@ -98,10 +98,64 @@ const evmChain = {
   name: 'Ethereum',
   type: ChainType.EVM,
   chainId: '0x1',
-  logo: '',
+  logo: 'https://example.com/eth.png',
   rpcs: [],
   mainToken: 'ETH',
 } as EvmChain;
+
+const polygonChain = {
+  name: 'Polygon',
+  type: ChainType.EVM,
+  chainId: '0x89',
+  logo: 'https://example.com/polygon.png',
+  rpcs: [],
+  mainToken: 'MATIC',
+} as EvmChain;
+
+const evmTestnetChain = {
+  name: 'Sepolia',
+  type: ChainType.EVM,
+  chainId: '0xaa36a7',
+  logo: 'https://example.com/sepolia.png',
+  testnet: true,
+  rpcs: [],
+  mainToken: 'ETH',
+} as EvmChain;
+
+const additionalEvmChains = [
+  {
+    name: 'Arbitrum',
+    type: ChainType.EVM,
+    chainId: '0xa4b1',
+    logo: 'https://example.com/arbitrum.png',
+    rpcs: [],
+    mainToken: 'ETH',
+  },
+  {
+    name: 'Optimism',
+    type: ChainType.EVM,
+    chainId: '0xa',
+    logo: 'https://example.com/optimism.png',
+    rpcs: [],
+    mainToken: 'ETH',
+  },
+  {
+    name: 'Base',
+    type: ChainType.EVM,
+    chainId: '0x2105',
+    logo: 'https://example.com/base.png',
+    rpcs: [],
+    mainToken: 'ETH',
+  },
+  {
+    name: 'Gnosis',
+    type: ChainType.EVM,
+    chainId: '0x64',
+    logo: 'https://example.com/gnosis.png',
+    rpcs: [],
+    mainToken: 'XDAI',
+  },
+] as EvmChain[];
 
 const firstEvmAddress = '0x1234567890123456789012345678901234567890';
 const secondEvmAddress = '0x2234567890123456789012345678901234567890';
@@ -172,7 +226,15 @@ describe('AccountSelectorComponent', () => {
     chrome.i18n.getMessage = jest.fn((key: string) => key);
     jest
       .spyOn(ChainUtils, 'getAllSetupChainsForType')
-      .mockResolvedValue([hiveChain]);
+      .mockImplementation(async (type) => {
+        if (type === ChainType.HIVE) {
+          return [hiveChain];
+        }
+        if (type === ChainType.EVM) {
+          return [evmChain, polygonChain, evmTestnetChain, ...additionalEvmChains];
+        }
+        return [];
+      });
     jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([hiveChain]);
     jest.spyOn(EvmChainUtils, 'getLastEvmChain').mockResolvedValue(evmChain);
     jest.spyOn(EvmChainUtils, 'getEthChain').mockResolvedValue(evmChain);
@@ -305,6 +367,60 @@ describe('AccountSelectorComponent', () => {
     expect(screen.getByTestId('account-selector-create-hive')).toHaveTextContent(
       'evm_addresses_add',
     );
+  });
+
+  it('shows Hive icon on Hive rows and stacked mainnet EVM chain logos on EVM rows', async () => {
+    customRender(<AccountSelectorComponent selectedAccountType="hive" />, {
+      initialState: buildState(),
+    });
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+
+    expect(
+      within(
+        screen.getByTestId(
+          `account-selector-hive-account-${userData.one.username}`,
+        ),
+      ).getByTestId('account-selector-hive-chain-indicator'),
+    ).toBeInTheDocument();
+
+    const evmAccountRow = screen.getByTestId(
+      `account-selector-evm-account-${firstEvmAddress}`,
+    );
+    expect(
+      within(evmAccountRow).getByTestId('account-selector-evm-chains-indicator'),
+    ).toBeInTheDocument();
+    expect(
+      within(evmAccountRow).getByTestId('account-selector-evm-chain-0x1'),
+    ).toBeInTheDocument();
+    expect(
+      within(evmAccountRow).getByTestId('account-selector-evm-chain-0x89'),
+    ).toBeInTheDocument();
+    expect(
+      within(evmAccountRow).queryByTestId('account-selector-evm-chain-0xaa36a7'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows at most five EVM chain logos when more chains are active', async () => {
+    customRender(<AccountSelectorComponent selectedAccountType="hive" />, {
+      initialState: buildState(),
+    });
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+
+    const evmAccountRow = screen.getByTestId(
+      `account-selector-evm-account-${firstEvmAddress}`,
+    );
+    const chainsIndicator = within(evmAccountRow).getByTestId(
+      'account-selector-evm-chains-indicator',
+    );
+
+    expect(
+      within(chainsIndicator).getAllByTestId(/^account-selector-evm-chain-/),
+    ).toHaveLength(5);
+    expect(
+      within(chainsIndicator).queryByTestId('account-selector-evm-chain-0x64'),
+    ).not.toBeInTheDocument();
   });
 
   it('switches the active Hive account when clicking another Hive account on Hive chain', async () => {
