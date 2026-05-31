@@ -3,6 +3,7 @@ import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions'
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
 import { setChain } from '@popup/multichain/actions/chain.actions';
@@ -106,6 +107,20 @@ const stopListItemActionPropagation = (
   event.stopPropagation();
 };
 
+const getVisibleEvmAccounts = (accounts: EvmAccount[]) =>
+  accounts.filter((account) => !account.hide);
+
+const resolveSelectableHiveAccounts = async (
+  hiveAccounts: LocalAccount[],
+  mk: string,
+): Promise<LocalAccount[]> => {
+  if (hiveAccounts.length || !mk) {
+    return hiveAccounts;
+  }
+
+  return (await AccountUtils.getAccountsFromLocalStorage(mk)) ?? [];
+};
+
 const getAccountSelectorCopyValue = (item: AccountSelectorListItem) => {
   if (item.type === ChainType.HIVE) {
     return item.account.name;
@@ -156,6 +171,32 @@ const AccountSelector = ({
         activeEvmAccountAddress?.toLowerCase(),
     ) ?? evmAccounts[0];
 
+  const resolveSelectableAccounts = async () => {
+    const selectableHiveAccounts = await resolveSelectableHiveAccounts(
+      hiveAccounts,
+      mk,
+    );
+
+    let selectableEvmAccounts = getVisibleEvmAccounts(evmAccounts);
+    let storedEvmAccounts: EvmAccount[] = [];
+
+    if (!selectableEvmAccounts.length && mk) {
+      storedEvmAccounts =
+        await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+      selectableEvmAccounts = getVisibleEvmAccounts(storedEvmAccounts);
+    }
+
+    if (mk && !hiveAccounts.length && selectableHiveAccounts.length > 0) {
+      setAccounts(selectableHiveAccounts);
+    }
+
+    if (mk && !evmAccounts.length && storedEvmAccounts.length > 0) {
+      setEvmAccounts(storedEvmAccounts);
+    }
+
+    return { selectableHiveAccounts, selectableEvmAccounts };
+  };
+
   const rebuildAccountListItems = async (
     selectableHiveAccounts: LocalAccount[],
     selectableEvmAccounts: EvmAccount[],
@@ -187,49 +228,50 @@ const AccountSelector = ({
     }
 
     void (async () => {
+      const { selectableHiveAccounts, selectableEvmAccounts } =
+        await resolveSelectableAccounts();
+
       if (!mk) {
-        await rebuildAccountListItems(hiveAccounts, evmAccounts);
+        await rebuildAccountListItems(
+          selectableHiveAccounts,
+          selectableEvmAccounts,
+        );
         return;
       }
 
       if (displayOrder.length > 0) {
         const mergedOrder = AccountSelectorOrderUtils.mergeDisplayOrder(
           displayOrder,
-          hiveAccounts,
-          evmAccounts,
+          selectableHiveAccounts,
+          selectableEvmAccounts,
         );
         if (!areDisplayOrdersEqual(mergedOrder, displayOrder)) {
           setDisplayOrder(mergedOrder);
         }
         setAccountListItems(
           AccountSelectorOrderUtils.buildOrderedListItems(
-            hiveAccounts,
-            evmAccounts,
+            selectableHiveAccounts,
+            selectableEvmAccounts,
             mergedOrder,
           ),
         );
         return;
       }
 
-      await rebuildAccountListItems(hiveAccounts, evmAccounts);
+      await rebuildAccountListItems(
+        selectableHiveAccounts,
+        selectableEvmAccounts,
+      );
     })();
     // displayOrder is read when hive/evm accounts change after a persisted reorder
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hiveAccounts, evmAccounts, mk, isPersistingOrder]);
 
   const openAccountSelector = async () => {
-    let selectableHiveAccounts = hiveAccounts;
+    const { selectableHiveAccounts, selectableEvmAccounts } =
+      await resolveSelectableAccounts();
 
-    if (!hiveAccounts.length && mk) {
-      const storedHiveAccounts =
-        await AccountUtils.getAccountsFromLocalStorage(mk);
-
-      if (storedHiveAccounts?.length) {
-        selectableHiveAccounts = storedHiveAccounts;
-      }
-    }
-
-    await rebuildAccountListItems(selectableHiveAccounts, evmAccounts);
+    await rebuildAccountListItems(selectableHiveAccounts, selectableEvmAccounts);
     setActiveEvmMainnetChains(await getActiveEvmMainnetChains());
     setIsOpened(true);
   };
@@ -542,14 +584,8 @@ const AccountSelector = ({
     setIsPersistingOrder(true);
 
     try {
-      let selectableHiveAccounts = hiveAccounts;
-      if (!hiveAccounts.length) {
-        const storedHiveAccounts =
-          await AccountUtils.getAccountsFromLocalStorage(mk);
-        if (storedHiveAccounts?.length) {
-          selectableHiveAccounts = storedHiveAccounts;
-        }
-      }
+      const { selectableHiveAccounts, selectableEvmAccounts } =
+        await resolveSelectableAccounts();
 
       const {
         displayOrder: persistedOrder,
@@ -559,7 +595,7 @@ const AccountSelector = ({
         mk,
         orderedRefs,
         selectableHiveAccounts,
-        evmAccounts,
+        selectableEvmAccounts,
       );
 
       setDisplayOrder(persistedOrder);

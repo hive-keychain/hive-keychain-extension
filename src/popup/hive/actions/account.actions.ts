@@ -6,14 +6,19 @@ import {
   refreshKeys,
 } from 'src/popup/hive/actions/active-account.actions';
 import { setProcessingDecryptAccount } from 'src/popup/hive/actions/app-status.actions';
+import { EvmActionType } from '@popup/evm/actions/action-type.evm.enum';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { ActionPayload, AppThunk } from '../../multichain/actions/interfaces';
 import { HiveActionType } from './action-type.enum';
 
 export const retrieveAccounts =
   (mk: string): AppThunk =>
-  async (dispatch, getState) => {
-    let accounts = await AccountUtils.getAccountsFromLocalStorage(mk);
+  async (dispatch) => {
+    const [accounts, evmAccounts] = await Promise.all([
+      AccountUtils.getAccountsFromLocalStorage(mk),
+      EvmWalletUtils.rebuildAccountsFromLocalStorage(mk),
+    ]);
     const action: ActionPayload<LocalAccount[]> = {
       type: HiveActionType.SET_ACCOUNTS,
       payload: accounts,
@@ -21,6 +26,9 @@ export const retrieveAccounts =
     if (accounts) {
       dispatch(action);
       dispatch(setProcessingDecryptAccount(false));
+    }
+    if (evmAccounts.length > 0) {
+      dispatch({ type: EvmActionType.SET_ACCOUNTS, payload: evmAccounts });
     }
   };
 

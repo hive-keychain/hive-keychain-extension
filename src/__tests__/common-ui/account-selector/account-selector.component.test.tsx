@@ -16,6 +16,7 @@ import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-
 import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 import { AccountSelectorComponent } from 'src/common-ui/account-selector/account-selector.component';
 import AccountSelectorOrderUtils from '@popup/multichain/utils/account-selector-order.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { EvmAccountSource } from 'src/popup/evm/interfaces/wallet.interface';
 import * as AccountActions from 'src/popup/hive/actions/account.actions';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
@@ -604,6 +605,38 @@ describe('AccountSelectorComponent', () => {
         `account-selector-hive-account-${userData.two.username}`,
       ),
     ).toBeInTheDocument();
+  });
+
+  it('loads EVM accounts from storage when opening the account list on Hive without EVM accounts in state', async () => {
+    const storedEvmAccounts = [
+      createEvmAccount(firstEvmAddress, 0, 'Primary EVM'),
+      createEvmAccount(secondEvmAddress, 1, 'Secondary EVM'),
+    ];
+    const rebuildAccountsSpy = jest
+      .spyOn(EvmWalletUtils, 'rebuildAccountsFromLocalStorage')
+      .mockResolvedValue(storedEvmAccounts);
+
+    const initialState = {
+      ...buildState(),
+      evm: {
+        ...buildState().evm,
+        accounts: [],
+      },
+    };
+
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
+      initialState,
+    });
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+
+    expect(
+      await screen.findByTestId(`account-selector-evm-account-${firstEvmAddress}`),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId(`account-selector-evm-account-${secondEvmAddress}`),
+    ).toBeInTheDocument();
+    expect(rebuildAccountsSpy).toHaveBeenCalledWith(mkData.user.one);
   });
 
   it('loads Hive accounts from storage when opening the account list without Hive accounts in state', async () => {

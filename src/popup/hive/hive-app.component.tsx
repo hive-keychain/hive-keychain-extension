@@ -1,5 +1,7 @@
 import { Rpc } from '@interfaces/rpc.interface';
 import { Screen } from '@interfaces/screen.interface';
+import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import {
   retrieveAccounts,
   setAccounts,
@@ -73,6 +75,7 @@ const HiveApp = ({
   displayChangeRpcPopup,
   initHiveEngineConfigFromStorage,
   setAccounts,
+  setEvmAccounts,
   loadGlobalProperties,
   setActiveRpc,
   setDisplayChangeRpcPopup,
@@ -200,8 +203,16 @@ const HiveApp = ({
     let accountsFromStorage: LocalAccount[] = [];
     if (storedAccounts && mk) {
       await AsyncUtils.sleep(500);
-      accountsFromStorage = await AccountUtils.getAccountsFromLocalStorage(mk);
+      const [hiveAccountsFromStorage, evmAccountsFromStorage] =
+        await Promise.all([
+          AccountUtils.getAccountsFromLocalStorage(mk),
+          EvmWalletUtils.rebuildAccountsFromLocalStorage(mk),
+        ]);
+      accountsFromStorage = hiveAccountsFromStorage ?? [];
       setAccounts(accountsFromStorage);
+      if (evmAccountsFromStorage.length > 0) {
+        setEvmAccounts(evmAccountsFromStorage);
+      }
     }
 
     await selectComponent(mk, accountsFromStorage);
@@ -372,6 +383,7 @@ const connector = connect(mapStateToProps, {
   navigateTo,
   refreshActiveAccount,
   setAccounts,
+  setEvmAccounts,
   loadActiveAccount,
   loadGlobalProperties,
   setSwitchToRpc,
