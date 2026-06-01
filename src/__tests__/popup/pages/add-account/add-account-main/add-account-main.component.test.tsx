@@ -1,14 +1,18 @@
 import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
-import { act, cleanup, screen } from '@testing-library/react';
+import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/fake-store';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 import { Icons } from 'src/common-ui/icons.enum';
+import { EvmChainUtils } from 'src/popup/evm/utils/evm-chain.utils';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import { AddAccountMainComponent } from 'src/popup/hive/pages/add-account/add-account-main/add-account-main.component';
+import { ChainType } from 'src/popup/multichain/interfaces/chains.interface';
 
 describe('add-account-main.component tests:\n', () => {
   afterEach(() => {
@@ -47,12 +51,16 @@ describe('add-account-main.component tests:\n', () => {
     it('Must navigate to add-by-keys', async () => {
       await act(async () => {
         await userEvent.click(
-          await screen.findByTestId(dataTestIdButton.addByKeys),
+          await screen.findByText('Use a private key or master password'),
         );
       });
       expect(
         await screen.findByTestId(`${Screen.ACCOUNT_PAGE_ADD_BY_KEYS}-page`),
       ).toBeInTheDocument();
+    });
+
+    it('Must hide create account without an existing Hive account', async () => {
+      expect(screen.queryByText('Create account')).not.toBeInTheDocument();
     });
   });
 
@@ -75,15 +83,15 @@ describe('add-account-main.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(await screen.findByTestId(dataTestIdButton.menu));
+        await userEvent.click(await screen.findByTestId('clickable-settings'));
         await userEvent.click(
           await screen.findByTestId(
-            dataTestIdButton.menuPreFix + Icons.ACCOUNTS,
+            'menu-settings-button-' + Icons.ACCOUNTS,
           ),
         );
         await userEvent.click(
           await screen.findByTestId(
-            dataTestIdButton.menuPreFix + Icons.ADD_ACCOUNT,
+            'menu-settings-button-' + Icons.ADD_ACCOUNT,
           ),
         );
       });
@@ -92,12 +100,90 @@ describe('add-account-main.component tests:\n', () => {
     it('Must navigate to add-by-auth', async () => {
       await act(async () => {
         await userEvent.click(
-          await screen.findByTestId(dataTestIdButton.addByAuth),
+          await screen.findByText('Use an authorized account'),
         );
       });
       expect(
         await screen.findByTestId(`${Screen.ACCOUNT_PAGE_ADD_BY_AUTH}-page`),
       ).toBeInTheDocument();
+    });
+
+    it('Must navigate to create account', async () => {
+      await act(async () => {
+        await userEvent.click(await screen.findByText('Create account'));
+      });
+      expect(
+        await screen.findByTestId(`${Screen.CREATE_ACCOUNT_PAGE_STEP_ONE}-page`),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe('Chain type selector cases', () => {
+    const evmChain = {
+      name: 'Ethereum',
+      type: ChainType.EVM,
+      chainId: '0x1',
+      logo: '',
+      rpcs: [{ url: 'https://eth.example' }],
+      mainToken: 'ETH',
+    };
+
+    beforeEach(() => {
+      jest.spyOn(EvmChainUtils, 'getLastEvmChain').mockResolvedValue(evmChain);
+      jest.spyOn(EvmChainUtils, 'getEthChain').mockResolvedValue(evmChain);
+    });
+
+    it('shows Hive options by default and EVM options when selecting EVM', async () => {
+      customRender(<AddAccountMainComponent />, {
+        initialState: {
+          ...initialEmptyStateStore,
+          hive: {
+            ...initialEmptyStateStore.hive,
+            accounts: accounts.twoAccounts,
+          },
+        },
+      });
+
+      expect(
+        screen.getByText('Use a private key or master password'),
+      ).toBeInTheDocument();
+      expect(screen.getByText('Create account')).toBeInTheDocument();
+
+      await userEvent.click(screen.getByTestId('add-account-type-evm'));
+
+      expect(
+        screen.queryByText('Use a private key or master password'),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByText('Import from a seedphrase'),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('Import keys from a .kc file'),
+      ).toBeInTheDocument();
+      expect(screen.getByText('Import from a private key')).toBeInTheDocument();
+      expect(screen.getByText('Create a new EVM wallet')).toBeInTheDocument();
+    });
+
+    it('switches to an EVM chain before navigating to an EVM add method', async () => {
+      const { store } = customRender(<AddAccountMainComponent />, {
+        initialState: {
+          ...initialEmptyStateStore,
+          hive: {
+            ...initialEmptyStateStore.hive,
+            accounts: accounts.twoAccounts,
+          },
+        },
+      });
+
+      await userEvent.click(screen.getByTestId('add-account-type-evm'));
+      await userEvent.click(screen.getByText('Import from a private key'));
+
+      await waitFor(() => {
+        expect(store.getState().chain.type).toBe(ChainType.EVM);
+        expect(store.getState().navigation.stack[0].currentPage).toBe(
+          Screen.IMPORT_EVM_WALLET_FROM_KEY,
+        );
+      });
     });
   });
 });

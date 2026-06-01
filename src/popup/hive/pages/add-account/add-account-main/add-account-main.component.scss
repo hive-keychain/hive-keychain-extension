@@ -3,16 +3,45 @@
   flex-direction: column;
   row-gap: 32px;
   padding: 0 24px;
+  padding-bottom: 24px;
 
   .caption {
     @include settings-page-note();
     margin: 0;
   }
 
-  .button-container {
+  .add-account-type-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .add-account-type-card {
+    @include poppins600(16px);
+    color: var(--main-font-color);
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    min-height: 112px;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     row-gap: 12px;
+    cursor: pointer;
+
+    .svg-icon {
+      @include icon-size(34px);
+    }
+
+    &.selected {
+      border-color: $red;
+      box-shadow: 0 4px 10px rgba(227, 19, 55, 0.14);
+    }
+  }
+
+  .button-container {
     padding: 0;
+    margin: 0;
   }
 }

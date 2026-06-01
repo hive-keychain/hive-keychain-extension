@@ -3,13 +3,48 @@ import BgdAccountsUtils from '@background/hive/utils/accounts.utils';
 import { ImportCallbackPayload } from '@interfaces/import-callback.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+const sendImportError = () => {
+  const response: ImportCallbackPayload = {
+    success: false,
+    message: 'import_html_error',
+  };
+  CommunicationUtils.runtimeSendMessage({
+    command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
+    value: response,
+  });
+};
+
 const sendBackImportedAccounts = async (fileContent: string) => {
   if (fileContent?.length) {
     const mk = await MkModule.getMk();
+    try {
+      const { hasLedger } = await EvmWalletUtils.importAccountsFromFileData(
+        fileContent,
+        mk,
+      );
+      const response: ImportCallbackPayload = {
+        success: true,
+        message: 'import_html_success',
+        accountType: 'evm',
+        warning: hasLedger
+          ? {
+              message: 'ledger_import_account_has_ledger',
+              params: [chrome.runtime.getURL('link-ledger-device.html')],
+            }
+          : null,
+      };
+      CommunicationUtils.runtimeSendMessage({
+        command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
+        value: response,
+      });
+      return;
+    } catch (e) {}
+
     let importedAccounts;
     try {
       importedAccounts = await BgdAccountsUtils.getAccountsFromFileData(
@@ -17,14 +52,7 @@ const sendBackImportedAccounts = async (fileContent: string) => {
         mk,
       );
     } catch (e) {
-      const response: ImportCallbackPayload = {
-        success: false,
-        message: 'import_html_error',
-      };
-      CommunicationUtils.runtimeSendMessage({
-        command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
-        value: response,
-      });
+      sendImportError();
       return;
     }
 
@@ -59,6 +87,7 @@ const sendBackImportedAccounts = async (fileContent: string) => {
     const response: ImportCallbackPayload = {
       success: true,
       message: 'import_html_success',
+      accountType: 'hive',
       accounts: newAccounts,
       warning: useLedger
         ? {

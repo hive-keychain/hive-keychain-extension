@@ -545,6 +545,207 @@ const hasStoredWalletAddress = (
   );
 };
 
+const isStoredSeed = (source: unknown): source is StoredSeed => {
+  const storedSeed = source as StoredSeed;
+  return (
+    source !== null &&
+    typeof source === 'object' &&
+    (!storedSeed.type || storedSeed.type === EvmAccountSource.SEED) &&
+    typeof storedSeed.seed === 'string' &&
+    typeof storedSeed.id === 'number' &&
+    Array.isArray(storedSeed.accounts)
+  );
+};
+
+const isStoredImportedSource = (
+  source: unknown,
+): source is StoredEvmImportedWalletSource => {
+  const importedSource = source as StoredEvmImportedWalletSource;
+  return (
+    source !== null &&
+    typeof source === 'object' &&
+    importedSource.type === EvmAccountSource.IMPORTED &&
+    typeof importedSource.id === 'number' &&
+    Array.isArray(importedSource.accounts) &&
+    importedSource.accounts.every(
+      (account) =>
+        typeof account.address === 'string' &&
+        typeof account.privateKey === 'string',
+    )
+  );
+};
+
+const isStoredLedgerSource = (
+  source: unknown,
+): source is StoredEvmLedgerWalletSource => {
+  const ledgerSource = source as StoredEvmLedgerWalletSource;
+  return (
+    source !== null &&
+    typeof source === 'object' &&
+    ledgerSource.type === EvmAccountSource.LEDGER &&
+    typeof ledgerSource.id === 'number' &&
+    Array.isArray(ledgerSource.accounts) &&
+    ledgerSource.accounts.every(
+      (account) =>
+        typeof account.address === 'string' && typeof account.path === 'string',
+    )
+  );
+};
+
+const isStoredEvmAccountSource = (
+  source: unknown,
+): source is StoredEvmAccountSource =>
+  isStoredSeed(source) ||
+  isStoredImportedSource(source) ||
+  isStoredLedgerSource(source);
+
+const getEvmAccountsFromFileData = async (
+  fileContent: string,
+  mk: string,
+): Promise<StoredEvmAccountSource[]> => {
+  const accounts = await EncryptUtils.decryptToJsonWithLegacySupport(
+    fileContent,
+    mk,
+  );
+  const importedAccounts = accounts?.list;
+  if (
+    !Array.isArray(importedAccounts) ||
+    importedAccounts.length === 0 ||
+    !importedAccounts.every(isStoredEvmAccountSource)
+  ) {
+    throw new Error('Invalid EVM accounts file');
+  }
+  return importedAccounts;
+};
+
+const mergeImportedEvmAccountsToExistingAccounts = (
+  importedSources: StoredEvmAccountSource[],
+  existingSources: StoredEvmAccountSource[],
+) => {
+  const mergedSources = normalizeSeedAccountOrders(existingSources);
+  let existingImportedSource = mergedSources.find(isImportedSource);
+  let existingLedgerSource = mergedSources.find(isLedgerSource);
+  const existingAddresses = new Set(
+    mergedSources
+      .map((source) =>
+        getStoredSourceAccountAddress(source).map((address) =>
+          address.toLowerCase(),
+        ),
+      )
+      .flat(),
+  );
+  const usedLedgerAccountIds = new Set(
+    existingLedgerSource?.accounts.map((account) => account.id) ?? [],
+  );
+  let nextSourceId = getMaxSourceId(mergedSources) + 1;
+  let nextOrder = getMaxAccountOrder(mergedSources) + 1;
+
+  for (const source of normalizeSeedAccountOrders(importedSources)) {
+    if (isSeedSource(source)) {
+      const accounts = source.accounts.filter((account) => {
+        const address = HDNodeWallet.fromPhrase(
+          source.seed,
+          undefined,
+          account.path,
+        ).address.toLowerCase();
+        if (existingAddresses.has(address)) return false;
+        existingAddresses.add(address);
+        return true;
+      });
+      if (!accounts.length) continue;
+
+      mergedSources.push({
+        ...source,
+        id: nextSourceId++,
+        accounts: accounts.map((account) => ({
+          ...account,
+          order: nextOrder++,
+        })),
+      });
+      continue;
+    }
+
+    if (isImportedSource(source)) {
+      const accounts = source.accounts.filter((account) => {
+        const address = account.address.toLowerCase();
+        if (existingAddresses.has(address)) return false;
+        existingAddresses.add(address);
+        return true;
+      });
+      if (!accounts.length) continue;
+
+      const normalizedAccounts = accounts.map((account, index) => ({
+        ...account,
+        id: (existingImportedSource?.accounts.length ?? 0) + index,
+        order: nextOrder++,
+      }));
+
+      if (existingImportedSource) {
+        existingImportedSource.accounts.push(...normalizedAccounts);
+      } else {
+        existingImportedSource = {
+          ...source,
+          id: nextSourceId++,
+          nickname: source.nickname ?? IMPORTED_SOURCE_NICKNAME,
+          accounts: normalizedAccounts,
+        };
+        mergedSources.push(existingImportedSource);
+      }
+      continue;
+    }
+
+    if (isLedgerSource(source)) {
+      const accounts = source.accounts.filter((account) => {
+        const address = account.address.toLowerCase();
+        if (existingAddresses.has(address)) return false;
+        existingAddresses.add(address);
+        return true;
+      });
+      if (!accounts.length) continue;
+
+      const normalizedAccounts = accounts.map((account) => ({
+        ...account,
+        id: getAvailableLedgerAccountId(account.id, usedLedgerAccountIds),
+        derivationMode:
+          account.derivationMode ??
+          EvmLedgerUtils.getDerivationModeFromPath(account.path),
+        ledgerIndex:
+          account.ledgerIndex ??
+          EvmLedgerUtils.getDerivationIndexFromPath(account.path) ??
+          account.id,
+        order: nextOrder++,
+      }));
+
+      if (existingLedgerSource) {
+        existingLedgerSource.accounts.push(...normalizedAccounts);
+      } else {
+        existingLedgerSource = {
+          ...source,
+          id: nextSourceId++,
+          accounts: normalizedAccounts,
+        };
+        mergedSources.push(existingLedgerSource);
+      }
+    }
+  }
+
+  return normalizeSeedAccountOrders(mergedSources);
+};
+
+const importAccountsFromFileData = async (fileContent: string, mk: string) => {
+  const importedSources = await getEvmAccountsFromFileData(fileContent, mk);
+  const existingSources = await getAccountsFromLocalStorage(mk);
+  const mergedSources = mergeImportedEvmAccountsToExistingAccounts(
+    importedSources,
+    existingSources,
+  );
+  await encryptAccountsInLocalStorage(mk, mergedSources);
+  return {
+    accounts: await rebuildAccountsFromLocalStorage(mk),
+    hasLedger: importedSources.some(isLedgerSource),
+  };
+};
+
 const addImportedWallet = async (
   wallet: EvmImportedWallet,
   mk: string,
@@ -1356,4 +1557,7 @@ export const EvmWalletUtils = {
   isSeedAccount,
   isImportedAccount,
   getWalletFromPrivateKey,
+  getEvmAccountsFromFileData,
+  mergeImportedEvmAccountsToExistingAccounts,
+  importAccountsFromFileData,
 };
