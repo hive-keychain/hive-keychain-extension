@@ -28,10 +28,15 @@ const ChainDropdown = ({
     let cancelled = false;
 
     const init = async () => {
-      const chains = await ChainUtils.getSetupChains(true);
+      const chains = (await ChainUtils.getSetupChains(true)).filter(
+        (setupChain) => setupChain.type !== ChainType.HIVE,
+      );
       if (cancelled) return;
 
-      if (!chains.find((e) => e.chainId === chain.chainId)) {
+      if (
+        chain.type !== ChainType.HIVE &&
+        !chains.find((e) => e.chainId === chain.chainId)
+      ) {
         chains.push(chain);
       }
       const optionItems: OptionItem[] = chains.map((c) => {
