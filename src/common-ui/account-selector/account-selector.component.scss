@@ -126,7 +126,7 @@
       @include poppins500(13px);
       color: var(--main-font-color);
       background: var(--card-background);
-      border: 1px solid $lighter-grey-border;
+      border: 1px solid var(--input-border);
       border-radius: 16px;
       min-height: 32px;
       padding: 5px 10px;
@@ -400,7 +400,7 @@
       margin-left: auto;
 
       .account-selector-export-button-icon {
-        @include icon-size(20px);
+        @include icon-size(18px);
         flex-shrink: 0;
 
         path {

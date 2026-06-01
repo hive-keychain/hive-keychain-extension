@@ -139,7 +139,7 @@ const AddAccountMain = ({
         const hiveAccounts =
           message.value?.accounts?.length > 0
             ? message.value.accounts
-            : (await AccountUtils.getAccountsFromLocalStorage(mk)) ?? [];
+            : ((await AccountUtils.getAccountsFromLocalStorage(mk)) ?? []);
         EvmWalletUtils.invalidateRebuildAccountsCache();
         const evmAccounts =
           await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
@@ -290,7 +290,7 @@ const AddAccountMain = ({
         ...(accounts.length === 0
           ? [
               {
-                icon: SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL,
+                icon: SVGIcons.MENU_ACCOUNTS_KEYLESS_KEYCHAIN,
                 label: 'popup_html_setup_keyless_keychain',
                 action: handleSetupKeylessKeychain,
               },
