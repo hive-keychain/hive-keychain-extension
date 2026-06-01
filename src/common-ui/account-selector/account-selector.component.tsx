@@ -224,13 +224,27 @@ const AccountSelector = ({
       .join(' ');
   };
 
+  const hasHiveAccounts = accountListItems.some(
+    (item) => item.type === ChainType.HIVE,
+  );
+  const hasEvmAccounts = accountListItems.some(
+    (item) => item.type === ChainType.EVM,
+  );
+  const showAccountFilters = accountListItems.length >= 2;
+  const showAccountTypeFilters =
+    showAccountFilters && hasHiveAccounts && hasEvmAccounts;
+
   const filteredAccountListItems = accountListItems.filter((item) => {
-    if (accountTypeFilter !== 'all' && item.type !== accountTypeFilter) {
+    if (
+      showAccountTypeFilters &&
+      accountTypeFilter !== 'all' &&
+      item.type !== accountTypeFilter
+    ) {
       return false;
     }
 
     const normalizedSearch = accountSearch.trim().toLowerCase();
-    if (!normalizedSearch) {
+    if (!showAccountFilters || !normalizedSearch) {
       return true;
     }
 
@@ -240,7 +254,8 @@ const AccountSelector = ({
   });
 
   const isAccountListFiltered =
-    accountTypeFilter !== 'all' || accountSearch.trim().length > 0;
+    (showAccountFilters && accountSearch.trim().length > 0) ||
+    (showAccountTypeFilters && accountTypeFilter !== 'all');
 
   const rebuildAccountListItems = async (
     selectableHiveAccounts: LocalAccount[],
@@ -738,46 +753,54 @@ const AccountSelector = ({
               data-testid="account-selector-title">
               {chrome.i18n.getMessage('popup_html_accounts')}
             </div>
-            <div className="account-selector-filters">
-              <InputComponent
-                classname="account-selector-search"
-                dataTestId="account-selector-search-input"
-                type={InputType.TEXT}
-                logo={SVGIcons.INPUT_SEARCH}
-                logoPosition="left"
-                placeholder="popup_html_search"
-                value={accountSearch}
-                onChange={setAccountSearch}
-              />
-              <div className="account-selector-type-filter">
-                <button
-                  className={`account-selector-type-filter-button ${
-                    accountTypeFilter === ChainType.HIVE ? 'selected' : ''
-                  }`}
-                  data-testid="account-selector-filter-hive"
-                  onClick={() => handleAccountTypeFilterClick(ChainType.HIVE)}
-                  type="button">
-                  <SVGIcon
-                    icon={SVGIcons.BLOCKCHAIN_HIVE}
-                    className="account-selector-type-filter-icon"
-                  />
-                  <span>HIVE</span>
-                </button>
-                <button
-                  className={`account-selector-type-filter-button ${
-                    accountTypeFilter === ChainType.EVM ? 'selected' : ''
-                  }`}
-                  data-testid="account-selector-filter-evm"
-                  onClick={() => handleAccountTypeFilterClick(ChainType.EVM)}
-                  type="button">
-                  <SVGIcon
-                    icon={SVGIcons.BLOCKCHAIN_ETHEREUM}
-                    className="account-selector-type-filter-icon"
-                  />
-                  <span>EVM</span>
-                </button>
+            {showAccountFilters && (
+              <div className="account-selector-filters">
+                <InputComponent
+                  classname="account-selector-search"
+                  dataTestId="account-selector-search-input"
+                  type={InputType.TEXT}
+                  logo={SVGIcons.INPUT_SEARCH}
+                  logoPosition="left"
+                  placeholder="popup_html_search"
+                  value={accountSearch}
+                  onChange={setAccountSearch}
+                />
+                {showAccountTypeFilters && (
+                  <div className="account-selector-type-filter">
+                    <button
+                      className={`account-selector-type-filter-button ${
+                        accountTypeFilter === ChainType.HIVE ? 'selected' : ''
+                      }`}
+                      data-testid="account-selector-filter-hive"
+                      onClick={() =>
+                        handleAccountTypeFilterClick(ChainType.HIVE)
+                      }
+                      type="button">
+                      <SVGIcon
+                        icon={SVGIcons.BLOCKCHAIN_HIVE}
+                        className="account-selector-type-filter-icon"
+                      />
+                      <span>HIVE</span>
+                    </button>
+                    <button
+                      className={`account-selector-type-filter-button ${
+                        accountTypeFilter === ChainType.EVM ? 'selected' : ''
+                      }`}
+                      data-testid="account-selector-filter-evm"
+                      onClick={() =>
+                        handleAccountTypeFilterClick(ChainType.EVM)
+                      }
+                      type="button">
+                      <SVGIcon
+                        icon={SVGIcons.BLOCKCHAIN_ETHEREUM}
+                        className="account-selector-type-filter-icon"
+                      />
+                      <span>EVM</span>
+                    </button>
+                  </div>
+                )}
               </div>
-            </div>
+            )}
             <div
               className="account-selector-list"
               data-testid="account-selector-list">

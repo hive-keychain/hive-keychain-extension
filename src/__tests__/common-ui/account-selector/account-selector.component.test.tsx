@@ -523,6 +523,65 @@ describe('AccountSelectorComponent', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('hides account type filters when only one account type is available', async () => {
+    jest
+      .spyOn(EvmWalletUtils, 'rebuildAccountsFromLocalStorage')
+      .mockResolvedValue([]);
+
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
+      initialState: {
+        ...buildState(),
+        evm: {
+          ...buildState().evm,
+          accounts: [],
+        },
+      },
+    });
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+
+    expect(
+      await screen.findByTestId('account-selector-search-input'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('account-selector-filter-hive'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('account-selector-filter-evm'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('hides account filters when fewer than two accounts are available', async () => {
+    jest
+      .spyOn(EvmWalletUtils, 'rebuildAccountsFromLocalStorage')
+      .mockResolvedValue([]);
+
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
+      initialState: {
+        ...buildState([localAccounts.user1]),
+        evm: {
+          ...buildState().evm,
+          accounts: [],
+        },
+      },
+    });
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+
+    expect(
+      await screen.findByTestId('account-selector-title'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('account-selector-search-input'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('account-selector-filter-hive'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('account-selector-filter-evm'),
+    ).not.toBeInTheDocument();
+  });
+
   it('copies the Hive username when clicking the copy icon', async () => {
     customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
       initialState: buildState(),
