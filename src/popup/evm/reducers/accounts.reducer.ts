@@ -9,6 +9,8 @@ export const EvmAccountsReducer = (
   switch (type) {
     case EvmActionType.SET_ACCOUNTS:
       return payload!;
+    case EvmActionType.RESET_STATE:
+      return [];
     default:
       return state;
   }

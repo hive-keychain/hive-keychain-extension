@@ -419,21 +419,24 @@ const UnlockedApp = ({
       const navStack = store.getState().navigation.stack;
       if (navStack.length === 0 || stackHasAccountSetupPage(navStack)) {
         if (navStack.length === 0) {
-          const navigationTarget =
-            EvmWalletSetupTabUtils.resolveEvmAppNavigationOnReady(
-              window.location.hash,
-              evmAccounts.length,
-            );
-          if (navigationTarget === 'create_wallet') {
-            EvmWalletSetupTabUtils.clearEvmWalletSetupHash();
-            navigateTo(Screen.CREATE_EVM_WALLET);
-            return;
-          }
-          if (navigationTarget === 'add_wallet_main') {
-            navigateToWithParams(Screen.EVM_ADD_WALLET_MAIN, {
-              resetOnBack: true,
-            });
-            return;
+          // EVM setup routes should not override Hive home when Hive accounts exist.
+          if (hiveAccounts.length === 0) {
+            const navigationTarget =
+              EvmWalletSetupTabUtils.resolveEvmAppNavigationOnReady(
+                window.location.hash,
+                evmAccounts.length,
+              );
+            if (navigationTarget === 'create_wallet') {
+              EvmWalletSetupTabUtils.clearEvmWalletSetupHash();
+              navigateTo(Screen.CREATE_EVM_WALLET);
+              return;
+            }
+            if (navigationTarget === 'add_wallet_main') {
+              navigateToWithParams(Screen.EVM_ADD_WALLET_MAIN, {
+                resetOnBack: true,
+              });
+              return;
+            }
           }
         }
         navigateTo(Screen.HOME_PAGE, true);

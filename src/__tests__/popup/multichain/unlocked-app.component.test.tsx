@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import { Screen } from '@interfaces/screen.interface';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { localAccounts } from 'src/__tests__/utils-for-testing/data/local-accounts';
@@ -271,5 +272,41 @@ describe('UnlockedAppComponent', () => {
       currentPage: HiveScreen.SETTINGS_MANAGE_ACCOUNTS,
       params: { username: localAccounts.user2.name },
     });
+  });
+
+  it('opens home page when only Hive accounts exist', async () => {
+    const { EvmWalletUtils } = require('@popup/evm/utils/wallet.utils');
+    const previousHash = window.location.hash;
+    window.location.hash = '';
+    EvmWalletUtils.rebuildAccountsFromLocalStorage.mockResolvedValue([]);
+
+    const { store } = customRender(<UnlockedAppComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk: mkData.user.one,
+        chain: hiveChain,
+        navigation: {
+          stack: [],
+        },
+        hive: {
+          ...initialEmptyStateStore.hive,
+          appStatus: {
+            ...initialEmptyStateStore.hive.appStatus,
+            priceLoaded: true,
+            globalPropertiesLoaded: true,
+          },
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(store.getState().hive.accounts).toHaveLength(2);
+      expect(store.getState().evm.accounts).toHaveLength(0);
+      expect(store.getState().navigation.stack[0]?.currentPage).toBe(
+        Screen.HOME_PAGE,
+      );
+    });
+
+    window.location.hash = previousHash;
   });
 });

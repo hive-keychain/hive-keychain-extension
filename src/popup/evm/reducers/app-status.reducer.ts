@@ -18,6 +18,7 @@ export const AppStatusReducer = (
     case EvmActionType.SET_APP_STATUS:
       return { ...state, ...payload };
     case EvmActionType.RESET_APP_STATUS:
+    case EvmActionType.RESET_STATE:
       return INITIAL_STATE;
     default:
       return state;

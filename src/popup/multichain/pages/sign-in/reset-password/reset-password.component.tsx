@@ -1,4 +1,6 @@
 import { Screen } from '@interfaces/screen.interface';
+import { resetEvmState } from '@popup/evm/actions/accounts.actions';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { resetChain } from '@popup/multichain/actions/chain.actions';
 import { setHasFinishedSignup } from '@popup/multichain/actions/has-finished-signup.actions';
 import { forgetMk } from '@popup/multichain/actions/mk.actions';
@@ -20,6 +22,7 @@ const ResetPasswordPage = ({
   resetActiveAccount,
   setHasFinishedSignup,
   resetChain,
+  resetEvmState,
 }: PropsFromRedux) => {
   useEffect(() => {
     setTitleContainerProperties({
@@ -30,6 +33,8 @@ const ResetPasswordPage = ({
 
   const reset = async () => {
     resetAccount();
+    resetEvmState();
+    EvmWalletUtils.invalidateRebuildAccountsCache();
     setHasFinishedSignup(false);
     forgetMk();
     resetActiveAccount();
@@ -71,6 +76,7 @@ const connector = connect(mapStateToProps, {
   resetActiveAccount,
   setHasFinishedSignup,
   resetChain,
+  resetEvmState,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

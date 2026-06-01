@@ -19,9 +19,20 @@ describe('ActiveAccountTypeUtils', () => {
         ChainType.EVM,
         hiveChain,
         hiveAccounts,
-        [],
+        evmAccounts,
       ),
     ).toBe(ChainType.EVM);
+  });
+
+  it('falls back to available account type when stored account type has no accounts', () => {
+    expect(
+      ActiveAccountTypeUtils.getActiveAccountType(
+        ChainType.EVM,
+        evmChain,
+        hiveAccounts,
+        [],
+      ),
+    ).toBe(ChainType.HIVE);
   });
 
   it('falls back to the active chain type', () => {
@@ -33,6 +44,17 @@ describe('ActiveAccountTypeUtils', () => {
         evmAccounts,
       ),
     ).toBe(ChainType.EVM);
+  });
+
+  it('falls back to available account type when active chain has no accounts', () => {
+    expect(
+      ActiveAccountTypeUtils.getActiveAccountType(
+        undefined,
+        evmChain,
+        hiveAccounts,
+        [],
+      ),
+    ).toBe(ChainType.HIVE);
   });
 
   it('uses EVM when only EVM accounts are available and no chain type is active', () => {

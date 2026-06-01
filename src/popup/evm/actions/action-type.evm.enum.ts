@@ -1,5 +1,6 @@
 export enum EvmActionType {
   SET_ACCOUNTS = 'SET_EVM_ACCOUNTS',
+  RESET_STATE = 'RESET_EVM_STATE',
 
   // Active account
   SET_ACTIVE_ACCOUNT = 'SET_ACTIVE_ACCOUNT',
