@@ -6,19 +6,18 @@ describe('getSettingsMainPageMenuItems', () => {
     const menuItems = getSettingsMainPageMenuItems({
       hasEvmAccounts: true,
       hasHiveAccounts: true,
-      logout: jest.fn(),
     });
 
     expect(menuItems.map((item) => item.nextScreen ?? item.label)).toEqual([
       Screen.SETTINGS_CONTACTS,
       Screen.SETTINGS_NETWORK,
       Screen.SETTINGS_CONNECTED_DAPPS,
+      Screen.SETTINGS_PREFERENCES_AND_DISPLAY,
       Screen.SETTINGS_EVM,
       Screen.SETTINGS_HIVE,
       Screen.SETTINGS_ADVANCED,
       Screen.SETTINGS_HELP,
       Screen.SETTINGS_ABOUT,
-      'popup_html_logout',
     ]);
   });
 
@@ -26,18 +25,17 @@ describe('getSettingsMainPageMenuItems', () => {
     const menuItems = getSettingsMainPageMenuItems({
       hasEvmAccounts: true,
       hasHiveAccounts: false,
-      logout: jest.fn(),
     });
 
     expect(menuItems.map((item) => item.nextScreen ?? item.label)).toEqual([
       Screen.SETTINGS_CONTACTS,
       Screen.SETTINGS_NETWORK,
       Screen.SETTINGS_CONNECTED_DAPPS,
+      Screen.SETTINGS_PREFERENCES_AND_DISPLAY,
       Screen.SETTINGS_EVM,
       Screen.SETTINGS_ADVANCED,
       Screen.SETTINGS_HELP,
       Screen.SETTINGS_ABOUT,
-      'popup_html_logout',
     ]);
   });
 });

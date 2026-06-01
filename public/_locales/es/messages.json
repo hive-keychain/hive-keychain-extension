@@ -659,6 +659,14 @@
     "message": "Separar ventana\nAtajo: Ctrl + D",
     "description": "after clicking on copy username to clipboard button on home page"
   },
+  "popup_html_detach_window": {
+    "message": "Abrir en pestaña",
+    "description": "Settings preferences menu: open extension in a browser tab"
+  },
+  "popup_html_preferences_and_display": {
+    "message": "Preferencias y visualización",
+    "description": "Settings menu section for theme and window display options"
+  },
   "popup_html_wrong_key_tooltip_text": {
     "message": "Esta llave no parece coincidir con tu cuenta. No podrás realizar transacciones con ella. Si la has cambiado, elimina esta llave y reemplázala con la nueva.",
     "description": "after hoover on red wrong key -> manage accounts -> account keys list item"

@@ -89,6 +89,7 @@ import { SettingsEvmPageComponent } from 'src/popup/multichain/pages/settings/se
 import { SettingsHivePageComponent } from 'src/popup/multichain/pages/settings/settings-hive-page.component';
 import { UnifiedSettingsMainPageComponent } from 'src/popup/multichain/pages/settings/settings-main-page.component';
 import { SettingsNetworkPageComponent } from 'src/popup/multichain/pages/settings/settings-network-page.component';
+import { SettingsPreferencesDisplayPageComponent } from 'src/popup/multichain/pages/settings/settings-preferences-display-page.component';
 
 const getConfirmationAccountType = (
   activeAccountType: ChainType.HIVE | ChainType.EVM,
@@ -196,6 +197,8 @@ const UnifiedRouter = ({
         return <SettingsNetworkPageComponent />;
       case MultichainScreen.SETTINGS_CONNECTED_DAPPS:
         return <SettingsConnectedDappsPageComponent />;
+      case MultichainScreen.SETTINGS_PREFERENCES_AND_DISPLAY:
+        return <SettingsPreferencesDisplayPageComponent />;
       case MultichainScreen.SETTINGS_EVM:
         return <SettingsEvmPageComponent />;
       case MultichainScreen.SETTINGS_HIVE:

@@ -22,6 +22,8 @@ export interface PageTitleProps {
     icon: SVGIcons;
     callback: () => void;
     className?: string;
+    dataTestId?: string;
+    tooltipMessage?: string;
   };
   closeNavigationParams?: any;
   onCloseAdditional?: () => void;
@@ -103,9 +105,13 @@ const PageTitle = ({
       )}
       {rightAction && (
         <SVGIcon
+          dataTestId={rightAction.dataTestId}
           onClick={handleRightActionButtonClick}
           icon={rightAction.icon}
-          className={`icon-button ${rightAction.className}`}
+          className={`icon-button ${rightAction.className ?? ''}`}
+          hoverable={!!rightAction.tooltipMessage}
+          tooltipMessage={rightAction.tooltipMessage}
+          tooltipPosition="bottom"
         />
       )}
       {!rightAction && !isCloseButtonDisabled && (

@@ -17,6 +17,8 @@ interface MenuProps {
     icon: SVGIcons;
     callback: () => void;
     className: string;
+    dataTestId?: string;
+    tooltipMessage?: string;
   };
   showDetachWindowOption?: boolean;
 }

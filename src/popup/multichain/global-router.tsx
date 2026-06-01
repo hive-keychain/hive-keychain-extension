@@ -14,6 +14,7 @@ import { SettingsContactsPageComponent } from 'src/popup/multichain/pages/settin
 import { SettingsEvmPageComponent } from 'src/popup/multichain/pages/settings/settings-evm-page.component';
 import { SettingsHivePageComponent } from 'src/popup/multichain/pages/settings/settings-hive-page.component';
 import { SettingsNetworkPageComponent } from 'src/popup/multichain/pages/settings/settings-network-page.component';
+import { SettingsPreferencesDisplayPageComponent } from 'src/popup/multichain/pages/settings/settings-preferences-display-page.component';
 
 export const globalRouter = (page: Screen) => {
   switch (page) {
@@ -43,6 +44,8 @@ export const globalRouter = (page: Screen) => {
       return <SettingsNetworkPageComponent />;
     case MultichainScreen.SETTINGS_CONNECTED_DAPPS:
       return <SettingsConnectedDappsPageComponent />;
+    case MultichainScreen.SETTINGS_PREFERENCES_AND_DISPLAY:
+      return <SettingsPreferencesDisplayPageComponent />;
     case MultichainScreen.SETTINGS_EVM:
       return <SettingsEvmPageComponent />;
     case MultichainScreen.SETTINGS_HIVE:

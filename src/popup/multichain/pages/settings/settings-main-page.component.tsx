@@ -2,7 +2,6 @@ import { Screen } from '@interfaces/screen.interface';
 import { forgetMk } from '@popup/multichain/actions/mk.actions';
 import { resetNav } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
-import { Theme, useThemeContext } from '@popup/theme.context';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -15,15 +14,10 @@ const SettingsMainPage = ({
   hiveAccountsCount,
   resetNav,
 }: PropsFromRedux) => {
-  const { toggleTheme, theme } = useThemeContext();
-
   const logout = () => {
     resetNav();
     forgetMk();
   };
-
-  const getThemeIcon = () =>
-    theme === Theme.DARK ? SVGIcons.MENU_THEME_LIGHT : SVGIcons.MENU_THEME_DARK;
 
   return (
     <div
@@ -33,16 +27,16 @@ const SettingsMainPage = ({
         title="popup_html_settings"
         isBackButtonEnable={true}
         rightAction={{
-          icon: getThemeIcon(),
-          callback: toggleTheme,
-          className: 'menu-toggle-theme',
+          icon: SVGIcons.MENU_LOGOUT,
+          callback: logout,
+          className: 'menu-logout',
+          dataTestId: 'log-out-button',
+          tooltipMessage: 'popup_html_logout',
         }}
-        showDetachWindowOption
         isCloseButtonDisabled
         menuItems={getSettingsMainPageMenuItems({
           hasEvmAccounts: evmAccountsCount > 0,
           hasHiveAccounts: hiveAccountsCount > 0,
-          logout,
         })}
       />
     </div>

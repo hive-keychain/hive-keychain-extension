@@ -5,13 +5,11 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 interface SettingsMainPageMenuItemsParams {
   hasEvmAccounts: boolean;
   hasHiveAccounts: boolean;
-  logout: () => void;
 }
 
 export const getSettingsMainPageMenuItems = ({
   hasEvmAccounts,
   hasHiveAccounts,
-  logout,
 }: SettingsMainPageMenuItemsParams): MenuItem[] => {
   const menuItems: MenuItem[] = [
     {
@@ -28,6 +26,11 @@ export const getSettingsMainPageMenuItems = ({
       label: 'popup_html_connected_dapps',
       icon: SVGIcons.MENU_PLUGINS,
       nextScreen: Screen.SETTINGS_CONNECTED_DAPPS,
+    },
+    {
+      label: 'popup_html_preferences_and_display',
+      icon: SVGIcons.MENU_USER_PREFERENCES_THEME,
+      nextScreen: Screen.SETTINGS_PREFERENCES_AND_DISPLAY,
     },
   ];
 
@@ -62,11 +65,6 @@ export const getSettingsMainPageMenuItems = ({
       label: 'popup_html_about',
       icon: SVGIcons.MENU_ABOUT,
       nextScreen: Screen.SETTINGS_ABOUT,
-    },
-    {
-      label: 'popup_html_logout',
-      icon: SVGIcons.MENU_LOGOUT,
-      action: logout,
     },
   );
 

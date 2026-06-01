@@ -169,16 +169,12 @@ describe('home.component tests:\n', () => {
     ).toBeInTheDocument();
   });
 
-  it('Must log out user when choosing log out from settings menu', async () => {
+  it('Must log out user when clicking log out in settings header', async () => {
     await act(async () => {
       await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
     });
     await act(async () => {
-      await userEvent.click(
-        screen.getByTestId(
-          dataTestIdButton.menuPreFix + SVGIcons.MENU_LOGOUT,
-        ),
-      );
+      await userEvent.click(screen.getByTestId(dataTestIdButton.logOut));
     });
     expect(await screen.findByTestId('sign-in-page')).toBeInTheDocument();
   });

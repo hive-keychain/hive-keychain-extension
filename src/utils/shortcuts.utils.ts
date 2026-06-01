@@ -20,6 +20,8 @@ const SHORTCUT_NAVIGATION_SCREEN_MESSAGE_KEYS = {
   [MultichainScreen.SETTINGS_NETWORK]: 'popup_html_network',
   [MultichainScreen.SETTINGS_CONNECTED_DAPPS]:
     'popup_html_connected_dapps',
+  [MultichainScreen.SETTINGS_PREFERENCES_AND_DISPLAY]:
+    'popup_html_preferences_and_display',
   [MultichainScreen.SETTINGS_EVM]: 'evm_settings',
   [MultichainScreen.SETTINGS_HIVE]: 'hive_settings',
 
@@ -213,6 +215,7 @@ const SHARED_NAVIGATION_SCREENS: MultichainScreen[] = [
   MultichainScreen.SETTINGS_CONTACTS,
   MultichainScreen.SETTINGS_NETWORK,
   MultichainScreen.SETTINGS_CONNECTED_DAPPS,
+  MultichainScreen.SETTINGS_PREFERENCES_AND_DISPLAY,
   MultichainScreen.SETTINGS_EVM,
   MultichainScreen.SETTINGS_HIVE,
   MultichainScreen.SETTINGS_CHANGE_PASSWORD,

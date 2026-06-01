@@ -659,6 +659,14 @@
     "message": "Fenster abtrennen Tastenkürzel: Strg D",
     "description": "after clicking on copy username to clipboard button on home page"
   },
+  "popup_html_detach_window": {
+    "message": "In Tab öffnen",
+    "description": "Settings preferences menu: open extension in a browser tab"
+  },
+  "popup_html_preferences_and_display": {
+    "message": "Einstellungen und Anzeige",
+    "description": "Settings menu section for theme and window display options"
+  },
   "popup_html_wrong_key_tooltip_text": {
     "message": "Dieser Schlüssel scheint nicht zu Ihrem Account zu passen. Sie können damit keine Transaktionen durchführen. Sollten Sie die Schlüssel geändert haben, ersetzen Sie diese mit dem neuen.",
     "description": "after hoover on red wrong key -> manage accounts -> account keys list item"

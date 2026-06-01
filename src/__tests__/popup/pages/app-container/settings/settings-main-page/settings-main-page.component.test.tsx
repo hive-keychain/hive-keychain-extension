@@ -14,7 +14,6 @@ describe('settings-main-page.component tests:\n', () => {
   const menuItems = getSettingsMainPageMenuItems({
     hasEvmAccounts: false,
     hasHiveAccounts: true,
-    logout: () => {},
   });
 
   afterEach(() => {
