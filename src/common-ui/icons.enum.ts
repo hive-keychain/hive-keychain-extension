@@ -109,6 +109,7 @@ export enum SVGIcons {
   MENU_ACCOUNTS_EXPORT = 'menu/accounts/export',
   MENU_ACCOUNTS_IMPORT = 'menu/accounts/import',
   MENU_ACCOUNTS_IMPORT_KEY = 'menu/accounts/import-key',
+  MENU_ACCOUNTS_KEYLESS_KEYCHAIN = 'menu/accounts/keyless-keychain',
   MENU_ACCOUNTS_ADD_BY_AUTHORIZED_ACCOUNT = 'menu/accounts/add-account-by-authority',
   MENU_EXPORT_ACCOUNTS_QR = 'menu/accounts/qr_code',
   MENU_ACCOUNTS_MANAGE_ACCOUNTS = 'menu/accounts/manage-accounts',
