@@ -99,7 +99,8 @@ const ChainSelector = ({
   };
 
   const builtInChains = defaultChains.filter(
-    (defaultChain) => !defaultChain.isCustom,
+    (defaultChain) =>
+      !defaultChain.isCustom && defaultChain.type !== ChainType.HIVE,
   );
   const popularChains = builtInChains
     .filter((defaultChain) => !defaultChain.testnet)

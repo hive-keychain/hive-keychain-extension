@@ -71,6 +71,34 @@ describe('ChainSelectorPageComponent', () => {
     jest.spyOn(EvmRpcUtils, 'setActiveRpc').mockResolvedValue(undefined);
   });
 
+  it('does not render Hive in built-in chain cards', async () => {
+    const hiveChain = {
+      ...initialEmptyStateStore.chain,
+      type: ChainType.HIVE,
+      chainId:
+        'beeab0de00000000000000000000000000000000000000000000000000000000',
+      name: 'HIVE',
+    };
+    const evmChain = {
+      ...fallbackChain,
+      chainId: '0x89',
+      name: 'Polygon',
+    };
+
+    jest.spyOn(ChainUtils, 'getDefaultChains').mockResolvedValue([
+      hiveChain,
+      evmChain,
+    ]);
+
+    customRender(<ChainSelectorPageComponent hideTitle />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Polygon')).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText('HIVE')).not.toBeInTheDocument();
+  });
+
   it('removes a custom chain after delete confirmation', async () => {
     const user = userEvent.setup();
     const { store } = customRender(
