@@ -746,6 +746,17 @@ const AccountSelector = ({
                   )}
                 </div>
               </button>
+              <button
+                className="account-selector-export-button"
+                data-testid="account-selector-export-button"
+                type="button">
+                <SVGIcon
+                  icon={SVGIcons.MENU_ACCOUNTS_EXPORT}
+                  className="account-selector-export-button-icon"
+                  svgViewBox="14 13 16 15"
+                />
+                <span>{chrome.i18n.getMessage('popup_html_export')}</span>
+              </button>
             </div>
           </div>
         </div>

@@ -265,7 +265,7 @@ const AddAccountMain = ({
             ]
           : []),
         {
-          icon: SVGIcons.MENU_ACCOUNTS_EXPORT,
+          icon: SVGIcons.MENU_ACCOUNTS_IMPORT,
           label: 'popup_html_import_keys',
           action: handleImportKeys,
         },
@@ -308,7 +308,7 @@ const AddAccountMain = ({
             ]
           : []),
         {
-          icon: SVGIcons.MENU_ACCOUNTS_EXPORT,
+          icon: SVGIcons.MENU_ACCOUNTS_IMPORT,
           label: 'popup_html_import_keys',
           action: handleImportKeys,
         },
