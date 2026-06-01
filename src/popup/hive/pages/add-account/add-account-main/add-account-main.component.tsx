@@ -27,6 +27,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
 import { setAccounts } from 'src/popup/hive/actions/account.actions';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -130,6 +131,32 @@ const AddAccountMain = ({
 
   const onSentBackAccountsListener = async (message: BackgroundMessage) => {
     if (message.command === BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS) {
+      if (
+        !(typeof message.value === 'string') &&
+        message.value?.success &&
+        message.value?.accountType === 'all'
+      ) {
+        const hiveAccounts =
+          message.value?.accounts?.length > 0
+            ? message.value.accounts
+            : (await AccountUtils.getAccountsFromLocalStorage(mk)) ?? [];
+        const evmAccounts =
+          await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+        setAccounts(hiveAccounts);
+        setEvmAccounts(evmAccounts);
+        if (hiveAccounts[0]) {
+          setActiveAccountType(ChainType.HIVE);
+          loadActiveAccount(hiveAccounts[0]);
+        }
+        if (chain?.type === ChainType.EVM && evmAccounts[0]) {
+          await loadEvmActiveAccount(chain as EvmChain, evmAccounts[0].wallet);
+        }
+        resetTitleContainerProperties();
+        navigateTo(Screen.HOME_PAGE, true);
+        chrome.runtime.onMessage.removeListener(onSentBackAccountsListener);
+        return;
+      }
+
       if (
         !(typeof message.value === 'string') &&
         message.value?.success &&

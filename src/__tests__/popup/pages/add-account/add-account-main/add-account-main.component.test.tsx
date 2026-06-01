@@ -10,9 +10,12 @@ import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-l
 import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 import { Icons } from 'src/common-ui/icons.enum';
 import { EvmChainUtils } from 'src/popup/evm/utils/evm-chain.utils';
+import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { AddAccountMainComponent } from 'src/popup/hive/pages/add-account/add-account-main/add-account-main.component';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { ChainType } from 'src/popup/multichain/interfaces/chains.interface';
+import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 
 describe('add-account-main.component tests:\n', () => {
   afterEach(() => {
@@ -182,6 +185,81 @@ describe('add-account-main.component tests:\n', () => {
         expect(store.getState().chain.type).toBe(ChainType.EVM);
         expect(store.getState().navigation.stack[0].currentPage).toBe(
           Screen.IMPORT_EVM_WALLET_FROM_KEY,
+        );
+      });
+    });
+
+    it('refreshes both Hive and EVM stores on multichain import success callback', async () => {
+      const importedHiveAccounts = [accounts.local.one];
+      const importedEvmAccounts = [
+        {
+          id: 0,
+          seedId: 1,
+          wallet: { address: '0x1234567890123456789012345678901234567890' },
+          source: 'seed',
+        },
+      ] as any;
+      jest
+        .spyOn(EvmWalletUtils, 'rebuildAccountsFromLocalStorage')
+        .mockResolvedValue(importedEvmAccounts);
+      jest
+        .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
+        .mockResolvedValue(importedHiveAccounts);
+
+      let onMessageListener: ((message: any) => Promise<void>) | undefined;
+      jest
+        .spyOn(chrome.runtime.onMessage, 'addListener')
+        .mockImplementation((listener: any) => {
+          onMessageListener = listener;
+        });
+      jest
+        .spyOn(chrome.windows, 'getCurrent')
+        .mockImplementation((callback: any) =>
+          callback({ width: 400, left: 0, top: 0 }),
+        );
+      jest.spyOn(chrome.windows, 'create').mockResolvedValue({ id: 1 } as any);
+
+      const { store } = customRender(<AddAccountMainComponent />, {
+        initialState: {
+          ...initialEmptyStateStore,
+          mk: 'mk',
+          chain: initialEmptyStateStore.chain,
+          hive: {
+            ...initialEmptyStateStore.hive,
+            accounts: [],
+          },
+          evm: {
+            ...initialEmptyStateStore.evm,
+            accounts: [],
+            appStatus: {
+              ...initialEmptyStateStore.evm.appStatus,
+              isLedgerSupported: false,
+            },
+          },
+        },
+      });
+
+      await userEvent.click(screen.getByText('Import keys from a .kc file'));
+      expect(onMessageListener).toBeDefined();
+
+      await act(async () => {
+        await onMessageListener!({
+          command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
+          value: {
+            success: true,
+            accountType: 'all',
+            accounts: importedHiveAccounts,
+          },
+        });
+      });
+
+      await waitFor(() => {
+        expect(store.getState().hive.accounts).toEqual(importedHiveAccounts);
+        expect(EvmWalletUtils.rebuildAccountsFromLocalStorage).toHaveBeenCalledWith(
+          'mk',
+        );
+        expect(store.getState().navigation.stack[0].currentPage).toBe(
+          Screen.HOME_PAGE,
         );
       });
     });

@@ -23,6 +23,7 @@ import * as AccountActions from 'src/popup/hive/actions/account.actions';
 import * as activeAccountActions from 'src/popup/hive/actions/active-account.actions';
 import { HiveScreen } from 'src/popup/hive/reference-data/hive-screen.enum';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
+import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import { MANAGE_ACCOUNT_SELECTED_NAME_PARAM } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/manage-account-selection.utils';
 
 const mockCopyTextWithToast = jest.fn().mockResolvedValue(true);
@@ -425,6 +426,68 @@ describe('AccountSelectorComponent', () => {
     expect(
       screen.queryByTestId('account-selector-backdrop'),
     ).not.toBeInTheDocument();
+  });
+
+  it('exports v2 encrypted multichain accounts when clicking export', async () => {
+    const importedSource = {
+      type: EvmAccountSource.IMPORTED,
+      nickname: 'Imported',
+      id: 2,
+      accounts: [
+        {
+          id: 0,
+          address: firstEvmAddress,
+          privateKey:
+            '0x1234567890123456789012345678901234567890123456789012345678901234',
+          path: '',
+          order: 0,
+          nickname: 'Primary EVM',
+        },
+      ],
+    };
+    jest
+      .spyOn(EvmWalletUtils, 'getAccountsFromLocalStorage')
+      .mockResolvedValue([importedSource]);
+
+    let exportedBlob: Blob | undefined;
+    const originalCreateObjectUrl = (window.URL as any).createObjectURL;
+    (window.URL as any).createObjectURL = jest.fn(
+      (blob: Blob | MediaSource) => {
+        exportedBlob = blob as Blob;
+        return 'blob:mocked-export';
+      },
+    );
+
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
+      initialState: buildState(),
+    });
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+    await userEvent.click(screen.getByTestId('account-selector-export-button'));
+
+    await waitFor(() => {
+      expect(exportedBlob).toBeDefined();
+    });
+    const encryptedContent = await new Promise<string>((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.onload = () => resolve(fileReader.result as string);
+      fileReader.onerror = () => reject(fileReader.error);
+      fileReader.readAsText(exportedBlob as Blob);
+    });
+    const decryptedPayload = await EncryptUtils.decryptToAnyJsonWithLegacySupport(
+      encryptedContent,
+      mkData.user.one,
+    );
+
+    expect(decryptedPayload).toMatchObject({
+      v: 2,
+      hiveAccounts: expect.arrayContaining([
+        expect.objectContaining({ name: userData.one.username }),
+        expect.objectContaining({ name: userData.two.username }),
+      ]),
+      evmAccounts: [expect.objectContaining({ type: EvmAccountSource.IMPORTED })],
+    });
+    (window.URL as any).createObjectURL = originalCreateObjectUrl;
   });
 
   it('shows Hive icon on Hive rows and stacked mainnet EVM chain logos on EVM rows', async () => {
