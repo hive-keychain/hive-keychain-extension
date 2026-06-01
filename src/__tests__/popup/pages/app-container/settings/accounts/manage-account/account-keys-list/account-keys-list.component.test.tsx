@@ -56,7 +56,10 @@ describe('account-keys-list.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+        const menu = await waitFor(() =>
+          screen.getByTestId(dataTestIdButton.menu),
+        );
+        await userEvent.click(menu);
         await userEvent.click(
           screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
         );
@@ -179,8 +182,8 @@ describe('account-keys-list.component tests:\n', () => {
         await screen.findByTestId(`${Screen.HOME_PAGE}-page`),
       ).toBeInTheDocument();
       expect(
-        await screen.findByTestId(`select-account-item-${mk.user.two}`),
-      ).toBeInTheDocument();
+        await screen.findByTestId(dataTestIdDiv.selectedAccount),
+      ).toHaveTextContent(mk.user.two);
     });
   });
 

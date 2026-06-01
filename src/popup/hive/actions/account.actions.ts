@@ -57,16 +57,26 @@ export const addKey =
     privateKey: string,
     keyType: KeyType,
     setErrorMessage: (key: string, params?: string[]) => ActionPayload<Message>,
+    accountName?: string,
   ): AppThunk =>
   async (dispatch, getState) => {
     const {
       hive: { activeAccount, accounts },
       mk,
     } = getState();
+    const targetAccountName = accountName ?? activeAccount.name!;
+    const targetLocalAccount = accounts.find(
+      (account: LocalAccount) => account.name === targetAccountName,
+    );
+    const targetActiveAccount = {
+      ...activeAccount,
+      name: targetAccountName,
+      keys: targetLocalAccount?.keys ?? activeAccount.keys,
+    };
     let newAccounts;
     try {
       newAccounts = await AccountUtils.addKey(
-        activeAccount,
+        targetActiveAccount,
         accounts,
         privateKey,
         keyType,
@@ -78,50 +88,63 @@ export const addKey =
 
     if (newAccounts && newAccounts?.length > 0) {
       const activeLocalAccount = newAccounts.find(
-        (account: LocalAccount) => account.name === activeAccount.name,
+        (account: LocalAccount) => account.name === targetAccountName,
       );
       const action: ActionPayload<LocalAccount[]> = {
         type: HiveActionType.SET_ACCOUNTS,
         payload: newAccounts,
       };
       dispatch(action);
-      dispatch(refreshKeys(activeLocalAccount!));
+      if (targetAccountName === activeAccount.name && activeLocalAccount) {
+        dispatch(refreshKeys(activeLocalAccount));
+      }
     }
   };
 
 export const removeKey =
-  (type: KeyType): AppThunk =>
+  (type: KeyType, accountName?: string): AppThunk =>
   async (dispatch, getState) => {
     const {
       hive: { activeAccount, accounts },
       mk,
     } = getState();
+    const targetAccountName = accountName ?? activeAccount.name!;
     const activeLocalAccount = accounts.find(
-      (account: LocalAccount) => account.name === activeAccount.name,
+      (account: LocalAccount) => account.name === targetAccountName,
     );
+    const targetActiveAccount = {
+      ...activeAccount,
+      name: targetAccountName,
+      keys: activeLocalAccount?.keys ?? activeAccount.keys,
+    };
 
-    let newAccounts = AccountUtils.deleteKey(type, accounts, activeAccount, mk);
+    let newAccounts = AccountUtils.deleteKey(
+      type,
+      accounts,
+      targetActiveAccount,
+      mk,
+    );
 
     const finalAccounts = [];
     for (let i = 0; i < newAccounts.length; i++) {
       let tmp = newAccounts[i];
       if (
         type === KeyType.ACTIVE &&
-        tmp.keys.activePubkey === `@${activeAccount.name}`
+        tmp.keys.activePubkey === `@${targetAccountName}`
       ) {
         delete tmp.keys.activePubkey;
         delete tmp.keys.active;
       }
       if (
         type === KeyType.POSTING &&
-        tmp.keys.postingPubkey === `@${activeAccount.name}`
+        tmp.keys.postingPubkey === `@${targetAccountName}`
       ) {
         delete tmp.keys.posting;
         delete tmp.keys.postingPubkey;
       }
       if (
         type === KeyType.MEMO &&
-        tmp.keys.memoPubkey === `@${activeAccount.name}`
+        tmp.keys.memoPubkey === `@${targetAccountName}`
       ) {
         delete tmp.keys.memo;
         delete tmp.keys.memoPubkey;
@@ -140,18 +163,26 @@ export const removeKey =
     };
 
     dispatch(action);
-    if (finalAccounts) {
-      if (
-        finalAccounts
-          .map((account: LocalAccount) => account.name)
-          .includes(activeLocalAccount!.name)
-      ) {
-        const updated = finalAccounts.filter(
-          (account: LocalAccount) => account.name === activeLocalAccount!.name,
-        );
-        dispatch(refreshKeys(updated[0]));
-      } else {
-        dispatch(loadActiveAccount(accounts[0]));
-      }
+
+    if (!finalAccounts.length) {
+      return;
     }
+
+    const isTargetGlobalActiveAccount =
+      targetAccountName === activeAccount.name;
+
+    if (!isTargetGlobalActiveAccount) {
+      return;
+    }
+
+    const updatedTargetAccount = finalAccounts.find(
+      (account: LocalAccount) => account.name === targetAccountName,
+    );
+
+    if (updatedTargetAccount) {
+      dispatch(refreshKeys(updatedTargetAccount));
+      return;
+    }
+
+    dispatch(loadActiveAccount(finalAccounts[0]));
   };

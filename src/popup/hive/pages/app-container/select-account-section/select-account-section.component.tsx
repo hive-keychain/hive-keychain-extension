@@ -25,6 +25,8 @@ interface Props {
   fullSize?: boolean;
   isOnMain?: boolean;
   hideManageAccountsOption?: boolean;
+  selectedAccountName?: string;
+  onAccountSelected?: (accountName: string) => void;
 }
 
 interface AccountActionLink {
@@ -52,7 +54,13 @@ const SelectAccountSection = ({
   navigateTo,
   isOnMain = false,
   hideManageAccountsOption = false,
+  selectedAccountName: controlledSelectedAccountName,
+  onAccountSelected,
 }: PropsFromRedux & Props) => {
+  const isControlledSelection =
+    controlledSelectedAccountName !== undefined &&
+    onAccountSelected !== undefined;
+
   const [isOpened, setIsOpened] = useState(false);
   const isMountedRef = useRef(false);
   const setStateIfMounted = <
@@ -73,6 +81,10 @@ const SelectAccountSection = ({
     activeAccount.name ?? accounts[0]?.name,
   );
 
+  const displayedAccountName = isControlledSelection
+    ? controlledSelectedAccountName
+    : selectedLocalAccount;
+
   useEffect(() => {
     isMountedRef.current = true;
     return () => {
@@ -82,11 +94,13 @@ const SelectAccountSection = ({
 
   useEffect(() => {
     setStateIfMounted(setOptions, buildAccountOptions(accounts));
-    setStateIfMounted(
-      setSelectedLocalAccount,
-      activeAccount.name ?? accounts[0]?.name,
-    );
-  }, [accounts, activeAccount]);
+    if (!isControlledSelection) {
+      setStateIfMounted(
+        setSelectedLocalAccount,
+        activeAccount.name ?? accounts[0]?.name,
+      );
+    }
+  }, [accounts, activeAccount, isControlledSelection]);
 
   const handleItemClicked = (accountName: string) => {
     const itemClicked = accounts.find(
@@ -95,7 +109,11 @@ const SelectAccountSection = ({
     if (!itemClicked) {
       return;
     }
-    loadActiveAccount(itemClicked);
+    if (isControlledSelection) {
+      onAccountSelected(accountName);
+    } else {
+      loadActiveAccount(itemClicked);
+    }
     handleClickOnSelector();
   };
 
@@ -131,14 +149,14 @@ const SelectAccountSection = ({
         }}>
         <PreloadedImage
           className="user-picture"
-          src={`https://images.hive.blog/u/${selectedLocalAccount}/avatar`}
+          src={`https://images.hive.blog/u/${displayedAccountName}/avatar`}
           alt={'/assets/images/placeholders/account-placeholder.png'}
           placeholder={'/assets/images/placeholders/account-placeholder.png'}
         />
         <div
           className="selected-account-name"
           data-testid="selected-account-name">
-          {selectedLocalAccount}
+          {displayedAccountName}
         </div>
       </div>
     );
@@ -214,7 +232,7 @@ const SelectAccountSection = ({
                           key={`option-${option.value}`}
                           isLast={options.length - 1 === index}
                           item={option}
-                          selectedAccount={selectedLocalAccount}
+                          selectedAccount={displayedAccountName}
                           handleItemClicked={(value) =>
                             handleItemClicked(value)
                           }
@@ -251,14 +269,14 @@ const SelectAccountSection = ({
 
   return (
     <>
-      {selectedLocalAccount && options && (
+      {displayedAccountName && options && (
         <div
           className={`hive-select-account-section ${
             fullSize ? 'fullsize' : ''
           } ${isOpened ? 'opened' : 'closed'} ${isOnMain ? 'main-page' : ''}`}>
           <Select
             keepOpen
-            values={[selectedLocalAccount as any]}
+            values={[displayedAccountName as any]}
             options={options}
             onChange={() => undefined}
             contentRenderer={customLabelRender}

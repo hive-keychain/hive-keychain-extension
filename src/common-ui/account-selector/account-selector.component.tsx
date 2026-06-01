@@ -1,3 +1,4 @@
+import { AccountSelectorOrderRef } from '@interfaces/account-selector-order.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
@@ -7,9 +8,6 @@ import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
 import { setChain } from '@popup/multichain/actions/chain.actions';
-import AccountSelectorOrderUtils, {
-  AccountSelectorListItem,
-} from '@popup/multichain/utils/account-selector-order.utils';
 import {
   Chain,
   ChainType,
@@ -17,6 +15,9 @@ import {
   HiveChain,
 } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
+import AccountSelectorOrderUtils, {
+  AccountSelectorListItem,
+} from '@popup/multichain/utils/account-selector-order.utils';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useState } from 'react';
 import {
@@ -36,7 +37,6 @@ import {
   COPY_GENERIC_MESSAGE_KEY,
   copyTextWithToast,
 } from 'src/common-ui/toast/copy-toast.utils';
-import { AccountSelectorOrderRef } from '@interfaces/account-selector-order.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import FormatUtils from 'src/utils/format.utils';
@@ -46,6 +46,7 @@ interface Props {
   background?: 'white';
   removeBorder?: boolean;
 }
+const MAX_DISPLAYED_EVM_CHAINS = 5;
 
 const getEvmAccountAddress = (account?: EvmAccount) => {
   return account ? EvmAccountUtils.getEvmAccountAddress(account) : undefined;
@@ -57,8 +58,7 @@ const areDisplayOrdersEqual = (
 ) =>
   left.length === right.length &&
   left.every(
-    (ref, index) =>
-      JSON.stringify(ref) === JSON.stringify(right[index]),
+    (ref, index) => JSON.stringify(ref) === JSON.stringify(right[index]),
   );
 
 const getAccountSelectorListItemId = (item: AccountSelectorListItem) =>
@@ -98,8 +98,6 @@ const getActiveEvmMainnetChains = async (): Promise<EvmChain[]> => {
   );
   return setupEvmChains.filter((chain) => !chain.testnet);
 };
-
-const MAX_DISPLAYED_EVM_CHAINS = 5;
 
 const stopListItemActionPropagation = (
   event: React.MouseEvent<HTMLElement>,
@@ -271,7 +269,10 @@ const AccountSelector = ({
     const { selectableHiveAccounts, selectableEvmAccounts } =
       await resolveSelectableAccounts();
 
-    await rebuildAccountListItems(selectableHiveAccounts, selectableEvmAccounts);
+    await rebuildAccountListItems(
+      selectableHiveAccounts,
+      selectableEvmAccounts,
+    );
     setActiveEvmMainnetChains(await getActiveEvmMainnetChains());
     setIsOpened(true);
   };
@@ -494,10 +495,7 @@ const AccountSelector = ({
   );
 
   const renderHiveAccount = (
-    item: Extract<
-      AccountSelectorListItem,
-      { type: ChainType.HIVE }
-    >,
+    item: Extract<AccountSelectorListItem, { type: ChainType.HIVE }>,
     dragHandle?: DraggableProvidedDragHandleProps | null,
   ) => {
     const account = item.account;
@@ -521,10 +519,7 @@ const AccountSelector = ({
   };
 
   const renderEvmAccount = (
-    item: Extract<
-      AccountSelectorListItem,
-      { type: ChainType.EVM }
-    >,
+    item: Extract<AccountSelectorListItem, { type: ChainType.EVM }>,
     dragHandle?: DraggableProvidedDragHandleProps | null,
   ) => {
     const account = item.account;
@@ -624,10 +619,8 @@ const AccountSelector = ({
   );
 
   if (
-    (selectedAccountType === ChainType.HIVE &&
-      !selectedHiveAccount) ||
-    (selectedAccountType === ChainType.EVM &&
-      !selectedEvmAccount)
+    (selectedAccountType === ChainType.HIVE && !selectedHiveAccount) ||
+    (selectedAccountType === ChainType.EVM && !selectedEvmAccount)
   ) {
     return null;
   }
@@ -664,7 +657,8 @@ const AccountSelector = ({
             <div
               className="account-selector-list"
               data-testid="account-selector-list">
-              <DragDropContext onDragEnd={(dragResult) => void onDragEnd(dragResult)}>
+              <DragDropContext
+                onDragEnd={(dragResult) => void onDragEnd(dragResult)}>
                 <Droppable
                   droppableId="account-selector-list"
                   type="account-selector-list-item">

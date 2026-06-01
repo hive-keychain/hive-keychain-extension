@@ -7,7 +7,8 @@ import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
+import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
+import { MANAGE_ACCOUNT_SELECTED_NAME_PARAM } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/manage-account-selection.utils';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -15,11 +16,12 @@ import { copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
 import { Key, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { removeKey, setAccounts } from 'src/popup/hive/actions/account.actions';
-import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 export interface KeyListItemProps {
+  selectedAccountName: string;
+  onAccountSelected: (accountName: string) => void;
   privateKey?: Key;
   publicKey?: Key;
   keyName: string;
@@ -31,18 +33,18 @@ export interface KeyListItemProps {
 const SUBSTRING_LENGTH = 15;
 
 const AccountKeysListItem = ({
+  selectedAccountName,
+  onAccountSelected,
   privateKey,
   publicKey,
   keyName,
   keyType,
-  activeAccount,
   accounts,
   canDelete,
   isWrongKey,
   navigateToWithParams,
   removeKey,
   goBack,
-  loadActiveAccount,
 }: PropsType) => {
   const [isPrivateHidden, setIsPrivateHidden] = useState(true);
   const [isAuthorizedAccount, setIsAuthorizedAccount] = useState(false);
@@ -50,7 +52,7 @@ const AccountKeysListItem = ({
 
   useEffect(() => {
     setIsPrivateHidden(true);
-  }, [activeAccount]);
+  }, [selectedAccountName]);
 
   useEffect(() => {
     if (publicKey) {
@@ -81,34 +83,36 @@ const AccountKeysListItem = ({
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage('html_popup_delete_key_confirm', [
         keyTypeLabel,
-        activeAccount.name!,
+        selectedAccountName,
       ]),
       fields: [],
       title: 'html_popup_delete_key',
+      method: null,
+      [MANAGE_ACCOUNT_SELECTED_NAME_PARAM]: selectedAccountName,
       afterConfirmAction: async () => {
         let actualNoKeyCheck = await LocalStorageUtils.getValueFromLocalStorage(
           LocalStorageKeyEnum.NO_KEY_CHECK,
         );
-        if (actualNoKeyCheck && actualNoKeyCheck[activeAccount.name!]) {
-          delete actualNoKeyCheck[activeAccount.name!];
+        if (actualNoKeyCheck && actualNoKeyCheck[selectedAccountName]) {
+          delete actualNoKeyCheck[selectedAccountName];
         }
         LocalStorageUtils.saveValueInLocalStorage(
           LocalStorageKeyEnum.NO_KEY_CHECK,
           actualNoKeyCheck,
         );
-        removeKey(keyType);
+        await removeKey(keyType, selectedAccountName);
         goBack();
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   const goToAccount = (publicKey: Key) => {
+    const nextAccountName = publicKey!.toString().split('@')[1];
     const nextAccount = accounts.find(
-      (localAccount: LocalAccount) =>
-        localAccount.name === publicKey!.toString().split('@')[1],
+      (localAccount: LocalAccount) => localAccount.name === nextAccountName,
     );
     if (nextAccount) {
-      loadActiveAccount(nextAccount);
+      onAccountSelected(nextAccount.name);
     }
   };
 
@@ -139,7 +143,11 @@ const AccountKeysListItem = ({
           <SVGIcon
             dataTestId={`icon-add-key-${removePopupTagForAriaLabel(keyName)}`}
             onClick={() =>
-              navigateToWithParams(Screen.SETTINGS_ADD_KEY, keyType)
+              navigateToWithParams(Screen.SETTINGS_ADD_KEY, {
+                keyType,
+                username: selectedAccountName,
+                [MANAGE_ACCOUNT_SELECTED_NAME_PARAM]: selectedAccountName,
+              })
             }
             icon={SVGIcons.GLOBAL_ADD_CIRCLE}
             className="add-key-icon"></SVGIcon>
@@ -213,7 +221,6 @@ const AccountKeysListItem = ({
 const mapStateToProps = (state: RootState) => {
   return {
     accounts: state.hive.accounts as LocalAccount[],
-    activeAccount: state.hive.activeAccount,
   };
 };
 
@@ -222,7 +229,6 @@ const connector = connect(mapStateToProps, {
   navigateToWithParams,
   removeKey,
   goBack,
-  loadActiveAccount,
 });
 type PropsType = ConnectedProps<typeof connector> & KeyListItemProps;
 

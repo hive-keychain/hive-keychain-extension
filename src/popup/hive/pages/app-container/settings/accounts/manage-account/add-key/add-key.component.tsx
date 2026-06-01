@@ -19,6 +19,23 @@ import { refreshActiveAccount } from '@popup/hive/actions/active-account.actions
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { ArrayUtils } from 'src/utils/array.utils';
 
+interface AddKeyNavParams {
+  keyType: KeyType;
+  username?: string;
+}
+
+const parseAddKeyNavParams = (
+  params: KeyType | AddKeyNavParams | undefined,
+): AddKeyNavParams => {
+  if (params === undefined) {
+    return { keyType: KeyType.ACTIVE };
+  }
+  if (typeof params === 'string') {
+    return { keyType: params as KeyType };
+  }
+  return params;
+};
+
 const AddKey = ({
   keyType,
   activeAccountName,
@@ -49,7 +66,12 @@ const AddKey = ({
       setErrorMessage('popup_accounts_fill');
       return;
     }
-    addKey(privateKey.trim(), keyType, setErrorMessage);
+    await addKey(
+      privateKey.trim(),
+      keyType,
+      setErrorMessage,
+      activeAccountName,
+    );
     goBack();
   };
 
@@ -79,7 +101,10 @@ const AddKey = ({
   };
 
   const loadAuthorizedAccounts = async () => {
-    const authority = getAuthorityForKeyType(activeAccount.account, keyType);
+    const extendedAccount = await AccountUtils.getExtendedAccount(
+      activeAccountName!,
+    );
+    const authority = getAuthorityForKeyType(extendedAccount, keyType);
     const auths: string[] =
       authority?.account_auths?.map((auth) => auth[0]) ?? [];
 
@@ -92,8 +117,20 @@ const AddKey = ({
   };
 
   const addAuth = async (username: string) => {
+    const extendedAccount = await AccountUtils.getExtendedAccount(
+      activeAccountName!,
+    );
+    const targetLocalAccount = localAccounts.find(
+      (localAccount) => localAccount.name === activeAccountName,
+    );
+    const targetActiveAccount = {
+      ...activeAccount,
+      name: activeAccountName,
+      account: extendedAccount,
+      keys: targetLocalAccount?.keys ?? activeAccount.keys,
+    };
     await AccountUtils.addAuthorizedKey(
-      activeAccount,
+      targetActiveAccount,
       username,
       localAccounts,
       mk,
@@ -169,9 +206,12 @@ const AddKey = ({
 };
 
 const mapStateToProps = (state: RootState) => {
+  const { keyType, username } = parseAddKeyNavParams(
+    state.navigation.stack[0].params as KeyType | AddKeyNavParams,
+  );
   return {
-    keyType: state.navigation.stack[0].params as KeyType,
-    activeAccountName: state.hive.activeAccount.name,
+    keyType,
+    activeAccountName: username ?? state.hive.activeAccount.name,
     isLedgerSupported: state.hive.appStatus.isLedgerSupported,
     activeAccount: state.hive.activeAccount,
     localAccounts: state.hive.accounts,

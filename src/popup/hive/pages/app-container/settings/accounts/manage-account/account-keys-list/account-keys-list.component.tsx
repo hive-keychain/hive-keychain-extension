@@ -29,12 +29,15 @@ import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 interface AccountKeysListProps {
+  selectedAccountName: string;
+  onAccountSelected: (accountName: string) => void;
   wrongKeysFound?: WrongKeysOnUser;
 }
 
 const AccountKeysList = ({
+  selectedAccountName,
+  onAccountSelected,
   wrongKeysFound,
-  activeAccount,
   accounts,
   setAccounts,
   loadActiveAccount,
@@ -52,20 +55,25 @@ const AccountKeysList = ({
   const [showQR, setShowQR] = useState<boolean>(false);
   const qrCodeRef = useRef<HTMLDivElement>(null);
 
+  const selectedLocalAccount = accounts.find(
+    (account: LocalAccount) => account.name === selectedAccountName,
+  );
+  const selectedAccountKeys = selectedLocalAccount?.keys;
+
   useEffect(() => {
     setQRCodeDisplayed(false);
     const acc = accounts.find(
-      (account: LocalAccount) => account.name === activeAccount.name,
+      (account: LocalAccount) => account.name === selectedAccountName,
     );
     setAccount(acc!);
-    setCanDeleteKey(KeysUtils.keysCount(activeAccount.keys) > 2);
-  }, [activeAccount]);
+    setCanDeleteKey(KeysUtils.keysCount(acc?.keys ?? {}) > 2);
+  }, [selectedAccountName, accounts]);
 
   const isWrongKey = (keyType: KeychainKeyTypesLC) => {
     return (
       wrongKeysFound &&
-      wrongKeysFound[activeAccount.name!] &&
-      !!wrongKeysFound[activeAccount.name!].find(
+      wrongKeysFound[selectedAccountName] &&
+      !!wrongKeysFound[selectedAccountName].find(
         (keyFound) => keyFound === keyType,
       )
     );
@@ -78,18 +86,18 @@ const AccountKeysList = ({
         account.keys.activePubkey,
         account.keys.memoPubkey,
         account.keys.postingPubkey,
-      ].includes(`@${activeAccount.name}`),
+      ].includes(`@${selectedAccountName}`),
     );
     if (hasAuthorizedAccountLinkedToActiveAccount) {
       warningMessage = 'popup_html_deleting_account_linked_to_authorized';
-      warningParams = [activeAccount.name!];
+      warningParams = [selectedAccountName];
     }
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: null,
       fields: [],
       message: chrome.i18n.getMessage(
         'popup_html_delete_account_confirmation_message',
-        [activeAccount.name!],
+        [selectedAccountName],
       ),
       title: 'popup_html_delete_account',
       warningMessage: warningMessage,
@@ -97,14 +105,14 @@ const AccountKeysList = ({
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_delete_account_operation');
         let newAccounts = AccountUtils.deleteAccount(
-          activeAccount.name!,
+          selectedAccountName,
           accounts,
         );
         let no_key_check = await LocalStorageUtils.getValueFromLocalStorage(
           LocalStorageKeyEnum.NO_KEY_CHECK,
         );
-        if (no_key_check && no_key_check.hasOwnProperty(activeAccount.name!)) {
-          delete no_key_check[activeAccount.name!];
+        if (no_key_check && no_key_check.hasOwnProperty(selectedAccountName)) {
+          delete no_key_check[selectedAccountName];
           if (Object.keys(no_key_check).length === 0) no_key_check = null;
           LocalStorageUtils.saveValueInLocalStorage(
             LocalStorageKeyEnum.NO_KEY_CHECK,
@@ -115,15 +123,15 @@ const AccountKeysList = ({
         if (hasAuthorizedAccountLinkedToActiveAccount) {
           for (let i = 0; i < newAccounts.length; i++) {
             let tmp = newAccounts[i];
-            if (tmp.keys.activePubkey === `@${activeAccount.name}`) {
+            if (tmp.keys.activePubkey === `@${selectedAccountName}`) {
               delete tmp.keys.activePubkey;
               delete tmp.keys.active;
             }
-            if (tmp.keys.postingPubkey === `@${activeAccount.name}`) {
+            if (tmp.keys.postingPubkey === `@${selectedAccountName}`) {
               delete tmp.keys.posting;
               delete tmp.keys.postingPubkey;
             }
-            if (tmp.keys.memoPubkey === `@${activeAccount.name}`) {
+            if (tmp.keys.memoPubkey === `@${selectedAccountName}`) {
               delete tmp.keys.memo;
               delete tmp.keys.memoPubkey;
             }
@@ -161,24 +169,30 @@ const AccountKeysList = ({
     <div className="account-keys-list">
       <div className="keys-panel">
         <AccountKeysListItemComponent
-          privateKey={activeAccount.keys.active}
-          publicKey={activeAccount.keys.activePubkey}
+          selectedAccountName={selectedAccountName}
+          onAccountSelected={onAccountSelected}
+          privateKey={selectedAccountKeys?.active}
+          publicKey={selectedAccountKeys?.activePubkey}
           keyName={'popup_html_active'}
           keyType={KeyType.ACTIVE}
           canDelete={canDeleteKey}
           isWrongKey={isWrongKey(KeychainKeyTypesLC.active)}
         />
         <AccountKeysListItemComponent
-          privateKey={activeAccount.keys.posting}
-          publicKey={activeAccount.keys.postingPubkey}
+          selectedAccountName={selectedAccountName}
+          onAccountSelected={onAccountSelected}
+          privateKey={selectedAccountKeys?.posting}
+          publicKey={selectedAccountKeys?.postingPubkey}
           keyName={'popup_html_posting'}
           keyType={KeyType.POSTING}
           canDelete={canDeleteKey}
           isWrongKey={isWrongKey(KeychainKeyTypesLC.posting)}
         />
         <AccountKeysListItemComponent
-          privateKey={activeAccount.keys.memo}
-          publicKey={activeAccount.keys.memoPubkey}
+          selectedAccountName={selectedAccountName}
+          onAccountSelected={onAccountSelected}
+          privateKey={selectedAccountKeys?.memo}
+          publicKey={selectedAccountKeys?.memoPubkey}
           keyName={'popup_html_memo'}
           keyType={KeyType.MEMO}
           canDelete={canDeleteKey}
@@ -274,7 +288,6 @@ const AccountKeysList = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.hive.activeAccount,
     accounts: state.hive.accounts as LocalAccount[],
   };
 };

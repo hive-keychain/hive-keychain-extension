@@ -2,7 +2,7 @@ import AccountUtils from '@hiveapp/utils/account.utils';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
-import { act, cleanup, screen } from '@testing-library/react';
+import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
@@ -53,7 +53,10 @@ describe('add-key.component tests:\n', () => {
       },
     );
     await act(async () => {
-      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+      const menu = await waitFor(() =>
+        screen.getByTestId(dataTestIdButton.menu),
+      );
+      await userEvent.click(menu);
       await userEvent.click(
         screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
       );

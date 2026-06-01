@@ -29,6 +29,8 @@ export interface EVMConfirmationPageParams extends ConfirmationPageParams {
 
 export interface HiveConfirmationPageParams extends ConfirmationPageParams {
   method: KeychainKeyTypes | null;
+  /** Preserved when returning to manage accounts after confirmation. */
+  manageAccountSelectedName?: string;
 }
 
 export interface ConfirmationPageFields {

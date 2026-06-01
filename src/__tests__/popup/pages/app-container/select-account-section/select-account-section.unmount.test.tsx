@@ -1,9 +1,11 @@
 import '@testing-library/jest-dom';
-import { act, cleanup } from '@testing-library/react';
+import { act, cleanup, screen } from '@testing-library/react';
 import React from 'react';
+import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import { initialStateForHome } from 'src/__tests__/utils-for-testing/initial-states';
 import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 import { SelectAccountSectionComponent } from 'src/popup/hive/pages/app-container/select-account-section/select-account-section.component';
+import * as activeAccountActions from 'src/popup/hive/actions/active-account.actions';
 
 jest.mock('src/common-ui/preloaded-image/preloaded-image.component', () => ({
   PreloadedImage: () => {
@@ -81,5 +83,40 @@ describe('select-account-section unmount behavior', () => {
     });
 
     expect(hasUnmountedStateUpdateWarning(consoleError)).toBe(false);
+  });
+
+  it('uses controlled selectedAccountName without syncing from active account', () => {
+    customRender(
+      <SelectAccountSectionComponent
+        selectedAccountName={userData.two.username}
+        onAccountSelected={jest.fn()}
+      />,
+      { initialState: initialStateForHome },
+    );
+
+    expect(screen.getByTestId('selected-account-name')).toHaveTextContent(
+      userData.two.username,
+    );
+  });
+
+  it('does not dispatch loadActiveAccount when controlled selection props are provided', () => {
+    const loadActiveAccountSpy = jest.spyOn(
+      activeAccountActions,
+      'loadActiveAccount',
+    );
+
+    try {
+      customRender(
+        <SelectAccountSectionComponent
+          selectedAccountName={userData.one.username}
+          onAccountSelected={jest.fn()}
+        />,
+        { initialState: initialStateForHome },
+      );
+
+      expect(loadActiveAccountSpy).not.toHaveBeenCalled();
+    } finally {
+      loadActiveAccountSpy.mockRestore();
+    }
   });
 });
