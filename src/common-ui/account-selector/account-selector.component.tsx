@@ -717,6 +717,25 @@ const AccountSelector = ({
     navigateToWithParams(Screen.SETTINGS_ADD_ACCOUNT, {});
   };
 
+  const handleExportAccountsClick = async () => {
+    if (!mk) {
+      return;
+    }
+
+    const selectableHiveAccounts = await resolveSelectableHiveAccounts(
+      hiveAccounts,
+      mk,
+    );
+    const storedEvmAccounts = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
+
+    await AccountUtils.downloadMultichainAccounts(
+      selectableHiveAccounts,
+      storedEvmAccounts,
+      mk,
+    );
+    setIsOpened(false);
+  };
+
   if (
     (selectedAccountType === ChainType.HIVE && !selectedHiveAccount) ||
     (selectedAccountType === ChainType.EVM && !selectedEvmAccount)
@@ -866,6 +885,7 @@ const AccountSelector = ({
               <button
                 className="account-selector-export-button"
                 data-testid="account-selector-export-button"
+                onClick={() => void handleExportAccountsClick()}
                 type="button">
                 <SVGIcon
                   icon={SVGIcons.MENU_ACCOUNTS_EXPORT}

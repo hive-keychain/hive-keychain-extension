@@ -8,6 +8,7 @@ import type {
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { HiveInternalMarketLockedInOrders } from '@interfaces/hive-market.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
+import { StoredEvmAccountSource } from '@popup/evm/interfaces/wallet.interface';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { isWif } from 'hive-keychain-commons';
@@ -39,6 +40,12 @@ export enum AccountErrorMessages {
   MISSING_FIELDS = 'popup_accounts_fill',
   ALREADY_REGISTERED = 'popup_accounts_already_registered',
   PASSWORD_IS_PUBLIC_KEY = 'popup_account_password_is_public_key',
+}
+
+interface ExportedAccountsV2 {
+  v: 2;
+  hiveAccounts: LocalAccount[];
+  evmAccounts: StoredEvmAccountSource[];
 }
 
 const getKeys = async (username: string, password: string) => {
@@ -382,6 +389,26 @@ const isAccountListIdentical = (
 const downloadAccounts = async (acc: LocalAccount[], mk: string) => {
   const accounts = { list: acc };
   var data = new Blob([await AccountUtils.encryptAccounts(accounts, mk)], {
+    type: 'text/plain',
+  });
+  var url = window.URL.createObjectURL(data);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'accounts.kc';
+  a.click();
+};
+
+const downloadMultichainAccounts = async (
+  hiveAccounts: LocalAccount[],
+  evmAccounts: StoredEvmAccountSource[],
+  mk: string,
+) => {
+  const exportedAccounts: ExportedAccountsV2 = {
+    v: 2,
+    hiveAccounts,
+    evmAccounts,
+  };
+  var data = new Blob([await EncryptUtils.encryptJson(exportedAccounts, mk)], {
     type: 'text/plain',
   });
   var url = window.URL.createObjectURL(data);
@@ -808,6 +835,7 @@ const AccountUtils = {
   isAccountListIdentical,
   deleteAccount,
   downloadAccounts,
+  downloadMultichainAccounts,
   getKeys,
   getAccountValue,
   getPublicMemo,
