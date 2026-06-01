@@ -34,7 +34,7 @@ export const getSettingsMainPageMenuItems = ({
   if (hasEvmAccounts) {
     menuItems.push({
       label: 'evm_settings',
-      icon: SVGIcons.BLOCKCHAIN_ETHEREUM,
+      icon: SVGIcons.MENU_EVM_SETTINGS,
       nextScreen: Screen.SETTINGS_EVM,
     });
   }
@@ -42,7 +42,7 @@ export const getSettingsMainPageMenuItems = ({
   if (hasHiveAccounts) {
     menuItems.push({
       label: 'hive_settings',
-      icon: SVGIcons.BLOCKCHAIN_HIVE,
+      icon: SVGIcons.MENU_HIVE_SETTINGS,
       nextScreen: Screen.SETTINGS_HIVE,
     });
   }

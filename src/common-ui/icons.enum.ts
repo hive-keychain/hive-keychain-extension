@@ -135,6 +135,8 @@ export enum SVGIcons {
   MENU_TOKENS = 'menu/tokens',
 
   MENU_GOVERNANCE = 'menu/governance',
+  MENU_HIVE_SETTINGS = 'menu/hive-settings',
+  MENU_EVM_SETTINGS = 'menu/evm-settings',
   MENU_LOGOUT = 'menu/logout',
   MENU_PLUGINS = 'menu/plugins',
   MENU_HELP = 'menu/help',
