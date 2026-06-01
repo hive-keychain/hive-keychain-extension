@@ -199,6 +199,10 @@ describe('add-account-main.component tests:\n', () => {
           source: 'seed',
         },
       ] as any;
+      const invalidateEvmAccountsCacheSpy = jest.spyOn(
+        EvmWalletUtils,
+        'invalidateRebuildAccountsCache',
+      );
       jest
         .spyOn(EvmWalletUtils, 'rebuildAccountsFromLocalStorage')
         .mockResolvedValue(importedEvmAccounts);
@@ -258,6 +262,7 @@ describe('add-account-main.component tests:\n', () => {
         expect(EvmWalletUtils.rebuildAccountsFromLocalStorage).toHaveBeenCalledWith(
           'mk',
         );
+        expect(invalidateEvmAccountsCacheSpy).toHaveBeenCalled();
         expect(store.getState().navigation.stack[0].currentPage).toBe(
           Screen.HOME_PAGE,
         );
