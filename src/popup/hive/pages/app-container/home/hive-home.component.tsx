@@ -467,6 +467,7 @@ const Home = ({
                 <AccountSelectorComponent
                   selectedAccountType={ChainType.HIVE}
                   background="white"
+                  removeBorder
                 />
               }
             />
