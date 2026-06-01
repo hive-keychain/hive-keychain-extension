@@ -2,24 +2,16 @@ import { BackgroundMessage } from '@background/multichain/background-message.int
 import { ActionButton } from '@interfaces/action-button.interface';
 import { Autolock, AutoLockType } from '@interfaces/autolock.interface';
 import { setStatus as setEvmStatus } from '@popup/evm/actions/app-status.actions';
-import { EvmAppComponent } from '@popup/evm/evm-app.component';
 import { setIsLedgerSupported } from '@popup/hive/actions/app-status.actions';
-import { HiveAppComponent } from '@popup/hive/hive-app.component';
 import { setHasFinishedSignup } from '@popup/multichain/actions/has-finished-signup.actions';
 import { resetMessage } from '@popup/multichain/actions/message.actions';
 import { setMk } from '@popup/multichain/actions/mk.actions';
-import {
-  Chain,
-  ChainType,
-} from '@popup/multichain/interfaces/chains.interface';
 import { ModalProperties } from '@popup/multichain/interfaces/modal.interface';
-import { AddCustomChainPage } from '@popup/multichain/pages/add-custom-chain/add-custom-chain.component';
-import { ChainSelectorPageComponent } from '@popup/multichain/pages/chain-selector/chain-selector.component';
 import { SignInRouterComponent } from '@popup/multichain/pages/sign-in/sign-in-router.component';
 import { SignUpComponent } from '@popup/multichain/pages/sign-up/sign-up.component';
-import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { SignUpScreen } from '@popup/multichain/sign-up.context';
 import { RootState } from '@popup/multichain/store';
+import { UnlockedAppComponent } from '@popup/multichain/unlocked-app.component';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
@@ -45,9 +37,7 @@ const ChainRouter = ({
   setEvmStatus,
   hasFinishedSignup,
   setHasFinishedSignup,
-  nav,
   resetMessage,
-  chain,
   modal,
 }: Props & PropsFromRedux) => {
   const [hasHydratedMk, setHasHydratedMk] = useState(false);
@@ -125,22 +115,7 @@ const ChainRouter = ({
         return <SignInRouterComponent />;
       }
     } else {
-      if (isKeylessKeychainEnabled) {
-        return <HiveAppComponent />;
-      } else {
-        switch (chain?.type) {
-          case ChainType.HIVE:
-            return <HiveAppComponent />;
-          case ChainType.EVM:
-            return <EvmAppComponent />;
-          default:
-            if (nav?.currentPage === MultichainScreen.CREATE_BLOCKCHAIN_PAGE) {
-              return <AddCustomChainPage />;
-            } else {
-              return <ChainSelectorPageComponent />;
-            }
-        }
-      }
+      return <UnlockedAppComponent />;
     }
   };
 
@@ -173,9 +148,6 @@ const mapStateToProps = (state: RootState) => {
     message: state.message,
     mk: state.mk,
     hasFinishedSignup: state.hasFinishedSignup,
-    nav: state.navigation.stack[0],
-    chain: state.chain as Chain,
-    currentPage: state.navigation.stack[0],
     modal: state.modal as ModalProperties,
   };
 };

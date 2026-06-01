@@ -1,5 +1,6 @@
 import evmReducers from '@popup/evm/reducers';
 import hiveReducers from '@popup/hive/reducers';
+import { ActiveAccountTypeReducer } from '@popup/multichain/reducers/active-account-type.reducer';
 import { ChainReducer } from '@popup/multichain/reducers/chain.reducer';
 import { HasFinishedSignupReducer } from '@popup/multichain/reducers/has-finished-signup.reducer';
 import { LoadingReducer } from '@popup/multichain/reducers/loading.reducer';
@@ -20,5 +21,6 @@ export default combineReducers({
   evm: evmReducers,
   hasFinishedSignup: HasFinishedSignupReducer,
   chain: ChainReducer,
+  activeAccountType: ActiveAccountTypeReducer,
   modal: ModalReducer,
 });

@@ -10,10 +10,14 @@ import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
-import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import {
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { HDNodeWallet } from 'ethers';
@@ -36,6 +40,7 @@ const ImportWalletConfirmation = ({
   activeAccount,
   loadEvmActiveAccount,
   navigateTo,
+  setActiveAccountType,
   accounts,
   hasImportParams,
 }: PropsType) => {
@@ -107,6 +112,7 @@ const ImportWalletConfirmation = ({
         }
       }
       setEvmAccounts(accounts);
+      setActiveAccountType(ChainType.EVM);
       navigateTo(Screen.HOME_PAGE, true);
       await loadEvmActiveAccount(chain as EvmChain, accounts[0].wallet);
     }
@@ -180,6 +186,7 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   setErrorMessage,
   setEvmAccounts,
+  setActiveAccountType,
   loadEvmActiveAccount,
   navigateTo,
 });

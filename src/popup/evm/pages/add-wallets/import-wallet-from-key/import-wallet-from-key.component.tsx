@@ -3,10 +3,14 @@ import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions'
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
-import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import {
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useState } from 'react';
@@ -23,6 +27,7 @@ const ImportWalletFromKey = ({
   loadEvmActiveAccount,
   mk,
   navigateTo,
+  setActiveAccountType,
   setEvmAccounts,
   setErrorMessage,
   setTitleContainerProperties,
@@ -76,6 +81,7 @@ const ImportWalletFromKey = ({
     const updatedAccounts =
       await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
     setEvmAccounts(updatedAccounts);
+    setActiveAccountType(ChainType.EVM);
     await loadEvmActiveAccount(chain, wallet);
     navigateTo(Screen.HOME_PAGE, true);
   };
@@ -124,6 +130,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   loadEvmActiveAccount,
   navigateTo,
+  setActiveAccountType,
   setEvmAccounts,
   setErrorMessage,
   setTitleContainerProperties,

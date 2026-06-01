@@ -27,6 +27,7 @@ if (store.getState().hive) {
   let previousAccounts = store.getState().hive.accounts as LocalAccount[];
   let previousRpc = store.getState().hive.activeRpc;
   let previousActiveAccountName = store.getState().hive.activeAccount?.name;
+  let previousActiveAccountType = store.getState().activeAccountType;
   let previousMk = store.getState().mk;
   let previousHiveEngineConfig = store.getState().hive.hiveEngineConfig;
 
@@ -64,6 +65,13 @@ if (store.getState().hive) {
       previousActiveAccountName = activeAccount.name;
       ActiveAccountUtils.saveActiveAccountNameInLocalStorage(
         activeAccount.name as string,
+      );
+    }
+    if (previousActiveAccountType !== store.getState().activeAccountType) {
+      previousActiveAccountType = store.getState().activeAccountType;
+      LocalStorageUtils.saveValueInLocalStorage(
+        LocalStorageKeyEnum.ACTIVE_ACCOUNT_TYPE,
+        previousActiveAccountType,
       );
     }
     if (previousMk !== mk) {

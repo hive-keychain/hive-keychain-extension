@@ -1,9 +1,11 @@
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
-import { resetChain, setChain } from '@popup/multichain/actions/chain.actions';
+import { setChain } from '@popup/multichain/actions/chain.actions';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { Chain, ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import {
@@ -17,7 +19,7 @@ const ChainDropdown = ({
   chain,
   activeAccount,
   setChain,
-  resetChain,
+  navigateTo,
   loadEvmActiveAccount,
 }: PropsFromRedux) => {
   const [options, setOptions] = useState<OptionItem[]>([]);
@@ -52,7 +54,7 @@ const ChainDropdown = ({
   }, [chain]);
 
   const handleOnManageChainsClicked = () => {
-    resetChain();
+    navigateTo(EvmScreen.EVM_CUSTOM_CHAINS);
   };
 
   const selectChain = async (chain: Chain) => {
@@ -129,7 +131,7 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   setChain,
-  resetChain,
+  navigateTo,
   loadEvmActiveAccount,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;

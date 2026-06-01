@@ -1,5 +1,6 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Screen } from '@interfaces/screen.interface';
+import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import {
   navigateTo,
@@ -9,6 +10,7 @@ import {
   resetTitleContainerProperties,
   setTitleContainerProperties,
 } from '@popup/multichain/actions/title-container.actions';
+import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -29,6 +31,7 @@ const AddByKeys = ({
   setTitleContainerProperties,
   resetTitleContainerProperties,
   setErrorMessage,
+  setActiveAccountType,
   loadActiveAccount,
 }: PropsType) => {
   const [username, setUsername] = useState('');
@@ -72,6 +75,7 @@ const AddByKeys = ({
       const account = { name: username, keys: keys };
       addAccount(account);
       resetTitleContainerProperties();
+      setActiveAccountType(ChainType.HIVE);
       loadActiveAccount(account);
       navigateTo(Screen.HOME_PAGE, true);
     }
@@ -129,6 +133,7 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   resetTitleContainerProperties,
   setErrorMessage,
+  setActiveAccountType,
   loadActiveAccount,
 });
 type PropsType = ConnectedProps<typeof connector>;

@@ -1,9 +1,11 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { setAccounts } from '@popup/hive/actions/account.actions';
+import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
 import { SelectAccountSectionItemComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section-item.component';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -51,6 +53,7 @@ const SelectAccountSection = ({
   setAccounts,
   activeAccount,
   loadActiveAccount,
+  setActiveAccountType,
   navigateTo,
   isOnMain = false,
   hideManageAccountsOption = false,
@@ -112,6 +115,7 @@ const SelectAccountSection = ({
     if (isControlledSelection) {
       onAccountSelected(accountName);
     } else {
+      setActiveAccountType(ChainType.HIVE);
       loadActiveAccount(itemClicked);
     }
     handleClickOnSelector();
@@ -305,6 +309,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   loadActiveAccount,
   setAccounts,
+  setActiveAccountType,
   navigateTo,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;

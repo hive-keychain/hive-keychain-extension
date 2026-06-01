@@ -8,6 +8,7 @@ import {
   EvmSmartContractInfoErc20,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
+import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
 import { setChain } from '@popup/multichain/actions/chain.actions';
 import {
   navigateTo,
@@ -151,6 +152,7 @@ const executeChangeAccountShortcut = async (shortcut: ShortcutDefinition) => {
     const chain = state.chain as EvmChain;
     const account = await findEvmAccount(target.accountId, state);
     if (chain?.type === ChainType.EVM && account) {
+      store.dispatch(setActiveAccountType(ChainType.EVM));
       store.dispatch(loadEvmActiveAccount(chain, account.wallet));
     }
     return;
@@ -159,7 +161,10 @@ const executeChangeAccountShortcut = async (shortcut: ShortcutDefinition) => {
   const account = state.hive.accounts.find(
     (item) => item.name === target.accountId,
   );
-  if (account) store.dispatch(loadActiveAccount(account));
+  if (account) {
+    store.dispatch(setActiveAccountType(ChainType.HIVE));
+    store.dispatch(loadActiveAccount(account));
+  }
 };
 
 const executeNavigateShortcut = (shortcut: ShortcutDefinition) => {
@@ -342,6 +347,9 @@ export const executeShortcut = async (
     return { deferred: true, targetChain };
   }
 
+  if (targetChain?.type === ChainType.HIVE || targetChain?.type === ChainType.EVM) {
+    store.dispatch(setActiveAccountType(targetChain.type));
+  }
   await executeShortcutInCurrentChain(shortcut);
   return { deferred: false };
 };

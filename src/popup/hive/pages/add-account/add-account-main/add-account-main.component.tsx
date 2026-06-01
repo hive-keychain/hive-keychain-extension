@@ -1,11 +1,13 @@
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { Screen } from '@interfaces/screen.interface';
+import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
 import { resetChain } from '@popup/multichain/actions/chain.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import {
   resetTitleContainerProperties,
   setTitleContainerProperties,
 } from '@popup/multichain/actions/title-container.actions';
+import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect } from 'react';
@@ -27,6 +29,7 @@ const AddAccountMain = ({
   isLedgerSupported,
   resetChain,
   loadActiveAccount,
+  setActiveAccountType,
 }: PropsFromRedux) => {
   useEffect(() => {
     setTitleContainerProperties({
@@ -71,6 +74,7 @@ const AddAccountMain = ({
       ) {
         setAccounts(message.value.accounts);
         resetTitleContainerProperties();
+        setActiveAccountType(ChainType.HIVE);
         loadActiveAccount(message.value.accounts[0]);
         navigateTo(Screen.HOME_PAGE, true);
       }
@@ -160,6 +164,7 @@ const connector = connect(mapStateToProps, {
   resetTitleContainerProperties,
   resetChain,
   loadActiveAccount,
+  setActiveAccountType,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

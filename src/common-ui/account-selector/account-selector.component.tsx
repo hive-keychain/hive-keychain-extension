@@ -7,6 +7,7 @@ import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
+import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setChain } from '@popup/multichain/actions/chain.actions';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
@@ -142,6 +143,7 @@ const AccountSelector = ({
   chain,
   loadActiveAccount,
   loadEvmActiveAccount,
+  setActiveAccountType,
   setChain,
   setAccounts,
   setEvmAccounts,
@@ -369,6 +371,7 @@ const AccountSelector = ({
       if (!isSameChain(chain, targetChain)) {
         await setChain(targetChain);
       }
+      setActiveAccountType(ChainType.HIVE);
       loadActiveAccount(item.account);
       setIsOpened(false);
       return;
@@ -386,6 +389,7 @@ const AccountSelector = ({
     if (!isSameChain(chain, targetChain)) {
       await setChain(targetChain);
     }
+    setActiveAccountType(ChainType.EVM);
     loadEvmActiveAccount(targetChain, item.account.wallet);
     setIsOpened(false);
   };
@@ -741,6 +745,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   loadActiveAccount,
   loadEvmActiveAccount,
+  setActiveAccountType,
   setChain,
   setAccounts,
   setEvmAccounts,

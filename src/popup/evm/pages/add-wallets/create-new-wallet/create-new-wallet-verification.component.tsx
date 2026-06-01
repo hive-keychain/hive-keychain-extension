@@ -13,13 +13,17 @@ import {
   addToLoadingList,
   removeFromLoadingList,
 } from '@popup/multichain/actions/loading.actions';
+import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import {
   resetTitleContainerProperties,
   setTitleContainerProperties,
 } from '@popup/multichain/actions/title-container.actions';
-import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import {
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { HDNodeWallet } from 'ethers';
 import React, { useEffect, useRef, useState } from 'react';
@@ -44,6 +48,7 @@ const CreateNewWalletVerification = ({
   mk,
   chain,
   setEvmAccounts,
+  setActiveAccountType,
   accounts,
   addToLoadingList,
   removeFromLoadingList,
@@ -129,6 +134,7 @@ const CreateNewWalletVerification = ({
       const rebuiltAccounts =
         await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
       setEvmAccounts(rebuiltAccounts);
+      setActiveAccountType(ChainType.EVM);
       await loadEvmActiveAccount(chain, rebuiltAccounts[0].wallet);
 
       if (EvmWalletSetupTabUtils.shouldShowDetachedTabCreationSuccess()) {
@@ -284,6 +290,7 @@ const connector = connect(mapStateToProps, {
   resetTitleContainerProperties,
   setErrorMessage,
   setEvmAccounts,
+  setActiveAccountType,
   loadEvmActiveAccount,
   addToLoadingList,
   removeFromLoadingList,

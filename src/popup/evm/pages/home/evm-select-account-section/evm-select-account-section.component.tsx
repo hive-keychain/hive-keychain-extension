@@ -16,7 +16,11 @@ import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
-import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
+import {
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -47,6 +51,7 @@ const SelectAccountSection = ({
   chain,
   mk,
   loadEvmActiveAccount,
+  setActiveAccountType,
   setEvmAccounts,
   navigateTo,
   isOnMain = false,
@@ -161,6 +166,7 @@ const SelectAccountSection = ({
     if (itemClicked) {
       await EvmWalletUtils.promoteConnectedWalletAddress(address);
       await EvmLightNodeUtils.registerAddress(chain.chainId, address, false);
+      setActiveAccountType(ChainType.EVM);
       loadEvmActiveAccount(chain, itemClicked?.wallet);
       handleClickOnSelector();
     }
@@ -341,6 +347,7 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   loadEvmActiveAccount,
+  setActiveAccountType,
   setEvmAccounts,
   navigateTo,
 });

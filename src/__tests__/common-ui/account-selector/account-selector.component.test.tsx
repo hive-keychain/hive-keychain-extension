@@ -193,10 +193,12 @@ const buildState = (
   hiveAccounts = [localAccounts.user1, localAccounts.user2],
   mk = mkData.user.one,
   chain: HiveChain | EvmChain = hiveChain,
+  activeAccountType: ChainType.HIVE | ChainType.EVM = ChainType.HIVE,
 ) => ({
   ...initialEmptyStateStore,
   mk,
   chain,
+  activeAccountType,
   hive: {
     ...initialEmptyStateStore.hive,
     accounts: hiveAccounts,
@@ -532,6 +534,49 @@ describe('AccountSelectorComponent', () => {
     }
   });
 
+  it('navigates to Hive manage without switching the active account type from EVM', async () => {
+    const loadActiveAccountSpy = jest.spyOn(
+      activeAccountActions,
+      'loadActiveAccount',
+    );
+
+    try {
+      const { store } = customRender(
+        <AccountSelectorComponent selectedAccountType={ChainType.EVM} />,
+        {
+          initialState: buildState(
+            [localAccounts.user1, localAccounts.user2],
+            mkData.user.one,
+            evmChain,
+            ChainType.EVM,
+          ),
+        },
+      );
+
+      await userEvent.click(screen.getByTestId('account-selector-trigger'));
+      await userEvent.click(
+        within(
+          screen.getByTestId(
+            `account-selector-hive-account-${userData.two.username}`,
+          ),
+        ).getByTestId(/^account-selector-manage-/),
+      );
+
+      expect(store.getState().navigation.stack[0].currentPage).toBe(
+        HiveScreen.SETTINGS_MANAGE_ACCOUNTS,
+      );
+      expect(store.getState().navigation.stack[0].params).toMatchObject({
+        username: userData.two.username,
+        [MANAGE_ACCOUNT_SELECTED_NAME_PARAM]: userData.two.username,
+      });
+      expect(store.getState().activeAccountType).toBe(ChainType.EVM);
+      expect(store.getState().chain.type).toBe(ChainType.EVM);
+      expect(loadActiveAccountSpy).not.toHaveBeenCalled();
+    } finally {
+      loadActiveAccountSpy.mockRestore();
+    }
+  });
+
   it('switches the active Hive account when clicking another Hive account on Hive chain', async () => {
     const { store } = customRender(
       <AccountSelectorComponent selectedAccountType={ChainType.HIVE} />,
@@ -553,6 +598,7 @@ describe('AccountSelectorComponent', () => {
       );
     });
     expect(store.getState().chain.chainId).toBe(hiveChain.chainId);
+    expect(store.getState().activeAccountType).toBe(ChainType.HIVE);
     expect(
       screen.queryByTestId('account-selector-backdrop'),
     ).not.toBeInTheDocument();
@@ -581,6 +627,7 @@ describe('AccountSelectorComponent', () => {
         address: secondEvmAddress,
       }),
     );
+    expect(store.getState().activeAccountType).toBe(ChainType.EVM);
     expect(
       screen.queryByTestId('account-selector-backdrop'),
     ).not.toBeInTheDocument();
@@ -758,10 +805,10 @@ describe('AccountSelectorComponent', () => {
         visibleEvmAccounts,
       );
       expect(getAccountSelectorRowTestIds()).toEqual([
-      `account-selector-evm-account-${secondEvmAddress}`,
-      `account-selector-hive-account-${userData.one.username}`,
-      `account-selector-hive-account-${userData.two.username}`,
-      `account-selector-evm-account-${firstEvmAddress}`,
+        `account-selector-evm-account-${secondEvmAddress}`,
+        `account-selector-hive-account-${userData.one.username}`,
+        `account-selector-hive-account-${userData.two.username}`,
+        `account-selector-evm-account-${firstEvmAddress}`,
       ]);
     });
   });
