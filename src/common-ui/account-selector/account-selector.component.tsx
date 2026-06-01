@@ -5,8 +5,8 @@ import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
-import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmActiveAccountInitUtils } from '@popup/evm/utils/evm-active-account-init.utils';
+import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
@@ -55,7 +55,7 @@ interface Props {
   background?: 'white';
   removeBorder?: boolean;
 }
-const MAX_DISPLAYED_EVM_CHAINS = 5;
+const MAX_DISPLAYED_EVM_CHAINS = 3;
 
 const getEvmAccountAddress = (account?: EvmAccount) => {
   return account ? EvmAccountUtils.getEvmAccountAddress(account) : undefined;
@@ -730,7 +730,8 @@ const AccountSelector = ({
       hiveAccounts,
       mk,
     );
-    const storedEvmAccounts = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
+    const storedEvmAccounts =
+      await EvmWalletUtils.getAccountsFromLocalStorage(mk);
 
     await AccountUtils.downloadMultichainAccounts(
       selectableHiveAccounts,

@@ -1654,11 +1654,11 @@
     "description": "when starting a recurrent transfer"
   },
   "popup_html_add_by_keys": {
-    "message": "Use a private key or master password",
+    "message": "Import by private key",
     "description": "When adding new account. In a button, must keep short. "
   },
   "popup_html_add_by_auth": {
-    "message": "Use an authorized account",
+    "message": "Import through an authorized account",
     "description": "When adding new account. In a button, must keep short."
   },
   "popup_html_chose_add_method": {
