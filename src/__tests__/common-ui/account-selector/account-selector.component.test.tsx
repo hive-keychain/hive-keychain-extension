@@ -22,9 +22,14 @@ import { EvmAccountSource } from 'src/popup/evm/interfaces/wallet.interface';
 import * as AccountActions from 'src/popup/hive/actions/account.actions';
 import * as activeAccountActions from 'src/popup/hive/actions/active-account.actions';
 import { HiveScreen } from 'src/popup/hive/reference-data/hive-screen.enum';
+import { EvmScreen } from 'src/popup/evm/reference-data/evm-screen.enum';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import { MANAGE_ACCOUNT_SELECTED_NAME_PARAM } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/manage-account-selection.utils';
+import {
+  MANAGE_EVM_SELECTED_ADDRESS_ID_PARAM,
+  MANAGE_EVM_SELECTED_SEED_ID_PARAM,
+} from 'src/popup/evm/pages/home/settings/evm-accounts/evm-accounts-selection.utils';
 
 const mockCopyTextWithToast = jest.fn().mockResolvedValue(true);
 
@@ -722,6 +727,69 @@ describe('AccountSelectorComponent', () => {
     } finally {
       loadActiveAccountSpy.mockRestore();
     }
+  });
+
+  it('navigates to EVM seeds and accounts when clicking the EVM manage icon', async () => {
+    mockLoadEvmActiveAccount.mockClear();
+
+    const { store } = customRender(
+      <AccountSelectorComponent selectedAccountType={ChainType.EVM} />,
+      {
+        initialState: buildState(),
+      },
+    );
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+    await userEvent.click(
+      within(
+        screen.getByTestId(`account-selector-evm-account-${secondEvmAddress}`),
+      ).getByTestId(/^account-selector-manage-/),
+    );
+
+    expect(store.getState().navigation.stack[0].currentPage).toBe(
+      EvmScreen.EVM_ACCOUNTS_SETTINGS,
+    );
+    expect(store.getState().navigation.stack[0].params).toMatchObject({
+      seedId: 1,
+      addressId: 1,
+      [MANAGE_EVM_SELECTED_SEED_ID_PARAM]: 1,
+      [MANAGE_EVM_SELECTED_ADDRESS_ID_PARAM]: 1,
+    });
+    expect(mockLoadEvmActiveAccount).not.toHaveBeenCalled();
+    expect(
+      screen.queryByTestId('account-selector-backdrop'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('navigates to EVM manage without switching the active account type from Hive', async () => {
+    mockLoadEvmActiveAccount.mockClear();
+
+    const { store } = customRender(
+      <AccountSelectorComponent selectedAccountType={ChainType.HIVE} />,
+      {
+        initialState: buildState(),
+      },
+    );
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+    await userEvent.click(
+      within(
+        screen.getByTestId(`account-selector-evm-account-${secondEvmAddress}`),
+      ).getByTestId(/^account-selector-manage-/),
+    );
+
+    expect(store.getState().navigation.stack[0].currentPage).toBe(
+      EvmScreen.EVM_ACCOUNTS_SETTINGS,
+    );
+    expect(store.getState().navigation.stack[0].params).toMatchObject({
+      seedId: 1,
+      addressId: 1,
+      [MANAGE_EVM_SELECTED_SEED_ID_PARAM]: 1,
+      [MANAGE_EVM_SELECTED_ADDRESS_ID_PARAM]: 1,
+    });
+    expect(store.getState().activeAccountType).toBe(ChainType.HIVE);
+    expect(store.getState().chain.type).toBe(ChainType.HIVE);
+    expect(mockLoadEvmActiveAccount).not.toHaveBeenCalled();
   });
 
   it('navigates to Hive manage without switching the active account type from EVM', async () => {
