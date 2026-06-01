@@ -102,6 +102,51 @@
       text-align: center;
     }
 
+    .account-selector-filters {
+      display: flex;
+      flex-direction: row;
+      column-gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .account-selector-search {
+      flex: 1;
+      min-width: 0;
+      .custom-input-content {
+        padding: 6px 12px;
+      }
+    }
+
+    .account-selector-type-filter {
+      display: flex;
+      column-gap: 8px;
+    }
+
+    .account-selector-type-filter-button {
+      @include poppins500(13px);
+      color: var(--main-font-color);
+      background: var(--card-background);
+      border: 1px solid $lighter-grey-border;
+      border-radius: 16px;
+      min-height: 32px;
+      padding: 5px 10px;
+      display: flex;
+      align-items: center;
+      column-gap: 6px;
+      cursor: pointer;
+
+      &.selected {
+        color: white;
+        background: $red;
+        border-color: $red;
+      }
+
+      .account-selector-type-filter-icon {
+        @include icon-size(18px);
+        flex-shrink: 0;
+      }
+    }
+
     .account-selector-list {
       flex: 1;
       overflow-y: auto;
