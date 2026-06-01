@@ -102,6 +102,51 @@
       text-align: center;
     }
 
+    .account-selector-filters {
+      display: flex;
+      flex-direction: row;
+      column-gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .account-selector-search {
+      flex: 1;
+      min-width: 0;
+      .custom-input-content {
+        padding: 6px 12px;
+      }
+    }
+
+    .account-selector-type-filter {
+      display: flex;
+      column-gap: 8px;
+    }
+
+    .account-selector-type-filter-button {
+      @include poppins500(13px);
+      color: var(--main-font-color);
+      background: var(--card-background);
+      border: 1px solid $lighter-grey-border;
+      border-radius: 16px;
+      min-height: 32px;
+      padding: 5px 10px;
+      display: flex;
+      align-items: center;
+      column-gap: 6px;
+      cursor: pointer;
+
+      &.selected {
+        color: white;
+        background: $red;
+        border-color: $red;
+      }
+
+      .account-selector-type-filter-icon {
+        @include icon-size(18px);
+        flex-shrink: 0;
+      }
+    }
+
     .account-selector-list {
       flex: 1;
       overflow-y: auto;
@@ -303,7 +348,8 @@
       padding-top: 4px;
     }
 
-    .account-selector-create-button {
+    .account-selector-create-button,
+    .account-selector-export-button {
       @include poppins500(14px);
       color: var(--main-font-color);
       background: var(--card-background);
@@ -323,7 +369,8 @@
         background: $red;
         border-color: $red;
 
-        .account-selector-create-button-icon {
+        .account-selector-create-button-icon,
+        .account-selector-export-button-icon {
           color: white;
 
           path {
@@ -332,8 +379,14 @@
         }
       }
 
+      span {
+        flex-shrink: 0;
+      }
+    }
+
+    .account-selector-create-button {
       .account-selector-create-button-icon {
-        @include icon-size(24px);
+        @include icon-size(20px);
         color: $red;
         flex-shrink: 0;
 
@@ -341,26 +394,13 @@
           display: none;
         }
       }
-
-      span {
-        flex-shrink: 0;
-      }
     }
 
     .account-selector-export-button {
-      @include poppins500(14px);
-      background: transparent;
-      border: 0;
-      display: flex;
-      align-items: center;
-      column-gap: 8px;
       margin-left: auto;
-      min-height: 40px;
-      padding: 8px 4px;
-      cursor: default;
 
       .account-selector-export-button-icon {
-        @include icon-size(24px);
+        @include icon-size(20px);
         flex-shrink: 0;
 
         path {
@@ -370,10 +410,6 @@
         rect {
           display: none;
         }
-      }
-
-      span {
-        flex-shrink: 0;
       }
     }
 

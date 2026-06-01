@@ -481,6 +481,107 @@ describe('AccountSelectorComponent', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('filters account rows by search text and account type', async () => {
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
+      initialState: buildState(),
+    });
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+
+    await userEvent.type(
+      screen.getByTestId('account-selector-search-input'),
+      'Secondary',
+    );
+
+    expect(
+      screen.queryByTestId(
+        `account-selector-hive-account-${userData.one.username}`,
+      ),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId(`account-selector-evm-account-${firstEvmAddress}`),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByTestId(`account-selector-evm-account-${secondEvmAddress}`),
+    ).toBeInTheDocument();
+
+    await userEvent.click(screen.getByTestId('account-selector-filter-hive'));
+
+    expect(
+      screen.queryByTestId(`account-selector-evm-account-${secondEvmAddress}`),
+    ).not.toBeInTheDocument();
+
+    await userEvent.clear(screen.getByTestId('account-selector-search-input'));
+
+    expect(
+      screen.getByTestId(
+        `account-selector-hive-account-${userData.one.username}`,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId(`account-selector-evm-account-${firstEvmAddress}`),
+    ).not.toBeInTheDocument();
+  });
+
+  it('hides account type filters when only one account type is available', async () => {
+    jest
+      .spyOn(EvmWalletUtils, 'rebuildAccountsFromLocalStorage')
+      .mockResolvedValue([]);
+
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
+      initialState: {
+        ...buildState(),
+        evm: {
+          ...buildState().evm,
+          accounts: [],
+        },
+      },
+    });
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+
+    expect(
+      await screen.findByTestId('account-selector-search-input'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('account-selector-filter-hive'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('account-selector-filter-evm'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('hides account filters when fewer than two accounts are available', async () => {
+    jest
+      .spyOn(EvmWalletUtils, 'rebuildAccountsFromLocalStorage')
+      .mockResolvedValue([]);
+
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
+      initialState: {
+        ...buildState([localAccounts.user1]),
+        evm: {
+          ...buildState().evm,
+          accounts: [],
+        },
+      },
+    });
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+
+    expect(
+      await screen.findByTestId('account-selector-title'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('account-selector-search-input'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('account-selector-filter-hive'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('account-selector-filter-evm'),
+    ).not.toBeInTheDocument();
+  });
+
   it('copies the Hive username when clicking the copy icon', async () => {
     customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
       initialState: buildState(),

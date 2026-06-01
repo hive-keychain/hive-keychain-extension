@@ -37,6 +37,8 @@ import { ConnectedProps, connect } from 'react-redux';
 import { ChainLogo } from 'src/common-ui/chain-logo/chain-logo.component';
 import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
+import { InputType } from 'src/common-ui/input/input-type.enum';
+import InputComponent from 'src/common-ui/input/input.component';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import {
@@ -134,6 +136,8 @@ const getAccountSelectorCopyValue = (item: AccountSelectorListItem) => {
   return getEvmAccountAddress(item.account) ?? '';
 };
 
+type AccountSelectorTypeFilter = 'all' | ChainType.HIVE | ChainType.EVM;
+
 const AccountSelector = ({
   selectedAccountType,
   background,
@@ -160,6 +164,9 @@ const AccountSelector = ({
   const [activeEvmMainnetChains, setActiveEvmMainnetChains] = useState<
     EvmChain[]
   >([]);
+  const [accountSearch, setAccountSearch] = useState('');
+  const [accountTypeFilter, setAccountTypeFilter] =
+    useState<AccountSelectorTypeFilter>('all');
   const [accountListItems, setAccountListItems] = useState<
     AccountSelectorListItem[]
   >(() =>
@@ -203,6 +210,53 @@ const AccountSelector = ({
 
     return { selectableHiveAccounts, selectableEvmAccounts };
   };
+
+  const getAccountListItemSearchValue = (item: AccountSelectorListItem) => {
+    if (item.type === ChainType.HIVE) {
+      return item.account.name;
+    }
+
+    return [
+      getEvmAccountAddress(item.account),
+      EvmAccountUtils.getSeedName(item.account),
+      EvmAccountUtils.getAccountName(item.account),
+    ]
+      .filter(Boolean)
+      .join(' ');
+  };
+
+  const hasHiveAccounts = accountListItems.some(
+    (item) => item.type === ChainType.HIVE,
+  );
+  const hasEvmAccounts = accountListItems.some(
+    (item) => item.type === ChainType.EVM,
+  );
+  const showAccountFilters = accountListItems.length >= 2;
+  const showAccountTypeFilters =
+    showAccountFilters && hasHiveAccounts && hasEvmAccounts;
+
+  const filteredAccountListItems = accountListItems.filter((item) => {
+    if (
+      showAccountTypeFilters &&
+      accountTypeFilter !== 'all' &&
+      item.type !== accountTypeFilter
+    ) {
+      return false;
+    }
+
+    const normalizedSearch = accountSearch.trim().toLowerCase();
+    if (!showAccountFilters || !normalizedSearch) {
+      return true;
+    }
+
+    return getAccountListItemSearchValue(item)
+      .toLowerCase()
+      .includes(normalizedSearch);
+  });
+
+  const isAccountListFiltered =
+    (showAccountFilters && accountSearch.trim().length > 0) ||
+    (showAccountTypeFilters && accountTypeFilter !== 'all');
 
   const rebuildAccountListItems = async (
     selectableHiveAccounts: LocalAccount[],
@@ -283,6 +337,8 @@ const AccountSelector = ({
       selectableEvmAccounts,
     );
     setActiveEvmMainnetChains(await getActiveEvmMainnetChains());
+    setAccountSearch('');
+    setAccountTypeFilter('all');
     setIsOpened(true);
   };
 
@@ -588,7 +644,8 @@ const AccountSelector = ({
     if (
       !result.destination ||
       result.destination.index === result.source.index ||
-      !mk
+      !mk ||
+      isAccountListFiltered
     ) {
       return;
     }
@@ -633,6 +690,14 @@ const AccountSelector = ({
     } finally {
       setIsPersistingOrder(false);
     }
+  };
+
+  const handleAccountTypeFilterClick = (
+    accountType: ChainType.HIVE | ChainType.EVM,
+  ) => {
+    setAccountTypeFilter((currentFilter) =>
+      currentFilter === accountType ? 'all' : accountType,
+    );
   };
 
   const renderCreateIcon = (icon: SVGIcons, testId: string) => (
@@ -692,6 +757,54 @@ const AccountSelector = ({
               data-testid="account-selector-title">
               {chrome.i18n.getMessage('popup_html_accounts')}
             </div>
+            {showAccountFilters && (
+              <div className="account-selector-filters">
+                <InputComponent
+                  classname="account-selector-search"
+                  dataTestId="account-selector-search-input"
+                  type={InputType.TEXT}
+                  logo={SVGIcons.INPUT_SEARCH}
+                  logoPosition="left"
+                  placeholder="popup_html_search"
+                  value={accountSearch}
+                  onChange={setAccountSearch}
+                />
+                {showAccountTypeFilters && (
+                  <div className="account-selector-type-filter">
+                    <button
+                      className={`account-selector-type-filter-button ${
+                        accountTypeFilter === ChainType.HIVE ? 'selected' : ''
+                      }`}
+                      data-testid="account-selector-filter-hive"
+                      onClick={() =>
+                        handleAccountTypeFilterClick(ChainType.HIVE)
+                      }
+                      type="button">
+                      <SVGIcon
+                        icon={SVGIcons.BLOCKCHAIN_HIVE}
+                        className="account-selector-type-filter-icon"
+                      />
+                      <span>HIVE</span>
+                    </button>
+                    <button
+                      className={`account-selector-type-filter-button ${
+                        accountTypeFilter === ChainType.EVM ? 'selected' : ''
+                      }`}
+                      data-testid="account-selector-filter-evm"
+                      onClick={() =>
+                        handleAccountTypeFilterClick(ChainType.EVM)
+                      }
+                      type="button">
+                      <SVGIcon
+                        icon={SVGIcons.BLOCKCHAIN_ETHEREUM}
+                        className="account-selector-type-filter-icon"
+                      />
+                      <span>EVM</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
             <div
               className="account-selector-list"
               data-testid="account-selector-list">
@@ -699,17 +812,19 @@ const AccountSelector = ({
                 onDragEnd={(dragResult) => void onDragEnd(dragResult)}>
                 <Droppable
                   droppableId="account-selector-list"
-                  type="account-selector-list-item">
+                  type="account-selector-list-item"
+                  isDropDisabled={isAccountListFiltered}>
                   {(provided) => (
                     <div
                       className="account-selector-list-items"
                       {...provided.droppableProps}
                       ref={provided.innerRef}>
-                      {accountListItems.map((item, index) => (
+                      {filteredAccountListItems.map((item, index) => (
                         <Draggable
                           key={item.id}
                           draggableId={item.id}
-                          index={index}>
+                          index={index}
+                          isDragDisabled={isAccountListFiltered}>
                           {(draggableProvided) => (
                             <div
                               ref={draggableProvided.innerRef}
