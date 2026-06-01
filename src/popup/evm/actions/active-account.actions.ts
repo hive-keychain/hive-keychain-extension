@@ -82,6 +82,43 @@ const isActiveAccountRequestCurrent = (
   );
 };
 
+const buildEvmActiveAccountIdentityPayload = (
+  wallet: EvmWallet,
+): EvmActiveAccount =>
+  ({
+    address: wallet.address,
+    wallet,
+    isReady: false,
+    nativeAndErc20Tokens: {
+      value: [] as NativeAndErc20Token[],
+      loading: true,
+      initialized: false,
+    },
+    nfts: {
+      value: [] as (EvmErc721Token | EvmErc1155Token)[],
+      loading: true,
+      initialized: false,
+    },
+    history: {
+      value: EMPTY_EVM_HISTORY,
+      loading: true,
+      initialized: false,
+    },
+  }) as EvmActiveAccount;
+
+const dispatchEvmActiveAccountIdentity = (
+  dispatch: (action: {
+    type: EvmActionType.SET_ACTIVE_ACCOUNT;
+    payload: EvmActiveAccount;
+  }) => void,
+  wallet: EvmWallet,
+) => {
+  dispatch({
+    type: EvmActionType.SET_ACTIVE_ACCOUNT,
+    payload: buildEvmActiveAccountIdentityPayload(wallet),
+  });
+};
+
 const getHistoryEventKey = (event: EvmUserHistory['events'][number]) => {
   return `${event.transactionHash.toLowerCase()}-${event.transactionIndex}`;
 };
@@ -429,30 +466,9 @@ export const loadMoreTokensInActiveAccount =
 export const loadEvmActiveAccount =
   (chain: EvmChain, wallet: EvmWallet): AppThunk =>
   async (dispatch, getState) => {
+    dispatchEvmActiveAccountIdentity(dispatch, wallet);
+
     if (chain.isCustom === true) {
-      dispatch({
-        type: EvmActionType.SET_ACTIVE_ACCOUNT,
-        payload: {
-          address: wallet.address,
-          nativeAndErc20Tokens: {
-            value: [] as NativeAndErc20Token[],
-            loading: true,
-            initialized: false,
-          },
-          nfts: {
-            value: [] as (EvmErc721Token | EvmErc1155Token)[],
-            loading: true,
-            initialized: false,
-          },
-          history: {
-            value: EMPTY_EVM_HISTORY,
-            loading: true,
-            initialized: false,
-          },
-          wallet: wallet,
-          isReady: false,
-        } as EvmActiveAccount,
-      });
       const additionalAssetLoadPromises = [dispatch(loadEvmHistory())];
 
       const nativeMeta = EvmTokensUtils.buildFallbackNativeTokenInfo(chain);
@@ -509,29 +525,6 @@ export const loadEvmActiveAccount =
     if (!isSameEvmChain(getState().chain as Chain, chain)) {
       return;
     }
-    dispatch({
-      type: EvmActionType.SET_ACTIVE_ACCOUNT,
-      payload: {
-        address: wallet.address,
-        nativeAndErc20Tokens: {
-          value: [] as NativeAndErc20Token[],
-          loading: true,
-          initialized: false,
-        },
-        nfts: {
-          value: [] as (EvmErc721Token | EvmErc1155Token)[],
-          loading: true,
-          initialized: false,
-        },
-        history: {
-          value: EMPTY_EVM_HISTORY,
-          loading: true,
-          initialized: false,
-        },
-        wallet: wallet,
-        isReady: false,
-      } as EvmActiveAccount,
-    });
     const additionalAssetLoadPromises = [
       dispatch(loadEvmActiveAccountNfts(chain, wallet)),
       dispatch(loadEvmHistory()),

@@ -4,6 +4,7 @@ import { Screen } from '@interfaces/screen.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmActiveAccountInitUtils } from '@popup/evm/utils/evm-active-account-init.utils';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmWalletSetupTabUtils } from '@popup/evm/utils/evm-wallet-setup-tab.utils';
@@ -203,6 +204,13 @@ const UnlockedApp = ({
 
   useEffect(() => {
     if (!isAppReady || chain?.type !== ChainType.EVM || !evmAccounts.length) {
+      return;
+    }
+    if (
+      EvmActiveAccountInitUtils.shouldSkipRestoreActiveEvmAccountOnChainChange(
+        chain.chainId,
+      )
+    ) {
       return;
     }
     void initActiveEvmAccount(evmAccounts, chain as EvmChain);
