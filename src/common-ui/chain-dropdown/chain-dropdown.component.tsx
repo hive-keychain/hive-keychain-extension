@@ -78,6 +78,10 @@ const ChainDropdown = ({
     await ChainUtils.reorderSetupChains(getChainIdsFromOptions(reorderedOptions));
   };
 
+  if (chain.type === ChainType.HIVE) {
+    return null;
+  }
+
   return (
     <>
       {options && chain && (
