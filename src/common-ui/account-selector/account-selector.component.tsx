@@ -11,6 +11,7 @@ import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
 import { setChain } from '@popup/multichain/actions/chain.actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
@@ -47,6 +48,10 @@ import {
 } from 'src/common-ui/toast/copy-toast.utils';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { MANAGE_ACCOUNT_SELECTED_NAME_PARAM } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/manage-account-selection.utils';
+import {
+  MANAGE_EVM_SELECTED_ADDRESS_ID_PARAM,
+  MANAGE_EVM_SELECTED_SEED_ID_PARAM,
+} from 'src/popup/evm/pages/home/settings/evm-accounts/evm-accounts-selection.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -464,6 +469,16 @@ const AccountSelector = ({
     });
   };
 
+  const handleManageEvmAccountClick = (account: EvmAccount) => {
+    setIsOpened(false);
+    navigateToWithParams(EvmScreen.EVM_ACCOUNTS_SETTINGS, {
+      seedId: account.seedId,
+      addressId: account.id,
+      [MANAGE_EVM_SELECTED_SEED_ID_PARAM]: account.seedId,
+      [MANAGE_EVM_SELECTED_ADDRESS_ID_PARAM]: account.id,
+    });
+  };
+
   const handleAccountListItemCopy = async (
     event: React.MouseEvent<HTMLElement>,
     item: AccountSelectorListItem,
@@ -551,6 +566,8 @@ const AccountSelector = ({
             stopListItemActionPropagation(event);
             if (item.type === ChainType.HIVE) {
               handleManageHiveAccountClick(item.account);
+            } else {
+              handleManageEvmAccountClick(item.account);
             }
           }}
         />

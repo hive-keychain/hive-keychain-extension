@@ -6,6 +6,7 @@ import {
   EvmAccountSource,
 } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountsContextualMenu } from '@popup/evm/pages/home/settings/evm-accounts/evm-accounts.contextual-menu';
+import { getEvmAccountsDefaultSeedOption } from '@popup/evm/pages/home/settings/evm-accounts/evm-accounts-selection.utils';
 import {
   EditAccountParams,
   EvmEditAccountPopup,
@@ -47,6 +48,8 @@ const EvmAccounts = ({
   setEvmAccounts,
   loadEvmActiveAccount,
   isLedgerSupported,
+  evmAccountsNavigationParams,
+  evmAccountsRestoreParams,
 }: PropsType) => {
   const [selectedSeed, setSelectedSeed] = useState<OptionItem>();
   const [seedsOptions, setSeedsOptions] = useState<OptionItem[]>();
@@ -134,7 +137,14 @@ const EvmAccounts = ({
   const initializeOptions = () => {
     const options = buildSeedOptions(accounts);
     setSeedsOptions(options);
-    setSelectedSeed(options[0]);
+    setSelectedSeed(
+      getEvmAccountsDefaultSeedOption(
+        accounts,
+        options,
+        evmAccountsNavigationParams,
+        evmAccountsRestoreParams,
+      ),
+    );
   };
 
   const onCopyAddress = (account: EvmAccountOrPublic) => {
@@ -517,6 +527,8 @@ const mapStateToProps = (state: RootState) => {
     mk: state.mk,
     chain: state.chain as EvmChain,
     isLedgerSupported: state.evm.appStatus.isLedgerSupported,
+    evmAccountsNavigationParams: state.navigation.stack[0]?.params,
+    evmAccountsRestoreParams: state.navigation.stack[0]?.previousParams,
   };
 };
 const connector = connect(mapStateToProps, {
