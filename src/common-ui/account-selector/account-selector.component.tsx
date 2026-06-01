@@ -6,6 +6,7 @@ import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions'
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmActiveAccountInitUtils } from '@popup/evm/utils/evm-active-account-init.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
@@ -444,11 +445,14 @@ const AccountSelector = ({
     if (!targetChain) {
       return;
     }
+    EvmActiveAccountInitUtils.markPendingUserEvmWalletSelection(
+      targetChain.chainId,
+    );
     if (!isSameChain(chain, targetChain)) {
       await setChain(targetChain);
     }
-    setActiveAccountType(ChainType.EVM);
     loadEvmActiveAccount(targetChain, item.account.wallet);
+    setActiveAccountType(ChainType.EVM);
     setIsOpened(false);
   };
 

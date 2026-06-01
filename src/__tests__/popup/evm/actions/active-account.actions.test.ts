@@ -158,6 +158,24 @@ describe('EVM active-account.actions (custom chain)', () => {
     ).toBe('0x00000000000000000000000000000000000000cc');
   });
 
+  it('loadEvmActiveAccount sets wallet identity before Light Node register', async () => {
+    const registerAddressSpy = jest
+      .spyOn(EvmLightNodeUtils, 'registerAddress')
+      .mockImplementation(async () => {
+        expect(store.getState().evm.activeAccount.wallet?.address).toBe(
+          wallet.address,
+        );
+      });
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      chain: baseEvmChain,
+    });
+
+    await store.dispatch<any>(loadEvmActiveAccount(baseEvmChain, wallet));
+
+    expect(registerAddressSpy).toHaveBeenCalled();
+  });
+
   it('loadEvmActiveAccount uses Light Node for default chains', async () => {
     const store = getFakeStore({
       ...initialEmptyStateStore,
