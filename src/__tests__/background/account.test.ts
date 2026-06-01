@@ -5,6 +5,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import { EvmAccountSource } from 'src/popup/evm/interfaces/wallet.interface';
+import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -68,6 +69,10 @@ describe('account tests:\n', () => {
       .fn()
       .mockResolvedValue(undefined);
     const saveSpy = jest.spyOn(LocalStorageUtils, 'saveValueInLocalStorage');
+    const invalidateRebuildAccountsCacheSpy = jest.spyOn(
+      EvmWalletUtils,
+      'invalidateRebuildAccountsCache',
+    );
     const sSendMessage = jest
       .spyOn(chrome.runtime, 'sendMessage')
       .mockResolvedValue(undefined);
@@ -107,6 +112,7 @@ describe('account tests:\n', () => {
       LocalStorageKeyEnum.EVM_ACCOUNTS,
       expect.any(String),
     );
+    expect(invalidateRebuildAccountsCacheSpy).toHaveBeenCalled();
     expect(sSendMessage).toHaveBeenCalledWith({
       command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
       value: expect.objectContaining({

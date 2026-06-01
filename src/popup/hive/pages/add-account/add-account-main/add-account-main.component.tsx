@@ -140,6 +140,7 @@ const AddAccountMain = ({
           message.value?.accounts?.length > 0
             ? message.value.accounts
             : (await AccountUtils.getAccountsFromLocalStorage(mk)) ?? [];
+        EvmWalletUtils.invalidateRebuildAccountsCache();
         const evmAccounts =
           await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
         setAccounts(hiveAccounts);
@@ -162,6 +163,7 @@ const AddAccountMain = ({
         message.value?.success &&
         message.value?.accountType === 'evm'
       ) {
+        EvmWalletUtils.invalidateRebuildAccountsCache();
         const evmAccounts =
           await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
         setEvmAccounts(evmAccounts);

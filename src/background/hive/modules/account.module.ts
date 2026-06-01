@@ -93,6 +93,7 @@ const importExportedAccountsV2 = async (
     LocalStorageKeyEnum.EVM_ACCOUNTS,
     await EncryptUtils.encryptJson({ list: mergedEvmAccounts }, mk),
   );
+  EvmWalletUtils.invalidateRebuildAccountsCache();
 
   sendImportSuccess({
     success: true,
