@@ -1,6 +1,7 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
 import {
   getInitialManageAccountSelection,
+  getManageAccountDefaultSelection,
   getRestoredManageAccountSelection,
   MANAGE_ACCOUNT_SELECTED_NAME_PARAM,
 } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/manage-account-selection.utils';
@@ -45,5 +46,32 @@ describe('manage-account-selection.utils', () => {
     expect(getInitialManageAccountSelection('alice', localAccounts)).toBe(
       'alice',
     );
+  });
+
+  it('prefers navigation params over active account', () => {
+    expect(
+      getManageAccountDefaultSelection('alice', localAccounts, {
+        username: 'bob',
+      }),
+    ).toBe('bob');
+  });
+
+  it('prefers navigation params over previous params', () => {
+    expect(
+      getManageAccountDefaultSelection(
+        'alice',
+        localAccounts,
+        { username: 'bob' },
+        { username: 'alice' },
+      ),
+    ).toBe('bob');
+  });
+
+  it('uses previous params when navigation params are absent', () => {
+    expect(
+      getManageAccountDefaultSelection('alice', localAccounts, undefined, {
+        username: 'bob',
+      }),
+    ).toBe('bob');
   });
 });

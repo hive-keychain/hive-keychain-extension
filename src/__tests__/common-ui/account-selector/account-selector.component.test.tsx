@@ -19,7 +19,10 @@ import AccountSelectorOrderUtils from '@popup/multichain/utils/account-selector-
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { EvmAccountSource } from 'src/popup/evm/interfaces/wallet.interface';
 import * as AccountActions from 'src/popup/hive/actions/account.actions';
+import * as activeAccountActions from 'src/popup/hive/actions/active-account.actions';
+import { HiveScreen } from 'src/popup/hive/reference-data/hive-screen.enum';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { MANAGE_ACCOUNT_SELECTED_NAME_PARAM } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/manage-account-selection.utils';
 
 const mockCopyTextWithToast = jest.fn().mockResolvedValue(true);
 
@@ -488,6 +491,45 @@ describe('AccountSelectorComponent', () => {
       'swap_copied_to_clipboard',
     );
     expect(screen.getByTestId('account-selector-backdrop')).toBeInTheDocument();
+  });
+
+  it('navigates to manage accounts with username when clicking the Hive manage icon', async () => {
+    const loadActiveAccountSpy = jest.spyOn(
+      activeAccountActions,
+      'loadActiveAccount',
+    );
+
+    try {
+      const { store } = customRender(
+        <AccountSelectorComponent selectedAccountType={ChainType.HIVE} />,
+        {
+          initialState: buildState(),
+        },
+      );
+
+      await userEvent.click(screen.getByTestId('account-selector-trigger'));
+      await userEvent.click(
+        within(
+          screen.getByTestId(
+            `account-selector-hive-account-${userData.two.username}`,
+          ),
+        ).getByTestId(/^account-selector-manage-/),
+      );
+
+      expect(store.getState().navigation.stack[0].currentPage).toBe(
+        HiveScreen.SETTINGS_MANAGE_ACCOUNTS,
+      );
+      expect(store.getState().navigation.stack[0].params).toMatchObject({
+        username: userData.two.username,
+        [MANAGE_ACCOUNT_SELECTED_NAME_PARAM]: userData.two.username,
+      });
+      expect(loadActiveAccountSpy).not.toHaveBeenCalled();
+      expect(
+        screen.queryByTestId('account-selector-backdrop'),
+      ).not.toBeInTheDocument();
+    } finally {
+      loadActiveAccountSpy.mockRestore();
+    }
   });
 
   it('switches the active Hive account when clicking another Hive account on Hive chain', async () => {

@@ -7,7 +7,10 @@ import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
+import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setChain } from '@popup/multichain/actions/chain.actions';
+import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
+import { MANAGE_ACCOUNT_SELECTED_NAME_PARAM } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/manage-account-selection.utils';
 import {
   Chain,
   ChainType,
@@ -142,6 +145,7 @@ const AccountSelector = ({
   setChain,
   setAccounts,
   setEvmAccounts,
+  navigateToWithParams,
 }: PropsFromRedux & Props) => {
   const [isOpened, setIsOpened] = useState(false);
   const [isPersistingOrder, setIsPersistingOrder] = useState(false);
@@ -386,6 +390,14 @@ const AccountSelector = ({
     setIsOpened(false);
   };
 
+  const handleManageHiveAccountClick = (account: LocalAccount) => {
+    setIsOpened(false);
+    navigateToWithParams(HiveScreen.SETTINGS_MANAGE_ACCOUNTS, {
+      username: account.name,
+      [MANAGE_ACCOUNT_SELECTED_NAME_PARAM]: account.name,
+    });
+  };
+
   const handleAccountListItemCopy = async (
     event: React.MouseEvent<HTMLElement>,
     item: AccountSelectorListItem,
@@ -469,7 +481,12 @@ const AccountSelector = ({
           className="account-selector-list-action manage-icon"
           dataTestId={`account-selector-manage-${itemId}`}
           icon={SVGIcons.SELECT_MANAGE_ACCOUNT}
-          onClick={stopListItemActionPropagation}
+          onClick={(event) => {
+            stopListItemActionPropagation(event);
+            if (item.type === ChainType.HIVE) {
+              handleManageHiveAccountClick(item.account);
+            }
+          }}
         />
         <SVGIcon
           className="account-selector-list-action copy-icon"
@@ -727,6 +744,7 @@ const connector = connect(mapStateToProps, {
   setChain,
   setAccounts,
   setEvmAccounts,
+  navigateToWithParams,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

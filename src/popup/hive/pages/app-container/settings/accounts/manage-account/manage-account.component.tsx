@@ -8,25 +8,21 @@ import { AccountKeysListComponent } from 'src/popup/hive/pages/app-container/set
 import { WrongKeysOnUser } from 'src/popup/hive/pages/app-container/wrong-key-popup/wrong-key-popup.component';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
-import {
-  getInitialManageAccountSelection,
-  getRestoredManageAccountSelection,
-} from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/manage-account-selection.utils';
+import { getManageAccountDefaultSelection } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/manage-account-selection.utils';
 
 const ManageAccount = ({
   setTitleContainerProperties,
   activeAccount,
   localAccounts,
+  manageAccountNavigationParams,
   manageAccountRestoreParams,
 }: PropsFromRedux) => {
   const [selectedAccountName, setSelectedAccountName] = useState(() =>
-    getInitialManageAccountSelection(
+    getManageAccountDefaultSelection(
       activeAccount.name,
       localAccounts,
-      getRestoredManageAccountSelection(
-        manageAccountRestoreParams,
-        localAccounts,
-      ),
+      manageAccountNavigationParams,
+      manageAccountRestoreParams,
     ),
   );
   const [wrongKeysFound, setWrongKeysFound] = useState<
@@ -111,6 +107,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.hive.activeAccount,
     localAccounts: state.hive.accounts,
+    manageAccountNavigationParams: state.navigation.stack[0]?.params,
     manageAccountRestoreParams: state.navigation.stack[0]?.previousParams,
   };
 };

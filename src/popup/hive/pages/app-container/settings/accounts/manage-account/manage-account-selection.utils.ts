@@ -2,6 +2,11 @@ import { LocalAccount } from 'src/interfaces/local-account.interface';
 
 export const MANAGE_ACCOUNT_SELECTED_NAME_PARAM = 'manageAccountSelectedName';
 
+export interface ManageAccountPageParams {
+  username?: string;
+  [MANAGE_ACCOUNT_SELECTED_NAME_PARAM]?: string;
+}
+
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
 
@@ -36,4 +41,26 @@ export const getInitialManageAccountSelection = (
     return restoredAccountName;
   }
   return activeAccountName ?? localAccounts[0]?.name ?? '';
+};
+
+export const getManageAccountDefaultSelection = (
+  activeAccountName: string | undefined,
+  localAccounts: LocalAccount[],
+  navigationParams?: unknown,
+  previousParams?: unknown,
+): string => {
+  const fromNavigation = getRestoredManageAccountSelection(
+    navigationParams,
+    localAccounts,
+  );
+  const fromPrevious = getRestoredManageAccountSelection(
+    previousParams,
+    localAccounts,
+  );
+
+  return getInitialManageAccountSelection(
+    activeAccountName,
+    localAccounts,
+    fromNavigation ?? fromPrevious,
+  );
 };
