@@ -7,5 +7,6 @@ export interface ImportCallbackPayload {
   success: boolean;
   message: string;
   warning?: ImportWarning | null;
+  accountType?: 'hive' | 'evm';
   accounts?: any[];
 }

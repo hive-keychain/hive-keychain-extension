@@ -2,6 +2,7 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
+import { Screen } from '@interfaces/screen.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import {
   ChainType,
@@ -393,12 +394,37 @@ describe('AccountSelectorComponent', () => {
       screen.getByTestId(`account-selector-evm-account-${secondEvmAddress}`),
     ).toHaveTextContent('0x2234...7890');
     expect(screen.queryByText(hiddenEvmAddress)).not.toBeInTheDocument();
-    expect(screen.getByTestId('account-selector-create-evm')).toHaveTextContent(
-      'evm_addresses_add',
+    expect(screen.getByTestId('account-selector-create-button')).toHaveTextContent(
+      'popup_html_add_account',
     );
-    expect(screen.getByTestId('account-selector-create-hive')).toHaveTextContent(
-      'evm_addresses_add',
+    expect(screen.getByTestId('account-selector-create-hive')).toBeInTheDocument();
+    expect(screen.getByTestId('account-selector-create-evm')).toBeInTheDocument();
+  });
+
+  it('navigates to the combined add account page when clicking the add account button', async () => {
+    const { store } = customRender(
+      <AccountSelectorComponent selectedAccountType={ChainType.EVM} />,
+      {
+        initialState: buildState(
+          [localAccounts.user1, localAccounts.user2],
+          mkData.user.one,
+          evmChain,
+        ),
+      },
     );
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+    await userEvent.click(screen.getByTestId('account-selector-create-button'));
+
+    await waitFor(() => {
+      expect(store.getState().chain.type).toBe(ChainType.HIVE);
+      expect(store.getState().navigation.stack[0].currentPage).toBe(
+        Screen.SETTINGS_ADD_ACCOUNT,
+      );
+    });
+    expect(
+      screen.queryByTestId('account-selector-backdrop'),
+    ).not.toBeInTheDocument();
   });
 
   it('shows Hive icon on Hive rows and stacked mainnet EVM chain logos on EVM rows', async () => {

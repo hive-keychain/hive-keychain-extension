@@ -268,7 +268,7 @@
     "description": "when keyless keychain is enabled"
   },
   "popup_html_setup": {
-    "message": "Setup",
+    "message": "Add an account",
     "description": "when adding new account"
   },
   "popup_html_private_key": {
@@ -288,7 +288,7 @@
     "description": "placeholder for entering a ending date"
   },
   "popup_html_import_keys": {
-    "message": "Import keys",
+    "message": "Import keys from a .kc file",
     "description": "Import all keys"
   },
   "popup_html_import_permissions": {
@@ -1654,15 +1654,15 @@
     "description": "when starting a recurrent transfer"
   },
   "popup_html_add_by_keys": {
-    "message": "Use keys/pwd",
+    "message": "Use a private key or master password",
     "description": "When adding new account. In a button, must keep short. "
   },
   "popup_html_add_by_auth": {
-    "message": "Use authorized account",
+    "message": "Use an authorized account",
     "description": "When adding new account. In a button, must keep short."
   },
   "popup_html_chose_add_method": {
-    "message": "You can add your keys by entering a private key or your master password.<br/>Alternatively, you can specify an authorized account or import your keys.",
+    "message": "Import or create a Hive account.",
     "description": "Text when adding new method."
   },
   "popup_html_auth_text": {
@@ -4656,15 +4656,15 @@
     "description": "Portfolio fetching message"
   },
   "html_popup_evm_add_wallet_method": {
-    "message": "Import an existing EVM wallet, add an account with a private key, connect a Ledger, or create a new wallet",
+    "message": "Import or create an EVM wallet to use it accross all EVM chains",
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_import_wallet": {
-    "message": "Import your wallet from a seedphrase",
+    "message": "Import from a seedphrase",
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_create_wallet": {
-    "message": "Create new EVM wallet",
+    "message": "Create a new EVM wallet",
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_setup_import_text": {
@@ -4680,7 +4680,7 @@
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "popup_html_import_wallet_from_key": {
-    "message": "Import key",
+    "message": "Import from a private key",
     "description": "EVM > Add wallet main page > Import private key"
   },
   "html_popup_evm_setup_import_key_text": {

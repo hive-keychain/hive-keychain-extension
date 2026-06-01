@@ -1,4 +1,6 @@
+import { Separator } from '@common-ui/separator/separator.component';
 import { AccountSelectorOrderRef } from '@interfaces/account-selector-order.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
@@ -7,11 +9,10 @@ import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
-import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
-import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
-import { setChain } from '@popup/multichain/actions/chain.actions';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
-import { MANAGE_ACCOUNT_SELECTED_NAME_PARAM } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/manage-account-selection.utils';
+import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
+import { setChain } from '@popup/multichain/actions/chain.actions';
+import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import {
   Chain,
   ChainType,
@@ -42,6 +43,7 @@ import {
   copyTextWithToast,
 } from 'src/common-ui/toast/copy-toast.utils';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
+import { MANAGE_ACCOUNT_SELECTED_NAME_PARAM } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/manage-account-selection.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -629,15 +631,26 @@ const AccountSelector = ({
     }
   };
 
-  const renderCreateButton = (icon: SVGIcons, testId: string) => (
-    <button
-      className="account-selector-create-button"
-      data-testid={testId}
-      type="button">
-      <SVGIcon icon={icon} className="account-selector-create-button-icon" />
-      <span>{chrome.i18n.getMessage('evm_addresses_add')}</span>
-    </button>
+  const renderCreateIcon = (icon: SVGIcons, testId: string) => (
+    <span className="account-selector-create-mini-card" data-testid={testId}>
+      <SVGIcon
+        icon={icon}
+        className={`account-selector-create-mini-card-icon ${
+          icon === SVGIcons.BLOCKCHAIN_HIVE ? 'hive' : ''
+        }`}
+      />
+    </span>
   );
+
+  const handleAddAccountClick = async () => {
+    setIsOpened(false);
+
+    const targetChain = await resolveHiveChain();
+    if (targetChain && !isSameChain(chain, targetChain)) {
+      await setChain(targetChain);
+    }
+    navigateToWithParams(Screen.SETTINGS_ADD_ACCOUNT, {});
+  };
 
   if (
     (selectedAccountType === ChainType.HIVE && !selectedHiveAccount) ||
@@ -711,15 +724,41 @@ const AccountSelector = ({
                 </Droppable>
               </DragDropContext>
             </div>
+            <Separator type="horizontal" fullSize />
             <div className="account-selector-create-actions">
-              {renderCreateButton(
-                SVGIcons.BLOCKCHAIN_ETHEREUM,
-                'account-selector-create-evm',
-              )}
-              {renderCreateButton(
-                SVGIcons.BLOCKCHAIN_HIVE,
-                'account-selector-create-hive',
-              )}
+              <button
+                className="account-selector-create-button"
+                data-testid="account-selector-create-button"
+                onClick={() => void handleAddAccountClick()}
+                type="button">
+                <SVGIcon
+                  icon={SVGIcons.MENU_ACCOUNTS_ADD_ACCOUNT}
+                  className="account-selector-create-button-icon"
+                  svgViewBox="17 11 12 18"
+                />
+                <span>{chrome.i18n.getMessage('popup_html_add_account')}</span>
+                <div className="account-selector-create-mini-cards">
+                  {renderCreateIcon(
+                    SVGIcons.BLOCKCHAIN_HIVE,
+                    'account-selector-create-hive',
+                  )}
+                  {renderCreateIcon(
+                    SVGIcons.BLOCKCHAIN_ETHEREUM,
+                    'account-selector-create-evm',
+                  )}
+                </div>
+              </button>
+              <button
+                className="account-selector-export-button"
+                data-testid="account-selector-export-button"
+                type="button">
+                <SVGIcon
+                  icon={SVGIcons.MENU_ACCOUNTS_EXPORT}
+                  className="account-selector-export-button-icon"
+                  svgViewBox="14 13 16 15"
+                />
+                <span>{chrome.i18n.getMessage('popup_html_export')}</span>
+              </button>
             </div>
           </div>
         </div>

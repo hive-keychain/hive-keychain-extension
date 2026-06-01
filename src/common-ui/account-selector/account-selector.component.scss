@@ -105,7 +105,8 @@
     .account-selector-list {
       flex: 1;
       overflow-y: auto;
-
+      margin-bottom: -24px;
+      padding-bottom: 24px;
       .account-selector-list-items {
         display: flex;
         flex-direction: column;
@@ -293,6 +294,7 @@
 
     .account-selector-create-actions {
       display: flex;
+      align-items: center;
       column-gap: 12px;
       flex-shrink: 0;
       position: sticky;
@@ -309,16 +311,100 @@
       border-radius: 16px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      column-gap: 8px;
-      flex: 1;
-      min-width: 0;
-      min-height: 44px;
-      padding: 10px 12px;
+      column-gap: 10px;
+      width: fit-content;
+      max-width: 100%;
+      min-height: 40px;
+      padding: 8px 12px;
       cursor: pointer;
 
+      &:hover {
+        color: white;
+        background: $red;
+        border-color: $red;
+
+        .account-selector-create-button-icon {
+          color: white;
+
+          path {
+            stroke: white;
+          }
+        }
+      }
+
       .account-selector-create-button-icon {
-        @include icon-size(20px);
+        @include icon-size(24px);
+        color: $red;
+        flex-shrink: 0;
+
+        rect {
+          display: none;
+        }
+      }
+
+      span {
+        flex-shrink: 0;
+      }
+    }
+
+    .account-selector-export-button {
+      @include poppins500(14px);
+      background: transparent;
+      border: 0;
+      display: flex;
+      align-items: center;
+      column-gap: 8px;
+      margin-left: auto;
+      min-height: 40px;
+      padding: 8px 4px;
+      cursor: default;
+
+      .account-selector-export-button-icon {
+        @include icon-size(24px);
+        flex-shrink: 0;
+
+        path {
+          stroke: $red;
+        }
+
+        rect {
+          display: none;
+        }
+      }
+
+      span {
+        flex-shrink: 0;
+      }
+    }
+
+    .account-selector-create-mini-cards {
+      position: relative;
+      width: 44px;
+      height: 26px;
+      margin-left: 10px;
+      pointer-events: none;
+    }
+
+    .account-selector-create-mini-card {
+      color: var(--main-font-color);
+      position: absolute;
+      top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:first-child {
+        right: 16px;
+        z-index: 2;
+      }
+
+      &:last-child {
+        right: 0;
+        z-index: 1;
+      }
+
+      .account-selector-create-mini-card-icon {
+        @include icon-size(22px);
         flex-shrink: 0;
       }
     }

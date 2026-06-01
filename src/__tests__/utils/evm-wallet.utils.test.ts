@@ -637,6 +637,111 @@ describe('evm wallet utils', () => {
     });
   });
 
+  it('imports EVM accounts from encrypted file data and skips duplicate addresses', async () => {
+    const wallet = getWalletFromTestPrivateKey('88');
+    const importedFileAccounts = {
+      list: [
+        {
+          seed: seedOne,
+          id: 10,
+          nickname: 'Imported Seed',
+          accounts: [
+            {
+              id: 0,
+              path: "m/44'/60'/0'/0/0",
+              nickname: 'Duplicate Seed Account',
+            },
+            {
+              id: 2,
+              path: "m/44'/60'/0'/0/2",
+              nickname: 'Imported Seed Account',
+            },
+          ],
+        },
+        {
+          type: EvmAccountSource.IMPORTED,
+          id: 11,
+          accounts: [
+            {
+              id: 0,
+              address: wallet.address,
+              privateKey: wallet.privateKey,
+              path: '',
+              nickname: 'Imported Private Key',
+            },
+          ],
+        },
+        {
+          type: EvmAccountSource.LEDGER,
+          id: 12,
+          accounts: [
+            {
+              id: 0,
+              address: '0xLedger000000000000000000000000000000000001',
+              path: "m/44'/60'/0'/0/0",
+              nickname: 'Imported Ledger',
+            },
+          ],
+        },
+      ],
+    };
+    (EncryptUtils.decryptToJsonWithLegacySupport as jest.Mock).mockImplementation(
+      async (content) =>
+        content === 'evm-file' ? importedFileAccounts : storedAccounts,
+    );
+
+    const result = await EvmWalletUtils.importAccountsFromFileData(
+      'evm-file',
+      mk,
+    );
+
+    expect(result.hasLedger).toBe(true);
+    expect(result.accounts.map((account) => account.nickname)).toEqual([
+      'Seed One Account 1',
+      'Seed One Account 2',
+      'Seed Two Hidden Account',
+      'Seed Two Account 2',
+      'Imported Seed Account',
+      'Imported Private Key',
+      'Imported Ledger',
+    ]);
+    expect(storedAccounts.list).toEqual([
+      expect.objectContaining({ id: 1 }),
+      expect.objectContaining({ id: 2 }),
+      expect.objectContaining({
+        id: 3,
+        nickname: 'Imported Seed',
+        accounts: [
+          expect.objectContaining({
+            path: "m/44'/60'/0'/0/2",
+            order: 4,
+          }),
+        ],
+      }),
+      expect.objectContaining({
+        type: EvmAccountSource.IMPORTED,
+        id: 4,
+        accounts: [
+          expect.objectContaining({
+            address: wallet.address,
+            privateKey: wallet.privateKey,
+            order: 5,
+          }),
+        ],
+      }),
+      expect.objectContaining({
+        type: EvmAccountSource.LEDGER,
+        id: 5,
+        accounts: [
+          expect.objectContaining({
+            address: '0xLedger000000000000000000000000000000000001',
+            order: 6,
+          }),
+        ],
+      }),
+    ]);
+  });
+
   it('deletes imported accounts individually', async () => {
     const firstWallet = getWalletFromTestPrivateKey('66');
     const secondWallet = getWalletFromTestPrivateKey('77');
