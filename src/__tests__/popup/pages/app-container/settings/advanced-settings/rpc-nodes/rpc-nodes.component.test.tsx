@@ -25,12 +25,9 @@ describe('rpc-nodes.component tests:\n', () => {
         initialStates.iniStateAs.defaultExistent,
       );
       await act(async () => {
-        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+        await userEvent.click(await screen.findByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.SETTINGS),
-        );
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.RPC),
+          await screen.findByTestId(dataTestIdButton.menuPreFix + Icons.RPC),
         );
       });
     });
@@ -69,12 +66,9 @@ describe('rpc-nodes.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+        await userEvent.click(await screen.findByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.SETTINGS),
-        );
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.RPC),
+          await screen.findByTestId(dataTestIdButton.menuPreFix + Icons.RPC),
         );
       });
     });
@@ -187,11 +181,6 @@ describe('rpc-nodes.component tests:\n', () => {
           screen.getByTestId(dataTestIdCheckbox.rpcNodes.select.setAsActive),
         );
         await userEvent.click(screen.getByTestId(dataTestIdButton.save));
-        fireEvent.click(
-          screen
-            .getByTestId(dataTestIdSelect.rpcNode.selected)
-            .closest('[aria-label="Dropdown select"]') as HTMLElement,
-        );
       });
       expect(sSetRpc).toHaveBeenCalled();
       sSetRpc.mockRestore();

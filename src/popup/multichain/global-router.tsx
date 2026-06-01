@@ -6,10 +6,14 @@ import { AutoLockComponent } from '@popup/hive/pages/app-container/settings/adva
 import { ChangePasswordComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/change-password/change-password.component';
 import { ClearAllDataComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/clear-all-data/clear-all-data.component';
 import { KeychainifyComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/keychainify/keychainify.component';
-import { RpcNodesComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/rpc-nodes/rpc-nodes.component';
 import { HelpSubMenuComponent } from '@popup/hive/pages/app-container/settings/help-sub-menu/help-sub-menu.component';
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import React from 'react';
+import { SettingsConnectedDappsPageComponent } from 'src/popup/multichain/pages/settings/settings-connected-dapps-page.component';
+import { SettingsContactsPageComponent } from 'src/popup/multichain/pages/settings/settings-contacts-page.component';
+import { SettingsEvmPageComponent } from 'src/popup/multichain/pages/settings/settings-evm-page.component';
+import { SettingsHivePageComponent } from 'src/popup/multichain/pages/settings/settings-hive-page.component';
+import { SettingsNetworkPageComponent } from 'src/popup/multichain/pages/settings/settings-network-page.component';
 
 export const globalRouter = (page: Screen) => {
   switch (page) {
@@ -32,7 +36,17 @@ export const globalRouter = (page: Screen) => {
     case MultichainScreen.SETTINGS_ANALYTICS:
       return <AnalyticsComponent />;
     case MultichainScreen.SETTINGS_RPC_NODES:
-      return <RpcNodesComponent />;
+      return <SettingsNetworkPageComponent />;
+    case MultichainScreen.SETTINGS_CONTACTS:
+      return <SettingsContactsPageComponent />;
+    case MultichainScreen.SETTINGS_NETWORK:
+      return <SettingsNetworkPageComponent />;
+    case MultichainScreen.SETTINGS_CONNECTED_DAPPS:
+      return <SettingsConnectedDappsPageComponent />;
+    case MultichainScreen.SETTINGS_EVM:
+      return <SettingsEvmPageComponent />;
+    case MultichainScreen.SETTINGS_HIVE:
+      return <SettingsHivePageComponent />;
     default:
       return null;
   }

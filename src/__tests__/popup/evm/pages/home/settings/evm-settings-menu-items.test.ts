@@ -1,22 +1,43 @@
 import { Screen } from '@interfaces/screen.interface';
-import { EvmSettingsMenuItems } from '@popup/evm/pages/home/settings/evm-settings-menu-items';
+import { getSettingsMainPageMenuItems } from 'src/popup/multichain/pages/settings/settings-main-page-menu-items';
 
-describe('EvmSettingsMenuItems', () => {
-  it('places dApps connections after custom chains', () => {
-    const menuItems = EvmSettingsMenuItems(jest.fn());
-    const customChainsIndex = menuItems.findIndex(
-      (item) => item.nextScreen === Screen.EVM_CUSTOM_CHAINS,
-    );
-    const dappsConnectionsIndex = menuItems.findIndex(
-      (item) => item.nextScreen === Screen.EVM_DAPPS_CONNECTIONS,
-    );
+describe('getSettingsMainPageMenuItems', () => {
+  it('uses the unified settings menu order', () => {
+    const menuItems = getSettingsMainPageMenuItems({
+      hasEvmAccounts: true,
+      hasHiveAccounts: true,
+      logout: jest.fn(),
+    });
 
-    expect(dappsConnectionsIndex).toBe(customChainsIndex + 1);
-    expect(menuItems[dappsConnectionsIndex]).toEqual(
-      expect.objectContaining({
-        label: 'evm_menu_dapps_connections',
-        nextScreen: Screen.EVM_DAPPS_CONNECTIONS,
-      }),
-    );
+    expect(menuItems.map((item) => item.nextScreen ?? item.label)).toEqual([
+      Screen.SETTINGS_CONTACTS,
+      Screen.SETTINGS_NETWORK,
+      Screen.SETTINGS_CONNECTED_DAPPS,
+      Screen.SETTINGS_EVM,
+      Screen.SETTINGS_HIVE,
+      Screen.SETTINGS_ADVANCED,
+      Screen.SETTINGS_HELP,
+      Screen.SETTINGS_ABOUT,
+      'popup_html_logout',
+    ]);
+  });
+
+  it('hides chain-specific settings when no account exists for that chain', () => {
+    const menuItems = getSettingsMainPageMenuItems({
+      hasEvmAccounts: true,
+      hasHiveAccounts: false,
+      logout: jest.fn(),
+    });
+
+    expect(menuItems.map((item) => item.nextScreen ?? item.label)).toEqual([
+      Screen.SETTINGS_CONTACTS,
+      Screen.SETTINGS_NETWORK,
+      Screen.SETTINGS_CONNECTED_DAPPS,
+      Screen.SETTINGS_EVM,
+      Screen.SETTINGS_ADVANCED,
+      Screen.SETTINGS_HELP,
+      Screen.SETTINGS_ABOUT,
+      'popup_html_logout',
+    ]);
   });
 });

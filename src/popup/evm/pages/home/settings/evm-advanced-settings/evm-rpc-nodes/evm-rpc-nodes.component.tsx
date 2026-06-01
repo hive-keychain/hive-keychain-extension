@@ -38,10 +38,13 @@ interface RpcOptionItem extends OptionItem {
 
 const EvmRpcNodes = ({
   chain,
+  chainOverride,
+  hideChainSelector,
   setTitleContainerProperties,
   setErrorMessage,
   setWarningMessage,
-}: PropsFromRedux) => {
+  titleMessageKey = 'popup_html_rpc_node',
+}: PropsType) => {
   const [switchAuto, setSwitchAuto] = useState(true);
   const [activeRpc, setActiveRpc] = useState<MultichainRpc>();
 
@@ -53,12 +56,14 @@ const EvmRpcNodes = ({
 
   const [isAddRpcPanelDisplayed, setIsAddRpcPanelDisplayed] = useState(false);
 
-  const [selectedChain, setSelectedChain] = useState<EvmChain>(chain);
+  const [selectedChain, setSelectedChain] = useState<EvmChain>(
+    chainOverride ?? chain,
+  );
   const [chainOptions, setChainOptions] = useState<OptionItem[]>();
 
   useEffect(() => {
     setTitleContainerProperties({
-      title: 'popup_html_rpc_node',
+      title: titleMessageKey,
       isBackButtonEnabled: true,
     });
     initChainList();
@@ -181,7 +186,7 @@ const EvmRpcNodes = ({
 
       <div className="rpc-form-container">
         <div className="rpc-section">
-          {chainOptions && selectedChain && (
+          {!hideChainSelector && chainOptions && selectedChain && (
             <ComplexeCustomSelect
               options={chainOptions}
               selectedItem={{
@@ -275,5 +280,11 @@ const connector = connect(mapStateToProps, {
   setWarningMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
+interface OwnProps {
+  chainOverride?: EvmChain;
+  hideChainSelector?: boolean;
+  titleMessageKey?: string;
+}
+type PropsType = PropsFromRedux & OwnProps;
 
 export const EvmRpcNodesComponent = connector(EvmRpcNodes);

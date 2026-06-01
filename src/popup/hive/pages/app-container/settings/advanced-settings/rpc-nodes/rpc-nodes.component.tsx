@@ -52,7 +52,8 @@ const RpcNodes = ({
   setErrorMessage,
   setSuccessMessage,
   setTitleContainerProperties,
-}: PropsFromRedux) => {
+  titleMessageKey = 'popup_html_rpc_node',
+}: Props) => {
   const allRpc = RpcUtils.getFullList();
   let displayedRpcs = allRpc;
   // Hive RPC
@@ -163,7 +164,7 @@ const RpcNodes = ({
 
   useEffect(() => {
     setTitleContainerProperties({
-      title: 'popup_html_rpc_node',
+      title: titleMessageKey,
       isBackButtonEnabled: true,
     });
     initCustomRpcList();
@@ -507,5 +508,9 @@ const connector = connect(mapStateToProps, {
   setSuccessMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
+interface OwnProps {
+  titleMessageKey?: string;
+}
+type Props = PropsFromRedux & OwnProps;
 
 export const RpcNodesComponent = connector(RpcNodes);

@@ -73,7 +73,7 @@ describe('wallet-history.component tests:\n', () => {
     it('Must show available all filters', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByTestId(dataTestIdDiv.wallet.history.filterPanel),
+          await screen.findByTestId(dataTestIdDiv.wallet.history.filterPanel),
         );
       });
       Object.keys(DEFAULT_FILTER.selectedTransactionTypes).map(
@@ -96,7 +96,7 @@ describe('wallet-history.component tests:\n', () => {
     it('Must set search box filter value & display try clear message', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByTestId(dataTestIdDiv.wallet.history.filterPanel),
+          await screen.findByTestId(dataTestIdDiv.wallet.history.filterPanel),
         );
         await userEvent.type(
           screen.getByTestId(dataTestIdInput.filter.walletHistory),
@@ -118,7 +118,7 @@ describe('wallet-history.component tests:\n', () => {
     it('Must filter by an specific value and display 1 transaction', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByTestId(dataTestIdDiv.wallet.history.filterPanel),
+          await screen.findByTestId(dataTestIdDiv.wallet.history.filterPanel),
         );
         await userEvent.type(
           screen.getByTestId(dataTestIdInput.filter.walletHistory),

@@ -1,0 +1,102 @@
+.settings-main-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+  row-gap: 16px;
+}
+
+.settings-shared-page {
+  @include pageLayoutRowGap;
+  row-gap: 12px;
+
+  .settings-chain-select-panel {
+    padding: 0 24px;
+  }
+}
+
+.settings-hive-dapps-page {
+  @include pageLayoutRowGap;
+  row-gap: 16px;
+  padding: 0 24px 24px;
+
+  .settings-hive-dapps-list {
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+  }
+
+  .settings-hive-dapps-site {
+    @include small-card;
+    align-items: unset;
+    margin: 0;
+    row-gap: 12px;
+  }
+
+  .settings-hive-dapps-site-title {
+    @include poppins600(14px);
+    color: var(--main-font-color);
+  }
+
+  .settings-hive-dapps-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .settings-hive-dapps-tag {
+    display: flex;
+    align-items: center;
+    column-gap: 6px;
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    background: var(--card-background);
+    color: var(--main-font-color);
+    cursor: pointer;
+    padding: 6px 8px;
+    @include poppins400(12px);
+
+    .svg-icon {
+      @include icon-size(12px);
+    }
+  }
+}
+
+.settings-empty-state {
+  @include settings-page-note();
+  margin: 0;
+}
+
+.settings-evm-page {
+  @include pageLayoutRowGap;
+  row-gap: 16px;
+  padding: 0 24px 24px;
+
+  .fields {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+  }
+
+  .settings-section {
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+  }
+
+  .section-title {
+    @include poppins600(14px);
+    color: var(--main-font-color);
+  }
+
+  .section-fields {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+  }
+
+  .provider-note {
+    @include settings-page-note();
+    margin: 0;
+  }
+}

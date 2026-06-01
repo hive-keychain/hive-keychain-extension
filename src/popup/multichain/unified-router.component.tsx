@@ -16,14 +16,7 @@ import { EvmNFTTransferComponent } from '@popup/evm/pages/home/evm-nft-pages/evm
 import { EvmNftCollectionPageComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-ntf-collection-page/evm-ntf-collection-page.component';
 import { EvmReceiveComponent } from '@popup/evm/pages/home/receive/evm-receive.component';
 import { EvmAccountsComponent } from '@popup/evm/pages/home/settings/evm-accounts/evm-accounts.component';
-import { EvmAdvancedSettingsComponent } from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-advanced-settings.component';
-import EvmProviderSettingsComponent from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-provider/evm-provider.component';
-import { EvmRpcNodesComponent } from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-rpc-nodes/evm-rpc-nodes.component';
-import { EvmSecuritySettingsComponent } from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-security/evm-security.component';
-import { EvmContactsComponent } from '@popup/evm/pages/home/settings/evm-contacts/evm-contacts.component';
 import { EvmCustomChainsComponent } from '@popup/evm/pages/home/settings/evm-custom-chains/evm-custom-chains.component';
-import { EvmDappsConnectionsComponent } from '@popup/evm/pages/home/settings/evm-dapps-connections/evm-dapps-connections.component';
-import { EvmSettingPage } from '@popup/evm/pages/home/settings/evm-settings.component';
 import { EvmTransactionResultComponent } from '@popup/evm/pages/home/transaction-result/transaction-result.component';
 import { EvmTransferComponent } from '@popup/evm/pages/home/transfer/evm-transfer.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
@@ -40,7 +33,6 @@ import { ChangePasswordComponent } from '@popup/hive/pages/app-container/setting
 import { ClearAllDataComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/clear-all-data/clear-all-data.component';
 import { ImportExportPreferencesComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/import-export-preferences/import-export-preferences.component';
 import { KeychainifyComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/keychainify/keychainify.component';
-import { RpcNodesComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/rpc-nodes/rpc-nodes.component';
 import { ShortcutsComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/shortcuts/shortcuts.component';
 import { AnalyticsComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/analytics/analytics.component';
 import { ExportTransactionsComponent } from '@popup/hive/pages/app-container/settings/user-preferences/export-transactions/export-transactions.component';
@@ -87,15 +79,16 @@ import { AddKeyComponent } from 'src/popup/hive/pages/app-container/settings/acc
 import { ManageAccountComponent } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/manage-account.component';
 import { AdvancedSettingsPageComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/advanced-settings.component';
 import { HelpSubMenuComponent } from 'src/popup/hive/pages/app-container/settings/help-sub-menu/help-sub-menu.component';
-import { SettingsMainPageComponent } from 'src/popup/hive/pages/app-container/settings/settings-main-page/settings-main-page.component';
-import { AuthorizedOperationsComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/authorized-operations/authorized-operations.component';
 import { AutomatedTasksComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/automated-tasks/automated-tasks.component';
-import { FavoriteAccountsComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts.component';
-import { OperationPopupComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/operation-popup/operation-popup.component';
-import { UserPreferencesPageComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/user-preferences.component';
 import { AddCustomChainPage } from 'src/popup/multichain/pages/add-custom-chain/add-custom-chain.component';
 import { ChainSelectorPageComponent } from 'src/popup/multichain/pages/chain-selector/chain-selector.component';
 import { ChainType } from 'src/popup/multichain/interfaces/chains.interface';
+import { SettingsConnectedDappsPageComponent } from 'src/popup/multichain/pages/settings/settings-connected-dapps-page.component';
+import { SettingsContactsPageComponent } from 'src/popup/multichain/pages/settings/settings-contacts-page.component';
+import { SettingsEvmPageComponent } from 'src/popup/multichain/pages/settings/settings-evm-page.component';
+import { SettingsHivePageComponent } from 'src/popup/multichain/pages/settings/settings-hive-page.component';
+import { UnifiedSettingsMainPageComponent } from 'src/popup/multichain/pages/settings/settings-main-page.component';
+import { SettingsNetworkPageComponent } from 'src/popup/multichain/pages/settings/settings-network-page.component';
 
 const getConfirmationAccountType = (
   activeAccountType: ChainType.HIVE | ChainType.EVM,
@@ -194,9 +187,19 @@ const UnifiedRouter = ({
       case MultichainScreen.SETTINGS_ANALYTICS:
         return <AnalyticsComponent />;
       case MultichainScreen.SETTINGS_RPC_NODES:
-        return <RpcNodesComponent />;
+        return <SettingsNetworkPageComponent />;
       case MultichainScreen.SETTINGS_SHORTCUTS:
         return <ShortcutsComponent />;
+      case MultichainScreen.SETTINGS_CONTACTS:
+        return <SettingsContactsPageComponent />;
+      case MultichainScreen.SETTINGS_NETWORK:
+        return <SettingsNetworkPageComponent />;
+      case MultichainScreen.SETTINGS_CONNECTED_DAPPS:
+        return <SettingsConnectedDappsPageComponent />;
+      case MultichainScreen.SETTINGS_EVM:
+        return <SettingsEvmPageComponent />;
+      case MultichainScreen.SETTINGS_HIVE:
+        return <SettingsHivePageComponent />;
 
       case HiveScreen.GOVERNANCE_PAGE:
         return <GovernanceComponent />;
@@ -236,7 +239,7 @@ const UnifiedRouter = ({
       case HiveScreen.TOKENS_PENDING_UNSTAKE:
         return <TokenPendingUnstakePage />;
       case HiveScreen.SETTINGS_MAIN_PAGE:
-        return <SettingsMainPageComponent />;
+        return <UnifiedSettingsMainPageComponent />;
       case HiveScreen.SETTINGS_ACCOUNTS:
         return <AccountSubMenuComponent />;
       case HiveScreen.ACCOUNT_PAGE_INIT_ACCOUNT:
@@ -267,17 +270,17 @@ const UnifiedRouter = ({
       case Screen.SETTINGS_IMPORT_EXPORT:
         return <ImportExportPreferencesComponent />;
       case HiveScreen.SETTINGS_USER_PREFERENCES:
-        return <UserPreferencesPageComponent />;
+        return <SettingsHivePageComponent />;
       case HiveScreen.SETTINGS_AUTHORIZED_OPERATIONS:
-        return <AuthorizedOperationsComponent />;
+        return <SettingsConnectedDappsPageComponent />;
       case HiveScreen.SETTINGS_EXPORT_TRANSACTIONS:
         return <ExportTransactionsComponent />;
       case HiveScreen.SETTINGS_OPERATION_POPUP:
-        return <OperationPopupComponent />;
+        return <SettingsHivePageComponent />;
       case HiveScreen.SETTINGS_AUTOMATED_TASKS:
         return <AutomatedTasksComponent />;
       case HiveScreen.SETTINGS_FAVORITE_ACCOUNTS:
-        return <FavoriteAccountsComponent />;
+        return <SettingsContactsPageComponent />;
       case HiveScreen.SETTINGS_NOTIFICATIONS_CONFIGURATION:
         return <NotificationsConfigComponent />;
       case HiveScreen.SETTINGS_MULTISIG:
@@ -314,27 +317,27 @@ const UnifiedRouter = ({
       case EvmScreen.EVM_NFT_TRANSFER_PAGE:
         return <EvmNFTTransferComponent />;
       case EvmScreen.EVM_SETTINGS:
-        return <EvmSettingPage />;
+        return <UnifiedSettingsMainPageComponent />;
       case EvmScreen.EVM_ACCOUNTS_SETTINGS:
         return <EvmAccountsComponent />;
       case EvmScreen.EVM_ADVANCED_SETTINGS:
-        return <EvmAdvancedSettingsComponent />;
+        return <SettingsEvmPageComponent />;
       case EvmScreen.EVM_CONTACTS:
-        return <EvmContactsComponent />;
+        return <SettingsContactsPageComponent />;
       case EvmScreen.EVM_CUSTOM_CHAINS:
         return <EvmCustomChainsComponent />;
       case EvmScreen.EVM_DAPPS_CONNECTIONS:
-        return <EvmDappsConnectionsComponent />;
+        return <SettingsConnectedDappsPageComponent />;
       case EvmScreen.EVM_CUSTOM_TOKENS_PAGE:
         return <EvmCustomTokensPageComponent />;
       case EvmScreen.EVM_CUSTOM_NFTS_PAGE:
         return <EvmCustomNftsPageComponent />;
       case EvmScreen.EVM_RPC_NODES_SETTINGS:
-        return <EvmRpcNodesComponent />;
+        return <SettingsNetworkPageComponent />;
       case EvmScreen.EVM_SECURITY_SETTINGS:
-        return <EvmSecuritySettingsComponent />;
+        return <SettingsEvmPageComponent />;
       case EvmScreen.EVM_PROVIDER_SETTINGS:
-        return <EvmProviderSettingsComponent />;
+        return <SettingsEvmPageComponent />;
       default:
         return null;
     }

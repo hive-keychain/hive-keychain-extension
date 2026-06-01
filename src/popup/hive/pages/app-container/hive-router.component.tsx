@@ -53,14 +53,13 @@ import { ManageAccountComponent } from 'src/popup/hive/pages/app-container/setti
 import { AdvancedSettingsPageComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/advanced-settings.component';
 import { ImportExportPreferencesComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/import-export-preferences/import-export-preferences.component';
 import { KeychainifyComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/keychainify/keychainify.component';
-import { RpcNodesComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/rpc-nodes/rpc-nodes.component';
 import { ShortcutsComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/shortcuts/shortcuts.component';
-import { SettingsMainPageComponent } from 'src/popup/hive/pages/app-container/settings/settings-main-page/settings-main-page.component';
-import { AuthorizedOperationsComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/authorized-operations/authorized-operations.component';
 import { AutomatedTasksComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/automated-tasks/automated-tasks.component';
-import { FavoriteAccountsComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts.component';
-import { OperationPopupComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/operation-popup/operation-popup.component';
-import { UserPreferencesPageComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/user-preferences.component';
+import { SettingsConnectedDappsPageComponent } from 'src/popup/multichain/pages/settings/settings-connected-dapps-page.component';
+import { SettingsContactsPageComponent } from 'src/popup/multichain/pages/settings/settings-contacts-page.component';
+import { SettingsHivePageComponent } from 'src/popup/multichain/pages/settings/settings-hive-page.component';
+import { UnifiedSettingsMainPageComponent } from 'src/popup/multichain/pages/settings/settings-main-page.component';
+import { SettingsNetworkPageComponent } from 'src/popup/multichain/pages/settings/settings-network-page.component';
 
 const AppRouter = ({
   currentPage,
@@ -127,7 +126,7 @@ const AppRouter = ({
 
       //Settings Routes
       case HiveScreen.SETTINGS_MAIN_PAGE:
-        return <SettingsMainPageComponent />;
+        return <UnifiedSettingsMainPageComponent />;
       case HiveScreen.SETTINGS_ACCOUNTS:
         return <AccountSubMenuComponent />;
       case HiveScreen.ACCOUNT_PAGE_INIT_ACCOUNT:
@@ -163,7 +162,7 @@ const AppRouter = ({
       case Screen.SETTINGS_CHANGE_PASSWORD:
         return <ChangePasswordComponent />;
       case Screen.SETTINGS_RPC_NODES:
-        return <RpcNodesComponent />;
+        return <SettingsNetworkPageComponent />;
       case Screen.SETTINGS_AUTO_LOCK:
         return <AutoLockComponent />;
       case Screen.SETTINGS_KEYCHAINIFY:
@@ -171,17 +170,17 @@ const AppRouter = ({
       case Screen.SETTINGS_CLEAR_ALL_DATA:
         return <ClearAllDataComponent />;
       case HiveScreen.SETTINGS_USER_PREFERENCES:
-        return <UserPreferencesPageComponent />;
+        return <SettingsHivePageComponent />;
       case HiveScreen.SETTINGS_AUTHORIZED_OPERATIONS:
-        return <AuthorizedOperationsComponent />;
+        return <SettingsConnectedDappsPageComponent />;
       case HiveScreen.SETTINGS_EXPORT_TRANSACTIONS:
         return <ExportTransactionsComponent />;
       case HiveScreen.SETTINGS_OPERATION_POPUP:
-        return <OperationPopupComponent />;
+        return <SettingsHivePageComponent />;
       case HiveScreen.SETTINGS_AUTOMATED_TASKS:
         return <AutomatedTasksComponent />;
       case HiveScreen.SETTINGS_FAVORITE_ACCOUNTS:
-        return <FavoriteAccountsComponent />;
+        return <SettingsContactsPageComponent />;
       case HiveScreen.SETTINGS_NOTIFICATIONS_CONFIGURATION:
         return <NotificationsConfigComponent />;
       case HiveScreen.SETTINGS_MULTISIG:

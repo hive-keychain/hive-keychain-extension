@@ -11,7 +11,7 @@ const ManageAccountAuthorities = ({
 }: PropsFromRedux) => {
   useEffect(() => {
     setTitleContainerProperties({
-      title: 'popup_html_manage_accounts_authorities',
+      title: 'popup_html_account_authorities',
       isBackButtonEnabled: true,
     });
   }, []);

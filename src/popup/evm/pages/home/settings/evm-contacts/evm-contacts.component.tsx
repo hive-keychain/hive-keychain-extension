@@ -25,9 +25,23 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { v4 } from 'uuid';
 
-const Contacts = ({ chain, setTitleContainerProperties }: PropsType) => {
+interface OwnProps {
+  chainOverride?: EvmChain;
+  hideChainSelector?: boolean;
+  titleMessageKey?: string;
+}
+
+const Contacts = ({
+  chain,
+  chainOverride,
+  hideChainSelector,
+  setTitleContainerProperties,
+  titleMessageKey = 'evm_menu_contacts',
+}: PropsType) => {
   const [chainOptions, setChainOptions] = useState<OptionItem[]>();
-  const [selectedChain, setSelectedChain] = useState<EvmChain>(chain);
+  const [selectedChain, setSelectedChain] = useState<EvmChain>(
+    chainOverride ?? chain,
+  );
 
   const [walletAddresses, setWalletAddresses] = useState<FavoriteAddress[]>([]);
   const [contractAddresses, setContractAddresses] = useState<FavoriteAddress[]>(
@@ -46,7 +60,7 @@ const Contacts = ({ chain, setTitleContainerProperties }: PropsType) => {
 
   useEffect(() => {
     setTitleContainerProperties({
-      title: 'evm_menu_contacts',
+      title: titleMessageKey,
       isBackButtonEnabled: true,
       isCloseButtonDisabled: false,
     });
@@ -62,7 +76,7 @@ const Contacts = ({ chain, setTitleContainerProperties }: PropsType) => {
       });
     setChainOptions(optionItems);
 
-    initAddresses(chain);
+    initAddresses(chainOverride ?? chain);
   };
 
   const initAddresses = async (newChain: EvmChain) => {
@@ -204,7 +218,7 @@ const Contacts = ({ chain, setTitleContainerProperties }: PropsType) => {
 
   return (
     <div className="evm-contacts-page contacts-settings-page">
-      {chainOptions && selectedChain && (
+      {!hideChainSelector && chainOptions && selectedChain && (
         <div className="chain-select-panel">
           <ComplexeCustomSelect
             options={chainOptions}
@@ -263,6 +277,6 @@ const connector = connect(mapStateToProps, {
   openModal,
 });
 
-type PropsType = ConnectedProps<typeof connector>;
+type PropsType = ConnectedProps<typeof connector> & OwnProps;
 
 export const EvmContactsComponent = connector(Contacts);

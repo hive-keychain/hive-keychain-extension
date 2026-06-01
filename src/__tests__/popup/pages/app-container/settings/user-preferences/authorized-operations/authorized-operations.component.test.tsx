@@ -4,12 +4,12 @@ import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
-import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Icons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-describe('authorized-operations.component tests:\n', () => {
+
+describe('settings-connected-dapps Hive whitelist tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
     jest.resetModules();
@@ -22,20 +22,17 @@ describe('authorized-operations.component tests:\n', () => {
         initialStates.iniStateAs.defaultExistent,
       );
       await act(async () => {
-        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+        await userEvent.click(await screen.findByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.PREFERENCES),
-        );
-        await userEvent.click(
-          screen.getByTestId(
-            dataTestIdButton.menuPreFix + Icons.AUTHORIZED_OPERATIONS,
+          await screen.findByTestId(
+            dataTestIdButton.menuPreFix + SVGIcons.MENU_PLUGINS,
           ),
         );
       });
     });
     it('Must load component and show no whitelisted operations', () => {
       expect(
-        screen.getByTestId(`${Screen.SETTINGS_AUTHORIZED_OPERATIONS}-page`),
+        screen.getByTestId(`${Screen.SETTINGS_CONNECTED_DAPPS}-page`),
       ).toBeInTheDocument();
       expect(
         screen.getByText(chrome.i18n.getMessage('popup_html_no_pref'), {
@@ -71,34 +68,34 @@ describe('authorized-operations.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+        await userEvent.click(await screen.findByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.PREFERENCES),
-        );
-        await userEvent.click(
-          screen.getByTestId(
-            dataTestIdButton.menuPreFix + Icons.AUTHORIZED_OPERATIONS,
+          await screen.findByTestId(
+            dataTestIdButton.menuPreFix + SVGIcons.MENU_PLUGINS,
           ),
         );
       });
     });
-    it('Must load component and show info', async () => {
+    it('Must load component and show operation tags', async () => {
       expect(
-        screen.getByTestId(`${Screen.SETTINGS_AUTHORIZED_OPERATIONS}-page`),
+        screen.getByTestId(`${Screen.SETTINGS_CONNECTED_DAPPS}-page`),
       ).toBeInTheDocument();
       expect(
-        screen.getAllByTestId(dataTestIdDiv.authorizedOperations.item).length,
+        screen.getAllByTestId('hive-whitelisted-operation-tag').length,
       ).toBe(4);
     });
 
-    it('Must delete selected website', async () => {
-      const deleteIconTestId = `icon-action-splinterlands.com-${chrome.i18n.getMessage(
-        'popup_post',
-      )}`;
+    it('Must delete selected operation', async () => {
+      const operationTags = screen.getAllByTestId(
+        'hive-whitelisted-operation-tag',
+      );
+
       await act(async () => {
-        await userEvent.click(screen.getByTestId(deleteIconTestId));
+        await userEvent.click(operationTags[0]);
       });
-      expect(screen.queryByTestId(deleteIconTestId)).not.toBeInTheDocument();
+      expect(
+        screen.getAllByTestId('hive-whitelisted-operation-tag').length,
+      ).toBe(3);
     });
   });
 });

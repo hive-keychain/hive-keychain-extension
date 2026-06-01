@@ -14,16 +14,9 @@ import { EvmNFTTransferComponent } from '@popup/evm/pages/home/evm-nft-pages/evm
 import { EvmNftCollectionPageComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-ntf-collection-page/evm-ntf-collection-page.component';
 import { EvmReceiveComponent } from '@popup/evm/pages/home/receive/evm-receive.component';
 import { EvmAccountsComponent } from '@popup/evm/pages/home/settings/evm-accounts/evm-accounts.component';
-import { EvmAdvancedSettingsComponent } from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-advanced-settings.component';
-import EvmProviderSettingsComponent from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-provider/evm-provider.component';
-import { EvmRpcNodesComponent } from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-rpc-nodes/evm-rpc-nodes.component';
-import { EvmSecuritySettingsComponent } from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-security/evm-security.component';
-import { EvmContactsComponent } from '@popup/evm/pages/home/settings/evm-contacts/evm-contacts.component';
 import { EvmCustomNftsPageComponent } from '@popup/evm/pages/home/evm-custom-nfts-page/evm-custom-nfts-page.component';
 import { EvmCustomTokensPageComponent } from '@popup/evm/pages/home/evm-custom-tokens-page/evm-custom-tokens-page.component';
 import { EvmCustomChainsComponent } from '@popup/evm/pages/home/settings/evm-custom-chains/evm-custom-chains.component';
-import { EvmDappsConnectionsComponent } from '@popup/evm/pages/home/settings/evm-dapps-connections/evm-dapps-connections.component';
-import { EvmSettingPage } from '@popup/evm/pages/home/settings/evm-settings.component';
 import { EvmTransactionResultComponent } from '@popup/evm/pages/home/transaction-result/transaction-result.component';
 import { EvmTransferComponent } from '@popup/evm/pages/home/transfer/evm-transfer.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
@@ -35,6 +28,11 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { EVMConfirmationPageComponent } from 'src/common-ui/confirmation-page/evm-confirmation-page.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
+import { SettingsConnectedDappsPageComponent } from 'src/popup/multichain/pages/settings/settings-connected-dapps-page.component';
+import { SettingsContactsPageComponent } from 'src/popup/multichain/pages/settings/settings-contacts-page.component';
+import { SettingsEvmPageComponent } from 'src/popup/multichain/pages/settings/settings-evm-page.component';
+import { UnifiedSettingsMainPageComponent } from 'src/popup/multichain/pages/settings/settings-main-page.component';
+import { SettingsNetworkPageComponent } from 'src/popup/multichain/pages/settings/settings-network-page.component';
 
 const EvmAppRouter = ({
   currentPage,
@@ -86,27 +84,27 @@ const EvmAppRouter = ({
 
       // Settings
       case EvmScreen.EVM_SETTINGS:
-        return <EvmSettingPage />;
+        return <UnifiedSettingsMainPageComponent />;
       case EvmScreen.EVM_ACCOUNTS_SETTINGS:
         return <EvmAccountsComponent />;
       case EvmScreen.EVM_ADVANCED_SETTINGS:
-        return <EvmAdvancedSettingsComponent />;
+        return <SettingsEvmPageComponent />;
       case EvmScreen.EVM_CONTACTS:
-        return <EvmContactsComponent />;
+        return <SettingsContactsPageComponent />;
       case EvmScreen.EVM_CUSTOM_CHAINS:
         return <EvmCustomChainsComponent />;
       case EvmScreen.EVM_DAPPS_CONNECTIONS:
-        return <EvmDappsConnectionsComponent />;
+        return <SettingsConnectedDappsPageComponent />;
       case EvmScreen.EVM_CUSTOM_TOKENS_PAGE:
         return <EvmCustomTokensPageComponent />;
       case EvmScreen.EVM_CUSTOM_NFTS_PAGE:
         return <EvmCustomNftsPageComponent />;
       case EvmScreen.EVM_RPC_NODES_SETTINGS:
-        return <EvmRpcNodesComponent />;
+        return <SettingsNetworkPageComponent />;
       case EvmScreen.EVM_SECURITY_SETTINGS:
-        return <EvmSecuritySettingsComponent />;
+        return <SettingsEvmPageComponent />;
       case EvmScreen.EVM_PROVIDER_SETTINGS:
-        return <EvmProviderSettingsComponent />;
+        return <SettingsEvmPageComponent />;
       case Screen.SETTINGS_SHORTCUTS:
         return <ShortcutsComponent />;
       default:

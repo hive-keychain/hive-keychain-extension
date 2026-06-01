@@ -276,7 +276,8 @@ export const removeEvmDappConnectionChains = (
 const EvmDappsConnections = ({
   accounts,
   setTitleContainerProperties,
-}: PropsFromRedux) => {
+  titleMessageKey = 'evm_menu_dapps_connections',
+}: Props) => {
   const [connections, setConnections] = useState<EvmDappConnection[]>([]);
   const [dappLogos, setDappLogos] = useState<Record<string, string>>({});
   const [expandedSubdomain, setExpandedSubdomain] = useState<string>();
@@ -287,7 +288,7 @@ const EvmDappsConnections = ({
 
   useEffect(() => {
     setTitleContainerProperties({
-      title: 'evm_menu_dapps_connections',
+      title: titleMessageKey,
       isBackButtonEnabled: true,
       isCloseButtonDisabled: false,
     });
@@ -636,5 +637,9 @@ const connector = connect(
 );
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
+interface OwnProps {
+  titleMessageKey?: string;
+}
+type Props = PropsFromRedux & OwnProps;
 
 export const EvmDappsConnectionsComponent = connector(EvmDappsConnections);

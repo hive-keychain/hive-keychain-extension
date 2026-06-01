@@ -25,7 +25,8 @@ const FavoriteAccounts = ({
   activeAccount,
   loadActiveAccount,
   setTitleContainerProperties,
-}: PropsFromRedux) => {
+  titleMessageKey = 'popup_html_favorite_accounts',
+}: Props) => {
   const defaultOptions: LocalAccountListItem[] = [];
   const [options, setOptions] = useState(defaultOptions);
   const [selectedLocalAccount, setSelectedLocalAccount] = useState(
@@ -46,7 +47,7 @@ const FavoriteAccounts = ({
 
   useEffect(() => {
     setTitleContainerProperties({
-      title: 'popup_html_favorite_accounts',
+      title: titleMessageKey,
       isBackButtonEnabled: true,
     });
   }, []);
@@ -63,13 +64,13 @@ const FavoriteAccounts = ({
   }, [accounts, activeAccount]);
 
   const init = async () => {
-    const favoriteUsers = await LocalStorageUtils.getValueFromLocalStorage(
+    let favoriteUsers = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.FAVORITE_USERS,
     );
 
-    await FavoriteUserUtils.fixFavoriteList(favoriteUsers);
+    favoriteUsers = await FavoriteUserUtils.fixFavoriteList(favoriteUsers ?? {});
 
-    const favorites = favoriteUsers[activeAccount.name!].map(
+    const favorites = (favoriteUsers[activeAccount.name!] ?? []).map(
       (favorite: any) => ({
         address: favorite.label,
         label: favorite.subLabel!,
@@ -217,5 +218,9 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
+interface OwnProps {
+  titleMessageKey?: string;
+}
+type Props = PropsFromRedux & OwnProps;
 
 export const FavoriteAccountsComponent = connector(FavoriteAccounts);

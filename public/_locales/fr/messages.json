@@ -227,6 +227,30 @@
     "message": "Paramètres",
     "description": "on settings page"
   },
+  "popup_html_contacts": {
+    "message": "Contacts",
+    "description": "Unified settings menu item"
+  },
+  "popup_html_network": {
+    "message": "Network",
+    "description": "Unified settings menu item for RPC settings"
+  },
+  "popup_html_connected_dapps": {
+    "message": "Connected dApps",
+    "description": "Unified settings menu item"
+  },
+  "evm_settings": {
+    "message": "EVM Settings",
+    "description": "Unified settings menu item"
+  },
+  "hive_settings": {
+    "message": "Hive Settings",
+    "description": "Unified settings menu item"
+  },
+  "popup_html_account_authorities": {
+    "message": "Account authorities",
+    "description": "Hive settings menu item"
+  },
   "popup_html_add_account": {
     "message": "Ajouter un compte",
     "description": "on settings page"

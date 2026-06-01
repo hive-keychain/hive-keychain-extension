@@ -5,11 +5,6 @@ import { MenuItem } from 'src/interfaces/menu-item.interface';
 export const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
   let settings: MenuItem[] = [
     {
-      label: 'popup_html_rpc_node',
-      icon: SVGIcons.MENU_ADVANCED_SETTINGS_RPC_NODE,
-      nextScreen: Screen.SETTINGS_RPC_NODES,
-    },
-    {
       label: 'popup_html_autolock',
       icon: SVGIcons.MENU_ADVANCED_SETTINGS_AUTO_LOCK,
       nextScreen: Screen.SETTINGS_AUTO_LOCK,
@@ -23,11 +18,6 @@ export const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
       label: 'popup_html_change_password',
       icon: SVGIcons.MENU_ADVANCED_SETTINGS_CHANGE_PASSWORD,
       nextScreen: Screen.SETTINGS_CHANGE_PASSWORD,
-    },
-    {
-      label: 'popup_html_keychainify',
-      icon: SVGIcons.MENU_ADVANCED_SETTINGS_KEYCHAINIFY,
-      nextScreen: Screen.SETTINGS_KEYCHAINIFY,
     },
     // {
     //   label: 'popup_html_analytics',

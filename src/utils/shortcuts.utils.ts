@@ -15,6 +15,13 @@ const SHORTCUT_NAVIGATION_SCREEN_MESSAGE_KEYS = {
   [MultichainScreen.SETTINGS_ABOUT]: 'popup_html_about',
   [MultichainScreen.SETTINGS_CHANGE_PASSWORD]: 'popup_html_change_password',
   [MultichainScreen.SETTINGS_SHORTCUTS]: 'popup_html_shortcuts',
+  [MultichainScreen.SETTINGS_HELP]: 'popup_html_help',
+  [MultichainScreen.SETTINGS_CONTACTS]: 'popup_html_contacts',
+  [MultichainScreen.SETTINGS_NETWORK]: 'popup_html_network',
+  [MultichainScreen.SETTINGS_CONNECTED_DAPPS]:
+    'popup_html_connected_dapps',
+  [MultichainScreen.SETTINGS_EVM]: 'evm_settings',
+  [MultichainScreen.SETTINGS_HIVE]: 'hive_settings',
 
   [HiveScreen.RECURRENT_TRANSFERS_PAGE]: 'popup_html_recurrent_transfers',
   [HiveScreen.WALLET_HISTORY_PAGE]: 'popup_html_wallet_history',
@@ -55,7 +62,6 @@ const SHORTCUT_NAVIGATION_SCREEN_MESSAGE_KEYS = {
   [HiveScreen.SETTINGS_OPERATION_POPUP]: 'popup_html_operation_popup',
   [HiveScreen.SETTINGS_NOTIFICATIONS_CONFIGURATION]:
     'html_popup_settings_notifications',
-  [HiveScreen.SETTINGS_HELP]: 'popup_html_help',
 
   [EvmScreen.LIFI_HISTORY_PAGE]: 'html_popup_token_swaps_history',
   [EvmScreen.EVM_SETTINGS]: 'popup_html_settings',
@@ -203,6 +209,12 @@ const SHARED_NAVIGATION_SCREENS: MultichainScreen[] = [
   MultichainScreen.TOKEN_SWAP_PAGE,
   MultichainScreen.TOKENS_SWAP_HISTORY,
   MultichainScreen.SETTINGS_ABOUT,
+  MultichainScreen.SETTINGS_HELP,
+  MultichainScreen.SETTINGS_CONTACTS,
+  MultichainScreen.SETTINGS_NETWORK,
+  MultichainScreen.SETTINGS_CONNECTED_DAPPS,
+  MultichainScreen.SETTINGS_EVM,
+  MultichainScreen.SETTINGS_HIVE,
   MultichainScreen.SETTINGS_CHANGE_PASSWORD,
   MultichainScreen.SETTINGS_SHORTCUTS,
 ];
@@ -238,34 +250,23 @@ const HIVE_NAVIGATION_SCREENS: HiveScreen[] = [
   HiveScreen.SETTINGS_MANAGE_ACCOUNTS_AUTHORITIES,
   HiveScreen.SETTINGS_ADD_KEY,
   HiveScreen.SETTINGS_ADVANCED,
-  HiveScreen.SETTINGS_RPC_NODES,
   HiveScreen.SETTINGS_AUTO_LOCK,
   HiveScreen.SETTINGS_KEYCHAINIFY,
   HiveScreen.SETTINGS_CLEAR_ALL_DATA,
   HiveScreen.SETTINGS_IMPORT_EXPORT,
-  HiveScreen.SETTINGS_USER_PREFERENCES,
   HiveScreen.SETTINGS_AUTOMATED_TASKS,
-  HiveScreen.SETTINGS_AUTHORIZED_OPERATIONS,
   HiveScreen.SETTINGS_EXPORT_TRANSACTIONS,
-  HiveScreen.SETTINGS_FAVORITE_ACCOUNTS,
   HiveScreen.SETTINGS_MULTISIG,
-  HiveScreen.SETTINGS_OPERATION_POPUP,
   HiveScreen.SETTINGS_NOTIFICATIONS_CONFIGURATION,
-  HiveScreen.SETTINGS_HELP,
 ];
 
 const EVM_NAVIGATION_SCREENS: EvmScreen[] = [
   EvmScreen.LIFI_HISTORY_PAGE,
   EvmScreen.EVM_SETTINGS,
   EvmScreen.EVM_ACCOUNTS_SETTINGS,
-  EvmScreen.EVM_ADVANCED_SETTINGS,
-  EvmScreen.EVM_CONTACTS,
   EvmScreen.EVM_CUSTOM_CHAINS,
   EvmScreen.EVM_CUSTOM_TOKENS_PAGE,
   EvmScreen.EVM_CUSTOM_NFTS_PAGE,
-  EvmScreen.EVM_RPC_NODES_SETTINGS,
-  EvmScreen.EVM_SECURITY_SETTINGS,
-  EvmScreen.EVM_PROVIDER_SETTINGS,
 ];
 
 const NAVIGATION_SCREENS: (MultichainScreen | HiveScreen | EvmScreen)[] = [

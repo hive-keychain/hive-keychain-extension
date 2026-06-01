@@ -8,13 +8,13 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { ArrayUtils } from 'src/utils/array.utils';
 
-const EvmSecuritySettings = ({ setTitleContainerProperties }: PropsType) => {
+const SettingsEvmPage = ({ setTitleContainerProperties }: PropsFromRedux) => {
   const [evmSettings, setEvmSettings] = useState<EvmSettings>();
-  const [displaySaveButton, setDisplaySaveButton] = useState<boolean>(false);
+  const [displaySaveButton, setDisplaySaveButton] = useState(false);
 
   useEffect(() => {
     setTitleContainerProperties({
-      title: 'evm_menu_security',
+      title: 'evm_settings',
       isBackButtonEnabled: true,
       isCloseButtonDisabled: false,
     });
@@ -22,11 +22,10 @@ const EvmSecuritySettings = ({ setTitleContainerProperties }: PropsType) => {
   }, []);
 
   const init = async () => {
-    const settings = await EvmSettingsUtils.getSettings();
-    setEvmSettings({ ...settings });
+    setEvmSettings({ ...(await EvmSettingsUtils.getSettings()) });
   };
 
-  const updateField = (key: string, value: any) => {
+  const updateField = (key: string, value: boolean) => {
     if (!evmSettings) return;
     const newSettings: EvmSettings = ArrayUtils.getSetDescendantProp(
       { ...evmSettings },
@@ -38,19 +37,42 @@ const EvmSecuritySettings = ({ setTitleContainerProperties }: PropsType) => {
   };
 
   const save = async () => {
-    if (evmSettings) {
-      await EvmSettingsUtils.saveSettings(evmSettings);
-      setDisplaySaveButton(false);
-    }
+    if (!evmSettings) return;
+    await EvmSettingsUtils.saveSettings(evmSettings);
+    setDisplaySaveButton(false);
   };
 
   return (
-    <div className="evm-security-settings-page">
-      <div className="fields">
-        {evmSettings && evmSettings.smartContracts && (
+    <div className="settings-evm-page" data-testid="SETTINGS_EVM-page">
+      {evmSettings && (
+        <div className="fields">
           <div className="settings-section advanced-settings-section">
             <div className="section-title">
-              {chrome.i18n.getMessage('evm_menu_advanced_smart_contracts')}
+              {chrome.i18n.getMessage('evm_menu_provider_compatibility')}
+            </div>
+            <div className="provider-note warning-note">
+              {chrome.i18n.getMessage('evm_provider_compatibility_warning')}
+            </div>
+            <div className="provider-note reload-note">
+              {chrome.i18n.getMessage('evm_provider_compatibility_reload_note')}
+            </div>
+            <div className="section-fields">
+              <CheckboxPanelComponent
+                title="evm_provider_compatibility_prefer_title"
+                hint="evm_provider_compatibility_prefer_hint"
+                checked={evmSettings.providerCompatibility.preferOnLegacyDapps}
+                onChange={(value) =>
+                  updateField(
+                    'providerCompatibility.preferOnLegacyDapps',
+                    value,
+                  )
+                }
+              />
+            </div>
+          </div>
+          <div className="settings-section advanced-settings-section">
+            <div className="section-title">
+              {chrome.i18n.getMessage('evm_menu_security')}
             </div>
             <div className="section-fields">
               <CheckboxPanelComponent
@@ -59,7 +81,8 @@ const EvmSecuritySettings = ({ setTitleContainerProperties }: PropsType) => {
                 checked={evmSettings.smartContracts.displayPossibleSpam}
                 onChange={(value) =>
                   updateField('smartContracts.displayPossibleSpam', value)
-                }></CheckboxPanelComponent>
+                }
+              />
               <CheckboxPanelComponent
                 title="evm_menu_advanced_smart_contracts_display_non_verified_title"
                 hint="evm_menu_advanced_smart_contracts_display_non_verified_hint"
@@ -69,31 +92,30 @@ const EvmSecuritySettings = ({ setTitleContainerProperties }: PropsType) => {
                     'smartContracts.displayNonVerifiedContracts',
                     value,
                   )
-                }></CheckboxPanelComponent>
+                }
+              />
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
       {displaySaveButton && (
         <ButtonComponent
           dataTestId="button-save"
-          label={'popup_html_save'}
-          onClick={() => save()}
+          label="popup_html_save"
+          onClick={save}
         />
       )}
     </div>
   );
 };
 
-const mapStateToProps = (state: RootState) => {
-  return {
-    accounts: state.evm.accounts,
-  };
-};
-const connector = connect(mapStateToProps, {
-  setTitleContainerProperties,
-});
+const connector = connect(
+  (state: RootState) => ({}),
+  {
+    setTitleContainerProperties,
+  },
+);
 
-type PropsType = ConnectedProps<typeof connector>;
+type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export const EvmSecuritySettingsComponent = connector(EvmSecuritySettings);
+export const SettingsEvmPageComponent = connector(SettingsEvmPage);

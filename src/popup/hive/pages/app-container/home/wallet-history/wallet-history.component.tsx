@@ -19,6 +19,7 @@ import {
   Transfer,
   WithdrawSavings,
 } from '@interfaces/transaction.interface';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -76,6 +77,7 @@ const WalletHistory = ({
   transactions,
   activeAccountName,
   fetchAccountTransactions,
+  navigateTo,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [isFilterOpened, setIsFilterPanelOpened] = useState(false);
@@ -503,6 +505,13 @@ const WalletHistory = ({
         ref={walletItemList}
         className="wallet-item-list"
         onScroll={handleScroll}>
+        <ButtonComponent
+          additionalClass="wallet-history-export-button"
+          dataTestId="wallet-history-export-transactions"
+          label="popup_html_export_transactions"
+          height="small"
+          onClick={() => navigateTo(Screen.SETTINGS_EXPORT_TRANSACTIONS)}
+        />
         <FlatList
           list={displayedTransactions}
           renderItem={renderListItem}
@@ -561,6 +570,7 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   fetchAccountTransactions,
+  navigateTo,
   setTitleContainerProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
