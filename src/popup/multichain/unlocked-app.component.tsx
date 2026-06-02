@@ -47,7 +47,6 @@ import { KeylessKeychainComponent } from 'src/popup/hive/pages/add-account/keyle
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
-import { AsyncUtils } from 'src/utils/async.utils';
 import { ColorsUtils } from 'src/utils/colors.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
@@ -380,7 +379,6 @@ const UnlockedApp = ({
     let hiveAccountsFromStorage: LocalAccount[] = [];
     let evmAccountsFromStorage: EvmAccount[] = [];
     if (mk) {
-      await AsyncUtils.sleep(500);
       const [loadedHiveAccounts, loadedEvmAccounts] = await Promise.all([
         AccountUtils.getAccountsFromLocalStorage(mk),
         EvmWalletUtils.rebuildAccountsFromLocalStorage(mk),

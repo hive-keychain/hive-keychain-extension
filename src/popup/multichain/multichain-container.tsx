@@ -152,6 +152,10 @@ const MultichainContainer = ({
 
   useEffect(() => {
     let isMounted = true;
+    const isSameChain = (left: Chain | null, right: Chain | null) =>
+      !!left?.chainId &&
+      !!right?.chainId &&
+      left.chainId.toLowerCase() === right.chainId.toLowerCase();
 
     const init = async () => {
       const storagePromise = LocalStorageUtils.getMultipleValueFromLocalStorage(
@@ -177,59 +181,78 @@ const MultichainContainer = ({
       registerShortcuts(shortcutsRef.current);
       setHasHydratedSettings(true);
 
-      const [storedChain, tabOrigin, categories] = await Promise.all([
-        res.ACTIVE_CHAIN
-          ? ChainUtils.getChain<Chain>(res.ACTIVE_CHAIN)
-          : Promise.resolve(null),
-        tabOriginPromise,
-        ecosystemPromise,
-      ]);
-
-      if (!isMounted) return;
-
-      const connectedEvmWallets = tabOrigin
-        ? await EvmWalletUtils.getConnectedWallets(tabOrigin)
-        : [];
-      const hasConnectedEvmAccountsForOrigin = connectedEvmWallets.length > 0;
-
-      const ecosystemDapp = findDappByTabOrigin(categories, tabOrigin);
-      const ecosystemChain = ecosystemDapp?.chainId
-        ? ((await ChainUtils.getChain<Chain>(ecosystemDapp.chainId)) ?? null)
+      const storedChain = res.ACTIVE_CHAIN
+        ? await ChainUtils.getChain<Chain>(res.ACTIVE_CHAIN)
         : null;
 
-      const providerBootstrap = await getProviderBootstrapForPopup({
-        tabOrigin,
-        hasConnectedEvmAccountsForOrigin,
-      });
-
       if (!isMounted) return;
 
-      const hasRequestedProviderChain = !!(
-        tabOrigin && hasConnectedEvmAccountsForOrigin
-      );
-      const { chain: initialChain, source: initialChainSource } =
-        resolvePopupInitialChain({
-          providerChain: providerBootstrap.resolvedChain,
-          hasRequestedProviderChain,
-          ecosystemChain,
-          storedChain,
-        });
-
-      if (initialChain) {
-        const isTabInferredChain =
-          initialChainSource === 'ecosystem' ||
-          initialChainSource === 'provider';
-        const isTabInferredEvmChain =
-          isTabInferredChain && initialChain.type === ChainType.EVM;
-        if (isTabInferredChain) {
-          PopupTabChainContextUtils.setTabInferredChainId(initialChain.chainId);
-        }
-        shouldPersistActiveChainRef.current = !isTabInferredEvmChain;
-        setChain(initialChain, {
-          saveLastUsedChain: !isTabInferredEvmChain,
-        });
+      // Fast path: apply stored chain and unblock rendering immediately.
+      if (storedChain) {
+        setChain(storedChain);
       }
       setIsBootstrapping(false);
+
+      // Refine chain selection in background without blocking popup first paint.
+      void (async () => {
+        try {
+          const [tabOrigin, categories] = await Promise.all([
+            tabOriginPromise,
+            ecosystemPromise,
+          ]);
+          if (!isMounted) return;
+
+          const connectedEvmWallets = tabOrigin
+            ? await EvmWalletUtils.getConnectedWallets(tabOrigin)
+            : [];
+          const hasConnectedEvmAccountsForOrigin =
+            connectedEvmWallets.length > 0;
+
+          const ecosystemDapp = findDappByTabOrigin(categories, tabOrigin);
+          const ecosystemChain = ecosystemDapp?.chainId
+            ? ((await ChainUtils.getChain<Chain>(ecosystemDapp.chainId)) ?? null)
+            : null;
+
+          const providerBootstrap = await getProviderBootstrapForPopup({
+            tabOrigin,
+            hasConnectedEvmAccountsForOrigin,
+          });
+          if (!isMounted) return;
+
+          const hasRequestedProviderChain = !!(
+            tabOrigin && hasConnectedEvmAccountsForOrigin
+          );
+          const { chain: refinedChain, source: refinedChainSource } =
+            resolvePopupInitialChain({
+              providerChain: providerBootstrap.resolvedChain,
+              hasRequestedProviderChain,
+              ecosystemChain,
+              storedChain,
+            });
+
+          if (!refinedChain) return;
+          if (
+            refinedChainSource === 'ecosystem' ||
+            refinedChainSource === 'provider'
+          ) {
+            PopupTabChainContextUtils.setTabInferredChainId(refinedChain.chainId);
+          }
+
+          const currentChain = store.getState().chain as Chain | null;
+          const isTabInferredEvmChain =
+            (refinedChainSource === 'ecosystem' ||
+              refinedChainSource === 'provider') &&
+            refinedChain.type === ChainType.EVM;
+          if (!isSameChain(currentChain, refinedChain)) {
+            shouldPersistActiveChainRef.current = !isTabInferredEvmChain;
+            setChain(refinedChain, {
+              saveLastUsedChain: !isTabInferredEvmChain,
+            });
+          }
+        } catch {
+          // Best-effort refinement only: keep stored/default chain on errors.
+        }
+      })();
     };
 
     void init();
