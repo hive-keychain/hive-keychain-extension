@@ -9,21 +9,29 @@ interface SettingsPreferencesDisplayMenuItemsParams {
   toggleTheme: () => void;
 }
 
+export const getThemeMenuItem = ({
+  theme,
+  toggleTheme,
+}: Pick<
+  SettingsPreferencesDisplayMenuItemsParams,
+  'theme' | 'toggleTheme'
+>): MenuItem => {
+  const themeIcon =
+    theme === Theme.DARK ? SVGIcons.MENU_THEME_LIGHT : SVGIcons.MENU_THEME_DARK;
+
+  return {
+    label: 'popup_html_theme',
+    icon: themeIcon,
+    action: toggleTheme,
+  };
+};
+
 export const getSettingsPreferencesDisplayMenuItems = ({
   isToolbarPopup,
   theme,
   toggleTheme,
 }: SettingsPreferencesDisplayMenuItemsParams): MenuItem[] => {
-  const themeIcon =
-    theme === Theme.DARK ? SVGIcons.MENU_THEME_LIGHT : SVGIcons.MENU_THEME_DARK;
-
-  const menuItems: MenuItem[] = [
-    {
-      label: 'popup_html_theme',
-      icon: themeIcon,
-      action: toggleTheme,
-    },
-  ];
+  const menuItems: MenuItem[] = [getThemeMenuItem({ theme, toggleTheme })];
 
   if (isToolbarPopup) {
     menuItems.push({

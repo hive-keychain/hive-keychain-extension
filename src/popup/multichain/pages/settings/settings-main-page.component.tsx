@@ -2,6 +2,7 @@ import { Screen } from '@interfaces/screen.interface';
 import { forgetMk } from '@popup/multichain/actions/mk.actions';
 import { resetNav } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
+import { Theme, useThemeContext } from '@popup/theme.context';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -14,6 +15,8 @@ const SettingsMainPage = ({
   hiveAccountsCount,
   resetNav,
 }: PropsFromRedux) => {
+  const { theme, toggleTheme } = useThemeContext();
+
   const logout = () => {
     resetNav();
     forgetMk();
@@ -37,6 +40,8 @@ const SettingsMainPage = ({
         menuItems={getSettingsMainPageMenuItems({
           hasEvmAccounts: evmAccountsCount > 0,
           hasHiveAccounts: hiveAccountsCount > 0,
+          theme: theme ?? Theme.LIGHT,
+          toggleTheme,
         })}
       />
     </div>
