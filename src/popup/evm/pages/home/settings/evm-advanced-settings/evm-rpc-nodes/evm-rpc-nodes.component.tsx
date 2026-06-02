@@ -1,3 +1,6 @@
+import ButtonComponent, {
+  ButtonType,
+} from '@common-ui/button/button.component';
 import { CheckboxPanelComponent } from '@common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import CheckboxComponent from '@common-ui/checkbox/checkbox/checkbox.component';
 import {
@@ -7,7 +10,6 @@ import {
 import { SVGIcons } from '@common-ui/icons.enum';
 import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
-import { Separator } from '@common-ui/separator/separator.component';
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import { EvmRpcUrlUtils } from '@popup/evm/utils/evm-rpc-url.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
@@ -240,18 +242,15 @@ const EvmRpcNodes = ({
             <div className="add-rpc-panel">
               <div className="add-rpc-caption">
                 <span>{chrome.i18n.getMessage('popup_html_add_rpc_text')}</span>
-                <SVGIcon
-                  icon={SVGIcons.MENU_RPC_SAVE_BUTTON}
-                  onClick={() => addCustomRpc()}
-                />
               </div>
-              <Separator type="horizontal" />
               <InputComponent
                 dataTestId="input-rpc-node-uri"
                 type={InputType.TEXT}
                 value={newRpc.url}
                 onChange={(value) => setNewRpc({ ...newRpc, url: value })}
+                label="popup_html_rpc_node"
                 placeholder={'popup_html_rpc_node'}
+                size="small"
                 onEnterPress={addCustomRpc}
               />
 
@@ -260,6 +259,14 @@ const EvmRpcNodes = ({
                 title="popup_html_set_new_rpc_as_active"
                 checked={setNewRpcAsActive}
                 onChange={setSetNewRpcAsActive}></CheckboxComponent>
+              <ButtonComponent
+                dataTestId="evm-rpc-save"
+                label="popup_html_save"
+                type={ButtonType.ALTERNATIVE}
+                height="small"
+                additionalClass="save-rpc-button"
+                onClick={() => addCustomRpc()}
+              />
             </div>
           )}
         </div>
