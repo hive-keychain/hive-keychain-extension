@@ -13,7 +13,7 @@ import {
   goBack,
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
-import { RootState } from '@popup/multichain/store';
+import { ActiveAccount } from '@interfaces/active-account.interface';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-field.interface';
@@ -27,10 +27,11 @@ import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 export interface AuthoritiesListItemProps {
   authority: AuthorityType;
   role: 'active' | 'posting';
+  managedAccount: ActiveAccount;
 }
 
 const AccountAuthoritiesListItem = ({
-  activeAccount,
+  managedAccount,
   authority,
   role,
   navigateToWithParams,
@@ -70,7 +71,7 @@ const AccountAuthoritiesListItem = ({
         try {
           const updatedActiveAccountAuth =
             ActiveAccountUtils.removeAuthorizedAccount(
-              activeAccount,
+              managedAccount,
               role,
               authorizedAccountName,
             );
@@ -148,13 +149,7 @@ const AccountAuthoritiesListItem = ({
   ) : null;
 };
 
-const mapStateToProps = (state: RootState) => {
-  return {
-    activeAccount: state.hive.activeAccount,
-  };
-};
-
-const connector = connect(mapStateToProps, {
+const connector = connect(null, {
   setAccounts,
   navigateToWithParams,
   addToLoadingList,

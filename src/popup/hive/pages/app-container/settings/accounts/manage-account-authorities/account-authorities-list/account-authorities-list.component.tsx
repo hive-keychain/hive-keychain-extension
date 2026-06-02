@@ -1,22 +1,27 @@
-import { RootState } from '@popup/multichain/store';
+import { ActiveAccount } from '@interfaces/active-account.interface';
 import React from 'react';
-import { connect, ConnectedProps } from 'react-redux';
 import { AccountAuthoritiesListItemComponent } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account-authorities/account-authorities-list/account-authorities-list-item/account-authorities-list-item.component';
 
-const AccountAuthoritiesList = ({ activeAccount }: PropsType) => {
+interface Props {
+  managedAccount: ActiveAccount;
+}
+
+const AccountAuthoritiesList = ({ managedAccount }: Props) => {
   return (
     <div className="account-authorities-list">
       <div className="authorities-panel">
         <AccountAuthoritiesListItemComponent
           role={'active'}
-          authority={activeAccount.account.active}
+          authority={managedAccount.account.active}
+          managedAccount={managedAccount}
         />
         <AccountAuthoritiesListItemComponent
           role={'posting'}
-          authority={activeAccount.account.posting}
+          authority={managedAccount.account.posting}
+          managedAccount={managedAccount}
         />
-        {activeAccount.account.active.account_auths.length === 0 &&
-          activeAccount.account.posting.account_auths.length === 0 && (
+        {managedAccount.account.active.account_auths.length === 0 &&
+          managedAccount.account.posting.account_auths.length === 0 && (
             <div className="no-authorities-found">
               {chrome.i18n.getMessage(
                 'popup_html_manage_no_accounts_authorities',
@@ -28,15 +33,4 @@ const AccountAuthoritiesList = ({ activeAccount }: PropsType) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => {
-  return {
-    activeAccount: state.hive.activeAccount,
-  };
-};
-
-const connector = connect(mapStateToProps, {});
-type PropsType = ConnectedProps<typeof connector>;
-
-export const AccountAuthoritiesListComponent = connector(
-  AccountAuthoritiesList,
-);
+export const AccountAuthoritiesListComponent = AccountAuthoritiesList;
