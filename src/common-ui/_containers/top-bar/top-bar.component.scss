@@ -74,6 +74,8 @@
       .react-dropdown-select-dropdown {
         right: 0;
         left: unset;
+        width: max-content;
+        min-width: 100%;
       }
     }
   }

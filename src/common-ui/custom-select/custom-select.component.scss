@@ -112,7 +112,7 @@
     .react-dropdown-select-dropdown {
       border-radius: 8px;
       box-sizing: border-box;
-      width: 100%;
+      width: max-content;
       min-width: 100%;
       max-height: 210px;
       border: 1px solid var(--input-border);
@@ -127,11 +127,18 @@
       .option,
       .custom-select-item {
         box-sizing: border-box;
-        width: 100%;
+        width: max-content;
+        min-width: 100%;
       }
 
       .custom-select-dropdown {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+
         .filter-input {
+          width: 100%;
+          box-sizing: border-box;
           border: unset !important;
           border-radius: unset !important;
           border-bottom: 1px solid var(--input-border);
@@ -216,12 +223,10 @@
             display: flex;
             flex-direction: column;
             line-height: 14px;
-            flex: 1;
-            min-width: 0;
+            flex: 1 1 auto;
+            min-width: max-content;
             color: var(--main-font-color);
-            text-overflow: ellipsis;
             white-space: nowrap;
-            overflow: hidden;
             .item-sub-label,
             .item-sub-label-hover {
               @include poppins400(12px);
