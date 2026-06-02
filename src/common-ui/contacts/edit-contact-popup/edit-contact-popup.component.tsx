@@ -6,7 +6,10 @@ import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
 import { PopupContainer } from '@common-ui/popup-container/popup-container.component';
 import { TextAreaComponent } from '@common-ui/text-area/textarea.component';
-import { UsernameAvatar } from '@common-ui/username-with-avatar/username-with-avatar';
+import {
+  HIVE_CONTACT_FALLBACK_IMAGE,
+  UsernameAvatar,
+} from '@common-ui/username-with-avatar/username-with-avatar';
 import { FavoriteAddress } from '@interfaces/contacts.interface';
 import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { ethers } from 'ethers';
@@ -81,6 +84,7 @@ export const EditContactPopupComponent = ({
                   <UsernameAvatar
                     username={favoriteAddress.address}
                     className="user-picture"
+                    fallbackImage={HIVE_CONTACT_FALLBACK_IMAGE}
                   />
                 )}
 

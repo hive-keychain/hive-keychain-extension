@@ -77,15 +77,15 @@
           left: 18px;
           color: $red;
         }
-          img.left-svg-chip {
-            border: 1px solid white;
-            border-radius: 50%;
-            left: 24px;
-          }
-          .left-svg-chip.chain-logo-initials {
-            @include poppins600(7px);
-            border: 1px solid white;
-          }
+        img.left-svg-chip {
+          border: 1px solid white;
+          border-radius: 50%;
+          left: 24px;
+        }
+        .left-svg-chip.chain-logo-initials {
+          @include poppins600(7px);
+          border: 1px solid white;
+        }
 
         &.has-img-chip {
           column-gap: 16px;
@@ -116,6 +116,7 @@
       min-width: 100%;
       max-height: 210px;
       border: 1px solid var(--input-border);
+      box-sizing: border-box;
       top: 60px;
       background-color: var(--input-background);
       border-radius: 16px;
@@ -170,6 +171,7 @@
           column-gap: 12px;
           padding: 10px 6px;
           position: relative;
+          width: 100%;
 
           .left-image {
             @include icon-size(24px);
