@@ -635,6 +635,10 @@
     "message": "No whitelisted operation",
     "description": "on preferences"
   },
+  "hive_dapps_connections_remove_all": {
+    "message": "Remove all permissions",
+    "description": "Button label to remove every Hive permission for a dapp"
+  },
   "popup_html_nothing_found_using_filter": {
     "message": "Nothing found, try to clear your filter(s)",
     "description": "on multiple pages where filter is used"

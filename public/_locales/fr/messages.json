@@ -383,6 +383,10 @@
     "message": "Aucune opération dans la whitelist",
     "description": "on preferences"
   },
+  "hive_dapps_connections_remove_all": {
+    "message": "Supprimer toutes les permissions",
+    "description": "Button label to remove every Hive permission for a dapp"
+  },
   "popup_html_add_rpc": {
     "message": "Ajouter un RPC",
     "description": "on preferences"

@@ -615,6 +615,10 @@
     "message": "Tidak ada informasi yang diizinkan",
     "description": "on preferences"
   },
+  "hive_dapps_connections_remove_all": {
+    "message": "Hapus semua izin",
+    "description": "Button label to remove every Hive permission for a dapp"
+  },
   "popup_html_nothing_found_using_filter": {
     "message": "Tidak ditemukan apa pun, coba bersihkan filter Anda",
     "description": "on multiple pages where filter is used"

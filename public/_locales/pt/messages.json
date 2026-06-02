@@ -591,6 +591,10 @@
     "message": "",
     "description": "on preferences"
   },
+  "hive_dapps_connections_remove_all": {
+    "message": "Remover todas as permissões",
+    "description": "Button label to remove every Hive permission for a dapp"
+  },
   "popup_html_nothing_found_using_filter": {
     "message": "Nada foi encontrado. Tente limpar seu(s) filtro(s)",
     "description": "on multiple pages where filter is used"

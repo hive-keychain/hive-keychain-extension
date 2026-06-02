@@ -20,41 +20,151 @@
   row-gap: 16px;
   padding: 0 24px 24px;
 
+  .settings-hive-account-select-panel {
+    width: 100%;
+
+    .custom-select-container {
+      width: 100%;
+    }
+
+    .custom-select {
+      width: 100%;
+    }
+  }
+
+  .settings-hive-dapps-card {
+    align-items: stretch;
+    flex-direction: column;
+    max-height: 400px;
+    overflow: hidden;
+    row-gap: 16px;
+  }
+
+  .settings-hive-dapps-empty {
+    @include poppins400(13px);
+    color: var(--main-font-color);
+    opacity: 0.85;
+  }
+
   .settings-hive-dapps-list {
     display: flex;
     flex-direction: column;
-    row-gap: 12px;
+    overflow: auto;
+    width: 100%;
   }
 
   .settings-hive-dapps-site {
-    @include small-card;
-    align-items: unset;
+    align-items: stretch;
+    border-bottom: 1px solid var(--card-border);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     margin: 0;
-    row-gap: 12px;
+    min-width: 0;
+    padding: 8px 0;
+    width: 100%;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+
+    &.expanded {
+      padding-bottom: 12px;
+    }
+  }
+
+  .settings-hive-dapps-site-header,
+  .settings-hive-dapps-site-identity {
+    align-items: center;
+    display: flex;
+  }
+
+  .settings-hive-dapps-site-header {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 32px;
+    padding: 0;
+    text-align: left;
+    width: 100%;
+  }
+
+  .settings-hive-dapps-site-identity {
+    gap: 8px;
+    min-width: 0;
   }
 
   .settings-hive-dapps-site-title {
     @include poppins600(14px);
     color: var(--main-font-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .settings-hive-dapps-favicon {
+    border-radius: 6px;
+    flex-shrink: 0;
+    height: 28px;
+    object-fit: contain;
+    width: 28px;
+  }
+
+  .settings-hive-dapps-expand-icon {
+    flex-shrink: 0;
+
+    .svg-icon {
+      @include icon-size(12px);
+    }
+  }
+
+  .settings-hive-dapps-permissions {
+    align-items: flex-start;
+    display: flex;
+    gap: 8px;
+    padding-left: 36px;
+  }
+
+  .settings-hive-dapps-remove-domain {
+    align-items: center;
+    background: transparent;
+    border: none;
+    color: var(--main-font-color);
+    cursor: pointer;
+    display: flex;
+    flex-shrink: 0;
+    justify-content: center;
+    min-height: 28px;
+    padding: 0;
+    width: 28px;
+
+    .svg-icon {
+      @include icon-size(16px);
+    }
   }
 
   .settings-hive-dapps-tags {
     display: flex;
+    flex: 1;
     flex-wrap: wrap;
     gap: 8px;
+    min-width: 0;
   }
 
   .settings-hive-dapps-tag {
-    display: flex;
+    @include poppins400(12px);
     align-items: center;
-    column-gap: 6px;
+    background: var(--card-background);
     border: 1px solid var(--card-border);
     border-radius: 14px;
-    background: var(--card-background);
     color: var(--main-font-color);
+    column-gap: 6px;
     cursor: pointer;
+    display: flex;
     padding: 6px 8px;
-    @include poppins400(12px);
 
     .svg-icon {
       @include icon-size(12px);

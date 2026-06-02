@@ -615,6 +615,10 @@
     "message": "Ninguna operación en la lista blanca",
     "description": "on preferences"
   },
+  "hive_dapps_connections_remove_all": {
+    "message": "Eliminar todos los permisos",
+    "description": "Button label to remove every Hive permission for a dapp"
+  },
   "popup_html_nothing_found_using_filter": {
     "message": "No se ha encontrado nada, intente vaciar los filtros",
     "description": "on multiple pages where filter is used"

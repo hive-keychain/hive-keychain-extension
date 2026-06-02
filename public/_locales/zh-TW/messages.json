@@ -379,6 +379,10 @@
     "message": "無白名單操作",
     "description": "on preferences"
   },
+  "hive_dapps_connections_remove_all": {
+    "message": "移除所有權限",
+    "description": "Button label to remove every Hive permission for a dapp"
+  },
   "popup_html_add_rpc": {
     "message": "增加RPC",
     "description": "on preferences"
