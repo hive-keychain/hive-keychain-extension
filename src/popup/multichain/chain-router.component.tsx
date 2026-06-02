@@ -82,9 +82,7 @@ const ChainRouter = ({
       (await LocalStorageUtils.getValueFromLocalStorage(
         LocalStorageKeyEnum.HAS_FINISHED_SIGNUP,
       )) || false;
-    setTimeout(() => {
-      setHasFinishedSignup(hasFinishedSignup);
-    }, 500);
+    setHasFinishedSignup(hasFinishedSignup);
   };
 
   const initAutoLock = async () => {

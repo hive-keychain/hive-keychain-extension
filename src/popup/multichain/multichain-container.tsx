@@ -148,6 +148,10 @@ const MultichainContainer = ({
 
   useEffect(() => {
     let isMounted = true;
+    const isSameChain = (left: Chain | null, right: Chain | null) =>
+      !!left?.chainId &&
+      !!right?.chainId &&
+      left.chainId.toLowerCase() === right.chainId.toLowerCase();
 
     const init = async () => {
       const storagePromise = LocalStorageUtils.getMultipleValueFromLocalStorage(
@@ -173,54 +177,70 @@ const MultichainContainer = ({
       registerShortcuts(shortcutsRef.current);
       setHasHydratedSettings(true);
 
-      const [storedChain, tabOrigin, categories] = await Promise.all([
-        res.ACTIVE_CHAIN
-          ? ChainUtils.getChain<Chain>(res.ACTIVE_CHAIN)
-          : Promise.resolve(null),
-        tabOriginPromise,
-        ecosystemPromise,
-      ]);
+      const storedChain = res.ACTIVE_CHAIN
+        ? await ChainUtils.getChain<Chain>(res.ACTIVE_CHAIN)
+        : null;
 
       if (!isMounted) return;
 
-      const storedOriginChainId = tabOrigin
-        ? await EvmChainUtils.getStoredChainIdForOrigin(tabOrigin)
-        : null;
-
-      const ecosystemDapp = findDappByTabOrigin(categories, tabOrigin);
-      const ecosystemChain = ecosystemDapp?.chainId
-        ? ((await ChainUtils.getChain<Chain>(ecosystemDapp.chainId)) ?? null)
-        : null;
-
-      const providerBootstrap = await getProviderBootstrapForPopup({
-        tabOrigin,
-        ecosystemChain,
-        storedOriginChainId,
-      });
-
-      if (!isMounted) return;
-
-      const hasRequestedProviderChain = !!(
-        tabOrigin && storedOriginChainId
-      );
-      const { chain: initialChain, source: initialChainSource } =
-        resolvePopupInitialChain({
-          providerChain: providerBootstrap.resolvedChain,
-          hasRequestedProviderChain,
-          ecosystemChain,
-          storedChain,
-        });
-
-      if (initialChain) {
-        if (
-          initialChainSource === 'ecosystem' ||
-          initialChainSource === 'provider'
-        ) {
-          PopupTabChainContextUtils.setTabInferredChainId(initialChain.chainId);
-        }
-        setChain(initialChain);
+      // Fast path: apply stored chain and unblock rendering immediately.
+      if (storedChain) {
+        setChain(storedChain);
       }
       setIsBootstrapping(false);
+
+      // Refine chain selection in background without blocking popup first paint.
+      void (async () => {
+        try {
+          const [tabOrigin, categories] = await Promise.all([
+            tabOriginPromise,
+            ecosystemPromise,
+          ]);
+          if (!isMounted) return;
+
+          const storedOriginChainId = tabOrigin
+            ? await EvmChainUtils.getStoredChainIdForOrigin(tabOrigin)
+            : null;
+
+          const ecosystemDapp = findDappByTabOrigin(categories, tabOrigin);
+          const ecosystemChain = ecosystemDapp?.chainId
+            ? ((await ChainUtils.getChain<Chain>(ecosystemDapp.chainId)) ?? null)
+            : null;
+
+          const providerBootstrap = await getProviderBootstrapForPopup({
+            tabOrigin,
+            ecosystemChain,
+            storedOriginChainId,
+          });
+          if (!isMounted) return;
+
+          const hasRequestedProviderChain = !!(
+            tabOrigin && storedOriginChainId
+          );
+          const { chain: refinedChain, source: refinedChainSource } =
+            resolvePopupInitialChain({
+              providerChain: providerBootstrap.resolvedChain,
+              hasRequestedProviderChain,
+              ecosystemChain,
+              storedChain,
+            });
+
+          if (!refinedChain) return;
+          if (
+            refinedChainSource === 'ecosystem' ||
+            refinedChainSource === 'provider'
+          ) {
+            PopupTabChainContextUtils.setTabInferredChainId(refinedChain.chainId);
+          }
+
+          const currentChain = store.getState().chain as Chain | null;
+          if (!isSameChain(currentChain, refinedChain)) {
+            setChain(refinedChain);
+          }
+        } catch {
+          // Best-effort refinement only: keep stored/default chain on errors.
+        }
+      })();
     };
 
     void init();
