@@ -1,13 +1,16 @@
-import { RootState } from '@popup/multichain/store';
+import { ActiveAccount } from '@interfaces/active-account.interface';
 import React from 'react';
-import { connect, ConnectedProps } from 'react-redux';
 import { Card } from 'src/common-ui/card/card.component';
 import { AccountAuthoritiesListItemComponent } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account-authorities/account-authorities-list/account-authorities-list-item/account-authorities-list-item.component';
 
-const AccountAuthoritiesList = ({ activeAccount }: PropsType) => {
+interface Props {
+  managedAccount: ActiveAccount;
+}
+
+const AccountAuthoritiesList = ({ managedAccount }: Props) => {
   const hasAccountAuthorities =
-    activeAccount.account.active.account_auths.length > 0 ||
-    activeAccount.account.posting.account_auths.length > 0;
+    managedAccount.account.active.account_auths.length > 0 ||
+    managedAccount.account.posting.account_auths.length > 0;
 
   return (
     <div className="account-authorities-list settings-hive-dapps-page">
@@ -16,11 +19,11 @@ const AccountAuthoritiesList = ({ activeAccount }: PropsType) => {
           <div className="authorities-panel settings-hive-dapps-list">
             <AccountAuthoritiesListItemComponent
               role={'active'}
-              authority={activeAccount.account.active}
+              authority={managedAccount.account.active}
             />
             <AccountAuthoritiesListItemComponent
               role={'posting'}
-              authority={activeAccount.account.posting}
+              authority={managedAccount.account.posting}
             />
           </div>
         ) : (
@@ -37,15 +40,4 @@ const AccountAuthoritiesList = ({ activeAccount }: PropsType) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => {
-  return {
-    activeAccount: state.hive.activeAccount,
-  };
-};
-
-const connector = connect(mapStateToProps, {});
-type PropsType = ConnectedProps<typeof connector>;
-
-export const AccountAuthoritiesListComponent = connector(
-  AccountAuthoritiesList,
-);
+export const AccountAuthoritiesListComponent = AccountAuthoritiesList;

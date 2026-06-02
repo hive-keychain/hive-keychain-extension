@@ -5,16 +5,21 @@ import {
 import { EvmRpcNodesComponent } from '@popup/evm/pages/home/settings/evm-advanced-settings/evm-rpc-nodes/evm-rpc-nodes.component';
 import { RpcNodesComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/rpc-nodes/rpc-nodes.component';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
-import { ChainType } from '@popup/multichain/interfaces/chains.interface';
+import {
+  Chain,
+  ChainType,
+} from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import {
   getSettingsChainOptions,
+  resolveDefaultSettingsChainOption,
   SettingsChainOption,
 } from 'src/popup/multichain/pages/settings/settings-chain-select.utils';
 
 const SettingsNetworkPage = ({
+  activeChain,
   hasHiveAccounts,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
@@ -33,7 +38,9 @@ const SettingsNetworkPage = ({
   const initOptions = async () => {
     const nextOptions = await getSettingsChainOptions(hasHiveAccounts);
     setOptions(nextOptions);
-    setSelectedOption(nextOptions[0]);
+    setSelectedOption(
+      resolveDefaultSettingsChainOption(nextOptions, activeChain),
+    );
   };
 
   const handleSelectedOption = (option: OptionItem) => {
@@ -72,6 +79,7 @@ const SettingsNetworkPage = ({
 
 const connector = connect(
   (state: RootState) => ({
+    activeChain: state.chain as Chain,
     hasHiveAccounts: state.hive.accounts.length > 0,
   }),
   {

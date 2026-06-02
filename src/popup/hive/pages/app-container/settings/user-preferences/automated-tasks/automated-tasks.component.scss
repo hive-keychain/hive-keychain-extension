@@ -5,6 +5,18 @@
   padding: 0px 24px;
   padding-bottom: 24px;
 
+  .settings-hive-account-select-panel {
+    width: 100%;
+
+    .custom-select-container {
+      width: 100%;
+    }
+
+    .custom-select {
+      width: 100%;
+    }
+  }
+
   .intro {
     @include settings-page-note();
 

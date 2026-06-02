@@ -1,32 +1,26 @@
 import {
-  EvmLocalAccountListItem,
-  LocalAccountListItem,
-} from '@interfaces/list-item.interface';
-import { LocalAccount } from '@interfaces/local-account.interface';
+  ComplexeCustomSelect,
+  OptionItem,
+} from '@common-ui/custom-select/custom-select.component';
+import { ActiveAccount } from '@interfaces/active-account.interface';
 import { Screen } from '@interfaces/screen.interface';
 import {
   loadTokens,
   loadTokensMarket,
   loadUserTokens,
 } from '@popup/hive/actions/token.actions';
-import { SelectAccountSectionComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section.component';
+import AccountUtils from '@popup/hive/utils/account.utils';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
-import { SelectItemRenderer, SelectRenderer } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
-import {
-  ComplexeCustomSelect,
-  OptionItem,
-} from 'src/common-ui/custom-select/custom-select.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
-import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
 
 const DEFAULT_SELECTED_TOKEN_OPTION = {
@@ -36,27 +30,34 @@ const DEFAULT_SELECTED_TOKEN_OPTION = {
   value: '',
 };
 
+type HiveAccountOption = OptionItem & {
+  value: string;
+};
+
 const AutomatedTasks = ({
   accounts,
-  activeAccount,
+  activeAccountName,
   userTokens,
   market,
   allTokens,
-  loadActiveAccount,
   setTitleContainerProperties,
   loadUserTokens,
   loadTokensMarket,
   loadTokens,
 }: PropsFromRedux) => {
-  const defaultOptions: LocalAccountListItem[] = [];
-  const [options, setOptions] = useState(defaultOptions);
   const [claimRewards, setClaimRewards] = useState(false);
   const [claimAccounts, setClaimAccounts] = useState(false);
   const [claimSavings, setClaimSavings] = useState(false);
   const [enabledAutoStake, setEnabledAutoStake] = useState(false);
-  const [selectedLocalAccount, setSelectedLocalAccount] = useState(
-    accounts[0].name,
+  const [selectedAccountName, setSelectedAccountName] = useState(
+    activeAccountName ?? accounts[0]?.name,
   );
+  const [selectedAccountContext, setSelectedAccountContext] = useState<
+    ActiveAccount | undefined
+  >();
+  const [isHiveSectionExpanded, setIsHiveSectionExpanded] = useState(true);
+  const [isHiveEngineSectionExpanded, setIsHiveEngineSectionExpanded] =
+    useState(false);
   const [userTokenOptionList, setUserTokenOptionList] =
     useState<OptionItem[]>();
   const [selectedUserTokenOption, setSelectedUserTokenOption] =
@@ -64,39 +65,103 @@ const AutomatedTasks = ({
   const [autoStakeTokenList, setAutoStakeTokenList] = useState<OptionItem[]>(
     [],
   );
-  const claimSavingsErrorMessage =
-    AutomatedTasksUtils.canClaimSavingsErrorMessage(activeAccount);
-  const claimAccountErrorMessage =
-    AutomatedTasksUtils.canClaimAccountErrorMessage(activeAccount);
-  const claimRewardsErrorMessage =
-    AutomatedTasksUtils.canClaimRewardsErrorMessage(activeAccount);
+
+  const accountOptions: HiveAccountOption[] = accounts.map((account) => ({
+    label: account.name,
+    value: account.name,
+    img: `https://images.hive.blog/u/${account.name}/avatar`,
+  }));
+  const selectedAccountOption = accountOptions.find(
+    (accountOption) => accountOption.value === selectedAccountName,
+  );
+
+  const claimSavingsErrorMessage = selectedAccountContext
+    ? AutomatedTasksUtils.canClaimSavingsErrorMessage(selectedAccountContext)
+    : undefined;
+  const claimAccountErrorMessage = selectedAccountContext
+    ? AutomatedTasksUtils.canClaimAccountErrorMessage(selectedAccountContext)
+    : undefined;
+  const claimRewardsErrorMessage = selectedAccountContext
+    ? AutomatedTasksUtils.canClaimRewardsErrorMessage(selectedAccountContext)
+    : undefined;
 
   useEffect(() => {
     setTitleContainerProperties({
       title: 'popup_html_automated_tasks',
       isBackButtonEnabled: true,
     });
+    loadTokensMarket();
+    loadTokens();
   }, []);
 
   useEffect(() => {
-    setSelectedUserTokenOption(DEFAULT_SELECTED_TOKEN_OPTION);
-    setAutoStakeTokenList([]);
-    init();
-    setOptions(
-      accounts.map((account: LocalAccount) => {
-        return { label: account.name, value: account.name };
-      }),
-    );
-    setSelectedLocalAccount(activeAccount.name!);
-    loadTokensMarket();
-    loadTokens();
-  }, [accounts, activeAccount]);
+    if (!selectedAccountName && activeAccountName) {
+      setSelectedAccountName(activeAccountName);
+    }
+  }, [activeAccountName, selectedAccountName]);
 
   useEffect(() => {
-    if (selectedLocalAccount) {
-      loadUserTokens(selectedLocalAccount);
+    if (
+      selectedAccountName &&
+      accountOptions.some(
+        (accountOption) => accountOption.value === selectedAccountName,
+      )
+    ) {
+      return;
     }
-  }, [selectedLocalAccount]);
+
+    setSelectedAccountName(activeAccountName ?? accounts[0]?.name);
+  }, [accounts, activeAccountName, selectedAccountName]);
+
+  useEffect(() => {
+    if (!selectedAccountName) {
+      setSelectedAccountContext(undefined);
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadSelectedAccountContext = async () => {
+      const localAccount = accounts.find(
+        (account) => account.name === selectedAccountName,
+      );
+      if (!localAccount) {
+        if (!cancelled) {
+          setSelectedAccountContext(undefined);
+        }
+        return;
+      }
+
+      const rc = await AccountUtils.getRCMana(selectedAccountName);
+      if (cancelled) {
+        return;
+      }
+
+      setSelectedAccountContext({
+        name: selectedAccountName,
+        keys: localAccount.keys,
+        rc,
+        account: {} as ActiveAccount['account'],
+      });
+    };
+
+    void loadSelectedAccountContext();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [accounts, selectedAccountName]);
+
+  useEffect(() => {
+    if (!selectedAccountName) {
+      return;
+    }
+
+    setSelectedUserTokenOption(DEFAULT_SELECTED_TOKEN_OPTION);
+    setAutoStakeTokenList([]);
+    void init(selectedAccountName);
+    loadUserTokens(selectedAccountName);
+  }, [selectedAccountName]);
 
   useEffect(() => {
     if (!userTokens.loading && userTokens.list && market) {
@@ -106,13 +171,18 @@ const AutomatedTasks = ({
           TokensUtils.getHiveEngineTokenValue(a, market, undefined, allTokens),
       );
 
-      let list = orderedFiltered
-        .filter((o) =>
-          allTokens.find((a) => a.symbol === o.symbol && a.stakingEnabled),
+      const list = orderedFiltered
+        .filter((token) =>
+          allTokens.find(
+            (tokenInfo) =>
+              tokenInfo.symbol === token.symbol && tokenInfo.stakingEnabled,
+          ),
         )
         .map((token) => {
           const tokenInfo = allTokens.find(
-            (t) => t.symbol === token.symbol && t.stakingEnabled === true,
+            (tokenDefinition) =>
+              tokenDefinition.symbol === token.symbol &&
+              tokenDefinition.stakingEnabled === true,
           );
           let img = '';
           let imgBackup = '';
@@ -131,72 +201,78 @@ const AutomatedTasks = ({
           };
         });
 
-      if (list) {
-        setUserTokenOptionList(list);
-      }
+      setUserTokenOptionList(list);
     }
-  }, [userTokens, market]);
+  }, [userTokens, market, allTokens]);
 
   const saveClaims = async (
-    claimRewards: boolean,
-    claimAccounts: boolean,
-    claimSavings: boolean,
+    nextClaimRewards: boolean,
+    nextClaimAccounts: boolean,
+    nextClaimSavings: boolean,
   ) => {
-    setClaimAccounts(claimAccounts);
-    setClaimRewards(claimRewards);
-    setClaimSavings(claimSavings);
+    if (!selectedAccountName) {
+      return;
+    }
+
+    setClaimAccounts(nextClaimAccounts);
+    setClaimRewards(nextClaimRewards);
+    setClaimSavings(nextClaimSavings);
 
     await AutomatedTasksUtils.saveClaims(
-      claimRewards,
-      claimAccounts,
-      claimSavings,
-      activeAccount.name!,
+      nextClaimRewards,
+      nextClaimAccounts,
+      nextClaimSavings,
+      selectedAccountName,
     );
   };
 
   useEffect(() => {
     if (
       userTokenOptionList &&
-      userTokenOptionList?.length > 0 &&
-      enabledAutoStake
+      userTokenOptionList.length > 0 &&
+      enabledAutoStake &&
+      selectedAccountName
     ) {
-      initAutoStakeTokens();
+      void initAutoStakeTokens(selectedAccountName);
     }
-  }, [userTokenOptionList, enabledAutoStake]);
+  }, [userTokenOptionList, enabledAutoStake, selectedAccountName]);
 
-  const initAutoStakeTokens = async () => {
-    let autoStakeUsernameList: any =
-      await AutomatedTasksUtils.getUsernameAutoStakeList(activeAccount.name!);
-    let autoStakeUsernameOptionItemList: OptionItem[] =
+  const initAutoStakeTokens = async (accountName: string) => {
+    const autoStakeUsernameList =
+      await AutomatedTasksUtils.getUsernameAutoStakeList(accountName);
+    const autoStakeUsernameOptionItemList: OptionItem[] =
       autoStakeUsernameList.length > 0
-        ? userTokenOptionList!.filter((u) =>
-            autoStakeUsernameList.find((a: any) => a.symbol === u.value.symbol),
+        ? userTokenOptionList!.filter((userTokenOption) =>
+            autoStakeUsernameList.find(
+              (autoStakeToken: { symbol: string }) =>
+                autoStakeToken.symbol === userTokenOption.value.symbol,
+            ),
           )
         : [];
     setAutoStakeTokenList(autoStakeUsernameOptionItemList);
   };
 
-  const init = async () => {
-    const values = await AutomatedTasksUtils.getClaims(activeAccount.name!);
+  const init = async (accountName: string) => {
+    const values = await AutomatedTasksUtils.getClaims(accountName);
     setClaimRewards(values[LocalStorageKeyEnum.CLAIM_REWARDS] ?? false);
     setClaimAccounts(values[LocalStorageKeyEnum.CLAIM_ACCOUNTS] ?? false);
     setClaimSavings(values[LocalStorageKeyEnum.CLAIM_SAVINGS] ?? false);
     setEnabledAutoStake(
-      await AutomatedTasksUtils.getUsernameAutoStake(activeAccount.name!),
+      await AutomatedTasksUtils.getUsernameAutoStake(accountName),
     );
-  };
-
-  const handleItemClicked = (accountName: string) => {
-    const itemClicked = accounts.find(
-      (account: LocalAccount) => account.name === accountName,
-    );
-    loadActiveAccount(itemClicked!);
   };
 
   const handleSetSelectedToken = async (selected: OptionItem) => {
+    if (!selectedAccountName) {
+      return;
+    }
+
     setSelectedUserTokenOption(DEFAULT_SELECTED_TOKEN_OPTION);
     if (
-      !autoStakeTokenList?.find((a) => a.value.symbol === selected.value.symbol)
+      !autoStakeTokenList?.find(
+        (autoStakeToken) =>
+          autoStakeToken.value.symbol === selected.value.symbol,
+      )
     ) {
       const copyAutoStakeList = [...autoStakeTokenList];
       copyAutoStakeList.unshift(selected);
@@ -205,9 +281,13 @@ const AutomatedTasks = ({
   };
 
   const setAndSaveAutoStakeTokenList = async (autoStakeData: OptionItem[]) => {
+    if (!selectedAccountName) {
+      return;
+    }
+
     setAutoStakeTokenList(autoStakeData);
     await AutomatedTasksUtils.updateAutoStakeTokenList(
-      activeAccount.name!,
+      selectedAccountName,
       autoStakeData,
     );
   };
@@ -215,67 +295,28 @@ const AutomatedTasks = ({
   const handleRemoveItem = async (item: OptionItem) => {
     if (autoStakeTokenList.find((a) => a.value.symbol === item.value.symbol)) {
       const copyAutoStakeList = [...autoStakeTokenList].filter(
-        (i) => i.value.symbol !== item.value.symbol,
+        (autoStakeToken) => autoStakeToken.value.symbol !== item.value.symbol,
       );
       await setAndSaveAutoStakeTokenList(copyAutoStakeList);
     }
   };
 
   const handleSetAutoStake = async (enable: boolean) => {
+    if (!selectedAccountName) {
+      return;
+    }
+
     setEnabledAutoStake(enable);
     await AutomatedTasksUtils.saveUsernameAutoStake(
-      activeAccount.name!,
+      selectedAccountName,
       enable,
     );
   };
 
-  const customLabelRender = (
-    selectProps: SelectRenderer<EvmLocalAccountListItem>,
-  ) => {
-    return (
-      <div
-        className="selected-account-panel"
-        onClick={() => {
-          selectProps.methods.dropDown('close');
-        }}>
-        <img
-          src={`https://images.hive.blog/u/${selectedLocalAccount}/avatar`}
-          onError={(e: any) => {
-            e.target.onError = null;
-            e.target.src = '/assets/images/accounts.png';
-          }}
-        />
-        <div className="selected-account-name">{selectedLocalAccount}</div>
-      </div>
-    );
-  };
-  const customItemRender = (
-    selectProps: SelectItemRenderer<LocalAccountListItem>,
-  ) => {
-    return (
-      <div
-        data-testid={`select-account-item-${selectProps.item.label}`}
-        className={`select-account-item ${
-          selectedLocalAccount === selectProps.item.value ? 'selected' : ''
-        }`}
-        onClick={() => {
-          handleItemClicked(selectProps.item.value);
-          selectProps.methods.dropDown('close');
-        }}>
-        <img
-          src={`https://images.hive.blog/u/${selectProps.item.label}/avatar`}
-          onError={(e: any) => {
-            e.target.onError = null;
-            e.target.src = '/assets/images/accounts.png';
-          }}
-        />
-        <div className="account-name">{selectProps.item.label}</div>
-      </div>
-    );
-  };
-
   const isClaimedAccountDisabled =
-    activeAccount.rc.max_rc < Config.claims.freeAccount.MIN_RC * 1.5;
+    (selectedAccountContext?.rc.max_rc ?? 0) <
+    Config.claims.freeAccount.MIN_RC * 1.5;
+
   return (
     <div
       data-testid={`${Screen.SETTINGS_AUTOMATED_TASKS}-page`}
@@ -284,7 +325,16 @@ const AutomatedTasks = ({
         {chrome.i18n.getMessage('popup_html_automated_intro')}
       </div>
 
-      <SelectAccountSectionComponent fullSize background="white" />
+      {selectedAccountOption && (
+        <div className="settings-hive-account-select-panel">
+          <ComplexeCustomSelect
+            options={accountOptions}
+            selectedItem={selectedAccountOption}
+            setSelectedItem={(option) => setSelectedAccountName(option.value)}
+            background="white"
+          />
+        </div>
+      )}
 
       <div className="section">
         <div className="section-header">
@@ -301,9 +351,7 @@ const AutomatedTasks = ({
             dataTestId="checkbox-autoclaim-rewards"
             title="popup_html_enable_autoclaim_rewards"
             checked={claimRewards}
-            onChange={(value) =>
-              saveClaims(value, claimAccounts, claimSavings)
-            }
+            onChange={(value) => saveClaims(value, claimAccounts, claimSavings)}
             hint="popup_html_enable_autoclaim_rewards_info"
             tooltipMessage={claimRewardsErrorMessage}
             disabled={!!claimRewardsErrorMessage}
@@ -312,9 +360,7 @@ const AutomatedTasks = ({
             dataTestId="checkbox-autoclaim-accounts"
             title="popup_html_enable_autoclaim_accounts"
             checked={claimAccounts && !isClaimedAccountDisabled}
-            onChange={(value) =>
-              saveClaims(claimRewards, value, claimSavings)
-            }
+            onChange={(value) => saveClaims(claimRewards, value, claimSavings)}
             skipHintTranslation
             hint={chrome.i18n.getMessage(
               'popup_html_enable_autoclaim_accounts_info',
@@ -331,9 +377,7 @@ const AutomatedTasks = ({
             dataTestId="checkbox-autoclaim-savings"
             title="popup_html_enable_autoclaim_savings"
             checked={claimSavings}
-            onChange={(value) =>
-              saveClaims(claimRewards, claimAccounts, value)
-            }
+            onChange={(value) => saveClaims(claimRewards, claimAccounts, value)}
             hint="popup_html_enable_autoclaim_savings_info"
             tooltipMessage={claimSavingsErrorMessage}
             disabled={!!claimSavingsErrorMessage}
@@ -421,7 +465,7 @@ const AutomatedTasks = ({
 const mapStateToProps = (state: RootState) => {
   return {
     accounts: state.hive.accounts,
-    activeAccount: state.hive.activeAccount,
+    activeAccountName: state.hive.activeAccount.name,
     userTokens: state.hive.userTokens,
     market: state.hive.tokenMarket,
     allTokens: state.hive.tokens,
@@ -429,7 +473,6 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const connector = connect(mapStateToProps, {
-  loadActiveAccount,
   setTitleContainerProperties,
   loadUserTokens,
   loadTokensMarket,

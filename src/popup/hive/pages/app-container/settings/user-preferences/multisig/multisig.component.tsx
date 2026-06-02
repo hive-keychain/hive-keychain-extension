@@ -1,11 +1,14 @@
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
+import {
+  ComplexeCustomSelect,
+  OptionItem,
+} from '@common-ui/custom-select/custom-select.component';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import {
   ConnectDisconnectMessage,
   MultisigAccountConfig,
 } from '@interfaces/multisig.interface';
 import { Screen } from '@interfaces/screen.interface';
-import { SelectAccountSectionComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section.component';
 import HiveUtils from '@popup/hive/utils/hive.utils';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
@@ -16,7 +19,6 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
-import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
 const defaultConfig: MultisigAccountConfig = {
@@ -25,18 +27,34 @@ const defaultConfig: MultisigAccountConfig = {
   posting: { isEnabled: false, publicKey: '', message: '' },
 };
 
+type HiveAccountOption = OptionItem & {
+  value: string;
+};
+
 const Multisig = ({
-  activeAccount,
   accounts,
+  activeAccountName,
   setTitleContainerProperties,
   setErrorMessage,
 }: PropsFromRedux) => {
+  const [selectedAccountName, setSelectedAccountName] = useState(
+    activeAccountName ?? accounts[0]?.name,
+  );
   const [multisigAccountConfig, setMultisigAccountConfig] =
     useState<MultisigAccountConfig>(defaultConfig);
 
   const [localAccount, setLocalAccount] = useState<LocalAccount>();
   const [isActiveLedger, setIsActiveLedger] = useState(false);
   const [isPostingLedger, setIsPostingLedger] = useState(false);
+
+  const accountOptions: HiveAccountOption[] = accounts.map((account) => ({
+    label: account.name,
+    value: account.name,
+    img: `https://images.hive.blog/u/${account.name}/avatar`,
+  }));
+  const selectedAccountOption = accountOptions.find(
+    (accountOption) => accountOption.value === selectedAccountName,
+  );
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -46,26 +64,58 @@ const Multisig = ({
   }, []);
 
   useEffect(() => {
-    init();
-  }, [activeAccount]);
+    if (!selectedAccountName && activeAccountName) {
+      setSelectedAccountName(activeAccountName);
+    }
+  }, [activeAccountName, selectedAccountName]);
 
-  const init = async () => {
+  useEffect(() => {
+    if (
+      selectedAccountName &&
+      accountOptions.some(
+        (accountOption) => accountOption.value === selectedAccountName,
+      )
+    ) {
+      return;
+    }
+
+    setSelectedAccountName(activeAccountName ?? accounts[0]?.name);
+  }, [accounts, activeAccountName, selectedAccountName]);
+
+  useEffect(() => {
+    if (!selectedAccountName) {
+      return;
+    }
+
+    init(selectedAccountName);
+  }, [selectedAccountName, accounts]);
+
+  const init = async (accountName: string) => {
     const multisigAccountConfig = await MultisigUtils.getMultisigAccountConfig(
-      activeAccount.name!,
+      accountName,
     );
     setMultisigAccountConfig(multisigAccountConfig ?? defaultConfig);
-    setLocalAccount(
-      accounts.find((account) => account.name === activeAccount.name!),
+    const account = accounts.find(
+      (localAccount) => localAccount.name === accountName,
     );
-    if (activeAccount.keys.active) {
-      setIsActiveLedger(KeysUtils.isUsingLedger(activeAccount.keys.active));
+    setLocalAccount(account);
+    if (account?.keys.active) {
+      setIsActiveLedger(KeysUtils.isUsingLedger(account.keys.active));
+    } else {
+      setIsActiveLedger(false);
     }
-    if (activeAccount.keys.posting) {
-      setIsPostingLedger(KeysUtils.isUsingLedger(activeAccount.keys.posting));
+    if (account?.keys.posting) {
+      setIsPostingLedger(KeysUtils.isUsingLedger(account.keys.posting));
+    } else {
+      setIsPostingLedger(false);
     }
   };
 
   const saveMultisigEnabled = async (isEnabled: boolean) => {
+    if (!selectedAccountName) {
+      return;
+    }
+
     if (!MultisigUtils.isMultisigCompatible()) {
       setErrorMessage('min_chrome_version');
       return;
@@ -83,22 +133,26 @@ const Multisig = ({
       },
     };
     setMultisigAccountConfig(newConfig);
-    await MultisigUtils.saveMultisigConfig(activeAccount.name!, newConfig);
+    await MultisigUtils.saveMultisigConfig(selectedAccountName, newConfig);
     if (!isEnabled) {
       notifyBackground({
-        account: activeAccount.name!,
+        account: selectedAccountName,
         connect: isEnabled,
       });
     }
   };
 
   const saveMultisigEnabledActive = async (isEnabled: boolean) => {
+    if (!selectedAccountName) {
+      return;
+    }
+
     let message: string = '';
     let publicKey: string = '';
 
     if (isEnabled) {
       message = HiveUtils.signMessage(
-        activeAccount.name!,
+        selectedAccountName,
         localAccount?.keys.active!,
       );
       publicKey = localAccount?.keys.activePubkey!;
@@ -110,9 +164,9 @@ const Multisig = ({
     };
 
     setMultisigAccountConfig(newConfig);
-    await MultisigUtils.saveMultisigConfig(activeAccount.name!, newConfig);
+    await MultisigUtils.saveMultisigConfig(selectedAccountName, newConfig);
     notifyBackground({
-      account: activeAccount.name!,
+      account: selectedAccountName,
       connect: isEnabled,
       publicKey: multisigAccountConfig.active.publicKey,
       message: multisigAccountConfig.active.message,
@@ -120,12 +174,16 @@ const Multisig = ({
   };
 
   const saveMultisigEnabledPosting = async (isEnabled: boolean) => {
+    if (!selectedAccountName) {
+      return;
+    }
+
     let message: string = '';
     let publicKey: string = '';
 
     if (isEnabled) {
       message = HiveUtils.signMessage(
-        activeAccount.name!,
+        selectedAccountName,
         localAccount?.keys.posting!,
       );
       publicKey = localAccount?.keys.postingPubkey!;
@@ -136,9 +194,9 @@ const Multisig = ({
       posting: { isEnabled: isEnabled, message: message, publicKey: publicKey },
     };
     setMultisigAccountConfig(newConfig);
-    await MultisigUtils.saveMultisigConfig(activeAccount.name!, newConfig);
+    await MultisigUtils.saveMultisigConfig(selectedAccountName, newConfig);
     notifyBackground({
-      account: activeAccount.name!,
+      account: selectedAccountName,
       connect: isEnabled,
       publicKey: multisigAccountConfig.posting.publicKey,
       message: multisigAccountConfig.posting.message,
@@ -152,6 +210,9 @@ const Multisig = ({
     } as BackgroundMessage);
   };
 
+  const hasActiveKey = !!localAccount?.keys.active;
+  const hasPostingKey = !!localAccount?.keys.posting;
+
   return (
     <div
       data-testid={`${Screen.SETTINGS_MULTISIG}-page`}
@@ -163,7 +224,18 @@ const Multisig = ({
         }}
       />
 
-      <SelectAccountSectionComponent fullSize background="white" />
+      {selectedAccountOption && (
+        <div className="settings-hive-account-select-panel">
+          <ComplexeCustomSelect
+            options={accountOptions}
+            selectedItem={selectedAccountOption}
+            setSelectedItem={(option) =>
+              setSelectedAccountName(option.value)
+            }
+            background="white"
+          />
+        </div>
+      )}
 
       {multisigAccountConfig && (
         <>
@@ -176,7 +248,7 @@ const Multisig = ({
           />
           {multisigAccountConfig.isEnabled && (
             <>
-              {activeAccount.keys.active && (
+              {hasActiveKey && (
                 <CheckboxPanelComponent
                   dataTestId="checkbox-multisig-active-key-enabled"
                   title="popup_html_enable_active_key_multisig"
@@ -188,7 +260,7 @@ const Multisig = ({
                   }
                 />
               )}
-              {activeAccount.keys.posting && (
+              {hasPostingKey && (
                 <CheckboxPanelComponent
                   dataTestId="checkbox-multisig-public-key-enabled"
                   title="popup_html_enable_posting_key_multisig"
@@ -211,12 +283,11 @@ const Multisig = ({
 const mapStateToProps = (state: RootState) => {
   return {
     accounts: state.hive.accounts,
-    activeAccount: state.hive.activeAccount,
+    activeAccountName: state.hive.activeAccount.name,
   };
 };
 
 const connector = connect(mapStateToProps, {
-  loadActiveAccount,
   setTitleContainerProperties,
   setErrorMessage,
 });

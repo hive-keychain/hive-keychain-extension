@@ -7,4 +7,16 @@
   .introduction {
     @include settings-page-note();
   }
+
+  .settings-hive-account-select-panel {
+    width: 100%;
+
+    .custom-select-container {
+      width: 100%;
+    }
+
+    .custom-select {
+      width: 100%;
+    }
+  }
 }

@@ -5,16 +5,21 @@ import {
 import { EvmContactsComponent } from '@popup/evm/pages/home/settings/evm-contacts/evm-contacts.component';
 import { FavoriteAccountsComponent } from '@popup/hive/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts.component';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
-import { ChainType } from '@popup/multichain/interfaces/chains.interface';
+import {
+  Chain,
+  ChainType,
+} from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import {
   getSettingsChainOptions,
+  resolveDefaultSettingsChainOption,
   SettingsChainOption,
 } from 'src/popup/multichain/pages/settings/settings-chain-select.utils';
 
 const SettingsContactsPage = ({
+  activeChain,
   hasHiveAccounts,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
@@ -33,7 +38,9 @@ const SettingsContactsPage = ({
   const initOptions = async () => {
     const nextOptions = await getSettingsChainOptions(hasHiveAccounts);
     setOptions(nextOptions);
-    setSelectedOption(nextOptions[0]);
+    setSelectedOption(
+      resolveDefaultSettingsChainOption(nextOptions, activeChain),
+    );
   };
 
   const handleSelectedOption = (option: OptionItem) => {
@@ -75,6 +82,7 @@ const SettingsContactsPage = ({
 
 const connector = connect(
   (state: RootState) => ({
+    activeChain: state.chain as Chain,
     hasHiveAccounts: state.hive.accounts.length > 0,
   }),
   {
