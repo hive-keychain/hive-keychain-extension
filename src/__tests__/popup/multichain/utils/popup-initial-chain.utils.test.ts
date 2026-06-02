@@ -33,7 +33,7 @@ describe('resolvePopupInitialChain', () => {
       storedChain: hiveChain,
     });
 
-    expect(result).toEqual(providerChain);
+    expect(result).toEqual({ chain: providerChain, source: 'provider' });
   });
 
   it('falls back to the ecosystem dapp chain when there is no requested provider chain', () => {
@@ -44,7 +44,32 @@ describe('resolvePopupInitialChain', () => {
       storedChain: hiveChain,
     });
 
-    expect(result).toEqual(ecosystemChain);
+    expect(result).toEqual({ chain: ecosystemChain, source: 'ecosystem' });
+  });
+
+  it('uses the provider chain when no ecosystem chain is available', () => {
+    const result = resolvePopupInitialChain({
+      providerChain,
+      hasRequestedProviderChain: false,
+      ecosystemChain: null,
+      storedChain: hiveChain,
+    });
+
+    expect(result).toEqual({ chain: providerChain, source: 'provider' });
+  });
+
+  it('ignores unresolved provider chains without a name', () => {
+    const result = resolvePopupInitialChain({
+      providerChain: {
+        ...providerChain,
+        name: '',
+      },
+      hasRequestedProviderChain: false,
+      ecosystemChain: null,
+      storedChain: hiveChain,
+    });
+
+    expect(result).toEqual({ chain: hiveChain, source: 'stored' });
   });
 
   it('falls back to ACTIVE_CHAIN when neither provider nor ecosystem chain should be used', () => {
@@ -55,6 +80,6 @@ describe('resolvePopupInitialChain', () => {
       storedChain: hiveChain,
     });
 
-    expect(result).toEqual(hiveChain);
+    expect(result).toEqual({ chain: hiveChain, source: 'stored' });
   });
 });

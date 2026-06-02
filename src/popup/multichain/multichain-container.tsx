@@ -7,6 +7,7 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
 import { resolvePopupInitialChain } from '@popup/multichain/utils/popup-initial-chain.utils';
 import { getProviderBootstrapForPopup } from '@popup/multichain/utils/provider-chain-bootstrap.utils';
+import { PopupTabChainContextUtils } from '@popup/multichain/utils/popup-tab-chain-context.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import hotkeys from 'hotkeys-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -15,10 +16,9 @@ import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.c
 import { ShortcutDefinition } from 'src/interfaces/shortcut.interface';
 import { Theme, ThemeContext } from 'src/popup/theme.context';
 import {
-  ensureEcosystemDappsCached,
   findDappByTabOrigin,
   getActiveTabOrigin,
-  getCachedEcosystemDapps,
+  getEcosystemCategoriesForPopup,
 } from 'src/utils/ecosystem-dapps-cache.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import {
@@ -158,8 +158,7 @@ const MultichainContainer = ({
         ],
       );
       const tabOriginPromise = getActiveTabOrigin();
-      const ecosystemPromise = getCachedEcosystemDapps();
-      void ensureEcosystemDappsCached();
+      const ecosystemPromise = getEcosystemCategoriesForPopup();
 
       const res = await storagePromise;
 
@@ -187,27 +186,38 @@ const MultichainContainer = ({
       const storedOriginChainId = tabOrigin
         ? await EvmChainUtils.getStoredChainIdForOrigin(tabOrigin)
         : null;
-      const providerBootstrap = await getProviderBootstrapForPopup(
-        storedOriginChainId,
-      );
-
-      if (!isMounted) return;
 
       const ecosystemDapp = findDappByTabOrigin(categories, tabOrigin);
       const ecosystemChain = ecosystemDapp?.chainId
         ? ((await ChainUtils.getChain<Chain>(ecosystemDapp.chainId)) ?? null)
         : null;
+
+      const providerBootstrap = await getProviderBootstrapForPopup({
+        tabOrigin,
+        ecosystemChain,
+        storedOriginChainId,
+      });
+
+      if (!isMounted) return;
+
       const hasRequestedProviderChain = !!(
         tabOrigin && storedOriginChainId
       );
-      const initialChain = resolvePopupInitialChain({
-        providerChain: providerBootstrap.resolvedChain,
-        hasRequestedProviderChain,
-        ecosystemChain,
-        storedChain,
-      });
+      const { chain: initialChain, source: initialChainSource } =
+        resolvePopupInitialChain({
+          providerChain: providerBootstrap.resolvedChain,
+          hasRequestedProviderChain,
+          ecosystemChain,
+          storedChain,
+        });
 
       if (initialChain) {
+        if (
+          initialChainSource === 'ecosystem' ||
+          initialChainSource === 'provider'
+        ) {
+          PopupTabChainContextUtils.setTabInferredChainId(initialChain.chainId);
+        }
         setChain(initialChain);
       }
       setIsBootstrapping(false);

@@ -44,7 +44,24 @@ const getActiveAccountType = (
   return getAvailableAccountType(hiveAccounts, evmAccounts);
 };
 
+const getActiveAccountTypeForTabInferredChain = (
+  activeChain: Chain,
+  hiveAccounts: LocalAccount[],
+  evmAccounts: EvmAccount[],
+): ActiveAccountType | null => {
+  if (
+    (activeChain?.type === ChainType.HIVE ||
+      activeChain?.type === ChainType.EVM) &&
+    hasAccountsForType(activeChain.type, hiveAccounts, evmAccounts)
+  ) {
+    return activeChain.type;
+  }
+
+  return null;
+};
+
 export const ActiveAccountTypeUtils = {
   getActiveAccountType,
+  getActiveAccountTypeForTabInferredChain,
   isActiveAccountType,
 };

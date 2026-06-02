@@ -46,6 +46,22 @@ export const getCachedEcosystemDapps = async (): Promise<DAppCategory[]> => {
 };
 
 /**
+ * Returns ecosystem dapps for popup startup. Uses the local cache when available
+ * and refreshes stale data in the background; otherwise waits for the API.
+ */
+export const getEcosystemCategoriesForPopup = async (): Promise<
+  DAppCategory[]
+> => {
+  const cached = await getCachedEcosystemDapps();
+  if (cached.length > 0) {
+    void ensureEcosystemDappsCached();
+    return cached;
+  }
+
+  return ensureEcosystemDappsCached();
+};
+
+/**
  * Ensures ecosystem dapps are cached in local storage with a 1h TTL.
  * On network failure, keeps existing cache if any.
  */

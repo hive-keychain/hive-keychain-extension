@@ -78,6 +78,36 @@ describe('ecosystem dapps cache utils', () => {
     expect(KeychainApi.get).not.toHaveBeenCalled();
   });
 
+  it('waits for the API when popup startup has no cached ecosystem dapps', async () => {
+    const {
+      getEcosystemCategoriesForPopup,
+      KeychainApi,
+      LocalStorageUtils,
+    } = await loadTestContext();
+
+    LocalStorageUtils.getValueFromLocalStorage.mockResolvedValue(undefined);
+    KeychainApi.get.mockResolvedValue(categories);
+
+    await expect(getEcosystemCategoriesForPopup()).resolves.toEqual(categories);
+    expect(KeychainApi.get).toHaveBeenCalledWith('ecosystem/dapps');
+  });
+
+  it('uses cached ecosystem dapps for popup startup without calling the API', async () => {
+    const {
+      getEcosystemCategoriesForPopup,
+      KeychainApi,
+      LocalStorageUtils,
+    } = await loadTestContext();
+
+    LocalStorageUtils.getValueFromLocalStorage.mockResolvedValue({
+      categories,
+      fetchedAt: Date.now(),
+    });
+
+    await expect(getEcosystemCategoriesForPopup()).resolves.toEqual(categories);
+    expect(KeychainApi.get).not.toHaveBeenCalled();
+  });
+
   it('refreshes stale ecosystem cache through ensureEcosystemDappsCached', async () => {
     const {
       ensureEcosystemDappsCached,

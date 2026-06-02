@@ -31,8 +31,8 @@ import {
 import { LoadingState } from '@popup/multichain/reducers/loading.reducer';
 import { RootState } from '@popup/multichain/store';
 import { UnifiedRouterComponent } from '@popup/multichain/unified-router.component';
-import { ActiveAccountTypeUtils } from '@popup/multichain/utils/active-account-type.utils';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { resolvePopupStartup } from '@popup/multichain/utils/popup-startup.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useRef, useState } from 'react';
@@ -134,6 +134,7 @@ const UnlockedApp = ({
   const previousAccountsCountRef = useRef<number | undefined>(undefined);
   const transactionResolutionRefreshInFlight = useRef(false);
   const transactionResolutionRefreshQueued = useRef(false);
+  const startupChainResolvedRef = useRef(false);
 
   useEffect(() => {
     void initApplication();
@@ -167,7 +168,7 @@ const UnlockedApp = ({
 
   useEffect(() => {
     if (activeRpc?.uri && activeRpc.uri !== 'NULL' && activeRpc.uri !== rpc) {
-      void initApplication();
+      void refreshApplicationOnRpcChange();
     }
     rpc = activeRpc?.uri;
   }, [activeRpc]);
@@ -303,24 +304,6 @@ const UnlockedApp = ({
     }
   };
 
-  const resolveStartupAccountType = async (
-    hiveAccountsFromStorage: LocalAccount[],
-    evmAccountsFromStorage: EvmAccount[],
-  ) => {
-    const storedActiveAccountType =
-      await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.ACTIVE_ACCOUNT_TYPE,
-      );
-    const nextAccountType = ActiveAccountTypeUtils.getActiveAccountType(
-      storedActiveAccountType,
-      store.getState().chain as Chain,
-      hiveAccountsFromStorage,
-      evmAccountsFromStorage,
-    );
-    setActiveAccountType(nextAccountType);
-    return nextAccountType;
-  };
-
   const ensureChainForAccountType = async (
     nextAccountType: ChainType.HIVE | ChainType.EVM,
   ) => {
@@ -335,6 +318,59 @@ const UnlockedApp = ({
     }
 
     return targetChain;
+  };
+
+  const resolveStartupChainAndAccountType = async (
+    hiveAccountsFromStorage: LocalAccount[],
+    evmAccountsFromStorage: EvmAccount[],
+  ) => {
+    const storedActiveAccountType =
+      await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.ACTIVE_ACCOUNT_TYPE,
+      );
+
+    return resolvePopupStartup(
+      store.getState().chain as Chain,
+      storedActiveAccountType,
+      hiveAccountsFromStorage,
+      evmAccountsFromStorage,
+      ensureChainForAccountType,
+    );
+  };
+
+  const initActiveAccountsForStartup = async (
+    hiveAccountsFromStorage: LocalAccount[],
+    evmAccountsFromStorage: EvmAccount[],
+    nextAccountType: ChainType.HIVE | ChainType.EVM,
+    targetChain: Chain | undefined,
+  ) => {
+    if (
+      nextAccountType === ChainType.HIVE &&
+      hiveAccountsFromStorage.length > 0
+    ) {
+      await initActiveHiveAccount(hiveAccountsFromStorage);
+      return;
+    }
+
+    if (
+      nextAccountType === ChainType.EVM &&
+      targetChain?.type === ChainType.EVM &&
+      evmAccountsFromStorage.length > 0
+    ) {
+      await initActiveEvmAccount(
+        evmAccountsFromStorage,
+        targetChain as EvmChain,
+      );
+    }
+  };
+
+  const refreshApplicationOnRpcChange = async () => {
+    loadCurrencyPrices();
+    loadGlobalProperties();
+
+    const rpc = await RpcUtils.getCurrentRpc();
+    setInitialRpc(rpc);
+    await initActiveRpc(rpc);
   };
 
   const initApplication = async () => {
@@ -355,11 +391,19 @@ const UnlockedApp = ({
       setEvmAccounts(evmAccountsFromStorage);
     }
 
-    const nextAccountType = await resolveStartupAccountType(
-      hiveAccountsFromStorage,
-      evmAccountsFromStorage,
-    );
-    const targetChain = await ensureChainForAccountType(nextAccountType);
+    let nextAccountType = store.getState().activeAccountType;
+    let targetChain = store.getState().chain as Chain | undefined;
+
+    if (!startupChainResolvedRef.current) {
+      const startupResolution = await resolveStartupChainAndAccountType(
+        hiveAccountsFromStorage,
+        evmAccountsFromStorage,
+      );
+      nextAccountType = startupResolution.accountType;
+      targetChain = startupResolution.targetChain;
+      setActiveAccountType(nextAccountType);
+      startupChainResolvedRef.current = true;
+    }
 
     await selectComponent(mk, hiveAccountsFromStorage, evmAccountsFromStorage);
     setAppReady(true);
@@ -370,17 +414,12 @@ const UnlockedApp = ({
     loadGlobalProperties();
     initHiveEngineConfigFromStorage();
 
-    if (hiveAccountsFromStorage.length > 0) {
-      initActiveHiveAccount(hiveAccountsFromStorage);
-    }
-
-    if (
-      nextAccountType === ChainType.EVM &&
-      targetChain?.type === ChainType.EVM &&
-      evmAccountsFromStorage.length > 0
-    ) {
-      await initActiveEvmAccount(evmAccountsFromStorage, targetChain);
-    }
+    await initActiveAccountsForStartup(
+      hiveAccountsFromStorage,
+      evmAccountsFromStorage,
+      nextAccountType,
+      targetChain,
+    );
   };
 
   const initActiveHiveAccount = async (accounts: LocalAccount[]) => {

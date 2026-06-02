@@ -147,15 +147,66 @@ describe('provider chain bootstrap', () => {
     expect(removeListenerMock).toHaveBeenCalledTimes(1);
   });
 
-  it('skips provider bootstrap when the active tab has no stored origin chain', async () => {
+  it('skips provider bootstrap when the active tab has no stored origin chain and an ecosystem chain is known', async () => {
     const { getProviderBootstrapForPopup, CommunicationUtils } =
       await loadTestContext();
+    const hiveChain = {
+      chainId: 'beeab0de00000000000000000000000000000000000000000000000000000000',
+      name: 'HIVE',
+      type: 'HIVE',
+      logo: '',
+      rpcs: [],
+    };
 
-    await expect(getProviderBootstrapForPopup(null)).resolves.toEqual({
+    await expect(
+      getProviderBootstrapForPopup({
+        tabOrigin: 'https://peakd.com',
+        ecosystemChain: hiveChain,
+        storedOriginChainId: null,
+      }),
+    ).resolves.toEqual({
       resolvedChain: null,
       rawChainId: null,
     });
     expect(CommunicationUtils.runtimeSendMessage).not.toHaveBeenCalled();
+  });
+
+  it('bootstraps the provider when the active tab has no ecosystem match', async () => {
+    const {
+      getProviderBootstrapForPopup,
+      CommunicationUtils,
+      ChainUtils,
+    } = await loadTestContext();
+    const addListenerMock = jest.spyOn(chrome.runtime.onMessage, 'addListener');
+    const expectedChain = {
+      chainId: '0x2105',
+      name: 'Base',
+      type: 'EVM',
+      logo: '',
+      rpcs: [],
+    };
+    ChainUtils.getChain.mockResolvedValue(expectedChain);
+
+    const bootstrapPromise = getProviderBootstrapForPopup(
+      {
+        tabOrigin: 'https://example.com',
+        ecosystemChain: null,
+        storedOriginChainId: null,
+      },
+      1000,
+    );
+    const listener = addListenerMock.mock.calls[0][0];
+
+    await listener({
+      command: BackgroundCommand.SEND_BACK_CHAIN_FROM_PROVIDER,
+      value: { chainId: '0x2105' },
+    });
+
+    await expect(bootstrapPromise).resolves.toEqual({
+      resolvedChain: expectedChain,
+      rawChainId: '0x2105',
+    });
+    expect(CommunicationUtils.runtimeSendMessage).toHaveBeenCalledTimes(1);
   });
 
   it('awaits provider bootstrap when the active tab has a stored origin chain', async () => {
@@ -174,7 +225,14 @@ describe('provider chain bootstrap', () => {
     };
     ChainUtils.getChain.mockResolvedValue(expectedChain);
 
-    const bootstrapPromise = getProviderBootstrapForPopup('0x1', 1000);
+    const bootstrapPromise = getProviderBootstrapForPopup(
+      {
+        tabOrigin: 'https://example.com',
+        ecosystemChain: null,
+        storedOriginChainId: '0x1',
+      },
+      1000,
+    );
     const listener = addListenerMock.mock.calls[0][0];
 
     await listener({

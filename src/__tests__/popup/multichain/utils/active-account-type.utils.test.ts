@@ -78,4 +78,24 @@ describe('ActiveAccountTypeUtils', () => {
       ),
     ).toBe(ChainType.HIVE);
   });
+
+  it('returns the tab-inferred account type when accounts exist for the chain', () => {
+    expect(
+      ActiveAccountTypeUtils.getActiveAccountTypeForTabInferredChain(
+        hiveChain,
+        hiveAccounts,
+        evmAccounts,
+      ),
+    ).toBe(ChainType.HIVE);
+  });
+
+  it('returns null for tab-inferred account type when no accounts exist for the chain', () => {
+    expect(
+      ActiveAccountTypeUtils.getActiveAccountTypeForTabInferredChain(
+        hiveChain,
+        [],
+        evmAccounts,
+      ),
+    ).toBeNull();
+  });
 });

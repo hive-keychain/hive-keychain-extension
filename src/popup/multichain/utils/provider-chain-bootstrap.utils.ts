@@ -2,7 +2,10 @@ import {
   BackgroundMessage,
   BaseBackgroundMessage,
 } from '@background/multichain/background-message.interface';
-import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import {
+  Chain,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
@@ -99,11 +102,29 @@ const EMPTY_PROVIDER_CHAIN_BOOTSTRAP_RESULT: ProviderChainBootstrapResult = {
   rawChainId: null,
 };
 
+export interface ProviderBootstrapForPopupOptions {
+  tabOrigin: string | null;
+  ecosystemChain: Chain | null;
+  storedOriginChainId: string | null;
+}
+
+export const shouldRunProviderBootstrapForPopup = ({
+  tabOrigin,
+  ecosystemChain,
+  storedOriginChainId,
+}: ProviderBootstrapForPopupOptions): boolean => {
+  if (storedOriginChainId) {
+    return true;
+  }
+
+  return !!tabOrigin && !ecosystemChain;
+};
+
 export const getProviderBootstrapForPopup = async (
-  storedOriginChainId: string | null,
+  options: ProviderBootstrapForPopupOptions,
   timeoutMs = PROVIDER_CHAIN_BOOTSTRAP_TIMEOUT_MS,
 ): Promise<ProviderChainBootstrapResult> => {
-  if (!storedOriginChainId) {
+  if (!shouldRunProviderBootstrapForPopup(options)) {
     return EMPTY_PROVIDER_CHAIN_BOOTSTRAP_RESULT;
   }
 

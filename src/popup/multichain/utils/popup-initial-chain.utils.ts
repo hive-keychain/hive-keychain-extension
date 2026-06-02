@@ -8,15 +8,40 @@ export interface PopupInitialChainCandidates {
   hasRequestedProviderChain: boolean;
 }
 
+export type PopupInitialChainSource = 'provider' | 'ecosystem' | 'stored';
+
+export interface PopupInitialChainResult {
+  chain: Chain | null;
+  source: PopupInitialChainSource | null;
+}
+
+const isResolvedStartupChain = (chain: Chain | null): chain is Chain =>
+  !!chain?.chainId && !!chain?.name?.length;
+
 export const resolvePopupInitialChain = ({
   storedChain,
   ecosystemChain,
   providerChain,
   hasRequestedProviderChain,
-}: PopupInitialChainCandidates): Chain | null => {
-  if (hasRequestedProviderChain && providerChain) {
-    return providerChain;
+}: PopupInitialChainCandidates): PopupInitialChainResult => {
+  if (
+    hasRequestedProviderChain &&
+    isResolvedStartupChain(providerChain)
+  ) {
+    return { chain: providerChain, source: 'provider' };
   }
 
-  return ecosystemChain ?? storedChain;
+  if (isResolvedStartupChain(ecosystemChain)) {
+    return { chain: ecosystemChain, source: 'ecosystem' };
+  }
+
+  if (isResolvedStartupChain(providerChain)) {
+    return { chain: providerChain, source: 'provider' };
+  }
+
+  if (isResolvedStartupChain(storedChain)) {
+    return { chain: storedChain, source: 'stored' };
+  }
+
+  return { chain: null, source: null };
 };
