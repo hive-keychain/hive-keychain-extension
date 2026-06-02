@@ -182,7 +182,24 @@ const Shortcuts = ({
       ChainUtils.getSetupChains(true),
       mk ? EvmWalletUtils.rebuildAccountsFromLocalStorage(mk) : evmAccounts,
     ]);
-    setShortcuts(Array.isArray(storedShortcuts) ? storedShortcuts : []);
+    const hasMigratedShortcutPresets =
+      (await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.SHORTCUT_PRESETS_MIGRATED,
+      )) === true;
+    const shortcuts =
+      Array.isArray(storedShortcuts) && hasMigratedShortcutPresets
+        ? storedShortcuts
+        : Array.isArray(storedShortcuts)
+          ? ShortcutsUtils.getShortcutsWithDefaultPresets(storedShortcuts)
+          : ShortcutsUtils.DEFAULT_SHORTCUTS;
+    setShortcuts(shortcuts);
+    if (!hasMigratedShortcutPresets) {
+      saveShortcuts(shortcuts);
+      LocalStorageUtils.saveValueInLocalStorage(
+        LocalStorageKeyEnum.SHORTCUT_PRESETS_MIGRATED,
+        true,
+      );
+    }
     setSetupChains(chains);
     setEvmLocalAccounts(rebuiltEvmAccounts ?? evmAccounts ?? []);
   };
@@ -364,6 +381,18 @@ const Shortcuts = ({
         ),
         value: ShortcutActionType.CHANGE_CHAIN,
       },
+      {
+        label: chrome.i18n.getMessage(
+          'popup_html_shortcuts_action_toggle_theme',
+        ),
+        value: ShortcutActionType.TOGGLE_THEME,
+      },
+      {
+        label: chrome.i18n.getMessage(
+          'popup_html_shortcuts_action_open_in_tab',
+        ),
+        value: ShortcutActionType.OPEN_IN_TAB,
+      },
     ];
   }, []);
 
@@ -372,6 +401,13 @@ const Shortcuts = ({
     if (actionType === ShortcutActionType.CHANGE_ACCOUNT) return accountOptions;
     return chainOptions;
   }, [actionType, screenOptions, accountOptions, chainOptions]);
+
+  const requiresTarget = useMemo(
+    () =>
+      actionType !== ShortcutActionType.TOGGLE_THEME &&
+      actionType !== ShortcutActionType.OPEN_IN_TAB,
+    [actionType],
+  );
 
   const requiresCurrency = useMemo(
     () =>
@@ -629,7 +665,7 @@ const Shortcuts = ({
       setErrorMessage('popup_html_shortcuts_missing_combo');
       return false;
     }
-    if (!target) {
+    if (requiresTarget && !target) {
       setErrorMessage('popup_html_shortcuts_missing_target');
       return false;
     }
@@ -719,7 +755,7 @@ const Shortcuts = ({
       id: editingShortcutId ?? ShortcutsUtils.createShortcutId(),
       combo: normalizedCombo,
       actionType,
-      target,
+      target: requiresTarget ? target : '',
       params: Object.keys(params).length ? params : undefined,
     };
     const updatedShortcuts = editingShortcutId
@@ -826,6 +862,16 @@ const Shortcuts = ({
         'popup_html_shortcuts_action_change_chain',
       );
     }
+    if (action === ShortcutActionType.TOGGLE_THEME) {
+      return chrome.i18n.getMessage(
+        'popup_html_shortcuts_action_toggle_theme',
+      );
+    }
+    if (action === ShortcutActionType.OPEN_IN_TAB) {
+      return chrome.i18n.getMessage(
+        'popup_html_shortcuts_action_open_in_tab',
+      );
+    }
     return chrome.i18n.getMessage('popup_html_shortcuts_action_navigate');
   };
 
@@ -861,6 +907,16 @@ const Shortcuts = ({
       return {
         firstLine: getShortcutActionLabel(shortcut.actionType),
         secondLine: getChainLabel(shortcut),
+      };
+    }
+
+    if (
+      shortcut.actionType === ShortcutActionType.TOGGLE_THEME ||
+      shortcut.actionType === ShortcutActionType.OPEN_IN_TAB
+    ) {
+      return {
+        firstLine: getShortcutActionLabel(shortcut.actionType),
+        secondLine: '',
       };
     }
 
@@ -985,7 +1041,7 @@ const Shortcuts = ({
               setSelectedItem={(option) => setTarget(option.value)}
               additionalClassname="shortcuts-account-selector"
             />
-          ) : (
+          ) : requiresTarget ? (
             <ComplexeCustomSelect
               label="popup_html_shortcuts_target"
               skipLabelTranslation={false}
@@ -996,7 +1052,7 @@ const Shortcuts = ({
                 actionType === ShortcutActionType.CHANGE_CHAIN
               }
             />
-          )}
+          ) : null}
           {requiresTransferChain && (
             <ComplexeCustomSelect
               label="popup_html_shortcut_transfer_chain_label"
@@ -1063,7 +1119,7 @@ const Shortcuts = ({
               dataTestId="shortcuts-save-button"
               label="popup_html_shortcuts_save_button"
               onClick={handleSave}
-              disabled={!combo || !target}
+              disabled={!combo || (requiresTarget && !target)}
             />
             <ButtonComponent
               dataTestId="shortcuts-cancel-button"

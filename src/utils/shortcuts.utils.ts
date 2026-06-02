@@ -1,4 +1,8 @@
-import { ShortcutAccountType } from '@interfaces/shortcut.interface';
+import {
+  ShortcutAccountType,
+  ShortcutActionType,
+  ShortcutDefinition,
+} from '@interfaces/shortcut.interface';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
@@ -73,7 +77,7 @@ const SHORTCUT_NAVIGATION_SCREEN_MESSAGE_KEYS = {
 } as Partial<Record<ShortcutNavigationScreen, string>>;
 
 const LEGACY_SHORTCUT_NAVIGATION_SCREEN_REMAP: Partial<
-  Record<ShortcutNavigationScreen, ShortcutNavigationScreen>
+  Record<string, ShortcutNavigationScreen>
 > = {
   [HiveScreen.SETTINGS_RPC_NODES]: MultichainScreen.SETTINGS_NETWORK,
   [HiveScreen.SETTINGS_USER_PREFERENCES]: MultichainScreen.SETTINGS_HIVE,
@@ -90,9 +94,7 @@ const LEGACY_SHORTCUT_NAVIGATION_SCREEN_REMAP: Partial<
 
 const normalizeShortcutNavigationTarget = (screen: string): string => {
   return (
-    LEGACY_SHORTCUT_NAVIGATION_SCREEN_REMAP[
-      screen as ShortcutNavigationScreen
-    ] ?? screen
+    LEGACY_SHORTCUT_NAVIGATION_SCREEN_REMAP[screen] ?? screen
   );
 };
 
@@ -319,6 +321,35 @@ const DELEGATION_REQUIRED_SCREENS: (MultichainScreen | HiveScreen)[] = [
   HiveScreen.TOKENS_DELEGATIONS,
 ];
 
+const DEFAULT_SHORTCUTS: ShortcutDefinition[] = [
+  {
+    id: 'preset-toggle-theme',
+    combo: 'ctrl+alt+t',
+    actionType: ShortcutActionType.TOGGLE_THEME,
+    target: '',
+  },
+  {
+    id: 'preset-open-in-tab',
+    combo: 'ctrl+d',
+    actionType: ShortcutActionType.OPEN_IN_TAB,
+    target: '',
+  },
+];
+
+const getShortcutsWithDefaultPresets = (
+  shortcuts: ShortcutDefinition[],
+): ShortcutDefinition[] => {
+  const presetsToAdd = DEFAULT_SHORTCUTS.filter((preset) => {
+    return !shortcuts.some(
+      (shortcut) =>
+        shortcut.actionType === preset.actionType ||
+        normalizeShortcutCombo(shortcut.combo) ===
+          normalizeShortcutCombo(preset.combo),
+    );
+  });
+  return [...shortcuts, ...presetsToAdd];
+};
+
 const formatScreenLabel = (
   screen: MultichainScreen | HiveScreen | EvmScreen,
 ) => {
@@ -389,6 +420,8 @@ const ShortcutsUtils = {
   CURRENCY_REQUIRED_SCREENS,
   TOKEN_REQUIRED_SCREENS,
   DELEGATION_REQUIRED_SCREENS,
+  DEFAULT_SHORTCUTS,
+  getShortcutsWithDefaultPresets,
   formatScreenLabel,
   getShortcutNavigationScreenMessageKey,
   createShortcutId,
@@ -406,6 +439,8 @@ export {
   createShortcutId,
   CURRENCY_REQUIRED_SCREENS,
   DELEGATION_REQUIRED_SCREENS,
+  DEFAULT_SHORTCUTS,
+  getShortcutsWithDefaultPresets,
   EVM_NAVIGATION_SCREENS,
   formatScreenLabel,
   formatShortcutCombo,

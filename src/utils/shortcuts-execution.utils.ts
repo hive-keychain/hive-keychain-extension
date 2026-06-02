@@ -24,6 +24,7 @@ import {
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { RootState, store } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
 import {
   ShortcutAccountType,
   ShortcutActionType,
@@ -41,6 +42,12 @@ import ShortcutsUtils from 'src/utils/shortcuts.utils';
 export interface ShortcutExecutionResult {
   deferred: boolean;
   targetChain?: Chain;
+}
+
+interface ShortcutExecutionOptions {
+  skipChainSwitch?: boolean;
+  toggleTheme?: () => void;
+  openKeychainInTab?: () => void;
 }
 
 const LAST_USED_EVM_CHAIN_TARGET = 'last_used_evm_chain';
@@ -367,8 +374,22 @@ export const isShortcutTargetChainReady = (
 
 export const executeShortcut = async (
   shortcut: ShortcutDefinition,
-  options: { skipChainSwitch?: boolean } = {},
+  options: ShortcutExecutionOptions = {},
 ): Promise<ShortcutExecutionResult> => {
+  if (shortcut.actionType === ShortcutActionType.TOGGLE_THEME) {
+    options.toggleTheme?.();
+    return { deferred: false };
+  }
+
+  if (shortcut.actionType === ShortcutActionType.OPEN_IN_TAB) {
+    if (options.openKeychainInTab) {
+      options.openKeychainInTab();
+    } else {
+      DetachedExtensionTabUtils.openDetachedExtensionTab();
+    }
+    return { deferred: false };
+  }
+
   const normalizedShortcut =
     shortcut.actionType === ShortcutActionType.NAVIGATE
       ? {

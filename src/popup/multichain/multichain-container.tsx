@@ -51,38 +51,22 @@ const MultichainContainer = ({
   const pendingShortcutRef = useRef<PendingShortcut | null>(null);
   const shouldPersistActiveChainRef = useRef(true);
 
-  const handleKeyPress = useCallback((event: KeyboardEvent) => {
-    // console.log({ event }, event.key, event.ctrlKey);
-
-    if (event.ctrlKey && event.altKey && event.code === 'KeyT') {
-      setTheme((previous) => {
-        return previous === Theme.LIGHT ? Theme.DARK : Theme.LIGHT;
-      });
-    }
-    if (event.key === 'd' && event.ctrlKey) {
-      handleDetachWindow();
-    }
-    if (event.ctrlKey && event.key === 'r') {
-      event.stopImmediatePropagation();
-      event.stopPropagation();
-      alert('refresh');
-    }
-  }, []);
-
-  useEffect(() => {
-    // remove the event listener
-    return () => {
-      document.removeEventListener('keydown', handleKeyPress);
-    };
-  }, [handleKeyPress]);
-
   const handleDetachWindow = useCallback(() => {
     DetachedExtensionTabUtils.openDetachedExtensionTab();
   }, []);
 
+  const toggleTheme = useCallback(() => {
+    setTheme((oldTheme) => {
+      return oldTheme === Theme.DARK ? Theme.LIGHT : Theme.DARK;
+    });
+  }, []);
+
   const executeRegisteredShortcut = useCallback(
     async (shortcut: ShortcutDefinition) => {
-      const result = await executeShortcut(shortcut);
+      const result = await executeShortcut(shortcut, {
+        toggleTheme,
+        openKeychainInTab: handleDetachWindow,
+      });
       if (result.deferred && result.targetChain) {
         pendingShortcutRef.current = {
           shortcut,
@@ -91,7 +75,7 @@ const MultichainContainer = ({
         };
       }
     },
-    [],
+    [handleDetachWindow, toggleTheme],
   );
 
   useEffect(() => {
@@ -163,6 +147,7 @@ const MultichainContainer = ({
           LocalStorageKeyEnum.ACTIVE_THEME,
           LocalStorageKeyEnum.ACTIVE_CHAIN,
           LocalStorageKeyEnum.SHORTCUTS,
+          LocalStorageKeyEnum.SHORTCUT_PRESETS_MIGRATED,
         ],
       );
       const tabOriginPromise = getActiveTabOrigin();
@@ -175,9 +160,24 @@ const MultichainContainer = ({
       setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
 
       const shortcutsValue = res[LocalStorageKeyEnum.SHORTCUTS];
-      shortcutsRef.current = Array.isArray(shortcutsValue)
-        ? shortcutsValue
-        : [];
+      const hasMigratedShortcutPresets =
+        res[LocalStorageKeyEnum.SHORTCUT_PRESETS_MIGRATED] === true;
+      shortcutsRef.current =
+        Array.isArray(shortcutsValue) && hasMigratedShortcutPresets
+          ? shortcutsValue
+          : Array.isArray(shortcutsValue)
+            ? ShortcutsUtils.getShortcutsWithDefaultPresets(shortcutsValue)
+            : ShortcutsUtils.DEFAULT_SHORTCUTS;
+      if (!hasMigratedShortcutPresets) {
+        LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.SHORTCUTS,
+          shortcutsRef.current,
+        );
+        LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.SHORTCUT_PRESETS_MIGRATED,
+          true,
+        );
+      }
       registerShortcuts(shortcutsRef.current);
       setHasHydratedSettings(true);
 
@@ -263,25 +263,11 @@ const MultichainContainer = ({
   }, [registerShortcuts, setChain]);
 
   useEffect(() => {
-    hotkeys('ctrl+alt+t', (event) => {
-      if (ShortcutsUtils.isEditableTarget(event.target)) return;
-      event.preventDefault();
-      setTheme((previous) => {
-        return previous === Theme.LIGHT ? Theme.DARK : Theme.LIGHT;
-      });
-    });
-    hotkeys('ctrl+d', (event) => {
-      if (ShortcutsUtils.isEditableTarget(event.target)) return;
-      event.preventDefault();
-      handleDetachWindow();
-    });
     return () => {
-      hotkeys.unbind('ctrl+alt+t');
-      hotkeys.unbind('ctrl+d');
       registeredCombosRef.current.forEach((combo) => hotkeys.unbind(combo));
       registeredCombosRef.current = [];
     };
-  }, [handleDetachWindow]);
+  }, []);
 
   useEffect(() => {
     const handleStorageChange = (
@@ -321,12 +307,6 @@ const MultichainContainer = ({
         theme,
       );
   }, [hasHydratedSettings, theme]);
-
-  const toggleTheme = () => {
-    setTheme((oldTheme) => {
-      return oldTheme === Theme.DARK ? Theme.LIGHT : Theme.DARK;
-    });
-  };
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>

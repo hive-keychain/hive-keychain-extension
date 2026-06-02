@@ -2086,6 +2086,14 @@
     "message": "Change chain",
     "description": "Shortcut action change chain"
   },
+  "popup_html_shortcuts_action_toggle_theme": {
+    "message": "Change theme",
+    "description": "Shortcut action change theme"
+  },
+  "popup_html_shortcuts_action_open_in_tab": {
+    "message": "Open Keychain in tab",
+    "description": "Shortcut action open Keychain in a browser tab"
+  },
   "popup_html_shortcut_transfer_chain_label": {
     "message": "Chain",
     "description": "Shortcuts form: transfer chain selector label"

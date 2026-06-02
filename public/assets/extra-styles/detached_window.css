@@ -1,86 +1,143 @@
-html,
-body {
-  display: flex;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
+html.detached-window-page,
+html.detached-window-page body {
+  display: flex !important;
+  width: 100vw;
+  min-width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden;
 }
-html {
+html.detached-window-page {
   background-image: url('assets/images/background/detached-popup-background.png');
   background-repeat: no-repeat;
   background-size: cover;
 }
-#root {
+html.detached-window-page #root {
+  display: flex !important;
+  width: 100vw;
+  min-width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden;
+  position: fixed;
+  inset: 0;
+}
+html.detached-window-page #root .theme {
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  width: 435px !important;
+  min-width: 435px !important;
+  max-width: 435px !important;
+  height: 600px !important;
+  min-height: 600px !important;
+  max-height: 600px !important;
+  color: var(--main-font-color);
+  padding: 0px !important;
+  box-sizing: border-box;
   display: flex;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-  .theme {
-    border: solid 1px var(--card-border-color);
-    border-radius: 8px;
-    width: 435px;
-    height: 600px;
-    color: var(--main-font-color);
-    padding: 0px !important;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    font-size: 16px;
-    position: relative;
-    .App {
-      margin-left: unset !important;
-      .splashscreen {
-        width: 435px !important;
-        height: 600px !important;
-        position: relative !important;
-        .loading-animation-container {
-          width: unset !important;
-        }
-        .overlay {
-          border: solid 1px grey !important;
-          border-radius: 8px !important;
-          width: 435px !important;
-          height: 600px !important;
-          .top {
-            position: relative !important;
-          }
-          .bottom {
-            top: 0px;
-            position: absolute;
-            left: 0px;
-          }
-        }
-      }
-      .home-page-content {
-        border-radius: 0 0 8px 8px !important;
-      }
-      .custom-select-handle {
-        height: unset !important;
-      }
-      /* common-styles */
-      .select-account-section {
-        margin: 0px !important;
-      }
-      .fullsize {
-        width: 100% !important;
-      }
-      .automated-tasks-page {
-        .select-account-section {
-          margin: 0px !important;
-          width: 100% !important;
-        }
-      }
-      .favorite-accounts-page,
-      .export-transactions-page,
-      .settings-manage-account,
-      .settings-manage-account-authorities {
-        .select-account-section {
-          margin: 0px 20px !important;
-          width: calc(100% - 40px) !important;
-        }
-      }
-    }
-  }
+  flex-direction: column;
+  font-size: 16px;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  overflow: hidden;
+}
+html.detached-window-page #root .theme .App {
+  width: 435px !important;
+  height: 600px !important;
+  margin-left: unset !important;
+}
+html.detached-window-page #root .theme .App .splashscreen {
+  width: 435px !important;
+  height: 600px !important;
+  position: relative !important;
+}
+html.detached-window-page #root .theme .App .splashscreen .loading-animation-container {
+  width: unset !important;
+}
+html.detached-window-page #root .theme .App .splashscreen .overlay {
+  border: solid 1px grey !important;
+  border-radius: 8px !important;
+  width: 435px !important;
+  height: 600px !important;
+}
+html.detached-window-page #root .theme .App .splashscreen .overlay .top {
+  position: relative !important;
+}
+html.detached-window-page #root .theme .App .splashscreen .overlay .bottom {
+  top: 0px;
+  position: absolute;
+  left: 0px;
+}
+html.detached-window-page #root .theme .App .home-page-content {
+  border-radius: 0 0 8px 8px !important;
+}
+html.detached-window-page #root .theme .App .custom-select-handle {
+  height: unset !important;
+}
+html.detached-window-page #root .theme .App .fullsize {
+  width: 100% !important;
+}
+html.detached-window-page #root .theme .App .automated-tasks-page .select-account-section {
+  margin: 0px !important;
+  width: 100% !important;
+}
+html.detached-window-page #root .theme .App .favorite-accounts-page .select-account-section,
+html.detached-window-page #root .theme .App .export-transactions-page .select-account-section,
+html.detached-window-page #root .theme .App .settings-manage-account .select-account-section,
+html.detached-window-page #root .theme .App .settings-manage-account-authorities .select-account-section {
+  margin: 0px 20px !important;
+  width: calc(100% - 40px) !important;
+}
+html.detached-window-page #root .theme .link-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+}
+html.detached-window-page #root .theme .account-selector-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 435px;
+  height: 600px;
+  transform: translate(-50%, -50%);
+}
+html.detached-window-page #root .theme .account-selector-overlay .account-selector-backdrop {
+  position: absolute;
+  inset: 0;
+}
+html.detached-window-page #root .theme .account-selector-overlay .account-selector-card {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: min(540px, 90%);
+  max-height: 540px;
+}
+html.detached-window-page #root .theme .hive-select-account-section.main-page .react-dropdown-select-dropdown {
+  max-width: 100%;
+  width: 100% !important;
+  min-width: calc(100% + 2px);
+}
+html.detached-window-page #root .theme .hive-select-account-section .react-dropdown-select-dropdown {
+  max-width: calc(100vw - 40px);
+  box-sizing: border-box;
+}
+html.detached-window-page #root .theme .hive-select-account-section .react-dropdown-select-dropdown .account-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @-moz-document url-prefix() {

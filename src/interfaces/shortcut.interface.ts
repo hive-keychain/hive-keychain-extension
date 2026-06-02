@@ -2,6 +2,8 @@ export enum ShortcutActionType {
   NAVIGATE = 'NAVIGATE',
   CHANGE_ACCOUNT = 'CHANGE_ACCOUNT',
   CHANGE_CHAIN = 'CHANGE_CHAIN',
+  TOGGLE_THEME = 'TOGGLE_THEME',
+  OPEN_IN_TAB = 'OPEN_IN_TAB',
 }
 
 export enum ShortcutAccountType {

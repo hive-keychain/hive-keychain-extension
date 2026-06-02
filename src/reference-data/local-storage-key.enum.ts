@@ -10,6 +10,7 @@ export enum LocalStorageKeyEnum {
   CLAIM_SAVINGS = 'claimSavings',
   AUTOLOCK = 'autolock',
   SHORTCUTS = 'shortcuts',
+  SHORTCUT_PRESETS_MIGRATED = 'shortcut_presets_migrated',
   NO_CONFIRM = 'no_confirm',
   WALLET_HISTORY_FILTERS = 'walletHistoryFilters',
   HIDDEN_TOKENS = 'hidden_tokens',

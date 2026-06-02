@@ -1525,6 +1525,14 @@
     "message": "Change account",
     "description": "Shortcut action change account"
   },
+  "popup_html_shortcuts_action_toggle_theme": {
+    "message": "Change theme",
+    "description": "Shortcut action change theme"
+  },
+  "popup_html_shortcuts_action_open_in_tab": {
+    "message": "Open Keychain in tab",
+    "description": "Shortcut action open Keychain in a browser tab"
+  },
   "popup_html_shortcuts_duplicate": {
     "message": "This shortcut is already assigned.",
     "description": "Duplicate shortcut error"

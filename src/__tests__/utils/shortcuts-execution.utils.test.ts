@@ -17,6 +17,7 @@ import {
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { store } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
 import { loadEvmActiveAccount } from 'src/popup/evm/actions/active-account.actions';
 import {
   executeShortcut,
@@ -61,6 +62,12 @@ jest.mock('@popup/multichain/utils/chain.utils', () => ({
     getAllSetupChainsForType: jest.fn(),
     getSetupChains: jest.fn(),
     getChain: jest.fn(),
+  },
+}));
+
+jest.mock('@popup/multichain/utils/detached-extension-tab.utils', () => ({
+  DetachedExtensionTabUtils: {
+    openDetachedExtensionTab: jest.fn(),
   },
 }));
 
@@ -300,5 +307,38 @@ describe('shortcuts-execution.utils', () => {
     expect(result).toEqual({ deferred: false });
     expect(setActiveAccountType).toHaveBeenCalledWith(ChainType.EVM);
     expect(setChain).toHaveBeenCalledWith(evmChain);
+  });
+
+  it('runs the provided theme callback for TOGGLE_THEME', async () => {
+    const toggleTheme = jest.fn();
+    const shortcut: ShortcutDefinition = {
+      id: 'theme',
+      combo: 'ctrl+alt+t',
+      actionType: ShortcutActionType.TOGGLE_THEME,
+      target: '',
+    };
+
+    const result = await executeShortcut(shortcut, { toggleTheme });
+
+    expect(result).toEqual({ deferred: false });
+    expect(toggleTheme).toHaveBeenCalledTimes(1);
+    expect(store.dispatch).not.toHaveBeenCalled();
+  });
+
+  it('opens Keychain in a detached tab for OPEN_IN_TAB', async () => {
+    const shortcut: ShortcutDefinition = {
+      id: 'open-tab',
+      combo: 'ctrl+d',
+      actionType: ShortcutActionType.OPEN_IN_TAB,
+      target: '',
+    };
+
+    const result = await executeShortcut(shortcut);
+
+    expect(result).toEqual({ deferred: false });
+    expect(
+      DetachedExtensionTabUtils.openDetachedExtensionTab,
+    ).toHaveBeenCalledTimes(1);
+    expect(store.dispatch).not.toHaveBeenCalled();
   });
 });

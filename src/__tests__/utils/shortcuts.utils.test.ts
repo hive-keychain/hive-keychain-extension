@@ -1,5 +1,8 @@
 import { Screen } from '@interfaces/screen.interface';
-import { ShortcutAccountType } from '@interfaces/shortcut.interface';
+import {
+  ShortcutAccountType,
+  ShortcutActionType,
+} from '@interfaces/shortcut.interface';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
@@ -115,6 +118,49 @@ describe('shortcuts.utils', () => {
       expect(ShortcutsUtils.TOKEN_REQUIRED_SCREENS).toContain(
         Screen.TOKENS_HISTORY,
       );
+    });
+
+    it('defines default presets for theme and detached tab shortcuts', () => {
+      expect(ShortcutsUtils.DEFAULT_SHORTCUTS).toEqual([
+        {
+          id: 'preset-toggle-theme',
+          combo: 'ctrl+alt+t',
+          actionType: ShortcutActionType.TOGGLE_THEME,
+          target: '',
+        },
+        {
+          id: 'preset-open-in-tab',
+          combo: 'ctrl+d',
+          actionType: ShortcutActionType.OPEN_IN_TAB,
+          target: '',
+        },
+      ]);
+    });
+
+    it('adds missing default presets without duplicating existing shortcuts', () => {
+      const shortcuts = ShortcutsUtils.getShortcutsWithDefaultPresets([
+        {
+          id: 'custom-theme',
+          combo: 'ctrl+shift+t',
+          actionType: ShortcutActionType.TOGGLE_THEME,
+          target: '',
+        },
+      ]);
+
+      expect(shortcuts).toEqual([
+        {
+          id: 'custom-theme',
+          combo: 'ctrl+shift+t',
+          actionType: ShortcutActionType.TOGGLE_THEME,
+          target: '',
+        },
+        {
+          id: 'preset-open-in-tab',
+          combo: 'ctrl+d',
+          actionType: ShortcutActionType.OPEN_IN_TAB,
+          target: '',
+        },
+      ]);
     });
 
     it('resolves an i18n message key for every shortcut navigation screen', () => {
