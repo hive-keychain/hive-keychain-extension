@@ -152,7 +152,6 @@ const SettingsHiveDappsPage = ({
   const [selectedAccountName, setSelectedAccountName] =
     useState(activeAccountName ?? accounts[0]?.name);
   const [noConfirm, setNoConfirm] = useState<NoConfirm>({});
-  const [expandedDomain, setExpandedDomain] = useState<string>();
 
   const accountOptions: HiveAccountOption[] = accounts.map((account) => ({
     label: account.name,
@@ -166,10 +165,6 @@ const SettingsHiveDappsPage = ({
   useEffect(() => {
     init();
   }, []);
-
-  useEffect(() => {
-    setExpandedDomain(undefined);
-  }, [selectedAccountName]);
 
   useEffect(() => {
     if (!selectedAccountName && activeAccountName) {
@@ -223,12 +218,6 @@ const SettingsHiveDappsPage = ({
     );
   };
 
-  const toggleExpandedDomain = (domain: string) => {
-    setExpandedDomain((currentDomain) =>
-      currentDomain === domain ? undefined : domain,
-    );
-  };
-
   const connections = getHiveAccountDappConnections(
     noConfirm,
     selectedAccountName,
@@ -254,17 +243,10 @@ const SettingsHiveDappsPage = ({
           <div className="settings-hive-dapps-list">
             {connections.map((connection) => (
               <div
-                className={`settings-hive-dapps-site ${
-                  expandedDomain === connection.domain ? 'expanded' : ''
-                }`}
+                className="settings-hive-dapps-site"
                 data-testid="hive-dapps-connection"
                 key={connection.domain}>
-                <button
-                  type="button"
-                  className="settings-hive-dapps-site-header"
-                  data-testid="hive-dapps-connection-toggle"
-                  aria-expanded={expandedDomain === connection.domain}
-                  onClick={() => toggleExpandedDomain(connection.domain)}>
+                <div className="settings-hive-dapps-site-header">
                   <div className="settings-hive-dapps-site-identity">
                     <img
                       className="settings-hive-dapps-favicon"
@@ -278,45 +260,35 @@ const SettingsHiveDappsPage = ({
                       {connection.domain}
                     </div>
                   </div>
-                  <SVGIcon
-                    icon={
-                      expandedDomain === connection.domain
-                        ? SVGIcons.SELECT_ARROW_UP
-                        : SVGIcons.SELECT_ARROW_DOWN
-                    }
-                    className="settings-hive-dapps-expand-icon"
-                  />
-                </button>
-                {expandedDomain === connection.domain && (
-                  <div className="settings-hive-dapps-permissions">
-                    <div className="settings-hive-dapps-tags">
-                      {connection.operations.map((operation) => (
-                        <button
-                          key={`${connection.domain}-${operation}`}
-                          type="button"
-                          className="settings-hive-dapps-tag"
-                          data-testid="hive-whitelisted-operation-tag"
-                          onClick={() =>
-                            removeOperation(connection.domain, operation)
-                          }>
-                          <span>{getReadableOperation(operation)}</span>
-                          <SVGIcon icon={SVGIcons.GLOBAL_ERROR} />
-                        </button>
-                      ))}
-                    </div>
-                    <button
-                      type="button"
-                      className="settings-hive-dapps-remove-domain"
-                      data-testid="hive-dapps-remove-domain"
-                      title={removeAllLabel}
-                      aria-label={removeAllLabel}
-                      onClick={() =>
-                        removeDomainPermissions(connection.domain)
-                      }>
-                      <SVGIcon icon={SVGIcons.GLOBAL_ERROR} />
-                    </button>
+                  <button
+                    type="button"
+                    className="settings-hive-dapps-remove-domain"
+                    data-testid="hive-dapps-remove-domain"
+                    title={removeAllLabel}
+                    aria-label={removeAllLabel}
+                    onClick={() =>
+                      removeDomainPermissions(connection.domain)
+                    }>
+                    <SVGIcon icon={SVGIcons.GLOBAL_DELETE} />
+                  </button>
+                </div>
+                <div className="settings-hive-dapps-permissions">
+                  <div className="settings-hive-dapps-tags">
+                    {connection.operations.map((operation) => (
+                      <button
+                        key={`${connection.domain}-${operation}`}
+                        type="button"
+                        className="settings-hive-dapps-tag"
+                        data-testid="hive-whitelisted-operation-tag"
+                        onClick={() =>
+                          removeOperation(connection.domain, operation)
+                        }>
+                        <span>{getReadableOperation(operation)}</span>
+                        <SVGIcon icon={SVGIcons.GLOBAL_DELETE} />
+                      </button>
+                    ))}
                   </div>
-                )}
+                </div>
               </div>
             ))}
           </div>

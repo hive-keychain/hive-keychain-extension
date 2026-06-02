@@ -103,17 +103,6 @@ const getDappConnection = (domain: string) => {
   return connection as HTMLElement;
 };
 
-const expandDappConnection = async (
-  user: ReturnType<typeof userEvent.setup>,
-  domain: string,
-) => {
-  const connection = getDappConnection(domain);
-  await user.click(
-    within(connection).getByTestId('hive-dapps-connection-toggle'),
-  );
-  return connection;
-};
-
 describe('settings-connected-dapps Hive whitelist tests:\n', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -236,8 +225,7 @@ describe('settings-connected-dapps Hive whitelist tests:\n', () => {
     });
   });
 
-  it('renders expandable dapp rows for the selected account', async () => {
-    const user = userEvent.setup();
+  it('renders dapp rows with visible operations for the selected account', async () => {
     renderWithNoConfirm({
       'keychain.tests': {
         'splinterlands.com': {
@@ -265,15 +253,11 @@ describe('settings-connected-dapps Hive whitelist tests:\n', () => {
       'src',
       getHiveDappFaviconUrl('splinterlands.com'),
     );
-
     expect(
-      screen.queryByTestId('hive-whitelisted-operation-tag'),
+      screen.queryByTestId('hive-dapps-connection-toggle'),
     ).not.toBeInTheDocument();
 
-    const splinterlandsConnection = await expandDappConnection(
-      user,
-      'splinterlands.com',
-    );
+    const splinterlandsConnection = getDappConnection('splinterlands.com');
 
     expect(
       within(splinterlandsConnection)
@@ -299,10 +283,7 @@ describe('settings-connected-dapps Hive whitelist tests:\n', () => {
     } as NoConfirm);
 
     await screen.findByText('splinterlands.com');
-    const splinterlandsConnection = await expandDappConnection(
-      user,
-      'splinterlands.com',
-    );
+    const splinterlandsConnection = getDappConnection('splinterlands.com');
 
     await act(async () => {
       await user.click(
@@ -360,10 +341,7 @@ describe('settings-connected-dapps Hive whitelist tests:\n', () => {
     } as NoConfirm);
 
     await screen.findByText('splinterlands.com');
-    const splinterlandsConnection = await expandDappConnection(
-      user,
-      'splinterlands.com',
-    );
+    const splinterlandsConnection = getDappConnection('splinterlands.com');
 
     await act(async () => {
       await user.click(
@@ -400,10 +378,7 @@ describe('settings-connected-dapps Hive whitelist tests:\n', () => {
     } as NoConfirm);
 
     await screen.findByText('splinterlands.com');
-    const splinterlandsConnection = await expandDappConnection(
-      user,
-      'splinterlands.com',
-    );
+    const splinterlandsConnection = getDappConnection('splinterlands.com');
 
     await act(async () => {
       await user.click(

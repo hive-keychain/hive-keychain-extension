@@ -88,8 +88,10 @@
       border-bottom: 0;
     }
 
-    &.expanded {
-      padding-bottom: 12px;
+    &:hover {
+      .settings-hive-dapps-remove-domain {
+        opacity: 1;
+      }
     }
   }
 
@@ -102,7 +104,6 @@
   .settings-hive-dapps-site-header {
     background: transparent;
     border: none;
-    cursor: pointer;
     justify-content: space-between;
     gap: 12px;
     min-height: 32px;
@@ -132,14 +133,6 @@
     width: 28px;
   }
 
-  .settings-hive-dapps-expand-icon {
-    flex-shrink: 0;
-
-    .svg-icon {
-      @include icon-size(12px);
-    }
-  }
-
   .settings-hive-dapps-permissions {
     align-items: flex-start;
     display: flex;
@@ -157,11 +150,17 @@
     flex-shrink: 0;
     justify-content: center;
     min-height: 28px;
+    opacity: 0;
     padding: 0;
+    transition: opacity 0.15s ease;
     width: 28px;
 
     .svg-icon {
-      @include icon-size(16px);
+      @include icon-size(18px);
+    }
+
+    &:focus-visible {
+      opacity: 1;
     }
   }
 
@@ -187,6 +186,13 @@
 
     .svg-icon {
       @include icon-size(12px);
+      opacity: 0;
+    }
+
+    &:hover {
+      .svg-icon {
+        opacity: 1;
+      }
     }
   }
 }

@@ -275,9 +275,7 @@ const RpcNodes = ({
       </div>
 
       <div className="rpc-form-container">
-        <div
-          className="rpc-section hive-rpc"
-          data-testid="section-hive-rpc">
+        <div className="rpc-section hive-rpc" data-testid="section-hive-rpc">
           <div className="title">Hive RPC</div>
           <CheckboxPanelComponent
             dataTestId="checkbox-rpc-nodes-automatic-mode"
@@ -362,7 +360,7 @@ const RpcNodes = ({
               <ButtonComponent
                 dataTestId="button-save"
                 label="popup_html_save"
-                type={ButtonType.ALTERNATIVE}
+                type={ButtonType.IMPORTANT}
                 height="small"
                 additionalClass="save-rpc-button"
                 onClick={() => saveNewHiveRpc()}
