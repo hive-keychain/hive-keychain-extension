@@ -20,10 +20,12 @@ const AccountAuthoritiesList = ({ managedAccount }: Props) => {
             <AccountAuthoritiesListItemComponent
               role={'active'}
               authority={managedAccount.account.active}
+              managedAccount={managedAccount}
             />
             <AccountAuthoritiesListItemComponent
               role={'posting'}
               authority={managedAccount.account.posting}
+              managedAccount={managedAccount}
             />
           </div>
         ) : (

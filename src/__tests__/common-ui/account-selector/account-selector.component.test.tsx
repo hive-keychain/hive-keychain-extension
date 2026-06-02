@@ -876,6 +876,61 @@ describe('AccountSelectorComponent', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('sets Hive as active account type before switching chain from EVM to Hive', async () => {
+    const observedTypesBeforeChainSwitch: ChainType[] = [];
+    jest.spyOn(ChainUtils, 'getAllSetupChainsForType').mockImplementation(
+      async (type) => {
+        if (type === ChainType.HIVE) {
+          return [
+            {
+              ...hiveChain,
+              chainId:
+                'beeab0de11111111111111111111111111111111111111111111111111111111',
+            },
+          ];
+        }
+        if (type === ChainType.EVM) {
+          return [evmChain, polygonChain, evmTestnetChain, ...additionalEvmChains];
+        }
+        return [];
+      },
+    );
+
+    const { store } = customRender(
+      <AccountSelectorComponent selectedAccountType={ChainType.EVM} />,
+      {
+        initialState: buildState(
+          [localAccounts.user1, localAccounts.user2],
+          mkData.user.one,
+          evmChain,
+          ChainType.EVM,
+        ),
+      },
+    );
+
+    store.subscribe(() => {
+      const state = store.getState();
+      if (state.chain.type === ChainType.EVM) {
+        observedTypesBeforeChainSwitch.push(state.activeAccountType);
+      }
+    });
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+    await userEvent.click(
+      screen.getByTestId(
+        `account-selector-hive-account-${userData.two.username}`,
+      ),
+    );
+
+    await waitFor(() => {
+      expect(store.getState().chain.type).toBe(ChainType.HIVE);
+    });
+    expect(observedTypesBeforeChainSwitch).toContain(ChainType.HIVE);
+    expect(store.getState().hive.activeAccount.name).toBe(
+      userData.two.username,
+    );
+  });
+
   it('switches chain and EVM account when clicking an EVM account from Hive chain', async () => {
     mockLoadEvmActiveAccount.mockClear();
     const { store } = customRender(

@@ -18,6 +18,7 @@ type HiveAccountOption = OptionItem & {
 
 const ManageAccountAuthorities = ({
   accounts,
+  activeAccount,
   activeAccountName,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
@@ -70,6 +71,15 @@ const ManageAccountAuthorities = ({
       return;
     }
 
+    if (
+      selectedAccountName === activeAccount.name &&
+      activeAccount.account?.name === selectedAccountName
+    ) {
+      setManagedAccount(activeAccount);
+      setIsLoadingManagedAccount(false);
+      return;
+    }
+
     let cancelled = false;
 
     const loadManagedAccount = async () => {
@@ -111,7 +121,7 @@ const ManageAccountAuthorities = ({
     return () => {
       cancelled = true;
     };
-  }, [accounts, selectedAccountName]);
+  }, [accounts, activeAccount, selectedAccountName]);
 
   return (
     <div
@@ -145,6 +155,7 @@ const ManageAccountAuthorities = ({
 const mapStateToProps = (state: RootState) => {
   return {
     accounts: state.hive.accounts,
+    activeAccount: state.hive.activeAccount,
     activeAccountName: state.hive.activeAccount.name,
   };
 };

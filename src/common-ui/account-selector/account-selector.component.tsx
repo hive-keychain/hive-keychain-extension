@@ -46,6 +46,7 @@ import {
   COPY_GENERIC_MESSAGE_KEY,
   copyTextWithToast,
 } from 'src/common-ui/toast/copy-toast.utils';
+import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { MANAGE_ACCOUNT_SELECTED_NAME_PARAM } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/manage-account-selection.utils';
 import {
@@ -148,6 +149,7 @@ const AccountSelector = ({
   background,
   removeBorder,
   hiveAccounts,
+  activeHiveAccount,
   activeHiveAccountName,
   evmAccounts,
   activeEvmAccountAddress,
@@ -432,11 +434,16 @@ const AccountSelector = ({
       if (!targetChain) {
         return;
       }
+      const isSelectedHiveAccountLoaded =
+        activeHiveAccountName === item.account.name &&
+        activeHiveAccount.account?.name === item.account.name;
+      if (!isSelectedHiveAccountLoaded) {
+        await loadActiveAccount(item.account);
+      }
+      setActiveAccountType(ChainType.HIVE);
       if (!isSameChain(chain, targetChain)) {
         await setChain(targetChain);
       }
-      setActiveAccountType(ChainType.HIVE);
-      loadActiveAccount(item.account);
       setIsOpened(false);
       return;
     }
@@ -945,6 +952,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     mk: state.mk,
     hiveAccounts: state.hive.accounts,
+    activeHiveAccount: state.hive.activeAccount as ActiveAccount,
     activeHiveAccountName: state.hive.activeAccount.name,
     evmAccounts: state.evm.accounts.filter((account) => !account.hide),
     activeEvmAccountAddress,
