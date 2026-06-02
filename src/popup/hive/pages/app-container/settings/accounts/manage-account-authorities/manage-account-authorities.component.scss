@@ -4,9 +4,14 @@
   justify-content: flex-start;
   overflow-y: auto;
   padding: 0 24px;
+  padding-bottom: 16px;
 
   .text {
     @include settings-page-note();
+    margin: 0;
+  }
+
+  .hive-select-account-section.fullsize {
     margin: 0;
   }
 }

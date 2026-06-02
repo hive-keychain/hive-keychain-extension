@@ -18,7 +18,6 @@ import React, { useEffect, useState } from 'react';
 import { SelectItemRenderer, SelectRenderer } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
-import { CustomSelectItemComponent } from 'src/common-ui/custom-select/custom-select-item.component';
 import {
   ComplexeCustomSelect,
   OptionItem,
@@ -58,9 +57,6 @@ const AutomatedTasks = ({
   const [selectedLocalAccount, setSelectedLocalAccount] = useState(
     accounts[0].name,
   );
-  const [isHiveSectionExpanded, setIsHiveSectionExpanded] = useState(true);
-  const [isHiveEngineSectionExpanded, setIsHiveEngineSectionExpanded] =
-    useState(false);
   const [userTokenOptionList, setUserTokenOptionList] =
     useState<OptionItem[]>();
   const [selectedUserTokenOption, setSelectedUserTokenOption] =
@@ -291,9 +287,7 @@ const AutomatedTasks = ({
       <SelectAccountSectionComponent fullSize background="white" />
 
       <div className="section">
-        <div
-          className="section-expander"
-          onClick={() => setIsHiveSectionExpanded(!isHiveSectionExpanded)}>
+        <div className="section-header">
           <div className="section-title-logo">
             <div className="section-title">
               {chrome.i18n.getMessage(
@@ -301,67 +295,53 @@ const AutomatedTasks = ({
               )}
             </div>
           </div>
-          <SVGIcon
-            className="custom-select-handle"
-            icon={
-              isHiveSectionExpanded
-                ? SVGIcons.SELECT_ARROW_UP
-                : SVGIcons.SELECT_ARROW_DOWN
+        </div>
+        <div className="tasks">
+          <CheckboxPanelComponent
+            dataTestId="checkbox-autoclaim-rewards"
+            title="popup_html_enable_autoclaim_rewards"
+            checked={claimRewards}
+            onChange={(value) =>
+              saveClaims(value, claimAccounts, claimSavings)
             }
+            hint="popup_html_enable_autoclaim_rewards_info"
+            tooltipMessage={claimRewardsErrorMessage}
+            disabled={!!claimRewardsErrorMessage}
+          />
+          <CheckboxPanelComponent
+            dataTestId="checkbox-autoclaim-accounts"
+            title="popup_html_enable_autoclaim_accounts"
+            checked={claimAccounts && !isClaimedAccountDisabled}
+            onChange={(value) =>
+              saveClaims(claimRewards, value, claimSavings)
+            }
+            skipHintTranslation
+            hint={chrome.i18n.getMessage(
+              'popup_html_enable_autoclaim_accounts_info',
+              [Config.claims.freeAccount.MIN_RC_PCT + ''],
+            )}
+            tooltipMessage={
+              claimAccountErrorMessage || isClaimedAccountDisabled
+                ? 'popup_html_insufficient_hp_claim_accounts'
+                : undefined
+            }
+            disabled={!!claimSavingsErrorMessage || isClaimedAccountDisabled}
+          />
+          <CheckboxPanelComponent
+            dataTestId="checkbox-autoclaim-savings"
+            title="popup_html_enable_autoclaim_savings"
+            checked={claimSavings}
+            onChange={(value) =>
+              saveClaims(claimRewards, claimAccounts, value)
+            }
+            hint="popup_html_enable_autoclaim_savings_info"
+            tooltipMessage={claimSavingsErrorMessage}
+            disabled={!!claimSavingsErrorMessage}
           />
         </div>
-        {isHiveSectionExpanded && (
-          <div className="tasks">
-            <CheckboxPanelComponent
-              dataTestId="checkbox-autoclaim-rewards"
-              title="popup_html_enable_autoclaim_rewards"
-              checked={claimRewards}
-              onChange={(value) =>
-                saveClaims(value, claimAccounts, claimSavings)
-              }
-              hint="popup_html_enable_autoclaim_rewards_info"
-              tooltipMessage={claimRewardsErrorMessage}
-              disabled={!!claimRewardsErrorMessage}
-            />
-            <CheckboxPanelComponent
-              dataTestId="checkbox-autoclaim-accounts"
-              title="popup_html_enable_autoclaim_accounts"
-              checked={claimAccounts && !isClaimedAccountDisabled}
-              onChange={(value) =>
-                saveClaims(claimRewards, value, claimSavings)
-              }
-              skipHintTranslation
-              hint={chrome.i18n.getMessage(
-                'popup_html_enable_autoclaim_accounts_info',
-                [Config.claims.freeAccount.MIN_RC_PCT + ''],
-              )}
-              tooltipMessage={
-                claimAccountErrorMessage || isClaimedAccountDisabled
-                  ? 'popup_html_insufficient_hp_claim_accounts'
-                  : undefined
-              }
-              disabled={!!claimSavingsErrorMessage || isClaimedAccountDisabled}
-            />
-            <CheckboxPanelComponent
-              dataTestId="checkbox-autoclaim-savings"
-              title="popup_html_enable_autoclaim_savings"
-              checked={claimSavings}
-              onChange={(value) =>
-                saveClaims(claimRewards, claimAccounts, value)
-              }
-              hint="popup_html_enable_autoclaim_savings_info"
-              tooltipMessage={claimSavingsErrorMessage}
-              disabled={!!claimSavingsErrorMessage}
-            />
-          </div>
-        )}
       </div>
       <div className="section">
-        <div
-          className="section-expander"
-          onClick={() =>
-            setIsHiveEngineSectionExpanded(!isHiveEngineSectionExpanded)
-          }>
+        <div className="section-header">
           <div className="section-title-logo">
             <div className="section-title">
               {chrome.i18n.getMessage(
@@ -374,67 +354,65 @@ const AutomatedTasks = ({
               </div>
             )}
           </div>
-          <SVGIcon
-            className="custom-select-handle"
-            icon={
-              isHiveEngineSectionExpanded
-                ? SVGIcons.SELECT_ARROW_UP
-                : SVGIcons.SELECT_ARROW_DOWN
-            }
-          />
         </div>
-        {isHiveEngineSectionExpanded && (
-          <div className="tasks">
-            <CheckboxPanelComponent
-              dataTestId="checkbox-autostake-tokens"
-              title="popup_html_enable_autostake_tokens"
-              checked={enabledAutoStake}
-              onChange={handleSetAutoStake}
-              hint="popup_html_enable_autostake_tokens_info"
-            />
-            {selectedUserTokenOption &&
-              userTokenOptionList?.length &&
-              enabledAutoStake && (
-                <ComplexeCustomSelect
-                  selectedItem={selectedUserTokenOption}
-                  options={userTokenOptionList.filter(
-                    (u) =>
-                      !autoStakeTokenList.find(
-                        (a) => a.value.symbol === u.value.symbol,
-                      ),
-                  )}
-                  setSelectedItem={handleSetSelectedToken}
-                  label="tokens"
-                  filterable
-                  rightActionIcon
-                  rightActionClicked={() => {}}
-                />
-              )}
-            {autoStakeTokenList.length > 0 && enabledAutoStake && (
-              <>
-                <div className="intro title-list">
-                  {chrome.i18n.getMessage(
-                    'popup_html_automated_hive_engine_list_title',
-                  )}
-                </div>
-                <div className="auto-stake-token-list">
-                  {autoStakeTokenList.map((o, index) => (
-                    <CustomSelectItemComponent
-                      key={`option-${o.label}`}
-                      isLast={true}
-                      item={o}
-                      isSelected={false}
-                      handleItemClicked={() => {}}
-                      closeDropdown={() => {}}
-                      onDelete={() => handleRemoveItem(o)}
-                      canDelete={true}
-                    />
-                  ))}
-                </div>
-              </>
+        <div className="tasks">
+          <CheckboxPanelComponent
+            dataTestId="checkbox-autostake-tokens"
+            title="popup_html_enable_autostake_tokens"
+            checked={enabledAutoStake}
+            onChange={handleSetAutoStake}
+            hint="popup_html_enable_autostake_tokens_info"
+          />
+          {selectedUserTokenOption &&
+            userTokenOptionList?.length &&
+            enabledAutoStake && (
+              <ComplexeCustomSelect
+                selectedItem={selectedUserTokenOption}
+                options={userTokenOptionList.filter(
+                  (u) =>
+                    !autoStakeTokenList.find(
+                      (a) => a.value.symbol === u.value.symbol,
+                    ),
+                )}
+                setSelectedItem={handleSetSelectedToken}
+                label="tokens"
+                filterable
+                rightActionIcon
+                rightActionClicked={() => {}}
+              />
             )}
-          </div>
-        )}
+          {autoStakeTokenList.length > 0 && enabledAutoStake && (
+            <>
+              <div className="intro title-list">
+                {chrome.i18n.getMessage(
+                  'popup_html_automated_hive_engine_list_title',
+                )}
+              </div>
+              <div className="auto-stake-token-list">
+                {autoStakeTokenList.map((o, index) => (
+                  <button
+                    type="button"
+                    key={`option-${o.label}`}
+                    className="auto-stake-token-tag"
+                    onClick={() => handleRemoveItem(o)}>
+                    {o.img && (
+                      <img
+                        className="token-img"
+                        src={o.img}
+                        onError={(e: any) => {
+                          e.target.onError = null;
+                          e.target.src = o.imgBackup;
+                        }}
+                      />
+                    )}
+                    <span className="token-label">{o.label}</span>
+                    <SVGIcon icon={SVGIcons.SELECT_DELETE} />
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

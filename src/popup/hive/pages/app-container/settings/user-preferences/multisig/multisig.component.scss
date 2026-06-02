@@ -5,7 +5,16 @@
   row-gap: 10px;
   padding: 0px 24px;
   padding-bottom: 16px;
+
   .intro {
     @include settings-page-note();
+  }
+
+  .hive-select-account-section.fullsize {
+    margin: 0;
+  }
+
+  .checkbox-panel {
+    border-radius: 18px;
   }
 }

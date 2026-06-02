@@ -27,7 +27,6 @@ export const SettingsHiveMenuItems: MenuItem[] = [
     label: 'html_popup_settings_notifications',
     icon: SVGIcons.MENU_USER_PREFERENCES_NOTIFICATIONS,
     nextScreen: Screen.SETTINGS_NOTIFICATIONS_CONFIGURATION,
-    experimental: true,
   },
   {
     label: 'popup_html_governance',

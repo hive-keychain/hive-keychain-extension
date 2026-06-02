@@ -40,6 +40,10 @@ const AccountAuthoritiesListItem = ({
   removeFromLoadingList,
   goBack,
 }: PropsType) => {
+  const removeAuthorityLabel = chrome.i18n.getMessage(
+    'popup_html_remove_account_authority',
+  );
+
   const goTo = (accountName: string) => {
     window.open(`https://hive.blog/@${accountName}`);
   };
@@ -106,22 +110,23 @@ const AccountAuthoritiesListItem = ({
   };
 
   return authority.account_auths.length > 0 ? (
-    <div className="account-authorities-list-item">
-      <div className="top-panel">
-        <div className="key-name">
-          <div className="name">
+    <div className="account-authorities-list-item settings-hive-dapps-site">
+      <div className="settings-hive-dapps-site-header">
+        <div className="settings-hive-dapps-site-identity">
+          <div className="settings-hive-dapps-site-title">
             {chrome.i18n.getMessage(`popup_html_authority_${role}`)}
           </div>
         </div>
       </div>
-      <div className="keys-panel">
-        <div className="account-auths-list">
+      <div className="settings-hive-dapps-permissions account-authorities-tags-panel">
+        <div className="settings-hive-dapps-tags">
           {authority.account_auths.map((accountAuth, index) => {
             return (
               <div
-                className="item"
+                className="settings-hive-dapps-tag account-authority-tag"
                 key={`account-auth-item-${accountAuth[0]}-${index}`}>
-                <div
+                <button
+                  type="button"
                   className="item-account"
                   onClick={() => goTo(accountAuth[0])}>
                   <img
@@ -133,12 +138,15 @@ const AccountAuthoritiesListItem = ({
                     }}
                   />
                   <div className="account-name">{accountAuth[0]}</div>
-                </div>
-                <SVGIcon
+                </button>
+                <button
+                  type="button"
                   className="delete-button"
-                  icon={SVGIcons.GLOBAL_DELETE}
-                  onClick={() => handleClickOnRemoveAccountAuth(accountAuth[0])}
-                />
+                  title={removeAuthorityLabel}
+                  aria-label={removeAuthorityLabel}
+                  onClick={() => handleClickOnRemoveAccountAuth(accountAuth[0])}>
+                  <SVGIcon icon={SVGIcons.GLOBAL_DELETE} />
+                </button>
               </div>
             );
           })}

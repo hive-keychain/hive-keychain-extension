@@ -9,4 +9,13 @@ describe('settings-hive-menu-items tests:\n', () => {
       ),
     ).toBe(false);
   });
+
+  it('does not mark notifications as experimental', () => {
+    expect(
+      SettingsHiveMenuItems.find(
+        (item) =>
+          item.nextScreen === Screen.SETTINGS_NOTIFICATIONS_CONFIGURATION,
+      )?.experimental,
+    ).toBeUndefined();
+  });
 });
