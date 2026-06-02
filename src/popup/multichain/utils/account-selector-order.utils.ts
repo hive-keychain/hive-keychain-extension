@@ -38,6 +38,26 @@ const isEvmOrderRef = (
 ): ref is Extract<AccountSelectorOrderRef, { type: 'evm' }> =>
   ref.type === 'evm';
 
+const getEvmOrderRefs = (refs: AccountSelectorOrderRef[]) =>
+  refs.filter(isEvmOrderRef);
+
+const areEvmOrderRefsEqual = (
+  left: AccountSelectorOrderRef[],
+  right: AccountSelectorOrderRef[],
+) => {
+  const leftEvmRefs = getEvmOrderRefs(left);
+  const rightEvmRefs = getEvmOrderRefs(right);
+
+  return (
+    leftEvmRefs.length === rightEvmRefs.length &&
+    leftEvmRefs.every(
+      (ref, index) =>
+        ref.seedId === rightEvmRefs[index].seedId &&
+        ref.accountId === rightEvmRefs[index].accountId,
+    )
+  );
+};
+
 const isStoredDisplayOrderPayload = (
   value: unknown,
 ): value is AccountSelectorDisplayOrderPayload =>
@@ -399,6 +419,8 @@ const AccountSelectorOrderUtils = {
   toOrderRef,
   toOrderRefs,
   loadOrderedListItems,
+  isEvmOrderRef,
+  areEvmOrderRefsEqual,
 };
 
 export default AccountSelectorOrderUtils;

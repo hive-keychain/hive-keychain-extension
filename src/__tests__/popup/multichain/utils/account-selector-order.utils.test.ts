@@ -29,6 +29,31 @@ describe('account-selector-order.utils', () => {
     jest.restoreAllMocks();
   });
 
+  it('areEvmOrderRefsEqual compares only evm refs in order', () => {
+    const left: AccountSelectorOrderRef[] = [
+      { type: 'hive', name: 'alice' },
+      { type: 'evm', seedId: 1, accountId: 0 },
+      { type: 'evm', seedId: 1, accountId: 1 },
+    ];
+    const rightWithHiveMoved: AccountSelectorOrderRef[] = [
+      { type: 'hive', name: 'bob' },
+      { type: 'evm', seedId: 1, accountId: 0 },
+      { type: 'evm', seedId: 1, accountId: 1 },
+    ];
+    const rightWithEvmMoved: AccountSelectorOrderRef[] = [
+      { type: 'hive', name: 'alice' },
+      { type: 'evm', seedId: 1, accountId: 1 },
+      { type: 'evm', seedId: 1, accountId: 0 },
+    ];
+
+    expect(
+      AccountSelectorOrderUtils.areEvmOrderRefsEqual(left, rightWithHiveMoved),
+    ).toBe(true);
+    expect(
+      AccountSelectorOrderUtils.areEvmOrderRefsEqual(left, rightWithEvmMoved),
+    ).toBe(false);
+  });
+
   it('buildDefaultDisplayOrder places hive accounts before visible evm accounts', () => {
     const hive = [accounts.local.justTwoKeys];
     const evmVisible = [

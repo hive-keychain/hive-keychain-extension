@@ -88,6 +88,15 @@ jest.mock('react-beautiful-dnd', () => ({
           }),
         type: 'button',
       }),
+      React.createElement('button', {
+        'data-testid': 'account-selector-mock-drag-hive-swap',
+        onClick: () =>
+          onDragEnd({
+            destination: { index: 1 },
+            source: { index: 0 },
+          }),
+        type: 'button',
+      }),
     );
   },
   Droppable: ({ children }: any) =>
@@ -243,7 +252,12 @@ const getAccountSelectorRowTestIds = () =>
     .map((element) => element.getAttribute('data-testid'));
 
 describe('AccountSelectorComponent', () => {
+  let promoteConnectedWalletAddressSpy: jest.SpyInstance;
+
   beforeEach(() => {
+    promoteConnectedWalletAddressSpy = jest
+      .spyOn(EvmWalletUtils, 'promoteConnectedWalletAddress')
+      .mockResolvedValue(undefined);
     jest.spyOn(AccountSelectorOrderUtils, 'loadOrderedListItems').mockImplementation(
       async (_mk, hiveAccounts, evmVisibleAccounts) => {
         const displayOrder = AccountSelectorOrderUtils.buildDefaultDisplayOrder(
@@ -885,6 +899,9 @@ describe('AccountSelectorComponent', () => {
         address: secondEvmAddress,
       }),
     );
+    expect(promoteConnectedWalletAddressSpy).toHaveBeenCalledWith(
+      secondEvmAddress,
+    );
     expect(store.getState().activeAccountType).toBe(ChainType.EVM);
     expect(
       screen.queryByTestId('account-selector-backdrop'),
@@ -1068,6 +1085,41 @@ describe('AccountSelectorComponent', () => {
         `account-selector-hive-account-${userData.two.username}`,
         `account-selector-evm-account-${firstEvmAddress}`,
       ]);
+      expect(promoteConnectedWalletAddressSpy).toHaveBeenCalledWith(
+        firstEvmAddress,
+      );
+    });
+  });
+
+  it('does not promote connected wallet address when only Hive order changes', async () => {
+    const initialState = buildState();
+    jest
+      .spyOn(AccountSelectorOrderUtils, 'applyDisplayOrder')
+      .mockResolvedValue({
+        displayOrder: [
+          { type: 'hive', name: userData.two.username },
+          { type: 'hive', name: userData.one.username },
+          { type: 'evm', seedId: 1, accountId: 0 },
+          { type: 'evm', seedId: 1, accountId: 1 },
+        ],
+        hiveAccounts: [
+          localAccounts.user2,
+          localAccounts.user1,
+        ],
+        evmAccounts: initialState.evm.accounts.filter((account) => !account.hide),
+      });
+
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
+      initialState,
+    });
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+    await userEvent.click(
+      screen.getByTestId('account-selector-mock-drag-hive-swap'),
+    );
+
+    await waitFor(() => {
+      expect(promoteConnectedWalletAddressSpy).not.toHaveBeenCalled();
     });
   });
 

@@ -456,6 +456,7 @@ const AccountSelector = ({
     if (!isSameChain(chain, targetChain)) {
       await setChain(targetChain);
     }
+    await EvmWalletUtils.promoteConnectedWalletAddress(walletAddress);
     loadEvmActiveAccount(targetChain, item.account.wallet);
     setActiveAccountType(ChainType.EVM);
     setIsOpened(false);
@@ -676,6 +677,11 @@ const AccountSelector = ({
       return;
     }
 
+    const evmOrderChanged = !AccountSelectorOrderUtils.areEvmOrderRefsEqual(
+      displayOrder,
+      orderedRefs,
+    );
+
     setAccountListItems(list);
     setIsPersistingOrder(true);
 
@@ -704,6 +710,14 @@ const AccountSelector = ({
           persistedOrder,
         ),
       );
+
+      if (evmOrderChanged) {
+        const activeEvmAddress =
+          activeEvmAccountAddress ?? getEvmAccountAddress(selectedEvmAccount);
+        if (activeEvmAddress) {
+          await EvmWalletUtils.promoteConnectedWalletAddress(activeEvmAddress);
+        }
+      }
     } finally {
       setIsPersistingOrder(false);
     }
