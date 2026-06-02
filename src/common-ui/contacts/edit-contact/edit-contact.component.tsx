@@ -1,6 +1,9 @@
 import { EditContactPopupComponent } from '@common-ui/contacts/edit-contact-popup/edit-contact-popup.component';
 import { EvmAccountImage } from '@common-ui/evm/evm-account-image/evm-account-image.component';
-import { UsernameAvatar } from '@common-ui/username-with-avatar/username-with-avatar';
+import {
+  HIVE_CONTACT_FALLBACK_IMAGE,
+  UsernameAvatar,
+} from '@common-ui/username-with-avatar/username-with-avatar';
 import { FavoriteAddress } from '@interfaces/contacts.interface';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { ChainType } from '@popup/multichain/interfaces/chains.interface';
@@ -72,6 +75,7 @@ export const EditContactComponent = ({
             <UsernameAvatar
               username={favoriteAddress.address}
               className="user-picture"
+              fallbackImage={HIVE_CONTACT_FALLBACK_IMAGE}
             />
           )}
           {favoriteAddress.label && favoriteAddress.label.length > 0
