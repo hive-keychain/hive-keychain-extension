@@ -371,6 +371,10 @@
     "message": "Contacts",
     "description": "Unified settings menu item"
   },
+  "popup_html_contacts_intro": {
+    "message": "Simpan kontak yang sering Anda gunakan agar transfer dan operasi lainnya lebih cepat.",
+    "description": "Intro on unified contacts settings page"
+  },
   "popup_html_network": {
     "message": "Network",
     "description": "Unified settings menu item for RPC settings"
@@ -1921,10 +1925,6 @@
   "popup_html_automated_hive_engine_list_title": {
     "message": "Token ditetapkan untuk staking otomatis",
     "description": "When on automated tasks page"
-  },
-  "popup_html_favorite_accounts_intro": {
-    "message": "Silahkan mengatur akun yang sering Anda gunakan untuk transfer, menggunakan hive engine, jual beli di bursa kripto dan lainnnya.",
-    "description": "When on favorite accounts page"
   },
   "popup_html_enable_autoclaim_rewards": {
     "message": "Klaim Rewards",

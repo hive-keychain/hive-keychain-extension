@@ -371,6 +371,10 @@
     "message": "Contacts",
     "description": "Unified settings menu item"
   },
+  "popup_html_contacts_intro": {
+    "message": "Guarda los contactos que más usas para agilizar transferencias y otras operaciones.",
+    "description": "Intro on unified contacts settings page"
+  },
   "popup_html_network": {
     "message": "Network",
     "description": "Unified settings menu item for RPC settings"
@@ -1921,10 +1925,6 @@
   "popup_html_automated_hive_engine_list_title": {
     "message": "Tokens elegidos para staking automático",
     "description": "When on automated tasks page"
-  },
-  "popup_html_favorite_accounts_intro": {
-    "message": "Configura las cuentas que más usas, al hacer transferencias, operaciones de Hive Engine, operaciones con exchanges y más.",
-    "description": "When on favorite accounts page"
   },
   "popup_html_enable_autoclaim_rewards": {
     "message": "Reclamar recompensas",

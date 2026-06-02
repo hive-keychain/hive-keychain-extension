@@ -231,6 +231,10 @@
     "message": "Contacts",
     "description": "Unified settings menu item"
   },
+  "popup_html_contacts_intro": {
+    "message": "Enregistrez les contacts que vous utilisez le plus souvent pour accélérer les transferts et autres opérations.",
+    "description": "Intro on unified contacts settings page"
+  },
   "popup_html_network": {
     "message": "Network",
     "description": "Unified settings menu item for RPC settings"

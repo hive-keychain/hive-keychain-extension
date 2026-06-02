@@ -15,6 +15,23 @@
   }
 }
 
+.settings-contacts-page {
+  padding: 0 24px 24px;
+
+  .settings-chain-select-panel {
+    padding: 0;
+  }
+
+  .contacts-settings-page {
+    padding: 0;
+  }
+
+  .settings-contacts-intro {
+    @include settings-page-note();
+    margin: 0;
+  }
+}
+
 .settings-hive-dapps-page {
   @include pageLayoutRowGap;
   row-gap: 16px;

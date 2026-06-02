@@ -1,7 +1,23 @@
 @import 'src/common-ui/contacts/contacts-settings-page/contacts-settings-page.scss';
 
 .favorite-accounts-page {
-  .account-select-panel {
+  .settings-hive-account-select-panel {
     width: 100%;
+
+    .custom-select-container {
+      width: 100%;
+    }
+
+    .custom-select {
+      width: 100%;
+    }
+  }
+
+  .empty-address-item {
+    @include poppins400(14px);
+    color: var(--main-font-color);
+    display: flex;
+    align-items: center;
+    padding: 8px 0 8px 8px;
   }
 }
