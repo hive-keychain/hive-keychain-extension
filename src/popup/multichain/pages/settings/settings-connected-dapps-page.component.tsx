@@ -4,11 +4,15 @@ import {
 } from '@common-ui/custom-select/custom-select.component';
 import { EvmDappsConnectionsComponent } from '@popup/evm/pages/home/settings/evm-dapps-connections/evm-dapps-connections.component';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
-import { ChainType } from '@popup/multichain/interfaces/chains.interface';
+import {
+  Chain,
+  ChainType,
+} from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
+import { resolveDefaultChainTypeSettingsOption } from 'src/popup/multichain/pages/settings/settings-chain-select.utils';
 import { SettingsHiveDappsPageComponent } from 'src/popup/multichain/pages/settings/settings-hive-dapps-page.component';
 
 type DappSettingsOption = OptionItem & {
@@ -16,6 +20,7 @@ type DappSettingsOption = OptionItem & {
 };
 
 const SettingsConnectedDappsPage = ({
+  activeChain,
   hasEvmAccounts,
   hasHiveAccounts,
   setTitleContainerProperties,
@@ -45,8 +50,10 @@ const SettingsConnectedDappsPage = ({
       });
     }
     setOptions(nextOptions);
-    setSelectedOption(nextOptions[0]);
-  }, [hasEvmAccounts, hasHiveAccounts]);
+    setSelectedOption(
+      resolveDefaultChainTypeSettingsOption(nextOptions, activeChain),
+    );
+  }, [activeChain, hasEvmAccounts, hasHiveAccounts]);
 
   const handleSelectedOption = (option: OptionItem) => {
     setSelectedOption(option as DappSettingsOption);
@@ -78,6 +85,7 @@ const SettingsConnectedDappsPage = ({
 
 const connector = connect(
   (state: RootState) => ({
+    activeChain: state.chain as Chain,
     hasEvmAccounts: state.evm.accounts.length > 0,
     hasHiveAccounts: state.hive.accounts.length > 0,
   }),

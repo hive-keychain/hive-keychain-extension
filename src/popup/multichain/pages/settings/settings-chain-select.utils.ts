@@ -42,3 +42,61 @@ export const getSettingsChainOptions = async (
   options.push(...setupChains.filter(isEvmChain).map(buildEvmSettingsOption));
   return options;
 };
+
+const isSameChainId = (left: string, right: string) =>
+  left.toLowerCase() === right.toLowerCase();
+
+export const resolveDefaultSettingsChainOption = (
+  options: SettingsChainOption[],
+  activeChain: Chain,
+): SettingsChainOption | undefined => {
+  if (!options.length) {
+    return undefined;
+  }
+
+  if (activeChain.type === ChainType.HIVE) {
+    return (
+      options.find((option) => option.value.type === ChainType.HIVE) ??
+      options[0]
+    );
+  }
+
+  if (activeChain.type === ChainType.EVM) {
+    const exactMatch = options.find(
+      (option) =>
+        option.value.type === ChainType.EVM &&
+        isSameChainId(option.value.chain.chainId, activeChain.chainId),
+    );
+    if (exactMatch) {
+      return exactMatch;
+    }
+    return (
+      options.find((option) => option.value.type === ChainType.EVM) ?? options[0]
+    );
+  }
+
+  return options[0];
+};
+
+export const resolveDefaultChainTypeSettingsOption = <
+  T extends { value: ChainType.HIVE | ChainType.EVM },
+>(
+  options: T[],
+  activeChain: Chain,
+): T | undefined => {
+  if (!options.length) {
+    return undefined;
+  }
+
+  if (
+    activeChain.type === ChainType.HIVE ||
+    activeChain.type === ChainType.EVM
+  ) {
+    const matched = options.find((option) => option.value === activeChain.type);
+    if (matched) {
+      return matched;
+    }
+  }
+
+  return options[0];
+};
