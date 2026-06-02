@@ -675,6 +675,38 @@
     "message": "Preferensi dan tampilan",
     "description": "Settings menu section for theme and window display options"
   },
+  "popup_html_preferences_appearance_section": {
+    "message": "Tampilan",
+    "description": "Preferences and display: theme section title"
+  },
+  "popup_html_light_mode": {
+    "message": "Terang",
+    "description": "Preferences and display: light theme label"
+  },
+  "popup_html_dark_mode": {
+    "message": "Gelap",
+    "description": "Preferences and display: dark theme label"
+  },
+  "popup_html_preferences_display_section": {
+    "message": "Tampilan jendela",
+    "description": "Preferences and display: window and side panel section title"
+  },
+  "popup_html_open_in_side_panel": {
+    "message": "Buka di panel samping",
+    "description": "Preferences and display: open Keychain in the browser side panel"
+  },
+  "popup_html_open_in_side_panel_hint": {
+    "message": "Buka Keychain di panel samping browser untuk tampilan yang lebih besar dan persisten.",
+    "description": "Preferences and display: side panel action hint"
+  },
+  "popup_html_open_side_panel_by_default": {
+    "message": "Buka panel samping secara default",
+    "description": "Preferences and display: default to side panel on extension icon click"
+  },
+  "popup_html_open_side_panel_by_default_hint": {
+    "message": "Jika diaktifkan, mengklik ikon ekstensi membuka Keychain di panel samping, bukan popup.",
+    "description": "Preferences and display: default side panel checkbox hint"
+  },
   "popup_html_chain_settings": {
     "message": "Pengaturan chain",
     "description": "Settings menu section for Hive and EVM chain-specific options"

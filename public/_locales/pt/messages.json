@@ -651,6 +651,38 @@
     "message": "Preferências e exibição",
     "description": "Settings menu section for theme and window display options"
   },
+  "popup_html_preferences_appearance_section": {
+    "message": "Aparência",
+    "description": "Preferences and display: theme section title"
+  },
+  "popup_html_light_mode": {
+    "message": "Claro",
+    "description": "Preferences and display: light theme label"
+  },
+  "popup_html_dark_mode": {
+    "message": "Escuro",
+    "description": "Preferences and display: dark theme label"
+  },
+  "popup_html_preferences_display_section": {
+    "message": "Exibição",
+    "description": "Preferences and display: window and side panel section title"
+  },
+  "popup_html_open_in_side_panel": {
+    "message": "Abrir no painel lateral",
+    "description": "Preferences and display: open Keychain in the browser side panel"
+  },
+  "popup_html_open_in_side_panel_hint": {
+    "message": "Abra o Keychain no painel lateral do navegador para uma visualização maior e persistente.",
+    "description": "Preferences and display: side panel action hint"
+  },
+  "popup_html_open_side_panel_by_default": {
+    "message": "Abrir painel lateral por padrão",
+    "description": "Preferences and display: default to side panel on extension icon click"
+  },
+  "popup_html_open_side_panel_by_default_hint": {
+    "message": "Quando ativado, clicar no ícone da extensão abre o Keychain no painel lateral em vez do popup.",
+    "description": "Preferences and display: default side panel checkbox hint"
+  },
   "popup_html_chain_settings": {
     "message": "Configurações de chain",
     "description": "Settings menu section for Hive and EVM chain-specific options"

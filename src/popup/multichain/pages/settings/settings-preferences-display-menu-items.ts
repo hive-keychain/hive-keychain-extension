@@ -4,7 +4,6 @@ import { Theme } from '@popup/theme.context';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 
 interface SettingsPreferencesDisplayMenuItemsParams {
-  isToolbarPopup: boolean;
   theme: Theme;
   toggleTheme: () => void;
 }
@@ -27,21 +26,15 @@ export const getThemeMenuItem = ({
 };
 
 export const getSettingsPreferencesDisplayMenuItems = ({
-  isToolbarPopup,
   theme,
   toggleTheme,
-}: SettingsPreferencesDisplayMenuItemsParams): MenuItem[] => {
-  const menuItems: MenuItem[] = [getThemeMenuItem({ theme, toggleTheme })];
-
-  if (isToolbarPopup) {
-    menuItems.push({
-      label: 'popup_html_detach_window',
-      icon: SVGIcons.MENU_USER_PREFERENCES_DETACH_EXTENSION,
-      action: () => {
-        void DetachedExtensionTabUtils.openDetachedExtension();
-      },
-    });
-  }
-
-  return menuItems;
-};
+}: SettingsPreferencesDisplayMenuItemsParams): MenuItem[] => [
+  getThemeMenuItem({ theme, toggleTheme }),
+  {
+    label: 'popup_html_open_in_side_panel',
+    icon: SVGIcons.MENU_USER_PREFERENCES_DETACH_EXTENSION,
+    action: () => {
+      void DetachedExtensionTabUtils.openDetachedExtension();
+    },
+  },
+];

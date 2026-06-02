@@ -91,7 +91,7 @@ import { UnifiedSettingsMainPageComponent } from 'src/popup/multichain/pages/set
 import { SettingsNetworkPageComponent } from 'src/popup/multichain/pages/settings/settings-network-page.component';
 import { SettingsChainSettingsPageComponent } from 'src/popup/multichain/pages/settings/settings-chain-settings-page.component';
 import { SettingsHelpAndAboutPageComponent } from 'src/popup/multichain/pages/settings/settings-help-and-about-page.component';
-import { SettingsPreferencesDisplayPageComponent } from 'src/popup/multichain/pages/settings/settings-preferences-display-page.component';
+import { SettingsPreferencesDisplaySubmenuPageComponent } from 'src/popup/multichain/pages/settings/settings-preferences-display-submenu-page.component';
 
 const getConfirmationAccountType = (
   activeAccountType: ChainType.HIVE | ChainType.EVM,
@@ -200,7 +200,7 @@ const UnifiedRouter = ({
       case MultichainScreen.SETTINGS_CONNECTED_DAPPS:
         return <SettingsConnectedDappsPageComponent />;
       case MultichainScreen.SETTINGS_PREFERENCES_AND_DISPLAY:
-        return <SettingsPreferencesDisplayPageComponent />;
+        return <SettingsPreferencesDisplaySubmenuPageComponent />;
       case MultichainScreen.SETTINGS_CHAIN_SETTINGS:
         return <SettingsChainSettingsPageComponent />;
       case MultichainScreen.SETTINGS_HELP_AND_ABOUT:

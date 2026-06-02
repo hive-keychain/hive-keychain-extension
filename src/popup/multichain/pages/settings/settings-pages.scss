@@ -201,6 +201,47 @@
   margin: 0;
 }
 
+.settings-preferences-display-submenu-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.settings-preferences-display-page {
+  @include pageLayoutRowGap;
+  row-gap: 16px;
+  padding: 0 24px 24px;
+  height: unset;
+
+  .fields {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+  }
+
+  .settings-section {
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+  }
+
+  .section-title {
+    @include poppins600(14px);
+    color: var(--main-font-color);
+  }
+
+  .section-fields {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+  }
+
+  .settings-page-note {
+    @include settings-page-note();
+    margin: 0;
+  }
+}
+
 .settings-evm-page {
   @include pageLayoutRowGap;
   row-gap: 16px;

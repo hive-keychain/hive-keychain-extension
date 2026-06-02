@@ -1,21 +1,15 @@
 import { MenuItem } from '@interfaces/menu-item.interface';
 import { Screen } from '@interfaces/screen.interface';
-import { Theme } from '@popup/theme.context';
-import { getThemeMenuItem } from 'src/popup/multichain/pages/settings/settings-preferences-display-menu-items';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 
 interface SettingsMainPageMenuItemsParams {
   hasEvmAccounts: boolean;
   hasHiveAccounts: boolean;
-  theme: Theme;
-  toggleTheme: () => void;
 }
 
 export const getSettingsMainPageMenuItems = ({
   hasEvmAccounts,
   hasHiveAccounts,
-  theme,
-  toggleTheme,
 }: SettingsMainPageMenuItemsParams): MenuItem[] => {
   const menuItems: MenuItem[] = [
     {
@@ -57,7 +51,11 @@ export const getSettingsMainPageMenuItems = ({
       icon: SVGIcons.MENU_ADVANCED_SETTINGS,
       nextScreen: Screen.SETTINGS_ADVANCED,
     },
-    getThemeMenuItem({ theme, toggleTheme }),
+    {
+      label: 'popup_html_preferences_and_display',
+      icon: SVGIcons.MENU_USER_PREFERENCES_THEME,
+      nextScreen: Screen.SETTINGS_PREFERENCES_AND_DISPLAY,
+    },
     {
       label: 'popup_html_help_and_about',
       icon: SVGIcons.MENU_HELP,

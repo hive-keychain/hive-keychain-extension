@@ -7,19 +7,14 @@ import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-tes
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Theme } from '@popup/theme.context';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { getSettingsMainPageMenuItems } from 'src/popup/multichain/pages/settings/settings-main-page-menu-items';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 
 describe('settings-main-page.component tests:\n', () => {
-  const toggleTheme = jest.fn();
-
   const menuItems = getSettingsMainPageMenuItems({
     hasEvmAccounts: false,
     hasHiveAccounts: true,
-    theme: Theme.LIGHT,
-    toggleTheme,
   });
 
   afterEach(() => {
@@ -56,15 +51,11 @@ describe('settings-main-page.component tests:\n', () => {
       ).toBeInTheDocument();
     }
 
-    const themeMenuButton =
-      screen.queryByTestId(
-        dataTestIdButton.menuPreFix + SVGIcons.MENU_THEME_DARK,
-      ) ??
-      screen.queryByTestId(
-        dataTestIdButton.menuPreFix + SVGIcons.MENU_THEME_LIGHT,
-      );
-
-    expect(themeMenuButton).toBeInTheDocument();
+    expect(
+      screen.getByTestId(
+        dataTestIdButton.menuPreFix + SVGIcons.MENU_USER_PREFERENCES_THEME,
+      ),
+    ).toBeInTheDocument();
   });
   it('Must open each menu item', async () => {
     const pageItems = menuItems.filter((item) => item.nextScreen);
