@@ -107,6 +107,7 @@ jest.mock('src/popup/hive/utils/account.utils', () => ({
 
 jest.mock('@popup/evm/utils/wallet.utils', () => ({
   EvmWalletUtils: {
+    getConnectedWallets: jest.fn().mockResolvedValue([]),
     rebuildAccountsFromLocalStorage: jest.fn().mockResolvedValue([
       {
         id: 0,
