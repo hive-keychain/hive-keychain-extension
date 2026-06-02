@@ -34,7 +34,7 @@
             @include poppins400(14px);
           }
           .custom-select {
-            height: 56px !important;
+            height: 45px !important;
             border-radius: 22px !important;
           }
         }
@@ -55,21 +55,31 @@
         }
       }
       .add-rpc-panel {
+        @include small-card;
         display: flex;
         flex-direction: column;
-        row-gap: 14px;
-        @include small-card;
+        row-gap: 12px;
         align-items: unset;
+        border: none;
         margin: 0px;
-        margin-top: -8px;
+        margin-top: -6px;
+        padding: 12px;
         .custom-input-content input {
-          @include poppins600(14px);
+          @include poppins400(14px);
         }
         .add-rpc-caption {
           @include poppins600(14px);
           display: flex;
-          justify-content: space-between;
+          align-items: center;
           color: var(--main-font-color);
+        }
+        .save-rpc-button {
+          align-self: flex-end;
+          min-height: 32px;
+          height: 32px;
+          margin-top: 0;
+          width: 96px;
+          @include poppins600(13px);
         }
       }
     }
