@@ -89,6 +89,8 @@ import { SettingsEvmPageComponent } from 'src/popup/multichain/pages/settings/se
 import { SettingsHivePageComponent } from 'src/popup/multichain/pages/settings/settings-hive-page.component';
 import { UnifiedSettingsMainPageComponent } from 'src/popup/multichain/pages/settings/settings-main-page.component';
 import { SettingsNetworkPageComponent } from 'src/popup/multichain/pages/settings/settings-network-page.component';
+import { SettingsChainSettingsPageComponent } from 'src/popup/multichain/pages/settings/settings-chain-settings-page.component';
+import { SettingsHelpAndAboutPageComponent } from 'src/popup/multichain/pages/settings/settings-help-and-about-page.component';
 import { SettingsPreferencesDisplayPageComponent } from 'src/popup/multichain/pages/settings/settings-preferences-display-page.component';
 
 const getConfirmationAccountType = (
@@ -199,6 +201,10 @@ const UnifiedRouter = ({
         return <SettingsConnectedDappsPageComponent />;
       case MultichainScreen.SETTINGS_PREFERENCES_AND_DISPLAY:
         return <SettingsPreferencesDisplayPageComponent />;
+      case MultichainScreen.SETTINGS_CHAIN_SETTINGS:
+        return <SettingsChainSettingsPageComponent />;
+      case MultichainScreen.SETTINGS_HELP_AND_ABOUT:
+        return <SettingsHelpAndAboutPageComponent />;
       case MultichainScreen.SETTINGS_EVM:
         return <SettingsEvmPageComponent />;
       case MultichainScreen.SETTINGS_HIVE:

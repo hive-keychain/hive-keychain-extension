@@ -691,6 +691,14 @@
     "message": "Preferences and display",
     "description": "Settings menu section for theme and window display options"
   },
+  "popup_html_chain_settings": {
+    "message": "Chain settings",
+    "description": "Settings menu section for Hive and EVM chain-specific options"
+  },
+  "popup_html_help_and_about": {
+    "message": "Help & about",
+    "description": "Settings menu section for support, tutorial, and about Keychain"
+  },
   "popup_html_wrong_key_tooltip_text": {
     "message": "This key doesn't seem to match your account. You won't be able to perform transactions with it. If you've changed it, remove this key and replace it with the new one.",
     "description": "after hoover on red wrong key -> manage accounts -> account keys list item"

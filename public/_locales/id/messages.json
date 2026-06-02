@@ -671,6 +671,14 @@
     "message": "Preferensi dan tampilan",
     "description": "Settings menu section for theme and window display options"
   },
+  "popup_html_chain_settings": {
+    "message": "Pengaturan chain",
+    "description": "Settings menu section for Hive and EVM chain-specific options"
+  },
+  "popup_html_help_and_about": {
+    "message": "Bantuan & tentang",
+    "description": "Settings menu section for support, tutorial, and about Keychain"
+  },
   "popup_html_wrong_key_tooltip_text": {
     "message": "Kunci ini tidak sesuai dengan akun Anda, sehingga transaksi tidak dapat dilakukan. Jika Anda telah memperbarui kunci, harap hapus yang lama dan masukkan kunci yang baru",
     "description": "after hoover on red wrong key -> manage accounts -> account keys list item"

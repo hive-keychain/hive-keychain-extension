@@ -13,12 +13,23 @@ describe('getSettingsMainPageMenuItems', () => {
       Screen.SETTINGS_NETWORK,
       Screen.SETTINGS_CONNECTED_DAPPS,
       Screen.SETTINGS_PREFERENCES_AND_DISPLAY,
-      Screen.SETTINGS_EVM,
-      Screen.SETTINGS_HIVE,
+      Screen.SETTINGS_CHAIN_SETTINGS,
       Screen.SETTINGS_ADVANCED,
-      Screen.SETTINGS_HELP,
-      Screen.SETTINGS_ABOUT,
+      Screen.SETTINGS_HELP_AND_ABOUT,
     ]);
+  });
+
+  it('omits chain settings when user has no Hive or EVM accounts', () => {
+    const menuItems = getSettingsMainPageMenuItems({
+      hasEvmAccounts: false,
+      hasHiveAccounts: false,
+    });
+
+    expect(
+      menuItems.some(
+        (item) => item.nextScreen === Screen.SETTINGS_CHAIN_SETTINGS,
+      ),
+    ).toBe(false);
   });
 
   it('hides chain-specific settings when no account exists for that chain', () => {
@@ -32,10 +43,9 @@ describe('getSettingsMainPageMenuItems', () => {
       Screen.SETTINGS_NETWORK,
       Screen.SETTINGS_CONNECTED_DAPPS,
       Screen.SETTINGS_PREFERENCES_AND_DISPLAY,
-      Screen.SETTINGS_EVM,
+      Screen.SETTINGS_CHAIN_SETTINGS,
       Screen.SETTINGS_ADVANCED,
-      Screen.SETTINGS_HELP,
-      Screen.SETTINGS_ABOUT,
+      Screen.SETTINGS_HELP_AND_ABOUT,
     ]);
   });
 });

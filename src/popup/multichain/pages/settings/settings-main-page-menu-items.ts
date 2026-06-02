@@ -34,19 +34,11 @@ export const getSettingsMainPageMenuItems = ({
     },
   ];
 
-  if (hasEvmAccounts) {
+  if (hasEvmAccounts || hasHiveAccounts) {
     menuItems.push({
-      label: 'evm_settings',
-      icon: SVGIcons.MENU_EVM_SETTINGS,
-      nextScreen: Screen.SETTINGS_EVM,
-    });
-  }
-
-  if (hasHiveAccounts) {
-    menuItems.push({
-      label: 'hive_settings',
-      icon: SVGIcons.MENU_HIVE_SETTINGS,
-      nextScreen: Screen.SETTINGS_HIVE,
+      label: 'popup_html_chain_settings',
+      icon: SVGIcons.MENU_CHAIN_SETTINGS,
+      nextScreen: Screen.SETTINGS_CHAIN_SETTINGS,
     });
   }
 
@@ -57,14 +49,9 @@ export const getSettingsMainPageMenuItems = ({
       nextScreen: Screen.SETTINGS_ADVANCED,
     },
     {
-      label: 'popup_html_help',
+      label: 'popup_html_help_and_about',
       icon: SVGIcons.MENU_HELP,
-      nextScreen: Screen.SETTINGS_HELP,
-    },
-    {
-      label: 'popup_html_about',
-      icon: SVGIcons.MENU_ABOUT,
-      nextScreen: Screen.SETTINGS_ABOUT,
+      nextScreen: Screen.SETTINGS_HELP_AND_ABOUT,
     },
   );
 
