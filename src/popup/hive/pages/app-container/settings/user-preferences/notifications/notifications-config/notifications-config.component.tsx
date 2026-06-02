@@ -1,6 +1,10 @@
+import { ActiveAccount } from '@interfaces/active-account.interface';
 import { KeyType } from '@interfaces/keys.interface';
 import { Screen } from '@interfaces/screen.interface';
-import { SelectAccountSectionComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section.component';
+import {
+  ComplexeCustomSelect,
+  OptionItem,
+} from '@common-ui/custom-select/custom-select.component';
 import { PeakDNotificationsUtils } from '@popup/hive/utils/notifications/peakd-notifications.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import {
@@ -18,25 +22,83 @@ import {
 } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 
+type HiveAccountOption = OptionItem & {
+  value: string;
+};
+
 const NotificationConfigPage = ({
-  activeAccount,
+  accounts,
+  activeAccountName,
   setTitleContainerProperties,
   resetNav,
   navigateTo,
   setErrorMessage,
 }: PropsFromRedux) => {
+  const [selectedAccountName, setSelectedAccountName] = useState(
+    activeAccountName ?? accounts[0]?.name,
+  );
   const [isActive, setActive] = useState(false);
   const [userHasConfig, setUserHasConfig] = useState<boolean>();
 
   const [ready, setReady] = useState(false);
+
+  const accountOptions: HiveAccountOption[] = accounts.map((account) => ({
+    label: account.name,
+    value: account.name,
+    img: `https://images.hive.blog/u/${account.name}/avatar`,
+  }));
+  const selectedAccountOption = accountOptions.find(
+    (accountOption) => accountOption.value === selectedAccountName,
+  );
+
+  const getSelectedAccountForSigning = (): ActiveAccount | undefined => {
+    const localAccount = accounts.find(
+      (account) => account.name === selectedAccountName,
+    );
+    if (!localAccount) {
+      return undefined;
+    }
+
+    return {
+      name: localAccount.name,
+      keys: localAccount.keys,
+    } as ActiveAccount;
+  };
 
   useEffect(() => {
     setTitleContainerProperties({
       title: 'html_popup_settings_notifications',
       isBackButtonEnabled: true,
     });
-    if (activeAccount && activeAccount.name) initConfig(activeAccount.name);
-  }, [activeAccount.name]);
+  }, []);
+
+  useEffect(() => {
+    if (!selectedAccountName && activeAccountName) {
+      setSelectedAccountName(activeAccountName);
+    }
+  }, [activeAccountName, selectedAccountName]);
+
+  useEffect(() => {
+    if (
+      selectedAccountName &&
+      accountOptions.some(
+        (accountOption) => accountOption.value === selectedAccountName,
+      )
+    ) {
+      return;
+    }
+
+    setSelectedAccountName(activeAccountName ?? accounts[0]?.name);
+  }, [accounts, activeAccountName, selectedAccountName]);
+
+  useEffect(() => {
+    if (!selectedAccountName) {
+      return;
+    }
+
+    setReady(false);
+    initConfig(selectedAccountName);
+  }, [selectedAccountName]);
 
   const initConfig = async (activeAccountName: string) => {
     const userConfig = await PeakDNotificationsUtils.getAccountConfig(
@@ -55,16 +117,21 @@ const NotificationConfigPage = ({
   };
 
   const handleSubmitClick = async () => {
+    const selectedAccount = getSelectedAccountForSigning();
+    if (!selectedAccount) {
+      return;
+    }
+
     if (isActive === userHasConfig) {
       setErrorMessage('notification_settings_nothing_has_changed');
       return;
     }
 
     if (isActive) {
-      await PeakDNotificationsUtils.saveDefaultConfig(activeAccount);
+      await PeakDNotificationsUtils.saveDefaultConfig(selectedAccount);
     } else {
       setReady(false);
-      await PeakDNotificationsUtils.deleteAccountConfig(activeAccount);
+      await PeakDNotificationsUtils.deleteAccountConfig(selectedAccount);
     }
     resetNav();
     navigateTo(Screen.HOME_PAGE, true);
@@ -82,9 +149,18 @@ const NotificationConfigPage = ({
             )}
           </div>
 
-          <SelectAccountSectionComponent
-            fullSize
-            background="white"></SelectAccountSectionComponent>
+          {selectedAccountOption && (
+            <div className="settings-hive-account-select-panel">
+              <ComplexeCustomSelect
+                options={accountOptions}
+                selectedItem={selectedAccountOption}
+                setSelectedItem={(option) =>
+                  setSelectedAccountName(option.value)
+                }
+                background="white"
+              />
+            </div>
+          )}
 
           <CheckboxPanelComponent
             checked={isActive}
@@ -112,9 +188,10 @@ const NotificationConfigPage = ({
   );
 };
 
-const mapStateToProps = (state: RootState) => {
-  return { activeAccount: state.hive.activeAccount };
-};
+const mapStateToProps = (state: RootState) => ({
+  accounts: state.hive.accounts,
+  activeAccountName: state.hive.activeAccount.name,
+});
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   resetNav,
