@@ -31,8 +31,8 @@ const clearEvmWalletSetupHash = (
   history.replaceState(null, '', getUrlWithoutHash(pathname, search));
 };
 
-const openEvmCreateWalletInTab = (): void => {
-  DetachedExtensionTabUtils.openDetachedExtensionTab(EVM_CREATE_WALLET_HASH);
+const openEvmCreateWalletOutsideToolbarPopup = (): void => {
+  void DetachedExtensionTabUtils.openDetachedExtension(EVM_CREATE_WALLET_HASH);
 };
 
 const resolveEvmAppNavigationOnReady = (
@@ -54,7 +54,7 @@ const startEvmCreateWalletFromToolbarPopup = (
   navigateToCreateWallet: () => void,
 ): void => {
   if (ExtensionSurfaceUtils.isToolbarPopup()) {
-    openEvmCreateWalletInTab();
+    openEvmCreateWalletOutsideToolbarPopup();
     return;
   }
 
@@ -81,7 +81,7 @@ export const EvmWalletSetupTabUtils = {
   parseEvmWalletSetupHash,
   getUrlWithoutHash,
   clearEvmWalletSetupHash,
-  openEvmCreateWalletInTab,
+  openEvmCreateWalletOutsideToolbarPopup,
   resolveEvmAppNavigationOnReady,
   startEvmCreateWalletFromToolbarPopup,
   shouldShowDetachedTabCreationSuccess,

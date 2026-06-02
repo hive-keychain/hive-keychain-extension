@@ -1,3 +1,4 @@
+import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
 import '@testing-library/jest-dom';
 import React from 'react';
 import userEvent from '@testing-library/user-event';
@@ -48,7 +49,17 @@ jest.mock('src/common-ui/toast/copy-toast.utils', () => ({
   copyTextWithToast: jest.fn().mockResolvedValue(true),
 }));
 
+jest.mock('@popup/multichain/utils/detached-extension-tab.utils', () => ({
+  DetachedExtensionTabUtils: {
+    openExtensionPage: jest.fn(),
+  },
+}));
+
 describe('EvmAccountsComponent', () => {
+  const openExtensionPageMock =
+    DetachedExtensionTabUtils.openExtensionPage as jest.MockedFunction<
+      typeof DetachedExtensionTabUtils.openExtensionPage
+    >;
   const mk = 'my-password';
   const mnemonic = 'test test test test test test test test test test test junk';
   const wallet = {
@@ -59,6 +70,7 @@ describe('EvmAccountsComponent', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.spyOn(chrome.i18n, 'getMessage').mockImplementation((key: string) => key);
+    openExtensionPageMock.mockResolvedValue(undefined);
   });
 
   it('asks for the password before copying the seed phrase', async () => {
@@ -191,10 +203,6 @@ describe('EvmAccountsComponent', () => {
 
   it('opens the EVM Ledger import flow from the seed menu', async () => {
     const user = userEvent.setup();
-    chrome.management.getSelf = jest.fn().mockResolvedValue({
-      id: 'extension-id',
-    });
-    chrome.tabs.create = jest.fn();
     const { container } = customRender(<EvmAccountsComponent />, {
       initialState: {
         ...initialEmptyStateStore,
@@ -234,9 +242,9 @@ describe('EvmAccountsComponent', () => {
     await user.click(screen.getByText('evm_connect_ledger_wallet'));
 
     await waitFor(() => {
-      expect(chrome.tabs.create).toHaveBeenCalledWith({
-        url: 'chrome-extension://extension-id/add-evm-accounts-from-ledger.html?chainId=0x1',
-      });
+      expect(openExtensionPageMock).toHaveBeenCalledWith(
+        'add-evm-accounts-from-ledger.html?chainId=0x1',
+      );
     });
   });
 

@@ -13,6 +13,17 @@ Object.assign(global, { contextType: 'service_worker' });
 HiveServiceWorker.initializeServiceWorker();
 EvmServiceWorker.initializeServiceWorker();
 
+const resetSidePanelActionClickBehavior = () => {
+  if (process.env.IS_FIREFOX) {
+    return;
+  }
+  void chrome.sidePanel?.setPanelBehavior?.({ openPanelOnActionClick: false });
+};
+
+resetSidePanelActionClickBehavior();
+chrome.runtime.onInstalled.addListener(resetSidePanelActionClickBehavior);
+chrome.runtime.onStartup.addListener(resetSidePanelActionClickBehavior);
+
 (async () => {
   if (!process.env.IS_FIREFOX) {
     Logger.log('Initializing vault');

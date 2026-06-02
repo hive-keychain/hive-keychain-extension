@@ -385,7 +385,7 @@ export const executeShortcut = async (
     if (options.openKeychainInTab) {
       options.openKeychainInTab();
     } else {
-      DetachedExtensionTabUtils.openDetachedExtensionTab();
+      void DetachedExtensionTabUtils.openDetachedExtension();
     }
     return { deferred: false };
   }

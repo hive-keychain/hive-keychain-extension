@@ -52,7 +52,7 @@ const MultichainContainer = ({
   const shouldPersistActiveChainRef = useRef(true);
 
   const handleDetachWindow = useCallback(() => {
-    DetachedExtensionTabUtils.openDetachedExtensionTab();
+    void DetachedExtensionTabUtils.openDetachedExtension();
   }, []);
 
   const toggleTheme = useCallback(() => {

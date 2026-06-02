@@ -103,6 +103,16 @@ html.detached-window-page #root .theme .link-panel {
   bottom: 0;
   width: 100%;
 }
+html.detached-window-page #root .theme .notification-button,
+html.detached-window-page #root .theme .notification-button svg {
+  width: 24px !important;
+  height: 24px !important;
+}
+html.detached-window-page #root .theme .claim-button,
+html.detached-window-page #root .theme .claim-button svg {
+  width: 26px !important;
+  height: 26px !important;
+}
 html.detached-window-page #root .theme .account-selector-overlay {
   position: fixed;
   top: 50%;

@@ -129,8 +129,8 @@
   .wallet-item-list {
     @include form-panel;
     row-gap: 8px;
-    max-height: 479px;
     position: relative;
+    max-height: var(--wallet-history-max-height, 476px);
 
     .wallet-history-export-button {
       align-self: flex-end;

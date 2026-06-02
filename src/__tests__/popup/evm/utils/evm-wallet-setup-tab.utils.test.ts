@@ -14,6 +14,7 @@ jest.mock('@popup/multichain/utils/extension-surface.utils', () => ({
 
 jest.mock('@popup/multichain/utils/detached-extension-tab.utils', () => ({
   DetachedExtensionTabUtils: {
+    openDetachedExtension: jest.fn(),
     openDetachedExtensionTab: jest.fn(),
   },
 }));
@@ -27,9 +28,9 @@ describe('EvmWalletSetupTabUtils', () => {
     ExtensionSurfaceUtils.isDetachedTab as jest.MockedFunction<
       typeof ExtensionSurfaceUtils.isDetachedTab
     >;
-  const openDetachedExtensionTabMock =
-    DetachedExtensionTabUtils.openDetachedExtensionTab as jest.MockedFunction<
-      typeof DetachedExtensionTabUtils.openDetachedExtensionTab
+  const openDetachedExtensionMock =
+    DetachedExtensionTabUtils.openDetachedExtension as jest.MockedFunction<
+      typeof DetachedExtensionTabUtils.openDetachedExtension
     >;
 
   beforeEach(() => {
@@ -84,18 +85,18 @@ describe('EvmWalletSetupTabUtils', () => {
     });
   });
 
-  describe('openEvmCreateWalletInTab', () => {
-    it('opens detached_window.html with the create-wallet hash', () => {
-      EvmWalletSetupTabUtils.openEvmCreateWalletInTab();
+  describe('openEvmCreateWalletOutsideToolbarPopup', () => {
+    it('opens the outside-popup create-wallet route', () => {
+      EvmWalletSetupTabUtils.openEvmCreateWalletOutsideToolbarPopup();
 
-      expect(openDetachedExtensionTabMock).toHaveBeenCalledWith(
+      expect(openDetachedExtensionMock).toHaveBeenCalledWith(
         EVM_CREATE_WALLET_HASH,
       );
     });
   });
 
   describe('startEvmCreateWalletFromToolbarPopup', () => {
-    it('opens a tab from the toolbar popup instead of navigating in place', () => {
+    it('opens outside the toolbar popup instead of navigating in place', () => {
       isToolbarPopupMock.mockReturnValue(true);
       const navigateToCreateWallet = jest.fn();
 
@@ -103,7 +104,7 @@ describe('EvmWalletSetupTabUtils', () => {
         navigateToCreateWallet,
       );
 
-      expect(openDetachedExtensionTabMock).toHaveBeenCalledWith(
+      expect(openDetachedExtensionMock).toHaveBeenCalledWith(
         EVM_CREATE_WALLET_HASH,
       );
       expect(navigateToCreateWallet).not.toHaveBeenCalled();
@@ -117,7 +118,7 @@ describe('EvmWalletSetupTabUtils', () => {
         navigateToCreateWallet,
       );
 
-      expect(openDetachedExtensionTabMock).not.toHaveBeenCalled();
+      expect(openDetachedExtensionMock).not.toHaveBeenCalled();
       expect(navigateToCreateWallet).toHaveBeenCalledTimes(1);
     });
   });

@@ -1,4 +1,5 @@
 import { Screen } from '@interfaces/screen.interface';
+import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
 import '@testing-library/jest-dom';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -9,13 +10,20 @@ import { AddWalletMainComponent } from 'src/popup/evm/pages/add-wallets/add-wall
 import { EvmScreen } from 'src/popup/evm/reference-data/evm-screen.enum';
 import { ChainType } from 'src/popup/multichain/interfaces/chains.interface';
 
+jest.mock('@popup/multichain/utils/detached-extension-tab.utils', () => ({
+  DetachedExtensionTabUtils: {
+    openExtensionPage: jest.fn(),
+  },
+}));
+
 describe('AddWalletMainComponent', () => {
-  const chromeManagementGetSelf = jest.fn().mockResolvedValue({ id: 'test-ext' });
-  const chromeTabsCreate = jest.fn();
+  const openExtensionPageMock =
+    DetachedExtensionTabUtils.openExtensionPage as jest.MockedFunction<
+      typeof DetachedExtensionTabUtils.openExtensionPage
+    >;
 
   beforeEach(() => {
-    chrome.management = { getSelf: chromeManagementGetSelf } as any;
-    chrome.tabs = { create: chromeTabsCreate } as any;
+    openExtensionPageMock.mockResolvedValue(undefined);
   });
 
   afterEach(() => {
@@ -80,10 +88,9 @@ describe('AddWalletMainComponent', () => {
 
     await user.click(screen.getByTestId('add-evm-wallet-from-ledger-button'));
 
-    expect(chromeManagementGetSelf).toHaveBeenCalled();
-    expect(chromeTabsCreate).toHaveBeenCalledWith({
-      url: 'chrome-extension://test-ext/add-evm-accounts-from-ledger.html?chainId=0x1',
-    });
+    expect(openExtensionPageMock).toHaveBeenCalledWith(
+      'add-evm-accounts-from-ledger.html?chainId=0x1',
+    );
   });
 
   it('renders on the EVM add wallet main screen', () => {

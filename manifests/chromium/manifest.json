@@ -10,7 +10,8 @@
     "alarms",
     "notifications",
     "webNavigation",
-    "offscreen"
+    "offscreen",
+    "sidePanel"
   ],
   "host_permissions": ["https://*/*", "http://*/*"],
   "action": {

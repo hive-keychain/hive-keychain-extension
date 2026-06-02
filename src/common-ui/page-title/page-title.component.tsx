@@ -68,7 +68,7 @@ const PageTitle = ({
   };
 
   const handleDetachWindow = () => {
-    DetachedExtensionTabUtils.openDetachedExtensionTab();
+    void DetachedExtensionTabUtils.openDetachedExtension();
   };
 
   return (

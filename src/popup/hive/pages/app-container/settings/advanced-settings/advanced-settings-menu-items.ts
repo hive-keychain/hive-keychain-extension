@@ -1,4 +1,5 @@
 import { Screen } from '@interfaces/screen.interface';
+import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
 
@@ -28,10 +29,9 @@ export const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
       label: 'ledger_link_ledger_device',
       icon: SVGIcons.MENU_ADVANCED_SETTINGS_LINK_LEDGER_DEVICE,
       action: async () => {
-        const extensionId = (await chrome.management.getSelf()).id;
-        chrome.tabs.create({
-          url: `chrome-extension://${extensionId}/link-ledger-device.html`,
-        });
+        await DetachedExtensionTabUtils.openExtensionPage(
+          'link-ledger-device.html',
+        );
       },
     },
     {

@@ -67,6 +67,7 @@ jest.mock('@popup/multichain/utils/chain.utils', () => ({
 
 jest.mock('@popup/multichain/utils/detached-extension-tab.utils', () => ({
   DetachedExtensionTabUtils: {
+    openDetachedExtension: jest.fn(),
     openDetachedExtensionTab: jest.fn(),
   },
 }));
@@ -337,7 +338,7 @@ describe('shortcuts-execution.utils', () => {
 
     expect(result).toEqual({ deferred: false });
     expect(
-      DetachedExtensionTabUtils.openDetachedExtensionTab,
+      DetachedExtensionTabUtils.openDetachedExtension,
     ).toHaveBeenCalledTimes(1);
     expect(store.dispatch).not.toHaveBeenCalled();
   });

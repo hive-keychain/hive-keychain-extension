@@ -21,6 +21,7 @@ import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
+import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
 import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent, {
@@ -254,10 +255,9 @@ const EvmAccounts = ({
     navigateTo(EvmScreen.IMPORT_EVM_WALLET_FROM_KEY);
   };
   const handleConnectLedgerWalletClick = async () => {
-    const extensionId = (await chrome.management.getSelf()).id;
-    chrome.tabs.create({
-      url: `chrome-extension://${extensionId}/add-evm-accounts-from-ledger.html?chainId=${chain.chainId}`,
-    });
+    await DetachedExtensionTabUtils.openExtensionPage(
+      `add-evm-accounts-from-ledger.html?chainId=${chain.chainId}`,
+    );
   };
 
   const handleDeleteSeedClick = async () => {

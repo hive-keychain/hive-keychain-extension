@@ -18,6 +18,7 @@ import {
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
+import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -192,10 +193,9 @@ const AddAccountMain = ({
   };
 
   const handleAddFromLedger = async () => {
-    const extensionId = (await chrome.management.getSelf()).id;
-    chrome.tabs.create({
-      url: `chrome-extension://${extensionId}/add-accounts-from-ledger.html`,
-    });
+    await DetachedExtensionTabUtils.openExtensionPage(
+      'add-accounts-from-ledger.html',
+    );
   };
 
   const handleAddEvmFromLedger = async () => {
@@ -204,10 +204,9 @@ const AddAccountMain = ({
       return;
     }
     await setChain(targetChain);
-    const extensionId = (await chrome.management.getSelf()).id;
-    chrome.tabs.create({
-      url: `chrome-extension://${extensionId}/add-evm-accounts-from-ledger.html?chainId=${targetChain.chainId}`,
-    });
+    await DetachedExtensionTabUtils.openExtensionPage(
+      `add-evm-accounts-from-ledger.html?chainId=${targetChain.chainId}`,
+    );
   };
 
   const handleSetupKeylessKeychain = async () => {

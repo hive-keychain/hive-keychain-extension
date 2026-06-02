@@ -669,7 +669,7 @@
   },
   "popup_html_detach_window": {
     "message": "In Tab öffnen",
-    "description": "Settings preferences menu: open extension in a browser tab"
+    "description": "Settings preferences menu: open Keychain outside the popup"
   },
   "popup_html_preferences_and_display": {
     "message": "Einstellungen und Anzeige",
@@ -2047,8 +2047,8 @@
     "description": "Shortcut action change theme"
   },
   "popup_html_shortcuts_action_open_in_tab": {
-    "message": "Open Keychain in tab",
-    "description": "Shortcut action open Keychain in a browser tab"
+    "message": "Open Keychain",
+    "description": "Shortcut action open Keychain outside the popup"
   },
   "popup_html_shortcuts_duplicate": {
     "message": "This shortcut is already assigned.",

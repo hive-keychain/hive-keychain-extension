@@ -38,7 +38,7 @@ export const getSettingsPreferencesDisplayMenuItems = ({
       label: 'popup_html_detach_window',
       icon: SVGIcons.MENU_USER_PREFERENCES_DETACH_EXTENSION,
       action: () => {
-        DetachedExtensionTabUtils.openDetachedExtensionTab();
+        void DetachedExtensionTabUtils.openDetachedExtension();
       },
     });
   }

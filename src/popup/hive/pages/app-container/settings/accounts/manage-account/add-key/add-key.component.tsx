@@ -17,6 +17,7 @@ import type { AuthorityType, ExtendedAccount } from '@hiveio/dhive';
 import { Screen } from '@interfaces/screen.interface';
 import { refreshActiveAccount } from '@popup/hive/actions/active-account.actions';
 import AccountUtils from '@popup/hive/utils/account.utils';
+import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
 import { ArrayUtils } from 'src/utils/array.utils';
 
 interface AddKeyNavParams {
@@ -76,10 +77,9 @@ const AddKey = ({
   };
 
   const navigateToUseLedger = async () => {
-    const extensionId = (await chrome.management.getSelf()).id;
-    chrome.tabs.create({
-      url: `chrome-extension://${extensionId}/add-key-from-ledger.html?keyType=${keyType}&username=${activeAccountName}`,
-    });
+    await DetachedExtensionTabUtils.openExtensionPage(
+      `add-key-from-ledger.html?keyType=${keyType}&username=${activeAccountName}`,
+    );
   };
 
   /** Memo uses `memo_key` (public key string), not an Authority — only owner/active/posting have account_auths. */

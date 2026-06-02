@@ -34,7 +34,7 @@
     position: sticky;
     top: 0;
     width: 100%;
-    max-height: 520px;
+    max-height: var(--wallet-background-max-height, 502px);
     border: 1px solid var(--card-border);
     box-sizing: border-box;
   }
