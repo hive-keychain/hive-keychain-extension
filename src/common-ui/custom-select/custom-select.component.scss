@@ -43,6 +43,14 @@
         width: 100%;
         font-size: $input-font-size;
         position: relative;
+
+        > span {
+          flex: 1;
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
         .left-image {
           height: 24px;
           width: 24px;
@@ -103,8 +111,9 @@
 
     .react-dropdown-select-dropdown {
       border-radius: 8px;
-      width: max-content;
-      min-width: 80px;
+      box-sizing: border-box;
+      width: 100%;
+      min-width: 100%;
       max-height: 210px;
       border: 1px solid var(--input-border);
       top: 60px;
@@ -112,6 +121,14 @@
       border-radius: 16px;
       @include radius-bound-dropdown-scrollbar;
       @include poppins500(14px);
+
+      .custom-select-dropdown,
+      .option,
+      .custom-select-item {
+        box-sizing: border-box;
+        width: 100%;
+      }
+
       .custom-select-dropdown {
         .filter-input {
           border: unset !important;
@@ -127,7 +144,7 @@
         .option {
           display: flex;
           flex-direction: column;
-          max-width: 320px;
+          max-width: unset;
           &:hover {
             background-color: $red;
             color: white;
@@ -152,7 +169,6 @@
           align-items: center;
           column-gap: 12px;
           padding: 10px 6px;
-          box-sizing: border-box;
           position: relative;
 
           .left-image {
@@ -199,6 +215,7 @@
             flex-direction: column;
             line-height: 14px;
             flex: 1;
+            min-width: 0;
             color: var(--main-font-color);
             text-overflow: ellipsis;
             white-space: nowrap;
