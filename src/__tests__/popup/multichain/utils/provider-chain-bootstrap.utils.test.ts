@@ -147,22 +147,14 @@ describe('provider chain bootstrap', () => {
     expect(removeListenerMock).toHaveBeenCalledTimes(1);
   });
 
-  it('skips provider bootstrap when the active tab has no stored origin chain and an ecosystem chain is known', async () => {
+  it('skips provider bootstrap when the active tab has no connected EVM accounts', async () => {
     const { getProviderBootstrapForPopup, CommunicationUtils } =
       await loadTestContext();
-    const hiveChain = {
-      chainId: 'beeab0de00000000000000000000000000000000000000000000000000000000',
-      name: 'HIVE',
-      type: 'HIVE',
-      logo: '',
-      rpcs: [],
-    };
 
     await expect(
       getProviderBootstrapForPopup({
-        tabOrigin: 'https://peakd.com',
-        ecosystemChain: hiveChain,
-        storedOriginChainId: null,
+        tabOrigin: 'https://example.com',
+        hasConnectedEvmAccountsForOrigin: false,
       }),
     ).resolves.toEqual({
       resolvedChain: null,
@@ -171,7 +163,7 @@ describe('provider chain bootstrap', () => {
     expect(CommunicationUtils.runtimeSendMessage).not.toHaveBeenCalled();
   });
 
-  it('bootstraps the provider when the active tab has no ecosystem match', async () => {
+  it('bootstraps the provider when the active tab has connected EVM accounts', async () => {
     const {
       getProviderBootstrapForPopup,
       CommunicationUtils,
@@ -190,8 +182,7 @@ describe('provider chain bootstrap', () => {
     const bootstrapPromise = getProviderBootstrapForPopup(
       {
         tabOrigin: 'https://example.com',
-        ecosystemChain: null,
-        storedOriginChainId: null,
+        hasConnectedEvmAccountsForOrigin: true,
       },
       1000,
     );
@@ -209,7 +200,7 @@ describe('provider chain bootstrap', () => {
     expect(CommunicationUtils.runtimeSendMessage).toHaveBeenCalledTimes(1);
   });
 
-  it('awaits provider bootstrap when the active tab has a stored origin chain', async () => {
+  it('awaits provider bootstrap for Ethereum when the active tab has connected EVM accounts', async () => {
     const {
       getProviderBootstrapForPopup,
       CommunicationUtils,
@@ -228,8 +219,7 @@ describe('provider chain bootstrap', () => {
     const bootstrapPromise = getProviderBootstrapForPopup(
       {
         tabOrigin: 'https://example.com',
-        ecosystemChain: null,
-        storedOriginChainId: '0x1',
+        hasConnectedEvmAccountsForOrigin: true,
       },
       1000,
     );

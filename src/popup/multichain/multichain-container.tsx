@@ -1,7 +1,10 @@
-import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setChain } from '@popup/multichain/actions/chain.actions';
 import { ChainComponentWithBoundary } from '@popup/multichain/chain.component';
-import { Chain } from '@popup/multichain/interfaces/chains.interface';
+import {
+  Chain,
+  ChainType,
+} from '@popup/multichain/interfaces/chains.interface';
 import { RootState, store } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
@@ -46,6 +49,7 @@ const MultichainContainer = ({
   const shortcutsRef = useRef<ShortcutDefinition[]>([]);
   const registeredCombosRef = useRef<string[]>([]);
   const pendingShortcutRef = useRef<PendingShortcut | null>(null);
+  const shouldPersistActiveChainRef = useRef(true);
 
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     // console.log({ event }, event.key, event.ctrlKey);
@@ -198,9 +202,11 @@ const MultichainContainer = ({
           ]);
           if (!isMounted) return;
 
-          const storedOriginChainId = tabOrigin
-            ? await EvmChainUtils.getStoredChainIdForOrigin(tabOrigin)
-            : null;
+          const connectedEvmWallets = tabOrigin
+            ? await EvmWalletUtils.getConnectedWallets(tabOrigin)
+            : [];
+          const hasConnectedEvmAccountsForOrigin =
+            connectedEvmWallets.length > 0;
 
           const ecosystemDapp = findDappByTabOrigin(categories, tabOrigin);
           const ecosystemChain = ecosystemDapp?.chainId
@@ -209,13 +215,12 @@ const MultichainContainer = ({
 
           const providerBootstrap = await getProviderBootstrapForPopup({
             tabOrigin,
-            ecosystemChain,
-            storedOriginChainId,
+            hasConnectedEvmAccountsForOrigin,
           });
           if (!isMounted) return;
 
           const hasRequestedProviderChain = !!(
-            tabOrigin && storedOriginChainId
+            tabOrigin && hasConnectedEvmAccountsForOrigin
           );
           const { chain: refinedChain, source: refinedChainSource } =
             resolvePopupInitialChain({
@@ -234,8 +239,15 @@ const MultichainContainer = ({
           }
 
           const currentChain = store.getState().chain as Chain | null;
+          const isTabInferredEvmChain =
+            (refinedChainSource === 'ecosystem' ||
+              refinedChainSource === 'provider') &&
+            refinedChain.type === ChainType.EVM;
           if (!isSameChain(currentChain, refinedChain)) {
-            setChain(refinedChain);
+            shouldPersistActiveChainRef.current = !isTabInferredEvmChain;
+            setChain(refinedChain, {
+              saveLastUsedChain: !isTabInferredEvmChain,
+            });
           }
         } catch {
           // Best-effort refinement only: keep stored/default chain on errors.
@@ -291,6 +303,10 @@ const MultichainContainer = ({
   }, [registerShortcuts]);
 
   useEffect(() => {
+    if (!shouldPersistActiveChainRef.current) {
+      shouldPersistActiveChainRef.current = true;
+      return;
+    }
     if (chain?.chainId?.length)
       LocalStorageUtils.saveValueInLocalStorage(
         LocalStorageKeyEnum.ACTIVE_CHAIN,
