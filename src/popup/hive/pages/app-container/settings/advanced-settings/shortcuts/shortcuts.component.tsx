@@ -206,6 +206,7 @@ const Shortcuts = ({
         ShortcutAccountType.HIVE,
         account.name,
       ),
+      img: `https://images.hive.blog/u/${account.name}/avatar`,
       subLabel: chrome.i18n.getMessage(
         'popup_html_shortcut_account_type_hive',
       ),
@@ -219,6 +220,7 @@ const Shortcuts = ({
             ShortcutAccountType.EVM,
             account.wallet.address,
           ),
+          img: SVGIcons.BLOCKCHAIN_ETHEREUM,
           subLabel: FormatUtils.shortenString(account.wallet.address, 6),
         })) ?? [];
 
@@ -541,6 +543,15 @@ const Shortcuts = ({
     }
     return targetOptions[0];
   }, [target, targetOptions]);
+
+  const selectedAccountTargetOption = useMemo<OptionItem>(() => {
+    if (target) {
+      const option = accountOptions.find((item) => item.value === target);
+      if (option) return option;
+      return { label: target, value: target };
+    }
+    return accountOptions[0];
+  }, [target, accountOptions]);
 
   const selectedCurrencyOption = useMemo<OptionItem>(() => {
     return (
@@ -965,16 +976,27 @@ const Shortcuts = ({
               setActionType(option.value as ShortcutActionType)
             }
           />
-          <ComplexeCustomSelect
-            label="popup_html_shortcuts_target"
-            skipLabelTranslation={false}
-            options={targetOptions}
-            selectedItem={selectedTargetOption}
-            setSelectedItem={(option) => setTarget(option.value)}
-            generateImageIfNull={
-              actionType === ShortcutActionType.CHANGE_CHAIN
-            }
-          />
+          {actionType === ShortcutActionType.CHANGE_ACCOUNT ? (
+            <ComplexeCustomSelect
+              label="popup_html_shortcuts_target"
+              skipLabelTranslation={false}
+              options={accountOptions}
+              selectedItem={selectedAccountTargetOption}
+              setSelectedItem={(option) => setTarget(option.value)}
+              additionalClassname="shortcuts-account-selector"
+            />
+          ) : (
+            <ComplexeCustomSelect
+              label="popup_html_shortcuts_target"
+              skipLabelTranslation={false}
+              options={targetOptions}
+              selectedItem={selectedTargetOption}
+              setSelectedItem={(option) => setTarget(option.value)}
+              generateImageIfNull={
+                actionType === ShortcutActionType.CHANGE_CHAIN
+              }
+            />
+          )}
           {requiresTransferChain && (
             <ComplexeCustomSelect
               label="popup_html_shortcut_transfer_chain_label"

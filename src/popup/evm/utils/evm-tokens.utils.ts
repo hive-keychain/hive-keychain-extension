@@ -371,10 +371,22 @@ const getTotalBalanceInMainToken = (
   tokens: NativeAndErc20Token[],
   chain: EvmChain,
 ) => {
-  const mainToken = tokens.find(
-    (token) =>
-      token.tokenInfo.symbol.toLowerCase() === chain.mainToken.toLowerCase(),
-  );
+  const normalizedMainTokenSymbol = chain?.mainToken?.toLowerCase();
+  if (!normalizedMainTokenSymbol) {
+    return 0;
+  }
+
+  const mainToken =
+    tokens.find((token) => {
+      const symbol = token?.tokenInfo?.symbol;
+      return (
+        typeof symbol === 'string' &&
+        symbol.toLowerCase() === normalizedMainTokenSymbol
+      );
+    }) ??
+    tokens.find(
+      (token) => token?.tokenInfo?.type === EVMSmartContractType.NATIVE,
+    );
 
   if (mainToken) {
     const valueInUsd = getTotalBalanceInUsd(tokens) || 0;

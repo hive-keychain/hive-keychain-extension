@@ -52,18 +52,13 @@ const SHORTCUT_NAVIGATION_SCREEN_MESSAGE_KEYS = {
     'popup_html_manage_accounts_authorities',
   [HiveScreen.SETTINGS_ADD_KEY]: 'popup_html_add_key',
   [HiveScreen.SETTINGS_ADVANCED]: 'popup_html_advanced_settings',
-  [HiveScreen.SETTINGS_RPC_NODES]: 'popup_html_rpc_node',
   [HiveScreen.SETTINGS_AUTO_LOCK]: 'popup_html_autolock',
   [HiveScreen.SETTINGS_KEYCHAINIFY]: 'popup_html_keychainify',
   [HiveScreen.SETTINGS_CLEAR_ALL_DATA]: 'popup_html_clear',
   [HiveScreen.SETTINGS_IMPORT_EXPORT]: 'popup_html_import_export_settings',
-  [HiveScreen.SETTINGS_USER_PREFERENCES]: 'popup_html_user_preferences',
   [HiveScreen.SETTINGS_AUTOMATED_TASKS]: 'popup_html_automated_tasks',
-  [HiveScreen.SETTINGS_AUTHORIZED_OPERATIONS]: 'popup_html_operations',
   [HiveScreen.SETTINGS_EXPORT_TRANSACTIONS]: 'popup_html_export_transactions',
-  [HiveScreen.SETTINGS_FAVORITE_ACCOUNTS]: 'popup_html_favorite_accounts',
   [HiveScreen.SETTINGS_MULTISIG]: 'popup_html_multisig',
-  [HiveScreen.SETTINGS_OPERATION_POPUP]: 'popup_html_operation_popup',
   [HiveScreen.SETTINGS_NOTIFICATIONS_CONFIGURATION]:
     'html_popup_settings_notifications',
 
@@ -75,14 +70,38 @@ const SHORTCUT_NAVIGATION_SCREEN_MESSAGE_KEYS = {
   [EvmScreen.EVM_CUSTOM_CHAINS]: 'evm_menu_custom_chains',
   [EvmScreen.EVM_CUSTOM_TOKENS_PAGE]: 'evm_custom_tokens_page_title',
   [EvmScreen.EVM_CUSTOM_NFTS_PAGE]: 'evm_custom_nfts_page_title',
-  [EvmScreen.EVM_RPC_NODES_SETTINGS]: 'evm_menu_rpc_node',
-  [EvmScreen.EVM_SECURITY_SETTINGS]: 'evm_menu_security',
-  [EvmScreen.EVM_PROVIDER_SETTINGS]: 'evm_menu_provider_compatibility',
 } as Partial<Record<ShortcutNavigationScreen, string>>;
+
+const LEGACY_SHORTCUT_NAVIGATION_SCREEN_REMAP: Partial<
+  Record<ShortcutNavigationScreen, ShortcutNavigationScreen>
+> = {
+  [HiveScreen.SETTINGS_RPC_NODES]: MultichainScreen.SETTINGS_NETWORK,
+  [HiveScreen.SETTINGS_USER_PREFERENCES]: MultichainScreen.SETTINGS_HIVE,
+  [HiveScreen.SETTINGS_AUTHORIZED_OPERATIONS]:
+    MultichainScreen.SETTINGS_CONNECTED_DAPPS,
+  [HiveScreen.SETTINGS_FAVORITE_ACCOUNTS]: MultichainScreen.SETTINGS_CONTACTS,
+  [HiveScreen.SETTINGS_OPERATION_POPUP]: MultichainScreen.SETTINGS_HIVE,
+  [EvmScreen.EVM_RPC_NODES_SETTINGS]: MultichainScreen.SETTINGS_NETWORK,
+  [EvmScreen.EVM_SECURITY_SETTINGS]: MultichainScreen.SETTINGS_EVM,
+  [EvmScreen.EVM_PROVIDER_SETTINGS]: MultichainScreen.SETTINGS_EVM,
+  [EvmScreen.EVM_DAPPS_CONNECTIONS]: MultichainScreen.SETTINGS_CONNECTED_DAPPS,
+  [EvmScreen.EVM_CONTACTS]: MultichainScreen.SETTINGS_CONTACTS,
+};
+
+const normalizeShortcutNavigationTarget = (screen: string): string => {
+  return (
+    LEGACY_SHORTCUT_NAVIGATION_SCREEN_REMAP[
+      screen as ShortcutNavigationScreen
+    ] ?? screen
+  );
+};
 
 const getShortcutNavigationScreenMessageKey = (
   screen: ShortcutNavigationScreen,
 ): string =>
+  (SHORTCUT_NAVIGATION_SCREEN_MESSAGE_KEYS as Partial<Record<string, string>>)[
+    normalizeShortcutNavigationTarget(screen)
+  ] ??
   (SHORTCUT_NAVIGATION_SCREEN_MESSAGE_KEYS as Partial<Record<string, string>>)[
     screen
   ] ?? `popup_html_shortcut_nav_${screen}`;
@@ -257,6 +276,7 @@ const HIVE_NAVIGATION_SCREENS: HiveScreen[] = [
   HiveScreen.SETTINGS_MANAGE_ACCOUNTS_AUTHORITIES,
   HiveScreen.SETTINGS_ADD_KEY,
   HiveScreen.SETTINGS_ADVANCED,
+  HiveScreen.SETTINGS_CHANGE_PASSWORD,
   HiveScreen.SETTINGS_AUTO_LOCK,
   HiveScreen.SETTINGS_KEYCHAINIFY,
   HiveScreen.SETTINGS_CLEAR_ALL_DATA,
@@ -271,6 +291,7 @@ const EVM_NAVIGATION_SCREENS: EvmScreen[] = [
   EvmScreen.LIFI_HISTORY_PAGE,
   EvmScreen.EVM_SETTINGS,
   EvmScreen.EVM_ACCOUNTS_SETTINGS,
+  EvmScreen.EVM_ADVANCED_SETTINGS,
   EvmScreen.EVM_CUSTOM_CHAINS,
   EvmScreen.EVM_CUSTOM_TOKENS_PAGE,
   EvmScreen.EVM_CUSTOM_NFTS_PAGE,
@@ -373,6 +394,7 @@ const ShortcutsUtils = {
   createShortcutId,
   buildShortcutAccountTarget,
   parseShortcutAccountTarget,
+  normalizeShortcutNavigationTarget,
   isHiveNavigationScreen,
   isEvmNavigationScreen,
   isSharedNavigationScreen,
@@ -395,6 +417,7 @@ export {
   isSharedNavigationScreen,
   NAVIGATION_SCREENS,
   normalizeShortcutCombo,
+  normalizeShortcutNavigationTarget,
   parseShortcutAccountTarget,
   SHARED_NAVIGATION_SCREENS,
   TOKEN_REQUIRED_SCREENS,

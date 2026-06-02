@@ -1,6 +1,8 @@
 import { Screen } from '@interfaces/screen.interface';
 import { ShortcutAccountType } from '@interfaces/shortcut.interface';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
+import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import ShortcutsUtils, {
   getShortcutNavigationScreenMessageKey,
 } from 'src/utils/shortcuts.utils';
@@ -104,6 +106,9 @@ describe('shortcuts.utils', () => {
       expect(ShortcutsUtils.NAVIGATION_SCREENS).toContain(
         EvmScreen.EVM_ACCOUNTS_SETTINGS,
       );
+      expect(ShortcutsUtils.NAVIGATION_SCREENS).not.toContain(
+        HiveScreen.SETTINGS_RPC_NODES,
+      );
       expect(ShortcutsUtils.CURRENCY_REQUIRED_SCREENS).toContain(
         Screen.TRANSFER_FUND_PAGE,
       );
@@ -115,8 +120,21 @@ describe('shortcuts.utils', () => {
     it('resolves an i18n message key for every shortcut navigation screen', () => {
       for (const screen of ShortcutsUtils.NAVIGATION_SCREENS) {
         const key = getShortcutNavigationScreenMessageKey(screen);
-        expect(key).toMatch(/^popup_html_|^html_popup_|^evm_|^dialog_/);
+        expect(key).toMatch(/^popup_html_|^html_popup_|^evm_|^dialog_|^hive_/);
       }
+    });
+
+    it('normalizes legacy settings targets to canonical multichain screens', () => {
+      expect(
+        ShortcutsUtils.normalizeShortcutNavigationTarget(
+          HiveScreen.SETTINGS_RPC_NODES,
+        ),
+      ).toBe(MultichainScreen.SETTINGS_NETWORK);
+      expect(
+        ShortcutsUtils.normalizeShortcutNavigationTarget(
+          EvmScreen.EVM_PROVIDER_SETTINGS,
+        ),
+      ).toBe(MultichainScreen.SETTINGS_EVM);
     });
   });
 

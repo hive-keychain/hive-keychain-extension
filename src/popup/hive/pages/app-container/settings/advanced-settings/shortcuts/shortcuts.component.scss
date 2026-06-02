@@ -167,31 +167,27 @@
   }
 
   .shortcuts-account-selector {
-    .label {
-      @include poppins500(14px);
-      margin-bottom: 8px;
-      color: var(--main-font-color);
+    .custom-select,
+    .react-dropdown-select-dropdown {
+      width: 100%;
     }
 
-    .select-account-section {
-      margin: 0;
-      padding: 5px;
-      border: 1px solid var(--input-border) !important;
-      border-radius: 66px !important;
+    .selected-item {
+      border-radius: 66px;
+      min-height: 44px;
+      padding: 4px 14px 4px 8px;
+    }
 
-      .react-dropdown-select-dropdown {
-        top: 52px;
-      }
+    .selected-item .left-image,
+    .selected-item .left-svg {
+      width: 30px;
+      height: 30px;
+    }
 
-      &.fullsize {
-        height: auto;
-        margin: 0;
-
-        .select-account-select {
-          height: auto;
-          border-width: 0px !important;
-        }
-      }
+    .custom-select-item .left-image,
+    .custom-select-item .left-svg {
+      width: 30px;
+      height: 30px;
     }
   }
 }
