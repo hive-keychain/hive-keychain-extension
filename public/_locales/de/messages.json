@@ -680,8 +680,8 @@
     "description": "Settings menu section for Hive and EVM chain-specific options"
   },
   "popup_html_help_and_about": {
-    "message": "Hilfe & Info",
-    "description": "Settings menu section for support, tutorial, and about Keychain"
+    "message": "Hilfe & Informationen",
+    "description": "Settings menu section for support, tutorial, and Keychain information"
   },
   "popup_html_wrong_key_tooltip_text": {
     "message": "Dieser Schlüssel scheint nicht zu Ihrem Account zu passen. Sie können damit keine Transaktionen durchführen. Sollten Sie die Schlüssel geändert haben, ersetzen Sie diese mit dem neuen.",

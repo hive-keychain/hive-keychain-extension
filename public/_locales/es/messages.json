@@ -681,7 +681,7 @@
   },
   "popup_html_help_and_about": {
     "message": "Ayuda e información",
-    "description": "Settings menu section for support, tutorial, and about Keychain"
+    "description": "Settings menu section for support, tutorial, and Keychain information"
   },
   "popup_html_wrong_key_tooltip_text": {
     "message": "Esta llave no parece coincidir con tu cuenta. No podrás realizar transacciones con ella. Si la has cambiado, elimina esta llave y reemplázala con la nueva.",

@@ -34,11 +34,19 @@ export const getSettingsMainPageMenuItems = ({
     },
   ];
 
-  if (hasEvmAccounts || hasHiveAccounts) {
+  if (hasHiveAccounts) {
     menuItems.push({
-      label: 'popup_html_chain_settings',
-      icon: SVGIcons.MENU_CHAIN_SETTINGS,
-      nextScreen: Screen.SETTINGS_CHAIN_SETTINGS,
+      label: 'hive_settings',
+      icon: SVGIcons.MENU_HIVE_SETTINGS,
+      nextScreen: Screen.SETTINGS_HIVE,
+    });
+  }
+
+  if (hasEvmAccounts) {
+    menuItems.push({
+      label: 'evm_settings',
+      icon: SVGIcons.MENU_EVM_SETTINGS,
+      nextScreen: Screen.SETTINGS_EVM,
     });
   }
 

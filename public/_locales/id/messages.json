@@ -680,8 +680,8 @@
     "description": "Settings menu section for Hive and EVM chain-specific options"
   },
   "popup_html_help_and_about": {
-    "message": "Bantuan & tentang",
-    "description": "Settings menu section for support, tutorial, and about Keychain"
+    "message": "Bantuan & informasi",
+    "description": "Settings menu section for support, tutorial, and Keychain information"
   },
   "popup_html_wrong_key_tooltip_text": {
     "message": "Kunci ini tidak sesuai dengan akun Anda, sehingga transaksi tidak dapat dilakukan. Jika Anda telah memperbarui kunci, harap hapus yang lama dan masukkan kunci yang baru",
