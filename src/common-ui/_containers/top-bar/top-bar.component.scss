@@ -22,6 +22,7 @@
     width: 220px;
     min-width: 220px;
     max-width: 220px;
+    flex-shrink: 0;
     overflow: hidden;
 
     .account-selector {
@@ -30,45 +31,65 @@
     }
   }
 
+  .fill-space {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
   .top-bar-chain-selector-slot {
-    flex: 0 0 32px;
-    width: 32px;
-    min-width: 32px;
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 52px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
 
+    &:empty {
+      display: none;
+      flex: 0 0 0;
+      width: 0;
+      min-width: 0;
+    }
+
     .chain-selector {
-      width: 32px;
+      width: auto;
 
       .custom-select {
-        width: 32px !important;
-        min-width: 32px !important;
+        width: auto !important;
+        min-width: 52px !important;
         height: 32px !important;
       }
 
       .react-dropdown-select {
-        width: 32px !important;
-        min-width: 32px !important;
+        width: auto !important;
+        min-width: 52px !important;
         height: 32px !important;
         padding: 0 !important;
       }
 
       .react-dropdown-select-content {
-        width: 32px;
-        justify-content: center;
+        width: auto;
+        flex: 1;
+        min-width: 0;
 
         .selected-item {
           padding: 4px;
-          width: 32px;
+          width: auto;
           box-sizing: border-box;
           justify-content: center;
         }
       }
 
       .react-dropdown-select-dropdown-handle {
-        display: none;
+        flex-shrink: 0;
+        width: 24px !important;
+        margin-left: unset !important;
+
+        .custom-select-handle {
+          height: 10px;
+          width: 10px;
+        }
       }
 
       .react-dropdown-select-dropdown {
@@ -104,12 +125,9 @@
     flex-direction: row;
     align-items: center;
     justify-content: flex-end;
-    flex: 0 0 58px;
-    width: 58px;
-    min-width: 58px;
+    flex: 0 0 auto;
     flex-shrink: 0;
     column-gap: 6px;
-    margin-right: 12px;
     .claim-button {
       height: 26px;
       width: 26px;

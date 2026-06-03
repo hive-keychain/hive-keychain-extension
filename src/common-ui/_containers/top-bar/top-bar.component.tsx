@@ -59,9 +59,11 @@ export const TopBarComponent = ({
       </div>
 
       <div className="account-selector-panel">{accountSelector}</div>
-      <div className="fill-space"></div>
+      <div className="fill-space" aria-hidden="true" />
       {hasActions && <div className="top-bar-actions">{actions}</div>}
-      <ChainDropdownComponent />
+      <div className="top-bar-chain-selector-slot">
+        <ChainDropdownComponent />
+      </div>
     </div>
   );
 };
