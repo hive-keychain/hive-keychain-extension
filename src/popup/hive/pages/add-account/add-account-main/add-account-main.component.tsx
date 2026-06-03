@@ -17,6 +17,7 @@ import {
   ChainType,
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
+import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
 import { RootState } from '@popup/multichain/store';
 import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -30,6 +31,8 @@ import { setAccounts } from 'src/popup/hive/actions/account.actions';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
+import { CommunicationUtils } from 'src/utils/communication.utils';
+import FileUtils from 'src/utils/file.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const AddAccountMain = ({
@@ -113,6 +116,32 @@ const AddAccountMain = ({
   };
 
   const handleImportKeys = (): void => {
+    if (ExtensionSurfaceUtils.isSidePanelPage()) {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.kc';
+      input.style.display = 'none';
+      input.onchange = async (event) => {
+        const selectedFile = (event.target as HTMLInputElement).files?.[0];
+        if (!selectedFile) {
+          input.remove();
+          return;
+        }
+
+        chrome.runtime.onMessage.addListener(onSentBackAccountsListener);
+        const base64 = await FileUtils.toBase64(selectedFile);
+        const fileData = atob(base64);
+        CommunicationUtils.runtimeSendMessage({
+          command: BackgroundCommand.IMPORT_ACCOUNTS,
+          value: fileData,
+        });
+        input.remove();
+      };
+      document.body.appendChild(input);
+      input.click();
+      return;
+    }
+
     chrome.windows.getCurrent(async (currentWindow) => {
       const win: chrome.windows.CreateData = {
         url: chrome.runtime.getURL('import-accounts.html'),
