@@ -125,15 +125,17 @@
     flex-direction: row;
     align-items: center;
     justify-content: flex-end;
-    flex: 0 0 auto;
+    flex: 1;
     flex-shrink: 0;
     column-gap: 6px;
+    padding-right: 2px;
+
     .claim-button {
-      height: 35px;
-      width: 35px;
+      height: 28px;
+      width: 28px;
       svg {
-        height: 35px;
-        width: 35px;
+        height: 28px;
+        width: 28px;
       }
 
       &:hover {
