@@ -29,8 +29,8 @@ html.sidepanel-page #root {
 }
 
 html.sidepanel-page #root .theme {
-  border: 1px solid var(--card-border);
-  border-radius: 8px;
+  border: none;
+  border-radius: 0;
   width: min(435px, 100%) !important;
   min-width: min(435px, 100%) !important;
   max-width: 435px !important;
@@ -69,6 +69,8 @@ html.sidepanel-page #root .theme .App .wallet-history-page .wallet-item-list {
 
 html.sidepanel-page #root .theme .App .splashscreen,
 html.sidepanel-page #root .theme .App .splashscreen .overlay {
+  border: none !important;
+  border-radius: 0 !important;
   width: 100% !important;
   height: 100% !important;
 }
