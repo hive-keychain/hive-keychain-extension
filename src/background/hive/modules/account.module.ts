@@ -36,7 +36,7 @@ const hasV2ExportVersionTag = (value: unknown) => {
 
 const getLedgerImportWarning = (): ImportCallbackPayload['warning'] => ({
   message: 'ledger_import_account_has_ledger',
-  params: [chrome.runtime.getURL('link-ledger-device.html')],
+  params: [chrome.runtime.getURL('popup.html#ledger/link-device')],
 });
 
 const hasHiveLedgerAccounts = (accounts: LocalAccount[]) =>

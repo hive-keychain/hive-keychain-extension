@@ -104,13 +104,11 @@ describe('DetachedExtensionTabUtils', () => {
     const open = jest.fn().mockResolvedValue(undefined);
     (chrome as any).sidePanel = { setOptions, setPanelBehavior, open };
 
-    await DetachedExtensionTabUtils.openExtensionPage(
-      'add-accounts-from-ledger.html',
-    );
+    await DetachedExtensionTabUtils.openExtensionPage('import-accounts.html');
 
     expect(setPanelBehavior).not.toHaveBeenCalled();
     expect(setOptions).toHaveBeenCalledWith({
-      path: 'add-accounts-from-ledger.html',
+      path: 'import-accounts.html',
       enabled: true,
     });
     expect(open).toHaveBeenCalledWith({ windowId: -2 });
@@ -121,15 +119,13 @@ describe('DetachedExtensionTabUtils', () => {
   });
 
   it('falls back to extension page tabs when sidePanel is unavailable', async () => {
-    await DetachedExtensionTabUtils.openExtensionPage(
-      'add-accounts-from-ledger.html',
-    );
+    await DetachedExtensionTabUtils.openExtensionPage('import-accounts.html');
 
     expect(chrome.runtime.getURL).toHaveBeenCalledWith(
-      'add-accounts-from-ledger.html',
+      'import-accounts.html',
     );
     expect(chrome.tabs.create).toHaveBeenCalledWith({
-      url: 'chrome-extension://test/add-accounts-from-ledger.html',
+      url: 'chrome-extension://test/import-accounts.html',
     });
   });
 });

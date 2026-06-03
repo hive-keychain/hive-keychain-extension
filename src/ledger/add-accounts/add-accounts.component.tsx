@@ -42,7 +42,19 @@ interface ImportAccountFormErrors {
   [key: string]: string;
 }
 
-const AddAccountsComponent = () => {
+interface AddAccountsComponentProps {
+  embedded?: boolean;
+  onAccountsAdded?: () => void | Promise<void>;
+  onClose?: () => void;
+  onLoadingChange?: (loading: boolean) => void;
+}
+
+const AddAccountsComponent = ({
+  embedded = false,
+  onAccountsAdded,
+  onClose,
+  onLoadingChange,
+}: AddAccountsComponentProps) => {
   const [loading, setLoading] = useState(false);
   const [selectableAccounts, setSelectableAccounts] = useState<LocalAccount[]>(
     [],
@@ -54,8 +66,10 @@ const AddAccountsComponent = () => {
 
   const [theme, setTheme] = useState<Theme>();
   useEffect(() => {
-    initTheme();
-  }, []);
+    if (!embedded) {
+      initTheme();
+    }
+  }, [embedded]);
 
   const initTheme = async () => {
     const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([
@@ -73,9 +87,14 @@ const AddAccountsComponent = () => {
     HiveTxUtils.setRpc(await RpcUtils.getCurrentRpc());
   };
 
+  const setLedgerLoading = (isLoading: boolean) => {
+    setLoading(isLoading);
+    onLoadingChange?.(isLoading);
+  };
+
   const discoverAccounts = async () => {
     setMessage('');
-    setLoading(true);
+    setLedgerLoading(true);
     try {
       if (await LedgerUtils.init(true)) {
         let discoveredAccounts = await LedgerUtils.getAllAccounts();
@@ -109,7 +128,7 @@ const AddAccountsComponent = () => {
           }),
         );
 
-        setLoading(false);
+        setLedgerLoading(false);
         if (filteredDiscoveredAccounts.length === 0) {
           setMessage('all_ledger_accounts_already_imported');
           setStep(SynchronizeLedgerStep.FINISHED);
@@ -125,7 +144,7 @@ const AddAccountsComponent = () => {
       }
     } catch (err: any) {
       Logger.log(err);
-      setLoading(false);
+      setLedgerLoading(false);
       setMessage(ErrorUtils.parseLedger(err).message);
     }
   };
@@ -175,7 +194,7 @@ const AddAccountsComponent = () => {
   };
 
   const processDiscoveredAccounts = async () => {
-    setLoading(true);
+    setLedgerLoading(true);
     const localAccounts: LocalAccount[] = [];
     for (const accForm of accountsForm) {
       localAccounts.push({
@@ -184,9 +203,18 @@ const AddAccountsComponent = () => {
       });
     }
     await AccountUtils.addMultipleAccounts(localAccounts);
+    await onAccountsAdded?.();
     setMessage('add_accounts_from_ledger_sucessful');
     setStep(SynchronizeLedgerStep.FINISHED);
-    setLoading(false);
+    setLedgerLoading(false);
+  };
+
+  const closePage = () => {
+    if (onClose) {
+      onClose();
+      return;
+    }
+    window.close();
   };
 
   const verifyForm = async () => {
@@ -294,9 +322,9 @@ const AddAccountsComponent = () => {
   };
 
   const goNextPage = async () => {
-    setLoading(true);
+    setLedgerLoading(true);
     const keys = await verifyForm();
-    setLoading(false);
+    setLedgerLoading(false);
     if (keys) {
       const newForm = [...accountsForm];
       newForm[currentAccount].keys = keys;
@@ -311,11 +339,14 @@ const AddAccountsComponent = () => {
   };
 
   return (
-    <div className={`theme ${theme} connect-ledger`}>
-      <div className="title-panel">
-        <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
-        <div className="title">{chrome.i18n.getMessage(step)}</div>
-      </div>
+    <div
+      className={`${embedded ? 'embedded-ledger-page ' : `theme ${theme} `}connect-ledger`}>
+      {!embedded && (
+        <div className="title-panel">
+          <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
+          <div className="title">{chrome.i18n.getMessage(step)}</div>
+        </div>
+      )}
 
       {step === SynchronizeLedgerStep.DISCOVER_ACCOUNTS && (
         <div className="account-discovery">
@@ -445,13 +476,13 @@ const AddAccountsComponent = () => {
           <div className="bottom-button-panel">
             <ButtonComponent
               label="popup_html_close"
-              onClick={() => window.close()}
+              onClick={closePage}
             />
           </div>
         </>
       )}
 
-      <LoadingComponent hide={!loading} />
+      {!embedded && <LoadingComponent hide={!loading} />}
     </div>
   );
 };

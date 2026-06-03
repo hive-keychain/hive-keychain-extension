@@ -18,7 +18,7 @@ import {
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
-import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
+import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -193,20 +193,30 @@ const AddAccountMain = ({
   };
 
   const handleAddFromLedger = async () => {
-    await DetachedExtensionTabUtils.openExtensionPage(
-      'add-accounts-from-ledger.html',
-    );
+    if (
+      await LedgerRouteUtils.openInSidePanelFromToolbarPopup(
+        LedgerRouteUtils.ADD_HIVE_ACCOUNTS_HASH,
+      )
+    ) {
+      return;
+    }
+    navigateTo(Screen.ACCOUNT_PAGE_ADD_ACCOUNTS_FROM_LEDGER);
   };
 
   const handleAddEvmFromLedger = async () => {
+    if (
+      await LedgerRouteUtils.openInSidePanelFromToolbarPopup(
+        LedgerRouteUtils.ADD_EVM_ACCOUNTS_HASH,
+      )
+    ) {
+      return;
+    }
     const targetChain = await resolveEvmAddAccountChain();
     if (!targetChain) {
       return;
     }
     await setChain(targetChain);
-    await DetachedExtensionTabUtils.openExtensionPage(
-      `add-evm-accounts-from-ledger.html?chainId=${targetChain.chainId}`,
-    );
+    navigateTo(Screen.EVM_ADD_ACCOUNTS_FROM_LEDGER);
   };
 
   const handleSetupKeylessKeychain = async () => {
@@ -227,7 +237,15 @@ const AddAccountMain = ({
     return classNames.join(' ');
   };
 
-  const handleMenuItemClick = (menuItem: MenuItem) => {
+  const handleMenuItemClick = async (menuItem: MenuItem) => {
+    if (
+      menuItem.sidePanelHash &&
+      (await LedgerRouteUtils.openInSidePanelFromToolbarPopup(
+        menuItem.sidePanelHash,
+      ))
+    ) {
+      return;
+    }
     if (menuItem.nextScreen) {
       navigateTo(menuItem.nextScreen);
       return;
@@ -283,6 +301,7 @@ const AddAccountMain = ({
                 icon: SVGIcons.MENU_ADVANCED_SETTINGS_LINK_LEDGER_DEVICE,
                 label: 'popup_html_add_account_with_ledger',
                 action: handleAddFromLedger,
+                sidePanelHash: LedgerRouteUtils.ADD_HIVE_ACCOUNTS_HASH,
               },
             ]
           : []),
@@ -335,6 +354,7 @@ const AddAccountMain = ({
                 icon: SVGIcons.MENU_ADVANCED_SETTINGS_LINK_LEDGER_DEVICE,
                 label: 'popup_html_add_account_with_ledger',
                 action: () => void handleAddEvmFromLedger(),
+                sidePanelHash: LedgerRouteUtils.ADD_EVM_ACCOUNTS_HASH,
               },
             ]
           : []),

@@ -54,7 +54,7 @@ describe('add-account-main.component tests:\n', () => {
     it('Must navigate to add-by-keys', async () => {
       await act(async () => {
         await userEvent.click(
-          await screen.findByText('Use a private key or master password'),
+          await screen.findByText('Import by private key'),
         );
       });
       expect(
@@ -148,14 +148,14 @@ describe('add-account-main.component tests:\n', () => {
       });
 
       expect(
-        screen.getByText('Use a private key or master password'),
+        screen.getByText('Import by private key'),
       ).toBeInTheDocument();
       expect(screen.getByText('Create account')).toBeInTheDocument();
 
       await userEvent.click(screen.getByTestId('add-account-type-evm'));
 
       expect(
-        screen.queryByText('Use a private key or master password'),
+        screen.queryByText('Import by private key'),
       ).not.toBeInTheDocument();
       expect(
         screen.getByText('Import from a seedphrase'),
@@ -165,6 +165,32 @@ describe('add-account-main.component tests:\n', () => {
       ).toBeInTheDocument();
       expect(screen.getByText('Import from a private key')).toBeInTheDocument();
       expect(screen.getByText('Create a new EVM wallet')).toBeInTheDocument();
+    });
+
+    it('opens the Hive Ledger add-accounts page inside the popup', async () => {
+      const { store } = customRender(<AddAccountMainComponent />, {
+        initialState: {
+          ...initialEmptyStateStore,
+          hive: {
+            ...initialEmptyStateStore.hive,
+            accounts: accounts.twoAccounts,
+            appStatus: {
+              ...initialEmptyStateStore.hive.appStatus,
+              isLedgerSupported: true,
+            },
+          },
+        },
+      });
+
+      await userEvent.click(
+        screen.getByTestId(
+          'menu-settings-button-menu/advanced-settings/link-ledger-device',
+        ),
+      );
+
+      expect(store.getState().navigation.stack[0].currentPage).toBe(
+        Screen.ACCOUNT_PAGE_ADD_ACCOUNTS_FROM_LEDGER,
+      );
     });
 
     it('switches to an EVM chain before navigating to an EVM add method', async () => {

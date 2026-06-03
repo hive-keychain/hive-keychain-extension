@@ -41,7 +41,21 @@ const LEDGER_DERIVATION_MODES = [
   EvmLedgerDerivationMode.LEGACY,
 ];
 
-const AddEvmAccountsComponent = () => {
+interface AddEvmAccountsComponentProps {
+  chain?: EvmChain;
+  embedded?: boolean;
+  onAccountsAdded?: () => void | Promise<void>;
+  onClose?: () => void;
+  onLoadingChange?: (loading: boolean) => void;
+}
+
+const AddEvmAccountsComponent = ({
+  chain: initialChain,
+  embedded = false,
+  onAccountsAdded,
+  onClose,
+  onLoadingChange,
+}: AddEvmAccountsComponentProps) => {
   const [loading, setLoading] = useState(false);
   const [selectableAccounts, setSelectableAccounts] = useState<
     EvmLedgerWalletWithBalance[]
@@ -64,16 +78,20 @@ const AddEvmAccountsComponent = () => {
   }, []);
 
   const init = async () => {
-    const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([
-      LocalStorageKeyEnum.ACTIVE_THEME,
-    ]);
-    setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
+    if (!embedded) {
+      const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([
+        LocalStorageKeyEnum.ACTIVE_THEME,
+      ]);
+      setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
+    }
 
     const queryParams = new URLSearchParams(window.location.search);
     const chainId = queryParams.get('chainId');
-    const loadedChain = chainId
-      ? await ChainUtils.getChain<EvmChain>(chainId)
-      : await EvmChainUtils.getLastEvmChain();
+    const loadedChain =
+      initialChain ??
+      (chainId
+        ? await ChainUtils.getChain<EvmChain>(chainId)
+        : await EvmChainUtils.getLastEvmChain());
     setChain(loadedChain);
     setLocalAccounts(await loadLocalAccounts());
   };
@@ -88,6 +106,11 @@ const AddEvmAccountsComponent = () => {
   const loadLocalAccounts = async () => {
     const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
     return mk ? await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk) : [];
+  };
+
+  const setLedgerLoading = (isLoading: boolean) => {
+    setLoading(isLoading);
+    onLoadingChange?.(isLoading);
   };
 
   const getLedgerPathMetadata = (accounts: EvmAccount[]) =>
@@ -132,7 +155,7 @@ const AddEvmAccountsComponent = () => {
     if (!chain) return;
 
     setMessage('');
-    setLoading(true);
+    setLedgerLoading(true);
     try {
       await EvmLedgerUtils.init(true);
       const refreshedLocalAccounts = await loadLocalAccounts();
@@ -168,7 +191,7 @@ const AddEvmAccountsComponent = () => {
       Logger.log(error);
       setMessage(getErrorMessage(error));
     } finally {
-      setLoading(false);
+      setLedgerLoading(false);
     }
   };
 
@@ -195,7 +218,7 @@ const AddEvmAccountsComponent = () => {
   const processDiscoveredAccounts = async () => {
     if (!chain || selectedAccounts.length === 0) return;
 
-    setLoading(true);
+    setLedgerLoading(true);
     try {
       const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
       if (!mk) {
@@ -219,11 +242,12 @@ const AddEvmAccountsComponent = () => {
       );
       setMessage('add_accounts_from_ledger_sucessful');
       setStep(AddEvmAccountsFromLedgerStep.FINISHED);
+      await onAccountsAdded?.();
     } catch (error: any) {
       Logger.log(error);
       setMessage(getErrorMessage(error));
     } finally {
-      setLoading(false);
+      setLedgerLoading(false);
     }
   };
 
@@ -249,12 +273,25 @@ const AddEvmAccountsComponent = () => {
     ]);
   };
 
+  const close = () => {
+    if (onClose) {
+      onClose();
+      return;
+    }
+    window.close();
+  };
+
   return (
-    <div className={`theme ${theme} connect-ledger`}>
-      <div className="title-panel">
-        <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
-        <div className="title">{chrome.i18n.getMessage(step)}</div>
-      </div>
+    <div
+      className={`${
+        embedded ? 'embedded-ledger-page' : `theme ${theme}`
+      } connect-ledger`}>
+      {!embedded && (
+        <div className="title-panel">
+          <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
+          <div className="title">{chrome.i18n.getMessage(step)}</div>
+        </div>
+      )}
 
       {step === AddEvmAccountsFromLedgerStep.DISCOVER_ACCOUNTS && (
         <div className="account-discovery">
@@ -328,14 +365,14 @@ const AddEvmAccountsComponent = () => {
           <div className="bottom-button-panel">
             <ButtonComponent
               label="popup_html_close"
-              onClick={() => window.close()}
+              onClick={close}
               type={ButtonType.IMPORTANT}
             />
           </div>
         </>
       )}
 
-      <LoadingComponent hide={!loading} />
+      {!embedded && <LoadingComponent hide={!loading} />}
     </div>
   );
 };

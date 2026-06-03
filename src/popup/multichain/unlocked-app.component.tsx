@@ -32,6 +32,7 @@ import { LoadingState } from '@popup/multichain/reducers/loading.reducer';
 import { RootState } from '@popup/multichain/store';
 import { UnifiedRouterComponent } from '@popup/multichain/unified-router.component';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
 import { resolvePopupStartup } from '@popup/multichain/utils/popup-startup.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -474,6 +475,23 @@ const UnlockedApp = ({
               });
               return;
             }
+          }
+          const ledgerRoute = LedgerRouteUtils.parseHash(window.location.hash);
+          if (ledgerRoute) {
+            LedgerRouteUtils.clearHash();
+            if (ledgerRoute.screen === Screen.EVM_ADD_ACCOUNTS_FROM_LEDGER) {
+              const targetChain = await resolveEvmChain(chain);
+              if (targetChain) {
+                await setChain(targetChain);
+                setActiveAccountType(ChainType.EVM);
+              }
+            }
+            if (ledgerRoute.params) {
+              navigateToWithParams(ledgerRoute.screen, ledgerRoute.params, true);
+            } else {
+              navigateTo(ledgerRoute.screen, true);
+            }
+            return;
           }
         }
         navigateTo(Screen.HOME_PAGE, true);

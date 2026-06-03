@@ -14,11 +14,7 @@ const config = {
     importAccounts: './src/import/import-accounts.tsx',
     importSettings: './src/import/import-settings.tsx',
     multisigDialog: './src/multisig/multisig-dialog.tsx',
-    addKeyFromLedger: './src/ledger/add-key/index.tsx',
-    linkLedgerDevice: './src/ledger/link-device/index.tsx',
     peakdNotificationsConfig: './src/peakd-notifications-config/index.tsx',
-    addAccountsFromLedger: './src/ledger/add-accounts/index.tsx',
-    addEvmAccountsFromLedger: './src/ledger/add-evm-accounts/index.tsx',
     web_interface: './src/content-scripts/hive/web-interface/index.ts',
     keychainify: './src/content-scripts/hive/keychainify/index.ts',
     evmKeychainLegacyPreferred:

@@ -1,5 +1,4 @@
 import { Screen } from '@interfaces/screen.interface';
-import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
 import '@testing-library/jest-dom';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -10,22 +9,7 @@ import { AddWalletMainComponent } from 'src/popup/evm/pages/add-wallets/add-wall
 import { EvmScreen } from 'src/popup/evm/reference-data/evm-screen.enum';
 import { ChainType } from 'src/popup/multichain/interfaces/chains.interface';
 
-jest.mock('@popup/multichain/utils/detached-extension-tab.utils', () => ({
-  DetachedExtensionTabUtils: {
-    openExtensionPage: jest.fn(),
-  },
-}));
-
 describe('AddWalletMainComponent', () => {
-  const openExtensionPageMock =
-    DetachedExtensionTabUtils.openExtensionPage as jest.MockedFunction<
-      typeof DetachedExtensionTabUtils.openExtensionPage
-    >;
-
-  beforeEach(() => {
-    openExtensionPageMock.mockResolvedValue(undefined);
-  });
-
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -82,15 +66,17 @@ describe('AddWalletMainComponent', () => {
     });
   });
 
-  it('opens the Ledger add-accounts page for the current chain', async () => {
+  it('navigates to the Ledger add-accounts page in the popup', async () => {
     const user = userEvent.setup();
-    renderSetupPage();
+    const { store } = renderSetupPage();
 
     await user.click(screen.getByTestId('add-evm-wallet-from-ledger-button'));
 
-    expect(openExtensionPageMock).toHaveBeenCalledWith(
-      'add-evm-accounts-from-ledger.html?chainId=0x1',
-    );
+    await waitFor(() => {
+      expect(store.getState().navigation.stack[0]?.currentPage).toBe(
+        EvmScreen.EVM_ADD_ACCOUNTS_FROM_LEDGER,
+      );
+    });
   });
 
   it('renders on the EVM add wallet main screen', () => {

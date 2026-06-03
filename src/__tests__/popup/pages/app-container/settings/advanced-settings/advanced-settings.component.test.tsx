@@ -1,5 +1,4 @@
 import { Screen } from '@interfaces/screen.interface';
-import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -13,25 +12,13 @@ import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import getAdvancedSettingsMenuItems from 'src/popup/hive/pages/app-container/settings/advanced-settings/advanced-settings-menu-items';
 
-jest.mock('@popup/multichain/utils/detached-extension-tab.utils', () => ({
-  DetachedExtensionTabUtils: {
-    openExtensionPage: jest.fn(),
-  },
-}));
-
 describe('advanced-settings.component tests:\n', () => {
-  const openExtensionPageMock =
-    DetachedExtensionTabUtils.openExtensionPage as jest.MockedFunction<
-      typeof DetachedExtensionTabUtils.openExtensionPage
-    >;
-
   afterEach(() => {
     jest.clearAllMocks();
     jest.resetModules();
     cleanup();
   });
   beforeEach(async () => {
-    openExtensionPageMock.mockResolvedValue(undefined);
     const base = initialStates.iniStateAs.defaultExistent;
     await reactTestingLibrary.renderWithConfiguration(
       <HiveAppComponent />,
@@ -95,7 +82,7 @@ describe('advanced-settings.component tests:\n', () => {
     }
   });
 
-  it('Must open the Ledger menu outside the popup', async () => {
+  it('Must open the Ledger menu inside the popup', async () => {
     const ledgerMenuItem = getAdvancedSettingsMenuItems(true).filter(
       (item) => item.label === 'ledger_link_ledger_device',
     )[0];
@@ -104,8 +91,8 @@ describe('advanced-settings.component tests:\n', () => {
         screen.getByTestId(dataTestIdButton.menuPreFix + ledgerMenuItem.icon),
       );
     });
-    expect(openExtensionPageMock).toHaveBeenCalledWith(
-      'link-ledger-device.html',
-    );
+    expect(
+      screen.getByTestId(`${Screen.SETTINGS_LINK_LEDGER_DEVICE}-page`),
+    ).toBeInTheDocument();
   });
 });

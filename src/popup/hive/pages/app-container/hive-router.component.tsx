@@ -26,6 +26,9 @@ import { AddByAuthComponent } from 'src/popup/hive/pages/add-account/add-by-auth
 import { AddByKeysComponent } from 'src/popup/hive/pages/add-account/add-by-keys/add-by-keys.component';
 import { ImportKeysComponent } from 'src/popup/hive/pages/add-account/import-keys/import-keys.component';
 import { SelectKeysComponent } from 'src/popup/hive/pages/add-account/select-keys/select-keys.component';
+import { AddAccountsFromLedgerComponent } from 'src/popup/hive/pages/ledger/add-accounts-from-ledger.component';
+import { AddKeyFromLedgerComponent } from 'src/popup/hive/pages/ledger/add-key-from-ledger.component';
+import { LinkLedgerDeviceComponent } from 'src/popup/hive/pages/ledger/link-ledger-device.component';
 import { BuyCoinsComponent } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins.component';
 import { ConversionComponent } from 'src/popup/hive/pages/app-container/home/conversion/conversion.component';
 import { PendingConversionPageComponent } from 'src/popup/hive/pages/app-container/home/conversion/pending-conversion/pending-conversion.component';
@@ -137,6 +140,8 @@ const AppRouter = ({
         return <KeylessKeychainComponent />;
       case Screen.ACCOUNT_PAGE_ADD_BY_AUTH:
         return <AddByAuthComponent />;
+      case HiveScreen.ACCOUNT_PAGE_ADD_ACCOUNTS_FROM_LEDGER:
+        return <AddAccountsFromLedgerComponent />;
       case HiveScreen.ACCOUNT_PAGE_IMPORT_KEYS:
         return <ImportKeysComponent />;
       case HiveScreen.ACCOUNT_PAGE_SELECT_KEYS:
@@ -151,8 +156,12 @@ const AppRouter = ({
         return <ExportedAccountsQRComponent />;
       case Screen.SETTINGS_ADD_KEY:
         return <AddKeyComponent />;
+      case HiveScreen.SETTINGS_ADD_KEY_FROM_LEDGER:
+        return <AddKeyFromLedgerComponent />;
       case HiveScreen.SETTINGS_ADVANCED:
         return <AdvancedSettingsPageComponent />;
+      case HiveScreen.SETTINGS_LINK_LEDGER_DEVICE:
+        return <LinkLedgerDeviceComponent />;
 
       case HiveScreen.SETTINGS_IMPORT_EXPORT:
       case Screen.SETTINGS_IMPORT_EXPORT:

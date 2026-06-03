@@ -1,5 +1,5 @@
 import { Screen } from '@interfaces/screen.interface';
-import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
+import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
 
@@ -28,11 +28,8 @@ export const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
     {
       label: 'ledger_link_ledger_device',
       icon: SVGIcons.MENU_ADVANCED_SETTINGS_LINK_LEDGER_DEVICE,
-      action: async () => {
-        await DetachedExtensionTabUtils.openExtensionPage(
-          'link-ledger-device.html',
-        );
-      },
+      nextScreen: Screen.SETTINGS_LINK_LEDGER_DEVICE,
+      sidePanelHash: LedgerRouteUtils.LINK_DEVICE_HASH,
     },
     {
       label: 'popup_html_import_export_settings',

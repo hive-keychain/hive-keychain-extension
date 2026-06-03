@@ -21,9 +21,13 @@ import {
 import { KeylessKeychainComponent } from '@popup/hive/pages/add-account/keyless-keychain/keyless-keychain.component';
 import { AppRouterComponent } from '@popup/hive/pages/app-container/hive-router.component';
 import { setMk } from '@popup/multichain/actions/mk.actions';
-import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
 import { SignInRouterComponent } from '@popup/multichain/pages/sign-in/sign-in-router.component';
 import { RootState } from '@popup/multichain/store';
+import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect, useStore } from 'react-redux';
@@ -69,6 +73,7 @@ const HiveApp = ({
   appStatus,
   setMk,
   navigateTo,
+  navigateToWithParams,
   loadActiveAccount,
   switchToRpc,
   displayChangeRpcPopup,
@@ -248,6 +253,16 @@ const HiveApp = ({
       // on a setup screen but accounts are now non-empty; go to home.
       const navStack = store.getState().navigation.stack;
       if (navStack.length === 0 || stackHasAccountSetupPage(navStack)) {
+        const ledgerRoute = LedgerRouteUtils.parseHash(window.location.hash);
+        if (ledgerRoute) {
+          LedgerRouteUtils.clearHash();
+          if (ledgerRoute.params) {
+            navigateToWithParams(ledgerRoute.screen, ledgerRoute.params, true);
+          } else {
+            navigateTo(ledgerRoute.screen, true);
+          }
+          return;
+        }
         navigateTo(Screen.HOME_PAGE, true);
       }
     } else if (mk && mk.length > 0) {
@@ -379,6 +394,7 @@ const connector = connect(mapStateToProps, {
   setMk,
   retrieveAccounts,
   navigateTo,
+  navigateToWithParams,
   refreshActiveAccount,
   setAccounts,
   setEvmAccounts,

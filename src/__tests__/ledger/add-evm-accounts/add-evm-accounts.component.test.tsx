@@ -53,7 +53,7 @@ describe('AddEvmAccountsComponent', () => {
     window.history.pushState(
       {},
       '',
-      '/add-evm-accounts-from-ledger.html?chainId=0x1',
+      '/popup.html?chainId=0x1',
     );
     global.chrome.i18n.getMessage = jest.fn((key: string, params?: string[]) =>
       params?.length ? `${key}:${params.join('|')}` : key,

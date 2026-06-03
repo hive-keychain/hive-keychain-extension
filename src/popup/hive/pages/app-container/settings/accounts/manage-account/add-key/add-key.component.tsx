@@ -2,7 +2,10 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/multichain/actions/message.actions';
-import { goBack } from '@popup/multichain/actions/navigation.actions';
+import {
+  goBack,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
@@ -17,7 +20,7 @@ import type { AuthorityType, ExtendedAccount } from '@hiveio/dhive';
 import { Screen } from '@interfaces/screen.interface';
 import { refreshActiveAccount } from '@popup/hive/actions/active-account.actions';
 import AccountUtils from '@popup/hive/utils/account.utils';
-import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
+import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
 import { ArrayUtils } from 'src/utils/array.utils';
 
 interface AddKeyNavParams {
@@ -49,6 +52,7 @@ const AddKey = ({
   refreshActiveAccount,
   setSuccessMessage,
   goBack,
+  navigateToWithParams,
   isLedgerSupported,
 }: PropsType) => {
   const [privateKey, setPrivateKey] = useState('');
@@ -77,9 +81,20 @@ const AddKey = ({
   };
 
   const navigateToUseLedger = async () => {
-    await DetachedExtensionTabUtils.openExtensionPage(
-      `add-key-from-ledger.html?keyType=${keyType}&username=${activeAccountName}`,
-    );
+    if (!activeAccountName) {
+      return;
+    }
+    if (
+      await LedgerRouteUtils.openInSidePanelFromToolbarPopup(
+        LedgerRouteUtils.buildAddKeyHash(keyType, activeAccountName),
+      )
+    ) {
+      return;
+    }
+    navigateToWithParams(Screen.SETTINGS_ADD_KEY_FROM_LEDGER, {
+      keyType,
+      username: activeAccountName,
+    });
   };
 
   /** Memo uses `memo_key` (public key string), not an Authority — only owner/active/posting have account_auths. */
@@ -226,6 +241,7 @@ const connector = connect(mapStateToProps, {
   setErrorMessage,
   setSuccessMessage,
   refreshActiveAccount,
+  navigateToWithParams,
 });
 type PropsType = ConnectedProps<typeof connector>;
 

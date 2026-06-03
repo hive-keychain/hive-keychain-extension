@@ -1,11 +1,11 @@
 import { Screen } from '@interfaces/screen.interface';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmWalletSetupTabUtils } from '@popup/evm/utils/evm-wallet-setup-tab.utils';
-import { resetChain, setChain } from '@popup/multichain/actions/chain.actions';
+import { resetChain } from '@popup/multichain/actions/chain.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
-import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
+import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
 import React, { useEffect } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
@@ -17,9 +17,7 @@ const AddWalletMain = ({
   navigateTo,
   setTitleContainerProperties,
   hasFinishedSignup,
-  chain,
   resetChain,
-  setChain,
   resetOnBack,
   isLedgerSupported,
 }: PropsFromRedux) => {
@@ -88,9 +86,14 @@ const AddWalletMain = ({
   // };
 
   const handleAddFromLedger = async () => {
-    await DetachedExtensionTabUtils.openExtensionPage(
-      `add-evm-accounts-from-ledger.html?chainId=${chain.chainId}`,
-    );
+    if (
+      await LedgerRouteUtils.openInSidePanelFromToolbarPopup(
+        LedgerRouteUtils.ADD_EVM_ACCOUNTS_HASH,
+      )
+    ) {
+      return;
+    }
+    navigateTo(EvmScreen.EVM_ADD_ACCOUNTS_FROM_LEDGER);
   };
 
   return (
@@ -144,7 +147,6 @@ const AddWalletMain = ({
 const mapStateToProps = (state: RootState) => {
   return {
     hasFinishedSignup: state.hasFinishedSignup,
-    chain: state.chain,
     resetOnBack: state.navigation.stack[0]?.params?.resetOnBack,
     isLedgerSupported: state.evm.appStatus.isLedgerSupported,
   };
@@ -154,7 +156,6 @@ const connector = connect(mapStateToProps, {
   navigateTo,
   setTitleContainerProperties,
   resetChain,
-  setChain,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

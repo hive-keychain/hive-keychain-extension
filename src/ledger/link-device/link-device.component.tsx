@@ -9,13 +9,27 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
-const LinkLedgerDevice = () => {
+interface LinkLedgerDeviceProps {
+  embedded?: boolean;
+  onClose?: () => void;
+  onLinked?: () => void;
+  onLoadingChange?: (loading: boolean) => void;
+}
+
+const LinkLedgerDevice = ({
+  embedded = false,
+  onClose,
+  onLinked,
+  onLoadingChange,
+}: LinkLedgerDeviceProps) => {
   const [done, setDone] = useState(false);
 
   const [theme, setTheme] = useState<Theme>();
   useEffect(() => {
-    init();
-  }, []);
+    if (!embedded) {
+      init();
+    }
+  }, [embedded]);
 
   const init = async () => {
     const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([
@@ -26,21 +40,37 @@ const LinkLedgerDevice = () => {
   };
 
   const linkDevice = async () => {
-    setDone(await LedgerUtils.init(true));
+    onLoadingChange?.(true);
+    try {
+      const linked = await LedgerUtils.init(true);
+      setDone(linked);
+      if (linked) {
+        onLinked?.();
+      }
+    } finally {
+      onLoadingChange?.(false);
+    }
   };
 
   const closeTab = () => {
+    if (onClose) {
+      onClose();
+      return;
+    }
     window.close();
   };
 
   return (
-    <div className={`theme ${theme} link-ledger-device`}>
-      <div className="title-panel">
-        <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
-        <div className="title">
-          {chrome.i18n.getMessage('ledger_link_device')}
+    <div
+      className={`${embedded ? 'embedded-ledger-page ' : `theme ${theme} `}link-ledger-device`}>
+      {!embedded && (
+        <div className="title-panel">
+          <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
+          <div className="title">
+            {chrome.i18n.getMessage('ledger_link_device')}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="link-device">
         <div
