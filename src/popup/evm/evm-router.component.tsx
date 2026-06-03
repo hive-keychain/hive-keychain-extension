@@ -1,10 +1,11 @@
 import { Screen } from '@interfaces/screen.interface';
-import { AddWalletMainComponent } from '@popup/evm/pages/add-wallets/add-wallets-main.component';
 import { CreateNewWalletVerificationComponent } from '@popup/evm/pages/add-wallets/create-new-wallet/create-new-wallet-verification.component';
 import { CreateNewWalletComponent } from '@popup/evm/pages/add-wallets/create-new-wallet/create-new-wallet.component';
 import { ImportWalletFromKeyComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-key/import-wallet-from-key.component';
 import { ImportWalletConfirmationComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-seed/import-wallet-confirmation.component';
 import { ImportWalletFromSeedComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-seed/import-wallet-from-seed.component';
+import { EvmCustomNftsPageComponent } from '@popup/evm/pages/home/evm-custom-nfts-page/evm-custom-nfts-page.component';
+import { EvmCustomTokensPageComponent } from '@popup/evm/pages/home/evm-custom-tokens-page/evm-custom-tokens-page.component';
 import { EvmHomeComponent } from '@popup/evm/pages/home/evm-home.component';
 import { EvmLifiSwapComponent } from '@popup/evm/pages/home/evm-lifi-swap/evm-lifi-swap.component';
 import { LiFiConfirmationPageComponent } from '@popup/evm/pages/home/evm-lifi-swap/lifi-confirmation-page/lifi-confirmation-page.component';
@@ -14,8 +15,6 @@ import { EvmNFTTransferComponent } from '@popup/evm/pages/home/evm-nft-pages/evm
 import { EvmNftCollectionPageComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-ntf-collection-page/evm-ntf-collection-page.component';
 import { EvmReceiveComponent } from '@popup/evm/pages/home/receive/evm-receive.component';
 import { EvmAccountsComponent } from '@popup/evm/pages/home/settings/evm-accounts/evm-accounts.component';
-import { EvmCustomNftsPageComponent } from '@popup/evm/pages/home/evm-custom-nfts-page/evm-custom-nfts-page.component';
-import { EvmCustomTokensPageComponent } from '@popup/evm/pages/home/evm-custom-tokens-page/evm-custom-tokens-page.component';
 import { EvmCustomChainsComponent } from '@popup/evm/pages/home/settings/evm-custom-chains/evm-custom-chains.component';
 import { EvmTransactionResultComponent } from '@popup/evm/pages/home/transaction-result/transaction-result.component';
 import { EvmTransferComponent } from '@popup/evm/pages/home/transfer/evm-transfer.component';
@@ -41,8 +40,6 @@ const EvmAppRouter = ({
 }: PropsFromRedux) => {
   const renderPage = (page: Screen) => {
     switch (page) {
-      case EvmScreen.EVM_ADD_WALLET_MAIN:
-        return <AddWalletMainComponent />;
       case EvmScreen.IMPORT_EVM_WALLET:
         return <ImportWalletFromSeedComponent />;
       case EvmScreen.IMPORT_EVM_WALLET_FROM_KEY:

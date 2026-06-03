@@ -332,7 +332,6 @@ const AccountSelector = ({
       );
     })();
     // displayOrder is read when hive/evm accounts change after a persisted reorder
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hiveAccounts, evmAccounts, mk, isPersistingOrder]);
 
   const openAccountSelector = async () => {
