@@ -53,7 +53,7 @@
 
       .chain-cards-container-list {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr));
         gap: 12px;
         width: 100%;
         padding: 0px 24px;
@@ -68,6 +68,7 @@
         flex-direction: column;
         row-gap: 8px;
         margin: 0;
+        min-width: 0;
         @include poppins500(15px);
         cursor: pointer;
         color: var(--main-font-color);
@@ -76,6 +77,16 @@
         height: 130px;
         position: relative;
         outline: none;
+
+        .chain-name {
+          min-width: 0;
+          width: 100%;
+          line-height: 1.25;
+          overflow: hidden;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+        }
 
         .svg-icon {
           @include icon-size(24px);
