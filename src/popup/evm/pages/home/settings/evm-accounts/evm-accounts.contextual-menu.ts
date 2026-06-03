@@ -2,17 +2,11 @@ import { ContextualMenu } from '@interfaces/contextual-menu.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 
 interface EvmAccountContextualMenuParams {
-  activeSeedName: string;
   onEditClicked: Function;
   onDeleteClicked: Function;
-  onCreateClicked: Function;
-  onImportClicked: Function;
-  onImportKeyClicked: Function;
-  onConnectLedgerClicked: Function;
   onCopyClicked: Function;
   isLedgerSource?: boolean;
   isImportedSource?: boolean;
-  isLedgerSupported: boolean;
 }
 
 const getDeleteSeedConfirmationMessage = (
@@ -29,17 +23,11 @@ const getDeleteSeedConfirmationMessage = (
 };
 
 export const EvmAccountsContextualMenu = ({
-  activeSeedName,
   onEditClicked,
   onDeleteClicked,
-  onCreateClicked,
-  onImportClicked,
-  onImportKeyClicked,
-  onConnectLedgerClicked,
   onCopyClicked,
   isLedgerSource,
   isImportedSource,
-  isLedgerSupported,
 }: EvmAccountContextualMenuParams): ContextualMenu => {
   const deleteSeedItem = {
     icon: SVGIcons.EVM_ACCOUNT_DELETE,
@@ -73,42 +61,10 @@ export const EvmAccountsContextualMenu = ({
           ...seedItems,
         ];
 
-  const commonSeedItems = [
-    {
-      icon: SVGIcons.EVM_ACCOUNT_ADD,
-      label: 'evm_create_seed',
-      onClick: onCreateClicked,
-    },
-    {
-      icon: SVGIcons.EVM_ACCOUNT_IMPORT,
-      label: 'evm_import_seed',
-      onClick: onImportClicked,
-    },
-    {
-      icon: SVGIcons.EVM_ACCOUNT_KEY,
-      label: 'evm_import_key',
-      onClick: onImportKeyClicked,
-    },
-  ];
-
-  if (isLedgerSupported) {
-    commonSeedItems.push({
-      icon: SVGIcons.EVM_ACCOUNT_LEDGER,
-      label: 'evm_connect_ledger_wallet',
-      onClick: onConnectLedgerClicked,
-    });
-  }
-
   return {
     sections: [
       {
-        title: activeSeedName,
-        skipTranslation: true,
         items: activeSeedItems,
-      },
-      {
-        title: 'common_seeds',
-        items: commonSeedItems,
       },
     ],
   };

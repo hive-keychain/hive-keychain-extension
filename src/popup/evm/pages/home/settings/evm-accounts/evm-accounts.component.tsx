@@ -11,17 +11,13 @@ import {
   EditAccountParams,
   EvmEditAccountPopup,
 } from '@popup/evm/pages/home/settings/evm-accounts/evm-edit-account-popup/evm-edit-account-popup.component';
-import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
-import { EvmWalletSetupTabUtils } from '@popup/evm/utils/evm-wallet-setup-tab.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
-import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
-import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
 import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent, {
@@ -45,10 +41,8 @@ const EvmAccounts = ({
   mk,
   chain,
   setTitleContainerProperties,
-  navigateTo,
   setEvmAccounts,
   loadEvmActiveAccount,
-  isLedgerSupported,
   evmAccountsNavigationParams,
   evmAccountsRestoreParams,
 }: PropsType) => {
@@ -243,23 +237,6 @@ const EvmAccounts = ({
     );
   };
 
-  const handleCreateSeedClick = () => {
-    EvmWalletSetupTabUtils.startEvmCreateWalletFromToolbarPopup(() => {
-      navigateTo(EvmScreen.CREATE_EVM_WALLET);
-    });
-  };
-  const handleImportSeedClick = () => {
-    navigateTo(EvmScreen.IMPORT_EVM_WALLET);
-  };
-  const handleImportKeyClick = () => {
-    navigateTo(EvmScreen.IMPORT_EVM_WALLET_FROM_KEY);
-  };
-  const handleConnectLedgerWalletClick = async () => {
-    await DetachedExtensionTabUtils.openExtensionPage(
-      `add-evm-accounts-from-ledger.html?chainId=${chain.chainId}`,
-    );
-  };
-
   const handleDeleteSeedClick = async () => {
     const seed = getCurrentSeed();
     if (!seed) return;
@@ -429,17 +406,11 @@ const EvmAccounts = ({
 
   const menu = selectedSeed
     ? EvmAccountsContextualMenu({
-        activeSeedName: selectedSeed.label,
         onEditClicked: handleEditSeedClick,
         onDeleteClicked: handleDeleteSeedClick,
-        onCreateClicked: handleCreateSeedClick,
-        onImportClicked: handleImportSeedClick,
-        onImportKeyClicked: handleImportKeyClick,
-        onConnectLedgerClicked: handleConnectLedgerWalletClick,
         onCopyClicked: handleCopySeedClick,
         isLedgerSource: isCurrentSourceLedger(),
         isImportedSource: isCurrentSourceImported(),
-        isLedgerSupported,
       })
     : undefined;
 
@@ -526,14 +497,12 @@ const mapStateToProps = (state: RootState) => {
     accounts: state.evm.accounts,
     mk: state.mk,
     chain: state.chain as EvmChain,
-    isLedgerSupported: state.evm.appStatus.isLedgerSupported,
     evmAccountsNavigationParams: state.navigation.stack[0]?.params,
     evmAccountsRestoreParams: state.navigation.stack[0]?.previousParams,
   };
 };
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
-  navigateTo,
   setEvmAccounts,
   loadEvmActiveAccount,
 });

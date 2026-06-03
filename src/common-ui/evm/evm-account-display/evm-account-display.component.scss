@@ -99,3 +99,28 @@
     }
   }
 }
+
+@media (max-width: 434px) {
+  html.sidepanel-page {
+    .evm-accounts-page {
+      .evm-account-display {
+        grid-template-columns: 36px minmax(0, 1fr) 20px;
+
+        .account-info {
+          min-width: 0;
+          margin-left: 12px;
+
+          .bottom-line {
+            min-width: 0;
+
+            .account-address.full-address {
+              @include poppins400(9px);
+              min-width: 0;
+              overflow-wrap: anywhere;
+            }
+          }
+        }
+      }
+    }
+  }
+}
