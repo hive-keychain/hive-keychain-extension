@@ -1,5 +1,6 @@
-import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
+import { Screen } from '@interfaces/screen.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
+import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import {
@@ -14,8 +15,6 @@ import { RootState } from '@popup/multichain/store';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import AddEvmAccountsComponent from 'src/ledger/add-evm-accounts/add-evm-accounts.component';
-import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
-import { Screen } from '@interfaces/screen.interface';
 
 const AddEvmAccountsFromLedger = ({
   chain,
@@ -38,7 +37,7 @@ const AddEvmAccountsFromLedger = ({
       isCloseButtonDisabled: true,
       onBackAdditional: () => {
         if (!canGoBack) {
-          navigateTo(EvmScreen.EVM_ADD_WALLET_MAIN, true);
+          navigateTo(Screen.SETTINGS_ADD_ACCOUNT, true);
         }
       },
     });

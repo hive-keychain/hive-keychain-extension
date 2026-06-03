@@ -1,14 +1,13 @@
 import { Screen } from '@interfaces/screen.interface';
 import { AddEvmAccountsFromLedgerComponent } from '@popup/evm/pages/add-wallets/add-evm-accounts-from-ledger.component';
-import { AddWalletMainComponent } from '@popup/evm/pages/add-wallets/add-wallets-main.component';
 import { CreateNewWalletVerificationComponent } from '@popup/evm/pages/add-wallets/create-new-wallet/create-new-wallet-verification.component';
 import { CreateNewWalletComponent } from '@popup/evm/pages/add-wallets/create-new-wallet/create-new-wallet.component';
 import { ImportWalletFromKeyComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-key/import-wallet-from-key.component';
 import { ImportWalletConfirmationComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-seed/import-wallet-confirmation.component';
 import { ImportWalletFromSeedComponent } from '@popup/evm/pages/add-wallets/import-wallet-from-seed/import-wallet-from-seed.component';
-import { EvmHomeComponent } from '@popup/evm/pages/home/evm-home.component';
 import { EvmCustomNftsPageComponent } from '@popup/evm/pages/home/evm-custom-nfts-page/evm-custom-nfts-page.component';
 import { EvmCustomTokensPageComponent } from '@popup/evm/pages/home/evm-custom-tokens-page/evm-custom-tokens-page.component';
+import { EvmHomeComponent } from '@popup/evm/pages/home/evm-home.component';
 import { EvmLifiSwapComponent } from '@popup/evm/pages/home/evm-lifi-swap/evm-lifi-swap.component';
 import { LiFiConfirmationPageComponent } from '@popup/evm/pages/home/evm-lifi-swap/lifi-confirmation-page/lifi-confirmation-page.component';
 import { LiFiHistoryPageComponent } from '@popup/evm/pages/home/evm-lifi-swap/lifi-history-page/lifi-history-page.component';
@@ -29,13 +28,13 @@ import { TokenPendingUnstakePage } from '@popup/hive/pages/app-container/home/to
 import { PendingRecurrentTransfersPageComponent } from '@popup/hive/pages/app-container/home/transfer-fund/recurrent-transfers/recurrent-transfers.component';
 import { ExportAccountsSubMenuComponent } from '@popup/hive/pages/app-container/settings/accounts/export-accounts/export-accounts-sub-menu.component';
 import { ExportedAccountsQRComponent } from '@popup/hive/pages/app-container/settings/accounts/export-accounts/exported-accounts-qr/exported-accounts-qr.component';
+import { AnalyticsComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/analytics/analytics.component';
 import { AutoLockComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/auto-lock/auto-lock.component';
 import { ChangePasswordComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/change-password/change-password.component';
 import { ClearAllDataComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/clear-all-data/clear-all-data.component';
 import { ImportExportPreferencesComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/import-export-preferences/import-export-preferences.component';
 import { KeychainifyComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/keychainify/keychainify.component';
 import { ShortcutsComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/shortcuts/shortcuts.component';
-import { AnalyticsComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/analytics/analytics.component';
 import { ExportTransactionsComponent } from '@popup/hive/pages/app-container/settings/user-preferences/export-transactions/export-transactions.component';
 import { MultisigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/multisig/multisig.component';
 import { NotificationsConfigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notifications-config/notifications-config.component';
@@ -52,9 +51,6 @@ import { AddByAuthComponent } from 'src/popup/hive/pages/add-account/add-by-auth
 import { AddByKeysComponent } from 'src/popup/hive/pages/add-account/add-by-keys/add-by-keys.component';
 import { ImportKeysComponent } from 'src/popup/hive/pages/add-account/import-keys/import-keys.component';
 import { SelectKeysComponent } from 'src/popup/hive/pages/add-account/select-keys/select-keys.component';
-import { AddAccountsFromLedgerComponent } from 'src/popup/hive/pages/ledger/add-accounts-from-ledger.component';
-import { AddKeyFromLedgerComponent } from 'src/popup/hive/pages/ledger/add-key-from-ledger.component';
-import { LinkLedgerDeviceComponent } from 'src/popup/hive/pages/ledger/link-ledger-device.component';
 import { BuyCoinsComponent } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins.component';
 import { ConversionComponent } from 'src/popup/hive/pages/app-container/home/conversion/conversion.component';
 import { PendingConversionPageComponent } from 'src/popup/hive/pages/app-container/home/conversion/pending-conversion/pending-conversion.component';
@@ -84,17 +80,20 @@ import { ManageAccountComponent } from 'src/popup/hive/pages/app-container/setti
 import { AdvancedSettingsPageComponent } from 'src/popup/hive/pages/app-container/settings/advanced-settings/advanced-settings.component';
 import { HelpSubMenuComponent } from 'src/popup/hive/pages/app-container/settings/help-sub-menu/help-sub-menu.component';
 import { AutomatedTasksComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/automated-tasks/automated-tasks.component';
+import { AddAccountsFromLedgerComponent } from 'src/popup/hive/pages/ledger/add-accounts-from-ledger.component';
+import { AddKeyFromLedgerComponent } from 'src/popup/hive/pages/ledger/add-key-from-ledger.component';
+import { LinkLedgerDeviceComponent } from 'src/popup/hive/pages/ledger/link-ledger-device.component';
+import { ChainType } from 'src/popup/multichain/interfaces/chains.interface';
 import { AddCustomChainPage } from 'src/popup/multichain/pages/add-custom-chain/add-custom-chain.component';
 import { ChainSelectorPageComponent } from 'src/popup/multichain/pages/chain-selector/chain-selector.component';
-import { ChainType } from 'src/popup/multichain/interfaces/chains.interface';
+import { SettingsChainSettingsPageComponent } from 'src/popup/multichain/pages/settings/settings-chain-settings-page.component';
 import { SettingsConnectedDappsPageComponent } from 'src/popup/multichain/pages/settings/settings-connected-dapps-page.component';
 import { SettingsContactsPageComponent } from 'src/popup/multichain/pages/settings/settings-contacts-page.component';
 import { SettingsEvmPageComponent } from 'src/popup/multichain/pages/settings/settings-evm-page.component';
+import { SettingsHelpAndAboutPageComponent } from 'src/popup/multichain/pages/settings/settings-help-and-about-page.component';
 import { SettingsHivePageComponent } from 'src/popup/multichain/pages/settings/settings-hive-page.component';
 import { UnifiedSettingsMainPageComponent } from 'src/popup/multichain/pages/settings/settings-main-page.component';
 import { SettingsNetworkPageComponent } from 'src/popup/multichain/pages/settings/settings-network-page.component';
-import { SettingsChainSettingsPageComponent } from 'src/popup/multichain/pages/settings/settings-chain-settings-page.component';
-import { SettingsHelpAndAboutPageComponent } from 'src/popup/multichain/pages/settings/settings-help-and-about-page.component';
 import { SettingsPreferencesDisplayPageComponent } from 'src/popup/multichain/pages/settings/settings-preferences-display-page.component';
 
 const getConfirmationAccountType = (
@@ -142,8 +141,10 @@ const UnifiedRouter = ({
           <TransferFundsComponent />
         );
       case MultichainScreen.CONFIRMATION_PAGE:
-        return getConfirmationAccountType(activeAccountType, navigationParams) ===
-          ChainType.EVM ? (
+        return getConfirmationAccountType(
+          activeAccountType,
+          navigationParams,
+        ) === ChainType.EVM ? (
           <EVMConfirmationPageComponent />
         ) : (
           <HiveConfirmationPageComponent />
@@ -309,8 +310,6 @@ const UnifiedRouter = ({
       case HiveScreen.CREATE_ACCOUNT_PAGE_STEP_TWO:
         return <CreateAccountStepTwoComponent />;
 
-      case EvmScreen.EVM_ADD_WALLET_MAIN:
-        return <AddWalletMainComponent />;
       case EvmScreen.EVM_ADD_ACCOUNTS_FROM_LEDGER:
         return <AddEvmAccountsFromLedgerComponent />;
       case EvmScreen.IMPORT_EVM_WALLET:
@@ -372,7 +371,9 @@ const UnifiedRouter = ({
         display: 'grid',
         gridTemplateRows: hasTitle ? '80px 1fr' : '1fr',
       }}>
-      {hasTitle && <PageTitleComponent {...titleProperties}></PageTitleComponent>}
+      {hasTitle && (
+        <PageTitleComponent {...titleProperties}></PageTitleComponent>
+      )}
       <div
         className="page-content"
         style={{

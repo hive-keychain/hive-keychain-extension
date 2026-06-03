@@ -51,6 +51,7 @@ const AddAccountMain = ({
   const [selectedAccountType, setSelectedAccountType] = useState<
     ChainType.HIVE | ChainType.EVM
   >(ChainType.HIVE);
+  const isLedgerAvailableForEvm = isEvmLedgerSupported || isLedgerSupported;
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -348,7 +349,7 @@ const AddAccountMain = ({
           label: 'html_popup_evm_create_wallet',
           action: () => void handleCreateEvmWallet(),
         },
-        ...(isEvmLedgerSupported
+        ...(isLedgerAvailableForEvm
           ? [
               {
                 icon: SVGIcons.MENU_ADVANCED_SETTINGS_LINK_LEDGER_DEVICE,
