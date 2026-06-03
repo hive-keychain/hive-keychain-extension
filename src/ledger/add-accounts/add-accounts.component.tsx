@@ -45,6 +45,7 @@ interface ImportAccountFormErrors {
 interface AddAccountsComponentProps {
   embedded?: boolean;
   onAccountsAdded?: () => void | Promise<void>;
+  onAllAccountsAlreadyImported?: () => void | Promise<void>;
   onClose?: () => void;
   onLoadingChange?: (loading: boolean) => void;
 }
@@ -52,6 +53,7 @@ interface AddAccountsComponentProps {
 const AddAccountsComponent = ({
   embedded = false,
   onAccountsAdded,
+  onAllAccountsAlreadyImported,
   onClose,
   onLoadingChange,
 }: AddAccountsComponentProps) => {
@@ -130,6 +132,10 @@ const AddAccountsComponent = ({
 
         setLedgerLoading(false);
         if (filteredDiscoveredAccounts.length === 0) {
+          if (embedded && onAllAccountsAlreadyImported) {
+            await onAllAccountsAlreadyImported();
+            return;
+          }
           setMessage('all_ledger_accounts_already_imported');
           setStep(SynchronizeLedgerStep.FINISHED);
           return;

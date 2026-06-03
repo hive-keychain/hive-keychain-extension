@@ -48,6 +48,20 @@ html.sidepanel-page #root .theme:has(.splashscreen) {
   border-color: var(--background-color);
 }
 
+html.sidepanel-page
+  #root
+  .theme:has(.loading-container:not(.hide) .overlay),
+html.sidepanel-page #root .theme:has(.popup-container .overlay),
+html.sidepanel-page #root .theme:has(.message-container .overlay),
+html.sidepanel-page #root .theme:has(.account-selector-overlay),
+html.sidepanel-page #root .theme:has(.contextual-menu-overlay) {
+  border-color: #212838;
+}
+
+html.sidepanel-page #root .theme:has(.message-container--viewport .overlay) {
+  border-color: var(--background-color);
+}
+
 html.sidepanel-page #root .theme .App {
   width: 100% !important;
   height: 100% !important;

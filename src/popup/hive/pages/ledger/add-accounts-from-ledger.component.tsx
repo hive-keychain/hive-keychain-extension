@@ -58,6 +58,11 @@ const AddAccountsFromLedger = ({
     navigateTo(Screen.HOME_PAGE, true);
   };
 
+  const handleAllAccountsAlreadyImported = async () => {
+    setSuccessMessage('all_ledger_accounts_already_imported');
+    navigateTo(Screen.HOME_PAGE, true);
+  };
+
   const closePage = () => {
     navigateTo(Screen.HOME_PAGE, true);
   };
@@ -77,6 +82,7 @@ const AddAccountsFromLedger = ({
       <AddAccountsComponent
         embedded
         onAccountsAdded={refreshAccounts}
+        onAllAccountsAlreadyImported={handleAllAccountsAlreadyImported}
         onClose={closePage}
         onLoadingChange={handleLoadingChange}
       />
