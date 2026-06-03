@@ -244,6 +244,7 @@ export enum SVGIcons {
   WALLET_HISTORY_TOP = 'wallet/history/back-to-top',
 
   WALLET_HISTORY_ESCROW = 'wallet/history/escrow',
+  WALLET_HISTORY_HIVE = 'wallet/history/hive',
 
   // LOGOS
   BINANCE = 'binance',
