@@ -59,7 +59,7 @@ export const TopBarComponent = ({
       </div>
 
       <div className="account-selector-panel">{accountSelector}</div>
-      <div className="fill-space" aria-hidden="true" />
+      {/* <div className="fill-space" aria-hidden="true" /> */}
       {hasActions && <div className="top-bar-actions">{actions}</div>}
       <div className="top-bar-chain-selector-slot">
         <ChainDropdownComponent />
