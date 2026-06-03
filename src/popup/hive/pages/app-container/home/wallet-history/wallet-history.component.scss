@@ -145,9 +145,53 @@
     max-height: var(--wallet-history-max-height, 476px);
 
     .wallet-history-export-button {
+      @include poppins500(14px);
       align-self: flex-end;
-      width: 180px;
+      color: var(--main-font-color);
+      background: var(--card-background);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      column-gap: 10px;
+      width: fit-content;
+      max-width: 100%;
+      min-height: 40px;
+      padding: 8px 12px;
+      margin-right: 16px;
       margin-bottom: 4px;
+      cursor: pointer;
+
+      &:hover {
+        color: white;
+        background: $red;
+        border-color: $red;
+
+        .wallet-history-export-button-icon {
+          color: white;
+
+          path {
+            stroke: white;
+          }
+        }
+      }
+
+      span {
+        flex-shrink: 0;
+      }
+
+      .wallet-history-export-button-icon {
+        @include icon-size(18px);
+        flex-shrink: 0;
+
+        path {
+          stroke: $red;
+        }
+
+        rect {
+          display: none;
+        }
+      }
     }
 
     .rotating-logo-container {

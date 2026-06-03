@@ -505,13 +505,18 @@ const WalletHistory = ({
         ref={walletItemList}
         className="wallet-item-list"
         onScroll={handleScroll}>
-        <ButtonComponent
-          additionalClass="wallet-history-export-button"
-          dataTestId="wallet-history-export-transactions"
-          label="popup_html_export_transactions"
-          height="small"
+        <button
+          className="wallet-history-export-button"
+          data-testid="wallet-history-export-transactions"
           onClick={() => navigateTo(Screen.SETTINGS_EXPORT_TRANSACTIONS)}
-        />
+          type="button">
+          <SVGIcon
+            icon={SVGIcons.MENU_ACCOUNTS_EXPORT}
+            className="wallet-history-export-button-icon"
+            svgViewBox="14 13 16 15"
+          />
+          <span>{chrome.i18n.getMessage('popup_html_export')}</span>
+        </button>
         <FlatList
           list={displayedTransactions}
           renderItem={renderListItem}
