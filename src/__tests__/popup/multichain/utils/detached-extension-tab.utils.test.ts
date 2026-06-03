@@ -1,4 +1,12 @@
 import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
+import { SidePanelPreferenceUtils } from 'src/utils/side-panel-preference.utils';
+
+jest.mock('src/utils/side-panel-preference.utils', () => ({
+  SIDE_PANEL_PATH: 'sidepanel.html',
+  SidePanelPreferenceUtils: {
+    applySidePanelActionClickBehavior: jest.fn().mockResolvedValue(undefined),
+  },
+}));
 
 describe('DetachedExtensionTabUtils', () => {
   beforeEach(() => {
@@ -38,14 +46,15 @@ describe('DetachedExtensionTabUtils', () => {
 
     await DetachedExtensionTabUtils.openDetachedExtension();
 
-    expect(setPanelBehavior).toHaveBeenCalledWith({
-      openPanelOnActionClick: false,
-    });
+    expect(setPanelBehavior).not.toHaveBeenCalled();
     expect(setOptions).toHaveBeenCalledWith({
       path: 'sidepanel.html',
       enabled: true,
     });
     expect(open).toHaveBeenCalledWith({ windowId: -2 });
+    expect(
+      SidePanelPreferenceUtils.applySidePanelActionClickBehavior,
+    ).toHaveBeenCalled();
     expect(chrome.tabs.create).not.toHaveBeenCalled();
   });
 
@@ -66,14 +75,15 @@ describe('DetachedExtensionTabUtils', () => {
 
     await DetachedExtensionTabUtils.openDetachedExtension('#evm/create');
 
-    expect(setPanelBehavior).toHaveBeenCalledWith({
-      openPanelOnActionClick: false,
-    });
+    expect(setPanelBehavior).not.toHaveBeenCalled();
     expect(setOptions).toHaveBeenCalledWith({
       path: 'sidepanel.html#evm/create',
       enabled: true,
     });
     expect(open).toHaveBeenCalledWith({ windowId: -2 });
+    expect(
+      SidePanelPreferenceUtils.applySidePanelActionClickBehavior,
+    ).toHaveBeenCalled();
     expect(chrome.tabs.create).not.toHaveBeenCalled();
   });
 
@@ -98,14 +108,15 @@ describe('DetachedExtensionTabUtils', () => {
       'add-accounts-from-ledger.html',
     );
 
-    expect(setPanelBehavior).toHaveBeenCalledWith({
-      openPanelOnActionClick: false,
-    });
+    expect(setPanelBehavior).not.toHaveBeenCalled();
     expect(setOptions).toHaveBeenCalledWith({
       path: 'add-accounts-from-ledger.html',
       enabled: true,
     });
     expect(open).toHaveBeenCalledWith({ windowId: -2 });
+    expect(
+      SidePanelPreferenceUtils.applySidePanelActionClickBehavior,
+    ).toHaveBeenCalled();
     expect(chrome.tabs.create).not.toHaveBeenCalled();
   });
 

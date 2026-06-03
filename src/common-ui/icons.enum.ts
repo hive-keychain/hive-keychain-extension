@@ -103,6 +103,11 @@ export enum SVGIcons {
   MENU_THEME_DARK = 'menu/theme/dark-theme',
   MENU_THEME_LIGHT = 'menu/theme/light-theme',
 
+  THEME_TOGGLE_SUN = 'theme-toggle/sun',
+  THEME_TOGGLE_MOON = 'theme-toggle/moon',
+
+  SIDE_PANEL_DETACH = 'side-panel/detach',
+
   MENU_ACCOUNTS = 'menu/accounts',
   MENU_ACCOUNTS_ADD_ACCOUNT = 'menu/accounts/add-account',
   MENU_ACCOUNTS_CREATE_ACCOUNT = 'menu/accounts/create-account',
