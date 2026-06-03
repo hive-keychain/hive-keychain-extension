@@ -27,6 +27,10 @@ import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+interface WalletSectionRefsProps {
+  walletScrollRef?: React.RefObject<HTMLDivElement>;
+}
+
 const WalletInfoSection = ({
   activeAccount,
   currencyLabels,
@@ -41,7 +45,8 @@ const WalletInfoSection = ({
   loadUserTokens,
   loadTokens,
   loadPendingUnstaking,
-}: PropsFromRedux) => {
+  walletScrollRef,
+}: PropsFromRedux & WalletSectionRefsProps) => {
   const [delegationAmount, setDelegationAmount] = useState<string | number>(
     '...',
   );
@@ -153,7 +158,7 @@ const WalletInfoSection = ({
   return (
     <div className="wallet-info-wrapper">
       <div className="wallet-background" />
-      <div className="wallet-info-section">
+      <div className="wallet-info-section" ref={walletScrollRef}>
         <HiveWalletInfoSectionItemComponent
           tokenSymbol="HIVE"
           icon={SVGIcons.WALLET_HIVE_LOGO}

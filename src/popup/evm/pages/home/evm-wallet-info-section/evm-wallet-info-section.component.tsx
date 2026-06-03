@@ -10,6 +10,10 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import React, { useState } from 'react';
 import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.component';
 
+interface WalletSectionRefsProps {
+  walletScrollRef?: React.RefObject<HTMLDivElement>;
+}
+
 interface EvmWalletInfoSectionProps {
   activeAccount: EvmActiveAccount;
   chain: EvmChain;
@@ -37,7 +41,8 @@ export const EvmWalletInfoSectionComponent = ({
   reloadEvmActiveAccount,
   initialDisplayNfts,
   initialDisplayHistory,
-}: EvmWalletInfoSectionProps) => {
+  walletScrollRef,
+}: EvmWalletInfoSectionProps & WalletSectionRefsProps) => {
   const getInitialDisplayedSection = (): EvmDisplayedPage => {
     if (initialDisplayHistory) return EvmDisplayedPage.HISTORY;
     if (initialDisplayNfts) return EvmDisplayedPage.NTFS;
@@ -87,7 +92,7 @@ export const EvmWalletInfoSectionComponent = ({
   return (
     <div className="wallet-info-wrapper">
       <div className="wallet-background" />
-      <div className="wallet-info-section">
+      <div className="wallet-info-section" ref={walletScrollRef}>
         {activeAccount.nativeAndErc20Tokens && (
           <>
             <SlidingBarComponent

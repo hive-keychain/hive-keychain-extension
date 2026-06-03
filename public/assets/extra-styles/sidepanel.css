@@ -77,10 +77,6 @@ html.sidepanel-page #root .theme .App .home-page {
   overflow: hidden;
 }
 
-html.sidepanel-page #root .theme .App .home-page .wallet-info-wrapper .wallet-background {
-  max-height: var(--wallet-background-max-height, 502px);
-}
-
 html.sidepanel-page #root .theme .App .wallet-history-page .wallet-item-list {
   max-height: var(--wallet-history-max-height, 476px);
 }
