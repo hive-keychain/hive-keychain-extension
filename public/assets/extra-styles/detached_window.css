@@ -59,7 +59,12 @@ html.detached-window-page #root .theme .App .splashscreen {
   height: 600px !important;
   position: relative !important;
 }
-html.detached-window-page #root .theme .App .splashscreen .loading-animation-container {
+html.detached-window-page
+  #root
+  .theme
+  .App
+  .splashscreen
+  .loading-animation-container {
   width: unset !important;
 }
 html.detached-window-page #root .theme .App .splashscreen .overlay {
@@ -85,14 +90,39 @@ html.detached-window-page #root .theme .App .custom-select-handle {
 html.detached-window-page #root .theme .App .fullsize {
   width: 100% !important;
 }
-html.detached-window-page #root .theme .App .automated-tasks-page .select-account-section {
+html.detached-window-page
+  #root
+  .theme
+  .App
+  .automated-tasks-page
+  .select-account-section {
   margin: 0px !important;
   width: 100% !important;
 }
-html.detached-window-page #root .theme .App .favorite-accounts-page .select-account-section,
-html.detached-window-page #root .theme .App .export-transactions-page .select-account-section,
-html.detached-window-page #root .theme .App .settings-manage-account .select-account-section,
-html.detached-window-page #root .theme .App .settings-manage-account-authorities .select-account-section {
+html.detached-window-page
+  #root
+  .theme
+  .App
+  .favorite-accounts-page
+  .select-account-section,
+html.detached-window-page
+  #root
+  .theme
+  .App
+  .export-transactions-page
+  .select-account-section,
+html.detached-window-page
+  #root
+  .theme
+  .App
+  .settings-manage-account
+  .select-account-section,
+html.detached-window-page
+  #root
+  .theme
+  .App
+  .settings-manage-account-authorities
+  .select-account-section {
   margin: 0px 20px !important;
   width: calc(100% - 40px) !important;
 }
@@ -121,11 +151,19 @@ html.detached-window-page #root .theme .account-selector-overlay {
   height: 600px;
   transform: translate(-50%, -50%);
 }
-html.detached-window-page #root .theme .account-selector-overlay .account-selector-backdrop {
+html.detached-window-page
+  #root
+  .theme
+  .account-selector-overlay
+  .account-selector-backdrop {
   position: absolute;
   inset: 0;
 }
-html.detached-window-page #root .theme .account-selector-overlay .account-selector-card {
+html.detached-window-page
+  #root
+  .theme
+  .account-selector-overlay
+  .account-selector-card {
   position: absolute;
   left: 0;
   right: 0;
@@ -134,16 +172,29 @@ html.detached-window-page #root .theme .account-selector-overlay .account-select
   height: min(540px, 90%);
   max-height: 540px;
 }
-html.detached-window-page #root .theme .hive-select-account-section.main-page .react-dropdown-select-dropdown {
+html.detached-window-page
+  #root
+  .theme
+  .hive-select-account-section.main-page
+  .react-dropdown-select-dropdown {
   max-width: 100%;
   width: 100% !important;
   min-width: calc(100% + 2px);
 }
-html.detached-window-page #root .theme .hive-select-account-section .react-dropdown-select-dropdown {
+html.detached-window-page
+  #root
+  .theme
+  .hive-select-account-section
+  .react-dropdown-select-dropdown {
   max-width: calc(100vw - 40px);
   box-sizing: border-box;
 }
-html.detached-window-page #root .theme .hive-select-account-section .react-dropdown-select-dropdown .account-name {
+html.detached-window-page
+  #root
+  .theme
+  .hive-select-account-section
+  .react-dropdown-select-dropdown
+  .account-name {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;

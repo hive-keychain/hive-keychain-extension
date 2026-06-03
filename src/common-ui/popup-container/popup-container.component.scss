@@ -51,4 +51,11 @@
       width: 100%;
     }
   }
+
+  html.detached-window-page &.dapp-status-details,
+  html.sidepanel-page &.dapp-status-details {
+    .popup-content {
+      margin: 0 !important;
+    }
+  }
 }
