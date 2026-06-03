@@ -7,6 +7,11 @@ const redirectToolbarPopupToSidePanelIfNeeded = async (): Promise<boolean> => {
     return false;
   }
 
+  if (await SidePanelPreferenceUtils.isSidePanelSessionActive()) {
+    window.close();
+    return true;
+  }
+
   const openSidePanelByDefault =
     await SidePanelPreferenceUtils.getOpenSidePanelByDefault();
   if (!openSidePanelByDefault) {
@@ -14,7 +19,6 @@ const redirectToolbarPopupToSidePanelIfNeeded = async (): Promise<boolean> => {
   }
 
   await DetachedExtensionTabUtils.openDetachedExtension();
-  window.close();
   return true;
 };
 

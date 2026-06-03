@@ -7,8 +7,10 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { VaultCommand, VaultKey } from '@reference-data/vault-message-key.enum';
 import { ensureEcosystemDappsCached } from 'src/utils/ecosystem-dapps-cache.utils';
 import Logger from 'src/utils/logger.utils';
-import { SidePanelPreferenceUtils } from 'src/utils/side-panel-preference.utils';
+import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
+import { SidePanelToolbarLifecycle } from '@background/multichain/side-panel-toolbar.lifecycle';
+import { SidePanelPreferenceUtils } from 'src/utils/side-panel-preference.utils';
 
 Object.assign(global, { contextType: 'service_worker' });
 
@@ -22,6 +24,13 @@ const syncSidePanelStartupSettings = () => {
 syncSidePanelStartupSettings();
 chrome.runtime.onInstalled.addListener(syncSidePanelStartupSettings);
 chrome.runtime.onStartup.addListener(syncSidePanelStartupSettings);
+
+if (!process.env.IS_FIREFOX) {
+  SidePanelToolbarLifecycle.registerSidePanelToolbarLifecycle();
+  chrome.action.onClicked.addListener(() => {
+    void SidePanelToolbarLifecycle.handleToolbarClickWhileSidePanelSessionActive();
+  });
+}
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName !== 'local') {
     return;
@@ -65,6 +74,11 @@ const chromeMessageHandler = async (
   }
 
   switch (backgroundMessage.command) {
+    case BackgroundCommand.SIDE_PANEL_CLOSED:
+      if (!process.env.IS_FIREFOX) {
+        void SidePanelPreferenceUtils.markSidePanelInactive();
+      }
+      return true;
     // Replace vault by persistent data storage for Firefox
     case VaultCommand.GET_VALUE:
       if (!process.env.IS_FIREFOX) return;

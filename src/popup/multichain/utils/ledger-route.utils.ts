@@ -78,7 +78,6 @@ const openInSidePanelFromToolbarPopup = async (
   }
 
   await DetachedExtensionTabUtils.openDetachedExtension(hash);
-  window.close();
   return true;
 };
 

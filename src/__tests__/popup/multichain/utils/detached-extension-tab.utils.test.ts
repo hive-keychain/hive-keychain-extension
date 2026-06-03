@@ -1,16 +1,29 @@
 import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
+import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
 import { SidePanelPreferenceUtils } from 'src/utils/side-panel-preference.utils';
+
+jest.mock('@popup/multichain/utils/extension-surface.utils', () => ({
+  ExtensionSurfaceUtils: {
+    isToolbarPopup: jest.fn(),
+  },
+}));
 
 jest.mock('src/utils/side-panel-preference.utils', () => ({
   SIDE_PANEL_PATH: 'sidepanel.html',
   SidePanelPreferenceUtils: {
-    applySidePanelActionClickBehavior: jest.fn().mockResolvedValue(undefined),
+    markSidePanelActive: jest.fn().mockResolvedValue(undefined),
   },
 }));
 
 describe('DetachedExtensionTabUtils', () => {
+  const isToolbarPopupMock =
+    ExtensionSurfaceUtils.isToolbarPopup as jest.MockedFunction<
+      typeof ExtensionSurfaceUtils.isToolbarPopup
+    >;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    isToolbarPopupMock.mockReturnValue(false);
     chrome.runtime.getURL = jest.fn(
       (path: string) => `chrome-extension://test/${path}`,
     );
@@ -53,7 +66,7 @@ describe('DetachedExtensionTabUtils', () => {
     });
     expect(open).toHaveBeenCalledWith({ windowId: -2 });
     expect(
-      SidePanelPreferenceUtils.applySidePanelActionClickBehavior,
+      SidePanelPreferenceUtils.markSidePanelActive,
     ).toHaveBeenCalled();
     expect(chrome.tabs.create).not.toHaveBeenCalled();
   });
@@ -82,7 +95,7 @@ describe('DetachedExtensionTabUtils', () => {
     });
     expect(open).toHaveBeenCalledWith({ windowId: -2 });
     expect(
-      SidePanelPreferenceUtils.applySidePanelActionClickBehavior,
+      SidePanelPreferenceUtils.markSidePanelActive,
     ).toHaveBeenCalled();
     expect(chrome.tabs.create).not.toHaveBeenCalled();
   });
@@ -113,7 +126,7 @@ describe('DetachedExtensionTabUtils', () => {
     });
     expect(open).toHaveBeenCalledWith({ windowId: -2 });
     expect(
-      SidePanelPreferenceUtils.applySidePanelActionClickBehavior,
+      SidePanelPreferenceUtils.markSidePanelActive,
     ).toHaveBeenCalled();
     expect(chrome.tabs.create).not.toHaveBeenCalled();
   });
@@ -127,5 +140,50 @@ describe('DetachedExtensionTabUtils', () => {
     expect(chrome.tabs.create).toHaveBeenCalledWith({
       url: 'chrome-extension://test/import-accounts.html',
     });
+  });
+
+  it('closes the toolbar popup after opening the side panel', async () => {
+    const close = jest.fn();
+    Object.defineProperty(window, 'close', {
+      configurable: true,
+      value: close,
+    });
+    isToolbarPopupMock.mockReturnValue(true);
+    const setOptions = jest.fn().mockResolvedValue(undefined);
+    const open = jest.fn().mockResolvedValue(undefined);
+    (chrome as any).sidePanel = { setOptions, open };
+
+    await DetachedExtensionTabUtils.openDetachedExtension();
+
+    expect(close).toHaveBeenCalled();
+  });
+
+  it('does not close the window when not opened from the toolbar popup', async () => {
+    const close = jest.fn();
+    Object.defineProperty(window, 'close', {
+      configurable: true,
+      value: close,
+    });
+    isToolbarPopupMock.mockReturnValue(false);
+    const setOptions = jest.fn().mockResolvedValue(undefined);
+    const open = jest.fn().mockResolvedValue(undefined);
+    (chrome as any).sidePanel = { setOptions, open };
+
+    await DetachedExtensionTabUtils.openDetachedExtension();
+
+    expect(close).not.toHaveBeenCalled();
+  });
+
+  it('closes the toolbar popup after falling back to a detached tab', async () => {
+    const close = jest.fn();
+    Object.defineProperty(window, 'close', {
+      configurable: true,
+      value: close,
+    });
+    isToolbarPopupMock.mockReturnValue(true);
+
+    await DetachedExtensionTabUtils.openDetachedExtension();
+
+    expect(close).toHaveBeenCalled();
   });
 });

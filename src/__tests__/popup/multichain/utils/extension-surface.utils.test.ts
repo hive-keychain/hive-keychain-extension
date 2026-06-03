@@ -14,4 +14,9 @@ describe('ExtensionSurfaceUtils', () => {
       false,
     );
   });
+
+  it('detects the side panel surface', () => {
+    expect(ExtensionSurfaceUtils.isSidePanelPage('/sidepanel.html')).toBe(true);
+    expect(ExtensionSurfaceUtils.isToolbarPopup('/sidepanel.html')).toBe(false);
+  });
 });

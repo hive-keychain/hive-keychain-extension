@@ -12,6 +12,7 @@ jest.mock('@popup/multichain/utils/extension-surface.utils', () => ({
 jest.mock('src/utils/side-panel-preference.utils', () => ({
   SidePanelPreferenceUtils: {
     getOpenSidePanelByDefault: jest.fn(),
+    isSidePanelSessionActive: jest.fn(),
   },
 }));
 
@@ -30,6 +31,10 @@ describe('PopupToolbarStartupUtils', () => {
     SidePanelPreferenceUtils.getOpenSidePanelByDefault as jest.MockedFunction<
       typeof SidePanelPreferenceUtils.getOpenSidePanelByDefault
     >;
+  const isSidePanelSessionActiveMock =
+    SidePanelPreferenceUtils.isSidePanelSessionActive as jest.MockedFunction<
+      typeof SidePanelPreferenceUtils.isSidePanelSessionActive
+    >;
   const openDetachedExtensionMock =
     DetachedExtensionTabUtils.openDetachedExtension as jest.MockedFunction<
       typeof DetachedExtensionTabUtils.openDetachedExtension
@@ -39,6 +44,7 @@ describe('PopupToolbarStartupUtils', () => {
     jest.clearAllMocks();
     isToolbarPopupMock.mockReturnValue(false);
     getOpenSidePanelByDefaultMock.mockResolvedValue(false);
+    isSidePanelSessionActiveMock.mockResolvedValue(false);
     openDetachedExtensionMock.mockResolvedValue();
   });
 
@@ -50,12 +56,24 @@ describe('PopupToolbarStartupUtils', () => {
     expect(openDetachedExtensionMock).not.toHaveBeenCalled();
   });
 
-  it('redirects toolbar popup to the side panel when preference is enabled', async () => {
+  it('closes the toolbar popup when the side panel session is already active', async () => {
     const close = jest.fn();
     Object.defineProperty(window, 'close', {
       configurable: true,
       value: close,
     });
+    isToolbarPopupMock.mockReturnValue(true);
+    isSidePanelSessionActiveMock.mockResolvedValue(true);
+
+    await expect(
+      PopupToolbarStartupUtils.redirectToolbarPopupToSidePanelIfNeeded(),
+    ).resolves.toBe(true);
+
+    expect(openDetachedExtensionMock).not.toHaveBeenCalled();
+    expect(close).toHaveBeenCalled();
+  });
+
+  it('redirects toolbar popup to the side panel when preference is enabled', async () => {
     isToolbarPopupMock.mockReturnValue(true);
     getOpenSidePanelByDefaultMock.mockResolvedValue(true);
 
@@ -64,6 +82,5 @@ describe('PopupToolbarStartupUtils', () => {
     ).resolves.toBe(true);
 
     expect(openDetachedExtensionMock).toHaveBeenCalled();
-    expect(close).toHaveBeenCalled();
   });
 });

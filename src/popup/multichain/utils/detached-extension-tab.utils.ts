@@ -1,3 +1,4 @@
+import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
 import {
   SIDE_PANEL_PATH,
   SidePanelPreferenceUtils,
@@ -31,7 +32,7 @@ const openExtensionPageInSidePanel = async (path: string): Promise<boolean> => {
     enabled: true,
   });
   await sidePanel.open({ windowId: chrome.windows.WINDOW_ID_CURRENT });
-  await SidePanelPreferenceUtils.applySidePanelActionClickBehavior();
+  await SidePanelPreferenceUtils.markSidePanelActive();
   return true;
 };
 
@@ -54,6 +55,10 @@ const openDetachedExtension = async (hash?: string): Promise<void> => {
     hash ? `${SIDE_PANEL_PATH}${hash}` : SIDE_PANEL_PATH,
     hash ? `${DETACHED_WINDOW_PATH}${hash}` : DETACHED_WINDOW_PATH,
   );
+
+  if (ExtensionSurfaceUtils.isToolbarPopup()) {
+    window.close();
+  }
 };
 
 export const DetachedExtensionTabUtils = {
