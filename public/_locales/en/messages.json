@@ -2127,7 +2127,7 @@
     "description": "Shortcut action change theme"
   },
   "popup_html_shortcuts_action_open_in_tab": {
-    "message": "Open Keychain",
+    "message": "Open in side panel",
     "description": "Shortcut action open Keychain outside the popup"
   },
   "popup_html_shortcut_transfer_chain_label": {
