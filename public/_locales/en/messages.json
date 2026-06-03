@@ -715,6 +715,10 @@
     "message": "Open in side panel",
     "description": "Preferences and display: open Keychain in the browser side panel"
   },
+  "popup_html_try_side_panel": {
+    "message": "Try the side panel",
+    "description": "Preferences and display: try Keychain in the browser side panel"
+  },
   "popup_html_open_in_side_panel_hint": {
     "message": "Open Keychain in the browser side panel for a larger, persistent view.",
     "description": "Preferences and display: side panel action hint"

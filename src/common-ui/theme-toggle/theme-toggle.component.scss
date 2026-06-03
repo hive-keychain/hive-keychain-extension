@@ -1,0 +1,70 @@
+.theme-toggle {
+  width: 100%;
+
+  .theme-toggle-tabs {
+    display: flex;
+    position: relative;
+    width: 100%;
+    padding: 4px;
+    border-radius: 22px;
+    border: 1px solid var(--input-border);
+    background: var(--input-background);
+    box-sizing: border-box;
+
+    input[type='radio'] {
+      display: none;
+    }
+
+    .theme-toggle-tab {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      column-gap: 8px;
+      height: 40px;
+      border-radius: 18px;
+      cursor: pointer;
+      z-index: 2;
+      color: var(--main-font-color);
+      transition: color 0.15s ease-in;
+      user-select: none;
+
+      .svg-icon {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+
+        div,
+        svg {
+          width: 100%;
+          height: 100%;
+        }
+      }
+
+      .theme-toggle-label {
+        @include poppins500(14px);
+        white-space: nowrap;
+      }
+
+      &.selected {
+        color: white;
+        --menu-icon-color: white;
+      }
+    }
+
+    .theme-toggle-glider {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: calc(50% - 4px);
+      height: calc(100% - 8px);
+      background-color: $red;
+      border-radius: 18px;
+      z-index: 1;
+      transition: transform 0.25s ease-out;
+      box-shadow: 0px 10px 7px 0px $red-shadow;
+      pointer-events: none;
+    }
+  }
+}

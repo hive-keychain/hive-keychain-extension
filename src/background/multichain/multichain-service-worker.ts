@@ -7,22 +7,30 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { VaultCommand, VaultKey } from '@reference-data/vault-message-key.enum';
 import { ensureEcosystemDappsCached } from 'src/utils/ecosystem-dapps-cache.utils';
 import Logger from 'src/utils/logger.utils';
+import { SidePanelPreferenceUtils } from 'src/utils/side-panel-preference.utils';
+import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 
 Object.assign(global, { contextType: 'service_worker' });
 
 HiveServiceWorker.initializeServiceWorker();
 EvmServiceWorker.initializeServiceWorker();
 
-const resetSidePanelActionClickBehavior = () => {
-  if (process.env.IS_FIREFOX) {
-    return;
-  }
-  void chrome.sidePanel?.setPanelBehavior?.({ openPanelOnActionClick: false });
+const syncSidePanelStartupSettings = () => {
+  void SidePanelPreferenceUtils.syncSidePanelStartupSettings();
 };
 
-resetSidePanelActionClickBehavior();
-chrome.runtime.onInstalled.addListener(resetSidePanelActionClickBehavior);
-chrome.runtime.onStartup.addListener(resetSidePanelActionClickBehavior);
+syncSidePanelStartupSettings();
+chrome.runtime.onInstalled.addListener(syncSidePanelStartupSettings);
+chrome.runtime.onStartup.addListener(syncSidePanelStartupSettings);
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName !== 'local') {
+    return;
+  }
+
+  if (changes[LocalStorageKeyEnum.OPEN_SIDE_PANEL_BY_DEFAULT]) {
+    syncSidePanelStartupSettings();
+  }
+});
 
 (async () => {
   if (!process.env.IS_FIREFOX) {

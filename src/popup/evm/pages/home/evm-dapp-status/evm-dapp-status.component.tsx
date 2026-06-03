@@ -44,6 +44,13 @@ const EvmDappStatus = ({
   }, [activeAccount.address, dapp]);
 
   const init = async () => {
+    chrome.tabs.onActivated.addListener(async (activeInfo) => {
+      const [activeTab] = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+      if (activeTab?.url && activeTab.url.length > 0) setDapp(activeTab);
+    });
     const [activeTab] = await chrome.tabs.query({
       active: true,
       currentWindow: true,

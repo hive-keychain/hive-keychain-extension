@@ -1,5 +1,9 @@
+import {
+  SIDE_PANEL_PATH,
+  SidePanelPreferenceUtils,
+} from 'src/utils/side-panel-preference.utils';
+
 const DETACHED_WINDOW_PATH = 'detached_window.html';
-const SIDE_PANEL_PATH = 'sidepanel.html';
 
 type SidePanelWithOpen = typeof chrome.sidePanel & {
   open?: (options: { windowId?: number; tabId?: number }) => Promise<void>;
@@ -8,12 +12,6 @@ type SidePanelWithOpen = typeof chrome.sidePanel & {
 const openExtensionPageInTab = (path: string): void => {
   const url = chrome.runtime.getURL(path);
   chrome.tabs.create({ url });
-};
-
-const resetSidePanelActionClickBehavior = (
-  sidePanel: typeof chrome.sidePanel,
-) => {
-  void sidePanel.setPanelBehavior?.({ openPanelOnActionClick: false });
 };
 
 const openDetachedExtensionTab = (hash?: string): void => {
@@ -28,12 +26,12 @@ const openExtensionPageInSidePanel = async (path: string): Promise<boolean> => {
     return false;
   }
 
-  resetSidePanelActionClickBehavior(sidePanel);
   void sidePanel.setOptions({
     path,
     enabled: true,
   });
   await sidePanel.open({ windowId: chrome.windows.WINDOW_ID_CURRENT });
+  await SidePanelPreferenceUtils.applySidePanelActionClickBehavior();
   return true;
 };
 
