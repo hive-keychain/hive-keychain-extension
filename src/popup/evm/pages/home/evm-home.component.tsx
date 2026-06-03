@@ -39,10 +39,15 @@ import {
 } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import {
+  useWalletScrollRelay,
+  WALLET_SCROLL_HANDOFF_PX,
+} from '@popup/multichain/hooks/use-wallet-scroll-relay.hook';
+import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { ethers } from 'ethers';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
 import { TopBarComponent } from 'src/common-ui/_containers/top-bar/top-bar.component';
@@ -82,7 +87,6 @@ const Home = ({
   const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
   const [surveyToDisplay, setSurveyToDisplay] = useState<Survey>();
 
-  const [scrollTop, setScrollTop] = useState(0);
   const [showBottomBar, setShowBottomBar] = useState(true);
 
   const [pendingTransactionsInfo, setPendingTransactionsInfo] =
@@ -98,6 +102,24 @@ const Home = ({
   const [initialRpc, setInitialRpc] = useState<MultichainRpc>();
   const [switchToRpc, setSwitchToRpc] = useState<MultichainRpc>();
   const isMountedRef = useRef(false);
+  const scrollTopRef = useRef(0);
+  const walletScrollHandoffPx = ExtensionSurfaceUtils.isSidePanelPage()
+    ? 0
+    : WALLET_SCROLL_HANDOFF_PX;
+  const handleWalletScrollDirectionChange = useCallback(
+    (isScrollingDown: boolean) => {
+      setShowBottomBar(!isScrollingDown);
+    },
+    [],
+  );
+  const {
+    homeContentRef,
+    walletScrollRef,
+    relayWheelToWallet,
+  } = useWalletScrollRelay({
+    onScrollDirectionChange: handleWalletScrollDirectionChange,
+    scrollHandoffPx: walletScrollHandoffPx,
+  });
   const pendingTransactionsRequestId = useRef(0);
   const rpcCheckRequestId = useRef(0);
   const setStateIfMounted = <
@@ -302,20 +324,20 @@ const Home = ({
   };
 
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    const scrolled = event.currentTarget.scrollTop;
-    if (scrolled > scrollTop) {
+    const clampedScrollTop = Math.min(
+      event.currentTarget.scrollTop,
+      walletScrollHandoffPx,
+    );
+    if (event.currentTarget.scrollTop !== clampedScrollTop) {
+      event.currentTarget.scrollTop = clampedScrollTop;
+    }
+    const scrolled = clampedScrollTop;
+    if (scrolled > scrollTopRef.current) {
       setShowBottomBar(false);
     } else {
       setShowBottomBar(true);
     }
-    setScrollTop(scrolled);
-
-    if (
-      event.currentTarget.clientHeight + event.currentTarget.scrollTop + 1 >
-      event.currentTarget.scrollHeight
-    ) {
-      setShowBottomBar(true);
-    }
+    scrollTopRef.current = scrolled;
   };
 
   const handleClickOnNftCollection = (
@@ -437,7 +459,11 @@ const Home = ({
         }
       />
 
-      <div className={'home-page-content'} onScroll={handleScroll}>
+      <div
+        className={'home-page-content'}
+        ref={homeContentRef}
+        onScroll={handleScroll}
+        onWheelCapture={relayWheelToWallet}>
         <div className="evm-account-value-wrapper">
           {accountValues && (
             <EstimatedAccountValueSectionComponent
@@ -470,6 +496,7 @@ const Home = ({
           reloadEvmActiveAccount={refresh}
           initialDisplayNfts={returningFromNftPage}
           initialDisplayHistory={returningFromHistoryDetails}
+          walletScrollRef={walletScrollRef}
         />
       </div>
       <ActionsSectionComponent

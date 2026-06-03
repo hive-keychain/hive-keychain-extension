@@ -32,10 +32,15 @@ import { resetTitleContainerProperties } from '@popup/multichain/actions/title-c
 import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import {
+  useWalletScrollRelay,
+  HIVE_WALLET_SCROLL_HANDOFF_PX,
+} from '@popup/multichain/hooks/use-wallet-scroll-relay.hook';
+import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { KeychainKeyTypes } from 'hive-keychain-commons';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
 import { TopBarComponent } from 'src/common-ui/_containers/top-bar/top-bar.component';
@@ -106,7 +111,6 @@ const Home = ({
   const [vestingRoutesDifferences, setVestingRoutesDifferences] = useState<
     AccountVestingRoutesDifferences[] | undefined
   >();
-  const [scrollTop, setScrollTop] = useState(0);
   const [showBottomBar, setShowBottomBar] = useState(true);
   const [hiddenTokensList, setHiddenTokensList] = useState<string[]>([]);
   const [
@@ -114,6 +118,24 @@ const Home = ({
     setHiveMarketLockedOpenOrdersValues,
   ] = useState<HiveInternalMarketLockedInOrders>({ hive: 0, hbd: 0 });
   const isMountedRef = useRef(false);
+  const scrollTopRef = useRef(0);
+  const walletScrollHandoffPx = ExtensionSurfaceUtils.isSidePanelPage()
+    ? 0
+    : HIVE_WALLET_SCROLL_HANDOFF_PX;
+  const handleWalletScrollDirectionChange = useCallback(
+    (isScrollingDown: boolean) => {
+      setShowBottomBar(!isScrollingDown);
+    },
+    [],
+  );
+  const {
+    homeContentRef,
+    walletScrollRef,
+    relayWheelToWallet,
+  } = useWalletScrollRelay({
+    onScrollDirectionChange: handleWalletScrollDirectionChange,
+    scrollHandoffPx: walletScrollHandoffPx,
+  });
   const setStateIfMounted = <
     TSetter extends React.Dispatch<React.SetStateAction<any>>,
   >(
@@ -327,20 +349,20 @@ const Home = ({
   };
 
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    const scrolled = event.currentTarget.scrollTop;
-    if (scrolled > scrollTop) {
+    const clampedScrollTop = Math.min(
+      event.currentTarget.scrollTop,
+      walletScrollHandoffPx,
+    );
+    if (event.currentTarget.scrollTop !== clampedScrollTop) {
+      event.currentTarget.scrollTop = clampedScrollTop;
+    }
+    const scrolled = clampedScrollTop;
+    if (scrolled > scrollTopRef.current) {
       setShowBottomBar(false);
     } else {
       setShowBottomBar(true);
     }
-    setScrollTop(scrolled);
-
-    if (
-      event.currentTarget.clientHeight + event.currentTarget.scrollTop + 1 >
-      event.currentTarget.scrollHeight
-    ) {
-      setShowBottomBar(true);
-    }
+    scrollTopRef.current = scrolled;
   };
 
   const refresh = async () => {
@@ -472,7 +494,11 @@ const Home = ({
               }
             />
 
-            <div className={'home-page-content'} onScroll={handleScroll}>
+            <div
+              className={'home-page-content'}
+              ref={homeContentRef}
+              onScroll={handleScroll}
+              onWheelCapture={relayWheelToWallet}>
               <ResourcesSectionComponent />
               <EstimatedAccountValueSectionComponent
                 accountValues={{
@@ -501,7 +527,9 @@ const Home = ({
                 }}
                 hasPortofolio
               />
-              <HiveWalletInfoSectionComponent />
+              <HiveWalletInfoSectionComponent
+                walletScrollRef={walletScrollRef}
+              />
             </div>
             <ActionsSectionComponent
               additionalClass={showBottomBar ? undefined : 'down'}

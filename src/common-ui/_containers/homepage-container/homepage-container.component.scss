@@ -14,5 +14,6 @@
     row-gap: 24px;
     flex: 1;
     overflow-y: auto;
+    overscroll-behavior-y: contain;
   }
 }
