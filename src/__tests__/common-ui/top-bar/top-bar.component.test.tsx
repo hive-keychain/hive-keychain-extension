@@ -59,4 +59,32 @@ describe('TopBarComponent', () => {
       screen.getByRole('button', { name: 'Refresh rewards' }),
     ).toBeInTheDocument();
   });
+
+  it('wraps the chain dropdown in a compact selector slot', () => {
+    const { container } = renderTopBar();
+
+    const chainSlot = container.querySelector('.top-bar-chain-selector-slot');
+    expect(chainSlot).toBeInTheDocument();
+    expect(chainSlot?.querySelector('[data-testid="chain-dropdown"]')).toBeInTheDocument();
+  });
+
+  it('keeps a fixed-width account selector and flexible spacer before trailing items', () => {
+    const { container } = renderTopBar(
+      <button type="button">Refresh rewards</button>,
+    );
+
+    const topBar = container.querySelector('.top-bar');
+    const accountPanel = container.querySelector('.account-selector-panel');
+    const fillSpace = container.querySelector('.fill-space');
+    const actions = container.querySelector('.top-bar-actions');
+    const chainSlot = container.querySelector('.top-bar-chain-selector-slot');
+
+    expect(accountPanel).toBeInTheDocument();
+    expect(fillSpace).toBeInTheDocument();
+
+    const children = Array.from(topBar?.children ?? []);
+    expect(children.indexOf(accountPanel!)).toBeLessThan(children.indexOf(fillSpace!));
+    expect(children.indexOf(fillSpace!)).toBeLessThan(children.indexOf(actions!));
+    expect(children.indexOf(actions!)).toBeLessThan(children.indexOf(chainSlot!));
+  });
 });
