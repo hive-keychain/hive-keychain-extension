@@ -102,11 +102,11 @@
   position: relative;
 
   .notification-button {
-    height: 24px;
-    width: 24px;
+    height: 35px;
+    width: 35px;
     svg {
-      height: 24px;
-      width: 24px;
+      height: 35px;
+      width: 35px;
     }
     &:hover {
       --action-button-background-color: #{$red};
