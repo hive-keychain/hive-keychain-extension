@@ -28,17 +28,32 @@
         display: flex;
         align-items: center;
         column-gap: 8px;
+        min-width: 0;
+        width: 100%;
+        box-sizing: border-box;
         .custom-select-container {
-          flex: 1;
+          flex: 1 1 auto;
+          min-width: 0;
           .selected-item {
             @include poppins400(14px);
           }
-          .custom-select {
+          .custom-select,
+          .react-dropdown-select {
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+            box-sizing: border-box;
             height: 45px !important;
             border-radius: 22px !important;
           }
+          .react-dropdown-select-content {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+          }
         }
         .round-button {
+          flex-shrink: 0;
           cursor: pointer;
           @include small-card;
           padding: 12px;
