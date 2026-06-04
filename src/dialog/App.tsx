@@ -17,7 +17,6 @@ import { CommunicationUtils } from 'src/utils/communication.utils';
 import BrowserUtils from 'src/utils/browser.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
-// import './../analytics/analytics/gtag';
 
 const App = () => {
   const [globalData, setGlobalData] = useState<any>(null);
@@ -55,27 +54,7 @@ const App = () => {
     );
   };
 
-  const initGoogleAnalytics = () => {
-    // window.dataLayer = window.dataLayer || [];
-    // window.gtag = function gtag() {
-    //   window.dataLayer.push(arguments); // eslint-disable-line
-    // };
-    // window.gtag('js', new Date());
-    // window.gtag(
-    //   'config',
-    //   process.env.GOOGLE_ANALYTICS_TAG_ID || 'G-1LRCTFLVBH',
-    //   {
-    //     page_path: '/popup',
-    //   },
-    // );
-    // window.gtag('set', 'checkProtocolTask', () => {}); // Disables file protocol checking.
-    // window.gtag('event', 'navigation', {
-    //   page: 'dialog',
-    // });
-  };
-
   useEffect(() => {
-    initGoogleAnalytics();
     chrome.runtime.onMessage.addListener(
       async function (data, sender, sendResp) {
         if (data.command === DialogCommand.READY) {

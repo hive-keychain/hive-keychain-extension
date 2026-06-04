@@ -28,7 +28,6 @@ import { TokenPendingUnstakePage } from '@popup/hive/pages/app-container/home/to
 import { PendingRecurrentTransfersPageComponent } from '@popup/hive/pages/app-container/home/transfer-fund/recurrent-transfers/recurrent-transfers.component';
 import { ExportAccountsSubMenuComponent } from '@popup/hive/pages/app-container/settings/accounts/export-accounts/export-accounts-sub-menu.component';
 import { ExportedAccountsQRComponent } from '@popup/hive/pages/app-container/settings/accounts/export-accounts/exported-accounts-qr/exported-accounts-qr.component';
-import { AnalyticsComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/analytics/analytics.component';
 import { AutoLockComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/auto-lock/auto-lock.component';
 import { ChangePasswordComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/change-password/change-password.component';
 import { ClearAllDataComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/clear-all-data/clear-all-data.component';
@@ -192,8 +191,6 @@ const UnifiedRouter = ({
         return <KeychainifyComponent />;
       case MultichainScreen.SETTINGS_CLEAR_ALL_DATA:
         return <ClearAllDataComponent />;
-      case MultichainScreen.SETTINGS_ANALYTICS:
-        return <AnalyticsComponent />;
       case MultichainScreen.SETTINGS_RPC_NODES:
         return <SettingsNetworkPageComponent />;
       case MultichainScreen.SETTINGS_SHORTCUTS:

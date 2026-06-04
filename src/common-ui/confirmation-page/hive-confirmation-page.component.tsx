@@ -127,7 +127,6 @@ const ConfirmationPage = ({
 
   const handleClickOnConfirm = () => {
     let metadata;
-    // AnalyticsUtils.sendRequestEvent(title);
     if (willUseMultisig) {
       addCaptionToLoading(
         twoFABots && Object.keys(twoFABots).length > 0

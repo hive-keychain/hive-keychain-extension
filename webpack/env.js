@@ -4,7 +4,6 @@ const dotenv = require('dotenv');
 // Do not add release credentials, upload tokens, or private server secrets here.
 const PUBLIC_ENV_KEYS = [
   'DEBUG_LOG',
-  'DEV_ANALYTICS_FREQUENCY',
   'DEV_CLAIM_ACCOUNT_MIN_RC',
   'DEV_CLAIM_ACCOUNT_RC_PCT',
   'DEV_CLAIM_FREQUENCY',
@@ -15,8 +14,6 @@ const PUBLIC_ENV_KEYS = [
   'EVM_DATA_EXPIRATION_TIME',
   'EVM_LIGHT_NODE_API_URL',
   'FORCED_EVM_WALLET_ADDRESS',
-  'GOOGLE_ANALYTICS_DEV_MODE',
-  'GOOGLE_ANALYTICS_TAG_ID',
   'KEYCHAIN_API_URL',
   'KEYCHAIN_SWAP_API_DEV',
   'KEYLESS_HOST',

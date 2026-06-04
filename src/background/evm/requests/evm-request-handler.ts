@@ -126,8 +126,6 @@ export class EvmRequestHandler {
       },
       this,
     );
-
-    // AnalyticsModule.sendData(msg.request.type, msg.domain);
   }
 
   getRequestData(requestId: number) {

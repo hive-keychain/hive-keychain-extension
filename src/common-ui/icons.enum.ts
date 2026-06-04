@@ -123,7 +123,6 @@ export enum SVGIcons {
   MENU_CONTACTS = 'menu/contacts',
 
   MENU_ADVANCED_SETTINGS = 'menu/advanced-settings',
-  MENU_ADVANCED_SETTINGS_ANALYTICS = 'menu/advanced-settings/analytics',
   MENU_ADVANCED_SETTINGS_AUTO_LOCK = 'menu/advanced-settings/auto-lock',
   MENU_ADVANCED_SETTINGS_CHANGE_PASSWORD = 'menu/advanced-settings/change-password',
   MENU_ADVANCED_SETTINGS_CLEAR_ALL = 'menu/advanced-settings/clear-all',

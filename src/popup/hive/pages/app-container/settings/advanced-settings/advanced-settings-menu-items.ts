@@ -20,11 +20,6 @@ export const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
       icon: SVGIcons.MENU_ADVANCED_SETTINGS_CHANGE_PASSWORD,
       nextScreen: Screen.SETTINGS_CHANGE_PASSWORD,
     },
-    // {
-    //   label: 'popup_html_analytics',
-    //   icon: SVGIcons.MENU_ADVANCED_SETTINGS_ANALYTICS,
-    //   nextScreen: Screen.SETTINGS_ANALYTICS,
-    // },
     {
       label: 'ledger_link_ledger_device',
       icon: SVGIcons.MENU_ADVANCED_SETTINGS_LINK_LEDGER_DEVICE,
