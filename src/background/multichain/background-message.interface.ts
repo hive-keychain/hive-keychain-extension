@@ -12,11 +12,6 @@ import { VaultCommand } from '@reference-data/vault-message-key.enum';
 import { KeychainRequestData } from 'hive-keychain-commons';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 
-// export interface BackgroundMessage {
-//   command: BackgroundCommand;
-//   value?: any;
-// }
-
 export type BaseBackgroundMessage = {
   command: BackgroundCommand | VaultCommand;
   value?: any;
@@ -31,11 +26,6 @@ export type SendRequestMessage = {
 };
 
 export type BackgroundMessage = BaseBackgroundMessage | SendRequestMessage;
-
-// export interface DialogMessage {
-//   command: DialogCommand;
-//   msg?: any;
-// }
 
 export interface MultisigDialogMessage {
   command: MultisigDialogCommand;

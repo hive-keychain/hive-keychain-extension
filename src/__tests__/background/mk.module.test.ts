@@ -1,5 +1,4 @@
 import MkModule from '@background/mk.module';
-import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -95,17 +94,6 @@ describe('mk.module tests:\n', () => {
       });
 
     expect(await MkModule.login(mk.user.one)).toBe(true);
-  });
-
-  it('Must call sendMessage', async () => {
-    jest.spyOn(VaultUtils, 'getValueFromVault').mockResolvedValue(mk.user.one);
-
-    const sSendMessage = jest.spyOn(chrome.runtime, 'sendMessage');
-    await MkModule.sendBackMk();
-    expect(sSendMessage).toHaveBeenCalledWith({
-      command: BackgroundCommand.SEND_BACK_MK,
-      value: mk.user.one,
-    });
   });
 
   it('Must set new MK', () => {

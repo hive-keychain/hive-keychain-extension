@@ -139,10 +139,6 @@ const retrieveSwapHistory = async (username: string): Promise<ISwap[]> => {
   }
   const swaps = [];
   for (const s of res.result) {
-    // const precisionStartToken = await TokensUtils.getTokenPrecision(
-    //   s.startToken,
-    // );
-    // const precisionEndToken = await TokensUtils.getTokenPrecision(s.endToken);
     if (s.status === SwapStatus.PENDING && !s.transferInitiated) continue;
     swaps.push({
       ...s,

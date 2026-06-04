@@ -51,7 +51,6 @@ import { EVMConfirmationPageComponent } from 'src/common-ui/confirmation-page/ev
 import { HiveConfirmationPageComponent } from 'src/common-ui/confirmation-page/hive-confirmation-page.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { AddAccountMainComponent } from 'src/popup/hive/pages/add-account/add-account-main/add-account-main.component';
-import { AddAccountRouterComponent } from 'src/popup/hive/pages/add-account/add-account-router/add-account-router.component';
 import { AddByAuthComponent } from 'src/popup/hive/pages/add-account/add-by-auth/add-by-auth.component';
 import { AddByKeysComponent } from 'src/popup/hive/pages/add-account/add-by-keys/add-by-keys.component';
 import { ImportKeysComponent } from 'src/popup/hive/pages/add-account/import-keys/import-keys.component';

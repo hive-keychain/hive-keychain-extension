@@ -1,4 +1,7 @@
-import { BackgroundMessage } from '@background/background-message.interface';
+import {
+  BackgroundMessage,
+  BaseBackgroundMessage,
+} from '@background/multichain/background-message.interface';
 import { EvmServiceWorker } from '@background/evm/evm-service-worker';
 import { HiveServiceWorker } from '@background/hive/hive-service-worker';
 import MkModule from '@background/hive/modules/mk.module';
@@ -73,8 +76,9 @@ const chromeMessageHandler = async (
     process.env.IS_FIREFOX &&
     Object.values(VaultCommand).includes(backgroundMessage.command as VaultCommand)
   ) {
+    const vaultMessage = backgroundMessage as BaseBackgroundMessage;
     if (
-      backgroundMessage.key !== VaultKey.__MK ||
+      vaultMessage.key !== VaultKey.__MK ||
       !isInternalExtensionSender(sender)
     )
       return;
