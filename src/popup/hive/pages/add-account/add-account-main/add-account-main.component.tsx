@@ -21,7 +21,8 @@ import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface
 import { RootState } from '@popup/multichain/store';
 import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import React, { useEffect, useState } from 'react';
+import { buildAddAccountSetupTitleProperties } from 'src/popup/hive/pages/add-account/add-account-setup-title.utils';
+import React, { useLayoutEffect, useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { MenuItemComponent } from 'src/common-ui/menu/menu-item/menu-item.component';
@@ -57,15 +58,16 @@ const AddAccountMain = ({
   >(ChainType.HIVE);
   const isLedgerAvailableForEvm = isEvmLedgerSupported || isLedgerSupported;
 
-  useEffect(() => {
-    setTitleContainerProperties({
-      title: 'popup_html_setup',
-      isBackButtonEnabled: true,
-      onBackAdditional:
-        !accounts || !accounts.length ? () => resetChain() : undefined,
-      isCloseButtonDisabled: !accounts || !accounts.length,
-    });
-  }, []);
+  const hasAnyAccounts = (accounts?.length ?? 0) > 0;
+
+  useLayoutEffect(() => {
+    setTitleContainerProperties(
+      buildAddAccountSetupTitleProperties(
+        hasAnyAccounts,
+        hasAnyAccounts ? undefined : () => resetChain(),
+      ),
+    );
+  }, [hasAnyAccounts, resetChain, setTitleContainerProperties]);
 
   const handleAddByKeys = (): void => {
     navigateTo(Screen.ACCOUNT_PAGE_ADD_BY_KEYS);

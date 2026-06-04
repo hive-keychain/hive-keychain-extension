@@ -17,7 +17,8 @@ import { loadGlobalProperties } from '@popup/hive/actions/global-properties.acti
 import { initHiveEngineConfigFromStorage } from '@popup/hive/actions/hive-engine-config.actions';
 import { setDisplayChangeRpcPopup } from '@popup/hive/actions/rpc-switcher';
 import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
-import { setChain } from '@popup/multichain/actions/chain.actions';
+import { resetChain, setChain } from '@popup/multichain/actions/chain.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import {
   navigateTo,
   navigateToWithParams,
@@ -43,8 +44,9 @@ import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';
 import Config from 'src/config';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
-import { AddAccountRouterComponent } from 'src/popup/hive/pages/add-account/add-account-router/add-account-router.component';
+import { buildAddAccountSetupTitleProperties } from 'src/popup/hive/pages/add-account/add-account-setup-title.utils';
 import { KeylessKeychainComponent } from 'src/popup/hive/pages/add-account/keyless-keychain/keyless-keychain.component';
+import { stackHasAccountSetupPage } from '@popup/multichain/utils/account-setup-screens.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
@@ -54,17 +56,6 @@ import Logger from 'src/utils/logger.utils';
 import { useWorkingRPC } from 'src/utils/rpc-switcher.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
-const stackHasAccountSetupPage = (stack: { currentPage: Screen }[]): boolean =>
-  stack.some(
-    (navigation) =>
-      navigation.currentPage === Screen.ACCOUNT_PAGE_INIT_ACCOUNT ||
-      navigation.currentPage === Screen.SIGN_IN_PAGE ||
-      navigation.currentPage === Screen.ACCOUNT_PAGE_ADD_BY_KEYS ||
-      navigation.currentPage === Screen.ACCOUNT_PAGE_ADD_BY_AUTH ||
-      navigation.currentPage === Screen.ACCOUNT_PAGE_SELECT_KEYS ||
-      navigation.currentPage === Screen.ACCOUNT_PAGE_IMPORT_KEYS ||
-      navigation.currentPage === Screen.ACCOUNT_PAGE_KEYLESS_KEYCHAIN,
-  );
 
 const isSameChain = (left: Chain, right: Chain) =>
   left?.chainId?.toLowerCase() === right?.chainId?.toLowerCase();
@@ -491,6 +482,9 @@ const UnlockedApp = ({
         navigateTo(Screen.HOME_PAGE, true);
       }
     } else if (mk && mk.length > 0) {
+      setTitleContainerProperties(
+        buildAddAccountSetupTitleProperties(false, () => resetChain()),
+      );
       navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);
     } else if (
       mk &&
@@ -511,12 +505,8 @@ const UnlockedApp = ({
     }
 
     const hasAccounts = hiveAccounts.length > 0 || evmAccounts.length > 0;
-    if (!hasAccounts) {
-      return isKeylessKeychainEnabled ? (
-        <KeylessKeychainComponent />
-      ) : (
-        <AddAccountRouterComponent />
-      );
+    if (!hasAccounts && isKeylessKeychainEnabled) {
+      return <KeylessKeychainComponent />;
     }
 
     return <UnifiedRouterComponent />;
@@ -619,6 +609,8 @@ const connector = connect(mapStateToProps, {
   initHiveEngineConfigFromStorage,
   navigateTo,
   navigateToWithParams,
+  setTitleContainerProperties,
+  resetChain,
 });
 
 type PropsFromRedux = ConnectedProps<typeof connector>;

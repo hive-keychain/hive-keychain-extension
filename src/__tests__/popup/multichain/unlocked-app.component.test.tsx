@@ -39,6 +39,12 @@ jest.mock('@popup/multichain/unified-router.component', () => ({
   UnifiedRouterComponent: () => <div data-testid="unified-router" />,
 }));
 
+jest.mock('src/popup/hive/pages/add-account/add-account-main/add-account-main.component', () => ({
+  AddAccountMainComponent: () => (
+    <div data-testid="add-account-main-mock" />
+  ),
+}));
+
 jest.mock('src/utils/async.utils', () => ({
   AsyncUtils: {
     sleep: jest.fn().mockResolvedValue(undefined),
@@ -273,6 +279,67 @@ describe('UnlockedAppComponent', () => {
     expect(store.getState().navigation.stack[0]).toMatchObject({
       currentPage: HiveScreen.SETTINGS_MANAGE_ACCOUNTS,
       params: { username: localAccounts.user2.name },
+    });
+  });
+
+  it('sets the setup title before navigating to add account during init', async () => {
+    const { store } = customRender(<UnlockedAppComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk: mkData.user.one,
+        chain: hiveChain,
+        navigation: { stack: [] },
+        hive: {
+          ...initialEmptyStateStore.hive,
+          accounts: [],
+          appStatus: {
+            ...initialEmptyStateStore.hive.appStatus,
+            priceLoaded: true,
+            globalPropertiesLoaded: true,
+          },
+        },
+        evm: {
+          ...initialEmptyStateStore.evm,
+          accounts: [],
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(store.getState().titleContainer.title).toBe('popup_html_setup');
+      expect(store.getState().navigation.stack[0]?.currentPage).toBe(
+        Screen.ACCOUNT_PAGE_INIT_ACCOUNT,
+      );
+    });
+  });
+
+  it('uses unified router when the wallet has no accounts yet', async () => {
+    const { getByTestId } = customRender(<UnlockedAppComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk: mkData.user.one,
+        chain: hiveChain,
+        navigation: {
+          stack: [{ currentPage: Screen.ACCOUNT_PAGE_INIT_ACCOUNT }],
+        },
+        hive: {
+          ...initialEmptyStateStore.hive,
+          accounts: [],
+          appStatus: {
+            ...initialEmptyStateStore.hive.appStatus,
+            priceLoaded: true,
+            globalPropertiesLoaded: true,
+          },
+        },
+        evm: {
+          ...initialEmptyStateStore.evm,
+          accounts: [],
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(getByTestId('unified-router')).toBeInTheDocument();
     });
   });
 

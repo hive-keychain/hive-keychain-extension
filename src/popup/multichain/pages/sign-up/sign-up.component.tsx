@@ -2,7 +2,10 @@ import { Screen } from '@interfaces/screen.interface';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { setMk } from '@popup/multichain/actions/mk.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
-import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import {
+  resetTitleContainerProperties,
+  setTitleContainerProperties,
+} from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -15,6 +18,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { buildAddAccountSetupTitleProperties } from 'src/popup/hive/pages/add-account/add-account-setup-title.utils';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
@@ -23,14 +27,15 @@ const SignUp = ({
   setMk,
   navigateTo,
   resetTitleContainerProperties,
+  setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
   const [accepted, setAccepted] = useState(false);
 
   useEffect(() => {
-    resetTitleContainerProperties;
-  }, []);
+    resetTitleContainerProperties();
+  }, [resetTitleContainerProperties]);
   const submitMk = (): any => {
     if (!accepted) {
       setErrorMessage('html_popup_sign_up_need_accept_pp');
@@ -39,6 +44,7 @@ const SignUp = ({
     if (newPassword === newPasswordConfirm) {
       if (MkUtils.isPasswordValid(newPassword)) {
         setMk(newPassword, true);
+        setTitleContainerProperties(buildAddAccountSetupTitleProperties(false));
         navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);
       } else {
         setErrorMessage('popup_password_regex');
@@ -108,6 +114,7 @@ const connector = connect(mapStateToProps, {
   setMk,
   navigateTo,
   resetTitleContainerProperties,
+  setTitleContainerProperties,
 });
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
