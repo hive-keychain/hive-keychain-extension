@@ -34,7 +34,7 @@ import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import {
   useWalletScrollRelay,
-  HIVE_WALLET_SCROLL_HANDOFF_PX,
+  WALLET_SCROLL_HANDOFF_PX,
 } from '@popup/multichain/hooks/use-wallet-scroll-relay.hook';
 import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
@@ -121,7 +121,7 @@ const Home = ({
   const scrollTopRef = useRef(0);
   const walletScrollHandoffPx = ExtensionSurfaceUtils.isSidePanelPage()
     ? 0
-    : HIVE_WALLET_SCROLL_HANDOFF_PX;
+    : WALLET_SCROLL_HANDOFF_PX;
   const handleWalletScrollDirectionChange = useCallback(
     (isScrollingDown: boolean) => {
       setShowBottomBar(!isScrollingDown);
