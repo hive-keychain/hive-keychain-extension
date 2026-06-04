@@ -6,7 +6,7 @@ import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmWalletSetupTabUtils } from '@popup/evm/utils/evm-wallet-setup-tab.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
-import { resetChain, setChain } from '@popup/multichain/actions/chain.actions';
+import { setChain } from '@popup/multichain/actions/chain.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import {
   resetTitleContainerProperties,
@@ -45,7 +45,6 @@ const AddAccountMain = ({
   resetTitleContainerProperties,
   isLedgerSupported,
   isEvmLedgerSupported,
-  resetChain,
   setChain,
   chain,
   mk,
@@ -61,13 +60,8 @@ const AddAccountMain = ({
   const hasAnyAccounts = (accounts?.length ?? 0) > 0;
 
   useLayoutEffect(() => {
-    setTitleContainerProperties(
-      buildAddAccountSetupTitleProperties(
-        hasAnyAccounts,
-        hasAnyAccounts ? undefined : () => resetChain(),
-      ),
-    );
-  }, [hasAnyAccounts, resetChain, setTitleContainerProperties]);
+    setTitleContainerProperties(buildAddAccountSetupTitleProperties(hasAnyAccounts));
+  }, [hasAnyAccounts, setTitleContainerProperties]);
 
   const handleAddByKeys = (): void => {
     navigateTo(Screen.ACCOUNT_PAGE_ADD_BY_KEYS);
@@ -445,7 +439,6 @@ const connector = connect(mapStateToProps, {
   setAccounts,
   setTitleContainerProperties,
   resetTitleContainerProperties,
-  resetChain,
   setChain,
   loadActiveAccount,
   setActiveAccountType,

@@ -38,7 +38,6 @@ import { ExportTransactionsComponent } from '@popup/hive/pages/app-container/set
 import { MultisigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/multisig/multisig.component';
 import { NotificationsConfigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notifications-config/notifications-config.component';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
-import { resetChain } from '@popup/multichain/actions/chain.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { RootState } from '@popup/multichain/store';
@@ -125,17 +124,12 @@ const UnifiedRouter = ({
   hiveAccountsCount,
   evmAccountsCount,
   setTitleContainerProperties,
-  resetChain,
 }: PropsFromRedux) => {
   const hasAnyAccounts = hiveAccountsCount + evmAccountsCount > 0;
 
   const fallbackSetupTitle = useMemo(
-    () =>
-      buildAddAccountSetupTitleProperties(
-        hasAnyAccounts,
-        hasAnyAccounts ? undefined : resetChain,
-      ),
-    [hasAnyAccounts, resetChain],
+    () => buildAddAccountSetupTitleProperties(hasAnyAccounts),
+    [hasAnyAccounts],
   );
 
   useLayoutEffect(() => {
@@ -438,7 +432,6 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
-  resetChain,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

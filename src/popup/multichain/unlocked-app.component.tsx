@@ -482,9 +482,7 @@ const UnlockedApp = ({
         navigateTo(Screen.HOME_PAGE, true);
       }
     } else if (mk && mk.length > 0) {
-      setTitleContainerProperties(
-        buildAddAccountSetupTitleProperties(false, () => resetChain()),
-      );
+      setTitleContainerProperties(buildAddAccountSetupTitleProperties(false));
       navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);
     } else if (
       mk &&
