@@ -2,6 +2,7 @@ import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { SendTransaction } from '@dialog/evm/requests/send-transaction/send-transaction';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
+import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmAccountSource } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
@@ -16,6 +17,7 @@ import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings
 import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
 const mockParseTransaction = jest.fn();
@@ -27,6 +29,22 @@ const mockGasFeePanel = jest.fn((props: any) => {
     props.onInitialEstimationComplete?.();
   }, [props.transactionData]);
   return <div data-testid="gas-fee-panel" />;
+});
+
+const buildGasFeeEstimation = (
+  estimatedFeeInEth: string,
+): GasFeeEstimationBase => ({
+  type: EvmTransactionType.EIP_1559,
+  estimatedFeeInEth: new Decimal(estimatedFeeInEth),
+  estimatedFeeUSD: new Decimal(0),
+  maxFeeInEth: new Decimal('0.02'),
+  maxFeeUSD: new Decimal(0),
+  estimatedMaxDuration: new Decimal(0),
+  gasLimit: new Decimal(21000),
+  priorityFeeInGwei: new Decimal(1),
+  maxFeePerGasInGwei: new Decimal(1),
+  icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
+  name: 'popup_html_evm_custom_gas_fee_custom',
 });
 
 jest.mock('src/dialog/evm/requests/transaction-warnings/transaction.hook', () => ({
@@ -998,12 +1016,7 @@ describe('send-transaction proxy tests:\n', () => {
       operationName: 'evm_operation_approve',
     } as any;
     transactionHook.ready = true;
-    transactionHook.selectedFee = {
-      estimatedFeeInEth: new Decimal('0.01'),
-      gasLimit: new Decimal(21000),
-      maxFeeInEth: new Decimal('0.02'),
-      priorityFeeInGwei: new Decimal('1'),
-    } as any;
+    transactionHook.selectedFee = buildGasFeeEstimation('0.01');
 
     const getBalanceInfoSpy = jest
       .spyOn(EvmTokensUtils, 'getBalanceInfo')
@@ -1065,12 +1078,7 @@ describe('send-transaction proxy tests:\n', () => {
       operationName: 'evm_operation_approve',
     } as any;
     transactionHook.ready = true;
-    transactionHook.selectedFee = {
-      estimatedFeeInEth: new Decimal('0.01'),
-      gasLimit: new Decimal(21000),
-      maxFeeInEth: new Decimal('0.02'),
-      priorityFeeInGwei: new Decimal('1'),
-    } as any;
+    transactionHook.selectedFee = buildGasFeeEstimation('0.01');
 
     const spenderAddress = '0x00000000000000000000000000000000000000ab';
     const allowanceAmount = 1000000000n;
@@ -1087,6 +1095,23 @@ describe('send-transaction proxy tests:\n', () => {
     ];
 
     jest.spyOn(EvmLightNodeUtils, 'getAbi').mockResolvedValue(approveAbi);
+    jest.spyOn(EvmLightNodeUtils, 'getContract').mockResolvedValue(null as any);
+    jest
+      .spyOn(EvmTransactionParserUtils, 'verifyTransactionInformation')
+      .mockResolvedValue({} as any);
+    jest
+      .spyOn(EvmTransactionParserUtils, 'enrichVerificationForAddresses')
+      .mockImplementation(async (verification) => verification);
+    jest
+      .spyOn(EvmTransactionParserUtils, 'getSmartContractWarningAndInfo')
+      .mockResolvedValue({ information: [], warnings: [] });
+    jest
+      .spyOn(EvmTransactionParserUtils, 'getFieldWarnings')
+      .mockResolvedValue([]);
+    jest.spyOn(EvmAddressesUtils, 'validateTransferRecipient').mockResolvedValue({
+      address: spenderAddress,
+      valid: true,
+    } as any);
     jest.spyOn(EvmTransactionParserUtils, 'parseArgs').mockReturnValue([
       spenderAddress,
       allowanceAmount,
@@ -1161,13 +1186,20 @@ describe('send-transaction proxy tests:\n', () => {
       ),
     );
     await waitFor(() => expect(screen.getByTestId('balance-card')).toBeTruthy());
+    await waitFor(() =>
+      expect(transactionHook.setFields.mock.calls.length).toBeGreaterThan(1),
+    );
 
     await waitFor(() => {
       const fields = lastSetFieldsPayload();
       const amountField = fields.otherFields.find(
         (field: any) => field.name === 'evm_operation_amount',
       );
-      expect(amountField.value).toBe('1,000  USDC');
+      expect(amountField).toEqual(
+        expect.objectContaining({
+          value: '1,000  USDC',
+        }),
+      );
     });
   });
 
@@ -1190,6 +1222,23 @@ describe('send-transaction proxy tests:\n', () => {
     ];
 
     jest.spyOn(EvmLightNodeUtils, 'getAbi').mockResolvedValue(nftAbi);
+    jest.spyOn(EvmLightNodeUtils, 'getContract').mockResolvedValue(null as any);
+    jest
+      .spyOn(EvmTransactionParserUtils, 'verifyTransactionInformation')
+      .mockResolvedValue({} as any);
+    jest
+      .spyOn(EvmTransactionParserUtils, 'enrichVerificationForAddresses')
+      .mockImplementation(async (verification) => verification);
+    jest
+      .spyOn(EvmTransactionParserUtils, 'getSmartContractWarningAndInfo')
+      .mockResolvedValue({ information: [], warnings: [] });
+    jest
+      .spyOn(EvmTransactionParserUtils, 'getFieldWarnings')
+      .mockResolvedValue([]);
+    jest.spyOn(EvmAddressesUtils, 'validateTransferRecipient').mockResolvedValue({
+      address: toAddress,
+      valid: true,
+    } as any);
     jest
       .spyOn(EvmTokensUtils, 'getTokenInfo')
       .mockResolvedValue({
@@ -1268,28 +1317,36 @@ describe('send-transaction proxy tests:\n', () => {
       />,
     );
 
-    await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
-
-    const fields = lastSetFieldsPayload();
-    const fromField = fields.otherFields.find(
-      (field: any) => field.name === 'from',
-    );
-    const toField = fields.otherFields.find((field: any) => field.name === 'to');
-    const contractField = fields.otherFields.find(
-      (field: any) => field.name === 'evm_operation_smart_contract_address',
+    await waitFor(() =>
+      expect(transactionHook.setFields.mock.calls.length).toBeGreaterThan(1),
     );
 
-    expect(contractField.value.type).toBe(EvmAddressComponent);
-    expect(contractField.value.props.address).toBe(proxyAddress);
-    expect(contractField.value.props.canCopy).toBe(true);
-    expect(contractField.value.props.prefix.type).toBe(EvmTokenLogo);
-    expect(contractField.value.props.prefix.props.tokenInfo.symbol).toBe('TNFT');
-    expect(fromField.value.type).toBe(EvmAddressComponent);
-    expect(fromField.value.props.address).toBe(fromAddress);
-    expect(fromField.value.props.canCopy).toBe(true);
-    expect(toField.value.type).toBe(EvmAddressComponent);
-    expect(toField.value.props.address).toBe(toAddress);
-    expect(toField.value.props.canCopy).toBe(true);
+    await waitFor(() => {
+      const fields = lastSetFieldsPayload();
+      const fromField = fields.otherFields.find(
+        (field: any) => field.name === 'from',
+      );
+      const toField = fields.otherFields.find(
+        (field: any) => field.name === 'to',
+      );
+      const contractField = fields.otherFields.find(
+        (field: any) => field.name === 'evm_operation_smart_contract_address',
+      );
+
+      expect(contractField.value.type).toBe(EvmAddressComponent);
+      expect(contractField.value.props.address).toBe(proxyAddress);
+      expect(contractField.value.props.canCopy).toBe(true);
+      expect(contractField.value.props.prefix.type).toBe(EvmTokenLogo);
+      expect(contractField.value.props.prefix.props.tokenInfo.symbol).toBe(
+        'TNFT',
+      );
+      expect(fromField.value.type).toBe(EvmAddressComponent);
+      expect(fromField.value.props.address).toBe(fromAddress);
+      expect(fromField.value.props.canCopy).toBe(true);
+      expect(toField.value.type).toBe(EvmAddressComponent);
+      expect(toField.value.props.address).toBe(toAddress);
+      expect(toField.value.props.canCopy).toBe(true);
+    });
   });
 
   it('labels ERC721 approve second argument as token ID when approve ABI is detected as ERC20', async () => {
@@ -1594,12 +1651,7 @@ describe('send-transaction proxy tests:\n', () => {
     } as any;
     transactionHook.ready = true;
 
-    const selectedGasFee = {
-      estimatedFeeInEth: new Decimal('0.01'),
-      gasLimit: new Decimal(21000),
-      maxFeeInEth: new Decimal('0.02'),
-      priorityFeeInGwei: new Decimal('1'),
-    } as any;
+    const selectedGasFee = buildGasFeeEstimation('0.01');
 
     const getBalanceInfoSpy = jest
       .spyOn(EvmTokensUtils, 'getBalanceInfo')

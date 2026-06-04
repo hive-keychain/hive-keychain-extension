@@ -154,9 +154,6 @@ export interface TestsAppLoadingValues {
       getProposalList?: Proposal[];
     };
   };
-  googleAnalytics?: {
-    window?: { gtag?: jest.Mock };
-  };
   popupsRelated?: {
     SurveyUtils?: {
       getSurvey?: jest.Mock;
@@ -479,12 +476,6 @@ const set = (params?: {
     .mockResolvedValue(
       params?.app?.proposal?.ProposalUtils?.getProposalList ?? [],
     );
-  //////////
-
-  window.gtag =
-    params?.app?.googleAnalytics?.window?.gtag ??
-    jest.fn().mockImplementation(() => undefined);
-
   /////////
   //AppPopups related (including: survey, governance, whats'new)
   SurveyUtils.getSurvey =

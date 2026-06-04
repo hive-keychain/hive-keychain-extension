@@ -1,7 +1,6 @@
 import { Screen } from '@interfaces/screen.interface';
 import { EcosystemComponent } from '@popup/hive/pages/app-container/home/ecosystem/ecosystem.component';
 import { AboutPageComponent } from '@popup/hive/pages/app-container/settings/about/about.component';
-import { AnalyticsComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/analytics/analytics.component';
 import { AutoLockComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/auto-lock/auto-lock.component';
 import { ChangePasswordComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/change-password/change-password.component';
 import { ClearAllDataComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/clear-all-data/clear-all-data.component';
@@ -36,8 +35,6 @@ export const globalRouter = (page: Screen) => {
       return <KeychainifyComponent />;
     case MultichainScreen.SETTINGS_CLEAR_ALL_DATA:
       return <ClearAllDataComponent />;
-    case MultichainScreen.SETTINGS_ANALYTICS:
-      return <AnalyticsComponent />;
     case MultichainScreen.SETTINGS_RPC_NODES:
       return <SettingsNetworkPageComponent />;
     case MultichainScreen.SETTINGS_CONTACTS:

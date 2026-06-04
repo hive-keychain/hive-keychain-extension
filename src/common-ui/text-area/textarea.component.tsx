@@ -41,12 +41,10 @@ export const TextAreaComponent = React.forwardRef(
 
     useEffect(() => {
       setMounted(true);
-      document.addEventListener('keydown', listenToBackspace);
       return function cleanup() {
         setMounted(false);
-        document.removeEventListener('keydown', listenToBackspace);
       };
-    }, [chips]);
+    }, []);
 
     useEffect(() => {
       if (props.useChips) {
@@ -54,27 +52,16 @@ export const TextAreaComponent = React.forwardRef(
       }
     }, [chips]);
 
-    const listenToBackspace = (event: KeyboardEvent) => {
-      if (event.key === 'Backspace') {
-        deleteChip(chips[chips.length - 1]);
-      }
-    };
-
     const addChips = () => {
       if (localValue.trim().length === 0) return;
       if (props.maxChips && chips.length + 1 > props.maxChips) return;
 
-      setChips((previousChips) => {
-        if (!previousChips.includes(localValue))
-          return [...previousChips, localValue];
-        return previousChips;
-      });
+      setChips((previousChips) => [...previousChips, localValue.trim()]);
       setLocalValue('');
     };
 
-    const deleteChip = (chip: string) => {
-      if (!chip) return;
-      const newChips = chips.filter((c) => c !== chip);
+    const deleteChip = (chipIndex: number) => {
+      const newChips = chips.filter((_, index) => index !== chipIndex);
       setChips(newChips);
       props.onChange(newChips);
     };
@@ -110,8 +97,22 @@ export const TextAreaComponent = React.forwardRef(
     ) => {
       if (props.useChips) {
         if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
           addChips();
         }
+      }
+    };
+
+    const handleBackspaceKeyPressed = (
+      e: React.KeyboardEvent<HTMLTextAreaElement>,
+    ) => {
+      if (
+        props.useChips &&
+        e.key === 'Backspace' &&
+        localValue.length === 0 &&
+        chips.length > 0
+      ) {
+        deleteChip(chips.length - 1);
       }
     };
 
@@ -150,13 +151,13 @@ export const TextAreaComponent = React.forwardRef(
                 ? 'has-value'
                 : ''
             }`}>
-            {chips.map((chip) => (
-              <div className="chip" key={`chip-${chip}`}>
+            {chips.map((chip, index) => (
+              <div className="chip" key={`chip-${index}-${chip}`}>
                 <div className="chip-label">{chip}</div>
                 <SVGIcon
                   icon={SVGIcons.GLOBAL_DELETE}
                   className="chip-delete"
-                  onClick={() => deleteChip(chip)}
+                  onClick={() => deleteChip(index)}
                 />
               </div>
             ))}
@@ -178,6 +179,7 @@ export const TextAreaComponent = React.forwardRef(
                   : props.onChange(e.target.value)
               }
               onKeyPress={handleEnterOrSpaceKeyPressed}
+              onKeyDown={handleBackspaceKeyPressed}
               onFocus={() => handleOnFocus()}
               onBlur={() => handleOnBlur()}
               onPaste={($event) => handlePaste($event)}

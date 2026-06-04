@@ -29,6 +29,7 @@ import {
 import { SignInRouterComponent } from '@popup/multichain/pages/sign-in/sign-in-router.component';
 import { RootState } from '@popup/multichain/store';
 import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
+import { stackHasAccountSetupPage } from '@popup/multichain/utils/account-setup-screens.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect, useStore } from 'react-redux';
@@ -46,20 +47,6 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { useWorkingRPC } from 'src/utils/rpc-switcher.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
-/** Same screens as the HiveApp `useEffect` that calls `selectComponent` after adding the first account(s). */
-const stackHasAccountSetupPage = (
-  stack: { currentPage: Screen }[],
-): boolean =>
-  stack.some(
-    (navigation) =>
-      navigation.currentPage === Screen.ACCOUNT_PAGE_INIT_ACCOUNT ||
-      navigation.currentPage === Screen.SIGN_IN_PAGE ||
-      navigation.currentPage === Screen.ACCOUNT_PAGE_ADD_BY_KEYS ||
-      navigation.currentPage === Screen.ACCOUNT_PAGE_ADD_BY_AUTH ||
-      navigation.currentPage === Screen.ACCOUNT_PAGE_SELECT_KEYS ||
-      navigation.currentPage === Screen.ACCOUNT_PAGE_IMPORT_KEYS ||
-      navigation.currentPage === Screen.ACCOUNT_PAGE_KEYLESS_KEYCHAIN,
-  );
 
 const stackHasPaidAccountCreationPage = (
   stack: { currentPage: Screen; params?: { mode?: AccountCreationMode } }[],

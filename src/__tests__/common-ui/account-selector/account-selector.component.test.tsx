@@ -542,7 +542,7 @@ describe('AccountSelectorComponent', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('shows at most five EVM chain logos when more chains are active', async () => {
+  it('shows at most three EVM chain logos when more chains are active', async () => {
     customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
       initialState: buildState(),
     });
@@ -558,9 +558,9 @@ describe('AccountSelectorComponent', () => {
 
     expect(
       within(chainsIndicator).getAllByTestId(/^account-selector-evm-chain-/),
-    ).toHaveLength(5);
+    ).toHaveLength(3);
     expect(
-      within(chainsIndicator).queryByTestId('account-selector-evm-chain-0x64'),
+      within(chainsIndicator).queryByTestId('account-selector-evm-chain-0xa'),
     ).not.toBeInTheDocument();
   });
 

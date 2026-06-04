@@ -16,6 +16,10 @@ if (!global.self) {
   });
 }
 
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = jest.fn();
+}
+
 /** jest-chrome may omit `storage.local.onChanged` used by HiveAppComponent. */
 if (!global.chrome?.storage?.local?.onChanged?.addListener) {
   global.chrome = global.chrome || {};

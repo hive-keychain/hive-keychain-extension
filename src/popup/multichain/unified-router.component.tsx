@@ -28,7 +28,6 @@ import { TokenPendingUnstakePage } from '@popup/hive/pages/app-container/home/to
 import { PendingRecurrentTransfersPageComponent } from '@popup/hive/pages/app-container/home/transfer-fund/recurrent-transfers/recurrent-transfers.component';
 import { ExportAccountsSubMenuComponent } from '@popup/hive/pages/app-container/settings/accounts/export-accounts/export-accounts-sub-menu.component';
 import { ExportedAccountsQRComponent } from '@popup/hive/pages/app-container/settings/accounts/export-accounts/exported-accounts-qr/exported-accounts-qr.component';
-import { AnalyticsComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/analytics/analytics.component';
 import { AutoLockComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/auto-lock/auto-lock.component';
 import { ChangePasswordComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/change-password/change-password.component';
 import { ClearAllDataComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/clear-all-data/clear-all-data.component';
@@ -39,14 +38,18 @@ import { ExportTransactionsComponent } from '@popup/hive/pages/app-container/set
 import { MultisigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/multisig/multisig.component';
 import { NotificationsConfigComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notifications-config/notifications-config.component';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { RootState } from '@popup/multichain/store';
-import React from 'react';
+import { isAccountSetupScreen } from '@popup/multichain/utils/account-setup-screens.utils';
+import React, { useLayoutEffect, useMemo } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { PageTitleProps } from 'src/common-ui/page-title/page-title.component';
+import { buildAddAccountSetupTitleProperties } from 'src/popup/hive/pages/add-account/add-account-setup-title.utils';
 import { EVMConfirmationPageComponent } from 'src/common-ui/confirmation-page/evm-confirmation-page.component';
 import { HiveConfirmationPageComponent } from 'src/common-ui/confirmation-page/hive-confirmation-page.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
-import { AddAccountRouterComponent } from 'src/popup/hive/pages/add-account/add-account-router/add-account-router.component';
+import { AddAccountMainComponent } from 'src/popup/hive/pages/add-account/add-account-main/add-account-main.component';
 import { AddByAuthComponent } from 'src/popup/hive/pages/add-account/add-by-auth/add-by-auth.component';
 import { AddByKeysComponent } from 'src/popup/hive/pages/add-account/add-by-keys/add-by-keys.component';
 import { ImportKeysComponent } from 'src/popup/hive/pages/add-account/import-keys/import-keys.component';
@@ -118,8 +121,41 @@ const UnifiedRouter = ({
   currentPage,
   navigationParams,
   titleProperties,
-  hasTitle,
+  hiveAccountsCount,
+  evmAccountsCount,
+  setTitleContainerProperties,
 }: PropsFromRedux) => {
+  const hasAnyAccounts = hiveAccountsCount + evmAccountsCount > 0;
+
+  const fallbackSetupTitle = useMemo(
+    () => buildAddAccountSetupTitleProperties(hasAnyAccounts),
+    [hasAnyAccounts],
+  );
+
+  useLayoutEffect(() => {
+    if (!isAccountSetupScreen(currentPage)) {
+      return;
+    }
+    if (titleProperties?.title?.length > 0) {
+      return;
+    }
+    setTitleContainerProperties(fallbackSetupTitle);
+  }, [
+    currentPage,
+    fallbackSetupTitle,
+    setTitleContainerProperties,
+    titleProperties?.title,
+  ]);
+
+  const pageTitleProps: PageTitleProps | null =
+    titleProperties?.title?.length > 0
+      ? titleProperties
+      : currentPage === Screen.ACCOUNT_PAGE_INIT_ACCOUNT
+        ? fallbackSetupTitle
+        : null;
+
+  const showPageTitle = Boolean(pageTitleProps?.title?.length);
+
   const renderSharedPage = (page: Screen) => {
     switch (page) {
       case MultichainScreen.HOME_PAGE:
@@ -129,11 +165,7 @@ const UnifiedRouter = ({
           <HiveHomeComponent />
         );
       case MultichainScreen.BUY_COINS_PAGE:
-        return activeAccountType === ChainType.EVM ? (
-          <>EVM on ramp</>
-        ) : (
-          <BuyCoinsComponent />
-        );
+        return <BuyCoinsComponent />;
       case MultichainScreen.TRANSFER_FUND_PAGE:
         return activeAccountType === ChainType.EVM ? (
           <EvmTransferComponent />
@@ -157,7 +189,7 @@ const UnifiedRouter = ({
         );
       case MultichainScreen.TOKENS_SWAP_HISTORY:
         return activeAccountType === ChainType.EVM ? (
-          <>Swap history</>
+          <LiFiHistoryPageComponent />
         ) : (
           <TokenSwapsHistoryComponent />
         );
@@ -192,8 +224,6 @@ const UnifiedRouter = ({
         return <KeychainifyComponent />;
       case MultichainScreen.SETTINGS_CLEAR_ALL_DATA:
         return <ClearAllDataComponent />;
-      case MultichainScreen.SETTINGS_ANALYTICS:
-        return <AnalyticsComponent />;
       case MultichainScreen.SETTINGS_RPC_NODES:
         return <SettingsNetworkPageComponent />;
       case MultichainScreen.SETTINGS_SHORTCUTS:
@@ -257,7 +287,7 @@ const UnifiedRouter = ({
       case HiveScreen.SETTINGS_ACCOUNTS:
         return <AccountSubMenuComponent />;
       case HiveScreen.ACCOUNT_PAGE_INIT_ACCOUNT:
-        return <AddAccountRouterComponent />;
+        return <AddAccountMainComponent />;
       case HiveScreen.ACCOUNT_PAGE_ADD_BY_KEYS:
         return <AddByKeysComponent />;
       case Screen.ACCOUNT_PAGE_KEYLESS_KEYCHAIN:
@@ -369,10 +399,10 @@ const UnifiedRouter = ({
       style={{
         height: '100%',
         display: 'grid',
-        gridTemplateRows: hasTitle ? '80px 1fr' : '1fr',
+        gridTemplateRows: showPageTitle ? '80px 1fr' : '1fr',
       }}>
-      {hasTitle && (
-        <PageTitleComponent {...titleProperties}></PageTitleComponent>
+      {showPageTitle && pageTitleProps && (
+        <PageTitleComponent {...pageTitleProps}></PageTitleComponent>
       )}
       <div
         className="page-content"
@@ -394,12 +424,15 @@ const mapStateToProps = (state: RootState) => {
       ? state.navigation.stack[0].currentPage
       : Screen.UNDEFINED,
     navigationParams: state.navigation.stack[0]?.params,
-    hasTitle: state.titleContainer?.title.length > 0,
     titleProperties: state.titleContainer,
+    hiveAccountsCount: state.hive.accounts.length,
+    evmAccountsCount: state.evm.accounts.length,
   };
 };
 
-const connector = connect(mapStateToProps, {});
+const connector = connect(mapStateToProps, {
+  setTitleContainerProperties,
+});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const UnifiedRouterComponent = connector(UnifiedRouter);

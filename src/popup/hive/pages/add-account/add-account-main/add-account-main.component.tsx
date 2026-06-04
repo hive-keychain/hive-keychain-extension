@@ -6,7 +6,7 @@ import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmWalletSetupTabUtils } from '@popup/evm/utils/evm-wallet-setup-tab.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
-import { resetChain, setChain } from '@popup/multichain/actions/chain.actions';
+import { setChain } from '@popup/multichain/actions/chain.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import {
   resetTitleContainerProperties,
@@ -21,7 +21,8 @@ import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface
 import { RootState } from '@popup/multichain/store';
 import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import React, { useEffect, useState } from 'react';
+import { buildAddAccountSetupTitleProperties } from 'src/popup/hive/pages/add-account/add-account-setup-title.utils';
+import React, { useLayoutEffect, useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { MenuItemComponent } from 'src/common-ui/menu/menu-item/menu-item.component';
@@ -44,7 +45,6 @@ const AddAccountMain = ({
   resetTitleContainerProperties,
   isLedgerSupported,
   isEvmLedgerSupported,
-  resetChain,
   setChain,
   chain,
   mk,
@@ -57,15 +57,11 @@ const AddAccountMain = ({
   >(ChainType.HIVE);
   const isLedgerAvailableForEvm = isEvmLedgerSupported || isLedgerSupported;
 
-  useEffect(() => {
-    setTitleContainerProperties({
-      title: 'popup_html_setup',
-      isBackButtonEnabled: true,
-      onBackAdditional:
-        !accounts || !accounts.length ? () => resetChain() : undefined,
-      isCloseButtonDisabled: !accounts || !accounts.length,
-    });
-  }, []);
+  const hasAnyAccounts = (accounts?.length ?? 0) > 0;
+
+  useLayoutEffect(() => {
+    setTitleContainerProperties(buildAddAccountSetupTitleProperties(hasAnyAccounts));
+  }, [hasAnyAccounts, setTitleContainerProperties]);
 
   const handleAddByKeys = (): void => {
     navigateTo(Screen.ACCOUNT_PAGE_ADD_BY_KEYS);
@@ -443,7 +439,6 @@ const connector = connect(mapStateToProps, {
   setAccounts,
   setTitleContainerProperties,
   resetTitleContainerProperties,
-  resetChain,
   setChain,
   loadActiveAccount,
   setActiveAccountType,

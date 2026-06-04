@@ -50,12 +50,6 @@ const chromeMessageHandler = async (
   sendResp: (response?: any) => void,
 ) => {
   switch (backgroundMessage.command) {
-    case BackgroundCommand.GET_MK:
-      MkModule.sendBackMk();
-      break;
-    case BackgroundCommand.SAVE_MK:
-      MkModule.saveMk(backgroundMessage.value);
-      break;
     case BackgroundCommand.IMPORT_ACCOUNTS:
       AccountModule.sendBackImportedAccounts(backgroundMessage.value);
       break;
@@ -64,9 +58,6 @@ const chromeMessageHandler = async (
       break;
     case BackgroundCommand.SEND_REQUEST:
       let requestHandler = await HiveRequestsHandler.getFromLocalStorage();
-      // if (requestHandler) {
-      //   requestHandler.closeWindow();
-      // }
       if (!requestHandler) {
         requestHandler = new HiveRequestsHandler();
       }

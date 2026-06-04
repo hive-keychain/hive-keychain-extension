@@ -17,7 +17,6 @@ export const resetNav = (): AppThunk => async (dispatch, getState) => {
 export const navigateTo =
   (screen: Screen, resetStack: boolean = false): AppThunk =>
   async (dispatch, getState) => {
-    // AnalyticsTracker.trackNav(screen);
     dispatch({
       type: MultichainActionType.NAVIGATE_TO,
       payload: { nextPage: screen, resetStack },
@@ -31,7 +30,6 @@ export const navigateToWithParams =
     resetStack: boolean = false,
   ): AppThunk =>
   async (dispatch, getState) => {
-    // AnalyticsTracker.trackNav(screen);
     dispatch({
       type: MultichainActionType.NAVIGATE_TO_WITH_PARAMS,
       payload: { nextPage: screen, params, resetStack },

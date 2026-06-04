@@ -147,11 +147,13 @@ describe('useWalletScrollRelay', () => {
       scrollHandoffPx: HIVE_WALLET_SCROLL_HANDOFF_PX,
     });
 
-    dispatchWheel(walletScroll, 130);
+    dispatchWheel(walletScroll, HIVE_WALLET_SCROLL_HANDOFF_PX + 20);
 
-    expect(homeContent.scrollTop).toBe(120);
-    expect(walletWrapper.style.minHeight).toBe('420px');
-    expect(walletScroll.scrollTop).toBe(10);
+    expect(homeContent.scrollTop).toBe(HIVE_WALLET_SCROLL_HANDOFF_PX);
+    expect(walletWrapper.style.minHeight).toBe(
+      `${300 + HIVE_WALLET_SCROLL_HANDOFF_PX}px`,
+    );
+    expect(walletScroll.scrollTop).toBe(20);
   });
 
   it('drops extra downward wheel delta at the wallet bottom without parent overshoot', () => {

@@ -9,6 +9,7 @@
     "moduleResolution": "node",
     "noEmit": false,
     "strict": true,
+    "skipLibCheck": true,
     "target": "ES6",
     "resolveJsonModule": true,
     "baseUrl": ".",

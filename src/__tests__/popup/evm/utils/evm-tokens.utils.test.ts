@@ -1,4 +1,5 @@
 import { EvmLightNodeApi } from '@api/evm-light-node';
+import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import {
@@ -7,6 +8,7 @@ import {
   EvmSmartContractInfoNative,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { ChainType } from '@popup/multichain/interfaces/chains.interface';
+import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { UniswapV2RouterAbiMinimal } from '@popup/evm/reference-data/abi-protocol-decode.data';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
@@ -16,8 +18,25 @@ import {
 } from '@popup/evm/utils/evm-tokens.utils';
 import Decimal from 'decimal.js';
 import { ethers } from 'ethers';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+
+const buildGasFeeEstimation = (
+  estimatedFeeInEth: string,
+): GasFeeEstimationBase => ({
+  type: EvmTransactionType.EIP_1559,
+  estimatedFeeInEth: new Decimal(estimatedFeeInEth),
+  estimatedFeeUSD: new Decimal(0),
+  maxFeeInEth: new Decimal(estimatedFeeInEth),
+  maxFeeUSD: new Decimal(0),
+  estimatedMaxDuration: new Decimal(0),
+  gasLimit: new Decimal(21000),
+  priorityFeeInGwei: new Decimal(1),
+  maxFeePerGasInGwei: new Decimal(1),
+  icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
+  name: 'popup_html_evm_custom_gas_fee_custom',
+});
 
 describe('evm-tokens.utils proxy metadata tests:\n', () => {
   afterEach(() => {
@@ -485,7 +504,7 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
       { chainId: '1' } as any,
       nativeToken,
       1,
-      { estimatedFeeInEth: new Decimal('0.1') } as any,
+      buildGasFeeEstimation('0.1'),
     );
 
     expect(balanceInfo).toEqual({
@@ -556,7 +575,7 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
       { chainId: '1' } as any,
       erc20Token,
       25,
-      { estimatedFeeInEth: new Decimal('0.1') } as any,
+      buildGasFeeEstimation('0.1'),
     );
 
     expect(balanceInfo).toEqual({
@@ -633,7 +652,7 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
       { chainId: '1' } as any,
       erc20Token,
       25,
-      { estimatedFeeInEth: new Decimal('0.1') } as any,
+      buildGasFeeEstimation('0.1'),
     );
 
     expect(balanceInfo.feeBalance?.insufficientBalance).toBe(true);

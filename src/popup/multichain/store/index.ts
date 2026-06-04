@@ -50,7 +50,6 @@ if (store.getState().hive) {
           true,
         );
         store.dispatch(setHasFinishedSignup(true));
-        // AnalyticsUtils.sendAddFirstAccountEvent();
       }
       previousAccounts = accounts;
       if (accounts.length !== 0) {

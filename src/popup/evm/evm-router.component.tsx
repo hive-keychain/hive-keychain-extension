@@ -19,6 +19,7 @@ import { EvmCustomChainsComponent } from '@popup/evm/pages/home/settings/evm-cus
 import { EvmTransactionResultComponent } from '@popup/evm/pages/home/transaction-result/transaction-result.component';
 import { EvmTransferComponent } from '@popup/evm/pages/home/transfer/evm-transfer.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { BuyCoinsComponent } from '@popup/hive/pages/app-container/home/buy-coins/buy-coins.component';
 import { ShortcutsComponent } from '@popup/hive/pages/app-container/settings/advanced-settings/shortcuts/shortcuts.component';
 import { globalRouter } from '@popup/multichain/global-router';
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
@@ -58,7 +59,7 @@ const EvmAppRouter = ({
       case EvmScreen.LIFI_HISTORY_PAGE:
         return <LiFiHistoryPageComponent />;
       case MultichainScreen.BUY_COINS_PAGE:
-        return <>EVM on ramp</>;
+        return <BuyCoinsComponent />;
       case MultichainScreen.TRANSFER_FUND_PAGE:
         return <EvmTransferComponent />;
       case EvmScreen.EVM_RECEIVE_PAGE:
@@ -70,7 +71,7 @@ const EvmAppRouter = ({
       case MultichainScreen.TOKEN_SWAP_PAGE:
         return <EvmLifiSwapComponent />;
       case MultichainScreen.TOKENS_SWAP_HISTORY:
-        return <>Swap history</>;
+        return <LiFiHistoryPageComponent />;
       // NFT
       case EvmScreen.EVM_NFT_COLLECTION_PAGE:
         return <EvmNftCollectionPageComponent />;
