@@ -2,6 +2,7 @@
   width: auto !important;
   max-width: calc(100% - 32px) !important;
   padding: 0 !important;
+  pointer-events: none;
 }
 
 .Toastify__toast-container--bottom-center.copy-toast-container {
@@ -18,10 +19,12 @@
     margin: 0;
     padding: 0;
     border: 1px solid var(--card-border);
-    border-radius: 12px;
-    background: var(--card-background);
-    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.24);
-    color: var(--main-font-color);
+    border-radius: 999px;
+    background: var(--tooltip-background-color);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
+    color: var(--tooltip-text-color);
+    overflow: hidden;
+    pointer-events: auto;
   }
 
   .copy-toast-body {
@@ -32,36 +35,19 @@
   .copy-toast-content {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 4px 10px;
-    text-align: left;
-  }
-
-  .copy-toast-icon-badge {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .copy-toast-icon {
-    width: 12px;
-    height: 12px;
-    flex-shrink: 0;
-    svg {
-      width: 12px;
-      height: 12px;
-    }
+    min-height: 30px;
+    padding: 5px 12px;
+    text-align: center;
   }
 
   .copy-toast-message {
     flex: 0 1 auto;
     min-width: 0;
-    max-width: 340px;
-    color: var(--main-font-color);
+    max-width: 300px;
+    color: var(--tooltip-text-color);
     white-space: normal;
     @include dmSans700(13px);
-    line-height: 17px;
+    line-height: 16px;
   }
 }
 
@@ -73,5 +59,14 @@
 
   .Toastify__toast-container--bottom-center.copy-toast-container {
     bottom: 12px !important;
+
+    .copy-toast-content {
+      min-height: 30px;
+      padding: 5px 11px;
+    }
+
+    .copy-toast-message {
+      max-width: 260px;
+    }
   }
 }

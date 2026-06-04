@@ -76,7 +76,7 @@ describe('copy toast shared behavior', () => {
     expect(screen.getByTestId('copy-toast-content')).toHaveClass(
       'copy-toast-content--success',
     );
-    expect(screen.getByTestId('copy-toast-success-icon')).toBeInTheDocument();
+    expect(screen.queryByTestId('copy-toast-success-icon')).not.toBeInTheDocument();
     expect(screen.getByText(toastMessage).closest('.copy-toast--success')).not.toBeNull();
 
     await act(async () => {
