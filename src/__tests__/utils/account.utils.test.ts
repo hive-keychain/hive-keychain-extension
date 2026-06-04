@@ -109,12 +109,12 @@ describe('account.utils tests:\n', () => {
     owner: { weight_threshold: 1, account_auths: [], key_auths: [] },
     active: {
       weight_threshold: 1,
-      account_auths: [[process.env._TEST_USERNAME, 1]],
+      account_auths: [[userData.one.username, 1]],
       key_auths: [['STM85Hcqk92kE1AtueigBAtHD2kZRcqji9Gi38ZaiW8xcWcQJLof6', 1]],
     },
     posting: {
       weight_threshold: 1,
-      account_auths: [[process.env._TEST_USERNAME, 1]],
+      account_auths: [[userData.one.username, 1]],
       key_auths: [['STM7cfYmyCU6J45NjBSBUwZAV6c2ttZoNjTeaxkWSYq5HDZDWtzC3', 1]],
     },
     memo_key: 'STM5NT27Z4XVgtpxTf6i5uB9pYmXC6syiHUSqzVZvQ1iN8BgJsLC2',
@@ -194,6 +194,10 @@ describe('account.utils tests:\n', () => {
     lifetime_bandwidth: '',
     last_active_proved: '',
   };
+
+  beforeEach(() => {
+    AccountUtils.saveAccounts = jest.fn().mockResolvedValue(undefined);
+  });
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -337,14 +341,14 @@ describe('account.utils tests:\n', () => {
     test('when accountName is present in existingAccounts must return true', () => {
       const result = AccountUtils.isAccountNameAlreadyExisting(
         existingAccountsUserPresent,
-        process.env._TEST_USERNAME!,
+        userData.one.username,
       );
       expect(result).toBe(true);
     });
     test('when accountName is present more than once in the existingAccount array must return true', () => {
       const result = AccountUtils.isAccountNameAlreadyExisting(
         existingAccountsUserPresentTwice,
-        process.env._TEST_USERNAME!,
+        userData.one.username,
       );
       expect(result).toBe(true);
     });

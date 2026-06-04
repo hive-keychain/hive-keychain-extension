@@ -5,12 +5,11 @@ import { EvmWalletPermissions } from '@interfaces/evm-provider.interface';
 import {
   EvmDappsConnectionsComponent,
   getEvmDappConnections,
-  getEvmDappConnectionIconUrl,
-  getEvmDappFaviconUrl,
   parseEvmOriginChainWhitelist,
   removeEvmDappConnectionAccounts,
   removeEvmDappConnectionChains,
 } from '@popup/evm/pages/home/settings/evm-dapps-connections/evm-dapps-connections.component';
+import { EvmDappUtils } from '@popup/evm/utils/evm-dapp.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -229,7 +228,7 @@ describe('EvmDappsConnectionsComponent', () => {
   });
 
   it('builds the favicon URL from the subdomain', () => {
-    expect(getEvmDappFaviconUrl('app.example.com')).toBe(
+    expect(EvmDappUtils.getEvmDappFaviconUrl('app.example.com')).toBe(
       'https://www.google.com/s2/favicons?domain=app.example.com&sz=256',
     );
   });
@@ -238,12 +237,12 @@ describe('EvmDappsConnectionsComponent', () => {
     const saved =
       'https://example.com/icon.png';
     expect(
-      getEvmDappConnectionIconUrl('app.example.com', {
+      EvmDappUtils.getEvmDappConnectionIconUrl('app.example.com', {
         'app.example.com': saved,
       }),
     ).toBe(saved);
-    expect(getEvmDappConnectionIconUrl('app.example.com', {})).toBe(
-      getEvmDappFaviconUrl('app.example.com'),
+    expect(EvmDappUtils.getEvmDappConnectionIconUrl('app.example.com', {})).toBe(
+      EvmDappUtils.getEvmDappFaviconUrl('app.example.com'),
     );
   });
 

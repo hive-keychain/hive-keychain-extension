@@ -24,6 +24,24 @@ import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { BuyCoinType } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coin-type.enum';
 import { BuyCoinsListItem } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins-list-item.list';
+
+const openHiveTransferPage = async () => {
+  const hiveDropdownArrow = await screen.findByTestId(
+    `${
+      dataTestIdDropdown.arrow.preFix
+    }${CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase()}`,
+  );
+
+  await act(async () => {
+    await userEvent.click(hiveDropdownArrow);
+    await userEvent.click(
+      await screen.findByTestId(dataTestIdDropdown.itemPreFix + Icons.SEND),
+    );
+  });
+
+  await screen.findByTestId(`${Screen.TRANSFER_FUND_PAGE}-page`);
+};
+
 describe('transfer-fund.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -37,18 +55,7 @@ describe('transfer-fund.component tests:\n', () => {
           <HiveAppComponent />,
           initialStates.iniStateAs.defaultExistent,
         );
-        await act(async () => {
-          await userEvent.click(
-            screen.getByTestId(
-              `${
-                dataTestIdDropdown.arrow.preFix
-              }${CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase()}`,
-            ),
-          );
-          await userEvent.click(
-            screen.getByTestId(dataTestIdDropdown.itemPreFix + Icons.SEND),
-          );
-        });
+        await openHiveTransferPage();
       });
       it('Must show transfer fund page with hive currency selected', async () => {
         expect(
@@ -477,18 +484,7 @@ describe('transfer-fund.component tests:\n', () => {
             },
           },
         );
-        await act(async () => {
-          await userEvent.click(
-            screen.getByTestId(
-              `${
-                dataTestIdDropdown.arrow.preFix
-              }${CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase()}`,
-            ),
-          );
-          await userEvent.click(
-            screen.getByTestId(dataTestIdDropdown.itemPreFix + Icons.SEND),
-          );
-        });
+        await openHiveTransferPage();
       });
       it('Must show error if no memo key', async () => {
         const memoField = '#Private Message';
@@ -537,18 +533,7 @@ describe('transfer-fund.component tests:\n', () => {
             },
           },
         );
-        await act(async () => {
-          await userEvent.click(
-            screen.getByTestId(
-              `${
-                dataTestIdDropdown.arrow.preFix
-              }${CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase()}`,
-            ),
-          );
-          await userEvent.click(
-            screen.getByTestId(dataTestIdDropdown.itemPreFix + Icons.SEND),
-          );
-        });
+        await openHiveTransferPage();
       });
       it('Must show error making a transfer', async () => {
         await act(async () => {
