@@ -11,9 +11,11 @@ import { BackgroundCommand } from 'src/reference-data/background-message-key.enu
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { SidePanelToolbarLifecycle } from '@background/multichain/side-panel-toolbar.lifecycle';
 import { SidePanelPreferenceUtils } from 'src/utils/side-panel-preference.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 
 Object.assign(global, { contextType: 'service_worker' });
 
+void I18nUtils.initLanguageFromStorage();
 HiveServiceWorker.initializeServiceWorker();
 EvmServiceWorker.initializeServiceWorker();
 
@@ -38,6 +40,11 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 
   if (changes[LocalStorageKeyEnum.OPEN_SIDE_PANEL_BY_DEFAULT]) {
     syncSidePanelStartupSettings();
+  }
+
+  const languageChange = changes[LocalStorageKeyEnum.ACTIVE_LANGUAGE];
+  if (typeof languageChange?.newValue === 'string') {
+    void I18nUtils.changeLanguage(languageChange.newValue);
   }
 });
 

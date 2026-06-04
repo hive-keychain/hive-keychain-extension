@@ -59,6 +59,7 @@ import { AsyncUtils } from 'src/utils/async.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import PopupUtils from 'src/utils/popup.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const manifestFile = {
   chromium: require('../../../../manifests/chromium/manifest.json'),
 };
@@ -215,7 +216,7 @@ const set = (params?: {
 
   /////////
   //chrome related
-  chrome.i18n.getMessage = jest
+  I18nUtils.getMessage = jest
     .fn()
     .mockImplementation(
       params?.app?.chrome?.i18n?.getMessageImplementation ??

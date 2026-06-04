@@ -8,6 +8,7 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useState } from 'react';
 import { ChainLogo } from 'src/common-ui/chain-logo/chain-logo.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   request: EvmRequest;
   data: EvmRequestMessage;
@@ -53,8 +54,8 @@ export const SwitchChain = ({ request, data, afterCancel }: Props) => {
       origin={data.dappInfo.origin}
       tab={data.tab}
       afterCancel={handleCancel}
-      title={chrome.i18n.getMessage('evm_switch_chain')}
-      caption={chrome.i18n.getMessage('evm_switch_chain_caption', [
+      title={I18nUtils.getMessage('evm_switch_chain')}
+      caption={I18nUtils.getMessage('evm_switch_chain_caption', [
         data.dappInfo.domain,
       ])}
       fields={

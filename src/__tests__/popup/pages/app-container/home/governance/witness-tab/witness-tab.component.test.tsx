@@ -18,6 +18,7 @@ import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-l
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('witness tab:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -62,7 +63,7 @@ describe('witness tab:\n', () => {
     it('Must display more information message', async () => {
       expect(
         (await screen.findByTestId(dataTestIdLink.linkToArcange)).textContent,
-      ).toContain(chrome.i18n.getMessage('html_popup_link_to_witness_website'));
+      ).toContain(I18nUtils.getMessage('html_popup_link_to_witness_website'));
     });
 
     it('Must open link about more information', async () => {
@@ -167,7 +168,7 @@ describe('witness tab:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_error_unvote_wit', [
+          I18nUtils.getMessage('popup_error_unvote_wit', [
             `${selectedWitness}`,
           ]),
         ),
@@ -193,7 +194,7 @@ describe('witness tab:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_success_unvote_wit', [
+          I18nUtils.getMessage('popup_success_unvote_wit', [
             `${selectedWitness}`,
           ]),
         ),
@@ -241,7 +242,7 @@ describe('witness tab:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_success_wit', [
+          I18nUtils.getMessage('popup_success_wit', [
             `${selectedWitnessNameToVote}`,
           ]),
         ),
@@ -281,7 +282,7 @@ describe('witness tab:\n', () => {
     it('Must show 2 errors if request data fails', async () => {
       expect(
         await screen.findAllByText(
-          chrome.i18n.getMessage('popup_html_error_retrieving_witness_ranking'),
+          I18nUtils.getMessage('popup_html_error_retrieving_witness_ranking'),
           { exact: false },
         ),
       ).toHaveLength(2);

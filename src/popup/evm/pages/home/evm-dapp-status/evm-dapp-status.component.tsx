@@ -23,6 +23,7 @@ import {
 } from 'src/utils/browser-origin.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const EvmDappStatus = ({
   activeAccount,
   accounts,
@@ -143,12 +144,12 @@ const EvmDappStatus = ({
               />
             </div>
             <div className="caption">
-              {chrome.i18n.getMessage('popup_html_evm_dapp_status_caption')}
+              {I18nUtils.getMessage('popup_html_evm_dapp_status_caption')}
             </div>
             <div className="accounts-section">
               {connectedAccounts.length ? (
                 <div className="account-section-title">
-                  {chrome.i18n.getMessage(
+                  {I18nUtils.getMessage(
                     'popup_html_evm_dapp_status_connected_accounts',
                   )}
                 </div>
@@ -188,7 +189,7 @@ const EvmDappStatus = ({
               ))}
               {unconnectedAccounts.length ? (
                 <div className="account-section-title">
-                  {chrome.i18n.getMessage(
+                  {I18nUtils.getMessage(
                     'popup_html_evm_dapp_status_other_accounts',
                   )}
                 </div>
@@ -229,7 +230,7 @@ const EvmDappStatus = ({
                   setShowDetail(false);
                   navigateTo(EvmScreen.EVM_DAPPS_CONNECTIONS);
                 }}>
-                {chrome.i18n.getMessage(
+                {I18nUtils.getMessage(
                   'popup_html_evm_dapp_status_show_all_connected',
                 )}
               </button>

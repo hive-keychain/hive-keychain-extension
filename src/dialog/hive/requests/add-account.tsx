@@ -6,6 +6,7 @@ import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with
 import CollaspsibleItem from 'src/dialog/components/collapsible-item/collapsible-item';
 import Operation from 'src/dialog/hive/operation/operation';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: RequestAddAccount & RequestId;
   domain: string;
@@ -18,7 +19,7 @@ const AddAccount = (props: Props) => {
   const { data } = props;
   return (
     <Operation
-      title={chrome.i18n.getMessage('popup_html_add_account')}
+      title={I18nUtils.getMessage('popup_html_add_account')}
       {...props}
       canWhitelist>
       <UsernameWithAvatar title="dialog_account" username={data.username} />

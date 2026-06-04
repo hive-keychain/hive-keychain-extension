@@ -19,6 +19,7 @@ import { Icons } from 'src/common-ui/icons.enum';
 import { COPY_TOAST_AUTO_CLOSE_MS } from 'src/common-ui/toast/copy-toast.component';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 /** Matches `AccountKeysListItemComponent` private key display (SUBSTRING_LENGTH = 15). */
 const truncatedPrivateKeyDisplay = (pk: string) =>
   `${pk.substring(0, 15)}...${pk.slice(-15)}`;
@@ -110,14 +111,14 @@ describe('account-keys-list.component tests:\n', () => {
         );
       });
       expect(
-        await screen.findByText(chrome.i18n.getMessage('popup_html_copied')),
+        await screen.findByText(I18nUtils.getMessage('popup_html_copied')),
       ).toBeInTheDocument();
       await act(async () => {
         jest.advanceTimersByTime(COPY_TOAST_AUTO_CLOSE_MS + 1000);
       });
       await waitFor(() => {
         expect(
-          screen.queryByText(chrome.i18n.getMessage('popup_html_copied')),
+          screen.queryByText(I18nUtils.getMessage('popup_html_copied')),
         ).not.toBeInTheDocument();
       });
       navigator = originalNavigator;
@@ -288,7 +289,7 @@ describe('account-keys-list.component tests:\n', () => {
     it('Must show using authorized account message', () => {
       expect(
         screen.getByText(
-          chrome.i18n.getMessage('html_popup_using_authorized_account', [
+          I18nUtils.getMessage('html_popup_using_authorized_account', [
             `@${mk.user.two}`,
           ]),
         ),

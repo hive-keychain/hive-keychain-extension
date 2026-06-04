@@ -12,6 +12,7 @@ import {
 } from 'src/common-ui/toast/copy-toast.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   swap: ISwap;
 }
@@ -29,18 +30,18 @@ const TokenSwapsHistoryItem = ({ swap }: PropsFromRedux) => {
     switch (status) {
       case SwapStatus.PENDING:
         return transferInitiated
-          ? chrome.i18n.getMessage('swap_status_pending')
-          : chrome.i18n.getMessage('swap_transfer_not_sent');
+          ? I18nUtils.getMessage('swap_status_pending')
+          : I18nUtils.getMessage('swap_transfer_not_sent');
       case SwapStatus.COMPLETED:
-        return chrome.i18n.getMessage('swap_status_completed');
+        return I18nUtils.getMessage('swap_status_completed');
       case SwapStatus.CANCELED_DUE_TO_ERROR:
-        return chrome.i18n.getMessage('swap_status_canceled_due_to_error');
+        return I18nUtils.getMessage('swap_status_canceled_due_to_error');
       case SwapStatus.FUNDS_RETURNED:
-        return chrome.i18n.getMessage('swap_status_returned');
+        return I18nUtils.getMessage('swap_status_returned');
       case SwapStatus.REFUNDED_SLIPPAGE:
-        return chrome.i18n.getMessage('swap_status_refunded');
+        return I18nUtils.getMessage('swap_status_refunded');
       case SwapStatus.STARTED:
-        return chrome.i18n.getMessage('swap_status_started');
+        return I18nUtils.getMessage('swap_status_started');
     }
   };
 
@@ -79,7 +80,7 @@ const TokenSwapsHistoryItem = ({ swap }: PropsFromRedux) => {
     return `${getStatusMessage(swap.status, swap.transferInitiated)}
       <br/> ${
         [SwapStatus.PENDING, SwapStatus.STARTED].includes(swap.status)
-          ? chrome.i18n.getMessage('swap_last_update', [
+          ? I18nUtils.getMessage('swap_last_update', [
               moment(swap.updatedAt).format('YYYY-MM-DD HH:mm:ss'),
             ])
           : moment(swap.updatedAt).format('YYYY-MM-DD HH:mm:ss')
@@ -160,7 +161,7 @@ const TokenSwapsHistoryItem = ({ swap }: PropsFromRedux) => {
             {!!swap.fee && (
               <div className="step">
                 <div className="step-number">
-                  {chrome.i18n.getMessage('swap_fee')}
+                  {I18nUtils.getMessage('swap_fee')}
                 </div>{' '}
                 <div className="details">
                   <div className="description">

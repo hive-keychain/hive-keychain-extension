@@ -13,6 +13,7 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { ResultOperation } from 'src/__tests__/utils-for-testing/interfaces/assertions';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('post tests:\n', () => {
   const data = {
     domain: 'domain',
@@ -36,7 +37,7 @@ describe('post tests:\n', () => {
   });
   beforeEach(() => {
     jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('em-US');
-    chrome.i18n.getMessage = jest
+    I18nUtils.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
   });
@@ -52,7 +53,7 @@ describe('post tests:\n', () => {
         error: new Error('html_popup_error_while_signing_transaction'),
         result: undefined,
         data: datas,
-        message: chrome.i18n.getMessage(
+        message: I18nUtils.getMessage(
           'html_popup_error_while_signing_transaction',
         ),
         request_id: request_id,
@@ -74,7 +75,7 @@ describe('post tests:\n', () => {
         error: new Error('html_popup_error_while_signing_transaction'),
         result: undefined,
         data: datas,
-        message: chrome.i18n.getMessage(
+        message: I18nUtils.getMessage(
           'html_popup_error_while_signing_transaction',
         ),
         request_id: request_id,
@@ -105,7 +106,7 @@ describe('post tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_post'),
+          message: I18nUtils.getMessage('bgd_ops_post'),
           request_id: request_id,
           publicKey: undefined,
         },
@@ -149,7 +150,7 @@ describe('post tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_post'),
+          message: I18nUtils.getMessage('bgd_ops_post'),
           request_id: request_id,
           publicKey: undefined,
         },

@@ -13,6 +13,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const CreateNewWallet = ({
   navigateToWithParams,
   setTitleContainerProperties,
@@ -83,11 +84,11 @@ const CreateNewWallet = ({
       data-testid={`${Screen.CREATE_EVM_WALLET}-page`}
       className="create-new-wallet-page">
       <div className="title">
-        {chrome.i18n.getMessage('html_popup_evm_create_new_wallet_title')}
+        {I18nUtils.getMessage('html_popup_evm_create_new_wallet_title')}
       </div>
       <div className="form-container">
         <div className="caption">
-          {chrome.i18n.getMessage('html_popup_evm_create_wallet_tips')}
+          {I18nUtils.getMessage('html_popup_evm_create_wallet_tips')}
         </div>
         <SlidingBarComponent
           id="wallet-type"
@@ -102,7 +103,7 @@ const CreateNewWallet = ({
           {!isMnemonicDisplayed && (
             <div className="mnemonic-overlay">
               <div className="mnemonic-overlay-text">
-                {chrome.i18n.getMessage('html_popup_mnemonic_overlay')}
+                {I18nUtils.getMessage('html_popup_mnemonic_overlay')}
               </div>
             </div>
           )}
@@ -127,7 +128,7 @@ const CreateNewWallet = ({
               onClick={() => setMnemonicDisplayed(false)}>
               <SVGIcon icon={SVGIcons.EVM_SETUP_HIDE_MNEMONIC} />
               <span>
-                {chrome.i18n.getMessage(
+                {I18nUtils.getMessage(
                   'html_popup_evm_create_wallet_hide_mnemonic',
                 )}
               </span>
@@ -137,7 +138,7 @@ const CreateNewWallet = ({
               onClick={() => copySeedPhraseToClipboard()}>
               <SVGIcon icon={SVGIcons.EVM_SETUP_COPY_MNEMONIC} />
               <span>
-                {chrome.i18n.getMessage(
+                {I18nUtils.getMessage(
                   'html_popup_evm_create_wallet_copy_mnemonic',
                 )}
               </span>

@@ -17,6 +17,7 @@ import { PageTitleProps } from 'src/common-ui/page-title/page-title.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { Tab, TabsComponent } from 'src/common-ui/tabs/tabs.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const Ecosystem = ({
   setTitleContainerProperties,
   chain,
@@ -78,7 +79,7 @@ export const Ecosystem = ({
           <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
           <div className="text">
             <div>
-              {chrome.i18n.getMessage('html_popup_ecosystem_retrieving_error')}
+              {I18nUtils.getMessage('html_popup_ecosystem_retrieving_error')}
             </div>
           </div>
         </div>

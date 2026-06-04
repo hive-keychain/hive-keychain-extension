@@ -16,6 +16,7 @@ import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user'
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('token-operation.component tests', () => {
   const selectedToken = tokensUser.balances.find(
     (token) => token.symbol === 'LEO',
@@ -115,7 +116,7 @@ describe('token-operation.component tests', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('validation_error_less_or_equal_value'),
+          I18nUtils.getMessage('validation_error_less_or_equal_value'),
           { exact: true },
         ),
       ).toBeInTheDocument();
@@ -150,7 +151,7 @@ describe('token-operation.component tests', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage(`popup_html_unstake_tokens_failed`),
+          I18nUtils.getMessage(`popup_html_unstake_tokens_failed`),
         ),
       ).toBeInTheDocument();
     });
@@ -183,7 +184,7 @@ describe('token-operation.component tests', () => {
         );
       });
       expect(
-        await screen.findByText(chrome.i18n.getMessage('popup_token_timeout')),
+        await screen.findByText(I18nUtils.getMessage('popup_token_timeout')),
       ).toBeInTheDocument();
     });
 
@@ -217,7 +218,7 @@ describe('token-operation.component tests', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage(`popup_html_unstake_tokens_success`),
+          I18nUtils.getMessage(`popup_html_unstake_tokens_success`),
         ),
       ).toBeInTheDocument();
     });
@@ -277,7 +278,7 @@ describe('token-operation.component tests', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage(`popup_html_delegate_tokens_success`),
+          I18nUtils.getMessage(`popup_html_delegate_tokens_success`),
         ),
       ).toBeInTheDocument();
     });
@@ -333,7 +334,7 @@ describe('token-operation.component tests', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage(`popup_html_stake_tokens_success`),
+          I18nUtils.getMessage(`popup_html_stake_tokens_success`),
         ),
       ).toBeInTheDocument();
     });

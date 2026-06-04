@@ -23,6 +23,7 @@ import AccountUtils from '@popup/hive/utils/account.utils';
 import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
 import { ArrayUtils } from 'src/utils/array.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface AddKeyNavParams {
   keyType: KeyType;
   username?: string;
@@ -164,7 +165,7 @@ const AddKey = ({
         data-testid="add-key-page-paragraph-introduction"
         className="caption"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_add_key_text', [
+          __html: I18nUtils.getMessage('popup_html_add_key_text', [
             keyType.substring(0, 1) + keyType.substring(1).toLowerCase(),
           ]),
         }}></div>
@@ -181,7 +182,7 @@ const AddKey = ({
       {availableAuths.length > 0 && (
         <div className="available-auths">
           <div className="caption">
-            {chrome.i18n.getMessage('html_add_available_authorities_caption')}
+            {I18nUtils.getMessage('html_add_available_authorities_caption')}
           </div>
           <div className="auths">
             {availableAuths.map((auth, index) => (
@@ -205,7 +206,7 @@ const AddKey = ({
 
       {keyType === KeyType.ACTIVE && isLedgerSupported && (
         <div className="add-using-ledger" onClick={navigateToUseLedger}>
-          {chrome.i18n.getMessage('popup_html_add_using_ledger')}
+          {I18nUtils.getMessage('popup_html_add_using_ledger')}
         </div>
       )}
 

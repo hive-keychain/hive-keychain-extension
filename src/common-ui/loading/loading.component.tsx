@@ -4,6 +4,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   operations?: LoadingOperation[];
   caption?: string;
@@ -18,13 +19,13 @@ const Loading = ({ hide, operations, caption, loadingPercentage }: Props) => {
       {caption && (
         <>
           <div className="loading-caption">
-            {chrome.i18n.getMessage(caption)}
+            {I18nUtils.getMessage(caption)}
           </div>
         </>
       )}
       {!caption && (
         <div className="loading-text">
-          {chrome.i18n.getMessage('popup_html_loading')}
+          {I18nUtils.getMessage('popup_html_loading')}
         </div>
       )}
 
@@ -34,7 +35,7 @@ const Loading = ({ hide, operations, caption, loadingPercentage }: Props) => {
             <div className="loading-operation" key={operation.name}>
               <span
                 dangerouslySetInnerHTML={{
-                  __html: chrome.i18n.getMessage(
+                  __html: I18nUtils.getMessage(
                     operation.name,
                     operation.operationParams,
                   ),

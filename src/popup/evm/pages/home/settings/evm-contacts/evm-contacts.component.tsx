@@ -25,6 +25,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { v4 } from 'uuid';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface OwnProps {
   chainOverride?: EvmChain;
   hideChainSelector?: boolean;
@@ -171,7 +172,7 @@ const Contacts = ({
   const renderAddLink = (type: EvmAddressType) => (
     <div className="add-contact-link" onClick={() => openAddAddressPopup(type)}>
       <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE} className="add-icon" />
-      {chrome.i18n.getMessage('evm_addresses_add')}
+      {I18nUtils.getMessage('evm_addresses_add')}
     </div>
   );
 
@@ -193,7 +194,7 @@ const Contacts = ({
       {addresses.length === 0 ? (
         <div className="addresses-list-items">
           <div className="empty-address-item">
-            {chrome.i18n.getMessage(getEmptyStateMessageKey(type))}
+            {I18nUtils.getMessage(getEmptyStateMessageKey(type))}
           </div>
         </div>
       ) : (

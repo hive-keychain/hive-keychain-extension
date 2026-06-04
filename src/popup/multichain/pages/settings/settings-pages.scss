@@ -230,6 +230,13 @@
     row-gap: 8px;
   }
 
+  .language-select-panel {
+    .custom-select-container,
+    .custom-select {
+      width: 100%;
+    }
+  }
+
   .try-side-panel-action {
     display: flex;
     align-items: center;

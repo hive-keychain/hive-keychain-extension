@@ -7,6 +7,7 @@ import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const PendingConversionPage = ({
   navParams,
   setTitleContainerProperties,
@@ -30,7 +31,7 @@ const PendingConversionPage = ({
               dataTestId="tooltip-timesteamp-pending-conversion"
               position="bottom"
               key={pendingConversion.id}
-              message={chrome.i18n.getMessage(
+              message={I18nUtils.getMessage(
                 'popup_html_pending_currency_timestamp',
                 [
                   moment

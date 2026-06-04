@@ -16,6 +16,7 @@ import AccountSelectorOrderUtils from '@popup/multichain/utils/account-selector-
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const ChangePassword = ({
   setErrorMessage,
   setMk,
@@ -64,7 +65,7 @@ const ChangePassword = ({
       data-testid={`${Screen.SETTINGS_CHANGE_PASSWORD}-page`}
       className="change-password-page">
       <div className="caption">
-        {chrome.i18n.getMessage('popup_html_change_password_text')}
+        {I18nUtils.getMessage('popup_html_change_password_text')}
       </div>
 
       <InputComponent

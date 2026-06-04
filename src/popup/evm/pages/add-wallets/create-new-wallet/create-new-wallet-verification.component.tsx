@@ -36,6 +36,7 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { ResultMessagePageComponent } from 'src/common-ui/result-message-page/result-message-page.component';
 import { MathUtils } from 'src/utils/math.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const EVM_CREATE_WALLET_LOADING_OPERATION = 'html_popup_evm_creating_wallet';
 
 const CreateNewWalletVerification = ({
@@ -194,7 +195,7 @@ const CreateNewWalletVerification = ({
       className="create-new-wallet-verification-page">
       <FormContainer>
         <div className="caption">
-          {chrome.i18n.getMessage(
+          {I18nUtils.getMessage(
             'html_popup_evm_create_wallet_verification_caption',
           )}
         </div>
@@ -234,7 +235,7 @@ const CreateNewWalletVerification = ({
             onChange={setCurrentWord}
             onEnterPress={() => verifyWord()}
             onBlur={() => verifyWord()}
-            label={chrome.i18n.getMessage(
+            label={I18nUtils.getMessage(
               'html_popup_evm_create_wallet_verification_enter_word',
               [(hiddenWordIndexes[currentWordIndex] + 1).toString()],
             )}

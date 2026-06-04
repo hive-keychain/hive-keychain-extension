@@ -14,6 +14,7 @@ import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: RequestRecurrentTransfer & RequestId;
   domain: string;
@@ -34,10 +35,10 @@ const RecurrentTransfer = (props: Props) => {
   let memoField = memo;
   if (memo.length) {
     if (memo.startsWith('#')) {
-      memoField = `${memo} (${chrome.i18n.getMessage('popup_encrypted')})`;
+      memoField = `${memo} (${I18nUtils.getMessage('popup_encrypted')})`;
     }
   } else {
-    memoField = chrome.i18n.getMessage('popup_empty');
+    memoField = I18nUtils.getMessage('popup_empty');
   }
   const renderUsername = () => {
     return !accounts && data.username ? (
@@ -55,16 +56,16 @@ const RecurrentTransfer = (props: Props) => {
     const hours = data.recurrence % 24;
     let recurrenceString;
     if (!days) {
-      recurrenceString = chrome.i18n.getMessage('dialog_recurrence_hours', [
+      recurrenceString = I18nUtils.getMessage('dialog_recurrence_hours', [
         hours + '',
       ]);
     } else {
       if (!hours) {
-        recurrenceString = chrome.i18n.getMessage('dialog_recurrence_days', [
+        recurrenceString = I18nUtils.getMessage('dialog_recurrence_days', [
           days + '',
         ]);
       } else {
-        recurrenceString = chrome.i18n.getMessage(
+        recurrenceString = I18nUtils.getMessage(
           'dialog_recurrence_days_hours',
           [days + '', hours + ''],
         );
@@ -74,7 +75,7 @@ const RecurrentTransfer = (props: Props) => {
   };
   return (
     <Operation
-      title={chrome.i18n.getMessage('dialog_title_recurrent_transfer')}
+      title={I18nUtils.getMessage('dialog_title_recurrent_transfer')}
       {...anonymousProps}
       {...props}>
       {renderUsername()}
@@ -104,7 +105,7 @@ const RecurrentTransfer = (props: Props) => {
       <Separator type={'horizontal'} fullSize />
       <RequestItem
         title="dialog_executions"
-        content={chrome.i18n.getMessage('dialog_executions_times', [
+        content={I18nUtils.getMessage('dialog_executions_times', [
           data.executions + '',
         ])}
       />

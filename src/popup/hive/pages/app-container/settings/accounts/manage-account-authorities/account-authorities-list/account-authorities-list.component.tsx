@@ -3,6 +3,7 @@ import React from 'react';
 import { Card } from 'src/common-ui/card/card.component';
 import { AccountAuthoritiesListItemComponent } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account-authorities/account-authorities-list/account-authorities-list-item/account-authorities-list-item.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   managedAccount: ActiveAccount;
 }
@@ -31,7 +32,7 @@ const AccountAuthoritiesList = ({ managedAccount }: Props) => {
         ) : (
           <div className="settings-hive-dapps-empty">
             <div className="no-authorities-found">
-              {chrome.i18n.getMessage(
+              {I18nUtils.getMessage(
                 'popup_html_manage_no_accounts_authorities',
               )}
             </div>

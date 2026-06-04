@@ -24,6 +24,7 @@ import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface LiFiConfirmationPageNavigationParams {
   swapTransactionData: ProviderTransactionData;
   swapFields: ConfirmationPageEvmFields[];
@@ -163,7 +164,7 @@ const LiFiConfirmationPage = ({
                   <div className="field">
                     {field.label && (
                       <div className="label">
-                        {chrome.i18n.getMessage(field.label)}
+                        {I18nUtils.getMessage(field.label)}
                         {field.warnings && field.warnings.length > 0 && (
                           <ConfirmationFieldWarningIcon
                             warnings={field.warnings}
@@ -215,7 +216,7 @@ const LiFiConfirmationPage = ({
               <div className="field">
                 {field.label && (
                   <div className="label">
-                    {chrome.i18n.getMessage(field.label)}
+                    {I18nUtils.getMessage(field.label)}
                     {field.warnings && field.warnings.length > 0 && (
                       <ConfirmationFieldWarningIcon
                         warnings={field.warnings}

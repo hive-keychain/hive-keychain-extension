@@ -41,6 +41,7 @@ import { ConversionUtils } from 'src/popup/hive/utils/conversion.utils';
 import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface ConversionForm {
   receiver: string;
   amount: number;
@@ -154,7 +155,7 @@ const ConversionPage = ({
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         conversionType === ConversionType.CONVERT_HBD_TO_HIVE
           ? 'popup_html_confirm_hbd_to_hive_conversion'
           : 'popup_html_confirm_hive_to_hbd_conversion',
@@ -247,13 +248,13 @@ const ConversionPage = ({
           onClick={goToPendingConversion}>
           <div className="pending-conversion-text">
             {totalPending} {watch('currency')}{' '}
-            {chrome.i18n.getMessage('popup_html_pending')}{' '}
+            {I18nUtils.getMessage('popup_html_pending')}{' '}
           </div>
         </div>
       )}
 
       <FormContainer onSubmit={handleSubmit(handleButtonClick)}>
-        <div className="text">{chrome.i18n.getMessage(text)}</div>
+        <div className="text">{I18nUtils.getMessage(text)}</div>
         <Separator fullSize type="horizontal" />
         <div className="form-fields">
           <div className="amount-panel">

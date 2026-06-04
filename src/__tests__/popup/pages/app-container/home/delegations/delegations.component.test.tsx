@@ -15,6 +15,7 @@ import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-l
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('delegations.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -50,7 +51,7 @@ describe('delegations.component tests:\n', () => {
     it('Must load delegations page, and show error', async () => {
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage(
+          I18nUtils.getMessage(
             'popup_html_error_retrieving_incoming_delegations',
           ),
         ),
@@ -98,7 +99,7 @@ describe('delegations.component tests:\n', () => {
         `${Screen.INCOMING_OUTGOING_PAGE}-page`,
       );
       expect(pageHTMLElement.textContent).toContain(
-        chrome.i18n.getMessage('popup_html_total_incoming'),
+        I18nUtils.getMessage('popup_html_total_incoming'),
       );
     });
 
@@ -114,7 +115,7 @@ describe('delegations.component tests:\n', () => {
         `${Screen.INCOMING_OUTGOING_PAGE}-page`,
       );
       expect(pageHTMLElement.textContent).toContain(
-        chrome.i18n.getMessage('popup_html_total_outgoing'),
+        I18nUtils.getMessage('popup_html_total_outgoing'),
       );
     });
 
@@ -138,7 +139,7 @@ describe('delegations.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_delegation_fail'),
+          I18nUtils.getMessage('popup_html_delegation_fail'),
         ),
       ).toBeInTheDocument();
     });
@@ -168,7 +169,7 @@ describe('delegations.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_delegation_successful'),
+          I18nUtils.getMessage('popup_html_delegation_successful'),
         ),
       ).toBeInTheDocument();
     });
@@ -198,7 +199,7 @@ describe('delegations.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_cancel_delegation_successful'),
+          I18nUtils.getMessage('popup_html_cancel_delegation_successful'),
         ),
       ).toBeInTheDocument();
     });
@@ -224,7 +225,7 @@ describe('delegations.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_cancel_delegation_fail'),
+          I18nUtils.getMessage('popup_html_cancel_delegation_fail'),
         ),
       ).toBeInTheDocument();
     });

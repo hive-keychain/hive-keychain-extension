@@ -13,6 +13,7 @@ import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 import { useTransferCheck } from 'src/dialog/hooks/transfer-check';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: RequestSendToken & RequestId;
   domain: string;
@@ -32,10 +33,10 @@ const SendToken = (props: Props) => {
   let memoField = memo;
   if (memo.length) {
     if (memo.startsWith('#')) {
-      memoField = `${memo} (${chrome.i18n.getMessage('popup_encrypted')})`;
+      memoField = `${memo} (${I18nUtils.getMessage('popup_encrypted')})`;
     }
   } else {
-    memoField = chrome.i18n.getMessage('popup_empty');
+    memoField = I18nUtils.getMessage('popup_empty');
   }
 
   useEffect(() => {
@@ -61,7 +62,7 @@ const SendToken = (props: Props) => {
 
   return (
     <Operation
-      title={chrome.i18n.getMessage('dialog_title_token')}
+      title={I18nUtils.getMessage('dialog_title_token')}
       {...anonymousProps}
       {...props}
       header={header}

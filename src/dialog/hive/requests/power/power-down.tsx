@@ -9,6 +9,7 @@ import Operation from 'src/dialog/hive/operation/operation';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: RequestPowerDown & RequestId;
   domain: string;
@@ -22,7 +23,7 @@ const PowerDown = (props: Props) => {
 
   return (
     <Operation
-      title={chrome.i18n.getMessage('dialog_title_powerdown')}
+      title={I18nUtils.getMessage('dialog_title_powerdown')}
       {...props}>
       <UsernameWithAvatar title="dialog_account" username={data.username} />
       <Separator type={'horizontal'} fullSize />

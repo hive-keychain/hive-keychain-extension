@@ -16,6 +16,7 @@ import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-l
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { TokenOperationType } from 'src/popup/hive/pages/app-container/home/tokens/token-operation/token-operation.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('token-operation No Active key tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -84,7 +85,7 @@ describe('token-operation No Active key tests:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_missing_key', [
+        I18nUtils.getMessage('popup_missing_key', [
           KeychainKeyTypesLC.active,
         ]),
       ),
@@ -113,7 +114,7 @@ describe('token-operation No Active key tests:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_missing_key', [
+        I18nUtils.getMessage('popup_missing_key', [
           KeychainKeyTypesLC.active,
         ]),
       ),
@@ -142,7 +143,7 @@ describe('token-operation No Active key tests:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_missing_key', [
+        I18nUtils.getMessage('popup_missing_key', [
           KeychainKeyTypesLC.active,
         ]),
       ),

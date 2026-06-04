@@ -10,6 +10,7 @@ import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user'
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('token-incoming-outgoing-page.component tests:\n', () => {
   const selectedToken = tokensUser.balances.find(
     (token) => token.symbol === 'LEO',
@@ -58,7 +59,7 @@ describe('token-incoming-outgoing-page.component tests:\n', () => {
     ).toBeInTheDocument();
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage(
+        I18nUtils.getMessage(
           'popup_html_token_undelegation_cooldown_disclaimer',
           [selectedToken.symbol, leoCooldownData],
         ),
@@ -83,7 +84,7 @@ describe('token-incoming-outgoing-page.component tests:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_html_total_incoming'),
+        I18nUtils.getMessage('popup_html_total_incoming'),
         { exact: true },
       ),
     ).toBeInTheDocument();

@@ -34,6 +34,7 @@ import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const normalizePendingTransactions = (
   transactions: unknown,
 ): EvmPendingTransaction[] => {
@@ -337,7 +338,7 @@ const getPendingTransactionsDetails = async (
   },
 ): Promise<EvmPendingTransactionDetails> => {
   let pendingTransactionDetail: EvmPendingTransactionDetails = {
-    label: chrome.i18n.getMessage('evm_unknown_pending_transaction'),
+    label: I18nUtils.getMessage('evm_unknown_pending_transaction'),
     title: 'evm_pending_queued_transactions',
     nonce: nonce,
   };
@@ -369,7 +370,7 @@ const getPendingTransactionsDetails = async (
     pendingTransactionDetail = {
       label:
         item?.label ??
-        chrome.i18n.getMessage('evm_unknown_pending_transaction'),
+        I18nUtils.getMessage('evm_unknown_pending_transaction'),
       title: 'evm_pending_queued_transactions',
       transactionResponse: pendingTx,
       nonce: pendingTx.nonce,

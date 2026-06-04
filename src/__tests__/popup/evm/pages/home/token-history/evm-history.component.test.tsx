@@ -4,6 +4,7 @@ import { EvmHistory } from '@popup/evm/pages/home/token-history/evm-history.comp
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 jest.mock('src/common-ui/svg-icon/svg-icon.component', () => ({
   SVGIcon: () => <span data-testid="svg-icon" />,
 }));
@@ -19,7 +20,7 @@ describe('EvmHistory', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    global.chrome.i18n.getMessage = jest.fn((key: string) => {
+    I18nUtils.getMessage = jest.fn((key: string) => {
       if (key === 'evm_custom_history_info_card_message') {
         return 'On this custom chain, only transactions broadcasted by Keychain will be displayed';
       }

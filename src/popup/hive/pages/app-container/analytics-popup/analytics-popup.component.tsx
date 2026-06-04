@@ -9,6 +9,7 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   onAnswered: any;
 }
@@ -40,10 +41,10 @@ const AnalyticsPopup = ({
   return (
     <PopupContainer className={`analytics-popup`}>
       <div className="popup-title">
-        {chrome.i18n.getMessage('popup_html_analytics_title')}
+        {I18nUtils.getMessage('popup_html_analytics_title')}
       </div>
       <div className="caption">
-        {chrome.i18n.getMessage('popup_html_analytics_message')}
+        {I18nUtils.getMessage('popup_html_analytics_message')}
       </div>
       <CheckboxComponent
         onChange={() => setAccepted(!accepted)}
@@ -51,13 +52,13 @@ const AnalyticsPopup = ({
         title="popup_html_analytics_accept_to_share"
       />
       <div className="pp">
-        {chrome.i18n.getMessage('popup_html_analytics_privacy_policy_text') +
+        {I18nUtils.getMessage('popup_html_analytics_privacy_policy_text') +
           ' '}
         <a
           className="privacy-policy-link"
           href="https://hive-keychain.com/#/privacy"
           target="__blank">
-          {chrome.i18n.getMessage('popup_html_analytics_privacy_policy')}
+          {I18nUtils.getMessage('popup_html_analytics_privacy_policy')}
         </a>
       </div>
       <div className="popup-footer">

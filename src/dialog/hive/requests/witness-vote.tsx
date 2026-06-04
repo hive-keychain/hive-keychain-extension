@@ -7,6 +7,7 @@ import RequestItem from 'src/dialog/components/request-item/request-item';
 import Operation from 'src/dialog/hive/operation/operation';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: RequestWitnessVote & RequestId;
   domain: string;
@@ -31,7 +32,7 @@ const WitnessVote = (props: Props) => {
   };
   return (
     <Operation
-      title={chrome.i18n.getMessage('dialog_title_wit')}
+      title={I18nUtils.getMessage('dialog_title_wit')}
       {...props}
       {...anonymousProps}>
       {renderUsername()}

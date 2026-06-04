@@ -12,6 +12,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { AccountAuthoritiesListComponent } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account-authorities/account-authorities-list/account-authorities-list.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type HiveAccountOption = OptionItem & {
   value: string;
 };
@@ -128,7 +129,7 @@ const ManageAccountAuthorities = ({
       className="settings-manage-account-authorities"
       data-testid={`${Screen.SETTINGS_MANAGE_ACCOUNTS_AUTHORITIES}-page`}>
       <div className="text">
-        {chrome.i18n.getMessage('popup_html_manage_accounts_authorities_text')}
+        {I18nUtils.getMessage('popup_html_manage_accounts_authorities_text')}
       </div>
 
       {selectedAccountOption && (

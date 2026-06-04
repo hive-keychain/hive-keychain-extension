@@ -10,6 +10,7 @@ import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import Operation from 'src/dialog/hive/operation/operation';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: RequestDecode & RequestId;
   domain: string;
@@ -22,8 +23,8 @@ const DecodeMemo = (props: Props) => {
   const { data, domain } = props;
   return (
     <Operation
-      title={chrome.i18n.getMessage('dialog_title_decode')}
-      header={chrome.i18n.getMessage('dialog_desc_verify', [
+      title={I18nUtils.getMessage('dialog_title_decode')}
+      header={I18nUtils.getMessage('dialog_desc_verify', [
         domain,
         data.method,
         data.username,

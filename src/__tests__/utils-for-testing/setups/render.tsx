@@ -5,6 +5,7 @@ import { resetMessage } from '@popup/multichain/actions/message.actions';
 import { RootState } from '@popup/multichain/store';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
+import { I18nProviderComponent } from 'src/common-ui/i18n/i18n-provider.component';
 import { MessageContainerComponent } from 'src/common-ui/message-container/message-container.component';
 import { CopyToastContainer } from 'src/common-ui/toast/copy-toast.component';
 
@@ -39,11 +40,13 @@ const render = (
 ) => {
   const Wrapper = ({ children }: Props) => {
     return (
-      <Provider store={fakeStore}>
-        {children}
-        <TestMessageOverlay />
-        <CopyToastContainer />
-      </Provider>
+      <I18nProviderComponent>
+        <Provider store={fakeStore}>
+          {children}
+          <TestMessageOverlay />
+          <CopyToastContainer />
+        </Provider>
+      </I18nProviderComponent>
     );
   };
 

@@ -11,6 +11,7 @@ import CollaspsibleItem from 'src/dialog/components/collapsible-item/collapsible
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import Operation from 'src/dialog/hive/operation/operation';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: RequestBroadcast & RequestId;
   domain: string;
@@ -24,7 +25,7 @@ const Broadcast = (props: Props) => {
 
   return (
     <Operation
-      title={chrome.i18n.getMessage('dialog_title_broadcast')}
+      title={I18nUtils.getMessage('dialog_title_broadcast')}
       {...props}
       canWhitelist={data.method.toLowerCase() !== KeychainKeyTypesLC.active}>
       <UsernameWithAvatar title="dialog_account" username={data.username} />

@@ -8,6 +8,7 @@ import manipulateStrings from 'src/__tests__/utils-for-testing/helpers/manipulat
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('about.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -33,7 +34,7 @@ describe('about.component tests:\n', () => {
       screen.getByTestId(`${Icons.INFO}-page-content`).textContent,
     ).toMatch(
       manipulateStrings.removeHtmlTags(
-        chrome.i18n.getMessage('popup_html_about_text'),
+        I18nUtils.getMessage('popup_html_about_text'),
       ),
     );
   });

@@ -11,9 +11,10 @@ import { HiveRequestsHandler } from '@background/hive/requests/hive-request-hand
 import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
 import * as DialogLifeCycle from 'src/background/multichain/dialog-lifecycle';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('initializeWallet current dialog flow', () => {
   beforeEach(() => {
-    chrome.i18n.getMessage = jest.fn((key: string) => key);
+    I18nUtils.getMessage = jest.fn((key: string) => key);
   });
 
   afterEach(() => {

@@ -9,6 +9,7 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import { store } from 'src/popup/multichain/store';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 /** Fixed keypair from @hiveio/hive-js memo self-test — avoids .env-dependent memo ciphertext. */
 const MEMO_CIPHER_SENDER_WIF =
   '5JdeC9P7Pbd1uGdFVEsJ41EkEnADbbHGq6p1BwFxm6txNBsQnsw';
@@ -176,7 +177,7 @@ describe('transaction.utils tests:\n', () => {
         amount: fakeTransfer.amount,
         memo: messageFromI18n,
       };
-      const mocki18nGetMessage = (chrome.i18n.getMessage = jest
+      const mocki18nGetMessage = (I18nUtils.getMessage = jest
         .fn()
         .mockReturnValueOnce(messageFromI18n));
       const result = TransactionUtils.decodeMemoIfNeeded(fakeTransfer, '');

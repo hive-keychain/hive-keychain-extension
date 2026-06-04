@@ -19,6 +19,7 @@ import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-log
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const mockParseTransaction = jest.fn();
 const mockBalanceChangeCard = jest.fn(({ balanceInfo }) => (
   <div data-testid="balance-card">{JSON.stringify(balanceInfo)}</div>
@@ -262,7 +263,7 @@ describe('send-transaction proxy tests:\n', () => {
       null as any,
     );
     jest.spyOn(EvmTransactionParserUtils, 'parseArgs').mockReturnValue([]);
-    global.chrome.i18n.getMessage = jest.fn((key: string) => key);
+    I18nUtils.getMessage = jest.fn((key: string) => key);
     mockParseTransaction.mockReturnValue({
       args: {
         toArray: () => [],

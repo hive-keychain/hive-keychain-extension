@@ -7,6 +7,7 @@ import CollaspsibleItem from 'src/dialog/components/collapsible-item/collapsible
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import Operation from 'src/dialog/hive/operation/operation';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: RequestPost & RequestId;
   domain: string;
@@ -19,7 +20,7 @@ const Post = (props: Props) => {
   const { data } = props;
   return (
     <Operation
-      title={chrome.i18n.getMessage('dialog_title_post')}
+      title={I18nUtils.getMessage('dialog_title_post')}
       {...props}
       canWhitelist>
       <UsernameWithAvatar title="dialog_account" username={data.username} />

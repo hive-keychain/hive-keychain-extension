@@ -13,6 +13,7 @@ import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.acti
 import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const ProxySuggestion = ({
   activeAccount,
   isMessageContainerDisplayed,
@@ -82,7 +83,7 @@ const ProxySuggestion = ({
         isMessageContainerDisplayed || forceClosed ? 'hide' : ''
       }`}>
       <div className="caption">
-        {chrome.i18n.getMessage('popup_html_proxy_suggestion')}
+        {I18nUtils.getMessage('popup_html_proxy_suggestion')}
       </div>
       <div className="button-panel">
         <ButtonComponent

@@ -8,6 +8,7 @@ import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import { getRequiredWifType } from 'src/utils/requests.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const anonymousRequests = (
   requestHandler: HiveRequestsHandler,
   tab: number,
@@ -25,8 +26,8 @@ export const anonymousRequests = (
       sendErrors(
         tab!,
         'user_cancel',
-        await chrome.i18n.getMessage('bgd_auth_canceled'),
-        await chrome.i18n.getMessage('bgd_auth_no_active'),
+        await I18nUtils.getMessage('bgd_auth_canceled'),
+        await I18nUtils.getMessage('bgd_auth_no_active'),
         request,
       );
       await requestHandler.removeRequestById(request.request_id, tab);

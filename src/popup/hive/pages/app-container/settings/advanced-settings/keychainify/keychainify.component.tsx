@@ -7,6 +7,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const Keychainify = ({ setTitleContainerProperties }: PropsFromRedux) => {
   const [enabled, setEnabled] = useState(false);
 
@@ -38,7 +39,7 @@ const Keychainify = ({ setTitleContainerProperties }: PropsFromRedux) => {
       data-testid={`${Screen.SETTINGS_KEYCHAINIFY}-page`}
       className="keychainify-page">
       <div className="intro">
-        {chrome.i18n.getMessage('popup_html_keychainify_text')}
+        {I18nUtils.getMessage('popup_html_keychainify_text')}
       </div>
       <div className="fields">
         <CheckboxPanelComponent

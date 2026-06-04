@@ -24,6 +24,7 @@ import { setAccounts } from 'src/popup/hive/actions/account.actions';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export interface AuthoritiesListItemProps {
   authority: AuthorityType;
   role: 'active' | 'posting';
@@ -41,7 +42,7 @@ const AccountAuthoritiesListItem = ({
   removeFromLoadingList,
   goBack,
 }: PropsType) => {
-  const removeAuthorityLabel = chrome.i18n.getMessage(
+  const removeAuthorityLabel = I18nUtils.getMessage(
     'popup_html_remove_account_authority',
   );
 
@@ -53,7 +54,7 @@ const AccountAuthoritiesListItem = ({
     authorizedAccountName: string,
   ) => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         'popup_html_confirm_remove_account_authority_message',
         [role, authorizedAccountName],
       ),
@@ -66,7 +67,7 @@ const AccountAuthoritiesListItem = ({
         },
         {
           label: 'popup_html_role',
-          value: chrome.i18n.getMessage(`popup_html_authority_${role}`),
+          value: I18nUtils.getMessage(`popup_html_authority_${role}`),
         },
       ],
       title: 'popup_html_remove_account_authority',
@@ -115,7 +116,7 @@ const AccountAuthoritiesListItem = ({
       <div className="settings-hive-dapps-site-header">
         <div className="settings-hive-dapps-site-identity">
           <div className="settings-hive-dapps-site-title">
-            {chrome.i18n.getMessage(`popup_html_authority_${role}`)}
+            {I18nUtils.getMessage(`popup_html_authority_${role}`)}
           </div>
         </div>
       </div>

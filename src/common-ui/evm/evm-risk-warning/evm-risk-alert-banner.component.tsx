@@ -6,6 +6,7 @@ import React from 'react';
 import { EvmRiskWarningUtils } from 'src/common-ui/evm/evm-risk-warning/evm-risk-warning.utils';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface EvmRiskAlertPanelProps {
   level: EvmTransactionWarningLevel;
   message: string;
@@ -20,7 +21,7 @@ const EvmRiskAlertPanel = ({
   dataTestId = 'evm-risk-alert',
 }: EvmRiskAlertPanelProps) => {
   const levelClass = EvmRiskWarningUtils.getLevelModifierClass(level);
-  const severityLabel = chrome.i18n.getMessage(
+  const severityLabel = I18nUtils.getMessage(
     EvmRiskWarningUtils.getSeverityLabelKey(level),
   );
   const AlertWrapper = onReviewClick ? 'button' : 'div';
@@ -65,14 +66,14 @@ export const EvmRiskAlertBanner = ({
     return null;
   }
 
-  const severityLabel = chrome.i18n.getMessage(
+  const severityLabel = I18nUtils.getMessage(
     EvmRiskWarningUtils.getSeverityLabelKey(highestLevel),
   );
 
   return (
     <EvmRiskAlertPanel
       level={highestLevel}
-      message={chrome.i18n.getMessage('evm_risk_banner_message', [
+      message={I18nUtils.getMessage('evm_risk_banner_message', [
         warningCount.toString(),
         severityLabel,
       ])}
@@ -99,7 +100,7 @@ export const EvmRiskStaticAlert = ({
 }: EvmRiskStaticAlertProps) => {
   const displayMessage = skipTranslation
     ? message
-    : chrome.i18n.getMessage(message, messageParams);
+    : I18nUtils.getMessage(message, messageParams);
 
   return (
     <EvmRiskAlertPanel
@@ -128,7 +129,7 @@ export const EvmRiskWarningAlert = ({
   return (
     <EvmRiskAlertPanel
       level={warning.level}
-      message={chrome.i18n.getMessage(
+      message={I18nUtils.getMessage(
         warning.message,
         warning.messageParams ?? [],
       )}

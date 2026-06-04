@@ -6,6 +6,7 @@ import { KeychainRequestData, RequestId } from '@interfaces/keychain.interface';
 import { Key } from '@interfaces/keys.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const createMessage = async (
   err: any,
   result: any,
@@ -17,7 +18,7 @@ export const createMessage = async (
 ): Promise<DialogMessage> => {
   let message;
   if (result?.isUsingMultisig && result?.tx_id?.length === 0) {
-    message = await chrome.i18n.getMessage(
+    message = await I18nUtils.getMessage(
       'multisig_transaction_sent_to_signers',
     );
   } else {
@@ -78,6 +79,6 @@ export const beautifyErrorMessage = async (err: any) => {
     error = err.message;
   }
   if (error.replace(' ', '') === '')
-    return await chrome.i18n.getMessage('unknown_error');
-  return `${await chrome.i18n.getMessage('bgd_ops_error')} : ${error}`;
+    return await I18nUtils.getMessage('unknown_error');
+  return `${await I18nUtils.getMessage('bgd_ops_error')} : ${error}`;
 };

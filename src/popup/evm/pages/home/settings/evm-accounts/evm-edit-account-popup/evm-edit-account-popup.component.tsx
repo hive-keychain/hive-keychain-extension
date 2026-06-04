@@ -6,6 +6,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export interface EditAccountParams {
   initialValue: string;
   onSubmit: (...params: any) => void;
@@ -47,9 +48,9 @@ export const EvmEditAccountPopup = ({ editParams }: Props) => {
 
   return (
     <PopupContainer className="seed-nickname-popup">
-      <div className="popup-title">{chrome.i18n.getMessage(title)}</div>
+      <div className="popup-title">{I18nUtils.getMessage(title)}</div>
       {caption && (
-        <div className="caption">{chrome.i18n.getMessage(caption)}</div>
+        <div className="caption">{I18nUtils.getMessage(caption)}</div>
       )}
       <InputComponent
         value={value}
@@ -63,7 +64,7 @@ export const EvmEditAccountPopup = ({ editParams }: Props) => {
       />
       {errorMessage && (
         <div className="caption error-message">
-          {chrome.i18n.getMessage(errorMessage)}
+          {I18nUtils.getMessage(errorMessage)}
         </div>
       )}
       <div className="popup-footer">

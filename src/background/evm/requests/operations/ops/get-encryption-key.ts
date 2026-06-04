@@ -9,6 +9,7 @@ import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
 import { ethers } from 'ethers';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const getUnsupportedLedgerEncryptionError = () => {
   const error = new Error('Ledger does not support encryption key requests');
   (error as any).code = 'UNSUPPORTED_OPERATION';
@@ -44,6 +45,6 @@ export const getEncryptionKey = async (
     res,
     request,
     requestData?.tab!,
-    await chrome.i18n.getMessage('dialog_evm_get_encryption_key_success'),
+    await I18nUtils.getMessage('dialog_evm_get_encryption_key_success'),
   );
 };

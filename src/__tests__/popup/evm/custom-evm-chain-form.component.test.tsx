@@ -6,11 +6,12 @@ import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { CustomEvmChainForm } from '@popup/evm/pages/home/settings/evm-custom-chains/custom-evm-chain-form.component';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('CustomEvmChainForm', () => {
   let consoleErrorSpy: jest.SpiedFunction<typeof console.error>;
 
   beforeEach(() => {
-    chrome.i18n.getMessage = jest.fn((key: string) => key);
+    I18nUtils.getMessage = jest.fn((key: string) => key);
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(EvmRpcUtils, 'isValidRpcForChainId').mockResolvedValue(true);
   });

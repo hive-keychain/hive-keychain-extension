@@ -16,6 +16,7 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { mockHiveTxCreateTransactionForLedger } from 'src/__tests__/utils-for-testing/mocks/hive-tx-ledger.helpers';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('custom-json tests:\n', () => {
   const data = {
     domain: 'domain',
@@ -39,7 +40,7 @@ describe('custom-json tests:\n', () => {
   });
   beforeEach(() => {
     jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('en-US');
-    chrome.i18n.getMessage = jest
+    I18nUtils.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
   });
@@ -76,7 +77,7 @@ describe('custom-json tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_broadcast'),
+          message: I18nUtils.getMessage('bgd_ops_broadcast'),
           request_id: request_id,
           publicKey: undefined,
         },
@@ -114,7 +115,7 @@ describe('custom-json tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_broadcast'),
+          message: I18nUtils.getMessage('bgd_ops_broadcast'),
           request_id: request_id,
           publicKey: undefined,
         },

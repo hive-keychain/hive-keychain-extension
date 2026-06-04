@@ -10,6 +10,7 @@ import { Rpc } from '@interfaces/rpc.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const transferRequest = (
   requestHandler: HiveRequestsHandler,
   tab: number,
@@ -33,8 +34,8 @@ export const transferRequest = (
       sendErrors(
         tab!,
         'user_cancel',
-        await chrome.i18n.getMessage('bgd_auth_canceled'),
-        await chrome.i18n.getMessage('bgd_auth_transfer_no_active', [username]),
+        await I18nUtils.getMessage('bgd_auth_canceled'),
+        await I18nUtils.getMessage('bgd_auth_transfer_no_active', [username]),
         request as KeychainRequest,
       );
       await requestHandler.removeRequestById(
@@ -48,8 +49,8 @@ export const transferRequest = (
       sendErrors(
         tab!,
         'user_cancel',
-        await chrome.i18n.getMessage('bgd_auth_canceled'),
-        await chrome.i18n.getMessage('bgd_auth_transfer_no_memo', [username!]),
+        await I18nUtils.getMessage('bgd_auth_canceled'),
+        await I18nUtils.getMessage('bgd_auth_transfer_no_memo', [username!]),
         request as KeychainRequest,
       );
       await requestHandler.removeRequestById(
@@ -63,8 +64,8 @@ export const transferRequest = (
       sendErrors(
         tab!,
         'user_cancel',
-        await chrome.i18n.getMessage('bgd_auth_canceled'),
-        await chrome.i18n.getMessage('bgd_auth_transfer_no_active', [
+        await I18nUtils.getMessage('bgd_auth_canceled'),
+        await I18nUtils.getMessage('bgd_auth_transfer_no_active', [
           username!,
         ]),
         request as KeychainRequest,

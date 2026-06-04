@@ -13,6 +13,7 @@ import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: RequestSavings & RequestId;
   domain: string;
@@ -35,7 +36,7 @@ const Savings = (props: Props) => {
     data.currency
   }`;
   const memoLabel = memo?.startsWith('#')
-    ? `${memo} (${chrome.i18n.getMessage('popup_encrypted')})`
+    ? `${memo} (${I18nUtils.getMessage('popup_encrypted')})`
     : memo;
   const savingOperationType = isDeposit
     ? SavingOperationType.DEPOSIT
@@ -59,13 +60,13 @@ const Savings = (props: Props) => {
 
   return (
     <Operation
-      title={chrome.i18n.getMessage(
+      title={I18nUtils.getMessage(
         isDeposit ? 'popup_html_deposit_param' : 'popup_html_withdraw_param',
         [currencyLabel],
       )}
       header={
         warningMessage ||
-        chrome.i18n.getMessage(
+        I18nUtils.getMessage(
           isDeposit
             ? 'popup_html_confirm_savings_deposit'
             : 'popup_html_confirm_savings_withdraw',

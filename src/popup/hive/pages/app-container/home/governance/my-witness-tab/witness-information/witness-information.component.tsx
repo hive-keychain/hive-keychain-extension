@@ -37,6 +37,7 @@ import WitnessUtils, {
 } from 'src/popup/hive/utils/witness.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface WitnessInformationProps {
   witnessInfo: WitnessInfo;
   ranking: Witness[];
@@ -90,7 +91,7 @@ const WitnessInformation = ({
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
       fields: [],
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         'popup_html_disable_witness_account_confirmation_message',
         [activeAccount.name!],
       ),
@@ -145,7 +146,7 @@ const WitnessInformation = ({
   const enableWitness = () => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         'popup_html_disable_witness_account_confirmation_message',
         [activeAccount.name!],
       ),
@@ -240,14 +241,14 @@ const WitnessInformation = ({
                 {witnessRanking.active_rank && (
                   <>
                     {witnessRanking?.active_rank}
-                    {chrome.i18n.getMessage(
+                    {I18nUtils.getMessage(
                       FormatUtils.getOrdinalLabelTranslation(
                         witnessRanking?.active_rank!,
                       ),
                     )}{' '}
                   </>
                 )}
-                {/* {chrome.i18n.getMessage('popup_html_witness_rank_label')}{' '} */}
+                {/* {I18nUtils.getMessage('popup_html_witness_rank_label')}{' '} */}
                 {(witnessRanking?.active_rank as any)?.toString() !==
                   (witnessRanking?.rank as any)?.toString() && (
                   <div>

@@ -5,6 +5,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { WitnessInfoDataComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-info-data/witness-info-data.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface WitnessParametersInformationProps {
   witnessInfo: WitnessInfo;
 }
@@ -15,7 +16,7 @@ const WitnessInformationParameters = ({
   return (
     <div className="witness-information-parameters">
       <div className="label-title">
-        {chrome.i18n.getMessage(
+        {I18nUtils.getMessage(
           'popup_html_witness_information_signing_key_label',
         )}
       </div>

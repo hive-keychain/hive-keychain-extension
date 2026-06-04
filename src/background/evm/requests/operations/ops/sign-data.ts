@@ -10,6 +10,7 @@ import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const signData = async (
   requestHandler: EvmRequestHandler,
   request: EvmRequest,
@@ -43,7 +44,7 @@ export const signData = async (
         res,
         request,
         requestData?.tab!,
-        await chrome.i18n.getMessage('dialog_evm_sign_request_success'),
+        await I18nUtils.getMessage('dialog_evm_sign_request_success'),
       );
     } catch (e) {
       Logger.error('sign error', e);

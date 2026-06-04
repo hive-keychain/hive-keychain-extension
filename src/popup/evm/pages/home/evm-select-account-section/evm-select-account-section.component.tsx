@@ -36,6 +36,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   background?: 'white';
   fullSize?: boolean;
@@ -296,7 +297,7 @@ const SelectAccountSection = ({
           onClick={handleOnManageAccountsClicked}>
           <SVGIcon icon={SVGIcons.MENU_ACCOUNTS_MANAGE_ACCOUNTS} />
           <div className="text">
-            {chrome.i18n.getMessage('manage_accounts')}
+            {I18nUtils.getMessage('manage_accounts')}
           </div>
         </div>
       </div>

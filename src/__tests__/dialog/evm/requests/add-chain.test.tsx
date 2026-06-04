@@ -15,6 +15,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const mockCustomEvmChainForm = jest.fn();
 const mockCustomEvmChainFormSubmitError = jest.fn();
 const mockEvmOperationConfirmError = jest.fn();
@@ -170,7 +171,7 @@ describe('AddChain', () => {
       rpcs: [{ url: 'https://rpc.example.com', isDefault: true }],
       defaultTransactionType: EvmTransactionType.EIP_1559,
     } as EvmChain;
-    global.chrome.i18n.getMessage = jest.fn(
+    I18nUtils.getMessage = jest.fn(
       (key: string, params?: string[]) =>
         params?.length ? `${key}:${params.join(',')}` : key,
     );

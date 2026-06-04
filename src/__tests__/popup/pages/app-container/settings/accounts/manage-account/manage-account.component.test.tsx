@@ -18,6 +18,7 @@ import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('manage-account.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -63,11 +64,11 @@ describe('manage-account.component tests:\n', () => {
       ).toBeInTheDocument();
       expect(
         screen.getByTestId('add-account-dropdown-option'),
-      ).toHaveTextContent(chrome.i18n.getMessage('popup_html_add_account'));
+      ).toHaveTextContent(I18nUtils.getMessage('popup_html_add_account'));
       expect(
         screen.getByTestId('create-account-dropdown-option'),
       ).toHaveTextContent(
-        chrome.i18n.getMessage('popup_html_create_account'),
+        I18nUtils.getMessage('popup_html_create_account'),
       );
       expect(
         screen.queryByTestId('manage-accounts-dropdown-option'),
@@ -137,7 +138,7 @@ describe('manage-account.component tests:\n', () => {
         );
       });
       const confirmCheck = (messageKey: string) => {
-        const label = screen.getByText(chrome.i18n.getMessage(messageKey));
+        const label = screen.getByText(I18nUtils.getMessage(messageKey));
         const panel = label.closest('.checkbox-panel');
         expect(panel).toBeTruthy();
         return userEvent.click(
@@ -149,7 +150,7 @@ describe('manage-account.component tests:\n', () => {
         await confirmCheck('popup_html_qr_check2');
         await userEvent.click(
           screen.getByRole('button', {
-            name: chrome.i18n.getMessage('popup_html_qr_exported_show_button'),
+            name: I18nUtils.getMessage('popup_html_qr_exported_show_button'),
           }),
         );
       });

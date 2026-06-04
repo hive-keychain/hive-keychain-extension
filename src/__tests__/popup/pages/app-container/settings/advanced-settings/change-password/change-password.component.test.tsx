@@ -11,6 +11,7 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('change-password.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -38,7 +39,7 @@ describe('change-password.component tests:\n', () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        chrome.i18n.getMessage('popup_html_change_password_text'),
+        I18nUtils.getMessage('popup_html_change_password_text'),
         { exact: true },
       ),
     ).toBeInTheDocument();
@@ -62,7 +63,7 @@ describe('change-password.component tests:\n', () => {
         await userEvent.click(screen.getByTestId(dataTestIdButton.submit));
       });
       expect(
-        await screen.findByText(chrome.i18n.getMessage('wrong_password')),
+        await screen.findByText(I18nUtils.getMessage('wrong_password')),
       ).toBeInTheDocument();
     });
 
@@ -84,7 +85,7 @@ describe('change-password.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_password_mismatch'),
+          I18nUtils.getMessage('popup_password_mismatch'),
         ),
       ).toBeInTheDocument();
     });
@@ -106,7 +107,7 @@ describe('change-password.component tests:\n', () => {
         await userEvent.click(screen.getByTestId(dataTestIdButton.submit));
       });
       expect(
-        await screen.findByText(chrome.i18n.getMessage('popup_password_regex')),
+        await screen.findByText(I18nUtils.getMessage('popup_password_regex')),
       ).toBeInTheDocument();
     });
 
@@ -128,7 +129,7 @@ describe('change-password.component tests:\n', () => {
         await userEvent.click(screen.getByTestId(dataTestIdButton.submit));
       });
       expect(
-        await screen.findByText(chrome.i18n.getMessage('popup_master_changed')),
+        await screen.findByText(I18nUtils.getMessage('popup_master_changed')),
       ).toBeInTheDocument();
       expect(
         await screen.findByTestId(`${Screen.HOME_PAGE}-page`),
@@ -153,7 +154,7 @@ describe('change-password.component tests:\n', () => {
         );
       });
       expect(
-        await screen.findByText(chrome.i18n.getMessage('wrong_password')),
+        await screen.findByText(I18nUtils.getMessage('wrong_password')),
       ).toBeInTheDocument();
     });
 
@@ -174,7 +175,7 @@ describe('change-password.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_password_mismatch'),
+          I18nUtils.getMessage('popup_password_mismatch'),
         ),
       ).toBeInTheDocument();
     });
@@ -195,7 +196,7 @@ describe('change-password.component tests:\n', () => {
         );
       });
       expect(
-        await screen.findByText(chrome.i18n.getMessage('popup_password_regex')),
+        await screen.findByText(I18nUtils.getMessage('popup_password_regex')),
       ).toBeInTheDocument();
     });
 
@@ -216,7 +217,7 @@ describe('change-password.component tests:\n', () => {
         );
       });
       expect(
-        await screen.findByText(chrome.i18n.getMessage('popup_master_changed')),
+        await screen.findByText(I18nUtils.getMessage('popup_master_changed')),
       ).toBeInTheDocument();
       expect(
         await screen.findByTestId(`${Screen.HOME_PAGE}-page`),

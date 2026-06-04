@@ -14,6 +14,7 @@ import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const broadcastSendToken = async (
   requestHandler: HiveRequestsHandler,
   data: RequestSendToken & RequestId,
@@ -84,7 +85,7 @@ export const broadcastSendToken = async (
     }
   } catch (e: any) {
     err = (e as KeychainError).trace || e;
-    err_message = await chrome.i18n.getMessage(
+    err_message = await I18nUtils.getMessage(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -94,7 +95,7 @@ export const broadcastSendToken = async (
       result,
       data,
       request?.tab!,
-      await chrome.i18n.getMessage('bgd_ops_tokens'),
+      await I18nUtils.getMessage('bgd_ops_tokens'),
       err_message,
     );
     return message;

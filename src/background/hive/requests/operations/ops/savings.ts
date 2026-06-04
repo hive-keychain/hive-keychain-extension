@@ -9,6 +9,7 @@ import { FormatUtils, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import Logger from 'src/utils/logger.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const broadcastSavings = async (
   requestHandler: HiveRequestsHandler,
   data: RequestSavings & RequestId,
@@ -82,7 +83,7 @@ export const broadcastSavings = async (
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await chrome.i18n.getMessage(
+    err_message = await I18nUtils.getMessage(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -92,7 +93,7 @@ export const broadcastSavings = async (
       result,
       data,
       request?.tab!,
-      await chrome.i18n.getMessage(
+      await I18nUtils.getMessage(
         isDeposit
           ? 'popup_html_deposit_success'
           : 'popup_html_withdraw_success',

@@ -23,6 +23,7 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const PendingRecurrentTransfersPage = ({
   recurrentTransfers,
   setTitleContainerProperties,
@@ -146,13 +147,13 @@ const RecurrentTransferItemComponent = ({
             <div className="expanded-panel">
               <div className="recurrent-transfer-details">
                 <div className="executions">
-                  {chrome.i18n.getMessage(
+                  {I18nUtils.getMessage(
                     'popup_html_pending_remaining_executions',
                     [remaining_executions.toString()],
                   )}
                 </div>
                 <div className="recurrence">
-                  {chrome.i18n.getMessage('popup_html_pending_recurrence', [
+                  {I18nUtils.getMessage('popup_html_pending_recurrence', [
                     recurrence.toString(),
                   ])}
                 </div>
@@ -164,7 +165,7 @@ const RecurrentTransferItemComponent = ({
                   onClick={() => cancelRecurrentTransfer()}>
                   <SVGIcon icon={SVGIcons.FAVORITE_ACCOUNTS_DELETE} />
                   <span className="label">
-                    {chrome.i18n.getMessage('popup_html_button_label_cancel')}
+                    {I18nUtils.getMessage('popup_html_button_label_cancel')}
                   </span>
                 </div>
               </div>

@@ -15,6 +15,7 @@ import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-l
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 /** Hive Engine RPC + account-history settings (Settings → RPC nodes). */
 describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
   afterEach(() => {
@@ -145,7 +146,7 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('html_popup_rpc_already_exist'),
+            I18nUtils.getMessage('html_popup_rpc_already_exist'),
           ),
         ).toBeInTheDocument();
       });
@@ -165,7 +166,7 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('html_popup_url_not_valid'),
+            I18nUtils.getMessage('html_popup_url_not_valid'),
           ),
         ).toBeInTheDocument();
       });
@@ -185,7 +186,7 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('html_popup_url_not_valid'),
+            I18nUtils.getMessage('html_popup_url_not_valid'),
           ),
         ).toBeInTheDocument();
       });
@@ -286,7 +287,7 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('html_popup_rpc_already_exist'),
+            I18nUtils.getMessage('html_popup_rpc_already_exist'),
           ),
         ).toBeInTheDocument();
       });
@@ -306,7 +307,7 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('html_popup_url_not_valid'),
+            I18nUtils.getMessage('html_popup_url_not_valid'),
           ),
         ).toBeInTheDocument();
       });
@@ -326,7 +327,7 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('html_popup_url_not_valid'),
+            I18nUtils.getMessage('html_popup_url_not_valid'),
           ),
         ).toBeInTheDocument();
       });

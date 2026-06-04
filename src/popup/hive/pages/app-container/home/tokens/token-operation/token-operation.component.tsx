@@ -47,6 +47,7 @@ import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export enum TokenOperationType {
   STAKE = 'stake',
   UNSTAKE = 'unstake',
@@ -211,7 +212,7 @@ const TokensOperation = ({
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         `popup_html_${operationType}_tokens_confirm_text`,
       ),
       fields: fields,
@@ -315,12 +316,12 @@ const TokensOperation = ({
         />
       )}
       <div className="caption">
-        {chrome.i18n.getMessage('popup_html_tokens_operation_text')}
+        {I18nUtils.getMessage('popup_html_tokens_operation_text')}
       </div>
       {operationType === TokenOperationType.UNSTAKE &&
         tokenInfo.unstakingCooldown > 0 && (
           <div className="cooldown-message">
-            {chrome.i18n.getMessage(
+            {I18nUtils.getMessage(
               'popup_html_token_unstake_cooldown_disclaimer',
               [tokenInfo.unstakingCooldown.toString()],
             )}

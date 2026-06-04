@@ -11,6 +11,7 @@ import RequestItem from 'src/dialog/components/request-item/request-item';
 import Operation from 'src/dialog/hive/operation/operation';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: RequestSignBuffer & RequestId;
   domain: string;
@@ -35,20 +36,20 @@ const SignBuffer = (props: Props) => {
   };
   return (
     <Operation
-      title={data.title || chrome.i18n.getMessage('dialog_title_sign')}
+      title={data.title || I18nUtils.getMessage('dialog_title_sign')}
       header={
         data.username
-          ? chrome.i18n.getMessage('dialog_desc_sign', [
+          ? I18nUtils.getMessage('dialog_desc_sign', [
               domain,
               data.method.toLowerCase(),
               data.username,
             ])
-          : chrome.i18n.getMessage('dialog_desc_user_unknown', [
+          : I18nUtils.getMessage('dialog_desc_user_unknown', [
               domain,
               data.method.toLowerCase(),
             ])
       }
-      checkboxLabelOverride={chrome.i18n.getMessage('dialog_no_prompt_verify', [
+      checkboxLabelOverride={I18nUtils.getMessage('dialog_no_prompt_verify', [
         data.username!,
         domain,
       ])}

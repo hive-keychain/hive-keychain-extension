@@ -24,6 +24,7 @@ import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { BuyCoinType } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coin-type.enum';
 import { BuyCoinsListItem } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins-list-item.list';
+import { I18nUtils } from 'src/utils/i18n.utils';
 
 const openHiveTransferPage = async () => {
   const hiveDropdownArrow = await screen.findByTestId(
@@ -79,7 +80,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('validation_error_mandatory'),
+            I18nUtils.getMessage('validation_error_mandatory'),
           ),
         );
       });
@@ -96,7 +97,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('validation_error_mandatory'),
+            I18nUtils.getMessage('validation_error_mandatory'),
           ),
         );
       });
@@ -117,7 +118,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('validation_error_mandatory'),
+            I18nUtils.getMessage('validation_error_mandatory'),
           ),
         );
       });
@@ -138,7 +139,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_need_positive_amount'),
+            I18nUtils.getMessage('popup_html_need_positive_amount'),
           ),
         );
       });
@@ -159,7 +160,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('validation_error_less_or_equal_value'),
+            I18nUtils.getMessage('validation_error_less_or_equal_value'),
           ),
         );
       });
@@ -183,7 +184,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('validation_error_mandatory'),
+            I18nUtils.getMessage('validation_error_mandatory'),
           ),
         );
       });
@@ -211,7 +212,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('validation_error_mandatory'),
+            I18nUtils.getMessage('validation_error_mandatory'),
           ),
         );
       });
@@ -239,7 +240,7 @@ describe('transfer-fund.component tests:\n', () => {
             dataTestIdDiv.warning.message,
           );
           expect(warningDivHTMLElement).toHaveTextContent(
-            chrome.i18n.getMessage('popup_warning_exchange_memo'),
+            I18nUtils.getMessage('popup_warning_exchange_memo'),
           );
         });
       });
@@ -263,7 +264,7 @@ describe('transfer-fund.component tests:\n', () => {
             dataTestIdDiv.warning.message,
           );
           expect(warningDivHTMLElement).toHaveTextContent(
-            chrome.i18n.getMessage('popup_warning_phishing', [
+            I18nUtils.getMessage('popup_warning_phishing', [
               phishing.accounts[0],
             ]),
           );
@@ -326,7 +327,7 @@ describe('transfer-fund.component tests:\n', () => {
           ).toBeInTheDocument();
           expect(
             await screen.findByText(
-              `${memoField} (${chrome.i18n.getMessage('popup_encrypted')})`,
+              `${memoField} (${I18nUtils.getMessage('popup_encrypted')})`,
             ),
           ).toBeInTheDocument();
         });
@@ -359,7 +360,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_transfer_successful', [
+            I18nUtils.getMessage('popup_html_transfer_successful', [
               `@${mk.user.two}`,
               '0.001 HIVE',
             ]),
@@ -405,7 +406,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_transfer_recurrent_successful', [
+            I18nUtils.getMessage('popup_html_transfer_recurrent_successful', [
               `@${mk.user.two}`,
               '0.001 HIVE',
               '24',
@@ -435,7 +436,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_transfer_failed'),
+            I18nUtils.getMessage('popup_html_transfer_failed'),
           ),
         ).toBeInTheDocument();
       });
@@ -507,7 +508,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_memo_key_missing'),
+            I18nUtils.getMessage('popup_html_memo_key_missing'),
           ),
         ).toBeInTheDocument();
       });
@@ -551,7 +552,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_missing_key', ['active']),
+            I18nUtils.getMessage('popup_missing_key', ['active']),
           ),
         ).toBeInTheDocument();
       });

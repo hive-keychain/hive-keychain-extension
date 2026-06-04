@@ -47,6 +47,7 @@ import { PowerUtils } from 'src/popup/hive/utils/power.utils';
 import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface PowerUpDownForm {
   receiver: string;
   amount: number;
@@ -176,7 +177,7 @@ const PowerUpDown = ({
       setErrorMessage('popup_html_power_up_down_error');
       return;
     }
-    const operationString = chrome.i18n.getMessage(
+    const operationString = I18nUtils.getMessage(
       powerType === PowerType.POWER_UP ? 'popup_html_pu' : 'popup_html_pd',
     );
     const formattedAmount = `${parseFloat(form.amount.toString()).toFixed(3)} ${
@@ -211,7 +212,7 @@ const PowerUpDown = ({
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         'popup_html_confirm_power_up_down_message',
         [operationString.toLowerCase()],
       ),
@@ -285,7 +286,7 @@ const PowerUpDown = ({
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       title: 'popup_html_confirm_cancel_power_down_title',
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         'popup_html_confirm_cancel_power_down_message',
       ),
       fields: [],
@@ -362,13 +363,13 @@ const PowerUpDown = ({
         powerDownInfo[0] !== powerDownInfo[1] && (
           <CustomTooltip
             dataTestId="custom-tool-tip-next-power-down"
-            message={chrome.i18n.getMessage('popup_next_powerdown', [
+            message={I18nUtils.getMessage('popup_next_powerdown', [
               powerDownInfo[2].split('T').join(', '),
             ])}
             skipTranslation>
             <div className="power-down-panel">
               <div className="power-down-text">
-                {chrome.i18n.getMessage('popup_html_powering_down')}{' '}
+                {I18nUtils.getMessage('popup_html_powering_down')}{' '}
                 {powerDownInfo[0]} / {powerDownInfo[1]} {currencyLabels.hp}
               </div>
               <SVGIcon
@@ -381,7 +382,7 @@ const PowerUpDown = ({
         )}
 
       <FormContainer onSubmit={handleSubmit(handleButtonClick)}>
-        <div className="text">{chrome.i18n.getMessage(text)}</div>
+        <div className="text">{I18nUtils.getMessage(text)}</div>
         <Separator fullSize type="horizontal" />
         <div className="form-fields">
           {powerType === PowerType.POWER_UP && (

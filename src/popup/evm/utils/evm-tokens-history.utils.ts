@@ -20,6 +20,7 @@ import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const LIMIT = 50;
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 type HistoryFlow = LightNodeHistoryFlowWithMeta;
@@ -430,7 +431,7 @@ const applyStatusLabel = (
 
   return {
     ...parsedItem,
-    label: chrome.i18n.getMessage('evm_history_operation_reverted', [
+    label: I18nUtils.getMessage('evm_history_operation_reverted', [
       getRevertedOperationName(toKnownOpName(sourceItem.opName)),
     ]),
     detailFields: parsedItem.detailFields?.filter(
@@ -449,7 +450,7 @@ const makeCommonItem = (item: LightNodeHistoryItem): EvmUserHistoryItem => ({
   transactionHash: item.txId,
   transactionIndex: toTransactionIndex(item.opIndex),
   timestamp: toTimestamp(item.blockTime),
-  label: chrome.i18n.getMessage('evm_history_generic_message'),
+  label: I18nUtils.getMessage('evm_history_generic_message'),
   nonce: 0,
 });
 
@@ -544,7 +545,7 @@ const parseTransfer = (
       type: isOutgoing
         ? EvmUserHistoryItemType.TRANSFER_OUT
         : EvmUserHistoryItemType.TRANSFER_IN,
-      label: chrome.i18n.getMessage(labelKey, labelArgs),
+      label: I18nUtils.getMessage(labelKey, labelArgs),
       detailFields: details,
       receiverAddress: toAddress ?? undefined,
     };
@@ -579,7 +580,7 @@ const parseTransfer = (
     type: isOutgoing
       ? EvmUserHistoryItemType.TRANSFER_OUT
       : EvmUserHistoryItemType.TRANSFER_IN,
-    label: chrome.i18n.getMessage(labelKey, labelArgs),
+    label: I18nUtils.getMessage(labelKey, labelArgs),
     detailFields: details,
     receiverAddress: toAddress ?? undefined,
   };
@@ -611,7 +612,7 @@ const parseApprove = (
         {
           label: 'popup_html_transfer_amount',
           value: flow.infinite
-            ? chrome.i18n.getMessage('evm_history_unlimited_approval_value', [
+            ? I18nUtils.getMessage('evm_history_unlimited_approval_value', [
                 flow.symbol ?? 'ERC20',
               ])
             : `${amount} ${flow.symbol ?? 'ERC20'}`,
@@ -646,7 +647,7 @@ const parseApprove = (
     ...historyItem,
     pageTitle: 'evm_approval',
     type: EvmUserHistoryItemType.SMART_CONTRACT,
-    label: chrome.i18n.getMessage(labelKey, labelArgs),
+    label: I18nUtils.getMessage(labelKey, labelArgs),
     detailFields: details,
     receiverAddress: item.toAddress ?? undefined,
   };
@@ -667,7 +668,7 @@ const parseMint = (
       ...historyItem,
       pageTitle: 'evm_mint',
       type: EvmUserHistoryItemType.SMART_CONTRACT,
-      label: chrome.i18n.getMessage('evm_history_operation_mintNFTs', [
+      label: I18nUtils.getMessage('evm_history_operation_mintNFTs', [
         'NFT',
         '-',
       ]),
@@ -704,7 +705,7 @@ const parseMint = (
       ...historyItem,
       pageTitle: 'evm_mint_batch',
       type: EvmUserHistoryItemType.SMART_CONTRACT,
-      label: chrome.i18n.getMessage('evm_history_operation_mint_batch', [
+      label: I18nUtils.getMessage('evm_history_operation_mint_batch', [
         amount.toString(),
         getFlowSymbol(mintedFlows[0], chain),
       ]),
@@ -717,7 +718,7 @@ const parseMint = (
     ...historyItem,
     pageTitle: 'evm_mint',
     type: EvmUserHistoryItemType.SMART_CONTRACT,
-    label: chrome.i18n.getMessage('evm_history_operation_mintNFTs', [
+    label: I18nUtils.getMessage('evm_history_operation_mintNFTs', [
       getFlowSymbol(flow, chain),
       flow.tokenId,
     ]),
@@ -755,7 +756,7 @@ const parseErc20Mint = (
     ...historyItem,
     pageTitle: 'evm_mint',
     type: EvmUserHistoryItemType.SMART_CONTRACT,
-    label: chrome.i18n.getMessage('evm_history_operation_mint_erc20', [
+    label: I18nUtils.getMessage('evm_history_operation_mint_erc20', [
       amount,
       symbol,
     ]),
@@ -837,7 +838,7 @@ const parseBurn = async (
     ...historyItem,
     pageTitle: 'evm_transfer',
     type: EvmUserHistoryItemType.SMART_CONTRACT,
-    label: chrome.i18n.getMessage(labelKey, labelArgs),
+    label: I18nUtils.getMessage(labelKey, labelArgs),
     detailFields: details,
     receiverAddress: item.toAddress ?? undefined,
   };
@@ -910,7 +911,7 @@ const parseComplexOperation = (
     ...historyItem,
     pageTitle: 'evm_history_smart_contract',
     type: EvmUserHistoryItemType.SMART_CONTRACT,
-    label: chrome.i18n.getMessage(key, args),
+    label: I18nUtils.getMessage(key, args),
     detailFields: details,
     receiverAddress: item.toAddress ?? undefined,
   };
@@ -960,7 +961,7 @@ const parseSmartContractOperation = async (
     ...historyItem,
     pageTitle: 'evm_history_smart_contract',
     type: EvmUserHistoryItemType.SMART_CONTRACT,
-    label: chrome.i18n.getMessage(
+    label: I18nUtils.getMessage(
       labelKey,
       formattedActionName ? [formattedActionName] : [],
     ),
@@ -999,7 +1000,7 @@ const parseItem = async (
       ...base,
       pageTitle: 'evm_history_canceled_transaction',
       type: EvmUserHistoryItemType.SMART_CONTRACT,
-      label: chrome.i18n.getMessage('evm_history_operation_canceled'),
+      label: I18nUtils.getMessage('evm_history_operation_canceled'),
       detailFields: details,
       isCanceled: true,
     };
@@ -1025,7 +1026,7 @@ const parseItem = async (
       ...base,
       pageTitle: 'evm_history_smart_contract_creation',
       type: EvmUserHistoryItemType.SMART_CONTRACT_CREATION,
-      label: chrome.i18n.getMessage(
+      label: I18nUtils.getMessage(
         item.toAddress
           ? 'evm_history_smart_contract_creation_message'
           : 'evm_history_smart_contract_creation_message_no_address',

@@ -1,6 +1,7 @@
 import React from 'react';
 import sanitizeHtml from 'sanitize-html';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   title: string;
   content: string;
@@ -9,7 +10,7 @@ type Props = {
 export const DisplayText = ({ title, content }: Props) => {
   return (
     <div className="display-text">
-      <div className="display-text-title">{chrome.i18n.getMessage(title)}</div>
+      <div className="display-text-title">{I18nUtils.getMessage(title)}</div>
       <div
         className="text"
         dangerouslySetInnerHTML={{

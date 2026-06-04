@@ -48,6 +48,7 @@ import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
 import PhishingUtils from 'src/utils/phishing.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface TokenTransferForm {
   receiverUsername: string;
   symbol: string;
@@ -167,7 +168,7 @@ const TokensTransfer = ({
     let memoField = form.memo;
     if (form.memo.length) {
       if (form.memo.startsWith('#')) {
-        memoField = `${form.memo} (${chrome.i18n.getMessage(
+        memoField = `${form.memo} (${I18nUtils.getMessage(
           'popup_encrypted',
         )})`;
         if (!activeAccount.keys.memo) {
@@ -176,7 +177,7 @@ const TokensTransfer = ({
         }
       }
     } else {
-      memoField = chrome.i18n.getMessage('popup_empty');
+      memoField = I18nUtils.getMessage('popup_empty');
     }
 
     const fields: ConfirmationPageFields[] = [
@@ -212,7 +213,7 @@ const TokensTransfer = ({
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage('popup_html_token_confirm_text'),
+      message: I18nUtils.getMessage('popup_html_token_confirm_text'),
       fields: fields,
       skipWarningTranslation: true,
       warningMessage: warningMessage,
@@ -299,7 +300,7 @@ const TokensTransfer = ({
       />
 
       <div className="caption">
-        {chrome.i18n.getMessage('popup_html_tokens_send_text')}
+        {I18nUtils.getMessage('popup_html_tokens_send_text')}
       </div>
 
       <FormContainer onSubmit={handleSubmit(handleClickOnSend)}>

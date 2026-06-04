@@ -30,6 +30,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface GasFeePanelProps {
   chain: EvmChain;
   fromAddress: string;
@@ -586,8 +587,8 @@ export const GasFeePanel = ({
           <div className="title-row">
             <SVGIcon className="gas-fee-settings" icon={selectedFee.icon} />
             <div className="title">
-              {chrome.i18n.getMessage('popup_html_evm_gas_fee')} :{' '}
-              {chrome.i18n.getMessage(selectedFee.name)}
+              {I18nUtils.getMessage('popup_html_evm_gas_fee')} :{' '}
+              {I18nUtils.getMessage(selectedFee.name)}
               {isRefreshing && (
                 <span
                   className="gas-fee-refresh-spinner"
@@ -638,7 +639,7 @@ export const GasFeePanel = ({
           </div>
           {gasFeeWarning && (
             <div className="gas-fee-warning">
-              {chrome.i18n.getMessage(gasFeeWarning)}
+              {I18nUtils.getMessage(gasFeeWarning)}
             </div>
           )}
           {isExpandablePanelOpened && (
@@ -647,7 +648,7 @@ export const GasFeePanel = ({
                 <>
                   <div className="gas-fee-top-row">
                     <div className="label gas-fee-label">
-                      {chrome.i18n.getMessage(
+                      {I18nUtils.getMessage(
                         'popup_html_evm_gas_fee_estimate_label',
                       )}
                     </div>
@@ -680,7 +681,7 @@ export const GasFeePanel = ({
 
               <div className="gas-fee-top-row">
                 <div className="label gas-fee-label">
-                  {chrome.i18n.getMessage(getFeeLabel())}
+                  {I18nUtils.getMessage(getFeeLabel())}
                 </div>
                 <div className="label gas-fee">
                   <div className="label gas-fee">
@@ -712,12 +713,12 @@ export const GasFeePanel = ({
                   <Separator fullSize type="horizontal" />
                   <div className="gas-fee-top-row">
                     <div className="label duration">
-                      {chrome.i18n.getMessage(
+                      {I18nUtils.getMessage(
                         'popup_html_evm_gas_fee_estimate_duration_label',
                       )}
                     </div>
                     <div className="label duration">
-                      {chrome.i18n.getMessage(
+                      {I18nUtils.getMessage(
                         'popup_html_evm_gas_fee_estimate_duration',
                         [selectedFee.estimatedMaxDuration.toString()],
                       )}
@@ -737,7 +738,7 @@ export const GasFeePanel = ({
             <div className="edit-gas-fee-content">
               <div className="title">
                 <span>
-                  {chrome.i18n.getMessage('popup_html_evm_edit_gas_fee')}
+                  {I18nUtils.getMessage('popup_html_evm_edit_gas_fee')}
                 </span>
                 <SVGIcon
                   icon={SVGIcons.TOP_BAR_CLOSE_BTN}
@@ -800,14 +801,14 @@ export const GasFeePanel = ({
                     onClick={() => openCustomFeePanel()}>
                     <SVGIcon icon={SVGIcons.EVM_GAS_FEE_CUSTOM} />
                     <div className="label type">
-                      {chrome.i18n.getMessage(
+                      {I18nUtils.getMessage(
                         'popup_html_evm_custom_gas_fee_custom',
                       )}
                     </div>
                     <div className="label duration">
                       {feeEstimation.custom &&
                       GasFeeUtils.hasDisplayableDuration(feeEstimation.custom)
-                        ? chrome.i18n.getMessage(
+                        ? I18nUtils.getMessage(
                             'popup_html_evm_gas_fee_estimate_duration',
                             [
                               feeEstimation.custom.estimatedMaxDuration.toString(),
@@ -834,7 +835,7 @@ export const GasFeePanel = ({
                         onClick={() => openCustomFeePanel()}>
                         <SVGIcon icon={SVGIcons.EVM_GAS_FEE_SUGGESTED} />
                         <div className="label type">
-                          {chrome.i18n.getMessage(
+                          {I18nUtils.getMessage(
                             'popup_html_evm_suggested_by_dapp_gas_fee_custom',
                           )}
                         </div>
@@ -843,7 +844,7 @@ export const GasFeePanel = ({
                           GasFeeUtils.hasDisplayableMaxFee(
                             feeEstimation.suggestedByDApp,
                           )
-                            ? chrome.i18n.getMessage(
+                            ? I18nUtils.getMessage(
                                 'popup_html_evm_gas_fee_estimate_duration',
                                 [
                                   feeEstimation.suggestedByDApp.estimatedMaxDuration.toString(),
@@ -873,7 +874,7 @@ export const GasFeePanel = ({
                     <>
                       {customFeeFormWarning && (
                         <div className="gas-fee-warning">
-                          {chrome.i18n.getMessage(customFeeFormWarning)}
+                          {I18nUtils.getMessage(customFeeFormWarning)}
                         </div>
                       )}
                       <div className="base-fee-panel">
@@ -896,7 +897,7 @@ export const GasFeePanel = ({
                           <div className="data-panel">
                             <div className="data-block">
                               <span className="label">
-                                {chrome.i18n.getMessage(
+                                {I18nUtils.getMessage(
                                   'popup_html_evm_custom_fee_current',
                                 )}
                                 {': '}
@@ -908,7 +909,7 @@ export const GasFeePanel = ({
                             </div>
                             <div className="data-block">
                               <span className="label">
-                                {chrome.i18n.getMessage(
+                                {I18nUtils.getMessage(
                                   'popup_html_evm_custom_fee_latest',
                                 )}
                                 {': '}
@@ -949,7 +950,7 @@ export const GasFeePanel = ({
                           <div className="data-panel">
                             <div className="data-block">
                               <span className="label">
-                                {chrome.i18n.getMessage(
+                                {I18nUtils.getMessage(
                                   'popup_html_evm_custom_fee_current',
                                 )}
                                 {': '}
@@ -963,7 +964,7 @@ export const GasFeePanel = ({
                             </div>
                             <div className="data-block">
                               <span className="label">
-                                {chrome.i18n.getMessage(
+                                {I18nUtils.getMessage(
                                   'popup_html_evm_custom_fee_latest',
                                 )}
                                 {': '}

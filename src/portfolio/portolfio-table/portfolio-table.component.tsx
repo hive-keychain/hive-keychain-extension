@@ -7,6 +7,7 @@ import {
 import FormatUtils from 'src/utils/format.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   data: UserPortfolio[];
   tableColumnsHeaders: string[];
@@ -45,10 +46,10 @@ const PortfolioTable = ({ data, tableColumnsHeaders }: Props) => {
                 );
               })}
               <th className="table-header total-column">
-                {chrome.i18n.getMessage('portfolio_table_column_total_hive')}
+                {I18nUtils.getMessage('portfolio_table_column_total_hive')}
               </th>
               <th className="table-header total-column">
-                {chrome.i18n.getMessage(
+                {I18nUtils.getMessage(
                   'portfolio_table_column_sticky_total_usd',
                 )}
               </th>
@@ -92,7 +93,7 @@ const PortfolioTable = ({ data, tableColumnsHeaders }: Props) => {
             })}
             <tr>
               <td className="header-total">
-                {chrome.i18n.getMessage('portfolio_table_column_sticky_totals')}
+                {I18nUtils.getMessage('portfolio_table_column_sticky_totals')}
               </td>
               {totals.map(({ symbol, balance }) => {
                 return (
@@ -110,7 +111,7 @@ const PortfolioTable = ({ data, tableColumnsHeaders }: Props) => {
             </tr>
             <tr>
               <td className="header-total">
-                {chrome.i18n.getMessage(
+                {I18nUtils.getMessage(
                   'portfolio_table_column_sticky_total_usd',
                 )}
               </td>

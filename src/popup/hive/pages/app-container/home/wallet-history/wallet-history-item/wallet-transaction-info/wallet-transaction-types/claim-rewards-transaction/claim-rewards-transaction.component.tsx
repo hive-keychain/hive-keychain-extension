@@ -5,6 +5,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { GenericTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/generic-transaction/generic-transaction.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface ClaimRewardsTransactionProps {
   transaction: ClaimReward;
 }
@@ -14,7 +15,7 @@ const ClaimRewardsTransaction = ({
 }: PropsFromRedux & ClaimRewardsTransactionProps) => {
   const getDetail = () => {
     const rewards = [transaction.hbd, transaction.hive, transaction.hp];
-    return chrome.i18n.getMessage('popup_html_wallet_info_claim_rewards', [
+    return I18nUtils.getMessage('popup_html_wallet_info_claim_rewards', [
       rewards
         .filter(
           (resource) => parseFloat(resource.toString().split(' ')[0]) !== 0,

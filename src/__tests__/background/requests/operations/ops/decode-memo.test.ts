@@ -14,6 +14,7 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('decode-memo tests:\n', () => {
   const data = {
     domain: 'domain',
@@ -32,7 +33,7 @@ describe('decode-memo tests:\n', () => {
   });
   beforeEach(() => {
     jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('en-US');
-    chrome.i18n.getMessage = jest
+    I18nUtils.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
   });
@@ -53,7 +54,7 @@ describe('decode-memo tests:\n', () => {
         error: null,
         result: '# keychain tha best wallet!',
         data: datas,
-        message: chrome.i18n.getMessage('bgd_ops_decode'),
+        message: I18nUtils.getMessage('bgd_ops_decode'),
         request_id: request_id,
         publicKey: undefined,
       },
@@ -77,7 +78,7 @@ describe('decode-memo tests:\n', () => {
         }),
         result: null,
         data: datas,
-        message: chrome.i18n.getMessage('bgd_ops_decode_err'),
+        message: I18nUtils.getMessage('bgd_ops_decode_err'),
         request_id: request_id,
         publicKey: undefined,
       },

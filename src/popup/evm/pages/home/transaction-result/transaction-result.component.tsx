@@ -49,6 +49,7 @@ import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 import Decimal from 'decimal.js';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 enum ReplacedTransactionReason {
   REPRICED = 'repriced',
   CANCELLED = 'cancelled',
@@ -526,7 +527,7 @@ const EvmTransactionResult = ({
 
   const getMinedGasFeeDisplay = (): string => {
     if (!txReceipt?.gasUsed) {
-      return chrome.i18n.getMessage('popup_html_pending');
+      return I18nUtils.getMessage('popup_html_pending');
     }
     const receipt = txReceipt as TransactionReceipt & {
       effectiveGasPrice?: bigint | null;
@@ -540,7 +541,7 @@ const EvmTransactionResult = ({
         chain.mainToken,
       );
     }
-    return chrome.i18n.getMessage('popup_html_pending');
+    return I18nUtils.getMessage('popup_html_pending');
   };
 
   const getPendingGasFeeDisplay = (): string => {
@@ -551,7 +552,7 @@ const EvmTransactionResult = ({
       );
     }
     if (!displayTx) {
-      return chrome.i18n.getMessage('popup_html_pending');
+      return I18nUtils.getMessage('popup_html_pending');
     }
     const gl = displayGasLimit;
     const maxFeePerGas = displayMaxFeePerGas ?? displayGasPrice;
@@ -567,7 +568,7 @@ const EvmTransactionResult = ({
         chain.mainToken,
       );
     }
-    return chrome.i18n.getMessage('popup_html_pending');
+    return I18nUtils.getMessage('popup_html_pending');
   };
 
   const statusForGasFeeLabel = getStatus();
@@ -585,7 +586,7 @@ const EvmTransactionResult = ({
   const blockNumberDisplay =
     displayBlockNumber != null
       ? String(displayBlockNumber)
-      : chrome.i18n.getMessage('popup_html_pending');
+      : I18nUtils.getMessage('popup_html_pending');
 
   const showLegacyGasPriceRow =
     displayGasPrice != null &&
@@ -767,7 +768,7 @@ const EvmTransactionResult = ({
           />
           <div className="amount-row">
             <div className="status">
-              {chrome.i18n.getMessage(getStatusLabel(getStatus()))}
+              {I18nUtils.getMessage(getStatusLabel(getStatus()))}
             </div>
             {shouldShowStatusAmount && (
               renderTokenAmount(amount, tokenContractAddress)
@@ -809,7 +810,7 @@ const EvmTransactionResult = ({
           className="transaction-gas-fee-popup">
           <div className="title-panel">
             <div className="title">
-              {chrome.i18n.getMessage('popup_html_evm_transaction_select_fee')}
+              {I18nUtils.getMessage('popup_html_evm_transaction_select_fee')}
             </div>
             <SVGIcon
               icon={SVGIcons.TOP_BAR_CLOSE_BTN}
@@ -822,7 +823,7 @@ const EvmTransactionResult = ({
               data-testid="tx-result-gas-fee-loading">
               <div className="gas-fee-estimate-spinner" aria-hidden />
               <span>
-                {chrome.i18n.getMessage('popup_html_evm_gas_fee_loading')}
+                {I18nUtils.getMessage('popup_html_evm_gas_fee_loading')}
               </span>
             </div>
           )}

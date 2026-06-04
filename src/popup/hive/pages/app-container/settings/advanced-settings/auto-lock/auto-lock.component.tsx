@@ -15,6 +15,7 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import AutolockUtils from 'src/utils/autolock.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const AutoLock = ({
   setSuccessMessage,
   goBack,
@@ -86,7 +87,7 @@ const AutoLock = ({
             <div
               className="hint"
               dangerouslySetInnerHTML={{
-                __html: chrome.i18n.getMessage('popup_html_al_idle_info'),
+                __html: I18nUtils.getMessage('popup_html_al_idle_info'),
               }}
             />
             {selectedType === AutoLockType.IDLE_LOCK && (
@@ -105,7 +106,7 @@ const AutoLock = ({
                   />
                   <div className="idle-lock-input-unit">
                     <Separator type="vertical" />
-                    <span>{chrome.i18n.getMessage('minutes')}</span>
+                    <span>{I18nUtils.getMessage('minutes')}</span>
                   </div>
                 </div>
               </div>

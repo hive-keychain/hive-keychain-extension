@@ -46,6 +46,7 @@ import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface SavingsForm {
   username: string;
   amount: number;
@@ -118,11 +119,11 @@ const SavingsPage = ({
 
   const savingOperationTypeOptions: SelectSavingsTypeOperation[] = [
     {
-      label: chrome.i18n.getMessage(SavingOperationType.WITHDRAW),
+      label: I18nUtils.getMessage(SavingOperationType.WITHDRAW),
       value: SavingOperationType.WITHDRAW,
     },
     {
-      label: chrome.i18n.getMessage(SavingOperationType.DEPOSIT),
+      label: I18nUtils.getMessage(SavingOperationType.DEPOSIT),
       value: SavingOperationType.DEPOSIT,
     },
   ];
@@ -179,12 +180,12 @@ const SavingsPage = ({
     let text = '';
     if (watch('type') === SavingOperationType.DEPOSIT) {
       if (watch('currency') === 'hbd') {
-        text = chrome.i18n.getMessage('popup_html_deposit_hbd_text', [
+        text = I18nUtils.getMessage('popup_html_deposit_hbd_text', [
           Number(globalProperties.globals?.hbd_interest_rate) / 100 + '',
         ]);
       }
     } else {
-      text = chrome.i18n.getMessage('popup_html_withdraw_text');
+      text = I18nUtils.getMessage('popup_html_withdraw_text');
     }
     setText(text);
   }, [watch('currency'), watch('type')]);
@@ -238,7 +239,7 @@ const SavingsPage = ({
       setErrorMessage('popup_html_power_up_down_error');
       return;
     }
-    let operationString = chrome.i18n.getMessage(
+    let operationString = I18nUtils.getMessage(
       watch('type') === SavingOperationType.WITHDRAW
         ? 'popup_html_withdraw_param'
         : 'popup_html_deposit_param',
@@ -260,7 +261,7 @@ const SavingsPage = ({
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         watch('type') === SavingOperationType.WITHDRAW
           ? 'popup_html_confirm_savings_withdraw'
           : 'popup_html_confirm_savings_deposit',
@@ -412,7 +413,7 @@ const SavingsPage = ({
           className="pending-savings-panel"
           onClick={goToPendingSavingsWithdrawal}>
           <div className="pending-savings-text">
-            {chrome.i18n.getMessage('popup_html_pending_savings_withdrawal', [
+            {I18nUtils.getMessage('popup_html_pending_savings_withdrawal', [
               FormatUtils.formatCurrencyValue(totalPendingValue, 3),
               currencyLabels[watch('currency') as keyof CurrencyLabels],
             ])}
@@ -436,7 +437,7 @@ const SavingsPage = ({
             selectedItem={
               {
                 value: watch('type'),
-                label: chrome.i18n.getMessage(watch('type')),
+                label: I18nUtils.getMessage(watch('type')),
               } as SelectSavingsTypeOperation
             }
             setSelectedItem={(item: SelectSavingsTypeOperation) =>

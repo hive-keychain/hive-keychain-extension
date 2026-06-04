@@ -10,6 +10,7 @@ import { TokenIncomingOutgoingItemComponent } from 'src/popup/hive/pages/app-con
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const TokenIncomingOutgoingPage = ({
   delegationType,
   tokenBalance,
@@ -70,7 +71,7 @@ const TokenIncomingOutgoingPage = ({
       {delegationType === DelegationType.OUTGOING &&
         tokenInfo.undelegationCooldown > 0 && (
           <div className="cooldown-message">
-            {chrome.i18n.getMessage(
+            {I18nUtils.getMessage(
               'popup_html_token_undelegation_cooldown_disclaimer',
               [tokenInfo.symbol, tokenInfo.undelegationCooldown.toString()],
             )}
@@ -80,7 +81,7 @@ const TokenIncomingOutgoingPage = ({
       <div className="list-panel">
         <div className="panel">
           <div className="total">
-            <div className="label">{chrome.i18n.getMessage(header)}</div>
+            <div className="label">{I18nUtils.getMessage(header)}</div>
             <div className="value">
               {total} {tokenBalance.symbol}
             </div>

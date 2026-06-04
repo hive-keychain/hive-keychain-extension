@@ -10,6 +10,7 @@ import { EditMyWitnessComponent } from 'src/popup/hive/pages/app-container/home/
 import { WitnessInformationComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-information.component';
 import WitnessUtils from 'src/popup/hive/utils/witness.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   ranking: Witness[];
 };
@@ -73,7 +74,7 @@ const MyWitnessTab = ({
         <div aria-label="error-witness" className="error-witness">
           <SVGIcon className="error-icon" icon={SVGIcons.MESSAGE_ERROR} />
           <span>
-            {chrome.i18n.getMessage(
+            {I18nUtils.getMessage(
               'popup_html_error_retrieving_witness_information',
             )}
           </span>

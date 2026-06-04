@@ -7,6 +7,7 @@ import mocksImplementation from 'src/__tests__/utils-for-testing/implementations
 import { CopyToastContainer, COPY_TOAST_AUTO_CLOSE_MS } from 'src/common-ui/toast/copy-toast.component';
 import CollaspsibleItem from 'src/dialog/components/collapsible-item/collapsible-item';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const flushToastTimers = () => {
   if ((setTimeout as any)._isMockFunction) {
     jest.runOnlyPendingTimers();
@@ -15,7 +16,7 @@ const flushToastTimers = () => {
 
 describe('collapsible-item copy toast', () => {
   beforeEach(() => {
-    chrome.i18n.getMessage = jest.fn(mocksImplementation.i18nGetMessageCustom);
+    I18nUtils.getMessage = jest.fn(mocksImplementation.i18nGetMessageCustom);
   });
 
   afterEach(() => {
@@ -47,7 +48,7 @@ describe('collapsible-item copy toast', () => {
     );
 
     await act(async () => {
-      await user.click(screen.getByText(chrome.i18n.getMessage('dialog_body')));
+      await user.click(screen.getByText(I18nUtils.getMessage('dialog_body')));
     });
 
     const copyIcon = container.querySelector('.field.collapsible .svg-icon.clickable');
@@ -57,7 +58,7 @@ describe('collapsible-item copy toast', () => {
       await user.click(copyIcon!);
     });
 
-    const toastMessage = chrome.i18n.getMessage('swap_copied_to_clipboard');
+    const toastMessage = I18nUtils.getMessage('swap_copied_to_clipboard');
     expect(await screen.findByText(toastMessage)).toBeInTheDocument();
 
     await act(async () => {

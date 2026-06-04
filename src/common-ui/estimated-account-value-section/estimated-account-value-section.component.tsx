@@ -6,6 +6,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export interface DisplayedAccountValues {
   [AccountValueType.DOLLARS]: string;
   [AccountValueType.TOKEN]: string;
@@ -66,7 +67,7 @@ const EstimatedAccountValueSection = ({
             delayShow={500}
             position="bottom">
             <div className="label">
-              {chrome.i18n.getMessage('popup_html_estimation')}
+              {I18nUtils.getMessage('popup_html_estimation')}
             </div>
           </CustomTooltip>
         </div>
