@@ -462,17 +462,10 @@ const UnlockedApp = ({
             const navigationTarget =
               EvmWalletSetupTabUtils.resolveEvmAppNavigationOnReady(
                 window.location.hash,
-                evmAccounts.length,
               );
             if (navigationTarget === 'create_wallet') {
               EvmWalletSetupTabUtils.clearEvmWalletSetupHash();
               navigateTo(Screen.CREATE_EVM_WALLET);
-              return;
-            }
-            if (navigationTarget === 'add_wallet_main') {
-              navigateToWithParams(Screen.EVM_ADD_WALLET_MAIN, {
-                resetOnBack: true,
-              });
               return;
             }
           }

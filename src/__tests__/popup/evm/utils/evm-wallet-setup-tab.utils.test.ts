@@ -60,27 +60,19 @@ describe('EvmWalletSetupTabUtils', () => {
       expect(
         EvmWalletSetupTabUtils.resolveEvmAppNavigationOnReady(
           EVM_CREATE_WALLET_HASH,
-          0,
         ),
       ).toBe('create_wallet');
 
       expect(
         EvmWalletSetupTabUtils.resolveEvmAppNavigationOnReady(
           EVM_CREATE_WALLET_HASH,
-          3,
         ),
       ).toBe('create_wallet');
     });
 
-    it('routes to add-wallet main when there are no accounts and no deep link', () => {
+    it('routes to home when there is no deep link', () => {
       expect(
-        EvmWalletSetupTabUtils.resolveEvmAppNavigationOnReady('', 0),
-      ).toBe('add_wallet_main');
-    });
-
-    it('routes to home when accounts exist and there is no deep link', () => {
-      expect(
-        EvmWalletSetupTabUtils.resolveEvmAppNavigationOnReady('', 2),
+        EvmWalletSetupTabUtils.resolveEvmAppNavigationOnReady(''),
       ).toBe('home_page');
     });
   });

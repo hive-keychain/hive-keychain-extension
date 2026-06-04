@@ -5,10 +5,7 @@ import { EvmRouterComponent } from '@popup/evm/evm-router.component';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
 import { EvmWalletSetupTabUtils } from '@popup/evm/utils/evm-wallet-setup-tab.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
-import {
-  navigateTo,
-  navigateToWithParams,
-} from '@popup/multichain/actions/navigation.actions';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { LoadingState } from '@popup/multichain/reducers/loading.reducer';
 import { RootState } from '@popup/multichain/store';
@@ -21,7 +18,6 @@ import Config from 'src/config';
 import Logger from 'src/utils/logger.utils';
 
 const EvmApp = ({
-  accounts,
   activeAccount,
   mk,
   isCurrentPageHomePage,
@@ -30,7 +26,6 @@ const EvmApp = ({
   loadingState,
   loading,
   navigateTo,
-  navigateToWithParams,
   setEvmAccounts,
   loadEvmActiveAccount,
 }: PropsFromRedux) => {
@@ -50,7 +45,6 @@ const EvmApp = ({
     const navigationTarget =
       EvmWalletSetupTabUtils.resolveEvmAppNavigationOnReady(
         window.location.hash,
-        accounts.length,
       );
 
     if (navigationTarget === 'create_wallet') {
@@ -59,13 +53,8 @@ const EvmApp = ({
       return;
     }
 
-    if (navigationTarget === 'add_wallet_main') {
-      navigateToWithParams(Screen.EVM_ADD_WALLET_MAIN, { resetOnBack: true });
-      return;
-    }
-
     navigateTo(Screen.HOME_PAGE, true);
-  }, [accounts.length, isAppReady, navigateTo, navigateToWithParams]);
+  }, [isAppReady, navigateTo]);
 
   useEffect(() => {
     setDisplaySplashscreen(true);
@@ -176,7 +165,6 @@ const EvmApp = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    accounts: state.evm.accounts,
     activeAccount: state.evm.activeAccount,
     mk: state.mk,
     isCurrentPageHomePage:
@@ -190,7 +178,6 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   navigateTo,
-  navigateToWithParams,
   setEvmAccounts,
   loadEvmActiveAccount,
 });

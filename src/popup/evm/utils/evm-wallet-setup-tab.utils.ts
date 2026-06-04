@@ -7,7 +7,6 @@ export type EvmWalletSetupDeepLink = 'create';
 
 export type EvmAppReadyNavigation =
   | 'create_wallet'
-  | 'add_wallet_main'
   | 'home_page';
 
 const parseEvmWalletSetupHash = (
@@ -37,14 +36,9 @@ const openEvmCreateWalletOutsideToolbarPopup = (): void => {
 
 const resolveEvmAppNavigationOnReady = (
   hash: string,
-  accountsLength: number,
 ): EvmAppReadyNavigation => {
   if (parseEvmWalletSetupHash(hash) === 'create') {
     return 'create_wallet';
-  }
-
-  if (accountsLength === 0) {
-    return 'add_wallet_main';
   }
 
   return 'home_page';
