@@ -36,12 +36,15 @@ const localeMessages = {
 } satisfies Record<string, ChromeMessages>;
 
 type SupportedLocale = keyof typeof localeMessages;
+const BROWSER_LANGUAGE_PREFERENCE = 'browser';
+type BrowserLanguagePreference = typeof BROWSER_LANGUAGE_PREFERENCE;
+type I18nLanguagePreference = SupportedLocale | BrowserLanguagePreference;
 type TranslationParams = string | string[];
 
 export interface I18nLanguageOption {
   label: string;
-  value: SupportedLocale;
-  key: SupportedLocale;
+  value: I18nLanguagePreference;
+  key: I18nLanguagePreference;
 }
 
 const DEFAULT_LOCALE: SupportedLocale = 'en';
@@ -130,13 +133,32 @@ const getSupportedLocale = (language?: string): SupportedLocale => {
 
 const getDefaultLanguage = () => getSupportedLocale(getUILanguage());
 
-const getLanguageOptions = () => [...languageOptions];
+const getEffectiveLanguage = (language?: string): SupportedLocale => {
+  if (language === BROWSER_LANGUAGE_PREFERENCE) {
+    return getDefaultLanguage();
+  }
+
+  return getSupportedLocale(language);
+};
+
+const getLanguageOptions = (): I18nLanguageOption[] => [
+  {
+    key: BROWSER_LANGUAGE_PREFERENCE,
+    label: getMessage('popup_html_preferences_browser_language'),
+    value: BROWSER_LANGUAGE_PREFERENCE,
+  },
+  ...languageOptions,
+];
 
 const getLanguageOption = (language?: string) => {
+  if (!language || language === BROWSER_LANGUAGE_PREFERENCE) {
+    return getLanguageOptions()[0];
+  }
+
   const supportedLocale = getSupportedLocale(language);
   return (
-    languageOptions.find((option) => option.value === supportedLocale) ??
-    languageOptions.find((option) => option.value === DEFAULT_LOCALE)!
+    getLanguageOptions().find((option) => option.value === supportedLocale) ??
+    getLanguageOptions().find((option) => option.value === DEFAULT_LOCALE)!
   );
 };
 
@@ -150,6 +172,10 @@ const getSavedLanguagePreference = async () => {
       return undefined;
     }
 
+    if (language === BROWSER_LANGUAGE_PREFERENCE) {
+      return BROWSER_LANGUAGE_PREFERENCE;
+    }
+
     return getSupportedLocale(language);
   } catch {
     return undefined;
@@ -157,7 +183,7 @@ const getSavedLanguagePreference = async () => {
 };
 
 const getSavedOrDefaultLanguage = async () => {
-  return (await getSavedLanguagePreference()) ?? getDefaultLanguage();
+  return (await getSavedLanguagePreference()) ?? BROWSER_LANGUAGE_PREFERENCE;
 };
 
 const getUILanguage = () => {
@@ -252,7 +278,7 @@ const emitLanguageChanged = (language: string) => {
 };
 
 const changeLanguage = async (language: string) => {
-  const supportedLocale = getSupportedLocale(language);
+  const supportedLocale = getEffectiveLanguage(language);
   await getInstance().changeLanguage(supportedLocale);
   emitLanguageChanged(supportedLocale);
   return supportedLocale;
@@ -263,13 +289,16 @@ const initLanguageFromStorage = async () => {
 };
 
 const saveLanguage = async (language: string) => {
-  const supportedLocale = getSupportedLocale(language);
+  const languagePreference =
+    language === BROWSER_LANGUAGE_PREFERENCE
+      ? BROWSER_LANGUAGE_PREFERENCE
+      : getSupportedLocale(language);
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.ACTIVE_LANGUAGE,
-    supportedLocale,
+    languagePreference,
   );
-  await changeLanguage(supportedLocale);
-  return supportedLocale;
+  await changeLanguage(languagePreference);
+  return languagePreference;
 };
 
 const resetForTesting = () => {
@@ -277,10 +306,12 @@ const resetForTesting = () => {
 };
 
 export const I18nUtils = {
+  BROWSER_LANGUAGE_PREFERENCE,
   LANGUAGE_CHANGED_EVENT,
   changeLanguage,
   getCurrentLanguage,
   getDefaultLanguage,
+  getEffectiveLanguage,
   getInstance,
   getLanguageOption,
   getLanguageOptions,

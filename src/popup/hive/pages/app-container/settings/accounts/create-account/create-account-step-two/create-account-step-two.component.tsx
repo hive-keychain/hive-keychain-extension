@@ -112,7 +112,7 @@ const CreateAccountStepTwo = ({
   const generateMasterKey = async () => {
     if (accountName.length < 3) {
       setMasterKey('');
-      setErrorMessage('html_popup_create_account_username_too_short');
+      setErrorMessage('popup_html_create_account_username_too_short');
       return;
     }
     if (!AccountCreationUtils.validateUsername(accountName)) {

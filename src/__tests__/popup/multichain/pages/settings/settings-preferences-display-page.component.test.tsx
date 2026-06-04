@@ -108,13 +108,21 @@ describe('SettingsPreferencesDisplayPageComponent', () => {
     expect(setTheme).toHaveBeenCalledWith(Theme.DARK);
   });
 
-  it('uses the system language when no saved language preference exists', async () => {
+  it('uses browser language when no saved language preference exists', async () => {
+    await renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText('Browser language')).toBeInTheDocument();
+    });
+  });
+
+  it('translates the browser language option using the browser language', async () => {
     chrome.i18n.getUILanguage = jest.fn().mockReturnValue('es-MX');
 
     await renderPage();
 
     await waitFor(() => {
-      expect(screen.getByText('Español')).toBeInTheDocument();
+      expect(screen.getByText('Idioma del navegador')).toBeInTheDocument();
     });
   });
 
@@ -124,7 +132,7 @@ describe('SettingsPreferencesDisplayPageComponent', () => {
     await renderPage();
 
     await waitFor(() => {
-      expect(screen.getByText('English')).toBeInTheDocument();
+      expect(screen.getByText('Browser language')).toBeInTheDocument();
     });
   });
 
@@ -151,6 +159,23 @@ describe('SettingsPreferencesDisplayPageComponent', () => {
       );
     });
     expect(screen.getByText('Français')).toBeInTheDocument();
+  });
+
+  it('persists the browser language option from the language dropdown', async () => {
+    getValueFromLocalStorageMock.mockResolvedValue('fr');
+
+    await renderPage();
+
+    fireEvent.click(screen.getByTestId('language-select-handle'));
+    fireEvent.click(await screen.findByTestId('custom-select-item-browser'));
+
+    await waitFor(() => {
+      expect(saveValueInLocalStorageMock).toHaveBeenCalledWith(
+        LocalStorageKeyEnum.ACTIVE_LANGUAGE,
+        'browser',
+      );
+    });
+    expect(screen.getByText('Browser language')).toBeInTheDocument();
   });
 
   it('shows try side panel button only in toolbar popup', async () => {

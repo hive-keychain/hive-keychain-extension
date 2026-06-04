@@ -39,6 +39,26 @@
     "message": "Falscher Schlüssel. Bitte verwende Memo Key",
     "description": "while using wrong private key"
   },
+  "common_pending": {
+    "message": "Pending",
+    "description": "EVM transaction pending status"
+  },
+  "common_testnet": {
+    "message": "Testnet",
+    "description": "EVM blockchain testnet"
+  },
+  "common_mainnet": {
+    "message": "Mainnet",
+    "description": "EVM blockchain mainnet"
+  },
+  "common_seed": {
+    "message": "Seed",
+    "description": "EVM blockchain seed"
+  },
+  "common_seeds": {
+    "message": "Seeds",
+    "description": "EVM blockchain seeds"
+  },
   "common_experimental": {
     "message": "Experimentell",
     "description": "experimental"
@@ -108,15 +128,15 @@
     "description": "Text on registration page"
   },
   "popup_html_unlock1": {
-    "message": "Die ultimative HIVE Wallet",
+    "message": "Die ultimative HIVE-Wallet",
     "description": "Text on unlock page"
   },
   "popup_html_unlock2": {
-    "message": "HIVE Assets verwalten und mit HIVE Anwendungen verbinden",
+    "message": "HIVE-Assets verwalten und mit HIVE-Anwendungen verbinden",
     "description": "Text on unlock page"
   },
   "popup_html_unlock3": {
-    "message": "Einfach. Leich. Sicher.",
+    "message": "Einfach. Leicht. Sicher.",
     "description": "Text on unlock page"
   },
   "popup_html_new_password": {
@@ -691,6 +711,10 @@
     "message": "Sprache",
     "description": "Preferences and display: language selector label"
   },
+  "popup_html_preferences_browser_language": {
+    "message": "Browsersprache",
+    "description": "Browser language option in preferences language selector"
+  },
   "popup_html_preferences_display_section": {
     "message": "Anzeige",
     "description": "Preferences and display: window and side panel section title"
@@ -698,6 +722,10 @@
   "popup_html_open_in_side_panel": {
     "message": "Im Seitenpanel öffnen",
     "description": "Preferences and display: open Keychain in the browser side panel"
+  },
+  "popup_html_try_side_panel": {
+    "message": "Try the side panel",
+    "description": "Preferences and display: try Keychain in the browser side panel"
   },
   "popup_html_open_in_side_panel_hint": {
     "message": "Öffnen Sie Keychain im Seitenpanel des Browsers für eine größere, dauerhafte Ansicht.",
@@ -944,7 +972,7 @@
     "description": "Main page > Delegate > Click on Incoming"
   },
   "popup_accounts_reveal_private": {
-    "message": "Klicken Sie hier, um den privaten Schlüssel anzuzeigen",
+    "message": "Privaten Schlüssel anzeigen",
     "description": "On manage accounts"
   },
   "popup_accounts_add_memo": {
@@ -1463,6 +1491,10 @@
     "message": "Wiederkehrend",
     "description": "When requesting recurrent transfers"
   },
+  "dialog_pair_id": {
+    "message": "Pair ID",
+    "description": "When requesting recurrent transfers"
+  },
   "dialog_executions": {
     "message": "Ausführungen",
     "description": "When requesting recurrent transfers"
@@ -1722,7 +1754,7 @@
     "description": "When adding new account. In a button, must keep short."
   },
   "popup_html_chose_add_method": {
-    "message": "Sie können Ihre Schlüssel hinzufügen, indem Sie einen privaten Schlüssel oder Ihr Master-Passwort eingeben.<br/>Alternativ können Sie ein autorisiertes Konto angeben oder Ihre Schlüssel importieren.",
+    "message": "Hive-Konto importieren oder erstellen.",
     "description": "Text when adding new method."
   },
   "popup_html_auth_text": {
@@ -2078,14 +2110,6 @@
     "message": "Change account",
     "description": "Shortcut action change account"
   },
-  "popup_html_shortcuts_action_toggle_theme": {
-    "message": "Change theme",
-    "description": "Shortcut action change theme"
-  },
-  "popup_html_shortcuts_action_open_in_tab": {
-    "message": "Open in side panel",
-    "description": "Shortcut action open Keychain outside the popup"
-  },
   "popup_html_shortcuts_duplicate": {
     "message": "This shortcut is already assigned.",
     "description": "Duplicate shortcut error"
@@ -2101,6 +2125,50 @@
   "popup_html_shortcuts_no_accounts": {
     "message": "No accounts available.",
     "description": "No accounts available for shortcuts"
+  },
+  "popup_html_shortcuts_action_change_chain": {
+    "message": "Change chain",
+    "description": "Shortcut action change chain"
+  },
+  "popup_html_shortcuts_action_toggle_theme": {
+    "message": "Change theme",
+    "description": "Shortcut action change theme"
+  },
+  "popup_html_shortcuts_action_open_in_tab": {
+    "message": "Open in side panel",
+    "description": "Shortcut action open Keychain outside the popup"
+  },
+  "popup_html_shortcut_transfer_chain_label": {
+    "message": "Chain",
+    "description": "Shortcuts form: transfer chain selector label"
+  },
+  "popup_html_shortcut_account_type_hive": {
+    "message": "Hive",
+    "description": "Shortcuts: Hive account row subtitle in account picker"
+  },
+  "popup_html_shortcut_no_chains": {
+    "message": "No chains available",
+    "description": "Shortcuts: empty chain list"
+  },
+  "popup_html_shortcut_last_used_evm_chain": {
+    "message": "Last used EVM chain",
+    "description": "Shortcuts: switch to last used EVM network"
+  },
+  "popup_html_shortcut_no_tokens": {
+    "message": "No tokens available",
+    "description": "Shortcuts: empty token list for transfer"
+  },
+  "popup_html_shortcut_currency_hive": {
+    "message": "HIVE",
+    "description": "Shortcuts: native transfer currency label"
+  },
+  "popup_html_shortcut_currency_hbd": {
+    "message": "HBD",
+    "description": "Shortcuts: HBD transfer currency label"
+  },
+  "popup_html_shortcut_nav_HOME_PAGE": {
+    "message": "Home",
+    "description": "Shortcut navigation target: home"
   },
   "popup_html_rpc_node_text": {
     "message": "Sie können auswählen, welche RPC-Node verwendet wird, um Informationen zu lesen und Transaktionen von/zur Hive Blockchain zu übertragen.",
@@ -2155,7 +2223,7 @@
     "description": "while confirming savings withdraw"
   },
   "popup_html_power_up_down_fail": {
-    "message": "Bei der Ausführung von $1 ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut. Wenn das Problem weiterhin besteht, wenden Sie sich an den Support.",
+    "message": "Fehler beim Ausführen von $1. Später erneut versuchen oder Support kontaktieren.",
     "description": "Error while power down or up"
   },
   "popup_html_power_up_down_success": {
@@ -2176,6 +2244,10 @@
   },
   "popup_html_recurrent_transfer": {
     "message": "Wiederkehrende Überweisung",
+    "description": "In transfer fund page"
+  },
+  "popup_html_recurrent_transfers": {
+    "message": "Recurrent transfers",
     "description": "In transfer fund page"
   },
   "popup_html_cancel_recurrent_transfer": {
@@ -2493,6 +2565,10 @@
   "html_popup_transfer_fund_operation": {
     "message": "Überweisung von Guthaben",
     "description": "Transfer fund operation"
+  },
+  "html_popup_cancel_transaction_operation": {
+    "message": "Cancelling transaction",
+    "description": "Cancel transaction operation"
   },
   "html_popup_stop_recc_transfer_fund_operation": {
     "message": "Wiederkehrende Überweisung stoppen",
@@ -3390,6 +3466,18 @@
     "message": "Ausstehend",
     "description": "Global"
   },
+  "popup_html_active_recurrent_transfer": {
+    "message": "active recurrent transfer(s)",
+    "description": "Global"
+  },
+  "popup_html_pending_remaining_executions": {
+    "message": "$1 remaining execution(s)",
+    "description": "Pending recurrent transfer remaining executions"
+  },
+  "popup_html_pending_recurrence": {
+    "message": "Every $1 hours",
+    "description": "Pending recurrent transfer recurrence every x hours"
+  },
   "popup_html_pending_currency": {
     "message": "Anstehende Umwandlungen",
     "description": "Global"
@@ -3704,7 +3792,7 @@
     "description": "when user hasn't allowed hash sign policyon his ledger"
   },
   "popup_html_need_active_key_for_claim_savings": {
-    "message": "Sie müssen Ihren aktiven Schlüssel zu Keychain hinzufügen, um die Ersparnisse in Anspruch nehmen zu können",
+    "message": "Aktiven Schlüssel in Keychain hinzufügen, um Savings zu claimen",
     "description": "automated tasks => need active key claim savings"
   },
   "popup_html_need_active_key_for_claim_accounts": {
@@ -3811,9 +3899,53 @@
     "message": "Connect and unlock your Ledger, open the Ethereum app, then discover EVM accounts.",
     "description": "EVM Ledger account discovery caption"
   },
+  "evm_ledger_derivation_path_bip44": {
+    "message": "MetaMask / BIP44",
+    "description": "EVM Ledger BIP44 derivation path label"
+  },
+  "evm_ledger_derivation_path_ledger_live": {
+    "message": "Ledger Live",
+    "description": "EVM Ledger Live derivation path label"
+  },
+  "evm_ledger_derivation_path_legacy": {
+    "message": "Legacy / MEW",
+    "description": "EVM Ledger legacy derivation path label"
+  },
+  "evm_ledger_derivation_next_index": {
+    "message": "Starts at index $1",
+    "description": "EVM Ledger derivation path next discovery index"
+  },
+  "evm_ledger_account_path_hint": {
+    "message": "$1 #$2 - $3",
+    "description": "EVM Ledger account derivation path hint"
+  },
   "ledger_source_name": {
     "message": "Ledger",
     "description": "Default EVM Ledger wallet source name"
+  },
+  "evm_ledger_connect_device": {
+    "message": "Please connect your Ledger",
+    "description": "EVM Ledger connection error"
+  },
+  "evm_ledger_unlock_device": {
+    "message": "Please unlock your Ledger",
+    "description": "EVM Ledger locked device error"
+  },
+  "evm_ledger_open_ethereum_app": {
+    "message": "Please open the Ethereum App on your Ledger",
+    "description": "EVM Ledger wrong or closed app error"
+  },
+  "evm_ledger_enable_blind_signing": {
+    "message": "Please enable blind signing in the Ethereum App settings on your Ledger",
+    "description": "EVM Ledger blind signing disabled error"
+  },
+  "evm_ledger_clear_signing_fallback_warning": {
+    "message": "Ledger clear signing will be attempted for this token operation. If token metadata is unavailable, your Ledger may show a blind-signing confirmation.",
+    "description": "Warning shown before signing an EVM token transaction with a Ledger"
+  },
+  "evm_ledger_unknown_error": {
+    "message": "An unknown Ledger error occurred. Please reconnect your Ledger, make sure you are in the Ethereum App and try again.",
+    "description": "EVM Ledger unknown error"
   },
   "no_account_found_on_ledger_error": {
     "message": "Kein Konto auf Ihrem Ledger gefunden. Stellen Sie sicher, dass Sie mindestens eines hinzugefügt haben und versuchen Sie es erneut.",
@@ -4619,6 +4751,202 @@
     "message": "Lade Daten... $1/$2... Lade gerade @$3",
     "description": "Portfolio fetching message"
   },
+  "html_popup_evm_add_wallet_method": {
+    "message": "Import or create an EVM wallet to use it accross all EVM chains",
+    "description": "EVM > Add wallet main page"
+  },
+  "html_popup_evm_import_wallet": {
+    "message": "Import from a seedphrase",
+    "description": "EVM > Add wallet main page"
+  },
+  "html_popup_evm_create_wallet": {
+    "message": "Create a new EVM wallet",
+    "description": "EVM > Add wallet main page"
+  },
+  "html_popup_evm_setup_import_text": {
+    "message": "Use your 12 or 24 words seed phrase to import your accounts into Keychain<br/>",
+    "description": "EVM > Add wallet main page > Import seed phrase"
+  },
+  "html_popup_evm_seed_phrase": {
+    "message": "Seed Phrase",
+    "description": "EVM > Add wallet main page > Import seed phrase"
+  },
+  "html_popup_evm_seed_phrase_placeholder": {
+    "message": "12 or 24 words seed phrase, separated by whitespace",
+    "description": "EVM > Add wallet main page > Import seed phrase"
+  },
+  "popup_html_import_wallet_from_key": {
+    "message": "Import from a private key",
+    "description": "EVM > Add wallet main page > Import private key"
+  },
+  "html_popup_evm_setup_import_key_text": {
+    "message": "Enter the private key of the EVM account you want to import.",
+    "description": "EVM > Add wallet main page > Import private key"
+  },
+  "evm_invalid_private_key": {
+    "message": "This private key is invalid.",
+    "description": "EVM > Add wallet main page > Import private key"
+  },
+  "html_popup_evm_invalid_mnemonic_length": {
+    "message": "Your seedphrase should be 12 or 24 words long.",
+    "description": "EVM > Add wallet main page > Import seed phrase"
+  },
+  "html_popup_evm_invalid_mnemonic_word": {
+    "message": "The word $1 of the seedphrase is incorrect.",
+    "description": "EVM > Add wallet main page > Import seed phrase"
+  },
+  "html_popup_evm_invalid_mnemonic_checksum": {
+    "message": "This seedphrase is invalid.",
+    "description": "EVM > Add wallet main page > Import seed phrase"
+  },
+  "html_popup_evm_choose_account": {
+    "message": "Select accounts",
+    "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
+  },
+  "html_popup_evm_choose_account_text": {
+    "message": "We've preselected accounts with a non-null $1 balance.<br/>Select additional accounts you wish to import. You can still add more later on from your wallet's main page.",
+    "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
+  },
+  "popup_html_import_wallet_from_seed": {
+    "message": "Import from seed",
+    "description": "Import wallet from seed phrase title"
+  },
+  "popup_html_create_new_wallet_create_seed": {
+    "message": "Create seed phrase",
+    "description": "Create seed phrase title"
+  },
+  "html_popup_evm_create_new_wallet_title": {
+    "message": "Save your secret seed phrase",
+    "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
+  },
+  "html_popup_evm_create_new_wallet_import": {
+    "message": "Import",
+    "description": "import accounts"
+  },
+  "html_popup_evm_error_select_account": {
+    "message": "Please select at least one account",
+    "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
+  },
+  "html_popup_chain_selector_page_title": {
+    "message": "Choose a blockchain",
+    "description": "setup blockchain page title"
+  },
+  "html_popup_chain_selector_page_caption": {
+    "message": "Choose your first blockchain to create or import an account. Don't worry, you can add more accounts later on.",
+    "description": "setup blockchain page caption"
+  },
+  "html_popup_deriving_wallets": {
+    "message": "Deriving wallets",
+    "description": "Deriving wallets"
+  },
+  "html_popup_mnemonic_overlay": {
+    "message": "Make sure nobody is looking",
+    "description": "text on overlay while creating evm account"
+  },
+  "html_popup_evm_create_wallet_caption": {
+    "message": "Write down this secret recovery phrase and save it in a place that you trust and only you can access",
+    "description": "evm account creation caption"
+  },
+  "html_popup_evm_12_words": {
+    "message": "12-words",
+    "description": "12 words"
+  },
+  "html_popup_evm_24_words": {
+    "message": "24-words",
+    "description": "24 words"
+  },
+  "html_popup_evm_create_wallet_verification_title": {
+    "message": "Seed phrase verification",
+    "description": "evm account creation caption"
+  },
+  "html_popup_evm_create_wallet_verification_caption": {
+    "message": "Enter your words one by one. Between each word, press Enter to verify it.",
+    "description": "evm account creation caption"
+  },
+  "html_popup_evm_create_wallet_verification_enter_word": {
+    "message": "Enter word #$1",
+    "description": "label of number to enter in verification page"
+  },
+  "html_popup_evm_create_wallet_verification_verify_word_error": {
+    "message": "Incorrect word",
+    "description": "Verify word error"
+  },
+  "html_popup_evm_create_wallet_tips": {
+    "message": "Make sure to store your seed phrase in multiple places and offline. If this seed phrase is lost, you won't be able to recover your account",
+    "description": "tips"
+  },
+  "html_popup_evm_create_wallet_tips1": {
+    "message": "Save in a password manager",
+    "description": "tips"
+  },
+  "html_popup_evm_create_wallet_tips2": {
+    "message": "Store in a safe deposit box",
+    "description": "tips"
+  },
+  "html_popup_evm_create_wallet_tips3": {
+    "message": "Write down and store in multiple secret places",
+    "description": "tips"
+  },
+  "html_popup_evm_create_wallet_display_mnemonic": {
+    "message": "Display seed phrase",
+    "description": "display seed phrase"
+  },
+  "html_popup_evm_create_wallet_hide_mnemonic": {
+    "message": "Hide seed phrase",
+    "description": "display seed phrase"
+  },
+  "html_popup_evm_hide_account": {
+    "message": "Hide this account",
+    "description": "hide account in acct settings"
+  },
+  "html_popup_evm_show_account": {
+    "message": "Show this account",
+    "description": "show account in acct settings"
+  },
+  "html_popup_evm_create_wallet_copy_mnemonic": {
+    "message": "Copy seed phrase",
+    "description": "display seed phrase"
+  },
+  "html_popup_evm_create_wallet_copied_mnemonic": {
+    "message": "Seed phrase copied to clipboard",
+    "description": "display seed phrase"
+  },
+  "evm_copy_seed_phrase_password_caption": {
+    "message": "You are about to copy your seed phrase. For security reasons, please enter your password to continue.",
+    "description": "Prompt shown before copying an EVM seed phrase"
+  },
+  "html_popup_add_blockchain": {
+    "message": "Add chain",
+    "description": "display seed phrase"
+  },
+  "html_popup_evm_create_wallet_copy_seed_phrase_error": {
+    "message": "You haven't copied your seed phrase, please copy it before continuing",
+    "description": "Error if seed phrase not copied"
+  },
+  "html_popup_evm_create_wallet_safely_copied_seed": {
+    "message": "I have safely copied my seed phrase and saved it outside of Keychain",
+    "description": "checkbox content on create account page"
+  },
+  "html_popup_evm_create_wallet_storage_understanding": {
+    "message": "I understand that Keychain should not be considered as the primary place of storage for my seed phrase",
+    "description": "checkbox content on create account page"
+  },
+  "html_popup_evm_create_wallet_condition_missing": {
+    "message": "You need to accept the conditions before creating an account.",
+    "description": "checkbox content on create account page"
+  },
+  "html_popup_evm_create_wallet_success_title": {
+    "message": "Wallet created",
+    "description": "Title shown after successfully creating an EVM wallet in a detached tab"
+  },
+  "html_popup_evm_create_wallet_success_message": {
+    "message": "Your wallet has been successfully created and added to Keychain.",
+    "description": "Message shown after successfully creating an EVM wallet in a detached tab"
+  },
+  "html_popup_evm_creating_wallet": {
+    "message": "Creating wallet...",
+    "description": "Loading caption while creating an EVM wallet"
+  },
   "multisig_bot_two_fa_code": {
     "message": "@$1 einmaliges Passwort:",
     "description": "Two fa code label"
@@ -4643,6 +4971,354 @@
     "message": "$1%",
     "description": "Caption for download data"
   },
+  "popup_html_create_blockchain": {
+    "message": "Create",
+    "description": "Create blockchain button"
+  },
+  "popup_html_create_blockchain_chain_type": {
+    "message": "Chain type",
+    "description": "Blockchain chain type"
+  },
+  "popup_html_create_blockchain_name": {
+    "message": "Name",
+    "description": "Blockchain chain name"
+  },
+  "popup_html_create_blockchain_symbol": {
+    "message": "Symbol",
+    "description": "Blockchain chain symbol"
+  },
+  "popup_html_create_blockchain_logo": {
+    "message": "Logo",
+    "description": "Blockchain logo"
+  },
+  "popup_html_create_blockchain_chain_id": {
+    "message": "Chain ID",
+    "description": "Blockchain chain id"
+  },
+  "popup_html_create_blockchain_block_explorer": {
+    "message": "Block explorer",
+    "description": "Blockchain chain block explorer"
+  },
+  "popup_html_create_blockchain_main_token": {
+    "message": "Main token's name",
+    "description": "Blockchain main token"
+  },
+  "popup_html_create_blockchain_token_hive": {
+    "message": "Hive token's name",
+    "description": "Blockchain hive token"
+  },
+  "popup_html_create_blockchain_token_hbd": {
+    "message": "HBD token's name",
+    "description": "Blockchain hbd token"
+  },
+  "popup_html_create_blockchain_token_hp": {
+    "message": "HP token's name",
+    "description": "Blockchain hp token"
+  },
+  "popup_html_evm_gas_fee_estimate_label": {
+    "message": "Estimate",
+    "description": "Evm Gas fee estimate label"
+  },
+  "popup_html_evm_gas_fee_estimate_duration_label": {
+    "message": "Duration",
+    "description": "Evm Gas fee estimate label"
+  },
+  "popup_html_evm_gas_fee": {
+    "message": "Gas fee",
+    "description": "Evm Gas fee estimate label"
+  },
+  "popup_html_evm_gas_fee_estimated": {
+    "message": "Estimated gas fee",
+    "description": "EVM transaction result pending fee label"
+  },
+  "popup_html_evm_gas_fee_estimate_duration": {
+    "message": "~$1 seconds",
+    "description": "Evm Gas fee estimate label"
+  },
+  "popup_html_evm_gas_max_fee_label": {
+    "message": "Max fee",
+    "description": "Evm Gas max fee estimate label"
+  },
+  "popup_html_evm_edit_gas_fee": {
+    "message": "Edit gas fee",
+    "description": "Evm edit Gas fee label"
+  },
+  "popup_html_evm_custom_gas_fee_increased": {
+    "message": "Increased",
+    "description": "Increased"
+  },
+  "popup_html_evm_custom_gas_fee_low": {
+    "message": "Low",
+    "description": "Low"
+  },
+  "popup_html_evm_custom_gas_fee_medium": {
+    "message": "Medium",
+    "description": "Medium"
+  },
+  "popup_html_evm_custom_gas_fee_aggressive": {
+    "message": "Aggressive",
+    "description": "Aggressive"
+  },
+  "popup_html_evm_custom_gas_fee_custom": {
+    "message": "Custom",
+    "description": "Custom"
+  },
+  "popup_html_evm_suggested_by_dapp_gas_fee_custom": {
+    "message": "Suggested by dApp",
+    "description": "Suggest by dapp"
+  },
+  "popup_html_add_custom_blockchain": {
+    "message": "Add custom blockchain",
+    "description": "Add custom blockchain page title"
+  },
+  "popup_html_evm_history_transfer_in": {
+    "message": "You received $1 $2 from $3",
+    "description": "EVM history item transfer in"
+  },
+  "popup_html_evm_history_transfer_out": {
+    "message": "You sent $1 $2 to $3",
+    "description": "EVM history item transfer out"
+  },
+  "popup_html_evm_history_loading_progression": {
+    "message": "$1 out of $2 blocks processed",
+    "description": "EVM history loading progress"
+  },
+  "popup_html_evm_gas_fee_form_base_fee": {
+    "message": "Max base fee per gas (Gwei)",
+    "description": "Max base fee evm transfer"
+  },
+  "popup_html_evm_gas_fee_form_gas_price": {
+    "message": "Gas price (Gwei)",
+    "description": "Gas price evm transfer"
+  },
+  "popup_html_evm_gas_fee_form_priority_fee": {
+    "message": "Priority fee per gas (Gwei)",
+    "description": "Evm priority fee"
+  },
+  "popup_html_evm_gas_fee_form_gas_limit": {
+    "message": "Gas limit",
+    "description": "Evm gas limit "
+  },
+  "popup_html_evm_transfer_successful": {
+    "message": "Transfer successful (to change)",
+    "description": "Evm transfer"
+  },
+  "popup_html_evm_gas_fee_not_selected": {
+    "message": "You need to select the gas fee before you can confirm",
+    "description": "Evm transfer"
+  },
+  "popup_html_evm_transfer_speed_up": {
+    "message": "Speed up",
+    "description": "Evm transfer"
+  },
+  "popup_html_evm_transfer_cancel": {
+    "message": "Cancel",
+    "description": "Evm transfer"
+  },
+  "popup_html_evm_transfer_status_pending": {
+    "message": "Pending...",
+    "description": "Evm transfer status"
+  },
+  "popup_html_evm_transfer_status_success": {
+    "message": "Success",
+    "description": "Evm transfer status"
+  },
+  "popup_html_evm_transfer_status_failed": {
+    "message": "Failed",
+    "description": "Evm transfer status"
+  },
+  "evm_history_operation_reverted_status": {
+    "message": "Reverted",
+    "description": "Reverted EVM transaction status"
+  },
+  "popup_html_evm_transfer_status_canceling": {
+    "message": "Canceling...",
+    "description": "Evm transfer status"
+  },
+  "popup_html_evm_transfer_status_canceled": {
+    "message": "Canceled",
+    "description": "Evm transfer status"
+  },
+  "popup_html_evm_transfer_status_speeding_up": {
+    "message": "Speeding up...",
+    "description": "Evm transfer status"
+  },
+  "popup_html_evm_transaction_info_block_number": {
+    "message": "Block number",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_gas_limit": {
+    "message": "Gas limit",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_total_fee_per_gas": {
+    "message": "Total fee per gas",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_priority_fee": {
+    "message": "Priority fee",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_gas_price": {
+    "message": "Gas price",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_to": {
+    "message": "To",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_tx_hash": {
+    "message": "Transaction hash",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_from": {
+    "message": "From",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_final_gas_fee": {
+    "message": "Final gas fee",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_speed_up_transaction": {
+    "message": "Speed up",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_select_fee": {
+    "message": "Select fee",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_gas_fee_loading": {
+    "message": "Loading gas fees…",
+    "description": "Shown while cancel/speed-up fee options are estimated"
+  },
+  "popup_html_evm_transaction_fee": {
+    "message": "Fee",
+    "description": "Evm fee"
+  },
+  "popup_html_evm_history_transaction_canceled": {
+    "message": "Transaction canceled",
+    "description": "Evm history transaction canceled"
+  },
+  "popup_html_evm_history_transaction_canceled_transfer_out_details": {
+    "message": "Canceled transfer of $1 $2 to $3",
+    "description": "Evm history transaction canceled"
+  },
+  "popup_html_evm_custom_fee_current": {
+    "message": "Current",
+    "description": "Custom fee current value"
+  },
+  "popup_html_evm_custom_fee_latest": {
+    "message": "Recent",
+    "description": "Custom fee latest value"
+  },
+  "popup_html_evm_loading_balances": {
+    "message": "Loading balances",
+    "description": "Loading balances on main screen"
+  },
+  "evm_connect_wallet": {
+    "message": "Connect EVM wallet",
+    "description": "Connect EVM wallet dialog title"
+  },
+  "popup_html_evm_dapp_status_connected_accounts": {
+    "message": "Connected Accounts",
+    "description": "Evm dapp status"
+  },
+  "popup_html_evm_dapp_status_other_accounts": {
+    "message": "Unconnected Accounts",
+    "description": "Evm dapp status"
+  },
+  "popup_html_evm_dapp_status_disconnect_all": {
+    "message": "Disconnect all accounts",
+    "description": "Evm dapp status"
+  },
+  "popup_html_evm_dapp_status_caption": {
+    "message": "Connecting an account to this dApp will give it permission to see your address, account balance and activity, and to suggest transactions to approve.",
+    "description": "Evm dapp status"
+  },
+  "popup_html_evm_dapp_status_show_all_connected": {
+    "message": "Show all connected dApps",
+    "description": "Link from EVM dapp status popup to Connected dApps settings"
+  },
+  "dialog_evm_dapp_status_caption": {
+    "message": "Select which accounts you want to connect to $1. It will give it permission to see your address, account balance and activity, and to suggest transactions to approve.",
+    "description": "Evm dapp status"
+  },
+  "dialog_evm_sign_request": {
+    "message": "Signature request",
+    "description": "Evm Signature request dialog title"
+  },
+  "dialog_evm_sign_request_message": {
+    "message": "Message",
+    "description": "Evm Signature request dialog title"
+  },
+  "dialog_evm_sign_request_interacting_with": {
+    "message": "Interacting with",
+    "description": "Evm Signature request interacting with"
+  },
+  "dialog_evm_sign_request_primary_type": {
+    "message": "Primary type",
+    "description": "Evm Signature request interacting with"
+  },
+  "dialog_evm_domain": {
+    "message": "Domain",
+    "description": "Evm domain"
+  },
+  "dialog_from": {
+    "message": "From",
+    "description": "General message"
+  },
+  "dialog_signature_request_caption": {
+    "message": "<b>$1</b> is asking you to sign the following message",
+    "description": "Signature request caption message"
+  },
+  "dialog_evm_sign_request_success": {
+    "message": "Your message was successfully signed",
+    "description": "Signature request success message"
+  },
+  "dialog_evm_unsupported_method": {
+    "message": "The method `$1` is not supported by Keychain",
+    "description": "Evm deprecated/unsupported error message"
+  },
+  "dialog_evm_non_existing_method": {
+    "message": "The method `$1` doesn't exist",
+    "description": "Evm non existing error message"
+  },
+  "dialog_evm_not_authorized_method": {
+    "message": "The method `$1` doesn't have authorization",
+    "description": "Evm non existing error message"
+  },
+  "dialog_evm_user_rejected_method": {
+    "message": "User ",
+    "description": "Evm deprecated/unsupported error message"
+  },
+  "dialog_evm_get_encryption_key": {
+    "message": "$1 is trying to access your encryption key. Do you accept to share it ?",
+    "description": "Evm get encryption key message"
+  },
+  "dialog_evm_get_encryption_key_success": {
+    "message": "Successfully shared encryption key",
+    "description": "Evm get encryption key success"
+  },
+  "dialog_evm_decrypt_message_success": {
+    "message": "Successfully decrypted message",
+    "description": "Evm decrypt message success"
+  },
+  "dialog_evm_decrypt_message_caption": {
+    "message": "$1 is trying to decrypt a message.",
+    "description": "Evm decrypt message caption"
+  },
+  "dialog_evm_decrypt_message_title": {
+    "message": "Decrypt message",
+    "description": "Evm decrypt message title"
+  },
+  "dialog_evm_decrypt_show_message": {
+    "message": "Show message",
+    "description": "Evm decrypt message show button"
+  },
+  "dialog_evm_decrypt_send_transaction_title": {
+    "message": "Send transaction",
+    "description": "Evm send transaction title"
+  },
   "popup_html_transaction_metadata": {
     "message": "Transaktions-Metadaten",
     "description": "Transaction metadata"
@@ -4659,89 +5335,1504 @@
     "message": "Ihr Einmalpasswort wurde bereits verwendet. Bitte verwenden Sie das nächste.",
     "description": "Error message if otp has been used already"
   },
+  "dialog_evm_decrypt_request_permission_title": {
+    "message": "Request permission",
+    "description": "Request permission dialog title"
+  },
+  "dialog_evm_get_encryption_key_title": {
+    "message": "Request encryption key",
+    "description": "Request encryption key dialog title"
+  },
+  "dialog_evm_sign_data_title": {
+    "message": "Request sign data",
+    "description": "Request sign typed data dialog title"
+  },
+  "evm_operation_transfer": {
+    "message": "Transfer",
+    "description": "Evm transaction operation : transfer"
+  },
+  "evm_operation_approve": {
+    "message": "Approve",
+    "description": "Evm transaction operation : approve"
+  },
+  "evm_operation_transferFrom": {
+    "message": "Transfer from",
+    "description": "Evm transaction operation : transfer from"
+  },
+  "evm_operation_safeTransferFrom": {
+    "message": "Safe transfer from",
+    "description": "Evm transaction operation : safe transfer from"
+  },
+  "evm_operation_to": {
+    "message": "To",
+    "description": "Evm transaction operation field to"
+  },
+  "evm_operation_spender": {
+    "message": "Spender",
+    "description": "Evm transaction operation field spender (ERC-20 approve)"
+  },
+  "evm_operation_from": {
+    "message": "From",
+    "description": "Evm transaction operation field from"
+  },
+  "evm_operation_amount": {
+    "message": "Amount",
+    "description": "Evm transaction operation field amount"
+  },
+  "evm_operation_smart_contract_address": {
+    "message": "Smart contract",
+    "description": "Evm smart contract address"
+  },
+  "evm_operation_action": {
+    "message": "Action",
+    "description": "Evm smart contract action"
+  },
+  "evm_balance_change_title": {
+    "message": "Balance",
+    "description": "Confirmation page balance change panel"
+  },
+  "evm_balance_before": {
+    "message": "Before : ",
+    "description": "Balance before transaction"
+  },
+  "evm_balance_after": {
+    "message": "After : ",
+    "description": "Balance after transaction"
+  },
+  "evm_transaction_transaction_has_warning": {
+    "message": "This transaction still has untreated warnings. Please resolve them all before proceeding",
+    "description": "Potential scam warning message"
+  },
+  "evm_transaction_warning_possible_scam": {
+    "message": "This address is listed as a potential scam",
+    "description": "Potential scam warning message"
+  },
+  "evm_send_transaction_ignore_warning": {
+    "message": "Proceed anyway",
+    "description": "Acknowledge warning and continue"
+  },
+  "evm_risk_banner_message": {
+    "message": "$1 security issue(s) — highest risk: $2. Tap to review before confirming.",
+    "description": "Clickable risk banner on EVM confirmation pages"
+  },
+  "evm_risk_severity_high": {
+    "message": "Critical",
+    "description": "High severity warning label"
+  },
+  "evm_risk_severity_medium": {
+    "message": "Warning",
+    "description": "Medium severity warning label"
+  },
+  "evm_risk_severity_low": {
+    "message": "Notice",
+    "description": "Low severity warning label"
+  },
+  "evm_risk_banner_review": {
+    "message": "Review warnings",
+    "description": "CTA on the risk alert banner"
+  },
+  "evm_risk_modal_title_high": {
+    "message": "Critical security issue(s)",
+    "description": "Title for high severity warning modal"
+  },
+  "evm_risk_modal_title_medium": {
+    "message": "Security warning",
+    "description": "Title for medium severity warning modal"
+  },
+  "evm_risk_modal_title_low": {
+    "message": "Security notice",
+    "description": "Title for low severity warning modal"
+  },
+  "evm_risk_warning_reviewed": {
+    "message": "Reviewed",
+    "description": "Label shown when a warning was acknowledged"
+  },
+  "evm_protocol_not_secured": {
+    "message": "This website is not using a safe connection",
+    "description": "Connection not secured"
+  },
+  "evm_operation_contract_deployment_transaction": {
+    "message": "Smart contract deployment",
+    "description": "Smart contract deployment transcation title"
+  },
+  "evm_contract_deployment_transaction_caption": {
+    "message": "You are deploying a smart contract",
+    "description": "Smart contract deployment transcation caption"
+  },
+  "evm_smart_contract_data": {
+    "message": "Data",
+    "description": "Smart contract data field"
+  },
+  "evm_transaction_data": {
+    "message": "Data",
+    "description": "Data field"
+  },
+  "evm_send_transaction_success": {
+    "message": "The transaction has been broadcasted successfully",
+    "description": "SuccesFully sent evm transaction"
+  },
+  "evm_send_transaction_failed": {
+    "message": "Transaction failed during broadcast",
+    "description": "Failed transaction"
+  },
+  "evm_transaction_domain_blacklisted": {
+    "message": "This domain has been flagged for suspicious behavior",
+    "description": "Domain is blacklisted"
+  },
+  "evm_transaction_domain_fuzzy": {
+    "message": "This domain seems to be very similar to $1. Make sure that your are on the correct website",
+    "description": "Domain is blacklisted"
+  },
+  "evm_transaction_domain_phishing": {
+    "message": "This website has been flagged as a potential phishing site",
+    "description": "Domain flagged by light-node security"
+  },
+  "evm_security_reason_blacklist_doubt": {
+    "message": "This address has been flagged for blacklist-related risk",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_blackmail_activities": {
+    "message": "This address has been linked to blackmail activities",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_cybercrime": {
+    "message": "This address has been linked to cybercrime",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_darkweb_transactions": {
+    "message": "This address has been linked to dark web transactions",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_fake_kyc": {
+    "message": "This address has been linked to fake KYC activity",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_fake_token": {
+    "message": "This address has been linked to fake token activity",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_financial_crime": {
+    "message": "This address has been linked to financial crime",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_gas_abuse": {
+    "message": "This address has been linked to gas abuse",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_honeypot_related_address": {
+    "message": "This address has been linked to honeypot-related activity",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_malicious_mining_activities": {
+    "message": "This address has been linked to malicious mining",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_mixer": {
+    "message": "This address has been linked to a mixer",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_money_laundering": {
+    "message": "This address has been linked to money laundering",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_phishing_activities": {
+    "message": "This address has been linked to phishing activity",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_grouped_address_risk": {
+    "message": "This address has been flagged for security risks",
+    "description": "Grouped light-node address security summary"
+  },
+  "evm_security_reason_grouped_domain_risk": {
+    "message": "This website has been flagged for security risks",
+    "description": "Grouped light-node domain security summary"
+  },
+  "evm_security_warning_show_details": {
+    "message": "Show details",
+    "description": "Expand grouped security warning reasons"
+  },
+  "evm_security_warning_hide_details": {
+    "message": "Hide details",
+    "description": "Collapse grouped security warning reasons"
+  },
+  "evm_security_reason_rug_pull": {
+    "message": "This is a deceptive request to a known rug-pull contract",
+    "description": "Light-node rug-pull summary when isRugPull is true"
+  },
+  "evm_security_reason_rug_pull_privilege_withdraw": {
+    "message": "This contract can withdraw your funds.",
+    "description": "Light-node GoPlus rug-pull reason"
+  },
+  "evm_security_reason_rug_pull_withdraw_missing": {
+    "message": "This contract may let others deposit, but can prevent withdrawals.",
+    "description": "Light-node GoPlus rug-pull reason"
+  },
+  "evm_security_reason_rug_pull_blacklist": {
+    "message": "This contract can blacklist wallets and block selling or transfers.",
+    "description": "Light-node GoPlus rug-pull reason"
+  },
+  "evm_security_reason_rug_pull_selfdestruct": {
+    "message": "This contract can self-destruct and break token functionality.",
+    "description": "Light-node GoPlus rug-pull reason"
+  },
+  "evm_security_reason_rug_pull_approval_abuse": {
+    "message": "This contract can abuse token approvals to move your funds.",
+    "description": "Light-node GoPlus rug-pull reason"
+  },
+  "evm_security_reason_reinit": {
+    "message": "This address has been flagged for suspicious reinitialization behavior",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_sanctioned": {
+    "message": "This address appears on sanctions lists",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_stealing_attack": {
+    "message": "This address has been linked to stealing attacks",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_scamsniffer_blacklist": {
+    "message": "This has been flagged by the ScamSniffer blacklist",
+    "description": "Light-node security reason"
+  },
+  "evm_security_reason_phishing_site": {
+    "message": "This website has been flagged as a phishing site",
+    "description": "Light-node domain security reason"
+  },
+  "evm_security_reason_address_risk": {
+    "message": "This website has been flagged for address risk: $1",
+    "description": "Light-node domain security reason with dynamic risk value"
+  },
+  "evm_security_reason_nft_risk": {
+    "message": "This website has been flagged for NFT risk: $1",
+    "description": "Light-node domain security reason with dynamic NFT risk key"
+  },
+  "evm_security_reason_unknown": {
+    "message": "A security risk was detected: $1",
+    "description": "Fallback light-node security reason"
+  },
+  "evm_transaction_receiver_blacklisted": {
+    "message": "This address has been flagged for suspicious behavior",
+    "description": "Receiver is blacklisted"
+  },
+  "evm_transaction_receiver_malicious": {
+    "message": "This address has been flagged as malicious",
+    "description": "Receiver flagged by light-node address security"
+  },
+  "evm_transaction_warning_high_level_bypass_message": {
+    "message": "I know what I'm doing",
+    "description": "Checkbox message to bypass warning"
+  },
+  "evm_transaction_receiver_not_whitelisted": {
+    "message": "This address hasn't been whitelisted in Keychain",
+    "description": "Checkbox message to bypass warning"
+  },
+  "evm_transaction_receiver_favorite_label": {
+    "message": "Nickname",
+    "description": "Nickname for address"
+  },
+  "evm_transaction_receiver_potential_spoofing_whitelisted": {
+    "message": "This address looks similar to your whitelisted address $1 and could be an attempt of address poisoning. Please check that this address is correct.",
+    "description": "potential spoofing warning"
+  },
+  "evm_transaction_receiver_potential_spoofing_local_accounts": {
+    "message": "This address looks similar to your address $1 and could be an attempt of address poisoning. Please check that this address is correct.",
+    "description": "potential spoofing warning"
+  },
+  "evm_transaction_contract_use_proxy": {
+    "message": "This contract is a proxy",
+    "description": "Smart contract uses a proxy"
+  },
+  "evm_transaction_contract_already_used": {
+    "message": "You whitelisted this smart contract",
+    "description": "Already used"
+  },
+  "evm_transaction_contract_not_used": {
+    "message": "You haven't whitelisted this smart contract yet",
+    "description": "Not used yet"
+  },
+  "evm_transaction_contract_honeypot": {
+    "message": "This token has been flagged as a potential honeypot",
+    "description": "Token honeypot warning from GoPlus"
+  },
+  "evm_transaction_contract_cannot_sell": {
+    "message": "This token may not be sellable",
+    "description": "Token cannot sell all warning from GoPlus"
+  },
+  "evm_transaction_contract_high_tax": {
+    "message": "This token has high buy or sell tax",
+    "description": "Token high tax warning from GoPlus"
+  },
+  "evm_transaction_contract_rug_pull": {
+    "message": "This contract has been flagged for potential rug-pull risk",
+    "description": "Rug pull warning from GoPlus"
+  },
+  "evm_transaction_nft_restricted_approval": {
+    "message": "This NFT collection has restricted approval risks",
+    "description": "NFT restricted approval warning from GoPlus"
+  },
+  "evm_transaction_nft_transfer_without_approval": {
+    "message": "This NFT collection may allow transfers without approval",
+    "description": "NFT transfer without approval warning from GoPlus"
+  },
+  "evm_domain_never_visited": {
+    "message": "We detected that this is the first time you visit this domain",
+    "description": "Domain never visited warning message"
+  },
+  "evm_sign_typed_data_message": {
+    "message": "Message",
+    "description": "Sign typed data message"
+  },
+  "evm_sign_typed_data_message_primary_type": {
+    "message": "Primary type",
+    "description": "Sign typed data message primary type"
+  },
+  "evm_chain_id": {
+    "message": "Chain Id",
+    "description": "evm chain id"
+  },
+  "evm_chain": {
+    "message": "Chain",
+    "description": "evm chain"
+  },
+  "evm_domain_name": {
+    "message": "Name",
+    "description": "evm domain name"
+  },
+  "evm_domain_version": {
+    "message": "Version",
+    "description": "evm domain version"
+  },
+  "evm_target_account": {
+    "message": "Account",
+    "description": "evm targeted account "
+  },
+  "evm_raw_data": {
+    "message": "Raw data",
+    "description": "evm raw data "
+  },
+  "evm_main_token_amount": {
+    "message": "Main token amount",
+    "description": "Main token amount evm"
+  },
+  "evm_access_list": {
+    "message": "Access list",
+    "description": "Evm access list"
+  },
+  "evm_access_list_caption_message": {
+    "message": "This transaction is using an access list. You won't be able to chose your gas fee because the access list will try to optimise the cost of the transaction",
+    "description": "Evm access list caption message"
+  },
+  "evm_ens_recipient_not_existing": {
+    "message": "This ENS doesn't seem to be linked to a wallet",
+    "description": "Evm ens not matching"
+  },
+  "evm_warning": {
+    "message": "Warning",
+    "description": "Evm warning"
+  },
+  "evm_warning_possible_duplicated_transaction_title": {
+    "message": "Possible duplicate",
+    "description": "Possible duplicated malicious transaction title"
+  },
+  "evm_warning_possible_duplicated_transaction": {
+    "message": "This transaction is similar to a similar transaction you processed. This could be a malicious transaction.",
+    "description": "Possible duplicated malicious transaction"
+  },
+  "evm_warning_possible_duplicated_transaction_sent_at": {
+    "message": "Sent on $1",
+    "description": "Possible duplicated malicious transaction sent on"
+  },
+  "evm_warning_eip7702_title": {
+    "message": "This action can give another contract control over your wallet",
+    "description": "EIP-7702 warning title"
+  },
+  "evm_warning_eip7702_message": {
+    "message": "This action can give another contract control over your wallet. Review with extreme caution as this could lead to a loss of funds.",
+    "description": "EIP-7702 warning message"
+  },
+  "evm_too_many_transaction_button": {
+    "message": "Block this app for $1 minute",
+    "description": "Label for block dapp button"
+  },
+  "evm_all_nft_collections": {
+    "message": "All NFT collections",
+    "description": "All nft collections"
+  },
+  "evm_nft_token_id": {
+    "message": "Token ID",
+    "description": "NFT token id"
+  },
+  "evm_nft_approve_all": {
+    "message": "Approve All",
+    "description": "NFT approve all value"
+  },
+  "evm_nft_number_of_tokens": {
+    "message": "Number of Tokens",
+    "description": "NFT number of tokens"
+  },
+  "evm_nft_token_type": {
+    "message": "Token type",
+    "description": "Token type"
+  },
+  "global_other": {
+    "message": "Other",
+    "description": "Global word"
+  },
+  "evm_tab_tokens": {
+    "message": "Tokens",
+    "description": "Tokens tab"
+  },
+  "evm_tab_nfts": {
+    "message": "NFTs",
+    "description": "NFTs tab"
+  },
+  "evm_tab_history": {
+    "message": "History",
+    "description": "History tab"
+  },
+  "evm_menu_contacts": {
+    "message": "Addresses",
+    "description": "Addresses menu item"
+  },
+  "evm_menu_custom_chains": {
+    "message": "Manage chains",
+    "description": "EVM settings: chain management"
+  },
+  "evm_menu_dapps_connections": {
+    "message": "Connected dApps",
+    "description": "EVM settings: connected dapps"
+  },
+  "evm_dapps_connections_empty": {
+    "message": "No connected dApp yet.",
+    "description": "Empty state for EVM dapps connections page"
+  },
+  "evm_dapps_connections_unknown_account": {
+    "message": "Unknown account",
+    "description": "Fallback label for an EVM dapp connection address that is not in the local wallet"
+  },
+  "evm_dapps_connections_addresses_option": {
+    "message": "Addresses",
+    "description": "Option to manage connected addresses for an EVM dapp"
+  },
+  "evm_dapps_connections_chains_option": {
+    "message": "Chains",
+    "description": "Option to manage allowed chains for an EVM dapp"
+  },
+  "evm_dapps_connections_chains_caption": {
+    "message": "Allowed chains let this dApp request activity on the selected networks.",
+    "description": "Caption for EVM dapp allowed chains popup"
+  },
+  "evm_dapps_connections_allowed_chains": {
+    "message": "Allowed Chains",
+    "description": "Title for EVM dapp allowed chains list"
+  },
+  "evm_dapps_connections_unknown_chain": {
+    "message": "Unknown chain",
+    "description": "Fallback label for an EVM dapp allowed chain missing local metadata"
+  },
+  "evm_dapps_connections_no_chains": {
+    "message": "No allowed chains.",
+    "description": "Empty state for an EVM dapp allowed chains popup"
+  },
+  "evm_dapps_connections_remove_all_chains": {
+    "message": "Remove all chains",
+    "description": "Button label to remove every allowed chain for an EVM dapp"
+  },
+  "evm_custom_chains_caption": {
+    "message": "Custom chains have limited support. Features such as token discovery and automatic history loading may be unavailable.",
+    "description": "Custom chains info caption"
+  },
+  "evm_custom_chains_delete": {
+    "message": "Delete",
+    "description": "Remove an added custom EVM chain"
+  },
+  "evm_custom_chains_delete_confirm": {
+    "message": "Remove \"$1\" from your custom chains? This cannot be undone.",
+    "description": "Confirmation before deleting a custom EVM chain; $1 is the chain name"
+  },
+  "evm_custom_chains_add": {
+    "message": "Add custom chain",
+    "description": "Button to add a custom EVM chain"
+  },
+  "evm_custom_chains_modal_title": {
+    "message": "Add custom chain",
+    "description": "Modal title for adding custom chain"
+  },
+  "evm_custom_chains_modal_title_edit": {
+    "message": "Edit custom chain",
+    "description": "Modal title for editing a custom chain"
+  },
+  "evm_custom_chains_update": {
+    "message": "Save changes",
+    "description": "Save button when editing custom chain"
+  },
+  "evm_custom_chains_error_not_found": {
+    "message": "This custom chain could not be found. Try refreshing the list.",
+    "description": "When update targets a missing custom chain"
+  },
+  "evm_custom_chains_empty": {
+    "message": "No custom chains yet. Add one to connect to a chain that is not in the default list.",
+    "description": "Empty state for custom chains list"
+  },
+  "evm_custom_chains_field_name": {
+    "message": "Chain name",
+    "description": "Custom chain form field"
+  },
+  "evm_custom_chains_field_chain_id": {
+    "message": "Chain ID",
+    "description": "Custom chain form field"
+  },
+  "evm_custom_chains_field_symbol": {
+    "message": "Currency symbol",
+    "description": "Custom chain form field"
+  },
+  "evm_custom_chains_field_default_tx_type": {
+    "message": "Default transaction type",
+    "description": "Custom chain form: EIP-1559 / legacy / etc."
+  },
+  "evm_custom_chains_tx_type_legacy": {
+    "message": "Legacy (type 0)",
+    "description": "EvmTransactionType"
+  },
+  "evm_custom_chains_tx_type_eip155": {
+    "message": "EIP-155 (type 1)",
+    "description": "EvmTransactionType"
+  },
+  "evm_custom_chains_tx_type_eip1559": {
+    "message": "EIP-1559 (type 2)",
+    "description": "EvmTransactionType"
+  },
+  "evm_custom_chains_tx_type_eip4844": {
+    "message": "EIP-4844 (type 3)",
+    "description": "EvmTransactionType"
+  },
+  "evm_custom_chains_tx_type_eip7702": {
+    "message": "EIP-7702 (type 4)",
+    "description": "EvmTransactionType"
+  },
+  "evm_custom_chains_field_rpc": {
+    "message": "RPC URLs",
+    "description": "Custom chain form section (one or more endpoints)"
+  },
+  "evm_custom_chains_field_rpc_placeholder": {
+    "message": "https://…",
+    "description": "Placeholder for RPC URL inputs"
+  },
+  "evm_custom_chains_add_rpc": {
+    "message": "Add another RPC URL",
+    "description": "Add another RPC row in custom chain form"
+  },
+  "evm_custom_chains_remove_rpc": {
+    "message": "Remove",
+    "description": "Remove an RPC row in custom chain form"
+  },
+  "evm_custom_chains_field_explorer": {
+    "message": "Block explorer URL (optional)",
+    "description": "Custom chain form field"
+  },
+  "evm_custom_chains_field_logo": {
+    "message": "Logo URL (optional)",
+    "description": "Custom chain form field"
+  },
+  "evm_custom_chains_field_testnet": {
+    "message": "This is a testnet",
+    "description": "Custom chain form checkbox"
+  },
+  "evm_custom_chains_save": {
+    "message": "Save chain",
+    "description": "Save custom chain button"
+  },
+  "evm_custom_chains_error_name": {
+    "message": "Please enter a chain name.",
+    "description": "Custom chain validation"
+  },
+  "evm_custom_chains_error_symbol": {
+    "message": "Please enter a currency symbol.",
+    "description": "Custom chain validation"
+  },
+  "evm_custom_chains_error_rpc": {
+    "message": "Please enter at least one valid HTTP or HTTPS RPC URL.",
+    "description": "Custom chain validation"
+  },
+  "evm_custom_chains_error_rpc_duplicate": {
+    "message": "Each RPC URL must be unique.",
+    "description": "Custom chain validation duplicate RPC"
+  },
+  "evm_custom_chains_error_rpc_unreachable": {
+    "message": "We could not reach every RPC. Each URL must respond to JSON-RPC (e.g. eth_blockNumber) over HTTP or HTTPS. Fix or remove failing endpoints and try again.",
+    "description": "Custom chain save: an RPC check failed"
+  },
+  "evm_custom_chains_error_chain_id": {
+    "message": "Please enter a valid chain ID (decimal or 0x hex).",
+    "description": "Custom chain validation"
+  },
+  "evm_custom_chains_error_duplicate": {
+    "message": "A custom chain with this ID is already added.",
+    "description": "Custom chain validation"
+  },
+  "evm_custom_chains_error_default_exists": {
+    "message": "This chain is already available as a default chain. Enable it from the chain list instead.",
+    "description": "Custom chain validation"
+  },
+  "evm_custom_chains_error_generic": {
+    "message": "Could not save this chain. Please check your entries and try again.",
+    "description": "Custom chain generic error"
+  },
+  "evm_custom_chains_chainlist_found": {
+    "message": "A matching chain was found in the public chain list (ChainList.org).",
+    "description": "When chain ID matches ChainList.org data for add-custom-chain form"
+  },
+  "evm_custom_chains_chainlist_preload_link": {
+    "message": "Load details into the form",
+    "description": "Button to prefill add-custom-chain form from ChainList.org"
+  },
+  "evm_custom_chains_chainlist_looking_up": {
+    "message": "Looking up public chain data…",
+    "description": "While ChainList.org data is being fetched for the chain ID"
+  },
+  "evm_custom_chains_rpc_collapsed_summary": {
+    "message": "$1 RPC URL(s)",
+    "description": "Collapsed RPC panel after ChainList preload; $1 is the number of endpoints"
+  },
+  "evm_menu_advanced": {
+    "message": "Advanced",
+    "description": "Evm Advanced menu"
+  },
+  "evm_menu_rpc_node": {
+    "message": "RPC Node",
+    "description": "Evm RPC node menu"
+  },
+  "evm_menu_security": {
+    "message": "Security",
+    "description": "Evm Security menu"
+  },
+  "evm_menu_provider_compatibility": {
+    "message": "Provider compatibility",
+    "description": "Evm provider compatibility menu"
+  },
+  "evm_menu_advanced_smart_contracts": {
+    "message": "Smart Contracts",
+    "description": "Evm Advanced smart contracts"
+  },
+  "evm_provider_compatibility_prefer_title": {
+    "message": "Prefer Keychain on legacy dApps",
+    "description": "Evm provider compatibility legacy preference title"
+  },
+  "evm_provider_compatibility_prefer_hint": {
+    "message": "Prioritize the use of Keychain over other wallets on websites that do not list all available wallets.",
+    "description": "Evm provider compatibility legacy preference hint"
+  },
+  "evm_provider_compatibility_warning": {
+    "message": "This can conflict with other installed wallets that also try to control the legacy provider.",
+    "description": "Evm provider compatibility warning"
+  },
+  "evm_provider_compatibility_reload_note": {
+    "message": "Reload open dApp tabs after changing this setting so websites pick up the new provider order.",
+    "description": "Evm provider compatibility reload note"
+  },
+  "evm_menu_advanced_smart_contracts_display_spam_title": {
+    "message": "Display possible spam",
+    "description": "Evm Advanced smart contract display possible spam option title"
+  },
+  "evm_menu_advanced_smart_contracts_display_spam_hint": {
+    "message": "Keychain will display smart contracts that have possibly been flagged as spam",
+    "description": "Evm Advanced smart contract display possible spam option hint"
+  },
+  "evm_menu_advanced_smart_contracts_display_non_verified_title": {
+    "message": "Display non verified",
+    "description": "Evm Advanced smart contract display non verified option hint"
+  },
+  "evm_menu_advanced_smart_contracts_display_non_verified_hint": {
+    "message": "Keychain will display all smart contracts that haven't been verified yet",
+    "description": "Evm Advanced smart contract display non verified option title"
+  },
+  "evm_nft_transfer": {
+    "message": "NFT Transfer",
+    "description": "Nft transfer page title"
+  },
+  "evm_nft_transfer_address": {
+    "message": "Address",
+    "description": "NFT Address"
+  },
+  "evm_history_op_native_send": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for NATIVE_SEND (native token)"
+  },
+  "evm_history_op_native_receive": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for NATIVE_RECEIVE (native token)"
+  },
+  "evm_history_op_erc20_send": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for ERC20_SEND (ERC-20)"
+  },
+  "evm_history_op_erc20_receive": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for ERC20_RECEIVE (ERC-20)"
+  },
+  "evm_history_op_erc20_approve": {
+    "message": "Approve",
+    "description": "EVM light-node history: page title for ERC20_APPROVE (ERC-20)"
+  },
+  "evm_history_op_erc20_mint": {
+    "message": "Mint",
+    "description": "EVM light-node history: page title for ERC20_MINT (ERC-20)"
+  },
+  "evm_history_op_erc20_burn": {
+    "message": "Burn",
+    "description": "EVM light-node history: page title for ERC20_BURN (ERC-20)"
+  },
+  "evm_history_op_erc721_send": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for ERC721_SEND (ERC-721)"
+  },
+  "evm_history_op_erc721_receive": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for ERC721_RECEIVE (ERC-721)"
+  },
+  "evm_history_op_erc721_approve": {
+    "message": "Approve",
+    "description": "EVM light-node history: page title for ERC721_APPROVE (ERC-721)"
+  },
+  "evm_history_op_erc721_approve_for_all": {
+    "message": "Approve for all",
+    "description": "EVM light-node history: page title for ERC721_APPROVE_FOR_ALL (ERC-721)"
+  },
+  "evm_history_op_erc721_mint": {
+    "message": "Mint",
+    "description": "EVM light-node history: page title for ERC721_MINT (ERC-721)"
+  },
+  "evm_history_op_erc721_burn": {
+    "message": "Burn",
+    "description": "EVM light-node history: page title for ERC721_BURN (ERC-721)"
+  },
+  "evm_history_op_erc1155_send": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for ERC1155_SEND (ERC-1155)"
+  },
+  "evm_history_op_erc1155_receive": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for ERC1155_RECEIVE (ERC-1155)"
+  },
+  "evm_history_op_erc1155_approve_for_all": {
+    "message": "Approve for all",
+    "description": "EVM light-node history: page title for ERC1155_APPROVE_FOR_ALL (ERC-1155)"
+  },
+  "evm_history_op_erc1155_mint": {
+    "message": "Mint",
+    "description": "EVM light-node history: page title for ERC1155_MINT (ERC-1155)"
+  },
+  "evm_history_op_erc1155_burn": {
+    "message": "Burn",
+    "description": "EVM light-node history: page title for ERC1155_BURN (ERC-1155)"
+  },
+  "evm_history_op_swap": {
+    "message": "Swap",
+    "description": "EVM light-node history: page title for SWAP"
+  },
+  "evm_history_op_airdrop_receive": {
+    "message": "Airdrop",
+    "description": "EVM light-node history: page title for AIRDROP_RECEIVE (airdrop / incoming tokens)"
+  },
+  "evm_history_op_contract_call": {
+    "message": "Contract call",
+    "description": "EVM light-node history: page title for CONTRACT_CALL"
+  },
+  "evm_history_op_contract_deploy": {
+    "message": "Contract deploy",
+    "description": "EVM light-node history: page title for CONTRACT_DEPLOY"
+  },
+  "evm_history_op_add_liquidity": {
+    "message": "Add liquidity",
+    "description": "EVM light-node history: page title for ADD_LIQUIDITY"
+  },
+  "evm_history_op_remove_liquidity": {
+    "message": "Remove liquidity",
+    "description": "EVM light-node history: page title for REMOVE_LIQUIDITY"
+  },
+  "evm_history_op_wrap": {
+    "message": "Wrap",
+    "description": "EVM light-node history: page title for WRAP"
+  },
+  "evm_history_op_unwrap": {
+    "message": "Unwrap",
+    "description": "EVM light-node history: page title for UNWRAP"
+  },
+  "evm_history_op_canceled_op": {
+    "message": "Canceled transaction",
+    "description": "EVM light-node history: page title for CANCELED_OP"
+  },
+  "evm_history_op_unknown": {
+    "message": "Transaction",
+    "description": "EVM light-node history: page title for unknown or unrecognized op types"
+  },
+  "evm_history_generic_message": {
+    "message": "Transaction sent",
+    "description": "Evm history generic message in case there in not enough information"
+  },
+  "evm_history_smart_contract_creation_message": {
+    "message": "You created the $1 smart contract",
+    "description": "Evm smart contract creation"
+  },
+  "evm_history_smart_contract_creation_message_no_address": {
+    "message": "You created a smart contract",
+    "description": "Evm smart contract creation when created address is unknown"
+  },
+  "evm_history_smart_contract_creation_message_pending": {
+    "message": "Creating smart contract",
+    "description": "Evm smart contract creation"
+  },
+  "evm_history_smart_contract": {
+    "message": "Smart Contract",
+    "description": "Evm smart contract"
+  },
+  "evm_history_smart_contract_creation": {
+    "message": "Smart Contract creation",
+    "description": "Evm smart contract creation"
+  },
+  "evm_history_operation_safe_transfer_from_erc721_in": {
+    "message": "You received $1#$2 from $3",
+    "description": ""
+  },
+  "evm_history_operation_safe_transfer_from_erc721_in_no_sender": {
+    "message": "You received $1#$2",
+    "description": ""
+  },
+  "evm_history_operation_safe_transfer_from_erc721_out": {
+    "message": "You sent $1#$2 to $3",
+    "description": ""
+  },
+  "evm_history_operation_safe_transfer_from_erc721_out_pending": {
+    "message": "Sending $1#$2 to $3",
+    "description": ""
+  },
+  "evm_history_operation_safe_transfer_from_erc1155_in": {
+    "message": "You received $1 $2#$3 from $4",
+    "description": ""
+  },
+  "evm_history_operation_safe_transfer_from_erc1155_in_no_sender": {
+    "message": "You received $1 $2#$3",
+    "description": ""
+  },
+  "evm_history_operation_safe_transfer_from_erc1155_out": {
+    "message": "You sent $1 $2#$3 to $4",
+    "description": ""
+  },
+  "evm_history_operation_safe_transfer_from_erc1155_out_pending": {
+    "message": "Sending $1 $2#$3 to $4",
+    "description": ""
+  },
+  "evm_history_operation_transfer_in": {
+    "message": "You received $1 $2 from $3",
+    "description": ""
+  },
+  "evm_history_operation_transfer_out": {
+    "message": "You sent $1 $2 to $3",
+    "description": ""
+  },
+  "evm_history_operation_transfer_out_pending": {
+    "message": "Sending $1 $2 to $3",
+    "description": ""
+  },
+  "evm_history_operation_transfer_in_no_sender": {
+    "message": "You received $1 $2",
+    "description": ""
+  },
+  "evm_history_operation_mint_batch": {
+    "message": "You minted $1 tokens from the $2 collection",
+    "description": "Batch mint operation"
+  },
+  "evm_history_operation_mint_batch_pending": {
+    "message": "Minting $1 tokens from the $2 collection",
+    "description": "Batch mint operation"
+  },
+  "evm_history_native_amount_paid": {
+    "message": "Amount paid",
+    "description": "Native token amount paid for a mint"
+  },
+  "evm_history_native_amount_received": {
+    "message": "Amount received",
+    "description": "Native token amount received during a smart contract operation"
+  },
+  "evm_history_operation_approve_out_erc20": {
+    "message": "You approved $1 to use up to $2 $3",
+    "description": "Approve history item"
+  },
+  "evm_history_operation_approve_out_erc20_pending": {
+    "message": "Approving $1 to use up to $2 $3",
+    "description": "Approve history item"
+  },
+  "evm_history_operation_approve_out_erc20_unlimited": {
+    "message": "You approved $1 to use unlimited $2",
+    "description": "Approve unlimited history item"
+  },
+  "evm_history_operation_approve_out_erc721": {
+    "message": "You approved $1 to use $2#$3",
+    "description": "Approve history item"
+  },
+  "evm_history_operation_approve_out_erc721_pending": {
+    "message": "Approving $1 to use $2#$3",
+    "description": "Approve history item"
+  },
+  "evm_history_operation_approve_out_for_all": {
+    "message": "You approved $1 to manage all your $2 tokens",
+    "description": "Approve for all history item"
+  },
+  "evm_history_operation_swap": {
+    "message": "You swapped $1 for $2",
+    "description": "Swap history item"
+  },
+  "evm_history_operation_add_liquidity": {
+    "message": "You added liquidity ($1 for $2)",
+    "description": "Add liquidity history item"
+  },
+  "evm_history_operation_remove_liquidity": {
+    "message": "You removed liquidity ($1 for $2)",
+    "description": "Remove liquidity history item"
+  },
+  "evm_history_operation_wrap": {
+    "message": "You wrapped $1 into $2",
+    "description": "Wrap history item"
+  },
+  "evm_history_operation_unwrap": {
+    "message": "You unwrapped $1 into $2",
+    "description": "Unwrap history item"
+  },
+  "evm_history_operation_airdrop_receive": {
+    "message": "You received an airdrop: $1",
+    "description": "Airdrop history item"
+  },
+  "evm_history_operation_reverted": {
+    "message": "$1 has been reverted",
+    "description": "Reverted operation message"
+  },
+  "evm_history_unlimited_approval_value": {
+    "message": "Unlimited $1",
+    "description": "Unlimited approval value"
+  },
+  "evm_history_operation_mint_erc20": {
+    "message": "You minted $1 $2",
+    "description": "ERC20 mint history item"
+  },
+  "evm_history_operation_burn_erc20": {
+    "message": "You burned $1 $2",
+    "description": "ERC20 burn history item"
+  },
+  "evm_history_operation_burn_erc721": {
+    "message": "You burned $1#$2",
+    "description": "ERC721 burn history item"
+  },
+  "evm_history_operation_burn_erc1155": {
+    "message": "You burned $1 $2#$3",
+    "description": "ERC1155 burn history item"
+  },
+  "evm_history_operation_mintNFTs": {
+    "message": "You minted $1#$2",
+    "description": "Mint single nft history item"
+  },
+  "evm_history_operation_mintNFTs_pending": {
+    "message": "Minting $1#$2",
+    "description": "Mint single nft history item"
+  },
+  "evm_history_operation_generic_smart_contract_messages_in": {
+    "message": "Included in '$1' call",
+    "description": "Generic smart contract operation history label"
+  },
+  "evm_history_operation_generic_smart_contract_messages_out": {
+    "message": "Called $1",
+    "description": "Generic smart contract operation history label"
+  },
+  "evm_history_operation_generic_smart_contract_messages_pending": {
+    "message": "Called '$1'",
+    "description": "Generic smart contract operation history label"
+  },
+  "evm_history_default_out_smart_contract_operation": {
+    "message": "Called a smart contract",
+    "description": "Generic smart contract operation history label"
+  },
+  "evm_history_default_out_smart_contract_operation_pending": {
+    "message": "Calling a smart contract",
+    "description": "Generic smart contract operation history label"
+  },
+  "evm_history_default_in_smart_contract_operation": {
+    "message": "Included in a smart contract call",
+    "description": "Generic smart contract operation history label"
+  },
+  "evm_add_wallet_address_button": {
+    "message": "Add wallet address",
+    "description": "Add wallet address button"
+  },
+  "evm_delete_seed_button": {
+    "message": "Delete",
+    "description": "Delete seed button"
+  },
+  "evm_delete_seed_confirmation_message": {
+    "message": "Are you sure you want to delete this seed ?",
+    "description": "Delete seed button"
+  },
+  "evm_delete_all_ledger_accounts_confirmation_message": {
+    "message": "Are you sure you want to delete all Ledger accounts?",
+    "description": "Delete all Ledger accounts confirmation message"
+  },
+  "evm_delete_all_imported_accounts_confirmation_message": {
+    "message": "Are you sure you want to delete all imported accounts?",
+    "description": "Delete all imported accounts confirmation message"
+  },
+  "evm_delete_account_confirmation_message": {
+    "message": "Are you sure you want to delete this account ?",
+    "description": "Delete EVM account button"
+  },
+  "evm_add_wallet_seed_button": {
+    "message": "Add seed",
+    "description": "Add seed button"
+  },
+  "evm_add_nickname_to_address_popup_title": {
+    "message": "Add name",
+    "description": "Add nickname to address title"
+  },
+  "evm_add_nickname_to_address_popup_caption": {
+    "message": "Add a name to your address to identify it easier",
+    "description": "Add nickname to address caption"
+  },
+  "evm_address_nickname": {
+    "message": "Nickname",
+    "description": "Nickname"
+  },
+  "evm_seed_nickname": {
+    "message": "Seed Name",
+    "description": "Nickname"
+  },
+  "evm_edit_seed_nickname": {
+    "message": "Edit name",
+    "decription": "Edit seed nickname"
+  },
+  "evm_edit_address_name": {
+    "message": "Edit address name",
+    "description": "Edit wallet address nickname"
+  },
+  "evm_import_seed": {
+    "message": "Import",
+    "description": "Import existing seed"
+  },
+  "evm_import_key": {
+    "message": "Import key",
+    "description": "Import existing private key"
+  },
+  "evm_imported_seed": {
+    "message": "Imported",
+    "description": "Imported private key source name"
+  },
+  "evm_create_seed": {
+    "message": "Create",
+    "description": "Create seed"
+  },
+  "evm_connect_ledger_wallet": {
+    "message": "Connect Ledger",
+    "description": "Open Ledger EVM wallet connection flow"
+  },
+  "evm_copy_seed": {
+    "message": "Copy seed",
+    "description": "Copy EVM seed menu item"
+  },
+  "evm_seeds_and_accounts": {
+    "message": "Seeds & Accounts",
+    "description": "sseds and account page"
+  },
   "error_granularity": {
     "message": "Dieser Vorgang ist unter Granularitätsregeln nicht zulässig",
     "description": "Error message if granularity failed has been used already"
   },
-  "evm_insufficient_token_balance": {
-    "message": "Unzureichendes $1-Guthaben.",
-    "description": "Insufficient token balance message on EVM balance change card"
+  "evm_seeds_already_in_keychain": {
+    "message": "This seed was already added in Keychain",
+    "description": "Seed already added in Keychain"
   },
-  "evm_transaction_result_error_message_insufficient_funds": {
-    "message": "Unzureichende Mittel, um diese Transaktion abzuschließen",
-    "description": "Transaction result error message insufficient funds"
+  "evm_private_key_already_in_keychain": {
+    "message": "This EVM account was already added in Keychain",
+    "description": "Private key already added in Keychain"
   },
-  "evm_transaction_result_error_message_user_rejected": {
-    "message": "Die Transaktion wurde vom Benutzer abgelehnt",
-    "description": "Transaction result error message user rejected"
+  "evm_transfer": {
+    "message": "Transfer",
+    "description": "Evm transfer"
   },
-  "evm_transaction_result_error_message_transaction_replaced": {
-    "message": "Die Transaktion wurde durch eine andere Transaktion ersetzt",
-    "description": "Transaction result error message transaction replaced"
+  "evm_mint_batch": {
+    "message": "Mint Batch",
+    "description": "Evm mint batch"
   },
-  "evm_transaction_result_error_message_network": {
-    "message": "Dieser RPC scheint nicht richtig zu funktionieren. Bitte erwägen Sie, ihn in den Erweiterten Einstellungen zu ändern",
-    "description": "Transaction result error when RPC/network fails; suggests changing RPC in Advanced Settings"
+  "evm_approval": {
+    "message": "Approval",
+    "description": "Evm approval"
   },
-  "evm_transaction_result_error_message_bad_data": {
-    "message": "Das RPC hat ungültige Daten zurückgegeben",
-    "description": "Transaction result error message bad data"
+  "evm_mint": {
+    "message": "Mint",
+    "description": "Evm mint"
   },
-  "evm_transaction_result_error_message_invalid_parameters": {
-    "message": "Die Transaktionsanfrage enthält ungültige Parameter",
-    "description": "Transaction result error message invalid parameters"
+  "evm_broadcast": {
+    "message": "Broadcast",
+    "description": "Evm generic broadcast"
   },
-  "evm_transaction_result_error_message_unsupported_operation": {
-    "message": "Dieser Vorgang wird vom RPC oder Vertrag nicht unterstützt",
-    "description": "Transaction result error message unsupported operation"
+  "evm_unable_to_reach_verify_transaction": {
+    "message": "Transaction verification is unavailable at the moment, proceed with caution",
+    "description": "Error message if backend not available while fetch verify transaction info"
   },
-  "evm_transaction_result_error_message_execution_reverted": {
-    "message": "Die Transaktion wurde vom Vertrag rückgängig gemacht",
-    "description": "Transaction result error message execution reverted"
+  "evm_created_smart_contract": {
+    "message": "Created smart contract",
+    "description": "Created smart contract label"
   },
-  "evm_transaction_result_error_message_call_exception": {
-    "message": "Die Transaktion ist während der Vertragsausführung fehlgeschlagen",
-    "description": "Transaction result error message call exception"
+  "evm_no_nfts_found": {
+    "message": "No NFTs found",
+    "description": "No nft"
   },
-  "evm_error_message_insufficient_token_balance": {
-    "message": "Unzureichendes Token-Guthaben",
-    "description": "Transaction result error message insufficient token balance"
+  "evm_tx_completed_notification_message": {
+    "message": "Tx #$1 was completed",
+    "description": "Transaction completed message"
   },
-  "evm_transaction_result_error_message_gas_required_exceeds_allowance": {
-    "message": "Die Gas-Schätzung ist fehlgeschlagen, weil die Transaktion wahrscheinlich rückgängig gemacht würde",
-    "description": "Transaction result error message gas required exceeds allowance"
+  "evm_tx_failed_notification_message": {
+    "message": "Tx #$1 has failed. For more details, click here.",
+    "description": "Transaction completed message"
   },
-  "evm_transaction_result_error_message_missing_revert_data": {
-    "message": "Die Transaktion ist ohne Revert-Details fehlgeschlagen",
-    "description": "Transaction result error message missing revert data"
+  "evm_tx_completed_notification_title": {
+    "message": "Transaction completed",
+    "description": "Transaction completed title"
   },
-  "evm_transaction_result_error_message_access_denied": {
-    "message": "Diese Aktion ist für das aktuelle Konto nicht erlaubt",
-    "description": "Transaction result error message access denied"
+  "evm_tx_failed_notification_title": {
+    "message": "Transaction failed",
+    "description": "Transaction completed title"
   },
-  "evm_transaction_result_error_message_paused": {
-    "message": "Dieser Vertrag ist derzeit pausiert",
-    "description": "Transaction result error message paused"
+  "evm_wallets": {
+    "message": "Wallets",
+    "description": "Evm wallets"
   },
-  "evm_transaction_result_error_message_blacklisted": {
-    "message": "Diese Adresse wird vom Vertrag blockiert",
-    "description": "Transaction result error message blacklisted"
+  "evm_contact_no_label": {
+    "message": "No label",
+    "description": "Evm contact no label"
   },
-  "evm_transaction_result_error_message_transaction_expired": {
-    "message": "Die Transaktion ist abgelaufen oder hat ihre Frist überschritten",
-    "description": "Transaction result error message transaction expired"
+  "evm_edit_contact_modal_title": {
+    "message": "Edit contact",
+    "description": "Evm edit contact modal title"
   },
-  "evm_transaction_result_error_message_slippage": {
-    "message": "Die Transaktion ist fehlgeschlagen, weil die Slippage-Toleranz überschritten wurde",
-    "description": "Transaction result error message slippage"
+  "evm_contact_address": {
+    "message": "Address",
+    "description": "Evm address"
   },
-  "evm_request_add_custom_chain_title": {
-    "message": "Add a custom chain",
-    "description": "Request to add a custom chain title"
+  "evm_contact_address_invalid": {
+    "message": "Enter a valid address.",
+    "description": "Validation error when saving a contact with an invalid EVM address"
   },
-  "evm_request_add_custom_chain_caption": {
-    "message": "$1 requested a switch to chain $2, but Keychain doesn't know this chain yet. Add the custom chain details below to continue.",
-    "description": "Request to add a custom chain caption"
+  "evm_contact_label": {
+    "message": "Label",
+    "description": "Evm label"
+  },
+  "evm_delete_contact_link": {
+    "message": "Delete contact",
+    "description": "Evm delete contact link"
+  },
+  "evm_add_contact_link": {
+    "message": "Add contact",
+    "description": "Evm add contact link"
+  },
+  "evm_contacts_section": {
+    "message": "Contacts",
+    "description": "Contacts section on the addresses settings page"
+  },
+  "evm_addresses_add": {
+    "message": "Add",
+    "description": "Add link on the addresses settings page"
+  },
+  "evm_addresses_no_whitelisted_account_yet": {
+    "message": "No whitelisted account yet.",
+    "description": "Empty state on the contacts section of the addresses settings page"
+  },
+  "evm_addresses_no_whitelisted_smart_contract_yet": {
+    "message": "No whitelisted smart contract yet.",
+    "description": "Empty state on the smart contracts section of the addresses settings page"
+  },
+  "evm_contact_new_contact": {
+    "message": "New contact",
+    "description": "Evm new contact"
+  },
+  "evm_fee_estimate_unknown_duration": {
+    "message": "Unknown",
+    "description": "Unknown duration"
+  },
+  "evm_gas_fee_warning_not_available": {
+    "message": "The gas fee estimation is currently unavailable",
+    "description": "Gas fee estimation not available"
+  },
+  "evm_gas_fee_warning_not_available_for_chain": {
+    "message": "The gas fee estimation is unavailable for this chain",
+    "description": "Gas fee estimation not available for chain"
+  },
+  "evm_transaction_broadcasted": {
+    "message": "Transaction was broadcasted. Please wait for it to be confirmed.",
+    "description": "Transaction broadcasted message"
+  },
+  "evm_collection_name": {
+    "message": "Collection name",
+    "description": "Collection name"
+  },
+  "evm_gas_fee_warning_priority_fee_higher_than_max_fee": {
+    "message": "Max fee must be higher than priority fee",
+    "description": "Priority fee is higher than max fee"
+  },
+  "evm_transaction_result_error_message_underpriced": {
+    "message": "Fee is too low, please increase it",
+    "description": "Transaction result error message underpriced"
+  },
+  "evm_transaction_result_unknown_error": {
+    "message": "An unknown error occurred",
+    "description": "Transaction result unknown error"
+  },
+  "evm_history_canceled_transaction": {
+    "message": "Canceled transaction",
+    "description": "Transaction canceled"
+  },
+  "evm_history_operation_canceled": {
+    "message": "You have canceled an operation",
+    "description": "EVM history message for CANCELED_OP operations"
+  },
+  "evm_transaction_result_error_message_nonce_expired": {
+    "message": "Nonce expired, please try again",
+    "description": "Transaction result error message nonce expired"
+  },
+  "evm_transaction_not_canceled_error": {
+    "message": "The transaction couldn't be canceled",
+    "description": "Transaction couldn't be canceled error message"
+  },
+  "evm_rpcs_not_responding_error": {
+    "message": "All RPCs are not responding, please try again later",
+    "description": "All RPCs are not responding error message"
+  },
+  "evm_rpc_already_in_list": {
+    "message": "This RPC is already in the list",
+    "description": "RPC already in list error message"
+  },
+  "evm_add_rpc_not_working_warning": {
+    "message": "This RPC doesn't seem to be working. Are you sure you want to add it ?",
+    "description": "RPC not working warning message while adding new rpc"
+  },
+  "evm_add_http_rpc_warning": {
+    "message": "This RPC uses HTTP and is not encrypted. Only add it if you trust this endpoint.",
+    "description": "HTTP RPC warning message while adding a new EVM RPC from the popup"
+  },
+  "evm_add_rpc_invalid_chain_error": {
+    "message": "This RPC is not responding for the selected chain.",
+    "description": "Invalid chain error message while adding a new EVM RPC"
+  },
+  "evm_history_warning_potential_zero_amount_scam": {
+    "message": "This transaction might be a zero-amount scam. Be careful when transacting to this address.",
+    "description": "Potential zero amount scam warning message"
+  },
+  "evm_error_message_transfer_amount_exceeds_allowance": {
+    "message": "Transfer amount exceeds allowance",
+    "description": "Transaction result error message transfer amount exceeds allowance"
+  },
+  "evm_add_chain": {
+    "message": "Add chain",
+    "description": "Add chain"
+  },
+  "evm_update_chain": {
+    "message": "Update chain",
+    "description": "Update chain"
+  },
+  "evm_chain_symbol": {
+    "message": "Symbol",
+    "description": "Chain symbol"
+  },
+  "evm_chain_decimals": {
+    "message": "Decimals",
+    "description": "Chain decimals"
+  },
+  "evm_chain_block_explorer": {
+    "message": "Block explorer",
+    "description": "Chain block explorer"
+  },
+  "evm_chain_rpcs": {
+    "message": "RPCs",
+    "description": "Chain rpc"
+  },
+  "evm_chain_name": {
+    "message": "Name",
+    "description": "Chain name"
+  },
+  "evm_add_chain_caption": {
+    "message": "$1 is asking you to add a new chain. Make sure you trust this chain before adding it.",
+    "description": "Add chain caption"
+  },
+  "evm_update_chain_caption": {
+    "message": "$1 is asking to update an existing chain. This will add the RPC URLs to the existing list, but they will not become active automatically.",
+    "description": "Update chain caption"
+  },
+  "html_popup_popular_chains": {
+    "message": "Popular chains",
+    "description": "Popular chains"
+  },
+  "html_popup_testnet_chains": {
+    "message": "Testnets",
+    "description": "Testnet chains"
+  },
+  "html_popup_custom_chains": {
+    "message": "Custom chains",
+    "description": "Custom chains section"
+  },
+  "html_popup_manage_chains": {
+    "message": "Manage chains",
+    "description": "Manage chains page and dropdown action"
+  },
+  "html_popup_search_chains": {
+    "message": "Search chains...",
+    "description": "Search chains input placeholder"
+  },
+  "html_popup_manage_chains_empty_results": {
+    "message": "No chains match your search.",
+    "description": "Empty state when Manage chains filters have no results"
+  },
+  "html_popup_non_popular_chains": {
+    "message": "Other chains",
+    "description": "Non popular chains"
+  },
+  "popup_html_show_testnets": {
+    "message": "Show testnets",
+    "description": "Show testnets"
+  },
+  "avalanche_smart_contract": {
+    "message": "Avalanche Smart contract test"
+  },
+  "evm_pay_to_smart_contract": {
+    "message": "Pay to Smart Contract",
+    "description": "Pay to smart contract"
+  },
+  "evm_add_custom_token": {
+    "message": "Add custom token",
+    "description": "Add custom tokens"
+  },
+  "evm_add_custom_nft": {
+    "message": "Add custom NFT",
+    "description": "Add a custom NFT"
+  },
+  "evm_custom_tokens_page_title": {
+    "message": "Custom tokens",
+    "description": "Title for the custom ERC20 tokens management page"
+  },
+  "evm_custom_nfts_page_title": {
+    "message": "Custom NFTs",
+    "description": "Title for the custom NFT management page"
+  },
+  "evm_custom_tokens_page_empty": {
+    "message": "No custom tokens yet. Add one to register an ERC20 contract for this network.",
+    "description": "Empty state on custom tokens page"
+  },
+  "evm_custom_nfts_page_empty": {
+    "message": "No custom NFTs yet. Add one to register NFT token IDs for this network.",
+    "description": "Empty state on custom NFT page"
+  },
+  "evm_custom_tokens_page_caption": {
+    "message": "Custom tokens are stored per network. You can remove them from this list at any time.",
+    "description": "Intro caption on custom tokens page"
+  },
+  "evm_custom_nfts_page_caption": {
+    "message": "Custom NFTs are stored per wallet and network. Saved entries stay here even if you no longer own those token IDs.",
+    "description": "Intro caption on custom NFT page"
+  },
+  "evm_custom_tokens_delete": {
+    "message": "Delete",
+    "description": "Remove a custom ERC20 token from the list"
+  },
+  "evm_custom_nfts_delete": {
+    "message": "Delete",
+    "description": "Remove a custom NFT entry from the list"
+  },
+  "evm_custom_tokens_delete_confirm": {
+    "message": "Remove \"$1\" from your custom tokens? This cannot be undone.",
+    "description": "Confirmation before deleting a custom token; $1 is symbol or name"
+  },
+  "evm_custom_nfts_delete_confirm": {
+    "message": "Remove \"$1\" from your custom NFTs? This cannot be undone.",
+    "description": "Confirmation before deleting a custom NFT entry; $1 is the contract address"
+  },
+  "evm_custom_tokens_modal_title_edit": {
+    "message": "Edit custom token",
+    "description": "Title when editing a saved custom ERC20 token"
+  },
+  "evm_custom_nfts_modal_title_edit": {
+    "message": "Edit custom NFT",
+    "description": "Title when editing a saved custom NFT entry"
+  },
+  "evm_custom_tokens_modal_caption_edit": {
+    "message": "Change the symbol or logo. Name and decimals are read from the contract when you save.",
+    "description": "Caption when editing a custom ERC20 token"
+  },
+  "evm_custom_nfts_modal_caption_edit": {
+    "message": "Replace the token ID list for this NFT contract. The NFT type stays the same.",
+    "description": "Caption when editing a custom NFT entry"
+  },
+  "evm_wallet_tokens_filter_no_results": {
+    "message": "No token found",
+    "description": "Shown on wallet tokens tab when the search/filter has no matching tokens"
+  },
+  "evm_custom_erc20_empty_card_message": {
+    "message": "You don't have any custom tokens yet.</br> To get started, click on the settings wheel.",
+    "description": "Hint on wallet tokens tab when there are no custom ERC20 tokens"
+  },
+  "evm_custom_erc20_empty_card_hide": {
+    "message": "Hide",
+    "description": "Dismiss the custom ERC20 empty-state hint card"
+  },
+  "evm_custom_nft_empty_card_message": {
+    "message": "You don't have any custom NFTs yet.</br> To get started, click on the settings wheel.",
+    "description": "Hint on wallet NFT tab when there are no custom NFTs on a custom chain"
+  },
+  "evm_custom_history_info_card_message": {
+    "message": "On this custom chain, only transactions broadcasted by Keychain will be displayed",
+    "description": "Hint on wallet history tab for custom EVM chains"
+  },
+  "evm_add_custom_token_popup_title": {
+    "message": "Add custom token",
+    "description": "Add custom token popup title"
+  },
+  "evm_add_custom_nft_popup_title": {
+    "message": "Add custom NFT",
+    "description": "Add custom NFT popup title"
+  },
+  "evm_smart_contract_address": {
+    "message": "Smart contract address",
+    "description": "Smart contract address"
+  },
+  "evm_add_custom_token_popup_caption": {
+    "message": "Add a custom token to your wallet. If you don't find the token you're looking for, you can add it manually.",
+    "description": "Add custom token popup caption"
+  },
+  "evm_watch_asset_title": {
+    "message": "Add custom token",
+    "description": "Title when a dApp requests wallet_watchAsset"
+  },
+  "evm_watch_asset_caption": {
+    "message": "$1 is asking you to add a custom token to Keychain.",
+    "description": "Caption when a dApp requests wallet_watchAsset; $1 is the dApp domain"
+  },
+  "evm_add_custom_nft_popup_caption": {
+    "message": "Add an NFT contract and the token IDs you own. Keychain will detect whether the contract is ERC721 or ERC1155.",
+    "description": "Add custom NFT popup caption"
+  },
+  "evm_custom_nfts_field_collection_name": {
+    "message": "Collection name (optional)",
+    "description": "Label for optional custom NFT collection display name"
+  },
+  "evm_custom_nfts_field_token_ids": {
+    "message": "Token IDs",
+    "description": "Label for NFT token IDs field"
+  },
+  "evm_custom_nfts_type_auto_detected": {
+    "message": "The NFT type will be detected automatically when you save.",
+    "description": "Message explaining NFT type auto detection"
+  },
+  "evm_custom_nfts_type_detected": {
+    "message": "This saved entry uses the $1 standard.",
+    "description": "Message explaining the detected NFT type; $1 is ERC721 or ERC1155"
+  },
+  "evm_custom_nfts_token_count": {
+    "message": "$1 saved token IDs",
+    "description": "Custom NFT token count label; $1 is the number of saved token IDs"
   },
   "evm_add_custom_asset_error_contract_address_invalid": {
     "message": "Enter a valid contract address.",
@@ -4791,6 +6882,321 @@
     "message": "Could not detect a supported NFT contract at this address. Only ERC721 and ERC1155 contracts are supported.",
     "description": "Error when the address is not a supported ERC721 or ERC1155 contract"
   },
+  "evm_add_manually_discover": {
+    "message": "Discover tokens",
+    "description": "Discover tokens"
+  },
+  "evm_pending_queued_transactions": {
+    "message": "You have 1 pending transaction and $1 queued transactions",
+    "description": "Pending and queued transactions"
+  },
+  "evm_one_pending_transaction": {
+    "message": "You have 1 pending transaction",
+    "description": "Pending transaction"
+  },
+  "evm_unknown_pending_transaction": {
+    "message": "Unknown pending transaction",
+    "description": "Unknown pending transaction"
+  },
+  "evm_pending_transaction": {
+    "message": "Pending transaction",
+    "description": "Pending transaction"
+  },
+  "evm_pending_transaction_warning": {
+    "message": "You have a pending transaction. No new transaction will be confirmed until the pending one is completed.",
+    "description": "Pending transaction warning"
+  },
+  "evm_gas_fee_warning_gas_limit_too_low": {
+    "message": "Gas limit is too low. Should be at least 21000",
+    "description": "Gas limit is too low"
+  },
+  "evm_nonce": {
+    "message": "Nonce",
+    "description": "Nonce"
+  },
+  "evm_cancel_transaction": {
+    "message": "Cancel transaction",
+    "description": "Cancel transaction"
+  },
+  "evm_canceled_transaction": {
+    "message": "Canceled transaction",
+    "description": "Canceled transaction"
+  },
+  "evm_cancel_transaction_error": {
+    "message": "Error during cancel transaction",
+    "description": "Error during cancel transaction"
+  },
+  "evm_cancel_transaction_confirm_message": {
+    "message": "You are about to cancel a unknown pending transaction.",
+    "description": "Error during cancel transaction"
+  },
+  "insufficient_balance_warning": {
+    "message": "Insufficient balance. Transaction will fail.",
+    "description": "Insufficient balance warning message"
+  },
+  "coming_soon_panel_title": {
+    "message": "Coming Soon",
+    "description": "Coming soon panel title"
+  },
+  "coming_soon_panel_description": {
+    "message": "This feature is not available yet. Please check back later.",
+    "description": "Coming soon panel description"
+  },
+  "evm_chain_non_supported": {
+    "message": "Chain $1 is not supported by Keychain",
+    "description": "Chain not supported error message"
+  },
+  "evm_request_add_chain_title": {
+    "message": "Add a chain",
+    "description": "Request to add chain title"
+  },
+  "evm_request_add_chain_caption": {
+    "message": "$1 has requested to make an action on a chain you haven't setup yet. Do you want to add it to Keychain and proceed with that transaction?",
+    "description": "Request to add chain caption"
+  },
+  "evm_request_add_custom_chain_title": {
+    "message": "Add a custom chain",
+    "description": "Request to add a custom chain title"
+  },
+  "evm_request_add_custom_chain_caption": {
+    "message": "$1 requested a switch to chain $2, but Keychain doesn't know this chain yet. Add the custom chain details below to continue.",
+    "description": "Request to add a custom chain caption"
+  },
+  "evm_link_to_other_receiver": {
+    "message": "Click here to change the receiver",
+    "description": "Link to other receiver"
+  },
+  "evm_swap_receiver_address": {
+    "message": "Receiver address",
+    "description": "Swap receiver address"
+  },
+  "evm_processed_by": {
+    "message": "Processed by $1",
+    "description": "Processed by"
+  },
+  "evm_swap_approval_amount": {
+    "message": "Approval amount",
+    "description": "Swap approval amount"
+  },
+  "swap_error_getting_estimate": {
+    "message": "Error getting estimate",
+    "description": "Error getting estimate"
+  },
+  "evm_lifi_swap_confirm_message": {
+    "message": ""
+  },
+  "evm_lifi_swap": {
+    "message": "LiFi Swap",
+    "description": "LiFi Swap"
+  },
+  "evm_swap_operation": {
+    "message": "Swap",
+    "description": "Swap operation"
+  },
+  "evm_approval_operation": {
+    "message": "Approve",
+    "description": "Approval operation"
+  },
+  "evm_lifi_swap_amount_out": {
+    "message": "Amount out",
+    "description": "Amount out"
+  },
+  "evm_lifi_swap_amount_in": {
+    "message": "Amount in",
+    "description": "Amount in"
+  },
+  "evm_lifi_swap_status_wait_source_confirmation": {
+    "message": "Waiting for source confirmation",
+    "description": "Waiting for source confirmation"
+  },
+  "evm_lifi_swap_status_wait_target_confirmation": {
+    "message": "Waiting for destination confirmation",
+    "description": "Waiting for destination confirmation"
+  },
+  "evm_lifi_swap_status_bridge_not_available": {
+    "message": "Bridge not available",
+    "description": "Bridge not available"
+  },
+  "evm_lifi_swap_status_chain_not_available": {
+    "message": "Chain not available",
+    "description": "Chain not available"
+  },
+  "evm_lifi_swap_refund_in_progress": {
+    "message": "Refund in progress",
+    "description": "Refund in progress"
+  },
+  "evm_lifi_swap_unknown_error": {
+    "message": "Unknown error",
+    "description": "Unknown error"
+  },
+  "evm_lifi_swap_completed": {
+    "message": "Completed",
+    "description": "Completed"
+  },
+  "evm_lifi_swap_partially_completed": {
+    "message": "Partially completed. You received a different token, the value has been fully preserved",
+    "description": "Partially completed"
+  },
+  "evm_lifi_swap_refunded_completed": {
+    "message": "Refund completed",
+    "description": "Refund completed"
+  },
+  "evm_lifi_swap_manual_intervention_required": {
+    "message": "Manual intervention required",
+    "description": "Manual intervention required"
+  },
+  "evm_lifi_swap_failed_out_of_gas": {
+    "message": "Operation ran out of gas",
+    "description": "Operation ran out of gas"
+  },
+  "evm_lifi_swap_failed_slippage": {
+    "message": "Slippage protection triggered",
+    "description": "Slippage protection triggered"
+  },
+  "evm_lifi_swap_failed_insufficient_allowance": {
+    "message": "Insufficient allowance",
+    "description": "Insufficient allowance"
+  },
+  "evm_lifi_swap_failed_insufficient_balance": {
+    "message": "Insufficient balance",
+    "description": "Insufficient balance"
+  },
+  "evm_lifi_swap_failed_transaction_expired": {
+    "message": "Transaction expired",
+    "description": "Transaction expired"
+  },
+  "evm_lifi_swap_error_no_available_quotes": {
+    "message": "No available quotes for the requested transfer",
+    "description": "No available quotes for the requested transfer"
+  },
+  "evm_lifi_swap_error_same_token_source_and_destination": {
+    "message": "The same token cannot be used as source and destination",
+    "description": "The same token cannot be used as source and destination"
+  },
+  "evm_lifi_swap_error_build_transaction": {
+    "message": "Unable to build the swap transaction. Please try again or adjust your parameters.",
+    "description": "LiFi failed to build transaction error"
+  },
+  "evm_lifi_swap_error_amount_too_low": {
+    "message": "Amount is too low for this swap. Try increasing the amount.",
+    "description": "LiFi amount too low error"
+  },
+  "evm_lifi_swap_error_amount_too_high": {
+    "message": "Amount is too high or liquidity is insufficient. Try a smaller amount.",
+    "description": "LiFi amount too high or insufficient liquidity error"
+  },
+  "evm_lifi_swap_error_fees_exceed_amount": {
+    "message": "Network fees exceed the swap amount. Try a larger amount.",
+    "description": "LiFi fees higher than amount error"
+  },
+  "evm_lifi_swap_error_rate_limited": {
+    "message": "Too many requests. Please wait a moment before trying again.",
+    "description": "LiFi rate limit error"
+  },
+  "evm_lifi_swap_error_service_unavailable": {
+    "message": "Swap service is temporarily unavailable. Please try again shortly.",
+    "description": "LiFi service unavailable error"
+  },
+  "evm_lifi_swap_error_invalid_request": {
+    "message": "Invalid swap parameters. Please check your selection and try again.",
+    "description": "LiFi invalid request error"
+  },
+  "evm_lifi_swap_approving_smart_contract": {
+    "message": "Approving smart contract",
+    "description": "Approving smart contract"
+  },
+  "evm_lifi_swap_sending_swap_transaction": {
+    "message": "Sending swap transaction",
+    "description": "Sending swap transaction"
+  },
+  "evm_lifi_swap_delay_caption_message": {
+    "message": "Your swap might take a few minutes to appear in your history after the transaction is confirmed",
+    "description": "Delay caption message"
+  },
+  "evm_insufficient_token_balance": {
+    "message": "Unzureichendes $1-Guthaben.",
+    "description": "Insufficient token balance message on EVM balance change card"
+  },
+  "evm_transaction_result_error_message_insufficient_funds": {
+    "message": "Unzureichende Mittel, um diese Transaktion abzuschließen",
+    "description": "Transaction result error message insufficient funds"
+  },
+  "evm_transaction_result_error_message_user_rejected": {
+    "message": "Die Transaktion wurde vom Benutzer abgelehnt",
+    "description": "Transaction result error message user rejected"
+  },
+  "evm_transaction_result_error_message_transaction_replaced": {
+    "message": "Die Transaktion wurde durch eine andere Transaktion ersetzt",
+    "description": "Transaction result error message transaction replaced"
+  },
+  "evm_transaction_result_error_message_network": {
+    "message": "Dieser RPC scheint nicht richtig zu funktionieren. Bitte erwägen Sie, ihn in den Erweiterten Einstellungen zu ändern",
+    "description": "Transaction result error when RPC/network fails; suggests changing RPC in Advanced Settings"
+  },
+  "evm_transaction_result_error_message_bad_data": {
+    "message": "Das RPC hat ungültige Daten zurückgegeben",
+    "description": "Transaction result error message bad data"
+  },
+  "evm_transaction_result_error_message_invalid_parameters": {
+    "message": "Die Transaktionsanfrage enthält ungültige Parameter",
+    "description": "Transaction result error message invalid parameters"
+  },
+  "evm_transaction_result_error_message_unsupported_operation": {
+    "message": "Dieser Vorgang wird vom RPC oder Vertrag nicht unterstützt",
+    "description": "Transaction result error message unsupported operation"
+  },
+  "evm_transaction_result_error_message_execution_reverted": {
+    "message": "Die Transaktion wurde vom Vertrag rückgängig gemacht",
+    "description": "Transaction result error message execution reverted"
+  },
+  "evm_transaction_result_error_message_execution_reverted_with_reason": {
+    "message": "Transaction execution was reverted by the contract : $1",
+    "description": "Transaction result error message execution reverted"
+  },
+  "evm_transaction_result_error_message_call_exception": {
+    "message": "Die Transaktion ist während der Vertragsausführung fehlgeschlagen",
+    "description": "Transaction result error message call exception"
+  },
+  "evm_error_message_insufficient_token_balance": {
+    "message": "Unzureichendes Token-Guthaben",
+    "description": "Transaction result error message insufficient token balance"
+  },
+  "evm_transaction_result_error_message_gas_required_exceeds_allowance": {
+    "message": "Die Gas-Schätzung ist fehlgeschlagen, weil die Transaktion wahrscheinlich rückgängig gemacht würde",
+    "description": "Transaction result error message gas required exceeds allowance"
+  },
+  "evm_transaction_result_error_message_missing_revert_data": {
+    "message": "Die Transaktion ist ohne Revert-Details fehlgeschlagen",
+    "description": "Transaction result error message missing revert data"
+  },
+  "evm_transaction_result_error_message_access_denied": {
+    "message": "Diese Aktion ist für das aktuelle Konto nicht erlaubt",
+    "description": "Transaction result error message access denied"
+  },
+  "evm_transaction_result_error_message_paused": {
+    "message": "Dieser Vertrag ist derzeit pausiert",
+    "description": "Transaction result error message paused"
+  },
+  "evm_transaction_result_error_message_blacklisted": {
+    "message": "Diese Adresse wird vom Vertrag blockiert",
+    "description": "Transaction result error message blacklisted"
+  },
+  "evm_transaction_result_error_message_transaction_expired": {
+    "message": "Die Transaktion ist abgelaufen oder hat ihre Frist überschritten",
+    "description": "Transaction result error message transaction expired"
+  },
+  "evm_transaction_result_error_message_slippage": {
+    "message": "Die Transaktion ist fehlgeschlagen, weil die Slippage-Toleranz überschritten wurde",
+    "description": "Transaction result error message slippage"
+  },
+  "evm_activity_tab": {
+    "message": "Activity",
+    "description": "Activity tab"
+  },
+  "manage_accounts": {
+    "message": "Manage accounts",
+    "description": "Manage accounts"
+  },
   "evm_switch_chain": {
     "message": "Switch chain",
     "description": "Title for EVM switch chain confirmation dialog"
@@ -4805,44 +7211,12 @@
       }
     }
   },
-  "evm_send_transaction_ignore_warning": {
-    "message": "Proceed anyway",
-    "description": "Acknowledge warning and continue"
+  "reload_extension": {
+    "message": "Reload extension",
+    "description": "Button label to reload the extension"
   },
-  "evm_risk_banner_message": {
-    "message": "$1 security issue(s) — highest risk: $2. Tap to review before confirming.",
-    "description": "Clickable risk banner on EVM confirmation pages"
-  },
-  "evm_risk_severity_high": {
-    "message": "Critical",
-    "description": "High severity warning label"
-  },
-  "evm_risk_severity_medium": {
-    "message": "Warning",
-    "description": "Medium severity warning label"
-  },
-  "evm_risk_severity_low": {
-    "message": "Notice",
-    "description": "Low severity warning label"
-  },
-  "evm_risk_banner_review": {
-    "message": "Review warnings",
-    "description": "CTA on the risk alert banner"
-  },
-  "evm_risk_modal_title_high": {
-    "message": "Critical security issue(s)",
-    "description": "Title for high severity warning modal"
-  },
-  "evm_risk_modal_title_medium": {
-    "message": "Security warning",
-    "description": "Title for medium severity warning modal"
-  },
-  "evm_risk_modal_title_low": {
-    "message": "Security notice",
-    "description": "Title for low severity warning modal"
-  },
-  "evm_risk_warning_reviewed": {
-    "message": "Reviewed",
-    "description": "Label shown when a warning was acknowledged"
+  "evm_error_gas_estimate": {
+    "message": "Gas estimation failed. You will need to enter a custom gas fee.",
+    "description": "Gas estimation failed. You will need to enter a custom gas fee."
   }
 }

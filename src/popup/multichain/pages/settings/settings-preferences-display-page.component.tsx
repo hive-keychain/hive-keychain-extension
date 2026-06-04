@@ -14,17 +14,16 @@ import { SidePanelPreferenceUtils } from 'src/utils/side-panel-preference.utils'
 
 import { I18nLanguageOption, I18nUtils } from 'src/utils/i18n.utils';
 
-const languageOptions = I18nUtils.getLanguageOptions();
-
 const SettingsPreferencesDisplayPage = ({
   setTitleContainerProperties,
 }: PropsFromRedux) => {
   const { setTheme, theme } = useThemeContext();
   const [openSidePanelByDefault, setOpenSidePanelByDefault] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<I18nLanguageOption>(
-    I18nUtils.getLanguageOption(I18nUtils.getCurrentLanguage()),
+    I18nUtils.getLanguageOption(),
   );
   const isToolbarPopup = ExtensionSurfaceUtils.isToolbarPopup();
+  const languageOptions = I18nUtils.getLanguageOptions();
 
   useEffect(() => {
     setTitleContainerProperties({

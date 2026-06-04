@@ -51,6 +51,11 @@ describe('I18nUtils', () => {
 
   it('falls back to English when a selected locale is missing a key', () => {
     chrome.i18n.getUILanguage = jest.fn().mockReturnValue('fr-FR');
+    const frenchResources = I18nUtils.getInstance().store.data.fr.translation as
+      | Record<string, string>
+      | undefined;
+
+    delete frenchResources?.popup_html_wrong_key_active;
 
     expect(I18nUtils.getMessage('popup_html_wrong_key_active')).toBe(
       'Wrong key. Please use active key',
@@ -82,9 +87,12 @@ describe('I18nUtils', () => {
   });
 
   it('returns the available language options from locale resources', () => {
+    chrome.i18n.getUILanguage = jest.fn().mockReturnValue('en-US');
+
     expect(I18nUtils.getLanguageOptions().map((option) => option.value)).toEqual(
-      ['de', 'en', 'es', 'fr', 'id', 'pt', 'zh-CN', 'zh-TW'],
+      ['browser', 'de', 'en', 'es', 'fr', 'id', 'pt', 'zh-CN', 'zh-TW'],
     );
+    expect(I18nUtils.getLanguageOptions()[0].label).toBe('Browser language');
   });
 
   it('uses the saved language preference before the system language', async () => {
@@ -96,16 +104,40 @@ describe('I18nUtils', () => {
     expect(I18nUtils.getCurrentLanguage()).toBe('pt');
   });
 
-  it('uses the system language when no saved preference exists', async () => {
+  it('uses the browser language preference when no saved preference exists', async () => {
     chrome.i18n.getUILanguage = jest.fn().mockReturnValue('es-MX');
 
-    await expect(I18nUtils.getSavedOrDefaultLanguage()).resolves.toBe('es');
+    await expect(I18nUtils.getSavedOrDefaultLanguage()).resolves.toBe(
+      'browser',
+    );
   });
 
-  it('uses English when the system language is unavailable', async () => {
+  it('resolves the browser language preference to the browser locale', async () => {
+    chrome.i18n.getUILanguage = jest.fn().mockReturnValue('es-MX');
+
+    await expect(I18nUtils.initLanguageFromStorage()).resolves.toBe('es');
+
+    expect(I18nUtils.getCurrentLanguage()).toBe('es');
+  });
+
+  it('uses English when the browser language is unavailable', async () => {
     chrome.i18n.getUILanguage = jest.fn().mockReturnValue('sv-SE');
 
-    await expect(I18nUtils.getSavedOrDefaultLanguage()).resolves.toBe('en');
+    await expect(I18nUtils.initLanguageFromStorage()).resolves.toBe('en');
+
+    expect(I18nUtils.getCurrentLanguage()).toBe('en');
+  });
+
+  it('saves the browser language preference explicitly', async () => {
+    chrome.i18n.getUILanguage = jest.fn().mockReturnValue('es-MX');
+
+    await expect(I18nUtils.saveLanguage('browser')).resolves.toBe('browser');
+
+    expect(saveValueInLocalStorageMock).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.ACTIVE_LANGUAGE,
+      'browser',
+    );
+    expect(I18nUtils.getCurrentLanguage()).toBe('es');
   });
 
   it('saves the selected language preference using supported locale fallback', async () => {
