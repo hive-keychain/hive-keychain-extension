@@ -22,6 +22,7 @@ import {
 } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type HiveAccountOption = OptionItem & {
   value: string;
 };
@@ -144,7 +145,7 @@ const NotificationConfigPage = ({
           data-testid={`${Screen.SETTINGS_NOTIFICATIONS_CONFIGURATION}-page`}
           className={`notifications-config-page`}>
           <div className="caption">
-            {chrome.i18n.getMessage(
+            {I18nUtils.getMessage(
               'html_popup_settings_notifications_caption',
             )}
           </div>
@@ -171,7 +172,7 @@ const NotificationConfigPage = ({
           <div
             className="link-to-advanced-settings"
             onClick={openAdvancedConfiguration}>
-            {chrome.i18n.getMessage('notification_settings_advanced_settings')}
+            {I18nUtils.getMessage('notification_settings_advanced_settings')}
           </div>
 
           <div className="fill-space"></div>

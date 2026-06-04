@@ -27,6 +27,7 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface RcIncomingOutgoingProps {
   delegationType: DelegationType;
   username?: string;
@@ -92,7 +93,7 @@ const RcIncomingOutgoingDelegationItem = ({
     ];
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.posting,
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         'popup_html_cancel_rc_delegation_confirm_text',
       ),
       fields: fields,
@@ -175,7 +176,7 @@ const RcIncomingOutgoingDelegationItem = ({
                       onClick={() => goToEdit(rcDelegation)}>
                       <SVGIcon icon={SVGIcons.FAVORITE_ACCOUNTS_EDIT} />
                       <span className="label">
-                        {chrome.i18n.getMessage('html_popup_button_edit_label')}
+                        {I18nUtils.getMessage('html_popup_button_edit_label')}
                       </span>
                     </div>
                     <div
@@ -183,7 +184,7 @@ const RcIncomingOutgoingDelegationItem = ({
                       onClick={() => cancelDelegation(rcDelegation)}>
                       <SVGIcon icon={SVGIcons.FAVORITE_ACCOUNTS_DELETE} />
                       <span className="label">
-                        {chrome.i18n.getMessage('delete_label')}
+                        {I18nUtils.getMessage('delete_label')}
                       </span>
                     </div>
                   </div>

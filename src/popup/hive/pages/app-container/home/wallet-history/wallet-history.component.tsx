@@ -46,6 +46,7 @@ import { WalletHistoryUtils } from 'src/popup/hive/utils/wallet-history.utils';
 import { ArrayUtils } from 'src/utils/array.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type FilterTransactionTypes = {
   [key: string]: boolean;
 };
@@ -462,7 +463,7 @@ const WalletHistory = ({
                           : 'not-selected')
                       }
                       onClick={() => toggleFilterType(filterOperationType)}>
-                      {chrome.i18n.getMessage(
+                      {I18nUtils.getMessage(
                         `popup_html_filter_type_${filterOperationType}`,
                       )}{' '}
                     </div>
@@ -478,7 +479,7 @@ const WalletHistory = ({
                   (filter.inSelected ? 'selected' : 'not-selected')
                 }
                 onClick={() => toggleFilterIn()}>
-                {chrome.i18n.getMessage(`popup_html_filter_in`)}
+                {I18nUtils.getMessage(`popup_html_filter_in`)}
               </div>
               <div
                 data-testid="filter-by-outgoing"
@@ -487,7 +488,7 @@ const WalletHistory = ({
                   (filter.outSelected ? 'selected' : 'not-selected')
                 }
                 onClick={() => toggleFilterOut()}>
-                {chrome.i18n.getMessage(`popup_html_filter_out`)}
+                {I18nUtils.getMessage(`popup_html_filter_out`)}
               </div>
             </div>
           </div>
@@ -515,7 +516,7 @@ const WalletHistory = ({
             className="wallet-history-export-button-icon"
             svgViewBox="14 13 16 15"
           />
-          <span>{chrome.i18n.getMessage('popup_html_export')}</span>
+          <span>{I18nUtils.getMessage('popup_html_export')}</span>
         </button>
         <FlatList
           list={displayedTransactions}
@@ -530,12 +531,12 @@ const WalletHistory = ({
                   <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
                   <div className="text">
                     <div>
-                      {chrome.i18n.getMessage(
+                      {I18nUtils.getMessage(
                         'popup_html_transaction_list_is_empty',
                       )}
                     </div>
                     <div>
-                      {chrome.i18n.getMessage(
+                      {I18nUtils.getMessage(
                         'popup_html_transaction_list_is_empty_try_clear_filter',
                       )}
                     </div>
@@ -550,7 +551,7 @@ const WalletHistory = ({
           !loading && (
             <div className="load-more-panel" onClick={tryToLoadMore}>
               <span className="label">
-                {chrome.i18n.getMessage('popup_html_load_more')}
+                {I18nUtils.getMessage('popup_html_load_more')}
               </span>
               <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE}></SVGIcon>
             </div>

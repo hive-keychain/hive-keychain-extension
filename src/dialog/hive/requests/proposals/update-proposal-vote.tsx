@@ -10,6 +10,7 @@ import RequestItem from 'src/dialog/components/request-item/request-item';
 import Operation from 'src/dialog/hive/operation/operation';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: RequestUpdateProposalVote & RequestId;
   domain: string;
@@ -31,7 +32,7 @@ const UpdateProposalVote = (props: Props) => {
   };
   return (
     <Operation
-      title={chrome.i18n.getMessage('dialog_title_vote_proposal')}
+      title={I18nUtils.getMessage('dialog_title_vote_proposal')}
       {...props}
       {...anonymousProps}>
       {renderUsername()}
@@ -49,8 +50,8 @@ const UpdateProposalVote = (props: Props) => {
         title="dialog_approve"
         content={
           data.approve
-            ? chrome.i18n.getMessage('common_yes')
-            : chrome.i18n.getMessage('common_no')
+            ? I18nUtils.getMessage('common_yes')
+            : I18nUtils.getMessage('common_no')
         }
       />
     </Operation>

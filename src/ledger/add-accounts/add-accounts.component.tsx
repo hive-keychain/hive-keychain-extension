@@ -23,6 +23,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 enum SynchronizeLedgerStep {
   DISCOVER_ACCOUNTS = 'add_accounts_from_ledger',
   SELECT_ACCOUNTS = 'select_account_from_ledger',
@@ -350,16 +351,16 @@ const AddAccountsComponent = ({
       {!embedded && (
         <div className="title-panel">
           <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
-          <div className="title">{chrome.i18n.getMessage(step)}</div>
+          <div className="title">{I18nUtils.getMessage(step)}</div>
         </div>
       )}
 
       {step === SynchronizeLedgerStep.DISCOVER_ACCOUNTS && (
         <div className="account-discovery">
           <div className="caption">
-            {chrome.i18n.getMessage('ledger_account_discovery_caption')}
+            {I18nUtils.getMessage('ledger_account_discovery_caption')}
           </div>
-          <div className="error">{chrome.i18n.getMessage(message)}</div>
+          <div className="error">{I18nUtils.getMessage(message)}</div>
           <div className="fill-space"></div>
           <ButtonComponent
             label="synchronize_ledger_button"
@@ -370,7 +371,7 @@ const AddAccountsComponent = ({
       {step === SynchronizeLedgerStep.SELECT_ACCOUNTS && (
         <div className="select-accounts">
           <div className="caption">
-            {chrome.i18n.getMessage('ledger_select_account_caption')}
+            {I18nUtils.getMessage('ledger_select_account_caption')}
           </div>
           <div className="list">
             {selectableAccounts.map((sa) => (
@@ -394,7 +395,7 @@ const AddAccountsComponent = ({
       {step === SynchronizeLedgerStep.ADD_MISSING_KEYS && (
         <div className="add-missing-keys">
           <div className="caption">
-            {chrome.i18n.getMessage('ledger_add_missing_keys_caption')}
+            {I18nUtils.getMessage('ledger_add_missing_keys_caption')}
           </div>
           <div className="username">@{accountsForm[currentAccount].name}</div>
           <div className="missing-keys">
@@ -477,7 +478,7 @@ const AddAccountsComponent = ({
 
       {step === SynchronizeLedgerStep.FINISHED && (
         <>
-          <div>{chrome.i18n.getMessage(message)}</div>
+          <div>{I18nUtils.getMessage(message)}</div>
           <div className="fill-space"></div>
           <div className="bottom-button-panel">
             <ButtonComponent

@@ -68,6 +68,7 @@ import Logger from 'src/utils/logger.utils';
 import { VersionLogUtils } from 'src/utils/version-log.utils';
 import { WhatsNewUtils } from 'src/utils/whats-new.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const Home = ({
   chain,
   accounts,
@@ -308,7 +309,7 @@ const Home = ({
       return (
         <div className="change-rpc-popup">
           <div className="message">
-            {chrome.i18n.getMessage('popup_html_rpc_not_responding_error', [
+            {I18nUtils.getMessage('popup_html_rpc_not_responding_error', [
               initialRpc?.url!,
               switchToRpc?.url!,
             ])}
@@ -386,7 +387,7 @@ const Home = ({
 
       navigateToWithParams(Screen.CONFIRMATION_PAGE, {
         method: null,
-        message: chrome.i18n.getMessage(
+        message: I18nUtils.getMessage(
           'evm_cancel_transaction_confirm_message',
         ),
         fields: [
@@ -481,7 +482,7 @@ const Home = ({
             className="pending-transactions-info"
             onClick={handleClickOnPendingTransactions}>
             <div className="pending-transactions-info-title">
-              {chrome.i18n.getMessage(
+              {I18nUtils.getMessage(
                 pendingTransactionsInfo.pendingTransactionDetails.title,
                 [pendingTransactionsInfo.queuedTransactionsCount.toString()],
               )}

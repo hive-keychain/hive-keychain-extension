@@ -15,6 +15,7 @@ import * as DialogLifeCycle from 'src/background/requests/dialog-lifecycle';
 import Logger from 'src/utils/logger.utils';
 import * as PreferencesUtils from 'src/utils/preferences.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('index tests:\n', () => {
   const data = {
     domain: 'domain',
@@ -37,7 +38,7 @@ describe('index tests:\n', () => {
 
   beforeEach(() => {
     jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('en-US');
-    chrome.i18n.getMessage = jest
+    I18nUtils.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
   });

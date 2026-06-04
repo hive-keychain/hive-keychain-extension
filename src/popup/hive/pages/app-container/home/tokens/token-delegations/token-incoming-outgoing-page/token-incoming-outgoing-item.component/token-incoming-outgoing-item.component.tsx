@@ -28,6 +28,7 @@ import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface TokenIncomingOutgoingProps {
   delegationType: DelegationType;
   username: string;
@@ -56,7 +57,7 @@ const TokenIncomingOutgoing = ({
   const cancelDelegation = () => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         'popup_html_confirm_cancel_delegation_message',
       ),
       title: 'popup_html_cancel_delegation',
@@ -123,7 +124,7 @@ const TokenIncomingOutgoing = ({
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         'popup_html_delegate_tokens_confirm_text',
       ),
       title: 'popup_html_delegation',
@@ -206,7 +207,7 @@ const TokenIncomingOutgoing = ({
                     className="edit-label"
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
-                    placeholder={chrome.i18n.getMessage(
+                    placeholder={I18nUtils.getMessage(
                       'popup_html_favorite_user_nickname',
                     )}
                   />
@@ -245,7 +246,7 @@ const TokenIncomingOutgoing = ({
                       onClick={() => enterEditMode()}>
                       <SVGIcon icon={SVGIcons.FAVORITE_ACCOUNTS_EDIT} />
                       <span className="label">
-                        {chrome.i18n.getMessage('html_popup_button_edit_label')}
+                        {I18nUtils.getMessage('html_popup_button_edit_label')}
                       </span>
                     </div>
                     <div
@@ -253,7 +254,7 @@ const TokenIncomingOutgoing = ({
                       onClick={() => cancelDelegation()}>
                       <SVGIcon icon={SVGIcons.FAVORITE_ACCOUNTS_DELETE} />
                       <span className="label">
-                        {chrome.i18n.getMessage('delete_label')}
+                        {I18nUtils.getMessage('delete_label')}
                       </span>
                     </div>
                   </div>

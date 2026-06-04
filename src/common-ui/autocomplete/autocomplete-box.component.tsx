@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { AutocompleteItemComponent } from 'src/common-ui/autocomplete/autocomplete-item/autocomplete-item.component';
 import { AutoCompleteUtils } from 'src/utils/autocomplete.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   autoCompleteValues?: AutoCompleteValuesType;
   translateSimpleAutoCompleteValues?: boolean;
@@ -63,7 +64,7 @@ export const AutocompleteBox = ({
                 <div className="category" key={category.title}>
                   <span className="title">
                     {category.translateTitle
-                      ? chrome.i18n.getMessage(category.title)
+                      ? I18nUtils.getMessage(category.title)
                       : category.title}
                   </span>
                   {category.values.map((autoCompleteItem, index) => (

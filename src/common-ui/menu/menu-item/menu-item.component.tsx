@@ -4,6 +4,7 @@ import { Badge, BadgeType } from 'src/common-ui/badge/badge.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface MenuItemProps {
   menuItem: MenuItem;
   handleMenuItemClick: (menuItem: MenuItem) => void;
@@ -28,7 +29,7 @@ export const MenuItemComponent = ({
         onClick={() => handleMenuItemClick(menuItem)}>
         <SVGIcon icon={menuItem.icon} className="icon" forceHover={hovered} />
         <div className="menu-label">
-          {chrome.i18n.getMessage(menuItem.label)}
+          {I18nUtils.getMessage(menuItem.label)}
         </div>
         <div className="divider"></div>
         {menuItem.rightPanel && <menuItem.rightPanel />}

@@ -19,6 +19,7 @@ import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const handleNonAuthorizedMethods = async (
   requestHandler: EvmRequestHandler,
   tab: number,
@@ -54,7 +55,7 @@ export const handleNonAuthorizedMethods = async (
     CommunicationUtils.runtimeSendMessage({
       command: DialogCommand.SEND_DIALOG_ERROR,
       msg: {
-        display_msg: await chrome.i18n.getMessage(
+        display_msg: await I18nUtils.getMessage(
           'dialog_evm_non_existing_method',
           [request.method],
         ),

@@ -6,6 +6,7 @@ import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import { KeychainError } from 'src/keychain-error';
 import { BloggingUtils } from 'src/popup/hive/utils/blogging.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const broadcastVote = async (
   requestHandler: HiveRequestsHandler,
   data: RequestVote & RequestId,
@@ -32,7 +33,7 @@ export const broadcastVote = async (
     );
   } catch (e: any) {
     err = (e as KeychainError).trace || e;
-    err_message = await chrome.i18n.getMessage(
+    err_message = await I18nUtils.getMessage(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -42,7 +43,7 @@ export const broadcastVote = async (
       result,
       data,
       request?.tab!,
-      await chrome.i18n.getMessage('bgd_ops_vote', [
+      await I18nUtils.getMessage('bgd_ops_vote', [
         data.author,
         data.permlink,
         +data.weight / 100 + '',

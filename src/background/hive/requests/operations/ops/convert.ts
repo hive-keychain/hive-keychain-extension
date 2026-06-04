@@ -17,6 +17,7 @@ import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const convert = async (
   requestHandler: HiveRequestsHandler,
   data: RequestConvert & RequestId,
@@ -83,7 +84,7 @@ export const convert = async (
   } catch (e: any) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await chrome.i18n.getMessage(
+    err_message = await I18nUtils.getMessage(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -93,7 +94,7 @@ export const convert = async (
       result,
       data,
       request?.tab!,
-      await chrome.i18n.getMessage(successMessage, [amount, username]),
+      await I18nUtils.getMessage(successMessage, [amount, username]),
       err_message,
     );
     return message;

@@ -6,6 +6,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const ErrorFallback = ({ error, resetErrorBoundary }: any) => {
   const formattedErrorMessage = `
     \`\`\` 
@@ -27,7 +28,7 @@ export const ErrorFallback = ({ error, resetErrorBoundary }: any) => {
     <div className="error-page">
       <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
       <div className="title">
-        {chrome.i18n.getMessage('error_message_title')}
+        {I18nUtils.getMessage('error_message_title')}
       </div>
 
       <div className="detail">

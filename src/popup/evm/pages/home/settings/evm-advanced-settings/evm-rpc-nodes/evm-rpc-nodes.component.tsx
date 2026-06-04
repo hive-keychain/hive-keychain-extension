@@ -28,6 +28,7 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const EMPTY_RPC: MultichainRpc = {
   isDefault: false,
   url: '',
@@ -183,7 +184,7 @@ const EvmRpcNodes = ({
   return (
     <div className="evm-rpc-nodes-page">
       <div className="introduction">
-        {chrome.i18n.getMessage('popup_html_rpc_node_text')}
+        {I18nUtils.getMessage('popup_html_rpc_node_text')}
       </div>
 
       <div className="rpc-form-container">
@@ -241,7 +242,7 @@ const EvmRpcNodes = ({
           {!switchAuto && isAddRpcPanelDisplayed && (
             <div className="add-rpc-panel">
               <div className="add-rpc-caption">
-                <span>{chrome.i18n.getMessage('popup_html_add_rpc_text')}</span>
+                <span>{I18nUtils.getMessage('popup_html_add_rpc_text')}</span>
               </div>
               <InputComponent
                 dataTestId="input-rpc-node-uri"

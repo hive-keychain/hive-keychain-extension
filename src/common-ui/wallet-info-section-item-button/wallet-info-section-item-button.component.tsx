@@ -2,6 +2,7 @@ import { ActionButton } from '@popup/hive/pages/app-container/home/hive-wallet-i
 import React, { BaseSyntheticEvent, useState } from 'react';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface WalletInfoSectionItemButtonProps {
   handleClick: (event: BaseSyntheticEvent, actionButton: ActionButton) => void;
   actionButton: ActionButton;
@@ -30,7 +31,7 @@ export const WalletInfoSectionItemButton = ({
         forceHover={hovered}
       />
       <div className="title">
-        {chrome.i18n.getMessage(actionButton.label, actionButton.labelParams)}
+        {I18nUtils.getMessage(actionButton.label, actionButton.labelParams)}
       </div>
     </div>
   );

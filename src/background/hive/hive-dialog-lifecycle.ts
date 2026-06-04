@@ -2,6 +2,7 @@ import { HiveRequestsHandler } from '@background/hive/requests/hive-request-hand
 import { isHiveDialogVisibleRequest } from '@background/multichain/dialog-request.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 /* istanbul ignore next */
 export const onRemoveHive = async (id: number) => {
   const requestHandler = await HiveRequestsHandler.getFromLocalStorage();
@@ -33,7 +34,7 @@ export const onRemoveHive = async (id: number) => {
           error: requestData.isMultisig ? 'pending_multisig' : 'user_cancel',
           result: null,
           data: requestData.request,
-          message: await chrome.i18n.getMessage(
+          message: await I18nUtils.getMessage(
             `bgd_lifecycle_request_${
               requestData.isMultisig ? 'pending_multisig' : 'canceled'
             }`,

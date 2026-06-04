@@ -25,6 +25,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { I18nProviderComponent } from 'src/common-ui/i18n/i18n-provider.component';
 import CollaspsibleItem from 'src/dialog/components/collapsible-item/collapsible-item';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import { DialogError } from 'src/dialog/multichain/error/error';
@@ -35,6 +36,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import './multisig-dialog.scss';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const MultisigDialog = () => {
   const [theme, setTheme] = useState<Theme>();
 
@@ -140,7 +142,7 @@ const MultisigDialog = () => {
                 data.success ? SVGIcons.MESSAGE_SUCCESS : SVGIcons.MESSAGE_ERROR
               }></SVGIcon>
             <div className="message">
-              {chrome.i18n.getMessage(data.message)}
+              {I18nUtils.getMessage(data.message)}
             </div>
             <div className="fill-space"></div>
             <ButtonComponent
@@ -221,7 +223,7 @@ const MultisigDialog = () => {
                 data.success ? SVGIcons.MESSAGE_SUCCESS : SVGIcons.MESSAGE_ERROR
               }></SVGIcon>
             <div className="message">
-              {chrome.i18n.getMessage(data.message)}
+              {I18nUtils.getMessage(data.message)}
             </div>
             <a href={`https://hivehub.dev/tx/${data.txId}`} target="__blank">
               {data.txId}
@@ -250,7 +252,7 @@ const MultisigDialog = () => {
         return (
           <DialogError
             data={{
-              msg: { display_msg: chrome.i18n.getMessage(data.message) },
+              msg: { display_msg: I18nUtils.getMessage(data.message) },
               command: DialogCommand.SEND_DIALOG_ERROR,
             }}
           />
@@ -270,14 +272,14 @@ const MultisigDialog = () => {
     <div className={`theme ${theme} multisig-dialog`}>
       <div className="title-panel">
         <img className="multisig-logo" src="/assets/images/multisig/logo.png" />
-        <div className="title">{chrome.i18n.getMessage('multisig')} </div>
+        <div className="title">{I18nUtils.getMessage('multisig')} </div>
       </div>
       {content && (
         <>
           <div
             className="caption"
             dangerouslySetInnerHTML={{
-              __html: chrome.i18n.getMessage(caption),
+              __html: I18nUtils.getMessage(caption),
             }}></div>
 
           {content}
@@ -287,6 +289,11 @@ const MultisigDialog = () => {
   );
 };
 
-ReactDOM.render(<MultisigDialog />, document.getElementById('root'));
+ReactDOM.render(
+  <I18nProviderComponent>
+    <MultisigDialog />
+  </I18nProviderComponent>,
+  document.getElementById('root'),
+);
 
 export {};

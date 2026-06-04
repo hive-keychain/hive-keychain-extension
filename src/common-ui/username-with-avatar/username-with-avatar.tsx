@@ -1,6 +1,7 @@
 import React from 'react';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const HIVE_CONTACT_FALLBACK_IMAGE =
   'https://images.hive.blog/p/X37EMQ9WSwsMkbaFFVtss2tEEKpVvbqx1wBjz6fCwXa41QNVwbz8YG8D7SsNDaVSpEJmfwUkNU9b82DE4zrWrusmgafrs2L25RaS7?width=128&height=128';
 
@@ -19,7 +20,7 @@ const UsernameWithAvatar = ({ username, title, className = '' }: Props) => {
 
   return (
     <div className={`username-with-avatar ${className}`}>
-      {title && <span className="title">{chrome.i18n.getMessage(title)}</span>}
+      {title && <span className="title">{I18nUtils.getMessage(title)}</span>}
       <div className="avatar-username-container">
         <>
           {usernameElement}

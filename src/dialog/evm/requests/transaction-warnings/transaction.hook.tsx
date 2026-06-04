@@ -31,6 +31,7 @@ import { DappRequestUtils } from 'src/utils/dapp-request.utils';
 import { EvmWarningUtils } from 'src/utils/evm/evm-warning.utils';
 import { WarningsPopupFieldRef } from 'src/dialog/evm/requests/transaction-warnings/warnings-popup-field-ref.type';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export type { WarningsPopupFieldRef };
 
 const EVM_DOMAIN_FIELD_NAME = 'dialog_evm_domain';
@@ -529,7 +530,7 @@ export const useTransactionHook = (
       setPendingTransactionWarningField({
         name: '',
         type: EvmInputDisplayType.WARNING_ONLY,
-        value: chrome.i18n.getMessage('evm_pending_transaction_warning'),
+        value: I18nUtils.getMessage('evm_pending_transaction_warning'),
         warnings: [
           {
             ignored: false,
@@ -689,7 +690,7 @@ export const useTransactionHook = (
       const field: TransactionConfirmationField = {
         name: 'evm_warning_possible_duplicated_transaction_title',
         type: EvmInputDisplayType.WARNING_ONLY,
-        value: chrome.i18n.getMessage(
+        value: I18nUtils.getMessage(
           'evm_warning_possible_duplicated_transaction',
         ),
         warnings: [

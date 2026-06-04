@@ -14,6 +14,7 @@ import TransferUtils from '@popup/hive/utils/transfer.utils';
 import { KeychainError } from 'src/keychain-error';
 import { SwapTokenUtils } from 'src/utils/swap-token.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const broadcastSwap = async (
   requestHandler: HiveRequestsHandler,
   data: RequestSwap & RequestId & { swapAccount?: string },
@@ -44,7 +45,7 @@ export const broadcastSwap = async (
       KeychainKeyTypesLC.active,
     );
     if (!swapAccount)
-      throw new Error(chrome.i18n.getMessage('swap_server_unavailable'));
+      throw new Error(I18nUtils.getMessage('swap_server_unavailable'));
 
     swapId = await SwapTokenUtils.saveEstimate(
       steps,
@@ -125,12 +126,12 @@ export const broadcastSwap = async (
         data,
         request?.tab!,
         null,
-        await chrome.i18n.getMessage('bgd_ops_encode_err'),
+        await I18nUtils.getMessage('bgd_ops_encode_err'),
       );
       return message;
     } else {
       err = (e as KeychainError).trace || e;
-      err_message = await chrome.i18n.getMessage(
+      err_message = await I18nUtils.getMessage(
         (e as KeychainError).message,
         (e as KeychainError).messageParams,
       );
@@ -141,7 +142,7 @@ export const broadcastSwap = async (
       { ...result, swap_id: swapId },
       data,
       request?.tab!,
-      await chrome.i18n.getMessage('bgd_ops_swap_start_success', [
+      await I18nUtils.getMessage('bgd_ops_swap_start_success', [
         data.amount + '',
         data.startToken,
         data.endToken,

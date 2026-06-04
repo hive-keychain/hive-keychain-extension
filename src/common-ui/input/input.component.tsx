@@ -8,6 +8,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { FormUtils } from 'src/utils/form.utils';
 import { InputType } from './input-type.enum';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export interface InputProps {
   value: any;
   logo?: string | SVGIcons;
@@ -75,7 +76,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
             <>
               {props.skipLabelTranslation
                 ? props.label
-                : chrome.i18n.getMessage(props.label)}{' '}
+                : I18nUtils.getMessage(props.label)}{' '}
               {props.required ? '*' : ''}
             </>
           )}
@@ -83,7 +84,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
             <div className="hint">
               {props.skipHintTranslation
                 ? props.hint
-                : chrome.i18n.getMessage(props.hint)}
+                : I18nUtils.getMessage(props.hint)}
             </div>
           )}
         </div>
@@ -116,7 +117,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
               props.placeholder
                 ? props.skipPlaceholderTranslation
                   ? props.placeholder
-                  : chrome.i18n.getMessage(props.placeholder)
+                  : I18nUtils.getMessage(props.placeholder)
                 : ''
             } ${props.required ? '*' : ''}`}
             value={props.value}

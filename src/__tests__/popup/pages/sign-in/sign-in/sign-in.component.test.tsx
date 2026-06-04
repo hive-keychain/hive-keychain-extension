@@ -11,6 +11,7 @@ import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-l
 import { RootState } from 'src/popup/multichain/store';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('sign-in.component.tsx tests:\n', () => {
   let store: Store<RootState>;
 
@@ -47,7 +48,7 @@ describe('sign-in.component.tsx tests:\n', () => {
       );
     });
     expect(
-      await screen.findByText(chrome.i18n.getMessage('wrong_password'), {
+      await screen.findByText(I18nUtils.getMessage('wrong_password'), {
         exact: true,
       }),
     ).toBeInTheDocument();
@@ -63,7 +64,7 @@ describe('sign-in.component.tsx tests:\n', () => {
       await userEvent.click(screen.getByTestId(dataTestIdButton.login));
     });
     expect(
-      await screen.findByText(chrome.i18n.getMessage('wrong_password'), {
+      await screen.findByText(I18nUtils.getMessage('wrong_password'), {
         exact: true,
       }),
     ).toBeInTheDocument();

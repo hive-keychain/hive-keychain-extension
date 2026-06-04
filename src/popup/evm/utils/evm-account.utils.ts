@@ -5,6 +5,7 @@ import {
   EvmAccountPublic,
 } from '@popup/evm/interfaces/wallet.interface';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type EvmAccountDisplayFields = Pick<
   EvmAccountOrPublic,
   'nickname' | 'id' | 'seedId' | 'seedNickname'
@@ -29,20 +30,20 @@ const filterSpamTokens = (tokens: NativeAndErc20Token[]) => {
 const getAccountFullname = (account: EvmAccountDisplayFields) => {
   if (account.nickname && account.nickname.length > 0) return account.nickname;
 
-  return `${getSeedName(account)} - ${chrome.i18n.getMessage(
+  return `${getSeedName(account)} - ${I18nUtils.getMessage(
     'dialog_account',
   )} ${account.id + 1}`;
 };
 
 const getAccountName = (account: EvmAccountDisplayFields) => {
   if (account.nickname && account.nickname.length > 0) return account.nickname;
-  return `${chrome.i18n.getMessage('dialog_account')} ${account.id + 1}`;
+  return `${I18nUtils.getMessage('dialog_account')} ${account.id + 1}`;
 };
 
 const getDefaultSeedName = (
   accounts: Pick<EvmAccountOrPublic, 'seedNickname'>[],
 ) => {
-  const defaultSeedNamePrefix = `${chrome.i18n.getMessage('common_seed')} #`;
+  const defaultSeedNamePrefix = `${I18nUtils.getMessage('common_seed')} #`;
   const maxDefaultSeedNameId = accounts.reduce((max, account) => {
     const seedName = account.seedNickname;
     if (!seedName?.startsWith(defaultSeedNamePrefix)) return max;
@@ -57,7 +58,7 @@ const getDefaultSeedName = (
 const getSeedName = (account: EvmAccountDisplayFields) => {
   return account.seedNickname && account.seedNickname.length > 0
     ? account.seedNickname
-    : `${chrome.i18n.getMessage('common_seed')} ${account.seedId}`;
+    : `${I18nUtils.getMessage('common_seed')} ${account.seedId}`;
 };
 
 export const EvmAccountUtils = {

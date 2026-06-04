@@ -29,6 +29,7 @@ import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/ch
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import { I18nUtils } from 'src/utils/i18n.utils';
 const ImportWalletConfirmation = ({
   setTitleContainerProperties,
   walletsWithBalance,
@@ -126,7 +127,7 @@ const ImportWalletConfirmation = ({
         <div
           className="caption"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage(
+            __html: I18nUtils.getMessage(
               'html_popup_evm_choose_account_text',
             ),
           }}></div>
@@ -147,10 +148,10 @@ const ImportWalletConfirmation = ({
               }}
               key={e.wallet.address}
               skipTranslation
-              title={`${chrome.i18n.getMessage('dialog_account')} ${
+              title={`${I18nUtils.getMessage('dialog_account')} ${
                 i + 1
               }: ${EvmFormatUtils.formatAddress(e.wallet.address)}`}
-              hint={`${chrome.i18n.getMessage('popup_html_balance')}: ${
+              hint={`${I18nUtils.getMessage('popup_html_balance')}: ${
                 e.balance
               } ETH`}
               skipHintTranslation

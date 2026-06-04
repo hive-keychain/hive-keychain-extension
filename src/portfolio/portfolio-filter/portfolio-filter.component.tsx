@@ -8,6 +8,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { UserPortfolio } from 'src/portfolio/portfolio.interface';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   extendedAccountsList: ExtendedAccount[];
   data: UserPortfolio[];
@@ -97,7 +98,7 @@ const PortfolioFilter = ({
             );
           })}
         <input
-          placeholder={chrome.i18n.getMessage('portfolio_filter_placeholder')}
+          placeholder={I18nUtils.getMessage('portfolio_filter_placeholder')}
           value={filterValue}
           onChange={(e) => setFilterValue(e.target.value)}
           className="filter-input"

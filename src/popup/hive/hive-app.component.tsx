@@ -44,6 +44,7 @@ import { ColorsUtils } from 'src/utils/colors.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { useWorkingRPC } from 'src/utils/rpc-switcher.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 /** Same screens as the HiveApp `useEffect` that calls `selectComponent` after adding the first account(s). */
 const stackHasAccountSetupPage = (
   stack: { currentPage: Screen }[],
@@ -319,7 +320,7 @@ const HiveApp = ({
       return (
         <div className="change-rpc-popup">
           <div className="message">
-            {chrome.i18n.getMessage('popup_html_rpc_not_responding_error', [
+            {I18nUtils.getMessage('popup_html_rpc_not_responding_error', [
               initialRpc?.uri!,
               switchToRpc?.uri!,
             ])}

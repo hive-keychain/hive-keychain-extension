@@ -8,9 +8,10 @@ import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 import * as activeAccountActions from 'src/popup/hive/actions/active-account.actions';
 import { ExportTransactionsComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/export-transactions/export-transactions.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('export-transactions.component', () => {
   beforeEach(() => {
-    chrome.i18n.getMessage = jest.fn((key: string) => key);
+    I18nUtils.getMessage = jest.fn((key: string) => key);
   });
 
   afterEach(() => {

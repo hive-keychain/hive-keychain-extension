@@ -6,6 +6,7 @@ import { Keys } from '@interfaces/keys.interface';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const addAccount = async (
   requestHandler: HiveRequestsHandler,
   data: RequestAddAccount & RequestId,
@@ -72,11 +73,11 @@ export const addAccount = async (
       );
     } else {
       // Error no corresponding keys
-      err = await chrome.i18n.getMessage('bgd_ops_add_account_error');
+      err = await I18nUtils.getMessage('bgd_ops_add_account_error');
     }
   } else {
     // Error no such account
-    err = await chrome.i18n.getMessage('bgd_ops_add_account_error_invalid');
+    err = await I18nUtils.getMessage('bgd_ops_add_account_error_invalid');
   }
   return await createMessage(
     !!err,
@@ -85,7 +86,7 @@ export const addAccount = async (
     request?.tab!,
     err
       ? null
-      : await chrome.i18n.getMessage('bgd_ops_add_account', [username]),
+      : await I18nUtils.getMessage('bgd_ops_add_account', [username]),
     err,
   );
 };

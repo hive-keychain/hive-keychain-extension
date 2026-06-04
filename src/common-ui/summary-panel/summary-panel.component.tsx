@@ -3,6 +3,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface PanelProps {
   top?: number | string;
   topLeft?: string;
@@ -57,7 +58,7 @@ const SummaryPanel = ({
         <div
           className={`current panel-row ${onTopPanelClick ? 'clickable' : ''}`}
           onClick={() => handleClickTopPanel()}>
-          <div className="current-title">{chrome.i18n.getMessage(topLeft)}</div>
+          <div className="current-title">{I18nUtils.getMessage(topLeft)}</div>
           <div className="current-value">
             {FormatUtils.formatCurrencyValue(
               top,
@@ -76,7 +77,7 @@ const SummaryPanel = ({
           }`}
           onClick={handleClickCenterPanel}>
           <div className="current-title">
-            {chrome.i18n.getMessage(centerLeft)}
+            {I18nUtils.getMessage(centerLeft)}
           </div>
           <div className="current-value">
             {FormatUtils.formatCurrencyValue(
@@ -96,7 +97,7 @@ const SummaryPanel = ({
         }`}
         onClick={() => handleClickBottomPanel()}>
         <div className="available-title">
-          {chrome.i18n.getMessage(bottomLeft)}
+          {I18nUtils.getMessage(bottomLeft)}
         </div>
         <div className="available-value">
           {FormatUtils.formatCurrencyValue(

@@ -36,6 +36,7 @@ import {
   copyTextWithToast,
 } from 'src/common-ui/toast/copy-toast.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const EvmAccounts = ({
   accounts,
   mk,
@@ -106,12 +107,12 @@ const EvmAccounts = ({
 
   const getSeedOptionLabel = (account: EvmAccount) => {
     if (account.source === EvmAccountSource.IMPORTED) {
-      return chrome.i18n.getMessage('evm_imported_seed');
+      return I18nUtils.getMessage('evm_imported_seed');
     }
 
     return (
       account.seedNickname ||
-      `${chrome.i18n.getMessage('common_seed')} #${account.seedId}`
+      `${I18nUtils.getMessage('common_seed')} #${account.seedId}`
     );
   };
 
@@ -466,10 +467,10 @@ const EvmAccounts = ({
       {accountToDelete && (
         <PopupContainer className="seed-nickname-popup">
           <div className="popup-title">
-            {chrome.i18n.getMessage('evm_delete_seed_button')}
+            {I18nUtils.getMessage('evm_delete_seed_button')}
           </div>
           <div className="caption">
-            {chrome.i18n.getMessage('evm_delete_account_confirmation_message')}
+            {I18nUtils.getMessage('evm_delete_account_confirmation_message')}
           </div>
           <div className="popup-footer">
             <ButtonComponent

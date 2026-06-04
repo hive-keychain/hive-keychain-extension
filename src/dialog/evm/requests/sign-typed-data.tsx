@@ -23,6 +23,7 @@ import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   request: EvmRequest;
   accounts: EvmAccountPublic[];
@@ -68,7 +69,7 @@ export const SignTypedData = (props: Props) => {
     transactionHook.setReady(false);
     let transactionConfirmationFields = {
       otherFields: [transactionHook.buildInitialDomainField()],
-      operationName: chrome.i18n.getMessage('dialog_evm_sign_data_title'),
+      operationName: I18nUtils.getMessage('dialog_evm_sign_data_title'),
     } as TransactionConfirmationFields;
     transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
       transactionConfirmationFields.otherFields,
@@ -136,14 +137,14 @@ export const SignTypedData = (props: Props) => {
     transactionConfirmationFields.otherFields.push({
       name: '',
       type: EvmInputDisplayType.STRING_CENTERED,
-      value: chrome.i18n.getMessage('evm_sign_typed_data_message'),
+      value: I18nUtils.getMessage('evm_sign_typed_data_message'),
     });
 
     let otherFields = [];
 
     otherFields.push({
       type: EvmInputDisplayType.STRING,
-      name: chrome.i18n.getMessage('evm_sign_typed_data_message_primary_type'),
+      name: I18nUtils.getMessage('evm_sign_typed_data_message_primary_type'),
       value: message.primaryType,
     } as TransactionConfirmationField);
 
@@ -297,7 +298,7 @@ export const SignTypedData = (props: Props) => {
       domain={data.dappInfo.domain}
       origin={data.dappInfo.origin}
       tab={data.tab}
-      title={chrome.i18n.getMessage('dialog_evm_sign_data_title')}
+      title={I18nUtils.getMessage('dialog_evm_sign_data_title')}
       fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}
       transactionHook={transactionHook}
       loadingCaption={loadingCaption}

@@ -17,6 +17,7 @@ import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list'
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('tokens-transfer.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -65,7 +66,7 @@ describe('tokens-transfer.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('validation_error_mandatory'),
+          I18nUtils.getMessage('validation_error_mandatory'),
         ),
       ).toBeInTheDocument();
     });
@@ -83,7 +84,7 @@ describe('tokens-transfer.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('validation_error_mandatory'),
+          I18nUtils.getMessage('validation_error_mandatory'),
         ),
       ).toBeInTheDocument();
     });
@@ -101,7 +102,7 @@ describe('tokens-transfer.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_need_positive_amount'),
+          I18nUtils.getMessage('popup_html_need_positive_amount'),
         ),
       ).toBeInTheDocument();
     });
@@ -120,7 +121,7 @@ describe('tokens-transfer.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_no_such_account'),
+          I18nUtils.getMessage('popup_no_such_account'),
         ),
       ).toBeInTheDocument();
     });
@@ -141,7 +142,7 @@ describe('tokens-transfer.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('validation_error_less_or_equal_value'),
+          I18nUtils.getMessage('validation_error_less_or_equal_value'),
         ),
       ).toBeInTheDocument();
     });
@@ -193,7 +194,7 @@ describe('tokens-transfer.component tests:\n', () => {
         );
       });
       expect(
-        await screen.findByText(chrome.i18n.getMessage('popup_token_timeout')),
+        await screen.findByText(I18nUtils.getMessage('popup_token_timeout')),
       ).toBeInTheDocument();
     });
 
@@ -219,7 +220,7 @@ describe('tokens-transfer.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_transfer_failed'),
+          I18nUtils.getMessage('popup_html_transfer_failed'),
         ),
       ).toBeInTheDocument();
     });
@@ -273,7 +274,7 @@ describe('tokens-transfer.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_transfer_successful', [
+          I18nUtils.getMessage('popup_html_transfer_successful', [
             `@${mk.user.two}`,
             formattedAmount,
           ]),

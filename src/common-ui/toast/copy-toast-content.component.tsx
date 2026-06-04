@@ -2,6 +2,7 @@ import React from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   messageKey: string;
 };
@@ -19,7 +20,7 @@ export const CopyToastContent = ({ messageKey }: Props) => {
         />
       </div>
       <div className="copy-toast-message">
-        {chrome.i18n.getMessage(messageKey)}
+        {I18nUtils.getMessage(messageKey)}
       </div>
     </div>
   );

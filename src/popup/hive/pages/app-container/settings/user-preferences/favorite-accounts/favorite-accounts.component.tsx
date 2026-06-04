@@ -21,6 +21,7 @@ import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { v4 } from 'uuid';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type HiveAccountOption = OptionItem & {
   value: string;
 };
@@ -195,7 +196,7 @@ const FavoriteAccounts = ({
             />
             <div className="add-contact-link" onClick={openAddContactPopup}>
               <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE} className="add-icon" />
-              {chrome.i18n.getMessage('evm_addresses_add')}
+              {I18nUtils.getMessage('evm_addresses_add')}
             </div>
           </div>
           {favoriteAccountsList.length > 0 ? (
@@ -215,7 +216,7 @@ const FavoriteAccounts = ({
           ) : (
             <div className="addresses-list-items">
               <div className="empty-address-item">
-                {chrome.i18n.getMessage(
+                {I18nUtils.getMessage(
                   'popup_html_favorite_accounts_no_favorites',
                 )}
               </div>

@@ -3,6 +3,7 @@ import { FieldError } from 'react-hook-form';
 import Logger from 'src/utils/logger.utils';
 import { FormUtils } from 'src/utils/form.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('form.utils', () => {
   afterEach(() => {
     jest.restoreAllMocks();
@@ -30,7 +31,7 @@ describe('form.utils', () => {
       } as FieldError;
 
       expect(FormUtils.parseJoiError(err)).toBe('translated');
-      expect(chrome.i18n.getMessage).toHaveBeenCalledWith(
+      expect(I18nUtils.getMessage).toHaveBeenCalledWith(
         'validation_error_mandatory',
         [],
       );
@@ -46,7 +47,7 @@ describe('form.utils', () => {
       } as FieldError;
 
       FormUtils.parseJoiError(err);
-      expect(chrome.i18n.getMessage).toHaveBeenCalledWith(
+      expect(I18nUtils.getMessage).toHaveBeenCalledWith(
         'validation_error_less_or_equal_value',
         [100],
       );

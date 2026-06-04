@@ -29,6 +29,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 enum AddEvmAccountsFromLedgerStep {
   DISCOVER_ACCOUNTS = 'evm_add_accounts_from_ledger',
   SELECT_ACCOUNTS = 'select_account_from_ledger',
@@ -229,7 +230,7 @@ const AddEvmAccountsComponent = ({
           EvmLedgerUtils.toStoredLedgerAccount(account.wallet),
         ),
         mk,
-        chrome.i18n.getMessage('ledger_source_name') || 'Ledger',
+        I18nUtils.getMessage('ledger_source_name') || 'Ledger',
       );
       await Promise.all(
         selectedAccounts.map((account) =>
@@ -262,11 +263,11 @@ const AddEvmAccountsComponent = ({
       account.wallet.derivationMode ??
       EvmLedgerUtils.getDerivationModeFromPath(account.wallet.path) ??
       EvmLedgerDerivationMode.BIP44;
-    const derivationModeLabel = chrome.i18n.getMessage(
+    const derivationModeLabel = I18nUtils.getMessage(
       EvmLedgerUtils.getDerivationModeLabelKey(derivationMode),
     );
 
-    return chrome.i18n.getMessage('evm_ledger_account_path_hint', [
+    return I18nUtils.getMessage('evm_ledger_account_path_hint', [
       derivationModeLabel,
       account.wallet.index.toString(),
       account.wallet.path,
@@ -289,14 +290,14 @@ const AddEvmAccountsComponent = ({
       {!embedded && (
         <div className="title-panel">
           <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
-          <div className="title">{chrome.i18n.getMessage(step)}</div>
+          <div className="title">{I18nUtils.getMessage(step)}</div>
         </div>
       )}
 
       {step === AddEvmAccountsFromLedgerStep.DISCOVER_ACCOUNTS && (
         <div className="account-discovery">
           <div className="caption">
-            {chrome.i18n.getMessage('evm_ledger_account_discovery_caption')}
+            {I18nUtils.getMessage('evm_ledger_account_discovery_caption')}
           </div>
           <div className="derivation-mode-selector">
             {LEDGER_DERIVATION_MODES.map((derivationMode) => (
@@ -309,19 +310,19 @@ const AddEvmAccountsComponent = ({
                 }`}
                 onClick={() => selectDerivationMode(derivationMode)}>
                 <span>
-                  {chrome.i18n.getMessage(
+                  {I18nUtils.getMessage(
                     EvmLedgerUtils.getDerivationModeLabelKey(derivationMode),
                   )}
                 </span>
                 <span className="derivation-mode-start-index">
-                  {chrome.i18n.getMessage('evm_ledger_derivation_next_index', [
+                  {I18nUtils.getMessage('evm_ledger_derivation_next_index', [
                     getStartIndex(derivationMode).toString(),
                   ])}
                 </span>
               </button>
             ))}
           </div>
-          <div className="error">{chrome.i18n.getMessage(message)}</div>
+          <div className="error">{I18nUtils.getMessage(message)}</div>
           <div className="fill-space"></div>
           <ButtonComponent
             label="synchronize_ledger_button"
@@ -333,7 +334,7 @@ const AddEvmAccountsComponent = ({
       {step === AddEvmAccountsFromLedgerStep.SELECT_ACCOUNTS && (
         <div className="select-accounts">
           <div className="caption">
-            {chrome.i18n.getMessage('ledger_select_account_caption')}
+            {I18nUtils.getMessage('ledger_select_account_caption')}
           </div>
           <div className="list">
             {selectableAccounts.map((account) => (
@@ -360,7 +361,7 @@ const AddEvmAccountsComponent = ({
 
       {step === AddEvmAccountsFromLedgerStep.FINISHED && (
         <>
-          <div>{chrome.i18n.getMessage(message)}</div>
+          <div>{I18nUtils.getMessage(message)}</div>
           <div className="fill-space"></div>
           <div className="bottom-button-panel">
             <ButtonComponent

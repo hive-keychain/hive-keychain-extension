@@ -11,6 +11,7 @@ import { ChainLogo } from 'src/common-ui/chain-logo/chain-logo.component';
 import React from 'react';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   request: EvmRequest;
   requestedChain: EvmChain;
@@ -50,17 +51,17 @@ export const RequestAddEvmChain = (props: Props) => {
     <div className="request-add-chain-page">
       <Card className="request-add-chain-card">
         <div className="title">
-          {chrome.i18n.getMessage('evm_request_add_chain_title')}
+          {I18nUtils.getMessage('evm_request_add_chain_title')}
         </div>
         <div className="caption">
-          {chrome.i18n.getMessage('evm_request_add_chain_caption', [
+          {I18nUtils.getMessage('evm_request_add_chain_caption', [
             dappInfo.domain,
           ])}
         </div>
         <div className="requested-chain">
           <EvmRequestItem
             field={{
-              name: chrome.i18n.getMessage('evm_chain'),
+              name: I18nUtils.getMessage('evm_chain'),
               type: EvmInputDisplayType.STRING,
               value: (
                 <div className="value-content">
@@ -76,7 +77,7 @@ export const RequestAddEvmChain = (props: Props) => {
           />
           <EvmRequestItem
             field={{
-              name: chrome.i18n.getMessage('evm_chain_id'),
+              name: I18nUtils.getMessage('evm_chain_id'),
               type: EvmInputDisplayType.STRING,
               value: requestedChain.chainId,
             }}

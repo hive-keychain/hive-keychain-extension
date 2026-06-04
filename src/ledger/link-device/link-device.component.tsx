@@ -9,6 +9,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface LinkLedgerDeviceProps {
   embedded?: boolean;
   onClose?: () => void;
@@ -67,7 +68,7 @@ const LinkLedgerDevice = ({
         <div className="title-panel">
           <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
           <div className="title">
-            {chrome.i18n.getMessage('ledger_link_device')}
+            {I18nUtils.getMessage('ledger_link_device')}
           </div>
         </div>
       )}
@@ -76,11 +77,11 @@ const LinkLedgerDevice = ({
         <div
           className="caption"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage('ledger_link_device_caption'),
+            __html: I18nUtils.getMessage('ledger_link_device_caption'),
           }}></div>
         {done && (
           <div className="confirmation">
-            {chrome.i18n.getMessage('ledger_link_device_linked')}
+            {I18nUtils.getMessage('ledger_link_device_linked')}
           </div>
         )}
         <div className="fill-space"></div>

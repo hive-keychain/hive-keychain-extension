@@ -9,6 +9,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export interface KeylessUsernameMessage {
   command: DialogCommand;
   requestHandler: HiveRequestsHandler;
@@ -68,11 +69,11 @@ const KeylessUsername = (props: Props) => {
   return (
     <div className="keyless-username-page">
       <DialogHeader
-        title={chrome.i18n.getMessage('dialog_header_keyless_username')}
+        title={I18nUtils.getMessage('dialog_header_keyless_username')}
       />
       <div className="content">
         <div className="caption">
-          {chrome.i18n.getMessage('dialog_anonymous_keyless_content')}
+          {I18nUtils.getMessage('dialog_anonymous_keyless_content')}
         </div>
       </div>
       <div className="inputs-panel">

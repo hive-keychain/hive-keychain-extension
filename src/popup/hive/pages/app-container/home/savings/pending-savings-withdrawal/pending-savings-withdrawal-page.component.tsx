@@ -7,6 +7,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { PendingSavingsWithdrawalItemComponent } from 'src/popup/hive/pages/app-container/home/savings/pending-savings-withdrawal/pending-savings-withdrawal-item/pending-savings-withdrawal-item.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export interface PendingSavingsWithdrawalProps {
   currentWithdrawLabel?: string;
   currency: string;
@@ -31,7 +32,7 @@ const PendingSavingsWithdrawal = ({
       data-testid={`${Screen.PENDING_SAVINGS_WITHDRAWAL_PAGE}-page`}>
       <div className="list-panel">
         <div className="pending-disclaimer">
-          {chrome.i18n.getMessage('popup_html_withdraw_savings_until_message', [
+          {I18nUtils.getMessage('popup_html_withdraw_savings_until_message', [
             currency,
           ])}
         </div>

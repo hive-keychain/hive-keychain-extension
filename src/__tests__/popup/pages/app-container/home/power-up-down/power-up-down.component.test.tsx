@@ -17,6 +17,7 @@ import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-l
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('power-up-down.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -62,7 +63,7 @@ describe('power-up-down.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('validation_error_mandatory'),
+          I18nUtils.getMessage('validation_error_mandatory'),
         ),
       ).toBeInTheDocument();
     });
@@ -81,7 +82,7 @@ describe('power-up-down.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('validation_error_less_or_equal_value'),
+          I18nUtils.getMessage('validation_error_less_or_equal_value'),
         ),
       ).toBeInTheDocument();
     });
@@ -123,8 +124,8 @@ describe('power-up-down.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_power_up_down_fail', [
-            chrome.i18n.getMessage('popup_html_pu'),
+          I18nUtils.getMessage('popup_html_power_up_down_fail', [
+            I18nUtils.getMessage('popup_html_pu'),
           ]),
         ),
       ).toBeInTheDocument();
@@ -148,8 +149,8 @@ describe('power-up-down.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_power_up_down_success', [
-            chrome.i18n.getMessage('popup_html_pu'),
+          I18nUtils.getMessage('popup_html_power_up_down_success', [
+            I18nUtils.getMessage('popup_html_pu'),
           ]),
         ),
       ).toBeInTheDocument();
@@ -217,7 +218,7 @@ describe('power-up-down.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('validation_error_mandatory'),
+          I18nUtils.getMessage('validation_error_mandatory'),
         ),
       ).toBeInTheDocument();
     });
@@ -234,7 +235,7 @@ describe('power-up-down.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('validation_error_less_or_equal_value'),
+          I18nUtils.getMessage('validation_error_less_or_equal_value'),
         ),
       ).toBeInTheDocument();
     });
@@ -276,8 +277,8 @@ describe('power-up-down.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_power_up_down_fail', [
-            chrome.i18n.getMessage('popup_html_pd'),
+          I18nUtils.getMessage('popup_html_power_up_down_fail', [
+            I18nUtils.getMessage('popup_html_pd'),
           ]),
         ),
       ).toBeInTheDocument();
@@ -304,8 +305,8 @@ describe('power-up-down.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_power_up_down_success', [
-            chrome.i18n.getMessage('popup_html_pd'),
+          I18nUtils.getMessage('popup_html_power_up_down_success', [
+            I18nUtils.getMessage('popup_html_pd'),
           ]),
         ),
       ).toBeInTheDocument();

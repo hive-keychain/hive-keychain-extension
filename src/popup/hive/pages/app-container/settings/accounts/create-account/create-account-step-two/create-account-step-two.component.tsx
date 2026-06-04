@@ -27,6 +27,7 @@ import { copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
 import { addAccount } from 'src/popup/hive/actions/account.actions';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const SUBSTRING_LENGTH = 15;
 const CreateAccountStepTwo = ({
   navParams,
@@ -212,12 +213,12 @@ const CreateAccountStepTwo = ({
   const getPaymentCheckboxLabel = () => {
     switch (creationType) {
       case AccountCreationType.BUYING:
-        return chrome.i18n.getMessage(
+        return I18nUtils.getMessage(
           'html_popup_create_account_buy_method_message',
           [price.toString(), selectedAccount.name],
         );
       case AccountCreationType.USING_TICKET:
-        return chrome.i18n.getMessage(
+        return I18nUtils.getMessage(
           'html_popup_create_account_claim_account_method_message',
           [selectedAccount.name],
         );

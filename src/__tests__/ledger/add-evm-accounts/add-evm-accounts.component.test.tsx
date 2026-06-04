@@ -13,6 +13,7 @@ import { ChainUtils } from 'src/popup/multichain/utils/chain.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 jest.mock('src/common-ui/loading/loading.component', () => ({
   LoadingComponent: ({ hide }: any) =>
     hide ? null : <div data-testid="loading" />,
@@ -55,7 +56,7 @@ describe('AddEvmAccountsComponent', () => {
       '',
       '/popup.html?chainId=0x1',
     );
-    global.chrome.i18n.getMessage = jest.fn((key: string, params?: string[]) =>
+    I18nUtils.getMessage = jest.fn((key: string, params?: string[]) =>
       params?.length ? `${key}:${params.join('|')}` : key,
     );
     jest

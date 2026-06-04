@@ -15,6 +15,7 @@ import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { ethers } from 'ethers';
 import React, { useState } from 'react';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   isNew?: boolean;
   favoriteAddress: FavoriteAddress;
@@ -39,7 +40,7 @@ export const EditContactPopupComponent = ({
       const trimmedAddress = contactAddress.trim();
       if (!trimmedAddress || !ethers.isAddress(trimmedAddress)) {
         setAddressError(
-          chrome.i18n.getMessage('evm_contact_address_invalid'),
+          I18nUtils.getMessage('evm_contact_address_invalid'),
         );
         return;
       }
@@ -71,7 +72,7 @@ export const EditContactPopupComponent = ({
       <div className="edit-contact-popup">
         <div className="top-row">
           <div className="initial-contact-label">
-            {isNew && chrome.i18n.getMessage('evm_contact_new_contact')}
+            {isNew && I18nUtils.getMessage('evm_contact_new_contact')}
             {!isNew && (
               <>
                 {chainType === ChainType.EVM && (
@@ -90,7 +91,7 @@ export const EditContactPopupComponent = ({
 
                 {favoriteAddress.label && favoriteAddress.label.length > 0
                   ? favoriteAddress.label
-                  : chrome.i18n.getMessage('evm_contact_no_label')}
+                  : I18nUtils.getMessage('evm_contact_no_label')}
               </>
             )}
           </div>

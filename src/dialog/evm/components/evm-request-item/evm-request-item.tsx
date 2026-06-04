@@ -15,6 +15,7 @@ import { useFieldTitle } from 'src/dialog/evm/components/use-field-title.hook';
 
 import sanitize from 'sanitize-html';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 /** Collapsible value row when decoded args (e.g. bytes32) render as long hex strings. */
 const COLLAPSIBLE_STRING_VALUE_MIN_LENGTH = 48;
 
@@ -136,7 +137,7 @@ export const EvmRequestItem = ({
                 icon={SVGIcons.GLOBAL_INFO}
               />
               <div className="information-message">
-                {chrome.i18n.getMessage(
+                {I18nUtils.getMessage(
                   information?.message!,
                   information.messageParams ?? [],
                 )}

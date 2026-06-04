@@ -13,6 +13,7 @@ import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const broadcastProxy = async (
   requestHandler: HiveRequestsHandler,
   data: RequestProxy & RequestId,
@@ -60,7 +61,7 @@ export const broadcastProxy = async (
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await chrome.i18n.getMessage(
+    err_message = await I18nUtils.getMessage(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -71,8 +72,8 @@ export const broadcastProxy = async (
       data,
       request?.tab!,
       data.proxy.length
-        ? await chrome.i18n.getMessage('popup_success_proxy', [data.proxy])
-        : await chrome.i18n.getMessage('bgd_ops_unproxy'),
+        ? await I18nUtils.getMessage('popup_success_proxy', [data.proxy])
+        : await I18nUtils.getMessage('bgd_ops_unproxy'),
       err_message,
     );
     return message;

@@ -23,6 +23,7 @@ import { addAccount } from 'src/popup/hive/actions/account.actions';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const AddByKeys = ({
   navigateTo,
   navigateToWithParams,
@@ -88,7 +89,7 @@ const AddByKeys = ({
       <div
         className="caption"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_setup_text'),
+          __html: I18nUtils.getMessage('popup_html_setup_text'),
         }}></div>
       <div className="form-container">
         <InputComponent

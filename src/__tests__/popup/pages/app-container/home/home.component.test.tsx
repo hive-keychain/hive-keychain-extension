@@ -22,6 +22,7 @@ import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { ActionButtonList } from 'src/popup/hive/pages/app-container/home/actions-section/action-button.list';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('home.component tests:\n', () => {
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(
@@ -66,7 +67,7 @@ describe('home.component tests:\n', () => {
 
     //EstimatedAccountValueSectionComponent
     expect(
-      screen.getByText(chrome.i18n.getMessage('popup_html_estimation'), {
+      screen.getByText(I18nUtils.getMessage('popup_html_estimation'), {
         exact: true,
       }),
     ).toBeInTheDocument();
@@ -95,7 +96,7 @@ describe('home.component tests:\n', () => {
         ),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(chrome.i18n.getMessage(ActionButtonList[i].label)),
+        screen.getByText(I18nUtils.getMessage(ActionButtonList[i].label)),
       ).toBeInTheDocument();
     }
   });

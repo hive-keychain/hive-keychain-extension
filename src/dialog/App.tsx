@@ -16,6 +16,7 @@ import { CopyToastContainer } from 'src/common-ui/toast/copy-toast.component';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import BrowserUtils from 'src/utils/browser.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 // import './../analytics/analytics/gtag';
 
 const App = () => {
@@ -112,7 +113,7 @@ const App = () => {
           error: 'user_cancel',
           result: null,
           data: globalError.msg.data,
-          message: await chrome.i18n.getMessage(
+          message: await I18nUtils.getMessage(
             'bgd_lifecycle_request_canceled',
           ),
           request_id: globalError.msg.request_id,

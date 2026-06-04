@@ -3,6 +3,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const AccountValueExplanation = ({}: PropsFromRedux) => {
   return (
     <div className="account-value-explanation-section">
@@ -14,7 +15,7 @@ const AccountValueExplanation = ({}: PropsFromRedux) => {
       <p
         className="introduction"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_estimation_info_text'),
+          __html: I18nUtils.getMessage('popup_html_estimation_info_text'),
         }}></p>
     </div>
   );

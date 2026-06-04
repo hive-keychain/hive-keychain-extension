@@ -13,6 +13,7 @@ import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.compon
 import { BuyCoinType } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coin-type.enum';
 import { BuyCoinsListItem } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const BuyCoins = ({
   setTitleContainerProperties,
   currencyLabels,
@@ -70,7 +71,7 @@ const BuyCoins = ({
               />
               <span className="title">{item.name}</span>
               <span className="description">
-                {chrome.i18n.getMessage(item.description)}
+                {I18nUtils.getMessage(item.description)}
               </span>
               <ButtonComponent
                 additionalClass="buy-button"
@@ -83,7 +84,7 @@ const BuyCoins = ({
         )}
         <div className="card exchanges-card">
           <div className="title">
-            {chrome.i18n.getMessage('html_popup_exchanges')}
+            {I18nUtils.getMessage('html_popup_exchanges')}
           </div>
           <div className="exchange-list">
             {BuyCoinsListItem(

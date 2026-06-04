@@ -54,6 +54,7 @@ import { DynamicGlobalPropertiesUtils } from 'src/popup/hive/utils/dynamic-globa
 import Logger from 'src/utils/logger.utils';
 import { getRequiredWifType } from 'src/utils/requests.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 let ws: WebSocket | null = null;
 let reconnectInterval = 1000;
 let connectionAttempts = 0;
@@ -355,7 +356,7 @@ const setupWebSocketHandlers = (
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          message: await chrome.i18n.getMessage(
+          message: await I18nUtils.getMessage(
             'dialog_hiveauth_connection_failed',
           ),
           error: 'connection_failed',
@@ -610,7 +611,7 @@ const handleSignBufferRequest = async (
     authAckData.challenge.challenge,
     keylessRequest.request,
     tab,
-    await chrome.i18n.getMessage('bgd_ops_sign_success'),
+    await I18nUtils.getMessage('bgd_ops_sign_success'),
     null,
     authAckData.challenge.pubkey,
   );
@@ -658,7 +659,7 @@ const handleSignRequest = async (
     signResponse,
     request,
     tab,
-    await chrome.i18n.getMessage('bgd_ops_sign_success'),
+    await I18nUtils.getMessage('bgd_ops_sign_success'),
     null,
     null,
   );
@@ -1087,7 +1088,7 @@ const handleSignWait = async (
             command: DialogCommand.ANSWER_REQUEST,
             msg: {
               success: true,
-              message: await chrome.i18n.getMessage('bgd_ops_sign_success'),
+              message: await I18nUtils.getMessage('bgd_ops_sign_success'),
               result: response,
             },
           });
@@ -1356,7 +1357,7 @@ const sendResponseToDapp = async (
       : response,
     request,
     success
-      ? await chrome.i18n.getMessage('bgd_ops_keyless_broadcast_success')
+      ? await I18nUtils.getMessage('bgd_ops_keyless_broadcast_success')
       : error?.message || 'Operation failed',
     error?.message || null,
     'challenge' in response && response.challenge ? response.pubkey : null,
@@ -1423,7 +1424,7 @@ const handleChallengeAck = async (
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: true,
-          message: await chrome.i18n.getMessage('bgd_ops_challenge_success', [
+          message: await I18nUtils.getMessage('bgd_ops_challenge_success', [
             request.type.charAt(0).toUpperCase() +
               request.type.slice(1).toLowerCase(),
           ]),

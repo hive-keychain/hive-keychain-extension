@@ -3,6 +3,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import sanitizeHTML from 'sanitize-html';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export type CustomTooltipPosition = 'top' | 'bottom' | 'left' | 'right';
 export interface TooltipProps {
   position?: CustomTooltipPosition;
@@ -328,7 +329,7 @@ export const CustomTooltip = ({
             __html: sanitizeHTML(
               skipTranslation
                 ? message
-                : chrome.i18n.getMessage(message, messageParams),
+                : I18nUtils.getMessage(message, messageParams),
               { allowedTags: ['b', 'br', 'i', 'p', 'span', 'div'] },
             ),
           }}></div>

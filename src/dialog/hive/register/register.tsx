@@ -13,6 +13,7 @@ import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.
 import { isPasswordValid } from 'src/popup/hive/utils/password.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: RegisterMessage;
 };
@@ -40,7 +41,7 @@ const Register = ({ data }: Props) => {
   const signup = () => {
     if (!accepted) {
       setSignupError(
-        chrome.i18n.getMessage('html_popup_sign_up_need_accept_pp'),
+        I18nUtils.getMessage('html_popup_sign_up_need_accept_pp'),
       );
       return;
     }
@@ -57,25 +58,25 @@ const Register = ({ data }: Props) => {
           },
         });
       } else {
-        setSignupError(chrome.i18n.getMessage('popup_password_regex'));
+        setSignupError(I18nUtils.getMessage('popup_password_regex'));
       }
     } else {
-      setSignupError(chrome.i18n.getMessage('popup_password_mismatch'));
+      setSignupError(I18nUtils.getMessage('popup_password_mismatch'));
     }
   };
 
   return (
     <div className="register-page">
-      <DialogHeader title={chrome.i18n.getMessage('dialog_header_register')} />
+      <DialogHeader title={I18nUtils.getMessage('dialog_header_register')} />
       <div className="introduction-panel">
         <span className="introduction big first">
-          {chrome.i18n.getMessage('popup_html_unlock1')}
+          {I18nUtils.getMessage('popup_html_unlock1')}
         </span>
         <span className="introduction medium second">
-          {chrome.i18n.getMessage('popup_html_unlock2')}
+          {I18nUtils.getMessage('popup_html_unlock2')}
         </span>
         <span className="introduction medium lighter third">
-          {chrome.i18n.getMessage('popup_html_unlock3')}
+          {I18nUtils.getMessage('popup_html_unlock3')}
         </span>
       </div>
       <div className="inputs-panel">

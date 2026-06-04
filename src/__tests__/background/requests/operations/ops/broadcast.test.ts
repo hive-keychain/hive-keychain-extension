@@ -21,6 +21,7 @@ import mocksImplementation from 'src/__tests__/utils-for-testing/implementations
 import { mockHiveTxCreateTransactionForLedger } from 'src/__tests__/utils-for-testing/mocks/hive-tx-ledger.helpers';
 import { KeychainError } from 'src/keychain-error';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('broadcast tests:\n', () => {
   const data = {
     domain: 'domain',
@@ -39,7 +40,7 @@ describe('broadcast tests:\n', () => {
   });
   beforeEach(() => {
     jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('en-US');
-    chrome.i18n.getMessage = jest
+    I18nUtils.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
     jest.spyOn(HiveMemo, 'encode').mockReturnValue('#mock-encoded-memo');
@@ -98,7 +99,7 @@ describe('broadcast tests:\n', () => {
       const error = new KeychainError(localeMessageKey, [transfers[0]['1'].to]);
       expect(result.msg.error).toEqual(error);
       expect(result.msg.message).toBe(
-        chrome.i18n.getMessage('bgd_ops_transfer_get_account', [
+        I18nUtils.getMessage('bgd_ops_transfer_get_account', [
           transfers[0]['1'].to,
         ]),
       );
@@ -117,7 +118,7 @@ describe('broadcast tests:\n', () => {
       const localeMessageKey = 'popup_html_memo_key_missing';
       const error = new KeychainError(localeMessageKey, []);
       expect(result.msg.error).toEqual(error);
-      expect(result.msg.message).toBe(chrome.i18n.getMessage(localeMessageKey));
+      expect(result.msg.message).toBe(I18nUtils.getMessage(localeMessageKey));
     });
 
     it('Must return error if not key on handler', async () => {
@@ -143,7 +144,7 @@ describe('broadcast tests:\n', () => {
         new Error('html_popup_error_while_signing_transaction'),
       );
       expect(result.msg.message).toBe(
-        chrome.i18n.getMessage('html_popup_error_while_signing_transaction'),
+        I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
       );
     });
 
@@ -187,7 +188,7 @@ describe('broadcast tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_broadcast'),
+          message: I18nUtils.getMessage('bgd_ops_broadcast'),
           request_id: request_id,
           publicKey: undefined,
         },
@@ -224,7 +225,7 @@ describe('broadcast tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_broadcast'),
+          message: I18nUtils.getMessage('bgd_ops_broadcast'),
           request_id: request_id,
           publicKey: undefined,
         },
@@ -278,7 +279,7 @@ describe('broadcast tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_broadcast'),
+          message: I18nUtils.getMessage('bgd_ops_broadcast'),
           request_id: request_id,
           publicKey: undefined,
         },

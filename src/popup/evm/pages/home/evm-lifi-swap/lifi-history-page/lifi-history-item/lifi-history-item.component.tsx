@@ -15,6 +15,7 @@ import { CustomTooltip } from '@common-ui/custom-tooltip/custom-tooltip.componen
 import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import moment from 'moment';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   historyItem: LifiHistoryItem;
   sendingChainLogoURI?: string;
@@ -34,53 +35,53 @@ const LiFiHistoryItemComponent = ({
   const getStatusMessage = (status: string) => {
     switch (status) {
       case 'REFUND_IN_PROGRESS':
-        return chrome.i18n.getMessage('evm_lifi_swap_refund_in_progress');
+        return I18nUtils.getMessage('evm_lifi_swap_refund_in_progress');
       case 'UNKNOWN_ERROR':
-        return chrome.i18n.getMessage('evm_lifi_swap_unknown_error');
+        return I18nUtils.getMessage('evm_lifi_swap_unknown_error');
       case 'WAIT_SOURCE_CONFIRMATIONS':
-        return chrome.i18n.getMessage(
+        return I18nUtils.getMessage(
           'evm_lifi_swap_wait_source_confirmations',
         );
       case 'WAIT_DESTINATION_TRANSACTION':
-        return chrome.i18n.getMessage(
+        return I18nUtils.getMessage(
           'evm_lifi_swap_status_wait_target_confirmation',
         );
       case 'BRIDGE_NOT_AVAILABLE':
-        return chrome.i18n.getMessage(
+        return I18nUtils.getMessage(
           'evm_lifi_swap_status_bridge_not_available',
         );
       case 'CHAIN_NOT_AVAILABLE':
-        return chrome.i18n.getMessage(
+        return I18nUtils.getMessage(
           'evm_lifi_swap_status_chain_not_available',
         );
       case 'COMPLETED':
-        return chrome.i18n.getMessage('evm_lifi_swap_completed');
+        return I18nUtils.getMessage('evm_lifi_swap_completed');
       case 'PARTIAL':
-        return chrome.i18n.getMessage('evm_lifi_swap_partially_completed');
+        return I18nUtils.getMessage('evm_lifi_swap_partially_completed');
       case 'REFUNDED':
-        return chrome.i18n.getMessage('evm_lifi_swap_refunded_completed');
+        return I18nUtils.getMessage('evm_lifi_swap_refunded_completed');
       case 'NOT_PROCESSABLE_REFUND_NEEDED':
-        return chrome.i18n.getMessage(
+        return I18nUtils.getMessage(
           'evm_lifi_swap_manual_intervention_required',
         );
       case 'OUT_OF_GAS':
-        return chrome.i18n.getMessage('evm_lifi_swap_failed_out_of_gas');
+        return I18nUtils.getMessage('evm_lifi_swap_failed_out_of_gas');
       case 'SLIPPAGE_EXCEEDED':
-        return chrome.i18n.getMessage('evm_lifi_swap_failed_slippage');
+        return I18nUtils.getMessage('evm_lifi_swap_failed_slippage');
       case 'INSUFFICIENT_ALLOWANCE':
-        return chrome.i18n.getMessage(
+        return I18nUtils.getMessage(
           'evm_lifi_swap_failed_insufficient_balance',
         );
       case 'INSUFFICIENT_BALANCE':
-        return chrome.i18n.getMessage(
+        return I18nUtils.getMessage(
           'evm_lifi_swap_failed_insufficient_balance',
         );
       case 'EXPIRED':
-        return chrome.i18n.getMessage(
+        return I18nUtils.getMessage(
           'evm_lifi_swap_failed_transaction_expired',
         );
       default:
-        return chrome.i18n.getMessage('swap_status_pending');
+        return I18nUtils.getMessage('swap_status_pending');
     }
   };
 

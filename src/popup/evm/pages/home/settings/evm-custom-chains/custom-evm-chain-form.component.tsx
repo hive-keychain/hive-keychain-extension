@@ -20,6 +20,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const normalizeEvmChainIdInput = (input: string): string => {
   const trimmed = input.trim();
   if (/^0x[0-9a-fA-F]+$/.test(trimmed)) {
@@ -61,7 +62,7 @@ const TX_TYPE_LABEL_KEY: Record<EvmTransactionType, string> = {
 const getTxTypeOptionLabel = (t: EvmTransactionType): string => {
   const key = TX_TYPE_LABEL_KEY[t];
   if (!key) return String(t);
-  const msg = chrome.i18n.getMessage(key);
+  const msg = I18nUtils.getMessage(key);
   return msg || key;
 };
 
@@ -149,9 +150,9 @@ export const CustomEvmChainForm = ({
   /** Locked when editing a saved chain or when the caller fixed the id (e.g. dapp add-chain request). */
   const isChainIdDisabled = isEdit || !!initialChain?.chainId?.trim();
   const addRpcAriaLabel =
-    chrome.i18n.getMessage('evm_custom_chains_add_rpc') || ADD_RPC_FALLBACK;
+    I18nUtils.getMessage('evm_custom_chains_add_rpc') || ADD_RPC_FALLBACK;
   const removeRpcAriaLabel =
-    chrome.i18n.getMessage('evm_custom_chains_remove_rpc') || 'Remove';
+    I18nUtils.getMessage('evm_custom_chains_remove_rpc') || 'Remove';
 
   const [name, setName] = useState('');
   const [chainIdInput, setChainIdInput] = useState('');
@@ -489,7 +490,7 @@ export const CustomEvmChainForm = ({
     <div className="add-custom-evm-chain-form">
       {localError && (
         <div className="add-custom-evm-chain-form__error">
-          {chrome.i18n.getMessage(localError)}
+          {I18nUtils.getMessage(localError)}
         </div>
       )}
       <InputComponent
@@ -511,7 +512,7 @@ export const CustomEvmChainForm = ({
             {chainListMatch ? (
               <>
                 <span className="add-custom-evm-chain-form__chainlist-hint-text">
-                  {chrome.i18n.getMessage('evm_custom_chains_chainlist_found')}
+                  {I18nUtils.getMessage('evm_custom_chains_chainlist_found')}
                 </span>{' '}
                 <button
                   type="button"
@@ -519,14 +520,14 @@ export const CustomEvmChainForm = ({
                   onClick={applyChainListPreload}
                   disabled={saving || chainListPreloadLoading}
                   data-testid="custom-evm-chain-chainlist-preload">
-                  {chrome.i18n.getMessage(
+                  {I18nUtils.getMessage(
                     'evm_custom_chains_chainlist_preload_link',
                   )}
                 </button>
               </>
             ) : (
               <span className="add-custom-evm-chain-form__chainlist-hint-text">
-                {chrome.i18n.getMessage(
+                {I18nUtils.getMessage(
                   'evm_custom_chains_chainlist_looking_up',
                 )}
               </span>
@@ -610,12 +611,12 @@ export const CustomEvmChainForm = ({
               aria-expanded={!rpcPanelCollapsed}
               data-testid="custom-evm-chain-rpc-toggle">
               <span className="add-custom-evm-chain-form__rpc-label">
-                {chrome.i18n.getMessage('evm_custom_chains_field_rpc')}
+                {I18nUtils.getMessage('evm_custom_chains_field_rpc')}
               </span>
               <span className="add-custom-evm-chain-form__rpc-header-right">
                 {rpcPanelCollapsed && (
                   <span className="add-custom-evm-chain-form__rpc-collapsed-hint">
-                    {chrome.i18n.getMessage(
+                    {I18nUtils.getMessage(
                       'evm_custom_chains_rpc_collapsed_summary',
                       [String(rpcFilledCount)],
                     )}
@@ -633,7 +634,7 @@ export const CustomEvmChainForm = ({
             </button>
           ) : (
             <div className="add-custom-evm-chain-form__rpc-label">
-              {chrome.i18n.getMessage('evm_custom_chains_field_rpc')}
+              {I18nUtils.getMessage('evm_custom_chains_field_rpc')}
             </div>
           )}
         </div>

@@ -28,6 +28,7 @@ import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface AccountKeysListProps {
   selectedAccountName: string;
   onAccountSelected: (accountName: string) => void;
@@ -95,7 +96,7 @@ const AccountKeysList = ({
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: null,
       fields: [],
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         'popup_html_delete_account_confirmation_message',
         [selectedAccountName],
       ),
@@ -211,13 +212,13 @@ const AccountKeysList = ({
           <div className="overlay"></div>
           <div className="qr-code-popup">
             <div>
-              <h3>{chrome.i18n.getMessage('popup_html_qr_title')}</h3>
+              <h3>{I18nUtils.getMessage('popup_html_qr_title')}</h3>
               <div className="qr-code-disclaimer">
                 <span>
-                  {chrome.i18n.getMessage('popup_html_qr_disclaimer1') + ' '}
+                  {I18nUtils.getMessage('popup_html_qr_disclaimer1') + ' '}
                 </span>
                 <span>
-                  {chrome.i18n.getMessage('popup_html_qr_disclaimer2')}
+                  {I18nUtils.getMessage('popup_html_qr_disclaimer2')}
                 </span>
               </div>
             </div>

@@ -12,6 +12,7 @@ import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transactio
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   request: EvmRequest;
   accounts: EvmAccountPublic[];
@@ -93,8 +94,8 @@ export const DecryptMessage = (props: Props) => {
       domain={data.dappInfo.domain}
       origin={data.dappInfo.origin}
       tab={data.tab}
-      title={chrome.i18n.getMessage('dialog_evm_decrypt_message_title')}
-      caption={chrome.i18n.getMessage('dialog_evm_decrypt_message_caption', [
+      title={I18nUtils.getMessage('dialog_evm_decrypt_message_title')}
+      caption={I18nUtils.getMessage('dialog_evm_decrypt_message_caption', [
         data.dappInfo.domain,
       ])}
       fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}
@@ -114,7 +115,7 @@ export const DecryptMessage = (props: Props) => {
                 onClick={showMessage}>
                 <SVGIcon icon={SVGIcons.EVM_SETUP_DISPLAY_MNEMONIC} />
                 <div>
-                  {chrome.i18n.getMessage('dialog_evm_decrypt_show_message')}
+                  {I18nUtils.getMessage('dialog_evm_decrypt_show_message')}
                 </div>
               </div>
             )}

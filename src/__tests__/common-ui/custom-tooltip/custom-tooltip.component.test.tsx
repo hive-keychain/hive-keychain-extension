@@ -3,6 +3,7 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import React from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('custom-tooltip.component', () => {
   interface RectOptions {
     left: number;
@@ -96,7 +97,7 @@ describe('custom-tooltip.component', () => {
 
   beforeEach(() => {
     setViewport(320, 600);
-    chrome.i18n.getMessage = jest.fn((key: string) => key);
+    I18nUtils.getMessage = jest.fn((key: string) => key);
   });
 
   afterEach(() => {

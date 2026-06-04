@@ -13,6 +13,7 @@ import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 import { RootState } from 'src/popup/multichain/store';
 import { SignUpComponent } from 'src/popup/multichain/pages/sign-up/sign-up.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 /** Sign-up UI lives under ChainRouter when !mk; test the screen directly (not HiveApp). */
 describe('sign-up.component tests:\n', () => {
   let store: Store<RootState>;
@@ -68,7 +69,7 @@ describe('sign-up.component tests:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_password_mismatch'),
+        I18nUtils.getMessage('popup_password_mismatch'),
         { exact: true },
       ),
     ).toBeInTheDocument();
@@ -89,7 +90,7 @@ describe('sign-up.component tests:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_password_mismatch'),
+        I18nUtils.getMessage('popup_password_mismatch'),
         { exact: true },
       ),
     ).toBeInTheDocument();
@@ -108,7 +109,7 @@ describe('sign-up.component tests:\n', () => {
       );
     });
     expect(
-      await screen.findByText(chrome.i18n.getMessage('popup_password_regex'), {
+      await screen.findByText(I18nUtils.getMessage('popup_password_regex'), {
         exact: true,
       }),
     ).toBeInTheDocument();
@@ -128,7 +129,7 @@ describe('sign-up.component tests:\n', () => {
       await userEvent.click(screen.getByTestId(dataTestIdButton.signUp));
     });
     expect(
-      await screen.findByText(chrome.i18n.getMessage('popup_password_regex'), {
+      await screen.findByText(I18nUtils.getMessage('popup_password_regex'), {
         exact: true,
       }),
     ).toBeInTheDocument();

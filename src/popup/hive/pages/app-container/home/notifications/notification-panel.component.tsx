@@ -11,6 +11,7 @@ import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.com
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { renderLocalizedNotificationMessage } from 'src/popup/hive/pages/app-container/home/notifications/notification-message.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface NotificationPanelProps {
   isPanelOpened: boolean;
   notifications: Notification[];
@@ -51,7 +52,7 @@ export const NotificationPanel = ({
   };
 
   const renderMessage = (notification: Notification) => {
-    const localizedMessage = chrome.i18n.getMessage(
+    const localizedMessage = I18nUtils.getMessage(
       notification.message,
       notification.messageParams,
     );

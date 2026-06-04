@@ -5,6 +5,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export interface ModalProps {
   children: JSX.Element | JSX.Element[];
   title?: string;
@@ -38,13 +39,13 @@ export const ModalPresentation = ({
       {(title || showCloseButton) && (
         <div className="modal-header">
           {title && (
-            <div className="modal-title">{chrome.i18n.getMessage(title)}</div>
+            <div className="modal-title">{I18nUtils.getMessage(title)}</div>
           )}
           {showCloseButton && (
             <button
               type="button"
               className="modal-close-button"
-              aria-label={chrome.i18n.getMessage('popup_html_close')}
+              aria-label={I18nUtils.getMessage('popup_html_close')}
               onClick={onClose}>
               <SVGIcon icon={SVGIcons.TOP_BAR_CLOSE_BTN} />
             </button>

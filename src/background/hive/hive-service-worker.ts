@@ -9,7 +9,6 @@ import SettingsModule from '@background/hive/modules/settings.module';
 import { initHiveRequestHandler } from '@background/hive/requests/init';
 import { KeylessKeychainModule } from '@background/keyless-keychain.module';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
-import getMessage from '@background/utils/i18n.utils';
 import {
   KeychainRequest,
   KeychainRequestWrapper,
@@ -44,9 +43,6 @@ const initializeServiceWorker = async () => {
   MultisigModule.start();
 };
 
-/* istanbul ignore next */
-//@ts-ignore
-chrome.i18n.getMessage = getMessage;
 /* istanbul ignore next */
 const chromeMessageHandler = async (
   backgroundMessage: BackgroundMessage,

@@ -20,6 +20,7 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { mockHiveTxCreateTransactionForLedger } from 'src/__tests__/utils-for-testing/mocks/hive-tx-ledger.helpers';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('proposals tests:\n', () => {
   const data = {
     create: {
@@ -62,7 +63,7 @@ describe('proposals tests:\n', () => {
   });
   beforeEach(() => {
     jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('en-US');
-    chrome.i18n.getMessage = jest
+    I18nUtils.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
   });
@@ -108,7 +109,7 @@ describe('proposals tests:\n', () => {
             error: new Error('html_popup_error_while_signing_transaction'),
             result: undefined,
             data: datas,
-            message: chrome.i18n.getMessage(
+            message: I18nUtils.getMessage(
               'html_popup_error_while_signing_transaction',
             ),
             request_id: request_id,
@@ -142,7 +143,7 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_create'),
+            message: I18nUtils.getMessage('bgd_ops_proposal_create'),
             request_id: request_id,
             publicKey: undefined,
           },
@@ -184,7 +185,7 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_create'),
+            message: I18nUtils.getMessage('bgd_ops_proposal_create'),
             request_id: request_id,
             publicKey: undefined,
           },
@@ -211,7 +212,7 @@ describe('proposals tests:\n', () => {
             error: new Error('html_popup_error_while_signing_transaction'),
             result: undefined,
             data: datas,
-            message: chrome.i18n.getMessage(
+            message: I18nUtils.getMessage(
               'html_popup_error_while_signing_transaction',
             ),
             request_id: request_id,
@@ -246,7 +247,7 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_votes', [
+            message: I18nUtils.getMessage('bgd_ops_proposal_votes', [
               data.update.proposal_ids.join(', #'),
             ]),
             request_id: request_id,
@@ -282,7 +283,7 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage(
+            message: I18nUtils.getMessage(
               'bgd_ops_proposal_vote',
               ids_parsed.join(', #'),
             ),
@@ -319,7 +320,7 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_vote', [ids]),
+            message: I18nUtils.getMessage('bgd_ops_proposal_vote', [ids]),
             request_id: request_id,
             publicKey: undefined,
           },
@@ -354,7 +355,7 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_unvotes', [ids]),
+            message: I18nUtils.getMessage('bgd_ops_proposal_unvotes', [ids]),
             request_id: request_id,
             publicKey: undefined,
           },
@@ -389,7 +390,7 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_unvote', [ids]),
+            message: I18nUtils.getMessage('bgd_ops_proposal_unvote', [ids]),
             request_id: request_id,
             publicKey: undefined,
           },
@@ -432,7 +433,7 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_vote', [
+            message: I18nUtils.getMessage('bgd_ops_proposal_vote', [
               datas.proposal_ids[0].toString(),
             ]),
             request_id: request_id,
@@ -473,7 +474,7 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_vote', ['1']),
+            message: I18nUtils.getMessage('bgd_ops_proposal_vote', ['1']),
             request_id: request_id,
             publicKey: undefined,
           },
@@ -558,7 +559,7 @@ describe('proposals tests:\n', () => {
             error: new Error('html_popup_error_while_signing_transaction'),
             result: undefined,
             data: datas,
-            message: chrome.i18n.getMessage(
+            message: I18nUtils.getMessage(
               'html_popup_error_while_signing_transaction',
             ),
             request_id: request_id,
@@ -594,7 +595,7 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_remove', [ids]),
+            message: I18nUtils.getMessage('bgd_ops_proposal_remove', [ids]),
             request_id: request_id,
             publicKey: undefined,
           },
@@ -638,7 +639,7 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_remove', [ids]),
+            message: I18nUtils.getMessage('bgd_ops_proposal_remove', [ids]),
             request_id: request_id,
             publicKey: undefined,
           },
@@ -676,7 +677,7 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_remove', ['1']),
+            message: I18nUtils.getMessage('bgd_ops_proposal_remove', ['1']),
             request_id: request_id,
             publicKey: undefined,
           },

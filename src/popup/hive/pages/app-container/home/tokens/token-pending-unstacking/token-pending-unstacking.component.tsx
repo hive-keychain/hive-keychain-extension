@@ -31,6 +31,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {}
 
 const TokenPendingUnstake = ({
@@ -82,7 +83,7 @@ const TokenPendingUnstake = ({
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage('html_popup_cancel_unstaking_message'),
+      message: I18nUtils.getMessage('html_popup_cancel_unstaking_message'),
       title: 'html_popup_pending_unstake',
       titleParams: [tokenInfo.symbol],
       fields: fields,
@@ -119,7 +120,7 @@ const TokenPendingUnstake = ({
         <div className="panel">
           <div className="total">
             <div className="label">
-              {chrome.i18n.getMessage('html_popup_total_pending_unstake')}
+              {I18nUtils.getMessage('html_popup_total_pending_unstake')}
             </div>
             <div className="value">
               {FormatUtils.formatCurrencyValue(
@@ -134,7 +135,7 @@ const TokenPendingUnstake = ({
               <div className="unstaking-row" key={`unstaking-${index}`}>
                 <div className="left">
                   <div className="top">
-                    {chrome.i18n.getMessage(
+                    {I18nUtils.getMessage(
                       'html_popup_remaining_transaction',
                       [unstaking.numberTransactionsLeft.toString()],
                     )}
@@ -160,7 +161,7 @@ const TokenPendingUnstake = ({
                     />
 
                     <span>
-                      {chrome.i18n.getMessage(
+                      {I18nUtils.getMessage(
                         'html_popup_unstake_per_transaction',
                         [
                           FormatUtils.formatCurrencyValue(

@@ -20,6 +20,7 @@ import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import { normalizeEvmAccounts } from 'src/utils/evm-provider-value.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   request: EvmRequest;
   accounts: EvmAccountPublic[];
@@ -153,9 +154,9 @@ export const ConnectAccounts = (props: Props) => {
         domain={data.dappInfo.domain}
         origin={data.dappInfo.origin}
         tab={data.tab}
-        title={chrome.i18n.getMessage('evm_connect_wallet')}
+        title={I18nUtils.getMessage('evm_connect_wallet')}
         onConfirm={saveInStorage}
-        caption={chrome.i18n.getMessage('dialog_evm_dapp_status_caption', [
+        caption={I18nUtils.getMessage('dialog_evm_dapp_status_caption', [
           data.dappInfo.domain,
         ])}
         fields={

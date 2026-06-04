@@ -11,6 +11,7 @@ import {
 } from 'hive-keychain-commons';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('operations.utils tests:\n', () => {
   const datas = {
     domain: 'domain',
@@ -39,7 +40,7 @@ describe('operations.utils tests:\n', () => {
         } as TransactionResult,
         datas,
         undefined,
-        chrome.i18n.getMessage('bgd_ops_transfer_success', [
+        I18nUtils.getMessage('bgd_ops_transfer_success', [
           datas.amount,
           datas.currency,
           datas.username!,
@@ -59,7 +60,7 @@ describe('operations.utils tests:\n', () => {
             confirmed: true,
           } as TransactionResult,
           data: data,
-          message: chrome.i18n.getMessage('bgd_ops_transfer_success', [
+          message: I18nUtils.getMessage('bgd_ops_transfer_success', [
             datas.amount,
             datas.currency,
             datas.username!,
@@ -76,23 +77,23 @@ describe('operations.utils tests:\n', () => {
     it('Must return an answerRequest with error', async () => {
       const errorMsg = 'Error while waiting confirmation';
       const result = await createMessage(
-        `${chrome.i18n.getMessage('bgd_ops_error')} : ${errorMsg}`,
+        `${I18nUtils.getMessage('bgd_ops_error')} : ${errorMsg}`,
         undefined,
         datas,
         null,
         undefined,
-        `${chrome.i18n.getMessage('bgd_ops_error')} : ${errorMsg}`,
+        `${I18nUtils.getMessage('bgd_ops_error')} : ${errorMsg}`,
         undefined,
       );
       const { request_id, ...data } = datas;
       expect(result).toEqual({
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
-          error: `${chrome.i18n.getMessage('bgd_ops_error')} : ${errorMsg}`,
+          error: `${I18nUtils.getMessage('bgd_ops_error')} : ${errorMsg}`,
           success: false,
           result: undefined,
           data: data,
-          message: `${chrome.i18n.getMessage('bgd_ops_error')} : ${errorMsg}`,
+          message: `${I18nUtils.getMessage('bgd_ops_error')} : ${errorMsg}`,
           request_id,
           publicKey: undefined,
           tab: null,
@@ -101,7 +102,7 @@ describe('operations.utils tests:\n', () => {
     });
 
     it('uses multisig pending message when tx is routed to signers', async () => {
-      const multisigMsg = chrome.i18n.getMessage(
+      const multisigMsg = I18nUtils.getMessage(
         'multisig_transaction_sent_to_signers',
       );
       const result = await createMessage(
@@ -127,7 +128,7 @@ describe('operations.utils tests:\n', () => {
       );
       const errorMessage = await beautifyErrorMessage(error);
       expect(errorMessage).toBe(
-        `${chrome.i18n.getMessage(
+        `${I18nUtils.getMessage(
           'bgd_ops_error',
         )} : Private key not defined. Code 191`,
       );
@@ -136,7 +137,7 @@ describe('operations.utils tests:\n', () => {
     it('Must return an unknown_error', async () => {
       const error = new Error(' ');
       const errorMessage = await beautifyErrorMessage(error);
-      expect(errorMessage).toBe(chrome.i18n.getMessage('unknown_error'));
+      expect(errorMessage).toBe(I18nUtils.getMessage('unknown_error'));
     });
 
     it('uses colon split when no Exception substring is present', async () => {

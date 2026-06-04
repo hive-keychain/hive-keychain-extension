@@ -31,6 +31,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 import { EvmDappUtils } from 'src/popup/evm/utils/evm-dapp.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export type EvmDappConnectionAccount = {
   address: string;
   account?: EvmAccount;
@@ -472,7 +473,7 @@ const EvmDappsConnections = ({
           <div
             className="evm-dapps-connections-empty"
             data-testid="evm-dapps-connections-empty">
-            {chrome.i18n.getMessage('evm_dapps_connections_empty')}
+            {I18nUtils.getMessage('evm_dapps_connections_empty')}
           </div>
         )}
       </Card>
@@ -496,11 +497,11 @@ const EvmDappsConnections = ({
             {selectedModalType === 'addresses' ? (
               <>
                 <div className="caption">
-                  {chrome.i18n.getMessage('popup_html_evm_dapp_status_caption')}
+                  {I18nUtils.getMessage('popup_html_evm_dapp_status_caption')}
                 </div>
                 <div className="accounts-section">
                   <div className="account-section-title">
-                    {chrome.i18n.getMessage(
+                    {I18nUtils.getMessage(
                       'popup_html_evm_dapp_status_connected_accounts',
                     )}
                   </div>
@@ -521,7 +522,7 @@ const EvmDappsConnections = ({
                           <DappStatusComponent address={address} />
                           <div className="evm-dapps-connections-stale-account-info">
                             <div className="evm-dapps-connections-stale-account-name">
-                              {chrome.i18n.getMessage(
+                              {I18nUtils.getMessage(
                                 'evm_dapps_connections_unknown_account',
                               )}
                             </div>
@@ -554,13 +555,13 @@ const EvmDappsConnections = ({
             ) : (
               <>
                 <div className="caption">
-                  {chrome.i18n.getMessage(
+                  {I18nUtils.getMessage(
                     'evm_dapps_connections_chains_caption',
                   )}
                 </div>
                 <div className="accounts-section">
                   <div className="account-section-title">
-                    {chrome.i18n.getMessage(
+                    {I18nUtils.getMessage(
                       'evm_dapps_connections_allowed_chains',
                     )}
                   </div>
@@ -579,7 +580,7 @@ const EvmDappsConnections = ({
                           <div className="evm-dapps-connections-chain-info">
                             <div className="evm-dapps-connections-chain-name">
                               {chain?.name ??
-                                chrome.i18n.getMessage(
+                                I18nUtils.getMessage(
                                   'evm_dapps_connections_unknown_chain',
                                 )}
                             </div>
@@ -601,7 +602,7 @@ const EvmDappsConnections = ({
                     <div
                       className="evm-dapps-connections-empty"
                       data-testid="evm-dapps-no-chains">
-                      {chrome.i18n.getMessage(
+                      {I18nUtils.getMessage(
                         'evm_dapps_connections_no_chains',
                       )}
                     </div>

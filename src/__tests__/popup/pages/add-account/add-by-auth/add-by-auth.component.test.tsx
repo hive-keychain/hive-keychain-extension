@@ -15,6 +15,7 @@ import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-l
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('add-by-auth tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -74,7 +75,7 @@ describe('add-by-auth tests:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_html_account_already_existing'),
+        I18nUtils.getMessage('popup_html_account_already_existing'),
       ),
     ).toBeInTheDocument();
   });
@@ -92,7 +93,7 @@ describe('add-by-auth tests:\n', () => {
       await userEvent.click(await screen.findByTestId(dataTestIdButton.submit));
     });
     expect(
-      await screen.findByText(chrome.i18n.getMessage('popup_accounts_fill')),
+      await screen.findByText(I18nUtils.getMessage('popup_accounts_fill')),
     ).toBeInTheDocument();
   });
 
@@ -109,7 +110,7 @@ describe('add-by-auth tests:\n', () => {
       await userEvent.click(await screen.findByTestId(dataTestIdButton.submit));
     });
     expect(
-      await screen.findByText(chrome.i18n.getMessage('popup_accounts_fill')),
+      await screen.findByText(I18nUtils.getMessage('popup_accounts_fill')),
     ).toBeInTheDocument();
   });
 
@@ -127,7 +128,7 @@ describe('add-by-auth tests:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_no_auth_account', ['theghost1980']),
+        I18nUtils.getMessage('popup_no_auth_account', ['theghost1980']),
       ),
     ).toBeInTheDocument();
   });
@@ -147,7 +148,7 @@ describe('add-by-auth tests:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_accounts_incorrect_user'),
+        I18nUtils.getMessage('popup_accounts_incorrect_user'),
       ),
     ).toBeInTheDocument();
   });
@@ -171,7 +172,7 @@ describe('add-by-auth tests:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_accounts_no_auth', [
+        I18nUtils.getMessage('popup_accounts_no_auth', [
           mk.user.one,
           'theghost1980',
         ]),

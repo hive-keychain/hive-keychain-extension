@@ -6,6 +6,7 @@ import { EvmRiskWarningUtils } from 'src/common-ui/evm/evm-risk-warning/evm-risk
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export type EvmRiskWarningVariant = 'tag' | 'panel';
 
 interface Props {
@@ -33,10 +34,10 @@ export const EvmRiskWarningRow = ({
   }
 
   const levelClass = EvmRiskWarningUtils.getLevelModifierClass(warning.level);
-  const severityLabel = chrome.i18n.getMessage(
+  const severityLabel = I18nUtils.getMessage(
     EvmRiskWarningUtils.getSeverityLabelKey(warning.level),
   );
-  const message = chrome.i18n.getMessage(
+  const message = I18nUtils.getMessage(
     warning.message,
     warning.messageParams ?? [],
   );
@@ -70,7 +71,7 @@ export const EvmRiskWarningRow = ({
         <div className="evm-risk-warning-panel__message">{message}</div>
         {warning.ignored && (
           <span className="evm-risk-warning-panel__acknowledged-label">
-            {chrome.i18n.getMessage('evm_risk_warning_reviewed')}
+            {I18nUtils.getMessage('evm_risk_warning_reviewed')}
           </span>
         )}
       </PanelWrapper>
@@ -101,7 +102,7 @@ export const EvmRiskWarningRow = ({
       <span className="evm-risk-tag__message">{message}</span>
       {warning.ignored && (
         <span className="evm-risk-tag__level">
-          {chrome.i18n.getMessage('evm_risk_warning_reviewed')}
+          {I18nUtils.getMessage('evm_risk_warning_reviewed')}
         </span>
       )}
     </TagWrapper>

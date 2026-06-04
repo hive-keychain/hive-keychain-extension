@@ -6,6 +6,7 @@ import ButtonComponent, {
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface MetadataPopupProps {
   initialMetadata: TransactionOptionsMetadata;
   onSubmit: (metadata: TransactionOptionsMetadata) => void;
@@ -40,13 +41,13 @@ export const MetadataPopup = ({
         {metadataForm.twoFACodes !== undefined && (
           <div className="two-fa-codes">
             <div className="section-title">
-              {chrome.i18n.getMessage('multisig_bot_two_fa_codes')}
+              {I18nUtils.getMessage('multisig_bot_two_fa_codes')}
             </div>
             {Object.keys(metadataForm.twoFACodes).map((botName: string) => (
               <InputComponent
                 type={InputType.TEXT}
                 key={`bot-${botName}`}
-                label={chrome.i18n.getMessage('multisig_bot_two_fa_code', [
+                label={I18nUtils.getMessage('multisig_bot_two_fa_code', [
                   botName,
                 ])}
                 skipLabelTranslation

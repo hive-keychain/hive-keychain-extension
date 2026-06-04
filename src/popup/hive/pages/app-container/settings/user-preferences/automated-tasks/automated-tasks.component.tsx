@@ -23,8 +23,9 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
 import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const DEFAULT_SELECTED_TOKEN_OPTION = {
-  label: chrome.i18n.getMessage(
+  label: I18nUtils.getMessage(
     'popup_html_automated_hive_section_default_option_message',
   ),
   value: '',
@@ -322,7 +323,7 @@ const AutomatedTasks = ({
       data-testid={`${Screen.SETTINGS_AUTOMATED_TASKS}-page`}
       className="automated-tasks-page">
       <div className="intro">
-        {chrome.i18n.getMessage('popup_html_automated_intro')}
+        {I18nUtils.getMessage('popup_html_automated_intro')}
       </div>
 
       {selectedAccountOption && (
@@ -340,7 +341,7 @@ const AutomatedTasks = ({
         <div className="section-header">
           <div className="section-title-logo">
             <div className="section-title">
-              {chrome.i18n.getMessage(
+              {I18nUtils.getMessage(
                 'popup_html_automated_hive_section_title',
               )}
             </div>
@@ -362,7 +363,7 @@ const AutomatedTasks = ({
             checked={claimAccounts && !isClaimedAccountDisabled}
             onChange={(value) => saveClaims(claimRewards, value, claimSavings)}
             skipHintTranslation
-            hint={chrome.i18n.getMessage(
+            hint={I18nUtils.getMessage(
               'popup_html_enable_autoclaim_accounts_info',
               [Config.claims.freeAccount.MIN_RC_PCT + ''],
             )}
@@ -388,7 +389,7 @@ const AutomatedTasks = ({
         <div className="section-header">
           <div className="section-title-logo">
             <div className="section-title">
-              {chrome.i18n.getMessage(
+              {I18nUtils.getMessage(
                 'popup_html_automated_hive_engine_section_title',
               )}
             </div>
@@ -428,7 +429,7 @@ const AutomatedTasks = ({
           {autoStakeTokenList.length > 0 && enabledAutoStake && (
             <>
               <div className="intro title-list">
-                {chrome.i18n.getMessage(
+                {I18nUtils.getMessage(
                   'popup_html_automated_hive_engine_list_title',
                 )}
               </div>

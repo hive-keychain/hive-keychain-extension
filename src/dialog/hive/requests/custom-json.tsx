@@ -12,6 +12,7 @@ import RequestItem from 'src/dialog/components/request-item/request-item';
 import Operation from 'src/dialog/hive/operation/operation';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: RequestCustomJSON & RequestId;
   domain: string;
@@ -33,7 +34,7 @@ const CustomJson = (props: Props) => {
   };
   return (
     <Operation
-      title={chrome.i18n.getMessage('dialog_title_custom')}
+      title={I18nUtils.getMessage('dialog_title_custom')}
       header={data.display_msg}
       {...anonymousProps}
       {...props}

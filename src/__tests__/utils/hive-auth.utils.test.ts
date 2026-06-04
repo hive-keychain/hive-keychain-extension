@@ -1,6 +1,7 @@
 import { HasCmd } from '@interfaces/has.interface';
 import { KeychainRequestTypes } from '@interfaces/keychain.interface';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const mockCreateMessage = jest.fn<
   Promise<{
     command: string;
@@ -226,7 +227,7 @@ describe('hive-auth.utils pre-correlation gate', () => {
       writable: true,
       value: FakeWebSocket,
     });
-    chrome.i18n.getMessage = jest.fn((key) => key);
+    I18nUtils.getMessage = jest.fn((key) => key);
     (chrome.runtime.sendMessage as jest.Mock).mockImplementation(() =>
       Promise.resolve(),
     );

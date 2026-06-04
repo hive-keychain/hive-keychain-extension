@@ -25,6 +25,7 @@ import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { getRequiredWifType } from 'src/utils/requests.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   title: string;
   children: JSX.Element[];
@@ -192,7 +193,7 @@ const Operation = ({
         error: 'user_cancel',
         result: null,
         data: data,
-        message: await chrome.i18n.getMessage(`bgd_lifecycle_request_canceled`),
+        message: await I18nUtils.getMessage(`bgd_lifecycle_request_canceled`),
         request_id: data.request_id,
         tab: tab,
       },
@@ -226,7 +227,7 @@ const Operation = ({
           <div data-testid="use-multisig-message" className="multisig-message">
             <img src="/assets/images/multisig/logo.png" className="logo" />
             <div className="message">
-              {chrome.i18n.getMessage('multisig_disclaimer_message')}
+              {I18nUtils.getMessage('multisig_disclaimer_message')}
             </div>
           </div>
         )}
@@ -256,7 +257,7 @@ const Operation = ({
                   return { ...old, [botName]: value };
                 });
               }}
-              label={chrome.i18n.getMessage('multisig_bot_two_fa_code', [
+              label={I18nUtils.getMessage('multisig_bot_two_fa_code', [
                 botName,
               ])}
               skipLabelTranslation
@@ -271,7 +272,7 @@ const Operation = ({
           skipTranslation
           title={
             checkboxLabelOverride ||
-            chrome.i18n.getMessage('dialog_no_prompt', [
+            I18nUtils.getMessage('dialog_no_prompt', [
               data.type,
               data.username!,
               domain,

@@ -10,6 +10,7 @@ import ButtonComponent, {
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const DEFAULT_TIMEOUT = 3000;
 
 interface MessageContainerProps {
@@ -91,7 +92,7 @@ const MessageContainer = ({
           className={`title ${
             message.type === MessageType.SUCCESS ? 'success' : ''
           }`}>
-          {chrome.i18n.getMessage(getTitle(message.type))}
+          {I18nUtils.getMessage(getTitle(message.type))}
         </div>
         <div
           className="message"
@@ -99,7 +100,7 @@ const MessageContainer = ({
             __html: sanitizeHTML(
               message.skipTranslation
                 ? message.key
-                : chrome.i18n.getMessage(message.key, message.params),
+                : I18nUtils.getMessage(message.key, message.params),
               { allowedTags: ['b', 'br', 'i', 'p', 'span', 'div'] },
             ),
           }}

@@ -24,6 +24,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const EvmCustomTokensPage = ({
   chain,
   activeAccount,
@@ -73,7 +74,7 @@ const EvmCustomTokensPage = ({
       children: (
         <div className="evm-delete-confirm-modal">
           <p className="evm-delete-confirm-modal__message">
-            {chrome.i18n.getMessage('evm_custom_tokens_delete_confirm', [
+            {I18nUtils.getMessage('evm_custom_tokens_delete_confirm', [
               label,
             ])}
           </p>
@@ -162,7 +163,7 @@ const EvmCustomTokensPage = ({
     <div className="evm-custom-tokens-page">
       <Card className="evm-custom-tokens-card">
         <p className="evm-custom-tokens-caption">
-          {chrome.i18n.getMessage('evm_custom_tokens_page_caption')}
+          {I18nUtils.getMessage('evm_custom_tokens_page_caption')}
         </p>
         <div
           className="add-custom-token-link"
@@ -171,11 +172,11 @@ const EvmCustomTokensPage = ({
             setEditingToken(null);
             setShowAddPopup(true);
           }}>
-          {chrome.i18n.getMessage('evm_add_custom_token')}
+          {I18nUtils.getMessage('evm_add_custom_token')}
         </div>
         {customTokens.length === 0 ? (
           <p className="evm-custom-tokens-empty">
-            {chrome.i18n.getMessage('evm_custom_tokens_page_empty')}
+            {I18nUtils.getMessage('evm_custom_tokens_page_empty')}
           </p>
         ) : (
           <ul className="evm-custom-tokens-list">
@@ -226,8 +227,8 @@ const EvmCustomTokensPage = ({
                     type="button"
                     className="evm-custom-tokens-list__delete"
                     data-testid={`btn-delete-custom-token-${token.address}`}
-                    title={chrome.i18n.getMessage('evm_custom_tokens_delete')}
-                    aria-label={chrome.i18n.getMessage('evm_custom_tokens_delete')}
+                    title={I18nUtils.getMessage('evm_custom_tokens_delete')}
+                    aria-label={I18nUtils.getMessage('evm_custom_tokens_delete')}
                     onClick={(e) => {
                       e.stopPropagation();
                       openDeleteTokenConfirmModal(token);

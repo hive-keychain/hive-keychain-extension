@@ -54,6 +54,7 @@ import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface TransferForm {
   receiverUsername: string;
   selectedCurrency: keyof CurrencyLabels;
@@ -225,7 +226,7 @@ const TransferFunds = ({
     let memoField = form.memo;
     if (form.memo.length) {
       if (form.memo.startsWith('#') || form.encrypted) {
-        memoField = `${form.memo} (${chrome.i18n.getMessage(
+        memoField = `${form.memo} (${I18nUtils.getMessage(
           'popup_encrypted',
         )})`;
         if (!activeAccount.keys.memo) {
@@ -234,7 +235,7 @@ const TransferFunds = ({
         }
       }
     } else {
-      memoField = chrome.i18n.getMessage('popup_empty');
+      memoField = I18nUtils.getMessage('popup_empty');
     }
 
     let fields: ConfirmationPageFields[] = [
@@ -268,7 +269,7 @@ const TransferFunds = ({
     if (form.isRecurrent) {
       fields.push({
         label: 'popup_html_transfer_recurrence',
-        value: chrome.i18n.getMessage('popup_html_transfer_recurrence_value', [
+        value: I18nUtils.getMessage('popup_html_transfer_recurrence_value', [
           form.frequency.toString(),
           form.iteration.toString(),
         ]),
@@ -284,7 +285,7 @@ const TransferFunds = ({
     );
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
+      message: I18nUtils.getMessage('popup_html_transfer_confirm_text'),
       fields: fields,
       warningMessage: warningMessage,
       skipWarningTranslation: true,
@@ -388,7 +389,7 @@ const TransferFunds = ({
               navigateTo(Screen.RECURRENT_TRANSFERS_PAGE);
             }}>
             <div className="pending-recurrent-transfer-text">
-              {`${recurrentTransfers?.length} ${chrome.i18n.getMessage(
+              {`${recurrentTransfers?.length} ${I18nUtils.getMessage(
                 'popup_html_active_recurrent_transfer',
               )}`}
             </div>
@@ -453,7 +454,7 @@ const TransferFunds = ({
               label="popup_html_transfer_memo"
               hint={
                 watch('encrypted') || watch('memo').startsWith('#')
-                  ? capitalize(chrome.i18n.getMessage('popup_encrypted'))
+                  ? capitalize(I18nUtils.getMessage('popup_encrypted'))
                   : undefined
               }
               skipHintTranslation

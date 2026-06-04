@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface SmallDataCardProps {
   label: string;
   skipLabelTranslation?: boolean;
@@ -28,7 +29,7 @@ export const SmallDataCardComponent = ({
   return (
     <div className="small-data-card">
       <div className="label">
-        {skipLabelTranslation ? label : chrome.i18n.getMessage(label)}
+        {skipLabelTranslation ? label : I18nUtils.getMessage(label)}
       </div>
       <div
         className={`value ${valueClassName ?? ''} ${

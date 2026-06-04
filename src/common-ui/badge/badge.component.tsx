@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export enum BadgeType {
   EXPERIMENTAL = 'experimental',
   TESTNET = 'testnet',
@@ -18,7 +19,7 @@ export const Badge = ({ badgeType, small, inverted }: Props) => {
       className={`badge ${badgeType} ${small && 'small'} ${
         inverted && 'inverted'
       }`}>
-      {chrome.i18n.getMessage(label)}
+      {I18nUtils.getMessage(label)}
     </div>
   );
 };

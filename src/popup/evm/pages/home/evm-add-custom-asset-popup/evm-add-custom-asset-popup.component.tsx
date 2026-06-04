@@ -16,6 +16,7 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ethers } from 'ethers';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export type EvmCustomAssetMode = 'erc20' | 'nft';
 
 export interface EvmCustomErc20FormData {
@@ -331,7 +332,7 @@ export const EvmAddCustomAssetPopup = ({
         if (isMountedRef.current) {
           setErc20Errors((current) => ({
             ...current,
-            contractAddress: chrome.i18n.getMessage(
+            contractAddress: I18nUtils.getMessage(
               'evm_add_custom_asset_error_contract_address_invalid',
             ),
           }));
@@ -345,7 +346,7 @@ export const EvmAddCustomAssetPopup = ({
         if (isMountedRef.current) {
           setErc20Errors((current) => ({
             ...current,
-            contractAddress: chrome.i18n.getMessage(
+            contractAddress: I18nUtils.getMessage(
               'evm_add_custom_asset_error_contract_address_duplicate',
             ),
           }));
@@ -382,7 +383,7 @@ export const EvmAddCustomAssetPopup = ({
         ) {
           setErc20Errors((current) => ({
             ...current,
-            contractAddress: chrome.i18n.getMessage(
+            contractAddress: I18nUtils.getMessage(
               'evm_add_custom_token_error_fetch_erc20_metadata',
             ),
           }));
@@ -417,25 +418,25 @@ export const EvmAddCustomAssetPopup = ({
     const normalizedAddress = normalizeAddress(erc20Form.contractAddress);
 
     if (!normalizedAddress || !ethers.isAddress(normalizedAddress)) {
-      errors.contractAddress = chrome.i18n.getMessage(
+      errors.contractAddress = I18nUtils.getMessage(
         'evm_add_custom_asset_error_contract_address_invalid',
       );
     } else if (
       normalizedExistingAddresses.has(normalizedAddress.toLowerCase())
     ) {
-      errors.contractAddress = chrome.i18n.getMessage(
+      errors.contractAddress = I18nUtils.getMessage(
         'evm_add_custom_asset_error_contract_address_duplicate',
       );
     }
 
     if (!erc20Form.symbol.trim()) {
-      errors.symbol = chrome.i18n.getMessage(
+      errors.symbol = I18nUtils.getMessage(
         'evm_add_custom_token_error_symbol_required',
       );
     }
 
     if (!erc20Form.name.trim()) {
-      errors.name = chrome.i18n.getMessage(
+      errors.name = I18nUtils.getMessage(
         'evm_add_custom_token_error_name_required',
       );
     }
@@ -448,7 +449,7 @@ export const EvmAddCustomAssetPopup = ({
       decimalsParsed < 0 ||
       decimalsParsed > 255
     ) {
-      errors.decimals = chrome.i18n.getMessage(
+      errors.decimals = I18nUtils.getMessage(
         'evm_add_custom_token_error_decimals_invalid',
       );
     }
@@ -473,23 +474,23 @@ export const EvmAddCustomAssetPopup = ({
     );
 
     if (!normalizedAddress || !ethers.isAddress(normalizedAddress)) {
-      errors.contractAddress = chrome.i18n.getMessage(
+      errors.contractAddress = I18nUtils.getMessage(
         'evm_add_custom_asset_error_contract_address_invalid',
       );
     } else if (
       normalizedExistingAddresses.has(normalizedAddress.toLowerCase())
     ) {
-      errors.contractAddress = chrome.i18n.getMessage(
+      errors.contractAddress = I18nUtils.getMessage(
         'evm_add_custom_asset_error_contract_address_duplicate',
       );
     }
 
     if (!rawTokenIds.length) {
-      errors.tokenIds = chrome.i18n.getMessage(
+      errors.tokenIds = I18nUtils.getMessage(
         'evm_add_custom_nft_error_token_ids_required',
       );
     } else if (invalidTokenIds.length) {
-      errors.tokenIds = chrome.i18n.getMessage(
+      errors.tokenIds = I18nUtils.getMessage(
         'evm_add_custom_nft_error_token_ids_format',
       );
     }
@@ -527,7 +528,7 @@ export const EvmAddCustomAssetPopup = ({
       if (isMountedRef.current) {
         setErc20Errors((current) => ({
           ...current,
-          save: chrome.i18n.getMessage(
+          save: I18nUtils.getMessage(
             'evm_add_custom_token_error_save_failed',
           ),
         }));
@@ -571,7 +572,7 @@ export const EvmAddCustomAssetPopup = ({
         if (isMountedRef.current) {
           setNftErrors((current) => ({
             ...current,
-            tokenIds: chrome.i18n.getMessage(
+            tokenIds: I18nUtils.getMessage(
               'evm_add_custom_nft_error_token_ids_not_owned',
             ),
           }));
@@ -594,7 +595,7 @@ export const EvmAddCustomAssetPopup = ({
         if (isMountedRef.current) {
           setNftErrors((current) => ({
             ...current,
-            save: chrome.i18n.getMessage(
+            save: I18nUtils.getMessage(
               'evm_add_custom_nft_error_save_failed',
             ),
           }));
@@ -604,7 +605,7 @@ export const EvmAddCustomAssetPopup = ({
       if (isMountedRef.current) {
         setNftErrors((current) => ({
           ...current,
-          save: chrome.i18n.getMessage(
+          save: I18nUtils.getMessage(
             'evm_add_custom_nft_error_unsupported_contract',
           ),
         }));
@@ -634,13 +635,13 @@ export const EvmAddCustomAssetPopup = ({
       }
       title={
         isEditing
-          ? chrome.i18n.getMessage('evm_custom_tokens_modal_title_edit')
-          : chrome.i18n.getMessage('evm_add_custom_token_popup_title')
+          ? I18nUtils.getMessage('evm_custom_tokens_modal_title_edit')
+          : I18nUtils.getMessage('evm_add_custom_token_popup_title')
       }
       caption={
         isEditing
-          ? chrome.i18n.getMessage('evm_custom_tokens_modal_caption_edit')
-          : chrome.i18n.getMessage('evm_add_custom_token_popup_caption')
+          ? I18nUtils.getMessage('evm_custom_tokens_modal_caption_edit')
+          : I18nUtils.getMessage('evm_add_custom_token_popup_caption')
       }
       onClose={onClose}
       onSave={onSave as (form: EvmCustomErc20FormData) => Promise<void> | void}
@@ -651,13 +652,13 @@ export const EvmAddCustomAssetPopup = ({
     <>
       <div className="popup-title">
         {isEditing
-          ? chrome.i18n.getMessage('evm_custom_nfts_modal_title_edit')
-          : chrome.i18n.getMessage('evm_add_custom_nft_popup_title')}
+          ? I18nUtils.getMessage('evm_custom_nfts_modal_title_edit')
+          : I18nUtils.getMessage('evm_add_custom_nft_popup_title')}
       </div>
       <div className="popup-caption">
         {isEditing
-          ? chrome.i18n.getMessage('evm_custom_nfts_modal_caption_edit')
-          : chrome.i18n.getMessage('evm_add_custom_nft_popup_caption')}
+          ? I18nUtils.getMessage('evm_custom_nfts_modal_caption_edit')
+          : I18nUtils.getMessage('evm_add_custom_nft_popup_caption')}
       </div>
 
       <div className="custom-asset-form">
@@ -702,7 +703,7 @@ export const EvmAddCustomAssetPopup = ({
         </div>
 
         <div className="popup-note">
-          {chrome.i18n.getMessage(
+          {I18nUtils.getMessage(
             isEditing && editedNftType
               ? 'evm_custom_nfts_type_detected'
               : 'evm_custom_nfts_type_auto_detected',

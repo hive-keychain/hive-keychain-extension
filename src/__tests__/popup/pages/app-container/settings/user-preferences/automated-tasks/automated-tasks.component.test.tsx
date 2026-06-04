@@ -11,6 +11,7 @@ import { Icons } from 'src/common-ui/icons.enum';
 import Config from 'src/config';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('automated-tasks.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -77,13 +78,13 @@ describe('automated-tasks.component tests:\n', () => {
         ).toBeInTheDocument();
         expect(
           screen.getByText(
-            chrome.i18n.getMessage('popup_html_automated_intro'),
+            I18nUtils.getMessage('popup_html_automated_intro'),
             { exact: true },
           ),
         ).toBeInTheDocument();
         expect(
           screen.getByText(
-            chrome.i18n.getMessage(
+            I18nUtils.getMessage(
               'popup_html_enable_autoclaim_accounts_info',
               [Config.claims.freeAccount.MIN_RC_PCT + ''],
             ),

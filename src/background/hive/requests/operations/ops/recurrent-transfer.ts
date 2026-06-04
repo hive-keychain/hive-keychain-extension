@@ -16,6 +16,7 @@ import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const recurrentTransfer = async (
   requestHandler: HiveRequestsHandler,
   data: RequestRecurrentTransfer & RequestId,
@@ -94,7 +95,7 @@ export const recurrentTransfer = async (
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await chrome.i18n.getMessage(
+    err_message = await I18nUtils.getMessage(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -105,8 +106,8 @@ export const recurrentTransfer = async (
       data,
       request?.tab!,
       parseFloat(amount) === 0
-        ? await chrome.i18n.getMessage('bgd_ops_stop_recurrent_transfer')
-        : await chrome.i18n.getMessage('bgd_ops_recurrent_transfer'),
+        ? await I18nUtils.getMessage('bgd_ops_stop_recurrent_transfer')
+        : await I18nUtils.getMessage('bgd_ops_recurrent_transfer'),
       err_message,
     );
     return message;

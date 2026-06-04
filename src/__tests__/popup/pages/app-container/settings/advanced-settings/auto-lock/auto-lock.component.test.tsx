@@ -11,6 +11,7 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('auto-lock.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -49,7 +50,7 @@ describe('auto-lock.component tests:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_html_save_successful'),
+        I18nUtils.getMessage('popup_html_save_successful'),
       ),
     ).toBeInTheDocument();
     expect(
@@ -68,7 +69,7 @@ describe('auto-lock.component tests:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_html_save_successful'),
+        I18nUtils.getMessage('popup_html_save_successful'),
       ),
     ).toBeInTheDocument();
     expect(
@@ -88,7 +89,7 @@ describe('auto-lock.component tests:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_html_save_successful'),
+        I18nUtils.getMessage('popup_html_save_successful'),
       ),
     ).toBeInTheDocument();
     expect(

@@ -2567,6 +2567,10 @@
     "message": "Connect and unlock your Ledger, open the Ethereum app, then discover EVM accounts.",
     "description": "EVM Ledger account discovery caption"
   },
+  "popup_html_preferences_language": {
+    "message": "Langue",
+    "description": "Preferences and display: language selector label"
+  },
   "ledger_source_name": {
     "message": "Ledger",
     "description": "Default EVM Ledger wallet source name"

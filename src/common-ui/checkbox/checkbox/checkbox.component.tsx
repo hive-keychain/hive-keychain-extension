@@ -3,6 +3,7 @@ import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.compo
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export interface CheckboxProps {
   onChange: (value: boolean) => void;
   title?: string;
@@ -41,7 +42,7 @@ const getCheckbox = (props: CheckboxProps) => {
       <div className="label">
         {props.skipTranslation
           ? props.title
-          : chrome.i18n.getMessage(props.title ?? '')}
+          : I18nUtils.getMessage(props.title ?? '')}
       </div>
     </div>
   );

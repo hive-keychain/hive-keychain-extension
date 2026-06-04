@@ -7,6 +7,7 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   request: EvmRequest;
   dappInfo: EvmDappInfo;
@@ -72,10 +73,10 @@ export const RequestAddCustomEvmChain = ({
     <div className="request-add-custom-chain-page">
       <Card className="request-add-custom-chain-card">
         <div className="title">
-          {chrome.i18n.getMessage('evm_request_add_custom_chain_title')}
+          {I18nUtils.getMessage('evm_request_add_custom_chain_title')}
         </div>
         <div className="caption">
-          {chrome.i18n.getMessage('evm_request_add_custom_chain_caption', [
+          {I18nUtils.getMessage('evm_request_add_custom_chain_caption', [
             dappInfo.domain,
             requestedChainId,
           ])}

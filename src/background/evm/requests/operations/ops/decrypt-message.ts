@@ -8,6 +8,7 @@ import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const getUnsupportedLedgerDecryptError = () => {
   const error = new Error('Ledger does not support decrypt requests');
   (error as any).code = 'UNSUPPORTED_OPERATION';
@@ -47,6 +48,6 @@ export const decryptMessage = async (
     res,
     request,
     requestData?.tab!,
-    await chrome.i18n.getMessage('dialog_evm_decrypt_message_success'),
+    await I18nUtils.getMessage('dialog_evm_decrypt_message_success'),
   );
 };

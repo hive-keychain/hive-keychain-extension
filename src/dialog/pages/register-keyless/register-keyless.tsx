@@ -10,6 +10,7 @@ import QRCode from 'react-qr-code';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type RegisterKeylessProps = {
   command: DialogCommand;
   requestHandler: HiveRequestsHandler;
@@ -94,13 +95,13 @@ const RegisterKeyless = (props: Props) => {
       data-testid={`${DialogCommand.REGISTER_KEYLESS_KEYCHAIN}-dialog`}
       className="register-keyless-dialog">
       <DialogHeader
-        title={chrome.i18n.getMessage('dialog_register_keyless_title')}
+        title={I18nUtils.getMessage('dialog_register_keyless_title')}
       />
       <div className="content">
         <div
           className="caption"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage(
+            __html: I18nUtils.getMessage(
               'popup_html_keyless_keychain_register',
             ),
           }}></div>
@@ -113,12 +114,12 @@ const RegisterKeyless = (props: Props) => {
             </div>
           ) : (
             <div>
-              <p>{chrome.i18n.getMessage('dialog_keyless_expired')}</p>
+              <p>{I18nUtils.getMessage('dialog_keyless_expired')}</p>
             </div>
           )}
           {expireSeconds > 0 && !isExpired && (
             <div className="expire-seconds">
-              {chrome.i18n.getMessage('dialog_keyless_expire_in', [
+              {I18nUtils.getMessage('dialog_keyless_expire_in', [
                 expireSeconds + '',
               ])}
             </div>

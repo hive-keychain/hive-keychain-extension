@@ -12,6 +12,7 @@ import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import FormatUtils from 'src/utils/format.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('top-bar.component tests:/n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -62,7 +63,7 @@ describe('top-bar.component tests:/n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_claim_success', [
+          I18nUtils.getMessage('popup_html_claim_success', [
             claimedResources.join(', '),
           ]),
         ),
@@ -116,7 +117,7 @@ describe('top-bar.component tests:/n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_accounts_err_claim'),
+          I18nUtils.getMessage('popup_accounts_err_claim'),
         ),
       ).toBeInTheDocument();
     });

@@ -6,13 +6,14 @@ import {
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmRiskWarningRow } from 'src/common-ui/evm/evm-risk-warning/evm-risk-warning-row.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 jest.mock('src/common-ui/svg-icon/svg-icon.component', () => ({
   SVGIcon: () => <span data-testid="warning-icon" />,
 }));
 
 describe('EvmRiskWarningRow', () => {
   beforeEach(() => {
-    global.chrome.i18n.getMessage = jest.fn((key: string) => key);
+    I18nUtils.getMessage = jest.fn((key: string) => key);
   });
 
   it('renders panel variant with severity title in modal layout', () => {

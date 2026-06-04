@@ -14,6 +14,7 @@ import AccountUtils from 'src/popup/hive/utils/account.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { VersionLogUtils } from 'src/utils/version-log.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 jest.mock('src/popup/hive/actions/active-account.actions', () => ({
   refreshActiveAccount: jest.fn(() => ({ type: 'REFRESH_ACTIVE_ACCOUNT' })),
   loadActiveAccount: jest.fn(() => ({ type: 'LOAD_ACTIVE_ACCOUNT' })),
@@ -193,7 +194,7 @@ describe('home.component unmount behavior', () => {
     );
 
   beforeEach(() => {
-    chrome.i18n.getMessage = jest.fn((key: string) => key);
+    I18nUtils.getMessage = jest.fn((key: string) => key);
     chrome.runtime.getManifest = jest.fn(() => ({
       version: '1.0.0',
       name: 'Hive Keychain',

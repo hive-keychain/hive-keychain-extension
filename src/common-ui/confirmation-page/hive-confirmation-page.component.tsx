@@ -23,6 +23,7 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const ConfirmationPage = ({
   fields,
   message,
@@ -193,7 +194,7 @@ const ConfirmationPage = ({
               <div
                 className="label"
                 style={{ display: 'flex', alignItems: 'center' }}>
-                {chrome.i18n.getMessage(field.label as string)}
+                {I18nUtils.getMessage(field.label as string)}
               </div>
               {getFieldComponent(field)}
             </div>
@@ -228,14 +229,14 @@ const ConfirmationPage = ({
           <div data-testid="warning-message" className="warning-message-panel">
             {skipWarningTranslation
               ? warningMessage
-              : chrome.i18n.getMessage(warningMessage, warningParams)}
+              : I18nUtils.getMessage(warningMessage, warningParams)}
           </div>
         )}
         {willUseMultisig && (
           <div data-testid="use-multisig-message" className="multisig-message">
             <img src="/assets/images/multisig/logo.png" className="logo" />
             <div className="message">
-              {chrome.i18n.getMessage('multisig_disclaimer_message')}
+              {I18nUtils.getMessage('multisig_disclaimer_message')}
             </div>
           </div>
         )}
@@ -252,7 +253,7 @@ const ConfirmationPage = ({
                     return { ...old, [botName]: value };
                   });
                 }}
-                label={chrome.i18n.getMessage('multisig_bot_two_fa_code', [
+                label={I18nUtils.getMessage('multisig_bot_two_fa_code', [
                   botName,
                 ])}
                 skipLabelTranslation

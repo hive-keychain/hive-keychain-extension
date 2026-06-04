@@ -3,6 +3,7 @@ import React, { Fragment } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface ThemeToggleOption {
   value: Theme;
   label: string;
@@ -61,7 +62,7 @@ export const ThemeToggleComponent = ({
                 htmlFor={`${dataTestId}-${option.value}`}>
                 <SVGIcon icon={option.icon} />
                 <span className="theme-toggle-label">
-                  {chrome.i18n.getMessage(option.label)}
+                  {I18nUtils.getMessage(option.label)}
                 </span>
               </label>
             </Fragment>

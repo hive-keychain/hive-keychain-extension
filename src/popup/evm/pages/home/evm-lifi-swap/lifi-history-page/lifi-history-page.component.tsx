@@ -12,6 +12,7 @@ import { LifiHistoryItem as LiFiHistoryItemType } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const LiFiHistoryPage = ({
   activeAccount,
   setTitleContainerProperties,
@@ -90,12 +91,12 @@ const LiFiHistoryPage = ({
   return (
     <div className="lifi-history-page">
       <div className="delay-caption-message">
-        {chrome.i18n.getMessage('evm_lifi_swap_delay_caption_message')}
+        {I18nUtils.getMessage('evm_lifi_swap_delay_caption_message')}
       </div>
       <div className="refresh-panel">
         {!!autoRefreshCountdown && (
           <>
-            {chrome.i18n.getMessage('swap_refresh_countdown', [
+            {I18nUtils.getMessage('swap_refresh_countdown', [
               autoRefreshCountdown?.toString(),
             ])}
             <SVGIcon
@@ -131,7 +132,7 @@ const LiFiHistoryPage = ({
           <div className="empty-history-panel">
             <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
             <span className="text">
-              {chrome.i18n.getMessage('swap_no_history')}
+              {I18nUtils.getMessage('swap_no_history')}
             </span>
           </div>
         )}

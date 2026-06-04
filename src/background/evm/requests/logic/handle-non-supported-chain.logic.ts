@@ -18,6 +18,7 @@ import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const handleNonSupportedChain = async (
   requestHandler: EvmRequestHandler,
   tab: number,
@@ -41,7 +42,7 @@ export const handleNonSupportedChain = async (
     CommunicationUtils.runtimeSendMessage({
       command: DialogCommand.SEND_DIALOG_ERROR,
       msg: {
-        display_msg: await chrome.i18n.getMessage(errorMessage, [chainId]),
+        display_msg: await I18nUtils.getMessage(errorMessage, [chainId]),
         tab,
       },
     });
