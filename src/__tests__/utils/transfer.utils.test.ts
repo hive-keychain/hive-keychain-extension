@@ -1,5 +1,6 @@
 import TransferUtils from '@hiveapp/utils/transfer.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('transfer.utils tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -8,7 +9,7 @@ describe('transfer.utils tests:\n', () => {
   describe('getTransferWarningLabel tests:\n', () => {
     test('Trying to transfer to exchange account with recurrent transfer should return warning', () => {
       const messageFromI18n = `Most exchanges do not accept recurrent transfers. If you proceed, your funds may be lost.`;
-      chrome.i18n.getMessage = jest.fn().mockReturnValueOnce(messageFromI18n);
+      I18nUtils.getMessage = jest.fn().mockReturnValueOnce(messageFromI18n);
       expect(
         TransferUtils.getTransferWarningLabel(
           'user.dunamu',
@@ -34,7 +35,7 @@ describe('transfer.utils tests:\n', () => {
       const i18nMessageName = 'popup_warning_exchange_deposit';
       const currencyToCheck = 'SPS';
       const messageFromI18n = `This exchange account does not accept ${currencyToCheck} deposits.`;
-      const mocki18nGetMessage = (chrome.i18n.getMessage = jest
+      const mocki18nGetMessage = (I18nUtils.getMessage = jest
         .fn()
         .mockReturnValueOnce(messageFromI18n));
       expect(
@@ -58,7 +59,7 @@ describe('transfer.utils tests:\n', () => {
       const currencyToCheck = 'HBD';
       const messageFromI18n =
         'Make sure you add a memo when transfering to an exchange account.';
-      const mocki18nGetMessage = (chrome.i18n.getMessage = jest
+      const mocki18nGetMessage = (I18nUtils.getMessage = jest
         .fn()
         .mockReturnValueOnce(messageFromI18n));
       expect(

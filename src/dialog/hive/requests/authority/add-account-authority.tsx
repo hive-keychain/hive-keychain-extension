@@ -9,6 +9,7 @@ import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import Operation from 'src/dialog/hive/operation/operation';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: RequestAddAccountAuthority & RequestId;
   domain: string;
@@ -21,7 +22,7 @@ const AddAccountAuthority = (props: Props) => {
   const { data } = props;
   return (
     <Operation
-      title={chrome.i18n.getMessage('dialog_title_add_auth')}
+      title={I18nUtils.getMessage('dialog_title_add_auth')}
       {...props}>
       <UsernameWithAvatar title="dialog_account" username={data.username} />
       <Separator type={'horizontal'} fullSize />

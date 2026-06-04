@@ -11,6 +11,7 @@ import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-l
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('keychainify.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -46,7 +47,7 @@ describe('keychainify.component tests:\n', () => {
       screen.getByTestId(`${Screen.SETTINGS_KEYCHAINIFY}-page`),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(chrome.i18n.getMessage('popup_html_keychainify_text'), {
+      screen.getByText(I18nUtils.getMessage('popup_html_keychainify_text'), {
         exact: true,
       }),
     ).toBeInTheDocument();

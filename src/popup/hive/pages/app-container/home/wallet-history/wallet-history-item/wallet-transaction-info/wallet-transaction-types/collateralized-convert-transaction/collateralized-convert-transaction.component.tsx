@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import 'react-tabs/style/react-tabs.scss';
 import { GenericTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/generic-transaction/generic-transaction.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   transaction: CollateralizedConvert;
 }
@@ -12,7 +13,7 @@ export const CollateralizedConvertTransactionComponent = ({
 }: Props) => {
   useEffect;
   const getDetail = () => {
-    return chrome.i18n.getMessage(
+    return I18nUtils.getMessage(
       'popup_html_wallet_info_collateralized_convert',
       [transaction.amount],
     );

@@ -5,6 +5,7 @@ import {
   RequestEncodeWithKeys,
   RequestId,
 } from '@interfaces/keychain.interface';
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const encodeWithKeys = async (
   requestHandler: HiveRequestsHandler,
   data: RequestEncodeWithKeys & RequestId,
@@ -35,8 +36,8 @@ export const encodeWithKeys = async (
       encoded,
       data,
       request?.tab!,
-      await chrome.i18n.getMessage('bgd_ops_encode'),
-      await chrome.i18n.getMessage('bgd_ops_encode_err'),
+      await I18nUtils.getMessage('bgd_ops_encode'),
+      await I18nUtils.getMessage('bgd_ops_encode_err'),
     );
   }
 };

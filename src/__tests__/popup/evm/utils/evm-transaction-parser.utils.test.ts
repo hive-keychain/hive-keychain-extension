@@ -1,10 +1,25 @@
-import { KeychainApi } from '@api/keychain';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { getAbiFromType } from '@popup/evm/reference-data/abi.data';
-import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
+import { EvmTransactionWarningType } from '@popup/evm/interfaces/evm-transactions.interface';
+import { getGroupedSecurityDetailReasons } from '@popup/evm/utils/evm-grouped-security-warning.utils';
+import {
+  EvmInputDisplayType,
+  EvmTransactionParserUtils,
+} from '@popup/evm/utils/evm-transaction-parser.utils';
+import { EvmVerificationUtils } from '@popup/evm/utils/evm-verification.utils';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { ethers } from 'ethers';
+
+jest.mock('@popup/evm/utils/evm-verification.utils', () => {
+  const actual = jest.requireActual('@popup/evm/utils/evm-verification.utils');
+  return {
+    EvmVerificationUtils: {
+      ...actual.EvmVerificationUtils,
+      fetchLightNodeVerificationData: jest.fn().mockResolvedValue({}),
+    },
+  };
+});
 
 describe('shouldDisplayBalanceChange', () => {
   const erc20Abi = getAbiFromType(EVMSmartContractType.ERC20)!;
@@ -28,43 +43,146 @@ describe('shouldDisplayBalanceChange', () => {
   });
 });
 
+describe('getErc20DecodedFieldName', () => {
+  it.each([
+    ['transfer', 'to', 'evm_operation_to'],
+    ['transfer', '_to', 'evm_operation_to'],
+    ['transfer', 'recipient', 'evm_operation_to'],
+    ['transfer', 'value', 'evm_operation_amount'],
+    ['transfer', '_value', 'evm_operation_amount'],
+    ['transfer', 'amount', 'evm_operation_amount'],
+    ['transfer', 'dst', 'evm_operation_to'],
+    ['transfer', 'wad', 'evm_operation_amount'],
+    ['transferFrom', 'sender', 'evm_operation_from'],
+    ['transferFrom', 'src', 'evm_operation_from'],
+    ['transferFrom', '_from', 'evm_operation_from'],
+    ['transferFrom', 'recipient', 'evm_operation_to'],
+    ['transferFrom', '_to', 'evm_operation_to'],
+    ['transferFrom', 'dst', 'evm_operation_to'],
+    ['transferFrom', '_value', 'evm_operation_amount'],
+    ['transferFrom', 'wad', 'evm_operation_amount'],
+    ['transferFrom', 'amount', 'evm_operation_amount'],
+    ['approve', 'spender', 'evm_operation_spender'],
+    ['approve', '_spender', 'evm_operation_spender'],
+    ['approve', 'usr', 'evm_operation_spender'],
+    ['approve', 'guy', 'evm_operation_spender'],
+    ['approve', 'amount', 'evm_operation_amount'],
+    ['approve', '_value', 'evm_operation_amount'],
+    ['approve', 'wad', 'evm_operation_amount'],
+  ])('maps %s.%s to %s', (methodName, inputName, expectedFieldName) => {
+    expect(
+      EvmTransactionParserUtils.getErc20DecodedFieldName(
+        methodName,
+        inputName,
+      ),
+    ).toBe(expectedFieldName);
+  });
+
+  it('returns undefined for unrelated ERC20 argument names', () => {
+    expect(
+      EvmTransactionParserUtils.getErc20DecodedFieldName(
+        'balanceOf',
+        'account',
+      ),
+    ).toBeUndefined();
+  });
+});
+
+describe('getDisplayInputType for non-standard ERC20 argument names', () => {
+  const erc20Abi = getAbiFromType(EVMSmartContractType.ERC20)!;
+
+  it.each([
+    ['transfer', 'dst', 'address', EvmInputDisplayType.WALLET_ADDRESS],
+    ['transfer', 'wad', 'uint256', EvmInputDisplayType.BALANCE],
+    ['transferFrom', 'src', 'address', EvmInputDisplayType.WALLET_ADDRESS],
+    ['transferFrom', '_from', 'address', EvmInputDisplayType.WALLET_ADDRESS],
+    ['transferFrom', 'dst', 'address', EvmInputDisplayType.WALLET_ADDRESS],
+    ['transferFrom', 'wad', 'uint256', EvmInputDisplayType.BALANCE],
+    ['approve', '_spender', 'address', EvmInputDisplayType.WALLET_ADDRESS],
+    ['approve', 'usr', 'address', EvmInputDisplayType.WALLET_ADDRESS],
+    ['approve', '_value', 'uint256', EvmInputDisplayType.BALANCE],
+    ['approve', 'wad', 'uint256', EvmInputDisplayType.BALANCE],
+  ])(
+    'uses %s display for %s.%s',
+    (methodName, argName, argType, expectedType) => {
+      expect(
+        EvmTransactionParserUtils.getDisplayInputType(
+          erc20Abi,
+          methodName,
+          argType,
+          argName,
+        ),
+      ).toBe(expectedType);
+    },
+  );
+});
+
+describe('resolveErc20TransferFromDecodedArgs', () => {
+  const recipient = '0x00000000000000000000000000000000000000ab';
+  const usdtTransferInputs = [
+    { name: '_to', type: 'address' },
+    { name: '_value', type: 'uint256' },
+  ];
+
+  it('maps USDT-style _to and _value argument names', () => {
+    const result = EvmTransactionParserUtils.resolveErc20TransferFromDecodedArgs(
+      'transfer',
+      usdtTransferInputs,
+      [recipient, 1000n],
+    );
+
+    expect(result).toEqual({
+      receiverAddress: recipient,
+      amountRaw: 1000n,
+    });
+  });
+
+  it('maps Maker/DAI-style dst and wad argument names', () => {
+    const result = EvmTransactionParserUtils.resolveErc20TransferFromDecodedArgs(
+      'transfer',
+      [
+        { name: 'dst', type: 'address' },
+        { name: 'wad', type: 'uint256' },
+      ],
+      [recipient, 1000n],
+    );
+
+    expect(result).toEqual({
+      receiverAddress: recipient,
+      amountRaw: 1000n,
+    });
+    expect(
+      EvmTransactionParserUtils.isErc20TransferRecipientArg('transfer', 'dst'),
+    ).toBe(true);
+    expect(
+      EvmTransactionParserUtils.isErc20TransferAmountArg('transfer', 'wad'),
+    ).toBe(true);
+  });
+
+  it('returns null for non-transfer methods', () => {
+    expect(
+      EvmTransactionParserUtils.resolveErc20TransferFromDecodedArgs(
+        'approve',
+        usdtTransferInputs,
+        [recipient, 1000n],
+      ),
+    ).toBeNull();
+  });
+});
+
 describe('evm-transaction-parser.utils proxy tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
   });
 
-  it('normalizes a raw proxy string from verification data', async () => {
-    jest.spyOn(KeychainApi, 'get').mockResolvedValue({
-      contract: { proxy: '0x00000000000000000000000000000000000000bb' },
-      domain: {},
-      to: {},
+  it('injects proxy target into normalized verification data', async () => {
+    const result = await EvmTransactionParserUtils.verifyTransactionInformation({
+      domain: 'app.example',
+      to: '0x00000000000000000000000000000000000000aa',
+      contract: '0x00000000000000000000000000000000000000cc',
+      proxyTarget: '0x00000000000000000000000000000000000000dd',
     });
-
-    const result = await EvmTransactionParserUtils.verifyTransactionInformation(
-      'app.example',
-      '0x00000000000000000000000000000000000000aa',
-      '0x00000000000000000000000000000000000000cc',
-    );
-
-    expect(result.contract.proxy).toEqual({
-      target: '0x00000000000000000000000000000000000000bb',
-    });
-  });
-
-  it('injects backend proxy target into normalized verification data', async () => {
-    jest.spyOn(KeychainApi, 'get').mockResolvedValue({
-      contract: {},
-      domain: {},
-      to: {},
-    });
-
-    const result = await EvmTransactionParserUtils.verifyTransactionInformation(
-      'app.example',
-      '0x00000000000000000000000000000000000000aa',
-      '0x00000000000000000000000000000000000000cc',
-      '0x00000000000000000000000000000000000000dd',
-    );
 
     expect(result.contract.proxy).toEqual({
       target: '0x00000000000000000000000000000000000000dd',
@@ -208,6 +326,394 @@ describe('evm-transaction-parser.utils proxy tests:\n', () => {
       address,
       'Saved wallet',
     );
+  });
+
+  it('does not add wallet whitelist warning when address has security risk', async () => {
+    jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(false);
+    jest
+      .spyOn(EvmAddressesUtils, 'isPotentialSpoofing')
+      .mockResolvedValue(undefined);
+
+    const warnings = await EvmTransactionParserUtils.getAddressWarning(
+      '0x00000000000000000000000000000000000000aa',
+      '1',
+      {
+        contract: { proxy: {}, verifiedBy: [] },
+        domain: {},
+        to: {},
+        addresses: {
+          '0x00000000000000000000000000000000000000aa': {
+            isMalicious: true,
+            securityReasons: ['mixer'],
+          },
+        },
+      },
+      [],
+    );
+
+    expect(
+      warnings.some(
+        (w) => w.type === EvmTransactionWarningType.WHITELIST_ADDRESS,
+      ),
+    ).toBe(false);
+  });
+
+  it('prefills wallet whitelist defaultLabel from ENS when available', async () => {
+    jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(false);
+    jest
+      .spyOn(EvmAddressesUtils, 'getEnsDataFromAddress')
+      .mockResolvedValue(undefined);
+    jest
+      .spyOn(EvmAddressesUtils, 'isPotentialSpoofing')
+      .mockResolvedValue(undefined);
+    jest
+      .spyOn(EvmRequestsUtils, 'getEnsForAddress')
+      .mockResolvedValue('vitalik.eth');
+
+    const warnings = await EvmTransactionParserUtils.getAddressWarning(
+      '0x00000000000000000000000000000000000000aa',
+      '1',
+      {
+        contract: { proxy: {}, verifiedBy: [] },
+        domain: {},
+        to: {},
+        addresses: {
+          '0x00000000000000000000000000000000000000aa': {},
+        },
+      },
+      [],
+    );
+
+    const whitelistWarning = warnings.find(
+      (warning) => warning.type === EvmTransactionWarningType.WHITELIST_ADDRESS,
+    );
+
+    expect(whitelistWarning?.extraData?.ensName).toBe('vitalik.eth');
+    expect(whitelistWarning?.extraData?.defaultLabel).toBe('vitalik.eth');
+  });
+
+  it('formats similar address in poisoning warning with nickname or shortening', async () => {
+    const similarAddress = '0x00000000000000000000000000000000000000bb';
+    jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(true);
+    jest.spyOn(EvmAddressesUtils, 'isPotentialSpoofing').mockResolvedValue({
+      errorMessage: 'evm_transaction_receiver_potential_spoofing_local_accounts',
+      address: similarAddress,
+    });
+    jest
+      .spyOn(EvmAddressesUtils, 'getAddressDisplayForWarning')
+      .mockResolvedValue('My wallet');
+
+    const warnings = await EvmTransactionParserUtils.getAddressWarning(
+      '0x00000000000000000000000000000000000000aa',
+      '1',
+      {
+        contract: { proxy: {}, verifiedBy: [] },
+        domain: {},
+        to: {},
+      },
+      [],
+    );
+
+    const spoofingWarning = warnings.find(
+      (warning) =>
+        warning.message ===
+        'evm_transaction_receiver_potential_spoofing_local_accounts',
+    );
+
+    expect(spoofingWarning?.messageParams).toEqual(['My wallet']);
+    expect(EvmAddressesUtils.getAddressDisplayForWarning).toHaveBeenCalledWith(
+      similarAddress,
+      '1',
+      [],
+    );
+  });
+
+  it('keeps wallet whitelist warning when no light-node security risk exists', async () => {
+    jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(false);
+    jest
+      .spyOn(EvmAddressesUtils, 'getEnsDataFromAddress')
+      .mockResolvedValue(undefined);
+    jest
+      .spyOn(EvmAddressesUtils, 'isPotentialSpoofing')
+      .mockResolvedValue(undefined);
+    jest.spyOn(EvmRequestsUtils, 'getEnsForAddress').mockResolvedValue('');
+
+    const warnings = await EvmTransactionParserUtils.getAddressWarning(
+      '0x00000000000000000000000000000000000000aa',
+      '1',
+      {
+        contract: { proxy: {}, verifiedBy: [] },
+        domain: {},
+        to: {},
+        addresses: {
+          '0x00000000000000000000000000000000000000aa': {},
+        },
+      },
+      [],
+    );
+
+    expect(
+      warnings.some(
+        (w) => w.type === EvmTransactionWarningType.WHITELIST_ADDRESS,
+      ),
+    ).toBe(true);
+  });
+
+  it('does not add contract whitelist warning when contract has security risk', async () => {
+    jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(false);
+
+    const warningAndInfo =
+      await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
+        '0x00000000000000000000000000000000000000aa',
+        '1',
+        {
+          contract: {
+            proxy: {},
+            verifiedBy: [],
+            rugPullRisk: true,
+            rugPullReasons: ['approval_abuse'],
+          },
+          domain: {},
+          to: {},
+        },
+        [],
+        {
+          type: EVMSmartContractType.ERC20,
+          name: 'Risk Token',
+          symbol: 'RISK',
+          logo: '',
+          chainId: '1',
+          backgroundColor: '',
+          priceUsd: null,
+          contractAddress: '0x00000000000000000000000000000000000000aa',
+          possibleSpam: true,
+          verifiedContract: false,
+          isProxy: false,
+          proxyTarget: null,
+          decimals: 18,
+          validated: 1,
+        },
+      );
+
+    expect(
+      warningAndInfo.warnings?.some(
+        (w) => w.type === EvmTransactionWarningType.WHITELIST_ADDRESS,
+      ),
+    ).toBe(false);
+  });
+
+  it('merges light-node contract security into verification result', async () => {
+    (
+      EvmVerificationUtils.fetchLightNodeVerificationData as jest.Mock
+    ).mockResolvedValue({
+      contractSecurity: {
+        isMalicious: true,
+        reasons: ['phishing_activities'],
+        stale: false,
+      },
+    });
+
+    const result = await EvmTransactionParserUtils.verifyTransactionInformation({
+      domain: 'app.example',
+      chainId: '1',
+      tokenContract: '0x00000000000000000000000000000000000000cc',
+    });
+
+    expect(result.contract.isMalicious).toBe(true);
+    expect(result.contract.securityReasons).toEqual(['phishing_activities']);
+  });
+
+  it('sets rugPullRisk from light-node security.isRugPull and isRugPullReason', async () => {
+    (
+      EvmVerificationUtils.fetchLightNodeVerificationData as jest.Mock
+    ).mockResolvedValue({
+      contractSecurity: {
+        isMalicious: false,
+        reasons: [],
+        stale: false,
+        isRugPull: true,
+        isRugPullReason: ['approval_abuse', 'blacklist'],
+      },
+    });
+
+    const result = await EvmTransactionParserUtils.verifyTransactionInformation({
+      domain: 'app.example',
+      chainId: '1',
+      tokenContract: '0x00000000000000000000000000000000000000cc',
+    });
+
+    expect(result.contract.isMalicious).toBeUndefined();
+    expect(result.contract.rugPullRisk).toBe(true);
+    expect(result.contract.rugPullReasons).toEqual(['approval_abuse', 'blacklist']);
+  });
+
+  it('emits one grouped rug-pull warning with detail reasons', async () => {
+    jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(true);
+
+    const warningAndInfo =
+      await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
+        '0x00000000000000000000000000000000000000aa',
+        '1',
+        {
+          contract: {
+            proxy: {},
+            verifiedBy: [],
+            rugPullRisk: true,
+            rugPullReasons: ['approval_abuse', 'blacklist'],
+          },
+          domain: {},
+          to: {},
+        },
+        [],
+        {
+          type: EVMSmartContractType.ERC20,
+          name: 'Risk Token',
+          symbol: 'RISK',
+          logo: '',
+          chainId: '1',
+          backgroundColor: '',
+          priceUsd: null,
+          contractAddress: '0x00000000000000000000000000000000000000aa',
+          possibleSpam: true,
+          verifiedContract: false,
+          isProxy: false,
+          proxyTarget: null,
+          decimals: 18,
+          validated: 1,
+        },
+      );
+
+    const rugPullWarnings =
+      warningAndInfo.warnings?.filter((w) => w.warningKey === 'rugPull') ?? [];
+    expect(rugPullWarnings).toHaveLength(1);
+    expect(rugPullWarnings[0].type).toBe(EvmTransactionWarningType.GROUPED_SECURITY);
+    expect(rugPullWarnings[0].message).toBe('evm_security_reason_rug_pull');
+    expect(getGroupedSecurityDetailReasons(rugPullWarnings[0])).toEqual([
+      { message: 'evm_security_reason_rug_pull_approval_abuse' },
+      { message: 'evm_security_reason_rug_pull_blacklist' },
+    ]);
+  });
+
+  it('shows rug-pull warnings on contract field from isRugPullReason', async () => {
+    jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(true);
+
+    const warningAndInfo =
+      await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
+        '0x00000000000000000000000000000000000000aa',
+        '1',
+        {
+          contract: {
+            proxy: {},
+            verifiedBy: [],
+            rugPullRisk: true,
+            rugPullReasons: ['approval_abuse'],
+          },
+          domain: {},
+          to: {},
+        },
+        [],
+        {
+          type: EVMSmartContractType.ERC20,
+          name: 'Risk Token',
+          symbol: 'RISK',
+          logo: '',
+          chainId: '1',
+          backgroundColor: '',
+          priceUsd: null,
+          contractAddress: '0x00000000000000000000000000000000000000aa',
+          possibleSpam: true,
+          verifiedContract: false,
+          isProxy: false,
+          proxyTarget: null,
+          decimals: 18,
+          validated: 1,
+        },
+      );
+
+    const rugPullWarning = warningAndInfo.warnings?.find(
+      (w) => w.warningKey === 'rugPull',
+    );
+    expect(rugPullWarning?.message).toBe('evm_security_reason_rug_pull');
+    expect(getGroupedSecurityDetailReasons(rugPullWarning!)).toEqual([
+      { message: 'evm_security_reason_rug_pull_approval_abuse' },
+    ]);
+  });
+
+  it('emits one grouped address security warning for multiple malicious reasons', async () => {
+    jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(true);
+    jest
+      .spyOn(EvmAddressesUtils, 'isPotentialSpoofing')
+      .mockResolvedValue(undefined);
+
+    const warnings = await EvmTransactionParserUtils.getAddressWarning(
+      '0x00000000000000000000000000000000000000aa',
+      '1',
+      {
+        contract: { proxy: {}, verifiedBy: [] },
+        domain: {},
+        to: {},
+        addresses: {
+          '0x00000000000000000000000000000000000000aa': {
+            isMalicious: true,
+            securityReasons: ['mixer', 'phishing_activities'],
+          },
+        },
+      },
+      [],
+    );
+
+    const grouped = warnings.find(
+      (w) => w.type === EvmTransactionWarningType.GROUPED_SECURITY,
+    );
+    expect(grouped?.message).toBe('evm_security_reason_grouped_address_risk');
+    expect(getGroupedSecurityDetailReasons(grouped!)).toEqual([
+      { message: 'evm_security_reason_mixer' },
+      { message: 'evm_security_reason_phishing_activities' },
+    ]);
+    expect(
+      warnings.some((w) => w.message === 'evm_security_reason_mixer'),
+    ).toBe(false);
+  });
+
+  it('getAddressWarning uses per-address verification flags for recipients', async () => {
+    jest.spyOn(EvmAddressesUtils, 'isWhitelisted').mockResolvedValue(true);
+    jest
+      .spyOn(EvmAddressesUtils, 'isPotentialSpoofing')
+      .mockResolvedValue(undefined);
+
+    const warnings = await EvmTransactionParserUtils.getAddressWarning(
+      '0x00000000000000000000000000000000000000aa',
+      '1',
+      {
+        contract: { proxy: {}, verifiedBy: [] },
+        domain: {},
+        to: {},
+        addresses: {
+          '0x00000000000000000000000000000000000000aa': {
+            isMalicious: true,
+          },
+        },
+      },
+      [],
+    );
+
+    expect(warnings.some((w) => w.message === 'evm_transaction_receiver_malicious')).toBe(
+      true,
+    );
+  });
+
+  it('sets lightNodeSecurityUnavailable when light-node fails', async () => {
+    (
+      EvmVerificationUtils.fetchLightNodeVerificationData as jest.Mock
+    ).mockRejectedValue(new Error('light-node down'));
+
+    const result = await EvmTransactionParserUtils.verifyTransactionInformation({
+      domain: 'app.example',
+      chainId: '1',
+    });
+
+    expect(result.unableToReach).toBeUndefined();
+    expect(result.lightNodeSecurityUnavailable).toBe(true);
   });
 });
 

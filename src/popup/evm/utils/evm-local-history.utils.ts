@@ -14,6 +14,7 @@ import { ethers, TransactionResponse } from 'ethers';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 /** Max events per wallet per chain; oldest dropped after append. */
 export const MAX_EVM_LOCAL_HISTORY_EVENTS = 150;
 
@@ -78,7 +79,7 @@ export const buildHistoryItemFromBroadcast = async (
       ...base,
       type: EvmUserHistoryItemType.SMART_CONTRACT_CREATION,
       pageTitle: 'evm_history_smart_contract_creation',
-      label: chrome.i18n.getMessage(
+      label: I18nUtils.getMessage(
         'evm_history_smart_contract_creation_message_no_address',
       ),
       detailFields: [],
@@ -99,7 +100,7 @@ export const buildHistoryItemFromBroadcast = async (
       ...base,
       type: EvmUserHistoryItemType.TRANSFER_OUT,
       pageTitle: 'popup_html_transfer_funds',
-      label: chrome.i18n.getMessage('popup_html_evm_history_transfer_out', [
+      label: I18nUtils.getMessage('popup_html_evm_history_transfer_out', [
         amountS,
         chain.mainToken,
         counterparty,
@@ -123,14 +124,14 @@ export const buildHistoryItemFromBroadcast = async (
     try {
       const decoded = await EvmTransactionParserUtils.parseData(tx.data, chain);
       if (decoded?.operationName) {
-        const contractLabel = chrome.i18n.getMessage(
+        const contractLabel = I18nUtils.getMessage(
           'evm_history_smart_contract',
         );
         return {
           ...base,
           type: EvmUserHistoryItemType.SMART_CONTRACT,
           pageTitle: 'evm_broadcast',
-          label: chrome.i18n.getMessage(
+          label: I18nUtils.getMessage(
             'evm_history_operation_generic_smart_contract_messages_out',
             [
               decoded.operationName,
@@ -155,7 +156,7 @@ export const buildHistoryItemFromBroadcast = async (
       ...base,
       type: EvmUserHistoryItemType.SMART_CONTRACT,
       pageTitle: 'evm_broadcast',
-      label: chrome.i18n.getMessage(
+      label: I18nUtils.getMessage(
         'evm_history_default_out_smart_contract_operation',
       ),
       detailFields: [
@@ -172,7 +173,7 @@ export const buildHistoryItemFromBroadcast = async (
     ...base,
     type: EvmUserHistoryItemType.BASE_TRANSACTION,
     pageTitle: 'evm_broadcast',
-    label: chrome.i18n.getMessage('evm_history_generic_message'),
+    label: I18nUtils.getMessage('evm_history_generic_message'),
     detailFields: [],
   };
 };

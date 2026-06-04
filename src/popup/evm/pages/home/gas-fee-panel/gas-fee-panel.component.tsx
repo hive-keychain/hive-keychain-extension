@@ -30,6 +30,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface GasFeePanelProps {
   chain: EvmChain;
   fromAddress: string;
@@ -48,6 +49,7 @@ interface GasFeePanelProps {
   refreshKey?: string | number;
   onRefreshStateChange?: (refreshing: boolean) => void;
   isActive?: boolean;
+  defaultFeeLevel?: 'low' | 'medium' | 'aggressive';
 }
 
 export const GasFeePanel = ({
@@ -65,6 +67,7 @@ export const GasFeePanel = ({
   refreshKey,
   onRefreshStateChange,
   isActive = true,
+  defaultFeeLevel,
 }: GasFeePanelProps) => {
   const initGenerationRef = useRef(0);
   const lastRefreshKeyRef = useRef<string | number>();
@@ -146,6 +149,88 @@ export const GasFeePanel = ({
     }
   }, [selectedFee]);
 
+  const getInitialFeeSelection = (estimate: FullGasFeeEstimation) => {
+    if (defaultFeeLevel && estimate[defaultFeeLevel]) {
+      return estimate[defaultFeeLevel];
+    }
+    if (estimate.suggestedByDApp) {
+      return estimate.suggestedByDApp;
+    }
+    if (estimate.suggested) {
+      return estimate.suggested;
+    }
+    return estimate.custom;
+  };
+
+  const multiplyDecimal = (value: Decimal | undefined, multiplier: number) => {
+    return value ? new Decimal(value).mul(multiplier) : undefined;
+  };
+
+  const getFeeComparisonValue = (fee: GasFeeEstimationBase) => {
+    return fee.maxFeePerGasInGwei ?? fee.gasPriceInGwei ?? fee.maxFeeInEth;
+  };
+
+  const isAtLeastMultiplierAboveCurrent = (
+    fee: GasFeeEstimationBase | undefined,
+    currentFee: GasFeeEstimationBase,
+    multiplier: number,
+  ) => {
+    const feeValue = fee ? getFeeComparisonValue(fee) : undefined;
+    const currentValue = getFeeComparisonValue(currentFee);
+
+    return (
+      !!feeValue && feeValue.greaterThanOrEqualTo(currentValue.mul(multiplier))
+    );
+  };
+
+  const getMultipliedCustomFee = (
+    currentFee: GasFeeEstimationBase,
+    multiplier: number,
+  ): GasFeeEstimationBase => {
+    return {
+      ...currentFee,
+      estimatedFeeInEth: new Decimal(currentFee.estimatedFeeInEth).mul(
+        multiplier,
+      ),
+      estimatedFeeUSD: new Decimal(currentFee.estimatedFeeUSD).mul(multiplier),
+      maxFeeInEth: new Decimal(currentFee.maxFeeInEth).mul(multiplier),
+      maxFeeUSD: new Decimal(currentFee.maxFeeUSD).mul(multiplier),
+      baseFeePerGasInGwei: multiplyDecimal(
+        currentFee.baseFeePerGasInGwei,
+        multiplier,
+      ),
+      gasPriceInGwei: multiplyDecimal(currentFee.gasPriceInGwei, multiplier),
+      maxFeePerGasInGwei: multiplyDecimal(
+        currentFee.maxFeePerGasInGwei,
+        multiplier,
+      ),
+      priorityFeeInGwei: multiplyDecimal(
+        currentFee.priorityFeeInGwei,
+        multiplier,
+      ),
+      icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
+      name: 'popup_html_evm_custom_gas_fee_custom',
+    };
+  };
+
+  const buildFallbackCustomFee = (): GasFeeEstimationBase => {
+    const fallbackGasLimit = Number(transactionData?.gasLimit ?? 21000);
+    return {
+      type: transactionType,
+      estimatedFeeInEth: new Decimal(0),
+      maxFeeInEth: new Decimal(0),
+      estimatedFeeUSD: new Decimal(0),
+      maxFeeUSD: new Decimal(0),
+      estimatedMaxDuration: new Decimal(0),
+      gasLimit: new Decimal(fallbackGasLimit),
+      priorityFeeInGwei: new Decimal(0),
+      maxFeePerGasInGwei: new Decimal(0),
+      gasPriceInGwei: new Decimal(0),
+      icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
+      name: 'popup_html_evm_custom_gas_fee_custom',
+    };
+  };
+
   const init = async (silentRefresh: boolean) => {
     const generation = ++initGenerationRef.current;
     let estimate;
@@ -178,46 +263,24 @@ export const GasFeePanel = ({
       }
 
       if (!!multiplier && selectedFee) {
-        const increasedFee: GasFeeEstimationBase = {
-          ...selectedFee,
-          estimatedFeeInEth: new Decimal(selectedFee.estimatedFeeInEth).mul(
-            multiplier,
-          ),
-          estimatedFeeUSD: new Decimal(selectedFee.estimatedFeeUSD).mul(
-            multiplier,
-          ),
-          maxFeeInEth: new Decimal(selectedFee.maxFeeInEth).mul(multiplier),
-          maxFeeUSD: new Decimal(selectedFee.maxFeeUSD).mul(multiplier),
-          maxFeePerGasInGwei: selectedFee.maxFeePerGasInGwei
-            ? new Decimal(selectedFee.maxFeePerGasInGwei).mul(multiplier)
-            : undefined,
-          priorityFeeInGwei: selectedFee.priorityFeeInGwei
-            ? new Decimal(selectedFee.priorityFeeInGwei).mul(multiplier)
-            : undefined,
-        };
+        const multipliedCustomFee = getMultipliedCustomFee(
+          selectedFee,
+          multiplier,
+        );
+        const preferredFee = defaultFeeLevel
+          ? estimate[defaultFeeLevel]
+          : undefined;
 
         if (
-          estimate?.aggressive?.estimatedFeeInEth &&
-          estimate.aggressive.estimatedFeeInEth < increasedFee.estimatedFeeInEth
-        )
-          estimate.aggressive.deactivated = true;
-        if (
-          estimate?.medium?.estimatedFeeInEth &&
-          estimate.medium.estimatedFeeInEth < increasedFee.estimatedFeeInEth
-        )
-          estimate.medium.deactivated = true;
-
-        onSelectFee(increasedFee);
-        estimate.increased = increasedFee;
-      } else if (!customFeeWasSavedRef.current) {
-        if (estimate?.suggestedByDApp) {
-          onSelectFee(estimate.suggestedByDApp);
-        } else if (estimate.suggested) {
-          onSelectFee(estimate.suggested);
+          isAtLeastMultiplierAboveCurrent(preferredFee, selectedFee, multiplier)
+        ) {
+          onSelectFee(preferredFee!);
         } else {
-          // No suggested by dapp, no suggested, so we select the custom fee
-          onSelectFee(estimate.custom!);
+          estimate.custom = multipliedCustomFee;
+          onSelectFee(multipliedCustomFee);
         }
+      } else if (!customFeeWasSavedRef.current) {
+        onSelectFee(getInitialFeeSelection(estimate)!);
       }
 
       if (
@@ -235,13 +298,29 @@ export const GasFeePanel = ({
       setFeeEstimation(estimate);
     } catch (err: any) {
       Logger.error('Catch in gas fee Panel', { err });
+      const fallbackCustomFee = buildFallbackCustomFee();
+      setFeeEstimation({ custom: fallbackCustomFee });
+      onSelectFee(fallbackCustomFee);
+      setgasFeeWarning('evm_gas_fee_warning_not_available_for_chain');
+
       const error = EthersUtils.getErrorMessage(
         err.code,
         err.reason,
         err.shortMessage,
         err.message,
       );
-      setErrorMessage(error);
+      // console.log('error', error.message);
+      // forceOpenGasFeePanelEvent?.emit('forceOpenCustomFeePanel');
+      // if (
+      //   error.message !==
+      //   'evm_transaction_result_error_message_insufficient_funds'
+      // ) {
+      //   // setErrorMessage(error);
+      //   // setErrorMessage({
+      //   //   message: 'evm_error_gas_estimate',
+      //   // } as EtherRPCCustomError);
+
+      // }
     } finally {
       if (generation === initGenerationRef.current) {
         onInitialEstimationComplete?.();
@@ -394,6 +473,7 @@ export const GasFeePanel = ({
         }
         case EvmTransactionType.LEGACY: {
           customMaxFee = gasPriceInEth;
+          customEstimatedFee = customMaxFee;
           break;
         }
       }
@@ -410,7 +490,7 @@ export const GasFeePanel = ({
         return;
       }
 
-      let customDuration = new Decimal(-1);
+      let customDuration = new Decimal(0);
       if (
         feeEstimation?.aggressive?.maxFeeInEth &&
         customMaxFee >= feeEstimation.aggressive.maxFeeInEth
@@ -428,12 +508,12 @@ export const GasFeePanel = ({
         customDuration = feeEstimation.low.estimatedMaxDuration;
       }
 
-      const custom: GasFeeEstimationBase = {
+      const customFeeCandidate = {
         estimatedFeeInEth: customEstimatedFee,
         maxFeeInEth: customMaxFee,
         estimatedMaxDuration: customDuration,
         gasLimit,
-        type: customGasFeeForm.type,
+        type: customGasFeeForm.type ?? transactionType,
         gasPriceInGwei,
         maxFeePerGasInGwei: maxBaseFeeInGwei.add(priorityFeeInGwei),
         priorityFeeInGwei,
@@ -442,6 +522,13 @@ export const GasFeePanel = ({
         name: 'popup_html_evm_custom_gas_fee_custom',
         icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
       } as GasFeeEstimationBase;
+
+      if (GasFeeUtils.isGasFeeEstimateInvalid(customFeeCandidate)) {
+        setCustomFeeFormWarning('evm_gas_fee_warning_not_available_for_chain');
+        return;
+      }
+
+      const custom: GasFeeEstimationBase = customFeeCandidate;
       customFeeWasSavedRef.current = true;
       onSelectFee(custom);
 
@@ -452,8 +539,8 @@ export const GasFeePanel = ({
 
       setFeeEstimation(fullGasFeeEstimation as FullGasFeeEstimation);
       closeCustomFeePanel();
-    } catch (err) {
-      console.log('catch in saveCustomFee', { err });
+    } catch (_err) {
+      // Custom fee validation failed; keep the panel open for correction.
     }
   };
 
@@ -500,8 +587,8 @@ export const GasFeePanel = ({
           <div className="title-row">
             <SVGIcon className="gas-fee-settings" icon={selectedFee.icon} />
             <div className="title">
-              {chrome.i18n.getMessage('popup_html_evm_gas_fee')} :{' '}
-              {chrome.i18n.getMessage(selectedFee.name)}
+              {I18nUtils.getMessage('popup_html_evm_gas_fee')} :{' '}
+              {I18nUtils.getMessage(selectedFee.name)}
               {isRefreshing && (
                 <span
                   className="gas-fee-refresh-spinner"
@@ -512,7 +599,7 @@ export const GasFeePanel = ({
             {!isExpandablePanelOpened && (
               <div className="gas-fee-estimate">
                 <div className="gas-fee-value">
-                  {!selectedFee.estimatedFeeInEth.equals(-1) ? (
+                  {GasFeeUtils.hasDisplayableEstimatedFee(selectedFee) ? (
                     <>
                       {FormatUtils.formatCurrencyValue(
                         selectedFee.estimatedFeeInEth.toFixed(),
@@ -552,7 +639,7 @@ export const GasFeePanel = ({
           </div>
           {gasFeeWarning && (
             <div className="gas-fee-warning">
-              {chrome.i18n.getMessage(gasFeeWarning)}
+              {I18nUtils.getMessage(gasFeeWarning)}
             </div>
           )}
           {isExpandablePanelOpened && (
@@ -561,13 +648,13 @@ export const GasFeePanel = ({
                 <>
                   <div className="gas-fee-top-row">
                     <div className="label gas-fee-label">
-                      {chrome.i18n.getMessage(
+                      {I18nUtils.getMessage(
                         'popup_html_evm_gas_fee_estimate_label',
                       )}
                     </div>
                     <div className="label gas-fee">
                       <div>
-                        {!selectedFee.estimatedFeeInEth.equals(-1) ? (
+                        {GasFeeUtils.hasDisplayableEstimatedFee(selectedFee) ? (
                           <>
                             {FormatUtils.formatCurrencyValue(
                               selectedFee.estimatedFeeInEth.toFixed(),
@@ -579,7 +666,7 @@ export const GasFeePanel = ({
                           '-'
                         )}
                       </div>
-                      {!selectedFee.estimatedFeeInEth.equals(-1) &&
+                      {GasFeeUtils.hasDisplayableEstimatedFee(selectedFee) &&
                         !!selectedFee.estimatedFeeUSD && (
                           <div className="label usd-value">
                             {selectedFee.estimatedFeeUSD.toFixed(2)}
@@ -594,12 +681,12 @@ export const GasFeePanel = ({
 
               <div className="gas-fee-top-row">
                 <div className="label gas-fee-label">
-                  {chrome.i18n.getMessage(getFeeLabel())}
+                  {I18nUtils.getMessage(getFeeLabel())}
                 </div>
                 <div className="label gas-fee">
                   <div className="label gas-fee">
                     <div>
-                      {!selectedFee.maxFeeInEth.equals(-1) ? (
+                      {GasFeeUtils.hasDisplayableMaxFee(selectedFee) ? (
                         <>
                           {FormatUtils.formatCurrencyValue(
                             selectedFee.maxFeeInEth.toFixed(),
@@ -611,7 +698,7 @@ export const GasFeePanel = ({
                         '-'
                       )}
                     </div>
-                    {!selectedFee.maxFeeInEth.equals(-1) &&
+                    {GasFeeUtils.hasDisplayableMaxFee(selectedFee) &&
                       !!selectedFee.maxFeeUSD && (
                         <div className="label usd-value">
                           {selectedFee.maxFeeUSD.toFixed(2)}
@@ -621,17 +708,17 @@ export const GasFeePanel = ({
                   </div>
                 </div>
               </div>
-              {!selectedFee.estimatedMaxDuration.equals(-1) && (
+              {GasFeeUtils.hasDisplayableDuration(selectedFee) && (
                 <>
                   <Separator fullSize type="horizontal" />
                   <div className="gas-fee-top-row">
                     <div className="label duration">
-                      {chrome.i18n.getMessage(
+                      {I18nUtils.getMessage(
                         'popup_html_evm_gas_fee_estimate_duration_label',
                       )}
                     </div>
                     <div className="label duration">
-                      {chrome.i18n.getMessage(
+                      {I18nUtils.getMessage(
                         'popup_html_evm_gas_fee_estimate_duration',
                         [selectedFee.estimatedMaxDuration.toString()],
                       )}
@@ -645,12 +732,13 @@ export const GasFeePanel = ({
       )}
       {isAdvancedPanelOpen && feeEstimation && (
         <PopupContainer
+          useBodyPortal
           className="edit-gas-fee-popup"
           children={
             <div className="edit-gas-fee-content">
               <div className="title">
                 <span>
-                  {chrome.i18n.getMessage('popup_html_evm_edit_gas_fee')}
+                  {I18nUtils.getMessage('popup_html_evm_edit_gas_fee')}
                 </span>
                 <SVGIcon
                   icon={SVGIcons.TOP_BAR_CLOSE_BTN}
@@ -713,14 +801,14 @@ export const GasFeePanel = ({
                     onClick={() => openCustomFeePanel()}>
                     <SVGIcon icon={SVGIcons.EVM_GAS_FEE_CUSTOM} />
                     <div className="label type">
-                      {chrome.i18n.getMessage(
+                      {I18nUtils.getMessage(
                         'popup_html_evm_custom_gas_fee_custom',
                       )}
                     </div>
                     <div className="label duration">
                       {feeEstimation.custom &&
-                      !feeEstimation.custom.estimatedMaxDuration.equals(-1)
-                        ? chrome.i18n.getMessage(
+                      GasFeeUtils.hasDisplayableDuration(feeEstimation.custom)
+                        ? I18nUtils.getMessage(
                             'popup_html_evm_gas_fee_estimate_duration',
                             [
                               feeEstimation.custom.estimatedMaxDuration.toString(),
@@ -730,7 +818,7 @@ export const GasFeePanel = ({
                     </div>
                     <div className="label gas-fee">
                       {feeEstimation.custom &&
-                      !feeEstimation.custom.maxFeeInEth.equals(-1)
+                      GasFeeUtils.hasDisplayableMaxFee(feeEstimation.custom)
                         ? FormatUtils.formatCurrencyValue(
                             feeEstimation.custom.maxFeeInEth.toFixed(),
                             8,
@@ -747,14 +835,16 @@ export const GasFeePanel = ({
                         onClick={() => openCustomFeePanel()}>
                         <SVGIcon icon={SVGIcons.EVM_GAS_FEE_SUGGESTED} />
                         <div className="label type">
-                          {chrome.i18n.getMessage(
+                          {I18nUtils.getMessage(
                             'popup_html_evm_suggested_by_dapp_gas_fee_custom',
                           )}
                         </div>
                         <div className="label duration">
                           {feeEstimation.suggestedByDApp &&
-                          !feeEstimation.suggestedByDApp.maxFeeInEth.equals(-1)
-                            ? chrome.i18n.getMessage(
+                          GasFeeUtils.hasDisplayableMaxFee(
+                            feeEstimation.suggestedByDApp,
+                          )
+                            ? I18nUtils.getMessage(
                                 'popup_html_evm_gas_fee_estimate_duration',
                                 [
                                   feeEstimation.suggestedByDApp.estimatedMaxDuration.toString(),
@@ -764,7 +854,9 @@ export const GasFeePanel = ({
                         </div>
                         <div className="label gas-fee">
                           {feeEstimation.suggestedByDApp &&
-                          !feeEstimation.suggestedByDApp.maxFeeInEth.equals(-1)
+                          GasFeeUtils.hasDisplayableMaxFee(
+                            feeEstimation.suggestedByDApp,
+                          )
                             ? FormatUtils.formatCurrencyValue(
                                 feeEstimation.suggestedByDApp.maxFeeInEth.toFixed(),
                                 8,
@@ -782,7 +874,7 @@ export const GasFeePanel = ({
                     <>
                       {customFeeFormWarning && (
                         <div className="gas-fee-warning">
-                          {chrome.i18n.getMessage(customFeeFormWarning)}
+                          {I18nUtils.getMessage(customFeeFormWarning)}
                         </div>
                       )}
                       <div className="base-fee-panel">
@@ -805,7 +897,7 @@ export const GasFeePanel = ({
                           <div className="data-panel">
                             <div className="data-block">
                               <span className="label">
-                                {chrome.i18n.getMessage(
+                                {I18nUtils.getMessage(
                                   'popup_html_evm_custom_fee_current',
                                 )}
                                 {': '}
@@ -817,7 +909,7 @@ export const GasFeePanel = ({
                             </div>
                             <div className="data-block">
                               <span className="label">
-                                {chrome.i18n.getMessage(
+                                {I18nUtils.getMessage(
                                   'popup_html_evm_custom_fee_latest',
                                 )}
                                 {': '}
@@ -858,7 +950,7 @@ export const GasFeePanel = ({
                           <div className="data-panel">
                             <div className="data-block">
                               <span className="label">
-                                {chrome.i18n.getMessage(
+                                {I18nUtils.getMessage(
                                   'popup_html_evm_custom_fee_current',
                                 )}
                                 {': '}
@@ -872,7 +964,7 @@ export const GasFeePanel = ({
                             </div>
                             <div className="data-block">
                               <span className="label">
-                                {chrome.i18n.getMessage(
+                                {I18nUtils.getMessage(
                                   'popup_html_evm_custom_fee_latest',
                                 )}
                                 {': '}

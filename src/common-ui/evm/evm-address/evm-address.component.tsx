@@ -1,4 +1,8 @@
 import {
+  EvmAccount,
+  EvmAccountOrPublic,
+} from '@popup/evm/interfaces/wallet.interface';
+import {
   EvmAddressDetail,
   EvmAddressesUtils,
 } from '@popup/evm/utils/evm-addresses.utils';
@@ -13,6 +17,7 @@ import {
 interface Props {
   address: string;
   chainId: string;
+  localAccounts: EvmAccountOrPublic[];
   canCopy?: boolean;
   prefix?: React.ReactNode;
   forceFormattedAddress?: boolean;
@@ -21,20 +26,54 @@ interface Props {
 export const EvmAddressComponent = ({
   address,
   chainId,
+  localAccounts,
   canCopy,
   prefix,
   forceFormattedAddress,
 }: Props) => {
-  const [addressDetail, setAddressDetail] = useState<EvmAddressDetail>();
+  const [addressDetail, setAddressDetail] = useState<EvmAddressDetail>(() =>
+    EvmAddressesUtils.getFallbackAddressDetails(address, localAccounts),
+  );
 
   useEffect(() => {
+    let cancelled = false;
+    setAddressDetail(
+      EvmAddressesUtils.getFallbackAddressDetails(address, localAccounts),
+    );
     initComponent();
-  }, [address, chainId]);
 
-  const initComponent = async () => {
-    const details = await EvmAddressesUtils.getAddressDetails(address, chainId);
-    setAddressDetail(details);
-  };
+    return () => {
+      cancelled = true;
+    };
+
+    async function initComponent() {
+      const walletLocalAccounts = localAccounts.filter(
+        (account): account is EvmAccount =>
+          'wallet' in account && !!account.wallet,
+      );
+      const details = await EvmAddressesUtils.getAddressDetails(
+        address,
+        chainId,
+        true,
+        walletLocalAccounts.length > 0
+          ? { localAccounts: walletLocalAccounts }
+          : undefined,
+      );
+      const localDetails = EvmAddressesUtils.getFallbackAddressDetails(
+        address,
+        localAccounts,
+      );
+      const shouldPreferLocalLabel =
+        localDetails.label !== localDetails.formattedAddress;
+      if (!cancelled) {
+        setAddressDetail(
+          shouldPreferLocalLabel
+            ? { ...details, label: localDetails.label }
+            : details,
+        );
+      }
+    }
+  }, [address, chainId, localAccounts]);
 
   const handleCopyAddress = (event: React.MouseEvent) => {
     if (canCopy) {

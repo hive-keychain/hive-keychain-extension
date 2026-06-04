@@ -4,8 +4,18 @@ import {
   EvmLightNodeUtils,
   evmChainIdToDecimalPathSegment,
   isCatchupStatusPending,
+  normalizeDomainForLightNode,
 } from '@popup/evm/utils/evm-light-node.utils';
+import { BaseApi } from 'src/api/base';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+
+jest.mock('src/api/base', () => ({
+  BaseApi: {
+    getWithResponse: jest.fn(),
+    get: jest.fn(),
+    post: jest.fn(),
+  },
+}));
 
 describe('evm-light-node.utils tests:\n', () => {
   it('uses decimal chain id in light-node URLs when chainId is hex', async () => {
@@ -279,5 +289,129 @@ describe('evm-light-node.utils tests:\n', () => {
       'register/1/0x00000000000000000000000000000000000000aa/false',
       {},
     );
+  });
+
+  it('getReceiverSecurity calls GET /address with encoded receiver', async () => {
+    const receiver = '0x00000000000000000000000000000000000000aa';
+    (BaseApi.getWithResponse as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: {
+        isMalicious: true,
+        reasons: ['mixer'],
+        stale: false,
+      },
+    });
+
+    const result = await EvmLightNodeUtils.getReceiverSecurity(receiver);
+
+    expect(result).toEqual({
+      isMalicious: true,
+      reasons: ['mixer'],
+      stale: false,
+    });
+    expect(BaseApi.getWithResponse).toHaveBeenCalledWith(
+      expect.stringContaining(`address/${encodeURIComponent(receiver)}`),
+    );
+  });
+
+  it('getReceiverSecurity preserves isRugPull fields from light-node', async () => {
+    const receiver = '0x00000000000000000000000000000000000000bb';
+    (BaseApi.getWithResponse as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: {
+        isMalicious: false,
+        reasons: [],
+        stale: false,
+        isRugPull: true,
+        isRugPullReason: ['approval_abuse', 'blacklist'],
+      },
+    });
+
+    const result = await EvmLightNodeUtils.getReceiverSecurity(receiver);
+
+    expect(result).toEqual({
+      isMalicious: false,
+      reasons: [],
+      stale: false,
+      isRugPull: true,
+      isRugPullReason: ['approval_abuse', 'blacklist'],
+    });
+  });
+
+  it('getContract preserves security from the light-node payload', async () => {
+    const contractAddress = '0x00000000000000000000000000000000000000cc';
+    jest.spyOn(EvmLightNodeApi, 'get').mockResolvedValue({
+      id: 1,
+      chainId: 1,
+      address: contractAddress,
+      firstSeenBlock: 1,
+      lastSeenBlock: null,
+      abi: null,
+      contractType: 'ERC20',
+      verified: false,
+      isProxy: false,
+      proxyTargetAddress: null,
+      proxyTarget: null,
+      possibleSpam: true,
+      metadata: null,
+      price: null,
+      security: {
+        isMalicious: true,
+        reasons: ['phishing_activities'],
+        stale: true,
+      },
+    });
+
+    const result = await EvmLightNodeUtils.getContract('1', contractAddress);
+
+    expect(result.security).toEqual({
+      isMalicious: true,
+      reasons: ['phishing_activities'],
+      stale: true,
+    });
+  });
+
+  it('getContract preserves rug-pull security fields from the light-node payload', async () => {
+    const contractAddress = '0x00000000000000000000000000000000000000dd';
+    jest.spyOn(EvmLightNodeApi, 'get').mockResolvedValue({
+      id: 1,
+      chainId: 1,
+      address: contractAddress,
+      firstSeenBlock: 1,
+      lastSeenBlock: null,
+      abi: null,
+      contractType: 'ERC20',
+      verified: false,
+      isProxy: false,
+      proxyTargetAddress: null,
+      proxyTarget: null,
+      possibleSpam: true,
+      metadata: null,
+      price: null,
+      security: {
+        isMalicious: false,
+        reasons: [],
+        stale: false,
+        isRugPull: true,
+        isRugPullReason: ['selfdestruct'],
+      },
+    });
+
+    const result = await EvmLightNodeUtils.getContract('1', contractAddress);
+
+    expect(result.security).toEqual({
+      isMalicious: false,
+      reasons: [],
+      stale: false,
+      isRugPull: true,
+      isRugPullReason: ['selfdestruct'],
+    });
+  });
+
+  it('normalizeDomainForLightNode matches light-node hostname rules', () => {
+    expect(normalizeDomainForLightNode('https://dapp.example/')).toBe(
+      'dapp.example',
+    );
+    expect(normalizeDomainForLightNode('dapp.example')).toBe('dapp.example');
   });
 });

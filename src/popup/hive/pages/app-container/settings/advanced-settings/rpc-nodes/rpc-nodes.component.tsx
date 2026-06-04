@@ -17,6 +17,9 @@ import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import ButtonComponent, {
+  ButtonType,
+} from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
 import {
@@ -26,7 +29,6 @@ import {
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import { setActiveRpc } from 'src/popup/hive/actions/active-rpc.actions';
@@ -35,6 +37,7 @@ import { ArrayUtils } from 'src/utils/array.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import * as ValidUrl from 'valid-url';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface RpcListItem {
   label: string;
   value: string;
@@ -52,7 +55,8 @@ const RpcNodes = ({
   setErrorMessage,
   setSuccessMessage,
   setTitleContainerProperties,
-}: PropsFromRedux) => {
+  titleMessageKey = 'popup_html_rpc_node',
+}: Props) => {
   const allRpc = RpcUtils.getFullList();
   let displayedRpcs = allRpc;
   // Hive RPC
@@ -163,7 +167,7 @@ const RpcNodes = ({
 
   useEffect(() => {
     setTitleContainerProperties({
-      title: 'popup_html_rpc_node',
+      title: titleMessageKey,
       isBackButtonEnabled: true,
     });
     initCustomRpcList();
@@ -268,13 +272,11 @@ const RpcNodes = ({
       data-testid={`${Screen.SETTINGS_RPC_NODES}-page`}
       className="rpc-nodes-page">
       <div className="introduction">
-        {chrome.i18n.getMessage('popup_html_rpc_node_text')}
+        {I18nUtils.getMessage('popup_html_rpc_node_text')}
       </div>
 
       <div className="rpc-form-container">
-        <div
-          className="rpc-section hive-rpc"
-          data-testid="section-hive-rpc">
+        <div className="rpc-section hive-rpc" data-testid="section-hive-rpc">
           <div className="title">Hive RPC</div>
           <CheckboxPanelComponent
             dataTestId="checkbox-rpc-nodes-automatic-mode"
@@ -318,20 +320,16 @@ const RpcNodes = ({
           {!switchAuto && isAddRpcPanelDisplayed && (
             <div className="add-rpc-panel">
               <div className="add-rpc-caption">
-                <span>{chrome.i18n.getMessage('popup_html_add_rpc_text')}</span>
-                <SVGIcon
-                  dataTestId="button-save"
-                  icon={SVGIcons.MENU_RPC_SAVE_BUTTON}
-                  onClick={() => saveNewHiveRpc()}
-                />
+                <span>{I18nUtils.getMessage('popup_html_add_rpc_text')}</span>
               </div>
-              <Separator type="horizontal" />
               <InputComponent
                 dataTestId="input-rpc-node-uri"
                 type={InputType.TEXT}
                 value={addRpcNodeUri}
                 onChange={setAddRpcNodeUri}
+                label="popup_html_rpc_node"
                 placeholder={'popup_html_rpc_node'}
+                size="small"
                 onEnterPress={saveNewHiveRpc}
               />
               <CheckboxComponent
@@ -346,8 +344,11 @@ const RpcNodes = ({
                   type={InputType.TEXT}
                   value={addRpcNodeChainId}
                   onChange={setAddRpcNodeChainId}
+                  label="Chain Id"
                   placeholder="Chain Id"
+                  skipLabelTranslation={true}
                   skipPlaceholderTranslation={true}
+                  size="small"
                   onEnterPress={saveNewHiveRpc}
                 />
               )}
@@ -357,6 +358,14 @@ const RpcNodes = ({
                 title="popup_html_set_new_rpc_as_active"
                 checked={setNewRpcAsActive}
                 onChange={setSetNewRpcAsActive}></CheckboxComponent>
+              <ButtonComponent
+                dataTestId="button-save"
+                label="popup_html_save"
+                type={ButtonType.IMPORTANT}
+                height="small"
+                additionalClass="save-rpc-button"
+                onClick={() => saveNewHiveRpc()}
+              />
             </div>
           )}
         </div>
@@ -396,20 +405,16 @@ const RpcNodes = ({
           {isNewHERpcPanelOpened && (
             <div className="add-rpc-panel">
               <div className="add-rpc-caption">
-                <span>{chrome.i18n.getMessage('popup_html_add_rpc_text')}</span>
-                <SVGIcon
-                  dataTestId="button-hive-engine-rpc-save"
-                  icon={SVGIcons.MENU_RPC_SAVE_BUTTON}
-                  onClick={() => saveHiveEngineRpc()}
-                />
+                <span>{I18nUtils.getMessage('popup_html_add_rpc_text')}</span>
               </div>
-              <Separator type="horizontal" />
               <InputComponent
                 dataTestId="input-hive-engine-rpc-uri"
                 type={InputType.TEXT}
                 value={newHERpc}
                 onChange={setNewHERpc}
+                label="popup_html_rpc_node"
                 placeholder={'popup_html_rpc_node'}
+                size="small"
                 onEnterPress={saveHiveEngineRpc}
               />
 
@@ -418,6 +423,14 @@ const RpcNodes = ({
                 title="popup_html_set_new_rpc_as_active"
                 checked={setNewHeRpcAsActive}
                 onChange={setSetNewHeRpcAsActive}></CheckboxComponent>
+              <ButtonComponent
+                dataTestId="button-hive-engine-rpc-save"
+                label="popup_html_save"
+                type={ButtonType.ALTERNATIVE}
+                height="small"
+                additionalClass="save-rpc-button"
+                onClick={() => saveHiveEngineRpc()}
+              />
             </div>
           )}
         </div>
@@ -460,20 +473,16 @@ const RpcNodes = ({
           {isNewAccountHistoryPanelOpened && (
             <div className="add-rpc-panel">
               <div className="add-rpc-caption">
-                <span>{chrome.i18n.getMessage('popup_html_add_rpc_text')}</span>
-                <SVGIcon
-                  dataTestId="button-account-history-api-save"
-                  icon={SVGIcons.MENU_RPC_SAVE_BUTTON}
-                  onClick={() => saveAccountHistory()}
-                />
+                <span>{I18nUtils.getMessage('popup_html_add_rpc_text')}</span>
               </div>
-              <Separator type="horizontal" />
               <InputComponent
                 dataTestId="input-account-history-api-uri"
                 type={InputType.TEXT}
                 value={newAccountHistory}
                 onChange={setNewAccountHistory}
+                label="html_popup_new_account_history"
                 placeholder={'html_popup_new_account_history'}
+                size="small"
                 onEnterPress={saveAccountHistory}
               />
 
@@ -482,6 +491,14 @@ const RpcNodes = ({
                 title="popup_html_set_new_rpc_as_active"
                 checked={setNewAccountHistoryAsActive}
                 onChange={setSetNewAccountHistoryAsActive}></CheckboxComponent>
+              <ButtonComponent
+                dataTestId="button-account-history-api-save"
+                label="popup_html_save"
+                type={ButtonType.ALTERNATIVE}
+                height="small"
+                additionalClass="save-rpc-button"
+                onClick={() => saveAccountHistory()}
+              />
             </div>
           )}
         </div>
@@ -507,5 +524,9 @@ const connector = connect(mapStateToProps, {
   setSuccessMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
+interface OwnProps {
+  titleMessageKey?: string;
+}
+type Props = PropsFromRedux & OwnProps;
 
 export const RpcNodesComponent = connector(RpcNodes);

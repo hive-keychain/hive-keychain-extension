@@ -18,8 +18,8 @@
 
   .evm-dapps-connections-item {
     @include small-card();
-    align-items: center;
-    flex-direction: row;
+    align-items: stretch;
+    flex-direction: column;
     gap: 8px;
     margin: 0;
     width: 100%;
@@ -32,12 +32,45 @@
     padding: 6px;
   }
 
+  .evm-dapps-connections-item-main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .evm-dapps-connections-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 4px 0 0 36px;
+    width: 100%;
+    box-sizing: border-box;
+
+    .submit-button {
+      min-width: 0;
+      height: 34px;
+      min-height: 34px;
+
+      .button-label {
+        @include poppins500(13px);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+
   .evm-dapps-connections-favicon {
     width: 28px;
     height: 28px;
     border-radius: 6px;
     object-fit: contain;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .evm-dapps-connections-subdomain {
@@ -76,5 +109,32 @@
     @include poppins400(13px);
     color: var(--main-font-color);
     opacity: 0.85;
+  }
+
+  .evm-dapps-connections-chain {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .evm-dapps-connections-chain-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .evm-dapps-connections-chain-name {
+    @include poppins600(14px);
+    color: var(--main-font-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .evm-dapps-connections-chain-id {
+    @include poppins400(12px);
+    color: var(--main-font-color);
+    opacity: 0.75;
   }
 }

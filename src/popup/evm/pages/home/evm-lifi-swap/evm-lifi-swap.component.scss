@@ -1,10 +1,40 @@
 .evm-lifi-swap-page {
+  @include pageLayoutRowGap;
+  row-gap: 4px;
+  overflow: hidden;
   flex: 1;
-  display: flex;
+  flex-flow: column wrap;
+
+  > .rotating-logo-wrapper,
+  > .service-unavailable-page,
+  > .maintenance-mode {
+    min-height: 0;
+  }
+
+  .maintenance-mode {
+    @include no-data-panel();
+  }
 
   .form-container {
     align-items: center;
     justify-content: center;
+  }
+
+  .top-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    .swap-history-button {
+      cursor: pointer;
+      margin-right: 16px;
+    }
+
+    .swap-history-button:hover {
+      --swap-history-button-icon-color: white;
+      --swap-history-button-border-color: #{$red};
+      --swap-history-button-background: #{$red};
+    }
   }
 
   .evm-lifi-swap-page-content {
@@ -15,28 +45,11 @@
     width: 100%;
 
     .countdown {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      margin-top: 10px;
-      font-size: 13px;
+      font-size: 12px;
+      font-style: italic;
       color: $red;
-    }
-
-    .top-row {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-
-      .swap-history-button {
-        cursor: pointer;
-      }
-
-      .swap-history-button:hover {
-        --swap-history-button-icon-color: white;
-        --swap-history-button-border-color: #{$red};
-        --swap-history-button-background: #{$red};
-      }
+      text-align: right;
+      margin-right: 18px;
     }
 
     .swap-label {
@@ -50,10 +63,24 @@
 
     .evm-lifi-swap-chain-token-selectors {
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       column-gap: 8px;
       .custom-select-container {
         flex: 1;
+      }
+
+      .selectors-panel {
+        display: flex;
+        column-gap: 8px;
+      }
+      .available-balance {
+        font-size: 12px;
+        font-style: italic;
+        color: var(--main-font-color);
+        opacity: 0.7;
+        text-align: right;
+        margin-right: 18px;
+        cursor: pointer;
       }
     }
     .evm-lifi-swap-page-content-buttons {

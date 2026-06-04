@@ -7,9 +7,11 @@ import {
 import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export interface PageTitleProps {
   title: string;
   titleParams?: string[];
@@ -21,6 +23,8 @@ export interface PageTitleProps {
     icon: SVGIcons;
     callback: () => void;
     className?: string;
+    dataTestId?: string;
+    tooltipMessage?: string;
   };
   closeNavigationParams?: any;
   onCloseAdditional?: () => void;
@@ -65,9 +69,7 @@ const PageTitle = ({
   };
 
   const handleDetachWindow = () => {
-    chrome.tabs.create({
-      url: `detached_window.html`,
-    });
+    void DetachedExtensionTabUtils.openDetachedExtension();
   };
 
   return (
@@ -89,7 +91,7 @@ const PageTitle = ({
       <div className="title">
         {skipTitleTranslation
           ? title
-          : chrome.i18n.getMessage(title, titleParams)}
+          : I18nUtils.getMessage(title, titleParams)}
       </div>
       {/* <div className="right-section"> */}
       {showDetachWindowOption && (
@@ -104,9 +106,13 @@ const PageTitle = ({
       )}
       {rightAction && (
         <SVGIcon
+          dataTestId={rightAction.dataTestId}
           onClick={handleRightActionButtonClick}
           icon={rightAction.icon}
-          className={`icon-button ${rightAction.className}`}
+          className={`icon-button ${rightAction.className ?? ''}`}
+          hoverable={!!rightAction.tooltipMessage}
+          tooltipMessage={rightAction.tooltipMessage}
+          tooltipPosition="bottom"
         />
       )}
       {!rightAction && !isCloseButtonDisabled && (

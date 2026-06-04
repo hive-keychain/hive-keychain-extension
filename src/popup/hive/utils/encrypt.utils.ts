@@ -230,6 +230,28 @@ const decryptToJsonWithLegacySupport = async (
   return LegacyEncryptUtils.decryptToJsonWithoutHashCheck(msg, pwd);
 };
 
+const decryptToAnyJsonWithLegacySupport = async (
+  msg: string,
+  pwd: string,
+): Promise<any> => {
+  const { isVersioned, payload } = getVersionedPayload(msg);
+
+  if (isVersioned) {
+    if (!payload) {
+      throw new Error('Invalid encrypted payload');
+    }
+
+    const decrypted = await decryptV2(payload, pwd);
+    if (!decrypted) {
+      throw new Error('Unable to decrypt payload');
+    }
+
+    return JSON.parse(decrypted);
+  }
+
+  return LegacyEncryptUtils.decryptToJsonWithoutHashCheck(msg, pwd);
+};
+
 const decryptToJson = async (msg: string, pwd: string): Promise<any> => {
   if (!msg) {
     return null;
@@ -267,6 +289,7 @@ const EncryptUtils = {
   encryptNoIV,
   decryptToJson,
   decryptToJsonWithLegacySupport,
+  decryptToAnyJsonWithLegacySupport,
   decrypt: LegacyEncryptUtils.decrypt,
   decryptNoIV,
   isEncryptedJsonV2,

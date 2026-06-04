@@ -35,6 +35,7 @@ import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
 import WitnessUtils from 'src/popup/hive/utils/witness.utils';
 import * as ValidUrl from 'valid-url';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const MAX_WITNESS_VOTE = 30;
 
 interface WitnessTabProps {
@@ -295,14 +296,14 @@ const WitnessTab = ({
     <div data-testid="witness-tab" className="witness-tab">
       {!usingProxy && (
         <div className="remaining-votes">
-          {chrome.i18n.getMessage('popup_html_witness_remaining', [
+          {I18nUtils.getMessage('popup_html_witness_remaining', [
             remainingVotes + '',
           ])}
         </div>
       )}
       {usingProxy && (
         <div className="using-proxy">
-          {chrome.i18n.getMessage('html_popup_currently_using_proxy', [
+          {I18nUtils.getMessage('html_popup_currently_using_proxy', [
             activeAccount.account.proxy,
           ])}
         </div>
@@ -315,7 +316,7 @@ const WitnessTab = ({
         }
         className="link-to-arcange">
         <div>
-          {chrome.i18n.getMessage('html_popup_link_to_witness_website')}
+          {I18nUtils.getMessage('html_popup_link_to_witness_website')}
         </div>
         {/* <SVGIcon
           icon={NewIcons.GOVERNANCE_WITNESS_LINK}
@@ -367,7 +368,7 @@ const WitnessTab = ({
           <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
           <div className="text">
             <div>
-              {chrome.i18n.getMessage(
+              {I18nUtils.getMessage(
                 'popup_html_error_retrieving_witness_ranking',
               )}
             </div>

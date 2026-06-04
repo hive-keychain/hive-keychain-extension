@@ -1,8 +1,8 @@
 const { merge } = require('webpack-merge');
 const common = require('./webpack.firefox.js');
 const path = require('path');
-const dotenv = require('dotenv');
 const { DefinePlugin } = require('webpack');
+const { toDefinePluginEnv } = require('../env');
 
 const useFilesystemCache = process.env.WEBPACK_FS_CACHE === 'true';
 const cache = useFilesystemCache
@@ -37,11 +37,6 @@ module.exports = merge(common, {
     filename: '[name]Bundle.js',
   },
   plugins: [
-    new DefinePlugin({
-      'process.env': JSON.stringify({
-        ...(dotenv.config().parsed || {}),
-        IS_FIREFOX: true,
-      }),
-    }),
+    new DefinePlugin(toDefinePluginEnv({ IS_FIREFOX: true })),
   ],
 });

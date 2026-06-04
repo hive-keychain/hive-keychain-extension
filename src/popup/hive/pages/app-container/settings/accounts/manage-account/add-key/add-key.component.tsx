@@ -2,7 +2,10 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/multichain/actions/message.actions';
-import { goBack } from '@popup/multichain/actions/navigation.actions';
+import {
+  goBack,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
@@ -17,7 +20,26 @@ import type { AuthorityType, ExtendedAccount } from '@hiveio/dhive';
 import { Screen } from '@interfaces/screen.interface';
 import { refreshActiveAccount } from '@popup/hive/actions/active-account.actions';
 import AccountUtils from '@popup/hive/utils/account.utils';
+import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
 import { ArrayUtils } from 'src/utils/array.utils';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+interface AddKeyNavParams {
+  keyType: KeyType;
+  username?: string;
+}
+
+const parseAddKeyNavParams = (
+  params: KeyType | AddKeyNavParams | undefined,
+): AddKeyNavParams => {
+  if (params === undefined) {
+    return { keyType: KeyType.ACTIVE };
+  }
+  if (typeof params === 'string') {
+    return { keyType: params as KeyType };
+  }
+  return params;
+};
 
 const AddKey = ({
   keyType,
@@ -31,6 +53,7 @@ const AddKey = ({
   refreshActiveAccount,
   setSuccessMessage,
   goBack,
+  navigateToWithParams,
   isLedgerSupported,
 }: PropsType) => {
   const [privateKey, setPrivateKey] = useState('');
@@ -49,14 +72,29 @@ const AddKey = ({
       setErrorMessage('popup_accounts_fill');
       return;
     }
-    addKey(privateKey.trim(), keyType, setErrorMessage);
+    await addKey(
+      privateKey.trim(),
+      keyType,
+      setErrorMessage,
+      activeAccountName,
+    );
     goBack();
   };
 
   const navigateToUseLedger = async () => {
-    const extensionId = (await chrome.management.getSelf()).id;
-    chrome.tabs.create({
-      url: `chrome-extension://${extensionId}/add-key-from-ledger.html?keyType=${keyType}&username=${activeAccountName}`,
+    if (!activeAccountName) {
+      return;
+    }
+    if (
+      await LedgerRouteUtils.openInSidePanelFromToolbarPopup(
+        LedgerRouteUtils.buildAddKeyHash(keyType, activeAccountName),
+      )
+    ) {
+      return;
+    }
+    navigateToWithParams(Screen.SETTINGS_ADD_KEY_FROM_LEDGER, {
+      keyType,
+      username: activeAccountName,
     });
   };
 
@@ -79,7 +117,10 @@ const AddKey = ({
   };
 
   const loadAuthorizedAccounts = async () => {
-    const authority = getAuthorityForKeyType(activeAccount.account, keyType);
+    const extendedAccount = await AccountUtils.getExtendedAccount(
+      activeAccountName!,
+    );
+    const authority = getAuthorityForKeyType(extendedAccount, keyType);
     const auths: string[] =
       authority?.account_auths?.map((auth) => auth[0]) ?? [];
 
@@ -92,8 +133,20 @@ const AddKey = ({
   };
 
   const addAuth = async (username: string) => {
+    const extendedAccount = await AccountUtils.getExtendedAccount(
+      activeAccountName!,
+    );
+    const targetLocalAccount = localAccounts.find(
+      (localAccount) => localAccount.name === activeAccountName,
+    );
+    const targetActiveAccount = {
+      ...activeAccount,
+      name: activeAccountName,
+      account: extendedAccount,
+      keys: targetLocalAccount?.keys ?? activeAccount.keys,
+    };
     await AccountUtils.addAuthorizedKey(
-      activeAccount,
+      targetActiveAccount,
       username,
       localAccounts,
       mk,
@@ -112,7 +165,7 @@ const AddKey = ({
         data-testid="add-key-page-paragraph-introduction"
         className="caption"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_add_key_text', [
+          __html: I18nUtils.getMessage('popup_html_add_key_text', [
             keyType.substring(0, 1) + keyType.substring(1).toLowerCase(),
           ]),
         }}></div>
@@ -129,7 +182,7 @@ const AddKey = ({
       {availableAuths.length > 0 && (
         <div className="available-auths">
           <div className="caption">
-            {chrome.i18n.getMessage('html_add_available_authorities_caption')}
+            {I18nUtils.getMessage('html_add_available_authorities_caption')}
           </div>
           <div className="auths">
             {availableAuths.map((auth, index) => (
@@ -153,7 +206,7 @@ const AddKey = ({
 
       {keyType === KeyType.ACTIVE && isLedgerSupported && (
         <div className="add-using-ledger" onClick={navigateToUseLedger}>
-          {chrome.i18n.getMessage('popup_html_add_using_ledger')}
+          {I18nUtils.getMessage('popup_html_add_using_ledger')}
         </div>
       )}
 
@@ -169,9 +222,12 @@ const AddKey = ({
 };
 
 const mapStateToProps = (state: RootState) => {
+  const { keyType, username } = parseAddKeyNavParams(
+    state.navigation.stack[0].params as KeyType | AddKeyNavParams,
+  );
   return {
-    keyType: state.navigation.stack[0].params as KeyType,
-    activeAccountName: state.hive.activeAccount.name,
+    keyType,
+    activeAccountName: username ?? state.hive.activeAccount.name,
     isLedgerSupported: state.hive.appStatus.isLedgerSupported,
     activeAccount: state.hive.activeAccount,
     localAccounts: state.hive.accounts,
@@ -186,6 +242,7 @@ const connector = connect(mapStateToProps, {
   setErrorMessage,
   setSuccessMessage,
   refreshActiveAccount,
+  navigateToWithParams,
 });
 type PropsType = ConnectedProps<typeof connector>;
 

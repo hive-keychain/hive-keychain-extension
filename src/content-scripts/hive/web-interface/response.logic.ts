@@ -17,6 +17,7 @@ import {
 } from 'src/utils/browser-origin.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import KeychainifyUtils from 'src/utils/keychainify.utils';
+import Logger from 'src/utils/logger.utils';
 
 export const cancelPreviousRequest = (prevReq: KeychainRequest) => {
   const response = {
@@ -49,7 +50,7 @@ export const sendEvmRequestToBackground = async (
   const link = document.querySelector("link[rel='icon']");
 
   CommunicationUtils.runtimeSendMessage({
-    command: 'sendEvmRequest',
+    command: BackgroundCommand.SEND_EVM_REQUEST,
     request: req,
     dappInfo: {
       origin: getWindowOrigin(),
@@ -111,7 +112,7 @@ export const sendResponse = (response: RequestResponse) => {
         getWindowOrigin(),
       );
     } catch (err) {
-      console.log('send response', err);
+      Logger.error('send response', err);
     }
   }
 };
@@ -135,7 +136,7 @@ export const sendResponseToEvm = (response: any) => {
         getWindowOrigin(),
       );
     } catch (err) {
-      console.log('send response to evm', err);
+      Logger.error('send response to evm', err);
     }
   }
 };
@@ -159,7 +160,7 @@ export const sendErrorToEvm = (response: any) => {
         getWindowOrigin(),
       );
     } catch (err) {
-      console.log('senderrortoEvm', err);
+      Logger.error('senderrortoEvm', err);
     }
   }
 };
@@ -174,7 +175,7 @@ export const sendEventToEvm = (event: any) => {
       getWindowOrigin(),
     );
   } catch (err) {
-    console.log('sendeventtoevm', err);
+    Logger.error('sendeventtoevm', err);
   }
 };
 

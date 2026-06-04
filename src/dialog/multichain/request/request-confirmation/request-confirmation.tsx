@@ -19,6 +19,7 @@ import { GetEncryptionKey } from 'src/dialog/evm/requests/get-encryption-key';
 import { PersonalSign } from 'src/dialog/evm/requests/personal-sign';
 import { SendTransaction } from 'src/dialog/evm/requests/send-transaction/send-transaction';
 import { SignTypedData } from 'src/dialog/evm/requests/sign-typed-data';
+import { SwitchChain } from 'src/dialog/evm/requests/switch-chain/switch-chain';
 import { WatchAsset } from 'src/dialog/evm/requests/watch-asset/watch-asset';
 import AddAccount from 'src/dialog/hive/requests/add-account';
 import AddAccountAuthority from 'src/dialog/hive/requests/authority/add-account-authority';
@@ -397,6 +398,16 @@ export const RequestConfirmation = ({
         case EvmRequestMethod.WALLET_ADD_ETH_CHAIN: {
           return (
             <AddChain
+              request={request}
+              data={displayedMessage}
+              afterCancel={afterCancel}
+            />
+          );
+        }
+
+        case EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN: {
+          return (
+            <SwitchChain
               request={request}
               data={displayedMessage}
               afterCancel={afterCancel}

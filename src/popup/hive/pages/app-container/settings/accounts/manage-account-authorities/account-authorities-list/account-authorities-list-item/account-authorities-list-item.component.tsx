@@ -13,7 +13,7 @@ import {
   goBack,
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
-import { RootState } from '@popup/multichain/store';
+import { ActiveAccount } from '@interfaces/active-account.interface';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-field.interface';
@@ -24,13 +24,15 @@ import { setAccounts } from 'src/popup/hive/actions/account.actions';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export interface AuthoritiesListItemProps {
   authority: AuthorityType;
   role: 'active' | 'posting';
+  managedAccount: ActiveAccount;
 }
 
 const AccountAuthoritiesListItem = ({
-  activeAccount,
+  managedAccount,
   authority,
   role,
   navigateToWithParams,
@@ -40,6 +42,10 @@ const AccountAuthoritiesListItem = ({
   removeFromLoadingList,
   goBack,
 }: PropsType) => {
+  const removeAuthorityLabel = I18nUtils.getMessage(
+    'popup_html_remove_account_authority',
+  );
+
   const goTo = (accountName: string) => {
     window.open(`https://hive.blog/@${accountName}`);
   };
@@ -48,7 +54,7 @@ const AccountAuthoritiesListItem = ({
     authorizedAccountName: string,
   ) => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         'popup_html_confirm_remove_account_authority_message',
         [role, authorizedAccountName],
       ),
@@ -61,7 +67,7 @@ const AccountAuthoritiesListItem = ({
         },
         {
           label: 'popup_html_role',
-          value: chrome.i18n.getMessage(`popup_html_authority_${role}`),
+          value: I18nUtils.getMessage(`popup_html_authority_${role}`),
         },
       ],
       title: 'popup_html_remove_account_authority',
@@ -70,7 +76,7 @@ const AccountAuthoritiesListItem = ({
         try {
           const updatedActiveAccountAuth =
             ActiveAccountUtils.removeAuthorizedAccount(
-              activeAccount,
+              managedAccount,
               role,
               authorizedAccountName,
             );
@@ -106,22 +112,23 @@ const AccountAuthoritiesListItem = ({
   };
 
   return authority.account_auths.length > 0 ? (
-    <div className="account-authorities-list-item">
-      <div className="top-panel">
-        <div className="key-name">
-          <div className="name">
-            {chrome.i18n.getMessage(`popup_html_authority_${role}`)}
+    <div className="account-authorities-list-item settings-hive-dapps-site">
+      <div className="settings-hive-dapps-site-header">
+        <div className="settings-hive-dapps-site-identity">
+          <div className="settings-hive-dapps-site-title">
+            {I18nUtils.getMessage(`popup_html_authority_${role}`)}
           </div>
         </div>
       </div>
-      <div className="keys-panel">
-        <div className="account-auths-list">
+      <div className="settings-hive-dapps-permissions account-authorities-tags-panel">
+        <div className="settings-hive-dapps-tags">
           {authority.account_auths.map((accountAuth, index) => {
             return (
               <div
-                className="item"
+                className="settings-hive-dapps-tag account-authority-tag"
                 key={`account-auth-item-${accountAuth[0]}-${index}`}>
-                <div
+                <button
+                  type="button"
                   className="item-account"
                   onClick={() => goTo(accountAuth[0])}>
                   <img
@@ -133,12 +140,15 @@ const AccountAuthoritiesListItem = ({
                     }}
                   />
                   <div className="account-name">{accountAuth[0]}</div>
-                </div>
-                <SVGIcon
+                </button>
+                <button
+                  type="button"
                   className="delete-button"
-                  icon={SVGIcons.GLOBAL_DELETE}
-                  onClick={() => handleClickOnRemoveAccountAuth(accountAuth[0])}
-                />
+                  title={removeAuthorityLabel}
+                  aria-label={removeAuthorityLabel}
+                  onClick={() => handleClickOnRemoveAccountAuth(accountAuth[0])}>
+                  <SVGIcon icon={SVGIcons.GLOBAL_DELETE} />
+                </button>
               </div>
             );
           })}
@@ -148,13 +158,7 @@ const AccountAuthoritiesListItem = ({
   ) : null;
 };
 
-const mapStateToProps = (state: RootState) => {
-  return {
-    activeAccount: state.hive.activeAccount,
-  };
-};
-
-const connector = connect(mapStateToProps, {
+const connector = connect(null, {
   setAccounts,
   navigateToWithParams,
   addToLoadingList,

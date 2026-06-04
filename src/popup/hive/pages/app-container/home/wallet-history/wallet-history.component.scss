@@ -1,15 +1,27 @@
 .wallet-history-page {
   display: flex;
   flex: 1;
+  position: relative;
+  min-width: 0;
+  width: 100%;
+
   .filter-panel {
     $filter-max-height: 400px;
+    // Matches app-router title row (gridTemplateRows: 80px 1fr).
+    $wallet-history-title-height: 80px;
+    $wallet-history-filter-inset: 24px;
 
-    position: absolute;
-    width: 320px;
-    top: 60px;
-    left: 40px;
-    padding: 0px 24px;
-    z-index: 2;
+    position: fixed;
+    top: $wallet-history-title-height;
+    right: $wallet-history-filter-inset;
+    left: auto;
+    width: min(320px, calc(100vw - #{$wallet-history-filter-inset * 2}));
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    z-index: 10;
+    pointer-events: none;
+
     .title-panel {
       display: flex;
       justify-content: space-between;
@@ -70,7 +82,6 @@
         .input-container {
           width: 100%;
           input {
-            height: 15px;
             font-size: 14px;
             &:focus {
               box-shadow: unset;
@@ -78,10 +89,6 @@
             &::-webkit-input-placeholder {
               font-size: 14px;
             }
-          }
-          .input-img svg {
-            height: 15px;
-            width: 15px;
           }
         }
       }
@@ -113,6 +120,11 @@
 
     &.filter-opened {
       @include small-card;
+      // small-card adds horizontal margin; keep panel under the title filter trigger.
+      margin: 0;
+      pointer-events: auto;
+      margin-top: -20px;
+
       .title-panel {
         .icon {
           transform: rotate(180deg);
@@ -129,8 +141,58 @@
   .wallet-item-list {
     @include form-panel;
     row-gap: 8px;
-    max-height: 476px;
     position: relative;
+    max-height: var(--wallet-history-max-height, 476px);
+
+    .wallet-history-export-button {
+      @include poppins500(14px);
+      align-self: flex-end;
+      color: var(--main-font-color);
+      background: var(--card-background);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      column-gap: 10px;
+      width: fit-content;
+      max-width: 100%;
+      min-height: 40px;
+      padding: 8px 12px;
+      margin-right: 16px;
+      margin-bottom: 4px;
+      cursor: pointer;
+
+      &:hover {
+        color: white;
+        background: $red;
+        border-color: $red;
+
+        .wallet-history-export-button-icon {
+          color: white;
+
+          path {
+            stroke: white;
+          }
+        }
+      }
+
+      span {
+        flex-shrink: 0;
+      }
+
+      .wallet-history-export-button-icon {
+        @include icon-size(18px);
+        flex-shrink: 0;
+
+        path {
+          stroke: $red;
+        }
+
+        rect {
+          display: none;
+        }
+      }
+    }
 
     .rotating-logo-container {
       flex: 1;

@@ -6,6 +6,7 @@ import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with
 import Operation from 'src/dialog/hive/operation/operation';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: RequestProxy & RequestId;
   domain: string;
@@ -28,7 +29,7 @@ const Proxy = (props: Props) => {
 
   return (
     <Operation
-      title={chrome.i18n.getMessage('dialog_title_proxy')}
+      title={I18nUtils.getMessage('dialog_title_proxy')}
       {...props}
       {...anonymousProps}>
       {renderUsername()}

@@ -12,9 +12,11 @@ import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import AccountSelectorOrderUtils from '@popup/multichain/utils/account-selector-order.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const ChangePassword = ({
   setErrorMessage,
   setMk,
@@ -35,14 +37,18 @@ const ChangePassword = ({
     });
   }, []);
 
-  const submitMk = (): any => {
+  const submitMk = async (): Promise<void> => {
     if (mk !== oldPassword) {
       setErrorMessage('wrong_password');
       return;
     }
     if (newPassword === newPasswordConfirm) {
       if (MkUtils.isPasswordValid(newPassword)) {
-        AccountUtils.saveAccounts(accounts, newPassword);
+        await AccountSelectorOrderUtils.reencryptDisplayOrder(
+          oldPassword,
+          newPassword,
+        );
+        await AccountUtils.saveAccounts(accounts, newPassword);
         setMk(newPassword, true);
         navigateTo(Screen.HOME_PAGE, true);
         setSuccessMessage('popup_master_changed');
@@ -59,7 +65,7 @@ const ChangePassword = ({
       data-testid={`${Screen.SETTINGS_CHANGE_PASSWORD}-page`}
       className="change-password-page">
       <div className="caption">
-        {chrome.i18n.getMessage('popup_html_change_password_text')}
+        {I18nUtils.getMessage('popup_html_change_password_text')}
       </div>
 
       <InputComponent

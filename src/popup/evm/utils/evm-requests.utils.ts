@@ -1,6 +1,5 @@
 import {
   decrypt,
-  EthEncryptedData,
   getEncryptionPublicKey,
   personalSign,
   recoverPersonalSignature,
@@ -10,9 +9,11 @@ import {
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
 import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BlockTag, ethers } from 'ethers';
+import { EvmEncryptedMessageUtils } from 'src/utils/evm/evm-encrypted-message.utils';
 import Logger from 'src/utils/logger.utils';
 
 const instanciateProvider = async (chain?: EvmChain) => {
@@ -172,17 +173,29 @@ const personalRecover = async (digest: string, signature: string) => {
 };
 
 const getEncryptionKey = async (account: EvmAccount) => {
+  if (EvmSignerUtils.isLedgerWallet(account.wallet)) {
+    throw new Error('Ledger wallet does not expose a private key');
+  }
+
   return getEncryptionPublicKey(account.wallet.privateKey.substring(2)!);
 };
 
 const decryptMessage = (account: EvmAccount, message: string) => {
-  const stripped = message.substring(2);
-  const buff = Buffer.from(stripped, 'hex');
-  const encryptedData: EthEncryptedData = JSON.parse(buff.toString('utf8'));
-  return decrypt({
-    encryptedData: encryptedData,
-    privateKey: account.wallet.signingKey.privateKey.substring(2),
-  });
+  if (EvmSignerUtils.isLedgerWallet(account.wallet)) {
+    throw new Error('Ledger wallet does not expose a private key');
+  }
+
+  const encryptedData = EvmEncryptedMessageUtils.parseEncryptedMessage(message);
+
+  try {
+    return decrypt({
+      encryptedData: encryptedData,
+      privateKey: account.wallet.signingKey.privateKey.substring(2),
+    });
+  } catch (err) {
+    Logger.error('Error in decryptMessage', err);
+    throw new Error('Unable to decrypt message');
+  }
 };
 
 const getNonce = async (

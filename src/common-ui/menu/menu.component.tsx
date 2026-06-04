@@ -2,6 +2,7 @@ import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
+import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -17,6 +18,8 @@ interface MenuProps {
     icon: SVGIcons;
     callback: () => void;
     className: string;
+    dataTestId?: string;
+    tooltipMessage?: string;
   };
   showDetachWindowOption?: boolean;
 }
@@ -41,7 +44,16 @@ const Menu = ({
     });
   }, [rightAction]);
 
-  const handleMenuItemClick = (menuItem: MenuItem) => {
+  const handleMenuItemClick = async (menuItem: MenuItem) => {
+    if (
+      menuItem.sidePanelHash &&
+      (await LedgerRouteUtils.openInSidePanelFromToolbarPopup(
+        menuItem.sidePanelHash,
+      ))
+    ) {
+      return;
+    }
+
     if (menuItem.nextScreen) {
       navigateTo(menuItem.nextScreen);
     } else if (menuItem.action) {

@@ -1,13 +1,18 @@
+import { Card } from '@common-ui/card/card.component';
 import { EvmOperation } from '@dialog/evm/evm-operation/evm-operation';
 import { EvmTransactionWarningsComponent } from '@dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from '@dialog/evm/requests/transaction-warnings/transaction.hook';
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
+import { ChainListOrgChain } from '@popup/evm/interfaces/chain-list-org.interface';
 import { AddChainRequest } from '@popup/evm/interfaces/evm-requests.interfaces';
+import { CustomEvmChainForm } from '@popup/evm/pages/home/settings/evm-custom-chains/custom-evm-chain-form.component';
 import {
   EvmTransactionType,
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
+import { ChainListOrgUtils } from '@popup/evm/utils/chain-list-org.utils';
+import { EvmRpcUrlUtils } from '@popup/evm/utils/evm-rpc-url.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EvmInputDisplayType } from '@popup/evm/utils/evm-transaction-parser.utils';
 import {
@@ -20,6 +25,7 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   request: EvmRequest<AddChainRequest>;
   data: EvmRequestMessage;
@@ -31,30 +37,90 @@ export const AddChain = (props: Props) => {
   const transactionHook = useTransactionHook(data, request);
 
   const addChainRequest = request.params[0] as AddChainRequest;
+  const chainName = addChainRequest.chainName ?? '';
+  const nativeCurrencySymbol = addChainRequest.nativeCurrency?.symbol ?? '';
 
-  const [isUpdatingChain, setIsUpdatingChain] = useState(false);
+  const [isUpdatingChain, setIsUpdatingChain] = useState<boolean>();
+  const [defaultChainToAdd, setDefaultChainToAdd] = useState<EvmChain>();
+  const [chainListChainToAdd, setChainListChainToAdd] = useState<EvmChain>();
+  const [validatedDappRpcUrls, setValidatedDappRpcUrls] = useState<
+    string[] | undefined
+  >();
+  const dappBlockExplorerUrl = addChainRequest.blockExplorerUrls?.find((url) =>
+    EvmRpcUrlUtils.isValidHttpsRpcUrl(url),
+  );
 
-  const [newChain, setNewChain] = useState<EvmChain>({
-    name: addChainRequest.chainName,
+  const dappRpcUrlsForDisplay = validatedDappRpcUrls ?? [];
+  const initialChain: EvmChain = {
+    name: chainName,
     type: ChainType.EVM,
-    mainToken: addChainRequest.nativeCurrency.symbol,
+    mainToken: nativeCurrencySymbol,
     defaultTransactionType: EvmTransactionType.EIP_1559,
     logo: addChainRequest.iconUrls?.[0] || '',
     chainId: addChainRequest.chainId,
-    rpcs: addChainRequest.rpcUrls.map((url) => ({
-      url: url,
-      isDefault: false,
-    })), // TODO will need to merge with existing rpcs (add to customs)
+    rpcs: dappRpcUrlsForDisplay.map((url, index) => ({
+      url,
+      isDefault: index === 0,
+    })),
     blockExplorer: {
-      url: addChainRequest.blockExplorerUrls?.[0] || '',
+      url: dappBlockExplorerUrl || '',
       type: BlockExplorerType.BLOCKSCOUT,
     },
     blockExplorerApi: { url: '', type: BlockExplorerType.BLOCKSCOUT },
-  });
+  };
 
   useEffect(() => {
     init();
   }, [request]);
+
+  const getChainListChainId = (): number => {
+    return Number(BigInt(addChainRequest.chainId));
+  };
+
+  const getValidDappRpcUrls = async (
+    forceRefresh: boolean = false,
+  ): Promise<string[]> => {
+    if (!forceRefresh && validatedDappRpcUrls !== undefined) {
+      return validatedDappRpcUrls;
+    }
+    const rpcUrls = await EvmRpcUtils.filterValidRpcsForChainId(
+      addChainRequest.rpcUrls,
+      addChainRequest.chainId,
+    );
+    setValidatedDappRpcUrls(rpcUrls);
+    return rpcUrls;
+  };
+
+  const assertHasValidRpcUrls = (rpcUrls: string[]): void => {
+    if (rpcUrls.length === 0) {
+      throw new Error('no_valid_rpc_for_chain_id');
+    }
+  };
+
+  const getRpcs = (rpcUrls: string[]) =>
+    rpcUrls.map((url, index) => ({
+      url,
+      isDefault: index === 0,
+    }));
+
+  const getUniqueRpcUrls = (rpcUrls: string[]): string[] => {
+    return [...new Set(rpcUrls)];
+  };
+
+  const getChainWithValidatedRpcs = async (
+    evmChain: EvmChain,
+    dappRpcUrls: string[],
+  ): Promise<EvmChain> => {
+    const validChainRpcUrls = await EvmRpcUtils.filterValidRpcsForChainId(
+      evmChain.rpcs.map((rpc) => rpc.url),
+      addChainRequest.chainId,
+    );
+    const rpcUrls = getUniqueRpcUrls([...validChainRpcUrls, ...dappRpcUrls]);
+    return {
+      ...evmChain,
+      rpcs: getRpcs(rpcUrls),
+    };
+  };
 
   const handleCancel = () => {
     props.afterCancel(request.request_id, data.tab);
@@ -63,19 +129,54 @@ export const AddChain = (props: Props) => {
   const init = async () => {
     transactionHook.setLoading(true);
     transactionHook.setReady(false);
+    setValidatedDappRpcUrls(undefined);
+    const validDappRpcUrls = await getValidDappRpcUrls(true);
     const setupChains = await ChainUtils.getSetupChains();
-    if (
-      setupChains.find((chain) => chain.chainId === addChainRequest.chainId)
-    ) {
+    setDefaultChainToAdd(undefined);
+    setChainListChainToAdd(undefined);
+    let displayChain: EvmChain | undefined;
+    const setupChain = setupChains.find(
+      (chain) =>
+        chain.chainId.toLowerCase() === addChainRequest.chainId.toLowerCase(),
+    ) as EvmChain | undefined;
+    if (setupChain) {
+      displayChain = setupChain;
       setIsUpdatingChain(true);
     } else {
+      const defaultChain = await ChainUtils.getChainFromDefaultChains<EvmChain>(
+        addChainRequest.chainId,
+      );
+      if (defaultChain) {
+        displayChain = defaultChain;
+        setDefaultChainToAdd(defaultChain);
+      } else {
+        let chainListChain: ChainListOrgChain | undefined;
+        try {
+          chainListChain = await ChainListOrgUtils.findByChainId(
+            getChainListChainId(),
+          );
+        } catch {
+          chainListChain = undefined;
+        }
+        const chainListEvmChain = chainListChain
+          ? ChainListOrgUtils.getEvmChain(
+              chainListChain,
+              addChainRequest.chainId,
+            )
+          : undefined;
+        const chainListChainForForm = chainListEvmChain
+          ? await getChainWithValidatedRpcs(chainListEvmChain, validDappRpcUrls)
+          : undefined;
+        setChainListChainToAdd(chainListChainForForm);
+        displayChain = chainListChainForForm;
+      }
       setIsUpdatingChain(false);
     }
     const fields: TransactionConfirmationFields = { otherFields: [] };
 
     fields.otherFields.push({
       name: 'evm_chain_name',
-      value: addChainRequest.chainName,
+      value: displayChain?.name ?? chainName,
       type: EvmInputDisplayType.STRING,
     });
     fields.otherFields.push({
@@ -85,12 +186,14 @@ export const AddChain = (props: Props) => {
     });
     fields.otherFields.push({
       name: 'evm_chain_symbol',
-      value: addChainRequest.nativeCurrency.symbol,
+      value: displayChain?.mainToken ?? nativeCurrencySymbol,
       type: EvmInputDisplayType.STRING,
     });
     fields.otherFields.push({
       name: 'evm_chain_rpcs',
-      value: addChainRequest.rpcUrls.join(', '),
+      value: (displayChain?.rpcs ?? getRpcs(validDappRpcUrls))
+        .map((rpc) => rpc.url)
+        .join(', '),
       type: EvmInputDisplayType.LONG_TEXT,
     });
 
@@ -101,106 +204,131 @@ export const AddChain = (props: Props) => {
     }, 250);
   };
 
-  const saveNewChain = async () => {
-    const chain = await ChainUtils.getChainFromDefaultChains<EvmChain>(
-      addChainRequest.chainId,
-    );
-    await ChainUtils.addChainToSetupChains(chain);
-    if (addChainRequest.rpcUrls.length > 0) {
-      await EvmRpcUtils.addCustomRpcsFromList(addChainRequest.rpcUrls, chain);
-      await EvmRpcUtils.setActiveRpc(
-        { url: addChainRequest.rpcUrls[0], isDefault: false },
-        chain,
+  const addDefaultChain = async () => {
+    if (defaultChainToAdd) {
+      const validDappRpcUrls = await getValidDappRpcUrls();
+      assertHasValidRpcUrls(validDappRpcUrls);
+      await ChainUtils.addChainToSetupChains(defaultChainToAdd);
+      await EvmRpcUtils.addCustomRpcsFromList(
+        validDappRpcUrls,
+        defaultChainToAdd,
       );
     }
   };
 
   const updateChain = async () => {
     const chain = await ChainUtils.getChain<EvmChain>(addChainRequest.chainId);
-    if (addChainRequest.rpcUrls.length > 0) {
-      await EvmRpcUtils.addCustomRpcsFromList(addChainRequest.rpcUrls, chain);
-      await EvmRpcUtils.setActiveRpc(
-        { url: addChainRequest.rpcUrls[0], isDefault: false },
-        chain,
+    const validDappRpcUrls = await getValidDappRpcUrls();
+    assertHasValidRpcUrls(validDappRpcUrls);
+    await EvmRpcUtils.addCustomRpcsFromList(validDappRpcUrls, chain);
+  };
+
+  const sendSuccessResponse = () => {
+    CommunicationUtils.runtimeSendMessage({
+      command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
+      value: {
+        requestId: request.request_id,
+        tab: data.tab,
+        origin: data.dappInfo.origin,
+        result: true,
+      },
+    });
+  };
+
+  const handleSubmitNewChain = async (chain: EvmChain) => {
+    let rpcUrls: string[];
+    let chainToSave = chain;
+    if (chainListChainToAdd) {
+      rpcUrls = await EvmRpcUtils.filterValidRpcsForChainId(
+        chain.rpcs.map((rpc) => rpc.url),
+        chain.chainId,
       );
+      assertHasValidRpcUrls(rpcUrls);
+      chainToSave = {
+        ...chainListChainToAdd,
+        name: chain.name,
+        mainToken: chain.mainToken,
+        logo: chain.logo,
+        testnet: chain.testnet,
+        defaultTransactionType: chain.defaultTransactionType,
+        ...(chain.blockExplorer
+          ? { blockExplorer: chain.blockExplorer }
+          : {}),
+        rpcs: getRpcs(rpcUrls),
+      };
+    } else {
+      rpcUrls = await EvmRpcUtils.filterValidRpcsForChainId(
+        chain.rpcs.map((rpc) => rpc.url),
+        chain.chainId,
+      );
+      assertHasValidRpcUrls(rpcUrls);
+      chainToSave = {
+        ...chain,
+        rpcs: getRpcs(rpcUrls),
+      };
     }
+    EvmRpcUrlUtils.assertValidHttpsRpcUrls(rpcUrls);
+
+    await ChainUtils.addCustomChain(chainToSave);
+    await EvmRpcUtils.addCustomRpcsFromList(rpcUrls, chainToSave);
+    await EvmRpcUtils.setActiveRpc(chainToSave.rpcs[0], chainToSave);
+    sendSuccessResponse();
   };
 
   const handleConfirm = async () => {
     if (isUpdatingChain) {
       await updateChain();
     } else {
-      await saveNewChain();
+      await addDefaultChain();
     }
 
-    CommunicationUtils.runtimeSendMessage({
-      command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
-      value: {
-        requestId: request.request_id,
-        result: true,
-      },
-    });
+    sendSuccessResponse();
   };
+
+  if (isUpdatingChain === false && !defaultChainToAdd) {
+    return (
+      <div className="request-add-custom-chain-page">
+        <Card className="request-add-custom-chain-card">
+          <div className="title">
+            {I18nUtils.getMessage('evm_add_chain')}
+          </div>
+          <div className="caption">
+            {I18nUtils.getMessage('evm_add_chain_caption', [
+              data.dappInfo.domain,
+            ])}
+          </div>
+          <CustomEvmChainForm
+            onCancel={handleCancel}
+            onSubmit={handleSubmitNewChain}
+            initialChain={chainListChainToAdd ?? initialChain}
+            submitLabel="dialog_confirm"
+          />
+        </Card>
+      </div>
+    );
+  }
+
+  if (isUpdatingChain === undefined) {
+    return null;
+  }
 
   return (
     <EvmOperation
       request={request}
       domain={data.dappInfo.domain}
-      tab={0}
+      origin={data.dappInfo.origin}
+      tab={data.tab}
       afterCancel={handleCancel}
-      title={chrome.i18n.getMessage(
+      title={I18nUtils.getMessage(
         isUpdatingChain ? 'evm_update_chain' : 'evm_add_chain',
       )}
       onConfirm={handleConfirm}
-      caption={chrome.i18n.getMessage(
+      caption={I18nUtils.getMessage(
         isUpdatingChain ? 'evm_update_chain_caption' : 'evm_add_chain_caption',
         [data.dappInfo.domain],
       )}
       fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}
-      bottomPanel={
-        <></>
-        // <FormContainer onSubmit={saveNewChain}>
-        //   <InputComponent
-        //     type={InputType.TEXT}
-        //     label="Chain Name"
-        //     skipLabelTranslation
-        //     value={newChain.name}
-        //     onChange={(value) => updateNewChain('name', value)}
-        //   />
-        //   <InputComponent
-        //     type={InputType.TEXT}
-        //     label="Chain ID"
-        //     skipLabelTranslation
-        //     value={newChain.chainId}
-        //     onChange={(value) => updateNewChain('chainId', value)}
-        //   />
-        //   {newChain.rpcs.map((rpc, index) => (
-        //     <InputComponent
-        //       type={InputType.TEXT}
-        //       label="RPC URL"
-        //       skipLabelTranslation
-        //       value={rpc.url}
-        //       onChange={(value) => updateNewChain(`rpcs.url.${index}`, value)}
-        //     />
-        //   ))}
-        //   {newChain.blockExplorer && (
-        //     <InputComponent
-        //       type={InputType.TEXT}
-        //       label="Block explorer URL"
-        //       skipLabelTranslation
-        //       value={newChain.blockExplorer.url}
-        //       onChange={(value) => updateNewChain('blockExplorer.url', value)}
-        //     />
-        //   )}
-        //   <InputComponent
-        //     type={InputType.TEXT}
-        //     label="Symbol"
-        //     skipLabelTranslation
-        //     value={newChain.mainToken}
-        //     onChange={(value) => updateNewChain('mainToken', value)}
-        //   />
-        // </FormContainer>
-      }
+      bottomPanel={<></>}
       transactionHook={transactionHook}></EvmOperation>
   );
 };

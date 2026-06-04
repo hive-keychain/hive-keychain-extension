@@ -25,3 +25,10 @@
 .evm-wallet-tokens-filter-empty-panel {
   width: calc(100% - 64px);
 }
+
+.evm-custom-history-info-card {
+  &.card-container {
+    border-color: var(--wallet-card-border);
+    z-index: 2;
+  }
+}

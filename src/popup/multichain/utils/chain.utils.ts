@@ -84,6 +84,54 @@ const getAllSetupChainsForType = async <T>(type: ChainType): Promise<T[]> => {
   return chains.filter((c: Chain) => c.type === type) as unknown as T[];
 };
 
+const buildChainByIdMap = (chains: Chain[]): Map<string, Chain> => {
+  const chainById = new Map<string, Chain>();
+  for (const chain of chains) {
+    chainById.set(chain.chainId.toLowerCase(), chain);
+  }
+  return chainById;
+};
+
+const getChainsInSetupOrder = (
+  chainIds: Chain['chainId'][],
+  chainById: Map<string, Chain>,
+): Chain[] => {
+  const chains: Chain[] = [];
+  const seen = new Set<string>();
+
+  for (const chainId of chainIds) {
+    if (typeof chainId !== 'string') continue;
+    const normalized = chainId.toLowerCase();
+    if (seen.has(normalized)) continue;
+    const chain = chainById.get(normalized);
+    if (!chain) continue;
+    seen.add(normalized);
+    chains.push(chain);
+  }
+
+  return chains;
+};
+
+const reorderChainIds = (
+  chainIds: Chain['chainId'][],
+  startIndex: number,
+  endIndex: number,
+): Chain['chainId'][] => {
+  const list = Array.from(chainIds);
+  const [removed] = list.splice(startIndex, 1);
+  list.splice(endIndex, 0, removed);
+  return list;
+};
+
+const reorderSetupChains = async (
+  orderedChainIds: Chain['chainId'][],
+): Promise<void> => {
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.SETUP_CHAINS,
+    orderedChainIds,
+  );
+};
+
 const getSetupChains = async (forceBaseChains?: boolean): Promise<Chain[]> => {
   let chainIds: Chain['chainId'][] =
     await LocalStorageUtils.getValueFromLocalStorage(
@@ -91,10 +139,11 @@ const getSetupChains = async (forceBaseChains?: boolean): Promise<Chain[]> => {
     );
   if (!chainIds) chainIds = [];
 
-  const chains = [
+  const chainById = buildChainByIdMap([
     ...(await getDefaultChains()),
     ...(await getCustomChains()),
-  ].filter((c: Chain) => chainIds.includes(c.chainId));
+  ]);
+  const chains = getChainsInSetupOrder(chainIds, chainById);
 
   if (forceBaseChains) {
     if (!chains.some((c: Chain) => c.type === ChainType.HIVE)) {
@@ -373,6 +422,9 @@ const STORAGE_RECORDS_KEYED_BY_CHAIN_ID: LocalStorageKeyEnum[] = [
   LocalStorageKeyEnum.EVM_ACTIVE_ACCOUNT_WALLET,
   LocalStorageKeyEnum.EVM_CANCELED_TRANSACTIONS,
   LocalStorageKeyEnum.EVM_LOCAL_HISTORY,
+  LocalStorageKeyEnum.EVM_CUSTOM_HISTORY_INFO_CARD_HIDDEN,
+  LocalStorageKeyEnum.EVM_CUSTOM_ERC20_EMPTY_CARD_HIDDEN,
+  LocalStorageKeyEnum.EVM_CUSTOM_NFT_EMPTY_CARD_HIDDEN,
 ];
 
 const DEFAULT_EVM_CHAIN_AFTER_CUSTOM_REMOVED = '0x1';
@@ -392,6 +444,36 @@ const removeChainIdFromKeyedRecord = (
   const next = { ...(record as Record<string, unknown>) };
   delete next[existingKey];
   return next;
+};
+
+const removeChainIdFromOriginChainWhitelist = (
+  whitelist: Record<string, unknown> | null | undefined,
+  chainIdToRemove: string,
+): Record<string, string[]> | undefined => {
+  if (whitelist == null || typeof whitelist !== 'object' || Array.isArray(whitelist)) {
+    return undefined;
+  }
+  const removeLower = chainIdToRemove.toLowerCase();
+  const next: Record<string, string[]> = {};
+  let changed = false;
+
+  for (const [origin, chainIds] of Object.entries(whitelist)) {
+    if (!Array.isArray(chainIds)) {
+      continue;
+    }
+    const filtered = chainIds.filter(
+      (chainId): chainId is string =>
+        typeof chainId === 'string' && chainId.toLowerCase() !== removeLower,
+    );
+    if (filtered.length !== chainIds.length) {
+      changed = true;
+    }
+    if (filtered.length > 0) {
+      next[origin] = filtered;
+    }
+  }
+
+  return changed ? next : undefined;
 };
 
 const clearEvmStorageForRemovedCustomChain = async (
@@ -454,6 +536,23 @@ const clearEvmStorageForRemovedCustomChain = async (
         next,
       );
     }
+  }
+
+  const originChainWhitelist = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_ORIGIN_CHAIN_WHITELIST,
+  );
+  const cleanedWhitelist = removeChainIdFromOriginChainWhitelist(
+    originChainWhitelist as Record<string, unknown> | null | undefined,
+    chainId,
+  );
+  if (
+    cleanedWhitelist !== undefined &&
+    cleanedWhitelist !== originChainWhitelist
+  ) {
+    await LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.EVM_ORIGIN_CHAIN_WHITELIST,
+      cleanedWhitelist,
+    );
   }
 
   const txs = await LocalStorageUtils.getValueFromLocalStorage(
@@ -622,6 +721,8 @@ const initChains = async (): Promise<Chain[]> => {
 export const ChainUtils = {
   getDefaultChains,
   getSetupChains,
+  reorderChainIds,
+  reorderSetupChains,
   addChainToSetupChains,
   removeChainFromSetupChains,
   getNonSetupChains,

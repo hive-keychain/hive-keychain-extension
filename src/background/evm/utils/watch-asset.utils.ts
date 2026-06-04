@@ -70,6 +70,7 @@ const rejectWatchAssetRequest = async (
   requestHandler: EvmRequestHandler,
   tab: number,
   request: EvmRequest,
+  origin: string,
   message: string,
 ) => {
   await handleEvmError(
@@ -82,6 +83,7 @@ const rejectWatchAssetRequest = async (
     },
     message,
     [],
+    origin,
     true,
   );
 };

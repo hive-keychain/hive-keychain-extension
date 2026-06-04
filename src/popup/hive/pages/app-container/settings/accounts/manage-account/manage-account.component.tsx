@@ -6,13 +6,25 @@ import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { AccountKeysListComponent } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/account-keys-list/account-keys-list.component';
 import { WrongKeysOnUser } from 'src/popup/hive/pages/app-container/wrong-key-popup/wrong-key-popup.component';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+import { getManageAccountDefaultSelection } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/manage-account-selection.utils';
 
 const ManageAccount = ({
   setTitleContainerProperties,
   activeAccount,
   localAccounts,
+  manageAccountNavigationParams,
+  manageAccountRestoreParams,
 }: PropsFromRedux) => {
+  const [selectedAccountName, setSelectedAccountName] = useState(() =>
+    getManageAccountDefaultSelection(
+      activeAccount.name,
+      localAccounts,
+      manageAccountNavigationParams,
+      manageAccountRestoreParams,
+    ),
+  );
   const [wrongKeysFound, setWrongKeysFound] = useState<
     WrongKeysOnUser | undefined
   >();
@@ -25,35 +37,68 @@ const ManageAccount = ({
   }, []);
 
   useEffect(() => {
-    if (activeAccount) {
+    let cancelled = false;
+
+    const checkWrongKeysForSelectedAccount = async () => {
+      if (!selectedAccountName) {
+        setWrongKeysFound(undefined);
+        return;
+      }
+
       const selectedLocalAccount = localAccounts.find(
-        (localAccount) => localAccount.name === activeAccount.name!,
+        (localAccount) => localAccount.name === selectedAccountName,
       );
-      let tempFoundWrongKeys: WrongKeysOnUser;
-      tempFoundWrongKeys = { [activeAccount.name!]: [] };
-      for (const [key, value] of Object.entries(selectedLocalAccount!.keys)) {
+      if (!selectedLocalAccount) {
+        setWrongKeysFound(undefined);
+        return;
+      }
+
+      const extendedAccount =
+        await AccountUtils.getExtendedAccount(selectedAccountName);
+      if (cancelled) {
+        return;
+      }
+
+      let tempFoundWrongKeys: WrongKeysOnUser = { [selectedAccountName]: [] };
+      for (const [key, value] of Object.entries(selectedLocalAccount.keys)) {
         tempFoundWrongKeys = KeysUtils.checkWrongKeyOnAccount(
           key,
           value,
-          activeAccount.name!,
-          activeAccount.account,
+          selectedAccountName,
+          extendedAccount,
           tempFoundWrongKeys,
         );
       }
-      if (tempFoundWrongKeys[activeAccount.name!].length > 0) {
+      if (tempFoundWrongKeys[selectedAccountName].length > 0) {
         setWrongKeysFound(tempFoundWrongKeys);
       } else {
         setWrongKeysFound(undefined);
       }
-    }
-  }, [activeAccount]);
+    };
+
+    void checkWrongKeysForSelectedAccount();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedAccountName, localAccounts]);
 
   return (
     <div
       data-testid={`${Screen.SETTINGS_MANAGE_ACCOUNTS}-page`}
       className="settings-manage-account">
-      <SelectAccountSectionComponent background="white" fullSize />
-      <AccountKeysListComponent wrongKeysFound={wrongKeysFound} />
+      <SelectAccountSectionComponent
+        background="white"
+        fullSize
+        hideManageAccountsOption
+        selectedAccountName={selectedAccountName}
+        onAccountSelected={setSelectedAccountName}
+      />
+      <AccountKeysListComponent
+        selectedAccountName={selectedAccountName}
+        onAccountSelected={setSelectedAccountName}
+        wrongKeysFound={wrongKeysFound}
+      />
     </div>
   );
 };
@@ -62,6 +107,8 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.hive.activeAccount,
     localAccounts: state.hive.accounts,
+    manageAccountNavigationParams: state.navigation.stack[0]?.params,
+    manageAccountRestoreParams: state.navigation.stack[0]?.previousParams,
   };
 };
 

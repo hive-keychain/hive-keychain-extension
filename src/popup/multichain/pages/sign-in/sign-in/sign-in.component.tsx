@@ -15,6 +15,7 @@ import { retrieveAccounts } from 'src/popup/hive/actions/account.actions';
 import { setProcessingDecryptAccount } from 'src/popup/hive/actions/app-status.actions';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const SignIn = ({
   setErrorMessage,
   setMk,
@@ -53,13 +54,13 @@ const SignIn = ({
       <SVGIcon className="logo-white" icon={SVGIcons.KEYCHAIN_FULL_LOGO} />
       <div className="introduction-panel">
         <span className="introduction big first">
-          {chrome.i18n.getMessage('popup_html_unlock1')}
+          {I18nUtils.getMessage('popup_html_unlock1')}
         </span>
         <span className="introduction medium second">
-          {chrome.i18n.getMessage('popup_html_unlock2')}
+          {I18nUtils.getMessage('popup_html_unlock2')}
         </span>
         <span className="introduction medium lighter third">
-          {chrome.i18n.getMessage('popup_html_unlock3')}
+          {I18nUtils.getMessage('popup_html_unlock3')}
         </span>
       </div>
 
@@ -85,7 +86,7 @@ const SignIn = ({
           className="reset-password-link"
           onClick={goToForgetPassword}
           data-testid="reset-password-link">
-          {chrome.i18n.getMessage('popup_html_forgot')}
+          {I18nUtils.getMessage('popup_html_forgot')}
         </div>
       </div>
     </div>

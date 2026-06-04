@@ -1,3 +1,4 @@
+import { SlidingBarComponent } from '@common-ui/switch-bar/sliding-bar.component';
 import { Screen } from '@interfaces/screen.interface';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
@@ -12,12 +13,20 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const CreateNewWallet = ({
   navigateToWithParams,
   setTitleContainerProperties,
   setErrorMessage,
 }: PropsType) => {
   const [wallet, setWallet] = useState<HDNodeWallet | undefined>(undefined);
+  const [wallet12Words, setWallet12Words] = useState<HDNodeWallet | undefined>(
+    undefined,
+  );
+  const [wallet24Words, setWallet24Words] = useState<HDNodeWallet | undefined>(
+    undefined,
+  );
+  const [selectedWalletType, setSelectedWalletType] = useState<number>(12);
 
   const [isMnemonicDisplayed, setMnemonicDisplayed] = useState(false);
   const [hasCopiedSeedPhrase, setHasCopiedSeedPhrase] = useState(false);
@@ -29,7 +38,12 @@ const CreateNewWallet = ({
       isCloseButtonDisabled: true,
     });
 
-    setWallet(EvmWalletUtils.createWallet());
+    const wallet12 = EvmWalletUtils.createWallet(12);
+    const wallet24 = EvmWalletUtils.createWallet(24);
+    setWallet12Words(wallet12);
+    setWallet24Words(wallet24);
+
+    setWallet(wallet12);
   }, []);
 
   const submitForm = async (): Promise<void> => {
@@ -54,22 +68,42 @@ const CreateNewWallet = ({
     }
   };
 
+  const onTabChange = (tab: number) => {
+    setSelectedWalletType(tab);
+    if (tab === 12) {
+      setWallet(wallet12Words);
+    } else {
+      setWallet(wallet24Words);
+    }
+    setMnemonicDisplayed(false);
+    setHasCopiedSeedPhrase(false);
+  };
+
   return (
     <div
       data-testid={`${Screen.CREATE_EVM_WALLET}-page`}
       className="create-new-wallet-page">
       <div className="title">
-        {chrome.i18n.getMessage('html_popup_evm_create_new_wallet_title')}
+        {I18nUtils.getMessage('html_popup_evm_create_new_wallet_title')}
       </div>
       <div className="form-container">
         <div className="caption">
-          {chrome.i18n.getMessage('html_popup_evm_create_wallet_tips')}
+          {I18nUtils.getMessage('html_popup_evm_create_wallet_tips')}
         </div>
+        <SlidingBarComponent
+          id="wallet-type"
+          onChange={onTabChange}
+          selectedValue={selectedWalletType}
+          values={[
+            { value: 12, label: 'html_popup_evm_12_words' },
+            { value: 24, label: 'html_popup_evm_24_words' },
+          ]}
+        />
         <div className="mnemonic-container">
           {!isMnemonicDisplayed && (
             <div className="mnemonic-overlay">
               <div className="mnemonic-overlay-text">
-                {chrome.i18n.getMessage('html_popup_mnemonic_overlay')}
+                {I18nUtils.getMessage('html_popup_mnemonic_overlay')}
               </div>
             </div>
           )}
@@ -94,7 +128,7 @@ const CreateNewWallet = ({
               onClick={() => setMnemonicDisplayed(false)}>
               <SVGIcon icon={SVGIcons.EVM_SETUP_HIDE_MNEMONIC} />
               <span>
-                {chrome.i18n.getMessage(
+                {I18nUtils.getMessage(
                   'html_popup_evm_create_wallet_hide_mnemonic',
                 )}
               </span>
@@ -104,7 +138,7 @@ const CreateNewWallet = ({
               onClick={() => copySeedPhraseToClipboard()}>
               <SVGIcon icon={SVGIcons.EVM_SETUP_COPY_MNEMONIC} />
               <span>
-                {chrome.i18n.getMessage(
+                {I18nUtils.getMessage(
                   'html_popup_evm_create_wallet_copy_mnemonic',
                 )}
               </span>

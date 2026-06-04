@@ -23,9 +23,15 @@
     z-index: 2;
     border-radius: 20px;
 
-    .qr-code-disclaimer,
+    .qr-code-disclaimer {
+      @include settings-page-note();
+      text-align: justify;
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
+    }
+
     .qr-code-container {
-      @include caption;
       padding: 12px;
       text-align: justify;
       display: flex;
@@ -53,6 +59,6 @@
   }
 
   .text {
-    @include caption();
+    @include settings-page-note();
   }
 }

@@ -1,6 +1,5 @@
 import AccountUtils from '@hiveapp/utils/account.utils';
 import HiveUtils from '@hiveapp/utils/hive.utils';
-import { ExtendedAccount } from '@hiveio/dhive';
 import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -9,7 +8,6 @@ import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
 import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
 import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
-import dataTestIdSelect from 'src/__tests__/utils-for-testing/data-testid/data-testid-select';
 import dataTestIdToolTip from 'src/__tests__/utils-for-testing/data-testid/data-testid-tool-tip';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import currencies from 'src/__tests__/utils-for-testing/data/currencies';
@@ -24,6 +22,7 @@ import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { ActionButtonList } from 'src/popup/hive/pages/app-container/home/actions-section/action-button.list';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('home.component tests:\n', () => {
   beforeEach(async () => {
     await reactTestingLibrary.renderWithConfiguration(
@@ -55,7 +54,7 @@ describe('home.component tests:\n', () => {
     expect(screen.getByTestId(dataTestIdIcon.refreshHome)).toBeInTheDocument();
     expect(screen.getByTestId(dataTestIdButton.menu)).toBeInTheDocument();
 
-    //SelectAccountSectionComponent
+    //AccountSelectorComponent
     const selectedAccountHTMLElement = screen.getByTestId(
       dataTestIdDiv.selectedAccount,
     );
@@ -68,7 +67,7 @@ describe('home.component tests:\n', () => {
 
     //EstimatedAccountValueSectionComponent
     expect(
-      screen.getByText(chrome.i18n.getMessage('popup_html_estimation'), {
+      screen.getByText(I18nUtils.getMessage('popup_html_estimation'), {
         exact: true,
       }),
     ).toBeInTheDocument();
@@ -97,7 +96,7 @@ describe('home.component tests:\n', () => {
         ),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(chrome.i18n.getMessage(ActionButtonList[i].label)),
+        screen.getByText(I18nUtils.getMessage(ActionButtonList[i].label)),
       ).toBeInTheDocument();
     }
   });
@@ -133,25 +132,27 @@ describe('home.component tests:\n', () => {
     expect(rcHTMLElement).toHaveTextContent(resourceReadyInValue);
   });
 
-  it('Must change active account to the selected one', async () => {
-    AccountUtils.getAccount = jest.fn().mockResolvedValue([
-      {
-        ...accounts.extended,
-        name: mk.user.two,
-      } as ExtendedAccount,
-    ]);
+  it('Must switch active account when selecting another account in the account selector overlay', async () => {
     await act(async () => {
-      //bellow the only element using an actual aria-label.
+      await userEvent.click(screen.getByTestId('account-selector-trigger'));
+    });
+
+    expect(
+      await screen.findByTestId(`account-selector-hive-account-${mk.user.two}`),
+    ).toBeInTheDocument();
+
+    await act(async () => {
       await userEvent.click(
-        screen.getByLabelText(dataTestIdSelect.accountSelector),
-      );
-      await userEvent.click(
-        screen.getByTestId(dataTestIdSelect.itemSelectorPreFix + mk.user.two),
+        screen.getByTestId(`account-selector-hive-account-${mk.user.two}`),
       );
     });
+
+    expect(screen.getByTestId(dataTestIdDiv.selectedAccount)).toHaveTextContent(
+      mk.user.two,
+    );
     expect(
-      await screen.findByTestId(dataTestIdDiv.selectedAccount),
-    ).toHaveTextContent(mk.user.two);
+      screen.queryByTestId('account-selector-backdrop'),
+    ).not.toBeInTheDocument();
   });
 
   it('Must refresh data when click on logo and show new estimated account value', async () => {
@@ -169,16 +170,12 @@ describe('home.component tests:\n', () => {
     ).toBeInTheDocument();
   });
 
-  it('Must log out user when choosing log out from settings menu', async () => {
+  it('Must log out user when clicking log out in settings header', async () => {
     await act(async () => {
       await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
     });
     await act(async () => {
-      await userEvent.click(
-        screen.getByTestId(
-          dataTestIdButton.menuPreFix + SVGIcons.MENU_LOGOUT,
-        ),
-      );
+      await userEvent.click(screen.getByTestId(dataTestIdButton.logOut));
     });
     expect(await screen.findByTestId('sign-in-page')).toBeInTheDocument();
   });

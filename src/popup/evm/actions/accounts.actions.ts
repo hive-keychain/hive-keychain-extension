@@ -12,3 +12,9 @@ export const setEvmAccounts =
       payload: { processingDecryptAccount: true } as Partial<EvmAppStatus>,
     });
   };
+
+export const resetEvmState = () => {
+  return {
+    type: EvmActionType.RESET_STATE,
+  };
+};

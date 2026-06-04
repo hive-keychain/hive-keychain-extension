@@ -1,15 +1,18 @@
-import { Card } from '@common-ui/card/card.component';
-import { SVGIcons } from '@common-ui/icons.enum';
 import { MessageContainerComponent } from '@common-ui/message-container/message-container.component';
-import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
-import { EvmRequestItem } from '@dialog/evm/components/evm-request-item/evm-request-item';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import { ConfirmationPopup } from 'src/common-ui/confirmation-warning-info/confirmation-popups/confirmation-popups.component';
+import {
+  EvmRiskAlertBanner,
+  EvmRiskStaticAlert,
+  EvmRiskWarningAlert,
+} from 'src/common-ui/evm/evm-risk-warning/evm-risk-alert-banner.component';
+import { EvmTransactionWarning } from '@popup/evm/interfaces/evm-transactions.interface';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { DialogCaption } from 'src/dialog/components/dialog-caption/dialog-caption.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
@@ -24,6 +27,7 @@ type Props = {
   onConfirm?: () => void;
   request: EvmRequest;
   domain: string;
+  origin: string;
   tab: number;
   header?: string;
   redHeader?: boolean;
@@ -32,6 +36,8 @@ type Props = {
   bottomPanel?: any;
   transactionHook?: useTransactionHook;
   confirmDisabled?: boolean;
+  hideConfirm?: boolean;
+  loadingCaption?: string;
   afterCancel: (requestId: number, tab: number) => void;
 };
 
@@ -39,6 +45,7 @@ export const EvmOperation = ({
   title,
   onConfirm,
   domain,
+  origin,
   tab,
   request,
   header,
@@ -48,6 +55,8 @@ export const EvmOperation = ({
   bottomPanel,
   transactionHook,
   confirmDisabled,
+  hideConfirm,
+  loadingCaption,
   afterCancel,
 }: Props) => {
   const [keep, setKeep] = useState(false);
@@ -57,9 +66,31 @@ export const EvmOperation = ({
     setLoading(false);
   }, [request]);
 
+  useEffect(() => {
+    const clearConfirmLoading = (msg: {
+      command?: string;
+      msg?: { request_id?: number };
+    }) => {
+      if (
+        msg?.command !== DialogCommand.ANSWER_EVM_REQUEST &&
+        msg?.command !== DialogCommand.SEND_DIALOG_ERROR
+      ) {
+        return;
+      }
+      if (msg.msg?.request_id !== request.request_id) {
+        return;
+      }
+      setLoading(false);
+    };
+    chrome.runtime.onMessage.addListener(clearConfirmLoading);
+    return () => {
+      chrome.runtime.onMessage.removeListener(clearConfirmLoading);
+    };
+  }, [request.request_id]);
+
   const genericOnConfirm = () => {
     if (transactionHook && transactionHook.hasWarning()) {
-      transactionHook.setWarningsPopupOpened(true);
+      transactionHook.openWarningsPopup();
       return;
     } else {
       setLoading(true);
@@ -69,6 +100,7 @@ export const EvmOperation = ({
           request: request,
           tab: tab,
           domain: domain,
+          origin,
           keep,
         },
       });
@@ -83,6 +115,7 @@ export const EvmOperation = ({
         request,
         tab,
         domain,
+        origin,
       },
     });
   };
@@ -91,6 +124,15 @@ export const EvmOperation = ({
     onClose();
     await DappRequestUtils.lockDomain(domain);
   };
+
+  const duplicateWarning =
+    transactionHook?.duplicatedTransactionField?.warnings?.find(
+      (warning) => !warning.ignored,
+    );
+
+  const bannerWarningCount =
+    transactionHook?.getAllFieldsWithNotIgnoredWarnings().length ?? 0;
+  const bannerWarnings = transactionHook?.getAllNotIgnoredWarnings() ?? [];
 
   return (
     <>
@@ -107,33 +149,32 @@ export const EvmOperation = ({
           )}
 
           {transactionHook?.unableToReachBackend && (
-            <div className="unable-to-reach-panel">
-              <SVGIcon icon={SVGIcons.GLOBAL_WARNING} />{' '}
-              <span className="text">
-                {chrome.i18n.getMessage(
-                  'evm_unable_to_reach_verify_transaction',
-                )}
-              </span>
-            </div>
+            <EvmRiskStaticAlert message="evm_unable_to_reach_verify_transaction" />
           )}
+
+          {transactionHook &&
+            (bannerWarningCount > 0 || duplicateWarning) && (
+              <div className="evm-risk-alerts-stack">
+                {bannerWarningCount > 0 && (
+                  <EvmRiskAlertBanner
+                    warnings={bannerWarnings}
+                    warningCount={bannerWarningCount}
+                    onReviewClick={() => transactionHook.openWarningsPopup()}
+                  />
+                )}
+                {duplicateWarning && (
+                  <EvmRiskWarningAlert
+                    warning={duplicateWarning}
+                    onReviewClick={() =>
+                      transactionHook.openWarningsPopup({ type: 'duplicate' })
+                    }
+                    dataTestId="evm-duplicate-transaction-alert"
+                  />
+                )}
+              </div>
+            )}
 
           {caption && <DialogCaption text={caption} />}
-
-          {transactionHook?.pendingTransactionWarningField && (
-            <Card>
-              <EvmRequestItem
-                field={transactionHook.pendingTransactionWarningField}
-                onWarningClicked={() =>
-                  transactionHook.openSingleWarningPopup(
-                    -1,
-                    -1,
-                    transactionHook.pendingTransactionWarningField!
-                      .warnings![0],
-                  )
-                }
-              />
-            </Card>
-          )}
 
           {fields && (
             <div className="operation-body">
@@ -152,7 +193,7 @@ export const EvmOperation = ({
               onClick={onClose}
               height="small"
             />
-            {!transactionHook?.hasBlockingError && (
+            {!transactionHook?.hasBlockingError && !hideConfirm && (
               <ButtonComponent
                 type={ButtonType.IMPORTANT}
                 label="dialog_confirm"
@@ -174,10 +215,11 @@ export const EvmOperation = ({
           />
         )}
 
-        <LoadingComponent hide={!loading} />
+        <LoadingComponent hide={!loading} caption={loadingCaption} />
         {transactionHook?.message && (
           <MessageContainerComponent
             message={transactionHook.message}
+            useBodyPortal
             onResetMessage={() => transactionHook.setErrorMessage(undefined)}
           />
         )}

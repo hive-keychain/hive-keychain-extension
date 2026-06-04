@@ -5,6 +5,7 @@ export interface MenuItem {
   label: string;
   icon: SVGIcons;
   nextScreen?: Screen;
+  sidePanelHash?: string;
   action?(params?: any): any;
   rightPanel?: any;
   experimental?: boolean;

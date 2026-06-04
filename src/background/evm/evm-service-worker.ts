@@ -1,11 +1,16 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { initializeEvmProviderRegistration } from '@background/evm/evm-provider-registration';
 import {
+  addWhitelistedChainForOrigin,
   getAccountsForOrigin,
+  getChainIdForOrigin,
   persistEvmDappLogoForDomain,
   setAccountsForOrigin,
 } from '@background/evm/evm-provider-state.utils';
-import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
+import {
+  EvmRequestHandler,
+  EvmRequestLocator,
+} from '@background/evm/requests/evm-request-handler';
 import { initEvmRequestHandler } from '@background/evm/requests/init';
 import { performEvmOperation } from '@background/evm/requests/operations/perform-operation';
 import MkModule from '@background/hive/modules/mk.module';
@@ -29,6 +34,7 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { TransactionResponse } from 'ethers';
+import { validateEvmRequest } from 'src/content-scripts/evm/evm-request-validation';
 import { getOriginFromUrl } from 'src/utils/browser-origin.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
@@ -123,14 +129,30 @@ const chromeMessageHandler = async (
       break;
     }
     case BackgroundCommand.SEND_EVM_REQUEST: {
+      const evmMessage = backgroundMessage as KeychainEvmRequestWrapper;
+      try {
+        evmMessage.request = validateEvmRequest(evmMessage.request);
+        evmMessage.request_id = evmMessage.request.request_id;
+      } catch (error) {
+        if (sender.tab?.id !== undefined) {
+          const requestId = evmMessage.request?.request_id;
+          CommunicationUtils.tabsSendMessage(sender.tab.id, {
+            command: BackgroundCommand.SEND_EVM_ERROR,
+            value: {
+              requestId,
+              request_id: requestId,
+              error,
+            },
+          });
+        }
+        break;
+      }
+
       let requestHandler = await EvmRequestHandler.getFromLocalStorage();
       if (!requestHandler) {
         requestHandler = new EvmRequestHandler();
       }
-      await requestHandler.sendRequest(
-        sender,
-        backgroundMessage as KeychainEvmRequestWrapper,
-      );
+      await requestHandler.sendRequest(sender, evmMessage);
 
       break;
     }
@@ -165,11 +187,19 @@ const chromeMessageHandler = async (
     case BackgroundCommand.SEND_EVM_RESPONSE_TO_SW: {
       const message = backgroundMessage.value;
       const requestId = message.requestId ?? message.request_id;
-      if (requestId === null || requestId === undefined) {
+      const { tab, origin } = message;
+      if (
+        requestId === null ||
+        requestId === undefined ||
+        tab === null ||
+        tab === undefined ||
+        !origin
+      ) {
         break;
       }
+      const locator: EvmRequestLocator = { requestId, tab, origin };
       const requestHandler = await EvmRequestHandler.getFromLocalStorage();
-      const requestData = requestHandler?.getRequestData(requestId);
+      const requestData = requestHandler?.getRequestDataByLocator(locator);
       if (requestData?.tab === null || requestData?.tab === undefined) {
         break;
       }
@@ -187,13 +217,18 @@ const chromeMessageHandler = async (
           requestData.dappInfo.origin,
           message.providerState.accounts,
         );
+        await addWhitelistedChainForOrigin(
+          requestData.dappInfo.origin,
+          requestData.request.chainId ??
+            (await getChainIdForOrigin(requestData.dappInfo.origin)),
+        );
         await persistEvmDappLogoForDomain(
           requestData.dappInfo,
           accounts.length,
         );
       }
 
-      await requestHandler.removeRequestById(requestId, requestData?.tab!);
+      await requestHandler.removeRequestByLocator(locator);
 
       CommunicationUtils.tabsSendMessage(requestData?.tab!, {
         command: BackgroundCommand.SEND_EVM_RESPONSE,
@@ -206,19 +241,38 @@ const chromeMessageHandler = async (
       break;
     }
     case BackgroundCommand.ACCEPT_EVM_TRANSACTION:
-      const { request, tab, domain, extraData } = backgroundMessage.value;
-      await performEvmOperation(
-        await EvmRequestHandler.getFromLocalStorage(),
-        request,
+      const { request, tab, domain, origin, extraData } =
+        backgroundMessage.value;
+      if (!origin) {
+        break;
+      }
+      const requestHandler = await EvmRequestHandler.getFromLocalStorage();
+      const locator: EvmRequestLocator = {
+        requestId: request.request_id,
         tab,
-        domain,
+        origin,
+      };
+      const requestData = requestHandler.getRequestDataByLocator(locator);
+      if (!requestData?.request) {
+        Logger.warn('Cannot perform EVM operation: pending request not found');
+        break;
+      }
+      await performEvmOperation(
+        requestHandler,
+        requestData.request,
+        tab,
+        requestData.dappInfo?.domain ?? domain,
+        origin,
         extraData,
       );
 
       break;
 
     case BackgroundCommand.REJECT_EVM_TRANSACTION: {
-      const { request, tab, domain } = backgroundMessage.value;
+      const { request, tab, domain, origin } = backgroundMessage.value;
+      if (!origin) {
+        break;
+      }
       const requestHandler = await EvmRequestHandler.getFromLocalStorage();
       CommunicationUtils.tabsSendMessage(tab, {
         command: BackgroundCommand.SEND_EVM_ERROR,
@@ -227,7 +281,11 @@ const chromeMessageHandler = async (
           error: ProviderRpcErrorList.userReject as ProviderRpcError,
         },
       });
-      await requestHandler.removeRequestById(request.request_id, tab);
+      await requestHandler.removeRequestByLocator({
+        requestId: request.request_id,
+        tab,
+        origin,
+      });
       break;
     }
     case BackgroundCommand.GET_CHAIN_FROM_PROVIDER: {
@@ -290,9 +348,12 @@ const chromeMessageHandler = async (
       if (requestedChain.rpcs.length > 0) {
         await EvmRpcUtils.setActiveRpc(requestedChain.rpcs[0], requestedChain);
       }
-      await requestHandler?.setRequestDialog(
-        request.request_id,
-        tab,
+      await requestHandler?.setRequestDialogByLocator(
+        {
+          requestId: request.request_id,
+          tab,
+          origin: dappInfo.origin,
+        },
         undefined,
         undefined,
       );
@@ -303,27 +364,32 @@ const chromeMessageHandler = async (
 };
 
 const previewEvmDecryptMessage = async (
-  request_id: number,
+  locator: EvmRequestLocator,
 ): Promise<string> => {
   const requestHandler = await EvmRequestHandler.getFromLocalStorage();
   if (!requestHandler) {
     throw new Error('No request handler');
   }
-  const requestData = requestHandler.getRequestData(request_id);
+  const requestData = requestHandler.getRequestDataByLocator(locator);
   const request = requestData?.request;
-  if (!request?.params?.[0] || !request?.params?.[1]) {
+  const encryptedMessage = request?.params?.[0];
+  const accountAddress = request?.params?.[1];
+  if (
+    typeof encryptedMessage !== 'string' ||
+    typeof accountAddress !== 'string'
+  ) {
     throw new Error('Invalid decrypt request');
   }
   const account = requestHandler.accounts.find((account: EvmAccount) => {
     return (
       account.wallet.address.toLowerCase() ===
-      String(request.params[1]).toLowerCase()
+      accountAddress.toLowerCase()
     );
   });
   if (!account) {
     throw new Error('Account not found');
   }
-  return EvmRequestsUtils.decryptMessage(account, request.params[0]);
+  return EvmRequestsUtils.decryptMessage(account, encryptedMessage);
 };
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -333,13 +399,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     (message as BackgroundMessage).command ===
       BackgroundCommand.PREVIEW_EVM_DECRYPT
   ) {
-    const request_id = (message as { value?: { request_id?: number } }).value
-      ?.request_id;
-    if (request_id == null) {
-      sendResponse({ success: false, error: 'Missing request_id' });
+    const value = (
+      message as {
+        value?: { request_id?: number; tab?: number; origin?: string };
+      }
+    ).value;
+    const request_id = value?.request_id;
+    if (request_id == null || value?.tab == null || !value.origin) {
+      sendResponse({ success: false, error: 'Missing request locator' });
       return true;
     }
-    void previewEvmDecryptMessage(request_id)
+    void previewEvmDecryptMessage({
+      requestId: request_id,
+      tab: value.tab,
+      origin: value.origin,
+    })
       .then((plaintext) => sendResponse({ success: true, plaintext }))
       .catch((err) =>
         sendResponse({

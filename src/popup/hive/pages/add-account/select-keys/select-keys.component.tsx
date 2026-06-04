@@ -3,11 +3,13 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/multichain/actions/message.actions';
+import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import {
   resetTitleContainerProperties,
   setTitleContainerProperties,
 } from '@popup/multichain/actions/title-container.actions';
+import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -18,6 +20,7 @@ import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions
 import { addAccount } from 'src/popup/hive/actions/account.actions';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export interface SelectKeysProps {
   keys: Keys;
   username: string;
@@ -32,6 +35,7 @@ const SelectKeys = ({
   navigateTo,
   setSuccessMessage,
   resetTitleContainerProperties,
+  setActiveAccountType,
   loadActiveAccount,
 }: PropsFromRedux) => {
   const [importActive, setImportActive] = useState(keys.active ? true : false);
@@ -71,6 +75,7 @@ const SelectKeys = ({
       addAccount(account);
       setSuccessMessage('popup_html_import_success');
       resetTitleContainerProperties();
+      setActiveAccountType(ChainType.HIVE);
       loadActiveAccount(account);
       navigateTo(Screen.HOME_PAGE, true);
     }
@@ -84,7 +89,7 @@ const SelectKeys = ({
         data-testid="select-keys-page-caption"
         className="caption"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_import_success'),
+          __html: I18nUtils.getMessage('popup_html_import_success'),
         }}></div>
 
       <CheckboxPanelComponent
@@ -146,6 +151,7 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   navigateTo,
   resetTitleContainerProperties,
+  setActiveAccountType,
   loadActiveAccount,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;

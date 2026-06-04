@@ -7,6 +7,8 @@ import {
 } from '@popup/evm/interfaces/active-account.interface';
 import { EvmUserHistory } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmWallet } from '@popup/evm/interfaces/wallet.interface';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import {
   CatchupStatus,
   DiscoveredNftsResponse,
@@ -16,7 +18,6 @@ import {
   PricingStatus,
 } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmLocalHistoryUtils } from '@popup/evm/utils/evm-local-history.utils';
-import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
@@ -26,7 +27,6 @@ import {
   ChainType,
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
-import { HDNodeWallet } from 'ethers';
 
 const EMPTY_EVM_HISTORY: EvmUserHistory = {
   events: [],
@@ -47,8 +47,7 @@ const getLoadMoreTokensRetryDelay = (retryCount: number): number => {
 const shouldLoadMoreDiscoveredAssets = (
   result: DiscoveredTokensResponse | DiscoveredNftsResponse,
 ): boolean => {
-  const shouldLoadMoreCatchup =
-    result.catchupStatus === CatchupStatus.RUNNING;
+  const shouldLoadMoreCatchup = result.catchupStatus === CatchupStatus.RUNNING;
   if ('pricingStatus' in result) {
     return (
       shouldLoadMoreCatchup ||
@@ -74,12 +73,50 @@ const isActiveAccountRequestCurrent = (
   currentChain: Chain,
   activeAccount: EvmActiveAccount,
   chain: EvmChain,
-  wallet: HDNodeWallet,
+  wallet: EvmWallet,
 ) => {
   return (
     isSameEvmChain(currentChain, chain) &&
-    activeAccount.wallet?.address?.toLowerCase() === wallet.address.toLowerCase()
+    activeAccount.wallet?.address?.toLowerCase() ===
+      wallet.address.toLowerCase()
   );
+};
+
+const buildEvmActiveAccountIdentityPayload = (
+  wallet: EvmWallet,
+): EvmActiveAccount =>
+  ({
+    address: wallet.address,
+    wallet,
+    isReady: false,
+    nativeAndErc20Tokens: {
+      value: [] as NativeAndErc20Token[],
+      loading: true,
+      initialized: false,
+    },
+    nfts: {
+      value: [] as (EvmErc721Token | EvmErc1155Token)[],
+      loading: true,
+      initialized: false,
+    },
+    history: {
+      value: EMPTY_EVM_HISTORY,
+      loading: true,
+      initialized: false,
+    },
+  }) as EvmActiveAccount;
+
+const dispatchEvmActiveAccountIdentity = (
+  dispatch: (action: {
+    type: EvmActionType.SET_ACTIVE_ACCOUNT;
+    payload: EvmActiveAccount;
+  }) => void,
+  wallet: EvmWallet,
+) => {
+  dispatch({
+    type: EvmActionType.SET_ACTIVE_ACCOUNT,
+    payload: buildEvmActiveAccountIdentityPayload(wallet),
+  });
 };
 
 const getHistoryEventKey = (event: EvmUserHistory['events'][number]) => {
@@ -216,7 +253,7 @@ const mapDiscoveredNftsResponseToActiveAccountNfts = async (
 
 const getTokenInfosWithCustomErc20 = async (
   chain: EvmChain,
-  wallet: HDNodeWallet,
+  wallet: EvmWallet,
   tokenInfos: NativeAndErc20Token['tokenInfo'][],
 ) => {
   const customTokenInfos = await EvmTokensUtils.getCustomErc20TokenInfos(
@@ -230,7 +267,7 @@ const getTokenInfosWithCustomErc20 = async (
   );
 };
 
-const getCustomChainNfts = async (chain: EvmChain, wallet: HDNodeWallet) => {
+const getCustomChainNfts = async (chain: EvmChain, wallet: EvmWallet) => {
   return EvmTokensUtils.getCustomNftCollectionsForWallet(
     chain,
     process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
@@ -351,7 +388,7 @@ export const loadEvmHistory =
   };
 
 export const loadMoreTokensInActiveAccount =
-  (chain: EvmChain, wallet: HDNodeWallet, retryCount = 0): AppThunk =>
+  (chain: EvmChain, wallet: EvmWallet, retryCount = 0): AppThunk =>
   async (dispatch, getState) => {
     if (chain.isCustom === true) {
       return;
@@ -427,32 +464,11 @@ export const loadMoreTokensInActiveAccount =
   };
 
 export const loadEvmActiveAccount =
-  (chain: EvmChain, wallet: HDNodeWallet): AppThunk =>
+  (chain: EvmChain, wallet: EvmWallet): AppThunk =>
   async (dispatch, getState) => {
+    dispatchEvmActiveAccountIdentity(dispatch, wallet);
+
     if (chain.isCustom === true) {
-      dispatch({
-        type: EvmActionType.SET_ACTIVE_ACCOUNT,
-        payload: {
-          address: wallet.address,
-          nativeAndErc20Tokens: {
-            value: [] as NativeAndErc20Token[],
-            loading: true,
-            initialized: false,
-          },
-          nfts: {
-            value: [] as (EvmErc721Token | EvmErc1155Token)[],
-            loading: true,
-            initialized: false,
-          },
-          history: {
-            value: EMPTY_EVM_HISTORY,
-            loading: true,
-            initialized: false,
-          },
-          wallet: wallet,
-          isReady: false,
-        } as EvmActiveAccount,
-      });
       const additionalAssetLoadPromises = [dispatch(loadEvmHistory())];
 
       const nativeMeta = EvmTokensUtils.buildFallbackNativeTokenInfo(chain);
@@ -509,29 +525,6 @@ export const loadEvmActiveAccount =
     if (!isSameEvmChain(getState().chain as Chain, chain)) {
       return;
     }
-    dispatch({
-      type: EvmActionType.SET_ACTIVE_ACCOUNT,
-      payload: {
-        address: wallet.address,
-        nativeAndErc20Tokens: {
-          value: [] as NativeAndErc20Token[],
-          loading: true,
-          initialized: false,
-        },
-        nfts: {
-          value: [] as (EvmErc721Token | EvmErc1155Token)[],
-          loading: true,
-          initialized: false,
-        },
-        history: {
-          value: EMPTY_EVM_HISTORY,
-          loading: true,
-          initialized: false,
-        },
-        wallet: wallet,
-        isReady: false,
-      } as EvmActiveAccount,
-    });
     const additionalAssetLoadPromises = [
       dispatch(loadEvmActiveAccountNfts(chain, wallet)),
       dispatch(loadEvmHistory()),
@@ -597,7 +590,7 @@ export const loadEvmActiveAccount =
   };
 
 export const loadMoreNftsInActiveAccount =
-  (chain: EvmChain, wallet: HDNodeWallet, retryCount = 0): AppThunk =>
+  (chain: EvmChain, wallet: EvmWallet, retryCount = 0): AppThunk =>
   async (dispatch, getState) => {
     if (chain.isCustom === true) {
       return;
@@ -654,7 +647,7 @@ export const loadMoreNftsInActiveAccount =
   };
 
 export const loadEvmActiveAccountNfts =
-  (chain: EvmChain, wallet: HDNodeWallet): AppThunk =>
+  (chain: EvmChain, wallet: EvmWallet): AppThunk =>
   async (dispatch, getState) => {
     if (chain.isCustom === true) {
       dispatch({

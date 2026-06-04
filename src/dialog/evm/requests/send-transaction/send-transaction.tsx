@@ -1,12 +1,16 @@
 import { BalanceChangeCard } from '@dialog/components/balance-change-card/balance-change-card.component';
+import { BalanceChangeCardUtils } from '@dialog/components/balance-change-card/balance-change-card.utils';
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
+import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
+import { EvmLedgerDialogUtils } from 'src/dialog/evm/evm-ledger-dialog.utils';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useSendTransaction } from 'src/dialog/evm/requests/send-transaction/use-send-transaction';
 
@@ -43,8 +47,7 @@ export const SendTransaction = (props: Props) => {
   } = useSendTransaction(request, data, accounts, { isActive, activationKey });
 
   const needsGasFeePanel = Boolean(
-    transactionHook.ready &&
-      transactionHook.fields &&
+    transactionHook.fields &&
       chain &&
       selectedAccount &&
       transactionData &&
@@ -54,6 +57,8 @@ export const SendTransaction = (props: Props) => {
   const [gasFeePanelReady, setGasFeePanelReady] = useState(false);
   const [gasRefreshKey, setGasRefreshKey] = useState<number>();
   const [gasFeeRefreshing, setGasFeeRefreshing] = useState(false);
+  const [isPostConfirmationLoading, setPostConfirmationLoading] =
+    useState(false);
   const wasActiveRef = useRef(isActive);
 
   useEffect(() => {
@@ -70,26 +75,62 @@ export const SendTransaction = (props: Props) => {
     }
   }, [activationKey, isActive, needsGasFeePanel]);
 
+  useEffect(() => {
+    setPostConfirmationLoading(false);
+  }, [request.request_id]);
+
+  useEffect(() => {
+    const clearPostConfirmationLoading = (msg: {
+      command?: string;
+      msg?: { request_id?: number };
+    }) => {
+      if (
+        msg?.command !== DialogCommand.ANSWER_EVM_REQUEST &&
+        msg?.command !== DialogCommand.SEND_DIALOG_ERROR
+      ) {
+        return;
+      }
+      if (msg.msg?.request_id !== request.request_id) {
+        return;
+      }
+      setPostConfirmationLoading(false);
+      transactionHook.setLoading(false);
+    };
+    chrome.runtime.onMessage.addListener(clearPostConfirmationLoading);
+    return () => {
+      chrome.runtime.onMessage.removeListener(clearPostConfirmationLoading);
+    };
+  }, [request.request_id, transactionHook.setLoading]);
+
   const onGasFeePanelInitialEstimationComplete = useCallback(() => {
     setGasFeePanelReady(true);
   }, []);
 
   const feeSelectionPending = needsGasFeePanel && !gasFeePanelReady;
+  const securityCheckPending = transactionHook.securityCheckPending;
   const quietRefreshPending = gasFeeRefreshing || balanceInfoRefreshing;
+  const insufficientBalancePending =
+    BalanceChangeCardUtils.hasInsufficientBalance(balanceInfo);
   const showLoading = transactionHook.loading;
+  const loadingCaption = isPostConfirmationLoading
+    ? EvmLedgerDialogUtils.getLedgerConfirmationCaption(selectedAccount)
+    : undefined;
 
   const handleClickOnConfirm = () => {
-    if (feeSelectionPending || quietRefreshPending) {
+    if (securityCheckPending || feeSelectionPending || quietRefreshPending) {
       return;
     }
 
     if (
-      transactionHook.selectedFee?.maxFeeInEth.equals(-1) ||
-      transactionHook.selectedFee?.estimatedFeeInEth.equals(-1) ||
-      transactionHook.selectedFee?.gasLimit.equals(-1) ||
-      transactionHook.selectedFee?.priorityFeeInGwei?.equals(-1)
+      needsGasFeePanel &&
+      GasFeeUtils.isGasFeeEstimateInvalid(transactionHook.selectedFee)
     ) {
       forceOpenGasFeePanelEvent.emit('forceOpenCustomFeePanel');
+      return;
+    }
+
+    if (!transactionHook.hasWarning()) {
+      setPostConfirmationLoading(true);
     }
     transactionHook.handleOnConfirmClick();
   };
@@ -105,6 +146,7 @@ export const SendTransaction = (props: Props) => {
           afterCancel={handleCancel}
           request={request}
           domain={data.dappInfo.domain}
+          origin={data.dappInfo.origin}
           tab={data.tab}
           title={transactionHook.fields.operationName!}
           caption={caption}
@@ -129,6 +171,7 @@ export const SendTransaction = (props: Props) => {
                     onGasFeePanelInitialEstimationComplete
                   }
                   onRefreshStateChange={setGasFeeRefreshing}
+                  forceOpenGasFeePanelEvent={forceOpenGasFeePanelEvent}
                 />
               )}
               {shouldDisplayBalanceChange &&
@@ -149,10 +192,13 @@ export const SendTransaction = (props: Props) => {
           }
           onConfirm={() => handleClickOnConfirm()}
           transactionHook={transactionHook}
-          confirmDisabled={feeSelectionPending || quietRefreshPending}
+          confirmDisabled={
+            securityCheckPending || feeSelectionPending || quietRefreshPending
+          }
+          hideConfirm={insufficientBalancePending}
         />
       )}
-      <LoadingComponent hide={!showLoading} />
+      <LoadingComponent hide={!showLoading} caption={loadingCaption} />
     </>
   );
 };

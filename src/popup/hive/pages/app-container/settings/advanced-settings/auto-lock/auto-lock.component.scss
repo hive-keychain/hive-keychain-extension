@@ -6,5 +6,39 @@
   padding-bottom: 24px;
   .fields {
     @include fields-panel;
+
+    .idle-lock-input-row {
+      margin-left: 32px;
+      margin-top: 12px;
+    }
+
+    .idle-lock-input-container {
+      position: relative;
+      width: 100%;
+
+      .idle-lock-input {
+        .custom-input-content {
+          padding-right: 104px;
+        }
+      }
+    }
+
+    .idle-lock-input-unit {
+      @include poppins500(13px);
+      align-items: center;
+      column-gap: 12px;
+      color: $red;
+      display: flex;
+      height: 25px;
+      pointer-events: none;
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+
+      .separator {
+        height: 100%;
+      }
+    }
   }
 }

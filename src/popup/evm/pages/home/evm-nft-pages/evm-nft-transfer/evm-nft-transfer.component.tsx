@@ -26,8 +26,8 @@ import { EvmNftCollectionListItem } from '@popup/evm/pages/home/evm-nft-pages/ev
 import { EvmNftDetails } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-details/evm-ntf-details.component';
 import { ERC1155Abi, ERC721Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
-import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
+import { EvmLedgerUtils } from '@popup/evm/utils/evm-ledger.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import {
@@ -39,7 +39,7 @@ import { navigateToWithParams } from '@popup/multichain/actions/navigation.actio
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
-import { ethers, Wallet } from 'ethers';
+import { ethers } from 'ethers';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -52,6 +52,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import { FormUtils } from 'src/utils/form.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface EvmNftTransferForm {
   receiverAddress: string;
   amount: number;
@@ -115,9 +116,8 @@ const EvmNftTransfer = ({
 
     setAutocompleteValues(values);
 
-    const enrichedValues = await EvmAddressesUtils.enrichWhiteListAutocomplete(
-      values,
-    );
+    const enrichedValues =
+      await EvmAddressesUtils.enrichWhiteListAutocomplete(values);
 
     if (isCancelled()) return;
 
@@ -139,10 +139,29 @@ const EvmNftTransfer = ({
   }, [activeAccount, chain, localAccounts]);
 
   const handleClickOnSend = async (form: EvmNftTransferForm) => {
-    // encode data
+    const recipientValidation =
+      await EvmAddressesUtils.validateTransferRecipient(
+        form.receiverAddress,
+        chain.chainId,
+        localAccounts,
+      );
+    if (!recipientValidation.valid) {
+      setErrorMessage(
+        recipientValidation.messageKey,
+        recipientValidation.messageParams ?? [],
+      );
+      return;
+    }
+    const receiverAddress = recipientValidation.address;
 
     const transactionInfo =
-      await EvmTransactionParserUtils.verifyTransactionInformation();
+      await EvmTransactionParserUtils.verifyTransactionInformation({
+        to: receiverAddress,
+        tokenContract: collectionItem.collection.tokenInfo.contractAddress,
+        chainId: chain.chainId,
+        tokenType: collectionItem.collection.tokenInfo.type,
+        nftTokenId: collectionItem.item.id,
+      });
 
     let fields = [
       {
@@ -153,6 +172,7 @@ const EvmNftTransfer = ({
             chainId={chain.chainId}
             forceFormattedAddress
             canCopy
+            localAccounts={localAccounts}
           />
         ),
       },
@@ -163,6 +183,7 @@ const EvmNftTransfer = ({
             address={activeAccount.address}
             chainId={chain.chainId}
             canCopy
+            localAccounts={localAccounts}
           />
         ),
       },
@@ -170,13 +191,14 @@ const EvmNftTransfer = ({
         label: 'popup_html_transfer_to',
         value: (
           <EvmAddressComponent
-            address={form.receiverAddress}
+            address={receiverAddress}
             chainId={chain.chainId}
             canCopy
+            localAccounts={localAccounts}
           />
         ),
         warnings: await EvmTransactionParserUtils.getAddressWarning(
-          form.receiverAddress,
+          receiverAddress,
           chain.chainId,
           transactionInfo,
           localAccounts,
@@ -209,21 +231,38 @@ const EvmNftTransfer = ({
           | EvmSmartContractInfoErc1155
           | EvmSmartContractInfoErc721,
         activeAccount,
-        form.receiverAddress,
+        receiverAddress,
         form.amount,
         form.nftId,
       ),
       value: '0x0',
     };
+    const ledgerClearSigningWarning =
+      EvmLedgerUtils.getClearSigningFallbackWarning(
+        activeAccount.wallet,
+        transactionData.data,
+      );
+    if (ledgerClearSigningWarning) {
+      const smartContractField = fields.find(
+        (field) => field.label === 'evm_operation_smart_contract_address',
+      );
+      if (smartContractField) {
+        smartContractField.warnings = [
+          ...(smartContractField.warnings ?? []),
+          ledgerClearSigningWarning,
+        ];
+      }
+    }
+
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: null,
-      message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
+      message: I18nUtils.getMessage('popup_html_transfer_confirm_text'),
       fields: fields,
       title: 'evm_nft_transfer',
       formParams: watch(),
       hasGasFee: true,
       tokenInfo: form.selectedToken,
-      receiverAddress: form.receiverAddress,
+      receiverAddress,
       amount: form.amount,
       wallet: activeAccount.wallet,
       transactionData: transactionData,
@@ -262,7 +301,7 @@ const EvmNftTransfer = ({
               } as EvmUserHistoryItemDetail,
               {
                 label: 'popup_html_transfer_to',
-                value: form.receiverAddress,
+                value: receiverAddress,
                 type: EvmUserHistoryItemDetailType.ADDRESS,
               } as EvmUserHistoryItemDetail,
               {
@@ -297,19 +336,12 @@ const EvmNftTransfer = ({
     amount: number,
     tokenId: string,
   ) => {
-    const provider = await EthersUtils.getProvider(chain);
-    const connectedWallet = new Wallet(
-      activeAccount.wallet.signingKey,
-      provider,
-    );
-    const contract = new ethers.Contract(
-      tokenInfo.contractAddress!,
+    const contractInterface = new ethers.Interface(
       tokenInfo.type === EVMSmartContractType.ERC1155 ? ERC1155Abi : ERC721Abi,
-      connectedWallet,
     );
 
     if (tokenInfo.type === EVMSmartContractType.ERC1155) {
-      return contract.interface.encodeFunctionData('safeTransferFrom', [
+      return contractInterface.encodeFunctionData('safeTransferFrom', [
         activeAccount.address,
         receiverAddress,
         Number(tokenId),
@@ -317,7 +349,7 @@ const EvmNftTransfer = ({
         '0x',
       ]);
     } else if (tokenInfo.type === EVMSmartContractType.ERC721) {
-      return contract.interface.encodeFunctionData(
+      return contractInterface.encodeFunctionData(
         'safeTransferFrom(address,address,uint256)',
         [activeAccount.address, receiverAddress, Number(tokenId)],
       );

@@ -3,6 +3,9 @@
   flex-direction: column;
   row-gap: 6px;
   height: 100%;
+  position: relative;
+  padding: 24px;
+
   .title {
     @include poppins200(18px);
     color: var(--main-font-color);
@@ -14,6 +17,7 @@
   .form-container {
     @include pageLayoutRowGap;
     row-gap: 8px;
+    margin: -24px;
 
     .caption {
       @include caption();

@@ -96,6 +96,7 @@ export const doesMethodExist = (method: string) => {
 
 export const EvmRestrictedMethods = [
   EvmRequestMethod.WALLET_ADD_ETH_CHAIN,
+  EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN,
   EvmRequestMethod.WALLET_REQUEST_PERMISSIONS,
   EvmRequestMethod.MM_WATCH_ASSET,
   EvmRequestMethod.WALLET_WATCH_ASSETS,
@@ -129,7 +130,6 @@ export const EvmMethodPermissionMap: {
 };
 
 export const EvmUnrestrictedMethods = [
-  EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN,
   EvmRequestMethod.WALLET_REVOKE_PERMISSION,
   EvmRequestMethod.GET_ACCOUNTS,
   EvmRequestMethod.GET_BLOCK_NUMBER,

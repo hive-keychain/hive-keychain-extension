@@ -23,6 +23,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 enum SynchronizeLedgerStep {
   DISCOVER_ACCOUNTS = 'add_accounts_from_ledger',
   SELECT_ACCOUNTS = 'select_account_from_ledger',
@@ -42,7 +43,21 @@ interface ImportAccountFormErrors {
   [key: string]: string;
 }
 
-const AddAccountsComponent = () => {
+interface AddAccountsComponentProps {
+  embedded?: boolean;
+  onAccountsAdded?: () => void | Promise<void>;
+  onAllAccountsAlreadyImported?: () => void | Promise<void>;
+  onClose?: () => void;
+  onLoadingChange?: (loading: boolean) => void;
+}
+
+const AddAccountsComponent = ({
+  embedded = false,
+  onAccountsAdded,
+  onAllAccountsAlreadyImported,
+  onClose,
+  onLoadingChange,
+}: AddAccountsComponentProps) => {
   const [loading, setLoading] = useState(false);
   const [selectableAccounts, setSelectableAccounts] = useState<LocalAccount[]>(
     [],
@@ -54,8 +69,10 @@ const AddAccountsComponent = () => {
 
   const [theme, setTheme] = useState<Theme>();
   useEffect(() => {
-    initTheme();
-  }, []);
+    if (!embedded) {
+      initTheme();
+    }
+  }, [embedded]);
 
   const initTheme = async () => {
     const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([
@@ -73,9 +90,14 @@ const AddAccountsComponent = () => {
     HiveTxUtils.setRpc(await RpcUtils.getCurrentRpc());
   };
 
+  const setLedgerLoading = (isLoading: boolean) => {
+    setLoading(isLoading);
+    onLoadingChange?.(isLoading);
+  };
+
   const discoverAccounts = async () => {
     setMessage('');
-    setLoading(true);
+    setLedgerLoading(true);
     try {
       if (await LedgerUtils.init(true)) {
         let discoveredAccounts = await LedgerUtils.getAllAccounts();
@@ -109,8 +131,12 @@ const AddAccountsComponent = () => {
           }),
         );
 
-        setLoading(false);
+        setLedgerLoading(false);
         if (filteredDiscoveredAccounts.length === 0) {
+          if (embedded && onAllAccountsAlreadyImported) {
+            await onAllAccountsAlreadyImported();
+            return;
+          }
           setMessage('all_ledger_accounts_already_imported');
           setStep(SynchronizeLedgerStep.FINISHED);
           return;
@@ -125,7 +151,7 @@ const AddAccountsComponent = () => {
       }
     } catch (err: any) {
       Logger.log(err);
-      setLoading(false);
+      setLedgerLoading(false);
       setMessage(ErrorUtils.parseLedger(err).message);
     }
   };
@@ -175,7 +201,7 @@ const AddAccountsComponent = () => {
   };
 
   const processDiscoveredAccounts = async () => {
-    setLoading(true);
+    setLedgerLoading(true);
     const localAccounts: LocalAccount[] = [];
     for (const accForm of accountsForm) {
       localAccounts.push({
@@ -184,9 +210,18 @@ const AddAccountsComponent = () => {
       });
     }
     await AccountUtils.addMultipleAccounts(localAccounts);
+    await onAccountsAdded?.();
     setMessage('add_accounts_from_ledger_sucessful');
     setStep(SynchronizeLedgerStep.FINISHED);
-    setLoading(false);
+    setLedgerLoading(false);
+  };
+
+  const closePage = () => {
+    if (onClose) {
+      onClose();
+      return;
+    }
+    window.close();
   };
 
   const verifyForm = async () => {
@@ -294,9 +329,9 @@ const AddAccountsComponent = () => {
   };
 
   const goNextPage = async () => {
-    setLoading(true);
+    setLedgerLoading(true);
     const keys = await verifyForm();
-    setLoading(false);
+    setLedgerLoading(false);
     if (keys) {
       const newForm = [...accountsForm];
       newForm[currentAccount].keys = keys;
@@ -311,18 +346,21 @@ const AddAccountsComponent = () => {
   };
 
   return (
-    <div className={`theme ${theme} connect-ledger`}>
-      <div className="title-panel">
-        <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
-        <div className="title">{chrome.i18n.getMessage(step)}</div>
-      </div>
+    <div
+      className={`${embedded ? 'embedded-ledger-page ' : `theme ${theme} `}connect-ledger`}>
+      {!embedded && (
+        <div className="title-panel">
+          <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
+          <div className="title">{I18nUtils.getMessage(step)}</div>
+        </div>
+      )}
 
       {step === SynchronizeLedgerStep.DISCOVER_ACCOUNTS && (
         <div className="account-discovery">
           <div className="caption">
-            {chrome.i18n.getMessage('ledger_account_discovery_caption')}
+            {I18nUtils.getMessage('ledger_account_discovery_caption')}
           </div>
-          <div className="error">{chrome.i18n.getMessage(message)}</div>
+          <div className="error">{I18nUtils.getMessage(message)}</div>
           <div className="fill-space"></div>
           <ButtonComponent
             label="synchronize_ledger_button"
@@ -333,7 +371,7 @@ const AddAccountsComponent = () => {
       {step === SynchronizeLedgerStep.SELECT_ACCOUNTS && (
         <div className="select-accounts">
           <div className="caption">
-            {chrome.i18n.getMessage('ledger_select_account_caption')}
+            {I18nUtils.getMessage('ledger_select_account_caption')}
           </div>
           <div className="list">
             {selectableAccounts.map((sa) => (
@@ -357,7 +395,7 @@ const AddAccountsComponent = () => {
       {step === SynchronizeLedgerStep.ADD_MISSING_KEYS && (
         <div className="add-missing-keys">
           <div className="caption">
-            {chrome.i18n.getMessage('ledger_add_missing_keys_caption')}
+            {I18nUtils.getMessage('ledger_add_missing_keys_caption')}
           </div>
           <div className="username">@{accountsForm[currentAccount].name}</div>
           <div className="missing-keys">
@@ -440,18 +478,18 @@ const AddAccountsComponent = () => {
 
       {step === SynchronizeLedgerStep.FINISHED && (
         <>
-          <div>{chrome.i18n.getMessage(message)}</div>
+          <div>{I18nUtils.getMessage(message)}</div>
           <div className="fill-space"></div>
           <div className="bottom-button-panel">
             <ButtonComponent
               label="popup_html_close"
-              onClick={() => window.close()}
+              onClick={closePage}
             />
           </div>
         </>
       )}
 
-      <LoadingComponent hide={!loading} />
+      {!embedded && <LoadingComponent hide={!loading} />}
     </div>
   );
 };

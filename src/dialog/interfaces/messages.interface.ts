@@ -50,7 +50,7 @@ export type RequestAddCustomEvmChainMessage = {
 };
 
 export type ErrorMessage = {
-  msg: { display_msg: string; tab?: number };
+  msg: { display_msg: string; tab?: number; request_id?: number };
   command: DialogCommand.SEND_DIALOG_ERROR;
 };
 

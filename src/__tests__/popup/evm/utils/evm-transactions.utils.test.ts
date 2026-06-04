@@ -6,6 +6,7 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 jest.mock('ethers', () => {
   const actual = jest.requireActual('ethers');
 
@@ -57,7 +58,7 @@ describe('evm transactions utils', () => {
       getTransactionReceipt: jest.fn(),
     };
 
-    chrome.i18n.getMessage = jest.fn((key: string) => key);
+    I18nUtils.getMessage = jest.fn((key: string) => key);
 
     jest
       .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
@@ -120,6 +121,7 @@ describe('evm transactions utils', () => {
       queuedTransactionsCount: 1,
       pendingTransactionDetails: {
         label: 'Pending swap',
+        title: 'evm_pending_queued_transactions',
         nonce: 0,
       },
     });
@@ -154,6 +156,37 @@ describe('evm transactions utils', () => {
       nonce: 0,
     });
     expect(EvmTokensHistoryParserUtils.parseEvent).not.toHaveBeenCalled();
+  });
+
+  it('uses the pending-only title when there are no queued transactions', async () => {
+    pendingTransactionsStorage = [
+      {
+        txResponseParams: { hash: '0xblocking', nonce: 0, chainId: chain.chainId },
+        walletAddress,
+        chainId: chain.chainId,
+        broadcastDate: 1,
+      },
+    ];
+
+    provider.getTransactionCount.mockImplementation((_addr: string, tag: string) =>
+      Promise.resolve(tag === 'pending' ? 1 : 0),
+    );
+
+    const result = await EvmTransactionsUtils.hasPendingTransaction(
+      walletAddress,
+      chain,
+    );
+
+    expect(result).toMatchObject({
+      hasPending: true,
+      pendingTransactionsCount: 1,
+      queuedTransactionsCount: 0,
+      pendingTransactionDetails: {
+        label: 'Pending swap',
+        title: 'evm_one_pending_transaction',
+        nonce: 0,
+      },
+    });
   });
 
   it('removes already confirmed transactions during rehydration', async () => {

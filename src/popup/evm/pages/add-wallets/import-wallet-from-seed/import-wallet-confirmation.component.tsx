@@ -3,16 +3,21 @@ import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import {
   EvmAccount,
+  EvmAccountSource,
   WalletWithBalance,
 } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
-import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import {
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { HDNodeWallet } from 'ethers';
@@ -24,6 +29,7 @@ import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/ch
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import { I18nUtils } from 'src/utils/i18n.utils';
 const ImportWalletConfirmation = ({
   setTitleContainerProperties,
   walletsWithBalance,
@@ -35,6 +41,7 @@ const ImportWalletConfirmation = ({
   activeAccount,
   loadEvmActiveAccount,
   navigateTo,
+  setActiveAccountType,
   accounts,
   hasImportParams,
 }: PropsType) => {
@@ -59,7 +66,6 @@ const ImportWalletConfirmation = ({
       navigateTo(Screen.IMPORT_EVM_WALLET, true);
     }
     // Runs once on landing; subscribing to param changes causes import-seed flicker mid-submit.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -86,6 +92,7 @@ const ImportWalletConfirmation = ({
         path: derivedWallet.wallet.path!,
         wallet: derivedWallet.wallet,
         seedId: 0,
+        source: EvmAccountSource.SEED,
       }));
       await EvmWalletUtils.addSeedAndAccounts(
         wallet,
@@ -106,6 +113,7 @@ const ImportWalletConfirmation = ({
         }
       }
       setEvmAccounts(accounts);
+      setActiveAccountType(ChainType.EVM);
       navigateTo(Screen.HOME_PAGE, true);
       await loadEvmActiveAccount(chain as EvmChain, accounts[0].wallet);
     }
@@ -119,7 +127,7 @@ const ImportWalletConfirmation = ({
         <div
           className="caption"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage(
+            __html: I18nUtils.getMessage(
               'html_popup_evm_choose_account_text',
             ),
           }}></div>
@@ -140,10 +148,10 @@ const ImportWalletConfirmation = ({
               }}
               key={e.wallet.address}
               skipTranslation
-              title={`${chrome.i18n.getMessage('dialog_account')} ${
+              title={`${I18nUtils.getMessage('dialog_account')} ${
                 i + 1
               }: ${EvmFormatUtils.formatAddress(e.wallet.address)}`}
-              hint={`${chrome.i18n.getMessage('popup_html_balance')}: ${
+              hint={`${I18nUtils.getMessage('popup_html_balance')}: ${
                 e.balance
               } ETH`}
               skipHintTranslation
@@ -179,6 +187,7 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   setErrorMessage,
   setEvmAccounts,
+  setActiveAccountType,
   loadEvmActiveAccount,
   navigateTo,
 });

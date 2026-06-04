@@ -1,18 +1,23 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
-import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
+import {
+  EvmRequestHandler,
+  EvmRequestLocator,
+} from '@background/evm/requests/evm-request-handler';
 import { createEvmMessage } from '@background/hive/requests/operations/operations.utils';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { SignTypedDataVersion } from '@metamask/eth-sig-util';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
-import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
+import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const signData = async (
   requestHandler: EvmRequestHandler,
   request: EvmRequest,
+  locator: EvmRequestLocator,
   version: SignTypedDataVersion,
 ) => {
-  const requestData = requestHandler.getRequestData(request.request_id);
+  const requestData = requestHandler.getRequestDataByLocator(locator);
 
   const TARGET_INDEX =
     request.method === EvmRequestMethod.ETH_SIGN_DATA ? 1 : 0;
@@ -29,8 +34,8 @@ export const signData = async (
       : request.params[1];
   if (account) {
     try {
-      const res = await EvmRequestsUtils.signData(
-        account.wallet.privateKey,
+      const res = await EvmSignerUtils.signTypedMessage(
+        account.wallet,
         message,
         version,
       );
@@ -39,10 +44,11 @@ export const signData = async (
         res,
         request,
         requestData?.tab!,
-        await chrome.i18n.getMessage('dialog_evm_sign_request_success'),
+        await I18nUtils.getMessage('dialog_evm_sign_request_success'),
       );
     } catch (e) {
       Logger.error('sign error', e);
+      throw e;
     }
   }
 };

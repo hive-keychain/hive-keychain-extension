@@ -7,6 +7,7 @@ export enum SVGIcons {
 
   BOTTOM_BAR_BUY = 'bottom-bar/buy',
   BOTTOM_BAR_ECOSYSTEM = 'bottom-bar/ecosystem',
+  BOTTOM_BAR_RECEIVE = 'bottom-bar/receive',
   BOTTOM_BAR_SEND = 'bottom-bar/send',
   BOTTOM_BAR_SWAPS = 'bottom-bar/swaps',
 
@@ -24,6 +25,9 @@ export enum SVGIcons {
   EVM_ACCOUNT_COPY = 'evm-account/copy-circle',
   EVM_ACCOUNT_DELETE = 'evm-account/delete-circle',
   EVM_ACCOUNT_EDIT = 'evm-account/edit-circle',
+  EVM_ACCOUNT_IMPORT = 'evm-account/import-circle',
+  EVM_ACCOUNT_KEY = 'evm-account/key-circle',
+  EVM_ACCOUNT_LEDGER = 'evm-account/ledger-circle',
 
   EVM_CHAIN_TESTNET = 'evm-chains/testnet',
 
@@ -99,10 +103,19 @@ export enum SVGIcons {
   MENU_THEME_DARK = 'menu/theme/dark-theme',
   MENU_THEME_LIGHT = 'menu/theme/light-theme',
 
+  THEME_TOGGLE_SUN = 'theme-toggle/sun',
+  THEME_TOGGLE_MOON = 'theme-toggle/moon',
+
+  SIDE_PANEL_DETACH = 'side-panel/detach',
+
   MENU_ACCOUNTS = 'menu/accounts',
   MENU_ACCOUNTS_ADD_ACCOUNT = 'menu/accounts/add-account',
   MENU_ACCOUNTS_CREATE_ACCOUNT = 'menu/accounts/create-account',
   MENU_ACCOUNTS_EXPORT = 'menu/accounts/export',
+  MENU_ACCOUNTS_IMPORT = 'menu/accounts/import',
+  MENU_ACCOUNTS_IMPORT_KEY = 'menu/accounts/import-key',
+  MENU_ACCOUNTS_KEYLESS_KEYCHAIN = 'menu/accounts/keyless-keychain',
+  MENU_ACCOUNTS_ADD_BY_AUTHORIZED_ACCOUNT = 'menu/accounts/add-account-by-authority',
   MENU_EXPORT_ACCOUNTS_QR = 'menu/accounts/qr_code',
   MENU_ACCOUNTS_MANAGE_ACCOUNTS = 'menu/accounts/manage-accounts',
   MENU_ACCOUNTS_MANAGE_AUTHORITIES = 'menu/accounts/manage-authorities',
@@ -127,6 +140,9 @@ export enum SVGIcons {
   MENU_TOKENS = 'menu/tokens',
 
   MENU_GOVERNANCE = 'menu/governance',
+  MENU_HIVE_SETTINGS = 'menu/hive-settings',
+  MENU_EVM_SETTINGS = 'menu/evm-settings',
+  MENU_CHAIN_SETTINGS = 'menu/chain-settings',
   MENU_LOGOUT = 'menu/logout',
   MENU_PLUGINS = 'menu/plugins',
   MENU_HELP = 'menu/help',
@@ -177,6 +193,7 @@ export enum SVGIcons {
   SELECT_ACTIVE = 'select/active',
   SELECT_COPY = 'select/copy',
   SELECT_DRAG = 'select/drag',
+  SELECT_MANAGE_ACCOUNT = 'select/manage-account',
   SELECT_DELETE = 'select/delete',
   SELECT_ADD = 'select/add-circle',
 
@@ -227,6 +244,7 @@ export enum SVGIcons {
   WALLET_HISTORY_TOP = 'wallet/history/back-to-top',
 
   WALLET_HISTORY_ESCROW = 'wallet/history/escrow',
+  WALLET_HISTORY_HIVE = 'wallet/history/hive',
 
   // LOGOS
   BINANCE = 'binance',

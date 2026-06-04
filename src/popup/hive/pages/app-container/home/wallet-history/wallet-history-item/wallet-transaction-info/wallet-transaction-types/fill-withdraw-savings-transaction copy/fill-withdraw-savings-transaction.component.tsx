@@ -9,6 +9,7 @@ import 'react-tabs/style/react-tabs.scss';
 import { GenericTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/generic-transaction/generic-transaction.component';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface WithdrawSavingsTransactionProps {
   transaction: WithdrawSavings | StartWithdrawSavings;
 }
@@ -18,7 +19,7 @@ const FillWithdrawSavingsTransaction = ({
   activeAccountName,
 }: PropsFromRedux & WithdrawSavingsTransactionProps) => {
   const getDetail = () => {
-    return chrome.i18n.getMessage(
+    return I18nUtils.getMessage(
       'popup_html_wallet_info_fill_withdraw_savings',
       [FormatUtils.withCommas(transaction.amount, 3)],
     );

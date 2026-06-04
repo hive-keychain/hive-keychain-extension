@@ -14,6 +14,8 @@ export const EvmPricesReducer = (
   switch (type) {
     case EvmActionType.SET_PRICES:
       return { ...state, ...payload };
+    case EvmActionType.RESET_STATE:
+      return {};
     default:
       return state;
   }

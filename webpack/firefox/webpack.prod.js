@@ -1,10 +1,10 @@
 const { merge } = require('webpack-merge');
 const common = require('./webpack.firefox.js');
 const path = require('path');
-const dotenv = require('dotenv');
 const WebpackBundleAnalyzer = require('webpack-bundle-analyzer');
 const { DefinePlugin } = require('webpack');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const { toDefinePluginEnv } = require('../env');
 
 module.exports = merge(common, {
   mode: 'production',
@@ -15,12 +15,7 @@ module.exports = merge(common, {
   },
   plugins: [
     // new WebpackBundleAnalyzer.BundleAnalyzerPlugin(),
-    new DefinePlugin({
-      'process.env': JSON.stringify({
-        ...(dotenv.config().parsed || {}),
-        IS_FIREFOX: true,
-      }),
-    }),
+    new DefinePlugin(toDefinePluginEnv({ IS_FIREFOX: true })),
     new ESLintPlugin({
       extensions: ['ts', 'tsx'],
       fix: false,

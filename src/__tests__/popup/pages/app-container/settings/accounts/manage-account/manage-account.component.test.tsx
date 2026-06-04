@@ -3,7 +3,7 @@ import { ExtendedAccount } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
-import { act, cleanup, screen } from '@testing-library/react';
+import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
@@ -18,6 +18,7 @@ import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('manage-account.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -30,7 +31,10 @@ describe('manage-account.component tests:\n', () => {
         initialStates.iniStateAs.defaultExistent,
       );
       await act(async () => {
-        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+        const menu = await waitFor(() =>
+          screen.getByTestId(dataTestIdButton.menu),
+        );
+        await userEvent.click(menu);
         await userEvent.click(
           screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
         );
@@ -44,6 +48,44 @@ describe('manage-account.component tests:\n', () => {
     it('Must display manage-account page', () => {
       expect(
         screen.getByTestId(`${Screen.SETTINGS_MANAGE_ACCOUNTS}-page`),
+      ).toBeInTheDocument();
+    });
+
+    it('Must not show manage accounts in account dropdown', async () => {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByLabelText(dataTestIdSelect.accountSelector),
+        );
+      });
+      expect(
+        await screen.findByTestId(
+          dataTestIdSelect.itemSelectorPreFix + mk.user.two,
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByTestId('add-account-dropdown-option'),
+      ).toHaveTextContent(I18nUtils.getMessage('popup_html_add_account'));
+      expect(
+        screen.getByTestId('create-account-dropdown-option'),
+      ).toHaveTextContent(
+        I18nUtils.getMessage('popup_html_create_account'),
+      );
+      expect(
+        screen.queryByTestId('manage-accounts-dropdown-option'),
+      ).not.toBeInTheDocument();
+    });
+
+    it('Must navigate to add account from account dropdown', async () => {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByLabelText(dataTestIdSelect.accountSelector),
+        );
+        await userEvent.click(
+          screen.getByTestId('add-account-dropdown-option'),
+        );
+      });
+      expect(
+        await screen.findByTestId(`${Screen.ACCOUNT_PAGE_INIT_ACCOUNT}-page`),
       ).toBeInTheDocument();
     });
 
@@ -68,6 +110,26 @@ describe('manage-account.component tests:\n', () => {
       ).toHaveTextContent(mk.user.two);
     });
 
+    it('Must not change global active account when selecting another account in dropdown', async () => {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByLabelText(dataTestIdSelect.accountSelector),
+        );
+        await userEvent.click(
+          screen.getByTestId(dataTestIdSelect.itemSelectorPreFix + mk.user.two),
+        );
+      });
+      expect(
+        await screen.findByTestId(dataTestIdDiv.selectedAccount),
+      ).toHaveTextContent(mk.user.two);
+      await act(async () => {
+        await userEvent.click(screen.getByTestId(dataTestIdIcon.closePage));
+      });
+      expect(
+        await screen.findByTestId(dataTestIdDiv.selectedAccount),
+      ).toHaveTextContent(mk.user.one);
+    });
+
     it('Must show/hide QR code', async () => {
       Element.prototype.scrollIntoView = jest.fn();
       await act(async () => {
@@ -76,7 +138,7 @@ describe('manage-account.component tests:\n', () => {
         );
       });
       const confirmCheck = (messageKey: string) => {
-        const label = screen.getByText(chrome.i18n.getMessage(messageKey));
+        const label = screen.getByText(I18nUtils.getMessage(messageKey));
         const panel = label.closest('.checkbox-panel');
         expect(panel).toBeTruthy();
         return userEvent.click(
@@ -88,7 +150,7 @@ describe('manage-account.component tests:\n', () => {
         await confirmCheck('popup_html_qr_check2');
         await userEvent.click(
           screen.getByRole('button', {
-            name: chrome.i18n.getMessage('popup_html_qr_exported_show_button'),
+            name: I18nUtils.getMessage('popup_html_qr_exported_show_button'),
           }),
         );
       });
@@ -112,6 +174,76 @@ describe('manage-account.component tests:\n', () => {
       expect(
         await screen.findByTestId(`${Screen.HOME_PAGE}-page`),
       ).toBeInTheDocument();
+    });
+  });
+
+  describe('Removing key on locally selected account:\n', () => {
+    beforeEach(async () => {
+      await reactTestingLibrary.renderWithConfiguration(
+        <HiveAppComponent />,
+        initialStates.iniStateAs.defaultExistent,
+        {
+          app: {
+            accountsRelated: {
+              AccountUtils: {
+                getAccountsFromLocalStorage: [
+                  accounts.local.oneAllkeys,
+                  {
+                    ...accounts.local.oneAllkeys,
+                    name: mk.user.two,
+                  },
+                ],
+              },
+            },
+          },
+        },
+      );
+      await act(async () => {
+        const menu = await waitFor(() =>
+          screen.getByTestId(dataTestIdButton.menu),
+        );
+        await userEvent.click(menu);
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
+        );
+        await userEvent.click(
+          screen.getByTestId(
+            dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
+          ),
+        );
+      });
+    });
+
+    it('Must keep locally selected account after removing a key', async () => {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByLabelText(dataTestIdSelect.accountSelector),
+        );
+        await userEvent.click(
+          screen.getByTestId(dataTestIdSelect.itemSelectorPreFix + mk.user.two),
+        );
+      });
+      expect(
+        await screen.findByTestId(dataTestIdDiv.selectedAccount),
+      ).toHaveTextContent(mk.user.two);
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(
+            dataTestIdIcon.keys.list.preFix.remove + 'posting',
+          ),
+        );
+      });
+      expect(
+        await screen.findByTestId(`${Screen.CONFIRMATION_PAGE}-page`),
+      ).toBeInTheDocument();
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.dialog.confirm),
+        );
+      });
+      expect(
+        await screen.findByTestId(dataTestIdDiv.selectedAccount),
+      ).toHaveTextContent(mk.user.two);
     });
   });
 

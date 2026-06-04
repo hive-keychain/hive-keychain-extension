@@ -15,6 +15,7 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('add-account tests:\n', () => {
   const data = {
     domain: 'domain',
@@ -32,7 +33,7 @@ describe('add-account tests:\n', () => {
   });
   beforeEach(() => {
     jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('en-US');
-    chrome.i18n.getMessage = jest
+    I18nUtils.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
   });
@@ -55,7 +56,7 @@ describe('add-account tests:\n', () => {
         error: true,
         result: false,
         data: datas,
-        message: chrome.i18n.getMessage('bgd_ops_add_account_error_invalid'),
+        message: I18nUtils.getMessage('bgd_ops_add_account_error_invalid'),
         request_id: request_id,
         publicKey: undefined,
       },
@@ -82,7 +83,7 @@ describe('add-account tests:\n', () => {
         result: false,
         success: false,
         data: datas,
-        message: chrome.i18n.getMessage('bgd_ops_add_account_error'),
+        message: I18nUtils.getMessage('bgd_ops_add_account_error'),
         request_id: request_id,
         publicKey: undefined,
       },
@@ -109,7 +110,7 @@ describe('add-account tests:\n', () => {
         result: false,
         success: false,
         data: datas,
-        message: chrome.i18n.getMessage('bgd_ops_add_account_error'),
+        message: I18nUtils.getMessage('bgd_ops_add_account_error'),
         request_id: request_id,
         publicKey: undefined,
       },
@@ -179,7 +180,7 @@ describe('add-account tests:\n', () => {
         result: true,
         success: true,
         data: datas,
-        message: chrome.i18n.getMessage('bgd_ops_add_account', [mk.user.one]),
+        message: I18nUtils.getMessage('bgd_ops_add_account', [mk.user.one]),
         request_id: request_id,
         publicKey: undefined,
       },

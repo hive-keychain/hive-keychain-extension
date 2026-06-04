@@ -35,6 +35,7 @@ import { addAccount } from 'src/popup/hive/actions/account.actions';
 import { PaidAccountCreationUtils } from 'src/popup/hive/utils/paid-account-creation.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const SUBSTRING_LENGTH = 15;
 
 const CreateAccountStepTwo = ({
@@ -141,7 +142,7 @@ const CreateAccountStepTwo = ({
   const generateMasterKey = async () => {
     if (accountName.length < 3) {
       setMasterKey('');
-      setErrorMessage('html_popup_create_account_username_too_short');
+      setErrorMessage('popup_html_create_account_username_too_short');
       return;
     }
     if (!AccountCreationUtils.validateUsername(accountName)) {
@@ -269,12 +270,12 @@ const CreateAccountStepTwo = ({
         }
         return '';
       case AccountCreationType.BUYING:
-        return chrome.i18n.getMessage(
+        return I18nUtils.getMessage(
           'html_popup_create_account_buy_method_message',
           [price.toString(), selectedAccount.name],
         );
       case AccountCreationType.USING_TICKET:
-        return chrome.i18n.getMessage(
+        return I18nUtils.getMessage(
           'html_popup_create_account_claim_account_method_message',
           [selectedAccount.name],
         );

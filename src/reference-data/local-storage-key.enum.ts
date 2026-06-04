@@ -10,6 +10,7 @@ export enum LocalStorageKeyEnum {
   CLAIM_SAVINGS = 'claimSavings',
   AUTOLOCK = 'autolock',
   SHORTCUTS = 'shortcuts',
+  SHORTCUT_PRESETS_MIGRATED = 'shortcut_presets_migrated',
   NO_CONFIRM = 'no_confirm',
   WALLET_HISTORY_FILTERS = 'walletHistoryFilters',
   HIDDEN_TOKENS = 'hidden_tokens',
@@ -44,7 +45,11 @@ export enum LocalStorageKeyEnum {
 
   // Global keys
   ACTIVE_CHAIN = 'ACTIVE_CHAIN',
+  ACTIVE_ACCOUNT_TYPE = 'ACTIVE_ACCOUNT_TYPE',
   ACTIVE_THEME = 'ACTIVE_THEME',
+  ACTIVE_LANGUAGE = 'ACTIVE_LANGUAGE',
+  /** When true, toolbar icon opens Keychain in the browser side panel instead of popup.html */
+  OPEN_SIDE_PANEL_BY_DEFAULT = 'OPEN_SIDE_PANEL_BY_DEFAULT',
   SETUP_CHAINS = 'SETUP_CHAINS',
   CUSTOM_CHAINS = 'CUSTOM_CHAINS',
   GUARD_DAPP_REQUEST = 'GUARD_DAPP_REQUEST',
@@ -60,11 +65,14 @@ export enum LocalStorageKeyEnum {
 
   // To check if some account (regardless of chain) has been setup
   HAS_FINISHED_SIGNUP = 'HAS_FINISHED_SIGNUP',
+  /** Encrypted cross-chain home account selector order: `{ list: AccountSelectorOrderRef[] }` */
+  ACCOUNT_SELECTOR_DISPLAY_ORDER = 'ACCOUNT_SELECTOR_DISPLAY_ORDER',
   EVM_ACCOUNTS = 'EVM_ACCOUNTS',
 
   // EVM
   EVM_LAST_CHAIN_USED = 'EVM_LAST_CHAIN_USED',
   EVM_ORIGIN_CHAIN_STATE = 'EVM_ORIGIN_CHAIN_STATE',
+  EVM_ORIGIN_CHAIN_WHITELIST = 'EVM_ORIGIN_CHAIN_WHITELIST',
   // EVM_TOKENS_METADATA = 'EVM_TOKENS_METADATA',
   EVM_PENDING_TRANSACTIONS = 'EVM_PENDING_TRANSACTIONS',
   EVM_CANCELED_TRANSACTIONS = 'EVM_CANCELED_TRANSACTIONS',
@@ -94,6 +102,9 @@ export enum LocalStorageKeyEnum {
 
   /** Per-chain: user dismissed the "no custom NFT" hint card on the wallet NFT tab */
   EVM_CUSTOM_NFT_EMPTY_CARD_HIDDEN = 'EVM_CUSTOM_NFT_EMPTY_CARD_HIDDEN',
+
+  /** Per-chain: user dismissed the custom-chain local history hint card */
+  EVM_CUSTOM_HISTORY_INFO_CARD_HIDDEN = 'EVM_CUSTOM_HISTORY_INFO_CARD_HIDDEN',
 
   EVM_LIGHT_NODE_REGISTERED_ADDRESSES = 'EVM_LIGHT_NODE_REGISTERED_ADDRESSES',
 

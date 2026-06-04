@@ -9,16 +9,22 @@ import {
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
 
+interface SetChainOptions {
+  saveLastUsedChain?: boolean;
+}
+
 export const resetChain = (): AppThunk => async (dispatch, getState) => {
   dispatch({ type: MultichainActionType.RESET_CHAIN, payload: {} });
   dispatch({ type: EvmActionType.RESET_APP_STATUS });
 };
 
 export const setChain =
-  (chain: Chain): AppThunk =>
+  (chain: Chain, options: SetChainOptions = {}): AppThunk =>
   async (dispatch, getState) => {
     if (chain?.type === ChainType.EVM) {
-      EvmChainUtils.saveLastUsedChain(chain as EvmChain);
+      if (options.saveLastUsedChain !== false) {
+        EvmChainUtils.saveLastUsedChain(chain as EvmChain);
+      }
       EvmRpcUtils.setActiveRpc(
         await EvmRpcUtils.getActiveRpc(chain as EvmChain),
         chain as EvmChain,

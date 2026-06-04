@@ -10,6 +10,7 @@ import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: RequestPowerUp & RequestId;
   domain: string;
@@ -39,7 +40,7 @@ const PowerUp = (props: Props) => {
 
   return (
     <Operation
-      title={chrome.i18n.getMessage('dialog_title_powerup')}
+      title={I18nUtils.getMessage('dialog_title_powerup')}
       {...anonymousProps}
       {...props}>
       {renderUsername()}

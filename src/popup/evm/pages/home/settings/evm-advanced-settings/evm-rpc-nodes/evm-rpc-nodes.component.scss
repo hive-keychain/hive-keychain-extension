@@ -1,14 +1,18 @@
 .evm-rpc-nodes-page {
   @include pageLayoutRowGap;
+  row-gap: 10px;
+  padding: 0 24px;
+
   .introduction {
-    @include caption();
+    @include settings-page-note();
+    margin: 0;
   }
 
   .rpc-form-container {
     display: flex;
     flex-direction: column;
     row-gap: 8px;
-    margin: 0px 32px;
+    margin: 0;
     padding-bottom: 24px;
 
     .rpc-section {
@@ -20,21 +24,56 @@
         color: var(--main-font-color);
       }
 
+      .custom-select-container {
+        .custom-select {
+          width: 100%;
+
+          .react-dropdown-select-dropdown {
+            box-sizing: border-box;
+            min-width: 100%;
+            width: 100%;
+
+            .custom-select-dropdown,
+            .option,
+            .custom-select-item {
+              box-sizing: border-box;
+              max-width: unset;
+              width: 100%;
+            }
+          }
+        }
+      }
+
       .select-rpc-panel {
         display: flex;
         align-items: center;
         column-gap: 8px;
+        min-width: 0;
+        width: 100%;
+        box-sizing: border-box;
         .custom-select-container {
-          flex: 1;
+          flex: 1 1 auto;
+          min-width: 0;
           .selected-item {
             @include poppins400(14px);
           }
-          .custom-select {
-            height: 56px !important;
+          .custom-select,
+          .react-dropdown-select {
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+            box-sizing: border-box;
+            height: 45px !important;
             border-radius: 22px !important;
+          }
+          .react-dropdown-select-content {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
           }
         }
         .round-button {
+          flex-shrink: 0;
           cursor: pointer;
           @include small-card;
           padding: 12px;
@@ -51,21 +90,31 @@
         }
       }
       .add-rpc-panel {
+        @include small-card;
         display: flex;
         flex-direction: column;
-        row-gap: 14px;
-        @include small-card;
+        row-gap: 12px;
         align-items: unset;
+        border: none;
         margin: 0px;
-        margin-top: -8px;
+        margin-top: -6px;
+        padding: 12px;
         .custom-input-content input {
-          @include poppins600(14px);
+          @include poppins400(14px);
         }
         .add-rpc-caption {
           @include poppins600(14px);
           display: flex;
-          justify-content: space-between;
+          align-items: center;
           color: var(--main-font-color);
+        }
+        .save-rpc-button {
+          align-self: flex-end;
+          min-height: 32px;
+          height: 32px;
+          margin-top: 0;
+          width: 96px;
+          @include poppins600(13px);
         }
       }
     }

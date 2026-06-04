@@ -1,75 +1,46 @@
 .account-authorities-list-item {
-  display: flex;
-  flex-direction: column;
-  row-gap: 8px;
-  font-size: 18px;
-
-  .weight {
-    text-align: center;
+  &.settings-hive-dapps-site {
+    padding: 8px 0;
   }
 
-  .top-panel {
-    display: grid;
-    grid-template-columns: 5fr 1fr;
-    align-items: center;
-    padding: 0 20px;
+  .account-authorities-tags-panel {
+    padding-left: 0;
+  }
 
-    .key-name {
-      .name {
-        @include poppins400(14px);
-        color: var(--main-font-color);
-      }
+  .account-authority-tag {
+    .item-account,
+    .delete-button {
+      align-items: center;
+      background: transparent;
+      border: none;
+      color: var(--main-font-color);
+      cursor: pointer;
+      display: flex;
+      padding: 0;
     }
-  }
 
-  .account-auths-list {
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
-    row-gap: 8px;
-
-    .item {
-      @include small-card;
-
-      .buttons-item {
-        display: none;
-      }
-
-      .item-account {
-        display: flex;
-        align-items: center;
-        flex-direction: row;
-        height: 100%;
-        padding-left: 8px;
-        cursor: pointer;
-        flex: 1;
-
-        .account-img {
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
-        }
-        .account-name {
-          padding-left: 8px;
-          padding-right: 8px;
-          color: var(--main-font-color);
-        }
-      }
-      .delete-button {
-        height: 20px;
-        width: 20px;
-        display: none;
-      }
-
-      &:hover {
-        .delete-button {
-          display: block;
-        }
-      }
+    .item-account {
+      min-width: 0;
     }
-  }
 
-  .padding-left {
-    padding-left: 8px;
+    .account-img {
+      border-radius: 50%;
+      flex-shrink: 0;
+      height: 20px;
+      width: 20px;
+    }
+
+    .account-name {
+      @include poppins400(12px);
+      color: var(--main-font-color);
+      overflow: hidden;
+      padding-left: 6px;
+      text-overflow: ellipsis;
+    }
+
+    .delete-button {
+      height: 12px;
+      width: 12px;
+    }
   }
 }

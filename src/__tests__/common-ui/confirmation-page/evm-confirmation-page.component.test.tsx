@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { Screen } from '@interfaces/screen.interface';
 import { EVMConfirmationPageComponent } from 'src/common-ui/confirmation-page/evm-confirmation-page.component';
@@ -7,12 +7,17 @@ import {
   EvmSmartContractInfoNative,
   EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
-import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
+import {
+  EvmTransactionType,
+  EvmTransactionWarningLevel,
+  EvmTransactionWarningType,
+} from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const mockGasFeePanel = jest.fn(() => <div data-testid="gas-fee-panel" />);
 
 jest.mock('@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component', () => ({
@@ -112,14 +117,13 @@ describe('EVMConfirmationPageComponent', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    global.chrome.i18n.getMessage = jest.fn((key: string) => key);
+    I18nUtils.getMessage = jest.fn((key: string) => key);
     (useTransactionHook as jest.Mock).mockReturnValue({
       hasWarning: jest.fn().mockReturnValue(false),
       initPendingTransactionWarning: jest.fn(),
-      openSingleWarningPopup: jest.fn(),
       pendingTransactionWarningField: undefined,
       setConfirmationPageFields: jest.fn(),
-      setWarningsPopupOpened: jest.fn(),
+      openWarningsPopup: jest.fn(),
     });
   });
 
@@ -192,6 +196,75 @@ describe('EVMConfirmationPageComponent', () => {
       5,
       undefined,
       nativeToken,
+    );
+  });
+
+  it('hides confirm when balance is insufficient', async () => {
+    const afterConfirmAction = jest.fn();
+    jest.spyOn(EvmTokensUtils, 'getBalanceInfo').mockResolvedValue({
+      mainBalance: {
+        symbol: 'ETH',
+        before: '0.1 ETH',
+        estimatedAfter: '-0.1 ETH',
+        insufficientBalance: true,
+      },
+    });
+
+    renderConfirmationPage({
+      amount: 1,
+      afterConfirmAction,
+      tokenInfo: nativeToken,
+    });
+
+    await waitFor(() =>
+      expect(screen.queryByTestId('dialog_confirm-button')).toBeNull(),
+    );
+    expect(afterConfirmAction).not.toHaveBeenCalled();
+  });
+
+  it('renders risk alert banner when fields contain active warnings', async () => {
+    renderConfirmationPage({
+      fields: [
+        {
+          label: 'popup_html_to',
+          value: '0xabc',
+          name: 'to',
+          warnings: [
+            {
+              level: EvmTransactionWarningLevel.HIGH,
+              message: 'evm_transaction_warning_possible_scam',
+              ignored: false,
+              type: EvmTransactionWarningType.BASE,
+            },
+          ],
+        },
+      ],
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('evm-risk-alert-banner')).toBeTruthy(),
+    );
+  });
+
+  it('shows confirm when balance is sufficient', async () => {
+    const afterConfirmAction = jest.fn();
+    jest.spyOn(EvmTokensUtils, 'getBalanceInfo').mockResolvedValue({
+      mainBalance: {
+        symbol: 'ETH',
+        before: '1 ETH',
+        estimatedAfter: '0.5 ETH',
+        insufficientBalance: false,
+      },
+    });
+
+    renderConfirmationPage({
+      amount: 0.5,
+      afterConfirmAction,
+      tokenInfo: nativeToken,
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('dialog_confirm-button')).toBeTruthy(),
     );
   });
 });

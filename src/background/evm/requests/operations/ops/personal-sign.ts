@@ -1,22 +1,27 @@
-import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
+import {
+  EvmRequestHandler,
+  EvmRequestLocator,
+} from '@background/evm/requests/evm-request-handler';
 import { createEvmMessage } from '@background/hive/requests/operations/operations.utils';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
-import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
+import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const personalSign = async (
   requestHandler: EvmRequestHandler,
   request: EvmRequest,
+  locator: EvmRequestLocator,
 ) => {
-  const requestData = requestHandler.getRequestData(request.request_id);
+  const requestData = requestHandler.getRequestDataByLocator(locator);
   const account = requestHandler.accounts.find((account: EvmAccount) => {
     return (
       account.wallet.address.toLowerCase() === request.params[1].toLowerCase()
     );
   });
   if (account) {
-    const res = await EvmRequestsUtils.signMessage(
-      account.wallet.privateKey,
+    const res = await EvmSignerUtils.signMessage(
+      account.wallet,
       request.params[0],
     );
     return await createEvmMessage(
@@ -24,7 +29,7 @@ export const personalSign = async (
       res,
       request,
       requestData?.tab!,
-      await chrome.i18n.getMessage('dialog_evm_sign_request_success'),
+      await I18nUtils.getMessage('dialog_evm_sign_request_success'),
     );
   }
 };

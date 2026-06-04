@@ -89,6 +89,20 @@
   color: var(--main-font-color);
 }
 
+@mixin provider-note-base() {
+  @include poppins400(14px);
+  color: var(--main-font-color);
+  background: var(--card-background);
+  border-radius: 16px;
+  padding: 12px 16px;
+  line-height: 1.4;
+}
+
+@mixin settings-page-note() {
+  @include provider-note-base();
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 @mixin form-container-text {
   padding: 0px 12px;
   @include poppins400($caption-font-size);

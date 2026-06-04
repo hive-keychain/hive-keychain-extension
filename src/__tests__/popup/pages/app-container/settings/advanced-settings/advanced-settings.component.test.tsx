@@ -11,6 +11,7 @@ import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-l
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import getAdvancedSettingsMenuItems from 'src/popup/hive/pages/app-container/settings/advanced-settings/advanced-settings-menu-items';
+
 describe('advanced-settings.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -81,9 +82,7 @@ describe('advanced-settings.component tests:\n', () => {
     }
   });
 
-  it('Must call tabs.create when opening ledger menu', async () => {
-    const tabId = 'unique-ID';
-    chrome.management.getSelf = jest.fn().mockResolvedValue({ id: tabId });
+  it('Must open the Ledger menu inside the popup', async () => {
     const ledgerMenuItem = getAdvancedSettingsMenuItems(true).filter(
       (item) => item.label === 'ledger_link_ledger_device',
     )[0];
@@ -92,8 +91,8 @@ describe('advanced-settings.component tests:\n', () => {
         screen.getByTestId(dataTestIdButton.menuPreFix + ledgerMenuItem.icon),
       );
     });
-    expect(jest.spyOn(chrome.tabs, 'create')).toHaveBeenCalledWith({
-      url: `chrome-extension://${tabId}/link-ledger-device.html`,
-    });
+    expect(
+      screen.getByTestId(`${Screen.SETTINGS_LINK_LEDGER_DEVICE}-page`),
+    ).toBeInTheDocument();
   });
 });

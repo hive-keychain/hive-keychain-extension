@@ -2,7 +2,7 @@ import AccountUtils from '@hiveapp/utils/account.utils';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
-import { act, cleanup, screen } from '@testing-library/react';
+import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
@@ -18,6 +18,7 @@ import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-l
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 jest.mock(
   'hive-keychain-commons',
   () =>
@@ -53,7 +54,10 @@ describe('add-key.component tests:\n', () => {
       },
     );
     await act(async () => {
-      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+      const menu = await waitFor(() =>
+        screen.getByTestId(dataTestIdButton.menu),
+      );
+      await userEvent.click(menu);
       await userEvent.click(
         screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
       );
@@ -80,7 +84,7 @@ describe('add-key.component tests:\n', () => {
       screen.getByTestId(dataTestIdParagraph.add.keyPage.introduction),
     ).toHaveTextContent(
       manipulateStrings.removeHtmlTags(
-        chrome.i18n.getMessage('popup_html_add_key_text', ['Active']),
+        I18nUtils.getMessage('popup_html_add_key_text', ['Active']),
       ),
     );
   });
@@ -97,7 +101,7 @@ describe('add-key.component tests:\n', () => {
         );
       });
       expect(
-        await screen.findByText(chrome.i18n.getMessage('popup_accounts_fill')),
+        await screen.findByText(I18nUtils.getMessage('popup_accounts_fill')),
       );
     });
     it('Must add active key', async () => {
@@ -176,7 +180,7 @@ describe('add-key.component tests:\n', () => {
         await userEvent.click(screen.getByTestId(dataTestIdButton.importKeys));
       });
       expect(
-        await screen.findByText(chrome.i18n.getMessage('popup_accounts_fill')),
+        await screen.findByText(I18nUtils.getMessage('popup_accounts_fill')),
       );
     });
 
@@ -232,7 +236,7 @@ describe('add-key.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_account_password_is_public_key'),
+            I18nUtils.getMessage('popup_account_password_is_public_key'),
           ),
         );
       });
@@ -252,7 +256,7 @@ describe('add-key.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_accounts_incorrect_user'),
+            I18nUtils.getMessage('popup_accounts_incorrect_user'),
           ),
         );
       });
@@ -271,7 +275,7 @@ describe('add-key.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_accounts_incorrect_key'),
+            I18nUtils.getMessage('popup_accounts_incorrect_key'),
           ),
         );
       });

@@ -1,5 +1,8 @@
+import {
+  ComplexeCustomSelect,
+  OptionItem,
+} from '@common-ui/custom-select/custom-select.component';
 import { Screen } from '@interfaces/screen.interface';
-import { SelectAccountSectionComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section.component';
 import { ExportTransactionUtils } from '@popup/hive/utils/export-transactions.utils';
 import {
   addToLoadingList,
@@ -17,8 +20,14 @@ import { KeychainError } from 'src/keychain-error';
 import { setTitleContainerProperties } from 'src/popup/multichain/actions/title-container.actions';
 import { RootState } from 'src/popup/multichain/store';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
+type HiveAccountOption = OptionItem & {
+  value: string;
+};
+
 const ExportTransactions = ({
-  activeAccount,
+  accounts,
+  activeAccountName,
   setTitleContainerProperties,
   addToLoadingList,
   removeFromLoadingList,
@@ -27,6 +36,18 @@ const ExportTransactions = ({
 }: PropsFromRedux) => {
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
+  const [selectedAccountName, setSelectedAccountName] = useState(
+    activeAccountName ?? accounts[0]?.name,
+  );
+
+  const accountOptions: HiveAccountOption[] = accounts.map((account) => ({
+    label: account.name,
+    value: account.name,
+    img: `https://images.hive.blog/u/${account.name}/avatar`,
+  }));
+  const selectedAccountOption = accountOptions.find(
+    (accountOption) => accountOption.value === selectedAccountName,
+  );
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -35,7 +56,30 @@ const ExportTransactions = ({
     });
   }, []);
 
+  useEffect(() => {
+    if (!selectedAccountName && activeAccountName) {
+      setSelectedAccountName(activeAccountName);
+    }
+  }, [activeAccountName, selectedAccountName]);
+
+  useEffect(() => {
+    if (
+      selectedAccountName &&
+      accountOptions.some(
+        (accountOption) => accountOption.value === selectedAccountName,
+      )
+    ) {
+      return;
+    }
+
+    setSelectedAccountName(activeAccountName ?? accounts[0]?.name);
+  }, [accounts, activeAccountName, selectedAccountName]);
+
   const handleClickOnDownload = async () => {
+    if (!selectedAccountName) {
+      return;
+    }
+
     if (
       startDate &&
       endDate &&
@@ -49,7 +93,7 @@ const ExportTransactions = ({
     );
     try {
       await ExportTransactionUtils.downloadTransactions(
-        activeAccount.name!,
+        selectedAccountName,
         startDate,
         endDate,
         (percentage) => {
@@ -73,12 +117,23 @@ const ExportTransactions = ({
       <div
         className="introduction"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage(
+          __html: I18nUtils.getMessage(
             'popup_html_pref_export_transactions_info',
           ),
         }}
       />
-      <SelectAccountSectionComponent fullSize background="white" />
+      {selectedAccountOption && (
+        <div className="settings-hive-account-select-panel">
+          <ComplexeCustomSelect
+            options={accountOptions}
+            selectedItem={selectedAccountOption}
+            setSelectedItem={(option) =>
+              setSelectedAccountName(option.value)
+            }
+            background="white"
+          />
+        </div>
+      )}
       <FormContainer onSubmit={handleClickOnDownload}>
         <div className="form-fields">
           <InputComponent
@@ -110,7 +165,8 @@ const ExportTransactions = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.hive.activeAccount,
+    accounts: state.hive.accounts,
+    activeAccountName: state.hive.activeAccount.name,
   };
 };
 

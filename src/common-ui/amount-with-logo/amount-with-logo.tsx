@@ -5,6 +5,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { ColorsUtils } from 'src/utils/colors.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   amount: string | number;
   icon?: SVGIcons;
@@ -72,7 +73,7 @@ const AmountWithLogo = ({
 
   return (
     <div className={`amount-with-logo ${className}`}>
-      {title && <span className="title">{chrome.i18n.getMessage(title)}</span>}
+      {title && <span className="title">{I18nUtils.getMessage(title)}</span>}
       <div className="amount-logo-container">
         <>
           {amountElement}

@@ -1,4 +1,4 @@
-import { BaseApi } from 'src/api/base';
+import { ApiResponse, BaseApi } from 'src/api/base';
 
 const buildUrl = (url: string) => {
   const baseURL =
@@ -14,7 +14,20 @@ const post = async (url: string, body: any): Promise<any> => {
   return await BaseApi.post(buildUrl(url), body);
 };
 
+const getWithResponse = async (url: string): Promise<ApiResponse> => {
+  return await BaseApi.getWithResponse(buildUrl(url));
+};
+
+const postWithResponse = async (
+  url: string,
+  body: unknown,
+): Promise<ApiResponse> => {
+  return await BaseApi.postWithResponse(buildUrl(url), body);
+};
+
 export const KeychainApi = {
   get,
   post,
+  getWithResponse,
+  postWithResponse,
 };

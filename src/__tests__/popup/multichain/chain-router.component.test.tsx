@@ -10,6 +10,14 @@ import { ChainRouterComponent } from 'src/popup/multichain/chain-router.componen
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
+jest.mock('@popup/multichain/unlocked-app.component', () => {
+  const React = require('react');
+  return {
+    UnlockedAppComponent: () =>
+      React.createElement('div', { 'data-testid': 'unlocked-app' }),
+  };
+});
+
 describe('ChainRouter startup', () => {
   beforeEach(() => {
     LoadingValuesConfiguration.set();
@@ -59,6 +67,27 @@ describe('ChainRouter startup', () => {
 
     await waitFor(() => {
       expect(queryByTestId('signup-page')).not.toBeNull();
+    });
+  });
+
+  it('renders the unlocked app without branching on chain type after unlock', async () => {
+    const { queryByTestId } = customRender(
+      <ChainRouterComponent screen={undefined as any} />,
+      {
+        initialState: {
+          ...initialEmptyStateStore,
+          mk: 'mk',
+          hasFinishedSignup: true,
+        },
+      },
+    );
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId('unlocked-app')).not.toBeNull();
     });
   });
 });

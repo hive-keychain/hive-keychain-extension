@@ -1,0 +1,81 @@
+.ledger-page {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.embedded-ledger-page {
+  color: var(--main-font-color);
+  padding: 16px 24px 24px;
+  box-sizing: border-box;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  row-gap: 24px;
+  font-size: 16px;
+  position: relative;
+  min-height: 0;
+  width: 100%;
+
+  @include dialogs-title-panel();
+
+  .caption {
+    @include caption();
+    padding: 0;
+  }
+
+  .error {
+    @include caption();
+    color: $red;
+  }
+
+  .account-discovery,
+  .add-key,
+  .link-device,
+  .select-accounts,
+  .add-missing-keys {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    row-gap: 16px;
+    min-height: 0;
+  }
+
+  .missing-keys {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+  }
+
+  .list {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    overflow: auto;
+
+    .ledger-account-path {
+      @include poppins300(11px);
+      color: $lighter-grey;
+      margin-left: 8px;
+      align-self: center;
+    }
+  }
+
+  .bottom-button-panel {
+    display: flex;
+    align-items: center;
+    column-gap: 16px;
+    font-size: 20px;
+  }
+
+  .confirmation {
+    margin-top: 20px;
+    display: flex;
+    column-gap: 5px;
+    flex-direction: row;
+  }
+
+  .fill-space {
+    flex: 1;
+  }
+}

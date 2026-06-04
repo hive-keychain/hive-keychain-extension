@@ -17,6 +17,7 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import {
   emitAccountsChangedIfNeeded,
   getAccountsForOrigin,
+  removeWhitelistedChainsForOrigin,
   setChainIdForOrigin,
 } from 'src/background/evm/evm-provider-state.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
@@ -106,6 +107,7 @@ export const evmRequestWithoutConfirmation = async (
     case EvmRequestMethod.WALLET_REVOKE_PERMISSION: {
       const prevAccounts = await getAccountsForOrigin(dappInfo.origin);
       await EvmWalletUtils.revokeAllPermissions(dappInfo.origin);
+      await removeWhitelistedChainsForOrigin(dappInfo.origin);
       message.value.result = null;
       await emitAccountsChangedIfNeeded(dappInfo.origin, prevAccounts, []);
       break;
@@ -199,6 +201,10 @@ export const evmRequestWithoutConfirmation = async (
   // if ((await RequestHandlerUtils.countPendingRequest()) === 1) {
   //   requestHandler.closeWindow();
   // }
-  await requestHandler.removeRequestById(request.request_id, tab);
+  await requestHandler.removeRequestByLocator({
+    requestId: request.request_id,
+    tab,
+    origin: dappInfo.origin,
+  });
   CommunicationUtils.tabsSendMessage(tab, message);
 };

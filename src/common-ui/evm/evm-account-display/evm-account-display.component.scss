@@ -26,8 +26,10 @@
       }
       .edit-icon {
         display: none;
+        flex-shrink: 0;
         margin-top: -9px;
         margin-right: 8px;
+        cursor: pointer;
         svg {
           height: 20px;
           width: 20px;
@@ -47,6 +49,7 @@
         flex-direction: row;
         display: flex;
         column-gap: 6px;
+        align-items: center;
         &.full-address {
           @include poppins400(11px);
         }
@@ -56,7 +59,7 @@
   .action-panel {
     display: flex;
     flex-direction: column;
-    row-gap: 8px;
+    row-gap: 5px;
 
     .copy-icon {
       visibility: hidden;
@@ -67,6 +70,19 @@
         stroke: var(--main-font-color);
       }
     }
+    .hide-token {
+      visibility: visible;
+    }
+    .delete-account {
+      visibility: hidden;
+      color: $red;
+      svg path {
+        stroke: $red;
+      }
+      svg * {
+        stroke-width: 1;
+      }
+    }
   }
 
   &:hover {
@@ -74,9 +90,37 @@
       .copy-icon {
         visibility: visible !important;
       }
+      .delete-account {
+        visibility: visible !important;
+      }
     }
     .edit-icon {
       display: block !important;
+    }
+  }
+}
+
+@media (max-width: 434px) {
+  html.sidepanel-page {
+    .evm-accounts-page {
+      .evm-account-display {
+        grid-template-columns: 36px minmax(0, 1fr) 20px;
+
+        .account-info {
+          min-width: 0;
+          margin-left: 12px;
+
+          .bottom-line {
+            min-width: 0;
+
+            .account-address.full-address {
+              @include poppins400(9px);
+              min-width: 0;
+              overflow-wrap: anywhere;
+            }
+          }
+        }
+      }
     }
   }
 }

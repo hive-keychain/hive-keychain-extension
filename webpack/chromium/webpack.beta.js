@@ -1,10 +1,10 @@
 const { merge } = require('webpack-merge');
 const common = require('../webpack.common.js');
 const path = require('path');
-const dotenv = require('dotenv');
 const { DefinePlugin } = require('webpack');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const { toDefinePluginEnv } = require('../env');
 
 module.exports = merge(common, {
   mode: 'production',
@@ -14,9 +14,7 @@ module.exports = merge(common, {
     filename: '[name]Bundle.js',
   },
   plugins: [
-    new DefinePlugin({
-      'process.env': JSON.stringify(dotenv.config().parsed || {}),
-    }),
+    new DefinePlugin(toDefinePluginEnv({ IS_FIREFOX: false })),
     new CopyPlugin({
       patterns: [{ from: 'manifests/chromium-beta', to: '.' }],
     }),

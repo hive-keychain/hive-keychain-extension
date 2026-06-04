@@ -37,5 +37,9 @@
   &.image {
     grid-row: span 3;
     justify-content: space-between;
+
+    .value.address-content {
+      cursor: url('assets/images/global/copy-icon.png'), copy;
+    }
   }
 }

@@ -14,6 +14,7 @@ interface Props {
   chain?: EvmChain;
   tokenInfo?: EvmSmartContractInfo;
 }
+
 export const EvmTransactionWarningsComponent = ({
   warningHook,
   selectedAccount,
@@ -43,31 +44,6 @@ export const EvmTransactionWarningsComponent = ({
         </div>
       )}
 
-      {warningHook.duplicatedTransactionField !== undefined && (
-        <EvmRequestItem
-          field={warningHook.duplicatedTransactionField}
-          onWarningClicked={() =>
-            warningHook.openSingleWarningPopup(
-              -1,
-              -1,
-              warningHook.duplicatedTransactionField!.warnings![0],
-            )
-          }
-        />
-      )}
-      {warningHook.eip7702WarningField !== undefined && (
-        <EvmRequestItem
-          field={warningHook.eip7702WarningField}
-          onWarningClicked={() =>
-            warningHook.openSingleWarningPopup(
-              -1,
-              -1,
-              warningHook.eip7702WarningField!.warnings![0],
-            )
-          }
-        />
-      )}
-
       {warningHook.fields?.mainTokenAmount !== undefined &&
         warningHook.fields?.mainTokenAmount !== null && (
           <>
@@ -82,12 +58,11 @@ export const EvmTransactionWarningsComponent = ({
             <Fragment key={`${f.name}-${index}`}>
               <EvmRequestItem
                 field={f}
-                onWarningClicked={(warningIndex: number) =>
-                  warningHook.openSingleWarningPopup(
+                onWarningClicked={() =>
+                  warningHook.openWarningsPopup({
+                    type: 'dialog-other',
                     index,
-                    warningIndex,
-                    f.warnings![warningIndex],
-                  )
+                  })
                 }
               />
               {index !== warningHook.fields!.otherFields.length - 1 && (

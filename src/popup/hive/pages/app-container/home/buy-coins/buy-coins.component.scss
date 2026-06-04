@@ -4,6 +4,9 @@
   padding: 0px 24px;
   padding-bottom: 16px;
   row-gap: 24px;
+  // Exchange logos are authored at 170×49; scale down with available width.
+  --buy-exchange-logo-aspect-ratio: 170 / 49;
+  --buy-exchange-logo-max-width: 170px;
 
   .list {
     display: flex;
@@ -22,6 +25,26 @@
       position: relative;
       align-items: start;
       justify-content: center;
+      min-width: 0;
+
+      > .svg-icon {
+        align-self: stretch;
+        width: 100%;
+        max-width: min(var(--buy-exchange-logo-max-width), 100%);
+        aspect-ratio: var(--buy-exchange-logo-aspect-ratio);
+
+        > div {
+          width: 100%;
+          height: 100%;
+          border-radius: 10px;
+        }
+
+        svg {
+          display: block;
+          width: 100%;
+          height: 100%;
+        }
+      }
 
       .buy-button {
         position: absolute;
@@ -57,24 +80,42 @@
 
       .exchange-list {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         column-gap: 6px;
         row-gap: 12px;
         width: 100%;
+        min-width: 0;
+
         .exchange-item {
-          width: 170px;
-          height: 49px;
+          width: 100%;
+          min-width: 0;
+          max-width: min(var(--buy-exchange-logo-max-width), 100%);
+          aspect-ratio: var(--buy-exchange-logo-aspect-ratio);
+          justify-self: center;
           display: flex;
           align-items: center;
           justify-content: center;
           box-sizing: border-box;
           cursor: pointer;
-          .svg-icon > div {
-            width: 170px;
-            height: 49px;
-            border-radius: 10px;
-            &:hover {
-              box-shadow: 0px 4px 9px 0px var(--buy-card-hovered-shadow);
+
+          .svg-icon {
+            width: 100%;
+            height: 100%;
+
+            > div {
+              width: 100%;
+              height: 100%;
+              border-radius: 10px;
+
+              &:hover {
+                box-shadow: 0px 4px 9px 0px var(--buy-card-hovered-shadow);
+              }
+            }
+
+            svg {
+              display: block;
+              width: 100%;
+              height: 100%;
             }
           }
         }

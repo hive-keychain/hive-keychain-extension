@@ -3,6 +3,7 @@ import {
   EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
+  EvmAddressVerificationFlags,
   EvmTransactionDecodedData,
   EvmTransactionDecodedDataInput,
   EvmTransactionVerificationInformation,
@@ -11,17 +12,147 @@ import {
   EvmTransactionWarningType,
   TransactionConfirmationField,
   TransactionConfirmationFields,
+  VerifyTransactionParams,
 } from '@popup/evm/interfaces/evm-transactions.interface';
+import { EvmLightNodeSecurityCheck } from '@popup/evm/interfaces/evm-light-node.interface';
+import { LightNodeVerificationData } from '@popup/evm/interfaces/evm-verification.interface';
 import { EvmAccountOrPublic } from '@popup/evm/interfaces/wallet.interface';
 import { AbiList } from '@popup/evm/reference-data/abi.data';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
+import {
+  EvmSecurityReasonUtils,
+  EvmSecurityReasonWarningContext,
+} from '@popup/evm/utils/evm-security-reason.utils';
+import { createGroupedSecurityWarning } from '@popup/evm/utils/evm-grouped-security-warning.utils';
+import { EvmVerificationUtils } from '@popup/evm/utils/evm-verification.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ethers, Interface, Result } from 'ethers';
-import { KeychainApi } from 'src/api/keychain';
 import Logger from 'src/utils/logger.utils';
+
+const recipientInputNameList = [
+  'recipient',
+  'spender',
+  '_spender',
+  'usr',
+  'guy',
+  'to',
+  '_to',
+  'dst',
+];
+const amountInputNameList = ['amount', 'value', '_value', 'wad'];
+
+/** Includes Maker/DAI-style `dst` / `wad` / `src` names from verified contract ABIs. */
+const erc20TransferRecipientArgNames = ['recipient', 'to', '_to', 'dst'];
+const erc20TransferAmountArgNames = ['amount', 'value', '_value', 'wad'];
+const erc20TransferFromSenderArgNames = ['sender', 'from', 'src', '_from'];
+const erc20ApproveSpenderArgNames = ['spender', '_spender', 'usr', 'guy'];
+const erc20ApproveAmountArgNames = ['amount', 'value', '_value', 'wad'];
+
+const isErc20TransferRecipientArg = (
+  methodName: string,
+  inputName: string,
+): boolean =>
+  methodName === 'transfer' &&
+  erc20TransferRecipientArgNames.includes(inputName.toLowerCase());
+
+const isErc20TransferAmountArg = (
+  methodName: string,
+  inputName: string,
+): boolean =>
+  methodName === 'transfer' &&
+  erc20TransferAmountArgNames.includes(inputName.toLowerCase());
+
+const getErc20DecodedFieldName = (
+  methodName: string,
+  inputName: string,
+): string | undefined => {
+  const normalizedMethodName = methodName.toLowerCase();
+  const normalizedInputName = inputName.toLowerCase();
+
+  if (normalizedMethodName === 'transfer') {
+    if (isErc20TransferRecipientArg(methodName, inputName)) {
+      return 'evm_operation_to';
+    }
+    if (isErc20TransferAmountArg(methodName, inputName)) {
+      return 'evm_operation_amount';
+    }
+    return undefined;
+  }
+
+  if (normalizedMethodName === 'transferfrom') {
+    if (erc20TransferFromSenderArgNames.includes(normalizedInputName)) {
+      return 'evm_operation_from';
+    }
+    if (erc20TransferRecipientArgNames.includes(normalizedInputName)) {
+      return 'evm_operation_to';
+    }
+    if (erc20TransferAmountArgNames.includes(normalizedInputName)) {
+      return 'evm_operation_amount';
+    }
+  }
+
+  if (normalizedMethodName === 'approve') {
+    if (erc20ApproveSpenderArgNames.includes(normalizedInputName)) {
+      return 'evm_operation_spender';
+    }
+    if (erc20ApproveAmountArgNames.includes(normalizedInputName)) {
+      return 'evm_operation_amount';
+    }
+  }
+
+  return undefined;
+};
+
+const resolveErc20TransferFromDecodedArgs = (
+  methodName: string,
+  inputs: ReadonlyArray<{ name: string }>,
+  args: ReadonlyArray<unknown>,
+): { receiverAddress: string; amountRaw: bigint } | null => {
+  if (methodName !== 'transfer' || args.length < 2) {
+    return null;
+  }
+
+  let receiverIndex = inputs.findIndex((input) =>
+    isErc20TransferRecipientArg(methodName, input.name),
+  );
+  let amountIndex = inputs.findIndex((input) =>
+    isErc20TransferAmountArg(methodName, input.name),
+  );
+
+  if (receiverIndex < 0) {
+    receiverIndex = 0;
+  }
+  if (amountIndex < 0) {
+    amountIndex = 1;
+  }
+
+  const receiverValue = args[receiverIndex];
+  const amountValue = args[amountIndex];
+
+  if (
+    (typeof receiverValue !== 'string' && typeof receiverValue !== 'bigint') ||
+    !ethers.isAddress(String(receiverValue))
+  ) {
+    return null;
+  }
+
+  if (
+    typeof amountValue !== 'bigint' &&
+    typeof amountValue !== 'number' &&
+    typeof amountValue !== 'string'
+  ) {
+    return null;
+  }
+
+  return {
+    receiverAddress: String(receiverValue),
+    amountRaw: BigInt(amountValue.toString()),
+  };
+};
 
 export enum EvmInputDisplayType {
   BYTES = 'bytes',
@@ -60,31 +191,49 @@ const getDisplayInputType = (
       switch (methodName) {
         case 'transferFrom':
         case 'transfer': {
-          switch (name) {
+          switch (name.toLowerCase()) {
             case 'amount':
+            case 'value':
+            case '_value':
+            case 'wad':
               return EvmInputDisplayType.BALANCE;
             case 'recipient':
+            case 'to':
+            case '_to':
+            case 'dst':
               return EvmInputDisplayType.WALLET_ADDRESS;
           }
         }
         case 'approve': {
-          switch (name) {
-            case 'spender': {
+          switch (name.toLowerCase()) {
+            case 'spender':
+            case '_spender':
+            case 'usr':
+            case 'guy':
               return EvmInputDisplayType.WALLET_ADDRESS;
-            }
             case 'amount':
+            case 'value':
+            case '_value':
+            case 'wad':
               return EvmInputDisplayType.BALANCE;
           }
         }
         case 'transferFrom': {
-          switch (name) {
-            case 'value': {
+          switch (name.toLowerCase()) {
+            case 'value':
+            case '_value':
+            case 'amount':
+            case 'wad':
               return EvmInputDisplayType.BALANCE;
-            }
             case 'sender':
-            case 'recipient': {
+            case 'from':
+            case 'src':
+            case '_from':
+            case 'recipient':
+            case 'to':
+            case '_to':
+            case 'dst':
               return EvmInputDisplayType.WALLET_ADDRESS;
-            }
           }
         }
       }
@@ -228,18 +377,13 @@ const getFieldWarnings = async (
   const warnings: EvmTransactionWarning[] = [];
   switch (tokenType) {
     case EVMSmartContractType.ERC20: {
-      switch (methodName) {
-        case 'transfer': {
-          if (name === 'recipient') {
-            return getAddressWarning(
-              value,
-              chainId,
-              verifyTransactionInformation,
-              localAccounts,
-            );
-          } else if (name === 'amount') {
-          }
-        }
+      if (recipientInputNameList.includes(name)) {
+        return getAddressWarning(
+          value,
+          chainId,
+          verifyTransactionInformation,
+          localAccounts,
+        );
       }
       break;
     }
@@ -377,8 +521,219 @@ const getDomainWarnings = async (
       type: EvmTransactionWarningType.BASE,
     });
   }
+  if (
+    verifyTransactionInformation?.domain?.isPhishing &&
+    !verifyTransactionInformation?.domain?.isBlacklisted
+  ) {
+    appendSecurityReasonWarnings(
+      warnings,
+      verifyTransactionInformation.domain.securityReasons,
+      true,
+      'domain',
+    );
+  }
 
   return warnings;
+};
+
+const getAddressVerificationFlags = (
+  verifyTransactionInformation: EvmTransactionVerificationInformation,
+  address: string,
+): EvmAddressVerificationFlags => {
+  if (ethers.isAddress(address)) {
+    const perAddress =
+      verifyTransactionInformation.addresses?.[address.toLowerCase()];
+    if (perAddress) {
+      return perAddress;
+    }
+  }
+
+  return {
+    isBlacklisted: verifyTransactionInformation.to?.isBlacklisted,
+    isMalicious: verifyTransactionInformation.to?.isMalicious,
+    isWhitelisted: verifyTransactionInformation.to?.isWhitelisted,
+  };
+};
+
+const setAddressVerificationFlags = (
+  verification: EvmTransactionVerificationInformation,
+  address: string,
+  flags: EvmAddressVerificationFlags,
+) => {
+  if (!ethers.isAddress(address)) {
+    return;
+  }
+  const key = address.toLowerCase();
+  if (!verification.addresses) {
+    verification.addresses = {};
+  }
+  verification.addresses[key] = {
+    ...verification.addresses[key],
+    ...flags,
+  };
+};
+
+const applyLightNodeSecurityCheck = (
+  verification: EvmTransactionVerificationInformation,
+  address: string,
+  security?: EvmLightNodeSecurityCheck,
+) => {
+  if (!security) {
+    return;
+  }
+  setAddressVerificationFlags(verification, address, {
+    isMalicious: security.isMalicious,
+    securityReasons: security.reasons.length ? [...security.reasons] : undefined,
+    rugPullRisk: security.isRugPull === true ? true : undefined,
+    rugPullReasons: security.isRugPullReason?.length
+      ? [...security.isRugPullReason]
+      : undefined,
+  });
+};
+
+const applyLightNodeContractSecurity = (
+  contract: EvmTransactionVerificationInformation['contract'],
+  security?: EvmLightNodeSecurityCheck,
+) => {
+  if (!security) {
+    return;
+  }
+  if (security.isMalicious) {
+    contract.isMalicious = true;
+  }
+  if (security.reasons.length) {
+    contract.securityReasons = [...security.reasons];
+  }
+  if (security.isRugPull === true) {
+    contract.rugPullRisk = true;
+    if (security.isRugPullReason?.length) {
+      contract.rugPullReasons = [...security.isRugPullReason];
+    }
+  }
+};
+
+const ADDRESS_SECURITY_SUMMARY_MESSAGE = 'evm_security_reason_grouped_address_risk';
+const DOMAIN_SECURITY_SUMMARY_MESSAGE = 'evm_security_reason_grouped_domain_risk';
+const RUG_PULL_SUMMARY_MESSAGE = 'evm_security_reason_rug_pull';
+const ADDRESS_MALICIOUS_FALLBACK_MESSAGE = 'evm_transaction_receiver_malicious';
+const DOMAIN_PHISHING_FALLBACK_MESSAGE = 'evm_transaction_domain_phishing';
+
+const appendSecurityReasonWarnings = (
+  warnings: EvmTransactionWarning[],
+  securityReasons: string[] | undefined,
+  isMalicious: boolean,
+  context: EvmSecurityReasonWarningContext,
+) => {
+  const detailReasons = EvmSecurityReasonUtils.buildWarningsForSecurityReasons(
+    securityReasons ?? [],
+    isMalicious,
+    context,
+  );
+  if (detailReasons.length === 0) {
+    return;
+  }
+
+  const fallbackMessage =
+    context === 'domain'
+      ? DOMAIN_PHISHING_FALLBACK_MESSAGE
+      : ADDRESS_MALICIOUS_FALLBACK_MESSAGE;
+  const onlyFallback =
+    detailReasons.length === 1 && detailReasons[0].message === fallbackMessage;
+
+  if (onlyFallback) {
+    warnings.push({
+      ignored: false,
+      level: EvmTransactionWarningLevel.HIGH,
+      message: detailReasons[0].message,
+      messageParams: detailReasons[0].messageParams,
+      type: EvmTransactionWarningType.BASE,
+    });
+    return;
+  }
+
+  const summaryMessage =
+    context === 'domain'
+      ? DOMAIN_SECURITY_SUMMARY_MESSAGE
+      : ADDRESS_SECURITY_SUMMARY_MESSAGE;
+  warnings.push(
+    createGroupedSecurityWarning(
+      summaryMessage,
+      detailReasons,
+      context === 'domain' ? 'domainSecurity' : 'addressSecurity',
+    ),
+  );
+};
+
+const appendRugPullReasonWarnings = (
+  warnings: EvmTransactionWarning[],
+  rugPullReasons: string[] | undefined,
+  isRugPull: boolean,
+) => {
+  if (!isRugPull) {
+    return;
+  }
+
+  const detailReasons = EvmSecurityReasonUtils.buildWarningsForRugPullReasons(
+    rugPullReasons ?? [],
+    true,
+  );
+  if (detailReasons.length === 0) {
+    return;
+  }
+
+  const onlyFallback =
+    detailReasons.length === 1 &&
+    detailReasons[0].message === RUG_PULL_SUMMARY_MESSAGE &&
+    (rugPullReasons?.length ?? 0) === 0;
+
+  if (onlyFallback) {
+    warnings.push({
+      ignored: false,
+      level: EvmTransactionWarningLevel.HIGH,
+      message: RUG_PULL_SUMMARY_MESSAGE,
+      type: EvmTransactionWarningType.BASE,
+      warningKey: 'rugPull',
+    });
+    return;
+  }
+
+  warnings.push(
+    createGroupedSecurityWarning(
+      RUG_PULL_SUMMARY_MESSAGE,
+      detailReasons,
+      'rugPull',
+    ),
+  );
+};
+
+const isDomainPhishing = (security?: EvmLightNodeSecurityCheck): boolean => {
+  if (!security) {
+    return false;
+  }
+  return (
+    security.isMalicious ||
+    security.reasons.includes('phishing_site') ||
+    security.reasons.includes('scamsniffer_blacklist')
+  );
+};
+
+const collectRecipientAddressesFromDecodedArgs = (
+  inputs: ReadonlyArray<{ name: string }>,
+  args: ReadonlyArray<unknown>,
+): string[] => {
+  const addresses: string[] = [];
+  for (let index = 0; index < inputs.length; index++) {
+    const input = inputs[index];
+    const value = args[index];
+    if (
+      recipientInputNameList.includes(input.name) &&
+      typeof value === 'string' &&
+      ethers.isAddress(value)
+    ) {
+      addresses.push(value);
+    }
+  }
+  return addresses;
 };
 
 const getAddressWarning = async (
@@ -393,7 +748,12 @@ const getAddressWarning = async (
     ? await EvmRequestsUtils.resolveEns(address)
     : '';
 
-  if (verifyTransactionInformation?.to?.isBlacklisted) {
+  const addressFlags = getAddressVerificationFlags(
+    verifyTransactionInformation,
+    address,
+  );
+
+  if (addressFlags.isBlacklisted) {
     warnings.push({
       ignored: false,
       level: EvmTransactionWarningLevel.HIGH,
@@ -401,7 +761,29 @@ const getAddressWarning = async (
       type: EvmTransactionWarningType.BASE,
     });
   }
+  if (addressFlags.isMalicious && !addressFlags.isBlacklisted) {
+    appendSecurityReasonWarnings(
+      warnings,
+      addressFlags.securityReasons,
+      true,
+      'address',
+    );
+  }
+  if (addressFlags.rugPullRisk) {
+    appendRugPullReasonWarnings(
+      warnings,
+      addressFlags.rugPullReasons,
+      true,
+    );
+  }
+  const hasLightNodeSecurityRisk =
+    !!addressFlags.isBlacklisted ||
+    !!addressFlags.isMalicious ||
+    !!addressFlags.rugPullRisk ||
+    !!addressFlags.securityReasons?.length ||
+    !!addressFlags.rugPullReasons?.length;
   if (
+    !hasLightNodeSecurityRisk &&
     !(await EvmAddressesUtils.isWhitelisted(address, chainId, localAccounts))
   ) {
     const savedEns = isAddress
@@ -423,7 +805,7 @@ const getAddressWarning = async (
       extraData: {
         placeholder: 'evm_transaction_receiver_favorite_label',
         resolveAllLabel: address,
-        ...(ensName ? { ensName } : {}),
+        ...(ensName ? { ensName, defaultLabel: ensName } : {}),
       },
       onConfirm: (label: string) => {
         return EvmAddressesUtils.saveWalletAddress(chainId, address, label);
@@ -431,14 +813,23 @@ const getAddressWarning = async (
     });
   }
 
-  const spoofingAddress = await EvmAddressesUtils.isPotentialSpoofing(address);
+  const spoofingAddress = await EvmAddressesUtils.isPotentialSpoofing(
+    address,
+    localAccounts,
+  );
 
   if (!!spoofingAddress) {
+    const similarAddressDisplay =
+      await EvmAddressesUtils.getAddressDisplayForWarning(
+        spoofingAddress.address,
+        chainId,
+        localAccounts,
+      );
     warnings.push({
       ignored: false,
       level: EvmTransactionWarningLevel.MEDIUM,
       message: spoofingAddress.errorMessage,
-      messageParams: [spoofingAddress.address],
+      messageParams: [similarAddressDisplay],
       type: EvmTransactionWarningType.BASE,
     });
   }
@@ -468,6 +859,13 @@ const getSmartContractWarningAndInfo = async (
     warnings: [],
     information: [],
   };
+  const contractInfo = verifyTransactionInformation?.contract;
+  const hasLightNodeContractSecurityRisk =
+    !!contractInfo?.isBlacklisted ||
+    !!contractInfo?.isMalicious ||
+    !!contractInfo?.rugPullRisk ||
+    !!contractInfo?.securityReasons?.length ||
+    !!contractInfo?.rugPullReasons?.length;
 
   if (verifyTransactionInformation?.contract?.proxy?.target) {
     warningAndInfo.information!.push({
@@ -477,6 +875,7 @@ const getSmartContractWarningAndInfo = async (
   }
 
   if (
+    !hasLightNodeContractSecurityRisk &&
     !(await EvmAddressesUtils.isWhitelisted(address, chainId, localAccounts))
   ) {
     if (
@@ -488,7 +887,10 @@ const getSmartContractWarningAndInfo = async (
       return warningAndInfo;
     }
 
-    const defaultLabel = usedToken?.name?.trim();
+    const defaultLabel =
+      usedToken?.type !== EVMSmartContractType.NATIVE
+        ? usedToken?.name?.trim()
+        : undefined;
 
     warningAndInfo.warnings?.push({
       ignored: false,
@@ -496,6 +898,7 @@ const getSmartContractWarningAndInfo = async (
       type: EvmTransactionWarningType.WHITELIST_ADDRESS,
       message: 'evm_transaction_contract_not_used',
       extraData: {
+        placeholder: 'evm_transaction_receiver_favorite_label',
         ...(defaultLabel ? { defaultLabel } : {}),
         resolveAllLabel: defaultLabel || address,
       },
@@ -503,6 +906,22 @@ const getSmartContractWarningAndInfo = async (
         return EvmAddressesUtils.saveContractAddress(address, chainId, label);
       },
     });
+  }
+
+  if (contractInfo?.isMalicious) {
+    appendSecurityReasonWarnings(
+      warningAndInfo.warnings!,
+      contractInfo.securityReasons,
+      true,
+      'address',
+    );
+  }
+  if (contractInfo?.rugPullRisk) {
+    appendRugPullReasonWarnings(
+      warningAndInfo.warnings!,
+      contractInfo.rugPullReasons,
+      true,
+    );
   }
 
   return warningAndInfo;
@@ -523,35 +942,129 @@ const normalizeVerificationInformation = (
       ...(verificationInformation.contract ?? {}),
       proxy: normalizedProxyTarget ? { target: normalizedProxyTarget } : {},
     },
+    domain: verificationInformation.domain ?? {},
+    to: verificationInformation.to ?? {},
   } as EvmTransactionVerificationInformation;
 };
 
-const verifyTransactionInformation = async (
-  domain?: string,
-  to?: string,
-  contract?: string,
-  proxyTarget?: string | null,
-): Promise<EvmTransactionVerificationInformation> => {
-  let url = `evm/verify-transaction?`;
-  if (domain) {
-    url += `domain=${domain}`;
-  }
-  if (to) {
-    url += `&to=${to}`;
-  }
-  if (contract) {
-    url += `&contract=${contract}`;
+const mergeLightNodeSecurityIntoVerification = (
+  verification: EvmTransactionVerificationInformation,
+  lightNodeData: LightNodeVerificationData,
+): EvmTransactionVerificationInformation => {
+  if (!lightNodeData || Object.keys(lightNodeData).length === 0) {
+    return verification;
   }
 
-  try {
-    const result = await KeychainApi.get(url);
-    return normalizeVerificationInformation(result, proxyTarget);
-  } catch (err) {
-    Logger.error('Error while fetchingm transaction information', err);
-    return {
-      unableToReach: true,
-    } as EvmTransactionVerificationInformation;
+  const merged: EvmTransactionVerificationInformation = {
+    ...verification,
+    domain: { ...verification.domain },
+    to: { ...verification.to },
+    contract: { ...verification.contract },
+  };
+
+  if (lightNodeData.unavailable) {
+    merged.lightNodeSecurityUnavailable = true;
   }
+
+  const domainSecurity = lightNodeData.domainSecurity;
+  if (isDomainPhishing(domainSecurity)) {
+    merged.domain.isPhishing = true;
+    if (domainSecurity?.reasons.length) {
+      merged.domain.securityReasons = [...domainSecurity.reasons];
+    }
+  }
+
+  if (lightNodeData.addressSecurityByAddress) {
+    for (const [address, security] of Object.entries(
+      lightNodeData.addressSecurityByAddress,
+    )) {
+      applyLightNodeSecurityCheck(merged, address, security);
+    }
+  }
+
+  applyLightNodeContractSecurity(merged.contract, lightNodeData.contractSecurity);
+
+  return merged;
+};
+
+const enrichVerificationForAddresses = async (
+  verification: EvmTransactionVerificationInformation,
+  addresses: string[],
+  _params: { chainId: string; domain?: string },
+): Promise<EvmTransactionVerificationInformation> => {
+  const uniqueAddresses = [
+    ...new Set(
+      addresses
+        .filter((address) => ethers.isAddress(address))
+        .map((address) => address.toLowerCase()),
+    ),
+  ];
+
+  if (uniqueAddresses.length === 0) {
+    return verification;
+  }
+
+  await Promise.all(
+    uniqueAddresses.map(async (address) => {
+      const receiverSecurity = await EvmLightNodeUtils.getReceiverSecurity(
+        address,
+      ).catch(() => undefined);
+
+      applyLightNodeSecurityCheck(verification, address, receiverSecurity);
+    }),
+  );
+
+  return verification;
+};
+
+const verifyTransactionInformation = async (
+  params: VerifyTransactionParams = {},
+): Promise<EvmTransactionVerificationInformation> => {
+  const verification = normalizeVerificationInformation(
+    {},
+    params.proxyTarget,
+  );
+
+  const lightNodeResult = await EvmVerificationUtils.fetchLightNodeVerificationData(
+    params,
+  )
+    .then((value) => ({ status: 'fulfilled', value }) as const)
+    .catch((reason) => ({ status: 'rejected', reason }) as const);
+
+  const lightNodeData =
+    lightNodeResult.status === 'fulfilled'
+      ? lightNodeResult.value
+      : { unavailable: true };
+
+  if (lightNodeResult.status === 'rejected') {
+    Logger.error('Light-node security verification failed', lightNodeResult.reason);
+  }
+
+  const merged = mergeLightNodeSecurityIntoVerification(
+    verification,
+    lightNodeData,
+  );
+
+  if (params.to && ethers.isAddress(params.to)) {
+    const toKey = params.to.toLowerCase();
+    const receiverFlags = merged.addresses?.[toKey];
+    setAddressVerificationFlags(merged, params.to, {
+      isBlacklisted: merged.to?.isBlacklisted,
+      isMalicious: receiverFlags?.isMalicious ?? merged.to?.isMalicious,
+      isWhitelisted: merged.to?.isWhitelisted,
+    });
+  }
+
+  for (const recipient of params.recipients ?? []) {
+    if (!ethers.isAddress(recipient)) {
+      continue;
+    }
+    const receiverSecurity =
+      lightNodeData.addressSecurityByAddress?.[recipient.toLowerCase()];
+    applyLightNodeSecurityCheck(merged, recipient, receiverSecurity);
+  }
+
+  return merged;
 };
 
 /**
@@ -635,9 +1148,6 @@ const parseData = async (
   }
 };
 
-const recipientInputNameList = ['recipient', 'spender'];
-const amountInputNameList = ['amount'];
-
 const parseArgs = (args: Result): any[] => {
   return args.toArray().map((arg) => {
     if (typeof arg === 'object') {
@@ -657,11 +1167,17 @@ export const EvmTransactionParserUtils = {
   getDomainWarnings,
   normalizeVerificationInformation,
   verifyTransactionInformation,
+  enrichVerificationForAddresses,
+  collectRecipientAddressesFromDecodedArgs,
   getAddressWarning,
   getSmartContractWarningAndInfo,
   parseData,
   findAbiFromData,
   getBundledAbiByDataSelector,
+  isErc20TransferRecipientArg,
+  isErc20TransferAmountArg,
+  getErc20DecodedFieldName,
+  resolveErc20TransferFromDecodedArgs,
   recipientInputNameList,
   amountInputNameList,
   parseArgs,

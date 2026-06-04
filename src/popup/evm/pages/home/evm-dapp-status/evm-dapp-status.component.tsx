@@ -16,12 +16,14 @@ import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-displa
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { EvmDappUtils } from 'src/popup/evm/utils/evm-dapp.utils';
 import {
   getHostnameFromUrl,
   getOriginFromUrl,
 } from 'src/utils/browser-origin.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const EvmDappStatus = ({
   activeAccount,
   accounts,
@@ -43,6 +45,13 @@ const EvmDappStatus = ({
   }, [activeAccount.address, dapp]);
 
   const init = async () => {
+    chrome.tabs.onActivated.addListener(async (activeInfo) => {
+      const [activeTab] = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+      if (activeTab?.url && activeTab.url.length > 0) setDapp(activeTab);
+    });
     const [activeTab] = await chrome.tabs.query({
       active: true,
       currentWindow: true,
@@ -67,9 +76,8 @@ const EvmDappStatus = ({
     }
 
     const normalizedActiveAddress = activeAccount.address.toLowerCase();
-    const connectedOriginWallets = await EvmWalletUtils.getConnectedWallets(
-      origin,
-    );
+    const connectedOriginWallets =
+      await EvmWalletUtils.getConnectedWallets(origin);
 
     setConnectedWallets(connectedOriginWallets);
     if (connectedOriginWallets.includes(normalizedActiveAddress)) {
@@ -85,15 +93,35 @@ const EvmDappStatus = ({
     connectedWallets.includes(account.wallet.address.toLowerCase()),
   );
   const unconnectedAccounts = accounts.filter(
-    (account) => !connectedWallets.includes(account.wallet.address.toLowerCase()),
+    (account) =>
+      !connectedWallets.includes(account.wallet.address.toLowerCase()),
   );
 
   if (!dapp?.url) return null;
+
+  const dappHostname = getHostnameFromUrl(dapp.url);
+  const fallbackDappIconUrl = dappHostname
+    ? EvmDappUtils.getEvmDappFaviconUrl(dappHostname)
+    : undefined;
+
+  const handleDappIconError = (
+    event: React.SyntheticEvent<HTMLImageElement>,
+  ) => {
+    if (
+      fallbackDappIconUrl &&
+      event.currentTarget.src !== fallbackDappIconUrl
+    ) {
+      event.currentTarget.src = fallbackDappIconUrl;
+      return;
+    }
+    event.currentTarget.style.display = 'none';
+  };
 
   return (
     <div className="dapp-status-wrapper">
       <DappStatusComponent
         imageUrl={dapp?.favIconUrl}
+        fallbackImageUrl={fallbackDappIconUrl}
         onClick={() => setShowDetail(true)}
         status={status}
       />
@@ -103,20 +131,25 @@ const EvmDappStatus = ({
           onClickOutside={() => setShowDetail(false)}>
           <div className="dapp-status-details-wrapper">
             <div className="popup-title">
-              <img src={dapp?.favIconUrl} />
-              <div className="domain">{getHostnameFromUrl(dapp.url)}</div>
+              {(dapp?.favIconUrl || fallbackDappIconUrl) && (
+                <img
+                  src={dapp?.favIconUrl || fallbackDappIconUrl}
+                  onError={handleDappIconError}
+                />
+              )}
+              <div className="domain">{dappHostname}</div>
               <SVGIcon
                 icon={SVGIcons.TOP_BAR_CLOSE_BTN}
                 onClick={() => setShowDetail(false)}
               />
             </div>
             <div className="caption">
-              {chrome.i18n.getMessage('popup_html_evm_dapp_status_caption')}
+              {I18nUtils.getMessage('popup_html_evm_dapp_status_caption')}
             </div>
             <div className="accounts-section">
               {connectedAccounts.length ? (
                 <div className="account-section-title">
-                  {chrome.i18n.getMessage(
+                  {I18nUtils.getMessage(
                     'popup_html_evm_dapp_status_connected_accounts',
                   )}
                 </div>
@@ -156,7 +189,7 @@ const EvmDappStatus = ({
               ))}
               {unconnectedAccounts.length ? (
                 <div className="account-section-title">
-                  {chrome.i18n.getMessage(
+                  {I18nUtils.getMessage(
                     'popup_html_evm_dapp_status_other_accounts',
                   )}
                 </div>
@@ -197,7 +230,7 @@ const EvmDappStatus = ({
                   setShowDetail(false);
                   navigateTo(EvmScreen.EVM_DAPPS_CONNECTIONS);
                 }}>
-                {chrome.i18n.getMessage(
+                {I18nUtils.getMessage(
                   'popup_html_evm_dapp_status_show_all_connected',
                 )}
               </button>

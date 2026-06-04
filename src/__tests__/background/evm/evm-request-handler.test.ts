@@ -169,6 +169,61 @@ describe('evm-request-handler tests:\n', () => {
     expect(persisted.requestsData).toEqual([{ request_id: 15, tab: 7 }]);
   });
 
+  it('matches and removes EVM requests by request id, tab, and origin', async () => {
+    storage[LocalStorageKeyEnum.__EVM_REQUEST_HANDLER] = {
+      requestsData: [
+        {
+          request_id: 13,
+          tab: 7,
+          dappInfo: { origin: 'https://first.example' },
+        },
+        {
+          request_id: 13,
+          tab: 8,
+          dappInfo: { origin: 'https://second.example' },
+        },
+        {
+          request_id: 13,
+          tab: 7,
+          dappInfo: { origin: 'https://third.example' },
+        },
+      ],
+    };
+    const handler = new EvmRequestHandler();
+    await handler.initFromLocalStorage(
+      storage[LocalStorageKeyEnum.__EVM_REQUEST_HANDLER]!.requestsData,
+    );
+    const locator = {
+      requestId: 13,
+      tab: 7,
+      origin: 'https://third.example',
+    };
+
+    expect(handler.getRequestDataByLocator(locator)).toEqual(
+      expect.objectContaining({
+        tab: 7,
+        dappInfo: { origin: 'https://third.example' },
+      }),
+    );
+
+    await handler.removeRequestByLocator(locator, false);
+
+    expect(storage[LocalStorageKeyEnum.__EVM_REQUEST_HANDLER]).toEqual({
+      requestsData: [
+        {
+          request_id: 13,
+          tab: 7,
+          dappInfo: { origin: 'https://first.example' },
+        },
+        {
+          request_id: 13,
+          tab: 8,
+          dappInfo: { origin: 'https://second.example' },
+        },
+      ],
+    });
+  });
+
   it('serializes request updates against the latest persisted queue', async () => {
     storage[LocalStorageKeyEnum.__EVM_REQUEST_HANDLER] = {
       requestsData: [

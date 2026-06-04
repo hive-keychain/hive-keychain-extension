@@ -4,9 +4,10 @@ import React from 'react';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { BalanceChangeCard } from 'src/dialog/components/balance-change-card/balance-change-card.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('BalanceChangeCard', () => {
   beforeEach(() => {
-    chrome.i18n.getMessage = jest.fn(mocksImplementation.i18nGetMessageCustom);
+    I18nUtils.getMessage = jest.fn(mocksImplementation.i18nGetMessageCustom);
   });
 
   afterEach(() => {
@@ -27,7 +28,7 @@ describe('BalanceChangeCard', () => {
     );
 
     expect(
-      screen.getByText(chrome.i18n.getMessage('evm_balance_change_title')),
+      screen.getByText(I18nUtils.getMessage('evm_balance_change_title')),
     ).toBeInTheDocument();
     expect(screen.getByText('10 ETH')).toBeInTheDocument();
     expect(screen.getByText('8 ETH')).toBeInTheDocument();
@@ -59,11 +60,11 @@ describe('BalanceChangeCard', () => {
     );
 
     expect(
-      screen.getByText(chrome.i18n.getMessage('evm_balance_change_title')),
+      screen.getByText(I18nUtils.getMessage('evm_balance_change_title')),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        chrome.i18n.getMessage('evm_insufficient_token_balance', ['ETH']),
+        I18nUtils.getMessage('evm_insufficient_token_balance', ['ETH']),
       ),
     ).toBeInTheDocument();
     expect(screen.queryByText('10 ETH')).not.toBeInTheDocument();

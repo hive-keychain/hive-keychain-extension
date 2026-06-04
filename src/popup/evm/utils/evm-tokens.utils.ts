@@ -28,6 +28,7 @@ import {
   EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
+import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import {
   AbiList,
   ERC1155Abi,
@@ -50,6 +51,8 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
 const SHORT_BALANCE_DECIMALS = 5;
+const NATIVE_TOKEN_PLACEHOLDER_ADDRESS =
+  '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 const ERC721_INTERFACE_ID = '0x80ac58cd';
 const ERC1155_INTERFACE_ID = '0xd9b67a26';
 const ERC165Abi = [
@@ -95,6 +98,9 @@ const normalizeOptionalCoingeckoId = (value: string | undefined) => {
   const normalizedValue = value?.trim();
   return normalizedValue?.length ? normalizedValue : undefined;
 };
+
+const isNativeTokenPlaceholderAddress = (address?: string) =>
+  address?.trim().toLowerCase() === NATIVE_TOKEN_PLACEHOLDER_ADDRESS;
 
 const normalizeCustomWalletKey = (walletAddress: string) =>
   walletAddress.toLowerCase();
@@ -365,10 +371,22 @@ const getTotalBalanceInMainToken = (
   tokens: NativeAndErc20Token[],
   chain: EvmChain,
 ) => {
-  const mainToken = tokens.find(
-    (token) =>
-      token.tokenInfo.symbol.toLowerCase() === chain.mainToken.toLowerCase(),
-  );
+  const normalizedMainTokenSymbol = chain?.mainToken?.toLowerCase();
+  if (!normalizedMainTokenSymbol) {
+    return 0;
+  }
+
+  const mainToken =
+    tokens.find((token) => {
+      const symbol = token?.tokenInfo?.symbol;
+      return (
+        typeof symbol === 'string' &&
+        symbol.toLowerCase() === normalizedMainTokenSymbol
+      );
+    }) ??
+    tokens.find(
+      (token) => token?.tokenInfo?.type === EVMSmartContractType.NATIVE,
+    );
 
   if (mainToken) {
     const valueInUsd = getTotalBalanceInUsd(tokens) || 0;
@@ -388,28 +406,68 @@ interface EvmTokenBalanceResult {
   shortFormattedBalance: string;
 }
 
+const isNativeTokenPlaceholder = (token: EvmSmartContractInfo) =>
+  token.type === EVMSmartContractType.ERC20 &&
+  isNativeTokenPlaceholderAddress(
+    (token as EvmSmartContractInfoErc20).contractAddress,
+  );
+
+const normalizeTokensMetadataForBalances = async (
+  chain: EvmChain,
+  tokensMetadata: EvmSmartContractInfo[],
+) => {
+  const hasNativeToken = tokensMetadata.some(
+    (token) => token.type === EVMSmartContractType.NATIVE,
+  );
+  let nativeTokenInfo: EvmSmartContractInfoNative | undefined;
+  const normalizedTokensMetadata: EvmSmartContractInfo[] = [];
+
+  for (const token of tokensMetadata) {
+    if (isNativeTokenPlaceholder(token)) {
+      if (hasNativeToken || nativeTokenInfo) {
+        continue;
+      }
+
+      nativeTokenInfo = await getMainTokenInfo(chain);
+      normalizedTokensMetadata.push(nativeTokenInfo);
+      continue;
+    }
+
+    normalizedTokensMetadata.push(token);
+  }
+
+  return normalizedTokensMetadata;
+};
+
 const getTokenBalances = async (
   walletAddress: string,
   chain: EvmChain,
   tokensMetadata: EvmSmartContractInfo[],
 ) => {
+  const normalizedTokensMetadata = await normalizeTokensMetadataForBalances(
+    chain,
+    tokensMetadata,
+  );
   const balancesPromises: Promise<EvmTokenBalanceResult | undefined>[] =
-    tokensMetadata.map(async (token) =>
+    normalizedTokensMetadata.map(async (token) =>
       getTokenBalance(walletAddress, chain, token),
     );
 
   const result = await Promise.all(balancesPromises);
+  const successfulBalances = result.filter(
+    (balance): balance is EvmTokenBalanceResult => !!balance,
+  );
 
-  const needCoingeckoPrices = result.filter(
+  const needCoingeckoPrices = successfulBalances.filter(
     (balance) =>
-      !!balance!.tokenInfo.coingeckoId && balance!.tokenInfo.priceUsd === null,
+      !!balance.tokenInfo.coingeckoId && balance.tokenInfo.priceUsd === null,
   );
   const coingeckoPrices = await CoingeckoUtils.fetchCoingeckoPrices(
-    needCoingeckoPrices.map((balance) => balance!.tokenInfo.coingeckoId!),
+    needCoingeckoPrices.map((balance) => balance.tokenInfo.coingeckoId!),
   );
 
-  const updatedBalances = result.map((balance) => {
-    if (balance?.tokenInfo.coingeckoId && balance.tokenInfo.priceUsd === null) {
+  const updatedBalances = successfulBalances.map((balance) => {
+    if (balance.tokenInfo.coingeckoId && balance.tokenInfo.priceUsd === null) {
       return {
         ...balance,
         tokenInfo: {
@@ -429,9 +487,8 @@ const getTokenBalances = async (
 
   return updatedBalances.filter(
     (balance) =>
-      !!balance &&
-      (balance.balance > 0 ||
-        balance.tokenInfo.type === EVMSmartContractType.NATIVE),
+      balance.balance > BigInt(0) ||
+      balance.tokenInfo.type === EVMSmartContractType.NATIVE,
   );
 };
 
@@ -510,7 +567,6 @@ const getTokenBalance = async (
       }
 
       default:
-        console.log(token, 'token in default');
         return undefined;
     }
 
@@ -522,8 +578,8 @@ const getTokenBalance = async (
       shortFormattedBalance: shortFormattedBalance,
     };
   } catch (err) {
-    console.log(token);
     Logger.error('Error while formatting evm balances', err);
+    return undefined;
   }
 };
 
@@ -1550,8 +1606,9 @@ const buildBalanceDetails = (
 };
 
 const getEstimatedGasFee = (selectedFee?: GasFeeEstimationBase) => {
-  if (!selectedFee || selectedFee.estimatedFeeInEth.equals(-1))
+  if (!selectedFee || GasFeeUtils.isGasFeeEstimateInvalid(selectedFee)) {
     return undefined;
+  }
   return new Decimal(selectedFee.estimatedFeeInEth.toString());
 };
 

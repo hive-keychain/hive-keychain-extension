@@ -15,6 +15,7 @@ import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-l
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('proxy-tab.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -43,10 +44,10 @@ describe('proxy-tab.component tests:\n', () => {
             screen.getByTestId(dataTestIdButton.menuPreFix + Icons.GOVERNANCE),
           );
         });
-        await screen.findByText(chrome.i18n.getMessage('popup_html_witness'));
+        await screen.findByText(I18nUtils.getMessage('popup_html_witness'));
         await act(async () => {
           await userEvent.click(
-            screen.getByText(chrome.i18n.getMessage('popup_html_proxy')),
+            screen.getByText(I18nUtils.getMessage('popup_html_proxy')),
           );
         });
       });
@@ -79,7 +80,7 @@ describe('proxy-tab.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_success_proxy', ['keychain']),
+            I18nUtils.getMessage('popup_success_proxy', ['keychain']),
           ),
         ).toBeInTheDocument();
       });
@@ -97,7 +98,7 @@ describe('proxy-tab.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('html_popup_set_as_proxy_error'),
+            I18nUtils.getMessage('html_popup_set_as_proxy_error'),
           ),
         ).toBeInTheDocument();
       });
@@ -150,10 +151,10 @@ describe('proxy-tab.component tests:\n', () => {
             screen.getByTestId(dataTestIdButton.menuPreFix + Icons.GOVERNANCE),
           );
         });
-        await screen.findByText(chrome.i18n.getMessage('popup_html_witness'));
+        await screen.findByText(I18nUtils.getMessage('popup_html_witness'));
         await act(async () => {
           await userEvent.click(
-            screen.getByText(chrome.i18n.getMessage('popup_html_proxy')),
+            screen.getByText(I18nUtils.getMessage('popup_html_proxy')),
           );
         });
       });
@@ -162,13 +163,13 @@ describe('proxy-tab.component tests:\n', () => {
         const proxyTab = await screen.findByTestId('proxy-tab');
         expect(
           await within(proxyTab).findByText(
-            chrome.i18n.getMessage('html_popup_witness_has_proxy').trim(),
+            I18nUtils.getMessage('html_popup_witness_has_proxy').trim(),
             { exact: true },
           ),
         ).toBeInTheDocument();
         expect(
           within(proxyTab).getByText(
-            chrome.i18n.getMessage('html_popup_currently_using_proxy', [
+            I18nUtils.getMessage('html_popup_currently_using_proxy', [
               'keychain',
             ]),
           ),
@@ -204,10 +205,10 @@ describe('proxy-tab.component tests:\n', () => {
           screen.getByTestId(dataTestIdButton.menuPreFix + Icons.GOVERNANCE),
         );
       });
-      await screen.findByText(chrome.i18n.getMessage('popup_html_witness'));
+      await screen.findByText(I18nUtils.getMessage('popup_html_witness'));
       await act(async () => {
         await userEvent.click(
-          screen.getByText(chrome.i18n.getMessage('popup_html_proxy')),
+          screen.getByText(I18nUtils.getMessage('popup_html_proxy')),
         );
       });
     });
@@ -224,7 +225,7 @@ describe('proxy-tab.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_missing_key', [
+          I18nUtils.getMessage('popup_missing_key', [
             KeychainKeyTypesLC.active,
           ]),
         ),

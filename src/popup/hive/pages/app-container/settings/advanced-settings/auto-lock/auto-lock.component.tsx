@@ -11,9 +11,11 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { Separator } from 'src/common-ui/separator/separator.component';
 import AutolockUtils from 'src/utils/autolock.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const AutoLock = ({
   setSuccessMessage,
   goBack,
@@ -80,18 +82,37 @@ const AutoLock = ({
           checked={selectedType === AutoLockType.IDLE_LOCK}
           onChange={() =>
             setSelectedType(AutoLockType.IDLE_LOCK)
-          }></CheckboxPanelComponent>
-
-        {selectedType === AutoLockType.IDLE_LOCK && (
-          <InputComponent
-            dataTestId="amount-input"
-            value={interval}
-            onChange={setInterval}
-            placeholder="10"
-            type={InputType.NUMBER}
-            onEnterPress={() => save()}
-          />
-        )}
+          }>
+          <>
+            <div
+              className="hint"
+              dangerouslySetInnerHTML={{
+                __html: I18nUtils.getMessage('popup_html_al_idle_info'),
+              }}
+            />
+            {selectedType === AutoLockType.IDLE_LOCK && (
+              <div
+                className="idle-lock-input-row"
+                onClick={(event) => event.stopPropagation()}>
+                <div className="idle-lock-input-container">
+                  <InputComponent
+                    dataTestId="amount-input"
+                    value={interval}
+                    onChange={setInterval}
+                    placeholder="10"
+                    type={InputType.NUMBER}
+                    onEnterPress={() => save()}
+                    classname="idle-lock-input"
+                  />
+                  <div className="idle-lock-input-unit">
+                    <Separator type="vertical" />
+                    <span>{I18nUtils.getMessage('minutes')}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        </CheckboxPanelComponent>
       </div>
 
       <ButtonComponent

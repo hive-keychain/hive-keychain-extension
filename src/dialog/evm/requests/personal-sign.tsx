@@ -13,11 +13,13 @@ import {
 import React, { useEffect, useState } from 'react';
 import { Card } from 'src/common-ui/card/card.component';
 import { DisplayText } from 'src/dialog/components/display-text/display-text';
+import { EvmLedgerDialogUtils } from 'src/dialog/evm/evm-ledger-dialog.utils';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   request: EvmRequest;
   accounts: EvmAccountPublic[];
@@ -50,15 +52,17 @@ export const PersonalSign = (props: Props) => {
     );
     transactionHook.setFields(transactionConfirmationFields);
 
+    const lastChain = await EvmChainUtils.getLastEvmChain();
+
     const transactionInfo =
-      await EvmTransactionParserUtils.verifyTransactionInformation(
-        data.dappInfo.domain,
-      );
+      await EvmTransactionParserUtils.verifyTransactionInformation({
+        domain: data.dappInfo.domain,
+        origin: data.dappInfo.origin,
+        chainId: lastChain.chainId,
+      });
     transactionHook.setUnableToReachBackend(
       !!(transactionInfo && transactionInfo.unableToReach),
     );
-
-    const lastChain = await EvmChainUtils.getLastEvmChain();
 
     const accountDisplay = await transactionHook.getWalletAddressInput(
       target,
@@ -86,15 +90,21 @@ export const PersonalSign = (props: Props) => {
   const handleCancel = () => {
     afterCancel(request.request_id, data.tab);
   };
+  const loadingCaption =
+    EvmLedgerDialogUtils.getLedgerConfirmationCaptionForAddress(
+      accounts,
+      target,
+    );
 
   return (
     <EvmOperation
       afterCancel={handleCancel}
       request={request}
       domain={data.dappInfo.domain}
+      origin={data.dappInfo.origin}
       tab={data.tab}
-      title={chrome.i18n.getMessage('dialog_evm_sign_request')}
-      caption={chrome.i18n.getMessage('dialog_signature_request_caption', [
+      title={I18nUtils.getMessage('dialog_evm_sign_request')}
+      caption={I18nUtils.getMessage('dialog_signature_request_caption', [
         data.dappInfo.domain,
       ])}
       fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}
@@ -106,6 +116,7 @@ export const PersonalSign = (props: Props) => {
           />
         </Card>
       }
+      loadingCaption={loadingCaption}
       transactionHook={transactionHook}></EvmOperation>
   );
 };

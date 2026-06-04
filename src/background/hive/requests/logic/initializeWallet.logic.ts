@@ -5,6 +5,7 @@ import sendErrors from '@background/multichain/errors';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const initializeWallet = (
   requestHandler: HiveRequestsHandler | EvmRequestHandler,
   tab: number,
@@ -15,8 +16,8 @@ export const initializeWallet = (
     sendErrors(
       tab,
       'no_wallet',
-      await chrome.i18n.getMessage('bgd_init_no_wallet'),
-      await chrome.i18n.getMessage('bgd_init_no_wallet_explained'),
+      await I18nUtils.getMessage('bgd_init_no_wallet'),
+      await I18nUtils.getMessage('bgd_init_no_wallet_explained'),
       request,
     );
     // await requestHandler.removeRequestById(request.request_id, tab);

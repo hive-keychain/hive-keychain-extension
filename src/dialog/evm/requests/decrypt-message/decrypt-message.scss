@@ -12,14 +12,17 @@
     max-height: 250px;
   }
 
+  .message {
+    overflow-wrap: anywhere;
+    word-break: break-all;
+  }
+
   &.hidden {
     .encrypted-message {
       filter: blur(2px);
       overflow: hidden;
     }
     .message {
-      word-break: break-all;
-
       overflow: hidden;
     }
   }

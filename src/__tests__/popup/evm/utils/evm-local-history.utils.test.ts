@@ -17,6 +17,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { ethers, TransactionResponse } from 'ethers';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('evm-local-history.utils', () => {
   let storageMap: Map<LocalStorageKeyEnum, unknown>;
 
@@ -45,7 +46,7 @@ describe('evm-local-history.utils', () => {
     storageMap = new Map();
     storageMap.set(LocalStorageKeyEnum.EVM_LOCAL_HISTORY, undefined);
 
-    chrome.i18n.getMessage = jest.fn((key: string, params?: string[]) => {
+    I18nUtils.getMessage = jest.fn((key: string, params?: string[]) => {
       if (params?.length) {
         return `${key}:${params.join(',')}`;
       }

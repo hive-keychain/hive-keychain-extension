@@ -1,8 +1,8 @@
 import { EvmActionType } from '@popup/evm/actions/action-type.evm.enum';
 import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface';
 import { EvmUserHistory } from '@popup/evm/interfaces/evm-tokens-history.interface';
+import { EvmWallet } from '@popup/evm/interfaces/wallet.interface';
 import { ActionPayload } from '@popup/multichain/actions/interfaces';
-import { HDNodeWallet } from 'ethers';
 
 const EMPTY_EVM_HISTORY: EvmUserHistory = {
   events: [],
@@ -10,27 +10,29 @@ const EMPTY_EVM_HISTORY: EvmUserHistory = {
   fullyFetch: false,
 };
 
-export const EvmActiveAccountReducer = (
-  state: EvmActiveAccount = {
-    address: '',
-    wallet: {} as HDNodeWallet,
-    nativeAndErc20Tokens: {
-      value: [],
-      loading: true,
-    },
-    nfts: {
-      value: [],
-      loading: true,
-      initialized: false,
-    },
-    history: {
-      value: EMPTY_EVM_HISTORY,
-      loading: true,
-      initialized: false,
-    },
-
-    isReady: false,
+const INITIAL_STATE: EvmActiveAccount = {
+  address: '',
+  wallet: {} as EvmWallet,
+  nativeAndErc20Tokens: {
+    value: [],
+    loading: true,
   },
+  nfts: {
+    value: [],
+    loading: true,
+    initialized: false,
+  },
+  history: {
+    value: EMPTY_EVM_HISTORY,
+    loading: true,
+    initialized: false,
+  },
+
+  isReady: false,
+};
+
+export const EvmActiveAccountReducer = (
+  state: EvmActiveAccount = INITIAL_STATE,
   { type, payload }: ActionPayload<Partial<EvmActiveAccount>>,
 ): EvmActiveAccount => {
   switch (type) {
@@ -39,6 +41,8 @@ export const EvmActiveAccountReducer = (
     case EvmActionType.SET_ACTIVE_ACCOUNT_NFT:
     case EvmActionType.SET_ACTIVE_ACCOUNT_TOKENS:
       return { ...state, ...payload };
+    case EvmActionType.RESET_STATE:
+      return INITIAL_STATE;
     default:
       return state;
   }

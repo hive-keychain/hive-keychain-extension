@@ -54,6 +54,7 @@ const NATIVE_TOKEN_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 type AccountItemType = 'HIVE' | 'EVM';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface AccountItemOption extends OptionItem {
   accountType: AccountItemType;
   hiveAccount?: LocalAccount;
@@ -317,7 +318,7 @@ const CreateAccountStepOne = ({
       case AccountCreationType.BUYING:
         return `${price} ${currencyLabels.hive}`;
       case AccountCreationType.USING_TICKET:
-        return chrome.i18n.getMessage('html_popup_ticket', ['1']);
+        return I18nUtils.getMessage('html_popup_ticket', ['1']);
     }
   };
 
@@ -380,6 +381,7 @@ const CreateAccountStepOne = ({
             setSelectedAccount(item)
           }
           background="white"
+          additionalClassname="create-account-user-dropdown"
         />
       )}
       {accountOptions.length === 0 && (
@@ -392,7 +394,7 @@ const CreateAccountStepOne = ({
       {selectedAccount && (
         <div className="price-panel">
           <span className="label">
-            {chrome.i18n.getMessage('html_popup_price')}
+            {I18nUtils.getMessage('html_popup_price')}
           </span>
           <span className="price">{getPriceLabel()}</span>
         </div>

@@ -2,6 +2,14 @@
   flex: 1;
   display: grid;
   grid-template-areas: 'only';
+  min-height: 0;
+  position: relative;
+  background: var(--wallet-card-background);
+  border-radius: 40px 40px 0 0;
+  border: 1px solid var(--card-border);
+  box-sizing: border-box;
+  overflow: hidden;
+
   .wallet-info-section {
     user-select: none;
     margin-top: 6px;
@@ -10,12 +18,28 @@
     align-items: center;
     justify-content: flex-start;
     row-gap: 12px;
-    padding-top: 12px;
+    padding-top: 0;
     padding-bottom: 100px;
     grid-area: only;
+    height: 100%;
+    min-height: 0;
+    max-height: 100%;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    box-sizing: border-box;
+    background: transparent;
 
     .sliding-bar-container {
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      width: 100%;
+      flex-shrink: 0;
+      margin-top: 0;
       margin-bottom: 4px;
+      padding-top: 12px;
+      padding-bottom: 12px;
+      background: var(--wallet-card-background);
     }
 
     .rotating-logo-container {
@@ -46,15 +70,7 @@
   }
 
   .wallet-background {
-    background: var(--wallet-card-background);
-    grid-area: only;
-    border-radius: 40px 40px 0 0;
-    position: sticky;
-    top: 0;
-    width: 100%;
-    max-height: 520px;
-    border: 1px solid var(--card-border);
-    box-sizing: border-box;
+    display: none;
   }
   .hide {
     width: 0;

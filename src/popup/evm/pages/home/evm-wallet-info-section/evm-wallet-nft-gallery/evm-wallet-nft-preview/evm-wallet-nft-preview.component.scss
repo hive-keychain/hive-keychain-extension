@@ -5,11 +5,18 @@
   row-gap: 4px;
   align-items: flex-start;
   cursor: pointer;
+  width: calc(100% - 60px);
+  min-width: 0;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
 
   .nft-collection-name-panel {
     display: flex;
     align-items: center;
     column-gap: 4px;
+    width: 100%;
+    min-width: 0;
     .nft-collection-name {
       @include poppins500(16px);
       color: var(--main-font-color);
@@ -29,6 +36,9 @@
     .nft-preview-container {
       display: flex;
       column-gap: 8px;
+      min-width: 0;
+      flex: 1;
+      overflow: hidden;
     }
 
     .go-to-icon {

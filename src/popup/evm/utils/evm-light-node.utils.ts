@@ -2,6 +2,7 @@ import { EvmLightNodeApi } from '@api/evm-light-node';
 import {
   EvmLightNodeContractResponse,
   EvmLightNodeRegisteredAddresses,
+  EvmLightNodeSecurityCheck,
 } from '@popup/evm/interfaces/evm-light-node.interface';
 import {
   EvmLpV2Pair,
@@ -12,7 +13,9 @@ import {
   EvmSmartContractInfoNative,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { BaseApi } from 'src/api/base';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 
 import { fetchGasOracle } from '@popup/evm/utils/evm-gas-oracle.utils';
 
@@ -96,12 +99,120 @@ const normalizeProxyTarget = (
   return null;
 };
 
+const normalizeSecurityCheck = (
+  payload: unknown,
+): EvmLightNodeSecurityCheck | undefined => {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return undefined;
+  }
+  const record = payload as Record<string, unknown>;
+  if (typeof record.isMalicious !== 'boolean') {
+    return undefined;
+  }
+  const reasons = Array.isArray(record.reasons)
+    ? record.reasons.filter(
+        (reason): reason is string => typeof reason === 'string',
+      )
+    : [];
+  const isRugPullReason = Array.isArray(record.isRugPullReason)
+    ? record.isRugPullReason.filter(
+        (reason): reason is string => typeof reason === 'string',
+      )
+    : undefined;
+  return {
+    isMalicious: record.isMalicious,
+    reasons,
+    stale: record.stale === true,
+    ...(record.isRugPull === true ? { isRugPull: true } : {}),
+    ...(isRugPullReason?.length ? { isRugPullReason } : {}),
+  };
+};
+
 const normalizeContract = (
   contract: EvmLightNodeContractResponse,
-): EvmLightNodeContractResponse => ({
-  ...contract,
-  proxyTarget: normalizeProxyTarget(contract.proxyTarget),
-});
+): EvmLightNodeContractResponse => {
+  const proxyTarget =
+    normalizeProxyTarget(contract.proxyTarget) ??
+    (contract.proxyTargetAddress?.trim() || null);
+  return {
+    ...contract,
+    proxyTarget: proxyTarget || null,
+    security: normalizeSecurityCheck(contract.security) ?? contract.security,
+  };
+};
+
+/** Aligns with evm-light-node `normalizeDomainInput` for GET /domain/:domain */
+export const normalizeDomainForLightNode = (
+  rawDomain: string | undefined,
+): string | null => {
+  if (!rawDomain?.trim()) {
+    return null;
+  }
+  let decoded: string;
+  try {
+    decoded = decodeURIComponent(rawDomain.trim());
+  } catch {
+    decoded = rawDomain.trim();
+  }
+  if (!decoded) {
+    return null;
+  }
+
+  let hostname: string;
+  try {
+    if (/^[a-z][a-z0-9+.-]*:\/\//i.test(decoded)) {
+      hostname = new URL(decoded).hostname;
+    } else if (decoded.startsWith('//')) {
+      hostname = new URL(`https:${decoded}`).hostname;
+    } else {
+      hostname = new URL(`https://${decoded}`).hostname;
+    }
+  } catch {
+    return null;
+  }
+
+  const normalized = hostname.toLowerCase().replace(/\.$/, '');
+  if (!normalized || normalized.length > 253) {
+    return null;
+  }
+  return normalized;
+};
+
+const getLightNodeSecurity = async (
+  path: string,
+): Promise<EvmLightNodeSecurityCheck | undefined> => {
+  const sanitizedPath = path.replace(/^\/+/, '');
+  const baseUrl = (
+    process.env.EVM_LIGHT_NODE_API_URL || 'https://evm.hive-keychain.com'
+  ).replace(/\/+$/, '');
+  const url = `${baseUrl}/${sanitizedPath}`;
+
+  try {
+    const response = await BaseApi.getWithResponse(url);
+    if (response.status !== 200) {
+      return undefined;
+    }
+    return normalizeSecurityCheck(response.data);
+  } catch (error) {
+    Logger.error('Light-node security request failed', error);
+    return undefined;
+  }
+};
+
+const getReceiverSecurity = async (
+  receiver: string,
+): Promise<EvmLightNodeSecurityCheck | undefined> =>
+  getLightNodeSecurity(`address/${encodeURIComponent(receiver)}`);
+
+const getDomainSecurity = async (
+  domainOrUrl: string,
+): Promise<EvmLightNodeSecurityCheck | undefined> => {
+  const hostname = normalizeDomainForLightNode(domainOrUrl);
+  if (!hostname) {
+    return undefined;
+  }
+  return getLightNodeSecurity(`domain/${encodeURIComponent(hostname)}`);
+};
 
 type HistoryDetailItem = {
   txId: string;
@@ -144,6 +255,7 @@ type HistoryFlowWithMeta =
       kind: 'ERC721' | 'ERC1155';
       collectionAddress: string;
       collectionName: string | null;
+      name?: string | null;
       tokenId: string;
       quantity: string;
       imageUrl?: string | null;
@@ -229,8 +341,7 @@ export enum CatchupStatus {
 export const isCatchupStatusPending = (
   catchupStatus?: CatchupStatus | string | null,
 ) =>
-  catchupStatus !== CatchupStatus.DONE &&
-  catchupStatus !== CatchupStatus.ERROR;
+  catchupStatus !== CatchupStatus.DONE && catchupStatus !== CatchupStatus.ERROR;
 
 export enum PricingStatus {
   READY = 'READY',
@@ -315,12 +426,7 @@ const buildHistoryQuery = (query: string) => {
 
   const source = new URLSearchParams(query);
   const allowed = new URLSearchParams();
-  for (const key of [
-    'cursor',
-    'limit',
-    'showPossibleSpam',
-    'showUnverified',
-  ]) {
+  for (const key of ['cursor', 'limit', 'showPossibleSpam', 'showUnverified']) {
     const value = source.get(key);
     if (value != null && value.length > 0) {
       allowed.set(key, value);
@@ -399,7 +505,10 @@ const getHistoryDetail = async (
   );
 };
 
-const contractInflight = new Map<string, Promise<EvmLightNodeContractResponse>>();
+const contractInflight = new Map<
+  string,
+  Promise<EvmLightNodeContractResponse>
+>();
 
 const getContractCacheKey = (
   chainId: string | number,
@@ -542,6 +651,8 @@ export const EvmLightNodeUtils = {
   getHistory,
   getHistoryDetail,
   getContract,
+  getReceiverSecurity,
+  getDomainSecurity,
   getGasFee,
   getCoingeckoNativeCoinId,
   getCoingeckoTokenId,

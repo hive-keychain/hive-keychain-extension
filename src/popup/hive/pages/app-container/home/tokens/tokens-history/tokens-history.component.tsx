@@ -28,6 +28,7 @@ import {
 import { TokenHistoryItemComponent } from 'src/popup/hive/pages/app-container/home/tokens/tokens-history/token-history-item/token-history-item.component';
 import { TokenTransactionUtils } from 'src/popup/hive/utils/token-transaction.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const TokensHistory = ({
   activeAccountName,
   currentTokenBalance,
@@ -122,10 +123,10 @@ const TokensHistory = ({
             <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
             <div className="text">
               <div>
-                {chrome.i18n.getMessage('popup_html_transaction_list_is_empty')}
+                {I18nUtils.getMessage('popup_html_transaction_list_is_empty')}
               </div>
               <div>
-                {chrome.i18n.getMessage(
+                {I18nUtils.getMessage(
                   'popup_html_transaction_list_is_empty_try_clear_filter',
                 )}
               </div>
@@ -142,7 +143,7 @@ const TokensHistory = ({
               );
             }}>
             <span className="label">
-              {chrome.i18n.getMessage('popup_html_load_more')}
+              {I18nUtils.getMessage('popup_html_load_more')}
             </span>
             <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE}></SVGIcon>
           </div>

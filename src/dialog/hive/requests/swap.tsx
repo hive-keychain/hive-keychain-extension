@@ -19,6 +19,7 @@ import { DialogError } from 'src/dialog/multichain/error/error';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import { SwapTokenUtils } from 'src/utils/swap-token.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: RequestSwap & RequestId;
   domain: string;
@@ -107,7 +108,7 @@ const Swap = (props: Props) => {
         data={{
           command: DialogCommand.SEND_DIALOG_ERROR,
           msg: {
-            display_msg: chrome.i18n.getMessage(
+            display_msg: I18nUtils.getMessage(
               serverStatus.isMaintenanceOn
                 ? 'swap_under_maintenance'
                 : serverStatus.isServerStopped
@@ -125,11 +126,11 @@ const Swap = (props: Props) => {
   } else
     return (
       <Operation
-        title={chrome.i18n.getMessage('dialog_title_swap')}
+        title={I18nUtils.getMessage('dialog_title_swap')}
         {...props}
         header={
           serverStatus.layerTwoDelayed
-            ? chrome.i18n.getMessage('swap_layer_two_delayed')
+            ? I18nUtils.getMessage('swap_layer_two_delayed')
             : ''
         }
         redHeader

@@ -15,6 +15,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
+import { EvmLedgerDialogUtils } from 'src/dialog/evm/evm-ledger-dialog.utils';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
@@ -22,6 +23,7 @@ import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   request: EvmRequest;
   accounts: EvmAccountPublic[];
@@ -67,17 +69,22 @@ export const SignTypedData = (props: Props) => {
     transactionHook.setReady(false);
     let transactionConfirmationFields = {
       otherFields: [transactionHook.buildInitialDomainField()],
-      operationName: chrome.i18n.getMessage('dialog_evm_sign_data_title'),
+      operationName: I18nUtils.getMessage('dialog_evm_sign_data_title'),
     } as TransactionConfirmationFields;
     transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
       transactionConfirmationFields.otherFields,
     );
     transactionHook.setFields(transactionConfirmationFields);
 
+    const lastChain = await EvmChainUtils.getLastEvmChain();
+
     const transactionInfo =
-      await EvmTransactionParserUtils.verifyTransactionInformation(
-        data.dappInfo.domain,
-      );
+      await EvmTransactionParserUtils.verifyTransactionInformation({
+        domain: data.dappInfo.domain,
+        origin: data.dappInfo.origin,
+        chainId: lastChain.chainId,
+        tokenContract: message.domain?.verifyingContract,
+      });
     transactionHook.setUnableToReachBackend(
       !!(transactionInfo && transactionInfo.unableToReach),
     );
@@ -113,8 +120,6 @@ export const SignTypedData = (props: Props) => {
         value: formatValue(message.domain.version, EvmInputDisplayType.STRING),
       });
 
-    const lastChain = await EvmChainUtils.getLastEvmChain();
-
     const accountDisplay = await transactionHook.getWalletAddressInput(
       target,
       lastChain.chainId,
@@ -132,14 +137,14 @@ export const SignTypedData = (props: Props) => {
     transactionConfirmationFields.otherFields.push({
       name: '',
       type: EvmInputDisplayType.STRING_CENTERED,
-      value: chrome.i18n.getMessage('evm_sign_typed_data_message'),
+      value: I18nUtils.getMessage('evm_sign_typed_data_message'),
     });
 
     let otherFields = [];
 
     otherFields.push({
       type: EvmInputDisplayType.STRING,
-      name: chrome.i18n.getMessage('evm_sign_typed_data_message_primary_type'),
+      name: I18nUtils.getMessage('evm_sign_typed_data_message_primary_type'),
       value: message.primaryType,
     } as TransactionConfirmationField);
 
@@ -281,15 +286,22 @@ export const SignTypedData = (props: Props) => {
   const handleCancel = () => {
     afterCancel(request.request_id, data.tab);
   };
+  const loadingCaption =
+    EvmLedgerDialogUtils.getLedgerConfirmationCaptionForAddress(
+      accounts,
+      target,
+    );
 
   return (
     <EvmOperation
       request={request}
       domain={data.dappInfo.domain}
+      origin={data.dappInfo.origin}
       tab={data.tab}
-      title={chrome.i18n.getMessage('dialog_evm_sign_data_title')}
+      title={I18nUtils.getMessage('dialog_evm_sign_data_title')}
       fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}
       transactionHook={transactionHook}
+      loadingCaption={loadingCaption}
       afterCancel={handleCancel}></EvmOperation>
   );
 };

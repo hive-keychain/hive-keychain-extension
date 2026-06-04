@@ -1,4 +1,3 @@
-import { Card } from '@common-ui/card/card.component';
 import { EditContactPopupComponent } from '@common-ui/contacts/edit-contact-popup/edit-contact-popup.component';
 import { EditContactComponent } from '@common-ui/contacts/edit-contact/edit-contact.component';
 import {
@@ -22,18 +21,36 @@ import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { v4 } from 'uuid';
 
-const Contacts = ({ chain, setTitleContainerProperties }: PropsType) => {
+import { I18nUtils } from 'src/utils/i18n.utils';
+interface OwnProps {
+  chainOverride?: EvmChain;
+  hideChainSelector?: boolean;
+  titleMessageKey?: string;
+}
+
+const Contacts = ({
+  chain,
+  chainOverride,
+  hideChainSelector,
+  setTitleContainerProperties,
+  titleMessageKey = 'evm_menu_contacts',
+}: PropsType) => {
   const [chainOptions, setChainOptions] = useState<OptionItem[]>();
-  const [selectedChain, setSelectedChain] = useState<EvmChain>(chain);
+  const [selectedChain, setSelectedChain] = useState<EvmChain>(
+    chainOverride ?? chain,
+  );
 
   const [walletAddresses, setWalletAddresses] = useState<FavoriteAddress[]>([]);
   const [contractAddresses, setContractAddresses] = useState<FavoriteAddress[]>(
     [],
   );
 
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [addingAddressType, setAddingAddressType] =
+    useState<EvmAddressType | null>(null);
   const [newFavoriteAddress, setNewFavoriteAddress] = useState<FavoriteAddress>(
     {
       address: '',
@@ -44,7 +61,7 @@ const Contacts = ({ chain, setTitleContainerProperties }: PropsType) => {
 
   useEffect(() => {
     setTitleContainerProperties({
-      title: 'evm_menu_contacts',
+      title: titleMessageKey,
       isBackButtonEnabled: true,
       isCloseButtonDisabled: false,
     });
@@ -60,7 +77,7 @@ const Contacts = ({ chain, setTitleContainerProperties }: PropsType) => {
       });
     setChainOptions(optionItems);
 
-    initAddresses(chain);
+    initAddresses(chainOverride ?? chain);
   };
 
   const initAddresses = async (newChain: EvmChain) => {
@@ -99,13 +116,25 @@ const Contacts = ({ chain, setTitleContainerProperties }: PropsType) => {
     initAddresses(selectedChain);
   };
 
-  const createNewFavoriteAddress = async (item: FavoriteAddress) => {
-    await EvmAddressesUtils.saveWalletAddress(
-      selectedChain.chainId,
-      item.address,
-      item.label,
-      newFavoriteAddress.id,
-    );
+  const createNewFavoriteAddress = async (
+    item: FavoriteAddress,
+    type: EvmAddressType,
+  ) => {
+    if (type === EvmAddressType.WALLET_ADDRESS) {
+      await EvmAddressesUtils.saveWalletAddress(
+        selectedChain.chainId,
+        item.address,
+        item.label,
+        newFavoriteAddress.id,
+      );
+    } else {
+      await EvmAddressesUtils.saveContractAddress(
+        item.address,
+        selectedChain.chainId,
+        item.label,
+        newFavoriteAddress.id,
+      );
+    }
     resetNewFavoriteAddress();
     initAddresses(selectedChain);
   };
@@ -116,7 +145,16 @@ const Contacts = ({ chain, setTitleContainerProperties }: PropsType) => {
       label: '',
       id: v4(),
     });
-    setIsPopupOpen(false);
+    setAddingAddressType(null);
+  };
+
+  const openAddAddressPopup = (type: EvmAddressType) => {
+    setNewFavoriteAddress({
+      address: '',
+      label: '',
+      id: v4(),
+    });
+    setAddingAddressType(type);
   };
 
   const deleteWhitelistedAddresses = async (
@@ -131,10 +169,58 @@ const Contacts = ({ chain, setTitleContainerProperties }: PropsType) => {
     initAddresses(selectedChain);
   };
 
+  const renderAddLink = (type: EvmAddressType) => (
+    <div className="add-contact-link" onClick={() => openAddAddressPopup(type)}>
+      <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE} className="add-icon" />
+      {I18nUtils.getMessage('evm_addresses_add')}
+    </div>
+  );
+
+  const getEmptyStateMessageKey = (type: EvmAddressType): string =>
+    type === EvmAddressType.WALLET_ADDRESS
+      ? 'evm_addresses_no_whitelisted_account_yet'
+      : 'evm_addresses_no_whitelisted_smart_contract_yet';
+
+  const renderAddressCategory = (
+    titleKey: string,
+    type: EvmAddressType,
+    addresses: FavoriteAddress[],
+  ) => (
+    <div className="contact-category section-card">
+      <div className="category-header">
+        <LabelComponent value={titleKey} className="category-title" />
+        {renderAddLink(type)}
+      </div>
+      {addresses.length === 0 ? (
+        <div className="addresses-list-items">
+          <div className="empty-address-item">
+            {I18nUtils.getMessage(getEmptyStateMessageKey(type))}
+          </div>
+        </div>
+      ) : (
+        <div className="addresses-list-items">
+          {addresses.map((savedAddress, index) => (
+            <EditContactComponent
+              key={`${savedAddress.address}-${index}`}
+              shortAddress={true}
+              favoriteAddress={savedAddress}
+              maxLabelLength={12}
+              onSaveClicked={(item) => updateWhitelistedAddresses(item, type)}
+              onDeleteClicked={(item) =>
+                deleteWhitelistedAddresses(item, type)
+              }
+              chainType={ChainType.EVM}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
   return (
-    <div className="evm-contacts-page">
-      <Card className="evm-contacts-card">
-        {chainOptions && selectedChain && (
+    <div className="evm-contacts-page contacts-settings-page">
+      {!hideChainSelector && chainOptions && selectedChain && (
+        <div className="chain-select-panel">
           <ComplexeCustomSelect
             options={chainOptions}
             selectedItem={{
@@ -143,73 +229,32 @@ const Contacts = ({ chain, setTitleContainerProperties }: PropsType) => {
               img: selectedChain.logo,
             }}
             setSelectedItem={(item) => updateSelectedChain(item.value)}
-            additionalClassname="chain-custom-select"
+            background="white"
             generateImageIfNull
           />
+        </div>
+      )}
+
+      <div className="addresses-list">
+        {renderAddressCategory(
+          'evm_contacts_section',
+          EvmAddressType.WALLET_ADDRESS,
+          walletAddresses,
         )}
+        {renderAddressCategory(
+          'evm_menu_advanced_smart_contracts',
+          EvmAddressType.SMART_CONTRACT,
+          contractAddresses,
+        )}
+      </div>
 
-        <div className="add-contact-link" onClick={() => setIsPopupOpen(true)}>
-          {chrome.i18n.getMessage('evm_add_contact_link')}
-        </div>
-
-        <div className="edit-contacts-panel">
-          {walletAddresses && walletAddresses.length > 0 && (
-            <>
-              <LabelComponent value="evm_wallets" />
-              {walletAddresses.map((savedAddress, index) => (
-                <EditContactComponent
-                  key={`${savedAddress.address}-${index}`}
-                  shortAddress={true}
-                  favoriteAddress={savedAddress}
-                  onSaveClicked={(item) =>
-                    updateWhitelistedAddresses(
-                      item,
-                      EvmAddressType.WALLET_ADDRESS,
-                    )
-                  }
-                  onDeleteClicked={(item) =>
-                    deleteWhitelistedAddresses(
-                      item,
-                      EvmAddressType.WALLET_ADDRESS,
-                    )
-                  }
-                  chainType={ChainType.EVM}
-                />
-              ))}
-            </>
-          )}
-          {contractAddresses && contractAddresses.length > 0 && (
-            <>
-              <LabelComponent value="evm_menu_advanced_smart_contracts" />
-              {contractAddresses.map((savedAddress, index) => (
-                <EditContactComponent
-                  key={`${savedAddress.address}-${index}`}
-                  shortAddress={true}
-                  favoriteAddress={savedAddress}
-                  onSaveClicked={(item) =>
-                    updateWhitelistedAddresses(
-                      item,
-                      EvmAddressType.SMART_CONTRACT,
-                    )
-                  }
-                  onDeleteClicked={(item) =>
-                    deleteWhitelistedAddresses(
-                      item,
-                      EvmAddressType.SMART_CONTRACT,
-                    )
-                  }
-                  chainType={ChainType.EVM}
-                />
-              ))}
-            </>
-          )}
-        </div>
-      </Card>
-      {isPopupOpen && (
+      {addingAddressType && (
         <EditContactPopupComponent
           isNew={true}
           favoriteAddress={newFavoriteAddress}
-          onSaveClicked={(item) => createNewFavoriteAddress(item)}
+          onSaveClicked={(item) =>
+            createNewFavoriteAddress(item, addingAddressType)
+          }
           closePopup={() => resetNewFavoriteAddress()}
           chainType={ChainType.EVM}
         />
@@ -233,6 +278,6 @@ const connector = connect(mapStateToProps, {
   openModal,
 });
 
-type PropsType = ConnectedProps<typeof connector>;
+type PropsType = ConnectedProps<typeof connector> & OwnProps;
 
 export const EvmContactsComponent = connector(Contacts);

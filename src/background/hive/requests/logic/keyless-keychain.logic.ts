@@ -10,6 +10,7 @@ import { KeylessAuthData } from '@interfaces/keyless-keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { anonymousRequests } from 'src/utils/requests.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const keylessKeychainRequest = async (
   requestHandler: HiveRequestsHandler,
   tab: number,
@@ -121,7 +122,7 @@ const createUnsupportedOperationPopup = (
       command: DialogCommand.ANSWER_REQUEST,
       msg: {
         success: false,
-        message: await chrome.i18n.getMessage(
+        message: await I18nUtils.getMessage(
           'dialog_keyless_unsupported_operation',
           [
             request.type

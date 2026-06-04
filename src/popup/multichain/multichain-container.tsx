@@ -1,11 +1,16 @@
-import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setChain } from '@popup/multichain/actions/chain.actions';
 import { ChainComponentWithBoundary } from '@popup/multichain/chain.component';
-import { Chain } from '@popup/multichain/interfaces/chains.interface';
+import {
+  Chain,
+  ChainType,
+} from '@popup/multichain/interfaces/chains.interface';
 import { RootState, store } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
 import { resolvePopupInitialChain } from '@popup/multichain/utils/popup-initial-chain.utils';
-import { getProviderChainBootstrapResult } from '@popup/multichain/utils/provider-chain-bootstrap.utils';
+import { getProviderBootstrapForPopup } from '@popup/multichain/utils/provider-chain-bootstrap.utils';
+import { PopupTabChainContextUtils } from '@popup/multichain/utils/popup-tab-chain-context.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import hotkeys from 'hotkeys-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -14,9 +19,9 @@ import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.c
 import { ShortcutDefinition } from 'src/interfaces/shortcut.interface';
 import { Theme, ThemeContext } from 'src/popup/theme.context';
 import {
-  ensureEcosystemDappsCached,
   findDappByTabOrigin,
   getActiveTabOrigin,
+  getEcosystemCategoriesForPopup,
 } from 'src/utils/ecosystem-dapps-cache.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import {
@@ -44,41 +49,24 @@ const MultichainContainer = ({
   const shortcutsRef = useRef<ShortcutDefinition[]>([]);
   const registeredCombosRef = useRef<string[]>([]);
   const pendingShortcutRef = useRef<PendingShortcut | null>(null);
-
-  const handleKeyPress = useCallback((event: KeyboardEvent) => {
-    // console.log({ event }, event.key, event.ctrlKey);
-
-    if (event.ctrlKey && event.altKey && event.code === 'KeyT') {
-      setTheme((previous) => {
-        return previous === Theme.LIGHT ? Theme.DARK : Theme.LIGHT;
-      });
-    }
-    if (event.key === 'd' && event.ctrlKey) {
-      handleDetachWindow();
-    }
-    if (event.ctrlKey && event.key === 'r') {
-      event.stopImmediatePropagation();
-      event.stopPropagation();
-      alert('refresh');
-    }
-  }, []);
-
-  useEffect(() => {
-    // remove the event listener
-    return () => {
-      document.removeEventListener('keydown', handleKeyPress);
-    };
-  }, [handleKeyPress]);
+  const shouldPersistActiveChainRef = useRef(true);
 
   const handleDetachWindow = useCallback(() => {
-    chrome.tabs.create({
-      url: `detached_window.html`,
+    void DetachedExtensionTabUtils.openDetachedExtension();
+  }, []);
+
+  const toggleTheme = useCallback(() => {
+    setTheme((oldTheme) => {
+      return oldTheme === Theme.DARK ? Theme.LIGHT : Theme.DARK;
     });
   }, []);
 
   const executeRegisteredShortcut = useCallback(
     async (shortcut: ShortcutDefinition) => {
-      const result = await executeShortcut(shortcut);
+      const result = await executeShortcut(shortcut, {
+        toggleTheme,
+        openKeychainInTab: handleDetachWindow,
+      });
       if (result.deferred && result.targetChain) {
         pendingShortcutRef.current = {
           shortcut,
@@ -87,7 +75,7 @@ const MultichainContainer = ({
         };
       }
     },
-    [],
+    [handleDetachWindow, toggleTheme],
   );
 
   useEffect(() => {
@@ -148,6 +136,10 @@ const MultichainContainer = ({
 
   useEffect(() => {
     let isMounted = true;
+    const isSameChain = (left: Chain | null, right: Chain | null) =>
+      !!left?.chainId &&
+      !!right?.chainId &&
+      left.chainId.toLowerCase() === right.chainId.toLowerCase();
 
     const init = async () => {
       const storagePromise = LocalStorageUtils.getMultipleValueFromLocalStorage(
@@ -155,10 +147,11 @@ const MultichainContainer = ({
           LocalStorageKeyEnum.ACTIVE_THEME,
           LocalStorageKeyEnum.ACTIVE_CHAIN,
           LocalStorageKeyEnum.SHORTCUTS,
+          LocalStorageKeyEnum.SHORTCUT_PRESETS_MIGRATED,
         ],
       );
-      const ecosystemPromise = ensureEcosystemDappsCached();
-      const providerBootstrapPromise = getProviderChainBootstrapResult();
+      const tabOriginPromise = getActiveTabOrigin();
+      const ecosystemPromise = getEcosystemCategoriesForPopup();
 
       const res = await storagePromise;
 
@@ -167,9 +160,24 @@ const MultichainContainer = ({
       setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
 
       const shortcutsValue = res[LocalStorageKeyEnum.SHORTCUTS];
-      shortcutsRef.current = Array.isArray(shortcutsValue)
-        ? shortcutsValue
-        : [];
+      const hasMigratedShortcutPresets =
+        res[LocalStorageKeyEnum.SHORTCUT_PRESETS_MIGRATED] === true;
+      shortcutsRef.current =
+        Array.isArray(shortcutsValue) && hasMigratedShortcutPresets
+          ? shortcutsValue
+          : Array.isArray(shortcutsValue)
+            ? ShortcutsUtils.getShortcutsWithDefaultPresets(shortcutsValue)
+            : ShortcutsUtils.DEFAULT_SHORTCUTS;
+      if (!hasMigratedShortcutPresets) {
+        LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.SHORTCUTS,
+          shortcutsRef.current,
+        );
+        LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.SHORTCUT_PRESETS_MIGRATED,
+          true,
+        );
+      }
       registerShortcuts(shortcutsRef.current);
       setHasHydratedSettings(true);
 
@@ -179,35 +187,72 @@ const MultichainContainer = ({
 
       if (!isMounted) return;
 
-      const [categories, providerBootstrap] = await Promise.all([
-        ecosystemPromise,
-        providerBootstrapPromise,
-      ]);
-
-      if (!isMounted) return;
-
-      const tabOrigin = await getActiveTabOrigin();
-
-      if (!isMounted) return;
-
-      const ecosystemDapp = findDappByTabOrigin(categories, tabOrigin);
-      const ecosystemChain = ecosystemDapp?.chainId
-        ? ((await ChainUtils.getChain<Chain>(ecosystemDapp.chainId)) ?? null)
-        : null;
-      const hasRequestedProviderChain = !!(
-        tabOrigin && (await EvmChainUtils.getStoredChainIdForOrigin(tabOrigin))
-      );
-      const initialChain = resolvePopupInitialChain({
-        providerChain: providerBootstrap.resolvedChain,
-        hasRequestedProviderChain,
-        ecosystemChain,
-        storedChain,
-      });
-
-      if (initialChain) {
-        setChain(initialChain);
+      // Fast path: apply stored chain and unblock rendering immediately.
+      if (storedChain) {
+        setChain(storedChain);
       }
       setIsBootstrapping(false);
+
+      // Refine chain selection in background without blocking popup first paint.
+      void (async () => {
+        try {
+          const [tabOrigin, categories] = await Promise.all([
+            tabOriginPromise,
+            ecosystemPromise,
+          ]);
+          if (!isMounted) return;
+
+          const connectedEvmWallets = tabOrigin
+            ? await EvmWalletUtils.getConnectedWallets(tabOrigin)
+            : [];
+          const hasConnectedEvmAccountsForOrigin =
+            connectedEvmWallets.length > 0;
+
+          const ecosystemDapp = findDappByTabOrigin(categories, tabOrigin);
+          const ecosystemChain = ecosystemDapp?.chainId
+            ? ((await ChainUtils.getChain<Chain>(ecosystemDapp.chainId)) ?? null)
+            : null;
+
+          const providerBootstrap = await getProviderBootstrapForPopup({
+            tabOrigin,
+            hasConnectedEvmAccountsForOrigin,
+          });
+          if (!isMounted) return;
+
+          const hasRequestedProviderChain = !!(
+            tabOrigin && hasConnectedEvmAccountsForOrigin
+          );
+          const { chain: refinedChain, source: refinedChainSource } =
+            resolvePopupInitialChain({
+              providerChain: providerBootstrap.resolvedChain,
+              hasRequestedProviderChain,
+              ecosystemChain,
+              storedChain,
+            });
+
+          if (!refinedChain) return;
+          if (
+            refinedChainSource === 'ecosystem' ||
+            refinedChainSource === 'provider'
+          ) {
+            PopupTabChainContextUtils.setTabInferredChainId(refinedChain.chainId);
+          }
+
+          const currentChain = store.getState().chain as Chain | null;
+          const isTabInferredEvmChain =
+            (refinedChainSource === 'ecosystem' ||
+              refinedChainSource === 'provider') &&
+            refinedChain.type === ChainType.EVM;
+          if (!isSameChain(currentChain, refinedChain)) {
+            shouldPersistActiveChainRef.current = !isTabInferredEvmChain;
+            setChain(refinedChain, {
+              saveLastUsedChain: !isTabInferredEvmChain,
+            });
+          }
+        } catch {
+          // Best-effort refinement only: keep stored/default chain on errors.
+        }
+      })();
     };
 
     void init();
@@ -218,25 +263,11 @@ const MultichainContainer = ({
   }, [registerShortcuts, setChain]);
 
   useEffect(() => {
-    hotkeys('ctrl+alt+t', (event) => {
-      if (ShortcutsUtils.isEditableTarget(event.target)) return;
-      event.preventDefault();
-      setTheme((previous) => {
-        return previous === Theme.LIGHT ? Theme.DARK : Theme.LIGHT;
-      });
-    });
-    hotkeys('ctrl+d', (event) => {
-      if (ShortcutsUtils.isEditableTarget(event.target)) return;
-      event.preventDefault();
-      handleDetachWindow();
-    });
     return () => {
-      hotkeys.unbind('ctrl+alt+t');
-      hotkeys.unbind('ctrl+d');
       registeredCombosRef.current.forEach((combo) => hotkeys.unbind(combo));
       registeredCombosRef.current = [];
     };
-  }, [handleDetachWindow]);
+  }, []);
 
   useEffect(() => {
     const handleStorageChange = (
@@ -258,6 +289,10 @@ const MultichainContainer = ({
   }, [registerShortcuts]);
 
   useEffect(() => {
+    if (!shouldPersistActiveChainRef.current) {
+      shouldPersistActiveChainRef.current = true;
+      return;
+    }
     if (chain?.chainId?.length)
       LocalStorageUtils.saveValueInLocalStorage(
         LocalStorageKeyEnum.ACTIVE_CHAIN,
@@ -272,12 +307,6 @@ const MultichainContainer = ({
         theme,
       );
   }, [hasHydratedSettings, theme]);
-
-  const toggleTheme = () => {
-    setTheme((oldTheme) => {
-      return oldTheme === Theme.DARK ? Theme.LIGHT : Theme.DARK;
-    });
-  };
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>

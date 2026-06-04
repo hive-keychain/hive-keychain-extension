@@ -24,6 +24,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { WalletInfoSectionItemButton } from 'src/common-ui/wallet-info-section-item-button/wallet-info-section-item-button.component';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 /**
  * Stable `data-testid` for wallet row actions and Hive-Engine token buttons.
  * Matches `src/__tests__/utils-for-testing/data-testid/data-testid-dropdown.ts`.
@@ -266,7 +267,7 @@ const WalletInfoSectionItem = ({
                     className="token-info-row"
                     onClick={() => goToTokenWebsite(tokenInfo)}>
                     <div className="label">
-                      {chrome.i18n.getMessage('html_tokens_issuer')}
+                      {I18nUtils.getMessage('html_tokens_issuer')}
                     </div>
                     <div className="value">
                       <span className="token-issuer">@{tokenInfo.issuer}</span>
@@ -278,7 +279,7 @@ const WalletInfoSectionItem = ({
               )}
               <div className="token-info-row">
                 <div className="label">
-                  {chrome.i18n.getMessage('token_value')}
+                  {I18nUtils.getMessage('token_value')}
                 </div>
                 <div className="value">
                   $
@@ -295,14 +296,14 @@ const WalletInfoSectionItem = ({
                       tokenMarket,
                     ) * hive?.usd!
                   ).toFixed(3)}
-                  /{chrome.i18n.getMessage('token').toLowerCase()})
+                  /{I18nUtils.getMessage('token').toLowerCase()})
                 </div>
                 <div></div>
               </div>
               <Separator type="horizontal" />
               <div className="token-info-row">
                 <div className="label">
-                  {chrome.i18n.getMessage('liquid_balance')}
+                  {I18nUtils.getMessage('liquid_balance')}
                 </div>
                 <div className="value">
                   {FormatUtils.trimUselessZero(
@@ -317,7 +318,7 @@ const WalletInfoSectionItem = ({
                   <Separator type="horizontal" />
                   <div className="token-info-row">
                     <div className="label">
-                      {chrome.i18n.getMessage('popup_html_token_staking')}{' '}
+                      {I18nUtils.getMessage('popup_html_token_staking')}{' '}
                     </div>
                     <div className="value">
                       {FormatUtils.trimUselessZero(
@@ -337,7 +338,7 @@ const WalletInfoSectionItem = ({
                       className="token-info-row"
                       onClick={goToPendingUnstakePage}>
                       <div className="label">
-                        {chrome.i18n.getMessage(
+                        {I18nUtils.getMessage(
                           'popup_html_token_pending_unstake',
                         )}
                       </div>
@@ -366,7 +367,7 @@ const WalletInfoSectionItem = ({
                     className="token-info-row"
                     onClick={goToTokenIncomingDelegations}>
                     <div className="label">
-                      {chrome.i18n.getMessage('popup_html_token_delegation_in')}
+                      {I18nUtils.getMessage('popup_html_token_delegation_in')}
                     </div>
                     <div className="value">
                       {FormatUtils.trimUselessZero(
@@ -395,7 +396,7 @@ const WalletInfoSectionItem = ({
                       className="token-info-row"
                       onClick={goToTokenOutgoingDelegations}>
                       <div className="label">
-                        {chrome.i18n.getMessage(
+                        {I18nUtils.getMessage(
                           'popup_html_token_delegation_out',
                         )}
                       </div>
@@ -423,7 +424,7 @@ const WalletInfoSectionItem = ({
                     <Separator type="horizontal" />
                     <div className="token-info-row">
                       <div className="label">
-                        {chrome.i18n.getMessage(
+                        {I18nUtils.getMessage(
                           'popup_html_token_pending_undelegation',
                         )}
                       </div>

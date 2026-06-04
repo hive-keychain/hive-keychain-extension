@@ -11,13 +11,13 @@ import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import Config from 'src/config';
 import HiveAuthUtils from 'src/utils/hive-auth.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const handleOperation = async (
   requestHandler: HiveRequestsHandler,
   request: KeychainRequest,
   domain: string,
   tab: number,
 ) => {
-  console.log('handleOperation', requestHandler);
   await HiveAuthUtils.connect();
 
   switch (request.type) {
@@ -36,7 +36,7 @@ const handleOperation = async (
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          message: await chrome.i18n.getMessage(
+          message: await I18nUtils.getMessage(
             'dialog_keyless_unsupported_operation',
             [request.type],
           ),
@@ -61,7 +61,7 @@ const register = async (
       command: DialogCommand.ANSWER_REQUEST,
       msg: {
         success: false,
-        message: await chrome.i18n.getMessage(
+        message: await I18nUtils.getMessage(
           'dialog_keyless_username_required',
         ),
         tab: tab,

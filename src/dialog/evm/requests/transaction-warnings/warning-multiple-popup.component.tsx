@@ -1,9 +1,9 @@
 import {
   EvmTransactionWarning,
   EvmTransactionWarningLevel,
+  EvmTransactionWarningType,
   TransactionConfirmationField,
 } from '@popup/evm/interfaces/evm-transactions.interface';
-import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import React, { Fragment } from 'react';
 import ButtonComponent, {
   ButtonType,
@@ -13,42 +13,74 @@ import {
   CheckboxPanelComponent,
 } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { ConfirmationPageEvmFields } from 'src/common-ui/confirmation-page/confirmation-page.interface';
-import { SVGIcons } from 'src/common-ui/icons.enum';
+import { EvmRiskWarningUtils } from 'src/common-ui/evm/evm-risk-warning/evm-risk-warning.utils';
+import { EvmRiskWarningRow } from 'src/common-ui/evm/evm-risk-warning/evm-risk-warning-row.component';
+import { InputType } from 'src/common-ui/input/input-type.enum';
+import InputComponent from 'src/common-ui/input/input.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   warningHook: useTransactionHook;
 }
 
 export const EvmMultipleWarningsPopup = ({ warningHook }: Props) => {
+  const activeWarnings = warningHook.getPopupNotIgnoredWarnings();
+  const highestLevel =
+    EvmRiskWarningUtils.getHighestLevelFromWarnings(activeWarnings) ??
+    EvmTransactionWarningLevel.LOW;
+  const levelClass = EvmRiskWarningUtils.getLevelModifierClass(highestLevel);
+
   const fieldWarningTemplate = (
     field: ConfirmationPageEvmFields | TransactionConfirmationField,
-    warningIndex: number,
+    fieldIndex: number,
   ) => {
     return (
-      <Fragment key={`warning-${field.name}-warning-${warningIndex}`}>
+      <Fragment key={`warning-field-${field.name}-${fieldIndex}`}>
         {field.name && (
-          <div className="field-name">{chrome.i18n.getMessage(field.name)}</div>
+          <div className="field-name">{I18nUtils.getMessage(field.name)}</div>
         )}
         {field.warnings?.map(
           (warning: EvmTransactionWarning, warningIndex: number) => {
             if (warning.ignored === false) {
               return (
-                <div
-                  className="warning"
-                  key={`warning-${field.name}-warning-${warningIndex}`}>
-                  <SVGIcon
-                    className={`warning-icon ${warning?.level}`}
-                    icon={SVGIcons.GLOBAL_WARNING}
+                <Fragment
+                  key={`warning-${field.name}-${warningIndex}`}>
+                  <EvmRiskWarningRow
+                    warning={warning}
+                    variant="panel"
                   />
-                  <div className="warning-message">
-                    {chrome.i18n.getMessage(warning?.message!)}
-                  </div>
-                </div>
+                  {warning.type ===
+                    EvmTransactionWarningType.WHITELIST_ADDRESS && (
+                    <InputComponent
+                      value={
+                        warningHook.whitelistLabels[
+                          EvmRiskWarningUtils.getWhitelistLabelKey(
+                            field.name,
+                            warningIndex,
+                          )
+                        ] ?? ''
+                      }
+                      type={InputType.TEXT}
+                      placeholder={
+                        warning.extraData?.placeholder ??
+                        'evm_transaction_receiver_favorite_label'
+                      }
+                      onChange={(value) =>
+                        warningHook.setWhitelistLabelForWarning(
+                          field.name,
+                          warningIndex,
+                          value,
+                        )
+                      }
+                    />
+                  )}
+                </Fragment>
               );
             }
+            return null;
           },
         )}
       </Fragment>
@@ -57,17 +89,23 @@ export const EvmMultipleWarningsPopup = ({ warningHook }: Props) => {
 
   return (
     <PopupContainer
+      useBodyPortal
       className="transaction-warning-content"
       onClickOutside={warningHook.closePopup}>
-      <div className="warning-top-panel">
-        <SVGIcon className="icon" icon={SVGIcons.MESSAGE_ERROR} />
-        <div className={`title`}>
-          {chrome.i18n.getMessage('evm_transaction_transaction_has_warning')}
+      <div className={`evm-risk-modal-header ${levelClass}`}>
+        <SVGIcon
+          className="evm-risk-modal-header__icon"
+          icon={EvmRiskWarningUtils.getWarningIcon(highestLevel)}
+        />
+        <div className="evm-risk-modal-header__title">
+          {I18nUtils.getMessage(
+            EvmRiskWarningUtils.getModalTitleKey(highestLevel),
+          )}
         </div>
       </div>
       <div className="warnings">
         {warningHook
-          .getAllFieldsWithNotIgnoredWarnings()
+          .getFieldsForWarningsPopup()
           .map(
             (
               field: ConfirmationPageEvmFields | TransactionConfirmationField,
@@ -76,14 +114,12 @@ export const EvmMultipleWarningsPopup = ({ warningHook }: Props) => {
           )}
       </div>
 
-      {EvmTransactionParserUtils.getHighestWarningLevel(
-        warningHook.getAllNotIgnoredWarnings(),
-      ) === EvmTransactionWarningLevel.HIGH && (
+      {highestLevel === EvmTransactionWarningLevel.HIGH && (
         <CheckboxPanelComponent
           onChange={(value) => warningHook.setBypassWarning(value)}
           checked={warningHook.bypassWarning}
           title="evm_transaction_warning_high_level_bypass_message"
-          backgroundType={BackgroundType.FILLED}
+          backgroundType={BackgroundType.TRANSPARENT}
         />
       )}
 
@@ -96,13 +132,12 @@ export const EvmMultipleWarningsPopup = ({ warningHook }: Props) => {
         />
         <ButtonComponent
           type={ButtonType.IMPORTANT}
-          label="evm_send_transaction_ignore_all_warnings"
-          onClick={warningHook.ignoreAllWarnings}
+          label="evm_send_transaction_ignore_warning"
+          onClick={warningHook.ignorePopupWarnings}
           height="small"
           disabled={
-            EvmTransactionParserUtils.getHighestWarningLevel(
-              warningHook.getAllNotIgnoredWarnings(),
-            ) === EvmTransactionWarningLevel.HIGH && !warningHook.bypassWarning
+            highestLevel === EvmTransactionWarningLevel.HIGH &&
+            !warningHook.bypassWarning
           }
         />
       </div>

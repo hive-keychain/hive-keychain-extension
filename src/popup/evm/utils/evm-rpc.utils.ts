@@ -1,12 +1,62 @@
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmRpcUrlUtils } from '@popup/evm/utils/evm-rpc-url.utils';
 import {
   EvmChain,
   MultichainRpc,
 } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { EtherJsonRpcProvider } from 'src/utils/evm/ether-json-rpc-provider';
+import {
+  createRpcFetchRequest,
+  EtherJsonRpcProvider,
+} from 'src/utils/evm/ether-json-rpc-provider';
+import { ethers } from 'ethers';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+
+const RPC_STATUS_CHECK_TIMEOUT_MS = 1000;
+
+/** True when retrying the same JSON-RPC on another endpoint may help (transport / node issues). */
+export const isEvmRpcInfrastructureFailure = (err: unknown): boolean => {
+  if (err == null) {
+    return false;
+  }
+  if (typeof err !== 'object') {
+    return true;
+  }
+  const e = err as { code?: string; message?: string; shortMessage?: string };
+  switch (e.code) {
+    case 'NETWORK_ERROR':
+    case 'SERVER_ERROR':
+    case 'TIMEOUT':
+    case 'UNKNOWN_ERROR':
+      return true;
+    default:
+      break;
+  }
+  const text = [e.message, e.shortMessage]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+  if (!text) {
+    return false;
+  }
+  return (
+    text.includes('fetch') ||
+    text.includes('failed to fetch') ||
+    text.includes('network') ||
+    text.includes('429') ||
+    text.includes('too many requests') ||
+    text.includes('rate limit') ||
+    text.includes('ratelimit') ||
+    text.includes('econnrefused') ||
+    text.includes('etimedout') ||
+    text.includes('socket') ||
+    text.includes('timeout') ||
+    text.includes('503') ||
+    text.includes('502') ||
+    text.includes('504')
+  );
+};
 
 const call = async (method: string, params: any[], rpcUrl: string) => {
   const body = JSON.stringify({
@@ -37,13 +87,24 @@ const call = async (method: string, params: any[], rpcUrl: string) => {
   });
 };
 
+const getRpcUrlsForChain = (
+  chain: EvmChain,
+  allCustomRpcs: Record<string, MultichainRpc[]>,
+): string[] => [
+  ...chain.rpcs.map((rpc) => rpc.url),
+  ...(allCustomRpcs[chain.chainId] ?? []).map(
+    (rpc: MultichainRpc) => rpc.url,
+  ),
+];
+
 const addCustomRpc = async (rpc: MultichainRpc, chain: EvmChain) => {
-  let allCustomRpcs = await LocalStorageUtils.getValueFromLocalStorage(
-    LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
-  );
-  if (!allCustomRpcs) {
-    allCustomRpcs = {};
-  }
+  EvmRpcUrlUtils.assertValidHttpOrHttpsRpcUrl(rpc.url);
+  const allCustomRpcs =
+    ((await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
+    )) as Record<string, MultichainRpc[]>) ?? {};
+  if (getRpcUrlsForChain(chain, allCustomRpcs).includes(rpc.url)) return;
+
   if (!allCustomRpcs[chain.chainId]) {
     allCustomRpcs[chain.chainId] = [];
   }
@@ -55,27 +116,27 @@ const addCustomRpc = async (rpc: MultichainRpc, chain: EvmChain) => {
 };
 
 const addCustomRpcsFromList = async (rpcs: string[], chain: EvmChain) => {
-  let allCustomRpcs = await LocalStorageUtils.getValueFromLocalStorage(
-    LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
-  );
-  if (!allCustomRpcs) {
-    allCustomRpcs = {};
-  }
+  EvmRpcUrlUtils.assertValidHttpsRpcUrls(rpcs);
+  const allCustomRpcs =
+    ((await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
+    )) as Record<string, MultichainRpc[]>) ?? {};
   if (!allCustomRpcs[chain.chainId]) {
     allCustomRpcs[chain.chainId] = [];
   }
+  const rpcUrlsForChain = getRpcUrlsForChain(chain, allCustomRpcs);
+  let hasNewRpc = false;
   for (const rpc of rpcs) {
-    if (
-      !allCustomRpcs[chain.chainId]
-        .map((rpc: MultichainRpc) => rpc.url)
-        .includes(rpc)
-    ) {
+    if (!rpcUrlsForChain.includes(rpc)) {
       allCustomRpcs[chain.chainId].push({
         url: rpc,
         isDefault: false,
       });
+      rpcUrlsForChain.push(rpc);
+      hasNewRpc = true;
     }
   }
+  if (!hasNewRpc) return;
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
     allCustomRpcs,
@@ -109,6 +170,7 @@ const getActiveRpc = async (chain: EvmChain): Promise<MultichainRpc> => {
 };
 
 const setActiveRpc = async (rpc: MultichainRpc, chain: EvmChain) => {
+  EvmRpcUrlUtils.assertValidHttpOrHttpsRpcUrl(rpc.url);
   let activeRpcs = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.EVM_ACTIVE_RPCS,
   );
@@ -166,13 +228,19 @@ const saveSwitchRpcAuto = async (chain: EvmChain, switchRpcAuto: boolean) => {
 };
 
 const checkRpcStatus = async (uri: string): Promise<boolean> => {
-  const rpcProvider = new EtherJsonRpcProvider(uri, undefined, {});
+  const rpcProvider = new EtherJsonRpcProvider(
+    createRpcFetchRequest(uri),
+    undefined,
+    {},
+  );
   try {
     const ok = await Promise.race([
       rpcProvider
         .send('eth_blockNumber', [])
         .then(() => true)
-        .catch(() => false),
+        .catch(() => {
+          return false;
+        }),
       new Promise<boolean>((resolve) => {
         setTimeout(() => {
           try {
@@ -181,7 +249,7 @@ const checkRpcStatus = async (uri: string): Promise<boolean> => {
             // ignore
           }
           resolve(false);
-        }, 1000);
+        }, RPC_STATUS_CHECK_TIMEOUT_MS);
       }),
     ]);
     try {
@@ -198,6 +266,75 @@ const checkRpcStatus = async (uri: string): Promise<boolean> => {
     }
     return false;
   }
+};
+
+const getRpcChainIdWithTimeout = async (
+  provider: ethers.JsonRpcProvider,
+): Promise<unknown> => {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      provider.send('eth_chainId', []),
+      new Promise<null>((resolve) => {
+        timeoutId = setTimeout(
+          () => resolve(null),
+          RPC_STATUS_CHECK_TIMEOUT_MS,
+        );
+      }),
+    ]);
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+  }
+};
+
+export const isValidRpcForChainId = async (
+  rpcUrl: string,
+  expectedChainId: string,
+  allowHttp: boolean = false,
+): Promise<boolean> => {
+  const isValidUrl = allowHttp
+    ? EvmRpcUrlUtils.isValidHttpOrHttpsRpcUrl(rpcUrl)
+    : EvmRpcUrlUtils.isValidHttpsRpcUrl(rpcUrl);
+  if (!isValidUrl) {
+    return false;
+  }
+
+  const provider = new ethers.JsonRpcProvider(rpcUrl);
+  try {
+    const chainId = await getRpcChainIdWithTimeout(provider);
+    return (
+      typeof chainId === 'string' &&
+      chainId.toLowerCase() === expectedChainId.toLowerCase()
+    );
+  } catch {
+    return false;
+  } finally {
+    try {
+      provider.destroy();
+    } catch {
+      // ignore
+    }
+  }
+};
+
+export const filterValidRpcsForChainId = async (
+  rpcUrls: string[],
+  expectedChainId: string,
+): Promise<string[]> => {
+  const uniqueRpcUrls = [...new Set(rpcUrls)];
+
+  const checks = await Promise.all(
+    uniqueRpcUrls.map(async (rpcUrl) => ({
+      rpcUrl,
+      isValid: await isValidRpcForChainId(rpcUrl, expectedChainId),
+    })),
+  );
+
+  return checks
+    .filter(({ isValid }) => isValid)
+    .map(({ rpcUrl }) => rpcUrl);
 };
 
 // Returning null, it means that no rpc is working
@@ -239,4 +376,7 @@ export const EvmRpcUtils = {
   switchToWorkingRpc,
   automaticallySwitchToWorkingRpc,
   addCustomRpcsFromList,
+  isEvmRpcInfrastructureFailure,
+  isValidRpcForChainId,
+  filterValidRpcsForChainId,
 };

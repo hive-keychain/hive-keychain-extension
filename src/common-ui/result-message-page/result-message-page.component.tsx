@@ -3,6 +3,7 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type ResultMessagePageType = 'success' | 'error' | 'warning';
 
 interface ResultMessagePageProps {
@@ -67,14 +68,14 @@ const ResultMessagePage = ({
           <div className={`title ${type === 'success' ? 'success' : ''}`}>
             {skipTitleTranslation
               ? title
-              : chrome.i18n.getMessage(title, titleParams)}
+              : I18nUtils.getMessage(title, titleParams)}
           </div>
           <div
             className="message"
             dangerouslySetInnerHTML={{
               __html: skipMessageTranslation
                 ? message
-                : chrome.i18n.getMessage(message, messageParams),
+                : I18nUtils.getMessage(message, messageParams),
             }}></div>
           {warningMessage && (
             <div
@@ -82,7 +83,7 @@ const ResultMessagePage = ({
               dangerouslySetInnerHTML={{
                 __html: skipWarningTranslation
                   ? warningMessage
-                  : chrome.i18n.getMessage(warningMessage, warningParams),
+                  : I18nUtils.getMessage(warningMessage, warningParams),
               }}></div>
           )}
         </div>

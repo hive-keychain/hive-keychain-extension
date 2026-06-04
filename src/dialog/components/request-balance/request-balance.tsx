@@ -11,6 +11,7 @@ import CurrencyUtils, {
 } from 'src/popup/hive/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   amount: number;
   currency: string;
@@ -62,7 +63,7 @@ const RequestBalance = ({ rpc, username, amount, currency }: Props) => {
         balance.length ? (
           parseFloat(newBalance) < 0 ? (
             <span className="insufficient-balance">
-              {chrome.i18n.getMessage('dialog_insufficient_balance')}
+              {I18nUtils.getMessage('dialog_insufficient_balance')}
             </span>
           ) : (
             <span className="balance-container">

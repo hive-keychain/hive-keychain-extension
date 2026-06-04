@@ -1,9 +1,11 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { setAccounts } from '@popup/hive/actions/account.actions';
+import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
 import { SelectAccountSectionItemComponent } from '@popup/hive/pages/app-container/select-account-section/select-account-section-item.component';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -20,10 +22,21 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   background?: 'white';
   fullSize?: boolean;
   isOnMain?: boolean;
+  hideManageAccountsOption?: boolean;
+  selectedAccountName?: string;
+  onAccountSelected?: (accountName: string) => void;
+}
+
+interface AccountActionLink {
+  icon: SVGIcons;
+  label: string;
+  screen: HiveScreen;
+  testId: string;
 }
 
 const buildAccountOptions = (
@@ -41,9 +54,17 @@ const SelectAccountSection = ({
   setAccounts,
   activeAccount,
   loadActiveAccount,
+  setActiveAccountType,
   navigateTo,
   isOnMain = false,
+  hideManageAccountsOption = false,
+  selectedAccountName: controlledSelectedAccountName,
+  onAccountSelected,
 }: PropsFromRedux & Props) => {
+  const isControlledSelection =
+    controlledSelectedAccountName !== undefined &&
+    onAccountSelected !== undefined;
+
   const [isOpened, setIsOpened] = useState(false);
   const isMountedRef = useRef(false);
   const setStateIfMounted = <
@@ -64,6 +85,10 @@ const SelectAccountSection = ({
     activeAccount.name ?? accounts[0]?.name,
   );
 
+  const displayedAccountName = isControlledSelection
+    ? controlledSelectedAccountName
+    : selectedLocalAccount;
+
   useEffect(() => {
     isMountedRef.current = true;
     return () => {
@@ -73,11 +98,13 @@ const SelectAccountSection = ({
 
   useEffect(() => {
     setStateIfMounted(setOptions, buildAccountOptions(accounts));
-    setStateIfMounted(
-      setSelectedLocalAccount,
-      activeAccount.name ?? accounts[0]?.name,
-    );
-  }, [accounts, activeAccount]);
+    if (!isControlledSelection) {
+      setStateIfMounted(
+        setSelectedLocalAccount,
+        activeAccount.name ?? accounts[0]?.name,
+      );
+    }
+  }, [accounts, activeAccount, isControlledSelection]);
 
   const handleItemClicked = (accountName: string) => {
     const itemClicked = accounts.find(
@@ -86,7 +113,12 @@ const SelectAccountSection = ({
     if (!itemClicked) {
       return;
     }
-    loadActiveAccount(itemClicked);
+    if (isControlledSelection) {
+      onAccountSelected(accountName);
+    } else {
+      setActiveAccountType(ChainType.HIVE);
+      loadActiveAccount(itemClicked);
+    }
     handleClickOnSelector();
   };
 
@@ -122,14 +154,14 @@ const SelectAccountSection = ({
         }}>
         <PreloadedImage
           className="user-picture"
-          src={`https://images.hive.blog/u/${selectedLocalAccount}/avatar`}
+          src={`https://images.hive.blog/u/${displayedAccountName}/avatar`}
           alt={'/assets/images/placeholders/account-placeholder.png'}
           placeholder={'/assets/images/placeholders/account-placeholder.png'}
         />
         <div
           className="selected-account-name"
           data-testid="selected-account-name">
-          {selectedLocalAccount}
+          {displayedAccountName}
         </div>
       </div>
     );
@@ -156,6 +188,31 @@ const SelectAccountSection = ({
     state,
     methods,
   }: SelectRenderer<LocalAccountListItem>) => {
+    const accountActionLinks: AccountActionLink[] = [
+      {
+        icon: SVGIcons.MENU_ACCOUNTS_ADD_ACCOUNT,
+        label: 'popup_html_add_account',
+        screen: HiveScreen.SETTINGS_ADD_ACCOUNT,
+        testId: 'add-account-dropdown-option',
+      },
+      {
+        icon: SVGIcons.MENU_ACCOUNTS_CREATE_ACCOUNT,
+        label: 'popup_html_create_account',
+        screen: HiveScreen.CREATE_ACCOUNT_PAGE_STEP_ONE,
+        testId: 'create-account-dropdown-option',
+      },
+      ...(hideManageAccountsOption
+        ? []
+        : [
+            {
+              icon: SVGIcons.MENU_ACCOUNTS_MANAGE_ACCOUNTS,
+              label: 'manage_accounts',
+              screen: HiveScreen.SETTINGS_MANAGE_ACCOUNTS,
+              testId: 'manage-accounts-dropdown-option',
+            },
+          ]),
+    ];
+
     return (
       <div className="custom-select-dropdown">
         <DragDropContext onDragEnd={onDragEnd}>
@@ -180,7 +237,7 @@ const SelectAccountSection = ({
                           key={`option-${option.value}`}
                           isLast={options.length - 1 === index}
                           item={option}
-                          selectedAccount={selectedLocalAccount}
+                          selectedAccount={displayedAccountName}
                           handleItemClicked={(value) =>
                             handleItemClicked(value)
                           }
@@ -197,32 +254,34 @@ const SelectAccountSection = ({
             )}
           </Droppable>
         </DragDropContext>
-        <div
-          className="manage-accounts-panel"
-          onClick={handleOnManageAccountsClicked}>
-          <SVGIcon icon={SVGIcons.MENU_ACCOUNTS_MANAGE_ACCOUNTS} />
-          <div className="text">
-            {chrome.i18n.getMessage('manage_accounts')}
+        {accountActionLinks.map((actionLink) => (
+          <div
+            key={actionLink.testId}
+            className="manage-accounts-panel"
+            data-testid={actionLink.testId}
+            onClick={() => {
+              navigateTo(actionLink.screen);
+            }}>
+            <SVGIcon icon={actionLink.icon} />
+            <div className="text">
+              {I18nUtils.getMessage(actionLink.label)}
+            </div>
           </div>
-        </div>
+        ))}
       </div>
     );
   };
 
-  const handleOnManageAccountsClicked = () => {
-    navigateTo(HiveScreen.SETTINGS_MANAGE_ACCOUNTS);
-  };
-
   return (
     <>
-      {selectedLocalAccount && options && (
+      {displayedAccountName && options && (
         <div
           className={`hive-select-account-section ${
             fullSize ? 'fullsize' : ''
           } ${isOpened ? 'opened' : 'closed'} ${isOnMain ? 'main-page' : ''}`}>
           <Select
             keepOpen
-            values={[selectedLocalAccount as any]}
+            values={[displayedAccountName as any]}
             options={options}
             onChange={() => undefined}
             contentRenderer={customLabelRender}
@@ -251,6 +310,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   loadActiveAccount,
   setAccounts,
+  setActiveAccountType,
   navigateTo,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;

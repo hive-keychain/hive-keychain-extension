@@ -1,4 +1,8 @@
-import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmLightNodeContractResponse } from '@popup/evm/interfaces/evm-light-node.interface';
+import {
+  EvmSmartContractInfo,
+  EVMSmartContractType,
+} from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { TransactionResponse } from 'ethers';
 
@@ -61,7 +65,18 @@ export enum EvmTransactionWarningType {
   BASE = 'BASE',
   WHITELIST_ADDRESS = 'WHITELIST_ADDRESS',
   WHITELIST_ADDRESS_NO_LABEL = 'WHITELIST_ADDRESS_NO_LABEL',
+  /** Summary message with optional `extraData.detailReasons` expandable list */
+  GROUPED_SECURITY = 'GROUPED_SECURITY',
 }
+
+export type EvmGroupedSecurityWarningDetail = {
+  message: string;
+  messageParams?: string[];
+};
+
+export type EvmGroupedSecurityWarningExtraData = {
+  detailReasons: EvmGroupedSecurityWarningDetail[];
+};
 
 export interface EvmTransactionWarning {
   level: EvmTransactionWarningLevel;
@@ -95,29 +110,71 @@ export interface TransactionConfirmationFields {
   otherFields: TransactionConfirmationField[];
 }
 
+export interface VerifyTransactionParams {
+  domain?: string;
+  to?: string;
+  /** Contract address used for verification context */
+  contract?: string;
+  /** Token/collection address for light-node contract security when different from `contract` */
+  tokenContract?: string;
+  proxyTarget?: string | null;
+  chainId?: string;
+  tokenType?: EVMSmartContractType;
+  nftTokenId?: string;
+  /** Full origin URL for light-node domain check (e.g. data.dappInfo.origin) */
+  origin?: string;
+  /** Wallet addresses to verify (decoded recipient, spender, etc.) */
+  recipients?: string[];
+  /** Avoid duplicate GET /contract when the dialog already fetched metadata */
+  prefetchedContract?: EvmLightNodeContractResponse | null;
+}
+
+export interface EvmAddressVerificationFlags {
+  isBlacklisted?: boolean;
+  isMalicious?: boolean;
+  isWhitelisted?: boolean;
+  securityReasons?: string[];
+  rugPullRisk?: boolean;
+  rugPullReasons?: string[];
+}
+
 export interface EvmTransactionVerificationInformation {
   unableToReach?: boolean;
+  lightNodeSecurityUnavailable?: boolean;
   contract: {
-    hasBeenUsedBefore: boolean;
-    isBlacklisted: boolean;
+    hasBeenUsedBefore?: boolean;
+    isBlacklisted?: boolean;
+    isMalicious?: boolean;
+    securityReasons?: string[];
+    isHoneypot?: boolean;
+    cannotSellAll?: boolean;
+    highSellTax?: boolean;
+    highBuyTax?: boolean;
+    rugPullRisk?: boolean;
+    rugPullReasons?: string[];
     proxy: {
       target?: string;
     };
-    verifiedBy: {
+    verifiedBy?: {
       icon: string;
       name: string;
     }[];
   };
   domain: {
-    isBlacklisted: boolean;
+    isBlacklisted?: boolean;
+    isPhishing?: boolean;
     isTrusted?: boolean;
-    isWhitelisted: boolean;
+    isWhitelisted?: boolean;
     fuzzy?: string;
+    securityReasons?: string[];
   };
   to: {
-    isBlacklisted: boolean;
-    isWhitelisted: boolean;
+    isBlacklisted?: boolean;
+    isMalicious?: boolean;
+    isWhitelisted?: boolean;
   };
+  /** Per-address verification (recipient, spender, etc.) keyed by lowercase address */
+  addresses?: Record<string, EvmAddressVerificationFlags>;
 }
 
 export interface EvmTransactionDecodedData {

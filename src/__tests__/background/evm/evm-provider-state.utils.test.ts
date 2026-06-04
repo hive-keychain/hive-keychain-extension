@@ -22,6 +22,14 @@ jest.mock('src/utils/communication.utils', () => ({
   },
 }));
 
+jest.mock('src/utils/localStorage.utils', () => ({
+  __esModule: true,
+  default: {
+    getValueFromLocalStorage: jest.fn(),
+    saveValueInLocalStorage: jest.fn(),
+  },
+}));
+
 const loadTestContext = async () => {
   const providerStateUtils = await import(
     '@background/evm/evm-provider-state.utils'
@@ -29,6 +37,8 @@ const loadTestContext = async () => {
   const { EvmWalletUtils } = await import('@popup/evm/utils/wallet.utils');
   const { EvmChainUtils } = await import('@popup/evm/utils/evm-chain.utils');
   const { CommunicationUtils } = await import('src/utils/communication.utils');
+  const LocalStorageUtils = (await import('src/utils/localStorage.utils'))
+    .default;
 
   return {
     ...providerStateUtils,
@@ -43,6 +53,10 @@ const loadTestContext = async () => {
     },
     CommunicationUtils: CommunicationUtils as {
       tabsSendMessage: jest.Mock;
+    },
+    LocalStorageUtils: LocalStorageUtils as {
+      getValueFromLocalStorage: jest.Mock;
+      saveValueInLocalStorage: jest.Mock;
     },
   };
 };
@@ -126,6 +140,59 @@ describe('evm provider state utils', () => {
         args: '0xa',
         scope: { kind: 'origin', origin: 'https://localhost' },
       },
+    });
+  });
+
+  it('stores normalized chain whitelist entries scoped by origin', async () => {
+    const {
+      addWhitelistedChainForOrigin,
+      isChainWhitelistedForOrigin,
+      LocalStorageUtils,
+    } = await loadTestContext();
+    let stored: Record<string, string[]> = {};
+    LocalStorageUtils.getValueFromLocalStorage.mockImplementation(() => stored);
+    LocalStorageUtils.saveValueInLocalStorage.mockImplementation(
+      (_key, value) => {
+        stored = value;
+      },
+    );
+
+    await expect(
+      addWhitelistedChainForOrigin('https://example.app', '0xA'),
+    ).resolves.toEqual(['0xa']);
+    await addWhitelistedChainForOrigin('https://example.app', '0xa');
+    await addWhitelistedChainForOrigin('https://other.app', '0x1');
+
+    expect(stored).toEqual({
+      'https://example.app': ['0xa'],
+      'https://other.app': ['0x1'],
+    });
+    await expect(
+      isChainWhitelistedForOrigin('https://example.app', '0xA'),
+    ).resolves.toBe(true);
+    await expect(
+      isChainWhitelistedForOrigin('https://other.app', '0xa'),
+    ).resolves.toBe(false);
+  });
+
+  it('removes all whitelisted chains for one origin only', async () => {
+    const { removeWhitelistedChainsForOrigin, LocalStorageUtils } =
+      await loadTestContext();
+    let stored: Record<string, string[]> = {
+      'https://example.app': ['0x1', '0xa'],
+      'https://other.app': ['0x1'],
+    };
+    LocalStorageUtils.getValueFromLocalStorage.mockImplementation(() => stored);
+    LocalStorageUtils.saveValueInLocalStorage.mockImplementation(
+      (_key, value) => {
+        stored = value;
+      },
+    );
+
+    await removeWhitelistedChainsForOrigin('https://example.app');
+
+    expect(stored).toEqual({
+      'https://other.app': ['0x1'],
     });
   });
 });

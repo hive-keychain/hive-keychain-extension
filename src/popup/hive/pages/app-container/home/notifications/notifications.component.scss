@@ -102,11 +102,11 @@
   position: relative;
 
   .notification-button {
-    height: 24px;
-    width: 24px;
+    height: 28px;
+    width: 28px;
     svg {
-      height: 24px;
-      width: 24px;
+      height: 28px;
+      width: 28px;
     }
     &:hover {
       --action-button-background-color: #{$red};
@@ -117,11 +117,11 @@
 
   .notifications-count {
     position: absolute;
-    top: -4px;
-    right: -8px;
-    height: 18px;
-    width: 18px;
-    font-size: 10px;
+    top: -6px;
+    right: -6px;
+    height: 14px;
+    width: 14px;
+    font-size: 8px;
     border-radius: 50%;
     display: flex;
     align-items: center;

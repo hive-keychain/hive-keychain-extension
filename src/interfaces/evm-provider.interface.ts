@@ -111,6 +111,10 @@ export const ProviderRpcErrorList: { [key: string]: ProviderRpcErrorItem } = {
     code: -32602,
     message: 'Invalid method parameter(s).',
   },
+  mismatchedChainId: {
+    code: -32602,
+    message: 'chainId should be same as current chainId',
+  },
   unconfiguredEns: {
     code: -32602,
     message: 'The address uses an ENS but this one was not configured.',
@@ -188,6 +192,13 @@ export const getEvmProviderRpcFullError = (
   const error = ProviderRpcErrorList[key];
   return error ?? ProviderRpcErrorList.unknownError;
 };
+
+export const getUnrecognizedChainIdError = (
+  chainId: string,
+): ProviderRpcErrorItem => ({
+  code: ProviderRpcErrorList.chainNotAdded.code,
+  message: `Unrecognized chain ID "${chainId}". Try adding the chain using wallet_addEthereumChain first.`,
+});
 
 export interface EvmWalletPermissions {
   [origin: string]: EvmWalletOriginPermissions;

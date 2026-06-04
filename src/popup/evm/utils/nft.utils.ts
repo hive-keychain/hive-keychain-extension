@@ -9,18 +9,13 @@ import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ethers } from 'ethers';
 import { BaseApi } from 'src/api/base';
+import { IpfsUtils } from 'src/utils/ipfs.utils';
+import Logger from 'src/utils/logger.utils';
 
 const getImgFromMetadata = (metadata: EvmNFTMetadata): string => {
   if (!metadata || !metadata.image)
     return '/assets/images/placeholder-image.svg';
-  if (metadata.image.startsWith('ipfs://ipfs/')) {
-    metadata.image = metadata.image.replace(
-      'ipfs://ipfs/',
-      'https://ipfs.io/ipfs/',
-    );
-  } else if (metadata.image.startsWith('ipfs://')) {
-    metadata.image = metadata.image.replace('ipfs://', 'https://ipfs.io/ipfs/');
-  }
+  metadata.image = IpfsUtils.resolveIpfsUrl(metadata.image);
   return metadata.image;
 };
 
@@ -41,12 +36,7 @@ const getMetadataFromURI = async (
   }
   let metadata;
   try {
-    if (uri.startsWith('ipfs://ipfs/')) {
-      uri = uri.replace('ipfs://ipfs/', '');
-      metadata = await IPFSApi.getURI(uri);
-      metadata.image = getImgFromMetadata(metadata);
-    } else if (uri.startsWith('ipfs://')) {
-      uri = uri.replace('ipfs://', '');
+    if (IpfsUtils.getIpfsPath(uri)) {
       metadata = await IPFSApi.getURI(uri);
       metadata.image = getImgFromMetadata(metadata);
     } else if (uri.startsWith('https://') || uri.startsWith('http://')) {
@@ -59,7 +49,7 @@ const getMetadataFromURI = async (
     metadata.image = getImgFromMetadata(metadata);
     return metadata;
   } catch (err) {
-    console.log('error', { err });
+    Logger.error('error', err);
   } finally {
     return (
       metadata ?? {
@@ -133,7 +123,7 @@ const getMetadataFromTokenId = async (
       (collectionItem as EvmErc1155TokenCollectionItem).balance = balance;
     }
   } catch (err) {
-    console.log(err);
+    Logger.error(err);
     collectionItem.metadata = {
       name: 'No name',
       description: 'No description',

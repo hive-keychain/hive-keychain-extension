@@ -1,0 +1,448 @@
+.account-selector {
+  margin: 0px 16px;
+
+  .selected-account-name {
+    @include poppins500(14px);
+    user-select: none;
+    color: var(--select-font-color);
+    display: flex;
+    flex-direction: column;
+    row-gap: 1px;
+    min-width: 0;
+
+    .seed-name,
+    .address {
+      opacity: 0.7;
+      font-size: 11px;
+      font-style: italic;
+      line-height: 0.7;
+    }
+
+    .seed-name {
+      margin-bottom: -2px;
+    }
+
+    .address-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .selected-account-panel .selected-account-name {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .selected-account-panel {
+    min-height: 50px;
+    border: 1px solid var(--select-border-color);
+    border-radius: 16px;
+    background: var(--select-account-background);
+    display: flex;
+    align-items: center;
+    column-gap: 12px;
+    padding: 4px 6px 4px 12px;
+    box-sizing: border-box;
+    cursor: pointer;
+    user-select: none;
+
+    .account-selector-dropdown-handle {
+      @include icon-size(10px);
+      flex-shrink: 0;
+      width: 24px;
+      margin-top: -2px;
+      margin-left: auto;
+    }
+
+    &.white {
+      background: var(--select-background-color);
+    }
+
+    &.remove-border {
+      border: unset;
+    }
+
+    .user-picture {
+      @include icon-size(32px);
+      border-radius: 50%;
+      flex-shrink: 0;
+
+      &.shimmer {
+        @include icon-size(32px);
+      }
+    }
+  }
+
+  .account-selector-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+
+    .account-selector-backdrop {
+      @include overlay;
+    }
+
+    .account-selector-card {
+      @include form-panel;
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 90vh;
+      box-sizing: border-box;
+      z-index: 21;
+      overflow: hidden;
+    }
+
+    .account-selector-title {
+      @include poppins600(16px);
+      color: var(--main-font-color);
+      flex-shrink: 0;
+      text-align: center;
+    }
+
+    .account-selector-filters {
+      display: flex;
+      flex-direction: row;
+      column-gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .account-selector-search {
+      flex: 1;
+      min-width: 0;
+      .custom-input-content {
+        padding: 6px 12px;
+      }
+    }
+
+    .account-selector-type-filter {
+      display: flex;
+      column-gap: 8px;
+    }
+
+    .account-selector-type-filter-button {
+      @include poppins500(13px);
+      color: var(--main-font-color);
+      background: var(--card-background);
+      border: 1px solid var(--input-border);
+      border-radius: 16px;
+      min-height: 32px;
+      padding: 5px 10px;
+      display: flex;
+      align-items: center;
+      column-gap: 6px;
+      cursor: pointer;
+
+      &.selected {
+        color: white;
+        background: $red;
+        border-color: $red;
+      }
+
+      .account-selector-type-filter-icon {
+        @include icon-size(18px);
+        flex-shrink: 0;
+      }
+    }
+
+    .account-selector-list {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: -24px;
+      padding-bottom: 24px;
+      .account-selector-list-items {
+        display: flex;
+        flex-direction: column;
+        row-gap: 8px;
+      }
+    }
+
+    @mixin account-selector-list-item-highlighted {
+      background: $red;
+      border-color: $red;
+
+      .account-selector-list-item-label,
+      .selected-account-name {
+        color: white;
+      }
+
+      .selected-account-name {
+        .seed-name,
+        .address {
+          opacity: 1;
+        }
+      }
+
+      .account-selector-list-action {
+        color: white;
+        opacity: 1;
+      }
+    }
+
+    .account-selector-list-item {
+      display: flex;
+      align-items: center;
+      column-gap: 12px;
+      min-height: 44px;
+      padding: 10px 12px;
+      box-sizing: border-box;
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      background: var(--card-background);
+      cursor: pointer;
+      transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+
+      .user-picture {
+        @include icon-size(32px);
+        border-radius: 50%;
+        flex-shrink: 0;
+
+        &.shimmer {
+          @include icon-size(32px);
+        }
+      }
+
+      .account-selector-list-item-label {
+        @include poppins500(14px);
+        color: var(--main-font-color);
+        flex: 1;
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+
+      .selected-account-name {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .account-selector-list-item-trailing {
+        display: flex;
+        align-items: center;
+        column-gap: 8px;
+        flex-shrink: 0;
+        margin-left: auto;
+        justify-content: flex-end;
+      }
+
+      .account-selector-list-item-chains {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        min-width: 80px;
+        justify-content: flex-end;
+
+        .account-selector-list-item-chain-icon {
+          @include icon-size(24px);
+        }
+
+        &--stacked {
+          .account-selector-list-item-chain-logo-wrapper {
+            display: flex;
+
+            &:not(:first-child) {
+              margin-left: -8px;
+            }
+          }
+
+          .account-selector-list-item-chain-logo {
+            @include icon-size(20px);
+            border-radius: 50%;
+            background-color: white;
+            border: 2px solid var(--card-background);
+            object-fit: cover;
+            box-sizing: border-box;
+
+            &.chain-logo-initials {
+              @include poppins600(8px);
+            }
+          }
+        }
+      }
+
+      .account-selector-list-item-actions {
+        display: none;
+        align-items: center;
+        column-gap: 8px;
+        flex-shrink: 0;
+        justify-content: flex-end;
+      }
+
+      .account-selector-list-action {
+        @include icon-size(20px);
+        color: var(--main-font-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        opacity: 0.7;
+
+        &.copy-icon,
+        &.drag-handle,
+        &.manage-icon {
+          display: none;
+          pointer-events: none;
+        }
+
+        &.drag-handle {
+          cursor: grab;
+
+          &:active {
+            cursor: grabbing;
+          }
+        }
+
+        &.copy-icon,
+        &.manage-icon,
+        .drag-icon {
+          @include icon-size(20px);
+        }
+
+        &.manage-icon {
+          cursor: pointer;
+        }
+      }
+
+      &--selected {
+        @include account-selector-list-item-highlighted;
+
+        .account-selector-list-item-chains--stacked {
+          .account-selector-list-item-chain-logo {
+            border-color: $red;
+          }
+        }
+      }
+
+      &:hover {
+        @include account-selector-list-item-highlighted;
+
+        .account-selector-list-item-chains {
+          display: none;
+        }
+
+        .account-selector-list-item-actions {
+          display: flex;
+        }
+
+        .account-selector-list-action.copy-icon,
+        .account-selector-list-action.drag-handle,
+        .account-selector-list-action.manage-icon {
+          display: flex;
+          pointer-events: auto;
+        }
+      }
+    }
+
+    .account-selector-create-actions {
+      display: flex;
+      align-items: center;
+      column-gap: 12px;
+      flex-shrink: 0;
+      position: sticky;
+      bottom: 0;
+      background: var(--form-panel-background);
+      padding-top: 4px;
+    }
+
+    .account-selector-create-button,
+    .account-selector-export-button {
+      @include poppins500(14px);
+      color: var(--main-font-color);
+      background: var(--card-background);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      column-gap: 10px;
+      width: fit-content;
+      max-width: 100%;
+      min-height: 40px;
+      padding: 8px 12px;
+      cursor: pointer;
+
+      &:hover {
+        color: white;
+        background: $red;
+        border-color: $red;
+
+        .account-selector-create-button-icon,
+        .account-selector-export-button-icon {
+          color: white;
+
+          path {
+            stroke: white;
+          }
+        }
+      }
+
+      span {
+        flex-shrink: 0;
+      }
+    }
+
+    .account-selector-create-button {
+      .account-selector-create-button-icon {
+        @include icon-size(20px);
+        color: $red;
+        flex-shrink: 0;
+
+        rect {
+          display: none;
+        }
+      }
+    }
+
+    .account-selector-export-button {
+      margin-left: auto;
+
+      .account-selector-export-button-icon {
+        @include icon-size(18px);
+        flex-shrink: 0;
+
+        path {
+          stroke: $red;
+        }
+
+        rect {
+          display: none;
+        }
+      }
+    }
+
+    .account-selector-create-mini-cards {
+      position: relative;
+      width: 44px;
+      height: 26px;
+      margin-left: 10px;
+      pointer-events: none;
+    }
+
+    .account-selector-create-mini-card {
+      color: var(--main-font-color);
+      position: absolute;
+      top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:first-child {
+        right: 16px;
+        z-index: 2;
+      }
+
+      &:last-child {
+        right: 0;
+        z-index: 1;
+      }
+
+      .account-selector-create-mini-card-icon {
+        @include icon-size(22px);
+        flex-shrink: 0;
+      }
+    }
+  }
+}

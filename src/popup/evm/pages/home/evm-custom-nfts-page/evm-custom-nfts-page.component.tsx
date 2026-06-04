@@ -21,6 +21,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const EvmCustomNftsPage = ({
   chain,
   activeAccount,
@@ -64,7 +65,7 @@ const EvmCustomNftsPage = ({
       children: (
         <div className="evm-delete-confirm-modal">
           <p className="evm-delete-confirm-modal__message">
-            {chrome.i18n.getMessage('evm_custom_nfts_delete_confirm', [
+            {I18nUtils.getMessage('evm_custom_nfts_delete_confirm', [
               EvmFormatUtils.formatAddress(nft.address),
             ])}
           </p>
@@ -132,7 +133,7 @@ const EvmCustomNftsPage = ({
     <div className="evm-custom-tokens-page evm-custom-nfts-page">
       <Card className="evm-custom-tokens-card">
         <p className="evm-custom-tokens-caption">
-          {chrome.i18n.getMessage('evm_custom_nfts_page_caption')}
+          {I18nUtils.getMessage('evm_custom_nfts_page_caption')}
         </p>
         <div
           className="add-custom-token-link"
@@ -141,11 +142,11 @@ const EvmCustomNftsPage = ({
             setEditingNft(null);
             setShowAddPopup(true);
           }}>
-          {chrome.i18n.getMessage('evm_add_custom_nft')}
+          {I18nUtils.getMessage('evm_add_custom_nft')}
         </div>
         {customNfts.length === 0 ? (
           <p className="evm-custom-tokens-empty">
-            {chrome.i18n.getMessage('evm_custom_nfts_page_empty')}
+            {I18nUtils.getMessage('evm_custom_nfts_page_empty')}
           </p>
         ) : (
           <ul className="evm-custom-tokens-list">
@@ -186,7 +187,7 @@ const EvmCustomNftsPage = ({
                         </div>
                       )}
                       <div className="evm-custom-nfts-list__meta">
-                        {chrome.i18n.getMessage('evm_custom_nfts_token_count', [
+                        {I18nUtils.getMessage('evm_custom_nfts_token_count', [
                           String(nft.tokenIds.length),
                         ])}
                       </div>
@@ -196,8 +197,8 @@ const EvmCustomNftsPage = ({
                     type="button"
                     className="evm-custom-tokens-list__delete"
                     data-testid={`btn-delete-custom-nft-${nft.address}`}
-                    title={chrome.i18n.getMessage('evm_custom_nfts_delete')}
-                    aria-label={chrome.i18n.getMessage('evm_custom_nfts_delete')}
+                    title={I18nUtils.getMessage('evm_custom_nfts_delete')}
+                    aria-label={I18nUtils.getMessage('evm_custom_nfts_delete')}
                     onClick={(e) => {
                       e.stopPropagation();
                       openDeleteNftConfirmModal(nft);

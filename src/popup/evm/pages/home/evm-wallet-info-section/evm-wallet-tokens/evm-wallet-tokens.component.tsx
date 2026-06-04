@@ -17,9 +17,10 @@ import {
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface OwnProps {
   chain: EvmChain;
   activeAccount: EvmActiveAccount;
@@ -45,9 +46,35 @@ const EvmWalletTokensInner = ({
     ready: boolean;
     showCard: boolean;
   }>({ ready: false, showCard: false });
+  const isMountedRef = useRef(false);
 
   useEffect(() => {
+    isMountedRef.current = true;
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const init = async () => {
+      const tokens: NativeAndErc20Token[] =
+        (await EvmTokensUtils.filterTokensBasedOnSettings(
+          activeAccount.nativeAndErc20Tokens.value,
+        )) as NativeAndErc20Token[];
+      const sortedTokens = EvmTokensUtils.sortTokens(tokens);
+      if (!cancelled) {
+        setFilteredTokens(sortedTokens);
+      }
+    };
+
     void init();
+
+    return () => {
+      cancelled = true;
+    };
   }, [activeAccount.nativeAndErc20Tokens]);
 
   useEffect(() => {
@@ -108,22 +135,15 @@ const EvmWalletTokensInner = ({
     activeAccount.nativeAndErc20Tokens.loading,
   ]);
 
-  const init = async () => {
-    const tokens: NativeAndErc20Token[] =
-      (await EvmTokensUtils.filterTokensBasedOnSettings(
-        activeAccount.nativeAndErc20Tokens.value,
-      )) as NativeAndErc20Token[];
-    const sortedTokens = EvmTokensUtils.sortTokens(tokens);
-    setFilteredTokens(sortedTokens);
-  };
-
   const openCustomTokensPage = () => {
     navigateTo(EvmScreen.EVM_CUSTOM_TOKENS_PAGE);
   };
 
   const handleHideEmptyCard = async () => {
     await setCustomErc20EmptyCardHiddenForChain(chain.chainId);
-    setEmptyCardState((prev) => ({ ...prev, showCard: false }));
+    if (isMountedRef.current) {
+      setEmptyCardState((prev) => ({ ...prev, showCard: false }));
+    }
   };
 
   const canManageCustomTokens =
@@ -153,7 +173,7 @@ const EvmWalletTokensInner = ({
               <p
                 className="evm-custom-erc20-empty-card__message"
                 dangerouslySetInnerHTML={{
-                  __html: chrome.i18n.getMessage(
+                  __html: I18nUtils.getMessage(
                     'evm_custom_erc20_empty_card_message',
                   ),
                 }}></p>
@@ -161,7 +181,7 @@ const EvmWalletTokensInner = ({
                 type="button"
                 className="evm-custom-erc20-empty-card__hide"
                 onClick={() => void handleHideEmptyCard()}>
-                {chrome.i18n.getMessage('evm_custom_erc20_empty_card_hide')}
+                {I18nUtils.getMessage('evm_custom_erc20_empty_card_hide')}
               </button>
             </Card>
           )}
@@ -171,7 +191,7 @@ const EvmWalletTokensInner = ({
               <div className="empty-history-panel evm-wallet-tokens-filter-empty-panel">
                 <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
                 <span className="text">
-                  {chrome.i18n.getMessage('evm_wallet_tokens_filter_no_results')}
+                  {I18nUtils.getMessage('evm_wallet_tokens_filter_no_results')}
                 </span>
               </div>
             )}

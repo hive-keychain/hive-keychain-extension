@@ -1,16 +1,21 @@
-import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
+import {
+  EvmRequestHandler,
+  EvmRequestLocator,
+} from '@background/evm/requests/evm-request-handler';
 import { createEvmMessage } from '@background/hive/requests/operations/operations.utils';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import Decimal from 'decimal.js';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const sendEvmTransaction = async (
   requestHandler: EvmRequestHandler,
   request: EvmRequest,
+  locator: EvmRequestLocator,
   extraData: any,
 ) => {
-  const requestData = requestHandler.getRequestData(request.request_id);
+  const requestData = requestHandler.getRequestDataByLocator(locator);
   const account = requestHandler.accounts.find((account: EvmAccount) => {
     return (
       account.wallet.address.toLowerCase() ===
@@ -48,7 +53,7 @@ export const sendEvmTransaction = async (
       res.hash,
       request,
       requestData?.tab!,
-      await chrome.i18n.getMessage('evm_send_transaction_success'),
+      await I18nUtils.getMessage('evm_send_transaction_success'),
     );
   }
 };

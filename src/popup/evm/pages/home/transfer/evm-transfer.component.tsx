@@ -1,5 +1,6 @@
 import { joiResolver } from '@hookform/resolvers/joi';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
+import { PrivateKeyType } from '@interfaces/keys.interface';
 import { Screen } from '@interfaces/screen.interface';
 import {
   EvmActiveAccount,
@@ -21,8 +22,9 @@ import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
-import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
+import { EvmLedgerUtils } from '@popup/evm/utils/evm-ledger.utils';
+import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
@@ -40,10 +42,10 @@ import { setTitleContainerProperties } from '@popup/multichain/actions/title-con
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import Decimal from 'decimal.js';
-import { ethers, parseUnits, Wallet } from 'ethers';
+import { ethers, parseUnits } from 'ethers';
 import Joi from 'joi';
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useEffect, useRef, useState } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { connect, ConnectedProps } from 'react-redux';
 import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
@@ -57,9 +59,11 @@ import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.c
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
+import { KeychainError } from 'src/keychain-error';
 import { FormUtils } from 'src/utils/form.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface TransferForm {
   receiverAddress: string;
   selectedToken: NativeAndErc20Token;
@@ -103,6 +107,8 @@ const formatExactDecimalWithCommas = (
 const toDecimalString = (amount: string | number) =>
   new Decimal(amount).toFixed();
 
+const NATIVE_MAX_ESTIMATE_DEBOUNCE_MS = 350;
+
 export const getEvmTransferValueHex = (
   amount: string | number,
   decimals: number,
@@ -116,6 +122,20 @@ export const getEvmTransferMaxAmount = (
   Decimal.max(new Decimal(balance).sub(feeToReserve ?? 0), 0)
     .toDecimalPlaces(decimals, Decimal.ROUND_DOWN)
     .toFixed();
+
+export const getEvmTransferErrorMessage = (error: unknown) => {
+  if (error instanceof KeychainError) {
+    return {
+      key: error.message,
+      params: error.messageParams ?? [],
+    };
+  }
+
+  return {
+    key: 'popup_html_transfer_failed',
+    params: [],
+  };
+};
 
 const EvmTransfer = ({
   formParams,
@@ -153,6 +173,13 @@ const EvmTransfer = ({
   const [tokenOptions, setTokenOptions] = useState<OptionItem[]>();
   const [autocompleteValues, setAutocompleteValues] =
     useState<AutoCompleteValues>();
+  const [nativeMaxAmount, setNativeMaxAmount] = useState<{
+    key: string;
+    value?: string;
+  }>();
+  const nativeMaxRequestId = useRef(0);
+  const selectedToken = useWatch({ control, name: 'selectedToken' });
+  const receiverAddress = useWatch({ control, name: 'receiverAddress' });
 
   const prefillReceiverAddress = (values: AutoCompleteValues) => {
     if (!formParams.receiverAddress) return;
@@ -161,7 +188,8 @@ const EvmTransfer = ({
       .flatMap((category) => category.values)
       .find(
         (value) =>
-          value.value.toLowerCase() === formParams.receiverAddress.toLowerCase(),
+          value.value.toLowerCase() ===
+          formParams.receiverAddress.toLowerCase(),
       )?.value;
 
     if (prefilledValue) {
@@ -251,9 +279,8 @@ const EvmTransfer = ({
   }, [activeAccount, chain, localAccounts, formParams.receiverAddress]);
 
   useEffect(() => {
-    if (watch('selectedToken'))
-      setBalance(watch('selectedToken').balanceInteger);
-  }, [watch('selectedToken')]);
+    if (selectedToken) setBalance(selectedToken.balanceInteger);
+  }, [selectedToken]);
 
   const handleClickOnSend = async (form: TransferForm) => {
     const amount = new Decimal(form.amount);
@@ -268,13 +295,40 @@ const EvmTransfer = ({
       return;
     }
 
+    const recipientValidation =
+      await EvmAddressesUtils.validateTransferRecipient(
+        form.receiverAddress,
+        chain.chainId,
+        localAccounts,
+      );
+    if (!recipientValidation.valid) {
+      setErrorMessage(
+        recipientValidation.messageKey,
+        recipientValidation.messageParams ?? [],
+      );
+      return;
+    }
+    const receiverAddress = recipientValidation.address;
+
     const decimals =
       form.selectedToken.tokenInfo.type === EVMSmartContractType.ERC20
         ? form.selectedToken.tokenInfo.decimals
         : 18;
 
     const transactionInfo =
-      await EvmTransactionParserUtils.verifyTransactionInformation();
+      await EvmTransactionParserUtils.verifyTransactionInformation({
+        to: receiverAddress,
+        contract:
+          form.selectedToken.tokenInfo.type === EVMSmartContractType.ERC20
+            ? form.selectedToken.tokenInfo.contractAddress
+            : undefined,
+        tokenContract:
+          form.selectedToken.tokenInfo.type === EVMSmartContractType.ERC20
+            ? form.selectedToken.tokenInfo.contractAddress
+            : undefined,
+        chainId: chain.chainId,
+        tokenType: form.selectedToken.tokenInfo.type,
+      });
 
     let fields = [
       {
@@ -284,6 +338,7 @@ const EvmTransfer = ({
             address={activeAccount.address}
             chainId={chain.chainId}
             canCopy
+            localAccounts={localAccounts}
           />
         ),
       },
@@ -291,13 +346,14 @@ const EvmTransfer = ({
         label: 'popup_html_transfer_to',
         value: (
           <EvmAddressComponent
-            address={form.receiverAddress}
+            address={receiverAddress}
             chainId={chain.chainId}
             canCopy
+            localAccounts={localAccounts}
           />
         ),
         warnings: await EvmTransactionParserUtils.getAddressWarning(
-          form.receiverAddress,
+          receiverAddress,
           chain.chainId,
           transactionInfo,
           localAccounts,
@@ -329,7 +385,7 @@ const EvmTransfer = ({
         type: EvmTransactionType.EIP_1559,
         to:
           form.selectedToken.tokenInfo.type === EVMSmartContractType.NATIVE
-            ? form.receiverAddress
+            ? receiverAddress
             : form.selectedToken.tokenInfo.contractAddress,
         data:
           form.selectedToken.tokenInfo.type === EVMSmartContractType.NATIVE
@@ -337,7 +393,7 @@ const EvmTransfer = ({
             : await encodeTransferData(
                 form.selectedToken.tokenInfo,
                 activeAccount,
-                form.receiverAddress,
+                receiverAddress,
                 form.amount,
               ),
         value:
@@ -351,21 +407,42 @@ const EvmTransfer = ({
       ]);
       return;
     }
+    const ledgerClearSigningWarning =
+      EvmLedgerUtils.getClearSigningFallbackWarning(
+        activeAccount.wallet,
+        transactionData.data,
+      );
+    if (ledgerClearSigningWarning) {
+      const smartContractField = fields.find(
+        (field) => field.label === 'evm_operation_smart_contract_address',
+      );
+      if (smartContractField) {
+        smartContractField.warnings = [
+          ...(smartContractField.warnings ?? []),
+          ledgerClearSigningWarning,
+        ];
+      }
+    }
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: null,
-      message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
+      message: I18nUtils.getMessage('popup_html_transfer_confirm_text'),
       fields: fields,
       title: 'popup_html_transfer_funds',
       formParams: watch(),
       hasGasFee: true,
       tokenInfo: form.selectedToken.tokenInfo,
-      receiverAddress: form.receiverAddress,
+      receiverAddress,
       amount: form.amount,
       wallet: activeAccount.wallet,
       transactionData: transactionData,
       afterConfirmAction: async (gasFee: GasFeeEstimationBase) => {
-        addToLoadingList('html_popup_transfer_fund_operation');
+        addToLoadingList(
+          'html_popup_transfer_fund_operation',
+          EvmSignerUtils.isLedgerWallet(activeAccount.wallet)
+            ? PrivateKeyType.LEDGER
+            : undefined,
+        );
         try {
           const transactionResponse = await EvmTransactionsUtils.send(
             activeAccount.wallet,
@@ -390,7 +467,7 @@ const EvmTransfer = ({
               } as EvmUserHistoryItemDetail,
               {
                 label: 'popup_html_transfer_to',
-                value: form.receiverAddress,
+                value: receiverAddress,
                 type: EvmUserHistoryItemDetailType.ADDRESS,
               } as EvmUserHistoryItemDetail,
               {
@@ -405,7 +482,8 @@ const EvmTransfer = ({
           });
         } catch (err) {
           Logger.error('Error during transfer', err);
-          setErrorMessage('popup_html_transfer_failed');
+          const errorMessage = getEvmTransferErrorMessage(err);
+          setErrorMessage(errorMessage.key, errorMessage.params);
         } finally {
           removeFromLoadingList('html_popup_transfer_fund_operation');
         }
@@ -413,16 +491,16 @@ const EvmTransfer = ({
     } as EVMConfirmationPageParams);
   };
 
-  const getNativeTransferFeeToReserve = async () => {
-    const receiverAddress = watch('receiverAddress');
-    const to = ethers.isAddress(receiverAddress)
-      ? receiverAddress
-      : activeAccount.address;
+  const getNativeTransferFeeToReserve = async (
+    token: NativeAndErc20Token,
+    receiver: string,
+  ) => {
+    const to = ethers.isAddress(receiver) ? receiver : activeAccount.address;
     const estimate = await GasFeeUtils.estimate(
       chain,
       activeAccount.address,
       EvmTransactionType.EIP_1559,
-      watch('selectedToken').tokenInfo.priceUsd ?? 0,
+      token.tokenInfo.priceUsd ?? 0,
       undefined,
       {
         from: activeAccount.address,
@@ -440,6 +518,91 @@ const EvmTransfer = ({
     );
   };
 
+  const getNativeMaxEstimateKey = (
+    token: NativeAndErc20Token,
+    receiver: string,
+    currentBalance: string | number,
+  ) =>
+    [
+      chain.chainId,
+      activeAccount.address.toLowerCase(),
+      ethers.isAddress(receiver)
+        ? receiver.toLowerCase()
+        : activeAccount.address.toLowerCase(),
+      currentBalance.toString(),
+      token.tokenInfo.priceUsd ?? 0,
+    ].join(':');
+
+  const estimateNativeMaxAmount = async (
+    token: NativeAndErc20Token,
+    receiver: string,
+    currentBalance: string | number,
+    key: string,
+  ) => {
+    const feeToReserve = await getNativeTransferFeeToReserve(token, receiver);
+    return {
+      key,
+      value: getEvmTransferMaxAmount(currentBalance, feeToReserve, 18),
+    };
+  };
+
+  useEffect(() => {
+    if (
+      !selectedToken ||
+      selectedToken.tokenInfo.type !== EVMSmartContractType.NATIVE ||
+      balance === '...'
+    ) {
+      setNativeMaxAmount(undefined);
+      return;
+    }
+
+    try {
+      new Decimal(balance.toString());
+    } catch {
+      setNativeMaxAmount(undefined);
+      return;
+    }
+
+    const normalizedReceiverAddress = receiverAddress ?? '';
+    const key = getNativeMaxEstimateKey(
+      selectedToken,
+      normalizedReceiverAddress,
+      balance,
+    );
+    const requestId = ++nativeMaxRequestId.current;
+    setNativeMaxAmount((previous) =>
+      previous?.key === key && previous.value ? previous : { key },
+    );
+
+    const timeout = setTimeout(() => {
+      estimateNativeMaxAmount(
+        selectedToken,
+        normalizedReceiverAddress,
+        balance,
+        key,
+      )
+        .then((estimate) => {
+          if (nativeMaxRequestId.current === requestId) {
+            setNativeMaxAmount(estimate);
+          }
+        })
+        .catch((error) => {
+          Logger.error(
+            'Error while pre-estimating native transfer max amount',
+            error,
+          );
+          if (nativeMaxRequestId.current === requestId) {
+            setNativeMaxAmount({ key });
+          }
+        });
+    }, NATIVE_MAX_ESTIMATE_DEBOUNCE_MS);
+
+    return () => {
+      clearTimeout(timeout);
+      nativeMaxRequestId.current += 1;
+    };
+  }, [selectedToken, receiverAddress, balance, chain, activeAccount.address]);
+
   const setAmountToMaxValue = async () => {
     const selectedToken = watch('selectedToken');
 
@@ -449,8 +612,25 @@ const EvmTransfer = ({
     }
 
     try {
-      const feeToReserve = await getNativeTransferFeeToReserve();
-      setValue('amount', getEvmTransferMaxAmount(balance, feeToReserve, 18));
+      const receiverAddress = watch('receiverAddress') ?? '';
+      const nativeMaxKey = getNativeMaxEstimateKey(
+        selectedToken,
+        receiverAddress,
+        balance,
+      );
+      if (nativeMaxAmount?.key === nativeMaxKey && nativeMaxAmount.value) {
+        setValue('amount', nativeMaxAmount.value);
+        return;
+      }
+
+      const estimate = await estimateNativeMaxAmount(
+        selectedToken,
+        receiverAddress,
+        balance,
+        nativeMaxKey,
+      );
+      setNativeMaxAmount(estimate);
+      setValue('amount', estimate.value);
     } catch (error) {
       Logger.error('Error while estimating native transfer max amount', error);
       setErrorMessage('evm_gas_fee_warning_not_available');
@@ -463,22 +643,13 @@ const EvmTransfer = ({
     receiverAddress: string,
     amount: string,
   ) => {
-    const provider = await EthersUtils.getProvider(chain);
-    const connectedWallet = new Wallet(
-      selectedAccount.wallet.signingKey,
-      provider,
-    );
-    const contract = new ethers.Contract(
-      tokenInfo.contractAddress!,
-      Erc20Abi,
-      connectedWallet,
-    );
+    const contractInterface = new ethers.Interface(Erc20Abi);
 
     const finalAmount = parseUnits(
       toDecimalString(amount),
       (tokenInfo as EvmSmartContractInfoErc20).decimals,
     );
-    return contract.interface.encodeFunctionData('transfer', [
+    return contractInterface.encodeFunctionData('transfer', [
       receiverAddress,
       finalAmount,
     ]);

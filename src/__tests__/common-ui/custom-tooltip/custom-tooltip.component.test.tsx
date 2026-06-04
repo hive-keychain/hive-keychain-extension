@@ -3,6 +3,7 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import React from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('custom-tooltip.component', () => {
   interface RectOptions {
     left: number;
@@ -96,7 +97,7 @@ describe('custom-tooltip.component', () => {
 
   beforeEach(() => {
     setViewport(320, 600);
-    chrome.i18n.getMessage = jest.fn((key: string) => key);
+    I18nUtils.getMessage = jest.fn((key: string) => key);
   });
 
   afterEach(() => {
@@ -213,5 +214,32 @@ describe('custom-tooltip.component', () => {
     expect(tooltip.style.getPropertyValue('--tooltip-arrow-offset-x')).toBe(
       '128px',
     );
+  });
+
+  it('renders the tooltip in a body portal so it is not clipped by overflow containers', () => {
+    jest.useFakeTimers();
+    mockTooltipRects({
+      anchorRect: { left: 100, top: 200, width: 40, height: 20 },
+      tooltipRect: { left: 0, top: 0, width: 150, height: 60 },
+    });
+
+    const { container } = render(
+      <div style={{ overflow: 'hidden', width: 120 }}>
+        <CustomTooltip dataTestId="tooltip" message="tooltip_message">
+          <button type="button">hover me</button>
+        </CustomTooltip>
+      </div>,
+    );
+
+    fireEvent.mouseEnter(screen.getByTestId('tooltip'));
+    act(() => {
+      jest.advanceTimersByTime(251);
+    });
+
+    const tooltip = screen.getByTestId('tooltip-content');
+    expect(tooltip).toBeInTheDocument();
+    expect(container).not.toContainElement(tooltip);
+    expect(document.body).toContainElement(tooltip);
+    expect(tooltip.closest('.tooltip-portal')).not.toBeNull();
   });
 });

@@ -1,34 +1,37 @@
+@import 'src/common-ui/contacts/contacts-settings-page/contacts-settings-page.scss';
+
 .evm-contacts-page {
-  .add-contact-link {
-    @include link;
-    align-self: flex-end;
+  .category-title {
+    @include poppins500(14px);
   }
 
-  .card-container {
+  .empty-address-item {
+    @include poppins400(14px);
+    color: var(--main-font-color);
     display: flex;
-    flex-direction: column;
-    row-gap: 24px;
-    margin: 0 24px;
+    align-items: center;
+    padding: 8px 0 8px 8px;
   }
 
-  .evm-contacts-card {
-    overflow: hidden;
-    max-height: 420px;
-    .chain-custom-select {
-      width: 100%;
-    }
-    .edit-contacts-panel {
-      display: flex;
-      flex-direction: column;
-      row-gap: 8px;
-      width: 100%;
-      overflow: auto;
+  .chain-select-panel {
+    margin: 0;
 
-      .right-action-logo {
-        div {
-          display: flex;
-          align-items: center;
-          justify-content: center;
+    .custom-select-container {
+      .custom-select {
+        width: 100%;
+
+        .react-dropdown-select-dropdown {
+          box-sizing: border-box;
+          min-width: 100%;
+          width: 100%;
+
+          .custom-select-dropdown,
+          .option,
+          .custom-select-item {
+            box-sizing: border-box;
+            max-width: unset;
+            width: 100%;
+          }
         }
       }
     }

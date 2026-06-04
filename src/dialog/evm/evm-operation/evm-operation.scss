@@ -13,27 +13,16 @@
     flex-direction: column;
     row-gap: 16px;
 
+    .evm-risk-alerts-stack {
+      padding: 0 12px;
+    }
+
     // .dialog-caption {
     //   @include small-card;
     //   display: unset;
     //   margin: unset;
     //   margin-bottom: 8px;
     // }
-
-    .unable-to-reach-panel {
-      @include small-card;
-      display: flex;
-      margin: unset;
-      column-gap: 8px;
-      .svg-icon {
-        @include icon-size(16px);
-        --warning-color: #{$red};
-      }
-      .text {
-        @include poppins400(12px);
-        color: var(--main-font-color);
-      }
-    }
 
     .operation-header {
       padding: 0 12px 12px 12px;
@@ -63,7 +52,7 @@
         text-align: center;
         font-size: 20px;
         text-transform: capitalize;
-        padding-bottom: 8px;
+        padding-bottom: 12px;
       }
 
       .account-chain-panel {

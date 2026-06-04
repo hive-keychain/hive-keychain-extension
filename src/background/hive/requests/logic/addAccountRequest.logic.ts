@@ -6,6 +6,7 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const addAccountRequest = (
   requestHandler: HiveRequestsHandler,
   tab: number,
@@ -19,8 +20,8 @@ export const addAccountRequest = (
       sendErrors(
         tab!,
         'user_cancel',
-        await chrome.i18n.getMessage('bgd_auth_canceled'),
-        await chrome.i18n.getMessage('popup_accounts_already_registered', [
+        await I18nUtils.getMessage('bgd_auth_canceled'),
+        await I18nUtils.getMessage('popup_accounts_already_registered', [
           account.name,
         ]),
         request,

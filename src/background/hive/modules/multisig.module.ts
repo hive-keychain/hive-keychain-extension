@@ -44,6 +44,7 @@ import { AsyncUtils } from 'src/utils/async.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
 let socket: Socket;
@@ -231,7 +232,7 @@ const requestSignatures = async (
               } catch (err: any) {
                 CommunicationUtils.runtimeSendMessage({
                   command: DialogCommand.SEND_DIALOG_ERROR,
-                  msg: { display_msg: await chrome.i18n.getMessage(err) },
+                  msg: { display_msg: await I18nUtils.getMessage(err) },
                 });
                 resolve({ error: { message: err } });
               }

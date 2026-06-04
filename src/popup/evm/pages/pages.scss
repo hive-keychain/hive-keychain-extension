@@ -1,2 +1,8 @@
-@import './add-wallets/add-wallets-main.component';
+@import './add-wallets/add-evm-accounts-from-ledger.component';
+@import './add-wallets/create-new-wallet/create-new-wallet.component';
+@import './add-wallets/create-new-wallet/create-new-wallet-verification.component';
+@import './add-wallets/import-wallet-from-seed/import-wallet-confirmation.component';
+@import './add-wallets/import-wallet-from-seed/import-wallet-from-seed.component';
 @import './home/home.module.scss';
+// EVMConfirmationPage (popup) renders EvmRequestItem; dialog bundle loads this via evm.scss.
+@import '../../../dialog/evm/components/evm-request-item/evm-request-item.scss';

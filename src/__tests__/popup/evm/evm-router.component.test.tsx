@@ -10,16 +10,44 @@ import {
 } from 'src/__tests__/utils-for-testing/fake-store';
 
 jest.mock(
-  '@popup/evm/pages/home/settings/evm-dapps-connections/evm-dapps-connections.component',
+  'src/popup/multichain/pages/settings/settings-connected-dapps-page.component',
   () => ({
-    EvmDappsConnectionsComponent: () => (
-      <div data-testid="evm-dapps-connections-router-page" />
+    SettingsConnectedDappsPageComponent: () => (
+      <div data-testid="settings-connected-dapps-router-page" />
+    ),
+  }),
+);
+
+jest.mock(
+  'src/popup/multichain/pages/settings/settings-main-page.component',
+  () => ({
+    UnifiedSettingsMainPageComponent: () => (
+      <div data-testid="unified-settings-main-router-page" />
     ),
   }),
 );
 
 describe('EvmRouterComponent', () => {
-  it('renders the dApps connections page', () => {
+  it('aliases the legacy settings route to the unified settings menu', () => {
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      navigation: {
+        stack: [{ currentPage: EvmScreen.EVM_SETTINGS }],
+      },
+    });
+
+    render(
+      <Provider store={store}>
+        <EvmRouterComponent />
+      </Provider>,
+    );
+
+    expect(
+      screen.getByTestId('unified-settings-main-router-page'),
+    ).toBeInTheDocument();
+  });
+
+  it('aliases the legacy dApps connections route to unified connected dApps', () => {
     const store = getFakeStore({
       ...initialEmptyStateStore,
       navigation: {
@@ -34,7 +62,7 @@ describe('EvmRouterComponent', () => {
     );
 
     expect(
-      screen.getByTestId('evm-dapps-connections-router-page'),
+      screen.getByTestId('settings-connected-dapps-router-page'),
     ).toBeInTheDocument();
   });
 });

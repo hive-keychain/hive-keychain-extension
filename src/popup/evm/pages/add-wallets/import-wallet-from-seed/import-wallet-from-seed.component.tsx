@@ -13,13 +13,14 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { TextAreaComponent } from 'src/common-ui/text-area/textarea.component';
+import { I18nUtils } from 'src/utils/i18n.utils';
 const ImportWalletFromSeed = ({
   chain,
   navigateToWithParams,
   setTitleContainerProperties,
   setErrorMessage,
   hasFinishedSignup,
-  accounts,
+  mk,
 }: PropsType) => {
   const [seed, setSeed] = useState<string[]>([]);
   const [isLoading, setLoading] = useState(false);
@@ -33,11 +34,13 @@ const ImportWalletFromSeed = ({
   }, []);
 
   const submitForm = async (): Promise<void> => {
+    const normalizedSeed = seed.join(' ').trim().toLowerCase();
+    const storedSeeds = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
     if (
-      accounts.some(
-        (account) =>
-          account.wallet.mnemonic?.phrase.trim().toLowerCase() ===
-          seed.join(' ').trim().toLowerCase(),
+      storedSeeds.some(
+        (storedSeed) =>
+          'seed' in storedSeed &&
+          storedSeed.seed.trim().toLowerCase() === normalizedSeed,
       )
     ) {
       setErrorMessage('evm_seeds_already_in_keychain');
@@ -50,7 +53,10 @@ const ImportWalletFromSeed = ({
     if (wallet) {
       setLoading(true);
 
-      const derivedWallets = await EvmWalletUtils.deriveWallets(wallet, chain);
+      const derivedWallets = await EvmWalletUtils.deriveWallets(
+        wallet.mnemonic!,
+        chain,
+      );
       setLoading(false);
       removeFromLoadingList('html_popup_deriving_wallets');
       navigateToWithParams(Screen.IMPORT_EVM_WALLET_CONFIRMATION, {
@@ -70,7 +76,7 @@ const ImportWalletFromSeed = ({
         <div
           className="caption"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage('html_popup_evm_setup_import_text'),
+            __html: I18nUtils.getMessage('html_popup_evm_setup_import_text'),
           }}></div>
         <Separator type="horizontal" />
         <TextAreaComponent
@@ -81,7 +87,7 @@ const ImportWalletFromSeed = ({
           placeholder="html_popup_evm_seed_phrase_placeholder"
           rows={4}
           useChips
-          maxChips={12}
+          maxChips={24}
         />
         <div className="fill-space"></div>
         <ButtonComponent
@@ -99,7 +105,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     hasFinishedSignup: state.hasFinishedSignup,
     chain: state.chain as EvmChain,
-    accounts: state.evm.accounts,
+    mk: state.mk,
   };
 };
 

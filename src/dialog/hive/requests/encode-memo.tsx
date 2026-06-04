@@ -10,6 +10,7 @@ import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import Operation from 'src/dialog/hive/operation/operation';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: RequestEncode & RequestId;
   domain: string;
@@ -22,7 +23,7 @@ const EncodeMemo = (props: Props) => {
   const { data } = props;
   return (
     <Operation
-      title={chrome.i18n.getMessage('dialog_title_encode')}
+      title={I18nUtils.getMessage('dialog_title_encode')}
       {...props}
       canWhitelist={data.method.toLowerCase() !== KeychainKeyTypesLC.active}>
       <UsernameWithAvatar title="dialog_account" username={data.username} />

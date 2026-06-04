@@ -20,6 +20,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const normalizeEvmChainIdInput = (input: string): string => {
   const trimmed = input.trim();
   if (/^0x[0-9a-fA-F]+$/.test(trimmed)) {
@@ -61,7 +62,7 @@ const TX_TYPE_LABEL_KEY: Record<EvmTransactionType, string> = {
 const getTxTypeOptionLabel = (t: EvmTransactionType): string => {
   const key = TX_TYPE_LABEL_KEY[t];
   if (!key) return String(t);
-  const msg = chrome.i18n.getMessage(key);
+  const msg = I18nUtils.getMessage(key);
   return msg || key;
 };
 
@@ -91,15 +92,19 @@ const inferTxTypeFromChainListFeatures = (
 };
 
 const applyChainListOrgToFormState = async (chain: ChainListOrgChain) => {
+  const expectedChainId = '0x' + BigInt(chain.chainId).toString(16);
   const httpCandidateUrls = chain.rpc
     .filter((rpc) => !rpc.url.startsWith('wss://'))
     .map((rpc) => rpc.url);
 
-  const urlsToProbe = httpCandidateUrls.slice(0, CHAINLIST_PRELOAD_MAX_RPCS_TO_CHECK);
+  const urlsToProbe = httpCandidateUrls.slice(
+    0,
+    CHAINLIST_PRELOAD_MAX_RPCS_TO_CHECK,
+  );
 
   const statusByUrl = await Promise.all(
     urlsToProbe.map((url) =>
-      EvmRpcUtils.checkRpcStatus(url)
+      EvmRpcUtils.isValidRpcForChainId(url, expectedChainId)
         .then((ok) => ({ url, ok: !!ok }))
         .catch(() => ({ url, ok: false })),
     ),
@@ -113,7 +118,7 @@ const applyChainListOrgToFormState = async (chain: ChainListOrgChain) => {
 
   return {
     name: chain.name,
-    chainIdInput: '0x' + BigInt(chain.chainId).toString(16),
+    chainIdInput: expectedChainId,
     symbol: chain.nativeCurrency.symbol.toUpperCase(),
     rpcUrls: httpRpcs.length > 0 ? httpRpcs : [''],
     explorer: chain.explorers?.[0]?.url?.trim() ?? '',
@@ -142,10 +147,12 @@ export const CustomEvmChainForm = ({
   submitLabel,
 }: CustomEvmChainFormProps) => {
   const isEdit = !!chainToEdit;
+  /** Locked when editing a saved chain or when the caller fixed the id (e.g. dapp add-chain request). */
+  const isChainIdDisabled = isEdit || !!initialChain?.chainId?.trim();
   const addRpcAriaLabel =
-    chrome.i18n.getMessage('evm_custom_chains_add_rpc') || ADD_RPC_FALLBACK;
+    I18nUtils.getMessage('evm_custom_chains_add_rpc') || ADD_RPC_FALLBACK;
   const removeRpcAriaLabel =
-    chrome.i18n.getMessage('evm_custom_chains_remove_rpc') || 'Remove';
+    I18nUtils.getMessage('evm_custom_chains_remove_rpc') || 'Remove';
 
   const [name, setName] = useState('');
   const [chainIdInput, setChainIdInput] = useState('');
@@ -159,7 +166,7 @@ export const CustomEvmChainForm = ({
   const [testnet, setTestnet] = useState(false);
   const [saving, setSaving] = useState(false);
   const [localError, setLocalError] = useState<string>();
-  /** Row indices that failed the pre-save `checkRpcStatus` (red borders). */
+  /** Row indices that failed the pre-save chain id RPC check (red borders). */
   const [failedRpcRowIndices, setFailedRpcRowIndices] = useState<number[]>([]);
   const [logoPreviewErrored, setLogoPreviewErrored] = useState(false);
   const [chainListMatch, setChainListMatch] =
@@ -418,7 +425,10 @@ export const CustomEvmChainForm = ({
 
       const rpcCheckResults = await Promise.all(
         rpcCheckRows.map(({ index, url }) =>
-          EvmRpcUtils.checkRpcStatus(url).then((ok) => ({ index, ok })),
+          EvmRpcUtils.isValidRpcForChainId(url, chainId).then((ok) => ({
+            index,
+            ok,
+          })),
         ),
       );
 
@@ -480,7 +490,7 @@ export const CustomEvmChainForm = ({
     <div className="add-custom-evm-chain-form">
       {localError && (
         <div className="add-custom-evm-chain-form__error">
-          {chrome.i18n.getMessage(localError)}
+          {I18nUtils.getMessage(localError)}
         </div>
       )}
       <InputComponent
@@ -491,9 +501,10 @@ export const CustomEvmChainForm = ({
           clearError();
           setChainIdInput(v);
         }}
+        disabled={isChainIdDisabled}
         dataTestId="custom-evm-chain-id"
       />
-      {!isEdit && (chainListLookupLoading || chainListMatch) && (
+      {/* {!isEdit && (chainListLookupLoading || chainListMatch) && (
         <div
           className="add-custom-evm-chain-form__chainlist-hint"
           aria-busy={chainListLookupLoading || chainListPreloadLoading}>
@@ -501,7 +512,7 @@ export const CustomEvmChainForm = ({
             {chainListMatch ? (
               <>
                 <span className="add-custom-evm-chain-form__chainlist-hint-text">
-                  {chrome.i18n.getMessage('evm_custom_chains_chainlist_found')}
+                  {I18nUtils.getMessage('evm_custom_chains_chainlist_found')}
                 </span>{' '}
                 <button
                   type="button"
@@ -509,14 +520,14 @@ export const CustomEvmChainForm = ({
                   onClick={applyChainListPreload}
                   disabled={saving || chainListPreloadLoading}
                   data-testid="custom-evm-chain-chainlist-preload">
-                  {chrome.i18n.getMessage(
+                  {I18nUtils.getMessage(
                     'evm_custom_chains_chainlist_preload_link',
                   )}
                 </button>
               </>
             ) : (
               <span className="add-custom-evm-chain-form__chainlist-hint-text">
-                {chrome.i18n.getMessage(
+                {I18nUtils.getMessage(
                   'evm_custom_chains_chainlist_looking_up',
                 )}
               </span>
@@ -530,7 +541,7 @@ export const CustomEvmChainForm = ({
             />
           )}
         </div>
-      )}
+      )} */}
       <InputComponent
         type={InputType.TEXT}
         label="evm_custom_chains_field_name"
@@ -600,12 +611,12 @@ export const CustomEvmChainForm = ({
               aria-expanded={!rpcPanelCollapsed}
               data-testid="custom-evm-chain-rpc-toggle">
               <span className="add-custom-evm-chain-form__rpc-label">
-                {chrome.i18n.getMessage('evm_custom_chains_field_rpc')}
+                {I18nUtils.getMessage('evm_custom_chains_field_rpc')}
               </span>
               <span className="add-custom-evm-chain-form__rpc-header-right">
                 {rpcPanelCollapsed && (
                   <span className="add-custom-evm-chain-form__rpc-collapsed-hint">
-                    {chrome.i18n.getMessage(
+                    {I18nUtils.getMessage(
                       'evm_custom_chains_rpc_collapsed_summary',
                       [String(rpcFilledCount)],
                     )}
@@ -623,7 +634,7 @@ export const CustomEvmChainForm = ({
             </button>
           ) : (
             <div className="add-custom-evm-chain-form__rpc-label">
-              {chrome.i18n.getMessage('evm_custom_chains_field_rpc')}
+              {I18nUtils.getMessage('evm_custom_chains_field_rpc')}
             </div>
           )}
         </div>

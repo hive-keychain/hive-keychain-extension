@@ -1,27 +1,21 @@
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { ActionButton } from '@interfaces/action-button.interface';
 import { Autolock, AutoLockType } from '@interfaces/autolock.interface';
-import { EvmAppComponent } from '@popup/evm/evm-app.component';
+import { setStatus as setEvmStatus } from '@popup/evm/actions/app-status.actions';
 import { setIsLedgerSupported } from '@popup/hive/actions/app-status.actions';
-import { HiveAppComponent } from '@popup/hive/hive-app.component';
 import { setHasFinishedSignup } from '@popup/multichain/actions/has-finished-signup.actions';
 import { navigateToPaidHiveAccountCreation } from '@popup/multichain/actions/hive-promotion.actions';
 import { resetMessage } from '@popup/multichain/actions/message.actions';
 import { setMk } from '@popup/multichain/actions/mk.actions';
 import { closeModal, openModal } from '@popup/multichain/actions/modal.actions';
-import {
-  Chain,
-  ChainType,
-} from '@popup/multichain/interfaces/chains.interface';
 import { ModalProperties } from '@popup/multichain/interfaces/modal.interface';
-import { AddCustomChainPage } from '@popup/multichain/pages/add-custom-chain/add-custom-chain.component';
-import { ChainSelectorPageComponent } from '@popup/multichain/pages/chain-selector/chain-selector.component';
 import { EvmOnlyHivePromotionPopupComponent } from '@popup/multichain/pages/evm-only-hive-promotion-popup/evm-only-hive-promotion-popup.component';
 import { SignInRouterComponent } from '@popup/multichain/pages/sign-in/sign-in-router.component';
 import { SignUpComponent } from '@popup/multichain/pages/sign-up/sign-up.component';
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { SignUpScreen } from '@popup/multichain/sign-up.context';
 import { RootState } from '@popup/multichain/store';
+import { UnlockedAppComponent } from '@popup/multichain/unlocked-app.component';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
@@ -31,6 +25,7 @@ import { MessageContainerComponent } from 'src/common-ui/message-container/messa
 import { ModalComponent } from 'src/common-ui/modal/modal.component';
 import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';
 import { CopyToastContainer } from 'src/common-ui/toast/copy-toast.component';
+import { EvmLedgerUtils } from 'src/popup/evm/utils/evm-ledger.utils';
 import { EvmOnlyHivePromotionUtils } from 'src/utils/evm-only-hive-promotion.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -46,15 +41,16 @@ const ChainRouter = ({
   mk,
   setMk,
   setIsLedgerSupported,
+  setEvmStatus,
   hasFinishedSignup,
   setHasFinishedSignup,
-  nav,
   resetMessage,
-  chain,
   modal,
   openModal,
   closeModal,
   navigateToPaidHiveAccountCreation,
+  nav,
+  currentPage,
 }: Props & PropsFromRedux) => {
   const [hasHydratedMk, setHasHydratedMk] = useState(false);
   const [hasHandledEvmOnlyHivePromotion, setHasHandledEvmOnlyHivePromotion] =
@@ -72,11 +68,15 @@ const ChainRouter = ({
     initAutoLock();
     checkIfHasFinishedSignup();
     initMk();
-    LedgerUtils.isLedgerSupported().then((res) => {
-      setIsLedgerSupported(res);
+    Promise.all([
+      LedgerUtils.isLedgerSupported(),
+      EvmLedgerUtils.isLedgerSupported(),
+    ]).then(([isHiveLedgerSupported, isEvmLedgerSupported]) => {
+      setIsLedgerSupported(isHiveLedgerSupported);
+      setEvmStatus({ isLedgerSupported: isEvmLedgerSupported });
       LocalStorageUtils.saveValueInLocalStorage(
         LocalStorageKeyEnum.IS_LEDGER_SUPPORTED,
-        res,
+        isHiveLedgerSupported,
       );
     });
     LocalStorageUtils.getValueFromLocalStorage(
@@ -174,9 +174,7 @@ const ChainRouter = ({
       (await LocalStorageUtils.getValueFromLocalStorage(
         LocalStorageKeyEnum.HAS_FINISHED_SIGNUP,
       )) || false;
-    setTimeout(() => {
-      setHasFinishedSignup(hasFinishedSignup);
-    }, 500);
+    setHasFinishedSignup(hasFinishedSignup);
   };
 
   const initAutoLock = async () => {
@@ -207,22 +205,7 @@ const ChainRouter = ({
         return <SignInRouterComponent />;
       }
     } else {
-      if (isKeylessKeychainEnabled) {
-        return <HiveAppComponent />;
-      } else {
-        switch (chain?.type) {
-          case ChainType.HIVE:
-            return <HiveAppComponent />;
-          case ChainType.EVM:
-            return <EvmAppComponent />;
-          default:
-            if (nav?.currentPage === MultichainScreen.CREATE_BLOCKCHAIN_PAGE) {
-              return <AddCustomChainPage />;
-            } else {
-              return <ChainSelectorPageComponent />;
-            }
-        }
-      }
+      return <UnlockedAppComponent />;
     }
   };
 
@@ -250,15 +233,15 @@ const mapStateToProps = (state: RootState) => {
     message: state.message,
     mk: state.mk,
     hasFinishedSignup: state.hasFinishedSignup,
-    nav: state.navigation.stack[0],
-    chain: state.chain as Chain,
-    currentPage: state.navigation.stack[0],
     modal: state.modal as ModalProperties,
+    nav: state.navigation.stack[0],
+    currentPage: state.navigation.stack[0],
   };
 };
 
 const connector = connect(mapStateToProps, {
   setIsLedgerSupported,
+  setEvmStatus,
   setMk,
   setHasFinishedSignup,
   resetMessage,

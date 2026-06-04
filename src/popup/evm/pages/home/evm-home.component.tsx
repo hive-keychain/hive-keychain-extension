@@ -3,7 +3,6 @@ import { EVMConfirmationPageParams } from '@common-ui/confirmation-page/confirma
 import { Screen } from '@interfaces/screen.interface';
 import {
   loadEvmActiveAccount,
-  loadEvmActiveAccountNfts,
   loadEvmHistory,
 } from '@popup/evm/actions/active-account.actions';
 import { EvmErc721Token } from '@popup/evm/interfaces/active-account.interface';
@@ -13,9 +12,9 @@ import {
   ProviderTransactionData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
+import { EvmWallet } from '@popup/evm/interfaces/wallet.interface';
 import { EvmActionButtonList } from '@popup/evm/pages/home/evm-action-section/evm-action-section.list';
 import { EvmDappStatusComponent } from '@popup/evm/pages/home/evm-dapp-status/evm-dapp-status.component';
-import { EvmSelectAccountSectionComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section.component';
 import { EvmWalletInfoSectionComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
@@ -40,13 +39,20 @@ import {
 } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import {
+  useWalletScrollRelay,
+  WALLET_SCROLL_HANDOFF_PX,
+} from '@popup/multichain/hooks/use-wallet-scroll-relay.hook';
+import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { ethers, HDNodeWallet } from 'ethers';
-import React, { useEffect, useRef, useState } from 'react';
+import { ethers } from 'ethers';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
 import { TopBarComponent } from 'src/common-ui/_containers/top-bar/top-bar.component';
+import { AccountSelectorComponent } from 'src/common-ui/account-selector/account-selector.component';
+import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { EstimatedAccountValueSectionComponent } from 'src/common-ui/estimated-account-value-section/estimated-account-value-section.component';
 import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
 import { ActionsSectionComponent } from 'src/popup/hive/pages/app-container/home/actions-section/actions-section.component';
@@ -62,6 +68,7 @@ import Logger from 'src/utils/logger.utils';
 import { VersionLogUtils } from 'src/utils/version-log.utils';
 import { WhatsNewUtils } from 'src/utils/whats-new.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const Home = ({
   chain,
   accounts,
@@ -74,7 +81,6 @@ const Home = ({
   setErrorMessage,
   addToLoadingList,
   removeFromLoadingList,
-  loadEvmActiveAccountNfts,
   returningFromNftPage,
   returningFromHistoryDetails,
 }: PropsFromRedux) => {
@@ -82,7 +88,6 @@ const Home = ({
   const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
   const [surveyToDisplay, setSurveyToDisplay] = useState<Survey>();
 
-  const [scrollTop, setScrollTop] = useState(0);
   const [showBottomBar, setShowBottomBar] = useState(true);
 
   const [pendingTransactionsInfo, setPendingTransactionsInfo] =
@@ -98,6 +103,24 @@ const Home = ({
   const [initialRpc, setInitialRpc] = useState<MultichainRpc>();
   const [switchToRpc, setSwitchToRpc] = useState<MultichainRpc>();
   const isMountedRef = useRef(false);
+  const scrollTopRef = useRef(0);
+  const walletScrollHandoffPx = ExtensionSurfaceUtils.isSidePanelPage()
+    ? 0
+    : WALLET_SCROLL_HANDOFF_PX;
+  const handleWalletScrollDirectionChange = useCallback(
+    (isScrollingDown: boolean) => {
+      setShowBottomBar(!isScrollingDown);
+    },
+    [],
+  );
+  const {
+    homeContentRef,
+    walletScrollRef,
+    relayWheelToWallet,
+  } = useWalletScrollRelay({
+    onScrollDirectionChange: handleWalletScrollDirectionChange,
+    scrollHandoffPx: walletScrollHandoffPx,
+  });
   const pendingTransactionsRequestId = useRef(0);
   const rpcCheckRequestId = useRef(0);
   const setStateIfMounted = <
@@ -125,7 +148,11 @@ const Home = ({
     resetTitleContainerProperties();
     void initWhatsNew();
     void initSurvey();
-    void checkActiveRpc();
+    EvmRpcUtils.getSwitchRpcAuto(chain).then((switchRpcAuto) => {
+      if (!switchRpcAuto) {
+        void checkActiveRpc();
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -214,7 +241,7 @@ const Home = ({
     }
   };
 
-  const loadPendingTransactions = async (wallet: HDNodeWallet) => {
+  const loadPendingTransactions = async (wallet: EvmWallet) => {
     const currentRequestId = ++pendingTransactionsRequestId.current;
     const pendingTransactionsInfo =
       await EvmTransactionsUtils.hasPendingTransaction(wallet.address, chain);
@@ -259,6 +286,7 @@ const Home = ({
 
   const refresh = async () => {
     await loadActiveAccount();
+    void loadPendingTransactions(activeAccount.wallet);
   };
 
   const handleCloseWhatsNew = () => {
@@ -281,7 +309,7 @@ const Home = ({
       return (
         <div className="change-rpc-popup">
           <div className="message">
-            {chrome.i18n.getMessage('popup_html_rpc_not_responding_error', [
+            {I18nUtils.getMessage('popup_html_rpc_not_responding_error', [
               initialRpc?.url!,
               switchToRpc?.url!,
             ])}
@@ -297,20 +325,20 @@ const Home = ({
   };
 
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    const scrolled = event.currentTarget.scrollTop;
-    if (scrolled > scrollTop) {
+    const clampedScrollTop = Math.min(
+      event.currentTarget.scrollTop,
+      walletScrollHandoffPx,
+    );
+    if (event.currentTarget.scrollTop !== clampedScrollTop) {
+      event.currentTarget.scrollTop = clampedScrollTop;
+    }
+    const scrolled = clampedScrollTop;
+    if (scrolled > scrollTopRef.current) {
       setShowBottomBar(false);
     } else {
       setShowBottomBar(true);
     }
-    setScrollTop(scrolled);
-
-    if (
-      event.currentTarget.clientHeight + event.currentTarget.scrollTop + 1 >
-      event.currentTarget.scrollHeight
-    ) {
-      setShowBottomBar(true);
-    }
+    scrollTopRef.current = scrolled;
   };
 
   const handleClickOnNftCollection = (
@@ -328,7 +356,6 @@ const Home = ({
         navigateToWithParams(EvmScreen.EVM_NFT_ALL_NFTS_PAGE, {
           collections: params,
         } as NavigationParams);
-        console.log('params', params);
         break;
       }
     }
@@ -338,11 +365,15 @@ const Home = ({
     if (
       pendingTransactionsInfo?.pendingTransactionDetails.transactionResponse
     ) {
+      const transactionResponse =
+        pendingTransactionsInfo.pendingTransactionDetails.transactionResponse;
       navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
-        transactionResponse:
-          pendingTransactionsInfo?.pendingTransactionDetails
-            .transactionResponse,
+        transactionResponse,
         pageTitle: 'evm_pending_transaction',
+        transactionData:
+          EvmTransactionsUtils.providerTransactionDataFromResponse(
+            transactionResponse,
+          ),
       } as NavigationParams);
     } else {
       const transactionData: ProviderTransactionData = {
@@ -356,7 +387,7 @@ const Home = ({
 
       navigateToWithParams(Screen.CONFIRMATION_PAGE, {
         method: null,
-        message: chrome.i18n.getMessage(
+        message: I18nUtils.getMessage(
           'evm_cancel_transaction_confirm_message',
         ),
         fields: [
@@ -421,15 +452,19 @@ const Home = ({
         }}
         onRefreshButtonClicked={refresh}
         accountSelector={
-          <EvmSelectAccountSectionComponent
+          <AccountSelectorComponent
+            selectedAccountType={ChainType.EVM}
             background="white"
             removeBorder
-            isOnMain
           />
         }
       />
 
-      <div className={'home-page-content'} onScroll={handleScroll}>
+      <div
+        className={'home-page-content'}
+        ref={homeContentRef}
+        onScroll={handleScroll}
+        onWheelCapture={relayWheelToWallet}>
         <div className="evm-account-value-wrapper">
           {accountValues && (
             <EstimatedAccountValueSectionComponent
@@ -447,7 +482,7 @@ const Home = ({
             className="pending-transactions-info"
             onClick={handleClickOnPendingTransactions}>
             <div className="pending-transactions-info-title">
-              {chrome.i18n.getMessage(
+              {I18nUtils.getMessage(
                 pendingTransactionsInfo.pendingTransactionDetails.title,
                 [pendingTransactionsInfo.queuedTransactionsCount.toString()],
               )}
@@ -459,10 +494,10 @@ const Home = ({
           onClickOnNftPreview={handleClickOnNftCollection}
           chain={chain}
           loadEvmHistory={loadEvmHistory}
-          loadEvmActiveAccountNfts={loadEvmActiveAccountNfts}
           reloadEvmActiveAccount={refresh}
           initialDisplayNfts={returningFromNftPage}
           initialDisplayHistory={returningFromHistoryDetails}
+          walletScrollRef={walletScrollRef}
         />
       </div>
       <ActionsSectionComponent
@@ -485,8 +520,8 @@ const mapStateToProps = (state: RootState) => {
     activeAccount: state.evm.activeAccount,
     returningFromNftPage: Boolean(
       state.navigation.stack[0]?.params?.initialDisplayNfts ||
-        state.navigation.stack[0]?.previousParams?.collection ||
-        state.navigation.stack[0]?.previousParams?.collections,
+      state.navigation.stack[0]?.previousParams?.collection ||
+      state.navigation.stack[0]?.previousParams?.collections,
     ),
     returningFromHistoryDetails: Boolean(
       state.navigation.stack[0]?.params?.initialDisplayHistory,
@@ -504,7 +539,6 @@ const connector = connect(mapStateToProps, {
   loadEvmHistory,
   addToLoadingList,
   removeFromLoadingList,
-  loadEvmActiveAccountNfts,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

@@ -240,6 +240,67 @@ describe('ChainUtils', () => {
     expect(result.find((chain) => chain.type === ChainType.EVM)).toBeUndefined();
   });
 
+  it('returns setup chains in SETUP_CHAINS storage order', async () => {
+    const { ChainUtils, EvmLightNodeApi, LocalStorageUtils } =
+      await loadTestContext();
+    const hiveChainId =
+      'beeab0de00000000000000000000000000000000000000000000000000000000';
+    (EvmLightNodeApi.get as jest.Mock).mockResolvedValue(clone(apiChains));
+    LocalStorageUtils.getValueFromLocalStorage.mockImplementation(
+      async (key: LocalStorageKeyEnum) => {
+        if (key === LocalStorageKeyEnum.SETUP_CHAINS) {
+          return ['0x1', hiveChainId];
+        }
+        return undefined;
+      },
+    );
+    LocalStorageUtils.saveValueInLocalStorage.mockResolvedValue(undefined);
+
+    await ChainUtils.initChains();
+    const result = await ChainUtils.getSetupChains();
+
+    expect(result.map((chain) => chain.chainId)).toEqual([
+      '0x1',
+      hiveChainId,
+    ]);
+  });
+
+  it('reorderChainIds moves a chain id to a new index', async () => {
+    const { ChainUtils } = await loadTestContext();
+    const chainIds = ['0x1', '0x89', '0xa'];
+
+    const reordered = ChainUtils.reorderChainIds(chainIds, 0, 2);
+
+    expect(reordered).toEqual(['0x89', '0xa', '0x1']);
+  });
+
+  it('reorderSetupChains persists the ordered chain ids', async () => {
+    const { ChainUtils, LocalStorageUtils } = await loadTestContext();
+    LocalStorageUtils.saveValueInLocalStorage.mockResolvedValue(undefined);
+    const orderedChainIds = ['0xa', '0x1'];
+
+    await ChainUtils.reorderSetupChains(orderedChainIds);
+
+    expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.SETUP_CHAINS,
+      orderedChainIds,
+    );
+  });
+
+  it('addChainToSetupChains appends new chain ids at the end', async () => {
+    const { ChainUtils, LocalStorageUtils } = await loadTestContext();
+    const hiveChain = apiChains[0];
+    LocalStorageUtils.getValueFromLocalStorage.mockResolvedValue(['0x1']);
+    LocalStorageUtils.saveValueInLocalStorage.mockResolvedValue(undefined);
+
+    await ChainUtils.addChainToSetupChains(hiveChain);
+
+    expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.SETUP_CHAINS,
+      ['0x1', hiveChain.chainId],
+    );
+  });
+
   it('removeCustomChain deletes the chain, setup entry, and clears keyed EVM storage', async () => {
     const { ChainUtils, LocalStorageUtils } = await loadTestContext();
     const customChain = {
@@ -265,6 +326,18 @@ describe('ChainUtils', () => {
         if (key === LocalStorageKeyEnum.EVM_LAST_CHAIN_USED) {
           return '0x539';
         }
+        if (key === LocalStorageKeyEnum.EVM_ORIGIN_CHAIN_WHITELIST) {
+          return {
+            'https://dapp.example': ['0x539', '0x1'],
+            'https://other.example': ['0xa'],
+          };
+        }
+        if (key === LocalStorageKeyEnum.EVM_CUSTOM_ERC20_EMPTY_CARD_HIDDEN) {
+          return { '0x539': true, '0x1': true };
+        }
+        if (key === LocalStorageKeyEnum.EVM_CUSTOM_NFT_EMPTY_CARD_HIDDEN) {
+          return { '0x539': true };
+        }
         return undefined;
       },
     );
@@ -286,6 +359,21 @@ describe('ChainUtils', () => {
     );
     expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
       LocalStorageKeyEnum.EVM_ACTIVE_RPCS,
+      {},
+    );
+    expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.EVM_ORIGIN_CHAIN_WHITELIST,
+      {
+        'https://dapp.example': ['0x1'],
+        'https://other.example': ['0xa'],
+      },
+    );
+    expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.EVM_CUSTOM_ERC20_EMPTY_CARD_HIDDEN,
+      { '0x1': true },
+    );
+    expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.EVM_CUSTOM_NFT_EMPTY_CARD_HIDDEN,
       {},
     );
   });

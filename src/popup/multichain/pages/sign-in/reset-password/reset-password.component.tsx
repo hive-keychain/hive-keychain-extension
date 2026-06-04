@@ -1,4 +1,6 @@
 import { Screen } from '@interfaces/screen.interface';
+import { resetEvmState } from '@popup/evm/actions/accounts.actions';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { resetChain } from '@popup/multichain/actions/chain.actions';
 import { setHasFinishedSignup } from '@popup/multichain/actions/has-finished-signup.actions';
 import { forgetMk } from '@popup/multichain/actions/mk.actions';
@@ -12,6 +14,7 @@ import { resetAccount } from 'src/popup/hive/actions/account.actions';
 import { resetActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const ResetPasswordPage = ({
   setTitleContainerProperties,
   navigateTo,
@@ -20,6 +23,7 @@ const ResetPasswordPage = ({
   resetActiveAccount,
   setHasFinishedSignup,
   resetChain,
+  resetEvmState,
 }: PropsFromRedux) => {
   useEffect(() => {
     setTitleContainerProperties({
@@ -30,6 +34,8 @@ const ResetPasswordPage = ({
 
   const reset = async () => {
     resetAccount();
+    resetEvmState();
+    EvmWalletUtils.invalidateRebuildAccountsCache();
     setHasFinishedSignup(false);
     forgetMk();
     resetActiveAccount();
@@ -44,7 +50,7 @@ const ResetPasswordPage = ({
         <p
           className="introduction"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage('popup_html_reset_desc'),
+            __html: I18nUtils.getMessage('popup_html_reset_desc'),
           }}></p>
       </div>
 
@@ -71,6 +77,7 @@ const connector = connect(mapStateToProps, {
   resetActiveAccount,
   setHasFinishedSignup,
   resetChain,
+  resetEvmState,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

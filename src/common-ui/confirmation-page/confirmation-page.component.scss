@@ -17,14 +17,6 @@
       margin: unset;
     }
 
-    .warning-message-panel {
-      @include caption;
-      color: $red;
-      @include small-card;
-      display: unset;
-      margin: unset;
-    }
-
     .multisig-message {
       display: flex;
       align-items: center;

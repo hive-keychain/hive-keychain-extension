@@ -37,6 +37,7 @@ export enum BackgroundCommand {
   GET_CHAIN_FROM_PROVIDER = 'getChainFromProvider',
   SEND_BACK_CHAIN_FROM_PROVIDER = 'sendBackChainFromProvider',
   WAIT_FOR_EVM_TRANSACTION_CONFIRMATION = 'waitForEvmTransactionConfirmation',
+  EVM_TRANSACTION_RESOLVED = 'evmTransactionResolved',
   ACCEPT_ADD_EVM_CHAIN = 'acceptAddEvmChain',
   ACCEPT_ADD_CUSTOM_EVM_CHAIN = 'acceptAddCustomEvmChain',
 
@@ -61,6 +62,8 @@ export enum BackgroundCommand {
   KEYLESS_KEYCHAIN = 'KEYLESS_KEYCHAIN',
   KEYLESS_KEYCHAIN_REGISTER = 'KEYLESS_KEYCHAIN_REGISTER',
   VAULT_LOADED = 'VAULT_LOADED',
+
+  SIDE_PANEL_CLOSED = 'SIDE_PANEL_CLOSED',
 }
 
 export type SendBackImportCommand = Extract<

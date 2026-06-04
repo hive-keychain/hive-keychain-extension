@@ -14,6 +14,7 @@ import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const broadcastDelegation = async (
   requestHandler: HiveRequestsHandler,
   data: RequestDelegation & RequestId,
@@ -80,7 +81,7 @@ export const broadcastDelegation = async (
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await chrome.i18n.getMessage(
+    err_message = await I18nUtils.getMessage(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -91,11 +92,11 @@ export const broadcastDelegation = async (
       data,
       request?.tab!,
       parseFloat(data.amount) === 0
-        ? await chrome.i18n.getMessage('bgd_ops_undelegate', [
+        ? await I18nUtils.getMessage('bgd_ops_undelegate', [
             data.delegatee,
             data.username!,
           ])
-        : await chrome.i18n.getMessage('bgd_ops_delegate', [
+        : await I18nUtils.getMessage('bgd_ops_delegate', [
             `${data.amount} ${data.unit}`,
             data.delegatee,
             data.username!,

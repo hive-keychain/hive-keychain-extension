@@ -7,8 +7,21 @@ interface TopBarProps {
   onMenuButtonClicked: () => Promise<void>;
   onRefreshButtonClicked: () => Promise<void>;
   accountSelector: JSX.Element;
-  actions?: JSX.Element;
+  actions?: React.ReactNode;
 }
+
+const hasTopBarActions = (actions?: React.ReactNode): boolean => {
+  return React.Children.toArray(actions).some((action) => {
+    if (
+      React.isValidElement<{ children?: React.ReactNode }>(action) &&
+      action.type === React.Fragment
+    ) {
+      return hasTopBarActions(action.props.children);
+    }
+
+    return true;
+  });
+};
 
 export const TopBarComponent = ({
   accountSelector,
@@ -17,6 +30,7 @@ export const TopBarComponent = ({
   onRefreshButtonClicked,
 }: TopBarProps) => {
   const [rotateLogo, setRotateLogo] = useState(false);
+  const hasActions = hasTopBarActions(actions);
 
   const refresh = async () => {
     setRotateLogo(true);
@@ -44,9 +58,12 @@ export const TopBarComponent = ({
         />
       </div>
 
-      {actions && <div className="top-bar-actions">{actions}</div>}
       <div className="account-selector-panel">{accountSelector}</div>
-      <ChainDropdownComponent />
+      {/* <div className="fill-space" aria-hidden="true" /> */}
+      {hasActions && <div className="top-bar-actions">{actions}</div>}
+      <div className="top-bar-chain-selector-slot">
+        <ChainDropdownComponent />
+      </div>
     </div>
   );
 };

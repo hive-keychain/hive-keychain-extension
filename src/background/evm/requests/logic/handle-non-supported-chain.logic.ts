@@ -18,11 +18,13 @@ import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const handleNonSupportedChain = async (
   requestHandler: EvmRequestHandler,
   tab: number,
   request: EvmRequest,
   chainId: string,
+  origin: string,
   errorMessage: string = 'evm_chain_non_supported',
 ) => {
   Logger.warn(`Chain ${chainId} is not supported, rawError: ${errorMessage}`);
@@ -40,7 +42,7 @@ export const handleNonSupportedChain = async (
     CommunicationUtils.runtimeSendMessage({
       command: DialogCommand.SEND_DIALOG_ERROR,
       msg: {
-        display_msg: await chrome.i18n.getMessage(errorMessage, [chainId]),
+        display_msg: await I18nUtils.getMessage(errorMessage, [chainId]),
         tab,
       },
     });
@@ -51,11 +53,16 @@ export const handleNonSupportedChain = async (
         handlers,
         request.request_id,
         tab,
+        origin,
       )
     ) {
       await delayMs(DIALOG_FEEDBACK_DISPLAY_MS);
     }
-    await requestHandler.removeRequestById(request.request_id, tab);
+    await requestHandler.removeRequestByLocator({
+      requestId: request.request_id,
+      tab,
+      origin,
+    });
   };
   createOrUpdateDialog(callback, requestHandler);
 };

@@ -4,7 +4,6 @@ import { TransactionConfirmationFields } from '@popup/evm/interfaces/evm-transac
 import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
-import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -13,6 +12,7 @@ import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transactio
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   request: EvmRequest;
   accounts: EvmAccountPublic[];
@@ -24,11 +24,10 @@ export const DecryptMessage = (props: Props) => {
   const { accounts, data, request, afterCancel } = props;
   const transactionHook = useTransactionHook(data, request);
 
-  const [decryptedMessage, setDecryptedMessage] = useState<
-    string | undefined
-  >();
+  const [showEncryptedMessage, setShowEncryptedMessage] = useState(false);
 
   useEffect(() => {
+    setShowEncryptedMessage(false);
     init();
   }, [request]);
 
@@ -43,15 +42,17 @@ export const DecryptMessage = (props: Props) => {
     );
     transactionHook.setFields(transactionConfirmationFields);
 
+    const chain = await EvmChainUtils.getLastEvmChain();
+
     const transactionInfo =
-      await EvmTransactionParserUtils.verifyTransactionInformation(
-        data.dappInfo.domain,
-      );
+      await EvmTransactionParserUtils.verifyTransactionInformation({
+        domain: data.dappInfo.domain,
+        origin: data.dappInfo.origin,
+        chainId: chain.chainId,
+      });
     transactionHook.setUnableToReachBackend(
       !!(transactionInfo && transactionInfo.unableToReach),
     );
-
-    const chain = await EvmChainUtils.getLastEvmChain();
     const usedAccount = accounts.find(
       (account) =>
         account.address.toLowerCase() === request.params[1].toLowerCase(),
@@ -77,15 +78,9 @@ export const DecryptMessage = (props: Props) => {
     }, 250);
   };
 
-  const decryptMessage = async () => {
-    const response = (await chrome.runtime.sendMessage({
-      command: BackgroundCommand.PREVIEW_EVM_DECRYPT,
-      value: { request_id: request.request_id },
-    })) as { success?: boolean; plaintext?: string; error?: string };
-
-    if (response?.success && response.plaintext != null) {
-      setDecryptedMessage(response.plaintext);
-    }
+  const showMessage = (event?: React.MouseEvent) => {
+    event?.stopPropagation();
+    setShowEncryptedMessage(true);
   };
 
   const handleCancel = () => {
@@ -97,9 +92,10 @@ export const DecryptMessage = (props: Props) => {
       afterCancel={handleCancel}
       request={request}
       domain={data.dappInfo.domain}
+      origin={data.dappInfo.origin}
       tab={data.tab}
-      title={chrome.i18n.getMessage('dialog_evm_decrypt_message_title')}
-      caption={chrome.i18n.getMessage('dialog_evm_decrypt_message_caption', [
+      title={I18nUtils.getMessage('dialog_evm_decrypt_message_title')}
+      caption={I18nUtils.getMessage('dialog_evm_decrypt_message_caption', [
         data.dappInfo.domain,
       ])}
       fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}
@@ -107,21 +103,19 @@ export const DecryptMessage = (props: Props) => {
         <>
           <div
             className={`encrypted-message-container ${
-              decryptedMessage ? 'display' : 'hidden'
+              showEncryptedMessage ? 'display' : 'hidden'
             }`}
-            onClick={() => void decryptMessage()}>
+            onClick={showMessage}>
             <div className="encrypted-message">
-              <div className="message">
-                {decryptedMessage ?? request.params[0]}
-              </div>
+              <div className="message">{request.params[0]}</div>
             </div>
-            {!decryptedMessage && (
+            {!showEncryptedMessage && (
               <div
                 className="display-message-icon"
-                onClick={() => void decryptMessage()}>
+                onClick={showMessage}>
                 <SVGIcon icon={SVGIcons.EVM_SETUP_DISPLAY_MNEMONIC} />
                 <div>
-                  {chrome.i18n.getMessage('dialog_evm_decrypt_show_message')}
+                  {I18nUtils.getMessage('dialog_evm_decrypt_show_message')}
                 </div>
               </div>
             )}

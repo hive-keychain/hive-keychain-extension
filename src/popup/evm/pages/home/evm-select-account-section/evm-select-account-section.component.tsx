@@ -16,7 +16,11 @@ import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
-import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
+import {
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -32,6 +36,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   background?: 'white';
   fullSize?: boolean;
@@ -47,6 +52,7 @@ const SelectAccountSection = ({
   chain,
   mk,
   loadEvmActiveAccount,
+  setActiveAccountType,
   setEvmAccounts,
   navigateTo,
   isOnMain = false,
@@ -82,7 +88,7 @@ const SelectAccountSection = ({
 
   useEffect(() => {
     void init();
-  }, [accounts, activeAccount]);
+  }, [accounts, activeAccount.address, activeAccount.wallet?.address, chain?.chainId]);
 
   const buildPlaceholderAddressDetail = (
     account: EvmAccount,
@@ -133,6 +139,7 @@ const SelectAccountSection = ({
               account.wallet.address,
               chain!.chainId,
               false,
+              { localAccounts: accounts },
             ),
           },
         })),
@@ -158,7 +165,9 @@ const SelectAccountSection = ({
       (account: EvmAccount) => account.wallet.address === address,
     );
     if (itemClicked) {
+      await EvmWalletUtils.promoteConnectedWalletAddress(address);
       await EvmLightNodeUtils.registerAddress(chain.chainId, address, false);
+      setActiveAccountType(ChainType.EVM);
       loadEvmActiveAccount(chain, itemClicked?.wallet);
       handleClickOnSelector();
     }
@@ -288,7 +297,7 @@ const SelectAccountSection = ({
           onClick={handleOnManageAccountsClicked}>
           <SVGIcon icon={SVGIcons.MENU_ACCOUNTS_MANAGE_ACCOUNTS} />
           <div className="text">
-            {chrome.i18n.getMessage('manage_accounts')}
+            {I18nUtils.getMessage('manage_accounts')}
           </div>
         </div>
       </div>
@@ -339,6 +348,7 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   loadEvmActiveAccount,
+  setActiveAccountType,
   setEvmAccounts,
   navigateTo,
 });

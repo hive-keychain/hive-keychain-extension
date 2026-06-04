@@ -6,6 +6,7 @@ import 'react-tabs/style/react-tabs.scss';
 import { GenericTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/generic-transaction/generic-transaction.component';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface RecurrentTransferTransactionProps {
   transaction: RecurrentTransfer;
 }
@@ -16,12 +17,12 @@ const RecurrentTransferTransaction = ({
 }: PropsFromRedux & RecurrentTransferTransactionProps) => {
   const getDetail = () => {
     if (parseFloat(transaction.amount.split(' ')[0]) === 0) {
-      return chrome.i18n.getMessage(
+      return I18nUtils.getMessage(
         'popup_html_wallet_info_canceled_recurrent_transfer',
         [transaction.from, transaction.to],
       );
     } else if (activeAccountName === transaction.from) {
-      return chrome.i18n.getMessage(
+      return I18nUtils.getMessage(
         'popup_html_wallet_info_recurrent_transfer_out',
         [
           FormatUtils.withCommas(transaction.amount, 3),
@@ -31,7 +32,7 @@ const RecurrentTransferTransaction = ({
         ],
       );
     } else {
-      return chrome.i18n.getMessage(
+      return I18nUtils.getMessage(
         'popup_html_wallet_info_recurrent_transfer_in',
         [
           transaction.from,

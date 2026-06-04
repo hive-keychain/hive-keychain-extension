@@ -1,5 +1,9 @@
-import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import {
+  doesMethodExist,
+  EvmRequestMethod,
+} from '@background/evm/evm-methods/evm-methods.list';
+import {
+  EvmRequest,
   ProviderRpcError,
   ProviderRpcErrorList,
 } from '@interfaces/evm-provider.interface';
@@ -8,7 +12,79 @@ import {
   getAllTransactionTypes,
   ProviderTransactionData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
-import { ethers } from 'ethers';
+import { AddChainRequest } from '@popup/evm/interfaces/evm-requests.interfaces';
+import { EvmRpcUrlUtils } from '@popup/evm/utils/evm-rpc-url.utils';
+import { EvmAddressUtils } from 'src/utils/evm/evm-address.utils';
+import { EvmEncryptedMessageUtils } from 'src/utils/evm/evm-encrypted-message.utils';
+
+const EVM_CHAIN_ID_REGEX = /^0x[1-9a-fA-F][0-9a-fA-F]*$/;
+
+const getProviderRpcError = (
+  error: keyof typeof ProviderRpcErrorList,
+  message?: string,
+) =>
+  ({
+    ...ProviderRpcErrorList[error],
+    ...(message ? { message } : {}),
+  }) as ProviderRpcError;
+
+const assertParamsArray = (params: unknown): unknown[] => {
+  if (!Array.isArray(params)) {
+    throw getProviderRpcError(
+      'invalidMethodParams',
+      'Invalid parameter. Params must be an array.',
+    );
+  }
+
+  return params;
+};
+
+const assertEvmAddressParam = (address: unknown) => {
+  if (!EvmAddressUtils.isValidEvmAddress(address)) {
+    throw getProviderRpcError(
+      'invalidMethodParams',
+      'Invalid parameter. Account address is not valid.',
+    );
+  }
+};
+
+export const validateEvmRequest = (request: unknown): EvmRequest => {
+  if (!request || typeof request !== 'object') {
+    throw getProviderRpcError('nonValidRequest', 'Missing request.');
+  }
+
+  const evmRequest = request as Partial<EvmRequest>;
+  if (
+    typeof evmRequest.request_id !== 'number' ||
+    !Number.isFinite(evmRequest.request_id)
+  ) {
+    throw getProviderRpcError(
+      'nonValidRequest',
+      'Invalid request. Missing or invalid request_id.',
+    );
+  }
+
+  if (typeof evmRequest.method !== 'string') {
+    throw getProviderRpcError(
+      'nonValidRequest',
+      'Invalid request. Missing or invalid method.',
+    );
+  }
+
+  if (!doesMethodExist(evmRequest.method)) {
+    throw getProviderRpcError('nonExistingMethod');
+  }
+
+  const params = evmRequest.params ?? [];
+  assertParamsArray(params);
+  validateRequest(evmRequest.method as EvmRequestMethod, params);
+
+  return {
+    ...evmRequest,
+    method: evmRequest.method as EvmRequestMethod,
+    params,
+  } as EvmRequest;
+};
 
 export const validateRequest = (
   method: EvmRequestMethod,
@@ -16,7 +92,17 @@ export const validateRequest = (
 ): boolean => {
   switch (method) {
     case EvmRequestMethod.SEND_TRANSACTION: {
-      const transactionParams = params[0] as ProviderTransactionData;
+      const requestParams = assertParamsArray(params ?? []);
+      const transactionParams = requestParams[0] as
+        | ProviderTransactionData
+        | undefined;
+
+      if (!transactionParams || typeof transactionParams !== 'object') {
+        throw {
+          ...ProviderRpcErrorList.invalidMethodParams,
+          message: 'Invalid parameter. Missing transaction parameters.',
+        } as ProviderRpcError;
+      }
 
       if (transactionParams.type === EvmTransactionType.LEGACY) {
         if (
@@ -36,7 +122,10 @@ export const validateRequest = (
           message: `Invalid parameter. Value is not a valid number (value: ${transactionParams.value})`,
         } as ProviderRpcError;
       }
-      if (transactionParams.to && !ethers.isAddress(transactionParams.to)) {
+      if (
+        transactionParams.to &&
+        !EvmAddressUtils.isValidEvmAddress(transactionParams.to)
+      ) {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
           message: `Invalid parameter. Receiver address is not valid (receiver: ${transactionParams.to})`,
@@ -80,22 +169,31 @@ export const validateRequest = (
       break;
     }
     case EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN: {
-      if (!params[0]) {
+      const requestParams = assertParamsArray(params);
+      const switchParams = requestParams[0] as
+        | { chainId?: unknown }
+        | undefined;
+
+      if (
+        !switchParams ||
+        typeof switchParams !== 'object' ||
+        Array.isArray(switchParams)
+      ) {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
           message: `Invalid parameters. Missing chainId`,
         } as ProviderRpcError;
       }
-      if (typeof params[0].chainId !== 'string') {
+      if (typeof switchParams.chainId !== 'string') {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
           message: `Invalid parameter. ChainId must be a string`,
         } as ProviderRpcError;
       }
-      if (!params[0].chainId.startsWith('0x')) {
+      if (!EVM_CHAIN_ID_REGEX.test(switchParams.chainId)) {
         throw {
           ...ProviderRpcErrorList.invalidMethodParams,
-          message: `Invalid parameter. ${params[0].chainId} is not a valid chainId. It must be using hexadecimal format`,
+          message: `Invalid parameter. ${switchParams.chainId} is not a valid chainId. It must be using hexadecimal format`,
         } as ProviderRpcError;
       }
       // if (
@@ -110,20 +208,109 @@ export const validateRequest = (
       // }
       break;
     }
-    // case EvmRequestMethod.WALLET_ADD_ETH_CHAIN: {
-    //   if (
-    //     !(await ChainUtils.getDefaultChains()).find(
-    //       (chain) =>
-    //         params[0].chainId.toLowerCase() === chain.chainId.toLowerCase(),
-    //     )
-    //   ) {
-    //     throw {
-    //       ...ProviderRpcErrorList.invalidMethodParams,
-    //       message: `Chain ${params[0].chainId} is not compatible with Keychain`,
-    //     } as ProviderRpcError;
-    //   }
-    //   break;
-    // }
+    case EvmRequestMethod.WALLET_ADD_ETH_CHAIN: {
+      const requestParams = assertParamsArray(params ?? []);
+      const addChainParams = requestParams[0] as
+        | Partial<AddChainRequest>
+        | undefined;
+
+      if (
+        !addChainParams ||
+        typeof addChainParams !== 'object' ||
+        Array.isArray(addChainParams)
+      ) {
+        throw getProviderRpcError(
+          'invalidMethodParams',
+          'Invalid parameter. Missing chain parameters.',
+        );
+      }
+
+      if (
+        typeof addChainParams.chainId !== 'string' ||
+        !EVM_CHAIN_ID_REGEX.test(addChainParams.chainId)
+      ) {
+        throw getProviderRpcError(
+          'invalidMethodParams',
+          'Invalid parameter. ChainId must be a hexadecimal string.',
+        );
+      }
+
+      if (
+        !Array.isArray(addChainParams.rpcUrls) ||
+        addChainParams.rpcUrls.length === 0
+      ) {
+        throw getProviderRpcError(
+          'invalidMethodParams',
+          'Invalid parameter. Missing RPC URLs.',
+        );
+      }
+
+      if (
+        addChainParams.rpcUrls.some(
+          (rpcUrl) =>
+            typeof rpcUrl !== 'string' ||
+            !EvmRpcUrlUtils.isValidHttpsRpcUrl(rpcUrl),
+        )
+      ) {
+        throw getProviderRpcError(
+          'invalidMethodParams',
+          'Invalid parameter. RPC URLs must use HTTPS.',
+        );
+      }
+
+      if (
+        addChainParams.blockExplorerUrls !== undefined &&
+        (!Array.isArray(addChainParams.blockExplorerUrls) ||
+          addChainParams.blockExplorerUrls.some(
+            (blockExplorerUrl) =>
+              typeof blockExplorerUrl !== 'string' ||
+              !EvmRpcUrlUtils.isValidHttpsRpcUrl(blockExplorerUrl),
+          ))
+      ) {
+        throw getProviderRpcError(
+          'invalidMethodParams',
+          'Invalid parameter. Block explorer URLs must use HTTPS.',
+        );
+      }
+      break;
+    }
+    case EvmRequestMethod.GET_ENCRYPTION_KEY: {
+      const requestParams = assertParamsArray(params);
+
+      if (requestParams.length < 1) {
+        throw getProviderRpcError(
+          'invalidMethodParams',
+          'Invalid parameter. Missing account address.',
+        );
+      }
+
+      assertEvmAddressParam(requestParams[0]);
+      break;
+    }
+    case EvmRequestMethod.ETH_DECRYPT: {
+      const requestParams = assertParamsArray(params);
+      const encryptedMessage = requestParams[0];
+      const accountAddress = requestParams[1];
+
+      if (requestParams.length < 2) {
+        throw getProviderRpcError(
+          'invalidMethodParams',
+          'Invalid parameter. Missing decrypt parameters.',
+        );
+      }
+
+      try {
+        EvmEncryptedMessageUtils.parseEncryptedMessage(encryptedMessage);
+      } catch (err) {
+        throw getProviderRpcError(
+          'invalidMethodParams',
+          'Invalid parameter. Encrypted message is invalid.',
+        );
+      }
+
+      assertEvmAddressParam(accountAddress);
+      break;
+    }
   }
   return true;
 };

@@ -5,6 +5,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { ActionButton } from 'src/interfaces/action-button.interface';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const ActionButton = ({
   label,
   icon,
@@ -23,7 +24,7 @@ const ActionButton = ({
       <div className="icon-container">
         <SVGIcon icon={icon} className="icon" forceHover={hovered} hoverable />
       </div>
-      <div className="label">{chrome.i18n.getMessage(label)}</div>
+      <div className="label">{I18nUtils.getMessage(label)}</div>
     </div>
   );
 };

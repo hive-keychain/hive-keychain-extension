@@ -1,3 +1,6 @@
+import ButtonComponent, {
+  ButtonType,
+} from '@common-ui/button/button.component';
 import CheckboxComponent from '@common-ui/checkbox/checkbox/checkbox.component';
 import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
@@ -20,6 +23,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface ChainSelectorProps {
   hideTitle?: boolean;
 }
@@ -96,7 +100,8 @@ const ChainSelector = ({
   };
 
   const builtInChains = defaultChains.filter(
-    (defaultChain) => !defaultChain.isCustom,
+    (defaultChain) =>
+      !defaultChain.isCustom && defaultChain.type !== ChainType.HIVE,
   );
   const popularChains = builtInChains
     .filter((defaultChain) => !defaultChain.testnet)
@@ -148,6 +153,58 @@ const ChainSelector = ({
             await init();
           }}
         />
+      ),
+    });
+  };
+
+  const deleteCustomChain = async (customChain: EvmChain) => {
+    const isActiveChain =
+      chain?.chainId?.toLowerCase() === customChain.chainId.toLowerCase();
+    await ChainUtils.removeCustomChain(customChain.chainId);
+    if (isActiveChain) {
+      const remainingSetup = await ChainUtils.getSetupChains();
+      if (remainingSetup?.length) {
+        setChain(remainingSetup[0]);
+      } else {
+        const previousChain = ChainUtils.getPreviousChain();
+        if (previousChain) setChain(previousChain);
+      }
+    }
+    await init();
+  };
+
+  const openDeleteConfirmModal = (customChain: EvmChain) => {
+    openModal({
+      title: 'evm_custom_chains_delete',
+      closeOnOverlayClick: true,
+      showCloseButton: true,
+      children: (
+        <div className="evm-delete-confirm-modal">
+          <p className="evm-delete-confirm-modal__message">
+            {I18nUtils.getMessage('evm_custom_chains_delete_confirm', [
+              customChain.name,
+            ])}
+          </p>
+          <div className="evm-delete-confirm-modal__actions">
+            <ButtonComponent
+              dataTestId="custom-chain-delete-cancel"
+              label="dialog_cancel"
+              type={ButtonType.ALTERNATIVE}
+              onClick={() => closeModal()}
+              height="small"
+            />
+            <ButtonComponent
+              dataTestId="custom-chain-delete-confirm"
+              label="popup_html_confirm"
+              type={ButtonType.IMPORTANT}
+              height="small"
+              onClick={async () => {
+                closeModal();
+                await deleteCustomChain(customChain);
+              }}
+            />
+          </div>
+        </div>
       ),
     });
   };
@@ -226,11 +283,25 @@ const ChainSelector = ({
       />
       <button
         type="button"
+        className="custom-chain-delete-icon"
+        data-testid={`btn-delete-custom-chain-${customChain.chainId}`}
+        aria-label={I18nUtils.getMessage('evm_custom_chains_delete')}
+        onClick={(event) => {
+          event.stopPropagation();
+          openDeleteConfirmModal(customChain);
+        }}>
+        <SVGIcon icon={SVGIcons.GLOBAL_DELETE} className="svg-icon" />
+      </button>
+      <button
+        type="button"
         className="custom-chain-settings-icon"
-        aria-label={chrome.i18n.getMessage(
+        aria-label={I18nUtils.getMessage(
           'evm_custom_chains_modal_title_edit',
         )}
-        onClick={() => openEditModal(customChain)}>
+        onClick={(event) => {
+          event.stopPropagation();
+          openEditModal(customChain);
+        }}>
         <SVGIcon icon={SVGIcons.WALLET_SETTINGS} svgViewBox="10 10 24 24" />
       </button>
       <div className="chain-name">{customChain.name}</div>
@@ -275,13 +346,13 @@ const ChainSelector = ({
         <div className="lists-container">
           {!!searchValue && !hasFilteredChainResults && (
             <p className="chain-selector-empty">
-              {chrome.i18n.getMessage('html_popup_manage_chains_empty_results')}
+              {I18nUtils.getMessage('html_popup_manage_chains_empty_results')}
             </p>
           )}
           {popularChains.length > 0 && (
             <div className="chain-cards-container">
               <div className="chain-cards-container-title">
-                {chrome.i18n.getMessage('html_popup_popular_chains')}
+                {I18nUtils.getMessage('html_popup_popular_chains')}
               </div>
               <div className="chain-cards-container-list">
                 {popularChains.map(renderBuiltInChainCard)}
@@ -291,7 +362,7 @@ const ChainSelector = ({
           {shouldShowTestnets && testnetChains.length > 0 && (
             <div className="chain-cards-container">
               <div className="chain-cards-container-title">
-                {chrome.i18n.getMessage('html_popup_testnet_chains')}
+                {I18nUtils.getMessage('html_popup_testnet_chains')}
               </div>
               <div className="chain-cards-container-list">
                 {testnetChains.map(renderBuiltInChainCard)}
@@ -300,7 +371,7 @@ const ChainSelector = ({
           )}
           <div className="chain-cards-container">
             <div className="chain-cards-container-title">
-              {chrome.i18n.getMessage('html_popup_custom_chains')}
+              {I18nUtils.getMessage('html_popup_custom_chains')}
             </div>
             <div className="chain-cards-container-list">
               {filteredCustomChains.map(renderCustomChainCard)}
@@ -313,7 +384,7 @@ const ChainSelector = ({
                 onKeyDown={(event) => handleCardKeyDown(event, openAddModal)}>
                 <SVGIcon icon={SVGIcons.SELECT_ADD} />
                 <div className="chain-name">
-                  {chrome.i18n.getMessage('evm_custom_chains_add')}
+                  {I18nUtils.getMessage('evm_custom_chains_add')}
                 </div>
               </div>
             </div>

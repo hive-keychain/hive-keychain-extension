@@ -5,6 +5,7 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { FormUtils } from 'src/utils/form.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export interface TextAreaProps {
   value: any;
   logo?: string | SVGIcons;
@@ -123,13 +124,13 @@ export const TextAreaComponent = React.forwardRef(
           <div className="label">
             {props.skipLabelTranslation
               ? props.label
-              : chrome.i18n.getMessage(props.label)}{' '}
+              : I18nUtils.getMessage(props.label)}{' '}
             {props.required ? '*' : ''}
             {props.hint && (
               <div className="hint">
                 {props.skipHintTranslation
                   ? props.hint
-                  : chrome.i18n.getMessage(props.hint)}
+                  : I18nUtils.getMessage(props.hint)}
               </div>
             )}
           </div>
@@ -141,7 +142,14 @@ export const TextAreaComponent = React.forwardRef(
               props.logo
                 ? `has-${props.logoPosition ?? 'left'}-logo`
                 : 'no-logo'
-            }  ${isFocused ? 'focused' : ''}`}>
+            } ${isFocused ? 'focused' : ''} ${
+              !props.disabled &&
+              !!props.value &&
+              props.value.length > 0 &&
+              !props.useChips
+                ? 'has-value'
+                : ''
+            }`}>
             {chips.map((chip) => (
               <div className="chip" key={`chip-${chip}`}>
                 <div className="chip-label">{chip}</div>
@@ -160,7 +168,7 @@ export const TextAreaComponent = React.forwardRef(
                 props.placeholder
                   ? props.skipPlaceholderTranslation
                     ? props.placeholder
-                    : chrome.i18n.getMessage(props.placeholder)
+                    : I18nUtils.getMessage(props.placeholder)
                   : ''
               } ${props.required ? '*' : ''}`}
               value={props.useChips ? localValue : props.value}

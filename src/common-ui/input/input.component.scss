@@ -90,16 +90,24 @@ $autoCompleteItemHeight: 30px;
       }
 
       .erase {
-        display: none;
+        display: block;
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      &.has-value {
+        input {
+          padding-right: 36px;
+        }
       }
 
       &.has-value:hover,
       &.has-value.focused {
-        input {
-          padding-right: 36px;
-        }
         .erase {
-          display: block;
+          visibility: visible;
+          opacity: 1;
+          pointer-events: auto;
         }
       }
     }
@@ -119,6 +127,25 @@ $autoCompleteItemHeight: 30px;
       border-color: $red !important;
     }
   }
+
+  &.disabled {
+    .label {
+      opacity: 0.75;
+    }
+
+    .custom-input-content {
+      border-color: var(--input-disabled-border);
+      cursor: not-allowed;
+
+      .input-container input:disabled {
+        color: var(--input-disabled-color);
+        cursor: not-allowed;
+        -webkit-text-fill-color: var(--input-disabled-color);
+        opacity: 1;
+      }
+    }
+  }
+
   .error {
     @include poppins400(12px);
     color: $red;

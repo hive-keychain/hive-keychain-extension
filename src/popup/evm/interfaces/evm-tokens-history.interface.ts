@@ -17,6 +17,8 @@ export interface EvmLocalHistory {
 
 export interface EvmUserHistoryItem {
   pageTitle: string;
+  /** Light-node operation name; used as detail page title when opening from history. */
+  opName?: string;
   type: EvmUserHistoryItemType;
   blockNumber: number;
   transactionHash: string;
@@ -33,6 +35,7 @@ export interface EvmUserHistoryItem {
   tokenInfo?: EvmSmartContractInfo;
 
   isPending?: boolean;
+  isReverted?: boolean;
   warningMessage?: string;
 }
 
@@ -41,6 +44,8 @@ export interface EvmUserHistoryItemDetail {
   value: string;
   type: EvmUserHistoryItemDetailType;
   imageUrl?: string | null;
+  /** ERC-20 / NFT collection contract; enables copy + tooltip on token name in amount/image rows. */
+  contractAddress?: string;
 }
 
 export enum EvmUserHistoryItemDetailType {

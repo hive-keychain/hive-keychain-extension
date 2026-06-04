@@ -2,26 +2,26 @@ import {
   EvmActiveAccount,
   EvmErc721Token,
 } from '@popup/evm/interfaces/active-account.interface';
-import { EvmUserHistory } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import { EvmWalletNftGalleryComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-nft-gallery/evm-wallet-nft-gallery.component';
 import { EvmWalletTokensComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-tokens/evm-wallet-tokens.component';
 import { EvmHistoryComponent } from '@popup/evm/pages/home/token-history/evm-history.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
-import { HDNodeWallet } from 'ethers';
 import React, { useState } from 'react';
 import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.component';
 
+interface WalletSectionRefsProps {
+  walletScrollRef?: React.RefObject<HTMLDivElement>;
+}
+
 interface EvmWalletInfoSectionProps {
   activeAccount: EvmActiveAccount;
-  history?: EvmUserHistory;
   chain: EvmChain;
   onClickOnNftPreview: (
     params: EvmErc721Token | EvmErc721Token[],
     screen: EvmScreen,
   ) => void;
   loadEvmHistory: Function;
-  loadEvmActiveAccountNfts: (chain: EvmChain, wallet: HDNodeWallet) => void;
   reloadEvmActiveAccount: () => Promise<void>;
   initialDisplayNfts?: boolean;
   initialDisplayHistory?: boolean;
@@ -38,11 +38,11 @@ export const EvmWalletInfoSectionComponent = ({
   chain,
   onClickOnNftPreview,
   loadEvmHistory,
-  loadEvmActiveAccountNfts,
   reloadEvmActiveAccount,
   initialDisplayNfts,
   initialDisplayHistory,
-}: EvmWalletInfoSectionProps) => {
+  walletScrollRef,
+}: EvmWalletInfoSectionProps & WalletSectionRefsProps) => {
   const getInitialDisplayedSection = (): EvmDisplayedPage => {
     if (initialDisplayHistory) return EvmDisplayedPage.HISTORY;
     if (initialDisplayNfts) return EvmDisplayedPage.NTFS;
@@ -73,14 +73,12 @@ export const EvmWalletInfoSectionComponent = ({
             activeAccount={activeAccount}
             onClickOnNftPreview={onClickOnNftPreview}
             chain={chain}
-            loadEvmActiveAccountNfts={loadEvmActiveAccountNfts}
           />
         );
       }
       case EvmDisplayedPage.HISTORY: {
         return (
           <EvmHistoryComponent
-            activeAccount={activeAccount}
             chain={chain}
             history={activeAccount.history.value}
             onClickOnLoadMore={loadHistory}
@@ -94,7 +92,7 @@ export const EvmWalletInfoSectionComponent = ({
   return (
     <div className="wallet-info-wrapper">
       <div className="wallet-background" />
-      <div className="wallet-info-section">
+      <div className="wallet-info-section" ref={walletScrollRef}>
         {activeAccount.nativeAndErc20Tokens && (
           <>
             <SlidingBarComponent

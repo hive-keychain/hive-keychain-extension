@@ -10,6 +10,7 @@ import {
 } from '@testing-library/react';
 import React from 'react';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 jest.mock(
   '@dialog/multichain/request/request-confirmation/request-confirmation',
   () => ({
@@ -83,12 +84,33 @@ const cancelRequest = (requestId: number) => {
 
 describe('DialogConfirmationPage', () => {
   beforeEach(() => {
-    chrome.i18n.getMessage = jest.fn((key: string) => key);
+    I18nUtils.getMessage = jest.fn((key: string) => key);
     jest.spyOn(window, 'close').mockImplementation(jest.fn());
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
+  });
+
+  it('closes the window when dismissing a dialog error for the last request', () => {
+    render(
+      <DialogConfirmationPage
+        message={createMessage(1)}
+        feedBackMessage={{
+          command: DialogCommand.SEND_DIALOG_ERROR,
+          msg: {
+            display_msg: 'Transaction rejected on Ledger',
+            tab: 1,
+            request_id: 1,
+          },
+        }}
+        setFeedBackMessage={jest.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByText('message_container_close_button'));
+
+    expect(window.close).toHaveBeenCalled();
   });
 
   it('closes the window without clearing final feedback for the last request', () => {

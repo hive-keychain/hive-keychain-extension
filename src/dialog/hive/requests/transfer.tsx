@@ -16,6 +16,7 @@ import CurrencyUtils, {
 } from 'src/popup/hive/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: RequestTransfer & RequestId;
   domain: string;
@@ -41,10 +42,10 @@ const Transfer = (props: Props) => {
   let memoField = memo;
   if (memo.length) {
     if (memo.startsWith('#')) {
-      memoField = `${memo} (${chrome.i18n.getMessage('popup_encrypted')})`;
+      memoField = `${memo} (${I18nUtils.getMessage('popup_encrypted')})`;
     }
   } else {
-    memoField = chrome.i18n.getMessage('popup_empty');
+    memoField = I18nUtils.getMessage('popup_empty');
   }
 
   useEffect(() => {
@@ -86,7 +87,7 @@ const Transfer = (props: Props) => {
 
   return (
     <Operation
-      title={chrome.i18n.getMessage('dialog_title_transfer')}
+      title={I18nUtils.getMessage('dialog_title_transfer')}
       header={header}
       redHeader
       bottomPanel={

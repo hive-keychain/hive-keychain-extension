@@ -7,6 +7,7 @@ import {
   RequestId,
 } from '@interfaces/keychain.interface';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const encodeMessage = async (
   requestHandler: HiveRequestsHandler,
   data: RequestEncode & RequestId,
@@ -34,8 +35,8 @@ export const encodeMessage = async (
       encoded,
       data,
       request?.tab!,
-      await chrome.i18n.getMessage('bgd_ops_encode'),
-      await chrome.i18n.getMessage('bgd_ops_encode_err'),
+      await I18nUtils.getMessage('bgd_ops_encode'),
+      await I18nUtils.getMessage('bgd_ops_encode_err'),
     );
   }
 };

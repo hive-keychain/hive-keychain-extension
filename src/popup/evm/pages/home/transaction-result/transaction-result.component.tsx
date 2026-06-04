@@ -14,6 +14,7 @@ import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.inter
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
+import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import { getAbiFromType } from '@popup/evm/reference-data/abi.data';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
@@ -22,29 +23,33 @@ import {
   TransactionTokenKind,
 } from '@popup/evm/utils/evm-tokens-history-parser.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
+import { getEvmLightNodeOpTitleMessageKey } from '@popup/evm/utils/evm-light-node-op-title.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
-import {
-  HDNodeWallet,
-  TransactionReceipt,
-  TransactionResponse,
-  Wallet,
-  ethers,
-} from 'ethers';
+import { TransactionReceipt, TransactionResponse, ethers } from 'ethers';
+import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SmallDataCardComponent } from 'src/common-ui/small-data-card/small-data-card.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import {
+  COPY_GENERIC_MESSAGE_KEY,
+  copyTextWithToast,
+} from 'src/common-ui/toast/copy-toast.utils';
+import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
+import Decimal from 'decimal.js';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 enum ReplacedTransactionReason {
   REPRICED = 'repriced',
   CANCELLED = 'cancelled',
@@ -70,6 +75,32 @@ function decodeErc20TransferRecipient(data: string | null): string | undefined {
   return undefined;
 }
 
+const TOTAL_FEE_FRACTION_DIGITS = 8;
+const PER_GAS_FRACTION_DIGITS = 10;
+
+function formatNativeAmountFromWei(
+  wei: bigint | string | number | Decimal,
+  fractionDigits: number,
+): string {
+  const inMainToken = new Decimal(wei.toString()).div(EvmFormatUtils.WEI);
+  return EvmFormatUtils.formatTokenBalance(inMainToken, fractionDigits);
+}
+
+function formatNativeFeeFromWei(
+  wei: bigint | string | number | Decimal,
+  fractionDigits: number,
+  mainToken: string,
+): string {
+  return `${formatNativeAmountFromWei(wei, fractionDigits)} ${mainToken}`;
+}
+
+function formatEstimatedNativeFeeFromEth(
+  ethAmount: Decimal,
+  mainToken: string,
+): string {
+  return `${FormatUtils.formatCurrencyValue(ethAmount.toFixed(), TOTAL_FEE_FRACTION_DIGITS)} ${mainToken}`;
+}
+
 const EvmTransactionResult = ({
   activeAccount,
   chain,
@@ -80,6 +111,7 @@ const EvmTransactionResult = ({
   gasFee,
   localAccounts,
   isCanceled,
+  isReverted,
   isSuccess,
   pageTitle,
   detailFields,
@@ -87,6 +119,8 @@ const EvmTransactionResult = ({
   warningMessage,
   initialDisplayNfts,
   initialDisplayHistory,
+  opName,
+  timestamp,
   setTitleContainerProperties,
   setErrorMessage,
   loadEvmActiveAccount,
@@ -94,12 +128,14 @@ const EvmTransactionResult = ({
   const [waitingForTx, setWaitingForTx] = useState(true);
   const [txReceipt, setTxReceipt] = useState<TransactionReceipt>();
   const [txResult, setTxResult] = useState<TransactionResponse>();
-  const hasRefreshedAccountAfterSuccess = useRef(false);
+  const hasRefreshedAccountAfterResolution = useRef(false);
 
   const [isCanceling, setCanceling] = useState<boolean>(false);
   const [isTransactionSpeedingUp, setTransactionSpeedingUp] =
     useState<boolean>(false);
   const [isGasPanelOpened, setGasPanelOpened] = useState<boolean>(false);
+  const [isGasFeeEstimateLoading, setGasFeeEstimateLoading] =
+    useState<boolean>(false);
   const [increasedGasFee, setIncreasedGasFee] =
     useState<GasFeeEstimationBase>(gasFee);
 
@@ -117,15 +153,24 @@ const EvmTransactionResult = ({
       : initialDisplayHistory
         ? { initialDisplayHistory: true }
         : undefined;
+    const historyOpTitle = opName?.trim() ?? '';
+    const useHistoryOpTitle =
+      Boolean(initialDisplayHistory) && historyOpTitle.length > 0;
+    const titleFromHistoryOp = useHistoryOpTitle
+      ? getEvmLightNodeOpTitleMessageKey(opName)
+      : undefined;
     setTitleContainerProperties({
-      title: pageTitle,
+      title: titleFromHistoryOp ?? pageTitle,
+      skipTitleTranslation: false,
       isBackButtonEnabled: false,
       closeNavigationParams,
     });
-    if (isSuccess || isCanceled) {
+    if (isSuccess || isCanceled || isReverted) {
       setWaitingForTx(false);
-    } else {
+    } else if (transactionResponse?.wait) {
       getTransactionStatus();
+    } else {
+      setWaitingForTx(false);
     }
   }, []);
 
@@ -133,18 +178,16 @@ const EvmTransactionResult = ({
     if (
       waitingForTx ||
       !txReceipt?.status ||
-      isCanceling ||
-      hasRefreshedAccountAfterSuccess.current
+      hasRefreshedAccountAfterResolution.current
     ) {
       return;
     }
 
-    hasRefreshedAccountAfterSuccess.current = true;
+    hasRefreshedAccountAfterResolution.current = true;
     loadEvmActiveAccount(chain, activeAccount.wallet);
   }, [
     activeAccount.wallet,
     chain,
-    isCanceling,
     loadEvmActiveAccount,
     txReceipt?.status,
     waitingForTx,
@@ -153,6 +196,10 @@ const EvmTransactionResult = ({
   useEffect(() => {
     if (tokenInfo) {
       setTransactionTokenType(tokenInfo.type);
+      return;
+    }
+
+    if (!transactionResponse?.hash) {
       return;
     }
 
@@ -174,10 +221,21 @@ const EvmTransactionResult = ({
     });
   }, [tokenInfo, chain.chainId, transactionResponse]);
 
+  useEffect(() => {
+    if (!isGasPanelOpened) {
+      setGasFeeEstimateLoading(false);
+    }
+  }, [isGasPanelOpened]);
+
   const getTransactionStatus = async () => {
+    const currentTransaction = transactionResponse;
+    if (!currentTransaction) {
+      setWaitingForTx(false);
+      return;
+    }
     const provider = await EthersUtils.getProvider(chain);
     try {
-      await transactionResponse
+      await currentTransaction
         .wait()
         .then(async (transactionReceipt: TransactionReceipt | null) => {
           if (transactionReceipt) {
@@ -186,6 +244,7 @@ const EvmTransactionResult = ({
             );
             setTxReceipt(transactionReceipt);
             if (transactionResult) setTxResult(transactionResult);
+            setWaitingForTx(false);
           }
         })
         .catch((err) => {
@@ -193,25 +252,30 @@ const EvmTransactionResult = ({
             switch (err.reason) {
               case ReplacedTransactionReason.REPRICED:
                 Logger.info('Transaction successfully sped up');
+                setWaitingForTx(false);
                 break;
               case ReplacedTransactionReason.CANCELLED:
               case ReplacedTransactionReason.REPLACED:
                 Logger.info('Transaction successfully canceled');
+                setWaitingForTx(false);
                 break;
             }
           } else {
-            console.log('Catch in getTransactionStatus', { err });
+            Logger.error('Unexpected error in getTransactionStatus', err);
           }
-        })
-        .finally(() => {
-          setWaitingForTx(false);
         });
     } catch (err: any) {
-      console.log('catch in get transaction status', err);
+      Logger.error('getTransactionStatus failed', err);
     }
   };
 
   const cancelTransaction = async () => {
+    const currentTransaction = transactionResponse;
+    if (!currentTransaction) {
+      setWaitingForTx(false);
+      setCanceling(false);
+      return;
+    }
     const provider = await EthersUtils.getProvider(chain);
     setWaitingForTx(true);
 
@@ -223,19 +287,18 @@ const EvmTransactionResult = ({
           value: 0,
           data: ethers.ZeroHash,
           from: activeAccount.wallet.address,
-          nonce: transactionResponse.nonce,
+          nonce: currentTransaction.nonce,
           chainId: chain.chainId,
           type: Number(EvmTransactionType.EIP_1559),
         },
         increasedGasFee,
         chain.chainId,
-        transactionResponse.nonce,
+        currentTransaction.nonce,
       );
       if (cancelTransactionResponse) {
         cancelTransactionResponse
           .wait()
           .then(async (cancelTransactionReceipt: TransactionReceipt | null) => {
-            console.log('cancelTransactionReceipt', cancelTransactionReceipt);
             if (cancelTransactionReceipt) {
               const cancelTransactionResult = await provider.getTransaction(
                 cancelTransactionReceipt.hash,
@@ -245,10 +308,11 @@ const EvmTransactionResult = ({
             }
           })
           .catch((err) => {
-            console.log('Catch in transaction cancel', { err });
             if (err.code === 'TRANSACTION_REPLACED') {
               setCanceling(false);
               setErrorMessage('evm_transaction_not_canceled_error');
+            } else {
+              Logger.error('cancelTransaction wait failed', err);
             }
           })
           .finally(() => {
@@ -256,7 +320,6 @@ const EvmTransactionResult = ({
           });
       }
     } catch (err: any) {
-      console.log('Catch in send transaction cancel', { err });
       const error = EthersUtils.getErrorMessage(
         err.code,
         err.reason,
@@ -266,23 +329,30 @@ const EvmTransactionResult = ({
       setErrorMessage(error.message);
       setCanceling(false);
       if (err.code === 'REPLACEMENT_UNDERPRICED') {
+        setGasFeeEstimateLoading(Boolean(transactionData));
         setGasPanelOpened(true);
       }
     }
   };
 
   const speedUpTransaction = async () => {
+    const currentTransaction = transactionResponse;
+    if (!currentTransaction) {
+      setWaitingForTx(false);
+      setTransactionSpeedingUp(false);
+      return;
+    }
     const provider = await EthersUtils.getProvider(chain);
     try {
       const speedUpTransactionResponse = await EvmTransactionsUtils.send(
         activeAccount.wallet,
         {
-          ...transactionResponse,
+          ...currentTransaction,
           from: activeAccount.wallet.address,
         },
         increasedGasFee,
         chain.chainId,
-        transactionResponse.nonce,
+        currentTransaction.nonce,
       );
 
       if (speedUpTransactionResponse) {
@@ -301,11 +371,13 @@ const EvmTransactionResult = ({
             },
           )
           .catch((err) => {
-            console.log('Catch in transaction speed up', { err });
+            Logger.error('speedUpTransaction wait failed', err);
+          })
+          .finally(() => {
+            setWaitingForTx(false);
           });
       }
     } catch (err: any) {
-      console.log('Catch in send transaction speed up', { err });
       const error = EthersUtils.getErrorMessage(
         err.code,
         err.reason,
@@ -325,6 +397,7 @@ const EvmTransactionResult = ({
       case 'canceling':
         return SVGIcons.EVM_TRANSACTION_STATUS_PROCESSING;
       case 'failed':
+      case 'reverted':
       case 'canceled':
         return SVGIcons.EVM_TRANSACTION_STATUS_CANCELED;
       default:
@@ -341,6 +414,8 @@ const EvmTransactionResult = ({
         return 'popup_html_evm_transfer_status_speeding_up';
       case 'failed':
         return 'popup_html_evm_transfer_status_failed';
+      case 'reverted':
+        return 'evm_history_operation_reverted_status';
       case 'canceling':
         return 'popup_html_evm_transfer_status_canceling';
       case 'canceled':
@@ -352,6 +427,7 @@ const EvmTransactionResult = ({
 
   const getStatus = () => {
     if (isSuccess) return 'success';
+    if (isReverted) return 'reverted';
     if (isCanceled) return 'canceled';
     if (waitingForTx) {
       if (isCanceling) {
@@ -406,6 +482,7 @@ const EvmTransactionResult = ({
   const closeFeePopup = () => {
     setTransactionSpeedingUp(false);
     setCanceling(false);
+    setGasFeeEstimateLoading(false);
     setGasPanelOpened(false);
   };
 
@@ -414,16 +491,10 @@ const EvmTransactionResult = ({
       return undefined;
     }
 
-    const connectedWallet = new Wallet(
-      HDNodeWallet.fromPhrase(activeAccount?.wallet.mnemonic?.phrase!)
-        .signingKey,
-      await EthersUtils.getProvider(chain),
-    );
-
     const contract = new ethers.Contract(
       (tokenInfo as any).contractAddress,
       getAbiFromType(tokenInfo.type)!,
-      connectedWallet,
+      await EthersUtils.getProvider(chain),
     );
 
     const metadata = await EvmNFTUtils.getMetadataFromTokenId(
@@ -443,81 +514,113 @@ const EvmTransactionResult = ({
     }
   };
 
-  const displayTx = txResult ?? transactionResponse;
+  const displayTx = txResult ?? transactionResponse ?? null;
+  const displayBlockNumber = displayTx?.blockNumber;
+  const displayData = displayTx?.data;
+  const displayGasLimit = displayTx?.gasLimit;
+  const displayGasPrice = displayTx?.gasPrice;
+  const displayHash = displayTx?.hash;
+  const displayMaxFeePerGas = displayTx?.maxFeePerGas;
+  const displayMaxPriorityFeePerGas = displayTx?.maxPriorityFeePerGas;
+  const displayTo = displayTx?.to;
   const hasMinedReceipt = Boolean(txReceipt?.gasUsed != null);
 
   const getMinedGasFeeDisplay = (): string => {
     if (!txReceipt?.gasUsed) {
-      return chrome.i18n.getMessage('popup_html_pending');
+      return I18nUtils.getMessage('popup_html_pending');
     }
-    const pricePerGas = txReceipt.gasPrice;
-    if (pricePerGas != null) {
-      return EvmFormatUtils.formatGweiFromWei(pricePerGas * txReceipt.gasUsed);
+    const receipt = txReceipt as TransactionReceipt & {
+      effectiveGasPrice?: bigint | null;
+    };
+    const pricePerGas =
+      receipt.gasPrice ?? receipt.effectiveGasPrice ?? undefined;
+    if (pricePerGas != null && pricePerGas > BigInt(0)) {
+      return formatNativeFeeFromWei(
+        pricePerGas * txReceipt.gasUsed,
+        TOTAL_FEE_FRACTION_DIGITS,
+        chain.mainToken,
+      );
     }
-    return chrome.i18n.getMessage('popup_html_pending');
+    return I18nUtils.getMessage('popup_html_pending');
   };
 
   const getPendingGasFeeDisplay = (): string => {
-    if (gasFee?.estimatedFeeInEth && !gasFee.estimatedFeeInEth.equals(-1)) {
-      return EvmFormatUtils.formatGweiFromEth(gasFee.estimatedFeeInEth);
+    if (gasFee && GasFeeUtils.hasDisplayableEstimatedFee(gasFee)) {
+      return formatEstimatedNativeFeeFromEth(
+        gasFee.estimatedFeeInEth,
+        chain.mainToken,
+      );
     }
-    const gl = displayTx.gasLimit;
-    const maxFeePerGas = displayTx.maxFeePerGas ?? displayTx.gasPrice;
+    if (!displayTx) {
+      return I18nUtils.getMessage('popup_html_pending');
+    }
+    const gl = displayGasLimit;
+    const maxFeePerGas = displayMaxFeePerGas ?? displayGasPrice;
     if (
       gl != null &&
       maxFeePerGas != null &&
       gl > BigInt(0) &&
       maxFeePerGas > BigInt(0)
     ) {
-      return EvmFormatUtils.formatGweiFromWei(gl * maxFeePerGas);
+      return formatNativeFeeFromWei(
+        gl * maxFeePerGas,
+        TOTAL_FEE_FRACTION_DIGITS,
+        chain.mainToken,
+      );
     }
-    return chrome.i18n.getMessage('popup_html_pending');
+    return I18nUtils.getMessage('popup_html_pending');
   };
 
-  const gasFeeLabelKey = hasMinedReceipt
-    ? 'popup_html_evm_gas_fee'
-    : 'popup_html_evm_gas_fee_estimated';
+  const statusForGasFeeLabel = getStatus();
+  const gasFeeLabelKey =
+    statusForGasFeeLabel === 'pending' ||
+    statusForGasFeeLabel === 'speeding' ||
+    statusForGasFeeLabel === 'canceling'
+      ? 'popup_html_evm_gas_fee_estimated'
+      : 'popup_html_evm_gas_fee';
 
   const gasFeeValueDisplay = hasMinedReceipt
     ? getMinedGasFeeDisplay()
     : getPendingGasFeeDisplay();
 
   const blockNumberDisplay =
-    displayTx.blockNumber != null
-      ? String(displayTx.blockNumber)
-      : chrome.i18n.getMessage('popup_html_pending');
+    displayBlockNumber != null
+      ? String(displayBlockNumber)
+      : I18nUtils.getMessage('popup_html_pending');
 
   const showLegacyGasPriceRow =
-    displayTx.gasPrice != null &&
-    displayTx.maxFeePerGas == null &&
-    displayTx.maxPriorityFeePerGas == null;
+    displayGasPrice != null &&
+    displayMaxFeePerGas == null &&
+    displayMaxPriorityFeePerGas == null;
 
   const showEip1559FeeRows =
-    displayTx.maxFeePerGas != null || displayTx.maxPriorityFeePerGas != null;
+    displayMaxFeePerGas != null || displayMaxPriorityFeePerGas != null;
 
   const txDataHex =
-    displayTx.data == null
+    displayData == null
       ? ''
-      : typeof displayTx.data === 'string'
-        ? displayTx.data
-        : ethers.hexlify(displayTx.data);
+      : typeof displayData === 'string'
+        ? displayData
+        : ethers.hexlify(displayData);
 
   const erc20TransferRecipient = decodeErc20TransferRecipient(
     txDataHex || null,
-  );
-
-  const detailFieldsIncludeTo = detailFields?.some(
-    (d: EvmUserHistoryItemDetail) =>
-      d.label === 'popup_html_transfer_to' ||
-      d.label === 'popup_html_evm_transaction_info_to',
   );
 
   const syntheticToAddress =
     receiverAddress ??
     erc20TransferRecipient ??
     (!txDataHex.startsWith('0xa9059cbb')
-      ? (displayTx.to ?? undefined)
+      ? (displayTo ?? undefined)
       : undefined);
+
+  const detailFieldsIncludeTo = detailFields?.some(
+    (d: EvmUserHistoryItemDetail) =>
+      d.label === 'popup_html_transfer_to' ||
+      d.label === 'popup_html_evm_transaction_info_to' ||
+      (d.label === 'evm_operation_smart_contract_address' &&
+        d.value?.toLowerCase() === syntheticToAddress?.toLowerCase()),
+  );
 
   const isCanceledHistoryOperation =
     pageTitle === 'evm_history_canceled_transaction';
@@ -525,7 +628,135 @@ const EvmTransactionResult = ({
   const showSyntheticToRow =
     syntheticToAddress != null &&
     !detailFieldsIncludeTo &&
-    !isCanceledHistoryOperation;
+    !isCanceledHistoryOperation &&
+    !isReverted;
+
+  const shouldShowStatusAmount =
+    tokenInfo !== undefined && amount !== undefined && amount !== null;
+
+  const shouldShowTransactionInfo =
+    Boolean(displayTx) ||
+    Boolean(detailFields?.length) ||
+    Boolean(timestamp) ||
+    shouldShowTokenType;
+  const shouldShowTransactionMetadataRows =
+    Boolean(displayTx) || Boolean(txReceipt) || Boolean(gasFee);
+
+  const getTokenInfoFromAmount = (value?: string) => {
+    if (tokenInfo) return tokenInfo;
+    const symbol = value?.trim().split(/\s+/).pop();
+    if (!symbol) return undefined;
+    return activeAccount.nativeAndErc20Tokens.value.find(
+      (token) =>
+        token.tokenInfo.symbol.toLowerCase() === symbol.toLowerCase(),
+    )?.tokenInfo;
+  };
+
+  const isAmountDetail = (detail: EvmUserHistoryItemDetail) =>
+    detail.label === 'popup_html_transfer_amount' ||
+    detail.type === EvmUserHistoryItemDetailType.TOKEN_AMOUNT;
+
+  const smartContractAddressLabels = new Set([
+    'evm_operation_smart_contract_address',
+    'evm_history_smart_contract',
+    'evm_created_smart_contract',
+    'evm_smart_contract_address',
+  ]);
+
+  const isSmartContractAddressDetail = (detail: EvmUserHistoryItemDetail) =>
+    detail.type === EvmUserHistoryItemDetailType.ADDRESS &&
+    smartContractAddressLabels.has(detail.label);
+
+  const renderCopiableAddress = (address: string) => (
+    <EvmAddressComponent
+      address={address}
+      chainId={chain.chainId}
+      canCopy
+      localAccounts={localAccounts}
+    />
+  );
+
+  const getAddressDetailClickAction = (detail: EvmUserHistoryItemDetail) => {
+    if (isSmartContractAddressDetail(detail)) {
+      return undefined;
+    }
+    return () => openWallet(detail.value!);
+  };
+
+  const tokenContractAddress =
+    tokenInfo &&
+    tokenInfo.type !== EVMSmartContractType.NATIVE &&
+    'contractAddress' in tokenInfo
+      ? tokenInfo.contractAddress
+      : undefined;
+
+  const renderCopiableContractLabel = (
+    visibleLabel: string,
+    contractAddress: string,
+  ) => (
+    <CustomTooltip
+      message={contractAddress}
+      skipTranslation
+      additionalClassName="evm-address-tooltip">
+      <span
+        className="value-content evm-address-content address-content"
+        onClick={(event) => {
+          event.stopPropagation();
+          void copyTextWithToast(contractAddress, COPY_GENERIC_MESSAGE_KEY);
+        }}>
+        {visibleLabel}
+      </span>
+    </CustomTooltip>
+  );
+
+  const renderTokenAmount = (
+    value: string | number,
+    contractAddress?: string,
+  ) => {
+    const amountValue = value.toString().trim();
+    const amountTokenInfo = getTokenInfoFromAmount(amountValue);
+    const symbol = amountTokenInfo?.symbol;
+    const resolvedContractAddress =
+      contractAddress ??
+      (amountTokenInfo && 'contractAddress' in amountTokenInfo
+        ? amountTokenInfo.contractAddress
+        : undefined);
+
+    let displayedAmount = amountValue;
+    let tokenLabel = symbol;
+    if (symbol && amountValue.endsWith(` ${symbol}`)) {
+      displayedAmount = amountValue.slice(0, -(` ${symbol}`).length);
+      tokenLabel = symbol;
+    }
+
+    const isNativeToken =
+      amountTokenInfo?.type === EVMSmartContractType.NATIVE ||
+      Boolean(
+        tokenLabel &&
+          tokenLabel.toLowerCase() === chain.mainToken.toLowerCase(),
+      );
+
+    const showCopiableToken =
+      Boolean(resolvedContractAddress) &&
+      Boolean(tokenLabel) &&
+      amountValue.includes(tokenLabel!) &&
+      !isNativeToken;
+
+    return (
+      <div className="value-content-horizontal">
+        {amountTokenInfo && <EvmTokenLogo tokenInfo={amountTokenInfo} />}
+        {showCopiableToken ? (
+          <>
+            <span>{displayedAmount}</span>
+            {displayedAmount.length > 0 ? ' ' : null}
+            {renderCopiableContractLabel(tokenLabel!, resolvedContractAddress!)}
+          </>
+        ) : (
+          <span>{amountValue}</span>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="evm-transaction-result">
@@ -537,17 +768,24 @@ const EvmTransactionResult = ({
           />
           <div className="amount-row">
             <div className="status">
-              {chrome.i18n.getMessage(getStatusLabel(getStatus()))}
+              {I18nUtils.getMessage(getStatusLabel(getStatus()))}
             </div>
+            {shouldShowStatusAmount && (
+              renderTokenAmount(amount, tokenContractAddress)
+            )}
             {warningMessage && <div className="warning">{warningMessage}</div>}
           </div>
         </div>
-        {waitingForTx && !isCanceling && !isTransactionSpeedingUp && (
+        {waitingForTx &&
+          transactionResponse &&
+          !isCanceling &&
+          !isTransactionSpeedingUp && (
           <div className="buttons-panel">
             <ButtonComponent
               dataTestId="dialog_cancel-button"
               label={'dialog_cancel'}
               onClick={() => {
+                setGasFeeEstimateLoading(Boolean(transactionData));
                 setGasPanelOpened(true);
                 setCanceling(true);
               }}
@@ -557,6 +795,7 @@ const EvmTransactionResult = ({
               dataTestId="dialog_confirm-button"
               label={'popup_html_evm_speed_up_transaction'}
               onClick={() => {
+                setGasFeeEstimateLoading(Boolean(transactionData));
                 setGasPanelOpened(true);
                 setTransactionSpeedingUp(true);
               }}
@@ -566,75 +805,82 @@ const EvmTransactionResult = ({
         )}
       </div>
       {isGasPanelOpened && (
-        <PopupContainer>
+        <PopupContainer
+          useBodyPortal
+          className="transaction-gas-fee-popup">
           <div className="title-panel">
             <div className="title">
-              {chrome.i18n.getMessage('popup_html_evm_transaction_select_fee')}
+              {I18nUtils.getMessage('popup_html_evm_transaction_select_fee')}
             </div>
             <SVGIcon
               icon={SVGIcons.TOP_BAR_CLOSE_BTN}
               onClick={() => closeFeePopup()}
             />
           </div>
+          {isGasFeeEstimateLoading && (
+            <div
+              className="gas-fee-estimate-loading-row"
+              data-testid="tx-result-gas-fee-loading">
+              <div className="gas-fee-estimate-spinner" aria-hidden />
+              <span>
+                {I18nUtils.getMessage('popup_html_evm_gas_fee_loading')}
+              </span>
+            </div>
+          )}
           <GasFeePanel
             chain={chain}
             fromAddress={localAccounts[0].wallet.address}
             onSelectFee={(value) => setIncreasedGasFee(value)}
             selectedFee={increasedGasFee}
+            defaultFeeLevel="aggressive"
             multiplier={1.5}
             transactionType={chain.defaultTransactionType}
             transactionData={transactionData}
             setErrorMessage={handleErrors}
+            onInitialEstimationComplete={() => setGasFeeEstimateLoading(false)}
           />
           <ButtonComponent
             label="popup_html_confirm"
             onClick={() => confirmNewFee()}
             height="small"
+            disabled={isGasFeeEstimateLoading}
           />
         </PopupContainer>
       )}
-      {transactionResponse && (
+      {shouldShowTransactionInfo && (
         <div className="transaction-info">
           {detailFields &&
             detailFields.map(
               (detail: EvmUserHistoryItemDetail, index: number) => (
                 <React.Fragment key={`card-${index}`}>
-                  {detail.type === EvmUserHistoryItemDetailType.BASE && (
-                    <SmallDataCardComponent
-                      label={detail.label}
-                      value={detail.value!}
-                    />
-                  )}
+                  {detail.type === EvmUserHistoryItemDetailType.BASE &&
+                    !isAmountDetail(detail) && (
+                      <SmallDataCardComponent
+                        label={detail.label}
+                        value={detail.value!}
+                      />
+                    )}
                   {detail.type === EvmUserHistoryItemDetailType.IMAGE && (
                     <SmallImageCardComponent
                       value={detail.imageUrl ?? getImage(detail.value!)}
                       name={detail.label}
+                      contractAddress={detail.contractAddress}
                     />
                   )}
                   {detail.type === EvmUserHistoryItemDetailType.ADDRESS && (
                     <SmallDataCardComponent
                       label={detail.label}
-                      value={
-                        <EvmAddressComponent
-                          address={detail.value!}
-                          chainId={chain.chainId}
-                          forceFormattedAddress
-                          canCopy
-                        />
-                      }
-                      valueOnClickAction={() => openWallet(detail.value!)}
+                      value={renderCopiableAddress(detail.value!)}
+                      valueOnClickAction={getAddressDetailClickAction(detail)}
                     />
                   )}
-                  {detail.type ===
-                    EvmUserHistoryItemDetailType.TOKEN_AMOUNT && (
+                  {isAmountDetail(detail) && (
                     <SmallDataCardComponent
                       label={detail.label}
-                      value={
-                        <div className="value-content-horizontal">
-                          {tokenInfo && <EvmTokenLogo tokenInfo={tokenInfo} />}
-                          {detail.value}
-                        </div>
-                      }
+                      value={renderTokenAmount(
+                        detail.value,
+                        detail.contractAddress,
+                      )}
                     />
                   )}
                 </React.Fragment>
@@ -643,15 +889,15 @@ const EvmTransactionResult = ({
           {showSyntheticToRow && (
             <SmallDataCardComponent
               label="popup_html_evm_transaction_info_to"
-              value={
-                <EvmAddressComponent
-                  address={syntheticToAddress!}
-                  chainId={chain.chainId}
-                  forceFormattedAddress
-                  canCopy
-                />
-              }
+              value={renderCopiableAddress(syntheticToAddress!)}
               valueOnClickAction={() => openWallet(syntheticToAddress!)}
+            />
+          )}
+          {timestamp && (
+            <SmallDataCardComponent
+              label="Time"
+              skipLabelTranslation
+              value={moment(timestamp).format('YYYY/MM/DD, hh:mm:ss a')}
             />
           )}
           {!isCanceledHistoryOperation && shouldShowTokenType && (
@@ -660,47 +906,65 @@ const EvmTransactionResult = ({
               value={transactionTokenType}
             />
           )}
-          <SmallDataCardComponent
-            label="popup_html_evm_transaction_info_block_number"
-            value={blockNumberDisplay}
-            valueOnClickAction={
-              displayTx.blockNumber != null
-                ? () => openBlock(Number(displayTx.blockNumber))
-                : undefined
-            }
-          />
-          <SmallDataCardComponent
-            label="popup_html_evm_transaction_info_tx_hash"
-            value={EvmFormatUtils.formatAddress(displayTx.hash)}
-            valueOnClickAction={() => openTransaction(displayTx.hash)}
-          />
-          <SmallDataCardComponent
-            label={gasFeeLabelKey}
-            value={gasFeeValueDisplay}
-            valueClassName="gas-fee-value"
-          />
-          <SmallDataCardComponent
-            label="popup_html_evm_transaction_info_gas_limit"
-            value={displayTx.gasLimit.toString()}
-          />
+          {shouldShowTransactionMetadataRows && (
+            <SmallDataCardComponent
+              label="popup_html_evm_transaction_info_block_number"
+              value={blockNumberDisplay}
+              valueOnClickAction={
+                displayBlockNumber != null
+                  ? () => openBlock(Number(displayBlockNumber))
+                  : undefined
+              }
+            />
+          )}
+          {displayHash && (
+            <SmallDataCardComponent
+              label="popup_html_evm_transaction_info_tx_hash"
+              value={EvmFormatUtils.formatAddress(displayHash)}
+              valueOnClickAction={() => openTransaction(displayHash)}
+            />
+          )}
+          {shouldShowTransactionMetadataRows && (
+            <SmallDataCardComponent
+              label={gasFeeLabelKey}
+              value={gasFeeValueDisplay}
+              valueClassName="gas-fee-value"
+            />
+          )}
+          {displayGasLimit != null && (
+            <SmallDataCardComponent
+              label="popup_html_evm_transaction_info_gas_limit"
+              value={displayGasLimit.toString()}
+            />
+          )}
           {showLegacyGasPriceRow && (
             <SmallDataCardComponent
               label="popup_html_evm_transaction_info_gas_price"
-              value={EvmFormatUtils.formatGweiFromWei(displayTx.gasPrice!)}
-            />
-          )}
-          {showEip1559FeeRows && displayTx.maxPriorityFeePerGas != null && (
-            <SmallDataCardComponent
-              label="popup_html_evm_transaction_info_priority_fee"
-              value={EvmFormatUtils.formatGweiFromWei(
-                displayTx.maxPriorityFeePerGas,
+              value={formatNativeFeeFromWei(
+                displayGasPrice!,
+                PER_GAS_FRACTION_DIGITS,
+                chain.mainToken,
               )}
             />
           )}
-          {showEip1559FeeRows && displayTx.maxFeePerGas != null && (
+          {showEip1559FeeRows && displayMaxPriorityFeePerGas != null && (
+            <SmallDataCardComponent
+              label="popup_html_evm_transaction_info_priority_fee"
+              value={formatNativeFeeFromWei(
+                displayMaxPriorityFeePerGas,
+                PER_GAS_FRACTION_DIGITS,
+                chain.mainToken,
+              )}
+            />
+          )}
+          {showEip1559FeeRows && displayMaxFeePerGas != null && (
             <SmallDataCardComponent
               label="popup_html_evm_transaction_info_total_fee_per_gas"
-              value={EvmFormatUtils.formatGweiFromWei(displayTx.maxFeePerGas)}
+              value={formatNativeFeeFromWei(
+                displayMaxFeePerGas,
+                PER_GAS_FRACTION_DIGITS,
+                chain.mainToken,
+              )}
             />
           )}
         </div>
@@ -712,8 +976,10 @@ const EvmTransactionResult = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.evm.activeAccount,
-    transactionResponse: state.navigation.stack[0].params
-      .transactionResponse as TransactionResponse,
+    transactionResponse: state.navigation.stack[0].params.transactionResponse as
+      | TransactionResponse
+      | null
+      | undefined,
     tokenInfo: state.navigation.stack[0].params
       .tokenInfo as EvmSmartContractInfo,
     amount: state.navigation.stack[0].params.amount,
@@ -722,6 +988,7 @@ const mapStateToProps = (state: RootState) => {
     localAccounts: state.evm.accounts,
     chain: state.chain as EvmChain,
     isCanceled: state.navigation.stack[0].params.isCanceled,
+    isReverted: state.navigation.stack[0].params.isReverted,
     isSuccess: state.navigation.stack[0].params.isSuccess,
     pageTitle: state.navigation.stack[0].params.pageTitle,
     detailFields: state.navigation.stack[0].params.detailFields,
@@ -730,6 +997,8 @@ const mapStateToProps = (state: RootState) => {
     initialDisplayNfts: state.navigation.stack[0].params.initialDisplayNfts,
     initialDisplayHistory:
       state.navigation.stack[0].params.initialDisplayHistory,
+    opName: state.navigation.stack[0].params.opName as string | undefined,
+    timestamp: state.navigation.stack[0].params.timestamp,
   };
 };
 

@@ -94,4 +94,32 @@ export const getProviderChainWithTimeout = async (
   return result.resolvedChain;
 };
 
+const EMPTY_PROVIDER_CHAIN_BOOTSTRAP_RESULT: ProviderChainBootstrapResult = {
+  resolvedChain: null,
+  rawChainId: null,
+};
+
+export interface ProviderBootstrapForPopupOptions {
+  tabOrigin: string | null;
+  hasConnectedEvmAccountsForOrigin: boolean;
+}
+
+export const shouldRunProviderBootstrapForPopup = ({
+  tabOrigin,
+  hasConnectedEvmAccountsForOrigin,
+}: ProviderBootstrapForPopupOptions): boolean => {
+  return !!tabOrigin && hasConnectedEvmAccountsForOrigin;
+};
+
+export const getProviderBootstrapForPopup = async (
+  options: ProviderBootstrapForPopupOptions,
+  timeoutMs = PROVIDER_CHAIN_BOOTSTRAP_TIMEOUT_MS,
+): Promise<ProviderChainBootstrapResult> => {
+  if (!shouldRunProviderBootstrapForPopup(options)) {
+    return EMPTY_PROVIDER_CHAIN_BOOTSTRAP_RESULT;
+  }
+
+  return getProviderChainBootstrapResult(timeoutMs);
+};
+
 export { PROVIDER_CHAIN_BOOTSTRAP_TIMEOUT_MS };

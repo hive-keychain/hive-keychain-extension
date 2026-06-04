@@ -338,6 +338,126 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
     expect(balance?.shortFormattedBalance).toBe('1.23457');
   });
 
+  it('formats discovery native placeholders as native balances', async () => {
+    const walletAddress = '0x1234567890123456789012345678901234567890';
+    const getBalance = jest.fn().mockResolvedValue(20888717742830912n);
+    jest.spyOn(EthersUtils, 'getProvider').mockResolvedValue({
+      getBalance,
+    } as any);
+    jest.spyOn(EvmLightNodeApi, 'get').mockResolvedValue({
+      chainId: 43114,
+      metadata: {
+        name: 'Avalanche',
+        symbol: 'AVAX',
+        decimals: 18,
+        logoUrl: 'https://cdn.example/avax.svg',
+        wrappedNativeTokenAddress:
+          '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7',
+      },
+      price: {
+        fetchedAt: '2026-05-19T00:00:00.000Z',
+        priceUsd: 25,
+      },
+    });
+    const contractSpy = jest.spyOn(ethers, 'Contract');
+
+    const balances = await EvmTokensUtils.getTokenBalances(
+      walletAddress,
+      {
+        chainId: '43114',
+        name: 'Avalanche',
+        mainToken: 'AVAX',
+      } as any,
+      [
+        {
+          type: EVMSmartContractType.ERC20,
+          name: '',
+          symbol: '',
+          decimals: 0,
+          logo: '',
+          chainId: '43114',
+          contractAddress: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+          backgroundColor: '#000000',
+          coingeckoId: null,
+          priceUsd: null,
+          possibleSpam: false,
+          verifiedContract: false,
+          isProxy: false,
+          proxyTarget: null,
+          validated: 0,
+        } as any,
+      ],
+    );
+
+    expect(contractSpy).not.toHaveBeenCalled();
+    expect(getBalance).toHaveBeenCalledWith(walletAddress);
+    expect(balances).toHaveLength(1);
+    expect(balances[0].tokenInfo).toMatchObject({
+      type: EVMSmartContractType.NATIVE,
+      name: 'Avalanche',
+      symbol: 'AVAX',
+      priceUsd: 25,
+    });
+    expect(balances[0].balance).toBe(20888717742830912n);
+  });
+
+  it('drops failed token balance reads without crashing discovery formatting', async () => {
+    const walletAddress = '0x1234567890123456789012345678901234567890';
+    const nativeToken = {
+      name: 'Ether',
+      symbol: 'ETH',
+      logo: '',
+      chainId: '1',
+      backgroundColor: '#000000',
+      coingeckoId: '',
+      priceUsd: 3000,
+      createdAt: '',
+      categories: [],
+      type: EVMSmartContractType.NATIVE,
+    } as EvmSmartContractInfoNative;
+    const erc20Token = {
+      name: 'Broken Token',
+      symbol: 'BAD',
+      decimals: 18,
+      logo: '',
+      chainId: '1',
+      contractAddress: '0x00000000000000000000000000000000000000aa',
+      backgroundColor: '#000000',
+      coingeckoId: '',
+      priceUsd: 0,
+      possibleSpam: false,
+      verifiedContract: true,
+      isProxy: false,
+      proxyTarget: null,
+      validated: 0,
+      type: EVMSmartContractType.ERC20,
+    } as EvmSmartContractInfoErc20;
+
+    jest.spyOn(EthersUtils, 'getProvider').mockResolvedValue({
+      getBalance: jest.fn().mockResolvedValue(1234567891234567890n),
+    } as any);
+    jest.spyOn(ethers, 'Contract').mockImplementation(
+      () =>
+        ({
+          balanceOf: jest.fn().mockRejectedValue(new Error('BAD_DATA')),
+        }) as any,
+    );
+    const errorSpy = jest.spyOn(Logger, 'error').mockImplementation(() => {});
+
+    const balances = await EvmTokensUtils.getTokenBalances(
+      walletAddress,
+      { chainId: '1' } as any,
+      [nativeToken, erc20Token],
+    );
+
+    expect(errorSpy).toHaveBeenCalledWith(
+      'Error while formatting evm balances',
+      expect.any(Error),
+    );
+    expect(balances).toHaveLength(1);
+    expect(balances[0].tokenInfo.type).toBe(EVMSmartContractType.NATIVE);
+  });
+
   it('includes the estimated gas fee in mainBalance for native transfers', async () => {
     const nativeToken = {
       name: 'Ether',

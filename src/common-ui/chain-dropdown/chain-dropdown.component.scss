@@ -12,7 +12,13 @@
     top: calc(100% + 4px) !important;
     right: 0;
     left: unset;
+    width: max-content;
+    min-width: 100%;
     background-color: var(--select-dropdown-bg-color);
+
+    .manage-chains-panel .text {
+      white-space: nowrap;
+    }
 
     .left-image {
       height: 20px !important;
@@ -26,6 +32,13 @@
       svg {
         height: 20px !important;
         width: 20px !important;
+      }
+    }
+
+    .custom-select-item.draggable {
+      .item-label {
+        flex: 1 1 auto;
+        min-width: max-content;
       }
     }
   }

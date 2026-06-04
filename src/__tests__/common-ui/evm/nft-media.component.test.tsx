@@ -2,7 +2,7 @@ import {
   EvmNftMedia,
   isNftVideoMedia,
 } from '@common-ui/evm/nft-media/nft-media.component';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 
 describe('EvmNftMedia', () => {
@@ -21,6 +21,25 @@ describe('EvmNftMedia', () => {
 
     expect(container.querySelector('video')).toBeTruthy();
     expect(container.querySelector('img')).toBeFalsy();
+  });
+
+  it('falls back to the next IPFS gateway when media fails to load', async () => {
+    const { container } = render(
+      <EvmNftMedia src="ipfs://cid?filename=Soul.mp4" />,
+    );
+    const video = container.querySelector('video')!;
+
+    expect(video.getAttribute('src')).toBe(
+      'https://ipfs.io/ipfs/cid?filename=Soul.mp4',
+    );
+
+    fireEvent.error(video);
+
+    await waitFor(() => {
+      expect(container.querySelector('video')!.getAttribute('src')).toBe(
+        'https://nftstorage.link/ipfs/cid?filename=Soul.mp4',
+      );
+    });
   });
 
   it('renders still media with an image element', () => {

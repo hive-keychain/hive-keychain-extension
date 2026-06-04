@@ -10,6 +10,7 @@ import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-l
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('import-export-preferences.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -37,7 +38,7 @@ describe('import-export-preferences.component tests:\n', () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        chrome.i18n.getMessage('popup_html_import_permissions'),
+        I18nUtils.getMessage('popup_html_import_permissions'),
         { exact: true },
       ),
     ).toBeInTheDocument();

@@ -1,3 +1,6 @@
+import ButtonComponent, {
+  ButtonType,
+} from '@common-ui/button/button.component';
 import { CheckboxPanelComponent } from '@common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import CheckboxComponent from '@common-ui/checkbox/checkbox/checkbox.component';
 import {
@@ -7,8 +10,8 @@ import {
 import { SVGIcons } from '@common-ui/icons.enum';
 import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
-import { Separator } from '@common-ui/separator/separator.component';
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
+import { EvmRpcUrlUtils } from '@popup/evm/utils/evm-rpc-url.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import {
   setErrorMessage,
@@ -25,21 +28,30 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const EMPTY_RPC: MultichainRpc = {
   isDefault: false,
   url: '',
 };
 
+interface RpcOptionItem extends OptionItem {
+  rpc: MultichainRpc;
+  value: string;
+}
+
 const EvmRpcNodes = ({
   chain,
+  chainOverride,
+  hideChainSelector,
   setTitleContainerProperties,
   setErrorMessage,
   setWarningMessage,
-}: PropsFromRedux) => {
+  titleMessageKey = 'popup_html_rpc_node',
+}: PropsType) => {
   const [switchAuto, setSwitchAuto] = useState(true);
   const [activeRpc, setActiveRpc] = useState<MultichainRpc>();
 
-  const [rpcOptions, setRpcOptions] = useState<OptionItem[]>();
+  const [rpcOptions, setRpcOptions] = useState<RpcOptionItem[]>();
 
   const [newRpc, setNewRpc] = useState<MultichainRpc>(EMPTY_RPC);
 
@@ -47,12 +59,14 @@ const EvmRpcNodes = ({
 
   const [isAddRpcPanelDisplayed, setIsAddRpcPanelDisplayed] = useState(false);
 
-  const [selectedChain, setSelectedChain] = useState<EvmChain>(chain);
+  const [selectedChain, setSelectedChain] = useState<EvmChain>(
+    chainOverride ?? chain,
+  );
   const [chainOptions, setChainOptions] = useState<OptionItem[]>();
 
   useEffect(() => {
     setTitleContainerProperties({
-      title: 'popup_html_rpc_node',
+      title: titleMessageKey,
       isBackButtonEnabled: true,
     });
     initChainList();
@@ -86,9 +100,10 @@ const EvmRpcNodes = ({
       rpcList.map((rpc) => {
         return {
           label: rpc.url.replace('http://', '').replace('https://', ''),
-          value: rpc,
+          value: rpc.url,
+          rpc,
           canDelete: !rpc.isDefault && savedActiveRpc?.url !== rpc.url,
-        } as OptionItem;
+        } as RpcOptionItem;
       }),
     );
   };
@@ -96,12 +111,45 @@ const EvmRpcNodes = ({
   const selectRpc = async (rpc: MultichainRpc) => {
     await EvmRpcUtils.setActiveRpc(rpc, selectedChain);
     setActiveRpc(rpc);
+    setRpcOptions((options) =>
+      options?.map((option) => ({
+        ...option,
+        canDelete: !option.rpc.isDefault && option.rpc.url !== rpc.url,
+      })),
+    );
+  };
+
+  const saveCustomRpc = async () => {
+    await EvmRpcUtils.addCustomRpc(newRpc, selectedChain);
+    if (setNewRpcAsActive) {
+      await selectRpc(newRpc);
+    }
+    setNewRpc(EMPTY_RPC);
+    setSetNewRpcAsActive(false);
+    setIsAddRpcPanelDisplayed(false);
+    setTimeout(() => {
+      initChain();
+    }, 500);
+  };
+
+  const validateAndSaveCustomRpc = async () => {
+    if (
+      !(await EvmRpcUtils.isValidRpcForChainId(
+        newRpc.url,
+        selectedChain.chainId,
+        true,
+      ))
+    ) {
+      setErrorMessage('evm_add_rpc_invalid_chain_error');
+      return;
+    }
+    await saveCustomRpc();
   };
 
   const addCustomRpc = async () => {
     // Before adding new rpc, check if it is already in the list
     const isRpcAlreadyInList = rpcOptions?.some(
-      (option) => option.value.url === newRpc.url,
+      (option) => option.value === newRpc.url,
     );
 
     if (!newRpc.url) {
@@ -111,36 +159,14 @@ const EvmRpcNodes = ({
       setErrorMessage('evm_rpc_already_in_list');
       return;
     }
-    const isRpcWorking = await EvmRpcUtils.checkRpcStatus(newRpc.url);
-    if (!isRpcWorking) {
-      setWarningMessage('evm_add_rpc_not_working_warning', [], false, {
-        onConfirm: async () => {
-          await EvmRpcUtils.addCustomRpc(newRpc, selectedChain);
-          if (setNewRpcAsActive) {
-            await selectRpc(newRpc);
-          }
-          setNewRpc(EMPTY_RPC);
-          setSetNewRpcAsActive(false);
-          setIsAddRpcPanelDisplayed(false);
-          setTimeout(() => {
-            initChain();
-          }, 500);
-        },
+    if (EvmRpcUrlUtils.isHttpRpcUrl(newRpc.url)) {
+      setWarningMessage('evm_add_http_rpc_warning', [], false, {
+        onConfirm: validateAndSaveCustomRpc,
         onCancel: () => {},
       });
       return;
-    } else {
-      await EvmRpcUtils.addCustomRpc(newRpc, selectedChain);
-      if (setNewRpcAsActive) {
-        await selectRpc(newRpc);
-      }
-      setNewRpc(EMPTY_RPC);
-      setSetNewRpcAsActive(false);
-      setIsAddRpcPanelDisplayed(false);
-      setTimeout(() => {
-        initChain();
-      }, 500);
     }
+    await validateAndSaveCustomRpc();
   };
 
   const deleteRpc = async (rpc: MultichainRpc) => {
@@ -158,12 +184,12 @@ const EvmRpcNodes = ({
   return (
     <div className="evm-rpc-nodes-page">
       <div className="introduction">
-        {chrome.i18n.getMessage('popup_html_rpc_node_text')}
+        {I18nUtils.getMessage('popup_html_rpc_node_text')}
       </div>
 
       <div className="rpc-form-container">
         <div className="rpc-section">
-          {chainOptions && selectedChain && (
+          {!hideChainSelector && chainOptions && selectedChain && (
             <ComplexeCustomSelect
               options={chainOptions}
               selectedItem={{
@@ -191,15 +217,16 @@ const EvmRpcNodes = ({
               <ComplexeCustomSelect
                 options={rpcOptions}
                 selectedItem={{
-                  value: activeRpc,
+                  value: activeRpc.url,
+                  rpc: activeRpc,
                   label: activeRpc.url
                     .replace('http://', '')
                     .replace('https://', ''),
                   canDelete: false,
                 }}
-                setSelectedItem={(item: OptionItem) => selectRpc(item.value)}
+                setSelectedItem={(item: RpcOptionItem) => selectRpc(item.rpc)}
                 background="white"
-                onDelete={(item: OptionItem) => deleteRpc(item.value)}
+                onDelete={(item: RpcOptionItem) => deleteRpc(item.rpc)}
               />
               <div
                 className={`round-button ${
@@ -215,19 +242,16 @@ const EvmRpcNodes = ({
           {!switchAuto && isAddRpcPanelDisplayed && (
             <div className="add-rpc-panel">
               <div className="add-rpc-caption">
-                <span>{chrome.i18n.getMessage('popup_html_add_rpc_text')}</span>
-                <SVGIcon
-                  icon={SVGIcons.MENU_RPC_SAVE_BUTTON}
-                  onClick={() => addCustomRpc()}
-                />
+                <span>{I18nUtils.getMessage('popup_html_add_rpc_text')}</span>
               </div>
-              <Separator type="horizontal" />
               <InputComponent
                 dataTestId="input-rpc-node-uri"
                 type={InputType.TEXT}
                 value={newRpc.url}
                 onChange={(value) => setNewRpc({ ...newRpc, url: value })}
+                label="popup_html_rpc_node"
                 placeholder={'popup_html_rpc_node'}
+                size="small"
                 onEnterPress={addCustomRpc}
               />
 
@@ -236,6 +260,14 @@ const EvmRpcNodes = ({
                 title="popup_html_set_new_rpc_as_active"
                 checked={setNewRpcAsActive}
                 onChange={setSetNewRpcAsActive}></CheckboxComponent>
+              <ButtonComponent
+                dataTestId="evm-rpc-save"
+                label="popup_html_save"
+                type={ButtonType.ALTERNATIVE}
+                height="small"
+                additionalClass="save-rpc-button"
+                onClick={() => addCustomRpc()}
+              />
             </div>
           )}
         </div>
@@ -256,5 +288,11 @@ const connector = connect(mapStateToProps, {
   setWarningMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
+interface OwnProps {
+  chainOverride?: EvmChain;
+  hideChainSelector?: boolean;
+  titleMessageKey?: string;
+}
+type PropsType = PropsFromRedux & OwnProps;
 
 export const EvmRpcNodesComponent = connector(EvmRpcNodes);

@@ -12,6 +12,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import { RcDelegationsUtils } from 'src/popup/hive/utils/rc-delegations.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const IncomingOutgoingRcPage = ({
   delegationType,
   delegations,
@@ -69,7 +70,7 @@ const IncomingOutgoingRcPage = ({
       <div className="list-panel">
         <div className="panel">
           <div className="total">
-            <div className="label">{chrome.i18n.getMessage(header)}</div>
+            <div className="label">{I18nUtils.getMessage(header)}</div>
             {totalRC && (
               <div className="value">
                 <span className="rc-value">

@@ -1,6 +1,7 @@
 import { ChainLogo } from '@common-ui/chain-logo/chain-logo.component';
 import { PreloadedImage } from '@common-ui/preloaded-image/preloaded-image.component';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
+import { DraggableProvidedDragHandleProps } from 'react-beautiful-dnd';
 import { OptionItem } from 'src/common-ui/custom-select/custom-select.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
@@ -17,6 +18,8 @@ interface CustomSelectItemProps<T> {
   onDelete?: (...params: any) => void;
   canDelete?: boolean;
   generateImageIfNull?: boolean;
+  enableDragAndDrop?: boolean;
+  dragHandle?: DraggableProvidedDragHandleProps | null;
 }
 
 export function CustomSelectItemComponent<T extends OptionItem>({
@@ -28,8 +31,11 @@ export function CustomSelectItemComponent<T extends OptionItem>({
   onDelete,
   canDelete = false,
   generateImageIfNull = false,
+  enableDragAndDrop = false,
+  dragHandle,
 }: CustomSelectItemProps<T>) {
   const [color, setColor] = useState<string>();
+  const [hovered, setHovered] = useState(false);
   const itemTestId = item.key ?? String(item.value ?? item.label);
 
   const handleDeleteClick = (event: BaseSyntheticEvent) => {
@@ -39,16 +45,55 @@ export function CustomSelectItemComponent<T extends OptionItem>({
   };
 
   useEffect(() => {
-    if (!item.img) {
+    if (!item.img && item.label) {
       setColor(ColorsUtils.stringToColor(item.label));
     }
   }, [item]);
 
+  const renderTrailingActions = () => {
+    if (enableDragAndDrop) {
+      return (
+        <div className="icons-wrapper">
+          {isSelected && !hovered && (
+            <SVGIcon icon={SVGIcons.SELECT_ACTIVE} className="active-icon" />
+          )}
+          {hovered && !process.env.IS_FIREFOX && dragHandle && (
+            <span {...dragHandle}>
+              <SVGIcon icon={SVGIcons.SELECT_DRAG} className="drag-icon" />
+            </span>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <>
+        {onDelete && canDelete && !isSelected && (
+          <SVGIcon
+            className="right-action-icon"
+            icon={SVGIcons.SELECT_DELETE}
+            onClick={(event) => handleDeleteClick(event)}
+          />
+        )}
+        {isSelected && (
+          <SVGIcon icon={SVGIcons.SELECT_ACTIVE} className="active-icon" />
+        )}
+      </>
+    );
+  };
+
   return (
-    <div className="option">
+    <div
+      className="option"
+      onMouseEnter={() => {
+        setHovered(true);
+      }}
+      onMouseLeave={() => {
+        setHovered(false);
+      }}>
       <div
         data-testid={`custom-select-item-${itemTestId}`}
-        className={`custom-select-item ${isSelected ? 'selected' : ''} ${item.imgChip ? 'has-img-chip' : ''}`}
+        className={`custom-select-item ${isSelected ? 'selected' : ''} ${item.imgChip ? 'has-img-chip' : ''} ${enableDragAndDrop ? 'draggable' : ''}`}
         onClick={() => {
           handleItemClicked();
           closeDropdown();
@@ -63,7 +108,7 @@ export function CustomSelectItemComponent<T extends OptionItem>({
             {item.img && !EnumUtils.isValueOf(item.img, SVGIcons) && (
               <img className="left-image" src={item.img} />
             )}
-            {!item.img && generateImageIfNull && (
+            {!item.img && generateImageIfNull && item.label && (
               <div
                 className="currency-icon add-background"
                 style={{
@@ -109,16 +154,7 @@ export function CustomSelectItemComponent<T extends OptionItem>({
             </>
           )}
         </div>
-        {onDelete && canDelete && !isSelected && (
-          <SVGIcon
-            className="right-action-icon"
-            icon={SVGIcons.SELECT_DELETE}
-            onClick={(event) => handleDeleteClick(event)}
-          />
-        )}
-        {isSelected && (
-          <SVGIcon icon={SVGIcons.SELECT_ACTIVE} className="active-icon" />
-        )}
+        {renderTrailingActions()}
       </div>
       {!isLast && <Separator type={'horizontal'} />}
     </div>

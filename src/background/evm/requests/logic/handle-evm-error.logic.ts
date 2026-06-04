@@ -17,6 +17,7 @@ import {
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const handleEvmError = async (
   requestHandler: EvmRequestHandler,
   tab: number,
@@ -24,6 +25,7 @@ export const handleEvmError = async (
   providerError: ProviderRpcErrorItem,
   errorMessage: string,
   errorMessageParams: string[],
+  origin: string,
   hideDialog?: boolean,
 ) => {
   const message: BackgroundMessage = {
@@ -40,11 +42,12 @@ export const handleEvmError = async (
       CommunicationUtils.runtimeSendMessage({
         command: DialogCommand.SEND_DIALOG_ERROR,
         msg: {
-          display_msg: await chrome.i18n.getMessage(
+          display_msg: await I18nUtils.getMessage(
             errorMessage,
             errorMessageParams,
           ),
           tab,
+          request_id: request.request_id,
         },
       });
       const handlers = await getRequestHandlers();
@@ -53,14 +56,23 @@ export const handleEvmError = async (
           handlers,
           request.request_id,
           tab,
+          origin,
         )
       ) {
         await delayMs(DIALOG_FEEDBACK_DISPLAY_MS);
       }
-      await requestHandler.removeRequestById(request.request_id, tab);
+      await requestHandler.removeRequestByLocator({
+        requestId: request.request_id,
+        tab,
+        origin,
+      });
     };
     createOrUpdateDialog(callback, requestHandler);
   } else {
-    await requestHandler.removeRequestById(request.request_id, tab);
+    await requestHandler.removeRequestByLocator({
+      requestId: request.request_id,
+      tab,
+      origin,
+    });
   }
 };

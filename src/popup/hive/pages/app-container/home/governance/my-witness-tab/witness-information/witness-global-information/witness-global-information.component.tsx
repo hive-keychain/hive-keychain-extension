@@ -6,6 +6,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { WitnessInfoDataComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-info-data/witness-info-data.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface WitnessGlobalInformationProps {
   witnessInfo: WitnessInfo;
 }
@@ -41,7 +42,7 @@ const WitnessGlobalInformation = ({
         <WitnessInfoDataComponent
           label={'html_popup_witness_global_information_price_feed_label'}
           value={witnessInfo.priceFeed}
-          extraInfo={chrome.i18n.getMessage(
+          extraInfo={I18nUtils.getMessage(
             'html_popup_witness_global_information_updated_label',
             [witnessInfo.priceFeedUpdatedAt.fromNow()],
           )}
@@ -57,13 +58,13 @@ const WitnessGlobalInformation = ({
 
       <div className="witness-rewards-panel">
         <div className="title">
-          {chrome.i18n.getMessage(
+          {I18nUtils.getMessage(
             'popup_html_witness_information_rewards_label',
           )}
         </div>
         <div className="rewards-row">
           <div className="label">
-            {chrome.i18n.getMessage(
+            {I18nUtils.getMessage(
               'popup_html_witness_information_reward_panel_last_week_label',
             )}
           </div>
@@ -74,7 +75,7 @@ const WitnessGlobalInformation = ({
         </div>
         <div className="rewards-row">
           <div className="label">
-            {chrome.i18n.getMessage(
+            {I18nUtils.getMessage(
               'popup_html_witness_information_reward_panel_last_month_label',
             )}
           </div>

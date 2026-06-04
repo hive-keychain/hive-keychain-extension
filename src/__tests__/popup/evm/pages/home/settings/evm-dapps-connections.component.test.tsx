@@ -7,7 +7,9 @@ import {
   getEvmDappConnections,
   getEvmDappConnectionIconUrl,
   getEvmDappFaviconUrl,
+  parseEvmOriginChainWhitelist,
   removeEvmDappConnectionAccounts,
+  removeEvmDappConnectionChains,
 } from '@popup/evm/pages/home/settings/evm-dapps-connections/evm-dapps-connections.component';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { act, render, screen, waitFor } from '@testing-library/react';
@@ -101,9 +103,15 @@ describe('EvmDappsConnectionsComponent', () => {
       'without-accounts.example': {},
     };
 
-    const connections = getEvmDappConnections(walletPermissions, [
-      localAccount,
-    ]);
+    const connections = getEvmDappConnections(
+      walletPermissions,
+      [localAccount],
+      {
+        'https://alpha.example': ['0X1', '0x89'],
+        'https://zeta.example': ['0x38'],
+        'https://other.example': ['0xa'],
+      },
+    );
 
     expect(connections.map((connection) => connection.subdomain)).toEqual([
       'alpha.example',
@@ -127,6 +135,13 @@ describe('EvmDappsConnectionsComponent', () => {
       address: staleAddress.toLowerCase(),
       account: undefined,
     });
+    expect(connections[0].chains).toEqual([
+      { chainId: '0x1', chain: undefined },
+      { chainId: '0x89', chain: undefined },
+    ]);
+    expect(connections[1].chains).toEqual([
+      { chainId: '0x38', chain: undefined },
+    ]);
   });
 
   it('removes one or all connected accounts from grouped hostname permissions', () => {
@@ -178,6 +193,38 @@ describe('EvmDappsConnectionsComponent', () => {
       'zeta.example': {
         [EvmRequestPermission.ETH_ACCOUNTS]: [removedAddress],
       },
+    });
+  });
+
+  it('normalizes and removes allowed chains from grouped hostname whitelist', () => {
+    const originChainWhitelist = parseEvmOriginChainWhitelist({
+      'https://alpha.example': ['0X1', '0x89', null],
+      'alpha.example': ['0x1'],
+      'https://zeta.example': ['0x38'],
+      invalid: '0x1',
+    });
+
+    expect(originChainWhitelist).toEqual({
+      'https://alpha.example': ['0x1', '0x89'],
+      'alpha.example': ['0x1'],
+      'https://zeta.example': ['0x38'],
+    });
+
+    expect(
+      removeEvmDappConnectionChains(
+        originChainWhitelist,
+        'alpha.example',
+        '0X1',
+      ),
+    ).toEqual({
+      'https://alpha.example': ['0x89'],
+      'https://zeta.example': ['0x38'],
+    });
+
+    expect(
+      removeEvmDappConnectionChains(originChainWhitelist, 'alpha.example'),
+    ).toEqual({
+      'https://zeta.example': ['0x38'],
     });
   });
 
@@ -259,6 +306,14 @@ describe('EvmDappsConnectionsComponent', () => {
     expect(screen.queryByTestId('evm-account-display')).not.toBeInTheDocument();
 
     await user.click(screen.getByText('alpha.example'));
+    expect(screen.getByTestId('evm-dapps-open-addresses')).toHaveTextContent(
+      'evm_dapps_connections_addresses_option',
+    );
+    expect(screen.getByTestId('evm-dapps-open-chains')).toHaveTextContent(
+      'evm_dapps_connections_chains_option',
+    );
+
+    await user.click(screen.getByTestId('evm-dapps-open-addresses'));
 
     expect(screen.getByTestId('evm-account-display')).toHaveTextContent(
       localAccount.wallet.address,
@@ -276,6 +331,7 @@ describe('EvmDappsConnectionsComponent', () => {
     });
 
     await user.click(screen.getByText('zeta.example'));
+    await user.click(screen.getByTestId('evm-dapps-open-addresses'));
 
     expect(screen.getByTestId('evm-dapps-stale-account')).toHaveTextContent(
       'evm_dapps_connections_unknown_account',
@@ -335,6 +391,7 @@ describe('EvmDappsConnectionsComponent', () => {
     );
 
     await user.click(await screen.findByText('alpha.example'));
+    await user.click(screen.getByTestId('evm-dapps-open-addresses'));
     expect(screen.getAllByTestId('evm-account-display')).toHaveLength(2);
 
     await act(async () => {
@@ -374,6 +431,102 @@ describe('EvmDappsConnectionsComponent', () => {
       'zeta.example': {
         [EvmRequestPermission.ETH_ACCOUNTS]: [firstAccount.wallet.address],
       },
+    });
+  });
+
+  it('opens the allowed chains modal and removes chains from local storage', async () => {
+    const user = userEvent.setup();
+    const account = createAccount(
+      '0x1111111111111111111111111111111111111111',
+    );
+    const walletPermissions: EvmWalletPermissions = {
+      'https://alpha.example': {
+        [EvmRequestPermission.ETH_ACCOUNTS]: [account.wallet.address],
+      },
+    };
+    let originChainWhitelist = {
+      'https://alpha.example': ['0x1', '0x89'],
+      'alpha.example': ['0x1'],
+      'https://zeta.example': ['0x38'],
+    };
+
+    jest
+      .spyOn(LocalStorageUtils, 'getMultipleValueFromLocalStorage')
+      .mockImplementation(async () => ({
+        [LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS]: walletPermissions,
+        [LocalStorageKeyEnum.EVM_DAPPS_LOGO]: {},
+        [LocalStorageKeyEnum.EVM_ORIGIN_CHAIN_WHITELIST]:
+          originChainWhitelist,
+        [LocalStorageKeyEnum.DEFAULT_CHAINS]: [
+          {
+            chainId: '0x1',
+            name: 'Ethereum',
+            logo: 'ethereum.svg',
+            type: 'EVM',
+            rpcs: [],
+          },
+          {
+            chainId: '0x89',
+            name: 'Polygon',
+            logo: 'polygon.svg',
+            type: 'EVM',
+            rpcs: [],
+          },
+        ],
+        [LocalStorageKeyEnum.CUSTOM_CHAINS]: [],
+      }));
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockImplementation(async () => originChainWhitelist);
+    jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockImplementation(async (_key, value) => {
+        originChainWhitelist = value;
+      });
+
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      evm: {
+        ...initialEmptyStateStore.evm,
+        accounts: [account],
+      },
+    });
+
+    render(
+      <Provider store={store}>
+        <EvmDappsConnectionsComponent />
+      </Provider>,
+    );
+
+    await user.click(await screen.findByText('alpha.example'));
+    await user.click(screen.getByTestId('evm-dapps-open-chains'));
+
+    expect(screen.getByText('Ethereum')).toBeInTheDocument();
+    expect(screen.getByText('Polygon')).toBeInTheDocument();
+
+    await act(async () => {
+      await user.click(screen.getAllByTestId('evm-dapps-remove-account')[0]);
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByText('Ethereum')).not.toBeInTheDocument();
+    });
+    expect(originChainWhitelist).toEqual({
+      'https://alpha.example': ['0x89'],
+      'https://zeta.example': ['0x38'],
+    });
+
+    await act(async () => {
+      await user.click(screen.getByTestId('evm-dapps-remove-all-chains'));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('evm-dapps-no-chains')).toHaveTextContent(
+        'evm_dapps_connections_no_chains',
+      );
+    });
+    expect(originChainWhitelist).toEqual({
+      'https://zeta.example': ['0x38'],
     });
   });
 

@@ -4,6 +4,7 @@ import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import React from 'react';
 import type { BalanceDetails, BalanceInfo } from './balance-change-card.interface';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   balanceInfo: BalanceInfo;
 }
@@ -19,12 +20,12 @@ export const BalanceChangeCard = ({ balanceInfo }: Props) => {
   return (
     <Card className="balance-change-panel">
       <div className="balance-change-title">
-        {chrome.i18n.getMessage('evm_balance_change_title')}
+        {I18nUtils.getMessage('evm_balance_change_title')}
       </div>
 
       {insufficientBalance ? (
         <span className="insufficient-balance">
-          {chrome.i18n.getMessage('evm_insufficient_token_balance', [
+          {I18nUtils.getMessage('evm_insufficient_token_balance', [
             insufficientBalance.symbol,
           ])}
         </span>

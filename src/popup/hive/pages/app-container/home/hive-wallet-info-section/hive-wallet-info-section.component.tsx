@@ -27,6 +27,11 @@ import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
+interface WalletSectionRefsProps {
+  walletScrollRef?: React.RefObject<HTMLDivElement>;
+}
+
 const WalletInfoSection = ({
   activeAccount,
   currencyLabels,
@@ -41,7 +46,8 @@ const WalletInfoSection = ({
   loadUserTokens,
   loadTokens,
   loadPendingUnstaking,
-}: PropsFromRedux) => {
+  walletScrollRef,
+}: PropsFromRedux & WalletSectionRefsProps) => {
   const [delegationAmount, setDelegationAmount] = useState<string | number>(
     '...',
   );
@@ -129,7 +135,7 @@ const WalletInfoSection = ({
     });
     if (pendingHbdConversions.length > 0) {
       // setHbdRowInfoContent(
-      //   chrome.i18n.getMessage('popup_html_pending_conversions', [
+      //   I18nUtils.getMessage('popup_html_pending_conversions', [
       //     pendingHbdConversions.length.toString(),
       //     'HIVE',
       //   ]),
@@ -142,7 +148,7 @@ const WalletInfoSection = ({
 
     if (pendingHiveConversions.length > 0) {
       // setHiveRowInfoContent(
-      //   chrome.i18n.getMessage('popup_html_pending_conversions', [
+      //   I18nUtils.getMessage('popup_html_pending_conversions', [
       //     pendingHiveConversions.length.toString(),
       //     'HIVE',
       //   ]),
@@ -153,14 +159,14 @@ const WalletInfoSection = ({
   return (
     <div className="wallet-info-wrapper">
       <div className="wallet-background" />
-      <div className="wallet-info-section">
+      <div className="wallet-info-section" ref={walletScrollRef}>
         <HiveWalletInfoSectionItemComponent
           tokenSymbol="HIVE"
           icon={SVGIcons.WALLET_HIVE_LOGO}
           mainValue={activeAccount.account.balance}
           mainValueLabel={currencyLabels.hive}
           subValue={activeAccount.account.savings_balance}
-          subValueLabel={chrome.i18n.getMessage('popup_html_wallet_savings')}
+          subValueLabel={I18nUtils.getMessage('popup_html_wallet_savings')}
         />
         <HiveWalletInfoSectionItemComponent
           tokenSymbol="HBD"
@@ -168,7 +174,7 @@ const WalletInfoSection = ({
           mainValue={activeAccount.account.hbd_balance}
           mainValueLabel={currencyLabels.hbd}
           subValue={activeAccount.account.savings_hbd_balance}
-          subValueLabel={chrome.i18n.getMessage('popup_html_wallet_savings')}
+          subValueLabel={I18nUtils.getMessage('popup_html_wallet_savings')}
         />
         <HiveWalletInfoSectionItemComponent
           tokenSymbol="HP"
@@ -180,9 +186,9 @@ const WalletInfoSection = ({
           mainValueLabel={currencyLabels.hp}
           subValue={delegationAmount}
           subValueLabel={
-            chrome.i18n.getMessage('popup_html_delegations').length <= 5
-              ? chrome.i18n.getMessage('popup_html_delegations')
-              : chrome.i18n.getMessage('popup_html_delegations').slice(0, 5) +
+            I18nUtils.getMessage('popup_html_delegations').length <= 5
+              ? I18nUtils.getMessage('popup_html_delegations')
+              : I18nUtils.getMessage('popup_html_delegations').slice(0, 5) +
                 '.'
           }
         />
@@ -262,7 +268,7 @@ const WalletInfoSection = ({
             <div className="no-token">
               <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
               <span className="text">
-                {chrome.i18n.getMessage('html_tokens_none_available')}
+                {I18nUtils.getMessage('html_tokens_none_available')}
               </span>
             </div>
           )}

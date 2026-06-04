@@ -37,6 +37,13 @@ export type EvmRequestData = {
   dialogCommand?: DialogCommand;
   dialogData?: Record<string, unknown>;
 };
+
+export type EvmRequestLocator = {
+  requestId: number;
+  tab: number;
+  origin: string;
+};
+
 export class EvmRequestHandler {
   requestsData: EvmRequestData[];
   accounts: EvmAccount[];
@@ -129,6 +136,12 @@ export class EvmRequestHandler {
     );
   }
 
+  getRequestDataByLocator(locator: EvmRequestLocator) {
+    return this.requestsData.find((requestData) =>
+      EvmRequestHandler.isRequestLocatorMatch(requestData, locator),
+    );
+  }
+
   getRequest(requestId: number) {
     const requestData = this.getRequestData(requestId);
     return requestData?.request;
@@ -159,6 +172,20 @@ export class EvmRequestHandler {
     );
   }
 
+  async setRequestDialogByLocator(
+    locator: EvmRequestLocator,
+    dialogCommand?: DialogCommand,
+    dialogData?: Record<string, unknown>,
+  ) {
+    await EvmRequestHandler.withPersistedRequestsData(this, (requestsData) =>
+      requestsData.map((requestData) =>
+        EvmRequestHandler.isRequestLocatorMatch(requestData, locator)
+          ? { ...requestData, dialogCommand, dialogData }
+          : requestData,
+      ),
+    );
+  }
+
   async removeRequestById(
     requestId: number,
     tab: number,
@@ -168,6 +195,21 @@ export class EvmRequestHandler {
       requestsData.filter(
         (requestData: EvmRequestData) =>
           requestData.request_id !== requestId || requestData.tab !== tab,
+      ),
+    );
+    if (shouldSyncDialog) {
+      await syncSharedDialogWindow();
+    }
+  }
+
+  async removeRequestByLocator(
+    locator: EvmRequestLocator,
+    shouldSyncDialog = true,
+  ) {
+    await EvmRequestHandler.withPersistedRequestsData(this, (requestsData) =>
+      requestsData.filter(
+        (requestData: EvmRequestData) =>
+          !EvmRequestHandler.isRequestLocatorMatch(requestData, locator),
       ),
     );
     if (shouldSyncDialog) {
@@ -203,7 +245,6 @@ export class EvmRequestHandler {
   }
 
   async saveInLocalStorage() {
-    console.log(this.requestsData, 'saving requests data');
     await LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
       {
@@ -249,5 +290,16 @@ export class EvmRequestHandler {
       () => undefined,
     );
     return runMutation;
+  }
+
+  private static isRequestLocatorMatch(
+    requestData: EvmRequestData,
+    locator: EvmRequestLocator,
+  ) {
+    return (
+      requestData.request_id === locator.requestId &&
+      requestData.tab === locator.tab &&
+      requestData.dappInfo?.origin === locator.origin
+    );
   }
 }

@@ -1,0 +1,309 @@
+.settings-main-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+  row-gap: 16px;
+}
+
+.settings-shared-page {
+  @include pageLayoutRowGap;
+  row-gap: 12px;
+
+  .settings-chain-select-panel {
+    padding: 0 24px;
+  }
+}
+
+.settings-contacts-page {
+  padding: 0 24px 24px;
+
+  .settings-chain-select-panel {
+    padding: 0;
+  }
+
+  .contacts-settings-page {
+    height: auto;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .settings-contacts-intro {
+    @include settings-page-note();
+    margin: 0;
+  }
+}
+
+.settings-hive-dapps-page {
+  @include pageLayoutRowGap;
+  row-gap: 16px;
+  padding: 0 24px 24px;
+
+  .settings-hive-account-select-panel {
+    width: 100%;
+
+    .custom-select-container {
+      width: 100%;
+    }
+
+    .custom-select {
+      width: 100%;
+    }
+  }
+
+  .settings-hive-dapps-card {
+    align-items: stretch;
+    flex-direction: column;
+    max-height: 400px;
+    overflow: hidden;
+    row-gap: 16px;
+  }
+
+  .settings-hive-dapps-empty {
+    @include poppins400(13px);
+    color: var(--main-font-color);
+    opacity: 0.85;
+  }
+
+  .settings-hive-dapps-list {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    width: 100%;
+  }
+
+  .settings-hive-dapps-site {
+    align-items: stretch;
+    border-bottom: 1px solid var(--card-border);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    min-width: 0;
+    padding: 8px 0;
+    width: 100%;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+
+    &:hover {
+      .settings-hive-dapps-remove-domain {
+        opacity: 1;
+      }
+    }
+  }
+
+  .settings-hive-dapps-site-header,
+  .settings-hive-dapps-site-identity {
+    align-items: center;
+    display: flex;
+  }
+
+  .settings-hive-dapps-site-header {
+    background: transparent;
+    border: none;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 32px;
+    padding: 0;
+    text-align: left;
+    width: 100%;
+  }
+
+  .settings-hive-dapps-site-identity {
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .settings-hive-dapps-site-title {
+    @include poppins600(14px);
+    color: var(--main-font-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .settings-hive-dapps-favicon {
+    border-radius: 6px;
+    flex-shrink: 0;
+    height: 28px;
+    object-fit: contain;
+    width: 28px;
+  }
+
+  .settings-hive-dapps-permissions {
+    align-items: flex-start;
+    display: flex;
+    gap: 8px;
+  }
+
+  .settings-hive-dapps-remove-domain {
+    align-items: center;
+    background: transparent;
+    border: none;
+    color: var(--main-font-color);
+    cursor: pointer;
+    display: flex;
+    flex-shrink: 0;
+    justify-content: center;
+    min-height: 28px;
+    opacity: 0;
+    padding: 0;
+    transition: opacity 0.15s ease;
+    width: 28px;
+
+    .svg-icon {
+      @include icon-size(18px);
+    }
+
+    &:focus-visible {
+      opacity: 1;
+    }
+  }
+
+  .settings-hive-dapps-tags {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .settings-hive-dapps-tag {
+    @include poppins400(12px);
+    align-items: center;
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    color: var(--main-font-color);
+    column-gap: 6px;
+    cursor: pointer;
+    display: flex;
+    padding: 6px 8px;
+
+    .svg-icon {
+      @include icon-size(12px);
+      opacity: 0;
+    }
+
+    &:hover {
+      .svg-icon {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+.settings-empty-state {
+  @include settings-page-note();
+  margin: 0;
+}
+
+.settings-preferences-display-page {
+  @include pageLayoutRowGap;
+  row-gap: 16px;
+  padding: 0 24px 24px;
+  height: unset;
+
+  .fields {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+  }
+
+  .settings-section {
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+  }
+
+  .section-title {
+    @include poppins600(14px);
+    color: var(--main-font-color);
+  }
+
+  .section-fields {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+  }
+
+  .language-select-panel {
+    .custom-select-container,
+    .custom-select {
+      width: 100%;
+    }
+  }
+
+  .try-side-panel-action {
+    display: flex;
+    align-items: center;
+    column-gap: 12px;
+    width: 100%;
+    padding: 16px;
+    border: 1px solid var(--input-border);
+    border-radius: 22px;
+    background: var(--input-background);
+    cursor: pointer;
+    box-sizing: border-box;
+
+    .try-side-panel-action-icon.svg-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      --menu-icon-color: #{$red};
+
+      div,
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .try-side-panel-action-label {
+      @include poppins500(14px);
+      color: var(--main-font-color);
+    }
+
+    &:hover {
+      background: var(--card-background);
+    }
+  }
+}
+
+.settings-evm-page {
+  @include pageLayoutRowGap;
+  row-gap: 16px;
+  padding: 0 24px 24px;
+  height: unset;
+
+  .fields {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+  }
+
+  .settings-section {
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+  }
+
+  .section-title {
+    @include poppins600(14px);
+    color: var(--main-font-color);
+  }
+
+  .section-fields {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+  }
+
+  .provider-note {
+    @include settings-page-note();
+    margin: 0;
+  }
+}

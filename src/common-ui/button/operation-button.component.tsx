@@ -7,6 +7,7 @@ import ButtonComponent, {
   ButtonProps,
 } from 'src/common-ui/button/button.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = PropsFromRedux & ButtonProps & { requiredKey: KeychainKeyTypesLC };
 
 const OperationButton = ({
@@ -19,7 +20,7 @@ const OperationButton = ({
   const handleClick = () => {
     if (requiredKey && !activeAccount.keys[requiredKey]) {
       setErrorMessage('popup_missing_key', [
-        chrome.i18n.getMessage(requiredKey),
+        I18nUtils.getMessage(requiredKey),
       ]);
     } else {
       onClick();

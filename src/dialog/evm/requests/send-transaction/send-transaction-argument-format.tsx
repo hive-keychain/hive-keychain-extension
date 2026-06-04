@@ -124,6 +124,7 @@ export async function formatDecodedArgumentDisplayValue(
           address={argumentValue as string}
           chainId={chainTmp.chainId}
           canCopy={true}
+          localAccounts={accounts}
         />
       );
     }

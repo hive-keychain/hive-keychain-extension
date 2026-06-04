@@ -10,6 +10,7 @@ import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: RequestDelegation & RequestId;
   domain: string;
@@ -32,7 +33,7 @@ const Delegation = (props: Props) => {
   };
   return (
     <Operation
-      title={chrome.i18n.getMessage('dialog_title_delegation')}
+      title={I18nUtils.getMessage('dialog_title_delegation')}
       {...props}
       {...anonymousProps}>
       {renderUsername()}

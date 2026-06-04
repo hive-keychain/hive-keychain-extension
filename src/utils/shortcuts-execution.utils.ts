@@ -1,4 +1,5 @@
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmActiveAccountInitUtils } from '@popup/evm/utils/evm-active-account-init.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import {
   NativeAndErc20Token,
@@ -8,6 +9,7 @@ import {
   EvmSmartContractInfoErc20,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
+import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
 import { setChain } from '@popup/multichain/actions/chain.actions';
 import {
   navigateTo,
@@ -22,6 +24,7 @@ import {
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { RootState, store } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
 import {
   ShortcutAccountType,
   ShortcutActionType,
@@ -39,6 +42,12 @@ import ShortcutsUtils from 'src/utils/shortcuts.utils';
 export interface ShortcutExecutionResult {
   deferred: boolean;
   targetChain?: Chain;
+}
+
+interface ShortcutExecutionOptions {
+  skipChainSwitch?: boolean;
+  toggleTheme?: () => void;
+  openKeychainInTab?: () => void;
 }
 
 const LAST_USED_EVM_CHAIN_TARGET = 'last_used_evm_chain';
@@ -65,6 +74,19 @@ const getEvmChain = async (chainId?: string) => {
     if (chain) return chain;
   }
   return (await EvmChainUtils.getLastEvmChain()) ?? EvmChainUtils.getEthChain();
+};
+
+const resolveEvmTargetChain = async (currentChain: Chain, chainId?: string) => {
+  if (chainId) {
+    const chain = await ChainUtils.getChain<EvmChain>(chainId);
+    if (chain) {
+      return chain;
+    }
+  }
+  if (currentChain.type === ChainType.EVM) {
+    return currentChain as EvmChain;
+  }
+  return getEvmChain();
 };
 
 export const resolveShortcutChain = async (
@@ -140,7 +162,7 @@ const findEvmAccount = async (
 };
 
 const executeChangeAccountShortcut = async (shortcut: ShortcutDefinition) => {
-  const state = store.getState();
+  let state = store.getState();
   const target = ShortcutsUtils.parseShortcutAccountTarget(
     shortcut.target,
     shortcut.params?.accountType,
@@ -148,22 +170,55 @@ const executeChangeAccountShortcut = async (shortcut: ShortcutDefinition) => {
   );
 
   if (target.accountType === ShortcutAccountType.EVM) {
-    const chain = state.chain as EvmChain;
     const account = await findEvmAccount(target.accountId, state);
-    if (chain?.type === ChainType.EVM && account) {
-      store.dispatch(loadEvmActiveAccount(chain, account.wallet));
+    if (!account) {
+      return;
     }
+
+    const targetChain = await resolveEvmTargetChain(
+      state.chain as Chain,
+      shortcut.params?.chainId,
+    );
+    if (!targetChain) {
+      return;
+    }
+
+    EvmActiveAccountInitUtils.markPendingUserEvmWalletSelection(
+      targetChain.chainId,
+    );
+    if (!sameChain(state.chain as Chain, targetChain)) {
+      store.dispatch(setChain(targetChain));
+      state = store.getState();
+      if (!sameChain(state.chain as Chain, targetChain)) {
+        return;
+      }
+    }
+
+    await EvmWalletUtils.promoteConnectedWalletAddress(account.wallet.address);
+    store.dispatch(loadEvmActiveAccount(targetChain, account.wallet));
+    store.dispatch(setActiveAccountType(ChainType.EVM));
     return;
   }
 
   const account = state.hive.accounts.find(
     (item) => item.name === target.accountId,
   );
-  if (account) store.dispatch(loadActiveAccount(account));
+  if (!account) {
+    return;
+  }
+  const isSelectedHiveAccountLoaded =
+    state.hive.activeAccount.name === account.name &&
+    state.hive.activeAccount.account?.name === account.name;
+  if (!isSelectedHiveAccountLoaded) {
+    store.dispatch(loadActiveAccount(account));
+  }
+  store.dispatch(setActiveAccountType(ChainType.HIVE));
 };
 
 const executeNavigateShortcut = (shortcut: ShortcutDefinition) => {
-  const targetScreen = shortcut.target as
+  const targetScreen = ShortcutsUtils.normalizeShortcutNavigationTarget(
+    shortcut.target,
+  ) as
     | MultichainScreen
     | HiveScreen
     | EvmScreen;
@@ -296,6 +351,14 @@ export const isShortcutTargetChainReady = (
   targetChain: Chain,
 ) => {
   if (!sameChain(state.chain as Chain, targetChain)) return false;
+  if (shortcut.actionType === ShortcutActionType.CHANGE_ACCOUNT) {
+    if (targetChain.type === ChainType.EVM) {
+      return true;
+    }
+    if (targetChain.type === ChainType.HIVE) {
+      return state.hive.activeRpc?.uri !== 'NULL';
+    }
+  }
   if (targetChain.type === ChainType.EVM) {
     return !!state.evm.activeAccount?.isReady;
   }
@@ -311,11 +374,37 @@ export const isShortcutTargetChainReady = (
 
 export const executeShortcut = async (
   shortcut: ShortcutDefinition,
-  options: { skipChainSwitch?: boolean } = {},
+  options: ShortcutExecutionOptions = {},
 ): Promise<ShortcutExecutionResult> => {
-  const targetChain = await resolveShortcutChain(shortcut);
+  if (shortcut.actionType === ShortcutActionType.TOGGLE_THEME) {
+    options.toggleTheme?.();
+    return { deferred: false };
+  }
 
-  if (shortcut.actionType === ShortcutActionType.CHANGE_CHAIN) {
+  if (shortcut.actionType === ShortcutActionType.OPEN_IN_TAB) {
+    if (options.openKeychainInTab) {
+      options.openKeychainInTab();
+    } else {
+      void DetachedExtensionTabUtils.openDetachedExtension();
+    }
+    return { deferred: false };
+  }
+
+  const normalizedShortcut =
+    shortcut.actionType === ShortcutActionType.NAVIGATE
+      ? {
+          ...shortcut,
+          target: ShortcutsUtils.normalizeShortcutNavigationTarget(
+            shortcut.target,
+          ),
+        }
+      : shortcut;
+  const targetChain = await resolveShortcutChain(normalizedShortcut);
+
+  if (normalizedShortcut.actionType === ShortcutActionType.CHANGE_CHAIN) {
+    if (targetChain?.type === ChainType.HIVE || targetChain?.type === ChainType.EVM) {
+      store.dispatch(setActiveAccountType(targetChain.type));
+    }
     if (
       targetChain &&
       !sameChain(store.getState().chain as Chain, targetChain)
@@ -330,6 +419,9 @@ export const executeShortcut = async (
     targetChain &&
     !sameChain(store.getState().chain as Chain, targetChain)
   ) {
+    if (targetChain.type === ChainType.HIVE || targetChain.type === ChainType.EVM) {
+      store.dispatch(setActiveAccountType(targetChain.type));
+    }
     store.dispatch(setChain(targetChain));
     return { deferred: true, targetChain };
   }
@@ -337,11 +429,17 @@ export const executeShortcut = async (
   if (
     !options.skipChainSwitch &&
     targetChain &&
-    !isShortcutTargetChainReady(shortcut, store.getState(), targetChain)
+    !isShortcutTargetChainReady(normalizedShortcut, store.getState(), targetChain)
   ) {
+    if (targetChain.type === ChainType.HIVE || targetChain.type === ChainType.EVM) {
+      store.dispatch(setActiveAccountType(targetChain.type));
+    }
     return { deferred: true, targetChain };
   }
 
-  await executeShortcutInCurrentChain(shortcut);
+  if (targetChain?.type === ChainType.HIVE || targetChain?.type === ChainType.EVM) {
+    store.dispatch(setActiveAccountType(targetChain.type));
+  }
+  await executeShortcutInCurrentChain(normalizedShortcut);
   return { deferred: false };
 };

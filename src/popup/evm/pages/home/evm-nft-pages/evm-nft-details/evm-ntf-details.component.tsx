@@ -10,6 +10,7 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { EvmNftMedia } from 'src/common-ui/evm/nft-media/nft-media.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   nft: EvmErc721TokenCollectionItem | EvmErc1155TokenCollectionItem;
   collection: EvmErc721Token | EvmErc721Token;
@@ -58,7 +59,7 @@ export const EvmNftDetails = ({
           <div className="collection-name">{collection.tokenInfo.name}</div>
           <div className="label-value smart-contract-address">
             <div className="label">
-              {chrome.i18n.getMessage('evm_operation_smart_contract_address')}
+              {I18nUtils.getMessage('evm_operation_smart_contract_address')}
             </div>
             <div className="value">
               {EvmFormatUtils.formatAddress(
@@ -68,14 +69,14 @@ export const EvmNftDetails = ({
           </div>
           <div className="label-value smart-contract-address">
             <div className="label">
-              {chrome.i18n.getMessage('evm_nft_token_id')}
+              {I18nUtils.getMessage('evm_nft_token_id')}
             </div>
             <div className="value">{nft.id}</div>
           </div>
           {(nft as EvmErc1155TokenCollectionItem)?.balance && (
             <div className="label-value smart-contract-address">
               <div className="label">
-                {chrome.i18n.getMessage('popup_html_balance')}
+                {I18nUtils.getMessage('popup_html_balance')}
               </div>
               <div className="value">
                 {(nft as EvmErc1155TokenCollectionItem)?.balance}
@@ -84,7 +85,7 @@ export const EvmNftDetails = ({
           )}
           <div className="label-value smart-contract-address">
             <div className="label">
-              {chrome.i18n.getMessage('evm_nft_token_type')}
+              {I18nUtils.getMessage('evm_nft_token_type')}
             </div>
             <div className="value">{collection.tokenInfo.type}</div>
           </div>

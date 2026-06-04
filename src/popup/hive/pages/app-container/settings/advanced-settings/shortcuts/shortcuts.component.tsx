@@ -59,12 +59,13 @@ import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import ShortcutsUtils from 'src/utils/shortcuts.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const LAST_USED_EVM_CHAIN_TARGET = 'last_used_evm_chain';
 
 const localizedShortcutScreenLabel = (
   screen: MultichainScreen | HiveScreen | EvmScreen,
 ) =>
-  chrome.i18n.getMessage(
+  I18nUtils.getMessage(
     ShortcutsUtils.getShortcutNavigationScreenMessageKey(screen),
   ) || ShortcutsUtils.formatScreenLabel(screen);
 
@@ -182,7 +183,24 @@ const Shortcuts = ({
       ChainUtils.getSetupChains(true),
       mk ? EvmWalletUtils.rebuildAccountsFromLocalStorage(mk) : evmAccounts,
     ]);
-    setShortcuts(Array.isArray(storedShortcuts) ? storedShortcuts : []);
+    const hasMigratedShortcutPresets =
+      (await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.SHORTCUT_PRESETS_MIGRATED,
+      )) === true;
+    const shortcuts =
+      Array.isArray(storedShortcuts) && hasMigratedShortcutPresets
+        ? storedShortcuts
+        : Array.isArray(storedShortcuts)
+          ? ShortcutsUtils.getShortcutsWithDefaultPresets(storedShortcuts)
+          : ShortcutsUtils.DEFAULT_SHORTCUTS;
+    setShortcuts(shortcuts);
+    if (!hasMigratedShortcutPresets) {
+      saveShortcuts(shortcuts);
+      LocalStorageUtils.saveValueInLocalStorage(
+        LocalStorageKeyEnum.SHORTCUT_PRESETS_MIGRATED,
+        true,
+      );
+    }
     setSetupChains(chains);
     setEvmLocalAccounts(rebuiltEvmAccounts ?? evmAccounts ?? []);
   };
@@ -206,7 +224,8 @@ const Shortcuts = ({
         ShortcutAccountType.HIVE,
         account.name,
       ),
-      subLabel: chrome.i18n.getMessage(
+      img: `https://images.hive.blog/u/${account.name}/avatar`,
+      subLabel: I18nUtils.getMessage(
         'popup_html_shortcut_account_type_hive',
       ),
     }));
@@ -219,13 +238,14 @@ const Shortcuts = ({
             ShortcutAccountType.EVM,
             account.wallet.address,
           ),
+          img: SVGIcons.BLOCKCHAIN_ETHEREUM,
           subLabel: FormatUtils.shortenString(account.wallet.address, 6),
         })) ?? [];
 
     if (hiveOptions.length === 0 && evmOptions.length === 0) {
       return [
         {
-          label: chrome.i18n.getMessage('popup_html_shortcuts_no_accounts'),
+          label: I18nUtils.getMessage('popup_html_shortcuts_no_accounts'),
           value: '',
         },
       ];
@@ -237,7 +257,7 @@ const Shortcuts = ({
     if (!setupChains.length) {
       return [
         {
-          label: chrome.i18n.getMessage('popup_html_shortcut_no_chains'),
+          label: I18nUtils.getMessage('popup_html_shortcut_no_chains'),
           value: '',
         },
       ];
@@ -256,7 +276,7 @@ const Shortcuts = ({
       !options.some((option) => option.value === LAST_USED_EVM_CHAIN_TARGET)
     ) {
       options.push({
-        label: chrome.i18n.getMessage(
+        label: I18nUtils.getMessage(
           'popup_html_shortcut_last_used_evm_chain',
         ),
         value: LAST_USED_EVM_CHAIN_TARGET,
@@ -274,12 +294,12 @@ const Shortcuts = ({
   const currencyOptions = useMemo<OptionItem[]>(
     () => [
       {
-        label: chrome.i18n.getMessage('popup_html_shortcut_currency_hive'),
+        label: I18nUtils.getMessage('popup_html_shortcut_currency_hive'),
         value: 'hive',
         img: '/assets/images/wallet/hive-logo.svg',
       },
       {
-        label: chrome.i18n.getMessage('popup_html_shortcut_currency_hbd'),
+        label: I18nUtils.getMessage('popup_html_shortcut_currency_hbd'),
         value: 'hbd',
         img: '/assets/images/wallet/hbd-logo.svg',
       },
@@ -291,7 +311,7 @@ const Shortcuts = ({
     if (!userTokens?.list || userTokens.list.length === 0) {
       return [
         {
-          label: chrome.i18n.getMessage('popup_html_tokens_no_tokens'),
+          label: I18nUtils.getMessage('popup_html_tokens_no_tokens'),
           value: '',
         },
       ];
@@ -315,7 +335,7 @@ const Shortcuts = ({
       if (!evmTransferTokens.length) {
         return [
           {
-            label: chrome.i18n.getMessage('popup_html_shortcut_no_tokens'),
+            label: I18nUtils.getMessage('popup_html_shortcut_no_tokens'),
             value: '',
           },
         ];
@@ -333,11 +353,11 @@ const Shortcuts = ({
   const delegationOptions = useMemo<OptionItem[]>(
     () => [
       {
-        label: chrome.i18n.getMessage(DelegationType.OUTGOING),
+        label: I18nUtils.getMessage(DelegationType.OUTGOING),
         value: DelegationType.OUTGOING,
       },
       {
-        label: chrome.i18n.getMessage(DelegationType.INCOMING),
+        label: I18nUtils.getMessage(DelegationType.INCOMING),
         value: DelegationType.INCOMING,
       },
     ],
@@ -347,20 +367,32 @@ const Shortcuts = ({
   const actionOptions = useMemo<OptionItem[]>(() => {
     return [
       {
-        label: chrome.i18n.getMessage('popup_html_shortcuts_action_navigate'),
+        label: I18nUtils.getMessage('popup_html_shortcuts_action_navigate'),
         value: ShortcutActionType.NAVIGATE,
       },
       {
-        label: chrome.i18n.getMessage(
+        label: I18nUtils.getMessage(
           'popup_html_shortcuts_action_change_account',
         ),
         value: ShortcutActionType.CHANGE_ACCOUNT,
       },
       {
-        label: chrome.i18n.getMessage(
+        label: I18nUtils.getMessage(
           'popup_html_shortcuts_action_change_chain',
         ),
         value: ShortcutActionType.CHANGE_CHAIN,
+      },
+      {
+        label: I18nUtils.getMessage(
+          'popup_html_shortcuts_action_toggle_theme',
+        ),
+        value: ShortcutActionType.TOGGLE_THEME,
+      },
+      {
+        label: I18nUtils.getMessage(
+          'popup_html_shortcuts_action_open_in_tab',
+        ),
+        value: ShortcutActionType.OPEN_IN_TAB,
       },
     ];
   }, []);
@@ -370,6 +402,13 @@ const Shortcuts = ({
     if (actionType === ShortcutActionType.CHANGE_ACCOUNT) return accountOptions;
     return chainOptions;
   }, [actionType, screenOptions, accountOptions, chainOptions]);
+
+  const requiresTarget = useMemo(
+    () =>
+      actionType !== ShortcutActionType.TOGGLE_THEME &&
+      actionType !== ShortcutActionType.OPEN_IN_TAB,
+    [actionType],
+  );
 
   const requiresCurrency = useMemo(
     () =>
@@ -542,6 +581,15 @@ const Shortcuts = ({
     return targetOptions[0];
   }, [target, targetOptions]);
 
+  const selectedAccountTargetOption = useMemo<OptionItem>(() => {
+    if (target) {
+      const option = accountOptions.find((item) => item.value === target);
+      if (option) return option;
+      return { label: target, value: target };
+    }
+    return accountOptions[0];
+  }, [target, accountOptions]);
+
   const selectedCurrencyOption = useMemo<OptionItem>(() => {
     return (
       currencyOptions.find((option) => option.value === selectedCurrency) ??
@@ -618,7 +666,7 @@ const Shortcuts = ({
       setErrorMessage('popup_html_shortcuts_missing_combo');
       return false;
     }
-    if (!target) {
+    if (requiresTarget && !target) {
       setErrorMessage('popup_html_shortcuts_missing_target');
       return false;
     }
@@ -708,7 +756,7 @@ const Shortcuts = ({
       id: editingShortcutId ?? ShortcutsUtils.createShortcutId(),
       combo: normalizedCombo,
       actionType,
-      target,
+      target: requiresTarget ? target : '',
       params: Object.keys(params).length ? params : undefined,
     };
     const updatedShortcuts = editingShortcutId
@@ -775,15 +823,15 @@ const Shortcuts = ({
 
   const getShortcutExtraLabel = (shortcut: ShortcutDefinition) => {
     if (shortcut.target === HiveScreen.POWER_UP_PAGE) {
-      return chrome.i18n.getMessage('popup_html_pu');
+      return I18nUtils.getMessage('popup_html_pu');
     }
     if (shortcut.target === HiveScreen.POWER_DOWN_PAGE) {
-      return chrome.i18n.getMessage('dialog_title_powerdown');
+      return I18nUtils.getMessage('dialog_title_powerdown');
     }
     if (!shortcut.params) return '';
     if (shortcut.params.tokenSymbol) {
       const delegationLabel = shortcut.params.delegationType
-        ? chrome.i18n.getMessage(shortcut.params.delegationType)
+        ? I18nUtils.getMessage(shortcut.params.delegationType)
         : '';
       return delegationLabel
         ? `${shortcut.params.tokenSymbol} · ${delegationLabel}`
@@ -806,21 +854,31 @@ const Shortcuts = ({
 
   const getShortcutActionLabel = (action: ShortcutActionType) => {
     if (action === ShortcutActionType.CHANGE_ACCOUNT) {
-      return chrome.i18n.getMessage(
+      return I18nUtils.getMessage(
         'popup_html_shortcuts_action_change_account',
       );
     }
     if (action === ShortcutActionType.CHANGE_CHAIN) {
-      return chrome.i18n.getMessage(
+      return I18nUtils.getMessage(
         'popup_html_shortcuts_action_change_chain',
       );
     }
-    return chrome.i18n.getMessage('popup_html_shortcuts_action_navigate');
+    if (action === ShortcutActionType.TOGGLE_THEME) {
+      return I18nUtils.getMessage(
+        'popup_html_shortcuts_action_toggle_theme',
+      );
+    }
+    if (action === ShortcutActionType.OPEN_IN_TAB) {
+      return I18nUtils.getMessage(
+        'popup_html_shortcuts_action_open_in_tab',
+      );
+    }
+    return I18nUtils.getMessage('popup_html_shortcuts_action_navigate');
   };
 
   const getChainLabel = (shortcut: ShortcutDefinition) => {
     if (shortcut.target === LAST_USED_EVM_CHAIN_TARGET) {
-      return chrome.i18n.getMessage(
+      return I18nUtils.getMessage(
         'popup_html_shortcut_last_used_evm_chain',
       );
     }
@@ -850,6 +908,16 @@ const Shortcuts = ({
       return {
         firstLine: getShortcutActionLabel(shortcut.actionType),
         secondLine: getChainLabel(shortcut),
+      };
+    }
+
+    if (
+      shortcut.actionType === ShortcutActionType.TOGGLE_THEME ||
+      shortcut.actionType === ShortcutActionType.OPEN_IN_TAB
+    ) {
+      return {
+        firstLine: getShortcutActionLabel(shortcut.actionType),
+        secondLine: '',
       };
     }
 
@@ -891,7 +959,7 @@ const Shortcuts = ({
       className="shortcuts-page">
       <div className="shortcuts-header">
         <div className="shortcuts-intro">
-          {chrome.i18n.getMessage('popup_html_shortcuts_intro')}
+          {I18nUtils.getMessage('popup_html_shortcuts_intro')}
         </div>
         <ButtonComponent
           dataTestId="shortcuts-add-button"
@@ -907,7 +975,7 @@ const Shortcuts = ({
       <div className="shortcuts-list">
         {shortcuts.length === 0 && (
           <div className="shortcuts-empty">
-            {chrome.i18n.getMessage('popup_html_shortcuts_no_shortcuts')}
+            {I18nUtils.getMessage('popup_html_shortcuts_no_shortcuts')}
           </div>
         )}
         {shortcuts.map((shortcut) => {
@@ -927,7 +995,7 @@ const Shortcuts = ({
                 <div
                   className="shortcut-action-icon"
                   onClick={() => handleEdit(shortcut)}
-                  title={chrome.i18n.getMessage(
+                  title={I18nUtils.getMessage(
                     'html_popup_button_edit_label',
                   )}>
                   <SVGIcon icon={SVGIcons.FAVORITE_ACCOUNTS_EDIT} />
@@ -935,7 +1003,7 @@ const Shortcuts = ({
                 <div
                   className="shortcut-action-icon"
                   onClick={() => handleDelete(shortcut.id)}
-                  title={chrome.i18n.getMessage('delete_label')}>
+                  title={I18nUtils.getMessage('delete_label')}>
                   <SVGIcon icon={SVGIcons.FAVORITE_ACCOUNTS_DELETE} />
                 </div>
               </div>
@@ -965,16 +1033,27 @@ const Shortcuts = ({
               setActionType(option.value as ShortcutActionType)
             }
           />
-          <ComplexeCustomSelect
-            label="popup_html_shortcuts_target"
-            skipLabelTranslation={false}
-            options={targetOptions}
-            selectedItem={selectedTargetOption}
-            setSelectedItem={(option) => setTarget(option.value)}
-            generateImageIfNull={
-              actionType === ShortcutActionType.CHANGE_CHAIN
-            }
-          />
+          {actionType === ShortcutActionType.CHANGE_ACCOUNT ? (
+            <ComplexeCustomSelect
+              label="popup_html_shortcuts_target"
+              skipLabelTranslation={false}
+              options={accountOptions}
+              selectedItem={selectedAccountTargetOption}
+              setSelectedItem={(option) => setTarget(option.value)}
+              additionalClassname="shortcuts-account-selector"
+            />
+          ) : requiresTarget ? (
+            <ComplexeCustomSelect
+              label="popup_html_shortcuts_target"
+              skipLabelTranslation={false}
+              options={targetOptions}
+              selectedItem={selectedTargetOption}
+              setSelectedItem={(option) => setTarget(option.value)}
+              generateImageIfNull={
+                actionType === ShortcutActionType.CHANGE_CHAIN
+              }
+            />
+          ) : null}
           {requiresTransferChain && (
             <ComplexeCustomSelect
               label="popup_html_shortcut_transfer_chain_label"
@@ -1041,7 +1120,7 @@ const Shortcuts = ({
               dataTestId="shortcuts-save-button"
               label="popup_html_shortcuts_save_button"
               onClick={handleSave}
-              disabled={!combo || !target}
+              disabled={!combo || (requiresTarget && !target)}
             />
             <ButtonComponent
               dataTestId="shortcuts-cancel-button"

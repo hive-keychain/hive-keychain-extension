@@ -27,7 +27,7 @@ export const EvmWalletNftPreviewComponent = ({ token, onClick }: Props) => {
       onClick={() => onClick()}
       key={`collection-${token.tokenInfo.contractAddress}`}>
       <div className="nft-collection-name-panel">
-        <span className="ntf-collection-name">{token.tokenInfo.name}</span>
+        <span className="nft-collection-name">{token.tokenInfo.name}</span>
         {shouldShowAddress && (
           <span className="nft-collection-address">{formattedAddress}</span>
         )}

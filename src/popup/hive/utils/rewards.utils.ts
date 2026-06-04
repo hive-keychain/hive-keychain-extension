@@ -5,6 +5,7 @@ import { TransactionOptions } from '@interfaces/keys.interface';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const claimRewards = async (
   username: string,
   rewardHive: string | Asset,
@@ -48,7 +49,7 @@ const getAvailableRewards = (activeAccount: ActiveAccount) => {
   let reward_vests = activeAccount.account.reward_vesting_balance;
   const reward_hp = FormatUtils.toHP(reward_vests as string) + ' HP';
   let reward_hive = activeAccount.account.reward_hive_balance;
-  let rewardText = chrome.i18n.getMessage('popup_account_redeem') + ':<br>';
+  let rewardText = I18nUtils.getMessage('popup_account_redeem') + ':<br>';
   if (FormatUtils.getValFromString(reward_hp) != 0)
     rewardText += reward_hp + ' / ';
   if (FormatUtils.getValFromString(reward_hbd as string) != 0)
