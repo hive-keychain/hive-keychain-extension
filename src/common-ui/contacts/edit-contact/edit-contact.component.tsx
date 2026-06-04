@@ -11,6 +11,7 @@ import React, { SyntheticEvent, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   favoriteAddress: FavoriteAddress;
   shortAddress: boolean;
@@ -80,7 +81,7 @@ export const EditContactComponent = ({
           )}
           {favoriteAddress.label && favoriteAddress.label.length > 0
             ? formatContactLabel(favoriteAddress.label, maxLabelLength)
-            : chrome.i18n.getMessage('evm_contact_no_label')}
+            : I18nUtils.getMessage('evm_contact_no_label')}
           <div className="hint">
             {shortAddress
               ? EvmFormatUtils.formatAddress(

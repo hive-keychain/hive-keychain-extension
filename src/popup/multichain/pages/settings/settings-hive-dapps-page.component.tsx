@@ -16,6 +16,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export type HiveAccountDappConnection = {
   domain: string;
   operations: string[];
@@ -26,7 +27,7 @@ type HiveAccountOption = OptionItem & {
 };
 
 const getReadableOperation = (operation: string) =>
-  chrome.i18n.getMessage(
+  I18nUtils.getMessage(
     `popup_${operation
       .split(/(?=[A-Z])/)
       .join('_')
@@ -222,7 +223,7 @@ const SettingsHiveDappsPage = ({
     noConfirm,
     selectedAccountName,
   );
-  const removeAllLabel = chrome.i18n.getMessage(
+  const removeAllLabel = I18nUtils.getMessage(
     'hive_dapps_connections_remove_all',
   );
 
@@ -296,7 +297,7 @@ const SettingsHiveDappsPage = ({
           <div
             className="settings-hive-dapps-empty"
             data-testid="hive-dapps-connections-empty">
-            {chrome.i18n.getMessage('popup_html_no_pref')}
+            {I18nUtils.getMessage('popup_html_no_pref')}
           </div>
         )}
       </Card>

@@ -63,6 +63,7 @@ import { KeychainError } from 'src/keychain-error';
 import { FormUtils } from 'src/utils/form.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface TransferForm {
   receiverAddress: string;
   selectedToken: NativeAndErc20Token;
@@ -425,7 +426,7 @@ const EvmTransfer = ({
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: null,
-      message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
+      message: I18nUtils.getMessage('popup_html_transfer_confirm_text'),
       fields: fields,
       title: 'popup_html_transfer_funds',
       formParams: watch(),

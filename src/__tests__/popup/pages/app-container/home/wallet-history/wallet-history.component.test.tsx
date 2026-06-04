@@ -10,6 +10,7 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { DEFAULT_FILTER } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history.component';
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('wallet-history.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -27,12 +28,12 @@ describe('wallet-history.component tests:\n', () => {
     it('Must show empty transactions & try clear filter, messages', async () => {
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_transaction_list_is_empty'),
+          I18nUtils.getMessage('popup_html_transaction_list_is_empty'),
         ),
       ).toBeInTheDocument();
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage(
+          I18nUtils.getMessage(
             'popup_html_transaction_list_is_empty_try_clear_filter',
           ),
         ),
@@ -108,7 +109,7 @@ describe('wallet-history.component tests:\n', () => {
       ).toHaveValue('one op');
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage(
+          I18nUtils.getMessage(
             'popup_html_transaction_list_is_empty_try_clear_filter',
           ),
         ),

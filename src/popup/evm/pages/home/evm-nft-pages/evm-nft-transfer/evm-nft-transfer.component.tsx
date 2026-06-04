@@ -52,6 +52,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import { FormUtils } from 'src/utils/form.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface EvmNftTransferForm {
   receiverAddress: string;
   amount: number;
@@ -255,7 +256,7 @@ const EvmNftTransfer = ({
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: null,
-      message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
+      message: I18nUtils.getMessage('popup_html_transfer_confirm_text'),
       fields: fields,
       title: 'evm_nft_transfer',
       formParams: watch(),

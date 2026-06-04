@@ -14,6 +14,7 @@ import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const broadcastTransfer = async (
   requestHandler: HiveRequestsHandler,
   data: RequestTransfer & RequestId,
@@ -96,12 +97,12 @@ export const broadcastTransfer = async (
         data,
         request?.tab!,
         null,
-        await chrome.i18n.getMessage('bgd_ops_encode_err'),
+        await I18nUtils.getMessage('bgd_ops_encode_err'),
       );
       return message;
     } else {
       err = (e as KeychainError).trace || e;
-      err_message = await chrome.i18n.getMessage(
+      err_message = await I18nUtils.getMessage(
         (e as KeychainError).message,
         (e as KeychainError).messageParams,
       );
@@ -112,7 +113,7 @@ export const broadcastTransfer = async (
       result,
       data,
       request?.tab!,
-      await chrome.i18n.getMessage('bgd_ops_transfer_success', [
+      await I18nUtils.getMessage('bgd_ops_transfer_success', [
         data.amount,
         data.currency,
         data.username!,

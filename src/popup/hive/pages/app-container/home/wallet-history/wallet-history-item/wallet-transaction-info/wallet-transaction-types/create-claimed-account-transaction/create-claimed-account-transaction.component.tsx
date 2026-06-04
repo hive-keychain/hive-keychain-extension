@@ -5,6 +5,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { GenericTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/generic-transaction/generic-transaction.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface CreateClaimedAccountTransactionProps {
   transaction: CreateClaimedAccount;
 }
@@ -13,7 +14,7 @@ const CreateClaimedAccountTransaction = ({
   transaction,
 }: PropsFromRedux & CreateClaimedAccountTransactionProps) => {
   const getDetail = () => {
-    return chrome.i18n.getMessage(
+    return I18nUtils.getMessage(
       'popup_html_wallet_info_create_claimed_account',
       [transaction.new_account_name],
     );

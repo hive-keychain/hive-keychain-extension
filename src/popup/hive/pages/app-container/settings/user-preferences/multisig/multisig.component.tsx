@@ -21,6 +21,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const defaultConfig: MultisigAccountConfig = {
   isEnabled: false,
   active: { isEnabled: false, publicKey: '', message: '' },
@@ -220,7 +221,7 @@ const Multisig = ({
       <div
         className="intro"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_multisig_intro'),
+          __html: I18nUtils.getMessage('popup_html_multisig_intro'),
         }}
       />
 

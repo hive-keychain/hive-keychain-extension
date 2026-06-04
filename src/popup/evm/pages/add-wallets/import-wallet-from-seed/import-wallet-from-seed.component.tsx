@@ -13,6 +13,7 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { TextAreaComponent } from 'src/common-ui/text-area/textarea.component';
+import { I18nUtils } from 'src/utils/i18n.utils';
 const ImportWalletFromSeed = ({
   chain,
   navigateToWithParams,
@@ -75,7 +76,7 @@ const ImportWalletFromSeed = ({
         <div
           className="caption"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage('html_popup_evm_setup_import_text'),
+            __html: I18nUtils.getMessage('html_popup_evm_setup_import_text'),
           }}></div>
         <Separator type="horizontal" />
         <TextAreaComponent

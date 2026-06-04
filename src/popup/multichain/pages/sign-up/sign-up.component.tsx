@@ -17,6 +17,7 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const SignUp = ({
   setErrorMessage,
   setMk,
@@ -52,13 +53,13 @@ const SignUp = ({
       <SVGIcon className="logo-white" icon={SVGIcons.KEYCHAIN_FULL_LOGO} />
       <div className="introduction-panel">
         <span className="introduction big first">
-          {chrome.i18n.getMessage('popup_html_unlock1')}
+          {I18nUtils.getMessage('popup_html_unlock1')}
         </span>
         <span className="introduction medium second">
-          {chrome.i18n.getMessage('popup_html_unlock2')}
+          {I18nUtils.getMessage('popup_html_unlock2')}
         </span>
         <span className="introduction medium lighter third">
-          {chrome.i18n.getMessage('popup_html_unlock3')}
+          {I18nUtils.getMessage('popup_html_unlock3')}
         </span>
       </div>
       <div className="inputs-panel">

@@ -15,6 +15,7 @@ import {
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const ChainDropdown = ({
   chain,
   activeAccount,
@@ -111,7 +112,7 @@ const ChainDropdown = ({
               onClick={handleOnManageChainsClicked}>
               <SVGIcon icon={SVGIcons.MENU_ADVANCED_SETTINGS_RPC_NODE} />
               <div className="text">
-                {chrome.i18n.getMessage('html_popup_manage_chains')}
+                {I18nUtils.getMessage('html_popup_manage_chains')}
               </div>
             </div>
           }

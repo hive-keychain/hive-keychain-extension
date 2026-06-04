@@ -13,6 +13,7 @@ import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import WitnessUtils from 'src/popup/hive/utils/witness.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const broadcastWitnessVote = async (
   requestHandler: HiveRequestsHandler,
   data: RequestWitnessVote & RequestId,
@@ -63,7 +64,7 @@ export const broadcastWitnessVote = async (
     }
   } catch (e: any) {
     err = (e as KeychainError).trace || e;
-    err_message = await chrome.i18n.getMessage(
+    err_message = await I18nUtils.getMessage(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -74,8 +75,8 @@ export const broadcastWitnessVote = async (
       data,
       request?.tab!,
       data.vote
-        ? await chrome.i18n.getMessage('bgd_ops_witness_voted', [data.witness])
-        : await chrome.i18n.getMessage('bgd_ops_witness_unvoted', [
+        ? await I18nUtils.getMessage('bgd_ops_witness_voted', [data.witness])
+        : await I18nUtils.getMessage('bgd_ops_witness_unvoted', [
             data.witness,
           ]),
       err_message,

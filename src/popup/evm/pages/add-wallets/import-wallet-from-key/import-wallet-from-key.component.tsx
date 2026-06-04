@@ -21,6 +21,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const ImportWalletFromKey = ({
   accounts,
   chain,
@@ -94,7 +95,7 @@ const ImportWalletFromKey = ({
         <div
           className="caption"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage(
+            __html: I18nUtils.getMessage(
               'html_popup_evm_setup_import_key_text',
             ),
           }}></div>

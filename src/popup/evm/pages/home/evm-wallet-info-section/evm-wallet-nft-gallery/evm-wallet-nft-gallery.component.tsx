@@ -21,6 +21,7 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   activeAccount: EvmActiveAccount;
   onClickOnNftPreview: (
@@ -152,7 +153,7 @@ const EvmWalletNftGallery = ({
               <p
                 className="evm-custom-erc20-empty-card__message"
                 dangerouslySetInnerHTML={{
-                  __html: chrome.i18n.getMessage(
+                  __html: I18nUtils.getMessage(
                     'evm_custom_nft_empty_card_message',
                   ),
                 }}></p>
@@ -160,7 +161,7 @@ const EvmWalletNftGallery = ({
                 type="button"
                 className="evm-custom-erc20-empty-card__hide"
                 onClick={() => void handleHideEmptyCard()}>
-                {chrome.i18n.getMessage('evm_custom_erc20_empty_card_hide')}
+                {I18nUtils.getMessage('evm_custom_erc20_empty_card_hide')}
               </button>
             </Card>
           )}
@@ -183,7 +184,7 @@ const EvmWalletNftGallery = ({
                 <div className="no-nfts-found">
                   <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
                   <span className="text">
-                    {chrome.i18n.getMessage('evm_no_nfts_found')}
+                    {I18nUtils.getMessage('evm_no_nfts_found')}
                   </span>
                 </div>
               );

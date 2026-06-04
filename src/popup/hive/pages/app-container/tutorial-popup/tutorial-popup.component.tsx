@@ -9,6 +9,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const TutorialPopup = () => {
   const [show, setShow] = useState(false);
   const isMountedRef = useRef(false);
@@ -49,7 +50,7 @@ const TutorialPopup = () => {
     return (
       <PopupContainer data-testid="tutorial-popup" className="tutorial">
         <div className="popup-title">
-          {chrome.i18n.getMessage('popup_html_tutorial_popup_title')}
+          {I18nUtils.getMessage('popup_html_tutorial_popup_title')}
         </div>
 
         <SVGIcon className="image" icon={SVGIcons.KEYCHAIN_LOGO_SPLASHSCREEN} />
@@ -57,7 +58,7 @@ const TutorialPopup = () => {
         <div
           className="sub-title"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage(
+            __html: I18nUtils.getMessage(
               'popup_html_tutorial_popup_description',
             ),
           }}></div>

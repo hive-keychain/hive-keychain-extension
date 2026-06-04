@@ -6,6 +6,7 @@ import { TransactionResponse } from 'ethers';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const waitForTransaction = async (transactionResponse: TransactionResponse) => {
   try {
     const transactionReceipt = await transactionResponse.wait();
@@ -49,10 +50,10 @@ const createSuccessNotification = async (
     {
       type: 'basic',
       iconUrl: '/assets/images/iconhive.png',
-      title: await chrome.i18n.getMessage(
+      title: await I18nUtils.getMessage(
         'evm_tx_completed_notification_title',
       ),
-      message: await chrome.i18n.getMessage(
+      message: await I18nUtils.getMessage(
         'evm_tx_completed_notification_message',
         [transactionResponse.hash],
       ),
@@ -69,8 +70,8 @@ const createFailedNotification = async (
     {
       type: 'basic',
       iconUrl: '/assets/images/iconhive.png',
-      title: await chrome.i18n.getMessage('evm_tx_failed_notification_title'),
-      message: await chrome.i18n.getMessage(
+      title: await I18nUtils.getMessage('evm_tx_failed_notification_title'),
+      message: await I18nUtils.getMessage(
         'evm_tx_failed_notification_message',
         [transactionResponse.hash],
       ),

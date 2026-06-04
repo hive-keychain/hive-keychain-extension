@@ -8,6 +8,7 @@ import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import Decimal from 'decimal.js';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const sendEvmTransaction = async (
   requestHandler: EvmRequestHandler,
   request: EvmRequest,
@@ -52,7 +53,7 @@ export const sendEvmTransaction = async (
       res.hash,
       request,
       requestData?.tab!,
-      await chrome.i18n.getMessage('evm_send_transaction_success'),
+      await I18nUtils.getMessage('evm_send_transaction_success'),
     );
   }
 };

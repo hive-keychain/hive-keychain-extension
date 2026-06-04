@@ -42,6 +42,7 @@ import { EvmTransactionWarning } from '@popup/evm/interfaces/evm-transactions.in
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const ConfirmationPage = ({
   fields,
   message,
@@ -242,7 +243,7 @@ const ConfirmationPage = ({
                 <div className="field">
                   {field.label && (
                     <div className="label">
-                      {chrome.i18n.getMessage(field.label)}
+                      {I18nUtils.getMessage(field.label)}
                       {field.warnings && field.warnings.length > 0 && (
                         <ConfirmationFieldWarningIcon
                           warnings={field.warnings}

@@ -11,6 +11,7 @@ import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user'
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('tokens.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -118,7 +119,7 @@ describe('tokens.component tests:\n', () => {
     it('Must show no tokens message', async () => {
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('html_tokens_none_available'),
+          I18nUtils.getMessage('html_tokens_none_available'),
         ),
       ).toBeInTheDocument();
     });

@@ -10,6 +10,7 @@ import { COPY_TOAST_AUTO_CLOSE_MS } from 'src/common-ui/toast/copy-toast.compone
 import { copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
 import { setSuccessMessage } from 'src/popup/multichain/actions/message.actions';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const flushToastTimers = () => {
   if ((setTimeout as any)._isMockFunction) {
     jest.runOnlyPendingTimers();
@@ -40,7 +41,7 @@ const SuccessOverlayTrigger = () => {
 
 describe('copy toast shared behavior', () => {
   beforeEach(() => {
-    chrome.i18n.getMessage = jest.fn(mocksImplementation.i18nGetMessageCustom);
+    I18nUtils.getMessage = jest.fn(mocksImplementation.i18nGetMessageCustom);
   });
 
   afterEach(() => {
@@ -66,7 +67,7 @@ describe('copy toast shared behavior', () => {
 
     customRender(<CopyTrigger />);
 
-    const toastMessage = chrome.i18n.getMessage('swap_copied_to_clipboard');
+    const toastMessage = I18nUtils.getMessage('swap_copied_to_clipboard');
 
     await act(async () => {
       await user.click(screen.getByRole('button', { name: 'copy' }));
@@ -112,10 +113,10 @@ describe('copy toast shared behavior', () => {
     });
 
     expect(
-      await screen.findByText(chrome.i18n.getMessage('popup_html_save_successful')),
+      await screen.findByText(I18nUtils.getMessage('popup_html_save_successful')),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(chrome.i18n.getMessage('message_container_close_button')),
+      screen.getByText(I18nUtils.getMessage('message_container_close_button')),
     ).toBeInTheDocument();
   });
 });

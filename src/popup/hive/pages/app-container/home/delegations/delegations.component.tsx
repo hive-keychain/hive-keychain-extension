@@ -42,6 +42,7 @@ import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface DelegationForm {
   username: string;
   amount: number;
@@ -228,7 +229,7 @@ const Delegations = ({
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage('popup_html_confirm_delegation', [
+      message: I18nUtils.getMessage('popup_html_confirm_delegation', [
         stringifiedAmount,
         `@${form.username}`,
       ]),
@@ -293,7 +294,7 @@ const Delegations = ({
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
 
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         'popup_html_confirm_cancel_delegation_message',
       ),
       fields: [
@@ -376,7 +377,7 @@ const Delegations = ({
 
       <div className="available-panel">
         <div className="label">
-          {chrome.i18n.getMessage('popup_html_available')}
+          {I18nUtils.getMessage('popup_html_available')}
         </div>
         <div className="value">
           {available && (
@@ -389,7 +390,7 @@ const Delegations = ({
       </div>
       <FormContainer onSubmit={handleSubmit(handleButtonClick)}>
         <div className="text">
-          {chrome.i18n.getMessage('popup_html_delegations_text')}
+          {I18nUtils.getMessage('popup_html_delegations_text')}
         </div>
         <Separator type="horizontal" />
         <div className="form-fields">

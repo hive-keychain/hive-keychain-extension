@@ -10,6 +10,7 @@ import {
 } from '@testing-library/react';
 import React from 'react';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 jest.mock(
   '@dialog/multichain/request/request-confirmation/request-confirmation',
   () => ({
@@ -83,7 +84,7 @@ const cancelRequest = (requestId: number) => {
 
 describe('DialogConfirmationPage', () => {
   beforeEach(() => {
-    chrome.i18n.getMessage = jest.fn((key: string) => key);
+    I18nUtils.getMessage = jest.fn((key: string) => key);
     jest.spyOn(window, 'close').mockImplementation(jest.fn());
   });
 

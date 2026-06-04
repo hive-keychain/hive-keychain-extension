@@ -23,6 +23,7 @@ import InputComponent from 'src/common-ui/input/input.component';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import HiveUtils from 'src/popup/hive/utils/hive.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface AccountItemOption extends OptionItem {
   img: string;
 }
@@ -135,7 +136,7 @@ const CreateAccountStepOne = ({
       case AccountCreationType.BUYING:
         return `${price} ${currencyLabels.hive}`;
       case AccountCreationType.USING_TICKET:
-        return chrome.i18n.getMessage('html_popup_ticket', ['1']);
+        return I18nUtils.getMessage('html_popup_ticket', ['1']);
     }
   };
 
@@ -181,7 +182,7 @@ const CreateAccountStepOne = ({
       )}
       <div className="price-panel">
         <span className="label">
-          {chrome.i18n.getMessage('html_popup_price')}
+          {I18nUtils.getMessage('html_popup_price')}
         </span>
         <span className="price">{getPriceLabel()}</span>
       </div>

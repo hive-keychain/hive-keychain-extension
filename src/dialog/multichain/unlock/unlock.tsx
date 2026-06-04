@@ -13,6 +13,7 @@ import { DialogCaption } from 'src/dialog/components/dialog-caption/dialog-capti
 import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.component';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: UnlockMessage;
   wrongMk?: boolean;
@@ -63,8 +64,8 @@ export default ({ data, index }: Props) => {
 
   return (
     <div className="unlock-page">
-      <DialogHeader title={chrome.i18n.getMessage('dialog_header_unlock')} />
-      <DialogCaption text={chrome.i18n.getMessage('bgd_auth_locked_desc')} />
+      <DialogHeader title={I18nUtils.getMessage('dialog_header_unlock')} />
+      <DialogCaption text={I18nUtils.getMessage('bgd_auth_locked_desc')} />
       <InputComponent
         value={password}
         onChange={setPassword}
@@ -75,7 +76,7 @@ export default ({ data, index }: Props) => {
       />
       {wrongMk && (
         <div className="error">
-          {chrome.i18n.getMessage('dialog_header_wrong_pwd')}
+          {I18nUtils.getMessage('dialog_header_wrong_pwd')}
         </div>
       )}
       <div className="fill-space"></div>

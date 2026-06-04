@@ -8,6 +8,7 @@ import {
 import { KeychainError } from 'src/keychain-error';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
 export type SignedBuffer = string;
@@ -37,7 +38,7 @@ export const signBuffer = async (
   } catch (err) {
     Logger.error(err);
     error = err;
-    err_message = await chrome.i18n.getMessage(
+    err_message = await I18nUtils.getMessage(
       (err as KeychainError).message,
       (err as KeychainError).messageParams,
     );
@@ -47,8 +48,8 @@ export const signBuffer = async (
       signed,
       data,
       request?.tab!,
-      await chrome.i18n.getMessage('bgd_ops_sign_success'),
-      err_message ?? (await chrome.i18n.getMessage('bgd_ops_sign_error')),
+      await I18nUtils.getMessage('bgd_ops_sign_success'),
+      err_message ?? (await I18nUtils.getMessage('bgd_ops_sign_error')),
       publicKey,
     );
   }

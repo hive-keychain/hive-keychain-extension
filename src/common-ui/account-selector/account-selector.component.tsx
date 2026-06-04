@@ -56,6 +56,7 @@ import {
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   selectedAccountType: ChainType.HIVE | ChainType.EVM;
   background?: 'white';
@@ -812,7 +813,7 @@ const AccountSelector = ({
             <div
               className="account-selector-title"
               data-testid="account-selector-title">
-              {chrome.i18n.getMessage('popup_html_accounts')}
+              {I18nUtils.getMessage('popup_html_accounts')}
             </div>
             {showAccountFilters && (
               <div className="account-selector-filters">
@@ -912,7 +913,7 @@ const AccountSelector = ({
                   className="account-selector-create-button-icon"
                   svgViewBox="17 11 12 18"
                 />
-                <span>{chrome.i18n.getMessage('popup_html_add_account')}</span>
+                <span>{I18nUtils.getMessage('popup_html_add_account')}</span>
                 <div className="account-selector-create-mini-cards">
                   {renderCreateIcon(
                     SVGIcons.BLOCKCHAIN_HIVE,
@@ -934,7 +935,7 @@ const AccountSelector = ({
                   className="account-selector-export-button-icon"
                   svgViewBox="14 13 16 15"
                 />
-                <span>{chrome.i18n.getMessage('popup_html_export')}</span>
+                <span>{I18nUtils.getMessage('popup_html_export')}</span>
               </button>
             </div>
           </div>

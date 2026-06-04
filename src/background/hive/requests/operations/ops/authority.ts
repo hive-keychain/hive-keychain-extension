@@ -18,6 +18,7 @@ import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const broadcastAddAccountAuthority = async (
   requestHandler: HiveRequestsHandler,
   data: RequestAddAccountAuthority & RequestId,
@@ -76,7 +77,7 @@ export const broadcastAddAccountAuthority = async (
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await chrome.i18n.getMessage(
+    err_message = await I18nUtils.getMessage(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -87,7 +88,7 @@ export const broadcastAddAccountAuthority = async (
       result,
       data,
       request?.tab!,
-      await chrome.i18n.getMessage('bgd_ops_add_auth', [
+      await I18nUtils.getMessage('bgd_ops_add_auth', [
         data.role.toLowerCase(),
         data.authorizedUsername,
         data.username,
@@ -153,7 +154,7 @@ export const broadcastRemoveAccountAuthority = async (
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await chrome.i18n.getMessage(
+    err_message = await I18nUtils.getMessage(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -163,7 +164,7 @@ export const broadcastRemoveAccountAuthority = async (
       result,
       data,
       request?.tab!,
-      await chrome.i18n.getMessage('bgd_ops_remove_auth', [
+      await I18nUtils.getMessage('bgd_ops_remove_auth', [
         data.role.toLowerCase(),
         data.authorizedUsername,
         data.username,
@@ -231,7 +232,7 @@ export const broadcastAddKeyAuthority = async (
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await chrome.i18n.getMessage(
+    err_message = await I18nUtils.getMessage(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -241,9 +242,9 @@ export const broadcastAddKeyAuthority = async (
       result,
       data,
       request?.tab!,
-      await chrome.i18n.getMessage('bgd_ops_add_key_auth', [
+      await I18nUtils.getMessage('bgd_ops_add_key_auth', [
         data.authorizedKey,
-        await chrome.i18n.getMessage(data.role.toLowerCase()),
+        await I18nUtils.getMessage(data.role.toLowerCase()),
         data.username,
         data.weight + '',
       ]),
@@ -308,7 +309,7 @@ export const broadcastRemoveKeyAuthority = async (
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await chrome.i18n.getMessage(
+    err_message = await I18nUtils.getMessage(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -318,9 +319,9 @@ export const broadcastRemoveKeyAuthority = async (
       result,
       data,
       request?.tab!,
-      await chrome.i18n.getMessage('bgd_ops_remove_key_auth', [
+      await I18nUtils.getMessage('bgd_ops_remove_key_auth', [
         data.authorizedKey,
-        await chrome.i18n.getMessage(data.role.toLowerCase()),
+        await I18nUtils.getMessage(data.role.toLowerCase()),
         data.username,
       ]),
       err_message,

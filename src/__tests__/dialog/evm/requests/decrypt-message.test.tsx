@@ -6,6 +6,7 @@ import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-pars
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const mockTransactionHook = {
   setLoading: jest.fn(),
   setReady: jest.fn(),
@@ -77,7 +78,7 @@ const accounts = [
 describe('DecryptMessage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    global.chrome.i18n.getMessage = jest.fn(
+    I18nUtils.getMessage = jest.fn(
       (key: string, params?: string[]) =>
         params?.length ? `${key}:${params.join(',')}` : key,
     );

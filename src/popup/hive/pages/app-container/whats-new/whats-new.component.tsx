@@ -11,6 +11,7 @@ import {
 } from 'src/popup/hive/pages/app-container/whats-new/whats-new.interface';
 import { WhatsNewUtils } from 'src/utils/whats-new.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   onOverlayClick: () => void;
   content: WhatsNewContent;
@@ -96,7 +97,7 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
     return (
       <PopupContainer data-testid="whats-new-popup" className="whats-new">
         <div className="popup-title">
-          {chrome.i18n.getMessage('popup_html_whats_new', [content.version])}
+          {I18nUtils.getMessage('popup_html_whats_new', [content.version])}
         </div>
         <Carousel
           showArrows={false}
@@ -120,7 +121,7 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
                 className="read-more-link"
                 onClick={() => handleOnClick(content, feature)}>
                 {feature.overrideReadMoreLabel ??
-                  chrome.i18n.getMessage('html_popup_read_more')}
+                  I18nUtils.getMessage('html_popup_read_more')}
               </a>
             </div>
           ))}

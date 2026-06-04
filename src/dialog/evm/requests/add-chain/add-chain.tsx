@@ -25,6 +25,7 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   request: EvmRequest<AddChainRequest>;
   data: EvmRequestMessage;
@@ -289,10 +290,10 @@ export const AddChain = (props: Props) => {
       <div className="request-add-custom-chain-page">
         <Card className="request-add-custom-chain-card">
           <div className="title">
-            {chrome.i18n.getMessage('evm_add_chain')}
+            {I18nUtils.getMessage('evm_add_chain')}
           </div>
           <div className="caption">
-            {chrome.i18n.getMessage('evm_add_chain_caption', [
+            {I18nUtils.getMessage('evm_add_chain_caption', [
               data.dappInfo.domain,
             ])}
           </div>
@@ -318,11 +319,11 @@ export const AddChain = (props: Props) => {
       origin={data.dappInfo.origin}
       tab={data.tab}
       afterCancel={handleCancel}
-      title={chrome.i18n.getMessage(
+      title={I18nUtils.getMessage(
         isUpdatingChain ? 'evm_update_chain' : 'evm_add_chain',
       )}
       onConfirm={handleConfirm}
-      caption={chrome.i18n.getMessage(
+      caption={I18nUtils.getMessage(
         isUpdatingChain ? 'evm_update_chain_caption' : 'evm_add_chain_caption',
         [data.dappInfo.domain],
       )}

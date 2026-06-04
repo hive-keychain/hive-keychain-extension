@@ -3,6 +3,7 @@ import { capitalize } from 'lodash';
 import { FieldError } from 'react-hook-form';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const FormValidationError: Record<string, string> = {
   ['string.empty']: 'validation_error_mandatory',
   ['number.base']: 'validation_error_mandatory',
@@ -15,7 +16,7 @@ const parseJoiError = (error: FieldError) => {
   Logger.error('Error in form: ', error);
   if (error.type === 'number.min')
     return capitalize(error.message?.replace(/"/g, ''));
-  let errMessage = chrome.i18n.getMessage(
+  let errMessage = I18nUtils.getMessage(
     FormValidationError[error.type],
     error.ref?.value ? [error.ref.value] : [],
   );

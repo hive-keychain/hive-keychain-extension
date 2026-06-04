@@ -23,6 +23,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface ChainSelectorProps {
   hideTitle?: boolean;
 }
@@ -180,7 +181,7 @@ const ChainSelector = ({
       children: (
         <div className="evm-delete-confirm-modal">
           <p className="evm-delete-confirm-modal__message">
-            {chrome.i18n.getMessage('evm_custom_chains_delete_confirm', [
+            {I18nUtils.getMessage('evm_custom_chains_delete_confirm', [
               customChain.name,
             ])}
           </p>
@@ -284,7 +285,7 @@ const ChainSelector = ({
         type="button"
         className="custom-chain-delete-icon"
         data-testid={`btn-delete-custom-chain-${customChain.chainId}`}
-        aria-label={chrome.i18n.getMessage('evm_custom_chains_delete')}
+        aria-label={I18nUtils.getMessage('evm_custom_chains_delete')}
         onClick={(event) => {
           event.stopPropagation();
           openDeleteConfirmModal(customChain);
@@ -294,7 +295,7 @@ const ChainSelector = ({
       <button
         type="button"
         className="custom-chain-settings-icon"
-        aria-label={chrome.i18n.getMessage(
+        aria-label={I18nUtils.getMessage(
           'evm_custom_chains_modal_title_edit',
         )}
         onClick={(event) => {
@@ -345,13 +346,13 @@ const ChainSelector = ({
         <div className="lists-container">
           {!!searchValue && !hasFilteredChainResults && (
             <p className="chain-selector-empty">
-              {chrome.i18n.getMessage('html_popup_manage_chains_empty_results')}
+              {I18nUtils.getMessage('html_popup_manage_chains_empty_results')}
             </p>
           )}
           {popularChains.length > 0 && (
             <div className="chain-cards-container">
               <div className="chain-cards-container-title">
-                {chrome.i18n.getMessage('html_popup_popular_chains')}
+                {I18nUtils.getMessage('html_popup_popular_chains')}
               </div>
               <div className="chain-cards-container-list">
                 {popularChains.map(renderBuiltInChainCard)}
@@ -361,7 +362,7 @@ const ChainSelector = ({
           {shouldShowTestnets && testnetChains.length > 0 && (
             <div className="chain-cards-container">
               <div className="chain-cards-container-title">
-                {chrome.i18n.getMessage('html_popup_testnet_chains')}
+                {I18nUtils.getMessage('html_popup_testnet_chains')}
               </div>
               <div className="chain-cards-container-list">
                 {testnetChains.map(renderBuiltInChainCard)}
@@ -370,7 +371,7 @@ const ChainSelector = ({
           )}
           <div className="chain-cards-container">
             <div className="chain-cards-container-title">
-              {chrome.i18n.getMessage('html_popup_custom_chains')}
+              {I18nUtils.getMessage('html_popup_custom_chains')}
             </div>
             <div className="chain-cards-container-list">
               {filteredCustomChains.map(renderCustomChainCard)}
@@ -383,7 +384,7 @@ const ChainSelector = ({
                 onKeyDown={(event) => handleCardKeyDown(event, openAddModal)}>
                 <SVGIcon icon={SVGIcons.SELECT_ADD} />
                 <div className="chain-name">
-                  {chrome.i18n.getMessage('evm_custom_chains_add')}
+                  {I18nUtils.getMessage('evm_custom_chains_add')}
                 </div>
               </div>
             </div>

@@ -10,6 +10,7 @@ import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   data: RequestConvert & RequestId;
   domain: string;
@@ -32,17 +33,17 @@ const Convert = (props: Props) => {
   );
   return (
     <Operation
-      title={chrome.i18n.getMessage(
+      title={I18nUtils.getMessage(
         data.collaterized
           ? 'popup_html_proposal_funded_option_hive'
           : 'popup_html_proposal_funded_option_hbd',
       )}
       header={
         data.collaterized
-          ? chrome.i18n.getMessage(`popup_html_convert_hive_intro`, [
+          ? I18nUtils.getMessage(`popup_html_convert_hive_intro`, [
               data.amount,
             ])
-          : chrome.i18n.getMessage(`popup_html_convert_hbd_intro`)
+          : I18nUtils.getMessage(`popup_html_convert_hbd_intro`)
       }
       {...anonymousProps}
       {...props}>

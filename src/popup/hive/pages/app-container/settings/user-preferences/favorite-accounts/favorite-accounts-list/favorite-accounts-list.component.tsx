@@ -8,6 +8,7 @@ import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { FavoriteAccountsItemComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts-item/favorite-accounts-item.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface FavoriteAccountsListProps {
   favoriteList: FavoriteUserList;
   handleDeleteFavorite: (
@@ -34,7 +35,7 @@ const FavoriteAccountsList = ({
       key={`${Math.random().toFixed(6).toString()}-${favoriteListName}`}>
       {(!favoriteList.list || favoriteList.list.length === 0) && (
         <div className="text-no-favorites">
-          {chrome.i18n.getMessage('popup_html_favorite_accounts_no_favorites')}
+          {I18nUtils.getMessage('popup_html_favorite_accounts_no_favorites')}
         </div>
       )}
       {favoriteList.list &&

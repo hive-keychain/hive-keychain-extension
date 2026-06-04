@@ -16,6 +16,7 @@ import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-l
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('Proposal tab:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -60,10 +61,10 @@ describe('Proposal tab:\n', () => {
         screen.getByTestId(dataTestIdButton.menuPreFix + Icons.GOVERNANCE),
       );
     });
-    await screen.findByText(chrome.i18n.getMessage('popup_html_witness'));
+    await screen.findByText(I18nUtils.getMessage('popup_html_witness'));
     await act(async () => {
       await userEvent.click(
-        screen.getByText(chrome.i18n.getMessage('popup_html_proposal')),
+        screen.getByText(I18nUtils.getMessage('popup_html_proposal')),
       );
     });
   });
@@ -145,7 +146,7 @@ describe('Proposal tab:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_html_proposal_vote_successful'),
+        I18nUtils.getMessage('popup_html_proposal_vote_successful'),
       ),
     ).toBeInTheDocument();
   });
@@ -167,7 +168,7 @@ describe('Proposal tab:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_html_proposal_unvote_successful'),
+        I18nUtils.getMessage('popup_html_proposal_unvote_successful'),
       ),
     ).toBeInTheDocument();
   });
@@ -185,7 +186,7 @@ describe('Proposal tab:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_html_proposal_unvote_fail'),
+        I18nUtils.getMessage('popup_html_proposal_unvote_fail'),
       ),
     ).toBeInTheDocument();
   });
@@ -203,7 +204,7 @@ describe('Proposal tab:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_html_proposal_vote_fail'),
+        I18nUtils.getMessage('popup_html_proposal_vote_fail'),
       ),
     ).toBeInTheDocument();
   });

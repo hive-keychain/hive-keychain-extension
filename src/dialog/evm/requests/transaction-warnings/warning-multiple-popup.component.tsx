@@ -21,6 +21,7 @@ import { PopupContainer } from 'src/common-ui/popup-container/popup-container.co
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   warningHook: useTransactionHook;
 }
@@ -39,7 +40,7 @@ export const EvmMultipleWarningsPopup = ({ warningHook }: Props) => {
     return (
       <Fragment key={`warning-field-${field.name}-${fieldIndex}`}>
         {field.name && (
-          <div className="field-name">{chrome.i18n.getMessage(field.name)}</div>
+          <div className="field-name">{I18nUtils.getMessage(field.name)}</div>
         )}
         {field.warnings?.map(
           (warning: EvmTransactionWarning, warningIndex: number) => {
@@ -97,7 +98,7 @@ export const EvmMultipleWarningsPopup = ({ warningHook }: Props) => {
           icon={EvmRiskWarningUtils.getWarningIcon(highestLevel)}
         />
         <div className="evm-risk-modal-header__title">
-          {chrome.i18n.getMessage(
+          {I18nUtils.getMessage(
             EvmRiskWarningUtils.getModalTitleKey(highestLevel),
           )}
         </div>

@@ -16,6 +16,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   chain: EvmChain;
   history?: EvmUserHistory;
@@ -91,13 +92,13 @@ export const EvmHistory = ({
       {!loading && infoCardState.ready && infoCardState.showCard && (
         <Card className="evm-custom-erc20-empty-card evm-custom-history-info-card">
           <p className="evm-custom-erc20-empty-card__message">
-            {chrome.i18n.getMessage('evm_custom_history_info_card_message')}
+            {I18nUtils.getMessage('evm_custom_history_info_card_message')}
           </p>
           <button
             type="button"
             className="evm-custom-erc20-empty-card__hide"
             onClick={() => void handleHideInfoCard()}>
-            {chrome.i18n.getMessage('evm_custom_erc20_empty_card_hide')}
+            {I18nUtils.getMessage('evm_custom_erc20_empty_card_hide')}
           </button>
         </Card>
       )}
@@ -148,7 +149,7 @@ export const EvmHistory = ({
           className="load-more-panel history-load-more"
           onClick={() => onClickOnLoadMore()}>
           <span className="label">
-            {chrome.i18n.getMessage('popup_html_load_more')}
+            {I18nUtils.getMessage('popup_html_load_more')}
           </span>
           <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE}></SVGIcon>
         </div>
@@ -166,7 +167,7 @@ export const EvmHistory = ({
             <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
             <div className="text">
               <div>
-                {chrome.i18n.getMessage('popup_html_transaction_list_is_empty')}
+                {I18nUtils.getMessage('popup_html_transaction_list_is_empty')}
               </div>
             </div>
           </div>

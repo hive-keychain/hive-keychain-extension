@@ -53,6 +53,7 @@ import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 import { addToWhitelist } from 'src/utils/preferences.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export type HiveOperationDelivery = 'dialog' | 'silent';
 
 export const performHiveOperation = async (
@@ -215,8 +216,8 @@ export const performHiveOperation = async (
     await sendErrors(
       tab,
       e + '',
-      await chrome.i18n.getMessage('unknown_error'),
-      await chrome.i18n.getMessage('unknown_error'),
+      await I18nUtils.getMessage('unknown_error'),
+      await I18nUtils.getMessage('unknown_error'),
       request,
     );
     const handlers = await getRequestHandlers();

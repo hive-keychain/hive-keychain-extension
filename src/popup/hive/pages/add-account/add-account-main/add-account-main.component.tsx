@@ -35,6 +35,7 @@ import { CommunicationUtils } from 'src/utils/communication.utils';
 import FileUtils from 'src/utils/file.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const AddAccountMain = ({
   navigateTo,
   accounts,
@@ -301,7 +302,7 @@ const AddAccountMain = ({
       <div
         className="caption"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_chose_add_method'),
+          __html: I18nUtils.getMessage('popup_html_chose_add_method'),
         }}></div>
 
       {renderAddAccountMenuItems([
@@ -358,7 +359,7 @@ const AddAccountMain = ({
       <div
         className="caption"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('html_popup_evm_add_wallet_method'),
+          __html: I18nUtils.getMessage('html_popup_evm_add_wallet_method'),
         }}></div>
 
       {renderAddAccountMenuItems([

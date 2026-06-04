@@ -11,6 +11,7 @@ import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-exte
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export interface PageTitleProps {
   title: string;
   titleParams?: string[];
@@ -90,7 +91,7 @@ const PageTitle = ({
       <div className="title">
         {skipTitleTranslation
           ? title
-          : chrome.i18n.getMessage(title, titleParams)}
+          : I18nUtils.getMessage(title, titleParams)}
       </div>
       {/* <div className="right-section"> */}
       {showDetachWindowOption && (

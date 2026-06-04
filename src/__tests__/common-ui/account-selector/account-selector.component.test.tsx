@@ -31,6 +31,7 @@ import {
   MANAGE_EVM_SELECTED_SEED_ID_PARAM,
 } from 'src/popup/evm/pages/home/settings/evm-accounts/evm-accounts-selection.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const mockCopyTextWithToast = jest.fn().mockResolvedValue(true);
 
 jest.mock('src/common-ui/toast/copy-toast.utils', () => ({
@@ -281,7 +282,7 @@ describe('AccountSelectorComponent', () => {
   });
 
   beforeEach(() => {
-    chrome.i18n.getMessage = jest.fn((key: string) => key);
+    I18nUtils.getMessage = jest.fn((key: string) => key);
     mockCopyTextWithToast.mockClear();
     jest
       .spyOn(ChainUtils, 'getAllSetupChainsForType')

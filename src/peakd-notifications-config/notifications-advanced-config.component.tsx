@@ -40,6 +40,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const NotificationsAdvancedConfigPage = () => {
   const [isActive, setActive] = useState(false);
   const [config, setConfig] = useState<NotificationConfig>();
@@ -173,7 +174,7 @@ const NotificationsAdvancedConfigPage = () => {
   };
 
   const saveConfig = async () => {
-    if (window.confirm(chrome.i18n.getMessage('notification_confirm_save')))
+    if (window.confirm(I18nUtils.getMessage('notification_confirm_save')))
       if (selectedAccount?.keys.posting) {
         setReady(false);
         const response = await PeakDNotificationsUtils.saveConfiguration(
@@ -196,7 +197,7 @@ const NotificationsAdvancedConfigPage = () => {
       } else {
         setMessage({
           key: 'popup_missing_key',
-          params: [chrome.i18n.getMessage('posting')],
+          params: [I18nUtils.getMessage('posting')],
           type: MessageType.ERROR,
         } as Message);
       }
@@ -235,11 +236,11 @@ const NotificationsAdvancedConfigPage = () => {
           <div className="title-panel">
             <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
             <div className="title">
-              {chrome.i18n.getMessage('html_popup_settings_notifications')}
+              {I18nUtils.getMessage('html_popup_settings_notifications')}
             </div>
           </div>
           <div className="caption">
-            {chrome.i18n.getMessage(
+            {I18nUtils.getMessage(
               'html_popup_settings_notifications_caption',
             )}
           </div>

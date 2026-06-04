@@ -15,6 +15,7 @@ import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('conversion.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -45,7 +46,7 @@ describe('conversion.component tests:\n', () => {
       ).toBeInTheDocument();
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_convert_hive_intro'),
+          I18nUtils.getMessage('popup_html_convert_hive_intro'),
         ),
       ).toBeInTheDocument();
     });
@@ -77,7 +78,7 @@ describe('conversion.component tests:\n', () => {
       ).toBeInTheDocument();
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_confirm_hive_to_hbd_conversion'),
+          I18nUtils.getMessage('popup_html_confirm_hive_to_hbd_conversion'),
         ),
       ).toBeInTheDocument();
       await act(async () => {
@@ -87,7 +88,7 @@ describe('conversion.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_hive_to_hbd_conversion_success'),
+          I18nUtils.getMessage('popup_html_hive_to_hbd_conversion_success'),
         ),
       ).toBeInTheDocument();
     });
@@ -111,7 +112,7 @@ describe('conversion.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_hive_to_hbd_conversion_fail'),
+          I18nUtils.getMessage('popup_html_hive_to_hbd_conversion_fail'),
         ),
       ).toBeInTheDocument();
     });
@@ -155,7 +156,7 @@ describe('conversion.component tests:\n', () => {
       ).toBeInTheDocument();
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_convert_hbd_intro'),
+          I18nUtils.getMessage('popup_html_convert_hbd_intro'),
         ),
       ).toBeInTheDocument();
     });
@@ -187,7 +188,7 @@ describe('conversion.component tests:\n', () => {
       ).toBeInTheDocument();
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_confirm_hbd_to_hive_conversion'),
+          I18nUtils.getMessage('popup_html_confirm_hbd_to_hive_conversion'),
         ),
       ).toBeInTheDocument();
       await act(async () => {
@@ -197,7 +198,7 @@ describe('conversion.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_hbd_to_hive_conversion_success'),
+          I18nUtils.getMessage('popup_html_hbd_to_hive_conversion_success'),
         ),
       ).toBeInTheDocument();
     });
@@ -221,7 +222,7 @@ describe('conversion.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_hbd_to_hive_conversion_fail'),
+          I18nUtils.getMessage('popup_html_hbd_to_hive_conversion_fail'),
         ),
       ).toBeInTheDocument();
     });

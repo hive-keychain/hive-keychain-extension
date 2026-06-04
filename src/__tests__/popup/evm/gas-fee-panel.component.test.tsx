@@ -8,10 +8,11 @@ import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import Decimal from 'decimal.js';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('GasFeePanel', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    global.chrome.i18n.getMessage = jest.fn((key: string) => key);
+    I18nUtils.getMessage = jest.fn((key: string) => key);
   });
 
   it('reports native token metadata failures through the existing error callback', async () => {

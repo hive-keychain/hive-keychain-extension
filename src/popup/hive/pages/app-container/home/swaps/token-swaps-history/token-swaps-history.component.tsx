@@ -12,6 +12,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
 import { SwapTokenUtils } from 'src/utils/swap-token.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const TokenSwapsHistory = ({
   activeAccount,
   setTitleContainerProperties,
@@ -80,7 +81,7 @@ const TokenSwapsHistory = ({
       <div className="refresh-panel">
         {!!autoRefreshCountdown && (
           <>
-            {chrome.i18n.getMessage('swap_refresh_countdown', [
+            {I18nUtils.getMessage('swap_refresh_countdown', [
               autoRefreshCountdown?.toString(),
             ])}
             <SVGIcon
@@ -107,7 +108,7 @@ const TokenSwapsHistory = ({
           <div className="empty-history-panel">
             <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
             <span className="text">
-              {chrome.i18n.getMessage('swap_no_history')}
+              {I18nUtils.getMessage('swap_no_history')}
             </span>
           </div>
         )}

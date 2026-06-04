@@ -6,6 +6,7 @@ import { KeychainRequest } from '@interfaces/keychain.interface';
 import { UnlockDialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const unlockWallet = async (
   requestHandler: HiveRequestsHandler | EvmRequestHandler,
   tab: number,
@@ -22,8 +23,8 @@ export const unlockWallet = async (
         error: 'locked',
         result: null,
         data: request,
-        message: chrome.i18n.getMessage('bgd_auth_locked'),
-        display_msg: chrome.i18n.getMessage('bgd_auth_locked_desc'),
+        message: I18nUtils.getMessage('bgd_auth_locked'),
+        display_msg: I18nUtils.getMessage('bgd_auth_locked_desc'),
       },
       // @ts-ignore
       tab,

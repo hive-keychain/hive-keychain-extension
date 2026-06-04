@@ -60,6 +60,7 @@ import Config from 'src/config';
 import { KeychainError } from 'src/keychain-error';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface EvmSwapForm {
   fromSelectedToken: TokenExtended | null;
   toSelectedToken: TokenExtended | null;
@@ -638,7 +639,7 @@ export const EvmLifiSwap = ({
           : undefined,
       approveFields: approveFields,
       swapFields: swapFields,
-      message: chrome.i18n.getMessage('evm_lifi_swap_confirm_message', [
+      message: I18nUtils.getMessage('evm_lifi_swap_confirm_message', [
         form.fromSelectedToken?.symbol ?? '',
         form.toSelectedToken?.symbol ?? '',
         form.amount.toString(),
@@ -928,7 +929,7 @@ export const EvmLifiSwap = ({
                     <div className="countdown">
                       {!!autoRefreshCountdown && (
                         <span>
-                          {chrome.i18n.getMessage(
+                          {I18nUtils.getMessage(
                             'swap_autorefresh',
                             autoRefreshCountdown + '',
                           )}
@@ -947,7 +948,7 @@ export const EvmLifiSwap = ({
                       )
                     }>
                     <div className="title">
-                      {chrome.i18n.getMessage('swap_advanced_parameters')}
+                      {I18nUtils.getMessage('swap_advanced_parameters')}
                     </div>
                     <SVGIcon
                       icon={SVGIcons.GLOBAL_ARROW}
@@ -1015,7 +1016,7 @@ export const EvmLifiSwap = ({
                         className="tool-logo"
                       />
                       <div className="tool-name">
-                        {chrome.i18n.getMessage('evm_processed_by', ['LiFi'])}
+                        {I18nUtils.getMessage('evm_processed_by', ['LiFi'])}
                       </div>
                     </div>
                   </Card>
@@ -1043,7 +1044,7 @@ export const EvmLifiSwap = ({
             <div className="maintenance-mode">
               <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
               <div className="text">
-                {chrome.i18n.getMessage('swap_under_maintenance')}
+                {I18nUtils.getMessage('swap_under_maintenance')}
               </div>
             </div>
           )}

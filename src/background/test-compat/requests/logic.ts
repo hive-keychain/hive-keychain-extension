@@ -11,6 +11,7 @@ import { performKeylessOperation, performOperationFromIndex } from '../index';
 import { createPopup } from './dialog-lifecycle';
 import { RequestsHandler } from './request-handler';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type TransferKeychainRequest = Extract<
   KeychainRequest,
   { type: KeychainRequestTypes.transfer }
@@ -28,7 +29,7 @@ const sendAnswerError = async (
       error: key,
       result: null,
       data,
-      message: await chrome.i18n.getMessage(key),
+      message: await I18nUtils.getMessage(key),
     },
     tab,
   });
@@ -73,7 +74,7 @@ export const addAccountToEmptyWallet = (
       command: DialogCommand.REGISTER,
       msg: {
         success: false,
-        message: await chrome.i18n.getMessage('popup_html_register'),
+        message: await I18nUtils.getMessage('popup_html_register'),
       },
       requestHandler,
       data: request,
@@ -98,8 +99,8 @@ export const unlockWallet = (
         error: 'locked',
         result: null,
         data: request,
-        message: await chrome.i18n.getMessage('bgd_auth_locked'),
-        display_msg: await chrome.i18n.getMessage('bgd_auth_locked_desc'),
+        message: await I18nUtils.getMessage('bgd_auth_locked'),
+        display_msg: await I18nUtils.getMessage('bgd_auth_locked_desc'),
       },
       tab,
       domain,
@@ -123,7 +124,7 @@ export const addAccountRequest = (
           error: 'popup_accounts_already_registered',
           result: null,
           data: request,
-          message: await chrome.i18n.getMessage(
+          message: await I18nUtils.getMessage(
             'popup_accounts_already_registered',
           ),
         },
@@ -299,7 +300,7 @@ export const keylessKeychainRequest = async (
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          message: await chrome.i18n.getMessage(
+          message: await I18nUtils.getMessage(
             'dialog_keyless_unsupported_operation',
           ),
         },

@@ -6,17 +6,24 @@ import { Theme, useThemeContext } from '@popup/theme.context';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
+import { ComplexeCustomSelect } from 'src/common-ui/custom-select/custom-select.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { ThemeToggleComponent } from 'src/common-ui/theme-toggle/theme-toggle.component';
 import { SidePanelPreferenceUtils } from 'src/utils/side-panel-preference.utils';
+
+import { I18nLanguageOption, I18nUtils } from 'src/utils/i18n.utils';
 
 const SettingsPreferencesDisplayPage = ({
   setTitleContainerProperties,
 }: PropsFromRedux) => {
   const { setTheme, theme } = useThemeContext();
   const [openSidePanelByDefault, setOpenSidePanelByDefault] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState<I18nLanguageOption>(
+    I18nUtils.getLanguageOption(),
+  );
   const isToolbarPopup = ExtensionSurfaceUtils.isToolbarPopup();
+  const languageOptions = I18nUtils.getLanguageOptions();
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -36,6 +43,20 @@ const SettingsPreferencesDisplayPage = ({
     void loadOpenSidePanelByDefault();
   }, []);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    void I18nUtils.getSavedOrDefaultLanguage().then((language) => {
+      if (isMounted) {
+        setSelectedLanguage(I18nUtils.getLanguageOption(language));
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const handleThemeChange = (nextTheme: Theme) => {
     setTheme(nextTheme);
   };
@@ -49,6 +70,13 @@ const SettingsPreferencesDisplayPage = ({
     void SidePanelPreferenceUtils.setOpenSidePanelByDefault(checked);
   };
 
+  const handleLanguageChange = (language: I18nLanguageOption) => {
+    setSelectedLanguage(language);
+    void I18nUtils.saveLanguage(language.value).then((savedLanguage) => {
+      setSelectedLanguage(I18nUtils.getLanguageOption(savedLanguage));
+    });
+  };
+
   return (
     <div
       data-testid="settings-preferences-display-content-page"
@@ -56,19 +84,32 @@ const SettingsPreferencesDisplayPage = ({
       <div className="fields">
         <div className="settings-section">
           <div className="section-title">
-            {chrome.i18n.getMessage('popup_html_preferences_appearance_section')}
+            {I18nUtils.getMessage('popup_html_preferences_appearance_section')}
           </div>
           <div className="section-fields">
             <ThemeToggleComponent
               selectedTheme={theme ?? Theme.LIGHT}
               onChange={handleThemeChange}
             />
+            <div className="language-select-panel">
+              <ComplexeCustomSelect
+                label="popup_html_preferences_language"
+                options={languageOptions}
+                selectedItem={selectedLanguage}
+                setSelectedItem={handleLanguageChange}
+                background="white"
+                selectHandleDataTestId="language-select-handle"
+                ariaLabel={I18nUtils.getMessage(
+                  'popup_html_preferences_language',
+                )}
+              />
+            </div>
           </div>
         </div>
 
         <div className="settings-section">
           <div className="section-title">
-            {chrome.i18n.getMessage('popup_html_preferences_display_section')}
+            {I18nUtils.getMessage('popup_html_preferences_display_section')}
           </div>
           <div className="section-fields">
             {isToolbarPopup && (
@@ -82,7 +123,7 @@ const SettingsPreferencesDisplayPage = ({
                   className="try-side-panel-action-icon"
                 />
                 <span className="try-side-panel-action-label">
-                  {chrome.i18n.getMessage('popup_html_try_side_panel')}
+                  {I18nUtils.getMessage('popup_html_try_side_panel')}
                 </span>
               </button>
             )}

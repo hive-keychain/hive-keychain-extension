@@ -19,6 +19,7 @@ import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transactio
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   request: EvmRequest;
   accounts: EvmAccountPublic[];
@@ -102,8 +103,8 @@ export const PersonalSign = (props: Props) => {
       domain={data.dappInfo.domain}
       origin={data.dappInfo.origin}
       tab={data.tab}
-      title={chrome.i18n.getMessage('dialog_evm_sign_request')}
-      caption={chrome.i18n.getMessage('dialog_signature_request_caption', [
+      title={I18nUtils.getMessage('dialog_evm_sign_request')}
+      caption={I18nUtils.getMessage('dialog_signature_request_caption', [
         data.dappInfo.domain,
       ])}
       fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}

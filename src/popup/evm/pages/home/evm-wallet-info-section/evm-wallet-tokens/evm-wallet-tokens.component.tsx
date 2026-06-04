@@ -20,6 +20,7 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface OwnProps {
   chain: EvmChain;
   activeAccount: EvmActiveAccount;
@@ -172,7 +173,7 @@ const EvmWalletTokensInner = ({
               <p
                 className="evm-custom-erc20-empty-card__message"
                 dangerouslySetInnerHTML={{
-                  __html: chrome.i18n.getMessage(
+                  __html: I18nUtils.getMessage(
                     'evm_custom_erc20_empty_card_message',
                   ),
                 }}></p>
@@ -180,7 +181,7 @@ const EvmWalletTokensInner = ({
                 type="button"
                 className="evm-custom-erc20-empty-card__hide"
                 onClick={() => void handleHideEmptyCard()}>
-                {chrome.i18n.getMessage('evm_custom_erc20_empty_card_hide')}
+                {I18nUtils.getMessage('evm_custom_erc20_empty_card_hide')}
               </button>
             </Card>
           )}
@@ -190,7 +191,7 @@ const EvmWalletTokensInner = ({
               <div className="empty-history-panel evm-wallet-tokens-filter-empty-panel">
                 <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
                 <span className="text">
-                  {chrome.i18n.getMessage('evm_wallet_tokens_filter_no_results')}
+                  {I18nUtils.getMessage('evm_wallet_tokens_filter_no_results')}
                 </span>
               </div>
             )}

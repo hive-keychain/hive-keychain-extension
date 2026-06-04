@@ -6,6 +6,7 @@ import { PopupToolbarStartupUtils } from '@popup/multichain/utils/popup-toolbar-
 import { SidePanelLifecycleUtils } from '@popup/multichain/utils/side-panel-lifecycle.utils';
 import { store } from '@popup/multichain/store';
 import { Provider } from 'react-redux';
+import { I18nProviderComponent } from 'src/common-ui/i18n/i18n-provider.component';
 import './style.scss';
 
 const mountPopup = async () => {
@@ -16,9 +17,11 @@ const mountPopup = async () => {
   }
 
   ReactDOM.render(
-    <Provider store={store}>
-      <MultichainContainerComponent />
-    </Provider>,
+    <I18nProviderComponent>
+      <Provider store={store}>
+        <MultichainContainerComponent />
+      </Provider>
+    </I18nProviderComponent>,
     document.getElementById('root'),
   );
 };

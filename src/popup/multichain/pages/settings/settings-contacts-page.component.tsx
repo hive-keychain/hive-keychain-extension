@@ -18,6 +18,7 @@ import {
   SettingsChainOption,
 } from 'src/popup/multichain/pages/settings/settings-chain-select.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const SettingsContactsPage = ({
   activeChain,
   hasHiveAccounts,
@@ -52,7 +53,7 @@ const SettingsContactsPage = ({
       className="settings-shared-page settings-contacts-page"
       data-testid="SETTINGS_CONTACTS-page">
       <div className="settings-contacts-intro">
-        {chrome.i18n.getMessage('popup_html_contacts_intro')}
+        {I18nUtils.getMessage('popup_html_contacts_intro')}
       </div>
       {selectedOption && options.length > 1 && (
         <div className="settings-chain-select-panel">

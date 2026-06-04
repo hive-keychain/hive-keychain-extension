@@ -16,6 +16,7 @@ import { VersionLogUtils } from 'src/utils/version-log.utils';
 import { ChainType } from 'src/popup/multichain/interfaces/chains.interface';
 import { Screen } from '@interfaces/screen.interface';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 jest.mock(
   'src/common-ui/_containers/homepage-container/homepage-container.component',
   () => ({
@@ -145,7 +146,7 @@ describe('evm-home unmount behavior', () => {
     );
 
   beforeEach(() => {
-    chrome.i18n.getMessage = jest.fn((key: string) => key);
+    I18nUtils.getMessage = jest.fn((key: string) => key);
     chrome.runtime.getManifest = jest.fn(() => ({
       version: '1.0.0',
       name: 'Hive Keychain',

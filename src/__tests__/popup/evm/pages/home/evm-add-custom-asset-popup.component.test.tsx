@@ -13,6 +13,7 @@ import {
   EvmAddCustomAssetPopup,
 } from 'src/popup/evm/pages/home/evm-add-custom-asset-popup/evm-add-custom-asset-popup.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const chain = {
   name: 'Ethereum',
   chainId: '0x1',
@@ -41,7 +42,7 @@ const i18nMessages: Record<string, string> = {
 describe('EvmAddCustomAssetPopup', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
-    global.chrome.i18n.getMessage = jest.fn(
+    I18nUtils.getMessage = jest.fn(
       (key: string) => i18nMessages[key] ?? key,
     );
     jest.spyOn(EvmTokensUtils, 'getCustomTokens').mockResolvedValue([]);

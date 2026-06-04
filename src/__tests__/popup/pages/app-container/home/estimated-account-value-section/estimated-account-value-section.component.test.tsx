@@ -8,6 +8,7 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('estimated-account-value-section.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -47,7 +48,7 @@ describe('estimated-account-value-section.component tests:\n', () => {
       });
       expect(
         (await screen.findByTestId(dataTestIdToolTip.content)).innerHTML,
-      ).toEqual(chrome.i18n.getMessage('popup_html_estimation_info_text'));
+      ).toEqual(I18nUtils.getMessage('popup_html_estimation_info_text'));
     });
   });
 

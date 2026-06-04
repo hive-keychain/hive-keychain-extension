@@ -15,6 +15,7 @@ import {
 import React from 'react';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 jest.mock('src/dialog/evm/evm-operation/evm-operation', () => ({
   EvmOperation: ({ bottomPanel, onConfirm, confirmDisabled }: any) => (
     <div data-testid="evm-operation">
@@ -74,7 +75,7 @@ const data = {
 describe('WatchAsset', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    global.chrome.i18n.getMessage = jest.fn(
+    I18nUtils.getMessage = jest.fn(
       (key: string, params?: string[]) =>
         params?.length ? `${key}:${params.join(',')}` : key,
     );

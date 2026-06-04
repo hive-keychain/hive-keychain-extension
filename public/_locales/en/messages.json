@@ -707,6 +707,14 @@
     "message": "Dark",
     "description": "Preferences and display: dark theme label"
   },
+  "popup_html_preferences_language": {
+    "message": "Language",
+    "description": "Preferences and display: language selector label"
+  },
+  "popup_html_preferences_browser_language": {
+    "message": "Browser language",
+    "description": "Browser language option in preferences language selector"
+  },
   "popup_html_preferences_display_section": {
     "message": "Display",
     "description": "Preferences and display: window and side panel section title"

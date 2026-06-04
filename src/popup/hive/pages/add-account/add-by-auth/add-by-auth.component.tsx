@@ -14,6 +14,7 @@ import { addAccount } from 'src/popup/hive/actions/account.actions';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const AddByAuth = ({
   setErrorMessage,
   navigateTo,
@@ -60,7 +61,7 @@ const AddByAuth = ({
       data-testid={`${Screen.ACCOUNT_PAGE_ADD_BY_AUTH}-page`}
       className="add-by-auth-page">
       <div className="caption">
-        {chrome.i18n.getMessage('popup_html_auth_text')}
+        {I18nUtils.getMessage('popup_html_auth_text')}
       </div>
       <InputComponent
         dataTestId="input-username"

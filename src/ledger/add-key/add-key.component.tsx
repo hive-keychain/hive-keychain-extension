@@ -13,6 +13,7 @@ import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface AddKeyComponentProps {
   embedded?: boolean;
   keyType?: KeyType;
@@ -110,7 +111,7 @@ const AddKeyComponent = ({
         <div className="title-panel">
           <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
           <div className="title">
-            {chrome.i18n.getMessage('add_key_from_ledger')}
+            {I18nUtils.getMessage('add_key_from_ledger')}
           </div>
         </div>
       )}
@@ -119,9 +120,9 @@ const AddKeyComponent = ({
         <div
           className="caption"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage('add_key_from_ledger_caption'),
+            __html: I18nUtils.getMessage('add_key_from_ledger_caption'),
           }}></div>
-        <div>{chrome.i18n.getMessage(message)}</div>
+        <div>{I18nUtils.getMessage(message)}</div>
         <div className="fill-space"></div>
         <ButtonComponent
           label={!done ? 'ledger_discover_key' : 'popup_html_close'}

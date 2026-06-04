@@ -3,6 +3,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   accounts: string[];
   username: string;
@@ -29,7 +30,7 @@ const OperationSelectUsername = ({
 
   return (
     <div className="operation-select-username">
-      {label && <div className="label">{chrome.i18n.getMessage(label)}</div>}
+      {label && <div className="label">{I18nUtils.getMessage(label)}</div>}
 
       <div className="select-container">
         <div className="selected-item" onClick={toggleDropdown}>

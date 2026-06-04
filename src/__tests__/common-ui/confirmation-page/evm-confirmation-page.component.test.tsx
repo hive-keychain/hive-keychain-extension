@@ -17,6 +17,7 @@ import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const mockGasFeePanel = jest.fn(() => <div data-testid="gas-fee-panel" />);
 
 jest.mock('@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component', () => ({
@@ -116,7 +117,7 @@ describe('EVMConfirmationPageComponent', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    global.chrome.i18n.getMessage = jest.fn((key: string) => key);
+    I18nUtils.getMessage = jest.fn((key: string) => key);
     (useTransactionHook as jest.Mock).mockReturnValue({
       hasWarning: jest.fn().mockReturnValue(false),
       initPendingTransactionWarning: jest.fn(),

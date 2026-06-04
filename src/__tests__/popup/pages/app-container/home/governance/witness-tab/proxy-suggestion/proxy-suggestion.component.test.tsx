@@ -15,6 +15,7 @@ import { RootState } from 'src/popup/multichain/store';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 /** `HiveApp` does not mount `ProxySuggestionComponent`; exercise it with a real store slice. */
 const stateWithActiveAccount = (): RootState => {
   const base = initialStates.iniStateAs.defaultExistent;
@@ -34,7 +35,7 @@ describe('Proxy suggestion tests:\n', () => {
   });
 
   beforeEach(() => {
-    chrome.i18n.getMessage = jest
+    I18nUtils.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
     LocalStorageUtils.getValueFromLocalStorage = jest
@@ -59,7 +60,7 @@ describe('Proxy suggestion tests:\n', () => {
     ).toBeInTheDocument();
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_html_proxy_suggestion'),
+        I18nUtils.getMessage('popup_html_proxy_suggestion'),
       ),
     ).toBeInTheDocument();
   });
@@ -101,7 +102,7 @@ describe('Proxy suggestion tests:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_success_proxy', ['keychain']),
+        I18nUtils.getMessage('popup_success_proxy', ['keychain']),
       ),
     ).toBeInTheDocument();
   });
@@ -121,7 +122,7 @@ describe('Proxy suggestion tests:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_error_proxy', ['keychain']),
+        I18nUtils.getMessage('popup_error_proxy', ['keychain']),
       ),
     ).toBeInTheDocument();
   });

@@ -20,6 +20,7 @@ import FileUtils from 'src/utils/file.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './import-file.scss';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface PropsType {
   title: string;
   text: string;
@@ -143,12 +144,12 @@ const ImportFile = ({
         <>
           <div className="title-panel">
             <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
-            <div className="title">{chrome.i18n.getMessage(title)}</div>
+            <div className="title">{I18nUtils.getMessage(title)}</div>
           </div>
           <div
             className="caption"
             dangerouslySetInnerHTML={{
-              __html: chrome.i18n.getMessage(text),
+              __html: I18nUtils.getMessage(text),
             }}></div>
           <div className="upload-panel">
             {selectedFile && selectedFile.name && (

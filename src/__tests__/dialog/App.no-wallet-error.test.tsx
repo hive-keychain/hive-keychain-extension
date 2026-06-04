@@ -14,6 +14,7 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('App no_wallet dialog error close behavior', () => {
   beforeEach(() => {
     jest
@@ -21,7 +22,7 @@ describe('App no_wallet dialog error close behavior', () => {
       .mockResolvedValue({
         ACTIVE_THEME: Theme.LIGHT,
       } as any);
-    chrome.i18n.getMessage = jest.fn((key: string) => {
+    I18nUtils.getMessage = jest.fn((key: string) => {
       if (key === 'message_container_close_button') return 'Close';
       if (key === 'message_container_title_fail') return 'Fail';
       if (key === 'bgd_lifecycle_request_canceled')

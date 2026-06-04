@@ -8,6 +8,7 @@ import { EvmRiskWarningUtils } from 'src/common-ui/evm/evm-risk-warning/evm-risk
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export type GroupedSecurityWarningVariant = 'tag' | 'panel';
 
 interface Props {
@@ -26,10 +27,10 @@ export const GroupedSecurityWarningMessage = ({
   const detailReasons = getGroupedSecurityDetailReasons(warning);
   const hasDetails = hasGroupedSecurityDetails(warning);
   const levelClass = EvmRiskWarningUtils.getLevelModifierClass(warning.level);
-  const severityLabel = chrome.i18n.getMessage(
+  const severityLabel = I18nUtils.getMessage(
     EvmRiskWarningUtils.getSeverityLabelKey(warning.level),
   );
-  const summaryMessage = chrome.i18n.getMessage(
+  const summaryMessage = I18nUtils.getMessage(
     warning.message,
     warning.messageParams ?? [],
   );
@@ -62,7 +63,7 @@ export const GroupedSecurityWarningMessage = ({
           <ul className="evm-risk-warning-panel__details">
             {detailReasons.map((detail, index) => (
               <li key={`${detail.message}-${index}`}>
-                {chrome.i18n.getMessage(
+                {I18nUtils.getMessage(
                   detail.message,
                   detail.messageParams ?? [],
                 )}
@@ -101,7 +102,7 @@ export const GroupedSecurityWarningMessage = ({
         <ul className="evm-risk-tag-group__details">
           {detailReasons.map((detail, index) => (
             <li key={`${detail.message}-${index}`}>
-              {chrome.i18n.getMessage(
+              {I18nUtils.getMessage(
                 detail.message,
                 detail.messageParams ?? [],
               )}

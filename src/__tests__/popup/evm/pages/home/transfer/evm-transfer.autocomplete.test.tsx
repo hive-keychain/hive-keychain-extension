@@ -18,6 +18,7 @@ import {
   waitFor,
 } from 'src/__tests__/utils-for-testing/setups/render';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 jest.mock(
   'src/common-ui/_containers/form-container/form-container.component',
   () => ({
@@ -167,7 +168,7 @@ describe('evm-transfer autocomplete behavior', () => {
   });
 
   beforeEach(() => {
-    chrome.i18n.getMessage = jest.fn((key: string) => key);
+    I18nUtils.getMessage = jest.fn((key: string) => key);
   });
 
   afterEach(() => {

@@ -18,6 +18,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { ColorsUtils } from 'src/utils/colors.utils';
 import { EnumUtils } from 'src/utils/enum.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export interface OptionItem {
   label: string;
   value: any;
@@ -326,7 +327,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
         <div className="label">
           {itemProps.skipLabelTranslation
             ? itemProps.label
-            : chrome.i18n.getMessage(itemProps.label)}
+            : I18nUtils.getMessage(itemProps.label)}
         </div>
       )}
       <Select

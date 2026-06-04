@@ -18,6 +18,7 @@ import {
 import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
 import { ChainType } from 'src/popup/multichain/interfaces/chains.interface';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 jest.mock('src/common-ui/evm/evm-account-image/evm-account-image.component', () => ({
   EvmAccountImage: () => {
     const React = require('react');
@@ -92,7 +93,7 @@ describe('evm-select-account-section unmount behavior', () => {
     );
 
   beforeEach(() => {
-    chrome.i18n.getMessage = jest.fn((key: string) => key);
+    I18nUtils.getMessage = jest.fn((key: string) => key);
   });
 
   afterEach(() => {

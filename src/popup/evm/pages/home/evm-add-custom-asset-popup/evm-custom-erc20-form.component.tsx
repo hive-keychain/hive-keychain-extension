@@ -17,6 +17,7 @@ import React, {
   useState,
 } from 'react';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export interface EvmCustomErc20FormData {
   contractAddress: string;
   name: string;
@@ -278,7 +279,7 @@ export const EvmCustomErc20Form = forwardRef<
         if (isMountedRef.current) {
           setErc20Errors((current) => ({
             ...current,
-            contractAddress: chrome.i18n.getMessage(
+            contractAddress: I18nUtils.getMessage(
               'evm_add_custom_asset_error_contract_address_invalid',
             ),
           }));
@@ -292,7 +293,7 @@ export const EvmCustomErc20Form = forwardRef<
         if (isMountedRef.current) {
           setErc20Errors((current) => ({
             ...current,
-            contractAddress: chrome.i18n.getMessage(
+            contractAddress: I18nUtils.getMessage(
               'evm_add_custom_asset_error_contract_address_duplicate',
             ),
           }));
@@ -329,7 +330,7 @@ export const EvmCustomErc20Form = forwardRef<
         ) {
           setErc20Errors((current) => ({
             ...current,
-            contractAddress: chrome.i18n.getMessage(
+            contractAddress: I18nUtils.getMessage(
               'evm_add_custom_token_error_fetch_erc20_metadata',
             ),
           }));
@@ -371,25 +372,25 @@ export const EvmCustomErc20Form = forwardRef<
       const normalizedAddress = normalizeAddress(erc20Form.contractAddress);
 
       if (!normalizedAddress || !ethers.isAddress(normalizedAddress)) {
-        errors.contractAddress = chrome.i18n.getMessage(
+        errors.contractAddress = I18nUtils.getMessage(
           'evm_add_custom_asset_error_contract_address_invalid',
         );
       } else if (
         normalizedExistingAddresses.has(normalizedAddress.toLowerCase())
       ) {
-        errors.contractAddress = chrome.i18n.getMessage(
+        errors.contractAddress = I18nUtils.getMessage(
           'evm_add_custom_asset_error_contract_address_duplicate',
         );
       }
 
       if (!erc20Form.symbol.trim()) {
-        errors.symbol = chrome.i18n.getMessage(
+        errors.symbol = I18nUtils.getMessage(
           'evm_add_custom_token_error_symbol_required',
         );
       }
 
       if (!erc20Form.name.trim()) {
-        errors.name = chrome.i18n.getMessage(
+        errors.name = I18nUtils.getMessage(
           'evm_add_custom_token_error_name_required',
         );
       }
@@ -402,7 +403,7 @@ export const EvmCustomErc20Form = forwardRef<
         decimalsParsed < 0 ||
         decimalsParsed > 255
       ) {
-        errors.decimals = chrome.i18n.getMessage(
+        errors.decimals = I18nUtils.getMessage(
           'evm_add_custom_token_error_decimals_invalid',
         );
       }
@@ -441,7 +442,7 @@ export const EvmCustomErc20Form = forwardRef<
         if (isMountedRef.current) {
           setErc20Errors((current) => ({
             ...current,
-            save: chrome.i18n.getMessage(
+            save: I18nUtils.getMessage(
               'evm_add_custom_token_error_save_failed',
             ),
           }));

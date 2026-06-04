@@ -15,6 +15,7 @@ import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import { PowerUtils } from 'src/popup/hive/utils/power.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const broadcastPowerUp = async (
   requestHandler: HiveRequestsHandler,
   data: RequestPowerUp & RequestId,
@@ -65,7 +66,7 @@ export const broadcastPowerUp = async (
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await chrome.i18n.getMessage(
+    err_message = await I18nUtils.getMessage(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -75,7 +76,7 @@ export const broadcastPowerUp = async (
       result,
       data,
       request?.tab!,
-      await chrome.i18n.getMessage('bgd_ops_pu', [data.hive, data.recipient]),
+      await I18nUtils.getMessage('bgd_ops_pu', [data.hive, data.recipient]),
       err_message,
     );
     return message;
@@ -136,7 +137,7 @@ export const broadcastPowerDown = async (
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await chrome.i18n.getMessage(
+    err_message = await I18nUtils.getMessage(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -147,8 +148,8 @@ export const broadcastPowerDown = async (
       data,
       request?.tab!,
       parseFloat(data.hive_power) == 0
-        ? await chrome.i18n.getMessage('bgd_ops_pd_stop', [data.username])
-        : await chrome.i18n.getMessage('bgd_ops_pd', [
+        ? await I18nUtils.getMessage('bgd_ops_pd_stop', [data.username])
+        : await I18nUtils.getMessage('bgd_ops_pd', [
             data.hive_power,
             data.username,
           ]),

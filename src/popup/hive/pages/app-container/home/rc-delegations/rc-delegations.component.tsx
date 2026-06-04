@@ -45,6 +45,7 @@ import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface DelegationForm {
   delegator: string;
   delegatee: string;
@@ -194,7 +195,7 @@ const RCDelegations = ({
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.posting,
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         isCancel
           ? 'popup_html_cancel_rc_delegation_confirm_text'
           : 'popup_html_rc_delegation_confirm_text',
@@ -314,7 +315,7 @@ const RCDelegations = ({
       {available?.gigaRcValue && (
         <div className="available-panel">
           <div className="label">
-            {chrome.i18n.getMessage('popup_html_available')}
+            {I18nUtils.getMessage('popup_html_available')}
           </div>
           <div className="value">
             {FormatUtils.formatCurrencyValue(available?.gigaRcValue)} G RC
@@ -324,7 +325,7 @@ const RCDelegations = ({
 
       <FormContainer onSubmit={handleSubmit(handleButtonClick)}>
         <div className="text">
-          {chrome.i18n.getMessage('popup_html_rc_delegations_text')}
+          {I18nUtils.getMessage('popup_html_rc_delegations_text')}
         </div>
         <Separator type="horizontal" />
         <div className="form-fields">

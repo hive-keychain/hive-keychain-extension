@@ -11,6 +11,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { LabelComponent } from 'src/common-ui/label/label.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   menu: ContextualMenu;
 }
@@ -91,12 +92,12 @@ export const ContextualMenuComponent = ({ menu }: Props) => {
       {isConfirmationPopupOpened && clickedItem && (
         <PopupContainer className="seed-nickname-popup">
           <div className="popup-title">
-            {chrome.i18n.getMessage(clickedItem.label)}
+            {I18nUtils.getMessage(clickedItem.label)}
           </div>
 
           {clickedItem.confirmationMessage && (
             <div className="caption">
-              {chrome.i18n.getMessage(clickedItem.confirmationMessage)}
+              {I18nUtils.getMessage(clickedItem.confirmationMessage)}
             </div>
           )}
 

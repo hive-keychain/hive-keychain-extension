@@ -17,6 +17,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface WatchAssetOptions {
   address: string;
   symbol?: string;
@@ -141,8 +142,8 @@ export const WatchAsset = ({ request, data, afterCancel }: Props) => {
       domain={data.dappInfo.domain}
       origin={data.dappInfo.origin}
       tab={data.tab}
-      title={chrome.i18n.getMessage('evm_watch_asset_title')}
-      caption={chrome.i18n.getMessage('evm_watch_asset_caption', [
+      title={I18nUtils.getMessage('evm_watch_asset_title')}
+      caption={I18nUtils.getMessage('evm_watch_asset_caption', [
         data.dappInfo.domain,
       ])}
       onConfirm={handleConfirm}

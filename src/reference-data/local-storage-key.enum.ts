@@ -44,6 +44,7 @@ export enum LocalStorageKeyEnum {
   ACTIVE_CHAIN = 'ACTIVE_CHAIN',
   ACTIVE_ACCOUNT_TYPE = 'ACTIVE_ACCOUNT_TYPE',
   ACTIVE_THEME = 'ACTIVE_THEME',
+  ACTIVE_LANGUAGE = 'ACTIVE_LANGUAGE',
   /** When true, toolbar icon opens Keychain in the browser side panel instead of popup.html */
   OPEN_SIDE_PANEL_BY_DEFAULT = 'OPEN_SIDE_PANEL_BY_DEFAULT',
   SETUP_CHAINS = 'SETUP_CHAINS',

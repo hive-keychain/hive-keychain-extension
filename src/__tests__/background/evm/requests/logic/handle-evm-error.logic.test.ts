@@ -3,6 +3,7 @@ import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { ProviderRpcErrorList } from '@interfaces/evm-provider.interface';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const tabsSendMessageMock = jest.fn();
 const runtimeSendMessageMock = jest.fn();
 const getRequestHandlersMock = jest.fn();
@@ -45,7 +46,7 @@ describe('handleEvmError', () => {
     createOrUpdateDialogMock.mockImplementation(async (callback: () => Promise<void>) => {
       await callback();
     });
-    chrome.i18n.getMessage = jest.fn(async (key: string) => key);
+    I18nUtils.getMessage = jest.fn(async (key: string) => key);
   });
 
   it('includes request_id in SEND_DIALOG_ERROR feedback', async () => {

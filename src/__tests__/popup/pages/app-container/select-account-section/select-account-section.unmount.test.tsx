@@ -7,6 +7,7 @@ import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 import { SelectAccountSectionComponent } from 'src/popup/hive/pages/app-container/select-account-section/select-account-section.component';
 import * as activeAccountActions from 'src/popup/hive/actions/active-account.actions';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 jest.mock('src/common-ui/preloaded-image/preloaded-image.component', () => ({
   PreloadedImage: () => {
     const React = require('react');
@@ -60,7 +61,7 @@ describe('select-account-section unmount behavior', () => {
     );
 
   beforeEach(() => {
-    chrome.i18n.getMessage = jest.fn((key: string) => key);
+    I18nUtils.getMessage = jest.fn((key: string) => key);
   });
 
   afterEach(() => {

@@ -3,6 +3,7 @@ import { RewardsUtils } from '@hiveapp/utils/rewards.utils';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe(' active-account.utils tests', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -277,7 +278,7 @@ describe(' active-account.utils tests', () => {
       const expectedRewardText = `["1.00 HBD","1 HP","1.00 HIVE","${messageI18n}:<br>1 HP / 1.00 HBD / 1.00 HIVE"]`;
       FormatUtils.toHP = jest.fn().mockReturnValue(1);
       FormatUtils.getValFromString = jest.fn().mockReturnValue(1);
-      chrome.i18n.getMessage = jest
+      I18nUtils.getMessage = jest
         .fn()
         .mockImplementation(() => `${messageI18n}`);
       const resultBalances = RewardsUtils.getAvailableRewards(justRewardsObj);
@@ -295,7 +296,7 @@ describe(' active-account.utils tests', () => {
       const expectedRewardText = `["1.00 HBD","0 HP","0.00 HIVE","${messageI18n}:<br>0 HP / 1.00 HBD / 0.00 HIVE"]`;
       FormatUtils.toHP = jest.fn().mockReturnValue(0);
       FormatUtils.getValFromString = jest.fn().mockReturnValue(1);
-      chrome.i18n.getMessage = jest
+      I18nUtils.getMessage = jest
         .fn()
         .mockImplementation(() => `${messageI18n}`);
       const resultBalances = RewardsUtils.getAvailableRewards(justRewardsObj);
@@ -313,7 +314,7 @@ describe(' active-account.utils tests', () => {
       const expectedRewardText = `["0.00 HBD","10 HP","0.00 HIVE","${messageI18n}:<br>10 HP / 0.00 HBD / 0.00 HIVE\"]`;
       FormatUtils.toHP = jest.fn().mockReturnValue(10);
       FormatUtils.getValFromString = jest.fn().mockReturnValue(1);
-      chrome.i18n.getMessage = jest
+      I18nUtils.getMessage = jest
         .fn()
         .mockImplementation(() => `${messageI18n}`);
       const resultBalances = RewardsUtils.getAvailableRewards(justRewardsObj);
@@ -331,7 +332,7 @@ describe(' active-account.utils tests', () => {
       const expectedRewardText = `["0.00 HBD","0 HP","100.00 HIVE","${messageI18n}:<br>0 HP / 0.00 HBD / 100.00 HIVE\"]`;
       FormatUtils.toHP = jest.fn().mockReturnValue(0);
       FormatUtils.getValFromString = jest.fn().mockReturnValue(1);
-      chrome.i18n.getMessage = jest
+      I18nUtils.getMessage = jest
         .fn()
         .mockImplementation(() => `${messageI18n}`);
       const resultBalances = RewardsUtils.getAvailableRewards(justRewardsObj);
@@ -349,7 +350,7 @@ describe(' active-account.utils tests', () => {
       const expectedRewardText = `["A HBD","0 HP","WT HIVE","${messageI18n}:<br>0 HP / A HBD / WT HIVE"]`;
       FormatUtils.toHP = jest.fn().mockReturnValue(0);
       FormatUtils.getValFromString = jest.fn().mockReturnValue(1);
-      chrome.i18n.getMessage = jest
+      I18nUtils.getMessage = jest
         .fn()
         .mockImplementation(() => `${messageI18n}`);
       const resultBalances = RewardsUtils.getAvailableRewards(justRewardsObj);

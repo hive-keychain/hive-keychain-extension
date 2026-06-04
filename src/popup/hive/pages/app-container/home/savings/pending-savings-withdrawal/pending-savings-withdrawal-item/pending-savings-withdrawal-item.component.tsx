@@ -26,6 +26,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { SavingsUtils } from 'src/popup/hive/utils/savings.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface PendingSavingsWithdrawalProps {
   item: SavingsWithdrawal;
   currency: string;
@@ -45,7 +46,7 @@ const PendingSavingsWithdrawalItem = ({
   const cancelCurrentWithdrawSavingItem = () => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         'popup_html_confirm_cancel_withdraw_savings_message',
         [currency],
       ),

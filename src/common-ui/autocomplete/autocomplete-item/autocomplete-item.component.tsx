@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface AutocompleteProps {
   value: string;
   label: string;
@@ -29,11 +30,11 @@ export const AutocompleteItemComponent = ({
       {img && <img src={img} className="user-avatar" />}
       <span>
         {prefix ?? ''}
-        {translateLabel ? chrome.i18n.getMessage(label) : label}{' '}
+        {translateLabel ? I18nUtils.getMessage(label) : label}{' '}
       </span>
       <div className="autocomplete-item-subvalue">
         {subLabel && subLabel.trim().length > 0
-          ? `${translateSublabel ? chrome.i18n.getMessage(subLabel) : subLabel}`
+          ? `${translateSublabel ? I18nUtils.getMessage(subLabel) : subLabel}`
           : ''}
       </div>
     </div>

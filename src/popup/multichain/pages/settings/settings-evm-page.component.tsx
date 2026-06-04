@@ -8,6 +8,7 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { ArrayUtils } from 'src/utils/array.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const SettingsEvmPage = ({ setTitleContainerProperties }: PropsFromRedux) => {
   const [evmSettings, setEvmSettings] = useState<EvmSettings>();
   const [displaySaveButton, setDisplaySaveButton] = useState(false);
@@ -48,13 +49,13 @@ const SettingsEvmPage = ({ setTitleContainerProperties }: PropsFromRedux) => {
         <div className="fields">
           <div className="settings-section advanced-settings-section">
             <div className="section-title">
-              {chrome.i18n.getMessage('evm_menu_provider_compatibility')}
+              {I18nUtils.getMessage('evm_menu_provider_compatibility')}
             </div>
             <div className="provider-note warning-note">
-              {chrome.i18n.getMessage('evm_provider_compatibility_warning')}
+              {I18nUtils.getMessage('evm_provider_compatibility_warning')}
             </div>
             <div className="provider-note reload-note">
-              {chrome.i18n.getMessage('evm_provider_compatibility_reload_note')}
+              {I18nUtils.getMessage('evm_provider_compatibility_reload_note')}
             </div>
             <div className="section-fields">
               <CheckboxPanelComponent
@@ -72,7 +73,7 @@ const SettingsEvmPage = ({ setTitleContainerProperties }: PropsFromRedux) => {
           </div>
           <div className="settings-section advanced-settings-section">
             <div className="section-title">
-              {chrome.i18n.getMessage('evm_menu_security')}
+              {I18nUtils.getMessage('evm_menu_security')}
             </div>
             <div className="section-fields">
               <CheckboxPanelComponent

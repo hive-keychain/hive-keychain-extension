@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   value: any;
   params?: any[];
@@ -22,7 +23,7 @@ export const LabelComponent = ({
   };
   return (
     <span className={className} onClick={handleOnClick}>
-      {skipTranslation ? value : chrome.i18n.getMessage(value, params ?? [])}
+      {skipTranslation ? value : I18nUtils.getMessage(value, params ?? [])}
     </span>
   );
 };

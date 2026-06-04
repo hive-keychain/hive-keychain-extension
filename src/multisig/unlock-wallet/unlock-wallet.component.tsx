@@ -9,6 +9,7 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface UnlockWalletProps {
   data: MultisigUnlockData;
 }
@@ -38,7 +39,7 @@ export const UnlockWalletComponent = ({ data }: UnlockWalletProps) => {
         dataTestId={'password-input'}
       />
       {data.feedback && (
-        <div className="feedback">{chrome.i18n.getMessage(data.feedback)}</div>
+        <div className="feedback">{I18nUtils.getMessage(data.feedback)}</div>
       )}
       <div className="divider"></div>
       <div className="action-panel">

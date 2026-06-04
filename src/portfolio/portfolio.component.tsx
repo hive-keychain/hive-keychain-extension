@@ -16,6 +16,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const Portfolio = () => {
   const [theme, setTheme] = useState<Theme>();
   const [tableColumnsHeaders, setTableColumnsHeaders] = useState<string[]>([]);
@@ -65,7 +66,7 @@ const Portfolio = () => {
     if (!localAccounts) {
       setIsLoading(false);
       setErrorMessage(
-        chrome.i18n.getMessage('no_account_found_on_portfolio_error'),
+        I18nUtils.getMessage('no_account_found_on_portfolio_error'),
       );
       return;
     } else {
@@ -96,12 +97,12 @@ const Portfolio = () => {
       <div className="title-panel info-row">
         <div className="info-row centered">
           <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
-          <div className="title">{chrome.i18n.getMessage('portfolio')}</div>
+          <div className="title">{I18nUtils.getMessage('portfolio')}</div>
         </div>
         {totalValueUSDPortfolio > 0 && (
           <div className="title-panel">
             <div className="title">
-              {chrome.i18n.getMessage('portfolio_total_value_usd')}
+              {I18nUtils.getMessage('portfolio_total_value_usd')}
             </div>
             <div className="info-row centered">
               <div className="title">
@@ -118,7 +119,7 @@ const Portfolio = () => {
       {!isLoading && (
         <>
           <div className="caption">
-            {chrome.i18n.getMessage('portfolio_caption_message_total_value')}
+            {I18nUtils.getMessage('portfolio_caption_message_total_value')}
           </div>
           <PortfolioFilterComponent
             extendedAccountsList={extendedAccountsList}
@@ -149,7 +150,7 @@ const Portfolio = () => {
 
           {currentAccountIndex && currentAccountUsername && localAccounts && (
             <div className="loading-message">
-              {chrome.i18n.getMessage('portfolio_fetch_progress', [
+              {I18nUtils.getMessage('portfolio_fetch_progress', [
                 currentAccountIndex.toString(),
                 localAccounts!.length.toString(),
                 currentAccountUsername,

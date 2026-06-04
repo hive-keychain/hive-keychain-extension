@@ -6,6 +6,7 @@ import { KeychainError } from 'src/keychain-error';
 import { BloggingUtils } from 'src/popup/hive/utils/blogging.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 // TODO : when compatible
 export const broadcastPost = async (
   requestHandler: HiveRequestsHandler,
@@ -45,7 +46,7 @@ export const broadcastPost = async (
   } catch (e: any) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await chrome.i18n.getMessage(
+    err_message = await I18nUtils.getMessage(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -55,7 +56,7 @@ export const broadcastPost = async (
       result,
       data,
       request?.tab!,
-      await chrome.i18n.getMessage('bgd_ops_post'),
+      await I18nUtils.getMessage('bgd_ops_post'),
       err_message,
     );
     return message;

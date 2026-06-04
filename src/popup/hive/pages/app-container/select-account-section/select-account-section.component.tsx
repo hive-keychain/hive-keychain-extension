@@ -22,6 +22,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   background?: 'white';
   fullSize?: boolean;
@@ -263,7 +264,7 @@ const SelectAccountSection = ({
             }}>
             <SVGIcon icon={actionLink.icon} />
             <div className="text">
-              {chrome.i18n.getMessage(actionLink.label)}
+              {I18nUtils.getMessage(actionLink.label)}
             </div>
           </div>
         ))}

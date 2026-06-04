@@ -16,6 +16,7 @@ import {
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const hiveChain = {
   name: 'HIVE',
   type: ChainType.HIVE,
@@ -224,7 +225,7 @@ jest.mock('@popup/evm/utils/evm-chain.utils', () => ({
 
 describe('UnlockedAppComponent', () => {
   beforeEach(() => {
-    chrome.i18n.getMessage = jest.fn((key: string) => key);
+    I18nUtils.getMessage = jest.fn((key: string) => key);
     jest
       .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
       .mockImplementation(async (key) => {

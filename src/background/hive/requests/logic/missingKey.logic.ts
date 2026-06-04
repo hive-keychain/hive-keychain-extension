@@ -3,6 +3,7 @@ import { createOrUpdateDialog } from '@background/multichain/dialog-lifecycle';
 import sendErrors from '@background/multichain/errors';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const missingKey = (
   requestHandler: HiveRequestsHandler,
   tab: number,
@@ -15,8 +16,8 @@ export const missingKey = (
     sendErrors(
       tab!,
       'user_cancel',
-      await chrome.i18n.getMessage('bgd_auth_canceled'),
-      await chrome.i18n.getMessage('bgd_auth_no_key', [username, typeWif]),
+      await I18nUtils.getMessage('bgd_auth_canceled'),
+      await I18nUtils.getMessage('bgd_auth_no_key', [username, typeWif]),
       request,
     );
     await requestHandler.removeRequestById(request.request_id, tab);

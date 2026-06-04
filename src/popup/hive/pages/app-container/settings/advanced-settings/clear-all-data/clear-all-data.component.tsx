@@ -19,6 +19,7 @@ import { resetAccount } from 'src/popup/hive/actions/account.actions';
 import { resetActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const ClearAllData = ({
   setTitleContainerProperties,
   navigateTo,
@@ -56,7 +57,7 @@ const ClearAllData = ({
       <p
         className="introduction"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_clear_all_data_desc'),
+          __html: I18nUtils.getMessage('popup_html_clear_all_data_desc'),
         }}></p>
 
       <div className="bottom-panel">

@@ -10,6 +10,7 @@ import {
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const chain: EvmChain = {
   name: 'Ethereum',
   type: ChainType.EVM,
@@ -276,7 +277,7 @@ describe('evm-tokens-history.utils tests:\n', () => {
     expect(history.events[0].label).toBe(
       'evm_history_operation_transfer_out',
     );
-    expect(chrome.i18n.getMessage).toHaveBeenCalledWith(
+    expect(I18nUtils.getMessage).toHaveBeenCalledWith(
       'evm_history_operation_transfer_out',
       ['10', 'USDC', 'Alice'],
     );

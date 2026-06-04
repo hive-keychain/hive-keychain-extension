@@ -10,6 +10,7 @@ import CurrencyUtils, {
 import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 import PhishingUtils from 'src/utils/phishing.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const useTransferCheck = (
   data: RequestTransfer | RequestSendToken,
   rpc: Rpc,
@@ -19,7 +20,7 @@ export const useTransferCheck = (
     PhishingUtils.getPhishingAccounts().then((accs: string[]) => {
       let warning;
       if (accs.includes(data.to)) {
-        warning = chrome.i18n.getMessage('popup_warning_phishing', [data.to]);
+        warning = I18nUtils.getMessage('popup_warning_phishing', [data.to]);
       } else {
         warning = TransferUtils.getTransferWarningLabel(
           data.to,

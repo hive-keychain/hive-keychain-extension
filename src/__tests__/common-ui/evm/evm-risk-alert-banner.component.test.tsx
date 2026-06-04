@@ -6,13 +6,14 @@ import {
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmRiskAlertBanner } from 'src/common-ui/evm/evm-risk-warning/evm-risk-alert-banner.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 jest.mock('src/common-ui/svg-icon/svg-icon.component', () => ({
   SVGIcon: () => <span data-testid="banner-icon" />,
 }));
 
 describe('EvmRiskAlertBanner', () => {
   beforeEach(() => {
-    global.chrome.i18n.getMessage = jest.fn(
+    I18nUtils.getMessage = jest.fn(
       (key: string, params?: string[]) =>
         params ? `${key}:${params.join(',')}` : key,
     );

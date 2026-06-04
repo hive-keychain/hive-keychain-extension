@@ -7,6 +7,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface FavoriteAccountsItemProps {
   favorite: AutoCompleteValue;
   handleDeleteFavorite: (
@@ -89,7 +90,7 @@ const FavoriteAccountsItem = ({
               className="edit-label"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
-              placeholder={chrome.i18n.getMessage(
+              placeholder={I18nUtils.getMessage(
                 'popup_html_favorite_user_nickname',
               )}
             />
@@ -116,7 +117,7 @@ const FavoriteAccountsItem = ({
               onClick={($event) => edit($event, favorite)}>
               <SVGIcon icon={SVGIcons.FAVORITE_ACCOUNTS_EDIT} />
               <span className="label">
-                {chrome.i18n.getMessage('html_popup_button_edit_label')}
+                {I18nUtils.getMessage('html_popup_button_edit_label')}
               </span>
             </div>
             <div
@@ -124,7 +125,7 @@ const FavoriteAccountsItem = ({
               onClick={($event) => deleteFavorite($event, listName, favorite)}>
               <SVGIcon icon={SVGIcons.FAVORITE_ACCOUNTS_DELETE} />
               <span className="label">
-                {chrome.i18n.getMessage('delete_label')}
+                {I18nUtils.getMessage('delete_label')}
               </span>
             </div>
           </div>

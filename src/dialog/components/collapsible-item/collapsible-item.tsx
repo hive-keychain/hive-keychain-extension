@@ -6,6 +6,7 @@ import {
   copyTextWithToast,
 } from 'src/common-ui/toast/copy-toast.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   title: string;
   content: string;
@@ -24,7 +25,7 @@ const CollaspsibleItem = ({ title, content, pre }: Props) => {
         <div
           className="label"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage(title),
+            __html: I18nUtils.getMessage(title),
           }}></div>
         <SVGIcon icon={SVGIcons.SELECT_ARROW_DOWN} />
       </div>

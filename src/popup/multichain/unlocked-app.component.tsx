@@ -53,6 +53,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { useWorkingRPC } from 'src/utils/rpc-switcher.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const stackHasAccountSetupPage = (stack: { currentPage: Screen }[]): boolean =>
   stack.some(
     (navigation) =>
@@ -539,7 +540,7 @@ const UnlockedApp = ({
       return (
         <div className="change-rpc-popup">
           <div className="message">
-            {chrome.i18n.getMessage('popup_html_rpc_not_responding_error', [
+            {I18nUtils.getMessage('popup_html_rpc_not_responding_error', [
               initialRpc?.uri!,
               switchToRpc?.uri!,
             ])}

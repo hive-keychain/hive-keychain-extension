@@ -43,6 +43,7 @@ import {
 } from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const renderCopyableFormattedAddress = (
   address: string,
   chainId: string,
@@ -339,7 +340,7 @@ export async function runSendTransactionInit(
       });
     }
     if (params.data && params.to) {
-      transactionConfirmationFields.operationName = chrome.i18n.getMessage(
+      transactionConfirmationFields.operationName = I18nUtils.getMessage(
         'dialog_evm_decrypt_send_transaction_title',
       );
       transactionConfirmationFields.otherFields.push({
@@ -360,7 +361,7 @@ export async function runSendTransactionInit(
       });
     } else if (!params.data && params.to) {
       transactionConfirmationFields.operationName =
-        chrome.i18n.getMessage('evm_operation_transfer');
+        I18nUtils.getMessage('evm_operation_transfer');
       transactionConfirmationFields.mainTokenAmount = {
         name: 'evm_main_token_amount',
         type: EvmInputDisplayType.BALANCE,
@@ -381,7 +382,7 @@ export async function runSendTransactionInit(
         warnings: [],
       });
     } else if (params.data) {
-      transactionConfirmationFields.operationName = chrome.i18n.getMessage(
+      transactionConfirmationFields.operationName = I18nUtils.getMessage(
         'evm_operation_contract_deployment_transaction',
       );
       transactionConfirmationFields.otherFields.push({
@@ -533,7 +534,7 @@ export async function runSendTransactionInit(
             );
 
             transactionConfirmationFields.operationName =
-              chrome.i18n.getMessage(
+              I18nUtils.getMessage(
                 'dialog_evm_decrypt_send_transaction_title',
               );
 
@@ -616,7 +617,7 @@ export async function runSendTransactionInit(
 
             setShouldDisplayBalanceChange(true);
 
-            const translatedOperationName = chrome.i18n.getMessage(
+            const translatedOperationName = I18nUtils.getMessage(
               `evm_operation_${decodedTransactionData.name}`,
             );
             transactionConfirmationFields.operationName =
@@ -878,7 +879,7 @@ export async function runSendTransactionInit(
           // Case of smart contract deployment
           // Unknown ABI
           setCaption(
-            chrome.i18n.getMessage(
+            I18nUtils.getMessage(
               'evm_contract_deployment_transaction_caption',
             ),
           );
@@ -887,7 +888,7 @@ export async function runSendTransactionInit(
 
           tData.data = params.data;
 
-          transactionConfirmationFields.operationName = chrome.i18n.getMessage(
+          transactionConfirmationFields.operationName = I18nUtils.getMessage(
             `evm_operation_contract_deployment_transaction`,
           );
 
@@ -931,7 +932,7 @@ export async function runSendTransactionInit(
 
         setShouldDisplayBalanceChange(true);
 
-        transactionConfirmationFields.operationName = chrome.i18n.getMessage(
+        transactionConfirmationFields.operationName = I18nUtils.getMessage(
           'evm_operation_transfer',
         );
 
@@ -1005,7 +1006,7 @@ export async function runSendTransactionInit(
             value: JSON.stringify(params.accessList),
             style: { fontWeight: 500 },
           });
-          setCaption(chrome.i18n.getMessage('evm_access_list_caption_message'));
+          setCaption(I18nUtils.getMessage('evm_access_list_caption_message'));
           break;
         }
       }

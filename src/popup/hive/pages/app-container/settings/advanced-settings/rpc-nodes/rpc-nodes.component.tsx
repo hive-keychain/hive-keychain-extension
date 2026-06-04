@@ -37,6 +37,7 @@ import { ArrayUtils } from 'src/utils/array.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import * as ValidUrl from 'valid-url';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface RpcListItem {
   label: string;
   value: string;
@@ -271,7 +272,7 @@ const RpcNodes = ({
       data-testid={`${Screen.SETTINGS_RPC_NODES}-page`}
       className="rpc-nodes-page">
       <div className="introduction">
-        {chrome.i18n.getMessage('popup_html_rpc_node_text')}
+        {I18nUtils.getMessage('popup_html_rpc_node_text')}
       </div>
 
       <div className="rpc-form-container">
@@ -319,7 +320,7 @@ const RpcNodes = ({
           {!switchAuto && isAddRpcPanelDisplayed && (
             <div className="add-rpc-panel">
               <div className="add-rpc-caption">
-                <span>{chrome.i18n.getMessage('popup_html_add_rpc_text')}</span>
+                <span>{I18nUtils.getMessage('popup_html_add_rpc_text')}</span>
               </div>
               <InputComponent
                 dataTestId="input-rpc-node-uri"
@@ -404,7 +405,7 @@ const RpcNodes = ({
           {isNewHERpcPanelOpened && (
             <div className="add-rpc-panel">
               <div className="add-rpc-caption">
-                <span>{chrome.i18n.getMessage('popup_html_add_rpc_text')}</span>
+                <span>{I18nUtils.getMessage('popup_html_add_rpc_text')}</span>
               </div>
               <InputComponent
                 dataTestId="input-hive-engine-rpc-uri"
@@ -472,7 +473,7 @@ const RpcNodes = ({
           {isNewAccountHistoryPanelOpened && (
             <div className="add-rpc-panel">
               <div className="add-rpc-caption">
-                <span>{chrome.i18n.getMessage('popup_html_add_rpc_text')}</span>
+                <span>{I18nUtils.getMessage('popup_html_add_rpc_text')}</span>
               </div>
               <InputComponent
                 dataTestId="input-account-history-api-uri"
