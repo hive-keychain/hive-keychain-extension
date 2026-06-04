@@ -4804,7 +4804,7 @@
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
   "html_popup_evm_choose_account_text": {
-    "message": "Nous avons présélectionné les comptes avec un solde $1 non nul.<br/>Sélectionnez les comptes supplémentaires que vous souhaitez importer. Vous pourrez toujours en ajouter davantage plus tard depuis la page principale de votre portefeuille.",
+    "message": "Sélectionnez les comptes que vous souhaitez importer dans Keychain. Vous pourrez en ajouter d'autres plus tard depuis le menu déroulant des comptes.",
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
   "popup_html_import_wallet_from_seed": {
