@@ -3386,6 +3386,10 @@
     "message": "La création de votre compte a échoué. Veuillez réessayer plus tard",
     "description": "Create account failed message"
   },
+  "html_popup_create_account_pending_keep_open": {
+    "message": "Veuillez garder Keychain ouvert jusqu'à la création de votre compte. Ce processus peut prendre quelques minutes.",
+    "description": "Reminder on pending account creation page to keep the extension open"
+  },
   "html_popup_read_more": {
     "message": "Lire la suite",
     "description": "read more"

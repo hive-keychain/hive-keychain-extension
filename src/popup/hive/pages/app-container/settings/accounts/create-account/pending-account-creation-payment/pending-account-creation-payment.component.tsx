@@ -54,9 +54,16 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
 import { PaidAccountCreationPaymentUtils } from 'src/popup/hive/utils/paid-account-creation-payment.utils';
 import { PendingHiveAccountCreationUtils } from 'src/utils/pending-hive-account-creation.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 import Logger from 'src/utils/logger.utils';
 
 const ACCOUNT_CREATION_POLL_INTERVAL_MS = 10000;
+
+const isPendingAccountCreationInProgress = (
+  status: HiveAccountCreationStatus,
+) =>
+  !PaidAccountCreationActions.isTerminalPaidAccountCreationFailure(status) &&
+  status !== 'account_created';
 
 const STATUS_LABELS: Record<HiveAccountCreationStatus, string> = {
   payment_pending: 'Payment pending',
@@ -513,10 +520,21 @@ const PendingAccountCreationPayment = ({
     );
   }
 
+  const showKeepOpenDisclaimer = isPendingAccountCreationInProgress(
+    pendingRequest.status,
+  );
+
   return (
     <div
       className="pending-account-creation-payment"
       data-testid={`${Screen.PENDING_ACCOUNT_CREATION_PAYMENT}-page`}>
+      {showKeepOpenDisclaimer && (
+        <div
+          className="pending-disclaimer"
+          data-testid="pending-account-creation-keep-open-disclaimer">
+          {I18nUtils.getMessage('html_popup_create_account_pending_keep_open')}
+        </div>
+      )}
       <div className="payment-panel">
         <div className="payment-summary">
           <div className="username">@{pendingRequest.username}</div>

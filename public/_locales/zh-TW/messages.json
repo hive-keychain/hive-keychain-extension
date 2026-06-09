@@ -3386,6 +3386,10 @@
     "message": "Your account creation has failed. Please try again later",
     "description": "Create account failed message"
   },
+  "html_popup_create_account_pending_keep_open": {
+    "message": "請保持 Keychain 開啟，直到帳戶建立完成。此過程可能需要幾分鐘。",
+    "description": "Reminder on pending account creation page to keep the extension open"
+  },
   "html_popup_read_more": {
     "message": "Read more",
     "description": "read more"

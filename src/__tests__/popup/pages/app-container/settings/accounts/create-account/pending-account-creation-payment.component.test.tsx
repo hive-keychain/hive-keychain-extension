@@ -97,6 +97,11 @@ describe('PendingAccountCreationPaymentComponent', () => {
     renderComponent();
 
     expect(await screen.findByText('@new-account')).toBeInTheDocument();
+    expect(
+      screen.getByTestId('pending-account-creation-keep-open-disclaimer'),
+    ).toHaveTextContent(
+      'Please keep Keychain open until your account is created. This process may take a few minutes.',
+    );
     expect(screen.getByText('request-1')).toBeInTheDocument();
     expect(screen.getByText('3.000')).toBeInTheDocument();
     expect(screen.getByText('HIVE')).toBeInTheDocument();
@@ -323,6 +328,55 @@ describe('PendingAccountCreationPaymentComponent', () => {
       await screen.findByRole('button', { name: 'Pay with Keychain' }),
     ).toBeInTheDocument();
   });
+
+  it.each([
+    ['payment_pending', 'Payment pending'],
+    ['payment_detected', 'Payment detected'],
+    ['payment_confirming', 'Payment confirming'],
+    ['creating_account', 'Creating account'],
+  ] as [HiveAccountCreationStatus, string][])(
+    'shows keep-open disclaimer for in-progress %s status',
+    async (status) => {
+      jest
+        .spyOn(
+          PendingHiveAccountCreationUtils,
+          'getPendingHiveAccountCreationRequests',
+        )
+        .mockResolvedValue([{ ...pendingRequest, status }]);
+
+      renderComponent();
+
+      expect(
+        await screen.findByTestId('pending-account-creation-keep-open-disclaimer'),
+      ).toBeInTheDocument();
+    },
+  );
+
+  it.each([
+    ['expired', 'Expired'],
+    ['underpaid', 'Underpaid'],
+    ['paid_after_expiry', 'Paid after expiry'],
+    ['username_unavailable', 'Username unavailable'],
+    ['account_creation_failed', 'Account creation failed'],
+    ['cancelled', 'Cancelled'],
+  ] as [HiveAccountCreationStatus, string][])(
+    'hides keep-open disclaimer for terminal %s status',
+    async (status) => {
+      jest
+        .spyOn(
+          PendingHiveAccountCreationUtils,
+          'getPendingHiveAccountCreationRequests',
+        )
+        .mockResolvedValue([{ ...pendingRequest, status }]);
+
+      renderComponent();
+
+      expect(await screen.findByText('Current status')).toBeInTheDocument();
+      expect(
+        screen.queryByTestId('pending-account-creation-keep-open-disclaimer'),
+      ).not.toBeInTheDocument();
+    },
+  );
 
   it.each([
     ['payment_pending', 'Payment pending'],

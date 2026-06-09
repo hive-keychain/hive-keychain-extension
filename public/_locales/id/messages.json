@@ -3386,6 +3386,10 @@
     "message": "Pembuatan akun Anda gagal. Silakan coba lagi nanti.",
     "description": "Create account failed message"
   },
+  "html_popup_create_account_pending_keep_open": {
+    "message": "Harap tetap buka Keychain hingga akun Anda dibuat. Proses ini mungkin memerlukan beberapa menit.",
+    "description": "Reminder on pending account creation page to keep the extension open"
+  },
   "html_popup_read_more": {
     "message": "Baca lebih lanjut",
     "description": "read more"

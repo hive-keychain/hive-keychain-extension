@@ -6,6 +6,10 @@
   padding: 0 24px 24px;
   color: var(--main-font-color);
 
+  .pending-disclaimer {
+    @include form-container-text;
+  }
+
   .payment-panel,
   .status-panel {
     @include form-panel;
