@@ -1,18 +1,42 @@
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import * as HiveAccountCreationApi from '@api/hive-account-creation';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import {
   HiveAccountCreationStatus,
   PendingHiveAccountCreationRequest,
 } from '@interfaces/hive-account-creation.interface';
 import { Screen } from '@interfaces/screen.interface';
+import * as PaidAccountCreationActions from '@popup/hive/actions/paid-account-creation.actions';
+import {
+  ChainType,
+  HiveChain,
+} from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import * as copyToastUtils from 'src/common-ui/toast/copy-toast.utils';
 import { PendingAccountCreationPaymentComponent } from 'src/popup/hive/pages/app-container/settings/accounts/create-account/pending-account-creation-payment/pending-account-creation-payment.component';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { PendingHiveAccountCreationUtils } from 'src/utils/pending-hive-account-creation.utils';
+
+jest.mock('@popup/hive/actions/paid-account-creation.actions', () => ({
+  PaidAccountCreationActions: {
+    isTerminalPaidAccountCreationFailure: jest.fn((status) =>
+      [
+        'expired',
+        'underpaid',
+        'paid_after_expiry',
+        'username_unavailable',
+        'account_creation_failed',
+        'cancelled',
+      ].includes(status),
+    ),
+  },
+  synchronizePendingHiveAccountCreation: jest.fn(
+    () => async () => ({ outcome: 'skipped' }),
+  ),
+}));
 
 jest.mock('react-qr-code', () => (props: any) => {
   const React = require('react');
@@ -47,9 +71,19 @@ describe('PendingAccountCreationPaymentComponent', () => {
 
   beforeEach(() => {
     jest.restoreAllMocks();
+    (
+      PaidAccountCreationActions.synchronizePendingHiveAccountCreation as jest.Mock
+    ).mockReset();
+    (
+      PaidAccountCreationActions.synchronizePendingHiveAccountCreation as jest.Mock
+    ).mockImplementation(() => async () => ({ outcome: 'skipped' }));
     jest
       .spyOn(copyToastUtils, 'copyTextWithToast')
       .mockResolvedValue(true);
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it('loads the pending request by request id and displays payment details', async () => {
@@ -103,7 +137,7 @@ describe('PendingAccountCreationPaymentComponent', () => {
     expect(copyToastUtils.copyTextWithToast).toHaveBeenCalledWith('3.000');
   });
 
-  it('refreshes status manually and updates local pending status', async () => {
+  it('refreshes status manually through the shared synchronization action', async () => {
     const updatedRequest = {
       ...pendingRequest,
       status: 'payment_detected' as HiveAccountCreationStatus,
@@ -116,21 +150,22 @@ describe('PendingAccountCreationPaymentComponent', () => {
         'getPendingHiveAccountCreationRequests',
       )
       .mockResolvedValue([pendingRequest]);
-    jest
-      .spyOn(HiveAccountCreationApi, 'getHiveAccountCreationStatus')
-      .mockResolvedValue({
-        requestId: 'request-1',
-        username: 'new-account',
-        status: 'payment_detected',
-      });
-    jest
-      .spyOn(
-        PendingHiveAccountCreationUtils,
-        'updatePendingHiveAccountCreationStatus',
-      )
-      .mockResolvedValue(updatedRequest);
 
     renderComponent();
+
+    await waitFor(() => {
+      expect(
+        PaidAccountCreationActions.synchronizePendingHiveAccountCreation,
+      ).toHaveBeenCalledWith('request-1');
+    });
+    (
+      PaidAccountCreationActions.synchronizePendingHiveAccountCreation as jest.Mock
+    ).mockClear();
+    (
+      PaidAccountCreationActions.synchronizePendingHiveAccountCreation as jest.Mock
+    ).mockImplementation(
+      () => async () => ({ outcome: 'updated', request: updatedRequest }),
+    );
 
     fireEvent.click(
       await screen.findByRole('button', { name: 'Refresh status' }),
@@ -138,13 +173,155 @@ describe('PendingAccountCreationPaymentComponent', () => {
 
     await waitFor(() => {
       expect(
-        HiveAccountCreationApi.getHiveAccountCreationStatus,
+        PaidAccountCreationActions.synchronizePendingHiveAccountCreation,
       ).toHaveBeenCalledWith('request-1');
     });
-    expect(
-      PendingHiveAccountCreationUtils.updatePendingHiveAccountCreationStatus,
-    ).toHaveBeenCalledWith('request-1', 'payment_detected', mk);
     expect(await screen.findByText('Payment detected')).toBeInTheDocument();
+  });
+
+  it('polls actionable requests every ten seconds without overlapping calls', async () => {
+    jest.useFakeTimers();
+    let resolveSynchronization: (result: unknown) => void = () => undefined;
+    const synchronizationPromise = new Promise((resolve) => {
+      resolveSynchronization = resolve;
+    });
+    (
+      PaidAccountCreationActions.synchronizePendingHiveAccountCreation as jest.Mock
+    ).mockImplementation(() => async () => synchronizationPromise);
+    jest
+      .spyOn(
+        PendingHiveAccountCreationUtils,
+        'getPendingHiveAccountCreationRequests',
+      )
+      .mockResolvedValue([pendingRequest]);
+
+    renderComponent();
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(
+      PaidAccountCreationActions.synchronizePendingHiveAccountCreation,
+    ).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      jest.advanceTimersByTime(20000);
+      await Promise.resolve();
+    });
+    expect(
+      PaidAccountCreationActions.synchronizePendingHiveAccountCreation,
+    ).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      resolveSynchronization({ outcome: 'updated', request: pendingRequest });
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    await act(async () => {
+      jest.advanceTimersByTime(10000);
+      await Promise.resolve();
+    });
+    expect(
+      PaidAccountCreationActions.synchronizePendingHiveAccountCreation,
+    ).toHaveBeenCalledTimes(2);
+
+    jest.useRealTimers();
+  });
+
+  it('stops polling terminal failure statuses', async () => {
+    jest.useFakeTimers();
+    jest
+      .spyOn(
+        PendingHiveAccountCreationUtils,
+        'getPendingHiveAccountCreationRequests',
+      )
+      .mockResolvedValue([{ ...pendingRequest, status: 'expired' }]);
+
+    renderComponent();
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+    (
+      PaidAccountCreationActions.synchronizePendingHiveAccountCreation as jest.Mock
+    ).mockClear();
+
+    await act(async () => {
+      jest.advanceTimersByTime(20000);
+      await Promise.resolve();
+    });
+
+    expect(
+      PaidAccountCreationActions.synchronizePendingHiveAccountCreation,
+    ).not.toHaveBeenCalled();
+    jest.useRealTimers();
+  });
+
+  it('activates an automatically imported account and navigates home', async () => {
+    const importedAccount = {
+      name: pendingRequest.username,
+      keys: { posting: 'posting-private' },
+    };
+    const hiveChain = {
+      name: 'Hive',
+      type: ChainType.HIVE,
+      chainId: 'hive-chain-id',
+      logo: '',
+      rpcs: [],
+    } as HiveChain;
+    jest
+      .spyOn(
+        PendingHiveAccountCreationUtils,
+        'getPendingHiveAccountCreationRequests',
+      )
+      .mockResolvedValue([pendingRequest]);
+    jest
+      .spyOn(ChainUtils, 'getAllSetupChainsForType')
+      .mockResolvedValue([hiveChain]);
+    jest.spyOn(AccountUtils, 'getExtendedAccount').mockResolvedValue({} as any);
+    jest.spyOn(AccountUtils, 'getRCMana').mockResolvedValue({} as any);
+    (
+      PaidAccountCreationActions.synchronizePendingHiveAccountCreation as jest.Mock
+    ).mockImplementation(
+      () => async () => ({ outcome: 'imported', account: importedAccount }),
+    );
+
+    const { store } = renderComponent();
+
+    await waitFor(() => {
+      expect(store.getState().navigation.stack[0]?.currentPage).toBe(
+        Screen.HOME_PAGE,
+      );
+    });
+    expect(store.getState().activeAccountType).toBe(ChainType.HIVE);
+    expect(store.getState().chain).toEqual(hiveChain);
+    expect(store.getState().message.key).toBe(
+      'html_popup_create_account_successful',
+    );
+  });
+
+  it('shows the Keychain payment action for pending EVM requests', async () => {
+    jest
+      .spyOn(
+        PendingHiveAccountCreationUtils,
+        'getPendingHiveAccountCreationRequests',
+      )
+      .mockResolvedValue([
+        {
+          ...pendingRequest,
+          paymentCurrency: 'EVM:40:native',
+          paymentChainId: '40',
+          payerEvmAddress: '0x1111111111111111111111111111111111111111',
+          paymentTokenSymbol: 'TLOS',
+          paymentTokenDecimals: 18,
+        },
+      ]);
+
+    renderComponent();
+
+    expect(
+      await screen.findByRole('button', { name: 'Pay with Keychain' }),
+    ).toBeInTheDocument();
   });
 
   it.each([
@@ -173,23 +350,27 @@ describe('PendingAccountCreationPaymentComponent', () => {
     },
   );
 
-  const renderComponent = () =>
-    render(
-      <Provider
-        store={getFakeStore({
-          ...initialEmptyStateStore,
-          mk,
-          navigation: {
+  const renderComponent = () => {
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      mk,
+      navigation: {
+        params: { requestId: 'request-1' },
+        stack: [
+          {
+            currentPage: Screen.PENDING_ACCOUNT_CREATION_PAYMENT,
             params: { requestId: 'request-1' },
-            stack: [
-              {
-                currentPage: Screen.PENDING_ACCOUNT_CREATION_PAYMENT,
-                params: { requestId: 'request-1' },
-              },
-            ],
           },
-        } as any)}>
-        <PendingAccountCreationPaymentComponent />
-      </Provider>,
-    );
+        ],
+      },
+    } as any);
+    return {
+      ...render(
+        <Provider store={store}>
+          <PendingAccountCreationPaymentComponent />
+        </Provider>,
+      ),
+      store,
+    };
+  };
 });

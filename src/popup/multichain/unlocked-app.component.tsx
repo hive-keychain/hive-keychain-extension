@@ -9,6 +9,7 @@ import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmWalletSetupTabUtils } from '@popup/evm/utils/evm-wallet-setup-tab.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import { synchronizePendingHiveAccountCreations } from '@popup/hive/actions/paid-account-creation.actions';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
 import { setActiveRpc } from '@popup/hive/actions/active-rpc.actions';
@@ -114,8 +115,10 @@ const UnlockedApp = ({
   loadCurrencyPrices,
   loadGlobalProperties,
   initHiveEngineConfigFromStorage,
+  synchronizePendingHiveAccountCreations,
   navigateTo,
   navigateToWithParams,
+  setTitleContainerProperties,
 }: PropsFromRedux) => {
   const store = useStore<RootState>();
   const [isAppReady, setAppReady] = useState(false);
@@ -411,6 +414,7 @@ const UnlockedApp = ({
       nextAccountType,
       targetChain,
     );
+    await synchronizePendingHiveAccountCreations();
   };
 
   const initActiveHiveAccount = async (accounts: LocalAccount[]) => {
@@ -605,6 +609,7 @@ const connector = connect(mapStateToProps, {
   loadCurrencyPrices,
   loadGlobalProperties,
   initHiveEngineConfigFromStorage,
+  synchronizePendingHiveAccountCreations,
   navigateTo,
   navigateToWithParams,
   setTitleContainerProperties,

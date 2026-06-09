@@ -6,6 +6,7 @@ import {
   getFakeStore,
   initialEmptyStateStore,
 } from 'src/__tests__/utils-for-testing/fake-store';
+import { Screen } from '@interfaces/screen.interface';
 import { UnifiedRouterComponent } from 'src/popup/multichain/unified-router.component';
 import { ChainType } from 'src/popup/multichain/interfaces/chains.interface';
 import { MultichainScreen } from 'src/popup/multichain/reference-data/multichain-screen.enum';
@@ -23,6 +24,15 @@ jest.mock(
   'src/popup/hive/pages/app-container/settings/accounts/manage-account/manage-account.component',
   () => ({
     ManageAccountComponent: () => <div data-testid="hive-manage-route" />,
+  }),
+);
+
+jest.mock(
+  'src/popup/hive/pages/app-container/settings/accounts/create-account/pending-account-creation-payment/pending-account-creation-payment.component',
+  () => ({
+    PendingAccountCreationPaymentComponent: () => (
+      <div data-testid={`${Screen.PENDING_ACCOUNT_CREATION_PAYMENT}-page`} />
+    ),
   }),
 );
 
@@ -62,5 +72,13 @@ describe('UnifiedRouterComponent', () => {
     renderRouter(HiveScreen.SETTINGS_MANAGE_ACCOUNTS, ChainType.EVM);
 
     expect(screen.getByTestId('hive-manage-route')).toBeInTheDocument();
+  });
+
+  it('renders pending account creation payment after EVM paid create flow', () => {
+    renderRouter(HiveScreen.PENDING_ACCOUNT_CREATION_PAYMENT, ChainType.EVM);
+
+    expect(
+      screen.getByTestId(`${Screen.PENDING_ACCOUNT_CREATION_PAYMENT}-page`),
+    ).toBeInTheDocument();
   });
 });

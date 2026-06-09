@@ -54,6 +54,13 @@ const createPendingPaidHiveAccountCreation = async (
       paymentChainId: payment.chainId,
       paymentTokenAddress: payment.tokenAddress,
       paymentPriceUsd: payment.priceUsd,
+      payerEvmAddress:
+        payment.payerEvmAddress ?? paymentSelection.payerEvmAddress,
+      paymentTokenSymbol: paymentSelection.paymentTokenSymbol,
+      paymentTokenName: paymentSelection.paymentTokenName,
+      paymentTokenDecimals: paymentSelection.paymentTokenDecimals,
+      paymentTokenLogo: paymentSelection.paymentTokenLogo,
+      paymentTxHash: null,
       expiresAt: quote.expiresAt,
       status: quote.status,
     },

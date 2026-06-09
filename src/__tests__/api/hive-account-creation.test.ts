@@ -1,6 +1,7 @@
 import {
   createHiveAccountCreationQuote,
   getHiveAccountCreationStatus,
+  submitHiveAccountCreationPaymentTx,
 } from '@api/hive-account-creation';
 import { KeychainApi } from '@api/keychain';
 import { CreateHiveAccountCreationQuoteRequest } from '@interfaces/hive-account-creation.interface';
@@ -60,6 +61,8 @@ describe('Hive account creation API', () => {
         paymentCurrency: 'HIVE',
         paymentChainId: undefined,
         paymentTokenAddress: undefined,
+        paymentTokenDecimals: undefined,
+        payerEvmAddress: undefined,
         ownerPublicKey: 'STMpublicKey',
         activePublicKey: 'STMpublicKey',
         postingPublicKey: 'STMpublicKey',
@@ -88,6 +91,8 @@ describe('Hive account creation API', () => {
         username: 'new-account',
         paymentChainId: '1',
         paymentTokenAddress: '0xabc',
+        paymentTokenDecimals: 6,
+        payerEvmAddress: '0x1111111111111111111111111111111111111111',
         authorities: {
           owner: authority,
           active: authority,
@@ -114,6 +119,8 @@ describe('Hive account creation API', () => {
         paymentCurrency: undefined,
         paymentChainId: '1',
         paymentTokenAddress: '0xabc',
+        paymentTokenDecimals: 6,
+        payerEvmAddress: '0x1111111111111111111111111111111111111111',
         ownerPublicKey: 'STMpublicKey',
       }),
     );
@@ -135,6 +142,35 @@ describe('Hive account creation API', () => {
 
     expect(KeychainApi.get).toHaveBeenCalledWith(
       'hive/account-creation/request%2F1',
+    );
+  });
+
+  it('submits an EVM payment tx hash by request id', async () => {
+    jest.spyOn(KeychainApi, 'post').mockResolvedValue({
+      requestId: 'request/1',
+      username: 'new-account',
+      status: 'payment_confirming',
+      payment: {
+        txId: '0xpayment',
+      },
+    });
+
+    await expect(
+      submitHiveAccountCreationPaymentTx('request/1', {
+        txHash: '0xpayment',
+        from: '0x1111111111111111111111111111111111111111',
+      }),
+    ).resolves.toMatchObject({
+      requestId: 'request/1',
+      status: 'payment_confirming',
+    });
+
+    expect(KeychainApi.post).toHaveBeenCalledWith(
+      'hive/account-creation/request%2F1/payment-tx',
+      {
+        txHash: '0xpayment',
+        from: '0x1111111111111111111111111111111111111111',
+      },
     );
   });
 });

@@ -49,6 +49,12 @@ const sanitizePendingHiveAccountCreationRequest = (
   paymentChainId: request.paymentChainId,
   paymentTokenAddress: request.paymentTokenAddress,
   paymentPriceUsd: request.paymentPriceUsd,
+  payerEvmAddress: request.payerEvmAddress,
+  paymentTokenSymbol: request.paymentTokenSymbol,
+  paymentTokenName: request.paymentTokenName,
+  paymentTokenDecimals: request.paymentTokenDecimals,
+  paymentTokenLogo: request.paymentTokenLogo,
+  paymentTxHash: request.paymentTxHash,
   expiresAt: request.expiresAt,
   status: request.status,
   createdAt: request.createdAt ?? timestamp,
@@ -84,6 +90,7 @@ const updatePendingHiveAccountCreationStatus = async (
   requestId: string,
   status: HiveAccountCreationStatus,
   mk: string,
+  paymentTxHash?: string | null,
 ): Promise<PendingHiveAccountCreationRequest | undefined> => {
   const requests = await getPendingHiveAccountCreationRequests(mk);
   const requestIndex = requests.findIndex(
@@ -98,6 +105,10 @@ const updatePendingHiveAccountCreationStatus = async (
   const updatedRequest = {
     ...requests[requestIndex],
     status,
+    paymentTxHash:
+      paymentTxHash !== undefined
+        ? paymentTxHash
+        : requests[requestIndex].paymentTxHash,
     updatedAt: timestamp,
     lastCheckedAt: timestamp,
   };

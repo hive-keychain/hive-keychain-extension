@@ -69,6 +69,9 @@ export interface EvmPaymentTokenOption extends OptionItem {
   priceUsd: number;
   balanceUsd: number;
   formattedBalance: string;
+  decimals: number;
+  name: string;
+  logo: string;
 }
 
 const CreateAccountStepOne = ({
@@ -341,6 +344,11 @@ const CreateAccountStepOne = ({
         paymentSelection: {
           paymentChainId: selectedPaymentToken.chainId,
           paymentTokenAddress: selectedPaymentToken.tokenAddress,
+          payerEvmAddress: selectedAccount.evmAccount!.wallet.address,
+          paymentTokenSymbol: selectedPaymentToken.symbol,
+          paymentTokenName: selectedPaymentToken.name,
+          paymentTokenDecimals: selectedPaymentToken.decimals,
+          paymentTokenLogo: selectedPaymentToken.logo,
         },
       });
       return;
@@ -621,6 +629,14 @@ const buildEvmPaymentTokenOption = (
     chainId: String(chainGroup.chainId),
     tokenAddress,
     symbol: tokenInfo.symbol || chainGroup.chain.nativeToken || 'Token',
+    name: tokenInfo.name || tokenInfo.symbol || chainGroup.chain.name,
+    decimals:
+      tokenInfo.type === EVMSmartContractType.ERC20 ? tokenInfo.decimals : 18,
+    logo:
+      tokenInfo.logo ||
+      (tokenInfo as any).logoUrl ||
+      (tokenInfo as any).metadata?.logoUrl ||
+      '',
     chainName: chainGroup.chain.name,
     priceUsd,
     balanceUsd,

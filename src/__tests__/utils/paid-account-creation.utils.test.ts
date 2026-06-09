@@ -56,6 +56,7 @@ describe('paid-account-creation.utils tests:\n', () => {
         paymentCurrency: 'HIVE',
         paymentChainId: undefined,
         paymentTokenAddress: undefined,
+        payerEvmAddress: undefined,
         ownerPublicKey: 'STMownerPublic',
         activePublicKey: 'STMactivePublic',
         postingPublicKey: 'STMpostingPublic',
@@ -111,7 +112,8 @@ describe('paid-account-creation.utils tests:\n', () => {
       tokenAddress: '0xabc',
       priceUsd: '1.5',
       address: '0x1111111111111111111111111111111111111111',
-      memo: 'account-creation:request-evm',
+      memo: null,
+      payerEvmAddress: '0x2222222222222222222222222222222222222222',
       expiresAt: '2026-04-28T00:00:00.000Z',
     });
     const saveSpy = jest
@@ -126,7 +128,15 @@ describe('paid-account-creation.utils tests:\n', () => {
     await PaidAccountCreationUtils.createPendingPaidHiveAccountCreation(
       'new-account',
       generatedKeys,
-      { paymentChainId: '1', paymentTokenAddress: '0xabc' },
+      {
+        paymentChainId: '1',
+        paymentTokenAddress: '0xabc',
+        payerEvmAddress: '0x2222222222222222222222222222222222222222',
+        paymentTokenSymbol: 'USDC',
+        paymentTokenName: 'USD Coin',
+        paymentTokenDecimals: 6,
+        paymentTokenLogo: 'usdc.svg',
+      },
       mk,
     );
 
@@ -136,6 +146,8 @@ describe('paid-account-creation.utils tests:\n', () => {
         paymentCurrency: undefined,
         paymentChainId: '1',
         paymentTokenAddress: '0xabc',
+        paymentTokenDecimals: 6,
+        payerEvmAddress: '0x2222222222222222222222222222222222222222',
       }),
     );
     expect(saveSpy).toHaveBeenCalledWith(
@@ -143,11 +155,17 @@ describe('paid-account-creation.utils tests:\n', () => {
         requestId: 'request-evm',
         paymentCurrency: 'EVM:1:0xabc',
         paymentAddress: '0x1111111111111111111111111111111111111111',
-        memo: 'account-creation:request-evm',
+        memo: null,
         amount: '2',
         paymentChainId: '1',
         paymentTokenAddress: '0xabc',
         paymentPriceUsd: '1.5',
+        payerEvmAddress: '0x2222222222222222222222222222222222222222',
+        paymentTokenSymbol: 'USDC',
+        paymentTokenName: 'USD Coin',
+        paymentTokenDecimals: 6,
+        paymentTokenLogo: 'usdc.svg',
+        paymentTxHash: null,
       }),
       mk,
     );

@@ -27,6 +27,8 @@ export interface CreateHiveAccountCreationQuoteRequest {
   paymentCurrency?: HiveAccountCreationPaymentCurrency;
   paymentChainId?: string | number;
   paymentTokenAddress?: string | null;
+  paymentTokenDecimals?: number;
+  payerEvmAddress?: string;
 }
 
 export type HiveAccountCreationPaymentCurrency = 'HIVE';
@@ -39,12 +41,18 @@ export interface HiveAccountCreationPayment {
   chainId?: string | null;
   tokenAddress?: string | null;
   priceUsd?: string | null;
+  payerEvmAddress?: string | null;
 }
 
 export interface HiveAccountCreationPaymentSelection {
   paymentCurrency?: HiveAccountCreationPaymentCurrency;
   paymentChainId?: string | number;
   paymentTokenAddress?: string | null;
+  payerEvmAddress?: string;
+  paymentTokenSymbol?: string;
+  paymentTokenName?: string;
+  paymentTokenDecimals?: number;
+  paymentTokenLogo?: string;
 }
 
 export interface HiveAccountCreationQuoteResponse {
@@ -63,6 +71,9 @@ export interface HiveAccountCreationStatusResponse {
   fee?: string;
   paidAmount?: string;
   txId?: string;
+  payment?: {
+    txId?: string | null;
+  };
   createdAccount?: string;
   expiresAt?: string;
   updatedAt?: string;
@@ -80,6 +91,12 @@ export interface PendingHiveAccountCreationRequest {
   paymentChainId?: string | null;
   paymentTokenAddress?: string | null;
   paymentPriceUsd?: string | null;
+  payerEvmAddress?: string | null;
+  paymentTokenSymbol?: string;
+  paymentTokenName?: string;
+  paymentTokenDecimals?: number;
+  paymentTokenLogo?: string;
+  paymentTxHash?: string | null;
   expiresAt: string;
   status: HiveAccountCreationStatus;
   createdAt: string;
@@ -92,3 +109,8 @@ export type SavePendingHiveAccountCreationRequest = Omit<
   'createdAt' | 'updatedAt'
 > &
   Partial<Pick<PendingHiveAccountCreationRequest, 'createdAt' | 'updatedAt'>>;
+
+export interface SubmitHiveAccountCreationPaymentTxRequest {
+  txHash: string;
+  from?: string;
+}
