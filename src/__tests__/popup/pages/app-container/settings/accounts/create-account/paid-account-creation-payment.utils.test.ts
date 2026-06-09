@@ -112,4 +112,47 @@ describe('PaidAccountCreationPaymentUtils', () => {
     expect(decoded[0]).toBe(treasuryAddress);
     expect(decoded[1].toString()).toBe('3250000');
   });
+
+  it('validates EVM and Hive payment transaction hashes', () => {
+    const evmRequest = baseRequest;
+    const hiveRequest = {
+      ...baseRequest,
+      paymentCurrency: 'HIVE',
+      paymentChainId: null,
+      payerEvmAddress: null,
+    };
+
+    expect(
+      PaidAccountCreationPaymentUtils.isValidPaymentTxHash(
+        evmRequest,
+        `0x${'a'.repeat(64)}`,
+      ),
+    ).toBe(true);
+    expect(
+      PaidAccountCreationPaymentUtils.isValidPaymentTxHash(
+        evmRequest,
+        'a'.repeat(40),
+      ),
+    ).toBe(false);
+    expect(
+      PaidAccountCreationPaymentUtils.isValidPaymentTxHash(
+        hiveRequest,
+        'a'.repeat(40),
+      ),
+    ).toBe(true);
+    expect(
+      PaidAccountCreationPaymentUtils.isValidPaymentTxHash(
+        hiveRequest,
+        `0x${'a'.repeat(64)}`,
+      ),
+    ).toBe(false);
+  });
+
+  it('normalizes payment transaction hashes before validation', () => {
+    expect(
+      PaidAccountCreationPaymentUtils.normalizePaymentTxHash(
+        `  ${'b'.repeat(40)}  `,
+      ),
+    ).toBe('b'.repeat(40));
+  });
 });

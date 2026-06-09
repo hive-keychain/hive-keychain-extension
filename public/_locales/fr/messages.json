@@ -3390,6 +3390,30 @@
     "message": "Veuillez garder Keychain ouvert jusqu'à la création de votre compte. Ce processus peut prendre quelques minutes.",
     "description": "Reminder on pending account creation page to keep the extension open"
   },
+  "html_popup_create_account_pay_external_wallet": {
+    "message": "Payer avec un autre portefeuille",
+    "description": "Button to open external wallet payment popup on pending account creation page"
+  },
+  "html_popup_create_account_external_wallet_instructions": {
+    "message": "Scannez le code QR ou copiez les détails de paiement ci-dessous. Après avoir envoyé le paiement, collez le hash de votre transaction.",
+    "description": "Instructions in external wallet payment popup for account creation"
+  },
+  "html_popup_create_account_payment_tx_hash": {
+    "message": "Hash de transaction",
+    "description": "Label for transaction hash input in external wallet payment popup"
+  },
+  "html_popup_create_account_submit_payment_tx": {
+    "message": "Soumettre le paiement",
+    "description": "Button to submit external payment transaction hash"
+  },
+  "html_popup_create_account_submitting_payment_tx": {
+    "message": "Envoi en cours...",
+    "description": "Loading label while submitting external payment transaction hash"
+  },
+  "html_popup_create_account_invalid_payment_tx_hash": {
+    "message": "Hash de transaction invalide.",
+    "description": "Validation error for external payment transaction hash input"
+  },
   "html_popup_read_more": {
     "message": "Lire la suite",
     "description": "read more"

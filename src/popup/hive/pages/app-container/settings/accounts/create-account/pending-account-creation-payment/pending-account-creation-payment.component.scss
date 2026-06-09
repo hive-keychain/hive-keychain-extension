@@ -93,20 +93,6 @@
     }
   }
 
-  .qr-code-container {
-    align-self: center;
-    border: 4px solid var(--qrcode-border-color);
-    background: var(--qrcode-background-color);
-    padding: 10px;
-    border-radius: 8px;
-
-    .qrcode {
-      width: 132px;
-      height: 132px;
-      display: block;
-    }
-  }
-
   .empty-state,
   .error-state {
     @include form-panel;

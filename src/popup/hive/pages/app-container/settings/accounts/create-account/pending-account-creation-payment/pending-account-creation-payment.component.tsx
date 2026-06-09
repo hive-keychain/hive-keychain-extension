@@ -41,7 +41,6 @@ import { setTitleContainerProperties } from '@popup/multichain/actions/title-con
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import moment from 'moment';
-import QRCode from 'react-qr-code';
 import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent, {
@@ -52,6 +51,7 @@ import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.c
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
+import { ExternalWalletPaymentPopup } from 'src/popup/hive/pages/app-container/settings/accounts/create-account/pending-account-creation-payment/external-wallet-payment-popup.component';
 import { PaidAccountCreationPaymentUtils } from 'src/popup/hive/utils/paid-account-creation-payment.utils';
 import { PendingHiveAccountCreationUtils } from 'src/utils/pending-hive-account-creation.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
@@ -106,6 +106,9 @@ const PendingAccountCreationPayment = ({
   >();
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isExternalWalletPopupOpen, setIsExternalWalletPopupOpen] =
+    useState(false);
+  const [isSubmittingExternalTx, setIsSubmittingExternalTx] = useState(false);
   const synchronizationInProgress = useRef(false);
 
   useEffect(() => {
@@ -471,6 +474,34 @@ const PendingAccountCreationPayment = ({
     } as EVMConfirmationPageParams);
   };
 
+  const submitExternalPaymentTx = async (txHash: string) => {
+    if (!pendingRequest) return;
+
+    setIsSubmittingExternalTx(true);
+    try {
+      const statusResponse = await submitHiveAccountCreationPaymentTx(
+        pendingRequest.requestId,
+        {
+          txHash,
+          from: pendingRequest.payerEvmAddress ?? undefined,
+        },
+      );
+      await updateLocalPaymentTxStatus(statusResponse.status, txHash);
+      setIsExternalWalletPopupOpen(false);
+    } catch (error) {
+      Logger.error('Error submitting external account creation payment', error);
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'Unable to submit account creation payment.',
+        [],
+        true,
+      );
+    } finally {
+      setIsSubmittingExternalTx(false);
+    }
+  };
+
   const renderCopyButton = (value: string, label: string) => (
     <button
       type="button"
@@ -578,16 +609,6 @@ const PendingAccountCreationPayment = ({
           label: 'Expiry',
           value: formatDate(pendingRequest.expiresAt),
         })}
-
-        <div className="qr-code-container">
-          <QRCode
-            data-testid="qrcode"
-            className="qrcode"
-            value={pendingRequest.paymentAddress}
-            bgColor="var(--qrcode-background-color)"
-            fgColor="var(--qrcode-foreground-color)"
-          />
-        </div>
       </div>
 
       {pendingRequest.status === 'payment_pending' &&
@@ -598,6 +619,26 @@ const PendingAccountCreationPayment = ({
             onClick={payWithKeychain}
           />
         )}
+
+      {pendingRequest.status === 'payment_pending' && (
+        <ButtonComponent
+          label="html_popup_create_account_pay_external_wallet"
+          onClick={() => setIsExternalWalletPopupOpen(true)}
+        />
+      )}
+
+      {isExternalWalletPopupOpen && (
+        <ExternalWalletPaymentPopup
+          pendingRequest={pendingRequest}
+          isSubmitting={isSubmittingExternalTx}
+          onClose={() => {
+            if (!isSubmittingExternalTx) {
+              setIsExternalWalletPopupOpen(false);
+            }
+          }}
+          onSubmitTxHash={submitExternalPaymentTx}
+        />
+      )}
 
       <ButtonComponent
         label={isRefreshing ? 'Refreshing...' : 'Refresh status'}

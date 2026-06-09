@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { submitHiveAccountCreationPaymentTx } from '@api/hive-account-creation';
 import {
   HiveAccountCreationStatus,
   PendingHiveAccountCreationRequest,
@@ -19,6 +20,10 @@ import * as copyToastUtils from 'src/common-ui/toast/copy-toast.utils';
 import { PendingAccountCreationPaymentComponent } from 'src/popup/hive/pages/app-container/settings/accounts/create-account/pending-account-creation-payment/pending-account-creation-payment.component';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { PendingHiveAccountCreationUtils } from 'src/utils/pending-hive-account-creation.utils';
+
+jest.mock('@api/hive-account-creation', () => ({
+  submitHiveAccountCreationPaymentTx: jest.fn(),
+}));
 
 jest.mock('@popup/hive/actions/paid-account-creation.actions', () => ({
   PaidAccountCreationActions: {
@@ -71,6 +76,7 @@ describe('PendingAccountCreationPaymentComponent', () => {
 
   beforeEach(() => {
     jest.restoreAllMocks();
+    (submitHiveAccountCreationPaymentTx as jest.Mock).mockReset();
     (
       PaidAccountCreationActions.synchronizePendingHiveAccountCreation as jest.Mock
     ).mockReset();
@@ -109,13 +115,122 @@ describe('PendingAccountCreationPaymentComponent', () => {
     expect(screen.getByText('account-creation:request-1')).toBeInTheDocument();
     expect(screen.getByText('Payment pending')).toBeInTheDocument();
     expect(screen.getByText('Expiry')).toBeInTheDocument();
+    expect(screen.queryByTestId('qrcode')).not.toBeInTheDocument();
+    expect(
+      await screen.findByRole('button', { name: 'Pay with another wallet' }),
+    ).toBeInTheDocument();
+    expect(
+      PendingHiveAccountCreationUtils.getPendingHiveAccountCreationRequests,
+    ).toHaveBeenCalledWith(mk);
+  });
+
+  it('opens the external wallet popup with a QR code and payment details', async () => {
+    jest
+      .spyOn(
+        PendingHiveAccountCreationUtils,
+        'getPendingHiveAccountCreationRequests',
+      )
+      .mockResolvedValue([pendingRequest]);
+
+    renderComponent();
+
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Pay with another wallet' }),
+    );
+
+    expect(
+      await screen.findByTestId('external-wallet-payment-popup'),
+    ).toBeInTheDocument();
     expect(screen.getByTestId('qrcode')).toHaveAttribute(
       'data-value',
       'hive-keychain',
     );
     expect(
-      PendingHiveAccountCreationUtils.getPendingHiveAccountCreationRequests,
-    ).toHaveBeenCalledWith(mk);
+      screen.getByText(
+        'Scan the QR code or copy the payment details below. After sending the payment, paste your transaction hash.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('submits an external Hive payment transaction hash to the backend', async () => {
+    const hiveTxId = 'a'.repeat(40);
+    jest
+      .spyOn(
+        PendingHiveAccountCreationUtils,
+        'getPendingHiveAccountCreationRequests',
+      )
+      .mockResolvedValue([pendingRequest]);
+    jest
+      .spyOn(
+        PendingHiveAccountCreationUtils,
+        'updatePendingHiveAccountCreationStatus',
+      )
+      .mockResolvedValue({
+        ...pendingRequest,
+        status: 'payment_confirming',
+        paymentTxHash: hiveTxId,
+      });
+    (submitHiveAccountCreationPaymentTx as jest.Mock).mockResolvedValue({
+      requestId: pendingRequest.requestId,
+      status: 'payment_confirming',
+    });
+
+    renderComponent();
+
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Pay with another wallet' }),
+    );
+    fireEvent.change(
+      await screen.findByTestId('external-wallet-payment-tx-hash-input'),
+      { target: { value: hiveTxId } },
+    );
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Submit payment' }),
+    );
+
+    await waitFor(() => {
+      expect(submitHiveAccountCreationPaymentTx).toHaveBeenCalledWith(
+        pendingRequest.requestId,
+        { txHash: hiveTxId, from: undefined },
+      );
+    });
+    expect(
+      PendingHiveAccountCreationUtils.updatePendingHiveAccountCreationStatus,
+    ).toHaveBeenCalledWith(
+      pendingRequest.requestId,
+      'payment_confirming',
+      mk,
+      hiveTxId,
+    );
+    expect(
+      screen.queryByTestId('external-wallet-payment-popup'),
+    ).not.toBeInTheDocument();
+    expect(await screen.findByText('Payment confirming')).toBeInTheDocument();
+  });
+
+  it('shows a validation error for an invalid external payment transaction hash', async () => {
+    jest
+      .spyOn(
+        PendingHiveAccountCreationUtils,
+        'getPendingHiveAccountCreationRequests',
+      )
+      .mockResolvedValue([pendingRequest]);
+
+    renderComponent();
+
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Pay with another wallet' }),
+    );
+    fireEvent.change(
+      await screen.findByTestId('external-wallet-payment-tx-hash-input'),
+      { target: { value: 'invalid-hash' } },
+    );
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Submit payment' }),
+    );
+
+    expect(await screen.findByText('Invalid transaction hash.')).toBeInTheDocument();
+    expect(submitHiveAccountCreationPaymentTx).not.toHaveBeenCalled();
   });
 
   it('copies address, memo, and amount', async () => {
@@ -325,8 +440,29 @@ describe('PendingAccountCreationPaymentComponent', () => {
     renderComponent();
 
     expect(
+      await screen.findByRole('button', { name: 'Pay with another wallet' }),
+    ).toBeInTheDocument();
+    expect(
       await screen.findByRole('button', { name: 'Pay with Keychain' }),
     ).toBeInTheDocument();
+  });
+
+  it('hides external wallet payment actions after payment is no longer pending', async () => {
+    jest
+      .spyOn(
+        PendingHiveAccountCreationUtils,
+        'getPendingHiveAccountCreationRequests',
+      )
+      .mockResolvedValue([
+        { ...pendingRequest, status: 'payment_detected' as HiveAccountCreationStatus },
+      ]);
+
+    renderComponent();
+
+    expect(await screen.findByText('Payment detected')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Pay with another wallet' }),
+    ).not.toBeInTheDocument();
   });
 
   it.each([

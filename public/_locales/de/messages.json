@@ -3390,6 +3390,30 @@
     "message": "Bitte lassen Sie Keychain geöffnet, bis Ihr Konto erstellt wurde. Dieser Vorgang kann einige Minuten dauern.",
     "description": "Reminder on pending account creation page to keep the extension open"
   },
+  "html_popup_create_account_pay_external_wallet": {
+    "message": "Mit anderer Wallet bezahlen",
+    "description": "Button to open external wallet payment popup on pending account creation page"
+  },
+  "html_popup_create_account_external_wallet_instructions": {
+    "message": "Scannen Sie den QR-Code oder kopieren Sie die Zahlungsdetails unten. Fügen Sie nach dem Senden der Zahlung Ihren Transaktions-Hash ein.",
+    "description": "Instructions in external wallet payment popup for account creation"
+  },
+  "html_popup_create_account_payment_tx_hash": {
+    "message": "Transaktions-Hash",
+    "description": "Label for transaction hash input in external wallet payment popup"
+  },
+  "html_popup_create_account_submit_payment_tx": {
+    "message": "Zahlung senden",
+    "description": "Button to submit external payment transaction hash"
+  },
+  "html_popup_create_account_submitting_payment_tx": {
+    "message": "Wird gesendet...",
+    "description": "Loading label while submitting external payment transaction hash"
+  },
+  "html_popup_create_account_invalid_payment_tx_hash": {
+    "message": "Ungültiger Transaktions-Hash.",
+    "description": "Validation error for external payment transaction hash input"
+  },
   "html_popup_read_more": {
     "message": "Mehr lesen",
     "description": "read more"

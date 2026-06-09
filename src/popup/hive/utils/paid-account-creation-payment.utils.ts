@@ -128,8 +128,29 @@ const buildPaymentTransactionData = (
   };
 };
 
+const EVM_PAYMENT_TX_HASH_PATTERN = /^0x[a-fA-F0-9]{64}$/;
+const HIVE_PAYMENT_TX_HASH_PATTERN = /^[a-fA-F0-9]{40}$/;
+
+const normalizePaymentTxHash = (txHash: string) => txHash.trim();
+
+const isValidPaymentTxHash = (
+  request: PendingHiveAccountCreationRequest,
+  txHash: string,
+): boolean => {
+  const normalizedTxHash = normalizePaymentTxHash(txHash);
+  if (!normalizedTxHash) {
+    return false;
+  }
+
+  return isEvmPaymentRequest(request)
+    ? EVM_PAYMENT_TX_HASH_PATTERN.test(normalizedTxHash)
+    : HIVE_PAYMENT_TX_HASH_PATTERN.test(normalizedTxHash);
+};
+
 export const PaidAccountCreationPaymentUtils = {
   isEvmPaymentRequest,
   buildPaymentTokenInfo,
   buildPaymentTransactionData,
+  normalizePaymentTxHash,
+  isValidPaymentTxHash,
 };

@@ -3390,6 +3390,30 @@
     "message": "請保持 Keychain 開啟，直到帳戶建立完成。此過程可能需要幾分鐘。",
     "description": "Reminder on pending account creation page to keep the extension open"
   },
+  "html_popup_create_account_pay_external_wallet": {
+    "message": "使用其他錢包付款",
+    "description": "Button to open external wallet payment popup on pending account creation page"
+  },
+  "html_popup_create_account_external_wallet_instructions": {
+    "message": "掃描 QR 碼或複製下方的付款詳情。發送付款後，請貼上您的交易雜湊。",
+    "description": "Instructions in external wallet payment popup for account creation"
+  },
+  "html_popup_create_account_payment_tx_hash": {
+    "message": "交易雜湊",
+    "description": "Label for transaction hash input in external wallet payment popup"
+  },
+  "html_popup_create_account_submit_payment_tx": {
+    "message": "提交付款",
+    "description": "Button to submit external payment transaction hash"
+  },
+  "html_popup_create_account_submitting_payment_tx": {
+    "message": "提交中...",
+    "description": "Loading label while submitting external payment transaction hash"
+  },
+  "html_popup_create_account_invalid_payment_tx_hash": {
+    "message": "交易雜湊無效。",
+    "description": "Validation error for external payment transaction hash input"
+  },
   "html_popup_read_more": {
     "message": "Read more",
     "description": "read more"

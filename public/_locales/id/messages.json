@@ -3390,6 +3390,30 @@
     "message": "Harap tetap buka Keychain hingga akun Anda dibuat. Proses ini mungkin memerlukan beberapa menit.",
     "description": "Reminder on pending account creation page to keep the extension open"
   },
+  "html_popup_create_account_pay_external_wallet": {
+    "message": "Bayar dengan dompet lain",
+    "description": "Button to open external wallet payment popup on pending account creation page"
+  },
+  "html_popup_create_account_external_wallet_instructions": {
+    "message": "Pindai kode QR atau salin detail pembayaran di bawah. Setelah mengirim pembayaran, tempel hash transaksi Anda.",
+    "description": "Instructions in external wallet payment popup for account creation"
+  },
+  "html_popup_create_account_payment_tx_hash": {
+    "message": "Hash transaksi",
+    "description": "Label for transaction hash input in external wallet payment popup"
+  },
+  "html_popup_create_account_submit_payment_tx": {
+    "message": "Kirim pembayaran",
+    "description": "Button to submit external payment transaction hash"
+  },
+  "html_popup_create_account_submitting_payment_tx": {
+    "message": "Mengirim...",
+    "description": "Loading label while submitting external payment transaction hash"
+  },
+  "html_popup_create_account_invalid_payment_tx_hash": {
+    "message": "Hash transaksi tidak valid.",
+    "description": "Validation error for external payment transaction hash input"
+  },
   "html_popup_read_more": {
     "message": "Baca lebih lanjut",
     "description": "read more"
