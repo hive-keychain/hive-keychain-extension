@@ -7,7 +7,10 @@ import { EvmWalletSetupTabUtils } from '@popup/evm/utils/evm-wallet-setup-tab.ut
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
 import { setChain } from '@popup/multichain/actions/chain.actions';
-import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
 import {
   resetTitleContainerProperties,
   setTitleContainerProperties,
@@ -37,9 +40,26 @@ import FileUtils from 'src/utils/file.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
+
+interface AddAccountNavigationParams {
+  selectedAccountType?: ChainType;
+}
+
+const getInitialSelectedAccountType = (
+  navigationParams?: AddAccountNavigationParams,
+  chain?: Chain,
+): ChainType.HIVE | ChainType.EVM => {
+  return navigationParams?.selectedAccountType === ChainType.EVM ||
+    chain?.type === ChainType.EVM
+    ? ChainType.EVM
+    : ChainType.HIVE;
+};
+
 const AddAccountMain = ({
   navigateTo,
+  navigateToWithParams,
   accounts,
+  evmAccountsCount,
   setAccounts,
   setTitleContainerProperties,
   resetTitleContainerProperties,
@@ -51,17 +71,27 @@ const AddAccountMain = ({
   loadActiveAccount,
   setActiveAccountType,
   loadEvmActiveAccount,
+  navigationParams,
 }: PropsFromRedux) => {
   const [selectedAccountType, setSelectedAccountType] = useState<
     ChainType.HIVE | ChainType.EVM
-  >(ChainType.HIVE);
+  >(getInitialSelectedAccountType(navigationParams, chain));
   const isLedgerAvailableForEvm = isEvmLedgerSupported || isLedgerSupported;
 
-  const hasAnyAccounts = (accounts?.length ?? 0) > 0;
+  const canLeaveAddAccountPage =
+    (accounts?.length ?? 0) + evmAccountsCount > 0;
+
+  useEffect(() => {
+    setSelectedAccountType(
+      getInitialSelectedAccountType(navigationParams, chain),
+    );
+  }, [chain, navigationParams]);
 
   useLayoutEffect(() => {
-    setTitleContainerProperties(buildAddAccountSetupTitleProperties(hasAnyAccounts));
-  }, [hasAnyAccounts, setTitleContainerProperties]);
+    setTitleContainerProperties(
+      buildAddAccountSetupTitleProperties(canLeaveAddAccountPage),
+    );
+  }, [canLeaveAddAccountPage, setTitleContainerProperties]);
 
   const handleAddByKeys = (): void => {
     navigateTo(Screen.ACCOUNT_PAGE_ADD_BY_KEYS);
@@ -90,7 +120,7 @@ const AddAccountMain = ({
       return;
     }
     await setChain(targetChain);
-    navigateTo(screen);
+    navigateToWithParams(screen, { selectedAccountType: ChainType.EVM });
   };
 
   const handleCreateEvmWallet = async (): Promise<void> => {
@@ -100,7 +130,9 @@ const AddAccountMain = ({
     }
     await setChain(targetChain);
     EvmWalletSetupTabUtils.startEvmCreateWalletFromToolbarPopup(() => {
-      navigateTo(Screen.CREATE_EVM_WALLET);
+      navigateToWithParams(Screen.CREATE_EVM_WALLET, {
+        selectedAccountType: ChainType.EVM,
+      });
     });
   };
 
@@ -243,7 +275,9 @@ const AddAccountMain = ({
       return;
     }
     await setChain(targetChain);
-    navigateTo(Screen.EVM_ADD_ACCOUNTS_FROM_LEDGER);
+    navigateToWithParams(Screen.EVM_ADD_ACCOUNTS_FROM_LEDGER, {
+      selectedAccountType: ChainType.EVM,
+    });
   };
 
   const handleSetupKeylessKeychain = async () => {
@@ -426,15 +460,21 @@ const AddAccountMain = ({
 const mapStateToProps = (state: RootState) => {
   return {
     accounts: state.hive.accounts,
+    evmAccountsCount: state.evm.accounts.length,
     isLedgerSupported: state.hive.appStatus.isLedgerSupported,
     isEvmLedgerSupported: state.evm.appStatus.isLedgerSupported,
     chain: state.chain as Chain,
     mk: state.mk,
+    navigationParams: (state.navigation.stack[0]?.params ??
+      state.navigation.stack[0]?.previousParams) as
+      | AddAccountNavigationParams
+      | undefined,
   };
 };
 
 const connector = connect(mapStateToProps, {
   navigateTo,
+  navigateToWithParams,
   setEvmAccounts,
   setAccounts,
   setTitleContainerProperties,

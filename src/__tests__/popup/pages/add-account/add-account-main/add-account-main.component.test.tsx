@@ -167,6 +167,89 @@ describe('add-account-main.component tests:\n', () => {
       expect(screen.getByText('Create a new EVM wallet')).toBeInTheDocument();
     });
 
+    it('opens on the EVM tab when returning from an EVM add-account page', () => {
+      customRender(<AddAccountMainComponent />, {
+        initialState: {
+          ...initialEmptyStateStore,
+          navigation: {
+            stack: [
+              {
+                currentPage: Screen.ACCOUNT_PAGE_INIT_ACCOUNT,
+                previousParams: { selectedAccountType: ChainType.EVM },
+              },
+            ],
+          },
+          hive: {
+            ...initialEmptyStateStore.hive,
+            accounts: accounts.twoAccounts,
+          },
+        },
+      });
+
+      expect(
+        screen.queryByText('Import by private key'),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByText('Import from a seedphrase'),
+      ).toBeInTheDocument();
+      expect(screen.getByText('Import from a private key')).toBeInTheDocument();
+      expect(screen.getByText('Create a new EVM wallet')).toBeInTheDocument();
+    });
+
+    it('opens on the EVM tab when the active chain is EVM', () => {
+      customRender(<AddAccountMainComponent />, {
+        initialState: {
+          ...initialEmptyStateStore,
+          chain: evmChain,
+          hive: {
+            ...initialEmptyStateStore.hive,
+            accounts: accounts.twoAccounts,
+          },
+        },
+      });
+
+      expect(
+        screen.queryByText('Import by private key'),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByText('Import from a seedphrase'),
+      ).toBeInTheDocument();
+      expect(screen.getByText('Import from a private key')).toBeInTheDocument();
+      expect(screen.getByText('Create a new EVM wallet')).toBeInTheDocument();
+    });
+
+    it('keeps back and close enabled when only EVM accounts exist', async () => {
+      const { store } = customRender(<AddAccountMainComponent />, {
+        initialState: {
+          ...initialEmptyStateStore,
+          hive: {
+            ...initialEmptyStateStore.hive,
+            accounts: [],
+          },
+          evm: {
+            ...initialEmptyStateStore.evm,
+            accounts: [
+              {
+                id: 0,
+                seedId: 1,
+                wallet: {
+                  address: '0x1234567890123456789012345678901234567890',
+                },
+                source: 'seed',
+              },
+            ] as any,
+          },
+        },
+      });
+
+      await waitFor(() => {
+        expect(store.getState().titleContainer).toMatchObject({
+          isBackButtonEnabled: true,
+          isCloseButtonDisabled: false,
+        });
+      });
+    });
+
     it('opens the Hive Ledger add-accounts page inside the popup', async () => {
       const { store } = customRender(<AddAccountMainComponent />, {
         initialState: {
