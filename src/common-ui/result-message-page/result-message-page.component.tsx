@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { HtmlUtils } from 'src/utils/html.utils';
 
 type ResultMessagePageType = 'success' | 'error' | 'warning';
 
@@ -69,21 +70,30 @@ const ResultMessagePage = ({
               ? title
               : chrome.i18n.getMessage(title, titleParams)}
           </div>
-          <div
-            className="message"
-            dangerouslySetInnerHTML={{
-              __html: skipMessageTranslation
-                ? message
-                : chrome.i18n.getMessage(message, messageParams),
-            }}></div>
-          {warningMessage && (
+          {skipMessageTranslation ? (
+            <div className="message">{message}</div>
+          ) : (
             <div
-              className="warning-message"
+              className="message"
               dangerouslySetInnerHTML={{
-                __html: skipWarningTranslation
-                  ? warningMessage
-                  : chrome.i18n.getMessage(warningMessage, warningParams),
+                __html: HtmlUtils.getSafeI18nHtml(message, messageParams),
               }}></div>
+          )}
+          {warningMessage && (
+            <>
+              {skipWarningTranslation ? (
+                <div className="warning-message">{warningMessage}</div>
+              ) : (
+                <div
+                  className="warning-message"
+                  dangerouslySetInnerHTML={{
+                    __html: HtmlUtils.getSafeI18nHtml(
+                      warningMessage,
+                      warningParams,
+                    ),
+                  }}></div>
+              )}
+            </>
           )}
         </div>
       </div>

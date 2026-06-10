@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { HtmlUtils } from 'src/utils/html.utils';
 
 export type CustomTooltipPosition = 'top' | 'bottom' | 'left' | 'right';
 export interface TooltipProps {
@@ -121,22 +122,38 @@ export const CustomTooltip = ({
       </div>
 
       {isOpen && message && coordinates && (
-        <div
-          ref={tooltip}
-          data-testid="tooltip-content"
-          className={`tooltip ${position ? position : 'top'} ${
-            color ? color : ''
-          }`}
-          style={{
-            position: 'fixed',
-            top: coordinates.y,
-            left: coordinates.x,
-          }}
-          dangerouslySetInnerHTML={{
-            __html: skipTranslation
-              ? message
-              : chrome.i18n.getMessage(message, messageParams),
-          }}></div>
+        <>
+          {skipTranslation ? (
+            <div
+              ref={tooltip}
+              data-testid="tooltip-content"
+              className={`tooltip ${position ? position : 'top'} ${
+                color ? color : ''
+              }`}
+              style={{
+                position: 'fixed',
+                top: coordinates.y,
+                left: coordinates.x,
+              }}>
+              {message}
+            </div>
+          ) : (
+            <div
+              ref={tooltip}
+              data-testid="tooltip-content"
+              className={`tooltip ${position ? position : 'top'} ${
+                color ? color : ''
+              }`}
+              style={{
+                position: 'fixed',
+                top: coordinates.y,
+                left: coordinates.x,
+              }}
+              dangerouslySetInnerHTML={{
+                __html: HtmlUtils.getSafeI18nHtml(message, messageParams),
+              }}></div>
+          )}
+        </>
       )}
     </div>
   );

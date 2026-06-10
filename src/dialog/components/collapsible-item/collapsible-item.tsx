@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { HtmlUtils } from 'src/utils/html.utils';
 
 type Props = {
   title: string;
@@ -21,7 +22,7 @@ const CollaspsibleItem = ({ title, content, pre }: Props) => {
         <div
           className="label"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage(title),
+            __html: HtmlUtils.getSafeI18nHtml(title),
           }}></div>
         <SVGIcon icon={SVGIcons.SELECT_ARROW_DOWN} />
       </div>

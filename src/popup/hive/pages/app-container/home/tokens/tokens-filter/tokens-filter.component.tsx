@@ -13,6 +13,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { loadTokens } from 'src/popup/hive/actions/token.actions';
 import FormatUtils from 'src/utils/format.utils';
+import { HtmlUtils } from 'src/utils/html.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const TokensFilter = ({
@@ -76,7 +77,7 @@ const TokensFilter = ({
         data-testid="tokens-filter-disclaimer"
         className="caption"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_tokens_settings_text'),
+          __html: HtmlUtils.getSafeI18nHtml('popup_html_tokens_settings_text'),
         }}></div>
 
       <InputComponent

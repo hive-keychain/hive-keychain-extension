@@ -9,6 +9,7 @@ import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/ch
 import { Keys } from 'src/interfaces/keys.interface';
 import { addAccount } from 'src/popup/hive/actions/account.actions';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+import { HtmlUtils } from 'src/utils/html.utils';
 
 export interface SelectKeysProps {
   keys: Keys;
@@ -65,7 +66,7 @@ const SelectKeys = ({
         data-testid="select-keys-page-caption"
         className="caption"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_import_success'),
+          __html: HtmlUtils.getSafeI18nHtml('popup_html_import_success'),
         }}></div>
 
       <CheckboxPanelComponent

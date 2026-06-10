@@ -6,6 +6,7 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { HtmlUtils } from 'src/utils/html.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -46,7 +47,7 @@ const LinkLedgerDevice = () => {
         <div
           className="caption"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage('ledger_link_device_caption'),
+            __html: HtmlUtils.getSafeI18nHtml('ledger_link_device_caption'),
           }}></div>
         {done && (
           <div className="confirmation">

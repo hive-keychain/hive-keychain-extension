@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { HtmlUtils } from 'src/utils/html.utils';
 
 const DEFAULT_TIMEOUT = 3000;
 
@@ -66,7 +67,7 @@ const MessageContainer = ({
         <div
           className="message"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage(message.key, message.params),
+            __html: HtmlUtils.getSafeI18nHtml(message.key, message.params),
           }}></div>
         <ButtonComponent
           additionalClass={

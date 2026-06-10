@@ -4,6 +4,7 @@ import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
+import { HtmlUtils } from 'src/utils/html.utils';
 
 const AboutPage = ({ setTitleContainerProperties }: PropsFromRedux) => {
   useEffect(() => {
@@ -19,7 +20,7 @@ const AboutPage = ({ setTitleContainerProperties }: PropsFromRedux) => {
         data-testid={`${SVGIcons.MENU_ABOUT}-page-content`}
         className="content"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_about_text'),
+          __html: HtmlUtils.getSafeI18nHtml('popup_html_about_text'),
         }}></div>
       <div className="version">
         {chrome.runtime.getManifest().name +

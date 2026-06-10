@@ -27,6 +27,7 @@ import RequestItem from 'src/dialog/components/request-item/request-item';
 import DialogError from 'src/dialog/pages/error';
 import { UnlockWalletComponent } from 'src/multisig/unlock-wallet/unlock-wallet.component';
 import BrowserUtils from 'src/utils/browser.utils';
+import { HtmlUtils } from 'src/utils/html.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import './multisig-dialog.scss';
@@ -272,7 +273,7 @@ const MultisigDialog = () => {
           <div
             className="caption"
             dangerouslySetInnerHTML={{
-              __html: chrome.i18n.getMessage(caption),
+              __html: HtmlUtils.getSafeI18nHtml(caption),
             }}></div>
 
           {content}

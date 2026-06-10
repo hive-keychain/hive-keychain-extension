@@ -17,6 +17,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
+import { HtmlUtils } from 'src/utils/html.utils';
 
 const defaultConfig: MultisigAccountConfig = {
   isEnabled: false,
@@ -158,7 +159,7 @@ const Multisig = ({
       <div
         className="intro"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_multisig_intro'),
+          __html: HtmlUtils.getSafeI18nHtml('popup_html_multisig_intro'),
         }}
       />
 

@@ -9,6 +9,7 @@ import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { ErrorUtils } from 'src/popup/hive/utils/error.utils';
+import { HtmlUtils } from 'src/utils/html.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
@@ -80,7 +81,7 @@ const AddKeyComponent = () => {
         <div
           className="caption"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage('add_key_from_ledger_caption'),
+            __html: HtmlUtils.getSafeI18nHtml('add_key_from_ledger_caption'),
           }}></div>
         <div>{chrome.i18n.getMessage(message)}</div>
         <div className="fill-space"></div>

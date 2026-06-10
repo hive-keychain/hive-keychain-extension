@@ -9,6 +9,7 @@ import React, { useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
+import { HtmlUtils } from 'src/utils/html.utils';
 
 type RegisterKeylessProps = {
   command: DialogCommand;
@@ -100,7 +101,7 @@ const RegisterKeyless = (props: Props) => {
         <div
           className="caption"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage(
+            __html: HtmlUtils.getSafeI18nHtml(
               'popup_html_keyless_keychain_register',
             ),
           }}></div>

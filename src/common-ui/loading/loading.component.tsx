@@ -3,6 +3,7 @@ import React from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { HtmlUtils } from 'src/utils/html.utils';
 
 type Props = {
   operations?: LoadingOperation[];
@@ -34,7 +35,7 @@ const Loading = ({ hide, operations, caption, loadingPercentage }: Props) => {
             <div className="loading-operation" key={operation.name}>
               <span
                 dangerouslySetInnerHTML={{
-                  __html: chrome.i18n.getMessage(
+                  __html: HtmlUtils.getSafeI18nHtml(
                     operation.name,
                     operation.operationParams,
                   ),

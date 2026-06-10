@@ -11,6 +11,7 @@ import ButtonComponent, {
 import { setAccounts } from 'src/popup/hive/actions/account.actions';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
+import { HtmlUtils } from 'src/utils/html.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const AddAccountMain = ({
@@ -89,7 +90,7 @@ const AddAccountMain = ({
       <div
         className="caption"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_chose_add_method'),
+          __html: HtmlUtils.getSafeI18nHtml('popup_html_chose_add_method'),
         }}></div>
 
       <div className="button-container">

@@ -11,6 +11,7 @@ import { ResultMessagePageComponent } from 'src/common-ui/result-message-page/re
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import FileUtils from 'src/utils/file.utils';
+import { HtmlUtils } from 'src/utils/html.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './import-file.scss';
 
@@ -139,7 +140,7 @@ const ImportFile = ({
           <div
             className="caption"
             dangerouslySetInnerHTML={{
-              __html: chrome.i18n.getMessage(text),
+              __html: HtmlUtils.getSafeI18nHtml(text),
             }}></div>
           <div className="upload-panel">
             {selectedFile && selectedFile.name && (
