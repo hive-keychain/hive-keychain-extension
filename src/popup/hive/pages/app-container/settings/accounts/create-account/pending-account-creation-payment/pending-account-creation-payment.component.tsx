@@ -1,23 +1,24 @@
 import { submitHiveAccountCreationPaymentTx } from '@api/hive-account-creation';
-import { PrivateKeyType } from '@interfaces/keys.interface';
-import { LocalAccount } from '@interfaces/local-account.interface';
 import {
   HiveAccountCreationStatus,
   PendingHiveAccountCreationRequest,
 } from '@interfaces/hive-account-creation.interface';
+import { PrivateKeyType } from '@interfaces/keys.interface';
+import { LocalAccount } from '@interfaces/local-account.interface';
 import { Screen } from '@interfaces/screen.interface';
+import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
+import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
+import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
+import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
+import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
 import {
   PaidAccountCreationActions,
   synchronizePendingHiveAccountCreation,
 } from '@popup/hive/actions/paid-account-creation.actions';
-import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
-import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
-import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
-import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
-import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
-import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
+import { setChain } from '@popup/multichain/actions/chain.actions';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -26,18 +27,17 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/multichain/actions/message.actions';
-import { setChain } from '@popup/multichain/actions/chain.actions';
 import {
   navigateTo,
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import {
   Chain,
   ChainType,
   EvmChain,
   HiveChain,
 } from '@popup/multichain/interfaces/chains.interface';
-import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import moment from 'moment';
@@ -53,9 +53,9 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
 import { ExternalWalletPaymentPopup } from 'src/popup/hive/pages/app-container/settings/accounts/create-account/pending-account-creation-payment/external-wallet-payment-popup.component';
 import { PaidAccountCreationPaymentUtils } from 'src/popup/hive/utils/paid-account-creation-payment.utils';
-import { PendingHiveAccountCreationUtils } from 'src/utils/pending-hive-account-creation.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 import Logger from 'src/utils/logger.utils';
+import { PendingHiveAccountCreationUtils } from 'src/utils/pending-hive-account-creation.utils';
 
 const ACCOUNT_CREATION_POLL_INTERVAL_MS = 10000;
 
@@ -172,16 +172,15 @@ const PendingAccountCreationPayment = ({
   };
 
   const getHiveChain = async (): Promise<HiveChain | undefined> => {
-    const setupHiveChains = await ChainUtils.getAllSetupChainsForType<HiveChain>(
-      ChainType.HIVE,
-    );
+    const setupHiveChains =
+      await ChainUtils.getAllSetupChainsForType<HiveChain>(ChainType.HIVE);
     if (setupHiveChains[0]) {
       return setupHiveChains[0];
     }
     const defaultChains = await ChainUtils.getDefaultChains();
-    return defaultChains.find(
-      (chain) => chain.type === ChainType.HIVE,
-    ) as HiveChain | undefined;
+    return defaultChains.find((chain) => chain.type === ChainType.HIVE) as
+      | HiveChain
+      | undefined;
   };
 
   const completeAccountImport = async (account: LocalAccount) => {
@@ -225,7 +224,10 @@ const PendingAccountCreationPayment = ({
         setPendingRequest(result.request);
       }
     } catch (error) {
-      Logger.error('Unable to synchronize pending Hive account creation', error);
+      Logger.error(
+        'Unable to synchronize pending Hive account creation',
+        error,
+      );
       if (showErrors) {
         setErrorMessage(
           error instanceof Error
@@ -611,14 +613,14 @@ const PendingAccountCreationPayment = ({
         })}
       </div>
 
-      {pendingRequest.status === 'payment_pending' &&
+      {/* {pendingRequest.status === 'payment_pending' &&
         PaidAccountCreationPaymentUtils.isEvmPaymentRequest(pendingRequest) && (
           <ButtonComponent
-            label="Pay with Keychain"
+            label="popup_html_create_account_pay_keychain"
             skipLabelTranslation
             onClick={payWithKeychain}
           />
-        )}
+        )} */}
 
       {pendingRequest.status === 'payment_pending' && (
         <ButtonComponent
