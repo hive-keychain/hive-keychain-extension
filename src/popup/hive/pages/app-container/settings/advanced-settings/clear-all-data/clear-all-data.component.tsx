@@ -14,6 +14,7 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { resetAccount } from 'src/popup/hive/actions/account.actions';
 import { resetActiveAccount } from 'src/popup/hive/actions/active-account.actions';
+import { HtmlUtils } from 'src/utils/html.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const ClearAllData = ({
@@ -48,7 +49,7 @@ const ClearAllData = ({
       <p
         className="introduction"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_clear_all_data_desc'),
+          __html: HtmlUtils.getSafeI18nHtml('popup_html_clear_all_data_desc'),
         }}></p>
 
       <div className="bottom-panel">

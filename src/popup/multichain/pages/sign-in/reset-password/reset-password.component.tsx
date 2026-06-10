@@ -9,6 +9,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { resetAccount } from 'src/popup/hive/actions/account.actions';
 import { resetActiveAccount } from 'src/popup/hive/actions/active-account.actions';
+import { HtmlUtils } from 'src/utils/html.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const ResetPasswordPage = ({
@@ -41,7 +42,7 @@ const ResetPasswordPage = ({
         <p
           className="introduction"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage('popup_html_reset_desc'),
+            __html: HtmlUtils.getSafeI18nHtml('popup_html_reset_desc'),
           }}></p>
       </div>
 

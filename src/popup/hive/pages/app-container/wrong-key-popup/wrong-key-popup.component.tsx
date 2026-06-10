@@ -11,6 +11,7 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
+import { HtmlUtils } from 'src/utils/html.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 export interface WrongKeysOnUser {
@@ -76,7 +77,7 @@ const WrongKeyPopup = ({
       <div
         className="caption"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('html_popup_wrong_key_introduction', [
+          __html: HtmlUtils.getSafeI18nHtml('html_popup_wrong_key_introduction', [
             accountFound,
           ]),
         }}></div>

@@ -7,6 +7,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
+import { HtmlUtils } from 'src/utils/html.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const TutorialPopup = () => {
@@ -50,7 +51,7 @@ const TutorialPopup = () => {
         <div
           className="sub-title"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage(
+            __html: HtmlUtils.getSafeI18nHtml(
               'popup_html_tutorial_popup_description',
             ),
           }}></div>

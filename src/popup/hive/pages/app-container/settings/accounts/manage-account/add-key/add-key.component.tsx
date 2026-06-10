@@ -18,6 +18,7 @@ import { refreshActiveAccount } from '@popup/hive/actions/active-account.actions
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { Screen } from '@reference-data/screen.enum';
 import ArrayUtils from 'src/utils/array.utils';
+import { HtmlUtils } from 'src/utils/html.utils';
 
 const AddKey = ({
   keyType,
@@ -112,7 +113,7 @@ const AddKey = ({
         data-testid="add-key-page-paragraph-introduction"
         className="caption"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_add_key_text', [
+          __html: HtmlUtils.getSafeI18nHtml('popup_html_add_key_text', [
             keyType.substring(0, 1) + keyType.substring(1).toLowerCase(),
           ]),
         }}></div>

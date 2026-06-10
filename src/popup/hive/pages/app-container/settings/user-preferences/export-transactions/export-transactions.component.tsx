@@ -16,6 +16,7 @@ import { SelectAccountSectionComponent } from 'src/common-ui/select-account-sect
 import { KeychainError } from 'src/keychain-error';
 import { setTitleContainerProperties } from 'src/popup/multichain/actions/title-container.actions';
 import { RootState } from 'src/popup/multichain/store';
+import { HtmlUtils } from 'src/utils/html.utils';
 
 const ExportTransactions = ({
   activeAccount,
@@ -73,7 +74,7 @@ const ExportTransactions = ({
       <div
         className="introduction"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage(
+          __html: HtmlUtils.getSafeI18nHtml(
             'popup_html_pref_export_transactions_info',
           ),
         }}

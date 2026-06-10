@@ -2,6 +2,7 @@ import React from 'react';
 import CheckboxComponent, {
   CheckboxProps,
 } from 'src/common-ui/checkbox/checkbox/checkbox.component';
+import { HtmlUtils } from 'src/utils/html.utils';
 
 export enum BackgroundType {
   TRANSPARENT = 'transparent',
@@ -28,22 +29,30 @@ export const CheckboxPanelComponent = (props: CheckboxPanelProps) => {
       {!props.children && (
         <>
           {props.hint && (
-            <div
-              className="hint"
-              dangerouslySetInnerHTML={{
-                __html: props.skipHintTranslation
-                  ? props.hint
-                  : chrome.i18n.getMessage(props.hint),
-              }}></div>
+            <>
+              {props.skipHintTranslation ? (
+                <div className="hint">{props.hint}</div>
+              ) : (
+                <div
+                  className="hint"
+                  dangerouslySetInnerHTML={{
+                    __html: HtmlUtils.getSafeI18nHtml(props.hint),
+                  }}></div>
+              )}
+            </>
           )}
           {props.text && (
-            <div
-              className="text"
-              dangerouslySetInnerHTML={{
-                __html: props.skipTextTranslation
-                  ? props.text
-                  : chrome.i18n.getMessage(props.text),
-              }}></div>
+            <>
+              {props.skipTextTranslation ? (
+                <div className="text">{props.text}</div>
+              ) : (
+                <div
+                  className="text"
+                  dangerouslySetInnerHTML={{
+                    __html: HtmlUtils.getSafeI18nHtml(props.text),
+                  }}></div>
+              )}
+            </>
           )}
         </>
       )}

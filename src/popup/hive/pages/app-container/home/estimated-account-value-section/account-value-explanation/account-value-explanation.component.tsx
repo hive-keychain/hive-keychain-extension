@@ -2,6 +2,7 @@ import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
+import { HtmlUtils } from 'src/utils/html.utils';
 
 const AccountValueExplanation = ({}: PropsFromRedux) => {
   return (
@@ -14,7 +15,7 @@ const AccountValueExplanation = ({}: PropsFromRedux) => {
       <p
         className="introduction"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_estimation_info_text'),
+          __html: HtmlUtils.getSafeI18nHtml('popup_html_estimation_info_text'),
         }}></p>
     </div>
   );

@@ -9,6 +9,7 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { GovernanceUtils } from 'src/popup/hive/utils/governance.utils';
+import { HtmlUtils } from 'src/utils/html.utils';
 
 interface GovernanceRenewalProps {
   accountNames: string[];
@@ -82,7 +83,7 @@ const GovernanceRenewal = ({
       <div
         className="caption"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage(
+          __html: HtmlUtils.getSafeI18nHtml(
             'html_popup_governance_renewal_introduction',
           ),
         }}></div>
