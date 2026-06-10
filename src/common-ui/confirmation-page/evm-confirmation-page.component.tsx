@@ -42,6 +42,7 @@ import { EvmTransactionWarning } from '@popup/evm/interfaces/evm-transactions.in
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 const ConfirmationPage = ({
   fields,
@@ -216,7 +217,7 @@ const ConfirmationPage = ({
         <div
           className="introduction"
           dangerouslySetInnerHTML={{
-            __html: message,
+            __html: HtmlUtils.sanitizeHtml(message),
           }}></div>
 
         {warningMessage && (

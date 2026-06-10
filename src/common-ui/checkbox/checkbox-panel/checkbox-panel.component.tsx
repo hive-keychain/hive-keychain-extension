@@ -3,6 +3,7 @@ import CheckboxComponent, {
   CheckboxProps,
 } from 'src/common-ui/checkbox/checkbox/checkbox.component';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 export enum BackgroundType {
   TRANSPARENT = 'transparent',
@@ -40,8 +41,8 @@ export const CheckboxPanelComponent = (props: CheckboxPanelProps) => {
               className="hint"
               dangerouslySetInnerHTML={{
                 __html: props.skipHintTranslation
-                  ? props.hint
-                  : I18nUtils.getMessage(props.hint),
+                  ? HtmlUtils.escapeHtml(props.hint)
+                  : HtmlUtils.getSafeI18nHtml(props.hint),
               }}></div>
           )}
           {props.text && (
@@ -49,8 +50,8 @@ export const CheckboxPanelComponent = (props: CheckboxPanelProps) => {
               className="text"
               dangerouslySetInnerHTML={{
                 __html: props.skipTextTranslation
-                  ? props.text
-                  : I18nUtils.getMessage(props.text),
+                  ? HtmlUtils.escapeHtml(props.text)
+                  : HtmlUtils.getSafeI18nHtml(props.text),
               }}></div>
           )}
         </>

@@ -22,6 +22,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
+import { HtmlUtils } from 'src/utils/html.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
 const ConfirmationPage = ({
@@ -221,7 +222,7 @@ const ConfirmationPage = ({
         <div
           className="introduction"
           dangerouslySetInnerHTML={{
-            __html: message,
+            __html: HtmlUtils.sanitizeHtml(message),
           }}></div>
 
         {warningMessage && (

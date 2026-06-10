@@ -20,6 +20,7 @@ import { KeychainError } from 'src/keychain-error';
 import { setTitleContainerProperties } from 'src/popup/multichain/actions/title-container.actions';
 import { RootState } from 'src/popup/multichain/store';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 type HiveAccountOption = OptionItem & {
   value: string;
@@ -117,7 +118,7 @@ const ExportTransactions = ({
       <div
         className="introduction"
         dangerouslySetInnerHTML={{
-          __html: I18nUtils.getMessage(
+          __html: HtmlUtils.getSafeI18nHtml(
             'popup_html_pref_export_transactions_info',
           ),
         }}

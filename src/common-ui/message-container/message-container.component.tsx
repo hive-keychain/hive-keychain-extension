@@ -3,13 +3,13 @@ import { Theme, useThemeContext } from '@popup/theme.context';
 import { MessageType } from '@reference-data/message-type.enum';
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import sanitizeHTML from 'sanitize-html';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 const DEFAULT_TIMEOUT = 3000;
 
@@ -97,12 +97,9 @@ const MessageContainer = ({
         <div
           className="message"
           dangerouslySetInnerHTML={{
-            __html: sanitizeHTML(
-              message.skipTranslation
-                ? message.key
-                : I18nUtils.getMessage(message.key, message.params),
-              { allowedTags: ['b', 'br', 'i', 'p', 'span', 'div'] },
-            ),
+            __html: message.skipTranslation
+              ? HtmlUtils.escapeHtml(message.key)
+              : HtmlUtils.getSafeI18nHtml(message.key, message.params),
           }}
         />
         {message.confirmation === undefined && (

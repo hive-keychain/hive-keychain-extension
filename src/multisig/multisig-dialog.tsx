@@ -36,6 +36,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import './multisig-dialog.scss';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 const MultisigDialog = () => {
   const [theme, setTheme] = useState<Theme>();
@@ -279,7 +280,7 @@ const MultisigDialog = () => {
           <div
             className="caption"
             dangerouslySetInnerHTML={{
-              __html: I18nUtils.getMessage(caption),
+              __html: HtmlUtils.getSafeI18nHtml(caption),
             }}></div>
 
           {content}

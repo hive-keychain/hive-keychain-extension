@@ -3,6 +3,7 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 type ResultMessagePageType = 'success' | 'error' | 'warning';
 
@@ -74,16 +75,16 @@ const ResultMessagePage = ({
             className="message"
             dangerouslySetInnerHTML={{
               __html: skipMessageTranslation
-                ? message
-                : I18nUtils.getMessage(message, messageParams),
+                ? HtmlUtils.escapeHtml(message)
+                : HtmlUtils.getSafeI18nHtml(message, messageParams),
             }}></div>
           {warningMessage && (
             <div
               className="warning-message"
               dangerouslySetInnerHTML={{
                 __html: skipWarningTranslation
-                  ? warningMessage
-                  : I18nUtils.getMessage(warningMessage, warningParams),
+                  ? HtmlUtils.escapeHtml(warningMessage)
+                  : HtmlUtils.getSafeI18nHtml(warningMessage, warningParams),
               }}></div>
           )}
         </div>

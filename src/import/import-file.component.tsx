@@ -20,6 +20,7 @@ import FileUtils from 'src/utils/file.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './import-file.scss';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 interface PropsType {
   title: string;
@@ -149,7 +150,7 @@ const ImportFile = ({
           <div
             className="caption"
             dangerouslySetInnerHTML={{
-              __html: I18nUtils.getMessage(text),
+              __html: HtmlUtils.getSafeI18nHtml(text),
             }}></div>
           <div className="upload-panel">
             {selectedFile && selectedFile.name && (

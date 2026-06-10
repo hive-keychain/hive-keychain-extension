@@ -9,6 +9,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 interface LinkLedgerDeviceProps {
   embedded?: boolean;
@@ -77,7 +78,7 @@ const LinkLedgerDevice = ({
         <div
           className="caption"
           dangerouslySetInnerHTML={{
-            __html: I18nUtils.getMessage('ledger_link_device_caption'),
+            __html: HtmlUtils.getSafeI18nHtml('ledger_link_device_caption'),
           }}></div>
         {done && (
           <div className="confirmation">

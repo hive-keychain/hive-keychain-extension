@@ -9,6 +9,9 @@ interface Props {
 
 export const EvmAccountImage = ({ address, avatar, small }: Props) => {
   const identicon = EvmAddressesUtils.getIdenticonFromAddress(address ?? '');
+  const identiconSrc = `data:image/svg+xml;utf8,${encodeURIComponent(
+    identicon.svg,
+  )}`;
   return (
     <>
       {avatar && (
@@ -18,12 +21,11 @@ export const EvmAccountImage = ({ address, avatar, small }: Props) => {
         />
       )}
       {!avatar && address && (
-        <div
+        <img
           className={`user-picture no-padding ${small ? 'small' : 'normal'}`}
-          dangerouslySetInnerHTML={{
-            __html: identicon.svg,
-          }}
-          style={{ backgroundColor: 'white' }}></div>
+          src={identiconSrc}
+          style={{ backgroundColor: 'white' }}
+        />
       )}
     </>
   );
