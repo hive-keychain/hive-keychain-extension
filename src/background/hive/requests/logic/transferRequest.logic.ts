@@ -1,6 +1,7 @@
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { createOrUpdateDialog } from '@background/multichain/dialog-lifecycle';
 import sendErrors from '@background/multichain/errors';
+import { removeRequestAfterDialogFeedback } from '@background/multichain/remove-request-after-dialog-feedback.logic';
 import {
   KeychainRequest,
   RequestTransfer,
@@ -38,7 +39,8 @@ export const transferRequest = (
         await I18nUtils.getMessage('bgd_auth_transfer_no_active', [username]),
         request as KeychainRequest,
       );
-      await requestHandler.removeRequestById(
+      await removeRequestAfterDialogFeedback(
+        requestHandler,
         (request as KeychainRequest).request_id,
         tab,
       );
@@ -53,7 +55,8 @@ export const transferRequest = (
         await I18nUtils.getMessage('bgd_auth_transfer_no_memo', [username!]),
         request as KeychainRequest,
       );
-      await requestHandler.removeRequestById(
+      await removeRequestAfterDialogFeedback(
+        requestHandler,
         (request as KeychainRequest).request_id,
         tab,
       );
@@ -70,7 +73,8 @@ export const transferRequest = (
         ]),
         request as KeychainRequest,
       );
-      await requestHandler.removeRequestById(
+      await removeRequestAfterDialogFeedback(
+        requestHandler,
         (request as KeychainRequest).request_id,
         tab,
       );
