@@ -1,4 +1,5 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
+import { EvmIncomingTransactionsModule } from '@background/evm/evm-incoming-transactions.module';
 import { initializeEvmProviderRegistration } from '@background/evm/evm-provider-registration';
 import {
   addWhitelistedChainForOrigin,
@@ -44,6 +45,7 @@ const initializeServiceWorker = async () => {
 
   Logger.info('Starting EVM service worker');
   initializeEvmProviderRegistration();
+  EvmIncomingTransactionsModule.start();
   void EvmTransactionsUtils.rehydratePendingTransactions();
 
   chrome.webNavigation.onBeforeNavigate.addListener((details: any) => {

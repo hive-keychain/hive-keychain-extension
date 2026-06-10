@@ -81,6 +81,9 @@ const createFailedNotification = async (
 };
 
 const onNotificationClicked = async (notificationId: string) => {
+  if (notificationId.startsWith('evm-incoming:')) {
+    return;
+  }
   const [hash, chainId] = notificationId.split('-');
   const chainIdHex = `0x${parseInt(chainId).toString(16)}`;
   const chain = await ChainUtils.getChain<EvmChain>(chainIdHex);

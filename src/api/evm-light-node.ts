@@ -4,7 +4,7 @@ const EVM_LIGHT_NODE_DEFAULT_URL = 'https://evm.hive-keychain.com';
 
 const sanitizeBaseUrl = (url: string) => url.replace(/\/+$/, '');
 
-const getEvmLightNodeBaseUrl = () =>
+export const getEvmLightNodeBaseUrl = () =>
   sanitizeBaseUrl(
     process.env.EVM_LIGHT_NODE_API_URL || EVM_LIGHT_NODE_DEFAULT_URL,
   );

@@ -17,6 +17,7 @@ import {
   LightNodeHistoryItem,
 } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
+import type { EvmSettings } from '@popup/evm/interfaces/evm-settings.interface';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
 
@@ -1067,6 +1068,52 @@ const parseItem = async (
   return parseSmartContractOperation(base, item, isOutgoing, chain);
 };
 
+const isHistoryFlowVisible = (
+  flow: HistoryFlow,
+  settings: EvmSettings,
+): boolean => {
+  if (
+    flow.possibleSpam &&
+    !settings.smartContracts.displayPossibleSpam
+  ) {
+    return false;
+  }
+  if (
+    flow.kind !== 'NATIVE' &&
+    !flow.verified &&
+    !settings.smartContracts.displayNonVerifiedContracts
+  ) {
+    return false;
+  }
+  return true;
+};
+
+const getVisibleHistoryItem = (
+  item: LightNodeHistoryItem,
+  settings: EvmSettings,
+): LightNodeHistoryItem | undefined => {
+  const visibleItem = {
+    ...item,
+    in: item.in.filter((flow) => isHistoryFlowVisible(flow, settings)),
+    out: item.out.filter((flow) => isHistoryFlowVisible(flow, settings)),
+  };
+  const hadFlows = item.in.length > 0 || item.out.length > 0;
+  const hasVisibleFlows =
+    visibleItem.in.length > 0 || visibleItem.out.length > 0;
+  return hadFlows && !hasVisibleFlows ? undefined : visibleItem;
+};
+
+const parseHistoryItem = async (
+  item: LightNodeHistoryItem,
+  chain: EvmChain,
+  walletAddress: string,
+  localAccounts?: EvmAccount[],
+): Promise<EvmUserHistoryItem> =>
+  applyStatusLabel(
+    await parseItem(item, chain, walletAddress, localAccounts),
+    item,
+  );
+
 const sortEvents = (events: EvmUserHistoryItem[]) =>
   [...events].sort((a, b) => {
     if (a.timestamp !== b.timestamp) return b.timestamp - a.timestamp;
@@ -1111,11 +1158,8 @@ const fetchHistory2 = async (
   const localAccounts = await EvmWalletUtils.getAllLocalAccounts();
 
   const parsedItems = await Promise.all(
-    response.items.map(async (item) =>
-      applyStatusLabel(
-        await parseItem(item, chain, walletAddress, localAccounts),
-        item,
-      ),
+    response.items.map((item) =>
+      parseHistoryItem(item, chain, walletAddress, localAccounts),
     ),
   );
   const dedupSet = new Set(previousHistory.events.map(getEventKey));
@@ -1139,4 +1183,6 @@ const fetchHistory2 = async (
 
 export const EvmTokensHistoryUtils = {
   fetchHistory2,
+  getVisibleHistoryItem,
+  parseHistoryItem,
 };
