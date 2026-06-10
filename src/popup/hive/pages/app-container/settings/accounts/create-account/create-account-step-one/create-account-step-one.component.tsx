@@ -492,14 +492,11 @@ const getLiveEvmPaymentTokenOptions = async (
 };
 
 const getEvmPaymentChainsById = async () => {
-  const [defaultChains, customChains] = await Promise.all([
-    ChainUtils.getDefaultChains(),
-    ChainUtils.getCustomChains(),
-  ]);
+  const setupChains = await ChainUtils.getSetupChains();
   const chainsById = new Map<string, EvmChain>();
 
-  for (const chain of [...defaultChains, ...customChains]) {
-    if (chain.type === ChainType.EVM) {
+  for (const chain of setupChains) {
+    if (chain.type === ChainType.EVM && chain.isCustom !== true) {
       chainsById.set(getChainIdLookupKey(chain.chainId), chain as EvmChain);
     }
   }

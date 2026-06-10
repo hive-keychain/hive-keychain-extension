@@ -57,11 +57,10 @@ describe('CreateAccountStepOneComponent', () => {
       pending_claimed_accounts: 0,
       balance: '10.000 HIVE',
     } as any);
-    jest.spyOn(ChainUtils, 'getDefaultChains').mockResolvedValue([
+    jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([
       hiveChain,
       evmChain,
     ]);
-    jest.spyOn(ChainUtils, 'getCustomChains').mockResolvedValue([]);
     jest.spyOn(EvmTokensUtils, 'getTokenBalances').mockImplementation(
       async (_walletAddress, _chain, tokenMetadata: EvmSmartContractInfo[]) =>
         tokenMetadata.map((tokenInfo) => {
@@ -256,6 +255,142 @@ describe('CreateAccountStepOneComponent', () => {
       await screen.findByTestId('custom-select-item-evm-payment-token-40-native'),
     ).toHaveTextContent('Telos');
     expect(screen.queryByText('SMOL')).not.toBeInTheDocument();
+  });
+
+  it('omits payment tokens from custom or unselected setup chains', async () => {
+    const customEvmChain = {
+      ...evmChain,
+      name: 'Custom Local',
+      chainId: '0x539',
+      mainToken: 'ETH',
+      isCustom: true,
+    } as EvmChain;
+
+    jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([
+      hiveChain,
+      evmChain,
+      customEvmChain,
+    ]);
+    jest
+      .spyOn(EvmLightNodeUtils, 'getDiscoveredTokensForAllRegisteredChains')
+      .mockResolvedValueOnce({
+        address: evmAccount.wallet.address,
+        chains: [
+          {
+            chainId: 40,
+            catchupStatus: 'DONE',
+            pricingStatus: 'READY',
+            chain: {
+              chainId: 40,
+              name: 'Telos',
+              logoUrl:
+                'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg"/%3E',
+              backgroundColor: null,
+              nativeToken: 'TLOS',
+              explorerBaseUrl: null,
+              testnet: false,
+              isPopular: true,
+            },
+            tokens: [
+              {
+                kind: 'NATIVE',
+                chainId: '40',
+                contractAddress: '0x0000000000000000000000000000000000000000',
+                name: 'Telos',
+                symbol: 'TLOS',
+                decimals: 18,
+                logo: '',
+                possibleSpam: false,
+                verifiedContract: true,
+                balance: '10',
+                formattedBalance: '10',
+                priceUsd: 0.5,
+                isNativeWrapped: false,
+              },
+            ],
+          },
+          {
+            chainId: 1337,
+            catchupStatus: 'DONE',
+            pricingStatus: 'READY',
+            chain: {
+              chainId: 1337,
+              name: 'Custom Local',
+              logoUrl: null,
+              backgroundColor: null,
+              nativeToken: 'ETH',
+              explorerBaseUrl: null,
+              testnet: false,
+              isPopular: false,
+            },
+            tokens: [
+              {
+                kind: 'NATIVE',
+                chainId: '1337',
+                contractAddress: '0x0000000000000000000000000000000000000000',
+                name: 'Custom Local',
+                symbol: 'ETH',
+                decimals: 18,
+                logo: '',
+                possibleSpam: false,
+                verifiedContract: true,
+                balance: '100',
+                formattedBalance: '100',
+                priceUsd: 1,
+                isNativeWrapped: false,
+              },
+            ],
+          },
+          {
+            chainId: 137,
+            catchupStatus: 'DONE',
+            pricingStatus: 'READY',
+            chain: {
+              chainId: 137,
+              name: 'Polygon',
+              logoUrl: null,
+              backgroundColor: null,
+              nativeToken: 'POL',
+              explorerBaseUrl: null,
+              testnet: false,
+              isPopular: true,
+            },
+            tokens: [
+              {
+                kind: 'NATIVE',
+                chainId: '137',
+                contractAddress: '0x0000000000000000000000000000000000000000',
+                name: 'Polygon',
+                symbol: 'POL',
+                decimals: 18,
+                logo: '',
+                possibleSpam: false,
+                verifiedContract: true,
+                balance: '100',
+                formattedBalance: '100',
+                priceUsd: 1,
+                isNativeWrapped: false,
+              },
+            ],
+          },
+        ],
+      } as any);
+
+    const { container } = renderPaidBackendStepOne();
+
+    expect(await screen.findByText('TLOS')).toBeInTheDocument();
+
+    fireEvent.click(container.querySelectorAll('.react-dropdown-select')[1]);
+
+    expect(
+      await screen.findByTestId('custom-select-item-evm-payment-token-40-native'),
+    ).toHaveTextContent('Telos');
+    expect(
+      screen.queryByTestId('custom-select-item-evm-payment-token-1337-native'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('custom-select-item-evm-payment-token-137-native'),
+    ).not.toBeInTheDocument();
   });
 });
 
