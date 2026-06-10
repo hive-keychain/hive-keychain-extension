@@ -47,7 +47,10 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
-import { SwapTokenUtils } from 'src/utils/swap-token.utils';
+import {
+  SWAP_END_EXCLUDED_TOKENS,
+  SwapTokenUtils,
+} from 'src/utils/swap-token.utils';
 
 const TokenSwaps = ({
   activeAccount,
@@ -227,7 +230,11 @@ const TokenSwaps = ({
         img: `/assets/images/wallet/hbd-logo.svg`,
       },
       ...allTokens
-        .filter((token: Token) => token.precision !== 0) // Remove token that doesn't allow decimals
+        .filter(
+          (token: Token) =>
+            token.precision !== 0 &&
+            !SWAP_END_EXCLUDED_TOKENS.has(token.symbol),
+        )
         .map((token: Token) => {
           let img = '';
           img =

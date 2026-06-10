@@ -4,7 +4,10 @@ import TransferUtils from '@popup/hive/utils/transfer.utils';
 import { SwapStatus } from 'hive-keychain-commons';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
-import { SwapTokenUtils } from 'src/utils/swap-token.utils';
+import {
+  SWAP_END_EXCLUDED_TOKENS,
+  SwapTokenUtils,
+} from 'src/utils/swap-token.utils';
 
 jest.mock('@api/keychain-swap', () => ({
   KeychainSwapApi: {
@@ -16,6 +19,42 @@ jest.mock('@api/keychain-swap', () => ({
 describe('swap-token.utils', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe('SWAP_END_EXCLUDED_TOKENS', () => {
+    it('excludes unsupported SWAP.* end tokens', () => {
+      [
+        'SWAP.ETH',
+        'SWAP.BNB',
+        'SWAP.SOL',
+        'SWAP.USDT',
+        'SWAP.UNI',
+        'SWAP.USDC',
+        'SWAP.GIFU',
+        'SWAP.GALA',
+      ].forEach((symbol) => {
+        expect(SWAP_END_EXCLUDED_TOKENS.has(symbol)).toBe(true);
+      });
+    });
+  });
+
+  describe('getSwapTokenStartList', () => {
+    it('includes SWAP.* tokens when the user has a balance', async () => {
+      jest.spyOn(TokensUtils, 'getUserBalance').mockResolvedValue([
+        { symbol: 'LEO', balance: '10' },
+        { symbol: 'SWAP.ETH', balance: '5' },
+        { symbol: 'SWAP.GALA', balance: '0' },
+      ] as any);
+
+      const account = {
+        name: 'alice',
+        balance: '0.000 HIVE',
+        hbd_balance: '0.000 HBD',
+      } as any;
+
+      const list = await SwapTokenUtils.getSwapTokenStartList(account);
+      expect(list.map((t) => t.symbol)).toEqual(['LEO', 'SWAP.ETH']);
+    });
   });
 
   describe('getEstimate', () => {
