@@ -280,6 +280,10 @@ type HistoryItem = {
   blockTime: string; // ISO
   opIndex: string; // bigint as string
   opName: string; // derived from OpType enum key
+  direction: 'NEUTRAL' | 'IN' | 'OUT' | 'SELF';
+  confirmationStatus: 'UNCONFIRMED' | 'CONFIRMED';
+  confirmations: number;
+  confirmationsRequired: number;
   in: HistoryFlowWithMeta[];
   out: HistoryFlowWithMeta[];
   status: 'SUCCESS' | 'REVERTED' | null;

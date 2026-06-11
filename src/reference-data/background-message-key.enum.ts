@@ -35,6 +35,7 @@ export enum BackgroundCommand {
   SEND_BACK_CHAIN_FROM_PROVIDER = 'sendBackChainFromProvider',
   WAIT_FOR_EVM_TRANSACTION_CONFIRMATION = 'waitForEvmTransactionConfirmation',
   EVM_TRANSACTION_RESOLVED = 'evmTransactionResolved',
+  EVM_WALLET_LOCK_STATE_CHANGED = 'evmWalletLockStateChanged',
   ACCEPT_ADD_EVM_CHAIN = 'acceptAddEvmChain',
   ACCEPT_ADD_CUSTOM_EVM_CHAIN = 'acceptAddCustomEvmChain',
 
