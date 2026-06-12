@@ -2,6 +2,7 @@ import AutoStakeTokensModule from '@background/auto-stake-tokens.module';
 import { AccountModule } from '@background/hive/modules/account.module';
 import AutolockModule from '@background/hive/modules/autolock.module';
 import ClaimModule from '@background/hive/modules/claim.module';
+import { PaidAccountCreationModule } from '@background/hive/modules/paid-account-creation.module';
 import LocalStorageModule from '@background/hive/modules/local-storage.module';
 import { MultisigModule } from '@background/hive/modules/multisig.module';
 import RPCModule from '@background/hive/modules/rpc.module';
@@ -33,6 +34,7 @@ const initializeServiceWorker = async () => {
   Logger.info('Initializing background tasks');
   await LocalStorageModule.checkAndUpdateLocalStorage();
   ClaimModule.start();
+  PaidAccountCreationModule.start();
   AutoStakeTokensModule.start();
   AutolockModule.start();
   AutolockModule.set(

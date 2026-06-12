@@ -425,6 +425,67 @@ describe('PendingAccountCreationPaymentComponent', () => {
     );
   });
 
+  it('navigates home when the pending request was already imported elsewhere', async () => {
+    const importedAccount = {
+      name: pendingRequest.username,
+      keys: { posting: 'posting-private' },
+    };
+    const hiveChain = {
+      name: 'Hive',
+      type: ChainType.HIVE,
+      chainId: 'hive-chain-id',
+      logo: '',
+      rpcs: [],
+    } as HiveChain;
+    jest
+      .spyOn(
+        PendingHiveAccountCreationUtils,
+        'getPendingHiveAccountCreationRequests',
+      )
+      .mockResolvedValue([pendingRequest]);
+    jest
+      .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
+      .mockResolvedValue([importedAccount]);
+    jest
+      .spyOn(ChainUtils, 'getAllSetupChainsForType')
+      .mockResolvedValue([hiveChain]);
+    jest.spyOn(AccountUtils, 'getExtendedAccount').mockResolvedValue({} as any);
+    jest.spyOn(AccountUtils, 'getRCMana').mockResolvedValue({} as any);
+    (
+      PaidAccountCreationActions.synchronizePendingHiveAccountCreation as jest.Mock
+    ).mockImplementation(() => async () => ({ outcome: 'not_found' }));
+
+    const { store } = renderComponent();
+
+    await waitFor(() => {
+      expect(store.getState().navigation.stack[0]?.currentPage).toBe(
+        Screen.HOME_PAGE,
+      );
+    });
+    expect(store.getState().activeAccountType).toBe(ChainType.HIVE);
+  });
+
+  it('keeps showing the pending request when sync reports not_found but storage still has it', async () => {
+    jest
+      .spyOn(
+        PendingHiveAccountCreationUtils,
+        'getPendingHiveAccountCreationRequests',
+      )
+      .mockResolvedValue([
+        { ...pendingRequest, status: 'payment_detected' as HiveAccountCreationStatus },
+      ]);
+    (
+      PaidAccountCreationActions.synchronizePendingHiveAccountCreation as jest.Mock
+    ).mockImplementation(() => async () => ({ outcome: 'not_found' }));
+
+    renderComponent();
+
+    expect(await screen.findByText('Payment detected')).toBeInTheDocument();
+    expect(
+      screen.queryByText('Pending payment request not found.'),
+    ).not.toBeInTheDocument();
+  });
+
   it('shows the Keychain payment action for pending EVM requests', async () => {
     jest
       .spyOn(
@@ -569,15 +630,32 @@ describe('PendingAccountCreationPaymentComponent', () => {
         'getPendingHiveAccountCreationRequests',
       )
       .mockResolvedValue([evmPendingRequest]);
+    const persistedRequest = {
+      ...evmPendingRequest,
+      status: 'payment_detected' as HiveAccountCreationStatus,
+      paymentTxHash: txHash,
+    };
     jest
       .spyOn(
         PendingHiveAccountCreationUtils,
-        'updatePendingHiveAccountCreationStatus',
+        'upsertPendingHiveAccountCreationPaymentStatus',
       )
-      .mockResolvedValue({
-        ...evmPendingRequest,
-        status: 'payment_detected',
-        paymentTxHash: txHash,
+      .mockResolvedValue(persistedRequest);
+    jest
+      .spyOn(
+        PendingHiveAccountCreationUtils,
+        'findPendingHiveAccountCreationRequestWithRetry',
+      )
+      .mockImplementation(async (requestId, mkArg, options) => {
+        if (options?.maxAttempts === 10) {
+          return persistedRequest;
+        }
+
+        const pendingRequests =
+          await PendingHiveAccountCreationUtils.getPendingHiveAccountCreationRequests(
+            mkArg,
+          );
+        return pendingRequests.find((request) => request.requestId === requestId);
       });
     jest.spyOn(ChainUtils, 'getDefaultChains').mockResolvedValue([paymentChain]);
     jest.spyOn(ChainUtils, 'getCustomChains').mockResolvedValue([]);
@@ -610,19 +688,31 @@ describe('PendingAccountCreationPaymentComponent', () => {
       await confirmationParams.afterConfirmAction({} as any);
     });
 
-    expect(EvmTransactionsUtils.send).not.toHaveBeenCalled();
-    expect(submitHiveAccountCreationPaymentTx).not.toHaveBeenCalled();
-    expect(
-      PendingHiveAccountCreationUtils.updatePendingHiveAccountCreationStatus,
-    ).toHaveBeenCalledWith(
+    expect(EvmTransactionsUtils.send).toHaveBeenCalled();
+    expect(submitHiveAccountCreationPaymentTx).toHaveBeenCalledWith(
       'request-1',
+      {
+        txHash,
+        from: payerAddress,
+      },
+    );
+    expect(
+      PendingHiveAccountCreationUtils.upsertPendingHiveAccountCreationPaymentStatus,
+    ).toHaveBeenCalledWith(
+      evmPendingRequest,
       'payment_detected',
       mk,
-      `0x${'0'.repeat(64)}`,
+      txHash,
     );
+    expect(
+      PendingHiveAccountCreationUtils.findPendingHiveAccountCreationRequestWithRetry,
+    ).toHaveBeenCalled();
     expect(
       PaidAccountCreationRouteUtils.openPaymentStatusInSidePanel,
     ).toHaveBeenCalledWith('request-1');
+    expect(store.getState().navigation.stack[0]?.currentPage).toBe(
+      Screen.HOME_PAGE,
+    );
   });
 
   it('hides external wallet payment actions after payment is no longer pending', async () => {
@@ -648,7 +738,7 @@ describe('PendingAccountCreationPaymentComponent', () => {
 
   it.each([
     ['payment_detected', 'Payment detected'],
-    ['payment_confirming', 'Payment confirming'],
+    ['payment_confirming', 'Confirming payment'],
     ['creating_account', 'Creating account'],
   ] as [HiveAccountCreationStatus, string][])(
     'shows keep-open disclaimer for in-progress %s status',
@@ -725,7 +815,7 @@ describe('PendingAccountCreationPaymentComponent', () => {
 
   it.each([
     ['payment_detected', 'Payment detected'],
-    ['payment_confirming', 'Payment confirming'],
+    ['payment_confirming', 'Confirming payment'],
     ['expired', 'Expired'],
     ['underpaid', 'Underpaid'],
     ['overpaid', 'Overpaid'],

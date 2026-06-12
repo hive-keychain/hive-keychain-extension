@@ -27,6 +27,7 @@ import {
 } from '@popup/multichain/actions/message.actions';
 import {
   goBackToThenNavigate,
+  navigateTo,
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -53,11 +54,16 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import { copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
 import { ExternalWalletPaymentPopup } from 'src/popup/hive/pages/app-container/settings/accounts/create-account/pending-account-creation-payment/external-wallet-payment-popup.component';
 import { PaidAccountCreationPaymentUtils } from 'src/popup/hive/utils/paid-account-creation-payment.utils';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 import Logger from 'src/utils/logger.utils';
 import { PendingHiveAccountCreationUtils } from 'src/utils/pending-hive-account-creation.utils';
 
 const ACCOUNT_CREATION_POLL_INTERVAL_MS = 10000;
+const PENDING_REQUEST_LOAD_MAX_ATTEMPTS = 8;
+const PENDING_REQUEST_LOAD_RETRY_DELAY_MS = 300;
+const PENDING_REQUEST_PERSIST_MAX_ATTEMPTS = 10;
+const PENDING_REQUEST_PERSIST_RETRY_DELAY_MS = 200;
 const PREPARING_ACCOUNT_CREATION_LOADING =
   'html_popup_preparing_account_creation';
 
@@ -70,7 +76,7 @@ const isPendingAccountCreationInProgress = (
 const STATUS_LABELS: Record<HiveAccountCreationStatus, string> = {
   payment_pending: 'Payment pending',
   payment_detected: 'Payment detected',
-  payment_confirming: 'Payment confirming',
+  payment_confirming: 'Confirming payment',
   creating_account: 'Creating account',
   account_created: 'Account created',
   expired: 'Expired',
@@ -109,6 +115,7 @@ const PendingAccountCreationPayment = ({
   setTitleContainerProperties,
   setErrorMessage,
   setChain,
+  navigateTo,
   navigateToWithParams,
   goBackToThenNavigate,
   addToLoadingList,
@@ -134,15 +141,43 @@ const PendingAccountCreationPayment = ({
   const autoPaymentStarted = useRef(false);
 
   useEffect(() => {
+    if (!requestId) {
+      setPendingRequest(undefined);
+      setIsLoading(false);
+      return;
+    }
+
+    if (!mk) {
+      setIsLoading(true);
+      return;
+    }
+
+    setIsLoading(true);
+    void loadPendingRequest();
+  }, [requestId, mk]);
+
+  useEffect(() => {
+    const shouldNavigateHomeOnBack =
+      !!pendingRequest &&
+      (!!pendingRequest.paymentTxHash ||
+        pendingRequest.status !== 'payment_pending');
+
     setTitleContainerProperties({
       title: 'popup_html_create_account',
       isBackButtonEnabled: true,
       onBackAdditional: () => {
         removeFromLoadingList(PREPARING_ACCOUNT_CREATION_LOADING);
+        if (shouldNavigateHomeOnBack) {
+          navigateTo(Screen.HOME_PAGE, true);
+          return true;
+        }
       },
     });
-    loadPendingRequest();
-  }, []);
+  }, [
+    pendingRequest?.requestId,
+    pendingRequest?.status,
+    pendingRequest?.paymentTxHash,
+  ]);
 
   useEffect(() => {
     if (
@@ -152,7 +187,7 @@ const PendingAccountCreationPayment = ({
     ) {
       void synchronizeRequest();
     }
-  }, [isLoading, requestId]);
+  }, [isLoading, requestId, pendingRequest?.requestId]);
 
   useEffect(() => {
     if (
@@ -196,13 +231,15 @@ const PendingAccountCreationPayment = ({
     }
 
     try {
-      const pendingRequests =
-        await PendingHiveAccountCreationUtils.getPendingHiveAccountCreationRequests(
+      const request =
+        await PendingHiveAccountCreationUtils.findPendingHiveAccountCreationRequestWithRetry(
+          requestId,
           mk,
+          {
+            maxAttempts: PENDING_REQUEST_LOAD_MAX_ATTEMPTS,
+            retryDelayMs: PENDING_REQUEST_LOAD_RETRY_DELAY_MS,
+          },
         );
-      const request = pendingRequests.find(
-        (pending) => pending.requestId === requestId,
-      );
       setPendingRequest(request);
       if (
         request &&
@@ -248,13 +285,41 @@ const PendingAccountCreationPayment = ({
       ) {
         await completePaidHiveAccountCreation(result.account, {
           activateCreatedAccount: true,
+          navigateToHomeAfterActivation: true,
           showSuccessMessage: true,
         });
         return;
       }
 
       if (result.outcome === 'not_found') {
-        setPendingRequest(undefined);
+        const username = pendingRequest?.username;
+        const accounts = await AccountUtils.getAccountsFromLocalStorage(mk);
+        const completedAccount = username
+          ? accounts?.find((account) => account.name === username)
+          : undefined;
+
+        if (completedAccount) {
+          await completePaidHiveAccountCreation(completedAccount, {
+            activateCreatedAccount: true,
+            navigateToHomeAfterActivation: true,
+            showSuccessMessage: false,
+          });
+          return;
+        }
+
+        const storedRequest =
+          await PendingHiveAccountCreationUtils.findPendingHiveAccountCreationRequestWithRetry(
+            requestId,
+            mk,
+            {
+              maxAttempts: PENDING_REQUEST_LOAD_MAX_ATTEMPTS,
+              retryDelayMs: PENDING_REQUEST_LOAD_RETRY_DELAY_MS,
+            },
+          );
+        if (storedRequest) {
+          setPendingRequest(storedRequest);
+        }
+        return;
       } else if (result.request) {
         setPendingRequest(result.request);
       }
@@ -348,28 +413,34 @@ const PendingAccountCreationPayment = ({
     },
   ];
 
-  const updateLocalPaymentTxStatus = async (
+  const persistLocalPaymentTxStatus = async (
     status: HiveAccountCreationStatus,
     txHash: string,
   ) => {
     const updatedRequest =
-      await PendingHiveAccountCreationUtils.updatePendingHiveAccountCreationStatus(
-        pendingRequest!.requestId,
+      await PendingHiveAccountCreationUtils.upsertPendingHiveAccountCreationPaymentStatus(
+        pendingRequest!,
         status,
         mk,
         txHash,
       );
 
-    const timestamp = new Date().toISOString();
-    setPendingRequest(
-      updatedRequest ?? {
-        ...pendingRequest!,
-        status,
-        paymentTxHash: txHash,
-        updatedAt: timestamp,
-        lastCheckedAt: timestamp,
-      },
-    );
+    const persistedRequest =
+      await PendingHiveAccountCreationUtils.findPendingHiveAccountCreationRequestWithRetry(
+        pendingRequest!.requestId,
+        mk,
+        {
+          maxAttempts: PENDING_REQUEST_PERSIST_MAX_ATTEMPTS,
+          retryDelayMs: PENDING_REQUEST_PERSIST_RETRY_DELAY_MS,
+        },
+      );
+
+    if (!persistedRequest) {
+      throw new Error('Unable to persist account creation payment status.');
+    }
+
+    setPendingRequest(persistedRequest);
+    return persistedRequest;
   };
 
   const submitPaymentTransaction = async (
@@ -386,32 +457,29 @@ const PendingAccountCreationPayment = ({
         : undefined,
     );
     try {
-      // DEV: momentarily skip actual EVM transfer to reach status page without paying.
-      // const transactionResponse = await EvmTransactionsUtils.send(
-      //   payerAccount.wallet,
-      //   {
-      //     value: transactionData.value,
-      //     to: transactionData.to,
-      //     type: Number(transactionData.type),
-      //     data: transactionData.data,
-      //   },
-      //   gasFee,
-      //   paymentChain.chainId,
-      // );
-      //
-      // const statusResponse = await submitHiveAccountCreationPaymentTx(
-      //   pendingRequest!.requestId,
-      //   {
-      //     txHash: transactionResponse.hash,
-      //     from: payerAccount.wallet.address,
-      //   },
-      // );
-      // await updateLocalPaymentTxStatus(
-      //   statusResponse.status,
-      //   transactionResponse.hash,
-      // );
-      const mockTxHash = `0x${'0'.repeat(64)}`;
-      await updateLocalPaymentTxStatus('payment_detected', mockTxHash);
+      const transactionResponse = await EvmTransactionsUtils.send(
+        payerAccount.wallet,
+        {
+          value: transactionData.value,
+          to: transactionData.to,
+          type: Number(transactionData.type),
+          data: transactionData.data,
+        },
+        gasFee,
+        paymentChain.chainId,
+      );
+
+      const statusResponse = await submitHiveAccountCreationPaymentTx(
+        pendingRequest!.requestId,
+        {
+          txHash: transactionResponse.hash,
+          from: payerAccount.wallet.address,
+        },
+      );
+      await persistLocalPaymentTxStatus(
+        statusResponse.status,
+        transactionResponse.hash,
+      );
       await setChain(previousChain, { saveLastUsedChain: false });
       if (ExtensionSurfaceUtils.isSidePanelPage()) {
         navigateToWithParams(
@@ -423,6 +491,7 @@ const PendingAccountCreationPayment = ({
         await PaidAccountCreationRouteUtils.openPaymentStatusInSidePanel(
           pendingRequest!.requestId,
         );
+        navigateTo(Screen.HOME_PAGE, true);
       }
     } catch (error) {
       Logger.error('Error during account creation EVM payment', error);
@@ -583,7 +652,7 @@ const PendingAccountCreationPayment = ({
           from: pendingRequest.payerEvmAddress ?? undefined,
         },
       );
-      await updateLocalPaymentTxStatus(statusResponse.status, txHash);
+      await persistLocalPaymentTxStatus(statusResponse.status, txHash);
       setIsExternalWalletPopupOpen(false);
     } catch (error) {
       Logger.error('Error submitting external account creation payment', error);
@@ -881,6 +950,7 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   setErrorMessage,
   setChain,
+  navigateTo,
   navigateToWithParams,
   goBackToThenNavigate,
   addToLoadingList,

@@ -139,7 +139,7 @@ const ConfirmationPage = ({
 
   const hideConfirm = BalanceChangeCardUtils.hasInsufficientBalance(balanceInfo);
 
-  const handleClickOnConfirm = () => {
+  const handleClickOnConfirm = async () => {
     if (hasGasFee && GasFeeUtils.isGasFeeEstimateInvalid(selectedFee)) {
       forceOpenGasFeePanelEvent.emit('forceOpenCustomFeePanel');
       return;
@@ -149,9 +149,11 @@ const ConfirmationPage = ({
       transactionHook.openWarningsPopup();
       return;
     }
-    if ((hasGasFee && !!selectedFee) || !hasGasFee)
-      afterConfirmAction(selectedFee);
-    else setErrorMessage('popup_html_evm_gas_fee_not_selected');
+    if ((hasGasFee && !!selectedFee) || !hasGasFee) {
+      await afterConfirmAction(selectedFee);
+    } else {
+      setErrorMessage('popup_html_evm_gas_fee_not_selected');
+    }
   };
 
   const handleClickOnCancel = async () => {

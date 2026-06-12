@@ -2,9 +2,11 @@ import * as HiveAccountCreationApi from '@api/hive-account-creation';
 import { PendingHiveAccountCreationRequest } from '@interfaces/hive-account-creation.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import {
+  handleCompletedPaidHiveAccountCreations,
   synchronizePendingHiveAccountCreation,
   synchronizePendingHiveAccountCreations,
 } from '@popup/hive/actions/paid-account-creation.actions';
+import { PaidAccountCreationNotificationsUtils } from '@popup/hive/utils/paid-account-creation-notifications.utils';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
@@ -246,6 +248,33 @@ describe('paid-account-creation.actions', () => {
     expect(HiveAccountCreationApi.getHiveAccountCreationStatus).toHaveBeenCalledTimes(
       1,
     );
+  });
+
+  it('shows a browser notification when completing imports away from the status page', async () => {
+    jest
+      .spyOn(
+        PaidAccountCreationNotificationsUtils,
+        'showAccountCreatedNotification',
+      )
+      .mockResolvedValue();
+    const store = getStore();
+
+    await store.dispatch<any>(
+      handleCompletedPaidHiveAccountCreations(
+        [
+          {
+            outcome: 'imported',
+            account: pendingAccount,
+            request: pendingRequest,
+          },
+        ],
+        { showBrowserNotification: true, showSuccessMessage: false },
+      ),
+    );
+
+    expect(
+      PaidAccountCreationNotificationsUtils.showAccountCreatedNotification,
+    ).toHaveBeenCalledWith(pendingAccount.name, pendingRequest.requestId);
   });
 
   it('continues synchronizing remaining requests after one fails', async () => {

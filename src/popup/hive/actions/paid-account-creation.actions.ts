@@ -1,202 +1,162 @@
-import { getHiveAccountCreationStatus } from '@api/hive-account-creation';
-import {
-  HiveAccountCreationStatus,
-  PendingHiveAccountCreationRequest,
-} from '@interfaces/hive-account-creation.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { Screen } from '@interfaces/screen.interface';
+import { setAccounts } from '@popup/hive/actions/account.actions';
+import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
 import { AppThunk } from '@popup/multichain/actions/interfaces';
-import { setAccounts } from 'src/popup/hive/actions/account.actions';
+import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
+import { setChain } from '@popup/multichain/actions/chain.actions';
+import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import {
+  ChainType,
+  HiveChain,
+} from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
-import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
-import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+import { PaidAccountCreationNotificationsUtils } from 'src/popup/hive/utils/paid-account-creation-notifications.utils';
+import {
+  PaidAccountCreationSynchronizationResult,
+  PaidAccountCreationSyncUtils,
+} from 'src/utils/paid-account-creation-sync.utils';
 import Logger from 'src/utils/logger.utils';
-import { PendingHiveAccountCreationUtils } from 'src/utils/pending-hive-account-creation.utils';
 
-export type PaidAccountCreationSynchronizationOutcome =
-  | 'updated'
-  | 'imported'
-  | 'already_imported'
-  | 'not_found'
-  | 'skipped';
+export type {
+  PaidAccountCreationSynchronizationOutcome,
+  PaidAccountCreationSynchronizationResult,
+} from 'src/utils/paid-account-creation-sync.utils';
 
-export interface PaidAccountCreationSynchronizationResult {
-  outcome: PaidAccountCreationSynchronizationOutcome;
-  request?: PendingHiveAccountCreationRequest;
-  account?: LocalAccount;
+export interface CompletePaidHiveAccountCreationOptions {
+  activateCreatedAccount?: boolean;
+  navigateToHomeAfterActivation?: boolean;
+  showSuccessMessage?: boolean;
+  showBrowserNotification?: boolean;
 }
 
-const terminalFailureStatuses: HiveAccountCreationStatus[] = [
-  'expired',
-  'underpaid',
-  'paid_after_expiry',
-  'username_unavailable',
-  'account_creation_failed',
-  'cancelled',
-];
-const synchronizingRequestIds = new Set<string>();
-
-const isTerminalPaidAccountCreationFailure = (
-  status: HiveAccountCreationStatus,
-) => terminalFailureStatuses.includes(status);
-
-const isValidKeyPair = (
-  privateKey: unknown,
-  publicKey: unknown,
-): privateKey is string =>
-  typeof privateKey === 'string' &&
-  typeof publicKey === 'string' &&
-  KeysUtils.getPublicKeyFromPrivateKeyString(privateKey) === publicKey;
-
-const getValidatedPendingAccount = async (
-  request: PendingHiveAccountCreationRequest,
-  mk: string,
-): Promise<LocalAccount> => {
-  const payload = await EncryptUtils.decryptToJson(
-    request.encryptedAccount,
-    mk,
-  );
-  const account = Array.isArray(payload?.list) ? payload.list[0] : undefined;
-
-  if (
-    !account ||
-    account.name !== request.username ||
-    !account.keys ||
-    !isValidKeyPair(account.keys.active, account.keys.activePubkey) ||
-    !isValidKeyPair(account.keys.posting, account.keys.postingPubkey) ||
-    !isValidKeyPair(account.keys.memo, account.keys.memoPubkey)
-  ) {
-    throw new Error('Invalid pending Hive account data.');
+const resolveHiveChain = async (): Promise<HiveChain | undefined> => {
+  const setupHiveChains =
+    await ChainUtils.getAllSetupChainsForType<HiveChain>(ChainType.HIVE);
+  if (setupHiveChains[0]) {
+    return setupHiveChains[0];
   }
-
-  return account as LocalAccount;
+  const defaultChains = await ChainUtils.getDefaultChains();
+  return defaultChains.find((chain) => chain.type === ChainType.HIVE) as
+    | HiveChain
+    | undefined;
 };
 
-const importCompletedPendingAccount = async (
-  request: PendingHiveAccountCreationRequest,
-  mk: string,
-  accounts: LocalAccount[],
-  dispatch: (action: ReturnType<typeof setAccounts>) => unknown,
-): Promise<PaidAccountCreationSynchronizationResult> => {
-  const existingAccount = accounts.find(
-    (account) => account.name === request.username,
-  );
-  if (existingAccount) {
-    await PendingHiveAccountCreationUtils.removePendingHiveAccountCreationRequest(
-      request.requestId,
-      mk,
-    );
-    return {
-      outcome: 'already_imported',
-      request,
-      account: existingAccount,
-    };
-  }
+export const completePaidHiveAccountCreation =
+  (
+    account: LocalAccount,
+    options: CompletePaidHiveAccountCreationOptions = {},
+  ): AppThunk =>
+  async (dispatch) => {
+    const {
+      activateCreatedAccount = false,
+      navigateToHomeAfterActivation = false,
+      showSuccessMessage = true,
+    } = options;
 
-  const pendingAccount = await getValidatedPendingAccount(request, mk);
-  const updatedAccounts = [...accounts, pendingAccount];
-  await AccountUtils.saveAccounts(updatedAccounts, mk);
-  dispatch(setAccounts(updatedAccounts));
-  await PendingHiveAccountCreationUtils.removePendingHiveAccountCreationRequest(
-    request.requestId,
-    mk,
-  );
+    if (activateCreatedAccount) {
+      const hiveChain = await resolveHiveChain();
+      if (!hiveChain) {
+        throw new Error('Unable to find Hive chain.');
+      }
 
-  return {
-    outcome: 'imported',
-    request,
-    account: pendingAccount,
+      await dispatch(setChain(hiveChain));
+      dispatch(setActiveAccountType(ChainType.HIVE));
+      try {
+        await dispatch(loadActiveAccount(account));
+      } catch (error) {
+        Logger.error('Unable to activate created Hive account', error);
+      }
+      if (navigateToHomeAfterActivation) {
+        dispatch(navigateTo(Screen.HOME_PAGE, true));
+      }
+    }
+
+    if (showSuccessMessage) {
+      dispatch(setSuccessMessage('html_popup_create_account_successful'));
+    }
   };
-};
 
 export const synchronizePendingHiveAccountCreation =
   (
     requestId: string,
   ): AppThunk<Promise<PaidAccountCreationSynchronizationResult>> =>
   async (dispatch, getState) => {
-    if (synchronizingRequestIds.has(requestId)) {
-      return { outcome: 'skipped' };
-    }
-
-    synchronizingRequestIds.add(requestId);
-    try {
-      const { mk } = getState();
-      const pendingRequests =
-        await PendingHiveAccountCreationUtils.getPendingHiveAccountCreationRequests(
-          mk,
-        );
-      const pendingRequest = pendingRequests.find(
-        (request) => request.requestId === requestId,
-      );
-      if (!pendingRequest) {
-        return { outcome: 'not_found' };
-      }
-
-      const statusResponse = await getHiveAccountCreationStatus(requestId);
-      const updatedRequest =
-        await PendingHiveAccountCreationUtils.updatePendingHiveAccountCreationStatus(
-          requestId,
-          statusResponse.status,
-          mk,
-          statusResponse.payment?.txId ?? statusResponse.txId,
-        );
-      const synchronizedRequest = updatedRequest ?? {
-        ...pendingRequest,
-        status: statusResponse.status,
-      };
-
-      if (synchronizedRequest.status !== 'account_created') {
-        return {
-          outcome: 'updated',
-          request: synchronizedRequest,
-        };
-      }
-
-      return await importCompletedPendingAccount(
-        synchronizedRequest,
-        mk,
-        getState().hive.accounts as LocalAccount[],
-        dispatch,
-      );
-    } finally {
-      synchronizingRequestIds.delete(requestId);
-    }
+    const { mk } = getState();
+    return PaidAccountCreationSyncUtils.synchronizePendingHiveAccountCreationRequest(
+      requestId,
+      mk,
+      getState().hive.accounts as LocalAccount[],
+      async (updatedAccounts) => {
+        await AccountUtils.saveAccounts(updatedAccounts, mk);
+        dispatch(setAccounts(updatedAccounts));
+      },
+    );
   };
 
 export const synchronizePendingHiveAccountCreations =
   (): AppThunk<Promise<PaidAccountCreationSynchronizationResult[]>> =>
   async (dispatch, getState) => {
-    let pendingRequests: PendingHiveAccountCreationRequest[];
+    const { mk } = getState();
+
     try {
-      pendingRequests =
-        await PendingHiveAccountCreationUtils.getPendingHiveAccountCreationRequests(
-          getState().mk,
-        );
+      return await PaidAccountCreationSyncUtils.synchronizePendingHiveAccountCreationRequests(
+        mk,
+        () => getState().hive.accounts as LocalAccount[],
+        async (updatedAccounts) => {
+          await AccountUtils.saveAccounts(updatedAccounts, mk);
+          dispatch(setAccounts(updatedAccounts));
+        },
+        (requestId, error) => {
+          Logger.error(
+            `Unable to synchronize pending Hive account creation ${requestId}`,
+            error,
+          );
+        },
+      );
     } catch (error) {
       Logger.error('Unable to load pending Hive account creations', error);
       return [];
     }
-    const results: PaidAccountCreationSynchronizationResult[] = [];
+  };
 
-    for (const request of pendingRequests) {
-      try {
-        results.push(
-          await dispatch(
-            synchronizePendingHiveAccountCreation(request.requestId),
-          ),
-        );
-      } catch (error) {
-        Logger.error(
-          `Unable to synchronize pending Hive account creation ${request.requestId}`,
-          error,
+export const handleCompletedPaidHiveAccountCreations =
+  (
+    results: PaidAccountCreationSynchronizationResult[],
+    options: CompletePaidHiveAccountCreationOptions = {},
+  ): AppThunk =>
+  async (dispatch) => {
+    for (const result of results) {
+      if (
+        (result.outcome !== 'imported' &&
+          result.outcome !== 'already_imported') ||
+        !result.account
+      ) {
+        continue;
+      }
+
+      await dispatch(completePaidHiveAccountCreation(result.account, options));
+
+      if (
+        options.showBrowserNotification &&
+        result.request?.requestId &&
+        result.account
+      ) {
+        await PaidAccountCreationNotificationsUtils.showAccountCreatedNotification(
+          result.account.name,
+          result.request.requestId,
         );
       }
     }
-
-    return results;
   };
 
 export const PaidAccountCreationActions = {
-  isTerminalPaidAccountCreationFailure,
+  isTerminalPaidAccountCreationFailure:
+    PaidAccountCreationSyncUtils.isTerminalPaidAccountCreationFailure,
   synchronizePendingHiveAccountCreation,
   synchronizePendingHiveAccountCreations,
+  completePaidHiveAccountCreation,
+  handleCompletedPaidHiveAccountCreations,
 };

@@ -3378,6 +3378,14 @@
     "message": "Your account has been successfully created and added to your Keychain",
     "description": "Create account successful message"
   },
+  "paid_hive_account_creation_notification_title": {
+    "message": "Hive account created",
+    "description": "Title for the browser notification when a paid Hive account creation completes while Keychain is closed"
+  },
+  "paid_hive_account_creation_notification_message": {
+    "message": "Your Hive account $1 was created successfully and added to your wallet",
+    "description": "Browser notification message when a paid Hive account creation completes while Keychain is closed"
+  },
   "html_popup_creating_account": {
     "message": "Creating account",
     "description": "Creating account message"

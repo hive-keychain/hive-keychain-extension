@@ -15,7 +15,10 @@ import { setActiveRpc } from '@popup/hive/actions/active-rpc.actions';
 import { loadCurrencyPrices } from '@popup/hive/actions/currency-prices.actions';
 import { loadGlobalProperties } from '@popup/hive/actions/global-properties.actions';
 import { initHiveEngineConfigFromStorage } from '@popup/hive/actions/hive-engine-config.actions';
-import { synchronizePendingHiveAccountCreations } from '@popup/hive/actions/paid-account-creation.actions';
+import {
+  handleCompletedPaidHiveAccountCreations,
+  synchronizePendingHiveAccountCreations,
+} from '@popup/hive/actions/paid-account-creation.actions';
 import { setDisplayChangeRpcPopup } from '@popup/hive/actions/rpc-switcher';
 import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
 import { resetChain, setChain } from '@popup/multichain/actions/chain.actions';
@@ -56,8 +59,12 @@ import { ColorsUtils } from 'src/utils/colors.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { useWorkingRPC } from 'src/utils/rpc-switcher.utils';
+import { PendingHiveAccountCreationUtils } from 'src/utils/pending-hive-account-creation.utils';
+import { PaidAccountCreationSyncUtils } from 'src/utils/paid-account-creation-sync.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
+
+const PAID_ACCOUNT_CREATION_POLL_INTERVAL_MS = 10000;
 
 const isSameChain = (left: Chain, right: Chain) =>
   left?.chainId?.toLowerCase() === right?.chainId?.toLowerCase();
@@ -117,6 +124,7 @@ const UnlockedApp = ({
   loadGlobalProperties,
   initHiveEngineConfigFromStorage,
   synchronizePendingHiveAccountCreations,
+  handleCompletedPaidHiveAccountCreations,
   navigateTo,
   navigateToWithParams,
   setTitleContainerProperties,
@@ -131,6 +139,91 @@ const UnlockedApp = ({
   const transactionResolutionRefreshInFlight = useRef(false);
   const transactionResolutionRefreshQueued = useRef(false);
   const startupChainResolvedRef = useRef(false);
+  const paidAccountCreationPollInFlight = useRef(false);
+  const paidAccountCreationPollIntervalRef = useRef<number | undefined>(
+    undefined,
+  );
+  const previousNavigationPageRef = useRef<Screen | undefined>(undefined);
+
+  const getCompletePaidHiveAccountCreationOptions = () => {
+    const isOnPendingAccountCreationStatusPage =
+      store.getState().navigation.stack[0]?.currentPage ===
+      Screen.PENDING_ACCOUNT_CREATION_PAYMENT;
+
+    return {
+      showSuccessMessage: true,
+      activateCreatedAccount: true,
+      navigateToHomeAfterActivation: isOnPendingAccountCreationStatusPage,
+      showBrowserNotification: !isOnPendingAccountCreationStatusPage,
+    };
+  };
+
+  const stopPaidAccountCreationPolling = () => {
+    if (paidAccountCreationPollIntervalRef.current !== undefined) {
+      window.clearInterval(paidAccountCreationPollIntervalRef.current);
+      paidAccountCreationPollIntervalRef.current = undefined;
+    }
+  };
+
+  const ensurePaidAccountCreationPolling = async () => {
+    if (!mk) {
+      return;
+    }
+
+    if (!(await hasPendingAccountCreationsInProgress())) {
+      stopPaidAccountCreationPolling();
+      return;
+    }
+
+    if (paidAccountCreationPollIntervalRef.current !== undefined) {
+      return;
+    }
+
+    await reconcilePendingAccountCreations();
+    paidAccountCreationPollIntervalRef.current = window.setInterval(() => {
+      void reconcilePendingAccountCreations();
+    }, PAID_ACCOUNT_CREATION_POLL_INTERVAL_MS);
+  };
+
+  const reconcilePendingAccountCreations = async () => {
+    if (!mk || paidAccountCreationPollInFlight.current) {
+      return;
+    }
+
+    paidAccountCreationPollInFlight.current = true;
+    try {
+      const results = await synchronizePendingHiveAccountCreations();
+      await handleCompletedPaidHiveAccountCreations(
+        results.filter(
+          (result) =>
+            result.outcome === 'imported' ||
+            result.outcome === 'already_imported',
+        ),
+        getCompletePaidHiveAccountCreationOptions(),
+      );
+    } finally {
+      paidAccountCreationPollInFlight.current = false;
+    }
+  };
+
+  const hasPendingAccountCreationsInProgress = async () => {
+    if (!mk) {
+      return false;
+    }
+
+    try {
+      const pendingRequests =
+        await PendingHiveAccountCreationUtils.getPendingHiveAccountCreationRequests(
+          mk,
+        );
+      return PaidAccountCreationSyncUtils.hasPendingHiveAccountCreationsAwaitingSync(
+        pendingRequests,
+      );
+    } catch (error) {
+      Logger.error('Unable to load pending Hive account creations', error);
+      return false;
+    }
+  };
 
   useEffect(() => {
     void initApplication();
@@ -244,6 +337,54 @@ const UnlockedApp = ({
       chrome.runtime.onMessage.removeListener(onResolvedEvmTransaction);
     };
   }, [activeEvmAccount.wallet, chain, loadEvmActiveAccount]);
+
+  useEffect(() => {
+    if (!isAppReady || !mk) {
+      return;
+    }
+
+    void ensurePaidAccountCreationPolling();
+
+    const onPendingAccountCreationStorageChange = (
+      changes: { [key: string]: chrome.storage.StorageChange },
+      areaName: string,
+    ) => {
+      if (
+        areaName !== 'local' ||
+        !changes[LocalStorageKeyEnum.PENDING_HIVE_ACCOUNT_CREATIONS]
+      ) {
+        return;
+      }
+
+      void ensurePaidAccountCreationPolling();
+    };
+
+    chrome.storage.onChanged.addListener(onPendingAccountCreationStorageChange);
+
+    return () => {
+      stopPaidAccountCreationPolling();
+      chrome.storage.onChanged.removeListener(
+        onPendingAccountCreationStorageChange,
+      );
+    };
+  }, [isAppReady, mk]);
+
+  useEffect(() => {
+    if (!isAppReady || !mk) {
+      return;
+    }
+
+    const currentPage = navigationStack[0]?.currentPage;
+    const previousPage = previousNavigationPageRef.current;
+    previousNavigationPageRef.current = currentPage;
+
+    if (
+      previousPage === Screen.PENDING_ACCOUNT_CREATION_PAYMENT &&
+      currentPage !== Screen.PENDING_ACCOUNT_CREATION_PAYMENT
+    ) {
+      void reconcilePendingAccountCreations();
+    }
+  }, [isAppReady, mk, navigationStack[0]?.currentPage]);
 
   useEffect(() => {
     if (
@@ -415,7 +556,15 @@ const UnlockedApp = ({
       nextAccountType,
       targetChain,
     );
-    await synchronizePendingHiveAccountCreations();
+    const syncResults = await synchronizePendingHiveAccountCreations();
+    await handleCompletedPaidHiveAccountCreations(
+      syncResults.filter(
+        (result) =>
+          result.outcome === 'imported' ||
+          result.outcome === 'already_imported',
+      ),
+      getCompletePaidHiveAccountCreationOptions(),
+    );
   };
 
   const initActiveHiveAccount = async (accounts: LocalAccount[]) => {
@@ -627,6 +776,7 @@ const connector = connect(mapStateToProps, {
   loadGlobalProperties,
   initHiveEngineConfigFromStorage,
   synchronizePendingHiveAccountCreations,
+  handleCompletedPaidHiveAccountCreations,
   navigateTo,
   navigateToWithParams,
   setTitleContainerProperties,

@@ -6,6 +6,7 @@ import {
   BaseBackgroundMessage,
 } from '@background/multichain/background-message.interface';
 import { SidePanelToolbarLifecycle } from '@background/multichain/side-panel-toolbar.lifecycle';
+import { ExtensionUiLifecycle } from '@background/multichain/extension-ui.lifecycle';
 import VaultModule from '@background/vault.module';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { VaultCommand, VaultKey } from '@reference-data/vault-message-key.enum';
@@ -31,6 +32,7 @@ chrome.runtime.onInstalled.addListener(syncSidePanelStartupSettings);
 chrome.runtime.onStartup.addListener(syncSidePanelStartupSettings);
 
 if (!process.env.IS_FIREFOX) {
+  ExtensionUiLifecycle.registerExtensionUiLifecycle();
   SidePanelToolbarLifecycle.registerSidePanelToolbarLifecycle();
   chrome.action.onClicked.addListener(() => {
     void SidePanelToolbarLifecycle.handleToolbarClickWhileSidePanelSessionActive();
