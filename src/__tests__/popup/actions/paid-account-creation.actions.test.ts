@@ -162,6 +162,30 @@ describe('paid-account-creation.actions', () => {
     ).toHaveBeenCalledWith(pendingRequest.requestId, mk);
   });
 
+  it('removes a stale pending request when the account is already local', async () => {
+    const existingAccount = {
+      name: pendingRequest.username,
+      keys: { posting: 'existing-posting-key' },
+    } as LocalAccount;
+    const store = getStore([existingAccount]);
+
+    await expect(
+      store.dispatch<any>(
+        synchronizePendingHiveAccountCreation(pendingRequest.requestId),
+      ),
+    ).resolves.toMatchObject({
+      outcome: 'already_imported',
+      account: existingAccount,
+    });
+
+    expect(
+      HiveAccountCreationApi.getHiveAccountCreationStatus,
+    ).not.toHaveBeenCalled();
+    expect(
+      PendingHiveAccountCreationUtils.removePendingHiveAccountCreationRequest,
+    ).toHaveBeenCalledWith(pendingRequest.requestId, mk);
+  });
+
   it('retains the pending request when encrypted account validation fails', async () => {
     jest
       .spyOn(HiveAccountCreationApi, 'getHiveAccountCreationStatus')

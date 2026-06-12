@@ -299,6 +299,10 @@ const PendingAccountCreationPayment = ({
           : undefined;
 
         if (completedAccount) {
+          await PendingHiveAccountCreationUtils.removePendingHiveAccountCreationRequest(
+            requestId,
+            mk,
+          );
           await completePaidHiveAccountCreation(completedAccount, {
             activateCreatedAccount: true,
             navigateToHomeAfterActivation: true,

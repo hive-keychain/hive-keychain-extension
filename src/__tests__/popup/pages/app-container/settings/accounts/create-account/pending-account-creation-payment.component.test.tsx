@@ -447,6 +447,12 @@ describe('PendingAccountCreationPaymentComponent', () => {
       .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
       .mockResolvedValue([importedAccount]);
     jest
+      .spyOn(
+        PendingHiveAccountCreationUtils,
+        'removePendingHiveAccountCreationRequest',
+      )
+      .mockResolvedValue();
+    jest
       .spyOn(ChainUtils, 'getAllSetupChainsForType')
       .mockResolvedValue([hiveChain]);
     jest.spyOn(AccountUtils, 'getExtendedAccount').mockResolvedValue({} as any);
@@ -463,6 +469,9 @@ describe('PendingAccountCreationPaymentComponent', () => {
       );
     });
     expect(store.getState().activeAccountType).toBe(ChainType.HIVE);
+    expect(
+      PendingHiveAccountCreationUtils.removePendingHiveAccountCreationRequest,
+    ).toHaveBeenCalledWith(pendingRequest.requestId, mk);
   });
 
   it('keeps showing the pending request when sync reports not_found but storage still has it', async () => {

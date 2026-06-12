@@ -134,6 +134,18 @@ const synchronizePendingHiveAccountCreationRequest = async (
       return { outcome: 'not_found' };
     }
 
+    const existingAccount = accounts.find(
+      (account) => account.name === pendingRequest.username,
+    );
+    if (existingAccount) {
+      return await importCompletedPendingAccount(
+        pendingRequest,
+        mk,
+        accounts,
+        persistAccounts,
+      );
+    }
+
     const statusResponse = await getHiveAccountCreationStatus(requestId);
     const updatedRequest =
       await PendingHiveAccountCreationUtils.updatePendingHiveAccountCreationStatus(
