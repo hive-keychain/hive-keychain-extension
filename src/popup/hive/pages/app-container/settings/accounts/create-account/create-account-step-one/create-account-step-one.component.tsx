@@ -221,6 +221,9 @@ const CreateAccountStepOne = ({
     setSelectedPaymentToken(undefined);
     setEvmTokensError('');
     const account = (await AccountUtils.getExtendedAccount(username)) as any;
+    if (!account) {
+      return;
+    }
 
     if (account.pending_claimed_accounts > 0) {
       setPrice(0);

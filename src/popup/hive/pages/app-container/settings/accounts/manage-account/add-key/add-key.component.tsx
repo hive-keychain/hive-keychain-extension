@@ -23,6 +23,7 @@ import AccountUtils from '@popup/hive/utils/account.utils';
 import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
 import { ArrayUtils } from 'src/utils/array.utils';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 interface AddKeyNavParams {
   keyType: KeyType;
@@ -165,7 +166,7 @@ const AddKey = ({
         data-testid="add-key-page-paragraph-introduction"
         className="caption"
         dangerouslySetInnerHTML={{
-          __html: I18nUtils.getMessage('popup_html_add_key_text', [
+          __html: HtmlUtils.getSafeI18nHtml('popup_html_add_key_text', [
             keyType.substring(0, 1) + keyType.substring(1).toLowerCase(),
           ]),
         }}></div>

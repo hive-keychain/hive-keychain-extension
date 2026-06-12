@@ -20,6 +20,7 @@ import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions
 import { addAccount } from 'src/popup/hive/actions/account.actions';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 export interface SelectKeysProps {
   keys: Keys;
@@ -89,7 +90,7 @@ const SelectKeys = ({
         data-testid="select-keys-page-caption"
         className="caption"
         dangerouslySetInnerHTML={{
-          __html: I18nUtils.getMessage('popup_html_import_success'),
+          __html: HtmlUtils.getSafeI18nHtml('popup_html_import_success'),
         }}></div>
 
       <CheckboxPanelComponent

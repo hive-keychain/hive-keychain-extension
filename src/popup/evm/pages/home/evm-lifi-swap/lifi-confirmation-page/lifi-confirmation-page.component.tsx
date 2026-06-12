@@ -24,6 +24,7 @@ import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 interface LiFiConfirmationPageNavigationParams {
   swapTransactionData: ProviderTransactionData;
@@ -140,7 +141,7 @@ const LiFiConfirmationPage = ({
           <div
             className="introduction"
             dangerouslySetInnerHTML={{
-              __html: message,
+              __html: HtmlUtils.sanitizeHtml(message),
             }}></div>
         )}
 

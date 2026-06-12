@@ -57,8 +57,13 @@ describe('add-account tests:\n', () => {
         result: false,
         data: datas,
         message: I18nUtils.getMessage('bgd_ops_add_account_error_invalid'),
+          messageKey: 'bgd_ops_add_account_error_invalid',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_add_account_error_invalid',
+          messageParams: undefined,
         request_id: request_id,
         publicKey: undefined,
+          tab: undefined,
       },
     });
   });
@@ -84,8 +89,13 @@ describe('add-account tests:\n', () => {
         success: false,
         data: datas,
         message: I18nUtils.getMessage('bgd_ops_add_account_error'),
+          messageKey: 'bgd_ops_add_account_error',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_add_account_error',
+          messageParams: undefined,
         request_id: request_id,
         publicKey: undefined,
+          tab: undefined,
       },
     });
   });
@@ -111,8 +121,13 @@ describe('add-account tests:\n', () => {
         success: false,
         data: datas,
         message: I18nUtils.getMessage('bgd_ops_add_account_error'),
+          messageKey: 'bgd_ops_add_account_error',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_add_account_error',
+          messageParams: undefined,
         request_id: request_id,
         publicKey: undefined,
+          tab: undefined,
       },
     });
   });
@@ -181,8 +196,13 @@ describe('add-account tests:\n', () => {
         success: true,
         data: datas,
         message: I18nUtils.getMessage('bgd_ops_add_account', [mk.user.one]),
+          messageKey: 'bgd_ops_add_account',
+          messageParams: [mk.user.one],
+          messageKey: 'bgd_ops_add_account',
+          messageParams: [mk.user.one],
         request_id: request_id,
         publicKey: undefined,
+          tab: undefined,
       },
     });
   });

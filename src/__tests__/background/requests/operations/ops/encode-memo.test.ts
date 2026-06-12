@@ -125,8 +125,13 @@ describe('encode-memo tests:\n', () => {
         result: '#mock-encoded-memo',
         data: datas,
         message: I18nUtils.getMessage('bgd_ops_encode'),
+          messageKey: 'bgd_ops_encode',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_encode',
+          messageParams: undefined,
         request_id: request_id,
         publicKey: undefined,
+          tab: undefined,
       },
     });
   });

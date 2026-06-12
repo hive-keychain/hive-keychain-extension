@@ -13,6 +13,7 @@ import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 interface AddKeyComponentProps {
   embedded?: boolean;
@@ -120,7 +121,7 @@ const AddKeyComponent = ({
         <div
           className="caption"
           dangerouslySetInnerHTML={{
-            __html: I18nUtils.getMessage('add_key_from_ledger_caption'),
+            __html: HtmlUtils.getSafeI18nHtml('add_key_from_ledger_caption'),
           }}></div>
         <div>{I18nUtils.getMessage(message)}</div>
         <div className="fill-space"></div>

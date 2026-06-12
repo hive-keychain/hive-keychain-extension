@@ -14,6 +14,7 @@ import { resetAccount } from 'src/popup/hive/actions/account.actions';
 import { resetActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 const ResetPasswordPage = ({
   setTitleContainerProperties,
@@ -50,7 +51,7 @@ const ResetPasswordPage = ({
         <p
           className="introduction"
           dangerouslySetInnerHTML={{
-            __html: I18nUtils.getMessage('popup_html_reset_desc'),
+            __html: HtmlUtils.getSafeI18nHtml('popup_html_reset_desc'),
           }}></p>
       </div>
 

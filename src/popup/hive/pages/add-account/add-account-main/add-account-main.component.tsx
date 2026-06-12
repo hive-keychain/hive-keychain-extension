@@ -39,6 +39,7 @@ import { CommunicationUtils } from 'src/utils/communication.utils';
 import FileUtils from 'src/utils/file.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 
 interface AddAccountNavigationParams {
@@ -332,7 +333,7 @@ const AddAccountMain = ({
       <div
         className="caption"
         dangerouslySetInnerHTML={{
-          __html: I18nUtils.getMessage('popup_html_chose_add_method'),
+          __html: HtmlUtils.getSafeI18nHtml('popup_html_chose_add_method'),
         }}></div>
 
       {renderAddAccountMenuItems([
@@ -389,7 +390,7 @@ const AddAccountMain = ({
       <div
         className="caption"
         dangerouslySetInnerHTML={{
-          __html: I18nUtils.getMessage('html_popup_evm_add_wallet_method'),
+          __html: HtmlUtils.getSafeI18nHtml('html_popup_evm_add_wallet_method'),
         }}></div>
 
       {renderAddAccountMenuItems([

@@ -1,6 +1,6 @@
 import LedgerModule from '@background/hive/modules/ledger.module';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createMessage } from '@background/hive/requests/operations/operations.utils';
+import { createMessage, feedbackI18n } from '@background/hive/requests/operations/operations.utils';
 import {
   KeychainKeyTypesLC,
   RequestId,
@@ -64,7 +64,7 @@ export const broadcastWitnessVote = async (
     }
   } catch (e: any) {
     err = (e as KeychainError).trace || e;
-    err_message = await I18nUtils.getMessage(
+    err_message = feedbackI18n(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -75,8 +75,8 @@ export const broadcastWitnessVote = async (
       data,
       request?.tab!,
       data.vote
-        ? await I18nUtils.getMessage('bgd_ops_witness_voted', [data.witness])
-        : await I18nUtils.getMessage('bgd_ops_witness_unvoted', [
+        ? feedbackI18n('bgd_ops_witness_voted', [data.witness])
+        : feedbackI18n('bgd_ops_witness_unvoted', [
             data.witness,
           ]),
       err_message,

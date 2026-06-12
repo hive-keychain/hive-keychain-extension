@@ -55,8 +55,13 @@ describe('decode-memo tests:\n', () => {
         result: '# keychain tha best wallet!',
         data: datas,
         message: I18nUtils.getMessage('bgd_ops_decode'),
+          messageKey: 'bgd_ops_decode',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_decode',
+          messageParams: undefined,
         request_id: request_id,
         publicKey: undefined,
+          tab: undefined,
       },
     });
   });
@@ -79,8 +84,13 @@ describe('decode-memo tests:\n', () => {
         result: null,
         data: datas,
         message: I18nUtils.getMessage('bgd_ops_decode_err'),
+          messageKey: 'bgd_ops_decode_err',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_decode_err',
+          messageParams: undefined,
         request_id: request_id,
         publicKey: undefined,
+          tab: undefined,
       },
     });
   });

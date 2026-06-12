@@ -26,7 +26,7 @@ import AccountSelectorOrderUtils, {
   AccountSelectorListItem,
 } from '@popup/multichain/utils/account-selector-order.utils';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   DragDropContext,
   Draggable,
@@ -165,6 +165,9 @@ const AccountSelector = ({
   navigateToWithParams,
 }: PropsFromRedux & Props) => {
   const [isOpened, setIsOpened] = useState(false);
+  const selectedAccountListItemRef = useRef<HTMLDivElement | null>(null);
+  const [shouldScrollToSelectedAccount, setShouldScrollToSelectedAccount] =
+    useState(false);
   const [isPersistingOrder, setIsPersistingOrder] = useState(false);
   const [displayOrder, setDisplayOrder] = useState<AccountSelectorOrderRef[]>(
     [],
@@ -266,6 +269,34 @@ const AccountSelector = ({
     (showAccountFilters && accountSearch.trim().length > 0) ||
     (showAccountTypeFilters && accountTypeFilter !== 'all');
 
+  useEffect(() => {
+    if (
+      !isOpened ||
+      !shouldScrollToSelectedAccount ||
+      isAccountListFiltered
+    ) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      selectedAccountListItemRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    });
+    setShouldScrollToSelectedAccount(false);
+  }, [
+    accountListItems,
+    accountSearch,
+    accountTypeFilter,
+    activeEvmAccountAddress,
+    activeHiveAccountName,
+    isAccountListFiltered,
+    isOpened,
+    selectedAccountType,
+    shouldScrollToSelectedAccount,
+  ]);
+
   const rebuildAccountListItems = async (
     selectableHiveAccounts: LocalAccount[],
     selectableEvmAccounts: EvmAccount[],
@@ -346,6 +377,7 @@ const AccountSelector = ({
     setActiveEvmMainnetChains(await getActiveEvmMainnetChains());
     setAccountSearch('');
     setAccountTypeFilter('all');
+    setShouldScrollToSelectedAccount(true);
     setIsOpened(true);
   };
 
@@ -613,6 +645,9 @@ const AccountSelector = ({
         className={getAccountListItemClassName(item)}
         data-testid={`account-selector-hive-account-${account.name}`}
         key={`hive-${account.name}`}
+        ref={
+          isAccountListItemSelected(item) ? selectedAccountListItemRef : null
+        }
         onClick={() => void handleAccountListItemClick(item)}>
         <PreloadedImage
           className="user-picture"
@@ -641,6 +676,9 @@ const AccountSelector = ({
         className={getAccountListItemClassName(item)}
         data-testid={`account-selector-evm-account-${address}`}
         key={`evm-${address}`}
+        ref={
+          isAccountListItemSelected(item) ? selectedAccountListItemRef : null
+        }
         onClick={() => void handleAccountListItemClick(item)}>
         <EvmAccountImage address={address} />
         <div className="selected-account-name">

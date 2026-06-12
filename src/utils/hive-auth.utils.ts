@@ -1,5 +1,9 @@
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createMessage } from '@background/hive/requests/operations/operations.utils';
+import {
+  createMessage,
+  feedbackI18n,
+  feedbackPlain,
+} from '@background/hive/requests/operations/operations.utils';
 import { KeylessKeychainUtils } from '@background/utils/keyless-keychain.utils';
 import {
   AuthAck,
@@ -611,7 +615,7 @@ const handleSignBufferRequest = async (
     authAckData.challenge.challenge,
     keylessRequest.request,
     tab,
-    await I18nUtils.getMessage('bgd_ops_sign_success'),
+    feedbackI18n('bgd_ops_sign_success'),
     null,
     authAckData.challenge.pubkey,
   );
@@ -659,7 +663,7 @@ const handleSignRequest = async (
     signResponse,
     request,
     tab,
-    await I18nUtils.getMessage('bgd_ops_sign_success'),
+    feedbackI18n('bgd_ops_sign_success'),
     null,
     null,
   );
@@ -736,7 +740,7 @@ const handleAuthAck = async (
       request,
       tab,
       null,
-      errorMessage,
+      feedbackPlain(errorMessage),
       null,
     );
 
@@ -1356,10 +1360,9 @@ const sendResponseToDapp = async (
       ? response.challenge
       : response,
     request,
-    success
-      ? await I18nUtils.getMessage('bgd_ops_keyless_broadcast_success')
-      : error?.message || 'Operation failed',
-    error?.message || null,
+    tab,
+    success ? feedbackI18n('bgd_ops_keyless_broadcast_success') : null,
+    !success ? feedbackPlain(error?.message || 'Operation failed') : null,
     'challenge' in response && response.challenge ? response.pubkey : null,
   );
 

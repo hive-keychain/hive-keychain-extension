@@ -1,7 +1,9 @@
 import {
   beautifyErrorMessage,
   createMessage,
-} from '@background/requests/operations/operations.utils';
+  feedbackI18n,
+  feedbackPlain,
+} from '@background/hive/requests/operations/operations.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import {
@@ -40,7 +42,7 @@ describe('operations.utils tests:\n', () => {
         } as TransactionResult,
         datas,
         undefined,
-        I18nUtils.getMessage('bgd_ops_transfer_success', [
+        feedbackI18n('bgd_ops_transfer_success', [
           datas.amount,
           datas.currency,
           datas.username!,
@@ -66,6 +68,13 @@ describe('operations.utils tests:\n', () => {
             datas.username!,
             datas.to,
           ]),
+          messageKey: 'bgd_ops_transfer_success',
+          messageParams: [
+            datas.amount,
+            datas.currency,
+            datas.username!,
+            datas.to,
+          ],
           error: undefined,
           publicKey: undefined,
           request_id,
@@ -82,7 +91,7 @@ describe('operations.utils tests:\n', () => {
         datas,
         null,
         undefined,
-        `${I18nUtils.getMessage('bgd_ops_error')} : ${errorMsg}`,
+        feedbackPlain(`${I18nUtils.getMessage('bgd_ops_error')} : ${errorMsg}`),
         undefined,
       );
       const { request_id, ...data } = datas;
@@ -110,10 +119,12 @@ describe('operations.utils tests:\n', () => {
         { isUsingMultisig: true, tx_id: '' },
         datas,
         'would-be-success',
-        'would-be-fail',
+        feedbackI18n('ignored-success'),
+        feedbackI18n('ignored-fail'),
       );
       expect(result.msg.success).toBe(true);
       expect(result.msg.message).toBe(multisigMsg);
+      expect(result.msg.messageKey).toBe('multisig_transaction_sent_to_signers');
     });
   });
 

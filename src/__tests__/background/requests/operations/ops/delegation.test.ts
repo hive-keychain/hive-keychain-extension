@@ -1,4 +1,5 @@
 import LedgerModule from '@background/ledger.module';
+import { KeychainError } from 'src/keychain-error';
 import { broadcastDelegation } from '@background/requests/operations/ops/delegation';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { DynamicGlobalPropertiesUtils } from '@hiveapp/utils/dynamic-global-properties.utils';
@@ -69,14 +70,15 @@ describe('delegation tests:\n', () => {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new Error('html_popup_error_while_signing_transaction'),
+          error: new KeychainError('html_popup_error_while_signing_transaction'),
           result: undefined,
           data: datas,
-          message: I18nUtils.getMessage(
-            'html_popup_error_while_signing_transaction',
-          ),
+          message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -110,8 +112,27 @@ describe('delegation tests:\n', () => {
             datas.delegatee,
             datas.username!,
           ]),
+          messageKey: 'bgd_ops_delegate',
+          messageParams: [
+            `${datas.amount} ${datas.unit}`,
+            datas.delegatee,
+            datas.username!,
+          ],
+          messageKey: 'bgd_ops_delegate',
+          messageParams: [
+            `${datas.amount} ${datas.unit}`,
+            datas.delegatee,
+            datas.username!,
+          ],
+          messageKey: 'bgd_ops_delegate',
+          messageParams: [
+            `${datas.amount} ${datas.unit}`,
+            datas.delegatee,
+            datas.username!,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -155,8 +176,27 @@ describe('delegation tests:\n', () => {
             datas.delegatee,
             datas.username!,
           ]),
+          messageKey: 'bgd_ops_delegate',
+          messageParams: [
+            `${datas.amount} ${datas.unit}`,
+            datas.delegatee,
+            datas.username!,
+          ],
+          messageKey: 'bgd_ops_delegate',
+          messageParams: [
+            `${datas.amount} ${datas.unit}`,
+            datas.delegatee,
+            datas.username!,
+          ],
+          messageKey: 'bgd_ops_delegate',
+          messageParams: [
+            `${datas.amount} ${datas.unit}`,
+            datas.delegatee,
+            datas.username!,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });

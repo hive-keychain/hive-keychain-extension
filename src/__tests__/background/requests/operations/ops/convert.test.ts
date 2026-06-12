@@ -1,4 +1,5 @@
 import LedgerModule from '@background/ledger.module';
+import { KeychainError } from 'src/keychain-error';
 import { convert } from '@background/requests/operations/ops/convert';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { ConversionUtils } from 'src/popup/hive/utils/conversion.utils';
@@ -53,14 +54,15 @@ describe('convert tests:\n', () => {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new Error('html_popup_error_while_signing_transaction'),
+          error: new KeychainError('html_popup_error_while_signing_transaction'),
           result: undefined,
           data: datas,
-          message: I18nUtils.getMessage(
-            'html_popup_error_while_signing_transaction',
-          ),
+          message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -92,8 +94,24 @@ describe('convert tests:\n', () => {
             data.amount,
             data.username,
           ]),
+          messageKey: 'bgd_ops_convert',
+          messageParams: [
+            data.amount,
+            data.username,
+          ],
+          messageKey: 'bgd_ops_convert',
+          messageParams: [
+            data.amount,
+            data.username,
+          ],
+          messageKey: 'bgd_ops_convert',
+          messageParams: [
+            data.amount,
+            data.username,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -126,8 +144,24 @@ describe('convert tests:\n', () => {
             data.amount,
             data.username,
           ]),
+          messageKey: 'bgd_ops_convert_collaterized',
+          messageParams: [
+            data.amount,
+            data.username,
+          ],
+          messageKey: 'bgd_ops_convert_collaterized',
+          messageParams: [
+            data.amount,
+            data.username,
+          ],
+          messageKey: 'bgd_ops_convert_collaterized',
+          messageParams: [
+            data.amount,
+            data.username,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -166,8 +200,24 @@ describe('convert tests:\n', () => {
             data.amount,
             data.username,
           ]),
+          messageKey: 'bgd_ops_convert_collaterized',
+          messageParams: [
+            data.amount,
+            data.username,
+          ],
+          messageKey: 'bgd_ops_convert_collaterized',
+          messageParams: [
+            data.amount,
+            data.username,
+          ],
+          messageKey: 'bgd_ops_convert_collaterized',
+          messageParams: [
+            data.amount,
+            data.username,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });

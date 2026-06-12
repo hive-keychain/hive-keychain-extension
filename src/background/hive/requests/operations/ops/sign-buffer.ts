@@ -1,5 +1,5 @@
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createMessage } from '@background/hive/requests/operations/operations.utils';
+import { createMessage, feedbackI18n } from '@background/hive/requests/operations/operations.utils';
 import {
   KeychainKeyTypesLC,
   RequestId,
@@ -8,7 +8,6 @@ import {
 import { KeychainError } from 'src/keychain-error';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
-import { I18nUtils } from 'src/utils/i18n.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
 export type SignedBuffer = string;
@@ -38,7 +37,7 @@ export const signBuffer = async (
   } catch (err) {
     Logger.error(err);
     error = err;
-    err_message = await I18nUtils.getMessage(
+    err_message = feedbackI18n(
       (err as KeychainError).message,
       (err as KeychainError).messageParams,
     );
@@ -48,8 +47,8 @@ export const signBuffer = async (
       signed,
       data,
       request?.tab!,
-      await I18nUtils.getMessage('bgd_ops_sign_success'),
-      err_message ?? (await I18nUtils.getMessage('bgd_ops_sign_error')),
+      feedbackI18n('bgd_ops_sign_success'),
+      err_message ?? (feedbackI18n('bgd_ops_sign_error')),
       publicKey,
     );
   }

@@ -21,6 +21,7 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   activeAccount: EvmActiveAccount;
@@ -153,7 +154,7 @@ const EvmWalletNftGallery = ({
               <p
                 className="evm-custom-erc20-empty-card__message"
                 dangerouslySetInnerHTML={{
-                  __html: I18nUtils.getMessage(
+                  __html: HtmlUtils.getSafeI18nHtml(
                     'evm_custom_nft_empty_card_message',
                   ),
                 }}></p>

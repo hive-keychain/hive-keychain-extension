@@ -15,6 +15,7 @@ import { loadTokens } from 'src/popup/hive/actions/token.actions';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 const TokensFilter = ({
   tokens,
@@ -77,7 +78,7 @@ const TokensFilter = ({
         data-testid="tokens-filter-disclaimer"
         className="caption"
         dangerouslySetInnerHTML={{
-          __html: I18nUtils.getMessage('popup_html_tokens_settings_text'),
+          __html: HtmlUtils.getSafeI18nHtml('popup_html_tokens_settings_text'),
         }}></div>
 
       <InputComponent

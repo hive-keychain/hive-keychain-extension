@@ -1,4 +1,5 @@
 import { Screen } from '@interfaces/screen.interface';
+import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -6,7 +7,6 @@ import {
 import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
-import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
 import React, { useEffect } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import LinkLedgerDevice from 'src/ledger/link-device/link-device.component';
@@ -24,9 +24,6 @@ const LinkLedgerDevicePage = ({
     setTitleContainerProperties({
       title: 'ledger_link_device',
       isBackButtonEnabled: true,
-      onBackAdditional: () => {
-        navigateTo(HiveScreen.SETTINGS_ADVANCED, true);
-      },
     });
     return () => {
       removeFromLoadingList(loadingOperation);

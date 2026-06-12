@@ -1,6 +1,6 @@
 import LedgerModule from '@background/hive/modules/ledger.module';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createMessage } from '@background/hive/requests/operations/operations.utils';
+import { createMessage, feedbackI18n } from '@background/hive/requests/operations/operations.utils';
 import {
   KeychainKeyTypesLC,
   RequestId,
@@ -61,7 +61,7 @@ export const broadcastProxy = async (
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await I18nUtils.getMessage(
+    err_message = feedbackI18n(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -72,8 +72,8 @@ export const broadcastProxy = async (
       data,
       request?.tab!,
       data.proxy.length
-        ? await I18nUtils.getMessage('popup_success_proxy', [data.proxy])
-        : await I18nUtils.getMessage('bgd_ops_unproxy'),
+        ? feedbackI18n('popup_success_proxy', [data.proxy])
+        : feedbackI18n('bgd_ops_unproxy'),
       err_message,
     );
     return message;

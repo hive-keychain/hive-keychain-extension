@@ -15,6 +15,7 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import AutolockUtils from 'src/utils/autolock.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 const AutoLock = ({
   setSuccessMessage,
@@ -87,7 +88,7 @@ const AutoLock = ({
             <div
               className="hint"
               dangerouslySetInnerHTML={{
-                __html: I18nUtils.getMessage('popup_html_al_idle_info'),
+                __html: HtmlUtils.getSafeI18nHtml('popup_html_al_idle_info'),
               }}
             />
             {selectedType === AutoLockType.IDLE_LOCK && (

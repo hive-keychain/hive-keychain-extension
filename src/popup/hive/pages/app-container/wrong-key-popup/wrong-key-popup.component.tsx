@@ -13,6 +13,7 @@ import { PopupContainer } from 'src/common-ui/popup-container/popup-container.co
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 export interface WrongKeysOnUser {
   [key: string]: string[];
@@ -77,7 +78,7 @@ const WrongKeyPopup = ({
       <div
         className="caption"
         dangerouslySetInnerHTML={{
-          __html: I18nUtils.getMessage('html_popup_wrong_key_introduction', [
+          __html: HtmlUtils.getSafeI18nHtml('html_popup_wrong_key_introduction', [
             accountFound,
           ]),
         }}></div>

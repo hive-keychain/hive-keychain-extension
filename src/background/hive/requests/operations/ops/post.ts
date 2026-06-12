@@ -1,5 +1,5 @@
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createMessage } from '@background/hive/requests/operations/operations.utils';
+import { createMessage, feedbackI18n } from '@background/hive/requests/operations/operations.utils';
 import { RequestId, RequestPost } from '@interfaces/keychain.interface';
 import { TransactionOptions } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
@@ -46,7 +46,7 @@ export const broadcastPost = async (
   } catch (e: any) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await I18nUtils.getMessage(
+    err_message = feedbackI18n(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -56,7 +56,7 @@ export const broadcastPost = async (
       result,
       data,
       request?.tab!,
-      await I18nUtils.getMessage('bgd_ops_post'),
+      feedbackI18n('bgd_ops_post'),
       err_message,
     );
     return message;

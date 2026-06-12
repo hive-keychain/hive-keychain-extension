@@ -6523,6 +6523,10 @@
     "message": "Transaction completed",
     "description": "Transaction completed title"
   },
+  "evm_incoming_transaction_notification_title": {
+    "message": "$1 · Eingehende Transaktion auf $2",
+    "description": "Incoming EVM transaction notification title"
+  },
   "evm_tx_failed_notification_title": {
     "message": "Transaction failed",
     "description": "Transaction completed title"

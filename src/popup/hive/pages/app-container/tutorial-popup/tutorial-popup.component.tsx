@@ -9,6 +9,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 const TutorialPopup = () => {
   const [show, setShow] = useState(false);
@@ -58,7 +59,7 @@ const TutorialPopup = () => {
         <div
           className="sub-title"
           dangerouslySetInnerHTML={{
-            __html: I18nUtils.getMessage(
+            __html: HtmlUtils.getSafeI18nHtml(
               'popup_html_tutorial_popup_description',
             ),
           }}></div>

@@ -1,8 +1,8 @@
 import { Theme, useThemeContext } from '@popup/theme.context';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import sanitizeHTML from 'sanitize-html';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 export type CustomTooltipPosition = 'top' | 'bottom' | 'left' | 'right';
 export interface TooltipProps {
@@ -326,12 +326,9 @@ export const CustomTooltip = ({
         <div
           className="tooltip-inner"
           dangerouslySetInnerHTML={{
-            __html: sanitizeHTML(
-              skipTranslation
-                ? message
-                : I18nUtils.getMessage(message, messageParams),
-              { allowedTags: ['b', 'br', 'i', 'p', 'span', 'div'] },
-            ),
+            __html: skipTranslation
+              ? HtmlUtils.escapeHtml(message)
+              : HtmlUtils.getSafeI18nHtml(message, messageParams),
           }}></div>
       </div>
     ) : null;

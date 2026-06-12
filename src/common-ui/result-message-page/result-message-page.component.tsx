@@ -3,6 +3,7 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 type ResultMessagePageType = 'success' | 'error' | 'warning';
 
@@ -16,6 +17,9 @@ interface ResultMessagePageProps {
   warningParams?: string[];
   skipTitleTranslation?: boolean;
   skipMessageTranslation?: boolean;
+  /** Locale key resolved in the dialog via getSafeI18nHtml (params escaped at render). */
+  messageI18nKey?: string;
+  messageI18nParams?: string[];
   skipWarningTranslation?: boolean;
   autoCloseDelayMs?: number;
   onClose: () => void;
@@ -31,6 +35,8 @@ const ResultMessagePage = ({
   warningParams,
   skipTitleTranslation,
   skipMessageTranslation,
+  messageI18nKey,
+  messageI18nParams,
   skipWarningTranslation,
   autoCloseDelayMs,
   onClose,
@@ -60,6 +66,18 @@ const ResultMessagePage = ({
     }
   };
 
+  const getMessageHtml = () => {
+    if (messageI18nKey) {
+      return HtmlUtils.getSafeI18nHtml(messageI18nKey, messageI18nParams);
+    }
+
+    if (skipMessageTranslation) {
+      return HtmlUtils.escapeHtml(message);
+    }
+
+    return HtmlUtils.getSafeI18nHtml(message, messageParams);
+  };
+
   return (
     <div className="result-message-page">
       <div className="result-message-container">
@@ -73,17 +91,15 @@ const ResultMessagePage = ({
           <div
             className="message"
             dangerouslySetInnerHTML={{
-              __html: skipMessageTranslation
-                ? message
-                : I18nUtils.getMessage(message, messageParams),
+              __html: getMessageHtml(),
             }}></div>
           {warningMessage && (
             <div
               className="warning-message"
               dangerouslySetInnerHTML={{
                 __html: skipWarningTranslation
-                  ? warningMessage
-                  : I18nUtils.getMessage(warningMessage, warningParams),
+                  ? HtmlUtils.escapeHtml(warningMessage)
+                  : HtmlUtils.getSafeI18nHtml(warningMessage, warningParams),
               }}></div>
           )}
         </div>

@@ -58,14 +58,15 @@ describe('recurrent-transfer tests:\n', () => {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new Error('html_popup_error_while_signing_transaction'),
+          error: new KeychainError('html_popup_error_while_signing_transaction'),
           result: undefined,
           data: datas,
-          message: I18nUtils.getMessage(
-            'html_popup_error_while_signing_transaction',
-          ),
+          message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -92,8 +93,13 @@ describe('recurrent-transfer tests:\n', () => {
           },
           data: datas,
           message: I18nUtils.getMessage('bgd_ops_recurrent_transfer'),
+          messageKey: 'bgd_ops_recurrent_transfer',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_recurrent_transfer',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -131,8 +137,13 @@ describe('recurrent-transfer tests:\n', () => {
           },
           data: datas,
           message: I18nUtils.getMessage('bgd_ops_recurrent_transfer'),
+          messageKey: 'bgd_ops_recurrent_transfer',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_recurrent_transfer',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -160,8 +171,13 @@ describe('recurrent-transfer tests:\n', () => {
           },
           data: datas,
           message: I18nUtils.getMessage('bgd_ops_stop_recurrent_transfer'),
+          messageKey: 'bgd_ops_stop_recurrent_transfer',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_stop_recurrent_transfer',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -183,8 +199,11 @@ describe('recurrent-transfer tests:\n', () => {
           result: undefined,
           data: datas,
           message: I18nUtils.getMessage(localeMessageKey),
+          messageKey: localeMessageKey,
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });

@@ -135,6 +135,31 @@ describe('CreateAccountStepOneComponent', () => {
     jest.restoreAllMocks();
   });
 
+  it('selects the first Hive account when no active Hive account is available', async () => {
+    renderStepOne({
+      ...initialStateWAccountsWActiveAccountStore,
+      chain: hiveChain,
+      hive: {
+        ...initialStateWAccountsWActiveAccountStore.hive,
+        activeAccount: {
+          ...initialStateWAccountsWActiveAccountStore.hive.activeAccount,
+          name: undefined,
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(`@${localAccounts.user1.name}`),
+      ).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText('@undefined')).not.toBeInTheDocument();
+    expect(AccountUtils.getExtendedAccount).toHaveBeenCalledWith(
+      localAccounts.user1.name,
+    );
+  });
+
   it('shows Hive and EVM account choices in default mode', async () => {
     const { container } = renderStepOne({
       ...initialStateWAccountsWActiveAccountStore,

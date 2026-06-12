@@ -1,6 +1,7 @@
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { createOrUpdateDialog } from '@background/multichain/dialog-lifecycle';
 import sendErrors from '@background/multichain/errors';
+import { removeRequestAfterDialogFeedback } from '@background/multichain/remove-request-after-dialog-feedback.logic';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
@@ -26,7 +27,11 @@ export const addAccountRequest = (
         ]),
         request,
       );
-      await requestHandler.removeRequestById(request.request_id, tab);
+      await removeRequestAfterDialogFeedback(
+        requestHandler,
+        request.request_id,
+        tab,
+      );
     }, requestHandler);
   } else {
     const callback = () => {

@@ -1,6 +1,6 @@
 import LedgerModule from '@background/hive/modules/ledger.module';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createMessage } from '@background/hive/requests/operations/operations.utils';
+import { createMessage, feedbackI18n } from '@background/hive/requests/operations/operations.utils';
 import {
   KeychainKeyTypesLC,
   RequestId,
@@ -66,7 +66,7 @@ export const broadcastPowerUp = async (
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await I18nUtils.getMessage(
+    err_message = feedbackI18n(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -76,7 +76,7 @@ export const broadcastPowerUp = async (
       result,
       data,
       request?.tab!,
-      await I18nUtils.getMessage('bgd_ops_pu', [data.hive, data.recipient]),
+      feedbackI18n('bgd_ops_pu', [data.hive, data.recipient]),
       err_message,
     );
     return message;
@@ -137,7 +137,7 @@ export const broadcastPowerDown = async (
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await I18nUtils.getMessage(
+    err_message = feedbackI18n(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -148,8 +148,8 @@ export const broadcastPowerDown = async (
       data,
       request?.tab!,
       parseFloat(data.hive_power) == 0
-        ? await I18nUtils.getMessage('bgd_ops_pd_stop', [data.username])
-        : await I18nUtils.getMessage('bgd_ops_pd', [
+        ? feedbackI18n('bgd_ops_pd_stop', [data.username])
+        : feedbackI18n('bgd_ops_pd', [
             data.hive_power,
             data.username,
           ]),

@@ -1,6 +1,7 @@
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { createOrUpdateDialog } from '@background/multichain/dialog-lifecycle';
 import sendErrors from '@background/multichain/errors';
+import { removeRequestAfterDialogFeedback } from '@background/multichain/remove-request-after-dialog-feedback.logic';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
@@ -20,6 +21,10 @@ export const missingKey = (
       await I18nUtils.getMessage('bgd_auth_no_key', [username, typeWif]),
       request,
     );
-    await requestHandler.removeRequestById(request.request_id, tab);
+    await removeRequestAfterDialogFeedback(
+      requestHandler,
+      request.request_id,
+      tab,
+    );
   }, requestHandler);
 };

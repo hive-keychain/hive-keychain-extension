@@ -20,6 +20,7 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 interface OwnProps {
   chain: EvmChain;
@@ -173,7 +174,7 @@ const EvmWalletTokensInner = ({
               <p
                 className="evm-custom-erc20-empty-card__message"
                 dangerouslySetInnerHTML={{
-                  __html: I18nUtils.getMessage(
+                  __html: HtmlUtils.getSafeI18nHtml(
                     'evm_custom_erc20_empty_card_message',
                   ),
                 }}></p>

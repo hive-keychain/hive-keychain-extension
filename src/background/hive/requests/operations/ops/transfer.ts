@@ -1,6 +1,6 @@
 import LedgerModule from '@background/hive/modules/ledger.module';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createMessage } from '@background/hive/requests/operations/operations.utils';
+import { createMessage, feedbackI18n } from '@background/hive/requests/operations/operations.utils';
 import { encode } from '@hiveio/hive-js/lib/auth/memo';
 import {
   KeychainKeyTypesLC,
@@ -97,12 +97,12 @@ export const broadcastTransfer = async (
         data,
         request?.tab!,
         null,
-        await I18nUtils.getMessage('bgd_ops_encode_err'),
+        feedbackI18n('bgd_ops_encode_err'),
       );
       return message;
     } else {
       err = (e as KeychainError).trace || e;
-      err_message = await I18nUtils.getMessage(
+      err_message = feedbackI18n(
         (e as KeychainError).message,
         (e as KeychainError).messageParams,
       );
@@ -113,7 +113,7 @@ export const broadcastTransfer = async (
       result,
       data,
       request?.tab!,
-      await I18nUtils.getMessage('bgd_ops_transfer_success', [
+      feedbackI18n('bgd_ops_transfer_success', [
         data.amount,
         data.currency,
         data.username!,

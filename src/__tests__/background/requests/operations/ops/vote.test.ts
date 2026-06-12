@@ -1,4 +1,5 @@
 import { broadcastVote } from '@background/requests/operations/ops/vote';
+import { KeychainError } from 'src/keychain-error';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
@@ -44,14 +45,15 @@ describe('vote tests:\n', () => {
       command: DialogCommand.ANSWER_REQUEST,
       msg: {
         success: false,
-        error: new Error('html_popup_error_while_signing_transaction'),
+        error: new KeychainError('html_popup_error_while_signing_transaction'),
         result: undefined,
         data: datas,
-        message: I18nUtils.getMessage(
-          'html_popup_error_while_signing_transaction',
-        ),
+        message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
         request_id: request_id,
         publicKey: undefined,
+          tab: undefined,
       },
     });
   });
@@ -82,8 +84,27 @@ describe('vote tests:\n', () => {
           data.permlink,
           +data.weight / 100 + '',
         ]),
+          messageKey: 'bgd_ops_vote',
+          messageParams: [
+          data.author,
+          data.permlink,
+          +data.weight / 100 + '',
+        ],
+          messageKey: 'bgd_ops_vote',
+          messageParams: [
+          data.author,
+          data.permlink,
+          +data.weight / 100 + '',
+        ],
+          messageKey: 'bgd_ops_vote',
+          messageParams: [
+          data.author,
+          data.permlink,
+          +data.weight / 100 + '',
+        ],
         request_id: request_id,
         publicKey: undefined,
+          tab: undefined,
       },
     });
   });

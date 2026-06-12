@@ -1,6 +1,6 @@
 import LedgerModule from '@background/hive/modules/ledger.module';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createMessage } from '@background/hive/requests/operations/operations.utils';
+import { createMessage, feedbackI18n } from '@background/hive/requests/operations/operations.utils';
 import { encode } from '@hiveio/hive-js/lib/auth/memo';
 import {
   KeychainKeyTypesLC,
@@ -95,7 +95,7 @@ export const recurrentTransfer = async (
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await I18nUtils.getMessage(
+    err_message = feedbackI18n(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -106,8 +106,8 @@ export const recurrentTransfer = async (
       data,
       request?.tab!,
       parseFloat(amount) === 0
-        ? await I18nUtils.getMessage('bgd_ops_stop_recurrent_transfer')
-        : await I18nUtils.getMessage('bgd_ops_recurrent_transfer'),
+        ? feedbackI18n('bgd_ops_stop_recurrent_transfer')
+        : feedbackI18n('bgd_ops_recurrent_transfer'),
       err_message,
     );
     return message;

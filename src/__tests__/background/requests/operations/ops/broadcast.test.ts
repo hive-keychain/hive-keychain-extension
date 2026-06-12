@@ -64,6 +64,7 @@ describe('broadcast tests:\n', () => {
         data: datas,
         request_id: request_id,
         publicKey: undefined,
+          tab: undefined,
       });
     });
 
@@ -82,6 +83,7 @@ describe('broadcast tests:\n', () => {
         data: datas,
         request_id: request_id,
         publicKey: undefined,
+          tab: undefined,
       });
     });
 
@@ -189,8 +191,13 @@ describe('broadcast tests:\n', () => {
           },
           data: datas,
           message: I18nUtils.getMessage('bgd_ops_broadcast'),
+          messageKey: 'bgd_ops_broadcast',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_broadcast',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -226,8 +233,13 @@ describe('broadcast tests:\n', () => {
           },
           data: datas,
           message: I18nUtils.getMessage('bgd_ops_broadcast'),
+          messageKey: 'bgd_ops_broadcast',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_broadcast',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -280,8 +292,13 @@ describe('broadcast tests:\n', () => {
           },
           data: datas,
           message: I18nUtils.getMessage('bgd_ops_broadcast'),
+          messageKey: 'bgd_ops_broadcast',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_broadcast',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });

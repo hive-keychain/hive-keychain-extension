@@ -254,10 +254,8 @@ const saveDisplayOrder = async (
   mk: string,
   refs: AccountSelectorOrderRef[],
 ): Promise<void> => {
-  const encrypted = await EncryptUtils.encryptJson(
-    { list: refs } satisfies AccountSelectorDisplayOrderPayload,
-    mk,
-  );
+  const payload: AccountSelectorDisplayOrderPayload = { list: refs };
+  const encrypted = await EncryptUtils.encryptJson(payload, mk);
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.ACCOUNT_SELECTOR_DISPLAY_ORDER,
     encrypted,

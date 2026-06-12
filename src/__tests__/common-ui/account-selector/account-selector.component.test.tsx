@@ -422,6 +422,63 @@ describe('AccountSelectorComponent', () => {
     expect(screen.getByTestId('account-selector-create-evm')).toBeInTheDocument();
   });
 
+  it('scrolls the active account into view when opening the selector', async () => {
+    let scrolledElement: HTMLElement | undefined;
+    let scrollOptions: ScrollIntoViewOptions | undefined;
+    const originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
+    const originalRequestAnimationFrame = window.requestAnimationFrame;
+    Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
+      configurable: true,
+      value: function (
+        this: HTMLElement,
+        options?: ScrollIntoViewOptions,
+      ) {
+        scrolledElement = this;
+        scrollOptions = options;
+      },
+    });
+    window.requestAnimationFrame = (callback: FrameRequestCallback) => {
+      callback(0);
+      return 0;
+    };
+    const initialState = buildState();
+
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
+      initialState: {
+        ...initialState,
+        hive: {
+          ...initialState.hive,
+          activeAccount: {
+            ...initialState.hive.activeAccount,
+            name: userData.two.username,
+            account: {
+              name: userData.two.username,
+            },
+          },
+        },
+      },
+    });
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+
+    await waitFor(() => {
+      expect(scrolledElement).toBe(
+        screen.getByTestId(
+          `account-selector-hive-account-${userData.two.username}`,
+        ),
+      );
+      expect(scrollOptions).toEqual({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    });
+    Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
+      configurable: true,
+      value: originalScrollIntoView,
+    });
+    window.requestAnimationFrame = originalRequestAnimationFrame;
+  });
+
   it('navigates to the combined add account page when clicking the add account button', async () => {
     const { store } = customRender(
       <AccountSelectorComponent selectedAccountType={ChainType.EVM} />,

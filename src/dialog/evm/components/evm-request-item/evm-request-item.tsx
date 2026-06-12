@@ -13,8 +13,6 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { EvmRequestItemLongText } from 'src/dialog/evm/components/evm-request-item/evm-request-item-long-text/evm-request-item-long-text';
 import { useFieldTitle } from 'src/dialog/evm/components/use-field-title.hook';
 
-import sanitize from 'sanitize-html';
-
 import { I18nUtils } from 'src/utils/i18n.utils';
 /** Collapsible value row when decoded args (e.g. bytes32) render as long hex strings. */
 const COLLAPSIBLE_STRING_VALUE_MIN_LENGTH = 48;
@@ -126,7 +124,7 @@ export const EvmRequestItem = ({
   return (
     <div className="field-container" style={field.style}>
       <div className="field-content">
-        <div className={`field ${sanitize(field.type)}`}>{renderField()}</div>
+        <div className={`field ${field.type}`}>{renderField()}</div>
       </div>
       {field.information && field.information.length > 0 && (
         <div className="information-container">

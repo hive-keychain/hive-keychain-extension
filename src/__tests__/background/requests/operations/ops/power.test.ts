@@ -1,4 +1,5 @@
 import LedgerModule from '@background/ledger.module';
+import { KeychainError } from 'src/keychain-error';
 import {
   broadcastPowerDown,
   broadcastPowerUp,
@@ -62,14 +63,15 @@ describe('power tests:\n', () => {
           command: DialogCommand.ANSWER_REQUEST,
           msg: {
             success: false,
-            error: new Error('html_popup_error_while_signing_transaction'),
+            error: new KeychainError('html_popup_error_while_signing_transaction'),
             result: undefined,
             data: datas,
-            message: I18nUtils.getMessage(
-              'html_popup_error_while_signing_transaction',
-            ),
+            message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -99,8 +101,24 @@ describe('power tests:\n', () => {
               datas.hive,
               datas.recipient,
             ]),
+          messageKey: 'bgd_ops_pu',
+          messageParams: [
+              datas.hive,
+              datas.recipient,
+            ],
+          messageKey: 'bgd_ops_pu',
+          messageParams: [
+              datas.hive,
+              datas.recipient,
+            ],
+          messageKey: 'bgd_ops_pu',
+          messageParams: [
+              datas.hive,
+              datas.recipient,
+            ],
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -140,8 +158,24 @@ describe('power tests:\n', () => {
               datas.hive,
               datas.recipient,
             ]),
+          messageKey: 'bgd_ops_pu',
+          messageParams: [
+              datas.hive,
+              datas.recipient,
+            ],
+          messageKey: 'bgd_ops_pu',
+          messageParams: [
+              datas.hive,
+              datas.recipient,
+            ],
+          messageKey: 'bgd_ops_pu',
+          messageParams: [
+              datas.hive,
+              datas.recipient,
+            ],
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -175,14 +209,15 @@ describe('power tests:\n', () => {
           command: DialogCommand.ANSWER_REQUEST,
           msg: {
             success: false,
-            error: new Error('html_popup_error_while_signing_transaction'),
+            error: new KeychainError('html_popup_error_while_signing_transaction'),
             result: undefined,
             data: datas,
-            message: I18nUtils.getMessage(
-              'html_popup_error_while_signing_transaction',
-            ),
+            message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -215,8 +250,24 @@ describe('power tests:\n', () => {
               datas.hive_power,
               datas.username,
             ]),
+          messageKey: 'bgd_ops_pd',
+          messageParams: [
+              datas.hive_power,
+              datas.username,
+            ],
+          messageKey: 'bgd_ops_pd',
+          messageParams: [
+              datas.hive_power,
+              datas.username,
+            ],
+          messageKey: 'bgd_ops_pd',
+          messageParams: [
+              datas.hive_power,
+              datas.username,
+            ],
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -259,8 +310,24 @@ describe('power tests:\n', () => {
               datas.hive_power,
               datas.username,
             ]),
+          messageKey: 'bgd_ops_pd',
+          messageParams: [
+              datas.hive_power,
+              datas.username,
+            ],
+          messageKey: 'bgd_ops_pd',
+          messageParams: [
+              datas.hive_power,
+              datas.username,
+            ],
+          messageKey: 'bgd_ops_pd',
+          messageParams: [
+              datas.hive_power,
+              datas.username,
+            ],
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });

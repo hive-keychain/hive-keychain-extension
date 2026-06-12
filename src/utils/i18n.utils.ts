@@ -24,7 +24,17 @@ interface ChromeMessage {
 }
 
 type ChromeMessages = Record<string, ChromeMessage>;
-const localeMessages = {
+type SupportedLocale =
+  | 'de'
+  | 'en'
+  | 'es'
+  | 'fr'
+  | 'id'
+  | 'pt'
+  | 'zh-CN'
+  | 'zh-TW';
+
+const localeMessages: Record<SupportedLocale, ChromeMessages> = {
   de: deMessages,
   en: enMessages,
   es: esMessages,
@@ -33,9 +43,8 @@ const localeMessages = {
   pt: ptMessages,
   'zh-CN': zhCNMessages,
   'zh-TW': zhTWMessages,
-} satisfies Record<string, ChromeMessages>;
+};
 
-type SupportedLocale = keyof typeof localeMessages;
 const BROWSER_LANGUAGE_PREFERENCE = 'browser';
 type BrowserLanguagePreference = typeof BROWSER_LANGUAGE_PREFERENCE;
 type I18nLanguagePreference = SupportedLocale | BrowserLanguagePreference;

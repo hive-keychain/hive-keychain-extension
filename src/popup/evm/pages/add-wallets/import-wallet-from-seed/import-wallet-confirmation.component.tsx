@@ -29,6 +29,7 @@ import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/ch
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 const ImportWalletConfirmation = ({
   setTitleContainerProperties,
@@ -127,7 +128,7 @@ const ImportWalletConfirmation = ({
         <div
           className="caption"
           dangerouslySetInnerHTML={{
-            __html: I18nUtils.getMessage(
+            __html: HtmlUtils.getSafeI18nHtml(
               'html_popup_evm_choose_account_text',
             ),
           }}></div>

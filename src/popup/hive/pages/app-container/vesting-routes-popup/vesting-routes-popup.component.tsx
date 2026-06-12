@@ -11,6 +11,7 @@ import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   vestingRoutesDifferences: AccountVestingRoutesDifferences[];
@@ -40,7 +41,7 @@ const VestingRoutesPopup = ({
       <div
         className="caption"
         dangerouslySetInnerHTML={{
-          __html: I18nUtils.getMessage(
+          __html: HtmlUtils.getSafeI18nHtml(
             'popup_html_vesting_routes_warning_message',
           ),
         }}></div>
