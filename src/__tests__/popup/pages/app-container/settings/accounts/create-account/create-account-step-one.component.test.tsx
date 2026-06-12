@@ -10,6 +10,7 @@ import {
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
 import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
+import AccountSelectorOrderUtils from '@popup/multichain/utils/account-selector-order.utils';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -42,6 +43,7 @@ describe('CreateAccountStepOneComponent', () => {
     id: 0,
     seedId: 1,
     nickname: 'TLOS',
+    seedNickname: 'Main seed',
     wallet: { address: '0x1111111111111111111111111111111111111111' },
   } as EvmAccount;
 
@@ -164,6 +166,7 @@ describe('CreateAccountStepOneComponent', () => {
     const { container } = renderStepOne({
       ...initialStateWAccountsWActiveAccountStore,
       chain: hiveChain,
+      mk: 'test-master-key',
       evm: {
         ...initialEmptyStateStore.evm,
         accounts: [evmAccount],
@@ -174,9 +177,57 @@ describe('CreateAccountStepOneComponent', () => {
 
     fireEvent.click(container.querySelector('.react-dropdown-select')!);
 
-    await waitFor(() => {
-      expect(screen.getByText('TLOS')).toBeInTheDocument();
+    expect(await screen.findByText('Main seed - TLOS')).toBeInTheDocument();
+  });
+
+  it('uses the main account selector order and keeps EVM address visible on hover', async () => {
+    jest
+      .spyOn(AccountSelectorOrderUtils, 'loadOrderedListItems')
+      .mockResolvedValue({
+        displayOrder: [],
+        listItems: [
+          {
+            account: evmAccount,
+            id: 'evm-0x1111111111111111111111111111111111111111',
+            type: ChainType.EVM,
+          },
+          {
+            account: localAccounts.user1,
+            id: `hive-${localAccounts.user1.name}`,
+            type: ChainType.HIVE,
+          },
+        ],
+      });
+
+    const { container } = renderStepOne({
+      ...initialStateWAccountsWActiveAccountStore,
+      chain: hiveChain,
+      mk: 'test-master-key',
+      evm: {
+        ...initialEmptyStateStore.evm,
+        accounts: [evmAccount],
+      },
     });
+
+    expect(await screen.findByText(`@${localAccounts.user1.name}`)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(AccountSelectorOrderUtils.loadOrderedListItems).toHaveBeenCalled();
+    });
+
+    fireEvent.click(container.querySelector('.react-dropdown-select')!);
+
+    const evmItem = await screen.findByTestId(
+      'custom-select-item-evm:0x1111111111111111111111111111111111111111',
+    );
+    const hiveItem = await screen.findByTestId(
+      `custom-select-item-hive:${localAccounts.user1.name}`,
+    );
+    expect(evmItem).toHaveTextContent('Main seed - TLOS');
+    expect(evmItem).toHaveTextContent('0x11111...11111');
+    expect(
+      evmItem.compareDocumentPosition(hiveItem) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 
   it('filters paid-backend creation to EVM accounts and payable tokens', async () => {
@@ -206,7 +257,7 @@ describe('CreateAccountStepOneComponent', () => {
       },
     });
 
-    expect(await screen.findByText('TLOS')).toBeInTheDocument();
+    expect(await screen.findByText('Main seed - TLOS')).toBeInTheDocument();
     expect(screen.queryByText(`@${localAccounts.user1.name}`)).not.toBeInTheDocument();
     expect(await screen.findByText('$3')).toBeInTheDocument();
 
@@ -272,7 +323,7 @@ describe('CreateAccountStepOneComponent', () => {
 
     const { container } = renderPaidBackendStepOne();
 
-    expect(await screen.findByText('TLOS')).toBeInTheDocument();
+    expect(await screen.findByText('Main seed - TLOS')).toBeInTheDocument();
 
     fireEvent.click(container.querySelectorAll('.react-dropdown-select')[1]);
 
@@ -403,7 +454,7 @@ describe('CreateAccountStepOneComponent', () => {
 
     const { container } = renderPaidBackendStepOne();
 
-    expect(await screen.findByText('TLOS')).toBeInTheDocument();
+    expect(await screen.findByText('Main seed - TLOS')).toBeInTheDocument();
 
     fireEvent.click(container.querySelectorAll('.react-dropdown-select')[1]);
 
@@ -447,6 +498,7 @@ const renderPaidBackendStepOne = () =>
           id: 0,
           seedId: 1,
           nickname: 'TLOS',
+          seedNickname: 'Main seed',
           wallet: { address: '0x1111111111111111111111111111111111111111' },
         } as EvmAccount,
       ],

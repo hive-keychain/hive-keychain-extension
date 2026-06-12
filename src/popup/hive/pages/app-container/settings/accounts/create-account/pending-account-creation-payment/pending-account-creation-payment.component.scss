@@ -38,15 +38,21 @@
     align-items: center;
     justify-content: space-between;
     column-gap: 12px;
+    padding-top: 2px;
+    color: var(--create-account-price-color);
+
+    .status-label {
+      @include dmSans400(13px);
+    }
   }
 
   .status-badge {
-    border-radius: 14px;
-    padding: 4px 10px;
+    border-radius: 8px;
+    padding: 5px 10px;
     background: var(--button-alternative-background-color);
     border: 1px solid var(--card-border);
-    @include dmSans700(12px);
-    text-transform: uppercase;
+    color: var(--main-font-color);
+    @include dmSans700(13px);
   }
 
   .payment-field {
@@ -90,6 +96,42 @@
         width: 16px;
         height: 16px;
       }
+    }
+  }
+
+  .payment-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    column-gap: 10px;
+
+    > .submit-button {
+      flex: 1;
+    }
+  }
+
+  .refresh-status-button {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    background: var(--button-alternative-background-color);
+    color: var(--main-font-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.6;
+    }
+
+    .svg-icon,
+    svg {
+      width: 18px;
+      height: 18px;
     }
   }
 

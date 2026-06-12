@@ -30,6 +30,9 @@ import {
   HiveChain,
 } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
+import AccountSelectorOrderUtils, {
+  AccountSelectorListItem,
+} from '@popup/multichain/utils/account-selector-order.utils';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { Asset } from 'hive-keychain-commons';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -48,13 +51,13 @@ import HiveUtils from 'src/popup/hive/utils/hive.utils';
 import { EvmFormatUtils } from 'src/popup/evm/utils/evm-format.utils';
 import { EvmTokensUtils } from 'src/popup/evm/utils/evm-tokens.utils';
 import FormatUtils from 'src/utils/format.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 
 const HIVE_ACCOUNT_CREATION_PRICE = 3;
 const NATIVE_TOKEN_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 type AccountItemType = 'HIVE' | 'EVM';
 
-import { I18nUtils } from 'src/utils/i18n.utils';
 interface AccountItemOption extends OptionItem {
   accountType: AccountItemType;
   hiveAccount?: LocalAccount;
@@ -80,6 +83,7 @@ const CreateAccountStepOne = ({
   evmAccounts,
   currencyLabels,
   currencyPrices,
+  mk,
   setTitleContainerProperties,
   setChain,
   navigateToWithParams,
@@ -153,50 +157,73 @@ const CreateAccountStepOne = ({
   };
 
   useEffect(() => {
-    initAccountOptions();
-  }, [accounts, evmAccounts, activeAccount, isPaidBackendCreation]);
+    let cancelled = false;
+    void initAccountOptions(() => cancelled);
 
-  const initAccountOptions = () => {
-    const hiveOptions: AccountItemOption[] = isPaidBackendCreation
-      ? []
-      : (accounts as LocalAccount[]).map((account) => ({
-          label: `@${account.name!}`,
-          value: `hive:${account.name!}`,
-          img: `https://images.hive.blog/u/${account.name!}/avatar`,
-          canDelete: false,
-          accountType: 'HIVE' as AccountItemType,
-          hiveAccount: account,
-        }));
+    return () => {
+      cancelled = true;
+    };
+  }, [accounts, evmAccounts, activeAccount, isPaidBackendCreation, mk]);
 
+  const initAccountOptions = async (isCancelled: () => boolean) => {
+    const hiveAccounts = accounts as LocalAccount[];
     const visibleEvmAccounts = (evmAccounts as EvmAccount[]).filter(
       (account) => !account.hide,
     );
-    const evmOptions: AccountItemOption[] = visibleEvmAccounts.map((account) => ({
-      label: EvmAccountUtils.getAccountName(account),
-      subLabel: EvmFormatUtils.formatAddress(account.wallet.address),
-      value: `evm:${account.wallet.address}`,
-      img: SVGIcons.BLOCKCHAIN_ETHEREUM,
-      canDelete: false,
-      accountType: 'EVM' as AccountItemType,
-      evmAccount: account,
-    }));
 
-    const options = [...hiveOptions, ...evmOptions];
-    setAccountOptions(options);
+    const defaultItems = AccountSelectorOrderUtils.buildAccountSelectorListItems(
+      hiveAccounts,
+      visibleEvmAccounts,
+    );
+    const defaultOptions = defaultItems
+      .filter((item) => !isPaidBackendCreation || item.type === ChainType.EVM)
+      .map(buildAccountItemOption);
+    applyAccountOptions(defaultOptions);
 
-    if (
-      selectedAccount &&
-      options.some((option) => option.value === selectedAccount.value)
-    ) {
+    if (!mk) {
       return;
     }
 
-    const activeHiveOption = options.find(
-      (option) =>
-        option.accountType === 'HIVE' &&
-        option.hiveAccount?.name === activeAccount.name,
-    );
-    setSelectedAccount(activeHiveOption ?? options[0]);
+    try {
+      const orderedItems = (
+        await AccountSelectorOrderUtils.loadOrderedListItems(
+          mk,
+          hiveAccounts,
+          visibleEvmAccounts,
+        )
+      ).listItems;
+      if (isCancelled()) {
+        return;
+      }
+      const orderedOptions = orderedItems
+        .filter((item) => !isPaidBackendCreation || item.type === ChainType.EVM)
+        .map(buildAccountItemOption);
+      applyAccountOptions(orderedOptions);
+    } catch {
+      if (!isCancelled()) {
+        applyAccountOptions(defaultOptions);
+      }
+    }
+  };
+
+  const applyAccountOptions = (options: AccountItemOption[]) => {
+    setAccountOptions(options);
+
+    setSelectedAccount((currentSelectedAccount) => {
+      if (
+        currentSelectedAccount &&
+        options.some((option) => option.value === currentSelectedAccount.value)
+      ) {
+        return currentSelectedAccount;
+      }
+
+      const activeHiveOption = options.find(
+        (option) =>
+          option.accountType === 'HIVE' &&
+          option.hiveAccount?.name === activeAccount.name,
+      );
+      return activeHiveOption ?? options[0];
+    });
   };
 
   useEffect(() => {
@@ -460,6 +487,35 @@ const getHiveUsd = (currencyPrices: CurrencyPrices) => {
     : undefined;
 };
 
+const buildAccountItemOption = (
+  item: AccountSelectorListItem,
+): AccountItemOption => {
+  if (item.type === ChainType.HIVE) {
+    return {
+      label: `@${item.account.name!}`,
+      value: `hive:${item.account.name!}`,
+      img: `https://images.hive.blog/u/${item.account.name!}/avatar`,
+      canDelete: false,
+      accountType: 'HIVE',
+      hiveAccount: item.account,
+    };
+  }
+
+  const address = EvmFormatUtils.formatAddress(item.account.wallet.address);
+  return {
+    label: `${EvmAccountUtils.getSeedName(
+      item.account,
+    )} - ${EvmAccountUtils.getAccountName(item.account)}`,
+    subLabel: address,
+    subLabelHover: address,
+    value: `evm:${item.account.wallet.address}`,
+    img: SVGIcons.BLOCKCHAIN_ETHEREUM,
+    canDelete: false,
+    accountType: 'EVM',
+    evmAccount: item.account,
+  };
+};
+
 const getLiveEvmPaymentTokenOptions = async (
   walletAddress: string,
   chainGroups: DiscoveredTokensChainGroup[],
@@ -699,6 +755,7 @@ const mapStateToProps = (state: RootState) => {
     evmAccounts: state.evm.accounts,
     currencyLabels: (state.chain as HiveChain).mainTokens,
     currencyPrices: state.hive.currencyPrices,
+    mk: state.mk,
     navParams: state.navigation.params,
   };
 };

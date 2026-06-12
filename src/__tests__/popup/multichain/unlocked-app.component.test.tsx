@@ -15,6 +15,7 @@ import {
   EvmChain,
   HiveChain,
 } from 'src/popup/multichain/interfaces/chains.interface';
+import { PaidAccountCreationRouteUtils } from 'src/popup/multichain/utils/paid-account-creation-route.utils';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -411,6 +412,43 @@ describe('UnlockedAppComponent', () => {
         Screen.HOME_PAGE,
       );
     });
+
+    window.location.hash = previousHash;
+  });
+
+  it('consumes EVM account-creation payment hashes on startup', async () => {
+    const previousHash = window.location.hash;
+    window.location.hash =
+      PaidAccountCreationRouteUtils.buildPaymentStatusHash('request-1');
+
+    const { store } = customRender(<UnlockedAppComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk: mkData.user.one,
+        chain: evmChain,
+        navigation: {
+          stack: [],
+        },
+        hive: {
+          ...initialEmptyStateStore.hive,
+          appStatus: {
+            ...initialEmptyStateStore.hive.appStatus,
+            priceLoaded: true,
+            globalPropertiesLoaded: true,
+          },
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(store.getState().navigation.stack[0]).toMatchObject({
+        currentPage: Screen.PENDING_ACCOUNT_CREATION_PAYMENT,
+        params: {
+          requestId: 'request-1',
+        },
+      });
+    });
+    expect(window.location.hash).toBe('');
 
     window.location.hash = previousHash;
   });

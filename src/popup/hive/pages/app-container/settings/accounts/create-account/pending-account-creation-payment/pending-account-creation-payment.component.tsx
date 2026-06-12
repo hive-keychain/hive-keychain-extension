@@ -40,12 +40,12 @@ import {
 } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
+import { PaidAccountCreationRouteUtils } from '@popup/multichain/utils/paid-account-creation-route.utils';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import ButtonComponent, {
-  ButtonType,
-} from 'src/common-ui/button/button.component';
+import ButtonComponent from 'src/common-ui/button/button.component';
 import { EVMConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -101,15 +101,18 @@ const PendingAccountCreationPayment = ({
   synchronizePendingHiveAccountCreation,
 }: PropsFromRedux) => {
   const requestId = navParams?.requestId as string | undefined;
+  const autoPayWithKeychain = navParams?.autoPayWithKeychain === true;
   const [pendingRequest, setPendingRequest] = useState<
     PendingHiveAccountCreationRequest | undefined
   >();
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isAutoOpeningPayment, setIsAutoOpeningPayment] = useState(false);
   const [isExternalWalletPopupOpen, setIsExternalWalletPopupOpen] =
     useState(false);
   const [isSubmittingExternalTx, setIsSubmittingExternalTx] = useState(false);
   const synchronizationInProgress = useRef(false);
+  const autoPaymentStarted = useRef(false);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -120,7 +123,11 @@ const PendingAccountCreationPayment = ({
   }, []);
 
   useEffect(() => {
-    if (!isLoading && pendingRequest) {
+    if (
+      !isLoading &&
+      pendingRequest &&
+      !shouldAutoOpenKeychainPayment(pendingRequest)
+    ) {
       void synchronizeRequest();
     }
   }, [isLoading, requestId]);
@@ -378,11 +385,17 @@ const PendingAccountCreationPayment = ({
         transactionResponse.hash,
       );
       await setChain(previousChain, { saveLastUsedChain: false });
-      navigateToWithParams(
-        Screen.PENDING_ACCOUNT_CREATION_PAYMENT,
-        { requestId: pendingRequest!.requestId },
-        true,
-      );
+      if (ExtensionSurfaceUtils.isSidePanelPage()) {
+        navigateToWithParams(
+          Screen.PENDING_ACCOUNT_CREATION_PAYMENT,
+          { requestId: pendingRequest!.requestId },
+          true,
+        );
+      } else {
+        await PaidAccountCreationRouteUtils.openPaymentStatusInSidePanel(
+          pendingRequest!.requestId,
+        );
+      }
     } catch (error) {
       Logger.error('Error during account creation EVM payment', error);
       setErrorMessage(
@@ -397,19 +410,27 @@ const PendingAccountCreationPayment = ({
     }
   };
 
-  const payWithKeychain = async () => {
-    if (!pendingRequest) return;
+  const shouldAutoOpenKeychainPayment = (
+    request: PendingHiveAccountCreationRequest,
+  ) =>
+    autoPayWithKeychain &&
+    request.status === 'payment_pending' &&
+    !request.paymentTxHash &&
+    PaidAccountCreationPaymentUtils.isEvmPaymentRequest(request);
+
+  const payWithKeychain = async (): Promise<boolean> => {
+    if (!pendingRequest) return false;
 
     const payerAccount = getPaymentEvmAccount();
     if (!payerAccount) {
       setErrorMessage('Unable to find EVM payer account.', [], true);
-      return;
+      return false;
     }
 
     const paymentChain = await getPaymentEvmChain();
     if (!paymentChain) {
       setErrorMessage('Unable to find EVM payment chain.', [], true);
-      return;
+      return false;
     }
 
     const tokenInfo = PaidAccountCreationPaymentUtils.buildPaymentTokenInfo(
@@ -418,7 +439,7 @@ const PendingAccountCreationPayment = ({
     );
     if (!tokenInfo) {
       setErrorMessage('Unable to build EVM payment token.', [], true);
-      return;
+      return false;
     }
 
     let transactionData: ProviderTransactionData;
@@ -432,7 +453,7 @@ const PendingAccountCreationPayment = ({
         );
     } catch {
       setErrorMessage('Unable to build EVM payment transaction.', [], true);
-      return;
+      return false;
     }
 
     const previousChain = currentChain as Chain;
@@ -448,7 +469,7 @@ const PendingAccountCreationPayment = ({
         [],
         true,
       );
-      return;
+      return false;
     }
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
@@ -474,7 +495,33 @@ const PendingAccountCreationPayment = ({
         );
       },
     } as EVMConfirmationPageParams);
+    return true;
   };
+
+  useEffect(() => {
+    if (
+      isLoading ||
+      !pendingRequest ||
+      autoPaymentStarted.current ||
+      !shouldAutoOpenKeychainPayment(pendingRequest)
+    ) {
+      return;
+    }
+
+    autoPaymentStarted.current = true;
+    setIsAutoOpeningPayment(true);
+    void payWithKeychain().then((didOpenPayment) => {
+      if (!didOpenPayment) {
+        setIsAutoOpeningPayment(false);
+      }
+    });
+  }, [
+    autoPayWithKeychain,
+    isLoading,
+    pendingRequest?.requestId,
+    pendingRequest?.status,
+    pendingRequest?.paymentTxHash,
+  ]);
 
   const submitExternalPaymentTx = async (txHash: string) => {
     if (!pendingRequest) return;
@@ -533,13 +580,23 @@ const PendingAccountCreationPayment = ({
     </div>
   );
 
-  if (isLoading) {
+  const renderRefreshButton = () => (
+    <button
+      type="button"
+      className="refresh-status-button"
+      aria-label="Refresh status"
+      title="Refresh status"
+      disabled={isRefreshing}
+      onClick={() => void synchronizeRequest(true)}>
+      <SVGIcon icon={SVGIcons.SWAPS_HISTORY_REFRESH} />
+    </button>
+  );
+
+  if (isLoading || isAutoOpeningPayment) {
     return (
       <div
         className="pending-account-creation-payment"
-        data-testid={`${Screen.PENDING_ACCOUNT_CREATION_PAYMENT}-page`}>
-        <div className="empty-state">Loading payment request...</div>
-      </div>
+        data-testid={`${Screen.PENDING_ACCOUNT_CREATION_PAYMENT}-page`}></div>
     );
   }
 
@@ -553,9 +610,15 @@ const PendingAccountCreationPayment = ({
     );
   }
 
-  const showKeepOpenDisclaimer = isPendingAccountCreationInProgress(
-    pendingRequest.status,
-  );
+  const hasBroadcastPayment =
+    !!pendingRequest.paymentTxHash ||
+    pendingRequest.status !== 'payment_pending';
+  const showKeepOpenDisclaimer =
+    hasBroadcastPayment &&
+    isPendingAccountCreationInProgress(pendingRequest.status);
+  const canPayWithKeychain =
+    pendingRequest.status === 'payment_pending' &&
+    PaidAccountCreationPaymentUtils.isEvmPaymentRequest(pendingRequest);
 
   return (
     <div
@@ -574,12 +637,14 @@ const PendingAccountCreationPayment = ({
           <div className="request-id">{pendingRequest.requestId}</div>
         </div>
 
-        <div className="status-line">
-          <div>Current status</div>
-          <div className="status-badge">
-            {STATUS_LABELS[pendingRequest.status]}
+        {hasBroadcastPayment && (
+          <div className="status-line">
+            <div className="status-label">Current status</div>
+            <div className="status-badge">
+              {STATUS_LABELS[pendingRequest.status]}
+            </div>
           </div>
-        </div>
+        )}
 
         {renderField({
           label: 'Amount',
@@ -613,21 +678,23 @@ const PendingAccountCreationPayment = ({
         })}
       </div>
 
-      {/* {pendingRequest.status === 'payment_pending' &&
-        PaidAccountCreationPaymentUtils.isEvmPaymentRequest(pendingRequest) && (
+      <div className="payment-actions">
+        {canPayWithKeychain && (
           <ButtonComponent
-            label="popup_html_create_account_pay_keychain"
+            label="Pay with Keychain"
             skipLabelTranslation
-            onClick={payWithKeychain}
+            onClick={() => void payWithKeychain()}
           />
-        )} */}
+        )}
+        {renderRefreshButton()}
+      </div>
 
-      {pendingRequest.status === 'payment_pending' && (
+      {/* {pendingRequest.status === 'payment_pending' && (
         <ButtonComponent
           label="html_popup_create_account_pay_external_wallet"
           onClick={() => setIsExternalWalletPopupOpen(true)}
         />
-      )}
+      )} */}
 
       {isExternalWalletPopupOpen && (
         <ExternalWalletPaymentPopup
@@ -641,14 +708,6 @@ const PendingAccountCreationPayment = ({
           onSubmitTxHash={submitExternalPaymentTx}
         />
       )}
-
-      <ButtonComponent
-        label={isRefreshing ? 'Refreshing...' : 'Refresh status'}
-        skipLabelTranslation
-        disabled={isRefreshing}
-        type={ButtonType.ALTERNATIVE}
-        onClick={() => void synchronizeRequest(true)}
-      />
     </div>
   );
 };

@@ -35,6 +35,7 @@ import { RootState } from '@popup/multichain/store';
 import { UnifiedRouterComponent } from '@popup/multichain/unified-router.component';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
+import { PaidAccountCreationRouteUtils } from '@popup/multichain/utils/paid-account-creation-route.utils';
 import { resolvePopupStartup } from '@popup/multichain/utils/popup-startup.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -453,6 +454,18 @@ const UnlockedApp = ({
       const navStack = store.getState().navigation.stack;
       if (navStack.length === 0 || stackHasAccountSetupPage(navStack)) {
         if (navStack.length === 0) {
+          const paidAccountCreationRoute =
+            PaidAccountCreationRouteUtils.parseHash(window.location.hash);
+          if (paidAccountCreationRoute) {
+            PaidAccountCreationRouteUtils.clearHash();
+            navigateToWithParams(
+              paidAccountCreationRoute.screen,
+              paidAccountCreationRoute.params,
+              true,
+            );
+            return;
+          }
+
           // EVM setup routes should not override Hive home when Hive accounts exist.
           if (hiveAccounts.length === 0) {
             const navigationTarget =

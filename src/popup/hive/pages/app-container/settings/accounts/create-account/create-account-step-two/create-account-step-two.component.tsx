@@ -210,7 +210,9 @@ const CreateAccountStepTwo = ({
       safelyCopied &&
       notPrimaryStorageUnderstanding
     ) {
-      addToLoadingList('html_popup_creating_account');
+      if (!isEvmPaymentCreation) {
+        addToLoadingList('html_popup_creating_account');
+      }
       try {
         if (isPaidCreation) {
           if (!paymentSelection?.paymentChainId) {
@@ -226,7 +228,10 @@ const CreateAccountStepTwo = ({
             );
           navigateToWithParams(
             Screen.PENDING_ACCOUNT_CREATION_PAYMENT,
-            { requestId: pendingRequest.requestId },
+            {
+              requestId: pendingRequest.requestId,
+              autoPayWithKeychain: true,
+            },
             true,
           );
           return;
@@ -254,7 +259,9 @@ const CreateAccountStepTwo = ({
       } catch (err: any) {
         setErrorMessage(err.message);
       } finally {
-        removeFromLoadingList('html_popup_creating_account');
+        if (!isEvmPaymentCreation) {
+          removeFromLoadingList('html_popup_creating_account');
+        }
       }
     } else {
       setErrorMessage('html_popup_create_account_need_accept_terms_condition');
@@ -414,7 +421,9 @@ const CreateAccountStepTwo = ({
               type={ButtonType.ALTERNATIVE}
             />
             <ButtonComponent
-              label="html_popup_create"
+              label={
+                isEvmPaymentCreation ? 'html_popup_next' : 'html_popup_create'
+              }
               onClick={() => createAccount()}
             />
           </div>
