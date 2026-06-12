@@ -55,6 +55,47 @@ describe('CreateAccountStepTwoComponent', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('renders step two content when navigation params are stale after goBack', async () => {
+    const navParams = {
+      ...defaultNavParams,
+    };
+    const store = getFakeStore({
+      ...initialStateWAccountsWActiveAccountStore,
+      chain: hiveChain,
+      mk: 'test-master-key',
+      navigation: {
+        params: {
+          requestId: 'request-1',
+          autoPayWithKeychain: true,
+        },
+        stack: [
+          {
+            currentPage: Screen.CREATE_ACCOUNT_PAGE_STEP_TWO,
+            params: navParams,
+          },
+          {
+            currentPage: Screen.PENDING_ACCOUNT_CREATION_PAYMENT,
+            params: {
+              requestId: 'request-1',
+              autoPayWithKeychain: true,
+            },
+          },
+        ],
+      },
+      evm: initialEmptyStateStore.evm,
+    } as any);
+
+    render(
+      <Provider store={store}>
+        <CreateAccountStepTwoComponent />
+      </Provider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Master password')).toBeInTheDocument();
+    });
+  });
+
   it('shows Create for non-EVM account creation', async () => {
     renderStepTwo({
       mode: AccountCreationMode.DEFAULT,

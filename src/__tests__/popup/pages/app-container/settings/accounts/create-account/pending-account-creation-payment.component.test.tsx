@@ -30,23 +30,31 @@ jest.mock('@api/hive-account-creation', () => ({
   submitHiveAccountCreationPaymentTx: jest.fn(),
 }));
 
-jest.mock('@popup/hive/actions/paid-account-creation.actions', () => ({
-  PaidAccountCreationActions: {
-    isTerminalPaidAccountCreationFailure: jest.fn((status) =>
-      [
-        'expired',
-        'underpaid',
-        'paid_after_expiry',
-        'username_unavailable',
-        'account_creation_failed',
-        'cancelled',
-      ].includes(status),
+jest.mock('@popup/hive/actions/paid-account-creation.actions', () => {
+  const actual = jest.requireActual(
+    '@popup/hive/actions/paid-account-creation.actions',
+  );
+
+  return {
+    ...actual,
+    PaidAccountCreationActions: {
+      ...actual.PaidAccountCreationActions,
+      isTerminalPaidAccountCreationFailure: jest.fn((status) =>
+        [
+          'expired',
+          'underpaid',
+          'paid_after_expiry',
+          'username_unavailable',
+          'account_creation_failed',
+          'cancelled',
+        ].includes(status),
+      ),
+    },
+    synchronizePendingHiveAccountCreation: jest.fn(
+      () => async () => ({ outcome: 'skipped' }),
     ),
-  },
-  synchronizePendingHiveAccountCreation: jest.fn(
-    () => async () => ({ outcome: 'skipped' }),
-  ),
-}));
+  };
+});
 
 jest.mock('@popup/evm/actions/active-account.actions', () => ({
   loadEvmActiveAccount: (_chain: unknown, wallet: { address: string }) => {
@@ -484,6 +492,75 @@ describe('PendingAccountCreationPaymentComponent', () => {
     ).not.toHaveBeenCalled();
   });
 
+  it('returns to create account step two when cancelling the confirmation page', async () => {
+    const stepOneParams = { mode: 'PAID_BACKEND_CREATION' };
+    const stepTwoParams = {
+      newUsername: 'new-account',
+      paymentSelection: {
+        paymentChainId: '40',
+        paymentTokenAddress: null,
+      },
+    };
+    jest
+      .spyOn(
+        PendingHiveAccountCreationUtils,
+        'getPendingHiveAccountCreationRequests',
+      )
+      .mockResolvedValue([evmPendingRequest]);
+    jest.spyOn(ChainUtils, 'getDefaultChains').mockResolvedValue([paymentChain]);
+    jest.spyOn(ChainUtils, 'getCustomChains').mockResolvedValue([]);
+
+    const { store } = renderComponent({
+      navParams: { requestId: 'request-1', autoPayWithKeychain: true },
+      state: {
+        evm: {
+          ...initialEmptyStateStore.evm,
+          accounts: [payerAccount],
+        },
+        navigation: {
+          params: { requestId: 'request-1', autoPayWithKeychain: true },
+          stack: [
+            {
+              currentPage: Screen.PENDING_ACCOUNT_CREATION_PAYMENT,
+              params: { requestId: 'request-1', autoPayWithKeychain: true },
+            },
+            {
+              currentPage: Screen.CREATE_ACCOUNT_PAGE_STEP_TWO,
+              params: stepTwoParams,
+            },
+            {
+              currentPage: Screen.CREATE_ACCOUNT_PAGE_STEP_ONE,
+              params: stepOneParams,
+            },
+          ],
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(store.getState().navigation.stack[0]?.currentPage).toBe(
+        Screen.CONFIRMATION_PAGE,
+      );
+    });
+
+    const confirmationParams = store.getState().navigation.stack[0].params as any;
+    await act(async () => {
+      expect(await confirmationParams.afterCancelAction()).toBe(true);
+    });
+
+    expect(store.getState().navigation.stack).toEqual([
+      expect.objectContaining({
+        currentPage: Screen.CREATE_ACCOUNT_PAGE_STEP_TWO,
+        params: stepTwoParams,
+      }),
+      expect.objectContaining({
+        currentPage: Screen.CREATE_ACCOUNT_PAGE_STEP_ONE,
+        params: stepOneParams,
+      }),
+    ]);
+    expect(store.getState().loading.loadingOperations).toEqual([]);
+  });
+
   it('opens the side-panel status route after confirming the Keychain transfer', async () => {
     const txHash = '0x' + 'a'.repeat(64);
     jest
@@ -682,7 +759,7 @@ describe('PendingAccountCreationPaymentComponent', () => {
       ...initialEmptyStateStore,
       ...state,
       mk,
-      navigation: {
+      navigation: state.navigation ?? {
         params: navParams,
         stack: [
           {

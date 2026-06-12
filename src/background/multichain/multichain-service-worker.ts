@@ -1,20 +1,20 @@
+import { EvmServiceWorker } from '@background/evm/evm-service-worker';
+import { HiveServiceWorker } from '@background/hive/hive-service-worker';
+import MkModule from '@background/hive/modules/mk.module';
 import {
   BackgroundMessage,
   BaseBackgroundMessage,
 } from '@background/multichain/background-message.interface';
-import { EvmServiceWorker } from '@background/evm/evm-service-worker';
-import { HiveServiceWorker } from '@background/hive/hive-service-worker';
-import MkModule from '@background/hive/modules/mk.module';
+import { SidePanelToolbarLifecycle } from '@background/multichain/side-panel-toolbar.lifecycle';
 import VaultModule from '@background/vault.module';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { VaultCommand, VaultKey } from '@reference-data/vault-message-key.enum';
-import { ensureEcosystemDappsCached } from 'src/utils/ecosystem-dapps-cache.utils';
-import Logger from 'src/utils/logger.utils';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
-import { SidePanelToolbarLifecycle } from '@background/multichain/side-panel-toolbar.lifecycle';
-import { SidePanelPreferenceUtils } from 'src/utils/side-panel-preference.utils';
+import { ensureEcosystemDappsCached } from 'src/utils/ecosystem-dapps-cache.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
+import Logger from 'src/utils/logger.utils';
+import { SidePanelPreferenceUtils } from 'src/utils/side-panel-preference.utils';
 
 Object.assign(global, { contextType: 'service_worker' });
 
@@ -74,7 +74,9 @@ const chromeMessageHandler = async (
 ) => {
   if (
     process.env.IS_FIREFOX &&
-    Object.values(VaultCommand).includes(backgroundMessage.command as VaultCommand)
+    Object.values(VaultCommand).includes(
+      backgroundMessage.command as VaultCommand,
+    )
   ) {
     const vaultMessage = backgroundMessage as BaseBackgroundMessage;
     if (

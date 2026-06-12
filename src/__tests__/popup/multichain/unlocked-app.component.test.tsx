@@ -1,5 +1,5 @@
-import '@testing-library/jest-dom';
 import { Screen } from '@interfaces/screen.interface';
+import '@testing-library/jest-dom';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { localAccounts } from 'src/__tests__/utils-for-testing/data/local-accounts';
@@ -9,19 +9,19 @@ import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 import { setAccounts } from 'src/popup/hive/actions/account.actions';
 import * as PaidAccountCreationActions from 'src/popup/hive/actions/paid-account-creation.actions';
 import { HiveScreen } from 'src/popup/hive/reference-data/hive-screen.enum';
-import { UnlockedAppComponent } from 'src/popup/multichain/unlocked-app.component';
 import {
   ChainType,
   EvmChain,
   HiveChain,
 } from 'src/popup/multichain/interfaces/chains.interface';
+import { UnlockedAppComponent } from 'src/popup/multichain/unlocked-app.component';
 import { PaidAccountCreationRouteUtils } from 'src/popup/multichain/utils/paid-account-creation-route.utils';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
-import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 
 const defaultHiveAccounts = () => [localAccounts.user1, localAccounts.user2];
 
@@ -39,8 +39,7 @@ const defaultEvmAccounts = () => [
 const hiveChain = {
   name: 'HIVE',
   type: ChainType.HIVE,
-  chainId:
-    'beeab0de00000000000000000000000000000000000000000000000000000000',
+  chainId: 'beeab0de00000000000000000000000000000000000000000000000000000000',
   logo: '',
   rpcs: [],
 } as HiveChain;
@@ -62,11 +61,12 @@ jest.mock('@popup/multichain/unified-router.component', () => ({
   UnifiedRouterComponent: () => <div data-testid="unified-router" />,
 }));
 
-jest.mock('src/popup/hive/pages/add-account/add-account-main/add-account-main.component', () => ({
-  AddAccountMainComponent: () => (
-    <div data-testid="add-account-main-mock" />
-  ),
-}));
+jest.mock(
+  'src/popup/hive/pages/add-account/add-account-main/add-account-main.component',
+  () => ({
+    AddAccountMainComponent: () => <div data-testid="add-account-main-mock" />,
+  }),
+);
 
 jest.mock('src/utils/async.utils', () => ({
   AsyncUtils: {
@@ -82,7 +82,9 @@ jest.mock('src/utils/colors.utils', () => ({
 
 jest.mock('src/popup/hive/actions/currency-prices.actions', () => ({
   loadCurrencyPrices: () => {
-    const { HiveActionType } = require('src/popup/hive/actions/action-type.enum');
+    const {
+      HiveActionType,
+    } = require('src/popup/hive/actions/action-type.enum');
     return (dispatch: (action: unknown) => unknown) =>
       dispatch({
         type: HiveActionType.SET_APP_STATUS,
@@ -93,7 +95,9 @@ jest.mock('src/popup/hive/actions/currency-prices.actions', () => ({
 
 jest.mock('src/popup/hive/actions/global-properties.actions', () => ({
   loadGlobalProperties: () => {
-    const { HiveActionType } = require('src/popup/hive/actions/action-type.enum');
+    const {
+      HiveActionType,
+    } = require('src/popup/hive/actions/action-type.enum');
     return (dispatch: (action: unknown) => unknown) =>
       dispatch({
         type: HiveActionType.SET_APP_STATUS,
@@ -108,7 +112,9 @@ jest.mock('src/popup/hive/actions/hive-engine-config.actions', () => ({
 
 jest.mock('src/popup/hive/actions/active-account.actions', () => ({
   loadActiveAccount: (account: unknown) => {
-    const { HiveActionType } = require('src/popup/hive/actions/action-type.enum');
+    const {
+      HiveActionType,
+    } = require('src/popup/hive/actions/action-type.enum');
     return (dispatch: (action: unknown) => unknown) =>
       dispatch({
         type: HiveActionType.SET_ACTIVE_ACCOUNT,
@@ -247,9 +253,9 @@ describe('UnlockedAppComponent', () => {
     (
       PaidAccountCreationActions.synchronizePendingHiveAccountCreations as jest.Mock
     ).mockImplementation(() => async () => []);
-    (
-      AccountUtils.getAccountsFromLocalStorage as jest.Mock
-    ).mockResolvedValue(defaultHiveAccounts());
+    (AccountUtils.getAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      defaultHiveAccounts(),
+    );
     (EvmWalletUtils.getConnectedWallets as jest.Mock).mockResolvedValue([]);
     (
       EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock
@@ -305,9 +311,9 @@ describe('UnlockedAppComponent', () => {
   });
 
   it('sets the setup title before navigating to add account during init', async () => {
-    (
-      AccountUtils.getAccountsFromLocalStorage as jest.Mock
-    ).mockResolvedValue([]);
+    (AccountUtils.getAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
     (
       EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock
     ).mockResolvedValue([]);
@@ -343,9 +349,9 @@ describe('UnlockedAppComponent', () => {
   });
 
   it('uses unified router when the wallet has no accounts yet', async () => {
-    (
-      AccountUtils.getAccountsFromLocalStorage as jest.Mock
-    ).mockResolvedValue([]);
+    (AccountUtils.getAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
     (
       EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock
     ).mockResolvedValue([]);
@@ -458,9 +464,9 @@ describe('UnlockedAppComponent', () => {
       name: 'new-account',
       keys: { posting: 'posting-key' },
     };
-    (
-      AccountUtils.getAccountsFromLocalStorage as jest.Mock
-    ).mockResolvedValue([]);
+    (AccountUtils.getAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
     (
       PaidAccountCreationActions.synchronizePendingHiveAccountCreations as jest.Mock
     ).mockImplementation(

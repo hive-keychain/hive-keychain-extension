@@ -238,7 +238,7 @@ const CreateAccountStepTwo = ({
               requestId: pendingRequest.requestId,
               autoPayWithKeychain: true,
             },
-            true,
+            false,
           );
           keepEvmPreparationLoading = true;
           return;
@@ -448,7 +448,8 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.hive.activeAccount,
     accounts: state.hive.accounts,
-    navParams: state.navigation.params,
+    navParams:
+      state.navigation.stack[0]?.params ?? state.navigation.params,
     mk: state.mk,
   };
 };

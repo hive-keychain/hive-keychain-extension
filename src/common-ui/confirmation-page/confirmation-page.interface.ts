@@ -18,7 +18,7 @@ export interface ConfirmationPageParams {
   title: string;
   skipTitleTranslation?: boolean;
   afterConfirmAction: <T>(params?: T) => {};
-  afterCancelAction?: () => {};
+  afterCancelAction?: () => void | boolean | Promise<void | boolean>;
   formParams?: any;
 }
 

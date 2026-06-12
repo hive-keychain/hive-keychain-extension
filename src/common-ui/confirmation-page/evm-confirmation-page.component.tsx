@@ -119,14 +119,14 @@ const ConfirmationPage = ({
       title: title ?? 'popup_html_confirm',
       skipTitleTranslation,
       isBackButtonEnabled: true,
-      onBackAdditional: () => {
+      onBackAdditional: async () => {
         if (afterCancelAction) {
-          afterCancelAction();
+          return await afterCancelAction();
         }
       },
-      onCloseAdditional: () => {
+      onCloseAdditional: async () => {
         if (afterCancelAction) {
-          afterCancelAction();
+          return await afterCancelAction();
         }
       },
     });
@@ -155,10 +155,13 @@ const ConfirmationPage = ({
   };
 
   const handleClickOnCancel = async () => {
+    let skipGoBack = false;
     if (afterCancelAction) {
-      afterCancelAction();
+      skipGoBack = (await afterCancelAction()) === true;
     }
-    goBack();
+    if (!skipGoBack) {
+      goBack();
+    }
   };
 
   const initBalance = async (tokenInfo: EvmSmartContractInfo) => {

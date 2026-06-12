@@ -795,7 +795,8 @@ const mapStateToProps = (state: RootState) => {
     currencyLabels: (state.chain as HiveChain).mainTokens,
     currencyPrices: state.hive.currencyPrices,
     mk: state.mk,
-    navParams: state.navigation.params,
+    navParams:
+      state.navigation.stack[0]?.params ?? state.navigation.params,
   };
 };
 

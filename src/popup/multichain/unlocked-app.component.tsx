@@ -9,21 +9,21 @@ import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmWalletSetupTabUtils } from '@popup/evm/utils/evm-wallet-setup-tab.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
-import { synchronizePendingHiveAccountCreations } from '@popup/hive/actions/paid-account-creation.actions';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
 import { setActiveRpc } from '@popup/hive/actions/active-rpc.actions';
 import { loadCurrencyPrices } from '@popup/hive/actions/currency-prices.actions';
 import { loadGlobalProperties } from '@popup/hive/actions/global-properties.actions';
 import { initHiveEngineConfigFromStorage } from '@popup/hive/actions/hive-engine-config.actions';
+import { synchronizePendingHiveAccountCreations } from '@popup/hive/actions/paid-account-creation.actions';
 import { setDisplayChangeRpcPopup } from '@popup/hive/actions/rpc-switcher';
 import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
 import { resetChain, setChain } from '@popup/multichain/actions/chain.actions';
-import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import {
   navigateTo,
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import {
   Chain,
   ChainType,
@@ -33,6 +33,7 @@ import {
 import { LoadingState } from '@popup/multichain/reducers/loading.reducer';
 import { RootState } from '@popup/multichain/store';
 import { UnifiedRouterComponent } from '@popup/multichain/unified-router.component';
+import { stackHasAccountSetupPage } from '@popup/multichain/utils/account-setup-screens.utils';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
 import { PaidAccountCreationRouteUtils } from '@popup/multichain/utils/paid-account-creation-route.utils';
@@ -48,7 +49,6 @@ import Config from 'src/config';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { buildAddAccountSetupTitleProperties } from 'src/popup/hive/pages/add-account/add-account-setup-title.utils';
 import { KeylessKeychainComponent } from 'src/popup/hive/pages/add-account/keyless-keychain/keyless-keychain.component';
-import { stackHasAccountSetupPage } from '@popup/multichain/utils/account-setup-screens.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
@@ -489,7 +489,11 @@ const UnlockedApp = ({
               }
             }
             if (ledgerRoute.params) {
-              navigateToWithParams(ledgerRoute.screen, ledgerRoute.params, true);
+              navigateToWithParams(
+                ledgerRoute.screen,
+                ledgerRoute.params,
+                true,
+              );
             } else {
               navigateTo(ledgerRoute.screen, true);
             }

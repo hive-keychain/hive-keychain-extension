@@ -4,7 +4,6 @@ import {
   PendingHiveAccountCreationRequest,
 } from '@interfaces/hive-account-creation.interface';
 import { PrivateKeyType } from '@interfaces/keys.interface';
-import { LocalAccount } from '@interfaces/local-account.interface';
 import { Screen } from '@interfaces/screen.interface';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
@@ -13,12 +12,11 @@ import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
-import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
 import {
   PaidAccountCreationActions,
+  completePaidHiveAccountCreation,
   synchronizePendingHiveAccountCreation,
 } from '@popup/hive/actions/paid-account-creation.actions';
-import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
 import { setChain } from '@popup/multichain/actions/chain.actions';
 import {
   addToLoadingList,
@@ -26,10 +24,9 @@ import {
 } from '@popup/multichain/actions/loading.actions';
 import {
   setErrorMessage,
-  setSuccessMessage,
 } from '@popup/multichain/actions/message.actions';
 import {
-  navigateTo,
+  goBackToThenNavigate,
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -37,7 +34,6 @@ import {
   Chain,
   ChainType,
   EvmChain,
-  HiveChain,
 } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
@@ -112,16 +108,15 @@ const PendingAccountCreationPayment = ({
   currentChain,
   setTitleContainerProperties,
   setErrorMessage,
-  setSuccessMessage,
   setChain,
-  setActiveAccountType,
-  loadActiveAccount,
-  navigateTo,
   navigateToWithParams,
+  goBackToThenNavigate,
   addToLoadingList,
   removeFromLoadingList,
   loadEvmActiveAccount,
+  completePaidHiveAccountCreation,
   synchronizePendingHiveAccountCreation,
+  navigationStack,
 }: PropsFromRedux) => {
   const requestId = navParams?.requestId as string | undefined;
   const autoPayWithKeychain = navParams?.autoPayWithKeychain === true;
@@ -142,6 +137,9 @@ const PendingAccountCreationPayment = ({
     setTitleContainerProperties({
       title: 'popup_html_create_account',
       isBackButtonEnabled: true,
+      onBackAdditional: () => {
+        removeFromLoadingList(PREPARING_ACCOUNT_CREATION_LOADING);
+      },
     });
     loadPendingRequest();
   }, []);
@@ -234,35 +232,6 @@ const PendingAccountCreationPayment = ({
     }
   };
 
-  const getHiveChain = async (): Promise<HiveChain | undefined> => {
-    const setupHiveChains =
-      await ChainUtils.getAllSetupChainsForType<HiveChain>(ChainType.HIVE);
-    if (setupHiveChains[0]) {
-      return setupHiveChains[0];
-    }
-    const defaultChains = await ChainUtils.getDefaultChains();
-    return defaultChains.find((chain) => chain.type === ChainType.HIVE) as
-      | HiveChain
-      | undefined;
-  };
-
-  const completeAccountImport = async (account: LocalAccount) => {
-    const hiveChain = await getHiveChain();
-    if (!hiveChain) {
-      throw new Error('Unable to find Hive chain.');
-    }
-
-    await setChain(hiveChain);
-    setActiveAccountType(ChainType.HIVE);
-    try {
-      await loadActiveAccount(account);
-    } catch (error) {
-      Logger.error('Unable to activate created Hive account', error);
-    }
-    setSuccessMessage('html_popup_create_account_successful');
-    navigateTo(Screen.HOME_PAGE, true);
-  };
-
   const synchronizeRequest = async (showErrors = false) => {
     if (!requestId || synchronizationInProgress.current) return;
 
@@ -277,7 +246,10 @@ const PendingAccountCreationPayment = ({
           result.outcome === 'already_imported') &&
         result.account
       ) {
-        await completeAccountImport(result.account);
+        await completePaidHiveAccountCreation(result.account, {
+          activateCreatedAccount: true,
+          showSuccessMessage: true,
+        });
         return;
       }
 
@@ -513,6 +485,9 @@ const PendingAccountCreationPayment = ({
     }
 
     const previousChain = currentChain as Chain;
+    const stepTwoNavigationEntry = navigationStack.find(
+      (entry) => entry.currentPage === Screen.CREATE_ACCOUNT_PAGE_STEP_TWO,
+    );
     try {
       await setChain(paymentChain, { saveLastUsedChain: false });
       await loadEvmActiveAccount(paymentChain, payerAccount.wallet);
@@ -540,6 +515,19 @@ const PendingAccountCreationPayment = ({
       transactionData,
       afterCancelAction: async () => {
         await setChain(previousChain, { saveLastUsedChain: false });
+        removeFromLoadingList(PREPARING_ACCOUNT_CREATION_LOADING);
+        if (stepTwoNavigationEntry) {
+          await goBackToThenNavigate(
+            Screen.CREATE_ACCOUNT_PAGE_STEP_TWO,
+            Screen.CREATE_ACCOUNT_PAGE_STEP_TWO,
+          );
+          return true;
+        }
+        await goBackToThenNavigate(
+          Screen.PENDING_ACCOUNT_CREATION_PAYMENT,
+          Screen.PENDING_ACCOUNT_CREATION_PAYMENT,
+        );
+        return true;
       },
       afterConfirmAction: async (gasFee: GasFeeEstimationBase) => {
         await submitPaymentTransaction(
@@ -552,6 +540,7 @@ const PendingAccountCreationPayment = ({
       },
     } as EVMConfirmationPageParams);
     removeFromLoadingList(PREPARING_ACCOUNT_CREATION_LOADING);
+    setIsAutoOpeningPayment(false);
     return true;
   };
 
@@ -882,6 +871,7 @@ const PendingAccountCreationPayment = ({
 
 const mapStateToProps = (state: RootState) => ({
   navParams: state.navigation.stack[0]?.params ?? state.navigation.params,
+  navigationStack: state.navigation.stack,
   mk: state.mk,
   evmAccounts: state.evm.accounts,
   currentChain: state.chain,
@@ -890,15 +880,13 @@ const mapStateToProps = (state: RootState) => ({
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   setErrorMessage,
-  setSuccessMessage,
   setChain,
-  setActiveAccountType,
-  loadActiveAccount,
-  navigateTo,
   navigateToWithParams,
+  goBackToThenNavigate,
   addToLoadingList,
   removeFromLoadingList,
   loadEvmActiveAccount,
+  completePaidHiveAccountCreation,
   synchronizePendingHiveAccountCreation,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;

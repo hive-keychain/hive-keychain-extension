@@ -9,8 +9,8 @@ import { setAccounts } from 'src/popup/hive/actions/account.actions';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
-import { PendingHiveAccountCreationUtils } from 'src/utils/pending-hive-account-creation.utils';
 import Logger from 'src/utils/logger.utils';
+import { PendingHiveAccountCreationUtils } from 'src/utils/pending-hive-account-creation.utils';
 
 export type PaidAccountCreationSynchronizationOutcome =
   | 'updated'
@@ -51,7 +51,10 @@ const getValidatedPendingAccount = async (
   request: PendingHiveAccountCreationRequest,
   mk: string,
 ): Promise<LocalAccount> => {
-  const payload = await EncryptUtils.decryptToJson(request.encryptedAccount, mk);
+  const payload = await EncryptUtils.decryptToJson(
+    request.encryptedAccount,
+    mk,
+  );
   const account = Array.isArray(payload?.list) ? payload.list[0] : undefined;
 
   if (
@@ -177,7 +180,9 @@ export const synchronizePendingHiveAccountCreations =
     for (const request of pendingRequests) {
       try {
         results.push(
-          await dispatch(synchronizePendingHiveAccountCreation(request.requestId)),
+          await dispatch(
+            synchronizePendingHiveAccountCreation(request.requestId),
+          ),
         );
       } catch (error) {
         Logger.error(
