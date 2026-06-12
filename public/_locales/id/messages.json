@@ -3382,9 +3382,65 @@
     "message": "Membuat akun",
     "description": "Creating account message"
   },
+  "html_popup_preparing_account_creation": {
+    "message": "Menyiapkan pembuatan akun",
+    "description": "Loading message while preparing EVM paid Hive account creation"
+  },
   "html_popup_create_account_failed": {
     "message": "Pembuatan akun Anda gagal. Silakan coba lagi nanti.",
     "description": "Create account failed message"
+  },
+  "html_popup_create_account_pending_keep_open": {
+    "message": "Pembuatan akun Anda dapat memakan waktu beberapa menit. Anda dapat menutup jendela ini.",
+    "description": "Reminder on pending account creation page to keep the extension open"
+  },
+  "html_popup_create_account_pay_external_wallet": {
+    "message": "Bayar dengan dompet lain",
+    "description": "Button to open external wallet payment popup on pending account creation page"
+  },
+  "html_popup_create_account_external_wallet_instructions": {
+    "message": "Pindai kode QR atau salin detail pembayaran di bawah. Setelah mengirim pembayaran, tempel hash transaksi Anda.",
+    "description": "Instructions in external wallet payment popup for account creation"
+  },
+  "html_popup_create_account_payment_tx_hash": {
+    "message": "Hash transaksi",
+    "description": "Label for transaction hash input in external wallet payment popup"
+  },
+  "html_popup_create_account_payment_account": {
+    "message": "Akun",
+    "description": "Account field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_chain": {
+    "message": "Chain",
+    "description": "Chain field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_token": {
+    "message": "Token",
+    "description": "Token field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_address": {
+    "message": "Alamat pembayaran",
+    "description": "Payment address field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_status": {
+    "message": "Status",
+    "description": "Status field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_expiry": {
+    "message": "Kedaluwarsa",
+    "description": "Expiry field on pending account creation payment page"
+  },
+  "html_popup_create_account_submit_payment_tx": {
+    "message": "Kirim pembayaran",
+    "description": "Button to submit external payment transaction hash"
+  },
+  "html_popup_create_account_submitting_payment_tx": {
+    "message": "Mengirim...",
+    "description": "Loading label while submitting external payment transaction hash"
+  },
+  "html_popup_create_account_invalid_payment_tx_hash": {
+    "message": "Hash transaksi tidak valid.",
+    "description": "Validation error for external payment transaction hash input"
   },
   "html_popup_read_more": {
     "message": "Baca lebih lanjut",
@@ -4768,7 +4824,7 @@
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_seed_phrase": {
-    "message": "Seed Phrase",
+    "message": "Seed phrase",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_seed_phrase_placeholder": {

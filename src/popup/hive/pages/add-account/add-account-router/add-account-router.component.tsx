@@ -16,6 +16,7 @@ import { AddByAuthComponent } from 'src/popup/hive/pages/add-account/add-by-auth
 import { SelectKeysComponent } from 'src/popup/hive/pages/add-account/select-keys/select-keys.component';
 import { CreateAccountStepOneComponent } from 'src/popup/hive/pages/app-container/settings/accounts/create-account/create-account-step-one/create-account-step-one.component';
 import { CreateAccountStepTwoComponent } from 'src/popup/hive/pages/app-container/settings/accounts/create-account/create-account-step-two/create-account-step-two.component';
+import { PendingAccountCreationPaymentComponent } from 'src/popup/hive/pages/app-container/settings/accounts/create-account/pending-account-creation-payment/pending-account-creation-payment.component';
 import { AddAccountsFromLedgerComponent } from 'src/popup/hive/pages/ledger/add-accounts-from-ledger.component';
 import { AddAccountMainComponent } from '../add-account-main/add-account-main.component';
 import { AddByKeysComponent } from '../add-by-keys/add-by-keys.component';
@@ -42,6 +43,8 @@ const AddAccountRouter = ({ currentPage }: PropsFromRedux) => {
         return <CreateAccountStepOneComponent />;
       case HiveScreen.CREATE_ACCOUNT_PAGE_STEP_TWO:
         return <CreateAccountStepTwoComponent />;
+      case HiveScreen.PENDING_ACCOUNT_CREATION_PAYMENT:
+        return <PendingAccountCreationPaymentComponent />;
       case EvmScreen.EVM_ADD_ACCOUNTS_FROM_LEDGER:
         return <AddEvmAccountsFromLedgerComponent />;
       case EvmScreen.IMPORT_EVM_WALLET:

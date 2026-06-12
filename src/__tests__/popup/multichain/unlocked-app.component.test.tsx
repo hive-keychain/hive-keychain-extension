@@ -1,27 +1,47 @@
-import '@testing-library/jest-dom';
 import { Screen } from '@interfaces/screen.interface';
+import '@testing-library/jest-dom';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { localAccounts } from 'src/__tests__/utils-for-testing/data/local-accounts';
 import mkData from 'src/__tests__/utils-for-testing/data/mk';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
+import { setAccounts } from 'src/popup/hive/actions/account.actions';
+import * as PaidAccountCreationActions from 'src/popup/hive/actions/paid-account-creation.actions';
 import { HiveScreen } from 'src/popup/hive/reference-data/hive-screen.enum';
-import { UnlockedAppComponent } from 'src/popup/multichain/unlocked-app.component';
 import {
   ChainType,
   EvmChain,
   HiveChain,
 } from 'src/popup/multichain/interfaces/chains.interface';
+import { navigateTo } from 'src/popup/multichain/actions/navigation.actions';
+import { UnlockedAppComponent } from 'src/popup/multichain/unlocked-app.component';
+import { PaidAccountCreationRouteUtils } from 'src/popup/multichain/utils/paid-account-creation-route.utils';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { PendingHiveAccountCreationUtils } from 'src/utils/pending-hive-account-creation.utils';
 
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
+
+const defaultHiveAccounts = () => [localAccounts.user1, localAccounts.user2];
+
+const defaultEvmAccounts = () => [
+  {
+    id: 0,
+    path: `m/44'/60'/0'/0/0`,
+    seedId: 1,
+    seedNickname: 'Main seed',
+    wallet: { address: '0x1234567890123456789012345678901234567890' },
+    source: 'seed',
+  },
+];
+
 const hiveChain = {
   name: 'HIVE',
   type: ChainType.HIVE,
-  chainId:
-    'beeab0de00000000000000000000000000000000000000000000000000000000',
+  chainId: 'beeab0de00000000000000000000000000000000000000000000000000000000',
   logo: '',
   rpcs: [],
 } as HiveChain;
@@ -35,15 +55,23 @@ const evmChain = {
   mainToken: 'ETH',
 } as EvmChain;
 
+jest.mock('src/popup/hive/actions/paid-account-creation.actions', () => ({
+  synchronizePendingHiveAccountCreations: jest.fn(() => async () => []),
+  handleCompletedPaidHiveAccountCreations: jest.fn(
+    () => async () => undefined,
+  ),
+}));
+
 jest.mock('@popup/multichain/unified-router.component', () => ({
   UnifiedRouterComponent: () => <div data-testid="unified-router" />,
 }));
 
-jest.mock('src/popup/hive/pages/add-account/add-account-main/add-account-main.component', () => ({
-  AddAccountMainComponent: () => (
-    <div data-testid="add-account-main-mock" />
-  ),
-}));
+jest.mock(
+  'src/popup/hive/pages/add-account/add-account-main/add-account-main.component',
+  () => ({
+    AddAccountMainComponent: () => <div data-testid="add-account-main-mock" />,
+  }),
+);
 
 jest.mock('src/utils/async.utils', () => ({
   AsyncUtils: {
@@ -59,7 +87,9 @@ jest.mock('src/utils/colors.utils', () => ({
 
 jest.mock('src/popup/hive/actions/currency-prices.actions', () => ({
   loadCurrencyPrices: () => {
-    const { HiveActionType } = require('src/popup/hive/actions/action-type.enum');
+    const {
+      HiveActionType,
+    } = require('src/popup/hive/actions/action-type.enum');
     return (dispatch: (action: unknown) => unknown) =>
       dispatch({
         type: HiveActionType.SET_APP_STATUS,
@@ -70,7 +100,9 @@ jest.mock('src/popup/hive/actions/currency-prices.actions', () => ({
 
 jest.mock('src/popup/hive/actions/global-properties.actions', () => ({
   loadGlobalProperties: () => {
-    const { HiveActionType } = require('src/popup/hive/actions/action-type.enum');
+    const {
+      HiveActionType,
+    } = require('src/popup/hive/actions/action-type.enum');
     return (dispatch: (action: unknown) => unknown) =>
       dispatch({
         type: HiveActionType.SET_APP_STATUS,
@@ -85,7 +117,9 @@ jest.mock('src/popup/hive/actions/hive-engine-config.actions', () => ({
 
 jest.mock('src/popup/hive/actions/active-account.actions', () => ({
   loadActiveAccount: (account: unknown) => {
-    const { HiveActionType } = require('src/popup/hive/actions/action-type.enum');
+    const {
+      HiveActionType,
+    } = require('src/popup/hive/actions/action-type.enum');
     return (dispatch: (action: unknown) => unknown) =>
       dispatch({
         type: HiveActionType.SET_ACTIVE_ACCOUNT,
@@ -101,12 +135,7 @@ jest.mock('@popup/evm/actions/active-account.actions', () => ({
 jest.mock('src/popup/hive/utils/account.utils', () => ({
   __esModule: true,
   default: {
-    getAccountsFromLocalStorage: jest.fn().mockImplementation(async () => {
-      const {
-        localAccounts,
-      } = require('src/__tests__/utils-for-testing/data/local-accounts');
-      return [localAccounts.user1, localAccounts.user2];
-    }),
+    getAccountsFromLocalStorage: jest.fn(),
     isAccountListIdentical: jest.fn(),
     saveAccounts: jest.fn(),
   },
@@ -114,17 +143,8 @@ jest.mock('src/popup/hive/utils/account.utils', () => ({
 
 jest.mock('@popup/evm/utils/wallet.utils', () => ({
   EvmWalletUtils: {
-    getConnectedWallets: jest.fn().mockResolvedValue([]),
-    rebuildAccountsFromLocalStorage: jest.fn().mockResolvedValue([
-      {
-        id: 0,
-        path: `m/44'/60'/0'/0/0`,
-        seedId: 1,
-        seedNickname: 'Main seed',
-        wallet: { address: '0x1234567890123456789012345678901234567890' },
-        source: 'seed',
-      },
-    ]),
+    getConnectedWallets: jest.fn(),
+    rebuildAccountsFromLocalStorage: jest.fn(),
   },
 }));
 
@@ -232,6 +252,19 @@ jest.mock('@popup/evm/utils/evm-chain.utils', () => ({
 describe('UnlockedAppComponent', () => {
   beforeEach(() => {
     I18nUtils.getMessage = jest.fn((key: string) => key);
+    (
+      PaidAccountCreationActions.synchronizePendingHiveAccountCreations as jest.Mock
+    ).mockReset();
+    (
+      PaidAccountCreationActions.synchronizePendingHiveAccountCreations as jest.Mock
+    ).mockImplementation(() => async () => []);
+    (AccountUtils.getAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      defaultHiveAccounts(),
+    );
+    (EvmWalletUtils.getConnectedWallets as jest.Mock).mockResolvedValue([]);
+    (
+      EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock
+    ).mockResolvedValue(defaultEvmAccounts());
     jest
       .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
       .mockImplementation(async (key) => {
@@ -283,6 +316,13 @@ describe('UnlockedAppComponent', () => {
   });
 
   it('sets the setup title before navigating to add account during init', async () => {
+    (AccountUtils.getAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
+    (
+      EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock
+    ).mockResolvedValue([]);
+
     const { store } = customRender(<UnlockedAppComponent />, {
       initialState: {
         ...initialEmptyStateStore,
@@ -314,6 +354,13 @@ describe('UnlockedAppComponent', () => {
   });
 
   it('uses unified router when the wallet has no accounts yet', async () => {
+    (AccountUtils.getAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
+    (
+      EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock
+    ).mockResolvedValue([]);
+
     const { getByTestId } = customRender(<UnlockedAppComponent />, {
       initialState: {
         ...initialEmptyStateStore,
@@ -344,10 +391,11 @@ describe('UnlockedAppComponent', () => {
   });
 
   it('opens home page when only Hive accounts exist', async () => {
-    const { EvmWalletUtils } = require('@popup/evm/utils/wallet.utils');
     const previousHash = window.location.hash;
     window.location.hash = '';
-    EvmWalletUtils.rebuildAccountsFromLocalStorage.mockResolvedValue([]);
+    (
+      EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock
+    ).mockResolvedValue([]);
 
     const { store } = customRender(<UnlockedAppComponent />, {
       initialState: {
@@ -377,5 +425,258 @@ describe('UnlockedAppComponent', () => {
     });
 
     window.location.hash = previousHash;
+  });
+
+  it('consumes EVM account-creation payment hashes on startup', async () => {
+    const previousHash = window.location.hash;
+    window.location.hash =
+      PaidAccountCreationRouteUtils.buildPaymentStatusHash('request-1');
+
+    const { store } = customRender(<UnlockedAppComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk: mkData.user.one,
+        chain: evmChain,
+        navigation: {
+          stack: [],
+        },
+        hive: {
+          ...initialEmptyStateStore.hive,
+          appStatus: {
+            ...initialEmptyStateStore.hive.appStatus,
+            priceLoaded: true,
+            globalPropertiesLoaded: true,
+          },
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(store.getState().navigation.stack[0]).toMatchObject({
+        currentPage: Screen.PENDING_ACCOUNT_CREATION_PAYMENT,
+        params: {
+          requestId: 'request-1',
+        },
+      });
+    });
+    expect(window.location.hash).toBe('');
+
+    window.location.hash = previousHash;
+  });
+
+  it('reconciles completed pending accounts while preserving EVM context', async () => {
+    const importedAccount = {
+      name: 'new-account',
+      keys: { posting: 'posting-key' },
+    };
+    (AccountUtils.getAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
+    (
+      PaidAccountCreationActions.synchronizePendingHiveAccountCreations as jest.Mock
+    ).mockImplementation(
+      () => async (dispatch: (action: unknown) => unknown) => {
+        dispatch(setAccounts([importedAccount]));
+        return [];
+      },
+    );
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockImplementation(async (key) => {
+        if (key === LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED) {
+          return false;
+        }
+        if (key === LocalStorageKeyEnum.ACTIVE_ACCOUNT_TYPE) {
+          return ChainType.EVM;
+        }
+        return undefined;
+      });
+
+    const { store } = customRender(<UnlockedAppComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk: mkData.user.one,
+        activeAccountType: ChainType.EVM,
+        chain: evmChain,
+        navigation: {
+          stack: [
+            {
+              currentPage: HiveScreen.SETTINGS_MANAGE_ACCOUNTS,
+              params: { username: localAccounts.user2.name },
+            },
+          ],
+        },
+        hive: {
+          ...initialEmptyStateStore.hive,
+          appStatus: {
+            ...initialEmptyStateStore.hive.appStatus,
+            priceLoaded: true,
+            globalPropertiesLoaded: true,
+          },
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(store.getState().hive.accounts).toEqual([importedAccount]);
+    });
+
+    expect(
+      PaidAccountCreationActions.synchronizePendingHiveAccountCreations,
+    ).toHaveBeenCalledTimes(1);
+    expect(store.getState().activeAccountType).toBe(ChainType.EVM);
+    expect(store.getState().chain).toEqual(evmChain);
+    expect(store.getState().navigation.stack[0]).toMatchObject({
+      currentPage: HiveScreen.SETTINGS_MANAGE_ACCOUNTS,
+      params: { username: localAccounts.user2.name },
+    });
+  });
+
+  it('reconciles pending account creations when leaving the status page', async () => {
+    jest
+      .spyOn(
+        PendingHiveAccountCreationUtils,
+        'getPendingHiveAccountCreationRequests',
+      )
+      .mockResolvedValue([
+        {
+          requestId: 'request-1',
+          username: 'new-account',
+          encryptedAccount: 'encrypted',
+          paymentCurrency: 'EVM:1:native',
+          paymentAddress: '0x1111111111111111111111111111111111111111',
+          amount: '0.001',
+          expiresAt: '2026-04-28T01:00:00.000Z',
+          status: 'payment_confirming',
+          createdAt: '2026-04-28T00:00:00.000Z',
+          updatedAt: '2026-04-28T00:00:00.000Z',
+        },
+      ]);
+
+    const { store } = customRender(<UnlockedAppComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk: mkData.user.one,
+        chain: evmChain,
+        navigation: {
+          stack: [
+            {
+              currentPage: Screen.PENDING_ACCOUNT_CREATION_PAYMENT,
+              params: { requestId: 'request-1' },
+            },
+          ],
+        },
+        hive: {
+          ...initialEmptyStateStore.hive,
+          appStatus: {
+            ...initialEmptyStateStore.hive.appStatus,
+            priceLoaded: true,
+            globalPropertiesLoaded: true,
+          },
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(
+        PaidAccountCreationActions.synchronizePendingHiveAccountCreations,
+      ).toHaveBeenCalled();
+    });
+
+    const syncCallsAfterInit = (
+      PaidAccountCreationActions.synchronizePendingHiveAccountCreations as jest.Mock
+    ).mock.calls.length;
+
+    store.dispatch(navigateTo(Screen.HOME_PAGE, true));
+
+    await waitFor(() => {
+      expect(
+        PaidAccountCreationActions.synchronizePendingHiveAccountCreations,
+      ).toHaveBeenCalledTimes(syncCallsAfterInit + 1);
+    });
+  });
+
+  it('activates imported accounts away from the status page without forcing home navigation', async () => {
+    const importedAccount = {
+      name: 'new-account',
+      keys: { posting: 'posting-key' },
+    };
+    (
+      PaidAccountCreationActions.synchronizePendingHiveAccountCreations as jest.Mock
+    ).mockImplementation(
+      () => async () => [
+        {
+          outcome: 'imported',
+          account: importedAccount,
+          request: { requestId: 'request-1', username: importedAccount.name },
+        },
+      ],
+    );
+    jest
+      .spyOn(
+        PendingHiveAccountCreationUtils,
+        'getPendingHiveAccountCreationRequests',
+      )
+      .mockResolvedValue([
+        {
+          requestId: 'request-1',
+          username: importedAccount.name,
+          encryptedAccount: 'encrypted',
+          paymentCurrency: 'EVM:1:native',
+          paymentAddress: '0x1111111111111111111111111111111111111111',
+          amount: '0.001',
+          expiresAt: '2026-04-28T01:00:00.000Z',
+          status: 'account_created',
+          createdAt: '2026-04-28T00:00:00.000Z',
+          updatedAt: '2026-04-28T00:00:00.000Z',
+        },
+      ]);
+
+    const { store } = customRender(<UnlockedAppComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk: mkData.user.one,
+        activeAccountType: ChainType.EVM,
+        chain: evmChain,
+        navigation: {
+          stack: [
+            {
+              currentPage: HiveScreen.SETTINGS_MANAGE_ACCOUNTS,
+              params: { username: localAccounts.user2.name },
+            },
+          ],
+        },
+        hive: {
+          ...initialEmptyStateStore.hive,
+          appStatus: {
+            ...initialEmptyStateStore.hive.appStatus,
+            priceLoaded: true,
+            globalPropertiesLoaded: true,
+          },
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(
+        PaidAccountCreationActions.handleCompletedPaidHiveAccountCreations,
+      ).toHaveBeenCalledWith(
+        [
+          expect.objectContaining({
+            outcome: 'imported',
+            account: importedAccount,
+          }),
+        ],
+        expect.objectContaining({
+          activateCreatedAccount: true,
+          navigateToHomeAfterActivation: false,
+          showBrowserNotification: true,
+        }),
+      );
+    });
+
+    expect(store.getState().navigation.stack[0]).toMatchObject({
+      currentPage: HiveScreen.SETTINGS_MANAGE_ACCOUNTS,
+    });
   });
 });

@@ -119,14 +119,14 @@ const ConfirmationPage = ({
       title: title ?? 'popup_html_confirm',
       skipTitleTranslation,
       isBackButtonEnabled: true,
-      onBackAdditional: () => {
+      onBackAdditional: async () => {
         if (afterCancelAction) {
-          afterCancelAction();
+          return await afterCancelAction();
         }
       },
-      onCloseAdditional: () => {
+      onCloseAdditional: async () => {
         if (afterCancelAction) {
-          afterCancelAction();
+          return await afterCancelAction();
         }
       },
     });
@@ -139,7 +139,7 @@ const ConfirmationPage = ({
 
   const hideConfirm = BalanceChangeCardUtils.hasInsufficientBalance(balanceInfo);
 
-  const handleClickOnConfirm = () => {
+  const handleClickOnConfirm = async () => {
     if (hasGasFee && GasFeeUtils.isGasFeeEstimateInvalid(selectedFee)) {
       forceOpenGasFeePanelEvent.emit('forceOpenCustomFeePanel');
       return;
@@ -149,16 +149,21 @@ const ConfirmationPage = ({
       transactionHook.openWarningsPopup();
       return;
     }
-    if ((hasGasFee && !!selectedFee) || !hasGasFee)
-      afterConfirmAction(selectedFee);
-    else setErrorMessage('popup_html_evm_gas_fee_not_selected');
+    if ((hasGasFee && !!selectedFee) || !hasGasFee) {
+      await afterConfirmAction(selectedFee);
+    } else {
+      setErrorMessage('popup_html_evm_gas_fee_not_selected');
+    }
   };
 
   const handleClickOnCancel = async () => {
+    let skipGoBack = false;
     if (afterCancelAction) {
-      afterCancelAction();
+      skipGoBack = (await afterCancelAction()) === true;
     }
-    goBack();
+    if (!skipGoBack) {
+      goBack();
+    }
   };
 
   const initBalance = async (tokenInfo: EvmSmartContractInfo) => {

@@ -15,6 +15,11 @@ export enum AccountCreationType {
   BUYING = 'BUYING',
 }
 
+export enum AccountCreationMode {
+  DEFAULT = 'DEFAULT',
+  PAID_BACKEND_CREATION = 'PAID_BACKEND_CREATION',
+}
+
 export interface GeneratedKey {
   public: string;
   private: string;
@@ -60,7 +65,9 @@ const createAccount = async (
   price?: number,
   generatedKeys?: GeneratedKeys,
   options?: TransactionOptions,
+  mode: AccountCreationMode = AccountCreationMode.DEFAULT,
 ) => {
+  void mode;
   let success = null;
   switch (creationType) {
     case AccountCreationType.BUYING: {

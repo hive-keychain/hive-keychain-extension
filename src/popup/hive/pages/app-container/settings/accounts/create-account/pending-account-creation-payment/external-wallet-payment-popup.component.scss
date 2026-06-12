@@ -1,0 +1,91 @@
+.external-wallet-payment-popup-container {
+  .external-wallet-payment-popup {
+    display: flex;
+    flex-direction: column;
+    row-gap: 14px;
+    width: 100%;
+    color: var(--main-font-color);
+
+    .popup-title {
+      @include dmSans700(18px);
+    }
+
+    .popup-instructions {
+      @include form-container-text;
+    }
+
+    .payment-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .payment-field {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 34px;
+      column-gap: 8px;
+      align-items: center;
+      padding: 10px 0;
+      border-top: 1px solid var(--card-border);
+
+      .field-content {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        row-gap: 4px;
+      }
+
+      .field-label {
+        @include dmSans700(13px);
+        color: var(--create-account-price-color);
+      }
+
+      .field-value {
+        @include dmSans400(15px);
+        overflow-wrap: anywhere;
+      }
+
+      .copy-field-button {
+        width: 34px;
+        height: 34px;
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        background: var(--button-alternative-background-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+
+        .svg-icon,
+        svg {
+          width: 16px;
+          height: 16px;
+        }
+      }
+    }
+
+    .qr-code-container {
+      align-self: center;
+      border: 4px solid var(--qrcode-border-color);
+      background: var(--qrcode-background-color);
+      padding: 10px;
+      border-radius: 8px;
+
+      .qrcode {
+        width: 132px;
+        height: 132px;
+        display: block;
+      }
+    }
+
+    .tx-hash-error {
+      @include dmSans400(12px);
+      color: $red;
+      margin-top: -6px;
+    }
+
+    .action-buttons {
+      display: flex;
+      column-gap: 8px;
+    }
+  }
+}

@@ -3,7 +3,11 @@ export interface ApiResponse<T = unknown> {
   data: T;
 }
 
+const isSuccessStatus = (status: number) => status >= 200 && status < 300;
+
 const parseJsonResponse = async (res: Response): Promise<unknown> => {
+  if (res.status === 204) return undefined;
+
   try {
     return await res.json();
   } catch {
@@ -39,8 +43,8 @@ const get = async (url: string): Promise<any> => {
         headers: { 'Content-Type': 'application/json' },
       })
         .then((res) => {
-          if (res && res.status === 200) {
-            return res.json();
+          if (res && isSuccessStatus(res.status)) {
+            return parseJsonResponse(res);
           }
         })
         .then((res) => {
@@ -64,8 +68,8 @@ const post = async (url: string, body: any): Promise<any> => {
         body: JSON.stringify(body),
       })
         .then((res) => {
-          if (res && res.status === 200) {
-            return res.json();
+          if (res && isSuccessStatus(res.status)) {
+            return parseJsonResponse(res);
           }
         })
         .then((res) => {

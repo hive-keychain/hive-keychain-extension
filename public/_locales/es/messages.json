@@ -3382,9 +3382,65 @@
     "message": "Creando cuenta",
     "description": "Creating account message"
   },
+  "html_popup_preparing_account_creation": {
+    "message": "Preparando la creación de cuenta",
+    "description": "Loading message while preparing EVM paid Hive account creation"
+  },
   "html_popup_create_account_failed": {
     "message": "La creación de tu cuenta ha fallado. Por favor, inténtalo de nuevo más tarde",
     "description": "Create account failed message"
+  },
+  "html_popup_create_account_pending_keep_open": {
+    "message": "La creación de tu cuenta puede tardar unos minutos. Puedes cerrar esta ventana.",
+    "description": "Reminder on pending account creation page to keep the extension open"
+  },
+  "html_popup_create_account_pay_external_wallet": {
+    "message": "Pagar con otra wallet",
+    "description": "Button to open external wallet payment popup on pending account creation page"
+  },
+  "html_popup_create_account_external_wallet_instructions": {
+    "message": "Escanea el código QR o copia los detalles de pago a continuación. Después de enviar el pago, pega el hash de tu transacción.",
+    "description": "Instructions in external wallet payment popup for account creation"
+  },
+  "html_popup_create_account_payment_tx_hash": {
+    "message": "Hash de transacción",
+    "description": "Label for transaction hash input in external wallet payment popup"
+  },
+  "html_popup_create_account_payment_account": {
+    "message": "Cuenta",
+    "description": "Account field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_chain": {
+    "message": "Cadena",
+    "description": "Chain field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_token": {
+    "message": "Token",
+    "description": "Token field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_address": {
+    "message": "Dirección de pago",
+    "description": "Payment address field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_status": {
+    "message": "Estado",
+    "description": "Status field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_expiry": {
+    "message": "Vencimiento",
+    "description": "Expiry field on pending account creation payment page"
+  },
+  "html_popup_create_account_submit_payment_tx": {
+    "message": "Enviar pago",
+    "description": "Button to submit external payment transaction hash"
+  },
+  "html_popup_create_account_submitting_payment_tx": {
+    "message": "Enviando...",
+    "description": "Loading label while submitting external payment transaction hash"
+  },
+  "html_popup_create_account_invalid_payment_tx_hash": {
+    "message": "Hash de transacción no válido.",
+    "description": "Validation error for external payment transaction hash input"
   },
   "html_popup_read_more": {
     "message": "Leer más",
@@ -4768,7 +4824,7 @@
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_seed_phrase": {
-    "message": "Seed Phrase",
+    "message": "Seed phrase",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_seed_phrase_placeholder": {

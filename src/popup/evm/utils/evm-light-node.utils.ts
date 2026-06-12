@@ -375,6 +375,30 @@ export type DiscoveredTokensResponse = {
   pricingStatus: PricingStatus;
 };
 
+export type DiscoveryChainMetadata = {
+  chainId: number;
+  name: string;
+  logoUrl: string | null;
+  backgroundColor: string | null;
+  nativeToken: string | null;
+  explorerBaseUrl: string | null;
+  testnet: boolean;
+  isPopular: boolean;
+};
+
+export type DiscoveredTokensChainGroup = {
+  chainId: number;
+  catchupStatus: string | null;
+  chain: DiscoveryChainMetadata;
+  pricingStatus: PricingStatus;
+  tokens: DiscoveredToken[];
+};
+
+export type DiscoveredTokensAllChainsResponse = {
+  address: string;
+  chains: DiscoveredTokensChainGroup[];
+};
+
 export type DiscoveredNftsResponse = {
   chainId: number;
   address: string;
@@ -428,6 +452,14 @@ const getDiscoveredTokens = async (
   );
 
   return reponse;
+};
+
+const getDiscoveredTokensForAllRegisteredChains = async (
+  address: string,
+): Promise<DiscoveredTokensAllChainsResponse> => {
+  return await EvmLightNodeApi.get(
+    `discovery/tokens/address/${encodeURIComponent(address)}`,
+  );
 };
 
 const getDiscoveredNfts = async (
@@ -617,6 +649,7 @@ const registerAddress = async (
 
 export const EvmLightNodeUtils = {
   getDiscoveredTokens,
+  getDiscoveredTokensForAllRegisteredChains,
   getDiscoveredNfts,
   getNftDetail,
   getHistory,

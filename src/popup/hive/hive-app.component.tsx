@@ -23,6 +23,7 @@ import {
 } from '@popup/hive/actions/rpc-switcher';
 import { KeylessKeychainComponent } from '@popup/hive/pages/add-account/keyless-keychain/keyless-keychain.component';
 import { AppRouterComponent } from '@popup/hive/pages/app-container/hive-router.component';
+import { AccountCreationMode } from '@popup/hive/utils/account-creation.utils';
 import { setMk } from '@popup/multichain/actions/mk.actions';
 import {
   navigateTo,
@@ -54,6 +55,23 @@ import {
 
 import { I18nUtils } from 'src/utils/i18n.utils';
 
+const stackHasPaidAccountCreationPage = (
+  stack: { currentPage: Screen; params?: { mode?: AccountCreationMode } }[],
+  navParams?: { mode?: AccountCreationMode },
+): boolean =>
+  stack.some((navigation) => {
+    if (navigation.currentPage === Screen.PENDING_ACCOUNT_CREATION_PAYMENT) {
+      return true;
+    }
+
+    const mode = navigation.params?.mode ?? navParams?.mode;
+    return (
+      mode === AccountCreationMode.PAID_BACKEND_CREATION &&
+      (navigation.currentPage === Screen.CREATE_ACCOUNT_PAGE_STEP_ONE ||
+        navigation.currentPage === Screen.CREATE_ACCOUNT_PAGE_STEP_TWO)
+    );
+  });
+
 let rpc: string | undefined = '';
 const HiveApp = ({
   mk,
@@ -82,6 +100,7 @@ const HiveApp = ({
   setDisplayChangeRpcPopup,
   loadCurrencyPrices,
   hasFinishedSignup,
+  navParams,
 }: PropsFromRedux) => {
   const store = useStore<RootState>();
   const [isAppReady, setAppReady] = useState(false);
@@ -276,6 +295,15 @@ const HiveApp = ({
         navigateTo(Screen.HOME_PAGE, true);
       }
     } else if (mk && mk.length > 0) {
+      const navStack = store.getState().navigation.stack;
+      if (
+        stackHasPaidAccountCreationPage(
+          navStack,
+          store.getState().navigation.params,
+        )
+      ) {
+        return;
+      }
       navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);
     } else if (
       mk &&
@@ -293,7 +321,11 @@ const HiveApp = ({
     if (!mk || mk.length === 0) {
       return <SignInRouterComponent />;
     } else {
-      if (accounts && accounts.length === 0) {
+      if (
+        accounts &&
+        accounts.length === 0 &&
+        !stackHasPaidAccountCreationPage(navigationStack, navParams)
+      ) {
         return isKeylessKeychainEnabled ? (
           <KeylessKeychainComponent />
         ) : (
@@ -419,6 +451,7 @@ const mapStateToProps = (state: RootState) => {
       state.hive.activeAccount.account.proxy === '' &&
       state.hive.activeAccount.account.witnesses_voted_for === 0,
     navigationStack: state.navigation.stack,
+    navParams: state.navigation.params,
     appStatus: state.hive.appStatus,
     hasFinishedSignup: state.hasFinishedSignup,
   };

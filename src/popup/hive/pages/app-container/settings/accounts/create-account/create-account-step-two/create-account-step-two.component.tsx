@@ -1,8 +1,10 @@
+import { HiveAccountCreationPaymentSelection } from '@interfaces/hive-account-creation.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Screen } from '@interfaces/screen.interface';
 import {
   AccountCreationType,
   AccountCreationUtils,
+  AccountCreationMode,
   GeneratedKeys,
 } from '@popup/hive/utils/account-creation.utils';
 import {
@@ -13,9 +15,14 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/multichain/actions/message.actions';
-import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { setChain } from '@popup/multichain/actions/chain.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { PrivateKey } from 'hive-tx';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -25,12 +32,18 @@ import ButtonComponent, {
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
 import { addAccount } from 'src/popup/hive/actions/account.actions';
+import { PaidAccountCreationUtils } from 'src/popup/hive/utils/paid-account-creation.utils';
 import FormatUtils from 'src/utils/format.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
+
 const SUBSTRING_LENGTH = 15;
+const PREPARING_ACCOUNT_CREATION_LOADING =
+  'html_popup_preparing_account_creation';
+
 const CreateAccountStepTwo = ({
   navParams,
+  mk,
   setErrorMessage,
   setSuccessMessage,
   setTitleContainerProperties,
@@ -38,6 +51,8 @@ const CreateAccountStepTwo = ({
   addToLoadingList,
   removeFromLoadingList,
   navigateTo,
+  navigateToWithParams,
+  setChain,
 }: PropsFromRedux) => {
   const emptyKeys = {
     owner: { public: '', private: '' },
@@ -53,6 +68,15 @@ const CreateAccountStepTwo = ({
   const accountName = navParams?.newUsername;
   const price = navParams?.price;
   const creationType = navParams?.creationType;
+  const accountCreationMode =
+    navParams?.mode ?? AccountCreationMode.DEFAULT;
+  const isPaidBackendCreation =
+    accountCreationMode === AccountCreationMode.PAID_BACKEND_CREATION;
+  const paymentSelection = navParams?.paymentSelection as
+    | HiveAccountCreationPaymentSelection
+    | undefined;
+  const isEvmPaymentCreation = !!paymentSelection?.paymentChainId;
+  const isPaidCreation = isPaidBackendCreation || isEvmPaymentCreation;
   const selectedAccount = navParams?.usedAccount as LocalAccount;
 
   const [paymentUnderstanding, setPaymentUnderstanding] = useState(false);
@@ -60,14 +84,23 @@ const CreateAccountStepTwo = ({
   const [notPrimaryStorageUnderstanding, setNotPrimaryStorageUnderstanding] =
     useState(false);
   const [hasCopied, setHasCopied] = useState(false);
-
   useEffect(() => {
     setTitleContainerProperties({
       title: 'popup_html_create_account',
       isBackButtonEnabled: true,
+      onCloseAdditional: () => {
+        restorePreviousChain();
+      },
     });
     generateMasterKey();
   }, []);
+
+  const restorePreviousChain = () => {
+    const previousChain = ChainUtils.getPreviousChain();
+    if (previousChain) {
+      void setChain(previousChain);
+    }
+  };
 
   useEffect(() => {
     if (masterKey === '') {
@@ -180,8 +213,37 @@ const CreateAccountStepTwo = ({
       safelyCopied &&
       notPrimaryStorageUnderstanding
     ) {
-      addToLoadingList('html_popup_creating_account');
+      let keepEvmPreparationLoading = false;
+      if (isEvmPaymentCreation) {
+        addToLoadingList(PREPARING_ACCOUNT_CREATION_LOADING);
+      } else {
+        addToLoadingList('html_popup_creating_account');
+      }
       try {
+        if (isPaidCreation) {
+          if (!paymentSelection?.paymentChainId) {
+            setErrorMessage('Unable to select an EVM payment token.');
+            return;
+          }
+          const pendingRequest =
+            await PaidAccountCreationUtils.createPendingPaidHiveAccountCreation(
+              accountName,
+              generatedKeys,
+              paymentSelection,
+              mk,
+            );
+          navigateToWithParams(
+            Screen.PENDING_ACCOUNT_CREATION_PAYMENT,
+            {
+              requestId: pendingRequest.requestId,
+              autoPayWithKeychain: true,
+            },
+            false,
+          );
+          keepEvmPreparationLoading = true;
+          return;
+        }
+
         const result = await AccountCreationUtils.createAccount(
           creationType,
           accountName,
@@ -190,6 +252,8 @@ const CreateAccountStepTwo = ({
           AccountCreationUtils.generateAccountAuthorities(generatedKeys),
           price,
           generatedKeys,
+          undefined,
+          accountCreationMode,
         );
 
         if (result) {
@@ -202,7 +266,13 @@ const CreateAccountStepTwo = ({
       } catch (err: any) {
         setErrorMessage(err.message);
       } finally {
-        removeFromLoadingList('html_popup_creating_account');
+        if (isEvmPaymentCreation) {
+          if (!keepEvmPreparationLoading) {
+            removeFromLoadingList(PREPARING_ACCOUNT_CREATION_LOADING);
+          }
+        } else {
+          removeFromLoadingList('html_popup_creating_account');
+        }
       }
     } else {
       setErrorMessage('html_popup_create_account_need_accept_terms_condition');
@@ -212,6 +282,11 @@ const CreateAccountStepTwo = ({
 
   const getPaymentCheckboxLabel = () => {
     switch (creationType) {
+      case undefined:
+        if (isPaidCreation) {
+          return 'I understand I must complete payment before this Hive account can be created';
+        }
+        return '';
       case AccountCreationType.BUYING:
         return I18nUtils.getMessage(
           'html_popup_create_account_buy_method_message',
@@ -357,7 +432,9 @@ const CreateAccountStepTwo = ({
               type={ButtonType.ALTERNATIVE}
             />
             <ButtonComponent
-              label="html_popup_create"
+              label={
+                isEvmPaymentCreation ? 'html_popup_next' : 'html_popup_create'
+              }
               onClick={() => createAccount()}
             />
           </div>
@@ -371,7 +448,9 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.hive.activeAccount,
     accounts: state.hive.accounts,
-    navParams: state.navigation.params,
+    navParams:
+      state.navigation.stack[0]?.params ?? state.navigation.params,
+    mk: state.mk,
   };
 };
 
@@ -381,6 +460,8 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   addAccount,
   navigateTo,
+  navigateToWithParams,
+  setChain,
   addToLoadingList,
   removeFromLoadingList,
 });

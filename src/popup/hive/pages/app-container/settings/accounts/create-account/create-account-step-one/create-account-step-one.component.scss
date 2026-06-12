@@ -27,14 +27,63 @@
     display: flex;
     font-size: 16px;
     padding: 0px 16px;
-    margin-bottom: 30px;
     justify-content: space-between;
     width: 100%;
     box-sizing: border-box;
     color: var(--create-account-price-color);
   }
 
+  .create-account-empty-state,
+  .evm-token-state {
+    @include poppins400(13px);
+    color: var(--main-font-color);
+    padding: 0 16px;
+    line-height: 18px;
+
+    &.error {
+      color: $red;
+    }
+  }
+
+  .payment-token-select {
+    .react-dropdown-select-content .selected-item {
+      .left-svg-chip {
+        @include icon-size(14px);
+        top: 4px;
+        left: 28px;
+      }
+
+      img.left-svg-chip,
+      .left-svg-chip.chain-logo-initials {
+        left: 28px;
+      }
+
+      .left-svg-chip.chain-logo-initials {
+        @include poppins600(5px);
+      }
+    }
+
+    .react-dropdown-select-dropdown .option .custom-select-item {
+      .left-svg-chip {
+        @include icon-size(14px);
+        top: 4px;
+        left: 22px;
+      }
+
+      img.left-svg-chip,
+      .left-svg-chip.chain-logo-initials {
+        left: 22px;
+      }
+
+      .left-svg-chip.chain-logo-initials {
+        @include poppins600(5px);
+      }
+    }
+  }
+
   .react-dropdown-select {
+    width: 100%;
+
     &,
     &:hover,
     &:focus {
@@ -79,6 +128,8 @@
   }
 
   .react-dropdown-select-dropdown {
+    width: 100% !important;
+    min-width: 100% !important;
     border: unset !important;
     .select-account-item {
       background: $black;

@@ -28,7 +28,7 @@ export interface PageTitleProps {
   };
   closeNavigationParams?: any;
   onCloseAdditional?: () => void;
-  onBackAdditional?: () => void;
+  onBackAdditional?: () => void | boolean | Promise<void | boolean>;
 }
 
 const PageTitle = ({
@@ -47,9 +47,13 @@ const PageTitle = ({
   resetNav,
   showDetachWindowOption,
 }: PropsType) => {
-  const handleBackButtonClick = (): void => {
-    if (onBackAdditional) onBackAdditional();
-    if (canGoBack && isBackButtonEnabled) {
+  const handleBackButtonClick = async (): Promise<void> => {
+    let skipGoBack = false;
+    if (onBackAdditional) {
+      const result = await onBackAdditional();
+      skipGoBack = result === true;
+    }
+    if (!skipGoBack && canGoBack && isBackButtonEnabled) {
       goBack();
     }
   };

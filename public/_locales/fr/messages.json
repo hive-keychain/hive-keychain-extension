@@ -52,11 +52,11 @@
     "description": "EVM blockchain mainnet"
   },
   "common_seed": {
-    "message": "Phrase de récupération",
+    "message": "Seed phrase",
     "description": "EVM blockchain seed"
   },
   "common_seeds": {
-    "message": "Phrases de récupération",
+    "message": "Seed phrases",
     "description": "EVM blockchain seeds"
   },
   "common_experimental": {
@@ -3382,9 +3382,65 @@
     "message": "Création du compte",
     "description": "Creating account message"
   },
+  "html_popup_preparing_account_creation": {
+    "message": "Préparation de la création de compte",
+    "description": "Loading message while preparing EVM paid Hive account creation"
+  },
   "html_popup_create_account_failed": {
     "message": "La création de votre compte a échoué. Veuillez réessayer plus tard",
     "description": "Create account failed message"
+  },
+  "html_popup_create_account_pending_keep_open": {
+    "message": "La création de votre compte peut prendre quelques minutes. Vous pouvez fermer cette fenêtre.",
+    "description": "Reminder on pending account creation page to keep the extension open"
+  },
+  "html_popup_create_account_pay_external_wallet": {
+    "message": "Payer avec un autre portefeuille",
+    "description": "Button to open external wallet payment popup on pending account creation page"
+  },
+  "html_popup_create_account_external_wallet_instructions": {
+    "message": "Scannez le code QR ou copiez les détails de paiement ci-dessous. Après avoir envoyé le paiement, collez le hash de votre transaction.",
+    "description": "Instructions in external wallet payment popup for account creation"
+  },
+  "html_popup_create_account_payment_tx_hash": {
+    "message": "Hash de transaction",
+    "description": "Label for transaction hash input in external wallet payment popup"
+  },
+  "html_popup_create_account_payment_account": {
+    "message": "Compte",
+    "description": "Account field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_chain": {
+    "message": "Chaîne",
+    "description": "Chain field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_token": {
+    "message": "Token",
+    "description": "Token field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_address": {
+    "message": "Adresse de paiement",
+    "description": "Payment address field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_status": {
+    "message": "Statut",
+    "description": "Status field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_expiry": {
+    "message": "Expiration",
+    "description": "Expiry field on pending account creation payment page"
+  },
+  "html_popup_create_account_submit_payment_tx": {
+    "message": "Soumettre le paiement",
+    "description": "Button to submit external payment transaction hash"
+  },
+  "html_popup_create_account_submitting_payment_tx": {
+    "message": "Envoi en cours...",
+    "description": "Loading label while submitting external payment transaction hash"
+  },
+  "html_popup_create_account_invalid_payment_tx_hash": {
+    "message": "Hash de transaction invalide.",
+    "description": "Validation error for external payment transaction hash input"
   },
   "html_popup_read_more": {
     "message": "Lire la suite",
@@ -4756,7 +4812,7 @@
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_import_wallet": {
-    "message": "Importer depuis une phrase de récupération",
+    "message": "Importer depuis une seed phrase",
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_create_wallet": {
@@ -4764,15 +4820,15 @@
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_setup_import_text": {
-    "message": "Utilisez votre phrase de récupération de 12 ou 24 mots pour importer vos comptes dans Keychain<br/>",
+    "message": "Utilisez votre seed phrase de 12 ou 24 mots pour importer vos comptes dans Keychain<br/>",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_seed_phrase": {
-    "message": "Phrase de récupération",
+    "message": "Seed phrase",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_seed_phrase_placeholder": {
-    "message": "Phrase de récupération de 12 ou 24 mots, séparés par des espaces",
+    "message": "Seed phrase de 12 ou 24 mots, séparés par des espaces",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "popup_html_import_wallet_from_key": {
@@ -4788,15 +4844,15 @@
     "description": "EVM > Add wallet main page > Import private key"
   },
   "html_popup_evm_invalid_mnemonic_length": {
-    "message": "Votre phrase de récupération doit contenir 12 ou 24 mots.",
+    "message": "Votre seed phrase doit contenir 12 ou 24 mots.",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_invalid_mnemonic_word": {
-    "message": "Le mot $1 de la phrase de récupération est incorrect.",
+    "message": "Le mot $1 de la seed phrase est incorrect.",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_invalid_mnemonic_checksum": {
-    "message": "Cette phrase de récupération est invalide.",
+    "message": "Cette seed phrase est invalide.",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_choose_account": {
@@ -4812,7 +4868,7 @@
     "description": "Import wallet from seed phrase title"
   },
   "popup_html_create_new_wallet_create_seed": {
-    "message": "Créer une phrase de récupération",
+    "message": "Créer une seed phrase",
     "description": "Create seed phrase title"
   },
   "html_popup_evm_create_new_wallet_title": {
@@ -4856,7 +4912,7 @@
     "description": "24 words"
   },
   "html_popup_evm_create_wallet_verification_title": {
-    "message": "Vérification de la phrase de récupération",
+    "message": "Vérification de la seed phrase",
     "description": "evm account creation caption"
   },
   "html_popup_evm_create_wallet_verification_caption": {
@@ -4872,7 +4928,7 @@
     "description": "Verify word error"
   },
   "html_popup_evm_create_wallet_tips": {
-    "message": "Veillez à stocker votre phrase de récupération à plusieurs endroits et hors ligne. Si cette phrase est perdue, vous ne pourrez pas récupérer votre compte",
+    "message": "Veillez à stocker votre seed phrase à plusieurs endroits et hors ligne. Si cette phrase est perdue, vous ne pourrez pas récupérer votre compte",
     "description": "tips"
   },
   "html_popup_evm_create_wallet_tips1": {
@@ -4888,11 +4944,11 @@
     "description": "tips"
   },
   "html_popup_evm_create_wallet_display_mnemonic": {
-    "message": "Afficher la phrase de récupération",
+    "message": "Afficher la seed phrase",
     "description": "display seed phrase"
   },
   "html_popup_evm_create_wallet_hide_mnemonic": {
-    "message": "Masquer la phrase de récupération",
+    "message": "Masquer la seed phrase",
     "description": "display seed phrase"
   },
   "html_popup_evm_hide_account": {
@@ -4904,15 +4960,15 @@
     "description": "show account in acct settings"
   },
   "html_popup_evm_create_wallet_copy_mnemonic": {
-    "message": "Copier la phrase de récupération",
+    "message": "Copier la seed phrase",
     "description": "display seed phrase"
   },
   "html_popup_evm_create_wallet_copied_mnemonic": {
-    "message": "Phrase de récupération copiée dans le presse-papiers",
+    "message": "Seed phrase copiée dans le presse-papiers",
     "description": "display seed phrase"
   },
   "evm_copy_seed_phrase_password_caption": {
-    "message": "Vous êtes sur le point de copier votre phrase de récupération. Pour des raisons de sécurité, veuillez saisir votre mot de passe pour continuer.",
+    "message": "Vous êtes sur le point de copier votre seed phrase. Pour des raisons de sécurité, veuillez saisir votre mot de passe pour continuer.",
     "description": "Prompt shown before copying an EVM seed phrase"
   },
   "html_popup_add_blockchain": {
@@ -4920,15 +4976,15 @@
     "description": "display seed phrase"
   },
   "html_popup_evm_create_wallet_copy_seed_phrase_error": {
-    "message": "Vous n’avez pas copié votre phrase de récupération, veuillez la copier avant de continuer",
+    "message": "Vous n’avez pas copié votre seed phrase, veuillez la copier avant de continuer",
     "description": "Error if seed phrase not copied"
   },
   "html_popup_evm_create_wallet_safely_copied_seed": {
-    "message": "J’ai copié ma phrase de récupération en sécurité et l’ai enregistrée hors de Keychain",
+    "message": "J’ai copié ma seed phrase en sécurité et l’ai enregistrée hors de Keychain",
     "description": "checkbox content on create account page"
   },
   "html_popup_evm_create_wallet_storage_understanding": {
-    "message": "Je comprends que Keychain ne doit pas être considéré comme le lieu principal de stockage de ma phrase de récupération",
+    "message": "Je comprends que Keychain ne doit pas être considéré comme le lieu principal de stockage de ma seed phrase",
     "description": "checkbox content on create account page"
   },
   "html_popup_evm_create_wallet_condition_missing": {
@@ -6368,7 +6424,7 @@
     "description": "Delete seed button"
   },
   "evm_delete_seed_confirmation_message": {
-    "message": "Voulez-vous vraiment supprimer cette phrase de récupération ?",
+    "message": "Voulez-vous vraiment supprimer cette seed phrase ?",
     "description": "Delete seed button"
   },
   "evm_delete_all_ledger_accounts_confirmation_message": {
@@ -6400,7 +6456,7 @@
     "description": "Nickname"
   },
   "evm_seed_nickname": {
-    "message": "Nom de la phrase de récupération",
+    "message": "Nom de la seed phrase",
     "description": "Nickname"
   },
   "evm_edit_seed_nickname": {
@@ -6432,7 +6488,7 @@
     "description": "Open Ledger EVM wallet connection flow"
   },
   "evm_copy_seed": {
-    "message": "Copier la phrase de récupération",
+    "message": "Copier la seed phrase",
     "description": "Copy EVM seed menu item"
   },
   "evm_seeds_and_accounts": {
@@ -6444,7 +6500,7 @@
     "description": "Error message if granularity failed has been used already"
   },
   "evm_seeds_already_in_keychain": {
-    "message": "Cette phrase de récupération a déjà été ajoutée dans Keychain",
+    "message": "Cette seed phrase a déjà été ajoutée dans Keychain",
     "description": "Seed already added in Keychain"
   },
   "evm_private_key_already_in_keychain": {
