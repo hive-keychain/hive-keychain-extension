@@ -3382,12 +3382,16 @@
     "message": "Criando conta",
     "description": "Creating account message"
   },
+  "html_popup_preparing_account_creation": {
+    "message": "Preparando criação de conta",
+    "description": "Loading message while preparing EVM paid Hive account creation"
+  },
   "html_popup_create_account_failed": {
     "message": "A criação da sua conta falhou. Por favor, tente novamente mais tarde",
     "description": "Create account failed message"
   },
   "html_popup_create_account_pending_keep_open": {
-    "message": "Mantenha o Keychain aberto até que sua conta seja criada. Este processo pode levar alguns minutos.",
+    "message": "A criação da sua conta pode levar alguns minutos. Você pode fechar esta janela.",
     "description": "Reminder on pending account creation page to keep the extension open"
   },
   "html_popup_create_account_pay_external_wallet": {
@@ -3401,6 +3405,30 @@
   "html_popup_create_account_payment_tx_hash": {
     "message": "Hash da transação",
     "description": "Label for transaction hash input in external wallet payment popup"
+  },
+  "html_popup_create_account_payment_account": {
+    "message": "Conta",
+    "description": "Account field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_chain": {
+    "message": "Chain",
+    "description": "Chain field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_token": {
+    "message": "Token",
+    "description": "Token field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_address": {
+    "message": "Endereço de pagamento",
+    "description": "Payment address field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_status": {
+    "message": "Status",
+    "description": "Status field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_expiry": {
+    "message": "Expiração",
+    "description": "Expiry field on pending account creation payment page"
   },
   "html_popup_create_account_submit_payment_tx": {
     "message": "Enviar pagamento",

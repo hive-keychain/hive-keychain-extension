@@ -9,6 +9,7 @@ import {
   EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import {
   DiscoveredToken,
@@ -79,6 +80,8 @@ export interface EvmPaymentTokenOption extends OptionItem {
 
 const CreateAccountStepOne = ({
   activeAccount,
+  activeAccountType,
+  activeEvmAccount,
   accounts,
   evmAccounts,
   currencyLabels,
@@ -163,7 +166,7 @@ const CreateAccountStepOne = ({
     return () => {
       cancelled = true;
     };
-  }, [accounts, evmAccounts, activeAccount, isPaidBackendCreation, mk]);
+  }, [accounts, evmAccounts, activeAccount, activeAccountType, activeEvmAccount, isPaidBackendCreation, mk]);
 
   const initAccountOptions = async (isCancelled: () => boolean) => {
     const hiveAccounts = accounts as LocalAccount[];
@@ -217,12 +220,13 @@ const CreateAccountStepOne = ({
         return currentSelectedAccount;
       }
 
-      const activeHiveOption = options.find(
-        (option) =>
-          option.accountType === 'HIVE' &&
-          option.hiveAccount?.name === activeAccount.name,
+      const preferredAccountOption = getPreferredAccountOption(
+        options,
+        activeAccountType,
+        activeAccount,
+        activeEvmAccount,
       );
-      return activeHiveOption ?? options[0];
+      return preferredAccountOption ?? options[0];
     });
   };
 
@@ -485,6 +489,39 @@ const getHiveUsd = (currencyPrices: CurrencyPrices) => {
   return typeof hiveUsd === 'number' && Number.isFinite(hiveUsd) && hiveUsd > 0
     ? hiveUsd
     : undefined;
+};
+
+const getActiveEvmAddress = (activeEvmAccount: EvmActiveAccount) =>
+  activeEvmAccount?.wallet?.address ?? activeEvmAccount?.address;
+
+const getPreferredAccountOption = (
+  options: AccountItemOption[],
+  activeAccountType: ChainType,
+  activeAccount: { name?: string },
+  activeEvmAccount: EvmActiveAccount,
+): AccountItemOption | undefined => {
+  if (activeAccountType === ChainType.EVM) {
+    const activeEvmAddress = getActiveEvmAddress(activeEvmAccount);
+    if (activeEvmAddress) {
+      const normalizedAddress = activeEvmAddress.toLowerCase();
+      return options.find(
+        (option) =>
+          option.accountType === 'EVM' &&
+          option.evmAccount?.wallet?.address?.toLowerCase() ===
+            normalizedAddress,
+      );
+    }
+  }
+
+  if (activeAccount.name) {
+    return options.find(
+      (option) =>
+        option.accountType === 'HIVE' &&
+        option.hiveAccount?.name === activeAccount.name,
+    );
+  }
+
+  return undefined;
 };
 
 const buildAccountItemOption = (
@@ -751,6 +788,8 @@ const getChainIdLookupKey = (chainId: string | number) => {
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.hive.activeAccount,
+    activeAccountType: state.activeAccountType,
+    activeEvmAccount: state.evm.activeAccount,
     accounts: state.hive.accounts,
     evmAccounts: state.evm.accounts,
     currencyLabels: (state.chain as HiveChain).mainTokens,

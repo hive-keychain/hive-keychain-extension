@@ -1,119 +1,114 @@
 .pending-account-creation-payment {
-  display: flex;
+  @include pageLayoutRowGap;
   flex: 1;
-  flex-direction: column;
-  row-gap: 16px;
-  padding: 0 24px 24px;
   color: var(--main-font-color);
+
+  &.confirmation-page .confirmation-top .fields {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .confirmation-top {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    padding: 0 24px;
+    flex: 1;
+  }
 
   .pending-disclaimer {
     @include form-container-text;
+    padding: 0 24px;
   }
 
-  .payment-panel,
-  .status-panel {
-    @include form-panel;
-    row-gap: 14px;
-  }
+  .fields {
+    position: relative;
 
-  .payment-summary {
-    display: flex;
-    flex-direction: column;
-    row-gap: 6px;
-
-    .username {
-      @include dmSans700(20px);
-      overflow-wrap: anywhere;
-    }
-
-    .request-id {
-      @include dmSans400(13px);
-      color: var(--create-account-price-color);
-      overflow-wrap: anywhere;
-    }
-  }
-
-  .status-line {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    column-gap: 12px;
-    padding-top: 2px;
-    color: var(--create-account-price-color);
-
-    .status-label {
-      @include dmSans400(13px);
-    }
-  }
-
-  .status-badge {
-    border-radius: 8px;
-    padding: 5px 10px;
-    background: var(--button-alternative-background-color);
-    border: 1px solid var(--card-border);
-    color: var(--main-font-color);
-    @include dmSans700(13px);
-  }
-
-  .payment-field {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 34px;
-    column-gap: 8px;
-    align-items: center;
-    padding: 10px 0;
-    border-top: 1px solid var(--card-border);
-
-    .field-content {
-      min-width: 0;
+    .fields-card-header {
       display: flex;
-      flex-direction: column;
-      row-gap: 4px;
-    }
-
-    .field-label {
-      @include dmSans700(13px);
-      color: var(--create-account-price-color);
-    }
-
-    .field-value {
-      @include dmSans400(15px);
-      overflow-wrap: anywhere;
-    }
-
-    .copy-field-button {
-      width: 34px;
-      height: 34px;
-      border: 1px solid var(--card-border);
-      border-radius: 8px;
-      background: var(--button-alternative-background-color);
-      display: flex;
+      justify-content: flex-end;
       align-items: center;
-      justify-content: center;
-      cursor: pointer;
+      min-height: 32px;
+      margin: -4px 0 4px;
+      column-gap: 8px;
 
-      .svg-icon,
-      svg {
-        width: 16px;
-        height: 16px;
+      .status-badge {
+        margin-right: auto;
+        border-radius: 8px;
+        padding: 5px 10px;
+        background: var(--button-alternative-background-color);
+        border: 1px solid var(--card-border);
+        color: var(--main-font-color);
+        @include dmSans700(13px);
       }
     }
   }
 
-  .payment-actions {
+  .pending-account-value {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    column-gap: 10px;
+    column-gap: 8px;
+    min-width: 0;
 
-    > .submit-button {
-      flex: 1;
+    .username {
+      @include poppins400(14px);
+      overflow-wrap: anywhere;
+      text-align: right;
+    }
+
+    .user-avatar {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  }
+
+  .value.copyable-value {
+    overflow-wrap: anywhere;
+    text-align: right;
+    cursor: url('assets/images/global/copy-icon.png'), copy;
+  }
+
+  .value.value-with-logo {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    column-gap: 8px;
+    min-width: 0;
+
+    .value-label {
+      overflow-wrap: anywhere;
+      text-align: right;
+    }
+
+    .field-logo,
+    .currency-icon {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .chain-logo-initials {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      @include poppins600(10px);
     }
   }
 
   .refresh-status-button {
-    width: 42px;
-    height: 42px;
-    min-width: 42px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
     border: 1px solid var(--card-border);
     border-radius: 8px;
     background: var(--button-alternative-background-color);
@@ -130,14 +125,22 @@
 
     .svg-icon,
     svg {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
     }
+  }
+
+  .evm-bottom-panel {
+    width: calc(100% - 48px);
+    display: flex;
+    column-gap: 16px;
+    padding: 0 24px 24px;
   }
 
   .empty-state,
   .error-state {
     @include form-panel;
+    margin: 0 24px 24px;
     text-align: center;
   }
 }

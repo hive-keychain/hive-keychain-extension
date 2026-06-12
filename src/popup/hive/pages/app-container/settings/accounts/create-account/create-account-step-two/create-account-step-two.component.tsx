@@ -36,7 +36,10 @@ import { PaidAccountCreationUtils } from 'src/popup/hive/utils/paid-account-crea
 import FormatUtils from 'src/utils/format.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
+
 const SUBSTRING_LENGTH = 15;
+const PREPARING_ACCOUNT_CREATION_LOADING =
+  'html_popup_preparing_account_creation';
 
 const CreateAccountStepTwo = ({
   navParams,
@@ -210,7 +213,10 @@ const CreateAccountStepTwo = ({
       safelyCopied &&
       notPrimaryStorageUnderstanding
     ) {
-      if (!isEvmPaymentCreation) {
+      let keepEvmPreparationLoading = false;
+      if (isEvmPaymentCreation) {
+        addToLoadingList(PREPARING_ACCOUNT_CREATION_LOADING);
+      } else {
         addToLoadingList('html_popup_creating_account');
       }
       try {
@@ -234,6 +240,7 @@ const CreateAccountStepTwo = ({
             },
             true,
           );
+          keepEvmPreparationLoading = true;
           return;
         }
 
@@ -259,7 +266,11 @@ const CreateAccountStepTwo = ({
       } catch (err: any) {
         setErrorMessage(err.message);
       } finally {
-        if (!isEvmPaymentCreation) {
+        if (isEvmPaymentCreation) {
+          if (!keepEvmPreparationLoading) {
+            removeFromLoadingList(PREPARING_ACCOUNT_CREATION_LOADING);
+          }
+        } else {
           removeFromLoadingList('html_popup_creating_account');
         }
       }

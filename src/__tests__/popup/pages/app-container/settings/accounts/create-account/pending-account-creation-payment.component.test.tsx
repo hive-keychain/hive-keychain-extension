@@ -189,13 +189,14 @@ describe('PendingAccountCreationPaymentComponent', () => {
     expect(
       screen.queryByTestId('pending-account-creation-keep-open-disclaimer'),
     ).not.toBeInTheDocument();
-    expect(screen.getByText('request-1')).toBeInTheDocument();
     expect(screen.getByText('3.000')).toBeInTheDocument();
+    expect(screen.getByText('Hive')).toBeInTheDocument();
     expect(screen.getByText('HIVE')).toBeInTheDocument();
     expect(screen.getByText('hive-keychain')).toBeInTheDocument();
     expect(screen.getByText('account-creation:request-1')).toBeInTheDocument();
     expect(screen.queryByText('Payment pending')).not.toBeInTheDocument();
     expect(screen.getByText('Expiry')).toBeInTheDocument();
+    expect(screen.queryByText('EVM:40:native')).not.toBeInTheDocument();
     expect(screen.queryByTestId('qrcode')).not.toBeInTheDocument();
     expect(
       screen.queryByRole('button', { name: 'Pay with another wallet' }),
@@ -203,6 +204,30 @@ describe('PendingAccountCreationPaymentComponent', () => {
     expect(
       PendingHiveAccountCreationUtils.getPendingHiveAccountCreationRequests,
     ).toHaveBeenCalledWith(mk);
+  });
+
+  it('displays human-readable chain and token labels for EVM payments', async () => {
+    jest
+      .spyOn(
+        PendingHiveAccountCreationUtils,
+        'getPendingHiveAccountCreationRequests',
+      )
+      .mockResolvedValue([evmPendingRequest]);
+    jest.spyOn(ChainUtils, 'getDefaultChains').mockResolvedValue([paymentChain]);
+    jest.spyOn(ChainUtils, 'getCustomChains').mockResolvedValue([]);
+
+    renderComponent({
+      state: {
+        evm: {
+          ...initialEmptyStateStore.evm,
+          accounts: [payerAccount],
+        },
+      },
+    });
+
+    expect(await screen.findByText('Telos EVM')).toBeInTheDocument();
+    expect(screen.getByText('TLOS')).toBeInTheDocument();
+    expect(screen.queryByText('EVM:40:native')).not.toBeInTheDocument();
   });
 
   it('copies address, memo, and amount', async () => {
@@ -399,6 +424,8 @@ describe('PendingAccountCreationPaymentComponent', () => {
         'getPendingHiveAccountCreationRequests',
       )
       .mockResolvedValue([evmPendingRequest]);
+    jest.spyOn(ChainUtils, 'getDefaultChains').mockResolvedValue([paymentChain]);
+    jest.spyOn(ChainUtils, 'getCustomChains').mockResolvedValue([]);
 
     renderComponent({
       state: {
@@ -506,20 +533,15 @@ describe('PendingAccountCreationPaymentComponent', () => {
       await confirmationParams.afterConfirmAction({} as any);
     });
 
-    expect(EvmTransactionsUtils.send).toHaveBeenCalledWith(
-      payerAccount.wallet,
-      expect.objectContaining({
-        to: evmPendingRequest.paymentAddress,
-      }),
-      {},
-      paymentChain.chainId,
-    );
-    expect(submitHiveAccountCreationPaymentTx).toHaveBeenCalledWith(
+    expect(EvmTransactionsUtils.send).not.toHaveBeenCalled();
+    expect(submitHiveAccountCreationPaymentTx).not.toHaveBeenCalled();
+    expect(
+      PendingHiveAccountCreationUtils.updatePendingHiveAccountCreationStatus,
+    ).toHaveBeenCalledWith(
       'request-1',
-      {
-        txHash,
-        from: payerAddress,
-      },
+      'payment_detected',
+      mk,
+      `0x${'0'.repeat(64)}`,
     );
     expect(
       PaidAccountCreationRouteUtils.openPaymentStatusInSidePanel,
@@ -603,7 +625,7 @@ describe('PendingAccountCreationPaymentComponent', () => {
     ['cancelled', 'Cancelled'],
   ] as [HiveAccountCreationStatus, string][])(
     'hides keep-open disclaimer for terminal %s status',
-    async (status) => {
+    async (status, label) => {
       jest
         .spyOn(
           PendingHiveAccountCreationUtils,
@@ -613,7 +635,11 @@ describe('PendingAccountCreationPaymentComponent', () => {
 
       renderComponent();
 
-      expect(await screen.findByText('Current status')).toBeInTheDocument();
+      expect(
+        await screen.findByTestId('pending-account-creation-status'),
+      ).toBeInTheDocument();
+      expect(await screen.findByText(label)).toBeInTheDocument();
+      expect(screen.queryByText('Status')).not.toBeInTheDocument();
       expect(
         screen.queryByTestId('pending-account-creation-keep-open-disclaimer'),
       ).not.toBeInTheDocument();

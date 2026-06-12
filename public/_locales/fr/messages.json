@@ -3382,12 +3382,16 @@
     "message": "Création du compte",
     "description": "Creating account message"
   },
+  "html_popup_preparing_account_creation": {
+    "message": "Préparation de la création de compte",
+    "description": "Loading message while preparing EVM paid Hive account creation"
+  },
   "html_popup_create_account_failed": {
     "message": "La création de votre compte a échoué. Veuillez réessayer plus tard",
     "description": "Create account failed message"
   },
   "html_popup_create_account_pending_keep_open": {
-    "message": "Veuillez garder Keychain ouvert jusqu'à la création de votre compte. Ce processus peut prendre quelques minutes.",
+    "message": "La création de votre compte peut prendre quelques minutes. Vous pouvez fermer cette fenêtre.",
     "description": "Reminder on pending account creation page to keep the extension open"
   },
   "html_popup_create_account_pay_external_wallet": {
@@ -3401,6 +3405,30 @@
   "html_popup_create_account_payment_tx_hash": {
     "message": "Hash de transaction",
     "description": "Label for transaction hash input in external wallet payment popup"
+  },
+  "html_popup_create_account_payment_account": {
+    "message": "Compte",
+    "description": "Account field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_chain": {
+    "message": "Chaîne",
+    "description": "Chain field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_token": {
+    "message": "Token",
+    "description": "Token field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_address": {
+    "message": "Adresse de paiement",
+    "description": "Payment address field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_status": {
+    "message": "Statut",
+    "description": "Status field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_expiry": {
+    "message": "Expiration",
+    "description": "Expiry field on pending account creation payment page"
   },
   "html_popup_create_account_submit_payment_tx": {
     "message": "Soumettre le paiement",

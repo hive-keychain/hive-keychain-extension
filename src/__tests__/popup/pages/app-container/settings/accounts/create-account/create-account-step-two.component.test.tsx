@@ -110,6 +110,12 @@ describe('CreateAccountStepTwoComponent', () => {
         autoPayWithKeychain: true,
       },
     });
+    expect(store.getState().loading.loadingOperations).toEqual([
+      expect.objectContaining({
+        name: 'html_popup_preparing_account_creation',
+        done: false,
+      }),
+    ]);
   });
 
   const defaultNavParams = {

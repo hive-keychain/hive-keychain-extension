@@ -180,6 +180,27 @@ describe('CreateAccountStepOneComponent', () => {
     expect(await screen.findByText('Main seed - TLOS')).toBeInTheDocument();
   });
 
+  it('preselects the active EVM account when EVM is the current account type', async () => {
+    renderStepOne({
+      ...initialStateWAccountsWActiveAccountStore,
+      activeAccountType: ChainType.EVM,
+      chain: evmChain,
+      mk: 'test-master-key',
+      evm: {
+        ...initialEmptyStateStore.evm,
+        accounts: [evmAccount],
+        activeAccount: {
+          ...initialEmptyStateStore.evm.activeAccount,
+          address: evmAccount.wallet.address,
+          wallet: evmAccount.wallet,
+        },
+      },
+    });
+
+    expect(await screen.findByText('Main seed - TLOS')).toBeInTheDocument();
+    expect(screen.queryByText(`@${localAccounts.user1.name}`)).not.toBeInTheDocument();
+  });
+
   it('uses the main account selector order and keeps EVM address visible on hover', async () => {
     jest
       .spyOn(AccountSelectorOrderUtils, 'loadOrderedListItems')

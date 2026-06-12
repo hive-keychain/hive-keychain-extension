@@ -10,6 +10,7 @@ import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions'
 import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
@@ -46,10 +47,13 @@ import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
+import { ChainLogo } from 'src/common-ui/chain-logo/chain-logo.component';
 import { EVMConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { EvmAddressComponent } from 'src/common-ui/evm/evm-address/evm-address.component';
+import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { Separator } from 'src/common-ui/separator/separator.component';
 import { copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
 import { ExternalWalletPaymentPopup } from 'src/popup/hive/pages/app-container/settings/accounts/create-account/pending-account-creation-payment/external-wallet-payment-popup.component';
 import { PaidAccountCreationPaymentUtils } from 'src/popup/hive/utils/paid-account-creation-payment.utils';
@@ -58,6 +62,8 @@ import Logger from 'src/utils/logger.utils';
 import { PendingHiveAccountCreationUtils } from 'src/utils/pending-hive-account-creation.utils';
 
 const ACCOUNT_CREATION_POLL_INTERVAL_MS = 10000;
+const PREPARING_ACCOUNT_CREATION_LOADING =
+  'html_popup_preparing_account_creation';
 
 const isPendingAccountCreationInProgress = (
   status: HiveAccountCreationStatus,
@@ -81,6 +87,23 @@ const STATUS_LABELS: Record<HiveAccountCreationStatus, string> = {
 };
 
 const formatDate = (date: string) => moment.utc(date).local().format('L LT');
+const HIVE_ACCOUNT_FALLBACK_AVATAR = '/assets/images/accounts.png';
+
+const PendingAccountDisplay = ({ username }: { username: string }) => {
+  const formattedUsername = username?.trim() ? `@${username.trim()}` : '@';
+
+  return (
+    <div className="value pending-account-value">
+      <span className="username">{formattedUsername}</span>
+      <PreloadedImage
+        className="user-avatar"
+        src={HIVE_ACCOUNT_FALLBACK_AVATAR}
+        alt={HIVE_ACCOUNT_FALLBACK_AVATAR}
+        addBackground
+      />
+    </div>
+  );
+};
 
 const PendingAccountCreationPayment = ({
   navParams,
@@ -105,6 +128,7 @@ const PendingAccountCreationPayment = ({
   const [pendingRequest, setPendingRequest] = useState<
     PendingHiveAccountCreationRequest | undefined
   >();
+  const [paymentChain, setPaymentChain] = useState<EvmChain | undefined>();
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isAutoOpeningPayment, setIsAutoOpeningPayment] = useState(false);
@@ -151,6 +175,22 @@ const PendingAccountCreationPayment = ({
     };
   }, [pendingRequest?.requestId, pendingRequest?.status]);
 
+  const resolvePaymentEvmChain = async (
+    request: PendingHiveAccountCreationRequest,
+  ) => {
+    if (!request.paymentChainId) return undefined;
+    const [defaultChains, customChains] = await Promise.all([
+      ChainUtils.getDefaultChains(),
+      ChainUtils.getCustomChains(),
+    ]);
+    const paymentChainLookupKey = getChainLookupKey(request.paymentChainId);
+    return [...defaultChains, ...customChains].find(
+      (chain) =>
+        chain.type === ChainType.EVM &&
+        getChainLookupKey(chain.chainId) === paymentChainLookupKey,
+    ) as EvmChain | undefined;
+  };
+
   const loadPendingRequest = async () => {
     if (!requestId) {
       setIsLoading(false);
@@ -162,9 +202,25 @@ const PendingAccountCreationPayment = ({
         await PendingHiveAccountCreationUtils.getPendingHiveAccountCreationRequests(
           mk,
         );
-      setPendingRequest(
-        pendingRequests.find((request) => request.requestId === requestId),
+      const request = pendingRequests.find(
+        (pending) => pending.requestId === requestId,
       );
+      setPendingRequest(request);
+      if (
+        request &&
+        PaidAccountCreationPaymentUtils.isEvmPaymentRequest(request)
+      ) {
+        void resolvePaymentEvmChain(request)
+          .then((chain) => {
+            setPaymentChain(chain);
+          })
+          .catch((error) => {
+            Logger.error('Unable to resolve EVM payment chain', error);
+            setPaymentChain(undefined);
+          });
+      } else {
+        setPaymentChain(undefined);
+      }
     } catch (error) {
       setErrorMessage(
         error instanceof Error
@@ -274,19 +330,16 @@ const PendingAccountCreationPayment = ({
   };
 
   const getPaymentEvmChain = async () => {
-    if (!pendingRequest?.paymentChainId) return undefined;
-    const [defaultChains, customChains] = await Promise.all([
-      ChainUtils.getDefaultChains(),
-      ChainUtils.getCustomChains(),
-    ]);
-    const paymentChainLookupKey = getChainLookupKey(
-      pendingRequest.paymentChainId,
-    );
-    return [...defaultChains, ...customChains].find(
-      (chain) =>
-        chain.type === ChainType.EVM &&
-        getChainLookupKey(chain.chainId) === paymentChainLookupKey,
-    ) as EvmChain | undefined;
+    if (!pendingRequest) return undefined;
+    if (paymentChain) {
+      return paymentChain;
+    }
+
+    const resolvedChain = await resolvePaymentEvmChain(pendingRequest);
+    if (resolvedChain) {
+      setPaymentChain(resolvedChain);
+    }
+    return resolvedChain;
   };
 
   const buildPaymentConfirmationFields = (
@@ -361,29 +414,32 @@ const PendingAccountCreationPayment = ({
         : undefined,
     );
     try {
-      const transactionResponse = await EvmTransactionsUtils.send(
-        payerAccount.wallet,
-        {
-          value: transactionData.value,
-          to: transactionData.to,
-          type: Number(transactionData.type),
-          data: transactionData.data,
-        },
-        gasFee,
-        paymentChain.chainId,
-      );
-
-      const statusResponse = await submitHiveAccountCreationPaymentTx(
-        pendingRequest!.requestId,
-        {
-          txHash: transactionResponse.hash,
-          from: payerAccount.wallet.address,
-        },
-      );
-      await updateLocalPaymentTxStatus(
-        statusResponse.status,
-        transactionResponse.hash,
-      );
+      // DEV: momentarily skip actual EVM transfer to reach status page without paying.
+      // const transactionResponse = await EvmTransactionsUtils.send(
+      //   payerAccount.wallet,
+      //   {
+      //     value: transactionData.value,
+      //     to: transactionData.to,
+      //     type: Number(transactionData.type),
+      //     data: transactionData.data,
+      //   },
+      //   gasFee,
+      //   paymentChain.chainId,
+      // );
+      //
+      // const statusResponse = await submitHiveAccountCreationPaymentTx(
+      //   pendingRequest!.requestId,
+      //   {
+      //     txHash: transactionResponse.hash,
+      //     from: payerAccount.wallet.address,
+      //   },
+      // );
+      // await updateLocalPaymentTxStatus(
+      //   statusResponse.status,
+      //   transactionResponse.hash,
+      // );
+      const mockTxHash = `0x${'0'.repeat(64)}`;
+      await updateLocalPaymentTxStatus('payment_detected', mockTxHash);
       await setChain(previousChain, { saveLastUsedChain: false });
       if (ExtensionSurfaceUtils.isSidePanelPage()) {
         navigateToWithParams(
@@ -495,6 +551,7 @@ const PendingAccountCreationPayment = ({
         );
       },
     } as EVMConfirmationPageParams);
+    removeFromLoadingList(PREPARING_ACCOUNT_CREATION_LOADING);
     return true;
   };
 
@@ -510,8 +567,10 @@ const PendingAccountCreationPayment = ({
 
     autoPaymentStarted.current = true;
     setIsAutoOpeningPayment(true);
+    addToLoadingList(PREPARING_ACCOUNT_CREATION_LOADING);
     void payWithKeychain().then((didOpenPayment) => {
       if (!didOpenPayment) {
+        removeFromLoadingList(PREPARING_ACCOUNT_CREATION_LOADING);
         setIsAutoOpeningPayment(false);
       }
     });
@@ -551,34 +610,187 @@ const PendingAccountCreationPayment = ({
     }
   };
 
-  const renderCopyButton = (value: string, label: string) => (
-    <button
-      type="button"
-      className="copy-field-button"
-      aria-label={`Copy ${label}`}
-      title={`Copy ${label}`}
-      onClick={() => copyTextWithToast(value)}>
-      <SVGIcon icon={SVGIcons.SELECT_COPY} />
-    </button>
-  );
-
-  const renderField = ({
-    label,
-    value,
-    copyable = false,
-  }: {
-    label: string;
-    value: string;
-    copyable?: boolean;
-  }) => (
-    <div className="payment-field">
-      <div className="field-content">
-        <div className="field-label">{label}</div>
-        <div className="field-value">{value}</div>
-      </div>
-      {copyable ? renderCopyButton(value, label.toLowerCase()) : <div />}
+  const renderCopyableValue = (value: string, copyLabel: string) => (
+    <div
+      className="value copyable-value"
+      role="button"
+      tabIndex={0}
+      aria-label={`Copy ${copyLabel}`}
+      onClick={() => void copyTextWithToast(value)}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          void copyTextWithToast(value);
+        }
+      }}>
+      {value}
     </div>
   );
+
+  const renderLabeledValueWithLogo = (
+    label: string,
+    logo: React.ReactNode,
+  ) => (
+    <div className="value value-with-logo">
+      {logo}
+      <span className="value-label">{label}</span>
+    </div>
+  );
+
+  const renderHiveLogo = () => (
+    <PreloadedImage
+      className="field-logo"
+      src={`/assets/images/icons/${SVGIcons.WALLET_HIVE_LOGO}.svg`}
+      symbol="HIVE"
+      addBackground
+      useDefaultSVG={SVGIcons.WALLET_HIVE_LOGO}
+    />
+  );
+
+  type PaymentDisplayField = {
+    key: string;
+    label: string;
+    value: React.ReactNode;
+  };
+
+  const buildPaymentDisplayFields = (
+    request: PendingHiveAccountCreationRequest,
+  ): PaymentDisplayField[] => {
+    const isEvmPayment =
+      PaidAccountCreationPaymentUtils.isEvmPaymentRequest(request);
+    const chainLabel = PaidAccountCreationPaymentUtils.getPaymentChainLabel(
+      request,
+      paymentChain,
+    );
+    const tokenLabel = PaidAccountCreationPaymentUtils.getPaymentTokenLabel(
+      request,
+      paymentChain,
+    );
+    const tokenInfo =
+      isEvmPayment && paymentChain
+        ? PaidAccountCreationPaymentUtils.buildPaymentTokenInfo(
+            request,
+            paymentChain,
+          )
+        : undefined;
+    const fields: PaymentDisplayField[] = [
+      {
+        key: 'account',
+        label: I18nUtils.getMessage('html_popup_create_account_payment_account'),
+        value: <PendingAccountDisplay username={request.username} />,
+      },
+      {
+        key: 'amount',
+        label: I18nUtils.getMessage('popup_html_transfer_amount'),
+        value: renderCopyableValue(request.amount, 'amount'),
+      },
+      {
+        key: 'chain',
+        label: I18nUtils.getMessage('html_popup_create_account_payment_chain'),
+        value: isEvmPayment
+          ? renderLabeledValueWithLogo(
+              chainLabel,
+              <ChainLogo
+                chainName={chainLabel}
+                logoUri={paymentChain?.logo}
+                className="field-logo"
+              />,
+            )
+          : renderLabeledValueWithLogo(chainLabel, renderHiveLogo()),
+      },
+      {
+        key: 'token',
+        label: I18nUtils.getMessage('html_popup_create_account_payment_token'),
+        value:
+          isEvmPayment && tokenInfo
+            ? renderLabeledValueWithLogo(
+                tokenLabel,
+                <EvmTokenLogo tokenInfo={tokenInfo} />,
+              )
+            : renderLabeledValueWithLogo(tokenLabel, renderHiveLogo()),
+      },
+      {
+        key: 'address',
+        label: I18nUtils.getMessage(
+          'html_popup_create_account_payment_address',
+        ),
+        value: isEvmPayment ? (
+          <div className="value">
+            <EvmAddressComponent
+              address={request.paymentAddress}
+              chainId={request.paymentChainId!}
+              localAccounts={evmAccounts}
+              canCopy
+            />
+          </div>
+        ) : (
+          renderCopyableValue(request.paymentAddress, 'address')
+        ),
+      },
+    ];
+
+    if (request.memo) {
+      fields.push({
+        key: 'memo',
+        label: I18nUtils.getMessage('popup_html_transfer_memo'),
+        value: renderCopyableValue(request.memo, 'memo'),
+      });
+    }
+
+    if (request.paymentTxHash) {
+      fields.push({
+        key: 'payment-transaction',
+        label: I18nUtils.getMessage('html_popup_create_account_payment_tx_hash'),
+        value: renderCopyableValue(request.paymentTxHash, 'payment transaction'),
+      });
+    }
+
+    fields.push({
+      key: 'expiry',
+      label: I18nUtils.getMessage('html_popup_create_account_payment_expiry'),
+      value: (
+        <div className="value">{formatDate(request.expiresAt)}</div>
+      ),
+    });
+
+    return fields;
+  };
+
+  const renderPaymentFields = (request: PendingHiveAccountCreationRequest) => {
+    const fields = buildPaymentDisplayFields(request);
+    const showStatusTag =
+      !!request.paymentTxHash || request.status !== 'payment_pending';
+
+    return (
+      <div className="fields">
+        <div className="fields-card-header">
+          {showStatusTag && (
+            <div
+              className="status-badge"
+              data-testid="pending-account-creation-status">
+              {STATUS_LABELS[request.status]}
+            </div>
+          )}
+          {renderRefreshButton()}
+        </div>
+        {fields.map((field, index) => (
+          <React.Fragment key={field.key}>
+            <div className="field">
+              <div className="label">{field.label}</div>
+              {field.value}
+            </div>
+            {index !== fields.length - 1 && (
+              <Separator
+                key={`separator-${field.key}`}
+                type="horizontal"
+                fullSize
+              />
+            )}
+          </React.Fragment>
+        ))}
+      </div>
+    );
+  };
 
   const renderRefreshButton = () => (
     <button
@@ -622,7 +834,7 @@ const PendingAccountCreationPayment = ({
 
   return (
     <div
-      className="pending-account-creation-payment"
+      className="pending-account-creation-payment confirmation-page"
       data-testid={`${Screen.PENDING_ACCOUNT_CREATION_PAYMENT}-page`}>
       {showKeepOpenDisclaimer && (
         <div
@@ -631,63 +843,19 @@ const PendingAccountCreationPayment = ({
           {I18nUtils.getMessage('html_popup_create_account_pending_keep_open')}
         </div>
       )}
-      <div className="payment-panel">
-        <div className="payment-summary">
-          <div className="username">@{pendingRequest.username}</div>
-          <div className="request-id">{pendingRequest.requestId}</div>
-        </div>
-
-        {hasBroadcastPayment && (
-          <div className="status-line">
-            <div className="status-label">Current status</div>
-            <div className="status-badge">
-              {STATUS_LABELS[pendingRequest.status]}
-            </div>
-          </div>
-        )}
-
-        {renderField({
-          label: 'Amount',
-          value: pendingRequest.amount,
-          copyable: true,
-        })}
-        {renderField({
-          label: 'Currency',
-          value: pendingRequest.paymentCurrency,
-        })}
-        {renderField({
-          label: 'Address',
-          value: pendingRequest.paymentAddress,
-          copyable: true,
-        })}
-        {pendingRequest.memo &&
-          renderField({
-            label: 'Memo',
-            value: pendingRequest.memo,
-            copyable: true,
-          })}
-        {pendingRequest.paymentTxHash &&
-          renderField({
-            label: 'Payment transaction',
-            value: pendingRequest.paymentTxHash,
-            copyable: true,
-          })}
-        {renderField({
-          label: 'Expiry',
-          value: formatDate(pendingRequest.expiresAt),
-        })}
+      <div className="confirmation-top">
+        {renderPaymentFields(pendingRequest)}
       </div>
 
-      <div className="payment-actions">
-        {canPayWithKeychain && (
+      {canPayWithKeychain && (
+        <div className="evm-bottom-panel">
           <ButtonComponent
             label="Pay with Keychain"
             skipLabelTranslation
             onClick={() => void payWithKeychain()}
           />
-        )}
-        {renderRefreshButton()}
-      </div>
+        </div>
+      )}
 
       {/* {pendingRequest.status === 'payment_pending' && (
         <ButtonComponent

@@ -3382,12 +3382,16 @@
     "message": "Creating account",
     "description": "Creating account message"
   },
+  "html_popup_preparing_account_creation": {
+    "message": "Preparing account creation",
+    "description": "Loading message while preparing EVM paid Hive account creation"
+  },
   "html_popup_create_account_failed": {
     "message": "Your account creation has failed. Please try again later",
     "description": "Create account failed message"
   },
   "html_popup_create_account_pending_keep_open": {
-    "message": "Please keep Keychain open until your account is created. This process may take a few minutes.",
+    "message": "The creation of your account can take a few minutes. You can close this window.",
     "description": "Reminder on pending account creation page to keep the extension open"
   },
   "html_popup_create_account_pay_external_wallet": {
@@ -3401,6 +3405,30 @@
   "html_popup_create_account_payment_tx_hash": {
     "message": "Transaction hash",
     "description": "Label for transaction hash input in external wallet payment popup"
+  },
+  "html_popup_create_account_payment_account": {
+    "message": "Account",
+    "description": "Account field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_chain": {
+    "message": "Chain",
+    "description": "Chain field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_token": {
+    "message": "Token",
+    "description": "Token field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_address": {
+    "message": "Payment address",
+    "description": "Payment address field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_status": {
+    "message": "Status",
+    "description": "Status field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_expiry": {
+    "message": "Expiry",
+    "description": "Expiry field on pending account creation payment page"
   },
   "html_popup_create_account_submit_payment_tx": {
     "message": "Submit payment",

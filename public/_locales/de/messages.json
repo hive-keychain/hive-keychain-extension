@@ -3382,12 +3382,16 @@
     "message": "Konto wird erstellt",
     "description": "Creating account message"
   },
+  "html_popup_preparing_account_creation": {
+    "message": "Kontoerstellung wird vorbereitet",
+    "description": "Loading message while preparing EVM paid Hive account creation"
+  },
   "html_popup_create_account_failed": {
     "message": "Ihre Kontoerstellung ist fehlgeschlagen. Bitte versuchen Sie es später erneut",
     "description": "Create account failed message"
   },
   "html_popup_create_account_pending_keep_open": {
-    "message": "Bitte lassen Sie Keychain geöffnet, bis Ihr Konto erstellt wurde. Dieser Vorgang kann einige Minuten dauern.",
+    "message": "Die Erstellung Ihres Kontos kann einige Minuten dauern. Sie können dieses Fenster schließen.",
     "description": "Reminder on pending account creation page to keep the extension open"
   },
   "html_popup_create_account_pay_external_wallet": {
@@ -3401,6 +3405,30 @@
   "html_popup_create_account_payment_tx_hash": {
     "message": "Transaktions-Hash",
     "description": "Label for transaction hash input in external wallet payment popup"
+  },
+  "html_popup_create_account_payment_account": {
+    "message": "Konto",
+    "description": "Account field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_chain": {
+    "message": "Chain",
+    "description": "Chain field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_token": {
+    "message": "Token",
+    "description": "Token field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_address": {
+    "message": "Zahlungsadresse",
+    "description": "Payment address field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_status": {
+    "message": "Status",
+    "description": "Status field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_expiry": {
+    "message": "Ablauf",
+    "description": "Expiry field on pending account creation payment page"
   },
   "html_popup_create_account_submit_payment_tx": {
     "message": "Zahlung senden",
