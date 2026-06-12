@@ -13,7 +13,10 @@ import {
 import { setActiveRpc } from '@popup/hive/actions/active-rpc.actions';
 import { loadCurrencyPrices } from '@popup/hive/actions/currency-prices.actions';
 import { loadGlobalProperties } from '@popup/hive/actions/global-properties.actions';
-import { initHiveEngineConfigFromStorage } from '@popup/hive/actions/hive-engine-config.actions';
+import {
+  initHiveEngineConfigFromStorage,
+  setHEActiveRpc,
+} from '@popup/hive/actions/hive-engine-config.actions';
 import {
   setDisplayChangeRpcPopup,
   setSwitchToRpc,
@@ -40,10 +43,14 @@ import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { AddAccountRouterComponent } from 'src/popup/hive/pages/add-account/add-account-router/add-account-router.component';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
+import { HiveEngineConfigUtils } from 'src/popup/hive/utils/hive-engine-config.utils';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import { ColorsUtils } from 'src/utils/colors.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import { useWorkingRPC } from 'src/utils/rpc-switcher.utils';
+import {
+  useWorkingHiveEngineRPC,
+  useWorkingRPC,
+} from 'src/utils/rpc-switcher.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
 
@@ -64,12 +71,14 @@ const HiveApp = ({
   navigateToWithParams,
   loadActiveAccount,
   switchToRpc,
+  switchToHiveEngineRpc,
   displayChangeRpcPopup,
   initHiveEngineConfigFromStorage,
   setAccounts,
   setEvmAccounts,
   loadGlobalProperties,
   setActiveRpc,
+  setHEActiveRpc,
   setDisplayChangeRpcPopup,
   loadCurrencyPrices,
   hasFinishedSignup,
@@ -77,6 +86,7 @@ const HiveApp = ({
   const store = useStore<RootState>();
   const [isAppReady, setAppReady] = useState(false);
   const [initialRpc, setInitialRpc] = useState<Rpc>();
+  const [initialHiveEngineRpc, setInitialHiveEngineRpc] = useState<string>();
   const [displaySplashscreen, setDisplaySplashscreen] = useState(true);
   const [isKeylessKeychainEnabled, setIsKeylessKeychainEnabled] =
     useState<boolean>(false);
@@ -187,6 +197,15 @@ const HiveApp = ({
     }
   };
 
+  const initActiveHiveEngineRpc = async (rpc: string) => {
+    const rpcStatusOk = await HiveEngineConfigUtils.checkRpcStatus(rpc);
+    if (rpcStatusOk) {
+      setHEActiveRpc(rpc);
+    } else {
+      useWorkingHiveEngineRPC(rpc);
+    }
+  };
+
   const initApplication = async () => {
     ColorsUtils.downloadColors();
     loadCurrencyPrices();
@@ -213,7 +232,10 @@ const HiveApp = ({
     setInitialRpc(rpc);
     await initActiveRpc(rpc);
     loadGlobalProperties();
-    initHiveEngineConfigFromStorage();
+    await initHiveEngineConfigFromStorage();
+    const hiveEngineRpc = HiveEngineConfigUtils.getApi();
+    setInitialHiveEngineRpc(hiveEngineRpc);
+    await initActiveHiveEngineRpc(hiveEngineRpc);
 
     if (accountsFromStorage.length > 0) {
       initActiveAccount(accountsFromStorage);
@@ -289,6 +311,7 @@ const HiveApp = ({
     displayProxySuggestion: boolean,
     displayChangeRpcPopup: boolean,
     switchToRpc: Rpc | undefined,
+    switchToHiveEngineRpc: string | undefined,
   ) => {
     if (loading) {
       return (
@@ -317,6 +340,20 @@ const HiveApp = ({
             onClick={tryNewRpc}></ButtonComponent>
         </div>
       );
+    } else if (displayChangeRpcPopup && switchToHiveEngineRpc) {
+      return (
+        <div className="change-rpc-popup">
+          <div className="message">
+            {I18nUtils.getMessage('popup_html_rpc_not_responding_error', [
+              initialHiveEngineRpc!,
+              switchToHiveEngineRpc,
+            ])}
+          </div>
+          <ButtonComponent
+            label="popup_html_switch_rpc"
+            onClick={tryNewHiveEngineRpc}></ButtonComponent>
+        </div>
+      );
     }
   };
 
@@ -324,6 +361,13 @@ const HiveApp = ({
     setDisplayChangeRpcPopup(false);
     setTimeout(() => {
       setActiveRpc(switchToRpc!);
+    }, 1000);
+  };
+
+  const tryNewHiveEngineRpc = () => {
+    setDisplayChangeRpcPopup(false);
+    setTimeout(() => {
+      setHEActiveRpc(switchToHiveEngineRpc!);
     }, 1000);
   };
 
@@ -348,6 +392,7 @@ const HiveApp = ({
         displayProxySuggestion,
         displayChangeRpcPopup,
         switchToRpc,
+        switchToHiveEngineRpc,
       )}
 
       {renderMainLayoutNav()}
@@ -361,6 +406,7 @@ const mapStateToProps = (state: RootState) => {
     accounts: state.hive.accounts as LocalAccount[],
     activeRpc: state.hive.activeRpc,
     switchToRpc: state.hive.rpcSwitcher.rpc,
+    switchToHiveEngineRpc: state.hive.rpcSwitcher.hiveEngineRpc,
     displayChangeRpcPopup: state.hive.rpcSwitcher.display,
     loading: state.loading.loadingOperations.length,
     loadingState: state.loading,
@@ -390,6 +436,7 @@ const connector = connect(mapStateToProps, {
   loadGlobalProperties,
   setSwitchToRpc,
   setActiveRpc,
+  setHEActiveRpc,
   setDisplayChangeRpcPopup,
   initHiveEngineConfigFromStorage,
   loadCurrencyPrices,

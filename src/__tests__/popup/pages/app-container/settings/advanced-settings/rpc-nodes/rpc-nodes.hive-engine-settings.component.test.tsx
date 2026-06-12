@@ -49,6 +49,14 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
     );
   };
 
+  const disableHiveEngineAutomaticMode = async () => {
+    if (!screen.queryByTestId('hive-engine-rpc-select-handle')) {
+      await userEvent.click(
+        screen.getByTestId('checkbox-hive-engine-rpc-nodes-automatic-mode'),
+      );
+    }
+  };
+
   const openAccountHistoryDropdown = () => {
     fireEvent.click(
       screen
@@ -74,6 +82,7 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
           },
         );
         await openRpcSettingsPage();
+        await disableHiveEngineAutomaticMode();
       });
 
       it('Must display total of rpc items & find custom rpc', async () => {
@@ -117,6 +126,7 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
           initialStates.iniStateAs.defaultExistent,
         );
         await openRpcSettingsPage();
+        await disableHiveEngineAutomaticMode();
       });
 
       it('Must display total of default rpc items & not find custom rpc', async () => {

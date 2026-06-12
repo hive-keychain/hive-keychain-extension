@@ -5,6 +5,7 @@ import {
 } from '@interfaces/hive-engine-rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { BgdHiveEngineConfigModule } from 'src/background/hive/modules/hive-engine-config.module';
+import { ArrayUtils } from 'src/utils/array.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 let rpc = 'https://api.hive-engine.com/rpc';
@@ -13,8 +14,12 @@ let accountHistoryApi = 'https://history.hive-engine.com';
 
 (async () => {
   const config = await BgdHiveEngineConfigModule.getActiveConfig();
-  rpc = config?.rpc;
-  accountHistoryApi = config?.accountHistoryApi;
+  if (config?.rpc) {
+    rpc = config.rpc;
+  }
+  if (config?.accountHistoryApi) {
+    accountHistoryApi = config.accountHistoryApi;
+  }
 })();
 
 const getApi = () => {
@@ -52,6 +57,63 @@ const getCustomRpcs = async () => {
     LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_RPC_LIST,
   );
   return customRpcs ? customRpcs : ([] as string[]);
+};
+
+const getFullRpcList = async () => {
+  return ArrayUtils.mergeWithoutDuplicate(
+    await getCustomRpcs(),
+    DefaultHiveEngineRpcs,
+  ) as string[];
+};
+
+const checkRpcStatus = async (
+  api: string,
+  timeoutInSeconds: number = 3,
+): Promise<boolean> => {
+  return new Promise((resolve) => {
+    let resolved = false;
+    const timeoutId = setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        resolve(false);
+      }
+    }, timeoutInSeconds * 1000);
+
+    fetch(`${api}/contracts`, {
+      method: 'POST',
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'find',
+        params: {
+          contract: 'tokens',
+          table: 'tokens',
+          query: {},
+          limit: 1,
+        },
+        id: 1,
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then((res) => {
+        if (res?.status === 200) {
+          return res.json();
+        }
+      })
+      .then((res: any) => {
+        if (!resolved) {
+          resolved = true;
+          clearTimeout(timeoutId);
+          resolve(Array.isArray(res?.result));
+        }
+      })
+      .catch(() => {
+        if (!resolved) {
+          resolved = true;
+          clearTimeout(timeoutId);
+          resolve(false);
+        }
+      });
+  });
 };
 const getCustomAccountHistoryApi = async () => {
   const customAccountHistoryApis: string[] =
@@ -105,6 +167,8 @@ export const HiveEngineConfigUtils = {
   deleteCustomRpc,
   deleteCustomAccountHistoryApi,
   getCustomRpcs,
+  getFullRpcList,
+  checkRpcStatus,
   getCustomAccountHistoryApi,
   isRpcDefault,
   isAccountHistoryApiDefault,

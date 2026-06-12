@@ -14,7 +14,10 @@ import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
 import { setActiveRpc } from '@popup/hive/actions/active-rpc.actions';
 import { loadCurrencyPrices } from '@popup/hive/actions/currency-prices.actions';
 import { loadGlobalProperties } from '@popup/hive/actions/global-properties.actions';
-import { initHiveEngineConfigFromStorage } from '@popup/hive/actions/hive-engine-config.actions';
+import {
+  initHiveEngineConfigFromStorage,
+  setHEActiveRpc,
+} from '@popup/hive/actions/hive-engine-config.actions';
 import { setDisplayChangeRpcPopup } from '@popup/hive/actions/rpc-switcher';
 import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
 import { resetChain, setChain } from '@popup/multichain/actions/chain.actions';
@@ -49,11 +52,15 @@ import { KeylessKeychainComponent } from 'src/popup/hive/pages/add-account/keyle
 import { stackHasAccountSetupPage } from '@popup/multichain/utils/account-setup-screens.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
+import { HiveEngineConfigUtils } from 'src/popup/hive/utils/hive-engine-config.utils';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import { ColorsUtils } from 'src/utils/colors.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
-import { useWorkingRPC } from 'src/utils/rpc-switcher.utils';
+import {
+  useWorkingHiveEngineRPC,
+  useWorkingRPC,
+} from 'src/utils/rpc-switcher.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
 
@@ -101,6 +108,7 @@ const UnlockedApp = ({
   loadingState,
   isCurrentPageHomePage,
   switchToRpc,
+  switchToHiveEngineRpc,
   displayChangeRpcPopup,
   hasFinishedSignup,
   setAccounts,
@@ -108,6 +116,7 @@ const UnlockedApp = ({
   setActiveAccountType,
   setChain,
   setActiveRpc,
+  setHEActiveRpc,
   setDisplayChangeRpcPopup,
   loadActiveAccount,
   loadEvmActiveAccount,
@@ -120,6 +129,7 @@ const UnlockedApp = ({
   const store = useStore<RootState>();
   const [isAppReady, setAppReady] = useState(false);
   const [initialRpc, setInitialRpc] = useState<Rpc>();
+  const [initialHiveEngineRpc, setInitialHiveEngineRpc] = useState<string>();
   const [displaySplashscreen, setDisplaySplashscreen] = useState(true);
   const [isKeylessKeychainEnabled, setIsKeylessKeychainEnabled] =
     useState<boolean>(false);
@@ -296,6 +306,15 @@ const UnlockedApp = ({
     }
   };
 
+  const initActiveHiveEngineRpc = async (rpc: string) => {
+    const rpcStatusOk = await HiveEngineConfigUtils.checkRpcStatus(rpc);
+    if (rpcStatusOk) {
+      setHEActiveRpc(rpc);
+    } else {
+      useWorkingHiveEngineRPC(rpc);
+    }
+  };
+
   const ensureChainForAccountType = async (
     nextAccountType: ChainType.HIVE | ChainType.EVM,
   ) => {
@@ -403,7 +422,10 @@ const UnlockedApp = ({
     setInitialRpc(rpc);
     await initActiveRpc(rpc);
     loadGlobalProperties();
-    initHiveEngineConfigFromStorage();
+    await initHiveEngineConfigFromStorage();
+    const hiveEngineRpc = HiveEngineConfigUtils.getApi();
+    setInitialHiveEngineRpc(hiveEngineRpc);
+    await initActiveHiveEngineRpc(hiveEngineRpc);
 
     await initActiveAccountsForStartup(
       hiveAccountsFromStorage,
@@ -515,6 +537,7 @@ const UnlockedApp = ({
     activeRpc: Rpc | undefined,
     displayChangeRpcPopup: boolean,
     switchToRpc: Rpc | undefined,
+    switchToHiveEngineRpc: string | undefined,
   ) => {
     if (loading) {
       return (
@@ -538,6 +561,20 @@ const UnlockedApp = ({
             onClick={tryNewRpc}></ButtonComponent>
         </div>
       );
+    } else if (displayChangeRpcPopup && switchToHiveEngineRpc) {
+      return (
+        <div className="change-rpc-popup">
+          <div className="message">
+            {I18nUtils.getMessage('popup_html_rpc_not_responding_error', [
+              initialHiveEngineRpc!,
+              switchToHiveEngineRpc,
+            ])}
+          </div>
+          <ButtonComponent
+            label="popup_html_switch_rpc"
+            onClick={tryNewHiveEngineRpc}></ButtonComponent>
+        </div>
+      );
     }
   };
 
@@ -545,6 +582,13 @@ const UnlockedApp = ({
     setDisplayChangeRpcPopup(false);
     setTimeout(() => {
       setActiveRpc(switchToRpc!);
+    }, 1000);
+  };
+
+  const tryNewHiveEngineRpc = () => {
+    setDisplayChangeRpcPopup(false);
+    setTimeout(() => {
+      setHEActiveRpc(switchToHiveEngineRpc!);
     }, 1000);
   };
 
@@ -566,7 +610,13 @@ const UnlockedApp = ({
       className={`App ${
         activeAccountType === ChainType.EVM ? 'evm ' : ''
       }${isCurrentPageHomePage ? 'homepage' : ''}`}>
-      {renderPopup(loading, activeRpc, displayChangeRpcPopup, switchToRpc)}
+      {renderPopup(
+        loading,
+        activeRpc,
+        displayChangeRpcPopup,
+        switchToRpc,
+        switchToHiveEngineRpc,
+      )}
       {renderMainLayoutNav()}
     </div>
   );
@@ -580,6 +630,7 @@ const mapStateToProps = (state: RootState) => {
     activeAccountType: state.activeAccountType,
     activeRpc: state.hive.activeRpc,
     switchToRpc: state.hive.rpcSwitcher.rpc,
+    switchToHiveEngineRpc: state.hive.rpcSwitcher.hiveEngineRpc,
     displayChangeRpcPopup: state.hive.rpcSwitcher.display,
     loading: state.loading.loadingOperations.length,
     loadingState: state.loading as LoadingState,
@@ -599,6 +650,7 @@ const connector = connect(mapStateToProps, {
   setActiveAccountType,
   setChain,
   setActiveRpc,
+  setHEActiveRpc,
   setDisplayChangeRpcPopup,
   loadActiveAccount,
   loadEvmActiveAccount,

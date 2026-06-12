@@ -17,6 +17,7 @@ const exportSettings = async () => {
 
     LocalStorageKeyEnum.HIDDEN_TOKENS,
     LocalStorageKeyEnum.HIVE_ENGINE_ACTIVE_CONFIG,
+    LocalStorageKeyEnum.HIVE_ENGINE_SWITCH_RPC_AUTO,
     LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_ACCOUNT_HISTORY_API,
     LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_RPC_LIST,
   ]);

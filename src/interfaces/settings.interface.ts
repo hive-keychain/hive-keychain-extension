@@ -18,6 +18,7 @@ export interface Settings {
   current_rpc?: Rpc;
   [LocalStorageKeyEnum.HIDDEN_TOKENS]: string[];
   [LocalStorageKeyEnum.HIVE_ENGINE_ACTIVE_CONFIG]: HiveEngineConfig;
+  [LocalStorageKeyEnum.HIVE_ENGINE_SWITCH_RPC_AUTO]: boolean;
   [LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_ACCOUNT_HISTORY_API]: string[];
   [LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_RPC_LIST]: string[];
 }

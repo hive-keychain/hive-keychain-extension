@@ -178,6 +178,13 @@ const sendBackImportedFileContent = async (fileContent: any) => {
         );
       }
 
+      if (importedSettings.HIVE_ENGINE_SWITCH_RPC_AUTO !== undefined) {
+        await LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.HIVE_ENGINE_SWITCH_RPC_AUTO,
+          importedSettings.HIVE_ENGINE_SWITCH_RPC_AUTO,
+        );
+      }
+
       if (importedSettings.HIVE_ENGINE_CUSTOM_ACCOUNT_HISTORY_API) {
         const currentHECustomAccountHistoryApi =
           await LocalStorageUtils.getValueFromLocalStorage(
