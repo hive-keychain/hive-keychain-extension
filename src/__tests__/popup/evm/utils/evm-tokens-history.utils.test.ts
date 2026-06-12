@@ -48,6 +48,59 @@ describe('evm-tokens-history.utils tests:\n', () => {
     } as any);
   });
 
+  it('hides history items when every flow is filtered by EVM settings', () => {
+    const item = {
+      in: [
+        {
+          kind: 'ERC20',
+          verified: false,
+          possibleSpam: true,
+        },
+      ],
+      out: [],
+    } as any;
+
+    expect(
+      EvmTokensHistoryUtils.getVisibleHistoryItem(item, {
+        smartContracts: {
+          displayPossibleSpam: false,
+          displayNonVerifiedContracts: false,
+        },
+      } as any),
+    ).toBeUndefined();
+  });
+
+  it('keeps visible history flows while filtering hidden flows', () => {
+    const visibleFlow = {
+      kind: 'NATIVE',
+      verified: true,
+      possibleSpam: false,
+    };
+    const item = {
+      in: [
+        visibleFlow,
+        {
+          kind: 'ERC20',
+          verified: false,
+          possibleSpam: true,
+        },
+      ],
+      out: [],
+    } as any;
+
+    expect(
+      EvmTokensHistoryUtils.getVisibleHistoryItem(item, {
+        smartContracts: {
+          displayPossibleSpam: false,
+          displayNonVerifiedContracts: false,
+        },
+      } as any),
+    ).toMatchObject({
+      in: [visibleFlow],
+      out: [],
+    });
+  });
+
   it.each([
     { catchupStatus: CatchupStatus.DONE, expectedFullyFetch: true },
     { catchupStatus: CatchupStatus.ERROR, expectedFullyFetch: true },
