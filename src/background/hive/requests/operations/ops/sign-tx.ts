@@ -1,6 +1,6 @@
 import LedgerModule from '@background/hive/modules/ledger.module';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createMessage } from '@background/hive/requests/operations/operations.utils';
+import { createMessage, feedbackI18n } from '@background/hive/requests/operations/operations.utils';
 import { RequestId, RequestSignTx } from '@interfaces/keychain.interface';
 import { PrivateKeyType } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
@@ -48,19 +48,18 @@ export const signTx = async (
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await I18nUtils.getMessage(
+    err_message = feedbackI18n(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
   } finally {
-    const message = createMessage(
+    return await createMessage(
       err,
       result,
       data,
       request?.tab!,
-      await I18nUtils.getMessage('bgd_ops_sign_tx'),
+      feedbackI18n('bgd_ops_sign_tx'),
       err_message,
     );
-    return message;
   }
 };

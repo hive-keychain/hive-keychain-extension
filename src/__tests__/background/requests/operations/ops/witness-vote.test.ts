@@ -1,4 +1,5 @@
 import LedgerModule from '@background/ledger.module';
+import { KeychainError } from 'src/keychain-error';
 import { broadcastWitnessVote } from '@background/requests/operations/ops/witness-vote';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
@@ -64,14 +65,15 @@ describe('witness-vote tests:\n', () => {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new Error('html_popup_error_while_signing_transaction'),
+          error: new KeychainError('html_popup_error_while_signing_transaction'),
           result: undefined,
           data: datas,
-          message: I18nUtils.getMessage(
-            'html_popup_error_while_signing_transaction',
-          ),
+          message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -100,8 +102,21 @@ describe('witness-vote tests:\n', () => {
           message: I18nUtils.getMessage('bgd_ops_witness_voted', [
             data.witness,
           ]),
+          messageKey: 'bgd_ops_witness_voted',
+          messageParams: [
+            data.witness,
+          ],
+          messageKey: 'bgd_ops_witness_voted',
+          messageParams: [
+            data.witness,
+          ],
+          messageKey: 'bgd_ops_witness_voted',
+          messageParams: [
+            data.witness,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -131,8 +146,21 @@ describe('witness-vote tests:\n', () => {
           message: I18nUtils.getMessage('bgd_ops_witness_unvoted', [
             data.witness,
           ]),
+          messageKey: 'bgd_ops_witness_unvoted',
+          messageParams: [
+            data.witness,
+          ],
+          messageKey: 'bgd_ops_witness_unvoted',
+          messageParams: [
+            data.witness,
+          ],
+          messageKey: 'bgd_ops_witness_unvoted',
+          messageParams: [
+            data.witness,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -177,8 +205,21 @@ describe('witness-vote tests:\n', () => {
           message: I18nUtils.getMessage('bgd_ops_witness_voted', [
             data.witness,
           ]),
+          messageKey: 'bgd_ops_witness_voted',
+          messageParams: [
+            data.witness,
+          ],
+          messageKey: 'bgd_ops_witness_voted',
+          messageParams: [
+            data.witness,
+          ],
+          messageKey: 'bgd_ops_witness_voted',
+          messageParams: [
+            data.witness,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });

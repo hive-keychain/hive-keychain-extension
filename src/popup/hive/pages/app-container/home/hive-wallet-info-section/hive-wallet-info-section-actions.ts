@@ -22,6 +22,7 @@ export const HiveWalletInfoSectionActions = (
     return [
       {
         label: 'popup_html_send',
+        labelParams: ['HBD'],
         icon: SVGIcons.WALLET_SEND,
         nextScreen: Screen.TRANSFER_FUND_PAGE,
         nextScreenParams: { selectedCurrency: 'hbd' },
@@ -45,6 +46,7 @@ export const HiveWalletInfoSectionActions = (
     return [
       {
         label: 'popup_html_send',
+        labelParams: ['HIVE'],
         icon: SVGIcons.WALLET_SEND,
         nextScreen: Screen.TRANSFER_FUND_PAGE,
         nextScreenParams: { selectedCurrency: 'hive' },

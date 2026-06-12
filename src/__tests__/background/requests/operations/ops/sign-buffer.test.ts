@@ -66,8 +66,13 @@ describe('sign-buffer tests:\n', () => {
         result: expectedHex,
         data: datas,
         message: I18nUtils.getMessage('bgd_ops_sign_success'),
+          messageKey: 'bgd_ops_sign_success',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_sign_success',
+          messageParams: undefined,
         request_id: request_id,
         publicKey: undefined,
+        tab: undefined,
       },
     });
   });
@@ -91,8 +96,13 @@ describe('sign-buffer tests:\n', () => {
         result: expectedBufferHex,
         data: datas,
         message: I18nUtils.getMessage('bgd_ops_sign_success'),
+          messageKey: 'bgd_ops_sign_success',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_sign_success',
+          messageParams: undefined,
         request_id: request_id,
         publicKey: undefined,
+        tab: undefined,
       },
     });
   });
@@ -111,8 +121,13 @@ describe('sign-buffer tests:\n', () => {
         result: null,
         data: datas,
         message: I18nUtils.getMessage('sign_buffer_ledger_error'),
+          messageKey: 'sign_buffer_ledger_error',
+          messageParams: undefined,
+          messageKey: 'sign_buffer_ledger_error',
+          messageParams: undefined,
         request_id: request_id,
         publicKey: undefined,
+        tab: undefined,
       },
     });
   });

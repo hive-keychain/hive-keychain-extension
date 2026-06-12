@@ -56,7 +56,10 @@ export type ErrorMessage = {
 
 export type ResultMessage = {
   msg: {
+    /** Resolved text for dapp responses; dialog prefers messageKey when set. */
     message: string;
+    messageKey?: string;
+    messageParams?: string[];
     success: boolean;
     data: KeychainRequest;
     tab?: number;

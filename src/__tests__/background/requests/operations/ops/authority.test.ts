@@ -164,8 +164,15 @@ describe('authority tests:\n', () => {
             'notAddedAccount',
             mk.user.one,
           ]),
+          messageKey: 'bgd_ops_add_auth',
+          messageParams: [
+            KeychainKeyTypesLC.posting,
+            'notAddedAccount',
+            mk.user.one,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -206,8 +213,15 @@ describe('authority tests:\n', () => {
             'notAddedAccount',
             mk.user.one,
           ]),
+          messageKey: 'bgd_ops_add_auth',
+          messageParams: [
+            KeychainKeyTypesLC.posting,
+            'notAddedAccount',
+            mk.user.one,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -241,14 +255,15 @@ describe('authority tests:\n', () => {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new Error('html_popup_error_while_signing_transaction'),
+          error: new KeychainError('html_popup_error_while_signing_transaction'),
           result: undefined,
           data: datas,
-          message: I18nUtils.getMessage(
-            'html_popup_error_while_signing_transaction',
-          ),
+          message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -280,8 +295,11 @@ describe('authority tests:\n', () => {
           result: undefined,
           data: datas,
           message: I18nUtils.getMessage(localeMessageKey),
+          messageKey: localeMessageKey,
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -332,8 +350,15 @@ describe('authority tests:\n', () => {
             'theghost1980',
             mk.user.one,
           ]),
+          messageKey: 'bgd_ops_remove_auth',
+          messageParams: [
+            KeychainKeyTypesLC.active,
+            'theghost1980',
+            mk.user.one,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -384,8 +409,15 @@ describe('authority tests:\n', () => {
             'theghost1980',
             mk.user.one,
           ]),
+          messageKey: 'bgd_ops_remove_auth',
+          messageParams: [
+            KeychainKeyTypesLC.active,
+            'theghost1980',
+            mk.user.one,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -439,8 +471,15 @@ describe('authority tests:\n', () => {
             'theghost1980',
             mk.user.one,
           ]),
+          messageKey: 'bgd_ops_remove_auth',
+          messageParams: [
+            KeychainKeyTypesLC.active,
+            'theghost1980',
+            mk.user.one,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -465,8 +504,11 @@ describe('authority tests:\n', () => {
           result: undefined,
           data: datas,
           message: I18nUtils.getMessage('already_has_authority_error'),
+          messageKey: 'already_has_authority_error',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -486,14 +528,15 @@ describe('authority tests:\n', () => {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new Error('html_popup_error_while_signing_transaction'),
+          error: new KeychainError('html_popup_error_while_signing_transaction'),
           result: undefined,
           data: datas,
-          message: I18nUtils.getMessage(
-            'html_popup_error_while_signing_transaction',
-          ),
+          message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -544,8 +587,16 @@ describe('authority tests:\n', () => {
             mk.user.one,
             cloneData.weight.toString(),
           ]),
+          messageKey: 'bgd_ops_add_key_auth',
+          messageParams: [
+            userData.one.encryptKeys.active,
+            KeychainKeyTypesLC.active,
+            mk.user.one,
+            cloneData.weight.toString(),
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -596,8 +647,16 @@ describe('authority tests:\n', () => {
             mk.user.one,
             cloneData.weight.toString(),
           ]),
+          messageKey: 'bgd_ops_add_key_auth',
+          messageParams: [
+            userData.one.encryptKeys.posting,
+            KeychainKeyTypesLC.active,
+            mk.user.one,
+            cloneData.weight.toString(),
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -649,8 +708,16 @@ describe('authority tests:\n', () => {
             mk.user.one,
             cloneData.weight.toString(),
           ]),
+          messageKey: 'bgd_ops_add_key_auth',
+          messageParams: [
+            userData.one.encryptKeys.posting,
+            KeychainKeyTypesLC.active,
+            mk.user.one,
+            cloneData.weight.toString(),
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -674,14 +741,15 @@ describe('authority tests:\n', () => {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new Error('html_popup_error_while_signing_transaction'),
+          error: new KeychainError('html_popup_error_while_signing_transaction'),
           result: undefined,
           data: datas,
-          message: I18nUtils.getMessage(
-            'html_popup_error_while_signing_transaction',
-          ),
+          message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -722,8 +790,11 @@ describe('authority tests:\n', () => {
           result: undefined,
           data: datas,
           message: I18nUtils.getMessage('missing_authority_error'),
+          messageKey: 'missing_authority_error',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -769,8 +840,15 @@ describe('authority tests:\n', () => {
             KeychainKeyTypesLC.posting,
             mk.user.one,
           ]),
+          messageKey: 'bgd_ops_remove_key_auth',
+          messageParams: [
+            cloneData.authorizedKey,
+            KeychainKeyTypesLC.posting,
+            mk.user.one,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -819,8 +897,15 @@ describe('authority tests:\n', () => {
             KeychainKeyTypesLC.active,
             mk.user.one,
           ]),
+          messageKey: 'bgd_ops_remove_key_auth',
+          messageParams: [
+            cloneData.authorizedKey,
+            KeychainKeyTypesLC.active,
+            mk.user.one,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });

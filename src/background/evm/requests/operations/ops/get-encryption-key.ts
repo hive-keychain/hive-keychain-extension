@@ -2,7 +2,7 @@ import {
   EvmRequestHandler,
   EvmRequestLocator,
 } from '@background/evm/requests/evm-request-handler';
-import { createEvmMessage } from '@background/hive/requests/operations/operations.utils';
+import { createEvmMessage, feedbackI18n } from '@background/hive/requests/operations/operations.utils';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
@@ -45,6 +45,6 @@ export const getEncryptionKey = async (
     res,
     request,
     requestData?.tab!,
-    await I18nUtils.getMessage('dialog_evm_get_encryption_key_success'),
+    feedbackI18n('dialog_evm_get_encryption_key_success'),
   );
 };

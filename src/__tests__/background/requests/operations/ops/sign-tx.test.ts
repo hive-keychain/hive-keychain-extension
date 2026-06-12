@@ -1,4 +1,5 @@
 import LedgerModule from '@background/ledger.module';
+import { KeychainError } from 'src/keychain-error';
 import { signTx } from '@background/requests/operations/ops/sign-tx';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { Operation, Transaction } from '@hiveio/dhive';
@@ -50,14 +51,15 @@ describe('sign-tx tests:\n', () => {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new Error('html_popup_error_while_signing_transaction'),
+          error: new KeychainError('html_popup_error_while_signing_transaction'),
           result: undefined,
           data: datas,
-          message: I18nUtils.getMessage(
-            'html_popup_error_while_signing_transaction',
-          ),
+          message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });

@@ -1,5 +1,5 @@
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createMessage } from '@background/hive/requests/operations/operations.utils';
+import { createMessage, feedbackI18n } from '@background/hive/requests/operations/operations.utils';
 import { RequestId, RequestVote } from '@interfaces/keychain.interface';
 import { TransactionOptions } from '@interfaces/keys.interface';
 import { KeychainKeyTypesLC } from 'hive-keychain-commons';
@@ -33,7 +33,7 @@ export const broadcastVote = async (
     );
   } catch (e: any) {
     err = (e as KeychainError).trace || e;
-    err_message = await I18nUtils.getMessage(
+    err_message = feedbackI18n(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -43,7 +43,7 @@ export const broadcastVote = async (
       result,
       data,
       request?.tab!,
-      await I18nUtils.getMessage('bgd_ops_vote', [
+      feedbackI18n('bgd_ops_vote', [
         data.author,
         data.permlink,
         +data.weight / 100 + '',

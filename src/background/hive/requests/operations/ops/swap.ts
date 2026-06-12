@@ -1,6 +1,6 @@
 import LedgerModule from '@background/hive/modules/ledger.module';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createMessage } from '@background/hive/requests/operations/operations.utils';
+import { createMessage, feedbackI18n } from '@background/hive/requests/operations/operations.utils';
 import {
   KeychainKeyTypesLC,
   RequestId,
@@ -120,29 +120,28 @@ export const broadcastSwap = async (
     }
   } catch (e: any) {
     if (typeof e === 'string') {
-      const message = createMessage(
+      return await createMessage(
         true,
         null,
         data,
         request?.tab!,
         null,
-        await I18nUtils.getMessage('bgd_ops_encode_err'),
+        feedbackI18n('bgd_ops_encode_err'),
       );
-      return message;
     } else {
       err = (e as KeychainError).trace || e;
-      err_message = await I18nUtils.getMessage(
+      err_message = feedbackI18n(
         (e as KeychainError).message,
         (e as KeychainError).messageParams,
       );
     }
   } finally {
-    const message = createMessage(
+    return await createMessage(
       err,
       { ...result, swap_id: swapId },
       data,
       request?.tab!,
-      await I18nUtils.getMessage('bgd_ops_swap_start_success', [
+      feedbackI18n('bgd_ops_swap_start_success', [
         data.amount + '',
         data.startToken,
         data.endToken,
@@ -150,6 +149,5 @@ export const broadcastSwap = async (
       ]),
       err_message,
     );
-    return message;
   }
 };

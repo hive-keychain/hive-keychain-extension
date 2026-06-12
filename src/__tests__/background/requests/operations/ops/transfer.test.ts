@@ -71,14 +71,15 @@ describe('transfer tests:\n', () => {
             command: DialogCommand.ANSWER_REQUEST,
             msg: {
               success: false,
-              error: new Error('html_popup_error_while_signing_transaction'),
+              error: new KeychainError('html_popup_error_while_signing_transaction'),
               result: undefined,
               data: datas,
-              message: I18nUtils.getMessage(
-                'html_popup_error_while_signing_transaction',
-              ),
+              message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
               request_id: request_id,
               publicKey: undefined,
+          tab: undefined,
             },
           });
         });
@@ -103,8 +104,11 @@ describe('transfer tests:\n', () => {
               result: undefined,
               data: datas,
               message: I18nUtils.getMessage(localeMessageKey, [cloneData.to]),
+          messageKey: localeMessageKey,
+          messageParams: [cloneData.to],
               request_id: request_id,
               publicKey: undefined,
+          tab: undefined,
             },
           });
         });
@@ -140,8 +144,30 @@ describe('transfer tests:\n', () => {
                 data.username!,
                 data.to,
               ]),
+          messageKey: 'bgd_ops_transfer_success',
+          messageParams: [
+                data.amount,
+                data.currency,
+                data.username!,
+                data.to,
+              ],
+          messageKey: 'bgd_ops_transfer_success',
+          messageParams: [
+                data.amount,
+                data.currency,
+                data.username!,
+                data.to,
+              ],
+          messageKey: 'bgd_ops_transfer_success',
+          messageParams: [
+                data.amount,
+                data.currency,
+                data.username!,
+                data.to,
+              ],
               request_id: request_id,
               publicKey: undefined,
+          tab: undefined,
             },
           });
         });
@@ -175,8 +201,11 @@ describe('transfer tests:\n', () => {
               result: undefined,
               data: datas,
               message: I18nUtils.getMessage(localeMessageKey),
+          messageKey: localeMessageKey,
+          messageParams: undefined,
               request_id: request_id,
               publicKey: undefined,
+          tab: undefined,
             },
           });
         });
@@ -200,8 +229,11 @@ describe('transfer tests:\n', () => {
               result: undefined,
               data: datas,
               message: I18nUtils.getMessage(localeMessageKey, [cloneData.to]),
+          messageKey: localeMessageKey,
+          messageParams: [cloneData.to],
               request_id: request_id,
               publicKey: undefined,
+          tab: undefined,
             },
           });
         });
@@ -240,8 +272,30 @@ describe('transfer tests:\n', () => {
                 cloneData.username!,
                 cloneData.to,
               ]),
+          messageKey: 'bgd_ops_transfer_success',
+          messageParams: [
+                cloneData.amount,
+                cloneData.currency,
+                cloneData.username!,
+                cloneData.to,
+              ],
+          messageKey: 'bgd_ops_transfer_success',
+          messageParams: [
+                cloneData.amount,
+                cloneData.currency,
+                cloneData.username!,
+                cloneData.to,
+              ],
+          messageKey: 'bgd_ops_transfer_success',
+          messageParams: [
+                cloneData.amount,
+                cloneData.currency,
+                cloneData.username!,
+                cloneData.to,
+              ],
               request_id: request_id,
               publicKey: undefined,
+          tab: undefined,
             },
           });
         });
@@ -297,8 +351,30 @@ describe('transfer tests:\n', () => {
               cloneData.username!,
               cloneData.to,
             ]),
+          messageKey: 'bgd_ops_transfer_success',
+          messageParams: [
+              cloneData.amount,
+              cloneData.currency,
+              cloneData.username!,
+              cloneData.to,
+            ],
+          messageKey: 'bgd_ops_transfer_success',
+          messageParams: [
+              cloneData.amount,
+              cloneData.currency,
+              cloneData.username!,
+              cloneData.to,
+            ],
+          messageKey: 'bgd_ops_transfer_success',
+          messageParams: [
+              cloneData.amount,
+              cloneData.currency,
+              cloneData.username!,
+              cloneData.to,
+            ],
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });

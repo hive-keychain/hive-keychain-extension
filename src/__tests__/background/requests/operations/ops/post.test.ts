@@ -1,4 +1,5 @@
 import { broadcastPost } from '@background/requests/operations/ops/post';
+import { KeychainError } from 'src/keychain-error';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
@@ -50,14 +51,15 @@ describe('post tests:\n', () => {
       command: DialogCommand.ANSWER_REQUEST,
       msg: {
         success: false,
-        error: new Error('html_popup_error_while_signing_transaction'),
+        error: new KeychainError('html_popup_error_while_signing_transaction'),
         result: undefined,
         data: datas,
-        message: I18nUtils.getMessage(
-          'html_popup_error_while_signing_transaction',
-        ),
+        message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
         request_id: request_id,
         publicKey: undefined,
+          tab: undefined,
       },
     });
   });
@@ -72,14 +74,15 @@ describe('post tests:\n', () => {
       command: DialogCommand.ANSWER_REQUEST,
       msg: {
         success: false,
-        error: new Error('html_popup_error_while_signing_transaction'),
+        error: new KeychainError('html_popup_error_while_signing_transaction'),
         result: undefined,
         data: datas,
-        message: I18nUtils.getMessage(
-          'html_popup_error_while_signing_transaction',
-        ),
+        message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
         request_id: request_id,
         publicKey: undefined,
+          tab: undefined,
       },
     });
   });
@@ -107,8 +110,13 @@ describe('post tests:\n', () => {
           },
           data: datas,
           message: I18nUtils.getMessage('bgd_ops_post'),
+          messageKey: 'bgd_ops_post',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_post',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -151,8 +159,13 @@ describe('post tests:\n', () => {
           },
           data: datas,
           message: I18nUtils.getMessage('bgd_ops_post'),
+          messageKey: 'bgd_ops_post',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_post',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });

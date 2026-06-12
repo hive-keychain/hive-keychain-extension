@@ -1,6 +1,6 @@
 import LedgerModule from '@background/hive/modules/ledger.module';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createMessage } from '@background/hive/requests/operations/operations.utils';
+import { createMessage, feedbackI18n } from '@background/hive/requests/operations/operations.utils';
 import {
   KeychainKeyTypesLC,
   RequestConvert,
@@ -84,7 +84,7 @@ export const convert = async (
   } catch (e: any) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await I18nUtils.getMessage(
+    err_message = feedbackI18n(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -94,7 +94,7 @@ export const convert = async (
       result,
       data,
       request?.tab!,
-      await I18nUtils.getMessage(successMessage, [amount, username]),
+      feedbackI18n(successMessage, [amount, username]),
       err_message,
     );
     return message;

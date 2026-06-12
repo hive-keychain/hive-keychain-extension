@@ -38,6 +38,29 @@ describe('HTML rendering safety', () => {
     jest.restoreAllMocks();
   });
 
+  it('renders dialog feedback locale keys with allowed tags only', () => {
+    jest.spyOn(I18nUtils, 'getMessage').mockImplementation((message) => {
+      if (message === 'bgd_ops_sign_success') {
+        return 'Message signed successfully.<br>Done.';
+      }
+      return message;
+    });
+
+    const { container } = render(
+      <ResultMessagePageComponent
+        type="success"
+        title="message_container_title_success"
+        message="ignored"
+        messageI18nKey="bgd_ops_sign_success"
+        onClose={jest.fn()}
+      />,
+    );
+
+    expect(container.querySelector('br')).toBeInTheDocument();
+    expect(container).toHaveTextContent('Message signed successfully.');
+    expect(container).toHaveTextContent('Done.');
+  });
+
   it('renders skipped translation result messages as text', () => {
     const maliciousMessage =
       'Account @<img src=x onerror="alert(1)"> has not been added.';

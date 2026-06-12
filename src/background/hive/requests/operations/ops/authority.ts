@@ -3,6 +3,8 @@ import { HiveRequestsHandler } from '@background/hive/requests/hive-request-hand
 import {
   beautifyErrorMessage,
   createMessage,
+  feedbackI18n,
+  feedbackPlain,
 } from '@background/hive/requests/operations/operations.utils';
 import {
   RequestAddAccountAuthority,
@@ -18,7 +20,6 @@ import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 
-import { I18nUtils } from 'src/utils/i18n.utils';
 export const broadcastAddAccountAuthority = async (
   requestHandler: HiveRequestsHandler,
   data: RequestAddAccountAuthority & RequestId,
@@ -77,23 +78,23 @@ export const broadcastAddAccountAuthority = async (
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await I18nUtils.getMessage(
+    err_message = feedbackI18n(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
   } finally {
-    const err_message = await beautifyErrorMessage(err);
+    const failMessage = await beautifyErrorMessage(err);
     return await createMessage(
       err,
       result,
       data,
       request?.tab!,
-      await I18nUtils.getMessage('bgd_ops_add_auth', [
+      feedbackI18n('bgd_ops_add_auth', [
         data.role.toLowerCase(),
         data.authorizedUsername,
         data.username,
       ]),
-      err_message,
+      failMessage ? feedbackPlain(failMessage) : err_message,
     );
   }
 };
@@ -154,7 +155,7 @@ export const broadcastRemoveAccountAuthority = async (
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await I18nUtils.getMessage(
+    err_message = feedbackI18n(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -164,7 +165,7 @@ export const broadcastRemoveAccountAuthority = async (
       result,
       data,
       request?.tab!,
-      await I18nUtils.getMessage('bgd_ops_remove_auth', [
+      feedbackI18n('bgd_ops_remove_auth', [
         data.role.toLowerCase(),
         data.authorizedUsername,
         data.username,
@@ -232,7 +233,7 @@ export const broadcastAddKeyAuthority = async (
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await I18nUtils.getMessage(
+    err_message = feedbackI18n(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -242,9 +243,9 @@ export const broadcastAddKeyAuthority = async (
       result,
       data,
       request?.tab!,
-      await I18nUtils.getMessage('bgd_ops_add_key_auth', [
+      feedbackI18n('bgd_ops_add_key_auth', [
         data.authorizedKey,
-        await I18nUtils.getMessage(data.role.toLowerCase()),
+        data.role.toLowerCase(),
         data.username,
         data.weight + '',
       ]),
@@ -309,7 +310,7 @@ export const broadcastRemoveKeyAuthority = async (
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await I18nUtils.getMessage(
+    err_message = feedbackI18n(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -319,9 +320,9 @@ export const broadcastRemoveKeyAuthority = async (
       result,
       data,
       request?.tab!,
-      await I18nUtils.getMessage('bgd_ops_remove_key_auth', [
+      feedbackI18n('bgd_ops_remove_key_auth', [
         data.authorizedKey,
-        await I18nUtils.getMessage(data.role.toLowerCase()),
+        data.role.toLowerCase(),
         data.username,
       ]),
       err_message,

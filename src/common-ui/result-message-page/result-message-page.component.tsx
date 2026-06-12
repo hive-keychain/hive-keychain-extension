@@ -17,6 +17,9 @@ interface ResultMessagePageProps {
   warningParams?: string[];
   skipTitleTranslation?: boolean;
   skipMessageTranslation?: boolean;
+  /** Locale key resolved in the dialog via getSafeI18nHtml (params escaped at render). */
+  messageI18nKey?: string;
+  messageI18nParams?: string[];
   skipWarningTranslation?: boolean;
   autoCloseDelayMs?: number;
   onClose: () => void;
@@ -32,6 +35,8 @@ const ResultMessagePage = ({
   warningParams,
   skipTitleTranslation,
   skipMessageTranslation,
+  messageI18nKey,
+  messageI18nParams,
   skipWarningTranslation,
   autoCloseDelayMs,
   onClose,
@@ -61,6 +66,18 @@ const ResultMessagePage = ({
     }
   };
 
+  const getMessageHtml = () => {
+    if (messageI18nKey) {
+      return HtmlUtils.getSafeI18nHtml(messageI18nKey, messageI18nParams);
+    }
+
+    if (skipMessageTranslation) {
+      return HtmlUtils.escapeHtml(message);
+    }
+
+    return HtmlUtils.getSafeI18nHtml(message, messageParams);
+  };
+
   return (
     <div className="result-message-page">
       <div className="result-message-container">
@@ -74,9 +91,7 @@ const ResultMessagePage = ({
           <div
             className="message"
             dangerouslySetInnerHTML={{
-              __html: skipMessageTranslation
-                ? HtmlUtils.escapeHtml(message)
-                : HtmlUtils.getSafeI18nHtml(message, messageParams),
+              __html: getMessageHtml(),
             }}></div>
           {warningMessage && (
             <div

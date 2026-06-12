@@ -1,4 +1,5 @@
 import LedgerModule from '@background/ledger.module';
+import { KeychainError } from 'src/keychain-error';
 import { broadcastCreateClaimedAccount } from '@background/requests/operations/ops/create-claimed-account';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
@@ -57,14 +58,15 @@ describe('create-claimed-account tests:\n', () => {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new Error('html_popup_error_while_signing_transaction'),
+          error: new KeychainError('html_popup_error_while_signing_transaction'),
           result: undefined,
           data: datas,
-          message: I18nUtils.getMessage(
-            'html_popup_error_while_signing_transaction',
-          ),
+          message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -92,8 +94,21 @@ describe('create-claimed-account tests:\n', () => {
           message: I18nUtils.getMessage('bgd_ops_create_account', [
             data.new_account,
           ]),
+          messageKey: 'bgd_ops_create_account',
+          messageParams: [
+            data.new_account,
+          ],
+          messageKey: 'bgd_ops_create_account',
+          messageParams: [
+            data.new_account,
+          ],
+          messageKey: 'bgd_ops_create_account',
+          messageParams: [
+            data.new_account,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -135,8 +150,21 @@ describe('create-claimed-account tests:\n', () => {
           message: I18nUtils.getMessage('bgd_ops_create_account', [
             data.new_account,
           ]),
+          messageKey: 'bgd_ops_create_account',
+          messageParams: [
+            data.new_account,
+          ],
+          messageKey: 'bgd_ops_create_account',
+          messageParams: [
+            data.new_account,
+          ],
+          messageKey: 'bgd_ops_create_account',
+          messageParams: [
+            data.new_account,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });

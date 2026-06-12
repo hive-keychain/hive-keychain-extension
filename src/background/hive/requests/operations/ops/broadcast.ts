@@ -1,6 +1,6 @@
 import LedgerModule from '@background/hive/modules/ledger.module';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createMessage } from '@background/hive/requests/operations/operations.utils';
+import { createMessage, feedbackI18n } from '@background/hive/requests/operations/operations.utils';
 import type { Operation } from '@hiveio/dhive';
 import { encode } from '@hiveio/hive-js/lib/auth/memo';
 import {
@@ -106,7 +106,7 @@ export const broadcastOperations = async (
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
-    err_message = await I18nUtils.getMessage(
+    err_message = feedbackI18n(
       (e as KeychainError).message,
       (e as KeychainError).messageParams,
     );
@@ -116,7 +116,7 @@ export const broadcastOperations = async (
       result,
       data,
       request?.tab!,
-      await I18nUtils.getMessage('bgd_ops_broadcast'),
+      feedbackI18n('bgd_ops_broadcast'),
       err_message,
     );
     return message;

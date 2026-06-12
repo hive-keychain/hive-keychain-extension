@@ -3,7 +3,7 @@ import {
   EvmRequestHandler,
   EvmRequestLocator,
 } from '@background/evm/requests/evm-request-handler';
-import { createEvmMessage } from '@background/hive/requests/operations/operations.utils';
+import { createEvmMessage, feedbackI18n } from '@background/hive/requests/operations/operations.utils';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { SignTypedDataVersion } from '@metamask/eth-sig-util';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
@@ -44,7 +44,7 @@ export const signData = async (
         res,
         request,
         requestData?.tab!,
-        await I18nUtils.getMessage('dialog_evm_sign_request_success'),
+        feedbackI18n('dialog_evm_sign_request_success'),
       );
     } catch (e) {
       Logger.error('sign error', e);

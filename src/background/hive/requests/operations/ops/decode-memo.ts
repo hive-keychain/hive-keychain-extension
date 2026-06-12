@@ -1,5 +1,5 @@
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createMessage } from '@background/hive/requests/operations/operations.utils';
+import { createMessage, feedbackI18n } from '@background/hive/requests/operations/operations.utils';
 import { decode } from '@hiveio/hive-js/lib/auth/memo';
 import { RequestDecode, RequestId } from '@interfaces/keychain.interface';
 import { I18nUtils } from 'src/utils/i18n.utils';
@@ -22,8 +22,8 @@ export const decodeMessage = async (
       decoded,
       data,
       request?.tab!,
-      await I18nUtils.getMessage('bgd_ops_decode'),
-      await I18nUtils.getMessage('bgd_ops_decode_err'),
+      feedbackI18n('bgd_ops_decode'),
+      feedbackI18n('bgd_ops_decode_err'),
     );
   }
 };

@@ -1,6 +1,6 @@
 import MkModule from '@background/hive/modules/mk.module';
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
-import { createMessage } from '@background/hive/requests/operations/operations.utils';
+import { createMessage, feedbackI18n } from '@background/hive/requests/operations/operations.utils';
 import { RequestAddAccount, RequestId } from '@interfaces/keychain.interface';
 import { Keys } from '@interfaces/keys.interface';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
@@ -73,11 +73,11 @@ export const addAccount = async (
       );
     } else {
       // Error no corresponding keys
-      err = await I18nUtils.getMessage('bgd_ops_add_account_error');
+      err = feedbackI18n('bgd_ops_add_account_error');
     }
   } else {
     // Error no such account
-    err = await I18nUtils.getMessage('bgd_ops_add_account_error_invalid');
+    err = feedbackI18n('bgd_ops_add_account_error_invalid');
   }
   return await createMessage(
     !!err,
@@ -86,7 +86,7 @@ export const addAccount = async (
     request?.tab!,
     err
       ? null
-      : await I18nUtils.getMessage('bgd_ops_add_account', [username]),
+      : feedbackI18n('bgd_ops_add_account', [username]),
     err,
   );
 };

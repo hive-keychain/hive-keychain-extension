@@ -1,4 +1,5 @@
 import LedgerModule from '@background/ledger.module';
+import { KeychainError } from 'src/keychain-error';
 import { broadcastProxy } from '@background/requests/operations/ops/proxy';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
@@ -46,14 +47,15 @@ describe('proxy tests:\n', () => {
           command: DialogCommand.ANSWER_REQUEST,
           msg: {
             success: false,
-            error: new Error('html_popup_error_while_signing_transaction'),
+            error: new KeychainError('html_popup_error_while_signing_transaction'),
             result: undefined,
             data: datas,
-            message: I18nUtils.getMessage(
-              'html_popup_error_while_signing_transaction',
-            ),
+            message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -81,8 +83,13 @@ describe('proxy tests:\n', () => {
             },
             data: datas,
             message: I18nUtils.getMessage('bgd_ops_unproxy'),
+          messageKey: 'bgd_ops_unproxy',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_unproxy',
+          messageParams: undefined,
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -113,8 +120,21 @@ describe('proxy tests:\n', () => {
             message: I18nUtils.getMessage('popup_success_proxy', [
               data.proxy,
             ]),
+          messageKey: 'popup_success_proxy',
+          messageParams: [
+              data.proxy,
+            ],
+          messageKey: 'popup_success_proxy',
+          messageParams: [
+              data.proxy,
+            ],
+          messageKey: 'popup_success_proxy',
+          messageParams: [
+              data.proxy,
+            ],
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -153,8 +173,21 @@ describe('proxy tests:\n', () => {
             message: I18nUtils.getMessage('popup_success_proxy', [
               data.proxy,
             ]),
+          messageKey: 'popup_success_proxy',
+          messageParams: [
+              data.proxy,
+            ],
+          messageKey: 'popup_success_proxy',
+          messageParams: [
+              data.proxy,
+            ],
+          messageKey: 'popup_success_proxy',
+          messageParams: [
+              data.proxy,
+            ],
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });

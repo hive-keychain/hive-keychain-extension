@@ -28,6 +28,13 @@ interface AccountItemOption extends OptionItem {
   img: string;
 }
 
+const getAccountItemOption = (account: LocalAccount): AccountItemOption => ({
+  label: `@${account.name}`,
+  value: account.name,
+  canDelete: false,
+  img: `https://images.hive.blog/u/${account.name}/avatar`,
+});
+
 const CreateAccountStepOne = ({
   activeAccount,
   accounts,
@@ -55,40 +62,34 @@ const CreateAccountStepOne = ({
   };
 
   useEffect(() => {
-    setSelectedAccount({
-      label: `@${activeAccount.name!}`,
-      value: activeAccount.name!,
-      canDelete: false,
-      img: `https://images.hive.blog/u/${activeAccount.name!}/avatar`,
-    });
-  }, [activeAccount]);
-
-  useEffect(() => {
     initAccountOptions();
-  }, [accounts]);
+  }, [accounts, activeAccount.name]);
 
-  const initAccountOptions = async () => {
-    const options = [];
+  const initAccountOptions = () => {
+    const options: AccountItemOption[] = [];
     for (const account of accounts as LocalAccount[]) {
-      options.push({
-        label: `@${account.name!}`,
-        value: account.name!,
-        img: `https://images.hive.blog/u/${account.name!}/avatar`,
-        canDelete: false,
-      });
+      options.push(getAccountItemOption(account));
     }
+
     setAccountOptions(options);
+    setSelectedAccount(
+      options.find((option) => option.value === activeAccount.name) ??
+        options[0],
+    );
   };
 
   useEffect(() => {
-    onSelectedAccountChanged(selectedAccount?.value!);
+    onSelectedAccountChanged(selectedAccount?.value);
   }, [selectedAccount]);
 
-  const onSelectedAccountChanged = async (username: string) => {
-    if (!selectedAccount) {
+  const onSelectedAccountChanged = async (username?: string) => {
+    if (!username) {
       return;
     }
     const account = (await AccountUtils.getExtendedAccount(username)) as any;
+    if (!account) {
+      return;
+    }
 
     if (account.pending_claimed_accounts > 0) {
       setPrice(0);
