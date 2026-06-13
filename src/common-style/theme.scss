@@ -107,6 +107,10 @@ $dark: (
   --select-account-background: $dark-background,
   // Message
   --green-success: $green-success,
+  // EVM transaction warnings
+  --evm-risk-high-panel-bg: mix($red, $darker-blue, 18%),
+  --evm-risk-medium-panel-bg: mix($orange, $darker-blue, 18%),
+  --evm-risk-low-panel-bg: mix($yellow, $darker-blue, 18%),
   // Menu Bottom Bar
   --menu-bottom-bar-icon-color: white,
 );
@@ -217,6 +221,10 @@ $light: (
   --select-account-background: $light-background,
   // Message
   --green-success: $green-success,
+  // EVM transaction warnings
+  --evm-risk-high-panel-bg: $light-red,
+  --evm-risk-medium-panel-bg: $light-orange,
+  --evm-risk-low-panel-bg: $light-yellow,
   // Menu Bottom Bar
   --menu-bottom-bar-icon-color: #484848,
 );
