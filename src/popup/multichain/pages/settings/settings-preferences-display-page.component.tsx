@@ -1,11 +1,8 @@
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
-import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
-import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
 import { Theme, useThemeContext } from '@popup/theme.context';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { ComplexeCustomSelect } from 'src/common-ui/custom-select/custom-select.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -13,6 +10,33 @@ import { ThemeToggleComponent } from 'src/common-ui/theme-toggle/theme-toggle.co
 import { SidePanelPreferenceUtils } from 'src/utils/side-panel-preference.utils';
 
 import { I18nLanguageOption, I18nUtils } from 'src/utils/i18n.utils';
+
+enum DisplayMode {
+  POPUP = 'popup',
+  SIDE_PANEL = 'side-panel',
+}
+
+interface DisplayModeToggleOption {
+  value: DisplayMode;
+  label: string;
+  icon: SVGIcons;
+  testId: string;
+}
+
+const DISPLAY_MODE_TOGGLE_OPTIONS: DisplayModeToggleOption[] = [
+  {
+    value: DisplayMode.POPUP,
+    label: 'popup_html_display_popup',
+    icon: SVGIcons.DISPLAY_MODE_POPUP,
+    testId: 'display-mode-toggle-popup',
+  },
+  {
+    value: DisplayMode.SIDE_PANEL,
+    label: 'popup_html_display_side_panel',
+    icon: SVGIcons.SIDE_PANEL_DETACH,
+    testId: 'display-mode-toggle-side-panel',
+  },
+];
 
 const SettingsPreferencesDisplayPage = ({
   setTitleContainerProperties,
@@ -22,8 +46,10 @@ const SettingsPreferencesDisplayPage = ({
   const [selectedLanguage, setSelectedLanguage] = useState<I18nLanguageOption>(
     I18nUtils.getLanguageOption(),
   );
-  const isToolbarPopup = ExtensionSurfaceUtils.isToolbarPopup();
   const languageOptions = I18nUtils.getLanguageOptions();
+  const selectedDisplayMode = openSidePanelByDefault
+    ? DisplayMode.SIDE_PANEL
+    : DisplayMode.POPUP;
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -35,8 +61,7 @@ const SettingsPreferencesDisplayPage = ({
 
   useEffect(() => {
     const loadOpenSidePanelByDefault = async () => {
-      const enabled =
-        await SidePanelPreferenceUtils.getOpenSidePanelByDefault();
+      const enabled = await SidePanelPreferenceUtils.getOpenSidePanelByDefault();
       setOpenSidePanelByDefault(enabled);
     };
 
@@ -61,13 +86,12 @@ const SettingsPreferencesDisplayPage = ({
     setTheme(nextTheme);
   };
 
-  const handleOpenInSidePanel = () => {
-    void DetachedExtensionTabUtils.openDetachedExtension();
-  };
-
-  const handleOpenSidePanelByDefaultChange = (checked: boolean) => {
-    setOpenSidePanelByDefault(checked);
-    void SidePanelPreferenceUtils.setOpenSidePanelByDefault(checked);
+  const handleDisplayModeChange = (displayMode: DisplayMode) => {
+    const shouldOpenSidePanelByDefault = displayMode === DisplayMode.SIDE_PANEL;
+    setOpenSidePanelByDefault(shouldOpenSidePanelByDefault);
+    void SidePanelPreferenceUtils.setOpenSidePanelByDefault(
+      shouldOpenSidePanelByDefault,
+    );
   };
 
   const handleLanguageChange = (language: I18nLanguageOption) => {
@@ -112,30 +136,63 @@ const SettingsPreferencesDisplayPage = ({
             {I18nUtils.getMessage('popup_html_preferences_display_section')}
           </div>
           <div className="section-fields">
-            {isToolbarPopup && (
-              <button
-                type="button"
-                data-testid="button-open-side-panel"
-                className="try-side-panel-action"
-                onClick={handleOpenInSidePanel}>
-                <SVGIcon
-                  icon={SVGIcons.SIDE_PANEL_DETACH}
-                  className="try-side-panel-action-icon"
-                />
-                <span className="try-side-panel-action-label">
-                  {I18nUtils.getMessage('popup_html_try_side_panel')}
-                </span>
-              </button>
-            )}
-            <CheckboxPanelComponent
-              dataTestId="checkbox-open-side-panel-by-default"
-              title="popup_html_open_side_panel_by_default"
-              hint="popup_html_open_side_panel_by_default_hint"
-              checked={openSidePanelByDefault}
-              onChange={handleOpenSidePanelByDefaultChange}
+            <DisplayModeToggleComponent
+              selectedDisplayMode={selectedDisplayMode}
+              onChange={handleDisplayModeChange}
             />
           </div>
         </div>
+      </div>
+    </div>
+  );
+};
+
+interface DisplayModeToggleProps {
+  selectedDisplayMode: DisplayMode;
+  onChange: (displayMode: DisplayMode) => void;
+}
+
+const DisplayModeToggleComponent = ({
+  selectedDisplayMode,
+  onChange,
+}: DisplayModeToggleProps) => {
+  const selectedIndex = DISPLAY_MODE_TOGGLE_OPTIONS.findIndex(
+    (option) => option.value === selectedDisplayMode,
+  );
+
+  return (
+    <div className="theme-toggle" data-testid="display-mode-toggle">
+      <div className="theme-toggle-tabs">
+        {DISPLAY_MODE_TOGGLE_OPTIONS.map((option) => {
+          const isSelected = option.value === selectedDisplayMode;
+
+          return (
+            <Fragment key={option.value}>
+              <input
+                type="radio"
+                id={`display-mode-toggle-${option.value}`}
+                name="display-mode-toggle"
+                checked={isSelected}
+                onChange={() => onChange(option.value)}
+              />
+              <label
+                data-testid={option.testId}
+                className={`theme-toggle-tab ${isSelected ? 'selected' : ''}`}
+                htmlFor={`display-mode-toggle-${option.value}`}>
+                <SVGIcon icon={option.icon} />
+                <span className="theme-toggle-label">
+                  {I18nUtils.getMessage(option.label)}
+                </span>
+              </label>
+            </Fragment>
+          );
+        })}
+        <span
+          className="theme-toggle-glider"
+          style={{
+            transform: `translateX(calc(${selectedIndex} * 100%))`,
+          }}
+        />
       </div>
     </div>
   );

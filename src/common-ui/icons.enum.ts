@@ -106,6 +106,8 @@ export enum SVGIcons {
   THEME_TOGGLE_SUN = 'theme-toggle/sun',
   THEME_TOGGLE_MOON = 'theme-toggle/moon',
 
+  DISPLAY_MODE_POPUP = 'display-mode/popup',
+
   SIDE_PANEL_DETACH = 'side-panel/detach',
 
   MENU_ACCOUNTS = 'menu/accounts',

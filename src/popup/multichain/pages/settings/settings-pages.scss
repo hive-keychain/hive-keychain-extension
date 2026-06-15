@@ -236,41 +236,6 @@
       width: 100%;
     }
   }
-
-  .try-side-panel-action {
-    display: flex;
-    align-items: center;
-    column-gap: 12px;
-    width: 100%;
-    padding: 16px;
-    border: 1px solid var(--input-border);
-    border-radius: 22px;
-    background: var(--input-background);
-    cursor: pointer;
-    box-sizing: border-box;
-
-    .try-side-panel-action-icon.svg-icon {
-      width: 24px;
-      height: 24px;
-      flex-shrink: 0;
-      --menu-icon-color: #{$red};
-
-      div,
-      svg {
-        width: 100%;
-        height: 100%;
-      }
-    }
-
-    .try-side-panel-action-label {
-      @include poppins500(14px);
-      color: var(--main-font-color);
-    }
-
-    &:hover {
-      background: var(--card-background);
-    }
-  }
 }
 
 .settings-evm-page {

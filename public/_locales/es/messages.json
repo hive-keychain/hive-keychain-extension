@@ -719,6 +719,14 @@
     "message": "Visualización",
     "description": "Preferences and display: window and side panel section title"
   },
+  "popup_html_display_popup": {
+    "message": "Popup",
+    "description": "Preferences and display: popup display mode option"
+  },
+  "popup_html_display_side_panel": {
+    "message": "Panel lateral",
+    "description": "Preferences and display: side panel display mode option"
+  },
   "popup_html_open_in_side_panel": {
     "message": "Abrir en panel lateral",
     "description": "Preferences and display: open Keychain in the browser side panel"
