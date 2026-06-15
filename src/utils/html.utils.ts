@@ -81,20 +81,26 @@ const sanitizeHtml = (html: string, options?: SanitizeHtmlOptions) => {
   });
 };
 
+const replaceAllLiterals = (
+  html: string,
+  search: string,
+  replacement: string,
+) => html.split(search).join(replacement);
+
 const getLegalLinksHtml = (html: string) =>
-  html
-    .replaceAll(
-      TERMS_URL,
-      escapeHtml(process.env.KEYCHAIN_TERMS_URL || TERMS_URL),
-    )
-    .replaceAll(
+  replaceAllLiterals(
+    replaceAllLiterals(
+      replaceAllLiterals(
+        html,
+        TERMS_URL,
+        escapeHtml(process.env.KEYCHAIN_TERMS_URL || TERMS_URL),
+      ),
       PRIVACY_URL,
       escapeHtml(process.env.KEYCHAIN_PRIVACY_URL || PRIVACY_URL),
-    )
-    .replaceAll(
-      FEES_URL,
-      escapeHtml(process.env.KEYCHAIN_FEES_URL || FEES_URL),
-    );
+    ),
+    FEES_URL,
+    escapeHtml(process.env.KEYCHAIN_FEES_URL || FEES_URL),
+  );
 
 const getI18nHtml = (
   message: string,

@@ -1,9 +1,8 @@
 import { Theme } from '@popup/theme.context';
-
-type SetupAppearanceDraftDisplayMode = 'popup' | 'side-panel';
+import { DisplayMode } from '@reference-data/display-mode.enum';
 
 interface SetupAppearanceDraft {
-  displayMode: SetupAppearanceDraftDisplayMode;
+  displayMode: DisplayMode;
   language: string;
   theme?: Theme;
 }

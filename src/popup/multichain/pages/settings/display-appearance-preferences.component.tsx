@@ -7,7 +7,10 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { ThemeToggleComponent } from 'src/common-ui/theme-toggle/theme-toggle.component';
 import { SetupAppearanceDraftUtils } from 'src/popup/multichain/utils/setup-appearance-draft.utils';
 import { I18nLanguageOption, I18nUtils } from 'src/utils/i18n.utils';
+import { DisplayMode } from '@reference-data/display-mode.enum';
 import { SidePanelPreferenceUtils } from 'src/utils/side-panel-preference.utils';
+
+export { DisplayMode };
 
 const getInitialDisplayMode = (
   defaultDisplayMode: DisplayMode,
@@ -29,11 +32,6 @@ const getInitialLanguage = (useSetupDraft: boolean): I18nLanguageOption => {
     draftLanguage ?? I18nUtils.BROWSER_LANGUAGE_PREFERENCE,
   );
 };
-
-export enum DisplayMode {
-  POPUP = 'popup',
-  SIDE_PANEL = 'side-panel',
-}
 
 interface DisplayModeToggleOption {
   value: DisplayMode;
