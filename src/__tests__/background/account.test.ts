@@ -123,6 +123,58 @@ describe('account tests:\n', () => {
     });
   });
 
+  it('Must use the detached Ledger route in the import warning link', async () => {
+    jest.spyOn(MkModule, 'getMk').mockResolvedValue(mk.user.one);
+    LocalStorageUtils.getValueFromLocalStorage = jest
+      .fn()
+      .mockImplementation((key: LocalStorageKeyEnum) =>
+        Promise.resolve(
+          key === LocalStorageKeyEnum.IS_LEDGER_SUPPORTED ? true : undefined,
+        ),
+      );
+    chrome.runtime.getURL = jest.fn(
+      (path: string) => `chrome-extension://test/${path}`,
+    );
+    const sSendMessage = jest
+      .spyOn(chrome.runtime, 'sendMessage')
+      .mockResolvedValue(undefined);
+    const multichainPayload = await EncryptUtils.encryptJson(
+      {
+        v: 2,
+        hiveAccounts: [
+          {
+            ...accounts.local.one,
+            keys: {
+              ...accounts.local.one.keys,
+              active: '#ledger',
+            },
+          },
+        ],
+        evmAccounts: [],
+      },
+      mk.user.one,
+    );
+
+    await AccountModule.sendBackImportedAccounts(multichainPayload);
+
+    expect(chrome.runtime.getURL).toHaveBeenCalledWith(
+      'detached_window.html#ledger/link-device',
+    );
+    expect(sSendMessage).toHaveBeenCalledWith({
+      command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
+      value: expect.objectContaining({
+        success: true,
+        message: 'import_html_success',
+        warning: {
+          message: 'ledger_import_account_has_ledger',
+          params: [
+            'chrome-extension://test/detached_window.html#ledger/link-device',
+          ],
+        },
+      }),
+    });
+  });
+
   it('Must reject malformed v2 payloads', async () => {
     jest.spyOn(MkModule, 'getMk').mockResolvedValue(mk.user.one);
     const malformedV2 = await EncryptUtils.encryptJson(
