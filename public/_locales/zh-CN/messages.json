@@ -6372,7 +6372,7 @@
     "description": "Unwrap history item"
   },
   "evm_history_operation_airdrop_receive": {
-    "message": "You received an airdrop: $1",
+    "message": "You received an airdrop",
     "description": "Airdrop history item"
   },
   "evm_history_operation_reverted": {
