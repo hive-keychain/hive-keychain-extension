@@ -6878,6 +6878,38 @@
     "message": "Add a custom token to your wallet. If you don't find the token you're looking for, you can add it manually.",
     "description": "Add custom token popup caption"
   },
+  "evm_custom_tokens_add_section_title": {
+    "message": "Add a token",
+    "description": "Known token list section title on custom tokens page"
+  },
+  "evm_add_custom_token_manually": {
+    "message": "Add manually",
+    "description": "Manual custom token button label"
+  },
+  "evm_known_tokens_search_label": {
+    "message": "Search token",
+    "description": "Known tokens search input label"
+  },
+  "evm_known_tokens_search_placeholder": {
+    "message": "Name or contract address",
+    "description": "Known tokens search input placeholder"
+  },
+  "evm_known_tokens_loading": {
+    "message": "Loading known tokens...",
+    "description": "Known tokens loading message"
+  },
+  "evm_known_tokens_empty": {
+    "message": "No known tokens found for this network.",
+    "description": "Known tokens empty state"
+  },
+  "evm_known_tokens_error_loading": {
+    "message": "Could not load known tokens for this network.",
+    "description": "Known tokens load error"
+  },
+  "evm_known_tokens_add": {
+    "message": "Add",
+    "description": "Add known token button label"
+  },
   "evm_watch_asset_title": {
     "message": "Add custom token",
     "description": "Title when a dApp requests wallet_watchAsset"

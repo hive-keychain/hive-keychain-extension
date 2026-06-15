@@ -71,3 +71,30 @@ describe('LiFiUtils.getTokenBalanceFromRawUnits', () => {
     });
   });
 });
+
+describe('LiFiUtils.filterKnownTokensByQuery', () => {
+  const tokens = [
+    {
+      address: '0x00000000000000000000000000000000000000AA',
+      name: 'USD Coin',
+      symbol: 'USDC',
+    },
+    {
+      address: '0x00000000000000000000000000000000000000BB',
+      name: 'Tether USD',
+      symbol: 'USDT',
+    },
+  ] as any[];
+
+  it('matches known tokens by name, symbol, or contract address', () => {
+    expect(LiFiUtils.filterKnownTokensByQuery(tokens, 'coin')).toEqual([
+      tokens[0],
+    ]);
+    expect(LiFiUtils.filterKnownTokensByQuery(tokens, 'usdt')).toEqual([
+      tokens[1],
+    ]);
+    expect(LiFiUtils.filterKnownTokensByQuery(tokens, '00aa')).toEqual([
+      tokens[0],
+    ]);
+  });
+});

@@ -13,6 +13,8 @@ import {
   EvmCustomErc20FormData,
   EvmCustomNftFormData,
 } from '@popup/evm/pages/home/evm-add-custom-asset-popup/evm-add-custom-asset-popup.component';
+import { EvmKnownTokenList } from '@popup/evm/pages/home/evm-add-custom-asset-popup/evm-known-token-list.component';
+import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { closeModal, openModal } from '@popup/multichain/actions/modal.actions';
@@ -158,6 +160,11 @@ const EvmCustomTokensPage = ({
           t.tokenInfo.type === EVMSmartContractType.ERC20,
       )
       .map((t) => t.tokenInfo.contractAddress) ?? [];
+  const existingErc20Addresses = [
+    ...erc20AddressesFromBalances,
+    ...customTokens.map((token) => token.address),
+  ];
+  const customTokenAddresses = customTokens.map((token) => token.address);
 
   return (
     <div className="evm-custom-tokens-page">
@@ -165,15 +172,7 @@ const EvmCustomTokensPage = ({
         <p className="evm-custom-tokens-caption">
           {I18nUtils.getMessage('evm_custom_tokens_page_caption')}
         </p>
-        <div
-          className="add-custom-token-link"
-          data-testid="btn-add-custom-token-page"
-          onClick={() => {
-            setEditingToken(null);
-            setShowAddPopup(true);
-          }}>
-          {I18nUtils.getMessage('evm_add_custom_token')}
-        </div>
+
         {customTokens.length === 0 ? (
           <p className="evm-custom-tokens-empty">
             {I18nUtils.getMessage('evm_custom_tokens_page_empty')}
@@ -190,10 +189,16 @@ const EvmCustomTokensPage = ({
                 : meta?.name?.length
                   ? meta.name
                   : EvmFormatUtils.formatAddress(token.address);
+              const tokenName = meta?.name?.length ? meta.name : displayName;
+              const tokenSymbol = meta?.symbol?.length
+                ? meta.symbol
+                : displayName;
               return (
-                <li key={token.address} className="evm-custom-tokens-list__item">
+                <li
+                  key={token.address}
+                  className="evm-custom-tokens-list__item known-token-item">
                   <div
-                    className="evm-custom-tokens-list__item-main evm-custom-tokens-list__item-main--clickable"
+                    className="evm-custom-tokens-list__item-main evm-custom-tokens-list__item-main--clickable known-token-row-main"
                     role="button"
                     tabIndex={0}
                     onClick={() => {
@@ -207,20 +212,23 @@ const EvmCustomTokensPage = ({
                         setShowAddPopup(true);
                       }
                     }}>
-                    {meta?.logo != null && meta.logo.length > 0 && (
-                      <img
-                        className="evm-custom-tokens-list__logo"
-                        src={meta.logo}
-                        alt=""
-                      />
-                    )}
-                    <div className="evm-custom-tokens-list__line">
-                      <span className="evm-custom-tokens-list__name">
-                        {displayName}
-                      </span>
-                      <span className="evm-custom-tokens-list__contract-address">
-                        ({EvmFormatUtils.formatAddress(token.address)})
-                      </span>
+                    <EvmTokenLogo
+                      className="known-token-logo"
+                      tokenInfo={{
+                        logo: meta?.logo ?? '',
+                        name: tokenName,
+                        symbol: tokenSymbol,
+                      }}
+                    />
+                    <div className="known-token-details">
+                      <div className="known-token-main-row">
+                        <span className="known-token-symbol">
+                          {tokenSymbol}
+                        </span>
+                      </div>
+                      <div className="known-token-address">
+                        {EvmFormatUtils.formatAddress(token.address)}
+                      </div>
                     </div>
                   </div>
                   <button
@@ -240,13 +248,35 @@ const EvmCustomTokensPage = ({
             })}
           </ul>
         )}
+
+        <div className="evm-custom-tokens-add-section">
+          <div className="evm-custom-tokens-section-title">
+            {I18nUtils.getMessage('evm_custom_tokens_add_section_title')}
+          </div>
+          <EvmKnownTokenList
+            chain={chain}
+            existingAddresses={customTokenAddresses}
+            onSave={saveCustomToken}
+          />
+        </div>
       </Card>
+      <div className="evm-custom-tokens-manual-action">
+        <ButtonComponent
+          type={ButtonType.ALTERNATIVE}
+          label="evm_add_custom_token_manually"
+          dataTestId="btn-add-custom-token-page"
+          onClick={() => {
+            setEditingToken(null);
+            setShowAddPopup(true);
+          }}
+        />
+      </div>
       {showAddPopup && (
         <EvmAddCustomAssetPopup
           chain={chain}
           mode="erc20"
           walletAddress={activeAccount.wallet.address}
-          existingAddresses={erc20AddressesFromBalances}
+          existingAddresses={existingErc20Addresses}
           tokenToEdit={editingToken}
           onClose={closeTokenPopup}
           onSave={

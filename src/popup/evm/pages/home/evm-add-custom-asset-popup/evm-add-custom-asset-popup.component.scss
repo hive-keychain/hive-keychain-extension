@@ -2,6 +2,9 @@
   .popup-content {
     row-gap: 16px;
     align-items: stretch;
+    width: min(92%, 420px);
+    max-width: 100%;
+    margin: 0 auto;
   }
 
   .popup-title {

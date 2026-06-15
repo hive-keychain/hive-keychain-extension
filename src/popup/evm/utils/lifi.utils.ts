@@ -303,6 +303,49 @@ const matchesTokenQuery = (token: OptionItem, query: string): boolean => {
   );
 };
 
+const sortTokensByMarketCap = (tokens: TokenExtended[]): TokenExtended[] =>
+  [...tokens].sort(
+    (a, b) => Number(b.marketCapUSD ?? 0) - Number(a.marketCapUSD ?? 0),
+  );
+
+const getKnownTokensForChain = async (
+  chainId: string,
+): Promise<TokenExtended[]> => {
+  const lifiChainId = evmChainIdToLifiId(chainId);
+  const data = await getLifiData();
+  const chainTokens = (data.tokens?.[lifiChainId] ?? []) as TokenExtended[];
+
+  const tokensWithContractAddress = chainTokens.filter(
+    (token) =>
+      !!token.address &&
+      token.address.toLowerCase() !== ethers.ZeroAddress,
+  );
+
+  return sortTokensByMarketCap(tokensWithContractAddress);
+};
+
+const matchesKnownTokenQuery = (
+  token: TokenExtended,
+  query: string,
+): boolean => {
+  const normalizedQuery = query.trim().toLowerCase();
+  if (!normalizedQuery.length) {
+    return true;
+  }
+
+  return (
+    token.name?.toLowerCase().includes(normalizedQuery) ||
+    token.symbol?.toLowerCase().includes(normalizedQuery) ||
+    token.address?.toLowerCase().includes(normalizedQuery)
+  );
+};
+
+const filterKnownTokensByQuery = (
+  tokens: TokenExtended[],
+  query: string,
+): TokenExtended[] =>
+  tokens.filter((token) => matchesKnownTokenQuery(token, query));
+
 const filterTokensByChainAndQuery = (
   tokens: OptionItem[],
   chain: ExtendedChain,
@@ -433,6 +476,8 @@ export const LiFiUtils = {
   getLiFiSwapOptionLists,
   getTokenOptionItem,
   getChainOptionItem,
+  getKnownTokensForChain,
+  filterKnownTokensByQuery,
   filterTokensByChainAndQuery,
   retrieveLiFiHistory,
   getTokenBalanceFromRawUnits,

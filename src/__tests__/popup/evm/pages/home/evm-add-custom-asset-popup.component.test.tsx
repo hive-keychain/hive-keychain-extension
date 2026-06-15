@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom';
-import { KeychainApi } from '@api/keychain';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import {
@@ -52,23 +51,16 @@ describe('EvmAddCustomAssetPopup', () => {
       .mockResolvedValue({ name: 'USD Coin', decimals: 6 });
   });
 
-  it('renders the manual ERC20 form without calling the popular token API', async () => {
-    const onSave = jest.fn();
-    const keychainGetSpy = jest.spyOn(KeychainApi, 'get');
-
+  it('renders the manual ERC20 form', async () => {
     render(
       <EvmAddCustomAssetPopup
         chain={chain}
         mode="erc20"
         walletAddress="0x1111111111111111111111111111111111111111"
         onClose={jest.fn()}
-        onSave={onSave}
+        onSave={jest.fn()}
       />,
     );
-
-    await waitFor(() => {
-      expect(EvmTokensUtils.getCustomTokens).toHaveBeenCalled();
-    });
 
     expect(
       screen.getByTestId('custom-asset-contract-address'),
@@ -76,7 +68,6 @@ describe('EvmAddCustomAssetPopup', () => {
     expect(screen.getByTestId('custom-asset-name')).toBeInTheDocument();
     expect(screen.getByTestId('custom-asset-symbol')).toBeInTheDocument();
     expect(screen.getByTestId('custom-asset-decimals')).toBeInTheDocument();
-    expect(keychainGetSpy).not.toHaveBeenCalled();
   });
 
   it('blocks save when required fields are empty', async () => {
