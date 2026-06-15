@@ -12,6 +12,7 @@ import {
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
+import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
 import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
@@ -315,30 +316,29 @@ const ConfirmationPage = ({
 };
 
 const mapStateToProps = (state: RootState) => {
+  const params = state.navigation.stack[0].params;
   return {
-    message: state.navigation.stack[0].params.message as string,
-    fields: state.navigation.stack[0].params
-      .fields as ConfirmationPageEvmFields[],
-    warningMessage: state.navigation.stack[0].params.warningMessage as string,
-    warningParams: state.navigation.stack[0].params.warningParams,
-    skipWarningTranslation:
-      state.navigation.stack[0].params.skipWarningTranslation,
-    afterConfirmAction: state.navigation.stack[0].params.afterConfirmAction,
-    afterCancelAction: state.navigation.stack[0].params.afterCancelAction,
-    title: state.navigation.stack[0].params.title,
-    skipTitleTranslation: state.navigation.stack[0].params.skipTitleTranslation,
-    activeAccount: state.evm.activeAccount,
-    hasGasFee: state.navigation.stack[0].params.hasGasFee,
-    chain: state.chain,
-    tokenInfo: state.navigation.stack[0].params.tokenInfo,
-    prefetchedMainTokenInfo:
-      state.navigation.stack[0].params.prefetchedMainTokenInfo,
-    receiverAddress: state.navigation.stack[0].params.receiverAddress,
-    amount: state.navigation.stack[0].params.amount,
-    wallet: state.navigation.stack[0].params.wallet,
-    selectedAccount: state.evm.activeAccount,
-    transactionData: state.navigation.stack[0].params
-      .transactionData as ProviderTransactionData,
+    message: params.message as string,
+    fields: params.fields as ConfirmationPageEvmFields[],
+    warningMessage: params.warningMessage as string,
+    warningParams: params.warningParams,
+    skipWarningTranslation: params.skipWarningTranslation,
+    afterConfirmAction: params.afterConfirmAction,
+    afterCancelAction: params.afterCancelAction,
+    title: params.title,
+    skipTitleTranslation: params.skipTitleTranslation,
+    activeAccount: (params.activeAccountOverride ??
+      state.evm.activeAccount) as EvmActiveAccount,
+    hasGasFee: params.hasGasFee,
+    chain: params.chainOverride ?? state.chain,
+    tokenInfo: params.tokenInfo as EvmSmartContractInfo,
+    prefetchedMainTokenInfo: params.prefetchedMainTokenInfo,
+    receiverAddress: params.receiverAddress,
+    amount: params.amount,
+    wallet: params.wallet,
+    selectedAccount: (params.activeAccountOverride ??
+      state.evm.activeAccount) as EvmActiveAccount,
+    transactionData: params.transactionData as ProviderTransactionData,
   };
 };
 

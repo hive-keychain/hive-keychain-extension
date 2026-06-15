@@ -34,7 +34,9 @@ import { LoadingState } from '@popup/multichain/reducers/loading.reducer';
 import { RootState } from '@popup/multichain/store';
 import { UnifiedRouterComponent } from '@popup/multichain/unified-router.component';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
 import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
+import { PortfolioRouteUtils } from '@popup/multichain/utils/portfolio-route.utils';
 import { resolvePopupStartup } from '@popup/multichain/utils/popup-startup.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -453,6 +455,19 @@ const UnlockedApp = ({
       const navStack = store.getState().navigation.stack;
       if (navStack.length === 0 || stackHasAccountSetupPage(navStack)) {
         if (navStack.length === 0) {
+          const portfolioRoute = PortfolioRouteUtils.parseHash(
+            window.location.hash,
+          );
+          if (portfolioRoute) {
+            PortfolioRouteUtils.clearHash();
+            if (ExtensionSurfaceUtils.isDetachedTab()) {
+              navigateTo(portfolioRoute, true);
+            } else {
+              void PortfolioRouteUtils.open(() => undefined);
+              navigateTo(Screen.HOME_PAGE, true);
+            }
+            return;
+          }
           // EVM setup routes should not override Hive home when Hive accounts exist.
           if (hiveAccounts.length === 0) {
             const navigationTarget =

@@ -22,7 +22,6 @@ const config = {
     evmKeychainLegacyYielding:
       './src/content-scripts/evm/injected/evm-keychain-legacy-yielding.ts',
     evmContentScript: './src/content-scripts/evm/evm-content-script.ts',
-    portfolio: './src/portfolio/index.tsx',
     vault: './src/vault/index.ts',
   },
   module: {

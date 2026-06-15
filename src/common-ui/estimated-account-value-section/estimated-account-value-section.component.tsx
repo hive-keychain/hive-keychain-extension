@@ -15,11 +15,13 @@ export interface DisplayedAccountValues {
 interface EstimatedAccountValueSectionProps {
   hasPortofolio?: boolean;
   accountValues: DisplayedAccountValues;
+  onPortfolioClick?: () => void;
 }
 
 const EstimatedAccountValueSection = ({
   hasPortofolio,
   accountValues,
+  onPortfolioClick,
 }: EstimatedAccountValueSectionProps) => {
   const [accountValueType, setAccountValueType] = useState<AccountValueType>(
     AccountValueType.DOLLARS,
@@ -35,12 +37,6 @@ const EstimatedAccountValueSection = ({
         LocalStorageKeyEnum.ACCOUNT_VALUE_TYPE,
       )) || AccountValueType.DOLLARS,
     );
-  };
-
-  const openPortfolio = async () => {
-    chrome.tabs.create({
-      url: `portfolio.html`,
-    });
   };
 
   const onClickEstimatedValue = () => {
@@ -86,7 +82,7 @@ const EstimatedAccountValueSection = ({
             <SVGIcon
               className={`portfolio-icon `}
               icon={SVGIcons.PORTOLIO}
-              onClick={openPortfolio}
+              onClick={onPortfolioClick}
             />
           )}
         </div>
