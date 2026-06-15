@@ -24,6 +24,10 @@ const LINK_ENABLED_I18N_KEYS = new Set([
 
 const LIST_ENABLED_I18N_KEYS = new Set(['popup_html_about_text']);
 
+const TERMS_URL = 'https://hive-keychain.com/#/terms';
+const PRIVACY_URL = 'https://hive-keychain.com/#/privacy';
+const TERMS_AND_PRIVACY_I18N_KEY = 'accept_terms_and_condition';
+
 interface SanitizeHtmlOptions {
   allowLinks?: boolean;
   allowLists?: boolean;
@@ -76,11 +80,35 @@ const sanitizeHtml = (html: string, options?: SanitizeHtmlOptions) => {
   });
 };
 
+const getTermsAndPrivacyHtml = (html: string) =>
+  html
+    .replaceAll(
+      TERMS_URL,
+      escapeHtml(process.env.KEYCHAIN_TERMS_URL || TERMS_URL),
+    )
+    .replaceAll(
+      PRIVACY_URL,
+      escapeHtml(process.env.KEYCHAIN_PRIVACY_URL || PRIVACY_URL),
+    );
+
+const getI18nHtml = (
+  message: string,
+  params?: HtmlMessageParam | HtmlMessageParam[],
+) => {
+  const html = I18nUtils.getMessage(message, escapeHtmlParams(params));
+
+  if (message === TERMS_AND_PRIVACY_I18N_KEY) {
+    return getTermsAndPrivacyHtml(html);
+  }
+
+  return html;
+};
+
 const getSafeI18nHtml = (
   message: string,
   params?: HtmlMessageParam | HtmlMessageParam[],
 ) =>
-  sanitizeHtml(I18nUtils.getMessage(message, escapeHtmlParams(params)), {
+  sanitizeHtml(getI18nHtml(message, params), {
     allowLinks: LINK_ENABLED_I18N_KEYS.has(message),
     allowLists: LIST_ENABLED_I18N_KEYS.has(message),
   });
