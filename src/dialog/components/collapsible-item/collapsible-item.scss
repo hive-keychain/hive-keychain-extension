@@ -7,18 +7,33 @@ pre {
 }
 .collapsible-title {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   width: 100%;
   flex-direction: row;
+  box-sizing: border-box;
+  min-height: 32px;
+  padding: 6px 0;
   cursor: pointer;
+
+  .label {
+    @include poppins500(14px);
+    color: var(--main-font-color);
+  }
 }
 
 .field.collapsible {
   flex-direction: column;
   position: relative;
+  color: var(--main-font-color);
+  @include poppins400(14px);
 
   .operation-item-content {
+    @include poppins400(14px);
+    user-select: text;
+
     pre {
+      @include poppins400(14px);
       user-select: none !important;
       margin: 0;
     }

@@ -144,8 +144,7 @@ export const performEvmOperation = async (
       error instanceof KeychainError ? error.message : etherJSError.message;
     const errorMessageParams =
       error instanceof KeychainError ? error.messageParams ?? [] : [];
-    Logger.log('etherJSError', etherJSError);
-    Logger.log('error', error);
+    Logger.warn(`EVM operation failed: ${etherJSError.message}`);
     await handleEvmError(
       requestHandler,
       tab,

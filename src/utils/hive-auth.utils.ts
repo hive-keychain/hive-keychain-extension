@@ -496,7 +496,7 @@ const listenToAuthAck = (
   const handleMessage = async (event: MessageEvent) => {
     try {
       const message = JSON.parse(event.data);
-      Logger.log('listenToAuthAck message:', { message });
+      Logger.log('listenToAuthAck message command:', message.cmd);
       if (message.cmd === HasCmd.AUTH_ACK) {
         if (message.uuid !== keylessRequest.uuid) return;
         ws?.removeEventListener('message', handleMessage);

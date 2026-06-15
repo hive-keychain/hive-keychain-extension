@@ -311,7 +311,6 @@ const broadcastAndConfirmTransactionWithSignature = async (
   }
   let response;
   try {
-    Logger.log(hiveTransaction);
     response = await hiveTransaction.broadcast();
     if ((response as HiveTxBroadcastSuccessResponse).result) {
       const transactionResult: HiveTxBroadcastResult = (
