@@ -109,6 +109,7 @@ const UnlockedApp = ({
   evmAccounts,
   activeAccountType,
   activeRpc,
+  activeHiveAccount,
   activeEvmAccount,
   chain,
   navigationStack,
@@ -774,10 +775,16 @@ const UnlockedApp = ({
     }, 1000);
   };
 
+  const needsHiveActiveAccount =
+    activeAccountType === ChainType.HIVE && hiveAccounts.length > 0;
+  const isStartupActiveAccountReady =
+    !needsHiveActiveAccount || !!activeHiveAccount?.name;
+
   const showStartupSplash =
     !isAppReady ||
     displaySplashscreen ||
-    (!activeRpc && !displayChangeRpcPopup);
+    (!activeRpc && !displayChangeRpcPopup) ||
+    !isStartupActiveAccountReady;
 
   if (showStartupSplash) {
     return (
@@ -816,6 +823,7 @@ const mapStateToProps = (state: RootState) => {
     displayChangeRpcPopup: state.hive.rpcSwitcher.display,
     loading: state.loading.loadingOperations.length,
     loadingState: state.loading as LoadingState,
+    activeHiveAccount: state.hive.activeAccount,
     activeEvmAccount: state.evm.activeAccount,
     isCurrentPageHomePage:
       state.navigation.stack[0]?.currentPage === Screen.HOME_PAGE,

@@ -114,16 +114,16 @@ jest.mock('src/popup/hive/actions/hive-engine-config.actions', () => ({
 }));
 
 jest.mock('src/popup/hive/actions/active-account.actions', () => ({
-  loadActiveAccount: (account: unknown) => {
+  loadActiveAccount: jest.fn((account: { name?: string }) => {
     const {
       HiveActionType,
     } = require('src/popup/hive/actions/action-type.enum');
     return (dispatch: (action: unknown) => unknown) =>
       dispatch({
         type: HiveActionType.SET_ACTIVE_ACCOUNT,
-        payload: account,
+        payload: { name: account?.name, account: {} },
       });
-  },
+  }),
 }));
 
 jest.mock('@popup/evm/actions/active-account.actions', () => ({
@@ -250,6 +250,17 @@ jest.mock('@popup/evm/utils/evm-chain.utils', () => ({
 describe('UnlockedAppComponent', () => {
   beforeEach(() => {
     I18nUtils.getMessage = jest.fn((key: string) => key);
+    const {
+      HiveActionType,
+    } = require('src/popup/hive/actions/action-type.enum');
+    const { loadActiveAccount } = require('src/popup/hive/actions/active-account.actions');
+    (loadActiveAccount as jest.Mock).mockImplementation(
+      (account: { name?: string }) => (dispatch: (action: unknown) => unknown) =>
+        dispatch({
+          type: HiveActionType.SET_ACTIVE_ACCOUNT,
+          payload: { name: account?.name, account: {} },
+        }),
+    );
     (PaidAccountCreationActions.synchronizePendingHiveAccountCreations as jest.Mock).mockReset();
     (PaidAccountCreationActions.synchronizePendingHiveAccountCreations as jest.Mock).mockImplementation(
       () => async () => [],
@@ -444,7 +455,7 @@ describe('UnlockedAppComponent', () => {
       [],
     );
 
-    const { store } = customRender(<UnlockedAppComponent />, {
+    const { store, getByTestId } = customRender(<UnlockedAppComponent />, {
       initialState: {
         ...initialEmptyStateStore,
         mk: mkData.user.one,
@@ -469,9 +480,57 @@ describe('UnlockedAppComponent', () => {
       expect(store.getState().navigation.stack[0]?.currentPage).toBe(
         Screen.HOME_PAGE,
       );
+      expect(store.getState().hive.activeAccount.name).toBeTruthy();
+      expect(getByTestId('unified-router')).toBeInTheDocument();
     });
 
     window.location.hash = previousHash;
+  });
+
+  it('keeps startup splash until the Hive active account name is hydrated', async () => {
+    const {
+      HiveActionType,
+    } = require('src/popup/hive/actions/action-type.enum');
+    const { loadActiveAccount } = require('src/popup/hive/actions/active-account.actions');
+    (loadActiveAccount as jest.Mock).mockImplementation(
+      (account: { name?: string }) => (dispatch: (action: unknown) => unknown) =>
+        new Promise<void>((resolve) => {
+          window.setTimeout(() => {
+            dispatch({
+              type: HiveActionType.SET_ACTIVE_ACCOUNT,
+              payload: { name: account?.name, account: {} },
+            });
+            resolve();
+          }, 50);
+        }),
+    );
+    (EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
+
+    const { queryByTestId } = customRender(<UnlockedAppComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk: mkData.user.one,
+        activeAccountType: ChainType.HIVE,
+        chain: hiveChain,
+        navigation: { stack: [] },
+        hive: {
+          ...initialEmptyStateStore.hive,
+          appStatus: {
+            ...initialEmptyStateStore.hive.appStatus,
+            priceLoaded: true,
+            globalPropertiesLoaded: true,
+          },
+        },
+      },
+    });
+
+    expect(queryByTestId('unified-router')).not.toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(queryByTestId('unified-router')).toBeInTheDocument();
+    });
   });
 
   it('shows display preferences after login when a migrated wallet has not completed it', async () => {
