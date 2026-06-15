@@ -11,14 +11,12 @@ jest.mock('src/utils/localStorage.utils', () => ({
 }));
 
 describe('SidePanelPreferenceUtils', () => {
-  const getValueFromLocalStorageMock =
-    LocalStorageUtils.getValueFromLocalStorage as jest.MockedFunction<
-      typeof LocalStorageUtils.getValueFromLocalStorage
-    >;
-  const saveValueInLocalStorageMock =
-    LocalStorageUtils.saveValueInLocalStorage as jest.MockedFunction<
-      typeof LocalStorageUtils.saveValueInLocalStorage
-    >;
+  const getValueFromLocalStorageMock = LocalStorageUtils.getValueFromLocalStorage as jest.MockedFunction<
+    typeof LocalStorageUtils.getValueFromLocalStorage
+  >;
+  const saveValueInLocalStorageMock = LocalStorageUtils.saveValueInLocalStorage as jest.MockedFunction<
+    typeof LocalStorageUtils.saveValueInLocalStorage
+  >;
   const sessionGetMock = jest.fn();
   const sessionSetMock = jest.fn();
   const sessionRemoveMock = jest.fn();
@@ -53,7 +51,27 @@ describe('SidePanelPreferenceUtils', () => {
     };
   });
 
-  it('returns false when open side panel preference is unset', async () => {
+  it('returns true when open side panel preference is unset before signup is finished', async () => {
+    getValueFromLocalStorageMock.mockImplementation(async (key) => {
+      if (key === LocalStorageKeyEnum.HAS_FINISHED_SIGNUP) {
+        return false;
+      }
+      return undefined;
+    });
+
+    await expect(
+      SidePanelPreferenceUtils.getOpenSidePanelByDefault(),
+    ).resolves.toBe(true);
+  });
+
+  it('returns false when migrating a signed up wallet without side panel preference', async () => {
+    getValueFromLocalStorageMock.mockImplementation(async (key) => {
+      if (key === LocalStorageKeyEnum.HAS_FINISHED_SIGNUP) {
+        return true;
+      }
+      return undefined;
+    });
+
     await expect(
       SidePanelPreferenceUtils.getOpenSidePanelByDefault(),
     ).resolves.toBe(false);

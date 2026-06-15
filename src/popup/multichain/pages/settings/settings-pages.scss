@@ -201,17 +201,10 @@
   margin: 0;
 }
 
-.settings-preferences-display-page {
-  @include pageLayoutRowGap;
+.display-appearance-preferences {
+  display: flex;
+  flex-direction: column;
   row-gap: 16px;
-  padding: 0 24px 24px;
-  height: unset;
-
-  .fields {
-    display: flex;
-    flex-direction: column;
-    row-gap: 16px;
-  }
 
   .settings-section {
     display: flex;
@@ -235,6 +228,64 @@
     .custom-select {
       width: 100%;
     }
+  }
+}
+
+.display-mode-reopen-notice {
+  @include settings-page-note();
+  margin: 0;
+}
+
+.display-appearance-setup-page {
+  @include pageLayoutRowGap;
+  box-sizing: border-box;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  padding: 0 24px 24px;
+  row-gap: 16px;
+
+  .display-appearance-setup-description {
+    @include poppins400(14px);
+    color: var(--main-font-color);
+  }
+
+  .display-appearance-setup-content {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+
+  .display-appearance-setup-continue {
+    flex-shrink: 0;
+    margin-top: auto;
+  }
+}
+
+html.sidepanel-page {
+  .display-appearance-setup-page {
+    row-gap: 24px;
+
+    .display-appearance-setup-content {
+      row-gap: 8px;
+    }
+
+    .display-appearance-preferences {
+      row-gap: 24px;
+    }
+  }
+}
+
+.settings-preferences-display-page {
+  @include pageLayoutRowGap;
+  row-gap: 16px;
+  padding: 0 24px 24px;
+  height: unset;
+
+  .fields {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
   }
 }
 

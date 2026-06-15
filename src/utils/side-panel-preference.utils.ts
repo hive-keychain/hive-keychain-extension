@@ -12,16 +12,24 @@ type SidePanelWithBehavior = typeof chrome.sidePanel & {
     openPanelOnActionClick: boolean;
   }) => Promise<void>;
   open?: (options: { windowId?: number; tabId?: number }) => Promise<void>;
-  setOptions?: (options: {
-    path?: string;
-    enabled?: boolean;
-  }) => Promise<void>;
+  setOptions?: (options: { path?: string; enabled?: boolean }) => Promise<void>;
 };
 
 const getOpenSidePanelByDefault = async (): Promise<boolean> => {
   const value = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.OPEN_SIDE_PANEL_BY_DEFAULT,
   );
+  if (typeof value === 'boolean') {
+    return value;
+  }
+
+  const hasFinishedSignup = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.HAS_FINISHED_SIGNUP,
+  );
+  if (hasFinishedSignup !== true) {
+    return true;
+  }
+
   return value === true;
 };
 
@@ -30,7 +38,9 @@ const isSidePanelSessionActive = async (): Promise<boolean> => {
     return false;
   }
 
-  const result = await chrome.storage.session.get(SIDE_PANEL_SESSION_ACTIVE_KEY);
+  const result = await chrome.storage.session.get(
+    SIDE_PANEL_SESSION_ACTIVE_KEY,
+  );
   return result[SIDE_PANEL_SESSION_ACTIVE_KEY] === true;
 };
 

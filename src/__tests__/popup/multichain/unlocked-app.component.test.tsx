@@ -57,9 +57,7 @@ const evmChain = {
 
 jest.mock('src/popup/hive/actions/paid-account-creation.actions', () => ({
   synchronizePendingHiveAccountCreations: jest.fn(() => async () => []),
-  handleCompletedPaidHiveAccountCreations: jest.fn(
-    () => async () => undefined,
-  ),
+  handleCompletedPaidHiveAccountCreations: jest.fn(() => async () => undefined),
 }));
 
 jest.mock('@popup/multichain/unified-router.component', () => ({
@@ -252,24 +250,25 @@ jest.mock('@popup/evm/utils/evm-chain.utils', () => ({
 describe('UnlockedAppComponent', () => {
   beforeEach(() => {
     I18nUtils.getMessage = jest.fn((key: string) => key);
-    (
-      PaidAccountCreationActions.synchronizePendingHiveAccountCreations as jest.Mock
-    ).mockReset();
-    (
-      PaidAccountCreationActions.synchronizePendingHiveAccountCreations as jest.Mock
-    ).mockImplementation(() => async () => []);
+    (PaidAccountCreationActions.synchronizePendingHiveAccountCreations as jest.Mock).mockReset();
+    (PaidAccountCreationActions.synchronizePendingHiveAccountCreations as jest.Mock).mockImplementation(
+      () => async () => [],
+    );
     (AccountUtils.getAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
       defaultHiveAccounts(),
     );
     (EvmWalletUtils.getConnectedWallets as jest.Mock).mockResolvedValue([]);
-    (
-      EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock
-    ).mockResolvedValue(defaultEvmAccounts());
+    (EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      defaultEvmAccounts(),
+    );
     jest
       .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
       .mockImplementation(async (key) => {
         if (key === LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED) {
           return false;
+        }
+        if (key === LocalStorageKeyEnum.DISPLAY_APPEARANCE_SETUP_COMPLETED) {
+          return true;
         }
         return undefined;
       });
@@ -319,9 +318,9 @@ describe('UnlockedAppComponent', () => {
     (AccountUtils.getAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
       [],
     );
-    (
-      EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock
-    ).mockResolvedValue([]);
+    (EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
 
     const { store } = customRender(<UnlockedAppComponent />, {
       initialState: {
@@ -353,13 +352,61 @@ describe('UnlockedAppComponent', () => {
     });
   });
 
+  it('shows display preferences before account setup when not completed', async () => {
+    (AccountUtils.getAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
+    (EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockImplementation(async (key) => {
+        if (key === LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED) {
+          return false;
+        }
+        if (key === LocalStorageKeyEnum.DISPLAY_APPEARANCE_SETUP_COMPLETED) {
+          return false;
+        }
+        return undefined;
+      });
+
+    const { store } = customRender(<UnlockedAppComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk: mkData.user.one,
+        chain: hiveChain,
+        navigation: { stack: [] },
+        hive: {
+          ...initialEmptyStateStore.hive,
+          accounts: [],
+          appStatus: {
+            ...initialEmptyStateStore.hive.appStatus,
+            priceLoaded: true,
+            globalPropertiesLoaded: true,
+          },
+        },
+        evm: {
+          ...initialEmptyStateStore.evm,
+          accounts: [],
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(store.getState().navigation.stack[0]?.currentPage).toBe(
+        Screen.SETUP_DISPLAY_APPEARANCE,
+      );
+    });
+  });
+
   it('uses unified router when the wallet has no accounts yet', async () => {
     (AccountUtils.getAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
       [],
     );
-    (
-      EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock
-    ).mockResolvedValue([]);
+    (EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
 
     const { getByTestId } = customRender(<UnlockedAppComponent />, {
       initialState: {
@@ -393,9 +440,9 @@ describe('UnlockedAppComponent', () => {
   it('opens home page when only Hive accounts exist', async () => {
     const previousHash = window.location.hash;
     window.location.hash = '';
-    (
-      EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock
-    ).mockResolvedValue([]);
+    (EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
 
     const { store } = customRender(<UnlockedAppComponent />, {
       initialState: {
@@ -427,10 +474,58 @@ describe('UnlockedAppComponent', () => {
     window.location.hash = previousHash;
   });
 
+  it('shows display preferences after login when a migrated wallet has not completed it', async () => {
+    const previousHash = window.location.hash;
+    window.location.hash = '';
+    (EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockImplementation(async (key) => {
+        if (key === LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED) {
+          return false;
+        }
+        if (key === LocalStorageKeyEnum.DISPLAY_APPEARANCE_SETUP_COMPLETED) {
+          return false;
+        }
+        return undefined;
+      });
+
+    const { store } = customRender(<UnlockedAppComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk: mkData.user.one,
+        hasFinishedSignup: true,
+        chain: hiveChain,
+        navigation: {
+          stack: [],
+        },
+        hive: {
+          ...initialEmptyStateStore.hive,
+          appStatus: {
+            ...initialEmptyStateStore.hive.appStatus,
+            priceLoaded: true,
+            globalPropertiesLoaded: true,
+          },
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(store.getState().navigation.stack[0]?.currentPage).toBe(
+        Screen.SETUP_DISPLAY_APPEARANCE,
+      );
+    });
+
+    window.location.hash = previousHash;
+  });
+
   it('consumes EVM account-creation payment hashes on startup', async () => {
     const previousHash = window.location.hash;
-    window.location.hash =
-      PaidAccountCreationRouteUtils.buildPaymentStatusHash('request-1');
+    window.location.hash = PaidAccountCreationRouteUtils.buildPaymentStatusHash(
+      'request-1',
+    );
 
     const { store } = customRender(<UnlockedAppComponent />, {
       initialState: {
@@ -472,9 +567,7 @@ describe('UnlockedAppComponent', () => {
     (AccountUtils.getAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
       [],
     );
-    (
-      PaidAccountCreationActions.synchronizePendingHiveAccountCreations as jest.Mock
-    ).mockImplementation(
+    (PaidAccountCreationActions.synchronizePendingHiveAccountCreations as jest.Mock).mockImplementation(
       () => async (dispatch: (action: unknown) => unknown) => {
         dispatch(setAccounts([importedAccount]));
         return [];
@@ -583,9 +676,8 @@ describe('UnlockedAppComponent', () => {
       ).toHaveBeenCalled();
     });
 
-    const syncCallsAfterInit = (
-      PaidAccountCreationActions.synchronizePendingHiveAccountCreations as jest.Mock
-    ).mock.calls.length;
+    const syncCallsAfterInit = (PaidAccountCreationActions.synchronizePendingHiveAccountCreations as jest.Mock)
+      .mock.calls.length;
 
     store.dispatch(navigateTo(Screen.HOME_PAGE, true));
 
@@ -601,9 +693,7 @@ describe('UnlockedAppComponent', () => {
       name: 'new-account',
       keys: { posting: 'posting-key' },
     };
-    (
-      PaidAccountCreationActions.synchronizePendingHiveAccountCreations as jest.Mock
-    ).mockImplementation(
+    (PaidAccountCreationActions.synchronizePendingHiveAccountCreations as jest.Mock).mockImplementation(
       () => async () => [
         {
           outcome: 'imported',

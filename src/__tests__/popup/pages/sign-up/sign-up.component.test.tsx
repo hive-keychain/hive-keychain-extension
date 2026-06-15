@@ -68,10 +68,9 @@ describe('sign-up.component tests:\n', () => {
       );
     });
     expect(
-      await screen.findByText(
-        I18nUtils.getMessage('popup_password_mismatch'),
-        { exact: true },
-      ),
+      await screen.findByText(I18nUtils.getMessage('popup_password_mismatch'), {
+        exact: true,
+      }),
     ).toBeInTheDocument();
   });
 
@@ -89,10 +88,9 @@ describe('sign-up.component tests:\n', () => {
       await userEvent.click(screen.getByTestId(dataTestIdButton.signUp));
     });
     expect(
-      await screen.findByText(
-        I18nUtils.getMessage('popup_password_mismatch'),
-        { exact: true },
-      ),
+      await screen.findByText(I18nUtils.getMessage('popup_password_mismatch'), {
+        exact: true,
+      }),
     ).toBeInTheDocument();
   });
 
@@ -135,7 +133,7 @@ describe('sign-up.component tests:\n', () => {
     ).toBeInTheDocument();
   });
 
-  it('Must navigate to add_keys_page with valid password and pressing enter', async () => {
+  it('Must navigate to display preferences with valid password and pressing enter', async () => {
     await acceptTerms();
     await act(async () => {
       await userEvent.type(
@@ -149,12 +147,12 @@ describe('sign-up.component tests:\n', () => {
     });
     await waitFor(() => {
       expect(store.getState().navigation.stack[0]?.currentPage).toBe(
-        Screen.ACCOUNT_PAGE_INIT_ACCOUNT,
+        Screen.SETUP_DISPLAY_APPEARANCE,
       );
     });
   });
 
-  it('Must navigate to add_keys_page with valid password and click button', async () => {
+  it('Must navigate to display preferences with valid password and click button', async () => {
     await acceptTerms();
     await act(async () => {
       await userEvent.type(
@@ -169,7 +167,7 @@ describe('sign-up.component tests:\n', () => {
     });
     await waitFor(() => {
       expect(store.getState().navigation.stack[0]?.currentPage).toBe(
-        Screen.ACCOUNT_PAGE_INIT_ACCOUNT,
+        Screen.SETUP_DISPLAY_APPEARANCE,
       );
     });
   });

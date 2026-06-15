@@ -695,6 +695,10 @@
     "message": "Einstellungen und Anzeige",
     "description": "Settings menu section for theme and window display options"
   },
+  "popup_html_customize_keychain_appearance": {
+    "message": "Passen Sie das Erscheinungsbild von Keychain an",
+    "description": "Setup preferences: display and appearance description"
+  },
   "popup_html_preferences_appearance_section": {
     "message": "Darstellung",
     "description": "Preferences and display: theme section title"
@@ -726,6 +730,10 @@
   "popup_html_display_side_panel": {
     "message": "Seitenpanel",
     "description": "Preferences and display: side panel display mode option"
+  },
+  "popup_html_display_mode_reopen_wallet_notice": {
+    "message": "Keychain wird nach dem erneuten Öffnen der Wallet im ausgewählten Anzeigemodus geöffnet.",
+    "description": "Preferences and display: selected display mode applies after reopening the wallet"
   },
   "popup_html_open_in_side_panel": {
     "message": "Im Seitenpanel öffnen",

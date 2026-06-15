@@ -695,6 +695,10 @@
     "message": "Preferensi dan tampilan",
     "description": "Settings menu section for theme and window display options"
   },
+  "popup_html_customize_keychain_appearance": {
+    "message": "Sesuaikan tampilan Keychain Anda",
+    "description": "Setup preferences: display and appearance description"
+  },
   "popup_html_preferences_appearance_section": {
     "message": "Tampilan",
     "description": "Preferences and display: theme section title"
@@ -726,6 +730,10 @@
   "popup_html_display_side_panel": {
     "message": "Panel samping",
     "description": "Preferences and display: side panel display mode option"
+  },
+  "popup_html_display_mode_reopen_wallet_notice": {
+    "message": "Keychain akan terbuka dalam mode tampilan yang dipilih setelah wallet dibuka kembali.",
+    "description": "Preferences and display: selected display mode applies after reopening the wallet"
   },
   "popup_html_open_in_side_panel": {
     "message": "Buka di panel samping",

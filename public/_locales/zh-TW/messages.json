@@ -695,6 +695,10 @@
     "message": "Preferences and display",
     "description": "Settings menu section for theme and window display options"
   },
+  "popup_html_customize_keychain_appearance": {
+    "message": "自訂您的 Keychain 外觀",
+    "description": "Setup preferences: display and appearance description"
+  },
   "popup_html_preferences_appearance_section": {
     "message": "Appearance",
     "description": "Preferences and display: theme section title"
@@ -726,6 +730,10 @@
   "popup_html_display_side_panel": {
     "message": "側邊欄",
     "description": "Preferences and display: side panel display mode option"
+  },
+  "popup_html_display_mode_reopen_wallet_notice": {
+    "message": "重新開啟錢包後，Keychain 將以所選顯示模式開啟。",
+    "description": "Preferences and display: selected display mode applies after reopening the wallet"
   },
   "popup_html_open_in_side_panel": {
     "message": "Open in side panel",

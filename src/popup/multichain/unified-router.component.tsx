@@ -99,6 +99,7 @@ import { SettingsHivePageComponent } from 'src/popup/multichain/pages/settings/s
 import { UnifiedSettingsMainPageComponent } from 'src/popup/multichain/pages/settings/settings-main-page.component';
 import { SettingsNetworkPageComponent } from 'src/popup/multichain/pages/settings/settings-network-page.component';
 import { SettingsPreferencesDisplayPageComponent } from 'src/popup/multichain/pages/settings/settings-preferences-display-page.component';
+import { DisplayAppearanceSetupPageComponent } from 'src/popup/multichain/pages/setup/display-appearance-setup-page.component';
 
 const getConfirmationAccountType = (
   activeAccountType: ChainType.HIVE | ChainType.EVM,
@@ -210,6 +211,8 @@ const UnifiedRouter = ({
         return <AddCustomChainPage />;
       case MultichainScreen.SELECT_BLOCKCHAIN_PAGE:
         return <ChainSelectorPageComponent />;
+      case MultichainScreen.SETUP_DISPLAY_APPEARANCE:
+        return <DisplayAppearanceSetupPageComponent />;
       case MultichainScreen.ECOSYSTEM_PAGE:
         return <EcosystemComponent />;
       case MultichainScreen.SETTINGS_ABOUT:

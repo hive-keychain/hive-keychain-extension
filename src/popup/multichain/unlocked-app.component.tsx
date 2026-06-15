@@ -619,6 +619,10 @@ const UnlockedApp = ({
     evmAccounts: EvmAccount[],
   ): Promise<void> => {
     const hasAccounts = hiveAccounts.length > 0 || evmAccounts.length > 0;
+    const hasCompletedDisplayAppearanceSetup =
+      (await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.DISPLAY_APPEARANCE_SETUP_COMPLETED,
+      )) === true;
 
     if (mk && mk.length > 0 && hasAccounts) {
       setDisplaySplashscreen(true);
@@ -671,11 +675,19 @@ const UnlockedApp = ({
             return;
           }
         }
+        if (!hasCompletedDisplayAppearanceSetup) {
+          navigateTo(Screen.SETUP_DISPLAY_APPEARANCE, true);
+          return;
+        }
         navigateTo(Screen.HOME_PAGE, true);
       }
     } else if (mk && mk.length > 0) {
-      setTitleContainerProperties(buildAddAccountSetupTitleProperties(false));
-      navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);
+      if (!hasCompletedDisplayAppearanceSetup) {
+        navigateTo(Screen.SETUP_DISPLAY_APPEARANCE, true);
+      } else {
+        setTitleContainerProperties(buildAddAccountSetupTitleProperties(false));
+        navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);
+      }
     } else if (
       mk &&
       mk.length === 0 &&
