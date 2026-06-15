@@ -4416,7 +4416,7 @@
     "description": "Message container success title"
   },
   "accept_terms_and_condition": {
-    "message": "He leído y estoy de acuerdo con los <a target='__blank' href='https://hive-keychain.com/#/terms'>Términos de Servicio</a> y las <a target='__blank' href='https://hive-keychain.com/#/privacy'>Políticas de Privacidad</a> de Hive Keychain",
+    "message": "He leído y estoy de acuerdo con los <a target='__blank' href='https://hive-keychain.com/#/terms'>Términos de Servicio</a>, las <a target='__blank' href='https://hive-keychain.com/#/privacy'>Políticas de Privacidad</a> y las <a target='__blank' href='https://hive-keychain.com/#/fees'>Tarifas</a> de Hive Keychain",
     "description": "Accept terms and conditions text"
   },
   "delete_label": {

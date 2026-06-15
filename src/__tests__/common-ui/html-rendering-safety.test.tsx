@@ -7,6 +7,12 @@ import { I18nUtils } from 'src/utils/i18n.utils';
 
 const env = process.env;
 
+const clearLegalLinksEnv = () => {
+  delete process.env.KEYCHAIN_FEES_URL;
+  delete process.env.KEYCHAIN_PRIVACY_URL;
+  delete process.env.KEYCHAIN_TERMS_URL;
+};
+
 jest.mock('react-svg', () => ({
   ReactSVG: ({ src }: { src: string }) => (
     <span data-testid="svg-icon" data-src={src} />
@@ -15,6 +21,8 @@ jest.mock('react-svg', () => ({
 
 describe('HTML rendering safety', () => {
   beforeEach(() => {
+    process.env = { ...env };
+    clearLegalLinksEnv();
     jest.spyOn(I18nUtils, 'getMessage').mockImplementation((message, params) => {
       if (message === 'message_container_close_button') {
         return 'Close';
@@ -33,7 +41,7 @@ describe('HTML rendering safety', () => {
       }
 
       if (message === 'accept_terms_and_condition') {
-        return "I agree to <a href='https://hive-keychain.com/#/terms'>Terms</a> and <a href='https://hive-keychain.com/#/privacy'>Privacy</a>";
+        return "I agree to <a href='https://hive-keychain.com/#/terms'>Terms</a>, <a href='https://hive-keychain.com/#/privacy'>Privacy</a>, and <a href='https://hive-keychain.com/#/fees'>Fees</a>";
       }
 
       return message;
@@ -135,7 +143,7 @@ describe('HTML rendering safety', () => {
     expect(link).not.toHaveAttribute('onclick');
   });
 
-  it('keeps default terms and privacy links without env overrides', () => {
+  it('keeps default legal links without env overrides', () => {
     const wrapper = document.createElement('div');
     wrapper.innerHTML = HtmlUtils.getSafeI18nHtml('accept_terms_and_condition');
     const links = wrapper.querySelectorAll('a');
@@ -148,11 +156,16 @@ describe('HTML rendering safety', () => {
       'href',
       'https://hive-keychain.com/#/privacy',
     );
+    expect(links[2]).toHaveAttribute(
+      'href',
+      'https://hive-keychain.com/#/fees',
+    );
   });
 
-  it('uses env overrides for terms and privacy links', () => {
+  it('uses env overrides for legal links', () => {
     process.env = {
       ...env,
+      KEYCHAIN_FEES_URL: 'https://example.com/fees',
       KEYCHAIN_PRIVACY_URL: 'https://example.com/privacy',
       KEYCHAIN_TERMS_URL: 'https://example.com/terms',
     };
@@ -163,11 +176,13 @@ describe('HTML rendering safety', () => {
 
     expect(links[0]).toHaveAttribute('href', 'https://example.com/terms');
     expect(links[1]).toHaveAttribute('href', 'https://example.com/privacy');
+    expect(links[2]).toHaveAttribute('href', 'https://example.com/fees');
   });
 
-  it('sanitizes env overrides for terms and privacy links', () => {
+  it('sanitizes env overrides for legal links', () => {
     process.env = {
       ...env,
+      KEYCHAIN_FEES_URL: 'javascript:alert(1)',
       KEYCHAIN_PRIVACY_URL: 'javascript:alert(1)',
       KEYCHAIN_TERMS_URL: 'javascript:alert(1)',
     };
@@ -178,5 +193,6 @@ describe('HTML rendering safety', () => {
 
     expect(links[0]).not.toHaveAttribute('href');
     expect(links[1]).not.toHaveAttribute('href');
+    expect(links[2]).not.toHaveAttribute('href');
   });
 });

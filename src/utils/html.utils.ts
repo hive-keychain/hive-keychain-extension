@@ -26,7 +26,8 @@ const LIST_ENABLED_I18N_KEYS = new Set(['popup_html_about_text']);
 
 const TERMS_URL = 'https://hive-keychain.com/#/terms';
 const PRIVACY_URL = 'https://hive-keychain.com/#/privacy';
-const TERMS_AND_PRIVACY_I18N_KEY = 'accept_terms_and_condition';
+const FEES_URL = 'https://hive-keychain.com/#/fees';
+const LEGAL_LINKS_I18N_KEY = 'accept_terms_and_condition';
 
 interface SanitizeHtmlOptions {
   allowLinks?: boolean;
@@ -80,7 +81,7 @@ const sanitizeHtml = (html: string, options?: SanitizeHtmlOptions) => {
   });
 };
 
-const getTermsAndPrivacyHtml = (html: string) =>
+const getLegalLinksHtml = (html: string) =>
   html
     .replaceAll(
       TERMS_URL,
@@ -89,6 +90,10 @@ const getTermsAndPrivacyHtml = (html: string) =>
     .replaceAll(
       PRIVACY_URL,
       escapeHtml(process.env.KEYCHAIN_PRIVACY_URL || PRIVACY_URL),
+    )
+    .replaceAll(
+      FEES_URL,
+      escapeHtml(process.env.KEYCHAIN_FEES_URL || FEES_URL),
     );
 
 const getI18nHtml = (
@@ -97,8 +102,8 @@ const getI18nHtml = (
 ) => {
   const html = I18nUtils.getMessage(message, escapeHtmlParams(params));
 
-  if (message === TERMS_AND_PRIVACY_I18N_KEY) {
-    return getTermsAndPrivacyHtml(html);
+  if (message === LEGAL_LINKS_I18N_KEY) {
+    return getLegalLinksHtml(html);
   }
 
   return html;
