@@ -14,6 +14,7 @@ import { PortfolioUtils } from 'src/utils/porfolio.utils';
 jest.mock('src/portfolio/portfolio-api.utils', () => ({
   PortfolioApiUtils: {
     listAssets: jest.fn().mockResolvedValue([]),
+    listHistory: jest.fn().mockResolvedValue([]),
   },
 }));
 
@@ -102,9 +103,9 @@ describe('Portfolio', () => {
       />,
     );
 
-    await waitFor(() => expect(PortfolioApiUtils.listAssets).toHaveBeenCalled());
-
-    expect(getByTestId('portfolio-page')).toBeTruthy();
+    await waitFor(() => {
+      expect(getByTestId('portfolio-page')).toBeTruthy();
+    });
     expect(container.querySelector('.portfolio-app-shell')).not.toBeNull();
     expect(container.querySelector('.portfolio-sidebar')).not.toBeNull();
     expect(setTitleContainerProperties).toHaveBeenCalledWith({
@@ -292,7 +293,7 @@ describe('Portfolio', () => {
     });
   });
 
-  it('loads portfolio balances when opening swap', async () => {
+  it('reuses cached portfolio balances when opening swap', async () => {
     const { container } = render(
       <Portfolio
         hiveAccounts={[]}
@@ -322,8 +323,58 @@ describe('Portfolio', () => {
     await waitFor(() => {
       expect(
         EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains,
-      ).toHaveBeenCalledTimes(2);
+      ).toHaveBeenCalledTimes(1);
       expect(container.querySelector('.portfolio-flow')).not.toBeNull();
+    });
+  });
+
+  it('refreshes portfolio data when the global refresh button is clicked', async () => {
+    jest.spyOn(AccountUtils, 'getExtendedAccounts').mockResolvedValue([
+      { name: 'alice' } as never,
+    ]);
+    jest.spyOn(PortfolioUtils, 'getPortfolio').mockResolvedValue([
+      [
+        {
+          account: 'alice',
+          balances: [],
+          totalHive: 0,
+          totalUSD: 0,
+        },
+      ],
+      [],
+    ]);
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[{ name: 'alice' } as never]}
+        evmAccounts={[]}
+        activeAccountType={ChainType.HIVE}
+        activeEvmAccountAddress={undefined}
+        activeHiveAccountName="alice"
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => expect(PortfolioApiUtils.listAssets).toHaveBeenCalled());
+
+    jest.spyOn(PortfolioUtils, 'getPortfolio').mockResolvedValue([[], []]);
+    (
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains as jest.Mock
+    ).mockClear();
+    (PortfolioApiUtils.listAssets as jest.Mock).mockClear();
+    (PortfolioApiUtils.listHistory as jest.Mock).mockClear();
+
+    const refreshButton = container.querySelector('.portfolio-refresh-button');
+    expect(refreshButton).not.toBeNull();
+    fireEvent.click(refreshButton!);
+
+    await waitFor(() => {
+      expect(PortfolioApiUtils.listAssets).toHaveBeenCalledTimes(1);
+      expect(PortfolioApiUtils.listHistory).toHaveBeenCalledTimes(1);
+      expect(PortfolioUtils.getPortfolio).toHaveBeenCalled();
     });
   });
 

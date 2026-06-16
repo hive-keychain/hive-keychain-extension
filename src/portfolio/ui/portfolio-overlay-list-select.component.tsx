@@ -1,6 +1,7 @@
 import React, {
   KeyboardEvent,
   ReactNode,
+  UIEvent,
   useCallback,
   useEffect,
   useMemo,
@@ -11,6 +12,10 @@ import React, {
 import './portfolio-overlay-list-select.component.scss';
 
 let overlaySelectIdCounter = 0;
+
+const OPTION_HEIGHT_PX = 44;
+const VIRTUALIZE_THRESHOLD = 30;
+const VIRTUAL_OVERSCAN = 6;
 
 const useOverlaySelectId = (): string => {
   const idRef = useRef<string>();
@@ -33,6 +38,8 @@ export type PortfolioOverlayListSelectProps = {
   onChange: (value: string) => void;
   renderOption: (value: string) => ReactNode;
   renderDisplay?: (value: string) => ReactNode;
+  listHeader?: ReactNode;
+  listFooter?: ReactNode;
   disabled?: boolean;
   error?: string;
   hint?: string;
@@ -47,6 +54,8 @@ export const PortfolioOverlayListSelect = ({
   onChange,
   renderOption,
   renderDisplay,
+  listHeader,
+  listFooter,
   disabled,
   error,
   hint,
@@ -61,6 +70,7 @@ export const PortfolioOverlayListSelect = ({
   const hintId = `${fieldId}-hint`;
 
   const [open, setOpen] = useState(false);
+  const [scrollTop, setScrollTop] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
@@ -70,14 +80,51 @@ export const PortfolioOverlayListSelect = ({
   );
   const selectedLabel = options[selectedIndex]?.label ?? value;
   const displayFn = renderDisplay ?? renderOption;
+  const shouldVirtualize = options.length > VIRTUALIZE_THRESHOLD;
 
   const [highlightIndex, setHighlightIndex] = useState(() =>
     selectedIndex >= 0 ? selectedIndex : 0,
   );
 
+  const virtualWindow = useMemo(() => {
+    if (!shouldVirtualize) {
+      return {
+        startIndex: 0,
+        endIndex: options.length,
+        paddingTop: 0,
+        paddingBottom: 0,
+      };
+    }
+
+    const listHeight = listRef.current?.clientHeight ?? 288;
+    const startIndex = Math.max(
+      0,
+      Math.floor(scrollTop / OPTION_HEIGHT_PX) - VIRTUAL_OVERSCAN,
+    );
+    const visibleCount =
+      Math.ceil(listHeight / OPTION_HEIGHT_PX) + VIRTUAL_OVERSCAN * 2;
+    const endIndex = Math.min(options.length, startIndex + visibleCount);
+
+    return {
+      startIndex,
+      endIndex,
+      paddingTop: startIndex * OPTION_HEIGHT_PX,
+      paddingBottom: Math.max(0, (options.length - endIndex) * OPTION_HEIGHT_PX),
+    };
+  }, [options.length, scrollTop, shouldVirtualize, open]);
+
+  const visibleOptions = useMemo(
+    () => options.slice(virtualWindow.startIndex, virtualWindow.endIndex),
+    [options, virtualWindow.endIndex, virtualWindow.startIndex],
+  );
+
   useEffect(() => {
     if (open) {
       setHighlightIndex(selectedIndex >= 0 ? selectedIndex : 0);
+      setScrollTop(0);
+      if (listRef.current) {
+        listRef.current.scrollTop = 0;
+      }
     }
   }, [open, selectedIndex]);
 
@@ -124,6 +171,10 @@ export const PortfolioOverlayListSelect = ({
     },
     [onChange],
   );
+
+  const onListScroll = (event: UIEvent<HTMLUListElement>) => {
+    setScrollTop(event.currentTarget.scrollTop);
+  };
 
   const onTriggerKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     if (disabled || options.length === 0) {
@@ -233,28 +284,73 @@ export const PortfolioOverlayListSelect = ({
           <span className="portfolio-overlay-select__caret" aria-hidden />
         </div>
         {open ? (
-          <ul
-            ref={listRef}
-            className="portfolio-overlay-select__list"
-            role="listbox"
-            id={listboxId}
-            aria-labelledby={labelId}>
-            {options.map((option, index) => (
-              <li
-                key={option.value}
-                id={`${listboxId}-opt-${index}`}
-                data-option-index={index}
-                role="option"
-                aria-selected={option.value === value}
-                data-highlighted={index === highlightIndex ? 'true' : undefined}
-                className="portfolio-overlay-select__option"
-                onMouseEnter={() => setHighlightIndex(index)}
-                onMouseDown={(mouseEvent) => mouseEvent.preventDefault()}
-                onClick={() => choose(option.value)}>
-                {renderOption(option.value)}
-              </li>
-            ))}
-          </ul>
+          <div className="portfolio-overlay-select__panel">
+            {listHeader ? (
+              <div className="portfolio-overlay-select__panel-header">
+                {listHeader}
+              </div>
+            ) : null}
+            <ul
+              ref={listRef}
+              className="portfolio-overlay-select__list"
+              role="listbox"
+              id={listboxId}
+              aria-labelledby={labelId}
+              onScroll={shouldVirtualize ? onListScroll : undefined}>
+              {options.length === 0 ? (
+                <li className="portfolio-overlay-select__empty" role="presentation">
+                  {listFooter}
+                </li>
+              ) : (
+                <>
+                  {shouldVirtualize && virtualWindow.paddingTop > 0 ? (
+                    <li
+                      aria-hidden
+                      className="portfolio-overlay-select__spacer"
+                      style={{ height: virtualWindow.paddingTop }}
+                    />
+                  ) : null}
+                  {visibleOptions.map((option, visibleIndex) => {
+                    const index = virtualWindow.startIndex + visibleIndex;
+                    return (
+                      <li
+                        key={option.value}
+                        id={`${listboxId}-opt-${index}`}
+                        data-option-index={index}
+                        role="option"
+                        aria-selected={option.value === value}
+                        data-highlighted={
+                          index === highlightIndex ? 'true' : undefined
+                        }
+                        className="portfolio-overlay-select__option"
+                        style={
+                          shouldVirtualize
+                            ? { minHeight: `${OPTION_HEIGHT_PX}px` }
+                            : undefined
+                        }
+                        onMouseEnter={() => setHighlightIndex(index)}
+                        onMouseDown={(mouseEvent) => mouseEvent.preventDefault()}
+                        onClick={() => choose(option.value)}>
+                        {renderOption(option.value)}
+                      </li>
+                    );
+                  })}
+                  {shouldVirtualize && virtualWindow.paddingBottom > 0 ? (
+                    <li
+                      aria-hidden
+                      className="portfolio-overlay-select__spacer"
+                      style={{ height: virtualWindow.paddingBottom }}
+                    />
+                  ) : null}
+                </>
+              )}
+            </ul>
+            {listFooter && options.length > 0 ? (
+              <div className="portfolio-overlay-select__panel-footer">
+                {listFooter}
+              </div>
+            ) : null}
+          </div>
         ) : null}
       </div>
       {hint && !error ? (

@@ -153,4 +153,102 @@ describe('PortfolioFlowUtils', () => {
       ),
     ).toBe('evm-eth-1');
   });
+
+  it('builds chain filter options from canonical assets', () => {
+    const assets = [hiveAsset, hiveEngineAsset, ethAsset, sepoliaEthAsset];
+
+    expect(
+      PortfolioFlowUtils.buildCanonicalAssetChainFilterOptions(assets, [
+        {
+          name: 'Ethereum',
+          chainId: '0x1',
+          logo: 'ethereum.svg',
+        } as never,
+      ]),
+    ).toEqual([
+      {
+        value: 'evm:11155111',
+        label: '0xaa36a7',
+        key: 'evm:11155111',
+        img: undefined,
+        imgChip: undefined,
+      },
+      {
+        value: 'evm:1',
+        label: 'Ethereum',
+        key: 'evm:1',
+        img: 'ethereum.svg',
+        imgChip: undefined,
+      },
+      {
+        value: 'hive',
+        label: 'Hive',
+        key: 'hive',
+        img: '/assets/images/wallet/hive-logo.svg',
+        imgChip: undefined,
+      },
+      {
+        value: 'hive_engine',
+        label: 'Hive Engine',
+        key: 'hive_engine',
+        img: '/assets/images/wallet/hive-engine.svg',
+        imgChip: undefined,
+      },
+    ]);
+  });
+
+  it('filters canonical assets by text and chain', () => {
+    const assets = [hiveAsset, hiveEngineAsset, ethAsset, sepoliaEthAsset];
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets(assets, {
+        textFilter: 'eth',
+        chainFilter: 'evm:1',
+      }),
+    ).toEqual({
+      assets: [ethAsset],
+      totalMatches: 1,
+    });
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets(assets, {
+        textFilter: 'dec',
+        chainFilter: 'hive_engine',
+      }),
+    ).toEqual({
+      assets: [hiveEngineAsset],
+      totalMatches: 1,
+    });
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets(assets, {
+        textFilter: 'dark',
+      }).assets,
+    ).toEqual([]);
+
+    const wethAsset: PortfolioCanonicalAsset = {
+      assetId: 'evm-weth-1',
+      ecosystem: 'evm',
+      symbol: 'WETH',
+      name: 'Wrapped Ether',
+      chainId: '0x1',
+      logoUrl: null,
+    };
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets([wethAsset, ethAsset], {
+        textFilter: 'eth',
+      }).assets,
+    ).toEqual([ethAsset, wethAsset]);
+  });
+
+  it('limits filtered canonical assets to maxResults', () => {
+    const assets = [hiveAsset, hiveEngineAsset, ethAsset, sepoliaEthAsset];
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets(assets, {
+        maxResults: 2,
+      }).totalMatches,
+    ).toBe(4);
+  });
 });

@@ -20,7 +20,7 @@ export type PortfolioTokenIdentityProps = {
   balance?: string;
 };
 
-export const PortfolioTokenIdentity = ({
+export const PortfolioTokenIdentity = React.memo(({
   symbol,
   network = '',
   logoUrl,
@@ -75,7 +75,9 @@ export const PortfolioTokenIdentity = ({
       ) : null}
     </div>
   );
-};
+});
+
+PortfolioTokenIdentity.displayName = 'PortfolioTokenIdentity';
 
 export const portfolioRowToTokenIdentityProps = (
   row: PortfolioFlowRow,

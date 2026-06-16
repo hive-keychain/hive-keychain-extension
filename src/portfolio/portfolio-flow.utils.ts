@@ -143,6 +143,174 @@ export const buildCanonicalAssetSelectOptions = (
     label: `${asset.symbol} - ${asset.name}`,
   }));
 
+export type PortfolioAssetChainFilterOption = {
+  value: string;
+  label: string;
+  key: string;
+  img?: string;
+  imgChip?: SVGIcons;
+};
+
+const HIVE_CHAIN_LOGO = '/assets/images/wallet/hive-logo.svg';
+const HIVE_ENGINE_CHAIN_LOGO = '/assets/images/wallet/hive-engine.svg';
+
+const HIVE_CHAIN_FILTER_VALUE = 'hive';
+const HIVE_ENGINE_CHAIN_FILTER_VALUE = 'hive_engine';
+const EVM_CHAIN_FILTER_PREFIX = 'evm:';
+
+export const buildCanonicalAssetChainFilterValue = (
+  asset: PortfolioCanonicalAsset,
+): string | null => {
+  if (asset.ecosystem === 'hive') {
+    return HIVE_CHAIN_FILTER_VALUE;
+  }
+
+  if (asset.ecosystem === 'hive_engine') {
+    return HIVE_ENGINE_CHAIN_FILTER_VALUE;
+  }
+
+  const normalizedChainId = normalizeChainId(asset.chainId);
+  if (!normalizedChainId) {
+    return null;
+  }
+
+  return `${EVM_CHAIN_FILTER_PREFIX}${normalizedChainId}`;
+};
+
+export const buildCanonicalAssetChainFilterOptions = (
+  assets: PortfolioCanonicalAsset[],
+  chains: EvmChain[],
+): PortfolioAssetChainFilterOption[] => {
+  const optionsByValue = new Map<string, PortfolioAssetChainFilterOption>();
+
+  for (const asset of assets) {
+    const value = buildCanonicalAssetChainFilterValue(asset);
+    if (!value || optionsByValue.has(value)) {
+      continue;
+    }
+
+    if (value === HIVE_CHAIN_FILTER_VALUE) {
+      optionsByValue.set(value, {
+        value,
+        label: 'Hive',
+        key: value,
+        img: HIVE_CHAIN_LOGO,
+      });
+      continue;
+    }
+
+    if (value === HIVE_ENGINE_CHAIN_FILTER_VALUE) {
+      optionsByValue.set(value, {
+        value,
+        label: 'Hive Engine',
+        key: value,
+        img: HIVE_ENGINE_CHAIN_LOGO,
+      });
+      continue;
+    }
+
+    const chainId = value.slice(EVM_CHAIN_FILTER_PREFIX.length);
+    const chain = chains.find((item) => chainIdsMatch(item.chainId, chainId));
+    optionsByValue.set(value, {
+      value,
+      label: chain?.name ?? asset.chainId ?? chainId,
+      key: value,
+      img: chain?.logo,
+      imgChip: chain?.testnet ? SVGIcons.EVM_CHAIN_TESTNET : undefined,
+    });
+  }
+
+  return [...optionsByValue.values()].sort((left, right) =>
+    left.label.localeCompare(right.label),
+  );
+};
+
+const getCanonicalAssetTextFilterRank = (
+  asset: PortfolioCanonicalAsset,
+  filter: string,
+): number => {
+  const normalizedFilter = filter.trim().toLowerCase();
+  if (!normalizedFilter) {
+    return 0;
+  }
+
+  const normalizedSymbol = asset.symbol.toLowerCase();
+  if (normalizedSymbol === normalizedFilter) {
+    return 0;
+  }
+
+  if (normalizedSymbol.startsWith(normalizedFilter)) {
+    return 1;
+  }
+
+  return 2;
+};
+
+const compareCanonicalAssetsByTextFilter = (
+  left: PortfolioCanonicalAsset,
+  right: PortfolioCanonicalAsset,
+  filter: string,
+): number => {
+  const rankDiff =
+    getCanonicalAssetTextFilterRank(left, filter) -
+    getCanonicalAssetTextFilterRank(right, filter);
+  if (rankDiff !== 0) {
+    return rankDiff;
+  }
+
+  return left.symbol.localeCompare(right.symbol);
+};
+
+const matchesCanonicalAssetTextFilter = (
+  asset: PortfolioCanonicalAsset,
+  filter: string,
+): boolean => {
+  const normalizedFilter = filter.trim().toLowerCase();
+  if (!normalizedFilter) {
+    return true;
+  }
+
+  return asset.symbol.toLowerCase().includes(normalizedFilter);
+};
+
+const matchesCanonicalAssetChainFilter = (
+  asset: PortfolioCanonicalAsset,
+  chainFilter: string,
+): boolean => {
+  if (!chainFilter) {
+    return true;
+  }
+
+  return buildCanonicalAssetChainFilterValue(asset) === chainFilter;
+};
+
+export const filterCanonicalAssets = (
+  assets: PortfolioCanonicalAsset[],
+  options: {
+    textFilter?: string;
+    chainFilter?: string;
+    maxResults?: number;
+  } = {},
+): { assets: PortfolioCanonicalAsset[]; totalMatches: number } => {
+  const maxResults = options.maxResults ?? Number.POSITIVE_INFINITY;
+  const textFilter = options.textFilter ?? '';
+  const filteredAssets = assets.filter(
+    (asset) =>
+      matchesCanonicalAssetTextFilter(asset, textFilter) &&
+      matchesCanonicalAssetChainFilter(asset, options.chainFilter ?? ''),
+  );
+  const sortedAssets = textFilter.trim()
+    ? [...filteredAssets].sort((left, right) =>
+        compareCanonicalAssetsByTextFilter(left, right, textFilter),
+      )
+    : filteredAssets;
+
+  return {
+    assets: sortedAssets.slice(0, maxResults),
+    totalMatches: filteredAssets.length,
+  };
+};
+
 export const getDefaultSelectOptionValue = (
   options: PortfolioFlowSelectOption[],
 ): string => options[0]?.value ?? '';
@@ -161,8 +329,11 @@ export const resolveFromRowKeyToCanonicalAssetId = (
 };
 
 export const PortfolioFlowUtils = {
+  buildCanonicalAssetChainFilterOptions,
+  buildCanonicalAssetChainFilterValue,
   buildCanonicalAssetSelectOptions,
   buildPortfolioFromSelectOptions,
+  filterCanonicalAssets,
   formatPortfolioTokenBalance,
   getDefaultSelectOptionValue,
   getHivePortfolioRowEcosystem,
