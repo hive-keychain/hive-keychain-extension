@@ -47,8 +47,14 @@ type KeychainRequestWrapper = {
   detail: KeychainRequest;
 };
 document.addEventListener('swRequest_hive', (request: object) => {
+  const detail = (request as KeychainRequestWrapper).detail;
+  // When extension_id is present, only process events meant for Keychain.
+  // Events without extension_id are legacy and processed for backward compatibility.
+  const extId = (detail as any).extension_id;
+  if (extId && extId !== 'keychain') return;
+  
   const prevReq = req;
-  req = (request as KeychainRequestWrapper).detail;
+  req = detail;
   const validation = validateRequest(req);
   const { error, value } = validation;
   if (!error) {
