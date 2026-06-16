@@ -647,6 +647,12 @@
   font-size: var(--kc-font-size-sm);
 }
 
+.portfolio-loading-more {
+  display: flex;
+  justify-content: center;
+  padding: var(--kc-space-4) 0 0;
+}
+
 .portfolio-status {
   border: 1px solid var(--kc-color-border-subtle);
   border-radius: var(--kc-radius-md);

@@ -4103,6 +4103,15 @@
   "portfolio_get_quotes": { "message": "Get quotes" },
   "portfolio_continue": { "message": "Continue" },
   "portfolio_load_error": { "message": "Unable to load portfolio data." },
+  "portfolio_partial_load_error": {
+    "message": "Some networks could not be loaded: $1",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "Ethereum, Polygon"
+      }
+    }
+  },
   "portfolio_native_execution_requires_evm": { "message": "Native execution requires an EVM account." },
   "portfolio_chain_not_setup": { "message": "Add the source chain to Keychain before signing." },
   "portfolio_native_confirmation_message": { "message": "Review and sign this portfolio transaction." },

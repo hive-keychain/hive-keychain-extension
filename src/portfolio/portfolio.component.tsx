@@ -10,10 +10,11 @@ import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
-import {
-  DiscoveredToken,
-  EvmLightNodeUtils,
-} from '@popup/evm/utils/evm-light-node.utils';
+import { NativeAndErc20Token } from '@popup/evm/interfaces/active-account.interface';
+import { EvmSmartContractInfoErc20 } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmAccountTokensLoadUtils } from '@popup/evm/utils/evm-account-tokens-load.utils';
+import { evmChainIdToDecimalPathSegment } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { navigateTo, navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
@@ -22,7 +23,7 @@ import { ChainType, EvmChain } from '@popup/multichain/interfaces/chains.interfa
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent, { ButtonType } from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -52,6 +53,7 @@ import { PortfolioUtils } from 'src/utils/porfolio.utils';
 import { UserPortfolio } from 'src/portfolio/portfolio.interface';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
+import { ethers } from 'ethers';
 
 type PortfolioSection = 'portfolio' | PortfolioMode | 'history';
 type AccountOption =
@@ -112,6 +114,46 @@ const getAllNetworksOption = (): OptionItem => ({
   key: 'all-networks',
 });
 
+const resolveDefaultPortfolioAccountKey = (
+  accountOptions: AccountOption[],
+  activeAccountType: ChainType,
+  activeEvmAccountAddress: string | undefined,
+  activeHiveAccountName: string | undefined,
+): string => {
+  if (activeAccountType === ChainType.EVM) {
+    const normalizedEvmAddress = activeEvmAccountAddress?.toLowerCase();
+    if (normalizedEvmAddress) {
+      const activeEvmKey = `evm:${normalizedEvmAddress}`;
+      if (accountOptions.some((account) => account.key === activeEvmKey)) {
+        return activeEvmKey;
+      }
+    }
+
+    const firstEvmAccount = accountOptions.find(
+      (account) => account.type === ChainType.EVM,
+    );
+    if (firstEvmAccount) {
+      return firstEvmAccount.key;
+    }
+  }
+
+  if (activeHiveAccountName) {
+    const activeHiveKey = `hive:${activeHiveAccountName}`;
+    if (accountOptions.some((account) => account.key === activeHiveKey)) {
+      return activeHiveKey;
+    }
+  }
+
+  const firstMatchingTypeAccount = accountOptions.find(
+    (account) => account.type === activeAccountType,
+  );
+  if (firstMatchingTypeAccount) {
+    return firstMatchingTypeAccount.key;
+  }
+
+  return accountOptions[0]?.key ?? '';
+};
+
 const getHiveTokenIcon = (symbol: string): SVGIcons | undefined => {
   switch (symbol.toUpperCase()) {
     case 'HBD':
@@ -125,37 +167,118 @@ const getHiveTokenIcon = (symbol: string): SVGIcons | undefined => {
   }
 };
 
-const getDiscoveredTokenBalance = (token: DiscoveredToken): string => {
-  if ('formattedBalance' in token && token.formattedBalance) {
-    return token.formattedBalance;
+const buildEvmPortfolioChainByIdMap = (
+  chains: EvmChain[],
+): Map<string, EvmChain> => {
+  const chainById = new Map<string, EvmChain>();
+
+  for (const chain of chains) {
+    chainById.set(chain.chainId.toLowerCase(), chain);
+    chainById.set(evmChainIdToDecimalPathSegment(chain.chainId), chain);
   }
-  if ('balance' in token && token.balance) {
-    return token.balance;
-  }
-  return '0';
+
+  return chainById;
 };
 
-const getDiscoveredTokenUsdValue = (token: DiscoveredToken): number | null => {
-  if ('balanceUsd' in token && token.balanceUsd) {
-    const value = Number(token.balanceUsd);
-    return Number.isFinite(value) ? value : null;
+const getEvmPortfolioChainKeys = (chain: EvmChain): Set<string> =>
+  new Set([
+    chain.chainId.toLowerCase(),
+    evmChainIdToDecimalPathSegment(chain.chainId),
+  ]);
+
+const resolveEvmPortfolioChain = (
+  chainById: Map<string, EvmChain>,
+  chainId: string | undefined,
+  fallbackChain?: EvmChain,
+): EvmChain | null => {
+  if (fallbackChain) {
+    return fallbackChain;
   }
-  return null;
+
+  if (!chainId) {
+    return null;
+  }
+
+  const normalizedChainId = chainId.toLowerCase();
+  return (
+    chainById.get(normalizedChainId) ??
+    chainById.get(evmChainIdToDecimalPathSegment(chainId)) ??
+    null
+  );
 };
 
-const getDiscoveredTokenPriceUsd = (token: DiscoveredToken): number | null => {
-  if ('priceUsd' in token && token.priceUsd !== null && token.priceUsd !== undefined) {
-    const value = Number(token.priceUsd);
-    return Number.isFinite(value) ? value : null;
+const getEvmTokenUsdValue = (token: NativeAndErc20Token): number | null => {
+  const priceUsd = token.tokenInfo.priceUsd;
+  if (
+    priceUsd === null ||
+    priceUsd === undefined ||
+    !Number.isFinite(priceUsd) ||
+    priceUsd === 0
+  ) {
+    return null;
   }
-  return null;
+
+  const decimals =
+    token.tokenInfo.type === EVMSmartContractType.ERC20
+      ? Number((token.tokenInfo as EvmSmartContractInfoErc20).decimals)
+      : 18;
+  const balance = Number(ethers.formatUnits(token.balance, decimals));
+
+  return Number.isFinite(balance) ? priceUsd * balance : null;
 };
 
-const getDiscoveredTokenLogo = (token: DiscoveredToken): string | null => {
-  if ('logo' in token && typeof token.logo === 'string' && token.logo.trim()) {
-    return token.logo;
-  }
-  return null;
+const mapEvmTokenToPortfolioRow = (
+  token: NativeAndErc20Token,
+  chainById: Map<string, EvmChain>,
+  chain?: EvmChain,
+): PortfolioRow => {
+  const resolvedChain = resolveEvmPortfolioChain(
+    chainById,
+    token.tokenInfo.chainId,
+    chain,
+  );
+  const priceUsd =
+    token.tokenInfo.priceUsd !== null &&
+    token.tokenInfo.priceUsd !== undefined &&
+    Number.isFinite(token.tokenInfo.priceUsd)
+      ? token.tokenInfo.priceUsd
+      : null;
+  const contractAddress =
+    token.tokenInfo.type === EVMSmartContractType.ERC20
+      ? (token.tokenInfo as EvmSmartContractInfoErc20).contractAddress
+      : 'native';
+  const rowChainId = resolvedChain?.chainId ?? token.tokenInfo.chainId ?? '';
+
+  return {
+    key: `${rowChainId}:${token.tokenInfo.symbol}:${contractAddress}`,
+    symbol: token.tokenInfo.symbol,
+    network: resolvedChain?.name ?? '',
+    balance: token.formattedBalance,
+    usdValue: getEvmTokenUsdValue(token),
+    priceUsd,
+    logoUrl: token.tokenInfo.logo ?? null,
+    networkLogoUrl: resolvedChain?.logo ?? null,
+  };
+};
+
+const mergeEvmPortfolioRowsForChain = (
+  currentRows: PortfolioRow[],
+  chain: EvmChain,
+  tokens: NativeAndErc20Token[],
+  chainById: Map<string, EvmChain>,
+): PortfolioRow[] => {
+  const chainKeys = getEvmPortfolioChainKeys(chain);
+  const nextRows = tokens.map((token) =>
+    mapEvmTokenToPortfolioRow(token, chainById, chain),
+  );
+
+  return [
+    ...currentRows.filter((row) => {
+      const rowChainId = row.key.split(':')[0]?.toLowerCase() ?? '';
+      return !chainKeys.has(rowChainId);
+    }),
+    ...nextRows,
+  ];
 };
 
 const formatUsd = (value: number | null): string =>
@@ -260,9 +383,12 @@ export const Portfolio = ({
   const [quoteResponse, setQuoteResponse] = useState<PortfolioQuoteResponse>();
   const [selectedQuoteId, setSelectedQuoteId] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
+  const [statusMessageParams, setStatusMessageParams] = useState<string[]>();
   const [isLoading, setIsLoading] = useState(false);
   const [tokenFilter, setTokenFilter] = useState('');
   const [selectedNetwork, setSelectedNetwork] = useState('');
+  const [setupEvmChains, setSetupEvmChains] = useState<EvmChain[]>([]);
+  const hasUserSelectedAccountRef = useRef(false);
 
   const accountOptions = useMemo<AccountOption[]>(() => {
     const seenEvmAddresses = new Set<string>();
@@ -315,21 +441,18 @@ export const Portfolio = ({
     [assets],
   );
 
-  const networkOptions = useMemo(
-    () => [...new Set(rows.map((row) => row.network))].sort(),
-    [rows],
-  );
-
   const networkSelectOptions = useMemo<OptionItem[]>(
     () => [
       getAllNetworksOption(),
-      ...networkOptions.map((network) => ({
-        key: network,
-        label: network,
-        value: network,
+      ...setupEvmChains.map((chain) => ({
+        key: chain.chainId,
+        label: chain.name,
+        value: chain.name,
+        img: chain.logo,
+        imgChip: chain.testnet ? SVGIcons.EVM_CHAIN_TESTNET : undefined,
       })),
     ],
-    [networkOptions],
+    [setupEvmChains],
   );
 
   const selectedNetworkOption =
@@ -372,29 +495,74 @@ export const Portfolio = ({
   }, []);
 
   useEffect(() => {
-    if (!accountOptions.length || selectedAccountKey) return;
-    const activeKey =
-      activeAccountType === ChainType.EVM && activeEvmAccountAddress
-        ? `evm:${activeEvmAccountAddress.toLowerCase()}`
-        : activeHiveAccountName
-          ? `hive:${activeHiveAccountName}`
-          : accountOptions[0].key;
-    setSelectedAccountKey(
-      accountOptions.some((account) => account.key === activeKey)
-        ? activeKey
-        : accountOptions[0].key,
+    if (!accountOptions.length) return;
+
+    const nextAccountKey = resolveDefaultPortfolioAccountKey(
+      accountOptions,
+      activeAccountType,
+      activeEvmAccountAddress,
+      activeHiveAccountName,
     );
+    if (!nextAccountKey) return;
+
+    setSelectedAccountKey((currentAccountKey) => {
+      if (hasUserSelectedAccountRef.current) {
+        return accountOptions.some((account) => account.key === currentAccountKey)
+          ? currentAccountKey
+          : nextAccountKey;
+      }
+
+      return nextAccountKey;
+    });
   }, [
     accountOptions,
     activeAccountType,
     activeEvmAccountAddress,
     activeHiveAccountName,
-    selectedAccountKey,
   ]);
 
+  const handleSelectedAccountChange = (accountKey: string) => {
+    hasUserSelectedAccountRef.current = true;
+    setSelectedAccountKey(accountKey);
+  };
+
   useEffect(() => {
+    let cancelled = false;
+
+    const loadSetupEvmChains = async () => {
+      if (selectedAccount?.type !== ChainType.EVM) {
+        setSetupEvmChains([]);
+        return;
+      }
+
+      try {
+        const chains = await ChainUtils.getAllSetupChainsForType<EvmChain>(
+          ChainType.EVM,
+        );
+        if (!cancelled) {
+          setSetupEvmChains(chains);
+        }
+      } catch (error) {
+        Logger.error('Unable to load portfolio setup chains', error);
+        if (!cancelled) {
+          setSetupEvmChains([]);
+        }
+      }
+    };
+
+    void loadSetupEvmChains();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedAccount?.type, selectedAccountKey]);
+
+  useEffect(() => {
+    if (!selectedAccountKey) return;
+
     setQuoteResponse(undefined);
     setStatusMessage('');
+    setStatusMessageParams(undefined);
     setSelectedNetwork('');
     setRows([]);
     if (section === 'portfolio' && selectedAccount) void loadPortfolio();
@@ -411,15 +579,18 @@ export const Portfolio = ({
 
   const loadPortfolio = async () => {
     const accountKey = selectedAccountKey;
-    const account =
-      accountOptions.find((item) => item.key === accountKey) ?? selectedAccount;
+    if (!accountKey) return;
+
+    const account = accountOptions.find((item) => item.key === accountKey);
     if (!account) return;
 
     setIsLoading(true);
     setStatusMessage('');
+    setStatusMessageParams(undefined);
     setRows([]);
-    try {
-      if (account.type === ChainType.HIVE) {
+
+    if (account.type === ChainType.HIVE) {
+      try {
         const extendedAccounts = await AccountUtils.getExtendedAccounts([
           account.account.name,
         ]);
@@ -439,54 +610,105 @@ export const Portfolio = ({
             hiveAccountName: account.account.name,
           })),
         );
-      } else {
-        const discovery =
-          await EvmLightNodeUtils.getDiscoveredTokensForAllRegisteredChains(
-            account.account.wallet.address,
-          );
+      } catch (error) {
         if (selectedAccountKey !== accountKey) return;
-        setRows(
-          discovery.chains.flatMap((chain) =>
-            chain.tokens
-              .filter(
-                (token) =>
-                  token.type === 'NATIVE' || token.type === 'ERC20',
-              )
-              .map((token) => {
-                const usdValue = getDiscoveredTokenUsdValue(token);
-                const balance = getDiscoveredTokenBalance(token);
-                const balanceNumber = Number(balance.replace(/,/g, ''));
-                return {
-                  key: `${chain.chainId}:${token.symbol}:${
-                    'contractAddress' in token ? token.contractAddress : 'native'
-                  }`,
-                  symbol: token.symbol,
-                  network: chain.chain.name,
-                  balance,
-                  usdValue,
-                  priceUsd:
-                    getDiscoveredTokenPriceUsd(token) ??
-                    (usdValue !== null &&
-                    Number.isFinite(balanceNumber) &&
-                    balanceNumber > 0
-                      ? usdValue / balanceNumber
-                      : null),
-                  logoUrl: getDiscoveredTokenLogo(token),
-                  networkLogoUrl: chain.chain.logoUrl,
-                };
-              }),
-          ),
-        );
+        Logger.error('Unable to load portfolio balances', error);
+        setStatusMessage('portfolio_load_error');
+        setStatusMessageParams(undefined);
+        setRows([]);
+      } finally {
+        if (selectedAccountKey === accountKey) {
+          setIsLoading(false);
+        }
       }
+      return;
+    }
+
+    void loadEvmPortfolioRows(accountKey, account);
+  };
+
+  const loadEvmPortfolioRows = async (
+    accountKey: string,
+    account: Extract<AccountOption, { type: ChainType.EVM }>,
+  ) => {
+    const failedChainNames: string[] = [];
+
+    try {
+      const chains = await ChainUtils.getAllSetupChainsForType<EvmChain>(
+        ChainType.EVM,
+      );
+      if (selectedAccountKey !== accountKey) return;
+
+      const chainById = buildEvmPortfolioChainByIdMap(chains);
+      const walletAddress = account.account.wallet.address;
+      const totalChains = chains.length;
+
+      if (totalChains === 0) {
+        setRows([]);
+        setIsLoading(false);
+        return;
+      }
+
+      let finishedChains = 0;
+
+      const markPortfolioChainLoadFinished = () => {
+        finishedChains++;
+        if (selectedAccountKey !== accountKey) return;
+        if (finishedChains !== totalChains) return;
+
+        setIsLoading(false);
+        if (failedChainNames.length === 0) {
+          return;
+        }
+
+        if (failedChainNames.length === totalChains) {
+          setStatusMessage('portfolio_load_error');
+          setStatusMessageParams(undefined);
+          return;
+        }
+
+        setStatusMessage('portfolio_partial_load_error');
+        setStatusMessageParams([failedChainNames.join(', ')]);
+      };
+
+      void EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains(
+        chains,
+        walletAddress,
+        {
+          maxRetries: EvmAccountTokensLoadUtils.DEFAULT_MAX_LOAD_MORE_RETRIES,
+          onChainReady: (chain, tokens) => {
+            if (selectedAccountKey !== accountKey) return;
+            setRows((previousRows) =>
+              mergeEvmPortfolioRowsForChain(
+                previousRows,
+                chain,
+                tokens,
+                chainById,
+              ),
+            );
+          },
+          onChainError: (chain, error) => {
+            if (selectedAccountKey !== accountKey) return;
+            Logger.error(
+              `Unable to load portfolio balances for ${chain.name}`,
+              error,
+            );
+            if (!failedChainNames.includes(chain.name)) {
+              failedChainNames.push(chain.name);
+            }
+          },
+          onChainFinished: () => {
+            markPortfolioChainLoadFinished();
+          },
+        },
+      );
     } catch (error) {
       if (selectedAccountKey !== accountKey) return;
       Logger.error('Unable to load portfolio balances', error);
       setStatusMessage('portfolio_load_error');
+      setStatusMessageParams(undefined);
       setRows([]);
-    } finally {
-      if (selectedAccountKey === accountKey) {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     }
   };
 
@@ -730,7 +952,7 @@ export const Portfolio = ({
     </div>
   );
 
-  const renderPortfolio = () => (
+  const renderPortfolio = (isLoadingMoreChains = false) => (
     <div className="portfolio-card-body">
       {accountOptions.length > 0 && selectedAccount ? (
         <div className="portfolio-sticky-menu-bar">
@@ -739,13 +961,13 @@ export const Portfolio = ({
               id="portfolio-account"
               label={I18nUtils.getMessage('portfolio_account')}
               value={selectedAccountKey}
-              onChange={setSelectedAccountKey}
+              onChange={handleSelectedAccountChange}
               options={overlayAccountOptions}
               renderDisplay={renderAccountRow}
               renderOption={renderAccountRow}
             />
             {selectedAccount.type === ChainType.EVM &&
-              networkOptions.length > 0 && (
+              setupEvmChains.length > 0 && (
                 <ComplexeCustomSelect
                   label="portfolio_network"
                   options={networkSelectOptions}
@@ -811,6 +1033,11 @@ export const Portfolio = ({
         <span>{I18nUtils.getMessage('portfolio_total_value_usd')}</span>
         <strong>{hasKnownValue ? formatUsd(totalUsd) : '—'}</strong>
       </div>
+      {isLoadingMoreChains ? (
+        <div className="portfolio-loading-more">
+          <RotatingLogoComponent />
+        </div>
+      ) : null}
     </div>
   );
 
@@ -956,14 +1183,19 @@ export const Portfolio = ({
   );
 
   const renderSectionContent = () => {
-    if (isLoading) {
+    const isLoadingPortfolioWithRows =
+      isLoading && section === 'portfolio' && rows.length > 0;
+
+    if (isLoading && !isLoadingPortfolioWithRows) {
       return (
         <div className="rotating-logo-wrapper">
           <RotatingLogoComponent />
         </div>
       );
     }
-    if (section === 'portfolio') return renderPortfolio();
+    if (section === 'portfolio') {
+      return renderPortfolio(isLoadingPortfolioWithRows);
+    }
     if (section === 'history') return renderHistory();
     return renderFlow();
   };
@@ -1015,7 +1247,7 @@ export const Portfolio = ({
 
             {statusMessage && (
               <div className="portfolio-status">
-                {I18nUtils.getMessage(statusMessage)}
+                {I18nUtils.getMessage(statusMessage, statusMessageParams)}
               </div>
             )}
           </section>

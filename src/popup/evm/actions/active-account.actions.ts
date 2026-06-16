@@ -9,13 +9,12 @@ import { EvmUserHistory } from '@popup/evm/interfaces/evm-tokens-history.interfa
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmWallet } from '@popup/evm/interfaces/wallet.interface';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
+import { EvmAccountTokensLoadUtils } from '@popup/evm/utils/evm-account-tokens-load.utils';
 import {
   CatchupStatus,
   DiscoveredNftsResponse,
-  DiscoveredTokensResponse,
   EvmLightNodeUtils,
   isCatchupStatusPending,
-  PricingStatus,
 } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmLocalHistoryUtils } from '@popup/evm/utils/evm-local-history.utils';
 import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
@@ -34,29 +33,9 @@ const EMPTY_EVM_HISTORY: EvmUserHistory = {
   fullyFetch: false,
 };
 
-const LOAD_MORE_TOKENS_INITIAL_DELAY_MS = 1000;
-const LOAD_MORE_TOKENS_MAX_DELAY_MS = 30000;
-
-const getLoadMoreTokensRetryDelay = (retryCount: number): number => {
-  return Math.min(
-    LOAD_MORE_TOKENS_INITIAL_DELAY_MS * 2 ** retryCount,
-    LOAD_MORE_TOKENS_MAX_DELAY_MS,
-  );
-};
-
-const shouldLoadMoreDiscoveredAssets = (
-  result: DiscoveredTokensResponse | DiscoveredNftsResponse,
-): boolean => {
-  const shouldLoadMoreCatchup = result.catchupStatus === CatchupStatus.RUNNING;
-  if ('pricingStatus' in result) {
-    return (
-      shouldLoadMoreCatchup ||
-      !result.pricingStatus ||
-      result.pricingStatus !== PricingStatus.READY
-    );
-  }
-  return shouldLoadMoreCatchup;
-};
+const shouldLoadMoreDiscoveredNfts = (
+  result: DiscoveredNftsResponse,
+): boolean => result.catchupStatus === CatchupStatus.RUNNING;
 
 const shouldLoadMoreHistory = (history: EvmUserHistory): boolean => {
   return isCatchupStatusPending(history.catchupStatus);
@@ -251,22 +230,6 @@ const mapDiscoveredNftsResponseToActiveAccountNfts = async (
   });
 };
 
-const getTokenInfosWithCustomErc20 = async (
-  chain: EvmChain,
-  wallet: EvmWallet,
-  tokenInfos: NativeAndErc20Token['tokenInfo'][],
-) => {
-  const customTokenInfos = await EvmTokensUtils.getCustomErc20TokenInfos(
-    chain,
-    process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
-  );
-
-  return EvmTokensUtils.mergeCustomErc20TokenInfos(
-    tokenInfos,
-    customTokenInfos,
-  );
-};
-
 const getCustomChainNfts = async (chain: EvmChain, wallet: EvmWallet) => {
   return EvmTokensUtils.getCustomNftCollectionsForWallet(
     chain,
@@ -380,7 +343,8 @@ export const loadEvmHistory =
     });
 
     if (shouldLoadMore) {
-      const retryDelay = getLoadMoreTokensRetryDelay(retryCount);
+      const retryDelay =
+        EvmAccountTokensLoadUtils.getLoadMoreTokensRetryDelay(retryCount);
       setTimeout(() => {
         dispatch(loadEvmHistory(retryCount + 1));
       }, retryDelay);
@@ -441,22 +405,23 @@ export const loadMoreTokensInActiveAccount =
       balances.length === 0 && currentTokens.value.length > 0
         ? currentTokens.value
         : balances;
+    const shouldLoadMore =
+      EvmAccountTokensLoadUtils.shouldLoadMoreDiscoveredAssets(result);
 
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT_TOKENS,
       payload: {
         nativeAndErc20Tokens: {
           value: nextBalances,
-          loading: shouldLoadMoreDiscoveredAssets(result)
-            ? nextBalances.length === 0
-            : false,
+          loading: shouldLoadMore ? nextBalances.length === 0 : false,
           initialized: true,
         },
       },
     });
 
-    if (shouldLoadMoreDiscoveredAssets(result)) {
-      const retryDelay = getLoadMoreTokensRetryDelay(retryCount);
+    if (shouldLoadMore) {
+      const retryDelay =
+        EvmAccountTokensLoadUtils.getLoadMoreTokensRetryDelay(retryCount);
       setTimeout(() => {
         dispatch(loadMoreTokensInActiveAccount(chain, wallet, retryCount + 1));
       }, retryDelay);
@@ -470,17 +435,14 @@ export const loadEvmActiveAccount =
 
     if (chain.isCustom === true) {
       const additionalAssetLoadPromises = [dispatch(loadEvmHistory())];
-
-      const nativeMeta = EvmTokensUtils.buildFallbackNativeTokenInfo(chain);
-      const [tokenInfos, customNfts] = await Promise.all([
-        getTokenInfosWithCustomErc20(chain, wallet, [nativeMeta]),
+      const [loadResult, customNfts] = await Promise.all([
+        EvmAccountTokensLoadUtils.loadNativeAndErc20TokensForChain(
+          chain,
+          wallet.address,
+        ),
         getCustomChainNfts(chain, wallet),
       ]);
-      const balances = await EvmTokensUtils.getTokenBalances(
-        process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
-        chain,
-        tokenInfos,
-      );
+      const balances = loadResult.balances;
       if (
         !isActiveAccountRequestCurrent(
           getState().chain as Chain,
@@ -516,7 +478,6 @@ export const loadEvmActiveAccount =
       return;
     }
 
-    // TODO remove after testing period
     await EvmLightNodeUtils.registerAddress(
       chain.chainId,
       wallet.address,
@@ -530,31 +491,12 @@ export const loadEvmActiveAccount =
       dispatch(loadEvmHistory()),
     ];
 
-    const result: DiscoveredTokensResponse =
-      await EvmLightNodeUtils.getDiscoveredTokens(
-        chain.chainId,
-        process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
-      );
-    if (
-      !isActiveAccountRequestCurrent(
-        getState().chain as Chain,
-        getState().evm.activeAccount,
+    const { balances, shouldLoadMore } =
+      await EvmAccountTokensLoadUtils.loadNativeAndErc20TokensForChain(
         chain,
-        wallet,
-      )
-    ) {
-      return;
-    }
-
-    const balances = await EvmTokensUtils.getTokenBalances(
-      process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
-      chain,
-      result.tokens.filter(
-        (token) =>
-          token.type === EVMSmartContractType.ERC20 ||
-          token.type === EVMSmartContractType.NATIVE,
-      ),
-    );
+        wallet.address,
+        { registerAddress: false },
+      );
     if (
       !isActiveAccountRequestCurrent(
         getState().chain as Chain,
@@ -581,7 +523,7 @@ export const loadEvmActiveAccount =
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: { isReady: true },
     });
-    if (shouldLoadMoreDiscoveredAssets(result)) {
+    if (shouldLoadMore) {
       setTimeout(() => {
         dispatch(loadMoreTokensInActiveAccount(chain, wallet));
       }, 1000);
@@ -610,7 +552,7 @@ export const loadMoreNftsInActiveAccount =
       process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
     );
     const nfts = await mapDiscoveredNftsResponseToActiveAccountNfts(result);
-    const shouldLoadMore = shouldLoadMoreDiscoveredAssets(result);
+    const shouldLoadMore = shouldLoadMoreDiscoveredNfts(result);
     if (
       !isActiveAccountRequestCurrent(
         getState().chain as Chain,
@@ -639,7 +581,8 @@ export const loadMoreNftsInActiveAccount =
     });
 
     if (shouldLoadMore) {
-      const retryDelay = getLoadMoreTokensRetryDelay(retryCount);
+      const retryDelay =
+        EvmAccountTokensLoadUtils.getLoadMoreTokensRetryDelay(retryCount);
       setTimeout(() => {
         dispatch(loadMoreNftsInActiveAccount(chain, wallet, retryCount + 1));
       }, retryDelay);
@@ -692,7 +635,7 @@ export const loadEvmActiveAccountNfts =
       process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
     );
     const nfts = await mapDiscoveredNftsResponseToActiveAccountNfts(result);
-    const shouldLoadMore = shouldLoadMoreDiscoveredAssets(result);
+    const shouldLoadMore = shouldLoadMoreDiscoveredNfts(result);
     if (
       !isActiveAccountRequestCurrent(
         getState().chain as Chain,
