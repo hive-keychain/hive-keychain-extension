@@ -182,6 +182,43 @@ const getPortfolio = async (
   return [portfolio, orderedTokenList];
 };
 
+const HIVE_CORE_TOKEN_SYMBOLS = ['HIVE', 'HBD', 'HP'] as const;
+
+export type HivePortfolioDisplaySortItem = {
+  symbol: string;
+  usdValue: number | null;
+};
+
+const getHiveCoreTokenSortIndex = (symbol: string): number | null => {
+  const normalizedSymbol = symbol.toUpperCase();
+  const coreIndex = HIVE_CORE_TOKEN_SYMBOLS.indexOf(
+    normalizedSymbol as (typeof HIVE_CORE_TOKEN_SYMBOLS)[number],
+  );
+
+  return coreIndex >= 0 ? coreIndex : null;
+};
+
+const compareHivePortfolioItemsByDisplayOrder = (
+  left: HivePortfolioDisplaySortItem,
+  right: HivePortfolioDisplaySortItem,
+): number => {
+  const leftOrder =
+    getHiveCoreTokenSortIndex(left.symbol) ?? HIVE_CORE_TOKEN_SYMBOLS.length;
+  const rightOrder =
+    getHiveCoreTokenSortIndex(right.symbol) ?? HIVE_CORE_TOKEN_SYMBOLS.length;
+
+  if (leftOrder !== rightOrder) {
+    return leftOrder - rightOrder;
+  }
+
+  return (right.usdValue ?? -1) - (left.usdValue ?? -1);
+};
+
+const sortHivePortfolioBalancesByDisplayOrder = (
+  balances: PortfolioBalance[],
+): PortfolioBalance[] =>
+  [...balances].sort(compareHivePortfolioItemsByDisplayOrder);
+
 const getOrderedTokenFullList = (
   tokensFullList: string[],
   portfolio: UserPortfolio[],
@@ -296,4 +333,6 @@ export const PortfolioUtils = {
   getTotals,
   getOrderedTokenFullList,
   generateUserLayerTwoPortolio,
+  compareHivePortfolioItemsByDisplayOrder,
+  sortHivePortfolioBalancesByDisplayOrder,
 };

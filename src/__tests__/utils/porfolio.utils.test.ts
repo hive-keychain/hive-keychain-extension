@@ -71,6 +71,39 @@ describe('porfolio.utils', () => {
     });
   });
 
+  describe('sortHivePortfolioBalancesByDisplayOrder', () => {
+    it('orders HIVE, HBD, and HP before Hive Engine tokens', () => {
+      const balances = [
+        { symbol: 'BEE', balance: 100, usdValue: 500 },
+        { symbol: 'HP', balance: 50, usdValue: 200 },
+        { symbol: 'HBD', balance: 10, usdValue: 10 },
+        { symbol: 'DEC', balance: 1, usdValue: 1000 },
+        { symbol: 'HIVE', balance: 5, usdValue: 5 },
+      ];
+
+      expect(
+        PortfolioUtils.sortHivePortfolioBalancesByDisplayOrder(balances).map(
+          (balance) => balance.symbol,
+        ),
+      ).toEqual(['HIVE', 'HBD', 'HP', 'DEC', 'BEE']);
+    });
+
+    it('sorts Hive Engine tokens by total value descending', () => {
+      const balances = [
+        { symbol: 'AAA', balance: 1, usdValue: 10 },
+        { symbol: 'HIVE', balance: 1, usdValue: 1 },
+        { symbol: 'BBB', balance: 1, usdValue: 50 },
+        { symbol: 'CCC', balance: 1, usdValue: 25 },
+      ];
+
+      expect(
+        PortfolioUtils.sortHivePortfolioBalancesByDisplayOrder(balances).map(
+          (balance) => balance.symbol,
+        ),
+      ).toEqual(['HIVE', 'BBB', 'CCC', 'AAA']);
+    });
+  });
+
   describe('getTotals', () => {
     it('sums balances and usd values per column symbol', () => {
       const data: UserPortfolio[] = [

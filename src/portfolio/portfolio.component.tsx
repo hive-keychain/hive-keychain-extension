@@ -469,16 +469,25 @@ export const Portfolio = ({
 
   const visibleRows = useMemo(() => {
     const filter = tokenFilter.trim().toLowerCase();
-    return [...rows]
+    const filteredRows = [...rows]
       .filter((row) => !selectedNetwork || row.network === selectedNetwork)
       .filter(
         (row) =>
           !filter ||
           row.symbol.toLowerCase().includes(filter) ||
           row.network.toLowerCase().includes(filter),
-      )
-      .sort((left, right) => (right.usdValue ?? -1) - (left.usdValue ?? -1));
-  }, [rows, selectedNetwork, tokenFilter]);
+      );
+
+    if (selectedAccount?.type === ChainType.HIVE) {
+      return filteredRows.sort(
+        PortfolioUtils.compareHivePortfolioItemsByDisplayOrder,
+      );
+    }
+
+    return filteredRows.sort(
+      (left, right) => (right.usdValue ?? -1) - (left.usdValue ?? -1),
+    );
+  }, [rows, selectedNetwork, tokenFilter, selectedAccount?.type]);
 
   const totalUsd = visibleRows.reduce(
     (total, row) => total + (row.usdValue ?? 0),
@@ -598,8 +607,11 @@ export const Portfolio = ({
           extendedAccounts,
         )) as [UserPortfolio[], string[]];
         if (selectedAccountKey !== accountKey) return;
+        const sortedBalances = PortfolioUtils.sortHivePortfolioBalancesByDisplayOrder(
+          portfolio[0]?.balances ?? [],
+        );
         setRows(
-          (portfolio[0]?.balances ?? []).map((balance) => ({
+          sortedBalances.map((balance) => ({
             key: `hive:${balance.symbol}`,
             symbol: balance.symbol,
             network: 'Hive',

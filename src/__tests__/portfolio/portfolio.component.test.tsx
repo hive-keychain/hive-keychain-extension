@@ -7,6 +7,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Portfolio } from 'src/portfolio/portfolio.component';
 import { PortfolioApiUtils } from 'src/portfolio/portfolio-api.utils';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
 
 jest.mock('src/portfolio/portfolio-api.utils', () => ({
@@ -243,6 +244,51 @@ describe('Portfolio', () => {
       ).toHaveBeenCalledTimes(1),
     );
     expect(PortfolioUtils.getPortfolio).not.toHaveBeenCalled();
+  });
+
+  it('orders Hive tokens as HIVE, HBD, HP, then Hive Engine tokens by value', async () => {
+    jest.spyOn(AccountUtils, 'getExtendedAccounts').mockResolvedValue([
+      { name: 'alice' } as never,
+    ]);
+    jest.spyOn(PortfolioUtils, 'getPortfolio').mockResolvedValue([
+      [
+        {
+          account: 'alice',
+          balances: [
+            { symbol: 'BEE', balance: 100, usdValue: 500 },
+            { symbol: 'HP', balance: 50, usdValue: 200 },
+            { symbol: 'HBD', balance: 10, usdValue: 10 },
+            { symbol: 'DEC', balance: 1, usdValue: 1000 },
+            { symbol: 'HIVE', balance: 5, usdValue: 5 },
+          ],
+          totalHive: 0,
+          totalUSD: 0,
+        },
+      ],
+      ['HIVE', 'HBD', 'HP', 'DEC', 'BEE'],
+    ]);
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[{ name: 'alice' } as never]}
+        evmAccounts={[]}
+        activeAccountType={ChainType.HIVE}
+        activeEvmAccountAddress={undefined}
+        activeHiveAccountName="alice"
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      const symbols = Array.from(
+        container.querySelectorAll('.portfolio-token-identity strong'),
+      ).map((element) => element.textContent);
+
+      expect(symbols).toEqual(['HIVE', 'HBD', 'HP', 'DEC', 'BEE']);
+    });
   });
 
   it('shows a partial load error and clears the bottom spinner when a chain fails', async () => {
