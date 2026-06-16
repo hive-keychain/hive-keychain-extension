@@ -7,6 +7,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Portfolio } from 'src/portfolio/portfolio.component';
 import { PortfolioApiUtils } from 'src/portfolio/portfolio-api.utils';
+import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
 
@@ -289,6 +290,65 @@ describe('Portfolio', () => {
 
       expect(symbols).toEqual(['HIVE', 'HBD', 'HP', 'DEC', 'BEE']);
     });
+  });
+
+  it('loads portfolio balances when opening swap', async () => {
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+    });
+
+    const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
+    fireEvent.click(sidebarButtons[3]);
+
+    await waitFor(() => {
+      expect(
+        EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains,
+      ).toHaveBeenCalledTimes(2);
+      expect(container.querySelector('.portfolio-flow')).not.toBeNull();
+    });
+  });
+
+  it('excludes testnet tokens from swap from options', () => {
+    const options = PortfolioFlowUtils.buildPortfolioFromSelectOptions([
+      {
+        key: '0x1:ETH:native',
+        symbol: 'ETH',
+        network: 'Ethereum',
+        balance: '1',
+        chainId: '0x1',
+        isTestnet: false,
+      },
+      {
+        key: '0xaa36a7:ETH:native',
+        symbol: 'ETH',
+        network: 'Sepolia',
+        balance: '5',
+        chainId: '0xaa36a7',
+        isTestnet: true,
+      },
+    ]);
+
+    expect(options).toHaveLength(1);
+    expect(options[0].label).toBe('ETH - Ethereum (1)');
   });
 
   it('shows a partial load error and clears the bottom spinner when a chain fails', async () => {

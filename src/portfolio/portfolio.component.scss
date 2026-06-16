@@ -458,69 +458,6 @@
   background: var(--kc-color-bg-raised);
 }
 
-.portfolio-token-identity {
-  display: flex;
-  align-items: center;
-  gap: var(--kc-space-2);
-  min-width: 0;
-
-  .portfolio-token-logo-wrap {
-    position: relative;
-    width: 28px;
-    height: 28px;
-    flex-shrink: 0;
-  }
-
-  .currency-icon,
-  .portfolio-token-avatar,
-  .svg-icon.currency-icon {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  .portfolio-token-avatar {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--kc-color-bg-elevated);
-    border: 1px solid var(--kc-color-border-subtle);
-    color: var(--kc-color-text-primary);
-    font-size: var(--kc-font-size-xs);
-    font-weight: var(--kc-font-weight-semibold);
-  }
-
-  .portfolio-network-badge,
-  .chain-logo-initials.portfolio-network-badge {
-    position: absolute;
-    right: -2px;
-    top: -2px;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    border: 1px solid var(--kc-color-bg-card);
-    object-fit: cover;
-  }
-
-  > span:last-child {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-
-    strong {
-      font-size: var(--kc-font-size-sm);
-      font-weight: var(--kc-font-weight-semibold);
-    }
-
-    small {
-      color: var(--kc-color-text-muted);
-      font-size: var(--kc-font-size-xs);
-    }
-  }
-}
-
 .portfolio-row-actions {
   display: flex;
   align-items: center;
@@ -596,6 +533,14 @@
   flex-direction: column;
   gap: var(--kc-space-3);
   width: min(100%, 38.75rem);
+
+  .portfolio-overlay-select__preview,
+  .portfolio-overlay-select__option {
+    .portfolio-token-identity {
+      width: 100%;
+      min-width: 0;
+    }
+  }
 }
 
 .portfolio-quote-card {

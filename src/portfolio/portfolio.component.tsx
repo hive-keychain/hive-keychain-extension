@@ -1,6 +1,5 @@
 import { FormContainer } from '@common-ui/_containers/form-container/form-container.component';
 import { EVMConfirmationPageParams } from '@common-ui/confirmation-page/confirmation-page.interface';
-import { ChainLogo } from '@common-ui/chain-logo/chain-logo.component';
 import {
   ComplexeCustomSelect,
   OptionItem,
@@ -29,13 +28,16 @@ import ButtonComponent, { ButtonType } from 'src/common-ui/button/button.compone
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { PortfolioAccountAvatar } from 'src/portfolio/ui/portfolio-account-avatar.component';
 import { PortfolioNavIcon } from 'src/portfolio/ui/portfolio-nav-icon.enum';
 import { PortfolioOverlayListSelect } from 'src/portfolio/ui/portfolio-overlay-list-select.component';
 import { PortfolioSidebarNavIcon } from 'src/portfolio/ui/portfolio-sidebar-nav-icon.component';
+import {
+  canonicalAssetToTokenIdentityProps,
+  PortfolioTokenIdentity,
+  portfolioRowToTokenIdentityProps,
+} from 'src/portfolio/ui/portfolio-token-identity.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import {
   PortfolioCanonicalAsset,
@@ -44,9 +46,9 @@ import {
   PortfolioQuote,
   PortfolioQuoteResponse,
 } from 'src/portfolio/portfolio-api.interface';
+import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
 import { PortfolioApiUtils } from 'src/portfolio/portfolio-api.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
-import { ColorsUtils } from 'src/utils/colors.utils';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
@@ -82,6 +84,8 @@ type PortfolioRow = {
   logoUrl?: string | null;
   networkLogoUrl?: string | null;
   hiveAccountName?: string;
+  chainId?: string | null;
+  isTestnet?: boolean;
 };
 
 const sectionIcons: Record<PortfolioSection, PortfolioNavIcon> = {
@@ -102,11 +106,13 @@ const sections: PortfolioSection[] = [
   'history',
 ];
 
-const getEmptyAssetOption = (): OptionItem => ({
-  label: I18nUtils.getMessage('portfolio_select_asset'),
-  value: '',
-  key: 'empty-asset',
-});
+const sectionsWithPortfolioRows: PortfolioSection[] = [
+  'portfolio',
+  'buy',
+  'sell',
+  'swap',
+  'bridge',
+];
 
 const getAllNetworksOption = (): OptionItem => ({
   label: I18nUtils.getMessage('portfolio_all_networks'),
@@ -152,19 +158,6 @@ const resolveDefaultPortfolioAccountKey = (
   }
 
   return accountOptions[0]?.key ?? '';
-};
-
-const getHiveTokenIcon = (symbol: string): SVGIcons | undefined => {
-  switch (symbol.toUpperCase()) {
-    case 'HBD':
-      return SVGIcons.WALLET_HBD_LOGO;
-    case 'HIVE':
-      return SVGIcons.WALLET_HIVE_LOGO;
-    case 'HP':
-      return SVGIcons.WALLET_HP_LOGO;
-    default:
-      return undefined;
-  }
 };
 
 const buildEvmPortfolioChainByIdMap = (
@@ -258,6 +251,8 @@ const mapEvmTokenToPortfolioRow = (
     priceUsd,
     logoUrl: token.tokenInfo.logo ?? null,
     networkLogoUrl: resolvedChain?.logo ?? null,
+    chainId: rowChainId || null,
+    isTestnet: resolvedChain?.testnet ?? false,
   };
 };
 
@@ -305,58 +300,6 @@ const getStatusMessageKey = (error: unknown, fallback: string): string =>
   error instanceof Error && error.message.startsWith('portfolio_')
     ? error.message
     : fallback;
-
-interface PortfolioTokenIdentityProps {
-  row: PortfolioRow;
-  isHive: boolean;
-}
-
-const PortfolioTokenIdentity = ({ row, isHive }: PortfolioTokenIdentityProps) => {
-  const [color, setColor] = useState<string>();
-
-  useEffect(() => {
-    setColor(ColorsUtils.stringToColor(row.symbol));
-  }, [row.symbol]);
-
-  const hiveIcon = isHive ? getHiveTokenIcon(row.symbol) : undefined;
-
-  return (
-    <div className="portfolio-token-identity">
-      <div className="portfolio-token-logo-wrap">
-        {hiveIcon ? (
-          <SVGIcon icon={hiveIcon} className="currency-icon" />
-        ) : row.logoUrl ? (
-          <PreloadedImage
-            className="currency-icon"
-            src={row.logoUrl}
-            alt=""
-            placeholder="/assets/images/hive-engine.svg"
-          />
-        ) : (
-          <span
-            className="portfolio-token-avatar"
-            style={{
-              backgroundColor: `${color}2b`,
-              color,
-            }}>
-            {row.symbol.slice(0, 1)}
-          </span>
-        )}
-        {row.networkLogoUrl ? (
-          <ChainLogo
-            chainName={row.network}
-            logoUri={row.networkLogoUrl}
-            className="portfolio-network-badge"
-          />
-        ) : null}
-      </div>
-      <span>
-        <strong>{row.symbol}</strong>
-        <small>{row.network}</small>
-      </span>
-    </div>
-  );
-};
 
 export const Portfolio = ({
   hiveAccounts,
@@ -431,13 +374,23 @@ export const Portfolio = ({
     [accountOptions],
   );
 
-  const assetOptions = useMemo<OptionItem[]>(
-    () =>
-      assets.map((asset) => ({
-        key: asset.assetId,
-        label: `${asset.symbol} - ${asset.name}`,
-        value: asset.assetId,
-      })),
+  const fromAssetOptions = useMemo(
+    () => PortfolioFlowUtils.buildPortfolioFromSelectOptions(rows),
+    [rows],
+  );
+
+  const toAssetOptions = useMemo(
+    () => PortfolioFlowUtils.buildCanonicalAssetSelectOptions(assets),
+    [assets],
+  );
+
+  const portfolioRowByKey = useMemo(
+    () => new Map(rows.map((row) => [row.key, row])),
+    [rows],
+  );
+
+  const canonicalAssetById = useMemo(
+    () => new Map(assets.map((asset) => [asset.assetId, asset])),
     [assets],
   );
 
@@ -459,13 +412,38 @@ export const Portfolio = ({
     networkSelectOptions.find((option) => option.value === selectedNetwork) ??
     getAllNetworksOption();
 
-  const selectedFromAsset =
-    assetOptions.find((asset) => asset.value === fromAssetId) ??
-    getEmptyAssetOption();
+  const renderFromAssetIdentity = (rowKey: string) => {
+    const row = portfolioRowByKey.get(rowKey);
+    if (!row) {
+      return rowKey;
+    }
 
-  const selectedToAsset =
-    assetOptions.find((asset) => asset.value === toAssetId) ??
-    getEmptyAssetOption();
+    return (
+      <PortfolioTokenIdentity
+        {...portfolioRowToTokenIdentityProps(row)}
+        balance={PortfolioFlowUtils.formatPortfolioTokenBalance(row.balance)}
+      />
+    );
+  };
+
+  const renderToAssetIdentity = (assetId: string) => {
+    const asset = canonicalAssetById.get(assetId);
+    if (!asset) {
+      return assetId;
+    }
+
+    return (
+      <PortfolioTokenIdentity
+        {...canonicalAssetToTokenIdentityProps(
+          asset,
+          PortfolioFlowUtils.resolveEvmChainLogoUrl(
+            asset.chainId,
+            setupEvmChains,
+          ),
+        )}
+      />
+    );
+  };
 
   const visibleRows = useMemo(() => {
     const filter = tokenFilter.trim().toLowerCase();
@@ -567,15 +545,55 @@ export const Portfolio = ({
   }, [selectedAccount?.type, selectedAccountKey]);
 
   useEffect(() => {
+    setFromAssetId('');
+    setToAssetId('');
+  }, [selectedAccountKey]);
+
+  useEffect(() => {
+    if (!fromAssetOptions.length) {
+      if (fromAssetId) {
+        setFromAssetId('');
+      }
+      return;
+    }
+
+    if (!fromAssetOptions.some((option) => option.value === fromAssetId)) {
+      setFromAssetId(fromAssetOptions[0].value);
+    }
+  }, [fromAssetOptions, fromAssetId]);
+
+  useEffect(() => {
+    if (!toAssetOptions.length) {
+      if (toAssetId) {
+        setToAssetId('');
+      }
+      return;
+    }
+
+    if (!toAssetOptions.some((option) => option.value === toAssetId)) {
+      setToAssetId(toAssetOptions[0].value);
+    }
+  }, [toAssetOptions, toAssetId]);
+
+  useEffect(() => {
     if (!selectedAccountKey) return;
 
     setQuoteResponse(undefined);
     setStatusMessage('');
     setStatusMessageParams(undefined);
-    setSelectedNetwork('');
-    setRows([]);
-    if (section === 'portfolio' && selectedAccount) void loadPortfolio();
-    if (section === 'history') void loadHistory();
+
+    if (section === 'history') {
+      void loadHistory();
+      return;
+    }
+
+    if (section === 'portfolio') {
+      setSelectedNetwork('');
+    }
+
+    if (sectionsWithPortfolioRows.includes(section) && selectedAccount) {
+      void loadPortfolio();
+    }
   }, [section, selectedAccountKey]);
 
   const loadAssets = async () => {
@@ -620,6 +638,9 @@ export const Portfolio = ({
             priceUsd:
               balance.balance > 0 ? balance.usdValue / balance.balance : null,
             hiveAccountName: account.account.name,
+            chainId: null,
+            isTestnet: false,
+            isHive: true,
           })),
         );
       } catch (error) {
@@ -747,10 +768,18 @@ export const Portfolio = ({
         selectedAccount.type === ChainType.EVM
           ? selectedAccount.account.wallet.address
           : selectedAccount.account.name;
+      const resolvedFromAssetId =
+        section === 'buy'
+          ? undefined
+          : PortfolioFlowUtils.resolveFromRowKeyToCanonicalAssetId(
+              fromAssetId,
+              rows,
+              assets,
+            );
+
       const response = await PortfolioApiUtils.getQuotes({
         mode: section as PortfolioMode,
-        fromAssetId:
-          section === 'buy' ? undefined : fromAssetId || undefined,
+        fromAssetId: resolvedFromAssetId,
         toAssetId: section === 'sell' ? undefined : toAssetId || undefined,
         fromAmount: amount,
         fromAddress: address,
@@ -897,11 +926,19 @@ export const Portfolio = ({
   };
 
   const openFlowForRow = (row: PortfolioRow, mode: PortfolioMode) => {
-    const matchingAsset = assets.find(
-      (asset) => asset.symbol.toLowerCase() === row.symbol.toLowerCase(),
+    const canUseAsFrom =
+      PortfolioFlowUtils.hasPositivePortfolioBalance(row.balance) &&
+      !row.isTestnet;
+
+    setFromAssetId(mode === 'buy' || !canUseAsFrom ? '' : row.key);
+    setToAssetId(
+      mode === 'sell'
+        ? ''
+        : PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+            row,
+            assets,
+          ) ?? '',
     );
-    setFromAssetId(mode === 'buy' ? '' : matchingAsset?.assetId ?? '');
-    setToAssetId(mode === 'sell' ? '' : matchingAsset?.assetId ?? '');
     setSection(mode);
   };
 
@@ -1023,8 +1060,10 @@ export const Portfolio = ({
           visibleRows.map((row) => (
             <div className="portfolio-table-row" key={row.key}>
               <PortfolioTokenIdentity
-                row={row}
-                isHive={selectedAccount?.type === ChainType.HIVE}
+                {...portfolioRowToTokenIdentityProps({
+                  ...row,
+                  isHive: selectedAccount?.type === ChainType.HIVE,
+                })}
               />
               {renderRowActions(row)}
               <span className="portfolio-number amount">
@@ -1093,20 +1132,26 @@ export const Portfolio = ({
               />
             </>
           )}
-          {mode !== 'buy' && (
-            <ComplexeCustomSelect
-              label="portfolio_from_asset"
-              options={[getEmptyAssetOption(), ...assetOptions]}
-              selectedItem={selectedFromAsset}
-              setSelectedItem={(item) => setFromAssetId(item.value)}
+          {mode !== 'buy' && fromAssetOptions.length > 0 && (
+            <PortfolioOverlayListSelect
+              id="portfolio-from-asset"
+              label={I18nUtils.getMessage('portfolio_from_asset')}
+              options={fromAssetOptions}
+              value={fromAssetId}
+              onChange={setFromAssetId}
+              renderOption={renderFromAssetIdentity}
+              renderDisplay={renderFromAssetIdentity}
             />
           )}
-          {mode !== 'sell' && (
-            <ComplexeCustomSelect
-              label="portfolio_to_asset"
-              options={[getEmptyAssetOption(), ...assetOptions]}
-              selectedItem={selectedToAsset}
-              setSelectedItem={(item) => setToAssetId(item.value)}
+          {mode !== 'sell' && toAssetOptions.length > 0 && (
+            <PortfolioOverlayListSelect
+              id="portfolio-to-asset"
+              label={I18nUtils.getMessage('portfolio_to_asset')}
+              options={toAssetOptions}
+              value={toAssetId}
+              onChange={setToAssetId}
+              renderOption={renderToAssetIdentity}
+              renderDisplay={renderToAssetIdentity}
             />
           )}
           <InputComponent
