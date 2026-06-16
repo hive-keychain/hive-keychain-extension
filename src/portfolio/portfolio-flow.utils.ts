@@ -73,38 +73,236 @@ const chainIdsMatch = (
   return normalizedLeft === normalizedRight;
 };
 
+const EVM_CONTRACT_ADDRESS_PATTERN = /^0x[0-9a-f]{40}$/i;
+
+type ParsedPortfolioEvmRowKey = {
+  chainReference: string;
+  contractAddress: string | null;
+};
+
+const parsePortfolioEvmRowKey = (
+  row: PortfolioFlowRow,
+): ParsedPortfolioEvmRowKey | null => {
+  if (row.key.startsWith('hive:')) {
+    return null;
+  }
+
+  const parts = row.key.split(':');
+  if (parts.length < 3) {
+    return null;
+  }
+
+  const chainReference = row.chainId ?? parts[0];
+  const tail = parts[parts.length - 1]?.toLowerCase() ?? '';
+  const contractAddress =
+    tail === 'native'
+      ? null
+      : EVM_CONTRACT_ADDRESS_PATTERN.test(tail)
+        ? tail
+        : null;
+
+  return {
+    chainReference,
+    contractAddress,
+  };
+};
+
+const getContractAddressFromAssetId = (
+  assetId: string,
+): string | null => {
+  const tail = assetId.split(':').pop()?.toLowerCase() ?? '';
+  return EVM_CONTRACT_ADDRESS_PATTERN.test(tail) ? tail : null;
+};
+
+const getChainSlugFromAssetId = (assetId: string): string | null => {
+  const parts = assetId.split(':');
+  if (parts[0] !== 'evm' || parts.length < 4) {
+    return null;
+  }
+
+  const slug = parts[2]?.trim().toLowerCase() ?? '';
+  if (
+    !slug ||
+    EVM_CONTRACT_ADDRESS_PATTERN.test(slug) ||
+    /^\d+$/.test(slug)
+  ) {
+    return null;
+  }
+
+  return slug;
+};
+
+const getChainReferencesFromAsset = (
+  asset: PortfolioCanonicalAsset,
+): string[] => {
+  const references = new Set<string>();
+
+  if (asset.chainId) {
+    references.add(asset.chainId);
+  }
+
+  const chainSlug = getChainSlugFromAssetId(asset.assetId);
+  if (chainSlug) {
+    references.add(chainSlug);
+  }
+
+  const parts = asset.assetId.split(':');
+  if (parts[0] !== 'evm') {
+    return [...references];
+  }
+
+  for (const part of parts.slice(1)) {
+    if (/^\d+$/.test(part)) {
+      references.add(part);
+      references.add(`0x${BigInt(part).toString(16)}`);
+    }
+  }
+
+  return [...references];
+};
+
+const resolveAssetEvmChain = (
+  asset: PortfolioCanonicalAsset,
+  chains: EvmChain[],
+): EvmChain | undefined => {
+  for (const chainReference of getChainReferencesFromAsset(asset)) {
+    const chain = resolveEvmChainForChainReference(chainReference, chains);
+    if (chain) {
+      return chain;
+    }
+  }
+
+  return undefined;
+};
+
+const assetChainMatchesRow = (
+  asset: PortfolioCanonicalAsset,
+  rowChainReference: string,
+  chains: EvmChain[],
+): boolean => {
+  const rowChain = resolveEvmChainForChainReference(rowChainReference, chains);
+  const assetChain = resolveAssetEvmChain(asset, chains);
+
+  if (rowChain && assetChain) {
+    return chainIdsMatch(rowChain.chainId, assetChain.chainId);
+  }
+
+  return getChainReferencesFromAsset(asset).some((chainReference) =>
+    chainIdsMatch(chainReference, rowChainReference),
+  );
+};
+
+const resolveEvmPortfolioRowToCanonicalAsset = (
+  row: PortfolioFlowRow,
+  assets: PortfolioCanonicalAsset[],
+  chains: EvmChain[],
+): PortfolioCanonicalAsset | undefined => {
+  const parsedRow = parsePortfolioEvmRowKey(row);
+  if (!parsedRow) {
+    return undefined;
+  }
+
+  const normalizedSymbol = row.symbol.toUpperCase();
+
+  if (parsedRow.contractAddress) {
+    return assets.find((asset) => {
+      if (asset.ecosystem !== 'evm') {
+        return false;
+      }
+
+      const assetContractAddress = getContractAddressFromAssetId(asset.assetId);
+      if (assetContractAddress !== parsedRow.contractAddress) {
+        return false;
+      }
+
+      return assetChainMatchesRow(asset, parsedRow.chainReference, chains);
+    });
+  }
+
+  return assets.find((asset) => {
+    if (asset.ecosystem !== 'evm') {
+      return false;
+    }
+
+    if (getContractAddressFromAssetId(asset.assetId)) {
+      return false;
+    }
+
+    if (asset.symbol.toUpperCase() !== normalizedSymbol) {
+      return false;
+    }
+
+    return assetChainMatchesRow(asset, parsedRow.chainReference, chains);
+  });
+};
+
 export const getHivePortfolioRowEcosystem = (
   symbol: string,
 ): 'hive' | 'hive_engine' =>
   HIVE_CORE_SYMBOLS.has(symbol.toUpperCase()) ? 'hive' : 'hive_engine';
 
-export const resolveEvmChainLogoUrl = (
-  chainId: string | null | undefined,
-  chains: EvmChain[],
+const normalizeChainReference = (
+  value: string | null | undefined,
 ): string | null => {
-  if (!chainId) {
+  if (!value) {
     return null;
   }
 
-  const chain = chains.find((item) => chainIdsMatch(item.chainId, chainId));
-  return chain?.logo ?? null;
+  const trimmed = value.trim();
+  return trimmed ? trimmed.toLowerCase() : null;
 };
+
+export const resolveEvmChainForChainReference = (
+  chainReference: string | null | undefined,
+  chains: EvmChain[],
+): EvmChain | undefined => {
+  if (!chainReference) {
+    return undefined;
+  }
+
+  const chainById = chains.find((chain) =>
+    chainIdsMatch(chain.chainId, chainReference),
+  );
+  if (chainById) {
+    return chainById;
+  }
+
+  const normalizedReference = normalizeChainReference(chainReference);
+  if (!normalizedReference) {
+    return undefined;
+  }
+
+  return chains.find((chain) => {
+    const references = [
+      chain.name,
+      chain.network,
+      chain.openSeaChainId,
+      chain.nativeCoinId,
+    ];
+
+    return references.some(
+      (reference) => normalizeChainReference(reference) === normalizedReference,
+    );
+  });
+};
+
+export const resolveEvmChainLogoUrl = (
+  chainId: string | null | undefined,
+  chains: EvmChain[],
+): string | null =>
+  resolveEvmChainForChainReference(chainId, chains)?.logo ?? null;
 
 export const resolvePortfolioRowToCanonicalAsset = (
   row: PortfolioFlowRow,
   assets: PortfolioCanonicalAsset[],
+  chains: EvmChain[] = [],
 ): PortfolioCanonicalAsset | undefined => {
-  const normalizedSymbol = row.symbol.toUpperCase();
-
-  if (row.chainId) {
-    return assets.find(
-      (asset) =>
-        asset.ecosystem === 'evm' &&
-        asset.symbol.toUpperCase() === normalizedSymbol &&
-        chainIdsMatch(asset.chainId, row.chainId),
-    );
+  const parsedEvmRow = parsePortfolioEvmRowKey(row);
+  if (parsedEvmRow) {
+    return resolveEvmPortfolioRowToCanonicalAsset(row, assets, chains);
   }
 
+  const normalizedSymbol = row.symbol.toUpperCase();
   const ecosystem = getHivePortfolioRowEcosystem(row.symbol);
   return assets.find(
     (asset) =>
@@ -116,8 +314,9 @@ export const resolvePortfolioRowToCanonicalAsset = (
 export const resolvePortfolioRowToCanonicalAssetId = (
   row: PortfolioFlowRow,
   assets: PortfolioCanonicalAsset[],
+  chains: EvmChain[] = [],
 ): string | undefined =>
-  resolvePortfolioRowToCanonicalAsset(row, assets)?.assetId;
+  resolvePortfolioRowToCanonicalAsset(row, assets, chains)?.assetId;
 
 export const buildPortfolioFromSelectOptions = (
   rows: PortfolioFlowRow[],
@@ -135,12 +334,48 @@ export const buildPortfolioFromSelectOptions = (
       };
     });
 
+export const resolveCanonicalAssetNetworkLabel = (
+  asset: PortfolioCanonicalAsset,
+  chains: EvmChain[],
+): string => {
+  if (asset.ecosystem === 'hive') {
+    return 'Hive';
+  }
+
+  if (asset.ecosystem === 'hive_engine') {
+    return 'Hive Engine';
+  }
+
+  const chain = resolveEvmChainForChainReference(asset.chainId, chains);
+  if (chain) {
+    return chain.name;
+  }
+
+  return asset.chainId ?? '';
+};
+
+export const resolveCanonicalAssetNetworkLogoUrl = (
+  asset: PortfolioCanonicalAsset,
+  chains: EvmChain[],
+): string | null => {
+  if (asset.ecosystem === 'hive') {
+    return HIVE_CHAIN_LOGO;
+  }
+
+  if (asset.ecosystem === 'hive_engine') {
+    return HIVE_ENGINE_CHAIN_LOGO;
+  }
+
+  return resolveEvmChainForChainReference(asset.chainId, chains)?.logo ?? null;
+};
+
 export const buildCanonicalAssetSelectOptions = (
   assets: PortfolioCanonicalAsset[],
+  chains: EvmChain[] = [],
 ): PortfolioFlowSelectOption[] =>
   assets.map((asset) => ({
     value: asset.assetId,
-    label: `${asset.symbol} - ${asset.name}`,
+    label: `${asset.symbol} - ${resolveCanonicalAssetNetworkLabel(asset, chains)}`,
   }));
 
 export type PortfolioAssetChainFilterOption = {
@@ -210,7 +445,7 @@ export const buildCanonicalAssetChainFilterOptions = (
     }
 
     const chainId = value.slice(EVM_CHAIN_FILTER_PREFIX.length);
-    const chain = chains.find((item) => chainIdsMatch(item.chainId, chainId));
+    const chain = resolveEvmChainForChainReference(chainId, chains);
     optionsByValue.set(value, {
       value,
       label: chain?.name ?? asset.chainId ?? chainId,
@@ -319,13 +554,14 @@ export const resolveFromRowKeyToCanonicalAssetId = (
   rowKey: string,
   rows: PortfolioFlowRow[],
   assets: PortfolioCanonicalAsset[],
+  chains: EvmChain[] = [],
 ): string | undefined => {
   const row = rows.find((item) => item.key === rowKey);
   if (!row) {
     return assets.some((asset) => asset.assetId === rowKey) ? rowKey : undefined;
   }
 
-  return resolvePortfolioRowToCanonicalAssetId(row, assets);
+  return resolvePortfolioRowToCanonicalAssetId(row, assets, chains);
 };
 
 export const PortfolioFlowUtils = {
@@ -339,6 +575,9 @@ export const PortfolioFlowUtils = {
   getHivePortfolioRowEcosystem,
   getHiveTokenIcon,
   hasPositivePortfolioBalance,
+  resolveCanonicalAssetNetworkLabel,
+  resolveCanonicalAssetNetworkLogoUrl,
+  resolveEvmChainForChainReference,
   resolveEvmChainLogoUrl,
   resolveFromRowKeyToCanonicalAssetId,
   resolvePortfolioRowToCanonicalAsset,

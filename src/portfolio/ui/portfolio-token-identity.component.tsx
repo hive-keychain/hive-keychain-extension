@@ -1,6 +1,7 @@
 import { ChainLogo } from '@common-ui/chain-logo/chain-logo.component';
 import { PreloadedImage } from '@common-ui/preloaded-image/preloaded-image.component';
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import React, { useEffect, useState } from 'react';
 import { PortfolioCanonicalAsset } from 'src/portfolio/portfolio-api.interface';
 import {
@@ -58,7 +59,7 @@ export const PortfolioTokenIdentity = React.memo(({
             {symbol.slice(0, 1)}
           </span>
         )}
-        {networkLogoUrl ? (
+        {networkLogoUrl || network ? (
           <ChainLogo
             chainName={network}
             logoUri={networkLogoUrl}
@@ -91,12 +92,14 @@ export const portfolioRowToTokenIdentityProps = (
 
 export const canonicalAssetToTokenIdentityProps = (
   asset: PortfolioCanonicalAsset,
-  networkLogoUrl?: string | null,
+  chains: EvmChain[] = [],
 ): PortfolioTokenIdentityProps => ({
   symbol: asset.symbol,
-  network: asset.name,
+  network: PortfolioFlowUtils.resolveCanonicalAssetNetworkLabel(asset, chains),
   logoUrl: asset.logoUrl,
-  networkLogoUrl:
-    asset.ecosystem === 'evm' ? (networkLogoUrl ?? null) : null,
+  networkLogoUrl: PortfolioFlowUtils.resolveCanonicalAssetNetworkLogoUrl(
+    asset,
+    chains,
+  ),
   isHive: asset.ecosystem === 'hive' || asset.ecosystem === 'hive_engine',
 });

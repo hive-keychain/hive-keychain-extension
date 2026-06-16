@@ -22,6 +22,7 @@
     isolation: isolate;
     min-height: 2.75rem;
     height: 2.75rem;
+    overflow: visible;
     border: 1px solid var(--kc-color-border-default);
     border-radius: var(--kc-radius-md);
     background: var(--kc-color-bg-elevated);
@@ -87,6 +88,7 @@
     gap: var(--kc-space-2);
     padding: 0.25rem 2.25rem 0.25rem var(--kc-space-2);
     pointer-events: none;
+    overflow: visible;
   }
 
   &__caret {

@@ -15,6 +15,7 @@ jest.mock('src/portfolio/portfolio-api.utils', () => ({
   PortfolioApiUtils: {
     listAssets: jest.fn().mockResolvedValue([]),
     listHistory: jest.fn().mockResolvedValue([]),
+    getQuotes: jest.fn().mockResolvedValue({ quotes: [] }),
   },
 }));
 
@@ -270,7 +271,7 @@ describe('Portfolio', () => {
       ['HIVE', 'HBD', 'HP', 'DEC', 'BEE'],
     ]);
 
-    const { container } = render(
+    const { container, getByText } = render(
       <Portfolio
         hiveAccounts={[{ name: 'alice' } as never]}
         evmAccounts={[]}
@@ -326,6 +327,44 @@ describe('Portfolio', () => {
       ).toHaveBeenCalledTimes(1);
       expect(container.querySelector('.portfolio-flow')).not.toBeNull();
     });
+  });
+
+  it('shows account selector in swap and bridge flows', async () => {
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[{ name: 'alice' } as never]}
+        evmAccounts={
+          [
+            {
+              id: 1,
+              wallet: { address: '0xabc' },
+            } as never,
+          ]
+        }
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName="alice"
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+    });
+
+    const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
+
+    fireEvent.click(sidebarButtons[3]);
+    expect(container.querySelector('#portfolio-flow-account')).not.toBeNull();
+
+    fireEvent.click(sidebarButtons[4]);
+    expect(container.querySelector('#portfolio-flow-account')).not.toBeNull();
+
+    fireEvent.click(sidebarButtons[1]);
+    expect(container.querySelector('#portfolio-flow-account')).toBeNull();
   });
 
   it('refreshes portfolio data when the global refresh button is clicked', async () => {
@@ -439,5 +478,62 @@ describe('Portfolio', () => {
         'Polygon',
       );
     });
+  });
+
+  it('does not request swap quotes when from asset id cannot be resolved', async () => {
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue([
+      {
+        assetId: 'evm:token:hmi:0xbb0d083fb1be0a9f6157ec484b6c79e0a4e31c2e',
+        ecosystem: 'evm',
+        symbol: 'HMI',
+        name: 'HMI',
+        chainId: '0x1',
+        logoUrl: null,
+      },
+    ]);
+
+    const { container, getByText } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={
+          [
+            {
+              id: 1,
+              wallet: { address: '0xabc' },
+            } as never,
+          ]
+        }
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+    });
+
+    const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
+    fireEvent.click(sidebarButtons[3]);
+
+    await waitFor(() => {
+      expect(container.textContent).not.toContain('ETH - Ethereum (1)');
+    });
+
+    const amountInput = container.querySelector(
+      '.portfolio-flow input[type="number"]',
+    ) as HTMLInputElement;
+    fireEvent.change(amountInput, { target: { value: '0.1' } });
+
+    const getQuotesButton = container.querySelector(
+      '.portfolio-flow button',
+    ) as HTMLButtonElement;
+    fireEvent.click(getQuotesButton);
+
+    expect(PortfolioApiUtils.getQuotes).not.toHaveBeenCalled();
   });
 });

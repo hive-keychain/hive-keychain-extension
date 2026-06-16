@@ -296,6 +296,31 @@ const getStatusMessageKey = (error: unknown, fallback: string): string =>
     ? error.message
     : fallback;
 
+const hasRequiredQuoteAssets = (options: {
+  mode: PortfolioMode;
+  fromAssetId?: string;
+  toAssetId?: string;
+}): boolean => {
+  const hasFromAssetId = Boolean(options.fromAssetId);
+  const hasToAssetId = Boolean(options.toAssetId);
+
+  switch (options.mode) {
+    case 'buy':
+      return hasToAssetId;
+    case 'sell':
+      return hasFromAssetId;
+    case 'swap':
+    case 'bridge':
+      return hasFromAssetId && hasToAssetId;
+    default:
+      return false;
+  }
+};
+
+const logPortfolioFlowDebug = (message: string, payload: unknown) => {
+  Logger.debug(`${message} ${JSON.stringify(payload, null, 2)}`);
+};
+
 export const Portfolio = ({
   hiveAccounts,
   evmAccounts,
@@ -331,6 +356,7 @@ export const Portfolio = ({
   const [toAssetFilter, setToAssetFilter] = useState('');
   const [toAssetChainFilter, setToAssetChainFilter] = useState('');
   const [setupEvmChains, setSetupEvmChains] = useState<EvmChain[]>([]);
+  const [defaultEvmChains, setDefaultEvmChains] = useState<EvmChain[]>([]);
   const hasUserSelectedAccountRef = useRef(false);
 
   const accountOptions = useMemo<AccountOption[]>(() => {
@@ -374,23 +400,100 @@ export const Portfolio = ({
     [accountOptions],
   );
 
-  const fromAssetOptions = useMemo(
-    () => PortfolioFlowUtils.buildPortfolioFromSelectOptions(rows),
-    [rows],
-  );
+  const toAssetEvmChains = useMemo(() => {
+    const chainById = buildEvmPortfolioChainByIdMap(setupEvmChains);
+    for (const chain of defaultEvmChains) {
+      for (const key of getEvmPortfolioChainKeys(chain)) {
+        if (!chainById.has(key)) {
+          chainById.set(key, chain);
+        }
+      }
+    }
 
-  const toAssetOptions = useMemo(
-    () => PortfolioFlowUtils.buildCanonicalAssetSelectOptions(assets),
-    [assets],
-  );
+    return [...new Set(chainById.values())];
+  }, [defaultEvmChains, setupEvmChains]);
+
+  const fromAssetOptions = useMemo(() => {
+    const rowResolutionDetails = rows.map((row) => {
+      const canonicalAssetId =
+        PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+          row,
+          assets,
+          toAssetEvmChains,
+        );
+      const hasPositiveBalance =
+        PortfolioFlowUtils.hasPositivePortfolioBalance(row.balance);
+
+      return {
+        key: row.key,
+        symbol: row.symbol,
+        network: row.network,
+        chainId: row.chainId ?? null,
+        balance: row.balance,
+        isTestnet: row.isTestnet ?? false,
+        hasPositiveBalance,
+        canonicalAssetId: canonicalAssetId ?? null,
+        includedInFromOptions:
+          Boolean(canonicalAssetId) && hasPositiveBalance && !row.isTestnet,
+      };
+    });
+
+    const rowsWithCanonicalAsset = rows.filter((row) =>
+      Boolean(
+        PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+          row,
+          assets,
+          toAssetEvmChains,
+        ),
+      ),
+    );
+
+    const options = PortfolioFlowUtils.buildPortfolioFromSelectOptions(
+      rowsWithCanonicalAsset,
+    );
+
+    logPortfolioFlowDebug('[Portfolio flow] build fromAssetOptions', {
+      selectedAccountKey,
+      inputRowCount: rows.length,
+      canonicalAssetCount: assets.length,
+      rowsWithCanonicalAssetCount: rowsWithCanonicalAsset.length,
+      fromAssetOptionsCount: options.length,
+      rowResolutionDetails,
+      fromAssetOptions: options.map((option) => ({
+        value: option.value,
+        label: option.label,
+      })),
+    });
+
+    return options;
+  }, [assets, rows, selectedAccountKey, toAssetEvmChains]);
+
+  const toAssetOptions = useMemo(() => {
+    const options = PortfolioFlowUtils.buildCanonicalAssetSelectOptions(
+      assets,
+      toAssetEvmChains,
+    );
+
+    logPortfolioFlowDebug('[Portfolio flow] build toAssetOptions', {
+      canonicalAssetCount: assets.length,
+      toAssetEvmChainCount: toAssetEvmChains.length,
+      toAssetOptionsCount: options.length,
+      toAssetOptionsPreview: options.slice(0, 25).map((option) => ({
+        value: option.value,
+        label: option.label,
+      })),
+    });
+
+    return options;
+  }, [assets, toAssetEvmChains]);
 
   const toAssetChainFilterOptions = useMemo(
     () =>
       PortfolioFlowUtils.buildCanonicalAssetChainFilterOptions(
         assets,
-        setupEvmChains,
+        toAssetEvmChains,
       ),
-    [assets, setupEvmChains],
+    [assets, toAssetEvmChains],
   );
 
   const hasToAssetFilters = Boolean(
@@ -409,13 +512,37 @@ export const Portfolio = ({
     [assets, hasToAssetFilters, toAssetChainFilter, toAssetFilter],
   );
 
-  const filteredToAssetOptions = useMemo(
-    () =>
-      PortfolioFlowUtils.buildCanonicalAssetSelectOptions(
-        filteredToAssetResult.assets,
-      ),
-    [filteredToAssetResult.assets],
-  );
+  const filteredToAssetOptions = useMemo(() => {
+    const options = PortfolioFlowUtils.buildCanonicalAssetSelectOptions(
+      filteredToAssetResult.assets,
+      toAssetEvmChains,
+    );
+
+    logPortfolioFlowDebug('[Portfolio flow] build filteredToAssetOptions', {
+      section,
+      toAssetFilter,
+      toAssetChainFilter,
+      hasToAssetFilters,
+      totalMatches: filteredToAssetResult.totalMatches,
+      filteredAssetCount: filteredToAssetResult.assets.length,
+      filteredToAssetOptionsCount: options.length,
+      truncatedCount: filteredToAssetResult.totalMatches - options.length,
+      filteredToAssetOptionsPreview: options.slice(0, 25).map((option) => ({
+        value: option.value,
+        label: option.label,
+      })),
+    });
+
+    return options;
+  }, [
+    filteredToAssetResult.assets,
+    filteredToAssetResult.totalMatches,
+    hasToAssetFilters,
+    section,
+    toAssetChainFilter,
+    toAssetEvmChains,
+    toAssetFilter,
+  ]);
 
   const toAssetChainSelectOptions = useMemo<OptionItem[]>(
     () => [
@@ -489,13 +616,7 @@ export const Portfolio = ({
 
     return (
       <PortfolioTokenIdentity
-        {...canonicalAssetToTokenIdentityProps(
-          asset,
-          PortfolioFlowUtils.resolveEvmChainLogoUrl(
-            asset.chainId,
-            setupEvmChains,
-          ),
-        )}
+        {...canonicalAssetToTokenIdentityProps(asset, toAssetEvmChains)}
       />
     );
   };
@@ -603,6 +724,34 @@ export const Portfolio = ({
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+
+    const loadDefaultEvmChains = async () => {
+      try {
+        const chains = await ChainUtils.getDefaultChains();
+        if (!cancelled) {
+          setDefaultEvmChains(
+            chains.filter(
+              (chain): chain is EvmChain => chain.type === ChainType.EVM,
+            ),
+          );
+        }
+      } catch (error) {
+        Logger.error('Unable to load portfolio default chains', error);
+        if (!cancelled) {
+          setDefaultEvmChains([]);
+        }
+      }
+    };
+
+    void loadDefaultEvmChains();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     setFromAssetId('');
     setToAssetId('');
     setToAssetFilter('');
@@ -612,26 +761,42 @@ export const Portfolio = ({
   useEffect(() => {
     if (!fromAssetOptions.length) {
       if (fromAssetId) {
+        logPortfolioFlowDebug('[Portfolio flow] clear fromAssetId (no from options)', {
+          previousFromAssetId: fromAssetId,
+        });
         setFromAssetId('');
       }
       return;
     }
 
     if (!fromAssetOptions.some((option) => option.value === fromAssetId)) {
-      setFromAssetId(fromAssetOptions[0].value);
+      const nextFromAssetId = fromAssetOptions[0].value;
+      logPortfolioFlowDebug('[Portfolio flow] auto-select fromAssetId', {
+        previousFromAssetId: fromAssetId,
+        nextFromAssetId,
+      });
+      setFromAssetId(nextFromAssetId);
     }
   }, [fromAssetOptions, fromAssetId]);
 
   useEffect(() => {
     if (!toAssetOptions.length) {
       if (toAssetId) {
+        logPortfolioFlowDebug('[Portfolio flow] clear toAssetId (no to options)', {
+          previousToAssetId: toAssetId,
+        });
         setToAssetId('');
       }
       return;
     }
 
     if (!toAssetOptions.some((option) => option.value === toAssetId)) {
-      setToAssetId(toAssetOptions[0].value);
+      const nextToAssetId = toAssetOptions[0].value;
+      logPortfolioFlowDebug('[Portfolio flow] auto-select toAssetId', {
+        previousToAssetId: toAssetId,
+        nextToAssetId,
+      });
+      setToAssetId(nextToAssetId);
     }
   }, [toAssetOptions, toAssetId]);
 
@@ -649,7 +814,18 @@ export const Portfolio = ({
 
   const loadAssets = async () => {
     try {
-      setAssets(await PortfolioApiUtils.listAssets());
+      const loadedAssets = await PortfolioApiUtils.listAssets();
+      logPortfolioFlowDebug('[Portfolio flow] loadAssets completed', {
+        selectedAccountKey,
+        assetCount: loadedAssets.length,
+        assetsPreview: loadedAssets.slice(0, 25).map((asset) => ({
+          assetId: asset.assetId,
+          symbol: asset.symbol,
+          ecosystem: asset.ecosystem,
+          chainId: asset.chainId,
+        })),
+      });
+      setAssets(loadedAssets);
     } catch (error) {
       Logger.error('Unable to load portfolio assets', error);
     }
@@ -662,6 +838,12 @@ export const Portfolio = ({
 
     const account = accountOptions.find((item) => item.key === accountKey);
     if (!account) return;
+
+    logPortfolioFlowDebug('[Portfolio flow] loadPortfolio started', {
+      accountKey,
+      accountType: account.type,
+      clearRows,
+    });
 
     setIsPortfolioLoading(true);
     if (clearRows) {
@@ -682,21 +864,29 @@ export const Portfolio = ({
         const sortedBalances = PortfolioUtils.sortHivePortfolioBalancesByDisplayOrder(
           portfolio[0]?.balances ?? [],
         );
-        setRows(
-          sortedBalances.map((balance) => ({
-            key: `hive:${balance.symbol}`,
-            symbol: balance.symbol,
-            network: 'Hive',
-            balance: balance.balance.toString(),
-            usdValue: balance.usdValue,
-            priceUsd:
-              balance.balance > 0 ? balance.usdValue / balance.balance : null,
-            hiveAccountName: account.account.name,
-            chainId: null,
-            isTestnet: false,
-            isHive: true,
+        const nextRows = sortedBalances.map((balance) => ({
+          key: `hive:${balance.symbol}`,
+          symbol: balance.symbol,
+          network: 'Hive',
+          balance: balance.balance.toString(),
+          usdValue: balance.usdValue,
+          priceUsd:
+            balance.balance > 0 ? balance.usdValue / balance.balance : null,
+          hiveAccountName: account.account.name,
+          chainId: null,
+          isTestnet: false,
+          isHive: true,
+        }));
+        logPortfolioFlowDebug('[Portfolio flow] loadPortfolio hive rows loaded', {
+          accountKey,
+          rowCount: nextRows.length,
+          rowsPreview: nextRows.map((row) => ({
+            key: row.key,
+            symbol: row.symbol,
+            balance: row.balance,
           })),
-        );
+        });
+        setRows(nextRows);
       } catch (error) {
         if (selectedAccountKey !== accountKey) return;
         Logger.error('Unable to load portfolio balances', error);
@@ -765,6 +955,17 @@ export const Portfolio = ({
           maxRetries: EvmAccountTokensLoadUtils.DEFAULT_MAX_LOAD_MORE_RETRIES,
           onChainReady: (chain, tokens) => {
             if (selectedAccountKey !== accountKey) return;
+            logPortfolioFlowDebug('[Portfolio flow] loadPortfolio evm chain ready', {
+              accountKey,
+              chainId: chain.chainId,
+              chainName: chain.name,
+              tokenCount: tokens.length,
+              tokensPreview: tokens.map((token) => ({
+                symbol: token.tokenInfo.symbol,
+                chainId: token.tokenInfo.chainId,
+                balance: token.formattedBalance,
+              })),
+            });
             setRows((previousRows) =>
               mergeEvmPortfolioRowsForChain(
                 previousRows,
@@ -819,6 +1020,11 @@ export const Portfolio = ({
     const account = accountOptions.find((item) => item.key === selectedAccountKey);
     if (!account) return;
 
+    logPortfolioFlowDebug('[Portfolio flow] initializePortfolioData started', {
+      selectedAccountKey,
+      accountType: account.type,
+    });
+
     await Promise.all([
       loadPortfolio({ clearRows: true }),
       loadAssets(),
@@ -843,6 +1049,45 @@ export const Portfolio = ({
 
   const getQuotes = async () => {
     if (!selectedAccount || !amount) return;
+    const mode = section as PortfolioMode;
+    const resolvedFromAssetId =
+      mode === 'buy'
+        ? undefined
+        : PortfolioFlowUtils.resolveFromRowKeyToCanonicalAssetId(
+            fromAssetId,
+            rows,
+            assets,
+            toAssetEvmChains,
+          );
+    const resolvedToAssetId = mode === 'sell' ? undefined : toAssetId || undefined;
+    if (
+      !hasRequiredQuoteAssets({
+        mode,
+        fromAssetId: resolvedFromAssetId,
+        toAssetId: resolvedToAssetId,
+      })
+    ) {
+      logPortfolioFlowDebug('[Portfolio flow] getQuotes skipped (missing required assets)', {
+        mode,
+        fromAssetId,
+        resolvedFromAssetId,
+        toAssetId,
+        resolvedToAssetId,
+        amount,
+      });
+      return;
+    }
+
+    logPortfolioFlowDebug('[Portfolio flow] getQuotes requested', {
+      mode,
+      fromAssetId,
+      resolvedFromAssetId,
+      toAssetId,
+      resolvedToAssetId,
+      amount,
+      selectedAccountKey,
+    });
+
     setIsFlowLoading(true);
     setStatusMessage('');
     try {
@@ -850,30 +1095,18 @@ export const Portfolio = ({
         selectedAccount.type === ChainType.EVM
           ? selectedAccount.account.wallet.address
           : selectedAccount.account.name;
-      const resolvedFromAssetId =
-        section === 'buy'
-          ? undefined
-          : PortfolioFlowUtils.resolveFromRowKeyToCanonicalAssetId(
-              fromAssetId,
-              rows,
-              assets,
-            );
 
       const response = await PortfolioApiUtils.getQuotes({
-        mode: section as PortfolioMode,
+        mode,
         fromAssetId: resolvedFromAssetId,
-        toAssetId: section === 'sell' ? undefined : toAssetId || undefined,
+        toAssetId: resolvedToAssetId,
         fromAmount: amount,
         fromAddress: address,
         toAddress: address,
-        countryCode:
-          section === 'buy' || section === 'sell' ? countryCode : undefined,
-        fiatCurrency:
-          section === 'buy' || section === 'sell' ? fiatCurrency : undefined,
+        countryCode: mode === 'buy' || mode === 'sell' ? countryCode : undefined,
+        fiatCurrency: mode === 'buy' || mode === 'sell' ? fiatCurrency : undefined,
         paymentMethod:
-          section === 'buy' || section === 'sell'
-            ? paymentMethod || undefined
-            : undefined,
+          mode === 'buy' || mode === 'sell' ? paymentMethod || undefined : undefined,
       });
       setQuoteResponse(response);
       setSelectedQuoteId(response.quotes[0]?.quoteId ?? '');
@@ -1011,7 +1244,6 @@ export const Portfolio = ({
     const canUseAsFrom =
       PortfolioFlowUtils.hasPositivePortfolioBalance(row.balance) &&
       !row.isTestnet;
-
     setFromAssetId(mode === 'buy' || !canUseAsFrom ? '' : row.key);
     setToAssetId(
       mode === 'sell'
@@ -1019,6 +1251,7 @@ export const Portfolio = ({
         : PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
             row,
             assets,
+            toAssetEvmChains,
           ) ?? '',
     );
     setSection(mode);
@@ -1176,6 +1409,23 @@ export const Portfolio = ({
 
   const renderFlow = () => {
     const mode = section as PortfolioMode;
+    const resolvedFromAssetId =
+      mode === 'buy'
+        ? undefined
+        : PortfolioFlowUtils.resolveFromRowKeyToCanonicalAssetId(
+            fromAssetId,
+            rows,
+            assets,
+            toAssetEvmChains,
+          );
+    const resolvedToAssetId = mode === 'sell' ? undefined : toAssetId || undefined;
+    const canRequestQuotes =
+      Boolean(amount) &&
+      hasRequiredQuoteAssets({
+        mode,
+        fromAssetId: resolvedFromAssetId,
+        toAssetId: resolvedToAssetId,
+      });
     const selectedQuote = quoteResponse?.quotes.find(
       (quote) => quote.quoteId === selectedQuoteId,
     );
@@ -1187,6 +1437,19 @@ export const Portfolio = ({
 
     return (
       <div className="portfolio-flow">
+          {(mode === 'swap' || mode === 'bridge') &&
+            accountOptions.length > 0 &&
+            selectedAccount && (
+              <PortfolioOverlayListSelect
+                id="portfolio-flow-account"
+                label={I18nUtils.getMessage('portfolio_account')}
+                value={selectedAccountKey}
+                onChange={handleSelectedAccountChange}
+                options={overlayAccountOptions}
+                renderDisplay={renderAccountRow}
+                renderOption={renderAccountRow}
+              />
+            )}
           {(mode === 'buy' || mode === 'sell') && (
             <>
               <InputComponent
@@ -1213,7 +1476,10 @@ export const Portfolio = ({
               />
             </>
           )}
-          {mode !== 'buy' && fromAssetOptions.length > 0 && (
+          {mode !== 'buy' &&
+            (mode === 'swap' ||
+              mode === 'bridge' ||
+              fromAssetOptions.length > 0) && (
             <PortfolioOverlayListSelect
               id="portfolio-from-asset"
               label={I18nUtils.getMessage('portfolio_from_asset')}
@@ -1222,6 +1488,12 @@ export const Portfolio = ({
               onChange={setFromAssetId}
               renderOption={renderFromAssetIdentity}
               renderDisplay={renderFromAssetIdentity}
+              disabled={fromAssetOptions.length === 0}
+              listFooter={
+                fromAssetOptions.length === 0
+                  ? I18nUtils.getMessage('portfolio_no_matching_assets')
+                  : undefined
+              }
             />
           )}
           <InputComponent
@@ -1288,7 +1560,7 @@ export const Portfolio = ({
           )}
           <ButtonComponent
             label="portfolio_get_quotes"
-            disabled={!amount || isFlowLoading}
+            disabled={!canRequestQuotes || isFlowLoading}
             onClick={() => void getQuotes()}
           />
           {quoteResponse?.quotes.map((quote) => (

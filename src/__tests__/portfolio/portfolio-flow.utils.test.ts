@@ -93,6 +93,113 @@ describe('PortfolioFlowUtils', () => {
     expect(PortfolioFlowUtils.getDefaultSelectOptionValue([])).toBe('');
   });
 
+  it('resolves evm erc20 rows by contract address and slug chain id', () => {
+    const usdcAsset: PortfolioCanonicalAsset = {
+      assetId:
+        'evm:token:ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+      ecosystem: 'evm',
+      symbol: 'USDC',
+      name: 'USD Coin',
+      chainId: 'ethereum',
+      logoUrl: null,
+    };
+    const chains = [
+      {
+        name: 'Ethereum',
+        chainId: '0x1',
+        logo: 'ethereum.svg',
+      } as never,
+    ];
+
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+        {
+          key: '0x1:USDC:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+          symbol: 'USDC',
+          network: 'Ethereum',
+          balance: '1',
+          chainId: '0x1',
+        },
+        [usdcAsset],
+        chains,
+      ),
+    ).toBe(
+      'evm:token:ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+    );
+  });
+
+  it('resolves native evm rows when canonical chain id uses a slug', () => {
+    const nativeEthAsset: PortfolioCanonicalAsset = {
+      assetId: 'evm:coin:ethereum:eth',
+      ecosystem: 'evm',
+      symbol: 'ETH',
+      name: 'Ether',
+      chainId: 'ethereum',
+      logoUrl: null,
+    };
+    const chains = [
+      {
+        name: 'Ethereum',
+        chainId: '0x1',
+        logo: 'ethereum.svg',
+      } as never,
+    ];
+
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+        {
+          key: '0x1:ETH:native',
+          symbol: 'ETH',
+          network: 'Ethereum',
+          balance: '1',
+          chainId: '0x1',
+        },
+        [nativeEthAsset],
+        chains,
+      ),
+    ).toBe('evm:coin:ethereum:eth');
+  });
+
+  it('does not match evm rows to hive engine assets with the same symbol', () => {
+    const hiveEngineKingAsset: PortfolioCanonicalAsset = {
+      assetId: 'hive-engine:king',
+      ecosystem: 'hive_engine',
+      symbol: 'KING',
+      name: 'KING',
+      chainId: null,
+      logoUrl: null,
+    };
+    const evmKingAsset: PortfolioCanonicalAsset = {
+      assetId: 'evm:token:ethereum:0xeb1a81845234f75b412b654415b0f1ae5e8f4339',
+      ecosystem: 'evm',
+      symbol: 'KING',
+      name: 'KING',
+      chainId: 'ethereum',
+      logoUrl: null,
+    };
+    const chains = [
+      {
+        name: 'Ethereum',
+        chainId: '0x1',
+        logo: 'ethereum.svg',
+      } as never,
+    ];
+
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+        {
+          key: '0x1:KING:0xeb1a81845234f75b412b654415b0f1ae5e8f4339',
+          symbol: 'KING',
+          network: 'Ethereum',
+          balance: '1',
+          chainId: '0x1',
+        },
+        [hiveEngineKingAsset, evmKingAsset],
+        chains,
+      ),
+    ).toBe('evm:token:ethereum:0xeb1a81845234f75b412b654415b0f1ae5e8f4339');
+  });
+
   it('resolves hive, hive engine, and evm rows to canonical assets', () => {
     const assets = [hiveAsset, hiveEngineAsset, ethAsset, sepoliaEthAsset];
 
@@ -250,5 +357,90 @@ describe('PortfolioFlowUtils', () => {
         maxResults: 2,
       }).totalMatches,
     ).toBe(4);
+  });
+
+  it('builds to asset select options with network labels', () => {
+    const chains = [
+      {
+        name: 'Ethereum',
+        chainId: '0x1',
+        logo: 'ethereum.svg',
+      } as never,
+    ];
+
+    expect(
+      PortfolioFlowUtils.buildCanonicalAssetSelectOptions(
+        [hiveAsset, hiveEngineAsset, ethAsset],
+        chains,
+      ),
+    ).toEqual([
+      { value: 'hive-hive', label: 'HIVE - Hive' },
+      { value: 'he-dec', label: 'DEC - Hive Engine' },
+      { value: 'evm-eth-1', label: 'ETH - Ethereum' },
+    ]);
+  });
+
+  it('resolves canonical asset network labels and logos', () => {
+    const chains = [
+      {
+        name: 'Ethereum',
+        chainId: '0x1',
+        logo: 'ethereum.svg',
+      } as never,
+    ];
+
+    expect(
+      PortfolioFlowUtils.resolveCanonicalAssetNetworkLabel(hiveAsset, chains),
+    ).toBe('Hive');
+    expect(
+      PortfolioFlowUtils.resolveCanonicalAssetNetworkLabel(
+        hiveEngineAsset,
+        chains,
+      ),
+    ).toBe('Hive Engine');
+    expect(
+      PortfolioFlowUtils.resolveCanonicalAssetNetworkLabel(ethAsset, chains),
+    ).toBe('Ethereum');
+
+    expect(
+      PortfolioFlowUtils.resolveCanonicalAssetNetworkLogoUrl(hiveAsset, chains),
+    ).toBe('/assets/images/wallet/hive-logo.svg');
+    expect(
+      PortfolioFlowUtils.resolveCanonicalAssetNetworkLogoUrl(
+        hiveEngineAsset,
+        chains,
+      ),
+    ).toBe('/assets/images/wallet/hive-engine.svg');
+    expect(
+      PortfolioFlowUtils.resolveCanonicalAssetNetworkLogoUrl(ethAsset, chains),
+    ).toBe('ethereum.svg');
+  });
+
+  it('resolves canonical assets by slug-style chain references', () => {
+    const slugEthAsset: PortfolioCanonicalAsset = {
+      assetId: 'evm-0g-ethereum',
+      ecosystem: 'evm',
+      symbol: '0G',
+      name: '0G',
+      chainId: 'ethereum',
+      logoUrl: 'https://example.com/0g.png',
+    };
+    const chains = [
+      {
+        name: 'Ethereum',
+        chainId: '0x1',
+        logo: 'ethereum.svg',
+      } as never,
+    ];
+
+    expect(
+      PortfolioFlowUtils.resolveCanonicalAssetNetworkLabel(slugEthAsset, chains),
+    ).toBe('Ethereum');
+    expect(
+      PortfolioFlowUtils.resolveCanonicalAssetNetworkLogoUrl(slugEthAsset, chains),
+    ).toBe('ethereum.svg');
+    expect(
+      PortfolioFlowUtils.resolveEvmChainForChainReference('ethereum', chains)?.name,
+    ).toBe('Ethereum');
   });
 });
