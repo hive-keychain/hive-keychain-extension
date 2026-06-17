@@ -9,7 +9,15 @@ import { Portfolio } from 'src/portfolio/portfolio.component';
 import { PortfolioApiUtils } from 'src/portfolio/portfolio-api.utils';
 import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
+import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
+
+jest.mock('src/popup/hive/utils/tokens.utils', () => ({
+  __esModule: true,
+  default: {
+    getAllTokens: jest.fn().mockResolvedValue([]),
+  },
+}));
 
 jest.mock('src/portfolio/portfolio-api.utils', () => ({
   PortfolioApiUtils: {

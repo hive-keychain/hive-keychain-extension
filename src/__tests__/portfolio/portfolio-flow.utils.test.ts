@@ -443,4 +443,51 @@ describe('PortfolioFlowUtils', () => {
       PortfolioFlowUtils.resolveEvmChainForChainReference('ethereum', chains)?.name,
     ).toBe('Ethereum');
   });
+
+  it('formats quote amounts using token decimals before API submission', () => {
+    expect(
+      PortfolioFlowUtils.formatPortfolioQuoteFromAmount('1.23456789', 6),
+    ).toBe('1.234567');
+    expect(
+      PortfolioFlowUtils.formatPortfolioQuoteFromAmount('1.5000', 3),
+    ).toBe('1.5');
+    expect(
+      PortfolioFlowUtils.formatPortfolioQuoteFromAmount('1,234.567891', 3),
+    ).toBe('1234.567');
+  });
+
+  it('resolves quote amount decimals by mode and from asset', () => {
+    expect(
+      PortfolioFlowUtils.resolvePortfolioQuoteFromAmountDecimals({
+        mode: 'buy',
+        fromAssetId: '',
+        rows: [],
+        assets: [],
+      }),
+    ).toBe(2);
+
+    expect(
+      PortfolioFlowUtils.resolvePortfolioQuoteFromAmountDecimals({
+        mode: 'swap',
+        fromAssetId: '0x1:USDC:0xbb0d083fb1be0a9f6157ec484b6c79e0a4e31c2e',
+        rows: [
+          {
+            key: '0x1:USDC:0xbb0d083fb1be0a9f6157ec484b6c79e0a4e31c2e',
+            symbol: 'USDC',
+            network: 'Ethereum',
+            balance: '10',
+            decimals: 6,
+          },
+        ],
+        assets: [],
+      }),
+    ).toBe(6);
+
+    expect(PortfolioFlowUtils.resolveHiveTokenDecimals('HIVE', [])).toBe(3);
+    expect(
+      PortfolioFlowUtils.resolveHiveTokenDecimals('DEC', [
+        { symbol: 'DEC', precision: 3 },
+      ]),
+    ).toBe(3);
+  });
 });

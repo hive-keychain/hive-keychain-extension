@@ -1,15 +1,25 @@
 import { evmChainIdToDecimalPathSegment } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import Decimal from 'decimal.js';
 import { SVGIcons } from 'src/common-ui/icons.enum';
-import { PortfolioCanonicalAsset } from 'src/portfolio/portfolio-api.interface';
+import {
+  PortfolioCanonicalAsset,
+  PortfolioMode,
+} from 'src/portfolio/portfolio-api.interface';
 
 const HIVE_CORE_SYMBOLS = new Set(['HIVE', 'HBD', 'HP']);
+const FIAT_QUOTE_AMOUNT_DECIMALS = 2;
+const EVM_NATIVE_TOKEN_DECIMALS = 18;
+const HIVE_CORE_TOKEN_DECIMALS = 3;
+const DEFAULT_HIVE_ENGINE_TOKEN_DECIMALS = 8;
+const FALLBACK_TOKEN_DECIMALS = 18;
 
 export type PortfolioFlowRow = {
   key: string;
   symbol: string;
   network: string;
   balance: string;
+  decimals?: number;
   chainId?: string | null;
   isTestnet?: boolean;
   logoUrl?: string | null;
@@ -45,6 +55,88 @@ export const formatPortfolioTokenBalance = (balance: string): string => {
   return Number.isFinite(amount)
     ? amount.toLocaleString(undefined, { maximumFractionDigits: 8 })
     : balance;
+};
+
+export const resolveHiveTokenDecimals = (
+  symbol: string,
+  tokens: ReadonlyArray<{ symbol: string; precision: number }> = [],
+): number => {
+  if (HIVE_CORE_SYMBOLS.has(symbol.toUpperCase())) {
+    return HIVE_CORE_TOKEN_DECIMALS;
+  }
+
+  const token = tokens.find(
+    (item) => item.symbol.toUpperCase() === symbol.toUpperCase(),
+  );
+  return token?.precision ?? DEFAULT_HIVE_ENGINE_TOKEN_DECIMALS;
+};
+
+export const formatPortfolioQuoteFromAmount = (
+  amount: string,
+  decimals: number,
+): string => {
+  const normalizedAmount = amount.replace(/,/g, '').trim();
+  if (!normalizedAmount) {
+    return normalizedAmount;
+  }
+
+  try {
+    const decimalAmount = new Decimal(normalizedAmount);
+    if (!decimalAmount.isFinite() || decimalAmount.isNegative()) {
+      return normalizedAmount;
+    }
+
+    return decimalAmount
+      .toDecimalPlaces(decimals, Decimal.ROUND_DOWN)
+      .toFixed()
+      .replace(/(\.\d*?)0+$/, '$1')
+      .replace(/\.$/, '');
+  } catch {
+    return normalizedAmount;
+  }
+};
+
+export const resolvePortfolioQuoteFromAmountDecimals = (options: {
+  mode: PortfolioMode;
+  fromAssetId: string;
+  rows: PortfolioFlowRow[];
+  assets: PortfolioCanonicalAsset[];
+  chains?: EvmChain[];
+}): number => {
+  if (options.mode === 'buy') {
+    return FIAT_QUOTE_AMOUNT_DECIMALS;
+  }
+
+  const row = options.rows.find((item) => item.key === options.fromAssetId);
+  if (row?.decimals !== undefined) {
+    return row.decimals;
+  }
+
+  const asset =
+    options.assets.find((item) => item.assetId === options.fromAssetId) ??
+    (row
+      ? resolvePortfolioRowToCanonicalAsset(
+          row,
+          options.assets,
+          options.chains ?? [],
+        )
+      : undefined);
+
+  if (!asset) {
+    return FALLBACK_TOKEN_DECIMALS;
+  }
+
+  if (asset.ecosystem === 'hive') {
+    return HIVE_CORE_TOKEN_DECIMALS;
+  }
+
+  if (asset.ecosystem === 'hive_engine') {
+    return DEFAULT_HIVE_ENGINE_TOKEN_DECIMALS;
+  }
+
+  return getContractAddressFromAssetId(asset.assetId)
+    ? FALLBACK_TOKEN_DECIMALS
+    : EVM_NATIVE_TOKEN_DECIMALS;
 };
 
 const normalizeChainId = (chainId: string | null | undefined): string | null => {
@@ -570,6 +662,7 @@ export const PortfolioFlowUtils = {
   buildCanonicalAssetSelectOptions,
   buildPortfolioFromSelectOptions,
   filterCanonicalAssets,
+  formatPortfolioQuoteFromAmount,
   formatPortfolioTokenBalance,
   getDefaultSelectOptionValue,
   getHivePortfolioRowEcosystem,
@@ -580,6 +673,8 @@ export const PortfolioFlowUtils = {
   resolveEvmChainForChainReference,
   resolveEvmChainLogoUrl,
   resolveFromRowKeyToCanonicalAssetId,
+  resolveHiveTokenDecimals,
+  resolvePortfolioQuoteFromAmountDecimals,
   resolvePortfolioRowToCanonicalAsset,
   resolvePortfolioRowToCanonicalAssetId,
 };

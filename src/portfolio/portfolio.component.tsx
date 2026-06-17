@@ -49,6 +49,7 @@ import {
 import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
 import { PortfolioApiUtils } from 'src/portfolio/portfolio-api.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
+import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
@@ -81,6 +82,7 @@ type PortfolioRow = {
   balance: string;
   usdValue: number | null;
   priceUsd: number | null;
+  decimals?: number;
   logoUrl?: string | null;
   networkLogoUrl?: string | null;
   hiveAccountName?: string;
@@ -236,6 +238,10 @@ const mapEvmTokenToPortfolioRow = (
       ? (token.tokenInfo as EvmSmartContractInfoErc20).contractAddress
       : 'native';
   const rowChainId = resolvedChain?.chainId ?? token.tokenInfo.chainId ?? '';
+  const decimals =
+    token.tokenInfo.type === EVMSmartContractType.ERC20
+      ? Number((token.tokenInfo as EvmSmartContractInfoErc20).decimals)
+      : 18;
 
   return {
     key: `${rowChainId}:${token.tokenInfo.symbol}:${contractAddress}`,
@@ -244,6 +250,7 @@ const mapEvmTokenToPortfolioRow = (
     balance: token.formattedBalance,
     usdValue: getEvmTokenUsdValue(token),
     priceUsd,
+    decimals,
     logoUrl: token.tokenInfo.logo ?? null,
     networkLogoUrl: resolvedChain?.logo ?? null,
     chainId: rowChainId || null,
@@ -864,6 +871,8 @@ export const Portfolio = ({
         const sortedBalances = PortfolioUtils.sortHivePortfolioBalancesByDisplayOrder(
           portfolio[0]?.balances ?? [],
         );
+        const hiveTokens = await TokensUtils.getAllTokens();
+        if (selectedAccountKey !== accountKey) return;
         const nextRows = sortedBalances.map((balance) => ({
           key: `hive:${balance.symbol}`,
           symbol: balance.symbol,
@@ -872,6 +881,10 @@ export const Portfolio = ({
           usdValue: balance.usdValue,
           priceUsd:
             balance.balance > 0 ? balance.usdValue / balance.balance : null,
+          decimals: PortfolioFlowUtils.resolveHiveTokenDecimals(
+            balance.symbol,
+            hiveTokens,
+          ),
           hiveAccountName: account.account.name,
           chainId: null,
           isTestnet: false,
@@ -1095,12 +1108,22 @@ export const Portfolio = ({
         selectedAccount.type === ChainType.EVM
           ? selectedAccount.account.wallet.address
           : selectedAccount.account.name;
+      const formattedFromAmount = PortfolioFlowUtils.formatPortfolioQuoteFromAmount(
+        amount,
+        PortfolioFlowUtils.resolvePortfolioQuoteFromAmountDecimals({
+          mode,
+          fromAssetId,
+          rows,
+          assets,
+          chains: toAssetEvmChains,
+        }),
+      );
 
       const response = await PortfolioApiUtils.getQuotes({
         mode,
         fromAssetId: resolvedFromAssetId,
         toAssetId: resolvedToAssetId,
-        fromAmount: amount,
+        fromAmount: formattedFromAmount,
         fromAddress: address,
         toAddress: address,
         countryCode: mode === 'buy' || mode === 'sell' ? countryCode : undefined,
