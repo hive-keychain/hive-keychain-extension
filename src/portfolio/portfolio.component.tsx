@@ -1560,6 +1560,9 @@ export const Portfolio = ({
                       setSelectedItem={(item) =>
                         setToAssetChainFilter(item.value)
                       }
+                      filterable
+                      generateImageIfNull
+                      skipImageGenerationForFirstItem
                       showOverlay
                     />
                   </div>

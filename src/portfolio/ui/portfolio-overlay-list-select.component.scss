@@ -153,6 +153,8 @@
   }
 
   &__filters {
+    --portfolio-filter-control-height: 2.75rem;
+
     display: flex;
     flex-direction: row;
     align-items: flex-end;
@@ -174,6 +176,62 @@
 
       .custom-select-container {
         margin: 0;
+
+        .label {
+          font-size: var(--kc-font-size-xs);
+          font-weight: var(--kc-font-weight-medium);
+          color: var(--kc-color-text-secondary);
+          margin: 0;
+        }
+
+        .custom-select {
+          height: var(--portfolio-filter-control-height) !important;
+          min-height: var(--portfolio-filter-control-height);
+          border-radius: var(--kc-radius-md) !important;
+          border-color: var(--kc-color-border-default) !important;
+          background: var(--kc-color-bg-elevated) !important;
+
+          &:hover,
+          &:focus {
+            background: var(--kc-color-bg-elevated) !important;
+          }
+
+          .react-dropdown-select-content .selected-item {
+            height: 100%;
+            min-height: 0;
+            padding: 0 calc(var(--kc-space-3) + 1rem) 0 var(--kc-space-3);
+            font-size: var(--kc-font-size-sm);
+            font-weight: 400;
+            line-height: 1.5;
+            color: var(--kc-color-text-primary);
+
+            .left-image,
+            .left-svg {
+              height: 1.25rem;
+              width: 1.25rem;
+
+              svg {
+                height: 1.25rem;
+                width: 1.25rem;
+              }
+            }
+
+            .left-svg-chip {
+              top: 1rem;
+              left: 0.875rem;
+              height: 0.875rem;
+              width: 0.875rem;
+            }
+
+            &.has-img-chip {
+              column-gap: var(--kc-space-2);
+            }
+          }
+
+          .react-dropdown-select-dropdown {
+            top: calc(100% + 2px);
+          }
+        }
       }
     }
 
@@ -186,7 +244,9 @@
     input {
       width: 100%;
       box-sizing: border-box;
-      padding: var(--kc-space-2) var(--kc-space-3);
+      height: var(--portfolio-filter-control-height);
+      min-height: var(--portfolio-filter-control-height);
+      padding: 0 var(--kc-space-3);
       font-family: inherit;
       font-size: var(--kc-font-size-sm);
       line-height: 1.5;

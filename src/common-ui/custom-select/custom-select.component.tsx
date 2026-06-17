@@ -8,11 +8,11 @@ import {
 } from 'react-beautiful-dnd';
 import type { SelectMethods } from 'react-dropdown-select';
 import Select, { SelectRenderer } from 'react-dropdown-select';
+import { ChainLogo } from 'src/common-ui/chain-logo/chain-logo.component';
 import { CustomSelectItemComponent } from 'src/common-ui/custom-select/custom-select-item.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { ChainLogo } from 'src/common-ui/chain-logo/chain-logo.component';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { ColorsUtils } from 'src/utils/colors.utils';
@@ -49,6 +49,7 @@ export interface CustomSelectProps<T> {
   rightActionIcon?: boolean;
   rightActionClicked?: () => void;
   generateImageIfNull?: boolean;
+  skipImageGenerationForFirstItem?: boolean;
   minFilterLength?: number;
   customFilter?: JSX.Element;
   /** For tests / automation: identifies the dropdown arrow control. */
@@ -85,6 +86,27 @@ export function ComplexeCustomSelect<T extends OptionItem>(
     );
   };
 
+  const isFirstSelectOption = (item: T): boolean => {
+    const firstOption = itemProps.options[0];
+    if (!firstOption) {
+      return false;
+    }
+
+    return item.value === firstOption.value;
+  };
+
+  const shouldGenerateImageForItem = (item: T): boolean => {
+    if (!itemProps.generateImageIfNull || item.img) {
+      return false;
+    }
+
+    if (itemProps.skipImageGenerationForFirstItem && isFirstSelectOption(item)) {
+      return false;
+    }
+
+    return Boolean(item.label);
+  };
+
   const customLabelRender = (selectProps: SelectRenderer<T>) => {
     methodsRef.current = selectProps.methods;
     return (
@@ -93,8 +115,8 @@ export function ComplexeCustomSelect<T extends OptionItem>(
         onClick={() => {
           selectProps.methods.dropDown('close');
         }}>
-        {((itemProps.selectedItem.img ||
-          (itemProps.generateImageIfNull && !itemProps.selectedItem.img)) ||
+        {(itemProps.selectedItem.img ||
+          shouldGenerateImageForItem(itemProps.selectedItem) ||
           itemProps.selectedItem.imgChip) && (
           <>
             {itemProps.selectedItem.img &&
@@ -112,13 +134,14 @@ export function ComplexeCustomSelect<T extends OptionItem>(
                 />
               )}
             {!itemProps.selectedItem.img &&
-              itemProps.generateImageIfNull &&
-              itemProps.selectedItem.label && (
+              shouldGenerateImageForItem(itemProps.selectedItem) && (
                 <div
                   className="left-image chain-logo-initials"
                   style={{
                     backgroundColor: `${ColorsUtils.stringToColor(itemProps.selectedItem.label)}2b`,
-                    color: ColorsUtils.stringToColor(itemProps.selectedItem.label),
+                    color: ColorsUtils.stringToColor(
+                      itemProps.selectedItem.label,
+                    ),
                   }}>
                   {itemProps.selectedItem.label.slice(0, 2)}
                 </div>
@@ -219,7 +242,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
       canDelete={
         option.canDelete && itemProps.selectedItem.value !== option.value
       }
-      generateImageIfNull={itemProps.generateImageIfNull}
+      generateImageIfNull={shouldGenerateImageForItem(option)}
       enableDragAndDrop={isDragAndDropEnabled}
       dragHandle={dragHandle}
     />
