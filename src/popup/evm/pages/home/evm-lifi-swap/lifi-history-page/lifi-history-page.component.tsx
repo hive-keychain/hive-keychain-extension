@@ -73,7 +73,12 @@ const LiFiHistoryPage = ({
       const result = await LiFiUtils.retrieveLiFiHistory(
         activeAccount.wallet.address,
       );
-      setHistory(result);
+      const historyWithPendingSwaps =
+        await LiFiUtils.mergeLiFiHistoryWithPendingSwaps(
+          activeAccount.wallet.address,
+          result,
+        );
+      setHistory(historyWithPendingSwaps);
     } finally {
       setAutoRefreshCountdown(Config.swaps.autoRefreshHistoryPeriodSec);
       setShouldRefresh(false);

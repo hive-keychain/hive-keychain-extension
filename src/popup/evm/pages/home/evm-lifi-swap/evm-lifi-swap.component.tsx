@@ -686,6 +686,11 @@ export const EvmLifiSwap = ({
               ? approveTransactionResponse.nonce + 1
               : undefined,
           );
+          await LiFiUtils.appendPendingLiFiSwapHistory(
+            activeAccount.wallet.address,
+            lifiQuote!,
+            swapTransactionResponse,
+          );
           removeFromLoadingList('evm_lifi_swap_sending_swap_transaction');
           navigateToWithParams(EvmScreen.LIFI_HISTORY_PAGE, {
             swapTransactionResponse,
