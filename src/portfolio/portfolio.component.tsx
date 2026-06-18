@@ -4,41 +4,46 @@ import {
   OptionItem,
 } from '@common-ui/custom-select/custom-select.component';
 import { Screen } from '@interfaces/screen.interface';
-import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface';
-import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
+import {
+  EvmActiveAccount,
+  NativeAndErc20Token,
+} from '@popup/evm/interfaces/active-account.interface';
+import {
+  EvmSmartContractInfoErc20,
+  EVMSmartContractType,
+} from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
+import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
-import { NativeAndErc20Token } from '@popup/evm/interfaces/active-account.interface';
-import { EvmSmartContractInfoErc20 } from '@popup/evm/interfaces/evm-tokens.interface';
-import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmAccountTokensLoadUtils } from '@popup/evm/utils/evm-account-tokens-load.utils';
 import { evmChainIdToDecimalPathSegment } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
-import { navigateTo, navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
-import { ChainType, EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import {
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import ButtonComponent, { ButtonType } from 'src/common-ui/button/button.component';
+import ButtonComponent, {
+  ButtonType,
+} from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { PortfolioAccountAvatar } from 'src/portfolio/ui/portfolio-account-avatar.component';
-import { PortfolioNavIcon } from 'src/portfolio/ui/portfolio-nav-icon.enum';
-import { PortfolioOverlayListSelect } from 'src/portfolio/ui/portfolio-overlay-list-select.component';
-import { PortfolioSidebarNavIcon } from 'src/portfolio/ui/portfolio-sidebar-nav-icon.component';
-import {
-  canonicalAssetToTokenIdentityProps,
-  PortfolioTokenIdentity,
-  portfolioRowToTokenIdentityProps,
-} from 'src/portfolio/ui/portfolio-token-identity.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import {
   PortfolioCanonicalAsset,
   PortfolioHistoryItem,
@@ -46,17 +51,24 @@ import {
   PortfolioQuote,
   PortfolioQuoteResponse,
 } from 'src/portfolio/portfolio-api.interface';
-import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
 import { PortfolioApiUtils } from 'src/portfolio/portfolio-api.utils';
-import AccountUtils from 'src/popup/hive/utils/account.utils';
-import TokensUtils from 'src/popup/hive/utils/tokens.utils';
+import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
+import { UserPortfolio } from 'src/portfolio/portfolio.interface';
+import { PortfolioAccountAvatar } from 'src/portfolio/ui/portfolio-account-avatar.component';
+import { PortfolioNavIcon } from 'src/portfolio/ui/portfolio-nav-icon.enum';
+import { PortfolioOverlayListSelect } from 'src/portfolio/ui/portfolio-overlay-list-select.component';
+import { PortfolioSidebarNavIcon } from 'src/portfolio/ui/portfolio-sidebar-nav-icon.component';
+import {
+  canonicalAssetToTokenIdentityProps,
+  portfolioRowToTokenIdentityProps,
+  PortfolioTokenIdentity,
+} from 'src/portfolio/ui/portfolio-token-identity.component';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
-import { UserPortfolio } from 'src/portfolio/portfolio.interface';
 
-import { I18nUtils } from 'src/utils/i18n.utils';
 import { ethers } from 'ethers';
+import { I18nUtils } from 'src/utils/i18n.utils';
 
 type PortfolioSection = 'portfolio' | PortfolioMode | 'history';
 type AccountOption =
@@ -363,6 +375,7 @@ export const Portfolio = ({
   const [toAssetFilter, setToAssetFilter] = useState('');
   const [toAssetChainFilter, setToAssetChainFilter] = useState('');
   const [recipientAddress, setRecipientAddress] = useState('');
+  const [isQuotesPanelExpanded, setIsQuotesPanelExpanded] = useState(false);
   const [setupEvmChains, setSetupEvmChains] = useState<EvmChain[]>([]);
   const [defaultEvmChains, setDefaultEvmChains] = useState<EvmChain[]>([]);
   const hasUserSelectedAccountRef = useRef(false);
@@ -429,8 +442,9 @@ export const Portfolio = ({
           assets,
           toAssetEvmChains,
         );
-      const hasPositiveBalance =
-        PortfolioFlowUtils.hasPositivePortfolioBalance(row.balance);
+      const hasPositiveBalance = PortfolioFlowUtils.hasPositivePortfolioBalance(
+        row.balance,
+      );
 
       return {
         key: row.key,
@@ -481,12 +495,13 @@ export const Portfolio = ({
       return undefined;
     }
 
-    const canonicalAssetId = PortfolioFlowUtils.resolveFromRowKeyToCanonicalAssetId(
-      fromAssetId,
-      rows,
-      assets,
-      toAssetEvmChains,
-    );
+    const canonicalAssetId =
+      PortfolioFlowUtils.resolveFromRowKeyToCanonicalAssetId(
+        fromAssetId,
+        rows,
+        assets,
+        toAssetEvmChains,
+      );
     if (!canonicalAssetId) {
       return undefined;
     }
@@ -513,7 +528,9 @@ export const Portfolio = ({
 
   const recipientAddressLabelKey = useMemo(
     () =>
-      PortfolioFlowUtils.resolvePortfolioRecipientAddressLabelKey(toCanonicalAsset),
+      PortfolioFlowUtils.resolvePortfolioRecipientAddressLabelKey(
+        toCanonicalAsset,
+      ),
     [toCanonicalAsset],
   );
 
@@ -533,23 +550,25 @@ export const Portfolio = ({
       fromAsset: fromCanonicalAsset,
       toAsset: toCanonicalAsset,
     });
-  }, [
-    fromCanonicalAsset,
-    recipientAddress,
-    selectedAccount,
-    toCanonicalAsset,
-  ]);
+  }, [fromCanonicalAsset, recipientAddress, selectedAccount, toCanonicalAsset]);
 
   useEffect(() => {
     setRecipientAddress('');
   }, [fromAssetId, toAssetId]);
+
+  useEffect(() => {
+    setIsQuotesPanelExpanded(false);
+  }, [amount, fromAssetId, toAssetId, selectedAccountKey]);
 
   const eligibleToAssets = useMemo(() => {
     if (section === 'buy' || !fromCanonicalAsset) {
       return assets;
     }
 
-    return PortfolioFlowUtils.filterToAssetsByFromAsset(assets, fromCanonicalAsset);
+    return PortfolioFlowUtils.filterToAssetsByFromAsset(
+      assets,
+      fromCanonicalAsset,
+    );
   }, [assets, fromCanonicalAsset, section]);
 
   const toAssetOptions = useMemo(() => {
@@ -583,9 +602,7 @@ export const Portfolio = ({
     [eligibleToAssets, toAssetEvmChains],
   );
 
-  const hasToAssetFilters = Boolean(
-    toAssetFilter.trim() || toAssetChainFilter,
-  );
+  const hasToAssetFilters = Boolean(toAssetFilter.trim() || toAssetChainFilter);
 
   const filteredToAssetResult = useMemo(
     () =>
@@ -746,7 +763,9 @@ export const Portfolio = ({
   useEffect(() => {
     if (!selectedAccountKey) return;
 
-    const account = accountOptions.find((item) => item.key === selectedAccountKey);
+    const account = accountOptions.find(
+      (item) => item.key === selectedAccountKey,
+    );
     if (!account) return;
 
     void initializePortfolioData();
@@ -765,7 +784,9 @@ export const Portfolio = ({
 
     setSelectedAccountKey((currentAccountKey) => {
       if (hasUserSelectedAccountRef.current) {
-        return accountOptions.some((account) => account.key === currentAccountKey)
+        return accountOptions.some(
+          (account) => account.key === currentAccountKey,
+        )
           ? currentAccountKey
           : nextAccountKey;
       }
@@ -848,9 +869,12 @@ export const Portfolio = ({
   useEffect(() => {
     if (!fromAssetOptions.length) {
       if (fromAssetId) {
-        logPortfolioFlowDebug('[Portfolio flow] clear fromAssetId (no from options)', {
-          previousFromAssetId: fromAssetId,
-        });
+        logPortfolioFlowDebug(
+          '[Portfolio flow] clear fromAssetId (no from options)',
+          {
+            previousFromAssetId: fromAssetId,
+          },
+        );
         setFromAssetId('');
       }
       return;
@@ -869,9 +893,12 @@ export const Portfolio = ({
   useEffect(() => {
     if (!toAssetOptions.length) {
       if (toAssetId) {
-        logPortfolioFlowDebug('[Portfolio flow] clear toAssetId (no to options)', {
-          previousToAssetId: toAssetId,
-        });
+        logPortfolioFlowDebug(
+          '[Portfolio flow] clear toAssetId (no to options)',
+          {
+            previousToAssetId: toAssetId,
+          },
+        );
         setToAssetId('');
       }
       return;
@@ -948,9 +975,10 @@ export const Portfolio = ({
           extendedAccounts,
         )) as [UserPortfolio[], string[]];
         if (selectedAccountKey !== accountKey) return;
-        const sortedBalances = PortfolioUtils.sortHivePortfolioBalancesByDisplayOrder(
-          portfolio[0]?.balances ?? [],
-        );
+        const sortedBalances =
+          PortfolioUtils.sortHivePortfolioBalancesByDisplayOrder(
+            portfolio[0]?.balances ?? [],
+          );
         const hiveTokens = await TokensUtils.getAllTokens();
         if (selectedAccountKey !== accountKey) return;
         const nextRows = sortedBalances.map((balance) => ({
@@ -970,15 +998,18 @@ export const Portfolio = ({
           isTestnet: false,
           isHive: true,
         }));
-        logPortfolioFlowDebug('[Portfolio flow] loadPortfolio hive rows loaded', {
-          accountKey,
-          rowCount: nextRows.length,
-          rowsPreview: nextRows.map((row) => ({
-            key: row.key,
-            symbol: row.symbol,
-            balance: row.balance,
-          })),
-        });
+        logPortfolioFlowDebug(
+          '[Portfolio flow] loadPortfolio hive rows loaded',
+          {
+            accountKey,
+            rowCount: nextRows.length,
+            rowsPreview: nextRows.map((row) => ({
+              key: row.key,
+              symbol: row.symbol,
+              balance: row.balance,
+            })),
+          },
+        );
         setRows(nextRows);
       } catch (error) {
         if (selectedAccountKey !== accountKey) return;
@@ -1048,17 +1079,20 @@ export const Portfolio = ({
           maxRetries: EvmAccountTokensLoadUtils.DEFAULT_MAX_LOAD_MORE_RETRIES,
           onChainReady: (chain, tokens) => {
             if (selectedAccountKey !== accountKey) return;
-            logPortfolioFlowDebug('[Portfolio flow] loadPortfolio evm chain ready', {
-              accountKey,
-              chainId: chain.chainId,
-              chainName: chain.name,
-              tokenCount: tokens.length,
-              tokensPreview: tokens.map((token) => ({
-                symbol: token.tokenInfo.symbol,
-                chainId: token.tokenInfo.chainId,
-                balance: token.formattedBalance,
-              })),
-            });
+            logPortfolioFlowDebug(
+              '[Portfolio flow] loadPortfolio evm chain ready',
+              {
+                accountKey,
+                chainId: chain.chainId,
+                chainName: chain.name,
+                tokenCount: tokens.length,
+                tokensPreview: tokens.map((token) => ({
+                  symbol: token.tokenInfo.symbol,
+                  chainId: token.tokenInfo.chainId,
+                  balance: token.formattedBalance,
+                })),
+              },
+            );
             setRows((previousRows) =>
               mergeEvmPortfolioRowsForChain(
                 previousRows,
@@ -1110,7 +1144,9 @@ export const Portfolio = ({
   const initializePortfolioData = async () => {
     if (!selectedAccountKey) return;
 
-    const account = accountOptions.find((item) => item.key === selectedAccountKey);
+    const account = accountOptions.find(
+      (item) => item.key === selectedAccountKey,
+    );
     if (!account) return;
 
     logPortfolioFlowDebug('[Portfolio flow] initializePortfolioData started', {
@@ -1152,7 +1188,8 @@ export const Portfolio = ({
             assets,
             toAssetEvmChains,
           );
-    const resolvedToAssetId = mode === 'sell' ? undefined : toAssetId || undefined;
+    const resolvedToAssetId =
+      mode === 'sell' ? undefined : toAssetId || undefined;
     if (
       !hasRequiredQuoteAssets({
         mode,
@@ -1160,14 +1197,17 @@ export const Portfolio = ({
         toAssetId: resolvedToAssetId,
       })
     ) {
-      logPortfolioFlowDebug('[Portfolio flow] getQuotes skipped (missing required assets)', {
-        mode,
-        fromAssetId,
-        resolvedFromAssetId,
-        toAssetId,
-        resolvedToAssetId,
-        amount,
-      });
+      logPortfolioFlowDebug(
+        '[Portfolio flow] getQuotes skipped (missing required assets)',
+        {
+          mode,
+          fromAssetId,
+          resolvedFromAssetId,
+          toAssetId,
+          resolvedToAssetId,
+          amount,
+        },
+      );
       return;
     }
 
@@ -1198,16 +1238,17 @@ export const Portfolio = ({
         setStatusMessage('portfolio_recipient_address_invalid');
         return;
       }
-      const formattedFromAmount = PortfolioFlowUtils.formatPortfolioQuoteFromAmount(
-        amount,
-        PortfolioFlowUtils.resolvePortfolioQuoteFromAmountDecimals({
-          mode,
-          fromAssetId,
-          rows,
-          assets,
-          chains: toAssetEvmChains,
-        }),
-      );
+      const formattedFromAmount =
+        PortfolioFlowUtils.formatPortfolioQuoteFromAmount(
+          amount,
+          PortfolioFlowUtils.resolvePortfolioQuoteFromAmountDecimals({
+            mode,
+            fromAssetId,
+            rows,
+            assets,
+            chains: toAssetEvmChains,
+          }),
+        );
 
       const response = await PortfolioApiUtils.getQuotes({
         mode,
@@ -1216,13 +1257,21 @@ export const Portfolio = ({
         fromAmount: formattedFromAmount,
         fromAddress: address,
         toAddress,
-        countryCode: mode === 'buy' || mode === 'sell' ? countryCode : undefined,
-        fiatCurrency: mode === 'buy' || mode === 'sell' ? fiatCurrency : undefined,
+        countryCode:
+          mode === 'buy' || mode === 'sell' ? countryCode : undefined,
+        fiatCurrency:
+          mode === 'buy' || mode === 'sell' ? fiatCurrency : undefined,
         paymentMethod:
-          mode === 'buy' || mode === 'sell' ? paymentMethod || undefined : undefined,
+          mode === 'buy' || mode === 'sell'
+            ? paymentMethod || undefined
+            : undefined,
       });
-      setQuoteResponse(response);
+      setQuoteResponse({
+        ...response,
+        quotes: [...response.quotes, ...response.quotes],
+      });
       setSelectedQuoteId(response.quotes[0]?.quoteId ?? '');
+      setIsQuotesPanelExpanded(false);
     } catch (error) {
       Logger.error('Unable to load portfolio quotes', error);
       setStatusMessage(getStatusMessageKey(error, 'portfolio_load_error'));
@@ -1266,7 +1315,11 @@ export const Portfolio = ({
           address,
           toAddress,
         );
-        await openNativeConfirmation(selectedAccount.account, execution.id, payload);
+        await openNativeConfirmation(
+          selectedAccount.account,
+          execution.id,
+          payload,
+        );
         return;
       }
 
@@ -1298,7 +1351,9 @@ export const Portfolio = ({
   const openNativeConfirmation = async (
     account: EvmAccount,
     executionId: string,
-    payload: Awaited<ReturnType<typeof PortfolioApiUtils.prepareInAppExecution>>,
+    payload: Awaited<
+      ReturnType<typeof PortfolioApiUtils.prepareInAppExecution>
+    >,
   ) => {
     const chainId = `0x${payload.chainId.toString(16)}`;
     const chain = await ChainUtils.getChain<EvmChain>(chainId);
@@ -1373,11 +1428,11 @@ export const Portfolio = ({
     setToAssetId(
       mode === 'sell'
         ? ''
-        : PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+        : (PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
             row,
             assets,
             toAssetEvmChains,
-          ) ?? '',
+          ) ?? ''),
     );
     setSection(mode);
   };
@@ -1402,9 +1457,13 @@ export const Portfolio = ({
           />
           <div className="portfolio-account-row__text">
             {account.ensName ? (
-              <span className="portfolio-account-row__ens">{account.ensName}</span>
+              <span className="portfolio-account-row__ens">
+                {account.ensName}
+              </span>
             ) : null}
-            <span className="portfolio-account-row__address">{account.value}</span>
+            <span className="portfolio-account-row__address">
+              {account.value}
+            </span>
           </div>
         </div>
       );
@@ -1417,7 +1476,9 @@ export const Portfolio = ({
           className="portfolio-account-row__avatar"
         />
         <div className="portfolio-account-row__text">
-          <span className="portfolio-account-row__address">@{account.value}</span>
+          <span className="portfolio-account-row__address">
+            @{account.value}
+          </span>
         </div>
       </div>
     );
@@ -1543,7 +1604,8 @@ export const Portfolio = ({
             assets,
             toAssetEvmChains,
           );
-    const resolvedToAssetId = mode === 'sell' ? undefined : toAssetId || undefined;
+    const resolvedToAssetId =
+      mode === 'sell' ? undefined : toAssetId || undefined;
     const canRequestQuotes =
       Boolean(amount) &&
       Boolean(resolvedToAddress) &&
@@ -1560,52 +1622,118 @@ export const Portfolio = ({
         ? selectedQuote.provider === 'lifi'
         : Boolean(selectedQuote?.redirectUrl) ||
           selectedQuote?.provider === 'stealthex';
+    const hasMultipleQuotes = (quoteResponse?.quotes.length ?? 0) > 1;
+    const estimatedAmountInput = (
+      <InputComponent
+        label="portfolio_estimated_amount"
+        type={InputType.NUMBER}
+        value={selectedQuote?.estimatedToAmount ?? ''}
+        onChange={() => {}}
+        disabled
+      />
+    );
+
+    const renderQuoteCard = (quote: PortfolioQuote) => (
+      <div
+        key={quote.quoteId}
+        role="button"
+        tabIndex={0}
+        className={`portfolio-quote-card ${
+          selectedQuoteId === quote.quoteId ? 'selected' : ''
+        }`}
+        onClick={() => setSelectedQuoteId(quote.quoteId)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            setSelectedQuoteId(quote.quoteId);
+          }
+        }}>
+        <div className="quote-details">
+          <strong>{quote.provider.replace(/_/g, ' ')}</strong>
+          <small>{quote.executionType.replace(/_/g, ' ')}</small>
+        </div>
+        <strong>{quote.estimatedToAmount}</strong>
+      </div>
+    );
+
+    const renderQuotesSection = () => {
+      if (!hasMultipleQuotes || !quoteResponse) {
+        return null;
+      }
+
+      return (
+        <>
+          <button
+            className="portfolio-quotes-toggle"
+            onClick={() => setIsQuotesPanelExpanded((expanded) => !expanded)}
+            type="button">
+            {I18nUtils.getMessage(
+              isQuotesPanelExpanded
+                ? 'portfolio_hide_quotes'
+                : 'portfolio_view_all_quotes',
+              [String(quoteResponse.quotes.length)],
+            )}
+          </button>
+          {isQuotesPanelExpanded && (
+            <div className="portfolio-quotes-panel">
+              {quoteResponse.quotes.map((quote) => renderQuoteCard(quote))}
+            </div>
+          )}
+        </>
+      );
+    };
+
+    const renderEstimatedAmountSection = () => (
+      <>
+        {estimatedAmountInput}
+        {renderQuotesSection()}
+      </>
+    );
 
     return (
       <div className="portfolio-flow">
-          {(mode === 'swap' || mode === 'bridge') &&
-            accountOptions.length > 0 &&
-            selectedAccount && (
-              <PortfolioOverlayListSelect
-                id="portfolio-flow-account"
-                label={I18nUtils.getMessage('portfolio_account')}
-                value={selectedAccountKey}
-                onChange={handleSelectedAccountChange}
-                options={overlayAccountOptions}
-                renderDisplay={renderAccountRow}
-                renderOption={renderAccountRow}
-              />
-            )}
-          {(mode === 'buy' || mode === 'sell') && (
-            <>
-              <InputComponent
-                label="portfolio_country_code"
-                type={InputType.TEXT}
-                value={countryCode}
-                onChange={(value: string) =>
-                  setCountryCode(value.toUpperCase().slice(0, 2))
-                }
-              />
-              <InputComponent
-                label="portfolio_fiat_currency"
-                type={InputType.TEXT}
-                value={fiatCurrency}
-                onChange={(value: string) =>
-                  setFiatCurrency(value.toUpperCase().slice(0, 10))
-                }
-              />
-              <InputComponent
-                label="portfolio_payment_method"
-                type={InputType.TEXT}
-                value={paymentMethod}
-                onChange={setPaymentMethod}
-              />
-            </>
+        {(mode === 'swap' || mode === 'bridge') &&
+          accountOptions.length > 0 &&
+          selectedAccount && (
+            <PortfolioOverlayListSelect
+              id="portfolio-flow-account"
+              label={I18nUtils.getMessage('portfolio_account')}
+              value={selectedAccountKey}
+              onChange={handleSelectedAccountChange}
+              options={overlayAccountOptions}
+              renderDisplay={renderAccountRow}
+              renderOption={renderAccountRow}
+            />
           )}
-          {mode !== 'buy' &&
-            (mode === 'swap' ||
-              mode === 'bridge' ||
-              fromAssetOptions.length > 0) && (
+        {(mode === 'buy' || mode === 'sell') && (
+          <>
+            <InputComponent
+              label="portfolio_country_code"
+              type={InputType.TEXT}
+              value={countryCode}
+              onChange={(value: string) =>
+                setCountryCode(value.toUpperCase().slice(0, 2))
+              }
+            />
+            <InputComponent
+              label="portfolio_fiat_currency"
+              type={InputType.TEXT}
+              value={fiatCurrency}
+              onChange={(value: string) =>
+                setFiatCurrency(value.toUpperCase().slice(0, 10))
+              }
+            />
+            <InputComponent
+              label="portfolio_payment_method"
+              type={InputType.TEXT}
+              value={paymentMethod}
+              onChange={setPaymentMethod}
+            />
+          </>
+        )}
+        {mode !== 'buy' &&
+          (mode === 'swap' ||
+            mode === 'bridge' ||
+            fromAssetOptions.length > 0) && (
             <PortfolioOverlayListSelect
               id="portfolio-from-asset"
               label={I18nUtils.getMessage('portfolio_from_asset')}
@@ -1622,128 +1750,113 @@ export const Portfolio = ({
               }
             />
           )}
-          <InputComponent
-            label="popup_html_transfer_amount"
-            type={InputType.NUMBER}
-            value={amount}
-            min={0}
-            onChange={setAmount}
-          />
-          {mode !== 'sell' && toAssetOptions.length > 0 && (
-            <PortfolioOverlayListSelect
-              id="portfolio-to-asset"
-              label={I18nUtils.getMessage('portfolio_to_asset')}
-              options={filteredToAssetOptions}
-              value={toAssetId}
-              onChange={setToAssetId}
-              renderOption={renderToAssetIdentity}
-              renderDisplay={renderToAssetIdentity}
-              listHeader={
-                <div
-                  className="portfolio-overlay-select__filters"
-                  onMouseDown={(event) => event.stopPropagation()}
-                  onClick={(event) => event.stopPropagation()}>
-                  <div className="portfolio-overlay-select__filters-field portfolio-overlay-select__filters-token">
-                    <label htmlFor="portfolio-to-asset-filter">
-                      {I18nUtils.getMessage('portfolio_symbol_filter')}
-                    </label>
-                    <input
-                      id="portfolio-to-asset-filter"
-                      type="text"
-                      placeholder={I18nUtils.getMessage('portfolio_symbol_filter')}
-                      value={toAssetFilter}
-                      onChange={(event) => setToAssetFilter(event.target.value)}
-                    />
-                  </div>
-                  <div className="portfolio-overlay-select__filters-field portfolio-overlay-select__filters-network">
-                    <ComplexeCustomSelect
-                      label="portfolio_network"
-                      options={toAssetChainSelectOptions}
-                      selectedItem={selectedToAssetChainOption}
-                      setSelectedItem={(item) =>
-                        setToAssetChainFilter(item.value)
-                      }
-                      filterable
-                      generateImageIfNull
-                      skipImageGenerationForFirstItem
-                      showOverlay
-                    />
-                  </div>
+        <InputComponent
+          label="popup_html_transfer_amount"
+          type={InputType.NUMBER}
+          value={amount}
+          min={0}
+          onChange={setAmount}
+        />
+        {mode === 'sell' && renderEstimatedAmountSection()}
+        {mode !== 'sell' && toAssetOptions.length > 0 && (
+          <PortfolioOverlayListSelect
+            id="portfolio-to-asset"
+            label={I18nUtils.getMessage('portfolio_to_asset')}
+            options={filteredToAssetOptions}
+            value={toAssetId}
+            onChange={setToAssetId}
+            renderOption={renderToAssetIdentity}
+            renderDisplay={renderToAssetIdentity}
+            listHeader={
+              <div
+                className="portfolio-overlay-select__filters"
+                onMouseDown={(event) => event.stopPropagation()}
+                onClick={(event) => event.stopPropagation()}>
+                <div className="portfolio-overlay-select__filters-field portfolio-overlay-select__filters-token">
+                  <label htmlFor="portfolio-to-asset-filter">
+                    {I18nUtils.getMessage('portfolio_symbol_filter')}
+                  </label>
+                  <input
+                    id="portfolio-to-asset-filter"
+                    type="text"
+                    placeholder={I18nUtils.getMessage(
+                      'portfolio_symbol_filter',
+                    )}
+                    value={toAssetFilter}
+                    onChange={(event) => setToAssetFilter(event.target.value)}
+                  />
                 </div>
-              }
-              listFooter={
-                filteredToAssetOptions.length === 0 ? (
-                  I18nUtils.getMessage('portfolio_no_matching_assets')
-                ) : hasToAssetFilters && toAssetTruncatedCount > 0 ? (
-                  I18nUtils.getMessage(
-                    'portfolio_to_asset_results_truncated',
-                    [String(toAssetTruncatedCount)],
-                  )
-                ) : !hasToAssetFilters &&
-                  filteredToAssetResult.totalMatches >
-                    TO_ASSET_UNFILTERED_MAX ? (
-                  I18nUtils.getMessage('portfolio_to_asset_filter_hint')
-                ) : undefined
-              }
-            />
-          )}
-          {requiresRecipientInput && (
-            <InputComponent
-              label={recipientAddressLabelKey}
-              type={InputType.TEXT}
-              value={recipientAddress}
-              onChange={setRecipientAddress}
-            />
-          )}
-          <ButtonComponent
-            label="portfolio_get_quotes"
-            disabled={!canRequestQuotes || isFlowLoading}
-            onClick={() => void getQuotes()}
-          />
-          {quoteResponse?.quotes.map((quote) => (
-            <div
-              key={quote.quoteId}
-              role="button"
-              tabIndex={0}
-              className={`portfolio-quote-card ${
-                selectedQuoteId === quote.quoteId ? 'selected' : ''
-              }`}
-              onClick={() => setSelectedQuoteId(quote.quoteId)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  setSelectedQuoteId(quote.quoteId);
-                }
-              }}>
-              <div className="quote-details">
-                <strong>{quote.provider.replace(/_/g, ' ')}</strong>
-                <small>{quote.executionType.replace(/_/g, ' ')}</small>
+                <div className="portfolio-overlay-select__filters-field portfolio-overlay-select__filters-network">
+                  <ComplexeCustomSelect
+                    label="portfolio_network"
+                    options={toAssetChainSelectOptions}
+                    selectedItem={selectedToAssetChainOption}
+                    setSelectedItem={(item) =>
+                      setToAssetChainFilter(item.value)
+                    }
+                    filterable
+                    generateImageIfNull
+                    skipImageGenerationForFirstItem
+                    showOverlay
+                  />
+                </div>
               </div>
-              <strong>{quote.estimatedToAmount}</strong>
-            </div>
-          ))}
-          {quoteResponse?.quotes.length === 0 && (
-            <div className="portfolio-status">
-              {I18nUtils.getMessage('portfolio_no_quotes')}
-            </div>
-          )}
-          {selectedQuoteId && (
-            <ButtonComponent
-              label="portfolio_continue"
-              type={ButtonType.ALTERNATIVE}
-              disabled={!canExecuteSelectedQuote}
-              onClick={() => {
-                if (selectedQuote && canExecuteSelectedQuote) {
-                  void executeQuote(selectedQuote);
-                }
-              }}
-            />
-          )}
-          {selectedQuote && !canExecuteSelectedQuote && (
-            <div className="portfolio-status">
-              {I18nUtils.getMessage('portfolio_provider_execution_unavailable')}
-            </div>
-          )}
-        </div>
+            }
+            listFooter={
+              filteredToAssetOptions.length === 0
+                ? I18nUtils.getMessage('portfolio_no_matching_assets')
+                : hasToAssetFilters && toAssetTruncatedCount > 0
+                  ? I18nUtils.getMessage(
+                      'portfolio_to_asset_results_truncated',
+                      [String(toAssetTruncatedCount)],
+                    )
+                  : !hasToAssetFilters &&
+                      filteredToAssetResult.totalMatches >
+                        TO_ASSET_UNFILTERED_MAX
+                    ? I18nUtils.getMessage('portfolio_to_asset_filter_hint')
+                    : undefined
+            }
+          />
+        )}
+        {mode !== 'sell' &&
+          toAssetOptions.length > 0 &&
+          renderEstimatedAmountSection()}
+        {requiresRecipientInput && (
+          <InputComponent
+            label={recipientAddressLabelKey}
+            type={InputType.TEXT}
+            value={recipientAddress}
+            onChange={setRecipientAddress}
+          />
+        )}
+        <ButtonComponent
+          label="portfolio_get_quotes"
+          disabled={!canRequestQuotes || isFlowLoading}
+          onClick={() => void getQuotes()}
+        />
+        {quoteResponse?.quotes.length === 0 && (
+          <div className="portfolio-status">
+            {I18nUtils.getMessage('portfolio_no_quotes')}
+          </div>
+        )}
+        {selectedQuoteId && (
+          <ButtonComponent
+            label="portfolio_continue"
+            type={ButtonType.ALTERNATIVE}
+            disabled={!canExecuteSelectedQuote}
+            onClick={() => {
+              if (selectedQuote && canExecuteSelectedQuote) {
+                void executeQuote(selectedQuote);
+              }
+            }}
+          />
+        )}
+        {selectedQuote && !canExecuteSelectedQuote && (
+          <div className="portfolio-status">
+            {I18nUtils.getMessage('portfolio_provider_execution_unavailable')}
+          </div>
+        )}
+      </div>
     );
   };
 
@@ -1835,7 +1948,9 @@ export const Portfolio = ({
                 <button
                   aria-label={I18nUtils.getMessage('portfolio_refresh')}
                   className="portfolio-refresh-button"
-                  disabled={isPortfolioLoading || isHistoryLoading || isRefreshing}
+                  disabled={
+                    isPortfolioLoading || isHistoryLoading || isRefreshing
+                  }
                   onClick={() => void handleRefreshPortfolioData()}
                   title={I18nUtils.getMessage('portfolio_refresh')}
                   type="button">

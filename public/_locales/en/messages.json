@@ -4126,6 +4126,17 @@
   "portfolio_recipient_address_invalid": {
     "message": "Enter a valid recipient address for this swap."
   },
+  "portfolio_estimated_amount": { "message": "Estimated amount" },
+  "portfolio_view_all_quotes": {
+    "message": "View all quotes ($1)",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "3"
+      }
+    }
+  },
+  "portfolio_hide_quotes": { "message": "Hide quotes" },
   "portfolio_provider_execution_unavailable": { "message": "This provider cannot currently be executed from Keychain." },
   "portfolio_no_assets": { "message": "No balances found for this account." },
   "portfolio_no_quotes": { "message": "No quotes are currently available." },
