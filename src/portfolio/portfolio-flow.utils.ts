@@ -8,6 +8,8 @@ import {
 } from 'src/portfolio/portfolio-api.interface';
 
 const HIVE_CORE_SYMBOLS = new Set(['HIVE', 'HBD', 'HP']);
+const HIVE_KEYCHAIN_SWAP_TARGET_SYMBOLS = new Set(['HIVE', 'HBD']);
+const HIVE_EXTERNAL_BRIDGE_TARGET_SYMBOLS = new Set(['HIVE']);
 const FIAT_QUOTE_AMOUNT_DECIMALS = 2;
 const EVM_NATIVE_TOKEN_DECIMALS = 18;
 const HIVE_CORE_TOKEN_DECIMALS = 3;
@@ -611,6 +613,47 @@ const matchesCanonicalAssetChainFilter = (
   return buildCanonicalAssetChainFilterValue(asset) === chainFilter;
 };
 
+const isHiveKeychainSwapTargetAsset = (asset: PortfolioCanonicalAsset): boolean =>
+  asset.ecosystem === 'hive' &&
+  HIVE_KEYCHAIN_SWAP_TARGET_SYMBOLS.has(asset.symbol.toUpperCase());
+
+const isHiveExternalBridgeTargetAsset = (asset: PortfolioCanonicalAsset): boolean =>
+  asset.ecosystem === 'hive' &&
+  HIVE_EXTERNAL_BRIDGE_TARGET_SYMBOLS.has(asset.symbol.toUpperCase());
+
+export const isEligibleToAssetForFromAsset = (
+  fromAsset: PortfolioCanonicalAsset,
+  toAsset: PortfolioCanonicalAsset,
+): boolean => {
+  if (fromAsset.assetId === toAsset.assetId) {
+    return false;
+  }
+
+  switch (fromAsset.ecosystem) {
+    case 'hive_engine':
+      return (
+        toAsset.ecosystem === 'hive_engine' || isHiveKeychainSwapTargetAsset(toAsset)
+      );
+    case 'hive':
+      return true;
+    case 'evm':
+      return toAsset.ecosystem === 'evm' || isHiveExternalBridgeTargetAsset(toAsset);
+    default:
+      return false;
+  }
+};
+
+export const filterToAssetsByFromAsset = (
+  assets: PortfolioCanonicalAsset[],
+  fromAsset: PortfolioCanonicalAsset | undefined,
+): PortfolioCanonicalAsset[] => {
+  if (!fromAsset) {
+    return assets;
+  }
+
+  return assets.filter((asset) => isEligibleToAssetForFromAsset(fromAsset, asset));
+};
+
 export const filterCanonicalAssets = (
   assets: PortfolioCanonicalAsset[],
   options: {
@@ -662,6 +705,8 @@ export const PortfolioFlowUtils = {
   buildCanonicalAssetSelectOptions,
   buildPortfolioFromSelectOptions,
   filterCanonicalAssets,
+  filterToAssetsByFromAsset,
+  isEligibleToAssetForFromAsset,
   formatPortfolioQuoteFromAmount,
   formatPortfolioTokenBalance,
   getDefaultSelectOptionValue,

@@ -304,11 +304,18 @@
   border: 1px solid var(--kc-color-border-default);
   border-radius: 50%;
   background: var(--kc-color-bg-elevated);
+  color: var(--kc-color-text-secondary);
   cursor: pointer;
   flex-shrink: 0;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background-color 0.2s ease;
 
   &:hover:not(:disabled) {
     border-color: var(--kc-color-accent);
+    color: var(--kc-color-accent);
+    background: var(--kc-color-accent-muted);
   }
 
   &:disabled {
@@ -317,8 +324,29 @@
   }
 
   .portfolio-refresh-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 1rem;
     height: 1rem;
+    flex-shrink: 0;
+
+    div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    path {
+      stroke: currentColor;
+    }
 
     &.rotate {
       @include rotate-logo-mixin();

@@ -10,6 +10,24 @@ const hiveAsset: PortfolioCanonicalAsset = {
   logoUrl: null,
 };
 
+const hbdAsset: PortfolioCanonicalAsset = {
+  assetId: 'hive-hbd',
+  ecosystem: 'hive',
+  symbol: 'HBD',
+  name: 'Hive Backed Dollar',
+  chainId: null,
+  logoUrl: null,
+};
+
+const hpAsset: PortfolioCanonicalAsset = {
+  assetId: 'hive-hp',
+  ecosystem: 'hive',
+  symbol: 'HP',
+  name: 'Hive Power',
+  chainId: null,
+  logoUrl: null,
+};
+
 const hiveEngineAsset: PortfolioCanonicalAsset = {
   assetId: 'he-dec',
   ecosystem: 'hive_engine',
@@ -454,6 +472,48 @@ describe('PortfolioFlowUtils', () => {
     expect(
       PortfolioFlowUtils.formatPortfolioQuoteFromAmount('1,234.567891', 3),
     ).toBe('1234.567');
+  });
+
+  it('filters to assets based on the selected from asset ecosystem', () => {
+    const assets = [
+      hiveAsset,
+      hbdAsset,
+      hpAsset,
+      hiveEngineAsset,
+      ethAsset,
+      sepoliaEthAsset,
+    ];
+
+    expect(
+      PortfolioFlowUtils.filterToAssetsByFromAsset(assets, hiveEngineAsset),
+    ).toEqual([hiveAsset, hbdAsset]);
+
+    expect(
+      PortfolioFlowUtils.filterToAssetsByFromAsset(assets, hiveAsset),
+    ).toEqual(assets.filter((asset) => asset.assetId !== 'hive-hive'));
+
+    expect(
+      PortfolioFlowUtils.filterToAssetsByFromAsset(assets, ethAsset),
+    ).toEqual([hiveAsset, sepoliaEthAsset]);
+
+    expect(
+      PortfolioFlowUtils.isEligibleToAssetForFromAsset(hiveEngineAsset, ethAsset),
+    ).toBe(false);
+    expect(
+      PortfolioFlowUtils.isEligibleToAssetForFromAsset(ethAsset, hbdAsset),
+    ).toBe(false);
+    expect(
+      PortfolioFlowUtils.isEligibleToAssetForFromAsset(ethAsset, hiveAsset),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.isEligibleToAssetForFromAsset(
+        hiveEngineAsset,
+        hiveEngineAsset,
+      ),
+    ).toBe(false);
+    expect(PortfolioFlowUtils.filterToAssetsByFromAsset(assets, undefined)).toBe(
+      assets,
+    );
   });
 
   it('resolves quote amount decimals by mode and from asset', () => {

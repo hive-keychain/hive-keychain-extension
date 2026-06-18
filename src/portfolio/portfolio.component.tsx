@@ -475,14 +475,43 @@ export const Portfolio = ({
     return options;
   }, [assets, rows, selectedAccountKey, toAssetEvmChains]);
 
+  const fromCanonicalAsset = useMemo(() => {
+    if (!fromAssetId) {
+      return undefined;
+    }
+
+    const canonicalAssetId = PortfolioFlowUtils.resolveFromRowKeyToCanonicalAssetId(
+      fromAssetId,
+      rows,
+      assets,
+      toAssetEvmChains,
+    );
+    if (!canonicalAssetId) {
+      return undefined;
+    }
+
+    return assets.find((asset) => asset.assetId === canonicalAssetId);
+  }, [assets, fromAssetId, rows, toAssetEvmChains]);
+
+  const eligibleToAssets = useMemo(() => {
+    if (section === 'buy' || !fromCanonicalAsset) {
+      return assets;
+    }
+
+    return PortfolioFlowUtils.filterToAssetsByFromAsset(assets, fromCanonicalAsset);
+  }, [assets, fromCanonicalAsset, section]);
+
   const toAssetOptions = useMemo(() => {
     const options = PortfolioFlowUtils.buildCanonicalAssetSelectOptions(
-      assets,
+      eligibleToAssets,
       toAssetEvmChains,
     );
 
     logPortfolioFlowDebug('[Portfolio flow] build toAssetOptions', {
       canonicalAssetCount: assets.length,
+      eligibleToAssetCount: eligibleToAssets.length,
+      fromCanonicalAssetId: fromCanonicalAsset?.assetId ?? null,
+      fromCanonicalAssetEcosystem: fromCanonicalAsset?.ecosystem ?? null,
       toAssetEvmChainCount: toAssetEvmChains.length,
       toAssetOptionsCount: options.length,
       toAssetOptionsPreview: options.slice(0, 25).map((option) => ({
@@ -492,15 +521,15 @@ export const Portfolio = ({
     });
 
     return options;
-  }, [assets, toAssetEvmChains]);
+  }, [assets.length, eligibleToAssets, fromCanonicalAsset, toAssetEvmChains]);
 
   const toAssetChainFilterOptions = useMemo(
     () =>
       PortfolioFlowUtils.buildCanonicalAssetChainFilterOptions(
-        assets,
+        eligibleToAssets,
         toAssetEvmChains,
       ),
-    [assets, toAssetEvmChains],
+    [eligibleToAssets, toAssetEvmChains],
   );
 
   const hasToAssetFilters = Boolean(
@@ -509,14 +538,14 @@ export const Portfolio = ({
 
   const filteredToAssetResult = useMemo(
     () =>
-      PortfolioFlowUtils.filterCanonicalAssets(assets, {
+      PortfolioFlowUtils.filterCanonicalAssets(eligibleToAssets, {
         textFilter: toAssetFilter,
         chainFilter: toAssetChainFilter,
         maxResults: hasToAssetFilters
           ? TO_ASSET_FILTERED_MAX
           : TO_ASSET_UNFILTERED_MAX,
       }),
-    [assets, hasToAssetFilters, toAssetChainFilter, toAssetFilter],
+    [eligibleToAssets, hasToAssetFilters, toAssetChainFilter, toAssetFilter],
   );
 
   const filteredToAssetOptions = useMemo(() => {
