@@ -1,5 +1,8 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { PortfolioApiUtils } from 'src/portfolio/portfolio-api.utils';
+import {
+  PortfolioApiError,
+  PortfolioApiUtils,
+} from 'src/portfolio/portfolio-api.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 jest.mock('src/utils/localStorage.utils', () => ({
@@ -65,5 +68,73 @@ describe('PortfolioApiUtils', () => {
     expect((init.headers as Headers).get('X-Keychain-Portfolio-Client-Token')).toBe(
       'x'.repeat(64),
     );
+  });
+
+  it('throws structured portfolio api errors from quote requests', async () => {
+    getValueMock.mockResolvedValue('x'.repeat(64));
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      json: jest.fn().mockResolvedValue({
+        code: 'SWAP_AMOUNT_OUT_OF_RANGE',
+        message: 'No quote available for the requested amount.',
+        requestId: '0db08dd7-368d-4eee-b34d-68385aa899d9',
+        details: {
+          requestedAmount: '1000',
+          mergedRange: {
+            min: '2200',
+            max: '110000',
+          },
+        },
+      }),
+    });
+
+    await expect(
+      PortfolioApiUtils.getQuotes({
+        mode: 'swap',
+        fromAmount: '1000',
+      }),
+    ).rejects.toMatchObject({
+      code: 'SWAP_AMOUNT_OUT_OF_RANGE',
+      message: 'No quote available for the requested amount.',
+      details: {
+        mergedRange: {
+          min: '2200',
+          max: '110000',
+        },
+      },
+    });
+  });
+
+  it('maps swap amount out of range errors to amount field messages', () => {
+    const error = new PortfolioApiError({
+      code: 'SWAP_AMOUNT_OUT_OF_RANGE',
+      message: 'No quote available for the requested amount.',
+      details: {
+        mergedRange: {
+          min: '2200',
+          max: '110000',
+        },
+      },
+    });
+
+    expect(PortfolioApiUtils.resolvePortfolioAmountQuoteError(error)).toEqual({
+      key: 'portfolio_swap_amount_out_of_range',
+      params: ['2200', '110000'],
+    });
+    expect(
+      PortfolioApiUtils.resolvePortfolioAmountQuoteError(
+        new PortfolioApiError({
+          code: 'SWAP_AMOUNT_OUT_OF_RANGE',
+          message: 'No quote available for the requested amount.',
+        }),
+      ),
+    ).toEqual({
+      key: 'portfolio_swap_amount_out_of_range_generic',
+    });
+    expect(
+      PortfolioApiUtils.resolvePortfolioAmountQuoteError(
+        new Error('portfolio_load_error'),
+      ),
+    ).toBeNull();
   });
 });

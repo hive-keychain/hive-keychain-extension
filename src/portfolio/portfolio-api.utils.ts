@@ -1,6 +1,7 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import {
+  PortfolioApiErrorPayload,
   PortfolioCanonicalAsset,
   PortfolioExecution,
   PortfolioHistoryItem,
@@ -9,9 +10,75 @@ import {
   PortfolioQuote,
   PortfolioQuoteResponse,
   PortfolioRedirectOrder,
+  PortfolioSwapAmountRangeDetails,
 } from 'src/portfolio/portfolio-api.interface';
 
 const CLIENT_TOKEN_HEADER = 'X-Keychain-Portfolio-Client-Token';
+
+export class PortfolioApiError extends Error {
+  readonly code?: string;
+  readonly details?: PortfolioSwapAmountRangeDetails;
+  readonly requestId?: string;
+
+  constructor(options: {
+    message: string;
+    code?: string;
+    details?: PortfolioSwapAmountRangeDetails;
+    requestId?: string;
+  }) {
+    super(options.message);
+    this.name = 'PortfolioApiError';
+    this.code = options.code;
+    this.details = options.details;
+    this.requestId = options.requestId;
+  }
+}
+
+export type PortfolioLocalizedMessage = {
+  key: string;
+  params?: string[];
+};
+
+const parsePortfolioApiErrorPayload = (payload: unknown): PortfolioApiError => {
+  const body =
+    payload && typeof payload === 'object'
+      ? (payload as PortfolioApiErrorPayload)
+      : {};
+  const nested = body.error ?? body;
+
+  return new PortfolioApiError({
+    message:
+      nested.message ||
+      body.message ||
+      'Portfolio request failed',
+    code: nested.code || body.code,
+    details: nested.details ?? body.details,
+    requestId: nested.requestId || body.requestId,
+  });
+};
+
+export const resolvePortfolioAmountQuoteError = (
+  error: unknown,
+): PortfolioLocalizedMessage | null => {
+  if (!(error instanceof PortfolioApiError)) {
+    return null;
+  }
+
+  if (error.code !== 'SWAP_AMOUNT_OUT_OF_RANGE') {
+    return null;
+  }
+
+  const min = error.details?.mergedRange?.min;
+  const max = error.details?.mergedRange?.max;
+  if (min && max) {
+    return {
+      key: 'portfolio_swap_amount_out_of_range',
+      params: [min, max],
+    };
+  }
+
+  return { key: 'portfolio_swap_amount_out_of_range_generic' };
+};
 
 const getBaseUrl = () => (process.env.PORTFOLIO_API_URL ?? '').replace(/\/+$/, '');
 
@@ -57,15 +124,7 @@ const fetchJson = async <T>(
   const response = await fetch(`${baseUrl}${path}`, { ...init, headers });
   const payload = (await response.json()) as unknown;
   if (!response.ok) {
-    const errorPayload =
-      payload && typeof payload === 'object'
-        ? (payload as { error?: { message?: string }; message?: string })
-        : {};
-    const message =
-      errorPayload.error?.message ||
-      errorPayload.message ||
-      `Portfolio request failed (${response.status})`;
-    throw new Error(message);
+    throw parsePortfolioApiErrorPayload(payload);
   }
   return payload as T;
 };
@@ -162,4 +221,5 @@ export const PortfolioApiUtils = {
   listHistory,
   markSubmitted,
   prepareInAppExecution,
+  resolvePortfolioAmountQuoteError,
 };

@@ -610,6 +610,26 @@
   }
 }
 
+.portfolio-amount-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kc-space-1);
+}
+
+.portfolio-field-error {
+  margin: 0;
+  color: var(--kc-color-accent);
+  font-size: var(--kc-font-size-xs);
+  line-height: 1.4;
+}
+
+.portfolio-amount-input--error {
+  .custom-input-content {
+    border-color: var(--kc-color-accent) !important;
+    box-shadow: 0 0 0 1px var(--kc-color-accent-muted);
+  }
+}
+
 .portfolio-quotes-toggle {
   align-self: flex-start;
   padding: 0;

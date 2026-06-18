@@ -51,7 +51,10 @@ import {
   PortfolioQuote,
   PortfolioQuoteResponse,
 } from 'src/portfolio/portfolio-api.interface';
-import { PortfolioApiUtils } from 'src/portfolio/portfolio-api.utils';
+import {
+  PortfolioApiUtils,
+  PortfolioLocalizedMessage,
+} from 'src/portfolio/portfolio-api.utils';
 import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
 import { UserPortfolio } from 'src/portfolio/portfolio.interface';
 import { PortfolioAccountAvatar } from 'src/portfolio/ui/portfolio-account-avatar.component';
@@ -366,6 +369,8 @@ export const Portfolio = ({
   const [selectedQuoteId, setSelectedQuoteId] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
   const [statusMessageParams, setStatusMessageParams] = useState<string[]>();
+  const [amountQuoteError, setAmountQuoteError] =
+    useState<PortfolioLocalizedMessage | null>(null);
   const [isPortfolioLoading, setIsPortfolioLoading] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [isFlowLoading, setIsFlowLoading] = useState(false);
@@ -559,6 +564,10 @@ export const Portfolio = ({
   useEffect(() => {
     setIsQuotesPanelExpanded(false);
   }, [amount, fromAssetId, toAssetId, selectedAccountKey]);
+
+  useEffect(() => {
+    setAmountQuoteError(null);
+  }, [amount]);
 
   const eligibleToAssets = useMemo(() => {
     if (section === 'buy' || !fromCanonicalAsset) {
@@ -1223,6 +1232,7 @@ export const Portfolio = ({
 
     setIsFlowLoading(true);
     setStatusMessage('');
+    setAmountQuoteError(null);
     try {
       const address =
         selectedAccount.type === ChainType.EVM
@@ -1266,15 +1276,23 @@ export const Portfolio = ({
             ? paymentMethod || undefined
             : undefined,
       });
-      setQuoteResponse({
-        ...response,
-        quotes: [...response.quotes, ...response.quotes],
-      });
+      setQuoteResponse(response);
       setSelectedQuoteId(response.quotes[0]?.quoteId ?? '');
       setIsQuotesPanelExpanded(false);
     } catch (error) {
       Logger.error('Unable to load portfolio quotes', error);
-      setStatusMessage(getStatusMessageKey(error, 'portfolio_load_error'));
+      setQuoteResponse(undefined);
+      setSelectedQuoteId('');
+      const amountError = PortfolioApiUtils.resolvePortfolioAmountQuoteError(error);
+      if (amountError) {
+        setAmountQuoteError(amountError);
+        setStatusMessage('');
+        setStatusMessageParams(undefined);
+      } else {
+        setAmountQuoteError(null);
+        setStatusMessage(getStatusMessageKey(error, 'portfolio_load_error'));
+        setStatusMessageParams(undefined);
+      }
     } finally {
       setIsFlowLoading(false);
     }
@@ -1750,13 +1768,24 @@ export const Portfolio = ({
               }
             />
           )}
-        <InputComponent
-          label="popup_html_transfer_amount"
-          type={InputType.NUMBER}
-          value={amount}
-          min={0}
-          onChange={setAmount}
-        />
+        <div className="portfolio-amount-field">
+          <InputComponent
+            label="popup_html_transfer_amount"
+            type={InputType.NUMBER}
+            value={amount}
+            min={0}
+            onChange={setAmount}
+            classname={amountQuoteError ? 'portfolio-amount-input--error' : undefined}
+          />
+          {amountQuoteError && (
+            <p className="portfolio-field-error" role="alert">
+              {I18nUtils.getMessage(
+                amountQuoteError.key,
+                amountQuoteError.params,
+              )}
+            </p>
+          )}
+        </div>
         {mode === 'sell' && renderEstimatedAmountSection()}
         {mode !== 'sell' && toAssetOptions.length > 0 && (
           <PortfolioOverlayListSelect

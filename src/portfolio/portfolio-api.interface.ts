@@ -81,3 +81,24 @@ export interface PortfolioRedirectOrder {
     network: string;
   } | null;
 }
+
+export interface PortfolioSwapAmountRangeDetails {
+  requestedAmount?: string;
+  mergedRange?: {
+    min?: string;
+    max?: string;
+  };
+  providerRanges?: Array<{
+    provider?: string;
+    min?: string;
+    max?: string;
+  }>;
+}
+
+export interface PortfolioApiErrorPayload {
+  code?: string;
+  message?: string;
+  requestId?: string;
+  details?: PortfolioSwapAmountRangeDetails;
+  error?: PortfolioApiErrorPayload;
+}
