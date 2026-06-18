@@ -89,7 +89,8 @@ const getQuotes = async (body: {
 const createExecution = async (
   quote: PortfolioQuote,
   request: PortfolioQuoteResponse['request'],
-  address: string,
+  fromAddress: string,
+  toAddress: string,
 ): Promise<PortfolioExecution> =>
   fetchJson(
     '/executions',
@@ -104,8 +105,8 @@ const createExecution = async (
         toAssetId: quote.toAsset?.assetId ?? request.toAssetId,
         fromAmount: quote.fromAmount,
         estimatedToAmount: quote.estimatedToAmount,
-        fromAddress: address,
-        toAddress: address,
+        fromAddress,
+        toAddress,
         executionType: quote.executionType,
         fiatCurrency: request.fiatCurrency,
         paymentMethod: request.paymentMethod,
@@ -117,13 +118,14 @@ const createExecution = async (
 
 const prepareInAppExecution = async (
   executionId: string,
-  address: string,
+  fromAddress: string,
+  toAddress: string,
 ): Promise<PortfolioInAppPayload> =>
   fetchJson(
     `/executions/${encodeURIComponent(executionId)}/prepare-in-app`,
     {
       method: 'POST',
-      body: JSON.stringify({ fromAddress: address, toAddress: address }),
+      body: JSON.stringify({ fromAddress, toAddress }),
     },
     true,
   );

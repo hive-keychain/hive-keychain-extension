@@ -550,4 +550,76 @@ describe('PortfolioFlowUtils', () => {
       ]),
     ).toBe(3);
   });
+
+  it('requires a separate recipient address for hive to evm and evm to hive swaps', () => {
+    expect(
+      PortfolioFlowUtils.requiresPortfolioRecipientAddress(hiveAsset, ethAsset),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.requiresPortfolioRecipientAddress(ethAsset, hiveAsset),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.requiresPortfolioRecipientAddress(
+        hiveEngineAsset,
+        ethAsset,
+      ),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.requiresPortfolioRecipientAddress(ethAsset, ethAsset),
+    ).toBe(false);
+    expect(
+      PortfolioFlowUtils.requiresPortfolioRecipientAddress(hiveAsset, hbdAsset),
+    ).toBe(false);
+  });
+
+  it('defaults toAddress to fromAddress for same-ecosystem swaps', () => {
+    const evmAddress = '0x0000000000000000000000000000000000000001';
+    expect(
+      PortfolioFlowUtils.resolvePortfolioToAddress({
+        fromAddress: evmAddress,
+        recipientAddress: '',
+        fromAsset: ethAsset,
+        toAsset: sepoliaEthAsset,
+      }),
+    ).toBe(evmAddress);
+  });
+
+  it('uses the recipient address for cross-ecosystem swaps', () => {
+    const evmAddress = '0x0000000000000000000000000000000000000001';
+    expect(
+      PortfolioFlowUtils.resolvePortfolioToAddress({
+        fromAddress: 'alice',
+        recipientAddress: evmAddress,
+        fromAsset: hiveAsset,
+        toAsset: ethAsset,
+      }),
+    ).toBe(evmAddress);
+    expect(
+      PortfolioFlowUtils.resolvePortfolioToAddress({
+        fromAddress: evmAddress,
+        recipientAddress: '@bob',
+        fromAsset: ethAsset,
+        toAsset: hiveAsset,
+      }),
+    ).toBe('bob');
+  });
+
+  it('rejects invalid cross-ecosystem recipient addresses', () => {
+    expect(
+      PortfolioFlowUtils.resolvePortfolioToAddress({
+        fromAddress: 'alice',
+        recipientAddress: 'not-an-evm-address',
+        fromAsset: hiveAsset,
+        toAsset: ethAsset,
+      }),
+    ).toBeUndefined();
+    expect(
+      PortfolioFlowUtils.resolvePortfolioToAddress({
+        fromAddress: '0x0000000000000000000000000000000000000001',
+        recipientAddress: '',
+        fromAsset: ethAsset,
+        toAsset: hiveAsset,
+      }),
+    ).toBeUndefined();
+  });
 });

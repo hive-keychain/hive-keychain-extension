@@ -6,6 +6,7 @@ import {
   PortfolioCanonicalAsset,
   PortfolioMode,
 } from 'src/portfolio/portfolio-api.interface';
+import { EvmAddressUtils } from 'src/utils/evm/evm-address.utils';
 
 const HIVE_CORE_SYMBOLS = new Set(['HIVE', 'HBD', 'HP']);
 const HIVE_KEYCHAIN_SWAP_TARGET_SYMBOLS = new Set(['HIVE', 'HBD']);
@@ -699,6 +700,96 @@ export const resolveFromRowKeyToCanonicalAssetId = (
   return resolvePortfolioRowToCanonicalAssetId(row, assets, chains);
 };
 
+export type PortfolioRecipientAddressKind = 'evm' | 'hive';
+
+const HIVE_PORTFOLIO_ECOSYSTEMS = new Set<PortfolioCanonicalAsset['ecosystem']>([
+  'hive',
+  'hive_engine',
+]);
+
+const HIVE_ACCOUNT_NAME_PATTERN =
+  /^(?=.{3,16}$)[a-z]([0-9a-z]|[0-9a-z\-](?=[0-9a-z])){2,}([\.](?=[a-z][0-9a-z\-][0-9a-z\-])[a-z]([0-9a-z]|[0-9a-z\-](?=[0-9a-z])){1,}){0,}$/;
+
+export const isHivePortfolioEcosystem = (
+  ecosystem: PortfolioCanonicalAsset['ecosystem'],
+): boolean => HIVE_PORTFOLIO_ECOSYSTEMS.has(ecosystem);
+
+export const requiresPortfolioRecipientAddress = (
+  fromAsset: PortfolioCanonicalAsset | undefined,
+  toAsset: PortfolioCanonicalAsset | undefined,
+): boolean => {
+  if (!fromAsset || !toAsset) {
+    return false;
+  }
+
+  const fromIsHive = isHivePortfolioEcosystem(fromAsset.ecosystem);
+  const toIsHive = isHivePortfolioEcosystem(toAsset.ecosystem);
+
+  return (
+    (fromIsHive && toAsset.ecosystem === 'evm') ||
+    (fromAsset.ecosystem === 'evm' && toIsHive)
+  );
+};
+
+export const resolvePortfolioRecipientAddressKind = (
+  toAsset: PortfolioCanonicalAsset,
+): PortfolioRecipientAddressKind =>
+  toAsset.ecosystem === 'evm' ? 'evm' : 'hive';
+
+export const resolvePortfolioRecipientAddressLabelKey = (
+  toAsset: PortfolioCanonicalAsset | undefined,
+): string =>
+  toAsset?.ecosystem === 'evm'
+    ? 'evm_swap_receiver_address'
+    : 'portfolio_recipient_hive_account';
+
+export const normalizePortfolioRecipientAddress = (address: string): string =>
+  address.trim().replace(/^@+/, '');
+
+export const isValidPortfolioRecipientAddress = (
+  address: string,
+  kind: PortfolioRecipientAddressKind,
+): boolean => {
+  const normalized = normalizePortfolioRecipientAddress(address);
+  if (!normalized) {
+    return false;
+  }
+
+  if (kind === 'evm') {
+    return EvmAddressUtils.isValidEvmAddress(normalized);
+  }
+
+  return HIVE_ACCOUNT_NAME_PATTERN.test(normalized);
+};
+
+export const resolvePortfolioToAddress = ({
+  fromAddress,
+  recipientAddress,
+  fromAsset,
+  toAsset,
+}: {
+  fromAddress: string;
+  recipientAddress: string;
+  fromAsset: PortfolioCanonicalAsset | undefined;
+  toAsset: PortfolioCanonicalAsset | undefined;
+}): string | undefined => {
+  if (!requiresPortfolioRecipientAddress(fromAsset, toAsset)) {
+    return fromAddress;
+  }
+
+  if (!toAsset) {
+    return undefined;
+  }
+
+  const kind = resolvePortfolioRecipientAddressKind(toAsset);
+  const normalizedRecipient = normalizePortfolioRecipientAddress(recipientAddress);
+  if (!isValidPortfolioRecipientAddress(normalizedRecipient, kind)) {
+    return undefined;
+  }
+
+  return normalizedRecipient;
+};
+
 export const PortfolioFlowUtils = {
   buildCanonicalAssetChainFilterOptions,
   buildCanonicalAssetChainFilterValue,
@@ -707,6 +798,8 @@ export const PortfolioFlowUtils = {
   filterCanonicalAssets,
   filterToAssetsByFromAsset,
   isEligibleToAssetForFromAsset,
+  isHivePortfolioEcosystem,
+  isValidPortfolioRecipientAddress,
   formatPortfolioQuoteFromAmount,
   formatPortfolioTokenBalance,
   getDefaultSelectOptionValue,
@@ -720,6 +813,11 @@ export const PortfolioFlowUtils = {
   resolveFromRowKeyToCanonicalAssetId,
   resolveHiveTokenDecimals,
   resolvePortfolioQuoteFromAmountDecimals,
+  normalizePortfolioRecipientAddress,
+  requiresPortfolioRecipientAddress,
+  resolvePortfolioRecipientAddressKind,
+  resolvePortfolioRecipientAddressLabelKey,
   resolvePortfolioRowToCanonicalAsset,
   resolvePortfolioRowToCanonicalAssetId,
+  resolvePortfolioToAddress,
 };

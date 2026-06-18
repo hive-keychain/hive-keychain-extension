@@ -362,6 +362,7 @@ export const Portfolio = ({
   const [selectedNetwork, setSelectedNetwork] = useState('');
   const [toAssetFilter, setToAssetFilter] = useState('');
   const [toAssetChainFilter, setToAssetChainFilter] = useState('');
+  const [recipientAddress, setRecipientAddress] = useState('');
   const [setupEvmChains, setSetupEvmChains] = useState<EvmChain[]>([]);
   const [defaultEvmChains, setDefaultEvmChains] = useState<EvmChain[]>([]);
   const hasUserSelectedAccountRef = useRef(false);
@@ -492,6 +493,56 @@ export const Portfolio = ({
 
     return assets.find((asset) => asset.assetId === canonicalAssetId);
   }, [assets, fromAssetId, rows, toAssetEvmChains]);
+
+  const toCanonicalAsset = useMemo(() => {
+    if (!toAssetId) {
+      return undefined;
+    }
+
+    return assets.find((asset) => asset.assetId === toAssetId);
+  }, [assets, toAssetId]);
+
+  const requiresRecipientInput = useMemo(
+    () =>
+      PortfolioFlowUtils.requiresPortfolioRecipientAddress(
+        fromCanonicalAsset,
+        toCanonicalAsset,
+      ),
+    [fromCanonicalAsset, toCanonicalAsset],
+  );
+
+  const recipientAddressLabelKey = useMemo(
+    () =>
+      PortfolioFlowUtils.resolvePortfolioRecipientAddressLabelKey(toCanonicalAsset),
+    [toCanonicalAsset],
+  );
+
+  const resolvedToAddress = useMemo(() => {
+    if (!selectedAccount) {
+      return undefined;
+    }
+
+    const fromAddress =
+      selectedAccount.type === ChainType.EVM
+        ? selectedAccount.account.wallet.address
+        : selectedAccount.account.name;
+
+    return PortfolioFlowUtils.resolvePortfolioToAddress({
+      fromAddress,
+      recipientAddress,
+      fromAsset: fromCanonicalAsset,
+      toAsset: toCanonicalAsset,
+    });
+  }, [
+    fromCanonicalAsset,
+    recipientAddress,
+    selectedAccount,
+    toCanonicalAsset,
+  ]);
+
+  useEffect(() => {
+    setRecipientAddress('');
+  }, [fromAssetId, toAssetId]);
 
   const eligibleToAssets = useMemo(() => {
     if (section === 'buy' || !fromCanonicalAsset) {
@@ -1137,6 +1188,16 @@ export const Portfolio = ({
         selectedAccount.type === ChainType.EVM
           ? selectedAccount.account.wallet.address
           : selectedAccount.account.name;
+      const toAddress = PortfolioFlowUtils.resolvePortfolioToAddress({
+        fromAddress: address,
+        recipientAddress,
+        fromAsset: fromCanonicalAsset,
+        toAsset: toCanonicalAsset,
+      });
+      if (!toAddress) {
+        setStatusMessage('portfolio_recipient_address_invalid');
+        return;
+      }
       const formattedFromAmount = PortfolioFlowUtils.formatPortfolioQuoteFromAmount(
         amount,
         PortfolioFlowUtils.resolvePortfolioQuoteFromAmountDecimals({
@@ -1154,7 +1215,7 @@ export const Portfolio = ({
         toAssetId: resolvedToAssetId,
         fromAmount: formattedFromAmount,
         fromAddress: address,
-        toAddress: address,
+        toAddress,
         countryCode: mode === 'buy' || mode === 'sell' ? countryCode : undefined,
         fiatCurrency: mode === 'buy' || mode === 'sell' ? fiatCurrency : undefined,
         paymentMethod:
@@ -1179,10 +1240,21 @@ export const Portfolio = ({
         selectedAccount.type === ChainType.EVM
           ? selectedAccount.account.wallet.address
           : selectedAccount.account.name;
+      const toAddress = PortfolioFlowUtils.resolvePortfolioToAddress({
+        fromAddress: address,
+        recipientAddress,
+        fromAsset: fromCanonicalAsset,
+        toAsset: toCanonicalAsset,
+      });
+      if (!toAddress) {
+        setStatusMessage('portfolio_recipient_address_invalid');
+        return;
+      }
       const execution = await PortfolioApiUtils.createExecution(
         quote,
         quoteResponse.request,
         address,
+        toAddress,
       );
 
       if (quote.executionType === 'in_app' && quote.provider === 'lifi') {
@@ -1192,6 +1264,7 @@ export const Portfolio = ({
         const payload = await PortfolioApiUtils.prepareInAppExecution(
           execution.id,
           address,
+          toAddress,
         );
         await openNativeConfirmation(selectedAccount.account, execution.id, payload);
         return;
@@ -1473,6 +1546,7 @@ export const Portfolio = ({
     const resolvedToAssetId = mode === 'sell' ? undefined : toAssetId || undefined;
     const canRequestQuotes =
       Boolean(amount) &&
+      Boolean(resolvedToAddress) &&
       hasRequiredQuoteAssets({
         mode,
         fromAssetId: resolvedFromAssetId,
@@ -1611,6 +1685,14 @@ export const Portfolio = ({
                   I18nUtils.getMessage('portfolio_to_asset_filter_hint')
                 ) : undefined
               }
+            />
+          )}
+          {requiresRecipientInput && (
+            <InputComponent
+              label={recipientAddressLabelKey}
+              type={InputType.TEXT}
+              value={recipientAddress}
+              onChange={setRecipientAddress}
             />
           )}
           <ButtonComponent
