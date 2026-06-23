@@ -10,7 +10,7 @@ import {
   EvmInputDisplayType,
   EvmTransactionParserUtils,
 } from '@popup/evm/utils/evm-transaction-parser.utils';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Card } from 'src/common-ui/card/card.component';
 import { DisplayText } from 'src/dialog/components/display-text/display-text';
 import { EvmLedgerDialogUtils } from 'src/dialog/evm/evm-ledger-dialog.utils';
@@ -29,12 +29,12 @@ interface Props {
 
 export const PersonalSign = (props: Props) => {
   const { accounts, data, request, afterCancel } = props;
-  const msg: string = Buffer.from(
-    request.params[0].substring(2),
-    'hex',
-  ).toString('utf8');
-  const [message, setMessage] = useState<string>(msg);
-  const [target, setTarget] = useState<string>(request.params[1]);
+  let msg: string;
+  if (request.params[0].startsWith('0x')) {
+    msg = Buffer.from(request.params[0].substring(2), 'hex').toString('utf8');
+  } else {
+    msg = request.params[0];
+  }
   const transactionHook = useTransactionHook(data, request);
 
   useEffect(() => {
@@ -65,7 +65,7 @@ export const PersonalSign = (props: Props) => {
     );
 
     const accountDisplay = await transactionHook.getWalletAddressInput(
-      target,
+      msg,
       lastChain.chainId,
       transactionInfo,
       accounts,
@@ -93,7 +93,7 @@ export const PersonalSign = (props: Props) => {
   const loadingCaption =
     EvmLedgerDialogUtils.getLedgerConfirmationCaptionForAddress(
       accounts,
-      target,
+      props.request.params[1],
     );
 
   return (
@@ -110,10 +110,7 @@ export const PersonalSign = (props: Props) => {
       fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}
       bottomPanel={
         <Card>
-          <DisplayText
-            title="dialog_evm_sign_request_message"
-            content={message}
-          />
+          <DisplayText title="dialog_evm_sign_request_message" content={msg} />
         </Card>
       }
       loadingCaption={loadingCaption}
