@@ -37,9 +37,11 @@
   --kc-color-border-strong: #4d5a7a;
   --kc-font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
+  height: 100%;
   min-height: 100%;
   display: grid;
   grid-template-columns: 4.25rem minmax(0, 1fr);
+  overflow: hidden;
   background: var(--kc-color-bg-base);
   color: var(--kc-color-text-primary);
   font-family: 'Poppins', system-ui, sans-serif;
@@ -106,12 +108,11 @@
 }
 
 .portfolio-sidebar {
-  position: sticky;
-  top: 0;
   display: flex;
   flex-direction: column;
   gap: var(--kc-space-4);
-  height: 100vh;
+  height: 100%;
+  min-height: 0;
   overflow-y: auto;
   padding: var(--kc-space-4) var(--kc-space-2);
   box-sizing: border-box;
@@ -242,7 +243,9 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .portfolio-main {
@@ -718,6 +721,6 @@ html.detached-window-page #root .theme:has(.portfolio-app-shell) .page-content {
   height: 100% !important;
   min-height: 0 !important;
   max-height: none !important;
-  overflow: auto !important;
+  overflow: hidden !important;
   background: transparent !important;
 }
