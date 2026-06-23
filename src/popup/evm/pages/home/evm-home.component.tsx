@@ -181,7 +181,7 @@ const Home = ({
       ),
     )} ${chain.mainToken}`;
     setAccountValues({ usdValue, mainTokenValue });
-  }, [activeAccount.nativeAndErc20Tokens]);
+  }, [activeAccount.nativeAndErc20Tokens, chain]);
 
   const checkActiveRpc = async () => {
     const currentRequestId = ++rpcCheckRequestId.current;

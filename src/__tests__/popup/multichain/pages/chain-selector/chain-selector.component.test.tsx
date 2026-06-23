@@ -36,6 +36,17 @@ const fallbackChain = {
   name: 'Ethereum',
 };
 
+const supportedChain: EvmChain = {
+  type: ChainType.EVM,
+  chainId: '0x1',
+  name: 'Ethereum',
+  mainToken: 'ETH',
+  defaultTransactionType: EvmTransactionType.EIP_1559,
+  rpcs: [{ url: 'https://rpc.ethereum.org', isDefault: true }],
+  testnet: false,
+  isCustom: false,
+};
+
 const TestModalHost = () => {
   const modal = useSelector((state: RootState) => state.modal) as
     | ModalProperties
@@ -69,6 +80,7 @@ describe('ChainSelectorPageComponent', () => {
       isDefault: true,
     });
     jest.spyOn(EvmRpcUtils, 'setActiveRpc').mockResolvedValue(undefined);
+    jest.spyOn(EvmRpcUtils, 'isValidRpcForChainId').mockResolvedValue(true);
   });
 
   it('does not render Hive in built-in chain cards', async () => {
@@ -133,5 +145,86 @@ describe('ChainSelectorPageComponent', () => {
     });
 
     expect(store.getState().chain.chainId).toBe('0x1');
+  });
+
+  it('renders settings for supported EVM chains', async () => {
+    jest.spyOn(ChainUtils, 'getDefaultChains').mockResolvedValue([
+      supportedChain,
+    ]);
+
+    customRender(<ChainSelectorPageComponent hideTitle />);
+
+    expect(
+      await screen.findByTestId('btn-edit-default-chain-0x1'),
+    ).toBeInTheDocument();
+  });
+
+  it('saves supported EVM chain edits as default-chain overrides', async () => {
+    const user = userEvent.setup();
+    jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([
+      supportedChain,
+    ]);
+    jest.spyOn(ChainUtils, 'getDefaultChains').mockResolvedValue([
+      supportedChain,
+    ]);
+    jest
+      .spyOn(ChainUtils, 'updateDefaultChainOverride')
+      .mockResolvedValue(undefined);
+
+    customRender(
+      <>
+        <ChainSelectorPageComponent hideTitle />
+        <TestModalHost />
+      </>,
+    );
+
+    await user.click(await screen.findByTestId('btn-edit-default-chain-0x1'));
+    await user.clear(screen.getByTestId('custom-evm-chain-name'));
+    await user.type(screen.getByTestId('custom-evm-chain-name'), 'Edited ETH');
+    await user.click(screen.getByTestId('custom-evm-chain-submit'));
+
+    await waitFor(() => {
+      expect(ChainUtils.updateDefaultChainOverride).toHaveBeenCalledWith(
+        '0x1',
+        expect.objectContaining({
+          chainId: '0x1',
+          name: 'Edited ETH',
+          isCustom: false,
+        }),
+      );
+    });
+  });
+
+  it('resets supported EVM chain overrides without deleting custom chains', async () => {
+    const user = userEvent.setup();
+    const overriddenSupportedChain = {
+      ...supportedChain,
+      name: 'Edited Ethereum',
+      isDefaultOverride: true,
+    };
+    jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([
+      overriddenSupportedChain,
+    ]);
+    jest.spyOn(ChainUtils, 'getDefaultChains').mockResolvedValue([
+      overriddenSupportedChain,
+    ]);
+    jest
+      .spyOn(ChainUtils, 'resetDefaultChainOverride')
+      .mockResolvedValue(undefined);
+
+    customRender(
+      <>
+        <ChainSelectorPageComponent hideTitle />
+        <TestModalHost />
+      </>,
+    );
+
+    await user.click(await screen.findByTestId('btn-edit-default-chain-0x1'));
+    await user.click(screen.getByTestId('custom-evm-chain-reset-default'));
+
+    await waitFor(() => {
+      expect(ChainUtils.resetDefaultChainOverride).toHaveBeenCalledWith('0x1');
+    });
+    expect(ChainUtils.removeCustomChain).not.toHaveBeenCalledWith('0x1');
   });
 });

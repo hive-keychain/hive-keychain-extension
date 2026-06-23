@@ -132,8 +132,10 @@ const applyChainListOrgToFormState = async (chain: ChainListOrgChain) => {
 export interface CustomEvmChainFormProps {
   onSubmit: (chain: EvmChain) => Promise<void> | void;
   onCancel: () => void;
+  onResetToDefault?: () => Promise<void> | void;
   chainToEdit?: EvmChain;
   initialChain?: Partial<EvmChain>;
+  isDefaultChain?: boolean;
   setErrorMessage?: (key: string) => void;
   submitLabel?: string;
 }
@@ -141,8 +143,10 @@ export interface CustomEvmChainFormProps {
 export const CustomEvmChainForm = ({
   onSubmit,
   onCancel,
+  onResetToDefault,
   chainToEdit,
   initialChain,
+  isDefaultChain,
   setErrorMessage,
   submitLabel,
 }: CustomEvmChainFormProps) => {
@@ -165,6 +169,7 @@ export const CustomEvmChainForm = ({
   );
   const [testnet, setTestnet] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [resetting, setResetting] = useState(false);
   const [localError, setLocalError] = useState<string>();
   /** Row indices that failed the pre-save chain id RPC check (red borders). */
   const [failedRpcRowIndices, setFailedRpcRowIndices] = useState<number[]>([]);
@@ -443,9 +448,10 @@ export const CustomEvmChainForm = ({
       }
 
       const chain: EvmChain = {
+        ...(chainToEdit ?? {}),
         type: ChainType.EVM,
-        isCustom: true,
-        active: true,
+        isCustom: !isDefaultChain,
+        active: chainToEdit?.active ?? true,
         name: name.trim(),
         chainId,
         mainToken: symbol.trim(),
@@ -456,13 +462,18 @@ export const CustomEvmChainForm = ({
           isDefault: i === 0,
         })),
         defaultTransactionType: txType,
-        disableTokensAndHistoryAutoLoading: true,
-        addTokensManually: true,
-        manualDiscoverAvailable: false,
       };
 
       if (explorer.trim()) {
         chain.blockExplorer = { url: explorer.trim() };
+      } else {
+        delete chain.blockExplorer;
+      }
+
+      if (!isDefaultChain) {
+        chain.disableTokensAndHistoryAutoLoading = true;
+        chain.addTokensManually = true;
+        chain.manualDiscoverAvailable = false;
       }
 
       await onSubmit(chain);
@@ -479,6 +490,19 @@ export const CustomEvmChainForm = ({
       }
     } finally {
       setSaving(false);
+    }
+  };
+
+  const resetToDefault = async () => {
+    if (!onResetToDefault) return;
+    clearError();
+    setResetting(true);
+    try {
+      await onResetToDefault();
+    } catch {
+      reportError('evm_custom_chains_error_generic');
+    } finally {
+      setResetting(false);
     }
   };
 
@@ -504,44 +528,6 @@ export const CustomEvmChainForm = ({
         disabled={isChainIdDisabled}
         dataTestId="custom-evm-chain-id"
       />
-      {/* {!isEdit && (chainListLookupLoading || chainListMatch) && (
-        <div
-          className="add-custom-evm-chain-form__chainlist-hint"
-          aria-busy={chainListLookupLoading || chainListPreloadLoading}>
-          <div className="add-custom-evm-chain-form__chainlist-hint-main">
-            {chainListMatch ? (
-              <>
-                <span className="add-custom-evm-chain-form__chainlist-hint-text">
-                  {I18nUtils.getMessage('evm_custom_chains_chainlist_found')}
-                </span>{' '}
-                <button
-                  type="button"
-                  className="add-custom-evm-chain-form__chainlist-preload"
-                  onClick={applyChainListPreload}
-                  disabled={saving || chainListPreloadLoading}
-                  data-testid="custom-evm-chain-chainlist-preload">
-                  {I18nUtils.getMessage(
-                    'evm_custom_chains_chainlist_preload_link',
-                  )}
-                </button>
-              </>
-            ) : (
-              <span className="add-custom-evm-chain-form__chainlist-hint-text">
-                {I18nUtils.getMessage(
-                  'evm_custom_chains_chainlist_looking_up',
-                )}
-              </span>
-            )}
-          </div>
-          {(chainListLookupLoading || chainListPreloadLoading) && (
-            <div
-              className="add-custom-evm-chain-form__chainlist-hint-spinner"
-              aria-hidden={true}
-              data-testid="custom-evm-chain-chainlist-hint-spinner"
-            />
-          )}
-        </div>
-      )} */}
       <InputComponent
         type={InputType.TEXT}
         label="evm_custom_chains_field_name"
@@ -680,16 +666,18 @@ export const CustomEvmChainForm = ({
             </div>
           ))}
       </div>
-      <CheckboxComponent
-        title="evm_custom_chains_field_testnet"
-        checked={testnet}
-        onChange={(v) => {
-          clearError();
-          setTestnet(v);
-        }}
-        dataTestId="custom-evm-chain-testnet"
-      />
-      {(isEdit || !addTxTypeHidden) && (
+      {!isDefaultChain && (
+        <CheckboxComponent
+          title="evm_custom_chains_field_testnet"
+          checked={testnet}
+          onChange={(v) => {
+            clearError();
+            setTestnet(v);
+          }}
+          dataTestId="custom-evm-chain-testnet"
+        />
+      )}
+      {!isDefaultChain && (isEdit || !addTxTypeHidden) && (
         <ComplexeCustomSelect
           label="evm_custom_chains_field_default_tx_type"
           options={txTypeOptions}
@@ -706,19 +694,31 @@ export const CustomEvmChainForm = ({
         />
       )}
       <div className="add-custom-evm-chain-form__actions">
-        <ButtonComponent
-          label="popup_html_button_label_cancel"
-          type={ButtonType.ALTERNATIVE}
-          onClick={onCancel}
-          disabled={saving}
-        />
+        {isDefaultChain && chainToEdit?.isDefaultOverride && (
+          <ButtonComponent
+            label="evm_custom_chains_reset_default"
+            type={ButtonType.ALTERNATIVE}
+            onClick={() => resetToDefault()}
+            disabled={saving || resetting}
+            dataTestId="custom-evm-chain-reset-default"
+            additionalClass="add-custom-evm-chain-form__reset-default-button"
+          />
+        )}
+        {!isDefaultChain && (
+          <ButtonComponent
+            label="popup_html_button_label_cancel"
+            type={ButtonType.ALTERNATIVE}
+            onClick={onCancel}
+            disabled={saving || resetting}
+          />
+        )}
         <ButtonComponent
           label={
             submitLabel ??
             (isEdit ? 'evm_custom_chains_update' : 'evm_custom_chains_save')
           }
           onClick={() => submit()}
-          disabled={saving}
+          disabled={saving || resetting}
           dataTestId="custom-evm-chain-submit"
         />
       </div>

@@ -100,4 +100,45 @@ describe('CustomEvmChainForm', () => {
       (screen.getByTestId('custom-evm-chain-id') as HTMLInputElement).disabled,
     ).toBe(true);
   });
+
+  it('submits a supported chain override without custom-chain flags', async () => {
+    const onSubmit = jest.fn().mockResolvedValue(undefined);
+
+    render(
+      <CustomEvmChainForm
+        onCancel={jest.fn()}
+        onSubmit={onSubmit}
+        isDefaultChain
+        chainToEdit={{
+          type: ChainType.EVM,
+          chainId: '0x1',
+          name: 'Ethereum',
+          mainToken: 'ETH',
+          defaultTransactionType: EvmTransactionType.EIP_1559,
+          rpcs: [{ url: 'https://rpc.ethereum.org', isDefault: true }],
+          testnet: false,
+          isCustom: false,
+        }}
+      />,
+    );
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('custom-evm-chain-submit'));
+    });
+
+    const submittedChain = onSubmit.mock.calls[0][0];
+    expect(submittedChain).toEqual(
+      expect.objectContaining({
+        chainId: '0x1',
+        isCustom: false,
+      }),
+    );
+    expect(submittedChain.disableTokensAndHistoryAutoLoading).toBeUndefined();
+    expect(submittedChain.addTokensManually).toBeUndefined();
+    expect(submittedChain.manualDiscoverAvailable).toBeUndefined();
+    expect(screen.queryByTestId('custom-evm-chain-testnet')).toBeNull();
+    expect(
+      screen.queryByText('evm_custom_chains_field_default_tx_type'),
+    ).toBeNull();
+  });
 });

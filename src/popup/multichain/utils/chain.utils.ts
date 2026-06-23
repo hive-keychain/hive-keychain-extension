@@ -72,11 +72,46 @@ const setDefaultChains = (chains: Chain[]) => {
   defaultChains = chains;
 };
 
-const getDefaultChains = async (): Promise<Chain[]> => {
+const getBaseDefaultChains = async (): Promise<Chain[]> => {
   if (!defaultChains) {
-    return initChains();
+    return initBaseChains();
   }
   return defaultChains;
+};
+
+const getStoredEvmChains = async (): Promise<EvmChain[]> => {
+  const stored = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.CUSTOM_CHAINS,
+  );
+  if (!Array.isArray(stored)) return [];
+  return stored.filter(isStoredEvmChain);
+};
+
+const getDefaultChainIdSet = (chains: Chain[]): Set<string> => {
+  return new Set(chains.map((chain) => chain.chainId.toLowerCase()));
+};
+
+const getDefaultChains = async (): Promise<Chain[]> => {
+  const chains = await getBaseDefaultChains();
+  const defaultChainIds = getDefaultChainIdSet(chains);
+  const overrides = (await getStoredEvmChains()).filter((chain) =>
+    defaultChainIds.has(chain.chainId.toLowerCase()),
+  );
+  if (overrides.length === 0) return chains;
+
+  const overrideByChainId = new Map(
+    overrides.map((chain) => [chain.chainId.toLowerCase(), chain]),
+  );
+
+  return chains.map((chain) => {
+    const override = overrideByChainId.get(chain.chainId.toLowerCase());
+    if (!override) return chain;
+    return {
+      ...override,
+      isCustom: false,
+      isDefaultOverride: true,
+    };
+  });
 };
 
 const getAllSetupChainsForType = async <T>(type: ChainType): Promise<T[]> => {
@@ -240,12 +275,10 @@ const isStoredEvmChain = (c: unknown): c is EvmChain => {
 };
 
 const getCustomChains = async (): Promise<EvmChain[]> => {
-  const stored = await LocalStorageUtils.getValueFromLocalStorage(
-    LocalStorageKeyEnum.CUSTOM_CHAINS,
-  );
-  if (!Array.isArray(stored)) return [];
-  return stored
-    .filter(isStoredEvmChain)
+  const defaults = await getBaseDefaultChains();
+  const defaultChainIds = getDefaultChainIdSet(defaults);
+  return (await getStoredEvmChains())
+    .filter((chain) => !defaultChainIds.has(chain.chainId.toLowerCase()))
     .map((c) => ({ ...c, isCustom: true }) as EvmChain);
 };
 
@@ -277,7 +310,7 @@ const addCustomChain = async (chain: EvmChain): Promise<void> => {
   if (custom.some((c) => c.chainId.toLowerCase() === normalizedId)) {
     throw new Error('duplicate_custom_chain');
   }
-  const defaults = await getDefaultChains();
+  const defaults = await getBaseDefaultChains();
   if (defaults.some((c) => c.chainId.toLowerCase() === normalizedId)) {
     throw new Error('chain_exists_in_defaults');
   }
@@ -642,7 +675,7 @@ const updateCustomChain = async (
     ) {
       throw new Error('duplicate_custom_chain');
     }
-    const defaults = await getDefaultChains();
+    const defaults = await getBaseDefaultChains();
     if (defaults.some((c) => c.chainId.toLowerCase() === normalizedNew)) {
       throw new Error('chain_exists_in_defaults');
     }
@@ -664,7 +697,64 @@ const updateCustomChain = async (
   );
 };
 
-const initChains = async (): Promise<Chain[]> => {
+const updateDefaultChainOverride = async (
+  originalChainId: string,
+  chain: EvmChain,
+): Promise<void> => {
+  const defaults = await getBaseDefaultChains();
+  const normalizedOrig = originalChainId.toLowerCase();
+  const matchingDefault = defaults.find(
+    (defaultChain) => defaultChain.chainId.toLowerCase() === normalizedOrig,
+  );
+  if (!matchingDefault) {
+    throw new Error('default_chain_not_found');
+  }
+  if (chain.chainId.toLowerCase() !== normalizedOrig) {
+    throw new Error('default_chain_id_cannot_change');
+  }
+
+  const stored = await getStoredEvmChains();
+  const idx = stored.findIndex(
+    (storedChain) => storedChain.chainId.toLowerCase() === normalizedOrig,
+  );
+  const override: EvmChain = {
+    ...chain,
+    isCustom: false,
+    isDefaultOverride: true,
+  };
+  const next = [...stored];
+  if (idx >= 0) {
+    next[idx] = override;
+  } else {
+    next.push(override);
+  }
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.CUSTOM_CHAINS,
+    next,
+  );
+};
+
+const resetDefaultChainOverride = async (chainId: string): Promise<void> => {
+  const defaults = await getBaseDefaultChains();
+  const normalized = chainId.toLowerCase();
+  const matchingDefault = defaults.find(
+    (defaultChain) => defaultChain.chainId.toLowerCase() === normalized,
+  );
+  if (!matchingDefault) {
+    throw new Error('default_chain_not_found');
+  }
+
+  const stored = await getStoredEvmChains();
+  const next = stored.filter(
+    (storedChain) => storedChain.chainId.toLowerCase() !== normalized,
+  );
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.CUSTOM_CHAINS,
+    next,
+  );
+};
+
+const initBaseChains = async (): Promise<Chain[]> => {
   if (defaultChains) return defaultChains;
   if (defaultChainsPromise) return defaultChainsPromise;
 
@@ -718,6 +808,10 @@ const initChains = async (): Promise<Chain[]> => {
   }
 };
 
+const initChains = async (): Promise<Chain[]> => {
+  return getDefaultChains();
+};
+
 export const ChainUtils = {
   getDefaultChains,
   getSetupChains,
@@ -730,6 +824,8 @@ export const ChainUtils = {
   addCustomChain,
   updateCustomChain,
   removeCustomChain,
+  updateDefaultChainOverride,
+  resetDefaultChainOverride,
   getChain,
   setPreviousChain,
   getPreviousChain,

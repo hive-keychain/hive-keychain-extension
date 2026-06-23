@@ -105,7 +105,18 @@ export function CustomSelectItemComponent<T extends OptionItem>({
             {item.img && EnumUtils.isValueOf(item.img, SVGIcons) && (
               <SVGIcon className="left-svg" icon={item.img as SVGIcons} />
             )}
-            {item.img && !EnumUtils.isValueOf(item.img, SVGIcons) && (
+            {item.img &&
+              item.imgChainName &&
+              !EnumUtils.isValueOf(item.img, SVGIcons) && (
+                <ChainLogo
+                  className="left-image"
+                  logoUri={item.img}
+                  chainName={item.imgChainName}
+                />
+              )}
+            {item.img &&
+              !item.imgChainName &&
+              !EnumUtils.isValueOf(item.img, SVGIcons) && (
               <img className="left-image" src={item.img} />
             )}
             {!item.img && generateImageIfNull && item.label && (

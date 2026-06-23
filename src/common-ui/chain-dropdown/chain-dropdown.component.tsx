@@ -46,6 +46,7 @@ const ChainDropdown = ({
           label: c.name,
           value: c,
           img: c.logo,
+          imgChainName: c.name,
           imgChip: c.testnet ? SVGIcons.EVM_CHAIN_TESTNET : undefined,
         };
       });
@@ -102,6 +103,7 @@ const ChainDropdown = ({
             label: chain.name,
             value: chain,
             img: chain.logo,
+            imgChainName: chain.name,
             imgChip: chain.testnet ? SVGIcons.EVM_CHAIN_TESTNET : undefined,
           }}
           setSelectedItem={(item) => selectChain(item.value)}

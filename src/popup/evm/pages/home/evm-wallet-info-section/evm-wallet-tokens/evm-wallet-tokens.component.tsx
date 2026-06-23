@@ -49,6 +49,23 @@ const EvmWalletTokensInner = ({
   }>({ ready: false, showCard: false });
   const isMountedRef = useRef(false);
 
+  const getTokenWithChainMainTokenInfo = (
+    token: NativeAndErc20Token,
+  ): NativeAndErc20Token => {
+    if (token.tokenInfo.type !== EVMSmartContractType.NATIVE) {
+      return token;
+    }
+    return {
+      ...token,
+      tokenInfo: {
+        ...token.tokenInfo,
+        name: chain.name,
+        symbol: chain.mainToken,
+        logo: chain.logo ?? token.tokenInfo.logo,
+      },
+    };
+  };
+
   useEffect(() => {
     isMountedRef.current = true;
 
@@ -65,7 +82,9 @@ const EvmWalletTokensInner = ({
         (await EvmTokensUtils.filterTokensBasedOnSettings(
           activeAccount.nativeAndErc20Tokens.value,
         )) as NativeAndErc20Token[];
-      const sortedTokens = EvmTokensUtils.sortTokens(tokens);
+      const sortedTokens = EvmTokensUtils.sortTokens(
+        tokens.map(getTokenWithChainMainTokenInfo),
+      );
       if (!cancelled) {
         setFilteredTokens(sortedTokens);
       }
@@ -76,7 +95,7 @@ const EvmWalletTokensInner = ({
     return () => {
       cancelled = true;
     };
-  }, [activeAccount.nativeAndErc20Tokens]);
+  }, [activeAccount.nativeAndErc20Tokens, chain]);
 
   useEffect(() => {
     const q = tokenFilter.trim().toLowerCase();

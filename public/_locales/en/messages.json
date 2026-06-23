@@ -5943,9 +5943,17 @@
     "message": "Edit custom chain",
     "description": "Modal title for editing a custom chain"
   },
+  "evm_custom_chains_modal_title_edit_default": {
+    "message": "Edit supported chain",
+    "description": "Modal title for editing a supported default EVM chain"
+  },
   "evm_custom_chains_update": {
     "message": "Save changes",
     "description": "Save button when editing custom chain"
+  },
+  "evm_custom_chains_reset_default": {
+    "message": "Reset to default",
+    "description": "Button label to reset a supported EVM chain override"
   },
   "evm_custom_chains_error_not_found": {
     "message": "This custom chain could not be found. Try refreshing the list.",

@@ -26,6 +26,8 @@ export interface OptionItem {
   subLabel?: string;
   subLabelHover?: string;
   img?: string;
+  /** When set, `img` uses the shared chain logo fallback if the URL is empty or fails to load. */
+  imgChainName?: string;
   imgChip?: SVGIcons | string;
   /** When `imgChip` is a chain logo URL, used for initials if the URL is empty or fails to load. */
   imgChipChainName?: string;
@@ -105,6 +107,16 @@ export function ComplexeCustomSelect<T extends OptionItem>(
                 />
               )}
             {itemProps.selectedItem.img &&
+              itemProps.selectedItem.imgChainName &&
+              !EnumUtils.isValueOf(itemProps.selectedItem.img, SVGIcons) && (
+                <ChainLogo
+                  className="left-image"
+                  logoUri={itemProps.selectedItem.img}
+                  chainName={itemProps.selectedItem.imgChainName}
+                />
+              )}
+            {itemProps.selectedItem.img &&
+              !itemProps.selectedItem.imgChainName &&
               !EnumUtils.isValueOf(itemProps.selectedItem.img, SVGIcons) && (
                 <PreloadedImage
                   className="left-image"

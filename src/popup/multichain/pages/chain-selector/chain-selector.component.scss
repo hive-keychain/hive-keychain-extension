@@ -184,6 +184,11 @@
           right: 8px;
         }
 
+        .chain-card__default-check-icon {
+          left: 8px;
+          right: auto;
+        }
+
         &.chain-card--custom {
           @media (hover: hover) and (pointer: fine) {
             .custom-chain-delete-icon {

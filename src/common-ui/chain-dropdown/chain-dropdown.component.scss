@@ -10,6 +10,7 @@
 
   .react-dropdown-select-dropdown {
     top: calc(100% + 4px) !important;
+    max-height: 300px !important;
     right: 0;
     left: unset;
     width: max-content;
