@@ -354,6 +354,57 @@ const UnlockedApp = ({
       return;
     }
 
+    const refreshEvmAccountsFromStorage = async () => {
+      EvmWalletUtils.invalidateRebuildAccountsCache();
+      const rebuiltAccounts =
+        await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+      setEvmAccounts(rebuiltAccounts);
+
+      const currentChain = store.getState().chain as Chain;
+      if (currentChain?.type !== ChainType.EVM || !rebuiltAccounts[0]) {
+        return;
+      }
+
+      const activeWalletAddress = store
+        .getState()
+        .evm.activeAccount.wallet?.address?.toLowerCase();
+      const hasActiveWallet =
+        !!activeWalletAddress &&
+        rebuiltAccounts.some(
+          (account) =>
+            account.wallet.address.toLowerCase() === activeWalletAddress,
+        );
+      if (!hasActiveWallet) {
+        await loadEvmActiveAccount(
+          currentChain as EvmChain,
+          rebuiltAccounts[0].wallet,
+        );
+      }
+    };
+
+    const onEvmAccountsStorageChange = (
+      changes: { [key: string]: chrome.storage.StorageChange },
+      areaName: string,
+    ) => {
+      if (areaName !== 'local' || !changes[LocalStorageKeyEnum.EVM_ACCOUNTS]) {
+        return;
+      }
+
+      void refreshEvmAccountsFromStorage();
+    };
+
+    chrome.storage.onChanged.addListener(onEvmAccountsStorageChange);
+
+    return () => {
+      chrome.storage.onChanged.removeListener(onEvmAccountsStorageChange);
+    };
+  }, [isAppReady, loadEvmActiveAccount, mk, setEvmAccounts, store]);
+
+  useEffect(() => {
+    if (!isAppReady || !mk) {
+      return;
+    }
+
     void ensurePaidAccountCreationPolling();
 
     const onPendingAccountCreationStorageChange = (

@@ -143,6 +143,7 @@ jest.mock('@popup/evm/utils/wallet.utils', () => ({
   EvmWalletUtils: {
     getConnectedWallets: jest.fn(),
     rebuildAccountsFromLocalStorage: jest.fn(),
+    invalidateRebuildAccountsCache: jest.fn(),
   },
 }));
 
@@ -272,6 +273,7 @@ describe('UnlockedAppComponent', () => {
     (EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
       defaultEvmAccounts(),
     );
+    (EvmWalletUtils.invalidateRebuildAccountsCache as jest.Mock).mockClear();
     jest
       .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
       .mockImplementation(async (key) => {
@@ -322,6 +324,78 @@ describe('UnlockedAppComponent', () => {
     expect(store.getState().navigation.stack[0]).toMatchObject({
       currentPage: HiveScreen.SETTINGS_MANAGE_ACCOUNTS,
       params: { username: localAccounts.user2.name },
+    });
+  });
+
+  it('refreshes EVM accounts when EVM account storage changes', async () => {
+    const updatedEvmAccounts = [
+      ...defaultEvmAccounts(),
+      {
+        id: 1,
+        path: `m/44'/60'/0'/0/1`,
+        seedId: 1,
+        seedNickname: 'Main seed',
+        wallet: { address: '0x2222222222222222222222222222222222222222' },
+        source: 'seed',
+      },
+    ];
+    const storageChangeListeners: ((
+      changes: { [key: string]: chrome.storage.StorageChange },
+      areaName: string,
+    ) => void)[] = [];
+    jest
+      .spyOn(chrome.storage.onChanged, 'addListener')
+      .mockImplementation((listener) => {
+        storageChangeListeners.push(listener);
+      });
+
+    const { store } = customRender(<UnlockedAppComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk: mkData.user.one,
+        chain: evmChain,
+        navigation: {
+          stack: [
+            {
+              currentPage: HiveScreen.SETTINGS_MANAGE_ACCOUNTS,
+              params: { username: localAccounts.user2.name },
+            },
+          ],
+        },
+        hive: {
+          ...initialEmptyStateStore.hive,
+          appStatus: {
+            ...initialEmptyStateStore.hive.appStatus,
+            priceLoaded: true,
+            globalPropertiesLoaded: true,
+          },
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(store.getState().evm.accounts).toHaveLength(1);
+    });
+
+    (EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      updatedEvmAccounts,
+    );
+
+    storageChangeListeners.forEach((listener) => {
+      listener(
+        {
+          [LocalStorageKeyEnum.EVM_ACCOUNTS]: {
+            oldValue: 'old-encrypted-accounts',
+            newValue: 'new-encrypted-accounts',
+          },
+        },
+        'local',
+      );
+    });
+
+    await waitFor(() => {
+      expect(EvmWalletUtils.invalidateRebuildAccountsCache).toHaveBeenCalled();
+      expect(store.getState().evm.accounts).toEqual(updatedEvmAccounts);
     });
   });
 
