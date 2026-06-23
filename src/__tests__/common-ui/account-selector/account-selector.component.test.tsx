@@ -479,7 +479,7 @@ describe('AccountSelectorComponent', () => {
     window.requestAnimationFrame = originalRequestAnimationFrame;
   });
 
-  it('navigates to the combined add account page when clicking the add account button', async () => {
+  it('navigates to the combined add account page without changing EVM chain context', async () => {
     const { store } = customRender(
       <AccountSelectorComponent selectedAccountType={ChainType.EVM} />,
       {
@@ -495,10 +495,13 @@ describe('AccountSelectorComponent', () => {
     await userEvent.click(screen.getByTestId('account-selector-create-button'));
 
     await waitFor(() => {
-      expect(store.getState().chain.type).toBe(ChainType.HIVE);
+      expect(store.getState().chain.type).toBe(ChainType.EVM);
       expect(store.getState().navigation.stack[0].currentPage).toBe(
         Screen.SETTINGS_ADD_ACCOUNT,
       );
+    });
+    expect(store.getState().navigation.stack[0].params).toEqual({
+      selectedAccountType: ChainType.EVM,
     });
     expect(
       screen.queryByTestId('account-selector-backdrop'),

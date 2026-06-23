@@ -790,11 +790,14 @@ const AccountSelector = ({
   const handleAddAccountClick = async () => {
     setIsOpened(false);
 
-    const targetChain = await resolveHiveChain();
+    const targetChain =
+      selectedAccountType === ChainType.EVM
+        ? await resolveEvmTargetChain(chain)
+        : await resolveHiveChain();
     if (targetChain && !isSameChain(chain, targetChain)) {
       await setChain(targetChain);
     }
-    navigateToWithParams(Screen.SETTINGS_ADD_ACCOUNT, {});
+    navigateToWithParams(Screen.SETTINGS_ADD_ACCOUNT, { selectedAccountType });
   };
 
   const handleExportAccountsClick = async () => {
