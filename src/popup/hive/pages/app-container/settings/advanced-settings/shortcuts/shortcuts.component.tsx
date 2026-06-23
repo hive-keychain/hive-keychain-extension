@@ -499,10 +499,10 @@ const Shortcuts = ({
           return;
         }
         const chain = selectedTransferChain as EvmChain;
-        const wallet = await EvmActiveAccountUtils.getSavedActiveAccountWallet(
-          chain,
-          evmLocalAccounts,
-        );
+        const wallet =
+          await EvmActiveAccountUtils.getSavedActiveAccountWallet(
+            evmLocalAccounts,
+          );
         let tokenInfos: NativeAndErc20Token['tokenInfo'][];
         if (chain.isCustom === true) {
           tokenInfos = [EvmTokensUtils.buildFallbackNativeTokenInfo(chain)];

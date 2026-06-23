@@ -86,7 +86,7 @@ const EvmAccounts = ({
     const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
     setEvmAccounts(accounts);
     const newActiveAccount =
-      await EvmActiveAccountUtils.getSavedActiveAccountWallet(chain, accounts);
+      await EvmActiveAccountUtils.getSavedActiveAccountWallet(accounts);
     loadEvmActiveAccount(chain, newActiveAccount);
   };
 

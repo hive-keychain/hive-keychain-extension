@@ -232,10 +232,8 @@ const Home = ({
 
   const loadActiveAccount = async () => {
     if (chain) {
-      const wallet = await EvmActiveAccountUtils.getSavedActiveAccountWallet(
-        chain,
-        accounts,
-      );
+      const wallet =
+        await EvmActiveAccountUtils.getSavedActiveAccountWallet(accounts);
       loadEvmActiveAccount(chain, wallet);
       // getPendingTransactions();
     }

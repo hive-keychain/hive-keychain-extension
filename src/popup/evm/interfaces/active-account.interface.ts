@@ -55,6 +55,4 @@ export interface EvmErc1155Token {
   collection: EvmErc1155TokenCollectionItem[];
 }
 
-export interface EvmSavedActiveAccounts {
-  [chainId: string]: string;
-}
+export type EvmSavedActiveAccount = string;

@@ -314,6 +314,10 @@ const UnlockedApp = ({
     ) {
       return;
     }
+    if (activeEvmAccount.wallet?.address) {
+      void loadEvmActiveAccount(chain as EvmChain, activeEvmAccount.wallet);
+      return;
+    }
     void initActiveEvmAccount(evmAccounts, chain as EvmChain);
   }, [chain?.chainId]);
 
@@ -655,10 +659,8 @@ const UnlockedApp = ({
     evmChain: EvmChain,
   ) => {
     try {
-      const wallet = await EvmActiveAccountUtils.getSavedActiveAccountWallet(
-        evmChain,
-        accounts,
-      );
+      const wallet =
+        await EvmActiveAccountUtils.getSavedActiveAccountWallet(accounts);
       await loadEvmActiveAccount(evmChain, wallet);
     } catch (err) {
       Logger.log(err);
