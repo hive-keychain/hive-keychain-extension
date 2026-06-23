@@ -8,9 +8,11 @@ import {
   ChainType,
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
+import { syncProviderChainForActiveTab } from '@popup/multichain/utils/provider-chain-bootstrap.utils';
 
 interface SetChainOptions {
   saveLastUsedChain?: boolean;
+  syncProviderNetwork?: boolean;
 }
 
 export const resetChain = (): AppThunk => async (dispatch, getState) => {
@@ -29,6 +31,9 @@ export const setChain =
         await EvmRpcUtils.getActiveRpc(chain as EvmChain),
         chain as EvmChain,
       );
+      if (options.syncProviderNetwork === true) {
+        await syncProviderChainForActiveTab(chain as EvmChain);
+      }
     }
     dispatch({ type: EvmActionType.RESET_APP_STATUS });
     dispatch({ type: MultichainActionType.SET_CHAIN, payload: chain });

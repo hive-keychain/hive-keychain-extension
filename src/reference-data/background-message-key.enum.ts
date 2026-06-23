@@ -33,6 +33,7 @@ export enum BackgroundCommand {
   REJECT_EVM_TRANSACTION = 'rejectEvmTransaction',
   GET_CHAIN_FROM_PROVIDER = 'getChainFromProvider',
   SEND_BACK_CHAIN_FROM_PROVIDER = 'sendBackChainFromProvider',
+  SET_EVM_PROVIDER_CHAIN = 'setEvmProviderChain',
   WAIT_FOR_EVM_TRANSACTION_CONFIRMATION = 'waitForEvmTransactionConfirmation',
   EVM_TRANSACTION_RESOLVED = 'evmTransactionResolved',
   EVM_WALLET_LOCK_STATE_CHANGED = 'evmWalletLockStateChanged',

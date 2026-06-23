@@ -493,7 +493,7 @@ const AccountSelector = ({
       targetChain.chainId,
     );
     if (!isSameChain(chain, targetChain)) {
-      await setChain(targetChain);
+      await setChain(targetChain, { syncProviderNetwork: true });
     }
     await EvmWalletUtils.promoteConnectedWalletAddress(walletAddress);
     loadEvmActiveAccount(targetChain, item.account.wallet);

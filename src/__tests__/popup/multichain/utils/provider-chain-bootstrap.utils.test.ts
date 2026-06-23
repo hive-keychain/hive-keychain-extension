@@ -6,6 +6,12 @@ jest.mock('src/utils/communication.utils', () => ({
   },
 }));
 
+jest.mock('@popup/evm/utils/wallet.utils', () => ({
+  EvmWalletUtils: {
+    getConnectedWallets: jest.fn(),
+  },
+}));
+
 jest.mock('@popup/multichain/utils/chain.utils', () => ({
   ChainUtils: {
     getChain: jest.fn(),
@@ -18,6 +24,7 @@ const loadTestContext = async () => {
   );
   const { CommunicationUtils } = await import('src/utils/communication.utils');
   const { ChainUtils } = await import('@popup/multichain/utils/chain.utils');
+  const { EvmWalletUtils } = await import('@popup/evm/utils/wallet.utils');
 
   return {
     ...bootstrapUtils,
@@ -25,6 +32,9 @@ const loadTestContext = async () => {
       runtimeSendMessage: jest.Mock;
     },
     ChainUtils: ChainUtils as { getChain: jest.Mock },
+    EvmWalletUtils: EvmWalletUtils as {
+      getConnectedWallets: jest.Mock;
+    },
   };
 };
 
@@ -235,5 +245,63 @@ describe('provider chain bootstrap', () => {
       rawChainId: '0x1',
     });
     expect(CommunicationUtils.runtimeSendMessage).toHaveBeenCalledTimes(1);
+  });
+
+  it('syncs the active tab provider chain when the active origin has connected wallets', async () => {
+    const { syncProviderChainForActiveTab, CommunicationUtils, EvmWalletUtils } =
+      await loadTestContext();
+    chrome.tabs.query.mockImplementation((_queryInfo, callback) => {
+      callback([
+        {
+          id: 12,
+          url: 'https://example.com/app',
+        },
+      ] as chrome.tabs.Tab[]);
+    });
+    EvmWalletUtils.getConnectedWallets.mockResolvedValue(['0xabc123']);
+
+    await syncProviderChainForActiveTab({
+      chainId: '0x2105',
+      name: 'Base',
+      type: 'EVM',
+      logo: '',
+      rpcs: [],
+    } as any);
+
+    expect(EvmWalletUtils.getConnectedWallets).toHaveBeenCalledWith(
+      'https://example.com',
+    );
+    expect(CommunicationUtils.runtimeSendMessage).toHaveBeenCalledWith({
+      command: BackgroundCommand.SET_EVM_PROVIDER_CHAIN,
+      value: {
+        origin: 'https://example.com',
+        tabId: 12,
+        chainId: '0x2105',
+      },
+    });
+  });
+
+  it('skips provider chain sync when the active origin has no connected wallets', async () => {
+    const { syncProviderChainForActiveTab, CommunicationUtils, EvmWalletUtils } =
+      await loadTestContext();
+    chrome.tabs.query.mockImplementation((_queryInfo, callback) => {
+      callback([
+        {
+          id: 12,
+          url: 'https://example.com/app',
+        },
+      ] as chrome.tabs.Tab[]);
+    });
+    EvmWalletUtils.getConnectedWallets.mockResolvedValue([]);
+
+    await syncProviderChainForActiveTab({
+      chainId: '0x2105',
+      name: 'Base',
+      type: 'EVM',
+      logo: '',
+      rpcs: [],
+    } as any);
+
+    expect(CommunicationUtils.runtimeSendMessage).not.toHaveBeenCalled();
   });
 });

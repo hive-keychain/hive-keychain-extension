@@ -91,7 +91,9 @@ export const evmRequestWithoutConfirmation = async (
     }
     case EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN: {
       const requestedChainId = (request.params[0] as { chainId: string }).chainId;
-      await setChainIdForOrigin(dappInfo.origin, requestedChainId);
+      await setChainIdForOrigin(dappInfo.origin, requestedChainId, {
+        tabId: tab,
+      });
       message.value.result = null;
       break;
     }

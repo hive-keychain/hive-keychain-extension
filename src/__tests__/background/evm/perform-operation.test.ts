@@ -235,6 +235,7 @@ describe('performEvmOperation', () => {
     expect(setChainIdForOriginMock).toHaveBeenCalledWith(
       'https://example.com',
       '0x539',
+      { tabId: 4 },
     );
     expect(tabsSendMessageMock).toHaveBeenCalledWith(4, {
       command: BackgroundCommand.SEND_EVM_RESPONSE,

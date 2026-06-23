@@ -113,7 +113,7 @@ export const performEvmOperation = async (
           throw new Error('Missing chainId');
         }
         await addWhitelistedChainForOrigin(origin, requestedChainId);
-        await setChainIdForOrigin(origin, requestedChainId);
+        await setChainIdForOrigin(origin, requestedChainId, { tabId: tab });
         result = null;
         break;
       }

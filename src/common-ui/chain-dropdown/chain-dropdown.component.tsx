@@ -72,7 +72,7 @@ const ChainDropdown = ({
         false,
       );
     }
-    setChain(chain);
+    setChain(chain, { syncProviderNetwork: true });
   };
 
   const getChainIdsFromOptions = (optionItems: OptionItem[]) => {

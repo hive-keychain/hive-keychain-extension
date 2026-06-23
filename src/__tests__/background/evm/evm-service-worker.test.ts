@@ -8,7 +8,9 @@ const initEvmRequestHandlerMock = jest.fn();
 const getFromLocalStorageMock = jest.fn();
 const performEvmOperationMock = jest.fn();
 const setAccountsForOriginMock = jest.fn();
+const setChainIdForOriginMock = jest.fn();
 const addWhitelistedChainForOriginMock = jest.fn();
+const getAccountsForOriginMock = jest.fn();
 const getChainIdForOriginMock = jest.fn();
 const persistEvmDappLogoForDomainMock = jest.fn();
 const tabsSendMessageMock = jest.fn();
@@ -41,7 +43,9 @@ jest.mock('@background/evm/evm-provider-state.utils', () => ({
   addWhitelistedChainForOrigin: (...args: any[]) =>
     addWhitelistedChainForOriginMock(...args),
   getChainIdForOrigin: (...args: any[]) => getChainIdForOriginMock(...args),
+  getAccountsForOrigin: (...args: any[]) => getAccountsForOriginMock(...args),
   setAccountsForOrigin: (...args: any[]) => setAccountsForOriginMock(...args),
+  setChainIdForOrigin: (...args: any[]) => setChainIdForOriginMock(...args),
   persistEvmDappLogoForDomain: (...args: any[]) =>
     persistEvmDappLogoForDomainMock(...args),
 }));
@@ -64,6 +68,12 @@ jest.mock('@popup/evm/utils/evm-rpc.utils', () => ({
   },
 }));
 
+jest.mock('@popup/evm/utils/evm-chain.utils', () => ({
+  EvmChainUtils: {
+    getLastEvmChainIdForOrigin: jest.fn(),
+  },
+}));
+
 describe('evm service worker', () => {
   beforeEach(() => {
     jest.resetModules();
@@ -71,6 +81,8 @@ describe('evm service worker', () => {
     initEvmRequestHandlerMock.mockResolvedValue(undefined);
     performEvmOperationMock.mockResolvedValue(undefined);
     setAccountsForOriginMock.mockResolvedValue([]);
+    setChainIdForOriginMock.mockResolvedValue('0x2105');
+    getAccountsForOriginMock.mockResolvedValue([]);
     addWhitelistedChainForOriginMock.mockResolvedValue(['0x1']);
     getChainIdForOriginMock.mockResolvedValue('0x1');
     persistEvmDappLogoForDomainMock.mockResolvedValue(undefined);
@@ -148,6 +160,74 @@ describe('evm service worker', () => {
       dappInfo,
       requestHandler,
     );
+  });
+
+  it('sets provider chain for manual popup sync requests', async () => {
+    const listener = await importListener();
+
+    await listener(
+      {
+        command: BackgroundCommand.SET_EVM_PROVIDER_CHAIN,
+        value: {
+          origin: 'https://example.app',
+          tabId: 12,
+          chainId: '0x2105',
+        },
+      } as any,
+      {} as any,
+      jest.fn(),
+    );
+
+    expect(setChainIdForOriginMock).toHaveBeenCalledWith(
+      'https://example.app',
+      '0x2105',
+      { tabId: 12 },
+    );
+  });
+
+  it('initializes provider state for the sender document origin', async () => {
+    const { EvmChainUtils } = await import('@popup/evm/utils/evm-chain.utils');
+    (EvmChainUtils.getLastEvmChainIdForOrigin as jest.Mock).mockResolvedValue(
+      '0x539',
+    );
+    getAccountsForOriginMock.mockResolvedValue(['0xabc123']);
+    const listener = await importListener();
+
+    await listener(
+      {
+        command: BackgroundCommand.SEND_EVM_INITIALIZE_PROVIDER_REQUEST,
+      } as any,
+      {
+        origin: 'https://iframe.example',
+        tab: {
+          id: 12,
+          url: 'https://host.example',
+        },
+      } as any,
+      jest.fn(),
+    );
+
+    expect(EvmChainUtils.getLastEvmChainIdForOrigin).toHaveBeenCalledWith(
+      'https://iframe.example',
+    );
+    expect(getAccountsForOriginMock).toHaveBeenCalledWith(
+      'https://iframe.example',
+    );
+    expect(tabsSendMessageMock).toHaveBeenCalledWith(12, {
+      command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
+      value: {
+        eventType: 'initializeProviderResponse',
+        scope: {
+          kind: 'origin',
+          origin: 'https://iframe.example',
+          tabId: 12,
+        },
+        args: {
+          chainId: '0x539',
+          accounts: ['0xabc123'],
+        },
+      },
+    });
   });
 
   it('awaits cleanup after forwarding a connect request response', async () => {

@@ -32,13 +32,20 @@ const routeOriginScopedEvent = async (
 ): Promise<void> => {
   await new Promise<void>((resolve) => {
     chrome.tabs.query({}, async (tabs) => {
-      const matchingTabs = tabs.filter((tab) => {
-        return tab.id && getOriginFromUrl(tab.url) === event.scope.origin;
-      });
+      const matchingTabIds = new Set<number>();
+      for (const tab of tabs) {
+        if (tab.id === undefined) continue;
+        if (
+          getOriginFromUrl(tab.url) === event.scope.origin ||
+          tab.id === event.scope.tabId
+        ) {
+          matchingTabIds.add(tab.id);
+        }
+      }
 
       await Promise.all(
-        matchingTabs.map((tab) =>
-          CommunicationUtils.tabsSendMessage(tab.id!, {
+        [...matchingTabIds].map((tabId) =>
+          CommunicationUtils.tabsSendMessage(tabId, {
             command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
             value: event,
           }),
@@ -119,6 +126,7 @@ export const emitChainChangedIfNeeded = async (
   origin: string,
   prev: string | null,
   next: string,
+  options: { tabId?: number } = {},
 ): Promise<string> => {
   const normalizedPrev = normalizeEvmChainId(prev);
   const normalizedNext = normalizeEvmChainId(next);
@@ -131,10 +139,15 @@ export const emitChainChangedIfNeeded = async (
     return normalizedNext;
   }
 
+  const scope: OriginScopedRoutedEvmEvent['scope'] =
+    options.tabId === undefined
+      ? { kind: 'origin', origin }
+      : { kind: 'origin', origin, tabId: options.tabId };
+
   await routeOriginScopedEvent({
     eventType: EvmEventName.CHAIN_CHANGED,
     args: normalizedNext,
-    scope: { kind: 'origin', origin },
+    scope,
   });
   return normalizedNext;
 };
@@ -142,6 +155,7 @@ export const emitChainChangedIfNeeded = async (
 export const setChainIdForOrigin = async (
   origin: string,
   chainId: string,
+  options: { tabId?: number } = {},
 ): Promise<string> => {
   const prevChainId = await getChainIdForOrigin(origin);
   const normalizedChainId = normalizeEvmChainId(chainId);
@@ -151,7 +165,12 @@ export const setChainIdForOrigin = async (
   }
 
   await EvmChainUtils.setChainIdForOrigin(origin, normalizedChainId);
-  return emitChainChangedIfNeeded(origin, prevChainId, normalizedChainId);
+  return emitChainChangedIfNeeded(
+    origin,
+    prevChainId,
+    normalizedChainId,
+    options,
+  );
 };
 
 const getOriginChainWhitelist = async (): Promise<OriginChainWhitelist> => {

@@ -69,13 +69,16 @@ const ChainSelector = ({
         false,
       );
     }
-    setChain(selectedChain);
+    setChain(selectedChain, { syncProviderNetwork: true });
   };
 
   const onCloseClicked = async () => {
     const previousChain = ChainUtils.getPreviousChain();
-    if (previousChain) setChain(previousChain);
-    else if (setupChains.length > 0) setChain(setupChains[0]);
+    if (previousChain) {
+      setChain(previousChain, { syncProviderNetwork: true });
+    } else if (setupChains.length > 0) {
+      setChain(setupChains[0], { syncProviderNetwork: true });
+    }
   };
 
   const searchValue = search.trim().toLowerCase();
@@ -183,10 +186,12 @@ const ChainSelector = ({
     if (isActiveChain) {
       const remainingSetup = await ChainUtils.getSetupChains();
       if (remainingSetup?.length) {
-        setChain(remainingSetup[0]);
+        setChain(remainingSetup[0], { syncProviderNetwork: true });
       } else {
         const previousChain = ChainUtils.getPreviousChain();
-        if (previousChain) setChain(previousChain);
+        if (previousChain) {
+          setChain(previousChain, { syncProviderNetwork: true });
+        }
       }
     }
     await init();
