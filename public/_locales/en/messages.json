@@ -4119,9 +4119,10 @@
   "portfolio_provider_opened": { "message": "Provider page opened in a new tab." },
   "portfolio_execution_error": { "message": "Unable to execute this quote." },
   "portfolio_api_not_configured": { "message": "Portfolio API is not configured." },
-  "portfolio_country_code": { "message": "Country code" },
+  "portfolio_country_code": { "message": "Country" },
   "portfolio_fiat_currency": { "message": "Fiat currency" },
   "portfolio_payment_method": { "message": "Payment method (optional)" },
+  "portfolio_payment_method_none": { "message": "Any payment method" },
   "portfolio_recipient_hive_account": { "message": "Recipient Hive account" },
   "portfolio_recipient_address_invalid": {
     "message": "Enter a valid recipient address for this swap."

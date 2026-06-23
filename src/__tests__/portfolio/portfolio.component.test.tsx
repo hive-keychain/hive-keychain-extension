@@ -24,6 +24,16 @@ jest.mock('src/portfolio/portfolio-api.utils', () => ({
     listAssets: jest.fn().mockResolvedValue([]),
     listHistory: jest.fn().mockResolvedValue([]),
     getQuotes: jest.fn().mockResolvedValue({ quotes: [] }),
+    getFiatRampOptions: jest.fn().mockResolvedValue({
+      fiatCurrencies: ['USD', 'EUR'],
+      paymentMethods: [{ id: 'card', label: 'Credit / Debit Card' }],
+    }),
+    listAvailableAssets: jest.fn().mockResolvedValue({
+      mode: 'buy',
+      direction: 'to',
+      sourceAssetId: null,
+      assets: [],
+    }),
   },
 }));
 
@@ -543,5 +553,62 @@ describe('Portfolio', () => {
     fireEvent.click(getQuotesButton);
 
     expect(PortfolioApiUtils.getQuotes).not.toHaveBeenCalled();
+  });
+
+  it('loads fiat ramp options and available buy assets when opening the buy section', async () => {
+    (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockResolvedValue({
+      mode: 'buy',
+      direction: 'to',
+      sourceAssetId: null,
+      assets: [
+        {
+          assetId: 'evm:native:ethereum',
+          ecosystem: 'evm',
+          symbol: 'ETH',
+          name: 'Ethereum',
+          chainId: 'ethereum',
+          address: null,
+          decimals: 18,
+          isNative: true,
+          familyId: 'eth',
+          logoUrl: null,
+        },
+      ],
+    });
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[]}
+        activeAccountType={ChainType.HIVE}
+        activeEvmAccountAddress={undefined}
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('.portfolio-sidebar')).not.toBeNull();
+    });
+
+    const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
+    fireEvent.click(sidebarButtons[1]);
+
+    await waitFor(() => {
+      expect(PortfolioApiUtils.getFiatRampOptions).toHaveBeenCalledWith({
+        countryCode: 'US',
+        mode: 'buy',
+      });
+      expect(PortfolioApiUtils.listAvailableAssets).toHaveBeenCalledWith({
+        mode: 'buy',
+        direction: 'to',
+      });
+      expect(container.textContent).toContain('🇺🇸');
+      expect(container.textContent).toContain('United States of America');
+      expect(container.textContent).toContain('USD');
+    });
   });
 });
