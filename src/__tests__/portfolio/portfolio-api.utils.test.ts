@@ -105,6 +105,63 @@ describe('PortfolioApiUtils', () => {
     });
   });
 
+  it('parses full quote responses from the portfolio api', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        request: {
+          mode: 'swap',
+          routeType: 'swap',
+          fromAssetId: 'evm:native:ethereum',
+          toAssetId: 'evm:token:ethereum:0xabc',
+          fiatCurrency: null,
+          paymentMethod: null,
+          countryCode: null,
+          sourceChainId: 'ethereum',
+          destinationChainId: null,
+        },
+        quotes: [
+          {
+            quoteId: 'lifi:abc',
+            provider: 'lifi',
+            providerName: 'LI.FI',
+            providerLogoUrl: 'https://example.com/lifi.png',
+            category: 'swap',
+            routeType: 'swap',
+            fromAmount: '1',
+            estimatedToAmount: '3200',
+            comparableValue: '3200',
+            warnings: [],
+            requiresRedirect: false,
+            executionType: 'in_app',
+            routeMetadata: {},
+            transaction: null,
+          },
+        ],
+      }),
+    });
+
+    await expect(
+      PortfolioApiUtils.getQuotes({
+        fromAmount: '1',
+        fromAssetId: 'evm:native:ethereum',
+        toAssetId: 'evm:token:ethereum:0xabc',
+      }),
+    ).resolves.toEqual(
+      expect.objectContaining({
+        request: expect.objectContaining({
+          sourceChainId: 'ethereum',
+        }),
+        quotes: [
+          expect.objectContaining({
+            providerName: 'LI.FI',
+            comparableValue: '3200',
+          }),
+        ],
+      }),
+    );
+  });
+
   it('maps swap amount out of range errors to amount field messages', () => {
     const error = new PortfolioApiError({
       code: 'SWAP_AMOUNT_OUT_OF_RANGE',

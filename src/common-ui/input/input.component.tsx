@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { FieldError } from 'react-hook-form';
 import { AutocompleteBox } from 'src/common-ui/autocomplete/autocomplete-box.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
+import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { FormUtils } from 'src/utils/form.utils';
@@ -12,6 +13,8 @@ import { I18nUtils } from 'src/utils/i18n.utils';
 export interface InputProps {
   value: any;
   logo?: string | SVGIcons;
+  imageLogoUrl?: string;
+  imageLogoAlt?: string;
   logoPosition?: 'left' | 'right';
   label?: string;
   placeholder?: string;
@@ -92,7 +95,9 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
       <div className={`custom-input-content ${props.error ? 'has-error' : ''}`}>
         <div
           className={`input-container ${
-            props.logo ? `has-${props.logoPosition ?? 'left'}-logo` : 'no-logo'
+            props.logo || props.imageLogoUrl
+              ? `has-${props.logoPosition ?? 'left'}-logo`
+              : 'no-logo'
           } ${props.type === InputType.PASSWORD ? 'password-type' : ''} ${
             isFocused ? 'focused' : ''
           } ${
@@ -173,11 +178,20 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
               prefix={props.autocompletePrefix}
             />
           )}
-          {props.logo && (
-            <SVGIcon
-              icon={props.logo as SVGIcons}
+          {props.imageLogoUrl ? (
+            <PreloadedImage
               className={`input-img ${props.logoPosition ?? 'left'}`}
+              src={props.imageLogoUrl}
+              alt={props.imageLogoAlt ?? ''}
+              placeholder="/assets/images/wallet/hive-engine.svg"
             />
+          ) : (
+            props.logo && (
+              <SVGIcon
+                icon={props.logo as SVGIcons}
+                className={`input-img ${props.logoPosition ?? 'left'}`}
+              />
+            )
           )}
         </div>
 

@@ -1,59 +1,69 @@
 import { PortfolioCanonicalAsset } from 'src/portfolio/portfolio-api.interface';
 import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
 
-const hiveAsset: PortfolioCanonicalAsset = {
+const createTestCanonicalAsset = (
+  asset: Pick<
+    PortfolioCanonicalAsset,
+    'assetId' | 'ecosystem' | 'symbol' | 'name'
+  > &
+    Partial<PortfolioCanonicalAsset>,
+): PortfolioCanonicalAsset => ({
+  chainId: null,
+  address: null,
+  decimals: null,
+  isNative: false,
+  familyId: asset.symbol.toLowerCase(),
+  logoUrl: null,
+  ...asset,
+});
+
+const hiveAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
   assetId: 'hive-hive',
   ecosystem: 'hive',
   symbol: 'HIVE',
   name: 'Hive',
-  chainId: null,
-  logoUrl: null,
-};
+});
 
-const hbdAsset: PortfolioCanonicalAsset = {
+const hbdAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
   assetId: 'hive-hbd',
   ecosystem: 'hive',
   symbol: 'HBD',
   name: 'Hive Backed Dollar',
-  chainId: null,
-  logoUrl: null,
-};
+});
 
-const hpAsset: PortfolioCanonicalAsset = {
+const hpAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
   assetId: 'hive-hp',
   ecosystem: 'hive',
   symbol: 'HP',
   name: 'Hive Power',
-  chainId: null,
-  logoUrl: null,
-};
+});
 
-const hiveEngineAsset: PortfolioCanonicalAsset = {
+const hiveEngineAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
   assetId: 'he-dec',
   ecosystem: 'hive_engine',
   symbol: 'DEC',
   name: 'Dark Energy Crystals',
-  chainId: null,
-  logoUrl: null,
-};
+});
 
-const ethAsset: PortfolioCanonicalAsset = {
+const ethAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
   assetId: 'evm-eth-1',
   ecosystem: 'evm',
   symbol: 'ETH',
   name: 'Ether',
   chainId: '0x1',
-  logoUrl: null,
-};
+  isNative: true,
+  familyId: 'eth',
+});
 
-const sepoliaEthAsset: PortfolioCanonicalAsset = {
+const sepoliaEthAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
   assetId: 'evm-eth-sepolia',
   ecosystem: 'evm',
   symbol: 'ETH',
   name: 'Sepolia Ether',
   chainId: '0xaa36a7',
-  logoUrl: null,
-};
+  isNative: true,
+  familyId: 'eth',
+});
 
 describe('PortfolioFlowUtils', () => {
   it('builds from asset options from positive portfolio balances and excludes testnets', () => {
@@ -112,15 +122,15 @@ describe('PortfolioFlowUtils', () => {
   });
 
   it('resolves evm erc20 rows by contract address and slug chain id', () => {
-    const usdcAsset: PortfolioCanonicalAsset = {
+    const usdcAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
       assetId:
         'evm:token:ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
       ecosystem: 'evm',
       symbol: 'USDC',
       name: 'USD Coin',
       chainId: 'ethereum',
-      logoUrl: null,
-    };
+      familyId: 'usdc',
+    });
     const chains = [
       {
         name: 'Ethereum',
@@ -147,14 +157,15 @@ describe('PortfolioFlowUtils', () => {
   });
 
   it('resolves native evm rows when canonical chain id uses a slug', () => {
-    const nativeEthAsset: PortfolioCanonicalAsset = {
+    const nativeEthAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
       assetId: 'evm:coin:ethereum:eth',
       ecosystem: 'evm',
       symbol: 'ETH',
       name: 'Ether',
       chainId: 'ethereum',
-      logoUrl: null,
-    };
+      isNative: true,
+      familyId: 'eth',
+    });
     const chains = [
       {
         name: 'Ethereum',
@@ -179,22 +190,21 @@ describe('PortfolioFlowUtils', () => {
   });
 
   it('does not match evm rows to hive engine assets with the same symbol', () => {
-    const hiveEngineKingAsset: PortfolioCanonicalAsset = {
+    const hiveEngineKingAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
       assetId: 'hive-engine:king',
       ecosystem: 'hive_engine',
       symbol: 'KING',
       name: 'KING',
-      chainId: null,
-      logoUrl: null,
-    };
-    const evmKingAsset: PortfolioCanonicalAsset = {
+      familyId: 'king',
+    });
+    const evmKingAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
       assetId: 'evm:token:ethereum:0xeb1a81845234f75b412b654415b0f1ae5e8f4339',
       ecosystem: 'evm',
       symbol: 'KING',
       name: 'KING',
       chainId: 'ethereum',
-      logoUrl: null,
-    };
+      familyId: 'king',
+    });
     const chains = [
       {
         name: 'Ethereum',
@@ -351,14 +361,14 @@ describe('PortfolioFlowUtils', () => {
       }).assets,
     ).toEqual([]);
 
-    const wethAsset: PortfolioCanonicalAsset = {
+    const wethAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
       assetId: 'evm-weth-1',
       ecosystem: 'evm',
       symbol: 'WETH',
       name: 'Wrapped Ether',
       chainId: '0x1',
-      logoUrl: null,
-    };
+      familyId: 'eth',
+    });
 
     expect(
       PortfolioFlowUtils.filterCanonicalAssets([wethAsset, ethAsset], {
@@ -435,14 +445,15 @@ describe('PortfolioFlowUtils', () => {
   });
 
   it('resolves canonical assets by slug-style chain references', () => {
-    const slugEthAsset: PortfolioCanonicalAsset = {
+    const slugEthAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
       assetId: 'evm-0g-ethereum',
       ecosystem: 'evm',
       symbol: '0G',
       name: '0G',
       chainId: 'ethereum',
       logoUrl: 'https://example.com/0g.png',
-    };
+      familyId: '0g',
+    });
     const chains = [
       {
         name: 'Ethereum',

@@ -58,6 +58,7 @@ import {
 import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
 import { UserPortfolio } from 'src/portfolio/portfolio.interface';
 import { PortfolioAccountAvatar } from 'src/portfolio/ui/portfolio-account-avatar.component';
+import { PortfolioQuoteCard } from 'src/portfolio/ui/portfolio-quote-card.component';
 import { PortfolioNavIcon } from 'src/portfolio/ui/portfolio-nav-icon.enum';
 import { PortfolioOverlayListSelect } from 'src/portfolio/ui/portfolio-overlay-list-select.component';
 import { PortfolioSidebarNavIcon } from 'src/portfolio/ui/portfolio-sidebar-nav-icon.component';
@@ -1648,29 +1649,21 @@ export const Portfolio = ({
         value={selectedQuote?.estimatedToAmount ?? ''}
         onChange={() => {}}
         disabled
+        imageLogoUrl={selectedQuote?.providerLogoUrl ?? undefined}
+        imageLogoAlt={selectedQuote?.providerName || selectedQuote?.provider}
+        logoPosition={
+          selectedQuote?.providerLogoUrl ? 'right' : undefined
+        }
       />
     );
 
     const renderQuoteCard = (quote: PortfolioQuote) => (
-      <div
+      <PortfolioQuoteCard
         key={quote.quoteId}
-        role="button"
-        tabIndex={0}
-        className={`portfolio-quote-card ${
-          selectedQuoteId === quote.quoteId ? 'selected' : ''
-        }`}
-        onClick={() => setSelectedQuoteId(quote.quoteId)}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            setSelectedQuoteId(quote.quoteId);
-          }
-        }}>
-        <div className="quote-details">
-          <strong>{quote.provider.replace(/_/g, ' ')}</strong>
-          <small>{quote.executionType.replace(/_/g, ' ')}</small>
-        </div>
-        <strong>{quote.estimatedToAmount}</strong>
-      </div>
+        quote={quote}
+        isSelected={selectedQuoteId === quote.quoteId}
+        onSelect={() => setSelectedQuoteId(quote.quoteId)}
+      />
     );
 
     const renderQuotesSection = () => {
@@ -1907,7 +1900,11 @@ export const Portfolio = ({
             <strong>{item.mode}</strong>
             <span>{item.provider.replace(/_/g, ' ')}</span>
             <span>{item.displayStatus}</span>
-            <span>{new Date(item.submittedAt).toLocaleDateString()}</span>
+            <span>
+              {item.submittedAt
+                ? new Date(item.submittedAt).toLocaleDateString()
+                : '-'}
+            </span>
           </div>
         ))
       )}

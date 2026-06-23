@@ -648,73 +648,10 @@
 }
 
 .portfolio-quotes-panel {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--kc-space-2);
-  width: 100%;
-}
-
-.portfolio-quote-card {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   gap: var(--kc-space-2);
-  min-width: 0;
-  padding: var(--kc-space-3);
-  border: 1px solid var(--kc-color-border-subtle);
-  border-radius: var(--kc-radius-md);
-  background: transparent;
-  cursor: pointer;
-  transition:
-    border-color 0.15s ease,
-    background-color 0.15s ease,
-    box-shadow 0.15s ease;
-
-  .quote-details {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    min-width: 0;
-
-    strong {
-      color: var(--kc-color-text-secondary);
-      font-weight: var(--kc-font-weight-medium);
-      overflow-wrap: anywhere;
-    }
-
-    small {
-      color: var(--kc-color-text-muted);
-      text-transform: capitalize;
-      font-size: var(--kc-font-size-xs);
-    }
-  }
-
-  > strong {
-    color: var(--kc-color-text-muted);
-    font-size: var(--kc-font-size-sm);
-    font-weight: var(--kc-font-weight-medium);
-    overflow-wrap: anywhere;
-  }
-
-  &:hover:not(.selected) {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: var(--kc-color-border-default);
-  }
-
-  &.selected {
-    border-color: var(--kc-color-accent);
-    background: var(--kc-color-accent-muted);
-    box-shadow: 0 0 0 1px var(--kc-color-accent-muted);
-
-    .quote-details strong,
-    > strong {
-      color: var(--kc-color-text-primary);
-    }
-
-    > strong {
-      color: var(--kc-color-accent);
-    }
-  }
+  width: 100%;
 }
 
 .portfolio-history-table {

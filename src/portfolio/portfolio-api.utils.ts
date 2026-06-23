@@ -2,16 +2,20 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import {
   PortfolioApiErrorPayload,
+  PortfolioAvailableAssetsResponse,
   PortfolioCanonicalAsset,
   PortfolioExecution,
+  PortfolioFiatRampOptions,
   PortfolioHistoryItem,
   PortfolioInAppPayload,
   PortfolioMode,
   PortfolioQuote,
+  PortfolioQuoteRequestBody,
   PortfolioQuoteResponse,
   PortfolioRedirectOrder,
   PortfolioSwapAmountRangeDetails,
 } from 'src/portfolio/portfolio-api.interface';
+import { PortfolioApiParser } from 'src/portfolio/portfolio-api.parser';
 
 const CLIENT_TOKEN_HEADER = 'X-Keychain-Portfolio-Client-Token';
 
@@ -103,11 +107,11 @@ const getClientToken = async (): Promise<string> => {
   return token;
 };
 
-const fetchJson = async <T>(
+const fetchJson = async (
   path: string,
   init: RequestInit = {},
   isPrivate = false,
-): Promise<T> => {
+): Promise<unknown> => {
   const baseUrl = getBaseUrl();
   if (!baseUrl) {
     throw new Error('portfolio_api_not_configured');
@@ -122,102 +126,167 @@ const fetchJson = async <T>(
   }
 
   const response = await fetch(`${baseUrl}${path}`, { ...init, headers });
-  const payload = (await response.json()) as unknown;
+  const payload = await response.json();
   if (!response.ok) {
     throw parsePortfolioApiErrorPayload(payload);
   }
-  return payload as T;
+  return payload;
 };
 
 const listAssets = async (): Promise<PortfolioCanonicalAsset[]> =>
-  (await fetchJson<{ assets: PortfolioCanonicalAsset[] }>('/assets')).assets;
+  PortfolioApiParser.parsePortfolioAssets(await fetchJson('/assets'));
 
-const getQuotes = async (body: {
+const listAvailableAssets = async (params: {
   mode: PortfolioMode;
-  fromAssetId?: string;
-  toAssetId?: string;
-  fromAmount: string;
-  fromAddress?: string;
-  toAddress?: string;
-  countryCode?: string;
-  fiatCurrency?: string;
-  paymentMethod?: string;
-}): Promise<PortfolioQuoteResponse> =>
-  fetchJson('/quotes', { method: 'POST', body: JSON.stringify(body) });
+  direction: 'from' | 'to';
+  sourceAssetId?: string;
+}): Promise<PortfolioAvailableAssetsResponse> => {
+  const searchParams = new URLSearchParams({
+    mode: params.mode,
+    direction: params.direction,
+  });
+  if (params.sourceAssetId) {
+    searchParams.set('sourceAssetId', params.sourceAssetId);
+  }
+
+  return PortfolioApiParser.parsePortfolioAvailableAssetsResponse(
+    await fetchJson(`/assets/available?${searchParams.toString()}`),
+  );
+};
+
+const getFiatRampOptions = async (params: {
+  countryCode: string;
+  mode: 'buy' | 'sell';
+}): Promise<PortfolioFiatRampOptions> => {
+  const searchParams = new URLSearchParams({
+    countryCode: params.countryCode,
+    mode: params.mode,
+  });
+
+  return PortfolioApiParser.parsePortfolioFiatRampOptions(
+    await fetchJson(`/fiat-ramp/options?${searchParams.toString()}`),
+  );
+};
+
+const getQuotes = async (
+  body: PortfolioQuoteRequestBody,
+): Promise<PortfolioQuoteResponse> =>
+  PortfolioApiParser.parsePortfolioQuoteResponse(
+    await fetchJson('/quotes', { method: 'POST', body: JSON.stringify(body) }),
+  );
 
 const createExecution = async (
   quote: PortfolioQuote,
   request: PortfolioQuoteResponse['request'],
   fromAddress: string,
   toAddress: string,
-): Promise<PortfolioExecution> =>
-  fetchJson(
-    '/executions',
-    {
-      method: 'POST',
-      body: JSON.stringify({
-        provider: quote.provider,
-        quoteId: quote.quoteId,
-        mode: quote.category,
-        routeType: quote.routeType,
-        fromAssetId: quote.fromAsset?.assetId ?? request.fromAssetId,
-        toAssetId: quote.toAsset?.assetId ?? request.toAssetId,
-        fromAmount: quote.fromAmount,
-        estimatedToAmount: quote.estimatedToAmount,
-        fromAddress,
-        toAddress,
-        executionType: quote.executionType,
-        fiatCurrency: request.fiatCurrency,
-        paymentMethod: request.paymentMethod,
-        countryCode: request.countryCode,
-      }),
-    },
-    true,
+): Promise<PortfolioExecution> => {
+  const execution = PortfolioApiParser.parsePortfolioExecution(
+    await fetchJson(
+      '/executions',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          provider: quote.provider,
+          quoteId: quote.quoteId,
+          mode: quote.category,
+          routeType: quote.routeType,
+          fromAssetId: quote.fromAsset?.assetId ?? request.fromAssetId,
+          toAssetId: quote.toAsset?.assetId ?? request.toAssetId,
+          fromAmount: quote.fromAmount,
+          estimatedToAmount: quote.estimatedToAmount,
+          fromAddress,
+          toAddress,
+          executionType: quote.executionType,
+          fiatCurrency: request.fiatCurrency,
+          paymentMethod: request.paymentMethod,
+          countryCode: request.countryCode,
+        }),
+      },
+      true,
+    ),
   );
+
+  if (!execution) {
+    throw new Error('portfolio_execution_create_failed');
+  }
+
+  return execution;
+};
 
 const prepareInAppExecution = async (
   executionId: string,
   fromAddress: string,
   toAddress: string,
-): Promise<PortfolioInAppPayload> =>
-  fetchJson(
-    `/executions/${encodeURIComponent(executionId)}/prepare-in-app`,
-    {
-      method: 'POST',
-      body: JSON.stringify({ fromAddress, toAddress }),
-    },
-    true,
+): Promise<PortfolioInAppPayload> => {
+  const payload = PortfolioApiParser.parsePortfolioInAppPayload(
+    await fetchJson(
+      `/executions/${encodeURIComponent(executionId)}/prepare-in-app`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ fromAddress, toAddress }),
+      },
+      true,
+    ),
   );
+
+  if (!payload) {
+    throw new Error('portfolio_execution_prepare_failed');
+  }
+
+  return payload;
+};
 
 const createRedirectOrder = async (
   executionId: string,
-): Promise<PortfolioRedirectOrder> =>
-  fetchJson(
-    `/executions/${encodeURIComponent(executionId)}/create-redirect-order`,
-    { method: 'POST', body: '{}' },
-    true,
+): Promise<PortfolioRedirectOrder> => {
+  const order = PortfolioApiParser.parsePortfolioRedirectOrder(
+    await fetchJson(
+      `/executions/${encodeURIComponent(executionId)}/create-redirect-order`,
+      { method: 'POST', body: '{}' },
+      true,
+    ),
   );
+
+  if (!order) {
+    throw new Error('portfolio_redirect_order_failed');
+  }
+
+  return order;
+};
 
 const markSubmitted = async (
   executionId: string,
   txHash: string,
-): Promise<PortfolioExecution> =>
-  fetchJson(
-    `/executions/${encodeURIComponent(executionId)}/submitted`,
-    { method: 'POST', body: JSON.stringify({ txHash }) },
-    true,
+): Promise<PortfolioExecution> => {
+  const execution = PortfolioApiParser.parsePortfolioExecution(
+    await fetchJson(
+      `/executions/${encodeURIComponent(executionId)}/submitted`,
+      { method: 'POST', body: JSON.stringify({ txHash }) },
+      true,
+    ),
   );
 
+  if (!execution) {
+    throw new Error('portfolio_execution_submit_failed');
+  }
+
+  return execution;
+};
+
 const listHistory = async (): Promise<PortfolioHistoryItem[]> =>
-  (await fetchJson<{ items: PortfolioHistoryItem[] }>('/history', {}, true))
-    .items;
+  PortfolioApiParser.parsePortfolioHistoryResponse(
+    await fetchJson('/history', {}, true),
+  ).items;
 
 export const PortfolioApiUtils = {
   createExecution,
   createRedirectOrder,
   getClientToken,
+  getFiatRampOptions,
   getQuotes,
   listAssets,
+  listAvailableAssets,
   listHistory,
   markSubmitted,
   prepareInAppExecution,

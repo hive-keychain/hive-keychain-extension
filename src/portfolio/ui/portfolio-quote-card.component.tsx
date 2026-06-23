@@ -1,0 +1,73 @@
+import { PreloadedImage } from '@common-ui/preloaded-image/preloaded-image.component';
+import React from 'react';
+import { PortfolioQuote } from 'src/portfolio/portfolio-api.interface';
+import { PortfolioQuoteDisplayUtils } from 'src/portfolio/ui/portfolio-quote-display.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
+
+import './portfolio-quote-card.component.scss';
+
+type Props = {
+  quote: PortfolioQuote;
+  isSelected: boolean;
+  onSelect: () => void;
+};
+
+export const PortfolioQuoteCard = ({
+  quote,
+  isSelected,
+  onSelect,
+}: Props) => {
+  const detailRows = PortfolioQuoteDisplayUtils.getPortfolioQuoteDetailRows(quote);
+  const providerLabel =
+    quote.providerName ||
+    PortfolioQuoteDisplayUtils.formatPortfolioQuoteEnumLabel(quote.provider);
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      className={`portfolio-quote-card ${isSelected ? 'selected' : ''}`}
+      onClick={onSelect}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onSelect();
+        }
+      }}>
+      <div className="portfolio-quote-card__header">
+        <div className="portfolio-quote-card__provider">
+          {quote.providerLogoUrl ? (
+            <PreloadedImage
+              className="portfolio-quote-card__provider-logo"
+              src={quote.providerLogoUrl}
+              alt=""
+              placeholder="/assets/images/wallet/hive-engine.svg"
+            />
+          ) : (
+            <span className="portfolio-quote-card__provider-fallback">
+              {providerLabel.slice(0, 1)}
+            </span>
+          )}
+          <div className="portfolio-quote-card__provider-text">
+            <strong>{providerLabel}</strong>
+            <small>{quote.provider}</small>
+          </div>
+        </div>
+        <strong className="portfolio-quote-card__amount">
+          {quote.estimatedToAmount}
+        </strong>
+      </div>
+
+      {detailRows.length > 0 && (
+        <dl className="portfolio-quote-card__details">
+          {detailRows.map((row) => (
+            <div key={row.key} className="portfolio-quote-card__detail-row">
+              <dt>{I18nUtils.getMessage(row.labelKey)}</dt>
+              <dd>{row.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+    </div>
+  );
+};
