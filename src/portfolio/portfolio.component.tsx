@@ -109,12 +109,13 @@ type PortfolioRow = {
   isTestnet?: boolean;
 };
 
-const sectionIcons: Record<PortfolioSection, PortfolioNavIcon> = {
+type PortfolioNavSection = Exclude<PortfolioSection, 'bridge'>;
+
+const sectionIcons: Record<PortfolioNavSection, PortfolioNavIcon> = {
   portfolio: PortfolioNavIcon.PORTFOLIO,
   buy: PortfolioNavIcon.BUY,
   sell: PortfolioNavIcon.SELL,
   swap: PortfolioNavIcon.SWAP,
-  bridge: PortfolioNavIcon.BRIDGE,
   history: PortfolioNavIcon.HISTORY,
 };
 
@@ -123,9 +124,14 @@ const sections: PortfolioSection[] = [
   'buy',
   'sell',
   'swap',
-  'bridge',
   'history',
 ];
+
+const hiddenPortfolioSections: PortfolioSection[] = ['buy', 'sell'];
+
+const visibleSections = sections.filter(
+  (item) => !hiddenPortfolioSections.includes(item),
+);
 
 const TO_ASSET_UNFILTERED_MAX = 50;
 const TO_ASSET_FILTERED_MAX = 200;
@@ -346,7 +352,6 @@ const hasRequiredQuoteAssets = (options: {
     case 'sell':
       return hasFromAssetId;
     case 'swap':
-    case 'bridge':
       return hasFromAssetId && hasToAssetId;
     default:
       return false;
@@ -1029,7 +1034,7 @@ export const Portfolio = ({
     if (section === 'portfolio') {
       setSelectedNetwork('');
     }
-    if (section !== 'buy' && section !== 'swap' && section !== 'bridge') {
+    if (section !== 'buy' && section !== 'swap') {
       setToAssetFilter('');
       setToAssetChainFilter('');
     }
@@ -1639,10 +1644,15 @@ export const Portfolio = ({
     setSection(mode);
   };
 
-  const getRowActions = (): PortfolioMode[] =>
-    selectedAccount?.type === ChainType.HIVE
-      ? ['swap']
-      : ['buy', 'sell', 'swap', 'bridge'];
+  const getRowActions = (): PortfolioMode[] => {
+    const actions: PortfolioMode[] =
+      selectedAccount?.type === ChainType.HIVE
+        ? ['swap']
+        : ['buy', 'sell', 'swap'];
+    return actions.filter(
+      (action) => !hiddenPortfolioSections.includes(action),
+    );
+  };
 
   const renderAccountRow = (accountKey: string) => {
     const account = accountOptions.find((item) => item.key === accountKey);
@@ -1696,7 +1706,7 @@ export const Portfolio = ({
           title={I18nUtils.getMessage(`portfolio_section_${action}`)}
           type="button">
           <PortfolioSidebarNavIcon
-            icon={sectionIcons[action]}
+            icon={sectionIcons[action as PortfolioNavSection]}
             className="portfolio-row-action-icon"
           />
         </button>
@@ -1885,7 +1895,7 @@ export const Portfolio = ({
 
     return (
       <div className="portfolio-flow">
-        {(mode === 'swap' || mode === 'bridge') &&
+        {mode === 'swap' &&
           accountOptions.length > 0 &&
           selectedAccount && (
             <PortfolioOverlayListSelect
@@ -1949,9 +1959,7 @@ export const Portfolio = ({
           </>
         )}
         {mode !== 'buy' &&
-          (mode === 'swap' ||
-            mode === 'bridge' ||
-            fromAssetOptions.length > 0) && (
+          (mode === 'swap' || fromAssetOptions.length > 0) && (
             <PortfolioOverlayListSelect
               id="portfolio-from-asset"
               label={I18nUtils.getMessage('portfolio_from_asset')}
@@ -2155,7 +2163,7 @@ export const Portfolio = ({
           <span>{I18nUtils.getMessage('portfolio')}</span>
         </div>
         <nav>
-          {sections.map((item) => (
+          {visibleSections.map((item) => (
             <button
               key={item}
               className={item === section ? 'active' : ''}
@@ -2163,7 +2171,7 @@ export const Portfolio = ({
               title={I18nUtils.getMessage(`portfolio_section_${item}`)}
               type="button">
               <PortfolioSidebarNavIcon
-                icon={sectionIcons[item]}
+                icon={sectionIcons[item as PortfolioNavSection]}
                 className="portfolio-sidebar-nav-icon"
               />
               <span>{I18nUtils.getMessage(`portfolio_section_${item}`)}</span>

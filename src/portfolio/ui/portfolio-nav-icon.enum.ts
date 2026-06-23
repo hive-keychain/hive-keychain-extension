@@ -3,6 +3,5 @@ export enum PortfolioNavIcon {
   BUY = 'buy',
   SELL = 'sell',
   SWAP = 'swap',
-  BRIDGE = 'bridge',
   HISTORY = 'history',
 }

@@ -133,12 +133,12 @@ describe('Portfolio', () => {
     });
 
     const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
-    expect(sidebarButtons).toHaveLength(6);
+    expect(sidebarButtons).toHaveLength(3);
     expect(sidebarButtons[0].classList.contains('active')).toBe(true);
 
-    fireEvent.click(sidebarButtons[3]);
+    fireEvent.click(sidebarButtons[1]);
 
-    expect(sidebarButtons[3].classList.contains('active')).toBe(true);
+    expect(sidebarButtons[1].classList.contains('active')).toBe(true);
     expect(container.querySelector('.portfolio-flow')).not.toBeNull();
   });
 
@@ -337,7 +337,7 @@ describe('Portfolio', () => {
     });
 
     const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
-    fireEvent.click(sidebarButtons[3]);
+    fireEvent.click(sidebarButtons[1]);
 
     await waitFor(() => {
       expect(
@@ -347,7 +347,7 @@ describe('Portfolio', () => {
     });
   });
 
-  it('shows account selector in swap and bridge flows', async () => {
+  it('shows account selector in the swap flow', async () => {
     const { container } = render(
       <Portfolio
         hiveAccounts={[{ name: 'alice' } as never]}
@@ -375,13 +375,10 @@ describe('Portfolio', () => {
 
     const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
 
-    fireEvent.click(sidebarButtons[3]);
-    expect(container.querySelector('#portfolio-flow-account')).not.toBeNull();
-
-    fireEvent.click(sidebarButtons[4]);
-    expect(container.querySelector('#portfolio-flow-account')).not.toBeNull();
-
     fireEvent.click(sidebarButtons[1]);
+    expect(container.querySelector('#portfolio-flow-account')).not.toBeNull();
+
+    fireEvent.click(sidebarButtons[0]);
     expect(container.querySelector('#portfolio-flow-account')).toBeNull();
   });
 
@@ -536,7 +533,7 @@ describe('Portfolio', () => {
     });
 
     const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
-    fireEvent.click(sidebarButtons[3]);
+    fireEvent.click(sidebarButtons[1]);
 
     await waitFor(() => {
       expect(container.textContent).not.toContain('ETH - Ethereum (1)');
@@ -555,7 +552,7 @@ describe('Portfolio', () => {
     expect(PortfolioApiUtils.getQuotes).not.toHaveBeenCalled();
   });
 
-  it('loads fiat ramp options and available buy assets when opening the buy section', async () => {
+  it.skip('loads fiat ramp options and available buy assets when opening the buy section', async () => {
     (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockResolvedValue({
       mode: 'buy',
       direction: 'to',

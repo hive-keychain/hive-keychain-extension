@@ -136,32 +136,6 @@ export const PortfolioSidebarNavIcon = ({ icon, className }: Props) => {
           />
         </svg>
       );
-    case PortfolioNavIcon.BRIDGE:
-      return (
-        <svg
-          className={className}
-          xmlns="http://www.w3.org/2000/svg"
-          width={24}
-          height={24}
-          fill="none"
-          viewBox="0 0 24 24"
-          aria-hidden>
-          <path
-            stroke="var(--wallet-icon-color)"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            {...strokeProps}
-            d="M19 12c0 3.864-3.136 7-7 7s-6.223-3.892-6.223-3.892m0 0h3.164m-3.164 0v3.5M5 12c0-3.864 3.108-7 7-7 4.67 0 7 3.892 7 3.892m0 0v-3.5m0 3.5h-3.107"
-          />
-          <path
-            stroke="var(--wallet-icon-secondary-color)"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            {...strokeProps}
-            d="M10.869 12.859c0 .553.424.999.952.999h1.076c.459 0 .832-.39.832-.87 0-.524-.228-.708-.566-.828l-1.728-.6c-.34-.12-.566-.305-.566-.828 0-.48.373-.87.832-.87h1.076c.527 0 .952.445.952.998m-1.433-1.572v5.146"
-          />
-        </svg>
-      );
     case PortfolioNavIcon.HISTORY:
       return (
         <svg
