@@ -11,6 +11,10 @@ import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { fetchGasOracle } from '@popup/evm/utils/evm-gas-oracle.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
+import {
+  RpcGasFeeEstimator,
+  RpcGasOracleEstimates,
+} from '@popup/evm/utils/rpc-gas-fee-estimator.utils';
 import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -75,113 +79,18 @@ const hasDisplayableMaxFee = (fee: GasFeeEstimationBase) => fee.maxFeeInEth.gt(0
 const hasDisplayableDuration = (fee: GasFeeEstimationBase) =>
   fee.estimatedMaxDuration.gt(0);
 
-const estimate = async (
-  chain: EvmChain,
-  fromAddress: string,
+const feeFromGweiAndGasLimit = (gwei: number | string, gasLimit: number) => {
+  return new Decimal(gwei)
+    .mul(Decimal.div(gasLimit, 1_000_000))
+    .div(1000);
+};
+
+const buildFullEstimationFromEstimates = (
+  estimates: RpcGasOracleEstimates,
   type: EvmTransactionType,
-  mainTokenPrice: number,
-  gasLimit?: number,
-  transactionData?: ProviderTransactionData,
-): Promise<FullGasFeeEstimation> => {
-  let estimates;
-  try {
-    estimates = await getGasFeeEstimations(chain);
-  } catch (error) {
-    Logger.error('Error in gas fee estimation', error);
-  }
-
-  const price = new Decimal(mainTokenPrice);
-  if (gasLimit != null && !isPlausibleGasLimit(gasLimit)) {
-    gasLimit = undefined;
-  }
-  if (!gasLimit) {
-    gasLimit = Number(
-      await EthersUtils.getGasLimit(
-        chain,
-        fromAddress,
-        transactionData?.abi,
-        transactionData?.signature ?? transactionData?.method,
-        transactionData?.args,
-        transactionData?.data,
-        transactionData?.to,
-        transactionData?.value,
-      ),
-    );
-  }
-
-  if (!estimates || !estimates.low) {
-    const provider = await EthersUtils.getProvider(chain);
-
-    const [feeDataResult, maxPriorityFeePerGasRpc] = await Promise.all([
-      provider.getFeeData(),
-      EvmRequestsUtils.getMaxPriorityFeePerGas(),
-    ]);
-
-    const feeData = feeDataResult.toJSON();
-
-    if (!feeData.maxPriorityFeePerGas) {
-      feeData.maxPriorityFeePerGas = maxPriorityFeePerGasRpc;
-    }
-
-    if (!feeData.maxFeePerGas) {
-      feeData.maxFeePerGas = feeData.maxPriorityFeePerGas;
-    }
-
-    const maxPriorityFeePerGasInGwei = EvmFormatUtils.weiToGwei(
-      new Decimal(Number(feeData.maxPriorityFeePerGas)),
-    );
-    const gasPriceInGwei = EvmFormatUtils.weiToGwei(
-      new Decimal(Number(feeData.gasPrice)),
-    );
-
-    const maxFeePerGasInGwei = EvmFormatUtils.weiToGwei(
-      new Decimal(Number(feeData.maxFeePerGas)),
-    );
-
-    const baseFeeInGwei = maxFeePerGasInGwei.sub(maxPriorityFeePerGasInGwei);
-
-    const maxFeePerGasInWei = EvmFormatUtils.gweiToWei(maxFeePerGasInGwei);
-
-    const maxFee = maxFeePerGasInWei
-      .mul(gasLimit)
-      .div(new Decimal(EvmFormatUtils.WEI));
-
-    const valueUSD = maxFee.mul(price);
-
-    const feeResult: FullGasFeeEstimation = {
-      custom: {
-        type: type,
-        estimatedFeeInEth: maxFee,
-        maxFeeInEth: maxFee,
-        estimatedFeeUSD: valueUSD,
-        maxFeeUSD: valueUSD,
-        estimatedMaxDuration: new Decimal(0),
-        priorityFeeInGwei: new Decimal(maxPriorityFeePerGasInGwei),
-        maxFeePerGasInGwei: new Decimal(maxFeePerGasInGwei),
-        baseFeePerGasInGwei: new Decimal(baseFeeInGwei),
-        gasPriceInGwei: new Decimal(gasPriceInGwei),
-        gasLimit: new Decimal(gasLimit),
-        icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
-        name: 'popup_html_evm_custom_gas_fee_custom',
-      },
-    };
-
-    if (
-      transactionData &&
-      (transactionData.gasPrice ||
-        (transactionData.maxPriorityFeePerGas && transactionData.maxFeePerGas))
-    ) {
-      feeResult.suggestedByDApp = await createDAppSuggestionFromTransactionData(
-        transactionData,
-        gasLimit!,
-        feeResult,
-        price,
-      );
-    }
-
-    return feeResult;
-  }
-
+  gasLimit: number,
+  price: Decimal,
+): FullGasFeeEstimation => {
   const lowPriorityFee = Math.max(
     Number(estimates.low.suggestedMaxPriorityFeePerGas),
     Number(estimates.latestPriorityFeeRange[0]),
@@ -195,32 +104,32 @@ const estimate = async (
     Number(estimates.latestPriorityFeeRange[0]),
   );
 
-  const maxLow = new Decimal(Number(estimates.low.suggestedMaxFeePerGas))
-    .mul(Decimal.div(Number(gasLimit), 1000000))
-    .div(1000);
-  const maxMedium = new Decimal(Number(estimates.medium.suggestedMaxFeePerGas))
-    .mul(Decimal.div(Number(gasLimit), 1000000))
-    .div(1000);
-  const maxAggressive = new Decimal(
-    Number(estimates.high.suggestedMaxFeePerGas),
-  )
-    .mul(Decimal.div(Number(gasLimit), 1000000))
-    .div(1000);
-  const low = new Decimal(lowPriorityFee + Number(estimates.estimatedBaseFee))
-    .mul(Decimal.div(Number(gasLimit), 1000000))
-    .div(1000);
-  const medium = new Decimal(
+  const maxLow = feeFromGweiAndGasLimit(
+    estimates.low.suggestedMaxFeePerGas,
+    gasLimit,
+  );
+  const maxMedium = feeFromGweiAndGasLimit(
+    estimates.medium.suggestedMaxFeePerGas,
+    gasLimit,
+  );
+  const maxAggressive = feeFromGweiAndGasLimit(
+    estimates.high.suggestedMaxFeePerGas,
+    gasLimit,
+  );
+  const low = feeFromGweiAndGasLimit(
+    lowPriorityFee + Number(estimates.estimatedBaseFee),
+    gasLimit,
+  );
+  const medium = feeFromGweiAndGasLimit(
     mediumPriorityFee + Number(estimates.estimatedBaseFee),
-  )
-    .mul(Decimal.div(Number(gasLimit), 1000000))
-    .div(1000);
-  const aggressive = new Decimal(
+    gasLimit,
+  );
+  const aggressive = feeFromGweiAndGasLimit(
     aggressivePriorityFee + Number(estimates.estimatedBaseFee),
-  )
-    .mul(Decimal.div(Number(gasLimit), 1000000))
-    .div(1000);
+    gasLimit,
+  );
 
-  const fullEstimation: FullGasFeeEstimation = {
+  return {
     suggested: {
       type: type,
       estimatedFeeInEth: new Decimal(low),
@@ -232,6 +141,7 @@ const estimate = async (
       ),
       priorityFeeInGwei: new Decimal(lowPriorityFee),
       maxFeePerGasInGwei: new Decimal(estimates.low.suggestedMaxFeePerGas),
+      baseFeePerGasInGwei: new Decimal(estimates.estimatedBaseFee),
       gasPriceInGwei: new Decimal(estimates.low.suggestedMaxFeePerGas),
       gasLimit: new Decimal(gasLimit),
       icon: SVGIcons.EVM_GAS_FEE_LOW,
@@ -248,6 +158,7 @@ const estimate = async (
       ),
       priorityFeeInGwei: new Decimal(lowPriorityFee),
       maxFeePerGasInGwei: new Decimal(estimates.low.suggestedMaxFeePerGas),
+      baseFeePerGasInGwei: new Decimal(estimates.estimatedBaseFee),
       gasPriceInGwei: new Decimal(estimates.low.suggestedMaxFeePerGas),
       gasLimit: new Decimal(gasLimit),
       icon: SVGIcons.EVM_GAS_FEE_LOW,
@@ -264,6 +175,7 @@ const estimate = async (
       ),
       priorityFeeInGwei: new Decimal(mediumPriorityFee),
       maxFeePerGasInGwei: new Decimal(estimates.medium.suggestedMaxFeePerGas),
+      baseFeePerGasInGwei: new Decimal(estimates.estimatedBaseFee),
       gasPriceInGwei: new Decimal(estimates.medium.suggestedMaxFeePerGas),
       gasLimit: new Decimal(gasLimit),
       icon: SVGIcons.EVM_GAS_FEE_MEDIUM,
@@ -280,6 +192,7 @@ const estimate = async (
       ),
       priorityFeeInGwei: new Decimal(aggressivePriorityFee),
       maxFeePerGasInGwei: new Decimal(estimates.high.suggestedMaxFeePerGas),
+      baseFeePerGasInGwei: new Decimal(estimates.estimatedBaseFee),
       gasPriceInGwei: new Decimal(estimates.high.suggestedMaxFeePerGas),
       gasLimit: new Decimal(gasLimit),
       icon: SVGIcons.EVM_GAS_FEE_HIGH,
@@ -323,22 +236,183 @@ const estimate = async (
       },
     },
   };
+};
 
+const buildRpcFallbackCustomFee = async (
+  chain: EvmChain,
+  type: EvmTransactionType,
+  gasLimit: number,
+  price: Decimal,
+): Promise<FullGasFeeEstimation> => {
+  const provider = await EthersUtils.getProvider(chain);
+  const feeDataResult = await provider.getFeeData();
+  const feeData = feeDataResult.toJSON();
+
+  let maxPriorityFeePerGasWei = feeData.maxPriorityFeePerGas
+    ? BigInt(feeData.maxPriorityFeePerGas)
+    : 0n;
+
+  if (maxPriorityFeePerGasWei <= 0n) {
+    try {
+      const rpcResult = await provider.send('eth_maxPriorityFeePerGas', []);
+      if (rpcResult != null && rpcResult !== '0x0') {
+        maxPriorityFeePerGasWei = BigInt(rpcResult);
+      }
+    } catch {
+      // Use gas price fraction below.
+    }
+  }
+
+  const gasPriceWei = feeData.gasPrice ? BigInt(feeData.gasPrice) : 0n;
+  if (maxPriorityFeePerGasWei <= 0n && gasPriceWei > 0n) {
+    maxPriorityFeePerGasWei = gasPriceWei / 10n;
+  }
+
+  let maxFeePerGasWei = feeData.maxFeePerGas
+    ? BigInt(feeData.maxFeePerGas)
+    : 0n;
+  if (maxFeePerGasWei <= 0n && gasPriceWei > 0n) {
+    maxFeePerGasWei = gasPriceWei;
+  }
+  if (maxFeePerGasWei <= 0n && maxPriorityFeePerGasWei > 0n) {
+    maxFeePerGasWei = maxPriorityFeePerGasWei;
+  }
+
+  const maxPriorityFeePerGasInGwei = EvmFormatUtils.weiToGwei(
+    new Decimal(Number(maxPriorityFeePerGasWei)),
+  );
+  const gasPriceInGwei = EvmFormatUtils.weiToGwei(
+    new Decimal(Number(gasPriceWei)),
+  );
+  const maxFeePerGasInGwei = EvmFormatUtils.weiToGwei(
+    new Decimal(Number(maxFeePerGasWei)),
+  );
+
+  const block = await provider.getBlock('latest');
+  const baseFeeInGwei = block?.baseFeePerGas
+    ? EvmFormatUtils.weiToGwei(new Decimal(Number(block.baseFeePerGas)))
+    : maxFeePerGasInGwei.sub(maxPriorityFeePerGasInGwei);
+
+  const estimatedGweiPerGas = Decimal.max(
+    baseFeeInGwei.add(maxPriorityFeePerGasInGwei),
+    gasPriceInGwei,
+  );
+
+  const estimatedFee = feeFromGweiAndGasLimit(estimatedGweiPerGas, gasLimit);
+  const maxFee = feeFromGweiAndGasLimit(maxFeePerGasInGwei, gasLimit);
+
+  return {
+    custom: {
+      type: type,
+      estimatedFeeInEth: estimatedFee,
+      maxFeeInEth: maxFee,
+      estimatedFeeUSD: estimatedFee.mul(price),
+      maxFeeUSD: maxFee.mul(price),
+      estimatedMaxDuration: new Decimal(0),
+      priorityFeeInGwei: new Decimal(maxPriorityFeePerGasInGwei),
+      maxFeePerGasInGwei: new Decimal(maxFeePerGasInGwei),
+      baseFeePerGasInGwei: new Decimal(baseFeeInGwei),
+      gasPriceInGwei: new Decimal(gasPriceInGwei),
+      gasLimit: new Decimal(gasLimit),
+      icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
+      name: 'popup_html_evm_custom_gas_fee_custom',
+    },
+  };
+};
+
+const attachDAppSuggestion = async (
+  feeResult: FullGasFeeEstimation,
+  transactionData: ProviderTransactionData | undefined,
+  gasLimit: number,
+  price: Decimal,
+) => {
   if (
-    transactionData &&
-    (transactionData.maxFeePerGas ||
-      transactionData.maxPriorityFeePerGas ||
-      transactionData.gasPrice)
+    !transactionData ||
+    (!transactionData.gasPrice &&
+      !transactionData.maxFeePerGas &&
+      !transactionData.maxPriorityFeePerGas)
   ) {
-    fullEstimation.suggestedByDApp =
-      await createDAppSuggestionFromTransactionData(
-        transactionData,
-        gasLimit!,
-        fullEstimation,
+    return feeResult;
+  }
+
+  feeResult.suggestedByDApp = await createDAppSuggestionFromTransactionData(
+    transactionData,
+    gasLimit,
+    feeResult,
+    price,
+  );
+  return feeResult;
+};
+
+const estimate = async (
+  chain: EvmChain,
+  fromAddress: string,
+  type: EvmTransactionType,
+  mainTokenPrice: number,
+  gasLimit?: number,
+  transactionData?: ProviderTransactionData,
+): Promise<FullGasFeeEstimation> => {
+  let estimates;
+  try {
+    estimates = await getGasFeeEstimations(chain);
+  } catch (error) {
+    Logger.error('Error in gas fee estimation', error);
+  }
+
+  const price = new Decimal(mainTokenPrice);
+  if (gasLimit != null && !isPlausibleGasLimit(gasLimit)) {
+    gasLimit = undefined;
+  }
+  if (!gasLimit) {
+    gasLimit = Number(
+      await EthersUtils.getGasLimit(
+        chain,
+        fromAddress,
+        transactionData?.abi,
+        transactionData?.signature ?? transactionData?.method,
+        transactionData?.args,
+        transactionData?.data,
+        transactionData?.to,
+        transactionData?.value,
+      ),
+    );
+  }
+
+  if (!estimates || !estimates.low) {
+    const provider = await EthersUtils.getProvider(chain);
+    const rpcEstimates = await RpcGasFeeEstimator.fetchTiers(provider, type);
+
+    if (rpcEstimates) {
+      const fullEstimation = buildFullEstimationFromEstimates(
+        rpcEstimates,
+        type,
+        gasLimit,
         price,
       );
+      return attachDAppSuggestion(
+        fullEstimation,
+        transactionData,
+        gasLimit,
+        price,
+      );
+    }
+
+    const feeResult = await buildRpcFallbackCustomFee(
+      chain,
+      type,
+      gasLimit,
+      price,
+    );
+    return attachDAppSuggestion(feeResult, transactionData, gasLimit, price);
   }
-  return fullEstimation;
+
+  const fullEstimation = buildFullEstimationFromEstimates(
+    estimates as RpcGasOracleEstimates,
+    type,
+    gasLimit,
+    price,
+  );
+  return attachDAppSuggestion(fullEstimation, transactionData, gasLimit, price);
 };
 
 const createDAppSuggestionFromTransactionData = async (

@@ -1,11 +1,15 @@
 import { EvmLightNodeApi } from '@api/evm-light-node';
-import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
+import {
+  EvmFeeTrend,
+  GasFeeEstimationBase,
+} from '@popup/evm/interfaces/gas-fee.interface';
 import {
   EvmTransactionType,
   ProviderTransactionData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
+import { RpcGasFeeEstimator } from '@popup/evm/utils/rpc-gas-fee-estimator.utils';
 import {
   ChainType,
   EvmChain,
@@ -168,18 +172,30 @@ describe('GasFeeUtils', () => {
 
   it('does not call the gas oracle for custom chains', async () => {
     jest.spyOn(EthersUtils, 'getGasLimit').mockResolvedValue(21000);
-    jest.spyOn(EthersUtils, 'getProvider').mockResolvedValue({
-      getFeeData: jest.fn().mockResolvedValue({
-        toJSON: () => ({
-          gasPrice: 20_000_000_000n,
-          maxFeePerGas: 30_000_000_000n,
-          maxPriorityFeePerGas: 1_000_000_000n,
-        }),
-      }),
-    } as any);
-    jest
-      .spyOn(EvmRequestsUtils, 'getMaxPriorityFeePerGas')
-      .mockResolvedValue(1_000_000_000n);
+    jest.spyOn(EthersUtils, 'getProvider').mockResolvedValue({} as any);
+    jest.spyOn(RpcGasFeeEstimator, 'fetchTiers').mockResolvedValue({
+      low: {
+        suggestedMaxPriorityFeePerGas: '1',
+        suggestedMaxFeePerGas: '35',
+        maxWaitTimeEstimate: 60000,
+      },
+      medium: {
+        suggestedMaxPriorityFeePerGas: '1',
+        suggestedMaxFeePerGas: '38',
+        maxWaitTimeEstimate: 30000,
+      },
+      high: {
+        suggestedMaxPriorityFeePerGas: '1',
+        suggestedMaxFeePerGas: '40',
+        maxWaitTimeEstimate: 15000,
+      },
+      estimatedBaseFee: '30',
+      latestPriorityFeeRange: ['1', '2'],
+      historicalPriorityFeeRange: ['1', '2'],
+      historicalBaseFeeRange: ['27', '33'],
+      baseFeeTrend: EvmFeeTrend.UP,
+      priorityFeeTrend: EvmFeeTrend.DOWN,
+    });
 
     const chain = {
       chainId: '0x539',
@@ -192,7 +208,7 @@ describe('GasFeeUtils', () => {
       type: ChainType.EVM,
     } as EvmChain;
 
-    await GasFeeUtils.estimate(
+    const result = await GasFeeUtils.estimate(
       chain,
       '0x0000000000000000000000000000000000000001',
       EvmTransactionType.EIP_1559,
@@ -201,5 +217,54 @@ describe('GasFeeUtils', () => {
     );
 
     expect(EvmLightNodeApi.get).not.toHaveBeenCalled();
+    expect(result.suggested).toBeDefined();
+    expect(result.low).toBeDefined();
+    expect(result.medium).toBeDefined();
+    expect(result.aggressive).toBeDefined();
+    expect(result.suggested!.estimatedFeeInEth.lt(result.suggested!.maxFeeInEth)).toBe(
+      true,
+    );
+  });
+
+  it('uses corrected estimated vs max fee math in the RPC fallback custom tier', async () => {
+    jest.spyOn(EthersUtils, 'getGasLimit').mockResolvedValue(21000);
+    jest.spyOn(RpcGasFeeEstimator, 'fetchTiers').mockResolvedValue(null);
+    jest.spyOn(EthersUtils, 'getProvider').mockResolvedValue({
+      getFeeData: jest.fn().mockResolvedValue({
+        toJSON: () => ({
+          gasPrice: 20_000_000_000n,
+          maxFeePerGas: 40_000_000_000n,
+          maxPriorityFeePerGas: 1_000_000_000n,
+        }),
+      }),
+      getBlock: jest.fn().mockResolvedValue({
+        baseFeePerGas: 30_000_000_000n,
+      }),
+      send: jest.fn().mockResolvedValue('0x3b9aca00'),
+    } as any);
+
+    const chain = {
+      chainId: '0x539',
+      defaultTransactionType: EvmTransactionType.EIP_1559,
+      isCustom: true,
+      logo: '',
+      mainToken: 'ETH',
+      name: 'Local Custom Chain',
+      rpcs: [{ url: 'http://127.0.0.1:8545' }],
+      type: ChainType.EVM,
+    } as EvmChain;
+
+    const result = await GasFeeUtils.estimate(
+      chain,
+      '0x0000000000000000000000000000000000000001',
+      EvmTransactionType.EIP_1559,
+      2500,
+      21000,
+    );
+
+    expect(result.custom).toBeDefined();
+    expect(result.custom!.estimatedFeeInEth.lt(result.custom!.maxFeeInEth)).toBe(
+      true,
+    );
   });
 });

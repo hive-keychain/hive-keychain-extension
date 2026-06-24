@@ -279,7 +279,7 @@ describe('GasFeePanel', () => {
           {
             chainId: '1',
             defaultTransactionType: EvmTransactionType.EIP_1559,
-            isCustom: true,
+            onlyCustomFee: true,
             mainToken: 'ETH',
             name: 'Ethereum',
           } as any
@@ -386,5 +386,92 @@ describe('GasFeePanel', () => {
       screen.getByText('popup_html_evm_gas_fee', { exact: false }),
     ).toBeTruthy();
     expect(setErrorMessage).toHaveBeenCalledWith(expectedError);
+  });
+
+  it('opens the tier picker for custom chains when RPC tiers are available', async () => {
+    const selectedFee = {
+      type: EvmTransactionType.EIP_1559,
+      estimatedFeeInEth: new Decimal('0.00042'),
+      estimatedFeeUSD: new Decimal(1),
+      maxFeeInEth: new Decimal('0.00063'),
+      maxFeeUSD: new Decimal(1.5),
+      estimatedMaxDuration: new Decimal(30),
+      priorityFeeInGwei: new Decimal(1),
+      maxFeePerGasInGwei: new Decimal(30),
+      gasPriceInGwei: new Decimal(30),
+      gasLimit: new Decimal(21000),
+      icon: SVGIcons.EVM_GAS_FEE_LOW,
+      name: 'popup_html_evm_custom_gas_fee_low',
+    };
+
+    jest.spyOn(GasFeeUtils, 'estimate').mockResolvedValue({
+      suggested: selectedFee,
+      low: selectedFee,
+      medium: {
+        ...selectedFee,
+        name: 'popup_html_evm_custom_gas_fee_medium',
+        icon: SVGIcons.EVM_GAS_FEE_MEDIUM,
+      },
+      aggressive: {
+        ...selectedFee,
+        name: 'popup_html_evm_custom_gas_fee_aggressive',
+        icon: SVGIcons.EVM_GAS_FEE_HIGH,
+      },
+      custom: {
+        ...selectedFee,
+        estimatedFeeInEth: new Decimal(0),
+        maxFeeInEth: new Decimal(0),
+        estimatedMaxDuration: new Decimal(0),
+        priorityFeeInGwei: new Decimal(0),
+        maxFeePerGasInGwei: new Decimal(0),
+        gasPriceInGwei: new Decimal(0),
+        icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
+        name: 'popup_html_evm_custom_gas_fee_custom',
+      },
+    });
+
+    const { container } = render(
+      <GasFeePanel
+        chain={
+          {
+            chainId: '1',
+            defaultTransactionType: EvmTransactionType.EIP_1559,
+            isCustom: true,
+            mainToken: 'ETH',
+            name: 'Custom Chain',
+          } as any
+        }
+        fromAddress="0x00000000000000000000000000000000000000aa"
+        onSelectFee={jest.fn()}
+        prefetchedMainTokenInfo={
+          {
+            priceUsd: 2400,
+            symbol: 'ETH',
+            type: 'NATIVE',
+          } as any
+        }
+        selectedFee={selectedFee}
+        setErrorMessage={jest.fn()}
+        transactionData={{
+          data: '0x',
+          from: '0x00000000000000000000000000000000000000aa',
+          to: '0x00000000000000000000000000000000000000bb',
+          type: EvmTransactionType.EIP_1559,
+          value: '0x0',
+        }}
+        transactionType={EvmTransactionType.EIP_1559}
+      />,
+    );
+
+    await waitFor(() => expect(GasFeeUtils.estimate).toHaveBeenCalled());
+
+    const panel = container.querySelector('.gas-fee-panel') as HTMLElement;
+    fireEvent.click(panel);
+
+    expect(screen.queryByText('popup_html_operation_button_save')).toBeNull();
+
+    fireEvent.click(panel);
+
+    expect(screen.getByText('popup_html_evm_custom_gas_fee_medium')).toBeTruthy();
   });
 });
