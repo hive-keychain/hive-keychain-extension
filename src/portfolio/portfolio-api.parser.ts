@@ -7,14 +7,18 @@ import {
   PortfolioExecutionType,
   PortfolioFiatRampOptions,
   PortfolioFiatRampPaymentMethod,
+  PortfolioHiveCustomJsonOperation,
+  PortfolioHiveOperation,
+  PortfolioHiveTransaction,
+  PortfolioHiveTransferOperation,
   PortfolioHistoryItem,
   PortfolioHistoryResponse,
-  PortfolioInAppPayload,
   PortfolioMode,
   PortfolioQuote,
   PortfolioQuoteFee,
   PortfolioQuoteRequestEcho,
   PortfolioQuoteResponse,
+  PortfolioQuoteTransaction,
   PortfolioRedirectOrder,
   PortfolioRouteType,
 } from 'src/portfolio/portfolio-api.interface';
@@ -151,6 +155,112 @@ const parsePortfolioEvmTransaction = (
   };
 };
 
+const parsePortfolioHiveTransferOperation = (
+  value: unknown,
+): PortfolioHiveTransferOperation | null => {
+  if (!Array.isArray(value) || value[0] !== 'transfer' || !isRecord(value[1])) {
+    return null;
+  }
+
+  const payload = value[1];
+  const from = readString(payload, 'from');
+  const to = readString(payload, 'to');
+  const amount = readString(payload, 'amount');
+  if (!from || !to || !amount) {
+    return null;
+  }
+
+  return [
+    'transfer',
+    {
+      from,
+      to,
+      amount,
+      memo: readString(payload, 'memo'),
+    },
+  ];
+};
+
+const parsePortfolioHiveCustomJsonOperation = (
+  value: unknown,
+): PortfolioHiveCustomJsonOperation | null => {
+  if (!Array.isArray(value) || value[0] !== 'custom_json' || !isRecord(value[1])) {
+    return null;
+  }
+
+  const payload = value[1];
+  const id = readString(payload, 'id');
+  if (!id) {
+    return null;
+  }
+
+  return [
+    'custom_json',
+    {
+      id,
+      json: readString(payload, 'json'),
+      required_auths: readStringArray(payload.required_auths),
+      required_posting_auths: readStringArray(payload.required_posting_auths),
+    },
+  ];
+};
+
+const parsePortfolioHiveOperation = (
+  value: unknown,
+): PortfolioHiveOperation | null =>
+  parsePortfolioHiveTransferOperation(value) ??
+  parsePortfolioHiveCustomJsonOperation(value);
+
+const parsePortfolioHiveTransaction = (
+  value: unknown,
+): PortfolioHiveTransaction | null => {
+  if (!isRecord(value) || value.method !== 'active' || !Array.isArray(value.operations)) {
+    return null;
+  }
+
+  const operations = value.operations
+    .map((operation) => parsePortfolioHiveOperation(operation))
+    .filter((operation): operation is PortfolioHiveOperation => operation !== null);
+
+  if (operations.length === 0) {
+    return null;
+  }
+
+  const refBlockNum = readNullableNumber(value, 'ref_block_num');
+  const refBlockPrefix = readNullableNumber(value, 'ref_block_prefix');
+  if (refBlockNum === null || refBlockPrefix === null) {
+    return null;
+  }
+
+  const expiration = readString(value, 'expiration');
+  if (!expiration) {
+    return null;
+  }
+
+  return {
+    method: 'active',
+    operations,
+    expiration,
+    ref_block_num: refBlockNum,
+    ref_block_prefix: refBlockPrefix,
+    extensions: Array.isArray(value.extensions) ? value.extensions : [],
+  };
+};
+
+const parsePortfolioQuoteTransaction = (
+  value: unknown,
+): PortfolioQuoteTransaction | null => {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  if ('operations' in value) {
+    return parsePortfolioHiveTransaction(value);
+  }
+
+  return parsePortfolioEvmTransaction(value);
+};
+
 const parsePortfolioQuote = (value: unknown): PortfolioQuote | null => {
   if (!isRecord(value)) {
     return null;
@@ -192,7 +302,7 @@ const parsePortfolioQuote = (value: unknown): PortfolioQuote | null => {
       'redirect',
     ),
     routeMetadata: readRecord(value.routeMetadata),
-    transaction: parsePortfolioEvmTransaction(value.transaction),
+    transaction: parsePortfolioQuoteTransaction(value.transaction),
   };
 };
 
@@ -346,6 +456,7 @@ const parsePortfolioExecution = (value: unknown): PortfolioExecution | null => {
     toAmount: readNullableString(value, 'toAmount'),
     fromAddress: readNullableString(value, 'fromAddress'),
     toAddress: readNullableString(value, 'toAddress'),
+    transaction: parsePortfolioQuoteTransaction(value.transaction),
     submittedAt: readNullableString(value, 'submittedAt'),
     updatedAt: readNullableString(value, 'updatedAt'),
   };
@@ -400,43 +511,6 @@ const parsePortfolioHistoryResponse = (
   };
 };
 
-const parsePortfolioInAppPayload = (
-  value: unknown,
-): PortfolioInAppPayload | null => {
-  if (!isRecord(value)) {
-    return null;
-  }
-
-  const quoteId = readString(value, 'quoteId');
-  const chainId = readNullableNumber(value, 'chainId');
-  if (!quoteId || chainId === null || !isRecord(value.transaction)) {
-    return null;
-  }
-
-  const transaction = value.transaction;
-
-  return {
-    provider: readString(value, 'provider'),
-    quoteId,
-    chainId,
-    transaction: {
-      to: readString(transaction, 'to'),
-      data: readString(transaction, 'data'),
-      value: readString(transaction, 'value', '0'),
-      from: readNullableString(transaction, 'from') ?? undefined,
-      gasLimit: readNullableString(transaction, 'gasLimit'),
-      gasPrice: readNullableString(transaction, 'gasPrice'),
-      maxFeePerGas: readNullableString(transaction, 'maxFeePerGas'),
-      maxPriorityFeePerGas: readNullableString(
-        transaction,
-        'maxPriorityFeePerGas',
-      ),
-    },
-    estimatedToAmount: readString(value, 'estimatedToAmount'),
-    fromAmount: readString(value, 'fromAmount'),
-  };
-};
-
 const parsePortfolioRedirectOrder = (
   value: unknown,
 ): PortfolioRedirectOrder | null => {
@@ -476,7 +550,6 @@ export const PortfolioApiParser = {
   parsePortfolioFiatRampOptions,
   parsePortfolioHistoryItem,
   parsePortfolioHistoryResponse,
-  parsePortfolioInAppPayload,
   parsePortfolioQuoteResponse,
   parsePortfolioRedirectOrder,
 };

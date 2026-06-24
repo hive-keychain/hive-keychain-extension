@@ -46,6 +46,51 @@ export interface PortfolioEvmTransaction {
   maxPriorityFeePerGas: string | null;
 }
 
+export type PortfolioHiveTransferOperation = [
+  'transfer',
+  {
+    from: string;
+    to: string;
+    amount: string;
+    memo: string;
+  },
+];
+
+export type PortfolioHiveCustomJsonOperation = [
+  'custom_json',
+  {
+    id: string;
+    json: string;
+    required_auths: string[];
+    required_posting_auths: string[];
+  },
+];
+
+export type PortfolioHiveOperation =
+  | PortfolioHiveTransferOperation
+  | PortfolioHiveCustomJsonOperation;
+
+export interface PortfolioHiveTransaction {
+  method: 'active';
+  operations: PortfolioHiveOperation[];
+  expiration: string;
+  ref_block_num: number;
+  ref_block_prefix: number;
+  extensions: unknown[];
+}
+
+export type PortfolioQuoteTransaction =
+  | PortfolioEvmTransaction
+  | PortfolioHiveTransaction;
+
+export const isPortfolioEvmTransaction = (
+  transaction: PortfolioQuoteTransaction,
+): transaction is PortfolioEvmTransaction => 'chainId' in transaction;
+
+export const isPortfolioHiveTransaction = (
+  transaction: PortfolioQuoteTransaction,
+): transaction is PortfolioHiveTransaction => 'operations' in transaction;
+
 export interface PortfolioQuote {
   quoteId: string;
   provider: PortfolioProviderId | string;
@@ -67,7 +112,7 @@ export interface PortfolioQuote {
   requiresRedirect: boolean;
   executionType: PortfolioExecutionType;
   routeMetadata: Record<string, unknown> | null;
-  transaction: PortfolioEvmTransaction | null;
+  transaction: PortfolioQuoteTransaction | null;
 }
 
 export interface PortfolioQuoteRequestEcho {
@@ -132,6 +177,7 @@ export interface PortfolioExecution {
   toAmount: string | null;
   fromAddress: string | null;
   toAddress: string | null;
+  transaction: PortfolioQuoteTransaction | null;
   submittedAt: string | null;
   updatedAt: string | null;
 }
@@ -147,24 +193,6 @@ export interface PortfolioHistoryResponse {
   pageSize: number;
   hasMore: boolean;
   items: PortfolioHistoryItem[];
-}
-
-export interface PortfolioInAppPayload {
-  provider: PortfolioProviderId | string;
-  quoteId: string;
-  chainId: number;
-  transaction: {
-    to: string;
-    data: string;
-    value: string;
-    from?: string;
-    gasLimit?: string | null;
-    gasPrice?: string | null;
-    maxFeePerGas?: string | null;
-    maxPriorityFeePerGas?: string | null;
-  };
-  estimatedToAmount: string;
-  fromAmount: string;
 }
 
 export interface PortfolioRedirectOrder {

@@ -1,0 +1,11 @@
+.portfolio-confirmation-step {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+
+  .confirmation-page--embedded {
+    flex: 1;
+    min-height: 0;
+  }
+}

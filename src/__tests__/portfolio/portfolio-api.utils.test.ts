@@ -162,6 +162,94 @@ describe('PortfolioApiUtils', () => {
     );
   });
 
+  it('sends transaction and route metadata when creating executions', async () => {
+    getValueMock.mockResolvedValue('x'.repeat(64));
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        id: 'exec-1',
+        status: 'created',
+        mode: 'swap',
+        provider: 'lifi',
+        providerReferenceId: null,
+        fromAssetId: 'evm:native:ethereum',
+        toAssetId: 'evm:token:ethereum:0xabc',
+        fromAmount: '1',
+        toAmount: '2',
+        fromAddress: '0xfrom',
+        toAddress: '0xto',
+        transaction: {
+          to: '0xrouter',
+          data: '0xabcd',
+          value: '0',
+          chainId: 1,
+        },
+        submittedAt: '2026-06-23T12:00:00.000Z',
+        updatedAt: '2026-06-23T12:00:00.000Z',
+      }),
+    });
+
+    await PortfolioApiUtils.createExecution(
+      {
+        quoteId: 'lifi:abc',
+        provider: 'lifi',
+        providerName: 'LI.FI',
+        providerLogoUrl: null,
+        category: 'swap',
+        routeType: 'swap',
+        fromAsset: null,
+        toAsset: null,
+        fromAmount: '1',
+        estimatedToAmount: '2',
+        comparableValue: '2',
+        providerFee: null,
+        networkFeeEstimate: null,
+        priceImpact: null,
+        warnings: [],
+        expiresAt: null,
+        redirectUrl: null,
+        requiresRedirect: false,
+        executionType: 'in_app',
+        routeMetadata: { tool: '1inch' },
+        transaction: {
+          from: null,
+          to: '0xrouter',
+          data: '0xabcd',
+          value: '0',
+          chainId: 1,
+          gasLimit: null,
+          gasPrice: null,
+          maxFeePerGas: null,
+          maxPriorityFeePerGas: null,
+        },
+      },
+      {
+        mode: 'swap',
+        routeType: 'swap',
+        fromAssetId: 'evm:native:ethereum',
+        toAssetId: 'evm:token:ethereum:0xabc',
+        fiatCurrency: null,
+        paymentMethod: null,
+        countryCode: null,
+        sourceChainId: 'ethereum',
+        destinationChainId: null,
+      },
+      '0xfrom',
+      '0xto',
+    );
+
+    const [, init] = (global.fetch as jest.Mock).mock.calls[0];
+    expect(JSON.parse(init.body as string)).toEqual(
+      expect.objectContaining({
+        transaction: expect.objectContaining({
+          to: '0xrouter',
+          chainId: 1,
+        }),
+        routeMetadata: { tool: '1inch' },
+      }),
+    );
+  });
+
   it('maps swap amount out of range errors to amount field messages', () => {
     const error = new PortfolioApiError({
       code: 'SWAP_AMOUNT_OUT_OF_RANGE',

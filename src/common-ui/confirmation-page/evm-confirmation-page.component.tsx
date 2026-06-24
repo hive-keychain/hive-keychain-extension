@@ -13,6 +13,7 @@ import {
 import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface';
+import { EvmWallet } from '@popup/evm/interfaces/wallet.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
 import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
@@ -30,6 +31,7 @@ import ButtonComponent, {
 import {
   ConfirmationPageEvmFields,
   ConfirmationPageFields,
+  EmbeddedConfirmationPageProps,
   EVMConfirmationPageParams,
 } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { ConfirmationPopup } from 'src/common-ui/confirmation-warning-info/confirmation-popups/confirmation-popups.component';
@@ -45,7 +47,34 @@ import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings
 
 import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
-const ConfirmationPage = ({
+
+export type EvmConfirmationPageContentProps = EVMConfirmationPageParams &
+  EmbeddedConfirmationPageProps & {
+    fields: ConfirmationPageEvmFields[];
+    message: string;
+    warningMessage?: string;
+    warningParams?: string[];
+    skipWarningTranslation?: boolean;
+    title?: string;
+    skipTitleTranslation?: boolean;
+    afterConfirmAction: (params?: GasFeeEstimationBase) => void | Promise<void>;
+    afterCancelAction?: () => void;
+    hasGasFee?: boolean;
+    chain: EvmChain;
+    tokenInfo?: EvmSmartContractInfo;
+    prefetchedMainTokenInfo?: EvmSmartContractInfoNative;
+    receiverAddress?: string;
+    amount?: string | number;
+    wallet: EvmWallet;
+    activeAccount: EvmActiveAccount;
+    selectedAccount: EvmActiveAccount;
+    transactionData: ProviderTransactionData;
+    setErrorMessage: (key: string, params?: string[]) => void;
+    goBack?: () => void;
+    setTitleContainerProperties?: typeof setTitleContainerProperties;
+  };
+
+export const EvmConfirmationPageContent = ({
   fields,
   message,
   afterConfirmAction,
@@ -65,10 +94,12 @@ const ConfirmationPage = ({
   activeAccount,
   selectedAccount,
   transactionData,
+  embedded = false,
+  onDismiss,
   goBack,
   setTitleContainerProperties,
   setErrorMessage,
-}: PropsType) => {
+}: EvmConfirmationPageContentProps) => {
   const [hasField] = useState(fields && fields.length !== 0);
   const [selectedFee, setSelectedFee] = useState<GasFeeEstimationBase>();
   const [balanceInfo, setBalanceInfo] = useState<BalanceInfo>();
@@ -82,9 +113,9 @@ const ConfirmationPage = ({
     () =>
       prefetchedMainTokenInfo ??
       (activeAccount?.nativeAndErc20Tokens?.value.find(
-        ({ tokenInfo }) =>
-          tokenInfo.type === EVMSmartContractType.NATIVE ||
-          tokenInfo.symbol.toLowerCase() ===
+        ({ tokenInfo: accountTokenInfo }) =>
+          accountTokenInfo.type === EVMSmartContractType.NATIVE ||
+          accountTokenInfo.symbol.toLowerCase() ===
             (chain as EvmChain)?.mainToken?.toLowerCase(),
       )?.tokenInfo as EvmSmartContractInfoNative | undefined),
     [
@@ -116,21 +147,23 @@ const ConfirmationPage = ({
   }, [amount, chain, selectedAccount, selectedFee, tokenInfo]);
 
   const initConfirmationPage = async () => {
-    setTitleContainerProperties({
-      title: title ?? 'popup_html_confirm',
-      skipTitleTranslation,
-      isBackButtonEnabled: true,
-      onBackAdditional: () => {
-        if (afterCancelAction) {
-          afterCancelAction();
-        }
-      },
-      onCloseAdditional: () => {
-        if (afterCancelAction) {
-          afterCancelAction();
-        }
-      },
-    });
+    if (!embedded && setTitleContainerProperties) {
+      setTitleContainerProperties({
+        title: title ?? 'popup_html_confirm',
+        skipTitleTranslation,
+        isBackButtonEnabled: true,
+        onBackAdditional: () => {
+          if (afterCancelAction) {
+            afterCancelAction();
+          }
+        },
+        onCloseAdditional: () => {
+          if (afterCancelAction) {
+            afterCancelAction();
+          }
+        },
+      });
+    }
     transactionHook.initPendingTransactionWarning(
       wallet.address,
       chain as EvmChain,
@@ -150,27 +183,33 @@ const ConfirmationPage = ({
       transactionHook.openWarningsPopup();
       return;
     }
-    if ((hasGasFee && !!selectedFee) || !hasGasFee)
-      afterConfirmAction(selectedFee);
-    else setErrorMessage('popup_html_evm_gas_fee_not_selected');
+    if ((hasGasFee && !!selectedFee) || !hasGasFee) {
+      void afterConfirmAction(selectedFee);
+    } else {
+      setErrorMessage('popup_html_evm_gas_fee_not_selected');
+    }
   };
 
   const handleClickOnCancel = async () => {
     if (afterCancelAction) {
       afterCancelAction();
     }
-    goBack();
+    if (embedded) {
+      onDismiss?.();
+      return;
+    }
+    goBack?.();
   };
 
-  const initBalance = async (tokenInfo: EvmSmartContractInfo) => {
+  const initBalance = async (balanceTokenInfo: EvmSmartContractInfo) => {
     setBalanceInfo(
       await EvmTokensUtils.getBalanceInfo(
         selectedAccount?.wallet.address!,
         chain as EvmChain,
-        tokenInfo,
+        balanceTokenInfo,
         amount!,
         selectedFee,
-        tokenInfo.type === EVMSmartContractType.ERC20
+        balanceTokenInfo.type === EVMSmartContractType.ERC20
           ? mainTokenInfo
           : undefined,
       ),
@@ -212,7 +251,7 @@ const ConfirmationPage = ({
 
   return (
     <div
-      className="confirmation-page"
+      className={`confirmation-page ${embedded ? 'confirmation-page--embedded' : ''}`}
       data-testid={`${Screen.CONFIRMATION_PAGE}-page`}>
       <div className="confirmation-top">
         <div
@@ -349,4 +388,6 @@ const connector = connect(mapStateToProps, {
 });
 type PropsType = ConnectedProps<typeof connector> & EVMConfirmationPageParams;
 
-export const EVMConfirmationPageComponent = connector(ConfirmationPage);
+export const EVMConfirmationPageComponent = connector((props: PropsType) => (
+  <EvmConfirmationPageContent {...props} embedded={false} />
+));

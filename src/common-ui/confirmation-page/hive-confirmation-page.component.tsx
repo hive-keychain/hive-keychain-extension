@@ -1,4 +1,5 @@
 import { Screen } from '@interfaces/screen.interface';
+import { ActiveAccount } from '@interfaces/active-account.interface';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import { addCaptionToLoading } from '@popup/multichain/actions/loading.actions';
@@ -15,6 +16,7 @@ import ButtonComponent, {
 import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import {
   ConfirmationPageFields,
+  EmbeddedConfirmationPageProps,
   HiveConfirmationPageParams,
 } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -25,7 +27,30 @@ import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with
 import { HtmlUtils } from 'src/utils/html.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
-const ConfirmationPage = ({
+
+export type HiveConfirmationPageContentProps = HiveConfirmationPageParams &
+  EmbeddedConfirmationPageProps & {
+    fields: ConfirmationPageFields[];
+    message: string;
+    warningMessage?: string;
+    warningParams?: string[];
+    skipWarningTranslation?: boolean;
+    title?: string;
+    skipTitleTranslation?: boolean;
+    afterConfirmAction: (params?: { metaData?: { twoFACodes?: Record<string, string> } }) =>
+      | void
+      | Promise<void>;
+    afterCancelAction?: () => void;
+    activeAccount: ActiveAccount;
+    method: KeychainKeyTypes | null;
+    extraComponent?: React.ReactNode;
+    tokens: RootState['hive']['tokens'];
+    goBack?: () => void;
+    setTitleContainerProperties?: typeof setTitleContainerProperties;
+    addCaptionToLoading?: typeof addCaptionToLoading;
+  };
+
+export const HiveConfirmationPageContent = ({
   fields,
   message,
   afterConfirmAction,
@@ -38,34 +63,38 @@ const ConfirmationPage = ({
   activeAccount,
   method,
   extraComponent,
+  embedded = false,
+  onDismiss,
   goBack,
   setTitleContainerProperties,
   addCaptionToLoading,
   tokens,
-}: PropsType) => {
+}: HiveConfirmationPageContentProps) => {
   const [willUseMultisig, setWillUseMultisig] = useState<boolean>();
   const [hasField] = useState(fields && fields.length !== 0);
 
   const [twoFABots, setTwoFABots] = useState<{ [botName: string]: string }>({});
 
   useEffect(() => {
-    setTitleContainerProperties({
-      title: title ?? 'popup_html_confirm',
-      skipTitleTranslation,
-      isBackButtonEnabled: true,
-      onBackAdditional: () => {
-        if (afterCancelAction) {
-          afterCancelAction();
-        }
-      },
-      onCloseAdditional: () => {
-        if (afterCancelAction) {
-          afterCancelAction();
-        }
-      },
-    });
+    if (!embedded && setTitleContainerProperties) {
+      setTitleContainerProperties({
+        title: title ?? 'popup_html_confirm',
+        skipTitleTranslation,
+        isBackButtonEnabled: true,
+        onBackAdditional: () => {
+          if (afterCancelAction) {
+            afterCancelAction();
+          }
+        },
+        onCloseAdditional: () => {
+          if (afterCancelAction) {
+            afterCancelAction();
+          }
+        },
+      });
+    }
 
-    checkForMultsig();
+    void checkForMultsig();
   }, []);
 
   const checkForMultsig = async () => {
@@ -129,21 +158,25 @@ const ConfirmationPage = ({
   const handleClickOnConfirm = () => {
     let metadata;
     if (willUseMultisig) {
-      addCaptionToLoading(
+      addCaptionToLoading?.(
         twoFABots && Object.keys(twoFABots).length > 0
           ? 'multisig_transmitting_to_2fa'
           : 'multisig_transmitting_to_multisig',
       );
       metadata = { twoFACodes: twoFABots };
     }
-    afterConfirmAction({ metaData: metadata });
+    void afterConfirmAction({ metaData: metadata });
   };
 
   const handleClickOnCancel = async () => {
     if (afterCancelAction) {
       afterCancelAction();
     }
-    goBack();
+    if (embedded) {
+      onDismiss?.();
+      return;
+    }
+    goBack?.();
   };
   const getIcon = (field: ConfirmationPageFields) => {
     switch (field.tokenSymbol) {
@@ -213,7 +246,7 @@ const ConfirmationPage = ({
 
   return (
     <div
-      className="confirmation-page"
+      className={`confirmation-page ${embedded ? 'confirmation-page--embedded' : ''}`}
       data-testid={`${Screen.CONFIRMATION_PAGE}-page`}>
       <div
         className={`confirmation-top ${
@@ -285,20 +318,22 @@ const ConfirmationPage = ({
 };
 
 const mapStateToProps = (state: RootState) => {
+  const params = state.navigation.stack[0].params;
   return {
-    message: state.navigation.stack[0].params.message as string,
-    fields: state.navigation.stack[0].params.fields as ConfirmationPageFields[],
-    warningMessage: state.navigation.stack[0].params.warningMessage as string,
-    warningParams: state.navigation.stack[0].params.warningParams,
+    message: params.message as string,
+    fields: params.fields as ConfirmationPageFields[],
+    warningMessage: params.warningMessage as string,
+    warningParams: params.warningParams,
     skipWarningTranslation:
       state.navigation.stack[0].params.skipWarningTranslation,
-    afterConfirmAction: state.navigation.stack[0].params.afterConfirmAction,
-    afterCancelAction: state.navigation.stack[0].params.afterCancelAction,
-    title: state.navigation.stack[0].params.title,
-    skipTitleTranslation: state.navigation.stack[0].params.skipTitleTranslation,
-    method: state.navigation.stack[0].params.method as KeychainKeyTypes,
-    activeAccount: state.hive.activeAccount,
-    extraComponent: state.navigation.stack[0].params.extraComponent,
+    afterConfirmAction: params.afterConfirmAction,
+    afterCancelAction: params.afterCancelAction,
+    title: params.title,
+    skipTitleTranslation: params.skipTitleTranslation,
+    method: params.method as KeychainKeyTypes,
+    activeAccount: (params.activeAccountOverride ??
+      state.hive.activeAccount) as ActiveAccount,
+    extraComponent: params.extraComponent,
     tokens: state.hive.tokens,
   };
 };
@@ -310,4 +345,6 @@ const connector = connect(mapStateToProps, {
 });
 type PropsType = ConnectedProps<typeof connector> & HiveConfirmationPageParams;
 
-export const HiveConfirmationPageComponent = connector(ConfirmationPage);
+export const HiveConfirmationPageComponent = connector((props: PropsType) => (
+  <HiveConfirmationPageContent {...props} embedded={false} />
+));

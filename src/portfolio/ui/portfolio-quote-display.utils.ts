@@ -1,7 +1,10 @@
 import {
+  PortfolioCanonicalAsset,
   PortfolioQuote,
   PortfolioQuoteFee,
 } from 'src/portfolio/portfolio-api.interface';
+import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
+import { ConfirmationPageFields } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 
 export type PortfolioQuoteDetailRow = {
   key: string;
@@ -19,6 +22,68 @@ const formatPortfolioQuoteFee = (fee: PortfolioQuoteFee | null): string | null =
 
 const formatPortfolioQuoteEnumLabel = (value: string): string =>
   value.replace(/_/g, ' ');
+
+const formatPortfolioConfirmationTokenAmount = (
+  amount: string,
+  asset: PortfolioCanonicalAsset | null | undefined,
+): string => {
+  const symbol = asset?.symbol?.trim();
+  return symbol ? `${amount} ${symbol}` : amount;
+};
+
+export type PortfolioInAppConfirmationFieldInput = {
+  quote: PortfolioQuote;
+  fromAsset?: PortfolioCanonicalAsset | null;
+  toAsset?: PortfolioCanonicalAsset | null;
+  fromAddress: string;
+  toAddress: string;
+};
+
+const buildPortfolioInAppConfirmationFields = (
+  input: PortfolioInAppConfirmationFieldInput,
+): ConfirmationPageFields[] => {
+  const { quote, fromAsset, toAsset, fromAddress, toAddress } = input;
+  const resolvedFromAsset = quote.fromAsset ?? fromAsset ?? null;
+  const resolvedToAsset = quote.toAsset ?? toAsset ?? null;
+
+  const fields: ConfirmationPageFields[] = [
+    {
+      label: 'portfolio_confirmation_from',
+      value: formatPortfolioConfirmationTokenAmount(
+        quote.fromAmount,
+        resolvedFromAsset,
+      ),
+    },
+    {
+      label: 'portfolio_confirmation_to',
+      value: formatPortfolioConfirmationTokenAmount(
+        quote.estimatedToAmount,
+        resolvedToAsset,
+      ),
+    },
+  ];
+
+  if (
+    PortfolioFlowUtils.requiresPortfolioRecipientAddress(
+      resolvedFromAsset ?? undefined,
+      resolvedToAsset ?? undefined,
+    ) &&
+    toAddress &&
+    toAddress !== fromAddress
+  ) {
+    fields.push({
+      label: 'portfolio_confirmation_to_account',
+      value: toAddress,
+    });
+  }
+
+  fields.push({
+    label: 'portfolio_provider',
+    value: quote.providerName || quote.provider,
+  });
+
+  return fields;
+};
 
 const getPortfolioQuoteDetailRows = (quote: PortfolioQuote): PortfolioQuoteDetailRow[] => {
   const rows: PortfolioQuoteDetailRow[] = [];
@@ -45,6 +110,8 @@ const getPortfolioQuoteDetailRows = (quote: PortfolioQuote): PortfolioQuoteDetai
 };
 
 export const PortfolioQuoteDisplayUtils = {
+  buildPortfolioInAppConfirmationFields,
+  formatPortfolioConfirmationTokenAmount,
   formatPortfolioQuoteEnumLabel,
   formatPortfolioQuoteFee,
   getPortfolioQuoteDetailRows,

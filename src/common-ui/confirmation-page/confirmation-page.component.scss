@@ -138,4 +138,26 @@
     padding: 0px 24px;
     padding-bottom: 16px;
   }
+
+  &--embedded {
+    display: flex;
+    flex-direction: column;
+    row-gap: var(--kc-space-4, 16px);
+    min-height: 0;
+
+    .confirmation-top {
+      padding: 0;
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+    }
+
+    .bottom-panel,
+    .evm-bottom-panel {
+      position: static;
+      width: 100%;
+      padding: 0;
+      margin-top: auto;
+    }
+  }
 }

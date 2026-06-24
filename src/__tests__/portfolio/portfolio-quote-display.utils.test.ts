@@ -8,8 +8,30 @@ const createQuote = (overrides: Partial<PortfolioQuote> = {}): PortfolioQuote =>
   providerLogoUrl: 'https://example.com/lifi.png',
   category: 'swap',
   routeType: 'swap',
-  fromAsset: null,
-  toAsset: null,
+  fromAsset: {
+    assetId: 'evm:native:ethereum',
+    ecosystem: 'evm',
+    symbol: 'ETH',
+    name: 'Ether',
+    chainId: 'ethereum',
+    address: null,
+    decimals: 18,
+    isNative: true,
+    familyId: 'eth',
+    logoUrl: null,
+  },
+  toAsset: {
+    assetId: 'evm:token:ethereum:0xabc',
+    ecosystem: 'evm',
+    symbol: 'USDC',
+    name: 'USD Coin',
+    chainId: 'ethereum',
+    address: '0xabc',
+    decimals: 6,
+    isNative: false,
+    familyId: 'usdc',
+    logoUrl: null,
+  },
   fromAmount: '1',
   estimatedToAmount: '3200',
   comparableValue: '3200',
@@ -55,5 +77,84 @@ describe('PortfolioQuoteDisplayUtils', () => {
     );
 
     expect(rows).toEqual([]);
+  });
+
+  it('builds in-app confirmation fields with token amounts and provider last', () => {
+    const fields = PortfolioQuoteDisplayUtils.buildPortfolioInAppConfirmationFields(
+      {
+        quote: createQuote(),
+        fromAddress: '0xfrom',
+        toAddress: '0xfrom',
+      },
+    );
+
+    expect(fields).toEqual([
+      {
+        label: 'portfolio_confirmation_from',
+        value: '1 ETH',
+      },
+      {
+        label: 'portfolio_confirmation_to',
+        value: '3200 USDC',
+      },
+      {
+        label: 'portfolio_provider',
+        value: 'LI.FI',
+      },
+    ]);
+  });
+
+  it('adds to account when a cross-ecosystem recipient is required', () => {
+    const fields = PortfolioQuoteDisplayUtils.buildPortfolioInAppConfirmationFields(
+      {
+        quote: createQuote({
+          fromAsset: {
+            assetId: 'hive:native:hive',
+            ecosystem: 'hive',
+            symbol: 'HIVE',
+            name: 'Hive',
+            chainId: 'hive',
+            address: null,
+            decimals: 3,
+            isNative: true,
+            familyId: 'hive',
+            logoUrl: null,
+          },
+          toAsset: {
+            assetId: 'evm:native:ethereum',
+            ecosystem: 'evm',
+            symbol: 'ETH',
+            name: 'Ether',
+            chainId: 'ethereum',
+            address: null,
+            decimals: 18,
+            isNative: true,
+            familyId: 'eth',
+            logoUrl: null,
+          },
+        }),
+        fromAddress: 'alice',
+        toAddress: '0xrecipient',
+      },
+    );
+
+    expect(fields).toEqual([
+      {
+        label: 'portfolio_confirmation_from',
+        value: '1 HIVE',
+      },
+      {
+        label: 'portfolio_confirmation_to',
+        value: '3200 ETH',
+      },
+      {
+        label: 'portfolio_confirmation_to_account',
+        value: '0xrecipient',
+      },
+      {
+        label: 'portfolio_provider',
+        value: 'LI.FI',
+      },
+    ]);
   });
 });

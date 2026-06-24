@@ -172,7 +172,7 @@ describe('PortfolioApiParser', () => {
     });
   });
 
-  it('parses execution, history, in-app, and redirect payloads', () => {
+  it('parses execution, history, hive transactions, and redirect payloads', () => {
     expect(
       PortfolioApiParser.parsePortfolioExecution({
         id: 'exec-1',
@@ -186,6 +186,12 @@ describe('PortfolioApiParser', () => {
         toAmount: '3200',
         fromAddress: '0xfrom',
         toAddress: '0xto',
+        transaction: {
+          to: '0xdef',
+          data: '0x1234',
+          value: '0',
+          chainId: 1,
+        },
         submittedAt: '2026-06-23T12:00:00.000Z',
         updatedAt: '2026-06-23T12:00:00.000Z',
       }),
@@ -194,6 +200,10 @@ describe('PortfolioApiParser', () => {
         id: 'exec-1',
         providerReferenceId: null,
         fromAddress: '0xfrom',
+        transaction: expect.objectContaining({
+          chainId: 1,
+          to: '0xdef',
+        }),
       }),
     );
 
@@ -227,23 +237,51 @@ describe('PortfolioApiParser', () => {
       }),
     );
 
-    expect(
-      PortfolioApiParser.parsePortfolioInAppPayload({
-        provider: 'lifi',
-        quoteId: 'lifi:abc',
-        chainId: 1,
-        transaction: {
-          to: '0xdef',
-          data: '0x1234',
-          value: '0',
+    const hiveQuote = PortfolioApiParser.parsePortfolioQuoteResponse({
+      request: { mode: 'swap' },
+      quotes: [
+        {
+          quoteId: 'keychain_swap:1',
+          provider: 'keychain_swap',
+          fromAmount: '1',
+          estimatedToAmount: '0.5',
+          executionType: 'in_app',
+          transaction: {
+            method: 'active',
+            operations: [
+              [
+                'transfer',
+                {
+                  from: 'alice',
+                  to: 'keychain.swap',
+                  amount: '1.000 HIVE',
+                  memo: 'estimate-123',
+                },
+              ],
+            ],
+            expiration: '2026-06-24T12:10:00',
+            ref_block_num: 123,
+            ref_block_prefix: 456,
+            extensions: [],
+          },
         },
-        estimatedToAmount: '3200',
-        fromAmount: '1',
-      }),
-    ).toEqual(
+      ],
+    });
+
+    expect(hiveQuote.quotes[0]?.transaction).toEqual(
       expect.objectContaining({
-        chainId: 1,
-        transaction: expect.objectContaining({ to: '0xdef' }),
+        method: 'active',
+        operations: [
+          [
+            'transfer',
+            {
+              from: 'alice',
+              to: 'keychain.swap',
+              amount: '1.000 HIVE',
+              memo: 'estimate-123',
+            },
+          ],
+        ],
       }),
     );
 

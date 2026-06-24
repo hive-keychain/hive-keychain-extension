@@ -1,4 +1,5 @@
 import { KeychainKeyTypes } from '@interfaces/keychain.interface';
+import { ActiveAccount } from '@interfaces/active-account.interface';
 import {
   EvmTransactionInfo,
   EvmTransactionWarning,
@@ -35,7 +36,13 @@ export interface HiveConfirmationPageParams extends ConfirmationPageParams {
   method: KeychainKeyTypes | null;
   /** Preserved when returning to manage accounts after confirmation. */
   manageAccountSelectedName?: string;
+  activeAccountOverride?: ActiveAccount;
 }
+
+export type EmbeddedConfirmationPageProps = {
+  embedded?: boolean;
+  onDismiss?: () => void;
+};
 
 export interface ConfirmationPageFields {
   label?: string;

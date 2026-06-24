@@ -1,9 +1,9 @@
-import { EVMConfirmationPageParams } from '@common-ui/confirmation-page/confirmation-page.interface';
 import {
   ComplexeCustomSelect,
   OptionItem,
 } from '@common-ui/custom-select/custom-select.component';
-import { Screen } from '@interfaces/screen.interface';
+import { ConfirmationPageEvmFields } from '@common-ui/confirmation-page/confirmation-page.interface';
+import { TransactionOptions } from '@interfaces/keys.interface';
 import {
   EvmActiveAccount,
   NativeAndErc20Token,
@@ -19,16 +19,11 @@ import { EvmAccountTokensLoadUtils } from '@popup/evm/utils/evm-account-tokens-l
 import { evmChainIdToDecimalPathSegment } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
-import {
-  navigateTo,
-  navigateToWithParams,
-} from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import {
   ChainType,
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
-import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -42,14 +37,21 @@ import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
+import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { ISO_COUNTRY_CODES } from 'src/reference-data/iso-country-code.list';
 import { IsoCountryCodeUtils } from 'src/reference-data/iso-country-code.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import {
+  isPortfolioEvmTransaction,
+  isPortfolioHiveTransaction,
   PortfolioCanonicalAsset,
+  PortfolioEvmTransaction,
+  PortfolioExecution,
   PortfolioFiatRampOptions,
   PortfolioHistoryItem,
+  PortfolioHiveTransaction,
   PortfolioMode,
   PortfolioQuote,
   PortfolioQuoteResponse,
@@ -61,7 +63,13 @@ import {
 import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
 import { UserPortfolio } from 'src/portfolio/portfolio.interface';
 import { PortfolioAccountAvatar } from 'src/portfolio/ui/portfolio-account-avatar.component';
+import {
+  getPortfolioHiveOperations,
+  PortfolioInAppConfirmationContext,
+} from 'src/portfolio/portfolio-in-app-confirmation.interface';
+import { PortfolioConfirmationStepComponent } from 'src/portfolio/ui/portfolio-confirmation-step.component';
 import { PortfolioQuoteCard } from 'src/portfolio/ui/portfolio-quote-card.component';
+import { PortfolioQuoteDisplayUtils } from 'src/portfolio/ui/portfolio-quote-display.utils';
 import { PortfolioNavIcon } from 'src/portfolio/ui/portfolio-nav-icon.enum';
 import { PortfolioOverlayListSelect } from 'src/portfolio/ui/portfolio-overlay-list-select.component';
 import { PortfolioSidebarNavIcon } from 'src/portfolio/ui/portfolio-sidebar-nav-icon.component';
@@ -128,6 +136,13 @@ const sections: PortfolioSection[] = [
 ];
 
 const hiddenPortfolioSections: PortfolioSection[] = ['buy', 'sell'];
+
+const portfolioInAppProviderIds = new Set(['lifi', 'keychain_swap']);
+
+const resolvePortfolioSignableTransaction = (
+  quote: PortfolioQuote,
+  execution: PortfolioExecution,
+) => execution.transaction ?? quote.transaction;
 
 const visibleSections = sections.filter(
   (item) => !hiddenPortfolioSections.includes(item),
@@ -368,8 +383,6 @@ export const Portfolio = ({
   activeHiveAccountName,
   activeEvmAccountAddress,
   activeAccountType,
-  navigateTo,
-  navigateToWithParams,
   setErrorMessage,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
@@ -411,6 +424,8 @@ export const Portfolio = ({
   >([]);
   const [isRampAvailableAssetsLoading, setIsRampAvailableAssetsLoading] =
     useState(false);
+  const [pendingInAppConfirmation, setPendingInAppConfirmation] =
+    useState<PortfolioInAppConfirmationContext | null>(null);
   const hasUserSelectedAccountRef = useRef(false);
 
   const accountOptions = useMemo<AccountOption[]>(() => {
@@ -1487,6 +1502,159 @@ export const Portfolio = ({
     }
   };
 
+  useEffect(() => {
+    setPendingInAppConfirmation(null);
+  }, [section]);
+
+  const buildEvmInAppConfirmationContext = async (
+    account: EvmAccount,
+    executionId: string,
+    quote: PortfolioQuote,
+    transaction: PortfolioEvmTransaction,
+    fromAddress: string,
+    toAddress: string,
+  ): Promise<PortfolioInAppConfirmationContext> => {
+    const chainId = `0x${transaction.chainId.toString(16)}`;
+    const chain = await ChainUtils.getChain<EvmChain>(chainId);
+    if (!chain) {
+      throw new Error('portfolio_chain_not_setup');
+    }
+
+    const transactionData = {
+      from: account.wallet.address,
+      to: transaction.to,
+      data: transaction.data,
+      value: transaction.value,
+      type: chain.defaultTransactionType ?? EvmTransactionType.EIP_1559,
+      chain,
+      gasLimit: transaction.gasLimit
+        ? Number(transaction.gasLimit)
+        : undefined,
+    };
+    const activeAccountOverride: EvmActiveAccount = {
+      address: account.wallet.address,
+      wallet: account.wallet,
+      nativeAndErc20Tokens: { value: [], loading: false },
+      nfts: { value: [], loading: false, initialized: false },
+      history: {
+        value: { events: [], nextCursor: null, fullyFetch: false },
+        loading: false,
+        initialized: false,
+      },
+      isReady: true,
+    };
+
+    return {
+      kind: 'evm',
+      executionId,
+      quote,
+      message: I18nUtils.getMessage('portfolio_native_confirmation_message'),
+      transaction,
+      account,
+      chain,
+      activeAccountOverride,
+      transactionData,
+      fields: PortfolioQuoteDisplayUtils.buildPortfolioInAppConfirmationFields({
+        quote,
+        fromAsset: fromCanonicalAsset,
+        toAsset: toCanonicalAsset,
+        fromAddress,
+        toAddress,
+      }).map((field, index) => ({
+        ...field,
+        name: field.label ?? `portfolio-confirmation-${index}`,
+      })) as ConfirmationPageEvmFields[],
+      onConfirm: async (gasFee?: GasFeeEstimationBase) => {
+        try {
+          const transactionResponse = await EvmTransactionsUtils.send(
+            account.wallet,
+            { ...transactionData, type: Number(transactionData.type) },
+            gasFee!,
+            chain.chainId,
+          );
+          await PortfolioApiUtils.markSubmitted(
+            executionId,
+            transactionResponse.hash,
+          );
+          setPendingInAppConfirmation(null);
+          setHistory(await PortfolioApiUtils.listHistory());
+        } catch (error) {
+          Logger.error('Portfolio transaction failed', error);
+          setErrorMessage('portfolio_execution_error');
+          throw error;
+        }
+      },
+    };
+  };
+
+  const buildHiveInAppConfirmationContext = async (
+    account: LocalAccount,
+    executionId: string,
+    quote: PortfolioQuote,
+    transaction: PortfolioHiveTransaction,
+    fromAddress: string,
+    toAddress: string,
+  ): Promise<PortfolioInAppConfirmationContext> => {
+    const activeKey = account.keys.active;
+    if (!activeKey) {
+      throw new Error('portfolio_hive_active_key_missing');
+    }
+
+    const extendedAccount = await AccountUtils.getExtendedAccount(account.name);
+    if (!extendedAccount) {
+      throw new Error('portfolio_hive_active_key_missing');
+    }
+
+    return {
+      kind: 'hive',
+      executionId,
+      quote,
+      message: I18nUtils.getMessage('portfolio_native_confirmation_message'),
+      transaction,
+      account,
+      activeAccount: {
+        account: extendedAccount,
+        keys: account.keys,
+        rc: {} as ActiveAccount['rc'],
+        name: account.name,
+      },
+      fields: PortfolioQuoteDisplayUtils.buildPortfolioInAppConfirmationFields({
+        quote,
+        fromAsset: fromCanonicalAsset,
+        toAsset: toCanonicalAsset,
+        fromAddress,
+        toAddress,
+      }),
+      onConfirm: async (options?: TransactionOptions) => {
+        try {
+          const result = await HiveTxUtils.sendOperation(
+            getPortfolioHiveOperations(transaction),
+            activeKey,
+            false,
+            options,
+          );
+          if (!result?.tx_id) {
+            throw new Error('portfolio_execution_error');
+          }
+          try {
+            await PortfolioApiUtils.markSubmitted(executionId, result.tx_id);
+          } catch (submitError) {
+            Logger.error(
+              'Portfolio execution submitted on-chain but history sync failed',
+              submitError,
+            );
+          }
+          setPendingInAppConfirmation(null);
+          setHistory(await PortfolioApiUtils.listHistory());
+        } catch (error) {
+          Logger.error('Portfolio transaction failed', error);
+          setErrorMessage('portfolio_execution_error');
+          throw error;
+        }
+      },
+    };
+  };
+
   const executeQuote = async (quote: PortfolioQuote) => {
     if (!selectedAccount || !quoteResponse) return;
     setIsFlowLoading(true);
@@ -1513,21 +1681,47 @@ export const Portfolio = ({
         toAddress,
       );
 
-      if (quote.executionType === 'in_app' && quote.provider === 'lifi') {
-        if (selectedAccount.type !== ChainType.EVM) {
-          throw new Error('portfolio_native_execution_requires_evm');
+      if (quote.executionType === 'in_app') {
+        const transaction = resolvePortfolioSignableTransaction(quote, execution);
+        if (!transaction) {
+          throw new Error('portfolio_execution_prepare_failed');
         }
-        const payload = await PortfolioApiUtils.prepareInAppExecution(
-          execution.id,
-          address,
-          toAddress,
-        );
-        await openNativeConfirmation(
-          selectedAccount.account,
-          execution.id,
-          payload,
-        );
-        return;
+
+        if (isPortfolioHiveTransaction(transaction)) {
+          if (selectedAccount.type !== ChainType.HIVE) {
+            throw new Error('portfolio_native_execution_requires_hive');
+          }
+          setPendingInAppConfirmation(
+            await buildHiveInAppConfirmationContext(
+              selectedAccount.account,
+              execution.id,
+              quote,
+              transaction,
+              address,
+              toAddress,
+            ),
+          );
+          return;
+        }
+
+        if (isPortfolioEvmTransaction(transaction)) {
+          if (selectedAccount.type !== ChainType.EVM) {
+            throw new Error('portfolio_native_execution_requires_evm');
+          }
+          setPendingInAppConfirmation(
+            await buildEvmInAppConfirmationContext(
+              selectedAccount.account,
+              execution.id,
+              quote,
+              transaction,
+              address,
+              toAddress,
+            ),
+          );
+          return;
+        }
+
+        throw new Error('portfolio_execution_prepare_failed');
       }
 
       if (quote.redirectUrl) {
@@ -1553,78 +1747,6 @@ export const Portfolio = ({
     } finally {
       setIsFlowLoading(false);
     }
-  };
-
-  const openNativeConfirmation = async (
-    account: EvmAccount,
-    executionId: string,
-    payload: Awaited<
-      ReturnType<typeof PortfolioApiUtils.prepareInAppExecution>
-    >,
-  ) => {
-    const chainId = `0x${payload.chainId.toString(16)}`;
-    const chain = await ChainUtils.getChain<EvmChain>(chainId);
-    if (!chain) {
-      throw new Error('portfolio_chain_not_setup');
-    }
-
-    const transactionData = {
-      from: account.wallet.address,
-      to: payload.transaction.to,
-      data: payload.transaction.data,
-      value: payload.transaction.value,
-      type: chain.defaultTransactionType ?? EvmTransactionType.EIP_1559,
-      chain,
-      gasLimit: payload.transaction.gasLimit
-        ? Number(payload.transaction.gasLimit)
-        : undefined,
-    };
-    const activeAccountOverride: EvmActiveAccount = {
-      address: account.wallet.address,
-      wallet: account.wallet,
-      nativeAndErc20Tokens: { value: [], loading: false },
-      nfts: { value: [], loading: false, initialized: false },
-      history: {
-        value: { events: [], nextCursor: null, fullyFetch: false },
-        loading: false,
-        initialized: false,
-      },
-      isReady: true,
-    };
-
-    navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-      message: I18nUtils.getMessage('portfolio_native_confirmation_message'),
-      fields: [
-        { label: 'portfolio_provider', value: payload.provider },
-        { label: 'popup_html_transfer_from', value: account.wallet.address },
-        { label: 'popup_html_transfer_to', value: payload.transaction.to },
-        { label: 'popup_html_transfer_amount', value: payload.fromAmount },
-      ],
-      title: 'portfolio',
-      hasGasFee: true,
-      wallet: account.wallet,
-      chainOverride: chain,
-      activeAccountOverride,
-      transactionData,
-      afterConfirmAction: async (gasFee) => {
-        try {
-          const transactionResponse = await EvmTransactionsUtils.send(
-            account.wallet,
-            { ...transactionData, type: Number(transactionData.type) },
-            gasFee as GasFeeEstimationBase,
-            chain.chainId,
-          );
-          await PortfolioApiUtils.markSubmitted(
-            executionId,
-            transactionResponse.hash,
-          );
-          navigateTo(MultichainScreen.PORTFOLIO_PAGE, true);
-        } catch (error) {
-          Logger.error('Portfolio transaction failed', error);
-          setErrorMessage('portfolio_execution_error');
-        }
-      },
-    } as EVMConfirmationPageParams);
   };
 
   const openFlowForRow = (row: PortfolioRow, mode: PortfolioMode) => {
@@ -1829,11 +1951,13 @@ export const Portfolio = ({
     const selectedQuote = quoteResponse?.quotes.find(
       (quote) => quote.quoteId === selectedQuoteId,
     );
-    const canExecuteSelectedQuote =
-      selectedQuote?.executionType === 'in_app'
-        ? selectedQuote.provider === 'lifi'
-        : Boolean(selectedQuote?.redirectUrl) ||
-          selectedQuote?.provider === 'stealthex';
+    const canExecuteSelectedQuote = selectedQuote
+      ? selectedQuote.executionType === 'in_app'
+        ? Boolean(selectedQuote.transaction) &&
+          portfolioInAppProviderIds.has(selectedQuote.provider)
+        : selectedQuote.executionType === 'redirect' ||
+          Boolean(selectedQuote.redirectUrl)
+      : false;
     const hasMultipleQuotes = (quoteResponse?.quotes.length ?? 0) > 1;
     const estimatedAmountInput = (
       <InputComponent
@@ -2136,6 +2260,15 @@ export const Portfolio = ({
     const showHistorySpinner =
       isHistoryLoading && history.length === 0 && section === 'history';
 
+    if (pendingInAppConfirmation) {
+      return (
+        <PortfolioConfirmationStepComponent
+          context={pendingInAppConfirmation}
+          onDismiss={() => setPendingInAppConfirmation(null)}
+        />
+      );
+    }
+
     if (showInitialPortfolioSpinner || showHistorySpinner) {
       return (
         <div className="rotating-logo-wrapper">
@@ -2149,6 +2282,10 @@ export const Portfolio = ({
     if (section === 'history') return renderHistory();
     return renderFlow();
   };
+
+  const pageTitleKey = pendingInAppConfirmation
+    ? 'popup_html_confirm'
+    : `portfolio_section_${section}`;
 
   return (
     <div className="portfolio-app-shell" data-testid="portfolio-page">
@@ -2185,7 +2322,8 @@ export const Portfolio = ({
           <section className="portfolio-page-frame">
             <header className="portfolio-page-header">
               <div className="portfolio-page-header__title">
-                <h1>{I18nUtils.getMessage(`portfolio_section_${section}`)}</h1>
+                <h1>{I18nUtils.getMessage(pageTitleKey)}</h1>
+                {!pendingInAppConfirmation && (
                 <button
                   aria-label={I18nUtils.getMessage('portfolio_refresh')}
                   className="portfolio-refresh-button"
@@ -2202,12 +2340,17 @@ export const Portfolio = ({
                     icon={SVGIcons.SWAPS_HISTORY_REFRESH}
                   />
                 </button>
+                )}
               </div>
+              {!pendingInAppConfirmation && (
               <p>{I18nUtils.getMessage('portfolio_page_description')}</p>
+              )}
             </header>
 
             <div className="portfolio-card">
-              <h2>{I18nUtils.getMessage(`portfolio_section_${section}`)}</h2>
+              {!pendingInAppConfirmation && (
+                <h2>{I18nUtils.getMessage(pageTitleKey)}</h2>
+              )}
               {renderSectionContent()}
             </div>
 
@@ -2232,8 +2375,6 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const connector = connect(mapStateToProps, {
-  navigateTo,
-  navigateToWithParams,
   setErrorMessage,
   setTitleContainerProperties,
 });

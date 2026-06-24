@@ -7,7 +7,6 @@ import {
   PortfolioExecution,
   PortfolioFiatRampOptions,
   PortfolioHistoryItem,
-  PortfolioInAppPayload,
   PortfolioMode,
   PortfolioQuote,
   PortfolioQuoteRequestBody,
@@ -198,6 +197,8 @@ const createExecution = async (
           fromAddress,
           toAddress,
           executionType: quote.executionType,
+          transaction: quote.transaction,
+          routeMetadata: quote.routeMetadata,
           fiatCurrency: request.fiatCurrency,
           paymentMethod: request.paymentMethod,
           countryCode: request.countryCode,
@@ -212,29 +213,6 @@ const createExecution = async (
   }
 
   return execution;
-};
-
-const prepareInAppExecution = async (
-  executionId: string,
-  fromAddress: string,
-  toAddress: string,
-): Promise<PortfolioInAppPayload> => {
-  const payload = PortfolioApiParser.parsePortfolioInAppPayload(
-    await fetchJson(
-      `/executions/${encodeURIComponent(executionId)}/prepare-in-app`,
-      {
-        method: 'POST',
-        body: JSON.stringify({ fromAddress, toAddress }),
-      },
-      true,
-    ),
-  );
-
-  if (!payload) {
-    throw new Error('portfolio_execution_prepare_failed');
-  }
-
-  return payload;
 };
 
 const createRedirectOrder = async (
@@ -289,6 +267,5 @@ export const PortfolioApiUtils = {
   listAvailableAssets,
   listHistory,
   markSubmitted,
-  prepareInAppExecution,
   resolvePortfolioAmountQuoteError,
 };
