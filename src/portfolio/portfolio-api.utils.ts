@@ -18,6 +18,34 @@ import { PortfolioApiParser } from 'src/portfolio/portfolio-api.parser';
 
 const CLIENT_TOKEN_HEADER = 'X-Keychain-Portfolio-Client-Token';
 
+export const canExecutePortfolioQuote = (quote: PortfolioQuote): boolean => {
+  if (quote.executionType === 'in_app') {
+    return Boolean(quote.transaction);
+  }
+
+  return quote.executionType === 'redirect' || Boolean(quote.redirectUrl);
+};
+
+export const resolveExecutablePortfolioQuoteId = (
+  quotes: PortfolioQuote[],
+  preferredQuoteId?: string,
+): string => {
+  if (preferredQuoteId) {
+    const preferredQuote = quotes.find(
+      (quote) => quote.quoteId === preferredQuoteId,
+    );
+    if (preferredQuote && canExecutePortfolioQuote(preferredQuote)) {
+      return preferredQuoteId;
+    }
+  }
+
+  return (
+    quotes.find((quote) => canExecutePortfolioQuote(quote))?.quoteId ??
+    quotes[0]?.quoteId ??
+    ''
+  );
+};
+
 export class PortfolioApiError extends Error {
   readonly code?: string;
   readonly details?: PortfolioSwapAmountRangeDetails;
@@ -258,6 +286,7 @@ const listHistory = async (): Promise<PortfolioHistoryItem[]> =>
   ).items;
 
 export const PortfolioApiUtils = {
+  canExecutePortfolioQuote,
   createExecution,
   createRedirectOrder,
   getClientToken,
@@ -267,5 +296,6 @@ export const PortfolioApiUtils = {
   listAvailableAssets,
   listHistory,
   markSubmitted,
+  resolveExecutablePortfolioQuoteId,
   resolvePortfolioAmountQuoteError,
 };

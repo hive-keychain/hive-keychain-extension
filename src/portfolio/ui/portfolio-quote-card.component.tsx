@@ -9,12 +9,14 @@ import './portfolio-quote-card.component.scss';
 type Props = {
   quote: PortfolioQuote;
   isSelected: boolean;
+  isExecutable?: boolean;
   onSelect: () => void;
 };
 
 export const PortfolioQuoteCard = ({
   quote,
   isSelected,
+  isExecutable = true,
   onSelect,
 }: Props) => {
   const detailRows = PortfolioQuoteDisplayUtils.getPortfolioQuoteDetailRows(quote);
@@ -26,7 +28,9 @@ export const PortfolioQuoteCard = ({
     <div
       role="button"
       tabIndex={0}
-      className={`portfolio-quote-card ${isSelected ? 'selected' : ''}`}
+      className={`portfolio-quote-card ${isSelected ? 'selected' : ''} ${
+        isExecutable ? '' : 'not-executable'
+      }`}
       onClick={onSelect}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
@@ -50,7 +54,11 @@ export const PortfolioQuoteCard = ({
           )}
           <div className="portfolio-quote-card__provider-text">
             <strong>{providerLabel}</strong>
-            <small>{quote.provider}</small>
+            <small>
+              {isExecutable
+                ? quote.provider
+                : I18nUtils.getMessage('portfolio_quote_not_executable')}
+            </small>
           </div>
         </div>
         <strong className="portfolio-quote-card__amount">

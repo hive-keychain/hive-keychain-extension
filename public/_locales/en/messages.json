@@ -4160,6 +4160,7 @@
     "message": "No quote available for the requested amount."
   },
   "portfolio_provider_execution_unavailable": { "message": "This provider cannot currently be executed from Keychain." },
+  "portfolio_quote_not_executable": { "message": "Not executable in Keychain" },
   "portfolio_no_assets": { "message": "No balances found for this account." },
   "portfolio_no_quotes": { "message": "No quotes are currently available." },
   "portfolio_no_history": { "message": "No portfolio history yet." },

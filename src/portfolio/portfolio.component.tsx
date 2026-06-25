@@ -137,8 +137,6 @@ const sections: PortfolioSection[] = [
 
 const hiddenPortfolioSections: PortfolioSection[] = ['buy', 'sell'];
 
-const portfolioInAppProviderIds = new Set(['lifi', 'keychain_swap']);
-
 const resolvePortfolioSignableTransaction = (
   quote: PortfolioQuote,
   execution: PortfolioExecution,
@@ -1481,7 +1479,9 @@ export const Portfolio = ({
             : undefined,
       });
       setQuoteResponse(response);
-      setSelectedQuoteId(response.quotes[0]?.quoteId ?? '');
+      setSelectedQuoteId(
+        PortfolioApiUtils.resolveExecutablePortfolioQuoteId(response.quotes),
+      );
       setIsQuotesPanelExpanded(false);
     } catch (error) {
       Logger.error('Unable to load portfolio quotes', error);
@@ -1952,11 +1952,7 @@ export const Portfolio = ({
       (quote) => quote.quoteId === selectedQuoteId,
     );
     const canExecuteSelectedQuote = selectedQuote
-      ? selectedQuote.executionType === 'in_app'
-        ? Boolean(selectedQuote.transaction) &&
-          portfolioInAppProviderIds.has(selectedQuote.provider)
-        : selectedQuote.executionType === 'redirect' ||
-          Boolean(selectedQuote.redirectUrl)
+      ? PortfolioApiUtils.canExecutePortfolioQuote(selectedQuote)
       : false;
     const hasMultipleQuotes = (quoteResponse?.quotes.length ?? 0) > 1;
     const estimatedAmountInput = (
@@ -1979,6 +1975,7 @@ export const Portfolio = ({
         key={quote.quoteId}
         quote={quote}
         isSelected={selectedQuoteId === quote.quoteId}
+        isExecutable={PortfolioApiUtils.canExecutePortfolioQuote(quote)}
         onSelect={() => setSelectedQuoteId(quote.quoteId)}
       />
     );

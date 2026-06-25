@@ -124,4 +124,12 @@
       color: var(--kc-color-accent);
     }
   }
+
+  &.not-executable {
+    opacity: 0.72;
+
+    .portfolio-quote-card__provider-text small {
+      color: var(--kc-color-text-secondary);
+    }
+  }
 }

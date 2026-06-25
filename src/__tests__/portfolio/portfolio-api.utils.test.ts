@@ -1,4 +1,5 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { PortfolioQuote } from 'src/portfolio/portfolio-api.interface';
 import {
   PortfolioApiError,
   PortfolioApiUtils,
@@ -281,5 +282,160 @@ describe('PortfolioApiUtils', () => {
         new Error('portfolio_load_error'),
       ),
     ).toBeNull();
+  });
+
+  describe('canExecutePortfolioQuote', () => {
+    const createQuote = (
+      overrides: Partial<PortfolioQuote> = {},
+    ): PortfolioQuote => ({
+      quoteId: 'quote-1',
+      provider: 'lifi',
+      providerName: 'LI.FI',
+      providerLogoUrl: null,
+      category: 'swap',
+      routeType: 'swap',
+      fromAsset: null,
+      toAsset: null,
+      fromAmount: '1',
+      estimatedToAmount: '1',
+      comparableValue: '1',
+      providerFee: null,
+      networkFeeEstimate: null,
+      priceImpact: null,
+      warnings: [],
+      expiresAt: null,
+      redirectUrl: null,
+      requiresRedirect: false,
+      executionType: 'in_app',
+      routeMetadata: null,
+      transaction: {
+        to: '0xdef',
+        value: '0',
+        data: '0x',
+        chainId: 1,
+        from: null,
+        gasLimit: null,
+        gasPrice: null,
+        maxFeePerGas: null,
+        maxPriorityFeePerGas: null,
+      },
+      ...overrides,
+    });
+
+    it('allows any in-app quote that carries a signable transaction', () => {
+      expect(
+        PortfolioApiUtils.canExecutePortfolioQuote(createQuote()),
+      ).toBe(true);
+      expect(
+        PortfolioApiUtils.canExecutePortfolioQuote(
+          createQuote({ provider: 'changelly' }),
+        ),
+      ).toBe(true);
+      expect(
+        PortfolioApiUtils.canExecutePortfolioQuote(
+          createQuote({ provider: 'stealthex' }),
+        ),
+      ).toBe(true);
+    });
+
+    it('blocks in-app quotes that do not include a transaction', () => {
+      expect(
+        PortfolioApiUtils.canExecutePortfolioQuote(
+          createQuote({ transaction: null }),
+        ),
+      ).toBe(false);
+    });
+
+    it('allows redirect quotes without a transaction payload', () => {
+      expect(
+        PortfolioApiUtils.canExecutePortfolioQuote(
+          createQuote({
+            provider: 'stealthex',
+            executionType: 'redirect',
+            transaction: null,
+          }),
+        ),
+      ).toBe(true);
+    });
+  });
+
+  describe('resolveExecutablePortfolioQuoteId', () => {
+    const nonExecutableQuote = {
+      quoteId: 'changelly:1',
+      provider: 'changelly',
+      executionType: 'in_app' as const,
+      transaction: null,
+      redirectUrl: null,
+    };
+    const executableQuote = {
+      quoteId: 'stealthex:1',
+      provider: 'stealthex',
+      executionType: 'in_app' as const,
+      transaction: {
+        to: '0xdef',
+        value: '0',
+        data: '0x',
+        chainId: 1,
+        from: null,
+        gasLimit: null,
+        gasPrice: null,
+        maxFeePerGas: null,
+        maxPriorityFeePerGas: null,
+      },
+    };
+
+    const createQuote = (
+      overrides: Record<string, unknown>,
+    ): PortfolioQuote =>
+      ({
+        quoteId: 'quote-1',
+        provider: 'lifi',
+        providerName: 'LI.FI',
+        providerLogoUrl: null,
+        category: 'swap',
+        routeType: 'swap',
+        fromAsset: null,
+        toAsset: null,
+        fromAmount: '1',
+        estimatedToAmount: '1',
+        comparableValue: '1',
+        providerFee: null,
+        networkFeeEstimate: null,
+        priceImpact: null,
+        warnings: [],
+        expiresAt: null,
+        redirectUrl: null,
+        requiresRedirect: false,
+        executionType: 'in_app',
+        routeMetadata: null,
+        transaction: null,
+        ...overrides,
+      }) as PortfolioQuote;
+
+    it('prefers the first executable quote when the best quote cannot execute', () => {
+      expect(
+        PortfolioApiUtils.resolveExecutablePortfolioQuoteId([
+          createQuote(nonExecutableQuote),
+          createQuote(executableQuote),
+        ]),
+      ).toBe('stealthex:1');
+    });
+
+    it('keeps a preferred quote when it is executable', () => {
+      expect(
+        PortfolioApiUtils.resolveExecutablePortfolioQuoteId(
+          [createQuote(nonExecutableQuote), createQuote(executableQuote)],
+          'stealthex:1',
+        ),
+      ).toBe('stealthex:1');
+    });
+
+    it('falls back to the first quote when none are executable', () => {
+      expect(
+        PortfolioApiUtils.resolveExecutablePortfolioQuoteId([
+          createQuote(nonExecutableQuote),
+        ]),
+      ).toBe('changelly:1');
+    });
   });
 });
