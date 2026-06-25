@@ -202,4 +202,64 @@ describe('GasFeeUtils', () => {
 
     expect(EvmLightNodeApi.get).not.toHaveBeenCalled();
   });
+
+  it('returns oracle presets when on-chain gas limit estimation fails', async () => {
+    jest
+      .spyOn(EthersUtils, 'getGasLimit')
+      .mockRejectedValue(new Error('execution reverted'));
+    (EvmLightNodeApi.get as jest.Mock).mockResolvedValue({
+      low: {
+        suggestedMaxPriorityFeePerGas: '1',
+        suggestedMaxFeePerGas: '20',
+        maxWaitTimeEstimate: 30000,
+      },
+      medium: {
+        suggestedMaxPriorityFeePerGas: '1.5',
+        suggestedMaxFeePerGas: '25',
+        maxWaitTimeEstimate: 15000,
+      },
+      high: {
+        suggestedMaxPriorityFeePerGas: '2',
+        suggestedMaxFeePerGas: '30',
+        maxWaitTimeEstimate: 5000,
+      },
+      estimatedBaseFee: '10',
+      latestPriorityFeeRange: ['1', '2'],
+      historicalPriorityFeeRange: ['1', '3'],
+      historicalBaseFeeRange: ['8', '12'],
+      baseFeeTrend: 'up',
+      priorityFeeTrend: 'down',
+    });
+
+    const chain = {
+      chainId: '0x1',
+      defaultTransactionType: EvmTransactionType.EIP_1559,
+      logo: '',
+      mainToken: 'ETH',
+      name: 'Ethereum',
+      rpcs: [],
+      type: ChainType.EVM,
+    } as EvmChain;
+
+    const transactionData: ProviderTransactionData = {
+      data: '0xdeadbeef',
+      from: '0x0000000000000000000000000000000000000001',
+      to: '0x0000000000000000000000000000000000000002',
+      type: EvmTransactionType.EIP_1559,
+      value: '0x0',
+    };
+
+    const result = await GasFeeUtils.estimate(
+      chain,
+      transactionData.from!,
+      EvmTransactionType.EIP_1559,
+      2500,
+      undefined,
+      transactionData,
+    );
+
+    expect(result.suggested).toBeDefined();
+    expect(result.suggested?.name).toBe('popup_html_evm_custom_gas_fee_low');
+    expect(result.suggested?.gasLimit.toNumber()).toBe(500_000);
+  });
 });

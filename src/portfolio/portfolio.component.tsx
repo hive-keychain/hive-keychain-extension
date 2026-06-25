@@ -1552,7 +1552,7 @@ export const Portfolio = ({
   }, []);
 
   useEffect(() => {
-    if (section !== 'swap' || !canRequestQuotes) {
+    if (section !== 'swap' || !canRequestQuotes || pendingInAppConfirmation) {
       swapQuoteRefreshDeadlineRef.current = 0;
       setQuoteRefreshCountdown(null);
       return;
@@ -1583,6 +1583,7 @@ export const Portfolio = ({
   }, [
     section,
     canRequestQuotes,
+    pendingInAppConfirmation,
     amount,
     fromAssetId,
     toAssetId,
@@ -1619,6 +1620,9 @@ export const Portfolio = ({
       gasLimit: transaction.gasLimit
         ? Number(transaction.gasLimit)
         : undefined,
+      maxFeePerGas: transaction.maxFeePerGas ?? undefined,
+      maxPriorityFeePerGas: transaction.maxPriorityFeePerGas ?? undefined,
+      gasPrice: transaction.gasPrice ?? undefined,
     };
     const activeAccountOverride: EvmActiveAccount = {
       address: account.wallet.address,
@@ -1752,6 +1756,8 @@ export const Portfolio = ({
 
   const executeQuote = async (quote: PortfolioQuote) => {
     if (!selectedAccount || !quoteResponse) return;
+    swapQuoteRefreshDeadlineRef.current = 0;
+    setQuoteRefreshCountdown(null);
     setIsFlowLoading(true);
     setStatusMessage('');
     try {

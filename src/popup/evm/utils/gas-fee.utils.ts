@@ -19,6 +19,8 @@ import Logger from 'src/utils/logger.utils';
 /** Above ~200M is never a real per-tx gas limit; larger values are usually mis-encoded or malicious. */
 const MAX_PLAUSIBLE_DAPP_GAS_LIMIT = 200_000_000;
 const MIN_PLAUSIBLE_DAPP_GAS_LIMIT = 21_000;
+const DEFAULT_SIMPLE_TX_GAS_LIMIT = 21_000;
+const DEFAULT_CONTRACT_CALL_GAS_LIMIT = 500_000;
 
 const isPlausibleGasLimit = (n: number | undefined | null): n is number => {
   return (
@@ -34,6 +36,16 @@ const getGasFeeEstimations = async (chain: Chain) => {
     return null;
   }
   return fetchGasOracle(chain.chainId) as Promise<any>;
+};
+
+const getFallbackGasLimit = (
+  transactionData?: ProviderTransactionData,
+): number => {
+  const data = transactionData?.data?.trim();
+  if (data && data !== '0x' && data !== '0x0') {
+    return DEFAULT_CONTRACT_CALL_GAS_LIMIT;
+  }
+  return DEFAULT_SIMPLE_TX_GAS_LIMIT;
 };
 
 const isInvalidDecimal = (value?: Decimal) => !value || value.lte(0);
@@ -95,18 +107,25 @@ const estimate = async (
     gasLimit = undefined;
   }
   if (!gasLimit) {
-    gasLimit = Number(
-      await EthersUtils.getGasLimit(
-        chain,
-        fromAddress,
-        transactionData?.abi,
-        transactionData?.signature ?? transactionData?.method,
-        transactionData?.args,
-        transactionData?.data,
-        transactionData?.to,
-        transactionData?.value,
-      ),
-    );
+    try {
+      gasLimit = Number(
+        await EthersUtils.getGasLimit(
+          chain,
+          fromAddress,
+          transactionData?.abi,
+          transactionData?.signature ?? transactionData?.method,
+          transactionData?.args,
+          transactionData?.data,
+          transactionData?.to,
+          transactionData?.value,
+        ),
+      );
+    } catch (error) {
+      Logger.warn(
+        `On-chain gas limit estimation failed for chain ${chain.chainId}; using fallback limit`,
+      );
+      gasLimit = getFallbackGasLimit(transactionData);
+    }
   }
 
   if (!estimates || !estimates.low) {
@@ -338,6 +357,7 @@ const estimate = async (
         price,
       );
   }
+
   return fullEstimation;
 };
 
