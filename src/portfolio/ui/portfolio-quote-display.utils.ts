@@ -1,10 +1,17 @@
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import {
   PortfolioCanonicalAsset,
   PortfolioQuote,
   PortfolioQuoteFee,
 } from 'src/portfolio/portfolio-api.interface';
-import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
-import { ConfirmationPageFields } from 'src/common-ui/confirmation-page/confirmation-page.interface';
+import {
+  isHivePortfolioEcosystem,
+  PortfolioFlowUtils,
+} from 'src/portfolio/portfolio-flow.utils';
+import {
+  ConfirmationPageFields,
+  ConfirmationPageFieldType,
+} from 'src/common-ui/confirmation-page/confirmation-page.interface';
 
 export type PortfolioQuoteDetailRow = {
   key: string;
@@ -23,12 +30,37 @@ const formatPortfolioQuoteFee = (fee: PortfolioQuoteFee | null): string | null =
 const formatPortfolioQuoteEnumLabel = (value: string): string =>
   value.replace(/_/g, ' ');
 
-const formatPortfolioConfirmationTokenAmount = (
+const buildPortfolioConfirmationAmountField = (
+  label: string,
   amount: string,
   asset: PortfolioCanonicalAsset | null | undefined,
-): string => {
+): ConfirmationPageFields => {
   const symbol = asset?.symbol?.trim();
-  return symbol ? `${amount} ${symbol}` : amount;
+  return {
+    label,
+    value: amount,
+    tag: ConfirmationPageFieldType.AMOUNT,
+    tokenSymbol: symbol || undefined,
+    tokenLogoUrl: asset?.logoUrl ?? undefined,
+  };
+};
+
+const buildPortfolioConfirmationRecipientField = (
+  toAddress: string,
+  asset: PortfolioCanonicalAsset | null | undefined,
+): ConfirmationPageFields => {
+  if (asset && isHivePortfolioEcosystem(asset.ecosystem)) {
+    return {
+      label: 'portfolio_confirmation_to_account',
+      value: toAddress,
+      tag: ConfirmationPageFieldType.USERNAME,
+    };
+  }
+
+  return {
+    label: 'portfolio_confirmation_to_account',
+    value: EvmFormatUtils.formatAddress(toAddress),
+  };
 };
 
 export type PortfolioInAppConfirmationFieldInput = {
@@ -47,20 +79,16 @@ const buildPortfolioInAppConfirmationFields = (
   const resolvedToAsset = quote.toAsset ?? toAsset ?? null;
 
   const fields: ConfirmationPageFields[] = [
-    {
-      label: 'portfolio_confirmation_from',
-      value: formatPortfolioConfirmationTokenAmount(
-        quote.fromAmount,
-        resolvedFromAsset,
-      ),
-    },
-    {
-      label: 'portfolio_confirmation_to',
-      value: formatPortfolioConfirmationTokenAmount(
-        quote.estimatedToAmount,
-        resolvedToAsset,
-      ),
-    },
+    buildPortfolioConfirmationAmountField(
+      'portfolio_confirmation_from',
+      quote.fromAmount,
+      resolvedFromAsset,
+    ),
+    buildPortfolioConfirmationAmountField(
+      'portfolio_confirmation_to',
+      quote.estimatedToAmount,
+      resolvedToAsset,
+    ),
   ];
 
   if (
@@ -71,10 +99,9 @@ const buildPortfolioInAppConfirmationFields = (
     toAddress &&
     toAddress !== fromAddress
   ) {
-    fields.push({
-      label: 'portfolio_confirmation_to_account',
-      value: toAddress,
-    });
+    fields.push(
+      buildPortfolioConfirmationRecipientField(toAddress, resolvedToAsset),
+    );
   }
 
   fields.push({
@@ -111,7 +138,6 @@ const getPortfolioQuoteDetailRows = (quote: PortfolioQuote): PortfolioQuoteDetai
 
 export const PortfolioQuoteDisplayUtils = {
   buildPortfolioInAppConfirmationFields,
-  formatPortfolioConfirmationTokenAmount,
   formatPortfolioQuoteEnumLabel,
   formatPortfolioQuoteFee,
   getPortfolioQuoteDetailRows,

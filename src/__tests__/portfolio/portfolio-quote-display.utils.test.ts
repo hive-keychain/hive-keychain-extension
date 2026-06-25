@@ -1,3 +1,5 @@
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
+import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { PortfolioQuote } from 'src/portfolio/portfolio-api.interface';
 import { PortfolioQuoteDisplayUtils } from 'src/portfolio/ui/portfolio-quote-display.utils';
 
@@ -79,10 +81,23 @@ describe('PortfolioQuoteDisplayUtils', () => {
     expect(rows).toEqual([]);
   });
 
-  it('builds in-app confirmation fields with token amounts and provider last', () => {
+  it('builds in-app confirmation fields with tagged token amounts and provider last', () => {
     const fields = PortfolioQuoteDisplayUtils.buildPortfolioInAppConfirmationFields(
       {
-        quote: createQuote(),
+        quote: createQuote({
+          fromAsset: {
+            assetId: 'evm:native:ethereum',
+            ecosystem: 'evm',
+            symbol: 'ETH',
+            name: 'Ether',
+            chainId: 'ethereum',
+            address: null,
+            decimals: 18,
+            isNative: true,
+            familyId: 'eth',
+            logoUrl: 'https://example.com/eth.png',
+          },
+        }),
         fromAddress: '0xfrom',
         toAddress: '0xfrom',
       },
@@ -91,11 +106,17 @@ describe('PortfolioQuoteDisplayUtils', () => {
     expect(fields).toEqual([
       {
         label: 'portfolio_confirmation_from',
-        value: '1 ETH',
+        value: '1',
+        tag: ConfirmationPageFieldType.AMOUNT,
+        tokenSymbol: 'ETH',
+        tokenLogoUrl: 'https://example.com/eth.png',
       },
       {
         label: 'portfolio_confirmation_to',
-        value: '3200 USDC',
+        value: '3200',
+        tag: ConfirmationPageFieldType.AMOUNT,
+        tokenSymbol: 'USDC',
+        tokenLogoUrl: undefined,
       },
       {
         label: 'portfolio_provider',
@@ -104,7 +125,7 @@ describe('PortfolioQuoteDisplayUtils', () => {
     ]);
   });
 
-  it('adds to account when a cross-ecosystem recipient is required', () => {
+  it('formats the recipient as a shortened address for an evm destination', () => {
     const fields = PortfolioQuoteDisplayUtils.buildPortfolioInAppConfirmationFields(
       {
         quote: createQuote({
@@ -134,22 +155,91 @@ describe('PortfolioQuoteDisplayUtils', () => {
           },
         }),
         fromAddress: 'alice',
-        toAddress: '0xrecipient',
+        toAddress: '0x1234567890abcdef1234567890abcdef12345678',
       },
     );
 
     expect(fields).toEqual([
       {
         label: 'portfolio_confirmation_from',
-        value: '1 HIVE',
+        value: '1',
+        tag: ConfirmationPageFieldType.AMOUNT,
+        tokenSymbol: 'HIVE',
+        tokenLogoUrl: undefined,
       },
       {
         label: 'portfolio_confirmation_to',
-        value: '3200 ETH',
+        value: '3200',
+        tag: ConfirmationPageFieldType.AMOUNT,
+        tokenSymbol: 'ETH',
+        tokenLogoUrl: undefined,
       },
       {
         label: 'portfolio_confirmation_to_account',
-        value: '0xrecipient',
+        value: EvmFormatUtils.formatAddress(
+          '0x1234567890abcdef1234567890abcdef12345678',
+        ),
+      },
+      {
+        label: 'portfolio_provider',
+        value: 'LI.FI',
+      },
+    ]);
+  });
+
+  it('tags the recipient as a username for a hive destination', () => {
+    const fields = PortfolioQuoteDisplayUtils.buildPortfolioInAppConfirmationFields(
+      {
+        quote: createQuote({
+          fromAsset: {
+            assetId: 'evm:native:ethereum',
+            ecosystem: 'evm',
+            symbol: 'ETH',
+            name: 'Ether',
+            chainId: 'ethereum',
+            address: null,
+            decimals: 18,
+            isNative: true,
+            familyId: 'eth',
+            logoUrl: null,
+          },
+          toAsset: {
+            assetId: 'hive:native:hive',
+            ecosystem: 'hive',
+            symbol: 'HIVE',
+            name: 'Hive',
+            chainId: 'hive',
+            address: null,
+            decimals: 3,
+            isNative: true,
+            familyId: 'hive',
+            logoUrl: null,
+          },
+        }),
+        fromAddress: '0xfrom',
+        toAddress: 'bob',
+      },
+    );
+
+    expect(fields).toEqual([
+      {
+        label: 'portfolio_confirmation_from',
+        value: '1',
+        tag: ConfirmationPageFieldType.AMOUNT,
+        tokenSymbol: 'ETH',
+        tokenLogoUrl: undefined,
+      },
+      {
+        label: 'portfolio_confirmation_to',
+        value: '3200',
+        tag: ConfirmationPageFieldType.AMOUNT,
+        tokenSymbol: 'HIVE',
+        tokenLogoUrl: undefined,
+      },
+      {
+        label: 'portfolio_confirmation_to_account',
+        value: 'bob',
+        tag: ConfirmationPageFieldType.USERNAME,
       },
       {
         label: 'portfolio_provider',

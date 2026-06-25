@@ -4130,6 +4130,7 @@
   "portfolio_confirmation_from": { "message": "From asset" },
   "portfolio_confirmation_to": { "message": "To assets" },
   "portfolio_confirmation_to_account": { "message": "To account" },
+  "portfolio_confirmation_evm_destination": { "message": "Provider address" },
   "portfolio_provider_opened": { "message": "Provider page opened in a new tab." },
   "portfolio_execution_error": { "message": "Unable to execute this quote." },
   "portfolio_api_not_configured": { "message": "Portfolio API is not configured." },

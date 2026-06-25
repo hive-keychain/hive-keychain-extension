@@ -53,6 +53,7 @@ export interface ConfirmationPageFields {
   warnings?: TransactionWarning[];
   info?: TransactionInfo[];
   tokenSymbol?: string;
+  tokenLogoUrl?: string;
   tag?: ConfirmationPageFieldType;
   iconPosition?: 'left' | 'right';
 }

@@ -10,6 +10,7 @@ type Props = {
   amount: string | number;
   icon?: SVGIcons;
   symbol?: string;
+  logoUrl?: string;
   className?: string;
   title?: string;
   tokens?: Token[];
@@ -19,6 +20,7 @@ const AmountWithLogo = ({
   amount,
   icon,
   symbol,
+  logoUrl,
   className = '',
   title,
   tokens,
@@ -27,7 +29,7 @@ const AmountWithLogo = ({
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (!icon && symbol) {
+    if (!icon && !logoUrl && symbol) {
       setIsLoading(true);
       ColorsUtils.downloadColors().then(async () => {
         let tokensList = tokens;
@@ -61,7 +63,7 @@ const AmountWithLogo = ({
       className="amount-logo"
       symbol={symbol}
       addBackground
-      src={tokenIcon || ''}
+      src={logoUrl || tokenIcon || ''}
     />
   );
 

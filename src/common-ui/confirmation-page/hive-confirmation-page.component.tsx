@@ -204,6 +204,7 @@ export const HiveConfirmationPageContent = ({
             <AmountWithLogo
               amount={field.value as string}
               symbol={field.tokenSymbol}
+              logoUrl={field.tokenLogoUrl}
               icon={getIcon(field)}
               tokens={tokens}
             />

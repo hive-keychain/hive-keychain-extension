@@ -25,12 +25,14 @@ import { RootState } from '@popup/multichain/store';
 import EventEmitter from 'events';
 import React, { BaseSyntheticEvent, useEffect, useMemo, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import AmountWithLogo from 'src/common-ui/amount-with-logo/amount-with-logo';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import {
   ConfirmationPageEvmFields,
   ConfirmationPageFields,
+  ConfirmationPageFieldType,
   EmbeddedConfirmationPageProps,
   EVMConfirmationPageParams,
 } from 'src/common-ui/confirmation-page/confirmation-page.interface';
@@ -43,6 +45,7 @@ import {
 import { EvmRiskWarningUtils } from 'src/common-ui/evm/evm-risk-warning/evm-risk-warning.utils';
 import { EvmTransactionWarning } from '@popup/evm/interfaces/evm-transactions.interface';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 
 import { HtmlUtils } from 'src/utils/html.utils';
@@ -246,6 +249,33 @@ export const EvmConfirmationPageContent = ({
     );
   };
 
+  const getFieldValueComponent = (field: ConfirmationPageEvmFields) => {
+    switch (field.tag) {
+      case ConfirmationPageFieldType.USERNAME:
+        return (
+          <div className={`value ${field.valueClassName ?? ''}`}>
+            <UsernameWithAvatar username={field.value as string} />
+          </div>
+        );
+      case ConfirmationPageFieldType.AMOUNT:
+        return (
+          <div className={`value ${field.valueClassName ?? ''}`}>
+            <AmountWithLogo
+              amount={field.value as string}
+              symbol={field.tokenSymbol}
+              logoUrl={field.tokenLogoUrl}
+            />
+          </div>
+        );
+      default:
+        return (
+          <div className={`value ${field.valueClassName ?? ''}`}>
+            {field.value}
+          </div>
+        );
+    }
+  };
+
   const bannerWarnings = getBannerWarnings();
   const bannerWarningCount = getBannerWarningCount();
 
@@ -298,9 +328,7 @@ export const EvmConfirmationPageContent = ({
                       )}
                     </div>
                   )}
-                  <div className={`value ${field.valueClassName ?? ''}`}>
-                    {field.value}
-                  </div>
+                  {getFieldValueComponent(field)}
                 </div>
                 {index !== fields.length - 1 && (
                   <Separator

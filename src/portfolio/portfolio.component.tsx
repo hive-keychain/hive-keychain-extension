@@ -16,6 +16,7 @@ import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.inter
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountTokensLoadUtils } from '@popup/evm/utils/evm-account-tokens-load.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { evmChainIdToDecimalPathSegment } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
@@ -1642,13 +1643,19 @@ export const Portfolio = ({
       chain,
       activeAccountOverride,
       transactionData,
-      fields: PortfolioQuoteDisplayUtils.buildPortfolioInAppConfirmationFields({
-        quote,
-        fromAsset: fromCanonicalAsset,
-        toAsset: toCanonicalAsset,
-        fromAddress,
-        toAddress,
-      }).map((field, index) => ({
+      fields: [
+        ...PortfolioQuoteDisplayUtils.buildPortfolioInAppConfirmationFields({
+          quote,
+          fromAsset: fromCanonicalAsset,
+          toAsset: toCanonicalAsset,
+          fromAddress,
+          toAddress,
+        }),
+        {
+          label: 'portfolio_confirmation_evm_destination',
+          value: EvmFormatUtils.formatAddress(transaction.to),
+        },
+      ].map((field, index) => ({
         ...field,
         name: field.label ?? `portfolio-confirmation-${index}`,
       })) as ConfirmationPageEvmFields[],
