@@ -8,7 +8,6 @@ import {
 } from '@common-ui/custom-select/custom-select.component';
 import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
-import { ChainListOrgChain } from '@popup/evm/interfaces/chain-list-org.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { ChainListOrgUtils } from '@popup/evm/utils/chain-list-org.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
@@ -16,6 +15,7 @@ import {
   ChainType,
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useRef, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -71,61 +71,46 @@ const parseTxType = (raw: string): EvmTransactionType => {
   return TX_TYPE_ORDER.includes(v) ? v : EvmTransactionType.LEGACY;
 };
 
-const CHAIN_ID_LOOKUP_DEBOUNCE_MS = 400;
-/** Chains like Ethereum have 100+ RPCs; only probe the first N when preloading from ChainList.org. */
-const CHAINLIST_PRELOAD_MAX_RPCS_TO_CHECK = 24;
+const getRpcsFromUrls = (rpcUrls: string[]) =>
+  rpcUrls.map((url, index) => ({
+    url,
+    isDefault: index === 0,
+  }));
 
-/** From ChainList.org `features` — if EIP-1559 is listed, prefer EIP-1559; else legacy. */
-const inferTxTypeFromChainListFeatures = (
-  chain: ChainListOrgChain,
-): EvmTransactionType => {
-  for (const f of chain.features ?? []) {
-    const n = (f.name ?? '').toLowerCase().replace(/[\s_]/g, '-');
-    if (n.includes('eip-1559') || n.replace(/-/g, '') === 'eip1559') {
-      return EvmTransactionType.EIP_1559;
-    }
-    if (n.includes('eip') && n.includes('1559')) {
-      return EvmTransactionType.EIP_1559;
-    }
-  }
-  return EvmTransactionType.LEGACY;
-};
-
-const applyChainListOrgToFormState = async (chain: ChainListOrgChain) => {
-  const expectedChainId = '0x' + BigInt(chain.chainId).toString(16);
-  const httpCandidateUrls = chain.rpc
-    .filter((rpc) => !rpc.url.startsWith('wss://'))
-    .map((rpc) => rpc.url);
-
-  const urlsToProbe = httpCandidateUrls.slice(
-    0,
-    CHAINLIST_PRELOAD_MAX_RPCS_TO_CHECK,
-  );
-
-  const statusByUrl = await Promise.all(
-    urlsToProbe.map((url) =>
-      EvmRpcUtils.isValidRpcForChainId(url, expectedChainId)
-        .then((ok) => ({ url, ok: !!ok }))
-        .catch(() => ({ url, ok: false })),
-    ),
-  );
-
-  let httpRpcs = statusByUrl.filter((r) => r.ok).map((r) => r.url);
-  if (httpRpcs.length === 0 && httpCandidateUrls.length > 0) {
-    // None of the probed endpoints responded; prefill a few so the form is usable. Save will re-check.
-    httpRpcs = httpCandidateUrls.slice(0, 3);
+/** Same resolution path as AddChain dialog init (defaults → ChainList.org + RPC validation). */
+const resolveChainForAddPrefill = async (
+  chainId: string,
+): Promise<EvmChain | undefined> => {
+  const defaultChain =
+    await ChainUtils.getChainFromDefaultChains<EvmChain>(chainId);
+  if (defaultChain) {
+    return defaultChain;
   }
 
+  let chainListChain;
+  try {
+    chainListChain = await ChainListOrgUtils.findByChainId(
+      Number(BigInt(chainId)),
+    );
+  } catch {
+    chainListChain = undefined;
+  }
+
+  if (!chainListChain) {
+    return undefined;
+  }
+
+  const chainListEvmChain = ChainListOrgUtils.getEvmChain(
+    chainListChain,
+    chainId,
+  );
+  const validRpcUrls = await EvmRpcUtils.filterValidRpcsForChainId(
+    chainListEvmChain.rpcs.map((rpc) => rpc.url),
+    chainId,
+  );
   return {
-    name: chain.name,
-    chainIdInput: expectedChainId,
-    symbol: chain.nativeCurrency.symbol.toUpperCase(),
-    rpcUrls: httpRpcs.length > 0 ? httpRpcs : [''],
-    explorer: chain.explorers?.[0]?.url?.trim() ?? '',
-    logo: chain.icon
-      ? `https://icons.llamao.fi/icons/chains/rsz_${chain.icon}.jpg`
-      : '',
-    testnet: !!chain.isTestnet,
+    ...chainListEvmChain,
+    rpcs: getRpcsFromUrls(validRpcUrls),
   };
 };
 
@@ -174,18 +159,14 @@ export const CustomEvmChainForm = ({
   /** Row indices that failed the pre-save chain id RPC check (red borders). */
   const [failedRpcRowIndices, setFailedRpcRowIndices] = useState<number[]>([]);
   const [logoPreviewErrored, setLogoPreviewErrored] = useState(false);
-  const [chainListMatch, setChainListMatch] =
-    useState<ChainListOrgChain | null>(null);
-  /** ChainList.org fetch in progress (after debounce). */
-  const [chainListLookupLoading, setChainListLookupLoading] = useState(false);
-  /** Preload click: parallel RPC checks in `applyChainListOrgToFormState`. */
-  const [chainListPreloadLoading, setChainListPreloadLoading] = useState(false);
-  /** After user preloads from ChainList, we keep tx hidden like when a match is present. */
+  const [chainPrefillLoading, setChainPrefillLoading] = useState(false);
+  /** After auto-prefill from chain id lookup, we keep tx type hidden. */
   const [addChainListPreloaded, setAddChainListPreloaded] = useState(false);
   /** When preloaded with ≥1 RPC, start with the RPC block collapsed (user can expand). */
   const [rpcPanelCollapsed, setRpcPanelCollapsed] = useState(false);
   const chainIdInputRef = useRef(chainIdInput);
   chainIdInputRef.current = chainIdInput;
+  const lastPrefilledChainIdRef = useRef<string | null>(null);
 
   const logoTrimmed = logo.trim();
   const logoPreviewSrc =
@@ -194,79 +175,6 @@ export const CustomEvmChainForm = ({
   useEffect(() => {
     setLogoPreviewErrored(false);
   }, [logo]);
-
-  useEffect(() => {
-    if (isEdit) {
-      setChainListMatch(null);
-    }
-  }, [isEdit]);
-
-  useEffect(() => {
-    if (isEdit) {
-      return;
-    }
-    setChainListMatch(null);
-    setAddChainListPreloaded(false);
-    setRpcPanelCollapsed(false);
-    setChainListLookupLoading(false);
-    const trimmed = chainIdInput.trim();
-    if (!trimmed) {
-      return;
-    }
-    let requestedChainId: number;
-    try {
-      requestedChainId = Number(BigInt(normalizeEvmChainIdInput(chainIdInput)));
-    } catch {
-      return;
-    }
-    let cancelled = false;
-    const handle = window.setTimeout(() => {
-      void (async () => {
-        if (cancelled) {
-          return;
-        }
-        setChainListLookupLoading(true);
-        try {
-          const found = await ChainListOrgUtils.findByChainId(requestedChainId);
-          if (cancelled) {
-            return;
-          }
-          let currentId: number;
-          try {
-            currentId = Number(
-              BigInt(normalizeEvmChainIdInput(chainIdInputRef.current)),
-            );
-          } catch {
-            return;
-          }
-          if (currentId !== requestedChainId) {
-            return;
-          }
-          if (found) {
-            setTxType(inferTxTypeFromChainListFeatures(found));
-            setChainListMatch(found);
-          } else {
-            setChainListMatch(null);
-            setTxType(EvmTransactionType.LEGACY);
-          }
-        } catch {
-          if (!cancelled) {
-            setChainListMatch(null);
-            setTxType(EvmTransactionType.LEGACY);
-          }
-        } finally {
-          if (!cancelled) {
-            setChainListLookupLoading(false);
-          }
-        }
-      })();
-    }, CHAIN_ID_LOOKUP_DEBOUNCE_MS);
-    return () => {
-      cancelled = true;
-      window.clearTimeout(handle);
-      setChainListLookupLoading(false);
-    };
-  }, [chainIdInput, isEdit]);
 
   useEffect(() => {
     if (chainToEdit) {
@@ -295,8 +203,7 @@ export const CustomEvmChainForm = ({
     setTestnet(!!initialChain?.testnet);
   }, [chainToEdit, initialChain]);
 
-  const addTxTypeHidden =
-    !isEdit && (!!chainListMatch || addChainListPreloaded);
+  const addTxTypeHidden = !isEdit && addChainListPreloaded;
   const addTxTypeChoiceOrder: EvmTransactionType[] = [
     EvmTransactionType.LEGACY,
     EvmTransactionType.EIP_1559,
@@ -336,30 +243,66 @@ export const CustomEvmChainForm = ({
     setFailedRpcRowIndices([]);
   };
 
-  const applyChainListPreload = async () => {
-    if (!chainListMatch) {
+  const applyResolvedChainToForm = (chain: EvmChain) => {
+    setName(chain.name);
+    setChainIdInput(chain.chainId);
+    setSymbol(chain.mainToken);
+    setRpcUrls(
+      chain.rpcs?.length ? chain.rpcs.map((r) => r.url) : [''],
+    );
+    setExplorer(chain.blockExplorer?.url ?? '');
+    setLogo(chain.logo ?? '');
+    setTxType(parseTxType(chain.defaultTransactionType ?? ''));
+    setTestnet(!!chain.testnet);
+    setAddChainListPreloaded(true);
+    const preloadedRpcCount = (chain.rpcs ?? []).filter((r) =>
+      r.url.trim(),
+    ).length;
+    if (preloadedRpcCount > 0) {
+      setRpcPanelCollapsed(true);
+    }
+  };
+
+  const handleChainIdBlur = async () => {
+    if (isEdit || isChainIdDisabled) {
       return;
     }
-    clearError();
-    setChainListPreloadLoading(true);
+
+    let normalizedChainId: string;
     try {
-      const v = await applyChainListOrgToFormState(chainListMatch);
-      setName(v.name);
-      setChainIdInput(v.chainIdInput);
-      setSymbol(v.symbol);
-      setRpcUrls(v.rpcUrls);
-      setExplorer(v.explorer);
-      setLogo(v.logo);
-      setTestnet(v.testnet);
-      setTxType(inferTxTypeFromChainListFeatures(chainListMatch));
-      setAddChainListPreloaded(true);
-      const preloadedRpcCount = v.rpcUrls.filter((u) => u.trim()).length;
-      if (preloadedRpcCount > 0) {
-        setRpcPanelCollapsed(true);
+      normalizedChainId = normalizeEvmChainIdInput(chainIdInput);
+    } catch {
+      return;
+    }
+
+    if (lastPrefilledChainIdRef.current === normalizedChainId) {
+      return;
+    }
+
+    clearError();
+    setChainPrefillLoading(true);
+    try {
+      const chain = await resolveChainForAddPrefill(normalizedChainId);
+      if (!chain) {
+        return;
       }
-      setChainListMatch(null);
+
+      let currentNormalizedChainId: string;
+      try {
+        currentNormalizedChainId = normalizeEvmChainIdInput(
+          chainIdInputRef.current,
+        );
+      } catch {
+        return;
+      }
+      if (currentNormalizedChainId !== normalizedChainId) {
+        return;
+      }
+
+      applyResolvedChainToForm(chain);
+      lastPrefilledChainIdRef.current = normalizedChainId;
     } finally {
-      setChainListPreloadLoading(false);
+      setChainPrefillLoading(false);
     }
   };
 
@@ -525,9 +468,19 @@ export const CustomEvmChainForm = ({
           clearError();
           setChainIdInput(v);
         }}
+        onBlur={() => {
+          void handleChainIdBlur();
+        }}
         disabled={isChainIdDisabled}
         dataTestId="custom-evm-chain-id"
       />
+      {chainPrefillLoading && (
+        <div
+          className="add-custom-evm-chain-form__chainlist-hint"
+          data-testid="custom-evm-chain-prefill-loading">
+          <span className="add-custom-evm-chain-form__chainlist-hint-spinner" />
+        </div>
+      )}
       <InputComponent
         type={InputType.TEXT}
         label="evm_custom_chains_field_name"
