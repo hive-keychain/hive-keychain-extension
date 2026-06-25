@@ -24,6 +24,8 @@ jest.mock('src/portfolio/portfolio-api.utils', () => ({
     listAssets: jest.fn().mockResolvedValue([]),
     listHistory: jest.fn().mockResolvedValue([]),
     getQuotes: jest.fn().mockResolvedValue({ quotes: [] }),
+    resolveExecutablePortfolioQuoteId: jest.fn().mockReturnValue(''),
+    resolvePortfolioAmountQuoteError: jest.fn().mockReturnValue(null),
     getFiatRampOptions: jest.fn().mockResolvedValue({
       fiatCurrencies: ['USD', 'EUR'],
       paymentMethods: [{ id: 'card', label: 'Credit / Debit Card' }],
@@ -495,7 +497,7 @@ describe('Portfolio', () => {
     });
   });
 
-  it('does not request swap quotes when from asset id cannot be resolved', async () => {
+  it('does not auto-request swap quotes when from asset id cannot be resolved', async () => {
     (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue([
       {
         assetId: 'evm:token:hmi:0xbb0d083fb1be0a9f6157ec484b6c79e0a4e31c2e',
@@ -507,7 +509,7 @@ describe('Portfolio', () => {
       },
     ]);
 
-    const { container, getByText } = render(
+    const { container } = render(
       <Portfolio
         hiveAccounts={[]}
         evmAccounts={
@@ -544,12 +546,87 @@ describe('Portfolio', () => {
     ) as HTMLInputElement;
     fireEvent.change(amountInput, { target: { value: '0.1' } });
 
-    const getQuotesButton = container.querySelector(
-      '.portfolio-flow button',
-    ) as HTMLButtonElement;
-    fireEvent.click(getQuotesButton);
+    await new Promise((resolve) => setTimeout(resolve, 900));
 
     expect(PortfolioApiUtils.getQuotes).not.toHaveBeenCalled();
+  });
+
+  it('auto-fetches swap quotes once the form is complete without a get quotes button', async () => {
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue([
+      {
+        assetId: 'evm:native:ethereum',
+        ecosystem: 'evm',
+        symbol: 'ETH',
+        name: 'Ethereum',
+        chainId: '0x1',
+        logoUrl: null,
+      },
+      {
+        assetId: 'evm:native:polygon',
+        ecosystem: 'evm',
+        symbol: 'MATIC',
+        name: 'Polygon',
+        chainId: '0x89',
+        logoUrl: null,
+      },
+    ]);
+
+    const { container, queryByText } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={
+          [
+            {
+              id: 1,
+              wallet: { address: '0xabc' },
+            } as never,
+          ]
+        }
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+    });
+
+    const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
+    fireEvent.click(sidebarButtons[1]);
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-from-asset')).not.toBeNull();
+    });
+
+    expect(queryByText('Get quotes')).toBeNull();
+    expect(PortfolioApiUtils.getQuotes).not.toHaveBeenCalled();
+
+    const amountInput = container.querySelector(
+      '.portfolio-flow input[type="number"]',
+    ) as HTMLInputElement;
+    fireEvent.change(amountInput, { target: { value: '0.1' } });
+
+    await waitFor(
+      () => {
+        expect(PortfolioApiUtils.getQuotes).toHaveBeenCalledTimes(1);
+      },
+      { timeout: 2000 },
+    );
+
+    expect(PortfolioApiUtils.getQuotes).toHaveBeenCalledWith(
+      expect.objectContaining({
+        mode: 'swap',
+        fromAssetId: 'evm:native:ethereum',
+        toAssetId: 'evm:native:polygon',
+        fromAddress: '0xabc',
+      }),
+    );
+    expect(queryByText('Get quotes')).toBeNull();
   });
 
   it.skip('loads fiat ramp options and available buy assets when opening the buy section', async () => {

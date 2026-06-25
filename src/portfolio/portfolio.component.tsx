@@ -26,7 +26,7 @@ import {
 } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
@@ -148,6 +148,10 @@ const visibleSections = sections.filter(
 
 const TO_ASSET_UNFILTERED_MAX = 50;
 const TO_ASSET_FILTERED_MAX = 200;
+
+const PORTFOLIO_SWAP_QUOTE_REFRESH_INTERVAL_MS = 30_000;
+const PORTFOLIO_SWAP_QUOTE_REFRESH_INTERVAL_SECONDS = 30;
+const PORTFOLIO_SWAP_QUOTE_DEBOUNCE_MS = 600;
 
 const getAllNetworksOption = (): OptionItem => ({
   label: I18nUtils.getMessage('portfolio_all_networks'),
@@ -405,6 +409,9 @@ export const Portfolio = ({
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [isFlowLoading, setIsFlowLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [quoteRefreshCountdown, setQuoteRefreshCountdown] = useState<
+    number | null
+  >(null);
   const [tokenFilter, setTokenFilter] = useState('');
   const [selectedNetwork, setSelectedNetwork] = useState('');
   const [toAssetFilter, setToAssetFilter] = useState('');
@@ -616,6 +623,33 @@ export const Portfolio = ({
       toAsset: toCanonicalAsset,
     });
   }, [fromCanonicalAsset, recipientAddress, selectedAccount, toCanonicalAsset]);
+
+  const flowMode = section as PortfolioMode;
+
+  const resolvedFromAssetId = useMemo(
+    () =>
+      flowMode === 'buy'
+        ? undefined
+        : PortfolioFlowUtils.resolveFromRowKeyToCanonicalAssetId(
+            fromAssetId,
+            rows,
+            assets,
+            toAssetEvmChains,
+          ),
+    [assets, flowMode, fromAssetId, rows, toAssetEvmChains],
+  );
+
+  const resolvedToAssetId =
+    flowMode === 'sell' ? undefined : toAssetId || undefined;
+
+  const canRequestQuotes =
+    Boolean(amount) &&
+    Boolean(resolvedToAddress) &&
+    hasRequiredQuoteAssets({
+      mode: flowMode,
+      fromAssetId: resolvedFromAssetId,
+      toAssetId: resolvedToAssetId,
+    });
 
   useEffect(() => {
     setRecipientAddress('');
@@ -1502,6 +1536,60 @@ export const Portfolio = ({
     }
   };
 
+  const getSwapQuotesRef = useRef(getQuotes);
+  getSwapQuotesRef.current = getQuotes;
+  const swapQuoteRefreshDeadlineRef = useRef(0);
+
+  const triggerSwapQuoteRefresh = useCallback(() => {
+    swapQuoteRefreshDeadlineRef.current = 0;
+    setQuoteRefreshCountdown(null);
+    void getSwapQuotesRef.current().finally(() => {
+      swapQuoteRefreshDeadlineRef.current =
+        Date.now() + PORTFOLIO_SWAP_QUOTE_REFRESH_INTERVAL_MS;
+      setQuoteRefreshCountdown(PORTFOLIO_SWAP_QUOTE_REFRESH_INTERVAL_SECONDS);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (section !== 'swap' || !canRequestQuotes) {
+      swapQuoteRefreshDeadlineRef.current = 0;
+      setQuoteRefreshCountdown(null);
+      return;
+    }
+
+    const initialQuoteTimeoutId = setTimeout(() => {
+      triggerSwapQuoteRefresh();
+    }, PORTFOLIO_SWAP_QUOTE_DEBOUNCE_MS);
+
+    const countdownIntervalId = setInterval(() => {
+      if (!swapQuoteRefreshDeadlineRef.current) {
+        return;
+      }
+
+      const remainingMs = swapQuoteRefreshDeadlineRef.current - Date.now();
+      if (remainingMs <= 0) {
+        triggerSwapQuoteRefresh();
+        return;
+      }
+
+      setQuoteRefreshCountdown(Math.ceil(remainingMs / 1000));
+    }, 1000);
+
+    return () => {
+      clearTimeout(initialQuoteTimeoutId);
+      clearInterval(countdownIntervalId);
+    };
+  }, [
+    section,
+    canRequestQuotes,
+    amount,
+    fromAssetId,
+    toAssetId,
+    recipientAddress,
+    selectedAccountKey,
+    triggerSwapQuoteRefresh,
+  ]);
+
   useEffect(() => {
     setPendingInAppConfirmation(null);
   }, [section]);
@@ -1927,27 +2015,39 @@ export const Portfolio = ({
     </div>
   );
 
+  const renderSwapQuoteRefreshControl = () => {
+    if (section !== 'swap' || !canRequestQuotes) {
+      return null;
+    }
+
+    const swapQuoteRefreshLabel = isFlowLoading
+      ? I18nUtils.getMessage('portfolio_quote_refreshing')
+      : quoteRefreshCountdown !== null
+        ? I18nUtils.getMessage('portfolio_quote_auto_refresh_countdown', [
+            String(quoteRefreshCountdown),
+          ])
+        : I18nUtils.getMessage('portfolio_quote_refresh_now');
+
+    return (
+      <button
+        type="button"
+        className="portfolio-quote-autorefresh"
+        disabled={isFlowLoading}
+        onClick={triggerSwapQuoteRefresh}
+        title={I18nUtils.getMessage('portfolio_quote_refresh_now')}>
+        <SVGIcon
+          className={`portfolio-quote-autorefresh__icon ${
+            isFlowLoading ? 'rotate' : ''
+          }`}
+          icon={SVGIcons.SWAPS_HISTORY_REFRESH}
+        />
+        <span>{swapQuoteRefreshLabel}</span>
+      </button>
+    );
+  };
+
   const renderFlow = () => {
-    const mode = section as PortfolioMode;
-    const resolvedFromAssetId =
-      mode === 'buy'
-        ? undefined
-        : PortfolioFlowUtils.resolveFromRowKeyToCanonicalAssetId(
-            fromAssetId,
-            rows,
-            assets,
-            toAssetEvmChains,
-          );
-    const resolvedToAssetId =
-      mode === 'sell' ? undefined : toAssetId || undefined;
-    const canRequestQuotes =
-      Boolean(amount) &&
-      Boolean(resolvedToAddress) &&
-      hasRequiredQuoteAssets({
-        mode,
-        fromAssetId: resolvedFromAssetId,
-        toAssetId: resolvedToAssetId,
-      });
+    const mode = flowMode;
     const selectedQuote = quoteResponse?.quotes.find(
       (quote) => quote.quoteId === selectedQuoteId,
     );
@@ -2187,11 +2287,13 @@ export const Portfolio = ({
             onChange={setRecipientAddress}
           />
         )}
-        <ButtonComponent
-          label="portfolio_get_quotes"
-          disabled={!canRequestQuotes || isFlowLoading}
-          onClick={() => void getQuotes()}
-        />
+        {mode !== 'swap' && (
+          <ButtonComponent
+            label="portfolio_get_quotes"
+            disabled={!canRequestQuotes || isFlowLoading}
+            onClick={() => void getQuotes()}
+          />
+        )}
         {quoteResponse?.quotes.length === 0 && (
           <div className="portfolio-status">
             {I18nUtils.getMessage('portfolio_no_quotes')}
@@ -2346,7 +2448,10 @@ export const Portfolio = ({
 
             <div className="portfolio-card">
               {!pendingInAppConfirmation && (
-                <h2>{I18nUtils.getMessage(pageTitleKey)}</h2>
+                <div className="portfolio-card-header">
+                  <h2>{I18nUtils.getMessage(pageTitleKey)}</h2>
+                  {renderSwapQuoteRefreshControl()}
+                </div>
               )}
               {renderSectionContent()}
             </div>

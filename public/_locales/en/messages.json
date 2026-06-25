@@ -4101,6 +4101,17 @@
   "portfolio_to_asset": { "message": "To asset" },
   "portfolio_select_asset": { "message": "Select an asset" },
   "portfolio_get_quotes": { "message": "Get quotes" },
+  "portfolio_quote_auto_refresh_countdown": {
+    "message": "Auto refresh in $1s",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "30"
+      }
+    }
+  },
+  "portfolio_quote_refresh_now": { "message": "Refresh now" },
+  "portfolio_quote_refreshing": { "message": "Updating quotes…" },
   "portfolio_continue": { "message": "Continue" },
   "portfolio_load_error": { "message": "Unable to load portfolio data." },
   "portfolio_partial_load_error": {
