@@ -17,7 +17,7 @@ let jsonRpcProvider: ethers.JsonRpcApiProvider;
 let chainId: EvmChain['chainId'];
 
 /** Safety buffer on eth_estimateGas results; ~12% is closer to industry norms than 50%. */
-const GAS_LIMIT_ESTIMATE_BUFFER = 1.12;
+const GAS_LIMIT_ESTIMATE_BUFFER = 1.2;
 
 const buildRpcFailover = (chain: EvmChain): EtherJsonRpcFailoverContext => ({
   network: ethers.Network.from(Number(chain.chainId)),
@@ -143,10 +143,7 @@ const getGasLimitFromRawTx = async (
 ) => {
   const estimation = await provider.estimateGas(tx);
 
-  return Decimal.mul(
-    Number(estimation),
-    GAS_LIMIT_ESTIMATE_BUFFER,
-  ).toNumber();
+  return Decimal.mul(Number(estimation), GAS_LIMIT_ESTIMATE_BUFFER).toNumber();
 };
 
 const reasonIncludes = (reason: string, patterns: string[]) => {
