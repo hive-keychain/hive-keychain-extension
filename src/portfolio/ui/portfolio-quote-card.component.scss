@@ -39,7 +39,7 @@
 
   &__provider-logo {
     object-fit: contain;
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--kc-color-logo-bg);
   }
 
   &__provider-fallback {
@@ -111,7 +111,7 @@
   }
 
   &:hover:not(.selected) {
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--kc-color-surface-hover);
     border-color: var(--kc-color-border-default);
   }
 

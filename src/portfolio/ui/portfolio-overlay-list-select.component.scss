@@ -127,7 +127,7 @@
     background: var(--kc-color-bg-elevated);
     border: 1px solid var(--kc-color-border-default);
     border-radius: var(--kc-radius-md);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+    box-shadow: var(--kc-shadow-dropdown);
     overflow: visible;
   }
 

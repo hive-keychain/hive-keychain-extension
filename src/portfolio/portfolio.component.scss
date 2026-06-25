@@ -1,6 +1,4 @@
-// Portfolio shell uses the standalone portfolio dark palette (always dark in detached tab).
-.portfolio-app-shell {
-  @include spread-map($dark);
+@mixin portfolio-shell-dark-tokens {
   color-scheme: dark;
 
   --kc-color-bg-base: #{$dark-blue};
@@ -9,11 +7,42 @@
   --kc-color-bg-card: #{$darker-blue};
   --kc-color-border-subtle: #{$blue-border};
   --kc-color-border-default: #3d4a6b;
+  --kc-color-border-strong: #4d5a7a;
   --kc-color-text-primary: #ffffff;
   --kc-color-text-secondary: #a8b1bd;
   --kc-color-text-muted: #818a9f;
   --kc-color-accent: #{$red};
   --kc-color-accent-muted: rgba(227, 19, 55, 0.14);
+  --kc-color-surface-hover: rgba(255, 255, 255, 0.03);
+  --kc-color-logo-bg: rgba(255, 255, 255, 0.04);
+  --kc-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --kc-shadow-accent-glow: 0 0 24px rgba(227, 19, 55, 0.18);
+  --kc-shadow-dropdown: 0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
+@mixin portfolio-shell-light-tokens {
+  color-scheme: light;
+
+  --kc-color-bg-base: #{$light-background};
+  --kc-color-bg-raised: #ffffff;
+  --kc-color-bg-elevated: #{$alternative-white};
+  --kc-color-bg-card: #ffffff;
+  --kc-color-border-subtle: #{$lighter-grey-border};
+  --kc-color-border-default: #{$dark-grey-border};
+  --kc-color-border-strong: #{$blue-border};
+  --kc-color-text-primary: #{$dark-blue};
+  --kc-color-text-secondary: #{$darker-grey};
+  --kc-color-text-muted: #{$lighter-grey};
+  --kc-color-accent: #{$red};
+  --kc-color-accent-muted: rgba(227, 19, 55, 0.1);
+  --kc-color-surface-hover: rgba(41, 49, 66, 0.06);
+  --kc-color-logo-bg: rgba(41, 49, 66, 0.04);
+  --kc-shadow-xs: 0 1px 2px rgba(41, 49, 66, 0.08);
+  --kc-shadow-accent-glow: 0 0 24px rgba(227, 19, 55, 0.12);
+  --kc-shadow-dropdown: 0 4px 24px rgba(41, 49, 66, 0.12);
+}
+
+.portfolio-app-shell {
   --kc-radius-md: 10px;
   --kc-radius-lg: 14px;
   --kc-space-1: 0.25rem;
@@ -31,10 +60,7 @@
   --kc-font-size-2xl: 1.75rem;
   --kc-font-weight-medium: 500;
   --kc-font-weight-semibold: 600;
-  --kc-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.35);
-  --kc-shadow-accent-glow: 0 0 24px rgba(227, 19, 55, 0.18);
   --kc-z-dropdown: 50;
-  --kc-color-border-strong: #4d5a7a;
   --kc-font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
   height: 100%;
@@ -105,6 +131,14 @@
     justify-content: center;
     padding: var(--kc-space-6);
   }
+}
+
+.theme.dark .portfolio-app-shell {
+  @include portfolio-shell-dark-tokens;
+}
+
+.theme.light .portfolio-app-shell {
+  @include portfolio-shell-light-tokens;
 }
 
 .portfolio-sidebar {
@@ -686,7 +720,7 @@
   &:hover:not(:disabled) {
     color: var(--kc-color-text-primary);
     border-color: var(--kc-color-border-default);
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--kc-color-surface-hover);
   }
 
   &:disabled {
@@ -776,7 +810,7 @@ html.detached-window-page #root .theme:has(.portfolio-app-shell) {
   border: 0 !important;
   border-radius: 0 !important;
   transform: none !important;
-  background: #{$dark-blue} !important;
+  background: var(--background-color) !important;
 }
 
 html.detached-window-page #root .theme:has(.portfolio-app-shell) .App,
