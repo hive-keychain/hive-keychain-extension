@@ -2,7 +2,6 @@ import { SVGIcons } from '@common-ui/icons.enum';
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
-import { FormatUtils } from 'hive-keychain-commons';
 import React from 'react';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
@@ -34,9 +33,10 @@ export const GasFeePanelItem = ({
       </div>
       <div className="label gas-fee">
         {GasFeeUtils.hasDisplayableEstimatedFee(estimation)
-          ? FormatUtils.formatCurrencyValue(
-              estimation.estimatedFeeInEth.toFixed(),
+          ? GasFeeUtils.formatGasFeeValue(
+              estimation.estimatedFeeInEth,
               8,
+              'compact',
             )
           : '-'}
       </div>

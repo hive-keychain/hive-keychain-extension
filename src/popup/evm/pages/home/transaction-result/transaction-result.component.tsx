@@ -45,7 +45,6 @@ import {
   COPY_GENERIC_MESSAGE_KEY,
   copyTextWithToast,
 } from 'src/common-ui/toast/copy-toast.utils';
-import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 import Decimal from 'decimal.js';
 
@@ -83,7 +82,7 @@ function formatNativeAmountFromWei(
   fractionDigits: number,
 ): string {
   const inMainToken = new Decimal(wei.toString()).div(EvmFormatUtils.WEI);
-  return EvmFormatUtils.formatTokenBalance(inMainToken, fractionDigits);
+  return GasFeeUtils.formatGasFeeValue(inMainToken, fractionDigits);
 }
 
 function formatNativeFeeFromWei(
@@ -98,7 +97,10 @@ function formatEstimatedNativeFeeFromEth(
   ethAmount: Decimal,
   mainToken: string,
 ): string {
-  return `${FormatUtils.formatCurrencyValue(ethAmount.toFixed(), TOTAL_FEE_FRACTION_DIGITS)} ${mainToken}`;
+  return `${GasFeeUtils.formatGasFeeValue(
+    ethAmount,
+    TOTAL_FEE_FRACTION_DIGITS,
+  )} ${mainToken}`;
 }
 
 const EvmTransactionResult = ({

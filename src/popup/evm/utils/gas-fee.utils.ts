@@ -18,6 +18,7 @@ import {
 import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import Decimal from 'decimal.js';
 import { SVGIcons } from 'src/common-ui/icons.enum';
+import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
 /** Above ~200M is never a real per-tx gas limit; larger values are usually mis-encoded or malicious. */
@@ -78,6 +79,32 @@ const hasDisplayableMaxFee = (fee: GasFeeEstimationBase) => fee.maxFeeInEth.gt(0
 
 const hasDisplayableDuration = (fee: GasFeeEstimationBase) =>
   fee.estimatedMaxDuration.gt(0);
+
+type GasFeeDisplayMode = 'compact' | 'full';
+
+const formatGasFeeValue = (
+  value: Decimal,
+  decimals = 8,
+  mode: GasFeeDisplayMode = 'full',
+): string => {
+  const formattedValue = FormatUtils.formatCurrencyValue(
+    value.toFixed(),
+    decimals,
+  );
+  if (value.gt(0) && new Decimal(formattedValue.replace(/,/g, '')).isZero()) {
+    if (mode === 'compact') {
+      return '~0';
+    }
+    const minimumDisplayableValue = new Decimal(1).div(
+      new Decimal(10).pow(decimals),
+    );
+    return `< ${FormatUtils.formatCurrencyValue(
+      minimumDisplayableValue.toFixed(),
+      decimals,
+    )}`;
+  }
+  return formattedValue;
+};
 
 const feeFromGweiAndGasLimit = (gwei: number | string, gasLimit: number) => {
   return new Decimal(gwei)
@@ -517,4 +544,5 @@ export const GasFeeUtils = {
   hasDisplayableEstimatedFee,
   hasDisplayableMaxFee,
   hasDisplayableDuration,
+  formatGasFeeValue,
 };

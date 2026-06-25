@@ -568,4 +568,79 @@ describe('GasFeePanel', () => {
     expect(getTierPickerFeeText('medium')).toBe('0.00056000');
     expect(getTierPickerFeeText('aggressive')).toBe('0.00084000');
   });
+
+  it('uses compact markers for tiny non-zero estimated fees in the tier picker rows', async () => {
+    const selectedFee = {
+      type: EvmTransactionType.EIP_1559,
+      estimatedFeeInEth: new Decimal('0.000000000882'),
+      estimatedFeeUSD: new Decimal(0),
+      maxFeeInEth: new Decimal('0.000000001239'),
+      maxFeeUSD: new Decimal(0),
+      estimatedMaxDuration: new Decimal(30),
+      priorityFeeInGwei: new Decimal('0.001'),
+      maxFeePerGasInGwei: new Decimal('0.059'),
+      gasPriceInGwei: new Decimal('0.042'),
+      gasLimit: new Decimal(21000),
+      icon: SVGIcons.EVM_GAS_FEE_LOW,
+      name: 'popup_html_evm_custom_gas_fee_low',
+    };
+
+    jest.spyOn(GasFeeUtils, 'estimate').mockResolvedValue({
+      suggested: selectedFee,
+      low: selectedFee,
+      custom: {
+        ...selectedFee,
+        estimatedFeeInEth: new Decimal(0),
+        maxFeeInEth: new Decimal(0),
+        estimatedMaxDuration: new Decimal(0),
+        priorityFeeInGwei: new Decimal(0),
+        maxFeePerGasInGwei: new Decimal(0),
+        gasPriceInGwei: new Decimal(0),
+        icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
+        name: 'popup_html_evm_custom_gas_fee_custom',
+      },
+    });
+
+    const { container } = render(
+      <GasFeePanel
+        chain={
+          {
+            chainId: '100',
+            defaultTransactionType: EvmTransactionType.EIP_1559,
+            mainToken: 'xDAI',
+            name: 'Gnosis',
+          } as any
+        }
+        fromAddress="0x00000000000000000000000000000000000000aa"
+        onSelectFee={jest.fn()}
+        prefetchedMainTokenInfo={
+          {
+            priceUsd: 1,
+            symbol: 'xDAI',
+            type: 'NATIVE',
+          } as any
+        }
+        selectedFee={selectedFee}
+        setErrorMessage={jest.fn()}
+        transactionData={{
+          data: '0x',
+          from: '0x00000000000000000000000000000000000000aa',
+          to: '0x00000000000000000000000000000000000000bb',
+          type: EvmTransactionType.EIP_1559,
+          value: '0x0',
+        }}
+        transactionType={EvmTransactionType.EIP_1559}
+      />,
+    );
+
+    await waitFor(() => expect(GasFeeUtils.estimate).toHaveBeenCalled());
+
+    const panel = container.querySelector('.gas-fee-panel') as HTMLElement;
+    fireEvent.click(panel);
+    fireEvent.click(panel);
+
+    expect(
+      document.querySelector('.custom-fee-row.low .gas-fee')?.textContent,
+    ).toBe('~0');
+  });
 });

@@ -111,6 +111,34 @@ describe('GasFeeUtils', () => {
     });
   });
 
+  describe('gas fee display formatting', () => {
+    it('keeps regular gas fee values at the default precision', () => {
+      expect(GasFeeUtils.formatGasFeeValue(new Decimal('0.00000002'))).toBe(
+        '0.00000002',
+      );
+    });
+
+    it('marks non-zero gas fee values below display precision', () => {
+      expect(GasFeeUtils.formatGasFeeValue(new Decimal('0.000000000882'))).toBe(
+        '< 0.00000001',
+      );
+    });
+
+    it('uses a compact marker for tiny non-zero gas fee values when requested', () => {
+      expect(
+        GasFeeUtils.formatGasFeeValue(
+          new Decimal('0.000000000882'),
+          8,
+          'compact',
+        ),
+      ).toBe('~0');
+    });
+
+    it('keeps zero gas fee values formatted as zero', () => {
+      expect(GasFeeUtils.formatGasFeeValue(new Decimal(0))).toBe('0.00000000');
+    });
+  });
+
   it('adds USD fee values to dApp gas suggestions', async () => {
     (EvmLightNodeApi.get as jest.Mock).mockResolvedValue({
       low: {

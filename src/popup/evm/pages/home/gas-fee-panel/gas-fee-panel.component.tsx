@@ -27,7 +27,6 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
@@ -602,9 +601,10 @@ export const GasFeePanel = ({
                 <div className="gas-fee-value">
                   {GasFeeUtils.hasDisplayableEstimatedFee(selectedFee) ? (
                     <>
-                      {FormatUtils.formatCurrencyValue(
-                        selectedFee.estimatedFeeInEth.toFixed(),
+                      {GasFeeUtils.formatGasFeeValue(
+                        selectedFee.estimatedFeeInEth,
                         8,
+                        'compact',
                       )}{' '}
                       {chain.mainToken}
                     </>
@@ -657,9 +657,8 @@ export const GasFeePanel = ({
                       <div>
                         {GasFeeUtils.hasDisplayableEstimatedFee(selectedFee) ? (
                           <>
-                            {FormatUtils.formatCurrencyValue(
-                              selectedFee.estimatedFeeInEth.toFixed(),
-                              8,
+                            {GasFeeUtils.formatGasFeeValue(
+                              selectedFee.estimatedFeeInEth,
                             )}{' '}
                             {chain.mainToken}
                           </>
@@ -689,9 +688,8 @@ export const GasFeePanel = ({
                     <div>
                       {GasFeeUtils.hasDisplayableMaxFee(selectedFee) ? (
                         <>
-                          {FormatUtils.formatCurrencyValue(
-                            selectedFee.maxFeeInEth.toFixed(),
-                            8,
+                          {GasFeeUtils.formatGasFeeValue(
+                            selectedFee.maxFeeInEth,
                           )}{' '}
                           {chain.mainToken}
                         </>
@@ -820,9 +818,10 @@ export const GasFeePanel = ({
                     <div className="label gas-fee">
                       {feeEstimation.custom &&
                       GasFeeUtils.hasDisplayableMaxFee(feeEstimation.custom)
-                        ? FormatUtils.formatCurrencyValue(
-                            feeEstimation.custom.maxFeeInEth.toFixed(),
+                        ? GasFeeUtils.formatGasFeeValue(
+                            feeEstimation.custom.maxFeeInEth,
                             8,
+                            'compact',
                           )
                         : '-'}
                     </div>
@@ -858,9 +857,10 @@ export const GasFeePanel = ({
                           GasFeeUtils.hasDisplayableMaxFee(
                             feeEstimation.suggestedByDApp,
                           )
-                            ? FormatUtils.formatCurrencyValue(
-                                feeEstimation.suggestedByDApp.maxFeeInEth.toFixed(),
+                            ? GasFeeUtils.formatGasFeeValue(
+                                feeEstimation.suggestedByDApp.maxFeeInEth,
                                 8,
+                                'compact',
                               )
                             : '-'}
                         </div>
