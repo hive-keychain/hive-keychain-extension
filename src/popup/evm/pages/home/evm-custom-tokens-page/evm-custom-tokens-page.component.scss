@@ -98,11 +98,9 @@
     min-width: 0;
   }
 
-  .known-token-logo,
   .known-token-item .currency-icon {
     width: 36px;
     height: 36px;
-    border-radius: 4px;
     object-fit: contain;
     flex-shrink: 0;
     @include poppins600(12px);

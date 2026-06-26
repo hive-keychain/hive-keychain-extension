@@ -44,6 +44,20 @@
     min-width: 0;
   }
 
+  .custom-asset-logo-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 24px;
+    align-items: end;
+    column-gap: 10px;
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 13px;
+
+    > .currency-icon {
+      margin-bottom: 12px;
+    }
+  }
+
   .custom-input {
     width: 100%;
     min-width: 0;
