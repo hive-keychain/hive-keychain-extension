@@ -1,0 +1,198 @@
+.portfolio-history-card {
+  border: 1px solid var(--kc-color-border-subtle);
+  border-radius: var(--kc-radius-lg);
+  background: var(--kc-color-bg-raised);
+  overflow: hidden;
+
+  &__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--kc-space-4);
+    width: 100%;
+    padding: var(--kc-space-4);
+    border: 0;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    box-sizing: border-box;
+  }
+
+  &__swap {
+    display: flex;
+    align-items: center;
+    gap: var(--kc-space-4);
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__leg {
+    display: flex;
+    flex-direction: column;
+    gap: var(--kc-space-1);
+    min-width: 0;
+    flex: 1 1 0;
+
+    &:first-child {
+      align-items: flex-end;
+      text-align: right;
+    }
+  }
+
+  &__leg-label {
+    font-size: var(--kc-font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--kc-color-text-muted);
+  }
+
+  &__leg-amount {
+    font-size: var(--kc-font-size-lg);
+    font-weight: var(--kc-font-weight-semibold);
+    color: var(--kc-color-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__between {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--kc-space-2);
+    flex-shrink: 0;
+  }
+
+  &__status-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  &__date {
+    font-size: var(--kc-font-size-xs);
+    color: var(--kc-color-text-secondary);
+    white-space: nowrap;
+  }
+
+  &__chevron {
+    width: 18px;
+    height: 18px;
+
+    &.open {
+      transform: rotate(-180deg);
+      transition: 0.3s ease-out;
+    }
+
+    &.closed {
+      transform: rotate(0deg);
+      transition: 0.3s ease-in;
+    }
+  }
+
+  &__details {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--kc-color-border-subtle);
+    padding: var(--kc-space-2) var(--kc-space-3);
+    padding-top: 2.5rem;
+    gap: var(--kc-space-1);
+  }
+
+  &__mode-tag {
+    position: absolute;
+    top: var(--kc-space-2);
+    right: var(--kc-space-3);
+    display: inline-flex;
+    align-items: center;
+    padding: 2px var(--kc-space-2);
+    border-radius: var(--kc-radius-pill, 999px);
+    background: var(--kc-color-accent-muted);
+    color: var(--kc-color-accent);
+    font-size: var(--kc-font-size-xs);
+    font-weight: var(--kc-font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__detail-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--kc-space-3);
+    padding: var(--kc-space-1) 0;
+  }
+
+  &__detail-label {
+    font-size: var(--kc-font-size-xs);
+    color: var(--kc-color-text-muted);
+    flex-shrink: 0;
+  }
+
+  &__detail-value {
+    font-size: var(--kc-font-size-sm);
+    color: var(--kc-color-text-primary);
+    text-align: right;
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+
+  &__address {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--kc-space-2);
+    min-width: 0;
+  }
+
+  &__address-avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    object-fit: cover;
+  }
+
+  &__address-label {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__copyable {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--kc-space-1);
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--kc-color-text-primary);
+    font: inherit;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--kc-color-accent);
+    }
+  }
+
+  &__copyable-text {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__copy-icon {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+  }
+}

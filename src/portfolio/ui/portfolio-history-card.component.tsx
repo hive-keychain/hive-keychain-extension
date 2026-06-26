@@ -1,0 +1,278 @@
+import { CustomTooltip } from '@common-ui/custom-tooltip/custom-tooltip.component';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
+import moment from 'moment';
+import React, { useState } from 'react';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import {
+  PortfolioCanonicalAsset,
+  PortfolioHistoryItem,
+} from 'src/portfolio/portfolio-api.interface';
+import { PortfolioAccountAvatar } from 'src/portfolio/ui/portfolio-account-avatar.component';
+import { PortfolioHistoryDisplayUtils } from 'src/portfolio/ui/portfolio-history-display.utils';
+import {
+  canonicalAssetToTokenIdentityProps,
+  PortfolioTokenIdentity,
+  PortfolioTokenIdentityProps,
+} from 'src/portfolio/ui/portfolio-token-identity.component';
+import {
+  COPY_GENERIC_MESSAGE_KEY,
+  copyTextWithToast,
+} from 'src/common-ui/toast/copy-toast.utils';
+import { EvmAddressUtils } from 'src/utils/evm/evm-address.utils';
+import FormatUtils from 'src/utils/format.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
+
+import './portfolio-history-card.component.scss';
+
+export interface PortfolioHistoryCardProps {
+  item: PortfolioHistoryItem;
+  fromAsset?: PortfolioCanonicalAsset;
+  toAsset?: PortfolioCanonicalAsset;
+  chains: EvmChain[];
+}
+
+const DATE_TOOLTIP_FORMAT = 'YYYY-MM-DD HH:mm';
+
+const resolveTokenIdentity = (
+  assetId: string | null,
+  asset: PortfolioCanonicalAsset | undefined,
+  chains: EvmChain[],
+): PortfolioTokenIdentityProps => {
+  if (asset) {
+    return canonicalAssetToTokenIdentityProps(asset, chains);
+  }
+
+  return {
+    symbol: PortfolioHistoryDisplayUtils.getPortfolioHistoryAssetSymbol(assetId),
+  };
+};
+
+export const PortfolioHistoryCard = ({
+  item,
+  fromAsset,
+  toAsset,
+  chains,
+}: PortfolioHistoryCardProps) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const fromIdentity = resolveTokenIdentity(item.fromAssetId, fromAsset, chains);
+  const toIdentity = resolveTokenIdentity(item.toAssetId, toAsset, chains);
+
+  const fromAmount = PortfolioHistoryDisplayUtils.formatPortfolioHistoryAmount(
+    item.fromAmount,
+  );
+  const toAmount = PortfolioHistoryDisplayUtils.formatPortfolioHistoryAmount(
+    item.toAmount,
+  );
+
+  const statusIcon = PortfolioHistoryDisplayUtils.getPortfolioHistoryStatusIcon(
+    item.status,
+  );
+  const statusLabel = I18nUtils.getMessage(
+    PortfolioHistoryDisplayUtils.getPortfolioHistoryStatusMessageKey(
+      item.status,
+    ),
+  );
+
+  const eventDate = item.submittedAt ?? item.updatedAt;
+  const relativeDate = eventDate
+    ? moment(eventDate).fromNow()
+    : I18nUtils.getMessage('portfolio_history_unknown_date');
+  const fullDate = eventDate
+    ? moment(eventDate).format(DATE_TOOLTIP_FORMAT)
+    : null;
+
+  const modeLabel = item.mode
+    ? I18nUtils.getMessage(`portfolio_section_${item.mode}`)
+    : '';
+  const providerLabel = item.provider.replace(/_/g, ' ');
+
+  const renderAddressValue = (address: string): React.ReactNode => {
+    if (EvmAddressUtils.isValidEvmAddress(address)) {
+      return (
+        <span className="portfolio-history-card__address">
+          <PortfolioAccountAvatar
+            kind="evm"
+            address={address}
+            className="portfolio-history-card__address-avatar"
+          />
+          <span className="portfolio-history-card__address-label">
+            {EvmFormatUtils.formatAddress(address)}
+          </span>
+        </span>
+      );
+    }
+
+    const username = address.replace(/^@+/, '');
+    return (
+      <span className="portfolio-history-card__address">
+        <PortfolioAccountAvatar
+          kind="hive"
+          username={username}
+          className="portfolio-history-card__address-avatar"
+        />
+        <span className="portfolio-history-card__address-label">
+          @{username}
+        </span>
+      </span>
+    );
+  };
+
+  const renderCopyableValue = (value: string): React.ReactNode => {
+    const display =
+      value.length > 16 ? FormatUtils.shortenString(value, 6) : value;
+
+    const copyButton = (
+      <button
+        type="button"
+        className="portfolio-history-card__copyable"
+        title={I18nUtils.getMessage('html_popup_copy')}
+        onClick={() => void copyTextWithToast(value, COPY_GENERIC_MESSAGE_KEY)}>
+        <span className="portfolio-history-card__copyable-text">{display}</span>
+        <SVGIcon
+          icon={SVGIcons.SELECT_COPY}
+          className="portfolio-history-card__copy-icon"
+        />
+      </button>
+    );
+
+    if (display === value) {
+      return copyButton;
+    }
+
+    return (
+      <CustomTooltip message={value} skipTranslation position="left">
+        {copyButton}
+      </CustomTooltip>
+    );
+  };
+
+  const detailRows: { label: string; value: React.ReactNode }[] = [];
+
+  if (providerLabel) {
+    detailRows.push({
+      label: I18nUtils.getMessage('portfolio_provider'),
+      value: providerLabel,
+    });
+  }
+  if (item.fromAddress) {
+    detailRows.push({
+      label: I18nUtils.getMessage('portfolio_history_from_address'),
+      value: renderAddressValue(item.fromAddress),
+    });
+  }
+  if (item.toAddress) {
+    detailRows.push({
+      label: I18nUtils.getMessage('portfolio_history_to_address'),
+      value: renderAddressValue(item.toAddress),
+    });
+  }
+  if (item.providerReferenceId) {
+    detailRows.push({
+      label: I18nUtils.getMessage('portfolio_history_provider_reference'),
+      value: renderCopyableValue(item.providerReferenceId),
+    });
+  }
+  if (item.submittedAt) {
+    detailRows.push({
+      label: I18nUtils.getMessage('portfolio_history_submitted_at'),
+      value: moment(item.submittedAt).format(DATE_TOOLTIP_FORMAT),
+    });
+  }
+  if (item.updatedAt) {
+    detailRows.push({
+      label: I18nUtils.getMessage('portfolio_history_updated_at'),
+      value: moment(item.updatedAt).format(DATE_TOOLTIP_FORMAT),
+    });
+  }
+  if (item.txHash) {
+    detailRows.push({
+      label: I18nUtils.getMessage('portfolio_history_tx_hash'),
+      value: renderCopyableValue(item.txHash),
+    });
+  }
+
+  const renderLeg = (
+    label: string,
+    amount: string,
+    identity: PortfolioTokenIdentityProps,
+  ) => (
+    <div className="portfolio-history-card__leg">
+      <span className="portfolio-history-card__leg-label">{label}</span>
+      {amount ? (
+        <span className="portfolio-history-card__leg-amount">{amount}</span>
+      ) : null}
+      <PortfolioTokenIdentity {...identity} />
+    </div>
+  );
+
+  return (
+    <div className="portfolio-history-card">
+      <button
+        type="button"
+        className="portfolio-history-card__summary"
+        aria-expanded={isExpanded}
+        onClick={() => setIsExpanded((previous) => !previous)}>
+        <div className="portfolio-history-card__swap">
+          {renderLeg(
+            I18nUtils.getMessage('portfolio_history_from'),
+            fromAmount,
+            fromIdentity,
+          )}
+          <SVGIcon
+            icon={SVGIcons.SWAPS_BETWEEN}
+            className="portfolio-history-card__between"
+          />
+          {renderLeg(
+            I18nUtils.getMessage('portfolio_history_to'),
+            toAmount,
+            toIdentity,
+          )}
+        </div>
+        <div className="portfolio-history-card__meta">
+          <CustomTooltip message={statusLabel} skipTranslation position="top">
+            <SVGIcon
+              icon={statusIcon}
+              className="portfolio-history-card__status-icon"
+            />
+          </CustomTooltip>
+          {fullDate ? (
+            <CustomTooltip message={fullDate} skipTranslation position="top">
+              <span className="portfolio-history-card__date">
+                {relativeDate}
+              </span>
+            </CustomTooltip>
+          ) : (
+            <span className="portfolio-history-card__date">{relativeDate}</span>
+          )}
+          <SVGIcon
+            icon={SVGIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
+            className={`portfolio-history-card__chevron ${
+              isExpanded ? 'open' : 'closed'
+            }`}
+          />
+        </div>
+      </button>
+
+      {isExpanded ? (
+        <div className="portfolio-history-card__details">
+          {modeLabel ? (
+            <span className="portfolio-history-card__mode-tag">{modeLabel}</span>
+          ) : null}
+          {detailRows.map((row) => (
+            <div className="portfolio-history-card__detail-row" key={row.label}>
+              <span className="portfolio-history-card__detail-label">
+                {row.label}
+              </span>
+              <div className="portfolio-history-card__detail-value">
+                {row.value}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+};

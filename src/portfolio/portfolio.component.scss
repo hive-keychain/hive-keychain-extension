@@ -758,16 +758,11 @@
   }
 }
 
-.portfolio-history-table {
-  .portfolio-table-head,
-  .portfolio-table-row {
-    grid-template-columns: repeat(4, minmax(130px, 1fr));
-    min-width: 0;
-  }
-
-  .portfolio-table-head span:not(:first-child) {
-    text-align: left;
-  }
+.portfolio-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kc-space-2);
+  min-width: 0;
 }
 
 .portfolio-empty,

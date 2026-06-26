@@ -32,6 +32,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -69,6 +70,8 @@ import {
   PortfolioInAppConfirmationContext,
 } from 'src/portfolio/portfolio-in-app-confirmation.interface';
 import { PortfolioConfirmationStepComponent } from 'src/portfolio/ui/portfolio-confirmation-step.component';
+import { PortfolioHistoryCard } from 'src/portfolio/ui/portfolio-history-card.component';
+import { PortfolioHistoryDisplayUtils } from 'src/portfolio/ui/portfolio-history-display.utils';
 import { PortfolioQuoteCard } from 'src/portfolio/ui/portfolio-quote-card.component';
 import { PortfolioQuoteDisplayUtils } from 'src/portfolio/ui/portfolio-quote-display.utils';
 import { PortfolioNavIcon } from 'src/portfolio/ui/portfolio-nav-icon.enum';
@@ -408,6 +411,8 @@ export const Portfolio = ({
     useState<PortfolioLocalizedMessage | null>(null);
   const [isPortfolioLoading, setIsPortfolioLoading] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
+  const [showCreatedExpiredHistory, setShowCreatedExpiredHistory] =
+    useState(false);
   const [isFlowLoading, setIsFlowLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [quoteRefreshCountdown, setQuoteRefreshCountdown] = useState<
@@ -487,6 +492,29 @@ export const Portfolio = ({
 
     return [...new Set(chainById.values())];
   }, [defaultEvmChains, setupEvmChains]);
+
+  const hasCreatedExpiredHistory = useMemo(
+    () =>
+      history.some((item) =>
+        PortfolioHistoryDisplayUtils.isCreatedOrExpiredHistoryStatus(
+          item.status,
+        ),
+      ),
+    [history],
+  );
+
+  const visibleHistory = useMemo(
+    () =>
+      showCreatedExpiredHistory
+        ? history
+        : history.filter(
+            (item) =>
+              !PortfolioHistoryDisplayUtils.isCreatedOrExpiredHistoryStatus(
+                item.status,
+              ),
+          ),
+    [history, showCreatedExpiredHistory],
+  );
 
   const fromAssetOptions = useMemo(() => {
     const rowResolutionDetails = rows.map((row) => {
@@ -2333,34 +2361,45 @@ export const Portfolio = ({
     );
   };
 
-  const renderHistory = () => (
-    <div className="portfolio-table-wrap portfolio-history-table">
-      <div className="portfolio-table-head">
-        <span>{I18nUtils.getMessage('portfolio_mode')}</span>
-        <span>{I18nUtils.getMessage('portfolio_provider')}</span>
-        <span>{I18nUtils.getMessage('portfolio_status')}</span>
-        <span>{I18nUtils.getMessage('portfolio_date')}</span>
+  const renderHistoryVisibilityToggle = () => {
+    if (section !== 'history' || !hasCreatedExpiredHistory) {
+      return null;
+    }
+
+    return (
+      <CheckboxComponent
+        checked={showCreatedExpiredHistory}
+        onChange={setShowCreatedExpiredHistory}
+        title="portfolio_history_show_created_expired"
+        dataTestId="portfolio-history-show-created-expired"
+      />
+    );
+  };
+
+  const renderHistory = () =>
+    visibleHistory.length === 0 ? (
+      <div className="portfolio-empty">
+        {I18nUtils.getMessage('portfolio_no_history')}
       </div>
-      {history.length === 0 ? (
-        <div className="portfolio-empty">
-          {I18nUtils.getMessage('portfolio_no_history')}
-        </div>
-      ) : (
-        history.map((item) => (
-          <div className="portfolio-table-row" key={item.id}>
-            <strong>{item.mode}</strong>
-            <span>{item.provider.replace(/_/g, ' ')}</span>
-            <span>{item.displayStatus}</span>
-            <span>
-              {item.submittedAt
-                ? new Date(item.submittedAt).toLocaleDateString()
-                : '-'}
-            </span>
-          </div>
-        ))
-      )}
-    </div>
-  );
+    ) : (
+      <div className="portfolio-history-list">
+        {visibleHistory.map((item) => (
+          <PortfolioHistoryCard
+            key={item.id}
+            item={item}
+            fromAsset={PortfolioHistoryDisplayUtils.resolvePortfolioAssetById(
+              item.fromAssetId,
+              assets,
+            )}
+            toAsset={PortfolioHistoryDisplayUtils.resolvePortfolioAssetById(
+              item.toAssetId,
+              assets,
+            )}
+            chains={toAssetEvmChains}
+          />
+        ))}
+      </div>
+    );
 
   const renderSectionContent = () => {
     const isLoadingPortfolioWithRows =
@@ -2464,6 +2503,7 @@ export const Portfolio = ({
                 <div className="portfolio-card-header">
                   <h2>{I18nUtils.getMessage(pageTitleKey)}</h2>
                   {renderSwapQuoteRefreshControl()}
+                  {renderHistoryVisibilityToggle()}
                 </div>
               )}
               {renderSectionContent()}
