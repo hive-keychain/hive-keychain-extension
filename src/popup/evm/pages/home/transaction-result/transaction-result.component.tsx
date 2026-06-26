@@ -10,7 +10,6 @@ import {
   EVMSmartContractType,
   EvmSmartContractInfo,
 } from '@popup/evm/interfaces/evm-tokens.interface';
-import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
@@ -291,7 +290,7 @@ const EvmTransactionResult = ({
           from: activeAccount.wallet.address,
           nonce: currentTransaction.nonce,
           chainId: chain.chainId,
-          type: Number(EvmTransactionType.EIP_1559),
+          type: Number(increasedGasFee?.type ?? chain.defaultTransactionType),
         },
         increasedGasFee,
         chain.chainId,

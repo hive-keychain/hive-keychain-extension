@@ -11,6 +11,7 @@ interface Props {
   additionalClass: 'low' | 'increased' | 'medium' | 'aggressive' | 'custom';
   onSelectGasFee: () => void;
   label: string;
+  showDuration?: boolean;
 }
 
 export const GasFeePanelItem = ({
@@ -19,18 +20,23 @@ export const GasFeePanelItem = ({
   additionalClass,
   icon,
   onSelectGasFee,
+  showDuration = true,
 }: Props) => {
   return (
     <div
-      className={`custom-fee-row ${additionalClass}`}
+      className={`custom-fee-row ${additionalClass}${
+        showDuration ? '' : ' no-duration'
+      }`}
       onClick={() => onSelectGasFee()}>
       <SVGIcon icon={icon} />
       <div className="label type">{I18nUtils.getMessage(label)}</div>
-      <div className="label duration">
-        {I18nUtils.getMessage('popup_html_evm_gas_fee_estimate_duration', [
-          estimation.estimatedMaxDuration.toString(),
-        ])}
-      </div>
+      {showDuration && (
+        <div className="label duration">
+          {I18nUtils.getMessage('popup_html_evm_gas_fee_estimate_duration', [
+            estimation.estimatedMaxDuration.toString(),
+          ])}
+        </div>
+      )}
       <div className="label gas-fee">
         {GasFeeUtils.hasDisplayableEstimatedFee(estimation)
           ? GasFeeUtils.formatGasFeeValue(

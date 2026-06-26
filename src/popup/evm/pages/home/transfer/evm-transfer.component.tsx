@@ -14,10 +14,7 @@ import {
   EvmSmartContractInfoErc20,
   EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
-import {
-  EvmTransactionType,
-  ProviderTransactionData,
-} from '@popup/evm/interfaces/evm-transactions.interface';
+import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
@@ -382,7 +379,7 @@ const EvmTransfer = ({
     try {
       transactionData = {
         from: activeAccount.address,
-        type: EvmTransactionType.EIP_1559,
+        type: chain.defaultTransactionType,
         to:
           form.selectedToken.tokenInfo.type === EVMSmartContractType.NATIVE
             ? receiverAddress
@@ -449,7 +446,7 @@ const EvmTransfer = ({
             {
               value: transactionData.value,
               to: transactionData.to,
-              type: Number(EvmTransactionType.EIP_1559),
+              type: Number(transactionData.type),
               data: transactionData.data,
             },
             gasFee,
@@ -499,12 +496,12 @@ const EvmTransfer = ({
     const estimate = await GasFeeUtils.estimate(
       chain,
       activeAccount.address,
-      EvmTransactionType.EIP_1559,
+      chain.defaultTransactionType,
       token.tokenInfo.priceUsd ?? 0,
       undefined,
       {
         from: activeAccount.address,
-        type: EvmTransactionType.EIP_1559,
+        type: chain.defaultTransactionType,
         to,
         data: '',
         value: '0x0',

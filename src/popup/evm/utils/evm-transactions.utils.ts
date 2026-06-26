@@ -53,6 +53,43 @@ const persistPendingTransactions = async (
   );
 };
 
+const getTransactionType = (
+  requestType: TransactionRequest['type'],
+  gasFee?: GasFeeEstimationBase,
+) => {
+  if (gasFee?.type !== undefined) {
+    return Number(gasFee.type);
+  }
+
+  if (requestType != null) {
+    return Number(requestType);
+  }
+
+  return undefined;
+};
+
+const getTransactionData = (data: TransactionRequest['data']) => {
+  if (data == null) {
+    return undefined;
+  }
+
+  if (data === '') {
+    return '0x';
+  }
+
+  return data;
+};
+
+const getWeiFromGwei = (value: Decimal.Value) => {
+  const wei = new Decimal(value).mul('1000000000');
+
+  if (wei.lte(0)) {
+    return BigInt(0);
+  }
+
+  return BigInt(wei.ceil().toFixed(0));
+};
+
 /** For cancel/speed-up fee UI: GasFeePanel only runs estimates when `transactionData` is set. */
 const providerTransactionDataFromResponse = (
   tx: TransactionResponse,
@@ -125,29 +162,21 @@ const send = async (
 ) => {
   const chain = await ChainUtils.getChain<EvmChain>(chainId);
   const walletAddress = EvmSignerUtils.getWalletAddress(wallet);
+  const transactionType = getTransactionType(request.type, gasFee);
   let feeData = {};
   if (gasFee)
     switch (gasFee.type) {
       case EvmTransactionType.EIP_1559: {
         feeData = {
-          maxPriorityFeePerGas: ethers.parseUnits(
-            gasFee.priorityFeeInGwei!.toFixed(),
-            'gwei',
-          ),
-          maxFeePerGas: ethers.parseUnits(
-            gasFee.maxFeePerGasInGwei!.toFixed(),
-            'gwei',
-          ),
+          maxPriorityFeePerGas: getWeiFromGwei(gasFee.priorityFeeInGwei!),
+          maxFeePerGas: getWeiFromGwei(gasFee.maxFeePerGasInGwei!),
         };
         break;
       }
       case EvmTransactionType.EIP_155:
       case EvmTransactionType.LEGACY: {
         feeData = {
-          gasPrice: ethers.parseUnits(
-            new Decimal(gasFee.gasPriceInGwei!).toFixed(),
-            'gwei',
-          ),
+          gasPrice: getWeiFromGwei(gasFee.gasPriceInGwei!),
         };
         break;
       }
@@ -156,21 +185,20 @@ const send = async (
   let transactionRequest: TransactionRequest;
   transactionRequest = {
     value: request.value ?? '0x0',
-    data: request.data,
+    data: getTransactionData(request.data),
     to: request.to,
     from: walletAddress,
     nonce:
       forceNounce ?? (await EvmRequestsUtils.getNonce(walletAddress, chain)),
     gasLimit: gasFee ? BigInt(gasFee.gasLimit.toFixed(0)) : null,
     chainId: chain.chainId,
-    type: request.type,
+    type: transactionType,
     ...feeData,
   };
 
   if (
-    request.type &&
-    (request.type as unknown as EvmTransactionType) ===
-      EvmTransactionType.EIP_155
+    gasFee?.type === EvmTransactionType.EIP_155 ||
+    getTransactionType(request.type) === Number(EvmTransactionType.EIP_155)
   ) {
     if (request.accessList) {
       transactionRequest.accessList = request.accessList;

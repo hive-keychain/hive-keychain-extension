@@ -17,10 +17,7 @@ import {
   EvmSmartContractInfoErc721,
   EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
-import {
-  EvmTransactionType,
-  ProviderTransactionData,
-} from '@popup/evm/interfaces/evm-transactions.interface';
+import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmNftCollectionListItem } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-collection/evm-nft-collection.component';
 import { EvmNftDetails } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-details/evm-ntf-details.component';
@@ -224,7 +221,7 @@ const EvmNftTransfer = ({
 
     let transactionData: ProviderTransactionData = {
       from: activeAccount.address,
-      type: EvmTransactionType.EIP_1559,
+      type: chain.defaultTransactionType,
       to: watch('selectedToken.contractAddress'),
       data: await encodeTransferData(
         form.selectedToken as
@@ -274,7 +271,7 @@ const EvmNftTransfer = ({
             {
               value: transactionData.value,
               to: transactionData.to,
-              type: Number(EvmTransactionType.EIP_1559),
+              type: Number(transactionData.type),
               data: transactionData.data,
             },
             gasFee,

@@ -1,9 +1,13 @@
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
+import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
+import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
+import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
 import { EvmTokensHistoryParserUtils } from '@popup/evm/utils/evm-tokens-history-parser.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import Decimal from 'decimal.js';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
@@ -50,6 +54,25 @@ describe('evm transactions utils', () => {
     getTransactionCount: jest.Mock;
     getTransactionReceipt: jest.Mock;
   };
+
+  const buildGasFee = (
+    type: EvmTransactionType,
+    overrides: Partial<GasFeeEstimationBase> = {},
+  ): GasFeeEstimationBase => ({
+    type,
+    estimatedFeeInEth: new Decimal('0.001'),
+    estimatedFeeUSD: new Decimal(1),
+    maxFeeInEth: new Decimal('0.002'),
+    maxFeeUSD: new Decimal(2),
+    estimatedMaxDuration: new Decimal(30),
+    gasLimit: new Decimal(21000),
+    priorityFeeInGwei: new Decimal(1),
+    maxFeePerGasInGwei: new Decimal(30),
+    gasPriceInGwei: new Decimal(25),
+    icon: 'EVM_GAS_FEE_LOW' as any,
+    name: 'popup_html_evm_custom_gas_fee_low',
+    ...overrides,
+  });
 
   beforeEach(() => {
     pendingTransactionsStorage = [];
@@ -251,5 +274,76 @@ describe('evm transactions utils', () => {
       }),
     );
     expect(pendingTransactionsStorage).toHaveLength(1);
+  });
+
+  it('broadcasts legacy selected gas fees as legacy transaction requests', async () => {
+    provider.getTransactionCount.mockResolvedValue(0);
+    const sendTransactionSpy = jest
+      .spyOn(EvmSignerUtils, 'sendTransaction')
+      .mockResolvedValue({
+        hash: '0xlegacy',
+        nonce: 0,
+        chainId: chain.chainId,
+        toJSON: () => ({
+          hash: '0xlegacy',
+          nonce: 0,
+          chainId: chain.chainId,
+        }),
+      } as any);
+
+    await EvmTransactionsUtils.send(
+      { address: walletAddress } as any,
+      {
+        to: '0x0000000000000000000000000000000000000001',
+        value: '0x0',
+        data: '',
+        type: Number(EvmTransactionType.EIP_1559),
+      },
+      buildGasFee(EvmTransactionType.LEGACY, {
+        gasPriceInGwei: new Decimal('0.0000000162'),
+      }),
+      chain.chainId,
+    );
+
+    const transactionRequest = sendTransactionSpy.mock.calls[0][1];
+    expect(transactionRequest.type).toBe(Number(EvmTransactionType.LEGACY));
+    expect(transactionRequest.data).toBe('0x');
+    expect(transactionRequest.gasPrice).toBe(BigInt('17'));
+    expect(transactionRequest.maxFeePerGas).toBeUndefined();
+    expect(transactionRequest.maxPriorityFeePerGas).toBeUndefined();
+  });
+
+  it('broadcasts EIP-1559 selected gas fees as EIP-1559 transaction requests', async () => {
+    provider.getTransactionCount.mockResolvedValue(0);
+    const sendTransactionSpy = jest
+      .spyOn(EvmSignerUtils, 'sendTransaction')
+      .mockResolvedValue({
+        hash: '0xeip1559',
+        nonce: 0,
+        chainId: chain.chainId,
+        toJSON: () => ({
+          hash: '0xeip1559',
+          nonce: 0,
+          chainId: chain.chainId,
+        }),
+      } as any);
+
+    await EvmTransactionsUtils.send(
+      { address: walletAddress } as any,
+      {
+        to: '0x0000000000000000000000000000000000000001',
+        value: '0x0',
+        data: '0x',
+        type: Number(EvmTransactionType.LEGACY),
+      },
+      buildGasFee(EvmTransactionType.EIP_1559),
+      chain.chainId,
+    );
+
+    const transactionRequest = sendTransactionSpy.mock.calls[0][1];
+    expect(transactionRequest.type).toBe(Number(EvmTransactionType.EIP_1559));
+    expect(transactionRequest.maxPriorityFeePerGas).toBe(BigInt('1000000000'));
+    expect(transactionRequest.maxFeePerGas).toBe(BigInt('30000000000'));
+    expect(transactionRequest.gasPrice).toBeUndefined();
   });
 });
