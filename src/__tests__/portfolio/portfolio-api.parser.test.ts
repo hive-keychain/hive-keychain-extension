@@ -52,9 +52,12 @@ describe('PortfolioApiParser', () => {
         quotes: [
           {
             quoteId: 'lifi:abc',
-            provider: 'lifi',
-            providerName: 'LI.FI',
-            providerLogoUrl: 'https://example.com/lifi.png',
+            provider: {
+              id: 'lifi',
+              name: 'LI.FI',
+              logo: 'https://example.com/lifi.png',
+              fee: { amount: '0.001', currency: 'ETH' },
+            },
             category: 'swap',
             routeType: 'swap',
             fromAsset: {
@@ -73,7 +76,6 @@ describe('PortfolioApiParser', () => {
             fromAmount: '1',
             estimatedToAmount: '3200',
             comparableValue: '3200',
-            providerFee: { amount: '0.001', currency: 'ETH' },
             networkFeeEstimate: { amount: '0.0005', currency: 'ETH' },
             priceImpact: '0.12',
             warnings: ['High slippage'],
@@ -115,7 +117,9 @@ describe('PortfolioApiParser', () => {
       quotes: [
         expect.objectContaining({
           quoteId: 'lifi:abc',
+          provider: 'lifi',
           providerName: 'LI.FI',
+          providerLogoUrl: 'https://example.com/lifi.png',
           comparableValue: '3200',
           providerFee: { amount: '0.001', currency: 'ETH' },
           networkFeeEstimate: { amount: '0.0005', currency: 'ETH' },
@@ -139,7 +143,7 @@ describe('PortfolioApiParser', () => {
       quotes: [
         {
           quoteId: 'lifi:no-approval',
-          provider: 'lifi',
+          provider: { id: 'lifi', name: 'LI.FI' },
           fromAmount: '1',
           estimatedToAmount: '0.99',
           approval: { spender: '0xabc' },
@@ -156,7 +160,7 @@ describe('PortfolioApiParser', () => {
       quotes: [
         {
           quoteId: 'simpleswap:1',
-          provider: 'simpleswap',
+          provider: { id: 'simpleswap', name: 'SimpleSwap' },
           fromAmount: '1',
           estimatedToAmount: '99.5',
         },
@@ -223,6 +227,7 @@ describe('PortfolioApiParser', () => {
     ).toEqual(
       expect.objectContaining({
         id: 'exec-1',
+        provider: 'lifi',
         providerReferenceId: null,
         fromAddress: '0xfrom',
         transaction: expect.objectContaining({
@@ -243,9 +248,15 @@ describe('PortfolioApiParser', () => {
             status: 'submitted',
             displayStatus: 'submitted',
             mode: 'swap',
-            provider: 'lifi',
+            provider: {
+              id: 'lifi',
+              name: 'LI.FI',
+              logo: 'https://example.com/lifi.png',
+            },
             executionType: 'in_app',
             txHash: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+            providerStatus: 'confirming',
+            lastProviderStatusRefreshAt: '2026-06-23T12:04:00.000Z',
           },
         ],
       }),
@@ -257,6 +268,11 @@ describe('PortfolioApiParser', () => {
           expect.objectContaining({
             displayStatus: 'submitted',
             executionType: 'in_app',
+            provider: 'lifi',
+            providerName: 'LI.FI',
+            providerLogoUrl: 'https://example.com/lifi.png',
+            providerStatus: 'confirming',
+            lastProviderStatusRefreshAt: '2026-06-23T12:04:00.000Z',
           }),
         ],
       }),
@@ -267,7 +283,7 @@ describe('PortfolioApiParser', () => {
       quotes: [
         {
           quoteId: 'keychain_swap:1',
-          provider: 'keychain_swap',
+          provider: { id: 'keychain_swap', name: 'Keychain Swap' },
           fromAmount: '1',
           estimatedToAmount: '0.5',
           executionType: 'in_app',

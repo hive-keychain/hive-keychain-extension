@@ -290,12 +290,13 @@ const parsePortfolioQuote = (value: unknown): PortfolioQuote | null => {
 
   const estimatedToAmount = readString(value, 'estimatedToAmount');
   const comparableValue = readString(value, 'comparableValue', estimatedToAmount);
+  const provider = readRecord(value.provider);
 
   return {
     quoteId,
-    provider: readString(value, 'provider'),
-    providerName: readString(value, 'providerName'),
-    providerLogoUrl: readNullableString(value, 'providerLogoUrl'),
+    provider: provider ? readString(provider, 'id') : '',
+    providerName: provider ? readString(provider, 'name') : '',
+    providerLogoUrl: provider ? readNullableString(provider, 'logo') : null,
     category: readEnum(value.category, portfolioModes, 'swap'),
     routeType:
       value.routeType === null
@@ -306,7 +307,7 @@ const parsePortfolioQuote = (value: unknown): PortfolioQuote | null => {
     fromAmount: readString(value, 'fromAmount'),
     estimatedToAmount,
     comparableValue,
-    providerFee: parsePortfolioQuoteFee(value.providerFee),
+    providerFee: provider ? parsePortfolioQuoteFee(provider.fee) : null,
     networkFeeEstimate: parsePortfolioQuoteFee(value.networkFeeEstimate),
     priceImpact: readNullableString(value, 'priceImpact'),
     warnings: readStringArray(value.warnings),
@@ -488,14 +489,24 @@ const parsePortfolioHistoryItem = (
     return null;
   }
 
+  const provider = readRecord(value.provider);
+
   return {
     ...execution,
+    provider: provider ? readString(provider, 'id') : execution.provider,
     displayStatus: readString(value, 'displayStatus'),
     executionType:
       value.executionType === null
         ? null
         : readEnum(value.executionType, portfolioExecutionTypes, 'redirect'),
     txHash: readNullableString(value, 'txHash'),
+    providerName: provider ? readNullableString(provider, 'name') : null,
+    providerLogoUrl: provider ? readNullableString(provider, 'logo') : null,
+    providerStatus: readNullableString(value, 'providerStatus'),
+    lastProviderStatusRefreshAt: readNullableString(
+      value,
+      'lastProviderStatusRefreshAt',
+    ),
   };
 };
 

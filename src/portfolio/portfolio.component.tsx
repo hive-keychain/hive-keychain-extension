@@ -162,6 +162,8 @@ const TO_ASSET_FILTERED_MAX = 200;
 const PORTFOLIO_SWAP_QUOTE_REFRESH_INTERVAL_MS = 30_000;
 const PORTFOLIO_SWAP_QUOTE_REFRESH_INTERVAL_SECONDS = 30;
 const PORTFOLIO_SWAP_QUOTE_DEBOUNCE_MS = 600;
+const PORTFOLIO_HISTORY_AUTO_REFRESH_INTERVAL_MS = 15_000;
+const PORTFOLIO_HISTORY_AUTO_REFRESH_INTERVAL_SECONDS = 15;
 
 const getAllNetworksOption = (): OptionItem => ({
   label: I18nUtils.getMessage('portfolio_all_networks'),
@@ -425,6 +427,9 @@ export const Portfolio = ({
   const [isFlowLoading, setIsFlowLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [quoteRefreshCountdown, setQuoteRefreshCountdown] = useState<
+    number | null
+  >(null);
+  const [historyRefreshCountdown, setHistoryRefreshCountdown] = useState<
     number | null
   >(null);
   const [tokenFilter, setTokenFilter] = useState('');
@@ -1125,6 +1130,51 @@ export const Portfolio = ({
     }
   }, [section]);
 
+  const historyRefreshDeadlineRef = useRef(0);
+
+  const refreshHistorySilently = useCallback(() => {
+    historyRefreshDeadlineRef.current = 0;
+    setHistoryRefreshCountdown(null);
+    void PortfolioApiUtils.listHistory()
+      .then(setHistory)
+      .catch((error) => {
+        Logger.error('Unable to auto-refresh portfolio history', error);
+      })
+      .finally(() => {
+        historyRefreshDeadlineRef.current =
+          Date.now() + PORTFOLIO_HISTORY_AUTO_REFRESH_INTERVAL_MS;
+        setHistoryRefreshCountdown(
+          PORTFOLIO_HISTORY_AUTO_REFRESH_INTERVAL_SECONDS,
+        );
+      });
+  }, []);
+
+  useEffect(() => {
+    if (section !== 'history' || !selectedAccountKey) {
+      historyRefreshDeadlineRef.current = 0;
+      setHistoryRefreshCountdown(null);
+      return;
+    }
+
+    historyRefreshDeadlineRef.current =
+      Date.now() + PORTFOLIO_HISTORY_AUTO_REFRESH_INTERVAL_MS;
+    setHistoryRefreshCountdown(PORTFOLIO_HISTORY_AUTO_REFRESH_INTERVAL_SECONDS);
+
+    const countdownIntervalId = setInterval(() => {
+      if (!historyRefreshDeadlineRef.current) return;
+
+      const remainingMs = historyRefreshDeadlineRef.current - Date.now();
+      if (remainingMs <= 0) {
+        refreshHistorySilently();
+        return;
+      }
+
+      setHistoryRefreshCountdown(Math.ceil(remainingMs / 1000));
+    }, 1000);
+
+    return () => clearInterval(countdownIntervalId);
+  }, [section, selectedAccountKey, refreshHistorySilently]);
+
   const loadFiatRampOptions = async (mode: 'buy' | 'sell', country: string) => {
     if (country.length !== 2) {
       setFiatRampOptions(null);
@@ -1764,6 +1814,7 @@ export const Portfolio = ({
           );
           setPendingInAppConfirmation(null);
           setHistory(await PortfolioApiUtils.listHistory());
+          setSection('history');
         } catch (error) {
           resetLoading();
           Logger.error('Portfolio transaction failed', error);
@@ -1833,6 +1884,7 @@ export const Portfolio = ({
           }
           setPendingInAppConfirmation(null);
           setHistory(await PortfolioApiUtils.listHistory());
+          setSection('history');
         } catch (error) {
           Logger.error('Portfolio transaction failed', error);
           setErrorMessage('portfolio_execution_error');
@@ -2143,6 +2195,36 @@ export const Portfolio = ({
           icon={SVGIcons.SWAPS_HISTORY_REFRESH}
         />
         <span>{swapQuoteRefreshLabel}</span>
+      </button>
+    );
+  };
+
+  const renderHistoryRefreshControl = () => {
+    if (section !== 'history' || !selectedAccountKey) {
+      return null;
+    }
+
+    const isHistoryRefreshing = historyRefreshCountdown === null;
+    const historyRefreshLabel = isHistoryRefreshing
+      ? I18nUtils.getMessage('portfolio_history_refreshing')
+      : I18nUtils.getMessage('portfolio_history_auto_refresh_countdown', [
+          String(historyRefreshCountdown),
+        ]);
+
+    return (
+      <button
+        type="button"
+        className="portfolio-quote-autorefresh"
+        disabled={isHistoryRefreshing}
+        onClick={refreshHistorySilently}
+        title={I18nUtils.getMessage('portfolio_history_refresh_now')}>
+        <SVGIcon
+          className={`portfolio-quote-autorefresh__icon ${
+            isHistoryRefreshing ? 'rotate' : ''
+          }`}
+          icon={SVGIcons.SWAPS_HISTORY_REFRESH}
+        />
+        <span>{historyRefreshLabel}</span>
       </button>
     );
   };
@@ -2563,6 +2645,7 @@ export const Portfolio = ({
                 <div className="portfolio-card-header">
                   <h2>{I18nUtils.getMessage(pageTitleKey)}</h2>
                   {renderSwapQuoteRefreshControl()}
+                  {renderHistoryRefreshControl()}
                   {renderHistoryVisibilityToggle()}
                 </div>
               )}

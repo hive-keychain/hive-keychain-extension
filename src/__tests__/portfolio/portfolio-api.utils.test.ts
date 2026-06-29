@@ -124,9 +124,11 @@ describe('PortfolioApiUtils', () => {
         quotes: [
           {
             quoteId: 'lifi:abc',
-            provider: 'lifi',
-            providerName: 'LI.FI',
-            providerLogoUrl: 'https://example.com/lifi.png',
+            provider: {
+              id: 'lifi',
+              name: 'LI.FI',
+              logo: 'https://example.com/lifi.png',
+            },
             category: 'swap',
             routeType: 'swap',
             fromAmount: '1',

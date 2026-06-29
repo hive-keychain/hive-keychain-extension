@@ -143,6 +143,27 @@
     min-width: 0;
   }
 
+  &__provider {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--kc-space-2);
+    min-width: 0;
+  }
+
+  &__provider-logo {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    object-fit: cover;
+  }
+
+  &__provider-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   &__address {
     display: inline-flex;
     align-items: center;

@@ -1,4 +1,5 @@
 import { CustomTooltip } from '@common-ui/custom-tooltip/custom-tooltip.component';
+import { PreloadedImage } from '@common-ui/preloaded-image/preloaded-image.component';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import moment from 'moment';
@@ -87,7 +88,7 @@ export const PortfolioHistoryCard = ({
   const modeLabel = item.mode
     ? I18nUtils.getMessage(`portfolio_section_${item.mode}`)
     : '';
-  const providerLabel = item.provider.replace(/_/g, ' ');
+  const providerLabel = item.providerName ?? item.provider.replace(/_/g, ' ');
 
   const renderAddressValue = (address: string): React.ReactNode => {
     if (EvmAddressUtils.isValidEvmAddress(address)) {
@@ -149,12 +150,28 @@ export const PortfolioHistoryCard = ({
     );
   };
 
+  const renderProviderValue = (): React.ReactNode => (
+    <span className="portfolio-history-card__provider">
+      {item.providerLogoUrl ? (
+        <PreloadedImage
+          className="portfolio-history-card__provider-logo"
+          src={item.providerLogoUrl}
+          alt=""
+          placeholder="/assets/images/wallet/hive-engine.svg"
+        />
+      ) : null}
+      <span className="portfolio-history-card__provider-label">
+        {providerLabel}
+      </span>
+    </span>
+  );
+
   const detailRows: { label: string; value: React.ReactNode }[] = [];
 
   if (providerLabel) {
     detailRows.push({
       label: I18nUtils.getMessage('portfolio_provider'),
-      value: providerLabel,
+      value: renderProviderValue(),
     });
   }
   if (item.fromAddress) {

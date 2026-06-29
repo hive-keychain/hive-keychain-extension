@@ -4112,6 +4112,17 @@
   },
   "portfolio_quote_refresh_now": { "message": "Refresh now" },
   "portfolio_quote_refreshing": { "message": "Updating quotes…" },
+  "portfolio_history_auto_refresh_countdown": {
+    "message": "Auto refresh in $1s",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "15"
+      }
+    }
+  },
+  "portfolio_history_refresh_now": { "message": "Refresh now" },
+  "portfolio_history_refreshing": { "message": "Refreshing…" },
   "portfolio_continue": { "message": "Continue" },
   "portfolio_load_error": { "message": "Unable to load portfolio data." },
   "portfolio_partial_load_error": {

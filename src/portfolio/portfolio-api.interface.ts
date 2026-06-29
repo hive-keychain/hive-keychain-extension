@@ -192,6 +192,10 @@ export interface PortfolioHistoryItem extends PortfolioExecution {
   displayStatus: string;
   executionType: PortfolioExecutionType | null;
   txHash: string | null;
+  providerName: string | null;
+  providerLogoUrl: string | null;
+  providerStatus: string | null;
+  lastProviderStatusRefreshAt: string | null;
 }
 
 export interface PortfolioHistoryResponse {
