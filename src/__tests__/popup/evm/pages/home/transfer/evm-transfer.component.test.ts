@@ -1,4 +1,5 @@
 import {
+  getEvmTransferDisplayAmount,
   getEvmTransferErrorMessage,
   getEvmTransferMaxAmount,
   getEvmTransferValueHex,
@@ -7,6 +8,17 @@ import Decimal from 'decimal.js';
 import { KeychainError } from 'src/keychain-error';
 
 describe('EvmTransferComponent helpers', () => {
+  describe('getEvmTransferDisplayAmount', () => {
+    it('formats transfer display amounts with the token symbol', () => {
+      expect(getEvmTransferDisplayAmount('1.230000', 18, 'ETH')).toBe(
+        '1.23 ETH',
+      );
+      expect(getEvmTransferDisplayAmount('1000', 18, 'TKN')).toBe(
+        '1,000 TKN',
+      );
+    });
+  });
+
   describe('getEvmTransferValueHex', () => {
     it('converts decimal native token amounts to valid hex wei without floating point math', () => {
       expect(getEvmTransferValueHex('0.0493', 18)).toBe('0xaf2616bb6d4000');

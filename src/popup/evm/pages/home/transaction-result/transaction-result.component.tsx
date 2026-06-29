@@ -3,6 +3,7 @@ import { SmallImageCardComponent } from '@common-ui/small-data-card/small-image-
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EtherRPCCustomError } from '@popup/evm/interfaces/evm-errors.interface';
 import {
+  EvmUserHistoryItem,
   EvmUserHistoryItemDetail,
   EvmUserHistoryItemDetailType,
 } from '@popup/evm/interfaces/evm-tokens-history.interface';
@@ -10,6 +11,10 @@ import {
   EVMSmartContractType,
   EvmSmartContractInfo,
 } from '@popup/evm/interfaces/evm-tokens.interface';
+import {
+  EvmTransactionResolvedPayload,
+  EvmTransactionResolvedStatus,
+} from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
@@ -28,6 +33,7 @@ import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { TransactionReceipt, TransactionResponse, ethers } from 'ethers';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
@@ -106,13 +112,14 @@ const EvmTransactionResult = ({
   activeAccount,
   chain,
   transactionResponse,
+  transactionReceipt,
   tokenInfo,
-  amount,
   receiverAddress,
   gasFee,
   localAccounts,
   isCanceled,
   isReverted,
+  isFailed,
   isSuccess,
   pageTitle,
   detailFields,
@@ -122,13 +129,23 @@ const EvmTransactionResult = ({
   initialDisplayHistory,
   opName,
   timestamp,
+  resolvedStatus: initialResolvedStatus,
+  displayItem: initialDisplayItem,
   setTitleContainerProperties,
   setErrorMessage,
   loadEvmActiveAccount,
 }: PropsFromRedux) => {
   const [waitingForTx, setWaitingForTx] = useState(true);
-  const [txReceipt, setTxReceipt] = useState<TransactionReceipt>();
-  const [txResult, setTxResult] = useState<TransactionResponse>();
+  const [txReceipt, setTxReceipt] = useState<TransactionReceipt | any>(
+    transactionReceipt,
+  );
+  const [txResult, setTxResult] = useState<TransactionResponse | any>();
+  const [resolvedStatus, setResolvedStatus] = useState<
+    EvmTransactionResolvedStatus | undefined
+  >(initialResolvedStatus);
+  const [resolvedDisplayItem, setResolvedDisplayItem] = useState<
+    EvmUserHistoryItem | undefined
+  >(initialDisplayItem);
   const hasRefreshedAccountAfterResolution = useRef(false);
 
   const [isCanceling, setCanceling] = useState<boolean>(false);
@@ -147,6 +164,31 @@ const EvmTransactionResult = ({
     transactionTokenType === EVMSmartContractType.ERC20 ||
     transactionTokenType === EVMSmartContractType.ERC721 ||
     transactionTokenType === EVMSmartContractType.ERC1155;
+  const effectiveDisplayItem = resolvedDisplayItem ?? initialDisplayItem;
+  const effectivePageTitle = effectiveDisplayItem?.pageTitle ?? pageTitle;
+  const effectiveDetailFields =
+    effectiveDisplayItem?.detailFields ?? detailFields;
+  const effectiveTokenInfo = effectiveDisplayItem?.tokenInfo ?? tokenInfo;
+  const effectiveReceiverAddress =
+    effectiveDisplayItem?.receiverAddress ?? receiverAddress;
+  const effectiveWarningMessage =
+    effectiveDisplayItem?.warningMessage ?? warningMessage;
+  const effectiveTimestamp = effectiveDisplayItem?.timestamp ?? timestamp;
+  const effectiveIsSuccess =
+    resolvedStatus === EvmTransactionResolvedStatus.SUCCESS || isSuccess;
+  const effectiveIsCanceled =
+    resolvedStatus === EvmTransactionResolvedStatus.CANCELED ||
+    isCanceled ||
+    effectiveDisplayItem?.isCanceled;
+  const effectiveIsReverted =
+    resolvedStatus === EvmTransactionResolvedStatus.REVERTED ||
+    isReverted ||
+    effectiveDisplayItem?.isReverted;
+  const effectiveIsFailed =
+    resolvedStatus === EvmTransactionResolvedStatus.FAILED ||
+    isFailed ||
+    effectiveDisplayItem?.isFailed;
+  const hasTerminalResolvedStatus = Boolean(resolvedStatus);
 
   useEffect(() => {
     const closeNavigationParams = initialDisplayNfts
@@ -161,12 +203,17 @@ const EvmTransactionResult = ({
       ? getEvmLightNodeOpTitleMessageKey(opName)
       : undefined;
     setTitleContainerProperties({
-      title: titleFromHistoryOp ?? pageTitle,
+      title: titleFromHistoryOp ?? effectivePageTitle,
       skipTitleTranslation: false,
       isBackButtonEnabled: false,
       closeNavigationParams,
     });
-    if (isSuccess || isCanceled || isReverted) {
+    if (
+      effectiveIsSuccess ||
+      effectiveIsCanceled ||
+      effectiveIsReverted ||
+      hasTerminalResolvedStatus
+    ) {
       setWaitingForTx(false);
     } else if (transactionResponse?.wait) {
       getTransactionStatus();
@@ -195,8 +242,55 @@ const EvmTransactionResult = ({
   ]);
 
   useEffect(() => {
-    if (tokenInfo) {
-      setTransactionTokenType(tokenInfo.type);
+    const onResolvedEvmTransaction = (message: {
+      command?: BackgroundCommand;
+      value?: EvmTransactionResolvedPayload;
+    }) => {
+      if (message.command !== BackgroundCommand.EVM_TRANSACTION_RESOLVED) {
+        return;
+      }
+
+      const payload = message.value;
+      const currentHash = transactionResponse?.hash?.toLowerCase();
+      if (!payload || !currentHash) {
+        return;
+      }
+
+      const resolvedChainId = Number(payload.chainId);
+      const currentChainId = Number(chain.chainId);
+      const resolvedWallet = payload.from?.toLowerCase();
+      const currentWallet = activeAccount.wallet?.address?.toLowerCase();
+
+      if (
+        payload.hash.toLowerCase() !== currentHash ||
+        resolvedChainId !== currentChainId ||
+        !resolvedWallet ||
+        resolvedWallet !== currentWallet
+      ) {
+        return;
+      }
+
+      setResolvedStatus(payload.status);
+      setResolvedDisplayItem(payload.displayItem);
+      if (payload.transactionReceiptParams) {
+        setTxReceipt(payload.transactionReceiptParams);
+      }
+      if (payload.transactionResponseParams) {
+        setTxResult(payload.transactionResponseParams);
+      }
+      setWaitingForTx(false);
+    };
+
+    chrome.runtime.onMessage.addListener(onResolvedEvmTransaction);
+
+    return () => {
+      chrome.runtime.onMessage.removeListener(onResolvedEvmTransaction);
+    };
+  }, [activeAccount.wallet, chain.chainId, transactionResponse]);
+
+  useEffect(() => {
+    if (effectiveTokenInfo) {
+      setTransactionTokenType(effectiveTokenInfo.type);
       return;
     }
 
@@ -220,7 +314,7 @@ const EvmTransactionResult = ({
         setTransactionTokenType(type as string);
       }
     });
-  }, [tokenInfo, chain.chainId, transactionResponse]);
+  }, [effectiveTokenInfo, chain.chainId, transactionResponse]);
 
   useEffect(() => {
     if (!isGasPanelOpened) {
@@ -427,9 +521,10 @@ const EvmTransactionResult = ({
   };
 
   const getStatus = () => {
-    if (isSuccess) return 'success';
-    if (isReverted) return 'reverted';
-    if (isCanceled) return 'canceled';
+    if (effectiveIsFailed) return 'failed';
+    if (effectiveIsSuccess) return 'success';
+    if (effectiveIsReverted) return 'reverted';
+    if (effectiveIsCanceled) return 'canceled';
     if (waitingForTx) {
       if (isCanceling) {
         return 'canceling';
@@ -488,22 +583,22 @@ const EvmTransactionResult = ({
   };
 
   const getImage = async (value: string) => {
-    if (!tokenInfo || !(tokenInfo as any).contractAddress) {
+    if (!effectiveTokenInfo || !(effectiveTokenInfo as any).contractAddress) {
       return undefined;
     }
 
     const contract = new ethers.Contract(
-      (tokenInfo as any).contractAddress,
-      getAbiFromType(tokenInfo.type)!,
+      (effectiveTokenInfo as any).contractAddress,
+      getAbiFromType(effectiveTokenInfo.type)!,
       await EthersUtils.getProvider(chain),
     );
 
     const metadata = await EvmNFTUtils.getMetadataFromTokenId(
-      tokenInfo.type,
+      effectiveTokenInfo.type,
       Number(value).toString(),
       contract,
       chain,
-      (tokenInfo as any).contractAddress,
+      (effectiveTokenInfo as any).contractAddress,
     );
 
     return metadata.metadata.image;
@@ -515,29 +610,44 @@ const EvmTransactionResult = ({
     }
   };
 
+  const getOptionalBigInt = (value: unknown): bigint | undefined => {
+    if (value == null) return undefined;
+    if (typeof value === 'bigint') return value;
+    if (typeof value === 'number') return BigInt(value);
+    if (typeof value === 'string' && value.length > 0) {
+      return BigInt(value);
+    }
+    return undefined;
+  };
+
   const displayTx = txResult ?? transactionResponse ?? null;
-  const displayBlockNumber = displayTx?.blockNumber;
+  const displayBlockNumber = displayTx?.blockNumber ?? txReceipt?.blockNumber;
   const displayData = displayTx?.data;
-  const displayGasLimit = displayTx?.gasLimit;
-  const displayGasPrice = displayTx?.gasPrice;
-  const displayHash = displayTx?.hash;
-  const displayMaxFeePerGas = displayTx?.maxFeePerGas;
-  const displayMaxPriorityFeePerGas = displayTx?.maxPriorityFeePerGas;
+  const displayGasLimit = getOptionalBigInt(displayTx?.gasLimit);
+  const displayGasPrice = getOptionalBigInt(displayTx?.gasPrice);
+  const displayHash = displayTx?.hash ?? txReceipt?.hash;
+  const displayMaxFeePerGas = getOptionalBigInt(displayTx?.maxFeePerGas);
+  const displayMaxPriorityFeePerGas = getOptionalBigInt(
+    displayTx?.maxPriorityFeePerGas,
+  );
   const displayTo = displayTx?.to;
   const hasMinedReceipt = Boolean(txReceipt?.gasUsed != null);
 
   const getMinedGasFeeDisplay = (): string => {
-    if (!txReceipt?.gasUsed) {
+    const gasUsed = getOptionalBigInt(txReceipt?.gasUsed);
+    if (!gasUsed) {
       return I18nUtils.getMessage('popup_html_pending');
     }
     const receipt = txReceipt as TransactionReceipt & {
       effectiveGasPrice?: bigint | null;
     };
     const pricePerGas =
-      receipt.gasPrice ?? receipt.effectiveGasPrice ?? undefined;
+      getOptionalBigInt(receipt.gasPrice) ??
+      getOptionalBigInt(receipt.effectiveGasPrice) ??
+      undefined;
     if (pricePerGas != null && pricePerGas > BigInt(0)) {
       return formatNativeFeeFromWei(
-        pricePerGas * txReceipt.gasUsed,
+        pricePerGas * gasUsed,
         TOTAL_FEE_FRACTION_DIGITS,
         chain.mainToken,
       );
@@ -609,13 +719,13 @@ const EvmTransactionResult = ({
   );
 
   const syntheticToAddress =
-    receiverAddress ??
+    effectiveReceiverAddress ??
     erc20TransferRecipient ??
     (!txDataHex.startsWith('0xa9059cbb')
       ? (displayTo ?? undefined)
       : undefined);
 
-  const detailFieldsIncludeTo = detailFields?.some(
+  const detailFieldsIncludeTo = effectiveDetailFields?.some(
     (d: EvmUserHistoryItemDetail) =>
       d.label === 'popup_html_transfer_to' ||
       d.label === 'popup_html_evm_transaction_info_to' ||
@@ -624,27 +734,24 @@ const EvmTransactionResult = ({
   );
 
   const isCanceledHistoryOperation =
-    pageTitle === 'evm_history_canceled_transaction';
+    effectivePageTitle === 'evm_history_canceled_transaction';
 
   const showSyntheticToRow =
     syntheticToAddress != null &&
     !detailFieldsIncludeTo &&
     !isCanceledHistoryOperation &&
-    !isReverted;
-
-  const shouldShowStatusAmount =
-    tokenInfo !== undefined && amount !== undefined && amount !== null;
+    !effectiveIsReverted;
 
   const shouldShowTransactionInfo =
     Boolean(displayTx) ||
-    Boolean(detailFields?.length) ||
-    Boolean(timestamp) ||
+    Boolean(effectiveDetailFields?.length) ||
+    Boolean(effectiveTimestamp) ||
     shouldShowTokenType;
   const shouldShowTransactionMetadataRows =
     Boolean(displayTx) || Boolean(txReceipt) || Boolean(gasFee);
 
   const getTokenInfoFromAmount = (value?: string) => {
-    if (tokenInfo) return tokenInfo;
+    if (effectiveTokenInfo) return effectiveTokenInfo;
     const symbol = value?.trim().split(/\s+/).pop();
     if (!symbol) return undefined;
     return activeAccount.nativeAndErc20Tokens.value.find(
@@ -685,10 +792,10 @@ const EvmTransactionResult = ({
   };
 
   const tokenContractAddress =
-    tokenInfo &&
-    tokenInfo.type !== EVMSmartContractType.NATIVE &&
-    'contractAddress' in tokenInfo
-      ? tokenInfo.contractAddress
+    effectiveTokenInfo &&
+    effectiveTokenInfo.type !== EVMSmartContractType.NATIVE &&
+    'contractAddress' in effectiveTokenInfo
+      ? effectiveTokenInfo.contractAddress
       : undefined;
 
   const renderCopiableContractLabel = (
@@ -771,10 +878,9 @@ const EvmTransactionResult = ({
             <div className="status">
               {I18nUtils.getMessage(getStatusLabel(getStatus()))}
             </div>
-            {shouldShowStatusAmount && (
-              renderTokenAmount(amount, tokenContractAddress)
+            {effectiveWarningMessage && (
+              <div className="warning">{effectiveWarningMessage}</div>
             )}
-            {warningMessage && <div className="warning">{warningMessage}</div>}
           </div>
         </div>
         {waitingForTx &&
@@ -850,8 +956,8 @@ const EvmTransactionResult = ({
       )}
       {shouldShowTransactionInfo && (
         <div className="transaction-info">
-          {detailFields &&
-            detailFields.map(
+          {effectiveDetailFields &&
+            effectiveDetailFields.map(
               (detail: EvmUserHistoryItemDetail, index: number) => (
                 <React.Fragment key={`card-${index}`}>
                   {detail.type === EvmUserHistoryItemDetailType.BASE &&
@@ -894,11 +1000,13 @@ const EvmTransactionResult = ({
               valueOnClickAction={() => openWallet(syntheticToAddress!)}
             />
           )}
-          {timestamp && (
+          {effectiveTimestamp && (
             <SmallDataCardComponent
               label="Time"
               skipLabelTranslation
-              value={moment(timestamp).format('YYYY/MM/DD, hh:mm:ss a')}
+              value={moment(effectiveTimestamp).format(
+                'YYYY/MM/DD, hh:mm:ss a',
+              )}
             />
           )}
           {!isCanceledHistoryOperation && shouldShowTokenType && (
@@ -981,6 +1089,10 @@ const mapStateToProps = (state: RootState) => {
       | TransactionResponse
       | null
       | undefined,
+    transactionReceipt: state.navigation.stack[0].params.transactionReceipt as
+      | TransactionReceipt
+      | null
+      | undefined,
     tokenInfo: state.navigation.stack[0].params
       .tokenInfo as EvmSmartContractInfo,
     amount: state.navigation.stack[0].params.amount,
@@ -990,6 +1102,7 @@ const mapStateToProps = (state: RootState) => {
     chain: state.chain as EvmChain,
     isCanceled: state.navigation.stack[0].params.isCanceled,
     isReverted: state.navigation.stack[0].params.isReverted,
+    isFailed: state.navigation.stack[0].params.isFailed,
     isSuccess: state.navigation.stack[0].params.isSuccess,
     pageTitle: state.navigation.stack[0].params.pageTitle,
     detailFields: state.navigation.stack[0].params.detailFields,
@@ -1000,6 +1113,11 @@ const mapStateToProps = (state: RootState) => {
       state.navigation.stack[0].params.initialDisplayHistory,
     opName: state.navigation.stack[0].params.opName as string | undefined,
     timestamp: state.navigation.stack[0].params.timestamp,
+    resolvedStatus: state.navigation.stack[0].params
+      .resolvedStatus as EvmTransactionResolvedStatus | undefined,
+    displayItem: state.navigation.stack[0].params.displayItem as
+      | EvmUserHistoryItem
+      | undefined,
   };
 };
 

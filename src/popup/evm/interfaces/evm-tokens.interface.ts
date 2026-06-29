@@ -1,4 +1,5 @@
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
+import type { EvmUserHistoryItem } from '@popup/evm/interfaces/evm-tokens-history.interface';
 
 export enum EVMSmartContractType {
   NATIVE = 'NATIVE',
@@ -90,6 +91,7 @@ export interface EvmPendingTransaction {
   walletAddress: string;
   chainId: string;
   broadcastDate: number;
+  displayItem?: EvmUserHistoryItem;
 }
 
 export interface UserPendingTransactions {

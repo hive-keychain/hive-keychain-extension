@@ -1,8 +1,8 @@
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
+import { EvmUserHistoryItemType } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
-import { EvmTokensHistoryParserUtils } from '@popup/evm/utils/evm-tokens-history-parser.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
@@ -48,6 +48,17 @@ describe('evm transactions utils', () => {
     mainToken: 'ETH',
   } as any;
   const walletAddress = '0xabc';
+  const pendingDisplayItem = {
+    pageTitle: 'evm_pending_transaction',
+    type: EvmUserHistoryItemType.SMART_CONTRACT,
+    blockNumber: 0,
+    transactionHash: '0xblocking',
+    transactionIndex: 0,
+    timestamp: 1,
+    label: 'Pending swap',
+    nonce: 0,
+    detailFields: [],
+  };
 
   let pendingTransactionsStorage: any[];
   let provider: {
@@ -104,9 +115,6 @@ describe('evm transactions utils', () => {
     jest
       .spyOn(EvmPendingTransactionsNotifications, 'waitForTransaction')
       .mockResolvedValue(undefined);
-    jest
-      .spyOn(EvmTokensHistoryParserUtils, 'parseEvent')
-      .mockResolvedValue({ label: 'Pending swap' } as any);
   });
 
   afterEach(() => {
@@ -120,6 +128,7 @@ describe('evm transactions utils', () => {
         walletAddress,
         chainId: chain.chainId,
         broadcastDate: 1,
+        displayItem: pendingDisplayItem,
       },
       {
         txResponseParams: { hash: '0xqueued', nonce: 1, chainId: chain.chainId },
@@ -146,6 +155,7 @@ describe('evm transactions utils', () => {
         label: 'Pending swap',
         title: 'evm_pending_queued_transactions',
         nonce: 0,
+        displayItem: pendingDisplayItem,
       },
     });
     expect(result?.pendingTransactionDetails.transactionResponse).toMatchObject({
@@ -154,7 +164,7 @@ describe('evm transactions utils', () => {
     });
   });
 
-  it('falls back to the unknown pending label when the blocking nonce is not in local storage', async () => {
+  it('builds a fallback display item for old pending records without one', async () => {
     pendingTransactionsStorage = [
       {
         txResponseParams: { hash: '0xqueued', nonce: 1, chainId: chain.chainId },
@@ -173,12 +183,14 @@ describe('evm transactions utils', () => {
       chain,
     );
 
-    expect(result?.pendingTransactionDetails).toEqual({
-      label: 'evm_unknown_pending_transaction',
+    expect(result?.pendingTransactionDetails).toMatchObject({
+      label: 'evm_history_smart_contract_creation_message_no_address',
       title: 'evm_pending_queued_transactions',
       nonce: 0,
+      displayItem: {
+        transactionHash: '0xqueued',
+      },
     });
-    expect(EvmTokensHistoryParserUtils.parseEvent).not.toHaveBeenCalled();
   });
 
   it('uses the pending-only title when there are no queued transactions', async () => {
@@ -188,6 +200,7 @@ describe('evm transactions utils', () => {
         walletAddress,
         chainId: chain.chainId,
         broadcastDate: 1,
+        displayItem: pendingDisplayItem,
       },
     ];
 
@@ -208,6 +221,7 @@ describe('evm transactions utils', () => {
         label: 'Pending swap',
         title: 'evm_one_pending_transaction',
         nonce: 0,
+        displayItem: pendingDisplayItem,
       },
     });
   });
@@ -274,6 +288,48 @@ describe('evm transactions utils', () => {
       }),
     );
     expect(pendingTransactionsStorage).toHaveLength(1);
+  });
+
+  it('stores a display item when adding a sent transaction to pending storage', async () => {
+    provider.getTransactionCount.mockResolvedValue(0);
+    jest.spyOn(EvmSignerUtils, 'sendTransaction').mockResolvedValue({
+      hash: '0xdisplay',
+      nonce: 0,
+      chainId: chain.chainId,
+      from: walletAddress,
+      to: '0x0000000000000000000000000000000000000001',
+      value: BigInt(1),
+      data: '0x',
+      blockNumber: null,
+      index: null,
+      toJSON: () => ({
+        hash: '0xdisplay',
+        nonce: 0,
+        chainId: chain.chainId,
+      }),
+    } as any);
+
+    await EvmTransactionsUtils.send(
+      { address: walletAddress } as any,
+      {
+        to: '0x0000000000000000000000000000000000000001',
+        value: '0x1',
+        data: '',
+        type: Number(EvmTransactionType.EIP_1559),
+      },
+      buildGasFee(EvmTransactionType.EIP_1559),
+      chain.chainId,
+    );
+
+    expect(pendingTransactionsStorage[0]).toMatchObject({
+      txResponseParams: {
+        hash: '0xdisplay',
+      },
+      displayItem: {
+        transactionHash: '0xdisplay',
+        type: EvmUserHistoryItemType.TRANSFER_OUT,
+      },
+    });
   });
 
   it('broadcasts legacy selected gas fees as legacy transaction requests', async () => {

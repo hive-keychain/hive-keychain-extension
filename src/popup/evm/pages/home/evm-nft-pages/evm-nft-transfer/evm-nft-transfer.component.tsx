@@ -25,6 +25,7 @@ import { ERC1155Abi, ERC721Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmLedgerUtils } from '@popup/evm/utils/evm-ledger.utils';
+import { EvmTransactionDisplayUtils } from '@popup/evm/utils/evm-transaction-display.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import {
@@ -266,6 +267,44 @@ const EvmNftTransfer = ({
       afterConfirmAction: async (gasFee: GasFeeEstimationBase) => {
         addToLoadingList('evm_nft_transfer');
         try {
+          const detailFields = [
+            {
+              label:
+                collectionItem.item.metadata.name ??
+                `${collectionItem.collection.tokenInfo.name} #${form.nftId}`,
+              value: form.nftId,
+              type: EvmUserHistoryItemDetailType.IMAGE,
+              imageUrl: collectionItem.item.metadata.image,
+            },
+            {
+              label: 'popup_html_transfer_from',
+              value: activeAccount.address,
+              type: EvmUserHistoryItemDetailType.ADDRESS,
+            } as EvmUserHistoryItemDetail,
+            {
+              label: 'popup_html_transfer_to',
+              value: receiverAddress,
+              type: EvmUserHistoryItemDetailType.ADDRESS,
+            } as EvmUserHistoryItemDetail,
+            {
+              label: 'evm_nft_token_id',
+              value: form.nftId,
+              type: EvmUserHistoryItemDetailType.BASE,
+            } as EvmUserHistoryItemDetail,
+            {
+              label: 'popup_html_transfer_amount',
+              value: form.amount.toString(),
+              type: EvmUserHistoryItemDetailType.BASE,
+            } as EvmUserHistoryItemDetail,
+          ];
+          const displayContext = {
+            pageTitle: 'evm_nft_transfer',
+            initialDisplayNfts: true,
+            detailFields,
+            tokenInfo: form.selectedToken,
+            receiverAddress,
+            amount: form.amount,
+          };
           const transactionResponse = await EvmTransactionsUtils.send(
             activeAccount.wallet,
             {
@@ -276,45 +315,23 @@ const EvmNftTransfer = ({
             },
             gasFee,
             chain.chainId,
+            undefined,
+            displayContext,
           );
+          const pendingTransaction =
+            await EvmTransactionsUtils.getPendingTransaction(
+              transactionResponse.hash,
+              chain.chainId,
+            );
 
           navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
-            pageTitle: 'evm_nft_transfer',
-            initialDisplayNfts: true,
-            transactionResponse: transactionResponse,
-            detailFields: [
-              {
-                label:
-                  collectionItem.item.metadata.name ??
-                  `${collectionItem.collection.tokenInfo.name} #${form.nftId}`,
-                value: form.nftId,
-                type: EvmUserHistoryItemDetailType.IMAGE,
-                imageUrl: collectionItem.item.metadata.image,
-              },
-              {
-                label: 'popup_html_transfer_from',
-                value: activeAccount.address,
-                type: EvmUserHistoryItemDetailType.ADDRESS,
-              } as EvmUserHistoryItemDetail,
-              {
-                label: 'popup_html_transfer_to',
-                value: receiverAddress,
-                type: EvmUserHistoryItemDetailType.ADDRESS,
-              } as EvmUserHistoryItemDetail,
-              {
-                label: 'evm_nft_token_id',
-                value: form.nftId,
-                type: EvmUserHistoryItemDetailType.BASE,
-              } as EvmUserHistoryItemDetail,
-              {
-                label: 'popup_html_transfer_amount',
-                value: form.amount.toString(),
-                type: EvmUserHistoryItemDetailType.BASE,
-              } as EvmUserHistoryItemDetail,
-            ],
-            tokenInfo: form.selectedToken,
-            transactionData: transactionData,
-            gasFee: gasFee,
+            ...EvmTransactionDisplayUtils.buildResultNavigationParams({
+              transactionResponse,
+              displayItem: pendingTransaction?.displayItem,
+              gasFee,
+              transactionData,
+              context: displayContext,
+            }),
           });
         } catch (error) {
           Logger.error('Error during transfer', error);

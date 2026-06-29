@@ -92,6 +92,35 @@ describe('evm-local-history.utils', () => {
     expect(stored['0x39'][wallet.toLowerCase()].nextCursor).toBeNull();
   });
 
+  it('appendBroadcastRecord stores a provided display item for custom chain', async () => {
+    await EvmLocalHistoryUtils.appendBroadcastRecord(
+      customChain,
+      wallet,
+      nativeTx('0xprovided'),
+      {
+        pageTitle: 'custom_title',
+        type: EvmUserHistoryItemType.SMART_CONTRACT,
+        blockNumber: 12,
+        transactionHash: '0xprovided',
+        transactionIndex: 1,
+        timestamp: 123,
+        label: 'Provided display',
+        nonce: 4,
+        detailFields: [],
+      },
+    );
+
+    const stored = storageMap.get(LocalStorageKeyEnum.EVM_LOCAL_HISTORY) as Record<
+      string,
+      Record<string, EvmUserHistory>
+    >;
+    expect(stored['0x39'][wallet.toLowerCase()].events[0]).toMatchObject({
+      pageTitle: 'custom_title',
+      label: 'Provided display',
+      blockNumber: 12,
+    });
+  });
+
   it('appendBroadcastRecord dedupes by transaction hash', async () => {
     const tx = nativeTx('0xdedupe');
     await EvmLocalHistoryUtils.appendBroadcastRecord(customChain, wallet, tx);

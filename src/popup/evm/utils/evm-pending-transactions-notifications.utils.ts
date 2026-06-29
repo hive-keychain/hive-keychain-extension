@@ -1,8 +1,12 @@
+import { EvmUserHistoryItemType } from '@popup/evm/interfaces/evm-tokens-history.interface';
+import { EvmTransactionResolvedStatus } from '@popup/evm/interfaces/evm-transactions.interface';
+import { EvmLocalHistoryUtils } from '@popup/evm/utils/evm-local-history.utils';
+import { EvmTransactionDisplayUtils } from '@popup/evm/utils/evm-transaction-display.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
-import { TransactionResponse } from 'ethers';
+import { TransactionReceipt, TransactionResponse } from 'ethers';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -11,26 +15,161 @@ const waitForTransaction = async (transactionResponse: TransactionResponse) => {
   try {
     const transactionReceipt = await transactionResponse.wait();
     if (transactionReceipt) {
-      await EvmTransactionsUtils.deleteFromPendingTransactions(
-        transactionReceipt.hash,
+      const status =
+        transactionReceipt.status === 0
+          ? EvmTransactionResolvedStatus.REVERTED
+          : EvmTransactionResolvedStatus.SUCCESS;
+      await resolvePendingTransaction(
+        transactionResponse,
+        status,
+        transactionReceipt,
       );
-      await sendTransactionResolvedMessage(transactionResponse);
-      await createSuccessNotification(transactionResponse);
+      if (status === EvmTransactionResolvedStatus.SUCCESS) {
+        await createSuccessNotification(transactionResponse);
+      } else {
+        await createFailedNotification(transactionResponse);
+      }
     }
   } catch (error: any) {
     Logger.error('Error in waitForTransaction', error);
-    await EvmTransactionsUtils.deleteFromPendingTransactions(
-      transactionResponse.hash,
+    const status = getStatusFromWaitError(error);
+    await resolvePendingTransaction(
+      transactionResponse,
+      status,
+      error?.receipt,
+      error?.shortMessage ?? error?.reason ?? error?.message,
     );
     if (error?.code !== 'TRANSACTION_REPLACED') {
       await createFailedNotification(transactionResponse);
-      return;
     }
   }
 };
 
+const getStatusFromWaitError = (error: any): EvmTransactionResolvedStatus => {
+  if (error?.code === 'TRANSACTION_REPLACED') {
+    if (error?.reason === 'cancelled') {
+      return EvmTransactionResolvedStatus.CANCELED;
+    }
+    if (error?.receipt?.status === 0) {
+      return EvmTransactionResolvedStatus.REVERTED;
+    }
+    return EvmTransactionResolvedStatus.SUCCESS;
+  }
+
+  if (error?.receipt?.status === 0) {
+    return EvmTransactionResolvedStatus.REVERTED;
+  }
+
+  return EvmTransactionResolvedStatus.FAILED;
+};
+
+const getChainIdHex = (transactionResponse: TransactionResponse) => {
+  const chainId = transactionResponse.chainId;
+  if (chainId == null) return undefined;
+  const numericChainId = Number(chainId);
+  if (!Number.isFinite(numericChainId)) return undefined;
+  return `0x${numericChainId.toString(16)}`;
+};
+
+const serializeForMessage = (value: any): any => {
+  if (value == null) return value;
+  return JSON.parse(
+    JSON.stringify(value, (_key, nestedValue) =>
+      typeof nestedValue === 'bigint' ? nestedValue.toString() : nestedValue,
+    ),
+  );
+};
+
+const getTransactionResponseParams = (
+  transactionResponse: TransactionResponse,
+) => {
+  const responseWithJson = transactionResponse as TransactionResponse & {
+    toJSON?: () => any;
+  };
+  return serializeForMessage(
+    responseWithJson.toJSON ? responseWithJson.toJSON() : transactionResponse,
+  );
+};
+
+const getTransactionReceiptParams = (
+  transactionReceipt?: TransactionReceipt | any,
+) => {
+  if (!transactionReceipt) return undefined;
+  const receiptWithJson = transactionReceipt as TransactionReceipt & {
+    toJSON?: () => any;
+  };
+  return serializeForMessage(
+    receiptWithJson.toJSON ? receiptWithJson.toJSON() : transactionReceipt,
+  );
+};
+
+const resolvePendingTransaction = async (
+  transactionResponse: TransactionResponse,
+  status: EvmTransactionResolvedStatus,
+  transactionReceipt?: TransactionReceipt | any,
+  errorMessage?: string,
+) => {
+  const chainIdHex = getChainIdHex(transactionResponse);
+  const chain = chainIdHex
+    ? await ChainUtils.getChain<EvmChain>(chainIdHex)
+    : undefined;
+  const pendingTransaction = chain
+    ? await EvmTransactionsUtils.getPendingTransaction(
+        transactionResponse.hash,
+        chain.chainId,
+      )
+    : undefined;
+  const walletAddress =
+    pendingTransaction?.walletAddress ?? transactionResponse.from;
+  const displayItem = EvmTransactionDisplayUtils.buildResolvedDisplayItem(
+    pendingTransaction?.displayItem ??
+      (chain
+        ? await EvmTransactionDisplayUtils.buildDisplayItemFromBroadcast(
+            transactionResponse,
+            chain,
+            walletAddress,
+          )
+        : {
+            pageTitle: 'evm_broadcast',
+            type: EvmUserHistoryItemType.BASE_TRANSACTION,
+            blockNumber: transactionReceipt?.blockNumber ?? 0,
+            transactionHash: transactionResponse.hash,
+            transactionIndex: transactionReceipt?.index ?? 0,
+            timestamp: Date.now(),
+            label: await I18nUtils.getMessage('evm_history_generic_message'),
+            nonce: Number(transactionResponse.nonce),
+          }),
+    status,
+    transactionReceipt,
+  );
+
+  if (chain?.isCustom) {
+    await EvmLocalHistoryUtils.appendBroadcastRecord(
+      chain,
+      walletAddress,
+      transactionResponse,
+      displayItem,
+    );
+  }
+
+  await sendTransactionResolvedMessage(
+    transactionResponse,
+    status,
+    transactionReceipt,
+    displayItem,
+    errorMessage,
+  );
+  await EvmTransactionsUtils.deleteFromPendingTransactions(
+    transactionResponse.hash,
+  );
+};
+
 const sendTransactionResolvedMessage = async (
   transactionResponse: TransactionResponse,
+  status: EvmTransactionResolvedStatus,
+  transactionReceipt?: TransactionReceipt | any,
+  displayItem?: any,
+  errorMessage?: string,
 ) => {
   await CommunicationUtils.runtimeSendMessage({
     command: BackgroundCommand.EVM_TRANSACTION_RESOLVED,
@@ -38,6 +177,15 @@ const sendTransactionResolvedMessage = async (
       chainId: transactionResponse.chainId?.toString(),
       from: transactionResponse.from,
       hash: transactionResponse.hash,
+      status,
+      transactionResponseParams: getTransactionResponseParams(
+        transactionResponse,
+      ),
+      transactionReceiptParams: getTransactionReceiptParams(
+        transactionReceipt,
+      ),
+      displayItem,
+      errorMessage,
     },
   });
 };

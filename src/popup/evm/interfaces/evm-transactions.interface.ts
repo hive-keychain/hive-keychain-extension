@@ -3,6 +3,10 @@ import {
   EvmSmartContractInfo,
   EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
+import type {
+  EvmUserHistoryItem,
+  EvmUserHistoryItemDetail,
+} from '@popup/evm/interfaces/evm-tokens-history.interface';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { TransactionResponse } from 'ethers';
 
@@ -206,4 +210,35 @@ export interface EvmPendingTransactionDetails {
   title: string;
   transactionResponse?: TransactionResponse;
   nonce?: number;
+  displayItem?: EvmUserHistoryItem;
+}
+
+export interface EvmTransactionDisplayContext {
+  pageTitle?: string;
+  detailFields?: EvmUserHistoryItemDetail[];
+  tokenInfo?: EvmSmartContractInfo;
+  amount?: string | number;
+  receiverAddress?: string;
+  warningMessage?: string;
+  initialDisplayNfts?: boolean;
+  initialDisplayHistory?: boolean;
+  timestamp?: number;
+}
+
+export enum EvmTransactionResolvedStatus {
+  SUCCESS = 'success',
+  FAILED = 'failed',
+  REVERTED = 'reverted',
+  CANCELED = 'canceled',
+}
+
+export interface EvmTransactionResolvedPayload {
+  chainId: string;
+  from: string;
+  hash: string;
+  status: EvmTransactionResolvedStatus;
+  transactionResponseParams?: any;
+  transactionReceiptParams?: any;
+  displayItem?: EvmUserHistoryItem;
+  errorMessage?: string;
 }

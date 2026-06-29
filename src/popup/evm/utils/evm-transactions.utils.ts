@@ -6,6 +6,7 @@ import {
 import {
   CanceledTransactionData,
   EvmPendingTransactionDetails,
+  EvmTransactionDisplayContext,
   EvmTransactionType,
   ProviderTransactionData,
   UserCanceledTransactions,
@@ -17,7 +18,7 @@ import { EvmLocalHistoryUtils } from '@popup/evm/utils/evm-local-history.utils';
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
-import { EvmTokensHistoryParserUtils } from '@popup/evm/utils/evm-tokens-history-parser.utils';
+import { EvmTransactionDisplayUtils } from '@popup/evm/utils/evm-transaction-display.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -109,7 +110,7 @@ const providerTransactionDataFromResponse = (
     from: tx.from,
     data,
     type: isEip1559 ? EvmTransactionType.EIP_1559 : EvmTransactionType.LEGACY,
-    value: ethers.toBeHex(tx.value),
+    value: tx.value != null ? ethers.toBeHex(tx.value) : '0x0',
     nonce: Number(tx.nonce),
   };
 
@@ -159,6 +160,7 @@ const send = async (
   gasFee: GasFeeEstimationBase,
   chainId: string,
   forceNounce?: number,
+  displayContext?: EvmTransactionDisplayContext,
 ) => {
   const chain = await ChainUtils.getChain<EvmChain>(chainId);
   const walletAddress = EvmSignerUtils.getWalletAddress(wallet);
@@ -215,12 +217,25 @@ const send = async (
       })
       .then((transaction) => transaction);
   if (transactionResponse) {
-    await addPendingTransaction(walletAddress, transactionResponse, chain);
+    const displayItem =
+      await EvmTransactionDisplayUtils.buildDisplayItemFromBroadcast(
+        transactionResponse,
+        chain,
+        walletAddress,
+        displayContext,
+      );
+    await addPendingTransaction(
+      walletAddress,
+      transactionResponse,
+      chain,
+      displayItem,
+    );
     if (chain.isCustom) {
       await EvmLocalHistoryUtils.appendBroadcastRecord(
         chain,
         walletAddress,
         transactionResponse,
+        displayItem,
       );
     }
   }
@@ -258,6 +273,7 @@ const addPendingTransaction = async (
   walletAddress: string,
   transactionResponse: TransactionResponse,
   chain: EvmChain,
+  displayItem?: EvmPendingTransaction['displayItem'],
 ) => {
   let transactions = await getAllPendingTransactions();
 
@@ -266,6 +282,7 @@ const addPendingTransaction = async (
     walletAddress: walletAddress,
     chainId: chain.chainId,
     broadcastDate: Date.now(),
+    displayItem,
   });
 
   await persistPendingTransactions(transactions);
@@ -372,6 +389,7 @@ const getPendingTransactionsDetails = async (
   };
 
   let pendingTx: any;
+  let pendingTransaction: EvmPendingTransaction | undefined;
 
   const provider =
     preloaded?.provider ?? (await EthersUtils.getProvider(chain));
@@ -380,20 +398,25 @@ const getPendingTransactionsDetails = async (
     (await getPendingTransactionsForWallet(walletAddress, chain.chainId));
 
   if (nonce !== undefined) {
-    const tx = localPendingTransactions.find(
+    pendingTransaction = localPendingTransactions.find(
       (transaction) => getPendingTransactionNonce(transaction) === nonce,
     );
-    if (tx) pendingTx = new TransactionResponse(tx?.txResponseParams, provider);
+    if (pendingTransaction) {
+      pendingTx = new TransactionResponse(
+        pendingTransaction.txResponseParams,
+        provider,
+      );
+    }
   }
 
   if (pendingTx) {
-    const item = await EvmTokensHistoryParserUtils.parseEvent(
-      pendingTx,
-      chain,
-      walletAddress.toLowerCase(),
-      undefined,
-      true,
-    );
+    const item =
+      pendingTransaction?.displayItem ??
+      (await EvmTransactionDisplayUtils.buildDisplayItemFromBroadcast(
+        pendingTx,
+        chain,
+        walletAddress,
+      ));
 
     pendingTransactionDetail = {
       label:
@@ -402,6 +425,7 @@ const getPendingTransactionsDetails = async (
       title: 'evm_pending_queued_transactions',
       transactionResponse: pendingTx,
       nonce: pendingTx.nonce,
+      displayItem: item,
     };
   }
 

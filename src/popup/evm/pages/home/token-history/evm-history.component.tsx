@@ -76,8 +76,11 @@ export const EvmHistory = ({
       transactionResponse: transactionResponse,
       ...historyItem,
       isSuccess:
-        historyItem.isCanceled || historyItem.isReverted ? false : true,
+        historyItem.isCanceled || historyItem.isReverted || historyItem.isFailed
+          ? false
+          : true,
       isCanceled: historyItem.isCanceled,
+      isFailed: historyItem.isFailed,
       initialDisplayHistory: true,
     });
   };
