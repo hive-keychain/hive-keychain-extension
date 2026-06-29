@@ -174,17 +174,31 @@ export const PortfolioHistoryCard = ({
       value: renderProviderValue(),
     });
   }
-  if (item.fromAddress) {
+  const normalizeAddress = (address: string): string =>
+    address.replace(/^@+/, '').toLowerCase();
+  const hasSameAccount =
+    !!item.fromAddress &&
+    !!item.toAddress &&
+    normalizeAddress(item.fromAddress) === normalizeAddress(item.toAddress);
+
+  if (hasSameAccount && item.fromAddress) {
     detailRows.push({
-      label: I18nUtils.getMessage('portfolio_history_from_address'),
+      label: I18nUtils.getMessage('portfolio_account'),
       value: renderAddressValue(item.fromAddress),
     });
-  }
-  if (item.toAddress) {
-    detailRows.push({
-      label: I18nUtils.getMessage('portfolio_history_to_address'),
-      value: renderAddressValue(item.toAddress),
-    });
+  } else {
+    if (item.fromAddress) {
+      detailRows.push({
+        label: I18nUtils.getMessage('portfolio_history_from'),
+        value: renderAddressValue(item.fromAddress),
+      });
+    }
+    if (item.toAddress) {
+      detailRows.push({
+        label: I18nUtils.getMessage('portfolio_history_to'),
+        value: renderAddressValue(item.toAddress),
+      });
+    }
   }
   if (item.providerReferenceId) {
     detailRows.push({
