@@ -1,42 +1,191 @@
 .witness-tab {
   @include pageLayoutRowGap;
-  row-gap: 8px;
-  height: auto;
-  overflow: visible;
-  .remaining-votes,
-  .using-proxy,
-  .link-to-arcange {
-    @include caption();
-    cursor: pointer;
-  }
+  row-gap: 12px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 
   .rotating-logo {
     align-self: center;
   }
 
   .ranking-container {
-    flex: unset;
+    flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    overflow: visible;
-    row-gap: 16px;
+    overflow: hidden;
+    row-gap: 18px;
     .ranking-filter {
       display: flex;
       flex-direction: column;
-      row-gap: 16px;
-      margin: 0px 24px;
+      row-gap: 10px;
+      margin: 0;
+      position: relative;
+      flex-shrink: 0;
 
-      .switches-panel {
+      .witness-toolbar {
         display: flex;
+        align-items: center;
         column-gap: 8px;
-        margin: 0px 18px;
+        width: 100%;
+      }
+
+      .search-panel {
+        flex: 1;
+        min-width: 0;
+
+        .custom-input {
+          width: 100%;
+        }
+
+        .custom-input-content {
+          padding: 6px 10px;
+          min-height: 34px;
+        }
+
+        .input-container {
+          width: 100%;
+
+          input {
+            height: 20px;
+            font-size: 14px;
+
+            &:focus {
+              box-shadow: unset;
+            }
+
+            &::-webkit-input-placeholder {
+              font-size: 14px;
+            }
+          }
+
+          .input-img {
+            height: 14px;
+            width: 14px;
+            svg {
+              height: 16px;
+              width: 16px;
+            }
+          }
+        }
+      }
+
+      .witness-filter-button {
+        @include small-card-no-padding();
+        width: 38px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin: unset;
+        border: unset;
+        background: var(--card-background);
+        color: var(--main-font-color);
+        cursor: pointer;
+
+        .svg-icon {
+          @include icon-size(18px);
+        }
+
+        &.selected,
+        &:hover {
+          background: $red;
+          color: white;
+
+          .svg-icon,
+          svg {
+            color: white;
+            --icon-color: white;
+            --wallet-history-filter-button-color: white;
+          }
+
+          svg path {
+            fill: white;
+          }
+        }
+      }
+
+      .witness-status-tag {
+        @include small-card-no-padding();
+        min-width: 52px;
+        height: 34px;
+        padding: 0px 10px;
+        margin: unset;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-sizing: border-box;
+        color: var(--main-font-color);
+        @include poppins600(13px);
+        background: var(--card-background);
+
+        &.proxy-tag {
+          max-width: 130px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          display: block;
+          line-height: 34px;
+        }
+      }
+
+      .witness-filters {
+        @include small-card;
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        width: min(240px, 100%);
+        padding: 12px;
+        margin: unset;
+        box-sizing: border-box;
+        z-index: 4;
+        pointer-events: none;
+        opacity: 0;
+        max-height: 0;
+        overflow: hidden;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        transition:
+          max-height 0.25s,
+          opacity 0.15s;
+
+        &.filter-opened {
+          max-height: 140px;
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        .filter-button {
+          @include small-card-no-padding();
+          padding: 4px 12px;
+          margin: unset;
+          min-width: 70px;
+          text-align: center;
+          justify-content: center;
+          height: 30px;
+          box-sizing: border-box;
+          color: var(--main-font-color);
+          cursor: pointer;
+          @include poppins500(13px);
+
+          &.selected,
+          &:hover {
+            background: $red;
+            color: white;
+          }
+        }
       }
     }
 
     .ranking {
       display: flex;
-      height: auto;
-      overflow: visible;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
       flex-direction: column;
       row-gap: 8px;
 
@@ -54,6 +203,7 @@
       .ranking-item {
         @include small-card;
         color: var(--main-font-color);
+        margin: 0;
         .rank {
           display: flex;
           align-items: center;

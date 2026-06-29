@@ -4,6 +4,7 @@
   flex-direction: column;
   overflow: visible;
   row-gap: 8px;
+  padding: 0;
   .using-proxy {
     @include caption();
   }

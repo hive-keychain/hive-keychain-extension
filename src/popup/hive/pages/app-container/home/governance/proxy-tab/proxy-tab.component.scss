@@ -1,7 +1,7 @@
 .proxy-tab {
   @include pageLayoutRowGap;
   row-gap: 32px;
-  padding: 0px 24px;
+  padding: 0;
   button {
     margin-bottom: 24px;
   }
