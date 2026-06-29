@@ -1,8 +1,8 @@
 .proposal-tab {
-  flex: 1;
+  flex: unset;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   row-gap: 8px;
   .using-proxy {
     @include caption();
@@ -10,8 +10,8 @@
   .proposal-list {
     flex-direction: column;
     display: flex;
-    flex: 1;
-    overflow: auto;
+    flex: unset;
+    overflow: visible;
     row-gap: 8px;
   }
   &.loading {

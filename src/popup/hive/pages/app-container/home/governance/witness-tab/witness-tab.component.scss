@@ -1,7 +1,8 @@
 .witness-tab {
   @include pageLayoutRowGap;
   row-gap: 8px;
-  height: 100%;
+  height: auto;
+  overflow: visible;
   .remaining-votes,
   .using-proxy,
   .link-to-arcange {
@@ -14,10 +15,10 @@
   }
 
   .ranking-container {
-    flex: 1;
+    flex: unset;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: visible;
     row-gap: 16px;
     .ranking-filter {
       display: flex;
@@ -34,8 +35,8 @@
 
     .ranking {
       display: flex;
-      height: 100%;
-      overflow: auto;
+      height: auto;
+      overflow: visible;
       flex-direction: column;
       row-gap: 8px;
 

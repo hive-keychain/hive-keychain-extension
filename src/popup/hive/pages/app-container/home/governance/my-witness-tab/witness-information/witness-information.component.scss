@@ -1,11 +1,10 @@
 .witness-information {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: unset;
   padding: 0px 24px;
   font-size: 16px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: visible;
   row-gap: 8px;
 
   .witness-disabled {
