@@ -336,6 +336,13 @@ export const getHivePortfolioRowEcosystem = (
 ): 'hive' | 'hive_engine' =>
   HIVE_CORE_SYMBOLS.has(symbol.toUpperCase()) ? 'hive' : 'hive_engine';
 
+export const resolveHivePortfolioRowNetworkLogoUrl = (
+  symbol: string,
+): string =>
+  getHivePortfolioRowEcosystem(symbol) === 'hive'
+    ? HIVE_CHAIN_LOGO
+    : HIVE_ENGINE_CHAIN_LOGO;
+
 const normalizeChainReference = (
   value: string | null | undefined,
 ): string | null => {
@@ -805,6 +812,7 @@ export const PortfolioFlowUtils = {
   getDefaultSelectOptionValue,
   getHivePortfolioRowEcosystem,
   getHiveTokenIcon,
+  resolveHivePortfolioRowNetworkLogoUrl,
   hasPositivePortfolioBalance,
   resolveCanonicalAssetNetworkLabel,
   resolveCanonicalAssetNetworkLogoUrl,

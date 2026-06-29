@@ -86,7 +86,11 @@ export const portfolioRowToTokenIdentityProps = (
   symbol: row.symbol,
   network: row.network,
   logoUrl: row.logoUrl,
-  networkLogoUrl: row.networkLogoUrl,
+  networkLogoUrl:
+    row.networkLogoUrl ??
+    (row.isHive || row.key.startsWith('hive:')
+      ? PortfolioFlowUtils.resolveHivePortfolioRowNetworkLogoUrl(row.symbol)
+      : null),
   isHive: row.isHive,
 });
 

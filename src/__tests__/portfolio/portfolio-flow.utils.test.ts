@@ -444,6 +444,18 @@ describe('PortfolioFlowUtils', () => {
     ).toBe('ethereum.svg');
   });
 
+  it('resolves hive portfolio row network logos from token symbol', () => {
+    expect(
+      PortfolioFlowUtils.resolveHivePortfolioRowNetworkLogoUrl('HIVE'),
+    ).toBe('/assets/images/wallet/hive-logo.svg');
+    expect(
+      PortfolioFlowUtils.resolveHivePortfolioRowNetworkLogoUrl('HBD'),
+    ).toBe('/assets/images/wallet/hive-logo.svg');
+    expect(
+      PortfolioFlowUtils.resolveHivePortfolioRowNetworkLogoUrl('DEC'),
+    ).toBe('/assets/images/wallet/hive-engine.svg');
+  });
+
   it('resolves canonical assets by slug-style chain references', () => {
     const slugEthAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
       assetId: 'evm-0g-ethereum',
