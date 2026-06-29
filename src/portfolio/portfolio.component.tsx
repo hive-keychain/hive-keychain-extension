@@ -685,9 +685,29 @@ export const Portfolio = ({
   const resolvedToAssetId =
     flowMode === 'sell' ? undefined : toAssetId || undefined;
 
+  const selectedFromRow = useMemo(
+    () => rows.find((row) => row.key === fromAssetId),
+    [rows, fromAssetId],
+  );
+
+  const hasInsufficientFromBalance = useMemo(() => {
+    if (flowMode !== 'swap' || !amount || !selectedFromRow) {
+      return false;
+    }
+
+    const requestedAmount = Number(amount.replace(/,/g, ''));
+    const availableBalance = Number(selectedFromRow.balance.replace(/,/g, ''));
+    return (
+      Number.isFinite(requestedAmount) &&
+      Number.isFinite(availableBalance) &&
+      requestedAmount > availableBalance
+    );
+  }, [amount, flowMode, selectedFromRow]);
+
   const canRequestQuotes =
     Boolean(amount) &&
     Boolean(resolvedToAddress) &&
+    !hasInsufficientFromBalance &&
     hasRequiredQuoteAssets({
       mode: flowMode,
       fromAssetId: resolvedFromAssetId,
@@ -2387,8 +2407,19 @@ export const Portfolio = ({
             value={amount}
             min={0}
             onChange={setAmount}
-            classname={amountQuoteError ? 'portfolio-amount-input--error' : undefined}
+            classname={
+              amountQuoteError || hasInsufficientFromBalance
+                ? 'portfolio-amount-input--error'
+                : undefined
+            }
           />
+          {hasInsufficientFromBalance && (
+            <p className="portfolio-field-error" role="alert">
+              {I18nUtils.getMessage('portfolio_insufficient_balance', [
+                selectedFromRow?.symbol ?? '',
+              ])}
+            </p>
+          )}
           {amountQuoteError && (
             <p className="portfolio-field-error" role="alert">
               {I18nUtils.getMessage(
@@ -2486,9 +2517,13 @@ export const Portfolio = ({
           <ButtonComponent
             label="portfolio_continue"
             type={ButtonType.ALTERNATIVE}
-            disabled={!canExecuteSelectedQuote}
+            disabled={!canExecuteSelectedQuote || hasInsufficientFromBalance}
             onClick={() => {
-              if (selectedQuote && canExecuteSelectedQuote) {
+              if (
+                selectedQuote &&
+                canExecuteSelectedQuote &&
+                !hasInsufficientFromBalance
+              ) {
                 void executeQuote(selectedQuote);
               }
             }}

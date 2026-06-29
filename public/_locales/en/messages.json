@@ -4112,6 +4112,15 @@
   },
   "portfolio_quote_refresh_now": { "message": "Refresh now" },
   "portfolio_quote_refreshing": { "message": "Updating quotes…" },
+  "portfolio_insufficient_balance": {
+    "message": "Insufficient $1 balance.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "HIVE"
+      }
+    }
+  },
   "portfolio_history_auto_refresh_countdown": {
     "message": "Auto refresh in $1s",
     "placeholders": {
