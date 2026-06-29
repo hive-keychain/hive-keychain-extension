@@ -61,7 +61,6 @@
   --kc-font-weight-medium: 500;
   --kc-font-weight-semibold: 600;
   --kc-z-dropdown: 50;
-  --kc-font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
   height: 100%;
   min-height: 100%;
@@ -469,7 +468,6 @@
   }
 
   &__address {
-    font-family: var(--kc-font-mono);
     font-size: var(--kc-font-size-xs);
     color: var(--kc-color-text-secondary);
     overflow: hidden;
@@ -619,7 +617,6 @@
   color: var(--kc-color-text-primary);
 
   &.amount {
-    font-family: 'IBM Plex Mono', ui-monospace, monospace;
     font-size: var(--kc-font-size-xs);
     color: var(--kc-color-text-secondary);
   }

@@ -19,6 +19,11 @@ import { EvmAccountTokensLoadUtils } from '@popup/evm/utils/evm-account-tokens-l
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { evmChainIdToDecimalPathSegment } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+  resetLoading,
+} from '@popup/multichain/actions/loading.actions';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import {
@@ -62,6 +67,7 @@ import {
   PortfolioApiUtils,
   PortfolioLocalizedMessage,
 } from 'src/portfolio/portfolio-api.utils';
+import { PortfolioEvmApprovalUtils } from 'src/portfolio/portfolio-evm-approval.utils';
 import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
 import { UserPortfolio } from 'src/portfolio/portfolio.interface';
 import { PortfolioAccountAvatar } from 'src/portfolio/ui/portfolio-account-avatar.component';
@@ -391,6 +397,9 @@ export const Portfolio = ({
   activeAccountType,
   setErrorMessage,
   setTitleContainerProperties,
+  addToLoadingList,
+  removeFromLoadingList,
+  resetLoading,
 }: PropsFromRedux) => {
   const [section, setSection] = useState<PortfolioSection>('portfolio');
   const [selectedAccountKey, setSelectedAccountKey] = useState('');
@@ -1665,6 +1674,28 @@ export const Portfolio = ({
       isReady: true,
     };
 
+    const requiredApproval = await PortfolioEvmApprovalUtils.getRequiredApproval(
+      chain,
+      account.wallet.address,
+      quote,
+    );
+    const approveTransactionData = requiredApproval
+      ? PortfolioEvmApprovalUtils.buildApproveTransactionData(
+          chain,
+          account.wallet.address,
+          requiredApproval,
+        )
+      : undefined;
+    const approveFields = requiredApproval
+      ? (PortfolioEvmApprovalUtils.buildApproveConfirmationFields(
+          requiredApproval,
+          quote.fromAsset ?? fromCanonicalAsset,
+        ).map((field, index) => ({
+          ...field,
+          name: field.label ?? `portfolio-approval-${index}`,
+        })) as ConfirmationPageEvmFields[])
+      : undefined;
+
     return {
       kind: 'evm',
       executionId,
@@ -1675,6 +1706,8 @@ export const Portfolio = ({
       chain,
       activeAccountOverride,
       transactionData,
+      approveTransactionData,
+      approveFields,
       fields: [
         ...PortfolioQuoteDisplayUtils.buildPortfolioInAppConfirmationFields({
           quote,
@@ -1691,14 +1724,40 @@ export const Portfolio = ({
         ...field,
         name: field.label ?? `portfolio-confirmation-${index}`,
       })) as ConfirmationPageEvmFields[],
-      onConfirm: async (gasFee?: GasFeeEstimationBase) => {
+      onConfirm: async (
+        gasFee?: GasFeeEstimationBase,
+        approveGasFee?: GasFeeEstimationBase,
+      ) => {
+        const shouldApprove = Boolean(approveTransactionData && approveGasFee);
+        if (shouldApprove) {
+          addToLoadingList('portfolio_approving_smart_contract');
+        }
+        addToLoadingList('portfolio_sending_transaction');
         try {
+          let approveNonce: number | undefined;
+          if (shouldApprove) {
+            const approveResponse = await EvmTransactionsUtils.send(
+              account.wallet,
+              {
+                ...approveTransactionData!,
+                type: Number(approveTransactionData!.type),
+              },
+              approveGasFee!,
+              chain.chainId,
+            );
+            await approveResponse.wait();
+            approveNonce = approveResponse.nonce;
+            removeFromLoadingList('portfolio_approving_smart_contract');
+          }
+
           const transactionResponse = await EvmTransactionsUtils.send(
             account.wallet,
             { ...transactionData, type: Number(transactionData.type) },
             gasFee!,
             chain.chainId,
+            approveNonce !== undefined ? approveNonce + 1 : undefined,
           );
+          removeFromLoadingList('portfolio_sending_transaction');
           await PortfolioApiUtils.markSubmitted(
             executionId,
             transactionResponse.hash,
@@ -1706,6 +1765,7 @@ export const Portfolio = ({
           setPendingInAppConfirmation(null);
           setHistory(await PortfolioApiUtils.listHistory());
         } catch (error) {
+          resetLoading();
           Logger.error('Portfolio transaction failed', error);
           setErrorMessage('portfolio_execution_error');
           throw error;
@@ -2532,6 +2592,9 @@ const mapStateToProps = (state: RootState) => ({
 const connector = connect(mapStateToProps, {
   setErrorMessage,
   setTitleContainerProperties,
+  addToLoadingList,
+  removeFromLoadingList,
+  resetLoading,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

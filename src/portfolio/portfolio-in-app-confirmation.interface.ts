@@ -28,7 +28,12 @@ export type PortfolioEvmInAppConfirmationContext = {
   activeAccountOverride: EvmActiveAccount;
   transactionData: ProviderTransactionData;
   fields: ConfirmationPageEvmFields[];
-  onConfirm: (gasFee?: GasFeeEstimationBase) => Promise<void>;
+  approveTransactionData?: ProviderTransactionData;
+  approveFields?: ConfirmationPageEvmFields[];
+  onConfirm: (
+    gasFee?: GasFeeEstimationBase,
+    approveGasFee?: GasFeeEstimationBase,
+  ) => Promise<void>;
 };
 
 export type PortfolioHiveInAppConfirmationContext = {

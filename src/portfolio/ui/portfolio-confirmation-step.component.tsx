@@ -8,6 +8,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { EvmConfirmationPageContent } from 'src/common-ui/confirmation-page/evm-confirmation-page.component';
 import { HiveConfirmationPageContent } from 'src/common-ui/confirmation-page/hive-confirmation-page.component';
 import { PortfolioInAppConfirmationContext } from 'src/portfolio/portfolio-in-app-confirmation.interface';
+import { PortfolioEvmApprovalConfirmation } from 'src/portfolio/ui/portfolio-evm-approval-confirmation.component';
 
 import './portfolio-confirmation-step.component.scss';
 
@@ -26,6 +27,17 @@ const PortfolioConfirmationStep = ({
   tokens,
 }: Props) => {
   if (context.kind === 'evm') {
+    if (context.approveTransactionData) {
+      return (
+        <div className="portfolio-confirmation-step">
+          <PortfolioEvmApprovalConfirmation
+            context={context}
+            onDismiss={onDismiss}
+            setErrorMessage={setErrorMessage}
+          />
+        </div>
+      );
+    }
     return (
       <div className="portfolio-confirmation-step">
         <EvmConfirmationPageContent

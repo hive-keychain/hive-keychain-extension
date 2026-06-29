@@ -15,6 +15,7 @@ import {
   PortfolioHistoryResponse,
   PortfolioMode,
   PortfolioQuote,
+  PortfolioQuoteApproval,
   PortfolioQuoteFee,
   PortfolioQuoteRequestEcho,
   PortfolioQuoteResponse,
@@ -97,6 +98,22 @@ const parsePortfolioQuoteFee = (value: unknown): PortfolioQuoteFee | null => {
   }
 
   return { amount, currency };
+};
+
+const parsePortfolioQuoteApproval = (
+  value: unknown,
+): PortfolioQuoteApproval | null => {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  const spender = readString(value, 'spender');
+  const amount = readString(value, 'amount');
+  if (!spender || !amount) {
+    return null;
+  }
+
+  return { spender, amount };
 };
 
 const parsePortfolioCanonicalAsset = (
@@ -302,6 +319,7 @@ const parsePortfolioQuote = (value: unknown): PortfolioQuote | null => {
       'redirect',
     ),
     routeMetadata: readRecord(value.routeMetadata),
+    approval: parsePortfolioQuoteApproval(value.approval),
     transaction: parsePortfolioQuoteTransaction(value.transaction),
   };
 };

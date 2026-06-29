@@ -82,6 +82,10 @@ describe('PortfolioApiParser', () => {
             requiresRedirect: false,
             executionType: 'in_app',
             routeMetadata: { tool: '1inch' },
+            approval: {
+              spender: '0x1111111254eeb25477b68fb85ed929f73a960582',
+              amount: '1000000000000000000',
+            },
             transaction: {
               from: '0xabc',
               to: '0xdef',
@@ -116,6 +120,10 @@ describe('PortfolioApiParser', () => {
           providerFee: { amount: '0.001', currency: 'ETH' },
           networkFeeEstimate: { amount: '0.0005', currency: 'ETH' },
           routeMetadata: { tool: '1inch' },
+          approval: {
+            spender: '0x1111111254eeb25477b68fb85ed929f73a960582',
+            amount: '1000000000000000000',
+          },
           transaction: expect.objectContaining({
             chainId: 1,
             to: '0xdef',
@@ -123,6 +131,23 @@ describe('PortfolioApiParser', () => {
         }),
       ],
     });
+  });
+
+  it('defaults approval to null when absent or incomplete', () => {
+    const response = PortfolioApiParser.parsePortfolioQuoteResponse({
+      request: { mode: 'swap' },
+      quotes: [
+        {
+          quoteId: 'lifi:no-approval',
+          provider: 'lifi',
+          fromAmount: '1',
+          estimatedToAmount: '0.99',
+          approval: { spender: '0xabc' },
+        },
+      ],
+    });
+
+    expect(response.quotes[0]?.approval).toBeNull();
   });
 
   it('falls back comparableValue to estimatedToAmount when omitted', () => {

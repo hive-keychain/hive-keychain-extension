@@ -34,6 +34,11 @@ export interface PortfolioQuoteFee {
   currency: string;
 }
 
+export interface PortfolioQuoteApproval {
+  spender: string;
+  amount: string;
+}
+
 export interface PortfolioEvmTransaction {
   from: string | null;
   to: string;
@@ -112,6 +117,7 @@ export interface PortfolioQuote {
   requiresRedirect: boolean;
   executionType: PortfolioExecutionType;
   routeMetadata: Record<string, unknown> | null;
+  approval: PortfolioQuoteApproval | null;
   transaction: PortfolioQuoteTransaction | null;
 }
 
