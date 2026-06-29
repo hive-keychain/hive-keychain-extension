@@ -1,5 +1,11 @@
 import '@testing-library/jest-dom';
-import { act, cleanup, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  cleanup,
+  fireEvent,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import {
   EvmUserHistoryItemDetailType,
   EvmUserHistoryItemType,
@@ -18,28 +24,16 @@ import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 import { ChainType } from 'src/popup/multichain/interfaces/chains.interface';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
+const mockGasFeePanel = jest.fn(() => <div data-testid="gas-fee-panel" />);
+
+jest.mock('@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component', () => ({
+  GasFeePanel: (props: any) => mockGasFeePanel(props),
+}));
 
 describe('EvmTransactionResultComponent', () => {
   let runtimeMessageListener: ((message: any) => void) | undefined;
 
-  beforeEach(() => {
-    I18nUtils.getMessage = jest.fn((key: string) => key);
-    runtimeMessageListener = undefined;
-    chrome.runtime.onMessage.addListener = jest.fn((listener) => {
-      runtimeMessageListener = listener;
-    }) as any;
-    chrome.runtime.onMessage.removeListener = jest.fn() as any;
-    jest.spyOn(EthersUtils, 'getProvider').mockResolvedValue({
-      getTransaction: jest.fn(),
-    } as any);
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-    cleanup();
-  });
-
-  it('shows pending actions without duplicating the transfer amount in the status panel', async () => {
+  const renderPendingStatusPage = () => {
     const wallet = {
       address: '0x1234567890123456789012345678901234567890',
     } as any;
@@ -115,6 +109,28 @@ describe('EvmTransactionResultComponent', () => {
         },
       },
     });
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    I18nUtils.getMessage = jest.fn((key: string) => key);
+    runtimeMessageListener = undefined;
+    chrome.runtime.onMessage.addListener = jest.fn((listener) => {
+      runtimeMessageListener = listener;
+    }) as any;
+    chrome.runtime.onMessage.removeListener = jest.fn() as any;
+    jest.spyOn(EthersUtils, 'getProvider').mockResolvedValue({
+      getTransaction: jest.fn(),
+    } as any);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+    cleanup();
+  });
+
+  it('shows pending actions without duplicating the transfer amount in the status panel', async () => {
+    renderPendingStatusPage();
 
     expect(
       await screen.findByText('popup_html_evm_transfer_status_pending'),
@@ -124,6 +140,36 @@ describe('EvmTransactionResultComponent', () => {
       screen.getByText('popup_html_evm_speed_up_transaction'),
     ).toBeInTheDocument();
     expect(screen.getAllByText('1 ETH')).toHaveLength(1);
+  });
+
+  it('opens cancel and speed up gas panels with Fast as the default mode', async () => {
+    renderPendingStatusPage();
+
+    fireEvent.click(await screen.findByText('dialog_cancel'));
+
+    await waitFor(() => expect(mockGasFeePanel).toHaveBeenCalled());
+    expect(mockGasFeePanel).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        defaultFeeLevel: 'aggressive',
+      }),
+    );
+    expect(mockGasFeePanel.mock.lastCall?.[0].multiplier).toBeUndefined();
+
+    cleanup();
+    jest.clearAllMocks();
+    renderPendingStatusPage();
+
+    fireEvent.click(
+      await screen.findByText('popup_html_evm_speed_up_transaction'),
+    );
+
+    await waitFor(() => expect(mockGasFeePanel).toHaveBeenCalled());
+    expect(mockGasFeePanel).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        defaultFeeLevel: 'aggressive',
+      }),
+    );
+    expect(mockGasFeePanel.mock.lastCall?.[0].multiplier).toBeUndefined();
   });
 
   it('updates a pending transaction when a success resolution message is received', async () => {

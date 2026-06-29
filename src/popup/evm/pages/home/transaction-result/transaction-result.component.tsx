@@ -940,7 +940,6 @@ const EvmTransactionResult = ({
             onSelectFee={(value) => setIncreasedGasFee(value)}
             selectedFee={increasedGasFee}
             defaultFeeLevel="aggressive"
-            multiplier={1.5}
             transactionType={chain.defaultTransactionType}
             transactionData={transactionData}
             setErrorMessage={handleErrors}
