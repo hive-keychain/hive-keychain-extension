@@ -8,6 +8,7 @@ import {
   customRender,
   screen,
   waitFor,
+  within,
 } from 'src/__tests__/utils-for-testing/setups/render';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import React from 'react';
@@ -98,9 +99,17 @@ describe('EvmCustomTokensPageComponent', () => {
     });
 
     expect(screen.getByText('USDC')).toBeInTheDocument();
-    expect(
-      screen.getByText('evm_custom_tokens_add_section_title'),
-    ).toBeInTheDocument();
+    const savedTokenRow = screen
+      .getByTestId(
+        'btn-delete-custom-token-0x0000000000000000000000000000000000000001',
+      )
+      .closest('li')!;
+
+    expect(within(savedTokenRow).getByText('US')).toHaveClass(
+      'currency-icon',
+      'add-background',
+    );
+    expect(screen.getByText('Add a token')).toBeInTheDocument();
     expect(await screen.findByText('USDT')).toBeInTheDocument();
     expect(
       screen.queryByTestId(
@@ -113,7 +122,7 @@ describe('EvmCustomTokensPageComponent', () => {
       ),
     ).toBeInTheDocument();
     expect(screen.getByTestId('btn-add-custom-token-page')).toHaveTextContent(
-      'evm_add_custom_token_manually',
+      'Add manually',
     );
   });
 });

@@ -14,10 +14,7 @@ import {
   EvmSmartContractInfoErc20,
   EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
-import {
-  EvmTransactionType,
-  ProviderTransactionData,
-} from '@popup/evm/interfaces/evm-transactions.interface';
+import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
@@ -26,6 +23,7 @@ import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmLedgerUtils } from '@popup/evm/utils/evm-ledger.utils';
 import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import { EvmTransactionDisplayUtils } from '@popup/evm/utils/evm-transaction-display.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
@@ -106,6 +104,17 @@ const formatExactDecimalWithCommas = (
 
 const toDecimalString = (amount: string | number) =>
   new Decimal(amount).toFixed();
+
+export const getEvmTransferDisplayAmount = (
+  amount: string | number,
+  decimals: number,
+  symbol: string,
+) =>
+  `${formatExactDecimalWithCommas(
+    amount.toString(),
+    decimals,
+    true,
+  )} ${symbol}`;
 
 const NATIVE_MAX_ESTIMATE_DEBOUNCE_MS = 350;
 
@@ -366,13 +375,13 @@ const EvmTransfer = ({
             {form.selectedToken.tokenInfo && (
               <EvmTokenLogo tokenInfo={form.selectedToken.tokenInfo} />
             )}
-            <span>{`${formatExactDecimalWithCommas(
-              form.amount,
-              decimals,
-              true,
-            )} ${
-              form.selectedToken.tokenInfo.symbol
-            }`}</span>
+            <span>
+              {getEvmTransferDisplayAmount(
+                form.amount,
+                decimals,
+                form.selectedToken.tokenInfo.symbol,
+              )}
+            </span>
           </div>
         ),
       },
@@ -382,7 +391,7 @@ const EvmTransfer = ({
     try {
       transactionData = {
         from: activeAccount.address,
-        type: EvmTransactionType.EIP_1559,
+        type: chain.defaultTransactionType,
         to:
           form.selectedToken.tokenInfo.type === EVMSmartContractType.NATIVE
             ? receiverAddress
@@ -444,41 +453,61 @@ const EvmTransfer = ({
             : undefined,
         );
         try {
+          const detailFields = [
+            {
+              label: 'popup_html_transfer_amount',
+              value: getEvmTransferDisplayAmount(
+                form.amount,
+                decimals,
+                form.selectedToken.tokenInfo.symbol,
+              ),
+              type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+            } as EvmUserHistoryItemDetail,
+            {
+              label: 'popup_html_transfer_from',
+              value: activeAccount.address,
+              type: EvmUserHistoryItemDetailType.ADDRESS,
+            } as EvmUserHistoryItemDetail,
+            {
+              label: 'popup_html_transfer_to',
+              value: receiverAddress,
+              type: EvmUserHistoryItemDetailType.ADDRESS,
+            } as EvmUserHistoryItemDetail,
+          ];
+          const displayContext = {
+            pageTitle: 'popup_html_transfer_funds',
+            detailFields,
+            tokenInfo: form.selectedToken.tokenInfo,
+            receiverAddress,
+            amount: form.amount,
+          };
           const transactionResponse = await EvmTransactionsUtils.send(
             activeAccount.wallet,
             {
               value: transactionData.value,
               to: transactionData.to,
-              type: Number(EvmTransactionType.EIP_1559),
+              type: Number(transactionData.type),
               data: transactionData.data,
             },
             gasFee,
             chain.chainId,
+            undefined,
+            displayContext,
           );
+          const pendingTransaction =
+            await EvmTransactionsUtils.getPendingTransaction(
+              transactionResponse.hash,
+              chain.chainId,
+            );
 
           navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
-            pageTitle: 'popup_html_transfer_funds',
-            transactionResponse: transactionResponse,
-            detailFields: [
-              {
-                label: 'popup_html_transfer_from',
-                value: activeAccount.address,
-                type: EvmUserHistoryItemDetailType.ADDRESS,
-              } as EvmUserHistoryItemDetail,
-              {
-                label: 'popup_html_transfer_to',
-                value: receiverAddress,
-                type: EvmUserHistoryItemDetailType.ADDRESS,
-              } as EvmUserHistoryItemDetail,
-              {
-                label: 'popup_html_transfer_amount',
-                value: form.amount.toString(),
-                type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
-              } as EvmUserHistoryItemDetail,
-            ],
-            tokenInfo: form.selectedToken.tokenInfo,
-            gasFee: gasFee,
-            transactionData: transactionData,
+            ...EvmTransactionDisplayUtils.buildResultNavigationParams({
+              transactionResponse,
+              displayItem: pendingTransaction?.displayItem,
+              gasFee,
+              transactionData,
+              context: displayContext,
+            }),
           });
         } catch (err) {
           Logger.error('Error during transfer', err);
@@ -499,12 +528,12 @@ const EvmTransfer = ({
     const estimate = await GasFeeUtils.estimate(
       chain,
       activeAccount.address,
-      EvmTransactionType.EIP_1559,
+      chain.defaultTransactionType,
       token.tokenInfo.priceUsd ?? 0,
       undefined,
       {
         from: activeAccount.address,
-        type: EvmTransactionType.EIP_1559,
+        type: chain.defaultTransactionType,
         to,
         data: '',
         value: '0x0',

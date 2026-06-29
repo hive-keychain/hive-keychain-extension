@@ -36,6 +36,7 @@ export interface EvmUserHistoryItem {
 
   isPending?: boolean;
   isReverted?: boolean;
+  isFailed?: boolean;
   warningMessage?: string;
 }
 

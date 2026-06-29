@@ -70,6 +70,34 @@ describe('EvmAddCustomAssetPopup', () => {
     expect(screen.getByTestId('custom-asset-decimals')).toBeInTheDocument();
   });
 
+  it('uses the token initials fallback when the ERC20 logo is empty', async () => {
+    render(
+      <EvmAddCustomAssetPopup
+        chain={chain}
+        mode="erc20"
+        walletAddress="0x1111111111111111111111111111111111111111"
+        onClose={jest.fn()}
+        onSave={jest.fn()}
+      />,
+    );
+
+    fireEvent.change(screen.getByTestId('custom-asset-symbol'), {
+      target: { value: 'USDC' },
+    });
+
+    const logoFallback = await screen.findByText('US');
+
+    expect(logoFallback).toHaveClass(
+      'currency-icon',
+      'add-background',
+    );
+    expect(
+      screen
+        .getByTestId('custom-asset-logo')
+        .compareDocumentPosition(logoFallback),
+    ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+
   it('blocks save when required fields are empty', async () => {
     const onSave = jest.fn();
 

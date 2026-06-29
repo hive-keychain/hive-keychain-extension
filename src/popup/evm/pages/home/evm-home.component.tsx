@@ -8,7 +8,6 @@ import {
 import { EvmErc721Token } from '@popup/evm/interfaces/active-account.interface';
 import {
   EvmPendingTransactionsInfo,
-  EvmTransactionType,
   ProviderTransactionData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
@@ -18,6 +17,7 @@ import { EvmDappStatusComponent } from '@popup/evm/pages/home/evm-dapp-status/ev
 import { EvmWalletInfoSectionComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
+import { EvmTransactionDisplayUtils } from '@popup/evm/utils/evm-transaction-display.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
@@ -366,17 +366,23 @@ const Home = ({
       const transactionResponse =
         pendingTransactionsInfo.pendingTransactionDetails.transactionResponse;
       navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
-        transactionResponse,
-        pageTitle: 'evm_pending_transaction',
-        transactionData:
-          EvmTransactionsUtils.providerTransactionDataFromResponse(
-            transactionResponse,
-          ),
+        ...EvmTransactionDisplayUtils.buildResultNavigationParams({
+          transactionResponse,
+          displayItem:
+            pendingTransactionsInfo.pendingTransactionDetails.displayItem,
+          transactionData:
+            EvmTransactionsUtils.providerTransactionDataFromResponse(
+              transactionResponse,
+            ),
+          context: {
+            pageTitle: 'evm_pending_transaction',
+          },
+        }),
       } as NavigationParams);
     } else {
       const transactionData: ProviderTransactionData = {
         from: activeAccount.address,
-        type: EvmTransactionType.EIP_1559,
+        type: chain.defaultTransactionType,
         to: activeAccount.address,
         data: ethers.ZeroHash,
         value: '0x0',
@@ -415,7 +421,7 @@ const Home = ({
               {
                 value: transactionData.value,
                 to: transactionData.to,
-                type: Number(EvmTransactionType.EIP_1559),
+                type: Number(transactionData.type),
                 data: transactionData.data,
                 nonce: transactionData.nonce,
               },

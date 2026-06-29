@@ -220,7 +220,6 @@ export const EvmKnownTokenList = ({
         data-testid={`known-token-item-${token.address}`}
         key={`${token.chainId}-${token.address}`}>
         <EvmTokenLogo
-          className="known-token-logo"
           tokenInfo={{
             logo: token.logoURI ?? '',
             name: token.name ?? '',

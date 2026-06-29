@@ -131,6 +131,10 @@
       grid-template-columns: 1fr 2fr 3fr 2fr;
       cursor: pointer;
 
+      &.no-duration {
+        grid-template-columns: 1fr 5fr 2fr;
+      }
+
       .svg-icon {
         width: 20px;
         height: 20px;

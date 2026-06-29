@@ -6,6 +6,7 @@ import {
 import {
   CanceledTransactionData,
   EvmPendingTransactionDetails,
+  EvmTransactionDisplayContext,
   EvmTransactionType,
   ProviderTransactionData,
   UserCanceledTransactions,
@@ -17,7 +18,7 @@ import { EvmLocalHistoryUtils } from '@popup/evm/utils/evm-local-history.utils';
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
-import { EvmTokensHistoryParserUtils } from '@popup/evm/utils/evm-tokens-history-parser.utils';
+import { EvmTransactionDisplayUtils } from '@popup/evm/utils/evm-transaction-display.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -53,6 +54,43 @@ const persistPendingTransactions = async (
   );
 };
 
+const getTransactionType = (
+  requestType: TransactionRequest['type'],
+  gasFee?: GasFeeEstimationBase,
+) => {
+  if (gasFee?.type !== undefined) {
+    return Number(gasFee.type);
+  }
+
+  if (requestType != null) {
+    return Number(requestType);
+  }
+
+  return undefined;
+};
+
+const getTransactionData = (data: TransactionRequest['data']) => {
+  if (data == null) {
+    return undefined;
+  }
+
+  if (data === '') {
+    return '0x';
+  }
+
+  return data;
+};
+
+const getWeiFromGwei = (value: Decimal.Value) => {
+  const wei = new Decimal(value).mul('1000000000');
+
+  if (wei.lte(0)) {
+    return BigInt(0);
+  }
+
+  return BigInt(wei.ceil().toFixed(0));
+};
+
 /** For cancel/speed-up fee UI: GasFeePanel only runs estimates when `transactionData` is set. */
 const providerTransactionDataFromResponse = (
   tx: TransactionResponse,
@@ -72,7 +110,7 @@ const providerTransactionDataFromResponse = (
     from: tx.from,
     data,
     type: isEip1559 ? EvmTransactionType.EIP_1559 : EvmTransactionType.LEGACY,
-    value: ethers.toBeHex(tx.value),
+    value: tx.value != null ? ethers.toBeHex(tx.value) : '0x0',
     nonce: Number(tx.nonce),
   };
 
@@ -122,32 +160,25 @@ const send = async (
   gasFee: GasFeeEstimationBase,
   chainId: string,
   forceNounce?: number,
+  displayContext?: EvmTransactionDisplayContext,
 ) => {
   const chain = await ChainUtils.getChain<EvmChain>(chainId);
   const walletAddress = EvmSignerUtils.getWalletAddress(wallet);
+  const transactionType = getTransactionType(request.type, gasFee);
   let feeData = {};
   if (gasFee)
     switch (gasFee.type) {
       case EvmTransactionType.EIP_1559: {
         feeData = {
-          maxPriorityFeePerGas: ethers.parseUnits(
-            gasFee.priorityFeeInGwei!.toFixed(),
-            'gwei',
-          ),
-          maxFeePerGas: ethers.parseUnits(
-            gasFee.maxFeePerGasInGwei!.toFixed(),
-            'gwei',
-          ),
+          maxPriorityFeePerGas: getWeiFromGwei(gasFee.priorityFeeInGwei!),
+          maxFeePerGas: getWeiFromGwei(gasFee.maxFeePerGasInGwei!),
         };
         break;
       }
       case EvmTransactionType.EIP_155:
       case EvmTransactionType.LEGACY: {
         feeData = {
-          gasPrice: ethers.parseUnits(
-            new Decimal(gasFee.gasPriceInGwei!).toFixed(),
-            'gwei',
-          ),
+          gasPrice: getWeiFromGwei(gasFee.gasPriceInGwei!),
         };
         break;
       }
@@ -156,21 +187,20 @@ const send = async (
   let transactionRequest: TransactionRequest;
   transactionRequest = {
     value: request.value ?? '0x0',
-    data: request.data,
+    data: getTransactionData(request.data),
     to: request.to,
     from: walletAddress,
     nonce:
       forceNounce ?? (await EvmRequestsUtils.getNonce(walletAddress, chain)),
     gasLimit: gasFee ? BigInt(gasFee.gasLimit.toFixed(0)) : null,
     chainId: chain.chainId,
-    type: request.type,
+    type: transactionType,
     ...feeData,
   };
 
   if (
-    request.type &&
-    (request.type as unknown as EvmTransactionType) ===
-      EvmTransactionType.EIP_155
+    gasFee?.type === EvmTransactionType.EIP_155 ||
+    getTransactionType(request.type) === Number(EvmTransactionType.EIP_155)
   ) {
     if (request.accessList) {
       transactionRequest.accessList = request.accessList;
@@ -187,12 +217,25 @@ const send = async (
       })
       .then((transaction) => transaction);
   if (transactionResponse) {
-    await addPendingTransaction(walletAddress, transactionResponse, chain);
+    const displayItem =
+      await EvmTransactionDisplayUtils.buildDisplayItemFromBroadcast(
+        transactionResponse,
+        chain,
+        walletAddress,
+        displayContext,
+      );
+    await addPendingTransaction(
+      walletAddress,
+      transactionResponse,
+      chain,
+      displayItem,
+    );
     if (chain.isCustom) {
       await EvmLocalHistoryUtils.appendBroadcastRecord(
         chain,
         walletAddress,
         transactionResponse,
+        displayItem,
       );
     }
   }
@@ -230,6 +273,7 @@ const addPendingTransaction = async (
   walletAddress: string,
   transactionResponse: TransactionResponse,
   chain: EvmChain,
+  displayItem?: EvmPendingTransaction['displayItem'],
 ) => {
   let transactions = await getAllPendingTransactions();
 
@@ -238,6 +282,7 @@ const addPendingTransaction = async (
     walletAddress: walletAddress,
     chainId: chain.chainId,
     broadcastDate: Date.now(),
+    displayItem,
   });
 
   await persistPendingTransactions(transactions);
@@ -344,6 +389,7 @@ const getPendingTransactionsDetails = async (
   };
 
   let pendingTx: any;
+  let pendingTransaction: EvmPendingTransaction | undefined;
 
   const provider =
     preloaded?.provider ?? (await EthersUtils.getProvider(chain));
@@ -352,20 +398,25 @@ const getPendingTransactionsDetails = async (
     (await getPendingTransactionsForWallet(walletAddress, chain.chainId));
 
   if (nonce !== undefined) {
-    const tx = localPendingTransactions.find(
+    pendingTransaction = localPendingTransactions.find(
       (transaction) => getPendingTransactionNonce(transaction) === nonce,
     );
-    if (tx) pendingTx = new TransactionResponse(tx?.txResponseParams, provider);
+    if (pendingTransaction) {
+      pendingTx = new TransactionResponse(
+        pendingTransaction.txResponseParams,
+        provider,
+      );
+    }
   }
 
   if (pendingTx) {
-    const item = await EvmTokensHistoryParserUtils.parseEvent(
-      pendingTx,
-      chain,
-      walletAddress.toLowerCase(),
-      undefined,
-      true,
-    );
+    const item =
+      pendingTransaction?.displayItem ??
+      (await EvmTransactionDisplayUtils.buildDisplayItemFromBroadcast(
+        pendingTx,
+        chain,
+        walletAddress,
+      ));
 
     pendingTransactionDetail = {
       label:
@@ -374,6 +425,7 @@ const getPendingTransactionsDetails = async (
       title: 'evm_pending_queued_transactions',
       transactionResponse: pendingTx,
       nonce: pendingTx.nonce,
+      displayItem: item,
     };
   }
 

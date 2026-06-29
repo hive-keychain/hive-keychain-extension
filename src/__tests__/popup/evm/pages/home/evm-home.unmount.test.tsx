@@ -4,6 +4,10 @@ import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
+import {
+  EvmUserHistoryItemDetailType,
+  EvmUserHistoryItemType,
+} from '@popup/evm/interfaces/evm-tokens-history.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React from 'react';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
@@ -282,6 +286,136 @@ describe('evm-home unmount behavior', () => {
     });
 
     expect(hasUnmountedStateUpdateWarning(consoleError)).toBe(false);
+  });
+
+  it('opens a pending transaction result with the stored display item', async () => {
+    const wallet = {
+      address: '0x1234567890123456789012345678901234567890',
+    } as any;
+    const displayItem = {
+      pageTitle: 'popup_html_transfer_funds',
+      type: EvmUserHistoryItemType.TRANSFER_OUT,
+      blockNumber: 0,
+      transactionHash: '0xpending',
+      transactionIndex: 0,
+      timestamp: 123,
+      label: 'Pending transfer display',
+      nonce: 5,
+      receiverAddress: '0x0000000000000000000000000000000000000001',
+      detailFields: [
+        {
+          label: 'popup_html_transfer_amount',
+          value: '1 ETH',
+          type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+        },
+      ],
+    };
+
+    jest.spyOn(EvmTransactionsUtils, 'hasPendingTransaction').mockResolvedValue({
+      hasPending: true,
+      pendingTransactionsCount: 1,
+      queuedTransactionsCount: 0,
+      pendingTransactionDetails: {
+        nonce: 5,
+        title: 'evm_one_pending_transaction',
+        label: 'Pending transfer display',
+        transactionResponse: {
+          hash: '0xpending',
+          nonce: 5,
+          from: wallet.address,
+          to: '0x0000000000000000000000000000000000000001',
+          value: 1000000000000000000n,
+          data: '0x',
+          gasLimit: 21000n,
+          maxFeePerGas: 100n,
+        } as any,
+        displayItem,
+      },
+    });
+    jest.spyOn(SurveyUtils, 'getSurvey').mockResolvedValue(undefined);
+    jest.spyOn(EvmRpcUtils, 'getActiveRpc').mockResolvedValue({
+      url: 'https://rpc.example',
+      isDefault: true,
+    } as any);
+    jest.spyOn(EvmRpcUtils, 'checkRpcStatus').mockResolvedValue(true);
+    jest.spyOn(EvmRpcUtils, 'getSwitchRpcAuto').mockResolvedValue(false);
+    jest.spyOn(LocalStorageUtils, 'getValueFromLocalStorage').mockResolvedValue(
+      undefined,
+    );
+
+    const { store } = customRender(<EvmHomeComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        chain: {
+          ...initialEmptyStateStore.chain,
+          type: ChainType.EVM,
+          chainId: '1',
+          name: 'Ethereum',
+          logo: '',
+          rpcs: [{ url: 'https://rpc.example', isDefault: true }],
+          mainToken: 'ETH',
+          defaultTransactionType: EvmTransactionType.EIP_1559,
+        },
+        evm: {
+          ...initialEmptyStateStore.evm,
+          accounts: [
+            {
+              id: 0,
+              path: "m/44'/60'/0'/0/0",
+              seedId: 1,
+              seedNickname: 'Main seed',
+              nickname: 'Account 1',
+              wallet,
+            },
+          ],
+          activeAccount: {
+            ...initialEmptyStateStore.evm.activeAccount,
+            address: wallet.address,
+            wallet,
+            isReady: true,
+            nativeAndErc20Tokens: {
+              value: [
+                {
+                  formattedBalance: '1',
+                  shortFormattedBalance: '1',
+                  balance: 1000000000000000000n,
+                  balanceInteger: 1,
+                  tokenInfo: {
+                    name: 'Ether',
+                    symbol: 'ETH',
+                    logo: '',
+                    chainId: '1',
+                    backgroundColor: '#000000',
+                    coingeckoId: 'ethereum',
+                    priceUsd: 3000,
+                    createdAt: '',
+                    categories: [],
+                    type: EVMSmartContractType.NATIVE,
+                  },
+                },
+              ],
+              loading: false,
+            },
+          },
+        },
+      },
+    });
+
+    await waitFor(() =>
+      expect(screen.getByText('evm_one_pending_transaction')).toBeInTheDocument(),
+    );
+
+    fireEvent.click(screen.getByText('evm_one_pending_transaction'));
+
+    expect(store.getState().navigation.stack[0].currentPage).toBe(
+      EvmScreen.EVM_TRANSFER_RESULT_PAGE,
+    );
+    expect(store.getState().navigation.params).toMatchObject({
+      transactionResponse: expect.objectContaining({ hash: '0xpending' }),
+      displayItem,
+      detailFields: displayItem.detailFields,
+      amount: '1 ETH',
+    });
   });
 
   it('passes the pending nonce through the home cancel fallback flow', async () => {

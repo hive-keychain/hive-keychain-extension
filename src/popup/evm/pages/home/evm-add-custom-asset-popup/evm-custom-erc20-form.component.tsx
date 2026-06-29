@@ -5,6 +5,7 @@ import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
 import { EvmCustomToken } from '@popup/evm/interfaces/evm-custom-tokens.interface';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ethers } from 'ethers';
@@ -531,15 +532,24 @@ export const EvmCustomErc20Form = forwardRef<
           </div>
 
           <div className="field">
-            <InputComponent
-              label="Logo URL (optional)"
-              skipLabelTranslation
-              value={erc20Form.logo}
-              type={InputType.TEXT}
-              onChange={(value) => setErc20Field('logo', value)}
-              dataTestId="custom-asset-logo"
-              classname="custom-asset-input"
-            />
+            <div className="custom-asset-logo-row">
+              <InputComponent
+                label="Logo URL (optional)"
+                skipLabelTranslation
+                value={erc20Form.logo}
+                type={InputType.TEXT}
+                onChange={(value) => setErc20Field('logo', value)}
+                dataTestId="custom-asset-logo"
+                classname="custom-asset-input"
+              />
+              <EvmTokenLogo
+                tokenInfo={{
+                  logo: erc20Form.logo,
+                  name: erc20Form.name,
+                  symbol: erc20Form.symbol,
+                }}
+              />
+            </div>
           </div>
         </div>
 

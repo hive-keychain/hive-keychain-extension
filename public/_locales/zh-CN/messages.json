@@ -5120,16 +5120,16 @@
     "description": "Increased"
   },
   "popup_html_evm_custom_gas_fee_low": {
-    "message": "Low",
-    "description": "Low"
+    "message": "经济",
+    "description": "Economy gas fee tier"
   },
   "popup_html_evm_custom_gas_fee_medium": {
-    "message": "Medium",
-    "description": "Medium"
+    "message": "市场",
+    "description": "Market gas fee tier"
   },
   "popup_html_evm_custom_gas_fee_aggressive": {
-    "message": "Aggressive",
-    "description": "Aggressive"
+    "message": "快速",
+    "description": "Fast gas fee tier"
   },
   "popup_html_evm_custom_gas_fee_custom": {
     "message": "Custom",
@@ -7043,7 +7043,7 @@
     "description": "Error during cancel transaction"
   },
   "evm_cancel_transaction_confirm_message": {
-    "message": "You are about to cancel a unknown pending transaction.",
+    "message": "You are about to cancel an unknown pending transaction.",
     "description": "Error during cancel transaction"
   },
   "insufficient_balance_warning": {

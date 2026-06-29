@@ -213,7 +213,6 @@ const EvmCustomTokensPage = ({
                       }
                     }}>
                     <EvmTokenLogo
-                      className="known-token-logo"
                       tokenInfo={{
                         logo: meta?.logo ?? '',
                         name: tokenName,

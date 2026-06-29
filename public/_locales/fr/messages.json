@@ -5120,16 +5120,16 @@
     "description": "Increased"
   },
   "popup_html_evm_custom_gas_fee_low": {
-    "message": "Faibles",
-    "description": "Low"
+    "message": "Économie",
+    "description": "Economy gas fee tier"
   },
   "popup_html_evm_custom_gas_fee_medium": {
-    "message": "Moyens",
-    "description": "Medium"
+    "message": "Marché",
+    "description": "Market gas fee tier"
   },
   "popup_html_evm_custom_gas_fee_aggressive": {
-    "message": "Agressifs",
-    "description": "Aggressive"
+    "message": "Rapide",
+    "description": "Fast gas fee tier"
   },
   "popup_html_evm_custom_gas_fee_custom": {
     "message": "Personnalisés",
