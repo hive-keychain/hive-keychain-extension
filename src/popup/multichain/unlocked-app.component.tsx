@@ -269,9 +269,23 @@ const UnlockedApp = ({
   useEffect(() => {
     if (activeRpc?.uri && activeRpc.uri !== 'NULL' && activeRpc.uri !== rpc) {
       void refreshApplicationOnRpcChange();
+      if (
+        isAppReady &&
+        activeAccountType === ChainType.HIVE &&
+        hiveAccounts.length > 0 &&
+        !activeHiveAccount?.name
+      ) {
+        void initActiveHiveAccount(hiveAccounts);
+      }
     }
     rpc = activeRpc?.uri;
-  }, [activeRpc]);
+  }, [
+    activeRpc,
+    activeAccountType,
+    activeHiveAccount?.name,
+    hiveAccounts,
+    isAppReady,
+  ]);
 
   useEffect(() => {
     const accountsCount = hiveAccounts.length + evmAccounts.length;
@@ -830,13 +844,19 @@ const UnlockedApp = ({
 
   const needsHiveActiveAccount =
     activeAccountType === ChainType.HIVE && hiveAccounts.length > 0;
+  const hasRpcSwitchPrompt =
+    displayChangeRpcPopup && Boolean(switchToRpc || switchToHiveEngineRpc);
+  const hasHiveRpcSwitchPrompt = displayChangeRpcPopup && Boolean(switchToRpc);
   const isStartupActiveAccountReady =
-    !needsHiveActiveAccount || !!activeHiveAccount?.name;
+    hasHiveRpcSwitchPrompt ||
+    !needsHiveActiveAccount ||
+    !!activeHiveAccount?.name;
+  const isActiveRpcReady = !!activeRpc?.uri && activeRpc.uri !== 'NULL';
 
   const showStartupSplash =
     !isAppReady ||
-    displaySplashscreen ||
-    (!activeRpc && !displayChangeRpcPopup) ||
+    (displaySplashscreen && !hasRpcSwitchPrompt) ||
+    (!isActiveRpcReady && !hasHiveRpcSwitchPrompt) ||
     !isStartupActiveAccountReady;
 
   if (showStartupSplash) {

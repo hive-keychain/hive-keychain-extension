@@ -109,6 +109,18 @@ describe('useWorkingRPC', () => {
     expect(dispatched.some((a) => a.type === 'SET_ACTIVE_RPC')).toBe(true);
   });
 
+  it('defaults to auto-switch when no Hive RPC preference is saved', async () => {
+    (LocalStorageUtils.getValueFromLocalStorage as jest.Mock).mockResolvedValue(
+      undefined,
+    );
+
+    await useWorkingRPC();
+
+    const dispatched = (store.dispatch as jest.Mock).mock.calls.map((c) => c[0]);
+    expect(dispatched.some((a) => a.type === 'SET_ACTIVE_RPC')).toBe(true);
+    expect(dispatched.some((a) => a.type === 'SET_SWITCH_TO_RPC')).toBe(false);
+  });
+
   it('dispatches switch popup flow when auto-switch is disabled', async () => {
     (LocalStorageUtils.getValueFromLocalStorage as jest.Mock).mockResolvedValue(
       false,

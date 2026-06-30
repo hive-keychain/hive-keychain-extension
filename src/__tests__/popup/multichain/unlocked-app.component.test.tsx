@@ -7,6 +7,9 @@ import mkData from 'src/__tests__/utils-for-testing/data/mk';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 import { setAccounts } from 'src/popup/hive/actions/account.actions';
+import { loadActiveAccount as loadHiveActiveAccount } from 'src/popup/hive/actions/active-account.actions';
+import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
+import { loadGlobalProperties } from 'src/popup/hive/actions/global-properties.actions';
 import * as PaidAccountCreationActions from 'src/popup/hive/actions/paid-account-creation.actions';
 import { HiveScreen } from 'src/popup/hive/reference-data/hive-screen.enum';
 import {
@@ -23,6 +26,7 @@ import { PendingHiveAccountCreationUtils } from 'src/utils/pending-hive-account-
 
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
+import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 
 const defaultHiveAccounts = () => [localAccounts.user1, localAccounts.user2];
@@ -84,7 +88,7 @@ jest.mock('src/utils/colors.utils', () => ({
 }));
 
 jest.mock('src/popup/hive/actions/currency-prices.actions', () => ({
-  loadCurrencyPrices: () => {
+  loadCurrencyPrices: jest.fn(() => {
     const {
       HiveActionType,
     } = require('src/popup/hive/actions/action-type.enum');
@@ -93,11 +97,11 @@ jest.mock('src/popup/hive/actions/currency-prices.actions', () => ({
         type: HiveActionType.SET_APP_STATUS,
         payload: { priceLoaded: true },
       });
-  },
+  }),
 }));
 
 jest.mock('src/popup/hive/actions/global-properties.actions', () => ({
-  loadGlobalProperties: () => {
+  loadGlobalProperties: jest.fn(() => {
     const {
       HiveActionType,
     } = require('src/popup/hive/actions/action-type.enum');
@@ -106,7 +110,7 @@ jest.mock('src/popup/hive/actions/global-properties.actions', () => ({
         type: HiveActionType.SET_APP_STATUS,
         payload: { globalPropertiesLoaded: true },
       });
-  },
+  }),
 }));
 
 jest.mock('src/popup/hive/actions/hive-engine-config.actions', () => ({
@@ -154,6 +158,10 @@ jest.mock('src/popup/hive/utils/rpc.utils', () => ({
       uri: 'https://api.hive.blog',
       testnet: false,
     }),
+    getFullList: jest.fn().mockReturnValue([
+      { uri: 'https://api.hive.blog', testnet: false },
+      { uri: 'https://api.deathwing.me', testnet: false },
+    ]),
     checkRpcStatus: jest.fn().mockResolvedValue(true),
     saveCurrentRpc: jest.fn(),
   },
@@ -254,6 +262,20 @@ describe('UnlockedAppComponent', () => {
     const {
       HiveActionType,
     } = require('src/popup/hive/actions/action-type.enum');
+    (loadCurrencyPrices as jest.Mock).mockImplementation(
+      () => (dispatch: (action: unknown) => unknown) =>
+        dispatch({
+          type: HiveActionType.SET_APP_STATUS,
+          payload: { priceLoaded: true },
+        }),
+    );
+    (loadGlobalProperties as jest.Mock).mockImplementation(
+      () => (dispatch: (action: unknown) => unknown) =>
+        dispatch({
+          type: HiveActionType.SET_APP_STATUS,
+          payload: { globalPropertiesLoaded: true },
+        }),
+    );
     const { loadActiveAccount } = require('src/popup/hive/actions/active-account.actions');
     (loadActiveAccount as jest.Mock).mockImplementation(
       (account: { name?: string }) => (dispatch: (action: unknown) => unknown) =>
@@ -604,6 +626,129 @@ describe('UnlockedAppComponent', () => {
 
     await waitFor(() => {
       expect(queryByTestId('unified-router')).toBeInTheDocument();
+    });
+  });
+
+  it('shows the manual RPC switch prompt when startup global properties cannot load', async () => {
+    (loadGlobalProperties as jest.Mock).mockImplementation(() => () => undefined);
+    (RpcUtils.getCurrentRpc as jest.Mock).mockResolvedValue({
+      uri: 'https://bad.rpc',
+      testnet: false,
+    });
+    (RpcUtils.getFullList as jest.Mock).mockReturnValue([
+      { uri: 'https://bad.rpc', testnet: false },
+      { uri: 'https://good.rpc', testnet: false },
+    ]);
+    (RpcUtils.checkRpcStatus as jest.Mock).mockImplementation(
+      async (uri: string) => uri === 'https://good.rpc',
+    );
+    (LocalStorageUtils.getValueFromLocalStorage as jest.Mock).mockImplementation(
+      async (key) => {
+        if (key === LocalStorageKeyEnum.SWITCH_RPC_AUTO) {
+          return false;
+        }
+        if (key === LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED) {
+          return false;
+        }
+        if (key === LocalStorageKeyEnum.DISPLAY_APPEARANCE_SETUP_COMPLETED) {
+          return true;
+        }
+        return undefined;
+      },
+    );
+    (EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
+
+    const { getByText } = customRender(<UnlockedAppComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk: mkData.user.one,
+        activeAccountType: ChainType.HIVE,
+        chain: hiveChain,
+        hasFinishedSignup: true,
+        hive: {
+          ...initialEmptyStateStore.hive,
+          activeRpc: { uri: 'NULL', testnet: false },
+          rpcSwitcher: {
+            display: true,
+            rpc: { uri: 'https://good.rpc', testnet: false },
+          },
+        },
+        navigation: { stack: [] },
+      },
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText('popup_html_rpc_not_responding_error'),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('retries Hive active account hydration after a valid RPC is set', async () => {
+    const {
+      HiveActionType,
+    } = require('src/popup/hive/actions/action-type.enum');
+    (RpcUtils.getCurrentRpc as jest.Mock).mockResolvedValue({
+      uri: 'https://bad.rpc',
+      testnet: false,
+    });
+    (RpcUtils.checkRpcStatus as jest.Mock).mockResolvedValue(false);
+    (EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
+    (loadHiveActiveAccount as jest.Mock).mockImplementation(
+      (account: { name?: string }) =>
+        (
+          dispatch: (action: unknown) => unknown,
+          getState: () => typeof initialEmptyStateStore,
+        ) => {
+          if (getState().hive.activeRpc?.uri === 'NULL') {
+            return;
+          }
+          dispatch({
+            type: HiveActionType.SET_ACTIVE_ACCOUNT,
+            payload: { name: account?.name, account: {} },
+          });
+        },
+    );
+
+    const { store } = customRender(<UnlockedAppComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk: mkData.user.one,
+        activeAccountType: ChainType.HIVE,
+        chain: hiveChain,
+        hasFinishedSignup: true,
+        hive: {
+          ...initialEmptyStateStore.hive,
+          activeRpc: { uri: 'NULL', testnet: false },
+          appStatus: {
+            ...initialEmptyStateStore.hive.appStatus,
+            priceLoaded: true,
+            globalPropertiesLoaded: true,
+          },
+        },
+        navigation: { stack: [] },
+      },
+    });
+
+    await waitFor(() => {
+      expect(store.getState().hive.accounts).toHaveLength(2);
+    });
+    (loadHiveActiveAccount as jest.Mock).mockClear();
+
+    store.dispatch({
+      type: HiveActionType.SET_ACTIVE_RPC,
+      payload: { uri: 'https://good.rpc', testnet: false },
+    });
+
+    await waitFor(() => {
+      expect(loadHiveActiveAccount).toHaveBeenCalled();
+      expect(store.getState().hive.activeAccount.name).toBe(
+        localAccounts.user1.name,
+      );
     });
   });
 
