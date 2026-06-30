@@ -716,7 +716,7 @@ describe('Portfolio', () => {
     },
   ];
 
-  const renderSwapPortfolio = async () => {
+  const renderSwapPortfolio = async (options?: { amount?: string }) => {
     (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue(
       swapAssetsFixture,
     );
@@ -758,10 +758,20 @@ describe('Portfolio', () => {
     const amountInput = view.container.querySelector(
       '.portfolio-flow .portfolio-amount-field input[type="number"]',
     ) as HTMLInputElement;
-    fireEvent.change(amountInput, { target: { value: '0.1' } });
+    fireEvent.change(amountInput, {
+      target: { value: options?.amount ?? '0.1' },
+    });
 
     return view;
   };
+
+  it('does not request swap quotes when amount is zero', async () => {
+    await renderSwapPortfolio({ amount: '0' });
+
+    await new Promise((resolve) => setTimeout(resolve, 900));
+
+    expect(PortfolioApiUtils.getQuotes).not.toHaveBeenCalled();
+  });
 
   it('shows a loading spinner in the swap quote input while awaiting the first quote', async () => {
     let resolveQuotes!: (value: unknown) => void;
@@ -881,6 +891,58 @@ describe('Portfolio', () => {
     fireEvent.click(getByTestId('portfolio-swap-quote-input'));
 
     await waitFor(() => {
+      expect(
+        container.querySelectorAll('.portfolio-quote-card'),
+      ).toHaveLength(2);
+    });
+  });
+
+  it('keeps the all-quotes panel open when refreshing swap quotes', async () => {
+    (PortfolioApiUtils.getQuotes as jest.Mock).mockResolvedValue({
+      quotes: [
+        {
+          quoteId: 'q1',
+          provider: 'lifi',
+          providerName: 'LiFi',
+          providerLogoUrl: 'https://example.com/lifi.png',
+          estimatedToAmount: '100',
+          executionType: 'redirect',
+        },
+        {
+          quoteId: 'q2',
+          provider: 'changelly',
+          providerName: 'Changelly',
+          providerLogoUrl: 'https://example.com/changelly.png',
+          estimatedToAmount: '99',
+          executionType: 'redirect',
+        },
+      ],
+      request: { mode: 'swap' },
+    });
+    (
+      PortfolioApiUtils.resolveExecutablePortfolioQuoteId as jest.Mock
+    ).mockReturnValue('q1');
+
+    const { container, getByTestId } = await renderSwapPortfolio();
+
+    await waitFor(() => {
+      expect(PortfolioApiUtils.getQuotes).toHaveBeenCalledTimes(1);
+    });
+
+    fireEvent.click(getByTestId('portfolio-swap-quote-input'));
+
+    await waitFor(() => {
+      expect(container.querySelector('.portfolio-quotes-panel')).not.toBeNull();
+    });
+
+    fireEvent.click(
+      container.querySelector(
+        '.portfolio-swap-quote-input__refresh',
+      ) as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
+      expect(PortfolioApiUtils.getQuotes).toHaveBeenCalledTimes(2);
       expect(
         container.querySelectorAll('.portfolio-quote-card'),
       ).toHaveLength(2);

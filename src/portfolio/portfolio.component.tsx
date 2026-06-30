@@ -363,6 +363,14 @@ const formatTokenAmount = (value: string): string => {
     : value;
 };
 
+const parsePortfolioAmountValue = (value: string): number =>
+  Number(value.replace(/,/g, ''));
+
+const isPositivePortfolioAmount = (value: string): boolean => {
+  const amount = parsePortfolioAmountValue(value);
+  return Number.isFinite(amount) && amount > 0;
+};
+
 const getStatusMessageKey = (error: unknown, fallback: string): string =>
   error instanceof Error && error.message.startsWith('portfolio_')
     ? error.message
@@ -439,6 +447,7 @@ export const Portfolio = ({
   const [toAssetChainFilter, setToAssetChainFilter] = useState('');
   const [recipientAddress, setRecipientAddress] = useState('');
   const [isQuotesPanelExpanded, setIsQuotesPanelExpanded] = useState(false);
+  const isQuotesPanelExpandedRef = useRef(isQuotesPanelExpanded);
   const [setupEvmChains, setSetupEvmChains] = useState<EvmChain[]>([]);
   const [defaultEvmChains, setDefaultEvmChains] = useState<EvmChain[]>([]);
   const [fiatRampOptions, setFiatRampOptions] =
@@ -711,7 +720,7 @@ export const Portfolio = ({
   }, [amount, flowMode, selectedFromRow]);
 
   const canRequestQuotes =
-    Boolean(amount) &&
+    isPositivePortfolioAmount(amount) &&
     Boolean(resolvedToAddress) &&
     !hasInsufficientFromBalance &&
     hasRequiredQuoteAssets({
@@ -723,6 +732,10 @@ export const Portfolio = ({
   useEffect(() => {
     setRecipientAddress('');
   }, [fromAssetId, toAssetId]);
+
+  useEffect(() => {
+    isQuotesPanelExpandedRef.current = isQuotesPanelExpanded;
+  }, [isQuotesPanelExpanded]);
 
   useEffect(() => {
     setIsQuotesPanelExpanded(false);
@@ -1537,8 +1550,8 @@ export const Portfolio = ({
     }
   };
 
-  const getQuotes = async () => {
-    if (!selectedAccount || !amount) return;
+  const getQuotes = async (options?: { preserveExpandedQuotesPanel?: boolean }) => {
+    if (!selectedAccount || !isPositivePortfolioAmount(amount)) return;
     const mode = section as PortfolioMode;
     const resolvedFromAssetId =
       mode === 'buy'
@@ -1632,7 +1645,9 @@ export const Portfolio = ({
       setSelectedQuoteId(
         PortfolioApiUtils.resolveExecutablePortfolioQuoteId(response.quotes),
       );
-      setIsQuotesPanelExpanded(false);
+      if (!options?.preserveExpandedQuotesPanel) {
+        setIsQuotesPanelExpanded(false);
+      }
     } catch (error) {
       Logger.error('Unable to load portfolio quotes', error);
       setQuoteResponse(undefined);
@@ -1682,9 +1697,12 @@ export const Portfolio = ({
   ]);
 
   const triggerSwapQuoteRefresh = useCallback(() => {
+    const preserveExpandedQuotesPanel = isQuotesPanelExpandedRef.current;
     swapQuoteRefreshDeadlineRef.current = 0;
     setQuoteRefreshCountdown(null);
-    void getSwapQuotesRef.current().finally(() => {
+    void getSwapQuotesRef
+      .current({ preserveExpandedQuotesPanel })
+      .finally(() => {
       swapQuoteRefreshDeadlineRef.current =
         Date.now() + PORTFOLIO_SWAP_QUOTE_REFRESH_INTERVAL_MS;
       setQuoteRefreshCountdown(PORTFOLIO_SWAP_QUOTE_REFRESH_INTERVAL_SECONDS);
