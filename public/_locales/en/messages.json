@@ -4199,6 +4199,9 @@
   "portfolio_quote_not_executable": { "message": "Not executable in Keychain" },
   "portfolio_no_assets": { "message": "No balances found for this account." },
   "portfolio_no_quotes": { "message": "No quotes are currently available." },
+  "portfolio_no_quote_available": {
+    "message": "No quote available at the moment."
+  },
   "portfolio_no_history": { "message": "No portfolio history yet." },
   "portfolio_history_from": { "message": "From" },
   "portfolio_history_to": { "message": "To" },

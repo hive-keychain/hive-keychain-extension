@@ -111,6 +111,21 @@ export const resolvePortfolioAmountQuoteError = (
   return { key: 'portfolio_swap_amount_out_of_range_generic' };
 };
 
+export const resolvePortfolioQuoteStatusMessage = (
+  error: unknown,
+  fallback = 'portfolio_load_error',
+): string => {
+  if (error instanceof PortfolioApiError && error.code === 'NO_QUOTE_AVAILABLE') {
+    return 'portfolio_no_quote_available';
+  }
+
+  if (error instanceof Error && error.message.startsWith('portfolio_')) {
+    return error.message;
+  }
+
+  return fallback;
+};
+
 const getBaseUrl = () => (process.env.PORTFOLIO_API_URL ?? '').replace(/\/+$/, '');
 
 const createClientToken = (): string => {
@@ -298,4 +313,5 @@ export const PortfolioApiUtils = {
   markSubmitted,
   resolveExecutablePortfolioQuoteId,
   resolvePortfolioAmountQuoteError,
+  resolvePortfolioQuoteStatusMessage,
 };

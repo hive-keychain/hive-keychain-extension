@@ -286,6 +286,25 @@ describe('PortfolioApiUtils', () => {
     ).toBeNull();
   });
 
+  it('maps no quote available errors to the quote status message', () => {
+    expect(
+      PortfolioApiUtils.resolvePortfolioQuoteStatusMessage(
+        new PortfolioApiError({
+          code: 'NO_QUOTE_AVAILABLE',
+          message: 'No quote available.',
+        }),
+      ),
+    ).toBe('portfolio_no_quote_available');
+    expect(
+      PortfolioApiUtils.resolvePortfolioQuoteStatusMessage(
+        new Error('portfolio_api_not_configured'),
+      ),
+    ).toBe('portfolio_api_not_configured');
+    expect(
+      PortfolioApiUtils.resolvePortfolioQuoteStatusMessage(new Error('Network error')),
+    ).toBe('portfolio_load_error');
+  });
+
   describe('canExecutePortfolioQuote', () => {
     const createQuote = (
       overrides: Partial<PortfolioQuote> = {},

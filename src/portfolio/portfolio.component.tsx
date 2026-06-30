@@ -1636,7 +1636,12 @@ export const Portfolio = ({
         setStatusMessageParams(undefined);
       } else {
         setAmountQuoteError(null);
-        setStatusMessage(getStatusMessageKey(error, 'portfolio_load_error'));
+        setStatusMessage(
+          PortfolioApiUtils.resolvePortfolioQuoteStatusMessage(
+            error,
+            'portfolio_load_error',
+          ),
+        );
         setStatusMessageParams(undefined);
       }
     } finally {
