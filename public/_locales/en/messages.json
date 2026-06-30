@@ -4102,7 +4102,7 @@
   "portfolio_select_asset": { "message": "Select an asset" },
   "portfolio_get_quotes": { "message": "Get quotes" },
   "portfolio_quote_auto_refresh_countdown": {
-    "message": "Auto refresh in $1s",
+    "message": "Refresh in $1s",
     "placeholders": {
       "1": {
         "content": "$1",

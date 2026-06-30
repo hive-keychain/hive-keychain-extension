@@ -41,6 +41,7 @@ import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.componen
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
@@ -1660,6 +1661,26 @@ export const Portfolio = ({
   getSwapQuotesRef.current = getQuotes;
   const swapQuoteRefreshDeadlineRef = useRef(0);
 
+  useEffect(() => {
+    if (section !== 'swap') {
+      return;
+    }
+
+    swapQuoteRefreshDeadlineRef.current = 0;
+    setQuoteRefreshCountdown(null);
+    setQuoteResponse(undefined);
+    setSelectedQuoteId('');
+    setIsQuotesPanelExpanded(false);
+    setAmountQuoteError(null);
+  }, [
+    section,
+    amount,
+    fromAssetId,
+    toAssetId,
+    recipientAddress,
+    selectedAccountKey,
+  ]);
+
   const triggerSwapQuoteRefresh = useCallback(() => {
     swapQuoteRefreshDeadlineRef.current = 0;
     setQuoteRefreshCountdown(null);
@@ -2200,36 +2221,6 @@ export const Portfolio = ({
     </div>
   );
 
-  const renderSwapQuoteRefreshControl = () => {
-    if (section !== 'swap' || !canRequestQuotes) {
-      return null;
-    }
-
-    const swapQuoteRefreshLabel = isFlowLoading
-      ? I18nUtils.getMessage('portfolio_quote_refreshing')
-      : quoteRefreshCountdown !== null
-        ? I18nUtils.getMessage('portfolio_quote_auto_refresh_countdown', [
-            String(quoteRefreshCountdown),
-          ])
-        : I18nUtils.getMessage('portfolio_quote_refresh_now');
-
-    return (
-      <button
-        type="button"
-        className="portfolio-quote-autorefresh"
-        disabled={isFlowLoading}
-        onClick={triggerSwapQuoteRefresh}
-        title={I18nUtils.getMessage('portfolio_quote_refresh_now')}>
-        <SVGIcon
-          className={`portfolio-quote-autorefresh__icon ${
-            isFlowLoading ? 'rotate' : ''
-          }`}
-          icon={SVGIcons.SWAPS_HISTORY_REFRESH}
-        />
-        <span>{swapQuoteRefreshLabel}</span>
-      </button>
-    );
-  };
 
   const renderHistoryRefreshControl = () => {
     if (section !== 'history' || !selectedAccountKey) {
@@ -2270,20 +2261,121 @@ export const Portfolio = ({
       ? PortfolioApiUtils.canExecutePortfolioQuote(selectedQuote)
       : false;
     const hasMultipleQuotes = (quoteResponse?.quotes.length ?? 0) > 1;
-    const estimatedAmountInput = (
-      <InputComponent
-        label="portfolio_estimated_amount"
-        type={InputType.NUMBER}
-        value={selectedQuote?.estimatedToAmount ?? ''}
-        onChange={() => {}}
-        disabled
-        imageLogoUrl={selectedQuote?.providerLogoUrl ?? undefined}
-        imageLogoAlt={selectedQuote?.providerName || selectedQuote?.provider}
-        logoPosition={
-          selectedQuote?.providerLogoUrl ? 'right' : undefined
-        }
-      />
-    );
+    const isAwaitingFirstSwapQuote =
+      mode === 'swap' &&
+      canRequestQuotes &&
+      !selectedQuoteId &&
+      !amountQuoteError;
+    const showSwapQuoteRefresh =
+      mode === 'swap' && Boolean(selectedQuoteId) && canRequestQuotes;
+    const swapQuoteRefreshLabel = isFlowLoading
+      ? I18nUtils.getMessage('portfolio_quote_refreshing')
+      : quoteRefreshCountdown !== null
+        ? I18nUtils.getMessage('portfolio_quote_auto_refresh_countdown', [
+            String(quoteRefreshCountdown),
+          ])
+        : I18nUtils.getMessage('portfolio_quote_refresh_now');
+
+    const handleSwapQuoteInputClick = () => {
+      if (!hasMultipleQuotes) {
+        return;
+      }
+      setIsQuotesPanelExpanded(true);
+    };
+
+    const handleSwapQuoteRefreshClick = (
+      event: React.MouseEvent<HTMLButtonElement>,
+    ) => {
+      event.stopPropagation();
+      triggerSwapQuoteRefresh();
+    };
+
+    const estimatedAmountInput =
+      mode === 'swap' ? (
+        <div className="custom-input portfolio-swap-quote-field">
+          <div className="label">
+            {I18nUtils.getMessage('portfolio_estimated_amount')}
+          </div>
+          <div
+            className={`custom-input-content ${
+              hasMultipleQuotes ? 'portfolio-swap-quote-input--clickable' : ''
+            }`}
+            data-testid="portfolio-swap-quote-input"
+            onClick={handleSwapQuoteInputClick}
+            onKeyDown={(event) => {
+              if (
+                hasMultipleQuotes &&
+                (event.key === 'Enter' || event.key === ' ')
+              ) {
+                event.preventDefault();
+                setIsQuotesPanelExpanded(true);
+              }
+            }}
+            role={hasMultipleQuotes ? 'button' : undefined}
+            tabIndex={hasMultipleQuotes ? 0 : undefined}>
+            <div className="portfolio-swap-quote-input__container input-container no-logo">
+              <div
+                className="portfolio-swap-quote-input__value"
+                data-testid="portfolio-swap-quote-value">
+                {selectedQuote?.estimatedToAmount ?? ''}
+              </div>
+              <div className="portfolio-swap-quote-input__adornments">
+                {showSwapQuoteRefresh ? (
+                  <button
+                    type="button"
+                    className="portfolio-swap-quote-input__refresh"
+                    disabled={isFlowLoading}
+                    onClick={handleSwapQuoteRefreshClick}
+                    title={swapQuoteRefreshLabel}
+                    aria-label={swapQuoteRefreshLabel}>
+                    <SVGIcon
+                      className={`portfolio-swap-quote-input__refresh-icon ${
+                        isFlowLoading ? 'rotate' : ''
+                      }`}
+                      icon={SVGIcons.SWAPS_HISTORY_REFRESH}
+                    />
+                    <span
+                      className="portfolio-swap-quote-input__refresh-label"
+                      data-testid="portfolio-swap-quote-refresh-label">
+                      {swapQuoteRefreshLabel}
+                    </span>
+                  </button>
+                ) : null}
+                {isAwaitingFirstSwapQuote ? (
+                  <div
+                    className="portfolio-swap-quote-input__spinner"
+                    data-testid="portfolio-swap-quote-loading">
+                    <RotatingLogoComponent />
+                  </div>
+                ) : null}
+                {selectedQuote?.providerLogoUrl ? (
+                  <PreloadedImage
+                    className="portfolio-swap-quote-input__logo"
+                    src={selectedQuote.providerLogoUrl}
+                    alt={
+                      selectedQuote.providerName || selectedQuote.provider
+                    }
+                    placeholder="/assets/images/wallet/hive-engine.svg"
+                  />
+                ) : null}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <InputComponent
+          label="portfolio_estimated_amount"
+          type={InputType.NUMBER}
+          value={selectedQuote?.estimatedToAmount ?? ''}
+          onChange={() => {}}
+          disabled
+          imageLogoUrl={selectedQuote?.providerLogoUrl ?? undefined}
+          imageLogoAlt={selectedQuote?.providerName || selectedQuote?.provider}
+          logoPosition={
+            selectedQuote?.providerLogoUrl ? 'right' : undefined
+          }
+        />
+      );
 
     const renderQuoteCard = (quote: PortfolioQuote) => (
       <PortfolioQuoteCard
@@ -2700,7 +2792,6 @@ export const Portfolio = ({
               {!pendingInAppConfirmation && (
                 <div className="portfolio-card-header">
                   <h2>{I18nUtils.getMessage(pageTitleKey)}</h2>
-                  {renderSwapQuoteRefreshControl()}
                   {renderHistoryRefreshControl()}
                   {renderHistoryVisibilityToggle()}
                 </div>

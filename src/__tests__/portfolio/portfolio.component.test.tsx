@@ -25,6 +25,7 @@ jest.mock('src/portfolio/portfolio-api.utils', () => ({
     listHistory: jest.fn().mockResolvedValue([]),
     getQuotes: jest.fn().mockResolvedValue({ quotes: [] }),
     resolveExecutablePortfolioQuoteId: jest.fn().mockReturnValue(''),
+    canExecutePortfolioQuote: jest.fn().mockReturnValue(true),
     resolvePortfolioAmountQuoteError: jest.fn().mockReturnValue(null),
     getFiatRampOptions: jest.fn().mockResolvedValue({
       fiatCurrencies: ['USD', 'EUR'],
@@ -694,6 +695,196 @@ describe('Portfolio', () => {
       }),
     );
     expect(queryByText('Get quotes')).toBeNull();
+  });
+
+  const swapAssetsFixture = [
+    {
+      assetId: 'evm:native:ethereum',
+      ecosystem: 'evm',
+      symbol: 'ETH',
+      name: 'Ethereum',
+      chainId: '0x1',
+      logoUrl: null,
+    },
+    {
+      assetId: 'evm:native:polygon',
+      ecosystem: 'evm',
+      symbol: 'MATIC',
+      name: 'Polygon',
+      chainId: '0x89',
+      logoUrl: null,
+    },
+  ];
+
+  const renderSwapPortfolio = async () => {
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue(
+      swapAssetsFixture,
+    );
+
+    const view = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={
+          [
+            {
+              id: 1,
+              wallet: { address: '0xabc' },
+            } as never,
+          ]
+        }
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(view.container.textContent).toContain('ETH');
+    });
+
+    const sidebarButtons = view.container.querySelectorAll(
+      '.portfolio-sidebar nav button',
+    );
+    fireEvent.click(sidebarButtons[1]);
+
+    await waitFor(() => {
+      expect(view.container.querySelector('#portfolio-from-asset')).not.toBeNull();
+    });
+
+    const amountInput = view.container.querySelector(
+      '.portfolio-flow .portfolio-amount-field input[type="number"]',
+    ) as HTMLInputElement;
+    fireEvent.change(amountInput, { target: { value: '0.1' } });
+
+    return view;
+  };
+
+  it('shows a loading spinner in the swap quote input while awaiting the first quote', async () => {
+    let resolveQuotes!: (value: unknown) => void;
+    const quotesPromise = new Promise((resolve) => {
+      resolveQuotes = resolve;
+    });
+    (PortfolioApiUtils.getQuotes as jest.Mock).mockReturnValue(quotesPromise);
+    (
+      PortfolioApiUtils.resolveExecutablePortfolioQuoteId as jest.Mock
+    ).mockReturnValue('q1');
+
+    const { getByTestId, queryByTestId } = await renderSwapPortfolio();
+
+    await waitFor(() => {
+      expect(getByTestId('portfolio-swap-quote-loading')).toBeTruthy();
+    });
+
+    resolveQuotes({
+      quotes: [
+        {
+          quoteId: 'q1',
+          provider: 'lifi',
+          providerName: 'LiFi',
+          providerLogoUrl: 'https://example.com/lifi.png',
+          estimatedToAmount: '100',
+          executionType: 'redirect',
+        },
+      ],
+      request: { mode: 'swap' },
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId('portfolio-swap-quote-loading')).toBeNull();
+    });
+  });
+
+  it('clears the loaded swap quote when amount changes', async () => {
+    (PortfolioApiUtils.getQuotes as jest.Mock).mockResolvedValue({
+      quotes: [
+        {
+          quoteId: 'q1',
+          provider: 'lifi',
+          providerName: 'LiFi',
+          providerLogoUrl: 'https://example.com/lifi.png',
+          estimatedToAmount: '100',
+          executionType: 'redirect',
+        },
+      ],
+      request: { mode: 'swap' },
+    });
+    (
+      PortfolioApiUtils.resolveExecutablePortfolioQuoteId as jest.Mock
+    ).mockReturnValue('q1');
+
+    const { container } = await renderSwapPortfolio();
+
+    await waitFor(() => {
+      const quoteInput = container.querySelector(
+        '[data-testid="portfolio-swap-quote-value"]',
+      );
+      expect(quoteInput?.textContent).toBe('100');
+    });
+
+    const amountInput = container.querySelector(
+      '.portfolio-flow .portfolio-amount-field input[type="number"]',
+    ) as HTMLInputElement;
+    fireEvent.change(amountInput, { target: { value: '0.2' } });
+
+    await waitFor(() => {
+      const quoteInput = container.querySelector(
+        '[data-testid="portfolio-swap-quote-value"]',
+      );
+      expect(quoteInput?.textContent).toBe('');
+      expect(
+        container.querySelector('[data-testid="portfolio-swap-quote-loading"]'),
+      ).not.toBeNull();
+    });
+  });
+
+  it('expands all swap quotes when clicking the quote input', async () => {
+    (PortfolioApiUtils.getQuotes as jest.Mock).mockResolvedValue({
+      quotes: [
+        {
+          quoteId: 'q1',
+          provider: 'lifi',
+          providerName: 'LiFi',
+          providerLogoUrl: 'https://example.com/lifi.png',
+          estimatedToAmount: '100',
+          executionType: 'redirect',
+        },
+        {
+          quoteId: 'q2',
+          provider: 'changelly',
+          providerName: 'Changelly',
+          providerLogoUrl: 'https://example.com/changelly.png',
+          estimatedToAmount: '99',
+          executionType: 'redirect',
+        },
+      ],
+      request: { mode: 'swap' },
+    });
+    (
+      PortfolioApiUtils.resolveExecutablePortfolioQuoteId as jest.Mock
+    ).mockReturnValue('q1');
+
+    const { container, getByTestId } = await renderSwapPortfolio();
+
+    await waitFor(() => {
+      const quoteInput = container.querySelector(
+        '[data-testid="portfolio-swap-quote-value"]',
+      );
+      expect(quoteInput?.textContent).toBe('100');
+    });
+
+    expect(container.querySelector('.portfolio-quotes-panel')).toBeNull();
+
+    fireEvent.click(getByTestId('portfolio-swap-quote-input'));
+
+    await waitFor(() => {
+      expect(
+        container.querySelectorAll('.portfolio-quote-card'),
+      ).toHaveLength(2);
+    });
   });
 
   it.skip('loads fiat ramp options and available buy assets when opening the buy section', async () => {
