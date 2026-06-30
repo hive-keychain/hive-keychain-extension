@@ -1,10 +1,10 @@
-import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
-import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmUserHistoryItemType } from '@popup/evm/interfaces/evm-tokens-history.interface';
+import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
+import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
 import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
-import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Decimal from 'decimal.js';
@@ -64,6 +64,7 @@ describe('evm transactions utils', () => {
   let provider: {
     getTransactionCount: jest.Mock;
     getTransactionReceipt: jest.Mock;
+    getTransaction: jest.Mock;
   };
 
   const buildGasFee = (
@@ -89,7 +90,8 @@ describe('evm transactions utils', () => {
     pendingTransactionsStorage = [];
     provider = {
       getTransactionCount: jest.fn(),
-      getTransactionReceipt: jest.fn(),
+      getTransactionReceipt: jest.fn().mockResolvedValue(null),
+      getTransaction: jest.fn().mockResolvedValue(null),
     };
 
     I18nUtils.getMessage = jest.fn((key: string) => key);
@@ -124,22 +126,31 @@ describe('evm transactions utils', () => {
   it('uses the blocking pending nonce when resolving pending transaction details', async () => {
     pendingTransactionsStorage = [
       {
-        txResponseParams: { hash: '0xblocking', nonce: 0, chainId: chain.chainId },
+        txResponseParams: {
+          hash: '0xblocking',
+          nonce: 0,
+          chainId: chain.chainId,
+        },
         walletAddress,
         chainId: chain.chainId,
         broadcastDate: 1,
         displayItem: pendingDisplayItem,
       },
       {
-        txResponseParams: { hash: '0xqueued', nonce: 1, chainId: chain.chainId },
+        txResponseParams: {
+          hash: '0xqueued',
+          nonce: 1,
+          chainId: chain.chainId,
+        },
         walletAddress,
         chainId: chain.chainId,
         broadcastDate: 2,
       },
     ];
 
-    provider.getTransactionCount.mockImplementation((_addr: string, tag: string) =>
-      Promise.resolve(tag === 'pending' ? 2 : 0),
+    provider.getTransactionCount.mockImplementation(
+      (_addr: string, tag: string) =>
+        Promise.resolve(tag === 'pending' ? 2 : 0),
     );
 
     const result = await EvmTransactionsUtils.hasPendingTransaction(
@@ -158,25 +169,31 @@ describe('evm transactions utils', () => {
         displayItem: pendingDisplayItem,
       },
     });
-    expect(result?.pendingTransactionDetails.transactionResponse).toMatchObject({
-      hash: '0xblocking',
-      nonce: 0,
-    });
+    expect(result?.pendingTransactionDetails.transactionResponse).toMatchObject(
+      {
+        hash: '0xblocking',
+        nonce: 0,
+      },
+    );
   });
 
   it('builds a fallback display item for old pending records without one', async () => {
     pendingTransactionsStorage = [
       {
-        txResponseParams: { hash: '0xqueued', nonce: 1, chainId: chain.chainId },
+        txResponseParams: {
+          hash: '0xqueued',
+          nonce: 0,
+          chainId: chain.chainId,
+        },
         walletAddress,
         chainId: chain.chainId,
         broadcastDate: 2,
       },
     ];
 
-    provider.getTransactionCount.mockImplementation((_addr: string, tag: string) =>
-      Promise.resolve(tag === 'pending' ? 2 : 0),
-    );
+    provider.getTransactionCount.mockResolvedValue(0);
+    provider.getTransactionReceipt.mockResolvedValue(null);
+    provider.getTransaction.mockResolvedValue(null);
 
     const result = await EvmTransactionsUtils.hasPendingTransaction(
       walletAddress,
@@ -185,7 +202,7 @@ describe('evm transactions utils', () => {
 
     expect(result?.pendingTransactionDetails).toMatchObject({
       label: 'evm_history_smart_contract_creation_message_no_address',
-      title: 'evm_pending_queued_transactions',
+      title: 'evm_one_pending_transaction',
       nonce: 0,
       displayItem: {
         transactionHash: '0xqueued',
@@ -196,7 +213,11 @@ describe('evm transactions utils', () => {
   it('uses the pending-only title when there are no queued transactions', async () => {
     pendingTransactionsStorage = [
       {
-        txResponseParams: { hash: '0xblocking', nonce: 0, chainId: chain.chainId },
+        txResponseParams: {
+          hash: '0xblocking',
+          nonce: 0,
+          chainId: chain.chainId,
+        },
         walletAddress,
         chainId: chain.chainId,
         broadcastDate: 1,
@@ -204,8 +225,9 @@ describe('evm transactions utils', () => {
       },
     ];
 
-    provider.getTransactionCount.mockImplementation((_addr: string, tag: string) =>
-      Promise.resolve(tag === 'pending' ? 1 : 0),
+    provider.getTransactionCount.mockImplementation(
+      (_addr: string, tag: string) =>
+        Promise.resolve(tag === 'pending' ? 1 : 0),
     );
 
     const result = await EvmTransactionsUtils.hasPendingTransaction(
@@ -226,20 +248,250 @@ describe('evm transactions utils', () => {
     });
   });
 
+  it('trusts local pending storage when RPC nonces are equal and getTransaction is null', async () => {
+    pendingTransactionsStorage = [
+      {
+        txResponseParams: { hash: '0xlocal', nonce: 0, chainId: chain.chainId },
+        walletAddress,
+        chainId: chain.chainId,
+        broadcastDate: 1,
+        displayItem: pendingDisplayItem,
+      },
+    ];
+
+    provider.getTransactionCount.mockResolvedValue(0);
+    provider.getTransactionReceipt.mockResolvedValue(null);
+    provider.getTransaction.mockResolvedValue(null);
+
+    const result = await EvmTransactionsUtils.hasPendingTransaction(
+      walletAddress,
+      chain,
+    );
+
+    expect(result).toMatchObject({
+      hasPending: true,
+      pendingTransactionsCount: 1,
+      queuedTransactionsCount: 0,
+      pendingTransactionDetails: {
+        label: 'Pending swap',
+        title: 'evm_one_pending_transaction',
+        nonce: 0,
+      },
+    });
+  });
+
+  it('does not report pending when local storage exists but receipt is confirmed', async () => {
+    pendingTransactionsStorage = [
+      {
+        txResponseParams: {
+          hash: '0xconfirmed',
+          nonce: 0,
+          chainId: chain.chainId,
+        },
+        walletAddress,
+        chainId: chain.chainId,
+        broadcastDate: 1,
+        displayItem: pendingDisplayItem,
+      },
+    ];
+
+    provider.getTransactionCount.mockResolvedValue(0);
+    provider.getTransactionReceipt.mockResolvedValue({ hash: '0xconfirmed' });
+    const finalizeSpy = jest
+      .spyOn(
+        EvmPendingTransactionsNotifications,
+        'finalizeConfirmedPendingTransaction',
+      )
+      .mockResolvedValue(true);
+
+    const result = await EvmTransactionsUtils.hasPendingTransaction(
+      walletAddress,
+      chain,
+    );
+
+    expect(result?.hasPending).toBe(false);
+    expect(finalizeSpy).toHaveBeenCalled();
+    expect(pendingTransactionsStorage).toEqual([]);
+  });
+
+  it('does not report pending when local storage nonce is behind latestNonce', async () => {
+    pendingTransactionsStorage = [
+      {
+        txResponseParams: { hash: '0xstale1', nonce: 1, chainId: chain.chainId },
+        walletAddress,
+        chainId: chain.chainId,
+        broadcastDate: 1,
+      },
+      {
+        txResponseParams: { hash: '0xstale2', nonce: 2, chainId: chain.chainId },
+        walletAddress,
+        chainId: chain.chainId,
+        broadcastDate: 2,
+      },
+      {
+        txResponseParams: { hash: '0xstale3', nonce: 3, chainId: chain.chainId },
+        walletAddress,
+        chainId: chain.chainId,
+        broadcastDate: 3,
+      },
+      {
+        txResponseParams: { hash: '0xstale4', nonce: 4, chainId: chain.chainId },
+        walletAddress,
+        chainId: chain.chainId,
+        broadcastDate: 4,
+      },
+    ];
+
+    provider.getTransactionCount.mockResolvedValue(5);
+    provider.getTransactionReceipt.mockResolvedValue(null);
+    provider.getTransaction.mockResolvedValue(null);
+    jest
+      .spyOn(
+        EvmPendingTransactionsNotifications,
+        'finalizeConfirmedPendingTransaction',
+      )
+      .mockResolvedValue(false);
+
+    const result = await EvmTransactionsUtils.hasPendingTransaction(
+      walletAddress,
+      chain,
+    );
+
+    expect(result?.hasPending).toBe(false);
+    expect(result?.queuedTransactionsCount).toBe(0);
+    expect(pendingTransactionsStorage).toEqual([]);
+  });
+
+  it('does not report pending when local storage exists but getTransaction is mined', async () => {
+    pendingTransactionsStorage = [
+      {
+        txResponseParams: { hash: '0xmined', nonce: 0, chainId: chain.chainId },
+        walletAddress,
+        chainId: chain.chainId,
+        broadcastDate: 1,
+        displayItem: pendingDisplayItem,
+      },
+    ];
+
+    provider.getTransactionCount.mockResolvedValue(0);
+    provider.getTransactionReceipt.mockResolvedValue(null);
+    provider.getTransaction.mockResolvedValue({
+      hash: '0xmined',
+      blockNumber: 123,
+      blockHash: '0xabc',
+    });
+    const finalizeSpy = jest
+      .spyOn(
+        EvmPendingTransactionsNotifications,
+        'finalizeConfirmedPendingTransaction',
+      )
+      .mockResolvedValue(true);
+
+    const result = await EvmTransactionsUtils.hasPendingTransaction(
+      walletAddress,
+      chain,
+    );
+
+    expect(result?.hasPending).toBe(false);
+    expect(finalizeSpy).toHaveBeenCalled();
+    expect(pendingTransactionsStorage).toEqual([]);
+  });
+
+  it('does not write local history when sending on a custom chain', async () => {
+    const customChain = { ...chain, chainId: '0x39', isCustom: true };
+    let localHistoryStorage: unknown;
+
+    jest.spyOn(ChainUtils, 'getChain').mockResolvedValue(customChain);
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockImplementation(async (key) => {
+        if (key === LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS) {
+          return pendingTransactionsStorage;
+        }
+        if (key === LocalStorageKeyEnum.EVM_LOCAL_HISTORY) {
+          return localHistoryStorage;
+        }
+        return undefined;
+      });
+    jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockImplementation(async (key, value) => {
+        if (key === LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS) {
+          pendingTransactionsStorage = value;
+        }
+        if (key === LocalStorageKeyEnum.EVM_LOCAL_HISTORY) {
+          localHistoryStorage = value;
+        }
+      });
+
+    provider.getTransactionCount.mockResolvedValue(0);
+    jest.spyOn(EvmSignerUtils, 'sendTransaction').mockResolvedValue({
+      hash: '0xcustom',
+      nonce: 0,
+      chainId: customChain.chainId,
+      from: walletAddress,
+      to: '0x0000000000000000000000000000000000000001',
+      value: BigInt(1),
+      data: '0x',
+      blockNumber: null,
+      index: null,
+      toJSON: () => ({
+        hash: '0xcustom',
+        nonce: 0,
+        chainId: customChain.chainId,
+      }),
+    } as any);
+
+    await EvmTransactionsUtils.send(
+      { address: walletAddress } as any,
+      {
+        to: '0x0000000000000000000000000000000000000001',
+        value: '0x1',
+        data: '',
+        type: Number(EvmTransactionType.EIP_1559),
+      },
+      buildGasFee(EvmTransactionType.EIP_1559),
+      customChain.chainId,
+    );
+
+    expect(pendingTransactionsStorage).toHaveLength(1);
+    expect(localHistoryStorage).toBeUndefined();
+  });
+
   it('removes already confirmed transactions during rehydration', async () => {
     pendingTransactionsStorage = [
       {
-        txResponseParams: { hash: '0xconfirmed', nonce: 5, chainId: chain.chainId },
+        txResponseParams: {
+          hash: '0xconfirmed',
+          nonce: 5,
+          chainId: chain.chainId,
+        },
         walletAddress,
         chainId: chain.chainId,
         broadcastDate: 1,
       },
     ];
-    provider.getTransactionReceipt.mockResolvedValue({ hash: '0xconfirmed' });
+    provider.getTransactionReceipt.mockResolvedValue({
+      hash: '0xconfirmed',
+      status: 1,
+      blockNumber: 42,
+    });
+    const finalizeSpy = jest
+      .spyOn(
+        EvmPendingTransactionsNotifications,
+        'finalizeConfirmedPendingTransaction',
+      )
+      .mockResolvedValue(true);
 
     await EvmTransactionsUtils.rehydratePendingTransactions();
 
-    expect(pendingTransactionsStorage).toEqual([]);
+    expect(finalizeSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        txResponseParams: expect.objectContaining({ hash: '0xconfirmed' }),
+      }),
+      provider,
+      expect.objectContaining({ hash: '0xconfirmed' }),
+    );
     expect(
       EvmPendingTransactionsNotifications.waitForTransaction,
     ).not.toHaveBeenCalled();
@@ -256,9 +508,16 @@ describe('evm transactions utils', () => {
     ];
     provider.getTransactionReceipt.mockResolvedValue(null);
     provider.getTransactionCount.mockResolvedValue(6);
+    const finalizeSpy = jest
+      .spyOn(
+        EvmPendingTransactionsNotifications,
+        'finalizeConfirmedPendingTransaction',
+      )
+      .mockResolvedValue(false);
 
     await EvmTransactionsUtils.rehydratePendingTransactions();
 
+    expect(finalizeSpy).toHaveBeenCalled();
     expect(pendingTransactionsStorage).toEqual([]);
     expect(
       EvmPendingTransactionsNotifications.waitForTransaction,
@@ -268,7 +527,11 @@ describe('evm transactions utils', () => {
   it('restarts waiting for transactions that are still pending during rehydration', async () => {
     pendingTransactionsStorage = [
       {
-        txResponseParams: { hash: '0xpending', nonce: 5, chainId: chain.chainId },
+        txResponseParams: {
+          hash: '0xpending',
+          nonce: 5,
+          chainId: chain.chainId,
+        },
         walletAddress,
         chainId: chain.chainId,
         broadcastDate: 1,

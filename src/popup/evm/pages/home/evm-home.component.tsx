@@ -45,6 +45,7 @@ import {
 } from '@popup/multichain/hooks/use-wallet-scroll-relay.hook';
 import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { ethers } from 'ethers';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -167,6 +168,38 @@ const Home = ({
       void loadPendingTransactions(activeAccount.wallet);
     }
   }, [activeAccount.wallet.address, chain.chainId]);
+
+  useEffect(() => {
+    const onResolvedEvmTransaction = (message: {
+      command?: BackgroundCommand;
+      value?: { chainId?: string; from?: string };
+    }) => {
+      if (message.command !== BackgroundCommand.EVM_TRANSACTION_RESOLVED) {
+        return;
+      }
+
+      const resolvedChainId = Number(message.value?.chainId);
+      const currentChainId = Number(chain.chainId);
+      const resolvedWallet = message.value?.from?.toLowerCase();
+      const currentWallet = activeAccount.wallet.address?.toLowerCase();
+
+      if (
+        resolvedChainId !== currentChainId ||
+        !resolvedWallet ||
+        resolvedWallet !== currentWallet
+      ) {
+        return;
+      }
+
+      void loadPendingTransactions(activeAccount.wallet);
+    };
+
+    chrome.runtime.onMessage.addListener(onResolvedEvmTransaction);
+
+    return () => {
+      chrome.runtime.onMessage.removeListener(onResolvedEvmTransaction);
+    };
+  }, [activeAccount.wallet, chain.chainId]);
 
   useEffect(() => {
     const usdValue = `$${FormatUtils.withCommas(

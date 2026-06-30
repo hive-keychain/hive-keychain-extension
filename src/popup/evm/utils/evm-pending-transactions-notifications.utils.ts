@@ -1,4 +1,5 @@
 import { EvmUserHistoryItemType } from '@popup/evm/interfaces/evm-tokens-history.interface';
+import { EvmPendingTransaction } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmTransactionResolvedStatus } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmLocalHistoryUtils } from '@popup/evm/utils/evm-local-history.utils';
 import { EvmTransactionDisplayUtils } from '@popup/evm/utils/evm-transaction-display.utils';
@@ -6,7 +7,7 @@ import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
-import { TransactionReceipt, TransactionResponse } from 'ethers';
+import { Provider, TransactionReceipt, TransactionResponse } from 'ethers';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -71,6 +72,31 @@ const getChainIdHex = (transactionResponse: TransactionResponse) => {
   return `0x${numericChainId.toString(16)}`;
 };
 
+const resolveChainForPendingTransaction = async (
+  transactionResponse: TransactionResponse,
+  pendingTransaction?: EvmPendingTransaction,
+): Promise<EvmChain | undefined> => {
+  const chainIdCandidates = [
+    pendingTransaction?.chainId,
+    getChainIdHex(transactionResponse),
+  ].filter((chainId): chainId is string => Boolean(chainId));
+
+  for (const chainId of chainIdCandidates) {
+    const chain = await ChainUtils.getChain<EvmChain>(chainId);
+    if (chain) {
+      return chain;
+    }
+  }
+
+  const normalizedChainIds = new Set(
+    chainIdCandidates.map((chainId) => chainId.toLowerCase()),
+  );
+  const customChains = await ChainUtils.getCustomChains();
+  return customChains.find((chain) =>
+    normalizedChainIds.has(chain.chainId.toLowerCase()),
+  );
+};
+
 const serializeForMessage = (value: any): any => {
   if (value == null) return value;
   return JSON.parse(
@@ -108,17 +134,20 @@ const resolvePendingTransaction = async (
   status: EvmTransactionResolvedStatus,
   transactionReceipt?: TransactionReceipt | any,
   errorMessage?: string,
+  pendingTransactionHint?: EvmPendingTransaction,
 ) => {
-  const chainIdHex = getChainIdHex(transactionResponse);
-  const chain = chainIdHex
-    ? await ChainUtils.getChain<EvmChain>(chainIdHex)
-    : undefined;
-  const pendingTransaction = chain
-    ? await EvmTransactionsUtils.getPendingTransaction(
-        transactionResponse.hash,
-        chain.chainId,
-      )
-    : undefined;
+  const chain = await resolveChainForPendingTransaction(
+    transactionResponse,
+    pendingTransactionHint,
+  );
+  const pendingTransaction =
+    pendingTransactionHint ??
+    (chain
+      ? await EvmTransactionsUtils.getPendingTransaction(
+          transactionResponse.hash,
+          chain.chainId,
+        )
+      : undefined);
   const walletAddress =
     pendingTransaction?.walletAddress ?? transactionResponse.from;
   const displayItem = EvmTransactionDisplayUtils.buildResolvedDisplayItem(
@@ -242,6 +271,40 @@ const onNotificationClicked = async (notificationId: string) => {
 };
 
 chrome.notifications.onClicked.addListener(onNotificationClicked);
+
+const finalizeConfirmedPendingTransaction = async (
+  pendingTransaction: EvmPendingTransaction,
+  provider: Provider,
+  transactionReceipt?: TransactionReceipt | any,
+): Promise<boolean> => {
+  const transactionResponse = new TransactionResponse(
+    pendingTransaction.txResponseParams,
+    provider,
+  );
+  const receipt =
+    transactionReceipt ??
+    (await provider.getTransactionReceipt(transactionResponse.hash));
+
+  if (!receipt) {
+    return false;
+  }
+
+  const status =
+    receipt.status === 0
+      ? EvmTransactionResolvedStatus.REVERTED
+      : EvmTransactionResolvedStatus.SUCCESS;
+
+  await resolvePendingTransaction(
+    transactionResponse,
+    status,
+    receipt,
+    undefined,
+    pendingTransaction,
+  );
+  return true;
+};
+
 export const EvmPendingTransactionsNotifications = {
   waitForTransaction,
+  finalizeConfirmedPendingTransaction,
 };

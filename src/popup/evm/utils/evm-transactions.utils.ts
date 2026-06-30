@@ -14,7 +14,6 @@ import {
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmWallet } from '@popup/evm/interfaces/wallet.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
-import { EvmLocalHistoryUtils } from '@popup/evm/utils/evm-local-history.utils';
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
@@ -44,6 +43,108 @@ const normalizePendingTransactions = (
 
 const getPendingTransactionNonce = (transaction: EvmPendingTransaction) =>
   Number(transaction.txResponseParams.nonce);
+
+const getBlockingLocalPendingTransaction = (
+  localPendingTransactions: EvmPendingTransaction[],
+): EvmPendingTransaction | undefined => {
+  if (localPendingTransactions.length === 0) {
+    return undefined;
+  }
+
+  return localPendingTransactions.reduce((blocking, current) =>
+    getPendingTransactionNonce(current) < getPendingTransactionNonce(blocking)
+      ? current
+      : blocking,
+  );
+};
+
+const isUnconfirmedLocalPending = async (
+  provider: Provider,
+  pendingTransaction: EvmPendingTransaction,
+  latestNonce: number,
+): Promise<boolean> => {
+  if (latestNonce > getPendingTransactionNonce(pendingTransaction)) {
+    return false;
+  }
+
+  const txHash = pendingTransaction.txResponseParams.hash;
+  const transactionReceipt = await provider.getTransactionReceipt(txHash);
+  if (transactionReceipt) {
+    return false;
+  }
+
+  const transaction = await provider.getTransaction(txHash);
+  if (transaction?.blockHash || transaction?.blockNumber != null) {
+    return false;
+  }
+
+  return true;
+};
+
+const getUnconfirmedLocalPendingTransactions = async (
+  provider: Provider,
+  latestNonce: number,
+  localPendingTransactions: EvmPendingTransaction[],
+): Promise<EvmPendingTransaction[]> => {
+  const unconfirmedLocalPendingTransactions: EvmPendingTransaction[] = [];
+
+  for (const pendingTransaction of localPendingTransactions) {
+    if (
+      await isUnconfirmedLocalPending(
+        provider,
+        pendingTransaction,
+        latestNonce,
+      )
+    ) {
+      unconfirmedLocalPendingTransactions.push(pendingTransaction);
+    }
+  }
+
+  return unconfirmedLocalPendingTransactions;
+};
+
+const pruneStaleLocalPendingTransactions = async (
+  walletAddress: string,
+  chainId: string,
+  localPendingTransactions: EvmPendingTransaction[],
+  unconfirmedLocalPendingTransactions: EvmPendingTransaction[],
+  provider: Provider,
+) => {
+  const unconfirmedHashes = new Set(
+    unconfirmedLocalPendingTransactions.map((transaction) =>
+      transaction.txResponseParams.hash.toLowerCase(),
+    ),
+  );
+  const staleLocalPendingTransactions = localPendingTransactions.filter(
+    (transaction) =>
+      !unconfirmedHashes.has(transaction.txResponseParams.hash.toLowerCase()),
+  );
+
+  for (const staleTransaction of staleLocalPendingTransactions) {
+    await EvmPendingTransactionsNotifications.finalizeConfirmedPendingTransaction(
+      staleTransaction,
+      provider,
+    );
+  }
+
+  const allTransactions = await getAllPendingTransactions();
+  const nextTransactions = allTransactions.filter((transaction) => {
+    if (
+      transaction.walletAddress.toLowerCase() !== walletAddress.toLowerCase() ||
+      transaction.chainId !== chainId
+    ) {
+      return true;
+    }
+
+    return unconfirmedHashes.has(
+      transaction.txResponseParams.hash.toLowerCase(),
+    );
+  });
+
+  if (nextTransactions.length !== allTransactions.length) {
+    await persistPendingTransactions(nextTransactions);
+  }
+};
 
 const persistPendingTransactions = async (
   transactions: EvmPendingTransaction[],
@@ -230,14 +331,6 @@ const send = async (
       chain,
       displayItem,
     );
-    if (chain.isCustom) {
-      await EvmLocalHistoryUtils.appendBroadcastRecord(
-        chain,
-        walletAddress,
-        transactionResponse,
-        displayItem,
-      );
-    }
   }
   return transactionResponse;
 };
@@ -312,29 +405,58 @@ const hasPendingTransaction = async (fromAddress: string, chain: EvmChain) => {
 
     let hasPending = pendingNonce > latestNonce;
     let hasPendingFromLocal = false;
-    if (!hasPending && localPendingTransactions.length > 0) {
-      const provider = await EthersUtils.getProvider(chain);
-      const res = await provider.getTransaction(
-        localPendingTransactions[0].txResponseParams.hash,
+    const unconfirmedLocalPendingTransactions =
+      await getUnconfirmedLocalPendingTransactions(
+        provider,
+        latestNonce,
+        localPendingTransactions,
       );
-      if (res && !res.blockHash && !res.blockNumber) {
-        hasPending = true;
-        hasPendingFromLocal = true;
-      }
+
+    if (
+      unconfirmedLocalPendingTransactions.length <
+      localPendingTransactions.length
+    ) {
+      await pruneStaleLocalPendingTransactions(
+        fromAddress,
+        chain.chainId,
+        localPendingTransactions,
+        unconfirmedLocalPendingTransactions,
+        provider,
+      );
+    }
+
+    const blockingLocalPendingTransaction = getBlockingLocalPendingTransaction(
+      unconfirmedLocalPendingTransactions,
+    );
+
+    if (!hasPending && blockingLocalPendingTransaction) {
+      hasPending = true;
+      hasPendingFromLocal = true;
     }
 
     let queuedTransactionsCount = 0;
     if (hasPendingFromLocal) {
-      queuedTransactionsCount = localPendingTransactions.length - 1;
+      queuedTransactionsCount = unconfirmedLocalPendingTransactions.length - 1;
     } else if (hasPending) {
       queuedTransactionsCount = pendingNonce - latestNonce - 1;
     }
 
+    const detailsNonce = hasPending
+      ? hasPendingFromLocal && blockingLocalPendingTransaction
+        ? getPendingTransactionNonce(blockingLocalPendingTransaction)
+        : latestNonce
+      : undefined;
+
     const pendingTransactionDetails = await getPendingTransactionsDetails(
       fromAddress,
       chain,
-      hasPending ? latestNonce : undefined,
-      { provider, localPendingTransactions },
+      detailsNonce,
+      {
+        provider,
+        localPendingTransactions: hasPendingFromLocal
+          ? unconfirmedLocalPendingTransactions
+          : localPendingTransactions,
+      },
     );
 
     return {
@@ -546,7 +668,11 @@ const rehydratePendingTransactions = async () => {
         transactionResponse.hash,
       );
       if (transactionReceipt) {
-        await deleteFromPendingTransactions(transactionReceipt.hash);
+        await EvmPendingTransactionsNotifications.finalizeConfirmedPendingTransaction(
+          pendingTransaction,
+          provider,
+          transactionReceipt,
+        );
         continue;
       }
 
@@ -555,7 +681,14 @@ const rehydratePendingTransactions = async () => {
         'latest',
       );
       if (latestNonce > getPendingTransactionNonce(pendingTransaction)) {
-        await deleteFromPendingTransactions(transactionResponse.hash);
+        const finalized =
+          await EvmPendingTransactionsNotifications.finalizeConfirmedPendingTransaction(
+            pendingTransaction,
+            provider,
+          );
+        if (!finalized) {
+          await deleteFromPendingTransactions(transactionResponse.hash);
+        }
         continue;
       }
 

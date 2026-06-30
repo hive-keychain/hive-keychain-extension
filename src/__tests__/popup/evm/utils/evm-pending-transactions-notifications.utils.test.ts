@@ -20,6 +20,7 @@ jest.mock('@popup/evm/utils/evm-transactions.utils', () => ({
 jest.mock('@popup/multichain/utils/chain.utils', () => ({
   ChainUtils: {
     getChain: jest.fn(),
+    getCustomChains: jest.fn(),
   },
 }));
 
@@ -86,6 +87,7 @@ describe('evm-pending-transactions-notifications.utils', () => {
     I18nUtils.getMessage = jest.fn((key: string) => key);
     chrome.notifications.create = jest.fn();
     (ChainUtils.getChain as jest.Mock).mockResolvedValue(chain);
+    (ChainUtils.getCustomChains as jest.Mock).mockResolvedValue([chain]);
     (EvmTransactionsUtils.getPendingTransaction as jest.Mock).mockResolvedValue({
       walletAddress,
       displayItem,
@@ -212,5 +214,47 @@ describe('evm-pending-transactions-notifications.utils', () => {
       EvmTransactionResolvedStatus.CANCELED,
       undefined,
     );
+  });
+
+  it('writes custom-chain history when finalizing a confirmed pending transaction', async () => {
+    const receipt = {
+      hash: '0xhash',
+      status: 1,
+      blockNumber: 42,
+      index: 1,
+    };
+    const pendingTransaction = {
+      txResponseParams: {
+        hash: '0xhash',
+        from: walletAddress,
+        nonce: 1,
+        chainId: chain.chainId,
+      },
+      walletAddress,
+      chainId: chain.chainId,
+      broadcastDate: 1,
+      displayItem,
+    };
+    const provider = {
+      getTransactionReceipt: jest.fn().mockResolvedValue(receipt),
+    } as any;
+
+    const finalized =
+      await EvmPendingTransactionsNotifications.finalizeConfirmedPendingTransaction(
+        pendingTransaction,
+        provider,
+        receipt,
+      );
+
+    expect(finalized).toBe(true);
+    expect(EvmLocalHistoryUtils.appendBroadcastRecord).toHaveBeenCalledWith(
+      chain,
+      walletAddress,
+      expect.objectContaining({ hash: '0xhash' }),
+      expect.objectContaining({ blockNumber: 42 }),
+    );
+    expect(
+      EvmTransactionsUtils.deleteFromPendingTransactions,
+    ).toHaveBeenCalledWith('0xhash');
   });
 });
