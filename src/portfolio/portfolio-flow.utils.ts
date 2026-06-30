@@ -11,6 +11,7 @@ import { EvmAddressUtils } from 'src/utils/evm/evm-address.utils';
 const HIVE_CORE_SYMBOLS = new Set(['HIVE', 'HBD', 'HP']);
 const HIVE_KEYCHAIN_SWAP_TARGET_SYMBOLS = new Set(['HIVE', 'HBD']);
 const HIVE_EXTERNAL_BRIDGE_TARGET_SYMBOLS = new Set(['HIVE']);
+const HIVE_SWAP_EXCLUDED_SYMBOLS = new Set(['HP']);
 const FIAT_QUOTE_AMOUNT_DECIMALS = 2;
 const EVM_NATIVE_TOKEN_DECIMALS = 18;
 const HIVE_CORE_TOKEN_DECIMALS = 3;
@@ -420,12 +421,22 @@ export const resolvePortfolioRowToCanonicalAssetId = (
 ): string | undefined =>
   resolvePortfolioRowToCanonicalAsset(row, assets, chains)?.assetId;
 
+export const isPortfolioSwapExcludedSymbol = (symbol: string): boolean =>
+  HIVE_SWAP_EXCLUDED_SYMBOLS.has(symbol.toUpperCase());
+
+export const isPortfolioSwapExcludedAsset = (
+  asset: PortfolioCanonicalAsset,
+): boolean =>
+  asset.ecosystem === 'hive' &&
+  isPortfolioSwapExcludedSymbol(asset.symbol);
+
 export const buildPortfolioFromSelectOptions = (
   rows: PortfolioFlowRow[],
 ): PortfolioFlowSelectOption[] =>
   rows
     .filter((row) => hasPositivePortfolioBalance(row.balance))
     .filter((row) => !row.isTestnet)
+    .filter((row) => !isPortfolioSwapExcludedSymbol(row.symbol))
     .map((row) => {
       const formattedBalance = formatPortfolioTokenBalance(row.balance);
       return {
@@ -637,13 +648,27 @@ export const isEligibleToAssetForFromAsset = (
     return false;
   }
 
+  if (isPortfolioSwapExcludedAsset(toAsset)) {
+    return false;
+  }
+
   switch (fromAsset.ecosystem) {
     case 'hive_engine':
       return (
         toAsset.ecosystem === 'hive_engine' || isHiveKeychainSwapTargetAsset(toAsset)
       );
-    case 'hive':
+    case 'hive': {
+      const fromSymbol = fromAsset.symbol.toUpperCase();
+      if (isPortfolioSwapExcludedSymbol(fromSymbol)) {
+        return false;
+      }
+      if (fromSymbol === 'HBD') {
+        return (
+          toAsset.ecosystem === 'hive' || toAsset.ecosystem === 'hive_engine'
+        );
+      }
       return true;
+    }
     case 'evm':
       return toAsset.ecosystem === 'evm' || isHiveExternalBridgeTargetAsset(toAsset);
     default:
@@ -655,11 +680,17 @@ export const filterToAssetsByFromAsset = (
   assets: PortfolioCanonicalAsset[],
   fromAsset: PortfolioCanonicalAsset | undefined,
 ): PortfolioCanonicalAsset[] => {
+  const swappableAssets = assets.filter(
+    (asset) => !isPortfolioSwapExcludedAsset(asset),
+  );
+
   if (!fromAsset) {
-    return assets;
+    return swappableAssets;
   }
 
-  return assets.filter((asset) => isEligibleToAssetForFromAsset(fromAsset, asset));
+  return swappableAssets.filter((asset) =>
+    isEligibleToAssetForFromAsset(fromAsset, asset),
+  );
 };
 
 export const filterCanonicalAssets = (
@@ -806,6 +837,8 @@ export const PortfolioFlowUtils = {
   filterToAssetsByFromAsset,
   isEligibleToAssetForFromAsset,
   isHivePortfolioEcosystem,
+  isPortfolioSwapExcludedAsset,
+  isPortfolioSwapExcludedSymbol,
   isValidPortfolioRecipientAddress,
   formatPortfolioQuoteFromAmount,
   formatPortfolioTokenBalance,

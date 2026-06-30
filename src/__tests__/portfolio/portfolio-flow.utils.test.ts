@@ -76,6 +76,13 @@ describe('PortfolioFlowUtils', () => {
         isHive: true,
       },
       {
+        key: 'hive:HP',
+        symbol: 'HP',
+        network: 'Hive',
+        balance: '5',
+        isHive: true,
+      },
+      {
         key: '0xaa36a7:ETH:native',
         symbol: 'ETH',
         network: 'Sepolia',
@@ -513,7 +520,16 @@ describe('PortfolioFlowUtils', () => {
 
     expect(
       PortfolioFlowUtils.filterToAssetsByFromAsset(assets, hiveAsset),
-    ).toEqual(assets.filter((asset) => asset.assetId !== 'hive-hive'));
+    ).toEqual(
+      assets.filter(
+        (asset) =>
+          asset.assetId !== 'hive-hive' && asset.assetId !== 'hive-hp',
+      ),
+    );
+
+    expect(
+      PortfolioFlowUtils.filterToAssetsByFromAsset(assets, hbdAsset),
+    ).toEqual([hiveAsset, hiveEngineAsset]);
 
     expect(
       PortfolioFlowUtils.filterToAssetsByFromAsset(assets, ethAsset),
@@ -529,14 +545,20 @@ describe('PortfolioFlowUtils', () => {
       PortfolioFlowUtils.isEligibleToAssetForFromAsset(ethAsset, hiveAsset),
     ).toBe(true);
     expect(
+      PortfolioFlowUtils.isEligibleToAssetForFromAsset(hbdAsset, ethAsset),
+    ).toBe(false);
+    expect(
+      PortfolioFlowUtils.isEligibleToAssetForFromAsset(hiveAsset, hpAsset),
+    ).toBe(false);
+    expect(
       PortfolioFlowUtils.isEligibleToAssetForFromAsset(
         hiveEngineAsset,
         hiveEngineAsset,
       ),
     ).toBe(false);
-    expect(PortfolioFlowUtils.filterToAssetsByFromAsset(assets, undefined)).toBe(
-      assets,
-    );
+    expect(
+      PortfolioFlowUtils.filterToAssetsByFromAsset(assets, undefined),
+    ).toEqual(assets.filter((asset) => asset.assetId !== 'hive-hp'));
   });
 
   it('resolves quote amount decimals by mode and from asset', () => {

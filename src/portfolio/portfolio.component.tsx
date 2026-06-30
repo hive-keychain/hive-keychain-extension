@@ -733,11 +733,13 @@ export const Portfolio = ({
 
   const eligibleToAssets = useMemo(() => {
     if (section === 'buy') {
-      return rampAvailableAssets.length > 0 ? rampAvailableAssets : assets;
+      const buyAssets =
+        rampAvailableAssets.length > 0 ? rampAvailableAssets : assets;
+      return PortfolioFlowUtils.filterToAssetsByFromAsset(buyAssets, undefined);
     }
 
     if (!fromCanonicalAsset) {
-      return assets;
+      return PortfolioFlowUtils.filterToAssetsByFromAsset(assets, undefined);
     }
 
     return PortfolioFlowUtils.filterToAssetsByFromAsset(
