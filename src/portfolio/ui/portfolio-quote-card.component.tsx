@@ -1,4 +1,4 @@
-import { PreloadedImage } from '@common-ui/preloaded-image/preloaded-image.component';
+import { PortfolioLogoImage } from 'src/portfolio/ui/portfolio-logo-image.component';
 import React from 'react';
 import { PortfolioQuote } from 'src/portfolio/portfolio-api.interface';
 import { PortfolioQuoteDisplayUtils } from 'src/portfolio/ui/portfolio-quote-display.utils';
@@ -40,18 +40,13 @@ export const PortfolioQuoteCard = ({
       }}>
       <div className="portfolio-quote-card__header">
         <div className="portfolio-quote-card__provider">
-          {quote.providerLogoUrl ? (
-            <PreloadedImage
-              className="portfolio-quote-card__provider-logo"
-              src={quote.providerLogoUrl}
-              alt=""
-              placeholder="/assets/images/wallet/hive-engine.svg"
-            />
-          ) : (
-            <span className="portfolio-quote-card__provider-fallback">
-              {providerLabel.slice(0, 1)}
-            </span>
-          )}
+          <PortfolioLogoImage
+            className="portfolio-quote-card__provider-logo"
+            src={quote.providerLogoUrl}
+            fallbackClassName="portfolio-quote-card__provider-fallback"
+            fallbackLetter={providerLabel}
+            colorKey={providerLabel}
+          />
           <div className="portfolio-quote-card__provider-text">
             <strong>{providerLabel}</strong>
             <small>

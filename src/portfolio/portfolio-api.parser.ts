@@ -1,6 +1,9 @@
 import {
+  PortfolioAssetsResponse,
   PortfolioAvailableAssetsResponse,
   PortfolioCanonicalAsset,
+  PortfolioChainDisplay,
+  PortfolioChainDisplayRecord,
   PortfolioEcosystem,
   PortfolioEvmTransaction,
   PortfolioExecution,
@@ -20,7 +23,6 @@ import {
   PortfolioQuoteRequestEcho,
   PortfolioQuoteResponse,
   PortfolioQuoteTransaction,
-  PortfolioRedirectOrder,
   PortfolioRouteType,
 } from 'src/portfolio/portfolio-api.interface';
 
@@ -378,14 +380,59 @@ const parsePortfolioQuoteResponse = (value: unknown): PortfolioQuoteResponse => 
   };
 };
 
-const parsePortfolioAssets = (value: unknown): PortfolioCanonicalAsset[] => {
-  if (!isRecord(value) || !Array.isArray(value.assets)) {
-    return [];
+const parsePortfolioChainDisplay = (
+  value: unknown,
+): PortfolioChainDisplay | null => {
+  if (!isRecord(value)) {
+    return null;
   }
 
-  return value.assets
-    .map((asset) => parsePortfolioCanonicalAsset(asset))
-    .filter((asset): asset is PortfolioCanonicalAsset => asset !== null);
+  const id = readString(value, 'id');
+  if (!id) {
+    return null;
+  }
+
+  return {
+    id,
+    name: readString(value, 'name'),
+    logoUrl: readNullableString(value, 'logoUrl'),
+    numericChainId: readNullableNumber(value, 'numericChainId'),
+  };
+};
+
+const parsePortfolioChainDisplayRecord = (
+  value: unknown,
+): PortfolioChainDisplayRecord => {
+  if (!isRecord(value)) {
+    return {};
+  }
+
+  return Object.entries(value).reduce<PortfolioChainDisplayRecord>(
+    (chains, [key, entry]) => {
+      const chain = parsePortfolioChainDisplay(entry);
+      if (chain) {
+        chains[key] = chain;
+      }
+      return chains;
+    },
+    {},
+  );
+};
+
+const parsePortfolioAssetsResponse = (value: unknown): PortfolioAssetsResponse => {
+  if (!isRecord(value) || !Array.isArray(value.assets)) {
+    return {
+      assets: [],
+      chains: {},
+    };
+  }
+
+  return {
+    assets: value.assets
+      .map((asset) => parsePortfolioCanonicalAsset(asset))
+      .filter((asset): asset is PortfolioCanonicalAsset => asset !== null),
+    chains: parsePortfolioChainDisplayRecord(value.chains),
+  };
 };
 
 const parsePortfolioAvailableAssetsResponse = (
@@ -397,6 +444,7 @@ const parsePortfolioAvailableAssetsResponse = (
       direction: 'from',
       sourceAssetId: null,
       assets: [],
+      chains: {},
     };
   }
 
@@ -409,6 +457,7 @@ const parsePortfolioAvailableAssetsResponse = (
           .map((asset) => parsePortfolioCanonicalAsset(asset))
           .filter((asset): asset is PortfolioCanonicalAsset => asset !== null)
       : [],
+    chains: parsePortfolioChainDisplayRecord(value.chains),
   };
 };
 
@@ -540,45 +589,12 @@ const parsePortfolioHistoryResponse = (
   };
 };
 
-const parsePortfolioRedirectOrder = (
-  value: unknown,
-): PortfolioRedirectOrder | null => {
-  if (!isRecord(value)) {
-    return null;
-  }
-
-  const executionId = readString(value, 'executionId');
-  if (!executionId) {
-    return null;
-  }
-
-  const depositRecord = isRecord(value.deposit) ? value.deposit : null;
-  const depositAddress = depositRecord ? readString(depositRecord, 'address') : '';
-
-  return {
-    executionId,
-    provider: readString(value, 'provider'),
-    providerReferenceId: readNullableString(value, 'providerReferenceId'),
-    redirectUrl: readNullableString(value, 'redirectUrl'),
-    deposit:
-      depositRecord && depositAddress
-        ? {
-            address: depositAddress,
-            expectedAmount: readString(depositRecord, 'expectedAmount'),
-            symbol: readString(depositRecord, 'symbol'),
-            network: readString(depositRecord, 'network'),
-          }
-        : null,
-  };
-};
-
 export const PortfolioApiParser = {
-  parsePortfolioAssets,
+  parsePortfolioAssetsResponse,
   parsePortfolioAvailableAssetsResponse,
   parsePortfolioExecution,
   parsePortfolioFiatRampOptions,
   parsePortfolioHistoryItem,
   parsePortfolioHistoryResponse,
   parsePortfolioQuoteResponse,
-  parsePortfolioRedirectOrder,
 };

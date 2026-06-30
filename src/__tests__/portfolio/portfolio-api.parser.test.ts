@@ -1,9 +1,9 @@
 import { PortfolioApiParser } from 'src/portfolio/portfolio-api.parser';
 
 describe('PortfolioApiParser', () => {
-  it('parses canonical assets from the assets payload', () => {
+  it('parses canonical assets and chains from the assets payload', () => {
     expect(
-      PortfolioApiParser.parsePortfolioAssets({
+      PortfolioApiParser.parsePortfolioAssetsResponse({
         assets: [
           {
             assetId: 'evm:native:ethereum',
@@ -18,21 +18,39 @@ describe('PortfolioApiParser', () => {
             logoUrl: 'https://example.com/eth.png',
           },
         ],
+        chains: {
+          ethereum: {
+            id: 'ethereum',
+            name: 'Ethereum',
+            logoUrl: 'https://example.com/ethereum.svg',
+            numericChainId: 1,
+          },
+        },
       }),
-    ).toEqual([
-      {
-        assetId: 'evm:native:ethereum',
-        ecosystem: 'evm',
-        symbol: 'ETH',
-        name: 'Ether',
-        chainId: 'ethereum',
-        address: null,
-        decimals: 18,
-        isNative: true,
-        familyId: 'eth',
-        logoUrl: 'https://example.com/eth.png',
+    ).toEqual({
+      assets: [
+        {
+          assetId: 'evm:native:ethereum',
+          ecosystem: 'evm',
+          symbol: 'ETH',
+          name: 'Ether',
+          chainId: 'ethereum',
+          address: null,
+          decimals: 18,
+          isNative: true,
+          familyId: 'eth',
+          logoUrl: 'https://example.com/eth.png',
+        },
+      ],
+      chains: {
+        ethereum: {
+          id: 'ethereum',
+          name: 'Ethereum',
+          logoUrl: 'https://example.com/ethereum.svg',
+          numericChainId: 1,
+        },
       },
-    ]);
+    });
   });
 
   it('parses quote responses with provider display and fee metadata', () => {
@@ -188,6 +206,7 @@ describe('PortfolioApiParser', () => {
           familyId: '',
         }),
       ],
+      chains: {},
     });
 
     expect(
@@ -325,31 +344,5 @@ describe('PortfolioApiParser', () => {
         ],
       }),
     );
-
-    expect(
-      PortfolioApiParser.parsePortfolioRedirectOrder({
-        executionId: 'exec-1',
-        provider: 'stealthex',
-        providerReferenceId: 'ref-1',
-        redirectUrl: 'https://provider.example/order',
-        deposit: {
-          address: 'deposit-address',
-          expectedAmount: '1',
-          symbol: 'ETH',
-          network: 'ethereum',
-        },
-      }),
-    ).toEqual({
-      executionId: 'exec-1',
-      provider: 'stealthex',
-      providerReferenceId: 'ref-1',
-      redirectUrl: 'https://provider.example/order',
-      deposit: {
-        address: 'deposit-address',
-        expectedAmount: '1',
-        symbol: 'ETH',
-        network: 'ethereum',
-      },
-    });
   });
 });

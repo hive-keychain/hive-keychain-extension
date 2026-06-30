@@ -4,6 +4,8 @@ import Decimal from 'decimal.js';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import {
   PortfolioCanonicalAsset,
+  PortfolioChainDisplay,
+  PortfolioChainDisplayRecord,
   PortfolioMode,
 } from 'src/portfolio/portfolio-api.interface';
 import { EvmAddressUtils } from 'src/utils/evm/evm-address.utils';
@@ -355,6 +357,30 @@ const normalizeChainReference = (
   return trimmed ? trimmed.toLowerCase() : null;
 };
 
+const resolvePortfolioChainDisplay = (
+  chainId: string | null | undefined,
+  portfolioChains: PortfolioChainDisplayRecord = {},
+): PortfolioChainDisplay | undefined => {
+  if (!chainId) {
+    return undefined;
+  }
+
+  const directMatch =
+    portfolioChains[chainId] ?? portfolioChains[chainId.toLowerCase()];
+  if (directMatch) {
+    return directMatch;
+  }
+
+  const normalizedChainId = normalizeChainReference(chainId);
+  if (!normalizedChainId) {
+    return undefined;
+  }
+
+  return Object.values(portfolioChains).find(
+    (chain) => chain.id.toLowerCase() === normalizedChainId,
+  );
+};
+
 export const resolveEvmChainForChainReference = (
   chainReference: string | null | undefined,
   chains: EvmChain[],
@@ -449,7 +475,8 @@ export const buildPortfolioFromSelectOptions = (
 
 export const resolveCanonicalAssetNetworkLabel = (
   asset: PortfolioCanonicalAsset,
-  chains: EvmChain[],
+  chains: EvmChain[] = [],
+  portfolioChains: PortfolioChainDisplayRecord = {},
 ): string => {
   if (asset.ecosystem === 'hive') {
     return 'Hive';
@@ -457,6 +484,14 @@ export const resolveCanonicalAssetNetworkLabel = (
 
   if (asset.ecosystem === 'hive_engine') {
     return 'Hive Engine';
+  }
+
+  const portfolioChain = resolvePortfolioChainDisplay(
+    asset.chainId,
+    portfolioChains,
+  );
+  if (portfolioChain?.name) {
+    return portfolioChain.name;
   }
 
   const chain = resolveEvmChainForChainReference(asset.chainId, chains);
@@ -469,7 +504,8 @@ export const resolveCanonicalAssetNetworkLabel = (
 
 export const resolveCanonicalAssetNetworkLogoUrl = (
   asset: PortfolioCanonicalAsset,
-  chains: EvmChain[],
+  chains: EvmChain[] = [],
+  portfolioChains: PortfolioChainDisplayRecord = {},
 ): string | null => {
   if (asset.ecosystem === 'hive') {
     return HIVE_CHAIN_LOGO;
@@ -479,16 +515,25 @@ export const resolveCanonicalAssetNetworkLogoUrl = (
     return HIVE_ENGINE_CHAIN_LOGO;
   }
 
+  const portfolioChain = resolvePortfolioChainDisplay(
+    asset.chainId,
+    portfolioChains,
+  );
+  if (portfolioChain?.logoUrl) {
+    return portfolioChain.logoUrl;
+  }
+
   return resolveEvmChainForChainReference(asset.chainId, chains)?.logo ?? null;
 };
 
 export const buildCanonicalAssetSelectOptions = (
   assets: PortfolioCanonicalAsset[],
   chains: EvmChain[] = [],
+  portfolioChains: PortfolioChainDisplayRecord = {},
 ): PortfolioFlowSelectOption[] =>
   assets.map((asset) => ({
     value: asset.assetId,
-    label: `${asset.symbol} - ${resolveCanonicalAssetNetworkLabel(asset, chains)}`,
+    label: `${asset.symbol} - ${resolveCanonicalAssetNetworkLabel(asset, chains, portfolioChains)}`,
   }));
 
 export type PortfolioAssetChainFilterOption = {
@@ -527,7 +572,8 @@ export const buildCanonicalAssetChainFilterValue = (
 
 export const buildCanonicalAssetChainFilterOptions = (
   assets: PortfolioCanonicalAsset[],
-  chains: EvmChain[],
+  chains: EvmChain[] = [],
+  portfolioChains: PortfolioChainDisplayRecord = {},
 ): PortfolioAssetChainFilterOption[] => {
   const optionsByValue = new Map<string, PortfolioAssetChainFilterOption>();
 
@@ -558,12 +604,13 @@ export const buildCanonicalAssetChainFilterOptions = (
     }
 
     const chainId = value.slice(EVM_CHAIN_FILTER_PREFIX.length);
+    const portfolioChain = resolvePortfolioChainDisplay(chainId, portfolioChains);
     const chain = resolveEvmChainForChainReference(chainId, chains);
     optionsByValue.set(value, {
       value,
-      label: chain?.name ?? asset.chainId ?? chainId,
+      label: portfolioChain?.name ?? chain?.name ?? asset.chainId ?? chainId,
       key: value,
-      img: chain?.logo,
+      img: portfolioChain?.logoUrl ?? chain?.logo,
       imgChip: chain?.testnet ? SVGIcons.EVM_CHAIN_TESTNET : undefined,
     });
   }

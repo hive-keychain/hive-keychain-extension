@@ -492,6 +492,53 @@ describe('PortfolioFlowUtils', () => {
     ).toBe('Ethereum');
   });
 
+  it('prefers portfolio chain display metadata over local evm chains', () => {
+    const arbitrumAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+      assetId: 'evm:native:arbitrum',
+      ecosystem: 'evm',
+      symbol: 'ETH',
+      name: 'Ether',
+      chainId: 'arbitrum',
+      logoUrl: null,
+      familyId: 'eth',
+    });
+    const portfolioChains = {
+      arbitrum: {
+        id: 'arbitrum',
+        name: 'Arbitrum One',
+        logoUrl: 'https://example.com/arbitrum.svg',
+        numericChainId: 42161,
+      },
+    };
+
+    expect(
+      PortfolioFlowUtils.resolveCanonicalAssetNetworkLabel(
+        arbitrumAsset,
+        [],
+        portfolioChains,
+      ),
+    ).toBe('Arbitrum One');
+    expect(
+      PortfolioFlowUtils.resolveCanonicalAssetNetworkLogoUrl(
+        arbitrumAsset,
+        [],
+        portfolioChains,
+      ),
+    ).toBe('https://example.com/arbitrum.svg');
+    expect(
+      PortfolioFlowUtils.buildCanonicalAssetChainFilterOptions(
+        [arbitrumAsset],
+        [],
+        portfolioChains,
+      ),
+    ).toEqual([
+      expect.objectContaining({
+        label: 'Arbitrum One',
+        img: 'https://example.com/arbitrum.svg',
+      }),
+    ]);
+  });
+
   it('formats quote amounts using token decimals before API submission', () => {
     expect(
       PortfolioFlowUtils.formatPortfolioQuoteFromAmount('1.23456789', 6),

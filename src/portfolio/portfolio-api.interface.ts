@@ -154,11 +154,26 @@ export interface PortfolioQuoteRequestBody {
   providers?: PortfolioProviderId[];
 }
 
+export interface PortfolioChainDisplay {
+  id: string;
+  name: string;
+  logoUrl: string | null;
+  numericChainId: number | null;
+}
+
+export type PortfolioChainDisplayRecord = Record<string, PortfolioChainDisplay>;
+
+export interface PortfolioAssetsResponse {
+  assets: PortfolioCanonicalAsset[];
+  chains: PortfolioChainDisplayRecord;
+}
+
 export interface PortfolioAvailableAssetsResponse {
   mode: PortfolioMode;
   direction: 'from' | 'to';
   sourceAssetId: string | null;
   assets: PortfolioCanonicalAsset[];
+  chains: PortfolioChainDisplayRecord;
 }
 
 export interface PortfolioFiatRampPaymentMethod {
@@ -203,19 +218,6 @@ export interface PortfolioHistoryResponse {
   pageSize: number;
   hasMore: boolean;
   items: PortfolioHistoryItem[];
-}
-
-export interface PortfolioRedirectOrder {
-  executionId: string;
-  provider: string;
-  providerReferenceId: string | null;
-  redirectUrl: string | null;
-  deposit: {
-    address: string;
-    expectedAmount: string;
-    symbol: string;
-    network: string;
-  } | null;
 }
 
 export interface PortfolioSwapAmountRangeDetails {

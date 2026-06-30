@@ -1,5 +1,5 @@
 import { CustomTooltip } from '@common-ui/custom-tooltip/custom-tooltip.component';
-import { PreloadedImage } from '@common-ui/preloaded-image/preloaded-image.component';
+import { PortfolioLogoImage } from 'src/portfolio/ui/portfolio-logo-image.component';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import moment from 'moment';
@@ -8,6 +8,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import {
   PortfolioCanonicalAsset,
+  PortfolioChainDisplayRecord,
   PortfolioHistoryItem,
 } from 'src/portfolio/portfolio-api.interface';
 import { PortfolioAccountAvatar } from 'src/portfolio/ui/portfolio-account-avatar.component';
@@ -32,6 +33,7 @@ export interface PortfolioHistoryCardProps {
   fromAsset?: PortfolioCanonicalAsset;
   toAsset?: PortfolioCanonicalAsset;
   chains: EvmChain[];
+  portfolioChains?: PortfolioChainDisplayRecord;
 }
 
 const DATE_TOOLTIP_FORMAT = 'YYYY-MM-DD HH:mm';
@@ -40,9 +42,10 @@ const resolveTokenIdentity = (
   assetId: string | null,
   asset: PortfolioCanonicalAsset | undefined,
   chains: EvmChain[],
+  portfolioChains: PortfolioChainDisplayRecord = {},
 ): PortfolioTokenIdentityProps => {
   if (asset) {
-    return canonicalAssetToTokenIdentityProps(asset, chains);
+    return canonicalAssetToTokenIdentityProps(asset, chains, portfolioChains);
   }
 
   return {
@@ -55,11 +58,22 @@ export const PortfolioHistoryCard = ({
   fromAsset,
   toAsset,
   chains,
+  portfolioChains = {},
 }: PortfolioHistoryCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const fromIdentity = resolveTokenIdentity(item.fromAssetId, fromAsset, chains);
-  const toIdentity = resolveTokenIdentity(item.toAssetId, toAsset, chains);
+  const fromIdentity = resolveTokenIdentity(
+    item.fromAssetId,
+    fromAsset,
+    chains,
+    portfolioChains,
+  );
+  const toIdentity = resolveTokenIdentity(
+    item.toAssetId,
+    toAsset,
+    chains,
+    portfolioChains,
+  );
 
   const fromAmount = PortfolioHistoryDisplayUtils.formatPortfolioHistoryAmount(
     item.fromAmount,
@@ -153,11 +167,9 @@ export const PortfolioHistoryCard = ({
   const renderProviderValue = (): React.ReactNode => (
     <span className="portfolio-history-card__provider">
       {item.providerLogoUrl ? (
-        <PreloadedImage
+        <PortfolioLogoImage
           className="portfolio-history-card__provider-logo"
           src={item.providerLogoUrl}
-          alt=""
-          placeholder="/assets/images/wallet/hive-engine.svg"
         />
       ) : null}
       <span className="portfolio-history-card__provider-label">

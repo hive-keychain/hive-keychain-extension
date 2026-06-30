@@ -44,7 +44,7 @@ import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.componen
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
+import { PortfolioLogoImage } from 'src/portfolio/ui/portfolio-logo-image.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
@@ -58,6 +58,7 @@ import {
   isPortfolioEvmTransaction,
   isPortfolioHiveTransaction,
   PortfolioCanonicalAsset,
+  PortfolioChainDisplayRecord,
   PortfolioEvmTransaction,
   PortfolioExecution,
   PortfolioFiatRampOptions,
@@ -168,6 +169,14 @@ const PORTFOLIO_SWAP_QUOTE_REFRESH_INTERVAL_SECONDS = 30;
 const PORTFOLIO_SWAP_QUOTE_DEBOUNCE_MS = 600;
 const PORTFOLIO_HISTORY_AUTO_REFRESH_INTERVAL_MS = 15_000;
 const PORTFOLIO_HISTORY_AUTO_REFRESH_INTERVAL_SECONDS = 15;
+
+const mergePortfolioChainRecords = (
+  current: PortfolioChainDisplayRecord,
+  incoming: PortfolioChainDisplayRecord,
+): PortfolioChainDisplayRecord => ({
+  ...current,
+  ...incoming,
+});
 
 const getAllNetworksOption = (): OptionItem => ({
   label: I18nUtils.getMessage('portfolio_all_networks'),
@@ -488,6 +497,8 @@ export const Portfolio = ({
   const [selectedAccountKey, setSelectedAccountKey] = useState('');
   const [rows, setRows] = useState<PortfolioRow[]>([]);
   const [assets, setAssets] = useState<PortfolioCanonicalAsset[]>([]);
+  const [portfolioChains, setPortfolioChains] =
+    useState<PortfolioChainDisplayRecord>({});
   const [history, setHistory] = useState<PortfolioHistoryItem[]>([]);
   const [fromAssetId, setFromAssetId] = useState('');
   const [toAssetId, setToAssetId] = useState('');
@@ -854,6 +865,7 @@ export const Portfolio = ({
     const options = PortfolioFlowUtils.buildCanonicalAssetSelectOptions(
       eligibleToAssets,
       toAssetEvmChains,
+      portfolioChains,
     );
 
     logPortfolioFlowDebug('[Portfolio flow] build toAssetOptions', {
@@ -870,15 +882,16 @@ export const Portfolio = ({
     });
 
     return options;
-  }, [assets.length, eligibleToAssets, fromCanonicalAsset, toAssetEvmChains]);
+  }, [assets.length, eligibleToAssets, fromCanonicalAsset, portfolioChains, toAssetEvmChains]);
 
   const toAssetChainFilterOptions = useMemo(
     () =>
       PortfolioFlowUtils.buildCanonicalAssetChainFilterOptions(
         eligibleToAssets,
         toAssetEvmChains,
+        portfolioChains,
       ),
-    [eligibleToAssets, toAssetEvmChains],
+    [eligibleToAssets, portfolioChains, toAssetEvmChains],
   );
 
   const hasToAssetFilters = Boolean(toAssetFilter.trim() || toAssetChainFilter);
@@ -899,6 +912,7 @@ export const Portfolio = ({
     const options = PortfolioFlowUtils.buildCanonicalAssetSelectOptions(
       filteredToAssetResult.assets,
       toAssetEvmChains,
+      portfolioChains,
     );
 
     logPortfolioFlowDebug('[Portfolio flow] build filteredToAssetOptions', {
@@ -921,6 +935,7 @@ export const Portfolio = ({
     filteredToAssetResult.assets,
     filteredToAssetResult.totalMatches,
     hasToAssetFilters,
+    portfolioChains,
     section,
     toAssetChainFilter,
     toAssetEvmChains,
@@ -1053,7 +1068,11 @@ export const Portfolio = ({
 
     return (
       <PortfolioTokenIdentity
-        {...canonicalAssetToTokenIdentityProps(asset, toAssetEvmChains)}
+        {...canonicalAssetToTokenIdentityProps(
+          asset,
+          toAssetEvmChains,
+          portfolioChains,
+        )}
       />
     );
   };
@@ -1339,6 +1358,9 @@ export const Portfolio = ({
         direction: mode === 'buy' ? 'to' : 'from',
       });
       setRampAvailableAssets(response.assets);
+      setPortfolioChains((current) =>
+        mergePortfolioChainRecords(current, response.chains),
+      );
       logPortfolioFlowDebug('[Portfolio flow] loadRampAvailableAssets completed', {
         mode,
         direction: mode === 'buy' ? 'to' : 'from',
@@ -1390,18 +1412,22 @@ export const Portfolio = ({
 
   const loadAssets = async () => {
     try {
-      const loadedAssets = await PortfolioApiUtils.listAssets();
+      const response = await PortfolioApiUtils.listAssets();
       logPortfolioFlowDebug('[Portfolio flow] loadAssets completed', {
         selectedAccountKey,
-        assetCount: loadedAssets.length,
-        assetsPreview: loadedAssets.slice(0, 25).map((asset) => ({
+        assetCount: response.assets.length,
+        chainCount: Object.keys(response.chains).length,
+        assetsPreview: response.assets.slice(0, 25).map((asset) => ({
           assetId: asset.assetId,
           symbol: asset.symbol,
           ecosystem: asset.ecosystem,
           chainId: asset.chainId,
         })),
       });
-      setAssets(loadedAssets);
+      setAssets(response.assets);
+      setPortfolioChains((current) =>
+        mergePortfolioChainRecords(current, response.chains),
+      );
     } catch (error) {
       Logger.error('Unable to load portfolio assets', error);
     }
@@ -2130,17 +2156,7 @@ export const Portfolio = ({
         return;
       }
 
-      const redirectOrder = await PortfolioApiUtils.createRedirectOrder(
-        execution.id,
-      );
-      if (redirectOrder.redirectUrl) {
-        chrome.tabs.create({ url: redirectOrder.redirectUrl });
-        setStatusMessage('portfolio_provider_opened');
-      } else if (redirectOrder.deposit) {
-        setStatusMessage(
-          `${redirectOrder.deposit.expectedAmount} ${redirectOrder.deposit.symbol} -> ${redirectOrder.deposit.address}`,
-        );
-      }
+      setStatusMessage('portfolio_provider_execution_unavailable');
     } catch (error) {
       Logger.error('Unable to execute portfolio quote', error);
       setStatusMessage(getStatusMessageKey(error, 'portfolio_execution_error'));
@@ -2454,14 +2470,17 @@ export const Portfolio = ({
                     <RotatingLogoComponent />
                   </div>
                 ) : null}
-                {selectedQuote?.providerLogoUrl ? (
-                  <PreloadedImage
+                {selectedQuote ? (
+                  <PortfolioLogoImage
                     className="portfolio-swap-quote-input__logo"
                     src={selectedQuote.providerLogoUrl}
-                    alt={
+                    fallbackClassName="portfolio-swap-quote-input__logo"
+                    fallbackLetter={
                       selectedQuote.providerName || selectedQuote.provider
                     }
-                    placeholder="/assets/images/wallet/hive-engine.svg"
+                    colorKey={
+                      selectedQuote.providerName || selectedQuote.provider
+                    }
                   />
                 ) : null}
               </div>
@@ -2792,6 +2811,7 @@ export const Portfolio = ({
               assets,
             )}
             chains={toAssetEvmChains}
+            portfolioChains={portfolioChains}
           />
         ))}
       </div>

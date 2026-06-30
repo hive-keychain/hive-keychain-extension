@@ -106,6 +106,53 @@ describe('PortfolioApiUtils', () => {
     });
   });
 
+  it('parses assets responses from the portfolio api', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        assets: [
+          {
+            assetId: 'evm:native:ethereum',
+            ecosystem: 'evm',
+            symbol: 'ETH',
+            name: 'Ether',
+            chainId: 'ethereum',
+            address: null,
+            decimals: 18,
+            isNative: true,
+            familyId: 'eth',
+            logoUrl: null,
+          },
+        ],
+        chains: {
+          ethereum: {
+            id: 'ethereum',
+            name: 'Ethereum',
+            logoUrl: 'https://example.com/ethereum.svg',
+            numericChainId: 1,
+          },
+        },
+      }),
+    });
+
+    await expect(PortfolioApiUtils.listAssets()).resolves.toEqual({
+      assets: [
+        expect.objectContaining({
+          assetId: 'evm:native:ethereum',
+          symbol: 'ETH',
+        }),
+      ],
+      chains: {
+        ethereum: {
+          id: 'ethereum',
+          name: 'Ethereum',
+          logoUrl: 'https://example.com/ethereum.svg',
+          numericChainId: 1,
+        },
+      },
+    });
+  });
+
   it('parses full quote responses from the portfolio api', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,

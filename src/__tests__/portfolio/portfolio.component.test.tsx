@@ -22,7 +22,7 @@ jest.mock('src/popup/hive/utils/tokens.utils', () => ({
 
 jest.mock('src/portfolio/portfolio-api.utils', () => ({
   PortfolioApiUtils: {
-    listAssets: jest.fn().mockResolvedValue([]),
+    listAssets: jest.fn().mockResolvedValue({ assets: [], chains: {} }),
     listHistory: jest.fn().mockResolvedValue([]),
     getQuotes: jest.fn().mockResolvedValue({ quotes: [] }),
     resolveExecutablePortfolioQuoteId: jest.fn().mockReturnValue(''),
@@ -37,6 +37,7 @@ jest.mock('src/portfolio/portfolio-api.utils', () => ({
       direction: 'to',
       sourceAssetId: null,
       assets: [],
+      chains: {},
     }),
   },
 }));
@@ -477,16 +478,19 @@ describe('Portfolio', () => {
       return [zeroEthToken];
     });
 
-    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue([
-      {
-        assetId: 'evm:native:ethereum',
-        ecosystem: 'evm',
-        symbol: 'ETH',
-        name: 'Ethereum',
-        chainId: '0x1',
-        logoUrl: null,
-      },
-    ]);
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
+      assets: [
+        {
+          assetId: 'evm:native:ethereum',
+          ecosystem: 'evm',
+          symbol: 'ETH',
+          name: 'Ethereum',
+          chainId: '0x1',
+          logoUrl: null,
+        },
+      ],
+      chains: {},
+    });
 
     const { container } = render(
       <Portfolio
@@ -567,16 +571,19 @@ describe('Portfolio', () => {
   });
 
   it('does not auto-request swap quotes when from asset id cannot be resolved', async () => {
-    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue([
-      {
-        assetId: 'evm:token:hmi:0xbb0d083fb1be0a9f6157ec484b6c79e0a4e31c2e',
-        ecosystem: 'evm',
-        symbol: 'HMI',
-        name: 'HMI',
-        chainId: '0x1',
-        logoUrl: null,
-      },
-    ]);
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
+      assets: [
+        {
+          assetId: 'evm:token:hmi:0xbb0d083fb1be0a9f6157ec484b6c79e0a4e31c2e',
+          ecosystem: 'evm',
+          symbol: 'HMI',
+          name: 'HMI',
+          chainId: '0x1',
+          logoUrl: null,
+        },
+      ],
+      chains: {},
+    });
 
     const { container } = render(
       <Portfolio
@@ -621,24 +628,27 @@ describe('Portfolio', () => {
   });
 
   it('auto-fetches swap quotes once the form is complete without a get quotes button', async () => {
-    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue([
-      {
-        assetId: 'evm:native:ethereum',
-        ecosystem: 'evm',
-        symbol: 'ETH',
-        name: 'Ethereum',
-        chainId: '0x1',
-        logoUrl: null,
-      },
-      {
-        assetId: 'evm:native:polygon',
-        ecosystem: 'evm',
-        symbol: 'MATIC',
-        name: 'Polygon',
-        chainId: '0x89',
-        logoUrl: null,
-      },
-    ]);
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
+      assets: [
+        {
+          assetId: 'evm:native:ethereum',
+          ecosystem: 'evm',
+          symbol: 'ETH',
+          name: 'Ethereum',
+          chainId: '0x1',
+          logoUrl: null,
+        },
+        {
+          assetId: 'evm:native:polygon',
+          ecosystem: 'evm',
+          symbol: 'MATIC',
+          name: 'Polygon',
+          chainId: '0x89',
+          logoUrl: null,
+        },
+      ],
+      chains: {},
+    });
 
     const { container, queryByText } = render(
       <Portfolio
@@ -718,9 +728,10 @@ describe('Portfolio', () => {
   ];
 
   const renderSwapPortfolio = async (options?: { amount?: string }) => {
-    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue(
-      swapAssetsFixture,
-    );
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
+      assets: swapAssetsFixture,
+      chains: {},
+    });
 
     const view = render(
       <Portfolio

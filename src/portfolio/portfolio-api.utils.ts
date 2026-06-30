@@ -3,15 +3,14 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import {
   PortfolioApiErrorPayload,
   PortfolioAvailableAssetsResponse,
-  PortfolioCanonicalAsset,
   PortfolioExecution,
   PortfolioFiatRampOptions,
+  PortfolioAssetsResponse,
   PortfolioHistoryItem,
   PortfolioMode,
   PortfolioQuote,
   PortfolioQuoteRequestBody,
   PortfolioQuoteResponse,
-  PortfolioRedirectOrder,
   PortfolioSwapAmountRangeDetails,
 } from 'src/portfolio/portfolio-api.interface';
 import { PortfolioApiParser } from 'src/portfolio/portfolio-api.parser';
@@ -175,8 +174,8 @@ const fetchJson = async (
   return payload;
 };
 
-const listAssets = async (): Promise<PortfolioCanonicalAsset[]> =>
-  PortfolioApiParser.parsePortfolioAssets(await fetchJson('/assets'));
+const listAssets = async (): Promise<PortfolioAssetsResponse> =>
+  PortfolioApiParser.parsePortfolioAssetsResponse(await fetchJson('/assets'));
 
 const listAvailableAssets = async (params: {
   mode: PortfolioMode;
@@ -258,24 +257,6 @@ const createExecution = async (
   return execution;
 };
 
-const createRedirectOrder = async (
-  executionId: string,
-): Promise<PortfolioRedirectOrder> => {
-  const order = PortfolioApiParser.parsePortfolioRedirectOrder(
-    await fetchJson(
-      `/executions/${encodeURIComponent(executionId)}/create-redirect-order`,
-      { method: 'POST', body: '{}' },
-      true,
-    ),
-  );
-
-  if (!order) {
-    throw new Error('portfolio_redirect_order_failed');
-  }
-
-  return order;
-};
-
 const markSubmitted = async (
   executionId: string,
   txHash: string,
@@ -303,7 +284,6 @@ const listHistory = async (): Promise<PortfolioHistoryItem[]> =>
 export const PortfolioApiUtils = {
   canExecutePortfolioQuote,
   createExecution,
-  createRedirectOrder,
   getClientToken,
   getFiatRampOptions,
   getQuotes,

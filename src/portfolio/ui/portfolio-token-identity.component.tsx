@@ -1,14 +1,16 @@
 import { ChainLogo } from '@common-ui/chain-logo/chain-logo.component';
-import { PreloadedImage } from '@common-ui/preloaded-image/preloaded-image.component';
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
-import React, { useEffect, useState } from 'react';
-import { PortfolioCanonicalAsset } from 'src/portfolio/portfolio-api.interface';
+import React from 'react';
+import {
+  PortfolioCanonicalAsset,
+  PortfolioChainDisplayRecord,
+} from 'src/portfolio/portfolio-api.interface';
 import {
   PortfolioFlowRow,
   PortfolioFlowUtils,
 } from 'src/portfolio/portfolio-flow.utils';
-import { ColorsUtils } from 'src/utils/colors.utils';
+import { PortfolioLogoImage } from 'src/portfolio/ui/portfolio-logo-image.component';
 
 import './portfolio-token-identity.component.scss';
 
@@ -29,12 +31,6 @@ export const PortfolioTokenIdentity = React.memo(({
   isHive = false,
   balance,
 }: PortfolioTokenIdentityProps) => {
-  const [color, setColor] = useState<string>();
-
-  useEffect(() => {
-    setColor(ColorsUtils.stringToColor(symbol));
-  }, [symbol]);
-
   const hiveIcon = isHive ? PortfolioFlowUtils.getHiveTokenIcon(symbol) : undefined;
 
   return (
@@ -42,22 +38,14 @@ export const PortfolioTokenIdentity = React.memo(({
       <div className="portfolio-token-logo-wrap">
         {hiveIcon ? (
           <SVGIcon icon={hiveIcon} className="currency-icon" />
-        ) : logoUrl ? (
-          <PreloadedImage
-            className="currency-icon"
-            src={logoUrl}
-            alt=""
-            placeholder="/assets/images/wallet/hive-engine.svg"
-          />
         ) : (
-          <span
-            className="portfolio-token-avatar"
-            style={{
-              backgroundColor: `${color}2b`,
-              color,
-            }}>
-            {symbol.slice(0, 1)}
-          </span>
+          <PortfolioLogoImage
+            src={logoUrl}
+            className="currency-icon"
+            fallbackClassName="portfolio-token-avatar"
+            fallbackLetter={symbol}
+            colorKey={symbol}
+          />
         )}
         {networkLogoUrl || network ? (
           <ChainLogo
@@ -97,13 +85,19 @@ export const portfolioRowToTokenIdentityProps = (
 export const canonicalAssetToTokenIdentityProps = (
   asset: PortfolioCanonicalAsset,
   chains: EvmChain[] = [],
+  portfolioChains: PortfolioChainDisplayRecord = {},
 ): PortfolioTokenIdentityProps => ({
   symbol: asset.symbol,
-  network: PortfolioFlowUtils.resolveCanonicalAssetNetworkLabel(asset, chains),
+  network: PortfolioFlowUtils.resolveCanonicalAssetNetworkLabel(
+    asset,
+    chains,
+    portfolioChains,
+  ),
   logoUrl: asset.logoUrl,
   networkLogoUrl: PortfolioFlowUtils.resolveCanonicalAssetNetworkLogoUrl(
     asset,
     chains,
+    portfolioChains,
   ),
   isHive: asset.ecosystem === 'hive' || asset.ecosystem === 'hive_engine',
 });
