@@ -458,6 +458,73 @@ describe('Portfolio', () => {
     expect(options[0].label).toBe('ETH - Ethereum (1)');
   });
 
+  it('excludes zero-balance tokens from swap from options and shows an empty-wallet message', async () => {
+    const zeroEthToken = {
+      ...ethToken,
+      formattedBalance: '0',
+      balance: 0n,
+      balanceInteger: 0,
+      shortFormattedBalance: '0',
+    };
+
+    (
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains as jest.Mock
+    ).mockImplementation(async (_chains, _walletAddress, options) => {
+      options?.onChainReady?.(ethereumChain, [zeroEthToken]);
+      options?.onChainFinished?.(ethereumChain);
+      return [zeroEthToken];
+    });
+
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue([
+      {
+        assetId: 'evm:native:ethereum',
+        ecosystem: 'evm',
+        symbol: 'ETH',
+        name: 'Ethereum',
+        chainId: '0x1',
+        logoUrl: null,
+      },
+    ]);
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={
+          [
+            {
+              id: 1,
+              wallet: { address: '0xabc' },
+            } as never,
+          ]
+        }
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+    });
+
+    const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
+    fireEvent.click(sidebarButtons[1]);
+
+    await waitFor(() => {
+      expect(
+        container.querySelector('#portfolio-from-asset-error'),
+      ).not.toBeNull();
+      expect(container.textContent).toContain(
+        "This wallet doesn't have any token.",
+      );
+      expect(container.textContent).not.toContain('ETH - Ethereum (0)');
+    });
+  });
+
   it('shows a partial load error and clears the bottom spinner when a chain fails', async () => {
     (
       EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains as jest.Mock

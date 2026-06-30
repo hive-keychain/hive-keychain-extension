@@ -4239,6 +4239,9 @@
     }
   },
   "portfolio_no_matching_assets": { "message": "No assets match your filters." },
+  "portfolio_swap_no_wallet_tokens": {
+    "message": "This wallet doesn't have any token."
+  },
   "portfolio_refresh": { "message": "Refresh portfolio data" },
   "portfolio_caption_message_total_value": {
     "message": "This amount reflects all your accounts' Hive and Hive Engine tokens, regardless of their form (liquid, staked, in savings or delegated)",

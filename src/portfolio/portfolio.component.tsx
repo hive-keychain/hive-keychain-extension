@@ -565,13 +565,18 @@ export const Portfolio = ({
         ),
       ),
     );
+    const rowsWithPositiveBalance = rowsWithCanonicalAsset.filter(
+      (row) =>
+        PortfolioFlowUtils.hasPositivePortfolioBalance(row.balance) &&
+        !row.isTestnet,
+    );
 
     const rampAvailableAssetIds = new Set(
       rampAvailableAssets.map((asset) => asset.assetId),
     );
     const eligibleFromRows =
       section === 'sell' && rampAvailableAssetIds.size > 0
-        ? rowsWithCanonicalAsset.filter((row) => {
+        ? rowsWithPositiveBalance.filter((row) => {
             const canonicalAssetId =
               PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
                 row,
@@ -583,7 +588,7 @@ export const Portfolio = ({
               rampAvailableAssetIds.has(canonicalAssetId)
             );
           })
-        : rowsWithCanonicalAsset;
+        : rowsWithPositiveBalance;
 
     const options = PortfolioFlowUtils.buildPortfolioFromSelectOptions(
       eligibleFromRows,
@@ -2398,8 +2403,17 @@ export const Portfolio = ({
               renderOption={renderFromAssetIdentity}
               renderDisplay={renderFromAssetIdentity}
               disabled={fromAssetOptions.length === 0}
-              listFooter={
+              error={
                 fromAssetOptions.length === 0
+                  ? I18nUtils.getMessage(
+                      mode === 'swap'
+                        ? 'portfolio_swap_no_wallet_tokens'
+                        : 'portfolio_no_matching_assets',
+                    )
+                  : undefined
+              }
+              listFooter={
+                fromAssetOptions.length === 0 && mode !== 'swap'
                   ? I18nUtils.getMessage('portfolio_no_matching_assets')
                   : undefined
               }
