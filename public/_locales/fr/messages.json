@@ -6647,6 +6647,10 @@
     "message": "L’estimation des frais de gas est indisponible pour cette chaîne",
     "description": "Gas fee estimation not available for chain"
   },
+  "evm_gas_fee_warning_transaction_will_revert": {
+    "message": "This transaction will revert",
+    "description": "Gas fee warning shown when transaction simulation reverts"
+  },
   "evm_transaction_broadcasted": {
     "message": "La transaction a été diffusée. Veuillez attendre sa confirmation.",
     "description": "Transaction broadcasted message"

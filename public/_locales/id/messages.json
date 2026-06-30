@@ -6647,6 +6647,10 @@
     "message": "The gas fee estimation is unavailable for this chain",
     "description": "Gas fee estimation not available for chain"
   },
+  "evm_gas_fee_warning_transaction_will_revert": {
+    "message": "This transaction will revert",
+    "description": "Gas fee warning shown when transaction simulation reverts"
+  },
   "evm_transaction_broadcasted": {
     "message": "Transaction was broadcasted. Please wait for it to be confirmed.",
     "description": "Transaction broadcasted message"

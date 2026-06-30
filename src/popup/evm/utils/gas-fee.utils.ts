@@ -112,12 +112,39 @@ const feeFromGweiAndGasLimit = (gwei: number | string, gasLimit: number) => {
     .div(1000);
 };
 
+const getBaseFeeInGwei = (
+  estimates: RpcGasOracleEstimates,
+): Decimal | undefined => {
+  return estimates.estimatedBaseFee != null
+    ? new Decimal(estimates.estimatedBaseFee)
+    : undefined;
+};
+
+const isLegacyTransactionType = (type: EvmTransactionType) => {
+  return (
+    type === EvmTransactionType.LEGACY || type === EvmTransactionType.EIP_155
+  );
+};
+
+const getTierEstimatedGasPriceInGwei = (
+  tier: RpcGasOracleEstimates['low'],
+  priorityFeeInGwei: number,
+  baseFeeInGwei: Decimal | undefined,
+  type: EvmTransactionType,
+) => {
+  if (isLegacyTransactionType(type)) {
+    return new Decimal(tier.suggestedMaxFeePerGas);
+  }
+  return new Decimal(priorityFeeInGwei).add(baseFeeInGwei ?? 0);
+};
+
 const buildFullEstimationFromEstimates = (
   estimates: RpcGasOracleEstimates,
   type: EvmTransactionType,
   gasLimit: number,
   price: Decimal,
 ): FullGasFeeEstimation => {
+  const baseFeeInGwei = getBaseFeeInGwei(estimates);
   const lowPriorityFee = Math.max(
     Number(estimates.low.suggestedMaxPriorityFeePerGas),
     Number(estimates.latestPriorityFeeRange[0]),
@@ -144,17 +171,33 @@ const buildFullEstimationFromEstimates = (
     gasLimit,
   );
   const low = feeFromGweiAndGasLimit(
-    lowPriorityFee + Number(estimates.estimatedBaseFee),
+    getTierEstimatedGasPriceInGwei(
+      estimates.low,
+      lowPriorityFee,
+      baseFeeInGwei,
+      type,
+    ).toString(),
     gasLimit,
   );
   const medium = feeFromGweiAndGasLimit(
-    mediumPriorityFee + Number(estimates.estimatedBaseFee),
+    getTierEstimatedGasPriceInGwei(
+      estimates.medium,
+      mediumPriorityFee,
+      baseFeeInGwei,
+      type,
+    ).toString(),
     gasLimit,
   );
   const aggressive = feeFromGweiAndGasLimit(
-    aggressivePriorityFee + Number(estimates.estimatedBaseFee),
+    getTierEstimatedGasPriceInGwei(
+      estimates.high,
+      aggressivePriorityFee,
+      baseFeeInGwei,
+      type,
+    ).toString(),
     gasLimit,
   );
+  const baseFeePerGasInGwei = baseFeeInGwei ?? new Decimal(0);
 
   return {
     suggested: {
@@ -168,7 +211,7 @@ const buildFullEstimationFromEstimates = (
       ),
       priorityFeeInGwei: new Decimal(lowPriorityFee),
       maxFeePerGasInGwei: new Decimal(estimates.low.suggestedMaxFeePerGas),
-      baseFeePerGasInGwei: new Decimal(estimates.estimatedBaseFee),
+      baseFeePerGasInGwei,
       gasPriceInGwei: new Decimal(estimates.low.suggestedMaxFeePerGas),
       gasLimit: new Decimal(gasLimit),
       icon: SVGIcons.EVM_GAS_FEE_LOW,
@@ -185,7 +228,7 @@ const buildFullEstimationFromEstimates = (
       ),
       priorityFeeInGwei: new Decimal(lowPriorityFee),
       maxFeePerGasInGwei: new Decimal(estimates.low.suggestedMaxFeePerGas),
-      baseFeePerGasInGwei: new Decimal(estimates.estimatedBaseFee),
+      baseFeePerGasInGwei,
       gasPriceInGwei: new Decimal(estimates.low.suggestedMaxFeePerGas),
       gasLimit: new Decimal(gasLimit),
       icon: SVGIcons.EVM_GAS_FEE_LOW,
@@ -202,7 +245,7 @@ const buildFullEstimationFromEstimates = (
       ),
       priorityFeeInGwei: new Decimal(mediumPriorityFee),
       maxFeePerGasInGwei: new Decimal(estimates.medium.suggestedMaxFeePerGas),
-      baseFeePerGasInGwei: new Decimal(estimates.estimatedBaseFee),
+      baseFeePerGasInGwei,
       gasPriceInGwei: new Decimal(estimates.medium.suggestedMaxFeePerGas),
       gasLimit: new Decimal(gasLimit),
       icon: SVGIcons.EVM_GAS_FEE_MEDIUM,
@@ -219,7 +262,7 @@ const buildFullEstimationFromEstimates = (
       ),
       priorityFeeInGwei: new Decimal(aggressivePriorityFee),
       maxFeePerGasInGwei: new Decimal(estimates.high.suggestedMaxFeePerGas),
-      baseFeePerGasInGwei: new Decimal(estimates.estimatedBaseFee),
+      baseFeePerGasInGwei,
       gasPriceInGwei: new Decimal(estimates.high.suggestedMaxFeePerGas),
       gasLimit: new Decimal(gasLimit),
       icon: SVGIcons.EVM_GAS_FEE_HIGH,
@@ -245,7 +288,7 @@ const buildFullEstimationFromEstimates = (
           min: Number(estimates.historicalBaseFeeRange[0]).toFixed(2),
           max: Number(estimates.historicalBaseFeeRange[1]).toFixed(2),
         },
-        estimated: Number(estimates.estimatedBaseFee).toFixed(2),
+        estimated: baseFeePerGasInGwei.toFixed(2),
       },
       priorityFee: {
         history: {

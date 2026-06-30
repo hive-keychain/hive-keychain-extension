@@ -36,7 +36,7 @@ export interface RpcGasOracleEstimates {
   low: RpcGasTierEstimate;
   medium: RpcGasTierEstimate;
   high: RpcGasTierEstimate;
-  estimatedBaseFee: string;
+  estimatedBaseFee: string | null;
   latestPriorityFeeRange: [string, string];
   historicalPriorityFeeRange: [string, string];
   historicalBaseFeeRange: [string, string];

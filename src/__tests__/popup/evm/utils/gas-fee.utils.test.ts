@@ -254,6 +254,58 @@ describe('GasFeeUtils', () => {
     );
   });
 
+  it('uses suggested gas price tiers when legacy oracle estimates have no base fee', async () => {
+    (EvmLightNodeApi.get as jest.Mock).mockResolvedValue({
+      low: {
+        suggestedMaxPriorityFeePerGas: '0',
+        suggestedMaxFeePerGas: '20',
+        maxWaitTimeEstimate: 60000,
+      },
+      medium: {
+        suggestedMaxPriorityFeePerGas: '0',
+        suggestedMaxFeePerGas: '25',
+        maxWaitTimeEstimate: 30000,
+      },
+      high: {
+        suggestedMaxPriorityFeePerGas: '0',
+        suggestedMaxFeePerGas: '30',
+        maxWaitTimeEstimate: 15000,
+      },
+      estimatedBaseFee: null,
+      latestPriorityFeeRange: ['0', '0'],
+      historicalPriorityFeeRange: ['0', '0'],
+      historicalBaseFeeRange: ['20', '30'],
+      baseFeeTrend: EvmFeeTrend.UP,
+      priorityFeeTrend: EvmFeeTrend.DOWN,
+    });
+
+    const chain = {
+      chainId: '0x38',
+      defaultTransactionType: EvmTransactionType.LEGACY,
+      logo: '',
+      mainToken: 'BNB',
+      name: 'BNB Smart Chain',
+      rpcs: [],
+      type: ChainType.EVM,
+    } as EvmChain;
+
+    const result = await GasFeeUtils.estimate(
+      chain,
+      '0x0000000000000000000000000000000000000001',
+      EvmTransactionType.LEGACY,
+      300,
+      21000,
+    );
+
+    expect(result.suggested).toBeDefined();
+    expect(GasFeeUtils.isGasFeeEstimateInvalid(result.suggested)).toBe(false);
+    expect(result.suggested!.gasPriceInGwei!.toString()).toBe('20');
+    expect(result.suggested!.estimatedFeeInEth.toString()).toBe('0.00042');
+    expect(result.suggested!.maxFeeInEth.toString()).toBe('0.00042');
+    expect(result.medium!.estimatedFeeInEth.toString()).toBe('0.000525');
+    expect(result.aggressive!.estimatedFeeInEth.toString()).toBe('0.00063');
+  });
+
   it('uses corrected estimated vs max fee math in the RPC fallback custom tier', async () => {
     jest.spyOn(EthersUtils, 'getGasLimit').mockResolvedValue(21000);
     jest.spyOn(RpcGasFeeEstimator, 'fetchTiers').mockResolvedValue(null);

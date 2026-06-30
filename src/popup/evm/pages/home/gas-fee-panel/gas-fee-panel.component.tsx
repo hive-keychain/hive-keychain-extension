@@ -51,6 +51,9 @@ interface GasFeePanelProps {
   defaultFeeLevel?: 'low' | 'medium' | 'aggressive';
 }
 
+// Reverting calls cannot produce a real gas limit; keep fee tiers visible with a conservative display fallback.
+const REVERTING_CONTRACT_CALL_GAS_LIMIT = 100_000;
+
 export const GasFeePanel = ({
   chain,
   fromAddress,
@@ -162,6 +165,16 @@ export const GasFeePanel = ({
     return estimate.custom;
   };
 
+  const getFallbackGasLimit = () => {
+    if (transactionData?.gasLimit) {
+      return Number(transactionData.gasLimit);
+    }
+    if (transactionData?.data) {
+      return REVERTING_CONTRACT_CALL_GAS_LIMIT;
+    }
+    return 21000;
+  };
+
   const multiplyDecimal = (value: Decimal | undefined, multiplier: number) => {
     return value ? new Decimal(value).mul(multiplier) : undefined;
   };
@@ -234,6 +247,7 @@ export const GasFeePanel = ({
   const init = async (silentRefresh: boolean) => {
     const generation = ++initGenerationRef.current;
     let estimate;
+    let priceUsd = 0;
     const shouldShowRefreshIndicator =
       silentRefresh && !!feeEstimation && !!selectedFee;
     if (shouldShowRefreshIndicator) {
@@ -245,13 +259,14 @@ export const GasFeePanel = ({
       const mainTokenInfo =
         prefetchedMainTokenInfo ??
         (await EvmTokensUtils.getMainTokenInfo(chain as EvmChain));
-      setMainTokenPrice(mainTokenInfo.priceUsd ?? undefined);
+      priceUsd = mainTokenInfo.priceUsd ?? 0;
+      setMainTokenPrice(priceUsd);
 
       estimate = await GasFeeUtils.estimate(
         chain,
         fromAddress,
         transactionType,
-        mainTokenInfo.priceUsd ?? 0,
+        priceUsd,
         transactionData?.gasLimit
           ? Number(transactionData.gasLimit)
           : undefined,
@@ -300,29 +315,39 @@ export const GasFeePanel = ({
       setFeeEstimation(estimate);
     } catch (err: any) {
       Logger.error('Catch in gas fee Panel', { err });
-      const fallbackCustomFee = buildFallbackCustomFee();
-      setFeeEstimation({ custom: fallbackCustomFee });
-      onSelectFee(fallbackCustomFee);
-      setgasFeeWarning('evm_gas_fee_warning_not_available_for_chain');
-
       const error = EthersUtils.getErrorMessage(
         err.code,
         err.reason,
         err.shortMessage,
         err.message,
       );
-      // console.log('error', error.message);
-      // forceOpenGasFeePanelEvent?.emit('forceOpenCustomFeePanel');
-      // if (
-      //   error.message !==
-      //   'evm_transaction_result_error_message_insufficient_funds'
-      // ) {
-      //   // setErrorMessage(error);
-      //   // setErrorMessage({
-      //   //   message: 'evm_error_gas_estimate',
-      //   // } as EtherRPCCustomError);
-
-      // }
+      if (err.code === 'CALL_EXCEPTION') {
+        try {
+          const revertEstimate = await GasFeeUtils.estimate(
+            chain,
+            fromAddress,
+            transactionType,
+            priceUsd,
+            getFallbackGasLimit(),
+            transactionData,
+          );
+          setgasFeeWarning('evm_gas_fee_warning_transaction_will_revert');
+          setFeeEstimation(revertEstimate);
+          if (!customFeeWasSavedRef.current) {
+            onSelectFee(getInitialFeeSelection(revertEstimate)!);
+          }
+          return;
+        } catch (fallbackError) {
+          Logger.error('Catch in reverting gas fee fallback', {
+            err: fallbackError,
+          });
+        }
+      }
+      const fallbackCustomFee = buildFallbackCustomFee();
+      setFeeEstimation({ custom: fallbackCustomFee });
+      onSelectFee(fallbackCustomFee);
+      setgasFeeWarning('evm_gas_fee_warning_not_available_for_chain');
+      setErrorMessage(error);
     } finally {
       if (generation === initGenerationRef.current) {
         onInitialEstimationComplete?.();
