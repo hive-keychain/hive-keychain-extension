@@ -630,7 +630,9 @@ describe('UnlockedAppComponent', () => {
   });
 
   it('shows the manual RPC switch prompt when startup global properties cannot load', async () => {
-    (loadGlobalProperties as jest.Mock).mockImplementation(() => () => undefined);
+    (loadGlobalProperties as jest.Mock).mockImplementation(
+      () => () => undefined,
+    );
     (RpcUtils.getCurrentRpc as jest.Mock).mockResolvedValue({
       uri: 'https://bad.rpc',
       testnet: false,

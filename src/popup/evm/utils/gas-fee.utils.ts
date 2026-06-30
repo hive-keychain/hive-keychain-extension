@@ -277,9 +277,9 @@ const buildRpcFallbackCustomFee = async (
 
   let maxPriorityFeePerGasWei = feeData.maxPriorityFeePerGas
     ? BigInt(feeData.maxPriorityFeePerGas)
-    : 0n;
+    : BigInt(0);
 
-  if (maxPriorityFeePerGasWei <= 0n) {
+  if (maxPriorityFeePerGasWei <= BigInt(0)) {
     try {
       const rpcResult = await provider.send('eth_maxPriorityFeePerGas', []);
       if (rpcResult != null && rpcResult !== '0x0') {
@@ -290,18 +290,18 @@ const buildRpcFallbackCustomFee = async (
     }
   }
 
-  const gasPriceWei = feeData.gasPrice ? BigInt(feeData.gasPrice) : 0n;
-  if (maxPriorityFeePerGasWei <= 0n && gasPriceWei > 0n) {
-    maxPriorityFeePerGasWei = gasPriceWei / 10n;
+  const gasPriceWei = feeData.gasPrice ? BigInt(feeData.gasPrice) : BigInt(0);
+  if (maxPriorityFeePerGasWei <= BigInt(0) && gasPriceWei > BigInt(0)) {
+    maxPriorityFeePerGasWei = gasPriceWei / BigInt(10);
   }
 
   let maxFeePerGasWei = feeData.maxFeePerGas
     ? BigInt(feeData.maxFeePerGas)
-    : 0n;
-  if (maxFeePerGasWei <= 0n && gasPriceWei > 0n) {
+    : BigInt(0);
+  if (maxFeePerGasWei <= BigInt(0) && gasPriceWei > BigInt(0)) {
     maxFeePerGasWei = gasPriceWei;
   }
-  if (maxFeePerGasWei <= 0n && maxPriorityFeePerGasWei > 0n) {
+  if (maxFeePerGasWei <= BigInt(0) && maxPriorityFeePerGasWei > BigInt(0)) {
     maxFeePerGasWei = maxPriorityFeePerGasWei;
   }
 
@@ -325,8 +325,14 @@ const buildRpcFallbackCustomFee = async (
     gasPriceInGwei,
   );
 
-  const estimatedFee = feeFromGweiAndGasLimit(estimatedGweiPerGas, gasLimit);
-  const maxFee = feeFromGweiAndGasLimit(maxFeePerGasInGwei, gasLimit);
+  const estimatedFee = feeFromGweiAndGasLimit(
+    estimatedGweiPerGas.toString(),
+    gasLimit,
+  );
+  const maxFee = feeFromGweiAndGasLimit(
+    maxFeePerGasInGwei.toString(),
+    gasLimit,
+  );
 
   return {
     custom: {

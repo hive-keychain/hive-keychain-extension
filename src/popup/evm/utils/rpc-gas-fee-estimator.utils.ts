@@ -92,7 +92,7 @@ const buildLegacyTier = (
 };
 
 const getMaxPriorityFeePerGasWei = async (
-  provider: ethers.Provider,
+  provider: ethers.JsonRpcApiProvider,
   gasPriceWei?: bigint,
 ): Promise<bigint> => {
   try {
@@ -104,15 +104,15 @@ const getMaxPriorityFeePerGasWei = async (
     // Fall through to gas price fraction.
   }
 
-  if (gasPriceWei != null && gasPriceWei > 0n) {
-    return gasPriceWei / 10n;
+  if (gasPriceWei != null && gasPriceWei > BigInt(0)) {
+    return gasPriceWei / BigInt(10);
   }
 
-  return 0n;
+  return BigInt(0);
 };
 
 const fetchEip1559Tiers = async (
-  provider: ethers.Provider,
+  provider: ethers.JsonRpcApiProvider,
 ): Promise<RpcGasOracleEstimates | null> => {
   const block = await provider.getBlock('latest');
   if (!block?.baseFeePerGas) {
@@ -153,11 +153,11 @@ const fetchEip1559Tiers = async (
 };
 
 const fetchLegacyTiers = async (
-  provider: ethers.Provider,
+  provider: ethers.JsonRpcApiProvider,
 ): Promise<RpcGasOracleEstimates | null> => {
   const feeData = await provider.getFeeData();
   const gasPriceWei = feeData.gasPrice;
-  if (!gasPriceWei || gasPriceWei <= 0n) {
+  if (!gasPriceWei || gasPriceWei <= BigInt(0)) {
     return null;
   }
 
@@ -184,7 +184,7 @@ const fetchLegacyTiers = async (
 };
 
 const fetchTiers = async (
-  provider: ethers.Provider,
+  provider: ethers.JsonRpcApiProvider,
   txType: EvmTransactionType,
 ): Promise<RpcGasOracleEstimates | null> => {
   try {
