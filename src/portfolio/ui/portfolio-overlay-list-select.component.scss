@@ -231,6 +231,20 @@
           .react-dropdown-select-dropdown {
             top: calc(100% + 2px);
           }
+
+          .filter-input .custom-input-content {
+            border: none !important;
+            border-radius: 0 !important;
+            border-bottom: 1px solid var(--kc-color-border-default) !important;
+            padding: var(--kc-space-1) var(--kc-space-2);
+            background: transparent;
+            box-shadow: none !important;
+
+            &:focus-within {
+              border-bottom-color: var(--kc-color-accent) !important;
+              box-shadow: none !important;
+            }
+          }
         }
       }
     }

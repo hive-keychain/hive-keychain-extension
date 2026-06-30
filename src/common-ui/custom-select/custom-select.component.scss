@@ -139,13 +139,28 @@
         .filter-input {
           width: 100%;
           box-sizing: border-box;
-          border: unset !important;
-          border-radius: unset !important;
-          border-bottom: 1px solid var(--input-border);
           padding: 6px;
-          input {
-            @include poppins500(14px);
-            font-size: 14px;
+
+          .custom-input-content {
+            width: 100%;
+            box-sizing: border-box;
+            border: unset !important;
+            border-radius: unset !important;
+            border-bottom: 1px solid var(--input-border) !important;
+            padding: 6px 12px;
+            min-height: unset;
+            background: transparent;
+            box-shadow: none !important;
+
+            &:focus-within {
+              border-bottom-color: var(--input-border) !important;
+              box-shadow: none !important;
+            }
+
+            input {
+              @include poppins500(14px);
+              font-size: 14px;
+            }
           }
         }
 
