@@ -3,6 +3,7 @@ import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface
 import { EvmAccountTokensLoadUtils } from '@popup/evm/utils/evm-account-tokens-load.utils';
 import { ChainType, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import AccountSelectorOrderUtils from '@popup/multichain/utils/account-selector-order.utils';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Portfolio } from 'src/portfolio/portfolio.component';
@@ -946,6 +947,105 @@ describe('Portfolio', () => {
       expect(
         container.querySelectorAll('.portfolio-quote-card'),
       ).toHaveLength(2);
+    });
+  });
+
+  it('excludes hidden evm accounts from the portfolio account dropdown', async () => {
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xvisible' },
+            hide: false,
+          } as never,
+          {
+            id: 2,
+            wallet: { address: '0xhidden' },
+            hide: true,
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xvisible"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-account')).not.toBeNull();
+    });
+
+    fireEvent.click(
+      container.querySelector('#portfolio-account') as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
+      const options = container.querySelectorAll(
+        '#portfolio-account-listbox [role="option"]',
+      );
+      const optionTexts = [...options].map((option) => option.textContent ?? '');
+      expect(optionTexts.some((text) => text.includes('0xvisible'))).toBe(true);
+      expect(optionTexts.some((text) => text.includes('0xhidden'))).toBe(false);
+    });
+  });
+
+  it('orders portfolio accounts using the account selector display order', async () => {
+    const hiveAlice = { name: 'alice' } as never;
+    const evmAccount = {
+      id: 1,
+      seedId: 1,
+      wallet: { address: '0xabc' },
+      hide: false,
+    } as never;
+
+    jest
+      .spyOn(AccountSelectorOrderUtils, 'loadOrderedListItems')
+      .mockResolvedValue({
+        displayOrder: [
+          { type: 'evm', seedId: 1, accountId: 1 },
+          { type: 'hive', name: 'alice' },
+        ],
+        listItems: [
+          { type: ChainType.EVM, id: 'evm-0xabc', account: evmAccount },
+          { type: ChainType.HIVE, id: 'hive-alice', account: hiveAlice },
+        ],
+      });
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[hiveAlice]}
+        evmAccounts={[evmAccount]}
+        mk="test-mk"
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName="alice"
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(AccountSelectorOrderUtils.loadOrderedListItems).toHaveBeenCalled();
+    });
+
+    fireEvent.click(
+      container.querySelector('#portfolio-account') as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
+      const options = container.querySelectorAll(
+        '#portfolio-account-listbox [role="option"]',
+      );
+      expect(options.length).toBe(2);
+      expect(options[0].textContent).toContain('0xabc');
+      expect(options[1].textContent).toContain('alice');
     });
   });
 

@@ -31,6 +31,9 @@ import {
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
+import AccountSelectorOrderUtils, {
+  AccountSelectorListItem,
+} from '@popup/multichain/utils/account-selector-order.utils';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -400,12 +403,81 @@ const logPortfolioFlowDebug = (message: string, payload: unknown) => {
   Logger.debug(`${message} ${JSON.stringify(payload, null, 2)}`);
 };
 
+const getVisiblePortfolioEvmAccounts = (accounts: EvmAccount[]) =>
+  accounts.filter((account) => !account.hide);
+
+const mapAccountSelectorListItemToPortfolioAccountOption = (
+  item: AccountSelectorListItem,
+): AccountOption => {
+  if (item.type === ChainType.HIVE) {
+    return {
+      key: `hive:${item.account.name}`,
+      type: ChainType.HIVE,
+      label: `@${item.account.name}`,
+      value: item.account.name,
+      account: item.account,
+    };
+  }
+
+  return {
+    key: `evm:${item.account.wallet.address.toLowerCase()}`,
+    type: ChainType.EVM,
+    label: item.account.nickname || item.account.wallet.address,
+    value: item.account.wallet.address,
+    ensName: item.account.nickname,
+    account: item.account,
+  };
+};
+
+const buildPortfolioAccountOptionsFromListItems = (
+  listItems: AccountSelectorListItem[],
+): AccountOption[] => {
+  const seenEvmAddresses = new Set<string>();
+  const options: AccountOption[] = [];
+
+  for (const item of listItems) {
+    if (item.type === ChainType.HIVE) {
+      options.push(mapAccountSelectorListItemToPortfolioAccountOption(item));
+      continue;
+    }
+
+    const address = item.account.wallet.address.toLowerCase();
+    if (seenEvmAddresses.has(address)) {
+      continue;
+    }
+    seenEvmAddresses.add(address);
+    options.push(mapAccountSelectorListItemToPortfolioAccountOption(item));
+  }
+
+  return options;
+};
+
+const buildDefaultPortfolioAccountOptions = (
+  hiveAccounts: LocalAccount[],
+  evmAccounts: EvmAccount[],
+): AccountOption[] => {
+  const visibleEvmAccounts = getVisiblePortfolioEvmAccounts(evmAccounts);
+  const displayOrder = AccountSelectorOrderUtils.buildDefaultDisplayOrder(
+    hiveAccounts,
+    visibleEvmAccounts,
+  );
+
+  return buildPortfolioAccountOptionsFromListItems(
+    AccountSelectorOrderUtils.buildOrderedListItems(
+      hiveAccounts,
+      visibleEvmAccounts,
+      displayOrder,
+    ),
+  );
+};
+
 export const Portfolio = ({
   hiveAccounts,
   evmAccounts,
   activeHiveAccountName,
   activeEvmAccountAddress,
   activeAccountType,
+  mk,
   setErrorMessage,
   setTitleContainerProperties,
   addToLoadingList,
@@ -463,33 +535,49 @@ export const Portfolio = ({
     useState<PortfolioInAppConfirmationContext | null>(null);
   const hasUserSelectedAccountRef = useRef(false);
 
-  const accountOptions = useMemo<AccountOption[]>(() => {
-    const seenEvmAddresses = new Set<string>();
-    return [
-      ...hiveAccounts.map((account) => ({
-        key: `hive:${account.name}`,
-        type: ChainType.HIVE as const,
-        label: `@${account.name}`,
-        value: account.name,
-        account,
-      })),
-      ...evmAccounts
-        .filter((account) => {
-          const address = account.wallet.address.toLowerCase();
-          if (seenEvmAddresses.has(address)) return false;
-          seenEvmAddresses.add(address);
-          return true;
-        })
-        .map((account) => ({
-          key: `evm:${account.wallet.address.toLowerCase()}`,
-          type: ChainType.EVM as const,
-          label: account.nickname || account.wallet.address,
-          value: account.wallet.address,
-          ensName: account.nickname,
-          account,
-        })),
-    ];
-  }, [evmAccounts, hiveAccounts]);
+  const [accountOptions, setAccountOptions] = useState<AccountOption[]>(() =>
+    buildDefaultPortfolioAccountOptions(hiveAccounts, evmAccounts),
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    const visibleEvmAccounts = getVisiblePortfolioEvmAccounts(evmAccounts);
+    const fallbackOptions = buildDefaultPortfolioAccountOptions(
+      hiveAccounts,
+      evmAccounts,
+    );
+
+    setAccountOptions(fallbackOptions);
+
+    if (!mk) {
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    void AccountSelectorOrderUtils.loadOrderedListItems(
+      mk,
+      hiveAccounts,
+      visibleEvmAccounts,
+    )
+      .then(({ listItems }) => {
+        if (!cancelled) {
+          setAccountOptions(
+            buildPortfolioAccountOptionsFromListItems(listItems),
+          );
+        }
+      })
+      .catch((error) => {
+        Logger.error('Unable to load portfolio account order', error);
+        if (!cancelled) {
+          setAccountOptions(fallbackOptions);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [evmAccounts, hiveAccounts, mk]);
 
   const selectedAccount =
     accountOptions.find((account) => account.key === selectedAccountKey) ??
@@ -2835,6 +2923,7 @@ const mapStateToProps = (state: RootState) => ({
   activeHiveAccountName: state.hive.activeAccount?.account?.name,
   activeEvmAccountAddress: state.evm.activeAccount?.wallet?.address,
   activeAccountType: state.activeAccountType,
+  mk: state.mk,
 });
 
 const connector = connect(mapStateToProps, {
