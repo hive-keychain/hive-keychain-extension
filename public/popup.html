@@ -21,6 +21,17 @@
         padding: 0;
         overflow: hidden;
         background: #e5edf5;
+        color-scheme: light;
+      }
+      html.popup-theme-dark,
+      html.popup-theme-dark body {
+        background: #212838;
+        color-scheme: dark;
+      }
+      html.popup-theme-light,
+      html.popup-theme-light body {
+        background: #e5edf5;
+        color-scheme: light;
       }
       #root {
         overflow: hidden;
@@ -31,6 +42,12 @@
         width: 435px;
         background: #e5edf5;
       }
+      html.popup-theme-dark #root {
+        background: #212838;
+      }
+      html.popup-theme-light #root {
+        background: #e5edf5;
+      }
 
       @-moz-document url-prefix() {
         div:not(.scrollable) {
@@ -38,6 +55,7 @@
         }
       }
     </style>
+    <script src="popup-preload.js"></script>
   </head>
 
   <body>
