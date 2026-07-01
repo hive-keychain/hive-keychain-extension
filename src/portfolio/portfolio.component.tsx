@@ -552,6 +552,7 @@ export const Portfolio = ({
   const [pendingInAppConfirmation, setPendingInAppConfirmation] =
     useState<PortfolioInAppConfirmationContext | null>(null);
   const hasUserSelectedAccountRef = useRef(false);
+  const hasLoadedSharedPortfolioDataRef = useRef(false);
 
   const [accountOptions, setAccountOptions] = useState<AccountOption[]>(() =>
     buildDefaultPortfolioAccountOptions(hiveAccounts, evmAccounts),
@@ -1096,7 +1097,13 @@ export const Portfolio = ({
     );
     if (!account) return;
 
-    void initializePortfolioData();
+    if (!hasLoadedSharedPortfolioDataRef.current) {
+      hasLoadedSharedPortfolioDataRef.current = true;
+      void initializePortfolioData();
+      return;
+    }
+
+    void loadPortfolio({ clearRows: true });
   }, [selectedAccountKey]);
 
   useEffect(() => {

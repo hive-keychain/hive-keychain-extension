@@ -513,6 +513,106 @@ describe('Portfolio', () => {
     });
   });
 
+  it('reloads only portfolio balances when changing account in the swap flow', async () => {
+    const secondEthToken = {
+      ...ethToken,
+      formattedBalance: '2',
+      balance: 2n,
+      balanceInteger: 2,
+      shortFormattedBalance: '2',
+    };
+
+    (
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains as jest.Mock
+    ).mockImplementation(async (_chains, walletAddress, options) => {
+      const token = walletAddress === '0xdef' ? secondEthToken : ethToken;
+      options?.onChainReady?.(ethereumChain, [token]);
+      options?.onChainFinished?.(ethereumChain);
+      options?.onChainReady?.(polygonChain, [maticToken]);
+      options?.onChainFinished?.(polygonChain);
+      return [token, maticToken];
+    });
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+          {
+            id: 2,
+            wallet: { address: '0xdef' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(PortfolioApiUtils.listAssets).toHaveBeenCalledTimes(1);
+      expect(PortfolioApiUtils.listHistory).toHaveBeenCalledTimes(1);
+      expect(
+        EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains,
+      ).toHaveBeenCalledTimes(1);
+    });
+
+    const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
+    fireEvent.click(sidebarButtons[1]);
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-flow-account')).not.toBeNull();
+    });
+
+    (PortfolioApiUtils.listAssets as jest.Mock).mockClear();
+    (PortfolioApiUtils.listHistory as jest.Mock).mockClear();
+    (
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains as jest.Mock
+    ).mockClear();
+
+    fireEvent.click(
+      container.querySelector('#portfolio-flow-account') as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
+      const options = container.querySelectorAll(
+        '#portfolio-flow-account-listbox [role="option"]',
+      );
+      expect(options.length).toBe(2);
+    });
+
+    fireEvent.click(
+      container.querySelectorAll(
+        '#portfolio-flow-account-listbox [role="option"]',
+      )[1] as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
+      expect(
+        EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains,
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains,
+      ).toHaveBeenCalledWith(
+        [ethereumChain, polygonChain],
+        '0xdef',
+        expect.objectContaining({
+          onChainReady: expect.any(Function),
+        }),
+      );
+    });
+
+    expect(PortfolioApiUtils.listAssets).not.toHaveBeenCalled();
+    expect(PortfolioApiUtils.listHistory).not.toHaveBeenCalled();
+  });
+
   it('excludes testnet tokens from swap from options', () => {
     const options = PortfolioFlowUtils.buildPortfolioFromSelectOptions([
       {
