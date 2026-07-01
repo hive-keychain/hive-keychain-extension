@@ -71,6 +71,7 @@ import {
 import {
   PortfolioApiUtils,
   PortfolioLocalizedMessage,
+  PortfolioSwapQuoteFetchResult,
 } from 'src/portfolio/portfolio-api.utils';
 import { PortfolioEvmApprovalUtils } from 'src/portfolio/portfolio-evm-approval.utils';
 import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
@@ -517,6 +518,8 @@ export const Portfolio = ({
   const [showCreatedExpiredHistory, setShowCreatedExpiredHistory] =
     useState(false);
   const [isFlowLoading, setIsFlowLoading] = useState(false);
+  const [isSwapQuoteRequestPending, setIsSwapQuoteRequestPending] =
+    useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [quoteRefreshCountdown, setQuoteRefreshCountdown] = useState<
     number | null
@@ -1779,8 +1782,12 @@ export const Portfolio = ({
     }
   };
 
-  const getQuotes = async (options?: { preserveExpandedQuotesPanel?: boolean }) => {
-    if (!selectedAccount || !isPositivePortfolioAmount(amount)) return;
+  const getQuotes = async (options?: {
+    preserveExpandedQuotesPanel?: boolean;
+  }): Promise<PortfolioSwapQuoteFetchResult> => {
+    if (!selectedAccount || !isPositivePortfolioAmount(amount)) {
+      return { status: 'skipped' };
+    }
     const mode = section as PortfolioMode;
     const resolvedFromAssetId =
       mode === 'buy'
@@ -1811,7 +1818,7 @@ export const Portfolio = ({
           amount,
         },
       );
-      return;
+      return { status: 'skipped' };
     }
 
     logPortfolioFlowDebug('[Portfolio flow] getQuotes requested', {
@@ -1840,7 +1847,7 @@ export const Portfolio = ({
       });
       if (!toAddress) {
         setStatusMessage('portfolio_recipient_address_invalid');
-        return;
+        return { status: 'invalid_recipient' };
       }
       const formattedFromAmount =
         PortfolioFlowUtils.formatPortfolioQuoteFromAmount(
@@ -1870,13 +1877,15 @@ export const Portfolio = ({
             ? paymentMethod || undefined
             : undefined,
       });
-      setQuoteResponse(response);
-      setSelectedQuoteId(
-        PortfolioApiUtils.resolveExecutablePortfolioQuoteId(response.quotes),
+      const quoteId = PortfolioApiUtils.resolveExecutablePortfolioQuoteId(
+        response.quotes,
       );
+      setQuoteResponse(response);
+      setSelectedQuoteId(quoteId);
       if (!options?.preserveExpandedQuotesPanel) {
         setIsQuotesPanelExpanded(false);
       }
+      return quoteId ? { status: 'quoted' } : { status: 'no_quote' };
     } catch (error) {
       Logger.error('Unable to load portfolio quotes', error);
       setQuoteResponse(undefined);
@@ -1896,6 +1905,7 @@ export const Portfolio = ({
         );
         setStatusMessageParams(undefined);
       }
+      return PortfolioApiUtils.resolvePortfolioSwapQuoteFetchErrorResult(error);
     } finally {
       setIsFlowLoading(false);
     }
@@ -1916,6 +1926,7 @@ export const Portfolio = ({
     setSelectedQuoteId('');
     setIsQuotesPanelExpanded(false);
     setAmountQuoteError(null);
+    setIsSwapQuoteRequestPending(false);
   }, [
     section,
     amount,
@@ -1925,26 +1936,37 @@ export const Portfolio = ({
     selectedAccountKey,
   ]);
 
+  const scheduleSwapQuoteAutoRefresh = useCallback(() => {
+    swapQuoteRefreshDeadlineRef.current =
+      Date.now() + PORTFOLIO_SWAP_QUOTE_REFRESH_INTERVAL_MS;
+    setQuoteRefreshCountdown(PORTFOLIO_SWAP_QUOTE_REFRESH_INTERVAL_SECONDS);
+  }, []);
+
   const triggerSwapQuoteRefresh = useCallback(() => {
     const preserveExpandedQuotesPanel = isQuotesPanelExpandedRef.current;
     swapQuoteRefreshDeadlineRef.current = 0;
     setQuoteRefreshCountdown(null);
     void getSwapQuotesRef
       .current({ preserveExpandedQuotesPanel })
-      .finally(() => {
-      swapQuoteRefreshDeadlineRef.current =
-        Date.now() + PORTFOLIO_SWAP_QUOTE_REFRESH_INTERVAL_MS;
-      setQuoteRefreshCountdown(PORTFOLIO_SWAP_QUOTE_REFRESH_INTERVAL_SECONDS);
-    });
-  }, []);
+      .then((result) => {
+        setIsSwapQuoteRequestPending(false);
+        if (
+          PortfolioApiUtils.shouldSchedulePortfolioSwapQuoteAutoRefresh(result)
+        ) {
+          scheduleSwapQuoteAutoRefresh();
+        }
+      });
+  }, [scheduleSwapQuoteAutoRefresh]);
 
   useEffect(() => {
     if (section !== 'swap' || !canRequestQuotes || pendingInAppConfirmation) {
       swapQuoteRefreshDeadlineRef.current = 0;
       setQuoteRefreshCountdown(null);
+      setIsSwapQuoteRequestPending(false);
       return;
     }
 
+    setIsSwapQuoteRequestPending(true);
     const initialQuoteTimeoutId = setTimeout(() => {
       triggerSwapQuoteRefresh();
     }, PORTFOLIO_SWAP_QUOTE_DEBOUNCE_MS);
@@ -2502,9 +2524,26 @@ export const Portfolio = ({
       mode === 'swap' &&
       canRequestQuotes &&
       !selectedQuoteId &&
-      !amountQuoteError;
+      !amountQuoteError &&
+      (isFlowLoading || isSwapQuoteRequestPending);
     const showSwapQuoteRefresh =
       mode === 'swap' && Boolean(selectedQuoteId) && canRequestQuotes;
+    const hasStoppedSwapQuoteFetch =
+      Boolean(amountQuoteError) ||
+      statusMessage === 'portfolio_no_quote_available' ||
+      statusMessage === 'portfolio_recipient_address_invalid' ||
+      (quoteResponse !== undefined &&
+        quoteResponse.quotes.length === 0 &&
+        !selectedQuoteId);
+    const showSwapQuoteRetry =
+      mode === 'swap' &&
+      canRequestQuotes &&
+      !selectedQuoteId &&
+      !isAwaitingFirstSwapQuote &&
+      quoteRefreshCountdown === null &&
+      hasStoppedSwapQuoteFetch;
+    const showSwapQuoteActionButton =
+      showSwapQuoteRefresh || showSwapQuoteRetry;
     const swapQuoteRefreshLabel = isFlowLoading
       ? I18nUtils.getMessage('portfolio_quote_refreshing')
       : quoteRefreshCountdown !== null
@@ -2512,6 +2551,11 @@ export const Portfolio = ({
             String(quoteRefreshCountdown),
           ])
         : I18nUtils.getMessage('portfolio_quote_refresh_now');
+    const swapQuoteActionLabel = isFlowLoading
+      ? I18nUtils.getMessage('portfolio_quote_refreshing')
+      : showSwapQuoteRetry
+        ? I18nUtils.getMessage('portfolio_quote_retry')
+        : swapQuoteRefreshLabel;
 
     const handleSwapQuoteInputClick = () => {
       if (!hasMultipleQuotes) {
@@ -2557,14 +2601,14 @@ export const Portfolio = ({
                 {selectedQuote?.estimatedToAmount ?? ''}
               </div>
               <div className="portfolio-swap-quote-input__adornments">
-                {showSwapQuoteRefresh ? (
+                {showSwapQuoteActionButton ? (
                   <button
                     type="button"
                     className="portfolio-swap-quote-input__refresh"
                     disabled={isFlowLoading}
                     onClick={handleSwapQuoteRefreshClick}
-                    title={swapQuoteRefreshLabel}
-                    aria-label={swapQuoteRefreshLabel}>
+                    title={swapQuoteActionLabel}
+                    aria-label={swapQuoteActionLabel}>
                     <SVGIcon
                       className={`portfolio-swap-quote-input__refresh-icon ${
                         isFlowLoading ? 'rotate' : ''
@@ -2573,8 +2617,12 @@ export const Portfolio = ({
                     />
                     <span
                       className="portfolio-swap-quote-input__refresh-label"
-                      data-testid="portfolio-swap-quote-refresh-label">
-                      {swapQuoteRefreshLabel}
+                      data-testid={
+                        showSwapQuoteRetry
+                          ? 'portfolio-swap-quote-retry-label'
+                          : 'portfolio-swap-quote-refresh-label'
+                      }>
+                      {swapQuoteActionLabel}
                     </span>
                   </button>
                 ) : null}

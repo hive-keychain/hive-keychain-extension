@@ -7,7 +7,7 @@ import AccountSelectorOrderUtils from '@popup/multichain/utils/account-selector-
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Portfolio } from 'src/portfolio/portfolio.component';
-import { PortfolioApiUtils } from 'src/portfolio/portfolio-api.utils';
+import { PortfolioApiUtils, PortfolioApiError } from 'src/portfolio/portfolio-api.utils';
 import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
@@ -88,27 +88,34 @@ const mockPortfolioListAvailableAssets = () => {
   );
 };
 
-jest.mock('src/portfolio/portfolio-api.utils', () => ({
-  PortfolioApiUtils: {
-    listAssets: jest.fn().mockResolvedValue({ assets: [], chains: {} }),
-    listHistory: jest.fn().mockResolvedValue([]),
-    getQuotes: jest.fn().mockResolvedValue({ quotes: [] }),
-    resolveExecutablePortfolioQuoteId: jest.fn().mockReturnValue(''),
-    canExecutePortfolioQuote: jest.fn().mockReturnValue(true),
-    resolvePortfolioAmountQuoteError: jest.fn().mockReturnValue(null),
-    getFiatRampOptions: jest.fn().mockResolvedValue({
-      fiatCurrencies: ['USD', 'EUR'],
-      paymentMethods: [{ id: 'card', label: 'Credit / Debit Card' }],
-    }),
-    listAvailableAssets: jest.fn().mockResolvedValue({
-      mode: 'buy',
-      direction: 'to',
-      sourceAssetId: null,
-      assets: [],
-      chains: {},
-    }),
-  },
-}));
+jest.mock('src/portfolio/portfolio-api.utils', () => {
+  const actual = jest.requireActual('src/portfolio/portfolio-api.utils');
+
+  return {
+    ...actual,
+    PortfolioApiUtils: {
+      ...actual.PortfolioApiUtils,
+      listAssets: jest.fn().mockResolvedValue({ assets: [], chains: {} }),
+      listHistory: jest.fn().mockResolvedValue([]),
+      getQuotes: jest.fn().mockResolvedValue({ quotes: [] }),
+      resolveExecutablePortfolioQuoteId: jest.fn().mockReturnValue(''),
+      canExecutePortfolioQuote: jest.fn().mockReturnValue(true),
+      resolvePortfolioAmountQuoteError:
+        actual.PortfolioApiUtils.resolvePortfolioAmountQuoteError,
+      getFiatRampOptions: jest.fn().mockResolvedValue({
+        fiatCurrencies: ['USD', 'EUR'],
+        paymentMethods: [{ id: 'card', label: 'Credit / Debit Card' }],
+      }),
+      listAvailableAssets: jest.fn().mockResolvedValue({
+        mode: 'buy',
+        direction: 'to',
+        sourceAssetId: null,
+        assets: [],
+        chains: {},
+      }),
+    },
+  };
+});
 
 const ethereumChain: EvmChain = {
   name: 'Ethereum',
@@ -1009,6 +1016,108 @@ describe('Portfolio', () => {
     });
   });
 
+  it('stops auto-refreshing swap quotes when no quote is available', async () => {
+    jest.useFakeTimers();
+    (PortfolioApiUtils.getQuotes as jest.Mock).mockRejectedValue(
+      new PortfolioApiError({
+        code: 'NO_QUOTE_AVAILABLE',
+        message: 'No quote available.',
+      }),
+    );
+
+    await renderSwapPortfolio();
+
+    await waitFor(() => {
+      expect(PortfolioApiUtils.getQuotes).toHaveBeenCalledTimes(1);
+    });
+
+    await waitFor(() => {
+      expect(
+        document.querySelector('[data-testid="portfolio-swap-quote-loading"]'),
+      ).toBeNull();
+    });
+
+    jest.advanceTimersByTime(35_000);
+
+    expect(PortfolioApiUtils.getQuotes).toHaveBeenCalledTimes(1);
+
+    jest.useRealTimers();
+  });
+
+  it('keeps auto-refreshing swap quotes after transient quote errors', async () => {
+    jest.useFakeTimers();
+    (PortfolioApiUtils.getQuotes as jest.Mock).mockRejectedValue(
+      new Error('Network error'),
+    );
+
+    await renderSwapPortfolio();
+
+    await waitFor(() => {
+      expect(PortfolioApiUtils.getQuotes).toHaveBeenCalledTimes(1);
+    });
+
+    jest.advanceTimersByTime(30_000);
+
+    await waitFor(() => {
+      expect(PortfolioApiUtils.getQuotes).toHaveBeenCalledTimes(2);
+    });
+
+    jest.useRealTimers();
+  });
+
+  it('stops auto-refreshing swap quotes when amount is out of range', async () => {
+    jest.useFakeTimers();
+    (PortfolioApiUtils.getQuotes as jest.Mock).mockRejectedValue(
+      new PortfolioApiError({
+        code: 'SWAP_AMOUNT_OUT_OF_RANGE',
+        message: 'Amount out of range.',
+      }),
+    );
+
+    await renderSwapPortfolio();
+
+    await waitFor(() => {
+      expect(PortfolioApiUtils.getQuotes).toHaveBeenCalledTimes(1);
+    });
+
+    jest.advanceTimersByTime(35_000);
+
+    expect(PortfolioApiUtils.getQuotes).toHaveBeenCalledTimes(1);
+
+    jest.useRealTimers();
+  });
+
+  it('shows a retry button in the swap quote input when no quote is available', async () => {
+    (PortfolioApiUtils.getQuotes as jest.Mock).mockRejectedValue(
+      new PortfolioApiError({
+        code: 'NO_QUOTE_AVAILABLE',
+        message: 'No quote available.',
+      }),
+    );
+
+    const { container } = await renderSwapPortfolio();
+
+    await waitFor(() => {
+      expect(PortfolioApiUtils.getQuotes).toHaveBeenCalledTimes(1);
+    });
+
+    await waitFor(() => {
+      expect(
+        container.querySelector('[data-testid="portfolio-swap-quote-retry-label"]'),
+      ).not.toBeNull();
+    });
+
+    fireEvent.click(
+      container.querySelector(
+        '.portfolio-swap-quote-input__refresh',
+      ) as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
+      expect(PortfolioApiUtils.getQuotes).toHaveBeenCalledTimes(2);
+    });
+  });
+
   it('renders swap to assets using metadata from listAvailableAssets when they are not in listAssets', async () => {
     (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
       assets: [swapAssetsFixture[0]],
@@ -1034,7 +1143,8 @@ describe('Portfolio', () => {
         if (
           params.mode === 'swap' &&
           params.direction === 'to' &&
-          params.sourceAssetId === 'evm:native:ethereum'
+          (!params.sourceAssetId ||
+            params.sourceAssetId === 'evm:native:ethereum')
         ) {
           return {
             mode: 'swap',

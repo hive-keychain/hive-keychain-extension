@@ -352,6 +352,70 @@ describe('PortfolioApiUtils', () => {
     ).toBe('portfolio_load_error');
   });
 
+  describe('shouldSchedulePortfolioSwapQuoteAutoRefresh', () => {
+    it('keeps auto-refresh for quoted and transient errors', () => {
+      expect(
+        PortfolioApiUtils.shouldSchedulePortfolioSwapQuoteAutoRefresh({
+          status: 'quoted',
+        }),
+      ).toBe(true);
+      expect(
+        PortfolioApiUtils.shouldSchedulePortfolioSwapQuoteAutoRefresh({
+          status: 'transient_error',
+        }),
+      ).toBe(true);
+    });
+
+    it('stops auto-refresh when no quote or amount is invalid', () => {
+      expect(
+        PortfolioApiUtils.shouldSchedulePortfolioSwapQuoteAutoRefresh({
+          status: 'no_quote',
+        }),
+      ).toBe(false);
+      expect(
+        PortfolioApiUtils.shouldSchedulePortfolioSwapQuoteAutoRefresh({
+          status: 'amount_out_of_range',
+        }),
+      ).toBe(false);
+      expect(
+        PortfolioApiUtils.shouldSchedulePortfolioSwapQuoteAutoRefresh({
+          status: 'invalid_recipient',
+        }),
+      ).toBe(false);
+      expect(
+        PortfolioApiUtils.shouldSchedulePortfolioSwapQuoteAutoRefresh({
+          status: 'skipped',
+        }),
+      ).toBe(false);
+    });
+  });
+
+  describe('resolvePortfolioSwapQuoteFetchErrorResult', () => {
+    it('maps quote fetch errors to refresh outcomes', () => {
+      expect(
+        PortfolioApiUtils.resolvePortfolioSwapQuoteFetchErrorResult(
+          new PortfolioApiError({
+            code: 'NO_QUOTE_AVAILABLE',
+            message: 'No quote available.',
+          }),
+        ),
+      ).toEqual({ status: 'no_quote' });
+      expect(
+        PortfolioApiUtils.resolvePortfolioSwapQuoteFetchErrorResult(
+          new PortfolioApiError({
+            code: 'SWAP_AMOUNT_OUT_OF_RANGE',
+            message: 'Amount out of range.',
+          }),
+        ),
+      ).toEqual({ status: 'amount_out_of_range' });
+      expect(
+        PortfolioApiUtils.resolvePortfolioSwapQuoteFetchErrorResult(
+          new Error('Network error'),
+        ),
+      ).toEqual({ status: 'transient_error' });
+    });
+  });
+
   describe('canExecutePortfolioQuote', () => {
     const createQuote = (
       overrides: Partial<PortfolioQuote> = {},

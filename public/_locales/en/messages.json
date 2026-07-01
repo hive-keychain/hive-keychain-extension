@@ -4111,6 +4111,7 @@
     }
   },
   "portfolio_quote_refresh_now": { "message": "Refresh now" },
+  "portfolio_quote_retry": { "message": "Retry" },
   "portfolio_quote_refreshing": { "message": "Updating quotes…" },
   "portfolio_insufficient_balance": {
     "message": "Insufficient $1 balance.",

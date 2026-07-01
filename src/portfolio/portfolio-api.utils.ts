@@ -125,6 +125,33 @@ export const resolvePortfolioQuoteStatusMessage = (
   return fallback;
 };
 
+export type PortfolioSwapQuoteFetchResult =
+  | { status: 'skipped' }
+  | { status: 'quoted' }
+  | { status: 'no_quote' }
+  | { status: 'amount_out_of_range' }
+  | { status: 'invalid_recipient' }
+  | { status: 'transient_error' };
+
+export const resolvePortfolioSwapQuoteFetchErrorResult = (
+  error: unknown,
+): PortfolioSwapQuoteFetchResult => {
+  if (resolvePortfolioAmountQuoteError(error)) {
+    return { status: 'amount_out_of_range' };
+  }
+
+  if (error instanceof PortfolioApiError && error.code === 'NO_QUOTE_AVAILABLE') {
+    return { status: 'no_quote' };
+  }
+
+  return { status: 'transient_error' };
+};
+
+export const shouldSchedulePortfolioSwapQuoteAutoRefresh = (
+  result: PortfolioSwapQuoteFetchResult,
+): boolean =>
+  result.status === 'quoted' || result.status === 'transient_error';
+
 const getBaseUrl = () => (process.env.PORTFOLIO_API_URL ?? '').replace(/\/+$/, '');
 
 const createClientToken = (): string => {
@@ -294,4 +321,6 @@ export const PortfolioApiUtils = {
   resolveExecutablePortfolioQuoteId,
   resolvePortfolioAmountQuoteError,
   resolvePortfolioQuoteStatusMessage,
+  resolvePortfolioSwapQuoteFetchErrorResult,
+  shouldSchedulePortfolioSwapQuoteAutoRefresh,
 };
