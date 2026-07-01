@@ -409,10 +409,6 @@ const hasRequiredQuoteAssets = (options: {
   }
 };
 
-const logPortfolioFlowDebug = (message: string, payload: unknown) => {
-  Logger.debug(`${message} ${JSON.stringify(payload, null, 2)}`);
-};
-
 const getVisiblePortfolioEvmAccounts = (accounts: EvmAccount[]) =>
   accounts.filter((account) => !account.hide);
 
@@ -651,31 +647,6 @@ export const Portfolio = ({
   );
 
   const fromAssetOptions = useMemo(() => {
-    const rowResolutionDetails = rows.map((row) => {
-      const canonicalAssetId =
-        PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
-          row,
-          assets,
-          toAssetEvmChains,
-        );
-      const hasPositiveBalance = PortfolioFlowUtils.hasPositivePortfolioBalance(
-        row.balance,
-      );
-
-      return {
-        key: row.key,
-        symbol: row.symbol,
-        network: row.network,
-        chainId: row.chainId ?? null,
-        balance: row.balance,
-        isTestnet: row.isTestnet ?? false,
-        hasPositiveBalance,
-        canonicalAssetId: canonicalAssetId ?? null,
-        includedInFromOptions:
-          Boolean(canonicalAssetId) && hasPositiveBalance && !row.isTestnet,
-      };
-    });
-
     const rowsWithCanonicalAsset = rows.filter((row) =>
       Boolean(
         PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
@@ -726,30 +697,12 @@ export const Portfolio = ({
             })
           : rowsWithPositiveBalance;
 
-    const options = PortfolioFlowUtils.buildPortfolioFromSelectOptions(
-      eligibleFromRows,
-    );
-
-    logPortfolioFlowDebug('[Portfolio flow] build fromAssetOptions', {
-      selectedAccountKey,
-      inputRowCount: rows.length,
-      canonicalAssetCount: assets.length,
-      rowsWithCanonicalAssetCount: rowsWithCanonicalAsset.length,
-      fromAssetOptionsCount: options.length,
-      rowResolutionDetails,
-      fromAssetOptions: options.map((option) => ({
-        value: option.value,
-        label: option.label,
-      })),
-    });
-
-    return options;
+    return PortfolioFlowUtils.buildPortfolioFromSelectOptions(eligibleFromRows);
   }, [
     assets,
     rampAvailableAssets,
     rows,
     section,
-    selectedAccountKey,
     swapAvailableFromAssets,
     toAssetEvmChains,
   ]);
@@ -926,28 +879,15 @@ export const Portfolio = ({
     swapAvailableToAssets,
   ]);
 
-  const toAssetOptions = useMemo(() => {
-    const options = PortfolioFlowUtils.buildCanonicalAssetSelectOptions(
-      eligibleToAssets,
-      toAssetEvmChains,
-      portfolioChains,
-    );
-
-    logPortfolioFlowDebug('[Portfolio flow] build toAssetOptions', {
-      canonicalAssetCount: assets.length,
-      eligibleToAssetCount: eligibleToAssets.length,
-      fromCanonicalAssetId: fromCanonicalAsset?.assetId ?? null,
-      fromCanonicalAssetEcosystem: fromCanonicalAsset?.ecosystem ?? null,
-      toAssetEvmChainCount: toAssetEvmChains.length,
-      toAssetOptionsCount: options.length,
-      toAssetOptionsPreview: options.slice(0, 25).map((option) => ({
-        value: option.value,
-        label: option.label,
-      })),
-    });
-
-    return options;
-  }, [assets.length, eligibleToAssets, fromCanonicalAsset, portfolioChains, toAssetEvmChains]);
+  const toAssetOptions = useMemo(
+    () =>
+      PortfolioFlowUtils.buildCanonicalAssetSelectOptions(
+        eligibleToAssets,
+        toAssetEvmChains,
+        portfolioChains,
+      ),
+    [eligibleToAssets, portfolioChains, toAssetEvmChains],
+  );
 
   const toAssetChainFilterOptions = useMemo(
     () =>
@@ -973,39 +913,15 @@ export const Portfolio = ({
     [eligibleToAssets, hasToAssetFilters, toAssetChainFilter, toAssetFilter],
   );
 
-  const filteredToAssetOptions = useMemo(() => {
-    const options = PortfolioFlowUtils.buildCanonicalAssetSelectOptions(
-      filteredToAssetResult.assets,
-      toAssetEvmChains,
-      portfolioChains,
-    );
-
-    logPortfolioFlowDebug('[Portfolio flow] build filteredToAssetOptions', {
-      section,
-      toAssetFilter,
-      toAssetChainFilter,
-      hasToAssetFilters,
-      totalMatches: filteredToAssetResult.totalMatches,
-      filteredAssetCount: filteredToAssetResult.assets.length,
-      filteredToAssetOptionsCount: options.length,
-      truncatedCount: filteredToAssetResult.totalMatches - options.length,
-      filteredToAssetOptionsPreview: options.slice(0, 25).map((option) => ({
-        value: option.value,
-        label: option.label,
-      })),
-    });
-
-    return options;
-  }, [
-    filteredToAssetResult.assets,
-    filteredToAssetResult.totalMatches,
-    hasToAssetFilters,
-    portfolioChains,
-    section,
-    toAssetChainFilter,
-    toAssetEvmChains,
-    toAssetFilter,
-  ]);
+  const filteredToAssetOptions = useMemo(
+    () =>
+      PortfolioFlowUtils.buildCanonicalAssetSelectOptions(
+        filteredToAssetResult.assets,
+        toAssetEvmChains,
+        portfolioChains,
+      ),
+    [filteredToAssetResult.assets, portfolioChains, toAssetEvmChains],
+  );
 
   const toAssetChainSelectOptions = useMemo<OptionItem[]>(
     () => [
@@ -1281,48 +1197,26 @@ export const Portfolio = ({
   useEffect(() => {
     if (!fromAssetOptions.length) {
       if (fromAssetId) {
-        logPortfolioFlowDebug(
-          '[Portfolio flow] clear fromAssetId (no from options)',
-          {
-            previousFromAssetId: fromAssetId,
-          },
-        );
         setFromAssetId('');
       }
       return;
     }
 
     if (!fromAssetOptions.some((option) => option.value === fromAssetId)) {
-      const nextFromAssetId = fromAssetOptions[0].value;
-      logPortfolioFlowDebug('[Portfolio flow] auto-select fromAssetId', {
-        previousFromAssetId: fromAssetId,
-        nextFromAssetId,
-      });
-      setFromAssetId(nextFromAssetId);
+      setFromAssetId(fromAssetOptions[0].value);
     }
   }, [fromAssetOptions, fromAssetId]);
 
   useEffect(() => {
     if (!toAssetOptions.length) {
       if (toAssetId) {
-        logPortfolioFlowDebug(
-          '[Portfolio flow] clear toAssetId (no to options)',
-          {
-            previousToAssetId: toAssetId,
-          },
-        );
         setToAssetId('');
       }
       return;
     }
 
     if (!toAssetOptions.some((option) => option.value === toAssetId)) {
-      const nextToAssetId = toAssetOptions[0].value;
-      logPortfolioFlowDebug('[Portfolio flow] auto-select toAssetId', {
-        previousToAssetId: toAssetId,
-        nextToAssetId,
-      });
-      setToAssetId(nextToAssetId);
+      setToAssetId(toAssetOptions[0].value);
     }
   }, [toAssetOptions, toAssetId]);
 
@@ -1396,12 +1290,6 @@ export const Portfolio = ({
         mode,
       });
       setFiatRampOptions(options);
-      logPortfolioFlowDebug('[Portfolio flow] loadFiatRampOptions completed', {
-        mode,
-        countryCode: country,
-        fiatCurrencyCount: options.fiatCurrencies.length,
-        paymentMethodCount: options.paymentMethods.length,
-      });
     } catch (error) {
       Logger.error('Unable to load fiat ramp options', error);
       setFiatRampOptions(null);
@@ -1421,11 +1309,6 @@ export const Portfolio = ({
       setPortfolioChains((current) =>
         mergePortfolioChainRecords(current, response.chains),
       );
-      logPortfolioFlowDebug('[Portfolio flow] loadRampAvailableAssets completed', {
-        mode,
-        direction: mode === 'buy' ? 'to' : 'from',
-        assetCount: response.assets.length,
-      });
     } catch (error) {
       Logger.error('Unable to load ramp available assets', error);
       setRampAvailableAssets([]);
@@ -1445,12 +1328,6 @@ export const Portfolio = ({
       setPortfolioChains((current) =>
         mergePortfolioChainRecords(current, response.chains),
       );
-      logPortfolioFlowDebug(
-        '[Portfolio flow] loadSwapAvailableToAssets completed',
-        {
-          assetCount: response.assets.length,
-        },
-      );
     } catch (error) {
       Logger.error('Unable to load swap available to assets', error);
       setSwapAvailableToAssets([]);
@@ -1468,12 +1345,6 @@ export const Portfolio = ({
       setSwapAvailableFromAssets(response.assets);
       setPortfolioChains((current) =>
         mergePortfolioChainRecords(current, response.chains),
-      );
-      logPortfolioFlowDebug(
-        '[Portfolio flow] loadSwapAvailableFromAssets completed',
-        {
-          assetCount: response.assets.length,
-        },
       );
     } catch (error) {
       Logger.error('Unable to load swap available from assets', error);
@@ -1531,17 +1402,6 @@ export const Portfolio = ({
   const loadAssets = async () => {
     try {
       const response = await PortfolioApiUtils.listAssets();
-      logPortfolioFlowDebug('[Portfolio flow] loadAssets completed', {
-        selectedAccountKey,
-        assetCount: response.assets.length,
-        chainCount: Object.keys(response.chains).length,
-        assetsPreview: response.assets.slice(0, 25).map((asset) => ({
-          assetId: asset.assetId,
-          symbol: asset.symbol,
-          ecosystem: asset.ecosystem,
-          chainId: asset.chainId,
-        })),
-      });
       setAssets(response.assets);
       setPortfolioChains((current) =>
         mergePortfolioChainRecords(current, response.chains),
@@ -1558,12 +1418,6 @@ export const Portfolio = ({
 
     const account = accountOptions.find((item) => item.key === accountKey);
     if (!account) return;
-
-    logPortfolioFlowDebug('[Portfolio flow] loadPortfolio started', {
-      accountKey,
-      accountType: account.type,
-      clearRows,
-    });
 
     setIsPortfolioLoading(true);
     if (clearRows) {
@@ -1604,18 +1458,6 @@ export const Portfolio = ({
           isTestnet: false,
           isHive: true,
         }));
-        logPortfolioFlowDebug(
-          '[Portfolio flow] loadPortfolio hive rows loaded',
-          {
-            accountKey,
-            rowCount: nextRows.length,
-            rowsPreview: nextRows.map((row) => ({
-              key: row.key,
-              symbol: row.symbol,
-              balance: row.balance,
-            })),
-          },
-        );
         setRows(nextRows);
       } catch (error) {
         if (selectedAccountKey !== accountKey) return;
@@ -1685,20 +1527,6 @@ export const Portfolio = ({
           maxRetries: EvmAccountTokensLoadUtils.DEFAULT_MAX_LOAD_MORE_RETRIES,
           onChainReady: (chain, tokens) => {
             if (selectedAccountKey !== accountKey) return;
-            logPortfolioFlowDebug(
-              '[Portfolio flow] loadPortfolio evm chain ready',
-              {
-                accountKey,
-                chainId: chain.chainId,
-                chainName: chain.name,
-                tokenCount: tokens.length,
-                tokensPreview: tokens.map((token) => ({
-                  symbol: token.tokenInfo.symbol,
-                  chainId: token.tokenInfo.chainId,
-                  balance: token.formattedBalance,
-                })),
-              },
-            );
             setRows((previousRows) =>
               mergeEvmPortfolioRowsForChain(
                 previousRows,
@@ -1755,11 +1583,6 @@ export const Portfolio = ({
     );
     if (!account) return;
 
-    logPortfolioFlowDebug('[Portfolio flow] initializePortfolioData started', {
-      selectedAccountKey,
-      accountType: account.type,
-    });
-
     await Promise.all([
       loadPortfolio({ clearRows: true }),
       loadAssets(),
@@ -1807,29 +1630,8 @@ export const Portfolio = ({
         toAssetId: resolvedToAssetId,
       })
     ) {
-      logPortfolioFlowDebug(
-        '[Portfolio flow] getQuotes skipped (missing required assets)',
-        {
-          mode,
-          fromAssetId,
-          resolvedFromAssetId,
-          toAssetId,
-          resolvedToAssetId,
-          amount,
-        },
-      );
       return { status: 'skipped' };
     }
-
-    logPortfolioFlowDebug('[Portfolio flow] getQuotes requested', {
-      mode,
-      fromAssetId,
-      resolvedFromAssetId,
-      toAssetId,
-      resolvedToAssetId,
-      amount,
-      selectedAccountKey,
-    });
 
     setIsFlowLoading(true);
     setStatusMessage('');
