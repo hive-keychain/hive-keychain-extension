@@ -66,14 +66,13 @@ const mockPortfolioListAvailableAssets = () => {
 
       if (
         params.mode === 'swap' &&
-        params.direction === 'to' &&
-        params.sourceAssetId === 'evm:native:ethereum'
+        params.direction === 'to'
       ) {
         return {
           mode: 'swap',
           direction: 'to',
-          sourceAssetId: params.sourceAssetId,
-          assets: [swapAssetsFixture[1]],
+          sourceAssetId: null,
+          assets: swapAssetsFixture.slice(1),
           chains: {},
         };
       }
@@ -739,7 +738,6 @@ describe('Portfolio', () => {
       expect(PortfolioApiUtils.listAvailableAssets).toHaveBeenCalledWith({
         mode: 'swap',
         direction: 'to',
-        sourceAssetId: 'evm:native:ethereum',
       });
     });
 
@@ -814,7 +812,6 @@ describe('Portfolio', () => {
       expect(PortfolioApiUtils.listAvailableAssets).toHaveBeenCalledWith({
         mode: 'swap',
         direction: 'to',
-        sourceAssetId: 'evm:native:ethereum',
       });
     });
 

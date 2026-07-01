@@ -901,7 +901,9 @@ export const Portfolio = ({
 
     if (section === 'swap' && fromCanonicalAsset) {
       return swapAvailableToAssets.filter(
-        (asset) => !PortfolioFlowUtils.isPortfolioSwapExcludedAsset(asset),
+        (asset) =>
+          !PortfolioFlowUtils.isPortfolioSwapExcludedAsset(asset) &&
+          asset.assetId !== fromCanonicalAsset.assetId,
       );
     }
 
@@ -1429,13 +1431,12 @@ export const Portfolio = ({
     }
   };
 
-  const loadSwapAvailableToAssets = async (sourceAssetId: string) => {
+  const loadSwapAvailableToAssets = async () => {
     setIsSwapAvailableToAssetsLoading(true);
     try {
       const response = await PortfolioApiUtils.listAvailableAssets({
         mode: 'swap',
         direction: 'to',
-        sourceAssetId,
       });
       setSwapAvailableToAssets(response.assets);
       setPortfolioChains((current) =>
@@ -1444,7 +1445,6 @@ export const Portfolio = ({
       logPortfolioFlowDebug(
         '[Portfolio flow] loadSwapAvailableToAssets completed',
         {
-          sourceAssetId,
           assetCount: response.assets.length,
         },
       );
@@ -1497,16 +1497,8 @@ export const Portfolio = ({
     }
 
     void loadSwapAvailableFromAssets();
+    void loadSwapAvailableToAssets();
   }, [section]);
-
-  useEffect(() => {
-    if (section !== 'swap' || !fromCanonicalAsset?.assetId) {
-      setSwapAvailableToAssets([]);
-      return;
-    }
-
-    void loadSwapAvailableToAssets(fromCanonicalAsset.assetId);
-  }, [fromCanonicalAsset?.assetId, section]);
 
   useEffect(() => {
     if (!fiatRampOptions?.fiatCurrencies.length) {
