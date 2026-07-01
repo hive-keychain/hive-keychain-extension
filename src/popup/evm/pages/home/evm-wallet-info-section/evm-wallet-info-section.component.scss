@@ -66,7 +66,9 @@
   .empty-history-panel {
     @include no-data-panel();
     z-index: 2;
-    flex: 1;
+    flex: 0 0 180px;
+    height: 180px;
+    box-sizing: border-box;
   }
 
   .wallet-background {
