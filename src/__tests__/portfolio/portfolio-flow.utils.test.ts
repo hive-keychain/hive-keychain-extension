@@ -65,6 +65,26 @@ const sepoliaEthAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
   familyId: 'eth',
 });
 
+const btcAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+  assetId: 'utxo:native:bitcoin',
+  ecosystem: 'utxo',
+  symbol: 'BTC',
+  name: 'Bitcoin',
+  chainId: 'bitcoin',
+  isNative: true,
+  familyId: 'utxo:native:btc',
+});
+
+const xrpAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+  assetId: 'external:native:ripple',
+  ecosystem: 'external',
+  symbol: 'XRP',
+  name: 'XRP',
+  chainId: 'ripple',
+  isNative: true,
+  familyId: 'external:native:xrp',
+});
+
 describe('PortfolioFlowUtils', () => {
   it('builds from asset options from positive portfolio balances and excludes testnets', () => {
     const options = PortfolioFlowUtils.buildPortfolioFromSelectOptions([
@@ -366,7 +386,19 @@ describe('PortfolioFlowUtils', () => {
       PortfolioFlowUtils.filterCanonicalAssets(assets, {
         textFilter: 'dark',
       }).assets,
-    ).toEqual([]);
+    ).toEqual([hiveEngineAsset]);
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets([hiveAsset, hbdAsset], {
+        textFilter: 'backed',
+      }).assets,
+    ).toEqual([hbdAsset]);
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets([hiveAsset, hbdAsset], {
+        textFilter: 'hive',
+      }).assets,
+    ).toEqual([hiveAsset, hbdAsset]);
 
     const wethAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
       assetId: 'evm-weth-1',
@@ -559,6 +591,7 @@ describe('PortfolioFlowUtils', () => {
       hiveEngineAsset,
       ethAsset,
       sepoliaEthAsset,
+      btcAsset,
     ];
 
     expect(
@@ -580,8 +613,11 @@ describe('PortfolioFlowUtils', () => {
 
     expect(
       PortfolioFlowUtils.filterToAssetsByFromAsset(assets, ethAsset),
-    ).toEqual([hiveAsset, sepoliaEthAsset]);
+    ).toEqual([hiveAsset, sepoliaEthAsset, btcAsset]);
 
+    expect(
+      PortfolioFlowUtils.isEligibleToAssetForFromAsset(ethAsset, btcAsset),
+    ).toBe(true);
     expect(
       PortfolioFlowUtils.isEligibleToAssetForFromAsset(hiveEngineAsset, ethAsset),
     ).toBe(false);
@@ -641,6 +677,54 @@ describe('PortfolioFlowUtils', () => {
         { symbol: 'DEC', precision: 3 },
       ]),
     ).toBe(3);
+  });
+
+  it('requires a destination address for external to-only assets', () => {
+    expect(
+      PortfolioFlowUtils.requiresPortfolioRecipientAddress(ethAsset, xrpAsset),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRecipientAddressLabelKey(xrpAsset),
+    ).toBe('portfolio_recipient_destination_address');
+    expect(
+      PortfolioFlowUtils.isEligibleToAssetForFromAsset(ethAsset, xrpAsset),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.resolvePortfolioToAddress({
+        fromAddress: '0x0000000000000000000000000000000000000001',
+        recipientAddress: 'rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH',
+        fromAsset: ethAsset,
+        toAsset: xrpAsset,
+      }),
+    ).toBe('rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH');
+  });
+
+  it('requires a destination address for bitcoin to-only assets', () => {
+    expect(
+      PortfolioFlowUtils.requiresPortfolioRecipientAddress(ethAsset, btcAsset),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRecipientAddressLabelKey(btcAsset),
+    ).toBe('portfolio_recipient_bitcoin_address');
+  });
+
+  it('accepts valid external destination addresses', () => {
+    expect(
+      PortfolioFlowUtils.resolvePortfolioToAddress({
+        fromAddress: '0x0000000000000000000000000000000000000001',
+        recipientAddress: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+        fromAsset: ethAsset,
+        toAsset: btcAsset,
+      }),
+    ).toBe('bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioToAddress({
+        fromAddress: '0x0000000000000000000000000000000000000001',
+        recipientAddress: 'not-a-bitcoin-address',
+        fromAsset: ethAsset,
+        toAsset: btcAsset,
+      }),
+    ).toBeUndefined();
   });
 
   it('requires a separate recipient address for hive to evm and evm to hive swaps', () => {

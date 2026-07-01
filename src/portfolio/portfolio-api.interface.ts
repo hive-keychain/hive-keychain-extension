@@ -14,7 +14,20 @@ export type PortfolioProviderId =
   | 'ramp'
   | 'transak';
 
-export type PortfolioEcosystem = 'evm' | 'hive' | 'hive_engine';
+export type PortfolioEcosystem =
+  | 'evm'
+  | 'hive'
+  | 'hive_engine'
+  | 'utxo'
+  | 'svm'
+  | 'mvm'
+  | 'tvm'
+  | 'external';
+
+export type PortfolioDestinationOnlyEcosystem = Extract<
+  PortfolioEcosystem,
+  'utxo' | 'svm' | 'mvm' | 'tvm' | 'external'
+>;
 
 export interface PortfolioCanonicalAsset {
   assetId: string;

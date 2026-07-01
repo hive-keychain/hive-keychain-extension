@@ -542,6 +542,14 @@ export const Portfolio = ({
   >([]);
   const [isRampAvailableAssetsLoading, setIsRampAvailableAssetsLoading] =
     useState(false);
+  const [swapAvailableToAssets, setSwapAvailableToAssets] = useState<
+    PortfolioCanonicalAsset[]
+  >([]);
+  const [isSwapAvailableToAssetsLoading, setIsSwapAvailableToAssetsLoading] =
+    useState(false);
+  const [swapAvailableFromAssets, setSwapAvailableFromAssets] = useState<
+    PortfolioCanonicalAsset[]
+  >([]);
   const [pendingInAppConfirmation, setPendingInAppConfirmation] =
     useState<PortfolioInAppConfirmationContext | null>(null);
   const hasUserSelectedAccountRef = useRef(false);
@@ -683,6 +691,9 @@ export const Portfolio = ({
     const rampAvailableAssetIds = new Set(
       rampAvailableAssets.map((asset) => asset.assetId),
     );
+    const swapAvailableFromAssetIds = new Set(
+      swapAvailableFromAssets.map((asset) => asset.assetId),
+    );
     const eligibleFromRows =
       section === 'sell' && rampAvailableAssetIds.size > 0
         ? rowsWithPositiveBalance.filter((row) => {
@@ -697,7 +708,20 @@ export const Portfolio = ({
               rampAvailableAssetIds.has(canonicalAssetId)
             );
           })
-        : rowsWithPositiveBalance;
+        : section === 'swap' && swapAvailableFromAssetIds.size > 0
+          ? rowsWithPositiveBalance.filter((row) => {
+              const canonicalAssetId =
+                PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+                  row,
+                  assets,
+                  toAssetEvmChains,
+                );
+              return (
+                canonicalAssetId &&
+                swapAvailableFromAssetIds.has(canonicalAssetId)
+              );
+            })
+          : rowsWithPositiveBalance;
 
     const options = PortfolioFlowUtils.buildPortfolioFromSelectOptions(
       eligibleFromRows,
@@ -717,7 +741,31 @@ export const Portfolio = ({
     });
 
     return options;
-  }, [assets, rampAvailableAssets, rows, section, selectedAccountKey, toAssetEvmChains]);
+  }, [
+    assets,
+    rampAvailableAssets,
+    rows,
+    section,
+    selectedAccountKey,
+    swapAvailableFromAssets,
+    toAssetEvmChains,
+  ]);
+
+  const canonicalAssetById = useMemo(() => {
+    const map = new Map<string, PortfolioCanonicalAsset>();
+    const registerAssets = (assetList: PortfolioCanonicalAsset[]) => {
+      for (const asset of assetList) {
+        map.set(asset.assetId, asset);
+      }
+    };
+
+    registerAssets(assets);
+    registerAssets(swapAvailableFromAssets);
+    registerAssets(swapAvailableToAssets);
+    registerAssets(rampAvailableAssets);
+
+    return map;
+  }, [assets, rampAvailableAssets, swapAvailableFromAssets, swapAvailableToAssets]);
 
   const fromCanonicalAsset = useMemo(() => {
     if (!fromAssetId) {
@@ -735,16 +783,16 @@ export const Portfolio = ({
       return undefined;
     }
 
-    return assets.find((asset) => asset.assetId === canonicalAssetId);
-  }, [assets, fromAssetId, rows, toAssetEvmChains]);
+    return canonicalAssetById.get(canonicalAssetId);
+  }, [canonicalAssetById, fromAssetId, rows, assets, toAssetEvmChains]);
 
   const toCanonicalAsset = useMemo(() => {
     if (!toAssetId) {
       return undefined;
     }
 
-    return assets.find((asset) => asset.assetId === toAssetId);
-  }, [assets, toAssetId]);
+    return canonicalAssetById.get(toAssetId);
+  }, [canonicalAssetById, toAssetId]);
 
   const requiresRecipientInput = useMemo(
     () =>
@@ -851,6 +899,12 @@ export const Portfolio = ({
       return PortfolioFlowUtils.filterToAssetsByFromAsset(buyAssets, undefined);
     }
 
+    if (section === 'swap' && fromCanonicalAsset) {
+      return swapAvailableToAssets.filter(
+        (asset) => !PortfolioFlowUtils.isPortfolioSwapExcludedAsset(asset),
+      );
+    }
+
     if (!fromCanonicalAsset) {
       return PortfolioFlowUtils.filterToAssetsByFromAsset(assets, undefined);
     }
@@ -859,7 +913,13 @@ export const Portfolio = ({
       assets,
       fromCanonicalAsset,
     );
-  }, [assets, fromCanonicalAsset, rampAvailableAssets, section]);
+  }, [
+    assets,
+    fromCanonicalAsset,
+    rampAvailableAssets,
+    section,
+    swapAvailableToAssets,
+  ]);
 
   const toAssetOptions = useMemo(() => {
     const options = PortfolioFlowUtils.buildCanonicalAssetSelectOptions(
@@ -967,11 +1027,6 @@ export const Portfolio = ({
   const portfolioRowByKey = useMemo(
     () => new Map(rows.map((row) => [row.key, row])),
     [rows],
-  );
-
-  const canonicalAssetById = useMemo(
-    () => new Map(assets.map((asset) => [asset.assetId, asset])),
-    [assets],
   );
 
   const networkSelectOptions = useMemo<OptionItem[]>(
@@ -1374,6 +1429,55 @@ export const Portfolio = ({
     }
   };
 
+  const loadSwapAvailableToAssets = async (sourceAssetId: string) => {
+    setIsSwapAvailableToAssetsLoading(true);
+    try {
+      const response = await PortfolioApiUtils.listAvailableAssets({
+        mode: 'swap',
+        direction: 'to',
+        sourceAssetId,
+      });
+      setSwapAvailableToAssets(response.assets);
+      setPortfolioChains((current) =>
+        mergePortfolioChainRecords(current, response.chains),
+      );
+      logPortfolioFlowDebug(
+        '[Portfolio flow] loadSwapAvailableToAssets completed',
+        {
+          sourceAssetId,
+          assetCount: response.assets.length,
+        },
+      );
+    } catch (error) {
+      Logger.error('Unable to load swap available to assets', error);
+      setSwapAvailableToAssets([]);
+    } finally {
+      setIsSwapAvailableToAssetsLoading(false);
+    }
+  };
+
+  const loadSwapAvailableFromAssets = async () => {
+    try {
+      const response = await PortfolioApiUtils.listAvailableAssets({
+        mode: 'swap',
+        direction: 'from',
+      });
+      setSwapAvailableFromAssets(response.assets);
+      setPortfolioChains((current) =>
+        mergePortfolioChainRecords(current, response.chains),
+      );
+      logPortfolioFlowDebug(
+        '[Portfolio flow] loadSwapAvailableFromAssets completed',
+        {
+          assetCount: response.assets.length,
+        },
+      );
+    } catch (error) {
+      Logger.error('Unable to load swap available from assets', error);
+      setSwapAvailableFromAssets([]);
+    }
+  };
+
   useEffect(() => {
     if (!isFiatRampSection(section)) {
       setFiatRampOptions(null);
@@ -1384,6 +1488,25 @@ export const Portfolio = ({
     void loadFiatRampOptions(section, countryCode);
     void loadRampAvailableAssets(section);
   }, [section, countryCode]);
+
+  useEffect(() => {
+    if (section !== 'swap') {
+      setSwapAvailableFromAssets([]);
+      setSwapAvailableToAssets([]);
+      return;
+    }
+
+    void loadSwapAvailableFromAssets();
+  }, [section]);
+
+  useEffect(() => {
+    if (section !== 'swap' || !fromCanonicalAsset?.assetId) {
+      setSwapAvailableToAssets([]);
+      return;
+    }
+
+    void loadSwapAvailableToAssets(fromCanonicalAsset.assetId);
+  }, [fromCanonicalAsset?.assetId, section]);
 
   useEffect(() => {
     if (!fiatRampOptions?.fiatCurrencies.length) {

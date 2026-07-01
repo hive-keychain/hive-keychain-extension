@@ -20,6 +20,75 @@ jest.mock('src/popup/hive/utils/tokens.utils', () => ({
   },
 }));
 
+const swapAssetsFixture = [
+  {
+    assetId: 'evm:native:ethereum',
+    ecosystem: 'evm',
+    symbol: 'ETH',
+    name: 'Ethereum',
+    chainId: '0x1',
+    address: null,
+    decimals: 18,
+    isNative: true,
+    familyId: 'eth',
+    logoUrl: null,
+  },
+  {
+    assetId: 'evm:native:polygon',
+    ecosystem: 'evm',
+    symbol: 'MATIC',
+    name: 'Polygon',
+    chainId: '0x89',
+    address: null,
+    decimals: 18,
+    isNative: true,
+    familyId: 'matic',
+    logoUrl: null,
+  },
+];
+
+const mockPortfolioListAvailableAssets = () => {
+  (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockImplementation(
+    async (params: {
+      mode: string;
+      direction: string;
+      sourceAssetId?: string;
+    }) => {
+      if (params.mode === 'swap' && params.direction === 'from') {
+        return {
+          mode: 'swap',
+          direction: 'from',
+          sourceAssetId: null,
+          assets: [swapAssetsFixture[0]],
+          chains: {},
+        };
+      }
+
+      if (
+        params.mode === 'swap' &&
+        params.direction === 'to' &&
+        params.sourceAssetId === 'evm:native:ethereum'
+      ) {
+        return {
+          mode: 'swap',
+          direction: 'to',
+          sourceAssetId: params.sourceAssetId,
+          assets: [swapAssetsFixture[1]],
+          chains: {},
+        };
+      }
+
+      return {
+        mode: params.mode,
+        direction: params.direction,
+        sourceAssetId: params.sourceAssetId ?? null,
+        assets: [],
+        chains: {},
+      };
+    },
+  );
+};
+
 jest.mock('src/portfolio/portfolio-api.utils', () => ({
   PortfolioApiUtils: {
     listAssets: jest.fn().mockResolvedValue({ assets: [], chains: {} }),
@@ -93,6 +162,7 @@ const maticToken = {
 describe('Portfolio', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockPortfolioListAvailableAssets();
     jest
       .spyOn(ChainUtils, 'getAllSetupChainsForType')
       .mockResolvedValue([ethereumChain, polygonChain]);
@@ -629,24 +699,7 @@ describe('Portfolio', () => {
 
   it('auto-fetches swap quotes once the form is complete without a get quotes button', async () => {
     (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
-      assets: [
-        {
-          assetId: 'evm:native:ethereum',
-          ecosystem: 'evm',
-          symbol: 'ETH',
-          name: 'Ethereum',
-          chainId: '0x1',
-          logoUrl: null,
-        },
-        {
-          assetId: 'evm:native:polygon',
-          ecosystem: 'evm',
-          symbol: 'MATIC',
-          name: 'Polygon',
-          chainId: '0x89',
-          logoUrl: null,
-        },
-      ],
+      assets: swapAssetsFixture,
       chains: {},
     });
 
@@ -682,6 +735,14 @@ describe('Portfolio', () => {
       expect(container.querySelector('#portfolio-from-asset')).not.toBeNull();
     });
 
+    await waitFor(() => {
+      expect(PortfolioApiUtils.listAvailableAssets).toHaveBeenCalledWith({
+        mode: 'swap',
+        direction: 'to',
+        sourceAssetId: 'evm:native:ethereum',
+      });
+    });
+
     expect(queryByText('Get quotes')).toBeNull();
     expect(PortfolioApiUtils.getQuotes).not.toHaveBeenCalled();
 
@@ -708,30 +769,12 @@ describe('Portfolio', () => {
     expect(queryByText('Get quotes')).toBeNull();
   });
 
-  const swapAssetsFixture = [
-    {
-      assetId: 'evm:native:ethereum',
-      ecosystem: 'evm',
-      symbol: 'ETH',
-      name: 'Ethereum',
-      chainId: '0x1',
-      logoUrl: null,
-    },
-    {
-      assetId: 'evm:native:polygon',
-      ecosystem: 'evm',
-      symbol: 'MATIC',
-      name: 'Polygon',
-      chainId: '0x89',
-      logoUrl: null,
-    },
-  ];
-
   const renderSwapPortfolio = async (options?: { amount?: string }) => {
     (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
       assets: swapAssetsFixture,
       chains: {},
     });
+    mockPortfolioListAvailableAssets();
 
     const view = render(
       <Portfolio
@@ -765,6 +808,14 @@ describe('Portfolio', () => {
 
     await waitFor(() => {
       expect(view.container.querySelector('#portfolio-from-asset')).not.toBeNull();
+    });
+
+    await waitFor(() => {
+      expect(PortfolioApiUtils.listAvailableAssets).toHaveBeenCalledWith({
+        mode: 'swap',
+        direction: 'to',
+        sourceAssetId: 'evm:native:ethereum',
+      });
     });
 
     const amountInput = view.container.querySelector(
@@ -958,6 +1009,122 @@ describe('Portfolio', () => {
       expect(
         container.querySelectorAll('.portfolio-quote-card'),
       ).toHaveLength(2);
+    });
+  });
+
+  it('renders swap to assets using metadata from listAvailableAssets when they are not in listAssets', async () => {
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
+      assets: [swapAssetsFixture[0]],
+      chains: {},
+    });
+
+    (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockImplementation(
+      async (params: {
+        mode: string;
+        direction: string;
+        sourceAssetId?: string;
+      }) => {
+        if (params.mode === 'swap' && params.direction === 'from') {
+          return {
+            mode: 'swap',
+            direction: 'from',
+            sourceAssetId: null,
+            assets: [swapAssetsFixture[0]],
+            chains: {},
+          };
+        }
+
+        if (
+          params.mode === 'swap' &&
+          params.direction === 'to' &&
+          params.sourceAssetId === 'evm:native:ethereum'
+        ) {
+          return {
+            mode: 'swap',
+            direction: 'to',
+            sourceAssetId: params.sourceAssetId,
+            assets: [
+              {
+                assetId: 'evm:native:kaia',
+                ecosystem: 'evm',
+                symbol: 'KAIA',
+                name: 'Kaia',
+                chainId: 'kaia',
+                address: null,
+                decimals: 18,
+                isNative: true,
+                familyId: 'kaia',
+                logoUrl: null,
+              },
+            ],
+            chains: {
+              kaia: {
+                id: 'kaia',
+                name: 'Kaia',
+                logoUrl: 'https://example.com/kaia.svg',
+                numericChainId: 8217,
+              },
+            },
+          };
+        }
+
+        return {
+          mode: params.mode,
+          direction: params.direction,
+          sourceAssetId: params.sourceAssetId ?? null,
+          assets: [],
+          chains: {},
+        };
+      },
+    );
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={
+          [
+            {
+              id: 1,
+              wallet: { address: '0xabc' },
+            } as never,
+          ]
+        }
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+    });
+
+    fireEvent.click(
+      container.querySelectorAll('.portfolio-sidebar nav button')[1],
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-to-asset')).not.toBeNull();
+    });
+
+    fireEvent.click(
+      container.querySelector('#portfolio-to-asset') as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
+      const options = container.querySelectorAll(
+        '#portfolio-to-asset-listbox [role="option"]',
+      );
+      const optionTexts = [...options].map((option) => option.textContent ?? '');
+      expect(optionTexts.some((text) => text.includes('KAIA'))).toBe(true);
+      expect(optionTexts.some((text) => text.includes('Kaia'))).toBe(true);
+      expect(optionTexts.some((text) => text.includes('evm:native:kaia'))).toBe(
+        false,
+      );
     });
   });
 

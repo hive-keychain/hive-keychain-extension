@@ -5,6 +5,7 @@ import {
   PortfolioQuoteFee,
 } from 'src/portfolio/portfolio-api.interface';
 import {
+  isDestinationOnlyPortfolioEcosystem,
   isHivePortfolioEcosystem,
   PortfolioFlowUtils,
 } from 'src/portfolio/portfolio-flow.utils';
@@ -54,6 +55,13 @@ const buildPortfolioConfirmationRecipientField = (
       label: 'portfolio_confirmation_to_account',
       value: toAddress,
       tag: ConfirmationPageFieldType.USERNAME,
+    };
+  }
+
+  if (asset && isDestinationOnlyPortfolioEcosystem(asset.ecosystem)) {
+    return {
+      label: 'portfolio_confirmation_to_account',
+      value: toAddress,
     };
   }
 

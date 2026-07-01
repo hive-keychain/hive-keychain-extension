@@ -6,6 +6,8 @@ import {
   PortfolioCanonicalAsset,
   PortfolioChainDisplay,
   PortfolioChainDisplayRecord,
+  PortfolioDestinationOnlyEcosystem,
+  PortfolioEcosystem,
   PortfolioMode,
 } from 'src/portfolio/portfolio-api.interface';
 import { EvmAddressUtils } from 'src/utils/evm/evm-address.utils';
@@ -494,6 +496,14 @@ export const resolveCanonicalAssetNetworkLabel = (
     return portfolioChain.name;
   }
 
+  if (isDestinationOnlyPortfolioEcosystem(asset.ecosystem)) {
+    if (asset.chainId) {
+      return asset.chainId.charAt(0).toUpperCase() + asset.chainId.slice(1);
+    }
+
+    return asset.name || asset.symbol;
+  }
+
   const chain = resolveEvmChainForChainReference(asset.chainId, chains);
   if (chain) {
     return chain.name;
@@ -562,6 +572,15 @@ export const buildCanonicalAssetChainFilterValue = (
     return HIVE_ENGINE_CHAIN_FILTER_VALUE;
   }
 
+  if (isDestinationOnlyPortfolioEcosystem(asset.ecosystem)) {
+    const chainId = asset.chainId?.trim().toLowerCase();
+    if (!chainId) {
+      return null;
+    }
+
+    return `${asset.ecosystem}:${chainId}`;
+  }
+
   const normalizedChainId = normalizeChainId(asset.chainId);
   if (!normalizedChainId) {
     return null;
@@ -603,6 +622,26 @@ export const buildCanonicalAssetChainFilterOptions = (
       continue;
     }
 
+    if (
+      value.startsWith('utxo:') ||
+      value.startsWith('svm:') ||
+      value.startsWith('mvm:') ||
+      value.startsWith('tvm:') ||
+      value.startsWith('external:')
+    ) {
+      const [ecosystem, chainId] = value.split(':');
+      const portfolioChain = resolvePortfolioChainDisplay(chainId, portfolioChains);
+      optionsByValue.set(value, {
+        value,
+        label:
+          portfolioChain?.name ??
+          (chainId ? chainId.charAt(0).toUpperCase() + chainId.slice(1) : ecosystem),
+        key: value,
+        img: portfolioChain?.logoUrl ?? undefined,
+      });
+      continue;
+    }
+
     const chainId = value.slice(EVM_CHAIN_FILTER_PREFIX.length);
     const portfolioChain = resolvePortfolioChainDisplay(chainId, portfolioChains);
     const chain = resolveEvmChainForChainReference(chainId, chains);
@@ -620,6 +659,27 @@ export const buildCanonicalAssetChainFilterOptions = (
   );
 };
 
+const getCanonicalAssetTextMatchRank = (
+  text: string,
+  normalizedFilter: string,
+  baseRank: number,
+): number => {
+  const normalizedText = text.toLowerCase();
+  if (normalizedText === normalizedFilter) {
+    return baseRank;
+  }
+
+  if (normalizedText.startsWith(normalizedFilter)) {
+    return baseRank + 1;
+  }
+
+  if (normalizedText.includes(normalizedFilter)) {
+    return baseRank + 2;
+  }
+
+  return Number.POSITIVE_INFINITY;
+};
+
 const getCanonicalAssetTextFilterRank = (
   asset: PortfolioCanonicalAsset,
   filter: string,
@@ -629,16 +689,10 @@ const getCanonicalAssetTextFilterRank = (
     return 0;
   }
 
-  const normalizedSymbol = asset.symbol.toLowerCase();
-  if (normalizedSymbol === normalizedFilter) {
-    return 0;
-  }
-
-  if (normalizedSymbol.startsWith(normalizedFilter)) {
-    return 1;
-  }
-
-  return 2;
+  return Math.min(
+    getCanonicalAssetTextMatchRank(asset.symbol, normalizedFilter, 0),
+    getCanonicalAssetTextMatchRank(asset.name, normalizedFilter, 3),
+  );
 };
 
 const compareCanonicalAssetsByTextFilter = (
@@ -665,7 +719,13 @@ const matchesCanonicalAssetTextFilter = (
     return true;
   }
 
-  return asset.symbol.toLowerCase().includes(normalizedFilter);
+  const normalizedSymbol = asset.symbol.toLowerCase();
+  const normalizedName = asset.name.toLowerCase();
+
+  return (
+    normalizedSymbol.includes(normalizedFilter) ||
+    normalizedName.includes(normalizedFilter)
+  );
 };
 
 const matchesCanonicalAssetChainFilter = (
@@ -717,7 +777,11 @@ export const isEligibleToAssetForFromAsset = (
       return true;
     }
     case 'evm':
-      return toAsset.ecosystem === 'evm' || isHiveExternalBridgeTargetAsset(toAsset);
+      return (
+        toAsset.ecosystem === 'evm' ||
+        isHiveExternalBridgeTargetAsset(toAsset) ||
+        isDestinationOnlyPortfolioEcosystem(toAsset.ecosystem)
+      );
     default:
       return false;
   }
@@ -785,12 +849,71 @@ export const resolveFromRowKeyToCanonicalAssetId = (
   return resolvePortfolioRowToCanonicalAssetId(row, assets, chains);
 };
 
-export type PortfolioRecipientAddressKind = 'evm' | 'hive';
+export type PortfolioRecipientAddressKind =
+  | 'evm'
+  | 'hive'
+  | PortfolioDestinationOnlyEcosystem;
 
-const HIVE_PORTFOLIO_ECOSYSTEMS = new Set<PortfolioCanonicalAsset['ecosystem']>([
+const HIVE_PORTFOLIO_ECOSYSTEMS = new Set<PortfolioEcosystem>([
   'hive',
   'hive_engine',
 ]);
+
+const DESTINATION_ONLY_ECOSYSTEMS = new Set<PortfolioDestinationOnlyEcosystem>([
+  'utxo',
+  'svm',
+  'mvm',
+  'tvm',
+  'external',
+]);
+
+const BITCOIN_ADDRESS_PATTERN =
+  /^(bc1[a-z0-9]{25,87}|[13][a-km-zA-HJ-NP-Z1-9]{25,34})$/i;
+const SOLANA_ADDRESS_PATTERN = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+const SUI_ADDRESS_PATTERN = /^0x[a-fA-F0-9]{64}$/;
+const TRON_ADDRESS_PATTERN = /^T[1-9A-HJ-NP-Za-km-z]{33}$/;
+const GENERIC_DESTINATION_ADDRESS_PATTERN = /^[^\s]{10,200}$/;
+
+const resolveUtxoAddressPattern = (chainId?: string | null): RegExp => {
+  switch (chainId?.trim().toLowerCase()) {
+    case 'bitcoin':
+      return BITCOIN_ADDRESS_PATTERN;
+    case 'litecoin':
+      return /^(ltc1[a-z0-9]{25,87}|[LM3][a-km-zA-HJ-NP-Z1-9]{26,33})$/i;
+    case 'dogecoin':
+      return /^D[1-9A-HJ-NP-Za-km-z]{33}$/;
+    case 'bitcoin-cash':
+      return /^((bitcoincash:)?(q|p)[a-z0-9]{41}|[13][a-km-zA-HJ-NP-Z1-9]{25,34})$/i;
+    default:
+      return /^[a-zA-Z0-9:._-]{26,120}$/;
+  }
+};
+
+const resolveExternalAddressPattern = (chainId?: string | null): RegExp => {
+  switch (chainId?.trim().toLowerCase()) {
+    case 'ripple':
+      return /^r[1-9A-HJ-NP-Za-km-z]{24,34}$/;
+    case 'cardano':
+      return /^addr1[a-z0-9]{50,110}$/;
+    case 'polkadot':
+      return /^1[a-zA-Z0-9]{47,48}$/;
+    case 'cosmos':
+      return /^cosmos1[a-z0-9]{38,58}$/;
+    case 'algorand':
+      return /^[A-Z2-7]{58}$/;
+    case 'stellar':
+      return /^G[A-Z2-7]{55}$/;
+    case 'near':
+      return /^([a-z0-9._-]+\.)*[a-z0-9._-]+\.near$|^[a-f0-9]{64}$/;
+    default:
+      return GENERIC_DESTINATION_ADDRESS_PATTERN;
+  }
+};
+
+export const isDestinationOnlyPortfolioEcosystem = (
+  ecosystem: PortfolioEcosystem,
+): ecosystem is PortfolioDestinationOnlyEcosystem =>
+  DESTINATION_ONLY_ECOSYSTEMS.has(ecosystem as PortfolioDestinationOnlyEcosystem);
 
 const HIVE_ACCOUNT_NAME_PATTERN =
   /^(?=.{3,16}$)[a-z]([0-9a-z]|[0-9a-z\-](?=[0-9a-z])){2,}([\.](?=[a-z][0-9a-z\-][0-9a-z\-])[a-z]([0-9a-z]|[0-9a-z\-](?=[0-9a-z])){1,}){0,}$/;
@@ -803,7 +926,15 @@ export const requiresPortfolioRecipientAddress = (
   fromAsset: PortfolioCanonicalAsset | undefined,
   toAsset: PortfolioCanonicalAsset | undefined,
 ): boolean => {
-  if (!fromAsset || !toAsset) {
+  if (!toAsset) {
+    return false;
+  }
+
+  if (isDestinationOnlyPortfolioEcosystem(toAsset.ecosystem)) {
+    return true;
+  }
+
+  if (!fromAsset) {
     return false;
   }
 
@@ -818,15 +949,40 @@ export const requiresPortfolioRecipientAddress = (
 
 export const resolvePortfolioRecipientAddressKind = (
   toAsset: PortfolioCanonicalAsset,
-): PortfolioRecipientAddressKind =>
-  toAsset.ecosystem === 'evm' ? 'evm' : 'hive';
+): PortfolioRecipientAddressKind => {
+  if (toAsset.ecosystem === 'evm') {
+    return 'evm';
+  }
+
+  if (isDestinationOnlyPortfolioEcosystem(toAsset.ecosystem)) {
+    return toAsset.ecosystem;
+  }
+
+  return 'hive';
+};
 
 export const resolvePortfolioRecipientAddressLabelKey = (
   toAsset: PortfolioCanonicalAsset | undefined,
-): string =>
-  toAsset?.ecosystem === 'evm'
-    ? 'evm_swap_receiver_address'
-    : 'portfolio_recipient_hive_account';
+): string => {
+  switch (toAsset?.ecosystem) {
+    case 'evm':
+      return 'evm_swap_receiver_address';
+    case 'utxo':
+      return toAsset.chainId?.toLowerCase() === 'bitcoin'
+        ? 'portfolio_recipient_bitcoin_address'
+        : 'portfolio_recipient_destination_address';
+    case 'svm':
+      return 'portfolio_recipient_solana_address';
+    case 'mvm':
+      return 'portfolio_recipient_sui_address';
+    case 'tvm':
+      return 'portfolio_recipient_tron_address';
+    case 'external':
+      return 'portfolio_recipient_destination_address';
+    default:
+      return 'portfolio_recipient_hive_account';
+  }
+};
 
 export const normalizePortfolioRecipientAddress = (address: string): string =>
   address.trim().replace(/^@+/, '');
@@ -834,17 +990,31 @@ export const normalizePortfolioRecipientAddress = (address: string): string =>
 export const isValidPortfolioRecipientAddress = (
   address: string,
   kind: PortfolioRecipientAddressKind,
+  chainId?: string | null,
 ): boolean => {
   const normalized = normalizePortfolioRecipientAddress(address);
   if (!normalized) {
     return false;
   }
 
-  if (kind === 'evm') {
-    return EvmAddressUtils.isValidEvmAddress(normalized);
+  switch (kind) {
+    case 'evm':
+      return EvmAddressUtils.isValidEvmAddress(normalized);
+    case 'hive':
+      return HIVE_ACCOUNT_NAME_PATTERN.test(normalized);
+    case 'utxo':
+      return resolveUtxoAddressPattern(chainId).test(normalized);
+    case 'svm':
+      return SOLANA_ADDRESS_PATTERN.test(normalized);
+    case 'mvm':
+      return SUI_ADDRESS_PATTERN.test(normalized);
+    case 'tvm':
+      return TRON_ADDRESS_PATTERN.test(normalized);
+    case 'external':
+      return resolveExternalAddressPattern(chainId).test(normalized);
+    default:
+      return false;
   }
-
-  return HIVE_ACCOUNT_NAME_PATTERN.test(normalized);
 };
 
 export const resolvePortfolioToAddress = ({
@@ -858,17 +1028,39 @@ export const resolvePortfolioToAddress = ({
   fromAsset: PortfolioCanonicalAsset | undefined;
   toAsset: PortfolioCanonicalAsset | undefined;
 }): string | undefined => {
-  if (!requiresPortfolioRecipientAddress(fromAsset, toAsset)) {
-    return fromAddress;
-  }
-
   if (!toAsset) {
     return undefined;
   }
 
+  if (isDestinationOnlyPortfolioEcosystem(toAsset.ecosystem)) {
+    const kind = resolvePortfolioRecipientAddressKind(toAsset);
+    const normalizedRecipient = normalizePortfolioRecipientAddress(recipientAddress);
+    if (
+      !isValidPortfolioRecipientAddress(
+        normalizedRecipient,
+        kind,
+        toAsset.chainId,
+      )
+    ) {
+      return undefined;
+    }
+
+    return normalizedRecipient;
+  }
+
+  if (!requiresPortfolioRecipientAddress(fromAsset, toAsset)) {
+    return fromAddress;
+  }
+
   const kind = resolvePortfolioRecipientAddressKind(toAsset);
   const normalizedRecipient = normalizePortfolioRecipientAddress(recipientAddress);
-  if (!isValidPortfolioRecipientAddress(normalizedRecipient, kind)) {
+  if (
+    !isValidPortfolioRecipientAddress(
+      normalizedRecipient,
+      kind,
+      toAsset.chainId,
+    )
+  ) {
     return undefined;
   }
 
@@ -882,6 +1074,7 @@ export const PortfolioFlowUtils = {
   buildPortfolioFromSelectOptions,
   filterCanonicalAssets,
   filterToAssetsByFromAsset,
+  isDestinationOnlyPortfolioEcosystem,
   isEligibleToAssetForFromAsset,
   isHivePortfolioEcosystem,
   isPortfolioSwapExcludedAsset,

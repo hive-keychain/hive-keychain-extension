@@ -53,6 +53,96 @@ describe('PortfolioApiParser', () => {
     });
   });
 
+  it('parses external destination assets from the assets payload', () => {
+    expect(
+      PortfolioApiParser.parsePortfolioAssetsResponse({
+        assets: [
+          {
+            assetId: 'external:native:ripple',
+            ecosystem: 'external',
+            symbol: 'XRP',
+            name: 'XRP',
+            chainId: 'ripple',
+            address: null,
+            decimals: 6,
+            isNative: true,
+            familyId: 'external:native:xrp',
+            logoUrl: null,
+          },
+        ],
+        chains: {
+          ripple: {
+            id: 'ripple',
+            name: 'Ripple',
+            logoUrl: 'https://example.com/ripple.svg',
+            numericChainId: null,
+          },
+        },
+      }),
+    ).toEqual({
+      assets: [
+        expect.objectContaining({
+          assetId: 'external:native:ripple',
+          ecosystem: 'external',
+          symbol: 'XRP',
+        }),
+      ],
+      chains: {
+        ripple: {
+          id: 'ripple',
+          name: 'Ripple',
+          logoUrl: 'https://example.com/ripple.svg',
+          numericChainId: null,
+        },
+      },
+    });
+  });
+
+  it('parses utxo destination assets from the assets payload', () => {
+    expect(
+      PortfolioApiParser.parsePortfolioAssetsResponse({
+        assets: [
+          {
+            assetId: 'utxo:native:bitcoin',
+            ecosystem: 'utxo',
+            symbol: 'BTC',
+            name: 'Bitcoin',
+            chainId: 'bitcoin',
+            address: null,
+            decimals: 8,
+            isNative: true,
+            familyId: 'utxo:native:btc',
+            logoUrl: 'https://example.com/btc.png',
+          },
+        ],
+        chains: {
+          bitcoin: {
+            id: 'bitcoin',
+            name: 'Bitcoin',
+            logoUrl: 'https://example.com/bitcoin.svg',
+            numericChainId: null,
+          },
+        },
+      }),
+    ).toEqual({
+      assets: [
+        expect.objectContaining({
+          assetId: 'utxo:native:bitcoin',
+          ecosystem: 'utxo',
+          symbol: 'BTC',
+        }),
+      ],
+      chains: {
+        bitcoin: {
+          id: 'bitcoin',
+          name: 'Bitcoin',
+          logoUrl: 'https://example.com/bitcoin.svg',
+          numericChainId: null,
+        },
+      },
+    });
+  });
+
   it('parses quote responses with provider display and fee metadata', () => {
     expect(
       PortfolioApiParser.parsePortfolioQuoteResponse({

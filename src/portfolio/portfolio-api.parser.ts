@@ -29,7 +29,16 @@ import {
 const portfolioModes: PortfolioMode[] = ['buy', 'sell', 'swap', 'bridge'];
 const portfolioRouteTypes: PortfolioRouteType[] = ['swap', 'bridge'];
 const portfolioExecutionTypes: PortfolioExecutionType[] = ['in_app', 'redirect'];
-const portfolioEcosystems: PortfolioEcosystem[] = ['evm', 'hive', 'hive_engine'];
+const portfolioEcosystems: PortfolioEcosystem[] = [
+  'evm',
+  'hive',
+  'hive_engine',
+  'utxo',
+  'svm',
+  'mvm',
+  'tvm',
+  'external',
+];
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   value !== null && typeof value === 'object' && !Array.isArray(value);
