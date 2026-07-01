@@ -318,6 +318,86 @@ describe('GasFeePanel', () => {
     );
   });
 
+  it('shows an error when custom legacy gas price is below the chain minimum', async () => {
+    const onSelectFee = jest.fn();
+    const selectedFee = {
+      type: EvmTransactionType.LEGACY,
+      estimatedFeeInEth: new Decimal('0.00000105'),
+      estimatedFeeUSD: new Decimal(0),
+      maxFeeInEth: new Decimal('0.00000105'),
+      maxFeeUSD: new Decimal(0),
+      estimatedMaxDuration: new Decimal(30),
+      gasPriceInGwei: new Decimal('0.05'),
+      gasLimit: new Decimal(21000),
+      icon: SVGIcons.EVM_GAS_FEE_LOW,
+      name: 'popup_html_evm_custom_gas_fee_low',
+    };
+
+    jest.spyOn(GasFeeUtils, 'estimate').mockResolvedValue({
+      suggested: selectedFee,
+      low: selectedFee,
+      custom: {
+        ...selectedFee,
+        estimatedFeeInEth: new Decimal(0),
+        maxFeeInEth: new Decimal(0),
+        estimatedMaxDuration: new Decimal(0),
+        gasPriceInGwei: new Decimal(0),
+        icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
+        name: 'popup_html_evm_custom_gas_fee_custom',
+      },
+      minGasPriceInGwei: new Decimal('0.05'),
+    });
+
+    render(
+      <GasFeePanel
+        chain={
+          {
+            chainId: '56',
+            defaultTransactionType: EvmTransactionType.LEGACY,
+            onlyCustomFee: true,
+            mainToken: 'BNB',
+            name: 'BNB Smart Chain',
+          } as any
+        }
+        fromAddress="0x00000000000000000000000000000000000000aa"
+        onSelectFee={onSelectFee}
+        prefetchedMainTokenInfo={
+          {
+            symbol: 'BNB',
+            type: 'NATIVE',
+          } as any
+        }
+        selectedFee={selectedFee}
+        setErrorMessage={jest.fn()}
+        transactionData={{
+          data: '0x',
+          from: '0x00000000000000000000000000000000000000aa',
+          to: '0x00000000000000000000000000000000000000bb',
+          type: EvmTransactionType.LEGACY,
+          value: '0x0',
+        }}
+        transactionType={EvmTransactionType.LEGACY}
+      />,
+    );
+
+    await waitFor(() => expect(GasFeeUtils.estimate).toHaveBeenCalled());
+
+    fireEvent.click(screen.getByText('popup_html_evm_gas_fee', { exact: false }));
+    fireEvent.change(
+      screen.getByPlaceholderText('popup_html_evm_gas_fee_form_gas_price'),
+      {
+        target: { value: '0.04' },
+      },
+    );
+    onSelectFee.mockClear();
+    fireEvent.click(screen.getByText('popup_html_operation_button_save'));
+
+    expect(
+      screen.getByText('evm_gas_fee_warning_gas_price_below_minimum'),
+    ).toBeTruthy();
+    expect(onSelectFee).not.toHaveBeenCalled();
+  });
+
   it('shows the panel with fallback custom fee when estimate fails', async () => {
     const setErrorMessage = jest.fn();
     const expectedError = {

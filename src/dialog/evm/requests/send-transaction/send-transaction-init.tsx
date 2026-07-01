@@ -59,6 +59,18 @@ const renderCopyableFormattedAddress = (
   />
 );
 
+const getSmartContractAddressPrefix = (tokenInfo: EvmSmartContractInfo) => {
+  if (
+    tokenInfo.logo?.trim() ||
+    tokenInfo.name?.trim() ||
+    tokenInfo.symbol?.trim()
+  ) {
+    return <EvmTokenLogo tokenInfo={tokenInfo} />;
+  }
+
+  return undefined;
+};
+
 const formatExactDecimalWithCommas = (
   value: string,
   decimals: number,
@@ -518,7 +530,7 @@ export async function runSendTransactionInit(
                     tokenAddress!,
                     chainTmp.chainId,
                     accounts,
-                    <EvmTokenLogo tokenInfo={usedToken} />,
+                    getSmartContractAddressPrefix(usedToken),
                   ),
                   ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
                     params.to,
@@ -617,13 +629,9 @@ export async function runSendTransactionInit(
 
             setShouldDisplayBalanceChange(true);
 
-            const translatedOperationName = I18nUtils.getMessage(
-              `evm_operation_${decodedTransactionData.name}`,
+            transactionConfirmationFields.operationName = I18nUtils.getMessage(
+              'dialog_evm_decrypt_send_transaction_title',
             );
-            transactionConfirmationFields.operationName =
-              translatedOperationName && translatedOperationName.length > 0
-                ? translatedOperationName
-                : decodedTransactionData.name;
 
             const transactionInfo = await resolveDecodedTransactionInfo(
               decodedTransactionData.fragment.inputs,
@@ -644,7 +652,7 @@ export async function runSendTransactionInit(
                     tokenAddress!,
                     chainTmp.chainId,
                     accounts,
-                    <EvmTokenLogo tokenInfo={usedToken} />,
+                    getSmartContractAddressPrefix(usedToken),
                   ),
                   ...(await EvmTransactionParserUtils.getSmartContractWarningAndInfo(
                     params.to,
@@ -658,6 +666,11 @@ export async function runSendTransactionInit(
                 params.data,
               ),
             );
+            transactionConfirmationFields.otherFields.push({
+              name: 'evm_operation_action',
+              type: EvmInputDisplayType.STRING,
+              value: decodedTransactionData.name,
+            });
 
             const nativePaymentValue = getNativePaymentValue(
               decodedTransactionData.value,

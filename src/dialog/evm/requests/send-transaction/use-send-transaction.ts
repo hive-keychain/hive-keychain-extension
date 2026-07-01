@@ -10,7 +10,7 @@ import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.
 import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import EventEmitter from 'events';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   COPY_GENERIC_MESSAGE_KEY,
   copyTextWithToast,
@@ -158,6 +158,17 @@ export function useSendTransaction(
     );
   }, [activationKey, chain, isActive, selectedAccount?.address]);
 
+  const applyCustomMinGasPrice = useCallback((minGasPriceInGwei: string) => {
+    setChain((currentChain) =>
+      currentChain
+        ? {
+            ...currentChain,
+            customMinGasPriceInGwei: minGasPriceInGwei,
+          }
+        : currentChain,
+    );
+  }, []);
+
   return {
     transactionHook,
     caption,
@@ -169,5 +180,6 @@ export function useSendTransaction(
     balanceInfoRefreshing,
     forceOpenGasFeePanelEvent,
     prefetchedMainTokenFromInit,
+    applyCustomMinGasPrice,
   };
 }

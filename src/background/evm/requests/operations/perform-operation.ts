@@ -23,7 +23,13 @@ import {
   getErrorFromEtherJS,
 } from '@interfaces/evm-provider.interface';
 import { SignTypedDataVersion } from '@metamask/eth-sig-util';
+import Decimal from 'decimal.js';
+import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
+import { EvmGasPriceErrorUtils } from '@popup/evm/utils/evm-gas-price-error.utils';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import {
   DIALOG_FEEDBACK_DISPLAY_MS,
   delayMs,
@@ -31,6 +37,66 @@ import {
 import { KeychainError } from 'src/keychain-error';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
+
+const getMinimumGasPriceInGwei = (error: unknown): string | undefined => {
+  const minimumGasPriceWei =
+    EvmGasPriceErrorUtils.getMinimumGasPriceWeiFromError(error);
+  if (!minimumGasPriceWei) {
+    return undefined;
+  }
+  return new Decimal(minimumGasPriceWei).div(1_000_000_000).toString();
+};
+
+const isLegacyCustomChainTransaction = (
+  request: EvmRequest,
+  chain: EvmChain,
+): boolean => {
+  const transaction = request.params?.[0] as { type?: EvmTransactionType };
+  const transactionType = transaction?.type ?? chain.defaultTransactionType;
+  return (
+    chain.isCustom === true && transactionType === EvmTransactionType.LEGACY
+  );
+};
+
+const handleRecoverableCustomGasPriceError = async (
+  error: unknown,
+  request: EvmRequest,
+  tab: number,
+) => {
+  const chainId = resolveRequestChainId(request);
+  if (
+    !chainId ||
+    !EvmGasPriceErrorUtils.isInsufficientGasPriceError(error)
+  ) {
+    return false;
+  }
+
+  const chain = await ChainUtils.getChain<EvmChain>(chainId);
+  if (!chain || !isLegacyCustomChainTransaction(request, chain)) {
+    return false;
+  }
+
+  const minimumGasPriceInGwei = getMinimumGasPriceInGwei(error);
+  const updatedChain = minimumGasPriceInGwei
+    ? await ChainUtils.updateCustomChainMinGasPrice(
+        chain.chainId,
+        minimumGasPriceInGwei,
+      )
+    : undefined;
+
+  CommunicationUtils.runtimeSendMessage({
+    command: DialogCommand.UPDATE_EVM_GAS_FEES,
+    msg: {
+      request_id: request.request_id,
+      tab,
+      chainId: chain.chainId,
+      minGasPriceInGwei:
+        updatedChain?.customMinGasPriceInGwei ?? minimumGasPriceInGwei,
+      message: 'evm_gas_fee_warning_updated_after_insufficient_price',
+    },
+  });
+  return true;
+};
 
 export const performEvmOperation = async (
   requestHandler: EvmRequestHandler,
@@ -139,6 +205,10 @@ export const performEvmOperation = async (
     await requestHandler.removeRequestByLocator(locator);
   } catch (err) {
     const error = err as any;
+    if (await handleRecoverableCustomGasPriceError(error, request, tab)) {
+      return;
+    }
+
     const etherJSError = getErrorFromEtherJS(error.code);
     const errorMessage =
       error instanceof KeychainError ? error.message : etherJSError.message;

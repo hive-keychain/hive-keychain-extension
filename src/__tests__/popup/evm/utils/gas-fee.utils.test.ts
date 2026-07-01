@@ -254,6 +254,60 @@ describe('GasFeeUtils', () => {
     );
   });
 
+  it('caps custom legacy chain RPC tiers with the stored minimum gas price', async () => {
+    jest.spyOn(EthersUtils, 'getGasLimit').mockResolvedValue(21000);
+    jest.spyOn(EthersUtils, 'getProvider').mockResolvedValue({} as any);
+    jest.spyOn(RpcGasFeeEstimator, 'fetchTiers').mockResolvedValue({
+      low: {
+        suggestedMaxPriorityFeePerGas: '0',
+        suggestedMaxFeePerGas: '0.045',
+        maxWaitTimeEstimate: 60000,
+      },
+      medium: {
+        suggestedMaxPriorityFeePerGas: '0',
+        suggestedMaxFeePerGas: '0.05',
+        maxWaitTimeEstimate: 30000,
+      },
+      high: {
+        suggestedMaxPriorityFeePerGas: '0',
+        suggestedMaxFeePerGas: '0.06',
+        maxWaitTimeEstimate: 15000,
+      },
+      estimatedBaseFee: null,
+      latestPriorityFeeRange: ['0', '0'],
+      historicalPriorityFeeRange: ['0.045', '0.06'],
+      historicalBaseFeeRange: ['0.045', '0.06'],
+      baseFeeTrend: EvmFeeTrend.UP,
+      priorityFeeTrend: EvmFeeTrend.DOWN,
+    });
+
+    const chain = {
+      chainId: '0x539',
+      customMinGasPriceInGwei: '0.05',
+      defaultTransactionType: EvmTransactionType.LEGACY,
+      isCustom: true,
+      logo: '',
+      mainToken: 'ETH',
+      name: 'Local Custom Chain',
+      rpcs: [{ url: 'http://127.0.0.1:8545' }],
+      type: ChainType.EVM,
+    } as EvmChain;
+
+    const result = await GasFeeUtils.estimate(
+      chain,
+      '0x0000000000000000000000000000000000000001',
+      EvmTransactionType.LEGACY,
+      2500,
+      21000,
+    );
+
+    expect(EvmLightNodeApi.get).not.toHaveBeenCalled();
+    expect(result.low!.gasPriceInGwei!.toString()).toBe('0.05');
+    expect(result.medium!.gasPriceInGwei!.toString()).toBe('0.05');
+    expect(result.aggressive!.gasPriceInGwei!.toString()).toBe('0.06');
+    expect(result.minGasPriceInGwei!.toString()).toBe('0.05');
+  });
+
   it('uses suggested gas price tiers when legacy oracle estimates have no base fee', async () => {
     (EvmLightNodeApi.get as jest.Mock).mockResolvedValue({
       low: {
@@ -304,6 +358,67 @@ describe('GasFeeUtils', () => {
     expect(result.suggested!.maxFeeInEth.toString()).toBe('0.00042');
     expect(result.medium!.estimatedFeeInEth.toString()).toBe('0.000525');
     expect(result.aggressive!.estimatedFeeInEth.toString()).toBe('0.00063');
+  });
+
+  it('caps legacy oracle and dApp gas prices with the light node minimum', async () => {
+    (EvmLightNodeApi.get as jest.Mock).mockResolvedValue({
+      low: {
+        suggestedMaxPriorityFeePerGas: null,
+        suggestedMaxFeePerGas: '0.045',
+        maxWaitTimeEstimate: 60000,
+      },
+      medium: {
+        suggestedMaxPriorityFeePerGas: null,
+        suggestedMaxFeePerGas: '0.05',
+        maxWaitTimeEstimate: 30000,
+      },
+      high: {
+        suggestedMaxPriorityFeePerGas: null,
+        suggestedMaxFeePerGas: '0.06',
+        maxWaitTimeEstimate: 15000,
+      },
+      minGasPrice: '0.05',
+      estimatedBaseFee: null,
+      latestPriorityFeeRange: [null, null],
+      historicalPriorityFeeRange: [null, null],
+      historicalBaseFeeRange: ['0.045', '0.06'],
+      baseFeeTrend: EvmFeeTrend.UP,
+      priorityFeeTrend: EvmFeeTrend.DOWN,
+    });
+
+    const chain = {
+      chainId: '0x61',
+      defaultTransactionType: EvmTransactionType.LEGACY,
+      logo: '',
+      mainToken: 'BNB',
+      name: 'BNB Smart Chain',
+      rpcs: [],
+      type: ChainType.EVM,
+    } as EvmChain;
+    const transactionData: ProviderTransactionData = {
+      data: '0x',
+      from: '0x0000000000000000000000000000000000000001',
+      gasLimit: 21000,
+      gasPrice: '5000000',
+      to: '0x0000000000000000000000000000000000000002',
+      type: EvmTransactionType.LEGACY,
+      value: '0',
+    };
+
+    const result = await GasFeeUtils.estimate(
+      chain,
+      transactionData.from!,
+      EvmTransactionType.LEGACY,
+      300,
+      21000,
+      transactionData,
+    );
+
+    expect(result.low!.gasPriceInGwei!.toString()).toBe('0.05');
+    expect(result.medium!.gasPriceInGwei!.toString()).toBe('0.05');
+    expect(result.aggressive!.gasPriceInGwei!.toString()).toBe('0.06');
+    expect(result.suggestedByDApp!.gasPriceInGwei!.toString()).toBe('0.05');
+    expect(transactionData.gasPrice).toBe('50000000');
   });
 
   it('uses corrected estimated vs max fee math in the RPC fallback custom tier', async () => {

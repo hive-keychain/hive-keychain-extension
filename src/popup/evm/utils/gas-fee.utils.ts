@@ -131,11 +131,101 @@ const getTierEstimatedGasPriceInGwei = (
   priorityFeeInGwei: number,
   baseFeeInGwei: Decimal | undefined,
   type: EvmTransactionType,
+  minGasPriceInGwei?: Decimal,
 ) => {
   if (isLegacyTransactionType(type)) {
-    return new Decimal(tier.suggestedMaxFeePerGas);
+    return getCappedLegacyGasPriceInGwei(
+      new Decimal(tier.suggestedMaxFeePerGas),
+      minGasPriceInGwei,
+    );
   }
   return new Decimal(priorityFeeInGwei).add(baseFeeInGwei ?? 0);
+};
+
+const getMinGasPriceInGwei = (
+  estimates: RpcGasOracleEstimates,
+  type: EvmTransactionType,
+): Decimal | undefined => {
+  if (!isLegacyTransactionType(type) || estimates.minGasPrice == null) {
+    return undefined;
+  }
+
+  const minGasPriceInGwei = new Decimal(estimates.minGasPrice);
+  return minGasPriceInGwei.gt(0) ? minGasPriceInGwei : undefined;
+};
+
+const getChainMinGasPriceInGwei = (
+  chain: EvmChain,
+  type: EvmTransactionType,
+): Decimal | undefined => {
+  if (
+    !chain.isCustom ||
+    !isLegacyTransactionType(type) ||
+    !chain.customMinGasPriceInGwei
+  ) {
+    return undefined;
+  }
+
+  const minGasPriceInGwei = new Decimal(chain.customMinGasPriceInGwei);
+  return minGasPriceInGwei.gt(0) ? minGasPriceInGwei : undefined;
+};
+
+const applyChainMinGasPrice = (
+  estimates: RpcGasOracleEstimates,
+  chain: EvmChain,
+  type: EvmTransactionType,
+): RpcGasOracleEstimates => {
+  const chainMinGasPriceInGwei = getChainMinGasPriceInGwei(chain, type);
+  if (!chainMinGasPriceInGwei) {
+    return estimates;
+  }
+
+  const estimateMinGasPriceInGwei = getMinGasPriceInGwei(estimates, type);
+  const minGasPrice = estimateMinGasPriceInGwei
+    ? Decimal.max(estimateMinGasPriceInGwei, chainMinGasPriceInGwei).toString()
+    : chainMinGasPriceInGwei.toString();
+
+  return {
+    ...estimates,
+    minGasPrice,
+  };
+};
+
+const getCappedLegacyGasPriceInGwei = (
+  gasPriceInGwei: Decimal,
+  minGasPriceInGwei?: Decimal,
+): Decimal => {
+  if (!minGasPriceInGwei) {
+    return gasPriceInGwei;
+  }
+  return Decimal.max(gasPriceInGwei, minGasPriceInGwei);
+};
+
+const getLegacyTierGasPriceInGwei = (
+  tier: RpcGasOracleEstimates['low'],
+  minGasPriceInGwei?: Decimal,
+): Decimal => {
+  return getCappedLegacyGasPriceInGwei(
+    new Decimal(tier.suggestedMaxFeePerGas),
+    minGasPriceInGwei,
+  );
+};
+
+const getCappedLegacyGasPriceInWei = (
+  gasPriceWei: string,
+  minGasPriceInGwei?: Decimal,
+): string => {
+  if (!minGasPriceInGwei) {
+    return gasPriceWei;
+  }
+
+  const gasPriceInGwei = new Decimal(gasPriceWei).div(EvmFormatUtils.GWEI);
+  return getCappedLegacyGasPriceInGwei(
+    gasPriceInGwei,
+    minGasPriceInGwei,
+  )
+    .mul(EvmFormatUtils.GWEI)
+    .toFixed(0);
 };
 
 const buildFullEstimationFromEstimates = (
@@ -145,6 +235,7 @@ const buildFullEstimationFromEstimates = (
   price: Decimal,
 ): FullGasFeeEstimation => {
   const baseFeeInGwei = getBaseFeeInGwei(estimates);
+  const minGasPriceInGwei = getMinGasPriceInGwei(estimates, type);
   const lowPriorityFee = Math.max(
     Number(estimates.low.suggestedMaxPriorityFeePerGas),
     Number(estimates.latestPriorityFeeRange[0]),
@@ -157,17 +248,26 @@ const buildFullEstimationFromEstimates = (
     Number(estimates.high.suggestedMaxPriorityFeePerGas),
     Number(estimates.latestPriorityFeeRange[0]),
   );
-
-  const maxLow = feeFromGweiAndGasLimit(
-    estimates.low.suggestedMaxFeePerGas,
-    gasLimit,
+  const lowGasPriceInGwei = getLegacyTierGasPriceInGwei(
+    estimates.low,
+    minGasPriceInGwei,
   );
+  const mediumGasPriceInGwei = getLegacyTierGasPriceInGwei(
+    estimates.medium,
+    minGasPriceInGwei,
+  );
+  const aggressiveGasPriceInGwei = getLegacyTierGasPriceInGwei(
+    estimates.high,
+    minGasPriceInGwei,
+  );
+
+  const maxLow = feeFromGweiAndGasLimit(lowGasPriceInGwei.toString(), gasLimit);
   const maxMedium = feeFromGweiAndGasLimit(
-    estimates.medium.suggestedMaxFeePerGas,
+    mediumGasPriceInGwei.toString(),
     gasLimit,
   );
   const maxAggressive = feeFromGweiAndGasLimit(
-    estimates.high.suggestedMaxFeePerGas,
+    aggressiveGasPriceInGwei.toString(),
     gasLimit,
   );
   const low = feeFromGweiAndGasLimit(
@@ -176,6 +276,7 @@ const buildFullEstimationFromEstimates = (
       lowPriorityFee,
       baseFeeInGwei,
       type,
+      minGasPriceInGwei,
     ).toString(),
     gasLimit,
   );
@@ -185,6 +286,7 @@ const buildFullEstimationFromEstimates = (
       mediumPriorityFee,
       baseFeeInGwei,
       type,
+      minGasPriceInGwei,
     ).toString(),
     gasLimit,
   );
@@ -194,6 +296,7 @@ const buildFullEstimationFromEstimates = (
       aggressivePriorityFee,
       baseFeeInGwei,
       type,
+      minGasPriceInGwei,
     ).toString(),
     gasLimit,
   );
@@ -210,9 +313,9 @@ const buildFullEstimationFromEstimates = (
         estimates.low.maxWaitTimeEstimate / 1000,
       ),
       priorityFeeInGwei: new Decimal(lowPriorityFee),
-      maxFeePerGasInGwei: new Decimal(estimates.low.suggestedMaxFeePerGas),
+      maxFeePerGasInGwei: new Decimal(lowGasPriceInGwei),
       baseFeePerGasInGwei,
-      gasPriceInGwei: new Decimal(estimates.low.suggestedMaxFeePerGas),
+      gasPriceInGwei: new Decimal(lowGasPriceInGwei),
       gasLimit: new Decimal(gasLimit),
       icon: SVGIcons.EVM_GAS_FEE_LOW,
       name: 'popup_html_evm_custom_gas_fee_low',
@@ -227,9 +330,9 @@ const buildFullEstimationFromEstimates = (
         estimates.low.maxWaitTimeEstimate / 1000,
       ),
       priorityFeeInGwei: new Decimal(lowPriorityFee),
-      maxFeePerGasInGwei: new Decimal(estimates.low.suggestedMaxFeePerGas),
+      maxFeePerGasInGwei: new Decimal(lowGasPriceInGwei),
       baseFeePerGasInGwei,
-      gasPriceInGwei: new Decimal(estimates.low.suggestedMaxFeePerGas),
+      gasPriceInGwei: new Decimal(lowGasPriceInGwei),
       gasLimit: new Decimal(gasLimit),
       icon: SVGIcons.EVM_GAS_FEE_LOW,
       name: 'popup_html_evm_custom_gas_fee_low',
@@ -244,9 +347,9 @@ const buildFullEstimationFromEstimates = (
         estimates.medium.maxWaitTimeEstimate / 1000,
       ),
       priorityFeeInGwei: new Decimal(mediumPriorityFee),
-      maxFeePerGasInGwei: new Decimal(estimates.medium.suggestedMaxFeePerGas),
+      maxFeePerGasInGwei: new Decimal(mediumGasPriceInGwei),
       baseFeePerGasInGwei,
-      gasPriceInGwei: new Decimal(estimates.medium.suggestedMaxFeePerGas),
+      gasPriceInGwei: new Decimal(mediumGasPriceInGwei),
       gasLimit: new Decimal(gasLimit),
       icon: SVGIcons.EVM_GAS_FEE_MEDIUM,
       name: 'popup_html_evm_custom_gas_fee_medium',
@@ -261,9 +364,9 @@ const buildFullEstimationFromEstimates = (
         estimates.high.maxWaitTimeEstimate / 1000,
       ),
       priorityFeeInGwei: new Decimal(aggressivePriorityFee),
-      maxFeePerGasInGwei: new Decimal(estimates.high.suggestedMaxFeePerGas),
+      maxFeePerGasInGwei: new Decimal(aggressiveGasPriceInGwei),
       baseFeePerGasInGwei,
-      gasPriceInGwei: new Decimal(estimates.high.suggestedMaxFeePerGas),
+      gasPriceInGwei: new Decimal(aggressiveGasPriceInGwei),
       gasLimit: new Decimal(gasLimit),
       icon: SVGIcons.EVM_GAS_FEE_HIGH,
       name: 'popup_html_evm_custom_gas_fee_aggressive',
@@ -305,6 +408,7 @@ const buildFullEstimationFromEstimates = (
         priorityFee: estimates.priorityFeeTrend as EvmFeeTrend,
       },
     },
+    minGasPriceInGwei,
   };
 };
 
@@ -333,7 +437,19 @@ const buildRpcFallbackCustomFee = async (
     }
   }
 
-  const gasPriceWei = feeData.gasPrice ? BigInt(feeData.gasPrice) : BigInt(0);
+  const minGasPriceInGwei = getChainMinGasPriceInGwei(chain, type);
+  const rawGasPriceWei = feeData.gasPrice
+    ? BigInt(feeData.gasPrice)
+    : BigInt(0);
+  const gasPriceWei =
+    rawGasPriceWei > BigInt(0) && minGasPriceInGwei
+      ? BigInt(
+          getCappedLegacyGasPriceInWei(
+            rawGasPriceWei.toString(),
+            minGasPriceInGwei,
+          ),
+        )
+      : rawGasPriceWei;
   if (maxPriorityFeePerGasWei <= BigInt(0) && gasPriceWei > BigInt(0)) {
     maxPriorityFeePerGasWei = gasPriceWei / BigInt(10);
   }
@@ -393,6 +509,7 @@ const buildRpcFallbackCustomFee = async (
       icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
       name: 'popup_html_evm_custom_gas_fee_custom',
     },
+    minGasPriceInGwei,
   };
 };
 
@@ -459,8 +576,13 @@ const estimate = async (
     const rpcEstimates = await RpcGasFeeEstimator.fetchTiers(provider, type);
 
     if (rpcEstimates) {
-      const fullEstimation = buildFullEstimationFromEstimates(
+      const estimatesWithChainMinimum = applyChainMinGasPrice(
         rpcEstimates,
+        chain,
+        type,
+      );
+      const fullEstimation = buildFullEstimationFromEstimates(
+        estimatesWithChainMinimum,
         type,
         gasLimit,
         price,
@@ -530,6 +652,10 @@ const createDAppSuggestionFromTransactionData = async (
           await EvmRequestsUtils.getGasPrice()
         ).toString();
       }
+      transactionData.gasPrice = getCappedLegacyGasPriceInWei(
+        transactionData.gasPrice,
+        estimates.minGasPriceInGwei,
+      );
       maxFee = new Decimal(Number(transactionData.gasPrice!)).div(
         EvmFormatUtils.GWEI,
       );

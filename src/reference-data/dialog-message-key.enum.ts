@@ -4,6 +4,7 @@ export enum DialogCommand {
   SEND_DIALOG_CONFIRM = 'sendDialogConfirm',
   SEND_DIALOG_CONFIRM_EVM = 'sendDialogConfirmEvm',
   SEND_DIALOG_ERROR = 'sendDialogError',
+  UPDATE_EVM_GAS_FEES = 'updateEvmGasFees',
   REGISTER = 'register',
   BROADCASTING_WITHOUT_CONFIRMATION = 'broadcastingNoConfirm',
   WRONG_MK = 'WRONG_MK',

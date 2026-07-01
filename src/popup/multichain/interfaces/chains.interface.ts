@@ -57,6 +57,7 @@ export interface EvmChain extends Chain {
   isEth?: boolean;
   defaultTransactionType: EvmTransactionType;
   onlyCustomFee?: boolean;
+  customMinGasPriceInGwei?: string;
   network?: string;
   addTokensManually?: boolean;
   disableTokensAndHistoryAutoLoading?: boolean;

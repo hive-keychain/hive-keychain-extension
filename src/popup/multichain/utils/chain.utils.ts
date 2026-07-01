@@ -7,6 +7,7 @@ import {
 } from '@popup/multichain/interfaces/chains.interface';
 import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import Decimal from 'decimal.js';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -689,11 +690,53 @@ const updateCustomChain = async (
     previous,
   );
   const next = [...custom];
-  next[idx] = { ...enrichedChain, isCustom: true };
+  next[idx] = {
+    ...enrichedChain,
+    customMinGasPriceInGwei:
+      enrichedChain.customMinGasPriceInGwei ??
+      previous.customMinGasPriceInGwei,
+    isCustom: true,
+  };
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.CUSTOM_CHAINS,
     next,
   );
+};
+
+const updateCustomChainMinGasPrice = async (
+  chainId: string,
+  minGasPriceInGwei: string,
+): Promise<EvmChain | undefined> => {
+  const stored = await getStoredEvmChains();
+  const defaults = await getBaseDefaultChains();
+  const defaultChainIds = getDefaultChainIdSet(defaults);
+  const normalized = chainId.toLowerCase();
+  const idx = stored.findIndex(
+    (chain) =>
+      chain.chainId.toLowerCase() === normalized &&
+      !defaultChainIds.has(chain.chainId.toLowerCase()),
+  );
+  if (idx === -1) {
+    return undefined;
+  }
+
+  const current = stored[idx];
+  const currentMin = current.customMinGasPriceInGwei
+    ? new Decimal(current.customMinGasPriceInGwei)
+    : new Decimal(0);
+  const nextMin = Decimal.max(currentMin, new Decimal(minGasPriceInGwei));
+  const updated = {
+    ...current,
+    isCustom: true,
+    customMinGasPriceInGwei: nextMin.toString(),
+  };
+  const next = [...stored];
+  next[idx] = updated;
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.CUSTOM_CHAINS,
+    next,
+  );
+  return updated;
 };
 
 const updateDefaultChainOverride = async (
@@ -822,6 +865,7 @@ export const ChainUtils = {
   getCustomChains,
   addCustomChain,
   updateCustomChain,
+  updateCustomChainMinGasPrice,
   removeCustomChain,
   updateDefaultChainOverride,
   resetDefaultChainOverride,

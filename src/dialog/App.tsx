@@ -69,6 +69,8 @@ const App = () => {
           } else if (data.command === DialogCommand.SEND_DIALOG_ERROR) {
             setGlobalError(data);
           }
+        } else if (data.command === DialogCommand.UPDATE_EVM_GAS_FEES) {
+          return;
         } else if (Object.values(DialogCommand).includes(data.command)) {
           setGlobalError(null);
           globalDataRef.current = data;

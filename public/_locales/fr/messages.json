@@ -6663,6 +6663,14 @@
     "message": "Les frais max. doivent être supérieurs aux frais de priorité",
     "description": "Priority fee is higher than max fee"
   },
+  "evm_gas_fee_warning_gas_price_below_minimum": {
+    "message": "Gas price is below the minimum for this chain",
+    "description": "Legacy gas price is below the configured chain minimum"
+  },
+  "evm_gas_fee_warning_updated_after_insufficient_price": {
+    "message": "Insufficient gas price. Gas fees have been updated",
+    "description": "Recoverable warning shown after custom-chain legacy gas price is rejected by RPC"
+  },
   "evm_transaction_result_error_message_underpriced": {
     "message": "Les frais sont trop faibles, veuillez les augmenter",
     "description": "Transaction result error message underpriced"

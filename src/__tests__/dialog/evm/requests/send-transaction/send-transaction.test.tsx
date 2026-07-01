@@ -427,6 +427,94 @@ describe('send-transaction proxy tests:\n', () => {
     expect(contractField.value.props.prefix.props.tokenInfo.symbol).toBe('USDC');
   });
 
+  it('uses the generic transaction title, action field, and address identicon for unnamed contracts', async () => {
+    const contractAddress = '0x00000000000000000000000000000000000000cc';
+    jest.spyOn(EvmLightNodeUtils, 'getAbi').mockResolvedValue([
+      { inputs: [], name: 'execute', outputs: [], type: 'function' },
+    ]);
+    jest.spyOn(EvmLightNodeUtils, 'getContract').mockResolvedValue(null as any);
+    jest.spyOn(EvmTokensUtils, 'getTokenInfo').mockResolvedValue({
+      backgroundColor: '',
+      chainId: '1',
+      contractAddress,
+      decimals: 18,
+      isProxy: false,
+      logo: '',
+      name: '',
+      possibleSpam: false,
+      priceUsd: 0,
+      proxyTarget: null,
+      symbol: '',
+      type: EVMSmartContractType.ERC20,
+      validated: 0,
+      verifiedContract: false,
+    } as any);
+    mockParseTransaction.mockReturnValue({
+      args: {
+        toArray: () => [],
+      },
+      fragment: { inputs: [] },
+      name: 'execute',
+      signature: 'execute()',
+      value: 0,
+    });
+
+    render(
+      <SendTransaction
+        accounts={[
+          {
+            wallet: {
+              address: '0x00000000000000000000000000000000000000ff',
+              mnemonic: { phrase: 'test phrase' },
+            },
+          } as any,
+        ]}
+        afterCancel={jest.fn()}
+        data={{ dappInfo: { domain: 'app.example' }, tab: 1 } as any}
+        request={
+          {
+            chainId: '1',
+            params: [
+              {
+                data: '0x1cff79cd',
+                from: '0x00000000000000000000000000000000000000ff',
+                gasLimit: 21000,
+                maxFeePerGas: '1',
+                maxPriorityFeePerGas: '1',
+                to: contractAddress,
+                type: EvmTransactionType.EIP_1559,
+                value: '0',
+              },
+            ],
+            request_id: 1,
+          } as any
+        }
+      />,
+    );
+
+    await waitFor(() =>
+      expect(transactionHook.setFields.mock.calls.length).toBeGreaterThan(1),
+    );
+
+    const fields = lastSetFieldsPayload();
+    const contractField = fields.otherFields.find(
+      (field: any) => field.name === 'evm_operation_smart_contract_address',
+    );
+    const actionField = fields.otherFields.find(
+      (field: any) => field.name === 'evm_operation_action',
+    );
+    expect(fields.operationName).toBe(
+      'dialog_evm_decrypt_send_transaction_title',
+    );
+    expect(contractField.value.type).toBe(EvmAddressComponent);
+    expect(contractField.value.props.address).toBe(contractAddress);
+    expect(contractField.value.props.prefix).toBeUndefined();
+    expect(actionField).toMatchObject({
+      name: 'evm_operation_action',
+      value: 'execute',
+    });
+  });
+
   it('adds a Ledger clear-signing fallback warning for Ledger token transactions', async () => {
     render(
       <SendTransaction
@@ -745,7 +833,15 @@ describe('send-transaction proxy tests:\n', () => {
     await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
 
     const fields = lastSetFieldsPayload();
-    expect(fields.operationName).toBe('evm_operation_mint');
+    expect(fields.operationName).toBe(
+      'dialog_evm_decrypt_send_transaction_title',
+    );
+    expect(
+      fields.otherFields.some(
+        (field: any) =>
+          field.name === 'evm_operation_action' && field.value === 'mint',
+      ),
+    ).toBe(true);
     expect(
       fields.otherFields.some((field: any) => field.name === 'evm_transaction_data'),
     ).toBe(false);
@@ -813,7 +909,15 @@ describe('send-transaction proxy tests:\n', () => {
     await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
 
     const fields = lastSetFieldsPayload();
-    expect(fields.operationName).toBe('evm_operation_mint');
+    expect(fields.operationName).toBe(
+      'dialog_evm_decrypt_send_transaction_title',
+    );
+    expect(
+      fields.otherFields.some(
+        (field: any) =>
+          field.name === 'evm_operation_action' && field.value === 'mint',
+      ),
+    ).toBe(true);
     expect(fields.mainTokenAmount).toMatchObject({
       name: 'evm_main_token_amount',
       value: '0.025 ETH',
@@ -938,7 +1042,15 @@ describe('send-transaction proxy tests:\n', () => {
     expect(transactionHook.setReady).toHaveBeenCalledWith(true);
 
     const fields = lastSetFieldsPayload();
-    expect(fields.operationName).toBe('evm_operation_mint');
+    expect(fields.operationName).toBe(
+      'dialog_evm_decrypt_send_transaction_title',
+    );
+    expect(
+      fields.otherFields.some(
+        (field: any) =>
+          field.name === 'evm_operation_action' && field.value === 'mint',
+      ),
+    ).toBe(true);
     expect(
       fields.otherFields.some(
         (field: any) => field.name === 'quantity' && field.value === '2',

@@ -46,6 +46,7 @@ interface GasFeePanelProps {
   onInitialEstimationComplete?: () => void;
   /** Re-runs gas estimation while preserving visible values. */
   refreshKey?: string | number;
+  resetCustomFeeSelectionKey?: string | number;
   onRefreshStateChange?: (refreshing: boolean) => void;
   isActive?: boolean;
   defaultFeeLevel?: 'low' | 'medium' | 'aggressive';
@@ -67,6 +68,7 @@ export const GasFeePanel = ({
   setErrorMessage,
   onInitialEstimationComplete,
   refreshKey,
+  resetCustomFeeSelectionKey,
   onRefreshStateChange,
   isActive = true,
   defaultFeeLevel,
@@ -100,6 +102,10 @@ export const GasFeePanel = ({
   useEffect(() => {
     latestIsActiveRef.current = isActive;
   }, [isActive]);
+
+  useEffect(() => {
+    customFeeWasSavedRef.current = false;
+  }, [resetCustomFeeSelectionKey]);
 
   useEffect(() => {
     const handler = () => {
@@ -517,6 +523,17 @@ export const GasFeePanel = ({
         return;
       }
 
+      if (
+        customGasFeeForm.type === EvmTransactionType.LEGACY &&
+        feeEstimation?.minGasPriceInGwei &&
+        gasPriceInGwei.lt(feeEstimation.minGasPriceInGwei)
+      ) {
+        setCustomFeeFormWarning(
+          'evm_gas_fee_warning_gas_price_below_minimum',
+        );
+        return;
+      }
+
       let customDuration = new Decimal(0);
       if (
         feeEstimation?.aggressive?.maxFeeInEth &&
@@ -912,11 +929,6 @@ export const GasFeePanel = ({
                 <div className="custom-gas-fee-panel">
                   {customGasFeeForm.type === EvmTransactionType.EIP_1559 && (
                     <>
-                      {customFeeFormWarning && (
-                        <div className="gas-fee-warning">
-                          {I18nUtils.getMessage(customFeeFormWarning)}
-                        </div>
-                      )}
                       <div className="base-fee-panel">
                         <InputComponent
                           label="popup_html_evm_gas_fee_form_base_fee"
@@ -1042,6 +1054,11 @@ export const GasFeePanel = ({
                         skipHintTranslation
                         step={'any'}
                       />
+                    </div>
+                  )}
+                  {customFeeFormWarning && (
+                    <div className="gas-fee-warning">
+                      {I18nUtils.getMessage(customFeeFormWarning)}
                     </div>
                   )}
                   <div className="priority-fee-panel">

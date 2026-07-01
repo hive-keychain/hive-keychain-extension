@@ -28,6 +28,7 @@ export interface FullGasFeeEstimation {
   suggestedByDApp?: GasFeeEstimationBase;
   increased?: GasFeeEstimationBase;
   extraInfo?: GasFeeEstimationExtraInfo;
+  minGasPriceInGwei?: Decimal;
 }
 
 export interface GasFeeEstimationExtraInfo {

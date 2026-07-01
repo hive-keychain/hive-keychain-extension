@@ -73,7 +73,8 @@ export const EvmOperation = ({
     }) => {
       if (
         msg?.command !== DialogCommand.ANSWER_EVM_REQUEST &&
-        msg?.command !== DialogCommand.SEND_DIALOG_ERROR
+        msg?.command !== DialogCommand.SEND_DIALOG_ERROR &&
+        msg?.command !== DialogCommand.UPDATE_EVM_GAS_FEES
       ) {
         return;
       }
