@@ -49,11 +49,11 @@ export const PortfolioQuoteCard = ({
           />
           <div className="portfolio-quote-card__provider-text">
             <strong>{providerLabel}</strong>
-            <small>
-              {isExecutable
-                ? quote.provider
-                : I18nUtils.getMessage('portfolio_quote_not_executable')}
-            </small>
+            {!isExecutable ? (
+              <small>
+                {I18nUtils.getMessage('portfolio_quote_not_executable')}
+              </small>
+            ) : null}
           </div>
         </div>
         <strong className="portfolio-quote-card__amount">
