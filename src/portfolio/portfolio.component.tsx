@@ -74,7 +74,10 @@ import {
   PortfolioSwapQuoteFetchResult,
 } from 'src/portfolio/portfolio-api.utils';
 import { PortfolioEvmApprovalUtils } from 'src/portfolio/portfolio-evm-approval.utils';
-import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
+import {
+  PortfolioFlowRow,
+  PortfolioFlowUtils,
+} from 'src/portfolio/portfolio-flow.utils';
 import { UserPortfolio } from 'src/portfolio/portfolio.interface';
 import { PortfolioAccountAvatar } from 'src/portfolio/ui/portfolio-account-avatar.component';
 import {
@@ -647,15 +650,51 @@ export const Portfolio = ({
     [history, showCreatedExpiredHistory],
   );
 
+  const canonicalAssetsForRowResolution = useMemo(() => {
+    const assetById = new Map<string, PortfolioCanonicalAsset>();
+    const registerAssets = (assetList: PortfolioCanonicalAsset[]) => {
+      for (const asset of assetList) {
+        assetById.set(asset.assetId, asset);
+      }
+    };
+
+    registerAssets(assets);
+    registerAssets(swapAvailableFromAssets);
+    registerAssets(swapAvailableToAssets);
+    registerAssets(rampAvailableAssets);
+
+    return [...assetById.values()];
+  }, [assets, rampAvailableAssets, swapAvailableFromAssets, swapAvailableToAssets]);
+
   const fromAssetOptions = useMemo(() => {
+    const resolveRowCanonicalAssetId = (row: PortfolioFlowRow) =>
+      PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+        row,
+        canonicalAssetsForRowResolution,
+        toAssetEvmChains,
+        portfolioChains,
+      );
+
+    const resolveRowSwapFromAssetId = (row: PortfolioFlowRow) =>
+      PortfolioFlowUtils.resolvePortfolioRowToSwapFromAssetId(
+        row,
+        swapAvailableFromAssets,
+        toAssetEvmChains,
+        portfolioChains,
+      );
+
+    const rowHasResolvableAsset = (row: PortfolioFlowRow) => {
+      if (section === 'swap' && swapAvailableFromAssets.length > 0) {
+        return Boolean(
+          resolveRowSwapFromAssetId(row) || resolveRowCanonicalAssetId(row),
+        );
+      }
+
+      return Boolean(resolveRowCanonicalAssetId(row));
+    };
+
     const rowsWithCanonicalAsset = rows.filter((row) =>
-      Boolean(
-        PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
-          row,
-          assets,
-          toAssetEvmChains,
-        ),
-      ),
+      rowHasResolvableAsset(row),
     );
     const rowsWithPositiveBalance = rowsWithCanonicalAsset.filter(
       (row) =>
@@ -672,12 +711,7 @@ export const Portfolio = ({
     const eligibleFromRows =
       section === 'sell' && rampAvailableAssetIds.size > 0
         ? rowsWithPositiveBalance.filter((row) => {
-            const canonicalAssetId =
-              PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
-                row,
-                assets,
-                toAssetEvmChains,
-              );
+            const canonicalAssetId = resolveRowCanonicalAssetId(row);
             return (
               canonicalAssetId &&
               rampAvailableAssetIds.has(canonicalAssetId)
@@ -685,14 +719,14 @@ export const Portfolio = ({
           })
         : section === 'swap' && swapAvailableFromAssetIds.size > 0
           ? rowsWithPositiveBalance.filter((row) => {
-              const canonicalAssetId =
-                PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
-                  row,
-                  assets,
-                  toAssetEvmChains,
-                );
+              const swapFromAssetId = resolveRowSwapFromAssetId(row);
+              if (swapFromAssetId) {
+                return true;
+              }
+
+              const canonicalAssetId = resolveRowCanonicalAssetId(row);
               return (
-                canonicalAssetId &&
+                canonicalAssetId !== undefined &&
                 swapAvailableFromAssetIds.has(canonicalAssetId)
               );
             })
@@ -700,7 +734,8 @@ export const Portfolio = ({
 
     return PortfolioFlowUtils.buildPortfolioFromSelectOptions(eligibleFromRows);
   }, [
-    assets,
+    canonicalAssetsForRowResolution,
+    portfolioChains,
     rampAvailableAssets,
     rows,
     section,
@@ -729,19 +764,42 @@ export const Portfolio = ({
       return undefined;
     }
 
+    const selectedRow = rows.find((row) => row.key === fromAssetId);
+    if (selectedRow && section === 'swap' && swapAvailableFromAssets.length > 0) {
+      const swapFromAssetId = PortfolioFlowUtils.resolvePortfolioRowToSwapFromAssetId(
+        selectedRow,
+        swapAvailableFromAssets,
+        toAssetEvmChains,
+        portfolioChains,
+      );
+      if (swapFromAssetId) {
+        return canonicalAssetById.get(swapFromAssetId);
+      }
+    }
+
     const canonicalAssetId =
       PortfolioFlowUtils.resolveFromRowKeyToCanonicalAssetId(
         fromAssetId,
         rows,
-        assets,
+        canonicalAssetsForRowResolution,
         toAssetEvmChains,
+        portfolioChains,
       );
     if (!canonicalAssetId) {
       return undefined;
     }
 
     return canonicalAssetById.get(canonicalAssetId);
-  }, [canonicalAssetById, fromAssetId, rows, assets, toAssetEvmChains]);
+  }, [
+    canonicalAssetById,
+    canonicalAssetsForRowResolution,
+    fromAssetId,
+    portfolioChains,
+    rows,
+    section,
+    swapAvailableFromAssets,
+    toAssetEvmChains,
+  ]);
 
   const toCanonicalAsset = useMemo(() => {
     if (!toAssetId) {
@@ -795,10 +853,18 @@ export const Portfolio = ({
         : PortfolioFlowUtils.resolveFromRowKeyToCanonicalAssetId(
             fromAssetId,
             rows,
-            assets,
+            canonicalAssetsForRowResolution,
             toAssetEvmChains,
+            portfolioChains,
           ),
-    [assets, flowMode, fromAssetId, rows, toAssetEvmChains],
+    [
+      canonicalAssetsForRowResolution,
+      flowMode,
+      fromAssetId,
+      portfolioChains,
+      rows,
+      toAssetEvmChains,
+    ],
   );
 
   const resolvedToAssetId =
@@ -1625,8 +1691,9 @@ export const Portfolio = ({
         : PortfolioFlowUtils.resolveFromRowKeyToCanonicalAssetId(
             fromAssetId,
             rows,
-            assets,
+            canonicalAssetsForRowResolution,
             toAssetEvmChains,
+            portfolioChains,
           );
     const resolvedToAssetId =
       mode === 'sell' ? undefined : toAssetId || undefined;
@@ -2121,8 +2188,9 @@ export const Portfolio = ({
         ? ''
         : (PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
             row,
-            assets,
+            canonicalAssetsForRowResolution,
             toAssetEvmChains,
+            portfolioChains,
           ) ?? ''),
     );
     setSection(mode);

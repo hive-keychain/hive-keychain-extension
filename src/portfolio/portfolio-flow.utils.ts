@@ -216,7 +216,7 @@ const getContractAddressFromAssetId = (
 
 const getChainSlugFromAssetId = (assetId: string): string | null => {
   const parts = assetId.split(':');
-  if (parts[0] !== 'evm' || parts.length < 4) {
+  if (parts[0] !== 'evm') {
     return null;
   }
 
@@ -226,6 +226,14 @@ const getChainSlugFromAssetId = (assetId: string): string | null => {
     EVM_CONTRACT_ADDRESS_PATTERN.test(slug) ||
     /^\d+$/.test(slug)
   ) {
+    return null;
+  }
+
+  if (parts[1] === 'native' && parts.length === 3) {
+    return slug;
+  }
+
+  if (parts.length < 4) {
     return null;
   }
 
@@ -275,11 +283,59 @@ const resolveAssetEvmChain = (
   return undefined;
 };
 
+const resolveChainNumericId = (
+  chainReference: string | null | undefined,
+  chains: EvmChain[] = [],
+  portfolioChains: PortfolioChainDisplayRecord = {},
+): string | null => {
+  if (!chainReference) {
+    return null;
+  }
+
+  const resolvedChain = resolveEvmChainForChainReference(chainReference, chains);
+  if (resolvedChain?.chainId) {
+    const normalizedChainId = normalizeChainId(resolvedChain.chainId);
+    if (normalizedChainId) {
+      return normalizedChainId;
+    }
+  }
+
+  const portfolioChain =
+    resolvePortfolioChainDisplay(chainReference, portfolioChains) ??
+    Object.values(portfolioChains).find(
+      (chain) =>
+        chain.numericChainId !== null &&
+        chainIdsMatch(String(chain.numericChainId), chainReference),
+    );
+  if (portfolioChain?.numericChainId != null) {
+    return String(portfolioChain.numericChainId);
+  }
+
+  return normalizeChainId(chainReference);
+};
+
 const assetChainMatchesRow = (
   asset: PortfolioCanonicalAsset,
   rowChainReference: string,
   chains: EvmChain[],
+  portfolioChains: PortfolioChainDisplayRecord = {},
 ): boolean => {
+  const rowNumericChainId = resolveChainNumericId(
+    rowChainReference,
+    chains,
+    portfolioChains,
+  );
+  if (rowNumericChainId) {
+    const assetMatchesNumericChainId = getChainReferencesFromAsset(asset).some(
+      (chainReference) =>
+        resolveChainNumericId(chainReference, chains, portfolioChains) ===
+        rowNumericChainId,
+    );
+    if (assetMatchesNumericChainId) {
+      return true;
+    }
+  }
+
   const rowChain = resolveEvmChainForChainReference(rowChainReference, chains);
   const assetChain = resolveAssetEvmChain(asset, chains);
 
@@ -292,10 +348,76 @@ const assetChainMatchesRow = (
   );
 };
 
+const isNativeCanonicalAsset = (asset: PortfolioCanonicalAsset): boolean => {
+  if (asset.isNative) {
+    return true;
+  }
+
+  const parts = asset.assetId.split(':');
+  return parts[0] === 'evm' && parts[1] === 'native';
+};
+
+export const portfolioRowMatchesCanonicalAsset = (
+  row: PortfolioFlowRow,
+  asset: PortfolioCanonicalAsset,
+  chains: EvmChain[] = [],
+  portfolioChains: PortfolioChainDisplayRecord = {},
+): boolean => {
+  const parsedRow = parsePortfolioEvmRowKey(row);
+  if (!parsedRow || asset.ecosystem !== 'evm') {
+    return false;
+  }
+
+  const normalizedSymbol = row.symbol.toUpperCase();
+  if (asset.symbol.toUpperCase() !== normalizedSymbol) {
+    return false;
+  }
+
+  if (parsedRow.contractAddress) {
+    const assetContractAddress = getContractAddressFromAssetId(asset.assetId);
+    if (assetContractAddress !== parsedRow.contractAddress) {
+      return false;
+    }
+
+    return assetChainMatchesRow(
+      asset,
+      parsedRow.chainReference,
+      chains,
+      portfolioChains,
+    );
+  }
+
+  if (!isNativeCanonicalAsset(asset)) {
+    return false;
+  }
+
+  if (getContractAddressFromAssetId(asset.assetId)) {
+    return false;
+  }
+
+  return assetChainMatchesRow(
+    asset,
+    parsedRow.chainReference,
+    chains,
+    portfolioChains,
+  );
+};
+
+export const resolvePortfolioRowToSwapFromAssetId = (
+  row: PortfolioFlowRow,
+  swapFromAssets: PortfolioCanonicalAsset[],
+  chains: EvmChain[] = [],
+  portfolioChains: PortfolioChainDisplayRecord = {},
+): string | undefined =>
+  swapFromAssets.find((asset) =>
+    portfolioRowMatchesCanonicalAsset(row, asset, chains, portfolioChains),
+  )?.assetId;
+
 const resolveEvmPortfolioRowToCanonicalAsset = (
   row: PortfolioFlowRow,
   assets: PortfolioCanonicalAsset[],
   chains: EvmChain[],
+  portfolioChains: PortfolioChainDisplayRecord = {},
 ): PortfolioCanonicalAsset | undefined => {
   const parsedRow = parsePortfolioEvmRowKey(row);
   if (!parsedRow) {
@@ -315,12 +437,21 @@ const resolveEvmPortfolioRowToCanonicalAsset = (
         return false;
       }
 
-      return assetChainMatchesRow(asset, parsedRow.chainReference, chains);
+      return assetChainMatchesRow(
+        asset,
+        parsedRow.chainReference,
+        chains,
+        portfolioChains,
+      );
     });
   }
 
   return assets.find((asset) => {
     if (asset.ecosystem !== 'evm') {
+      return false;
+    }
+
+    if (!isNativeCanonicalAsset(asset)) {
       return false;
     }
 
@@ -332,7 +463,12 @@ const resolveEvmPortfolioRowToCanonicalAsset = (
       return false;
     }
 
-    return assetChainMatchesRow(asset, parsedRow.chainReference, chains);
+    return assetChainMatchesRow(
+      asset,
+      parsedRow.chainReference,
+      chains,
+      portfolioChains,
+    );
   });
 };
 
@@ -404,12 +540,7 @@ export const resolveEvmChainForChainReference = (
   }
 
   return chains.find((chain) => {
-    const references = [
-      chain.name,
-      chain.network,
-      chain.openSeaChainId,
-      chain.nativeCoinId,
-    ];
+    const references = [chain.name, chain.network, chain.openSeaChainId];
 
     return references.some(
       (reference) => normalizeChainReference(reference) === normalizedReference,
@@ -427,10 +558,16 @@ export const resolvePortfolioRowToCanonicalAsset = (
   row: PortfolioFlowRow,
   assets: PortfolioCanonicalAsset[],
   chains: EvmChain[] = [],
+  portfolioChains: PortfolioChainDisplayRecord = {},
 ): PortfolioCanonicalAsset | undefined => {
   const parsedEvmRow = parsePortfolioEvmRowKey(row);
   if (parsedEvmRow) {
-    return resolveEvmPortfolioRowToCanonicalAsset(row, assets, chains);
+    return resolveEvmPortfolioRowToCanonicalAsset(
+      row,
+      assets,
+      chains,
+      portfolioChains,
+    );
   }
 
   const normalizedSymbol = row.symbol.toUpperCase();
@@ -446,8 +583,10 @@ export const resolvePortfolioRowToCanonicalAssetId = (
   row: PortfolioFlowRow,
   assets: PortfolioCanonicalAsset[],
   chains: EvmChain[] = [],
+  portfolioChains: PortfolioChainDisplayRecord = {},
 ): string | undefined =>
-  resolvePortfolioRowToCanonicalAsset(row, assets, chains)?.assetId;
+  resolvePortfolioRowToCanonicalAsset(row, assets, chains, portfolioChains)
+    ?.assetId;
 
 export const isPortfolioSwapExcludedSymbol = (symbol: string): boolean =>
   HIVE_SWAP_EXCLUDED_SYMBOLS.has(symbol.toUpperCase());
@@ -840,13 +979,19 @@ export const resolveFromRowKeyToCanonicalAssetId = (
   rows: PortfolioFlowRow[],
   assets: PortfolioCanonicalAsset[],
   chains: EvmChain[] = [],
+  portfolioChains: PortfolioChainDisplayRecord = {},
 ): string | undefined => {
   const row = rows.find((item) => item.key === rowKey);
   if (!row) {
     return assets.some((asset) => asset.assetId === rowKey) ? rowKey : undefined;
   }
 
-  return resolvePortfolioRowToCanonicalAssetId(row, assets, chains);
+  return resolvePortfolioRowToCanonicalAssetId(
+    row,
+    assets,
+    chains,
+    portfolioChains,
+  );
 };
 
 export type PortfolioRecipientAddressKind =
@@ -1091,6 +1236,8 @@ export const PortfolioFlowUtils = {
   resolveCanonicalAssetNetworkLogoUrl,
   resolveEvmChainForChainReference,
   resolveEvmChainLogoUrl,
+  portfolioRowMatchesCanonicalAsset,
+  resolvePortfolioRowToSwapFromAssetId,
   resolveFromRowKeyToCanonicalAssetId,
   resolveHiveTokenDecimals,
   resolvePortfolioQuoteFromAmountDecimals,

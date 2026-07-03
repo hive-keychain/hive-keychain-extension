@@ -216,6 +216,110 @@ describe('PortfolioFlowUtils', () => {
     ).toBe('evm:coin:ethereum:eth');
   });
 
+  it('resolves evm:native:ethereum rows when other chains share the same nativeCoinId', () => {
+    const nativeEthAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+      assetId: 'evm:native:ethereum',
+      ecosystem: 'evm',
+      symbol: 'ETH',
+      name: 'ETH',
+      chainId: 'ethereum',
+      isNative: true,
+      familyId: 'eth',
+    });
+    const chains = [
+      {
+        name: 'Optimism',
+        chainId: '0xa',
+        nativeCoinId: 'ethereum',
+      } as never,
+      {
+        name: 'Ethereum',
+        chainId: '0x1',
+        nativeCoinId: 'ethereum',
+      } as never,
+    ];
+
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+        {
+          key: '0x1:ETH:native',
+          symbol: 'ETH',
+          network: 'Ethereum',
+          balance: '0.00596414',
+          chainId: '0x1',
+        },
+        [nativeEthAsset],
+        chains,
+      ),
+    ).toBe('evm:native:ethereum');
+  });
+
+  it('resolves native evm rows using portfolio chain metadata when setup chains are unavailable', () => {
+    const nativeEthAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+      assetId: 'evm:native:ethereum',
+      ecosystem: 'evm',
+      symbol: 'ETH',
+      name: 'ETH',
+      chainId: 'ethereum',
+      isNative: true,
+      familyId: 'evm-native:eth',
+    });
+    const portfolioChains = {
+      ethereum: {
+        id: 'ethereum',
+        name: 'Ethereum',
+        logoUrl: null,
+        numericChainId: 1,
+      },
+    };
+
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToSwapFromAssetId(
+        {
+          key: '0x1:ETH:native',
+          symbol: 'ETH',
+          network: 'Ethereum',
+          balance: '0.00596414',
+          chainId: '0x1',
+        },
+        [nativeEthAsset],
+        [],
+        portfolioChains,
+      ),
+    ).toBe('evm:native:ethereum');
+  });
+
+  it('does not match native rows to non-native assets with the same symbol', () => {
+    const wrappedEthAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+      assetId: 'evm:token:base:baseeth',
+      ecosystem: 'evm',
+      symbol: 'ETH',
+      name: 'Base ETH',
+      chainId: 'base',
+      isNative: false,
+      familyId: 'baseeth',
+    });
+
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+        {
+          key: '0x1:ETH:native',
+          symbol: 'ETH',
+          network: 'Ethereum',
+          balance: '1',
+          chainId: '0x1',
+        },
+        [wrappedEthAsset],
+        [
+          {
+            name: 'Ethereum',
+            chainId: '0x1',
+          } as never,
+        ],
+      ),
+    ).toBeUndefined();
+  });
+
   it('does not match evm rows to hive engine assets with the same symbol', () => {
     const hiveEngineKingAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
       assetId: 'hive-engine:king',

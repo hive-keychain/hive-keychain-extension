@@ -436,6 +436,11 @@ const normalizeTokensMetadataForBalances = async (
     normalizedTokensMetadata.push(token);
   }
 
+  if (!hasNativeToken && !nativeTokenInfo) {
+    nativeTokenInfo = await getMainTokenInfo(chain);
+    normalizedTokensMetadata.unshift(nativeTokenInfo);
+  }
+
   return normalizedTokensMetadata;
 };
 

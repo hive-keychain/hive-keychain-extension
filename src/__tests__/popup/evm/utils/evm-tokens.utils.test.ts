@@ -420,6 +420,65 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
     expect(balances[0].balance).toBe(20888717742830912n);
   });
 
+  it('injects native token metadata when discovery omits the native asset', async () => {
+    const walletAddress = '0x1234567890123456789012345678901234567890';
+    const getBalance = jest.fn().mockResolvedValue(5000000000000000n);
+    jest.spyOn(EthersUtils, 'getProvider').mockResolvedValue({
+      getBalance,
+    } as any);
+    jest.spyOn(EvmLightNodeApi, 'get').mockResolvedValue({
+      chainId: 1,
+      metadata: {
+        name: 'Ethereum',
+        symbol: 'ETH',
+        decimals: 18,
+        logoUrl: 'https://cdn.example/eth.svg',
+        wrappedNativeTokenAddress:
+          '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+      },
+      price: {
+        fetchedAt: '2026-05-19T00:00:00.000Z',
+        priceUsd: 3000,
+      },
+    });
+    const contractSpy = jest.spyOn(ethers, 'Contract');
+
+    const balances = await EvmTokensUtils.getTokenBalances(
+      walletAddress,
+      {
+        chainId: '0x1',
+        name: 'Ethereum',
+        mainToken: 'ETH',
+      } as any,
+      [
+        {
+          type: EVMSmartContractType.ERC20,
+          name: 'USD Coin',
+          symbol: 'USDC',
+          decimals: 6,
+          logo: '',
+          chainId: '0x1',
+          contractAddress: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+          backgroundColor: '#000000',
+          coingeckoId: null,
+          priceUsd: 1,
+          possibleSpam: false,
+          verifiedContract: true,
+          isProxy: false,
+          proxyTarget: null,
+          validated: 0,
+        } as any,
+      ],
+    );
+
+    expect(balances.some(
+      (balance) => balance.tokenInfo.type === EVMSmartContractType.NATIVE,
+    )).toBe(true);
+    expect(balances.find(
+      (balance) => balance.tokenInfo.type === EVMSmartContractType.NATIVE,
+    )?.balance).toBe(5000000000000000n);
+  });
+
   it('drops failed token balance reads without crashing discovery formatting', async () => {
     const walletAddress = '0x1234567890123456789012345678901234567890';
     const nativeToken = {

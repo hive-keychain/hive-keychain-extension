@@ -760,6 +760,13 @@ describe('Portfolio', () => {
       ],
       chains: {},
     });
+    (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockResolvedValue({
+      mode: 'swap',
+      direction: 'from',
+      sourceAssetId: null,
+      assets: [],
+      chains: {},
+    });
 
     const { container } = render(
       <Portfolio
@@ -801,6 +808,137 @@ describe('Portfolio', () => {
     await new Promise((resolve) => setTimeout(resolve, 900));
 
     expect(PortfolioApiUtils.getQuotes).not.toHaveBeenCalled();
+  });
+
+  it('includes native ETH in swap from options when swap-available assets provide canonical metadata', async () => {
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
+      assets: [
+        {
+          assetId: 'evm:token:ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+          ecosystem: 'evm',
+          symbol: 'USDC',
+          name: 'USD Coin',
+          chainId: 'ethereum',
+          logoUrl: null,
+        },
+      ],
+      chains: {},
+    });
+    mockPortfolioListAvailableAssets();
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={
+          [
+            {
+              id: 1,
+              wallet: { address: '0xabc' },
+            } as never,
+          ]
+        }
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+    });
+
+    const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
+    fireEvent.click(sidebarButtons[1]);
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-from-asset')).not.toBeNull();
+      expect(container.textContent).toContain('ETH');
+      expect(container.textContent).toContain('Ethereum');
+      expect(container.textContent).not.toContain(
+        "This wallet doesn't have any token.",
+      );
+    });
+  });
+
+  it('includes mainnet ETH in swap from options when another ETH chain is listed first', async () => {
+    const optimismChain: EvmChain = {
+      name: 'Optimism',
+      type: ChainType.EVM,
+      logo: 'optimism.svg',
+      chainId: '0xa',
+      rpcs: [{ url: 'https://optimism.rpc' }],
+      mainToken: 'ETH',
+      nativeCoinId: 'ethereum',
+      defaultTransactionType: EvmTransactionType.EIP_1559,
+    };
+
+    jest
+      .spyOn(ChainUtils, 'getAllSetupChainsForType')
+      .mockResolvedValue([optimismChain, ethereumChain]);
+    (
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains as jest.Mock
+    ).mockImplementation(async (_chains, _walletAddress, options) => {
+      options?.onChainReady?.(ethereumChain, [ethToken]);
+      options?.onChainFinished?.(ethereumChain);
+      return [ethToken];
+    });
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
+      assets: [
+        {
+          assetId: 'evm:native:ethereum',
+          ecosystem: 'evm',
+          symbol: 'ETH',
+          name: 'ETH',
+          chainId: 'ethereum',
+          isNative: true,
+          familyId: 'eth',
+          logoUrl: null,
+        },
+      ],
+      chains: {},
+    });
+    mockPortfolioListAvailableAssets();
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={
+          [
+            {
+              id: 1,
+              wallet: { address: '0xabc' },
+            } as never,
+          ]
+        }
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+    });
+
+    const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
+    fireEvent.click(sidebarButtons[1]);
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-from-asset')).not.toBeNull();
+      expect(container.textContent).toContain('ETH');
+      expect(container.textContent).toContain('Ethereum');
+      expect(container.textContent).not.toContain(
+        "This wallet doesn't have any token.",
+      );
+    });
   });
 
   it('auto-fetches swap quotes once the form is complete without a get quotes button', async () => {
