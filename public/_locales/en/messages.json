@@ -6660,8 +6660,12 @@
     "description": "Evm generic broadcast"
   },
   "evm_unable_to_reach_verify_transaction": {
-    "message": "Transaction verification is unavailable at the moment, proceed with caution",
+    "message": "Keychain could not verify this website, address, or contract because the EVM security service is unavailable. Proceed only if you trust this request.",
     "description": "Error message if backend not available while fetch verify transaction info"
+  },
+  "evm_light_node_assets_cache_warning": {
+    "message": "The EVM service is unavailable. Showing last known asset information; balances may refresh, but token and NFT details might be outdated.",
+    "description": "Warning shown when EVM token or NFT data is loaded from local cache because the light-node is unavailable"
   },
   "evm_created_smart_contract": {
     "message": "Created smart contract",

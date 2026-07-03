@@ -1,4 +1,4 @@
-import { EvmLightNodeApi } from '@api/evm-light-node';
+import { EvmLightNodeApi, EvmLightNodeApiError } from '@api/evm-light-node';
 import {
   CatchupStatus,
   EvmLightNodeUtils,
@@ -12,6 +12,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 jest.mock('src/api/base', () => ({
   BaseApi: {
     getWithResponse: jest.fn(),
+    postWithResponse: jest.fn(),
     get: jest.fn(),
     post: jest.fn(),
   },
@@ -33,6 +34,31 @@ describe('evm-light-node.utils tests:\n', () => {
     ).resolves.toEqual(payload);
 
     expect(getSpy).toHaveBeenCalledWith('discovery/tokens/address/0xabc');
+  });
+
+  it('EvmLightNodeApi.get rejects non-2xx responses', async () => {
+    (BaseApi.getWithResponse as jest.Mock).mockResolvedValue({
+      status: 502,
+      data: { error: 'bad gateway' },
+    });
+
+    await expect(EvmLightNodeApi.get('health')).rejects.toMatchObject({
+      name: 'EvmLightNodeApiError',
+      status: 502,
+      data: { error: 'bad gateway' },
+      url: expect.stringContaining('/health'),
+    });
+  });
+
+  it('EvmLightNodeApi.post rejects non-2xx responses', async () => {
+    (BaseApi.postWithResponse as jest.Mock).mockResolvedValue({
+      status: 503,
+      data: { error: 'unavailable' },
+    });
+
+    await expect(
+      EvmLightNodeApi.post('register/1/0xabc/false', {}),
+    ).rejects.toBeInstanceOf(EvmLightNodeApiError);
   });
 
   it('evmChainIdToDecimalPathSegment maps hex and decimal strings', () => {

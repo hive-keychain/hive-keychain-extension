@@ -7,7 +7,7 @@ import { EvmWalletTokensComponent } from '@popup/evm/pages/home/evm-wallet-info-
 import { EvmHistoryComponent } from '@popup/evm/pages/home/token-history/evm-history.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.component';
 
 interface WalletSectionRefsProps {
@@ -43,21 +43,61 @@ export const EvmWalletInfoSectionComponent = ({
   initialDisplayHistory,
   walletScrollRef,
 }: EvmWalletInfoSectionProps & WalletSectionRefsProps) => {
+  const lightNodeUnavailable = Boolean(
+    activeAccount.nativeAndErc20Tokens.lightNodeUnavailable ||
+      activeAccount.nfts.lightNodeUnavailable ||
+      activeAccount.history.lightNodeUnavailable,
+  );
+  const canDisplayHistory = chain.isCustom === true || !lightNodeUnavailable;
+
   const getInitialDisplayedSection = (): EvmDisplayedPage => {
-    if (initialDisplayHistory) return EvmDisplayedPage.HISTORY;
+    if (initialDisplayHistory && canDisplayHistory) {
+      return EvmDisplayedPage.HISTORY;
+    }
     if (initialDisplayNfts) return EvmDisplayedPage.NTFS;
     return EvmDisplayedPage.TOKENS;
   };
   const [displayedSection, setDisplayedSection] = useState<EvmDisplayedPage>(
     getInitialDisplayedSection(),
   );
+  const effectiveDisplayedSection =
+    !canDisplayHistory && displayedSection === EvmDisplayedPage.HISTORY
+      ? EvmDisplayedPage.TOKENS
+      : displayedSection;
+
+  useEffect(() => {
+    if (!canDisplayHistory && displayedSection === EvmDisplayedPage.HISTORY) {
+      setDisplayedSection(EvmDisplayedPage.TOKENS);
+    }
+  }, [canDisplayHistory, displayedSection]);
 
   const loadHistory = async (reset?: boolean) => {
     loadEvmHistory();
   };
 
+  const tabValues = [
+    {
+      label: `evm_tab_${EvmDisplayedPage.TOKENS}`,
+      value: EvmDisplayedPage.TOKENS,
+    },
+    {
+      label: `evm_tab_${EvmDisplayedPage.NTFS}`,
+      value: EvmDisplayedPage.NTFS,
+    },
+    ...(canDisplayHistory
+      ? [
+          {
+            label: chain.isCustom
+              ? 'evm_activity_tab'
+              : `evm_tab_${EvmDisplayedPage.HISTORY}`,
+            value: EvmDisplayedPage.HISTORY,
+          },
+        ]
+      : []),
+  ];
+
   const getDisplayedSection = () => {
-    switch (displayedSection) {
+    switch (effectiveDisplayedSection) {
       case EvmDisplayedPage.TOKENS: {
         return (
           <EvmWalletTokensComponent
@@ -97,23 +137,8 @@ export const EvmWalletInfoSectionComponent = ({
           <>
             <SlidingBarComponent
               onChange={setDisplayedSection}
-              selectedValue={displayedSection}
-              values={[
-                {
-                  label: `evm_tab_${EvmDisplayedPage.TOKENS}`,
-                  value: EvmDisplayedPage.TOKENS,
-                },
-                {
-                  label: `evm_tab_${EvmDisplayedPage.NTFS}`,
-                  value: EvmDisplayedPage.NTFS,
-                },
-                {
-                  label: chain.isCustom
-                    ? 'evm_activity_tab'
-                    : `evm_tab_${EvmDisplayedPage.HISTORY}`,
-                  value: EvmDisplayedPage.HISTORY,
-                },
-              ]}
+              selectedValue={effectiveDisplayedSection}
+              values={tabValues}
               id="tabs"
             />
             {getDisplayedSection()}

@@ -1,6 +1,7 @@
 import { EvmActionType } from '@popup/evm/actions/action-type.evm.enum';
 import {
   EvmActiveAccount,
+  EvmActiveAccountLoadMetadata,
   EvmErc1155Token,
   EvmErc721Token,
   NativeAndErc20Token,
@@ -16,6 +17,7 @@ import {
   EvmLightNodeUtils,
   isCatchupStatusPending,
 } from '@popup/evm/utils/evm-light-node.utils';
+import { EvmDiscoveryCacheUtils } from '@popup/evm/utils/evm-discovery-cache.utils';
 import { EvmLocalHistoryUtils } from '@popup/evm/utils/evm-local-history.utils';
 import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
@@ -26,6 +28,7 @@ import {
   ChainType,
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
+import Logger from 'src/utils/logger.utils';
 
 const EMPTY_EVM_HISTORY: EvmUserHistory = {
   events: [],
@@ -40,6 +43,18 @@ const shouldLoadMoreDiscoveredNfts = (
 const shouldLoadMoreHistory = (history: EvmUserHistory): boolean => {
   return isCatchupStatusPending(history.catchupStatus);
 };
+
+const getLoadMetadataPayload = (
+  loadMetadata: EvmActiveAccountLoadMetadata,
+): EvmActiveAccountLoadMetadata => ({
+  ...(loadMetadata.source ? { source: loadMetadata.source } : {}),
+  ...(loadMetadata.cacheUpdatedAt != null
+    ? { cacheUpdatedAt: loadMetadata.cacheUpdatedAt }
+    : {}),
+  ...(loadMetadata.lightNodeUnavailable
+    ? { lightNodeUnavailable: true }
+    : {}),
+});
 
 const isSameEvmChain = (currentChain: Chain, chain: EvmChain) => {
   return (
@@ -100,6 +115,16 @@ const dispatchEvmActiveAccountIdentity = (
 
 const getHistoryEventKey = (event: EvmUserHistory['events'][number]) => {
   return `${event.transactionHash.toLowerCase()}-${event.transactionIndex}`;
+};
+
+const waitForAdditionalAssetLoads = async (loads: unknown[]) => {
+  await Promise.all(
+    loads.map((load) =>
+      Promise.resolve(load).catch((error) => {
+        Logger.error('Error while loading additional EVM account data', error);
+      }),
+    ),
+  );
 };
 
 const sortHistoryEvents = (events: EvmUserHistory['events']) => {
@@ -230,6 +255,72 @@ const mapDiscoveredNftsResponseToActiveAccountNfts = async (
   });
 };
 
+type LoadEvmNftsResult = EvmActiveAccountLoadMetadata & {
+  nfts: (EvmErc721Token | EvmErc1155Token)[];
+  shouldLoadMore: boolean;
+};
+
+const saveDiscoveredNftsCache = async (
+  chain: EvmChain,
+  walletAddress: string,
+  response: DiscoveredNftsResponse,
+) => {
+  try {
+    await EvmDiscoveryCacheUtils.saveDiscoveredNfts(
+      chain.chainId,
+      walletAddress,
+      response,
+    );
+  } catch (error) {
+    Logger.error('Error while caching discovered EVM NFTs', error);
+  }
+};
+
+const loadNftsForChain = async (
+  chain: EvmChain,
+  walletAddress: string,
+): Promise<LoadEvmNftsResult> => {
+  const address = process.env.FORCED_EVM_WALLET_ADDRESS ?? walletAddress;
+
+  try {
+    const response = await EvmLightNodeUtils.getDiscoveredNfts(
+      chain.chainId,
+      address,
+    );
+    if (!Array.isArray(response?.collections)) {
+      throw new Error('Invalid discovered NFTs response');
+    }
+    await saveDiscoveredNftsCache(chain, address, response);
+    return {
+      nfts: await mapDiscoveredNftsResponseToActiveAccountNfts(response),
+      shouldLoadMore: shouldLoadMoreDiscoveredNfts(response),
+    };
+  } catch (error) {
+    Logger.error('Error while loading discovered EVM NFTs', error);
+    const cached = await EvmDiscoveryCacheUtils.getDiscoveredNfts(
+      chain.chainId,
+      address,
+    );
+
+    if (!cached?.response || !Array.isArray(cached.response.collections)) {
+      return {
+        nfts: [],
+        shouldLoadMore: false,
+        source: 'fallback',
+        lightNodeUnavailable: true,
+      };
+    }
+
+    return {
+      nfts: await mapDiscoveredNftsResponseToActiveAccountNfts(cached.response),
+      shouldLoadMore: false,
+      source: 'cache',
+      cacheUpdatedAt: cached.updatedAt,
+      lightNodeUnavailable: true,
+    };
+  }
+};
+
 const getCustomChainNfts = async (chain: EvmChain, wallet: EvmWallet) => {
   return EvmTokensUtils.getCustomNftCollectionsForWallet(
     chain,
@@ -307,11 +398,40 @@ export const loadEvmHistory =
     });
 
     const evmChain = chain as EvmChain;
-    const newHistory = await EvmTokensHistoryUtils.fetchHistory2(
-      process.env.FORCED_EVM_WALLET_ADDRESS ?? initialWallet.address,
-      evmChain,
-      initialHistory ?? null,
-    );
+    let newHistory: EvmUserHistory;
+    try {
+      newHistory = await EvmTokensHistoryUtils.fetchHistory2(
+        process.env.FORCED_EVM_WALLET_ADDRESS ?? initialWallet.address,
+        evmChain,
+        initialHistory ?? null,
+      );
+    } catch (error) {
+      Logger.error('Error while loading EVM history', error);
+      if (
+        !isActiveAccountRequestCurrent(
+          getState().chain as Chain,
+          getState().evm.activeAccount,
+          evmChain,
+          initialWallet,
+        )
+      ) {
+        return;
+      }
+
+      dispatch({
+        type: EvmActionType.SET_ACTIVE_ACCOUNT,
+        payload: {
+          ...getState().evm.activeAccount,
+          history: {
+            value: getState().evm.activeAccount.history.value ?? initialHistory,
+            loading: false,
+            initialized: true,
+            lightNodeUnavailable: true,
+          },
+        } as EvmActiveAccount,
+      });
+      return;
+    }
 
     if (
       !isActiveAccountRequestCurrent(
@@ -354,50 +474,26 @@ export const loadEvmHistory =
 export const loadMoreTokensInActiveAccount =
   (chain: EvmChain, wallet: EvmWallet, retryCount = 0): AppThunk =>
   async (dispatch, getState) => {
+    const isCurrentRequest = () =>
+      isActiveAccountRequestCurrent(
+        getState().chain as Chain,
+        getState().evm.activeAccount,
+        chain,
+        wallet,
+      );
     if (chain.isCustom === true) {
       return;
     }
-    if (
-      !isActiveAccountRequestCurrent(
-        getState().chain as Chain,
-        getState().evm.activeAccount,
-        chain,
-        wallet,
-      )
-    ) {
+    if (!isCurrentRequest()) {
       return;
     }
-    const result = await EvmLightNodeUtils.getDiscoveredTokens(
-      chain.chainId,
-      process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
-    );
-    if (
-      !isActiveAccountRequestCurrent(
-        getState().chain as Chain,
-        getState().evm.activeAccount,
+    const { balances, shouldLoadMore, ...loadMetadata } =
+      await EvmAccountTokensLoadUtils.loadNativeAndErc20TokensForChain(
         chain,
-        wallet,
-      )
-    ) {
-      return;
-    }
-    const balances = await EvmTokensUtils.getTokenBalances(
-      process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
-      chain,
-      result.tokens.filter(
-        (token) =>
-          token.type === EVMSmartContractType.ERC20 ||
-          token.type === EVMSmartContractType.NATIVE,
-      ),
-    );
-    if (
-      !isActiveAccountRequestCurrent(
-        getState().chain as Chain,
-        getState().evm.activeAccount,
-        chain,
-        wallet,
-      )
-    ) {
+        wallet.address,
+        { registerAddress: false, shouldContinue: isCurrentRequest },
+      );
+    if (!isCurrentRequest()) {
       return;
     }
     const currentTokens = getState().evm.activeAccount.nativeAndErc20Tokens;
@@ -405,8 +501,6 @@ export const loadMoreTokensInActiveAccount =
       balances.length === 0 && currentTokens.value.length > 0
         ? currentTokens.value
         : balances;
-    const shouldLoadMore =
-      EvmAccountTokensLoadUtils.shouldLoadMoreDiscoveredAssets(result);
 
     dispatch({
       type: EvmActionType.SET_ACTIVE_ACCOUNT_TOKENS,
@@ -415,6 +509,7 @@ export const loadMoreTokensInActiveAccount =
           value: nextBalances,
           loading: shouldLoadMore ? nextBalances.length === 0 : false,
           initialized: true,
+          ...getLoadMetadataPayload(loadMetadata),
         },
       },
     });
@@ -474,15 +569,19 @@ export const loadEvmActiveAccount =
         type: EvmActionType.SET_ACTIVE_ACCOUNT,
         payload: { isReady: true },
       });
-      await Promise.all(additionalAssetLoadPromises);
+      await waitForAdditionalAssetLoads(additionalAssetLoadPromises);
       return;
     }
 
-    await EvmLightNodeUtils.registerAddress(
-      chain.chainId,
-      wallet.address,
-      false,
-    );
+    try {
+      await EvmLightNodeUtils.registerAddress(
+        chain.chainId,
+        wallet.address,
+        false,
+      );
+    } catch (error) {
+      Logger.error('Error while registering EVM address with light node', error);
+    }
     if (!isSameEvmChain(getState().chain as Chain, chain)) {
       return;
     }
@@ -491,11 +590,20 @@ export const loadEvmActiveAccount =
       dispatch(loadEvmHistory()),
     ];
 
-    const { balances, shouldLoadMore } =
+    const { balances, shouldLoadMore, ...loadMetadata } =
       await EvmAccountTokensLoadUtils.loadNativeAndErc20TokensForChain(
         chain,
         wallet.address,
-        { registerAddress: false },
+        {
+          registerAddress: false,
+          shouldContinue: () =>
+            isActiveAccountRequestCurrent(
+              getState().chain as Chain,
+              getState().evm.activeAccount,
+              chain,
+              wallet,
+            ),
+        },
       );
     if (
       !isActiveAccountRequestCurrent(
@@ -515,6 +623,7 @@ export const loadEvmActiveAccount =
           value: balances,
           loading: false,
           initialized: true,
+          ...getLoadMetadataPayload(loadMetadata),
         },
       },
     });
@@ -528,7 +637,7 @@ export const loadEvmActiveAccount =
         dispatch(loadMoreTokensInActiveAccount(chain, wallet));
       }, 1000);
     }
-    await Promise.all(additionalAssetLoadPromises);
+    await waitForAdditionalAssetLoads(additionalAssetLoadPromises);
   };
 
 export const loadMoreNftsInActiveAccount =
@@ -547,12 +656,10 @@ export const loadMoreNftsInActiveAccount =
     ) {
       return;
     }
-    const result = await EvmLightNodeUtils.getDiscoveredNfts(
-      chain.chainId,
-      process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
+    const { nfts, shouldLoadMore, ...loadMetadata } = await loadNftsForChain(
+      chain,
+      wallet.address,
     );
-    const nfts = await mapDiscoveredNftsResponseToActiveAccountNfts(result);
-    const shouldLoadMore = shouldLoadMoreDiscoveredNfts(result);
     if (
       !isActiveAccountRequestCurrent(
         getState().chain as Chain,
@@ -576,6 +683,7 @@ export const loadMoreNftsInActiveAccount =
           value: nextNfts,
           loading: shouldLoadMore ? nextNfts.length === 0 : false,
           initialized: true,
+          ...getLoadMetadataPayload(loadMetadata),
         },
       },
     });
@@ -630,12 +738,10 @@ export const loadEvmActiveAccountNfts =
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: { nfts: { value: [], loading: true, initialized: false } },
     });
-    const result = await EvmLightNodeUtils.getDiscoveredNfts(
-      chain.chainId,
-      process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
+    const { nfts, shouldLoadMore, ...loadMetadata } = await loadNftsForChain(
+      chain,
+      wallet.address,
     );
-    const nfts = await mapDiscoveredNftsResponseToActiveAccountNfts(result);
-    const shouldLoadMore = shouldLoadMoreDiscoveredNfts(result);
     if (
       !isActiveAccountRequestCurrent(
         getState().chain as Chain,
@@ -653,6 +759,7 @@ export const loadEvmActiveAccountNfts =
           value: nfts,
           loading: shouldLoadMore ? nfts.length === 0 : false,
           initialized: true,
+          ...getLoadMetadataPayload(loadMetadata),
         },
       },
     });

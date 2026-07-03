@@ -12,12 +12,38 @@ export const getEvmLightNodeBaseUrl = () =>
 const buildUrl = (url: string) =>
   `${getEvmLightNodeBaseUrl()}/${url.replace(/^\/+/, '')}`;
 
+export class EvmLightNodeApiError extends Error {
+  status: number;
+  data: unknown;
+  url: string;
+
+  constructor(url: string, status: number, data: unknown) {
+    super(`EVM light-node request failed (${status})`);
+    this.name = 'EvmLightNodeApiError';
+    this.status = status;
+    this.data = data;
+    this.url = url;
+  }
+}
+
+const isSuccessStatus = (status: number) => status >= 200 && status < 300;
+
 const get = async (url: string): Promise<any> => {
-  return await BaseApi.get(buildUrl(url));
+  const fullUrl = buildUrl(url);
+  const response = await BaseApi.getWithResponse(fullUrl);
+  if (!isSuccessStatus(response.status)) {
+    throw new EvmLightNodeApiError(fullUrl, response.status, response.data);
+  }
+  return response.data;
 };
 
 const post = async (url: string, body: any): Promise<any> => {
-  return await BaseApi.post(buildUrl(url), body);
+  const fullUrl = buildUrl(url);
+  const response = await BaseApi.postWithResponse(fullUrl, body);
+  if (!isSuccessStatus(response.status)) {
+    throw new EvmLightNodeApiError(fullUrl, response.status, response.data);
+  }
+  return response.data;
 };
 
 export const EvmLightNodeApi = {

@@ -1,4 +1,5 @@
 import { Card } from '@common-ui/card/card.component';
+import { EvmRiskStaticAlert } from '@common-ui/evm/evm-risk-warning/evm-risk-alert-banner.component';
 import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.component';
 import { SeparatorWithFilter } from '@common-ui/separator-with-filter/separator-with-filter.component';
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
@@ -7,6 +8,7 @@ import {
   EvmErc1155Token,
   EvmErc721Token,
 } from '@popup/evm/interfaces/active-account.interface';
+import { EvmTransactionWarningLevel } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmWalletNftPreviewComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-nft-gallery/evm-wallet-nft-preview/evm-wallet-nft-preview.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import {
@@ -132,8 +134,15 @@ const EvmWalletNftGallery = ({
 
   return (
     <div className="nft-gallery">
-      {displayedCollections && !activeAccount.nfts.loading && (
+      {!activeAccount.nfts.loading && (
         <>
+          {activeAccount.nfts.lightNodeUnavailable && (
+            <EvmRiskStaticAlert
+              message="evm_light_node_assets_cache_warning"
+              level={EvmTransactionWarningLevel.LOW}
+              dataTestId="evm-nft-stale-alert"
+            />
+          )}
           {(hasFilterableCollections || isCustomChainSelected) && (
             <SeparatorWithFilter
               setFilterValue={setFilterValue}
@@ -167,7 +176,7 @@ const EvmWalletNftGallery = ({
             </Card>
           )}
           <FlatList
-            list={displayedCollections}
+            list={displayedCollections ?? []}
             renderItem={(token: EvmErc721Token | EvmErc1155Token) => (
               <EvmWalletNftPreviewComponent
                 token={token}

@@ -1,7 +1,11 @@
-import { NativeAndErc20Token } from '@popup/evm/interfaces/active-account.interface';
 import {
-  EvmSmartContractInfo,
+  EvmActiveAccountLoadMetadata,
+  NativeAndErc20Token,
+} from '@popup/evm/interfaces/active-account.interface';
+import {
   EVMSmartContractType,
+  EvmSmartContractInfoErc20,
+  EvmSmartContractInfoNative,
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   CatchupStatus,
@@ -9,9 +13,11 @@ import {
   EvmLightNodeUtils,
   PricingStatus,
 } from '@popup/evm/utils/evm-light-node.utils';
+import { EvmDiscoveryCacheUtils } from '@popup/evm/utils/evm-discovery-cache.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { AsyncUtils } from 'src/utils/async.utils';
+import Logger from 'src/utils/logger.utils';
 
 const LOAD_MORE_TOKENS_INITIAL_DELAY_MS = 1000;
 const LOAD_MORE_TOKENS_MAX_DELAY_MS = 30000;
@@ -20,7 +26,7 @@ const DEFAULT_MAX_LOAD_MORE_RETRIES = 5;
 export type LoadNativeAndErc20TokensResult = {
   balances: NativeAndErc20Token[];
   shouldLoadMore: boolean;
-};
+} & EvmActiveAccountLoadMetadata;
 
 const getWalletAddressForLoading = (walletAddress: string): string =>
   process.env.FORCED_EVM_WALLET_ADDRESS ?? walletAddress;
@@ -42,10 +48,45 @@ const shouldLoadMoreDiscoveredAssets = (
   );
 };
 
+const saveDiscoveredTokensCache = async (
+  chain: EvmChain,
+  walletAddress: string,
+  result: DiscoveredTokensResponse,
+) => {
+  try {
+    await EvmDiscoveryCacheUtils.saveDiscoveredTokens(
+      chain.chainId,
+      walletAddress,
+      result,
+    );
+  } catch (error) {
+    Logger.error('Error while caching discovered EVM tokens', error);
+  }
+};
+
+const getFallbackNativeTokenBalances = async (
+  chain: EvmChain,
+  walletAddress: string,
+): Promise<LoadNativeAndErc20TokensResult> => {
+  const nativeMeta = EvmTokensUtils.buildFallbackNativeTokenInfo(chain);
+  const balances = await EvmTokensUtils.getTokenBalances(
+    getWalletAddressForLoading(walletAddress),
+    chain,
+    [nativeMeta],
+  );
+
+  return {
+    balances,
+    shouldLoadMore: false,
+    source: 'fallback',
+    lightNodeUnavailable: true,
+  };
+};
+
 const getTokenInfosWithCustomErc20 = async (
   chain: EvmChain,
   walletAddress: string,
-  tokenInfos: EvmSmartContractInfo[],
+  tokenInfos: (EvmSmartContractInfoNative | EvmSmartContractInfoErc20)[],
 ) => {
   const customTokenInfos = await EvmTokensUtils.getCustomErc20TokenInfos(
     chain,
@@ -65,10 +106,19 @@ const getVisibleNativeAndErc20Tokens = async (
   return EvmTokensUtils.sortTokens(filtered);
 };
 
+type LoadNativeAndErc20TokensForChainOptions = {
+  registerAddress?: boolean;
+  shouldContinue?: () => boolean;
+};
+
+const isLoadCancelled = (
+  options?: LoadNativeAndErc20TokensForChainOptions,
+) => options?.shouldContinue?.() === false;
+
 const loadNativeAndErc20TokensForChain = async (
   chain: EvmChain,
   walletAddress: string,
-  options?: { registerAddress?: boolean },
+  options?: LoadNativeAndErc20TokensForChainOptions,
 ): Promise<LoadNativeAndErc20TokensResult> => {
   const address = getWalletAddressForLoading(walletAddress);
 
@@ -87,13 +137,53 @@ const loadNativeAndErc20TokensForChain = async (
   }
 
   if (options?.registerAddress !== false) {
-    await EvmLightNodeUtils.registerAddress(chain.chainId, walletAddress, false);
+    try {
+      await EvmLightNodeUtils.registerAddress(chain.chainId, walletAddress, false);
+    } catch (error) {
+      Logger.error('Error while registering EVM address with light node', error);
+    }
   }
 
-  const result = await EvmLightNodeUtils.getDiscoveredTokens(
-    chain.chainId,
-    address,
-  );
+  if (isLoadCancelled(options)) {
+    return { balances: [], shouldLoadMore: false };
+  }
+
+  let result: DiscoveredTokensResponse;
+  let loadMetadata: EvmActiveAccountLoadMetadata = {};
+
+  try {
+    result = await EvmLightNodeUtils.getDiscoveredTokens(chain.chainId, address);
+    if (!Array.isArray(result?.tokens)) {
+      throw new Error('Invalid discovered tokens response');
+    }
+    await saveDiscoveredTokensCache(chain, address, result);
+  } catch (error) {
+    Logger.error('Error while loading discovered EVM tokens', error);
+    const cached = await EvmDiscoveryCacheUtils.getDiscoveredTokens(
+      chain.chainId,
+      address,
+    );
+
+    if (isLoadCancelled(options)) {
+      return { balances: [], shouldLoadMore: false };
+    }
+
+    if (!cached?.response || !Array.isArray(cached.response.tokens)) {
+      return getFallbackNativeTokenBalances(chain, walletAddress);
+    }
+
+    result = cached.response;
+    loadMetadata = {
+      source: 'cache',
+      cacheUpdatedAt: cached.updatedAt,
+      lightNodeUnavailable: true,
+    };
+  }
+
+  if (isLoadCancelled(options)) {
+    return { balances: [], shouldLoadMore: false, ...loadMetadata };
+  }
+
   const balances = await EvmTokensUtils.getTokenBalances(
     address,
     chain,
@@ -106,7 +196,10 @@ const loadNativeAndErc20TokensForChain = async (
 
   return {
     balances,
-    shouldLoadMore: shouldLoadMoreDiscoveredAssets(result),
+    shouldLoadMore: loadMetadata.lightNodeUnavailable
+      ? false
+      : shouldLoadMoreDiscoveredAssets(result),
+    ...loadMetadata,
   };
 };
 

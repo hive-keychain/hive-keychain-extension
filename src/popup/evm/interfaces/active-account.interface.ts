@@ -8,18 +8,27 @@ import {
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmWallet } from '@popup/evm/interfaces/wallet.interface';
 
+export type EvmActiveAccountDataSource = 'light-node' | 'cache' | 'fallback';
+
+export interface EvmActiveAccountLoadMetadata {
+  source?: EvmActiveAccountDataSource;
+  cacheUpdatedAt?: number;
+  lightNodeUnavailable?: boolean;
+}
+
 export interface EvmActiveAccount {
   address: string;
-  nativeAndErc20Tokens: {
+  nativeAndErc20Tokens: EvmActiveAccountLoadMetadata & {
     value: NativeAndErc20Token[];
     loading: boolean;
+    initialized?: boolean;
   };
-  nfts: {
+  nfts: EvmActiveAccountLoadMetadata & {
     value: (EvmErc721Token | EvmErc1155Token)[];
     loading: boolean;
     initialized: boolean;
   };
-  history: {
+  history: EvmActiveAccountLoadMetadata & {
     value: EvmUserHistory;
     loading: boolean;
     initialized: boolean;

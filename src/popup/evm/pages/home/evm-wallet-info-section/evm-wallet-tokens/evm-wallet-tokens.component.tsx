@@ -1,4 +1,5 @@
 import { Card } from '@common-ui/card/card.component';
+import { EvmRiskStaticAlert } from '@common-ui/evm/evm-risk-warning/evm-risk-alert-banner.component';
 import { SVGIcons } from '@common-ui/icons.enum';
 import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.component';
 import { SeparatorWithFilter } from '@common-ui/separator-with-filter/separator-with-filter.component';
@@ -7,6 +8,7 @@ import {
   EvmActiveAccount,
   NativeAndErc20Token,
 } from '@popup/evm/interfaces/active-account.interface';
+import { EvmTransactionWarningLevel } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EVMWalletInfoSectionItemComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section-item/evm-wallet-info-section-item.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
@@ -154,6 +156,13 @@ const EvmWalletTokensInner = ({
     <>
       {!activeAccount.nativeAndErc20Tokens.loading && (
         <>
+          {activeAccount.nativeAndErc20Tokens.lightNodeUnavailable && (
+            <EvmRiskStaticAlert
+              message="evm_light_node_assets_cache_warning"
+              level={EvmTransactionWarningLevel.LOW}
+              dataTestId="evm-token-stale-alert"
+            />
+          )}
           <SeparatorWithFilter
             setFilterValue={setTokenFilter}
             filterValue={tokenFilter}

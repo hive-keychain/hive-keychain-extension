@@ -1,8 +1,10 @@
 import { NativeAndErc20Token } from '@popup/evm/interfaces/active-account.interface';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmAccountTokensLoadUtils } from '@popup/evm/utils/evm-account-tokens-load.utils';
+import { EvmDiscoveryCacheUtils } from '@popup/evm/utils/evm-discovery-cache.utils';
 import {
   CatchupStatus,
+  DiscoveredTokensResponse,
   EvmLightNodeUtils,
   PricingStatus,
 } from '@popup/evm/utils/evm-light-node.utils';
@@ -33,22 +35,40 @@ const nativeToken = {
   shortFormattedBalance: '1',
 } as NativeAndErc20Token;
 
+const discoveredTokensResponse: DiscoveredTokensResponse = {
+  address: '0xabc',
+  chainId: '1',
+  tokens: [
+    {
+      type: EVMSmartContractType.NATIVE,
+      name: 'Ethereum',
+      symbol: 'ETH',
+      logo: 'eth.svg',
+      chainId: '1',
+      backgroundColor: '',
+      priceUsd: 100,
+      coingeckoId: 'ethereum',
+      createdAt: '',
+      categories: [],
+    },
+  ],
+  catchupStatus: CatchupStatus.DONE,
+  pricingStatus: PricingStatus.READY,
+};
+
 describe('EvmAccountTokensLoadUtils', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.spyOn(EvmLightNodeUtils, 'registerAddress').mockResolvedValue(undefined);
-    jest.spyOn(EvmLightNodeUtils, 'getDiscoveredTokens').mockResolvedValue({
-      address: '0xabc',
-      chainId: '1',
-      tokens: [
-        {
-          type: EVMSmartContractType.NATIVE,
-          symbol: 'ETH',
-        },
-      ],
-      catchupStatus: CatchupStatus.DONE,
-      pricingStatus: PricingStatus.READY,
-    });
+    jest
+      .spyOn(EvmLightNodeUtils, 'getDiscoveredTokens')
+      .mockResolvedValue(discoveredTokensResponse);
+    jest
+      .spyOn(EvmDiscoveryCacheUtils, 'saveDiscoveredTokens')
+      .mockResolvedValue({ updatedAt: 1, response: discoveredTokensResponse });
+    jest
+      .spyOn(EvmDiscoveryCacheUtils, 'getDiscoveredTokens')
+      .mockResolvedValue(null);
     jest.spyOn(EvmTokensUtils, 'getTokenBalances').mockResolvedValue([nativeToken]);
     jest
       .spyOn(EvmTokensUtils, 'filterTokensBasedOnSettings')
@@ -74,6 +94,19 @@ describe('EvmAccountTokensLoadUtils', () => {
     expect(EvmTokensUtils.getTokenBalances).toHaveBeenCalled();
     expect(result.balances).toEqual([nativeToken]);
     expect(result.shouldLoadMore).toBe(false);
+  });
+
+  it('caches successful light-node token discovery responses', async () => {
+    await EvmAccountTokensLoadUtils.loadNativeAndErc20TokensForChain(
+      ethereumChain,
+      '0xabc',
+    );
+
+    expect(EvmDiscoveryCacheUtils.saveDiscoveredTokens).toHaveBeenCalledWith(
+      ethereumChain.chainId,
+      '0xabc',
+      discoveredTokensResponse,
+    );
   });
 
   it('skips address registration on refresh loads', async () => {
@@ -108,7 +141,7 @@ describe('EvmAccountTokensLoadUtils', () => {
     expect(tokens).toEqual([nativeToken]);
   });
 
-  it('continues loading other chains when one chain fails', async () => {
+  it('falls back per setup chain when discovery fails', async () => {
     const polygonChain: EvmChain = {
       ...ethereumChain,
       name: 'Polygon',
@@ -153,12 +186,104 @@ describe('EvmAccountTokensLoadUtils', () => {
         },
       );
 
-    expect(tokens).toEqual([nativeToken]);
-    expect(failedChains).toEqual(['Polygon']);
+    expect(tokens).toEqual([nativeToken, nativeToken]);
+    expect(failedChains).toEqual([]);
     expect(finishedChains).toHaveLength(2);
     expect(finishedChains).toEqual(
       expect.arrayContaining(['Ethereum', 'Polygon']),
     );
+  });
+
+  it('uses cached token metadata on light-node failure and refreshes balances through rpc', async () => {
+    const cachedToken = {
+      type: EVMSmartContractType.ERC20,
+      name: 'USD Coin',
+      symbol: 'USDC',
+      logo: '',
+      chainId: '1',
+      backgroundColor: '',
+      priceUsd: 1,
+      contractAddress: '0x00000000000000000000000000000000000000aa',
+      possibleSpam: false,
+      verifiedContract: true,
+      isProxy: false,
+      proxyTarget: null,
+      decimals: 6,
+      validated: 1,
+    };
+    const cachedResponse: DiscoveredTokensResponse = {
+      address: '0xabc',
+      chainId: '1',
+      tokens: [cachedToken],
+      catchupStatus: CatchupStatus.RUNNING,
+      pricingStatus: PricingStatus.PENDING,
+    };
+    const cachedBalance = {
+      ...nativeToken,
+      tokenInfo: cachedToken,
+    } as NativeAndErc20Token;
+
+    (EvmLightNodeUtils.getDiscoveredTokens as jest.Mock).mockRejectedValue(
+      new Error('light node unavailable'),
+    );
+    (
+      EvmDiscoveryCacheUtils.getDiscoveredTokens as jest.Mock
+    ).mockResolvedValue({
+      updatedAt: 123,
+      response: cachedResponse,
+    });
+    (EvmTokensUtils.getTokenBalances as jest.Mock).mockResolvedValue([
+      cachedBalance,
+    ]);
+
+    const result =
+      await EvmAccountTokensLoadUtils.loadNativeAndErc20TokensForChain(
+        ethereumChain,
+        '0xabc',
+      );
+
+    expect(EvmTokensUtils.getTokenBalances).toHaveBeenCalledWith(
+      '0xabc',
+      ethereumChain,
+      [cachedToken],
+    );
+    expect(result).toMatchObject({
+      balances: [cachedBalance],
+      shouldLoadMore: false,
+      source: 'cache',
+      cacheUpdatedAt: 123,
+      lightNodeUnavailable: true,
+    });
+  });
+
+  it('falls back to native token balances when light-node fails with no cache', async () => {
+    (EvmLightNodeUtils.getDiscoveredTokens as jest.Mock).mockRejectedValue(
+      new Error('light node unavailable'),
+    );
+    (
+      EvmDiscoveryCacheUtils.getDiscoveredTokens as jest.Mock
+    ).mockResolvedValue(null);
+
+    const result =
+      await EvmAccountTokensLoadUtils.loadNativeAndErc20TokensForChain(
+        ethereumChain,
+        '0xabc',
+      );
+
+    const balanceCall = (EvmTokensUtils.getTokenBalances as jest.Mock).mock
+      .calls[0];
+    expect(balanceCall[0]).toBe('0xabc');
+    expect(balanceCall[1]).toBe(ethereumChain);
+    expect(balanceCall[2][0]).toMatchObject({
+      type: EVMSmartContractType.NATIVE,
+      symbol: ethereumChain.mainToken,
+    });
+    expect(result).toMatchObject({
+      balances: [nativeToken],
+      shouldLoadMore: false,
+      source: 'fallback',
+      lightNodeUnavailable: true,
+    });
   });
 
   it('stops retrying after the configured max retries', async () => {
