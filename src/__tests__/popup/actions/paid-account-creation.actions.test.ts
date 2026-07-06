@@ -186,6 +186,37 @@ describe('paid-account-creation.actions', () => {
     ).toHaveBeenCalledWith(pendingRequest.requestId, mk);
   });
 
+  it('removes only the pending request missing from the account creation API', async () => {
+    const requestNotFoundError = Object.assign(
+      new Error('Request not found.'),
+      {
+        status: 404,
+        response: { error: 'Request not found.' },
+      },
+    );
+    jest
+      .spyOn(HiveAccountCreationApi, 'getHiveAccountCreationStatus')
+      .mockRejectedValue(requestNotFoundError);
+    const store = getStore();
+
+    await expect(
+      store.dispatch<any>(
+        synchronizePendingHiveAccountCreation(pendingRequest.requestId),
+      ),
+    ).resolves.toMatchObject({
+      outcome: 'not_found',
+      request: pendingRequest,
+    });
+
+    expect(
+      PendingHiveAccountCreationUtils.removePendingHiveAccountCreationRequest,
+    ).toHaveBeenCalledWith(pendingRequest.requestId, mk);
+    expect(
+      PendingHiveAccountCreationUtils.updatePendingHiveAccountCreationStatus,
+    ).not.toHaveBeenCalled();
+    expect(AccountUtils.saveAccounts).not.toHaveBeenCalled();
+  });
+
   it('retains the pending request when encrypted account validation fails', async () => {
     jest
       .spyOn(HiveAccountCreationApi, 'getHiveAccountCreationStatus')

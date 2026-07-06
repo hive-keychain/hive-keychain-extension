@@ -1,8 +1,12 @@
-import { getHiveAccountCreationStatus } from '@api/hive-account-creation';
+import {
+  getHiveAccountCreationStatus,
+} from '@api/hive-account-creation';
 import {
   HiveAccountCreationStatus,
+  HiveAccountCreationStatusResponse,
   PendingHiveAccountCreationRequest,
 } from '@interfaces/hive-account-creation.interface';
+import type { HiveAccountCreationApiError } from '@api/hive-account-creation';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
@@ -38,6 +42,24 @@ const isTerminalPaidAccountCreationFailure = (
 const isPendingHiveAccountCreationAwaitingSync = (
   status: HiveAccountCreationStatus,
 ) => !isTerminalPaidAccountCreationFailure(status);
+
+const isMissingHiveAccountCreationRequestError = (
+  error: unknown,
+): error is HiveAccountCreationApiError => {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  const apiError = error as Partial<HiveAccountCreationApiError>;
+  const response = apiError.response;
+  return (
+    apiError.status === 404 &&
+    typeof response === 'object' &&
+    response !== null &&
+    'error' in response &&
+    response.error === 'Request not found.'
+  );
+};
 
 const hasPendingHiveAccountCreationsAwaitingSync = (
   pendingRequests: PendingHiveAccountCreationRequest[],
@@ -146,7 +168,24 @@ const synchronizePendingHiveAccountCreationRequest = async (
       );
     }
 
-    const statusResponse = await getHiveAccountCreationStatus(requestId);
+    let statusResponse: HiveAccountCreationStatusResponse;
+    try {
+      statusResponse = await getHiveAccountCreationStatus(requestId);
+    } catch (error) {
+      if (isMissingHiveAccountCreationRequestError(error)) {
+        await PendingHiveAccountCreationUtils.removePendingHiveAccountCreationRequest(
+          pendingRequest.requestId,
+          mk,
+        );
+        return {
+          outcome: 'not_found',
+          request: pendingRequest,
+        };
+      }
+
+      throw error;
+    }
+
     const updatedRequest =
       await PendingHiveAccountCreationUtils.updatePendingHiveAccountCreationStatus(
         requestId,

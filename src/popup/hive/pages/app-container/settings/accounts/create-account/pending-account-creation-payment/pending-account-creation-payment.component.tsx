@@ -322,6 +322,8 @@ const PendingAccountCreationPayment = ({
           );
         if (storedRequest) {
           setPendingRequest(storedRequest);
+        } else {
+          setPendingRequest(undefined);
         }
         return;
       } else if (result.request) {

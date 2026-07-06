@@ -6,6 +6,30 @@ import {
   SubmitHiveAccountCreationPaymentTxRequest,
 } from '@interfaces/hive-account-creation.interface';
 
+export interface HiveAccountCreationApiError extends Error {
+  status: number;
+  response: unknown;
+}
+
+const isSuccessStatus = (status: number) => status >= 200 && status < 300;
+
+const createHiveAccountCreationApiError = (
+  status: number,
+  response: unknown,
+): HiveAccountCreationApiError => {
+  const message =
+    typeof response === 'object' &&
+    response !== null &&
+    'error' in response &&
+    typeof response.error === 'string'
+      ? response.error
+      : 'Unable to get Hive account creation status.';
+  const error = new Error(message) as HiveAccountCreationApiError;
+  error.status = status;
+  error.response = response;
+  return error;
+};
+
 const buildQuoteRequestBody = ({
   username,
   authorities,
@@ -64,9 +88,14 @@ export const createHiveAccountCreationQuote = async (
 export const getHiveAccountCreationStatus = async (
   requestId: string,
 ): Promise<HiveAccountCreationStatusResponse> => {
-  return await KeychainApi.get(
+  const response = await KeychainApi.getWithResponse(
     `hive/account-creation/${encodeURIComponent(requestId)}`,
   );
+  if (isSuccessStatus(response.status)) {
+    return response.data as HiveAccountCreationStatusResponse;
+  }
+
+  throw createHiveAccountCreationApiError(response.status, response.data);
 };
 
 export const submitHiveAccountCreationPaymentTx = async (

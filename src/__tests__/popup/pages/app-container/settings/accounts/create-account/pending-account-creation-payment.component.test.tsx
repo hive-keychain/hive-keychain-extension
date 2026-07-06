@@ -495,6 +495,33 @@ describe('PendingAccountCreationPaymentComponent', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('clears the pending request when sync reports not_found and storage no longer has it', async () => {
+    jest
+      .spyOn(
+        PendingHiveAccountCreationUtils,
+        'getPendingHiveAccountCreationRequests',
+      )
+      .mockResolvedValue([pendingRequest]);
+    jest
+      .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
+      .mockResolvedValue([]);
+    jest
+      .spyOn(
+        PendingHiveAccountCreationUtils,
+        'findPendingHiveAccountCreationRequestWithRetry',
+      )
+      .mockResolvedValue(undefined);
+    (
+      PaidAccountCreationActions.synchronizePendingHiveAccountCreation as jest.Mock
+    ).mockImplementation(() => async () => ({ outcome: 'not_found' }));
+
+    renderComponent();
+
+    expect(
+      await screen.findByText('Pending payment request not found.'),
+    ).toBeInTheDocument();
+  });
+
   it('shows the Keychain payment action for pending EVM requests', async () => {
     jest
       .spyOn(
