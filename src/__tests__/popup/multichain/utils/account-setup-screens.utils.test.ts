@@ -3,6 +3,7 @@ import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
 import {
   isAccountSetupScreen,
+  isAccountSetupScreenWithOwnCompletion,
   stackHasAccountSetupPage,
 } from '@popup/multichain/utils/account-setup-screens.utils';
 
@@ -14,6 +15,22 @@ describe('account-setup-screens.utils', () => {
     );
     expect(isAccountSetupScreen(EvmScreen.CREATE_EVM_WALLET)).toBe(true);
     expect(isAccountSetupScreen(Screen.HOME_PAGE)).toBe(false);
+  });
+
+  it('detects setup screens that complete their own post-submit navigation', () => {
+    expect(
+      isAccountSetupScreenWithOwnCompletion(
+        EvmScreen.CREATE_EVM_WALLET_VERIFICATION,
+      ),
+    ).toBe(true);
+    expect(
+      isAccountSetupScreenWithOwnCompletion(
+        EvmScreen.IMPORT_EVM_WALLET_CONFIRMATION,
+      ),
+    ).toBe(true);
+    expect(
+      isAccountSetupScreenWithOwnCompletion(EvmScreen.CREATE_EVM_WALLET),
+    ).toBe(false);
   });
 
   it('detects account setup pages anywhere in the navigation stack', () => {

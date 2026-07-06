@@ -530,7 +530,7 @@ export const loadEvmActiveAccount =
       dispatch(loadEvmHistory()),
     ];
 
-    const result: DiscoveredTokensResponse =
+    const result: DiscoveredTokensResponse | undefined =
       await EvmLightNodeUtils.getDiscoveredTokens(
         chain.chainId,
         process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
@@ -546,10 +546,11 @@ export const loadEvmActiveAccount =
       return;
     }
 
+    const discoveredTokens = result?.tokens ?? [];
     const balances = await EvmTokensUtils.getTokenBalances(
       process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
       chain,
-      result.tokens.filter(
+      discoveredTokens.filter(
         (token) =>
           token.type === EVMSmartContractType.ERC20 ||
           token.type === EVMSmartContractType.NATIVE,
@@ -581,7 +582,7 @@ export const loadEvmActiveAccount =
       type: EvmActionType.SET_ACTIVE_ACCOUNT,
       payload: { isReady: true },
     });
-    if (shouldLoadMoreDiscoveredAssets(result)) {
+    if (result && shouldLoadMoreDiscoveredAssets(result)) {
       setTimeout(() => {
         dispatch(loadMoreTokensInActiveAccount(chain, wallet));
       }, 1000);

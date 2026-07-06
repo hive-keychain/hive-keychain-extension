@@ -1,12 +1,18 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { HDNodeWallet, Wallet, keccak256, toUtf8Bytes } from 'ethers';
+import { HDNodeWallet, Wallet, ethers, keccak256, toUtf8Bytes } from 'ethers';
 import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import {
   EvmAccount,
   EvmAccountSource,
   EvmLedgerDerivationMode,
 } from 'src/popup/evm/interfaces/wallet.interface';
+import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
+import {
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -936,6 +942,192 @@ describe('evm wallet utils', () => {
       'https://example.com': {
         [EvmRequestPermission.ETH_ACCOUNTS]: [seedAddress.toLowerCase()],
       },
+    });
+  });
+
+  describe('deriveWallets RPC handling', () => {
+    const deriveChain = {
+      chainId: '0x1',
+      name: 'Ethereum',
+      type: ChainType.EVM,
+      mainToken: 'ETH',
+      logo: '',
+      rpcs: [
+        { url: 'https://rpc-one.example', isDefault: true },
+        { url: 'https://rpc-two.example', isDefault: false },
+      ],
+    } as EvmChain;
+
+    const fakeMnemonic = {} as ethers.Mnemonic;
+
+    beforeEach(() => {
+      jest.spyOn(ethers.HDNodeWallet, 'fromMnemonic').mockImplementation(
+        (_mnemonic, path) =>
+          ({
+            address: `0x${String(path).replace(/\W+/g, '')}`,
+            path: String(path),
+            index: 0,
+          }) as HDNodeWallet,
+      );
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+      jest.useRealTimers();
+    });
+
+    const mockDeriveRpcStack = (
+      getBalance: jest.Mock,
+      activeRpcUrl: string = deriveChain.rpcs[0].url,
+    ) => {
+      jest
+        .spyOn(EvmRpcUtils, 'getRpcListForChain')
+        .mockResolvedValue(deriveChain.rpcs);
+      jest.spyOn(EvmRpcUtils, 'getActiveRpc').mockResolvedValue({
+        url: activeRpcUrl,
+        isDefault: activeRpcUrl === deriveChain.rpcs[0].url,
+      });
+      jest.spyOn(EvmRpcUtils, 'setActiveRpc').mockResolvedValue(undefined);
+      jest.spyOn(EthersUtils, 'getProvider').mockResolvedValue({
+        getBalance,
+      } as never);
+    };
+
+    it('cycles RPCs with getBalance and sticks with the active RPC order', async () => {
+      const getBalance = jest
+        .fn()
+        .mockResolvedValueOnce(0n)
+        .mockResolvedValueOnce(0n);
+      mockDeriveRpcStack(getBalance);
+
+      const result = await EvmWalletUtils.deriveWallets(
+        fakeMnemonic,
+        deriveChain,
+      );
+
+      expect(EvmRpcUtils.setActiveRpc).toHaveBeenCalledWith(
+        deriveChain.rpcs[0],
+        deriveChain,
+      );
+      expect(result).toHaveLength(2);
+      expect(getBalance).toHaveBeenCalledTimes(2);
+    });
+
+    it('stops after 2 consecutive zero balances', async () => {
+      const getBalance = jest
+        .fn()
+        .mockResolvedValueOnce(0n)
+        .mockResolvedValueOnce(0n);
+      mockDeriveRpcStack(getBalance);
+
+      const result = await EvmWalletUtils.deriveWallets(
+        fakeMnemonic,
+        deriveChain,
+      );
+
+      expect(result).toHaveLength(2);
+      expect(result.every((wallet) => wallet.balance === 0)).toBe(true);
+      expect(result[0].selected).toBe(true);
+      expect(result[1].selected).toBe(false);
+    });
+
+    it('tries the next RPC when the first getBalance times out', async () => {
+      jest.useFakeTimers();
+      const setActiveRpcSpy = jest
+        .spyOn(EvmRpcUtils, 'setActiveRpc')
+        .mockResolvedValue(undefined);
+      jest
+        .spyOn(EvmRpcUtils, 'getRpcListForChain')
+        .mockResolvedValue(deriveChain.rpcs);
+      jest.spyOn(EvmRpcUtils, 'getActiveRpc').mockResolvedValue({
+        url: deriveChain.rpcs[0].url,
+        isDefault: true,
+      });
+
+      let balanceCallCount = 0;
+      const getBalance = jest.fn().mockImplementation(() => {
+        balanceCallCount += 1;
+        if (balanceCallCount === 1) {
+          return new Promise<bigint>(() => {});
+        }
+        return Promise.resolve(0n);
+      });
+      jest.spyOn(EthersUtils, 'getProvider').mockResolvedValue({
+        getBalance,
+      } as never);
+
+      const derivePromise = EvmWalletUtils.deriveWallets(
+        fakeMnemonic,
+        deriveChain,
+      );
+
+      await jest.advanceTimersByTimeAsync(2000);
+      await derivePromise;
+
+      expect(setActiveRpcSpy).toHaveBeenCalledWith(
+        deriveChain.rpcs[0],
+        deriveChain,
+      );
+      expect(setActiveRpcSpy).toHaveBeenCalledWith(
+        deriveChain.rpcs[1],
+        deriveChain,
+      );
+      expect(balanceCallCount).toBe(3);
+    });
+
+    it('succeeds on the second RPC when the first fails checkRpcStatus-style preflight would skip it', async () => {
+      jest.useFakeTimers();
+      jest
+        .spyOn(EvmRpcUtils, 'getRpcListForChain')
+        .mockResolvedValue(deriveChain.rpcs);
+      jest.spyOn(EvmRpcUtils, 'getActiveRpc').mockResolvedValue({
+        url: deriveChain.rpcs[0].url,
+        isDefault: true,
+      });
+      jest.spyOn(EvmRpcUtils, 'setActiveRpc').mockResolvedValue(undefined);
+
+      let balanceCallCount = 0;
+      const getBalance = jest.fn().mockImplementation(() => {
+        balanceCallCount += 1;
+        if (balanceCallCount === 1) {
+          return new Promise<bigint>(() => {});
+        }
+        return Promise.resolve(0n);
+      });
+      jest.spyOn(EthersUtils, 'getProvider').mockResolvedValue({
+        getBalance,
+      } as never);
+
+      const derivePromise = EvmWalletUtils.deriveWallets(
+        fakeMnemonic,
+        deriveChain,
+      );
+
+      await jest.advanceTimersByTimeAsync(2000);
+      await derivePromise;
+
+      expect(balanceCallCount).toBeGreaterThanOrEqual(2);
+    });
+
+    it('throws when all RPCs fail during balance fetch', async () => {
+      jest.useFakeTimers();
+      mockDeriveRpcStack(
+        jest.fn().mockImplementation(() => new Promise<bigint>(() => {})),
+      );
+
+      const derivePromise = EvmWalletUtils.deriveWallets(
+        fakeMnemonic,
+        deriveChain,
+      );
+      const expectation = expect(derivePromise).rejects.toThrow(
+        'evm_rpcs_not_responding',
+      );
+
+      await jest.advanceTimersByTimeAsync(2000);
+      await jest.advanceTimersByTimeAsync(2000);
+      await expectation;
+
+      expect(EvmRpcUtils.setActiveRpc).toHaveBeenCalledTimes(2);
     });
   });
 });

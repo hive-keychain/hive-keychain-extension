@@ -6696,7 +6696,7 @@
     "description": "Transaction couldn't be canceled error message"
   },
   "evm_rpcs_not_responding_error": {
-    "message": "All RPCs are not responding, please try again later",
+    "message": "None of the RPCs are responding, please try again later.",
     "description": "All RPCs are not responding error message"
   },
   "evm_rpc_already_in_list": {

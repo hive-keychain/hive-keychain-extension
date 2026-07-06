@@ -22,8 +22,9 @@ import {
 } from '@popup/evm/interfaces/wallet.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmLedgerUtils } from '@popup/evm/utils/evm-ledger.utils';
+import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import EncryptUtils from '@popup/hive/utils/encrypt.utils';
-import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { EvmChain, MultichainRpc } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
@@ -39,6 +40,71 @@ import VaultUtils from 'src/utils/vault.utils';
 
 const INITIAL_PATH = "44'/60'/0'/0";
 const IMPORTED_SOURCE_NICKNAME = 'Imported';
+const DERIVE_WALLETS_BALANCE_TIMEOUT_MS = 2000;
+
+const DERIVE_WALLETS_RPC_UNAVAILABLE_ERROR = 'evm_rpcs_not_responding';
+
+const createDeriveWalletBalanceTimeoutError = () =>
+  new Error('derive_wallet_balance_timeout');
+
+const getDeriveWalletBalanceWithTimeout = async (
+  provider: Awaited<ReturnType<typeof EthersUtils.getProvider>>,
+  address: string,
+): Promise<bigint> => {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      provider.getBalance(address),
+      new Promise<never>((_, reject) => {
+        timeoutId = setTimeout(
+          () => reject(createDeriveWalletBalanceTimeoutError()),
+          DERIVE_WALLETS_BALANCE_TIMEOUT_MS,
+        );
+      }),
+    ]);
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+  }
+};
+
+const orderRpcsStartingWithActive = (
+  rpcList: MultichainRpc[],
+  activeRpc: MultichainRpc,
+): MultichainRpc[] => {
+  const activeIndex = rpcList.findIndex((rpc) => rpc.url === activeRpc.url);
+  if (activeIndex <= 0) {
+    return rpcList;
+  }
+
+  return [...rpcList.slice(activeIndex), ...rpcList.slice(0, activeIndex)];
+};
+
+const getDeriveWalletBalance = async (
+  chain: EvmChain,
+  address: string,
+): Promise<bigint> => {
+  const rpcList = await EvmRpcUtils.getRpcListForChain(chain);
+  if (rpcList.length === 0) {
+    throw new Error(DERIVE_WALLETS_RPC_UNAVAILABLE_ERROR);
+  }
+
+  const activeRpc = await EvmRpcUtils.getActiveRpc(chain);
+  const orderedRpcs = orderRpcsStartingWithActive(rpcList, activeRpc);
+
+  for (const rpc of orderedRpcs) {
+    await EvmRpcUtils.setActiveRpc(rpc, chain);
+    const provider = await EthersUtils.getProvider(chain);
+    try {
+      return await getDeriveWalletBalanceWithTimeout(provider, address);
+    } catch {
+      // try next RPC in the cycle
+    }
+  }
+
+  throw new Error(DERIVE_WALLETS_RPC_UNAVAILABLE_ERROR);
+};
 
 const getEvmAccountOrderKey = (seedId: number, addressId: number) =>
   `${seedId}-${addressId}`;
@@ -300,7 +366,6 @@ const deriveWallets = async (
 
   chain: EvmChain,
 ): Promise<WalletWithBalance[]> => {
-  const provider = await EthersUtils.getProvider(chain);
   const wallets: WalletWithBalance[] = [];
   let consecutiveEmptyWallets = 0;
 
@@ -310,7 +375,7 @@ const deriveWallets = async (
       `${INITIAL_PATH}/${i}`,
     );
 
-    const wei = await provider.getBalance(derivedWallet.address);
+    const wei = await getDeriveWalletBalance(chain, derivedWallet.address);
     const balance = Number(Number(ethers.formatEther(wei)).toFixed(6));
     wallets.push({
       wallet: derivedWallet,

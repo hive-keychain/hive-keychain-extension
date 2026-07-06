@@ -134,17 +134,26 @@ const CreateNewWalletVerification = ({
 
       const rebuiltAccounts =
         await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+      const createdAccount = rebuiltAccounts[0];
+      if (!createdAccount) {
+        setErrorMessage('html_popup_create_account_failed');
+        return;
+      }
+
       setEvmAccounts(rebuiltAccounts);
       setActiveAccountType(ChainType.EVM);
-      await loadEvmActiveAccount(chain, rebuiltAccounts[0].wallet);
 
       if (EvmWalletSetupTabUtils.shouldShowDetachedTabCreationSuccess()) {
         resetTitleContainerProperties();
         setIsWalletCreatedSuccessfully(true);
+        void loadEvmActiveAccount(chain, createdAccount.wallet);
         return;
       }
 
       navigateTo(Screen.HOME_PAGE, true);
+      void loadEvmActiveAccount(chain, createdAccount.wallet);
+    } catch {
+      setErrorMessage('html_popup_create_account_failed');
     } finally {
       removeFromLoadingList(EVM_CREATE_WALLET_LOADING_OPERATION);
       setIsSubmitting(false);

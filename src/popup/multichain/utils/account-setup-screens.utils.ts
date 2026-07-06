@@ -21,8 +21,18 @@ const ACCOUNT_SETUP_SCREENS = new Set<Screen>([
   EvmScreen.CREATE_EVM_WALLET_VERIFICATION,
 ]);
 
+const ACCOUNT_SETUP_SCREENS_WITH_OWN_COMPLETION = new Set<Screen>([
+  EvmScreen.CREATE_EVM_WALLET_VERIFICATION,
+  EvmScreen.IMPORT_EVM_WALLET_CONFIRMATION,
+]);
+
 export const isAccountSetupScreen = (screen: Screen): boolean =>
   ACCOUNT_SETUP_SCREENS.has(screen);
+
+export const isAccountSetupScreenWithOwnCompletion = (
+  screen: Screen | undefined,
+): boolean =>
+  !!screen && ACCOUNT_SETUP_SCREENS_WITH_OWN_COMPLETION.has(screen);
 
 export const stackHasAccountSetupPage = (
   stack: { currentPage: Screen }[],

@@ -39,7 +39,10 @@ import {
 import { LoadingState } from '@popup/multichain/reducers/loading.reducer';
 import { RootState } from '@popup/multichain/store';
 import { UnifiedRouterComponent } from '@popup/multichain/unified-router.component';
-import { stackHasAccountSetupPage } from '@popup/multichain/utils/account-setup-screens.utils';
+import {
+  isAccountSetupScreenWithOwnCompletion,
+  stackHasAccountSetupPage,
+} from '@popup/multichain/utils/account-setup-screens.utils';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
 import { PaidAccountCreationRouteUtils } from '@popup/multichain/utils/paid-account-creation-route.utils';
@@ -290,13 +293,17 @@ const UnlockedApp = ({
   useEffect(() => {
     const accountsCount = hiveAccounts.length + evmAccounts.length;
     const isOnAccountSetupFlow = stackHasAccountSetupPage(navigationStack);
+    const currentNavigationPage = navigationStack[0]?.currentPage;
     const previousAccountsCount = previousAccountsCountRef.current;
     const didAddFirstAccount = previousAccountsCount === 0 && accountsCount > 0;
+    const shouldAutoNavigateAfterFirstAccount =
+      isOnAccountSetupFlow &&
+      didAddFirstAccount &&
+      !isAccountSetupScreenWithOwnCompletion(currentNavigationPage);
 
     if (
       isAppReady &&
-      (navigationStack.length === 0 ||
-        (isOnAccountSetupFlow && didAddFirstAccount)) &&
+      (navigationStack.length === 0 || shouldAutoNavigateAfterFirstAccount) &&
       (hasFinishedSignup || accountsCount > 0)
     ) {
       if (hiveAccounts.length > 0) {
