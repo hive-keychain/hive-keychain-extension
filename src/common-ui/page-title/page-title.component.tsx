@@ -27,7 +27,7 @@ export interface PageTitleProps {
     tooltipMessage?: string;
   };
   closeNavigationParams?: any;
-  onCloseAdditional?: () => void;
+  onCloseAdditional?: () => void | Promise<void>;
   onBackAdditional?: () => void | boolean | Promise<void | boolean>;
 }
 
@@ -57,9 +57,9 @@ const PageTitle = ({
       goBack();
     }
   };
-  const handleCloseButtonClick = (): void => {
+  const handleCloseButtonClick = async (): Promise<void> => {
     if (onCloseAdditional) {
-      onCloseAdditional();
+      await onCloseAdditional();
     }
 
     resetNav();
@@ -122,7 +122,7 @@ const PageTitle = ({
       {!rightAction && !isCloseButtonDisabled && (
         <SVGIcon
           dataTestId="icon-close-page"
-          onClick={handleCloseButtonClick}
+          onClick={() => void handleCloseButtonClick()}
           icon={SVGIcons.TOP_BAR_CLOSE_BTN}
         />
       )}
