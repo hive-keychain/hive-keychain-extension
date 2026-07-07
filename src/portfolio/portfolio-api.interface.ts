@@ -203,6 +203,15 @@ export interface PortfolioFiatRampOptions {
   paymentMethods: PortfolioFiatRampPaymentMethod[];
 }
 
+export interface PortfolioFiatRampCountry {
+  countryCode: string;
+  name: string | null;
+}
+
+export interface PortfolioFiatRampCountriesResponse {
+  countries: PortfolioFiatRampCountry[];
+}
+
 export interface PortfolioExecution {
   id: string;
   status: string;

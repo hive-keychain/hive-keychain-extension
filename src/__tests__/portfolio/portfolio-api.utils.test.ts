@@ -95,6 +95,31 @@ describe('PortfolioApiUtils', () => {
     );
   });
 
+  it('requests supported fiat ramp countries for the selected mode', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        countries: [
+          { countryCode: 'DE', name: 'Germany' },
+          { countryCode: 'us', name: null },
+          { countryCode: 'INVALID', name: 'Nope' },
+        ],
+      }),
+    });
+
+    await expect(
+      PortfolioApiUtils.listFiatRampCountries('sell'),
+    ).resolves.toEqual([
+      { countryCode: 'DE', name: 'Germany' },
+      { countryCode: 'US', name: null },
+    ]);
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      'https://portfolio.example/fiat-ramp/countries?mode=sell',
+      expect.any(Object),
+    );
+  });
+
   it('throws structured portfolio api errors from quote requests', async () => {
     getValueMock.mockResolvedValue('x'.repeat(64));
     global.fetch = jest.fn().mockResolvedValue({

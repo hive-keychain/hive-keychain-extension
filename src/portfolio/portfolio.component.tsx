@@ -61,6 +61,7 @@ import {
   PortfolioChainDisplayRecord,
   PortfolioEvmTransaction,
   PortfolioExecution,
+  PortfolioFiatRampCountry,
   PortfolioFiatRampOptions,
   PortfolioHistoryItem,
   PortfolioHiveTransaction,
@@ -538,6 +539,9 @@ export const Portfolio = ({
     useState<PortfolioFiatRampOptions | null>(null);
   const [isFiatRampOptionsLoading, setIsFiatRampOptionsLoading] =
     useState(false);
+  const [fiatRampCountries, setFiatRampCountries] = useState<
+    PortfolioFiatRampCountry[]
+  >([]);
   const [rampAvailableAssets, setRampAvailableAssets] = useState<
     PortfolioCanonicalAsset[]
   >([]);
@@ -1050,19 +1054,36 @@ export const Portfolio = ({
     networkSelectOptions.find((option) => option.value === selectedNetwork) ??
     getAllNetworksOption();
 
-  const countrySelectOptions = useMemo<OptionItem[]>(
+  const isoCountryNameByCode = useMemo(
     () =>
-      ISO_COUNTRY_CODES.map((country) => {
-        const flag = IsoCountryCodeUtils.getIsoCountryFlagEmoji(country.code);
-
-        return {
-          key: country.code,
-          label: flag ? `${flag} ${country.name}` : country.name,
-          value: country.code,
-        };
-      }),
+      new Map(
+        ISO_COUNTRY_CODES.map((country) => [country.code, country.name]),
+    ),
     [],
   );
+
+  const buildCountryOption = (code: string, name: string | null): OptionItem => {
+    const label = name || isoCountryNameByCode.get(code) || code;
+    const flag = IsoCountryCodeUtils.getIsoCountryFlagEmoji(code);
+
+    return {
+      key: code,
+      label: flag ? `${flag} ${label}` : label,
+      value: code,
+    };
+  };
+
+  const countrySelectOptions = useMemo<OptionItem[]>(() => {
+    if (fiatRampCountries.length > 0) {
+      return fiatRampCountries.map((country) =>
+        buildCountryOption(country.countryCode, country.name),
+      );
+    }
+
+    return ISO_COUNTRY_CODES.map((country) =>
+      buildCountryOption(country.code, country.name),
+    );
+  }, [fiatRampCountries, isoCountryNameByCode]);
 
   const selectedCountryOption =
     countrySelectOptions.find((option) => option.value === countryCode) ??
@@ -1386,6 +1407,16 @@ export const Portfolio = ({
     }
   };
 
+  const loadFiatRampCountries = async (mode: 'buy' | 'sell') => {
+    try {
+      const countries = await PortfolioApiUtils.listFiatRampCountries(mode);
+      setFiatRampCountries(countries);
+    } catch (error) {
+      Logger.error('Unable to load fiat ramp countries', error);
+      setFiatRampCountries([]);
+    }
+  };
+
   const loadRampAvailableAssets = async (mode: 'buy' | 'sell') => {
     setIsRampAvailableAssetsLoading(true);
     try {
@@ -1444,11 +1475,20 @@ export const Portfolio = ({
     if (!isFiatRampSection(section)) {
       setFiatRampOptions(null);
       setRampAvailableAssets([]);
+      setFiatRampCountries([]);
+      return;
+    }
+
+    void loadFiatRampCountries(section);
+    void loadRampAvailableAssets(section);
+  }, [section]);
+
+  useEffect(() => {
+    if (!isFiatRampSection(section)) {
       return;
     }
 
     void loadFiatRampOptions(section, countryCode);
-    void loadRampAvailableAssets(section);
   }, [section, countryCode]);
 
   useEffect(() => {
@@ -1461,6 +1501,23 @@ export const Portfolio = ({
     void loadSwapAvailableFromAssets();
     void loadSwapAvailableToAssets();
   }, [section]);
+
+  useEffect(() => {
+    if (fiatRampCountries.length === 0) {
+      return;
+    }
+
+    const supportedCodes = new Set(
+      fiatRampCountries.map((country) => country.countryCode),
+    );
+    setCountryCode((current) =>
+      supportedCodes.has(current)
+        ? current
+        : supportedCodes.has('US')
+          ? 'US'
+          : fiatRampCountries[0].countryCode,
+    );
+  }, [fiatRampCountries]);
 
   useEffect(() => {
     if (!fiatRampOptions?.fiatCurrencies.length) {
@@ -1840,7 +1897,7 @@ export const Portfolio = ({
       .then((result) => {
         setIsSwapQuoteRequestPending(false);
         if (
-          section === 'swap' &&
+          isQuoteAutoFetchSection(section) &&
           PortfolioApiUtils.shouldSchedulePortfolioSwapQuoteAutoRefresh(result)
         ) {
           scheduleSwapQuoteAutoRefresh();
@@ -1862,7 +1919,7 @@ export const Portfolio = ({
     }, PORTFOLIO_SWAP_QUOTE_DEBOUNCE_MS);
 
     const countdownIntervalId =
-      section === 'swap'
+      isQuoteAutoFetchSection(section)
         ? setInterval(() => {
             if (!swapQuoteRefreshDeadlineRef.current) {
               return;
@@ -2416,13 +2473,15 @@ export const Portfolio = ({
       : false;
     const hasMultipleQuotes = (quoteResponse?.quotes.length ?? 0) > 1;
     const isAwaitingFirstSwapQuote =
-      mode === 'swap' &&
+      isQuoteAutoFetchSection(mode) &&
       canRequestQuotes &&
       !selectedQuoteId &&
       !amountQuoteError &&
       (isFlowLoading || isSwapQuoteRequestPending);
     const showSwapQuoteRefresh =
-      mode === 'swap' && Boolean(selectedQuoteId) && canRequestQuotes;
+      isQuoteAutoFetchSection(mode) &&
+      Boolean(selectedQuoteId) &&
+      canRequestQuotes;
     const hasStoppedSwapQuoteFetch =
       Boolean(amountQuoteError) ||
       statusMessage === 'portfolio_no_quote_available' ||
@@ -2431,7 +2490,7 @@ export const Portfolio = ({
         quoteResponse.quotes.length === 0 &&
         !selectedQuoteId);
     const showSwapQuoteRetry =
-      mode === 'swap' &&
+      isQuoteAutoFetchSection(mode) &&
       canRequestQuotes &&
       !selectedQuoteId &&
       !isAwaitingFirstSwapQuote &&
@@ -2467,7 +2526,7 @@ export const Portfolio = ({
     };
 
     const estimatedAmountInput =
-      mode === 'swap' ? (
+      isQuoteAutoFetchSection(mode) ? (
         <div className="custom-input portfolio-swap-quote-field">
           <div className="label">
             {I18nUtils.getMessage('portfolio_estimated_amount')}
@@ -2613,6 +2672,173 @@ export const Portfolio = ({
       </>
     );
 
+    const fiatRampFields =
+      mode === 'buy' || mode === 'sell' ? (
+        <>
+          <ComplexeCustomSelect
+            label="portfolio_country_code"
+            options={countrySelectOptions}
+            selectedItem={selectedCountryOption}
+            setSelectedItem={(item) => setCountryCode(item.value)}
+            filterable
+            showOverlay
+          />
+          {fiatCurrencySelectOptions.length > 0 ? (
+            <ComplexeCustomSelect
+              label="portfolio_fiat_currency"
+              options={fiatCurrencySelectOptions}
+              selectedItem={selectedFiatCurrencyOption}
+              setSelectedItem={(item) => setFiatCurrency(item.value)}
+              additionalClassname={
+                isFiatRampOptionsLoading ? 'disabled' : undefined
+              }
+            />
+          ) : (
+            <InputComponent
+              label="portfolio_fiat_currency"
+              type={InputType.TEXT}
+              value={fiatCurrency}
+              onChange={(value: string) =>
+                setFiatCurrency(value.toUpperCase().slice(0, 10))
+              }
+            />
+          )}
+          {paymentMethodSelectOptions.length > 1 ? (
+            <ComplexeCustomSelect
+              label="portfolio_payment_method"
+              options={paymentMethodSelectOptions}
+              selectedItem={selectedPaymentMethodOption}
+              setSelectedItem={(item) => setPaymentMethod(item.value)}
+              additionalClassname={
+                isFiatRampOptionsLoading ? 'disabled' : undefined
+              }
+            />
+          ) : (
+            <InputComponent
+              label="portfolio_payment_method"
+              type={InputType.TEXT}
+              value={paymentMethod}
+              onChange={setPaymentMethod}
+            />
+          )}
+        </>
+      ) : null;
+
+    const fromAssetSelect =
+      mode !== 'buy' && (mode === 'swap' || fromAssetOptions.length > 0) ? (
+        <PortfolioOverlayListSelect
+          id="portfolio-from-asset"
+          label={I18nUtils.getMessage('portfolio_from_asset')}
+          options={fromAssetOptions}
+          value={fromAssetId}
+          onChange={setFromAssetId}
+          renderOption={renderFromAssetIdentity}
+          renderDisplay={renderFromAssetIdentity}
+          disabled={fromAssetOptions.length === 0}
+          error={
+            fromAssetOptions.length === 0
+              ? I18nUtils.getMessage(
+                  mode === 'swap'
+                    ? 'portfolio_swap_no_wallet_tokens'
+                    : 'portfolio_no_matching_assets',
+                )
+              : undefined
+          }
+          listFooter={
+            fromAssetOptions.length === 0 && mode !== 'swap'
+              ? I18nUtils.getMessage('portfolio_no_matching_assets')
+              : undefined
+          }
+        />
+      ) : null;
+
+    const toAssetSelect =
+      mode !== 'sell' && toAssetOptions.length > 0 ? (
+        <PortfolioOverlayListSelect
+          id="portfolio-to-asset"
+          label={I18nUtils.getMessage('portfolio_to_asset')}
+          options={filteredToAssetOptions}
+          value={toAssetId}
+          onChange={setToAssetId}
+          renderOption={renderToAssetIdentity}
+          renderDisplay={renderToAssetIdentity}
+          listHeader={
+            <div
+              className="portfolio-overlay-select__filters"
+              onMouseDown={(event) => event.stopPropagation()}
+              onClick={(event) => event.stopPropagation()}>
+              <div className="portfolio-overlay-select__filters-field portfolio-overlay-select__filters-token">
+                <label htmlFor="portfolio-to-asset-filter">
+                  {I18nUtils.getMessage('portfolio_symbol_filter')}
+                </label>
+                <input
+                  id="portfolio-to-asset-filter"
+                  type="text"
+                  placeholder={I18nUtils.getMessage('portfolio_symbol_filter')}
+                  value={toAssetFilter}
+                  onChange={(event) => setToAssetFilter(event.target.value)}
+                />
+              </div>
+              <div className="portfolio-overlay-select__filters-field portfolio-overlay-select__filters-network">
+                <ComplexeCustomSelect
+                  label="portfolio_network"
+                  options={toAssetChainSelectOptions}
+                  selectedItem={selectedToAssetChainOption}
+                  setSelectedItem={(item) =>
+                    setToAssetChainFilter(item.value)
+                  }
+                  filterable
+                  generateImageIfNull
+                  skipImageGenerationForFirstItem
+                  showOverlay
+                />
+              </div>
+            </div>
+          }
+          listFooter={
+            filteredToAssetOptions.length === 0
+              ? I18nUtils.getMessage('portfolio_no_matching_assets')
+              : hasToAssetFilters && toAssetTruncatedCount > 0
+                ? I18nUtils.getMessage('portfolio_to_asset_results_truncated', [
+                    String(toAssetTruncatedCount),
+                  ])
+                : !hasToAssetFilters &&
+                    filteredToAssetResult.totalMatches > TO_ASSET_UNFILTERED_MAX
+                  ? I18nUtils.getMessage('portfolio_to_asset_filter_hint')
+                  : undefined
+          }
+        />
+      ) : null;
+
+    const amountField = (
+      <div className="portfolio-amount-field">
+        <InputComponent
+          label="popup_html_transfer_amount"
+          type={InputType.NUMBER}
+          value={amount}
+          min={0}
+          onChange={setAmount}
+          classname={
+            amountQuoteError || hasInsufficientFromBalance
+              ? 'portfolio-amount-input--error'
+              : undefined
+          }
+        />
+        {hasInsufficientFromBalance && (
+          <p className="portfolio-field-error" role="alert">
+            {I18nUtils.getMessage('portfolio_insufficient_balance', [
+              selectedFromRow?.symbol ?? '',
+            ])}
+          </p>
+        )}
+        {amountQuoteError && (
+          <p className="portfolio-field-error" role="alert">
+            {I18nUtils.getMessage(amountQuoteError.key, amountQuoteError.params)}
+          </p>
+        )}
+      </div>
+    );
+
     return (
       <div className="portfolio-flow">
         {isQuoteAutoFetchSection(mode) &&
@@ -2628,173 +2854,11 @@ export const Portfolio = ({
               renderOption={renderAccountRow}
             />
           )}
-        {(mode === 'buy' || mode === 'sell') && (
-          <>
-            <ComplexeCustomSelect
-              label="portfolio_country_code"
-              options={countrySelectOptions}
-              selectedItem={selectedCountryOption}
-              setSelectedItem={(item) => setCountryCode(item.value)}
-              filterable
-              showOverlay
-            />
-            {fiatCurrencySelectOptions.length > 0 ? (
-              <ComplexeCustomSelect
-                label="portfolio_fiat_currency"
-                options={fiatCurrencySelectOptions}
-                selectedItem={selectedFiatCurrencyOption}
-                setSelectedItem={(item) => setFiatCurrency(item.value)}
-                additionalClassname={
-                  isFiatRampOptionsLoading ? 'disabled' : undefined
-                }
-              />
-            ) : (
-              <InputComponent
-                label="portfolio_fiat_currency"
-                type={InputType.TEXT}
-                value={fiatCurrency}
-                onChange={(value: string) =>
-                  setFiatCurrency(value.toUpperCase().slice(0, 10))
-                }
-              />
-            )}
-            {paymentMethodSelectOptions.length > 1 ? (
-              <ComplexeCustomSelect
-                label="portfolio_payment_method"
-                options={paymentMethodSelectOptions}
-                selectedItem={selectedPaymentMethodOption}
-                setSelectedItem={(item) => setPaymentMethod(item.value)}
-                additionalClassname={
-                  isFiatRampOptionsLoading ? 'disabled' : undefined
-                }
-              />
-            ) : (
-              <InputComponent
-                label="portfolio_payment_method"
-                type={InputType.TEXT}
-                value={paymentMethod}
-                onChange={setPaymentMethod}
-              />
-            )}
-          </>
-        )}
-        {mode !== 'buy' &&
-          (mode === 'swap' || fromAssetOptions.length > 0) && (
-            <PortfolioOverlayListSelect
-              id="portfolio-from-asset"
-              label={I18nUtils.getMessage('portfolio_from_asset')}
-              options={fromAssetOptions}
-              value={fromAssetId}
-              onChange={setFromAssetId}
-              renderOption={renderFromAssetIdentity}
-              renderDisplay={renderFromAssetIdentity}
-              disabled={fromAssetOptions.length === 0}
-              error={
-                fromAssetOptions.length === 0
-                  ? I18nUtils.getMessage(
-                      mode === 'swap'
-                        ? 'portfolio_swap_no_wallet_tokens'
-                        : 'portfolio_no_matching_assets',
-                    )
-                  : undefined
-              }
-              listFooter={
-                fromAssetOptions.length === 0 && mode !== 'swap'
-                  ? I18nUtils.getMessage('portfolio_no_matching_assets')
-                  : undefined
-              }
-            />
-          )}
-        <div className="portfolio-amount-field">
-          <InputComponent
-            label="popup_html_transfer_amount"
-            type={InputType.NUMBER}
-            value={amount}
-            min={0}
-            onChange={setAmount}
-            classname={
-              amountQuoteError || hasInsufficientFromBalance
-                ? 'portfolio-amount-input--error'
-                : undefined
-            }
-          />
-          {hasInsufficientFromBalance && (
-            <p className="portfolio-field-error" role="alert">
-              {I18nUtils.getMessage('portfolio_insufficient_balance', [
-                selectedFromRow?.symbol ?? '',
-              ])}
-            </p>
-          )}
-          {amountQuoteError && (
-            <p className="portfolio-field-error" role="alert">
-              {I18nUtils.getMessage(
-                amountQuoteError.key,
-                amountQuoteError.params,
-              )}
-            </p>
-          )}
-        </div>
+        {mode === 'buy' ? toAssetSelect : fromAssetSelect}
+        {amountField}
+        {fiatRampFields}
+        {mode === 'swap' && toAssetSelect}
         {mode === 'sell' && renderEstimatedAmountSection()}
-        {mode !== 'sell' && toAssetOptions.length > 0 && (
-          <PortfolioOverlayListSelect
-            id="portfolio-to-asset"
-            label={I18nUtils.getMessage('portfolio_to_asset')}
-            options={filteredToAssetOptions}
-            value={toAssetId}
-            onChange={setToAssetId}
-            renderOption={renderToAssetIdentity}
-            renderDisplay={renderToAssetIdentity}
-            listHeader={
-              <div
-                className="portfolio-overlay-select__filters"
-                onMouseDown={(event) => event.stopPropagation()}
-                onClick={(event) => event.stopPropagation()}>
-                <div className="portfolio-overlay-select__filters-field portfolio-overlay-select__filters-token">
-                  <label htmlFor="portfolio-to-asset-filter">
-                    {I18nUtils.getMessage('portfolio_symbol_filter')}
-                  </label>
-                  <input
-                    id="portfolio-to-asset-filter"
-                    type="text"
-                    placeholder={I18nUtils.getMessage(
-                      'portfolio_symbol_filter',
-                    )}
-                    value={toAssetFilter}
-                    onChange={(event) => setToAssetFilter(event.target.value)}
-                  />
-                </div>
-                <div className="portfolio-overlay-select__filters-field portfolio-overlay-select__filters-network">
-                  <ComplexeCustomSelect
-                    label="portfolio_network"
-                    options={toAssetChainSelectOptions}
-                    selectedItem={selectedToAssetChainOption}
-                    setSelectedItem={(item) =>
-                      setToAssetChainFilter(item.value)
-                    }
-                    filterable
-                    generateImageIfNull
-                    skipImageGenerationForFirstItem
-                    showOverlay
-                  />
-                </div>
-              </div>
-            }
-            listFooter={
-              filteredToAssetOptions.length === 0
-                ? I18nUtils.getMessage('portfolio_no_matching_assets')
-                : hasToAssetFilters && toAssetTruncatedCount > 0
-                  ? I18nUtils.getMessage(
-                      'portfolio_to_asset_results_truncated',
-                      [String(toAssetTruncatedCount)],
-                    )
-                  : !hasToAssetFilters &&
-                      filteredToAssetResult.totalMatches >
-                        TO_ASSET_UNFILTERED_MAX
-                    ? I18nUtils.getMessage('portfolio_to_asset_filter_hint')
-                    : undefined
-            }
-          />
-        )}
         {mode !== 'sell' &&
           toAssetOptions.length > 0 &&
           renderEstimatedAmountSection()}

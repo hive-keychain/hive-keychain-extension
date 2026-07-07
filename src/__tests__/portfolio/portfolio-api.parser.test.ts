@@ -437,4 +437,32 @@ describe('PortfolioApiParser', () => {
       }),
     );
   });
+
+  it('parses supported fiat ramp countries and normalizes country codes', () => {
+    expect(
+      PortfolioApiParser.parsePortfolioFiatRampCountriesResponse({
+        countries: [
+          { countryCode: 'de', name: 'Germany' },
+          { countryCode: 'US', name: null },
+          { countryCode: 'USA', name: 'Invalid' },
+          { name: 'Missing code' },
+          'not-an-object',
+        ],
+      }),
+    ).toEqual({
+      countries: [
+        { countryCode: 'DE', name: 'Germany' },
+        { countryCode: 'US', name: null },
+      ],
+    });
+  });
+
+  it('returns an empty country list for malformed payloads', () => {
+    expect(
+      PortfolioApiParser.parsePortfolioFiatRampCountriesResponse(null),
+    ).toEqual({ countries: [] });
+    expect(
+      PortfolioApiParser.parsePortfolioFiatRampCountriesResponse({}),
+    ).toEqual({ countries: [] });
+  });
 });

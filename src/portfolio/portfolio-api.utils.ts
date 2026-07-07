@@ -4,6 +4,7 @@ import {
   PortfolioApiErrorPayload,
   PortfolioAvailableAssetsResponse,
   PortfolioExecution,
+  PortfolioFiatRampCountry,
   PortfolioFiatRampOptions,
   PortfolioAssetsResponse,
   PortfolioHistoryItem,
@@ -241,6 +242,16 @@ const getFiatRampOptions = async (params: {
   );
 };
 
+const listFiatRampCountries = async (
+  mode: 'buy' | 'sell',
+): Promise<PortfolioFiatRampCountry[]> => {
+  const searchParams = new URLSearchParams({ mode });
+
+  return PortfolioApiParser.parsePortfolioFiatRampCountriesResponse(
+    await fetchJson(`/fiat-ramp/countries?${searchParams.toString()}`),
+  ).countries;
+};
+
 const getQuotes = async (
   body: PortfolioQuoteRequestBody,
 ): Promise<PortfolioQuoteResponse> =>
@@ -330,6 +341,7 @@ export const PortfolioApiUtils = {
   getQuotes,
   listAssets,
   listAvailableAssets,
+  listFiatRampCountries,
   listHistory,
   markSubmitted,
   resolveExecutablePortfolioQuoteId,

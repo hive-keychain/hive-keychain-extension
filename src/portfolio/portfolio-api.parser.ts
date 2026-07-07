@@ -8,6 +8,8 @@ import {
   PortfolioEvmTransaction,
   PortfolioExecution,
   PortfolioExecutionType,
+  PortfolioFiatRampCountriesResponse,
+  PortfolioFiatRampCountry,
   PortfolioFiatRampOptions,
   PortfolioFiatRampPaymentMethod,
   PortfolioHiveCustomJsonOperation,
@@ -511,6 +513,40 @@ const parsePortfolioFiatRampOptions = (
   };
 };
 
+const parsePortfolioFiatRampCountry = (
+  value: unknown,
+): PortfolioFiatRampCountry | null => {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  const countryCode = readString(value, 'countryCode').trim().toUpperCase();
+  if (!/^[A-Z]{2}$/.test(countryCode)) {
+    return null;
+  }
+
+  return {
+    countryCode,
+    name: readNullableString(value, 'name'),
+  };
+};
+
+const parsePortfolioFiatRampCountriesResponse = (
+  value: unknown,
+): PortfolioFiatRampCountriesResponse => {
+  if (!isRecord(value) || !Array.isArray(value.countries)) {
+    return { countries: [] };
+  }
+
+  return {
+    countries: value.countries
+      .map((country) => parsePortfolioFiatRampCountry(country))
+      .filter(
+        (country): country is PortfolioFiatRampCountry => country !== null,
+      ),
+  };
+};
+
 const parsePortfolioExecution = (value: unknown): PortfolioExecution | null => {
   if (!isRecord(value)) {
     return null;
@@ -603,6 +639,7 @@ export const PortfolioApiParser = {
   parsePortfolioAssetsResponse,
   parsePortfolioAvailableAssetsResponse,
   parsePortfolioExecution,
+  parsePortfolioFiatRampCountriesResponse,
   parsePortfolioFiatRampOptions,
   parsePortfolioHistoryItem,
   parsePortfolioHistoryResponse,
