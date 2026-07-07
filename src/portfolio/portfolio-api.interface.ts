@@ -6,6 +6,10 @@ export type PortfolioExecutionType = 'in_app' | 'redirect';
 
 export type PortfolioProviderId =
   | 'lifi'
+  | 'uniswap'
+  | 'zero_x'
+  | 'one_inch'
+  | 'socket'
   | 'keychain_swap'
   | 'stealthex'
   | 'simpleswap'
@@ -211,6 +215,7 @@ export interface PortfolioExecution {
   toAmount: string | null;
   fromAddress: string | null;
   toAddress: string | null;
+  redirectUrl: string | null;
   transaction: PortfolioQuoteTransaction | null;
   submittedAt: string | null;
   updatedAt: string | null;

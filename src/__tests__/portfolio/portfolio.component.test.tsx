@@ -88,6 +88,17 @@ const mockPortfolioListAvailableAssets = () => {
   );
 };
 
+const clickPortfolioNav = (
+  container: HTMLElement,
+  section: 'portfolio' | 'buy' | 'sell' | 'swap' | 'history',
+) => {
+  fireEvent.click(
+    container.querySelector(
+      `[data-testid="portfolio-nav-${section}"]`,
+    ) as HTMLButtonElement,
+  );
+};
+
 jest.mock('src/portfolio/portfolio-api.utils', () => {
   const actual = jest.requireActual('src/portfolio/portfolio-api.utils');
 
@@ -214,12 +225,16 @@ describe('Portfolio', () => {
     });
 
     const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
-    expect(sidebarButtons).toHaveLength(3);
+    expect(sidebarButtons).toHaveLength(5);
     expect(sidebarButtons[0].classList.contains('active')).toBe(true);
 
-    fireEvent.click(sidebarButtons[1]);
+    clickPortfolioNav(container, 'buy');
 
-    expect(sidebarButtons[1].classList.contains('active')).toBe(true);
+    expect(
+      container
+        .querySelector('[data-testid="portfolio-nav-buy"]')
+        ?.classList.contains('active'),
+    ).toBe(true);
     expect(container.querySelector('.portfolio-flow')).not.toBeNull();
   });
 
@@ -417,8 +432,7 @@ describe('Portfolio', () => {
       expect(container.textContent).toContain('ETH');
     });
 
-    const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
-    fireEvent.click(sidebarButtons[1]);
+    clickPortfolioNav(container, 'swap');
 
     await waitFor(() => {
       expect(
@@ -454,12 +468,10 @@ describe('Portfolio', () => {
       expect(container.textContent).toContain('ETH');
     });
 
-    const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
-
-    fireEvent.click(sidebarButtons[1]);
+    clickPortfolioNav(container, 'swap');
     expect(container.querySelector('#portfolio-flow-account')).not.toBeNull();
 
-    fireEvent.click(sidebarButtons[0]);
+    clickPortfolioNav(container, 'portfolio');
     expect(container.querySelector('#portfolio-flow-account')).toBeNull();
   });
 
@@ -564,8 +576,7 @@ describe('Portfolio', () => {
       ).toHaveBeenCalledTimes(1);
     });
 
-    const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
-    fireEvent.click(sidebarButtons[1]);
+    clickPortfolioNav(container, 'swap');
 
     await waitFor(() => {
       expect(container.querySelector('#portfolio-flow-account')).not.toBeNull();
@@ -693,8 +704,7 @@ describe('Portfolio', () => {
       expect(container.textContent).toContain('ETH');
     });
 
-    const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
-    fireEvent.click(sidebarButtons[1]);
+    clickPortfolioNav(container, 'swap');
 
     await waitFor(() => {
       expect(
@@ -793,8 +803,7 @@ describe('Portfolio', () => {
       expect(container.textContent).toContain('ETH');
     });
 
-    const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
-    fireEvent.click(sidebarButtons[1]);
+    clickPortfolioNav(container, 'swap');
 
     await waitFor(() => {
       expect(container.textContent).not.toContain('ETH - Ethereum (1)');
@@ -851,8 +860,7 @@ describe('Portfolio', () => {
       expect(container.textContent).toContain('ETH');
     });
 
-    const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
-    fireEvent.click(sidebarButtons[1]);
+    clickPortfolioNav(container, 'swap');
 
     await waitFor(() => {
       expect(container.querySelector('#portfolio-from-asset')).not.toBeNull();
@@ -928,8 +936,7 @@ describe('Portfolio', () => {
       expect(container.textContent).toContain('ETH');
     });
 
-    const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
-    fireEvent.click(sidebarButtons[1]);
+    clickPortfolioNav(container, 'swap');
 
     await waitFor(() => {
       expect(container.querySelector('#portfolio-from-asset')).not.toBeNull();
@@ -972,8 +979,7 @@ describe('Portfolio', () => {
       expect(container.textContent).toContain('ETH');
     });
 
-    const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
-    fireEvent.click(sidebarButtons[1]);
+    clickPortfolioNav(container, 'swap');
 
     await waitFor(() => {
       expect(container.querySelector('#portfolio-from-asset')).not.toBeNull();
@@ -1044,10 +1050,7 @@ describe('Portfolio', () => {
       expect(view.container.textContent).toContain('ETH');
     });
 
-    const sidebarButtons = view.container.querySelectorAll(
-      '.portfolio-sidebar nav button',
-    );
-    fireEvent.click(sidebarButtons[1]);
+    clickPortfolioNav(view.container, 'swap');
 
     await waitFor(() => {
       expect(view.container.querySelector('#portfolio-from-asset')).not.toBeNull();
@@ -1448,9 +1451,7 @@ describe('Portfolio', () => {
       expect(container.textContent).toContain('ETH');
     });
 
-    fireEvent.click(
-      container.querySelectorAll('.portfolio-sidebar nav button')[1],
-    );
+    clickPortfolioNav(container, 'swap');
 
     await waitFor(() => {
       expect(container.querySelector('#portfolio-to-asset')).not.toBeNull();
@@ -1572,7 +1573,7 @@ describe('Portfolio', () => {
     });
   });
 
-  it.skip('loads fiat ramp options and available buy assets when opening the buy section', async () => {
+  it('loads fiat ramp options and available buy assets when opening the buy section', async () => {
     (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockResolvedValue({
       mode: 'buy',
       direction: 'to',
@@ -1611,8 +1612,7 @@ describe('Portfolio', () => {
       expect(container.querySelector('.portfolio-sidebar')).not.toBeNull();
     });
 
-    const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
-    fireEvent.click(sidebarButtons[1]);
+    clickPortfolioNav(container, 'buy');
 
     await waitFor(() => {
       expect(PortfolioApiUtils.getFiatRampOptions).toHaveBeenCalledWith({

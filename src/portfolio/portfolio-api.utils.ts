@@ -25,6 +25,11 @@ export const canExecutePortfolioQuote = (quote: PortfolioQuote): boolean => {
   return quote.executionType === 'redirect' || Boolean(quote.redirectUrl);
 };
 
+export const resolvePortfolioExecutionRedirectUrl = (
+  execution: PortfolioExecution,
+  quote?: PortfolioQuote,
+): string | null => execution.redirectUrl ?? quote?.redirectUrl ?? null;
+
 export const resolveExecutablePortfolioQuoteId = (
   quotes: PortfolioQuote[],
   preferredQuoteId?: string,
@@ -303,10 +308,19 @@ const markSubmitted = async (
   return execution;
 };
 
-const listHistory = async (): Promise<PortfolioHistoryItem[]> =>
-  PortfolioApiParser.parsePortfolioHistoryResponse(
-    await fetchJson('/history', {}, true),
+const listHistory = async (
+  page = 1,
+): Promise<PortfolioHistoryItem[]> => {
+  const searchParams = new URLSearchParams();
+  if (page > 1) {
+    searchParams.set('page', String(page));
+  }
+  const query = searchParams.toString();
+
+  return PortfolioApiParser.parsePortfolioHistoryResponse(
+    await fetchJson(query ? `/history?${query}` : '/history', {}, true),
   ).items;
+};
 
 export const PortfolioApiUtils = {
   canExecutePortfolioQuote,
@@ -320,6 +334,7 @@ export const PortfolioApiUtils = {
   markSubmitted,
   resolveExecutablePortfolioQuoteId,
   resolvePortfolioAmountQuoteError,
+  resolvePortfolioExecutionRedirectUrl,
   resolvePortfolioQuoteStatusMessage,
   resolvePortfolioSwapQuoteFetchErrorResult,
   shouldSchedulePortfolioSwapQuoteAutoRefresh,

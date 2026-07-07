@@ -324,6 +324,7 @@ describe('PortfolioApiParser', () => {
         toAmount: '3200',
         fromAddress: '0xfrom',
         toAddress: '0xto',
+        redirectUrl: 'https://global.transak.com?sessionId=abc',
         transaction: {
           to: '0xdef',
           data: '0x1234',
@@ -339,6 +340,7 @@ describe('PortfolioApiParser', () => {
         provider: 'lifi',
         providerReferenceId: null,
         fromAddress: '0xfrom',
+        redirectUrl: 'https://global.transak.com?sessionId=abc',
         transaction: expect.objectContaining({
           chainId: 1,
           to: '0xdef',

@@ -533,6 +533,7 @@ const parsePortfolioExecution = (value: unknown): PortfolioExecution | null => {
     toAmount: readNullableString(value, 'toAmount'),
     fromAddress: readNullableString(value, 'fromAddress'),
     toAddress: readNullableString(value, 'toAddress'),
+    redirectUrl: readNullableString(value, 'redirectUrl'),
     transaction: parsePortfolioQuoteTransaction(value.transaction),
     submittedAt: readNullableString(value, 'submittedAt'),
     updatedAt: readNullableString(value, 'updatedAt'),

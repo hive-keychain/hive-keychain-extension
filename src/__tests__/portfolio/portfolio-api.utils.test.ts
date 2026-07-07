@@ -65,9 +65,33 @@ describe('PortfolioApiUtils', () => {
 
     await PortfolioApiUtils.listHistory();
 
+    expect(global.fetch).toHaveBeenCalledWith(
+      'https://portfolio.example/history',
+      expect.any(Object),
+    );
     const [, init] = (global.fetch as jest.Mock).mock.calls[0];
     expect((init.headers as Headers).get('X-Keychain-Portfolio-Client-Token')).toBe(
       'x'.repeat(64),
+    );
+  });
+
+  it('requests paginated history when page is greater than one', async () => {
+    getValueMock.mockResolvedValue('x'.repeat(64));
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        page: 2,
+        pageSize: 20,
+        hasMore: false,
+        items: [],
+      }),
+    });
+
+    await PortfolioApiUtils.listHistory(2);
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      'https://portfolio.example/history?page=2',
+      expect.any(Object),
     );
   });
 
@@ -228,6 +252,7 @@ describe('PortfolioApiUtils', () => {
         toAmount: '2',
         fromAddress: '0xfrom',
         toAddress: '0xto',
+        redirectUrl: null,
         transaction: {
           to: '0xrouter',
           data: '0xabcd',
@@ -413,6 +438,104 @@ describe('PortfolioApiUtils', () => {
           new Error('Network error'),
         ),
       ).toEqual({ status: 'transient_error' });
+    });
+  });
+
+  describe('resolvePortfolioExecutionRedirectUrl', () => {
+    it('prefers the execution redirect url over the quote preview url', () => {
+      expect(
+        PortfolioApiUtils.resolvePortfolioExecutionRedirectUrl(
+          {
+            id: 'exec-1',
+            status: 'created',
+            mode: 'buy',
+            provider: 'transak',
+            providerReferenceId: 'session-1',
+            fromAssetId: null,
+            toAssetId: 'evm:native:ethereum',
+            fromAmount: '100',
+            toAmount: '0.05',
+            fromAddress: null,
+            toAddress: '0xabc',
+            redirectUrl: 'https://global.transak.com?sessionId=fresh',
+            transaction: null,
+            submittedAt: '2026-06-23T12:00:00.000Z',
+            updatedAt: '2026-06-23T12:00:00.000Z',
+          },
+          {
+            quoteId: 'transak:1',
+            provider: 'transak',
+            providerName: 'Transak',
+            providerLogoUrl: null,
+            category: 'buy',
+            routeType: null,
+            fromAsset: null,
+            toAsset: null,
+            fromAmount: '100',
+            estimatedToAmount: '0.05',
+            comparableValue: '0.05',
+            providerFee: null,
+            networkFeeEstimate: null,
+            priceImpact: null,
+            warnings: [],
+            expiresAt: null,
+            redirectUrl: 'https://global.transak.com?sessionId=preview',
+            requiresRedirect: true,
+            executionType: 'redirect',
+            routeMetadata: null,
+            approval: null,
+            transaction: null,
+          },
+        ),
+      ).toBe('https://global.transak.com?sessionId=fresh');
+    });
+
+    it('falls back to the quote preview url when execution has no redirect url', () => {
+      expect(
+        PortfolioApiUtils.resolvePortfolioExecutionRedirectUrl(
+          {
+            id: 'exec-1',
+            status: 'created',
+            mode: 'buy',
+            provider: 'ramp',
+            providerReferenceId: null,
+            fromAssetId: null,
+            toAssetId: 'evm:native:ethereum',
+            fromAmount: '100',
+            toAmount: '0.05',
+            fromAddress: null,
+            toAddress: '0xabc',
+            redirectUrl: null,
+            transaction: null,
+            submittedAt: '2026-06-23T12:00:00.000Z',
+            updatedAt: '2026-06-23T12:00:00.000Z',
+          },
+          {
+            quoteId: 'ramp:1',
+            provider: 'ramp',
+            providerName: 'Ramp',
+            providerLogoUrl: null,
+            category: 'buy',
+            routeType: null,
+            fromAsset: null,
+            toAsset: null,
+            fromAmount: '100',
+            estimatedToAmount: '0.05',
+            comparableValue: '0.05',
+            providerFee: null,
+            networkFeeEstimate: null,
+            priceImpact: null,
+            warnings: [],
+            expiresAt: null,
+            redirectUrl: 'https://app.rampnetwork.com/preview',
+            requiresRedirect: true,
+            executionType: 'redirect',
+            routeMetadata: null,
+            approval: null,
+            transaction: null,
+          },
+        ),
+      ).toBe('https://app.rampnetwork.com/preview');
     });
   });
 

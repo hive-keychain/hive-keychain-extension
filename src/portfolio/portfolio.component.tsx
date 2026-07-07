@@ -154,16 +154,10 @@ const sections: PortfolioSection[] = [
   'history',
 ];
 
-const hiddenPortfolioSections: PortfolioSection[] = ['buy', 'sell'];
-
 const resolvePortfolioSignableTransaction = (
   quote: PortfolioQuote,
   execution: PortfolioExecution,
 ) => execution.transaction ?? quote.transaction;
-
-const visibleSections = sections.filter(
-  (item) => !hiddenPortfolioSections.includes(item),
-);
 
 const TO_ASSET_UNFILTERED_MAX = 50;
 const TO_ASSET_FILTERED_MAX = 200;
@@ -197,6 +191,11 @@ const getOptionalPaymentMethodOption = (): OptionItem => ({
 const isFiatRampSection = (
   section: PortfolioSection,
 ): section is 'buy' | 'sell' => section === 'buy' || section === 'sell';
+
+const isQuoteAutoFetchSection = (
+  section: PortfolioSection,
+): section is 'buy' | 'sell' | 'swap' =>
+  section === 'buy' || section === 'sell' || section === 'swap';
 
 const resolveDefaultPortfolioAccountKey = (
   accountOptions: AccountOption[],
@@ -826,6 +825,8 @@ export const Portfolio = ({
     [toCanonicalAsset],
   );
 
+  const flowMode = section as PortfolioMode;
+
   const resolvedToAddress = useMemo(() => {
     if (!selectedAccount) {
       return undefined;
@@ -836,15 +837,23 @@ export const Portfolio = ({
         ? selectedAccount.account.wallet.address
         : selectedAccount.account.name;
 
+    if (flowMode === 'sell') {
+      return fromAddress;
+    }
+
     return PortfolioFlowUtils.resolvePortfolioToAddress({
       fromAddress,
       recipientAddress,
       fromAsset: fromCanonicalAsset,
       toAsset: toCanonicalAsset,
     });
-  }, [fromCanonicalAsset, recipientAddress, selectedAccount, toCanonicalAsset]);
-
-  const flowMode = section as PortfolioMode;
+  }, [
+    flowMode,
+    fromCanonicalAsset,
+    recipientAddress,
+    selectedAccount,
+    toCanonicalAsset,
+  ]);
 
   const resolvedFromAssetId = useMemo(
     () =>
@@ -876,7 +885,11 @@ export const Portfolio = ({
   );
 
   const hasInsufficientFromBalance = useMemo(() => {
-    if (flowMode !== 'swap' || !amount || !selectedFromRow) {
+    if (
+      (flowMode !== 'swap' && flowMode !== 'sell') ||
+      !amount ||
+      !selectedFromRow
+    ) {
       return false;
     }
 
@@ -897,7 +910,9 @@ export const Portfolio = ({
       mode: flowMode,
       fromAssetId: resolvedFromAssetId,
       toAssetId: resolvedToAssetId,
-    });
+    }) &&
+    (!isFiatRampSection(section) ||
+      (countryCode.length === 2 && Boolean(fiatCurrency.trim())));
 
   useEffect(() => {
     setRecipientAddress('');
@@ -1715,12 +1730,7 @@ export const Portfolio = ({
         selectedAccount.type === ChainType.EVM
           ? selectedAccount.account.wallet.address
           : selectedAccount.account.name;
-      const toAddress = PortfolioFlowUtils.resolvePortfolioToAddress({
-        fromAddress: address,
-        recipientAddress,
-        fromAsset: fromCanonicalAsset,
-        toAsset: toCanonicalAsset,
-      });
+      const toAddress = resolvedToAddress;
       if (!toAddress) {
         setStatusMessage('portfolio_recipient_address_invalid');
         return { status: 'invalid_recipient' };
@@ -1792,7 +1802,7 @@ export const Portfolio = ({
   const swapQuoteRefreshDeadlineRef = useRef(0);
 
   useEffect(() => {
-    if (section !== 'swap') {
+    if (!isQuoteAutoFetchSection(section)) {
       return;
     }
 
@@ -1810,6 +1820,9 @@ export const Portfolio = ({
     toAssetId,
     recipientAddress,
     selectedAccountKey,
+    countryCode,
+    fiatCurrency,
+    paymentMethod,
   ]);
 
   const scheduleSwapQuoteAutoRefresh = useCallback(() => {
@@ -1818,7 +1831,7 @@ export const Portfolio = ({
     setQuoteRefreshCountdown(PORTFOLIO_SWAP_QUOTE_REFRESH_INTERVAL_SECONDS);
   }, []);
 
-  const triggerSwapQuoteRefresh = useCallback(() => {
+  const triggerFlowQuoteRefresh = useCallback(() => {
     const preserveExpandedQuotesPanel = isQuotesPanelExpandedRef.current;
     swapQuoteRefreshDeadlineRef.current = 0;
     setQuoteRefreshCountdown(null);
@@ -1827,15 +1840,16 @@ export const Portfolio = ({
       .then((result) => {
         setIsSwapQuoteRequestPending(false);
         if (
+          section === 'swap' &&
           PortfolioApiUtils.shouldSchedulePortfolioSwapQuoteAutoRefresh(result)
         ) {
           scheduleSwapQuoteAutoRefresh();
         }
       });
-  }, [scheduleSwapQuoteAutoRefresh]);
+  }, [scheduleSwapQuoteAutoRefresh, section]);
 
   useEffect(() => {
-    if (section !== 'swap' || !canRequestQuotes || pendingInAppConfirmation) {
+    if (!isQuoteAutoFetchSection(section) || !canRequestQuotes || pendingInAppConfirmation) {
       swapQuoteRefreshDeadlineRef.current = 0;
       setQuoteRefreshCountdown(null);
       setIsSwapQuoteRequestPending(false);
@@ -1844,26 +1858,31 @@ export const Portfolio = ({
 
     setIsSwapQuoteRequestPending(true);
     const initialQuoteTimeoutId = setTimeout(() => {
-      triggerSwapQuoteRefresh();
+      triggerFlowQuoteRefresh();
     }, PORTFOLIO_SWAP_QUOTE_DEBOUNCE_MS);
 
-    const countdownIntervalId = setInterval(() => {
-      if (!swapQuoteRefreshDeadlineRef.current) {
-        return;
-      }
+    const countdownIntervalId =
+      section === 'swap'
+        ? setInterval(() => {
+            if (!swapQuoteRefreshDeadlineRef.current) {
+              return;
+            }
 
-      const remainingMs = swapQuoteRefreshDeadlineRef.current - Date.now();
-      if (remainingMs <= 0) {
-        triggerSwapQuoteRefresh();
-        return;
-      }
+            const remainingMs = swapQuoteRefreshDeadlineRef.current - Date.now();
+            if (remainingMs <= 0) {
+              triggerFlowQuoteRefresh();
+              return;
+            }
 
-      setQuoteRefreshCountdown(Math.ceil(remainingMs / 1000));
-    }, 1000);
+            setQuoteRefreshCountdown(Math.ceil(remainingMs / 1000));
+          }, 1000)
+        : undefined;
 
     return () => {
       clearTimeout(initialQuoteTimeoutId);
-      clearInterval(countdownIntervalId);
+      if (countdownIntervalId) {
+        clearInterval(countdownIntervalId);
+      }
     };
   }, [
     section,
@@ -1874,7 +1893,10 @@ export const Portfolio = ({
     toAssetId,
     recipientAddress,
     selectedAccountKey,
-    triggerSwapQuoteRefresh,
+    countryCode,
+    fiatCurrency,
+    paymentMethod,
+    triggerFlowQuoteRefresh,
   ]);
 
   useEffect(() => {
@@ -2103,12 +2125,7 @@ export const Portfolio = ({
         selectedAccount.type === ChainType.EVM
           ? selectedAccount.account.wallet.address
           : selectedAccount.account.name;
-      const toAddress = PortfolioFlowUtils.resolvePortfolioToAddress({
-        fromAddress: address,
-        recipientAddress,
-        fromAsset: fromCanonicalAsset,
-        toAsset: toCanonicalAsset,
-      });
+      const toAddress = resolvedToAddress;
       if (!toAddress) {
         setStatusMessage('portfolio_recipient_address_invalid');
         return;
@@ -2163,8 +2180,14 @@ export const Portfolio = ({
         throw new Error('portfolio_execution_prepare_failed');
       }
 
-      if (quote.redirectUrl) {
-        chrome.tabs.create({ url: quote.redirectUrl });
+      const redirectUrl = PortfolioApiUtils.resolvePortfolioExecutionRedirectUrl(
+        execution,
+        quote,
+      );
+      if (redirectUrl) {
+        chrome.tabs.create({ url: redirectUrl });
+        setHistory(await PortfolioApiUtils.listHistory());
+        setSection('history');
         setStatusMessage('portfolio_provider_opened');
         return;
       }
@@ -2196,15 +2219,10 @@ export const Portfolio = ({
     setSection(mode);
   };
 
-  const getRowActions = (): PortfolioMode[] => {
-    const actions: PortfolioMode[] =
-      selectedAccount?.type === ChainType.HIVE
-        ? ['swap']
-        : ['buy', 'sell', 'swap'];
-    return actions.filter(
-      (action) => !hiddenPortfolioSections.includes(action),
-    );
-  };
+  const getRowActions = (): PortfolioMode[] =>
+    selectedAccount?.type === ChainType.HIVE
+      ? ['swap']
+      : ['buy', 'sell', 'swap'];
 
   const renderAccountRow = (accountKey: string) => {
     const account = accountOptions.find((item) => item.key === accountKey);
@@ -2445,7 +2463,7 @@ export const Portfolio = ({
       event: React.MouseEvent<HTMLButtonElement>,
     ) => {
       event.stopPropagation();
-      triggerSwapQuoteRefresh();
+      triggerFlowQuoteRefresh();
     };
 
     const estimatedAmountInput =
@@ -2528,18 +2546,27 @@ export const Portfolio = ({
           </div>
         </div>
       ) : (
-        <InputComponent
-          label="portfolio_estimated_amount"
-          type={InputType.NUMBER}
-          value={selectedQuote?.estimatedToAmount ?? ''}
-          onChange={() => {}}
-          disabled
-          imageLogoUrl={selectedQuote?.providerLogoUrl ?? undefined}
-          imageLogoAlt={selectedQuote?.providerName || selectedQuote?.provider}
-          logoPosition={
-            selectedQuote?.providerLogoUrl ? 'right' : undefined
-          }
-        />
+        <div className="portfolio-amount-field">
+          <InputComponent
+            label="portfolio_estimated_amount"
+            type={InputType.NUMBER}
+            value={selectedQuote?.estimatedToAmount ?? ''}
+            onChange={() => {}}
+            disabled
+            imageLogoUrl={selectedQuote?.providerLogoUrl ?? undefined}
+            imageLogoAlt={selectedQuote?.providerName || selectedQuote?.provider}
+            logoPosition={
+              selectedQuote?.providerLogoUrl ? 'right' : undefined
+            }
+          />
+          {isSwapQuoteRequestPending && !selectedQuote ? (
+            <div
+              className="portfolio-swap-quote-input__spinner"
+              data-testid="portfolio-flow-quote-loading">
+              <RotatingLogoComponent />
+            </div>
+          ) : null}
+        </div>
       );
 
     const renderQuoteCard = (quote: PortfolioQuote) => (
@@ -2588,7 +2615,7 @@ export const Portfolio = ({
 
     return (
       <div className="portfolio-flow">
-        {mode === 'swap' &&
+        {isQuoteAutoFetchSection(mode) &&
           accountOptions.length > 0 &&
           selectedAccount && (
             <PortfolioOverlayListSelect
@@ -2779,13 +2806,6 @@ export const Portfolio = ({
             onChange={setRecipientAddress}
           />
         )}
-        {mode !== 'swap' && (
-          <ButtonComponent
-            label="portfolio_get_quotes"
-            disabled={!canRequestQuotes || isFlowLoading}
-            onClick={() => void getQuotes()}
-          />
-        )}
         {quoteResponse?.quotes.length === 0 && (
           <div className="portfolio-status">
             {I18nUtils.getMessage('portfolio_no_quotes')}
@@ -2907,10 +2927,11 @@ export const Portfolio = ({
           <span>{I18nUtils.getMessage('portfolio')}</span>
         </div>
         <nav>
-          {visibleSections.map((item) => (
+          {sections.map((item) => (
             <button
               key={item}
               className={item === section ? 'active' : ''}
+              data-testid={`portfolio-nav-${item}`}
               onClick={() => setSection(item)}
               title={I18nUtils.getMessage(`portfolio_section_${item}`)}
               type="button">
