@@ -54,25 +54,12 @@ const mockPortfolioListAvailableAssets = () => {
       direction: string;
       sourceAssetId?: string;
     }) => {
-      if (params.mode === 'swap' && params.direction === 'from') {
+      if (params.mode === 'swap' && !params.direction) {
         return {
           mode: 'swap',
-          direction: 'from',
-          sourceAssetId: null,
-          assets: [swapAssetsFixture[0]],
-          chains: {},
-        };
-      }
-
-      if (
-        params.mode === 'swap' &&
-        params.direction === 'to'
-      ) {
-        return {
-          mode: 'swap',
-          direction: 'to',
-          sourceAssetId: null,
-          assets: swapAssetsFixture.slice(1),
+          direction: null,
+          sourceAssetId: params.sourceAssetId ?? null,
+          assets: swapAssetsFixture,
           chains: {},
         };
       }
@@ -410,6 +397,39 @@ describe('Portfolio', () => {
 
       expect(symbols).toEqual(['HIVE', 'HBD', 'HP', 'DEC', 'BEE']);
     });
+  });
+
+  it('preloads swap available assets after portfolio initialization', async () => {
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+    });
+
+    await waitFor(() => {
+      expect(PortfolioApiUtils.listAvailableAssets).toHaveBeenCalledWith({
+        mode: 'swap',
+      });
+    });
+
+    expect(container.querySelector('.portfolio-flow')).toBeNull();
   });
 
   it('reuses cached portfolio balances when opening swap', async () => {
@@ -776,7 +796,7 @@ describe('Portfolio', () => {
     });
     (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockResolvedValue({
       mode: 'swap',
-      direction: 'from',
+      direction: null,
       sourceAssetId: null,
       assets: [],
       chains: {},
@@ -992,8 +1012,8 @@ describe('Portfolio', () => {
     await waitFor(() => {
       expect(PortfolioApiUtils.listAvailableAssets).toHaveBeenCalledWith({
         mode: 'swap',
-        direction: 'to',
       });
+      expect(PortfolioApiUtils.listAvailableAssets).toHaveBeenCalledTimes(1);
     });
 
     expect(queryByText('Get quotes')).toBeNull();
@@ -1063,8 +1083,8 @@ describe('Portfolio', () => {
     await waitFor(() => {
       expect(PortfolioApiUtils.listAvailableAssets).toHaveBeenCalledWith({
         mode: 'swap',
-        direction: 'to',
       });
+      expect(PortfolioApiUtils.listAvailableAssets).toHaveBeenCalledTimes(1);
     });
 
     const amountInput = view.container.querySelector(
@@ -1375,27 +1395,13 @@ describe('Portfolio', () => {
         direction: string;
         sourceAssetId?: string;
       }) => {
-        if (params.mode === 'swap' && params.direction === 'from') {
+        if (params.mode === 'swap' && !params.direction) {
           return {
             mode: 'swap',
-            direction: 'from',
-            sourceAssetId: null,
-            assets: [swapAssetsFixture[0]],
-            chains: {},
-          };
-        }
-
-        if (
-          params.mode === 'swap' &&
-          params.direction === 'to' &&
-          (!params.sourceAssetId ||
-            params.sourceAssetId === 'evm:native:ethereum')
-        ) {
-          return {
-            mode: 'swap',
-            direction: 'to',
-            sourceAssetId: params.sourceAssetId,
+            direction: null,
+            sourceAssetId: params.sourceAssetId ?? null,
             assets: [
+              swapAssetsFixture[0],
               {
                 assetId: 'evm:native:kaia',
                 ecosystem: 'evm',

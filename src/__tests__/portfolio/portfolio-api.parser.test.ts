@@ -281,6 +281,24 @@ describe('PortfolioApiParser', () => {
   it('parses available assets and fiat ramp option payloads', () => {
     expect(
       PortfolioApiParser.parsePortfolioAvailableAssetsResponse({
+        mode: 'swap',
+        assets: [{ assetId: 'evm:native:ethereum', ecosystem: 'evm', symbol: 'ETH', name: 'Ethereum' }],
+      }),
+    ).toEqual({
+      mode: 'swap',
+      direction: null,
+      sourceAssetId: null,
+      assets: [
+        expect.objectContaining({
+          assetId: 'evm:native:ethereum',
+          familyId: '',
+        }),
+      ],
+      chains: {},
+    });
+
+    expect(
+      PortfolioApiParser.parsePortfolioAvailableAssetsResponse({
         mode: 'bridge',
         direction: 'to',
         sourceAssetId: 'evm:native:ethereum',

@@ -212,13 +212,15 @@ const listAssets = async (): Promise<PortfolioAssetsResponse> =>
 
 const listAvailableAssets = async (params: {
   mode: PortfolioMode;
-  direction: 'from' | 'to';
+  direction?: 'from' | 'to';
   sourceAssetId?: string;
 }): Promise<PortfolioAvailableAssetsResponse> => {
   const searchParams = new URLSearchParams({
     mode: params.mode,
-    direction: params.direction,
   });
+  if (params.direction) {
+    searchParams.set('direction', params.direction);
+  }
   if (params.sourceAssetId) {
     searchParams.set('sourceAssetId', params.sourceAssetId);
   }

@@ -452,16 +452,24 @@ const parsePortfolioAvailableAssetsResponse = (
   if (!isRecord(value)) {
     return {
       mode: 'swap',
-      direction: 'from',
+      direction: null,
       sourceAssetId: null,
       assets: [],
       chains: {},
     };
   }
 
+  const directionValue = value.direction;
+  const direction =
+    directionValue === 'to'
+      ? 'to'
+      : directionValue === 'from'
+        ? 'from'
+        : null;
+
   return {
     mode: readEnum(value.mode, portfolioModes, 'swap'),
-    direction: value.direction === 'to' ? 'to' : 'from',
+    direction,
     sourceAssetId: readNullableString(value, 'sourceAssetId'),
     assets: Array.isArray(value.assets)
       ? value.assets

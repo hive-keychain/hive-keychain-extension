@@ -1060,6 +1060,11 @@ export const isDestinationOnlyPortfolioEcosystem = (
 ): ecosystem is PortfolioDestinationOnlyEcosystem =>
   DESTINATION_ONLY_ECOSYSTEMS.has(ecosystem as PortfolioDestinationOnlyEcosystem);
 
+export const filterActionableSwapSourceAssets = (
+  assets: PortfolioCanonicalAsset[],
+): PortfolioCanonicalAsset[] =>
+  assets.filter((asset) => !isDestinationOnlyPortfolioEcosystem(asset.ecosystem));
+
 const HIVE_ACCOUNT_NAME_PATTERN =
   /^(?=.{3,16}$)[a-z]([0-9a-z]|[0-9a-z\-](?=[0-9a-z])){2,}([\.](?=[a-z][0-9a-z\-][0-9a-z\-])[a-z]([0-9a-z]|[0-9a-z\-](?=[0-9a-z])){1,}){0,}$/;
 
@@ -1217,6 +1222,7 @@ export const PortfolioFlowUtils = {
   buildCanonicalAssetChainFilterValue,
   buildCanonicalAssetSelectOptions,
   buildPortfolioFromSelectOptions,
+  filterActionableSwapSourceAssets,
   filterCanonicalAssets,
   filterToAssetsByFromAsset,
   isDestinationOnlyPortfolioEcosystem,

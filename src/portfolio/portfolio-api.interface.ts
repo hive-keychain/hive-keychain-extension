@@ -187,7 +187,7 @@ export interface PortfolioAssetsResponse {
 
 export interface PortfolioAvailableAssetsResponse {
   mode: PortfolioMode;
-  direction: 'from' | 'to';
+  direction: 'from' | 'to' | null;
   sourceAssetId: string | null;
   assets: PortfolioCanonicalAsset[];
   chains: PortfolioChainDisplayRecord;

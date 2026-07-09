@@ -86,6 +86,16 @@ const xrpAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
 });
 
 describe('PortfolioFlowUtils', () => {
+  it('filters destination-only assets out of actionable swap source assets', () => {
+    expect(
+      PortfolioFlowUtils.filterActionableSwapSourceAssets([
+        ethAsset,
+        btcAsset,
+        xrpAsset,
+      ]),
+    ).toEqual([ethAsset]);
+  });
+
   it('builds from asset options from positive portfolio balances and excludes testnets', () => {
     const options = PortfolioFlowUtils.buildPortfolioFromSelectOptions([
       {

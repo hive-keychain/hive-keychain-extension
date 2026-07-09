@@ -547,18 +547,16 @@ export const Portfolio = ({
   >([]);
   const [isRampAvailableAssetsLoading, setIsRampAvailableAssetsLoading] =
     useState(false);
-  const [swapAvailableToAssets, setSwapAvailableToAssets] = useState<
-    PortfolioCanonicalAsset[]
-  >([]);
-  const [isSwapAvailableToAssetsLoading, setIsSwapAvailableToAssetsLoading] =
-    useState(false);
-  const [swapAvailableFromAssets, setSwapAvailableFromAssets] = useState<
+  const [swapAvailableAssets, setSwapAvailableAssets] = useState<
     PortfolioCanonicalAsset[]
   >([]);
   const [pendingInAppConfirmation, setPendingInAppConfirmation] =
     useState<PortfolioInAppConfirmationContext | null>(null);
   const hasUserSelectedAccountRef = useRef(false);
   const hasLoadedSharedPortfolioDataRef = useRef(false);
+  const hasPreloadedSwapAvailableAssetsRef = useRef(false);
+  const swapAvailableAssetsLoadedRef = useRef(false);
+  const isSwapAvailableAssetsLoadInFlightRef = useRef(false);
 
   const [accountOptions, setAccountOptions] = useState<AccountOption[]>(() =>
     buildDefaultPortfolioAccountOptions(hiveAccounts, evmAccounts),
@@ -662,12 +660,17 @@ export const Portfolio = ({
     };
 
     registerAssets(assets);
-    registerAssets(swapAvailableFromAssets);
-    registerAssets(swapAvailableToAssets);
+    registerAssets(swapAvailableAssets);
     registerAssets(rampAvailableAssets);
 
     return [...assetById.values()];
-  }, [assets, rampAvailableAssets, swapAvailableFromAssets, swapAvailableToAssets]);
+  }, [assets, rampAvailableAssets, swapAvailableAssets]);
+
+  const swapSourceAssets = useMemo(
+    () =>
+      PortfolioFlowUtils.filterActionableSwapSourceAssets(swapAvailableAssets),
+    [swapAvailableAssets],
+  );
 
   const fromAssetOptions = useMemo(() => {
     const resolveRowCanonicalAssetId = (row: PortfolioFlowRow) =>
@@ -681,13 +684,13 @@ export const Portfolio = ({
     const resolveRowSwapFromAssetId = (row: PortfolioFlowRow) =>
       PortfolioFlowUtils.resolvePortfolioRowToSwapFromAssetId(
         row,
-        swapAvailableFromAssets,
+        swapSourceAssets,
         toAssetEvmChains,
         portfolioChains,
       );
 
     const rowHasResolvableAsset = (row: PortfolioFlowRow) => {
-      if (section === 'swap' && swapAvailableFromAssets.length > 0) {
+      if (section === 'swap' && swapSourceAssets.length > 0) {
         return Boolean(
           resolveRowSwapFromAssetId(row) || resolveRowCanonicalAssetId(row),
         );
@@ -709,7 +712,7 @@ export const Portfolio = ({
       rampAvailableAssets.map((asset) => asset.assetId),
     );
     const swapAvailableFromAssetIds = new Set(
-      swapAvailableFromAssets.map((asset) => asset.assetId),
+      swapSourceAssets.map((asset) => asset.assetId),
     );
     const eligibleFromRows =
       section === 'sell' && rampAvailableAssetIds.size > 0
@@ -742,7 +745,7 @@ export const Portfolio = ({
     rampAvailableAssets,
     rows,
     section,
-    swapAvailableFromAssets,
+    swapSourceAssets,
     toAssetEvmChains,
   ]);
 
@@ -755,12 +758,11 @@ export const Portfolio = ({
     };
 
     registerAssets(assets);
-    registerAssets(swapAvailableFromAssets);
-    registerAssets(swapAvailableToAssets);
+    registerAssets(swapAvailableAssets);
     registerAssets(rampAvailableAssets);
 
     return map;
-  }, [assets, rampAvailableAssets, swapAvailableFromAssets, swapAvailableToAssets]);
+  }, [assets, rampAvailableAssets, swapAvailableAssets]);
 
   const fromCanonicalAsset = useMemo(() => {
     if (!fromAssetId) {
@@ -768,10 +770,10 @@ export const Portfolio = ({
     }
 
     const selectedRow = rows.find((row) => row.key === fromAssetId);
-    if (selectedRow && section === 'swap' && swapAvailableFromAssets.length > 0) {
+    if (selectedRow && section === 'swap' && swapSourceAssets.length > 0) {
       const swapFromAssetId = PortfolioFlowUtils.resolvePortfolioRowToSwapFromAssetId(
         selectedRow,
-        swapAvailableFromAssets,
+        swapSourceAssets,
         toAssetEvmChains,
         portfolioChains,
       );
@@ -800,7 +802,7 @@ export const Portfolio = ({
     portfolioChains,
     rows,
     section,
-    swapAvailableFromAssets,
+    swapSourceAssets,
     toAssetEvmChains,
   ]);
 
@@ -942,7 +944,7 @@ export const Portfolio = ({
     }
 
     if (section === 'swap' && fromCanonicalAsset) {
-      return swapAvailableToAssets.filter(
+      return swapAvailableAssets.filter(
         (asset) =>
           !PortfolioFlowUtils.isPortfolioSwapExcludedAsset(asset) &&
           asset.assetId !== fromCanonicalAsset.assetId,
@@ -962,7 +964,7 @@ export const Portfolio = ({
     fromCanonicalAsset,
     rampAvailableAssets,
     section,
-    swapAvailableToAssets,
+    swapAvailableAssets,
   ]);
 
   const toAssetOptions = useMemo(
@@ -1436,39 +1438,40 @@ export const Portfolio = ({
     }
   };
 
-  const loadSwapAvailableToAssets = async () => {
-    setIsSwapAvailableToAssetsLoading(true);
+  const loadSwapAvailableAssets = async () => {
+    if (
+      swapAvailableAssetsLoadedRef.current ||
+      isSwapAvailableAssetsLoadInFlightRef.current
+    ) {
+      return;
+    }
+
+    isSwapAvailableAssetsLoadInFlightRef.current = true;
     try {
       const response = await PortfolioApiUtils.listAvailableAssets({
         mode: 'swap',
-        direction: 'to',
       });
-      setSwapAvailableToAssets(response.assets);
+      setSwapAvailableAssets(response.assets);
       setPortfolioChains((current) =>
         mergePortfolioChainRecords(current, response.chains),
       );
+      swapAvailableAssetsLoadedRef.current = true;
     } catch (error) {
-      Logger.error('Unable to load swap available to assets', error);
-      setSwapAvailableToAssets([]);
+      Logger.error('Unable to load swap available assets', error);
+      setSwapAvailableAssets([]);
+      hasPreloadedSwapAvailableAssetsRef.current = false;
     } finally {
-      setIsSwapAvailableToAssetsLoading(false);
+      isSwapAvailableAssetsLoadInFlightRef.current = false;
     }
   };
 
-  const loadSwapAvailableFromAssets = async () => {
-    try {
-      const response = await PortfolioApiUtils.listAvailableAssets({
-        mode: 'swap',
-        direction: 'from',
-      });
-      setSwapAvailableFromAssets(response.assets);
-      setPortfolioChains((current) =>
-        mergePortfolioChainRecords(current, response.chains),
-      );
-    } catch (error) {
-      Logger.error('Unable to load swap available from assets', error);
-      setSwapAvailableFromAssets([]);
+  const preloadSwapAvailableAssets = () => {
+    if (hasPreloadedSwapAvailableAssetsRef.current) {
+      return;
     }
+
+    hasPreloadedSwapAvailableAssetsRef.current = true;
+    void loadSwapAvailableAssets();
   };
 
   useEffect(() => {
@@ -1493,13 +1496,10 @@ export const Portfolio = ({
 
   useEffect(() => {
     if (section !== 'swap') {
-      setSwapAvailableFromAssets([]);
-      setSwapAvailableToAssets([]);
       return;
     }
 
-    void loadSwapAvailableFromAssets();
-    void loadSwapAvailableToAssets();
+    void loadSwapAvailableAssets();
   }, [section]);
 
   useEffect(() => {
@@ -1733,6 +1733,7 @@ export const Portfolio = ({
       loadAssets(),
       loadHistory(),
     ]);
+    preloadSwapAvailableAssets();
   };
 
   const handleRefreshPortfolioData = async () => {
