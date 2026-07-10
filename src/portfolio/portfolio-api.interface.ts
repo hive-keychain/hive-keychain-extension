@@ -230,6 +230,36 @@ export interface PortfolioExecution {
   updatedAt: string | null;
 }
 
+export type PortfolioFailureCode =
+  | 'unknown'
+  | 'transaction_reverted'
+  | 'slippage_exceeded'
+  | 'insufficient_balance'
+  | 'insufficient_allowance'
+  | 'out_of_gas'
+  | 'expired'
+  | 'refunded'
+  | 'bridge_failed'
+  | 'aml_review'
+  | 'amount_below_minimum'
+  | 'canceled'
+  | 'slippage_refund'
+  | 'funds_returned'
+  | 'manual_recovery_required'
+  | 'exchange_failed';
+
+export type PortfolioFailureAction =
+  | 'contact_support'
+  | 'retry_swap'
+  | 'check_wallet_balance'
+  | 'check_token_allowance'
+  | 'increase_slippage'
+  | 'wait_for_refund'
+  | 'check_wallet'
+  | 'view_explorer'
+  | 'submit_recovery_transaction'
+  | 'create_new_exchange';
+
 export interface PortfolioHistoryItem extends PortfolioExecution {
   displayStatus: string;
   executionType: PortfolioExecutionType | null;
@@ -238,6 +268,10 @@ export interface PortfolioHistoryItem extends PortfolioExecution {
   providerLogoUrl: string | null;
   providerStatus: string | null;
   lastProviderStatusRefreshAt: string | null;
+  failureCode: PortfolioFailureCode | null;
+  failureAction: PortfolioFailureAction | null;
+  providerStatusDetail: string | null;
+  providerStatusUrl: string | null;
 }
 
 export interface PortfolioHistoryResponse {

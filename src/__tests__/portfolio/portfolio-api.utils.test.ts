@@ -56,7 +56,7 @@ describe('PortfolioApiUtils', () => {
     );
   });
 
-  it('sends the installation token on private history requests', async () => {
+  it('posts the first history page with the installation token', async () => {
     getValueMock.mockResolvedValue('x'.repeat(64));
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
@@ -67,15 +67,21 @@ describe('PortfolioApiUtils', () => {
 
     expect(global.fetch).toHaveBeenCalledWith(
       'https://portfolio.example/history',
-      expect.any(Object),
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ page: 1 }),
+      }),
     );
     const [, init] = (global.fetch as jest.Mock).mock.calls[0];
     expect((init.headers as Headers).get('X-Keychain-Portfolio-Client-Token')).toBe(
       'x'.repeat(64),
     );
+    expect((init.headers as Headers).get('Content-Type')).toBe(
+      'application/json',
+    );
   });
 
-  it('requests paginated history when page is greater than one', async () => {
+  it('posts paginated history requests', async () => {
     getValueMock.mockResolvedValue('x'.repeat(64));
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
@@ -90,8 +96,39 @@ describe('PortfolioApiUtils', () => {
     await PortfolioApiUtils.listHistory(2);
 
     expect(global.fetch).toHaveBeenCalledWith(
-      'https://portfolio.example/history?page=2',
-      expect.any(Object),
+      'https://portfolio.example/history',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ page: 2 }),
+      }),
+    );
+  });
+
+  it('sends history address filters when provided', async () => {
+    getValueMock.mockResolvedValue('x'.repeat(64));
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        page: 1,
+        pageSize: 20,
+        hasMore: false,
+        items: [],
+      }),
+    });
+
+    await PortfolioApiUtils.listHistory(1, {
+      addresses: ['0xabc', 'alice', ' 0xdef '],
+    });
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      'https://portfolio.example/history',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({
+          page: 1,
+          addresses: ['0xabc', 'alice', '0xdef'],
+        }),
+      }),
     );
   });
 

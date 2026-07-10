@@ -83,13 +83,18 @@ export const PortfolioHistoryCard = ({
   );
 
   const statusIcon = PortfolioHistoryDisplayUtils.getPortfolioHistoryStatusIcon(
-    item.status,
+    item,
   );
   const statusLabel = I18nUtils.getMessage(
-    PortfolioHistoryDisplayUtils.getPortfolioHistoryStatusMessageKey(
-      item.status,
-    ),
+    PortfolioHistoryDisplayUtils.resolvePortfolioHistoryStatusLabelKey(item),
   );
+  const failureActionKey =
+    PortfolioHistoryDisplayUtils.resolvePortfolioHistoryFailureActionMessageKey(
+      item.failureAction,
+    );
+  const failureActionLabel = failureActionKey
+    ? I18nUtils.getMessage(failureActionKey)
+    : null;
 
   const eventDate = item.submittedAt ?? item.updatedAt;
   const relativeDate = eventDate
@@ -120,7 +125,7 @@ export const PortfolioHistoryCard = ({
       );
     }
 
-    const username = address.replace(/^@+/, '');
+    const username = String(address).replace(/^@+/, '');
     return (
       <span className="portfolio-history-card__address">
         <PortfolioAccountAvatar
@@ -218,6 +223,25 @@ export const PortfolioHistoryCard = ({
       value: renderCopyableValue(item.providerReferenceId),
     });
   }
+  if (item.providerStatusUrl) {
+    detailRows.push({
+      label: I18nUtils.getMessage('portfolio_history_provider_status'),
+      value: (
+        <button
+          type="button"
+          className="portfolio-history-card__action-link"
+          onClick={() => {
+            if (item.providerStatusUrl) {
+              chrome.tabs.create({ url: item.providerStatusUrl });
+            }
+          }}>
+          {I18nUtils.getMessage('portfolio_history_view_on_provider', [
+            providerLabel,
+          ])}
+        </button>
+      ),
+    });
+  }
   if (item.submittedAt) {
     detailRows.push({
       label: I18nUtils.getMessage('portfolio_history_submitted_at'),
@@ -234,6 +258,12 @@ export const PortfolioHistoryCard = ({
     detailRows.push({
       label: I18nUtils.getMessage('portfolio_history_tx_hash'),
       value: renderCopyableValue(item.txHash),
+    });
+  }
+  if (failureActionLabel) {
+    detailRows.push({
+      label: I18nUtils.getMessage('portfolio_history_suggested_action'),
+      value: failureActionLabel,
     });
   }
 

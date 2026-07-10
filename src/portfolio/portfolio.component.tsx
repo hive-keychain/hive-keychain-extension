@@ -615,6 +615,26 @@ export const Portfolio = ({
     [accountOptions],
   );
 
+  const historyAddressFilters = useMemo(() => {
+    const addressSet = new Set<string>();
+
+    for (const account of hiveAccounts) {
+      const name = account.name?.trim();
+      if (name) {
+        addressSet.add(name);
+      }
+    }
+
+    for (const account of evmAccounts) {
+      const address = account.wallet?.address?.trim();
+      if (address) {
+        addressSet.add(address);
+      }
+    }
+
+    return { addresses: [...addressSet] };
+  }, [evmAccounts, hiveAccounts]);
+
   const toAssetEvmChains = useMemo(() => {
     const chainById = buildEvmPortfolioChainByIdMap(setupEvmChains);
     for (const chain of defaultEvmChains) {
@@ -632,7 +652,7 @@ export const Portfolio = ({
     () =>
       history.some((item) =>
         PortfolioHistoryDisplayUtils.isCreatedOrExpiredHistoryStatus(
-          item.status,
+          item,
         ),
       ),
     [history],
@@ -645,7 +665,7 @@ export const Portfolio = ({
         : history.filter(
             (item) =>
               !PortfolioHistoryDisplayUtils.isCreatedOrExpiredHistoryStatus(
-                item.status,
+                item,
               ),
           ),
     [history, showCreatedExpiredHistory],
@@ -1348,7 +1368,7 @@ export const Portfolio = ({
   const refreshHistorySilently = useCallback(() => {
     historyRefreshDeadlineRef.current = 0;
     setHistoryRefreshCountdown(null);
-    void PortfolioApiUtils.listHistory()
+    void PortfolioApiUtils.listHistory(1, historyAddressFilters)
       .then(setHistory)
       .catch((error) => {
         Logger.error('Unable to auto-refresh portfolio history', error);
@@ -1360,7 +1380,7 @@ export const Portfolio = ({
           PORTFOLIO_HISTORY_AUTO_REFRESH_INTERVAL_SECONDS,
         );
       });
-  }, []);
+  }, [historyAddressFilters]);
 
   useEffect(() => {
     if (section !== 'history' || !selectedAccountKey) {
@@ -1710,7 +1730,7 @@ export const Portfolio = ({
     setIsHistoryLoading(true);
     setStatusMessage('');
     try {
-      setHistory(await PortfolioApiUtils.listHistory());
+      setHistory(await PortfolioApiUtils.listHistory(1, historyAddressFilters));
     } catch (error) {
       Logger.error('Unable to load portfolio history', error);
       setStatusMessage('portfolio_load_error');
@@ -2091,7 +2111,7 @@ export const Portfolio = ({
             transactionResponse.hash,
           );
           setPendingInAppConfirmation(null);
-          setHistory(await PortfolioApiUtils.listHistory());
+          setHistory(await PortfolioApiUtils.listHistory(1, historyAddressFilters));
           setSection('history');
         } catch (error) {
           resetLoading();
@@ -2161,7 +2181,7 @@ export const Portfolio = ({
             );
           }
           setPendingInAppConfirmation(null);
-          setHistory(await PortfolioApiUtils.listHistory());
+          setHistory(await PortfolioApiUtils.listHistory(1, historyAddressFilters));
           setSection('history');
         } catch (error) {
           Logger.error('Portfolio transaction failed', error);
@@ -2244,7 +2264,7 @@ export const Portfolio = ({
       );
       if (redirectUrl) {
         chrome.tabs.create({ url: redirectUrl });
-        setHistory(await PortfolioApiUtils.listHistory());
+        setHistory(await PortfolioApiUtils.listHistory(1, historyAddressFilters));
         setSection('history');
         setStatusMessage('portfolio_provider_opened');
         return;

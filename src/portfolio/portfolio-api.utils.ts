@@ -323,15 +323,24 @@ const markSubmitted = async (
 
 const listHistory = async (
   page = 1,
+  filters?: {
+    addresses?: string[];
+  },
 ): Promise<PortfolioHistoryItem[]> => {
-  const searchParams = new URLSearchParams();
-  if (page > 1) {
-    searchParams.set('page', String(page));
-  }
-  const query = searchParams.toString();
+  const addresses = (filters?.addresses ?? [])
+    .map((address) => address.trim())
+    .filter((address) => address.length > 0);
+  const body = {
+    page,
+    ...(addresses.length > 0 ? { addresses } : {}),
+  };
 
   return PortfolioApiParser.parsePortfolioHistoryResponse(
-    await fetchJson(query ? `/history?${query}` : '/history', {}, true),
+    await fetchJson(
+      '/history',
+      { method: 'POST', body: JSON.stringify(body) },
+      true,
+    ),
   ).items;
 };
 

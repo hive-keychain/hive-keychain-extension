@@ -1,8 +1,19 @@
 import { SVGIcons } from 'src/common-ui/icons.enum';
-import { PortfolioCanonicalAsset } from 'src/portfolio/portfolio-api.interface';
+import {
+  PortfolioCanonicalAsset,
+  PortfolioFailureAction,
+  PortfolioFailureCode,
+  PortfolioHistoryItem,
+} from 'src/portfolio/portfolio-api.interface';
 import FormatUtils from 'src/utils/format.utils';
 
 export type PortfolioHistoryStatusKind = 'completed' | 'failed' | 'pending';
+type PortfolioHistoryStatusInput =
+  | string
+  | {
+      status: string;
+      displayStatus?: string | null;
+    };
 
 const COMPLETED_STATUSES = new Set([
   'completed',
@@ -26,6 +37,7 @@ const FAILED_STATUSES = new Set([
   'expired',
   'rejected',
   'declined',
+  'unknown',
 ]);
 
 const STATUS_ICONS: Record<PortfolioHistoryStatusKind, SVGIcons> = {
@@ -44,10 +56,17 @@ const CREATED_OR_EXPIRED_STATUSES = new Set(['created', 'expired']);
 
 const EVM_CONTRACT_ADDRESS_PATTERN = /^0x[0-9a-f]{40}$/i;
 
+const resolvePortfolioHistoryDisplayStatus = (
+  input: PortfolioHistoryStatusInput,
+): string =>
+  typeof input === 'string' ? input : input.displayStatus || input.status;
+
 const getPortfolioHistoryStatusKind = (
-  status: string,
+  status: PortfolioHistoryStatusInput,
 ): PortfolioHistoryStatusKind => {
-  const normalized = status.trim().toLowerCase();
+  const normalized = resolvePortfolioHistoryDisplayStatus(status)
+    .trim()
+    .toLowerCase();
   if (COMPLETED_STATUSES.has(normalized)) {
     return 'completed';
   }
@@ -57,14 +76,44 @@ const getPortfolioHistoryStatusKind = (
   return 'pending';
 };
 
-const getPortfolioHistoryStatusIcon = (status: string): SVGIcons =>
+const getPortfolioHistoryStatusIcon = (
+  status: PortfolioHistoryStatusInput,
+): SVGIcons =>
   STATUS_ICONS[getPortfolioHistoryStatusKind(status)];
 
-const getPortfolioHistoryStatusMessageKey = (status: string): string =>
+const getPortfolioHistoryStatusMessageKey = (
+  status: PortfolioHistoryStatusInput,
+): string =>
   STATUS_MESSAGE_KEYS[getPortfolioHistoryStatusKind(status)];
 
-const isCreatedOrExpiredHistoryStatus = (status: string): boolean =>
-  CREATED_OR_EXPIRED_STATUSES.has(status.trim().toLowerCase());
+const resolvePortfolioHistoryFailureCodeMessageKey = (
+  failureCode: PortfolioFailureCode | null,
+): string | null =>
+  failureCode ? `portfolio_history_failure_${failureCode}` : null;
+
+const resolvePortfolioHistoryFailureActionMessageKey = (
+  failureAction: PortfolioFailureAction | null,
+): string | null =>
+  failureAction ? `portfolio_history_failure_action_${failureAction}` : null;
+
+const resolvePortfolioHistoryStatusLabelKey = (
+  item: Pick<PortfolioHistoryItem, 'status' | 'failureCode'> &
+    Partial<Pick<PortfolioHistoryItem, 'displayStatus'>>,
+): string => {
+  const failureKey = resolvePortfolioHistoryFailureCodeMessageKey(item.failureCode);
+  if (failureKey && getPortfolioHistoryStatusKind(item) === 'failed') {
+    return failureKey;
+  }
+
+  return getPortfolioHistoryStatusMessageKey(item);
+};
+
+const isCreatedOrExpiredHistoryStatus = (
+  status: PortfolioHistoryStatusInput,
+): boolean =>
+  CREATED_OR_EXPIRED_STATUSES.has(
+    resolvePortfolioHistoryDisplayStatus(status).trim().toLowerCase(),
+  );
 
 const formatPortfolioHistoryAmount = (amount: string | null): string => {
   if (!amount) {
@@ -106,9 +155,13 @@ const getPortfolioHistoryAssetSymbol = (
 };
 
 export const PortfolioHistoryDisplayUtils = {
+  resolvePortfolioHistoryDisplayStatus,
   getPortfolioHistoryStatusKind,
   getPortfolioHistoryStatusIcon,
   getPortfolioHistoryStatusMessageKey,
+  resolvePortfolioHistoryFailureCodeMessageKey,
+  resolvePortfolioHistoryFailureActionMessageKey,
+  resolvePortfolioHistoryStatusLabelKey,
   isCreatedOrExpiredHistoryStatus,
   formatPortfolioHistoryAmount,
   resolvePortfolioAssetById,

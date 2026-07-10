@@ -8,6 +8,8 @@ import {
   PortfolioEvmTransaction,
   PortfolioExecution,
   PortfolioExecutionType,
+  PortfolioFailureAction,
+  PortfolioFailureCode,
   PortfolioFiatRampCountriesResponse,
   PortfolioFiatRampCountry,
   PortfolioFiatRampOptions,
@@ -31,6 +33,36 @@ import {
 const portfolioModes: PortfolioMode[] = ['buy', 'sell', 'swap', 'bridge'];
 const portfolioRouteTypes: PortfolioRouteType[] = ['swap', 'bridge'];
 const portfolioExecutionTypes: PortfolioExecutionType[] = ['in_app', 'redirect'];
+const portfolioFailureCodes: PortfolioFailureCode[] = [
+  'unknown',
+  'transaction_reverted',
+  'slippage_exceeded',
+  'insufficient_balance',
+  'insufficient_allowance',
+  'out_of_gas',
+  'expired',
+  'refunded',
+  'bridge_failed',
+  'aml_review',
+  'amount_below_minimum',
+  'canceled',
+  'slippage_refund',
+  'funds_returned',
+  'manual_recovery_required',
+  'exchange_failed',
+];
+const portfolioFailureActions: PortfolioFailureAction[] = [
+  'contact_support',
+  'retry_swap',
+  'check_wallet_balance',
+  'check_token_allowance',
+  'increase_slippage',
+  'wait_for_refund',
+  'check_wallet',
+  'view_explorer',
+  'submit_recovery_transaction',
+  'create_new_exchange',
+];
 const portfolioEcosystems: PortfolioEcosystem[] = [
   'evm',
   'hive',
@@ -87,14 +119,17 @@ const readStringArray = (value: unknown): string[] =>
     ? value.filter((entry): entry is string => typeof entry === 'string')
     : [];
 
+const readNullableEnum = <T extends string>(
+  value: unknown,
+  allowed: readonly T[],
+): T | null =>
+  typeof value === 'string' && allowed.includes(value as T) ? (value as T) : null;
+
 const readEnum = <T extends string>(
   value: unknown,
   allowed: readonly T[],
   fallback: T,
-): T =>
-  typeof value === 'string' && allowed.includes(value as T)
-    ? (value as T)
-    : fallback;
+): T => readNullableEnum(value, allowed) ?? fallback;
 
 const readRecord = (value: unknown): Record<string, unknown> | null =>
   isRecord(value) ? value : null;
@@ -610,6 +645,10 @@ const parsePortfolioHistoryItem = (
       value,
       'lastProviderStatusRefreshAt',
     ),
+    failureCode: readNullableEnum(value.failureCode, portfolioFailureCodes),
+    failureAction: readNullableEnum(value.failureAction, portfolioFailureActions),
+    providerStatusDetail: readNullableString(value, 'providerStatusDetail'),
+    providerStatusUrl: readNullableString(value, 'providerStatusUrl'),
   };
 };
 

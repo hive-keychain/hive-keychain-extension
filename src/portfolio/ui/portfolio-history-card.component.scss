@@ -203,6 +203,22 @@
     }
   }
 
+  &__action-link {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--kc-color-accent);
+    font: inherit;
+    text-align: right;
+    text-decoration: underline;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
   &__copyable-text {
     overflow: hidden;
     text-overflow: ellipsis;

@@ -36,6 +36,9 @@ describe('PortfolioHistoryDisplayUtils', () => {
       expect(
         PortfolioHistoryDisplayUtils.getPortfolioHistoryStatusKind('Expired'),
       ).toBe('failed');
+      expect(
+        PortfolioHistoryDisplayUtils.getPortfolioHistoryStatusKind('unknown'),
+      ).toBe('failed');
     });
 
     it('falls back to pending for unknown statuses', () => {
@@ -45,6 +48,15 @@ describe('PortfolioHistoryDisplayUtils', () => {
       expect(
         PortfolioHistoryDisplayUtils.getPortfolioHistoryStatusKind(''),
       ).toBe('pending');
+    });
+
+    it('prefers displayStatus when a history item is provided', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.getPortfolioHistoryStatusKind({
+          status: 'awaiting_user_action',
+          displayStatus: 'expired',
+        }),
+      ).toBe('failed');
     });
   });
 
@@ -76,6 +88,81 @@ describe('PortfolioHistoryDisplayUtils', () => {
     });
   });
 
+  describe('resolvePortfolioHistoryFailureCodeMessageKey', () => {
+    it('maps known failure codes to translation keys', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistoryFailureCodeMessageKey(
+          'refunded',
+        ),
+      ).toBe('portfolio_history_failure_refunded');
+    });
+
+    it('returns null when failure code is absent', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistoryFailureCodeMessageKey(
+          null,
+        ),
+      ).toBeNull();
+    });
+  });
+
+  describe('resolvePortfolioHistoryFailureActionMessageKey', () => {
+    it('maps known failure actions to translation keys', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistoryFailureActionMessageKey(
+          'wait_for_refund',
+        ),
+      ).toBe('portfolio_history_failure_action_wait_for_refund');
+    });
+
+    it('returns null when failure action is absent', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistoryFailureActionMessageKey(
+          null,
+        ),
+      ).toBeNull();
+    });
+  });
+
+  describe('resolvePortfolioHistoryStatusLabelKey', () => {
+    it('prefers failure code labels for failed statuses', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistoryStatusLabelKey({
+          status: 'failed',
+          failureCode: 'refunded',
+        }),
+      ).toBe('portfolio_history_failure_refunded');
+    });
+
+    it('uses displayStatus when resolving failure code labels', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistoryStatusLabelKey({
+          status: 'awaiting_user_action',
+          displayStatus: 'failed',
+          failureCode: 'refunded',
+        }),
+      ).toBe('portfolio_history_failure_refunded');
+    });
+
+    it('falls back to generic status labels when no failure code is set', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistoryStatusLabelKey({
+          status: 'failed',
+          failureCode: null,
+        }),
+      ).toBe('portfolio_history_status_failed');
+    });
+
+    it('ignores failure codes for non-failed statuses', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistoryStatusLabelKey({
+          status: 'submitted',
+          failureCode: 'refunded',
+        }),
+      ).toBe('portfolio_history_status_pending');
+    });
+  });
+
   describe('isCreatedOrExpiredHistoryStatus', () => {
     it('flags created and expired statuses regardless of casing', () => {
       expect(
@@ -83,6 +170,12 @@ describe('PortfolioHistoryDisplayUtils', () => {
       ).toBe(true);
       expect(
         PortfolioHistoryDisplayUtils.isCreatedOrExpiredHistoryStatus(' EXPIRED '),
+      ).toBe(true);
+      expect(
+        PortfolioHistoryDisplayUtils.isCreatedOrExpiredHistoryStatus({
+          status: 'awaiting_user_action',
+          displayStatus: 'created',
+        }),
       ).toBe(true);
     });
 

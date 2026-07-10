@@ -549,6 +549,41 @@ describe('Portfolio', () => {
     });
   });
 
+  it('requests history with all wallet addresses as filters', async () => {
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[{ name: 'alice' } as never, { name: 'bob' } as never]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xAbC' },
+          } as never,
+          {
+            id: 2,
+            wallet: { address: '0xDef' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName="alice"
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-account')).not.toBeNull();
+    });
+
+    await waitFor(() => {
+      expect(PortfolioApiUtils.listHistory).toHaveBeenCalledWith(1, {
+        addresses: ['alice', 'bob', '0xAbC', '0xDef'],
+      });
+    });
+  });
+
   it('reloads only portfolio balances when changing account in the swap flow', async () => {
     const secondEthToken = {
       ...ethToken,
