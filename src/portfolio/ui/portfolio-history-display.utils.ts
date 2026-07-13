@@ -1,3 +1,4 @@
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import {
   PortfolioCanonicalAsset,
@@ -5,9 +6,17 @@ import {
   PortfolioFailureCode,
   PortfolioHistoryItem,
 } from 'src/portfolio/portfolio-api.interface';
+import { resolveEvmChainForChainReference } from 'src/portfolio/portfolio-flow.utils';
 import FormatUtils from 'src/utils/format.utils';
 
 export type PortfolioHistoryStatusKind = 'completed' | 'failed' | 'pending';
+export type PortfolioHistoryStatusLinkKind = 'provider' | 'explorer';
+
+export type PortfolioHistoryStatusLink = {
+  url: string;
+  kind: PortfolioHistoryStatusLinkKind;
+};
+
 type PortfolioHistoryStatusInput =
   | string
   | {
@@ -55,6 +64,90 @@ const STATUS_MESSAGE_KEYS: Record<PortfolioHistoryStatusKind, string> = {
 const CREATED_OR_EXPIRED_STATUSES = new Set(['created', 'expired']);
 
 const EVM_CONTRACT_ADDRESS_PATTERN = /^0x[0-9a-f]{40}$/i;
+const EVM_TX_HASH_PATTERN = /^0x[a-fA-F0-9]{64}$/;
+const HIVE_TX_HASH_PATTERN = /^[a-fA-F0-9]{40}$/;
+const HIVE_TX_EXPLORER_BASE_URL = 'https://hivehub.dev/tx';
+const HIVE_ENGINE_TX_EXPLORER_BASE_URL = 'https://he.dtools.dev/tx';
+
+const normalizeExplorerBaseUrl = (url: string): string =>
+  url.replace(/\/+$/, '');
+
+const isEvmTxHash = (txHash: string): boolean => EVM_TX_HASH_PATTERN.test(txHash);
+
+const isHiveTxHash = (txHash: string): boolean => HIVE_TX_HASH_PATTERN.test(txHash);
+
+const resolvePortfolioHistoryExplorerUrl = (
+  item: Pick<PortfolioHistoryItem, 'txHash'>,
+  fromAsset: PortfolioCanonicalAsset | undefined,
+  toAsset: PortfolioCanonicalAsset | undefined,
+  chains: EvmChain[],
+): string | null => {
+  const txHash = item.txHash?.trim();
+  if (!txHash) {
+    return null;
+  }
+
+  if (isHiveTxHash(txHash)) {
+    const hiveAsset =
+      fromAsset?.ecosystem === 'hive' || fromAsset?.ecosystem === 'hive_engine'
+        ? fromAsset
+        : toAsset?.ecosystem === 'hive' || toAsset?.ecosystem === 'hive_engine'
+          ? toAsset
+          : undefined;
+    const baseUrl =
+      hiveAsset?.ecosystem === 'hive_engine'
+        ? HIVE_ENGINE_TX_EXPLORER_BASE_URL
+        : HIVE_TX_EXPLORER_BASE_URL;
+    return `${baseUrl}/${encodeURIComponent(txHash)}`;
+  }
+
+  if (!isEvmTxHash(txHash)) {
+    return null;
+  }
+
+  const chainReferences = [fromAsset?.chainId, toAsset?.chainId].filter(
+    (chainId): chainId is string => Boolean(chainId),
+  );
+
+  for (const chainReference of chainReferences) {
+    const chain = resolveEvmChainForChainReference(chainReference, chains);
+    const explorerUrl = chain?.blockExplorer?.url?.trim();
+    if (explorerUrl) {
+      return `${normalizeExplorerBaseUrl(explorerUrl)}/tx/${txHash}`;
+    }
+  }
+
+  return null;
+};
+
+/**
+ * Prefers a provider status/deep-link URL when the API supplies one.
+ * Falls back to the chain's default block explorer for EVM hashes, or Hive
+ * explorers for Hive / Hive Engine transaction ids.
+ */
+const resolvePortfolioHistoryStatusLink = (
+  item: Pick<PortfolioHistoryItem, 'providerStatusUrl' | 'txHash'>,
+  fromAsset: PortfolioCanonicalAsset | undefined,
+  toAsset: PortfolioCanonicalAsset | undefined,
+  chains: EvmChain[],
+): PortfolioHistoryStatusLink | null => {
+  const providerStatusUrl = item.providerStatusUrl?.trim();
+  if (providerStatusUrl) {
+    return { url: providerStatusUrl, kind: 'provider' };
+  }
+
+  const explorerUrl = resolvePortfolioHistoryExplorerUrl(
+    item,
+    fromAsset,
+    toAsset,
+    chains,
+  );
+  if (!explorerUrl) {
+    return null;
+  }
+
+  return { url: explorerUrl, kind: 'explorer' };
+};
 
 const resolvePortfolioHistoryDisplayStatus = (
   input: PortfolioHistoryStatusInput,
@@ -166,4 +259,6 @@ export const PortfolioHistoryDisplayUtils = {
   formatPortfolioHistoryAmount,
   resolvePortfolioAssetById,
   getPortfolioHistoryAssetSymbol,
+  resolvePortfolioHistoryExplorerUrl,
+  resolvePortfolioHistoryStatusLink,
 };

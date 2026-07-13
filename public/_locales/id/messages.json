@@ -4160,6 +4160,7 @@
   "portfolio_history_to_address": { "message": "To address" },
   "portfolio_history_provider_reference": { "message": "Provider reference" },
   "portfolio_history_provider_status": { "message": "Provider status" },
+  "portfolio_history_block_explorer": { "message": "Block explorer" },
   "portfolio_history_view_on_provider": {
     "message": "View on $1",
     "placeholders": {
@@ -4169,6 +4170,7 @@
       }
     }
   },
+  "portfolio_history_view_on_explorer": { "message": "View on block explorer" },
   "portfolio_history_tx_hash": { "message": "Transaction hash" },
   "portfolio_history_submitted_at": { "message": "Submitted" },
   "portfolio_history_updated_at": { "message": "Last updated" },

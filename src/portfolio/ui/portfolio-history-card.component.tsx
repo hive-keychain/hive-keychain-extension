@@ -95,6 +95,12 @@ export const PortfolioHistoryCard = ({
   const failureActionLabel = failureActionKey
     ? I18nUtils.getMessage(failureActionKey)
     : null;
+  const statusLink = PortfolioHistoryDisplayUtils.resolvePortfolioHistoryStatusLink(
+    item,
+    fromAsset,
+    toAsset,
+    chains,
+  );
 
   const eventDate = item.submittedAt ?? item.updatedAt;
   const relativeDate = eventDate
@@ -223,21 +229,27 @@ export const PortfolioHistoryCard = ({
       value: renderCopyableValue(item.providerReferenceId),
     });
   }
-  if (item.providerStatusUrl) {
+  if (statusLink) {
+    const statusLinkLabel =
+      statusLink.kind === 'provider'
+        ? I18nUtils.getMessage('portfolio_history_view_on_provider', [
+            providerLabel,
+          ])
+        : I18nUtils.getMessage('portfolio_history_view_on_explorer');
     detailRows.push({
-      label: I18nUtils.getMessage('portfolio_history_provider_status'),
+      label: I18nUtils.getMessage(
+        statusLink.kind === 'provider'
+          ? 'portfolio_history_provider_status'
+          : 'portfolio_history_block_explorer',
+      ),
       value: (
         <button
           type="button"
           className="portfolio-history-card__action-link"
           onClick={() => {
-            if (item.providerStatusUrl) {
-              chrome.tabs.create({ url: item.providerStatusUrl });
-            }
+            chrome.tabs.create({ url: statusLink.url });
           }}>
-          {I18nUtils.getMessage('portfolio_history_view_on_provider', [
-            providerLabel,
-          ])}
+          {statusLinkLabel}
         </button>
       ),
     });

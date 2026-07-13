@@ -261,4 +261,157 @@ describe('PortfolioHistoryDisplayUtils', () => {
       ).toBe('');
     });
   });
+
+  describe('resolvePortfolioHistoryStatusLink', () => {
+    const ethereumChain = {
+      name: 'Ethereum',
+      type: 'EVM' as const,
+      logo: 'https://example.com/eth.svg',
+      chainId: '0x1',
+      mainToken: 'ETH',
+      defaultTransactionType: '0x2' as const,
+      blockExplorer: { url: 'https://etherscan.io/' },
+      testnet: false,
+      isEth: true,
+      rpcs: [{ url: 'https://rpc.example.com', isDefault: true }],
+    };
+    const polygonChain = {
+      ...ethereumChain,
+      name: 'Polygon',
+      chainId: '0x89',
+      blockExplorer: { url: 'https://polygonscan.com' },
+      isEth: false,
+    };
+    const evmTxHash =
+      '0x5862726dbc6643c6a34b3496bb15e91f11771f6756ccf83826304846bbc93c0e';
+    const hiveTxHash = 'a1f3e5c7b9d0a2c4e6f8b1d3c5a7e9f0b2d4c6e8';
+
+    it('prefers the provider status URL when present', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistoryStatusLink(
+          {
+            providerStatusUrl: 'https://scan.li.fi/tx/0xabc',
+            txHash: evmTxHash,
+          },
+          createAsset(),
+          undefined,
+          [ethereumChain as any],
+        ),
+      ).toEqual({
+        url: 'https://scan.li.fi/tx/0xabc',
+        kind: 'provider',
+      });
+    });
+
+    it('falls back to the from-asset chain block explorer', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistoryStatusLink(
+          {
+            providerStatusUrl: null,
+            txHash: evmTxHash,
+          },
+          createAsset({ chainId: 'ethereum' }),
+          createAsset({
+            assetId: 'evm:native:polygon',
+            chainId: 'polygon',
+            symbol: 'MATIC',
+          }),
+          [ethereumChain as any, polygonChain as any],
+        ),
+      ).toEqual({
+        url: `https://etherscan.io/tx/${evmTxHash}`,
+        kind: 'explorer',
+      });
+    });
+
+    it('falls back to the to-asset chain when the from asset has no explorer', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistoryStatusLink(
+          {
+            providerStatusUrl: null,
+            txHash: evmTxHash,
+          },
+          createAsset({ chainId: 'unknown-chain' }),
+          createAsset({
+            assetId: 'evm:native:polygon',
+            chainId: 'polygon',
+            symbol: 'MATIC',
+          }),
+          [polygonChain as any],
+        ),
+      ).toEqual({
+        url: `https://polygonscan.com/tx/${evmTxHash}`,
+        kind: 'explorer',
+      });
+    });
+
+    it('builds a Hive explorer URL for Hive transaction ids', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistoryStatusLink(
+          {
+            providerStatusUrl: null,
+            txHash: hiveTxHash,
+          },
+          createAsset({
+            assetId: 'hive:hive',
+            ecosystem: 'hive',
+            chainId: null,
+            symbol: 'HIVE',
+          }),
+          undefined,
+          [],
+        ),
+      ).toEqual({
+        url: `https://hivehub.dev/tx/${hiveTxHash}`,
+        kind: 'explorer',
+      });
+    });
+
+    it('builds a Hive Engine explorer URL for Hive Engine assets', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistoryStatusLink(
+          {
+            providerStatusUrl: null,
+            txHash: hiveTxHash,
+          },
+          createAsset({
+            assetId: 'hive_engine:SWAP.HIVE',
+            ecosystem: 'hive_engine',
+            chainId: null,
+            symbol: 'SWAP.HIVE',
+          }),
+          undefined,
+          [],
+        ),
+      ).toEqual({
+        url: `https://he.dtools.dev/tx/${hiveTxHash}`,
+        kind: 'explorer',
+      });
+    });
+
+    it('returns null when neither provider URL nor resolvable explorer exists', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistoryStatusLink(
+          {
+            providerStatusUrl: null,
+            txHash: evmTxHash,
+          },
+          createAsset({ chainId: 'unknown-chain' }),
+          undefined,
+          [ethereumChain as any],
+        ),
+      ).toBeNull();
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistoryStatusLink(
+          {
+            providerStatusUrl: null,
+            txHash: null,
+          },
+          createAsset(),
+          undefined,
+          [ethereumChain as any],
+        ),
+      ).toBeNull();
+    });
+  });
 });
