@@ -212,6 +212,11 @@ export interface PortfolioFiatRampCountriesResponse {
   countries: PortfolioFiatRampCountry[];
 }
 
+export interface PortfolioFiatRampLocale {
+  countryCode: string | null;
+  source: 'header' | 'ip_lookup' | 'client_lookup' | 'unavailable';
+}
+
 export interface PortfolioExecution {
   id: string;
   status: string;
@@ -285,14 +290,16 @@ export interface PortfolioSwapAmountRangeDetails {
   fromAssetId?: string;
   toAssetId?: string;
   requestedAmount?: string;
+  fiatCurrency?: string;
+  mode?: string;
   mergedRange?: {
-    min?: string;
-    max?: string;
+    min?: string | null;
+    max?: string | null;
   };
   providerRanges?: Array<{
     provider?: string;
-    min?: string;
-    max?: string;
+    min?: string | null;
+    max?: string | null;
   }>;
 }
 

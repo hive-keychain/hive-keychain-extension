@@ -101,13 +101,13 @@ jest.mock('src/portfolio/portfolio-api.utils', () => {
       resolvePortfolioAmountQuoteError:
         actual.PortfolioApiUtils.resolvePortfolioAmountQuoteError,
       getFiatRampOptions: jest.fn().mockResolvedValue({
-        fiatCurrencies: ['USD', 'EUR'],
+        fiatCurrencies: ['USD', 'EUR', 'TWD'],
         paymentMethods: [{ id: 'card', label: 'Credit / Debit Card' }],
       }),
-      listFiatRampCountries: jest.fn().mockResolvedValue([
-        { countryCode: 'US', name: 'United States' },
-        { countryCode: 'DE', name: 'Germany' },
-      ]),
+      getFiatRampLocale: jest.fn().mockResolvedValue({
+        countryCode: null,
+        source: 'unavailable',
+      }),
       listAvailableAssets: jest.fn().mockResolvedValue({
         mode: 'buy',
         direction: 'to',
@@ -1660,19 +1660,13 @@ describe('Portfolio', () => {
     clickPortfolioNav(container, 'buy');
 
     await waitFor(() => {
-      expect(PortfolioApiUtils.listFiatRampCountries).toHaveBeenCalledWith(
-        'buy',
-      );
       expect(PortfolioApiUtils.getFiatRampOptions).toHaveBeenCalledWith({
-        countryCode: 'US',
         mode: 'buy',
       });
       expect(PortfolioApiUtils.listAvailableAssets).toHaveBeenCalledWith({
         mode: 'buy',
         direction: 'to',
       });
-      expect(container.textContent).toContain('🇺🇸');
-      expect(container.textContent).toContain('United States');
       expect(container.textContent).toContain('USD');
     });
   });

@@ -4163,6 +4163,32 @@
   "portfolio_fiat_currency": { "message": "Fiat currency" },
   "portfolio_payment_method": { "message": "Payment method (optional)" },
   "portfolio_payment_method_none": { "message": "Any payment method" },
+  "portfolio_payment_method_credit_debit_card": {
+    "message": "Credit / debit card"
+  },
+  "portfolio_payment_method_creditcard": { "message": "Credit / debit card" },
+  "portfolio_payment_method_card": { "message": "Credit / debit card" },
+  "portfolio_payment_method_card_payment": { "message": "Card payment" },
+  "portfolio_payment_method_ach_bank_transfer": {
+    "message": "ACH bank transfer"
+  },
+  "portfolio_payment_method_paypal": { "message": "PayPal" },
+  "portfolio_payment_method_gbp_bank_transfer": {
+    "message": "GBP bank transfer"
+  },
+  "portfolio_payment_method_gbp_open_banking_payment": {
+    "message": "GBP open banking"
+  },
+  "portfolio_payment_method_pix_instant_payment": { "message": "PIX" },
+  "portfolio_payment_method_sepa_bank_transfer": {
+    "message": "SEPA bank transfer"
+  },
+  "portfolio_payment_method_applepay": { "message": "Apple Pay" },
+  "portfolio_payment_method_apple_pay": { "message": "Apple Pay" },
+  "portfolio_payment_method_googlepay": { "message": "Google Pay" },
+  "portfolio_payment_method_google_pay": { "message": "Google Pay" },
+  "portfolio_payment_method_banktransfer": { "message": "Bank transfer" },
+  "portfolio_payment_method_bank_transfer": { "message": "Bank transfer" },
   "portfolio_recipient_hive_account": { "message": "Recipient Hive account" },
   "portfolio_recipient_bitcoin_address": { "message": "Bitcoin destination address" },
   "portfolio_recipient_solana_address": { "message": "Solana destination address" },
@@ -4197,6 +4223,67 @@
       "2": {
         "content": "$2",
         "example": "110000"
+      }
+    }
+  },
+  "portfolio_amount_out_of_range_fiat": {
+    "message": "Amount must be between $1 and $2 $3.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "908"
+      },
+      "2": {
+        "content": "$2",
+        "example": "334910"
+      },
+      "3": {
+        "content": "$3",
+        "example": "TWD"
+      }
+    }
+  },
+  "portfolio_amount_below_minimum": {
+    "message": "Minimum amount is $1.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "0.01123"
+      }
+    }
+  },
+  "portfolio_amount_below_minimum_fiat": {
+    "message": "Minimum amount is $1 $2.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "908"
+      },
+      "2": {
+        "content": "$2",
+        "example": "TWD"
+      }
+    }
+  },
+  "portfolio_amount_above_maximum": {
+    "message": "Maximum amount is $1.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "110000"
+      }
+    }
+  },
+  "portfolio_amount_above_maximum_fiat": {
+    "message": "Maximum amount is $1 $2.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "334910"
+      },
+      "2": {
+        "content": "$2",
+        "example": "TWD"
       }
     }
   },

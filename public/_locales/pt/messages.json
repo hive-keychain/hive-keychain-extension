@@ -4091,76 +4091,213 @@
     "message": "Valor Total:",
     "description": "portfolio main page"
   },
-  "portfolio_section_portfolio": { "message": "Portfolio" },
-  "portfolio_section_buy": { "message": "Buy" },
-  "portfolio_section_sell": { "message": "Sell" },
-  "portfolio_section_swap": { "message": "Swap" },
-  "portfolio_section_bridge": { "message": "Bridge" },
-  "portfolio_section_history": { "message": "History" },
-  "portfolio_from_asset": { "message": "From asset" },
-  "portfolio_to_asset": { "message": "To asset" },
-  "portfolio_select_asset": { "message": "Select an asset" },
-  "portfolio_get_quotes": { "message": "Get quotes" },
-  "portfolio_continue": { "message": "Continue" },
-  "portfolio_load_error": { "message": "Unable to load portfolio data." },
-  "portfolio_native_execution_requires_evm": { "message": "Native execution requires an EVM account." },
-  "portfolio_chain_not_setup": { "message": "Add the source chain to Keychain before signing." },
-  "portfolio_native_confirmation_message": { "message": "Review and sign this portfolio transaction." },
-  "portfolio_provider": { "message": "Provider" },
-  "portfolio_confirmation_from": { "message": "From asset" },
-  "portfolio_confirmation_to": { "message": "To assets" },
-  "portfolio_confirmation_to_account": { "message": "To account" },
-  "portfolio_provider_opened": { "message": "Provider page opened in a new tab." },
-  "portfolio_execution_error": { "message": "Unable to execute this quote." },
-  "portfolio_api_not_configured": { "message": "Portfolio API is not configured." },
-  "portfolio_country_code": { "message": "Country code" },
-  "portfolio_fiat_currency": { "message": "Fiat currency" },
-  "portfolio_payment_method": { "message": "Payment method (optional)" },
-  "portfolio_provider_execution_unavailable": { "message": "This provider cannot currently be executed from Keychain." },
-  "portfolio_quote_not_executable": { "message": "Not executable in Keychain" },
-  "portfolio_no_assets": { "message": "No balances found for this account." },
-  "portfolio_no_quotes": { "message": "No quotes are currently available." },
+  "portfolio_section_portfolio": {
+    "message": "Portfolio"
+  },
+  "portfolio_section_buy": {
+    "message": "Buy"
+  },
+  "portfolio_section_sell": {
+    "message": "Sell"
+  },
+  "portfolio_section_swap": {
+    "message": "Swap"
+  },
+  "portfolio_section_bridge": {
+    "message": "Bridge"
+  },
+  "portfolio_section_history": {
+    "message": "History"
+  },
+  "portfolio_from_asset": {
+    "message": "From asset"
+  },
+  "portfolio_to_asset": {
+    "message": "To asset"
+  },
+  "portfolio_select_asset": {
+    "message": "Select an asset"
+  },
+  "portfolio_get_quotes": {
+    "message": "Get quotes"
+  },
+  "portfolio_continue": {
+    "message": "Continue"
+  },
+  "portfolio_load_error": {
+    "message": "Unable to load portfolio data."
+  },
+  "portfolio_native_execution_requires_evm": {
+    "message": "Native execution requires an EVM account."
+  },
+  "portfolio_chain_not_setup": {
+    "message": "Add the source chain to Keychain before signing."
+  },
+  "portfolio_native_confirmation_message": {
+    "message": "Review and sign this portfolio transaction."
+  },
+  "portfolio_provider": {
+    "message": "Provider"
+  },
+  "portfolio_confirmation_from": {
+    "message": "From asset"
+  },
+  "portfolio_confirmation_to": {
+    "message": "To assets"
+  },
+  "portfolio_confirmation_to_account": {
+    "message": "To account"
+  },
+  "portfolio_provider_opened": {
+    "message": "Provider page opened in a new tab."
+  },
+  "portfolio_execution_error": {
+    "message": "Unable to execute this quote."
+  },
+  "portfolio_api_not_configured": {
+    "message": "Portfolio API is not configured."
+  },
+  "portfolio_country_code": {
+    "message": "Country code"
+  },
+  "portfolio_fiat_currency": {
+    "message": "Fiat currency"
+  },
+  "portfolio_payment_method": {
+    "message": "Payment method (optional)"
+  },
+  "portfolio_payment_method_none": {
+    "message": "Qualquer método de pagamento"
+  },
+  "portfolio_provider_execution_unavailable": {
+    "message": "This provider cannot currently be executed from Keychain."
+  },
+  "portfolio_quote_not_executable": {
+    "message": "Not executable in Keychain"
+  },
+  "portfolio_no_assets": {
+    "message": "No balances found for this account."
+  },
+  "portfolio_no_quotes": {
+    "message": "No quotes are currently available."
+  },
   "portfolio_no_quote_available": {
     "message": "No quote available at the moment."
   },
-  "portfolio_no_history": { "message": "No portfolio history yet." },
-  "portfolio_history_from": { "message": "From" },
-  "portfolio_history_to": { "message": "To" },
-  "portfolio_history_status_completed": { "message": "Completed" },
-  "portfolio_history_status_failed": { "message": "Failed" },
-  "portfolio_history_status_pending": { "message": "Pending" },
-  "portfolio_history_suggested_action": { "message": "Suggested action" },
-  "portfolio_history_failure_unknown": { "message": "Unclassified failure" },
-  "portfolio_history_failure_transaction_reverted": { "message": "On-chain transaction reverted" },
-  "portfolio_history_failure_slippage_exceeded": { "message": "Output below allowed slippage" },
-  "portfolio_history_failure_insufficient_balance": { "message": "Insufficient token or gas balance" },
-  "portfolio_history_failure_insufficient_allowance": { "message": "Token allowance too low" },
-  "portfolio_history_failure_out_of_gas": { "message": "Transaction ran out of gas" },
-  "portfolio_history_failure_expired": { "message": "Quote or deposit window expired" },
-  "portfolio_history_failure_refunded": { "message": "Provider refunded deposited funds" },
-  "portfolio_history_failure_bridge_failed": { "message": "Cross-chain route failed" },
-  "portfolio_history_failure_aml_review": { "message": "Exchange held for compliance review" },
-  "portfolio_history_failure_amount_below_minimum": { "message": "Amount below provider minimum" },
-  "portfolio_history_failure_canceled": { "message": "Swap canceled by provider" },
-  "portfolio_history_failure_slippage_refund": { "message": "Refunded due to slippage limits" },
-  "portfolio_history_failure_funds_returned": { "message": "Funds returned to sender" },
-  "portfolio_history_failure_manual_recovery_required": { "message": "Manual recovery transaction may be required" },
-  "portfolio_history_failure_exchange_failed": { "message": "Exchange provider reported failure" },
-  "portfolio_history_failure_action_contact_support": { "message": "Contact provider or product support" },
-  "portfolio_history_failure_action_retry_swap": { "message": "Start a new swap with a fresh quote" },
-  "portfolio_history_failure_action_check_wallet_balance": { "message": "Verify wallet balance and gas" },
-  "portfolio_history_failure_action_check_token_allowance": { "message": "Approve token spending and retry" },
-  "portfolio_history_failure_action_increase_slippage": { "message": "Retry with higher slippage tolerance" },
-  "portfolio_history_failure_action_wait_for_refund": { "message": "Wait for refund to arrive" },
-  "portfolio_history_failure_action_check_wallet": { "message": "Check receiving wallet for returned funds" },
-  "portfolio_history_failure_action_view_explorer": { "message": "Inspect transaction on a block explorer" },
-  "portfolio_history_failure_action_submit_recovery_transaction": { "message": "Submit provider recovery transaction if offered" },
-  "portfolio_history_failure_action_create_new_exchange": { "message": "Create a new exchange order" },
-  "portfolio_history_from_address": { "message": "From address" },
-  "portfolio_history_to_address": { "message": "To address" },
-  "portfolio_history_provider_reference": { "message": "Provider reference" },
-  "portfolio_history_provider_status": { "message": "Provider status" },
-  "portfolio_history_block_explorer": { "message": "Block explorer" },
+  "portfolio_no_history": {
+    "message": "No portfolio history yet."
+  },
+  "portfolio_history_from": {
+    "message": "From"
+  },
+  "portfolio_history_to": {
+    "message": "To"
+  },
+  "portfolio_history_status_completed": {
+    "message": "Completed"
+  },
+  "portfolio_history_status_failed": {
+    "message": "Failed"
+  },
+  "portfolio_history_status_pending": {
+    "message": "Pending"
+  },
+  "portfolio_history_suggested_action": {
+    "message": "Suggested action"
+  },
+  "portfolio_history_failure_unknown": {
+    "message": "Unclassified failure"
+  },
+  "portfolio_history_failure_transaction_reverted": {
+    "message": "On-chain transaction reverted"
+  },
+  "portfolio_history_failure_slippage_exceeded": {
+    "message": "Output below allowed slippage"
+  },
+  "portfolio_history_failure_insufficient_balance": {
+    "message": "Insufficient token or gas balance"
+  },
+  "portfolio_history_failure_insufficient_allowance": {
+    "message": "Token allowance too low"
+  },
+  "portfolio_history_failure_out_of_gas": {
+    "message": "Transaction ran out of gas"
+  },
+  "portfolio_history_failure_expired": {
+    "message": "Quote or deposit window expired"
+  },
+  "portfolio_history_failure_refunded": {
+    "message": "Provider refunded deposited funds"
+  },
+  "portfolio_history_failure_bridge_failed": {
+    "message": "Cross-chain route failed"
+  },
+  "portfolio_history_failure_aml_review": {
+    "message": "Exchange held for compliance review"
+  },
+  "portfolio_history_failure_amount_below_minimum": {
+    "message": "Amount below provider minimum"
+  },
+  "portfolio_history_failure_canceled": {
+    "message": "Swap canceled by provider"
+  },
+  "portfolio_history_failure_slippage_refund": {
+    "message": "Refunded due to slippage limits"
+  },
+  "portfolio_history_failure_funds_returned": {
+    "message": "Funds returned to sender"
+  },
+  "portfolio_history_failure_manual_recovery_required": {
+    "message": "Manual recovery transaction may be required"
+  },
+  "portfolio_history_failure_exchange_failed": {
+    "message": "Exchange provider reported failure"
+  },
+  "portfolio_history_failure_action_contact_support": {
+    "message": "Contact provider or product support"
+  },
+  "portfolio_history_failure_action_retry_swap": {
+    "message": "Start a new swap with a fresh quote"
+  },
+  "portfolio_history_failure_action_check_wallet_balance": {
+    "message": "Verify wallet balance and gas"
+  },
+  "portfolio_history_failure_action_check_token_allowance": {
+    "message": "Approve token spending and retry"
+  },
+  "portfolio_history_failure_action_increase_slippage": {
+    "message": "Retry with higher slippage tolerance"
+  },
+  "portfolio_history_failure_action_wait_for_refund": {
+    "message": "Wait for refund to arrive"
+  },
+  "portfolio_history_failure_action_check_wallet": {
+    "message": "Check receiving wallet for returned funds"
+  },
+  "portfolio_history_failure_action_view_explorer": {
+    "message": "Inspect transaction on a block explorer"
+  },
+  "portfolio_history_failure_action_submit_recovery_transaction": {
+    "message": "Submit provider recovery transaction if offered"
+  },
+  "portfolio_history_failure_action_create_new_exchange": {
+    "message": "Create a new exchange order"
+  },
+  "portfolio_history_from_address": {
+    "message": "From address"
+  },
+  "portfolio_history_to_address": {
+    "message": "To address"
+  },
+  "portfolio_history_provider_reference": {
+    "message": "Provider reference"
+  },
+  "portfolio_history_provider_status": {
+    "message": "Provider status"
+  },
+  "portfolio_history_block_explorer": {
+    "message": "Block explorer"
+  },
   "portfolio_history_view_on_provider": {
     "message": "View on $1",
     "placeholders": {
@@ -4170,24 +4307,60 @@
       }
     }
   },
-  "portfolio_history_view_on_explorer": { "message": "View on block explorer" },
-  "portfolio_history_tx_hash": { "message": "Transaction hash" },
-  "portfolio_history_submitted_at": { "message": "Submitted" },
-  "portfolio_history_updated_at": { "message": "Last updated" },
-  "portfolio_history_unknown_date": { "message": "Unknown date" },
-  "portfolio_history_show_created_expired": { "message": "Show created/expired" },
-  "portfolio_page_description": { "message": "View balances and access portfolio services without changing your active Keychain account." },
-  "portfolio_account": { "message": "Account" },
-  "portfolio_network": { "message": "Network" },
-  "portfolio_all_networks": { "message": "All networks" },
-  "portfolio_token": { "message": "Token" },
-  "portfolio_actions": { "message": "Actions" },
-  "portfolio_price": { "message": "Price" },
-  "portfolio_value": { "message": "Value" },
-  "portfolio_mode": { "message": "Mode" },
-  "portfolio_status": { "message": "Status" },
-  "portfolio_date": { "message": "Date" },
-  "portfolio_token_filter": { "message": "Filter by name or symbol" },
+  "portfolio_history_view_on_explorer": {
+    "message": "View on block explorer"
+  },
+  "portfolio_history_tx_hash": {
+    "message": "Transaction hash"
+  },
+  "portfolio_history_submitted_at": {
+    "message": "Submitted"
+  },
+  "portfolio_history_updated_at": {
+    "message": "Last updated"
+  },
+  "portfolio_history_unknown_date": {
+    "message": "Unknown date"
+  },
+  "portfolio_history_show_created_expired": {
+    "message": "Show created/expired"
+  },
+  "portfolio_page_description": {
+    "message": "View balances and access portfolio services without changing your active Keychain account."
+  },
+  "portfolio_account": {
+    "message": "Account"
+  },
+  "portfolio_network": {
+    "message": "Network"
+  },
+  "portfolio_all_networks": {
+    "message": "All networks"
+  },
+  "portfolio_token": {
+    "message": "Token"
+  },
+  "portfolio_actions": {
+    "message": "Actions"
+  },
+  "portfolio_price": {
+    "message": "Price"
+  },
+  "portfolio_value": {
+    "message": "Value"
+  },
+  "portfolio_mode": {
+    "message": "Mode"
+  },
+  "portfolio_status": {
+    "message": "Status"
+  },
+  "portfolio_date": {
+    "message": "Date"
+  },
+  "portfolio_token_filter": {
+    "message": "Filter by name or symbol"
+  },
   "portfolio_caption_message_total_value": {
     "message": "Esse valor reflete todos os tokens da Hive e Hive Engine de suas contas, independentemente do seu formulário (líquido, estampado, em poupança ou delegado)",
     "description": "portfolio main page, information total value"
@@ -7347,5 +7520,53 @@
   "evm_error_gas_estimate": {
     "message": "Gas estimation failed. You will need to enter a custom gas fee.",
     "description": "Gas estimation failed. You will need to enter a custom gas fee."
+  },
+  "portfolio_payment_method_credit_debit_card": {
+    "message": "Cartão de crédito / débito"
+  },
+  "portfolio_payment_method_creditcard": {
+    "message": "Cartão de crédito / débito"
+  },
+  "portfolio_payment_method_card": {
+    "message": "Cartão de crédito / débito"
+  },
+  "portfolio_payment_method_card_payment": {
+    "message": "Pagamento com cartão"
+  },
+  "portfolio_payment_method_ach_bank_transfer": {
+    "message": "Transferência bancária ACH"
+  },
+  "portfolio_payment_method_paypal": {
+    "message": "PayPal"
+  },
+  "portfolio_payment_method_gbp_bank_transfer": {
+    "message": "Transferência bancária GBP"
+  },
+  "portfolio_payment_method_gbp_open_banking_payment": {
+    "message": "Open banking GBP"
+  },
+  "portfolio_payment_method_pix_instant_payment": {
+    "message": "PIX"
+  },
+  "portfolio_payment_method_sepa_bank_transfer": {
+    "message": "Transferência SEPA"
+  },
+  "portfolio_payment_method_applepay": {
+    "message": "Apple Pay"
+  },
+  "portfolio_payment_method_apple_pay": {
+    "message": "Apple Pay"
+  },
+  "portfolio_payment_method_googlepay": {
+    "message": "Google Pay"
+  },
+  "portfolio_payment_method_google_pay": {
+    "message": "Google Pay"
+  },
+  "portfolio_payment_method_banktransfer": {
+    "message": "Transferência bancária"
+  },
+  "portfolio_payment_method_bank_transfer": {
+    "message": "Transferência bancária"
   }
 }

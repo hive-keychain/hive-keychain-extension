@@ -12,6 +12,7 @@ import {
   PortfolioFailureCode,
   PortfolioFiatRampCountriesResponse,
   PortfolioFiatRampCountry,
+  PortfolioFiatRampLocale,
   PortfolioFiatRampOptions,
   PortfolioFiatRampPaymentMethod,
   PortfolioHiveCustomJsonOperation,
@@ -590,6 +591,30 @@ const parsePortfolioFiatRampCountriesResponse = (
   };
 };
 
+const parsePortfolioFiatRampLocale = (
+  value: unknown,
+): PortfolioFiatRampLocale => {
+  if (!isRecord(value)) {
+    return { countryCode: null, source: 'unavailable' };
+  }
+
+  const rawCountry = readNullableString(value, 'countryCode');
+  const countryCode =
+    rawCountry && /^[A-Za-z]{2}$/.test(rawCountry.trim())
+      ? rawCountry.trim().toUpperCase()
+      : null;
+
+  const rawSource = readString(value, 'source').trim().toLowerCase();
+  const source =
+    rawSource === 'header' ||
+    rawSource === 'ip_lookup' ||
+    rawSource === 'client_lookup'
+      ? rawSource
+      : 'unavailable';
+
+  return { countryCode, source };
+};
+
 const parsePortfolioExecution = (value: unknown): PortfolioExecution | null => {
   if (!isRecord(value)) {
     return null;
@@ -687,6 +712,7 @@ export const PortfolioApiParser = {
   parsePortfolioAvailableAssetsResponse,
   parsePortfolioExecution,
   parsePortfolioFiatRampCountriesResponse,
+  parsePortfolioFiatRampLocale,
   parsePortfolioFiatRampOptions,
   parsePortfolioHistoryItem,
   parsePortfolioHistoryResponse,

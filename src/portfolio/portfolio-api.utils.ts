@@ -5,6 +5,7 @@ import {
   PortfolioAvailableAssetsResponse,
   PortfolioExecution,
   PortfolioFiatRampCountry,
+  PortfolioFiatRampLocale,
   PortfolioFiatRampOptions,
   PortfolioAssetsResponse,
   PortfolioHistoryItem,
@@ -106,10 +107,50 @@ export const resolvePortfolioAmountQuoteError = (
 
   const min = error.details?.mergedRange?.min;
   const max = error.details?.mergedRange?.max;
+  const fiatCurrency =
+    typeof error.details?.fiatCurrency === 'string' && error.details.fiatCurrency.trim()
+      ? error.details.fiatCurrency.trim().toUpperCase()
+      : null;
+
   if (min && max) {
+    if (fiatCurrency) {
+      return {
+        key: 'portfolio_amount_out_of_range_fiat',
+        params: [min, max, fiatCurrency],
+      };
+    }
+
     return {
       key: 'portfolio_swap_amount_out_of_range',
       params: [min, max],
+    };
+  }
+
+  if (min) {
+    if (fiatCurrency) {
+      return {
+        key: 'portfolio_amount_below_minimum_fiat',
+        params: [min, fiatCurrency],
+      };
+    }
+
+    return {
+      key: 'portfolio_amount_below_minimum',
+      params: [min],
+    };
+  }
+
+  if (max) {
+    if (fiatCurrency) {
+      return {
+        key: 'portfolio_amount_above_maximum_fiat',
+        params: [max, fiatCurrency],
+      };
+    }
+
+    return {
+      key: 'portfolio_amount_above_maximum',
+      params: [max],
     };
   }
 
@@ -231,18 +272,25 @@ const listAvailableAssets = async (params: {
 };
 
 const getFiatRampOptions = async (params: {
-  countryCode: string;
   mode: 'buy' | 'sell';
+  countryCode?: string;
 }): Promise<PortfolioFiatRampOptions> => {
   const searchParams = new URLSearchParams({
-    countryCode: params.countryCode,
     mode: params.mode,
   });
+  if (params.countryCode && /^[A-Za-z]{2}$/.test(params.countryCode.trim())) {
+    searchParams.set('countryCode', params.countryCode.trim().toUpperCase());
+  }
 
   return PortfolioApiParser.parsePortfolioFiatRampOptions(
     await fetchJson(`/fiat-ramp/options?${searchParams.toString()}`),
   );
 };
+
+const getFiatRampLocale = async (): Promise<PortfolioFiatRampLocale> =>
+  PortfolioApiParser.parsePortfolioFiatRampLocale(
+    await fetchJson('/fiat-ramp/locale'),
+  );
 
 const listFiatRampCountries = async (
   mode: 'buy' | 'sell',
@@ -348,6 +396,7 @@ export const PortfolioApiUtils = {
   canExecutePortfolioQuote,
   createExecution,
   getClientToken,
+  getFiatRampLocale,
   getFiatRampOptions,
   getQuotes,
   listAssets,

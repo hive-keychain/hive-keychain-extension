@@ -157,6 +157,70 @@ describe('PortfolioApiUtils', () => {
     );
   });
 
+  it('requests full fiat ramp options without requiring a country', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        fiatCurrencies: ['EUR', 'USD'],
+        paymentMethods: [{ id: 'SEPA_BANK_TRANSFER', label: 'SEPA bank transfer' }],
+      }),
+    });
+
+    await expect(
+      PortfolioApiUtils.getFiatRampOptions({ mode: 'buy' }),
+    ).resolves.toEqual({
+      fiatCurrencies: ['EUR', 'USD'],
+      paymentMethods: [
+        { id: 'SEPA_BANK_TRANSFER', label: 'SEPA bank transfer' },
+      ],
+    });
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      'https://portfolio.example/fiat-ramp/options?mode=buy',
+      expect.any(Object),
+    );
+  });
+
+  it('includes countryCode on fiat ramp options when provided', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        fiatCurrencies: ['EUR'],
+        paymentMethods: [],
+      }),
+    });
+
+    await PortfolioApiUtils.getFiatRampOptions({
+      mode: 'sell',
+      countryCode: 'de',
+    });
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      'https://portfolio.example/fiat-ramp/options?mode=sell&countryCode=DE',
+      expect.any(Object),
+    );
+  });
+
+  it('requests fiat ramp locale from the caller IP', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        countryCode: 'TW',
+        source: 'ip_lookup',
+      }),
+    });
+
+    await expect(PortfolioApiUtils.getFiatRampLocale()).resolves.toEqual({
+      countryCode: 'TW',
+      source: 'ip_lookup',
+    });
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      'https://portfolio.example/fiat-ramp/locale',
+      expect.any(Object),
+    );
+  });
+
   it('throws structured portfolio api errors from quote requests', async () => {
     getValueMock.mockResolvedValue('x'.repeat(64));
     global.fetch = jest.fn().mockResolvedValue({
@@ -402,6 +466,42 @@ describe('PortfolioApiUtils', () => {
     expect(PortfolioApiUtils.resolvePortfolioAmountQuoteError(error)).toEqual({
       key: 'portfolio_swap_amount_out_of_range',
       params: ['2200', '110000'],
+    });
+    expect(
+      PortfolioApiUtils.resolvePortfolioAmountQuoteError(
+        new PortfolioApiError({
+          code: 'SWAP_AMOUNT_OUT_OF_RANGE',
+          message: 'No quote available for the requested amount.',
+          details: {
+            fiatCurrency: 'TWD',
+            mergedRange: {
+              min: '908',
+              max: '334910',
+            },
+          },
+        }),
+      ),
+    ).toEqual({
+      key: 'portfolio_amount_out_of_range_fiat',
+      params: ['908', '334910', 'TWD'],
+    });
+    expect(
+      PortfolioApiUtils.resolvePortfolioAmountQuoteError(
+        new PortfolioApiError({
+          code: 'SWAP_AMOUNT_OUT_OF_RANGE',
+          message: 'No quote available for the requested amount.',
+          details: {
+            fiatCurrency: 'TWD',
+            mergedRange: {
+              min: '908',
+              max: null,
+            },
+          },
+        }),
+      ),
+    ).toEqual({
+      key: 'portfolio_amount_below_minimum_fiat',
+      params: ['908', 'TWD'],
     });
     expect(
       PortfolioApiUtils.resolvePortfolioAmountQuoteError(

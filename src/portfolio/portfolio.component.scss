@@ -653,6 +653,27 @@
   }
 }
 
+.portfolio-flow-pair-row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.5fr);
+  gap: var(--kc-space-3);
+  align-items: start;
+  width: 100%;
+
+  .portfolio-amount-field,
+  &__secondary {
+    min-width: 0;
+  }
+
+  &__secondary {
+    .custom-select-container,
+    .input-container,
+    .portfolio-overlay-select {
+      width: 100%;
+    }
+  }
+}
+
 .portfolio-amount-field {
   display: flex;
   flex-direction: column;

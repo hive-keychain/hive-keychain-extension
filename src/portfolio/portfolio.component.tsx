@@ -49,8 +49,6 @@ import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.com
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
-import { ISO_COUNTRY_CODES } from 'src/reference-data/iso-country-code.list';
-import { IsoCountryCodeUtils } from 'src/reference-data/iso-country-code.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
@@ -61,7 +59,6 @@ import {
   PortfolioChainDisplayRecord,
   PortfolioEvmTransaction,
   PortfolioExecution,
-  PortfolioFiatRampCountry,
   PortfolioFiatRampOptions,
   PortfolioHistoryItem,
   PortfolioHiveTransaction,
@@ -74,6 +71,7 @@ import {
   PortfolioLocalizedMessage,
   PortfolioSwapQuoteFetchResult,
 } from 'src/portfolio/portfolio-api.utils';
+import { PortfolioFiatLocaleUtils } from 'src/portfolio/portfolio-fiat-locale.utils';
 import { PortfolioEvmApprovalUtils } from 'src/portfolio/portfolio-evm-approval.utils';
 import {
   PortfolioFlowRow,
@@ -503,9 +501,15 @@ export const Portfolio = ({
   const [fromAssetId, setFromAssetId] = useState('');
   const [toAssetId, setToAssetId] = useState('');
   const [amount, setAmount] = useState('');
-  const [countryCode, setCountryCode] = useState('US');
-  const [fiatCurrency, setFiatCurrency] = useState('USD');
+  const [fiatCurrency, setFiatCurrency] = useState(
+    PortfolioFiatLocaleUtils.getPreferredFiatCurrencyCode(),
+  );
   const [paymentMethod, setPaymentMethod] = useState('');
+  const [geoCountryCode, setGeoCountryCode] = useState<string | undefined>();
+  const [preferredFiatCurrency, setPreferredFiatCurrency] = useState(
+    PortfolioFiatLocaleUtils.getPreferredFiatCurrencyCode(),
+  );
+  const hasUserSelectedFiatRef = useRef(false);
   const [quoteResponse, setQuoteResponse] = useState<PortfolioQuoteResponse>();
   const [selectedQuoteId, setSelectedQuoteId] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
@@ -539,9 +543,6 @@ export const Portfolio = ({
     useState<PortfolioFiatRampOptions | null>(null);
   const [isFiatRampOptionsLoading, setIsFiatRampOptionsLoading] =
     useState(false);
-  const [fiatRampCountries, setFiatRampCountries] = useState<
-    PortfolioFiatRampCountry[]
-  >([]);
   const [rampAvailableAssets, setRampAvailableAssets] = useState<
     PortfolioCanonicalAsset[]
   >([]);
@@ -937,8 +938,7 @@ export const Portfolio = ({
       fromAssetId: resolvedFromAssetId,
       toAssetId: resolvedToAssetId,
     }) &&
-    (!isFiatRampSection(section) ||
-      (countryCode.length === 2 && Boolean(fiatCurrency.trim())));
+    (!isFiatRampSection(section) || Boolean(fiatCurrency.trim()));
 
   useEffect(() => {
     setRecipientAddress('');
@@ -1076,42 +1076,6 @@ export const Portfolio = ({
     networkSelectOptions.find((option) => option.value === selectedNetwork) ??
     getAllNetworksOption();
 
-  const isoCountryNameByCode = useMemo(
-    () =>
-      new Map(
-        ISO_COUNTRY_CODES.map((country) => [country.code, country.name]),
-    ),
-    [],
-  );
-
-  const buildCountryOption = (code: string, name: string | null): OptionItem => {
-    const label = name || isoCountryNameByCode.get(code) || code;
-    const flag = IsoCountryCodeUtils.getIsoCountryFlagEmoji(code);
-
-    return {
-      key: code,
-      label: flag ? `${flag} ${label}` : label,
-      value: code,
-    };
-  };
-
-  const countrySelectOptions = useMemo<OptionItem[]>(() => {
-    if (fiatRampCountries.length > 0) {
-      return fiatRampCountries.map((country) =>
-        buildCountryOption(country.countryCode, country.name),
-      );
-    }
-
-    return ISO_COUNTRY_CODES.map((country) =>
-      buildCountryOption(country.code, country.name),
-    );
-  }, [fiatRampCountries, isoCountryNameByCode]);
-
-  const selectedCountryOption =
-    countrySelectOptions.find((option) => option.value === countryCode) ??
-    countrySelectOptions.find((option) => option.value === 'US') ??
-    countrySelectOptions[0];
-
   const fiatCurrencySelectOptions = useMemo<OptionItem[]>(() => {
     if (fiatRampOptions?.fiatCurrencies.length) {
       return fiatRampOptions.fiatCurrencies.map((currency) => ({
@@ -1135,7 +1099,7 @@ export const Portfolio = ({
     const methods =
       fiatRampOptions?.paymentMethods.map((method) => ({
         key: method.id,
-        label: method.label,
+        label: PortfolioFiatLocaleUtils.getPaymentMethodLabel(method),
         value: method.id,
       })) ?? [];
 
@@ -1408,16 +1372,10 @@ export const Portfolio = ({
     return () => clearInterval(countdownIntervalId);
   }, [section, selectedAccountKey, refreshHistorySilently]);
 
-  const loadFiatRampOptions = async (mode: 'buy' | 'sell', country: string) => {
-    if (country.length !== 2) {
-      setFiatRampOptions(null);
-      return;
-    }
-
+  const loadFiatRampOptions = async (mode: 'buy' | 'sell') => {
     setIsFiatRampOptionsLoading(true);
     try {
       const options = await PortfolioApiUtils.getFiatRampOptions({
-        countryCode: country,
         mode,
       });
       setFiatRampOptions(options);
@@ -1426,16 +1384,6 @@ export const Portfolio = ({
       setFiatRampOptions(null);
     } finally {
       setIsFiatRampOptionsLoading(false);
-    }
-  };
-
-  const loadFiatRampCountries = async (mode: 'buy' | 'sell') => {
-    try {
-      const countries = await PortfolioApiUtils.listFiatRampCountries(mode);
-      setFiatRampCountries(countries);
-    } catch (error) {
-      Logger.error('Unable to load fiat ramp countries', error);
-      setFiatRampCountries([]);
     }
   };
 
@@ -1498,21 +1446,41 @@ export const Portfolio = ({
     if (!isFiatRampSection(section)) {
       setFiatRampOptions(null);
       setRampAvailableAssets([]);
-      setFiatRampCountries([]);
       return;
     }
 
-    void loadFiatRampCountries(section);
+    void loadFiatRampOptions(section);
     void loadRampAvailableAssets(section);
+
+    let cancelled = false;
+    void (async () => {
+      let backendCountryCode: string | null = null;
+      try {
+        const locale = await PortfolioApiUtils.getFiatRampLocale();
+        backendCountryCode = locale.countryCode;
+      } catch (error) {
+        Logger.error('Unable to load fiat ramp locale from API', error);
+      }
+
+      const resolved =
+        await PortfolioFiatLocaleUtils.resolvePreferredFiatLocale({
+          backendCountryCode,
+        });
+      if (cancelled) {
+        return;
+      }
+
+      setGeoCountryCode(resolved.countryCode);
+      setPreferredFiatCurrency(resolved.fiatCurrency);
+      if (!hasUserSelectedFiatRef.current) {
+        setFiatCurrency(resolved.fiatCurrency);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [section]);
-
-  useEffect(() => {
-    if (!isFiatRampSection(section)) {
-      return;
-    }
-
-    void loadFiatRampOptions(section, countryCode);
-  }, [section, countryCode]);
 
   useEffect(() => {
     if (section !== 'swap') {
@@ -1523,33 +1491,29 @@ export const Portfolio = ({
   }, [section]);
 
   useEffect(() => {
-    if (fiatRampCountries.length === 0) {
-      return;
-    }
-
-    const supportedCodes = new Set(
-      fiatRampCountries.map((country) => country.countryCode),
-    );
-    setCountryCode((current) =>
-      supportedCodes.has(current)
-        ? current
-        : supportedCodes.has('US')
-          ? 'US'
-          : fiatRampCountries[0].countryCode,
-    );
-  }, [fiatRampCountries]);
-
-  useEffect(() => {
     if (!fiatRampOptions?.fiatCurrencies.length) {
       return;
     }
 
-    setFiatCurrency((current) =>
-      fiatRampOptions.fiatCurrencies.includes(current)
-        ? current
-        : fiatRampOptions.fiatCurrencies[0],
+    if (hasUserSelectedFiatRef.current) {
+      setFiatCurrency((current) =>
+        fiatRampOptions.fiatCurrencies.includes(current)
+          ? current
+          : PortfolioFiatLocaleUtils.pickPreferredFiatCurrency(
+              fiatRampOptions.fiatCurrencies,
+              preferredFiatCurrency,
+            ),
+      );
+      return;
+    }
+
+    setFiatCurrency(
+      PortfolioFiatLocaleUtils.pickPreferredFiatCurrency(
+        fiatRampOptions.fiatCurrencies,
+        preferredFiatCurrency,
+      ),
     );
-  }, [fiatRampOptions]);
+  }, [fiatRampOptions, preferredFiatCurrency]);
 
   useEffect(() => {
     if (!fiatRampOptions?.paymentMethods.length) {
@@ -1833,7 +1797,10 @@ export const Portfolio = ({
         fromAddress: address,
         toAddress,
         countryCode:
-          mode === 'buy' || mode === 'sell' ? countryCode : undefined,
+          mode === 'buy' || mode === 'sell'
+            ? geoCountryCode ??
+              PortfolioFiatLocaleUtils.getPreferredRegionCode()
+            : undefined,
         fiatCurrency:
           mode === 'buy' || mode === 'sell' ? fiatCurrency : undefined,
         paymentMethod:
@@ -1898,7 +1865,6 @@ export const Portfolio = ({
     toAssetId,
     recipientAddress,
     selectedAccountKey,
-    countryCode,
     fiatCurrency,
     paymentMethod,
   ]);
@@ -1971,7 +1937,6 @@ export const Portfolio = ({
     toAssetId,
     recipientAddress,
     selectedAccountKey,
-    countryCode,
     fiatCurrency,
     paymentMethod,
     triggerFlowQuoteRefresh,
@@ -2693,56 +2658,56 @@ export const Portfolio = ({
       </>
     );
 
-    const fiatRampFields =
+    const fiatCurrencyField =
       mode === 'buy' || mode === 'sell' ? (
-        <>
+        fiatCurrencySelectOptions.length > 0 ? (
           <ComplexeCustomSelect
-            label="portfolio_country_code"
-            options={countrySelectOptions}
-            selectedItem={selectedCountryOption}
-            setSelectedItem={(item) => setCountryCode(item.value)}
+            label="portfolio_fiat_currency"
+            options={fiatCurrencySelectOptions}
+            selectedItem={selectedFiatCurrencyOption}
+            setSelectedItem={(item) => {
+              hasUserSelectedFiatRef.current = true;
+              setFiatCurrency(item.value);
+            }}
             filterable
             showOverlay
+            additionalClassname={
+              isFiatRampOptionsLoading ? 'disabled' : undefined
+            }
           />
-          {fiatCurrencySelectOptions.length > 0 ? (
-            <ComplexeCustomSelect
-              label="portfolio_fiat_currency"
-              options={fiatCurrencySelectOptions}
-              selectedItem={selectedFiatCurrencyOption}
-              setSelectedItem={(item) => setFiatCurrency(item.value)}
-              additionalClassname={
-                isFiatRampOptionsLoading ? 'disabled' : undefined
-              }
-            />
-          ) : (
-            <InputComponent
-              label="portfolio_fiat_currency"
-              type={InputType.TEXT}
-              value={fiatCurrency}
-              onChange={(value: string) =>
-                setFiatCurrency(value.toUpperCase().slice(0, 10))
-              }
-            />
-          )}
-          {paymentMethodSelectOptions.length > 1 ? (
-            <ComplexeCustomSelect
-              label="portfolio_payment_method"
-              options={paymentMethodSelectOptions}
-              selectedItem={selectedPaymentMethodOption}
-              setSelectedItem={(item) => setPaymentMethod(item.value)}
-              additionalClassname={
-                isFiatRampOptionsLoading ? 'disabled' : undefined
-              }
-            />
-          ) : (
-            <InputComponent
-              label="portfolio_payment_method"
-              type={InputType.TEXT}
-              value={paymentMethod}
-              onChange={setPaymentMethod}
-            />
-          )}
-        </>
+        ) : (
+          <InputComponent
+            label="portfolio_fiat_currency"
+            type={InputType.TEXT}
+            value={fiatCurrency}
+            onChange={(value: string) => {
+              hasUserSelectedFiatRef.current = true;
+              setFiatCurrency(value.toUpperCase().slice(0, 10));
+            }}
+          />
+        )
+      ) : null;
+
+    const paymentMethodField =
+      mode === 'buy' || mode === 'sell' ? (
+        paymentMethodSelectOptions.length > 1 ? (
+          <ComplexeCustomSelect
+            label="portfolio_payment_method"
+            options={paymentMethodSelectOptions}
+            selectedItem={selectedPaymentMethodOption}
+            setSelectedItem={(item) => setPaymentMethod(item.value)}
+            additionalClassname={
+              isFiatRampOptionsLoading ? 'disabled' : undefined
+            }
+          />
+        ) : (
+          <InputComponent
+            label="portfolio_payment_method"
+            type={InputType.TEXT}
+            value={paymentMethod}
+            onChange={setPaymentMethod}
+          />
+        )
       ) : null;
 
     const fromAssetSelect =
@@ -2875,14 +2840,38 @@ export const Portfolio = ({
               renderOption={renderAccountRow}
             />
           )}
-        {mode === 'buy' ? toAssetSelect : fromAssetSelect}
-        {amountField}
-        {fiatRampFields}
-        {mode === 'swap' && toAssetSelect}
-        {mode === 'sell' && renderEstimatedAmountSection()}
-        {mode !== 'sell' &&
-          toAssetOptions.length > 0 &&
-          renderEstimatedAmountSection()}
+        {mode === 'buy' ? (
+          <>
+            <div className="portfolio-flow-pair-row">
+              {amountField}
+              <div className="portfolio-flow-pair-row__secondary">
+                {fiatCurrencyField}
+              </div>
+            </div>
+            {toAssetSelect}
+            {paymentMethodField}
+            {toAssetOptions.length > 0 && renderEstimatedAmountSection()}
+          </>
+        ) : mode === 'sell' ? (
+          <>
+            <div className="portfolio-flow-pair-row">
+              {amountField}
+              <div className="portfolio-flow-pair-row__secondary">
+                {fromAssetSelect}
+              </div>
+            </div>
+            {fiatCurrencyField}
+            {paymentMethodField}
+            {renderEstimatedAmountSection()}
+          </>
+        ) : (
+          <>
+            {fromAssetSelect}
+            {amountField}
+            {toAssetSelect}
+            {toAssetOptions.length > 0 && renderEstimatedAmountSection()}
+          </>
+        )}
         {requiresRecipientInput && (
           <InputComponent
             label={recipientAddressLabelKey}
