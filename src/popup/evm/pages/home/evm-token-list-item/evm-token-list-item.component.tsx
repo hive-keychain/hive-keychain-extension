@@ -10,8 +10,11 @@ interface Props {
   contentClassName?: string;
   contentProps?: React.HTMLAttributes<HTMLDivElement>;
   dataTestId?: string;
+  isActivateDisabled?: boolean;
   logo?: string;
   name?: string;
+  /** Makes the whole row activate this callback (keyboard + click). */
+  onActivate?: () => void;
   symbol?: string;
 }
 
@@ -34,14 +37,22 @@ export const EvmTokenListItemComponent = ({
   contentClassName,
   contentProps,
   dataTestId,
+  isActivateDisabled = false,
   logo = '',
   name,
+  onActivate,
   symbol,
 }: Props) => {
   const tokenLabel = getTokenLabel(address, name, symbol);
-  const containerClassName = className.length
-    ? `known-token-item ${className}`
-    : 'known-token-item';
+  const isRowActivatable = Boolean(onActivate) && !isActivateDisabled;
+  const containerClassName = [
+    'known-token-item',
+    className,
+    onActivate ? 'known-token-item--clickable' : '',
+    isActivateDisabled ? 'known-token-item--disabled' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
   const content = (
     <>
       <EvmTokenLogo
@@ -62,8 +73,31 @@ export const EvmTokenListItemComponent = ({
     </>
   );
 
+  const handleActivate = () => {
+    if (!isRowActivatable) {
+      return;
+    }
+    onActivate?.();
+  };
+
   return (
-    <Container className={containerClassName} data-testid={dataTestId}>
+    <Container
+      className={containerClassName}
+      data-testid={dataTestId}
+      role={onActivate ? 'button' : undefined}
+      tabIndex={isRowActivatable ? 0 : undefined}
+      aria-disabled={onActivate ? isActivateDisabled : undefined}
+      onClick={onActivate ? handleActivate : undefined}
+      onKeyDown={
+        onActivate
+          ? (event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                handleActivate();
+              }
+            }
+          : undefined
+      }>
       {contentClassName ? (
         <div {...contentProps} className={contentClassName}>
           {content}

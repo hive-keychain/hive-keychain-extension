@@ -6800,14 +6800,14 @@
   },
   "evm_add_custom_token": {
     "message": "Ajouter un jeton personnalisé",
-    "description": "Add custom tokens"
+    "description": "Opens the add-token flow from manage tokens"
   },
   "evm_add_custom_nft": {
     "message": "Ajouter un NFT personnalisé",
     "description": "Add a custom NFT"
   },
   "evm_custom_tokens_page_title": {
-    "message": "Manage tokens",
+    "message": "Gérer les jetons",
     "description": "Title for the ERC20 tokens management page"
   },
   "evm_custom_nfts_page_title": {
@@ -6815,19 +6815,23 @@
     "description": "Title for the custom NFT management page"
   },
   "evm_custom_tokens_page_empty": {
-    "message": "Aucun jeton personnalisé pour le moment. Ajoutez-en un pour enregistrer un contrat ERC20 pour ce réseau.",
-    "description": "Empty state on custom tokens page"
+    "message": "Aucun jeton personnalisé pour le moment. Utilisez Ajouter un jeton personnalisé pour enregistrer un contrat ERC20 pour ce réseau.",
+    "description": "Empty state for custom tokens section on manage tokens page"
   },
   "evm_custom_nfts_page_empty": {
     "message": "Aucun NFT personnalisé pour le moment. Ajoutez-en un pour enregistrer des ID de jetons NFT pour ce réseau.",
     "description": "Empty state on custom NFT page"
   },
   "evm_custom_tokens_page_caption": {
-    "message": "Custom tokens are stored per network. Zero balance tokens will not be displayed on the home page.",
-    "description": "Intro caption on custom tokens page"
+    "message": "Masquez les jetons détectés automatiquement, ou modifiez et supprimez les jetons personnalisés.<br/>Les paramètres s’appliquent par réseau. Les jetons avec un solde nul restent hors de la page d’accueil.",
+    "description": "Intro caption on manage tokens page; may include a <br/> line break"
+  },
+  "evm_custom_tokens_section_title": {
+    "message": "Jetons personnalisés",
+    "description": "Custom token list section title on manage tokens page"
   },
   "evm_auto_detected_tokens_section_title": {
-    "message": "Auto-detected tokens",
+    "message": "Jetons détectés automatiquement",
     "description": "Auto-detected token list section title on manage tokens page"
   },
   "evm_auto_detected_tokens_empty": {
@@ -6919,40 +6923,40 @@
     "description": "Smart contract address"
   },
   "evm_add_custom_token_popup_caption": {
-    "message": "Ajoutez un jeton personnalisé à votre portefeuille. Si vous ne trouvez pas le jeton recherché, vous pouvez l’ajouter manuellement.",
-    "description": "Add custom token popup caption"
+    "message": "Recherchez les jetons connus pour ce réseau. Si vous ne trouvez pas le jeton souhaité, ajoutez-le manuellement.",
+    "description": "Browse step caption in the add custom token popup"
   },
   "evm_custom_tokens_add_section_title": {
     "message": "Add a token",
-    "description": "Known token list section title on custom tokens page"
+    "description": "Unused legacy key; known token list now lives in the add token popup"
   },
   "evm_add_custom_token_manually": {
-    "message": "Add manually",
-    "description": "Manual custom token button label"
+    "message": "Ajouter manuellement",
+    "description": "Opens the manual ERC20 form from the add token popup browse step"
   },
   "evm_known_tokens_search_label": {
-    "message": "Search token",
-    "description": "Known tokens search input label"
+    "message": "Rechercher un jeton",
+    "description": "Known tokens search input label in the add token popup"
   },
   "evm_known_tokens_search_placeholder": {
-    "message": "Name or contract address",
-    "description": "Known tokens search input placeholder"
+    "message": "Nom ou adresse du contrat",
+    "description": "Known tokens search input placeholder in the add token popup"
   },
   "evm_known_tokens_loading": {
-    "message": "Loading known tokens...",
-    "description": "Known tokens loading message"
+    "message": "Chargement des jetons connus...",
+    "description": "Known tokens loading message in the add token popup"
   },
   "evm_known_tokens_empty": {
-    "message": "No known tokens found for this network.",
-    "description": "Known tokens empty state"
+    "message": "Aucun jeton connu trouvé pour ce réseau.",
+    "description": "Known tokens empty state in the add token popup"
   },
   "evm_known_tokens_error_loading": {
-    "message": "Could not load known tokens for this network.",
-    "description": "Known tokens load error"
+    "message": "Impossible de charger les jetons connus pour ce réseau.",
+    "description": "Known tokens load error in the add token popup"
   },
   "evm_known_tokens_add": {
-    "message": "Add",
-    "description": "Add known token button label"
+    "message": "Ajouter",
+    "description": "Add known token button label in the add token popup"
   },
   "evm_watch_asset_title": {
     "message": "Ajouter un jeton personnalisé",

@@ -1,20 +1,26 @@
 .evm-add-custom-asset-popup {
   .popup-content {
+    display: flex;
+    flex-direction: column;
     row-gap: 16px;
     align-items: stretch;
     width: min(92%, 420px);
     max-width: 100%;
+    max-height: 90%;
     margin: 0 auto;
+    overflow: hidden;
   }
 
   .popup-title {
     margin: 0;
+    flex-shrink: 0;
   }
 
   .popup-caption {
     color: var(--secondary-text-color);
     font-size: 14px;
     line-height: 1.4;
+    flex-shrink: 0;
   }
 
   .popup-note {
@@ -29,6 +35,9 @@
     row-gap: 12px;
     width: 100%;
     min-width: 0;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
   }
 
   .field {
@@ -70,7 +79,54 @@
   }
 
   .popup-footer {
-    flex: unset;
+    flex: 0 0 auto;
     width: 100%;
+    margin-top: auto;
+  }
+
+  .known-token-list {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .known-token-items {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  &--browse {
+    padding: 16px;
+
+    .overlay {
+      margin: -16px;
+    }
+
+    .popup-content {
+      row-gap: 10px;
+      width: min(96%, 420px);
+      max-height: calc(100% - 8px);
+      padding: 12px;
+      box-sizing: border-box;
+    }
+
+    .popup-title {
+      @include poppins500(18px);
+    }
+
+    .known-token-list {
+      row-gap: 8px;
+    }
+
+    .known-token-items {
+      row-gap: 6px;
+    }
+
+    .known-token-item {
+      padding: 6px 8px;
+    }
   }
 }

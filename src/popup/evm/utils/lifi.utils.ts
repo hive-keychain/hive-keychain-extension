@@ -403,7 +403,21 @@ const sortTokensByMarketCap = (tokens: TokenExtended[]): TokenExtended[] =>
     (a, b) => Number(b.marketCapUSD ?? 0) - Number(a.marketCapUSD ?? 0),
   );
 
-const getKnownTokensForChain = async (
+const knownTokensByChainId = new Map<string, TokenExtended[]>();
+const knownTokensInflightByChainId = new Map<
+  string,
+  Promise<TokenExtended[]>
+>();
+
+const getCachedKnownTokensForChain = (chainId: string) =>
+  knownTokensByChainId.get(chainId);
+
+const clearKnownTokensCache = () => {
+  knownTokensByChainId.clear();
+  knownTokensInflightByChainId.clear();
+};
+
+const loadKnownTokensForChain = async (
   chainId: string,
 ): Promise<TokenExtended[]> => {
   const lifiChainId = evmChainIdToLifiId(chainId);
@@ -417,6 +431,32 @@ const getKnownTokensForChain = async (
   );
 
   return sortTokensByMarketCap(tokensWithContractAddress);
+};
+
+const getKnownTokensForChain = async (
+  chainId: string,
+): Promise<TokenExtended[]> => {
+  const cachedTokens = knownTokensByChainId.get(chainId);
+  if (cachedTokens) {
+    return cachedTokens;
+  }
+
+  const inflightRequest = knownTokensInflightByChainId.get(chainId);
+  if (inflightRequest) {
+    return inflightRequest;
+  }
+
+  const loadRequest = loadKnownTokensForChain(chainId)
+    .then((tokens) => {
+      knownTokensByChainId.set(chainId, tokens);
+      return tokens;
+    })
+    .finally(() => {
+      knownTokensInflightByChainId.delete(chainId);
+    });
+
+  knownTokensInflightByChainId.set(chainId, loadRequest);
+  return loadRequest;
 };
 
 const matchesKnownTokenQuery = (
@@ -684,6 +724,8 @@ export const LiFiUtils = {
   getTokenOptionItem,
   getChainOptionItem,
   getKnownTokensForChain,
+  getCachedKnownTokensForChain,
+  clearKnownTokensCache,
   filterKnownTokensByQuery,
   filterTokensByChainAndQuery,
   retrieveLiFiHistory,

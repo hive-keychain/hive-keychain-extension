@@ -9,6 +9,7 @@ import {
 import { EvmAutoDetectedTokenVisibilityUtils } from '@popup/evm/utils/evm-auto-detected-token-visibility.utils';
 import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import { LiFiUtils } from '@popup/evm/utils/lifi.utils';
 import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { EvmCustomTokensPageComponent } from '@popup/evm/pages/home/evm-custom-tokens-page/evm-custom-tokens-page.component';
 import {
@@ -24,6 +25,7 @@ import React from 'react';
 describe('EvmCustomTokensPageComponent', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
+    LiFiUtils.clearKnownTokensCache();
     jest
       .spyOn(chrome.i18n, 'getMessage')
       .mockImplementation((key: string) => key);
@@ -176,7 +178,7 @@ describe('EvmCustomTokensPageComponent', () => {
       .mockResolvedValue(undefined);
   });
 
-  it('lists saved tokens before known addable tokens and excludes already added addresses', async () => {
+  it('lists custom tokens and opens the add popup from the manage link', async () => {
     const { store } = customRender(<EvmCustomTokensPageComponent />, {
       initialState: {
         ...initialEmptyStateStore,
@@ -221,10 +223,12 @@ describe('EvmCustomTokensPageComponent', () => {
     );
     expect(screen.queryByText('Auto-detected tokens')).not.toBeInTheDocument();
     expect(
-      screen.getByText(
-        'Custom tokens are stored per network. Zero balance tokens will not be displayed on the home page.',
-      ),
+      screen.getByText(/Hide auto-detected tokens, or edit and remove custom ones/),
     ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Zero-balance tokens stay off the home page/),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Custom tokens')).toBeInTheDocument();
     expect(screen.getByText('USDC')).toBeInTheDocument();
     const savedTokenRow = screen
       .getByTestId(
@@ -236,21 +240,37 @@ describe('EvmCustomTokensPageComponent', () => {
       'currency-icon',
       'add-background',
     );
-    expect(screen.getByText('Add a token')).toBeInTheDocument();
-    expect(await screen.findByText('USDT')).toBeInTheDocument();
+    expect(screen.queryByText('Add a token')).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId(
+        'known-token-item-0x0000000000000000000000000000000000000002',
+      ),
+    ).not.toBeInTheDocument();
+    expect(screen.getByTestId('btn-add-custom-token-page')).toHaveTextContent(
+      'Add custom token',
+    );
+    expect(
+      screen
+        .getByTestId('btn-add-custom-token-page')
+        .closest('.evm-custom-tokens-section-header'),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('btn-add-custom-token-page'));
+
+    expect(await screen.findByTestId('custom-asset-popup')).toBeInTheDocument();
+    expect(
+      await screen.findByTestId(
+        'known-token-item-0x0000000000000000000000000000000000000002',
+      ),
+    ).toBeInTheDocument();
     expect(
       screen.queryByTestId(
         'known-token-item-0x0000000000000000000000000000000000000001',
       ),
     ).not.toBeInTheDocument();
     expect(
-      await screen.findByTestId(
-        'known-token-item-0x0000000000000000000000000000000000000002',
-      ),
+      screen.getByTestId('btn-add-custom-token-manually'),
     ).toBeInTheDocument();
-    expect(screen.getByTestId('btn-add-custom-token-page')).toHaveTextContent(
-      'Add manually',
-    );
   });
 
   it('renders auto-detected tokens for supported chains and lets them be hidden', async () => {
@@ -282,6 +302,7 @@ describe('EvmCustomTokensPageComponent', () => {
     });
 
     expect(await screen.findByText('Auto-detected tokens')).toBeInTheDocument();
+    expect(screen.getByText('Custom tokens')).toBeInTheDocument();
     expect(
       screen.getByTestId(
         'auto-detected-token-item-0x0000000000000000000000000000000000000002',
@@ -299,9 +320,6 @@ describe('EvmCustomTokensPageComponent', () => {
     expect(screen.queryByText('SPAM')).not.toBeInTheDocument();
     expect(screen.queryByText('UNV')).not.toBeInTheDocument();
 
-    await waitFor(() => {
-      expect(KeychainApi.get).toHaveBeenCalled();
-    });
     expect(
       screen.queryByTestId(
         'known-token-item-0x0000000000000000000000000000000000000002',
@@ -315,7 +333,7 @@ describe('EvmCustomTokensPageComponent', () => {
 
     fireEvent.click(
       screen.getByTestId(
-        'auto-detected-token-toggle-0x0000000000000000000000000000000000000002',
+        'auto-detected-token-item-0x0000000000000000000000000000000000000002',
       ),
     );
 
@@ -327,6 +345,11 @@ describe('EvmCustomTokensPageComponent', () => {
         '0x0000000000000000000000000000000000000002',
       );
     });
+    expect(
+      screen.getByTestId(
+        'auto-detected-token-item-0x0000000000000000000000000000000000000002',
+      ),
+    ).toHaveClass('known-token-item--hidden');
   });
 
   it('shows an empty auto-detected token state for supported chains', async () => {

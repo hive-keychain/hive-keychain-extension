@@ -2,6 +2,7 @@ import '@testing-library/jest-dom';
 import { KeychainApi } from '@api/keychain';
 import { EvmKnownTokenList } from '@popup/evm/pages/home/evm-add-custom-asset-popup/evm-known-token-list.component';
 import { ChainType } from '@popup/multichain/interfaces/chains.interface';
+import { LiFiUtils } from '@popup/evm/utils/lifi.utils';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -30,6 +31,7 @@ const buildToken = (
 describe('EvmKnownTokenList', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
+    LiFiUtils.clearKnownTokensCache();
     I18nUtils.getMessage = jest.fn((key: string) => key);
   });
 
@@ -61,7 +63,7 @@ describe('EvmKnownTokenList', () => {
 
     fireEvent.click(
       screen.getByTestId(
-        'known-token-add-0x0000000000000000000000000000000000000002',
+        'known-token-item-0x0000000000000000000000000000000000000002',
       ),
     );
 
@@ -76,19 +78,7 @@ describe('EvmKnownTokenList', () => {
     });
   });
 
-  it('renders more known tokens when the load-more sentinel is visible', async () => {
-    let triggerIntersection: (() => void) | undefined;
-    const observe = jest.fn();
-    const disconnect = jest.fn();
-    const intersectionObserver = jest.fn((callback) => {
-      triggerIntersection = () =>
-        callback([{ isIntersecting: true } as IntersectionObserverEntry]);
-      return {
-        observe,
-        disconnect,
-      };
-    });
-    (global as any).IntersectionObserver = intersectionObserver;
+  it('renders more known tokens when the list is scrolled near the bottom', async () => {
     jest.spyOn(KeychainApi, 'get').mockResolvedValue({
       tokens: {
         1: Array.from({ length: 30 }, (_, index) => buildToken(index + 1)),
@@ -99,10 +89,21 @@ describe('EvmKnownTokenList', () => {
 
     expect(await screen.findByText('TKN25')).toBeInTheDocument();
     expect(screen.queryByText('TKN26')).not.toBeInTheDocument();
-    expect(screen.getByTestId('known-token-load-more')).toBeInTheDocument();
-    expect(observe).toHaveBeenCalled();
 
-    triggerIntersection?.();
+    const tokenList = screen.getByTestId('known-token-items');
+    Object.defineProperty(tokenList, 'scrollTop', {
+      configurable: true,
+      value: 1000,
+    });
+    Object.defineProperty(tokenList, 'clientHeight', {
+      configurable: true,
+      value: 200,
+    });
+    Object.defineProperty(tokenList, 'scrollHeight', {
+      configurable: true,
+      value: 1200,
+    });
+    fireEvent.scroll(tokenList);
 
     await waitFor(() => {
       expect(screen.getByText('TKN26')).toBeInTheDocument();

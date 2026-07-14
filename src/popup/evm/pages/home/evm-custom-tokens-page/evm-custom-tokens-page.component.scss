@@ -8,7 +8,7 @@
 
   .add-custom-token-link {
     @include link;
-    align-self: flex-end;
+    flex-shrink: 0;
   }
 
   .evm-custom-tokens-card {
@@ -34,16 +34,19 @@
     opacity: 0.85;
   }
 
-  .evm-custom-tokens-manual-action {
-    flex-shrink: 0;
-    margin: auto 24px 0;
-    padding-top: 16px;
-  }
-
-  .evm-custom-tokens-add-section {
+  .evm-custom-tokens-section {
     display: flex;
     flex-direction: column;
     row-gap: 12px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .evm-custom-tokens-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 12px;
     width: 100%;
     min-width: 0;
   }
@@ -51,131 +54,11 @@
   .evm-custom-tokens-section-title {
     @include poppins600(14px);
     color: var(--main-font-color);
-  }
-
-  .known-token-list {
-    display: flex;
-    flex-direction: column;
-    row-gap: 12px;
-    width: 100%;
     min-width: 0;
-  }
-
-  .known-token-items {
-    display: flex;
-    flex-direction: column;
-    row-gap: 8px;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .known-token-load-more {
-    height: 1px;
-  }
-
-  .known-token-item {
-    @include small-card();
-    display: grid;
-    grid-template-columns: 36px minmax(0, 1fr) auto;
-    align-items: center;
-    column-gap: 10px;
-    width: 100%;
-    min-width: 0;
-    margin: 0;
-    padding: 8px;
-    box-sizing: border-box;
   }
 
   .evm-custom-tokens-list__item.known-token-item {
     grid-template-columns: minmax(0, 1fr) auto;
-  }
-
-  .known-token-row-main {
-    display: grid;
-    grid-template-columns: 36px minmax(0, 1fr);
-    align-items: center;
-    column-gap: 10px;
-    min-width: 0;
-  }
-
-  .known-token-item .currency-icon {
-    width: 36px;
-    height: 36px;
-    object-fit: contain;
-    flex-shrink: 0;
-    @include poppins600(12px);
-  }
-
-  .known-token-details {
-    display: flex;
-    flex-direction: column;
-    row-gap: 3px;
-    min-width: 0;
-  }
-
-  .known-token-main-row {
-    display: flex;
-    align-items: center;
-    column-gap: 8px;
-    min-width: 0;
-  }
-
-  .known-token-symbol,
-  .known-token-address {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .known-token-symbol {
-    @include poppins600(14px);
-    color: var(--main-font-color);
-  }
-
-  .known-token-address {
-    @include poppins400(12px);
-    color: var(--secondary-text-color);
-  }
-
-  .known-token-add-button,
-  .known-token-visibility-button {
-    --add-icon-color: #{$red};
-
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    margin: 0;
-    padding: 0;
-    border: none;
-    background: transparent;
-    color: $red;
-    cursor: pointer;
-    box-sizing: border-box;
-    transition: opacity 0.15s ease;
-
-    &:disabled {
-      cursor: not-allowed;
-      opacity: 0.5;
-    }
-
-    .svg-icon {
-      width: 22px;
-      height: 22px;
-
-      svg {
-        width: 22px;
-        height: 22px;
-      }
-    }
-  }
-
-  .known-token-visibility-button {
-    --add-icon-color: var(--main-font-color);
-
-    color: var(--main-font-color);
   }
 
   .evm-custom-tokens-list {
@@ -224,22 +107,6 @@
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .known-token-add-button {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .known-token-item:hover .known-token-add-button,
-    .known-token-item:focus-within .known-token-add-button {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .known-token-item:hover .known-token-add-button:disabled,
-    .known-token-item:focus-within .known-token-add-button:disabled {
-      opacity: 0.5;
-    }
-
     .evm-custom-tokens-list__item {
       .evm-custom-tokens-list__delete {
         opacity: 0;

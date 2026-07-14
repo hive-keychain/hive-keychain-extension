@@ -35,12 +35,13 @@ export const EvmKnownTokenList = ({
   existingAddresses = [],
   onSave,
 }: Props) => {
-  const [tokens, setTokens] = useState<TokenExtended[]>([]);
+  const cachedTokens = LiFiUtils.getCachedKnownTokensForChain(chain.chainId);
+  const [tokens, setTokens] = useState<TokenExtended[]>(cachedTokens ?? []);
   const [query, setQuery] = useState('');
   const [visibleTokenCount, setVisibleTokenCount] = useState(
     KNOWN_TOKENS_PAGE_SIZE,
   );
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!cachedTokens);
   const [savingAddress, setSavingAddress] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const isMountedRef = useRef(true);
@@ -54,6 +55,16 @@ export const EvmKnownTokenList = ({
 
   useEffect(() => {
     let mounted = true;
+    const cachedKnownTokens = LiFiUtils.getCachedKnownTokensForChain(
+      chain.chainId,
+    );
+
+    if (cachedKnownTokens) {
+      setTokens(cachedKnownTokens);
+      setIsLoading(false);
+      setError(null);
+      return;
+    }
 
     const loadKnownTokens = async () => {
       setIsLoading(true);
@@ -87,7 +98,7 @@ export const EvmKnownTokenList = ({
     return () => {
       mounted = false;
     };
-  }, [chain]);
+  }, [chain.chainId]);
 
   const normalizedExistingAddresses = useMemo(
     () =>
@@ -212,6 +223,13 @@ export const EvmKnownTokenList = ({
   const renderKnownToken = (token: TokenExtended) => {
     const normalizedAddress = normalizeAddress(token.address);
     const isSaving = savingAddress === normalizedAddress;
+    const isActivateDisabled = !onSave || isSaving;
+    const activateKnownToken = () => {
+      if (isActivateDisabled) {
+        return;
+      }
+      void saveKnownToken(token);
+    };
 
     return (
       <EvmTokenListItemComponent
@@ -221,14 +239,19 @@ export const EvmKnownTokenList = ({
         name={token.name ?? ''}
         symbol={token.symbol ?? ''}
         dataTestId={`known-token-item-${token.address}`}
+        onActivate={activateKnownToken}
+        isActivateDisabled={isActivateDisabled}
         action={
           <button
             type="button"
             className="known-token-add-button"
             aria-label={I18nUtils.getMessage('evm_known_tokens_add')}
             data-testid={`known-token-add-${token.address}`}
-            onClick={() => void saveKnownToken(token)}
-            disabled={!onSave || isSaving}>
+            onClick={(event) => {
+              event.stopPropagation();
+              activateKnownToken();
+            }}
+            disabled={isActivateDisabled}>
             <SVGIcon icon={SVGIcons.SELECT_ADD} />
           </button>
         }

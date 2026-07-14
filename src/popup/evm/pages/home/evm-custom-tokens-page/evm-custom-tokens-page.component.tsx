@@ -1,6 +1,3 @@
-import ButtonComponent, {
-  ButtonType,
-} from '@common-ui/button/button.component';
 import { Card } from '@common-ui/card/card.component';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import type { NativeAndErc20Token } from '@popup/evm/interfaces/active-account.interface';
@@ -11,22 +8,21 @@ import {
   EvmCustomErc20FormData,
   EvmCustomNftFormData,
 } from '@popup/evm/pages/home/evm-add-custom-asset-popup/evm-add-custom-asset-popup.component';
-import { EvmKnownTokenList } from '@popup/evm/pages/home/evm-add-custom-asset-popup/evm-known-token-list.component';
 import { EvmTokenListItemComponent } from '@popup/evm/pages/home/evm-token-list-item/evm-token-list-item.component';
 import { EvmAutoDetectedTokenVisibilityUtils } from '@popup/evm/utils/evm-auto-detected-token-visibility.utils';
-import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import type { DiscoveredErc20Token } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
-import { closeModal, openModal } from '@popup/multichain/actions/modal.actions';
+import { LiFiUtils } from '@popup/evm/utils/lifi.utils';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 
 const normalizeTokenAddress = (address: string) =>
@@ -107,10 +103,11 @@ const EvmCustomTokensPage = ({
   activeAccount,
   setTitleContainerProperties,
   loadEvmActiveAccount,
-  openModal,
-  closeModal,
 }: PropsFromRedux) => {
   const [customTokens, setCustomTokens] = useState<EvmCustomToken[]>([]);
+  const [discoveredErc20Tokens, setDiscoveredErc20Tokens] = useState<
+    DiscoveredErc20Token[]
+  >([]);
   const [autoDetectedTokens, setAutoDetectedTokens] = useState<
     DiscoveredErc20Token[]
   >([]);
@@ -119,12 +116,13 @@ const EvmCustomTokensPage = ({
     setHiddenAutoDetectedTokenAddresses,
   ] = useState<string[]>([]);
   const [isLoadingAutoDetectedTokens, setIsLoadingAutoDetectedTokens] =
-    useState(false);
+    useState(chain.isCustom !== true);
   const [autoDetectedTokensError, setAutoDetectedTokensError] = useState<
     string | null
   >(null);
   const [showAddPopup, setShowAddPopup] = useState(false);
   const [editingToken, setEditingToken] = useState<EvmCustomToken | null>(null);
+  const hasLoadedDiscoveredTokensRef = useRef(false);
 
   const loadTokens = useCallback(async () => {
     const tokens = await EvmTokensUtils.getCustomTokens(
@@ -135,55 +133,6 @@ const EvmCustomTokensPage = ({
       tokens.filter((t) => t.type === EVMSmartContractType.ERC20),
     );
   }, [chain, activeAccount.wallet.address]);
-
-  const loadAutoDetectedTokens = useCallback(async () => {
-    if (chain.isCustom === true) {
-      setAutoDetectedTokens([]);
-      setHiddenAutoDetectedTokenAddresses([]);
-      setAutoDetectedTokensError(null);
-      setIsLoadingAutoDetectedTokens(false);
-      return;
-    }
-
-    setIsLoadingAutoDetectedTokens(true);
-    setAutoDetectedTokensError(null);
-
-    try {
-      const [discoveredTokens, hiddenTokens] = await Promise.all([
-        EvmLightNodeUtils.getDiscoveredTokens(
-          chain.chainId,
-          activeAccount.wallet.address,
-        ),
-        EvmAutoDetectedTokenVisibilityUtils.getHiddenAutoDetectedTokenAddresses(
-          chain.chainId,
-        ),
-      ]);
-
-      const discoveredErc20Tokens = discoveredTokens.tokens.filter(
-        (token): token is DiscoveredErc20Token =>
-          token.type === EVMSmartContractType.ERC20,
-      );
-
-      setAutoDetectedTokens(
-        await getVisibleAutoDetectedTokens(
-          discoveredErc20Tokens,
-          activeAccount.nativeAndErc20Tokens.value,
-        ),
-      );
-      setHiddenAutoDetectedTokenAddresses(hiddenTokens);
-    } catch {
-      setAutoDetectedTokens([]);
-      setAutoDetectedTokensError(
-        I18nUtils.getMessage('evm_auto_detected_tokens_error_loading'),
-      );
-    } finally {
-      setIsLoadingAutoDetectedTokens(false);
-    }
-  }, [
-    activeAccount.nativeAndErc20Tokens.value,
-    activeAccount.wallet.address,
-    chain,
-  ]);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -198,61 +147,119 @@ const EvmCustomTokensPage = ({
   }, [loadTokens]);
 
   useEffect(() => {
-    void loadAutoDetectedTokens();
-  }, [loadAutoDetectedTokens]);
+    if (chain.isCustom === true) {
+      return;
+    }
+    void LiFiUtils.getKnownTokensForChain(chain.chainId);
+  }, [chain.chainId, chain.isCustom]);
 
-  const openDeleteTokenConfirmModal = (token: EvmCustomToken) => {
-    const meta =
-      token.metadata?.type === EVMSmartContractType.ERC20
-        ? token.metadata
-        : undefined;
-    const label = meta?.symbol?.length
-      ? meta.symbol
-      : meta?.name?.length
-        ? meta.name
-        : EvmFormatUtils.formatAddress(token.address);
-    openModal({
-      title: 'evm_custom_tokens_delete',
-      children: (
-        <div className="evm-delete-confirm-modal">
-          <p className="evm-delete-confirm-modal__message">
-            {I18nUtils.getMessage('evm_custom_tokens_delete_confirm', [
-              label,
-            ])}
-          </p>
-          <div className="evm-delete-confirm-modal__actions">
-            <ButtonComponent
-              dataTestId="evm-custom-token-delete-cancel"
-              label="dialog_cancel"
-              type={ButtonType.ALTERNATIVE}
-              onClick={() => closeModal()}
-              height="small"
-            />
-            <ButtonComponent
-              dataTestId="evm-custom-token-delete-confirm"
-              label="popup_html_confirm"
-              type={ButtonType.IMPORTANT}
-              height="small"
-              onClick={async () => {
-                closeModal();
-                try {
-                  await EvmTokensUtils.removeCustomToken(
-                    chain,
-                    activeAccount.wallet.address,
-                    token.address,
-                    EVMSmartContractType.ERC20,
-                  );
-                  await loadEvmActiveAccount(chain, activeAccount.wallet);
-                  await loadTokens();
-                } catch {
-                  await loadTokens();
-                }
-              }}
-            />
-          </div>
-        </div>
-      ),
-    });
+  useEffect(() => {
+    hasLoadedDiscoveredTokensRef.current = false;
+    setDiscoveredErc20Tokens([]);
+    setAutoDetectedTokens([]);
+    setHiddenAutoDetectedTokenAddresses([]);
+    setAutoDetectedTokensError(null);
+
+    if (chain.isCustom === true) {
+      setIsLoadingAutoDetectedTokens(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadDiscoveredTokens = async () => {
+      setIsLoadingAutoDetectedTokens(true);
+      setAutoDetectedTokensError(null);
+
+      try {
+        const [discoveredTokens, hiddenTokens] = await Promise.all([
+          EvmLightNodeUtils.getDiscoveredTokens(
+            chain.chainId,
+            activeAccount.wallet.address,
+          ),
+          EvmAutoDetectedTokenVisibilityUtils.getHiddenAutoDetectedTokenAddresses(
+            chain.chainId,
+          ),
+        ]);
+
+        if (cancelled) {
+          return;
+        }
+
+        const discoveredErc20 = discoveredTokens.tokens.filter(
+          (token): token is DiscoveredErc20Token =>
+            token.type === EVMSmartContractType.ERC20,
+        );
+
+        hasLoadedDiscoveredTokensRef.current = true;
+        setDiscoveredErc20Tokens(discoveredErc20);
+        setHiddenAutoDetectedTokenAddresses(hiddenTokens);
+      } catch {
+        if (cancelled) {
+          return;
+        }
+        hasLoadedDiscoveredTokensRef.current = true;
+        setDiscoveredErc20Tokens([]);
+        setHiddenAutoDetectedTokenAddresses([]);
+        setAutoDetectedTokensError(
+          I18nUtils.getMessage('evm_auto_detected_tokens_error_loading'),
+        );
+      } finally {
+        if (!cancelled) {
+          setIsLoadingAutoDetectedTokens(false);
+        }
+      }
+    };
+
+    void loadDiscoveredTokens();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeAccount.wallet.address, chain.chainId, chain.isCustom]);
+
+  useEffect(() => {
+    if (chain.isCustom === true || !hasLoadedDiscoveredTokensRef.current) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const refreshVisibleAutoDetectedTokens = async () => {
+      const visibleTokens = await getVisibleAutoDetectedTokens(
+        discoveredErc20Tokens,
+        activeAccount.nativeAndErc20Tokens.value,
+      );
+
+      if (!cancelled) {
+        setAutoDetectedTokens(visibleTokens);
+      }
+    };
+
+    void refreshVisibleAutoDetectedTokens();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    activeAccount.nativeAndErc20Tokens.value,
+    chain.isCustom,
+    discoveredErc20Tokens,
+  ]);
+
+  const deleteCustomToken = async (token: EvmCustomToken) => {
+    try {
+      await EvmTokensUtils.removeCustomToken(
+        chain,
+        activeAccount.wallet.address,
+        token.address,
+        EVMSmartContractType.ERC20,
+      );
+      await loadTokens();
+      await loadEvmActiveAccount(chain, activeAccount.wallet);
+    } catch {
+      await loadTokens();
+    }
   };
 
   const closeTokenPopup = () => {
@@ -288,9 +295,9 @@ const EvmCustomTokensPage = ({
         },
       });
     }
+    await loadTokens();
     closeTokenPopup();
     await loadEvmActiveAccount(chain, activeAccount.wallet);
-    await loadTokens();
   };
 
   const customTokenAddresses = customTokens.map((token) => token.address);
@@ -342,12 +349,15 @@ const EvmCustomTokensPage = ({
   return (
     <div className="evm-custom-tokens-page">
       <Card className="evm-custom-tokens-card">
-        <p className="evm-custom-tokens-caption">
-          {I18nUtils.getMessage('evm_custom_tokens_page_caption')}
-        </p>
+        <p
+          className="evm-custom-tokens-caption"
+          dangerouslySetInnerHTML={{
+            __html: HtmlUtils.getSafeI18nHtml('evm_custom_tokens_page_caption'),
+          }}
+        />
 
         {chain.isCustom !== true && (
-          <div className="evm-custom-tokens-add-section">
+          <div className="evm-custom-tokens-section">
             <div className="evm-custom-tokens-section-title">
               {I18nUtils.getMessage('evm_auto_detected_tokens_section_title')}
             </div>
@@ -384,10 +394,16 @@ const EvmCustomTokensPage = ({
                       <EvmTokenListItemComponent
                         key={`${token.chainId}-${token.contractAddress}`}
                         address={token.contractAddress}
+                        className={
+                          isHidden ? 'known-token-item--hidden' : undefined
+                        }
                         logo={token.logo ?? ''}
                         name={token.name ?? ''}
                         symbol={token.symbol ?? ''}
                         dataTestId={`auto-detected-token-item-${token.contractAddress}`}
+                        onActivate={() =>
+                          void toggleAutoDetectedTokenVisibility(token)
+                        }
                         action={
                           <button
                             type="button"
@@ -403,9 +419,10 @@ const EvmCustomTokensPage = ({
                                 : 'evm_auto_detected_tokens_hide',
                             )}
                             data-testid={`auto-detected-token-toggle-${token.contractAddress}`}
-                            onClick={() =>
-                              void toggleAutoDetectedTokenVisibility(token)
-                            }>
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              void toggleAutoDetectedTokenVisibility(token);
+                            }}>
                             <SVGIcon
                               icon={
                                 isHidden
@@ -423,95 +440,90 @@ const EvmCustomTokensPage = ({
           </div>
         )}
 
-        {customTokens.length === 0 ? (
-          <p className="evm-custom-tokens-empty">
-            {I18nUtils.getMessage('evm_custom_tokens_page_empty')}
-          </p>
-        ) : (
-          <ul className="evm-custom-tokens-list">
-            {customTokens.map((token) => {
-              const meta =
-                token.metadata?.type === EVMSmartContractType.ERC20
-                  ? token.metadata
-                  : undefined;
-              return (
-                <EvmTokenListItemComponent
-                  key={token.address}
-                  container="li"
-                  className="evm-custom-tokens-list__item"
-                  address={token.address}
-                  logo={meta?.logo ?? ''}
-                  name={meta?.name ?? ''}
-                  symbol={meta?.symbol ?? ''}
-                  contentClassName="evm-custom-tokens-list__item-main evm-custom-tokens-list__item-main--clickable known-token-row-main"
-                  contentProps={{
-                    role: 'button',
-                    tabIndex: 0,
-                    onClick: () => {
-                      setEditingToken(token);
-                      setShowAddPopup(true);
-                    },
-                    onKeyDown: (e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
+        <div className="evm-custom-tokens-section">
+          <div className="evm-custom-tokens-section-header">
+            <div className="evm-custom-tokens-section-title">
+              {I18nUtils.getMessage('evm_custom_tokens_section_title')}
+            </div>
+            <div
+              className="add-custom-token-link"
+              data-testid="btn-add-custom-token-page"
+              onClick={() => {
+                setEditingToken(null);
+                setShowAddPopup(true);
+              }}>
+              {I18nUtils.getMessage('evm_add_custom_token')}
+            </div>
+          </div>
+
+          {customTokens.length === 0 ? (
+            <p className="evm-custom-tokens-empty">
+              {I18nUtils.getMessage('evm_custom_tokens_page_empty')}
+            </p>
+          ) : (
+            <ul className="evm-custom-tokens-list">
+              {customTokens.map((token) => {
+                const meta =
+                  token.metadata?.type === EVMSmartContractType.ERC20
+                    ? token.metadata
+                    : undefined;
+                return (
+                  <EvmTokenListItemComponent
+                    key={token.address}
+                    container="li"
+                    className="evm-custom-tokens-list__item"
+                    address={token.address}
+                    logo={meta?.logo ?? ''}
+                    name={meta?.name ?? ''}
+                    symbol={meta?.symbol ?? ''}
+                    contentClassName="evm-custom-tokens-list__item-main evm-custom-tokens-list__item-main--clickable known-token-row-main"
+                    contentProps={{
+                      role: 'button',
+                      tabIndex: 0,
+                      onClick: () => {
                         setEditingToken(token);
                         setShowAddPopup(true);
-                      }
-                    },
-                  }}
-                  action={
-                    <button
-                      type="button"
-                      className="evm-custom-tokens-list__delete"
-                      data-testid={`btn-delete-custom-token-${token.address}`}
-                      title={I18nUtils.getMessage('evm_custom_tokens_delete')}
-                      aria-label={I18nUtils.getMessage(
-                        'evm_custom_tokens_delete',
-                      )}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openDeleteTokenConfirmModal(token);
-                      }}>
-                      <SVGIcon
-                        icon={SVGIcons.GLOBAL_DELETE}
-                        className="svg-icon"
-                      />
-                    </button>
-                  }
-                />
-              );
-            })}
-          </ul>
-        )}
-
-        <div className="evm-custom-tokens-add-section">
-          <div className="evm-custom-tokens-section-title">
-            {I18nUtils.getMessage('evm_custom_tokens_add_section_title')}
-          </div>
-          <EvmKnownTokenList
-            chain={chain}
-            existingAddresses={knownTokenExistingAddresses}
-            onSave={saveCustomToken}
-          />
+                      },
+                      onKeyDown: (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setEditingToken(token);
+                          setShowAddPopup(true);
+                        }
+                      },
+                    }}
+                    action={
+                      <button
+                        type="button"
+                        className="evm-custom-tokens-list__delete"
+                        data-testid={`btn-delete-custom-token-${token.address}`}
+                        title={I18nUtils.getMessage('evm_custom_tokens_delete')}
+                        aria-label={I18nUtils.getMessage(
+                          'evm_custom_tokens_delete',
+                        )}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void deleteCustomToken(token);
+                        }}>
+                        <SVGIcon
+                          icon={SVGIcons.GLOBAL_DELETE}
+                          className="svg-icon"
+                        />
+                      </button>
+                    }
+                  />
+                );
+              })}
+            </ul>
+          )}
         </div>
       </Card>
-      <div className="evm-custom-tokens-manual-action">
-        <ButtonComponent
-          type={ButtonType.ALTERNATIVE}
-          label="evm_add_custom_token_manually"
-          dataTestId="btn-add-custom-token-page"
-          onClick={() => {
-            setEditingToken(null);
-            setShowAddPopup(true);
-          }}
-        />
-      </div>
       {showAddPopup && (
         <EvmAddCustomAssetPopup
           chain={chain}
           mode="erc20"
           walletAddress={activeAccount.wallet.address}
-          existingAddresses={customTokenAddresses}
+          existingAddresses={knownTokenExistingAddresses}
           tokenToEdit={editingToken}
           onClose={closeTokenPopup}
           onSave={
@@ -533,8 +545,6 @@ const mapStateToProps = (state: RootState) => ({
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   loadEvmActiveAccount,
-  openModal,
-  closeModal,
 });
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
