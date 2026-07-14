@@ -2,6 +2,7 @@ import { EvmLightNodeApi } from '@api/evm-light-node';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
+import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
 import {
   EVMSmartContractType,
   EvmSmartContractInfoErc20,
@@ -475,6 +476,170 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
     );
     expect(balances).toHaveLength(1);
     expect(balances[0].tokenInfo.type).toBe(EVMSmartContractType.NATIVE);
+  });
+
+  it('omits zero-balance ERC20 tokens from token balances', async () => {
+    const walletAddress = '0x1234567890123456789012345678901234567890';
+    const nativeToken = {
+      name: 'Ether',
+      symbol: 'ETH',
+      logo: '',
+      chainId: '1',
+      backgroundColor: '#000000',
+      coingeckoId: '',
+      priceUsd: 3000,
+      createdAt: '',
+      categories: [],
+      type: EVMSmartContractType.NATIVE,
+    } as EvmSmartContractInfoNative;
+    const zeroBalanceToken = {
+      name: 'Zero Token',
+      symbol: 'ZERO',
+      decimals: 18,
+      logo: '',
+      chainId: '1',
+      contractAddress: '0x00000000000000000000000000000000000000aa',
+      backgroundColor: '#000000',
+      coingeckoId: '',
+      priceUsd: 0,
+      possibleSpam: false,
+      verifiedContract: true,
+      isProxy: false,
+      proxyTarget: null,
+      validated: 0,
+      type: EVMSmartContractType.ERC20,
+    } as EvmSmartContractInfoErc20;
+
+    jest.spyOn(EthersUtils, 'getProvider').mockResolvedValue({
+      getBalance: jest.fn().mockResolvedValue(1000000000000000000n),
+    } as any);
+    jest.spyOn(ethers, 'Contract').mockImplementation(
+      () =>
+        ({
+          balanceOf: jest.fn().mockResolvedValue(0n),
+        }) as any,
+    );
+
+    const balances = await EvmTokensUtils.getTokenBalances(
+      walletAddress,
+      { chainId: '1' } as any,
+      [nativeToken, zeroBalanceToken],
+    );
+
+    expect(balances).toHaveLength(1);
+    expect(balances[0].tokenInfo.type).toBe(EVMSmartContractType.NATIVE);
+  });
+
+  it('hides explicitly hidden auto-detected ERC20 tokens', async () => {
+    jest.spyOn(EvmSettingsUtils, 'getSettings').mockResolvedValue({
+      smartContracts: {
+        displayPossibleSpam: false,
+        displayNonVerifiedContracts: false,
+      },
+      providerCompatibility: {
+        preferOnLegacyDapps: true,
+      },
+    });
+
+    const visibleToken = {
+      tokenInfo: {
+        type: EVMSmartContractType.ERC20,
+        name: 'Visible Token',
+        symbol: 'VIS',
+        decimals: 18,
+        logo: '',
+        chainId: '1',
+        contractAddress: '0x00000000000000000000000000000000000000aa',
+        backgroundColor: '',
+        priceUsd: 0,
+        possibleSpam: false,
+        verifiedContract: true,
+        isProxy: false,
+        proxyTarget: null,
+        validated: 0,
+      },
+    } as any;
+    const hiddenToken = {
+      tokenInfo: {
+        ...visibleToken.tokenInfo,
+        name: 'Hidden Token',
+        symbol: 'HID',
+        contractAddress: '0x00000000000000000000000000000000000000bb',
+      },
+    } as any;
+
+    const result = await EvmTokensUtils.filterTokensBasedOnSettings(
+      [visibleToken, hiddenToken],
+      {
+        hiddenAutoDetectedTokenAddresses: [
+          '0x00000000000000000000000000000000000000BB',
+        ],
+      },
+    );
+
+    expect(result).toEqual([visibleToken]);
+  });
+
+  it('lets custom ERC20 tokens bypass spam and verification settings unless explicitly hidden', async () => {
+    jest.spyOn(EvmSettingsUtils, 'getSettings').mockResolvedValue({
+      smartContracts: {
+        displayPossibleSpam: false,
+        displayNonVerifiedContracts: false,
+      },
+      providerCompatibility: {
+        preferOnLegacyDapps: true,
+      },
+    });
+
+    const protectedToken = {
+      tokenInfo: {
+        type: EVMSmartContractType.ERC20,
+        name: 'Protected Token',
+        symbol: 'PRO',
+        decimals: 18,
+        logo: '',
+        chainId: '1',
+        contractAddress: '0x00000000000000000000000000000000000000cc',
+        backgroundColor: '',
+        priceUsd: 0,
+        possibleSpam: true,
+        verifiedContract: false,
+        isProxy: false,
+        proxyTarget: null,
+        validated: 0,
+      },
+    } as any;
+    const hiddenCustomToken = {
+      tokenInfo: {
+        ...protectedToken.tokenInfo,
+        name: 'Hidden Custom Token',
+        symbol: 'HCT',
+        contractAddress: '0x00000000000000000000000000000000000000dd',
+      },
+    } as any;
+
+    await expect(
+      EvmTokensUtils.filterTokensBasedOnSettings([protectedToken]),
+    ).resolves.toEqual([]);
+
+    await expect(
+      EvmTokensUtils.filterTokensBasedOnSettings([protectedToken], {
+        customTokenAddresses: [
+          '0x00000000000000000000000000000000000000CC',
+        ],
+      }),
+    ).resolves.toEqual([protectedToken]);
+
+    await expect(
+      EvmTokensUtils.filterTokensBasedOnSettings([hiddenCustomToken], {
+        customTokenAddresses: [
+          '0x00000000000000000000000000000000000000dd',
+        ],
+        hiddenAutoDetectedTokenAddresses: [
+          '0x00000000000000000000000000000000000000dd',
+        ],
+      }),
+    ).resolves.toEqual([]);
   });
 
   it('includes the estimated gas fee in mainBalance for native transfers', async () => {

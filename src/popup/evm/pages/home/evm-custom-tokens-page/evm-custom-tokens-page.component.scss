@@ -137,7 +137,8 @@
     color: var(--secondary-text-color);
   }
 
-  .known-token-add-button {
+  .known-token-add-button,
+  .known-token-visibility-button {
     --add-icon-color: #{$red};
 
     flex-shrink: 0;
@@ -169,6 +170,12 @@
         height: 22px;
       }
     }
+  }
+
+  .known-token-visibility-button {
+    --add-icon-color: var(--main-font-color);
+
+    color: var(--main-font-color);
   }
 
   .evm-custom-tokens-list {

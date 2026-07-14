@@ -2,8 +2,7 @@ import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
 import { TokenExtended } from '@lifi/types';
 import { EvmCustomErc20FormData } from '@popup/evm/pages/home/evm-add-custom-asset-popup/evm-custom-erc20-form.component';
-import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
-import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
+import { EvmTokenListItemComponent } from '@popup/evm/pages/home/evm-token-list-item/evm-token-list-item.component';
 import { LiFiUtils } from '@popup/evm/utils/lifi.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ethers } from 'ethers';
@@ -215,35 +214,25 @@ export const EvmKnownTokenList = ({
     const isSaving = savingAddress === normalizedAddress;
 
     return (
-      <div
-        className="known-token-item"
-        data-testid={`known-token-item-${token.address}`}
-        key={`${token.chainId}-${token.address}`}>
-        <EvmTokenLogo
-          tokenInfo={{
-            logo: token.logoURI ?? '',
-            name: token.name ?? '',
-            symbol: token.symbol ?? '',
-          }}
-        />
-        <div className="known-token-details">
-          <div className="known-token-main-row">
-            <span className="known-token-symbol">{token.symbol}</span>
-          </div>
-          <div className="known-token-address">
-            {EvmFormatUtils.formatAddress(token.address)}
-          </div>
-        </div>
-        <button
-          type="button"
-          className="known-token-add-button"
-          aria-label={I18nUtils.getMessage('evm_known_tokens_add')}
-          data-testid={`known-token-add-${token.address}`}
-          onClick={() => void saveKnownToken(token)}
-          disabled={!onSave || isSaving}>
-          <SVGIcon icon={SVGIcons.SELECT_ADD} />
-        </button>
-      </div>
+      <EvmTokenListItemComponent
+        key={`${token.chainId}-${token.address}`}
+        address={token.address}
+        logo={token.logoURI ?? ''}
+        name={token.name ?? ''}
+        symbol={token.symbol ?? ''}
+        dataTestId={`known-token-item-${token.address}`}
+        action={
+          <button
+            type="button"
+            className="known-token-add-button"
+            aria-label={I18nUtils.getMessage('evm_known_tokens_add')}
+            data-testid={`known-token-add-${token.address}`}
+            onClick={() => void saveKnownToken(token)}
+            disabled={!onSave || isSaving}>
+            <SVGIcon icon={SVGIcons.SELECT_ADD} />
+          </button>
+        }
+      />
     );
   };
 

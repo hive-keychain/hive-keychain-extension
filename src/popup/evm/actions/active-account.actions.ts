@@ -12,6 +12,7 @@ import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import {
   CatchupStatus,
   DiscoveredNftsResponse,
+  DiscoveredToken,
   DiscoveredTokensResponse,
   EvmLightNodeUtils,
   isCatchupStatusPending,
@@ -267,6 +268,16 @@ const getTokenInfosWithCustomErc20 = async (
   );
 };
 
+const isNativeOrErc20TokenInfo = (
+  token: DiscoveredToken,
+): token is NativeAndErc20Token['tokenInfo'] => {
+  const tokenType = token.type;
+  return (
+    tokenType === EVMSmartContractType.ERC20 ||
+    tokenType === EVMSmartContractType.NATIVE
+  );
+};
+
 const getCustomChainNfts = async (chain: EvmChain, wallet: EvmWallet) => {
   return EvmTokensUtils.getCustomNftCollectionsForWallet(
     chain,
@@ -417,14 +428,15 @@ export const loadMoreTokensInActiveAccount =
     ) {
       return;
     }
+    const tokenInfos = await getTokenInfosWithCustomErc20(
+      chain,
+      wallet,
+      result.tokens.filter(isNativeOrErc20TokenInfo),
+    );
     const balances = await EvmTokensUtils.getTokenBalances(
       process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
       chain,
-      result.tokens.filter(
-        (token) =>
-          token.type === EVMSmartContractType.ERC20 ||
-          token.type === EVMSmartContractType.NATIVE,
-      ),
+      tokenInfos,
     );
     if (
       !isActiveAccountRequestCurrent(
@@ -547,14 +559,15 @@ export const loadEvmActiveAccount =
     }
 
     const discoveredTokens = result?.tokens ?? [];
+    const tokenInfos = await getTokenInfosWithCustomErc20(
+      chain,
+      wallet,
+      discoveredTokens.filter(isNativeOrErc20TokenInfo),
+    );
     const balances = await EvmTokensUtils.getTokenBalances(
       process.env.FORCED_EVM_WALLET_ADDRESS ?? wallet.address,
       chain,
-      discoveredTokens.filter(
-        (token) =>
-          token.type === EVMSmartContractType.ERC20 ||
-          token.type === EVMSmartContractType.NATIVE,
-      ),
+      tokenInfos,
     );
     if (
       !isActiveAccountRequestCurrent(
