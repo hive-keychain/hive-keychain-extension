@@ -20,6 +20,7 @@ type Process = {
     characterData: boolean;
   };
   observerTimer?: number;
+  checkedAnchors: WeakSet<HTMLAnchorElement>;
   initObserver: () => void;
   checkAnchors: (isKeychainifyEnabled: boolean) => void;
 };
@@ -35,6 +36,7 @@ let contentScript: Props = {
   process: {
     initialized: false,
     observer: null,
+    checkedAnchors: new WeakSet(),
     observerConfig: {
       attributes: false,
       childList: true,
@@ -80,15 +82,14 @@ let contentScript: Props = {
      * Verify all anchors to find HiveSigner links
      */
     checkAnchors: async function (isKeychainifyEnabled: boolean) {
-      let anchors: NodeListOf<HTMLAnchorElement> = document.querySelectorAll(
-        'a[href]:not(.keychainify-checked)',
-      );
+      let anchors: NodeListOf<HTMLAnchorElement> =
+        document.querySelectorAll('a[href]');
 
       for (let i = 0; i < anchors.length; i++) {
         let anchor = anchors[i];
         if (
           anchor.href &&
-          !anchor.classList.contains('keychainify-checked') // That was not checked before
+          !contentScript.process.checkedAnchors.has(anchor) // That was not checked before
         ) {
           /**
            * When keychainify is enabled, both hivesigner and hive-uri will be supported. Otherwise only hive-uri.
@@ -111,7 +112,7 @@ let contentScript: Props = {
           }
         }
 
-        anchor.classList.add('keychainify-checked');
+        contentScript.process.checkedAnchors.add(anchor);
       }
     },
 
