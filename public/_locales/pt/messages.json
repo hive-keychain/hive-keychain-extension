@@ -7371,6 +7371,22 @@
     "message": "Reload extension",
     "description": "Button label to reload the extension"
   },
+  "accessibility_back": {
+    "message": "Voltar",
+    "description": "Accessible label for back buttons"
+  },
+  "accessibility_show_password": {
+    "message": "Mostrar palavra-passe",
+    "description": "Accessible label for password visibility buttons"
+  },
+  "accessibility_hide_password": {
+    "message": "Ocultar palavra-passe",
+    "description": "Accessible label for password visibility buttons"
+  },
+  "accessibility_clear_input": {
+    "message": "Limpar campo",
+    "description": "Accessible label for input clear buttons"
+  },
   "evm_error_gas_estimate": {
     "message": "Gas estimation failed. You will need to enter a custom gas fee.",
     "description": "Gas estimation failed. You will need to enter a custom gas fee."

@@ -5,6 +5,12 @@
   }
   &.clickable {
     cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid $red;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
   }
 }
 @media (resolution >= 2dppx) {
