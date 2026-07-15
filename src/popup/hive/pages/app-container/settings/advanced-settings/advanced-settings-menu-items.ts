@@ -27,11 +27,6 @@ export const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
       sidePanelHash: LedgerRouteUtils.LINK_DEVICE_HASH,
     },
     {
-      label: 'popup_html_import_export_settings',
-      icon: SVGIcons.MENU_ADVANCED_SETTINGS_IMPORT_EXPORT,
-      nextScreen: Screen.SETTINGS_IMPORT_EXPORT,
-    },
-    {
       label: 'popup_html_clear',
       icon: SVGIcons.MENU_ADVANCED_SETTINGS_CLEAR_ALL,
       nextScreen: Screen.SETTINGS_CLEAR_ALL_DATA,

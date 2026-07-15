@@ -1,26 +1,12 @@
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
-import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { EXPORTABLE_SETTINGS_KEYS } from '@reference-data/exportable-settings.list';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 /* istanbul ignore next */
 const exportSettings = async () => {
-  const val = await LocalStorageUtils.getMultipleValueFromLocalStorage([
-    LocalStorageKeyEnum.AUTOLOCK,
-    LocalStorageKeyEnum.CLAIM_ACCOUNTS,
-    LocalStorageKeyEnum.CLAIM_REWARDS,
-    LocalStorageKeyEnum.NO_CONFIRM,
-    LocalStorageKeyEnum.FAVORITE_USERS,
-    LocalStorageKeyEnum.RPC_LIST,
-    LocalStorageKeyEnum.KEYCHAINIFY_ENABLED,
-    LocalStorageKeyEnum.CURRENT_RPC,
-    LocalStorageKeyEnum.SWITCH_RPC_AUTO,
-
-    LocalStorageKeyEnum.HIDDEN_TOKENS,
-    LocalStorageKeyEnum.HIVE_ENGINE_ACTIVE_CONFIG,
-    LocalStorageKeyEnum.HIVE_ENGINE_SWITCH_RPC_AUTO,
-    LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_ACCOUNT_HISTORY_API,
-    LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_RPC_LIST,
-  ]);
+  const val = await LocalStorageUtils.getMultipleValueFromLocalStorage(
+    EXPORTABLE_SETTINGS_KEYS,
+  );
 
   var data = new Blob([JSON.stringify(val)], {
     type: 'text/plain',

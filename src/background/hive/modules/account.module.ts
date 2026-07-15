@@ -1,5 +1,7 @@
 import MkModule from '@background/hive/modules/mk.module';
+import SettingsModule from '@background/hive/modules/settings.module';
 import BgdAccountsUtils from '@background/hive/utils/accounts.utils';
+import { ExportedAccountsV2 } from '@interfaces/exported-accounts.interface';
 import { ImportCallbackPayload } from '@interfaces/import-callback.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -12,12 +14,7 @@ import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-
-interface ExportedAccountsV2 {
-  v: 2;
-  hiveAccounts: LocalAccount[];
-  evmAccounts: StoredEvmAccountSource[];
-}
+import { ObjectUtils } from 'src/utils/object.utils';
 
 const isExportedAccountsV2 = (value: unknown): value is ExportedAccountsV2 => {
   const payload = value as ExportedAccountsV2;
@@ -25,7 +22,8 @@ const isExportedAccountsV2 = (value: unknown): value is ExportedAccountsV2 => {
     !!payload &&
     payload.v === 2 &&
     Array.isArray(payload.hiveAccounts) &&
-    Array.isArray(payload.evmAccounts)
+    Array.isArray(payload.evmAccounts) &&
+    (payload.settings === undefined || ObjectUtils.isPureObject(payload.settings))
   );
 };
 
@@ -94,6 +92,14 @@ const importExportedAccountsV2 = async (
     await EncryptUtils.encryptJson({ list: mergedEvmAccounts }, mk),
   );
   EvmWalletUtils.invalidateRebuildAccountsCache();
+
+  if (exportedAccounts.settings) {
+    await SettingsModule.importSettings(exportedAccounts.settings);
+  }
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.HAS_FINISHED_SIGNUP,
+    true,
+  );
 
   sendImportSuccess({
     success: true,
