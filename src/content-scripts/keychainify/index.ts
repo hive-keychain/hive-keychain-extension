@@ -127,3 +127,5 @@ let contentScript: Props = {
 };
 
 contentScript.init();
+
+export default contentScript;
