@@ -1,3 +1,4 @@
+import { IsoCountryCodeUtils } from 'src/reference-data/iso-country-code.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 
 /**
@@ -200,6 +201,32 @@ const REGION_TO_FIAT_CURRENCY: Record<string, string> = {
   ZW: 'ZWG',
 };
 
+/**
+ * Representative region for shared / multi-country currencies when rendering a
+ * flag. Overrides the first region found while inverting REGION_TO_FIAT_CURRENCY.
+ */
+const FIAT_CURRENCY_FLAG_REGION_OVERRIDES: Record<string, string> = {
+  ANG: 'CW',
+  EUR: 'EU',
+  USD: 'US',
+  XAF: 'CM',
+  XCD: 'AG',
+  XOF: 'SN',
+  XPF: 'PF',
+};
+
+const buildFiatCurrencyToFlagRegion = (): Record<string, string> => {
+  const map: Record<string, string> = {};
+  for (const [region, currency] of Object.entries(REGION_TO_FIAT_CURRENCY)) {
+    if (!map[currency]) {
+      map[currency] = region;
+    }
+  }
+  return { ...map, ...FIAT_CURRENCY_FLAG_REGION_OVERRIDES };
+};
+
+const FIAT_CURRENCY_TO_FLAG_REGION = buildFiatCurrencyToFlagRegion();
+
 const DEFAULT_FIAT_CURRENCY = 'USD';
 const CLIENT_GEO_LOOKUP_TIMEOUT_MS = 2_500;
 
@@ -379,6 +406,54 @@ const pickPreferredFiatCurrency = (
   return availableCurrencies[0];
 };
 
+const normalizeFiatCurrencyCode = (currencyCode: string): string =>
+  currencyCode.trim().toUpperCase();
+
+const getFiatCurrencyDisplayName = (
+  currencyCode: string,
+  locale = getUiLocale(),
+): string => {
+  const normalized = normalizeFiatCurrencyCode(currencyCode);
+  if (!/^[A-Z]{3}$/.test(normalized)) {
+    return currencyCode.trim() || currencyCode;
+  }
+
+  try {
+    const displayName = new Intl.DisplayNames([locale], {
+      type: 'currency',
+    }).of(normalized);
+    return displayName?.trim() || normalized;
+  } catch {
+    return normalized;
+  }
+};
+
+const getFiatCurrencyFlagEmoji = (currencyCode: string): string => {
+  const normalized = normalizeFiatCurrencyCode(currencyCode);
+  const region = FIAT_CURRENCY_TO_FLAG_REGION[normalized];
+  return region ? IsoCountryCodeUtils.getIsoCountryFlagEmoji(region) : '';
+};
+
+const getFiatCurrencySelectLabel = (
+  currencyCode: string,
+  locale = getUiLocale(),
+): string => {
+  const displayName = getFiatCurrencyDisplayName(currencyCode, locale);
+  const flag = getFiatCurrencyFlagEmoji(currencyCode);
+  return flag ? `${flag} ${displayName}` : displayName;
+};
+
+const getFiatCurrencySelectOptionFields = (
+  currencyCode: string,
+  locale = getUiLocale(),
+): { label: string; subLabel: string } => {
+  const normalized = normalizeFiatCurrencyCode(currencyCode);
+  return {
+    label: getFiatCurrencySelectLabel(currencyCode, locale),
+    subLabel: normalized || currencyCode,
+  };
+};
+
 /** Test helper: clear memoized client IP lookup. */
 const resetResolvedFiatLocaleForTests = (): void => {
   clientCountryLookupPromise = null;
@@ -386,7 +461,11 @@ const resetResolvedFiatLocaleForTests = (): void => {
 
 export const PortfolioFiatLocaleUtils = {
   DEFAULT_FIAT_CURRENCY,
+  getFiatCurrencyDisplayName,
+  getFiatCurrencyFlagEmoji,
   getFiatCurrencyForRegion,
+  getFiatCurrencySelectLabel,
+  getFiatCurrencySelectOptionFields,
   getPaymentMethodLabel,
   getPreferredFiatCurrencyCode,
   getPreferredRegionCode,

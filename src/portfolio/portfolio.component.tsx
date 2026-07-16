@@ -1077,23 +1077,34 @@ export const Portfolio = ({
     getAllNetworksOption();
 
   const fiatCurrencySelectOptions = useMemo<OptionItem[]>(() => {
-    if (fiatRampOptions?.fiatCurrencies.length) {
-      return fiatRampOptions.fiatCurrencies.map((currency) => ({
+    const toFiatCurrencyOption = (currency: string): OptionItem => {
+      const { label, subLabel } =
+        PortfolioFiatLocaleUtils.getFiatCurrencySelectOptionFields(currency);
+      return {
         key: currency,
-        label: currency,
+        label,
+        subLabel,
         value: currency,
-      }));
+      };
+    };
+
+    if (fiatRampOptions?.fiatCurrencies.length) {
+      return fiatRampOptions.fiatCurrencies.map(toFiatCurrencyOption);
     }
 
-    return fiatCurrency
-      ? [{ key: fiatCurrency, label: fiatCurrency, value: fiatCurrency }]
-      : [];
+    return fiatCurrency ? [toFiatCurrencyOption(fiatCurrency)] : [];
   }, [fiatCurrency, fiatRampOptions]);
+
+  const fallbackFiatCurrencyOption: OptionItem = {
+    key: fiatCurrency,
+    ...PortfolioFiatLocaleUtils.getFiatCurrencySelectOptionFields(fiatCurrency),
+    value: fiatCurrency,
+  };
 
   const selectedFiatCurrencyOption =
     fiatCurrencySelectOptions.find((option) => option.value === fiatCurrency) ??
     fiatCurrencySelectOptions[0] ??
-    ({ label: fiatCurrency, value: fiatCurrency, key: fiatCurrency } as OptionItem);
+    fallbackFiatCurrencyOption;
 
   const paymentMethodSelectOptions = useMemo<OptionItem[]>(() => {
     const methods =

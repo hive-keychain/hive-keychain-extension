@@ -93,7 +93,7 @@ export function CustomSelectItemComponent<T extends OptionItem>({
       }}>
       <div
         data-testid={`custom-select-item-${itemTestId}`}
-        className={`custom-select-item ${isSelected ? 'selected' : ''} ${item.imgChip ? 'has-img-chip' : ''} ${enableDragAndDrop ? 'draggable' : ''}`}
+        className={`custom-select-item ${isSelected ? 'selected' : ''} ${item.imgChip ? 'has-img-chip' : ''} ${item.subLabelHover ? 'has-sub-label-hover' : ''} ${enableDragAndDrop ? 'draggable' : ''}`}
         onClick={() => {
           handleItemClicked();
           closeDropdown();
@@ -150,7 +150,11 @@ export function CustomSelectItemComponent<T extends OptionItem>({
           {item.subLabel && (
             <>
               <span className="item-sub-label">{item.subLabel}</span>
-              <span className="item-sub-label-hover">{item.subLabelHover}</span>
+              {item.subLabelHover && (
+                <span className="item-sub-label-hover">
+                  {item.subLabelHover}
+                </span>
+              )}
             </>
           )}
         </div>

@@ -1667,7 +1667,10 @@ describe('Portfolio', () => {
         mode: 'buy',
         direction: 'to',
       });
-      expect(container.textContent).toContain('USD');
+      expect(container.textContent).toMatch(/🇺🇸|🇪🇺|🇹🇼/);
+      expect(container.textContent).toMatch(
+        /US Dollar|Euro|New Taiwan Dollar/,
+      );
     });
   });
 

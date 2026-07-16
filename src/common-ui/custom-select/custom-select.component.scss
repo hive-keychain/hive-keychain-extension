@@ -294,6 +294,9 @@
           .separator {
             background: $red;
           }
+        }
+
+        &.has-sub-label-hover:hover {
           .item-sub-label-hover {
             display: block !important;
           }

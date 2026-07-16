@@ -78,6 +78,33 @@ describe('PortfolioFiatLocaleUtils', () => {
     );
   });
 
+  it('builds fiat select labels with flag emoji and localized full names', () => {
+    expect(
+      PortfolioFiatLocaleUtils.getFiatCurrencyDisplayName('USD', 'en-US'),
+    ).toBe('US Dollar');
+    expect(
+      PortfolioFiatLocaleUtils.getFiatCurrencyDisplayName('EUR', 'en-US'),
+    ).toBe('Euro');
+    expect(PortfolioFiatLocaleUtils.getFiatCurrencyFlagEmoji('USD')).toBe('🇺🇸');
+    expect(PortfolioFiatLocaleUtils.getFiatCurrencyFlagEmoji('EUR')).toBe('🇪🇺');
+    expect(
+      PortfolioFiatLocaleUtils.getFiatCurrencySelectOptionFields('TWD', 'en-US'),
+    ).toEqual({
+      label: '🇹🇼 New Taiwan Dollar',
+      subLabel: 'TWD',
+    });
+  });
+
+  it('falls back to the currency code when the display name is unavailable', () => {
+    expect(
+      PortfolioFiatLocaleUtils.getFiatCurrencyDisplayName('ZZZ', 'en-US'),
+    ).toBe('ZZZ');
+    expect(PortfolioFiatLocaleUtils.getFiatCurrencyFlagEmoji('ZZZ')).toBe('');
+    expect(
+      PortfolioFiatLocaleUtils.getFiatCurrencySelectLabel('ZZZ', 'en-US'),
+    ).toBe('ZZZ');
+  });
+
   it('translates known payment method ids and falls back to API labels', () => {
     jest
       .spyOn(I18nUtils, 'getMessage')
