@@ -1670,4 +1670,60 @@ describe('Portfolio', () => {
       expect(container.textContent).toContain('USD');
     });
   });
+
+  it('resets buy/sell form fields when switching sections', async () => {
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[]}
+        activeAccountType={ChainType.HIVE}
+        activeEvmAccountAddress={undefined}
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('.portfolio-sidebar')).not.toBeNull();
+    });
+
+    clickPortfolioNav(container, 'buy');
+
+    await waitFor(() => {
+      expect(container.querySelector('.portfolio-flow')).not.toBeNull();
+    });
+
+    const amountInput = container.querySelector(
+      '.portfolio-flow .portfolio-amount-field input[type="number"]',
+    ) as HTMLInputElement;
+    fireEvent.change(amountInput, { target: { value: '100' } });
+    expect(amountInput.value).toBe('100');
+
+    clickPortfolioNav(container, 'sell');
+
+    await waitFor(() => {
+      const sellAmountInput = container.querySelector(
+        '.portfolio-flow .portfolio-amount-field input[type="number"]',
+      ) as HTMLInputElement;
+      expect(sellAmountInput.value).toBe('');
+    });
+
+    const sellAmountInput = container.querySelector(
+      '.portfolio-flow .portfolio-amount-field input[type="number"]',
+    ) as HTMLInputElement;
+    fireEvent.change(sellAmountInput, { target: { value: '50' } });
+    expect(sellAmountInput.value).toBe('50');
+
+    clickPortfolioNav(container, 'buy');
+
+    await waitFor(() => {
+      const buyAmountInput = container.querySelector(
+        '.portfolio-flow .portfolio-amount-field input[type="number"]',
+      ) as HTMLInputElement;
+      expect(buyAmountInput.value).toBe('');
+    });
+  });
 });

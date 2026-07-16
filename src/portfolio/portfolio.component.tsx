@@ -1282,11 +1282,21 @@ export const Portfolio = ({
     };
   }, []);
 
+  const resetFlowFormFields = () => {
+    setAmount('');
+    setPaymentMethod('');
+    setRecipientAddress('');
+    setAmountQuoteError(null);
+    setPendingInAppConfirmation(null);
+    setIsQuotesPanelExpanded(false);
+  };
+
   useEffect(() => {
     setFromAssetId('');
     setToAssetId('');
     setToAssetFilter('');
     setToAssetChainFilter('');
+    resetFlowFormFields();
   }, [selectedAccountKey]);
 
   useEffect(() => {
@@ -1318,6 +1328,7 @@ export const Portfolio = ({
   useEffect(() => {
     setQuoteResponse(undefined);
     setSelectedQuoteId('');
+    resetFlowFormFields();
     if (section === 'portfolio') {
       setSelectedNetwork('');
     }
@@ -2248,6 +2259,7 @@ export const Portfolio = ({
     const canUseAsFrom =
       PortfolioFlowUtils.hasPositivePortfolioBalance(row.balance) &&
       !row.isTestnet;
+    resetFlowFormFields();
     setFromAssetId(mode === 'buy' || !canUseAsFrom ? '' : row.key);
     setToAssetId(
       mode === 'sell'
