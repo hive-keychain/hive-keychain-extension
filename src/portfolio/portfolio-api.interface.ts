@@ -15,6 +15,8 @@ export type PortfolioProviderId =
   | 'simpleswap'
   | 'letsexchange'
   | 'changelly'
+  | 'onramper'
+  | 'moonpay'
   | 'ramp'
   | 'transak';
 
