@@ -59,6 +59,7 @@ import {
   PortfolioChainDisplayRecord,
   PortfolioEvmTransaction,
   PortfolioExecution,
+  PortfolioFeatureFlags,
   PortfolioFiatRampOptions,
   PortfolioHistoryItem,
   PortfolioHiveTransaction,
@@ -70,6 +71,7 @@ import {
   PortfolioApiUtils,
   PortfolioLocalizedMessage,
   PortfolioSwapQuoteFetchResult,
+  DEFAULT_PORTFOLIO_FEATURE_FLAGS,
 } from 'src/portfolio/portfolio-api.utils';
 import { PortfolioFiatLocaleUtils } from 'src/portfolio/portfolio-fiat-locale.utils';
 import { PortfolioEvmApprovalUtils } from 'src/portfolio/portfolio-evm-approval.utils';
@@ -144,14 +146,6 @@ const sectionIcons: Record<PortfolioNavSection, PortfolioNavIcon> = {
   swap: PortfolioNavIcon.SWAP,
   history: PortfolioNavIcon.HISTORY,
 };
-
-const sections: PortfolioSection[] = [
-  'portfolio',
-  'buy',
-  'sell',
-  'swap',
-  'history',
-];
 
 const resolvePortfolioSignableTransaction = (
   quote: PortfolioQuote,
@@ -492,6 +486,13 @@ export const Portfolio = ({
   resetLoading,
 }: PropsFromRedux) => {
   const [section, setSection] = useState<PortfolioSection>('portfolio');
+  const [featureFlags, setFeatureFlags] = useState<PortfolioFeatureFlags>(
+    DEFAULT_PORTFOLIO_FEATURE_FLAGS,
+  );
+  const sections = useMemo(
+    () => PortfolioApiUtils.resolveVisiblePortfolioSections(featureFlags),
+    [featureFlags],
+  );
   const [selectedAccountKey, setSelectedAccountKey] = useState('');
   const [rows, setRows] = useState<PortfolioRow[]>([]);
   const [assets, setAssets] = useState<PortfolioCanonicalAsset[]>([]);
@@ -562,6 +563,30 @@ export const Portfolio = ({
   const [accountOptions, setAccountOptions] = useState<AccountOption[]>(() =>
     buildDefaultPortfolioAccountOptions(hiveAccounts, evmAccounts),
   );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void PortfolioApiUtils.getFeatures()
+      .then((features) => {
+        if (!cancelled) {
+          setFeatureFlags(features);
+        }
+      })
+      .catch((error) => {
+        Logger.error('Unable to load portfolio feature flags', error);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!sections.includes(section)) {
+      setSection('portfolio');
+    }
+  }, [section, sections]);
 
   useEffect(() => {
     let cancelled = false;

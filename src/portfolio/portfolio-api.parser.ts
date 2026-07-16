@@ -21,6 +21,8 @@ import {
   PortfolioHiveTransferOperation,
   PortfolioHistoryItem,
   PortfolioHistoryResponse,
+  PortfolioFeatureFlags,
+  PortfolioFeaturesResponse,
   PortfolioMode,
   PortfolioQuote,
   PortfolioQuoteApproval,
@@ -707,10 +709,38 @@ const parsePortfolioHistoryResponse = (
   };
 };
 
+const DEFAULT_PORTFOLIO_FEATURE_FLAGS: PortfolioFeatureFlags = {
+  swapBridge: true,
+  buy: true,
+  sell: true,
+};
+
+const parsePortfolioFeaturesResponse = (
+  value: unknown,
+): PortfolioFeaturesResponse => {
+  if (!isRecord(value) || !isRecord(value.features)) {
+    return {
+      version: 1,
+      features: { ...DEFAULT_PORTFOLIO_FEATURE_FLAGS },
+    };
+  }
+
+  const features = value.features;
+  return {
+    version: 1,
+    features: {
+      swapBridge: readBoolean(features, 'swapBridge', true),
+      buy: readBoolean(features, 'buy', true),
+      sell: readBoolean(features, 'sell', true),
+    },
+  };
+};
+
 export const PortfolioApiParser = {
   parsePortfolioAssetsResponse,
   parsePortfolioAvailableAssetsResponse,
   parsePortfolioExecution,
+  parsePortfolioFeaturesResponse,
   parsePortfolioFiatRampCountriesResponse,
   parsePortfolioFiatRampLocale,
   parsePortfolioFiatRampOptions,

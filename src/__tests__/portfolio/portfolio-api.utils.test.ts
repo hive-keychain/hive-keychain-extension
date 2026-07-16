@@ -855,4 +855,26 @@ describe('PortfolioApiUtils', () => {
       ).toBe('changelly:1');
     });
   });
+
+  describe('resolveVisiblePortfolioSections', () => {
+    it('hides buy, sell, and swap when their flags are off', () => {
+      expect(
+        PortfolioApiUtils.resolveVisiblePortfolioSections({
+          swapBridge: false,
+          buy: false,
+          sell: true,
+        }),
+      ).toEqual(['portfolio', 'sell', 'history']);
+    });
+
+    it('hides history when all trade features are off', () => {
+      expect(
+        PortfolioApiUtils.resolveVisiblePortfolioSections({
+          swapBridge: false,
+          buy: false,
+          sell: false,
+        }),
+      ).toEqual(['portfolio']);
+    });
+  });
 });

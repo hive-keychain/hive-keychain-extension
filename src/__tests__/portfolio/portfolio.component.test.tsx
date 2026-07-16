@@ -95,6 +95,11 @@ jest.mock('src/portfolio/portfolio-api.utils', () => {
       ...actual.PortfolioApiUtils,
       listAssets: jest.fn().mockResolvedValue({ assets: [], chains: {} }),
       listHistory: jest.fn().mockResolvedValue([]),
+      getFeatures: jest.fn().mockResolvedValue({
+        swapBridge: true,
+        buy: true,
+        sell: true,
+      }),
       getQuotes: jest.fn().mockResolvedValue({ quotes: [] }),
       resolveExecutablePortfolioQuoteId: jest.fn().mockReturnValue(''),
       canExecutePortfolioQuote: jest.fn().mockReturnValue(true),

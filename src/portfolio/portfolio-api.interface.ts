@@ -288,6 +288,18 @@ export interface PortfolioHistoryResponse {
   items: PortfolioHistoryItem[];
 }
 
+/** Product feature flags from `GET /features`. */
+export interface PortfolioFeatureFlags {
+  swapBridge: boolean;
+  buy: boolean;
+  sell: boolean;
+}
+
+export interface PortfolioFeaturesResponse {
+  version: 1;
+  features: PortfolioFeatureFlags;
+}
+
 export interface PortfolioSwapAmountRangeDetails {
   fromAssetId?: string;
   toAssetId?: string;

@@ -4,6 +4,7 @@ import {
   PortfolioApiErrorPayload,
   PortfolioAvailableAssetsResponse,
   PortfolioExecution,
+  PortfolioFeatureFlags,
   PortfolioFiatRampCountry,
   PortfolioFiatRampLocale,
   PortfolioFiatRampOptions,
@@ -18,6 +19,34 @@ import {
 import { PortfolioApiParser } from 'src/portfolio/portfolio-api.parser';
 
 const CLIENT_TOKEN_HEADER = 'X-Keychain-Portfolio-Client-Token';
+
+export const DEFAULT_PORTFOLIO_FEATURE_FLAGS: PortfolioFeatureFlags = {
+  swapBridge: true,
+  buy: true,
+  sell: true,
+};
+
+/** Builds sidebar sections from product feature flags (history hidden when all flows are off). */
+export const resolveVisiblePortfolioSections = (
+  features: PortfolioFeatureFlags,
+): Array<'portfolio' | 'buy' | 'sell' | 'swap' | 'history'> => {
+  const sections: Array<'portfolio' | 'buy' | 'sell' | 'swap' | 'history'> = [
+    'portfolio',
+  ];
+  if (features.buy) {
+    sections.push('buy');
+  }
+  if (features.sell) {
+    sections.push('sell');
+  }
+  if (features.swapBridge) {
+    sections.push('swap');
+  }
+  if (features.buy || features.sell || features.swapBridge) {
+    sections.push('history');
+  }
+  return sections;
+};
 
 export const canExecutePortfolioQuote = (quote: PortfolioQuote): boolean => {
   if (quote.executionType === 'in_app') {
@@ -251,6 +280,10 @@ const fetchJson = async (
 const listAssets = async (): Promise<PortfolioAssetsResponse> =>
   PortfolioApiParser.parsePortfolioAssetsResponse(await fetchJson('/assets'));
 
+const getFeatures = async (): Promise<PortfolioFeatureFlags> =>
+  PortfolioApiParser.parsePortfolioFeaturesResponse(await fetchJson('/features'))
+    .features;
+
 const listAvailableAssets = async (params: {
   mode: PortfolioMode;
   direction?: 'from' | 'to';
@@ -396,6 +429,7 @@ export const PortfolioApiUtils = {
   canExecutePortfolioQuote,
   createExecution,
   getClientToken,
+  getFeatures,
   getFiatRampLocale,
   getFiatRampOptions,
   getQuotes,
@@ -409,5 +443,6 @@ export const PortfolioApiUtils = {
   resolvePortfolioExecutionRedirectUrl,
   resolvePortfolioQuoteStatusMessage,
   resolvePortfolioSwapQuoteFetchErrorResult,
+  resolveVisiblePortfolioSections,
   shouldSchedulePortfolioSwapQuoteAutoRefresh,
 };
