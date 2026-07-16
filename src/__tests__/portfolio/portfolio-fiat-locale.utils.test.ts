@@ -108,11 +108,18 @@ describe('PortfolioFiatLocaleUtils', () => {
   it('translates known payment method ids and falls back to API labels', () => {
     jest
       .spyOn(I18nUtils, 'getMessage')
-      .mockImplementation((key: string) =>
-        key === 'portfolio_payment_method_sepa_bank_transfer'
-          ? 'SEPA bank transfer'
-          : key,
-      );
+      .mockImplementation((key: string) => {
+        if (key === 'portfolio_payment_method_sepa_bank_transfer') {
+          return 'SEPA bank transfer';
+        }
+        if (key === 'portfolio_payment_method_manual_bank_transfer') {
+          return 'Manual bank transfer';
+        }
+        if (key === 'portfolio_payment_method_auto_bank_transfer') {
+          return 'Automatic bank transfer';
+        }
+        return key;
+      });
 
     expect(
       PortfolioFiatLocaleUtils.getPaymentMethodLabel({
@@ -123,9 +130,24 @@ describe('PortfolioFiatLocaleUtils', () => {
 
     expect(
       PortfolioFiatLocaleUtils.getPaymentMethodLabel({
+        id: 'MANUAL_BANK_TRANSFER',
+        label: 'Ignored English label',
+      }),
+    ).toBe('Manual bank transfer');
+
+    expect(
+      PortfolioFiatLocaleUtils.getPaymentMethodLabel({
+        id: 'AUTO_BANK_TRANSFER',
+        label: 'Ignored English label',
+      }),
+    ).toBe('Automatic bank transfer');
+
+    expect(
+      PortfolioFiatLocaleUtils.getPaymentMethodLabel({
         id: 'UNKNOWN_METHOD',
         label: 'Mystery Method',
       }),
     ).toBe('Mystery Method');
   });
 });
+

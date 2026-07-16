@@ -4189,6 +4189,12 @@
   "portfolio_payment_method_google_pay": { "message": "Google Pay" },
   "portfolio_payment_method_banktransfer": { "message": "Bank transfer" },
   "portfolio_payment_method_bank_transfer": { "message": "Bank transfer" },
+  "portfolio_payment_method_manual_bank_transfer": {
+    "message": "Manual bank transfer"
+  },
+  "portfolio_payment_method_auto_bank_transfer": {
+    "message": "Automatic bank transfer"
+  },
   "portfolio_recipient_hive_account": { "message": "Recipient Hive account" },
   "portfolio_recipient_bitcoin_address": { "message": "Bitcoin destination address" },
   "portfolio_recipient_solana_address": { "message": "Solana destination address" },

@@ -7568,5 +7568,11 @@
   },
   "portfolio_payment_method_bank_transfer": {
     "message": "银行转账"
+  },
+  "portfolio_payment_method_manual_bank_transfer": {
+    "message": "手动银行转账"
+  },
+  "portfolio_payment_method_auto_bank_transfer": {
+    "message": "自动银行转账"
   }
 }
