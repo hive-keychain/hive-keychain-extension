@@ -170,7 +170,8 @@ export const ConnectAccounts = (props: Props) => {
             <CheckboxPanelComponent
               key={`account-${account.address}`}
               onChange={() => toggleAccount(account.address)}
-              checked={isChecked(account.address)}>
+              checked={isChecked(account.address)}
+              ariaLabel={account.address}>
               <EvmAccountDisplayComponent
                 account={account}
                 status={getStatus(account)}

@@ -105,6 +105,7 @@ const TokensFilter = ({
                   dataTestId={`checkbox-select-token-${token.symbol}`}
                   extraDataTestIdOnInput={`checkbox-checked-${token.symbol}`}
                   checked={!hiddenTokens.includes(token.symbol)}
+                  ariaLabel={token.symbol}
                   onChange={() => {
                     toggleHiddenToken(token.symbol);
                   }}>
