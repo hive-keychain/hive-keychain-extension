@@ -2,6 +2,7 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { TopBarComponent } from 'src/common-ui/_containers/top-bar/top-bar.component';
+import { I18nUtils } from 'src/utils/i18n.utils';
 
 jest.mock('src/common-ui/chain-dropdown/chain-dropdown.component', () => ({
   ChainDropdownComponent: () => {
@@ -11,16 +12,23 @@ jest.mock('src/common-ui/chain-dropdown/chain-dropdown.component', () => ({
 }));
 
 jest.mock('src/common-ui/svg-icon/svg-icon.component', () => ({
-  SVGIcon: ({ className, dataTestId }: any) => {
+  SVGIcon: ({ ariaLabel, className, dataTestId, onClick }: any) => {
     const React = require('react');
-    return React.createElement('div', {
+    return React.createElement(onClick ? 'button' : 'div', {
+      'aria-label': ariaLabel,
       className,
       'data-testid': dataTestId,
+      onClick,
+      type: onClick ? 'button' : undefined,
     });
   },
 }));
 
 describe('TopBarComponent', () => {
+  beforeEach(() => {
+    I18nUtils.getMessage = jest.fn((key: string) => key);
+  });
+
   const renderTopBar = (actions?: React.ReactNode) => {
     return render(
       <TopBarComponent
@@ -57,6 +65,17 @@ describe('TopBarComponent', () => {
     expect(container.querySelector('.top-bar-actions')).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: 'Refresh rewards' }),
+    ).toBeInTheDocument();
+  });
+
+  it('provides accessible names for icon-only controls', () => {
+    renderTopBar();
+
+    expect(
+      screen.getByRole('button', { name: 'popup_html_settings' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'html_popup_click_to_refresh' }),
     ).toBeInTheDocument();
   });
 
