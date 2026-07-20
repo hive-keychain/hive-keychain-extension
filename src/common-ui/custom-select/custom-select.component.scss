@@ -18,6 +18,11 @@
     height: 52px;
     border-radius: 66px !important;
 
+    &:focus-visible {
+      outline: 2px solid $red !important;
+      outline-offset: 2px;
+    }
+
     .selected-item {
       @include poppins500(15px);
       user-select: none;
@@ -153,7 +158,8 @@
           display: flex;
           flex-direction: column;
           max-width: unset;
-          &:hover {
+          &:hover,
+          &:has(.custom-select-item.keyboard-active) {
             background-color: $red;
             color: white;
             .account-name,

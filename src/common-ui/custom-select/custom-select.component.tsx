@@ -62,6 +62,8 @@ export interface CustomSelectProps<T> {
   droppableId?: string;
 }
 
+let customSelectIdCounter = 0;
+
 export function ComplexeCustomSelect<T extends OptionItem>(
   itemProps: CustomSelectProps<T>,
 ) {
@@ -71,6 +73,18 @@ export function ComplexeCustomSelect<T extends OptionItem>(
   const [filteredOptions, setFilteredOptions] = useState(itemProps.options);
   const [query, setQuery] = useState('');
   const [isOpened, setIsOpened] = useState(false);
+  const [activeOptionIndex, setActiveOptionIndex] = useState<number>();
+  const [selectId] = useState(
+    () => `keychain-custom-select-${++customSelectIdCounter}`,
+  );
+  const optionsId = `${selectId}-options`;
+  const accessibleLabel =
+    itemProps.ariaLabel ??
+    (itemProps.label
+      ? itemProps.skipLabelTranslation
+        ? itemProps.label
+        : I18nUtils.getMessage(itemProps.label)
+      : itemProps.selectedItem.label || 'Dropdown select');
 
   useEffect(() => {
     setFilteredOptions(filter(query));
@@ -85,6 +99,78 @@ export function ComplexeCustomSelect<T extends OptionItem>(
         option.label?.toLowerCase().includes(query.toLowerCase()) ||
         option.subLabel?.toLowerCase().includes(query.toLowerCase()),
     );
+  };
+
+  const closeDropdown = (restoreFocus: boolean) => {
+    methodsRef.current?.dropDown('close');
+    setActiveOptionIndex(undefined);
+
+    if (restoreFocus) {
+      setTimeout(() => methodsRef.current?.getSelectRef().focus());
+    }
+  };
+
+  const openDropdown = (initialOptionIndex = 0) => {
+    methodsRef.current?.dropDown('open');
+    setActiveOptionIndex(initialOptionIndex);
+  };
+
+  const handleSelectKeyDown = (
+    event: React.KeyboardEvent<HTMLDivElement>,
+  ) => {
+    const isFilterInput = event.target instanceof HTMLInputElement;
+
+    if (!isOpened) {
+      if (['Enter', ' ', 'ArrowDown', 'ArrowUp'].includes(event.key)) {
+        event.preventDefault();
+        openDropdown(event.key === 'ArrowUp' ? filteredOptions.length - 1 : 0);
+      }
+      return;
+    }
+
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeDropdown(true);
+      return;
+    }
+
+    if (event.key === 'Tab') {
+      closeDropdown(false);
+      return;
+    }
+
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      const direction = event.key === 'ArrowDown' ? 1 : -1;
+      setActiveOptionIndex((currentIndex) => {
+        const nextIndex = (currentIndex ?? (direction > 0 ? -1 : 0)) + direction;
+        return Math.min(
+          Math.max(nextIndex, 0),
+          Math.max(filteredOptions.length - 1, 0),
+        );
+      });
+      return;
+    }
+
+    if (event.key === 'Home' || event.key === 'End') {
+      event.preventDefault();
+      setActiveOptionIndex(
+        event.key === 'Home' ? 0 : Math.max(filteredOptions.length - 1, 0),
+      );
+      return;
+    }
+
+    if (
+      (event.key === 'Enter' || (event.key === ' ' && !isFilterInput)) &&
+      activeOptionIndex !== undefined
+    ) {
+      const option = filteredOptions[activeOptionIndex];
+      if (option) {
+        event.preventDefault();
+        itemProps.setSelectedItem(option);
+        closeDropdown(true);
+      }
+    }
   };
 
   const customLabelRender = (selectProps: SelectRenderer<T>) => {
@@ -213,7 +299,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
     option: T,
     index: number,
     optionsLength: number,
-    closeDropdown: () => void,
+    closeOptionsDropdown: () => void,
     dragHandle?: React.ComponentProps<
       typeof CustomSelectItemComponent
     >['dragHandle'],
@@ -223,10 +309,12 @@ export function ComplexeCustomSelect<T extends OptionItem>(
       isLast={index === optionsLength - 1}
       item={option}
       isSelected={option.value === itemProps.selectedItem.value}
+      isKeyboardActive={index === activeOptionIndex}
+      id={`${optionsId}-option-${index}`}
       handleItemClicked={() => {
         itemProps.setSelectedItem(option);
       }}
-      closeDropdown={closeDropdown}
+      closeDropdown={closeOptionsDropdown}
       onDelete={itemProps.onDelete}
       canDelete={
         option.canDelete && itemProps.selectedItem.value !== option.value
@@ -305,7 +393,10 @@ export function ComplexeCustomSelect<T extends OptionItem>(
       ref.current?.focus();
     }, 200);
     return (
-      <div className="custom-select-dropdown">
+      <div
+        id={optionsId}
+        className="custom-select-dropdown"
+        role="listbox">
         {itemProps.filterable && !itemProps.customFilter && (
           <InputComponent
             onChange={setQuery}
@@ -324,7 +415,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
           !!itemProps.customFilter &&
           itemProps.customFilter}
 
-        {renderOptionsList(() => methods.dropDown('close'))}
+        {renderOptionsList(() => closeDropdown(true))}
         {itemProps.footer && itemProps.footer}
       </div>
     );
@@ -348,17 +439,38 @@ export function ComplexeCustomSelect<T extends OptionItem>(
         dropdownHandleRenderer={customHandleRenderer}
         contentRenderer={customLabelRender}
         dropdownRenderer={customDropdownRenderer}
-        additionalProps={
-          itemProps.ariaLabel
-            ? { 'aria-label': itemProps.ariaLabel }
-            : undefined
-        }
+        additionalProps={{
+          id: selectId,
+          role: 'combobox',
+          'aria-label': accessibleLabel,
+          'aria-haspopup': 'listbox',
+          'aria-controls': isOpened ? optionsId : undefined,
+          'aria-expanded': isOpened,
+          'aria-activedescendant':
+            isOpened && activeOptionIndex !== undefined
+              ? `${optionsId}-option-${activeOptionIndex}`
+              : undefined,
+          onKeyDown: handleSelectKeyDown,
+        }}
         className={`custom-select ${
           itemProps.background ? itemProps.background : ''
         }`}
         values={[]}
-        onDropdownOpen={() => setIsOpened(true)}
-        onDropdownClose={() => setIsOpened(false)}
+        onDropdownOpen={() => {
+          setIsOpened(true);
+          setActiveOptionIndex(
+            Math.max(
+              filteredOptions.findIndex(
+                (option) => option.value === itemProps.selectedItem.value,
+              ),
+              0,
+            ),
+          );
+        }}
+        onDropdownClose={() => {
+          setIsOpened(false);
+          setActiveOptionIndex(undefined);
+        }}
       />
       {itemProps.showOverlay && (
         <div

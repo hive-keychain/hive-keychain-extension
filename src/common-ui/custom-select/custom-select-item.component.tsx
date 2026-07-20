@@ -10,9 +10,11 @@ import { ColorsUtils } from 'src/utils/colors.utils';
 import { EnumUtils } from 'src/utils/enum.utils';
 
 interface CustomSelectItemProps<T> {
+  id: string;
   isLast: boolean;
   item: T;
   isSelected: boolean;
+  isKeyboardActive: boolean;
   handleItemClicked: () => void;
   closeDropdown: () => void;
   onDelete?: (...params: any) => void;
@@ -23,8 +25,10 @@ interface CustomSelectItemProps<T> {
 }
 
 export function CustomSelectItemComponent<T extends OptionItem>({
+  id,
   item,
   isSelected,
+  isKeyboardActive,
   isLast,
   handleItemClicked,
   closeDropdown,
@@ -92,8 +96,11 @@ export function CustomSelectItemComponent<T extends OptionItem>({
         setHovered(false);
       }}>
       <div
+        id={id}
         data-testid={`custom-select-item-${itemTestId}`}
-        className={`custom-select-item ${isSelected ? 'selected' : ''} ${item.imgChip ? 'has-img-chip' : ''} ${enableDragAndDrop ? 'draggable' : ''}`}
+        className={`custom-select-item ${isSelected ? 'selected' : ''} ${isKeyboardActive ? 'keyboard-active' : ''} ${item.imgChip ? 'has-img-chip' : ''} ${enableDragAndDrop ? 'draggable' : ''}`}
+        role="option"
+        aria-selected={isSelected}
         onClick={() => {
           handleItemClicked();
           closeDropdown();
