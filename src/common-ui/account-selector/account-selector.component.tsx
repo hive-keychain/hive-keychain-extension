@@ -165,6 +165,11 @@ const AccountSelector = ({
   navigateToWithParams,
 }: PropsFromRedux & Props) => {
   const [isOpened, setIsOpened] = useState(false);
+  const triggerRef = useRef<HTMLDivElement | null>(null);
+  const accountSelectorCardRef = useRef<HTMLDivElement | null>(null);
+  const accountListRef = useRef<HTMLDivElement | null>(null);
+  const accountSearchInputRef = useRef<HTMLInputElement | null>(null);
+  const shouldFocusSelectedAccountRef = useRef(false);
   const selectedAccountListItemRef = useRef<HTMLDivElement | null>(null);
   const [shouldScrollToSelectedAccount, setShouldScrollToSelectedAccount] =
     useState(false);
@@ -283,6 +288,14 @@ const AccountSelector = ({
         behavior: 'smooth',
         block: 'center',
       });
+      if (shouldFocusSelectedAccountRef.current) {
+        if (showAccountFilters) {
+          accountSearchInputRef.current?.focus();
+        } else {
+          selectedAccountListItemRef.current?.focus();
+        }
+        shouldFocusSelectedAccountRef.current = false;
+      }
     });
     setShouldScrollToSelectedAccount(false);
   }, [
@@ -294,6 +307,7 @@ const AccountSelector = ({
     isAccountListFiltered,
     isOpened,
     selectedAccountType,
+    showAccountFilters,
     shouldScrollToSelectedAccount,
   ]);
 
@@ -366,7 +380,31 @@ const AccountSelector = ({
     // displayOrder is read when hive/evm accounts change after a persisted reorder
   }, [hiveAccounts, evmAccounts, mk, isPersistingOrder]);
 
-  const openAccountSelector = async () => {
+  const closeAccountSelector = (restoreFocus = true) => {
+    setIsOpened(false);
+    if (restoreFocus) {
+      setTimeout(() => triggerRef.current?.focus());
+    }
+  };
+
+  useEffect(() => {
+    if (!isOpened) {
+      return;
+    }
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeAccountSelector();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpened]);
+
+  const openAccountSelector = async (focusSelectedAccount = false) => {
+    shouldFocusSelectedAccountRef.current = focusSelectedAccount;
     const { selectableHiveAccounts, selectableEvmAccounts } =
       await resolveSelectableAccounts();
 
@@ -433,9 +471,18 @@ const AccountSelector = ({
       : renderEvmSelectedAccount();
 
   const renderDragHandle = (
+    item: AccountSelectorListItem,
     dragHandle?: DraggableProvidedDragHandleProps | null,
   ) => (
-    <span className="account-selector-list-action drag-handle" {...dragHandle}>
+    <span
+      className="account-selector-list-action drag-handle"
+      {...dragHandle}
+      aria-label={`${I18nUtils.getMessage('popup_html_accounts')}: ${getAccountListItemSearchValue(item)}`}
+      aria-keyshortcuts="ArrowUp ArrowDown"
+      aria-disabled={isAccountListFiltered}
+      role="button"
+      tabIndex={isAccountListFiltered ? -1 : 0}
+      onKeyDown={(event) => handleDragHandleKeyDown(event, item)}>
       <SVGIcon icon={SVGIcons.SELECT_DRAG} className="drag-icon" />
     </span>
   );
@@ -457,7 +504,7 @@ const AccountSelector = ({
 
   const handleAccountListItemClick = async (item: AccountSelectorListItem) => {
     if (isAccountListItemSelected(item)) {
-      setIsOpened(false);
+      closeAccountSelector();
       return;
     }
 
@@ -476,7 +523,7 @@ const AccountSelector = ({
       if (!isSameChain(chain, targetChain)) {
         await setChain(targetChain);
       }
-      setIsOpened(false);
+      closeAccountSelector();
       return;
     }
 
@@ -498,11 +545,11 @@ const AccountSelector = ({
     await EvmWalletUtils.promoteConnectedWalletAddress(walletAddress);
     loadEvmActiveAccount(targetChain, item.account.wallet);
     setActiveAccountType(ChainType.EVM);
-    setIsOpened(false);
+    closeAccountSelector();
   };
 
   const handleManageHiveAccountClick = (account: LocalAccount) => {
-    setIsOpened(false);
+    closeAccountSelector(false);
     navigateToWithParams(HiveScreen.SETTINGS_MANAGE_ACCOUNTS, {
       username: account.name,
       [MANAGE_ACCOUNT_SELECTED_NAME_PARAM]: account.name,
@@ -510,7 +557,7 @@ const AccountSelector = ({
   };
 
   const handleManageEvmAccountClick = (account: EvmAccount) => {
-    setIsOpened(false);
+    closeAccountSelector(false);
     navigateToWithParams(EvmScreen.EVM_ACCOUNTS_SETTINGS, {
       seedId: account.seedId,
       addressId: account.id,
@@ -588,6 +635,50 @@ const AccountSelector = ({
     return classNames.join(' ');
   };
 
+  const handleAccountListItemKeyDown = (
+    event: React.KeyboardEvent<HTMLDivElement>,
+    item: AccountSelectorListItem,
+  ) => {
+    if (event.target !== event.currentTarget) {
+      return;
+    }
+
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      void handleAccountListItemClick(item);
+      return;
+    }
+
+    if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
+      return;
+    }
+
+    event.preventDefault();
+    const accountElements = Array.from(
+      accountListRef.current?.querySelectorAll<HTMLElement>(
+        '[data-account-selector-list-item]',
+      ) ?? [],
+    );
+    const currentIndex = accountElements.indexOf(event.currentTarget);
+    if (currentIndex < 0) {
+      return;
+    }
+
+    const targetIndex =
+      event.key === 'Home'
+        ? 0
+        : event.key === 'End'
+          ? accountElements.length - 1
+          : Math.min(
+              Math.max(
+                currentIndex + (event.key === 'ArrowDown' ? 1 : -1),
+                0,
+              ),
+              accountElements.length - 1,
+            );
+    accountElements[targetIndex]?.focus();
+  };
+
   const renderAccountListItemActions = (
     item: AccountSelectorListItem,
     dragHandle?: DraggableProvidedDragHandleProps | null,
@@ -602,6 +693,7 @@ const AccountSelector = ({
           className="account-selector-list-action manage-icon"
           dataTestId={`account-selector-manage-${itemId}`}
           icon={SVGIcons.SELECT_MANAGE_ACCOUNT}
+          ariaLabel={`${I18nUtils.getMessage('manage_accounts')}: ${getAccountListItemSearchValue(item)}`}
           onClick={(event) => {
             stopListItemActionPropagation(event);
             if (item.type === ChainType.HIVE) {
@@ -615,10 +707,11 @@ const AccountSelector = ({
           className="account-selector-list-action copy-icon"
           dataTestId={`account-selector-copy-${itemId}`}
           icon={SVGIcons.SELECT_COPY}
+          ariaLabel={`${I18nUtils.getMessage('html_popup_copy')}: ${getAccountListItemSearchValue(item)}`}
           onClick={(event) => void handleAccountListItemCopy(event, item)}
         />
         <span onClick={stopListItemActionPropagation}>
-          {renderDragHandle(dragHandle)}
+          {renderDragHandle(item, dragHandle)}
         </span>
       </div>
     );
@@ -644,10 +737,15 @@ const AccountSelector = ({
       <div
         className={getAccountListItemClassName(item)}
         data-testid={`account-selector-hive-account-${account.name}`}
+        data-account-selector-list-item
         key={`hive-${account.name}`}
         ref={
           isAccountListItemSelected(item) ? selectedAccountListItemRef : null
         }
+        role="button"
+        tabIndex={0}
+        aria-current={isAccountListItemSelected(item) ? 'true' : undefined}
+        onKeyDown={(event) => handleAccountListItemKeyDown(event, item)}
         onClick={() => void handleAccountListItemClick(item)}>
         <PreloadedImage
           className="user-picture"
@@ -675,10 +773,15 @@ const AccountSelector = ({
       <div
         className={getAccountListItemClassName(item)}
         data-testid={`account-selector-evm-account-${address}`}
+        data-account-selector-list-item
         key={`evm-${address}`}
         ref={
           isAccountListItemSelected(item) ? selectedAccountListItemRef : null
         }
+        role="button"
+        tabIndex={0}
+        aria-current={isAccountListItemSelected(item) ? 'true' : undefined}
+        onKeyDown={(event) => handleAccountListItemKeyDown(event, item)}
         onClick={() => void handleAccountListItemClick(item)}>
         <EvmAccountImage address={address} />
         <div className="selected-account-name">
@@ -703,10 +806,12 @@ const AccountSelector = ({
       ? renderHiveAccount(item, dragHandle)
       : renderEvmAccount(item, dragHandle);
 
-  const onDragEnd = async (result: DropResult) => {
+  const reorderAccountListItems = async (
+    sourceIndex: number,
+    destinationIndex: number,
+  ) => {
     if (
-      !result.destination ||
-      result.destination.index === result.source.index ||
+      destinationIndex === sourceIndex ||
       !mk ||
       isAccountListFiltered
     ) {
@@ -714,8 +819,8 @@ const AccountSelector = ({
     }
 
     const list = Array.from(accountListItems);
-    const [removed] = list.splice(result.source.index, 1);
-    list.splice(result.destination.index, 0, removed);
+    const [removed] = list.splice(sourceIndex, 1);
+    list.splice(destinationIndex, 0, removed);
     const orderedRefs = AccountSelectorOrderUtils.toOrderRefs(list);
 
     if (areDisplayOrdersEqual(displayOrder, orderedRefs)) {
@@ -768,6 +873,41 @@ const AccountSelector = ({
     }
   };
 
+  const onDragEnd = async (result: DropResult) => {
+    if (!result.destination) {
+      return;
+    }
+
+    await reorderAccountListItems(
+      result.source.index,
+      result.destination.index,
+    );
+  };
+
+  const handleDragHandleKeyDown = (
+    event: React.KeyboardEvent<HTMLSpanElement>,
+    item: AccountSelectorListItem,
+  ) => {
+    if (!['ArrowDown', 'ArrowUp'].includes(event.key)) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    const sourceIndex = accountListItems.findIndex(
+      (accountListItem) => accountListItem.id === item.id,
+    );
+    if (sourceIndex < 0) {
+      return;
+    }
+
+    const destinationIndex = Math.min(
+      Math.max(sourceIndex + (event.key === 'ArrowDown' ? 1 : -1), 0),
+      accountListItems.length - 1,
+    );
+    void reorderAccountListItems(sourceIndex, destinationIndex);
+  };
+
   const handleAccountTypeFilterClick = (
     accountType: ChainType.HIVE | ChainType.EVM,
   ) => {
@@ -788,7 +928,7 @@ const AccountSelector = ({
   );
 
   const handleAddAccountClick = async () => {
-    setIsOpened(false);
+    closeAccountSelector(false);
 
     const targetChain =
       selectedAccountType === ChainType.EVM
@@ -817,7 +957,31 @@ const AccountSelector = ({
       storedEvmAccounts,
       mk,
     );
-    setIsOpened(false);
+    closeAccountSelector();
+  };
+
+  const handleAccountSelectorKeyDown = (
+    event: React.KeyboardEvent<HTMLDivElement>,
+  ) => {
+    if (event.key !== 'Tab' || !accountSelectorCardRef.current) {
+      return;
+    }
+
+    const focusableElements = Array.from(
+      accountSelectorCardRef.current.querySelectorAll<HTMLElement>(
+        'button, input, [href], [tabindex]:not([tabindex="-1"])',
+      ),
+    ).filter((element) => !element.hasAttribute('disabled'));
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    if (event.shiftKey && document.activeElement === firstElement) {
+      event.preventDefault();
+      lastElement?.focus();
+    } else if (!event.shiftKey && document.activeElement === lastElement) {
+      event.preventDefault();
+      firstElement?.focus();
+    }
   };
 
   if (
@@ -830,11 +994,29 @@ const AccountSelector = ({
   return (
     <div className={`account-selector ${isOpened ? 'opened' : 'closed'}`}>
       <div
+        ref={triggerRef}
         className={`selected-account-panel ${background ? background : ''} ${
           removeBorder ? 'remove-border' : ''
         }`}
         data-testid="account-selector-trigger"
-        onClick={openAccountSelector}>
+        role="button"
+        tabIndex={0}
+        aria-label={`${I18nUtils.getMessage('popup_html_accounts')}: ${
+          selectedAccountType === ChainType.HIVE
+            ? selectedHiveAccount?.name
+            : EvmAccountUtils.getAccountName(selectedEvmAccount) ??
+              getEvmAccountAddress(selectedEvmAccount)
+        }`}
+        aria-haspopup="dialog"
+        aria-expanded={isOpened}
+        aria-controls={isOpened ? 'account-selector-dialog' : undefined}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            void openAccountSelector(true);
+          }
+        }}
+        onClick={() => void openAccountSelector()}>
         {renderSelectedAccount()}
         <SVGIcon
           className="account-selector-dropdown-handle"
@@ -845,13 +1027,22 @@ const AccountSelector = ({
         />
       </div>
       {isOpened && (
-        <div className="account-selector-overlay">
+        <div
+          className="account-selector-overlay"
+          onKeyDown={handleAccountSelectorKeyDown}>
           <div
             className="account-selector-backdrop"
             data-testid="account-selector-backdrop"
-            onClick={() => setIsOpened(false)}></div>
-          <div className="account-selector-card">
+            onClick={() => closeAccountSelector()}></div>
+          <div
+            id="account-selector-dialog"
+            ref={accountSelectorCardRef}
+            className="account-selector-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="account-selector-title">
             <div
+              id="account-selector-title"
               className="account-selector-title"
               data-testid="account-selector-title">
               {I18nUtils.getMessage('popup_html_accounts')}
@@ -859,6 +1050,7 @@ const AccountSelector = ({
             {showAccountFilters && (
               <div className="account-selector-filters">
                 <InputComponent
+                  ref={accountSearchInputRef}
                   classname="account-selector-search"
                   dataTestId="account-selector-search-input"
                   type={InputType.TEXT}
@@ -875,6 +1067,7 @@ const AccountSelector = ({
                         accountTypeFilter === ChainType.HIVE ? 'selected' : ''
                       }`}
                       data-testid="account-selector-filter-hive"
+                      aria-pressed={accountTypeFilter === ChainType.HIVE}
                       onClick={() =>
                         handleAccountTypeFilterClick(ChainType.HIVE)
                       }
@@ -890,6 +1083,7 @@ const AccountSelector = ({
                         accountTypeFilter === ChainType.EVM ? 'selected' : ''
                       }`}
                       data-testid="account-selector-filter-evm"
+                      aria-pressed={accountTypeFilter === ChainType.EVM}
                       onClick={() =>
                         handleAccountTypeFilterClick(ChainType.EVM)
                       }
@@ -906,7 +1100,9 @@ const AccountSelector = ({
             )}
             <div
               className="account-selector-list"
-              data-testid="account-selector-list">
+              data-testid="account-selector-list"
+              role="list"
+              ref={accountListRef}>
               <DragDropContext
                 onDragEnd={(dragResult) => void onDragEnd(dragResult)}>
                 <Droppable

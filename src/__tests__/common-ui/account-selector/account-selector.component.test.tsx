@@ -339,6 +339,139 @@ describe('AccountSelectorComponent', () => {
     );
   });
 
+  it('opens from the keyboard and focuses the account search', async () => {
+    const user = userEvent.setup();
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
+      initialState: buildState(),
+    });
+
+    const trigger = screen.getByRole('button', {
+      name: `popup_html_accounts: ${userData.one.username}`,
+    });
+    trigger.focus();
+    await user.keyboard('{Enter}');
+
+    expect(await screen.findByRole('dialog')).toHaveAccessibleName(
+      'popup_html_accounts',
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId('account-selector-search-input')).toHaveFocus(),
+    );
+    await user.tab();
+    expect(screen.getByTestId('account-selector-filter-hive')).toHaveFocus();
+    screen.getByTestId('account-selector-search-input').focus();
+    await user.tab({ shift: true });
+    expect(screen.getByTestId('account-selector-export-button')).toHaveFocus();
+    await user.tab({ shift: true });
+    expect(screen.getByTestId('account-selector-create-button')).toHaveFocus();
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('navigates and selects accounts with arrow keys and Enter', async () => {
+    const user = userEvent.setup();
+    const { store } = customRender(
+      <AccountSelectorComponent selectedAccountType={ChainType.HIVE} />,
+      { initialState: buildState() },
+    );
+
+    const trigger = screen.getByTestId('account-selector-trigger');
+    trigger.focus();
+    await user.keyboard(' ');
+    const selectedAccountRow = await screen.findByTestId(
+      `account-selector-hive-account-${userData.one.username}`,
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId('account-selector-search-input')).toHaveFocus(),
+    );
+    selectedAccountRow.focus();
+    await user.keyboard('{ArrowDown}{Enter}');
+
+    await waitFor(() =>
+      expect(store.getState().hive.activeAccount.name).toBe(
+        userData.two.username,
+      ),
+    );
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('closes with Escape and restores focus to the trigger', async () => {
+    const user = userEvent.setup();
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
+      initialState: buildState(),
+    });
+
+    const trigger = screen.getByTestId('account-selector-trigger');
+    trigger.focus();
+    await user.keyboard('{Enter}');
+    expect(await screen.findByRole('dialog')).toBeInTheDocument();
+    await user.keyboard('{Escape}');
+
+    await waitFor(() => expect(trigger).toHaveFocus());
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('operates row actions from the keyboard without selecting the account', async () => {
+    const user = userEvent.setup();
+    const { store } = customRender(
+      <AccountSelectorComponent selectedAccountType={ChainType.HIVE} />,
+      { initialState: buildState() },
+    );
+
+    const trigger = screen.getByTestId('account-selector-trigger');
+    trigger.focus();
+    await user.keyboard('{Enter}');
+    const secondAccountRow = await screen.findByTestId(
+      `account-selector-hive-account-${userData.two.username}`,
+    );
+    const copyAction = within(secondAccountRow).getByTestId(
+      /^account-selector-copy-/,
+    );
+    copyAction.focus();
+    await user.keyboard('{Enter}');
+
+    expect(mockCopyTextWithToast).toHaveBeenCalledWith(
+      userData.two.username,
+      'swap_copied_to_clipboard',
+    );
+    expect(store.getState().hive.activeAccount.name).toBe(userData.one.username);
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  it('reorders accounts with arrow keys on the drag handle', async () => {
+    const user = userEvent.setup();
+    const applyDisplayOrderSpy = jest
+      .spyOn(AccountSelectorOrderUtils, 'applyDisplayOrder')
+      .mockImplementation(
+        async (_mk, orderedRefs, hiveAccounts, evmAccounts) => ({
+          displayOrder: orderedRefs,
+          hiveAccounts,
+          evmAccounts,
+        }),
+      );
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
+      initialState: buildState(),
+    });
+
+    await user.click(screen.getByTestId('account-selector-trigger'));
+    const firstAccountRow = await screen.findByTestId(
+      `account-selector-hive-account-${userData.one.username}`,
+    );
+    const reorderButton = within(firstAccountRow).getByRole('button', {
+      name: `popup_html_accounts: ${userData.one.username}`,
+    });
+    reorderButton.focus();
+    await user.keyboard('{ArrowDown}');
+
+    await waitFor(() =>
+      expect(getAccountSelectorRowTestIds().slice(0, 2)).toEqual([
+        `account-selector-hive-account-${userData.two.username}`,
+        `account-selector-hive-account-${userData.one.username}`,
+      ]),
+    );
+    expect(applyDisplayOrderSpy).toHaveBeenCalled();
+  });
+
   it('opens the bottom sheet and lists Hive names and formatted visible EVM accounts', async () => {
     customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
       initialState: buildState(),
