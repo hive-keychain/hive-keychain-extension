@@ -6,7 +6,7 @@ import {
   ContextualMenu,
   ContextualMenuSectionItem,
 } from '@interfaces/contextual-menu.interface';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { LabelComponent } from 'src/common-ui/label/label.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -18,15 +18,35 @@ interface Props {
 
 export const ContextualMenuComponent = ({ menu }: Props) => {
   const [isMenuOpened, setMenuOpened] = useState<boolean>(false);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   const [isConfirmationPopupOpened, setConfirmationPopupOpened] =
     useState<boolean>(false);
   const [clickedItem, setClickedItem] = useState<ContextualMenuSectionItem>();
 
+  useEffect(() => {
+    if (!isMenuOpened) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      menuRef.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
+    });
+  }, [isMenuOpened]);
+
+  const closeMenu = (restoreFocus = false) => {
+    setMenuOpened(false);
+    if (restoreFocus) {
+      setTimeout(() => triggerRef.current?.focus());
+    }
+  };
+
   const handleItemClick = (sectionItem: ContextualMenuSectionItem) => {
     setClickedItem(sectionItem);
     if (sectionItem.onClick) {
       if (sectionItem.needsConfirmation) {
+        closeMenu();
         setConfirmationPopupOpened(true);
       } else {
         processOnClick(sectionItem);
@@ -35,21 +55,62 @@ export const ContextualMenuComponent = ({ menu }: Props) => {
   };
 
   const processOnClick = (sectionItem: ContextualMenuSectionItem) => {
-    setMenuOpened(false);
+    closeMenu();
     if (sectionItem.onClick) {
       sectionItem.onClick();
       setConfirmationPopupOpened(false);
     }
   };
 
+  const handleMenuKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeMenu(true);
+      return;
+    }
+
+    if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
+      return;
+    }
+
+    event.preventDefault();
+    const menuItems = Array.from(
+      menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [],
+    );
+    const currentIndex = menuItems.indexOf(
+      document.activeElement as HTMLElement,
+    );
+    const targetIndex =
+      event.key === 'Home'
+        ? 0
+        : event.key === 'End'
+          ? menuItems.length - 1
+          : (currentIndex + (event.key === 'ArrowDown' ? 1 : -1) +
+              menuItems.length) %
+            menuItems.length;
+    menuItems[targetIndex]?.focus();
+  };
+
   return (
     <>
       <div className={`contextual-menu ${isMenuOpened ? 'opened' : 'closed'}`}>
-        <SVGIcon
-          icon={SVGIcons.GLOBAL_MENU_DOTS}
-          onClick={() => setMenuOpened(!isMenuOpened)}
-        />
-        <div className={`contextual-menu-container`}>
+        <button
+          ref={triggerRef}
+          className="contextual-menu-trigger"
+          type="button"
+          aria-label={I18nUtils.getMessage('dialog_options')}
+          aria-haspopup="menu"
+          aria-expanded={isMenuOpened}
+          aria-controls="contextual-menu-options"
+          onClick={() => setMenuOpened(!isMenuOpened)}>
+          <SVGIcon icon={SVGIcons.GLOBAL_MENU_DOTS} />
+        </button>
+        <div
+          id="contextual-menu-options"
+          ref={menuRef}
+          className="contextual-menu-container"
+          role="menu"
+          onKeyDown={handleMenuKeyDown}>
           {menu.sections.map((section, index) => (
             <div
               className="contextual-menu-section"
@@ -64,7 +125,9 @@ export const ContextualMenuComponent = ({ menu }: Props) => {
               )}
               <div className="section-items">
                 {section.items.map((sectionItem, index) => (
-                  <div
+                  <button
+                    type="button"
+                    role="menuitem"
                     className="section-item"
                     key={`section-item-${index}`}
                     onClick={() => handleItemClick(sectionItem)}>
@@ -77,7 +140,7 @@ export const ContextualMenuComponent = ({ menu }: Props) => {
                       skipTranslation={sectionItem.skipTranslation}
                       className="label"
                     />
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
@@ -86,7 +149,7 @@ export const ContextualMenuComponent = ({ menu }: Props) => {
         {isMenuOpened && (
           <div
             className="contextual-menu-overlay"
-            onClick={() => setMenuOpened(false)}></div>
+            onClick={() => closeMenu()}></div>
         )}
       </div>
       {isConfirmationPopupOpened && clickedItem && (
