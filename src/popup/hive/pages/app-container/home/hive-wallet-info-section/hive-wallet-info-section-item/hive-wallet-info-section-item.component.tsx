@@ -75,7 +75,7 @@ interface WalletSectionInfoItemProps {
   subValueLabel?: string;
 }
 
-const WalletInfoSectionItem = ({
+export const WalletInfoSectionItem = ({
   tokenSymbol,
   tokenInfo,
   tokenBalance,
@@ -92,6 +92,9 @@ const WalletInfoSectionItem = ({
   navigateToWithParams,
 }: PropsFromRedux) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [detailsId] = useState(
+    () => `hive-wallet-details-${tokenSymbol.replace(/[^a-zA-Z0-9_-]/g, '-')}`,
+  );
   const [actionButtons, setActionButtons] = useState<ActionButton[]>([]);
   const reff = useRef<HTMLDivElement>(null);
 
@@ -130,6 +133,12 @@ const WalletInfoSectionItem = ({
 
   const toggleDropdown = () => {
     setIsExpanded(!isExpanded);
+    !process.env.IS_FIREFOX &&
+      reff.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+        inline: 'center',
+      });
   };
 
   const handleClick = (
@@ -191,70 +200,71 @@ const WalletInfoSectionItem = ({
   return (
     <div
       className={`wallet-info-row ${isExpanded ? 'opened' : ''}`}
-      data-testid={
-        tokenInfo
-          ? 'token-user-item'
-          : `dropdown-arrow-${tokenSymbol.toLowerCase()}`
-      }
-      ref={reff}
-      onClick={() => {
-        toggleDropdown();
-        !process.env.IS_FIREFOX &&
-          reff.current?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-            inline: 'center',
-          });
-      }}>
+      ref={reff}>
       <div className="information-panel-hive">
-        {typeof icon === 'string' && (
-          <PreloadedImage
-            src={icon}
-            className="currency-icon"
-            addBackground={addBackground}
-            useDefaultSVG={icon || defaultIcon}
-          />
-        )}
-        {typeof icon !== 'string' && !tokenInfo && (
-          <SVGIcon
-            icon={icon}
-            className={`currency-icon ${addBackground ? 'add-background' : ''}`}
-          />
-        )}
-        {typeof icon !== 'string' && tokenInfo && (
-          <PreloadedImage
-            src={ImageUtils.getImmutableImage(tokenInfo?.metadata.icon)}
-            className="currency-icon"
-            addBackground={addBackground}
-            symbol={tokenInfo.symbol}
-            useDefaultSVG={icon || defaultIcon}
-          />
-        )}
-        <div className="main-value-label">{mainValueLabel}</div>
-        <div className="value">
-          <div className="main-value">
-            {FormatUtils.formatCurrencyValue(mainValue)}
+        <button
+          type="button"
+          data-testid={
+            tokenInfo
+              ? 'token-user-item'
+              : `dropdown-arrow-${tokenSymbol.toLowerCase()}`
+          }
+          className="wallet-info-disclosure"
+          aria-expanded={isExpanded}
+          aria-controls={detailsId}
+          onClick={toggleDropdown}>
+          {typeof icon === 'string' && (
+            <PreloadedImage
+              src={icon}
+              className="currency-icon"
+              addBackground={addBackground}
+              useDefaultSVG={icon || defaultIcon}
+            />
+          )}
+          {typeof icon !== 'string' && !tokenInfo && (
+            <SVGIcon
+              icon={icon}
+              className={`currency-icon ${
+                addBackground ? 'add-background' : ''
+              }`}
+            />
+          )}
+          {typeof icon !== 'string' && tokenInfo && (
+            <PreloadedImage
+              src={ImageUtils.getImmutableImage(tokenInfo?.metadata.icon)}
+              className="currency-icon"
+              addBackground={addBackground}
+              symbol={tokenInfo.symbol}
+              useDefaultSVG={icon || defaultIcon}
+            />
+          )}
+          <div className="main-value-label">{mainValueLabel}</div>
+          <div className="value">
+            <div className="main-value">
+              {FormatUtils.formatCurrencyValue(mainValue)}
+            </div>
+            {!!subValue &&
+              parseFloat(FormatUtils.formatCurrencyValue(subValue)) !== 0 && (
+                <div className="sub-value">
+                  {parseFloat(subValue?.toString()) > 0 ? '+' : ''}
+                  {FormatUtils.formatCurrencyValue(subValue)} ({subValueLabel})
+                </div>
+              )}
           </div>
-          {!!subValue &&
-            parseFloat(FormatUtils.formatCurrencyValue(subValue)) !== 0 && (
-              <div className="sub-value">
-                {parseFloat(subValue?.toString()) > 0 ? '+' : ''}
-                {FormatUtils.formatCurrencyValue(subValue)} ({subValueLabel})
-              </div>
-            )}
-        </div>
+        </button>
         {isExpanded && (
           <SVGIcon
             icon={SVGIcons.WALLET_HISTORY_BUTTON}
             className={`history-icon`}
             dataTestId={`icon-token-history-${tokenSymbol}`}
+            ariaLabel={I18nUtils.getMessage('popup_html_history')}
             onClick={($event) => handleHistoryClick($event, tokenBalance)}
             hoverable
           />
         )}
       </div>
       {isExpanded && (
-        <>
+        <div id={detailsId} className="wallet-info-details">
           {tokenInfo && tokenBalance && tokenMarket && (
             <div
               className={`token-info-panel ${
@@ -450,7 +460,7 @@ const WalletInfoSectionItem = ({
               />
             ))}
           </div>
-        </>
+        </div>
       )}
     </div>
   );

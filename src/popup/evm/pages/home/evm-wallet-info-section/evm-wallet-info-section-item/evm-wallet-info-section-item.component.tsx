@@ -23,7 +23,7 @@ interface EVMWalletSectionInfoItemProps {
   subValueLabel?: string;
 }
 
-const WalletInfoSectionItem = ({
+export const WalletInfoSectionItem = ({
   token,
   icon,
   addBackground,
@@ -35,6 +35,13 @@ const WalletInfoSectionItem = ({
   navigateToWithParams,
 }: PropsFromRedux) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [detailsId] = useState(
+    () =>
+      `evm-wallet-details-${token.tokenInfo.symbol.replace(
+        /[^a-zA-Z0-9_-]/g,
+        '-',
+      )}`,
+  );
   const [actionButtons, setActionButtons] = useState<ActionButton[]>([]);
   const reff = useRef<HTMLDivElement>(null);
 
@@ -48,6 +55,12 @@ const WalletInfoSectionItem = ({
 
   const toggleDropdown = () => {
     setIsExpanded(!isExpanded);
+    !process.env.IS_FIREFOX &&
+      reff.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+        inline: 'center',
+      });
   };
 
   const handleClick = (
@@ -64,18 +77,14 @@ const WalletInfoSectionItem = ({
   return (
     <div
       className={`wallet-info-row ${isExpanded ? 'opened' : ''}`}
-      data-testid={`wallet-info-section-row`}
-      ref={reff}
-      onClick={() => {
-        toggleDropdown();
-        !process.env.IS_FIREFOX &&
-          reff.current?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-            inline: 'center',
-          });
-      }}>
-      <div className="information-panel">
+      ref={reff}>
+      <button
+        type="button"
+        data-testid="wallet-info-section-row"
+        className="information-panel"
+        aria-expanded={isExpanded}
+        aria-controls={detailsId}
+        onClick={toggleDropdown}>
         {!(
           token.tokenInfo.type === EVMSmartContractType.ERC20 &&
           token.tokenInfo.lpV2
@@ -124,9 +133,9 @@ const WalletInfoSectionItem = ({
               </div>
             )}
         </div>
-      </div>
+      </button>
       {isExpanded && (
-        <>
+        <div id={detailsId} className="wallet-info-details">
           <div className="actions-panel">
             {actionButtons.map((ab, index) => (
               <WalletInfoSectionItemButton
@@ -136,7 +145,7 @@ const WalletInfoSectionItem = ({
               />
             ))}
           </div>
-        </>
+        </div>
       )}
     </div>
   );

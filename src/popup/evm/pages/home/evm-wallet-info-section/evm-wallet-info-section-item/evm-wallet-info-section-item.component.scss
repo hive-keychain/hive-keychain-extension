@@ -27,6 +27,22 @@
     grid-template-columns: 48px 1fr auto;
     align-items: center;
     column-gap: 16px;
+    border: 0;
+    padding: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $red;
+      outline-offset: 4px;
+      border-radius: 18px;
+    }
     .currency-icon-container {
       display: flex;
       align-items: center;
@@ -118,6 +134,10 @@
         @include poppins400(12px);
       }
     }
+  }
+
+  .wallet-info-details {
+    width: 100%;
   }
 
   .token-info-panel {
