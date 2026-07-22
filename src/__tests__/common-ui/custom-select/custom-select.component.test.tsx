@@ -16,13 +16,17 @@ const options: OptionItem[] = [
   { label: 'Second option', value: 'second' },
 ];
 
-const renderSelect = (setSelectedItem = jest.fn()) => {
+const renderSelect = (
+  setSelectedItem = jest.fn(),
+  footer?: React.ReactElement,
+) => {
   render(
     <ComplexeCustomSelect
       ariaLabel="Test dropdown"
       options={options}
       selectedItem={options[0]}
       setSelectedItem={setSelectedItem}
+      footer={footer}
     />,
   );
 
@@ -66,5 +70,44 @@ describe('ComplexeCustomSelect', () => {
 
     await waitFor(() => expect(select).toHaveAttribute('aria-expanded', 'false'));
     expect(select).toHaveFocus();
+  });
+
+  it('scrolls the keyboard-active option into view', async () => {
+    const user = userEvent.setup();
+    const scrollIntoView = jest.fn();
+    HTMLElement.prototype.scrollIntoView = scrollIntoView;
+    const { select } = renderSelect();
+
+    select.focus();
+    await user.keyboard('{Enter}');
+    await waitFor(() => expect(scrollIntoView).toHaveBeenCalled());
+    scrollIntoView.mockClear();
+    await user.keyboard('{ArrowDown}');
+
+    await waitFor(() =>
+      expect(scrollIntoView).toHaveBeenCalledWith({ block: 'nearest' }),
+    );
+    expect(screen.getAllByRole('option')[1]).toHaveClass('keyboard-active');
+  });
+
+  it('moves focus to the footer with Tab', async () => {
+    const user = userEvent.setup();
+    const handleFooterClick = jest.fn();
+    const { select } = renderSelect(
+      jest.fn(),
+      <button type="button" onClick={handleFooterClick}>
+        Add custom chain
+      </button>,
+    );
+
+    select.focus();
+    await user.keyboard('{Enter}{Tab}');
+
+    const footerButton = screen.getByRole('button', {
+      name: 'Add custom chain',
+    });
+    expect(footerButton).toHaveFocus();
+    await user.keyboard('{Enter}');
+    expect(handleFooterClick).toHaveBeenCalledTimes(1);
   });
 });

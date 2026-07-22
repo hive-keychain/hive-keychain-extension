@@ -141,6 +141,10 @@
         flex-direction: column;
         align-items: stretch;
 
+        .custom-select-options {
+          min-width: 100%;
+        }
+
         .filter-input {
           width: 100%;
           box-sizing: border-box;
@@ -219,7 +223,8 @@
             border: 1px solid white;
           }
 
-          &:hover {
+          &:hover,
+          &.keyboard-active {
             .left-svg-chip {
               color: white;
             }
@@ -274,7 +279,8 @@
             column-gap: 16px;
           }
         }
-        &:hover {
+        &:hover,
+        &:has(.custom-select-item.keyboard-active) {
           .item-label {
             color: white;
           }

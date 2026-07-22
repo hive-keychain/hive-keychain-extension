@@ -53,11 +53,18 @@
     box-sizing: border-box;
     @include poppins500(14px);
     cursor: pointer;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    text-align: left;
     --add-icon-color: #{$red};
     .text {
       color: var(--main-font-color);
     }
-    &:hover {
+    &:hover,
+    &:focus-visible {
+      outline: none;
       background: $red;
       --add-icon-color: white;
       --menu-icon-color: white;

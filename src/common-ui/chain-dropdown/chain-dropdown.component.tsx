@@ -109,14 +109,15 @@ const ChainDropdown = ({
           setSelectedItem={(item) => selectChain(item.value)}
           background="white"
           footer={
-            <div
+            <button
+              type="button"
               className="manage-chains-panel"
               onClick={handleOnManageChainsClicked}>
               <SVGIcon icon={SVGIcons.MENU_ADVANCED_SETTINGS_RPC_NODE} />
               <div className="text">
                 {I18nUtils.getMessage('html_popup_manage_chains')}
               </div>
-            </div>
+            </button>
           }
           renderOnlyIcon
           showOverlay

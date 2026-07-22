@@ -2,7 +2,8 @@ import { Theme, useThemeContext } from '@popup/theme.context';
 import React from 'react';
 import { createPortal } from 'react-dom';
 
-interface PopupContainerProps {
+interface PopupContainerProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {
   children: any;
   className?: string;
   onClickOutside?: () => void;
@@ -13,39 +14,52 @@ interface PopupContainerProps {
   useBodyPortal?: boolean;
 }
 
-export const PopupContainer = ({
-  children,
-  className,
-  onClickOutside,
-  showOverlay = true,
-  dataTestId,
-  'data-testid': dataTestIdAttr,
-  useBodyPortal = false,
-}: PopupContainerProps) => {
-  const { theme: contextTheme } = useThemeContext();
-  const portalTheme = contextTheme ?? Theme.DARK;
+export const PopupContainer = React.forwardRef<
+  HTMLDivElement,
+  PopupContainerProps
+>(
+  (
+    {
+      children,
+      className,
+      onClickOutside,
+      showOverlay = true,
+      dataTestId,
+      'data-testid': dataTestIdAttr,
+      useBodyPortal = false,
+      ...containerProps
+    },
+    ref,
+  ) => {
+    const { theme: contextTheme } = useThemeContext();
+    const portalTheme = contextTheme ?? Theme.DARK;
 
-  const popup = (
-    <div
-      data-testid={dataTestId ?? dataTestIdAttr}
-      className={`popup-container ${className ?? ''}`}>
-      {showOverlay && (
-        <div
-          className="overlay"
-          onClick={() => {
-            onClickOutside?.();
-          }}></div>
-      )}
-      <div className="popup-content">{children}</div>
-    </div>
-  );
-
-  if (useBodyPortal) {
-    return createPortal(
-      <div className={`theme ${portalTheme}`}>{popup}</div>,
-      document.body,
+    const popup = (
+      <div
+        {...containerProps}
+        ref={ref}
+        data-testid={dataTestId ?? dataTestIdAttr}
+        className={`popup-container ${className ?? ''}`}>
+        {showOverlay && (
+          <div
+            className="overlay"
+            onClick={() => {
+              onClickOutside?.();
+            }}></div>
+        )}
+        <div className="popup-content">{children}</div>
+      </div>
     );
-  }
 
-  return popup;
-};
+    if (useBodyPortal) {
+      return createPortal(
+        <div className={`theme ${portalTheme}`}>{popup}</div>,
+        document.body,
+      );
+    }
+
+    return popup;
+  },
+);
+
+PopupContainer.displayName = 'PopupContainer';

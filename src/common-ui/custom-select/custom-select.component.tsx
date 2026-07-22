@@ -69,6 +69,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
 ) {
   const ref = useRef<HTMLInputElement>(null);
   const methodsRef = useRef<SelectMethods<T> | null>(null);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const [filteredOptions, setFilteredOptions] = useState(itemProps.options);
   const [query, setQuery] = useState('');
@@ -89,6 +90,20 @@ export function ComplexeCustomSelect<T extends OptionItem>(
   useEffect(() => {
     setFilteredOptions(filter(query));
   }, [query, itemProps.options]);
+
+  useEffect(() => {
+    if (!isOpened || activeOptionIndex === undefined) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      dropdownRef.current
+        ?.querySelector<HTMLElement>(
+          `#${optionsId}-option-${activeOptionIndex}`,
+        )
+        ?.scrollIntoView({ block: 'nearest' });
+    });
+  }, [activeOptionIndex, isOpened, optionsId]);
 
   const filter = (query: string) => {
     if (itemProps.minFilterLength && query.length < itemProps.minFilterLength) {
@@ -119,6 +134,10 @@ export function ComplexeCustomSelect<T extends OptionItem>(
     event: React.KeyboardEvent<HTMLDivElement>,
   ) => {
     const isFilterInput = event.target instanceof HTMLInputElement;
+    const footer = dropdownRef.current?.querySelector<HTMLElement>(
+      '.custom-select-footer button, .custom-select-footer [href], .custom-select-footer [tabindex]:not([tabindex="-1"])',
+    );
+    const isFooterFocused = !!footer?.contains(event.target as Node);
 
     if (!isOpened) {
       if (['Enter', ' ', 'ArrowDown', 'ArrowUp'].includes(event.key)) {
@@ -135,7 +154,23 @@ export function ComplexeCustomSelect<T extends OptionItem>(
     }
 
     if (event.key === 'Tab') {
+      if (isFooterFocused && event.shiftKey) {
+        event.preventDefault();
+        methodsRef.current?.getSelectRef().focus();
+        return;
+      }
+
+      if (!isFooterFocused && !event.shiftKey && footer) {
+        event.preventDefault();
+        footer.focus();
+        return;
+      }
+
       closeDropdown(false);
+      return;
+    }
+
+    if (isFooterFocused) {
       return;
     }
 
@@ -394,9 +429,8 @@ export function ComplexeCustomSelect<T extends OptionItem>(
     }, 200);
     return (
       <div
-        id={optionsId}
-        className="custom-select-dropdown"
-        role="listbox">
+        ref={dropdownRef}
+        className="custom-select-dropdown">
         {itemProps.filterable && !itemProps.customFilter && (
           <InputComponent
             onChange={setQuery}
@@ -415,8 +449,12 @@ export function ComplexeCustomSelect<T extends OptionItem>(
           !!itemProps.customFilter &&
           itemProps.customFilter}
 
-        {renderOptionsList(() => closeDropdown(true))}
-        {itemProps.footer && itemProps.footer}
+        <div id={optionsId} className="custom-select-options" role="listbox">
+          {renderOptionsList(() => closeDropdown(true))}
+        </div>
+        {itemProps.footer && (
+          <div className="custom-select-footer">{itemProps.footer}</div>
+        )}
       </div>
     );
   };
