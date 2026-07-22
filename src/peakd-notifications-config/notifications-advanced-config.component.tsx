@@ -304,9 +304,15 @@ const NotificationsAdvancedConfigPage = () => {
                   )}
                   autocompletePrefix=""
                 />
-                <div className="add-button" onClick={addNewCriteria}>
+                <button
+                  type="button"
+                  className="add-button"
+                  aria-label={I18nUtils.getMessage(
+                    'html_popup_add_new_criteria',
+                  )}
+                  onClick={addNewCriteria}>
                   <SVGIcon icon={SVGIcons.NOTIFICATIONS_ADD} />
-                </div>
+                </button>
               </div>
               <div className="form-fields" ref={topFormFields}>
                 {configForm?.map((configFormItem, configFormItemIndex) => {

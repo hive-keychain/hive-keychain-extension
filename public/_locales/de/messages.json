@@ -4655,6 +4655,10 @@
     "message": "Neue Bedingung hinzufügen",
     "description": "Add new condition"
   },
+  "html_popup_add_new_criteria": {
+    "message": "Neues Kriterium hinzufügen",
+    "description": "Accessible label for adding notification criteria"
+  },
   "html_popup_delete_criteria": {
     "message": "Kriterien entfernen",
     "description": "Delete criteria"

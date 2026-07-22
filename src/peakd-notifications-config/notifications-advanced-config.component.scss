@@ -74,7 +74,9 @@ html {
                   height: 18px;
                   width: 18px;
                 }
-                &:hover {
+                &:hover,
+                &:focus-visible {
+                  outline: none;
                   background: $red;
                   color: white;
                 }
