@@ -15,6 +15,21 @@ pre {
   min-height: 32px;
   padding: 6px 0;
   cursor: pointer;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $red;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 
   .label {
     @include poppins500(14px);
