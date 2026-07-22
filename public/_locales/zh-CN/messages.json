@@ -7387,6 +7387,10 @@
     "message": "清除输入",
     "description": "Accessible label for input clear buttons"
   },
+  "accessibility_back_to_top": {
+    "message": "返回顶部",
+    "description": "Accessible label for buttons that scroll to the top"
+  },
   "evm_error_gas_estimate": {
     "message": "Gas estimation failed. You will need to enter a custom gas fee.",
     "description": "Gas estimation failed. You will need to enter a custom gas fee."

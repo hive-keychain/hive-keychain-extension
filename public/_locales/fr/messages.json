@@ -7387,6 +7387,10 @@
     "message": "Effacer le champ",
     "description": "Accessible label for input clear buttons"
   },
+  "accessibility_back_to_top": {
+    "message": "Retour en haut",
+    "description": "Accessible label for buttons that scroll to the top"
+  },
   "evm_error_gas_estimate": {
     "message": "L’estimation du gas a échoué. Vous devrez saisir des frais de gas personnalisés.",
     "description": "Gas estimation failed. You will need to enter a custom gas fee."
