@@ -224,6 +224,17 @@
       row-gap: 4px;
       font-size: 16px;
       cursor: pointer;
+      color: inherit;
+      font: inherit;
+
+      &:focus {
+        outline: none;
+      }
+
+      &:focus-visible {
+        outline: 2px solid $red;
+        outline-offset: 2px;
+      }
       .label {
         color: var(--main-font-color);
       }
