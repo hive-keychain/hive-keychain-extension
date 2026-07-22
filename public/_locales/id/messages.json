@@ -4659,6 +4659,10 @@
     "message": "Tambah kriteria baru",
     "description": "Accessible label for adding notification criteria"
   },
+  "html_popup_delete_condition": {
+    "message": "Hapus kondisi",
+    "description": "Accessible label for deleting a notification condition"
+  },
   "html_popup_delete_criteria": {
     "message": "Hapus Kriteria",
     "description": "Delete criteria"

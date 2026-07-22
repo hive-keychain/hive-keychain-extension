@@ -10,6 +10,7 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { I18nUtils } from 'src/utils/i18n.utils';
 
 interface Props {
   updateConfig: Function;
@@ -95,6 +96,9 @@ export const NotificationConfigItemComponent = ({
                   {
                     <SVGIcon
                       icon={SVGIcons.GLOBAL_DELETE}
+                      ariaLabel={`${I18nUtils.getMessage(
+                        'html_popup_delete_condition',
+                      )} ${configFormItemConditionIndex + 1}`}
                       onClick={() =>
                         deleteCondition(configFormItemConditionIndex)
                       }
