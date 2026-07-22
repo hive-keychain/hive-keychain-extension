@@ -25,6 +25,7 @@ export const NotificationConfigItemComponent = ({
   configFormItemIndex,
 }: Props) => {
   const [isOpen, setOpen] = useState<boolean>(false);
+  const conditionsId = `notification-criteria-${configFormItemIndex}-conditions`;
 
   const addNewCondition = () => {
     // const newId = Math.max(
@@ -59,16 +60,24 @@ export const NotificationConfigItemComponent = ({
 
   return (
     <div className="criteria">
-      <div className="operation-panel" onClick={() => setOpen(!isOpen)}>
+      <button
+        type="button"
+        className="operation-panel"
+        aria-expanded={isOpen}
+        aria-controls={conditionsId}
+        onClick={() => setOpen(!isOpen)}>
         <div>{configFormItem.operation}</div>
         <SVGIcon
           icon={SVGIcons.GLOBAL_EXPAND_COLLAPSE}
           className={`expand-detail-icon ${isOpen ? 'open' : 'closed'}`}
         />
-      </div>
+      </button>
 
       {configFormItem && isOpen && (
-        <div className="conditions" key={configFormItem.operation}>
+        <div
+          id={conditionsId}
+          className="conditions"
+          key={configFormItem.operation}>
           {configFormItem.conditions &&
             configFormItem.conditions.map(
               (configFormItemCondition, configFormItemConditionIndex) => (
