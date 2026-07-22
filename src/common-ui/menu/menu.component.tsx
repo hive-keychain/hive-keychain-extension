@@ -92,24 +92,28 @@ const Menu = ({
         <SVGIcon
           className="network-icon"
           icon={SVGIcons.MENU_BOTTOM_BAR_HIVE}
+          ariaLabel="PeakD"
           onClick={goToPeakD}
           hoverable
         />
         <SVGIcon
           className="network-icon"
           icon={SVGIcons.MENU_BOTTOM_BAR_DISCORD}
+          ariaLabel="Discord"
           onClick={goToDiscord}
           hoverable
         />
         <SVGIcon
           className="network-icon"
           icon={SVGIcons.MENU_BOTTOM_BAR_TWITTER}
+          ariaLabel="X (Twitter)"
           onClick={goToTwitter}
           hoverable
         />
         <SVGIcon
           className="network-icon"
           icon={SVGIcons.MENU_BOTTOM_BAR_MEDIUM}
+          ariaLabel="Medium"
           onClick={goToMedium}
           hoverable
         />
