@@ -1,4 +1,5 @@
 import { EditContactPopupComponent } from '@common-ui/contacts/edit-contact-popup/edit-contact-popup.component';
+import { AddContactButton } from '@common-ui/contacts/add-contact-button/add-contact-button.component';
 import { EditContactComponent } from '@common-ui/contacts/edit-contact/edit-contact.component';
 import {
   ComplexeCustomSelect,
@@ -21,8 +22,6 @@ import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { SVGIcons } from 'src/common-ui/icons.enum';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { v4 } from 'uuid';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
@@ -170,10 +169,7 @@ const Contacts = ({
   };
 
   const renderAddLink = (type: EvmAddressType) => (
-    <div className="add-contact-link" onClick={() => openAddAddressPopup(type)}>
-      <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE} className="add-icon" />
-      {I18nUtils.getMessage('evm_addresses_add')}
-    </div>
+    <AddContactButton onClick={() => openAddAddressPopup(type)} />
   );
 
   const getEmptyStateMessageKey = (type: EvmAddressType): string =>
