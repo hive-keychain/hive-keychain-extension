@@ -18,7 +18,12 @@
   }
   .svg-icon {
     width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+
     svg {
+      width: 20px;
+      height: 20px;
       color: #929292;
     }
 
