@@ -2,15 +2,15 @@
   @if $level == high {
     --evm-risk-accent: #{$red};
     --evm-risk-tag-bg: rgba($red, 0.1);
-    --evm-risk-panel-bg: #{$light-red};
+    --evm-risk-panel-bg: var(--evm-risk-high-panel-bg);
   } @else if $level == medium {
     --evm-risk-accent: #{$orange};
     --evm-risk-tag-bg: rgba($orange, 0.12);
-    --evm-risk-panel-bg: #{$light-orange};
+    --evm-risk-panel-bg: var(--evm-risk-medium-panel-bg);
   } @else {
     --evm-risk-accent: #{$yellow};
     --evm-risk-tag-bg: rgba($yellow, 0.16);
-    --evm-risk-panel-bg: #{$light-yellow};
+    --evm-risk-panel-bg: var(--evm-risk-low-panel-bg);
   }
 }
 

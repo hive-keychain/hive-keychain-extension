@@ -37,6 +37,10 @@ export const EvmTokenHistoryItemComponent = ({
   };
 
   const getIcon = () => {
+    if (historyItem.opName === 'SWAP') {
+      return SVGIcons.SWAPS_ITEM;
+    }
+
     switch (historyItem.type) {
       case EvmUserHistoryItemType.TRANSFER_IN:
       case EvmUserHistoryItemType.TRANSFER_OUT:

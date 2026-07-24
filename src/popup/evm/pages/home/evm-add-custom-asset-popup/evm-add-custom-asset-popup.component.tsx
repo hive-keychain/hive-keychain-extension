@@ -6,6 +6,7 @@ import InputComponent from '@common-ui/input/input.component';
 import { PopupContainer } from '@common-ui/popup-container/popup-container.component';
 import { TextAreaComponent } from '@common-ui/text-area/textarea.component';
 import { EvmCustomErc20Form } from '@popup/evm/pages/home/evm-add-custom-asset-popup/evm-custom-erc20-form.component';
+import { EvmKnownTokenList } from '@popup/evm/pages/home/evm-add-custom-asset-popup/evm-known-token-list.component';
 import {
   EvmCustomNft,
   EvmCustomToken,
@@ -153,6 +154,7 @@ export const EvmAddCustomAssetPopup = ({
   const [savedCustomNfts, setSavedCustomNfts] = useState<EvmCustomNft[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [isResolvingContract, setIsResolvingContract] = useState(false);
+  const [showManualErc20Form, setShowManualErc20Form] = useState(false);
   const isMountedRef = useRef(true);
   const erc20FormRef = useRef(erc20Form);
   const normalizedExistingErc20Ref = useRef(
@@ -196,6 +198,10 @@ export const EvmAddCustomAssetPopup = ({
       mounted = false;
     };
   }, [chain, mode, walletAddress]);
+
+  useEffect(() => {
+    setShowManualErc20Form(false);
+  }, [tokenToEdit]);
 
   useEffect(() => {
     if (mode !== 'erc20') {
@@ -621,6 +627,36 @@ export const EvmAddCustomAssetPopup = ({
   const editedNftType =
     tokenToEdit && 'tokenIds' in tokenToEdit ? tokenToEdit.type : undefined;
 
+  const handleKnownTokenSave = async (form: EvmCustomErc20FormData) => {
+    await onSave?.(form);
+  };
+
+  const renderErc20Browse = () => (
+    <>
+      <div className="popup-title">
+        {I18nUtils.getMessage('evm_add_custom_token_popup_title')}
+      </div>
+      <EvmKnownTokenList
+        chain={chain}
+        existingAddresses={existingAddresses}
+        onSave={handleKnownTokenSave}
+      />
+      <div className="popup-footer">
+        <ButtonComponent
+          type={ButtonType.ALTERNATIVE}
+          onClick={onClose}
+          label="popup_html_button_label_cancel"
+        />
+        <ButtonComponent
+          type={ButtonType.IMPORTANT}
+          label="evm_add_custom_token_manually"
+          dataTestId="btn-add-custom-token-manually"
+          onClick={() => setShowManualErc20Form(true)}
+        />
+      </div>
+    </>
+  );
+
   const renderErc20Form = () => (
     <EvmCustomErc20Form
       chain={chain}
@@ -641,12 +677,21 @@ export const EvmAddCustomAssetPopup = ({
       caption={
         isEditing
           ? I18nUtils.getMessage('evm_custom_tokens_modal_caption_edit')
-          : I18nUtils.getMessage('evm_add_custom_token_popup_caption')
+          : undefined
       }
-      onClose={onClose}
+      onClose={
+        isEditing ? onClose : () => setShowManualErc20Form(false)
+      }
       onSave={onSave as (form: EvmCustomErc20FormData) => Promise<void> | void}
     />
   );
+
+  const renderErc20Content = () => {
+    if (isEditing || showManualErc20Form) {
+      return renderErc20Form();
+    }
+    return renderErc20Browse();
+  };
 
   const renderNftForm = () => (
     <>
@@ -734,10 +779,14 @@ export const EvmAddCustomAssetPopup = ({
 
   return (
     <PopupContainer
-      className="evm-add-custom-asset-popup"
+      className={`evm-add-custom-asset-popup${
+        mode === 'erc20' && !isEditing && !showManualErc20Form
+          ? ' evm-add-custom-asset-popup--browse'
+          : ''
+      }`}
       dataTestId="custom-asset-popup"
       onClickOutside={onClose}>
-      {mode === 'erc20' ? renderErc20Form() : renderNftForm()}
+      {mode === 'erc20' ? renderErc20Content() : renderNftForm()}
     </PopupContainer>
   );
 };

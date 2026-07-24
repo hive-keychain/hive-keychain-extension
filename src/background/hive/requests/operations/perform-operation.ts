@@ -68,7 +68,6 @@ export const performHiveOperation = async (
   let message = null;
   try {
     Logger.info('-- PERFORMING HIVE TRANSACTION --');
-    Logger.log(request);
     switch (request.type) {
       case KeychainRequestTypes.addAccount:
         message = await addAccount(requestHandler, request);

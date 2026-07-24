@@ -549,12 +549,15 @@ const WalletHistory = ({
         {transactions.list[transactions.list.length - 1]?.last === false &&
           transactions.lastUsedStart !== 0 &&
           !loading && (
-            <div className="load-more-panel" onClick={tryToLoadMore}>
+            <button
+              type="button"
+              className="load-more-panel"
+              onClick={tryToLoadMore}>
               <span className="label">
                 {I18nUtils.getMessage('popup_html_load_more')}
               </span>
               <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE}></SVGIcon>
-            </div>
+            </button>
           )}
         {loading && (
           <div className="rotating-logo-container">

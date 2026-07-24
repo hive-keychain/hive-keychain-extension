@@ -155,4 +155,27 @@ describe('PaidAccountCreationPaymentUtils', () => {
       ),
     ).toBe('b'.repeat(40));
   });
+
+  it('returns human-readable chain and token labels', () => {
+    expect(
+      PaidAccountCreationPaymentUtils.getPaymentChainLabel(baseRequest, chain),
+    ).toBe('Base');
+    expect(
+      PaidAccountCreationPaymentUtils.getPaymentTokenLabel(baseRequest, chain),
+    ).toBe('Ether');
+
+    const hiveRequest = {
+      ...baseRequest,
+      paymentCurrency: 'HIVE',
+      paymentChainId: null,
+      payerEvmAddress: null,
+    };
+
+    expect(
+      PaidAccountCreationPaymentUtils.getPaymentChainLabel(hiveRequest),
+    ).toBe('Hive');
+    expect(
+      PaidAccountCreationPaymentUtils.getPaymentTokenLabel(hiveRequest),
+    ).toBe('HIVE');
+  });
 });

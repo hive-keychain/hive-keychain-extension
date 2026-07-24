@@ -43,7 +43,13 @@
       box-sizing: border-box;
       @include poppins500(13px);
       cursor: pointer;
-      &:hover {
+
+      &:focus {
+        outline: none;
+      }
+
+      &:hover,
+      &:focus-visible {
         background: $red;
         color: white;
       }

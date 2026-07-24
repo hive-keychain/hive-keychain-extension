@@ -67,6 +67,14 @@ describe('advanced-settings.component tests:\n', () => {
     }
   });
 
+  it('Must not show the legacy settings import-export item', () => {
+    expect(
+      getAdvancedSettingsMenuItems(true).some(
+        (item) => item.nextScreen === Screen.SETTINGS_IMPORT_EXPORT,
+      ),
+    ).toBe(false);
+  });
+
   it('Must open each menu page with no actions', async () => {
     const menuItems = getAdvancedSettingsMenuItems(false);
     for (let i = 0; i < menuItems.length; i++) {

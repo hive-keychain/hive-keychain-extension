@@ -147,8 +147,39 @@ const isValidPaymentTxHash = (
     : HIVE_PAYMENT_TX_HASH_PATTERN.test(normalizedTxHash);
 };
 
+const HIVE_PAYMENT_CHAIN_LABEL = 'Hive';
+
+const getPaymentChainLabel = (
+  request: PendingHiveAccountCreationRequest,
+  chain?: EvmChain,
+): string => {
+  if (isEvmPaymentRequest(request)) {
+    return chain?.name || request.paymentChainId || 'EVM';
+  }
+
+  return HIVE_PAYMENT_CHAIN_LABEL;
+};
+
+const getPaymentTokenLabel = (
+  request: PendingHiveAccountCreationRequest,
+  chain?: EvmChain,
+): string => {
+  if (isEvmPaymentRequest(request)) {
+    return (
+      request.paymentTokenName ||
+      request.paymentTokenSymbol ||
+      chain?.mainToken ||
+      'Token'
+    );
+  }
+
+  return request.paymentCurrency;
+};
+
 export const PaidAccountCreationPaymentUtils = {
   isEvmPaymentRequest,
+  getPaymentChainLabel,
+  getPaymentTokenLabel,
   buildPaymentTokenInfo,
   buildPaymentTransactionData,
   normalizePaymentTxHash,

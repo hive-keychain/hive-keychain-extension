@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ChainDropdownComponent } from 'src/common-ui/chain-dropdown/chain-dropdown.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { I18nUtils } from 'src/utils/i18n.utils';
 
 interface TopBarProps {
   onMenuButtonClicked: () => Promise<void>;
@@ -46,6 +47,7 @@ export const TopBarComponent = ({
       <SVGIcon
         dataTestId="clickable-settings"
         icon={SVGIcons.MENU_BUTTON}
+        ariaLabel={I18nUtils.getMessage('popup_html_settings')}
         onClick={() => onMenuButtonClicked()}
         className="button settings-button"
       />
@@ -53,6 +55,7 @@ export const TopBarComponent = ({
         <SVGIcon
           className={`logo ${rotateLogo ? 'rotate' : ''}`}
           icon={SVGIcons.TOP_BAR_KEYCHAIN_LOGO}
+          ariaLabel={I18nUtils.getMessage('html_popup_click_to_refresh')}
           onClick={refresh}
           dataTestId="top-bar-refresh-icon"
         />

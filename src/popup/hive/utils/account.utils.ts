@@ -6,10 +6,15 @@ import type {
   ExtendedAccount,
 } from '@hiveio/dhive/lib/index-browser';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
+import {
+  ExportedAccountsV2,
+  ExportedSettings,
+} from '@interfaces/exported-accounts.interface';
 import { HiveInternalMarketLockedInOrders } from '@interfaces/hive-market.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { StoredEvmAccountSource } from '@popup/evm/interfaces/wallet.interface';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
+import { EXPORTABLE_SETTINGS_KEYS } from '@reference-data/exportable-settings.list';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { isWif } from 'hive-keychain-commons';
 import Config from 'src/config';
@@ -40,12 +45,6 @@ export enum AccountErrorMessages {
   MISSING_FIELDS = 'popup_accounts_fill',
   ALREADY_REGISTERED = 'popup_accounts_already_registered',
   PASSWORD_IS_PUBLIC_KEY = 'popup_account_password_is_public_key',
-}
-
-interface ExportedAccountsV2 {
-  v: 2;
-  hiveAccounts: LocalAccount[];
-  evmAccounts: StoredEvmAccountSource[];
 }
 
 const getKeys = async (username: string, password: string) => {
@@ -386,36 +385,35 @@ const isAccountListIdentical = (
   return JSON.stringify(a) === JSON.stringify(b);
 };
 /* istanbul ignore next */
-const downloadAccounts = async (acc: LocalAccount[], mk: string) => {
-  const accounts = { list: acc };
-  var data = new Blob([await AccountUtils.encryptAccounts(accounts, mk)], {
+const downloadMultichainAccounts = async (
+  hiveAccounts: LocalAccount[],
+  evmAccounts: StoredEvmAccountSource[],
+  mk: string,
+) => {
+  const settings: ExportedSettings =
+    await LocalStorageUtils.getMultipleValueFromLocalStorage(
+      EXPORTABLE_SETTINGS_KEYS,
+    );
+  const exportedAccounts: ExportedAccountsV2 = {
+    v: 2,
+    hiveAccounts,
+    evmAccounts,
+    settings,
+  };
+  const data = new Blob([await EncryptUtils.encryptJson(exportedAccounts, mk)], {
     type: 'text/plain',
   });
-  var url = window.URL.createObjectURL(data);
+  const url = window.URL.createObjectURL(data);
   const a = document.createElement('a');
   a.href = url;
   a.download = 'accounts.kc';
   a.click();
 };
 
-const downloadMultichainAccounts = async (
-  hiveAccounts: LocalAccount[],
-  evmAccounts: StoredEvmAccountSource[],
-  mk: string,
-) => {
-  const exportedAccounts: ExportedAccountsV2 = {
-    v: 2,
-    hiveAccounts,
-    evmAccounts,
-  };
-  var data = new Blob([await EncryptUtils.encryptJson(exportedAccounts, mk)], {
-    type: 'text/plain',
-  });
-  var url = window.URL.createObjectURL(data);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'accounts.kc';
-  a.click();
+const downloadAccounts = async (acc: LocalAccount[], mk: string) => {
+  const { EvmWalletUtils } = await import('@popup/evm/utils/wallet.utils');
+  const evmAccounts = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
+  await downloadMultichainAccounts(acc, evmAccounts, mk);
 };
 
 const getAccountValue = (

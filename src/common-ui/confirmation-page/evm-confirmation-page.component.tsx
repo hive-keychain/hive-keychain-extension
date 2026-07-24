@@ -4,19 +4,22 @@ import { BalanceChangeCardUtils } from '@dialog/components/balance-change-card/b
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { Screen } from '@interfaces/screen.interface';
+import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface';
 import { EtherRPCCustomError } from '@popup/evm/interfaces/evm-errors.interface';
 import {
   EvmSmartContractInfo,
   EvmSmartContractInfoNative,
   EVMSmartContractType,
 } from '@popup/evm/interfaces/evm-tokens.interface';
-import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
+import {
+  EvmTransactionWarning,
+  ProviderTransactionData,
+} from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
-import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface';
 import { EvmWallet } from '@popup/evm/interfaces/wallet.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
-import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { goBack } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
@@ -31,19 +34,17 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import {
   ConfirmationPageEvmFields,
-  ConfirmationPageFields,
   ConfirmationPageFieldType,
   EmbeddedConfirmationPageProps,
   EVMConfirmationPageParams,
 } from 'src/common-ui/confirmation-page/confirmation-page.interface';
-import { ConfirmationPopup } from 'src/common-ui/confirmation-warning-info/confirmation-popups/confirmation-popups.component';
 import { ConfirmationFieldWarningIcon } from 'src/common-ui/confirmation-warning-info/confirmation-field-warning-icon/confirmation-field-warning-icon.component';
+import { ConfirmationPopup } from 'src/common-ui/confirmation-warning-info/confirmation-popups/confirmation-popups.component';
 import {
   EvmRiskAlertBanner,
   EvmRiskStaticAlert,
 } from 'src/common-ui/evm/evm-risk-warning/evm-risk-alert-banner.component';
 import { EvmRiskWarningUtils } from 'src/common-ui/evm/evm-risk-warning/evm-risk-warning.utils';
-import { EvmTransactionWarning } from '@popup/evm/interfaces/evm-transactions.interface';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
@@ -51,7 +52,10 @@ import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings
 import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 
-export type EvmConfirmationPageContentProps = EVMConfirmationPageParams &
+export type EvmConfirmationPageContentProps = Omit<
+  EVMConfirmationPageParams,
+  'afterConfirmAction' | 'afterCancelAction'
+> &
   EmbeddedConfirmationPageProps & {
     fields: ConfirmationPageEvmFields[];
     message: string;
@@ -61,7 +65,7 @@ export type EvmConfirmationPageContentProps = EVMConfirmationPageParams &
     title?: string;
     skipTitleTranslation?: boolean;
     afterConfirmAction: (params?: GasFeeEstimationBase) => void | Promise<void>;
-    afterCancelAction?: () => void;
+    afterCancelAction?: () => void | boolean | Promise<void | boolean>;
     hasGasFee?: boolean;
     chain: EvmChain;
     tokenInfo?: EvmSmartContractInfo;
@@ -155,14 +159,14 @@ export const EvmConfirmationPageContent = ({
         title: title ?? 'popup_html_confirm',
         skipTitleTranslation,
         isBackButtonEnabled: true,
-        onBackAdditional: () => {
+        onBackAdditional: async () => {
           if (afterCancelAction) {
-            afterCancelAction();
+            return await afterCancelAction();
           }
         },
-        onCloseAdditional: () => {
+        onCloseAdditional: async () => {
           if (afterCancelAction) {
-            afterCancelAction();
+            await afterCancelAction();
           }
         },
       });
@@ -174,9 +178,10 @@ export const EvmConfirmationPageContent = ({
     transactionHook.setConfirmationPageFields(fields);
   };
 
-  const hideConfirm = BalanceChangeCardUtils.hasInsufficientBalance(balanceInfo);
+  const hideConfirm =
+    BalanceChangeCardUtils.hasInsufficientBalance(balanceInfo);
 
-  const handleClickOnConfirm = () => {
+  const handleClickOnConfirm = async () => {
     if (hasGasFee && GasFeeUtils.isGasFeeEstimateInvalid(selectedFee)) {
       forceOpenGasFeePanelEvent.emit('forceOpenCustomFeePanel');
       return;
@@ -187,16 +192,18 @@ export const EvmConfirmationPageContent = ({
       return;
     }
     if ((hasGasFee && !!selectedFee) || !hasGasFee) {
-      void afterConfirmAction(selectedFee);
+      await afterConfirmAction(selectedFee);
     } else {
       setErrorMessage('popup_html_evm_gas_fee_not_selected');
     }
   };
 
   const handleClickOnCancel = async () => {
+    let skipGoBack = false;
     if (afterCancelAction) {
-      afterCancelAction();
+      skipGoBack = (await afterCancelAction()) === true;
     }
+    if (skipGoBack) return;
     if (embedded) {
       onDismiss?.();
       return;
@@ -210,7 +217,7 @@ export const EvmConfirmationPageContent = ({
         selectedAccount?.wallet.address!,
         chain as EvmChain,
         balanceTokenInfo,
-        amount!,
+        Number(amount ?? 0),
         selectedFee,
         balanceTokenInfo.type === EVMSmartContractType.ERC20
           ? mainTokenInfo

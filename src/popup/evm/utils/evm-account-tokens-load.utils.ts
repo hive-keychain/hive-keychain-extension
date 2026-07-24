@@ -9,6 +9,7 @@ import {
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   CatchupStatus,
+  DiscoveredToken,
   DiscoveredTokensResponse,
   EvmLightNodeUtils,
   PricingStatus,
@@ -69,10 +70,18 @@ const getFallbackNativeTokenBalances = async (
   walletAddress: string,
 ): Promise<LoadNativeAndErc20TokensResult> => {
   const nativeMeta = EvmTokensUtils.buildFallbackNativeTokenInfo(chain);
+  const customTokenInfos = await EvmTokensUtils.getCustomErc20TokenInfos(
+    chain,
+    getWalletAddressForLoading(walletAddress),
+  );
+  const tokenInfos = EvmTokensUtils.mergeCustomErc20TokenInfos(
+    [nativeMeta],
+    customTokenInfos,
+  );
   const balances = await EvmTokensUtils.getTokenBalances(
     getWalletAddressForLoading(walletAddress),
     chain,
-    [nativeMeta],
+    tokenInfos,
   );
 
   return {
@@ -95,6 +104,12 @@ const getTokenInfosWithCustomErc20 = async (
 
   return EvmTokensUtils.mergeCustomErc20TokenInfos(tokenInfos, customTokenInfos);
 };
+
+const isNativeOrErc20TokenInfo = (
+  token: DiscoveredToken,
+): token is EvmSmartContractInfoNative | EvmSmartContractInfoErc20 =>
+  token.type === EVMSmartContractType.ERC20 ||
+  token.type === EVMSmartContractType.NATIVE;
 
 const getVisibleNativeAndErc20Tokens = async (
   balances: NativeAndErc20Token[],
@@ -184,14 +199,15 @@ const loadNativeAndErc20TokensForChain = async (
     return { balances: [], shouldLoadMore: false, ...loadMetadata };
   }
 
+  const tokenInfos = await getTokenInfosWithCustomErc20(
+    chain,
+    walletAddress,
+    result.tokens.filter(isNativeOrErc20TokenInfo),
+  );
   const balances = await EvmTokensUtils.getTokenBalances(
     address,
     chain,
-    result.tokens.filter(
-      (token) =>
-        token.type === EVMSmartContractType.ERC20 ||
-        token.type === EVMSmartContractType.NATIVE,
-    ),
+    tokenInfos,
   );
 
   return {

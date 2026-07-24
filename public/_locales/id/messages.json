@@ -695,6 +695,10 @@
     "message": "Preferensi dan tampilan",
     "description": "Settings menu section for theme and window display options"
   },
+  "popup_html_customize_keychain_appearance": {
+    "message": "Sesuaikan tampilan Keychain Anda",
+    "description": "Setup preferences: display and appearance description"
+  },
   "popup_html_preferences_appearance_section": {
     "message": "Tampilan",
     "description": "Preferences and display: theme section title"
@@ -718,6 +722,18 @@
   "popup_html_preferences_display_section": {
     "message": "Tampilan jendela",
     "description": "Preferences and display: window and side panel section title"
+  },
+  "popup_html_display_popup": {
+    "message": "Popup",
+    "description": "Preferences and display: popup display mode option"
+  },
+  "popup_html_display_side_panel": {
+    "message": "Panel samping",
+    "description": "Preferences and display: side panel display mode option"
+  },
+  "popup_html_display_mode_reopen_wallet_notice": {
+    "message": "Keychain akan terbuka dalam mode tampilan yang dipilih setelah wallet dibuka kembali.",
+    "description": "Preferences and display: selected display mode applies after reopening the wallet"
   },
   "popup_html_open_in_side_panel": {
     "message": "Buka di panel samping",
@@ -3382,12 +3398,16 @@
     "message": "Membuat akun",
     "description": "Creating account message"
   },
+  "html_popup_preparing_account_creation": {
+    "message": "Menyiapkan pembuatan akun",
+    "description": "Loading message while preparing EVM paid Hive account creation"
+  },
   "html_popup_create_account_failed": {
     "message": "Pembuatan akun Anda gagal. Silakan coba lagi nanti.",
     "description": "Create account failed message"
   },
   "html_popup_create_account_pending_keep_open": {
-    "message": "Harap tetap buka Keychain hingga akun Anda dibuat. Proses ini mungkin memerlukan beberapa menit.",
+    "message": "Pembuatan akun Anda dapat memakan waktu beberapa menit. Anda dapat menutup jendela ini.",
     "description": "Reminder on pending account creation page to keep the extension open"
   },
   "html_popup_create_account_pay_external_wallet": {
@@ -3401,6 +3421,30 @@
   "html_popup_create_account_payment_tx_hash": {
     "message": "Hash transaksi",
     "description": "Label for transaction hash input in external wallet payment popup"
+  },
+  "html_popup_create_account_payment_account": {
+    "message": "Akun",
+    "description": "Account field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_chain": {
+    "message": "Chain",
+    "description": "Chain field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_token": {
+    "message": "Token",
+    "description": "Token field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_address": {
+    "message": "Alamat pembayaran",
+    "description": "Payment address field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_status": {
+    "message": "Status",
+    "description": "Status field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_expiry": {
+    "message": "Kedaluwarsa",
+    "description": "Expiry field on pending account creation payment page"
   },
   "html_popup_create_account_submit_payment_tx": {
     "message": "Kirim pembayaran",
@@ -4658,7 +4702,7 @@
     "description": "Message container success title"
   },
   "accept_terms_and_condition": {
-    "message": "Saya telah membaca dan menyetujui <a target='__blank' href='https://hive-keychain.com/#/terms'>Persyaratan Layanan</a> Hive Keychain serta<a target='__blank' href='https://hive-keychain.com/#/privacy'>Kebijakan Privasi</a>",
+    "message": "Saya telah membaca dan menyetujui <a target='__blank' href='https://hive-keychain.com/#/terms'>Persyaratan Layanan</a>, <a target='__blank' href='https://hive-keychain.com/#/privacy'>Kebijakan Privasi</a>, serta <a target='__blank' href='https://hive-keychain.com/#/fees'>Biaya</a> Hive Keychain",
     "description": "Accept terms and conditions text"
   },
   "delete_label": {
@@ -4880,6 +4924,14 @@
   "html_popup_add_new_condition": {
     "message": "Tambahkan kondisi baru",
     "description": "Add new condition"
+  },
+  "html_popup_add_new_criteria": {
+    "message": "Tambah kriteria baru",
+    "description": "Accessible label for adding notification criteria"
+  },
+  "html_popup_delete_condition": {
+    "message": "Hapus kondisi",
+    "description": "Accessible label for deleting a notification condition"
   },
   "html_popup_delete_criteria": {
     "message": "Hapus Kriteria",
@@ -5346,16 +5398,16 @@
     "description": "Increased"
   },
   "popup_html_evm_custom_gas_fee_low": {
-    "message": "Low",
-    "description": "Low"
+    "message": "Hemat",
+    "description": "Economy gas fee tier"
   },
   "popup_html_evm_custom_gas_fee_medium": {
-    "message": "Medium",
-    "description": "Medium"
+    "message": "Pasar",
+    "description": "Market gas fee tier"
   },
   "popup_html_evm_custom_gas_fee_aggressive": {
-    "message": "Aggressive",
-    "description": "Aggressive"
+    "message": "Cepat",
+    "description": "Fast gas fee tier"
   },
   "popup_html_evm_custom_gas_fee_custom": {
     "message": "Custom",
@@ -5536,6 +5588,18 @@
   "popup_html_evm_dapp_status_show_all_connected": {
     "message": "Show all connected dApps",
     "description": "Link from EVM dapp status popup to Connected dApps settings"
+  },
+  "popup_html_evm_dapp_status_open_details": {
+    "message": "Lihat status koneksi $1",
+    "description": "Accessible label for opening the current dApp connection status"
+  },
+  "popup_html_evm_dapp_status_connect_account": {
+    "message": "Hubungkan $1",
+    "description": "Accessible label for connecting an account to the current dApp"
+  },
+  "popup_html_evm_dapp_status_disconnect_account": {
+    "message": "Putuskan $1",
+    "description": "Accessible label for disconnecting an account from the current dApp"
   },
   "dialog_evm_dapp_status_caption": {
     "message": "Select which accounts you want to connect to $1. It will give it permission to see your address, account balance and activity, and to suggest transactions to approve.",
@@ -6161,9 +6225,17 @@
     "message": "Edit custom chain",
     "description": "Modal title for editing a custom chain"
   },
+  "evm_custom_chains_modal_title_edit_default": {
+    "message": "Edit supported chain",
+    "description": "Modal title for editing a supported default EVM chain"
+  },
   "evm_custom_chains_update": {
     "message": "Save changes",
     "description": "Save button when editing custom chain"
+  },
+  "evm_custom_chains_reset_default": {
+    "message": "Reset to default",
+    "description": "Button label to reset a supported EVM chain override"
   },
   "evm_custom_chains_error_not_found": {
     "message": "This custom chain could not be found. Try refreshing the list.",
@@ -6598,7 +6670,7 @@
     "description": "Unwrap history item"
   },
   "evm_history_operation_airdrop_receive": {
-    "message": "You received an airdrop: $1",
+    "message": "You received an airdrop",
     "description": "Airdrop history item"
   },
   "evm_history_operation_reverted": {
@@ -6865,6 +6937,10 @@
     "message": "The gas fee estimation is unavailable for this chain",
     "description": "Gas fee estimation not available for chain"
   },
+  "evm_gas_fee_warning_transaction_will_revert": {
+    "message": "This transaction will revert",
+    "description": "Gas fee warning shown when transaction simulation reverts"
+  },
   "evm_transaction_broadcasted": {
     "message": "Transaction was broadcasted. Please wait for it to be confirmed.",
     "description": "Transaction broadcasted message"
@@ -6876,6 +6952,14 @@
   "evm_gas_fee_warning_priority_fee_higher_than_max_fee": {
     "message": "Max fee must be higher than priority fee",
     "description": "Priority fee is higher than max fee"
+  },
+  "evm_gas_fee_warning_gas_price_below_minimum": {
+    "message": "Gas price is below the minimum for this chain",
+    "description": "Legacy gas price is below the configured chain minimum"
+  },
+  "evm_gas_fee_warning_updated_after_insufficient_price": {
+    "message": "Insufficient gas price. Gas fees have been updated",
+    "description": "Recoverable warning shown after custom-chain legacy gas price is rejected by RPC"
   },
   "evm_transaction_result_error_message_underpriced": {
     "message": "Fee is too low, please increase it",
@@ -6902,7 +6986,7 @@
     "description": "Transaction couldn't be canceled error message"
   },
   "evm_rpcs_not_responding_error": {
-    "message": "All RPCs are not responding, please try again later",
+    "message": "None of the RPCs are responding, please try again later.",
     "description": "All RPCs are not responding error message"
   },
   "evm_rpc_already_in_list": {
@@ -7006,31 +7090,59 @@
   },
   "evm_add_custom_token": {
     "message": "Add custom token",
-    "description": "Add custom tokens"
+    "description": "Opens the add-token flow from manage tokens"
   },
   "evm_add_custom_nft": {
     "message": "Add custom NFT",
     "description": "Add a custom NFT"
   },
   "evm_custom_tokens_page_title": {
-    "message": "Custom tokens",
-    "description": "Title for the custom ERC20 tokens management page"
+    "message": "Manage tokens",
+    "description": "Title for the ERC20 tokens management page"
   },
   "evm_custom_nfts_page_title": {
     "message": "Custom NFTs",
     "description": "Title for the custom NFT management page"
   },
   "evm_custom_tokens_page_empty": {
-    "message": "No custom tokens yet. Add one to register an ERC20 contract for this network.",
-    "description": "Empty state on custom tokens page"
+    "message": "No custom tokens yet. Use Add custom token to register an ERC20 contract for this network.",
+    "description": "Empty state for custom tokens section on manage tokens page"
   },
   "evm_custom_nfts_page_empty": {
     "message": "No custom NFTs yet. Add one to register NFT token IDs for this network.",
     "description": "Empty state on custom NFT page"
   },
   "evm_custom_tokens_page_caption": {
-    "message": "Custom tokens are stored per network. You can remove them from this list at any time.",
-    "description": "Intro caption on custom tokens page"
+    "message": "Hide auto-detected tokens, or edit and remove custom ones.<br/>Settings apply per network. Zero-balance tokens stay off the home page.",
+    "description": "Intro caption on manage tokens page; may include a <br/> line break"
+  },
+  "evm_custom_tokens_section_title": {
+    "message": "Custom tokens",
+    "description": "Custom token list section title on manage tokens page"
+  },
+  "evm_auto_detected_tokens_section_title": {
+    "message": "Auto-detected tokens",
+    "description": "Auto-detected token list section title on manage tokens page"
+  },
+  "evm_auto_detected_tokens_empty": {
+    "message": "No auto-detected tokens found for this network.",
+    "description": "Empty state for auto-detected token list on manage tokens page"
+  },
+  "evm_auto_detected_tokens_loading": {
+    "message": "Loading auto-detected tokens...",
+    "description": "Loading state for auto-detected token list on manage tokens page"
+  },
+  "evm_auto_detected_tokens_error_loading": {
+    "message": "Could not load auto-detected tokens for this network.",
+    "description": "Error state for auto-detected token list on manage tokens page"
+  },
+  "evm_auto_detected_tokens_hide": {
+    "message": "Hide from home page",
+    "description": "Hide an auto-detected token from the home page"
+  },
+  "evm_auto_detected_tokens_restore": {
+    "message": "Restore on home page",
+    "description": "Restore an auto-detected token on the home page"
   },
   "evm_custom_nfts_page_caption": {
     "message": "Custom NFTs are stored per wallet and network. Saved entries stay here even if you no longer own those token IDs.",
@@ -7101,8 +7213,40 @@
     "description": "Smart contract address"
   },
   "evm_add_custom_token_popup_caption": {
-    "message": "Add a custom token to your wallet. If you don't find the token you're looking for, you can add it manually.",
-    "description": "Add custom token popup caption"
+    "message": "Search known tokens for this network. If you do not find the token you need, add it manually.",
+    "description": "Browse step caption in the add custom token popup"
+  },
+  "evm_custom_tokens_add_section_title": {
+    "message": "Add a token",
+    "description": "Unused legacy key; known token list now lives in the add token popup"
+  },
+  "evm_add_custom_token_manually": {
+    "message": "Add manually",
+    "description": "Opens the manual ERC20 form from the add token popup browse step"
+  },
+  "evm_known_tokens_search_label": {
+    "message": "Search token",
+    "description": "Known tokens search input label in the add token popup"
+  },
+  "evm_known_tokens_search_placeholder": {
+    "message": "Name or contract address",
+    "description": "Known tokens search input placeholder in the add token popup"
+  },
+  "evm_known_tokens_loading": {
+    "message": "Loading known tokens...",
+    "description": "Known tokens loading message in the add token popup"
+  },
+  "evm_known_tokens_empty": {
+    "message": "No known tokens found for this network.",
+    "description": "Known tokens empty state in the add token popup"
+  },
+  "evm_known_tokens_error_loading": {
+    "message": "Could not load known tokens for this network.",
+    "description": "Known tokens load error in the add token popup"
+  },
+  "evm_known_tokens_add": {
+    "message": "Add",
+    "description": "Add known token button label in the add token popup"
   },
   "evm_watch_asset_title": {
     "message": "Add custom token",
@@ -7229,7 +7373,7 @@
     "description": "Error during cancel transaction"
   },
   "evm_cancel_transaction_confirm_message": {
-    "message": "You are about to cancel a unknown pending transaction.",
+    "message": "You are about to cancel an unknown pending transaction.",
     "description": "Error during cancel transaction"
   },
   "insufficient_balance_warning": {
@@ -7516,6 +7660,26 @@
   "reload_extension": {
     "message": "Reload extension",
     "description": "Button label to reload the extension"
+  },
+  "accessibility_back": {
+    "message": "Kembali",
+    "description": "Accessible label for back buttons"
+  },
+  "accessibility_show_password": {
+    "message": "Tampilkan kata sandi",
+    "description": "Accessible label for password visibility buttons"
+  },
+  "accessibility_hide_password": {
+    "message": "Sembunyikan kata sandi",
+    "description": "Accessible label for password visibility buttons"
+  },
+  "accessibility_clear_input": {
+    "message": "Hapus input",
+    "description": "Accessible label for input clear buttons"
+  },
+  "accessibility_back_to_top": {
+    "message": "Kembali ke atas",
+    "description": "Accessible label for buttons that scroll to the top"
   },
   "evm_error_gas_estimate": {
     "message": "Gas estimation failed. You will need to enter a custom gas fee.",

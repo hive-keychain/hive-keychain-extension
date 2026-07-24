@@ -33,6 +33,8 @@ export interface Chain {
   isPopular?: boolean;
   /** When `true`, the chain was added by the user (custom EVM chains list). Omitted on default/API chains. */
   isCustom?: boolean;
+  /** When `true`, a supported default chain has locally edited metadata in CUSTOM_CHAINS. */
+  isDefaultOverride?: boolean;
 }
 
 export enum BlockExplorerType {
@@ -55,6 +57,7 @@ export interface EvmChain extends Chain {
   isEth?: boolean;
   defaultTransactionType: EvmTransactionType;
   onlyCustomFee?: boolean;
+  customMinGasPriceInGwei?: string;
   network?: string;
   addTokensManually?: boolean;
   disableTokensAndHistoryAutoLoading?: boolean;

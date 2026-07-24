@@ -1,5 +1,20 @@
 .contextual-menu {
   position: relative;
+
+  .contextual-menu-trigger {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid $red;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+  }
+
   .contextual-menu-container {
     overflow: hidden;
     @include small-card();
@@ -44,6 +59,10 @@
           margin: 0px -14px;
           padding: 4px 14px;
           align-items: center;
+          border: 0;
+          background: transparent;
+          color: inherit;
+          text-align: left;
           .section-item-icon {
             @include icon-size(20px);
           }
@@ -51,7 +70,9 @@
             @include poppins300(13px);
             line-height: 136%;
           }
-          &:hover {
+          &:hover,
+          &:focus-visible {
+            outline: none;
             background: $red;
             color: white;
             .section-item-icon {

@@ -8,6 +8,10 @@
   box-sizing: border-box;
   user-select: none;
   column-gap: 12px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  font: inherit;
 
   .icon {
     padding: 8px 12px;
@@ -21,7 +25,9 @@
     color: var(--main-font-color);
   }
 
-  &:hover {
+  &:hover,
+  &:focus-visible {
+    outline: none;
     background-color: $red;
     .menu-label {
       color: white;

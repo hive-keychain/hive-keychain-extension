@@ -2,6 +2,7 @@ import { PendingHiveAccountCreationUtils } from 'src/utils/pending-hive-account-
 import { SavePendingHiveAccountCreationRequest } from '@interfaces/hive-account-creation.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
+import { AsyncUtils } from 'src/utils/async.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 describe('pending-hive-account-creation.utils tests:\n', () => {
@@ -145,6 +146,56 @@ describe('pending-hive-account-creation.utils tests:\n', () => {
     ).resolves.toBeUndefined();
 
     expect(saveSpy).not.toHaveBeenCalled();
+  });
+
+  it('retries loading a pending request from storage', async () => {
+    jest.spyOn(AsyncUtils, 'sleep').mockResolvedValue(undefined);
+    const encryptedEmpty = await EncryptUtils.encryptJson({ list: [] }, mk);
+    const encryptedWithRequest = await EncryptUtils.encryptJson(
+      { list: [pendingRequest] },
+      mk,
+    );
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockResolvedValueOnce(encryptedEmpty)
+      .mockResolvedValueOnce(encryptedWithRequest);
+
+    await expect(
+      PendingHiveAccountCreationUtils.findPendingHiveAccountCreationRequestWithRetry(
+        pendingRequest.requestId,
+        mk,
+        { maxAttempts: 2, retryDelayMs: 10 },
+      ),
+    ).resolves.toEqual(expect.objectContaining({ requestId: pendingRequest.requestId }));
+
+    expect(AsyncUtils.sleep).toHaveBeenCalledWith(10);
+  });
+
+  it('upserts payment status when the pending request is missing from storage', async () => {
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockResolvedValue(undefined);
+    const saveSpy = jest.spyOn(LocalStorageUtils, 'saveValueInLocalStorage');
+
+    await expect(
+      PendingHiveAccountCreationUtils.upsertPendingHiveAccountCreationPaymentStatus(
+        pendingRequest,
+        'payment_detected',
+        mk,
+        '0xabc',
+      ),
+    ).resolves.toEqual(
+      expect.objectContaining({
+        requestId: pendingRequest.requestId,
+        status: 'payment_detected',
+        paymentTxHash: '0xabc',
+      }),
+    );
+
+    expect(saveSpy).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.PENDING_HIVE_ACCOUNT_CREATIONS,
+      expect.any(String),
+    );
   });
 
   it('removes a pending request', async () => {

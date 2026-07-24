@@ -18,6 +18,11 @@
     height: 52px;
     border-radius: 66px !important;
 
+    &:focus-visible {
+      outline: none !important;
+      box-shadow: inset 0 0 0 2px $red !important;
+    }
+
     .selected-item {
       @include poppins500(15px);
       user-select: none;
@@ -136,6 +141,10 @@
         flex-direction: column;
         align-items: stretch;
 
+        .custom-select-options {
+          min-width: 100%;
+        }
+
         .filter-input {
           width: 100%;
           box-sizing: border-box;
@@ -168,7 +177,8 @@
           display: flex;
           flex-direction: column;
           max-width: unset;
-          &:hover {
+          &:hover,
+          &:has(.custom-select-item.keyboard-active) {
             background-color: $red;
             color: white;
             .account-name,
@@ -228,7 +238,8 @@
             border: 1px solid white;
           }
 
-          &:hover {
+          &:hover,
+          &.keyboard-active {
             .left-svg-chip {
               color: white;
             }
@@ -283,7 +294,8 @@
             column-gap: 16px;
           }
         }
-        &:hover {
+        &:hover,
+        &:has(.custom-select-item.keyboard-active) {
           .item-label {
             color: white;
           }

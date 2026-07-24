@@ -1,6 +1,7 @@
 import { NativeAndErc20Token } from '@popup/evm/interfaces/active-account.interface';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EVMWalletInfoSectionActions } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section-actions';
+import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
 import { ActionButton } from '@popup/hive/pages/app-container/home/hive-wallet-info-section/hive-wallet-info-section-actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
@@ -9,7 +10,6 @@ import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { WalletInfoSectionItemButton } from 'src/common-ui/wallet-info-section-item-button/wallet-info-section-item-button.component';
-import { ColorsUtils } from 'src/utils/colors.utils';
 import FormatUtils from 'src/utils/format.utils';
 
 interface EVMWalletSectionInfoItemProps {
@@ -23,7 +23,7 @@ interface EVMWalletSectionInfoItemProps {
   subValueLabel?: string;
 }
 
-const WalletInfoSectionItem = ({
+export const WalletInfoSectionItem = ({
   token,
   icon,
   addBackground,
@@ -35,19 +35,19 @@ const WalletInfoSectionItem = ({
   navigateToWithParams,
 }: PropsFromRedux) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [detailsId] = useState(
+    () =>
+      `evm-wallet-details-${token.tokenInfo.symbol.replace(
+        /[^a-zA-Z0-9_-]/g,
+        '-',
+      )}`,
+  );
   const [actionButtons, setActionButtons] = useState<ActionButton[]>([]);
   const reff = useRef<HTMLDivElement>(null);
-  const [color, setColor] = useState<string>();
 
   useEffect(() => {
     init();
   }, []);
-
-  useEffect(() => {
-    if (token && !token.tokenInfo.logo) {
-      setColor(ColorsUtils.stringToColor(token.tokenInfo.name));
-    }
-  }, [token]);
 
   const init = async () => {
     setActionButtons(EVMWalletInfoSectionActions(token));
@@ -55,6 +55,12 @@ const WalletInfoSectionItem = ({
 
   const toggleDropdown = () => {
     setIsExpanded(!isExpanded);
+    !process.env.IS_FIREFOX &&
+      reff.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+        inline: 'center',
+      });
   };
 
   const handleClick = (
@@ -71,40 +77,18 @@ const WalletInfoSectionItem = ({
   return (
     <div
       className={`wallet-info-row ${isExpanded ? 'opened' : ''}`}
-      data-testid={`wallet-info-section-row`}
-      ref={reff}
-      onClick={() => {
-        toggleDropdown();
-        !process.env.IS_FIREFOX &&
-          reff.current?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-            inline: 'center',
-          });
-      }}>
-      <div className="information-panel">
-        {token.tokenInfo.logo && (
-          <PreloadedImage
-            src={token.tokenInfo?.logo}
-            className="currency-icon"
-            addBackground
-            useDefaultSVG={icon}
-          />
-        )}
-        {!token.tokenInfo.logo &&
-          !(
-            token.tokenInfo.type === EVMSmartContractType.ERC20 &&
-            token.tokenInfo.lpV2
-          ) && (
-            <div
-              className="currency-icon add-background"
-              style={{
-                backgroundColor: `${color}2b`,
-                color: `${color}`,
-              }}>
-              {token.tokenInfo.symbol.slice(0, 2)}
-            </div>
-          )}
+      ref={reff}>
+      <button
+        type="button"
+        data-testid="wallet-info-section-row"
+        className="information-panel"
+        aria-expanded={isExpanded}
+        aria-controls={detailsId}
+        onClick={toggleDropdown}>
+        {!(
+          token.tokenInfo.type === EVMSmartContractType.ERC20 &&
+          token.tokenInfo.lpV2
+        ) && <EvmTokenLogo tokenInfo={token.tokenInfo} />}
         {token.tokenInfo.type === EVMSmartContractType.ERC20 &&
           token.tokenInfo.lpV2 && (
             <div className="currency-icon-container">
@@ -149,9 +133,9 @@ const WalletInfoSectionItem = ({
               </div>
             )}
         </div>
-      </div>
+      </button>
       {isExpanded && (
-        <>
+        <div id={detailsId} className="wallet-info-details">
           <div className="actions-panel">
             {actionButtons.map((ab, index) => (
               <WalletInfoSectionItemButton
@@ -161,7 +145,7 @@ const WalletInfoSectionItem = ({
               />
             ))}
           </div>
-        </>
+        </div>
       )}
     </div>
   );

@@ -4,6 +4,21 @@
   column-gap: 8px;
   cursor: pointer;
   user-select: none;
+  position: relative;
+
+  .native-checkbox {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+
+    &:focus-visible + .custom-checkbox {
+      outline: 2px solid $red;
+      outline-offset: 2px;
+    }
+  }
+
   .custom-checkbox {
     display: flex;
     align-items: center;

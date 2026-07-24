@@ -46,6 +46,7 @@ const ChainDropdown = ({
           label: c.name,
           value: c,
           img: c.logo,
+          imgChainName: c.name,
           imgChip: c.testnet ? SVGIcons.EVM_CHAIN_TESTNET : undefined,
         };
       });
@@ -71,7 +72,7 @@ const ChainDropdown = ({
         false,
       );
     }
-    setChain(chain);
+    setChain(chain, { syncProviderNetwork: true });
   };
 
   const getChainIdsFromOptions = (optionItems: OptionItem[]) => {
@@ -102,19 +103,21 @@ const ChainDropdown = ({
             label: chain.name,
             value: chain,
             img: chain.logo,
+            imgChainName: chain.name,
             imgChip: chain.testnet ? SVGIcons.EVM_CHAIN_TESTNET : undefined,
           }}
           setSelectedItem={(item) => selectChain(item.value)}
           background="white"
           footer={
-            <div
+            <button
+              type="button"
               className="manage-chains-panel"
               onClick={handleOnManageChainsClicked}>
               <SVGIcon icon={SVGIcons.MENU_ADVANCED_SETTINGS_RPC_NODE} />
               <div className="text">
                 {I18nUtils.getMessage('html_popup_manage_chains')}
               </div>
-            </div>
+            </button>
           }
           renderOnlyIcon
           showOverlay

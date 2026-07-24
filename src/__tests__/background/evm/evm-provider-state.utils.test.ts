@@ -143,6 +143,32 @@ describe('evm provider state utils', () => {
     });
   });
 
+  it('routes chain changes to the requesting tab when the dapp origin is not the top-level tab origin', async () => {
+    const { setChainIdForOrigin, EvmChainUtils, CommunicationUtils } =
+      await loadTestContext();
+    EvmChainUtils.getLastEvmChainIdForOrigin.mockResolvedValue('0x1');
+    EvmChainUtils.getEthChainId.mockResolvedValue('0x1');
+    EvmChainUtils.setChainIdForOrigin.mockResolvedValue(undefined);
+
+    await expect(
+      setChainIdForOrigin('https://iframe.example', '0xA', { tabId: 2 }),
+    ).resolves.toBe('0xa');
+
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledTimes(1);
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(2, {
+      command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
+      value: {
+        eventType: 'chainChanged',
+        args: '0xa',
+        scope: {
+          kind: 'origin',
+          origin: 'https://iframe.example',
+          tabId: 2,
+        },
+      },
+    });
+  });
+
   it('stores normalized chain whitelist entries scoped by origin', async () => {
     const {
       addWhitelistedChainForOrigin,

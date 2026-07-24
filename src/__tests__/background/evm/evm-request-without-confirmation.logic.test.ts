@@ -72,6 +72,7 @@ const loadTestContext = async () => {
       emitAccountsChangedIfNeeded: jest.Mock;
       getAccountsForOrigin: jest.Mock;
       removeWhitelistedChainsForOrigin: jest.Mock;
+      setChainIdForOrigin: jest.Mock;
     },
     CommunicationUtils: CommunicationUtils as {
       tabsSendMessage: jest.Mock;
@@ -182,6 +183,48 @@ describe('evm request without confirmation', () => {
       requestId: 2,
       tab: 6,
       origin: 'http://localhost:3000',
+    });
+  });
+
+  it('switches provider chain with the requesting tab for whitelisted wallet_switchEthereumChain', async () => {
+    const { providerStateUtils, CommunicationUtils } = await loadTestContext();
+    providerStateUtils.setChainIdForOrigin.mockResolvedValue('0x539');
+    const requestHandler = {
+      removeRequestByLocator: jest.fn().mockResolvedValue(undefined),
+    } as any;
+
+    await evmRequestWithoutConfirmation(
+      requestHandler,
+      7,
+      {
+        request_id: 3,
+        method: EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN,
+        params: [{ chainId: '0x539' }],
+      } as any,
+      {
+        origin: 'https://example.app',
+        domain: 'example.app',
+        protocol: 'https:',
+        logo: '',
+      },
+    );
+
+    expect(providerStateUtils.setChainIdForOrigin).toHaveBeenCalledWith(
+      'https://example.app',
+      '0x539',
+      { tabId: 7 },
+    );
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(7, {
+      command: BackgroundCommand.SEND_EVM_RESPONSE,
+      value: {
+        requestId: 3,
+        result: null,
+      },
+    });
+    expect(requestHandler.removeRequestByLocator).toHaveBeenCalledWith({
+      requestId: 3,
+      tab: 7,
+      origin: 'https://example.app',
     });
   });
 

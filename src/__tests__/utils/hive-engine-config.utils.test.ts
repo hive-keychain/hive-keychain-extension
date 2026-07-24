@@ -101,6 +101,40 @@ describe('hive-engine-config.utils.ts tests:/n', () => {
     });
   });
 
+  describe('getFullRpcList cases:\n', () => {
+    it('Must return custom and default rpcs without duplicates', async () => {
+      jest
+        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+        .mockResolvedValue(['https://custom.rpc', DefaultHiveEngineRpcs[0]]);
+
+      expect(await HiveEngineConfigUtils.getFullRpcList()).toEqual([
+        'https://custom.rpc',
+        ...DefaultHiveEngineRpcs,
+      ]);
+    });
+  });
+
+  describe('checkRpcStatus cases:\n', () => {
+    it('Must return true when rpc returns token results', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        status: 200,
+        json: jest.fn().mockResolvedValue({ result: [] }),
+      }) as jest.Mock;
+
+      expect(
+        await HiveEngineConfigUtils.checkRpcStatus('https://working.rpc'),
+      ).toBe(true);
+    });
+
+    it('Must return false when rpc request fails', async () => {
+      global.fetch = jest.fn().mockRejectedValue(new Error('Network error'));
+
+      expect(
+        await HiveEngineConfigUtils.checkRpcStatus('https://failing.rpc'),
+      ).toBe(false);
+    });
+  });
+
   describe('getCustomAccountHistoryApi cases:\n', () => {
     it('Must return history api list', async () => {
       jest

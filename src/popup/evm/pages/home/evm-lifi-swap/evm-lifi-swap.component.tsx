@@ -20,10 +20,7 @@ import ServiceUnavailablePage from '@common-ui/service-unavailable-page/service-
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import { ExtendedChain, LiFiStep, TokenExtended } from '@lifi/types';
 import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
-import {
-  EvmTransactionType,
-  ProviderTransactionData,
-} from '@popup/evm/interfaces/evm-transactions.interface';
+import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { LiFiTokenFilter } from '@popup/evm/pages/home/evm-lifi-swap/lifi-token-filter/lifi-token-filter.component';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
@@ -470,7 +467,7 @@ export const EvmLifiSwap = ({
       approveTransactionData = {
         chain: fromChain,
         from: activeAccount.address,
-        type: EvmTransactionType.EIP_1559,
+        type: fromChain.defaultTransactionType,
         to: form.fromSelectedToken?.address,
         data: await encodeApproveData(
           form.fromSelectedToken?.address!,
@@ -533,7 +530,7 @@ export const EvmLifiSwap = ({
     let swapTransactionData: ProviderTransactionData = {
       chain: fromChain,
       from: activeAccount.address,
-      type: EvmTransactionType.EIP_1559,
+      type: fromChain.defaultTransactionType,
       to: lifiQuote!.transactionRequest!.to,
       data: lifiQuote!.transactionRequest!.data!,
       value: lifiQuote!.transactionRequest!.value ?? '0x0',
@@ -685,6 +682,11 @@ export const EvmLifiSwap = ({
             approveTransactionResponse?.nonce
               ? approveTransactionResponse.nonce + 1
               : undefined,
+          );
+          await LiFiUtils.appendPendingLiFiSwapHistory(
+            activeAccount.wallet.address,
+            lifiQuote!,
+            swapTransactionResponse,
           );
           removeFromLoadingList('evm_lifi_swap_sending_swap_transaction');
           navigateToWithParams(EvmScreen.LIFI_HISTORY_PAGE, {

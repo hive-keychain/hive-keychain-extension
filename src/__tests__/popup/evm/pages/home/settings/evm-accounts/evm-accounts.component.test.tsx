@@ -306,4 +306,77 @@ describe('EvmAccountsComponent', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('popup_html_confirm')).toBeInTheDocument();
   });
+
+  it('syncs renamed seed nicknames to redux immediately', async () => {
+    const user = userEvent.setup();
+    const updatedAccounts = [
+      {
+        id: 0,
+        path: "m/44'/60'/0'/0/0",
+        seedId: 1,
+        seedNickname: 'Renamed seed',
+        nickname: 'Account 1',
+        source: EvmAccountSource.SEED,
+        wallet,
+      },
+    ];
+
+    jest.spyOn(EvmWalletUtils, 'updateSeedNickname').mockResolvedValue([]);
+    jest
+      .spyOn(EvmWalletUtils, 'rebuildAccountsFromLocalStorage')
+      .mockResolvedValue(updatedAccounts as any);
+
+    const { container, store } = customRender(<EvmAccountsComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk,
+        chain: {
+          ...initialEmptyStateStore.chain,
+          type: ChainType.EVM,
+          chainId: '0x1',
+          name: 'Ethereum',
+        },
+        evm: {
+          ...initialEmptyStateStore.evm,
+          appStatus: {
+            ...initialEmptyStateStore.evm.appStatus,
+            isLedgerSupported: true,
+          },
+          accounts: [
+            {
+              id: 0,
+              path: "m/44'/60'/0'/0/0",
+              seedId: 1,
+              seedNickname: 'Main seed',
+              nickname: 'Account 1',
+              source: EvmAccountSource.SEED,
+              wallet,
+            },
+          ],
+        },
+      },
+    });
+
+    const menuButton = container.querySelector(
+      '.contextual-menu > .svg-icon.clickable',
+    ) as HTMLElement;
+
+    await user.click(menuButton);
+    await user.click(screen.getByText('Edit name'));
+
+    const nicknameInput = screen.getByPlaceholderText('Nickname');
+    await user.clear(nicknameInput);
+    await user.type(nicknameInput, 'Renamed seed');
+    await user.click(screen.getByText('Confirm'));
+
+    await waitFor(() => {
+      expect(EvmWalletUtils.updateSeedNickname).toHaveBeenCalledWith(
+        1,
+        'Renamed seed',
+        mk,
+      );
+      expect(store.getState().evm.accounts).toEqual(updatedAccounts);
+      expect(screen.getByText('Renamed seed')).toBeInTheDocument();
+    });
+  });
 });

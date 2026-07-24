@@ -27,8 +27,8 @@ export interface PageTitleProps {
     tooltipMessage?: string;
   };
   closeNavigationParams?: any;
-  onCloseAdditional?: () => void;
-  onBackAdditional?: () => void;
+  onCloseAdditional?: () => void | Promise<void>;
+  onBackAdditional?: () => void | boolean | Promise<void | boolean>;
 }
 
 const PageTitle = ({
@@ -47,15 +47,19 @@ const PageTitle = ({
   resetNav,
   showDetachWindowOption,
 }: PropsType) => {
-  const handleBackButtonClick = (): void => {
-    if (onBackAdditional) onBackAdditional();
-    if (canGoBack && isBackButtonEnabled) {
+  const handleBackButtonClick = async (): Promise<void> => {
+    let skipGoBack = false;
+    if (onBackAdditional) {
+      const result = await onBackAdditional();
+      skipGoBack = result === true;
+    }
+    if (!skipGoBack && canGoBack && isBackButtonEnabled) {
       goBack();
     }
   };
-  const handleCloseButtonClick = (): void => {
+  const handleCloseButtonClick = async (): Promise<void> => {
     if (onCloseAdditional) {
-      onCloseAdditional();
+      await onCloseAdditional();
     }
 
     resetNav();
@@ -83,6 +87,7 @@ const PageTitle = ({
           onClick={handleBackButtonClick}
           icon={SVGIcons.TOP_BAR_BACK_BTN}
           className="icon-button"
+          ariaLabel={I18nUtils.getMessage('accessibility_back')}
         />
       ) : (
         <div></div>
@@ -102,6 +107,7 @@ const PageTitle = ({
           hoverable
           tooltipMessage="popup_html_detach_window_tooltip_text"
           tooltipPosition="bottom"
+          ariaLabel={I18nUtils.getMessage('popup_html_detach_window')}
         />
       )}
       {rightAction && (
@@ -118,8 +124,9 @@ const PageTitle = ({
       {!rightAction && !isCloseButtonDisabled && (
         <SVGIcon
           dataTestId="icon-close-page"
-          onClick={handleCloseButtonClick}
+          onClick={() => void handleCloseButtonClick()}
           icon={SVGIcons.TOP_BAR_CLOSE_BTN}
+          ariaLabel={I18nUtils.getMessage('popup_html_close')}
         />
       )}
     </div>

@@ -14,12 +14,21 @@ type Props = {
   pre?: boolean; // set pre to true if we are showing a pretty printed json
 };
 
+let collapsibleItemId = 0;
+
 const CollaspsibleItem = ({ title, content, pre }: Props) => {
   const [collapsed, setCollapsed] = useState(true);
+  const [contentId] = useState(
+    () => `dialog-collapsible-content-${++collapsibleItemId}`,
+  );
+
   return (
     <>
-      <div
+      <button
+        type="button"
         className="collapsible-title"
+        aria-expanded={!collapsed}
+        aria-controls={contentId}
         onClick={() => {
           setCollapsed(!collapsed);
         }}>
@@ -29,10 +38,13 @@ const CollaspsibleItem = ({ title, content, pre }: Props) => {
             __html: HtmlUtils.getSafeI18nHtml(title),
           }}></div>
         <SVGIcon icon={SVGIcons.SELECT_ARROW_DOWN} />
-      </div>
-      <div className={collapsed ? 'hide' : 'field collapsible'}>
+      </button>
+      <div
+        id={contentId}
+        className={collapsed ? 'hide' : 'field collapsible'}>
         <SVGIcon
           icon={SVGIcons.SELECT_COPY}
+          ariaLabel={I18nUtils.getMessage('html_popup_copy')}
           onClick={() => void copyTextWithToast(content, COPY_GENERIC_MESSAGE_KEY)}
         />
         {pre ? (

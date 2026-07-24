@@ -2,10 +2,7 @@ import { Screen } from '@interfaces/screen.interface';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { setMk } from '@popup/multichain/actions/mk.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
-import {
-  resetTitleContainerProperties,
-  setTitleContainerProperties,
-} from '@popup/multichain/actions/title-container.actions';
+import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -18,7 +15,6 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { buildAddAccountSetupTitleProperties } from 'src/popup/hive/pages/add-account/add-account-setup-title.utils';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
@@ -27,7 +23,6 @@ const SignUp = ({
   setMk,
   navigateTo,
   resetTitleContainerProperties,
-  setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
@@ -44,8 +39,7 @@ const SignUp = ({
     if (newPassword === newPasswordConfirm) {
       if (MkUtils.isPasswordValid(newPassword)) {
         setMk(newPassword, true);
-        setTitleContainerProperties(buildAddAccountSetupTitleProperties(false));
-        navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);
+        navigateTo(Screen.SETUP_DISPLAY_APPEARANCE, true);
       } else {
         setErrorMessage('popup_password_regex');
       }
@@ -56,50 +50,53 @@ const SignUp = ({
 
   return (
     <div className="sign-up-page" data-testid="signup-page">
-      <SVGIcon className="logo-white" icon={SVGIcons.KEYCHAIN_FULL_LOGO} />
-      <div className="introduction-panel">
-        <span className="introduction big first">
-          {I18nUtils.getMessage('popup_html_unlock1')}
-        </span>
-        <span className="introduction medium second">
-          {I18nUtils.getMessage('popup_html_unlock2')}
-        </span>
-        <span className="introduction medium lighter third">
-          {I18nUtils.getMessage('popup_html_unlock3')}
-        </span>
-      </div>
-      <div className="inputs-panel">
-        <InputComponent
-          value={newPassword}
-          onChange={setNewPassword}
-          placeholder="popup_html_new_password"
-          label="popup_html_new_password"
-          type={InputType.PASSWORD}
-          dataTestId="password-input"
-          classname="password-input"
-        />
-        <InputComponent
-          value={newPasswordConfirm}
-          onChange={setNewPasswordConfirm}
-          placeholder="popup_html_confirm"
-          label="popup_html_confirm"
-          type={InputType.PASSWORD}
-          onEnterPress={submitMk}
-          dataTestId="password-input-confirmation"
-          classname="password-input"
-        />
-        <CheckboxPanelComponent
-          onChange={() => setAccepted(!accepted)}
-          checked={accepted}
-          backgroundType={BackgroundType.FILLED}
-          text="accept_terms_and_condition"
-          dataTestId="accept-terms-and-condition"
-        />
+      <div className="sign-up-content">
+        <SVGIcon className="logo-white" icon={SVGIcons.KEYCHAIN_FULL_LOGO} />
+        <div className="introduction-panel">
+          <span className="introduction big first">
+            {I18nUtils.getMessage('popup_html_unlock1')}
+          </span>
+          <span className="introduction medium second">
+            {I18nUtils.getMessage('popup_html_unlock2')}
+          </span>
+          <span className="introduction medium lighter third">
+            {I18nUtils.getMessage('popup_html_unlock3')}
+          </span>
+        </div>
+        <div className="inputs-panel">
+          <InputComponent
+            value={newPassword}
+            onChange={setNewPassword}
+            placeholder="popup_html_new_password"
+            label="popup_html_new_password"
+            type={InputType.PASSWORD}
+            dataTestId="password-input"
+            classname="password-input"
+          />
+          <InputComponent
+            value={newPasswordConfirm}
+            onChange={setNewPasswordConfirm}
+            placeholder="popup_html_confirm"
+            label="popup_html_confirm"
+            type={InputType.PASSWORD}
+            onEnterPress={submitMk}
+            dataTestId="password-input-confirmation"
+            classname="password-input"
+          />
+          <CheckboxPanelComponent
+            onChange={() => setAccepted(!accepted)}
+            checked={accepted}
+            backgroundType={BackgroundType.FILLED}
+            text="accept_terms_and_condition"
+            dataTestId="accept-terms-and-condition"
+          />
+        </div>
       </div>
       <ButtonComponent
         label={'popup_html_submit'}
         onClick={submitMk}
         dataTestId="signup-button"
+        additionalClass="sign-up-submit"
       />
     </div>
   );
@@ -114,7 +111,6 @@ const connector = connect(mapStateToProps, {
   setMk,
   navigateTo,
   resetTitleContainerProperties,
-  setTitleContainerProperties,
 });
 
 type PropsFromRedux = ConnectedProps<typeof connector>;

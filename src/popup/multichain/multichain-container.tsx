@@ -11,6 +11,7 @@ import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-exte
 import { resolvePopupInitialChain } from '@popup/multichain/utils/popup-initial-chain.utils';
 import { getProviderBootstrapForPopup } from '@popup/multichain/utils/provider-chain-bootstrap.utils';
 import { PopupTabChainContextUtils } from '@popup/multichain/utils/popup-tab-chain-context.utils';
+import { PopupThemeStartupUtils } from '@popup/multichain/utils/popup-theme-startup.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import hotkeys from 'hotkeys-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -36,14 +37,19 @@ interface PendingShortcut {
   executeAfter: number;
 }
 
+interface OwnProps {
+  initialTheme?: Theme | null;
+}
+
 const MultichainContainer = ({
   chain,
   evmActiveAccountReady,
   hiveActiveAccountName,
   hiveActiveRpcUri,
+  initialTheme,
   setChain,
-}: PropsFromRedux) => {
-  const [theme, setTheme] = useState<Theme>(Theme.LIGHT);
+}: Props) => {
+  const [theme, setTheme] = useState<Theme>(initialTheme ?? Theme.LIGHT);
   const [hasHydratedSettings, setHasHydratedSettings] = useState(false);
   const [isBootstrapping, setIsBootstrapping] = useState(true);
   const shortcutsRef = useRef<ShortcutDefinition[]>([]);
@@ -157,7 +163,12 @@ const MultichainContainer = ({
 
       if (!isMounted) return;
 
-      setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
+      const activeTheme =
+        res.ACTIVE_THEME === Theme.DARK || res.ACTIVE_THEME === Theme.LIGHT
+          ? res.ACTIVE_THEME
+          : Theme.LIGHT;
+      setTheme(activeTheme);
+      PopupThemeStartupUtils.cacheTheme(activeTheme);
 
       const shortcutsValue = res[LocalStorageKeyEnum.SHORTCUTS];
       const hasMigratedShortcutPresets =
@@ -301,11 +312,13 @@ const MultichainContainer = ({
   }, [chain]);
 
   useEffect(() => {
-    if (theme && hasHydratedSettings)
+    if (theme && hasHydratedSettings) {
+      PopupThemeStartupUtils.cacheTheme(theme);
       LocalStorageUtils.saveValueInLocalStorage(
         LocalStorageKeyEnum.ACTIVE_THEME,
         theme,
       );
+    }
   }, [hasHydratedSettings, theme]);
 
   return (
@@ -330,6 +343,7 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & OwnProps;
 
 const connector = connect(mapStateToProps, {
   setChain,

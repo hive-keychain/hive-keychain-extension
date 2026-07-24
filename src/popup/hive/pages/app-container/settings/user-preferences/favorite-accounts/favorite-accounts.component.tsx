@@ -1,4 +1,5 @@
 import { EditContactPopupComponent } from '@common-ui/contacts/edit-contact-popup/edit-contact-popup.component';
+import { AddContactButton } from '@common-ui/contacts/add-contact-button/add-contact-button.component';
 import { EditContactComponent } from '@common-ui/contacts/edit-contact/edit-contact.component';
 import {
   ComplexeCustomSelect,
@@ -15,8 +16,6 @@ import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { SVGIcons } from 'src/common-ui/icons.enum';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { v4 } from 'uuid';
@@ -194,10 +193,7 @@ const FavoriteAccounts = ({
               value="evm_contacts_section"
               className="category-title"
             />
-            <div className="add-contact-link" onClick={openAddContactPopup}>
-              <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE} className="add-icon" />
-              {I18nUtils.getMessage('evm_addresses_add')}
-            </div>
+            <AddContactButton onClick={openAddContactPopup} />
           </div>
           {favoriteAccountsList.length > 0 ? (
             <div className="addresses-list-items">

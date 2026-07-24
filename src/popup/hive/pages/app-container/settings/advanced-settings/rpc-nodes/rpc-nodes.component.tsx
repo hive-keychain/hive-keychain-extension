@@ -83,6 +83,7 @@ const RpcNodes = ({
   const [hiveEngineRpcOptions, setHiveEngineRpcOptions] = useState<
     OptionItem[]
   >([]);
+  const [hiveEngineSwitchAuto, setHiveEngineSwitchAuto] = useState(true);
   const [newHERpc, setNewHERpc] = useState('');
   const [isNewHERpcPanelOpened, setIsNewHERpcPanelOpened] = useState(false);
   const [setNewHeRpcAsActive, setSetNewHeRpcAsActive] = useState(false);
@@ -172,6 +173,7 @@ const RpcNodes = ({
     });
     initCustomRpcList();
     initSwitchAuto();
+    initHiveEngineSwitchAuto();
   }, []);
 
   useEffect(() => {
@@ -181,12 +183,25 @@ const RpcNodes = ({
     );
   }, [switchAuto]);
 
-  const initSwitchAuto = async () => {
-    setSwitchAuto(
-      await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.SWITCH_RPC_AUTO,
-      ),
+  useEffect(() => {
+    LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.HIVE_ENGINE_SWITCH_RPC_AUTO,
+      hiveEngineSwitchAuto,
     );
+  }, [hiveEngineSwitchAuto]);
+
+  const initSwitchAuto = async () => {
+    const savedSwitchAuto = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.SWITCH_RPC_AUTO,
+    );
+    setSwitchAuto(savedSwitchAuto ?? true);
+  };
+
+  const initHiveEngineSwitchAuto = async () => {
+    const savedSwitchAuto = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.HIVE_ENGINE_SWITCH_RPC_AUTO,
+    );
+    setHiveEngineSwitchAuto(savedSwitchAuto ?? true);
   };
 
   const initCustomRpcList = async () => {
@@ -259,6 +274,9 @@ const RpcNodes = ({
     if (ValidUrl.isWebUri(newHERpc)) {
       setSuccessMessage('html_popup_new_rpc_save_success');
       await HiveEngineConfigUtils.addCustomRpc(newHERpc);
+      if (setNewHeRpcAsActive) {
+        setHEActiveRpc(newHERpc);
+      }
       setNewHERpc('');
       setIsNewHERpcPanelOpened(false);
       initLayer2();
@@ -374,35 +392,46 @@ const RpcNodes = ({
           className="rpc-section hive-engine-rpc"
           data-testid="section-hive-engine-rpc">
           <div className="title">Hive-Engine RPC</div>
-          <div className="select-rpc-panel">
-            <ComplexeCustomSelect
-              options={hiveEngineRpcOptions}
-              selectHandleDataTestId="hive-engine-rpc-select-handle"
-              selectedItem={
-                {
-                  value: activeHERpc,
-                  label: activeHERpc
-                    .replace('http://', '')
-                    .replace('https://', '')
-                    .split('/')[0],
-                } as OptionItem
-              }
-              setSelectedItem={(item: OptionItem) => {
-                setHEActiveRpc(item.value);
-              }}
-              background="white"
-              onDelete={deleteHeRpc}
-            />
-            <div
-              className={`round-button ${
-                isNewHERpcPanelOpened ? 'close-button' : 'add-button'
-              }`}
-              data-testid="button-hive-engine-rpc-add"
-              onClick={() => setIsNewHERpcPanelOpened(!isNewHERpcPanelOpened)}>
-              <SVGIcon icon={SVGIcons.MENU_RPC_ADD_BUTTON} />
+          <CheckboxPanelComponent
+            dataTestId="checkbox-hive-engine-rpc-nodes-automatic-mode"
+            title="popup_html_rpc_automatic_mode"
+            hint="popup_html_rpc_automatic_mode_hint"
+            checked={hiveEngineSwitchAuto}
+            onChange={setHiveEngineSwitchAuto}
+          />
+          {!hiveEngineSwitchAuto && (
+            <div className="select-rpc-panel">
+              <ComplexeCustomSelect
+                options={hiveEngineRpcOptions}
+                selectHandleDataTestId="hive-engine-rpc-select-handle"
+                selectedItem={
+                  {
+                    value: activeHERpc,
+                    label: activeHERpc
+                      .replace('http://', '')
+                      .replace('https://', '')
+                      .split('/')[0],
+                  } as OptionItem
+                }
+                setSelectedItem={(item: OptionItem) => {
+                  setHEActiveRpc(item.value);
+                }}
+                background="white"
+                onDelete={deleteHeRpc}
+              />
+              <div
+                className={`round-button ${
+                  isNewHERpcPanelOpened ? 'close-button' : 'add-button'
+                }`}
+                data-testid="button-hive-engine-rpc-add"
+                onClick={() =>
+                  setIsNewHERpcPanelOpened(!isNewHERpcPanelOpened)
+                }>
+                <SVGIcon icon={SVGIcons.MENU_RPC_ADD_BUTTON} />
+              </div>
             </div>
-          </div>
-          {isNewHERpcPanelOpened && (
+          )}
+          {!hiveEngineSwitchAuto && isNewHERpcPanelOpened && (
             <div className="add-rpc-panel">
               <div className="add-rpc-caption">
                 <span>{I18nUtils.getMessage('popup_html_add_rpc_text')}</span>

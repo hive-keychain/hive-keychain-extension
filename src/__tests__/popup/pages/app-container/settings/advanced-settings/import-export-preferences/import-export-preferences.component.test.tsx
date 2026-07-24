@@ -21,16 +21,10 @@ describe('import-export-preferences.component tests:\n', () => {
     await reactTestingLibrary.renderWithConfiguration(
       <HiveAppComponent />,
       initialStates.iniStateAs.defaultExistent,
+      {
+        navigateToAfterMount: Screen.SETTINGS_IMPORT_EXPORT,
+      },
     );
-    await act(async () => {
-      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
-      await userEvent.click(
-        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.SETTINGS),
-      );
-      await userEvent.click(
-        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.IMPORT_EXPORT),
-      );
-    });
   });
   it('Must load import-export page and show info', () => {
     expect(

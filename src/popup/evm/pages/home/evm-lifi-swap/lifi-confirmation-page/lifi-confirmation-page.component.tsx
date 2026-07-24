@@ -192,19 +192,19 @@ const LiFiConfirmationPage = ({
                   )}
                 </React.Fragment>
               ))}
-              <GasFeePanel
-                chain={approveTransactionData.chain!}
-                fromAddress={activeAccount.wallet.address}
-                selectedFee={approveSelectedFee}
-                onSelectFee={setApproveSelectedFee}
-                transactionType={
-                  (approveTransactionData.chain! as EvmChain)
-                    .defaultTransactionType
-                }
-                transactionData={approveTransactionData}
-                setErrorMessage={handleErrors}
-              />
             </div>
+            <GasFeePanel
+              chain={approveTransactionData.chain!}
+              fromAddress={activeAccount.wallet.address}
+              selectedFee={approveSelectedFee}
+              onSelectFee={setApproveSelectedFee}
+              transactionType={
+                (approveTransactionData.chain! as EvmChain)
+                  .defaultTransactionType
+              }
+              transactionData={approveTransactionData}
+              setErrorMessage={handleErrors}
+            />
           </>
         )}
         <div className="fields">
@@ -244,18 +244,18 @@ const LiFiConfirmationPage = ({
               )}
             </React.Fragment>
           ))}
-          <GasFeePanel
-            chain={swapTransactionData.chain!}
-            fromAddress={activeAccount.wallet.address}
-            selectedFee={swapSelectedFee}
-            onSelectFee={setSwapSelectedFee}
-            transactionType={
-              (swapTransactionData.chain! as EvmChain).defaultTransactionType
-            }
-            transactionData={swapTransactionData}
-            setErrorMessage={handleErrors}
-          />
         </div>
+        <GasFeePanel
+          chain={swapTransactionData.chain!}
+          fromAddress={activeAccount.wallet.address}
+          selectedFee={swapSelectedFee}
+          onSelectFee={setSwapSelectedFee}
+          transactionType={
+            (swapTransactionData.chain! as EvmChain).defaultTransactionType
+          }
+          transactionData={swapTransactionData}
+          setErrorMessage={handleErrors}
+        />
       </div>
 
       <div className="evm-bottom-panel lifi-confirmation-page-actions">

@@ -56,7 +56,6 @@ describe('index tests:\n', () => {
       .spyOn(chrome.tabs, 'sendMessage')
       .mockImplementation(() => undefined);
     const sLoggerInfo = jest.spyOn(Logger, 'info');
-    const sLoggerLog = jest.spyOn(Logger, 'log');
     const sAddToWhitelist = jest
       .spyOn(PreferencesUtils, 'addToWhitelist')
       .mockResolvedValue(undefined);
@@ -67,7 +66,6 @@ describe('index tests:\n', () => {
     requestHandler.data.windowId = 1;
     await performOperation(requestHandler, data, 0, 'domain', true);
     expect(sLoggerInfo).toHaveBeenCalledWith('-- PERFORMING TRANSACTION --');
-    expect(sLoggerLog).toHaveBeenCalledWith(data);
     expect(sSendMessage).toHaveBeenCalledWith(
       0,
       `mocked message for ${KeychainRequestTypes.addAccount}`,

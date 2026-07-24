@@ -76,8 +76,11 @@ export const EvmHistory = ({
       transactionResponse: transactionResponse,
       ...historyItem,
       isSuccess:
-        historyItem.isCanceled || historyItem.isReverted ? false : true,
+        historyItem.isCanceled || historyItem.isReverted || historyItem.isFailed
+          ? false
+          : true,
       isCanceled: historyItem.isCanceled,
+      isFailed: historyItem.isFailed,
       initialDisplayHistory: true,
     });
   };
@@ -145,14 +148,15 @@ export const EvmHistory = ({
         </>
       )}
       {!loading && history && !history.fullyFetch && (
-        <div
+        <button
+          type="button"
           className="load-more-panel history-load-more"
           onClick={() => onClickOnLoadMore()}>
           <span className="label">
             {I18nUtils.getMessage('popup_html_load_more')}
           </span>
           <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE}></SVGIcon>
-        </div>
+        </button>
       )}
       {loading && (
         <div className="rotating-logo-container">

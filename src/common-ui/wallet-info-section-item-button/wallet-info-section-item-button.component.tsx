@@ -18,7 +18,8 @@ export const WalletInfoSectionItemButton = ({
   const [hovered, setHovered] = useState(false);
 
   return (
-    <div
+    <button
+      type="button"
       data-testid={dataTestId}
       className="wallet-action-button"
       onClick={($event) => handleClick($event, actionButton)}
@@ -33,6 +34,6 @@ export const WalletInfoSectionItemButton = ({
       <div className="title">
         {I18nUtils.getMessage(actionButton.label, actionButton.labelParams)}
       </div>
-    </div>
+    </button>
   );
 };

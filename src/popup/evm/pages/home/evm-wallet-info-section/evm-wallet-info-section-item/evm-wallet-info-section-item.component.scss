@@ -21,12 +21,27 @@
     border: 1px solid var(--wallet-card-opened-border);
   }
 
+  &:has(.information-panel:focus-visible) {
+    border-color: $red;
+  }
+
   .information-panel {
     width: 100%;
     display: grid;
     grid-template-columns: 48px 1fr auto;
     align-items: center;
     column-gap: 16px;
+    border: 0;
+    padding: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+
+    &:focus {
+      outline: none;
+    }
+
     .currency-icon-container {
       display: flex;
       align-items: center;
@@ -118,6 +133,10 @@
         @include poppins400(12px);
       }
     }
+  }
+
+  .wallet-info-details {
+    width: 100%;
   }
 
   .token-info-panel {

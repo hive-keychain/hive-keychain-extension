@@ -1,7 +1,10 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Screen } from '@interfaces/screen.interface';
-import { AccountCreationMode, AccountCreationUtils } from '@popup/hive/utils/account-creation.utils';
+import {
+  AccountCreationMode,
+  AccountCreationUtils,
+} from '@popup/hive/utils/account-creation.utils';
 import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
 import React from 'react';
@@ -41,7 +44,73 @@ describe('CreateAccountStepTwoComponent', () => {
     expect(screen.queryByText('Payment currency')).not.toBeInTheDocument();
   });
 
-  it('passes the Step 1 EVM payment selection to paid account creation', async () => {
+  it('shows Next for EVM paid creation', async () => {
+    renderStepTwo();
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Next' })).toBeInTheDocument();
+    });
+    expect(
+      screen.queryByRole('button', { name: 'Create' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders step two content when navigation params are stale after goBack', async () => {
+    const navParams = {
+      ...defaultNavParams,
+    };
+    const store = getFakeStore({
+      ...initialStateWAccountsWActiveAccountStore,
+      chain: hiveChain,
+      mk: 'test-master-key',
+      navigation: {
+        params: {
+          requestId: 'request-1',
+          autoPayWithKeychain: true,
+        },
+        stack: [
+          {
+            currentPage: Screen.CREATE_ACCOUNT_PAGE_STEP_TWO,
+            params: navParams,
+          },
+          {
+            currentPage: Screen.PENDING_ACCOUNT_CREATION_PAYMENT,
+            params: {
+              requestId: 'request-1',
+              autoPayWithKeychain: true,
+            },
+          },
+        ],
+      },
+      evm: initialEmptyStateStore.evm,
+    } as any);
+
+    render(
+      <Provider store={store}>
+        <CreateAccountStepTwoComponent />
+      </Provider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Master password')).toBeInTheDocument();
+    });
+  });
+
+  it('shows Create for non-EVM account creation', async () => {
+    renderStepTwo({
+      mode: AccountCreationMode.DEFAULT,
+      paymentSelection: undefined,
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Master password')).toBeInTheDocument();
+    });
+    expect(
+      screen.getByRole('button', { name: 'Create' }),
+    ).toBeInTheDocument();
+  });
+
+  it('passes the Step 1 EVM payment selection to paid account creation and opens the confirmation controller', async () => {
     const createSpy = jest
       .spyOn(PaidAccountCreationUtils, 'createPendingPaidHiveAccountCreation')
       .mockResolvedValue({ requestId: 'request-1' } as any);
@@ -75,39 +144,45 @@ describe('CreateAccountStepTwoComponent', () => {
         'test-master-key',
       );
     });
-    await waitFor(() => {
-      expect(store.getState().navigation.stack[0]).toMatchObject({
-        currentPage: Screen.PENDING_ACCOUNT_CREATION_PAYMENT,
-        params: { requestId: 'request-1' },
-      });
+    expect(store.getState().navigation.stack[0]).toMatchObject({
+      currentPage: Screen.PENDING_ACCOUNT_CREATION_PAYMENT,
+      params: {
+        requestId: 'request-1',
+        autoPayWithKeychain: true,
+      },
     });
+    expect(store.getState().loading.loadingOperations).toEqual([
+      expect.objectContaining({
+        name: 'html_popup_preparing_account_creation',
+        done: false,
+      }),
+    ]);
   });
 
-  const renderStepTwo = () => {
+  const defaultNavParams = {
+    mode: AccountCreationMode.PAID_BACKEND_CREATION,
+    newUsername: 'new-account',
+    paymentSelection: {
+      paymentChainId: '40',
+      paymentTokenAddress: null,
+    },
+  } as any;
+
+  const renderStepTwo = (navParamsOverride = {} as any) => {
+    const navParams = {
+      ...defaultNavParams,
+      ...navParamsOverride,
+    };
     const store = getFakeStore({
       ...initialStateWAccountsWActiveAccountStore,
       chain: hiveChain,
       mk: 'test-master-key',
       navigation: {
-        params: {
-          mode: AccountCreationMode.PAID_BACKEND_CREATION,
-          newUsername: 'new-account',
-          paymentSelection: {
-            paymentChainId: '40',
-            paymentTokenAddress: null,
-          },
-        },
+        params: navParams,
         stack: [
           {
             currentPage: Screen.CREATE_ACCOUNT_PAGE_STEP_TWO,
-            params: {
-              mode: AccountCreationMode.PAID_BACKEND_CREATION,
-              newUsername: 'new-account',
-              paymentSelection: {
-                paymentChainId: '40',
-                paymentTokenAddress: null,
-              },
-            },
+            params: navParams,
           },
         ],
       },

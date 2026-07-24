@@ -7,6 +7,8 @@ import { I18nUtils } from 'src/utils/i18n.utils';
 export interface CheckboxProps {
   onChange: (value: boolean) => void;
   title?: string;
+  ariaLabel?: string;
+  ariaLabelledBy?: string;
   checked: boolean;
   skipTranslation?: boolean;
   dataTestId?: string;
@@ -16,35 +18,38 @@ export interface CheckboxProps {
   skipTooltipTranslation?: boolean;
 }
 
-const handleClick = (
-  props: CheckboxProps,
-  event: React.MouseEvent<HTMLDivElement>,
-) => {
+const handleClick = (event: React.MouseEvent<HTMLLabelElement>) => {
   event.stopPropagation();
-  event.preventDefault();
-  if (props.disabled !== true) {
-    props.onChange(!props.checked);
-  }
 };
 
 const getCheckbox = (props: CheckboxProps) => {
   return (
-    <div
+    <label
       id={`${props.dataTestId}-inner-input`}
       className={`custom-checkbox-container ${
         props.disabled ? 'disabled' : ''
       }`}
-      data-testid={props.extraDataTestIdOnInput ?? props.dataTestId}
-      onClick={(event) => handleClick(props, event)}>
-      <div className="custom-checkbox">
+      data-testid={props.dataTestId}
+      onClick={handleClick}>
+      <input
+        className="native-checkbox"
+        type="checkbox"
+        checked={props.checked}
+        disabled={props.disabled}
+        aria-label={props.ariaLabel}
+        aria-labelledby={props.ariaLabelledBy}
+        data-testid={props.extraDataTestIdOnInput}
+        onChange={(event) => props.onChange(event.target.checked)}
+      />
+      <span className="custom-checkbox" aria-hidden="true">
         {props.checked && <SVGIcon icon={SVGIcons.CHECKBOX_CHECKED} />}
-      </div>
-      <div className="label">
+      </span>
+      <span className="label">
         {props.skipTranslation
           ? props.title
           : I18nUtils.getMessage(props.title ?? '')}
-      </div>
-    </div>
+      </span>
+    </label>
   );
 };
 

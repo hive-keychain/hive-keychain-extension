@@ -53,7 +53,6 @@ const PortfolioConfirmationStep = ({
           selectedAccount={context.activeAccountOverride}
           transactionData={context.transactionData}
           afterConfirmAction={context.onConfirm}
-          afterCancelAction={onDismiss}
           setErrorMessage={setErrorMessage}
         />
       </div>
@@ -74,7 +73,6 @@ const PortfolioConfirmationStep = ({
         afterConfirmAction={(params) =>
           context.onConfirm(params as TransactionOptions)
         }
-        afterCancelAction={onDismiss}
         addCaptionToLoading={addCaptionToLoading}
       />
     </div>

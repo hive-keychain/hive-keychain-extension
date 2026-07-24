@@ -7,6 +7,7 @@ import {
   getChainIdForOrigin,
   persistEvmDappLogoForDomain,
   setAccountsForOrigin,
+  setChainIdForOrigin,
 } from '@background/evm/evm-provider-state.utils';
 import {
   EvmRequestHandler,
@@ -36,7 +37,10 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { TransactionResponse } from 'ethers';
 import { validateEvmRequest } from 'src/content-scripts/evm/evm-request-validation';
-import { getOriginFromUrl } from 'src/utils/browser-origin.utils';
+import {
+  getOriginFromMessageSender,
+  getOriginFromUrl,
+} from 'src/utils/browser-origin.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -110,16 +114,20 @@ const chromeMessageHandler = async (
   sender: chrome.runtime.MessageSender,
   sendResp: (response?: any) => void,
 ) => {
-  Logger.log('Background message evm service worker', backgroundMessage);
+  Logger.log(
+    'Background message evm service worker',
+    backgroundMessage.command,
+  );
 
   switch (backgroundMessage.command) {
     case BackgroundCommand.SEND_EVM_INITIALIZE_PROVIDER_REQUEST: {
-      const origin = getOriginFromUrl(sender.tab?.url);
-      if (sender?.tab?.url && origin) {
+      const origin = getOriginFromMessageSender(sender);
+      if (sender?.tab?.id !== undefined && origin) {
         sendEvmEventToTab(sender.tab!.id!, {
           eventType: EvmEventName.INITIALIZE_PROVIDER_RESPONSE,
           scope: {
-            kind: 'tab',
+            kind: 'origin',
+            origin,
             tabId: sender.tab!.id!,
           },
           args: {
@@ -128,6 +136,19 @@ const chromeMessageHandler = async (
           },
         });
       }
+      break;
+    }
+    case BackgroundCommand.SET_EVM_PROVIDER_CHAIN: {
+      const { origin, chainId, tabId } = backgroundMessage.value ?? {};
+      if (typeof origin !== 'string' || typeof chainId !== 'string') {
+        break;
+      }
+
+      await setChainIdForOrigin(
+        origin,
+        chainId,
+        typeof tabId === 'number' ? { tabId } : {},
+      );
       break;
     }
     case BackgroundCommand.SEND_EVM_REQUEST: {

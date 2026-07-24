@@ -134,7 +134,8 @@ const TokensHistory = ({
           </div>
         )}
         {shouldLoadMore && !isTokenHistoryLoading && (
-          <div
+          <button
+            type="button"
             className="load-more-panel"
             onClick={() => {
               fetchMoreTokenHistory(
@@ -146,7 +147,7 @@ const TokensHistory = ({
               {I18nUtils.getMessage('popup_html_load_more')}
             </span>
             <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE}></SVGIcon>
-          </div>
+          </button>
         )}
         {isTokenHistoryLoading && (
           <div className="rotating-logo-container">

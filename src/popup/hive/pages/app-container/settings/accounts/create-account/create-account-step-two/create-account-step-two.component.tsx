@@ -36,7 +36,10 @@ import { PaidAccountCreationUtils } from 'src/popup/hive/utils/paid-account-crea
 import FormatUtils from 'src/utils/format.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
+
 const SUBSTRING_LENGTH = 15;
+const PREPARING_ACCOUNT_CREATION_LOADING =
+  'html_popup_preparing_account_creation';
 
 const CreateAccountStepTwo = ({
   navParams,
@@ -210,7 +213,12 @@ const CreateAccountStepTwo = ({
       safelyCopied &&
       notPrimaryStorageUnderstanding
     ) {
-      addToLoadingList('html_popup_creating_account');
+      let keepEvmPreparationLoading = false;
+      if (isEvmPaymentCreation) {
+        addToLoadingList(PREPARING_ACCOUNT_CREATION_LOADING);
+      } else {
+        addToLoadingList('html_popup_creating_account');
+      }
       try {
         if (isPaidCreation) {
           if (!paymentSelection?.paymentChainId) {
@@ -226,9 +234,13 @@ const CreateAccountStepTwo = ({
             );
           navigateToWithParams(
             Screen.PENDING_ACCOUNT_CREATION_PAYMENT,
-            { requestId: pendingRequest.requestId },
-            true,
+            {
+              requestId: pendingRequest.requestId,
+              autoPayWithKeychain: true,
+            },
+            false,
           );
+          keepEvmPreparationLoading = true;
           return;
         }
 
@@ -254,7 +266,13 @@ const CreateAccountStepTwo = ({
       } catch (err: any) {
         setErrorMessage(err.message);
       } finally {
-        removeFromLoadingList('html_popup_creating_account');
+        if (isEvmPaymentCreation) {
+          if (!keepEvmPreparationLoading) {
+            removeFromLoadingList(PREPARING_ACCOUNT_CREATION_LOADING);
+          }
+        } else {
+          removeFromLoadingList('html_popup_creating_account');
+        }
       }
     } else {
       setErrorMessage('html_popup_create_account_need_accept_terms_condition');
@@ -414,7 +432,9 @@ const CreateAccountStepTwo = ({
               type={ButtonType.ALTERNATIVE}
             />
             <ButtonComponent
-              label="html_popup_create"
+              label={
+                isEvmPaymentCreation ? 'html_popup_next' : 'html_popup_create'
+              }
               onClick={() => createAccount()}
             />
           </div>
@@ -428,7 +448,8 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.hive.activeAccount,
     accounts: state.hive.accounts,
-    navParams: state.navigation.params,
+    navParams:
+      state.navigation.stack[0]?.params ?? state.navigation.params,
     mk: state.mk,
   };
 };

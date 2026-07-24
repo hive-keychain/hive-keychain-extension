@@ -69,13 +69,16 @@ const ChainSelector = ({
         false,
       );
     }
-    setChain(selectedChain);
+    setChain(selectedChain, { syncProviderNetwork: true });
   };
 
   const onCloseClicked = async () => {
     const previousChain = ChainUtils.getPreviousChain();
-    if (previousChain) setChain(previousChain);
-    else if (setupChains.length > 0) setChain(setupChains[0]);
+    if (previousChain) {
+      setChain(previousChain, { syncProviderNetwork: true });
+    } else if (setupChains.length > 0) {
+      setChain(setupChains[0], { syncProviderNetwork: true });
+    }
   };
 
   const searchValue = search.trim().toLowerCase();
@@ -138,19 +141,38 @@ const ChainSelector = ({
     });
   };
 
-  const openEditModal = (customChain: EvmChain) => {
+  const openEditModal = (
+    chainToEdit: EvmChain,
+    isDefaultChain: boolean = false,
+  ) => {
+    const refreshActiveChainIfNeeded = async () => {
+      if (chain?.chainId?.toLowerCase() !== chainToEdit.chainId.toLowerCase()) {
+        return;
+      }
+      const updatedChain = await ChainUtils.getChain<EvmChain>(
+        chainToEdit.chainId,
+      );
+      if (updatedChain) {
+        setChain(updatedChain);
+      }
+    };
+
     openModal({
-      title: 'evm_custom_chains_modal_title_edit',
+      title: isDefaultChain
+        ? 'evm_custom_chains_modal_title_edit_default'
+        : 'evm_custom_chains_modal_title_edit',
       closeOnOverlayClick: true,
       showCloseButton: true,
       children: (
         <AddCustomEvmChainForm
-          key={`edit-custom-chain-${customChain.chainId}`}
-          chainToEdit={customChain}
+          key={`edit-chain-${chainToEdit.chainId}`}
+          chainToEdit={chainToEdit}
+          isDefaultChain={isDefaultChain}
           onCancel={() => closeModal()}
           onSuccess={async () => {
             closeModal();
             await init();
+            await refreshActiveChainIfNeeded();
           }}
         />
       ),
@@ -164,10 +186,12 @@ const ChainSelector = ({
     if (isActiveChain) {
       const remainingSetup = await ChainUtils.getSetupChains();
       if (remainingSetup?.length) {
-        setChain(remainingSetup[0]);
+        setChain(remainingSetup[0], { syncProviderNetwork: true });
       } else {
         const previousChain = ChainUtils.getPreviousChain();
-        if (previousChain) setChain(previousChain);
+        if (previousChain) {
+          setChain(previousChain, { syncProviderNetwork: true });
+        }
       }
     }
     await init();
@@ -251,8 +275,24 @@ const ChainSelector = ({
           className="chain-card__logo"
         />
         <div className="chain-name">{builtInChain.name}</div>
+        <button
+          type="button"
+          className="custom-chain-settings-icon chain-card__default-settings-icon"
+          data-testid={`btn-edit-default-chain-${builtInChain.chainId}`}
+          aria-label={I18nUtils.getMessage(
+            'evm_custom_chains_modal_title_edit_default',
+          )}
+          onClick={(event) => {
+            event.stopPropagation();
+            openEditModal(builtInChain as EvmChain, true);
+          }}>
+          <SVGIcon icon={SVGIcons.WALLET_SETTINGS} svgViewBox="10 10 24 24" />
+        </button>
         {enabled && (
-          <SVGIcon icon={SVGIcons.SELECT_ACTIVE} className="check-icon" />
+          <SVGIcon
+            icon={SVGIcons.SELECT_ACTIVE}
+            className="check-icon chain-card__default-check-icon"
+          />
         )}
         <div className="chain-card__meta-row">
           <div className="chain-card__badge">

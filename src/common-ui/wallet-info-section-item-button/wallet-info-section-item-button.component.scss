@@ -27,6 +27,10 @@
   align-items: center;
   justify-content: center;
   transition: 0.225s linear;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
   .title {
     @include poppins400(14px);
     color: var(--main-font-color);
@@ -37,7 +41,11 @@
   svg .savings {
     fill: $red;
   }
-  &:hover {
+  &:focus {
+    outline: none;
+  }
+  &:hover,
+  &:focus-visible {
     background: $red;
     .title {
       color: white;

@@ -1,5 +1,5 @@
 import { closeModal } from '@popup/multichain/actions/modal.actions';
-import React from 'react';
+import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
@@ -20,6 +20,8 @@ export type ModalPresentationProps = ModalProps & {
   onClose: () => void;
 };
 
+let modalId = 0;
+
 export const ModalPresentation = ({
   children,
   title,
@@ -30,16 +32,29 @@ export const ModalPresentation = ({
   containerClassName,
   onClose,
 }: ModalPresentationProps) => {
+  const [titleId] = useState(() => `modal-title-${++modalId}`);
+  const canCloseWithEscape = !(
+    closeOnOverlayClick === false && showCloseButton === false
+  );
+
   return (
     <PopupContainer
       className={`modal-container${containerClassName ? ` ${containerClassName}` : ''}`}
       showOverlay={showOverlay}
       useBodyPortal={useBodyPortal}
-      onClickOutside={closeOnOverlayClick ? onClose : undefined}>
+      onClickOutside={closeOnOverlayClick ? onClose : undefined}
+      onEscape={canCloseWithEscape ? onClose : undefined}
+      initialFocusSelector=".modal-content"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={title ? titleId : undefined}
+      tabIndex={-1}>
       {(title || showCloseButton) && (
         <div className="modal-header">
           {title && (
-            <div className="modal-title">{I18nUtils.getMessage(title)}</div>
+            <div id={titleId} className="modal-title">
+              {I18nUtils.getMessage(title)}
+            </div>
           )}
           {showCloseButton && (
             <button

@@ -206,69 +206,71 @@ const WitnessInformation = ({
 
   return (
     <div className="witness-information">
-      <div className="top-panel">
-        <SlidingBarComponent
-          dataTestId="witness"
-          id="witness"
-          onChange={changeSelectedScreen}
-          selectedValue={selectedScreen}
-          values={[
-            {
-              value: WitnessInfoScreen.INFO,
-              label: 'html_popup_witness_information_info_label',
-            },
-            {
-              value: WitnessInfoScreen.PARAMS,
-              label: 'html_popup_witness_information_params_label',
-            },
-          ]}
-        />
-      </div>
-      <div className="witness-profile-container">
-        <div className="witness-profile">
-          <img
-            className="witness-image"
-            src={`https://images.hive.blog/u/${activeAccount.name!}/avatar`}
-            onError={(e: any) => {
-              e.target.onError = null;
-              e.target.src = '/assets/images/accounts.png';
-            }}
+      <div className="witness-information-header">
+        <div className="top-panel">
+          <SlidingBarComponent
+            dataTestId="witness"
+            id="witness"
+            onChange={changeSelectedScreen}
+            selectedValue={selectedScreen}
+            values={[
+              {
+                value: WitnessInfoScreen.INFO,
+                label: 'html_popup_witness_information_info_label',
+              },
+              {
+                value: WitnessInfoScreen.PARAMS,
+                label: 'html_popup_witness_information_params_label',
+              },
+            ]}
           />
-          <div className="info-container">
-            <div className="witness-name">@{activeAccount.name!}</div>
-            {witnessRanking && (
-              <div className="witness-ranking">
-                {witnessRanking.active_rank && (
-                  <>
-                    {witnessRanking?.active_rank}
-                    {I18nUtils.getMessage(
-                      FormatUtils.getOrdinalLabelTranslation(
-                        witnessRanking?.active_rank!,
-                      ),
-                    )}{' '}
-                  </>
-                )}
-                {/* {I18nUtils.getMessage('popup_html_witness_rank_label')}{' '} */}
-                {(witnessRanking?.active_rank as any)?.toString() !==
-                  (witnessRanking?.rank as any)?.toString() && (
-                  <div>
-                    {'('}
-                    {witnessRanking?.rank}
-                    {')'}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
         </div>
-        {witnessInfo.isDisabled && (
-          <SVGIcon
-            className="witness-disabled"
-            icon={SVGIcons.GOVERNANCE_MY_WITNESS_DEACTIVATED}
-            tooltipMessage="popup_html_witness_information_witness_disabled_text"
-            tooltipPosition="right"
-          />
-        )}
+        <div className="witness-profile-container">
+          <div className="witness-profile">
+            <img
+              className="witness-image"
+              src={`https://images.hive.blog/u/${activeAccount.name!}/avatar`}
+              onError={(e: any) => {
+                e.target.onError = null;
+                e.target.src = '/assets/images/accounts.png';
+              }}
+            />
+            <div className="info-container">
+              <div className="witness-name">@{activeAccount.name!}</div>
+              {witnessRanking && (
+                <div className="witness-ranking">
+                  {witnessRanking.active_rank && (
+                    <>
+                      {witnessRanking?.active_rank}
+                      {I18nUtils.getMessage(
+                        FormatUtils.getOrdinalLabelTranslation(
+                          witnessRanking?.active_rank!,
+                        ),
+                      )}{' '}
+                    </>
+                  )}
+                  {/* {I18nUtils.getMessage('popup_html_witness_rank_label')}{' '} */}
+                  {(witnessRanking?.active_rank as any)?.toString() !==
+                    (witnessRanking?.rank as any)?.toString() && (
+                    <div>
+                      {'('}
+                      {witnessRanking?.rank}
+                      {')'}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+          {witnessInfo.isDisabled && (
+            <SVGIcon
+              className="witness-disabled"
+              icon={SVGIcons.GOVERNANCE_MY_WITNESS_DEACTIVATED}
+              tooltipMessage="popup_html_witness_information_witness_disabled_text"
+              tooltipPosition="right"
+            />
+          )}
+        </div>
       </div>
       {selectedScreen === WitnessInfoScreen.INFO && witnessRanking && (
         <WitnessGlobalInformationComponent witnessInfo={witnessInfo} />

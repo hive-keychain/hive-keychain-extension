@@ -53,7 +53,6 @@ export const performOperation = async (
   options?: TransactionOptions,
 ) => {
   Logger.info('-- PERFORMING TRANSACTION --');
-  Logger.log(request);
 
   let message: any = null;
 

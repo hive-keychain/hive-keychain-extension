@@ -10,9 +10,11 @@ import { ColorsUtils } from 'src/utils/colors.utils';
 import { EnumUtils } from 'src/utils/enum.utils';
 
 interface CustomSelectItemProps<T> {
+  id: string;
   isLast: boolean;
   item: T;
   isSelected: boolean;
+  isKeyboardActive: boolean;
   handleItemClicked: () => void;
   closeDropdown: () => void;
   onDelete?: (...params: any) => void;
@@ -23,8 +25,10 @@ interface CustomSelectItemProps<T> {
 }
 
 export function CustomSelectItemComponent<T extends OptionItem>({
+  id,
   item,
   isSelected,
+  isKeyboardActive,
   isLast,
   handleItemClicked,
   closeDropdown,
@@ -92,22 +96,34 @@ export function CustomSelectItemComponent<T extends OptionItem>({
         setHovered(false);
       }}>
       <div
+        id={id}
         data-testid={`custom-select-item-${itemTestId}`}
-        className={`custom-select-item ${isSelected ? 'selected' : ''} ${item.imgChip ? 'has-img-chip' : ''} ${item.subLabelHover ? 'has-sub-label-hover' : ''} ${enableDragAndDrop ? 'draggable' : ''}`}
+        className={`custom-select-item ${isSelected ? 'selected' : ''} ${isKeyboardActive ? 'keyboard-active' : ''} ${item.imgChip ? 'has-img-chip' : ''} ${item.subLabelHover ? 'has-sub-label-hover' : ''} ${enableDragAndDrop ? 'draggable' : ''}`}
+        role="option"
+        aria-selected={isSelected}
         onClick={() => {
           handleItemClicked();
           closeDropdown();
         }}>
-        {((item.img ||
-          (generateImageIfNull && !item.img)) ||
-          item.imgChip) && (
+        {(item.img || (generateImageIfNull && !item.img) || item.imgChip) && (
           <>
             {item.img && EnumUtils.isValueOf(item.img, SVGIcons) && (
               <SVGIcon className="left-svg" icon={item.img as SVGIcons} />
             )}
-            {item.img && !EnumUtils.isValueOf(item.img, SVGIcons) && (
-              <img className="left-image" src={item.img} />
-            )}
+            {item.img &&
+              item.imgChainName &&
+              !EnumUtils.isValueOf(item.img, SVGIcons) && (
+                <ChainLogo
+                  className="left-image"
+                  logoUri={item.img}
+                  chainName={item.imgChainName}
+                />
+              )}
+            {item.img &&
+              !item.imgChainName &&
+              !EnumUtils.isValueOf(item.img, SVGIcons) && (
+                <img className="left-image" src={item.img} />
+              )}
             {!item.img && generateImageIfNull && item.label && (
               <div
                 className="currency-icon add-background"

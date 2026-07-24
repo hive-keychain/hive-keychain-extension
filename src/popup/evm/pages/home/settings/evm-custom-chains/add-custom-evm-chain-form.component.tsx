@@ -7,8 +7,9 @@ import { CustomEvmChainForm } from '@popup/evm/pages/home/settings/evm-custom-ch
 interface OwnProps {
   onSuccess: () => void;
   onCancel: () => void;
-  /** When set, form loads this chain and saves with `updateCustomChain(originalChainId, chain)`. */
+  /** When set, form loads this chain and saves it as a custom chain update or default-chain override. */
   chainToEdit?: EvmChain;
+  isDefaultChain?: boolean;
 }
 
 /** Errors are shown inside the form so they stay above the modal content (global setErrorMessage renders behind the modal). */
@@ -16,13 +17,28 @@ export const AddCustomEvmChainForm = ({
   onSuccess,
   onCancel,
   chainToEdit,
+  isDefaultChain,
 }: OwnProps) => {
   return (
     <CustomEvmChainForm
       onCancel={onCancel}
       chainToEdit={chainToEdit}
+      isDefaultChain={isDefaultChain}
+      onResetToDefault={
+        isDefaultChain && chainToEdit
+          ? async () => {
+              await ChainUtils.resetDefaultChainOverride(chainToEdit.chainId);
+              await onSuccess();
+            }
+          : undefined
+      }
       onSubmit={async (chain) => {
-        if (chainToEdit) {
+        if (chainToEdit && isDefaultChain) {
+          await ChainUtils.updateDefaultChainOverride(
+            chainToEdit.chainId,
+            chain,
+          );
+        } else if (chainToEdit) {
           await ChainUtils.updateCustomChain(chainToEdit.chainId, chain);
         } else {
           await ChainUtils.addCustomChain(chain);

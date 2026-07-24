@@ -3,8 +3,6 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Theme, ThemeContext } from '@popup/theme.context';
-import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
-import { DetachedExtensionTabUtils } from 'src/popup/multichain/utils/detached-extension-tab.utils';
 import { SettingsPreferencesDisplayPageComponent } from 'src/popup/multichain/pages/settings/settings-preferences-display-page.component';
 import { SidePanelPreferenceUtils } from 'src/utils/side-panel-preference.utils';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
@@ -15,13 +13,6 @@ jest.mock('src/utils/side-panel-preference.utils', () => ({
   SidePanelPreferenceUtils: {
     getOpenSidePanelByDefault: jest.fn(),
     setOpenSidePanelByDefault: jest.fn(),
-  },
-}));
-
-jest.mock('@popup/multichain/utils/extension-surface.utils', () => ({
-  ExtensionSurfaceUtils: {
-    isToolbarPopup: jest.fn(),
-    isDetachedTab: jest.fn(),
   },
 }));
 
@@ -39,14 +30,12 @@ const createStore = () => ({
 
 describe('SettingsPreferencesDisplayPageComponent', () => {
   const setTheme = jest.fn();
-  const getOpenSidePanelByDefaultMock =
-    SidePanelPreferenceUtils.getOpenSidePanelByDefault as jest.MockedFunction<
-      typeof SidePanelPreferenceUtils.getOpenSidePanelByDefault
-    >;
-  const setOpenSidePanelByDefaultMock =
-    SidePanelPreferenceUtils.setOpenSidePanelByDefault as jest.MockedFunction<
-      typeof SidePanelPreferenceUtils.setOpenSidePanelByDefault
-    >;
+  const getOpenSidePanelByDefaultMock = SidePanelPreferenceUtils.getOpenSidePanelByDefault as jest.MockedFunction<
+    typeof SidePanelPreferenceUtils.getOpenSidePanelByDefault
+  >;
+  const setOpenSidePanelByDefaultMock = SidePanelPreferenceUtils.setOpenSidePanelByDefault as jest.MockedFunction<
+    typeof SidePanelPreferenceUtils.setOpenSidePanelByDefault
+  >;
   const getValueFromLocalStorageMock = jest.spyOn(
     LocalStorageUtils,
     'getValueFromLocalStorage',
@@ -64,11 +53,6 @@ describe('SettingsPreferencesDisplayPageComponent', () => {
     setOpenSidePanelByDefaultMock.mockResolvedValue();
     getValueFromLocalStorageMock.mockResolvedValue(undefined);
     saveValueInLocalStorageMock.mockResolvedValue();
-    (
-      ExtensionSurfaceUtils.isToolbarPopup as jest.MockedFunction<
-        typeof ExtensionSurfaceUtils.isToolbarPopup
-      >
-    ).mockReturnValue(false);
   });
 
   const renderPage = async (theme: Theme = Theme.LIGHT) => {
@@ -95,8 +79,12 @@ describe('SettingsPreferencesDisplayPageComponent', () => {
     expect(screen.getByTestId('theme-toggle-light')).toBeInTheDocument();
     expect(screen.getByTestId('theme-toggle-dark')).toBeInTheDocument();
     expect(screen.getByTestId('language-select-handle')).toBeInTheDocument();
+    expect(screen.getByTestId('display-mode-toggle')).toBeInTheDocument();
+    expect(screen.getByTestId('display-mode-toggle-popup')).toHaveClass(
+      'selected',
+    );
     expect(
-      screen.getByTestId('checkbox-open-side-panel-by-default'),
+      screen.getByTestId('display-mode-toggle-side-panel'),
     ).toBeInTheDocument();
   });
 
@@ -178,48 +166,32 @@ describe('SettingsPreferencesDisplayPageComponent', () => {
     expect(screen.getByText('Browser language')).toBeInTheDocument();
   });
 
-  it('shows try side panel button only in toolbar popup', async () => {
-    (
-      ExtensionSurfaceUtils.isToolbarPopup as jest.MockedFunction<
-        typeof ExtensionSurfaceUtils.isToolbarPopup
-      >
-    ).mockReturnValue(true);
-
-    await renderPage();
-
-    expect(screen.getByTestId('button-open-side-panel')).toBeInTheDocument();
-  });
-
   it('loads open side panel by default preference from storage', async () => {
     getOpenSidePanelByDefaultMock.mockResolvedValue(true);
 
     await renderPage();
 
     expect(getOpenSidePanelByDefaultMock).toHaveBeenCalled();
+    expect(screen.getByTestId('display-mode-toggle-side-panel')).toHaveClass(
+      'selected',
+    );
   });
 
-  it('persists open side panel by default preference when toggled', async () => {
+  it('persists side panel display mode when selected', async () => {
     await renderPage();
 
-    fireEvent.click(screen.getByTestId('checkbox-open-side-panel-by-default'));
+    fireEvent.click(screen.getByTestId('display-mode-toggle-side-panel'));
 
     expect(setOpenSidePanelByDefaultMock).toHaveBeenCalledWith(true);
   });
 
-  it('opens the side panel from the try side panel button', async () => {
-    const openDetachedExtension = jest
-      .spyOn(DetachedExtensionTabUtils, 'openDetachedExtension')
-      .mockResolvedValue();
-    (
-      ExtensionSurfaceUtils.isToolbarPopup as jest.MockedFunction<
-        typeof ExtensionSurfaceUtils.isToolbarPopup
-      >
-    ).mockReturnValue(true);
+  it('persists popup display mode when selected', async () => {
+    getOpenSidePanelByDefaultMock.mockResolvedValue(true);
 
     await renderPage();
 
-    fireEvent.click(screen.getByTestId('button-open-side-panel'));
+    fireEvent.click(screen.getByTestId('display-mode-toggle-popup'));
 
-    expect(openDetachedExtension).toHaveBeenCalled();
+    expect(setOpenSidePanelByDefaultMock).toHaveBeenCalledWith(false);
   });
 });

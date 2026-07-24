@@ -1,5 +1,5 @@
-import { Screen } from '@interfaces/screen.interface';
 import { ActiveAccount } from '@interfaces/active-account.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
 import { addCaptionToLoading } from '@popup/multichain/actions/loading.actions';
@@ -28,7 +28,10 @@ import { HtmlUtils } from 'src/utils/html.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
 
-export type HiveConfirmationPageContentProps = HiveConfirmationPageParams &
+export type HiveConfirmationPageContentProps = Omit<
+  HiveConfirmationPageParams,
+  'afterConfirmAction' | 'afterCancelAction'
+> &
   EmbeddedConfirmationPageProps & {
     fields: ConfirmationPageFields[];
     message: string;
@@ -37,10 +40,10 @@ export type HiveConfirmationPageContentProps = HiveConfirmationPageParams &
     skipWarningTranslation?: boolean;
     title?: string;
     skipTitleTranslation?: boolean;
-    afterConfirmAction: (params?: { metaData?: { twoFACodes?: Record<string, string> } }) =>
-      | void
-      | Promise<void>;
-    afterCancelAction?: () => void;
+    afterConfirmAction: (params?: {
+      metaData?: { twoFACodes?: Record<string, string> };
+    }) => void | Promise<void>;
+    afterCancelAction?: () => void | boolean | Promise<void | boolean>;
     activeAccount: ActiveAccount;
     method: KeychainKeyTypes | null;
     extraComponent?: React.ReactNode;
@@ -81,14 +84,14 @@ export const HiveConfirmationPageContent = ({
         title: title ?? 'popup_html_confirm',
         skipTitleTranslation,
         isBackButtonEnabled: true,
-        onBackAdditional: () => {
+        onBackAdditional: async () => {
           if (afterCancelAction) {
-            afterCancelAction();
+            return await afterCancelAction();
           }
         },
-        onCloseAdditional: () => {
+        onCloseAdditional: async () => {
           if (afterCancelAction) {
-            afterCancelAction();
+            await afterCancelAction();
           }
         },
       });
@@ -169,9 +172,11 @@ export const HiveConfirmationPageContent = ({
   };
 
   const handleClickOnCancel = async () => {
+    let skipGoBack = false;
     if (afterCancelAction) {
-      afterCancelAction();
+      skipGoBack = (await afterCancelAction()) === true;
     }
+    if (skipGoBack) return;
     if (embedded) {
       onDismiss?.();
       return;

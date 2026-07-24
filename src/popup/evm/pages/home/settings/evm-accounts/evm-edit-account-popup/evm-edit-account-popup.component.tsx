@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -7,9 +7,10 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
+import Logger from 'src/utils/logger.utils';
 export interface EditAccountParams {
   initialValue: string;
-  onSubmit: (...params: any) => void;
+  onSubmit: (value: string) => Promise<void> | void;
   onCancel: () => void;
   title: string;
   caption?: string;
@@ -41,10 +42,41 @@ export const EvmEditAccountPopup = ({ editParams }: Props) => {
   } = editParams;
 
   const [value, setValue] = useState(initialValue);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitErrorMessage, setSubmitErrorMessage] = useState<string>();
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     setValue(initialValue);
+    setSubmitErrorMessage(undefined);
   }, [initialValue]);
+
+  const handleSubmit = async (): Promise<void> => {
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+    setSubmitErrorMessage(undefined);
+    try {
+      await onSubmit(value);
+    } catch (error) {
+      Logger.error('Unable to save EVM account changes', error);
+      if (isMountedRef.current) {
+        setSubmitErrorMessage('unknown_error');
+      }
+    } finally {
+      if (isMountedRef.current) {
+        setIsSubmitting(false);
+      }
+    }
+  };
+
+  const displayedErrorMessage = errorMessage ?? submitErrorMessage;
 
   return (
     <PopupContainer className="seed-nickname-popup">
@@ -56,15 +88,16 @@ export const EvmEditAccountPopup = ({ editParams }: Props) => {
         value={value}
         onChange={(newValue) => {
           setValue(newValue);
+          setSubmitErrorMessage(undefined);
           onInputChange?.(newValue);
         }}
         label={inputLabel ?? 'evm_address_nickname'}
         placeholder={inputPlaceholder ?? 'evm_address_nickname'}
         type={inputType ?? InputType.TEXT}
       />
-      {errorMessage && (
+      {displayedErrorMessage && (
         <div className="caption error-message">
-          {I18nUtils.getMessage(errorMessage)}
+          {I18nUtils.getMessage(displayedErrorMessage)}
         </div>
       )}
       <div className="popup-footer">
@@ -77,8 +110,9 @@ export const EvmEditAccountPopup = ({ editParams }: Props) => {
         <ButtonComponent
           type={ButtonType.IMPORTANT}
           label={confirmLabel ?? 'popup_html_confirm'}
-          onClick={() => onSubmit(value)}
+          onClick={() => void handleSubmit()}
           height="small"
+          disabled={isSubmitting}
         />
       </div>
     </PopupContainer>

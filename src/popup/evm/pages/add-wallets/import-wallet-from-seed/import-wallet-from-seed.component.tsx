@@ -54,16 +54,21 @@ const ImportWalletFromSeed = ({
     if (wallet) {
       setLoading(true);
 
-      const derivedWallets = await EvmWalletUtils.deriveWallets(
-        wallet.mnemonic!,
-        chain,
-      );
-      setLoading(false);
-      removeFromLoadingList('html_popup_deriving_wallets');
-      navigateToWithParams(Screen.IMPORT_EVM_WALLET_CONFIRMATION, {
-        wallet,
-        derivedWallets,
-      });
+      try {
+        const derivedWallets = await EvmWalletUtils.deriveWallets(
+          wallet.mnemonic!,
+          chain,
+        );
+        navigateToWithParams(Screen.IMPORT_EVM_WALLET_CONFIRMATION, {
+          wallet,
+          derivedWallets,
+        });
+      } catch {
+        setErrorMessage('evm_rpcs_not_responding_error');
+      } finally {
+        setLoading(false);
+        removeFromLoadingList('html_popup_deriving_wallets');
+      }
     } else {
       setErrorMessage(error!, errorParams);
     }

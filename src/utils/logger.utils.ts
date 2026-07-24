@@ -2,12 +2,19 @@
 
 import moment from 'moment';
 
+const isDebugLogEnabled = () =>
+  process.env.DEBUG_LOG === 'true' || process.env.DEBUG_LOG === '1';
+
 function log(...message: any[]) {
-  console.log(...message);
+  if (isDebugLogEnabled()) {
+    console.log(...message);
+  }
 }
 
 function debug(...message: any[]) {
-  console.log(...message);
+  if (isDebugLogEnabled()) {
+    console.log(...message);
+  }
 }
 
 const info = (message: string) => {
@@ -20,7 +27,7 @@ const warn = (message: string) => {
 const error = (message: any, stacktrace?: any) => {
   console.log(`%c ${timestamp()} ${message} `, 'color: red');
 
-  if (process.env.DEBUG_LOG && stacktrace) {
+  if (isDebugLogEnabled() && stacktrace) {
     console.trace();
     console.log(stacktrace);
   }

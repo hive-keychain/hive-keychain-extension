@@ -2,9 +2,11 @@ import {
   BackgroundMessage,
   BaseBackgroundMessage,
 } from '@background/multichain/background-message.interface';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { getOriginFromUrl } from 'src/utils/browser-origin.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
 const PROVIDER_CHAIN_BOOTSTRAP_TIMEOUT_MS = 1000;
@@ -120,6 +122,57 @@ export const getProviderBootstrapForPopup = async (
   }
 
   return getProviderChainBootstrapResult(timeoutMs);
+};
+
+const getActiveTabProviderSyncTarget = async (): Promise<{
+  origin: string;
+  tabId: number;
+} | null> => {
+  return new Promise((resolve) => {
+    try {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        const [activeTab] = tabs;
+        const origin = getOriginFromUrl(activeTab?.url);
+
+        if (!origin || activeTab?.id === undefined) {
+          resolve(null);
+          return;
+        }
+
+        resolve({
+          origin,
+          tabId: activeTab.id,
+        });
+      });
+    } catch {
+      resolve(null);
+    }
+  });
+};
+
+export const syncProviderChainForActiveTab = async (
+  chain: EvmChain,
+): Promise<void> => {
+  const target = await getActiveTabProviderSyncTarget();
+  if (!target) {
+    return;
+  }
+
+  const connectedWallets = await EvmWalletUtils.getConnectedWallets(
+    target.origin,
+  );
+  if (!connectedWallets.length) {
+    return;
+  }
+
+  await CommunicationUtils.runtimeSendMessage({
+    command: BackgroundCommand.SET_EVM_PROVIDER_CHAIN,
+    value: {
+      origin: target.origin,
+      tabId: target.tabId,
+      chainId: chain.chainId,
+    },
+  } as BackgroundMessage);
 };
 
 export { PROVIDER_CHAIN_BOOTSTRAP_TIMEOUT_MS };

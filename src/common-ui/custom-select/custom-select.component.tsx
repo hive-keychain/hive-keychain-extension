@@ -26,6 +26,8 @@ export interface OptionItem {
   subLabel?: string;
   subLabelHover?: string;
   img?: string;
+  /** When set, `img` uses the shared chain logo fallback if the URL is empty or fails to load. */
+  imgChainName?: string;
   imgChip?: SVGIcons | string;
   /** When `imgChip` is a chain logo URL, used for initials if the URL is empty or fails to load. */
   imgChipChainName?: string;
@@ -61,19 +63,48 @@ export interface CustomSelectProps<T> {
   droppableId?: string;
 }
 
+let customSelectIdCounter = 0;
+
 export function ComplexeCustomSelect<T extends OptionItem>(
   itemProps: CustomSelectProps<T>,
 ) {
   const ref = useRef<HTMLInputElement>(null);
   const methodsRef = useRef<SelectMethods<T> | null>(null);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const [filteredOptions, setFilteredOptions] = useState(itemProps.options);
   const [query, setQuery] = useState('');
   const [isOpened, setIsOpened] = useState(false);
+  const [activeOptionIndex, setActiveOptionIndex] = useState<number>();
+  const [selectId] = useState(
+    () => `keychain-custom-select-${++customSelectIdCounter}`,
+  );
+  const optionsId = `${selectId}-options`;
+  const accessibleLabel =
+    itemProps.ariaLabel ??
+    (itemProps.label
+      ? itemProps.skipLabelTranslation
+        ? itemProps.label
+        : I18nUtils.getMessage(itemProps.label)
+      : itemProps.selectedItem.label || 'Dropdown select');
 
   useEffect(() => {
     setFilteredOptions(filter(query));
   }, [query, itemProps.options]);
+
+  useEffect(() => {
+    if (!isOpened || activeOptionIndex === undefined) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      dropdownRef.current
+        ?.querySelector<HTMLElement>(
+          `#${optionsId}-option-${activeOptionIndex}`,
+        )
+        ?.scrollIntoView({ block: 'nearest' });
+    });
+  }, [activeOptionIndex, isOpened, optionsId]);
 
   const filter = (query: string) => {
     if (itemProps.minFilterLength && query.length < itemProps.minFilterLength) {
@@ -100,11 +131,105 @@ export function ComplexeCustomSelect<T extends OptionItem>(
       return false;
     }
 
-    if (itemProps.skipImageGenerationForFirstItem && isFirstSelectOption(item)) {
+    if (
+      itemProps.skipImageGenerationForFirstItem &&
+      isFirstSelectOption(item)
+    ) {
       return false;
     }
 
     return Boolean(item.label);
+  };
+
+  const closeDropdown = (restoreFocus: boolean) => {
+    methodsRef.current?.dropDown('close');
+    setActiveOptionIndex(undefined);
+
+    if (restoreFocus) {
+      setTimeout(() => methodsRef.current?.getSelectRef().focus());
+    }
+  };
+
+  const openDropdown = (initialOptionIndex = 0) => {
+    methodsRef.current?.dropDown('open');
+    setActiveOptionIndex(initialOptionIndex);
+  };
+
+  const handleSelectKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const isFilterInput = event.target instanceof HTMLInputElement;
+    const footer = dropdownRef.current?.querySelector<HTMLElement>(
+      '.custom-select-footer button, .custom-select-footer [href], .custom-select-footer [tabindex]:not([tabindex="-1"])',
+    );
+    const isFooterFocused = !!footer?.contains(event.target as Node);
+
+    if (!isOpened) {
+      if (['Enter', ' ', 'ArrowDown', 'ArrowUp'].includes(event.key)) {
+        event.preventDefault();
+        openDropdown(event.key === 'ArrowUp' ? filteredOptions.length - 1 : 0);
+      }
+      return;
+    }
+
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeDropdown(true);
+      return;
+    }
+
+    if (event.key === 'Tab') {
+      if (isFooterFocused && event.shiftKey) {
+        event.preventDefault();
+        methodsRef.current?.getSelectRef().focus();
+        return;
+      }
+
+      if (!isFooterFocused && !event.shiftKey && footer) {
+        event.preventDefault();
+        footer.focus();
+        return;
+      }
+
+      closeDropdown(false);
+      return;
+    }
+
+    if (isFooterFocused) {
+      return;
+    }
+
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      const direction = event.key === 'ArrowDown' ? 1 : -1;
+      setActiveOptionIndex((currentIndex) => {
+        const nextIndex =
+          (currentIndex ?? (direction > 0 ? -1 : 0)) + direction;
+        return Math.min(
+          Math.max(nextIndex, 0),
+          Math.max(filteredOptions.length - 1, 0),
+        );
+      });
+      return;
+    }
+
+    if (event.key === 'Home' || event.key === 'End') {
+      event.preventDefault();
+      setActiveOptionIndex(
+        event.key === 'Home' ? 0 : Math.max(filteredOptions.length - 1, 0),
+      );
+      return;
+    }
+
+    if (
+      (event.key === 'Enter' || (event.key === ' ' && !isFilterInput)) &&
+      activeOptionIndex !== undefined
+    ) {
+      const option = filteredOptions[activeOptionIndex];
+      if (option) {
+        event.preventDefault();
+        itemProps.setSelectedItem(option);
+        closeDropdown(true);
+      }
+    }
   };
 
   const customLabelRender = (selectProps: SelectRenderer<T>) => {
@@ -127,6 +252,16 @@ export function ComplexeCustomSelect<T extends OptionItem>(
                 />
               )}
             {itemProps.selectedItem.img &&
+              itemProps.selectedItem.imgChainName &&
+              !EnumUtils.isValueOf(itemProps.selectedItem.img, SVGIcons) && (
+                <ChainLogo
+                  className="left-image"
+                  logoUri={itemProps.selectedItem.img}
+                  chainName={itemProps.selectedItem.imgChainName}
+                />
+              )}
+            {itemProps.selectedItem.img &&
+              !itemProps.selectedItem.imgChainName &&
               !EnumUtils.isValueOf(itemProps.selectedItem.img, SVGIcons) && (
                 <PreloadedImage
                   className="left-image"
@@ -224,7 +359,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
     option: T,
     index: number,
     optionsLength: number,
-    closeDropdown: () => void,
+    closeOptionsDropdown: () => void,
     dragHandle?: React.ComponentProps<
       typeof CustomSelectItemComponent
     >['dragHandle'],
@@ -234,10 +369,12 @@ export function ComplexeCustomSelect<T extends OptionItem>(
       isLast={index === optionsLength - 1}
       item={option}
       isSelected={option.value === itemProps.selectedItem.value}
+      isKeyboardActive={index === activeOptionIndex}
+      id={`${optionsId}-option-${index}`}
       handleItemClicked={() => {
         itemProps.setSelectedItem(option);
       }}
-      closeDropdown={closeDropdown}
+      closeDropdown={closeOptionsDropdown}
       onDelete={itemProps.onDelete}
       canDelete={
         option.canDelete && itemProps.selectedItem.value !== option.value
@@ -316,7 +453,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
       ref.current?.focus();
     }, 200);
     return (
-      <div className="custom-select-dropdown">
+      <div ref={dropdownRef} className="custom-select-dropdown">
         {itemProps.filterable && !itemProps.customFilter && (
           <InputComponent
             onChange={setQuery}
@@ -335,8 +472,12 @@ export function ComplexeCustomSelect<T extends OptionItem>(
           !!itemProps.customFilter &&
           itemProps.customFilter}
 
-        {renderOptionsList(() => methods.dropDown('close'))}
-        {itemProps.footer && itemProps.footer}
+        <div id={optionsId} className="custom-select-options" role="listbox">
+          {renderOptionsList(() => closeDropdown(true))}
+        </div>
+        {itemProps.footer && (
+          <div className="custom-select-footer">{itemProps.footer}</div>
+        )}
       </div>
     );
   };
@@ -359,17 +500,38 @@ export function ComplexeCustomSelect<T extends OptionItem>(
         dropdownHandleRenderer={customHandleRenderer}
         contentRenderer={customLabelRender}
         dropdownRenderer={customDropdownRenderer}
-        additionalProps={
-          itemProps.ariaLabel
-            ? { 'aria-label': itemProps.ariaLabel }
-            : undefined
-        }
+        additionalProps={{
+          id: selectId,
+          role: 'combobox',
+          'aria-label': accessibleLabel,
+          'aria-haspopup': 'listbox',
+          'aria-controls': isOpened ? optionsId : undefined,
+          'aria-expanded': isOpened,
+          'aria-activedescendant':
+            isOpened && activeOptionIndex !== undefined
+              ? `${optionsId}-option-${activeOptionIndex}`
+              : undefined,
+          onKeyDown: handleSelectKeyDown,
+        }}
         className={`custom-select ${
           itemProps.background ? itemProps.background : ''
         }`}
         values={[]}
-        onDropdownOpen={() => setIsOpened(true)}
-        onDropdownClose={() => setIsOpened(false)}
+        onDropdownOpen={() => {
+          setIsOpened(true);
+          setActiveOptionIndex(
+            Math.max(
+              filteredOptions.findIndex(
+                (option) => option.value === itemProps.selectedItem.value,
+              ),
+              0,
+            ),
+          );
+        }}
+        onDropdownClose={() => {
+          setIsOpened(false);
+          setActiveOptionIndex(undefined);
+        }}
       />
       {itemProps.showOverlay && (
         <div

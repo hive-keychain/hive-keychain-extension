@@ -42,7 +42,7 @@ const parseAddKeyNavParams = (
   return params;
 };
 
-const AddKey = ({
+export const AddKey = ({
   keyType,
   activeAccountName,
   activeAccount,
@@ -188,17 +188,21 @@ const AddKey = ({
           <div className="auths">
             {availableAuths.map((auth, index) => (
               <div className="auth" key={`account-auth-item-${auth}-${index}`}>
-                <div className="item-account" onClick={() => addAuth(auth)}>
+                <button
+                  type="button"
+                  className="item-account"
+                  onClick={() => addAuth(auth)}>
                   <img
                     className="account-img"
                     src={`https://images.hive.blog/u/${auth}/avatar`}
+                    alt=""
                     onError={(e: any) => {
                       e.target.onError = null;
                       e.target.src = '/assets/images/menu/accounts.svg';
                     }}
                   />
                   <div className="account-name">{auth}</div>
-                </div>
+                </button>
               </div>
             ))}
           </div>
@@ -206,9 +210,12 @@ const AddKey = ({
       )}
 
       {keyType === KeyType.ACTIVE && isLedgerSupported && (
-        <div className="add-using-ledger" onClick={navigateToUseLedger}>
+        <button
+          type="button"
+          className="add-using-ledger"
+          onClick={navigateToUseLedger}>
           {I18nUtils.getMessage('popup_html_add_using_ledger')}
-        </div>
+        </button>
       )}
 
       <div className="fill-space"></div>

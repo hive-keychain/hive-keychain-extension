@@ -35,7 +35,7 @@ export enum EvmEventName {
 
 export type EvmEventScope =
   | { kind: 'tab'; tabId: number }
-  | { kind: 'origin'; origin: string }
+  | { kind: 'origin'; origin: string; tabId?: number }
   | { kind: 'global' };
 
 export interface RoutedEvmEvent {

@@ -497,25 +497,71 @@ const getTokenBalances = async (
   );
 };
 
+interface EvmTokenSettingsFilterOptions {
+  customTokenAddresses?: string[];
+  hiddenAutoDetectedTokenAddresses?: string[];
+}
+
+const normalizeTokenFilterAddress = (address: string) =>
+  address.trim().toLowerCase();
+
+const getErc20FilterAddress = (
+  token: NativeAndErc20Token | EvmErc721Token | EvmErc1155Token,
+) => {
+  if (token.tokenInfo.type !== EVMSmartContractType.ERC20) {
+    return '';
+  }
+
+  return normalizeTokenFilterAddress(
+    (token.tokenInfo as EvmSmartContractInfoErc20).contractAddress,
+  );
+};
+
 const filterTokensBasedOnSettings = async (
   tokens: (NativeAndErc20Token | EvmErc721Token | EvmErc1155Token)[],
+  options: EvmTokenSettingsFilterOptions = {},
 ) => {
   const evmSettings = await EvmSettingsUtils.getSettings();
+  const hiddenAutoDetectedTokenAddresses = new Set(
+    (options.hiddenAutoDetectedTokenAddresses ?? [])
+      .map(normalizeTokenFilterAddress)
+      .filter(Boolean),
+  );
+  const customTokenAddresses = new Set(
+    (options.customTokenAddresses ?? [])
+      .map(normalizeTokenFilterAddress)
+      .filter(Boolean),
+  );
 
   return tokens.filter((token) => {
-    if (token.tokenInfo.type !== EVMSmartContractType.NATIVE) {
-      if (
-        !evmSettings.smartContracts.displayNonVerifiedContracts &&
-        !token.tokenInfo.verifiedContract
-      )
-        return false;
-
-      if (
-        !evmSettings.smartContracts.displayPossibleSpam &&
-        token.tokenInfo.possibleSpam
-      )
-        return false;
+    if (token.tokenInfo.type === EVMSmartContractType.NATIVE) {
+      return true;
     }
+
+    const erc20Address = getErc20FilterAddress(token);
+    if (
+      erc20Address &&
+      hiddenAutoDetectedTokenAddresses.has(erc20Address)
+    ) {
+      return false;
+    }
+
+    if (erc20Address && customTokenAddresses.has(erc20Address)) {
+      return true;
+    }
+
+    if (
+      !evmSettings.smartContracts.displayNonVerifiedContracts &&
+      !token.tokenInfo.verifiedContract
+    )
+      return false;
+
+    if (
+      !evmSettings.smartContracts.displayPossibleSpam &&
+      token.tokenInfo.possibleSpam
+    )
+      return false;
+
     return true;
   });
 };

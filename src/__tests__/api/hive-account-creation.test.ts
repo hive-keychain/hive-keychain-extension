@@ -127,10 +127,13 @@ describe('Hive account creation API', () => {
   });
 
   it('gets paid account creation status by request id', async () => {
-    jest.spyOn(KeychainApi, 'get').mockResolvedValue({
-      requestId: 'request/1',
-      username: 'new-account',
-      status: 'creating_account',
+    jest.spyOn(KeychainApi, 'getWithResponse').mockResolvedValue({
+      status: 200,
+      data: {
+        requestId: 'request/1',
+        username: 'new-account',
+        status: 'creating_account',
+      },
     });
 
     await expect(
@@ -140,8 +143,23 @@ describe('Hive account creation API', () => {
       status: 'creating_account',
     });
 
-    expect(KeychainApi.get).toHaveBeenCalledWith(
+    expect(KeychainApi.getWithResponse).toHaveBeenCalledWith(
       'hive/account-creation/request%2F1',
+    );
+  });
+
+  it('throws the backend error when paid account creation status is missing', async () => {
+    jest.spyOn(KeychainApi, 'getWithResponse').mockResolvedValue({
+      status: 404,
+      data: { error: 'Request not found.' },
+    });
+
+    await expect(getHiveAccountCreationStatus('request/1')).rejects.toMatchObject(
+      {
+        message: 'Request not found.',
+        status: 404,
+        response: { error: 'Request not found.' },
+      },
     );
   });
 

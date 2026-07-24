@@ -129,10 +129,8 @@ const EvmApp = ({
         await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
       setEvmAccounts(localAccounts);
 
-      const wallet = await EvmActiveAccountUtils.getSavedActiveAccountWallet(
-        chain,
-        localAccounts,
-      );
+      const wallet =
+        await EvmActiveAccountUtils.getSavedActiveAccountWallet(localAccounts);
       loadEvmActiveAccount(chain, wallet);
     } catch (err) {
       Logger.log(err);

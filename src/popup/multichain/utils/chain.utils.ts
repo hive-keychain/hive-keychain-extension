@@ -7,6 +7,7 @@ import {
 } from '@popup/multichain/interfaces/chains.interface';
 import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import Decimal from 'decimal.js';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -72,11 +73,46 @@ const setDefaultChains = (chains: Chain[]) => {
   defaultChains = chains;
 };
 
-const getDefaultChains = async (): Promise<Chain[]> => {
+const getBaseDefaultChains = async (): Promise<Chain[]> => {
   if (!defaultChains) {
-    return initChains();
+    return initBaseChains();
   }
   return defaultChains;
+};
+
+const getStoredEvmChains = async (): Promise<EvmChain[]> => {
+  const stored = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.CUSTOM_CHAINS,
+  );
+  if (!Array.isArray(stored)) return [];
+  return stored.filter(isStoredEvmChain);
+};
+
+const getDefaultChainIdSet = (chains: Chain[]): Set<string> => {
+  return new Set(chains.map((chain) => chain.chainId.toLowerCase()));
+};
+
+const getDefaultChains = async (): Promise<Chain[]> => {
+  const chains = await getBaseDefaultChains();
+  const defaultChainIds = getDefaultChainIdSet(chains);
+  const overrides = (await getStoredEvmChains()).filter((chain) =>
+    defaultChainIds.has(chain.chainId.toLowerCase()),
+  );
+  if (overrides.length === 0) return chains;
+
+  const overrideByChainId = new Map(
+    overrides.map((chain) => [chain.chainId.toLowerCase(), chain]),
+  );
+
+  return chains.map((chain) => {
+    const override = overrideByChainId.get(chain.chainId.toLowerCase());
+    if (!override) return chain;
+    return {
+      ...override,
+      isCustom: false,
+      isDefaultOverride: true,
+    };
+  });
 };
 
 const getAllSetupChainsForType = async <T>(type: ChainType): Promise<T[]> => {
@@ -240,12 +276,10 @@ const isStoredEvmChain = (c: unknown): c is EvmChain => {
 };
 
 const getCustomChains = async (): Promise<EvmChain[]> => {
-  const stored = await LocalStorageUtils.getValueFromLocalStorage(
-    LocalStorageKeyEnum.CUSTOM_CHAINS,
-  );
-  if (!Array.isArray(stored)) return [];
-  return stored
-    .filter(isStoredEvmChain)
+  const defaults = await getBaseDefaultChains();
+  const defaultChainIds = getDefaultChainIdSet(defaults);
+  return (await getStoredEvmChains())
+    .filter((chain) => !defaultChainIds.has(chain.chainId.toLowerCase()))
     .map((c) => ({ ...c, isCustom: true }) as EvmChain);
 };
 
@@ -277,7 +311,7 @@ const addCustomChain = async (chain: EvmChain): Promise<void> => {
   if (custom.some((c) => c.chainId.toLowerCase() === normalizedId)) {
     throw new Error('duplicate_custom_chain');
   }
-  const defaults = await getDefaultChains();
+  const defaults = await getBaseDefaultChains();
   if (defaults.some((c) => c.chainId.toLowerCase() === normalizedId)) {
     throw new Error('chain_exists_in_defaults');
   }
@@ -416,12 +450,12 @@ const STORAGE_RECORDS_KEYED_BY_CHAIN_ID: LocalStorageKeyEnum[] = [
   LocalStorageKeyEnum.EVM_SWITCH_RPC_AUTO,
   LocalStorageKeyEnum.EVM_WHITELISTED_ADDRESSES,
   LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
+  LocalStorageKeyEnum.EVM_HIDDEN_AUTO_DETECTED_TOKENS,
   LocalStorageKeyEnum.EVM_CUSTOM_NFTS,
   LocalStorageKeyEnum.EVM_MANUAL_DISCOVERED_NFTS,
   LocalStorageKeyEnum.EVM_DISCOVERED_TOKENS_CACHE,
   LocalStorageKeyEnum.EVM_DISCOVERED_NFTS_CACHE,
   LocalStorageKeyEnum.EVM_LIGHT_NODE_REGISTERED_ADDRESSES,
-  LocalStorageKeyEnum.EVM_ACTIVE_ACCOUNT_WALLET,
   LocalStorageKeyEnum.EVM_CANCELED_TRANSACTIONS,
   LocalStorageKeyEnum.EVM_LOCAL_HISTORY,
   LocalStorageKeyEnum.EVM_CUSTOM_HISTORY_INFO_CARD_HIDDEN,
@@ -644,7 +678,7 @@ const updateCustomChain = async (
     ) {
       throw new Error('duplicate_custom_chain');
     }
-    const defaults = await getDefaultChains();
+    const defaults = await getBaseDefaultChains();
     if (defaults.some((c) => c.chainId.toLowerCase() === normalizedNew)) {
       throw new Error('chain_exists_in_defaults');
     }
@@ -659,14 +693,113 @@ const updateCustomChain = async (
     previous,
   );
   const next = [...custom];
-  next[idx] = { ...enrichedChain, isCustom: true };
+  next[idx] = {
+    ...enrichedChain,
+    customMinGasPriceInGwei:
+      enrichedChain.customMinGasPriceInGwei ??
+      previous.customMinGasPriceInGwei,
+    isCustom: true,
+  };
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.CUSTOM_CHAINS,
     next,
   );
 };
 
-const initChains = async (): Promise<Chain[]> => {
+const updateCustomChainMinGasPrice = async (
+  chainId: string,
+  minGasPriceInGwei: string,
+): Promise<EvmChain | undefined> => {
+  const stored = await getStoredEvmChains();
+  const defaults = await getBaseDefaultChains();
+  const defaultChainIds = getDefaultChainIdSet(defaults);
+  const normalized = chainId.toLowerCase();
+  const idx = stored.findIndex(
+    (chain) =>
+      chain.chainId.toLowerCase() === normalized &&
+      !defaultChainIds.has(chain.chainId.toLowerCase()),
+  );
+  if (idx === -1) {
+    return undefined;
+  }
+
+  const current = stored[idx];
+  const currentMin = current.customMinGasPriceInGwei
+    ? new Decimal(current.customMinGasPriceInGwei)
+    : new Decimal(0);
+  const nextMin = Decimal.max(currentMin, new Decimal(minGasPriceInGwei));
+  const updated = {
+    ...current,
+    isCustom: true,
+    customMinGasPriceInGwei: nextMin.toString(),
+  };
+  const next = [...stored];
+  next[idx] = updated;
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.CUSTOM_CHAINS,
+    next,
+  );
+  return updated;
+};
+
+const updateDefaultChainOverride = async (
+  originalChainId: string,
+  chain: EvmChain,
+): Promise<void> => {
+  const defaults = await getBaseDefaultChains();
+  const normalizedOrig = originalChainId.toLowerCase();
+  const matchingDefault = defaults.find(
+    (defaultChain) => defaultChain.chainId.toLowerCase() === normalizedOrig,
+  );
+  if (!matchingDefault) {
+    throw new Error('default_chain_not_found');
+  }
+  if (chain.chainId.toLowerCase() !== normalizedOrig) {
+    throw new Error('default_chain_id_cannot_change');
+  }
+
+  const stored = await getStoredEvmChains();
+  const idx = stored.findIndex(
+    (storedChain) => storedChain.chainId.toLowerCase() === normalizedOrig,
+  );
+  const override: EvmChain = {
+    ...chain,
+    isCustom: false,
+    isDefaultOverride: true,
+  };
+  const next = [...stored];
+  if (idx >= 0) {
+    next[idx] = override;
+  } else {
+    next.push(override);
+  }
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.CUSTOM_CHAINS,
+    next,
+  );
+};
+
+const resetDefaultChainOverride = async (chainId: string): Promise<void> => {
+  const defaults = await getBaseDefaultChains();
+  const normalized = chainId.toLowerCase();
+  const matchingDefault = defaults.find(
+    (defaultChain) => defaultChain.chainId.toLowerCase() === normalized,
+  );
+  if (!matchingDefault) {
+    throw new Error('default_chain_not_found');
+  }
+
+  const stored = await getStoredEvmChains();
+  const next = stored.filter(
+    (storedChain) => storedChain.chainId.toLowerCase() !== normalized,
+  );
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.CUSTOM_CHAINS,
+    next,
+  );
+};
+
+const initBaseChains = async (): Promise<Chain[]> => {
   if (defaultChains) return defaultChains;
   if (defaultChainsPromise) return defaultChainsPromise;
 
@@ -720,6 +853,10 @@ const initChains = async (): Promise<Chain[]> => {
   }
 };
 
+const initChains = async (): Promise<Chain[]> => {
+  return getDefaultChains();
+};
+
 export const ChainUtils = {
   getDefaultChains,
   getSetupChains,
@@ -731,7 +868,10 @@ export const ChainUtils = {
   getCustomChains,
   addCustomChain,
   updateCustomChain,
+  updateCustomChainMinGasPrice,
   removeCustomChain,
+  updateDefaultChainOverride,
+  resetDefaultChainOverride,
   getChain,
   setPreviousChain,
   getPreviousChain,

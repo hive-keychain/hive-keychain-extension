@@ -209,7 +209,7 @@ const requestSignatures = async (
         message,
         withTimeout(
           async (message: string) => {
-            Logger.log({ multisigRequestSignatureResponse: message });
+            Logger.info('Received multisig request signature response');
             if (useRuntimeMessages) {
               CommunicationUtils.runtimeSendMessage({
                 command: BackgroundCommand.MULTISIG_REQUEST_SIGNATURES_RESPONSE,

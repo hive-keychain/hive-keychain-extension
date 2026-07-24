@@ -5,10 +5,12 @@ import {
   TooltipProps,
 } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
+import { I18nUtils } from 'src/utils/i18n.utils';
 
 interface ISVGIconProps {
   dataTestId?: string;
   onClick?: (...params: any) => void;
+  ariaLabel?: string;
   className?: string;
   icon: SVGIcons;
   hoverable?: boolean;
@@ -33,6 +35,7 @@ export const SVGIcon = ({
   tooltipPosition,
   tooltipDelayShow,
   svgViewBox,
+  ariaLabel,
 }: ISVGIconProps) => {
   const [hovered, setHovered] = useState(false);
 
@@ -51,6 +54,7 @@ export const SVGIcon = ({
     forceHover,
     background,
     svgViewBox,
+    ariaLabel,
   }: ISVGIconProps) => {
     return (
       <ReactSVG
@@ -60,6 +64,14 @@ export const SVGIcon = ({
         onClick={($event) => {
           handleClick($event);
         }}
+        onKeyDown={(event) => {
+          if (!onClick || (event.key !== 'Enter' && event.key !== ' ')) return;
+          event.preventDefault();
+          handleClick(event);
+        }}
+        role={onClick ? 'button' : undefined}
+        tabIndex={onClick ? 0 : undefined}
+        aria-label={onClick ? ariaLabel : undefined}
         className={`svg-icon ${className ?? ''} ${onClick ? 'clickable' : ''} ${
           (hoverable && hovered) || forceHover ? 'hovered' : ''
         }`}
@@ -73,6 +85,14 @@ export const SVGIcon = ({
       />
     );
   };
+
+  const accessibleLabel =
+    ariaLabel ??
+    (tooltipMessage
+      ? skipTooltipTranslation
+        ? tooltipMessage
+        : I18nUtils.getMessage(tooltipMessage)
+      : undefined);
 
   if (tooltipMessage && tooltipPosition) {
     return (
@@ -89,6 +109,7 @@ export const SVGIcon = ({
           hoverable,
           forceHover,
           svgViewBox,
+          ariaLabel: accessibleLabel,
         })}
       </CustomTooltip>
     );
@@ -101,6 +122,7 @@ export const SVGIcon = ({
       hoverable,
       forceHover,
       svgViewBox,
+      ariaLabel: accessibleLabel,
     });
   }
 };

@@ -44,6 +44,7 @@ export const SendTransaction = (props: Props) => {
     balanceInfoRefreshing,
     forceOpenGasFeePanelEvent,
     prefetchedMainTokenFromInit,
+    applyCustomMinGasPrice,
   } = useSendTransaction(request, data, accounts, { isActive, activationKey });
 
   const needsGasFeePanel = Boolean(
@@ -56,6 +57,8 @@ export const SendTransaction = (props: Props) => {
 
   const [gasFeePanelReady, setGasFeePanelReady] = useState(false);
   const [gasRefreshKey, setGasRefreshKey] = useState<number>();
+  const [gasFeeSelectionResetKey, setGasFeeSelectionResetKey] =
+    useState<number>();
   const [gasFeeRefreshing, setGasFeeRefreshing] = useState(false);
   const [isPostConfirmationLoading, setPostConfirmationLoading] =
     useState(false);
@@ -86,7 +89,8 @@ export const SendTransaction = (props: Props) => {
     }) => {
       if (
         msg?.command !== DialogCommand.ANSWER_EVM_REQUEST &&
-        msg?.command !== DialogCommand.SEND_DIALOG_ERROR
+        msg?.command !== DialogCommand.SEND_DIALOG_ERROR &&
+        msg?.command !== DialogCommand.UPDATE_EVM_GAS_FEES
       ) {
         return;
       }
@@ -101,6 +105,44 @@ export const SendTransaction = (props: Props) => {
       chrome.runtime.onMessage.removeListener(clearPostConfirmationLoading);
     };
   }, [request.request_id, transactionHook.setLoading]);
+
+  useEffect(() => {
+    const handleGasFeeUpdate = (msg: {
+      command?: string;
+      msg?: {
+        request_id?: number;
+        minGasPriceInGwei?: string;
+        message?: string;
+      };
+    }) => {
+      if (
+        msg?.command !== DialogCommand.UPDATE_EVM_GAS_FEES ||
+        msg.msg?.request_id !== request.request_id
+      ) {
+        return;
+      }
+
+      if (msg.msg.minGasPriceInGwei) {
+        applyCustomMinGasPrice(msg.msg.minGasPriceInGwei);
+      }
+      transactionHook.setErrorMessage({
+        message:
+          msg.msg.message ??
+          'evm_gas_fee_warning_updated_after_insufficient_price',
+      });
+      setGasFeePanelReady(false);
+      setGasFeeSelectionResetKey((currentKey) => (currentKey ?? 0) + 1);
+      setGasRefreshKey((currentKey) => (currentKey ?? 0) + 1);
+    };
+    chrome.runtime.onMessage.addListener(handleGasFeeUpdate);
+    return () => {
+      chrome.runtime.onMessage.removeListener(handleGasFeeUpdate);
+    };
+  }, [
+    applyCustomMinGasPrice,
+    request.request_id,
+    transactionHook.setErrorMessage,
+  ]);
 
   const onGasFeePanelInitialEstimationComplete = useCallback(() => {
     setGasFeePanelReady(true);
@@ -165,6 +207,7 @@ export const SendTransaction = (props: Props) => {
                   transactionType={transactionData!.type}
                   transactionData={transactionData}
                   refreshKey={gasRefreshKey}
+                  resetCustomFeeSelectionKey={gasFeeSelectionResetKey}
                   isActive={isActive}
                   setErrorMessage={transactionHook.setErrorMessage}
                   onInitialEstimationComplete={

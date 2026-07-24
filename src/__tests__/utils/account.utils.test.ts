@@ -9,6 +9,7 @@ import { KeyType, Keys } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import accounts, * as dataAccounts from 'src/__tests__/utils-for-testing/data/accounts';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -16,6 +17,12 @@ import rcAccounts from 'src/__tests__/utils-for-testing/data/rc-accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import { KeychainError } from 'src/keychain-error';
+import {
+  EvmAccountSource,
+  StoredEvmAccountSource,
+} from 'src/popup/evm/interfaces/wallet.interface';
+import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
+import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -203,6 +210,71 @@ describe('account.utils tests:\n', () => {
     jest.clearAllMocks();
     jest.resetModules();
   });
+
+  it('Must include EVM accounts and settings in the legacy export entry point', async () => {
+    const evmAccounts: StoredEvmAccountSource[] = [
+      {
+        type: EvmAccountSource.IMPORTED,
+        nickname: 'Imported',
+        id: 1,
+        accounts: [
+          {
+            id: 0,
+            address: '0x1234567890123456789012345678901234567890',
+            privateKey:
+              '0x1234567890123456789012345678901234567890123456789012345678901234',
+            path: '',
+            order: 0,
+            nickname: 'Main',
+          },
+        ],
+      },
+    ];
+    const getEvmAccountsSpy = jest
+      .spyOn(EvmWalletUtils, 'getAccountsFromLocalStorage')
+      .mockResolvedValue(evmAccounts);
+    const getSettingsSpy = jest
+      .spyOn(LocalStorageUtils, 'getMultipleValueFromLocalStorage')
+      .mockResolvedValue({
+        [LocalStorageKeyEnum.ACTIVE_THEME]: 'dark',
+      });
+    let exportedBlob: Blob | undefined;
+    const originalCreateObjectUrl = window.URL.createObjectURL;
+    window.URL.createObjectURL = jest.fn((blob: Blob | MediaSource) => {
+      exportedBlob = blob as Blob;
+      return 'blob:mocked-export';
+    });
+    const clickSpy = jest
+      .spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => undefined);
+
+    await AccountUtils.downloadAccounts(constants.accounts, mk.user.one);
+
+    const encryptedContent = await new Promise<string>((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.onload = () => resolve(fileReader.result as string);
+      fileReader.onerror = () => reject(fileReader.error);
+      fileReader.readAsText(exportedBlob as Blob);
+    });
+    const decryptedPayload = await EncryptUtils.decryptToAnyJsonWithLegacySupport(
+      encryptedContent,
+      mk.user.one,
+    );
+    expect(decryptedPayload).toMatchObject({
+      v: 2,
+      hiveAccounts: constants.accounts,
+      evmAccounts,
+      settings: {
+        [LocalStorageKeyEnum.ACTIVE_THEME]: 'dark',
+      },
+    });
+
+    window.URL.createObjectURL = originalCreateObjectUrl;
+    getEvmAccountsSpy.mockRestore();
+    getSettingsSpy.mockRestore();
+    clickSpy.mockRestore();
+  });
+
   describe('getKeys tests:\n', () => {
     test('Must throw error if username not found', async () => {
       const userObject: {

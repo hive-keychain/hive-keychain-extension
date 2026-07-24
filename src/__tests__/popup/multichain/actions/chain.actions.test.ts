@@ -9,6 +9,10 @@ import {
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 
+jest.mock('@popup/multichain/utils/provider-chain-bootstrap.utils', () => ({
+  syncProviderChainForActiveTab: jest.fn(),
+}));
+
 const evmChain: EvmChain = {
   type: ChainType.EVM,
   chainId: '0x2105',
@@ -51,5 +55,18 @@ describe('chain.actions tests:\n', () => {
 
     expect(EvmChainUtils.saveLastUsedChain).not.toHaveBeenCalled();
     expect(fakeStore.getState().chain).toEqual(evmChain);
+  });
+
+  it('syncs the provider chain when requested', async () => {
+    const { syncProviderChainForActiveTab } = await import(
+      '@popup/multichain/utils/provider-chain-bootstrap.utils'
+    );
+    const fakeStore = getFakeStore(initialEmptyStateStore);
+
+    await fakeStore.dispatch<any>(
+      setChain(evmChain, { syncProviderNetwork: true }),
+    );
+
+    expect(syncProviderChainForActiveTab).toHaveBeenCalledWith(evmChain);
   });
 });

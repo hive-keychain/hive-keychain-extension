@@ -13,6 +13,7 @@ type Props = {
   address?: string;
   status?: DappStatusEnum;
   onClick?: () => void;
+  ariaLabel?: string;
 };
 export const DappStatusComponent = ({
   imageUrl,
@@ -20,16 +21,13 @@ export const DappStatusComponent = ({
   status,
   onClick,
   address,
+  ariaLabel,
 }: Props) => {
   const [imageSrc, setImageSrc] = useState(imageUrl || fallbackImageUrl);
 
   useEffect(() => {
     setImageSrc(imageUrl || fallbackImageUrl);
   }, [fallbackImageUrl, imageUrl]);
-
-  const handleOnClick = () => {
-    if (onClick) onClick();
-  };
 
   const handleImageError = () => {
     if (fallbackImageUrl && imageSrc !== fallbackImageUrl) {
@@ -39,13 +37,29 @@ export const DappStatusComponent = ({
     setImageSrc(undefined);
   };
 
-  return (
-    <div
-      className={`evm-dapp-status-container ${onClick ? 'pointer' : ''}`}
-      onClick={handleOnClick}>
+  const content = (
+    <>
       {address && <EvmAccountImage address={address} />}
-      {imageSrc && <img src={imageSrc} onError={handleImageError} />}
+      {imageSrc && <img src={imageSrc} alt="" onError={handleImageError} />}
       {status && <div className={`indicator ${status}`}></div>}
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        className="evm-dapp-status-container pointer"
+        onClick={onClick}
+        aria-label={ariaLabel}>
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div className="evm-dapp-status-container">
+      {content}
     </div>
   );
 };

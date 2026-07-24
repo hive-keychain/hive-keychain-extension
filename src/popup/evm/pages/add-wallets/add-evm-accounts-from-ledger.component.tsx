@@ -51,7 +51,7 @@ const AddEvmAccountsFromLedger = ({
     await setEvmAccounts(accounts);
 
     const activeAccount =
-      await EvmActiveAccountUtils.getSavedActiveAccountWallet(chain, accounts);
+      await EvmActiveAccountUtils.getSavedActiveAccountWallet(accounts);
     if (activeAccount) {
       await loadEvmActiveAccount(chain, activeAccount);
     }

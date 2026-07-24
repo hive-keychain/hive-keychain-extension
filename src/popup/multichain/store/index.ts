@@ -1,11 +1,7 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
 import { setHasFinishedSignup } from '@popup/multichain/actions/has-finished-signup.actions';
-import {
-  Chain,
-  ChainType,
-  EvmChain,
-} from '@popup/multichain/interfaces/chains.interface';
+import { Chain, ChainType } from '@popup/multichain/interfaces/chains.interface';
 import reducers from '@popup/multichain/reducers';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
@@ -95,7 +91,6 @@ if (store.getState().hive) {
 
 if (store.getState().evm) {
   let previousAccounts = store.getState().evm.accounts;
-  let previousChainId = (store.getState().chain as Chain)?.chainId;
   let previousActiveAccountAddress =
     store.getState().evm.activeAccount?.address;
 
@@ -124,15 +119,10 @@ if (store.getState().evm) {
     if (
       chain?.type === ChainType.EVM &&
       activeAccount?.address &&
-      (previousActiveAccountAddress !== activeAccount.address ||
-        previousChainId !== chain.chainId)
+      previousActiveAccountAddress !== activeAccount.address
     ) {
-      EvmActiveAccountUtils.saveActiveAccountWallet(
-        chain as EvmChain,
-        activeAccount.address,
-      );
+      EvmActiveAccountUtils.saveActiveAccountWallet(activeAccount.address);
     }
-    previousChainId = chain?.chainId;
     previousActiveAccountAddress = activeAccount?.address;
   });
 }

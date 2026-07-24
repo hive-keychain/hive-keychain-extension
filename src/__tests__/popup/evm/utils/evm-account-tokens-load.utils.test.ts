@@ -69,6 +69,9 @@ describe('EvmAccountTokensLoadUtils', () => {
     jest
       .spyOn(EvmDiscoveryCacheUtils, 'getDiscoveredTokens')
       .mockResolvedValue(null);
+    jest
+      .spyOn(EvmTokensUtils, 'getCustomErc20TokenInfos')
+      .mockResolvedValue([]);
     jest.spyOn(EvmTokensUtils, 'getTokenBalances').mockResolvedValue([nativeToken]);
     jest
       .spyOn(EvmTokensUtils, 'filterTokensBasedOnSettings')
@@ -106,6 +109,42 @@ describe('EvmAccountTokensLoadUtils', () => {
       ethereumChain.chainId,
       '0xabc',
       discoveredTokensResponse,
+    );
+  });
+
+  it('merges saved custom tokens with discovered tokens on default chains', async () => {
+    const customToken = {
+      type: EVMSmartContractType.ERC20,
+      name: 'Custom Token',
+      symbol: 'CUS',
+      decimals: 6,
+      logo: '',
+      chainId: ethereumChain.chainId,
+      contractAddress: '0x00000000000000000000000000000000000000aa',
+      backgroundColor: '',
+      priceUsd: 0,
+      possibleSpam: false,
+      verifiedContract: true,
+      isProxy: false,
+      proxyTarget: null,
+      validated: 0,
+    };
+    (
+      EvmTokensUtils.getCustomErc20TokenInfos as jest.Mock
+    ).mockResolvedValue([customToken]);
+
+    await EvmAccountTokensLoadUtils.loadNativeAndErc20TokensForChain(
+      ethereumChain,
+      '0xabc',
+    );
+
+    expect(EvmTokensUtils.getTokenBalances).toHaveBeenCalledWith(
+      '0xabc',
+      ethereumChain,
+      expect.arrayContaining([
+        discoveredTokensResponse.tokens[0],
+        customToken,
+      ]),
     );
   });
 

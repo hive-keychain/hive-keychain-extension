@@ -11,6 +11,7 @@ import { InputType } from './input-type.enum';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
 export interface InputProps {
+  id?: string;
   value: any;
   logo?: string | SVGIcons;
   imageLogoUrl?: string;
@@ -44,10 +45,23 @@ export interface InputProps {
   onBlur?(): any;
 }
 
-const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
+let inputIdCounter = 0;
+
+const InputComponent = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordDisplay, setPasswordDisplayed] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [inputId] = useState(
+    () => props.id ?? `keychain-input-${++inputIdCounter}`,
+  );
+  const hintId = `${inputId}-hint`;
+  const errorId = `${inputId}-error`;
+  const describedBy = [
+    props.hint ? hintId : undefined,
+    props.error ? errorId : undefined,
+  ]
+    .filter((id): id is string => !!id)
+    .join(' ');
 
   useEffect(() => {
     setMounted(true);
@@ -76,15 +90,15 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
       {(props.label || props.hint) && (
         <div className="label">
           {props.label && (
-            <>
+            <label htmlFor={inputId}>
               {props.skipLabelTranslation
                 ? props.label
                 : I18nUtils.getMessage(props.label)}{' '}
               {props.required ? '*' : ''}
-            </>
+            </label>
           )}
           {props.hint && (
-            <div className="hint">
+            <div className="hint" id={hintId}>
               {props.skipHintTranslation
                 ? props.hint
                 : I18nUtils.getMessage(props.hint)}
@@ -109,6 +123,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
               : ''
           }`}>
           <input
+            id={inputId}
             disabled={props.disabled}
             readOnly={props.readOnly}
             data-testid={props.dataTestId}
@@ -118,6 +133,8 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
                 : props.type
             }
             ref={ref}
+            aria-describedby={describedBy || undefined}
+            aria-invalid={props.error ? true : undefined}
             placeholder={`${
               props.placeholder
                 ? props.skipPlaceholderTranslation
@@ -145,6 +162,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
               <SVGIcon
                 icon={SVGIcons.INPUT_SHOW}
                 className="input-img display-password right"
+                ariaLabel={I18nUtils.getMessage('accessibility_show_password')}
                 onClick={() => setPasswordDisplayed(true)}
               />
             )}
@@ -154,6 +172,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
               <SVGIcon
                 icon={SVGIcons.INPUT_HIDE}
                 className="input-img display-password right"
+                ariaLabel={I18nUtils.getMessage('accessibility_hide_password')}
                 onClick={() => setPasswordDisplayed(false)}
               />
             )}
@@ -167,6 +186,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
                 className={`input-img erase right ${
                   props.logoPosition === 'right' ? 'has-right-logo' : ''
                 }`}
+                ariaLabel={I18nUtils.getMessage('accessibility_clear_input')}
                 onClick={() => props.onChange('')}
               />
             )}
@@ -223,7 +243,9 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
         )}
       </div>
       {props.error && (
-        <div className="error">{FormUtils.parseJoiError(props.error)}</div>
+        <div className="error" id={errorId} role="alert">
+          {FormUtils.parseJoiError(props.error)}
+        </div>
       )}
     </div>
   );

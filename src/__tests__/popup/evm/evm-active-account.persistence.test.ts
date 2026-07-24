@@ -65,13 +65,10 @@ describe('EVM active account persistence', () => {
       },
     });
 
-    expect(saveActiveAccountWalletSpy).toHaveBeenCalledWith(
-      evmChainFixture,
-      '0x123',
-    );
+    expect(saveActiveAccountWalletSpy).toHaveBeenCalledWith('0x123');
   });
 
-  it('saves the current address again when switching to another EVM chain', () => {
+  it('does not save the current address again when switching to another EVM chain', () => {
     const saveActiveAccountWalletSpy = jest
       .spyOn(EvmActiveAccountUtils, 'saveActiveAccountWallet')
       .mockResolvedValue(undefined as never);
@@ -95,9 +92,6 @@ describe('EVM active account persistence', () => {
       payload: secondEvmChainFixture,
     });
 
-    expect(saveActiveAccountWalletSpy).toHaveBeenCalledWith(
-      secondEvmChainFixture,
-      '0x123',
-    );
+    expect(saveActiveAccountWalletSpy).not.toHaveBeenCalled();
   });
 });

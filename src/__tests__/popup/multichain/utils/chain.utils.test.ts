@@ -302,7 +302,8 @@ describe('ChainUtils', () => {
   });
 
   it('removeCustomChain deletes the chain, setup entry, and clears keyed EVM storage', async () => {
-    const { ChainUtils, LocalStorageUtils } = await loadTestContext();
+    const { ChainUtils, EvmLightNodeApi, LocalStorageUtils } =
+      await loadTestContext();
     const customChain = {
       type: ChainType.EVM,
       chainId: '0x539',
@@ -312,6 +313,7 @@ describe('ChainUtils', () => {
       rpcs: [{ url: 'http://127.0.0.1:8545', isDefault: true }],
       testnet: false,
     };
+    (EvmLightNodeApi.get as jest.Mock).mockResolvedValue(clone(apiChains));
     LocalStorageUtils.getValueFromLocalStorage.mockImplementation(
       async (key: LocalStorageKeyEnum) => {
         if (key === LocalStorageKeyEnum.CUSTOM_CHAINS) {
@@ -379,7 +381,9 @@ describe('ChainUtils', () => {
   });
 
   it('removeCustomChain throws when the chain is not in custom list', async () => {
-    const { ChainUtils, LocalStorageUtils } = await loadTestContext();
+    const { ChainUtils, EvmLightNodeApi, LocalStorageUtils } =
+      await loadTestContext();
+    (EvmLightNodeApi.get as jest.Mock).mockResolvedValue(clone(apiChains));
     LocalStorageUtils.getValueFromLocalStorage.mockImplementation(
       async (key: LocalStorageKeyEnum) => {
         if (key === LocalStorageKeyEnum.CUSTOM_CHAINS) {
@@ -458,7 +462,7 @@ describe('ChainUtils', () => {
   });
 
   it('updateCustomChain refreshes nativeCoinId and preserves the previous one on failure', async () => {
-    const { ChainUtils, EvmLightNodeUtils, LocalStorageUtils } =
+    const { ChainUtils, EvmLightNodeApi, EvmLightNodeUtils, LocalStorageUtils } =
       await loadTestContext();
     const existingCustomChain = {
       type: ChainType.EVM,
@@ -471,6 +475,7 @@ describe('ChainUtils', () => {
       testnet: false,
     };
 
+    (EvmLightNodeApi.get as jest.Mock).mockResolvedValue(clone(apiChains));
     LocalStorageUtils.getValueFromLocalStorage.mockImplementation(
       async (key: LocalStorageKeyEnum) => {
         if (key === LocalStorageKeyEnum.CUSTOM_CHAINS) {
@@ -498,6 +503,7 @@ describe('ChainUtils', () => {
     );
 
     jest.clearAllMocks();
+    (EvmLightNodeApi.get as jest.Mock).mockResolvedValue(clone(apiChains));
     LocalStorageUtils.getValueFromLocalStorage.mockImplementation(
       async (key: LocalStorageKeyEnum) => {
         if (key === LocalStorageKeyEnum.CUSTOM_CHAINS) {
@@ -522,6 +528,148 @@ describe('ChainUtils', () => {
     expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
       LocalStorageKeyEnum.CUSTOM_CHAINS,
       [expect.objectContaining({ name: 'Preserved Local', nativeCoinId: 'old-id' })],
+    );
+  });
+
+  it('merges stored default chain overrides into defaults and excludes them from custom chains', async () => {
+    const { ChainUtils, EvmLightNodeApi, LocalStorageUtils } =
+      await loadTestContext();
+    const defaultOverride = {
+      ...apiChains[1],
+      name: 'Edited Ethereum',
+      logo: 'https://example.com/edited-eth.svg',
+      rpcs: [{ url: 'https://edited.ethereum.org', isDefault: true }],
+      isCustom: false,
+      isDefaultOverride: true,
+    };
+    const customChain = {
+      type: ChainType.EVM,
+      chainId: '0x539',
+      name: 'Local',
+      mainToken: 'ETH',
+      defaultTransactionType: EvmTransactionType.EIP_1559,
+      rpcs: [{ url: 'http://127.0.0.1:8545', isDefault: true }],
+      testnet: false,
+    };
+    (EvmLightNodeApi.get as jest.Mock).mockResolvedValue(clone(apiChains));
+    LocalStorageUtils.getValueFromLocalStorage.mockImplementation(
+      async (key: LocalStorageKeyEnum) => {
+        if (key === LocalStorageKeyEnum.CUSTOM_CHAINS) {
+          return [clone(defaultOverride), clone(customChain)];
+        }
+        return undefined;
+      },
+    );
+    LocalStorageUtils.saveValueInLocalStorage.mockResolvedValue(undefined);
+
+    const defaults = await ChainUtils.getDefaultChains();
+    const custom = await ChainUtils.getCustomChains();
+
+    expect(defaults.find((chain) => chain.chainId === '0x1')).toEqual(
+      expect.objectContaining({
+        name: 'Edited Ethereum',
+        isCustom: false,
+        isDefaultOverride: true,
+      }),
+    );
+    expect(custom).toEqual([
+      expect.objectContaining({
+        chainId: '0x539',
+        isCustom: true,
+      }),
+    ]);
+  });
+
+  it('updateDefaultChainOverride stores a supported chain override beside real custom chains', async () => {
+    const { ChainUtils, EvmLightNodeApi, LocalStorageUtils } =
+      await loadTestContext();
+    const customChain = {
+      type: ChainType.EVM,
+      chainId: '0x539',
+      name: 'Local',
+      mainToken: 'ETH',
+      defaultTransactionType: EvmTransactionType.EIP_1559,
+      rpcs: [{ url: 'http://127.0.0.1:8545', isDefault: true }],
+      testnet: false,
+    };
+    const editedDefaultChain = {
+      ...apiChains[1],
+      name: 'Edited Ethereum',
+      rpcs: [{ url: 'https://edited.ethereum.org', isDefault: true }],
+      isCustom: false,
+    };
+    (EvmLightNodeApi.get as jest.Mock).mockResolvedValue(clone(apiChains));
+    LocalStorageUtils.getValueFromLocalStorage.mockImplementation(
+      async (key: LocalStorageKeyEnum) => {
+        if (key === LocalStorageKeyEnum.CUSTOM_CHAINS) {
+          return [clone(customChain)];
+        }
+        return undefined;
+      },
+    );
+    LocalStorageUtils.saveValueInLocalStorage.mockResolvedValue(undefined);
+
+    await ChainUtils.updateDefaultChainOverride(
+      '0x1',
+      editedDefaultChain as any,
+    );
+
+    expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.CUSTOM_CHAINS,
+      [
+        customChain,
+        expect.objectContaining({
+          chainId: '0x1',
+          name: 'Edited Ethereum',
+          isCustom: false,
+          isDefaultOverride: true,
+        }),
+      ],
+    );
+  });
+
+  it('resetDefaultChainOverride removes only the supported chain override', async () => {
+    const { ChainUtils, EvmLightNodeApi, LocalStorageUtils } =
+      await loadTestContext();
+    const defaultOverride = {
+      ...apiChains[1],
+      name: 'Edited Ethereum',
+      isCustom: false,
+      isDefaultOverride: true,
+    };
+    const customChain = {
+      type: ChainType.EVM,
+      chainId: '0x539',
+      name: 'Local',
+      mainToken: 'ETH',
+      defaultTransactionType: EvmTransactionType.EIP_1559,
+      rpcs: [{ url: 'http://127.0.0.1:8545', isDefault: true }],
+      testnet: false,
+    };
+    (EvmLightNodeApi.get as jest.Mock).mockResolvedValue(clone(apiChains));
+    LocalStorageUtils.getValueFromLocalStorage.mockImplementation(
+      async (key: LocalStorageKeyEnum) => {
+        if (key === LocalStorageKeyEnum.CUSTOM_CHAINS) {
+          return [clone(defaultOverride), clone(customChain)];
+        }
+        return undefined;
+      },
+    );
+    LocalStorageUtils.saveValueInLocalStorage.mockResolvedValue(undefined);
+
+    await ChainUtils.resetDefaultChainOverride('0x1');
+
+    expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.CUSTOM_CHAINS,
+      [customChain],
+    );
+    expect(LocalStorageUtils.saveValueInLocalStorage).not.toHaveBeenCalledWith(
+      LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
+      expect.anything(),
+    );
+    expect(LocalStorageUtils.saveValueInLocalStorage).not.toHaveBeenCalledWith(
+      LocalStorageKeyEnum.EVM_ACTIVE_RPCS,
+      expect.anything(),
     );
   });
 });

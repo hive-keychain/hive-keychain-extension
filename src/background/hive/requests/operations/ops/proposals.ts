@@ -141,7 +141,7 @@ export const broadcastUpdateProposalVote = async (
       (e as KeychainError).messageParams,
     );
   } finally {
-    let messageText = '';
+    let messageText: ReturnType<typeof feedbackI18n>;
     const ids =
       typeof data.proposal_ids === 'string'
         ? JSON.parse(data.proposal_ids)

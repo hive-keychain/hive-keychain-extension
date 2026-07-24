@@ -20,11 +20,34 @@ path {
     border: 1px solid var(--wallet-card-opened-border);
   }
 
+  &:has(.wallet-info-disclosure:focus-visible) {
+    border-color: $red;
+  }
+
   .information-panel-hive {
     width: 100%;
     display: flex;
     align-items: center;
     column-gap: 16px;
+
+    .wallet-info-disclosure {
+      display: flex;
+      align-items: center;
+      column-gap: 16px;
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      padding: 0;
+      background: none;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+
+      &:focus {
+        outline: none;
+      }
+
+    }
     .currency-icon {
       border-radius: 50%;
       @include icon-size(36px);
@@ -82,6 +105,14 @@ path {
         @include poppins400(12px);
       }
     }
+  }
+
+  .wallet-info-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 8px;
+    width: 100%;
   }
 
   .token-info-panel {

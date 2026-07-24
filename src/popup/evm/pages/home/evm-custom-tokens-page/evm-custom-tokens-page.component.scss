@@ -1,27 +1,64 @@
 .evm-custom-tokens-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  padding-bottom: 16px;
+
   .add-custom-token-link {
     @include link;
-    align-self: flex-end;
+    flex-shrink: 0;
   }
 
   .evm-custom-tokens-card {
     display: flex;
     flex-direction: column;
     row-gap: 16px;
+    flex: 1 1 auto;
+    min-height: 0;
     margin: 0 24px;
+    overflow-y: auto;
   }
 
   .evm-custom-tokens-caption {
-    font-size: 13px;
+    @include poppins400(13px);
     line-height: 1.45;
     margin: 0;
     opacity: 0.85;
   }
 
   .evm-custom-tokens-empty {
+    @include poppins400(13px);
     margin: 0;
-    font-size: 13px;
     opacity: 0.85;
+  }
+
+  .evm-custom-tokens-section {
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .evm-custom-tokens-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 12px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .evm-custom-tokens-section-title {
+    @include poppins600(14px);
+    color: var(--main-font-color);
+    min-width: 0;
+  }
+
+  .evm-custom-tokens-list__item.known-token-item {
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 
   .evm-custom-tokens-list {
@@ -31,8 +68,6 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    max-height: 360px;
-    overflow: auto;
     width: 100%;
   }
 
@@ -57,9 +92,8 @@
       height: 40px;
       margin: 0;
       padding: 0;
-      border: 1px solid var(--card-border);
-      border-radius: 50%;
-      background: var(--card-background);
+      border: none;
+      background: transparent;
       cursor: pointer;
       color: var(--main-font-color);
       box-sizing: border-box;
@@ -105,41 +139,6 @@
     }
   }
 
-  .evm-custom-tokens-list__logo {
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
-    object-fit: contain;
-    flex-shrink: 0;
-  }
-
-  .evm-custom-tokens-list__line {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-items: baseline;
-    gap: 10px;
-    min-width: 0;
-    flex: 1 1 auto;
-    font-size: 14px;
-    line-height: 1.3;
-    overflow: hidden;
-  }
-
-  .evm-custom-tokens-list__name {
-    @include poppins600(14px);
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .evm-custom-tokens-list__contract-address {
-    @include poppins400(14px);
-    flex-shrink: 0;
-    opacity: 0.9;
-    white-space: nowrap;
-  }
 }
 
 /* Modal content is rendered at router level (not under .evm-custom-tokens-page). */

@@ -583,7 +583,7 @@ export const Portfolio = ({
   }, []);
 
   useEffect(() => {
-    if (!sections.includes(section)) {
+    if (!sections.some((visibleSection) => visibleSection === section)) {
       setSection('portfolio');
     }
   }, [section, sections]);

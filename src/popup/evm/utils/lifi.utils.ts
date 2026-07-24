@@ -1,12 +1,19 @@
 import { KeychainApi } from '@api/keychain';
 import { OptionItem } from '@common-ui/custom-select/custom-select.component';
 import { SVGIcons } from '@common-ui/icons.enum';
-import { ExtendedChain, TokenExtended } from '@lifi/types';
+import { ExtendedChain, LiFiStep, TokenExtended } from '@lifi/types';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
-import { ethers } from 'ethers';
-import { LifiHistoryItem, LifiHistoryResponse } from 'hive-keychain-commons';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import Decimal from 'decimal.js';
+import { ethers, TransactionResponse } from 'ethers';
+import {
+  LifiHistoryItem,
+  LifiHistoryResponse,
+  LifiHistoryToken,
+} from 'hive-keychain-commons';
 import { KeychainError } from 'src/keychain-error';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const ALL_CHAINS_ID = 0;
 
@@ -41,8 +48,96 @@ export interface LiFiTokenBalance {
   balanceValue: string;
 }
 
+type LifiSwapHistoryStorage = Record<string, LifiHistoryItem[]>;
+type LifiHistoryItemWithTransactionHashes = LifiHistoryItem & {
+  sending?: LifiHistoryItem['sending'] & {
+    txHash?: string;
+  };
+  receiving?: LifiHistoryItem['receiving'] & {
+    txHash?: string;
+  };
+};
+
 const isAllChains = (chain: ExtendedChain): boolean =>
   chain.id === ALL_CHAINS_ID;
+
+const normalizeWalletKey = (walletAddress: string): string =>
+  walletAddress.toLowerCase();
+
+const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+  value !== null && typeof value === 'object' && !Array.isArray(value);
+
+const parseStoredLiFiSwapHistory = (
+  raw: unknown,
+): LifiSwapHistoryStorage => {
+  if (!isPlainObject(raw)) return {};
+
+  return Object.entries(raw).reduce<LifiSwapHistoryStorage>(
+    (storage, [walletAddress, items]) => {
+      if (Array.isArray(items)) {
+        storage[normalizeWalletKey(walletAddress)] = items.filter((item) =>
+          isPlainObject(item),
+        ) as LifiHistoryItem[];
+      }
+      return storage;
+    },
+    {},
+  );
+};
+
+const normalizeLiFiHistoryIdentifier = (value?: string): string | undefined =>
+  value?.toLowerCase();
+
+const getLiFiHistoryIdentifierCandidates = (
+  historyItem: LifiHistoryItem,
+): string[] => {
+  const itemWithHashes = historyItem as LifiHistoryItemWithTransactionHashes;
+  return [
+    historyItem.transactionId,
+    itemWithHashes.sending?.txHash,
+    itemWithHashes.receiving?.txHash,
+  ].reduce<string[]>((candidates, value) => {
+    const normalizedValue = normalizeLiFiHistoryIdentifier(value);
+    if (normalizedValue && !candidates.includes(normalizedValue)) {
+      candidates.push(normalizedValue);
+    }
+    return candidates;
+  }, []);
+};
+
+const hasMatchingLiFiHistoryIdentifier = (
+  historyItem: LifiHistoryItem,
+  identifiers: Set<string>,
+): boolean =>
+  getLiFiHistoryIdentifierCandidates(historyItem).some((identifier) =>
+    identifiers.has(identifier),
+  );
+
+const getHistoryItemTimestamp = (historyItem: LifiHistoryItem): number =>
+  historyItem.sending?.timestamp ?? historyItem.receiving?.timestamp ?? 0;
+
+const sortLiFiHistoryByTimestamp = (
+  history: LifiHistoryItem[],
+): LifiHistoryItem[] =>
+  [...history].sort(
+    (a, b) => getHistoryItemTimestamp(b) - getHistoryItemTimestamp(a),
+  );
+
+const getRawTokenAmount = (amount: string | number, decimals: number): string =>
+  new Decimal(amount).mul(new Decimal(10).pow(decimals)).toFixed(0);
+
+const getLiFiHistoryToken = (
+  token: TokenExtended | LiFiStep['action']['fromToken'],
+): LifiHistoryToken => ({
+  address: token.address,
+  chainId: token.chainId,
+  symbol: token.symbol,
+  decimals: token.decimals,
+  name: token.name,
+  coinKey: token.coinKey,
+  logoURI: token.logoURI,
+  priceUSD: token.priceUSD,
+});
 
 const evmChainIdToLifiId = (chainId: string): number =>
   Number.parseInt(
@@ -303,6 +398,89 @@ const matchesTokenQuery = (token: OptionItem, query: string): boolean => {
   );
 };
 
+const sortTokensByMarketCap = (tokens: TokenExtended[]): TokenExtended[] =>
+  [...tokens].sort(
+    (a, b) => Number(b.marketCapUSD ?? 0) - Number(a.marketCapUSD ?? 0),
+  );
+
+const knownTokensByChainId = new Map<string, TokenExtended[]>();
+const knownTokensInflightByChainId = new Map<
+  string,
+  Promise<TokenExtended[]>
+>();
+
+const getCachedKnownTokensForChain = (chainId: string) =>
+  knownTokensByChainId.get(chainId);
+
+const clearKnownTokensCache = () => {
+  knownTokensByChainId.clear();
+  knownTokensInflightByChainId.clear();
+};
+
+const loadKnownTokensForChain = async (
+  chainId: string,
+): Promise<TokenExtended[]> => {
+  const lifiChainId = evmChainIdToLifiId(chainId);
+  const data = await getLifiData();
+  const chainTokens = (data.tokens?.[lifiChainId] ?? []) as TokenExtended[];
+
+  const tokensWithContractAddress = chainTokens.filter(
+    (token) =>
+      !!token.address &&
+      token.address.toLowerCase() !== ethers.ZeroAddress,
+  );
+
+  return sortTokensByMarketCap(tokensWithContractAddress);
+};
+
+const getKnownTokensForChain = async (
+  chainId: string,
+): Promise<TokenExtended[]> => {
+  const cachedTokens = knownTokensByChainId.get(chainId);
+  if (cachedTokens) {
+    return cachedTokens;
+  }
+
+  const inflightRequest = knownTokensInflightByChainId.get(chainId);
+  if (inflightRequest) {
+    return inflightRequest;
+  }
+
+  const loadRequest = loadKnownTokensForChain(chainId)
+    .then((tokens) => {
+      knownTokensByChainId.set(chainId, tokens);
+      return tokens;
+    })
+    .finally(() => {
+      knownTokensInflightByChainId.delete(chainId);
+    });
+
+  knownTokensInflightByChainId.set(chainId, loadRequest);
+  return loadRequest;
+};
+
+const matchesKnownTokenQuery = (
+  token: TokenExtended,
+  query: string,
+): boolean => {
+  const normalizedQuery = query.trim().toLowerCase();
+  if (!normalizedQuery.length) {
+    return true;
+  }
+
+  return (
+    token.name?.toLowerCase().includes(normalizedQuery) ||
+    token.symbol?.toLowerCase().includes(normalizedQuery) ||
+    token.address?.toLowerCase().includes(normalizedQuery)
+  );
+};
+
+const filterKnownTokensByQuery = (
+  tokens: TokenExtended[],
+  query: string,
+): TokenExtended[] =>
+  tokens.filter((token) => matchesKnownTokenQuery(token, query));
+
 const filterTokensByChainAndQuery = (
   tokens: OptionItem[],
   chain: ExtendedChain,
@@ -328,6 +506,118 @@ const retrieveLiFiHistory = async (
         timestamp: item.sending?.timestamp,
       }))
     : [];
+};
+
+const buildPendingLiFiHistoryItem = (
+  lifiQuote: LiFiStep,
+  transactionResponse: TransactionResponse,
+): LifiHistoryItem => {
+  const timestamp = Date.now();
+  const receivingDecimals = lifiQuote.action.toToken.decimals ?? 18;
+
+  const pendingItem: LifiHistoryItemWithTransactionHashes = {
+    transactionId: lifiQuote.transactionId ?? transactionResponse.hash,
+    status: 'PENDING',
+    sending: {
+      txHash: transactionResponse.hash,
+      token: getLiFiHistoryToken(lifiQuote.action.fromToken),
+      chainId: lifiQuote.action.fromChainId,
+      amount: lifiQuote.action.fromAmount,
+      amountUSD: lifiQuote.estimate?.fromAmountUSD,
+      timestamp,
+    },
+    receiving: {
+      token: getLiFiHistoryToken(lifiQuote.action.toToken),
+      chainId: lifiQuote.action.toChainId,
+      amount: getRawTokenAmount(lifiQuote.estimate.toAmount, receivingDecimals),
+      amountUSD: lifiQuote.estimate?.toAmountUSD,
+      timestamp,
+    },
+  };
+
+  return pendingItem;
+};
+
+const getStoredLiFiSwapHistory = async (): Promise<LifiSwapHistoryStorage> => {
+  const raw = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_LIFI_SWAP_HISTORY,
+  );
+  return parseStoredLiFiSwapHistory(raw);
+};
+
+const saveStoredLiFiSwapHistory = async (
+  storage: LifiSwapHistoryStorage,
+): Promise<void> => {
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_LIFI_SWAP_HISTORY,
+    storage,
+  );
+};
+
+const getPendingLiFiSwapHistory = async (
+  wallet: string,
+): Promise<LifiHistoryItem[]> => {
+  if (!wallet) return [];
+  const storage = await getStoredLiFiSwapHistory();
+  return storage[normalizeWalletKey(wallet)] ?? [];
+};
+
+const appendPendingLiFiSwapHistoryItem = async (
+  wallet: string,
+  item: LifiHistoryItem,
+): Promise<void> => {
+  const itemIdentifiers = new Set(getLiFiHistoryIdentifierCandidates(item));
+  if (!wallet || itemIdentifiers.size === 0) return;
+
+  const storage = await getStoredLiFiSwapHistory();
+  const walletKey = normalizeWalletKey(wallet);
+  const previousItems = storage[walletKey] ?? [];
+  const dedupedItems = previousItems.filter(
+    (historyItem) =>
+      !hasMatchingLiFiHistoryIdentifier(historyItem, itemIdentifiers),
+  );
+
+  storage[walletKey] = sortLiFiHistoryByTimestamp([item, ...dedupedItems]);
+  await saveStoredLiFiSwapHistory(storage);
+};
+
+const appendPendingLiFiSwapHistory = async (
+  wallet: string,
+  lifiQuote: LiFiStep,
+  transactionResponse: TransactionResponse,
+): Promise<void> => {
+  const item = buildPendingLiFiHistoryItem(lifiQuote, transactionResponse);
+  await appendPendingLiFiSwapHistoryItem(wallet, item);
+};
+
+const mergeLiFiHistoryWithPendingSwaps = async (
+  wallet: string,
+  backendHistory: LifiHistoryItem[],
+): Promise<LifiHistoryItem[]> => {
+  if (!wallet) return backendHistory;
+
+  const storage = await getStoredLiFiSwapHistory();
+  const walletKey = normalizeWalletKey(wallet);
+  const pendingItems = storage[walletKey] ?? [];
+  if (!pendingItems.length) return backendHistory;
+
+  const backendIdentifiers = new Set(
+    backendHistory.flatMap(getLiFiHistoryIdentifierCandidates),
+  );
+  const missingPendingItems = pendingItems.filter((item) => {
+    const pendingIdentifiers = getLiFiHistoryIdentifierCandidates(item);
+    return (
+      pendingIdentifiers.length > 0 &&
+      !pendingIdentifiers.some((identifier) =>
+        backendIdentifiers.has(identifier),
+      )
+    );
+  });
+
+  storage[walletKey] = missingPendingItems;
+  await saveStoredLiFiSwapHistory(storage);
+
+  return sortLiFiHistoryByTimestamp([...missingPendingItems, ...backendHistory]);
 };
 
 const getTokenBalanceFromRawUnits = (
@@ -433,8 +723,17 @@ export const LiFiUtils = {
   getLiFiSwapOptionLists,
   getTokenOptionItem,
   getChainOptionItem,
+  getKnownTokensForChain,
+  getCachedKnownTokensForChain,
+  clearKnownTokensCache,
+  filterKnownTokensByQuery,
   filterTokensByChainAndQuery,
   retrieveLiFiHistory,
+  buildPendingLiFiHistoryItem,
+  appendPendingLiFiSwapHistory,
+  appendPendingLiFiSwapHistoryItem,
+  getPendingLiFiSwapHistory,
+  mergeLiFiHistoryWithPendingSwaps,
   getTokenBalanceFromRawUnits,
   getQuote,
   getLiFiErrorMessage,

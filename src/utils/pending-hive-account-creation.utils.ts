@@ -5,7 +5,13 @@ import {
 } from '@interfaces/hive-account-creation.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
+import { AsyncUtils } from 'src/utils/async.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+
+interface PendingHiveAccountCreationLookupOptions {
+  maxAttempts?: number;
+  retryDelayMs?: number;
+}
 
 const getStoragePayload = async (mk: string) => {
   const encryptedRequests = await LocalStorageUtils.getValueFromLocalStorage(
@@ -19,6 +25,39 @@ const getPendingHiveAccountCreationRequests = async (
 ): Promise<PendingHiveAccountCreationRequest[]> => {
   const payload = await getStoragePayload(mk);
   return Array.isArray(payload?.list) ? payload.list : [];
+};
+
+const findPendingHiveAccountCreationRequest = async (
+  requestId: string,
+  mk: string,
+): Promise<PendingHiveAccountCreationRequest | undefined> => {
+  const pendingRequests =
+    await PendingHiveAccountCreationUtils.getPendingHiveAccountCreationRequests(
+      mk,
+    );
+  return pendingRequests.find((request) => request.requestId === requestId);
+};
+
+const findPendingHiveAccountCreationRequestWithRetry = async (
+  requestId: string,
+  mk: string,
+  options: PendingHiveAccountCreationLookupOptions = {},
+): Promise<PendingHiveAccountCreationRequest | undefined> => {
+  const maxAttempts = options.maxAttempts ?? 1;
+  const retryDelayMs = options.retryDelayMs ?? 250;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const request = await findPendingHiveAccountCreationRequest(requestId, mk);
+    if (request) {
+      return request;
+    }
+
+    if (attempt < maxAttempts - 1) {
+      await AsyncUtils.sleep(retryDelayMs);
+    }
+  }
+
+  return undefined;
 };
 
 const persistPendingHiveAccountCreationRequests = async (
@@ -117,6 +156,50 @@ const updatePendingHiveAccountCreationStatus = async (
   return updatedRequest;
 };
 
+const upsertPendingHiveAccountCreationPaymentStatus = async (
+  request: PendingHiveAccountCreationRequest,
+  status: HiveAccountCreationStatus,
+  mk: string,
+  paymentTxHash?: string | null,
+): Promise<PendingHiveAccountCreationRequest> => {
+  const updatedRequest = await updatePendingHiveAccountCreationStatus(
+    request.requestId,
+    status,
+    mk,
+    paymentTxHash,
+  );
+  if (updatedRequest) {
+    return updatedRequest;
+  }
+
+  const timestamp = new Date().toISOString();
+  return savePendingHiveAccountCreationRequest(
+    {
+      requestId: request.requestId,
+      username: request.username,
+      encryptedAccount: request.encryptedAccount,
+      paymentCurrency: request.paymentCurrency,
+      paymentAddress: request.paymentAddress,
+      memo: request.memo,
+      amount: request.amount,
+      paymentChainId: request.paymentChainId,
+      paymentTokenAddress: request.paymentTokenAddress,
+      paymentPriceUsd: request.paymentPriceUsd,
+      payerEvmAddress: request.payerEvmAddress,
+      paymentTokenSymbol: request.paymentTokenSymbol,
+      paymentTokenName: request.paymentTokenName,
+      paymentTokenDecimals: request.paymentTokenDecimals,
+      paymentTokenLogo: request.paymentTokenLogo,
+      paymentTxHash: paymentTxHash ?? request.paymentTxHash,
+      expiresAt: request.expiresAt,
+      status,
+      createdAt: request.createdAt,
+      updatedAt: timestamp,
+    },
+    mk,
+  );
+};
+
 const removePendingHiveAccountCreationRequest = async (
   requestId: string,
   mk: string,
@@ -131,6 +214,9 @@ const removePendingHiveAccountCreationRequest = async (
 export const PendingHiveAccountCreationUtils = {
   savePendingHiveAccountCreationRequest,
   getPendingHiveAccountCreationRequests,
+  findPendingHiveAccountCreationRequest,
+  findPendingHiveAccountCreationRequestWithRetry,
   updatePendingHiveAccountCreationStatus,
+  upsertPendingHiveAccountCreationPaymentStatus,
   removePendingHiveAccountCreationRequest,
 };

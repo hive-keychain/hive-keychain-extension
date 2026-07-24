@@ -8,7 +8,6 @@ import {
 import { EvmErc721Token } from '@popup/evm/interfaces/active-account.interface';
 import {
   EvmPendingTransactionsInfo,
-  EvmTransactionType,
   ProviderTransactionData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
@@ -18,6 +17,7 @@ import { EvmDappStatusComponent } from '@popup/evm/pages/home/evm-dapp-status/ev
 import { EvmWalletInfoSectionComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
+import { EvmTransactionDisplayUtils } from '@popup/evm/utils/evm-transaction-display.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
@@ -47,6 +47,7 @@ import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface
 import { PortfolioRouteUtils } from '@popup/multichain/utils/portfolio-route.utils';
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { ethers } from 'ethers';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -171,6 +172,38 @@ const Home = ({
   }, [activeAccount.wallet.address, chain.chainId]);
 
   useEffect(() => {
+    const onResolvedEvmTransaction = (message: {
+      command?: BackgroundCommand;
+      value?: { chainId?: string; from?: string };
+    }) => {
+      if (message.command !== BackgroundCommand.EVM_TRANSACTION_RESOLVED) {
+        return;
+      }
+
+      const resolvedChainId = Number(message.value?.chainId);
+      const currentChainId = Number(chain.chainId);
+      const resolvedWallet = message.value?.from?.toLowerCase();
+      const currentWallet = activeAccount.wallet.address?.toLowerCase();
+
+      if (
+        resolvedChainId !== currentChainId ||
+        !resolvedWallet ||
+        resolvedWallet !== currentWallet
+      ) {
+        return;
+      }
+
+      void loadPendingTransactions(activeAccount.wallet);
+    };
+
+    chrome.runtime.onMessage.addListener(onResolvedEvmTransaction);
+
+    return () => {
+      chrome.runtime.onMessage.removeListener(onResolvedEvmTransaction);
+    };
+  }, [activeAccount.wallet, chain.chainId]);
+
+  useEffect(() => {
     const usdValue = `$${FormatUtils.withCommas(
       EvmTokensUtils.getTotalBalanceInUsd(
         activeAccount.nativeAndErc20Tokens.value,
@@ -183,7 +216,7 @@ const Home = ({
       ),
     )} ${chain.mainToken}`;
     setAccountValues({ usdValue, mainTokenValue });
-  }, [activeAccount.nativeAndErc20Tokens]);
+  }, [activeAccount.nativeAndErc20Tokens, chain]);
 
   const checkActiveRpc = async () => {
     const currentRequestId = ++rpcCheckRequestId.current;
@@ -234,10 +267,8 @@ const Home = ({
 
   const loadActiveAccount = async () => {
     if (chain) {
-      const wallet = await EvmActiveAccountUtils.getSavedActiveAccountWallet(
-        chain,
-        accounts,
-      );
+      const wallet =
+        await EvmActiveAccountUtils.getSavedActiveAccountWallet(accounts);
       loadEvmActiveAccount(chain, wallet);
       // getPendingTransactions();
     }
@@ -370,17 +401,23 @@ const Home = ({
       const transactionResponse =
         pendingTransactionsInfo.pendingTransactionDetails.transactionResponse;
       navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
-        transactionResponse,
-        pageTitle: 'evm_pending_transaction',
-        transactionData:
-          EvmTransactionsUtils.providerTransactionDataFromResponse(
-            transactionResponse,
-          ),
+        ...EvmTransactionDisplayUtils.buildResultNavigationParams({
+          transactionResponse,
+          displayItem:
+            pendingTransactionsInfo.pendingTransactionDetails.displayItem,
+          transactionData:
+            EvmTransactionsUtils.providerTransactionDataFromResponse(
+              transactionResponse,
+            ),
+          context: {
+            pageTitle: 'evm_pending_transaction',
+          },
+        }),
       } as NavigationParams);
     } else {
       const transactionData: ProviderTransactionData = {
         from: activeAccount.address,
-        type: EvmTransactionType.EIP_1559,
+        type: chain.defaultTransactionType,
         to: activeAccount.address,
         data: ethers.ZeroHash,
         value: '0x0',
@@ -419,7 +456,7 @@ const Home = ({
               {
                 value: transactionData.value,
                 to: transactionData.to,
-                type: Number(EvmTransactionType.EIP_1559),
+                type: Number(transactionData.type),
                 data: transactionData.data,
                 nonce: transactionData.nonce,
               },

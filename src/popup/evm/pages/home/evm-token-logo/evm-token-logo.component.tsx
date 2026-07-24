@@ -1,38 +1,46 @@
 import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
 import React, { useEffect, useState } from 'react';
-import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { ColorsUtils } from 'src/utils/colors.utils';
 
 interface TokenLogoProps {
-  tokenInfo: EvmSmartContractInfo;
+  tokenInfo: Pick<EvmSmartContractInfo, 'logo' | 'name' | 'symbol'>;
+  className?: string;
 }
 
-export const EvmTokenLogo = ({ tokenInfo }: TokenLogoProps) => {
+export const EvmTokenLogo = ({ tokenInfo, className }: TokenLogoProps) => {
   const [color, setColor] = useState<string>();
+  const [logoFailed, setLogoFailed] = useState(false);
+  const logo = tokenInfo.logo?.trim();
+  const displayName = tokenInfo.name || tokenInfo.symbol || '?';
+  const displaySymbol = tokenInfo.symbol || tokenInfo.name || '?';
+  const tokenLogoClassName = className ?? 'currency-icon';
 
   useEffect(() => {
-    setColor(ColorsUtils.stringToColor(tokenInfo.name));
-  }, []);
+    setColor(ColorsUtils.stringToColor(displayName));
+  }, [displayName]);
+
+  useEffect(() => {
+    setLogoFailed(false);
+  }, [logo]);
 
   return (
     <>
-      {color !== undefined && tokenInfo.logo && (
-        <PreloadedImage
-          src={tokenInfo?.logo}
-          className="currency-icon"
-          addBackground
+      {color !== undefined && logo && !logoFailed && (
+        <img
+          src={logo}
+          className={tokenLogoClassName}
+          alt=""
+          onError={() => setLogoFailed(true)}
         />
       )}
-      {color !== undefined && !tokenInfo.logo && (
+      {color !== undefined && (!logo || logoFailed) && (
         <div
-          className="currency-icon add-background"
+          className={`${tokenLogoClassName} add-background`}
           style={{
             backgroundColor: `${color}2b`,
             color: `${color}`,
           }}>
-          {tokenInfo.symbol
-            ? tokenInfo.symbol.slice(0, 2)
-            : tokenInfo.name.slice(0, 2)}
+          {displaySymbol.slice(0, 2).toUpperCase()}
         </div>
       )}
     </>

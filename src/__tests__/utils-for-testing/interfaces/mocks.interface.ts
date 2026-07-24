@@ -123,6 +123,7 @@ export interface CustomDataFromLocalStorage {
   customRpcList?: string[] | string;
   customAutolock?: Autolock | string;
   customSwitchAuto?: boolean;
+  customHiveEngineSwitchAuto?: boolean;
   customsRpcs?: Rpc[];
   customAuthorizedOP?: NoConfirm | string;
   customlastVersionSeen?: string;

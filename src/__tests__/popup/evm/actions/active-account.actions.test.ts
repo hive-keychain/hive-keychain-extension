@@ -1,3 +1,4 @@
+import { EvmActionType } from '@popup/evm/actions/action-type.evm.enum';
 import {
   loadEvmActiveAccount,
   loadEvmActiveAccountNfts,
@@ -5,7 +6,7 @@ import {
   loadMoreNftsInActiveAccount,
   loadMoreTokensInActiveAccount,
 } from '@popup/evm/actions/active-account.actions';
-import { EvmActionType } from '@popup/evm/actions/action-type.evm.enum';
+import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmDiscoveryCacheUtils } from '@popup/evm/utils/evm-discovery-cache.utils';
 import {
   CatchupStatus,
@@ -14,6 +15,7 @@ import {
   PricingStatus,
 } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmLocalHistoryUtils } from '@popup/evm/utils/evm-local-history.utils';
+import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import {
   ChainType,
@@ -24,7 +26,6 @@ import {
   getFakeStore,
   initialEmptyStateStore,
 } from 'src/__tests__/utils-for-testing/fake-store';
-import { EvmTokensHistoryUtils } from '@popup/evm/utils/evm-tokens-history.utils';
 
 const baseEvmChain: EvmChain = {
   name: 'Ethereum',
@@ -43,7 +44,9 @@ const customEvmChain: EvmChain = {
   isCustom: true,
 };
 
-const wallet = { address: '0x1111111111111111111111111111111111111111' } as HDNodeWallet;
+const wallet = {
+  address: '0x1111111111111111111111111111111111111111',
+} as HDNodeWallet;
 const otherWallet = {
   address: '0x2222222222222222222222222222222222222222',
 } as HDNodeWallet;
@@ -75,7 +78,9 @@ const discoveredNftsResponse: DiscoveredNftsResponse = {
 describe('EVM active-account.actions (custom chain)', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
-    jest.spyOn(EvmLightNodeUtils, 'registerAddress').mockResolvedValue(undefined);
+    jest
+      .spyOn(EvmLightNodeUtils, 'registerAddress')
+      .mockResolvedValue(undefined);
     jest.spyOn(EvmLightNodeUtils, 'getDiscoveredTokens').mockResolvedValue({
       address: wallet.address,
       chainId: '1',
@@ -113,7 +118,9 @@ describe('EVM active-account.actions (custom chain)', () => {
         nextCursor: null,
         fullyFetch: true,
       });
-    jest.spyOn(EvmTokensUtils, 'getCustomErc20TokenInfos').mockResolvedValue([]);
+    jest
+      .spyOn(EvmTokensUtils, 'getCustomErc20TokenInfos')
+      .mockResolvedValue([]);
     jest
       .spyOn(EvmTokensUtils, 'getCustomNftCollectionsForWallet')
       .mockResolvedValue([]);
@@ -126,9 +133,7 @@ describe('EVM active-account.actions (custom chain)', () => {
       chain: customEvmChain,
     });
 
-    await store.dispatch<any>(
-      loadEvmActiveAccount(customEvmChain, wallet),
-    );
+    await store.dispatch<any>(loadEvmActiveAccount(customEvmChain, wallet));
 
     expect(EvmLightNodeUtils.registerAddress).not.toHaveBeenCalled();
     expect(EvmLightNodeUtils.getDiscoveredTokens).not.toHaveBeenCalled();
@@ -137,8 +142,8 @@ describe('EVM active-account.actions (custom chain)', () => {
       EvmLocalHistoryUtils.getLocalUserHistoryForCustomChain,
     ).toHaveBeenCalledWith(customEvmChain.chainId, wallet.address);
     expect(EvmTokensUtils.getTokenBalances).toHaveBeenCalled();
-    const tokenBalancesCall = (EvmTokensUtils.getTokenBalances as jest.Mock).mock
-      .calls[0];
+    const tokenBalancesCall = (EvmTokensUtils.getTokenBalances as jest.Mock)
+      .mock.calls[0];
     expect(tokenBalancesCall[2]).toHaveLength(1);
     expect(tokenBalancesCall[2][0].type).toBe('NATIVE');
     expect(tokenBalancesCall[2][0].symbol).toBe(customEvmChain.mainToken);
@@ -153,7 +158,9 @@ describe('EVM active-account.actions (custom chain)', () => {
   });
 
   it('loadEvmActiveAccount includes saved custom NFTs for custom chains', async () => {
-    (EvmTokensUtils.getCustomNftCollectionsForWallet as jest.Mock).mockResolvedValue([
+    (
+      EvmTokensUtils.getCustomNftCollectionsForWallet as jest.Mock
+    ).mockResolvedValue([
       {
         tokenInfo: {
           type: 'ERC721',
@@ -192,7 +199,8 @@ describe('EVM active-account.actions (custom chain)', () => {
 
     expect(store.getState().evm.activeAccount.nfts.value).toHaveLength(1);
     expect(
-      store.getState().evm.activeAccount.nfts.value[0].tokenInfo.contractAddress,
+      store.getState().evm.activeAccount.nfts.value[0].tokenInfo
+        .contractAddress,
     ).toBe('0x00000000000000000000000000000000000000cc');
   });
 
@@ -226,11 +234,80 @@ describe('EVM active-account.actions (custom chain)', () => {
     expect(EvmLightNodeUtils.getDiscoveredTokens).toHaveBeenCalled();
     expect(EvmLightNodeUtils.getDiscoveredNfts).toHaveBeenCalled();
     expect(EvmTokensHistoryUtils.fetchHistory2).toHaveBeenCalled();
-    expect(EvmTokensUtils.getCustomErc20TokenInfos).not.toHaveBeenCalled();
     expect(EvmDiscoveryCacheUtils.saveDiscoveredTokens).toHaveBeenCalled();
     expect(EvmDiscoveryCacheUtils.saveDiscoveredNfts).toHaveBeenCalled();
+    expect(EvmTokensUtils.getCustomErc20TokenInfos).toHaveBeenCalledWith(
+      baseEvmChain,
+      wallet.address,
+    );
     expect(store.getState().evm.activeAccount.nfts.initialized).toBe(true);
     expect(store.getState().evm.activeAccount.history.initialized).toBe(true);
+  });
+
+  it('loadEvmActiveAccount includes saved custom ERC20 tokens for default chains', async () => {
+    jest.spyOn(EvmLightNodeUtils, 'getDiscoveredTokens').mockResolvedValue({
+      address: wallet.address,
+      chainId: '1',
+      tokens: [
+        {
+          type: EVMSmartContractType.ERC20,
+          name: 'Detected Token',
+          symbol: 'DET',
+          decimals: 18,
+          logo: '',
+          chainId: baseEvmChain.chainId,
+          contractAddress: '0x00000000000000000000000000000000000000dd',
+          backgroundColor: '',
+          priceUsd: 0,
+          possibleSpam: false,
+          verifiedContract: true,
+          isProxy: false,
+          proxyTarget: null,
+          validated: 0,
+        },
+      ],
+      catchupStatus: CatchupStatus.DONE,
+      pricingStatus: PricingStatus.READY,
+    });
+    (EvmTokensUtils.getCustomErc20TokenInfos as jest.Mock).mockResolvedValue([
+      {
+        type: EVMSmartContractType.ERC20,
+        name: 'Custom Token',
+        symbol: 'CUS',
+        decimals: 6,
+        logo: '',
+        chainId: baseEvmChain.chainId,
+        contractAddress: '0x00000000000000000000000000000000000000aa',
+        backgroundColor: '',
+        priceUsd: 0,
+        possibleSpam: false,
+        verifiedContract: true,
+        isProxy: false,
+        proxyTarget: null,
+        validated: 0,
+      },
+    ]);
+
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      chain: baseEvmChain,
+    });
+
+    await store.dispatch<any>(loadEvmActiveAccount(baseEvmChain, wallet));
+
+    const tokenBalancesCall = (EvmTokensUtils.getTokenBalances as jest.Mock)
+      .mock.calls[0];
+    expect(tokenBalancesCall[2]).toHaveLength(2);
+    expect(tokenBalancesCall[2]).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          contractAddress: '0x00000000000000000000000000000000000000dd',
+        }),
+        expect.objectContaining({
+          contractAddress: '0x00000000000000000000000000000000000000aa',
+        }),
+      ]),
+    );
   });
 
   it('loadEvmActiveAccount includes saved custom ERC20 tokens for custom chains', async () => {
@@ -260,8 +337,8 @@ describe('EVM active-account.actions (custom chain)', () => {
 
     await store.dispatch<any>(loadEvmActiveAccount(customEvmChain, wallet));
 
-    const tokenBalancesCall = (EvmTokensUtils.getTokenBalances as jest.Mock).mock
-      .calls[0];
+    const tokenBalancesCall = (EvmTokensUtils.getTokenBalances as jest.Mock)
+      .mock.calls[0];
     expect(tokenBalancesCall[2]).toHaveLength(2);
     expect(tokenBalancesCall[2][0].type).toBe('NATIVE');
     expect(tokenBalancesCall[2][1]).toMatchObject({
@@ -323,15 +400,12 @@ describe('EVM active-account.actions (custom chain)', () => {
       },
     });
 
-    await store.dispatch<any>(
-      loadEvmActiveAccountNfts(customEvmChain, wallet),
-    );
+    await store.dispatch<any>(loadEvmActiveAccountNfts(customEvmChain, wallet));
 
     expect(EvmLightNodeUtils.getDiscoveredNfts).not.toHaveBeenCalled();
-    expect(EvmTokensUtils.getCustomNftCollectionsForWallet).toHaveBeenCalledWith(
-      customEvmChain,
-      wallet.address,
-    );
+    expect(
+      EvmTokensUtils.getCustomNftCollectionsForWallet,
+    ).toHaveBeenCalledWith(customEvmChain, wallet.address);
     expect(store.getState().evm.activeAccount.nfts.initialized).toBe(true);
     expect(store.getState().evm.activeAccount.nfts.loading).toBe(false);
   });
@@ -422,7 +496,9 @@ describe('EVM active-account.actions (custom chain)', () => {
       },
     });
 
-    await store.dispatch<any>(loadMoreNftsInActiveAccount(baseEvmChain, wallet));
+    await store.dispatch<any>(
+      loadMoreNftsInActiveAccount(baseEvmChain, wallet),
+    );
 
     expect(store.getState().evm.activeAccount.nfts.value).toHaveLength(1);
     expect(store.getState().evm.activeAccount.nfts.loading).toBe(false);
@@ -472,15 +548,15 @@ describe('EVM active-account.actions (custom chain)', () => {
       },
     });
 
-    await store.dispatch<any>(loadMoreNftsInActiveAccount(baseEvmChain, wallet));
+    await store.dispatch<any>(
+      loadMoreNftsInActiveAccount(baseEvmChain, wallet),
+    );
 
     const [collection] = store.getState().evm.activeAccount.nfts.value;
     expect(collection.tokenInfo.contractAddress).toBe(
       '0x00000000000000000000000000000000000000bb',
     );
-    expect(collection.tokenInfo.name).toBe(
-      '0x00000...000bb',
-    );
+    expect(collection.tokenInfo.name).toBe('0x00000...000bb');
     expect(collection.collection[0].metadata.name).toBe('#42');
     expect(store.getState().evm.activeAccount.nfts.loading).toBe(false);
   });
@@ -616,9 +692,9 @@ describe('EVM active-account.actions (custom chain)', () => {
 
     await store.dispatch<any>(loadEvmHistory());
 
-    expect(store.getState().evm.activeAccount.history.value.events).toHaveLength(
-      1,
-    );
+    expect(
+      store.getState().evm.activeAccount.history.value.events,
+    ).toHaveLength(1);
     expect(store.getState().evm.activeAccount.history.loading).toBe(false);
     expect(global.setTimeout).toHaveBeenCalled();
   });
@@ -680,9 +756,9 @@ describe('EVM active-account.actions (custom chain)', () => {
   });
 
   it('loadEvmHistory marks history unavailable when light-node history fails', async () => {
-    jest.spyOn(EvmTokensHistoryUtils, 'fetchHistory2').mockRejectedValue(
-      new Error('light node unavailable'),
-    );
+    jest
+      .spyOn(EvmTokensHistoryUtils, 'fetchHistory2')
+      .mockRejectedValue(new Error('light node unavailable'));
 
     const store = getFakeStore({
       ...initialEmptyStateStore,
@@ -721,7 +797,9 @@ describe('EVM active-account.actions (custom chain)', () => {
   });
 
   it('loadMoreTokensInActiveAccount ignores stale responses for a previous wallet', async () => {
-    let resolveDiscovery!: (value: Awaited<ReturnType<typeof EvmLightNodeUtils.getDiscoveredTokens>>) => void;
+    let resolveDiscovery!: (
+      value: Awaited<ReturnType<typeof EvmLightNodeUtils.getDiscoveredTokens>>,
+    ) => void;
     (EvmLightNodeUtils.getDiscoveredTokens as jest.Mock).mockReturnValueOnce(
       new Promise((resolve) => {
         resolveDiscovery = resolve;

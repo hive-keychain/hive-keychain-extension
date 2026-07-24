@@ -36,6 +36,17 @@
           text-align: center;
           overflow-wrap: anywhere;
         }
+
+        .dapp-status-close-icon {
+          width: 20px;
+          height: 20px;
+          justify-self: center;
+
+          svg {
+            width: 20px;
+            height: 20px;
+          }
+        }
       }
 
       .accounts-section {
@@ -60,7 +71,16 @@
           width: 100%;
 
           .account-section-icon {
-            display: none;
+            width: 20px;
+            height: 20px;
+            flex: 0 0 20px;
+            margin-right: 4px;
+            opacity: 0;
+
+            svg {
+              width: 20px;
+              height: 20px;
+            }
 
             svg path {
               stroke-width: 2;
@@ -68,9 +88,10 @@
           }
         }
 
-        .account-section-item:hover {
+        .account-section-item:hover,
+        .account-section-item:focus-within {
           .account-section-icon {
-            display: block;
+            opacity: 1;
             cursor: pointer;
           }
         }
@@ -83,6 +104,11 @@
         width: 100%;
         margin-top: auto;
         flex-shrink: 0;
+
+        .submit-button:focus-visible {
+          outline: 2px solid $red;
+          outline-offset: 2px;
+        }
       }
 
       .dapp-status-show-all-connected {
@@ -92,6 +118,12 @@
         border: none;
         background: none;
         @include poppins500(14px);
+
+        &:focus-visible {
+          outline: 2px solid $red;
+          outline-offset: 2px;
+          border-radius: 4px;
+        }
       }
     }
   }

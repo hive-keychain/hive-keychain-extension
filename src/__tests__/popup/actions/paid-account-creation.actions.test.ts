@@ -2,9 +2,11 @@ import * as HiveAccountCreationApi from '@api/hive-account-creation';
 import { PendingHiveAccountCreationRequest } from '@interfaces/hive-account-creation.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import {
+  handleCompletedPaidHiveAccountCreations,
   synchronizePendingHiveAccountCreation,
   synchronizePendingHiveAccountCreations,
 } from '@popup/hive/actions/paid-account-creation.actions';
+import { PaidAccountCreationNotificationsUtils } from '@popup/hive/utils/paid-account-creation-notifications.utils';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
@@ -160,6 +162,61 @@ describe('paid-account-creation.actions', () => {
     ).toHaveBeenCalledWith(pendingRequest.requestId, mk);
   });
 
+  it('removes a stale pending request when the account is already local', async () => {
+    const existingAccount = {
+      name: pendingRequest.username,
+      keys: { posting: 'existing-posting-key' },
+    } as LocalAccount;
+    const store = getStore([existingAccount]);
+
+    await expect(
+      store.dispatch<any>(
+        synchronizePendingHiveAccountCreation(pendingRequest.requestId),
+      ),
+    ).resolves.toMatchObject({
+      outcome: 'already_imported',
+      account: existingAccount,
+    });
+
+    expect(
+      HiveAccountCreationApi.getHiveAccountCreationStatus,
+    ).not.toHaveBeenCalled();
+    expect(
+      PendingHiveAccountCreationUtils.removePendingHiveAccountCreationRequest,
+    ).toHaveBeenCalledWith(pendingRequest.requestId, mk);
+  });
+
+  it('removes only the pending request missing from the account creation API', async () => {
+    const requestNotFoundError = Object.assign(
+      new Error('Request not found.'),
+      {
+        status: 404,
+        response: { error: 'Request not found.' },
+      },
+    );
+    jest
+      .spyOn(HiveAccountCreationApi, 'getHiveAccountCreationStatus')
+      .mockRejectedValue(requestNotFoundError);
+    const store = getStore();
+
+    await expect(
+      store.dispatch<any>(
+        synchronizePendingHiveAccountCreation(pendingRequest.requestId),
+      ),
+    ).resolves.toMatchObject({
+      outcome: 'not_found',
+      request: pendingRequest,
+    });
+
+    expect(
+      PendingHiveAccountCreationUtils.removePendingHiveAccountCreationRequest,
+    ).toHaveBeenCalledWith(pendingRequest.requestId, mk);
+    expect(
+      PendingHiveAccountCreationUtils.updatePendingHiveAccountCreationStatus,
+    ).not.toHaveBeenCalled();
+    expect(AccountUtils.saveAccounts).not.toHaveBeenCalled();
+  });
+
   it('retains the pending request when encrypted account validation fails', async () => {
     jest
       .spyOn(HiveAccountCreationApi, 'getHiveAccountCreationStatus')
@@ -246,6 +303,33 @@ describe('paid-account-creation.actions', () => {
     expect(HiveAccountCreationApi.getHiveAccountCreationStatus).toHaveBeenCalledTimes(
       1,
     );
+  });
+
+  it('shows a browser notification when completing imports away from the status page', async () => {
+    jest
+      .spyOn(
+        PaidAccountCreationNotificationsUtils,
+        'showAccountCreatedNotification',
+      )
+      .mockResolvedValue();
+    const store = getStore();
+
+    await store.dispatch<any>(
+      handleCompletedPaidHiveAccountCreations(
+        [
+          {
+            outcome: 'imported',
+            account: pendingAccount,
+            request: pendingRequest,
+          },
+        ],
+        { showBrowserNotification: true, showSuccessMessage: false },
+      ),
+    );
+
+    expect(
+      PaidAccountCreationNotificationsUtils.showAccountCreatedNotification,
+    ).toHaveBeenCalledWith(pendingAccount.name, pendingRequest.requestId);
   });
 
   it('continues synchronizing remaining requests after one fails', async () => {

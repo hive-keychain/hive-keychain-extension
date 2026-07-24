@@ -115,7 +115,10 @@ const readBoolean = (
   record: Record<string, unknown>,
   key: string,
   fallback = false,
-): boolean => (typeof record[key] === 'boolean' ? record[key] : fallback);
+): boolean => {
+  const value = record[key];
+  return typeof value === 'boolean' ? value : fallback;
+};
 
 const readStringArray = (value: unknown): string[] =>
   Array.isArray(value)

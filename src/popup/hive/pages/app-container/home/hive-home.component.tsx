@@ -259,9 +259,21 @@ const Home = ({
         );
       if (!noKeyCheck) noKeyCheck = { [localAccounts[0].name!]: [] };
 
-      for (let i = 0; i < extendedAccountsList.length; i++) {
-        const accountName = localAccounts[i].name!;
-        const keys = localAccounts[i].keys;
+      const extendedAccountsByName = new Map(
+        extendedAccountsList.map((extendedAccount) => [
+          extendedAccount.name,
+          extendedAccount,
+        ]),
+      );
+
+      for (const localAccount of localAccounts) {
+        const accountName = localAccount.name!;
+        const extendedAccount = extendedAccountsByName.get(accountName);
+        if (!extendedAccount) {
+          continue;
+        }
+
+        const keys = localAccount.keys;
         foundWrongKey = { [accountName]: [] };
         if (!noKeyCheck.hasOwnProperty(accountName)) {
           noKeyCheck = { ...noKeyCheck, [accountName]: [] };
@@ -272,7 +284,7 @@ const Home = ({
             key,
             value,
             accountName,
-            extendedAccountsList[i],
+            extendedAccount,
             foundWrongKey,
             !!noKeyCheck[accountName].find(
               (keyName: string) => keyName === key.split('Pubkey')[0],

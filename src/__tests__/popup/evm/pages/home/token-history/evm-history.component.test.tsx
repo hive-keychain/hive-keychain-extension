@@ -1,12 +1,18 @@
+import '@testing-library/jest-dom';
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { EvmHistory } from '@popup/evm/pages/home/token-history/evm-history.component';
+import { EvmUserHistoryItemType } from '@popup/evm/interfaces/evm-tokens-history.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
 jest.mock('src/common-ui/svg-icon/svg-icon.component', () => ({
-  SVGIcon: () => <span data-testid="svg-icon" />,
+  SVGIcon: ({ icon }: { icon: SVGIcons }) => (
+    <span data-icon={icon} data-testid="svg-icon" />
+  ),
 }));
 
 describe('EvmHistory', () => {
@@ -93,5 +99,64 @@ describe('EvmHistory', () => {
       ).toBeNull(),
     );
     expect(getSpy).not.toHaveBeenCalled();
+  });
+
+  it('uses the swap icon for swap history items', async () => {
+    render(
+      <EvmHistory
+        chain={{ ...customChain, isCustom: false }}
+        history={{
+          events: [
+            {
+              pageTitle: 'evm_history_smart_contract',
+              opName: 'SWAP',
+              type: EvmUserHistoryItemType.SMART_CONTRACT,
+              blockNumber: 1,
+              transactionHash: '0xabc',
+              transactionIndex: 0,
+              timestamp: 1710000000,
+              label: 'Swapped 1 ETH for 1000 USDC',
+              nonce: 1,
+            },
+          ],
+          fullyFetch: true,
+          nextCursor: null,
+        }}
+        loading={false}
+        navigateToWithParams={jest.fn()}
+        onClickOnLoadMore={jest.fn()}
+      />,
+    );
+
+    expect(
+      await screen.findByText('Swapped 1 ETH for 1000 USDC'),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('svg-icon')).toHaveAttribute(
+      'data-icon',
+      SVGIcons.SWAPS_ITEM,
+    );
+  });
+
+  it('loads more history from the keyboard', async () => {
+    const user = userEvent.setup();
+    const onClickOnLoadMore = jest.fn();
+    render(
+      <EvmHistory
+        chain={{ ...customChain, isCustom: false }}
+        history={{ events: [], fullyFetch: false, nextCursor: 'next' }}
+        loading={false}
+        navigateToWithParams={jest.fn()}
+        onClickOnLoadMore={onClickOnLoadMore}
+      />,
+    );
+
+    const loadMoreButton = screen.getByRole('button', {
+      name: 'popup_html_load_more',
+    });
+    loadMoreButton.focus();
+    await user.keyboard('{Enter}');
+    await user.keyboard(' ');
+
+    expect(onClickOnLoadMore).toHaveBeenCalledTimes(2);
   });
 });

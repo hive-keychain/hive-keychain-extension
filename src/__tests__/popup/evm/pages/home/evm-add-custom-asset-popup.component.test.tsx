@@ -12,6 +12,7 @@ import React from 'react';
 import {
   EvmAddCustomAssetPopup,
 } from 'src/popup/evm/pages/home/evm-add-custom-asset-popup/evm-add-custom-asset-popup.component';
+import { LiFiUtils } from '@popup/evm/utils/lifi.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
 const chain = {
@@ -37,11 +38,24 @@ const i18nMessages: Record<string, string> = {
     'Could not detect a supported NFT contract at this address. Only ERC721 and ERC1155 contracts are supported.',
   evm_add_custom_nft_error_token_ids_not_owned:
     'One or more token IDs are not owned by this wallet.',
+  evm_add_custom_token_popup_title: 'Add custom token',
+  evm_add_custom_token_popup_caption:
+    'Search known tokens for this network. If you do not find the token you need, add it manually.',
+  evm_add_custom_token_manually: 'Add manually',
+  popup_html_button_label_cancel: 'Cancel',
+};
+
+const openManualErc20Form = async () => {
+  fireEvent.click(await screen.findByTestId('btn-add-custom-token-manually'));
+  expect(
+    await screen.findByTestId('custom-asset-contract-address'),
+  ).toBeInTheDocument();
 };
 
 describe('EvmAddCustomAssetPopup', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
+    LiFiUtils.clearKnownTokensCache();
     I18nUtils.getMessage = jest.fn(
       (key: string) => i18nMessages[key] ?? key,
     );
@@ -50,33 +64,137 @@ describe('EvmAddCustomAssetPopup', () => {
     jest
       .spyOn(EvmTokensUtils, 'fetchErc20NameAndDecimalsFromChain')
       .mockResolvedValue({ name: 'USD Coin', decimals: 6 });
+    jest.spyOn(KeychainApi, 'get').mockResolvedValue({
+      tokens: {
+        1: [
+          {
+            chainId: 1,
+            address: '0x0000000000000000000000000000000000000002',
+            name: 'Tether USD',
+            symbol: 'USDT',
+            decimals: 6,
+            logoURI: '',
+            marketCapUSD: 90000000000,
+          },
+        ],
+      },
+    });
   });
 
-  it('renders the manual ERC20 form without calling the popular token API', async () => {
-    const onSave = jest.fn();
-    const keychainGetSpy = jest.spyOn(KeychainApi, 'get');
-
+  it('shows known tokens and Add manually on the browse step', async () => {
     render(
       <EvmAddCustomAssetPopup
         chain={chain}
         mode="erc20"
         walletAddress="0x1111111111111111111111111111111111111111"
         onClose={jest.fn()}
-        onSave={onSave}
+        onSave={jest.fn()}
       />,
     );
 
-    await waitFor(() => {
-      expect(EvmTokensUtils.getCustomTokens).toHaveBeenCalled();
-    });
-
+    expect(await screen.findByText('Add custom token')).toBeInTheDocument();
     expect(
-      screen.getByTestId('custom-asset-contract-address'),
+      screen.queryByText(
+        'Search known tokens for this network. If you do not find the token you need, add it manually.',
+      ),
+    ).not.toBeInTheDocument();
+    expect(
+      await screen.findByTestId(
+        'known-token-item-0x0000000000000000000000000000000000000002',
+      ),
     ).toBeInTheDocument();
+    expect(
+      screen.getByTestId('btn-add-custom-token-manually'),
+    ).toHaveTextContent('Add manually');
+    expect(
+      screen.queryByTestId('custom-asset-contract-address'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('opens the manual ERC20 form from Add manually and returns to browse on cancel', async () => {
+    render(
+      <EvmAddCustomAssetPopup
+        chain={chain}
+        mode="erc20"
+        walletAddress="0x1111111111111111111111111111111111111111"
+        onClose={jest.fn()}
+        onSave={jest.fn()}
+      />,
+    );
+
+    await openManualErc20Form();
     expect(screen.getByTestId('custom-asset-name')).toBeInTheDocument();
     expect(screen.getByTestId('custom-asset-symbol')).toBeInTheDocument();
     expect(screen.getByTestId('custom-asset-decimals')).toBeInTheDocument();
-    expect(keychainGetSpy).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByText('Cancel'));
+
+    expect(
+      await screen.findByTestId('btn-add-custom-token-manually'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('custom-asset-contract-address'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('skips the browse step when editing a custom token', async () => {
+    render(
+      <EvmAddCustomAssetPopup
+        chain={chain}
+        mode="erc20"
+        walletAddress="0x1111111111111111111111111111111111111111"
+        tokenToEdit={{
+          address: '0x0000000000000000000000000000000000000001',
+          type: EVMSmartContractType.ERC20,
+          metadata: {
+            type: EVMSmartContractType.ERC20,
+            name: 'USD Coin',
+            symbol: 'USDC',
+            decimals: 6,
+            logo: '',
+          },
+        }}
+        onClose={jest.fn()}
+        onSave={jest.fn()}
+      />,
+    );
+
+    expect(
+      await screen.findByTestId('custom-asset-contract-address'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('btn-add-custom-token-manually'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('uses the token initials fallback when the ERC20 logo is empty', async () => {
+    render(
+      <EvmAddCustomAssetPopup
+        chain={chain}
+        mode="erc20"
+        walletAddress="0x1111111111111111111111111111111111111111"
+        onClose={jest.fn()}
+        onSave={jest.fn()}
+      />,
+    );
+
+    await openManualErc20Form();
+
+    fireEvent.change(screen.getByTestId('custom-asset-symbol'), {
+      target: { value: 'USDC' },
+    });
+
+    const logoFallback = await screen.findByText('US');
+
+    expect(logoFallback).toHaveClass(
+      'currency-icon',
+      'add-background',
+    );
+    expect(
+      screen
+        .getByTestId('custom-asset-logo')
+        .compareDocumentPosition(logoFallback),
+    ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
 
   it('blocks save when required fields are empty', async () => {
@@ -92,6 +210,7 @@ describe('EvmAddCustomAssetPopup', () => {
       />,
     );
 
+    await openManualErc20Form();
     fireEvent.click(screen.getByTestId('custom-asset-save'));
 
     expect(
@@ -119,6 +238,8 @@ describe('EvmAddCustomAssetPopup', () => {
         onSave={onSave}
       />,
     );
+
+    await openManualErc20Form();
 
     fireEvent.change(screen.getByTestId('custom-asset-contract-address'), {
       target: { value: '0x00000000000000000000000000000000000000aa' },
@@ -155,6 +276,8 @@ describe('EvmAddCustomAssetPopup', () => {
       />,
     );
 
+    await openManualErc20Form();
+
     fireEvent.change(screen.getByTestId('custom-asset-contract-address'), {
       target: { value: '0x00000000000000000000000000000000000000aa' },
     });
@@ -180,6 +303,8 @@ describe('EvmAddCustomAssetPopup', () => {
         onSave={onSave}
       />,
     );
+
+    await openManualErc20Form();
 
     fireEvent.change(screen.getByTestId('custom-asset-contract-address'), {
       target: { value: '0x00000000000000000000000000000000000000aa' },

@@ -155,6 +155,11 @@
       border: 1px solid var(--menu-button-icon-border);
       border-top-right-radius: 50%;
       border-bottom-right-radius: 50%;
+
+      &:focus-visible {
+        outline: none;
+        border-color: $red;
+      }
     }
   }
 

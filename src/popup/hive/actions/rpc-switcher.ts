@@ -8,6 +8,13 @@ export const setSwitchToRpc = (rpc: Rpc) => {
   };
 };
 
+export const setSwitchToHiveEngineRpc = (rpc: string) => {
+  return {
+    type: HiveActionType.SET_SWITCH_TO_HIVE_ENGINE_RPC,
+    payload: rpc,
+  };
+};
+
 export const setDisplayChangeRpcPopup = (display: boolean) => {
   return {
     type: HiveActionType.SET_DISPLAY_SWITCH_RPC,

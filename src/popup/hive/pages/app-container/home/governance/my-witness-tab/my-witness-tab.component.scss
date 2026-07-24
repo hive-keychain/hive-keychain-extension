@@ -1,7 +1,7 @@
 .my-witness-tab {
   @include pageLayoutRowGap;
-  overflow: hidden;
-  flex: 1;
+  overflow: visible;
+  flex: unset;
 
   .rotating-logo-container {
     display: flex;

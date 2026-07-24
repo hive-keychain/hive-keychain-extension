@@ -16,6 +16,7 @@ import {
   isCustomErc20EmptyCardHiddenForChain,
   setCustomErc20EmptyCardHiddenForChain,
 } from '@popup/evm/utils/evm-custom-erc20-empty-card.utils';
+import { EvmAutoDetectedTokenVisibilityUtils } from '@popup/evm/utils/evm-auto-detected-token-visibility.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -51,6 +52,23 @@ const EvmWalletTokensInner = ({
   }>({ ready: false, showCard: false });
   const isMountedRef = useRef(false);
 
+  const getTokenWithChainMainTokenInfo = (
+    token: NativeAndErc20Token,
+  ): NativeAndErc20Token => {
+    if (token.tokenInfo.type !== EVMSmartContractType.NATIVE) {
+      return token;
+    }
+    return {
+      ...token,
+      tokenInfo: {
+        ...token.tokenInfo,
+        name: chain.name,
+        symbol: chain.mainToken,
+        logo: chain.logo ?? token.tokenInfo.logo,
+      },
+    };
+  };
+
   useEffect(() => {
     isMountedRef.current = true;
 
@@ -63,11 +81,26 @@ const EvmWalletTokensInner = ({
     let cancelled = false;
 
     const init = async () => {
+      const [customTokens, hiddenAutoDetectedTokenAddresses] = await Promise.all([
+        EvmTokensUtils.getCustomTokens(chain, activeAccount.wallet.address),
+        EvmAutoDetectedTokenVisibilityUtils.getHiddenAutoDetectedTokenAddresses(
+          chain.chainId,
+        ),
+      ]);
+      const customTokenAddresses = customTokens
+        .filter((token) => token.type === EVMSmartContractType.ERC20)
+        .map((token) => token.address);
       const tokens: NativeAndErc20Token[] =
         (await EvmTokensUtils.filterTokensBasedOnSettings(
           activeAccount.nativeAndErc20Tokens.value,
+          {
+            customTokenAddresses,
+            hiddenAutoDetectedTokenAddresses,
+          },
         )) as NativeAndErc20Token[];
-      const sortedTokens = EvmTokensUtils.sortTokens(tokens);
+      const sortedTokens = EvmTokensUtils.sortTokens(
+        tokens.map(getTokenWithChainMainTokenInfo),
+      );
       if (!cancelled) {
         setFilteredTokens(sortedTokens);
       }
@@ -78,7 +111,12 @@ const EvmWalletTokensInner = ({
     return () => {
       cancelled = true;
     };
-  }, [activeAccount.nativeAndErc20Tokens]);
+  }, [
+    activeAccount.nativeAndErc20Tokens,
+    activeAccount.wallet.address,
+    chain,
+    chain.chainId,
+  ]);
 
   useEffect(() => {
     const q = tokenFilter.trim().toLowerCase();
@@ -149,9 +187,6 @@ const EvmWalletTokensInner = ({
     }
   };
 
-  const canManageCustomTokens =
-    chain.manualDiscoverAvailable || chain.addTokensManually;
-
   return (
     <>
       {!activeAccount.nativeAndErc20Tokens.loading && (
@@ -166,14 +201,10 @@ const EvmWalletTokensInner = ({
           <SeparatorWithFilter
             setFilterValue={setTokenFilter}
             filterValue={tokenFilter}
-            rightAction={
-              canManageCustomTokens
-                ? {
-                    icon: SVGIcons.WALLET_SETTINGS,
-                    onClick: openCustomTokensPage,
-                  }
-                : undefined
-            }
+            rightAction={{
+              icon: SVGIcons.WALLET_SETTINGS,
+              onClick: openCustomTokensPage,
+            }}
             filterDisabled={
               activeAccount.nativeAndErc20Tokens.value.length === 0
             }

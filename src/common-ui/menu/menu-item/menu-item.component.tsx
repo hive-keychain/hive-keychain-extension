@@ -23,9 +23,10 @@ export const MenuItemComponent = ({
       className="menu-item-container"
       onMouseOver={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}>
-      <div
+      <button
         data-testid={'menu-settings-button-' + menuItem.icon}
         className="menu-item"
+        type="button"
         onClick={() => handleMenuItemClick(menuItem)}>
         <SVGIcon icon={menuItem.icon} className="icon" forceHover={hovered} />
         <div className="menu-label">
@@ -34,7 +35,7 @@ export const MenuItemComponent = ({
         <div className="divider"></div>
         {menuItem.rightPanel && <menuItem.rightPanel />}
         {menuItem.experimental && <Badge badgeType={BadgeType.EXPERIMENTAL} />}
-      </div>
+      </button>
       {!isLast && <Separator type={'horizontal'} />}
     </div>
   );

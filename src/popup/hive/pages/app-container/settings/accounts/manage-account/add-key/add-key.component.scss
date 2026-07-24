@@ -12,7 +12,18 @@
     font-size: 16px;
     text-decoration: underline;
     cursor: pointer;
-    &:hover {
+    border: 0;
+    padding: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+
+    &:focus {
+      outline: none;
+    }
+
+    &:hover,
+    &:focus-visible {
       color: $red-dark;
     }
   }
@@ -41,6 +52,16 @@
           padding-left: 8px;
           cursor: pointer;
           flex: 1;
+          width: 100%;
+          border: 0;
+          background: none;
+          color: inherit;
+          font: inherit;
+          text-align: left;
+
+          &:focus {
+            outline: none;
+          }
 
           .account-img {
             width: 28px;
@@ -54,7 +75,8 @@
           }
         }
 
-        &:hover {
+        &:hover,
+        &:focus-within {
           background: $red;
           .account-name {
             color: white;

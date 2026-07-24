@@ -3,10 +3,14 @@ import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { KeychainError } from 'src/keychain-error';
+import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
+import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 
 const tabsSendMessageMock = jest.fn();
 const runtimeSendMessageMock = jest.fn();
 const sendEvmTransactionMock = jest.fn();
+const getChainMock = jest.fn();
+const updateCustomChainMinGasPriceMock = jest.fn();
 const getRequestHandlersMock = jest.fn();
 const willCloseDialogWindowAfterRemovingRequestMock = jest.fn();
 const delayMsMock = jest.fn();
@@ -58,6 +62,14 @@ jest.mock('@background/evm/evm-provider-state.utils', () => ({
   setChainIdForOrigin: (...args: unknown[]) => setChainIdForOriginMock(...args),
 }));
 
+jest.mock('@popup/multichain/utils/chain.utils', () => ({
+  ChainUtils: {
+    getChain: (...args: unknown[]) => getChainMock(...args),
+    updateCustomChainMinGasPrice: (...args: unknown[]) =>
+      updateCustomChainMinGasPriceMock(...args),
+  },
+}));
+
 describe('performEvmOperation', () => {
   const removeRequestByLocator = jest.fn();
 
@@ -70,6 +82,8 @@ describe('performEvmOperation', () => {
     delayMsMock.mockResolvedValue(undefined);
     addWhitelistedChainForOriginMock.mockResolvedValue(['0x539']);
     setChainIdForOriginMock.mockResolvedValue('0x539');
+    getChainMock.mockResolvedValue(undefined);
+    updateCustomChainMinGasPriceMock.mockResolvedValue(undefined);
   });
 
   it('sends tab response then ANSWER_EVM_REQUEST to runtime then removes request', async () => {
@@ -235,6 +249,7 @@ describe('performEvmOperation', () => {
     expect(setChainIdForOriginMock).toHaveBeenCalledWith(
       'https://example.com',
       '0x539',
+      { tabId: 4 },
     );
     expect(tabsSendMessageMock).toHaveBeenCalledWith(4, {
       command: BackgroundCommand.SEND_EVM_RESPONSE,
@@ -282,5 +297,71 @@ describe('performEvmOperation', () => {
       [],
       'https://example.com',
     );
+  });
+
+  it('keeps custom legacy transaction requests open when learning minimum gas price', async () => {
+    const error = {
+      code: 'UNKNOWN_ERROR',
+      error: {
+        message:
+          'transaction gas price below minimum: gas tip cap 5000000, minimum needed 100000000',
+      },
+    };
+    sendEvmTransactionMock.mockRejectedValue(error);
+    getChainMock.mockResolvedValue({
+      chainId: '0x539',
+      customMinGasPriceInGwei: undefined,
+      defaultTransactionType: EvmTransactionType.LEGACY,
+      isCustom: true,
+      logo: '',
+      mainToken: 'TST',
+      name: 'Custom Chain',
+      rpcs: [],
+      type: ChainType.EVM,
+    });
+    updateCustomChainMinGasPriceMock.mockResolvedValue({
+      chainId: '0x539',
+      customMinGasPriceInGwei: '0.1',
+    });
+    const { handleEvmError } = await import(
+      '@background/evm/requests/logic/handle-evm-error.logic'
+    );
+    const { performEvmOperation } = await import(
+      '@background/evm/requests/operations/perform-operation'
+    );
+    const request = {
+      chainId: '0x539',
+      request_id: 77,
+      method: EvmRequestMethod.SEND_TRANSACTION,
+      params: [{ from: '0x', type: EvmTransactionType.LEGACY }],
+    };
+    const requestHandler = { removeRequestByLocator } as any;
+
+    await performEvmOperation(
+      requestHandler,
+      request as any,
+      9,
+      'example.com',
+      'https://example.com',
+      { gasFee: {} },
+    );
+
+    expect(updateCustomChainMinGasPriceMock).toHaveBeenCalledWith(
+      '0x539',
+      '0.1',
+    );
+    expect(runtimeSendMessageMock).toHaveBeenCalledWith({
+      command: DialogCommand.UPDATE_EVM_GAS_FEES,
+      msg: {
+        request_id: 77,
+        tab: 9,
+        chainId: '0x539',
+        minGasPriceInGwei: '0.1',
+        message: 'evm_gas_fee_warning_updated_after_insufficient_price',
+      },
+    });
+    expect(handleEvmError).not.toHaveBeenCalled();
+    expect(removeRequestByLocator).not.toHaveBeenCalled();
+    expect(tabsSendMessageMock).not.toHaveBeenCalled();
   });
 });

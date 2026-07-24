@@ -86,7 +86,7 @@ const EvmAccounts = ({
     const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
     setEvmAccounts(accounts);
     const newActiveAccount =
-      await EvmActiveAccountUtils.getSavedActiveAccountWallet(chain, accounts);
+      await EvmActiveAccountUtils.getSavedActiveAccountWallet(accounts);
     loadEvmActiveAccount(chain, newActiveAccount);
   };
 
@@ -355,7 +355,14 @@ const EvmAccounts = ({
       const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
       if (!isMountedRef.current) return;
 
+      const updatedSeedOptions = buildSeedOptions(accounts);
       setLocalAccounts(accounts);
+      setSeedsOptions(updatedSeedOptions);
+      setSelectedSeed(
+        updatedSeedOptions.find((option) => option.value === selectedSeed.value) ??
+          updatedSeedOptions[0],
+      );
+      setEvmAccounts(accounts);
       setEditParams(undefined);
     }
   };
@@ -386,6 +393,7 @@ const EvmAccounts = ({
     if (!isMountedRef.current) return;
 
     setLocalAccounts(accounts);
+    setEvmAccounts(accounts);
     setEditParams(undefined);
   };
 

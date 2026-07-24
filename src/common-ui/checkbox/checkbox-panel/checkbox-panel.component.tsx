@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import CheckboxComponent, {
   CheckboxProps,
 } from 'src/common-ui/checkbox/checkbox/checkbox.component';
@@ -19,12 +19,33 @@ interface CheckboxPanelProps extends CheckboxProps {
   children?: JSX.Element;
 }
 
+let checkboxPanelIdCounter = 0;
+
 export const CheckboxPanelComponent = (props: CheckboxPanelProps) => {
+  const [contentId] = useState(
+    () => `keychain-checkbox-panel-content-${++checkboxPanelIdCounter}`,
+  );
+
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    const element =
+      event.target instanceof Element
+        ? event.target
+        : event.target instanceof Node
+          ? event.target.parentElement
+          : null;
+
+    if (element?.closest('a')) {
+      return;
+    }
+
     event.stopPropagation();
     event.preventDefault();
-    props.onChange(!props.checked);
+    if (!props.disabled) {
+      props.onChange(!props.checked);
+    }
   };
+
+  const ariaLabelledBy = !props.title && props.text ? contentId : undefined;
 
   return (
     <div
@@ -32,7 +53,7 @@ export const CheckboxPanelComponent = (props: CheckboxPanelProps) => {
         props.backgroundType ?? BackgroundType.FILLED
       } ${props.hint ? 'has-hint' : ''} ${props.text ? 'has-text' : ''}`}
       onClick={handleClick}>
-      <CheckboxComponent {...props} />
+      <CheckboxComponent {...props} ariaLabelledBy={ariaLabelledBy} />
       {props.children && props.children}
       {!props.children && (
         <>
@@ -47,6 +68,7 @@ export const CheckboxPanelComponent = (props: CheckboxPanelProps) => {
           )}
           {props.text && (
             <div
+              id={contentId}
               className="text"
               dangerouslySetInnerHTML={{
                 __html: props.skipTextTranslation
