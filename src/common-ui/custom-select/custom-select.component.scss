@@ -20,7 +20,11 @@
 
     &:focus-visible {
       outline: none !important;
+<<<<<<< HEAD
       box-shadow: inset 0 0 0 2px $red !important;
+=======
+      box-shadow: inset 0 0 0 2px $red;
+>>>>>>> 0f3d6d7acf00f02de45ddbc60458d904b3c63c5b
     }
 
     .selected-item {
