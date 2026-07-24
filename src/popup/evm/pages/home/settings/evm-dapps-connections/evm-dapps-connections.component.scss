@@ -30,6 +30,15 @@
     cursor: pointer;
     text-align: left;
     padding: 6px;
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $red;
+      outline-offset: -2px;
+    }
   }
 
   .evm-dapps-connections-item-main {
@@ -52,6 +61,11 @@
       min-width: 0;
       height: 34px;
       min-height: 34px;
+
+      &:focus-visible {
+        outline: 2px solid $red;
+        outline-offset: 2px;
+      }
 
       .button-label {
         @include poppins500(13px);

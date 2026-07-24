@@ -5319,6 +5319,18 @@
     "message": "Show all connected dApps",
     "description": "Link from EVM dapp status popup to Connected dApps settings"
   },
+  "popup_html_evm_dapp_status_open_details": {
+    "message": "Ver o estado da conexão de $1",
+    "description": "Accessible label for opening the current dApp connection status"
+  },
+  "popup_html_evm_dapp_status_connect_account": {
+    "message": "Conectar $1",
+    "description": "Accessible label for connecting an account to the current dApp"
+  },
+  "popup_html_evm_dapp_status_disconnect_account": {
+    "message": "Desconectar $1",
+    "description": "Accessible label for disconnecting an account from the current dApp"
+  },
   "dialog_evm_dapp_status_caption": {
     "message": "Select which accounts you want to connect to $1. It will give it permission to see your address, account balance and activity, and to suggest transactions to approve.",
     "description": "Evm dapp status"

@@ -4,8 +4,15 @@
   height: 40px;
   background-color: var(--input-background);
   border-radius: 50%;
+  border: none;
+  padding: 0;
   &.pointer {
     cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid $red;
+      outline-offset: 2px;
+    }
   }
   justify-content: center;
   align-items: center;

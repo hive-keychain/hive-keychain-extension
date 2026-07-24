@@ -16,6 +16,7 @@ import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-displa
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { EvmAccountUtils } from 'src/popup/evm/utils/evm-account.utils';
 import { EvmDappUtils } from 'src/popup/evm/utils/evm-dapp.utils';
 import {
   getHostnameFromUrl,
@@ -100,6 +101,7 @@ const EvmDappStatus = ({
   if (!dapp?.url) return null;
 
   const dappHostname = getHostnameFromUrl(dapp.url);
+  const dappName = dappHostname || dapp.url;
   const fallbackDappIconUrl = dappHostname
     ? EvmDappUtils.getEvmDappFaviconUrl(dappHostname)
     : undefined;
@@ -124,10 +126,15 @@ const EvmDappStatus = ({
         fallbackImageUrl={fallbackDappIconUrl}
         onClick={() => setShowDetail(true)}
         status={status}
+        ariaLabel={I18nUtils.getMessage(
+          'popup_html_evm_dapp_status_open_details',
+          [dappName],
+        )}
       />
       {showDetail && (
         <PopupContainer
           className="dapp-status-details"
+          aria-labelledby="evm-dapp-status-title"
           onClickOutside={() => setShowDetail(false)}>
           <div className="dapp-status-details-wrapper">
             <div className="popup-title">
@@ -137,10 +144,14 @@ const EvmDappStatus = ({
                   onError={handleDappIconError}
                 />
               )}
-              <div className="domain">{dappHostname}</div>
+              <div className="domain" id="evm-dapp-status-title">
+                {dappHostname}
+              </div>
               <SVGIcon
                 icon={SVGIcons.TOP_BAR_CLOSE_BTN}
+                className="dapp-status-close-icon"
                 onClick={() => setShowDetail(false)}
+                ariaLabel={I18nUtils.getMessage('popup_html_close')}
               />
             </div>
             <div className="caption">
@@ -171,6 +182,10 @@ const EvmDappStatus = ({
                   <SVGIcon
                     icon={SVGIcons.GLOBAL_ERROR}
                     className="account-section-icon"
+                    ariaLabel={I18nUtils.getMessage(
+                      'popup_html_evm_dapp_status_disconnect_account',
+                      [EvmAccountUtils.getAccountFullname(account)],
+                    )}
                     onClick={async () => {
                       const origin = getCurrentOrigin();
                       if (!origin) return;
@@ -207,6 +222,10 @@ const EvmDappStatus = ({
                   <SVGIcon
                     icon={SVGIcons.GLOBAL_ADD_CIRCLE}
                     className="account-section-icon"
+                    ariaLabel={I18nUtils.getMessage(
+                      'popup_html_evm_dapp_status_connect_account',
+                      [EvmAccountUtils.getAccountFullname(account)],
+                    )}
                     onClick={async () => {
                       const origin = getCurrentOrigin();
                       if (!origin) return;

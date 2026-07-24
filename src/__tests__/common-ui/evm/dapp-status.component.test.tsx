@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import { DappStatusComponent } from 'src/common-ui/evm/dapp-status/dapp-status.component';
 
@@ -39,5 +39,25 @@ describe('DappStatusComponent', () => {
     fireEvent.error(container.querySelector('img')!);
 
     expect(container.querySelector('img')).not.toBeInTheDocument();
+  });
+
+  it('uses a named button when the status opens details', () => {
+    const onClick = jest.fn();
+
+    render(
+      <DappStatusComponent
+        imageUrl="https://example.com/favicon.ico"
+        ariaLabel="View connection status for example.com"
+        onClick={onClick}
+      />,
+    );
+
+    const statusButton = screen.getByRole('button', {
+      name: 'View connection status for example.com',
+    });
+
+    fireEvent.click(statusButton);
+
+    expect(onClick).toHaveBeenCalledTimes(1);
   });
 });

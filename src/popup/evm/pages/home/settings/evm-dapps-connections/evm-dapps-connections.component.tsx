@@ -480,6 +480,7 @@ const EvmDappsConnections = ({
       {selectedConnection && selectedModalType && (
         <PopupContainer
           className="dapp-status-details"
+          aria-labelledby="evm-dapps-connection-title"
           onClickOutside={closePopup}>
           <div className="dapp-status-details-wrapper">
             <div className="popup-title">
@@ -491,8 +492,15 @@ const EvmDappsConnections = ({
                   dappLogos,
                 )}
               />
-              <div className="domain">{selectedConnection.subdomain}</div>
-              <SVGIcon icon={SVGIcons.TOP_BAR_CLOSE_BTN} onClick={closePopup} />
+              <div className="domain" id="evm-dapps-connection-title">
+                {selectedConnection.subdomain}
+              </div>
+              <SVGIcon
+                icon={SVGIcons.TOP_BAR_CLOSE_BTN}
+                className="dapp-status-close-icon"
+                onClick={closePopup}
+                ariaLabel={I18nUtils.getMessage('popup_html_close')}
+              />
             </div>
             {selectedModalType === 'addresses' ? (
               <>
