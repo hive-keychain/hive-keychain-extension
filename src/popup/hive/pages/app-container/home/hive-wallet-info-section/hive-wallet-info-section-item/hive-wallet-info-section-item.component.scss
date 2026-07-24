@@ -20,6 +20,10 @@ path {
     border: 1px solid var(--wallet-card-opened-border);
   }
 
+  &:has(.wallet-info-disclosure:focus-visible) {
+    border-color: $red;
+  }
+
   .information-panel-hive {
     width: 100%;
     display: flex;
@@ -43,11 +47,6 @@ path {
         outline: none;
       }
 
-      &:focus-visible {
-        outline: 2px solid $red;
-        outline-offset: 4px;
-        border-radius: 18px;
-      }
     }
     .currency-icon {
       border-radius: 50%;
