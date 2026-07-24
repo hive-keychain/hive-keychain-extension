@@ -65,7 +65,7 @@ const rules = FormUtils.createRules<DelegationForm>({
   gigaRcValue: Joi.number().required().min(0).max(Joi.ref('$maxAmount')),
 });
 
-const RCDelegations = ({
+export const RCDelegations = ({
   activeAccount,
   currencyLabels,
   properties,
@@ -371,20 +371,30 @@ const RCDelegations = ({
           </div>
 
           <div className="preset-button-panels">
-            <div className="preset-button" onClick={() => setToPresetValue(5)}>
+            <button
+              type="button"
+              className="preset-button"
+              onClick={() => setToPresetValue(5)}>
               5 {currencyLabels.hp}
-            </div>
-            <div className="preset-button" onClick={() => setToPresetValue(10)}>
+            </button>
+            <button
+              type="button"
+              className="preset-button"
+              onClick={() => setToPresetValue(10)}>
               10 {currencyLabels.hp}
-            </div>
-            <div className="preset-button" onClick={() => setToPresetValue(50)}>
+            </button>
+            <button
+              type="button"
+              className="preset-button"
+              onClick={() => setToPresetValue(50)}>
               50 {currencyLabels.hp}
-            </div>
-            <div
+            </button>
+            <button
+              type="button"
               className="preset-button"
               onClick={() => setToPresetValue(100)}>
               100 {currencyLabels.hp}
-            </div>
+            </button>
           </div>
         </div>
         <OperationButtonComponent
