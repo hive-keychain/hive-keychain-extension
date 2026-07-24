@@ -18,7 +18,16 @@
     }
   }
   input[type='radio'] {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+
+    &:focus-visible + .tab {
+      outline: 2px solid $red;
+      outline-offset: 2px;
+    }
   }
 
   .tab {
