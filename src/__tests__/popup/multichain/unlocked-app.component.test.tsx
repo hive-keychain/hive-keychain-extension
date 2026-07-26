@@ -19,6 +19,7 @@ import {
 } from 'src/popup/multichain/interfaces/chains.interface';
 import { navigateTo } from 'src/popup/multichain/actions/navigation.actions';
 import { UnlockedAppComponent } from 'src/popup/multichain/unlocked-app.component';
+import { ExtensionSurfaceUtils } from 'src/popup/multichain/utils/extension-surface.utils';
 import { PaidAccountCreationRouteUtils } from 'src/popup/multichain/utils/paid-account-creation-route.utils';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -578,6 +579,44 @@ describe('UnlockedAppComponent', () => {
       );
       expect(store.getState().hive.activeAccount.name).toBeTruthy();
       expect(getByTestId('unified-router')).toBeInTheDocument();
+    });
+
+    window.location.hash = previousHash;
+  });
+
+  it('opens the portfolio on the dedicated portfolio page', async () => {
+    const previousHash = window.location.hash;
+    window.location.hash = '';
+    jest
+      .spyOn(ExtensionSurfaceUtils, 'isPortfolioPage')
+      .mockReturnValue(true);
+    (EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
+
+    const { store } = customRender(<UnlockedAppComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk: mkData.user.one,
+        chain: hiveChain,
+        navigation: {
+          stack: [],
+        },
+        hive: {
+          ...initialEmptyStateStore.hive,
+          appStatus: {
+            ...initialEmptyStateStore.hive.appStatus,
+            priceLoaded: true,
+            globalPropertiesLoaded: true,
+          },
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(store.getState().navigation.stack[0]?.currentPage).toBe(
+        Screen.PORTFOLIO_PAGE,
+      );
     });
 
     window.location.hash = previousHash;

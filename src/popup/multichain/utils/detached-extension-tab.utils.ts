@@ -1,4 +1,5 @@
 import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
+import { ExtensionPageUtils } from '@popup/multichain/utils/extension-page.utils';
 import {
   SIDE_PANEL_PATH,
   SidePanelPreferenceUtils,
@@ -10,13 +11,8 @@ type SidePanelWithOpen = typeof chrome.sidePanel & {
   open?: (options: { windowId?: number; tabId?: number }) => Promise<void>;
 };
 
-const openExtensionPageInTab = (path: string): void => {
-  const url = chrome.runtime.getURL(path);
-  chrome.tabs.create({ url });
-};
-
 const openDetachedExtensionTab = (hash?: string): void => {
-  openExtensionPageInTab(
+  ExtensionPageUtils.openInTab(
     hash ? `${DETACHED_WINDOW_PATH}${hash}` : DETACHED_WINDOW_PATH,
   );
 };
@@ -47,7 +43,7 @@ const openExtensionPage = async (
     // Fall back to a tab when sidePanel is unavailable.
   }
 
-  openExtensionPageInTab(fallbackTabPath);
+  ExtensionPageUtils.openInTab(fallbackTabPath);
 };
 
 const openDetachedExtension = async (hash?: string): Promise<void> => {

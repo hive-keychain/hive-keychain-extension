@@ -8,7 +8,15 @@ const useFastDev = process.env.WEBPACK_FS_CACHE === 'true';
 const config = {
   entry: {
     hiveTx: 'hive-tx',
-    popup: { import: './src/popup/index.tsx', dependOn: 'hiveTx' },
+    extensionApp: {
+      import: './src/popup/multichain/extension-app-root.component.tsx',
+      dependOn: 'hiveTx',
+    },
+    popup: { import: './src/popup/index.tsx', dependOn: 'extensionApp' },
+    portfolio: {
+      import: './src/portfolio/index.tsx',
+      dependOn: 'extensionApp',
+    },
     dialog: './src/dialog/index.tsx',
     background: './src/background/multichain/multichain-service-worker.ts',
     importAccounts: './src/import/import-accounts.tsx',

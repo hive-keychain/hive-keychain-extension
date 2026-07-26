@@ -18,8 +18,15 @@ const isSidePanelPage = (
   return isExtensionPathEnding(pathname, '/sidepanel.html');
 };
 
+const isPortfolioPage = (
+  pathname: string = window.location.pathname,
+): boolean => {
+  return isExtensionPathEnding(pathname, '/portfolio.html');
+};
+
 export const ExtensionSurfaceUtils = {
   isToolbarPopup,
   isDetachedTab,
   isSidePanelPage,
+  isPortfolioPage,
 };

@@ -19,4 +19,11 @@ describe('ExtensionSurfaceUtils', () => {
     expect(ExtensionSurfaceUtils.isSidePanelPage('/sidepanel.html')).toBe(true);
     expect(ExtensionSurfaceUtils.isToolbarPopup('/sidepanel.html')).toBe(false);
   });
+
+  it('detects the portfolio page surface', () => {
+    expect(ExtensionSurfaceUtils.isPortfolioPage('/portfolio.html')).toBe(true);
+    expect(
+      ExtensionSurfaceUtils.isPortfolioPage('/detached_window.html'),
+    ).toBe(false);
+  });
 });

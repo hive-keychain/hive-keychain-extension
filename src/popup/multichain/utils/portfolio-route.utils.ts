@@ -1,9 +1,9 @@
 import { Screen } from '@interfaces/screen.interface';
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
-import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
-import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
+import { ExtensionPageUtils } from '@popup/multichain/utils/extension-page.utils';
 
 const PORTFOLIO_HASH = '#portfolio';
+const PORTFOLIO_PATH = 'portfolio.html';
 
 const parseHash = (hash: string): Screen | undefined =>
   hash === PORTFOLIO_HASH ? MultichainScreen.PORTFOLIO_PAGE : undefined;
@@ -16,17 +16,13 @@ const clearHash = () => {
   );
 };
 
-const open = async (navigateToPortfolio: () => void): Promise<void> => {
-  if (ExtensionSurfaceUtils.isDetachedTab()) {
-    navigateToPortfolio();
-    return;
-  }
-
-  DetachedExtensionTabUtils.openDetachedExtensionTab(PORTFOLIO_HASH);
+const open = (): void => {
+  ExtensionPageUtils.openInTab(PORTFOLIO_PATH);
 };
 
 export const PortfolioRouteUtils = {
   PORTFOLIO_HASH,
+  PORTFOLIO_PATH,
   clearHash,
   open,
   parseHash,

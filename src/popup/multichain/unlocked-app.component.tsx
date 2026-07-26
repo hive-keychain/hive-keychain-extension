@@ -709,14 +709,17 @@ const UnlockedApp = ({
           const portfolioRoute = PortfolioRouteUtils.parseHash(
             window.location.hash,
           );
-          if (portfolioRoute) {
-            PortfolioRouteUtils.clearHash();
-            if (ExtensionSurfaceUtils.isDetachedTab()) {
-              navigateTo(portfolioRoute, true);
-            } else {
-              void PortfolioRouteUtils.open(() => undefined);
-              navigateTo(Screen.HOME_PAGE, true);
+          const isPortfolioPage = ExtensionSurfaceUtils.isPortfolioPage();
+          if (isPortfolioPage || portfolioRoute) {
+            if (portfolioRoute) {
+              PortfolioRouteUtils.clearHash();
             }
+            if (isPortfolioPage) {
+              navigateTo(Screen.PORTFOLIO_PAGE, true);
+              return;
+            }
+            PortfolioRouteUtils.open();
+            navigateTo(Screen.HOME_PAGE, true);
             return;
           }
           const paidAccountCreationRoute =

@@ -45,7 +45,6 @@ import {
 } from '@popup/multichain/hooks/use-wallet-scroll-relay.hook';
 import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
 import { PortfolioRouteUtils } from '@popup/multichain/utils/portfolio-route.utils';
-import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -508,11 +507,7 @@ const Home = ({
           {accountValues && (
             <EstimatedAccountValueSectionComponent
               hasPortofolio
-              onPortfolioClick={() =>
-                void PortfolioRouteUtils.open(() =>
-                  navigateTo(MultichainScreen.PORTFOLIO_PAGE),
-                )
-              }
+              onPortfolioClick={PortfolioRouteUtils.open}
               accountValues={{
                 [AccountValueType.DOLLARS]: accountValues.usdValue,
                 [AccountValueType.TOKEN]: accountValues.mainTokenValue,
