@@ -2050,6 +2050,8 @@ export const Portfolio = ({
       ? (PortfolioEvmApprovalUtils.buildApproveConfirmationFields(
           requiredApproval,
           quote.fromAsset ?? fromCanonicalAsset,
+          toAssetEvmChains,
+          portfolioChains,
         ).map((field, index) => ({
           ...field,
           name: field.label ?? `portfolio-approval-${index}`,
@@ -2075,6 +2077,8 @@ export const Portfolio = ({
           toAsset: toCanonicalAsset,
           fromAddress,
           toAddress,
+          chains: toAssetEvmChains,
+          portfolioChains,
         }),
         {
           label: 'portfolio_confirmation_evm_destination',
@@ -2172,6 +2176,8 @@ export const Portfolio = ({
         toAsset: toCanonicalAsset,
         fromAddress,
         toAddress,
+        chains: toAssetEvmChains,
+        portfolioChains,
       }),
       onConfirm: async (options?: TransactionOptions) => {
         try {

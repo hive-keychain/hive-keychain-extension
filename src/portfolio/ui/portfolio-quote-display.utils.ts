@@ -1,6 +1,8 @@
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import {
   PortfolioCanonicalAsset,
+  PortfolioChainDisplayRecord,
   PortfolioQuote,
   PortfolioQuoteFee,
 } from 'src/portfolio/portfolio-api.interface';
@@ -35,14 +37,33 @@ const buildPortfolioConfirmationAmountField = (
   label: string,
   amount: string,
   asset: PortfolioCanonicalAsset | null | undefined,
+  chains: EvmChain[] = [],
+  portfolioChains: PortfolioChainDisplayRecord = {},
 ): ConfirmationPageFields => {
   const symbol = asset?.symbol?.trim();
+  const tokenNetwork = asset
+    ? PortfolioFlowUtils.resolveCanonicalAssetNetworkLabel(
+        asset,
+        chains,
+        portfolioChains,
+      )
+    : undefined;
+  const tokenNetworkLogoUrl = asset
+    ? PortfolioFlowUtils.resolveCanonicalAssetNetworkLogoUrl(
+        asset,
+        chains,
+        portfolioChains,
+      ) ?? undefined
+    : undefined;
+
   return {
     label,
     value: amount,
     tag: ConfirmationPageFieldType.AMOUNT,
     tokenSymbol: symbol || undefined,
     tokenLogoUrl: asset?.logoUrl ?? undefined,
+    tokenNetwork: tokenNetwork || undefined,
+    tokenNetworkLogoUrl,
   };
 };
 
@@ -77,12 +98,22 @@ export type PortfolioInAppConfirmationFieldInput = {
   toAsset?: PortfolioCanonicalAsset | null;
   fromAddress: string;
   toAddress: string;
+  chains?: EvmChain[];
+  portfolioChains?: PortfolioChainDisplayRecord;
 };
 
 const buildPortfolioInAppConfirmationFields = (
   input: PortfolioInAppConfirmationFieldInput,
 ): ConfirmationPageFields[] => {
-  const { quote, fromAsset, toAsset, fromAddress, toAddress } = input;
+  const {
+    quote,
+    fromAsset,
+    toAsset,
+    fromAddress,
+    toAddress,
+    chains = [],
+    portfolioChains = {},
+  } = input;
   const resolvedFromAsset = quote.fromAsset ?? fromAsset ?? null;
   const resolvedToAsset = quote.toAsset ?? toAsset ?? null;
 
@@ -91,11 +122,15 @@ const buildPortfolioInAppConfirmationFields = (
       'portfolio_confirmation_from',
       quote.fromAmount,
       resolvedFromAsset,
+      chains,
+      portfolioChains,
     ),
     buildPortfolioConfirmationAmountField(
       'portfolio_confirmation_to',
       quote.estimatedToAmount,
       resolvedToAsset,
+      chains,
+      portfolioChains,
     ),
   ];
 

@@ -110,6 +110,8 @@ describe('PortfolioQuoteDisplayUtils', () => {
         tag: ConfirmationPageFieldType.AMOUNT,
         tokenSymbol: 'ETH',
         tokenLogoUrl: 'https://example.com/eth.png',
+        tokenNetwork: 'ethereum',
+        tokenNetworkLogoUrl: undefined,
       },
       {
         label: 'portfolio_confirmation_to',
@@ -117,12 +119,74 @@ describe('PortfolioQuoteDisplayUtils', () => {
         tag: ConfirmationPageFieldType.AMOUNT,
         tokenSymbol: 'USDC',
         tokenLogoUrl: undefined,
+        tokenNetwork: 'ethereum',
+        tokenNetworkLogoUrl: undefined,
       },
       {
         label: 'portfolio_provider',
         value: 'LI.FI',
       },
     ]);
+  });
+
+  it('includes resolved chain badge data on from/to amount fields', () => {
+    const fields = PortfolioQuoteDisplayUtils.buildPortfolioInAppConfirmationFields(
+      {
+        quote: createQuote({
+          fromAsset: {
+            assetId: 'hive:native:hive',
+            ecosystem: 'hive',
+            symbol: 'HIVE',
+            name: 'Hive',
+            chainId: 'hive',
+            address: null,
+            decimals: 3,
+            isNative: true,
+            familyId: 'hive',
+            logoUrl: null,
+          },
+          toAsset: {
+            assetId: 'evm:native:ethereum',
+            ecosystem: 'evm',
+            symbol: 'ETH',
+            name: 'Ether',
+            chainId: 'ethereum',
+            address: null,
+            decimals: 18,
+            isNative: true,
+            familyId: 'eth',
+            logoUrl: 'https://example.com/eth.png',
+          },
+        }),
+        fromAddress: 'alice',
+        toAddress: '0xfrom',
+        portfolioChains: {
+          ethereum: {
+            id: 'ethereum',
+            name: 'Ethereum',
+            logoUrl: 'https://example.com/ethereum.png',
+            numericChainId: 1,
+          },
+        },
+      },
+    );
+
+    expect(fields[0]).toEqual(
+      expect.objectContaining({
+        label: 'portfolio_confirmation_from',
+        tokenSymbol: 'HIVE',
+        tokenNetwork: 'Hive',
+        tokenNetworkLogoUrl: '/assets/images/wallet/hive-logo.svg',
+      }),
+    );
+    expect(fields[1]).toEqual(
+      expect.objectContaining({
+        label: 'portfolio_confirmation_to',
+        tokenSymbol: 'ETH',
+        tokenNetwork: 'Ethereum',
+        tokenNetworkLogoUrl: 'https://example.com/ethereum.png',
+      }),
+    );
   });
 
   it('formats the recipient as a shortened address for an evm destination', () => {
@@ -166,6 +230,8 @@ describe('PortfolioQuoteDisplayUtils', () => {
         tag: ConfirmationPageFieldType.AMOUNT,
         tokenSymbol: 'HIVE',
         tokenLogoUrl: undefined,
+        tokenNetwork: 'Hive',
+        tokenNetworkLogoUrl: '/assets/images/wallet/hive-logo.svg',
       },
       {
         label: 'portfolio_confirmation_to',
@@ -173,6 +239,8 @@ describe('PortfolioQuoteDisplayUtils', () => {
         tag: ConfirmationPageFieldType.AMOUNT,
         tokenSymbol: 'ETH',
         tokenLogoUrl: undefined,
+        tokenNetwork: 'ethereum',
+        tokenNetworkLogoUrl: undefined,
       },
       {
         label: 'portfolio_confirmation_to_account',
@@ -228,6 +296,8 @@ describe('PortfolioQuoteDisplayUtils', () => {
         tag: ConfirmationPageFieldType.AMOUNT,
         tokenSymbol: 'ETH',
         tokenLogoUrl: undefined,
+        tokenNetwork: 'ethereum',
+        tokenNetworkLogoUrl: undefined,
       },
       {
         label: 'portfolio_confirmation_to',
@@ -235,6 +305,8 @@ describe('PortfolioQuoteDisplayUtils', () => {
         tag: ConfirmationPageFieldType.AMOUNT,
         tokenSymbol: 'HIVE',
         tokenLogoUrl: undefined,
+        tokenNetwork: 'Hive',
+        tokenNetworkLogoUrl: '/assets/images/wallet/hive-logo.svg',
       },
       {
         label: 'portfolio_confirmation_to_account',

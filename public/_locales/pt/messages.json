@@ -4178,16 +4178,16 @@
     "message": "Add the source chain to Keychain before signing."
   },
   "portfolio_native_confirmation_message": {
-    "message": "Review and sign this portfolio transaction."
+    "message": "Review the swap details below, then sign to confirm."
   },
   "portfolio_provider": {
     "message": "Provider"
   },
   "portfolio_confirmation_from": {
-    "message": "From asset"
+    "message": "From"
   },
   "portfolio_confirmation_to": {
-    "message": "To assets"
+    "message": "To"
   },
   "portfolio_confirmation_to_account": {
     "message": "To account"
