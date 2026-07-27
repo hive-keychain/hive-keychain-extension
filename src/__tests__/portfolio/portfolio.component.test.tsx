@@ -1012,6 +1012,73 @@ describe('Portfolio', () => {
     });
   });
 
+  it('sorts swap from assets by portfolio display order', async () => {
+    jest
+      .spyOn(ChainUtils, 'getAllSetupChainsForType')
+      .mockResolvedValue([polygonChain, ethereumChain]);
+    (
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains as jest.Mock
+    ).mockImplementation(async (_chains, _walletAddress, options) => {
+      options?.onChainReady?.(polygonChain, [maticToken]);
+      options?.onChainFinished?.(polygonChain);
+      options?.onChainReady?.(ethereumChain, [ethToken]);
+      options?.onChainFinished?.(ethereumChain);
+      return [maticToken, ethToken];
+    });
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
+      assets: swapAssetsFixture,
+      chains: {},
+    });
+    const buildFromAssetOptionsSpy = jest.spyOn(
+      PortfolioFlowUtils,
+      'buildPortfolioFromSelectOptions',
+    );
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={
+          [
+            {
+              id: 1,
+              wallet: { address: '0xabc' },
+            } as never,
+          ]
+        }
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+      expect(container.textContent).toContain('MATIC');
+    });
+
+    clickPortfolioNav(container, 'swap');
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-from-asset')).not.toBeNull();
+    });
+
+    const swapFromRowsCall = buildFromAssetOptionsSpy.mock.calls.find(([rows]) => {
+      const symbols = rows.map((row) => row.symbol);
+      return symbols.includes('ETH') && symbols.includes('MATIC');
+    });
+
+    expect(swapFromRowsCall?.[0].map((row) => row.symbol)).toEqual([
+      'ETH',
+      'MATIC',
+    ]);
+
+    buildFromAssetOptionsSpy.mockRestore();
+  });
+
   it('auto-fetches swap quotes once the form is complete without a get quotes button', async () => {
     (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
       assets: swapAssetsFixture,

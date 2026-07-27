@@ -784,13 +784,21 @@ export const Portfolio = ({
             })
           : rowsWithPositiveBalance;
 
-    return PortfolioFlowUtils.buildPortfolioFromSelectOptions(eligibleFromRows);
+    const sortedEligibleFromRows = PortfolioUtils.sortPortfolioDisplayItems(
+      eligibleFromRows,
+      selectedAccount?.type === ChainType.HIVE,
+    );
+
+    return PortfolioFlowUtils.buildPortfolioFromSelectOptions(
+      sortedEligibleFromRows,
+    );
   }, [
     canonicalAssetsForRowResolution,
     portfolioChains,
     rampAvailableAssets,
     rows,
     section,
+    selectedAccount?.type,
     swapSourceAssets,
     toAssetEvmChains,
   ]);
@@ -1189,14 +1197,9 @@ export const Portfolio = ({
           row.network.toLowerCase().includes(filter),
       );
 
-    if (selectedAccount?.type === ChainType.HIVE) {
-      return filteredRows.sort(
-        PortfolioUtils.compareHivePortfolioItemsByDisplayOrder,
-      );
-    }
-
-    return filteredRows.sort(
-      (left, right) => (right.usdValue ?? -1) - (left.usdValue ?? -1),
+    return PortfolioUtils.sortPortfolioDisplayItems(
+      filteredRows,
+      selectedAccount?.type === ChainType.HIVE,
     );
   }, [rows, selectedNetwork, tokenFilter, selectedAccount?.type]);
 
