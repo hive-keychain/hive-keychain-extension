@@ -1,5 +1,10 @@
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import React from 'react';
+import {
+  ConfirmationPageFields,
+  ConfirmationPageFieldType,
+} from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import {
   PortfolioCanonicalAsset,
   PortfolioChainDisplayRecord,
@@ -11,10 +16,7 @@ import {
   isHivePortfolioEcosystem,
   PortfolioFlowUtils,
 } from 'src/portfolio/portfolio-flow.utils';
-import {
-  ConfirmationPageFields,
-  ConfirmationPageFieldType,
-} from 'src/common-ui/confirmation-page/confirmation-page.interface';
+import { PortfolioProviderValue } from 'src/portfolio/ui/portfolio-provider-value.component';
 
 export type PortfolioQuoteDetailRow = {
   key: string;
@@ -147,9 +149,13 @@ const buildPortfolioInAppConfirmationFields = (
     );
   }
 
+  const providerLabel = quote.providerName || quote.provider;
   fields.push({
     label: 'portfolio_provider',
-    value: quote.providerName || quote.provider,
+    value: React.createElement(PortfolioProviderValue, {
+      label: providerLabel,
+      logoUrl: quote.providerLogoUrl,
+    }),
   });
 
   return fields;

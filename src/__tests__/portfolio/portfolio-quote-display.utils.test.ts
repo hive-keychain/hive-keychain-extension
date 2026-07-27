@@ -1,4 +1,6 @@
+import { render, screen } from '@testing-library/react';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
+import React from 'react';
 import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { PortfolioQuote } from 'src/portfolio/portfolio-api.interface';
 import { PortfolioQuoteDisplayUtils } from 'src/portfolio/ui/portfolio-quote-display.utils';
@@ -49,6 +51,25 @@ const createQuote = (overrides: Partial<PortfolioQuote> = {}): PortfolioQuote =>
   transaction: null,
   ...overrides,
 });
+
+const expectProviderField = (
+  field: ReturnType<
+    typeof PortfolioQuoteDisplayUtils.buildPortfolioInAppConfirmationFields
+  >[number],
+  providerLabel: string,
+  providerLogoUrl: string | null,
+) => {
+  expect(field.label).toBe('portfolio_provider');
+  expect(React.isValidElement(field.value)).toBe(true);
+  render(field.value as React.ReactElement);
+  expect(screen.getByText(providerLabel)).toBeTruthy();
+  if (providerLogoUrl) {
+    expect(screen.getByRole('img').getAttribute('src')).toBe(providerLogoUrl);
+  } else {
+    expect(screen.queryByRole('img')).toBeNull();
+    expect(screen.getByText(providerLabel.slice(0, 1))).toBeTruthy();
+  }
+};
 
 describe('PortfolioQuoteDisplayUtils', () => {
   it('builds detail rows for provider and network fees only', () => {
@@ -103,7 +124,7 @@ describe('PortfolioQuoteDisplayUtils', () => {
       },
     );
 
-    expect(fields).toEqual([
+    expect(fields.slice(0, -1)).toEqual([
       {
         label: 'portfolio_confirmation_from',
         value: '1',
@@ -122,11 +143,8 @@ describe('PortfolioQuoteDisplayUtils', () => {
         tokenNetwork: 'ethereum',
         tokenNetworkLogoUrl: undefined,
       },
-      {
-        label: 'portfolio_provider',
-        value: 'LI.FI',
-      },
     ]);
+    expectProviderField(fields[fields.length - 1], 'LI.FI', 'https://example.com/lifi.png');
   });
 
   it('includes resolved chain badge data on from/to amount fields', () => {
@@ -223,7 +241,7 @@ describe('PortfolioQuoteDisplayUtils', () => {
       },
     );
 
-    expect(fields).toEqual([
+    expect(fields.slice(0, -1)).toEqual([
       {
         label: 'portfolio_confirmation_from',
         value: '1',
@@ -248,11 +266,8 @@ describe('PortfolioQuoteDisplayUtils', () => {
           '0x1234567890abcdef1234567890abcdef12345678',
         ),
       },
-      {
-        label: 'portfolio_provider',
-        value: 'LI.FI',
-      },
     ]);
+    expectProviderField(fields[fields.length - 1], 'LI.FI', 'https://example.com/lifi.png');
   });
 
   it('tags the recipient as a username for a hive destination', () => {
@@ -289,7 +304,7 @@ describe('PortfolioQuoteDisplayUtils', () => {
       },
     );
 
-    expect(fields).toEqual([
+    expect(fields.slice(0, -1)).toEqual([
       {
         label: 'portfolio_confirmation_from',
         value: '1',
@@ -313,10 +328,21 @@ describe('PortfolioQuoteDisplayUtils', () => {
         value: 'bob',
         tag: ConfirmationPageFieldType.USERNAME,
       },
-      {
-        label: 'portfolio_provider',
-        value: 'LI.FI',
-      },
     ]);
+    expectProviderField(fields[fields.length - 1], 'LI.FI', 'https://example.com/lifi.png');
+  });
+
+  it('falls back to a letter avatar when the provider logo is missing', () => {
+    const fields = PortfolioQuoteDisplayUtils.buildPortfolioInAppConfirmationFields(
+      {
+        quote: createQuote({
+          providerLogoUrl: null,
+        }),
+        fromAddress: '0xfrom',
+        toAddress: '0xfrom',
+      },
+    );
+
+    expectProviderField(fields[fields.length - 1], 'LI.FI', null);
   });
 });
