@@ -834,6 +834,53 @@ const getCanonicalAssetTextFilterRank = (
   );
 };
 
+const getCanonicalAssetPriceUsd = (asset: PortfolioCanonicalAsset): number =>
+  typeof asset.priceUsd === 'number' && Number.isFinite(asset.priceUsd)
+    ? asset.priceUsd
+    : 0;
+
+const getCanonicalAssetRankScore = (asset: PortfolioCanonicalAsset): number =>
+  typeof asset.rankScore === 'number' && Number.isFinite(asset.rankScore)
+    ? asset.rankScore
+    : 0;
+
+const compareCanonicalAssetsByPriceUsd = (
+  left: PortfolioCanonicalAsset,
+  right: PortfolioCanonicalAsset,
+): number => {
+  const priceDiff =
+    getCanonicalAssetPriceUsd(right) - getCanonicalAssetPriceUsd(left);
+  if (priceDiff !== 0) {
+    return priceDiff;
+  }
+
+  return left.symbol.localeCompare(right.symbol);
+};
+
+const compareCanonicalAssetsByRank = (
+  left: PortfolioCanonicalAsset,
+  right: PortfolioCanonicalAsset,
+): number => {
+  const rankDiff =
+    getCanonicalAssetRankScore(right) - getCanonicalAssetRankScore(left);
+  if (rankDiff !== 0) {
+    return rankDiff;
+  }
+
+  return compareCanonicalAssetsByPriceUsd(left, right);
+};
+
+export const sortCanonicalAssetsByPriceUsd = (
+  assets: PortfolioCanonicalAsset[],
+): PortfolioCanonicalAsset[] =>
+  [...assets].sort(compareCanonicalAssetsByPriceUsd);
+
+/** Sorts by API `rankScore` (desc), then `priceUsd`, then symbol. */
+export const sortCanonicalAssetsByRank = (
+  assets: PortfolioCanonicalAsset[],
+): PortfolioCanonicalAsset[] =>
+  [...assets].sort(compareCanonicalAssetsByRank);
+
 const compareCanonicalAssetsByTextFilter = (
   left: PortfolioCanonicalAsset,
   right: PortfolioCanonicalAsset,
@@ -846,7 +893,7 @@ const compareCanonicalAssetsByTextFilter = (
     return rankDiff;
   }
 
-  return left.symbol.localeCompare(right.symbol);
+  return compareCanonicalAssetsByRank(left, right);
 };
 
 const matchesCanonicalAssetTextFilter = (
@@ -962,7 +1009,7 @@ export const filterCanonicalAssets = (
     ? [...filteredAssets].sort((left, right) =>
         compareCanonicalAssetsByTextFilter(left, right, textFilter),
       )
-    : filteredAssets;
+    : sortCanonicalAssetsByRank(filteredAssets);
 
   return {
     assets: sortedAssets.slice(0, maxResults),
@@ -1254,4 +1301,6 @@ export const PortfolioFlowUtils = {
   resolvePortfolioRowToCanonicalAsset,
   resolvePortfolioRowToCanonicalAssetId,
   resolvePortfolioToAddress,
+  sortCanonicalAssetsByPriceUsd,
+  sortCanonicalAssetsByRank,
 };

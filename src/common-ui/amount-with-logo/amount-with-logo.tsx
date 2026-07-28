@@ -1,6 +1,7 @@
 import { Token } from '@interfaces/tokens.interface';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import React, { useEffect, useState } from 'react';
+import { ChainLogo } from 'src/common-ui/chain-logo/chain-logo.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { ColorsUtils } from 'src/utils/colors.utils';
@@ -11,6 +12,8 @@ type Props = {
   icon?: SVGIcons;
   symbol?: string;
   logoUrl?: string;
+  network?: string;
+  networkLogoUrl?: string | null;
   className?: string;
   title?: string;
   tokens?: Token[];
@@ -21,6 +24,8 @@ const AmountWithLogo = ({
   icon,
   symbol,
   logoUrl,
+  network,
+  networkLogoUrl,
   className = '',
   title,
   tokens,
@@ -67,6 +72,7 @@ const AmountWithLogo = ({
     />
   );
 
+  const showNetworkBadge = Boolean(networkLogoUrl || network);
   const amountElement = (
     <span className="amount">
       {typeof amount === 'string' ? amount.split(' ')[0] : amount} {symbol}
@@ -79,7 +85,16 @@ const AmountWithLogo = ({
       <div className="amount-logo-container">
         <>
           {amountElement}
-          {iconElement}
+          <div className="amount-logo-wrap">
+            {iconElement}
+            {showNetworkBadge ? (
+              <ChainLogo
+                chainName={network ?? ''}
+                logoUri={networkLogoUrl}
+                className="amount-network-badge"
+              />
+            ) : null}
+          </div>
         </>
       </div>
     </div>

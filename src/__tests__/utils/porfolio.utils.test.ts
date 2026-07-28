@@ -104,6 +104,36 @@ describe('porfolio.utils', () => {
     });
   });
 
+  describe('sortPortfolioDisplayItems', () => {
+    it('sorts EVM portfolio rows by usd value descending', () => {
+      const rows = [
+        { symbol: 'MATIC', usdValue: 10 },
+        { symbol: 'ETH', usdValue: 100 },
+        { symbol: 'USDC', usdValue: 25 },
+      ];
+
+      expect(
+        PortfolioUtils.sortPortfolioDisplayItems(rows, false).map(
+          (row) => row.symbol,
+        ),
+      ).toEqual(['ETH', 'USDC', 'MATIC']);
+    });
+
+    it('uses Hive core token order when requested', () => {
+      const rows = [
+        { symbol: 'DEC', usdValue: 1000 },
+        { symbol: 'HIVE', usdValue: 5 },
+        { symbol: 'BEE', usdValue: 500 },
+      ];
+
+      expect(
+        PortfolioUtils.sortPortfolioDisplayItems(rows, true).map(
+          (row) => row.symbol,
+        ),
+      ).toEqual(['HIVE', 'DEC', 'BEE']);
+    });
+  });
+
   describe('getTotals', () => {
     it('sums balances and usd values per column symbol', () => {
       const data: UserPortfolio[] = [

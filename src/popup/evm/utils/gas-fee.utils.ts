@@ -53,6 +53,57 @@ const getFallbackGasLimit = (
   return DEFAULT_SIMPLE_TX_GAS_LIMIT;
 };
 
+const resolveGasLimitForEstimate = async (
+  chain: EvmChain,
+  fromAddress: string,
+  transactionData: ProviderTransactionData | undefined,
+  providedGasLimit: number | undefined,
+): Promise<number> => {
+  const providerGasLimit =
+    providedGasLimit != null && isPlausibleGasLimit(providedGasLimit)
+      ? providedGasLimit
+      : transactionData?.gasLimit != null &&
+          isPlausibleGasLimit(Number(transactionData.gasLimit))
+        ? Number(transactionData.gasLimit)
+        : undefined;
+
+  let estimatedGasLimit: number | undefined;
+  try {
+    estimatedGasLimit = Number(
+      await EthersUtils.getGasLimit(
+        chain,
+        fromAddress,
+        transactionData?.abi,
+        transactionData?.signature ?? transactionData?.method,
+        transactionData?.args,
+        transactionData?.data,
+        transactionData?.to,
+        transactionData?.value,
+      ),
+    );
+    if (!isPlausibleGasLimit(estimatedGasLimit)) {
+      estimatedGasLimit = undefined;
+    }
+  } catch (error) {
+    Logger.warn(
+      `On-chain gas limit estimation failed for chain ${chain.chainId}; using fallback limit`,
+    );
+    estimatedGasLimit = undefined;
+  }
+
+  if (providerGasLimit != null && estimatedGasLimit != null) {
+    return Math.max(providerGasLimit, estimatedGasLimit);
+  }
+  if (providerGasLimit != null) {
+    return providerGasLimit;
+  }
+  if (estimatedGasLimit != null) {
+    return estimatedGasLimit;
+  }
+
+  return getFallbackGasLimit(transactionData);
+};
+
 const isInvalidDecimal = (value?: Decimal) => !value || value.lte(0);
 
 const isGasFeeEstimateInvalid = (fee?: GasFeeEstimationBase): boolean => {
@@ -565,30 +616,12 @@ const estimate = async (
   }
 
   const price = new Decimal(mainTokenPrice);
-  if (gasLimit != null && !isPlausibleGasLimit(gasLimit)) {
-    gasLimit = undefined;
-  }
-  if (!gasLimit) {
-    try {
-      gasLimit = Number(
-        await EthersUtils.getGasLimit(
-          chain,
-          fromAddress,
-          transactionData?.abi,
-          transactionData?.signature ?? transactionData?.method,
-          transactionData?.args,
-          transactionData?.data,
-          transactionData?.to,
-          transactionData?.value,
-        ),
-      );
-    } catch (error) {
-      Logger.warn(
-        `On-chain gas limit estimation failed for chain ${chain.chainId}; using fallback limit`,
-      );
-      gasLimit = getFallbackGasLimit(transactionData);
-    }
-  }
+  const resolvedGasLimit = await resolveGasLimitForEstimate(
+    chain,
+    fromAddress,
+    transactionData,
+    gasLimit != null && isPlausibleGasLimit(gasLimit) ? gasLimit : undefined,
+  );
 
   if (!estimates || !estimates.low) {
     const provider = await EthersUtils.getProvider(chain);
@@ -603,13 +636,13 @@ const estimate = async (
       const fullEstimation = buildFullEstimationFromEstimates(
         estimatesWithChainMinimum,
         type,
-        gasLimit,
+        resolvedGasLimit,
         price,
       );
       return attachDAppSuggestion(
         fullEstimation,
         transactionData,
-        gasLimit,
+        resolvedGasLimit,
         price,
       );
     }
@@ -617,19 +650,19 @@ const estimate = async (
     const feeResult = await buildRpcFallbackCustomFee(
       chain,
       type,
-      gasLimit,
+      resolvedGasLimit,
       price,
     );
-    return attachDAppSuggestion(feeResult, transactionData, gasLimit, price);
+    return attachDAppSuggestion(feeResult, transactionData, resolvedGasLimit, price);
   }
 
   const fullEstimation = buildFullEstimationFromEstimates(
     estimates as RpcGasOracleEstimates,
     type,
-    gasLimit,
+    resolvedGasLimit,
     price,
   );
-  return attachDAppSuggestion(fullEstimation, transactionData, gasLimit, price);
+  return attachDAppSuggestion(fullEstimation, transactionData, resolvedGasLimit, price);
 };
 
 const createDAppSuggestionFromTransactionData = async (

@@ -11,8 +11,10 @@ import {
 } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import {
   PortfolioCanonicalAsset,
+  PortfolioChainDisplayRecord,
   PortfolioQuote,
 } from 'src/portfolio/portfolio-api.interface';
+import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
 
 export type PortfolioRequiredApproval = {
   spender: string;
@@ -83,10 +85,26 @@ const buildApproveTransactionData = (
 const buildApproveConfirmationFields = (
   approval: PortfolioRequiredApproval,
   fromAsset: PortfolioCanonicalAsset | null | undefined,
+  chains: EvmChain[] = [],
+  portfolioChains: PortfolioChainDisplayRecord = {},
 ): ConfirmationPageFields[] => {
   const decimals = fromAsset?.decimals ?? 18;
   const formattedAmount = ethers.formatUnits(approval.amount, decimals);
   const symbol = fromAsset?.symbol?.trim();
+  const tokenNetwork = fromAsset
+    ? PortfolioFlowUtils.resolveCanonicalAssetNetworkLabel(
+        fromAsset,
+        chains,
+        portfolioChains,
+      )
+    : undefined;
+  const tokenNetworkLogoUrl = fromAsset
+    ? PortfolioFlowUtils.resolveCanonicalAssetNetworkLogoUrl(
+        fromAsset,
+        chains,
+        portfolioChains,
+      ) ?? undefined
+    : undefined;
 
   return [
     {
@@ -95,6 +113,8 @@ const buildApproveConfirmationFields = (
       tag: ConfirmationPageFieldType.AMOUNT,
       tokenSymbol: symbol || undefined,
       tokenLogoUrl: fromAsset?.logoUrl ?? undefined,
+      tokenNetwork: tokenNetwork || undefined,
+      tokenNetworkLogoUrl,
     },
     {
       label: 'portfolio_confirmation_approval_spender',

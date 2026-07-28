@@ -272,6 +272,8 @@ describe('PortfolioApiUtils', () => {
             isNative: true,
             familyId: 'eth',
             logoUrl: null,
+            priceUsd: 0,
+            rankScore: 0,
           },
         ],
         chains: {

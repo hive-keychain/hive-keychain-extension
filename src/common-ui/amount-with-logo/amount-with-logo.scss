@@ -16,6 +16,12 @@
     min-height: 32px;
     gap: 8px;
   }
+  .amount-logo-wrap {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+  }
   .svg-icon {
     height: 32px;
     width: 32px;
@@ -35,6 +41,23 @@
       // animation: loading-shimmer 1.5s infinite;
       border: 1px solid var(--card-border);
     }
+  }
+  .amount-network-badge,
+  .chain-logo-initials.amount-network-badge {
+    position: absolute;
+    right: -2px;
+    top: -2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid var(--card-background-color, var(--kc-color-bg-card));
+    object-fit: cover;
+  }
+  .chain-logo-initials.amount-network-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    @include poppins600(7px);
   }
 
   .amount {

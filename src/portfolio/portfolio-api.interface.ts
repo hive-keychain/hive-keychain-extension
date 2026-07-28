@@ -46,6 +46,13 @@ export interface PortfolioCanonicalAsset {
   isNative: boolean;
   familyId: string;
   logoUrl: string | null;
+  /** Spot USD price from provider sync; `0` means unknown / unavailable. */
+  priceUsd: number;
+  /**
+   * Picker ranking score from the portfolio API.
+   * Higher is better for default to-asset sort order.
+   */
+  rankScore: number;
 }
 
 export interface PortfolioQuoteFee {

@@ -271,6 +271,8 @@ export const EvmConfirmationPageContent = ({
               amount={field.value as string}
               symbol={field.tokenSymbol}
               logoUrl={field.tokenLogoUrl}
+              network={field.tokenNetwork}
+              networkLogoUrl={field.tokenNetworkLogoUrl}
             />
           </div>
         );

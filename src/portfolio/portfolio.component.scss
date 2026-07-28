@@ -84,6 +84,7 @@
       font-weight: var(--kc-font-weight-medium);
       color: var(--kc-color-text-secondary);
       margin-bottom: var(--kc-space-1);
+      padding-left: 0;
     }
 
     .custom-input-content {
@@ -110,6 +111,7 @@
       font-weight: var(--kc-font-weight-medium);
       color: var(--kc-color-text-secondary);
       margin-bottom: var(--kc-space-1);
+      padding-left: 0;
     }
 
     .custom-select {
@@ -395,6 +397,7 @@
   flex-direction: column;
   gap: var(--kc-space-3);
   min-width: 0;
+  box-sizing: border-box;
   padding: var(--kc-space-4);
   border: 1px solid var(--kc-color-border-subtle);
   border-radius: var(--kc-radius-lg);
@@ -412,6 +415,16 @@
     font-weight: var(--kc-font-weight-semibold);
     line-height: 1.35;
     color: var(--kc-color-text-primary);
+  }
+
+  &--compact {
+    align-self: flex-start;
+    width: 100%;
+    max-width: calc(38.75rem + 2 * var(--kc-space-4));
+
+    @media (min-width: 768px) {
+      max-width: calc(38.75rem + 2 * var(--kc-space-5));
+    }
   }
 }
 
@@ -642,7 +655,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--kc-space-3);
-  width: min(100%, 38.75rem);
+  width: 100%;
+  min-width: 0;
 
   .portfolio-overlay-select__preview,
   .portfolio-overlay-select__option {

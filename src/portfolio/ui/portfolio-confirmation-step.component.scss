@@ -8,4 +8,39 @@
     flex: 1;
     min-height: 0;
   }
+
+  .portfolio-confirmation-provider {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--kc-space-2);
+    min-width: 0;
+
+    &__logo,
+    &__fallback {
+      flex: 0 0 20px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+    }
+
+    &__logo {
+      object-fit: contain;
+      background: var(--kc-color-logo-bg);
+    }
+
+    &__fallback {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--kc-font-size-xs);
+      font-weight: var(--kc-font-weight-medium);
+      text-transform: uppercase;
+    }
+
+    &__label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
 }

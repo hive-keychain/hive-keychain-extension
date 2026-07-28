@@ -219,6 +219,16 @@ const sortHivePortfolioBalancesByDisplayOrder = (
 ): PortfolioBalance[] =>
   [...balances].sort(compareHivePortfolioItemsByDisplayOrder);
 
+const sortPortfolioDisplayItems = <T extends HivePortfolioDisplaySortItem>(
+  items: T[],
+  useHiveCoreTokenOrder: boolean,
+): T[] =>
+  [...items].sort((left, right) =>
+    useHiveCoreTokenOrder
+      ? compareHivePortfolioItemsByDisplayOrder(left, right)
+      : (right.usdValue ?? -1) - (left.usdValue ?? -1),
+  );
+
 const getOrderedTokenFullList = (
   tokensFullList: string[],
   portfolio: UserPortfolio[],
@@ -335,4 +345,5 @@ export const PortfolioUtils = {
   generateUserLayerTwoPortolio,
   compareHivePortfolioItemsByDisplayOrder,
   sortHivePortfolioBalancesByDisplayOrder,
+  sortPortfolioDisplayItems,
 };

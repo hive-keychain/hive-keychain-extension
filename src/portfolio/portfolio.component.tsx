@@ -1,8 +1,8 @@
+import { ConfirmationPageEvmFields } from '@common-ui/confirmation-page/confirmation-page.interface';
 import {
   ComplexeCustomSelect,
   OptionItem,
 } from '@common-ui/custom-select/custom-select.component';
-import { ConfirmationPageEvmFields } from '@common-ui/confirmation-page/confirmation-page.interface';
 import { TransactionOptions } from '@interfaces/keys.interface';
 import {
   EvmActiveAccount,
@@ -35,7 +35,13 @@ import AccountSelectorOrderUtils, {
   AccountSelectorListItem,
 } from '@popup/multichain/utils/account-selector-order.utils';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
@@ -44,11 +50,10 @@ import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.componen
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { PortfolioLogoImage } from 'src/portfolio/ui/portfolio-logo-image.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
+import { LocalAccount } from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
@@ -68,30 +73,31 @@ import {
   PortfolioQuoteResponse,
 } from 'src/portfolio/portfolio-api.interface';
 import {
+  DEFAULT_PORTFOLIO_FEATURE_FLAGS,
   PortfolioApiUtils,
   PortfolioLocalizedMessage,
   PortfolioSwapQuoteFetchResult,
-  DEFAULT_PORTFOLIO_FEATURE_FLAGS,
 } from 'src/portfolio/portfolio-api.utils';
-import { PortfolioFiatLocaleUtils } from 'src/portfolio/portfolio-fiat-locale.utils';
 import { PortfolioEvmApprovalUtils } from 'src/portfolio/portfolio-evm-approval.utils';
+import { PortfolioFiatLocaleUtils } from 'src/portfolio/portfolio-fiat-locale.utils';
 import {
   PortfolioFlowRow,
   PortfolioFlowUtils,
 } from 'src/portfolio/portfolio-flow.utils';
-import { UserPortfolio } from 'src/portfolio/portfolio.interface';
-import { PortfolioAccountAvatar } from 'src/portfolio/ui/portfolio-account-avatar.component';
 import {
   getPortfolioHiveOperations,
   PortfolioInAppConfirmationContext,
 } from 'src/portfolio/portfolio-in-app-confirmation.interface';
+import { UserPortfolio } from 'src/portfolio/portfolio.interface';
+import { PortfolioAccountAvatar } from 'src/portfolio/ui/portfolio-account-avatar.component';
 import { PortfolioConfirmationStepComponent } from 'src/portfolio/ui/portfolio-confirmation-step.component';
 import { PortfolioHistoryCard } from 'src/portfolio/ui/portfolio-history-card.component';
 import { PortfolioHistoryDisplayUtils } from 'src/portfolio/ui/portfolio-history-display.utils';
-import { PortfolioQuoteCard } from 'src/portfolio/ui/portfolio-quote-card.component';
-import { PortfolioQuoteDisplayUtils } from 'src/portfolio/ui/portfolio-quote-display.utils';
+import { PortfolioLogoImage } from 'src/portfolio/ui/portfolio-logo-image.component';
 import { PortfolioNavIcon } from 'src/portfolio/ui/portfolio-nav-icon.enum';
 import { PortfolioOverlayListSelect } from 'src/portfolio/ui/portfolio-overlay-list-select.component';
+import { PortfolioQuoteCard } from 'src/portfolio/ui/portfolio-quote-card.component';
+import { PortfolioQuoteDisplayUtils } from 'src/portfolio/ui/portfolio-quote-display.utils';
 import { PortfolioSidebarNavIcon } from 'src/portfolio/ui/portfolio-sidebar-nav-icon.component';
 import {
   canonicalAssetToTokenIdentityProps,
@@ -723,9 +729,7 @@ export const Portfolio = ({
   const hasCreatedExpiredHistory = useMemo(
     () =>
       history.some((item) =>
-        PortfolioHistoryDisplayUtils.isCreatedOrExpiredHistoryStatus(
-          item,
-        ),
+        PortfolioHistoryDisplayUtils.isCreatedOrExpiredHistoryStatus(item),
       ),
     [history],
   );
@@ -811,8 +815,7 @@ export const Portfolio = ({
         ? rowsWithPositiveBalance.filter((row) => {
             const canonicalAssetId = resolveRowCanonicalAssetId(row);
             return (
-              canonicalAssetId &&
-              rampAvailableAssetIds.has(canonicalAssetId)
+              canonicalAssetId && rampAvailableAssetIds.has(canonicalAssetId)
             );
           })
         : section === 'swap' && swapAvailableFromAssetIds.size > 0
@@ -830,13 +833,21 @@ export const Portfolio = ({
             })
           : rowsWithPositiveBalance;
 
-    return PortfolioFlowUtils.buildPortfolioFromSelectOptions(eligibleFromRows);
+    const sortedEligibleFromRows = PortfolioUtils.sortPortfolioDisplayItems(
+      eligibleFromRows,
+      selectedAccount?.type === ChainType.HIVE,
+    );
+
+    return PortfolioFlowUtils.buildPortfolioFromSelectOptions(
+      sortedEligibleFromRows,
+    );
   }, [
     canonicalAssetsForRowResolution,
     portfolioChains,
     rampAvailableAssets,
     rows,
     section,
+    selectedAccount?.type,
     swapSourceAssets,
     toAssetEvmChains,
   ]);
@@ -863,12 +874,13 @@ export const Portfolio = ({
 
     const selectedRow = rows.find((row) => row.key === fromAssetId);
     if (selectedRow && section === 'swap' && swapSourceAssets.length > 0) {
-      const swapFromAssetId = PortfolioFlowUtils.resolvePortfolioRowToSwapFromAssetId(
-        selectedRow,
-        swapSourceAssets,
-        toAssetEvmChains,
-        portfolioChains,
-      );
+      const swapFromAssetId =
+        PortfolioFlowUtils.resolvePortfolioRowToSwapFromAssetId(
+          selectedRow,
+          swapSourceAssets,
+          toAssetEvmChains,
+          portfolioChains,
+        );
       if (swapFromAssetId) {
         return canonicalAssetById.get(swapFromAssetId);
       }
@@ -1028,28 +1040,35 @@ export const Portfolio = ({
   }, [amount]);
 
   const eligibleToAssets = useMemo(() => {
-    if (section === 'buy') {
-      const buyAssets =
-        rampAvailableAssets.length > 0 ? rampAvailableAssets : assets;
-      return PortfolioFlowUtils.filterToAssetsByFromAsset(buyAssets, undefined);
-    }
+    const toAssets = (() => {
+      if (section === 'buy') {
+        const buyAssets =
+          rampAvailableAssets.length > 0 ? rampAvailableAssets : assets;
+        return PortfolioFlowUtils.filterToAssetsByFromAsset(
+          buyAssets,
+          undefined,
+        );
+      }
 
-    if (section === 'swap' && fromCanonicalAsset) {
-      return swapAvailableAssets.filter(
-        (asset) =>
-          !PortfolioFlowUtils.isPortfolioSwapExcludedAsset(asset) &&
-          asset.assetId !== fromCanonicalAsset.assetId,
+      if (section === 'swap' && fromCanonicalAsset) {
+        return swapAvailableAssets.filter(
+          (asset) =>
+            !PortfolioFlowUtils.isPortfolioSwapExcludedAsset(asset) &&
+            asset.assetId !== fromCanonicalAsset.assetId,
+        );
+      }
+
+      if (!fromCanonicalAsset) {
+        return PortfolioFlowUtils.filterToAssetsByFromAsset(assets, undefined);
+      }
+
+      return PortfolioFlowUtils.filterToAssetsByFromAsset(
+        assets,
+        fromCanonicalAsset,
       );
-    }
+    })();
 
-    if (!fromCanonicalAsset) {
-      return PortfolioFlowUtils.filterToAssetsByFromAsset(assets, undefined);
-    }
-
-    return PortfolioFlowUtils.filterToAssetsByFromAsset(
-      assets,
-      fromCanonicalAsset,
-    );
+    return PortfolioFlowUtils.sortCanonicalAssetsByRank(toAssets);
   }, [
     assets,
     fromCanonicalAsset,
@@ -1235,14 +1254,9 @@ export const Portfolio = ({
           row.network.toLowerCase().includes(filter),
       );
 
-    if (selectedAccount?.type === ChainType.HIVE) {
-      return filteredRows.sort(
-        PortfolioUtils.compareHivePortfolioItemsByDisplayOrder,
-      );
-    }
-
-    return filteredRows.sort(
-      (left, right) => (right.usdValue ?? -1) - (left.usdValue ?? -1),
+    return PortfolioUtils.sortPortfolioDisplayItems(
+      filteredRows,
+      selectedAccount?.type === ChainType.HIVE,
     );
   }, [rows, selectedNetwork, tokenFilter, selectedAccount?.type]);
 
@@ -1512,6 +1526,7 @@ export const Portfolio = ({
       const response = await PortfolioApiUtils.listAvailableAssets({
         mode: 'swap',
       });
+      console.log('response', response);
       setSwapAvailableAssets(response.assets);
       setPortfolioChains((current) =>
         mergePortfolioChainRecords(current, response.chains),
@@ -1891,8 +1906,8 @@ export const Portfolio = ({
         toAddress,
         countryCode:
           mode === 'buy' || mode === 'sell'
-            ? geoCountryCode ??
-              PortfolioFiatLocaleUtils.getPreferredRegionCode()
+            ? (geoCountryCode ??
+              PortfolioFiatLocaleUtils.getPreferredRegionCode())
             : undefined,
         fiatCurrency:
           mode === 'buy' || mode === 'sell' ? fiatCurrency : undefined,
@@ -1914,7 +1929,8 @@ export const Portfolio = ({
       Logger.error('Unable to load portfolio quotes', error);
       setQuoteResponse(undefined);
       setSelectedQuoteId('');
-      const amountError = PortfolioApiUtils.resolvePortfolioAmountQuoteError(error);
+      const amountError =
+        PortfolioApiUtils.resolvePortfolioAmountQuoteError(error);
       if (amountError) {
         setAmountQuoteError(amountError);
         setStatusMessage('');
@@ -1986,7 +2002,11 @@ export const Portfolio = ({
   }, [scheduleSwapQuoteAutoRefresh, section]);
 
   useEffect(() => {
-    if (!isQuoteAutoFetchSection(section) || !canRequestQuotes || pendingInAppConfirmation) {
+    if (
+      !isQuoteAutoFetchSection(section) ||
+      !canRequestQuotes ||
+      pendingInAppConfirmation
+    ) {
       swapQuoteRefreshDeadlineRef.current = 0;
       setQuoteRefreshCountdown(null);
       setIsSwapQuoteRequestPending(false);
@@ -1998,22 +2018,21 @@ export const Portfolio = ({
       triggerFlowQuoteRefresh();
     }, PORTFOLIO_SWAP_QUOTE_DEBOUNCE_MS);
 
-    const countdownIntervalId =
-      isQuoteAutoFetchSection(section)
-        ? setInterval(() => {
-            if (!swapQuoteRefreshDeadlineRef.current) {
-              return;
-            }
+    const countdownIntervalId = isQuoteAutoFetchSection(section)
+      ? setInterval(() => {
+          if (!swapQuoteRefreshDeadlineRef.current) {
+            return;
+          }
 
-            const remainingMs = swapQuoteRefreshDeadlineRef.current - Date.now();
-            if (remainingMs <= 0) {
-              triggerFlowQuoteRefresh();
-              return;
-            }
+          const remainingMs = swapQuoteRefreshDeadlineRef.current - Date.now();
+          if (remainingMs <= 0) {
+            triggerFlowQuoteRefresh();
+            return;
+          }
 
-            setQuoteRefreshCountdown(Math.ceil(remainingMs / 1000));
-          }, 1000)
-        : undefined;
+          setQuoteRefreshCountdown(Math.ceil(remainingMs / 1000));
+        }, 1000)
+      : undefined;
 
     return () => {
       clearTimeout(initialQuoteTimeoutId);
@@ -2060,9 +2079,7 @@ export const Portfolio = ({
       value: transaction.value,
       type: chain.defaultTransactionType ?? EvmTransactionType.EIP_1559,
       chain,
-      gasLimit: transaction.gasLimit
-        ? Number(transaction.gasLimit)
-        : undefined,
+      gasLimit: transaction.gasLimit ? Number(transaction.gasLimit) : undefined,
       maxFeePerGas: transaction.maxFeePerGas ?? undefined,
       maxPriorityFeePerGas: transaction.maxPriorityFeePerGas ?? undefined,
       gasPrice: transaction.gasPrice ?? undefined,
@@ -2080,11 +2097,12 @@ export const Portfolio = ({
       isReady: true,
     };
 
-    const requiredApproval = await PortfolioEvmApprovalUtils.getRequiredApproval(
-      chain,
-      account.wallet.address,
-      quote,
-    );
+    const requiredApproval =
+      await PortfolioEvmApprovalUtils.getRequiredApproval(
+        chain,
+        account.wallet.address,
+        quote,
+      );
     const approveTransactionData = requiredApproval
       ? PortfolioEvmApprovalUtils.buildApproveTransactionData(
           chain,
@@ -2096,6 +2114,8 @@ export const Portfolio = ({
       ? (PortfolioEvmApprovalUtils.buildApproveConfirmationFields(
           requiredApproval,
           quote.fromAsset ?? fromCanonicalAsset,
+          toAssetEvmChains,
+          portfolioChains,
         ).map((field, index) => ({
           ...field,
           name: field.label ?? `portfolio-approval-${index}`,
@@ -2121,6 +2141,8 @@ export const Portfolio = ({
           toAsset: toCanonicalAsset,
           fromAddress,
           toAddress,
+          chains: toAssetEvmChains,
+          portfolioChains,
         }),
         {
           label: 'portfolio_confirmation_evm_destination',
@@ -2169,7 +2191,9 @@ export const Portfolio = ({
             transactionResponse.hash,
           );
           setPendingInAppConfirmation(null);
-          setHistory(await PortfolioApiUtils.listHistory(1, historyAddressFilters));
+          setHistory(
+            await PortfolioApiUtils.listHistory(1, historyAddressFilters),
+          );
           setSection('history');
         } catch (error) {
           resetLoading();
@@ -2218,6 +2242,8 @@ export const Portfolio = ({
         toAsset: toCanonicalAsset,
         fromAddress,
         toAddress,
+        chains: toAssetEvmChains,
+        portfolioChains,
       }),
       onConfirm: async (options?: TransactionOptions) => {
         try {
@@ -2239,7 +2265,9 @@ export const Portfolio = ({
             );
           }
           setPendingInAppConfirmation(null);
-          setHistory(await PortfolioApiUtils.listHistory(1, historyAddressFilters));
+          setHistory(
+            await PortfolioApiUtils.listHistory(1, historyAddressFilters),
+          );
           setSection('history');
         } catch (error) {
           Logger.error('Portfolio transaction failed', error);
@@ -2274,7 +2302,10 @@ export const Portfolio = ({
       );
 
       if (quote.executionType === 'in_app') {
-        const transaction = resolvePortfolioSignableTransaction(quote, execution);
+        const transaction = resolvePortfolioSignableTransaction(
+          quote,
+          execution,
+        );
         if (!transaction) {
           throw new Error('portfolio_execution_prepare_failed');
         }
@@ -2316,13 +2347,16 @@ export const Portfolio = ({
         throw new Error('portfolio_execution_prepare_failed');
       }
 
-      const redirectUrl = PortfolioApiUtils.resolvePortfolioExecutionRedirectUrl(
-        execution,
-        quote,
-      );
+      const redirectUrl =
+        PortfolioApiUtils.resolvePortfolioExecutionRedirectUrl(
+          execution,
+          quote,
+        );
       if (redirectUrl) {
         chrome.tabs.create({ url: redirectUrl });
-        setHistory(await PortfolioApiUtils.listHistory(1, historyAddressFilters));
+        setHistory(
+          await PortfolioApiUtils.listHistory(1, historyAddressFilters),
+        );
         setSection('history');
         setStatusMessage('portfolio_provider_opened');
         return;
@@ -2512,7 +2546,6 @@ export const Portfolio = ({
     </div>
   );
 
-
   const renderHistoryRefreshControl = () => {
     if (section !== 'history' || !selectedAccountKey) {
       return null;
@@ -2605,108 +2638,105 @@ export const Portfolio = ({
       triggerFlowQuoteRefresh();
     };
 
-    const estimatedAmountInput =
-      isQuoteAutoFetchSection(mode) ? (
-        <div className="custom-input portfolio-swap-quote-field">
-          <div className="label">
-            {I18nUtils.getMessage('portfolio_estimated_amount')}
-          </div>
-          <div
-            className={`custom-input-content ${
-              hasMultipleQuotes ? 'portfolio-swap-quote-input--clickable' : ''
-            }`}
-            data-testid="portfolio-swap-quote-input"
-            onClick={handleSwapQuoteInputClick}
-            onKeyDown={(event) => {
-              if (
-                hasMultipleQuotes &&
-                (event.key === 'Enter' || event.key === ' ')
-              ) {
-                event.preventDefault();
-                setIsQuotesPanelExpanded(true);
-              }
-            }}
-            role={hasMultipleQuotes ? 'button' : undefined}
-            tabIndex={hasMultipleQuotes ? 0 : undefined}>
-            <div className="portfolio-swap-quote-input__container input-container no-logo">
-              <div
-                className="portfolio-swap-quote-input__value"
-                data-testid="portfolio-swap-quote-value">
-                {selectedQuote?.estimatedToAmount ?? ''}
-              </div>
-              <div className="portfolio-swap-quote-input__adornments">
-                {showSwapQuoteActionButton ? (
-                  <button
-                    type="button"
-                    className="portfolio-swap-quote-input__refresh"
-                    disabled={isFlowLoading}
-                    onClick={handleSwapQuoteRefreshClick}
-                    title={swapQuoteActionLabel}
-                    aria-label={swapQuoteActionLabel}>
-                    <SVGIcon
-                      className={`portfolio-swap-quote-input__refresh-icon ${
-                        isFlowLoading ? 'rotate' : ''
-                      }`}
-                      icon={SVGIcons.SWAPS_HISTORY_REFRESH}
-                    />
-                    <span
-                      className="portfolio-swap-quote-input__refresh-label"
-                      data-testid={
-                        showSwapQuoteRetry
-                          ? 'portfolio-swap-quote-retry-label'
-                          : 'portfolio-swap-quote-refresh-label'
-                      }>
-                      {swapQuoteActionLabel}
-                    </span>
-                  </button>
-                ) : null}
-                {isAwaitingFirstSwapQuote ? (
-                  <div
-                    className="portfolio-swap-quote-input__spinner"
-                    data-testid="portfolio-swap-quote-loading">
-                    <RotatingLogoComponent />
-                  </div>
-                ) : null}
-                {selectedQuote ? (
-                  <PortfolioLogoImage
-                    className="portfolio-swap-quote-input__logo"
-                    src={selectedQuote.providerLogoUrl}
-                    fallbackClassName="portfolio-swap-quote-input__logo"
-                    fallbackLetter={
-                      selectedQuote.providerName || selectedQuote.provider
-                    }
-                    colorKey={
-                      selectedQuote.providerName || selectedQuote.provider
-                    }
-                  />
-                ) : null}
-              </div>
-            </div>
-          </div>
+    const estimatedAmountInput = isQuoteAutoFetchSection(mode) ? (
+      <div className="custom-input portfolio-swap-quote-field">
+        <div className="label">
+          {I18nUtils.getMessage('portfolio_estimated_amount')}
         </div>
-      ) : (
-        <div className="portfolio-amount-field">
-          <InputComponent
-            label="portfolio_estimated_amount"
-            type={InputType.NUMBER}
-            value={selectedQuote?.estimatedToAmount ?? ''}
-            onChange={() => {}}
-            disabled
-            imageLogoUrl={selectedQuote?.providerLogoUrl ?? undefined}
-            imageLogoAlt={selectedQuote?.providerName || selectedQuote?.provider}
-            logoPosition={
-              selectedQuote?.providerLogoUrl ? 'right' : undefined
+        <div
+          className={`custom-input-content ${
+            hasMultipleQuotes ? 'portfolio-swap-quote-input--clickable' : ''
+          }`}
+          data-testid="portfolio-swap-quote-input"
+          onClick={handleSwapQuoteInputClick}
+          onKeyDown={(event) => {
+            if (
+              hasMultipleQuotes &&
+              (event.key === 'Enter' || event.key === ' ')
+            ) {
+              event.preventDefault();
+              setIsQuotesPanelExpanded(true);
             }
-          />
-          {isSwapQuoteRequestPending && !selectedQuote ? (
+          }}
+          role={hasMultipleQuotes ? 'button' : undefined}
+          tabIndex={hasMultipleQuotes ? 0 : undefined}>
+          <div className="portfolio-swap-quote-input__container input-container no-logo">
             <div
-              className="portfolio-swap-quote-input__spinner"
-              data-testid="portfolio-flow-quote-loading">
-              <RotatingLogoComponent />
+              className="portfolio-swap-quote-input__value"
+              data-testid="portfolio-swap-quote-value">
+              {selectedQuote?.estimatedToAmount ?? ''}
             </div>
-          ) : null}
+            <div className="portfolio-swap-quote-input__adornments">
+              {showSwapQuoteActionButton ? (
+                <button
+                  type="button"
+                  className="portfolio-swap-quote-input__refresh"
+                  disabled={isFlowLoading}
+                  onClick={handleSwapQuoteRefreshClick}
+                  title={swapQuoteActionLabel}
+                  aria-label={swapQuoteActionLabel}>
+                  <SVGIcon
+                    className={`portfolio-swap-quote-input__refresh-icon ${
+                      isFlowLoading ? 'rotate' : ''
+                    }`}
+                    icon={SVGIcons.SWAPS_HISTORY_REFRESH}
+                  />
+                  <span
+                    className="portfolio-swap-quote-input__refresh-label"
+                    data-testid={
+                      showSwapQuoteRetry
+                        ? 'portfolio-swap-quote-retry-label'
+                        : 'portfolio-swap-quote-refresh-label'
+                    }>
+                    {swapQuoteActionLabel}
+                  </span>
+                </button>
+              ) : null}
+              {isAwaitingFirstSwapQuote ? (
+                <div
+                  className="portfolio-swap-quote-input__spinner"
+                  data-testid="portfolio-swap-quote-loading">
+                  <RotatingLogoComponent />
+                </div>
+              ) : null}
+              {selectedQuote ? (
+                <PortfolioLogoImage
+                  className="portfolio-swap-quote-input__logo"
+                  src={selectedQuote.providerLogoUrl}
+                  fallbackClassName="portfolio-swap-quote-input__logo"
+                  fallbackLetter={
+                    selectedQuote.providerName || selectedQuote.provider
+                  }
+                  colorKey={
+                    selectedQuote.providerName || selectedQuote.provider
+                  }
+                />
+              ) : null}
+            </div>
+          </div>
         </div>
-      );
+      </div>
+    ) : (
+      <div className="portfolio-amount-field">
+        <InputComponent
+          label="portfolio_estimated_amount"
+          type={InputType.NUMBER}
+          value={selectedQuote?.estimatedToAmount ?? ''}
+          onChange={() => {}}
+          disabled
+          imageLogoUrl={selectedQuote?.providerLogoUrl ?? undefined}
+          imageLogoAlt={selectedQuote?.providerName || selectedQuote?.provider}
+          logoPosition={selectedQuote?.providerLogoUrl ? 'right' : undefined}
+        />
+        {isSwapQuoteRequestPending && !selectedQuote ? (
+          <div
+            className="portfolio-swap-quote-input__spinner"
+            data-testid="portfolio-flow-quote-loading">
+            <RotatingLogoComponent />
+          </div>
+        ) : null}
+      </div>
+    );
 
     const renderQuoteCard = (quote: PortfolioQuote) => (
       <PortfolioQuoteCard
@@ -2864,9 +2894,7 @@ export const Portfolio = ({
                   label="portfolio_network"
                   options={toAssetChainSelectOptions}
                   selectedItem={selectedToAssetChainOption}
-                  setSelectedItem={(item) =>
-                    setToAssetChainFilter(item.value)
-                  }
+                  setSelectedItem={(item) => setToAssetChainFilter(item.value)}
                   filterable
                   generateImageIfNull
                   skipImageGenerationForFirstItem
@@ -2913,7 +2941,10 @@ export const Portfolio = ({
         )}
         {amountQuoteError && (
           <p className="portfolio-field-error" role="alert">
-            {I18nUtils.getMessage(amountQuoteError.key, amountQuoteError.params)}
+            {I18nUtils.getMessage(
+              amountQuoteError.key,
+              amountQuoteError.params,
+            )}
           </p>
         )}
       </div>
@@ -3081,6 +3112,9 @@ export const Portfolio = ({
   const pageTitleKey = pendingInAppConfirmation
     ? 'popup_html_confirm'
     : `portfolio_section_${section}`;
+  const isCompactPortfolioCard =
+    Boolean(pendingInAppConfirmation) ||
+    (section !== 'portfolio' && section !== 'history');
 
   return (
     <div className="portfolio-app-shell" data-testid="portfolio-page">
@@ -3120,30 +3154,33 @@ export const Portfolio = ({
               <div className="portfolio-page-header__title">
                 <h1>{I18nUtils.getMessage(pageTitleKey)}</h1>
                 {!pendingInAppConfirmation && (
-                <button
-                  aria-label={I18nUtils.getMessage('portfolio_refresh')}
-                  className="portfolio-refresh-button"
-                  disabled={
-                    isPortfolioLoading || isHistoryLoading || isRefreshing
-                  }
-                  onClick={() => void handleRefreshPortfolioData()}
-                  title={I18nUtils.getMessage('portfolio_refresh')}
-                  type="button">
-                  <SVGIcon
-                    className={`portfolio-refresh-icon ${
-                      isRefreshing || isPortfolioLoading ? 'rotate' : ''
-                    }`}
-                    icon={SVGIcons.SWAPS_HISTORY_REFRESH}
-                  />
-                </button>
+                  <button
+                    aria-label={I18nUtils.getMessage('portfolio_refresh')}
+                    className="portfolio-refresh-button"
+                    disabled={
+                      isPortfolioLoading || isHistoryLoading || isRefreshing
+                    }
+                    onClick={() => void handleRefreshPortfolioData()}
+                    title={I18nUtils.getMessage('portfolio_refresh')}
+                    type="button">
+                    <SVGIcon
+                      className={`portfolio-refresh-icon ${
+                        isRefreshing || isPortfolioLoading ? 'rotate' : ''
+                      }`}
+                      icon={SVGIcons.SWAPS_HISTORY_REFRESH}
+                    />
+                  </button>
                 )}
               </div>
               {!pendingInAppConfirmation && (
-              <p>{I18nUtils.getMessage('portfolio_page_description')}</p>
+                <p>{I18nUtils.getMessage('portfolio_page_description')}</p>
               )}
             </header>
 
-            <div className="portfolio-card">
+            <div
+              className={`portfolio-card${
+                isCompactPortfolioCard ? ' portfolio-card--compact' : ''
+              }`}>
               {!pendingInAppConfirmation && (
                 <div className="portfolio-card-header">
                   <h2>{I18nUtils.getMessage(pageTitleKey)}</h2>
