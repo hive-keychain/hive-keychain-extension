@@ -32,6 +32,8 @@ const swapAssetsFixture = [
     isNative: true,
     familyId: 'eth',
     logoUrl: null,
+    priceUsd: 0,
+    rankScore: 0,
   },
   {
     assetId: 'evm:native:polygon',
@@ -44,6 +46,8 @@ const swapAssetsFixture = [
     isNative: true,
     familyId: 'matic',
     logoUrl: null,
+    priceUsd: 0,
+    rankScore: 0,
   },
 ];
 
@@ -969,6 +973,8 @@ describe('Portfolio', () => {
           isNative: true,
           familyId: 'eth',
           logoUrl: null,
+          priceUsd: 0,
+          rankScore: 0,
         },
       ],
       chains: {},
@@ -1520,6 +1526,8 @@ describe('Portfolio', () => {
                 isNative: true,
                 familyId: 'kaia',
                 logoUrl: null,
+                priceUsd: 0,
+                rankScore: 0,
               },
             ],
             chains: {
@@ -1707,6 +1715,8 @@ describe('Portfolio', () => {
           isNative: true,
           familyId: 'eth',
           logoUrl: null,
+          priceUsd: 0,
+          rankScore: 0,
         },
       ],
     });

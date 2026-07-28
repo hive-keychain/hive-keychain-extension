@@ -193,6 +193,8 @@ const parsePortfolioCanonicalAsset = (
     isNative: readBoolean(value, 'isNative'),
     familyId: readString(value, 'familyId'),
     logoUrl: readNullableString(value, 'logoUrl'),
+    priceUsd: readNullableNumber(value, 'priceUsd') ?? 0,
+    rankScore: readNullableNumber(value, 'rankScore') ?? 0,
   };
 };
 

@@ -12,8 +12,10 @@ const createTestCanonicalAsset = (
   address: null,
   decimals: null,
   isNative: false,
-  familyId: asset.symbol.toLowerCase(),
+    familyId: asset.symbol.toLowerCase(),
   logoUrl: null,
+  priceUsd: 0,
+  rankScore: 0,
   ...asset,
 });
 
@@ -538,6 +540,100 @@ describe('PortfolioFlowUtils', () => {
         maxResults: 2,
       }).totalMatches,
     ).toBe(4);
+  });
+
+  it('sorts to assets by usd price descending by default', () => {
+    const cheapAsset = createTestCanonicalAsset({
+      assetId: 'evm-matic',
+      ecosystem: 'evm',
+      symbol: 'MATIC',
+      name: 'Polygon',
+      chainId: '0x89',
+      priceUsd: 1,
+      rankScore: 0,
+    });
+    const expensiveAsset = createTestCanonicalAsset({
+      assetId: 'evm-eth',
+      ecosystem: 'evm',
+      symbol: 'ETH',
+      name: 'Ether',
+      chainId: '0x1',
+      priceUsd: 3000,
+      rankScore: 0,
+    });
+    const unknownPriceAsset = createTestCanonicalAsset({
+      assetId: 'evm-unknown',
+      ecosystem: 'evm',
+      symbol: 'UNKNOWN',
+      name: 'Unknown',
+      chainId: '0x1',
+      priceUsd: 0,
+      rankScore: 0,
+    });
+
+    expect(
+      PortfolioFlowUtils.sortCanonicalAssetsByPriceUsd([
+        cheapAsset,
+        unknownPriceAsset,
+        expensiveAsset,
+      ]),
+    ).toEqual([expensiveAsset, cheapAsset, unknownPriceAsset]);
+  });
+
+  it('sorts to assets by API rankScore descending by default', () => {
+    const vaultAsset = createTestCanonicalAsset({
+      assetId: 'evm-stata-wbtc',
+      ecosystem: 'evm',
+      symbol: 'stataPolWBTC',
+      name: 'Static Aave Polygon WBTC',
+      chainId: 'polygon',
+      priceUsd: 79515,
+      rankScore: 100,
+    });
+    const ethNative = createTestCanonicalAsset({
+      assetId: 'evm-eth',
+      ecosystem: 'evm',
+      symbol: 'ETH',
+      name: 'Ether',
+      chainId: 'ethereum',
+      isNative: true,
+      priceUsd: 1873,
+      rankScore: 2900,
+    });
+    const usdcAsset = createTestCanonicalAsset({
+      assetId: 'evm-usdc',
+      ecosystem: 'evm',
+      symbol: 'USDC',
+      name: 'USD Coin',
+      chainId: 'ethereum',
+      priceUsd: 1,
+      rankScore: 950,
+    });
+    const lpAsset = createTestCanonicalAsset({
+      assetId: 'evm-lp',
+      ecosystem: 'evm',
+      symbol: 'sAMMV2-USDC/MAI',
+      name: 'StableV2 AMM - USDC/MAI',
+      chainId: 'optimism',
+      priceUsd: 77574,
+      rankScore: 50,
+    });
+
+    expect(
+      PortfolioFlowUtils.sortCanonicalAssetsByRank([
+        vaultAsset,
+        lpAsset,
+        usdcAsset,
+        ethNative,
+      ]),
+    ).toEqual([ethNative, usdcAsset, vaultAsset, lpAsset]);
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets(
+        [vaultAsset, lpAsset, usdcAsset, ethNative],
+        { maxResults: 2 },
+      ).assets,
+    ).toEqual([ethNative, usdcAsset]);
   });
 
   it('builds to asset select options with network labels', () => {

@@ -15,6 +15,8 @@ const createAsset = (
   isNative: false,
   familyId: 'usdc',
   logoUrl: null,
+  priceUsd: 0,
+  rankScore: 0,
   ...overrides,
 });
 

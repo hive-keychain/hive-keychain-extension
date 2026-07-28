@@ -16,6 +16,8 @@ describe('PortfolioApiParser', () => {
             isNative: true,
             familyId: 'eth',
             logoUrl: 'https://example.com/eth.png',
+            priceUsd: 3245.67,
+            rankScore: 2850,
           },
         ],
         chains: {
@@ -40,6 +42,8 @@ describe('PortfolioApiParser', () => {
           isNative: true,
           familyId: 'eth',
           logoUrl: 'https://example.com/eth.png',
+          priceUsd: 3245.67,
+          rankScore: 2850,
         },
       ],
       chains: {
@@ -51,6 +55,34 @@ describe('PortfolioApiParser', () => {
         },
       },
     });
+  });
+
+  it('defaults missing canonical asset priceUsd and rankScore to 0', () => {
+    expect(
+      PortfolioApiParser.parsePortfolioAssetsResponse({
+        assets: [
+          {
+            assetId: 'evm:native:ethereum',
+            ecosystem: 'evm',
+            symbol: 'ETH',
+            name: 'Ether',
+            chainId: 'ethereum',
+            address: null,
+            decimals: 18,
+            isNative: true,
+            familyId: 'eth',
+            logoUrl: null,
+          },
+        ],
+        chains: {},
+      }).assets[0],
+    ).toEqual(
+      expect.objectContaining({
+        assetId: 'evm:native:ethereum',
+        priceUsd: 0,
+        rankScore: 0,
+      }),
+    );
   });
 
   it('parses external destination assets from the assets payload', () => {
@@ -68,6 +100,8 @@ describe('PortfolioApiParser', () => {
             isNative: true,
             familyId: 'external:native:xrp',
             logoUrl: null,
+            priceUsd: 0,
+            rankScore: 0,
           },
         ],
         chains: {
@@ -113,6 +147,8 @@ describe('PortfolioApiParser', () => {
             isNative: true,
             familyId: 'utxo:native:btc',
             logoUrl: 'https://example.com/btc.png',
+            priceUsd: 0,
+            rankScore: 0,
           },
         ],
         chains: {
@@ -179,6 +215,8 @@ describe('PortfolioApiParser', () => {
               isNative: true,
               familyId: 'eth',
               logoUrl: null,
+              priceUsd: 0,
+              rankScore: 0,
             },
             toAsset: null,
             fromAmount: '1',
