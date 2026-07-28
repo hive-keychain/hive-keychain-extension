@@ -3066,6 +3066,9 @@ export const Portfolio = ({
   const pageTitleKey = pendingInAppConfirmation
     ? 'popup_html_confirm'
     : `portfolio_section_${section}`;
+  const isCompactPortfolioCard =
+    Boolean(pendingInAppConfirmation) ||
+    (section !== 'portfolio' && section !== 'history');
 
   return (
     <div className="portfolio-app-shell" data-testid="portfolio-page">
@@ -3128,7 +3131,10 @@ export const Portfolio = ({
               )}
             </header>
 
-            <div className="portfolio-card">
+            <div
+              className={`portfolio-card${
+                isCompactPortfolioCard ? ' portfolio-card--compact' : ''
+              }`}>
               {!pendingInAppConfirmation && (
                 <div className="portfolio-card-header">
                   <h2>{I18nUtils.getMessage(pageTitleKey)}</h2>

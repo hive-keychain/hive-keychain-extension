@@ -228,6 +228,12 @@ describe('Portfolio', () => {
     expect(sidebarButtons).toHaveLength(5);
     expect(sidebarButtons[0].classList.contains('active')).toBe(true);
 
+    expect(
+      container
+        .querySelector('.portfolio-card')
+        ?.classList.contains('portfolio-card--compact'),
+    ).toBe(false);
+
     clickPortfolioNav(container, 'buy');
 
     expect(
@@ -236,6 +242,19 @@ describe('Portfolio', () => {
         ?.classList.contains('active'),
     ).toBe(true);
     expect(container.querySelector('.portfolio-flow')).not.toBeNull();
+    expect(
+      container
+        .querySelector('.portfolio-card')
+        ?.classList.contains('portfolio-card--compact'),
+    ).toBe(true);
+
+    clickPortfolioNav(container, 'history');
+
+    expect(
+      container
+        .querySelector('.portfolio-card')
+        ?.classList.contains('portfolio-card--compact'),
+    ).toBe(false);
   });
 
   it('loads evm chains in parallel and renders rows as each chain becomes ready', async () => {
