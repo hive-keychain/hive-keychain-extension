@@ -175,6 +175,7 @@ const maticToken = {
 describe('Portfolio', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    window.history.replaceState(null, '', '/#portfolio');
     mockPortfolioListAvailableAssets();
     jest
       .spyOn(ChainUtils, 'getAllSetupChainsForType')
@@ -223,6 +224,7 @@ describe('Portfolio', () => {
     const sidebarButtons = container.querySelectorAll('.portfolio-sidebar nav button');
     expect(sidebarButtons).toHaveLength(5);
     expect(sidebarButtons[0].classList.contains('active')).toBe(true);
+    expect(window.location.hash).toBe('#portfolio');
 
     clickPortfolioNav(container, 'buy');
 
@@ -232,6 +234,34 @@ describe('Portfolio', () => {
         ?.classList.contains('active'),
     ).toBe(true);
     expect(container.querySelector('.portfolio-flow')).not.toBeNull();
+    expect(window.location.hash).toBe('#buy');
+  });
+
+  it('restores the current section from the URL hash', async () => {
+    window.history.replaceState(null, '', '/#history');
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[]}
+        activeAccountType={ChainType.HIVE}
+        activeEvmAccountAddress={undefined}
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(
+        container
+          .querySelector('[data-testid="portfolio-nav-history"]')
+          ?.classList.contains('active'),
+      ).toBe(true);
+    });
+    expect(window.location.hash).toBe('#history');
   });
 
   it('loads evm chains in parallel and renders rows as each chain becomes ready', async () => {

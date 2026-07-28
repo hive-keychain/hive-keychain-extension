@@ -106,6 +106,35 @@ import { ethers } from 'ethers';
 import { I18nUtils } from 'src/utils/i18n.utils';
 
 type PortfolioSection = 'portfolio' | PortfolioMode | 'history';
+const PORTFOLIO_SECTION_HASHES: PortfolioSection[] = [
+  'portfolio',
+  'buy',
+  'sell',
+  'swap',
+  'history',
+];
+
+const getPortfolioSectionFromHash = (hash: string): PortfolioSection => {
+  const hashSection = hash.startsWith('#') ? hash.slice(1) : hash;
+  return (
+    PORTFOLIO_SECTION_HASHES.find((section) => section === hashSection) ??
+    'portfolio'
+  );
+};
+
+const replacePortfolioSectionHash = (section: PortfolioSection): void => {
+  const hash = `#${section}`;
+  if (window.location.hash === hash) {
+    return;
+  }
+
+  window.history.replaceState(
+    null,
+    document.title,
+    `${window.location.pathname}${window.location.search}${hash}`,
+  );
+};
+
 type AccountOption =
   | {
       key: string;
@@ -485,7 +514,9 @@ export const Portfolio = ({
   removeFromLoadingList,
   resetLoading,
 }: PropsFromRedux) => {
-  const [section, setSection] = useState<PortfolioSection>('portfolio');
+  const [section, setSection] = useState<PortfolioSection>(() =>
+    getPortfolioSectionFromHash(window.location.hash),
+  );
   const [featureFlags, setFeatureFlags] = useState<PortfolioFeatureFlags>(
     DEFAULT_PORTFOLIO_FEATURE_FLAGS,
   );
@@ -563,6 +594,21 @@ export const Portfolio = ({
   const [accountOptions, setAccountOptions] = useState<AccountOption[]>(() =>
     buildDefaultPortfolioAccountOptions(hiveAccounts, evmAccounts),
   );
+
+  useEffect(() => {
+    replacePortfolioSectionHash(section);
+  }, [section]);
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      setSection(getPortfolioSectionFromHash(window.location.hash));
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
