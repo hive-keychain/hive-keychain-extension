@@ -2592,7 +2592,7 @@ export const Portfolio = ({
     const canExecuteSelectedQuote = selectedQuote
       ? PortfolioApiUtils.canExecutePortfolioQuote(selectedQuote)
       : false;
-    const hasMultipleQuotes = (quoteResponse?.quotes.length ?? 0) > 1;
+    const hasAvailableQuotes = (quoteResponse?.quotes.length ?? 0) > 0;
     const isAwaitingFirstSwapQuote =
       isQuoteAutoFetchSection(mode) &&
       canRequestQuotes &&
@@ -2633,7 +2633,7 @@ export const Portfolio = ({
         : swapQuoteRefreshLabel;
 
     const handleSwapQuoteInputClick = () => {
-      if (!hasMultipleQuotes) {
+      if (!hasAvailableQuotes) {
         return;
       }
       setIsQuotesPanelExpanded(true);
@@ -2653,21 +2653,21 @@ export const Portfolio = ({
         </div>
         <div
           className={`custom-input-content ${
-            hasMultipleQuotes ? 'portfolio-swap-quote-input--clickable' : ''
+            hasAvailableQuotes ? 'portfolio-swap-quote-input--clickable' : ''
           }`}
           data-testid="portfolio-swap-quote-input"
           onClick={handleSwapQuoteInputClick}
           onKeyDown={(event) => {
             if (
-              hasMultipleQuotes &&
+              hasAvailableQuotes &&
               (event.key === 'Enter' || event.key === ' ')
             ) {
               event.preventDefault();
               setIsQuotesPanelExpanded(true);
             }
           }}
-          role={hasMultipleQuotes ? 'button' : undefined}
-          tabIndex={hasMultipleQuotes ? 0 : undefined}>
+          role={hasAvailableQuotes ? 'button' : undefined}
+          tabIndex={hasAvailableQuotes ? 0 : undefined}>
           <div className="portfolio-swap-quote-input__container input-container no-logo">
             <div
               className="portfolio-swap-quote-input__value"
@@ -2757,7 +2757,7 @@ export const Portfolio = ({
     );
 
     const renderQuotesSection = () => {
-      if (!hasMultipleQuotes || !quoteResponse) {
+      if (!hasAvailableQuotes || !quoteResponse) {
         return null;
       }
 

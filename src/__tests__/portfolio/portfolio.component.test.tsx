@@ -1419,6 +1419,41 @@ describe('Portfolio', () => {
     });
   });
 
+  it('expands the quotes list when only one provider is available', async () => {
+    (PortfolioApiUtils.getQuotes as jest.Mock).mockResolvedValue({
+      quotes: [
+        {
+          quoteId: 'q1',
+          provider: 'lifi',
+          providerName: 'LiFi',
+          providerLogoUrl: 'https://example.com/lifi.png',
+          estimatedToAmount: '100',
+          executionType: 'redirect',
+        },
+      ],
+      request: { mode: 'swap' },
+    });
+    (
+      PortfolioApiUtils.resolveExecutablePortfolioQuoteId as jest.Mock
+    ).mockReturnValue('q1');
+
+    const { container, getByTestId } = await renderSwapPortfolio();
+
+    await waitFor(() => {
+      expect(
+        getByTestId('portfolio-swap-quote-input').getAttribute('role'),
+      ).toBe('button');
+    });
+
+    fireEvent.click(getByTestId('portfolio-swap-quote-input'));
+
+    await waitFor(() => {
+      expect(container.querySelectorAll('.portfolio-quote-card')).toHaveLength(
+        1,
+      );
+    });
+  });
+
   it('keeps the all-quotes panel open when refreshing swap quotes', async () => {
     (PortfolioApiUtils.getQuotes as jest.Mock).mockResolvedValue({
       quotes: [
