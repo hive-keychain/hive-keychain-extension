@@ -1584,6 +1584,7 @@ describe('Portfolio', () => {
                 name: 'Kaia',
                 logoUrl: 'https://example.com/kaia.svg',
                 numericChainId: 8217,
+                rankScore: 0,
               },
             },
           };

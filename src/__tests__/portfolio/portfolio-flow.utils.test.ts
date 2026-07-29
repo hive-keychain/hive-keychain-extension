@@ -282,6 +282,7 @@ describe('PortfolioFlowUtils', () => {
         name: 'Ethereum',
         logoUrl: null,
         numericChainId: 1,
+        rankScore: 0,
       },
     };
 
@@ -475,6 +476,41 @@ describe('PortfolioFlowUtils', () => {
     ]);
   });
 
+  it('sorts chain filter options by API chain rankScore descending', () => {
+    const assets = [hiveAsset, ethAsset, sepoliaEthAsset];
+    const portfolioChains = {
+      '1': {
+        id: '1',
+        name: 'Ethereum',
+        logoUrl: 'ethereum.svg',
+        numericChainId: 1,
+        rankScore: 9200,
+      },
+      '11155111': {
+        id: '11155111',
+        name: 'Sepolia',
+        logoUrl: null,
+        numericChainId: 11155111,
+        rankScore: 10,
+      },
+      hive: {
+        id: 'hive',
+        name: 'Hive',
+        logoUrl: null,
+        numericChainId: null,
+        rankScore: 500,
+      },
+    };
+
+    expect(
+      PortfolioFlowUtils.buildCanonicalAssetChainFilterOptions(
+        assets,
+        [],
+        portfolioChains,
+      ).map((option) => option.value),
+    ).toEqual(['evm:1', 'hive', 'evm:11155111']);
+  });
+
   it('filters canonical assets by text and chain', () => {
     const assets = [hiveAsset, hiveEngineAsset, ethAsset, sepoliaEthAsset];
 
@@ -636,6 +672,50 @@ describe('PortfolioFlowUtils', () => {
     ).toEqual([ethNative, usdcAsset]);
   });
 
+  it('uses chain rankScore as a tiebreaker when asset rankScores match', () => {
+    const polygonUsdc = createTestCanonicalAsset({
+      assetId: 'evm-usdc-polygon',
+      ecosystem: 'evm',
+      symbol: 'USDC',
+      name: 'USD Coin',
+      chainId: 'polygon',
+      priceUsd: 1,
+      rankScore: 100,
+    });
+    const ethereumUsdc = createTestCanonicalAsset({
+      assetId: 'evm-usdc-ethereum',
+      ecosystem: 'evm',
+      symbol: 'USDC',
+      name: 'USD Coin',
+      chainId: 'ethereum',
+      priceUsd: 1,
+      rankScore: 100,
+    });
+    const portfolioChains = {
+      ethereum: {
+        id: 'ethereum',
+        name: 'Ethereum',
+        logoUrl: null,
+        numericChainId: 1,
+        rankScore: 9200,
+      },
+      polygon: {
+        id: 'polygon',
+        name: 'Polygon',
+        logoUrl: null,
+        numericChainId: 137,
+        rankScore: 800,
+      },
+    };
+
+    expect(
+      PortfolioFlowUtils.sortCanonicalAssetsByRank(
+        [polygonUsdc, ethereumUsdc],
+        portfolioChains,
+      ),
+    ).toEqual([ethereumUsdc, polygonUsdc]);
+  });
+
   it('builds to asset select options with network labels', () => {
     const chains = [
       {
@@ -750,6 +830,7 @@ describe('PortfolioFlowUtils', () => {
         name: 'Arbitrum One',
         logoUrl: 'https://example.com/arbitrum.svg',
         numericChainId: 42161,
+        rankScore: 0,
       },
     };
 

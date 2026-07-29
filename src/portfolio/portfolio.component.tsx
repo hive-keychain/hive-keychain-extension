@@ -1068,10 +1068,14 @@ export const Portfolio = ({
       );
     })();
 
-    return PortfolioFlowUtils.sortCanonicalAssetsByRank(toAssets);
+    return PortfolioFlowUtils.sortCanonicalAssetsByRank(
+      toAssets,
+      portfolioChains,
+    );
   }, [
     assets,
     fromCanonicalAsset,
+    portfolioChains,
     rampAvailableAssets,
     section,
     swapAvailableAssets,
@@ -1104,11 +1108,12 @@ export const Portfolio = ({
       PortfolioFlowUtils.filterCanonicalAssets(eligibleToAssets, {
         textFilter: toAssetFilter,
         chainFilter: toAssetChainFilter,
+        portfolioChains,
         maxResults: hasToAssetFilters
           ? TO_ASSET_FILTERED_MAX
           : TO_ASSET_UNFILTERED_MAX,
       }),
-    [eligibleToAssets, hasToAssetFilters, toAssetChainFilter, toAssetFilter],
+    [eligibleToAssets, hasToAssetFilters, portfolioChains, toAssetChainFilter, toAssetFilter],
   );
 
   const filteredToAssetOptions = useMemo(

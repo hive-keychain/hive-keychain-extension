@@ -185,6 +185,11 @@ export interface PortfolioChainDisplay {
   name: string;
   logoUrl: string | null;
   numericChainId: number | null;
+  /**
+   * Network picker ranking score from the portfolio API.
+   * Higher is better for default chain filter sort order.
+   */
+  rankScore: number;
 }
 
 export type PortfolioChainDisplayRecord = Record<string, PortfolioChainDisplay>;

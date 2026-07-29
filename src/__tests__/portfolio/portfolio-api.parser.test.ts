@@ -26,6 +26,7 @@ describe('PortfolioApiParser', () => {
             name: 'Ethereum',
             logoUrl: 'https://example.com/ethereum.svg',
             numericChainId: 1,
+            rankScore: 0,
           },
         },
       }),
@@ -52,7 +53,46 @@ describe('PortfolioApiParser', () => {
           name: 'Ethereum',
           logoUrl: 'https://example.com/ethereum.svg',
           numericChainId: 1,
+          rankScore: 0,
         },
+      },
+    });
+  });
+
+  it('parses chain rankScore and defaults missing values to 0', () => {
+    expect(
+      PortfolioApiParser.parsePortfolioAssetsResponse({
+        assets: [],
+        chains: {
+          ethereum: {
+            id: 'ethereum',
+            name: 'Ethereum',
+            logoUrl: null,
+            numericChainId: 1,
+            rankScore: 9200,
+          },
+          polygon: {
+            id: 'polygon',
+            name: 'Polygon',
+            logoUrl: null,
+            numericChainId: 137,
+          },
+        },
+      }).chains,
+    ).toEqual({
+      ethereum: {
+        id: 'ethereum',
+        name: 'Ethereum',
+        logoUrl: null,
+        numericChainId: 1,
+        rankScore: 9200,
+      },
+      polygon: {
+        id: 'polygon',
+        name: 'Polygon',
+        logoUrl: null,
+        numericChainId: 137,
+        rankScore: 0,
       },
     });
   });
@@ -110,6 +150,7 @@ describe('PortfolioApiParser', () => {
             name: 'Ripple',
             logoUrl: 'https://example.com/ripple.svg',
             numericChainId: null,
+            rankScore: 0,
           },
         },
       }),
@@ -127,6 +168,7 @@ describe('PortfolioApiParser', () => {
           name: 'Ripple',
           logoUrl: 'https://example.com/ripple.svg',
           numericChainId: null,
+          rankScore: 0,
         },
       },
     });
@@ -157,6 +199,7 @@ describe('PortfolioApiParser', () => {
             name: 'Bitcoin',
             logoUrl: 'https://example.com/bitcoin.svg',
             numericChainId: null,
+            rankScore: 0,
           },
         },
       }),
@@ -174,6 +217,7 @@ describe('PortfolioApiParser', () => {
           name: 'Bitcoin',
           logoUrl: 'https://example.com/bitcoin.svg',
           numericChainId: null,
+          rankScore: 0,
         },
       },
     });

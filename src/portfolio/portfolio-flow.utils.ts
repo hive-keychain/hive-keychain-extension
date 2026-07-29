@@ -495,6 +495,10 @@ const normalizeChainReference = (
   return trimmed ? trimmed.toLowerCase() : null;
 };
 
+const HIVE_CHAIN_FILTER_VALUE = 'hive';
+const HIVE_ENGINE_CHAIN_FILTER_VALUE = 'hive_engine';
+const EVM_CHAIN_FILTER_PREFIX = 'evm:';
+
 const resolvePortfolioChainDisplay = (
   chainId: string | null | undefined,
   portfolioChains: PortfolioChainDisplayRecord = {},
@@ -516,6 +520,37 @@ const resolvePortfolioChainDisplay = (
 
   return Object.values(portfolioChains).find(
     (chain) => chain.id.toLowerCase() === normalizedChainId,
+  );
+};
+
+const getPortfolioChainDisplayRankScore = (
+  chain: PortfolioChainDisplay | undefined,
+): number =>
+  typeof chain?.rankScore === 'number' && Number.isFinite(chain.rankScore)
+    ? chain.rankScore
+    : 0;
+
+const getCanonicalAssetChainRankScore = (
+  asset: PortfolioCanonicalAsset,
+  portfolioChains: PortfolioChainDisplayRecord = {},
+): number => {
+  if (asset.ecosystem === 'hive') {
+    return getPortfolioChainDisplayRankScore(
+      resolvePortfolioChainDisplay(HIVE_CHAIN_FILTER_VALUE, portfolioChains),
+    );
+  }
+
+  if (asset.ecosystem === 'hive_engine') {
+    return getPortfolioChainDisplayRankScore(
+      resolvePortfolioChainDisplay(
+        HIVE_ENGINE_CHAIN_FILTER_VALUE,
+        portfolioChains,
+      ),
+    );
+  }
+
+  return getPortfolioChainDisplayRankScore(
+    resolvePortfolioChainDisplay(asset.chainId, portfolioChains),
   );
 };
 
@@ -696,10 +731,6 @@ export type PortfolioAssetChainFilterOption = {
 const HIVE_CHAIN_LOGO = '/assets/images/wallet/hive-logo.svg';
 const HIVE_ENGINE_CHAIN_LOGO = '/assets/images/wallet/hive-engine.svg';
 
-const HIVE_CHAIN_FILTER_VALUE = 'hive';
-const HIVE_ENGINE_CHAIN_FILTER_VALUE = 'hive_engine';
-const EVM_CHAIN_FILTER_PREFIX = 'evm:';
-
 export const buildCanonicalAssetChainFilterValue = (
   asset: PortfolioCanonicalAsset,
 ): string | null => {
@@ -733,7 +764,10 @@ export const buildCanonicalAssetChainFilterOptions = (
   chains: EvmChain[] = [],
   portfolioChains: PortfolioChainDisplayRecord = {},
 ): PortfolioAssetChainFilterOption[] => {
-  const optionsByValue = new Map<string, PortfolioAssetChainFilterOption>();
+  const optionsByValue = new Map<
+    string,
+    PortfolioAssetChainFilterOption & { rankScore: number }
+  >();
 
   for (const asset of assets) {
     const value = buildCanonicalAssetChainFilterValue(asset);
@@ -747,6 +781,9 @@ export const buildCanonicalAssetChainFilterOptions = (
         label: 'Hive',
         key: value,
         img: HIVE_CHAIN_LOGO,
+        rankScore: getPortfolioChainDisplayRankScore(
+          resolvePortfolioChainDisplay(HIVE_CHAIN_FILTER_VALUE, portfolioChains),
+        ),
       });
       continue;
     }
@@ -757,6 +794,12 @@ export const buildCanonicalAssetChainFilterOptions = (
         label: 'Hive Engine',
         key: value,
         img: HIVE_ENGINE_CHAIN_LOGO,
+        rankScore: getPortfolioChainDisplayRankScore(
+          resolvePortfolioChainDisplay(
+            HIVE_ENGINE_CHAIN_FILTER_VALUE,
+            portfolioChains,
+          ),
+        ),
       });
       continue;
     }
@@ -777,6 +820,7 @@ export const buildCanonicalAssetChainFilterOptions = (
           (chainId ? chainId.charAt(0).toUpperCase() + chainId.slice(1) : ecosystem),
         key: value,
         img: portfolioChain?.logoUrl ?? undefined,
+        rankScore: getPortfolioChainDisplayRankScore(portfolioChain),
       });
       continue;
     }
@@ -790,12 +834,20 @@ export const buildCanonicalAssetChainFilterOptions = (
       key: value,
       img: portfolioChain?.logoUrl ?? chain?.logo,
       imgChip: chain?.testnet ? SVGIcons.EVM_CHAIN_TESTNET : undefined,
+      rankScore: getPortfolioChainDisplayRankScore(portfolioChain),
     });
   }
 
-  return [...optionsByValue.values()].sort((left, right) =>
-    left.label.localeCompare(right.label),
-  );
+  return [...optionsByValue.values()]
+    .sort((left, right) => {
+      const rankDiff = right.rankScore - left.rankScore;
+      if (rankDiff !== 0) {
+        return rankDiff;
+      }
+
+      return left.label.localeCompare(right.label);
+    })
+    .map(({ rankScore: _rankScore, ...option }) => option);
 };
 
 const getCanonicalAssetTextMatchRank = (
@@ -860,11 +912,19 @@ const compareCanonicalAssetsByPriceUsd = (
 const compareCanonicalAssetsByRank = (
   left: PortfolioCanonicalAsset,
   right: PortfolioCanonicalAsset,
+  portfolioChains: PortfolioChainDisplayRecord = {},
 ): number => {
   const rankDiff =
     getCanonicalAssetRankScore(right) - getCanonicalAssetRankScore(left);
   if (rankDiff !== 0) {
     return rankDiff;
+  }
+
+  const chainRankDiff =
+    getCanonicalAssetChainRankScore(right, portfolioChains) -
+    getCanonicalAssetChainRankScore(left, portfolioChains);
+  if (chainRankDiff !== 0) {
+    return chainRankDiff;
   }
 
   return compareCanonicalAssetsByPriceUsd(left, right);
@@ -875,11 +935,14 @@ export const sortCanonicalAssetsByPriceUsd = (
 ): PortfolioCanonicalAsset[] =>
   [...assets].sort(compareCanonicalAssetsByPriceUsd);
 
-/** Sorts by API `rankScore` (desc), then `priceUsd`, then symbol. */
+/** Sorts by API `rankScore` (desc), then chain `rankScore`, then `priceUsd`, then symbol. */
 export const sortCanonicalAssetsByRank = (
   assets: PortfolioCanonicalAsset[],
+  portfolioChains: PortfolioChainDisplayRecord = {},
 ): PortfolioCanonicalAsset[] =>
-  [...assets].sort(compareCanonicalAssetsByRank);
+  [...assets].sort((left, right) =>
+    compareCanonicalAssetsByRank(left, right, portfolioChains),
+  );
 
 const compareCanonicalAssetsByTextFilter = (
   left: PortfolioCanonicalAsset,
@@ -996,6 +1059,7 @@ export const filterCanonicalAssets = (
     textFilter?: string;
     chainFilter?: string;
     maxResults?: number;
+    portfolioChains?: PortfolioChainDisplayRecord;
   } = {},
 ): { assets: PortfolioCanonicalAsset[]; totalMatches: number } => {
   const maxResults = options.maxResults ?? Number.POSITIVE_INFINITY;
@@ -1009,7 +1073,7 @@ export const filterCanonicalAssets = (
     ? [...filteredAssets].sort((left, right) =>
         compareCanonicalAssetsByTextFilter(left, right, textFilter),
       )
-    : sortCanonicalAssetsByRank(filteredAssets);
+    : sortCanonicalAssetsByRank(filteredAssets, options.portfolioChains);
 
   return {
     assets: sortedAssets.slice(0, maxResults),

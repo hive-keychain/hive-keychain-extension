@@ -282,6 +282,7 @@ describe('PortfolioApiUtils', () => {
             name: 'Ethereum',
             logoUrl: 'https://example.com/ethereum.svg',
             numericChainId: 1,
+            rankScore: 0,
           },
         },
       }),
@@ -300,6 +301,7 @@ describe('PortfolioApiUtils', () => {
           name: 'Ethereum',
           logoUrl: 'https://example.com/ethereum.svg',
           numericChainId: 1,
+          rankScore: 0,
         },
       },
     });

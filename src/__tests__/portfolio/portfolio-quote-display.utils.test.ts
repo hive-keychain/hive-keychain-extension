@@ -194,6 +194,7 @@ describe('PortfolioQuoteDisplayUtils', () => {
             name: 'Ethereum',
             logoUrl: 'https://example.com/ethereum.png',
             numericChainId: 1,
+            rankScore: 0,
           },
         },
       },

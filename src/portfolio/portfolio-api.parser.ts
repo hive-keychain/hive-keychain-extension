@@ -451,6 +451,7 @@ const parsePortfolioChainDisplay = (
     name: readString(value, 'name'),
     logoUrl: readNullableString(value, 'logoUrl'),
     numericChainId: readNullableNumber(value, 'numericChainId'),
+    rankScore: readNullableNumber(value, 'rankScore') ?? 0,
   };
 };
 
