@@ -1050,11 +1050,10 @@ export const Portfolio = ({
         );
       }
 
-      if (section === 'swap' && fromCanonicalAsset) {
-        return swapAvailableAssets.filter(
-          (asset) =>
-            !PortfolioFlowUtils.isPortfolioSwapExcludedAsset(asset) &&
-            asset.assetId !== fromCanonicalAsset.assetId,
+      if (section === 'swap') {
+        return PortfolioFlowUtils.filterToAssetsByFromAsset(
+          swapAvailableAssets,
+          fromCanonicalAsset,
         );
       }
 

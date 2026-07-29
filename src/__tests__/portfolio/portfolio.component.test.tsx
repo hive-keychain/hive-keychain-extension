@@ -1648,6 +1648,114 @@ describe('Portfolio', () => {
     });
   });
 
+  it('filters swap to assets using from-asset eligibility rules', async () => {
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
+      assets: swapAssetsFixture,
+      chains: {},
+    });
+
+    (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockImplementation(
+      async (params: {
+        mode: string;
+        direction: string;
+        sourceAssetId?: string;
+      }) => {
+        if (params.mode === 'swap' && !params.direction) {
+          return {
+            mode: 'swap',
+            direction: null,
+            sourceAssetId: params.sourceAssetId ?? null,
+            assets: [
+              ...swapAssetsFixture,
+              {
+                assetId: 'hive:native:hive',
+                ecosystem: 'hive',
+                symbol: 'HIVE',
+                name: 'Hive',
+                chainId: 'hive',
+                address: null,
+                decimals: 3,
+                isNative: true,
+                familyId: 'hive',
+                logoUrl: null,
+                priceUsd: 0,
+                rankScore: 0,
+              },
+              {
+                assetId: 'hive:native:hbd',
+                ecosystem: 'hive',
+                symbol: 'HBD',
+                name: 'Hive Backed Dollar',
+                chainId: 'hive',
+                address: null,
+                decimals: 3,
+                isNative: true,
+                familyId: 'hbd',
+                logoUrl: null,
+                priceUsd: 0,
+                rankScore: 0,
+              },
+            ],
+            chains: {},
+          };
+        }
+
+        return {
+          mode: params.mode,
+          direction: params.direction,
+          sourceAssetId: params.sourceAssetId ?? null,
+          assets: [],
+          chains: {},
+        };
+      },
+    );
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+    });
+
+    clickPortfolioNav(container, 'swap');
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-to-asset')).not.toBeNull();
+    });
+
+    fireEvent.click(
+      container.querySelector('#portfolio-to-asset') as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
+      const options = container.querySelectorAll(
+        '#portfolio-to-asset-listbox [role="option"]',
+      );
+      const optionTexts = [...options].map(
+        (option) => option.textContent ?? '',
+      );
+      expect(optionTexts.some((text) => text.includes('MATIC'))).toBe(true);
+      expect(optionTexts.some((text) => text.includes('HIVE'))).toBe(true);
+      expect(optionTexts.some((text) => text.includes('HBD'))).toBe(false);
+    });
+  });
+
   it('excludes hidden evm accounts from the portfolio account dropdown', async () => {
     const { container } = render(
       <Portfolio
