@@ -109,6 +109,7 @@ import Logger from 'src/utils/logger.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
 
 import { ethers } from 'ethers';
+import ImageUtils from 'hive-keychain-commons/lib/utils/images.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 
 type PortfolioSection = 'portfolio' | PortfolioMode | 'history';
@@ -1697,23 +1698,32 @@ export const Portfolio = ({
           );
         const hiveTokens = await TokensUtils.getAllTokens();
         if (selectedAccountKey !== accountKey) return;
-        const nextRows = sortedBalances.map((balance) => ({
-          key: `hive:${balance.symbol}`,
-          symbol: balance.symbol,
-          network: 'Hive',
-          balance: balance.balance.toString(),
-          usdValue: balance.usdValue,
-          priceUsd:
-            balance.balance > 0 ? balance.usdValue / balance.balance : null,
-          decimals: PortfolioFlowUtils.resolveHiveTokenDecimals(
-            balance.symbol,
-            hiveTokens,
-          ),
-          hiveAccountName: account.account.name,
-          chainId: null,
-          isTestnet: false,
-          isHive: true,
-        }));
+        const nextRows = sortedBalances.map((balance) => {
+          const tokenIcon = hiveTokens
+            .find((token) => token.symbol === balance.symbol)
+            ?.metadata.icon?.trim();
+
+          return {
+            key: `hive:${balance.symbol}`,
+            symbol: balance.symbol,
+            network: 'Hive',
+            balance: balance.balance.toString(),
+            usdValue: balance.usdValue,
+            priceUsd:
+              balance.balance > 0 ? balance.usdValue / balance.balance : null,
+            decimals: PortfolioFlowUtils.resolveHiveTokenDecimals(
+              balance.symbol,
+              hiveTokens,
+            ),
+            logoUrl: tokenIcon
+              ? ImageUtils.getImmutableImage(tokenIcon)
+              : null,
+            hiveAccountName: account.account.name,
+            chainId: null,
+            isTestnet: false,
+            isHive: true,
+          };
+        });
         setRows(nextRows);
       } catch (error) {
         if (selectedAccountKey !== accountKey) return;

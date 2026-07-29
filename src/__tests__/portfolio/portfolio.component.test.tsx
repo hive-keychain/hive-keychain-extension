@@ -10,6 +10,7 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
+import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import {
   PortfolioApiError,
   PortfolioApiUtils,
@@ -461,6 +462,89 @@ describe('Portfolio', () => {
       ).map((element) => element.textContent);
 
       expect(symbols).toEqual(['HIVE', 'HBD', 'HP', 'DEC', 'BEE']);
+    });
+  });
+
+  it('shows Hive Engine token icons in the portfolio and swap selector', async () => {
+    const decIconUrl =
+      'https://images.hive.blog/0x0/https://example.com/dec.png';
+    jest
+      .spyOn(AccountUtils, 'getExtendedAccounts')
+      .mockResolvedValue([{ name: 'alice' } as never]);
+    jest.spyOn(PortfolioUtils, 'getPortfolio').mockResolvedValue([
+      [
+        {
+          account: 'alice',
+          balances: [{ symbol: 'DEC', balance: 10, usdValue: 1 }],
+          totalHive: 0,
+          totalUSD: 1,
+        },
+      ],
+      ['DEC'],
+    ]);
+    (TokensUtils.getAllTokens as jest.Mock).mockResolvedValue([
+      {
+        symbol: 'DEC',
+        precision: 3,
+        metadata: { icon: decIconUrl },
+      },
+    ]);
+    const decAsset = {
+      assetId: 'hive_engine:DEC',
+      ecosystem: 'hive_engine',
+      symbol: 'DEC',
+      name: 'Dark Energy Crystals',
+      chainId: 'hive_engine',
+      address: null,
+      decimals: 3,
+      isNative: false,
+      familyId: 'dec',
+      logoUrl: null,
+      priceUsd: 0,
+      rankScore: 0,
+    };
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
+      assets: [decAsset],
+      chains: {},
+    });
+    (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockResolvedValue({
+      mode: 'swap',
+      direction: null,
+      sourceAssetId: null,
+      assets: [decAsset],
+      chains: {},
+    });
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[{ name: 'alice' } as never]}
+        evmAccounts={[]}
+        activeAccountType={ChainType.HIVE}
+        activeEvmAccountAddress={undefined}
+        activeHiveAccountName="alice"
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(
+        container.querySelector(
+          '.portfolio-table-row .portfolio-token-identity .currency-icon',
+        )?.getAttribute('src'),
+      ).toBe(decIconUrl);
+    });
+
+    clickPortfolioNav(container, 'swap');
+
+    await waitFor(() => {
+      expect(
+        container.querySelector(
+          '#portfolio-from-asset .portfolio-token-identity .currency-icon',
+        )?.getAttribute('src'),
+      ).toBe(decIconUrl);
     });
   });
 
