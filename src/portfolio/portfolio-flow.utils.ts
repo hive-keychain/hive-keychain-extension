@@ -759,24 +759,66 @@ export const buildCanonicalAssetChainFilterValue = (
   return `${EVM_CHAIN_FILTER_PREFIX}${normalizedChainId}`;
 };
 
+/**
+ * Identity used to collapse filter options that point at the same network under
+ * different ecosystems (e.g. `evm:solana` vs `svm:solana` from mis-tagged API assets).
+ */
+const getCanonicalAssetChainFilterIdentity = (
+  filterValue: string,
+): string => {
+  if (
+    filterValue === HIVE_CHAIN_FILTER_VALUE ||
+    filterValue === HIVE_ENGINE_CHAIN_FILTER_VALUE
+  ) {
+    return filterValue;
+  }
+
+  const separatorIndex = filterValue.indexOf(':');
+  if (separatorIndex === -1) {
+    return filterValue;
+  }
+
+  return filterValue.slice(separatorIndex + 1);
+};
+
+const isDestinationOnlyChainFilterValue = (filterValue: string): boolean =>
+  filterValue.startsWith('utxo:') ||
+  filterValue.startsWith('svm:') ||
+  filterValue.startsWith('mvm:') ||
+  filterValue.startsWith('tvm:') ||
+  filterValue.startsWith('external:');
+
+const shouldReplaceChainFilterOption = (
+  currentValue: string,
+  incomingValue: string,
+): boolean =>
+  isDestinationOnlyChainFilterValue(incomingValue) &&
+  !isDestinationOnlyChainFilterValue(currentValue);
+
 export const buildCanonicalAssetChainFilterOptions = (
   assets: PortfolioCanonicalAsset[],
   chains: EvmChain[] = [],
   portfolioChains: PortfolioChainDisplayRecord = {},
 ): PortfolioAssetChainFilterOption[] => {
-  const optionsByValue = new Map<
+  const optionsByIdentity = new Map<
     string,
     PortfolioAssetChainFilterOption & { rankScore: number }
   >();
 
   for (const asset of assets) {
     const value = buildCanonicalAssetChainFilterValue(asset);
-    if (!value || optionsByValue.has(value)) {
+    if (!value) {
+      continue;
+    }
+
+    const identity = getCanonicalAssetChainFilterIdentity(value);
+    const existing = optionsByIdentity.get(identity);
+    if (existing && !shouldReplaceChainFilterOption(existing.value, value)) {
       continue;
     }
 
     if (value === HIVE_CHAIN_FILTER_VALUE) {
-      optionsByValue.set(value, {
+      optionsByIdentity.set(identity, {
         value,
         label: 'Hive',
         key: value,
@@ -789,7 +831,7 @@ export const buildCanonicalAssetChainFilterOptions = (
     }
 
     if (value === HIVE_ENGINE_CHAIN_FILTER_VALUE) {
-      optionsByValue.set(value, {
+      optionsByIdentity.set(identity, {
         value,
         label: 'Hive Engine',
         key: value,
@@ -804,16 +846,10 @@ export const buildCanonicalAssetChainFilterOptions = (
       continue;
     }
 
-    if (
-      value.startsWith('utxo:') ||
-      value.startsWith('svm:') ||
-      value.startsWith('mvm:') ||
-      value.startsWith('tvm:') ||
-      value.startsWith('external:')
-    ) {
+    if (isDestinationOnlyChainFilterValue(value)) {
       const [ecosystem, chainId] = value.split(':');
       const portfolioChain = resolvePortfolioChainDisplay(chainId, portfolioChains);
-      optionsByValue.set(value, {
+      optionsByIdentity.set(identity, {
         value,
         label:
           portfolioChain?.name ??
@@ -828,7 +864,7 @@ export const buildCanonicalAssetChainFilterOptions = (
     const chainId = value.slice(EVM_CHAIN_FILTER_PREFIX.length);
     const portfolioChain = resolvePortfolioChainDisplay(chainId, portfolioChains);
     const chain = resolveEvmChainForChainReference(chainId, chains);
-    optionsByValue.set(value, {
+    optionsByIdentity.set(identity, {
       value,
       label: portfolioChain?.name ?? chain?.name ?? asset.chainId ?? chainId,
       key: value,
@@ -838,7 +874,7 @@ export const buildCanonicalAssetChainFilterOptions = (
     });
   }
 
-  return [...optionsByValue.values()]
+  return [...optionsByIdentity.values()]
     .sort((left, right) => {
       const rankDiff = right.rankScore - left.rankScore;
       if (rankDiff !== 0) {
@@ -985,7 +1021,19 @@ const matchesCanonicalAssetChainFilter = (
     return true;
   }
 
-  return buildCanonicalAssetChainFilterValue(asset) === chainFilter;
+  const assetFilterValue = buildCanonicalAssetChainFilterValue(asset);
+  if (!assetFilterValue) {
+    return false;
+  }
+
+  if (assetFilterValue === chainFilter) {
+    return true;
+  }
+
+  return (
+    getCanonicalAssetChainFilterIdentity(assetFilterValue) ===
+    getCanonicalAssetChainFilterIdentity(chainFilter)
+  );
 };
 
 const isHiveKeychainSwapTargetAsset = (asset: PortfolioCanonicalAsset): boolean =>

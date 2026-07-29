@@ -125,6 +125,40 @@ describe('PortfolioApiParser', () => {
     );
   });
 
+  it('normalizes canonical asset symbols to uppercase', () => {
+    expect(
+      PortfolioApiParser.parsePortfolioAssetsResponse({
+        assets: [
+          {
+            assetId: 'utxo:native:bitcoin',
+            ecosystem: 'utxo',
+            symbol: 'btc',
+            name: 'Bitcoin',
+            chainId: 'bitcoin',
+            address: null,
+            decimals: 8,
+            isNative: true,
+            familyId: 'utxo:native:btc',
+            logoUrl: null,
+          },
+          {
+            assetId: 'svm:native:solana',
+            ecosystem: 'svm',
+            symbol: 'sol',
+            name: 'Solana',
+            chainId: 'solana',
+            address: null,
+            decimals: 9,
+            isNative: true,
+            familyId: 'svm:native:sol',
+            logoUrl: null,
+          },
+        ],
+        chains: {},
+      }).assets.map((asset) => asset.symbol),
+    ).toEqual(['BTC', 'SOL']);
+  });
+
   it('parses external destination assets from the assets payload', () => {
     expect(
       PortfolioApiParser.parsePortfolioAssetsResponse({

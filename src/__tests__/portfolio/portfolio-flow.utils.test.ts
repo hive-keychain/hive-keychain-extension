@@ -476,6 +476,83 @@ describe('PortfolioFlowUtils', () => {
     ]);
   });
 
+  it('dedupes chain filter options that share a chain id across ecosystems', () => {
+    const solSvm = createTestCanonicalAsset({
+      assetId: 'svm:native:solana',
+      ecosystem: 'svm',
+      symbol: 'SOL',
+      name: 'Solana',
+      chainId: 'solana',
+      isNative: true,
+    });
+    const solMisTaggedAsEvm = createTestCanonicalAsset({
+      assetId: 'evm:token:solana:abc',
+      ecosystem: 'evm',
+      symbol: 'MEME',
+      name: 'Meme',
+      chainId: 'solana',
+    });
+    const tronTvm = createTestCanonicalAsset({
+      assetId: 'tvm:native:tron',
+      ecosystem: 'tvm',
+      symbol: 'TRX',
+      name: 'TRON',
+      chainId: 'tron',
+      isNative: true,
+    });
+    const tronMisTaggedAsEvm = createTestCanonicalAsset({
+      assetId: 'evm:token:tron:xyz',
+      ecosystem: 'evm',
+      symbol: 'USDT',
+      name: 'Tether',
+      chainId: 'tron',
+    });
+    const portfolioChains = {
+      solana: {
+        id: 'solana',
+        name: 'Solana',
+        logoUrl: 'solana.svg',
+        numericChainId: null,
+        rankScore: 9000,
+      },
+      tron: {
+        id: 'tron',
+        name: 'Tron',
+        logoUrl: 'tron.svg',
+        numericChainId: null,
+        rankScore: 9500,
+      },
+    };
+
+    expect(
+      PortfolioFlowUtils.buildCanonicalAssetChainFilterOptions(
+        [solMisTaggedAsEvm, solSvm, tronMisTaggedAsEvm, tronTvm],
+        [],
+        portfolioChains,
+      ),
+    ).toEqual([
+      {
+        value: 'tvm:tron',
+        label: 'Tron',
+        key: 'tvm:tron',
+        img: 'tron.svg',
+      },
+      {
+        value: 'svm:solana',
+        label: 'Solana',
+        key: 'svm:solana',
+        img: 'solana.svg',
+      },
+    ]);
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets(
+        [solMisTaggedAsEvm, solSvm, tronMisTaggedAsEvm, tronTvm],
+        { chainFilter: 'svm:solana' },
+      ).assets.map((asset) => asset.assetId),
+    ).toEqual(['evm:token:solana:abc', 'svm:native:solana']);
+  });
+
   it('sorts chain filter options by API chain rankScore descending', () => {
     const assets = [hiveAsset, ethAsset, sepoliaEthAsset];
     const portfolioChains = {

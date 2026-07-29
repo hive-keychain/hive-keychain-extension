@@ -185,7 +185,7 @@ const parsePortfolioCanonicalAsset = (
   return {
     assetId,
     ecosystem: readEnum(value.ecosystem, portfolioEcosystems, 'evm'),
-    symbol: readString(value, 'symbol'),
+    symbol: readString(value, 'symbol').toUpperCase(),
     name: readString(value, 'name'),
     chainId: readNullableString(value, 'chainId'),
     address: readNullableString(value, 'address'),

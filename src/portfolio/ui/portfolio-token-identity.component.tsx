@@ -31,7 +31,10 @@ export const PortfolioTokenIdentity = React.memo(({
   isHive = false,
   balance,
 }: PortfolioTokenIdentityProps) => {
-  const hiveIcon = isHive ? PortfolioFlowUtils.getHiveTokenIcon(symbol) : undefined;
+  const displaySymbol = symbol.toUpperCase();
+  const hiveIcon = isHive
+    ? PortfolioFlowUtils.getHiveTokenIcon(displaySymbol)
+    : undefined;
 
   return (
     <div className="portfolio-token-identity">
@@ -43,8 +46,8 @@ export const PortfolioTokenIdentity = React.memo(({
             src={logoUrl}
             className="currency-icon"
             fallbackClassName="portfolio-token-avatar"
-            fallbackLetter={symbol}
-            colorKey={symbol}
+            fallbackLetter={displaySymbol}
+            colorKey={displaySymbol}
           />
         )}
         {networkLogoUrl || network ? (
@@ -56,7 +59,7 @@ export const PortfolioTokenIdentity = React.memo(({
         ) : null}
       </div>
       <span className="portfolio-token-identity__text">
-        <strong>{symbol}</strong>
+        <strong>{displaySymbol}</strong>
         {network ? <small>{network}</small> : null}
       </span>
       {balance ? (
