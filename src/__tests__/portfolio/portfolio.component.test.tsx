@@ -1265,6 +1265,22 @@ describe('Portfolio', () => {
     expect(PortfolioApiUtils.getQuotes).not.toHaveBeenCalled();
   });
 
+  it('sets the swap amount to the selected source balance', async () => {
+    const { container, getByTestId } = await renderSwapPortfolio({
+      amount: '0',
+    });
+
+    fireEvent.click(getByTestId('set-to-max-button'));
+
+    expect(
+      (
+        container.querySelector(
+          '.portfolio-flow .portfolio-amount-field input[type="number"]',
+        ) as HTMLInputElement
+      ).value,
+    ).toBe('1');
+  });
+
   it('does not request swap quotes when amount exceeds from balance', async () => {
     await renderSwapPortfolio({ amount: '999' });
 
@@ -1976,7 +1992,70 @@ describe('Portfolio', () => {
       });
       expect(container.textContent).toMatch(/🇺🇸|🇪🇺|🇹🇼/);
       expect(container.textContent).toMatch(/US Dollar|Euro|New Taiwan Dollar/);
+      expect(
+        container.querySelector('[data-testid="set-to-max-button"]'),
+      ).toBeNull();
     });
+  });
+
+  it('sets the sell amount to the selected source balance', async () => {
+    (
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains as jest.Mock
+    ).mockImplementation(async (_chains, _walletAddress, options) => {
+      options?.onChainReady?.(ethereumChain, [ethToken]);
+      options?.onChainFinished?.(ethereumChain);
+      return [ethToken];
+    });
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
+      assets: [swapAssetsFixture[0]],
+      chains: {},
+    });
+    (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockResolvedValue({
+      mode: 'sell',
+      direction: 'from',
+      sourceAssetId: null,
+      assets: [swapAssetsFixture[0]],
+      chains: {},
+    });
+
+    const { container, getByTestId } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+    });
+
+    clickPortfolioNav(container, 'sell');
+
+    await waitFor(() => {
+      expect(getByTestId('set-to-max-button')).toBeTruthy();
+    });
+
+    fireEvent.click(getByTestId('set-to-max-button'));
+
+    expect(
+      (
+        container.querySelector(
+          '.portfolio-flow .portfolio-amount-field input[type="number"]',
+        ) as HTMLInputElement
+      ).value,
+    ).toBe('1');
   });
 
   it('resets buy/sell form fields when switching sections', async () => {

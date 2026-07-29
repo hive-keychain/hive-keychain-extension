@@ -994,6 +994,17 @@ export const Portfolio = ({
     [rows, fromAssetId],
   );
 
+  const canSetAmountToMax =
+    (flowMode === 'swap' || flowMode === 'sell') && Boolean(selectedFromRow);
+
+  const handleSetAmountToMax = () => {
+    if (!canSetAmountToMax || !selectedFromRow) {
+      return;
+    }
+
+    setAmount(selectedFromRow.balance.replace(/,/g, '').trim());
+  };
+
   const hasInsufficientFromBalance = useMemo(() => {
     if (process.env.PORTFOLIO_SKIP_BALANCE_CHECK === 'true') {
       return false;
@@ -2938,6 +2949,12 @@ export const Portfolio = ({
             amountQuoteError || hasInsufficientFromBalance
               ? 'portfolio-amount-input--error'
               : undefined
+          }
+          rightActionClicked={
+            canSetAmountToMax ? handleSetAmountToMax : undefined
+          }
+          rightActionIcon={
+            canSetAmountToMax ? SVGIcons.INPUT_MAX : undefined
           }
         />
         {hasInsufficientFromBalance && (
