@@ -1166,4 +1166,92 @@ describe('PortfolioFlowUtils', () => {
       }),
     ).toBeUndefined();
   });
+
+  it('uses a placeholder toAddress for quote requests when recipient is missing', () => {
+    expect(
+      PortfolioFlowUtils.resolvePortfolioQuoteToAddress({
+        fromAddress: 'alice',
+        recipientAddress: '',
+        fromAsset: hiveAsset,
+        toAsset: ethAsset,
+      }),
+    ).toBe('0x0000000000000000000000000000000000000001');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioQuoteToAddress({
+        fromAddress: '0x0000000000000000000000000000000000000001',
+        recipientAddress: '',
+        fromAsset: ethAsset,
+        toAsset: hiveAsset,
+      }),
+    ).toBe('portfolio');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioQuoteToAddress({
+        fromAddress: '0x0000000000000000000000000000000000000001',
+        recipientAddress: '',
+        fromAsset: ethAsset,
+        toAsset: btcAsset,
+      }),
+    ).toBe('bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioQuoteToAddress({
+        fromAddress: '0x0000000000000000000000000000000000000001',
+        recipientAddress: '',
+        fromAsset: ethAsset,
+        toAsset: xrpAsset,
+      }),
+    ).toBe('rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh');
+  });
+
+  it('prefers a valid recipient over the quote placeholder', () => {
+    const evmAddress = '0x00000000000000000000000000000000000000aa';
+    expect(
+      PortfolioFlowUtils.resolvePortfolioQuoteToAddress({
+        fromAddress: 'alice',
+        recipientAddress: evmAddress,
+        fromAsset: hiveAsset,
+        toAsset: ethAsset,
+      }),
+    ).toBe(evmAddress);
+  });
+
+  it('keeps same-ecosystem quote toAddress as fromAddress without a placeholder', () => {
+    const evmAddress = '0x0000000000000000000000000000000000000001';
+    expect(
+      PortfolioFlowUtils.resolvePortfolioQuoteToAddress({
+        fromAddress: evmAddress,
+        recipientAddress: '',
+        fromAsset: ethAsset,
+        toAsset: sepoliaEthAsset,
+      }),
+    ).toBe(evmAddress);
+  });
+
+  it('builds format-valid quote placeholder addresses per destination ecosystem', () => {
+    expect(
+      PortfolioFlowUtils.isValidPortfolioRecipientAddress(
+        PortfolioFlowUtils.resolvePortfolioQuotePlaceholderAddress(ethAsset),
+        'evm',
+      ),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.isValidPortfolioRecipientAddress(
+        PortfolioFlowUtils.resolvePortfolioQuotePlaceholderAddress(hiveAsset),
+        'hive',
+      ),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.isValidPortfolioRecipientAddress(
+        PortfolioFlowUtils.resolvePortfolioQuotePlaceholderAddress(btcAsset),
+        'utxo',
+        'bitcoin',
+      ),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.isValidPortfolioRecipientAddress(
+        PortfolioFlowUtils.resolvePortfolioQuotePlaceholderAddress(xrpAsset),
+        'external',
+        'ripple',
+      ),
+    ).toBe(true);
+  });
 });

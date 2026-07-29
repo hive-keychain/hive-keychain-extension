@@ -37,6 +37,19 @@ describe('form.utils', () => {
       );
     });
 
+    it('maps portfolio recipient invalid errors to i18n messages', () => {
+      jest.spyOn(Logger, 'error').mockImplementation(() => {});
+
+      const err = {
+        type: 'portfolio.recipient.invalid',
+        ref: { name: 'recipient' },
+      } as FieldError;
+
+      expect(FormUtils.parseJoiError(err)).toBe(
+        'Enter a valid recipient address for this swap.',
+      );
+    });
+
     it('passes ref value into i18n when present', () => {
       jest.spyOn(chrome.i18n, 'getMessage').mockReturnValue('with ref');
       jest.spyOn(Logger, 'error').mockImplementation(() => {});

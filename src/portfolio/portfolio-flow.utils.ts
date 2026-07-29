@@ -1376,6 +1376,117 @@ export const resolvePortfolioToAddress = ({
   return normalizedRecipient;
 };
 
+const PORTFOLIO_QUOTE_PLACEHOLDER_EVM_ADDRESS =
+  '0x0000000000000000000000000000000000000001';
+const PORTFOLIO_QUOTE_PLACEHOLDER_HIVE_ACCOUNT = 'portfolio';
+const PORTFOLIO_QUOTE_PLACEHOLDER_BITCOIN_ADDRESS =
+  'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh';
+const PORTFOLIO_QUOTE_PLACEHOLDER_LITECOIN_ADDRESS =
+  'ltc1qw508d6qejxtdg4y5r3zarvary0c5xw7kgmn4n9';
+const PORTFOLIO_QUOTE_PLACEHOLDER_DOGECOIN_ADDRESS =
+  'DBXu2MgC1EozT9d6zHZXRjmDqEurJZGRoq';
+const PORTFOLIO_QUOTE_PLACEHOLDER_BITCOIN_CASH_ADDRESS =
+  'bitcoincash:qp3wjpa3tjlj042z2wv7hahsldgwhwy0rq9sywjpyy';
+const PORTFOLIO_QUOTE_PLACEHOLDER_SOLANA_ADDRESS =
+  '11111111111111111111111111111112';
+const PORTFOLIO_QUOTE_PLACEHOLDER_SUI_ADDRESS = `0x${'0'.repeat(64)}`;
+const PORTFOLIO_QUOTE_PLACEHOLDER_TRON_ADDRESS =
+  'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb';
+const PORTFOLIO_QUOTE_PLACEHOLDER_RIPPLE_ADDRESS =
+  'rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh';
+const PORTFOLIO_QUOTE_PLACEHOLDER_CARDANO_ADDRESS =
+  `addr1${'q'.repeat(98)}`;
+const PORTFOLIO_QUOTE_PLACEHOLDER_POLKADOT_ADDRESS =
+  `1${'A'.repeat(47)}`;
+const PORTFOLIO_QUOTE_PLACEHOLDER_COSMOS_ADDRESS =
+  `cosmos1${'q'.repeat(38)}`;
+const PORTFOLIO_QUOTE_PLACEHOLDER_ALGORAND_ADDRESS = 'A'.repeat(58);
+const PORTFOLIO_QUOTE_PLACEHOLDER_STELLAR_ADDRESS = `G${'A'.repeat(55)}`;
+const PORTFOLIO_QUOTE_PLACEHOLDER_NEAR_ADDRESS = 'portfolio.near';
+const PORTFOLIO_QUOTE_PLACEHOLDER_GENERIC_ADDRESS =
+  'portfolio-quote-placeholder-address';
+
+export const resolvePortfolioQuotePlaceholderAddress = (
+  toAsset: PortfolioCanonicalAsset,
+): string => {
+  const kind = resolvePortfolioRecipientAddressKind(toAsset);
+  const chainId = toAsset.chainId?.trim().toLowerCase();
+
+  switch (kind) {
+    case 'evm':
+      return PORTFOLIO_QUOTE_PLACEHOLDER_EVM_ADDRESS;
+    case 'hive':
+      return PORTFOLIO_QUOTE_PLACEHOLDER_HIVE_ACCOUNT;
+    case 'utxo':
+      switch (chainId) {
+        case 'litecoin':
+          return PORTFOLIO_QUOTE_PLACEHOLDER_LITECOIN_ADDRESS;
+        case 'dogecoin':
+          return PORTFOLIO_QUOTE_PLACEHOLDER_DOGECOIN_ADDRESS;
+        case 'bitcoin-cash':
+          return PORTFOLIO_QUOTE_PLACEHOLDER_BITCOIN_CASH_ADDRESS;
+        case 'bitcoin':
+        default:
+          return PORTFOLIO_QUOTE_PLACEHOLDER_BITCOIN_ADDRESS;
+      }
+    case 'svm':
+      return PORTFOLIO_QUOTE_PLACEHOLDER_SOLANA_ADDRESS;
+    case 'mvm':
+      return PORTFOLIO_QUOTE_PLACEHOLDER_SUI_ADDRESS;
+    case 'tvm':
+      return PORTFOLIO_QUOTE_PLACEHOLDER_TRON_ADDRESS;
+    case 'external':
+      switch (chainId) {
+        case 'ripple':
+          return PORTFOLIO_QUOTE_PLACEHOLDER_RIPPLE_ADDRESS;
+        case 'cardano':
+          return PORTFOLIO_QUOTE_PLACEHOLDER_CARDANO_ADDRESS;
+        case 'polkadot':
+          return PORTFOLIO_QUOTE_PLACEHOLDER_POLKADOT_ADDRESS;
+        case 'cosmos':
+          return PORTFOLIO_QUOTE_PLACEHOLDER_COSMOS_ADDRESS;
+        case 'algorand':
+          return PORTFOLIO_QUOTE_PLACEHOLDER_ALGORAND_ADDRESS;
+        case 'stellar':
+          return PORTFOLIO_QUOTE_PLACEHOLDER_STELLAR_ADDRESS;
+        case 'near':
+          return PORTFOLIO_QUOTE_PLACEHOLDER_NEAR_ADDRESS;
+        default:
+          return PORTFOLIO_QUOTE_PLACEHOLDER_GENERIC_ADDRESS;
+      }
+    default:
+      return PORTFOLIO_QUOTE_PLACEHOLDER_GENERIC_ADDRESS;
+  }
+};
+
+export const resolvePortfolioQuoteToAddress = ({
+  fromAddress,
+  recipientAddress,
+  fromAsset,
+  toAsset,
+}: {
+  fromAddress: string;
+  recipientAddress: string;
+  fromAsset: PortfolioCanonicalAsset | undefined;
+  toAsset: PortfolioCanonicalAsset | undefined;
+}): string | undefined => {
+  const resolvedToAddress = resolvePortfolioToAddress({
+    fromAddress,
+    recipientAddress,
+    fromAsset,
+    toAsset,
+  });
+  if (resolvedToAddress) {
+    return resolvedToAddress;
+  }
+
+  if (!toAsset || !requiresPortfolioRecipientAddress(fromAsset, toAsset)) {
+    return undefined;
+  }
+
+  return resolvePortfolioQuotePlaceholderAddress(toAsset);
+};
+
 export const PortfolioFlowUtils = {
   buildCanonicalAssetChainFilterOptions,
   buildCanonicalAssetChainFilterValue,
@@ -1408,6 +1519,8 @@ export const PortfolioFlowUtils = {
   resolvePortfolioQuoteFromAmountDecimals,
   normalizePortfolioRecipientAddress,
   requiresPortfolioRecipientAddress,
+  resolvePortfolioQuotePlaceholderAddress,
+  resolvePortfolioQuoteToAddress,
   resolvePortfolioRecipientAddressKind,
   resolvePortfolioRecipientAddressLabelKey,
   resolvePortfolioRowToCanonicalAsset,

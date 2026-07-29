@@ -42,6 +42,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { FieldError } from 'react-hook-form';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
@@ -574,6 +575,9 @@ export const Portfolio = ({
   const [toAssetFilter, setToAssetFilter] = useState('');
   const [toAssetChainFilter, setToAssetChainFilter] = useState('');
   const [recipientAddress, setRecipientAddress] = useState('');
+  const [recipientFieldError, setRecipientFieldError] = useState<
+    FieldError | undefined
+  >();
   const [isQuotesPanelExpanded, setIsQuotesPanelExpanded] = useState(false);
   const isQuotesPanelExpandedRef = useRef(isQuotesPanelExpanded);
   const [setupEvmChains, setSetupEvmChains] = useState<EvmChain[]>([]);
@@ -938,22 +942,27 @@ export const Portfolio = ({
 
   const flowMode = section as PortfolioMode;
 
-  const resolvedToAddress = useMemo(() => {
+  const selectedAccountFromAddress = useMemo(() => {
     if (!selectedAccount) {
       return undefined;
     }
 
-    const fromAddress =
-      selectedAccount.type === ChainType.EVM
-        ? selectedAccount.account.wallet.address
-        : selectedAccount.account.name;
+    return selectedAccount.type === ChainType.EVM
+      ? selectedAccount.account.wallet.address
+      : selectedAccount.account.name;
+  }, [selectedAccount]);
+
+  const resolvedToAddress = useMemo(() => {
+    if (!selectedAccountFromAddress) {
+      return undefined;
+    }
 
     if (flowMode === 'sell') {
-      return fromAddress;
+      return selectedAccountFromAddress;
     }
 
     return PortfolioFlowUtils.resolvePortfolioToAddress({
-      fromAddress,
+      fromAddress: selectedAccountFromAddress,
       recipientAddress,
       fromAsset: fromCanonicalAsset,
       toAsset: toCanonicalAsset,
@@ -962,7 +971,30 @@ export const Portfolio = ({
     flowMode,
     fromCanonicalAsset,
     recipientAddress,
-    selectedAccount,
+    selectedAccountFromAddress,
+    toCanonicalAsset,
+  ]);
+
+  const quoteToAddress = useMemo(() => {
+    if (!selectedAccountFromAddress) {
+      return undefined;
+    }
+
+    if (flowMode === 'sell') {
+      return selectedAccountFromAddress;
+    }
+
+    return PortfolioFlowUtils.resolvePortfolioQuoteToAddress({
+      fromAddress: selectedAccountFromAddress,
+      recipientAddress,
+      fromAsset: fromCanonicalAsset,
+      toAsset: toCanonicalAsset,
+    });
+  }, [
+    flowMode,
+    fromCanonicalAsset,
+    recipientAddress,
+    selectedAccountFromAddress,
     toCanonicalAsset,
   ]);
 
@@ -1030,7 +1062,7 @@ export const Portfolio = ({
 
   const canRequestQuotes =
     isPositivePortfolioAmount(amount) &&
-    Boolean(resolvedToAddress) &&
+    Boolean(quoteToAddress) &&
     !hasInsufficientFromBalance &&
     hasRequiredQuoteAssets({
       mode: flowMode,
@@ -1041,7 +1073,12 @@ export const Portfolio = ({
 
   useEffect(() => {
     setRecipientAddress('');
+    setRecipientFieldError(undefined);
   }, [fromAssetId, toAssetId]);
+
+  useEffect(() => {
+    setRecipientFieldError(undefined);
+  }, [recipientAddress]);
 
   useEffect(() => {
     isQuotesPanelExpandedRef.current = isQuotesPanelExpanded;
@@ -1402,6 +1439,7 @@ export const Portfolio = ({
     setAmount('');
     setPaymentMethod('');
     setRecipientAddress('');
+    setRecipientFieldError(undefined);
     setAmountQuoteError(null);
     setPendingInAppConfirmation(null);
     setIsQuotesPanelExpanded(false);
@@ -1905,11 +1943,11 @@ export const Portfolio = ({
     setStatusMessage('');
     setAmountQuoteError(null);
     try {
-      const address =
-        selectedAccount.type === ChainType.EVM
-          ? selectedAccount.account.wallet.address
-          : selectedAccount.account.name;
-      const toAddress = resolvedToAddress;
+      const address = selectedAccountFromAddress;
+      if (!address) {
+        return { status: 'skipped' };
+      }
+      const toAddress = quoteToAddress;
       if (!toAddress) {
         setStatusMessage('portfolio_recipient_address_invalid');
         return { status: 'invalid_recipient' };
@@ -2001,7 +2039,6 @@ export const Portfolio = ({
     amount,
     fromAssetId,
     toAssetId,
-    recipientAddress,
     selectedAccountKey,
     fiatCurrency,
     paymentMethod,
@@ -2076,7 +2113,6 @@ export const Portfolio = ({
     amount,
     fromAssetId,
     toAssetId,
-    recipientAddress,
     selectedAccountKey,
     fiatCurrency,
     paymentMethod,
@@ -2309,20 +2345,28 @@ export const Portfolio = ({
 
   const executeQuote = async (quote: PortfolioQuote) => {
     if (!selectedAccount || !quoteResponse) return;
+    const address = selectedAccountFromAddress;
+    if (!address) {
+      return;
+    }
+    const toAddress = resolvedToAddress;
+    if (!toAddress) {
+      setRecipientFieldError({
+        type: PortfolioFlowUtils.normalizePortfolioRecipientAddress(
+          recipientAddress,
+        )
+          ? 'portfolio.recipient.invalid'
+          : 'string.empty',
+      });
+      return;
+    }
+
     swapQuoteRefreshDeadlineRef.current = 0;
     setQuoteRefreshCountdown(null);
     setIsFlowLoading(true);
     setStatusMessage('');
+    setRecipientFieldError(undefined);
     try {
-      const address =
-        selectedAccount.type === ChainType.EVM
-          ? selectedAccount.account.wallet.address
-          : selectedAccount.account.name;
-      const toAddress = resolvedToAddress;
-      if (!toAddress) {
-        setStatusMessage('portfolio_recipient_address_invalid');
-        return;
-      }
       const execution = await PortfolioApiUtils.createExecution(
         quote,
         quoteResponse.request,
@@ -3038,6 +3082,7 @@ export const Portfolio = ({
             type={InputType.TEXT}
             value={recipientAddress}
             onChange={setRecipientAddress}
+            error={recipientFieldError}
           />
         )}
         {quoteResponse?.quotes.length === 0 && (

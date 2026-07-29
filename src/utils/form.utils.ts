@@ -10,6 +10,7 @@ const FormValidationError: Record<string, string> = {
   ['number.less']: 'validation_error_greater_than_value',
   ['number.max']: 'validation_error_less_or_equal_value',
   ['number.positive']: 'popup_html_need_positive_amount',
+  ['portfolio.recipient.invalid']: 'portfolio_recipient_address_invalid',
 };
 
 const parseJoiError = (error: FieldError) => {
