@@ -8,6 +8,7 @@ import {
 import AccountSelectorOrderUtils from '@popup/multichain/utils/account-selector-order.utils';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { fireEvent, render, waitFor } from '@testing-library/react';
+import React from 'react';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import {
   PortfolioApiError,
@@ -1262,6 +1263,36 @@ describe('Portfolio', () => {
     await new Promise((resolve) => setTimeout(resolve, 900));
 
     expect(PortfolioApiUtils.getQuotes).not.toHaveBeenCalled();
+  });
+
+  it('does not request swap quotes when amount exceeds from balance', async () => {
+    await renderSwapPortfolio({ amount: '999' });
+
+    await new Promise((resolve) => setTimeout(resolve, 900));
+
+    expect(PortfolioApiUtils.getQuotes).not.toHaveBeenCalled();
+  });
+
+  it('requests swap quotes above balance when PORTFOLIO_SKIP_BALANCE_CHECK is true', async () => {
+    const originalSkipBalanceCheck = process.env.PORTFOLIO_SKIP_BALANCE_CHECK;
+    process.env.PORTFOLIO_SKIP_BALANCE_CHECK = 'true';
+
+    try {
+      await renderSwapPortfolio({ amount: '999' });
+
+      await waitFor(
+        () => {
+          expect(PortfolioApiUtils.getQuotes).toHaveBeenCalledTimes(1);
+        },
+        { timeout: 2000 },
+      );
+    } finally {
+      if (originalSkipBalanceCheck === undefined) {
+        delete process.env.PORTFOLIO_SKIP_BALANCE_CHECK;
+      } else {
+        process.env.PORTFOLIO_SKIP_BALANCE_CHECK = originalSkipBalanceCheck;
+      }
+    }
   });
 
   it('shows a loading spinner in the swap quote input while awaiting the first quote', async () => {

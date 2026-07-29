@@ -995,6 +995,10 @@ export const Portfolio = ({
   );
 
   const hasInsufficientFromBalance = useMemo(() => {
+    if (process.env.PORTFOLIO_SKIP_BALANCE_CHECK === 'true') {
+      return false;
+    }
+
     if (
       (flowMode !== 'swap' && flowMode !== 'sell') ||
       !amount ||
