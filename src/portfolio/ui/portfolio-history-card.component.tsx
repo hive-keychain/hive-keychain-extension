@@ -197,6 +197,32 @@ export const PortfolioHistoryCard = ({
       value: renderProviderValue(),
     });
   }
+
+  const formatExactAmountValue = (
+    amount: string,
+    symbol: string,
+  ): string => {
+    const normalizedSymbol = symbol.trim().toUpperCase();
+    return normalizedSymbol ? `${amount} ${normalizedSymbol}` : amount;
+  };
+
+  if (item.fromAmount) {
+    detailRows.push({
+      label: I18nUtils.getMessage('portfolio_history_exact_from_amount'),
+      value: renderCopyableValue(
+        formatExactAmountValue(item.fromAmount, fromIdentity.symbol),
+      ),
+    });
+  }
+  if (item.toAmount) {
+    detailRows.push({
+      label: I18nUtils.getMessage('portfolio_history_exact_to_amount'),
+      value: renderCopyableValue(
+        formatExactAmountValue(item.toAmount, toIdentity.symbol),
+      ),
+    });
+  }
+
   const normalizeAddress = (address: string): string =>
     address.replace(/^@+/, '').toLowerCase();
   const hasSameAccount =

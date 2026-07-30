@@ -4358,6 +4358,8 @@
   "portfolio_no_history": { "message": "No portfolio history yet." },
   "portfolio_history_from": { "message": "From" },
   "portfolio_history_to": { "message": "To" },
+  "portfolio_history_exact_from_amount": { "message": "Exact from amount" },
+  "portfolio_history_exact_to_amount": { "message": "Exact to amount" },
   "portfolio_history_status_completed": { "message": "Completed" },
   "portfolio_history_status_failed": { "message": "Failed" },
   "portfolio_history_status_pending": { "message": "Pending" },
