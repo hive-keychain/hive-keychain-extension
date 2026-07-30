@@ -203,15 +203,26 @@ export const resolvePortfolioQuoteStatusMessage = (
 
 export type PortfolioSwapQuoteFetchResult =
   | { status: 'skipped' }
+  | { status: 'aborted' }
   | { status: 'quoted' }
   | { status: 'no_quote' }
   | { status: 'amount_out_of_range' }
   | { status: 'invalid_recipient' }
   | { status: 'transient_error' };
 
+export const isPortfolioQuoteRequestAborted = (error: unknown): boolean =>
+  (typeof DOMException !== 'undefined' &&
+    error instanceof DOMException &&
+    error.name === 'AbortError') ||
+  (error instanceof Error && error.name === 'AbortError');
+
 export const resolvePortfolioSwapQuoteFetchErrorResult = (
   error: unknown,
 ): PortfolioSwapQuoteFetchResult => {
+  if (isPortfolioQuoteRequestAborted(error)) {
+    return { status: 'aborted' };
+  }
+
   if (resolvePortfolioAmountQuoteError(error)) {
     return { status: 'amount_out_of_range' };
   }
@@ -337,9 +348,14 @@ const listFiatRampCountries = async (
 
 const getQuotes = async (
   body: PortfolioQuoteRequestBody,
+  signal?: AbortSignal,
 ): Promise<PortfolioQuoteResponse> =>
   PortfolioApiParser.parsePortfolioQuoteResponse(
-    await fetchJson('/quotes', { method: 'POST', body: JSON.stringify(body) }),
+    await fetchJson('/quotes', {
+      method: 'POST',
+      body: JSON.stringify(body),
+      signal,
+    }),
   );
 
 const createExecution = async (
@@ -433,6 +449,7 @@ export const PortfolioApiUtils = {
   getFiatRampLocale,
   getFiatRampOptions,
   getQuotes,
+  isPortfolioQuoteRequestAborted,
   listAssets,
   listAvailableAssets,
   listFiatRampCountries,

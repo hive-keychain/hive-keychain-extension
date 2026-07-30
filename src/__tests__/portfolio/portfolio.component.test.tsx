@@ -1282,6 +1282,7 @@ describe('Portfolio', () => {
         toAssetId: 'evm:native:polygon',
         fromAddress: '0xabc',
       }),
+      expect.any(AbortSignal),
     );
     expect(queryByText('Get quotes')).toBeNull();
   });
@@ -1471,6 +1472,86 @@ describe('Portfolio', () => {
         container.querySelector('[data-testid="portfolio-swap-quote-loading"]'),
       ).not.toBeNull();
     });
+  });
+
+  it('cancels an in-flight swap quote request when amount changes', async () => {
+    const signals: AbortSignal[] = [];
+    let resolveSecondQuote!: (value: unknown) => void;
+
+    (PortfolioApiUtils.getQuotes as jest.Mock).mockImplementation(
+      (_body: unknown, signal?: AbortSignal) => {
+        if (signal) {
+          signals.push(signal);
+        }
+
+        if (signals.length === 1) {
+          return new Promise((_resolve, reject) => {
+            const onAbort = () => {
+              reject(new DOMException('The operation was aborted.', 'AbortError'));
+            };
+            if (signal?.aborted) {
+              onAbort();
+              return;
+            }
+            signal?.addEventListener('abort', onAbort, { once: true });
+          });
+        }
+
+        return new Promise((resolve) => {
+          resolveSecondQuote = resolve;
+        });
+      },
+    );
+    (
+      PortfolioApiUtils.resolveExecutablePortfolioQuoteId as jest.Mock
+    ).mockReturnValue('q2');
+
+    const { container } = await renderSwapPortfolio();
+
+    await waitFor(
+      () => {
+        expect(PortfolioApiUtils.getQuotes).toHaveBeenCalledTimes(1);
+      },
+      { timeout: 2000 },
+    );
+
+    const amountInput = container.querySelector(
+      '.portfolio-flow .portfolio-amount-field input[type="number"]',
+    ) as HTMLInputElement;
+    fireEvent.change(amountInput, { target: { value: '0.2' } });
+
+    await waitFor(() => {
+      expect(signals[0]?.aborted).toBe(true);
+    });
+
+    await waitFor(
+      () => {
+        expect(PortfolioApiUtils.getQuotes).toHaveBeenCalledTimes(2);
+      },
+      { timeout: 2000 },
+    );
+
+    resolveSecondQuote({
+      quotes: [
+        {
+          quoteId: 'q2',
+          provider: 'lifi',
+          providerName: 'LiFi',
+          providerLogoUrl: 'https://example.com/lifi.png',
+          estimatedToAmount: '200',
+          executionType: 'redirect',
+        },
+      ],
+      request: { mode: 'swap' },
+    });
+
+    await waitFor(() => {
+      const quoteInput = container.querySelector(
+        '[data-testid="portfolio-swap-quote-value"]',
+      );
+      expect(quoteInput?.textContent).toBe('200');
+    });
+    expect(container.textContent).not.toContain('portfolio_load_error');
   });
 
   it('expands all swap quotes when clicking the quote input', async () => {

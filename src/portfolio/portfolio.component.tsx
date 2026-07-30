@@ -1918,6 +1918,8 @@ export const Portfolio = ({
     }
   };
 
+  const swapQuoteAbortControllerRef = useRef<AbortController | null>(null);
+
   const getQuotes = async (options?: {
     preserveExpandedQuotesPanel?: boolean;
   }): Promise<PortfolioSwapQuoteFetchResult> => {
@@ -1947,6 +1949,10 @@ export const Portfolio = ({
       return { status: 'skipped' };
     }
 
+    swapQuoteAbortControllerRef.current?.abort();
+    const abortController = new AbortController();
+    swapQuoteAbortControllerRef.current = abortController;
+
     setIsFlowLoading(true);
     setStatusMessage('');
     setAmountQuoteError(null);
@@ -1972,25 +1978,31 @@ export const Portfolio = ({
           }),
         );
 
-      const response = await PortfolioApiUtils.getQuotes({
-        mode,
-        fromAssetId: resolvedFromAssetId,
-        toAssetId: resolvedToAssetId,
-        fromAmount: formattedFromAmount,
-        fromAddress: address,
-        toAddress,
-        countryCode:
-          mode === 'buy' || mode === 'sell'
-            ? (geoCountryCode ??
-              PortfolioFiatLocaleUtils.getPreferredRegionCode())
-            : undefined,
-        fiatCurrency:
-          mode === 'buy' || mode === 'sell' ? fiatCurrency : undefined,
-        paymentMethod:
-          mode === 'buy' || mode === 'sell'
-            ? paymentMethod || undefined
-            : undefined,
-      });
+      const response = await PortfolioApiUtils.getQuotes(
+        {
+          mode,
+          fromAssetId: resolvedFromAssetId,
+          toAssetId: resolvedToAssetId,
+          fromAmount: formattedFromAmount,
+          fromAddress: address,
+          toAddress,
+          countryCode:
+            mode === 'buy' || mode === 'sell'
+              ? (geoCountryCode ??
+                PortfolioFiatLocaleUtils.getPreferredRegionCode())
+              : undefined,
+          fiatCurrency:
+            mode === 'buy' || mode === 'sell' ? fiatCurrency : undefined,
+          paymentMethod:
+            mode === 'buy' || mode === 'sell'
+              ? paymentMethod || undefined
+              : undefined,
+        },
+        abortController.signal,
+      );
+      if (abortController.signal.aborted) {
+        return { status: 'aborted' };
+      }
       const quoteId = PortfolioApiUtils.resolveExecutablePortfolioQuoteId(
         response.quotes,
       );
@@ -2001,6 +2013,12 @@ export const Portfolio = ({
       }
       return quoteId ? { status: 'quoted' } : { status: 'no_quote' };
     } catch (error) {
+      if (
+        PortfolioApiUtils.isPortfolioQuoteRequestAborted(error) ||
+        abortController.signal.aborted
+      ) {
+        return { status: 'aborted' };
+      }
       Logger.error('Unable to load portfolio quotes', error);
       setQuoteResponse(undefined);
       setSelectedQuoteId('');
@@ -2022,7 +2040,10 @@ export const Portfolio = ({
       }
       return PortfolioApiUtils.resolvePortfolioSwapQuoteFetchErrorResult(error);
     } finally {
-      setIsFlowLoading(false);
+      if (swapQuoteAbortControllerRef.current === abortController) {
+        swapQuoteAbortControllerRef.current = null;
+        setIsFlowLoading(false);
+      }
     }
   };
 
@@ -2031,6 +2052,10 @@ export const Portfolio = ({
   const swapQuoteRefreshDeadlineRef = useRef(0);
 
   useEffect(() => {
+    swapQuoteAbortControllerRef.current?.abort();
+    swapQuoteAbortControllerRef.current = null;
+    setIsFlowLoading(false);
+
     if (!isQuoteAutoFetchSection(section)) {
       return;
     }
@@ -2065,6 +2090,9 @@ export const Portfolio = ({
     void getSwapQuotesRef
       .current({ preserveExpandedQuotesPanel })
       .then((result) => {
+        if (result.status === 'aborted') {
+          return;
+        }
         setIsSwapQuoteRequestPending(false);
         if (
           isQuoteAutoFetchSection(section) &&
@@ -2081,9 +2109,12 @@ export const Portfolio = ({
       !canRequestQuotes ||
       pendingInAppConfirmation
     ) {
+      swapQuoteAbortControllerRef.current?.abort();
+      swapQuoteAbortControllerRef.current = null;
       swapQuoteRefreshDeadlineRef.current = 0;
       setQuoteRefreshCountdown(null);
       setIsSwapQuoteRequestPending(false);
+      setIsFlowLoading(false);
       return;
     }
 

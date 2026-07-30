@@ -366,6 +366,33 @@ describe('PortfolioApiUtils', () => {
     );
   });
 
+  it('forwards an abort signal on quote requests', async () => {
+    const controller = new AbortController();
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        request: { mode: 'swap' },
+        quotes: [],
+      }),
+    });
+
+    await PortfolioApiUtils.getQuotes(
+      {
+        mode: 'swap',
+        fromAmount: '1',
+      },
+      controller.signal,
+    );
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      'https://portfolio.example/quotes',
+      expect.objectContaining({
+        method: 'POST',
+        signal: controller.signal,
+      }),
+    );
+  });
+
   it('sends transaction and route metadata when creating executions', async () => {
     getValueMock.mockResolvedValue('x'.repeat(64));
     global.fetch = jest.fn().mockResolvedValue({
@@ -578,6 +605,11 @@ describe('PortfolioApiUtils', () => {
           status: 'skipped',
         }),
       ).toBe(false);
+      expect(
+        PortfolioApiUtils.shouldSchedulePortfolioSwapQuoteAutoRefresh({
+          status: 'aborted',
+        }),
+      ).toBe(false);
     });
   });
 
@@ -604,6 +636,11 @@ describe('PortfolioApiUtils', () => {
           new Error('Network error'),
         ),
       ).toEqual({ status: 'transient_error' });
+      expect(
+        PortfolioApiUtils.resolvePortfolioSwapQuoteFetchErrorResult(
+          new DOMException('The operation was aborted.', 'AbortError'),
+        ),
+      ).toEqual({ status: 'aborted' });
     });
   });
 
