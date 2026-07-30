@@ -594,6 +594,10 @@ export const Portfolio = ({
   const [swapAvailableAssets, setSwapAvailableAssets] = useState<
     PortfolioCanonicalAsset[]
   >([]);
+  const [isSwapAvailableAssetsLoading, setIsSwapAvailableAssetsLoading] =
+    useState(false);
+  const [hasLoadedSwapAvailableAssets, setHasLoadedSwapAvailableAssets] =
+    useState(false);
   const [pendingInAppConfirmation, setPendingInAppConfirmation] =
     useState<PortfolioInAppConfirmationContext | null>(null);
   const hasUserSelectedAccountRef = useRef(false);
@@ -1572,19 +1576,21 @@ export const Portfolio = ({
   };
 
   const loadSwapAvailableAssets = async () => {
-    if (
-      swapAvailableAssetsLoadedRef.current ||
-      isSwapAvailableAssetsLoadInFlightRef.current
-    ) {
+    if (swapAvailableAssetsLoadedRef.current) {
+      setHasLoadedSwapAvailableAssets(true);
+      return;
+    }
+
+    if (isSwapAvailableAssetsLoadInFlightRef.current) {
       return;
     }
 
     isSwapAvailableAssetsLoadInFlightRef.current = true;
+    setIsSwapAvailableAssetsLoading(true);
     try {
       const response = await PortfolioApiUtils.listAvailableAssets({
         mode: 'swap',
       });
-      console.log('response', response);
       setSwapAvailableAssets(response.assets);
       setPortfolioChains((current) =>
         mergePortfolioChainRecords(current, response.chains),
@@ -1596,6 +1602,8 @@ export const Portfolio = ({
       hasPreloadedSwapAvailableAssetsRef.current = false;
     } finally {
       isSwapAvailableAssetsLoadInFlightRef.current = false;
+      setIsSwapAvailableAssetsLoading(false);
+      setHasLoadedSwapAvailableAssets(true);
     }
   };
 
@@ -2907,6 +2915,17 @@ export const Portfolio = ({
         )
       ) : null;
 
+    const isFromAssetCatalogReady =
+      mode === 'swap'
+        ? hasLoadedSwapAvailableAssets && !isSwapAvailableAssetsLoading
+        : mode === 'sell'
+          ? !isRampAvailableAssetsLoading
+          : true;
+    const shouldShowEmptyFromAssetError =
+      fromAssetOptions.length === 0 &&
+      !isPortfolioLoading &&
+      isFromAssetCatalogReady;
+
     const fromAssetSelect =
       mode !== 'buy' && (mode === 'swap' || fromAssetOptions.length > 0) ? (
         <PortfolioOverlayListSelect
@@ -2919,7 +2938,7 @@ export const Portfolio = ({
           renderDisplay={renderFromAssetIdentity}
           disabled={fromAssetOptions.length === 0}
           error={
-            fromAssetOptions.length === 0
+            shouldShowEmptyFromAssetError
               ? I18nUtils.getMessage(
                   mode === 'swap'
                     ? 'portfolio_swap_no_wallet_tokens'
@@ -2928,7 +2947,7 @@ export const Portfolio = ({
               : undefined
           }
           listFooter={
-            fromAssetOptions.length === 0 && mode !== 'swap'
+            shouldShowEmptyFromAssetError && mode !== 'swap'
               ? I18nUtils.getMessage('portfolio_no_matching_assets')
               : undefined
           }
@@ -3161,7 +3180,20 @@ export const Portfolio = ({
       isPortfolioLoading && section === 'portfolio' && rows.length > 0;
 
     const showInitialPortfolioSpinner =
-      isPortfolioLoading && rows.length === 0 && section !== 'history';
+      isPortfolioLoading && rows.length === 0 && section === 'portfolio';
+
+    const isFlowCatalogLoading =
+      section === 'swap'
+        ? isSwapAvailableAssetsLoading || !hasLoadedSwapAvailableAssets
+        : isFiatRampSection(section)
+          ? isRampAvailableAssetsLoading || isFiatRampOptionsLoading
+          : false;
+
+    // Wait for account + flow catalog only. Portfolio balances stream in via
+    // onChainReady so one slow RPC cannot block the whole swap/buy/sell form.
+    const showFlowLoadingSpinner =
+      isQuoteAutoFetchSection(section) &&
+      (!selectedAccountKey || isFlowCatalogLoading);
 
     const showHistorySpinner =
       isHistoryLoading && history.length === 0 && section === 'history';
@@ -3175,7 +3207,11 @@ export const Portfolio = ({
       );
     }
 
-    if (showInitialPortfolioSpinner || showHistorySpinner) {
+    if (
+      showInitialPortfolioSpinner ||
+      showFlowLoadingSpinner ||
+      showHistorySpinner
+    ) {
       return (
         <div className="rotating-logo-wrapper">
           <RotatingLogoComponent />
