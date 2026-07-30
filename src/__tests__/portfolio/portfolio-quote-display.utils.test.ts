@@ -95,6 +95,28 @@ describe('PortfolioQuoteDisplayUtils', () => {
     ]);
   });
 
+  it('uppercases fee currency symbols in quote detail rows', () => {
+    const rows = PortfolioQuoteDisplayUtils.getPortfolioQuoteDetailRows(
+      createQuote({
+        providerFee: { amount: '3.538', currency: 'hive' },
+        networkFeeEstimate: { amount: '7.889', currency: 'hive' },
+      }),
+    );
+
+    expect(rows).toEqual([
+      {
+        key: 'provider-fee',
+        labelKey: 'portfolio_quote_provider_fee',
+        value: '3.538 HIVE',
+      },
+      {
+        key: 'network-fee',
+        labelKey: 'portfolio_quote_network_fee',
+        value: '7.889 HIVE',
+      },
+    ]);
+  });
+
   it('omits fee rows when values are unavailable', () => {
     const rows = PortfolioQuoteDisplayUtils.getPortfolioQuoteDetailRows(
       createQuote({

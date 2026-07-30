@@ -29,7 +29,7 @@ const formatPortfolioQuoteFee = (fee: PortfolioQuoteFee | null): string | null =
     return null;
   }
 
-  return `${fee.amount} ${fee.currency}`;
+  return `${fee.amount} ${fee.currency.trim().toUpperCase()}`;
 };
 
 const formatPortfolioQuoteEnumLabel = (value: string): string =>
