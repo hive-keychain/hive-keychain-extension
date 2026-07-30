@@ -622,6 +622,45 @@ describe('UnlockedAppComponent', () => {
     window.location.hash = previousHash;
   });
 
+  it('opens the portfolio after unlock when sign-in left SIGN_IN_PAGE on the stack', async () => {
+    const previousHash = window.location.hash;
+    window.location.hash = '#portfolio';
+    jest
+      .spyOn(ExtensionSurfaceUtils, 'isPortfolioPage')
+      .mockReturnValue(true);
+    (EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
+
+    const { store } = customRender(<UnlockedAppComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk: mkData.user.one,
+        chain: hiveChain,
+        navigation: {
+          stack: [{ currentPage: Screen.SIGN_IN_PAGE }],
+        },
+        hive: {
+          ...initialEmptyStateStore.hive,
+          appStatus: {
+            ...initialEmptyStateStore.hive.appStatus,
+            priceLoaded: true,
+            globalPropertiesLoaded: true,
+          },
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(store.getState().navigation.stack[0]?.currentPage).toBe(
+        Screen.PORTFOLIO_PAGE,
+      );
+    });
+    expect(window.location.hash).toBe('');
+
+    window.location.hash = previousHash;
+  });
+
   it('keeps startup splash until the Hive active account name is hydrated', async () => {
     const {
       HiveActionType,

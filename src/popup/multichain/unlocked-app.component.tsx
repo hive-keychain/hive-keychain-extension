@@ -704,69 +704,70 @@ const UnlockedApp = ({
     if (mk && mk.length > 0 && hasAccounts) {
       setDisplaySplashscreen(true);
       const navStack = store.getState().navigation.stack;
+      // Seed navigation on an empty stack, or when replacing sign-in / account-setup.
+      // Deep links (portfolio, ledger, etc.) must run in both cases — after unlock the
+      // stack already has SIGN_IN_PAGE from SignInRouter.
       if (navStack.length === 0 || stackHasAccountSetupPage(navStack)) {
-        if (navStack.length === 0) {
-          const portfolioRoute = PortfolioRouteUtils.parseHash(
-            window.location.hash,
-          );
-          const isPortfolioPage = ExtensionSurfaceUtils.isPortfolioPage();
-          if (isPortfolioPage || portfolioRoute) {
-            if (portfolioRoute) {
-              PortfolioRouteUtils.clearHash();
-            }
-            if (isPortfolioPage) {
-              navigateTo(Screen.PORTFOLIO_PAGE, true);
-              return;
-            }
-            PortfolioRouteUtils.open();
-            navigateTo(Screen.HOME_PAGE, true);
+        const portfolioRoute = PortfolioRouteUtils.parseHash(
+          window.location.hash,
+        );
+        const isPortfolioPage = ExtensionSurfaceUtils.isPortfolioPage();
+        if (isPortfolioPage || portfolioRoute) {
+          if (portfolioRoute) {
+            PortfolioRouteUtils.clearHash();
+          }
+          if (isPortfolioPage) {
+            navigateTo(Screen.PORTFOLIO_PAGE, true);
             return;
           }
-          const paidAccountCreationRoute =
-            PaidAccountCreationRouteUtils.parseHash(window.location.hash);
-          if (paidAccountCreationRoute) {
-            PaidAccountCreationRouteUtils.clearHash();
+          PortfolioRouteUtils.open();
+          navigateTo(Screen.HOME_PAGE, true);
+          return;
+        }
+        const paidAccountCreationRoute =
+          PaidAccountCreationRouteUtils.parseHash(window.location.hash);
+        if (paidAccountCreationRoute) {
+          PaidAccountCreationRouteUtils.clearHash();
+          navigateToWithParams(
+            paidAccountCreationRoute.screen,
+            paidAccountCreationRoute.params,
+            true,
+          );
+          return;
+        }
+
+        // EVM setup routes should not override Hive home when Hive accounts exist.
+        if (hiveAccounts.length === 0) {
+          const navigationTarget =
+            EvmWalletSetupTabUtils.resolveEvmAppNavigationOnReady(
+              window.location.hash,
+            );
+          if (navigationTarget === 'create_wallet') {
+            EvmWalletSetupTabUtils.clearEvmWalletSetupHash();
+            navigateTo(Screen.CREATE_EVM_WALLET);
+            return;
+          }
+        }
+        const ledgerRoute = LedgerRouteUtils.parseHash(window.location.hash);
+        if (ledgerRoute) {
+          LedgerRouteUtils.clearHash();
+          if (ledgerRoute.screen === Screen.EVM_ADD_ACCOUNTS_FROM_LEDGER) {
+            const targetChain = await resolveEvmChain(chain);
+            if (targetChain) {
+              await setChain(targetChain);
+              setActiveAccountType(ChainType.EVM);
+            }
+          }
+          if (ledgerRoute.params) {
             navigateToWithParams(
-              paidAccountCreationRoute.screen,
-              paidAccountCreationRoute.params,
+              ledgerRoute.screen,
+              ledgerRoute.params,
               true,
             );
-            return;
+          } else {
+            navigateTo(ledgerRoute.screen, true);
           }
-
-          // EVM setup routes should not override Hive home when Hive accounts exist.
-          if (hiveAccounts.length === 0) {
-            const navigationTarget =
-              EvmWalletSetupTabUtils.resolveEvmAppNavigationOnReady(
-                window.location.hash,
-              );
-            if (navigationTarget === 'create_wallet') {
-              EvmWalletSetupTabUtils.clearEvmWalletSetupHash();
-              navigateTo(Screen.CREATE_EVM_WALLET);
-              return;
-            }
-          }
-          const ledgerRoute = LedgerRouteUtils.parseHash(window.location.hash);
-          if (ledgerRoute) {
-            LedgerRouteUtils.clearHash();
-            if (ledgerRoute.screen === Screen.EVM_ADD_ACCOUNTS_FROM_LEDGER) {
-              const targetChain = await resolveEvmChain(chain);
-              if (targetChain) {
-                await setChain(targetChain);
-                setActiveAccountType(ChainType.EVM);
-              }
-            }
-            if (ledgerRoute.params) {
-              navigateToWithParams(
-                ledgerRoute.screen,
-                ledgerRoute.params,
-                true,
-              );
-            } else {
-              navigateTo(ledgerRoute.screen, true);
-            }
-            return;
-          }
+          return;
         }
         if (!hasCompletedDisplayAppearanceSetup) {
           navigateTo(Screen.SETUP_DISPLAY_APPEARANCE, true);
