@@ -178,7 +178,6 @@ export const PortfolioToAssetFilter = ({
             setSelectedItem={(item) => handleChainFilterChange(item.value)}
             filterable
             generateImageIfNull
-            skipImageGenerationForFirstItem
             showOverlay
             ariaLabel={I18nUtils.getMessage('portfolio_network')}
           />

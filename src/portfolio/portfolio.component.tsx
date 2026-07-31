@@ -1185,16 +1185,14 @@ export const Portfolio = ({
   );
 
   const toAssetChainSelectOptions = useMemo<OptionItem[]>(
-    () => [
-      getAllNetworksOption(),
-      ...toAssetChainFilterOptions.map((option) => ({
+    () =>
+      toAssetChainFilterOptions.map((option) => ({
         key: option.key,
         label: option.label,
         value: option.value,
         img: option.img,
         imgChip: option.imgChip,
       })),
-    ],
     [toAssetChainFilterOptions],
   );
 
