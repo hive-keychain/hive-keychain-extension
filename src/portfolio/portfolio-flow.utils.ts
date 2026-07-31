@@ -723,6 +723,8 @@ export const buildCanonicalAssetSelectOptions = (
 export type PortfolioAssetChainFilterOption = {
   value: string;
   label: string;
+  /** Three-character abbreviation of the chain name for compact chips. */
+  chipLabel: string;
   key: string;
   img?: string;
   imgChip?: SVGIcons;
@@ -794,6 +796,15 @@ const shouldReplaceChainFilterOption = (
 ): boolean =>
   isDestinationOnlyChainFilterValue(incomingValue) &&
   !isDestinationOnlyChainFilterValue(currentValue);
+
+export const abbreviatePortfolioChainFilterChipLabel = (label: string): string => {
+  const normalized = label.replace(/[^a-zA-Z0-9]/g, '');
+  if (!normalized) {
+    return label.trim().slice(0, 3).toUpperCase();
+  }
+
+  return normalized.slice(0, 3).toUpperCase();
+};
 
 export const buildCanonicalAssetChainFilterOptions = (
   assets: PortfolioCanonicalAsset[],
@@ -883,7 +894,13 @@ export const buildCanonicalAssetChainFilterOptions = (
 
       return left.label.localeCompare(right.label);
     })
-    .map(({ rankScore: _rankScore, ...option }) => option);
+    .map(({ rankScore: _rankScore, ...option }) => ({
+      ...option,
+      chipLabel:
+        option.value === HIVE_ENGINE_CHAIN_FILTER_VALUE
+          ? 'HE'
+          : abbreviatePortfolioChainFilterChipLabel(option.label),
+    }));
 };
 
 const getCanonicalAssetTextMatchRank = (
@@ -907,9 +924,29 @@ const getCanonicalAssetTextMatchRank = (
   return Number.POSITIVE_INFINITY;
 };
 
+type CanonicalAssetTextFilterContext = {
+  chains?: EvmChain[];
+  portfolioChains?: PortfolioChainDisplayRecord;
+};
+
+const getCanonicalAssetNetworkTextFilterRank = (
+  asset: PortfolioCanonicalAsset,
+  normalizedFilter: string,
+  context: CanonicalAssetTextFilterContext,
+): number => {
+  const networkLabel = resolveCanonicalAssetNetworkLabel(
+    asset,
+    context.chains ?? [],
+    context.portfolioChains ?? {},
+  );
+
+  return getCanonicalAssetTextMatchRank(networkLabel, normalizedFilter, 6);
+};
+
 const getCanonicalAssetTextFilterRank = (
   asset: PortfolioCanonicalAsset,
   filter: string,
+  context: CanonicalAssetTextFilterContext = {},
 ): number => {
   const normalizedFilter = filter.trim().toLowerCase();
   if (!normalizedFilter) {
@@ -919,6 +956,7 @@ const getCanonicalAssetTextFilterRank = (
   return Math.min(
     getCanonicalAssetTextMatchRank(asset.symbol, normalizedFilter, 0),
     getCanonicalAssetTextMatchRank(asset.name, normalizedFilter, 3),
+    getCanonicalAssetNetworkTextFilterRank(asset, normalizedFilter, context),
   );
 };
 
@@ -984,20 +1022,26 @@ const compareCanonicalAssetsByTextFilter = (
   left: PortfolioCanonicalAsset,
   right: PortfolioCanonicalAsset,
   filter: string,
+  context: CanonicalAssetTextFilterContext = {},
 ): number => {
   const rankDiff =
-    getCanonicalAssetTextFilterRank(left, filter) -
-    getCanonicalAssetTextFilterRank(right, filter);
+    getCanonicalAssetTextFilterRank(left, filter, context) -
+    getCanonicalAssetTextFilterRank(right, filter, context);
   if (rankDiff !== 0) {
     return rankDiff;
   }
 
-  return compareCanonicalAssetsByRank(left, right);
+  return compareCanonicalAssetsByRank(
+    left,
+    right,
+    context.portfolioChains ?? {},
+  );
 };
 
 const matchesCanonicalAssetTextFilter = (
   asset: PortfolioCanonicalAsset,
   filter: string,
+  context: CanonicalAssetTextFilterContext = {},
 ): boolean => {
   const normalizedFilter = filter.trim().toLowerCase();
   if (!normalizedFilter) {
@@ -1006,10 +1050,16 @@ const matchesCanonicalAssetTextFilter = (
 
   const normalizedSymbol = asset.symbol.toLowerCase();
   const normalizedName = asset.name.toLowerCase();
+  const normalizedNetwork = resolveCanonicalAssetNetworkLabel(
+    asset,
+    context.chains ?? [],
+    context.portfolioChains ?? {},
+  ).toLowerCase();
 
   return (
     normalizedSymbol.includes(normalizedFilter) ||
-    normalizedName.includes(normalizedFilter)
+    normalizedName.includes(normalizedFilter) ||
+    normalizedNetwork.includes(normalizedFilter)
   );
 };
 
@@ -1107,19 +1157,29 @@ export const filterCanonicalAssets = (
     textFilter?: string;
     chainFilter?: string;
     maxResults?: number;
+    chains?: EvmChain[];
     portfolioChains?: PortfolioChainDisplayRecord;
   } = {},
 ): { assets: PortfolioCanonicalAsset[]; totalMatches: number } => {
   const maxResults = options.maxResults ?? Number.POSITIVE_INFINITY;
   const textFilter = options.textFilter ?? '';
+  const textFilterContext: CanonicalAssetTextFilterContext = {
+    chains: options.chains,
+    portfolioChains: options.portfolioChains,
+  };
   const filteredAssets = assets.filter(
     (asset) =>
-      matchesCanonicalAssetTextFilter(asset, textFilter) &&
+      matchesCanonicalAssetTextFilter(asset, textFilter, textFilterContext) &&
       matchesCanonicalAssetChainFilter(asset, options.chainFilter ?? ''),
   );
   const sortedAssets = textFilter.trim()
     ? [...filteredAssets].sort((left, right) =>
-        compareCanonicalAssetsByTextFilter(left, right, textFilter),
+        compareCanonicalAssetsByTextFilter(
+          left,
+          right,
+          textFilter,
+          textFilterContext,
+        ),
       )
     : sortCanonicalAssetsByRank(filteredAssets, options.portfolioChains);
 
@@ -1488,6 +1548,7 @@ export const resolvePortfolioQuoteToAddress = ({
 };
 
 export const PortfolioFlowUtils = {
+  abbreviatePortfolioChainFilterChipLabel,
   buildCanonicalAssetChainFilterOptions,
   buildCanonicalAssetChainFilterValue,
   buildCanonicalAssetSelectOptions,

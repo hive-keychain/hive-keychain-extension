@@ -433,6 +433,18 @@ describe('PortfolioFlowUtils', () => {
     ).toBe('evm-eth-1');
   });
 
+  it('abbreviates chain filter chip labels to three characters', () => {
+    expect(
+      PortfolioFlowUtils.abbreviatePortfolioChainFilterChipLabel('Ethereum'),
+    ).toBe('ETH');
+    expect(
+      PortfolioFlowUtils.abbreviatePortfolioChainFilterChipLabel('Arbitrum One'),
+    ).toBe('ARB');
+    expect(
+      PortfolioFlowUtils.abbreviatePortfolioChainFilterChipLabel('Hive Engine'),
+    ).toBe('HIV');
+  });
+
   it('builds chain filter options from canonical assets', () => {
     const assets = [hiveAsset, hiveEngineAsset, ethAsset, sepoliaEthAsset];
 
@@ -448,6 +460,7 @@ describe('PortfolioFlowUtils', () => {
       {
         value: 'evm:11155111',
         label: '0xaa36a7',
+        chipLabel: '0XA',
         key: 'evm:11155111',
         img: undefined,
         imgChip: undefined,
@@ -455,6 +468,7 @@ describe('PortfolioFlowUtils', () => {
       {
         value: 'evm:1',
         label: 'Ethereum',
+        chipLabel: 'ETH',
         key: 'evm:1',
         img: 'ethereum.svg',
         imgChip: undefined,
@@ -462,6 +476,7 @@ describe('PortfolioFlowUtils', () => {
       {
         value: 'hive',
         label: 'Hive',
+        chipLabel: 'HIV',
         key: 'hive',
         img: '/assets/images/wallet/hive-logo.svg',
         imgChip: undefined,
@@ -469,6 +484,7 @@ describe('PortfolioFlowUtils', () => {
       {
         value: 'hive_engine',
         label: 'Hive Engine',
+        chipLabel: 'HE',
         key: 'hive_engine',
         img: '/assets/images/wallet/hive-engine.svg',
         imgChip: undefined,
@@ -534,12 +550,14 @@ describe('PortfolioFlowUtils', () => {
       {
         value: 'tvm:tron',
         label: 'Tron',
+        chipLabel: 'TRO',
         key: 'tvm:tron',
         img: 'tron.svg',
       },
       {
         value: 'svm:solana',
         label: 'Solana',
+        chipLabel: 'SOL',
         key: 'svm:solana',
         img: 'solana.svg',
       },
@@ -643,6 +661,49 @@ describe('PortfolioFlowUtils', () => {
         textFilter: 'eth',
       }).assets,
     ).toEqual([ethAsset, wethAsset]);
+  });
+
+  it('filters canonical assets by network label in text search', () => {
+    const portfolioChains = {
+      '1': {
+        id: '1',
+        name: 'Ethereum',
+        logoUrl: 'ethereum.svg',
+        numericChainId: 1,
+        rankScore: 9200,
+      },
+      '11155111': {
+        id: '11155111',
+        name: 'Sepolia',
+        logoUrl: null,
+        numericChainId: 11155111,
+        rankScore: 10,
+      },
+    };
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets([ethAsset, sepoliaEthAsset], {
+        textFilter: 'ethereum',
+        portfolioChains,
+        chains: [
+          {
+            name: 'Ethereum',
+            chainId: '0x1',
+            logo: 'ethereum.svg',
+          } as never,
+        ],
+      }).assets,
+    ).toEqual([ethAsset]);
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets(
+        [hiveAsset, hiveEngineAsset, ethAsset],
+        {
+          textFilter: 'engine',
+          portfolioChains,
+        },
+      ).assets,
+    ).toEqual([hiveEngineAsset]);
   });
 
   it('limits filtered canonical assets to maxResults', () => {

@@ -96,6 +96,7 @@ import { PortfolioHistoryCard } from 'src/portfolio/ui/portfolio-history-card.co
 import { PortfolioHistoryDisplayUtils } from 'src/portfolio/ui/portfolio-history-display.utils';
 import { PortfolioLogoImage } from 'src/portfolio/ui/portfolio-logo-image.component';
 import { PortfolioNavIcon } from 'src/portfolio/ui/portfolio-nav-icon.enum';
+import { PortfolioToAssetFilter } from 'src/portfolio/ui/portfolio-to-asset-filter.component';
 import { PortfolioOverlayListSelect } from 'src/portfolio/ui/portfolio-overlay-list-select.component';
 import { PortfolioQuoteCard } from 'src/portfolio/ui/portfolio-quote-card.component';
 import { PortfolioQuoteDisplayUtils } from 'src/portfolio/ui/portfolio-quote-display.utils';
@@ -1164,12 +1165,13 @@ export const Portfolio = ({
       PortfolioFlowUtils.filterCanonicalAssets(eligibleToAssets, {
         textFilter: toAssetFilter,
         chainFilter: toAssetChainFilter,
+        chains: toAssetEvmChains,
         portfolioChains,
         maxResults: hasToAssetFilters
           ? TO_ASSET_FILTERED_MAX
           : TO_ASSET_UNFILTERED_MAX,
       }),
-    [eligibleToAssets, hasToAssetFilters, portfolioChains, toAssetChainFilter, toAssetFilter],
+    [eligibleToAssets, hasToAssetFilters, portfolioChains, toAssetChainFilter, toAssetFilter, toAssetEvmChains],
   );
 
   const filteredToAssetOptions = useMemo(
@@ -2996,35 +2998,15 @@ export const Portfolio = ({
           renderOption={renderToAssetIdentity}
           renderDisplay={renderToAssetIdentity}
           listHeader={
-            <div
-              className="portfolio-overlay-select__filters"
-              onMouseDown={(event) => event.stopPropagation()}
-              onClick={(event) => event.stopPropagation()}>
-              <div className="portfolio-overlay-select__filters-field portfolio-overlay-select__filters-token">
-                <label htmlFor="portfolio-to-asset-filter">
-                  {I18nUtils.getMessage('portfolio_symbol_filter')}
-                </label>
-                <input
-                  id="portfolio-to-asset-filter"
-                  type="text"
-                  placeholder={I18nUtils.getMessage('portfolio_symbol_filter')}
-                  value={toAssetFilter}
-                  onChange={(event) => setToAssetFilter(event.target.value)}
-                />
-              </div>
-              <div className="portfolio-overlay-select__filters-field portfolio-overlay-select__filters-network">
-                <ComplexeCustomSelect
-                  label="portfolio_network"
-                  options={toAssetChainSelectOptions}
-                  selectedItem={selectedToAssetChainOption}
-                  setSelectedItem={(item) => setToAssetChainFilter(item.value)}
-                  filterable
-                  generateImageIfNull
-                  skipImageGenerationForFirstItem
-                  showOverlay
-                />
-              </div>
-            </div>
+            <PortfolioToAssetFilter
+              textFilter={toAssetFilter}
+              onTextFilterChange={setToAssetFilter}
+              chainFilter={toAssetChainFilter}
+              onChainFilterChange={setToAssetChainFilter}
+              chainOptions={toAssetChainFilterOptions}
+              networkSelectOptions={toAssetChainSelectOptions}
+              selectedNetworkOption={selectedToAssetChainOption}
+            />
           }
           listFooter={
             filteredToAssetOptions.length === 0

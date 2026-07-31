@@ -4414,6 +4414,9 @@
   "portfolio_account": { "message": "Account" },
   "portfolio_network": { "message": "Network" },
   "portfolio_all_networks": { "message": "All networks" },
+  "portfolio_all_networks_short": { "message": "All" },
+  "portfolio_to_asset_search": { "message": "Search symbol or network" },
+  "portfolio_more_networks": { "message": "More networks" },
   "portfolio_token": { "message": "Token" },
   "portfolio_actions": { "message": "Actions" },
   "portfolio_price": { "message": "Price" },
@@ -4424,7 +4427,7 @@
   "portfolio_token_filter": { "message": "Filter by name or symbol" },
   "portfolio_symbol_filter": { "message": "Filter by symbol" },
   "portfolio_to_asset_filter_hint": {
-    "message": "Showing the first assets. Filter by symbol or network to narrow the list."
+    "message": "Showing the first assets. Search or pick a network to narrow the list."
   },
   "portfolio_to_asset_results_truncated": {
     "message": "$1 more assets match your filters. Refine your search to see them.",
