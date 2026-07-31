@@ -506,6 +506,7 @@ describe('PortfolioApiParser', () => {
             failureAction: null,
             providerStatusDetail: null,
             providerStatusUrl: null,
+            supportUrl: null,
           },
           {
             id: 'exec-2',
@@ -527,6 +528,7 @@ describe('PortfolioApiParser', () => {
             providerStatusDetail: null,
             providerStatusUrl:
               'https://stealthex.io/exchange/?id=f8c0c770-b5fd-4e56-9a9e-3ac841f6d9a5',
+            supportUrl: 'https://stealthex.io/contacts/',
           },
         ],
       }),
@@ -547,6 +549,7 @@ describe('PortfolioApiParser', () => {
             failureAction: null,
             providerStatusDetail: null,
             providerStatusUrl: null,
+            supportUrl: null,
           }),
           expect.objectContaining({
             displayStatus: 'failed',
@@ -557,6 +560,7 @@ describe('PortfolioApiParser', () => {
             providerStatusDetail: null,
             providerStatusUrl:
               'https://stealthex.io/exchange/?id=f8c0c770-b5fd-4e56-9a9e-3ac841f6d9a5',
+            supportUrl: 'https://stealthex.io/contacts/',
           }),
         ],
       }),

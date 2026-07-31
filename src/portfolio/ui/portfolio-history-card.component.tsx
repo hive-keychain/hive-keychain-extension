@@ -299,9 +299,22 @@ export const PortfolioHistoryCard = ({
     });
   }
   if (failureActionLabel) {
+    const supportActionUrl =
+      PortfolioHistoryDisplayUtils.resolvePortfolioHistorySupportActionUrl(item);
     detailRows.push({
       label: I18nUtils.getMessage('portfolio_history_suggested_action'),
-      value: failureActionLabel,
+      value: supportActionUrl ? (
+        <button
+          type="button"
+          className="portfolio-history-card__action-link"
+          onClick={() => {
+            chrome.tabs.create({ url: supportActionUrl });
+          }}>
+          {failureActionLabel}
+        </button>
+      ) : (
+        failureActionLabel
+      ),
     });
   }
 

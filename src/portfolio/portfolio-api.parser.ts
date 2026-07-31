@@ -682,6 +682,7 @@ const parsePortfolioHistoryItem = (
     failureAction: readNullableEnum(value.failureAction, portfolioFailureActions),
     providerStatusDetail: readNullableString(value, 'providerStatusDetail'),
     providerStatusUrl: readNullableString(value, 'providerStatusUrl'),
+    supportUrl: readNullableString(value, 'supportUrl'),
   };
 };
 

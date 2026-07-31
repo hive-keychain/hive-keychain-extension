@@ -291,6 +291,7 @@ export interface PortfolioHistoryItem extends PortfolioExecution {
   failureAction: PortfolioFailureAction | null;
   providerStatusDetail: string | null;
   providerStatusUrl: string | null;
+  supportUrl: string | null;
 }
 
 export interface PortfolioHistoryResponse {

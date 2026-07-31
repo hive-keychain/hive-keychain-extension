@@ -126,6 +126,56 @@ describe('PortfolioHistoryDisplayUtils', () => {
     });
   });
 
+  describe('resolvePortfolioHistorySupportActionUrl', () => {
+    it('returns supportUrl for contact_support failures', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistorySupportActionUrl({
+          failureAction: 'contact_support',
+          supportUrl: 'https://stealthex.io/contacts/',
+        }),
+      ).toBe('https://stealthex.io/contacts/');
+    });
+
+    it('trims whitespace from supportUrl', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistorySupportActionUrl({
+          failureAction: 'contact_support',
+          supportUrl: '  https://stealthex.io/contacts/  ',
+        }),
+      ).toBe('https://stealthex.io/contacts/');
+    });
+
+    it('returns null when supportUrl is missing for contact_support', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistorySupportActionUrl({
+          failureAction: 'contact_support',
+          supportUrl: null,
+        }),
+      ).toBeNull();
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistorySupportActionUrl({
+          failureAction: 'contact_support',
+          supportUrl: '   ',
+        }),
+      ).toBeNull();
+    });
+
+    it('does not link supportUrl for other failure actions', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistorySupportActionUrl({
+          failureAction: 'wait_for_refund',
+          supportUrl: 'https://discord.gg/lifi',
+        }),
+      ).toBeNull();
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistorySupportActionUrl({
+          failureAction: null,
+          supportUrl: 'https://stealthex.io/contacts/',
+        }),
+      ).toBeNull();
+    });
+  });
+
   describe('resolvePortfolioHistoryStatusLabelKey', () => {
     it('prefers failure code labels for failed statuses', () => {
       expect(

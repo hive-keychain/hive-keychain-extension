@@ -189,6 +189,20 @@ const resolvePortfolioHistoryFailureActionMessageKey = (
 ): string | null =>
   failureAction ? `portfolio_history_failure_action_${failureAction}` : null;
 
+/**
+ * Returns a support URL only when the suggested action is `contact_support`
+ * and the API provided one. Distinct from `providerStatusUrl`.
+ */
+const resolvePortfolioHistorySupportActionUrl = (
+  item: Pick<PortfolioHistoryItem, 'failureAction' | 'supportUrl'>,
+): string | null => {
+  if (item.failureAction !== 'contact_support') {
+    return null;
+  }
+
+  return item.supportUrl?.trim() || null;
+};
+
 const resolvePortfolioHistoryStatusLabelKey = (
   item: Pick<PortfolioHistoryItem, 'status' | 'failureCode'> &
     Partial<Pick<PortfolioHistoryItem, 'displayStatus'>>,
@@ -254,6 +268,7 @@ export const PortfolioHistoryDisplayUtils = {
   getPortfolioHistoryStatusMessageKey,
   resolvePortfolioHistoryFailureCodeMessageKey,
   resolvePortfolioHistoryFailureActionMessageKey,
+  resolvePortfolioHistorySupportActionUrl,
   resolvePortfolioHistoryStatusLabelKey,
   isCreatedOrExpiredHistoryStatus,
   formatPortfolioHistoryAmount,
