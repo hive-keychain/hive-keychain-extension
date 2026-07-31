@@ -66,7 +66,11 @@ export const PortfolioQuoteCard = ({
           {detailRows.map((row) => (
             <div key={row.key} className="portfolio-quote-card__detail-row">
               <dt>{I18nUtils.getMessage(row.labelKey)}</dt>
-              <dd>{row.value}</dd>
+              <dd>
+                {row.valueKey
+                  ? I18nUtils.getMessage(row.valueKey)
+                  : row.value}
+              </dd>
             </div>
           ))}
         </dl>

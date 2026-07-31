@@ -4260,6 +4260,9 @@
   },
   "portfolio_estimated_amount": { "message": "Estimated amount" },
   "portfolio_quote_provider_fee": { "message": "Provider fee" },
+  "portfolio_quote_provider_fee_undisclosed": {
+    "message": "Undisclosed by provider"
+  },
   "portfolio_quote_network_fee": { "message": "Network fee" },
   "portfolio_view_all_quotes": {
     "message": "View all quotes ($1)",

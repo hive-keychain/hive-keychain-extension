@@ -21,7 +21,8 @@ import { PortfolioProviderValue } from 'src/portfolio/ui/portfolio-provider-valu
 export type PortfolioQuoteDetailRow = {
   key: string;
   labelKey: string;
-  value: string;
+  value?: string;
+  valueKey?: string;
 };
 
 const formatPortfolioQuoteFee = (fee: PortfolioQuoteFee | null): string | null => {
@@ -165,13 +166,19 @@ const getPortfolioQuoteDetailRows = (quote: PortfolioQuote): PortfolioQuoteDetai
   const rows: PortfolioQuoteDetailRow[] = [];
 
   const providerFee = formatPortfolioQuoteFee(quote.providerFee);
-  if (providerFee) {
-    rows.push({
-      key: 'provider-fee',
-      labelKey: 'portfolio_quote_provider_fee',
-      value: providerFee,
-    });
-  }
+  rows.push(
+    providerFee
+      ? {
+          key: 'provider-fee',
+          labelKey: 'portfolio_quote_provider_fee',
+          value: providerFee,
+        }
+      : {
+          key: 'provider-fee',
+          labelKey: 'portfolio_quote_provider_fee',
+          valueKey: 'portfolio_quote_provider_fee_undisclosed',
+        },
+  );
 
   const networkFee = formatPortfolioQuoteFee(quote.networkFeeEstimate);
   if (networkFee) {

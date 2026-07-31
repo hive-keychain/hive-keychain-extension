@@ -117,7 +117,7 @@ describe('PortfolioQuoteDisplayUtils', () => {
     ]);
   });
 
-  it('omits fee rows when values are unavailable', () => {
+  it('shows an undisclosed provider fee when the fee is unavailable', () => {
     const rows = PortfolioQuoteDisplayUtils.getPortfolioQuoteDetailRows(
       createQuote({
         providerFee: null,
@@ -125,7 +125,13 @@ describe('PortfolioQuoteDisplayUtils', () => {
       }),
     );
 
-    expect(rows).toEqual([]);
+    expect(rows).toEqual([
+      {
+        key: 'provider-fee',
+        labelKey: 'portfolio_quote_provider_fee',
+        valueKey: 'portfolio_quote_provider_fee_undisclosed',
+      },
+    ]);
   });
 
   it('builds in-app confirmation fields with tagged token amounts and provider last', () => {
