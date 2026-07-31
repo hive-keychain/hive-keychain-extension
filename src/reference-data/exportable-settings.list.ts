@@ -33,6 +33,7 @@ export const EXPORTABLE_SETTINGS_KEYS: LocalStorageKeyEnum[] = [
   LocalStorageKeyEnum.SKIP_TUTORIAL,
   LocalStorageKeyEnum.WALLET_HISTORY_FILTERS,
   LocalStorageKeyEnum.PORTFOLIO_FILTER,
+  LocalStorageKeyEnum.PORTFOLIO_SWAP_LAST_USED_ASSETS,
   LocalStorageKeyEnum.SWAP_LAST_USED_TOKENS,
   LocalStorageKeyEnum.HIDE_SUGGESTION_PROXY,
   LocalStorageKeyEnum.GOVERNANCE_RENEWAL_IGNORED,

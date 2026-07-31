@@ -84,6 +84,7 @@ import { PortfolioFiatLocaleUtils } from 'src/portfolio/portfolio-fiat-locale.ut
 import {
   PortfolioFlowRow,
   PortfolioFlowUtils,
+  PortfolioSwapLastUsedAssets,
 } from 'src/portfolio/portfolio-flow.utils';
 import {
   getPortfolioHiveOperations,
@@ -541,6 +542,10 @@ export const Portfolio = ({
   const [history, setHistory] = useState<PortfolioHistoryItem[]>([]);
   const [fromAssetId, setFromAssetId] = useState('');
   const [toAssetId, setToAssetId] = useState('');
+  const [lastUsedSwapAssets, setLastUsedSwapAssets] =
+    useState<PortfolioSwapLastUsedAssets | null>(null);
+  const [hasLoadedLastUsedSwapAssets, setHasLoadedLastUsedSwapAssets] =
+    useState(false);
   const [amount, setAmount] = useState('');
   const [fiatCurrency, setFiatCurrency] = useState(
     PortfolioFiatLocaleUtils.getPreferredFiatCurrencyCode(),
@@ -1458,6 +1463,44 @@ export const Portfolio = ({
   }, [selectedAccountKey]);
 
   useEffect(() => {
+    let cancelled = false;
+    void PortfolioFlowUtils.getLastUsedSwapAssets()
+      .then((lastUsed) => {
+        if (!cancelled) {
+          setLastUsedSwapAssets(lastUsed);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setHasLoadedLastUsedSwapAssets(true);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const persistLastUsedSwapAssets = useCallback(
+    (fromCanonicalAssetId?: string, toCanonicalAssetId?: string) => {
+      if (!fromCanonicalAssetId || !toCanonicalAssetId) {
+        return;
+      }
+
+      void PortfolioFlowUtils.saveLastUsedSwapAssets(
+        fromCanonicalAssetId,
+        toCanonicalAssetId,
+      ).then(() => {
+        setLastUsedSwapAssets({
+          fromAssetId: fromCanonicalAssetId,
+          toAssetId: toCanonicalAssetId,
+        });
+      });
+    },
+    [],
+  );
+
+  useEffect(() => {
     if (!fromAssetOptions.length) {
       if (fromAssetId) {
         setFromAssetId('');
@@ -1465,10 +1508,45 @@ export const Portfolio = ({
       return;
     }
 
-    if (!fromAssetOptions.some((option) => option.value === fromAssetId)) {
-      setFromAssetId(fromAssetOptions[0].value);
+    if (fromAssetOptions.some((option) => option.value === fromAssetId)) {
+      return;
     }
-  }, [fromAssetOptions, fromAssetId]);
+
+    if (section === 'swap' && !hasLoadedLastUsedSwapAssets) {
+      return;
+    }
+
+    const preferredFromOptionValue =
+      section === 'swap'
+        ? PortfolioFlowUtils.resolveFromSelectOptionValueForAssetId(
+            lastUsedSwapAssets?.fromAssetId,
+            fromAssetOptions,
+            rows,
+            canonicalAssetsForRowResolution,
+            toAssetEvmChains,
+            portfolioChains,
+            swapSourceAssets,
+          )
+        : undefined;
+
+    setFromAssetId(
+      PortfolioFlowUtils.getDefaultSelectOptionValue(
+        fromAssetOptions,
+        preferredFromOptionValue,
+      ),
+    );
+  }, [
+    canonicalAssetsForRowResolution,
+    fromAssetId,
+    fromAssetOptions,
+    hasLoadedLastUsedSwapAssets,
+    lastUsedSwapAssets?.fromAssetId,
+    portfolioChains,
+    rows,
+    section,
+    swapSourceAssets,
+    toAssetEvmChains,
+  ]);
 
   useEffect(() => {
     if (!toAssetOptions.length) {
@@ -1478,10 +1556,30 @@ export const Portfolio = ({
       return;
     }
 
-    if (!toAssetOptions.some((option) => option.value === toAssetId)) {
-      setToAssetId(toAssetOptions[0].value);
+    if (toAssetOptions.some((option) => option.value === toAssetId)) {
+      return;
     }
-  }, [toAssetOptions, toAssetId]);
+
+    if (section === 'swap' && !hasLoadedLastUsedSwapAssets) {
+      return;
+    }
+
+    const preferredToAssetId =
+      section === 'swap' ? lastUsedSwapAssets?.toAssetId : undefined;
+
+    setToAssetId(
+      PortfolioFlowUtils.getDefaultSelectOptionValue(
+        toAssetOptions,
+        preferredToAssetId,
+      ),
+    );
+  }, [
+    hasLoadedLastUsedSwapAssets,
+    lastUsedSwapAssets?.toAssetId,
+    section,
+    toAssetId,
+    toAssetOptions,
+  ]);
 
   useEffect(() => {
     setQuoteResponse(undefined);
@@ -2294,6 +2392,10 @@ export const Portfolio = ({
             executionId,
             transactionResponse.hash,
           );
+          persistLastUsedSwapAssets(
+            quote.fromAsset?.assetId,
+            quote.toAsset?.assetId,
+          );
           setPendingInAppConfirmation(null);
           setHistory(
             await PortfolioApiUtils.listHistory(1, historyAddressFilters),
@@ -2368,6 +2470,10 @@ export const Portfolio = ({
               submitError,
             );
           }
+          persistLastUsedSwapAssets(
+            quote.fromAsset?.assetId,
+            quote.toAsset?.assetId,
+          );
           setPendingInAppConfirmation(null);
           setHistory(
             await PortfolioApiUtils.listHistory(1, historyAddressFilters),
@@ -2466,6 +2572,12 @@ export const Portfolio = ({
         );
       if (redirectUrl) {
         chrome.tabs.create({ url: redirectUrl });
+        if (flowMode === 'swap') {
+          persistLastUsedSwapAssets(
+            quote.fromAsset?.assetId,
+            quote.toAsset?.assetId,
+          );
+        }
         setHistory(
           await PortfolioApiUtils.listHistory(1, historyAddressFilters),
         );

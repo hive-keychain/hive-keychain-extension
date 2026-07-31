@@ -1,5 +1,7 @@
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { PortfolioCanonicalAsset } from 'src/portfolio/portfolio-api.interface';
 import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const createTestCanonicalAsset = (
   asset: Pick<
@@ -158,6 +160,127 @@ describe('PortfolioFlowUtils', () => {
       ]),
     ).toBe('a');
     expect(PortfolioFlowUtils.getDefaultSelectOptionValue([])).toBe('');
+  });
+
+  it('prefers a matching preferred option value when defaulting', () => {
+    expect(
+      PortfolioFlowUtils.getDefaultSelectOptionValue(
+        [
+          { label: 'A', value: 'a' },
+          { label: 'B', value: 'b' },
+        ],
+        'b',
+      ),
+    ).toBe('b');
+    expect(
+      PortfolioFlowUtils.getDefaultSelectOptionValue(
+        [
+          { label: 'A', value: 'a' },
+          { label: 'B', value: 'b' },
+        ],
+        'missing',
+      ),
+    ).toBe('a');
+  });
+
+  it('resolves a from-select option value from a preferred canonical asset id', () => {
+    const rows = [
+      {
+        key: 'hive:HIVE',
+        symbol: 'HIVE',
+        network: 'Hive',
+        balance: '10',
+      },
+      {
+        key: 'hive:HBD',
+        symbol: 'HBD',
+        network: 'Hive',
+        balance: '5',
+      },
+    ];
+    const options = [
+      { label: 'HIVE', value: 'hive:HIVE' },
+      { label: 'HBD', value: 'hive:HBD' },
+    ];
+
+    expect(
+      PortfolioFlowUtils.resolveFromSelectOptionValueForAssetId(
+        'hive-hbd',
+        options,
+        rows,
+        [hiveAsset, hbdAsset],
+      ),
+    ).toBe('hive:HBD');
+    expect(
+      PortfolioFlowUtils.resolveFromSelectOptionValueForAssetId(
+        'missing',
+        options,
+        rows,
+        [hiveAsset, hbdAsset],
+      ),
+    ).toBeUndefined();
+    expect(
+      PortfolioFlowUtils.resolveFromSelectOptionValueForAssetId(
+        'hive-hive',
+        [{ label: 'HIVE', value: 'hive-hive' }],
+        [],
+        [hiveAsset],
+      ),
+    ).toBe('hive-hive');
+  });
+
+  describe('getLastUsedSwapAssets and saveLastUsedSwapAssets', () => {
+    it('returns null when nothing valid is stored', async () => {
+      const getSpy = jest
+        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+        .mockResolvedValue(null);
+
+      await expect(
+        PortfolioFlowUtils.getLastUsedSwapAssets(),
+      ).resolves.toBeNull();
+
+      getSpy.mockResolvedValue({ fromAssetId: 'hive-hive' });
+      await expect(
+        PortfolioFlowUtils.getLastUsedSwapAssets(),
+      ).resolves.toBeNull();
+
+      getSpy.mockRestore();
+    });
+
+    it('returns stored from/to asset ids', async () => {
+      const getSpy = jest
+        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+        .mockResolvedValue({
+          fromAssetId: 'hive-hive',
+          toAssetId: 'hive-hbd',
+        });
+
+      await expect(
+        PortfolioFlowUtils.getLastUsedSwapAssets(),
+      ).resolves.toEqual({
+        fromAssetId: 'hive-hive',
+        toAssetId: 'hive-hbd',
+      });
+
+      getSpy.mockRestore();
+    });
+
+    it('persists last used swap assets via local storage', async () => {
+      const saveSpy = jest
+        .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+        .mockResolvedValue(undefined);
+
+      await PortfolioFlowUtils.saveLastUsedSwapAssets('hive-hive', 'hive-hbd');
+      expect(saveSpy).toHaveBeenCalledWith(
+        LocalStorageKeyEnum.PORTFOLIO_SWAP_LAST_USED_ASSETS,
+        { fromAssetId: 'hive-hive', toAssetId: 'hive-hbd' },
+      );
+
+      await PortfolioFlowUtils.saveLastUsedSwapAssets('', 'hive-hbd');
+      expect(saveSpy).toHaveBeenCalledTimes(1);
+
+      saveSpy.mockRestore();
+    });
   });
 
   it('resolves evm erc20 rows by contract address and slug chain id', () => {

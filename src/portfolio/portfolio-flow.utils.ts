@@ -1,5 +1,6 @@
 import { evmChainIdToDecimalPathSegment } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Decimal from 'decimal.js';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import {
@@ -11,6 +12,7 @@ import {
   PortfolioMode,
 } from 'src/portfolio/portfolio-api.interface';
 import { EvmAddressUtils } from 'src/utils/evm/evm-address.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const HIVE_CORE_SYMBOLS = new Set(['HIVE', 'HBD', 'HP']);
 const HIVE_KEYCHAIN_SWAP_TARGET_SYMBOLS = new Set(['HIVE', 'HBD']);
@@ -1189,9 +1191,108 @@ export const filterCanonicalAssets = (
   };
 };
 
+export type PortfolioSwapLastUsedAssets = {
+  fromAssetId: string;
+  toAssetId: string;
+};
+
 export const getDefaultSelectOptionValue = (
   options: PortfolioFlowSelectOption[],
-): string => options[0]?.value ?? '';
+  preferredValue?: string | null,
+): string => {
+  if (
+    preferredValue &&
+    options.some((option) => option.value === preferredValue)
+  ) {
+    return preferredValue;
+  }
+
+  return options[0]?.value ?? '';
+};
+
+export const getLastUsedSwapAssets =
+  async (): Promise<PortfolioSwapLastUsedAssets | null> => {
+    const lastUsed = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.PORTFOLIO_SWAP_LAST_USED_ASSETS,
+    );
+    if (
+      !lastUsed ||
+      typeof lastUsed.fromAssetId !== 'string' ||
+      typeof lastUsed.toAssetId !== 'string' ||
+      !lastUsed.fromAssetId ||
+      !lastUsed.toAssetId
+    ) {
+      return null;
+    }
+
+    return {
+      fromAssetId: lastUsed.fromAssetId,
+      toAssetId: lastUsed.toAssetId,
+    };
+  };
+
+export const saveLastUsedSwapAssets = async (
+  fromAssetId: string,
+  toAssetId: string,
+): Promise<void> => {
+  if (!fromAssetId || !toAssetId) {
+    return;
+  }
+
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.PORTFOLIO_SWAP_LAST_USED_ASSETS,
+    { fromAssetId, toAssetId },
+  );
+};
+
+export const resolveFromSelectOptionValueForAssetId = (
+  preferredAssetId: string | null | undefined,
+  options: PortfolioFlowSelectOption[],
+  rows: PortfolioFlowRow[],
+  assets: PortfolioCanonicalAsset[],
+  chains: EvmChain[] = [],
+  portfolioChains: PortfolioChainDisplayRecord = {},
+  swapSourceAssets: PortfolioCanonicalAsset[] = [],
+): string | undefined => {
+  if (!preferredAssetId) {
+    return undefined;
+  }
+
+  if (options.some((option) => option.value === preferredAssetId)) {
+    return preferredAssetId;
+  }
+
+  for (const option of options) {
+    const row = rows.find((item) => item.key === option.value);
+    if (!row) {
+      continue;
+    }
+
+    const swapFromAssetId =
+      swapSourceAssets.length > 0
+        ? resolvePortfolioRowToSwapFromAssetId(
+            row,
+            swapSourceAssets,
+            chains,
+            portfolioChains,
+          )
+        : undefined;
+    const resolvedAssetId =
+      swapFromAssetId ??
+      resolvePortfolioRowToCanonicalAssetId(
+        row,
+        assets,
+        chains,
+        portfolioChains,
+      );
+
+    if (resolvedAssetId === preferredAssetId) {
+      return option.value;
+    }
+  }
+
+  return undefined;
+};
 
 export const resolveFromRowKeyToCanonicalAssetId = (
   rowKey: string,
@@ -1567,6 +1668,7 @@ export const PortfolioFlowUtils = {
   getDefaultSelectOptionValue,
   getHivePortfolioRowEcosystem,
   getHiveTokenIcon,
+  getLastUsedSwapAssets,
   resolveHivePortfolioRowNetworkLogoUrl,
   hasPositivePortfolioBalance,
   resolveCanonicalAssetNetworkLabel,
@@ -1576,6 +1678,7 @@ export const PortfolioFlowUtils = {
   portfolioRowMatchesCanonicalAsset,
   resolvePortfolioRowToSwapFromAssetId,
   resolveFromRowKeyToCanonicalAssetId,
+  resolveFromSelectOptionValueForAssetId,
   resolveHiveTokenDecimals,
   resolvePortfolioQuoteFromAmountDecimals,
   normalizePortfolioRecipientAddress,
@@ -1587,6 +1690,7 @@ export const PortfolioFlowUtils = {
   resolvePortfolioRowToCanonicalAsset,
   resolvePortfolioRowToCanonicalAssetId,
   resolvePortfolioToAddress,
+  saveLastUsedSwapAssets,
   sortCanonicalAssetsByPriceUsd,
   sortCanonicalAssetsByRank,
 };

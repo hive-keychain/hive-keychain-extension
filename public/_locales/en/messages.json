@@ -4149,8 +4149,8 @@
   "portfolio_section_swap": { "message": "Swap" },
   "portfolio_section_bridge": { "message": "Bridge" },
   "portfolio_section_history": { "message": "History" },
-  "portfolio_from_asset": { "message": "From asset" },
-  "portfolio_to_asset": { "message": "To asset" },
+  "portfolio_from_asset": { "message": "From" },
+  "portfolio_to_asset": { "message": "To" },
   "portfolio_select_asset": { "message": "Select an asset" },
   "portfolio_get_quotes": { "message": "Get quotes" },
   "portfolio_quote_auto_refresh_countdown": {
