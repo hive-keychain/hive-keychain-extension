@@ -1288,11 +1288,15 @@ export const Portfolio = ({
 
   const paymentMethodSelectOptions = useMemo<OptionItem[]>(() => {
     const methods =
-      fiatRampOptions?.paymentMethods.map((method) => ({
-        key: method.id,
-        label: PortfolioFiatLocaleUtils.getPaymentMethodLabel(method),
-        value: method.id,
-      })) ?? [];
+      fiatRampOptions?.paymentMethods.map((method) => {
+        const logo = PortfolioFiatLocaleUtils.getPaymentMethodLogo(method.id);
+        return {
+          key: method.id,
+          label: PortfolioFiatLocaleUtils.getPaymentMethodLabel(method),
+          value: method.id,
+          ...(logo ? { img: logo } : {}),
+        };
+      }) ?? [];
 
     return [getOptionalPaymentMethodOption(), ...methods];
   }, [fiatRampOptions]);
@@ -3090,9 +3094,12 @@ export const Portfolio = ({
             options={paymentMethodSelectOptions}
             selectedItem={selectedPaymentMethodOption}
             setSelectedItem={(item) => setPaymentMethod(item.value)}
-            additionalClassname={
-              isFiatRampOptionsLoading ? 'disabled' : undefined
-            }
+            additionalClassname={[
+              'portfolio-payment-method-select',
+              isFiatRampOptionsLoading ? 'disabled' : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
           />
         ) : (
           <InputComponent

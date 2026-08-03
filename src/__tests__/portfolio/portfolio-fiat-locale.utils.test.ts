@@ -149,5 +149,41 @@ describe('PortfolioFiatLocaleUtils', () => {
       }),
     ).toBe('Mystery Method');
   });
+
+  it('maps known payment method ids to logos and falls back by keyword', () => {
+    expect(
+      PortfolioFiatLocaleUtils.getPaymentMethodLogo('CREDIT_DEBIT_CARD'),
+    ).toBe('/assets/images/portfolio/payment-methods/card.png');
+    expect(PortfolioFiatLocaleUtils.getPaymentMethodLogo('APPLE_PAY')).toBe(
+      '/assets/images/portfolio/payment-methods/apple-pay.png',
+    );
+    expect(PortfolioFiatLocaleUtils.getPaymentMethodLogo('GOOGLE')).toBe(
+      '/assets/images/portfolio/payment-methods/google-pay.png',
+    );
+    expect(PortfolioFiatLocaleUtils.getPaymentMethodLogo('PAYPAL')).toBe(
+      '/assets/images/portfolio/payment-methods/paypal.png',
+    );
+    expect(
+      PortfolioFiatLocaleUtils.getPaymentMethodLogo('SEPA_BANK_TRANSFER'),
+    ).toBe('/assets/images/portfolio/payment-methods/sepa.png');
+    expect(
+      PortfolioFiatLocaleUtils.getPaymentMethodLogo('PIX_INSTANT_PAYMENT'),
+    ).toBe('/assets/images/portfolio/payment-methods/pix.png');
+    expect(PortfolioFiatLocaleUtils.getPaymentMethodLogo('BLIK-DIRECT')).toBe(
+      '/assets/images/portfolio/payment-methods/blik.png',
+    );
+    expect(PortfolioFiatLocaleUtils.getPaymentMethodLogo('INTERAC_GK')).toBe(
+      '/assets/images/portfolio/payment-methods/interac.png',
+    );
+    expect(
+      PortfolioFiatLocaleUtils.getPaymentMethodLogo('PM_OPEN_BANKING'),
+    ).toBe('/assets/images/portfolio/payment-methods/bank.png');
+    expect(
+      PortfolioFiatLocaleUtils.getPaymentMethodLogo('SOME_NEW_VISA_METHOD'),
+    ).toBe('/assets/images/portfolio/payment-methods/card.png');
+    expect(
+      PortfolioFiatLocaleUtils.getPaymentMethodLogo('UNKNOWN_METHOD'),
+    ).toBeUndefined();
+  });
 });
 

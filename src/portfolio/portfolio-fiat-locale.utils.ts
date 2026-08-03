@@ -278,12 +278,15 @@ const getFiatCurrencyForRegion = (region: string | undefined): string => {
   return REGION_TO_FIAT_CURRENCY[region] ?? DEFAULT_FIAT_CURRENCY;
 };
 
-const normalizePaymentMethodMessageKey = (methodId: string): string =>
-  `portfolio_payment_method_${methodId
+const normalizePaymentMethodId = (methodId: string): string =>
+  methodId
     .trim()
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '_')
-    .replace(/^_+|_+$/g, '')}`;
+    .replace(/^_+|_+$/g, '');
+
+const normalizePaymentMethodMessageKey = (methodId: string): string =>
+  `portfolio_payment_method_${normalizePaymentMethodId(methodId)}`;
 
 const formatPaymentMethodIdForLabel = (methodId: string): string => {
   const normalized = methodId.replace(/[_-]+/g, ' ').trim();
@@ -291,6 +294,92 @@ const formatPaymentMethodIdForLabel = (methodId: string): string => {
     return methodId;
   }
   return normalized.replace(/\b\w/g, (character) => character.toUpperCase());
+};
+
+const PAYMENT_METHOD_LOGO_BASE_PATH =
+  '/assets/images/portfolio/payment-methods';
+
+const paymentMethodLogoPath = (fileName: string): string =>
+  `${PAYMENT_METHOD_LOGO_BASE_PATH}/${fileName}`;
+
+const PAYMENT_METHOD_LOGO_BY_ID: Record<string, string> = {
+  ach_bank_transfer: paymentMethodLogoPath('bank.png'),
+  apple: paymentMethodLogoPath('apple-pay.png'),
+  apple_pay: paymentMethodLogoPath('apple-pay.png'),
+  applepay: paymentMethodLogoPath('apple-pay.png'),
+  auto_bank_transfer: paymentMethodLogoPath('bank.png'),
+  bank_transfer: paymentMethodLogoPath('bank.png'),
+  banktransfer: paymentMethodLogoPath('bank.png'),
+  blik: paymentMethodLogoPath('blik.png'),
+  blik_direct: paymentMethodLogoPath('blik.png'),
+  card: paymentMethodLogoPath('card.png'),
+  card_payment: paymentMethodLogoPath('card.png'),
+  credit_debit_card: paymentMethodLogoPath('card.png'),
+  creditcard: paymentMethodLogoPath('card.png'),
+  eightbworld_instapay: paymentMethodLogoPath('bank.png'),
+  gbp_bank_transfer: paymentMethodLogoPath('bank.png'),
+  gbp_open_banking_payment: paymentMethodLogoPath('bank.png'),
+  google: paymentMethodLogoPath('google-pay.png'),
+  google_pay: paymentMethodLogoPath('google-pay.png'),
+  googlepay: paymentMethodLogoPath('google-pay.png'),
+  interac_gk: paymentMethodLogoPath('interac.png'),
+  manual_bank_transfer: paymentMethodLogoPath('bank.png'),
+  paypal: paymentMethodLogoPath('paypal.png'),
+  pix: paymentMethodLogoPath('pix.png'),
+  pix_instant_payment: paymentMethodLogoPath('pix.png'),
+  pm_open_banking: paymentMethodLogoPath('bank.png'),
+  pm_wire: paymentMethodLogoPath('bank.png'),
+  sepa_bank_transfer: paymentMethodLogoPath('sepa.png'),
+  unlimint_pix_brl: paymentMethodLogoPath('pix.png'),
+};
+
+const getPaymentMethodLogoByNormalizedId = (
+  normalizedId: string,
+): string | undefined => {
+  const exactMatch = PAYMENT_METHOD_LOGO_BY_ID[normalizedId];
+  if (exactMatch) {
+    return exactMatch;
+  }
+
+  if (normalizedId.includes('apple')) {
+    return paymentMethodLogoPath('apple-pay.png');
+  }
+  if (normalizedId.includes('google')) {
+    return paymentMethodLogoPath('google-pay.png');
+  }
+  if (normalizedId.includes('paypal')) {
+    return paymentMethodLogoPath('paypal.png');
+  }
+  if (normalizedId.includes('pix')) {
+    return paymentMethodLogoPath('pix.png');
+  }
+  if (normalizedId.includes('blik')) {
+    return paymentMethodLogoPath('blik.png');
+  }
+  if (normalizedId.includes('interac')) {
+    return paymentMethodLogoPath('interac.png');
+  }
+  if (normalizedId.includes('sepa')) {
+    return paymentMethodLogoPath('sepa.png');
+  }
+  if (
+    normalizedId.includes('card') ||
+    normalizedId.includes('visa') ||
+    normalizedId.includes('mastercard')
+  ) {
+    return paymentMethodLogoPath('card.png');
+  }
+  if (
+    normalizedId.includes('bank') ||
+    normalizedId.includes('open_banking') ||
+    normalizedId.includes('instapay') ||
+    normalizedId.includes('ach') ||
+    normalizedId.includes('wire')
+  ) {
+    return paymentMethodLogoPath('bank.png');
+  }
+
+  return undefined;
 };
 
 const getPaymentMethodLabel = (method: {
@@ -305,6 +394,14 @@ const getPaymentMethodLabel = (method: {
 
   const fallbackLabel = method.label?.trim();
   return fallbackLabel || formatPaymentMethodIdForLabel(method.id);
+};
+
+const getPaymentMethodLogo = (methodId: string): string | undefined => {
+  const normalizedId = normalizePaymentMethodId(methodId);
+  if (!normalizedId) {
+    return undefined;
+  }
+  return getPaymentMethodLogoByNormalizedId(normalizedId);
 };
 
 const lookupCountryCodeFromClientIp = async (): Promise<string | undefined> => {
@@ -467,6 +564,7 @@ export const PortfolioFiatLocaleUtils = {
   getFiatCurrencySelectLabel,
   getFiatCurrencySelectOptionFields,
   getPaymentMethodLabel,
+  getPaymentMethodLogo,
   getPreferredFiatCurrencyCode,
   getPreferredRegionCode,
   getUiLocale,
