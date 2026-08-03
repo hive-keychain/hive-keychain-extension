@@ -2871,6 +2871,12 @@ export const Portfolio = ({
       : showSwapQuoteRetry
         ? I18nUtils.getMessage('portfolio_quote_retry')
         : swapQuoteRefreshLabel;
+    const estimatedAmountErrorMessage =
+      !selectedQuote && statusMessage === 'portfolio_no_quote_available'
+        ? I18nUtils.getMessage('portfolio_no_quote_available')
+        : !selectedQuote && quoteResponse?.quotes.length === 0
+          ? I18nUtils.getMessage('portfolio_no_quotes')
+          : null;
 
     const handleSwapQuoteInputClick = () => {
       if (!hasAvailableQuotes) {
@@ -2887,7 +2893,10 @@ export const Portfolio = ({
     };
 
     const estimatedAmountInput = isQuoteAutoFetchSection(mode) ? (
-      <div className="custom-input portfolio-swap-quote-field">
+      <div
+        className={`custom-input portfolio-swap-quote-field${
+          estimatedAmountErrorMessage ? ' portfolio-amount-input--error' : ''
+        }`}>
         <div className="label">
           {I18nUtils.getMessage('portfolio_estimated_amount')}
         </div>
@@ -2910,9 +2919,16 @@ export const Portfolio = ({
           tabIndex={hasAvailableQuotes ? 0 : undefined}>
           <div className="portfolio-swap-quote-input__container input-container no-logo">
             <div
-              className="portfolio-swap-quote-input__value"
-              data-testid="portfolio-swap-quote-value">
-              {selectedQuote?.estimatedToAmount ?? ''}
+              className={`portfolio-swap-quote-input__value${
+                estimatedAmountErrorMessage
+                  ? ' portfolio-swap-quote-input__value--error'
+                  : ''
+              }`}
+              data-testid="portfolio-swap-quote-value"
+              role={estimatedAmountErrorMessage ? 'alert' : undefined}>
+              {selectedQuote?.estimatedToAmount ??
+                estimatedAmountErrorMessage ??
+                ''}
             </div>
             <div className="portfolio-swap-quote-input__adornments">
               {showSwapQuoteActionButton ? (
@@ -2972,10 +2988,23 @@ export const Portfolio = ({
           value={selectedQuote?.estimatedToAmount ?? ''}
           onChange={() => {}}
           disabled
+          classname={
+            estimatedAmountErrorMessage
+              ? 'portfolio-amount-input--error'
+              : undefined
+          }
           imageLogoUrl={selectedQuote?.providerLogoUrl ?? undefined}
           imageLogoAlt={selectedQuote?.providerName || selectedQuote?.provider}
           logoPosition={selectedQuote?.providerLogoUrl ? 'right' : undefined}
         />
+        {estimatedAmountErrorMessage ? (
+          <p
+            className="portfolio-field-error"
+            role="alert"
+            data-testid="portfolio-estimated-amount-error">
+            {estimatedAmountErrorMessage}
+          </p>
+        ) : null}
         {isSwapQuoteRequestPending && !selectedQuote ? (
           <div
             className="portfolio-swap-quote-input__spinner"
@@ -3263,11 +3292,6 @@ export const Portfolio = ({
             error={recipientFieldError}
           />
         )}
-        {quoteResponse?.quotes.length === 0 && (
-          <div className="portfolio-status">
-            {I18nUtils.getMessage('portfolio_no_quotes')}
-          </div>
-        )}
         {selectedQuoteId && (
           <ButtonComponent
             label="portfolio_continue"
@@ -3466,11 +3490,12 @@ export const Portfolio = ({
               {renderSectionContent()}
             </div>
 
-            {statusMessage && (
-              <div className="portfolio-status">
-                {I18nUtils.getMessage(statusMessage, statusMessageParams)}
-              </div>
-            )}
+            {statusMessage &&
+              statusMessage !== 'portfolio_no_quote_available' && (
+                <div className="portfolio-status">
+                  {I18nUtils.getMessage(statusMessage, statusMessageParams)}
+                </div>
+              )}
           </section>
         </main>
       </div>

@@ -1910,6 +1910,18 @@ describe('Portfolio', () => {
           '[data-testid="portfolio-swap-quote-retry-label"]',
         ),
       ).not.toBeNull();
+      const quoteValue = container.querySelector(
+        '[data-testid="portfolio-swap-quote-value"]',
+      );
+      expect(quoteValue?.textContent).toMatch(
+        /No quote available at the moment\.|portfolio_no_quote_available/,
+      );
+      expect(
+        quoteValue?.classList.contains(
+          'portfolio-swap-quote-input__value--error',
+        ),
+      ).toBe(true);
+      expect(container.querySelector('.portfolio-status')).toBeNull();
     });
 
     fireEvent.click(
