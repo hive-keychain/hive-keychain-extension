@@ -497,6 +497,7 @@ describe('PortfolioApiUtils', () => {
     expect(PortfolioApiUtils.resolvePortfolioAmountQuoteError(error)).toEqual({
       key: 'portfolio_swap_amount_out_of_range',
       params: ['2200', '110000'],
+      fillAmount: '2200',
     });
     expect(
       PortfolioApiUtils.resolvePortfolioAmountQuoteError(
@@ -515,6 +516,7 @@ describe('PortfolioApiUtils', () => {
     ).toEqual({
       key: 'portfolio_amount_out_of_range_fiat',
       params: ['908', '334910', 'TWD'],
+      fillAmount: '908',
     });
     expect(
       PortfolioApiUtils.resolvePortfolioAmountQuoteError(
@@ -533,6 +535,25 @@ describe('PortfolioApiUtils', () => {
     ).toEqual({
       key: 'portfolio_amount_below_minimum_fiat',
       params: ['908', 'TWD'],
+      fillAmount: '908',
+    });
+    expect(
+      PortfolioApiUtils.resolvePortfolioAmountQuoteError(
+        new PortfolioApiError({
+          code: 'SWAP_AMOUNT_OUT_OF_RANGE',
+          message: 'No quote available for the requested amount.',
+          details: {
+            mergedRange: {
+              min: '0.05',
+              max: null,
+            },
+          },
+        }),
+      ),
+    ).toEqual({
+      key: 'portfolio_amount_below_minimum',
+      params: ['0.05'],
+      fillAmount: '0.05',
     });
     expect(
       PortfolioApiUtils.resolvePortfolioAmountQuoteError(
@@ -549,6 +570,44 @@ describe('PortfolioApiUtils', () => {
         new Error('portfolio_load_error'),
       ),
     ).toBeNull();
+  });
+
+  it('allows filling the minimum amount only when balance covers it or balance check is skipped', () => {
+    expect(
+      PortfolioApiUtils.canFillPortfolioMinimumAmount({
+        fillAmount: '0.5',
+        availableBalance: '1',
+        skipBalanceCheck: false,
+      }),
+    ).toBe(true);
+    expect(
+      PortfolioApiUtils.canFillPortfolioMinimumAmount({
+        fillAmount: '2',
+        availableBalance: '1',
+        skipBalanceCheck: false,
+      }),
+    ).toBe(false);
+    expect(
+      PortfolioApiUtils.canFillPortfolioMinimumAmount({
+        fillAmount: '2',
+        availableBalance: '1',
+        skipBalanceCheck: true,
+      }),
+    ).toBe(true);
+    expect(
+      PortfolioApiUtils.canFillPortfolioMinimumAmount({
+        fillAmount: undefined,
+        availableBalance: '1',
+        skipBalanceCheck: false,
+      }),
+    ).toBe(false);
+    expect(
+      PortfolioApiUtils.canFillPortfolioMinimumAmount({
+        fillAmount: '0.1',
+        availableBalance: undefined,
+        skipBalanceCheck: false,
+      }),
+    ).toBe(false);
   });
 
   it('maps no quote available errors to the quote status message', () => {

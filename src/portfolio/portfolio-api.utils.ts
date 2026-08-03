@@ -103,6 +103,47 @@ export class PortfolioApiError extends Error {
 export type PortfolioLocalizedMessage = {
   key: string;
   params?: string[];
+  /** When set, the UI may offer clicking the message to fill this amount. */
+  fillAmount?: string;
+};
+
+const parseComparableAmount = (value: string): number =>
+  Number(value.replace(/,/g, '').trim());
+
+/**
+ * Whether the user can fill the form with a quote minimum amount.
+ * When PORTFOLIO_SKIP_BALANCE_CHECK is enabled, balance is not required.
+ * Otherwise, available balance must cover the minimum.
+ */
+export const canFillPortfolioMinimumAmount = ({
+  fillAmount,
+  availableBalance,
+  skipBalanceCheck = process.env.PORTFOLIO_SKIP_BALANCE_CHECK === 'true',
+}: {
+  fillAmount: string | undefined;
+  availableBalance: string | null | undefined;
+  skipBalanceCheck?: boolean;
+}): boolean => {
+  if (!fillAmount?.trim()) {
+    return false;
+  }
+
+  if (skipBalanceCheck) {
+    return true;
+  }
+
+  if (availableBalance == null || availableBalance.trim() === '') {
+    return false;
+  }
+
+  const minimum = parseComparableAmount(fillAmount);
+  const balance = parseComparableAmount(availableBalance);
+
+  return (
+    Number.isFinite(minimum) &&
+    Number.isFinite(balance) &&
+    balance >= minimum
+  );
 };
 
 const parsePortfolioApiErrorPayload = (payload: unknown): PortfolioApiError => {
@@ -146,12 +187,14 @@ export const resolvePortfolioAmountQuoteError = (
       return {
         key: 'portfolio_amount_out_of_range_fiat',
         params: [min, max, fiatCurrency],
+        fillAmount: min,
       };
     }
 
     return {
       key: 'portfolio_swap_amount_out_of_range',
       params: [min, max],
+      fillAmount: min,
     };
   }
 
@@ -160,12 +203,14 @@ export const resolvePortfolioAmountQuoteError = (
       return {
         key: 'portfolio_amount_below_minimum_fiat',
         params: [min, fiatCurrency],
+        fillAmount: min,
       };
     }
 
     return {
       key: 'portfolio_amount_below_minimum',
       params: [min],
+      fillAmount: min,
     };
   }
 
@@ -443,6 +488,7 @@ const listHistory = async (
 
 export const PortfolioApiUtils = {
   canExecutePortfolioQuote,
+  canFillPortfolioMinimumAmount,
   createExecution,
   getClientToken,
   getFeatures,

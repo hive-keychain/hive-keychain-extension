@@ -699,6 +699,25 @@
   color: var(--kc-color-accent);
   font-size: var(--kc-font-size-xs);
   line-height: 1.4;
+
+  &--action {
+    align-self: flex-start;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--kc-color-accent);
+    font: inherit;
+    font-size: var(--kc-font-size-xs);
+    line-height: 1.4;
+    text-align: left;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--kc-color-text-primary);
+    }
+  }
 }
 
 .portfolio-amount-input--error {

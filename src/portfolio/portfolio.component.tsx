@@ -1070,6 +1070,30 @@ export const Portfolio = ({
     );
   }, [amount, flowMode, selectedFromRow]);
 
+  const canFillMinimumAmount = useMemo(
+    () =>
+      PortfolioApiUtils.canFillPortfolioMinimumAmount({
+        fillAmount: amountQuoteError?.fillAmount,
+        availableBalance:
+          flowMode === 'swap' || flowMode === 'sell'
+            ? selectedFromRow?.balance
+            : undefined,
+        // Buy/sell fiat mins have no crypto balance to gate against.
+        skipBalanceCheck:
+          process.env.PORTFOLIO_SKIP_BALANCE_CHECK === 'true' ||
+          flowMode === 'buy',
+      }),
+    [amountQuoteError?.fillAmount, flowMode, selectedFromRow?.balance],
+  );
+
+  const handleFillMinimumAmount = () => {
+    if (!canFillMinimumAmount || !amountQuoteError?.fillAmount) {
+      return;
+    }
+
+    setAmount(amountQuoteError.fillAmount);
+  };
+
   const canRequestQuotes =
     isPositivePortfolioAmount(amount) &&
     Boolean(quoteToAddress) &&
@@ -3160,14 +3184,26 @@ export const Portfolio = ({
             ])}
           </p>
         )}
-        {amountQuoteError && (
-          <p className="portfolio-field-error" role="alert">
-            {I18nUtils.getMessage(
-              amountQuoteError.key,
-              amountQuoteError.params,
-            )}
-          </p>
-        )}
+        {amountQuoteError &&
+          (canFillMinimumAmount ? (
+            <button
+              type="button"
+              className="portfolio-field-error portfolio-field-error--action"
+              onClick={handleFillMinimumAmount}
+              data-testid="portfolio-fill-minimum-amount">
+              {I18nUtils.getMessage(
+                amountQuoteError.key,
+                amountQuoteError.params,
+              )}
+            </button>
+          ) : (
+            <p className="portfolio-field-error" role="alert">
+              {I18nUtils.getMessage(
+                amountQuoteError.key,
+                amountQuoteError.params,
+              )}
+            </p>
+          ))}
       </div>
     );
 

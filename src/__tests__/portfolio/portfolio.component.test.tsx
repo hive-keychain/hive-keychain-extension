@@ -1758,6 +1758,138 @@ describe('Portfolio', () => {
     jest.useRealTimers();
   });
 
+  it('fills the amount field when clicking the minimum amount error and balance covers it', async () => {
+    const originalSkipBalanceCheck = process.env.PORTFOLIO_SKIP_BALANCE_CHECK;
+    delete process.env.PORTFOLIO_SKIP_BALANCE_CHECK;
+
+    try {
+      (PortfolioApiUtils.getQuotes as jest.Mock).mockRejectedValue(
+        new PortfolioApiError({
+          code: 'SWAP_AMOUNT_OUT_OF_RANGE',
+          message: 'Amount below minimum.',
+          details: {
+            mergedRange: {
+              min: '0.5',
+              max: null,
+            },
+          },
+        }),
+      );
+
+      const { container, getByTestId } = await renderSwapPortfolio({
+        amount: '0.1',
+      });
+
+      await waitFor(() => {
+        expect(getByTestId('portfolio-fill-minimum-amount')).toBeTruthy();
+      });
+
+      fireEvent.click(getByTestId('portfolio-fill-minimum-amount'));
+
+      expect(
+        (
+          container.querySelector(
+            '.portfolio-flow .portfolio-amount-field input[type="number"]',
+          ) as HTMLInputElement
+        ).value,
+      ).toBe('0.5');
+    } finally {
+      if (originalSkipBalanceCheck === undefined) {
+        delete process.env.PORTFOLIO_SKIP_BALANCE_CHECK;
+      } else {
+        process.env.PORTFOLIO_SKIP_BALANCE_CHECK = originalSkipBalanceCheck;
+      }
+    }
+  });
+
+  it('fills the amount field when clicking a min-max range error and balance covers the min', async () => {
+    const originalSkipBalanceCheck = process.env.PORTFOLIO_SKIP_BALANCE_CHECK;
+    delete process.env.PORTFOLIO_SKIP_BALANCE_CHECK;
+
+    try {
+      (PortfolioApiUtils.getQuotes as jest.Mock).mockRejectedValue(
+        new PortfolioApiError({
+          code: 'SWAP_AMOUNT_OUT_OF_RANGE',
+          message: 'Amount out of range.',
+          details: {
+            mergedRange: {
+              min: '0.5',
+              max: '100',
+            },
+          },
+        }),
+      );
+
+      const { container, getByTestId } = await renderSwapPortfolio({
+        amount: '0.1',
+      });
+
+      await waitFor(() => {
+        expect(getByTestId('portfolio-fill-minimum-amount')).toBeTruthy();
+      });
+
+      fireEvent.click(getByTestId('portfolio-fill-minimum-amount'));
+
+      expect(
+        (
+          container.querySelector(
+            '.portfolio-flow .portfolio-amount-field input[type="number"]',
+          ) as HTMLInputElement
+        ).value,
+      ).toBe('0.5');
+    } finally {
+      if (originalSkipBalanceCheck === undefined) {
+        delete process.env.PORTFOLIO_SKIP_BALANCE_CHECK;
+      } else {
+        process.env.PORTFOLIO_SKIP_BALANCE_CHECK = originalSkipBalanceCheck;
+      }
+    }
+  });
+
+  it('does not make the minimum amount error clickable when balance is too low', async () => {
+    const originalSkipBalanceCheck = process.env.PORTFOLIO_SKIP_BALANCE_CHECK;
+    delete process.env.PORTFOLIO_SKIP_BALANCE_CHECK;
+
+    try {
+      (PortfolioApiUtils.getQuotes as jest.Mock).mockRejectedValue(
+        new PortfolioApiError({
+          code: 'SWAP_AMOUNT_OUT_OF_RANGE',
+          message: 'Amount below minimum.',
+          details: {
+            mergedRange: {
+              min: '2',
+              max: null,
+            },
+          },
+        }),
+      );
+
+      // Allow requesting a quote above balance only long enough to land the
+      // amount-below-min error would need the amount to be under balance; use 0.1
+      // with min 2 so quote is requested (0.1 <= balance 1) then min is unfillable.
+      const { queryByTestId } = await renderSwapPortfolio({ amount: '0.1' });
+
+      await waitFor(() => {
+        expect(PortfolioApiUtils.getQuotes).toHaveBeenCalledTimes(1);
+      });
+
+      await waitFor(() => {
+        expect(
+          document.body.textContent?.includes('portfolio_amount_below_minimum') ||
+            document.body.textContent?.includes('Minimum amount is'),
+        ).toBe(true);
+      });
+
+      expect(queryByTestId('portfolio-fill-minimum-amount')).toBeNull();
+    } finally {
+      if (originalSkipBalanceCheck === undefined) {
+        delete process.env.PORTFOLIO_SKIP_BALANCE_CHECK;
+      } else {
+        process.env.PORTFOLIO_SKIP_BALANCE_CHECK = originalSkipBalanceCheck;
+      }
+    }
+  });
+
   it('shows a retry button in the swap quote input when no quote is available', async () => {
     (PortfolioApiUtils.getQuotes as jest.Mock).mockRejectedValue(
       new PortfolioApiError({
