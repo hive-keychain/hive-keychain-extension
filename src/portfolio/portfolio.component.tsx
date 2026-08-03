@@ -2872,11 +2872,11 @@ export const Portfolio = ({
         ? I18nUtils.getMessage('portfolio_quote_retry')
         : swapQuoteRefreshLabel;
     const estimatedAmountErrorMessage =
-      !selectedQuote && statusMessage === 'portfolio_no_quote_available'
-        ? I18nUtils.getMessage('portfolio_no_quote_available')
-        : !selectedQuote && quoteResponse?.quotes.length === 0
-          ? I18nUtils.getMessage('portfolio_no_quotes')
-          : null;
+      !selectedQuote &&
+      (statusMessage === 'portfolio_no_quote_available' ||
+        quoteResponse?.quotes.length === 0)
+        ? I18nUtils.getMessage('portfolio_no_quote_available_short')
+        : null;
 
     const handleSwapQuoteInputClick = () => {
       if (!hasAvailableQuotes) {
@@ -2893,10 +2893,7 @@ export const Portfolio = ({
     };
 
     const estimatedAmountInput = isQuoteAutoFetchSection(mode) ? (
-      <div
-        className={`custom-input portfolio-swap-quote-field${
-          estimatedAmountErrorMessage ? ' portfolio-amount-input--error' : ''
-        }`}>
+      <div className="custom-input portfolio-swap-quote-field">
         <div className="label">
           {I18nUtils.getMessage('portfolio_estimated_amount')}
         </div>
@@ -2921,7 +2918,7 @@ export const Portfolio = ({
             <div
               className={`portfolio-swap-quote-input__value${
                 estimatedAmountErrorMessage
-                  ? ' portfolio-swap-quote-input__value--error'
+                  ? ' portfolio-swap-quote-input__value--error-text'
                   : ''
               }`}
               data-testid="portfolio-swap-quote-value"
@@ -2988,11 +2985,6 @@ export const Portfolio = ({
           value={selectedQuote?.estimatedToAmount ?? ''}
           onChange={() => {}}
           disabled
-          classname={
-            estimatedAmountErrorMessage
-              ? 'portfolio-amount-input--error'
-              : undefined
-          }
           imageLogoUrl={selectedQuote?.providerLogoUrl ?? undefined}
           imageLogoAlt={selectedQuote?.providerName || selectedQuote?.provider}
           logoPosition={selectedQuote?.providerLogoUrl ? 'right' : undefined}
@@ -3052,12 +3044,13 @@ export const Portfolio = ({
       );
     };
 
-    const renderEstimatedAmountSection = () => (
-      <>
-        {estimatedAmountInput}
-        {renderQuotesSection()}
-      </>
-    );
+    const canEditRecipient =
+      isPositivePortfolioAmount(amount) &&
+      hasRequiredQuoteAssets({
+        mode,
+        fromAssetId: resolvedFromAssetId,
+        toAssetId: resolvedToAssetId,
+      });
 
     const fiatCurrencyField =
       mode === 'buy' || mode === 'sell' ? (
@@ -3241,76 +3234,129 @@ export const Portfolio = ({
         {isQuoteAutoFetchSection(mode) &&
           accountOptions.length > 0 &&
           selectedAccount && (
-            <PortfolioOverlayListSelect
-              id="portfolio-flow-account"
-              label={I18nUtils.getMessage('portfolio_account')}
-              value={selectedAccountKey}
-              onChange={handleSelectedAccountChange}
-              options={overlayAccountOptions}
-              renderDisplay={renderAccountRow}
-              renderOption={renderAccountRow}
-            />
+            <div className="portfolio-flow-group">
+              <PortfolioOverlayListSelect
+                id="portfolio-flow-account"
+                label={I18nUtils.getMessage('portfolio_account')}
+                value={selectedAccountKey}
+                onChange={handleSelectedAccountChange}
+                options={overlayAccountOptions}
+                renderDisplay={renderAccountRow}
+                renderOption={renderAccountRow}
+              />
+            </div>
           )}
         {mode === 'buy' ? (
           <>
-            <div className="portfolio-flow-pair-row">
-              {amountField}
-              <div className="portfolio-flow-pair-row__secondary">
-                {fiatCurrencyField}
+            <div className="portfolio-flow-group">
+              <div className="portfolio-flow-pair-row portfolio-flow-pair-row--amount-first">
+                {amountField}
+                <div className="portfolio-flow-pair-row__secondary">
+                  {fiatCurrencyField}
+                </div>
               </div>
             </div>
-            {toAssetSelect}
-            {paymentMethodField}
-            {toAssetOptions.length > 0 && renderEstimatedAmountSection()}
+            <div className="portfolio-flow-group">
+              {toAssetOptions.length > 0 ? (
+                <div className="portfolio-flow-pair-row">
+                  {toAssetSelect}
+                  <div className="portfolio-flow-pair-row__secondary">
+                    {estimatedAmountInput}
+                  </div>
+                </div>
+              ) : (
+                toAssetSelect
+              )}
+              {paymentMethodField}
+              {renderQuotesSection()}
+            </div>
           </>
         ) : mode === 'sell' ? (
           <>
-            <div className="portfolio-flow-pair-row">
-              {amountField}
-              <div className="portfolio-flow-pair-row__secondary">
-                {fromAssetSelect}
+            <div className="portfolio-flow-group">
+              <div className="portfolio-flow-pair-row portfolio-flow-pair-row--amount-first">
+                {amountField}
+                <div className="portfolio-flow-pair-row__secondary">
+                  {fromAssetSelect}
+                </div>
               </div>
             </div>
-            {fiatCurrencyField}
-            {paymentMethodField}
-            {renderEstimatedAmountSection()}
+            <div className="portfolio-flow-group">
+              <div className="portfolio-flow-pair-row">
+                {estimatedAmountInput}
+                <div className="portfolio-flow-pair-row__secondary">
+                  {fiatCurrencyField}
+                </div>
+              </div>
+              {paymentMethodField}
+              {renderQuotesSection()}
+            </div>
           </>
         ) : (
           <>
-            {fromAssetSelect}
-            {amountField}
-            {toAssetSelect}
-            {toAssetOptions.length > 0 && renderEstimatedAmountSection()}
+            <div className="portfolio-flow-group">
+              <div className="portfolio-flow-pair-row">
+                {fromAssetSelect}
+                <div className="portfolio-flow-pair-row__secondary">
+                  {amountField}
+                </div>
+              </div>
+            </div>
+            <div className="portfolio-flow-group">
+              {toAssetOptions.length > 0 ? (
+                <div className="portfolio-flow-pair-row">
+                  {toAssetSelect}
+                  <div className="portfolio-flow-pair-row__secondary">
+                    {estimatedAmountInput}
+                  </div>
+                </div>
+              ) : (
+                toAssetSelect
+              )}
+              {renderQuotesSection()}
+            </div>
           </>
         )}
         {requiresRecipientInput && (
-          <InputComponent
-            label={recipientAddressLabelKey}
-            type={InputType.TEXT}
-            value={recipientAddress}
-            onChange={setRecipientAddress}
-            error={recipientFieldError}
-          />
+          <div className="portfolio-flow-group">
+            <InputComponent
+              label={recipientAddressLabelKey}
+              type={InputType.TEXT}
+              value={recipientAddress}
+              onChange={setRecipientAddress}
+              error={recipientFieldError}
+              disabled={!canEditRecipient}
+            />
+          </div>
         )}
-        {selectedQuoteId && (
-          <ButtonComponent
-            label="portfolio_continue"
-            type={ButtonType.ALTERNATIVE}
-            disabled={!canExecuteSelectedQuote || hasInsufficientFromBalance}
-            onClick={() => {
-              if (
-                selectedQuote &&
-                canExecuteSelectedQuote &&
-                !hasInsufficientFromBalance
-              ) {
-                void executeQuote(selectedQuote);
-              }
-            }}
-          />
-        )}
-        {selectedQuote && !canExecuteSelectedQuote && (
-          <div className="portfolio-status">
-            {I18nUtils.getMessage('portfolio_provider_execution_unavailable')}
+        {(selectedQuoteId ||
+          (selectedQuote && !canExecuteSelectedQuote)) && (
+          <div className="portfolio-flow-actions">
+            {selectedQuoteId && (
+              <ButtonComponent
+                label="portfolio_continue"
+                type={ButtonType.ALTERNATIVE}
+                disabled={
+                  !canExecuteSelectedQuote || hasInsufficientFromBalance
+                }
+                onClick={() => {
+                  if (
+                    selectedQuote &&
+                    canExecuteSelectedQuote &&
+                    !hasInsufficientFromBalance
+                  ) {
+                    void executeQuote(selectedQuote);
+                  }
+                }}
+              />
+            )}
+            {selectedQuote && !canExecuteSelectedQuote && (
+              <div className="portfolio-status">
+                {I18nUtils.getMessage(
+                  'portfolio_provider_execution_unavailable',
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -3411,9 +3457,22 @@ export const Portfolio = ({
   const pageTitleKey = pendingInAppConfirmation
     ? 'popup_html_confirm'
     : `portfolio_section_${section}`;
+  const pageDescriptionKey =
+    section === 'buy' ||
+    section === 'sell' ||
+    section === 'swap' ||
+    section === 'history'
+      ? `portfolio_page_description_${section}`
+      : 'portfolio_page_description';
   const isCompactPortfolioCard =
     Boolean(pendingInAppConfirmation) ||
     (section !== 'portfolio' && section !== 'history');
+  const showPageRefreshButton =
+    !pendingInAppConfirmation &&
+    (section === 'portfolio' || section === 'history');
+  const showCardHeader =
+    !pendingInAppConfirmation &&
+    (section === 'portfolio' || section === 'history');
 
   return (
     <div className="portfolio-app-shell" data-testid="portfolio-page">
@@ -3448,11 +3507,14 @@ export const Portfolio = ({
 
       <div className="portfolio-column">
         <main className="portfolio-main">
-          <section className="portfolio-page-frame">
+          <section
+            className={`portfolio-page-frame${
+              isCompactPortfolioCard ? ' portfolio-page-frame--compact' : ''
+            }`}>
             <header className="portfolio-page-header">
               <div className="portfolio-page-header__title">
                 <h1>{I18nUtils.getMessage(pageTitleKey)}</h1>
-                {!pendingInAppConfirmation && (
+                {showPageRefreshButton && (
                   <button
                     aria-label={I18nUtils.getMessage('portfolio_refresh')}
                     className="portfolio-refresh-button"
@@ -3472,7 +3534,7 @@ export const Portfolio = ({
                 )}
               </div>
               {!pendingInAppConfirmation && (
-                <p>{I18nUtils.getMessage('portfolio_page_description')}</p>
+                <p>{I18nUtils.getMessage(pageDescriptionKey)}</p>
               )}
             </header>
 
@@ -3480,7 +3542,7 @@ export const Portfolio = ({
               className={`portfolio-card${
                 isCompactPortfolioCard ? ' portfolio-card--compact' : ''
               }`}>
-              {!pendingInAppConfirmation && (
+              {showCardHeader && (
                 <div className="portfolio-card-header">
                   <h2>{I18nUtils.getMessage(pageTitleKey)}</h2>
                   {renderHistoryRefreshControl()}

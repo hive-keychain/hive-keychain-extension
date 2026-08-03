@@ -210,9 +210,14 @@ describe('Portfolio', () => {
     const { container, getByTestId } = render(
       <Portfolio
         hiveAccounts={[]}
-        evmAccounts={[]}
-        activeAccountType={ChainType.HIVE}
-        activeEvmAccountAddress={undefined}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
         activeHiveAccountName={undefined}
         navigateTo={jest.fn()}
         navigateToWithParams={jest.fn()}
@@ -251,8 +256,21 @@ describe('Portfolio', () => {
         .querySelector('[data-testid="portfolio-nav-buy"]')
         ?.classList.contains('active'),
     ).toBe(true);
-    expect(container.querySelector('.portfolio-flow')).not.toBeNull();
+    await waitFor(() => {
+      expect(container.querySelector('.portfolio-flow')).not.toBeNull();
+    });
     expect(window.location.hash).toBe('#buy');
+    expect(
+      container
+        .querySelector('.portfolio-card')
+        ?.classList.contains('portfolio-card--compact'),
+    ).toBe(true);
+    expect(
+      container
+        .querySelector('.portfolio-page-frame')
+        ?.classList.contains('portfolio-page-frame--compact'),
+    ).toBe(true);
+    expect(container.querySelector('.portfolio-card-header')).toBeNull();
   });
 
   it('restores the current section from the URL hash', async () => {
@@ -284,7 +302,7 @@ describe('Portfolio', () => {
       container
         .querySelector('.portfolio-card')
         ?.classList.contains('portfolio-card--compact'),
-    ).toBe(true);
+    ).toBe(false);
 
     clickPortfolioNav(container, 'history');
 
@@ -1914,14 +1932,20 @@ describe('Portfolio', () => {
         '[data-testid="portfolio-swap-quote-value"]',
       );
       expect(quoteValue?.textContent).toMatch(
-        /No quote available at the moment\.|portfolio_no_quote_available/,
+        /No quote available|portfolio_no_quote_available_short/,
       );
       expect(
         quoteValue?.classList.contains(
-          'portfolio-swap-quote-input__value--error',
+          'portfolio-swap-quote-input__value--error-text',
         ),
       ).toBe(true);
       expect(container.querySelector('.portfolio-status')).toBeNull();
+      expect(
+        container.querySelector('.portfolio-flow-pair-row'),
+      ).not.toBeNull();
+      expect(
+        container.querySelector('.portfolio-card-header'),
+      ).toBeNull();
     });
 
     fireEvent.click(

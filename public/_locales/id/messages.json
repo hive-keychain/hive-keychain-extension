@@ -4372,6 +4372,21 @@
   "portfolio_page_description": {
     "message": "View balances and access portfolio services without changing your active Keychain account."
   },
+  "portfolio_page_description_buy": {
+    "message": "Buy crypto with fiat through supported on-ramp providers."
+  },
+  "portfolio_page_description_sell": {
+    "message": "Sell crypto for fiat through supported off-ramp providers."
+  },
+  "portfolio_page_description_swap": {
+    "message": "Exchange tokens across supported chains without switching your active account."
+  },
+  "portfolio_page_description_history": {
+    "message": "Track buy, sell, and swap activity for your Keychain accounts."
+  },
+  "portfolio_no_quote_available_short": {
+    "message": "No quote available"
+  },
   "portfolio_account": {
     "message": "Account"
   },

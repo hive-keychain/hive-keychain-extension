@@ -301,6 +301,39 @@
   display: flex;
   flex-direction: column;
   gap: var(--kc-space-4);
+
+  &--compact {
+    align-items: center;
+
+    .portfolio-page-header {
+      width: 100%;
+      max-width: calc(38.75rem + 2 * var(--kc-space-4));
+      align-items: center;
+      text-align: center;
+
+      @media (min-width: 768px) {
+        max-width: calc(38.75rem + 2 * var(--kc-space-5));
+      }
+
+      &__title {
+        justify-content: center;
+      }
+
+      p {
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+
+    .portfolio-status {
+      width: 100%;
+      max-width: calc(38.75rem + 2 * var(--kc-space-4));
+
+      @media (min-width: 768px) {
+        max-width: calc(38.75rem + 2 * var(--kc-space-5));
+      }
+    }
+  }
 }
 
 .portfolio-page-header {
@@ -418,7 +451,7 @@
   }
 
   &--compact {
-    align-self: flex-start;
+    align-self: center;
     width: 100%;
     max-width: calc(38.75rem + 2 * var(--kc-space-4));
 
@@ -654,7 +687,7 @@
 .portfolio-flow {
   display: flex;
   flex-direction: column;
-  gap: var(--kc-space-3);
+  gap: var(--kc-space-5);
   width: 100%;
   min-width: 0;
 
@@ -667,23 +700,59 @@
   }
 }
 
+.portfolio-flow-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kc-space-2);
+  width: 100%;
+  min-width: 0;
+}
+
+.portfolio-flow-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kc-space-2);
+  width: 100%;
+  margin-top: var(--kc-space-1);
+  padding-top: var(--kc-space-3);
+  border-top: 1px solid var(--kc-color-border-subtle);
+}
+
 .portfolio-flow-pair-row {
   display: grid;
-  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.5fr);
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
   gap: var(--kc-space-3);
   align-items: start;
   width: 100%;
 
+  &--amount-first {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.35fr);
+  }
+
   .portfolio-amount-field,
+  .portfolio-swap-quote-field,
+  .portfolio-overlay-select,
+  .custom-select-container,
   &__secondary {
     min-width: 0;
   }
 
   &__secondary {
     .custom-select-container,
+    .custom-input,
     .input-container,
-    .portfolio-overlay-select {
+    .portfolio-overlay-select,
+    .portfolio-swap-quote-field,
+    .portfolio-amount-field {
       width: 100%;
+    }
+  }
+
+  @media (max-width: 680px) {
+    grid-template-columns: 1fr;
+
+    &--amount-first {
+      grid-template-columns: 1fr;
     }
   }
 }
@@ -779,12 +848,8 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 
-    &--error {
+    &--error-text {
       color: var(--kc-color-accent);
-      font-size: var(--kc-font-size-xs);
-      line-height: 1.3;
-      white-space: normal;
-      text-overflow: unset;
     }
   }
 
