@@ -175,6 +175,10 @@ export enum SVGIcons {
 
   NOTIFICATIONS_ADD = 'notifications/add',
   PORTOLIO = 'portfolio/portfolio',
+  PORTFOLIO_BUY = 'portfolio/buy',
+  PORTFOLIO_SELL = 'portfolio/sell',
+  PORTFOLIO_SWAP = 'portfolio/swap',
+  PORTFOLIO_HISTORY = 'portfolio/history',
 
   RESOURCE_ITEM_MANA = 'resources/mana',
   RESOURCE_ITEM_RC = 'resources/rc',

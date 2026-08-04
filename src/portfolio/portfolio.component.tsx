@@ -96,12 +96,10 @@ import { PortfolioConfirmationStepComponent } from 'src/portfolio/ui/portfolio-c
 import { PortfolioHistoryCard } from 'src/portfolio/ui/portfolio-history-card.component';
 import { PortfolioHistoryDisplayUtils } from 'src/portfolio/ui/portfolio-history-display.utils';
 import { PortfolioLogoImage } from 'src/portfolio/ui/portfolio-logo-image.component';
-import { PortfolioNavIcon } from 'src/portfolio/ui/portfolio-nav-icon.enum';
 import { PortfolioToAssetFilter } from 'src/portfolio/ui/portfolio-to-asset-filter.component';
 import { PortfolioOverlayListSelect } from 'src/portfolio/ui/portfolio-overlay-list-select.component';
 import { PortfolioQuoteCard } from 'src/portfolio/ui/portfolio-quote-card.component';
 import { PortfolioQuoteDisplayUtils } from 'src/portfolio/ui/portfolio-quote-display.utils';
-import { PortfolioSidebarNavIcon } from 'src/portfolio/ui/portfolio-sidebar-nav-icon.component';
 import {
   canonicalAssetToTokenIdentityProps,
   portfolioRowToTokenIdentityProps,
@@ -178,12 +176,12 @@ type PortfolioRow = {
 
 type PortfolioNavSection = Exclude<PortfolioSection, 'bridge'>;
 
-const sectionIcons: Record<PortfolioNavSection, PortfolioNavIcon> = {
-  portfolio: PortfolioNavIcon.PORTFOLIO,
-  buy: PortfolioNavIcon.BUY,
-  sell: PortfolioNavIcon.SELL,
-  swap: PortfolioNavIcon.SWAP,
-  history: PortfolioNavIcon.HISTORY,
+const sectionIcons: Record<PortfolioNavSection, SVGIcons> = {
+  portfolio: SVGIcons.PORTOLIO,
+  buy: SVGIcons.PORTFOLIO_BUY,
+  sell: SVGIcons.PORTFOLIO_SELL,
+  swap: SVGIcons.PORTFOLIO_SWAP,
+  history: SVGIcons.PORTFOLIO_HISTORY,
 };
 
 const resolvePortfolioSignableTransaction = (
@@ -2698,7 +2696,7 @@ export const Portfolio = ({
           onClick={() => openFlowForRow(row, action)}
           title={I18nUtils.getMessage(`portfolio_section_${action}`)}
           type="button">
-          <PortfolioSidebarNavIcon
+          <SVGIcon
             icon={sectionIcons[action as PortfolioNavSection]}
             className="portfolio-row-action-icon"
           />
@@ -3502,7 +3500,7 @@ export const Portfolio = ({
               onClick={() => setSection(item)}
               title={I18nUtils.getMessage(`portfolio_section_${item}`)}
               type="button">
-              <PortfolioSidebarNavIcon
+              <SVGIcon
                 icon={sectionIcons[item as PortfolioNavSection]}
                 className="portfolio-sidebar-nav-icon"
               />
