@@ -248,6 +248,9 @@ describe('Portfolio', () => {
         .querySelector('.portfolio-card')
         ?.classList.contains('portfolio-card--compact'),
     ).toBe(false);
+    expect(container.querySelector('.portfolio-card-header')).toBeNull();
+    expect(container.querySelector('.portfolio-page-header h1')).not.toBeNull();
+    expect(container.querySelector('.portfolio-refresh-button')).not.toBeNull();
 
     clickPortfolioNav(container, 'buy');
 
@@ -271,6 +274,8 @@ describe('Portfolio', () => {
         ?.classList.contains('portfolio-page-frame--compact'),
     ).toBe(true);
     expect(container.querySelector('.portfolio-card-header')).toBeNull();
+    expect(container.querySelector('.portfolio-page-header h1')).not.toBeNull();
+    expect(container.querySelector('.portfolio-refresh-button')).toBeNull();
   });
 
   it('restores the current section from the URL hash', async () => {
@@ -664,7 +669,7 @@ describe('Portfolio', () => {
     expect(container.querySelector('#portfolio-flow-account')).toBeNull();
   });
 
-  it('refreshes portfolio data when the global refresh button is clicked', async () => {
+  it('refreshes portfolio data when the portfolio refresh button is clicked', async () => {
     jest
       .spyOn(AccountUtils, 'getExtendedAccounts')
       .mockResolvedValue([{ name: 'alice' } as never]);

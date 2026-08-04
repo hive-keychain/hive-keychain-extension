@@ -2603,12 +2603,12 @@ export const Portfolio = ({
             quote.fromAsset?.assetId,
             quote.toAsset?.assetId,
           );
+          setStatusMessage('portfolio_provider_opened');
         }
         setHistory(
           await PortfolioApiUtils.listHistory(1, historyAddressFilters),
         );
         setSection('history');
-        setStatusMessage('portfolio_provider_opened');
         return;
       }
 
@@ -3383,31 +3383,52 @@ export const Portfolio = ({
     );
   };
 
-  const renderHistory = () =>
-    visibleHistory.length === 0 ? (
-      <div className="portfolio-empty">
-        {I18nUtils.getMessage('portfolio_no_history')}
-      </div>
-    ) : (
-      <div className="portfolio-history-list">
-        {visibleHistory.map((item) => (
-          <PortfolioHistoryCard
-            key={item.id}
-            item={item}
-            fromAsset={PortfolioHistoryDisplayUtils.resolvePortfolioAssetById(
-              item.fromAssetId,
-              assets,
-            )}
-            toAsset={PortfolioHistoryDisplayUtils.resolvePortfolioAssetById(
-              item.toAssetId,
-              assets,
-            )}
-            chains={toAssetEvmChains}
-            portfolioChains={portfolioChains}
-          />
-        ))}
-      </div>
+  const renderHistory = () => {
+    const historyRefreshControl = renderHistoryRefreshControl();
+    const historyVisibilityToggle = renderHistoryVisibilityToggle();
+    const historyToolbar =
+      historyRefreshControl || historyVisibilityToggle ? (
+        <div className="portfolio-history-toolbar">
+          {historyRefreshControl}
+          {historyVisibilityToggle}
+        </div>
+      ) : null;
+
+    if (visibleHistory.length === 0) {
+      return (
+        <>
+          {historyToolbar}
+          <div className="portfolio-empty">
+            {I18nUtils.getMessage('portfolio_no_history')}
+          </div>
+        </>
+      );
+    }
+
+    return (
+      <>
+        {historyToolbar}
+        <div className="portfolio-history-list">
+          {visibleHistory.map((item) => (
+            <PortfolioHistoryCard
+              key={item.id}
+              item={item}
+              fromAsset={PortfolioHistoryDisplayUtils.resolvePortfolioAssetById(
+                item.fromAssetId,
+                assets,
+              )}
+              toAsset={PortfolioHistoryDisplayUtils.resolvePortfolioAssetById(
+                item.toAssetId,
+                assets,
+              )}
+              chains={toAssetEvmChains}
+              portfolioChains={portfolioChains}
+            />
+          ))}
+        </div>
+      </>
     );
+  };
 
   const renderSectionContent = () => {
     const isLoadingPortfolioWithRows =
@@ -3472,12 +3493,8 @@ export const Portfolio = ({
   const isCompactPortfolioCard =
     Boolean(pendingInAppConfirmation) ||
     (section !== 'portfolio' && section !== 'history');
-  const showPageRefreshButton =
-    !pendingInAppConfirmation &&
-    (section === 'portfolio' || section === 'history');
-  const showCardHeader =
-    !pendingInAppConfirmation &&
-    (section === 'portfolio' || section === 'history');
+  const showPortfolioRefreshButton =
+    !pendingInAppConfirmation && section === 'portfolio';
 
   return (
     <div className="portfolio-app-shell" data-testid="portfolio-page">
@@ -3516,53 +3533,42 @@ export const Portfolio = ({
             className={`portfolio-page-frame${
               isCompactPortfolioCard ? ' portfolio-page-frame--compact' : ''
             }`}>
-            <header className="portfolio-page-header">
-              <div className="portfolio-page-header__title">
-                <h1>{I18nUtils.getMessage(pageTitleKey)}</h1>
-                {showPageRefreshButton && (
-                  <button
-                    aria-label={I18nUtils.getMessage('portfolio_refresh')}
-                    className="portfolio-refresh-button"
-                    disabled={
-                      isPortfolioLoading || isHistoryLoading || isRefreshing
-                    }
-                    onClick={() => void handleRefreshPortfolioData()}
-                    title={I18nUtils.getMessage('portfolio_refresh')}
-                    type="button">
-                    <SVGIcon
-                      className={`portfolio-refresh-icon ${
-                        isRefreshing || isPortfolioLoading ? 'rotate' : ''
-                      }`}
-                      icon={SVGIcons.SWAPS_HISTORY_REFRESH}
-                    />
-                  </button>
-                )}
-              </div>
-              {!pendingInAppConfirmation && (
-                <p>{I18nUtils.getMessage(pageDescriptionKey)}</p>
-              )}
-            </header>
-
             <div
               className={`portfolio-card${
                 isCompactPortfolioCard ? ' portfolio-card--compact' : ''
               }`}>
-              {showCardHeader && (
-                <div className="portfolio-card-header">
-                  <h2>{I18nUtils.getMessage(pageTitleKey)}</h2>
-                  {renderHistoryRefreshControl()}
-                  {renderHistoryVisibilityToggle()}
+              <header className="portfolio-page-header">
+                <div className="portfolio-page-header__title">
+                  <h1>{I18nUtils.getMessage(pageTitleKey)}</h1>
+                  {showPortfolioRefreshButton && (
+                    <button
+                      aria-label={I18nUtils.getMessage('portfolio_refresh')}
+                      className="portfolio-refresh-button"
+                      disabled={isPortfolioLoading || isRefreshing}
+                      onClick={() => void handleRefreshPortfolioData()}
+                      title={I18nUtils.getMessage('portfolio_refresh')}
+                      type="button">
+                      <SVGIcon
+                        className={`portfolio-refresh-icon ${
+                          isRefreshing || isPortfolioLoading ? 'rotate' : ''
+                        }`}
+                        icon={SVGIcons.SWAPS_HISTORY_REFRESH}
+                      />
+                    </button>
+                  )}
                 </div>
-              )}
+                {!pendingInAppConfirmation && (
+                  <p>{I18nUtils.getMessage(pageDescriptionKey)}</p>
+                )}
+              </header>
               {renderSectionContent()}
+              {statusMessage &&
+                statusMessage !== 'portfolio_no_quote_available' && (
+                  <div className="portfolio-status" role="status">
+                    {I18nUtils.getMessage(statusMessage, statusMessageParams)}
+                  </div>
+                )}
             </div>
-
-            {statusMessage &&
-              statusMessage !== 'portfolio_no_quote_available' && (
-                <div className="portfolio-status">
-                  {I18nUtils.getMessage(statusMessage, statusMessageParams)}
-                </div>
-              )}
           </section>
         </main>
       </div>
