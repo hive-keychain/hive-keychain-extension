@@ -20,8 +20,8 @@
   &__shell {
     position: relative;
     isolation: isolate;
-    min-height: 2.75rem;
-    height: 2.75rem;
+    min-height: 3.25rem;
+    height: 3.25rem;
     overflow: visible;
     border: 1px solid var(--kc-color-border-default);
     border-radius: var(--kc-radius-md);
@@ -57,7 +57,7 @@
     box-sizing: border-box;
     width: 100%;
     height: 100%;
-    min-height: 2.75rem;
+    min-height: 3.25rem;
     margin: 0;
     padding: 0;
     border: none;
@@ -142,6 +142,87 @@
     padding: var(--kc-space-2);
     border-bottom: 1px solid var(--kc-color-border-default);
     background: var(--kc-color-bg-raised);
+  }
+
+  &__filter {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 2.5rem;
+    margin-bottom: var(--kc-space-2);
+    border: 1px solid var(--kc-color-border-default);
+    border-radius: var(--kc-radius-md);
+    background: var(--kc-color-bg-elevated);
+
+    &:focus-within {
+      border-color: var(--kc-color-accent);
+      box-shadow: 0 0 0 1px var(--kc-color-accent-muted);
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    input {
+      flex: 1 1 auto;
+      min-width: 0;
+      height: 2.5rem;
+      margin: 0;
+      padding: 0 var(--kc-space-2);
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: var(--kc-font-size-sm);
+      line-height: 1.5;
+      color: var(--kc-color-text-primary);
+
+      &::placeholder {
+        color: var(--kc-color-text-muted);
+      }
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+
+  &__filter-icon {
+    flex: 0 0 auto;
+    margin-left: var(--kc-space-2);
+    width: 1rem;
+    height: 1rem;
+    color: var(--kc-color-text-muted);
+    pointer-events: none;
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  &__filter-clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-right: var(--kc-space-1);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--kc-color-text-muted);
+    cursor: pointer;
+
+    .svg-icon {
+      width: 0.875rem;
+      height: 0.875rem;
+
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
   }
 
   &__panel-footer {

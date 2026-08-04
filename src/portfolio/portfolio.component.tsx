@@ -1,6 +1,5 @@
 import { ConfirmationPageEvmFields } from '@common-ui/confirmation-page/confirmation-page.interface';
 import {
-  ComplexeCustomSelect,
   OptionItem,
 } from '@common-ui/custom-select/custom-select.component';
 import { TransactionOptions } from '@interfaces/keys.interface';
@@ -1250,9 +1249,14 @@ export const Portfolio = ({
     [setupEvmChains],
   );
 
-  const selectedNetworkOption =
-    networkSelectOptions.find((option) => option.value === selectedNetwork) ??
-    getAllNetworksOption();
+  const overlayNetworkOptions = useMemo(
+    () =>
+      networkSelectOptions.map((option) => ({
+        value: option.value,
+        label: option.label,
+      })),
+    [networkSelectOptions],
+  );
 
   const fiatCurrencySelectOptions = useMemo<OptionItem[]>(() => {
     const toFiatCurrencyOption = (currency: string): OptionItem => {
@@ -1272,6 +1276,15 @@ export const Portfolio = ({
 
     return fiatCurrency ? [toFiatCurrencyOption(fiatCurrency)] : [];
   }, [fiatCurrency, fiatRampOptions]);
+
+  const overlayFiatCurrencyOptions = useMemo(
+    () =>
+      fiatCurrencySelectOptions.map((option) => ({
+        value: option.value,
+        label: option.label,
+      })),
+    [fiatCurrencySelectOptions],
+  );
 
   const fallbackFiatCurrencyOption: OptionItem = {
     key: fiatCurrency,
@@ -1298,6 +1311,15 @@ export const Portfolio = ({
 
     return [getOptionalPaymentMethodOption(), ...methods];
   }, [fiatRampOptions]);
+
+  const overlayPaymentMethodOptions = useMemo(
+    () =>
+      paymentMethodSelectOptions.map((option) => ({
+        value: option.value,
+        label: option.label,
+      })),
+    [paymentMethodSelectOptions],
+  );
 
   const selectedPaymentMethodOption =
     paymentMethodSelectOptions.find(
@@ -2687,6 +2709,88 @@ export const Portfolio = ({
     );
   };
 
+  const renderNetworkOption = (networkValue: string) => {
+    const option = networkSelectOptions.find(
+      (item) => item.value === networkValue,
+    );
+    if (!option) {
+      return '—';
+    }
+
+    return (
+      <div className="portfolio-network-row">
+        {option.img ? (
+          <PortfolioLogoImage
+            className="portfolio-network-row__logo"
+            src={option.img}
+            fallbackClassName="portfolio-network-row__logo-fallback"
+            fallbackLetter={option.label}
+            colorKey={option.label}
+          />
+        ) : null}
+        <span className="portfolio-network-row__label">{option.label}</span>
+      </div>
+    );
+  };
+
+  const renderFiatCurrencyOption = (currencyValue: string) => {
+    const option =
+      fiatCurrencySelectOptions.find((item) => item.value === currencyValue) ??
+      (currencyValue === selectedFiatCurrencyOption.value
+        ? selectedFiatCurrencyOption
+        : undefined);
+    if (!option) {
+      return currencyValue || '—';
+    }
+
+    return (
+      <div className="portfolio-fiat-option">
+        <span className="portfolio-fiat-option__label">{option.label}</span>
+        {option.subLabel ? (
+          <span className="portfolio-fiat-option__code">{option.subLabel}</span>
+        ) : null}
+      </div>
+    );
+  };
+
+  const renderFiatCurrencyDisplay = (currencyValue: string) => {
+    const option =
+      fiatCurrencySelectOptions.find((item) => item.value === currencyValue) ??
+      (currencyValue === selectedFiatCurrencyOption.value
+        ? selectedFiatCurrencyOption
+        : undefined);
+    const label = option?.label ?? currencyValue ?? '—';
+
+    return <span className="portfolio-fiat-option__label">{label}</span>;
+  };
+
+  const renderPaymentMethodOption = (methodValue: string) => {
+    const option =
+      paymentMethodSelectOptions.find((item) => item.value === methodValue) ??
+      (methodValue === selectedPaymentMethodOption.value
+        ? selectedPaymentMethodOption
+        : undefined);
+    if (!option) {
+      return methodValue || '—';
+    }
+
+    return (
+      <div className="portfolio-payment-method-option">
+        {option.img ? (
+          <PortfolioLogoImage
+            className="portfolio-payment-method-option__logo"
+            src={option.img}
+            fallbackLetter={option.label}
+            colorKey={option.label}
+          />
+        ) : null}
+        <span className="portfolio-payment-method-option__label">
+          {option.label}
+        </span>
+      </div>
+    );
+  };
+
   const renderRowActions = (row: PortfolioRow) => (
     <div className="portfolio-row-actions">
       {getRowActions().map((action) => (
@@ -2721,11 +2825,15 @@ export const Portfolio = ({
             />
             {selectedAccount.type === ChainType.EVM &&
               setupEvmChains.length > 0 && (
-                <ComplexeCustomSelect
-                  label="portfolio_network"
-                  options={networkSelectOptions}
-                  selectedItem={selectedNetworkOption}
-                  setSelectedItem={(item) => setSelectedNetwork(item.value)}
+                <PortfolioOverlayListSelect
+                  id="portfolio-network"
+                  className="portfolio-header-row__network"
+                  label={I18nUtils.getMessage('portfolio_network')}
+                  value={selectedNetwork}
+                  onChange={setSelectedNetwork}
+                  options={overlayNetworkOptions}
+                  renderDisplay={renderNetworkOption}
+                  renderOption={renderNetworkOption}
                 />
               )}
           </div>
@@ -3056,20 +3164,20 @@ export const Portfolio = ({
 
     const fiatCurrencyField =
       mode === 'buy' || mode === 'sell' ? (
-        fiatCurrencySelectOptions.length > 0 ? (
-          <ComplexeCustomSelect
-            label="portfolio_fiat_currency"
-            options={fiatCurrencySelectOptions}
-            selectedItem={selectedFiatCurrencyOption}
-            setSelectedItem={(item) => {
+        overlayFiatCurrencyOptions.length > 0 ? (
+          <PortfolioOverlayListSelect
+            id="portfolio-fiat-currency"
+            label={I18nUtils.getMessage('portfolio_fiat_currency')}
+            options={overlayFiatCurrencyOptions}
+            value={selectedFiatCurrencyOption.value}
+            onChange={(next) => {
               hasUserSelectedFiatRef.current = true;
-              setFiatCurrency(item.value);
+              setFiatCurrency(next);
             }}
+            renderDisplay={renderFiatCurrencyDisplay}
+            renderOption={renderFiatCurrencyOption}
             filterable
-            showOverlay
-            additionalClassname={
-              isFiatRampOptionsLoading ? 'disabled' : undefined
-            }
+            disabled={isFiatRampOptionsLoading}
           />
         ) : (
           <InputComponent
@@ -3086,18 +3194,17 @@ export const Portfolio = ({
 
     const paymentMethodField =
       mode === 'buy' || mode === 'sell' ? (
-        paymentMethodSelectOptions.length > 1 ? (
-          <ComplexeCustomSelect
-            label="portfolio_payment_method"
-            options={paymentMethodSelectOptions}
-            selectedItem={selectedPaymentMethodOption}
-            setSelectedItem={(item) => setPaymentMethod(item.value)}
-            additionalClassname={[
-              'portfolio-payment-method-select',
-              isFiatRampOptionsLoading ? 'disabled' : '',
-            ]
-              .filter(Boolean)
-              .join(' ')}
+        overlayPaymentMethodOptions.length > 1 ? (
+          <PortfolioOverlayListSelect
+            id="portfolio-payment-method"
+            className="portfolio-payment-method-select"
+            label={I18nUtils.getMessage('portfolio_payment_method')}
+            options={overlayPaymentMethodOptions}
+            value={selectedPaymentMethodOption.value}
+            onChange={setPaymentMethod}
+            renderDisplay={renderPaymentMethodOption}
+            renderOption={renderPaymentMethodOption}
+            disabled={isFiatRampOptionsLoading}
           />
         ) : (
           <InputComponent

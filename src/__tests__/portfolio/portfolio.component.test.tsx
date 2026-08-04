@@ -2302,11 +2302,11 @@ describe('Portfolio', () => {
 
     const { container } = render(
       <Portfolio
-        hiveAccounts={[]}
+        hiveAccounts={[{ name: 'alice' } as never]}
         evmAccounts={[]}
         activeAccountType={ChainType.HIVE}
         activeEvmAccountAddress={undefined}
-        activeHiveAccountName={undefined}
+        activeHiveAccountName="alice"
         navigateTo={jest.fn()}
         navigateToWithParams={jest.fn()}
         setErrorMessage={jest.fn()}
@@ -2328,6 +2328,14 @@ describe('Portfolio', () => {
         mode: 'buy',
         direction: 'to',
       });
+      expect(container.querySelector('#portfolio-fiat-currency')).not.toBeNull();
+    });
+
+    fireEvent.click(
+      container.querySelector('#portfolio-fiat-currency') as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
       expect(container.textContent).toMatch(/🇺🇸|🇪🇺|🇹🇼/);
       expect(container.textContent).toMatch(/US Dollar|Euro|New Taiwan Dollar/);
       expect(
@@ -2399,11 +2407,11 @@ describe('Portfolio', () => {
   it('resets buy/sell form fields when switching sections', async () => {
     const { container } = render(
       <Portfolio
-        hiveAccounts={[]}
+        hiveAccounts={[{ name: 'alice' } as never]}
         evmAccounts={[]}
         activeAccountType={ChainType.HIVE}
         activeEvmAccountAddress={undefined}
-        activeHiveAccountName={undefined}
+        activeHiveAccountName="alice"
         navigateTo={jest.fn()}
         navigateToWithParams={jest.fn()}
         setErrorMessage={jest.fn()}

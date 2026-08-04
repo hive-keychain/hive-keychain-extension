@@ -8,6 +8,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { I18nUtils } from 'src/utils/i18n.utils';
 
 import './portfolio-overlay-list-select.component.scss';
 
@@ -40,6 +43,7 @@ export type PortfolioOverlayListSelectProps = {
   renderDisplay?: (value: string) => ReactNode;
   listHeader?: ReactNode;
   listFooter?: ReactNode;
+  filterable?: boolean;
   disabled?: boolean;
   error?: string;
   hint?: string;
@@ -56,6 +60,7 @@ export const PortfolioOverlayListSelect = ({
   renderDisplay,
   listHeader,
   listFooter,
+  filterable,
   disabled,
   error,
   hint,
@@ -68,29 +73,50 @@ export const PortfolioOverlayListSelect = ({
   const listboxId = `${fieldId}-listbox`;
   const errorId = `${fieldId}-error`;
   const hintId = `${fieldId}-hint`;
+  const filterId = `${fieldId}-filter`;
 
   const [open, setOpen] = useState(false);
+  const [textFilter, setTextFilter] = useState('');
   const [scrollTop, setScrollTop] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const filterInputRef = useRef<HTMLInputElement>(null);
 
-  const selectedIndex = useMemo(
-    () => options.findIndex((option) => option.value === value),
+  const selectedOption = useMemo(
+    () => options.find((option) => option.value === value),
     [options, value],
   );
-  const selectedLabel = options[selectedIndex]?.label ?? value;
+  const selectedLabel = selectedOption?.label ?? value;
   const displayFn = renderDisplay ?? renderOption;
-  const shouldVirtualize = options.length > VIRTUALIZE_THRESHOLD;
+
+  const filteredOptions = useMemo(() => {
+    const normalizedFilter = textFilter.trim().toLowerCase();
+    if (!filterable || !normalizedFilter) {
+      return options;
+    }
+
+    return options.filter((option) => {
+      const labelMatch = option.label.toLowerCase().includes(normalizedFilter);
+      const valueMatch = option.value.toLowerCase().includes(normalizedFilter);
+      return labelMatch || valueMatch;
+    });
+  }, [filterable, options, textFilter]);
+
+  const selectedFilteredIndex = useMemo(
+    () => filteredOptions.findIndex((option) => option.value === value),
+    [filteredOptions, value],
+  );
+  const shouldVirtualize = filteredOptions.length > VIRTUALIZE_THRESHOLD;
 
   const [highlightIndex, setHighlightIndex] = useState(() =>
-    selectedIndex >= 0 ? selectedIndex : 0,
+    Math.max(selectedFilteredIndex, 0),
   );
 
   const virtualWindow = useMemo(() => {
     if (!shouldVirtualize) {
       return {
         startIndex: 0,
-        endIndex: options.length,
+        endIndex: filteredOptions.length,
         paddingTop: 0,
         paddingBottom: 0,
       };
@@ -103,30 +129,59 @@ export const PortfolioOverlayListSelect = ({
     );
     const visibleCount =
       Math.ceil(listHeight / OPTION_HEIGHT_PX) + VIRTUAL_OVERSCAN * 2;
-    const endIndex = Math.min(options.length, startIndex + visibleCount);
+    const endIndex = Math.min(
+      filteredOptions.length,
+      startIndex + visibleCount,
+    );
 
     return {
       startIndex,
       endIndex,
       paddingTop: startIndex * OPTION_HEIGHT_PX,
-      paddingBottom: Math.max(0, (options.length - endIndex) * OPTION_HEIGHT_PX),
+      paddingBottom: Math.max(
+        0,
+        (filteredOptions.length - endIndex) * OPTION_HEIGHT_PX,
+      ),
     };
-  }, [options.length, scrollTop, shouldVirtualize, open]);
+  }, [filteredOptions.length, scrollTop, shouldVirtualize, open]);
 
   const visibleOptions = useMemo(
-    () => options.slice(virtualWindow.startIndex, virtualWindow.endIndex),
-    [options, virtualWindow.endIndex, virtualWindow.startIndex],
+    () =>
+      filteredOptions.slice(virtualWindow.startIndex, virtualWindow.endIndex),
+    [filteredOptions, virtualWindow.endIndex, virtualWindow.startIndex],
   );
 
   useEffect(() => {
-    if (open) {
-      setHighlightIndex(selectedIndex >= 0 ? selectedIndex : 0);
-      setScrollTop(0);
-      if (listRef.current) {
-        listRef.current.scrollTop = 0;
-      }
+    if (!open) {
+      setTextFilter('');
+      return;
     }
-  }, [open, selectedIndex]);
+
+    const selectedIndexInFiltered = filteredOptions.findIndex(
+      (option) => option.value === value,
+    );
+    setHighlightIndex(selectedIndexInFiltered >= 0 ? selectedIndexInFiltered : 0);
+    setScrollTop(0);
+    if (listRef.current) {
+      listRef.current.scrollTop = 0;
+    }
+    if (filterable) {
+      filterInputRef.current?.focus();
+    }
+    // Reset panel state only when opening.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  useEffect(() => {
+    if (!open || !filterable) {
+      return;
+    }
+    setHighlightIndex(0);
+    setScrollTop(0);
+    if (listRef.current) {
+      listRef.current.scrollTop = 0;
+    }
+  }, [textFilter, open, filterable]);
 
   useEffect(() => {
     if (!open) {
@@ -153,15 +208,15 @@ export const PortfolioOverlayListSelect = ({
 
   const moveHighlight = useCallback(
     (delta: number) => {
-      if (options.length === 0) {
+      if (filteredOptions.length === 0) {
         return;
       }
       setHighlightIndex((current) => {
         const next = current + delta;
-        return Math.max(0, Math.min(options.length - 1, next));
+        return Math.max(0, Math.min(filteredOptions.length - 1, next));
       });
     },
-    [options.length],
+    [filteredOptions.length],
   );
 
   const choose = useCallback(
@@ -176,6 +231,45 @@ export const PortfolioOverlayListSelect = ({
     setScrollTop(event.currentTarget.scrollTop);
   };
 
+  const onListNavigationKeyDown = (
+    event: KeyboardEvent<HTMLElement>,
+  ): boolean => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      setOpen(false);
+      return true;
+    }
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      moveHighlight(1);
+      return true;
+    }
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      moveHighlight(-1);
+      return true;
+    }
+    if (event.key === 'Home') {
+      event.preventDefault();
+      setHighlightIndex(0);
+      return true;
+    }
+    if (event.key === 'End') {
+      event.preventDefault();
+      setHighlightIndex(filteredOptions.length - 1);
+      return true;
+    }
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const option = filteredOptions[highlightIndex];
+      if (option) {
+        choose(option.value);
+      }
+      return true;
+    }
+    return false;
+  };
+
   const onTriggerKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     if (disabled || options.length === 0) {
       return;
@@ -185,49 +279,29 @@ export const PortfolioOverlayListSelect = ({
       setOpen(false);
       return;
     }
-    if (event.key === 'ArrowDown') {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       event.preventDefault();
       if (!open) {
         setOpen(true);
-        setHighlightIndex(selectedIndex >= 0 ? selectedIndex : 0);
-      } else {
-        moveHighlight(1);
+        return;
       }
+      moveHighlight(event.key === 'ArrowDown' ? 1 : -1);
       return;
     }
-    if (event.key === 'ArrowUp') {
-      event.preventDefault();
-      if (!open) {
-        setOpen(true);
-        setHighlightIndex(selectedIndex >= 0 ? selectedIndex : 0);
-      } else {
-        moveHighlight(-1);
-      }
-      return;
-    }
-    if (open && event.key === 'Home') {
-      event.preventDefault();
-      setHighlightIndex(0);
-      return;
-    }
-    if (open && event.key === 'End') {
-      event.preventDefault();
-      setHighlightIndex(options.length - 1);
-      return;
-    }
-    if (open && (event.key === 'Enter' || event.key === ' ')) {
-      event.preventDefault();
-      const option = options[highlightIndex];
-      if (option) {
-        choose(option.value);
-      }
+    if (open && onListNavigationKeyDown(event)) {
       return;
     }
     if (!open && event.key === ' ') {
       event.preventDefault();
       setOpen(true);
-      setHighlightIndex(selectedIndex >= 0 ? selectedIndex : 0);
     }
+  };
+
+  const onFilterKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === ' ') {
+      return;
+    }
+    onListNavigationKeyDown(event);
   };
 
   const shellClass = [
@@ -239,14 +313,18 @@ export const PortfolioOverlayListSelect = ({
     .join(' ');
 
   const activeDescendant =
-    open && options.length > 0
+    open && filteredOptions.length > 0
       ? `${listboxId}-opt-${highlightIndex}`
       : undefined;
+
+  const showPanelHeader = Boolean(filterable || listHeader);
 
   return (
     <div
       ref={rootRef}
-      className={['portfolio-overlay-select', className].filter(Boolean).join(' ')}>
+      className={['portfolio-overlay-select', className]
+        .filter(Boolean)
+        .join(' ')}>
       <label
         id={labelId}
         className="portfolio-overlay-select__label"
@@ -285,8 +363,37 @@ export const PortfolioOverlayListSelect = ({
         </div>
         {open ? (
           <div className="portfolio-overlay-select__panel">
-            {listHeader ? (
+            {showPanelHeader ? (
               <div className="portfolio-overlay-select__panel-header">
+                {filterable ? (
+                  <div
+                    className="portfolio-overlay-select__filter"
+                    onMouseDown={(event) => event.stopPropagation()}>
+                    <SVGIcon
+                      icon={SVGIcons.WALLET_SEARCH}
+                      className="portfolio-overlay-select__filter-icon"
+                    />
+                    <input
+                      ref={filterInputRef}
+                      id={filterId}
+                      type="text"
+                      placeholder={I18nUtils.getMessage('popup_html_search')}
+                      aria-label={I18nUtils.getMessage('popup_html_search')}
+                      value={textFilter}
+                      onChange={(event) => setTextFilter(event.target.value)}
+                      onKeyDown={onFilterKeyDown}
+                    />
+                    {textFilter ? (
+                      <button
+                        type="button"
+                        className="portfolio-overlay-select__filter-clear"
+                        aria-label={I18nUtils.getMessage('popup_html_clear')}
+                        onClick={() => setTextFilter('')}>
+                        <SVGIcon icon={SVGIcons.INPUT_CLEAR} />
+                      </button>
+                    ) : null}
+                  </div>
+                ) : null}
                 {listHeader}
               </div>
             ) : null}
@@ -297,9 +404,14 @@ export const PortfolioOverlayListSelect = ({
               id={listboxId}
               aria-labelledby={labelId}
               onScroll={shouldVirtualize ? onListScroll : undefined}>
-              {options.length === 0 ? (
-                <li className="portfolio-overlay-select__empty" role="presentation">
-                  {listFooter}
+              {filteredOptions.length === 0 ? (
+                <li
+                  className="portfolio-overlay-select__empty"
+                  role="presentation">
+                  {listFooter ??
+                    I18nUtils.getMessage(
+                      'popup_html_nothing_found_using_filter',
+                    )}
                 </li>
               ) : (
                 <>
@@ -329,7 +441,9 @@ export const PortfolioOverlayListSelect = ({
                             : undefined
                         }
                         onMouseEnter={() => setHighlightIndex(index)}
-                        onMouseDown={(mouseEvent) => mouseEvent.preventDefault()}
+                        onMouseDown={(mouseEvent) =>
+                          mouseEvent.preventDefault()
+                        }
                         onClick={() => choose(option.value)}>
                         {renderOption(option.value)}
                       </li>
@@ -345,7 +459,7 @@ export const PortfolioOverlayListSelect = ({
                 </>
               )}
             </ul>
-            {listFooter && options.length > 0 ? (
+            {listFooter && filteredOptions.length > 0 ? (
               <div className="portfolio-overlay-select__panel-footer">
                 {listFooter}
               </div>

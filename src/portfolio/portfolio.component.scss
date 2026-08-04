@@ -92,7 +92,8 @@
       padding: var(--kc-space-2) var(--kc-space-3);
       background: var(--kc-color-bg-elevated);
       border: 1px solid var(--kc-color-border-default);
-      min-height: 2.75rem;
+      min-height: 3.25rem;
+      box-sizing: border-box;
 
       input {
         background: transparent;
@@ -115,32 +116,14 @@
     }
 
     .custom-select {
-      min-height: 2.75rem;
-      height: auto;
+      min-height: 3.25rem;
+      height: 3.25rem;
       border-radius: var(--kc-radius-md) !important;
       background: var(--kc-color-bg-elevated) !important;
       border: 1px solid var(--kc-color-border-default) !important;
 
       .selected-item {
         color: var(--kc-color-text-primary);
-      }
-    }
-
-    &.portfolio-payment-method-select {
-      .left-image {
-        width: 36px;
-        height: 24px;
-        border-radius: 4px;
-        object-fit: contain;
-        background: #fff;
-      }
-
-      .option .left-image {
-        width: 36px;
-        height: 24px;
-        border-radius: 4px;
-        object-fit: contain;
-        background: #fff;
       }
     }
   }
@@ -469,11 +452,106 @@
 .portfolio-header-row {
   display: grid;
   gap: var(--kc-space-2);
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) minmax(10.5rem, 14rem);
   align-items: end;
 
   @media (max-width: 680px) {
     grid-template-columns: 1fr;
+  }
+
+  &__network {
+    min-width: 0;
+  }
+
+  .portfolio-account-row {
+    &__ens,
+    &__address {
+      line-height: 1.25;
+    }
+  }
+}
+
+.portfolio-network-row {
+  display: flex;
+  align-items: center;
+  gap: var(--kc-space-2);
+  min-width: 0;
+  width: 100%;
+
+  &__logo,
+  &__logo-fallback {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+    object-fit: cover;
+  }
+
+  &__logo-fallback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.625rem;
+    font-weight: var(--kc-font-weight-semibold);
+  }
+
+  &__label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--kc-font-size-sm);
+    color: var(--kc-color-text-primary);
+  }
+}
+
+.portfolio-fiat-option {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+  width: 100%;
+
+  &__label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--kc-font-size-sm);
+    color: var(--kc-color-text-primary);
+    line-height: 1.25;
+  }
+
+  &__code {
+    font-size: var(--kc-font-size-xs);
+    color: var(--kc-color-text-secondary);
+    line-height: 1.25;
+  }
+}
+
+.portfolio-payment-method-option {
+  display: flex;
+  align-items: center;
+  gap: var(--kc-space-2);
+  min-width: 0;
+  width: 100%;
+
+  &__logo {
+    width: 2.25rem;
+    height: 1.5rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+    object-fit: contain;
+    background: #fff;
+  }
+
+  &__label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--kc-font-size-sm);
+    color: var(--kc-color-text-primary);
   }
 }
 
@@ -709,19 +787,73 @@
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
   gap: var(--kc-space-3);
-  align-items: start;
+  align-items: stretch;
   width: 100%;
 
   &--amount-first {
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.35fr);
   }
 
+  > .portfolio-amount-field,
+  > .portfolio-swap-quote-field,
+  > .portfolio-overlay-select,
+  > .custom-input,
+  > .custom-select-container,
+  > &__secondary {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .portfolio-overlay-select,
   .portfolio-amount-field,
   .portfolio-swap-quote-field,
-  .portfolio-overlay-select,
-  .custom-select-container,
-  &__secondary {
-    min-width: 0;
+  .custom-input,
+  .custom-select-container {
+    height: 100%;
+  }
+
+  .portfolio-amount-field > .custom-input,
+  .portfolio-swap-quote-field.custom-input,
+  &__secondary > .custom-input,
+  &__secondary > .portfolio-overlay-select,
+  &__secondary > .portfolio-amount-field,
+  &__secondary > .portfolio-swap-quote-field {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .portfolio-overlay-select__shell-wrap {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .portfolio-overlay-select__shell,
+  .portfolio-overlay-select__trigger {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 3.25rem;
+  }
+
+  .custom-input .custom-input-content {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 3.25rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .portfolio-overlay-select__preview {
+    .portfolio-token-identity__text {
+      strong,
+      small {
+        line-height: 1.2;
+      }
+    }
   }
 
   &__secondary {
@@ -732,6 +864,7 @@
     .portfolio-swap-quote-field,
     .portfolio-amount-field {
       width: 100%;
+      height: 100%;
     }
   }
 
