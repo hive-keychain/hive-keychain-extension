@@ -787,7 +787,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
   gap: var(--kc-space-3);
-  align-items: stretch;
+  align-items: start;
   width: 100%;
 
   &--amount-first {
@@ -799,49 +799,19 @@
   > .portfolio-overlay-select,
   > .custom-input,
   > .custom-select-container,
-  > &__secondary {
+  > .portfolio-flow-pair-row__secondary {
     min-width: 0;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .portfolio-overlay-select,
-  .portfolio-amount-field,
-  .portfolio-swap-quote-field,
-  .custom-input,
-  .custom-select-container {
-    height: 100%;
-  }
-
-  .portfolio-amount-field > .custom-input,
-  .portfolio-swap-quote-field.custom-input,
-  &__secondary > .custom-input,
-  &__secondary > .portfolio-overlay-select,
-  &__secondary > .portfolio-amount-field,
-  &__secondary > .portfolio-swap-quote-field {
-    display: flex;
-    flex: 1 1 auto;
-    flex-direction: column;
-    min-height: 0;
-  }
-
-  .portfolio-overlay-select__shell-wrap {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
   }
 
   .portfolio-overlay-select__shell,
   .portfolio-overlay-select__trigger {
-    flex: 1 1 auto;
-    height: auto;
+    height: 3.25rem;
     min-height: 3.25rem;
   }
 
   .custom-input .custom-input-content {
-    flex: 1 1 auto;
-    height: auto;
+    box-sizing: border-box;
+    height: 3.25rem;
     min-height: 3.25rem;
     display: flex;
     align-items: center;
@@ -864,7 +834,6 @@
     .portfolio-swap-quote-field,
     .portfolio-amount-field {
       width: 100%;
-      height: 100%;
     }
   }
 
@@ -878,9 +847,27 @@
 }
 
 .portfolio-amount-field {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--kc-space-1);
+
+  .custom-input {
+    flex: 0 0 auto;
+  }
+
+  &:has(.portfolio-field-error) {
+    // Keep the next pair row clear of the absolute message without
+    // stretching the sibling From/To control.
+    margin-bottom: calc(1.125rem + var(--kc-space-1));
+  }
+
+  .portfolio-field-error {
+    position: absolute;
+    top: calc(100% + var(--kc-space-1));
+    left: 0;
+    right: 0;
+    z-index: 2;
+  }
 }
 
 .portfolio-field-error {
