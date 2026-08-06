@@ -20,6 +20,7 @@
   &__shell {
     position: relative;
     isolation: isolate;
+    box-sizing: border-box;
     min-height: 3.25rem;
     height: 3.25rem;
     overflow: visible;
