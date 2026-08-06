@@ -977,11 +977,12 @@ export const Portfolio = ({
 
   const requiresRecipientInput = useMemo(
     () =>
+      section !== 'sell' &&
       PortfolioFlowUtils.requiresPortfolioRecipientAddress(
         fromCanonicalAsset,
         toCanonicalAsset,
       ),
-    [fromCanonicalAsset, toCanonicalAsset],
+    [fromCanonicalAsset, section, toCanonicalAsset],
   );
 
   const recipientAddressLabelKey = useMemo(
@@ -1184,6 +1185,10 @@ export const Portfolio = ({
           swapAvailableAssets,
           fromCanonicalAsset,
         );
+      }
+
+      if (section === 'sell') {
+        return [];
       }
 
       if (!fromCanonicalAsset) {

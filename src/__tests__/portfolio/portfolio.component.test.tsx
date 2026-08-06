@@ -2488,6 +2488,97 @@ describe('Portfolio', () => {
     ).toBe('1');
   });
 
+  it('does not show a recipient field on the sell page', async () => {
+    (
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains as jest.Mock
+    ).mockImplementation(async (_chains, _walletAddress, options) => {
+      options?.onChainReady?.(ethereumChain, [ethToken]);
+      options?.onChainFinished?.(ethereumChain);
+      return [ethToken];
+    });
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
+      assets: [
+        swapAssetsFixture[0],
+        {
+          assetId: 'hive-hive',
+          ecosystem: 'hive',
+          symbol: 'HIVE',
+          name: 'Hive',
+          chainId: 'hive',
+          address: null,
+          decimals: 3,
+          isNative: true,
+          familyId: 'hive',
+          logoUrl: null,
+          priceUsd: 0,
+          rankScore: 100,
+        },
+        {
+          assetId: 'utxo:native:bitcoin',
+          ecosystem: 'utxo',
+          symbol: 'BTC',
+          name: 'Bitcoin',
+          chainId: 'bitcoin',
+          address: null,
+          decimals: 8,
+          isNative: true,
+          familyId: 'utxo:native:btc',
+          logoUrl: null,
+          priceUsd: 0,
+          rankScore: 90,
+        },
+      ],
+      chains: {},
+    });
+    (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockResolvedValue({
+      mode: 'sell',
+      direction: 'from',
+      sourceAssetId: null,
+      assets: [swapAssetsFixture[0]],
+      chains: {},
+    });
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+    });
+
+    clickPortfolioNav(container, 'sell');
+
+    await waitFor(() => {
+      expect(container.querySelector('.portfolio-flow')).not.toBeNull();
+    });
+
+    expect(container.textContent).not.toContain('evm_swap_receiver_address');
+    expect(container.textContent).not.toContain(
+      'portfolio_recipient_hive_account',
+    );
+    expect(container.textContent).not.toContain(
+      'portfolio_recipient_bitcoin_address',
+    );
+    expect(container.textContent).not.toContain(
+      'portfolio_recipient_destination_address',
+    );
+  });
+
   it('resets buy/sell form fields when switching sections', async () => {
     const { container } = render(
       <Portfolio
