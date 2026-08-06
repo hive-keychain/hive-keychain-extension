@@ -1,7 +1,7 @@
 .portfolio-token-identity {
   display: flex;
   align-items: center;
-  gap: var(--kc-space-2);
+  gap: var(--kc-space-4);
   min-width: 0;
 
   .portfolio-token-logo-wrap {
@@ -9,6 +9,8 @@
     width: 28px;
     height: 28px;
     flex-shrink: 0;
+    // Keep room for the network badge that hangs outside the logo.
+    margin-right: 6px;
   }
 
   .currency-icon,
