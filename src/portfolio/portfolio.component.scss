@@ -641,9 +641,12 @@
 
 .portfolio-table-wrap {
   min-width: 0;
-  overflow: hidden;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
   border: 1px solid var(--kc-color-border-subtle);
   border-radius: var(--kc-radius-lg);
+  -webkit-overflow-scrolling: touch;
 }
 
 .portfolio-table-head,
@@ -1242,12 +1245,6 @@
   overflow-wrap: anywhere;
   font-size: var(--kc-font-size-sm);
   line-height: 1.4;
-}
-
-@media (max-width: 680px) {
-  .portfolio-table-wrap {
-    overflow-x: auto;
-  }
 }
 
 html.detached-window-page #root .theme:has(.portfolio-app-shell) {
