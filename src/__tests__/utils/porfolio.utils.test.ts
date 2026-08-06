@@ -20,6 +20,7 @@ jest.mock('@popup/hive/utils/tokens.utils', () => ({
   __esModule: true,
   default: {
     getHiveEngineTokenValue: jest.fn().mockReturnValue(42.5),
+    getHiveEngineTokenPrice: jest.fn().mockReturnValue(0.85),
     getUserBalance: jest.fn().mockResolvedValue([]),
     getTokensMarket: jest.fn().mockResolvedValue([]),
     getAllTokens: jest.fn().mockResolvedValue([]),
@@ -202,7 +203,64 @@ describe('porfolio.utils', () => {
       );
 
       expect(result).toEqual([
-        { symbol: 'KEEP', balance: 15, usdValue: 42.5 },
+        {
+          symbol: 'KEEP',
+          balance: 10,
+          usdValue: 42.5,
+          priceUsd: 0.425,
+          breakdown: {
+            liquid: 10,
+            stake: 3,
+            delegationsIn: 0,
+            delegationsOut: 2,
+            pendingUnstake: 0,
+            pendingUndelegations: 0,
+          },
+        },
+      ]);
+    });
+
+    it('uses liquid as main amount and rounds breakdown like the wallet', () => {
+      const tokensBalance: TokenBalance[] = [
+        {
+          _id: 1,
+          account: 'alice',
+          symbol: 'LASSECASH',
+          balance: '0.00002287',
+          delegationsIn: '1.00000001',
+          delegationsOut: '0',
+          stake: '96153.84635176',
+          pendingUndelegations: '0',
+          pendingUnstake: '100000.00020583',
+        },
+      ];
+
+      const result = PortfolioUtils.generateUserLayerTwoPortolio(
+        { username: 'alice', tokensBalance },
+        {
+          hive: { usd: 0.5 },
+          hive_dollar: { usd: 1 },
+        } as unknown as CurrencyPrices,
+        [] as TokenMarket[],
+        [{ symbol: 'LASSECASH', precision: 3 } as Token],
+        [],
+      );
+
+      expect(result).toEqual([
+        {
+          symbol: 'LASSECASH',
+          balance: 0,
+          usdValue: 42.5,
+          priceUsd: 0.425,
+          breakdown: {
+            liquid: 0,
+            stake: 96153.846,
+            delegationsIn: 1,
+            delegationsOut: 0,
+            pendingUnstake: 100000,
+            pendingUndelegations: 0,
+          },
+        },
       ]);
     });
   });

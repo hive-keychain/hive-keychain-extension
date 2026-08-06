@@ -89,7 +89,10 @@ import {
   getPortfolioHiveOperations,
   PortfolioInAppConfirmationContext,
 } from 'src/portfolio/portfolio-in-app-confirmation.interface';
-import { UserPortfolio } from 'src/portfolio/portfolio.interface';
+import {
+  PortfolioHiveEngineBalanceBreakdown,
+  UserPortfolio,
+} from 'src/portfolio/portfolio.interface';
 import { PortfolioAccountAvatar } from 'src/portfolio/ui/portfolio-account-avatar.component';
 import { PortfolioConfirmationStepComponent } from 'src/portfolio/ui/portfolio-confirmation-step.component';
 import { PortfolioHistoryCard } from 'src/portfolio/ui/portfolio-history-card.component';
@@ -171,6 +174,7 @@ type PortfolioRow = {
   hiveAccountName?: string;
   chainId?: string | null;
   isTestnet?: boolean;
+  breakdown?: PortfolioHiveEngineBalanceBreakdown;
 };
 
 type PortfolioNavSection = Exclude<PortfolioSection, 'bridge'>;
@@ -407,6 +411,44 @@ const formatTokenAmount = (value: string): string => {
     : value;
 };
 
+const formatHiveEngineTokenAmount = (
+  value: string | number,
+  decimals?: number,
+): string => {
+  const amount = typeof value === 'number' ? value : Number(value.replace(/,/g, ''));
+  if (!Number.isFinite(amount)) {
+    return String(value);
+  }
+
+  if (typeof decimals === 'number' && Number.isFinite(decimals)) {
+    return FormatUtils.trimUselessZero(amount, decimals);
+  }
+
+  return formatTokenAmount(String(amount));
+};
+
+const getHiveEngineBalanceBreakdownLabels = () => ({
+  liquid: I18nUtils.getMessage('liquid_balance'),
+  staked: I18nUtils.getMessage('popup_html_token_staking'),
+  delegatedIn: I18nUtils.getMessage('popup_html_token_delegation_in'),
+  delegatedOut: I18nUtils.getMessage('popup_html_token_delegation_out'),
+  unstaking: I18nUtils.getMessage('popup_html_token_pending_unstake'),
+  undelegating: I18nUtils.getMessage('popup_html_token_pending_undelegation'),
+});
+
+const getHiveEngineBalanceBreakdownItems = (
+  breakdown?: PortfolioHiveEngineBalanceBreakdown,
+) => {
+  if (!breakdown) {
+    return [];
+  }
+
+  return PortfolioFlowUtils.getPortfolioHiveEngineBalanceBreakdownItems(
+    breakdown,
+    getHiveEngineBalanceBreakdownLabels(),
+  );
+};
+
 const parsePortfolioAmountValue = (value: string): number =>
   Number(value.replace(/,/g, ''));
 
@@ -532,6 +574,9 @@ export const Portfolio = ({
     [featureFlags],
   );
   const [selectedAccountKey, setSelectedAccountKey] = useState('');
+  const [expandedPortfolioRowKeys, setExpandedPortfolioRowKeys] = useState<
+    string[]
+  >([]);
   const [rows, setRows] = useState<PortfolioRow[]>([]);
   const [assets, setAssets] = useState<PortfolioCanonicalAsset[]>([]);
   const [portfolioChains, setPortfolioChains] =
@@ -1435,7 +1480,16 @@ export const Portfolio = ({
 
   const handleSelectedAccountChange = (accountKey: string) => {
     hasUserSelectedAccountRef.current = true;
+    setExpandedPortfolioRowKeys([]);
     setSelectedAccountKey(accountKey);
+  };
+
+  const togglePortfolioRowExpanded = (rowKey: string) => {
+    setExpandedPortfolioRowKeys((currentKeys) =>
+      currentKeys.includes(rowKey)
+        ? currentKeys.filter((key) => key !== rowKey)
+        : [...currentKeys, rowKey],
+    );
   };
 
   useEffect(() => {
@@ -1902,7 +1956,10 @@ export const Portfolio = ({
             balance: balance.balance.toString(),
             usdValue: balance.usdValue,
             priceUsd:
-              balance.balance > 0 ? balance.usdValue / balance.balance : null,
+              balance.priceUsd ??
+              (balance.balance > 0
+                ? balance.usdValue / balance.balance
+                : null),
             decimals: PortfolioFlowUtils.resolveHiveTokenDecimals(
               balance.symbol,
               hiveTokens,
@@ -1914,6 +1971,7 @@ export const Portfolio = ({
             chainId: null,
             isTestnet: false,
             isHive: true,
+            breakdown: balance.breakdown,
           };
         });
         setRows(nextRows);
@@ -2869,26 +2927,97 @@ export const Portfolio = ({
             {I18nUtils.getMessage('portfolio_no_assets')}
           </div>
         ) : (
-          visibleRows.map((row) => (
-            <div className="portfolio-table-row" key={row.key}>
-              <PortfolioTokenIdentity
-                {...portfolioRowToTokenIdentityProps({
-                  ...row,
-                  isHive: selectedAccount?.type === ChainType.HIVE,
-                })}
-              />
-              {renderRowActions(row)}
-              <span className="portfolio-number amount">
-                {formatTokenAmount(row.balance)}
-              </span>
-              <span className="portfolio-number">
-                {formatPrice(row.priceUsd)}
-              </span>
-              <strong className="portfolio-number">
-                {formatUsd(row.usdValue)}
-              </strong>
-            </div>
-          ))
+          visibleRows.map((row) => {
+            const breakdownItems = getHiveEngineBalanceBreakdownItems(
+              row.breakdown,
+            );
+            const canExpandBreakdown = breakdownItems.length > 0;
+            const isExpanded =
+              canExpandBreakdown &&
+              expandedPortfolioRowKeys.includes(row.key);
+
+            return (
+              <div
+                className={`portfolio-table-row-group${
+                  isExpanded ? ' is-expanded' : ''
+                }`}
+                key={row.key}>
+                <div
+                  className={`portfolio-table-row${
+                    isExpanded ? ' is-expanded' : ''
+                  }`}>
+                  <PortfolioTokenIdentity
+                    {...portfolioRowToTokenIdentityProps({
+                      ...row,
+                      isHive: selectedAccount?.type === ChainType.HIVE,
+                    })}
+                  />
+                  {renderRowActions(row)}
+                  <span className="portfolio-number amount">
+                    {canExpandBreakdown ? (
+                      <button
+                        type="button"
+                        className="portfolio-amount-expand"
+                        aria-expanded={isExpanded}
+                        aria-label={I18nUtils.getMessage(
+                          isExpanded
+                            ? 'portfolio_he_breakdown_collapse'
+                            : 'portfolio_he_breakdown_expand',
+                        )}
+                        onClick={() => togglePortfolioRowExpanded(row.key)}>
+                        <SVGIcon
+                          icon={SVGIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
+                          className={`portfolio-row-expand-icon ${
+                            isExpanded ? 'open' : 'closed'
+                          }`}
+                        />
+                        <span className="portfolio-amount-total">
+                          {formatHiveEngineTokenAmount(
+                            row.balance,
+                            row.decimals,
+                          )}
+                        </span>
+                      </button>
+                    ) : (
+                      <span className="portfolio-amount-total">
+                        {row.breakdown
+                          ? formatHiveEngineTokenAmount(
+                              row.balance,
+                              row.decimals,
+                            )
+                          : formatTokenAmount(row.balance)}
+                      </span>
+                    )}
+                  </span>
+                  <span className="portfolio-number">
+                    {formatPrice(row.priceUsd)}
+                  </span>
+                  <strong className="portfolio-number">
+                    {formatUsd(row.usdValue)}
+                  </strong>
+                </div>
+                {isExpanded ? (
+                  <div className="portfolio-row-breakdown">
+                    {breakdownItems.map((item) => (
+                      <div
+                        className="portfolio-row-breakdown__item"
+                        key={`${row.key}:${item.key}`}>
+                        <span className="portfolio-row-breakdown__label">
+                          {item.label}
+                        </span>
+                        <span className="portfolio-row-breakdown__value">
+                          {formatHiveEngineTokenAmount(
+                            item.amount,
+                            row.decimals,
+                          )}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })
         )}
       </div>
 

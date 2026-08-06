@@ -1438,4 +1438,68 @@ describe('PortfolioFlowUtils', () => {
       ),
     ).toBe(true);
   });
+
+  describe('Hive Engine balance breakdown', () => {
+    const labels = {
+      liquid: 'liquid',
+      staked: 'staked',
+      delegatedIn: 'incoming',
+      delegatedOut: 'delegated',
+      unstaking: 'unstaking',
+      undelegating: 'undelegating',
+    };
+
+    it('returns null when only liquid balance is present', () => {
+      expect(
+        PortfolioFlowUtils.formatPortfolioHiveEngineBalanceBreakdown(
+          {
+            liquid: 10,
+            stake: 0,
+            delegationsIn: 0,
+            delegationsOut: 0,
+            pendingUnstake: 0,
+            pendingUndelegations: 0,
+          },
+          labels,
+        ),
+      ).toBeNull();
+    });
+
+    it('formats liquid plus non-liquid ownership parts', () => {
+      expect(
+        PortfolioFlowUtils.formatPortfolioHiveEngineBalanceBreakdown(
+          {
+            liquid: 10,
+            stake: 3,
+            delegationsIn: 0,
+            delegationsOut: 2,
+            pendingUnstake: 1,
+            pendingUndelegations: 0,
+          },
+          labels,
+        ),
+      ).toBe('10 liquid · 3 staked · 1 unstaking · 2 delegated');
+    });
+
+    it('builds vertical breakdown items matching wallet order', () => {
+      expect(
+        PortfolioFlowUtils.getPortfolioHiveEngineBalanceBreakdownItems(
+          {
+            liquid: 0,
+            stake: 96153.846,
+            delegationsIn: 1,
+            delegationsOut: 0,
+            pendingUnstake: 100000,
+            pendingUndelegations: 0,
+          },
+          labels,
+        ),
+      ).toEqual([
+        { key: 'liquid', label: 'liquid', amount: 0 },
+        { key: 'stake', label: 'staked', amount: 96153.846 },
+        { key: 'pendingUnstake', label: 'unstaking', amount: 100000 },
+        { key: 'delegationsIn', label: 'incoming', amount: 1 },
+      ]);
+    });
+  });
 });

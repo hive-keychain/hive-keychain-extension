@@ -11,6 +11,7 @@ import {
   PortfolioEcosystem,
   PortfolioMode,
 } from 'src/portfolio/portfolio-api.interface';
+import { PortfolioHiveEngineBalanceBreakdown } from 'src/portfolio/portfolio.interface';
 import { EvmAddressUtils } from 'src/utils/evm/evm-address.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -65,6 +66,103 @@ export const formatPortfolioTokenBalance = (balance: string): string => {
   return Number.isFinite(amount)
     ? amount.toLocaleString(undefined, { maximumFractionDigits: 8 })
     : balance;
+};
+
+export type { PortfolioHiveEngineBalanceBreakdown };
+
+export type PortfolioHiveEngineBreakdownLabels = {
+  liquid: string;
+  staked: string;
+  delegatedIn: string;
+  delegatedOut: string;
+  unstaking: string;
+  undelegating: string;
+};
+
+export const hasPortfolioHiveEngineBalanceBreakdown = (
+  breakdown?: PortfolioHiveEngineBalanceBreakdown | null,
+): boolean => {
+  if (!breakdown) {
+    return false;
+  }
+
+  return (
+    breakdown.stake > 0 ||
+    breakdown.delegationsIn > 0 ||
+    breakdown.delegationsOut > 0 ||
+    breakdown.pendingUnstake > 0 ||
+    breakdown.pendingUndelegations > 0
+  );
+};
+
+export type PortfolioHiveEngineBreakdownItem = {
+  key: string;
+  label: string;
+  amount: number;
+};
+
+export const getPortfolioHiveEngineBalanceBreakdownItems = (
+  breakdown: PortfolioHiveEngineBalanceBreakdown,
+  labels: PortfolioHiveEngineBreakdownLabels,
+): PortfolioHiveEngineBreakdownItem[] => {
+  if (!hasPortfolioHiveEngineBalanceBreakdown(breakdown)) {
+    return [];
+  }
+
+  const items: PortfolioHiveEngineBreakdownItem[] = [
+    { key: 'liquid', label: labels.liquid, amount: breakdown.liquid },
+  ];
+
+  if (breakdown.stake > 0) {
+    items.push({ key: 'stake', label: labels.staked, amount: breakdown.stake });
+  }
+  if (breakdown.pendingUnstake > 0) {
+    items.push({
+      key: 'pendingUnstake',
+      label: labels.unstaking,
+      amount: breakdown.pendingUnstake,
+    });
+  }
+  if (breakdown.delegationsIn > 0) {
+    items.push({
+      key: 'delegationsIn',
+      label: labels.delegatedIn,
+      amount: breakdown.delegationsIn,
+    });
+  }
+  if (breakdown.delegationsOut > 0) {
+    items.push({
+      key: 'delegationsOut',
+      label: labels.delegatedOut,
+      amount: breakdown.delegationsOut,
+    });
+  }
+  if (breakdown.pendingUndelegations > 0) {
+    items.push({
+      key: 'pendingUndelegations',
+      label: labels.undelegating,
+      amount: breakdown.pendingUndelegations,
+    });
+  }
+
+  return items;
+};
+
+export const formatPortfolioHiveEngineBalanceBreakdown = (
+  breakdown: PortfolioHiveEngineBalanceBreakdown,
+  labels: PortfolioHiveEngineBreakdownLabels,
+): string | null => {
+  const items = getPortfolioHiveEngineBalanceBreakdownItems(breakdown, labels);
+  if (items.length === 0) {
+    return null;
+  }
+
+  return items
+    .map(
+      (item) =>
+        `${formatPortfolioTokenBalance(String(item.amount))} ${item.label}`,
+    )
+    .join(' · ');
 };
 
 export const resolveHiveTokenDecimals = (
@@ -1664,12 +1762,15 @@ export const PortfolioFlowUtils = {
   isPortfolioSwapExcludedSymbol,
   isValidPortfolioRecipientAddress,
   formatPortfolioQuoteFromAmount,
+  formatPortfolioHiveEngineBalanceBreakdown,
   formatPortfolioTokenBalance,
   getDefaultSelectOptionValue,
   getHivePortfolioRowEcosystem,
   getHiveTokenIcon,
   getLastUsedSwapAssets,
+  getPortfolioHiveEngineBalanceBreakdownItems,
   resolveHivePortfolioRowNetworkLogoUrl,
+  hasPortfolioHiveEngineBalanceBreakdown,
   hasPositivePortfolioBalance,
   resolveCanonicalAssetNetworkLabel,
   resolveCanonicalAssetNetworkLogoUrl,

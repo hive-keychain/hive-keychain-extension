@@ -488,6 +488,90 @@ describe('Portfolio', () => {
     });
   });
 
+  it('expands Hive Engine ownership breakdown into a vertical list', async () => {
+    jest
+      .spyOn(AccountUtils, 'getExtendedAccounts')
+      .mockResolvedValue([{ name: 'alice' } as never]);
+    jest.spyOn(PortfolioUtils, 'getPortfolio').mockResolvedValue([
+      [
+        {
+          account: 'alice',
+          balances: [
+            {
+              symbol: 'BEE',
+              balance: 0,
+              usdValue: 30,
+              priceUsd: 0.002,
+              breakdown: {
+                liquid: 0,
+                stake: 96153.846,
+                delegationsIn: 1,
+                delegationsOut: 0,
+                pendingUnstake: 100000,
+                pendingUndelegations: 0,
+              },
+            },
+            {
+              symbol: 'HIVE',
+              balance: 5,
+              usdValue: 5,
+            },
+          ],
+          totalHive: 0,
+          totalUSD: 35,
+        },
+      ],
+      ['HIVE', 'BEE'],
+    ]);
+    (TokensUtils.getAllTokens as jest.Mock).mockResolvedValue([
+      { symbol: 'BEE', precision: 3, metadata: {} },
+    ]);
+
+    const { container, getByText } = render(
+      <Portfolio
+        hiveAccounts={[{ name: 'alice' } as never]}
+        evmAccounts={[]}
+        activeAccountType={ChainType.HIVE}
+        activeEvmAccountAddress={undefined}
+        activeHiveAccountName="alice"
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(getByText('0.000')).toBeTruthy();
+      expect(
+        container.querySelector('.portfolio-amount-expand'),
+      ).toBeTruthy();
+    });
+
+    expect(container.querySelector('.portfolio-row-breakdown')).toBeNull();
+
+    fireEvent.click(
+      container.querySelector('.portfolio-amount-expand') as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
+      const breakdownValues = Array.from(
+        container.querySelectorAll('.portfolio-row-breakdown__value'),
+      ).map((element) => element.textContent);
+
+      expect(breakdownValues).toEqual([
+        '0.000',
+        '96,153.846',
+        '100,000.000',
+        '1.000',
+      ]);
+    });
+
+    expect(
+      container.querySelectorAll('.portfolio-amount-expand'),
+    ).toHaveLength(1);
+  });
+
   it('shows Hive Engine token icons in the portfolio and swap selector', async () => {
     const decIconUrl =
       'https://images.hive.blog/0x0/https://example.com/dec.png';

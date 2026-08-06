@@ -283,27 +283,71 @@ const getTokensFullList = (
   return tokensFullList;
 };
 
+const parseHiveEngineAmountWithPrecision = (
+  value: string,
+  precision: number,
+): number => parseFloat(parseFloat(value).toFixed(precision));
+
 const getPortfolioHETokenData = (
   tokenBalanceItem: TokenBalance,
   tokenMarket: TokenMarket[],
   currencyPrices: CurrencyPrices,
   tokens: Token[],
 ): PortfolioBalance => {
+  const hiveUsd = currencyPrices.hive?.usd ?? 0;
   const totalBalanceUsdValue = TokensUtils.getHiveEngineTokenValue(
     tokenBalanceItem,
     tokenMarket,
     currencyPrices!.hive!,
     tokens,
   );
+  const priceInHive = TokensUtils.getHiveEngineTokenPrice(
+    tokenBalanceItem,
+    tokenMarket,
+  );
+  const priceUsd = priceInHive > 0 ? priceInHive * hiveUsd : null;
+  const precision =
+    tokens.find((token) => token.symbol === tokenBalanceItem.symbol)
+      ?.precision ?? 8;
+  const liquid = parseHiveEngineAmountWithPrecision(
+    tokenBalanceItem.balance,
+    precision,
+  );
+  const stake = parseHiveEngineAmountWithPrecision(
+    tokenBalanceItem.stake,
+    precision,
+  );
+  const delegationsIn = parseHiveEngineAmountWithPrecision(
+    tokenBalanceItem.delegationsIn,
+    precision,
+  );
+  const delegationsOut = parseHiveEngineAmountWithPrecision(
+    tokenBalanceItem.delegationsOut,
+    precision,
+  );
+  const pendingUnstake = parseHiveEngineAmountWithPrecision(
+    tokenBalanceItem.pendingUnstake,
+    precision,
+  );
+  const pendingUndelegations = parseHiveEngineAmountWithPrecision(
+    tokenBalanceItem.pendingUndelegations,
+    precision,
+  );
+
   return {
     symbol: tokenBalanceItem.symbol,
-    balance:
-      +tokenBalanceItem.balance +
-      +tokenBalanceItem.delegationsOut +
-      +tokenBalanceItem.stake +
-      +tokenBalanceItem.pendingUndelegations +
-      +tokenBalanceItem.pendingUnstake,
+    // Match wallet main amount: liquid only. Stake/pending/etc. live in breakdown.
+    balance: liquid,
     usdValue: totalBalanceUsdValue,
+    priceUsd,
+    breakdown: {
+      liquid,
+      stake,
+      delegationsIn,
+      delegationsOut,
+      pendingUnstake,
+      pendingUndelegations,
+    },
   };
 };
 

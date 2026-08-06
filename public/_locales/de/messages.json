@@ -4399,6 +4399,27 @@
   "portfolio_token": {
     "message": "Token"
   },
+  "portfolio_he_breakdown_liquid": {
+    "message": "liquid"
+  },
+  "portfolio_he_breakdown_staked": {
+    "message": "staked"
+  },
+  "portfolio_he_breakdown_delegated": {
+    "message": "delegated"
+  },
+  "portfolio_he_breakdown_unstaking": {
+    "message": "unstaking"
+  },
+  "portfolio_he_breakdown_undelegating": {
+    "message": "undelegating"
+  },
+  "portfolio_he_breakdown_expand": {
+    "message": "Show balance details"
+  },
+  "portfolio_he_breakdown_collapse": {
+    "message": "Hide balance details"
+  },
   "portfolio_actions": {
     "message": "Actions"
   },
