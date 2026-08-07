@@ -655,7 +655,7 @@ describe('Portfolio', () => {
     });
   });
 
-  it('preloads swap available assets after portfolio initialization', async () => {
+  it('preloads swap available assets during portfolio initialization', async () => {
     const { container } = render(
       <Portfolio
         hiveAccounts={[]}
@@ -977,6 +977,8 @@ describe('Portfolio', () => {
     ).mockImplementation(async (_chains, _walletAddress, options) => {
       options?.onChainReady?.(ethereumChain, [zeroEthToken]);
       options?.onChainFinished?.(ethereumChain);
+      options?.onChainReady?.(polygonChain, []);
+      options?.onChainFinished?.(polygonChain);
       return [zeroEthToken];
     });
 
@@ -1474,11 +1476,22 @@ describe('Portfolio', () => {
   });
 
   it('does not request swap quotes when amount exceeds from balance', async () => {
-    await renderSwapPortfolio({ amount: '999' });
+    const originalSkipBalanceCheck = process.env.PORTFOLIO_SKIP_BALANCE_CHECK;
+    process.env.PORTFOLIO_SKIP_BALANCE_CHECK = 'false';
 
-    await new Promise((resolve) => setTimeout(resolve, 900));
+    try {
+      await renderSwapPortfolio({ amount: '999' });
 
-    expect(PortfolioApiUtils.getQuotes).not.toHaveBeenCalled();
+      await new Promise((resolve) => setTimeout(resolve, 900));
+
+      expect(PortfolioApiUtils.getQuotes).not.toHaveBeenCalled();
+    } finally {
+      if (originalSkipBalanceCheck === undefined) {
+        delete process.env.PORTFOLIO_SKIP_BALANCE_CHECK;
+      } else {
+        process.env.PORTFOLIO_SKIP_BALANCE_CHECK = originalSkipBalanceCheck;
+      }
+    }
   });
 
   it('requests swap quotes above balance when PORTFOLIO_SKIP_BALANCE_CHECK is true', async () => {

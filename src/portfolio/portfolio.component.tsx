@@ -94,6 +94,7 @@ import {
   UserPortfolio,
 } from 'src/portfolio/portfolio.interface';
 import { PortfolioAccountAvatar } from 'src/portfolio/ui/portfolio-account-avatar.component';
+import { PortfolioBalancesSection } from 'src/portfolio/ui/portfolio-balances-section.component';
 import { PortfolioConfirmationStepComponent } from 'src/portfolio/ui/portfolio-confirmation-step.component';
 import { PortfolioHistoryCard } from 'src/portfolio/ui/portfolio-history-card.component';
 import { PortfolioHistoryDisplayUtils } from 'src/portfolio/ui/portfolio-history-display.utils';
@@ -107,7 +108,6 @@ import {
   portfolioRowToTokenIdentityProps,
   PortfolioTokenIdentity,
 } from 'src/portfolio/ui/portfolio-token-identity.component';
-import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
 
@@ -389,64 +389,6 @@ const mergeEvmPortfolioRowsForChain = (
     }),
     ...nextRows,
   ];
-};
-
-const formatUsd = (value: number | null): string =>
-  value === null ? '—' : `$${FormatUtils.formatCurrencyValue(value, 2)}`;
-
-const formatPrice = (value: number | null): string => {
-  if (value === null) {
-    return '—';
-  }
-  if (value >= 1) {
-    return formatUsd(value);
-  }
-  return `$${value.toFixed(6).replace(/0+$/, '').replace(/\.$/, '')}`;
-};
-
-const formatTokenAmount = (value: string): string => {
-  const amount = Number(value.replace(/,/g, ''));
-  return Number.isFinite(amount)
-    ? amount.toLocaleString(undefined, { maximumFractionDigits: 8 })
-    : value;
-};
-
-const formatHiveEngineTokenAmount = (
-  value: string | number,
-  decimals?: number,
-): string => {
-  const amount = typeof value === 'number' ? value : Number(value.replace(/,/g, ''));
-  if (!Number.isFinite(amount)) {
-    return String(value);
-  }
-
-  if (typeof decimals === 'number' && Number.isFinite(decimals)) {
-    return FormatUtils.trimUselessZero(amount, decimals);
-  }
-
-  return formatTokenAmount(String(amount));
-};
-
-const getHiveEngineBalanceBreakdownLabels = () => ({
-  liquid: I18nUtils.getMessage('liquid_balance'),
-  staked: I18nUtils.getMessage('popup_html_token_staking'),
-  delegatedIn: I18nUtils.getMessage('popup_html_token_delegation_in'),
-  delegatedOut: I18nUtils.getMessage('popup_html_token_delegation_out'),
-  unstaking: I18nUtils.getMessage('popup_html_token_pending_unstake'),
-  undelegating: I18nUtils.getMessage('popup_html_token_pending_undelegation'),
-});
-
-const getHiveEngineBalanceBreakdownItems = (
-  breakdown?: PortfolioHiveEngineBalanceBreakdown,
-) => {
-  if (!breakdown) {
-    return [];
-  }
-
-  return PortfolioFlowUtils.getPortfolioHiveEngineBalanceBreakdownItems(
-    breakdown,
-    getHiveEngineBalanceBreakdownLabels(),
-  );
 };
 
 const parsePortfolioAmountValue = (value: string): number =>
@@ -1407,29 +1349,6 @@ export const Portfolio = ({
     );
   };
 
-  const visibleRows = useMemo(() => {
-    const filter = tokenFilter.trim().toLowerCase();
-    const filteredRows = [...rows]
-      .filter((row) => !selectedNetwork || row.network === selectedNetwork)
-      .filter(
-        (row) =>
-          !filter ||
-          row.symbol.toLowerCase().includes(filter) ||
-          row.network.toLowerCase().includes(filter),
-      );
-
-    return PortfolioUtils.sortPortfolioDisplayItems(
-      filteredRows,
-      selectedAccount?.type === ChainType.HIVE,
-    );
-  }, [rows, selectedNetwork, tokenFilter, selectedAccount?.type]);
-
-  const totalUsd = visibleRows.reduce(
-    (total, row) => total + (row.usdValue ?? 0),
-    0,
-  );
-  const hasKnownValue = visibleRows.some((row) => row.usdValue !== null);
-
   useEffect(() => {
     setTitleContainerProperties({
       title: '',
@@ -1483,19 +1402,23 @@ export const Portfolio = ({
     activeHiveAccountName,
   ]);
 
-  const handleSelectedAccountChange = (accountKey: string) => {
+  const handleSelectedAccountChange = useCallback((accountKey: string) => {
     hasUserSelectedAccountRef.current = true;
     setExpandedPortfolioRowKeys([]);
     setSelectedAccountKey(accountKey);
-  };
+  }, []);
 
-  const togglePortfolioRowExpanded = (rowKey: string) => {
+  const togglePortfolioRowExpanded = useCallback((rowKey: string) => {
     setExpandedPortfolioRowKeys((currentKeys) =>
       currentKeys.includes(rowKey)
         ? currentKeys.filter((key) => key !== rowKey)
         : [...currentKeys, rowKey],
     );
-  };
+  }, []);
+
+  const handleTokenFilterChange = useCallback((value: string) => {
+    setTokenFilter(value);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -1812,13 +1735,13 @@ export const Portfolio = ({
     }
   };
 
-  const preloadSwapAvailableAssets = () => {
+  const preloadSwapAvailableAssets = (): Promise<void> => {
     if (hasPreloadedSwapAvailableAssetsRef.current) {
-      return;
+      return Promise.resolve();
     }
 
     hasPreloadedSwapAvailableAssetsRef.current = true;
-    void loadSwapAvailableAssets();
+    return loadSwapAvailableAssets();
   };
 
   useEffect(() => {
@@ -2108,8 +2031,8 @@ export const Portfolio = ({
       loadPortfolio({ clearRows: true }),
       loadAssets(),
       loadHistory(),
+      preloadSwapAvailableAssets(),
     ]);
-    preloadSwapAvailableAssets();
   };
 
   const handleRefreshPortfolioData = async () => {
@@ -2706,95 +2629,111 @@ export const Portfolio = ({
     }
   };
 
-  const openFlowForRow = (row: PortfolioRow, mode: PortfolioMode) => {
-    const canUseAsFrom =
-      PortfolioFlowUtils.hasPositivePortfolioBalance(row.balance) &&
-      !row.isTestnet;
-    resetFlowFormFields();
-    setFromAssetId(mode === 'buy' || !canUseAsFrom ? '' : row.key);
-    setToAssetId(
-      mode === 'sell'
-        ? ''
-        : (PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
-            row,
-            canonicalAssetsForRowResolution,
-            toAssetEvmChains,
-            portfolioChains,
-          ) ?? ''),
-    );
-    setSection(mode);
-  };
+  const openFlowForRow = useCallback(
+    (row: PortfolioRow, mode: PortfolioMode) => {
+      const canUseAsFrom =
+        PortfolioFlowUtils.hasPositivePortfolioBalance(row.balance) &&
+        !row.isTestnet;
+      resetFlowFormFields();
+      setFromAssetId(mode === 'buy' || !canUseAsFrom ? '' : row.key);
+      setToAssetId(
+        mode === 'sell'
+          ? ''
+          : (PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+              row,
+              canonicalAssetsForRowResolution,
+              toAssetEvmChains,
+              portfolioChains,
+            ) ?? ''),
+      );
+      setSection(mode);
+    },
+    [
+      canonicalAssetsForRowResolution,
+      portfolioChains,
+      toAssetEvmChains,
+    ],
+  );
 
-  const getRowActions = (): PortfolioMode[] =>
-    selectedAccount?.type === ChainType.HIVE
-      ? ['swap']
-      : ['buy', 'sell', 'swap'];
+  const portfolioRowActions = useMemo(
+    (): PortfolioMode[] =>
+      selectedAccount?.type === ChainType.HIVE
+        ? ['swap']
+        : ['buy', 'sell', 'swap'],
+    [selectedAccount?.type],
+  );
 
-  const renderAccountRow = (accountKey: string) => {
-    const account = accountOptions.find((item) => item.key === accountKey);
-    if (!account) {
-      return '—';
-    }
-    if (account.type === ChainType.EVM) {
+  const renderAccountRow = useCallback(
+    (accountKey: string) => {
+      const account = accountOptions.find((item) => item.key === accountKey);
+      if (!account) {
+        return '—';
+      }
+      if (account.type === ChainType.EVM) {
+        return (
+          <div className="portfolio-account-row">
+            <PortfolioAccountAvatar
+              kind="evm"
+              address={account.value}
+              className="portfolio-account-row__avatar"
+            />
+            <div className="portfolio-account-row__text">
+              {account.ensName ? (
+                <span className="portfolio-account-row__ens">
+                  {account.ensName}
+                </span>
+              ) : null}
+              <span className="portfolio-account-row__address">
+                {account.value}
+              </span>
+            </div>
+          </div>
+        );
+      }
       return (
         <div className="portfolio-account-row">
           <PortfolioAccountAvatar
-            kind="evm"
-            address={account.value}
+            kind="hive"
+            username={account.value}
             className="portfolio-account-row__avatar"
           />
           <div className="portfolio-account-row__text">
-            {account.ensName ? (
-              <span className="portfolio-account-row__ens">
-                {account.ensName}
-              </span>
-            ) : null}
             <span className="portfolio-account-row__address">
-              {account.value}
+              @{account.value}
             </span>
           </div>
         </div>
       );
-    }
-    return (
-      <div className="portfolio-account-row">
-        <PortfolioAccountAvatar
-          kind="hive"
-          username={account.value}
-          className="portfolio-account-row__avatar"
-        />
-        <div className="portfolio-account-row__text">
-          <span className="portfolio-account-row__address">
-            @{account.value}
-          </span>
+    },
+    [accountOptions],
+  );
+
+  const renderNetworkOption = useCallback(
+    (networkValue: string) => {
+      const option = networkSelectOptions.find(
+        (item) => item.value === networkValue,
+      );
+      if (!option) {
+        return '—';
+      }
+
+      return (
+        <div className="portfolio-network-row">
+          {option.img ? (
+            <PortfolioLogoImage
+              className="portfolio-network-row__logo"
+              src={option.img}
+              fallbackClassName="portfolio-network-row__logo-fallback"
+              fallbackLetter={option.label}
+              colorKey={option.label}
+            />
+          ) : null}
+          <span className="portfolio-network-row__label">{option.label}</span>
         </div>
-      </div>
-    );
-  };
-
-  const renderNetworkOption = (networkValue: string) => {
-    const option = networkSelectOptions.find(
-      (item) => item.value === networkValue,
-    );
-    if (!option) {
-      return '—';
-    }
-
-    return (
-      <div className="portfolio-network-row">
-        {option.img ? (
-          <PortfolioLogoImage
-            className="portfolio-network-row__logo"
-            src={option.img}
-            fallbackClassName="portfolio-network-row__logo-fallback"
-            fallbackLetter={option.label}
-            colorKey={option.label}
-          />
-        ) : null}
-        <span className="portfolio-network-row__label">{option.label}</span>
-      </div>
-    );
-  };
+      );
+    },
+    [networkSelectOptions],
+  );
 
   const renderFiatCurrencyOption = (currencyValue: string) => {
     const option =
@@ -2854,188 +2793,30 @@ export const Portfolio = ({
     );
   };
 
-  const renderRowActions = (row: PortfolioRow) => (
-    <div className="portfolio-row-actions">
-      {getRowActions().map((action) => (
-        <button
-          aria-label={I18nUtils.getMessage(`portfolio_section_${action}`)}
-          key={`${row.key}:${action}`}
-          onClick={() => openFlowForRow(row, action)}
-          title={I18nUtils.getMessage(`portfolio_section_${action}`)}
-          type="button">
-          <SVGIcon
-            icon={sectionIcons[action as PortfolioNavSection]}
-            className="portfolio-row-action-icon"
-          />
-        </button>
-      ))}
-    </div>
-  );
-
   const renderPortfolio = (isLoadingMoreChains = false) => (
-    <div className="portfolio-card-body">
-      {accountOptions.length > 0 && selectedAccount ? (
-        <div className="portfolio-sticky-menu-bar">
-          <div className="portfolio-header-row">
-            <PortfolioOverlayListSelect
-              id="portfolio-account"
-              label={I18nUtils.getMessage('portfolio_account')}
-              value={selectedAccountKey}
-              onChange={handleSelectedAccountChange}
-              options={overlayAccountOptions}
-              renderDisplay={renderAccountRow}
-              renderOption={renderAccountRow}
-            />
-            {selectedAccount.type === ChainType.EVM &&
-              setupEvmChains.length > 0 && (
-                <PortfolioOverlayListSelect
-                  id="portfolio-network"
-                  className="portfolio-header-row__network"
-                  label={I18nUtils.getMessage('portfolio_network')}
-                  value={selectedNetwork}
-                  onChange={setSelectedNetwork}
-                  options={overlayNetworkOptions}
-                  renderDisplay={renderNetworkOption}
-                  renderOption={renderNetworkOption}
-                />
-              )}
-          </div>
-          <div className="portfolio-token-filter">
-            <label htmlFor="portfolio-token-filter">
-              {I18nUtils.getMessage('portfolio_token_filter')}
-            </label>
-            <input
-              id="portfolio-token-filter"
-              type="text"
-              placeholder={I18nUtils.getMessage('portfolio_token_filter')}
-              value={tokenFilter}
-              onChange={(event) => setTokenFilter(event.target.value)}
-            />
-          </div>
-        </div>
-      ) : (
-        <div className="portfolio-empty">
-          {I18nUtils.getMessage('portfolio_no_assets')}
-        </div>
-      )}
-
-      <div className="portfolio-table-wrap">
-        <div className="portfolio-table-head">
-          <span>{I18nUtils.getMessage('portfolio_token')}</span>
-          <span>{I18nUtils.getMessage('portfolio_actions')}</span>
-          <span>{I18nUtils.getMessage('popup_html_transfer_amount')}</span>
-          <span>{I18nUtils.getMessage('portfolio_price')}</span>
-          <span>{I18nUtils.getMessage('portfolio_value')}</span>
-        </div>
-        {visibleRows.length === 0 ? (
-          <div className="portfolio-empty">
-            {I18nUtils.getMessage('portfolio_no_assets')}
-          </div>
-        ) : (
-          visibleRows.map((row) => {
-            const breakdownItems = getHiveEngineBalanceBreakdownItems(
-              row.breakdown,
-            );
-            const canExpandBreakdown = breakdownItems.length > 0;
-            const isExpanded =
-              canExpandBreakdown &&
-              expandedPortfolioRowKeys.includes(row.key);
-
-            return (
-              <div
-                className={`portfolio-table-row-group${
-                  isExpanded ? ' is-expanded' : ''
-                }`}
-                key={row.key}>
-                <div
-                  className={`portfolio-table-row${
-                    isExpanded ? ' is-expanded' : ''
-                  }`}>
-                  <PortfolioTokenIdentity
-                    {...portfolioRowToTokenIdentityProps({
-                      ...row,
-                      isHive: selectedAccount?.type === ChainType.HIVE,
-                    })}
-                  />
-                  {renderRowActions(row)}
-                  <span className="portfolio-number amount">
-                    {canExpandBreakdown ? (
-                      <button
-                        type="button"
-                        className="portfolio-amount-expand"
-                        aria-expanded={isExpanded}
-                        aria-label={I18nUtils.getMessage(
-                          isExpanded
-                            ? 'portfolio_he_breakdown_collapse'
-                            : 'portfolio_he_breakdown_expand',
-                        )}
-                        onClick={() => togglePortfolioRowExpanded(row.key)}>
-                        <SVGIcon
-                          icon={SVGIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
-                          className={`portfolio-row-expand-icon ${
-                            isExpanded ? 'open' : 'closed'
-                          }`}
-                        />
-                        <span className="portfolio-amount-total">
-                          {formatHiveEngineTokenAmount(
-                            row.balance,
-                            row.decimals,
-                          )}
-                        </span>
-                      </button>
-                    ) : (
-                      <span className="portfolio-amount-total">
-                        {row.breakdown
-                          ? formatHiveEngineTokenAmount(
-                              row.balance,
-                              row.decimals,
-                            )
-                          : formatTokenAmount(row.balance)}
-                      </span>
-                    )}
-                  </span>
-                  <span className="portfolio-number">
-                    {formatPrice(row.priceUsd)}
-                  </span>
-                  <strong className="portfolio-number">
-                    {formatUsd(row.usdValue)}
-                  </strong>
-                </div>
-                {isExpanded ? (
-                  <div className="portfolio-row-breakdown">
-                    {breakdownItems.map((item) => (
-                      <div
-                        className="portfolio-row-breakdown__item"
-                        key={`${row.key}:${item.key}`}>
-                        <span className="portfolio-row-breakdown__label">
-                          {item.label}
-                        </span>
-                        <span className="portfolio-row-breakdown__value">
-                          {formatHiveEngineTokenAmount(
-                            item.amount,
-                            row.decimals,
-                          )}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            );
-          })
-        )}
-      </div>
-
-      <div className="portfolio-total">
-        <span>{I18nUtils.getMessage('portfolio_total_value_usd')}</span>
-        <strong>{hasKnownValue ? formatUsd(totalUsd) : '—'}</strong>
-      </div>
-      {isLoadingMoreChains ? (
-        <div className="portfolio-loading-more">
-          <RotatingLogoComponent />
-        </div>
-      ) : null}
-    </div>
+    <PortfolioBalancesSection
+      hasAccounts={accountOptions.length > 0 && Boolean(selectedAccount)}
+      selectedAccountKey={selectedAccountKey}
+      isHiveAccount={selectedAccount?.type === ChainType.HIVE}
+      showNetworkFilter={
+        selectedAccount?.type === ChainType.EVM && setupEvmChains.length > 0
+      }
+      accountOptions={overlayAccountOptions}
+      networkOptions={overlayNetworkOptions}
+      selectedNetwork={selectedNetwork}
+      tokenFilter={tokenFilter}
+      rows={rows}
+      expandedRowKeys={expandedPortfolioRowKeys}
+      rowActions={portfolioRowActions}
+      isLoadingMoreChains={isLoadingMoreChains}
+      onSelectedAccountChange={handleSelectedAccountChange}
+      onSelectedNetworkChange={setSelectedNetwork}
+      onTokenFilterChange={handleTokenFilterChange}
+      onToggleRowExpanded={togglePortfolioRowExpanded}
+      onOpenFlowForRow={openFlowForRow}
+      renderAccountOption={renderAccountRow}
+      renderNetworkOption={renderNetworkOption}
+    />
   );
 
   const renderHistoryRefreshControl = () => {
