@@ -676,8 +676,11 @@
 }
 
 .portfolio-table-row-group {
+  width: 100%;
+  min-width: 760px;
   border-top: 1px solid var(--kc-color-border-subtle);
   background: var(--kc-color-bg-raised);
+  box-sizing: border-box;
 }
 
 .portfolio-table-row {
