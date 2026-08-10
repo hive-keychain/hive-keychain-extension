@@ -261,6 +261,32 @@ describe('PortfolioHistoryDisplayUtils', () => {
     });
   });
 
+  describe('resolvePortfolioHistoryDisplayToAmount', () => {
+    it('prefers receivedAmount when present', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistoryDisplayToAmount({
+          toAmount: '0.99',
+          receivedAmount: '0.985',
+        }),
+      ).toBe('0.985');
+    });
+
+    it('falls back to toAmount when receivedAmount is missing', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistoryDisplayToAmount({
+          toAmount: '0.99',
+          receivedAmount: null,
+        }),
+      ).toBe('0.99');
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistoryDisplayToAmount({
+          toAmount: '0.99',
+          receivedAmount: '   ',
+        }),
+      ).toBe('0.99');
+    });
+  });
+
   describe('resolvePortfolioAssetById', () => {
     it('finds the matching asset by assetId', () => {
       const asset = createAsset();
@@ -311,6 +337,16 @@ describe('PortfolioHistoryDisplayUtils', () => {
       expect(
         PortfolioHistoryDisplayUtils.getPortfolioHistoryAssetSymbol(null),
       ).toBe('');
+    });
+
+    it('uses fiatCurrency when the fiat leg has no asset id', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.getPortfolioHistoryAssetSymbol(
+          null,
+          undefined,
+          'usd',
+        ),
+      ).toBe('USD');
     });
   });
 

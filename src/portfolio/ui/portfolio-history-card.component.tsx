@@ -11,6 +11,7 @@ import {
   PortfolioChainDisplayRecord,
   PortfolioHistoryItem,
 } from 'src/portfolio/portfolio-api.interface';
+import { PortfolioFiatLocaleUtils } from 'src/portfolio/portfolio-fiat-locale.utils';
 import { PortfolioAccountAvatar } from 'src/portfolio/ui/portfolio-account-avatar.component';
 import { PortfolioHistoryDisplayUtils } from 'src/portfolio/ui/portfolio-history-display.utils';
 import {
@@ -43,13 +44,18 @@ const resolveTokenIdentity = (
   asset: PortfolioCanonicalAsset | undefined,
   chains: EvmChain[],
   portfolioChains: PortfolioChainDisplayRecord = {},
+  fiatCurrency: string | null = null,
 ): PortfolioTokenIdentityProps => {
   if (asset) {
     return canonicalAssetToTokenIdentityProps(asset, chains, portfolioChains);
   }
 
   return {
-    symbol: PortfolioHistoryDisplayUtils.getPortfolioHistoryAssetSymbol(assetId),
+    symbol: PortfolioHistoryDisplayUtils.getPortfolioHistoryAssetSymbol(
+      assetId,
+      undefined,
+      fiatCurrency,
+    ),
   };
 };
 
@@ -67,19 +73,23 @@ export const PortfolioHistoryCard = ({
     fromAsset,
     chains,
     portfolioChains,
+    item.fromAssetId ? null : item.fiatCurrency,
   );
   const toIdentity = resolveTokenIdentity(
     item.toAssetId,
     toAsset,
     chains,
     portfolioChains,
+    item.toAssetId ? null : item.fiatCurrency,
   );
 
   const fromAmount = PortfolioHistoryDisplayUtils.formatPortfolioHistoryAmount(
     item.fromAmount,
   );
+  const displayToAmount =
+    PortfolioHistoryDisplayUtils.resolvePortfolioHistoryDisplayToAmount(item);
   const toAmount = PortfolioHistoryDisplayUtils.formatPortfolioHistoryAmount(
-    item.toAmount,
+    displayToAmount,
   );
 
   const statusIcon = PortfolioHistoryDisplayUtils.getPortfolioHistoryStatusIcon(
@@ -214,12 +224,42 @@ export const PortfolioHistoryCard = ({
       ),
     });
   }
-  if (item.toAmount) {
+  if (item.receivedAmount) {
     detailRows.push({
-      label: I18nUtils.getMessage('portfolio_history_exact_to_amount'),
+      label: I18nUtils.getMessage('portfolio_history_received_amount'),
+      value: renderCopyableValue(
+        formatExactAmountValue(item.receivedAmount, toIdentity.symbol),
+      ),
+    });
+  }
+  if (
+    item.toAmount &&
+    (!item.receivedAmount || item.toAmount.trim() !== item.receivedAmount.trim())
+  ) {
+    detailRows.push({
+      label: I18nUtils.getMessage(
+        item.receivedAmount
+          ? 'portfolio_history_estimated_to_amount'
+          : 'portfolio_history_exact_to_amount',
+      ),
       value: renderCopyableValue(
         formatExactAmountValue(item.toAmount, toIdentity.symbol),
       ),
+    });
+  }
+  if (item.fiatCurrency) {
+    detailRows.push({
+      label: I18nUtils.getMessage('portfolio_history_fiat_currency'),
+      value: item.fiatCurrency.trim().toUpperCase(),
+    });
+  }
+  if (item.paymentMethod) {
+    detailRows.push({
+      label: I18nUtils.getMessage('portfolio_history_payment_method'),
+      value: PortfolioFiatLocaleUtils.getPaymentMethodLabel({
+        id: item.paymentMethod,
+        label: '',
+      }),
     });
   }
 

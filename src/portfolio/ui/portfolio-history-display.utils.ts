@@ -235,6 +235,21 @@ const formatPortfolioHistoryAmount = (amount: string | null): string => {
   return FormatUtils.withCommas(normalized, 6, true);
 };
 
+/**
+ * Prefers the provider-reported fill when status refresh has persisted one.
+ * Falls back to the quote estimate (`toAmount`) until then.
+ */
+const resolvePortfolioHistoryDisplayToAmount = (
+  item: Pick<PortfolioHistoryItem, 'toAmount' | 'receivedAmount'>,
+): string | null => {
+  const receivedAmount = item.receivedAmount?.trim();
+  if (receivedAmount) {
+    return receivedAmount;
+  }
+
+  return item.toAmount;
+};
+
 const resolvePortfolioAssetById = (
   assetId: string | null,
   assets: PortfolioCanonicalAsset[],
@@ -244,13 +259,15 @@ const resolvePortfolioAssetById = (
 const getPortfolioHistoryAssetSymbol = (
   assetId: string | null,
   asset?: PortfolioCanonicalAsset,
+  fiatCurrency?: string | null,
 ): string => {
   if (asset?.symbol) {
     return asset.symbol;
   }
 
   if (!assetId) {
-    return '';
+    const fiatSymbol = fiatCurrency?.trim();
+    return fiatSymbol ? fiatSymbol.toUpperCase() : '';
   }
 
   const tail = assetId.split(':').filter(Boolean).pop() ?? assetId;
@@ -272,6 +289,7 @@ export const PortfolioHistoryDisplayUtils = {
   resolvePortfolioHistoryStatusLabelKey,
   isCreatedOrExpiredHistoryStatus,
   formatPortfolioHistoryAmount,
+  resolvePortfolioHistoryDisplayToAmount,
   resolvePortfolioAssetById,
   getPortfolioHistoryAssetSymbol,
   resolvePortfolioHistoryExplorerUrl,

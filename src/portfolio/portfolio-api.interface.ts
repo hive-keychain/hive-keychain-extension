@@ -240,11 +240,18 @@ export interface PortfolioExecution {
   fromAssetId: string | null;
   toAssetId: string | null;
   fromAmount: string | null;
+  /** Quote estimate persisted at accept time. */
   toAmount: string | null;
+  /** Actual destination fill from provider status; null until known. */
+  receivedAmount: string | null;
   fromAddress: string | null;
   toAddress: string | null;
   redirectUrl: string | null;
   transaction: PortfolioQuoteTransaction | null;
+  /** ISO fiat currency for buy/sell (`USD`, …). Null for swap/bridge. */
+  fiatCurrency: string | null;
+  /** Payment method for buy/sell when known. Null for swap/bridge. */
+  paymentMethod: string | null;
   submittedAt: string | null;
   updatedAt: string | null;
 }

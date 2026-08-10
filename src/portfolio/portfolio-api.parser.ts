@@ -643,10 +643,13 @@ const parsePortfolioExecution = (value: unknown): PortfolioExecution | null => {
     toAssetId: readNullableString(value, 'toAssetId'),
     fromAmount: readNullableString(value, 'fromAmount'),
     toAmount: readNullableString(value, 'toAmount'),
+    receivedAmount: readNullableString(value, 'receivedAmount'),
     fromAddress: readNullableString(value, 'fromAddress'),
     toAddress: readNullableString(value, 'toAddress'),
     redirectUrl: readNullableString(value, 'redirectUrl'),
     transaction: parsePortfolioQuoteTransaction(value.transaction),
+    fiatCurrency: readNullableString(value, 'fiatCurrency'),
+    paymentMethod: readNullableString(value, 'paymentMethod'),
     submittedAt: readNullableString(value, 'submittedAt'),
     updatedAt: readNullableString(value, 'updatedAt'),
   };
