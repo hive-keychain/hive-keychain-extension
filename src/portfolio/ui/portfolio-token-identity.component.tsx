@@ -21,6 +21,8 @@ export type PortfolioTokenIdentityProps = {
   networkLogoUrl?: string | null;
   isHive?: boolean;
   balance?: string;
+  /** Full avatar fallback (e.g. fiat narrow symbol). Defaults to the first letter of symbol. */
+  avatarFallback?: string;
 };
 
 export const PortfolioTokenIdentity = React.memo(({
@@ -30,6 +32,7 @@ export const PortfolioTokenIdentity = React.memo(({
   networkLogoUrl,
   isHive = false,
   balance,
+  avatarFallback,
 }: PortfolioTokenIdentityProps) => {
   const displaySymbol = symbol.toUpperCase();
   const hiveIcon = isHive
@@ -47,6 +50,7 @@ export const PortfolioTokenIdentity = React.memo(({
             className="currency-icon"
             fallbackClassName="portfolio-token-avatar"
             fallbackLetter={displaySymbol}
+            fallbackText={avatarFallback}
             colorKey={displaySymbol}
           />
         )}

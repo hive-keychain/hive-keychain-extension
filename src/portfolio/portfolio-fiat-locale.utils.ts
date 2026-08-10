@@ -531,6 +531,35 @@ const getFiatCurrencyFlagEmoji = (currencyCode: string): string => {
   return region ? IsoCountryCodeUtils.getIsoCountryFlagEmoji(region) : '';
 };
 
+const getFiatCurrencyNarrowSymbol = (
+  currencyCode: string,
+  locale = getUiLocale(),
+): string => {
+  const normalized = normalizeFiatCurrencyCode(currencyCode);
+  if (!/^[A-Z]{3}$/.test(normalized)) {
+    return normalized.slice(0, 1);
+  }
+
+  try {
+    const currencyPart = new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: normalized,
+      currencyDisplay: 'narrowSymbol',
+    })
+      .formatToParts(0)
+      .find((part) => part.type === 'currency')?.value;
+
+    const symbol = currencyPart?.trim();
+    // When Intl has no narrow glyph it often returns the ISO code itself.
+    if (!symbol || symbol.toUpperCase() === normalized) {
+      return normalized.slice(0, 1);
+    }
+    return symbol;
+  } catch {
+    return normalized.slice(0, 1);
+  }
+};
+
 const getFiatCurrencySelectLabel = (
   currencyCode: string,
   locale = getUiLocale(),
@@ -561,6 +590,7 @@ export const PortfolioFiatLocaleUtils = {
   getFiatCurrencyDisplayName,
   getFiatCurrencyFlagEmoji,
   getFiatCurrencyForRegion,
+  getFiatCurrencyNarrowSymbol,
   getFiatCurrencySelectLabel,
   getFiatCurrencySelectOptionFields,
   getPaymentMethodLabel,

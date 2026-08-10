@@ -50,13 +50,21 @@ const resolveTokenIdentity = (
     return canonicalAssetToTokenIdentityProps(asset, chains, portfolioChains);
   }
 
-  return {
-    symbol: PortfolioHistoryDisplayUtils.getPortfolioHistoryAssetSymbol(
-      assetId,
-      undefined,
-      fiatCurrency,
-    ),
-  };
+  const symbol = PortfolioHistoryDisplayUtils.getPortfolioHistoryAssetSymbol(
+    assetId,
+    undefined,
+    fiatCurrency,
+  );
+
+  if (!assetId && fiatCurrency?.trim()) {
+    return {
+      symbol,
+      avatarFallback:
+        PortfolioFiatLocaleUtils.getFiatCurrencyNarrowSymbol(fiatCurrency),
+    };
+  }
+
+  return { symbol };
 };
 
 export const PortfolioHistoryCard = ({

@@ -105,6 +105,21 @@ describe('PortfolioFiatLocaleUtils', () => {
     ).toBe('ZZZ');
   });
 
+  it('resolves narrow currency symbols for fiat avatar fallbacks', () => {
+    expect(
+      PortfolioFiatLocaleUtils.getFiatCurrencyNarrowSymbol('EUR', 'en-US'),
+    ).toBe('€');
+    expect(
+      PortfolioFiatLocaleUtils.getFiatCurrencyNarrowSymbol('usd', 'en-US'),
+    ).toBe('$');
+    expect(
+      PortfolioFiatLocaleUtils.getFiatCurrencyNarrowSymbol('GBP', 'en-US'),
+    ).toBe('£');
+    expect(
+      PortfolioFiatLocaleUtils.getFiatCurrencyNarrowSymbol('ZZZ', 'en-US'),
+    ).toBe('Z');
+  });
+
   it('translates known payment method ids and falls back to API labels', () => {
     jest
       .spyOn(I18nUtils, 'getMessage')

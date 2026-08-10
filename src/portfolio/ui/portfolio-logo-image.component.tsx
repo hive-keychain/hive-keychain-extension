@@ -5,7 +5,10 @@ type Props = {
   src?: string | null;
   className?: string;
   fallbackClassName?: string;
+  /** First character used as the letter avatar when no image is available. */
   fallbackLetter?: string;
+  /** Full fallback label (e.g. fiat narrow symbol). Takes precedence over fallbackLetter. */
+  fallbackText?: string;
   colorKey?: string;
 };
 
@@ -14,6 +17,7 @@ export const PortfolioLogoImage = ({
   className,
   fallbackClassName,
   fallbackLetter = '',
+  fallbackText,
   colorKey,
 }: Props) => {
   const [failed, setFailed] = useState(false);
@@ -23,7 +27,8 @@ export const PortfolioLogoImage = ({
   }, [src]);
 
   const trimmedSrc = src?.trim() ?? '';
-  const letter = fallbackLetter.slice(0, 1);
+  const trimmedFallbackText = fallbackText?.trim() ?? '';
+  const letter = trimmedFallbackText || fallbackLetter.slice(0, 1);
 
   if (!trimmedSrc || failed) {
     if (!letter) {

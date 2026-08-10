@@ -42,4 +42,20 @@ describe('PortfolioLogoImage', () => {
 
     expect(container.firstChild).toBeNull();
   });
+
+  it('prefers full fallback text over the truncated fallback letter', () => {
+    render(
+      <PortfolioLogoImage
+        src={null}
+        className="token-logo"
+        fallbackClassName="token-fallback"
+        fallbackLetter="EUR"
+        fallbackText="€"
+        colorKey="EUR"
+      />,
+    );
+
+    expect(screen.getByText('€')).toBeTruthy();
+    expect(screen.queryByText('E')).toBeNull();
+  });
 });
