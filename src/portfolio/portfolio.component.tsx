@@ -591,6 +591,7 @@ export const Portfolio = ({
   const [pendingInAppConfirmation, setPendingInAppConfirmation] =
     useState<PortfolioInAppConfirmationContext | null>(null);
   const hasUserSelectedAccountRef = useRef(false);
+  const sectionRef = useRef(section);
   const hasLoadedSharedPortfolioDataRef = useRef(false);
   const hasPreloadedSwapAvailableAssetsRef = useRef(false);
   const swapAvailableAssetsLoadedRef = useRef(false);
@@ -599,6 +600,10 @@ export const Portfolio = ({
   const [accountOptions, setAccountOptions] = useState<AccountOption[]>(() =>
     buildDefaultPortfolioAccountOptions(hiveAccounts, evmAccounts),
   );
+
+  useEffect(() => {
+    sectionRef.current = section;
+  }, [section]);
 
   useEffect(() => {
     replacePortfolioSectionHash(section);
@@ -917,6 +922,53 @@ export const Portfolio = ({
     return canonicalAssetById.get(toAssetId);
   }, [canonicalAssetById, toAssetId]);
 
+  // Buy filters destination accounts by to-asset type. Sell is wallet-first,
+  // so it uses the full account list and derives assets from that wallet.
+  const flowAccountKind =
+    section === 'buy'
+      ? PortfolioFlowUtils.resolvePortfolioFlowAccountKindForAsset(
+          toCanonicalAsset,
+        )
+      : undefined;
+
+  const flowAccountOptions = useMemo(() => {
+    if (section !== 'buy' || !flowAccountKind) {
+      return accountOptions;
+    }
+
+    const requiredType =
+      flowAccountKind === 'hive' ? ChainType.HIVE : ChainType.EVM;
+
+    return accountOptions.filter((account) => account.type === requiredType);
+  }, [accountOptions, flowAccountKind, section]);
+
+  const flowOverlayAccountOptions = useMemo(
+    () =>
+      flowAccountOptions.map((account) => ({
+        value: account.key,
+        label: account.label,
+      })),
+    [flowAccountOptions],
+  );
+
+  const flowSelectedAccount = useMemo(() => {
+    if (section === 'buy' && flowAccountKind) {
+      return (
+        flowAccountOptions.find(
+          (account) => account.key === selectedAccountKey,
+        ) ?? flowAccountOptions[0]
+      );
+    }
+
+    return selectedAccount;
+  }, [
+    flowAccountKind,
+    flowAccountOptions,
+    section,
+    selectedAccount,
+    selectedAccountKey,
+  ]);
+
   const requiresRecipientInput = useMemo(
     () =>
       section !== 'sell' &&
@@ -938,14 +990,14 @@ export const Portfolio = ({
   const flowMode = section as PortfolioMode;
 
   const selectedAccountFromAddress = useMemo(() => {
-    if (!selectedAccount) {
+    if (!flowSelectedAccount) {
       return undefined;
     }
 
-    return selectedAccount.type === ChainType.EVM
-      ? selectedAccount.account.wallet.address
-      : selectedAccount.account.name;
-  }, [selectedAccount]);
+    return flowSelectedAccount.type === ChainType.EVM
+      ? flowSelectedAccount.account.wallet.address
+      : flowSelectedAccount.account.name;
+  }, [flowSelectedAccount]);
 
   const resolvedToAddress = useMemo(() => {
     if (!selectedAccountFromAddress) {
@@ -1402,6 +1454,36 @@ export const Portfolio = ({
     activeHiveAccountName,
   ]);
 
+  useEffect(() => {
+    if (section !== 'buy' || !flowAccountKind || !flowAccountOptions.length) {
+      return;
+    }
+
+    const requiredType =
+      flowAccountKind === 'hive' ? ChainType.HIVE : ChainType.EVM;
+    const nextAccountKey = resolveDefaultPortfolioAccountKey(
+      flowAccountOptions,
+      requiredType,
+      activeEvmAccountAddress,
+      activeHiveAccountName,
+    );
+    if (!nextAccountKey) {
+      return;
+    }
+
+    setSelectedAccountKey((currentAccountKey) =>
+      flowAccountOptions.some((account) => account.key === currentAccountKey)
+        ? currentAccountKey
+        : nextAccountKey,
+    );
+  }, [
+    activeEvmAccountAddress,
+    activeHiveAccountName,
+    flowAccountKind,
+    flowAccountOptions,
+    section,
+  ]);
+
   const handleSelectedAccountChange = useCallback((accountKey: string) => {
     hasUserSelectedAccountRef.current = true;
     setExpandedPortfolioRowKeys([]);
@@ -1485,6 +1567,16 @@ export const Portfolio = ({
   };
 
   useEffect(() => {
+    // Buy destination account is independent of asset/amount selections.
+    if (sectionRef.current === 'buy') {
+      setRecipientAddress('');
+      setRecipientFieldError(undefined);
+      setAmountQuoteError(null);
+      setPendingInAppConfirmation(null);
+      setIsQuotesPanelExpanded(false);
+      return;
+    }
+
     setFromAssetId('');
     setToAssetId('');
     setToAssetFilter('');
@@ -2523,7 +2615,7 @@ export const Portfolio = ({
   };
 
   const executeQuote = async (quote: PortfolioQuote) => {
-    if (!selectedAccount || !quoteResponse) return;
+    if (!flowSelectedAccount || !quoteResponse) return;
     const address = selectedAccountFromAddress;
     if (!address) {
       return;
@@ -2563,12 +2655,12 @@ export const Portfolio = ({
         }
 
         if (isPortfolioHiveTransaction(transaction)) {
-          if (selectedAccount.type !== ChainType.HIVE) {
+          if (flowSelectedAccount.type !== ChainType.HIVE) {
             throw new Error('portfolio_native_execution_requires_hive');
           }
           setPendingInAppConfirmation(
             await buildHiveInAppConfirmationContext(
-              selectedAccount.account,
+              flowSelectedAccount.account,
               execution.id,
               quote,
               transaction,
@@ -2580,12 +2672,12 @@ export const Portfolio = ({
         }
 
         if (isPortfolioEvmTransaction(transaction)) {
-          if (selectedAccount.type !== ChainType.EVM) {
+          if (flowSelectedAccount.type !== ChainType.EVM) {
             throw new Error('portfolio_native_execution_requires_evm');
           }
           setPendingInAppConfirmation(
             await buildEvmInAppConfirmationContext(
-              selectedAccount.account,
+              flowSelectedAccount.account,
               execution.id,
               quote,
               transaction,
@@ -3256,23 +3348,35 @@ export const Portfolio = ({
       </div>
     );
 
+    const shouldShowFlowAccountSelect =
+      flowAccountOptions.length > 0 && Boolean(selectedAccount);
+    const shouldShowFlowAccountSelectUpFront =
+      mode === 'swap' || mode === 'sell';
+    const shouldShowFlowAccountSelectAfterFields =
+      mode === 'buy' && Boolean(flowAccountKind);
+
+    const flowAccountSelectValue =
+      flowSelectedAccount?.key ||
+      flowAccountOptions[0]?.key ||
+      selectedAccountKey;
+
+    const flowAccountSelect = shouldShowFlowAccountSelect ? (
+      <div className="portfolio-flow-group">
+        <PortfolioOverlayListSelect
+          id="portfolio-flow-account"
+          label={I18nUtils.getMessage('portfolio_account')}
+          value={flowAccountSelectValue}
+          onChange={handleSelectedAccountChange}
+          options={flowOverlayAccountOptions}
+          renderDisplay={renderAccountRow}
+          renderOption={renderAccountRow}
+        />
+      </div>
+    ) : null;
+
     return (
       <div className="portfolio-flow">
-        {isQuoteAutoFetchSection(mode) &&
-          accountOptions.length > 0 &&
-          selectedAccount && (
-            <div className="portfolio-flow-group">
-              <PortfolioOverlayListSelect
-                id="portfolio-flow-account"
-                label={I18nUtils.getMessage('portfolio_account')}
-                value={selectedAccountKey}
-                onChange={handleSelectedAccountChange}
-                options={overlayAccountOptions}
-                renderDisplay={renderAccountRow}
-                renderOption={renderAccountRow}
-              />
-            </div>
-          )}
+        {shouldShowFlowAccountSelectUpFront ? flowAccountSelect : null}
         {mode === 'buy' ? (
           <>
             <div className="portfolio-flow-group">
@@ -3295,16 +3399,17 @@ export const Portfolio = ({
                 toAssetSelect
               )}
               {paymentMethodField}
-              {renderQuotesSection()}
             </div>
+            {shouldShowFlowAccountSelectAfterFields ? flowAccountSelect : null}
+            {renderQuotesSection()}
           </>
         ) : mode === 'sell' ? (
           <>
             <div className="portfolio-flow-group">
-              <div className="portfolio-flow-pair-row portfolio-flow-pair-row--amount-first">
-                {amountField}
+              <div className="portfolio-flow-pair-row">
+                {fromAssetSelect}
                 <div className="portfolio-flow-pair-row__secondary">
-                  {fromAssetSelect}
+                  {amountField}
                 </div>
               </div>
             </div>

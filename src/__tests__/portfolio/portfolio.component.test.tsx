@@ -2441,6 +2441,261 @@ describe('Portfolio', () => {
     });
   });
 
+  it('places the buy account selector after payment method and filters by to-asset type', async () => {
+    const hiveAlice = { name: 'alice' } as never;
+    const evmAccount = {
+      id: 1,
+      seedId: 1,
+      wallet: { address: '0xabc' },
+      hide: false,
+    } as never;
+    const hiveAsset = {
+      assetId: 'hive-hive',
+      ecosystem: 'hive',
+      symbol: 'HIVE',
+      name: 'Hive',
+      chainId: 'hive',
+      address: null,
+      decimals: 3,
+      isNative: true,
+      familyId: 'hive',
+      logoUrl: null,
+      priceUsd: 0,
+      rankScore: 100,
+    };
+    const ethAsset = {
+      assetId: 'evm:native:ethereum',
+      ecosystem: 'evm',
+      symbol: 'ETH',
+      name: 'Ethereum',
+      chainId: 'ethereum',
+      address: null,
+      decimals: 18,
+      isNative: true,
+      familyId: 'eth',
+      logoUrl: null,
+      priceUsd: 0,
+      rankScore: 90,
+    };
+
+    jest
+      .spyOn(AccountSelectorOrderUtils, 'loadOrderedListItems')
+      .mockResolvedValue({
+        displayOrder: [
+          { type: 'hive', name: 'alice' },
+          { type: 'evm', seedId: 1, accountId: 1 },
+        ],
+        listItems: [
+          { type: ChainType.HIVE, id: 'hive-alice', account: hiveAlice },
+          { type: ChainType.EVM, id: 'evm-0xabc', account: evmAccount },
+        ],
+      });
+
+    (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockResolvedValue({
+      mode: 'buy',
+      direction: 'to',
+      sourceAssetId: null,
+      assets: [hiveAsset, ethAsset],
+      chains: {},
+    });
+
+    const selectBuyToAsset = async (
+      container: HTMLElement,
+      matcher: (text: string) => boolean,
+    ) => {
+      fireEvent.click(
+        container.querySelector('#portfolio-to-asset') as HTMLButtonElement,
+      );
+      await waitFor(() => {
+        expect(
+          container.querySelector('#portfolio-to-asset-listbox'),
+        ).not.toBeNull();
+      });
+
+      const option = [
+        ...container.querySelectorAll(
+          '#portfolio-to-asset-listbox [role="option"]',
+        ),
+      ].find((item) => matcher(item.textContent ?? ''));
+      expect(option).toBeTruthy();
+      fireEvent.click(option as HTMLButtonElement);
+    };
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[hiveAlice]}
+        evmAccounts={[evmAccount]}
+        mk="test-mk"
+        activeAccountType={ChainType.HIVE}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName="alice"
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('.portfolio-sidebar')).not.toBeNull();
+    });
+
+    clickPortfolioNav(container, 'buy');
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-to-asset')).not.toBeNull();
+      expect(container.querySelector('#portfolio-payment-method')).not.toBeNull();
+      expect(container.querySelector('#portfolio-flow-account')).not.toBeNull();
+    });
+
+    const flow = container.querySelector('.portfolio-flow') as HTMLElement;
+    const paymentMethodIndex = flow.innerHTML.indexOf(
+      'id="portfolio-payment-method"',
+    );
+    const accountIndex = flow.innerHTML.indexOf('id="portfolio-flow-account"');
+    expect(paymentMethodIndex).toBeGreaterThan(-1);
+    expect(accountIndex).toBeGreaterThan(paymentMethodIndex);
+
+    await selectBuyToAsset(container, (text) => text.includes('HIVE'));
+
+    await waitFor(() => {
+      const accountButton = container.querySelector(
+        '#portfolio-flow-account',
+      ) as HTMLButtonElement;
+      expect(accountButton.textContent).toContain('alice');
+      expect(accountButton.textContent).not.toContain('0xabc');
+    });
+
+    fireEvent.click(
+      container.querySelector('#portfolio-flow-account') as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
+      const accountOptions = container.querySelectorAll(
+        '#portfolio-flow-account-listbox [role="option"]',
+      );
+      const optionTexts = [...accountOptions].map(
+        (option) => option.textContent ?? '',
+      );
+      expect(optionTexts).toHaveLength(1);
+      expect(optionTexts[0]).toContain('alice');
+    });
+
+    fireEvent.click(
+      container.querySelector('#portfolio-flow-account') as HTMLButtonElement,
+    );
+
+    await selectBuyToAsset(
+      container,
+      (text) => text.includes('Ethereum') || /\bETH\b/.test(text),
+    );
+
+    await waitFor(() => {
+      const accountButton = container.querySelector(
+        '#portfolio-flow-account',
+      ) as HTMLButtonElement;
+      expect(accountButton.textContent).toContain('0xabc');
+      expect(accountButton.textContent).not.toContain('alice');
+    });
+
+    fireEvent.click(
+      container.querySelector('#portfolio-flow-account') as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
+      const accountOptions = container.querySelectorAll(
+        '#portfolio-flow-account-listbox [role="option"]',
+      );
+      const optionTexts = [...accountOptions].map(
+        (option) => option.textContent ?? '',
+      );
+      expect(optionTexts).toHaveLength(1);
+      expect(optionTexts[0]).toContain('0xabc');
+    });
+  });
+
+  it('orders sell fields as wallet, asset, then amount', async () => {
+    (
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains as jest.Mock
+    ).mockImplementation(async (_chains, _walletAddress, options) => {
+      options?.onChainReady?.(ethereumChain, [ethToken]);
+      options?.onChainFinished?.(ethereumChain);
+      return [ethToken];
+    });
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
+      assets: [swapAssetsFixture[0]],
+      chains: {},
+    });
+    (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockResolvedValue({
+      mode: 'sell',
+      direction: 'from',
+      sourceAssetId: null,
+      assets: [swapAssetsFixture[0]],
+      chains: {},
+    });
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[{ name: 'alice' } as never]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName="alice"
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+    });
+
+    clickPortfolioNav(container, 'sell');
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-flow-account')).not.toBeNull();
+      expect(container.querySelector('#portfolio-from-asset')).not.toBeNull();
+      expect(
+        container.querySelector(
+          '.portfolio-flow .portfolio-amount-field input[type="number"]',
+        ),
+      ).not.toBeNull();
+    });
+
+    const flowHtml = (
+      container.querySelector('.portfolio-flow') as HTMLElement
+    ).innerHTML;
+    const accountIndex = flowHtml.indexOf('id="portfolio-flow-account"');
+    const fromAssetIndex = flowHtml.indexOf('id="portfolio-from-asset"');
+    const amountIndex = flowHtml.indexOf('portfolio-amount-field');
+
+    expect(accountIndex).toBeGreaterThan(-1);
+    expect(fromAssetIndex).toBeGreaterThan(accountIndex);
+    expect(amountIndex).toBeGreaterThan(fromAssetIndex);
+
+    fireEvent.click(
+      container.querySelector('#portfolio-flow-account') as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
+      const accountOptions = container.querySelectorAll(
+        '#portfolio-flow-account-listbox [role="option"]',
+      );
+      const optionTexts = [...accountOptions].map(
+        (option) => option.textContent ?? '',
+      );
+      expect(optionTexts.some((text) => text.includes('0xabc'))).toBe(true);
+      expect(optionTexts.some((text) => text.includes('alice'))).toBe(true);
+    });
+  });
+
   it('sets the sell amount to the selected source balance', async () => {
     (
       EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains as jest.Mock

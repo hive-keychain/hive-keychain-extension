@@ -1279,6 +1279,29 @@ describe('PortfolioFlowUtils', () => {
     ).toBeUndefined();
   });
 
+  it('maps buy/sell destination assets to hive or evm account kinds', () => {
+    expect(
+      PortfolioFlowUtils.resolvePortfolioFlowAccountKindForAsset(hiveAsset),
+    ).toBe('hive');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioFlowAccountKindForAsset(hbdAsset),
+    ).toBe('hive');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioFlowAccountKindForAsset(
+        hiveEngineAsset,
+      ),
+    ).toBe('hive');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioFlowAccountKindForAsset(ethAsset),
+    ).toBe('evm');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioFlowAccountKindForAsset(btcAsset),
+    ).toBe('evm');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioFlowAccountKindForAsset(undefined),
+    ).toBeUndefined();
+  });
+
   it('requires a separate recipient address for hive to evm and evm to hive swaps', () => {
     expect(
       PortfolioFlowUtils.requiresPortfolioRecipientAddress(hiveAsset, ethAsset),

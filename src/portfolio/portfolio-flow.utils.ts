@@ -1490,6 +1490,18 @@ export const isHivePortfolioEcosystem = (
   ecosystem: PortfolioCanonicalAsset['ecosystem'],
 ): boolean => HIVE_PORTFOLIO_ECOSYSTEMS.has(ecosystem);
 
+export type PortfolioFlowAccountKind = 'hive' | 'evm';
+
+export const resolvePortfolioFlowAccountKindForAsset = (
+  asset: PortfolioCanonicalAsset | undefined,
+): PortfolioFlowAccountKind | undefined => {
+  if (!asset) {
+    return undefined;
+  }
+
+  return isHivePortfolioEcosystem(asset.ecosystem) ? 'hive' : 'evm';
+};
+
 export const requiresPortfolioRecipientAddress = (
   fromAsset: PortfolioCanonicalAsset | undefined,
   toAsset: PortfolioCanonicalAsset | undefined,
@@ -1758,6 +1770,7 @@ export const PortfolioFlowUtils = {
   isDestinationOnlyPortfolioEcosystem,
   isEligibleToAssetForFromAsset,
   isHivePortfolioEcosystem,
+  resolvePortfolioFlowAccountKindForAsset,
   isPortfolioSwapExcludedAsset,
   isPortfolioSwapExcludedSymbol,
   isValidPortfolioRecipientAddress,
