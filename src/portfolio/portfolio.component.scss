@@ -129,9 +129,17 @@
   }
 
   .rotating-logo-wrapper {
+    box-sizing: border-box;
     display: flex;
+    align-items: center;
     justify-content: center;
+    align-self: stretch;
+    width: 100%;
     padding: var(--kc-space-6);
+
+    .rotating-logo {
+      margin-inline: auto;
+    }
   }
 }
 
@@ -1232,8 +1240,14 @@
 
 .portfolio-loading-more {
   display: flex;
+  align-items: center;
   justify-content: center;
+  width: 100%;
   padding: var(--kc-space-4) 0 0;
+
+  .rotating-logo {
+    margin-inline: auto;
+  }
 }
 
 .portfolio-status {
