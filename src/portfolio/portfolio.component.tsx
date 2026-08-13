@@ -15,6 +15,7 @@ import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.inter
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountTokensLoadUtils } from '@popup/evm/utils/evm-account-tokens-load.utils';
+import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { evmChainIdToDecimalPathSegment } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
@@ -158,7 +159,7 @@ type AccountOption =
       type: ChainType.EVM;
       label: string;
       value: string;
-      ensName?: string;
+      accountName: string;
       account: EvmAccount;
     };
 type PortfolioRow = {
@@ -440,12 +441,14 @@ const mapAccountSelectorListItemToPortfolioAccountOption = (
     };
   }
 
+  const accountName = EvmAccountUtils.getAccountName(item.account);
+
   return {
     key: `evm:${item.account.wallet.address.toLowerCase()}`,
     type: ChainType.EVM,
-    label: item.account.nickname || item.account.wallet.address,
+    label: accountName,
     value: item.account.wallet.address,
-    ensName: item.account.nickname,
+    accountName,
     account: item.account,
   };
 };
@@ -2770,9 +2773,9 @@ export const Portfolio = ({
               className="portfolio-account-row__avatar"
             />
             <div className="portfolio-account-row__text">
-              {account.ensName ? (
+              {account.accountName ? (
                 <span className="portfolio-account-row__ens">
-                  {account.ensName}
+                  {account.accountName}
                 </span>
               ) : null}
               <span className="portfolio-account-row__address">

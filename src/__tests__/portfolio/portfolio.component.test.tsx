@@ -2319,6 +2319,57 @@ describe('Portfolio', () => {
     });
   });
 
+  it('shows fallback names for every unnamed EVM account in flow dropdowns', async () => {
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 0,
+            seedId: 1,
+            nickname: 'Main account',
+            wallet: { address: '0xabc' },
+          } as never,
+          {
+            id: 1,
+            seedId: 1,
+            wallet: { address: '0xdef' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    clickPortfolioNav(container, 'swap');
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-flow-account')).not.toBeNull();
+    });
+
+    fireEvent.click(
+      container.querySelector('#portfolio-flow-account') as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
+      const optionTexts = [
+        ...container.querySelectorAll(
+          '#portfolio-flow-account-listbox [role="option"]',
+        ),
+      ].map((option) => option.textContent ?? '');
+
+      expect(optionTexts).toHaveLength(2);
+      expect(optionTexts[0]).toContain('Main account');
+      expect(optionTexts[1]).toContain('Account 2');
+      expect(optionTexts[1]).toContain('0xdef');
+    });
+  });
+
   it('orders portfolio accounts using the account selector display order', async () => {
     const hiveAlice = { name: 'alice' } as never;
     const evmAccount = {
