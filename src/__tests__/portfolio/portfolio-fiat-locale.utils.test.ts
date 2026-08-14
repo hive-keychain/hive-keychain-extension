@@ -200,5 +200,48 @@ describe('PortfolioFiatLocaleUtils', () => {
       PortfolioFiatLocaleUtils.getPaymentMethodLogo('UNKNOWN_METHOD'),
     ).toBeUndefined();
   });
+
+  it('collapses catalog methods that share a group into one picker row', () => {
+    expect(
+      PortfolioFiatLocaleUtils.toPaymentMethodPickerItems([
+        {
+          id: 'CREDIT_DEBIT_CARD',
+          label: 'Credit / debit card',
+          group: { id: 'card', label: 'Credit / debit card' },
+        },
+        {
+          id: 'SEPA_BANK_TRANSFER',
+          label: 'SEPA bank transfer',
+          group: { id: 'bank_transfer', label: 'Bank transfer' },
+        },
+        {
+          id: 'ACH_BANK_TRANSFER',
+          label: 'ACH bank transfer',
+          group: { id: 'bank_transfer', label: 'Bank transfer' },
+        },
+        {
+          id: 'PIX_INSTANT_PAYMENT',
+          label: 'PIX',
+          group: { id: 'pix', label: 'PIX' },
+        },
+      ]),
+    ).toEqual([
+      { id: 'card', label: 'Credit / debit card' },
+      { id: 'bank_transfer', label: 'Bank transfer' },
+      { id: 'pix', label: 'PIX' },
+    ]);
+  });
+
+  it('keeps ungrouped catalog methods as their own picker rows', () => {
+    expect(
+      PortfolioFiatLocaleUtils.toPaymentMethodPickerItems([
+        { id: 'SEPA_BANK_TRANSFER', label: 'SEPA bank transfer' },
+        { id: 'ACH_BANK_TRANSFER', label: 'ACH bank transfer' },
+      ]),
+    ).toEqual([
+      { id: 'SEPA_BANK_TRANSFER', label: 'SEPA bank transfer' },
+      { id: 'ACH_BANK_TRANSFER', label: 'ACH bank transfer' },
+    ]);
+  });
 });
 

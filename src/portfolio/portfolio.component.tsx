@@ -1345,16 +1345,17 @@ export const Portfolio = ({
     fallbackFiatCurrencyOption;
 
   const paymentMethodSelectOptions = useMemo<OptionItem[]>(() => {
-    const methods =
-      fiatRampOptions?.paymentMethods.map((method) => {
-        const logo = PortfolioFiatLocaleUtils.getPaymentMethodLogo(method.id);
-        return {
-          key: method.id,
-          label: PortfolioFiatLocaleUtils.getPaymentMethodLabel(method),
-          value: method.id,
-          ...(logo ? { img: logo } : {}),
-        };
-      }) ?? [];
+    const methods = PortfolioFiatLocaleUtils.toPaymentMethodPickerItems(
+      fiatRampOptions?.paymentMethods ?? [],
+    ).map((method) => {
+      const logo = PortfolioFiatLocaleUtils.getPaymentMethodLogo(method.id);
+      return {
+        key: method.id,
+        label: PortfolioFiatLocaleUtils.getPaymentMethodLabel(method),
+        value: method.id,
+        ...(logo ? { img: logo } : {}),
+      };
+    });
 
     return [getOptionalPaymentMethodOption(), ...methods];
   }, [fiatRampOptions]);
@@ -1918,12 +1919,14 @@ export const Portfolio = ({
     }
 
     const validPaymentMethodIds = new Set(
-      fiatRampOptions.paymentMethods.map((method) => method.id),
+      paymentMethodSelectOptions
+        .map((option) => option.value)
+        .filter((value) => value.length > 0),
     );
     setPaymentMethod((current) =>
       current && !validPaymentMethodIds.has(current) ? '' : current,
     );
-  }, [fiatRampOptions]);
+  }, [fiatRampOptions, paymentMethodSelectOptions]);
 
   const loadAssets = async () => {
     try {

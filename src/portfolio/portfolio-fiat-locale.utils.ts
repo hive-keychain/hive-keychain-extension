@@ -1,5 +1,6 @@
 import { IsoCountryCodeUtils } from 'src/reference-data/iso-country-code.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
+import { PortfolioFiatRampPaymentMethod } from './portfolio-api.interface';
 
 /**
  * ISO 3166-1 alpha-2 → primary ISO 4217 currency. Used to default the buy/sell
@@ -404,6 +405,28 @@ const getPaymentMethodLogo = (methodId: string): string | undefined => {
   return getPaymentMethodLogoByNormalizedId(normalizedId);
 };
 
+/** Collapse catalog methods that share `group.id` into one picker row. */
+const toPaymentMethodPickerItems = (
+  methods: PortfolioFiatRampPaymentMethod[],
+): Array<{ id: string; label: string }> => {
+  const seen = new Set<string>();
+  const items: Array<{ id: string; label: string }> = [];
+
+  for (const method of methods) {
+    const id = method.group?.id || method.id;
+    if (seen.has(id)) {
+      continue;
+    }
+    seen.add(id);
+    items.push({
+      id,
+      label: method.group?.label || method.label,
+    });
+  }
+
+  return items;
+};
+
 const lookupCountryCodeFromClientIp = async (): Promise<string | undefined> => {
   const controller = new AbortController();
   const timeoutId = setTimeout(
@@ -595,6 +618,7 @@ export const PortfolioFiatLocaleUtils = {
   getFiatCurrencySelectOptionFields,
   getPaymentMethodLabel,
   getPaymentMethodLogo,
+  toPaymentMethodPickerItems,
   getPreferredFiatCurrencyCode,
   getPreferredRegionCode,
   getUiLocale,

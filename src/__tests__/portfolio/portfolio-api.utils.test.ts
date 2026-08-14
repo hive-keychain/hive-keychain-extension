@@ -162,7 +162,13 @@ describe('PortfolioApiUtils', () => {
       ok: true,
       json: jest.fn().mockResolvedValue({
         fiatCurrencies: ['EUR', 'USD'],
-        paymentMethods: [{ id: 'SEPA_BANK_TRANSFER', label: 'SEPA bank transfer' }],
+        paymentMethods: [
+          {
+            id: 'SEPA_BANK_TRANSFER',
+            label: 'SEPA bank transfer',
+            group: { id: 'bank_transfer', label: 'Bank transfer' },
+          },
+        ],
       }),
     });
 
@@ -171,7 +177,11 @@ describe('PortfolioApiUtils', () => {
     ).resolves.toEqual({
       fiatCurrencies: ['EUR', 'USD'],
       paymentMethods: [
-        { id: 'SEPA_BANK_TRANSFER', label: 'SEPA bank transfer' },
+        {
+          id: 'SEPA_BANK_TRANSFER',
+          label: 'SEPA bank transfer',
+          group: { id: 'bank_transfer', label: 'Bank transfer' },
+        },
       ],
     });
 

@@ -473,11 +473,25 @@ describe('PortfolioApiParser', () => {
     expect(
       PortfolioApiParser.parsePortfolioFiatRampOptions({
         fiatCurrencies: ['USD', 'EUR'],
-        paymentMethods: [{ id: 'card', label: 'Credit / Debit Card' }],
+        paymentMethods: [
+          { id: 'card', label: 'Credit / Debit Card' },
+          {
+            id: 'SEPA_BANK_TRANSFER',
+            label: 'SEPA bank transfer',
+            group: { id: 'bank_transfer', label: 'Bank transfer' },
+          },
+        ],
       }),
     ).toEqual({
       fiatCurrencies: ['USD', 'EUR'],
-      paymentMethods: [{ id: 'card', label: 'Credit / Debit Card' }],
+      paymentMethods: [
+        { id: 'card', label: 'Credit / Debit Card' },
+        {
+          id: 'SEPA_BANK_TRANSFER',
+          label: 'SEPA bank transfer',
+          group: { id: 'bank_transfer', label: 'Bank transfer' },
+        },
+      ],
     });
   });
 

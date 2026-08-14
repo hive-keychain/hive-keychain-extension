@@ -15,6 +15,7 @@ import {
   PortfolioFiatRampLocale,
   PortfolioFiatRampOptions,
   PortfolioFiatRampPaymentMethod,
+  PortfolioFiatRampPaymentMethodGroup,
   PortfolioHiveCustomJsonOperation,
   PortfolioHiveOperation,
   PortfolioHiveTransaction,
@@ -539,6 +540,24 @@ const parsePortfolioAvailableAssetsResponse = (
   };
 };
 
+const parsePortfolioFiatRampPaymentMethodGroup = (
+  value: unknown,
+): PortfolioFiatRampPaymentMethodGroup | undefined => {
+  if (!isRecord(value)) {
+    return undefined;
+  }
+
+  const id = readString(value, 'id');
+  if (!id) {
+    return undefined;
+  }
+
+  return {
+    id,
+    label: readString(value, 'label') || id,
+  };
+};
+
 const parsePortfolioFiatRampPaymentMethod = (
   value: unknown,
 ): PortfolioFiatRampPaymentMethod | null => {
@@ -551,9 +570,12 @@ const parsePortfolioFiatRampPaymentMethod = (
     return null;
   }
 
+  const group = parsePortfolioFiatRampPaymentMethodGroup(value.group);
+
   return {
     id,
     label: readString(value, 'label'),
+    ...(group ? { group } : {}),
   };
 };
 

@@ -209,9 +209,15 @@ export interface PortfolioAvailableAssetsResponse {
   chains: PortfolioChainDisplayRecord;
 }
 
+export interface PortfolioFiatRampPaymentMethodGroup {
+  id: string;
+  label: string;
+}
+
 export interface PortfolioFiatRampPaymentMethod {
   id: string;
   label: string;
+  group?: PortfolioFiatRampPaymentMethodGroup;
 }
 
 export interface PortfolioFiatRampOptions {
