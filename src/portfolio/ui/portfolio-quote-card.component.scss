@@ -110,6 +110,23 @@
     }
   }
 
+  &__payment-method {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--kc-space-1);
+    min-width: 0;
+  }
+
+  &__payment-method-logo {
+    flex: 0 0 auto;
+    width: 1.5rem;
+    height: 1rem;
+    border-radius: 3px;
+    object-fit: contain;
+    background: #fff;
+  }
+
   &:hover:not(.selected) {
     background: var(--kc-color-surface-hover);
     border-color: var(--kc-color-border-default);

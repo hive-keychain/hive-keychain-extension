@@ -429,7 +429,7 @@ const createExecution = async (
           transaction: quote.transaction,
           routeMetadata: quote.routeMetadata,
           fiatCurrency: request.fiatCurrency,
-          paymentMethod: request.paymentMethod,
+          paymentMethod: quote.paymentMethod ?? request.paymentMethod,
           countryCode: request.countryCode,
         }),
       },

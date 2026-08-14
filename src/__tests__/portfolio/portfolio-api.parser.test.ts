@@ -394,6 +394,43 @@ describe('PortfolioApiParser', () => {
     expect(response.quotes[0]?.comparableValue).toBe('99.5');
   });
 
+  it('parses payment methods on buy/sell quotes from string or object ids', () => {
+    const stringResponse = PortfolioApiParser.parsePortfolioQuoteResponse({
+      request: { mode: 'buy', paymentMethod: null },
+      quotes: [
+        {
+          quoteId: 'moonpay:card',
+          provider: { id: 'moonpay', name: 'MoonPay' },
+          category: 'buy',
+          fromAmount: '100',
+          estimatedToAmount: '0.05',
+          paymentMethod: 'credit_debit_card',
+        },
+        {
+          quoteId: 'moonpay:apple',
+          provider: { id: 'moonpay', name: 'MoonPay' },
+          category: 'buy',
+          fromAmount: '100',
+          estimatedToAmount: '0.049',
+          paymentMethod: { id: 'apple_pay', label: 'Apple Pay' },
+        },
+        {
+          quoteId: 'moonpay:none',
+          provider: { id: 'moonpay', name: 'MoonPay' },
+          category: 'buy',
+          fromAmount: '100',
+          estimatedToAmount: '0.048',
+        },
+      ],
+    });
+
+    expect(stringResponse.quotes.map((quote) => quote.paymentMethod)).toEqual([
+      'credit_debit_card',
+      'apple_pay',
+      null,
+    ]);
+  });
+
   it('parses available assets and fiat ramp option payloads', () => {
     expect(
       PortfolioApiParser.parsePortfolioAvailableAssetsResponse({

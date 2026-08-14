@@ -53,6 +53,7 @@ const createQuote = (overrides: Partial<PortfolioQuote> = {}): PortfolioQuote =>
   executionType: 'in_app',
   routeMetadata: null,
   transaction: null,
+  paymentMethod: null,
   ...overrides,
 });
 

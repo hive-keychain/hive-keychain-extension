@@ -1,6 +1,7 @@
 import { PortfolioLogoImage } from 'src/portfolio/ui/portfolio-logo-image.component';
 import React from 'react';
 import { PortfolioQuote } from 'src/portfolio/portfolio-api.interface';
+import { PortfolioFiatLocaleUtils } from 'src/portfolio/portfolio-fiat-locale.utils';
 import { PortfolioQuoteDisplayUtils } from 'src/portfolio/ui/portfolio-quote-display.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 
@@ -23,6 +24,16 @@ export const PortfolioQuoteCard = ({
   const providerLabel =
     quote.providerName ||
     PortfolioQuoteDisplayUtils.formatPortfolioQuoteEnumLabel(quote.provider);
+  const paymentMethodId = quote.paymentMethod?.trim() || '';
+  const paymentMethodLabel = paymentMethodId
+    ? PortfolioFiatLocaleUtils.getPaymentMethodLabel({
+        id: paymentMethodId,
+        label: '',
+      })
+    : '';
+  const paymentMethodLogo = paymentMethodId
+    ? PortfolioFiatLocaleUtils.getPaymentMethodLogo(paymentMethodId)
+    : undefined;
 
   return (
     <div
@@ -61,8 +72,26 @@ export const PortfolioQuoteCard = ({
         </strong>
       </div>
 
-      {detailRows.length > 0 && (
+      {(paymentMethodLabel || detailRows.length > 0) && (
         <dl className="portfolio-quote-card__details">
+          {paymentMethodLabel ? (
+            <div className="portfolio-quote-card__detail-row">
+              <dt>{I18nUtils.getMessage('portfolio_quote_payment_method')}</dt>
+              <dd
+                className="portfolio-quote-card__payment-method"
+                data-testid="portfolio-quote-card-payment-method">
+                {paymentMethodLogo ? (
+                  <PortfolioLogoImage
+                    className="portfolio-quote-card__payment-method-logo"
+                    src={paymentMethodLogo}
+                    fallbackLetter={paymentMethodLabel}
+                    colorKey={paymentMethodLabel}
+                  />
+                ) : null}
+                <span>{paymentMethodLabel}</span>
+              </dd>
+            </div>
+          ) : null}
           {detailRows.map((row) => (
             <div key={row.key} className="portfolio-quote-card__detail-row">
               <dt>{I18nUtils.getMessage(row.labelKey)}</dt>

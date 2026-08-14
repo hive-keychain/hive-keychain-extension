@@ -100,6 +100,20 @@ const readNullableString = (
   return typeof value === 'string' ? value : null;
 };
 
+const readPaymentMethodId = (value: unknown): string | null => {
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    return trimmed || null;
+  }
+
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  const id = readString(value, 'id').trim();
+  return id || null;
+};
+
 const readNullableNumber = (
   record: Record<string, unknown>,
   key: string,
@@ -378,6 +392,7 @@ const parsePortfolioQuote = (value: unknown): PortfolioQuote | null => {
     routeMetadata: readRecord(value.routeMetadata),
     approval: parsePortfolioQuoteApproval(value.approval),
     transaction: parsePortfolioQuoteTransaction(value.transaction),
+    paymentMethod: readPaymentMethodId(value.paymentMethod),
   };
 };
 

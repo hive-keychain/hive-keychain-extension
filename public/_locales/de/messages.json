@@ -4219,6 +4219,9 @@
   "portfolio_quote_not_executable": {
     "message": "Not executable in Keychain"
   },
+  "portfolio_quote_payment_method": {
+    "message": "Zahlungsmethode"
+  },
   "portfolio_no_assets": {
     "message": "No balances found for this account."
   },

@@ -4280,6 +4280,7 @@
     "message": "Undisclosed by provider"
   },
   "portfolio_quote_network_fee": { "message": "Network fee" },
+  "portfolio_quote_payment_method": { "message": "Payment method" },
   "portfolio_view_all_quotes": {
     "message": "View all quotes ($1)",
     "placeholders": {

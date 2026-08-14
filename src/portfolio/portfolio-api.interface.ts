@@ -145,6 +145,8 @@ export interface PortfolioQuote {
   routeMetadata: Record<string, unknown> | null;
   approval: PortfolioQuoteApproval | null;
   transaction: PortfolioQuoteTransaction | null;
+  /** Payment method for buy/sell quotes. Null for swap/bridge. */
+  paymentMethod: string | null;
 }
 
 export interface PortfolioQuoteRequestEcho {

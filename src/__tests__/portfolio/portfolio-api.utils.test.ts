@@ -443,6 +443,7 @@ describe('PortfolioApiUtils', () => {
         requiresRedirect: false,
         executionType: 'in_app',
         routeMetadata: { tool: '1inch' },
+        paymentMethod: null,
         transaction: {
           from: null,
           to: '0xrouter',
@@ -478,6 +479,80 @@ describe('PortfolioApiUtils', () => {
           chainId: 1,
         }),
         routeMetadata: { tool: '1inch' },
+        paymentMethod: null,
+      }),
+    );
+  });
+
+  it('sends the quote payment method when creating a buy execution', async () => {
+    getValueMock.mockResolvedValue('x'.repeat(64));
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        id: 'exec-1',
+        status: 'created',
+        mode: 'buy',
+        provider: 'moonpay',
+        providerReferenceId: null,
+        fromAssetId: null,
+        toAssetId: 'evm:native:ethereum',
+        fromAmount: '100',
+        toAmount: '0.05',
+        fromAddress: '0xfrom',
+        toAddress: '0xto',
+        redirectUrl: 'https://example.com/buy',
+        transaction: null,
+        submittedAt: '2026-06-23T12:00:00.000Z',
+        updatedAt: '2026-06-23T12:00:00.000Z',
+      }),
+    });
+
+    await PortfolioApiUtils.createExecution(
+      {
+        quoteId: 'moonpay:card',
+        provider: 'moonpay',
+        providerName: 'MoonPay',
+        providerLogoUrl: null,
+        category: 'buy',
+        routeType: null,
+        fromAsset: null,
+        toAsset: null,
+        fromAmount: '100',
+        estimatedToAmount: '0.05',
+        comparableValue: '0.05',
+        providerFee: null,
+        networkFeeEstimate: null,
+        priceImpact: null,
+        warnings: [],
+        expiresAt: null,
+        redirectUrl: 'https://example.com/buy',
+        requiresRedirect: true,
+        executionType: 'redirect',
+        routeMetadata: null,
+        approval: null,
+        transaction: null,
+        paymentMethod: 'credit_debit_card',
+      },
+      {
+        mode: 'buy',
+        routeType: null,
+        fromAssetId: null,
+        toAssetId: 'evm:native:ethereum',
+        fiatCurrency: 'USD',
+        paymentMethod: null,
+        countryCode: 'US',
+        sourceChainId: null,
+        destinationChainId: null,
+      },
+      '0xfrom',
+      '0xto',
+    );
+
+    const [, init] = (global.fetch as jest.Mock).mock.calls[0];
+    expect(JSON.parse(init.body as string)).toEqual(
+      expect.objectContaining({
+        paymentMethod: 'credit_debit_card',
+        fiatCurrency: 'USD',
       }),
     );
   });
@@ -750,6 +825,7 @@ describe('PortfolioApiUtils', () => {
             routeMetadata: null,
             approval: null,
             transaction: null,
+            paymentMethod: 'credit_debit_card',
           },
         ),
       ).toBe('https://global.transak.com?sessionId=fresh');
@@ -801,6 +877,7 @@ describe('PortfolioApiUtils', () => {
             routeMetadata: null,
             approval: null,
             transaction: null,
+            paymentMethod: null,
           },
         ),
       ).toBe('https://app.rampnetwork.com/preview');
@@ -842,6 +919,7 @@ describe('PortfolioApiUtils', () => {
         maxFeePerGas: null,
         maxPriorityFeePerGas: null,
       },
+      paymentMethod: null,
       ...overrides,
     });
 
