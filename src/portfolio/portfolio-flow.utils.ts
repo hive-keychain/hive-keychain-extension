@@ -1502,6 +1502,8 @@ export const resolvePortfolioFlowAccountKindForAsset = (
   return isHivePortfolioEcosystem(asset.ecosystem) ? 'hive' : 'evm';
 };
 
+export const PORTFOLIO_RECIPIENT_OTHER_VALUE = 'other';
+
 export const requiresPortfolioRecipientAddress = (
   fromAsset: PortfolioCanonicalAsset | undefined,
   toAsset: PortfolioCanonicalAsset | undefined,
@@ -1539,6 +1541,21 @@ export const resolvePortfolioRecipientAddressKind = (
   }
 
   return 'hive';
+};
+
+export const resolvePortfolioRecipientAccountKind = (
+  toAsset: PortfolioCanonicalAsset | undefined,
+): PortfolioFlowAccountKind | undefined => {
+  if (!toAsset) {
+    return undefined;
+  }
+
+  const kind = resolvePortfolioRecipientAddressKind(toAsset);
+  if (kind === 'hive' || kind === 'evm') {
+    return kind;
+  }
+
+  return undefined;
 };
 
 export const resolvePortfolioRecipientAddressLabelKey = (
@@ -1771,6 +1788,7 @@ export const PortfolioFlowUtils = {
   isEligibleToAssetForFromAsset,
   isHivePortfolioEcosystem,
   resolvePortfolioFlowAccountKindForAsset,
+  resolvePortfolioRecipientAccountKind,
   isPortfolioSwapExcludedAsset,
   isPortfolioSwapExcludedSymbol,
   isValidPortfolioRecipientAddress,
@@ -1799,6 +1817,7 @@ export const PortfolioFlowUtils = {
   requiresPortfolioRecipientAddress,
   resolvePortfolioQuotePlaceholderAddress,
   resolvePortfolioQuoteToAddress,
+  resolvePortfolioRecipientAccountKind,
   resolvePortfolioRecipientAddressKind,
   resolvePortfolioRecipientAddressLabelKey,
   resolvePortfolioRowToCanonicalAsset,

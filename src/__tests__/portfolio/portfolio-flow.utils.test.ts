@@ -1302,6 +1302,27 @@ describe('PortfolioFlowUtils', () => {
     ).toBeUndefined();
   });
 
+  it('maps hive and evm destinations to Keychain recipient account kinds', () => {
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRecipientAccountKind(hiveAsset),
+    ).toBe('hive');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRecipientAccountKind(hiveEngineAsset),
+    ).toBe('hive');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRecipientAccountKind(ethAsset),
+    ).toBe('evm');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRecipientAccountKind(btcAsset),
+    ).toBeUndefined();
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRecipientAccountKind(xrpAsset),
+    ).toBeUndefined();
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRecipientAccountKind(undefined),
+    ).toBeUndefined();
+  });
+
   it('requires a separate recipient address for hive to evm and evm to hive swaps', () => {
     expect(
       PortfolioFlowUtils.requiresPortfolioRecipientAddress(hiveAsset, ethAsset),

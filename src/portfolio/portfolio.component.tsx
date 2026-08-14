@@ -82,6 +82,7 @@ import {
 import { PortfolioEvmApprovalUtils } from 'src/portfolio/portfolio-evm-approval.utils';
 import { PortfolioFiatLocaleUtils } from 'src/portfolio/portfolio-fiat-locale.utils';
 import {
+  PORTFOLIO_RECIPIENT_OTHER_VALUE,
   PortfolioFlowRow,
   PortfolioFlowUtils,
   PortfolioSwapLastUsedAssets,
@@ -568,6 +569,7 @@ export const Portfolio = ({
   const [toAssetFilter, setToAssetFilter] = useState('');
   const [toAssetChainFilter, setToAssetChainFilter] = useState('');
   const [recipientAddress, setRecipientAddress] = useState('');
+  const [recipientSelectValue, setRecipientSelectValue] = useState('');
   const [recipientFieldError, setRecipientFieldError] = useState<
     FieldError | undefined
   >();
@@ -990,6 +992,40 @@ export const Portfolio = ({
     [toCanonicalAsset],
   );
 
+  const recipientAccountKind = useMemo(
+    () =>
+      PortfolioFlowUtils.resolvePortfolioRecipientAccountKind(toCanonicalAsset),
+    [toCanonicalAsset],
+  );
+
+  const recipientAccountOptions = useMemo(() => {
+    if (!recipientAccountKind) {
+      return [];
+    }
+
+    const requiredType =
+      recipientAccountKind === 'hive' ? ChainType.HIVE : ChainType.EVM;
+
+    return accountOptions.filter((account) => account.type === requiredType);
+  }, [accountOptions, recipientAccountKind]);
+
+  const shouldShowRecipientAccountSelect =
+    requiresRecipientInput && recipientAccountOptions.length > 0;
+
+  const recipientOverlayAccountOptions = useMemo(
+    () => [
+      ...recipientAccountOptions.map((account) => ({
+        value: account.key,
+        label: account.label,
+      })),
+      {
+        value: PORTFOLIO_RECIPIENT_OTHER_VALUE,
+        label: I18nUtils.getMessage('global_other'),
+      },
+    ],
+    [recipientAccountOptions],
+  );
+
   const flowMode = section as PortfolioMode;
 
   const selectedAccountFromAddress = useMemo(() => {
@@ -1147,12 +1183,55 @@ export const Portfolio = ({
 
   useEffect(() => {
     setRecipientAddress('');
+    setRecipientSelectValue('');
     setRecipientFieldError(undefined);
   }, [fromAssetId, toAssetId]);
 
   useEffect(() => {
     setRecipientFieldError(undefined);
   }, [recipientAddress]);
+
+  useEffect(() => {
+    if (!shouldShowRecipientAccountSelect) {
+      return;
+    }
+
+    if (recipientSelectValue === PORTFOLIO_RECIPIENT_OTHER_VALUE) {
+      return;
+    }
+
+    if (
+      recipientSelectValue &&
+      recipientAccountOptions.some(
+        (account) => account.key === recipientSelectValue,
+      )
+    ) {
+      return;
+    }
+
+    const defaultAccountKey = resolveDefaultPortfolioAccountKey(
+      recipientAccountOptions,
+      recipientAccountKind === 'hive' ? ChainType.HIVE : ChainType.EVM,
+      activeEvmAccountAddress,
+      activeHiveAccountName,
+    );
+    const defaultAccount = recipientAccountOptions.find(
+      (account) => account.key === defaultAccountKey,
+    );
+    if (!defaultAccount) {
+      return;
+    }
+
+    setRecipientSelectValue(defaultAccount.key);
+    setRecipientAddress(defaultAccount.value);
+  }, [
+    activeEvmAccountAddress,
+    activeHiveAccountName,
+    recipientAccountKind,
+    recipientAccountOptions,
+    recipientSelectValue,
+    shouldShowRecipientAccountSelect,
+  ]);
 
   useEffect(() => {
     isQuotesPanelExpandedRef.current = isQuotesPanelExpanded;
@@ -1494,6 +1573,22 @@ export const Portfolio = ({
     setSelectedAccountKey(accountKey);
   }, []);
 
+  const handleRecipientSelectChange = useCallback(
+    (value: string) => {
+      setRecipientSelectValue(value);
+      if (value === PORTFOLIO_RECIPIENT_OTHER_VALUE) {
+        setRecipientAddress('');
+        return;
+      }
+
+      const selectedRecipientAccount = recipientAccountOptions.find(
+        (account) => account.key === value,
+      );
+      setRecipientAddress(selectedRecipientAccount?.value ?? '');
+    },
+    [recipientAccountOptions],
+  );
+
   const togglePortfolioRowExpanded = useCallback((rowKey: string) => {
     setExpandedPortfolioRowKeys((currentKeys) =>
       currentKeys.includes(rowKey)
@@ -1564,6 +1659,7 @@ export const Portfolio = ({
     setAmount('');
     setPaymentMethod('');
     setRecipientAddress('');
+    setRecipientSelectValue('');
     setRecipientFieldError(undefined);
     setAmountQuoteError(null);
     setPendingInAppConfirmation(null);
@@ -1574,6 +1670,7 @@ export const Portfolio = ({
     // Buy destination account is independent of asset/amount selections.
     if (sectionRef.current === 'buy') {
       setRecipientAddress('');
+      setRecipientSelectValue('');
       setRecipientFieldError(undefined);
       setAmountQuoteError(null);
       setPendingInAppConfirmation(null);
@@ -2806,6 +2903,17 @@ export const Portfolio = ({
     [accountOptions],
   );
 
+  const renderRecipientOption = useCallback(
+    (value: string) => {
+      if (value === PORTFOLIO_RECIPIENT_OTHER_VALUE) {
+        return I18nUtils.getMessage('global_other');
+      }
+
+      return renderAccountRow(value);
+    },
+    [renderAccountRow],
+  );
+
   const renderNetworkOption = useCallback(
     (networkValue: string) => {
       const option = networkSelectOptions.find(
@@ -3167,14 +3275,6 @@ export const Portfolio = ({
       );
     };
 
-    const canEditRecipient =
-      isPositivePortfolioAmount(amount) &&
-      hasRequiredQuoteAssets({
-        mode,
-        fromAssetId: resolvedFromAssetId,
-        toAssetId: resolvedToAssetId,
-      });
-
     const fiatCurrencyField =
       mode === 'buy' || mode === 'sell' ? (
         overlayFiatCurrencyOptions.length > 0 ? (
@@ -3457,14 +3557,39 @@ export const Portfolio = ({
         )}
         {requiresRecipientInput && (
           <div className="portfolio-flow-group">
-            <InputComponent
-              label={recipientAddressLabelKey}
-              type={InputType.TEXT}
-              value={recipientAddress}
-              onChange={setRecipientAddress}
-              error={recipientFieldError}
-              disabled={!canEditRecipient}
-            />
+            {shouldShowRecipientAccountSelect ? (
+              <>
+                <PortfolioOverlayListSelect
+                  id="portfolio-recipient-account"
+                  label={I18nUtils.getMessage(recipientAddressLabelKey)}
+                  options={recipientOverlayAccountOptions}
+                  value={recipientSelectValue}
+                  onChange={handleRecipientSelectChange}
+                  renderDisplay={renderRecipientOption}
+                  renderOption={renderRecipientOption}
+                />
+                {recipientSelectValue === PORTFOLIO_RECIPIENT_OTHER_VALUE ? (
+                  <InputComponent
+                    id="portfolio-recipient-address"
+                    type={InputType.TEXT}
+                    value={recipientAddress}
+                    onChange={setRecipientAddress}
+                    error={recipientFieldError}
+                    dataTestId="portfolio-recipient-address"
+                  />
+                ) : null}
+              </>
+            ) : (
+              <InputComponent
+                id="portfolio-recipient-address"
+                label={recipientAddressLabelKey}
+                type={InputType.TEXT}
+                value={recipientAddress}
+                onChange={setRecipientAddress}
+                error={recipientFieldError}
+                dataTestId="portfolio-recipient-address"
+              />
+            )}
           </div>
         )}
         {(selectedQuoteId ||

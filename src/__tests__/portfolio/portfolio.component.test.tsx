@@ -96,6 +96,25 @@ const clickPortfolioNav = (
   );
 };
 
+const selectOverlayOption = async (
+  container: HTMLElement,
+  selectId: string,
+  matcher: (text: string) => boolean,
+) => {
+  fireEvent.click(
+    container.querySelector(`#${selectId}`) as HTMLButtonElement,
+  );
+  await waitFor(() => {
+    expect(container.querySelector(`#${selectId}-listbox`)).not.toBeNull();
+  });
+
+  const option = [
+    ...container.querySelectorAll(`#${selectId}-listbox [role="option"]`),
+  ].find((item) => matcher(item.textContent ?? ''));
+  expect(option).toBeTruthy();
+  fireEvent.click(option as HTMLElement);
+};
+
 jest.mock('src/portfolio/portfolio-api.utils', () => {
   const actual = jest.requireActual('src/portfolio/portfolio-api.utils');
 
@@ -2896,6 +2915,297 @@ describe('Portfolio', () => {
     expect(container.textContent).not.toContain(
       'portfolio_recipient_destination_address',
     );
+  });
+
+  it('lets users pick a Keychain recipient or enter another address on swap', async () => {
+    const hiveAlice = { name: 'alice' } as never;
+    const hiveBob = { name: 'bob' } as never;
+    const evmAccount = {
+      id: 1,
+      wallet: { address: '0xabc' },
+      hide: false,
+    } as never;
+    const hiveAsset = {
+      assetId: 'hive:native:hive',
+      ecosystem: 'hive',
+      symbol: 'HIVE',
+      name: 'Hive',
+      chainId: 'hive',
+      address: null,
+      decimals: 3,
+      isNative: true,
+      familyId: 'hive',
+      logoUrl: null,
+      priceUsd: 0,
+      rankScore: 100,
+    };
+    const btcAsset = {
+      assetId: 'utxo:native:bitcoin',
+      ecosystem: 'utxo',
+      symbol: 'BTC',
+      name: 'Bitcoin',
+      chainId: 'bitcoin',
+      address: null,
+      decimals: 8,
+      isNative: true,
+      familyId: 'utxo:native:btc',
+      logoUrl: null,
+      priceUsd: 0,
+      rankScore: 90,
+    };
+
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
+      assets: [swapAssetsFixture[0], hiveAsset, btcAsset],
+      chains: {},
+    });
+    (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockImplementation(
+      async (params: {
+        mode: string;
+        direction?: string;
+        sourceAssetId?: string;
+      }) => {
+        if (params.mode === 'swap') {
+          return {
+            mode: 'swap',
+            direction: params.direction ?? null,
+            sourceAssetId: params.sourceAssetId ?? null,
+            assets: [swapAssetsFixture[0], hiveAsset, btcAsset],
+            chains: {},
+          };
+        }
+
+        return {
+          mode: params.mode,
+          direction: params.direction,
+          sourceAssetId: params.sourceAssetId ?? null,
+          assets: [],
+          chains: {},
+        };
+      },
+    );
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[hiveAlice, hiveBob]}
+        evmAccounts={[evmAccount]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName="alice"
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+    });
+
+    clickPortfolioNav(container, 'swap');
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-to-asset')).not.toBeNull();
+    });
+
+    await selectOverlayOption(container, 'portfolio-to-asset', (text) =>
+      text.includes('HIVE'),
+    );
+
+    await waitFor(() => {
+      const recipientSelect = container.querySelector(
+        '#portfolio-recipient-account',
+      ) as HTMLButtonElement;
+      expect(recipientSelect).not.toBeNull();
+      expect(recipientSelect.disabled).toBe(false);
+      expect(recipientSelect.textContent).toContain('alice');
+      expect(
+        container.querySelector('[data-testid="portfolio-recipient-address"]'),
+      ).toBeNull();
+    });
+
+    fireEvent.click(
+      container.querySelector(
+        '#portfolio-recipient-account',
+      ) as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
+      expect(
+        container.querySelector('#portfolio-recipient-account-listbox'),
+      ).not.toBeNull();
+    });
+
+    const recipientOptions = [
+      ...container.querySelectorAll(
+        '#portfolio-recipient-account-listbox [role="option"]',
+      ),
+    ];
+    const recipientOptionTexts = recipientOptions.map(
+      (option) => option.textContent ?? '',
+    );
+    expect(recipientOptionTexts.some((text) => text.includes('alice'))).toBe(
+      true,
+    );
+    expect(recipientOptionTexts.some((text) => text.includes('bob'))).toBe(
+      true,
+    );
+    expect(recipientOptionTexts.some((text) => text.includes('Other'))).toBe(
+      true,
+    );
+    expect(recipientOptionTexts.some((text) => text.includes('0xabc'))).toBe(
+      false,
+    );
+
+    const otherOption = recipientOptions.find((option) =>
+      (option.textContent ?? '').includes('Other'),
+    );
+    expect(otherOption).toBeTruthy();
+    fireEvent.click(otherOption as HTMLElement);
+
+    await waitFor(() => {
+      const recipientInput = container.querySelector(
+        '[data-testid="portfolio-recipient-address"]',
+      ) as HTMLInputElement;
+      expect(recipientInput).not.toBeNull();
+      expect(recipientInput.disabled).toBe(false);
+    });
+
+    await selectOverlayOption(container, 'portfolio-to-asset', (text) =>
+      text.includes('BTC') || text.includes('Bitcoin'),
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-recipient-account')).toBeNull();
+      const recipientInput = container.querySelector(
+        '[data-testid="portfolio-recipient-address"]',
+      ) as HTMLInputElement;
+      expect(recipientInput).not.toBeNull();
+      expect(recipientInput.disabled).toBe(false);
+    });
+  });
+
+  it('lists Keychain EVM accounts as recipients for hive to evm swaps', async () => {
+    const hiveAlice = { name: 'alice' } as never;
+    const evmAccount = {
+      id: 1,
+      wallet: { address: '0xabc' },
+      hide: false,
+    } as never;
+    const hiveAsset = {
+      assetId: 'hive:native:hive',
+      ecosystem: 'hive',
+      symbol: 'HIVE',
+      name: 'Hive',
+      chainId: 'hive',
+      address: null,
+      decimals: 3,
+      isNative: true,
+      familyId: 'hive',
+      logoUrl: null,
+      priceUsd: 0,
+      rankScore: 100,
+    };
+
+    jest
+      .spyOn(AccountUtils, 'getExtendedAccounts')
+      .mockResolvedValue([{ name: 'alice' } as never]);
+    jest.spyOn(PortfolioUtils, 'getPortfolio').mockResolvedValue([
+      [
+        {
+          account: 'alice',
+          balances: [{ symbol: 'HIVE', balance: 10, usdValue: 10 }],
+          totalHive: 10,
+          totalUSD: 10,
+        },
+      ],
+      ['HIVE'],
+    ]);
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
+      assets: [swapAssetsFixture[0], hiveAsset],
+      chains: {},
+    });
+    (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockImplementation(
+      async (params: {
+        mode: string;
+        direction?: string;
+        sourceAssetId?: string;
+      }) => {
+        if (params.mode === 'swap') {
+          return {
+            mode: 'swap',
+            direction: params.direction ?? null,
+            sourceAssetId: params.sourceAssetId ?? null,
+            assets: [swapAssetsFixture[0], hiveAsset],
+            chains: {},
+          };
+        }
+
+        return {
+          mode: params.mode,
+          direction: params.direction,
+          sourceAssetId: params.sourceAssetId ?? null,
+          assets: [],
+          chains: {},
+        };
+      },
+    );
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[hiveAlice]}
+        evmAccounts={[evmAccount]}
+        activeAccountType={ChainType.HIVE}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName="alice"
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('HIVE');
+    });
+
+    clickPortfolioNav(container, 'swap');
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-to-asset')).not.toBeNull();
+    });
+
+    await selectOverlayOption(
+      container,
+      'portfolio-to-asset',
+      (text) => text.includes('Ethereum') || /\bETH\b/.test(text),
+    );
+
+    await waitFor(() => {
+      const recipientSelect = container.querySelector(
+        '#portfolio-recipient-account',
+      ) as HTMLButtonElement;
+      expect(recipientSelect).not.toBeNull();
+      expect(recipientSelect.disabled).toBe(false);
+      expect(recipientSelect.textContent).toContain('0xabc');
+    });
+
+    fireEvent.click(
+      container.querySelector(
+        '#portfolio-recipient-account',
+      ) as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
+      const optionTexts = [
+        ...container.querySelectorAll(
+          '#portfolio-recipient-account-listbox [role="option"]',
+        ),
+      ].map((option) => option.textContent ?? '');
+      expect(optionTexts.some((text) => text.includes('0xabc'))).toBe(true);
+      expect(optionTexts.some((text) => text.includes('Other'))).toBe(true);
+      expect(optionTexts.some((text) => text.includes('alice'))).toBe(false);
+    });
   });
 
   it('resets buy/sell form fields when switching sections', async () => {
