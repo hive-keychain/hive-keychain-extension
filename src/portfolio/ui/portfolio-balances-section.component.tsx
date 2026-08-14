@@ -165,40 +165,42 @@ const PortfolioBalancesSectionComponent = ({
     <div className="portfolio-card-body">
       {hasAccounts ? (
         <div className="portfolio-sticky-menu-bar">
-          <div className="portfolio-header-row">
-            <PortfolioOverlayListSelect
-              id="portfolio-account"
-              label={I18nUtils.getMessage('portfolio_account')}
-              value={selectedAccountKey}
-              onChange={onSelectedAccountChange}
-              options={accountOptions}
-              renderDisplay={renderAccountOption}
-              renderOption={renderAccountOption}
-            />
-            {showNetworkFilter && (
+          <div className="portfolio-controls">
+            <div className="portfolio-header-row">
               <PortfolioOverlayListSelect
-                id="portfolio-network"
-                className="portfolio-header-row__network"
-                label={I18nUtils.getMessage('portfolio_network')}
-                value={selectedNetwork}
-                onChange={onSelectedNetworkChange}
-                options={networkOptions}
-                renderDisplay={renderNetworkOption}
-                renderOption={renderNetworkOption}
+                id="portfolio-account"
+                label={I18nUtils.getMessage('portfolio_account')}
+                value={selectedAccountKey}
+                onChange={onSelectedAccountChange}
+                options={accountOptions}
+                renderDisplay={renderAccountOption}
+                renderOption={renderAccountOption}
               />
-            )}
-          </div>
-          <div className="portfolio-token-filter">
-            <label htmlFor="portfolio-token-filter">
-              {I18nUtils.getMessage('portfolio_token_filter')}
-            </label>
-            <input
-              id="portfolio-token-filter"
-              type="text"
-              placeholder={I18nUtils.getMessage('portfolio_token_filter')}
-              value={tokenFilter}
-              onChange={(event) => onTokenFilterChange(event.target.value)}
-            />
+              {showNetworkFilter && (
+                <PortfolioOverlayListSelect
+                  id="portfolio-network"
+                  className="portfolio-header-row__network"
+                  label={I18nUtils.getMessage('portfolio_network')}
+                  value={selectedNetwork}
+                  onChange={onSelectedNetworkChange}
+                  options={networkOptions}
+                  renderDisplay={renderNetworkOption}
+                  renderOption={renderNetworkOption}
+                />
+              )}
+            </div>
+            <div className="portfolio-token-filter">
+              <label htmlFor="portfolio-token-filter">
+                {I18nUtils.getMessage('portfolio_assets')}
+              </label>
+              <input
+                id="portfolio-token-filter"
+                type="text"
+                placeholder={I18nUtils.getMessage('portfolio_token_filter')}
+                value={tokenFilter}
+                onChange={(event) => onTokenFilterChange(event.target.value)}
+              />
+            </div>
           </div>
         </div>
       ) : (

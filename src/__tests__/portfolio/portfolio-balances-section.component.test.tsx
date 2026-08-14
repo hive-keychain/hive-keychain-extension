@@ -24,6 +24,17 @@ describe('PortfolioBalancesSection', () => {
     renderNetworkOption: () => 'All networks',
   };
 
+  it('groups the account dropdown and token filter in one controls row', () => {
+    const { container } = render(
+      <PortfolioBalancesSection {...baseProps} rows={[]} />,
+    );
+
+    const controls = container.querySelector('.portfolio-controls');
+
+    expect(controls?.querySelector('#portfolio-account')).not.toBeNull();
+    expect(controls?.querySelector('#portfolio-token-filter')).not.toBeNull();
+  });
+
   it('filters visible rows by token filter and renders totals', () => {
     const { container, rerender } = render(
       <PortfolioBalancesSection

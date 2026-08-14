@@ -4524,6 +4524,7 @@
   "portfolio_mode": { "message": "Mode" },
   "portfolio_status": { "message": "Status" },
   "portfolio_date": { "message": "Date" },
+  "portfolio_assets": { "message": "Assets" },
   "portfolio_token_filter": { "message": "Filter by name or symbol" },
   "portfolio_symbol_filter": { "message": "Filter by symbol" },
   "portfolio_to_asset_filter_hint": {

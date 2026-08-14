@@ -4441,6 +4441,7 @@
   "portfolio_date": {
     "message": "Date"
   },
+  "portfolio_assets": { "message": "Aset" },
   "portfolio_token_filter": {
     "message": "Filter by name or symbol"
   },
