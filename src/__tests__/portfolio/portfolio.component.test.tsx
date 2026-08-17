@@ -859,6 +859,97 @@ describe('Portfolio', () => {
     });
   });
 
+  it('renders Hive and Hive Engine token logos in history without API assets', async () => {
+    const decIconUrl =
+      'https://images.hive.blog/0x0/https://example.com/dec.png';
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
+      assets: [],
+      chains: {},
+    });
+    (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockResolvedValue({
+      mode: 'swap',
+      direction: null,
+      sourceAssetId: null,
+      assets: [],
+      chains: {},
+    });
+    (TokensUtils.getAllTokens as jest.Mock).mockResolvedValue([
+      {
+        symbol: 'DEC',
+        metadata: { icon: decIconUrl },
+      },
+    ]);
+    (PortfolioApiUtils.listHistory as jest.Mock).mockResolvedValue([
+      {
+        id: 'hive-history-without-api-assets',
+        status: 'completed',
+        displayStatus: 'completed',
+        mode: 'swap',
+        provider: 'lifi',
+        providerReferenceId: null,
+        fromAssetId: 'hive-hive',
+        toAssetId: 'hive_engine:DEC',
+        fromAmount: '1',
+        toAmount: '0.99',
+        receivedAmount: '0.99',
+        fromAddress: '0xabc',
+        toAddress: '0xabc',
+        redirectUrl: null,
+        transaction: null,
+        fiatCurrency: null,
+        paymentMethod: null,
+        submittedAt: '2026-08-17T10:00:00.000Z',
+        updatedAt: '2026-08-17T10:01:00.000Z',
+        executionType: 'redirect',
+        txHash: null,
+        providerName: 'LI.FI',
+        providerLogoUrl: null,
+        providerStatus: 'completed',
+        lastProviderStatusRefreshAt: null,
+        failureCode: null,
+        failureAction: null,
+        providerStatusDetail: null,
+        providerStatusUrl: null,
+        supportUrl: null,
+      },
+    ]);
+    window.history.replaceState(null, '', '/#history');
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(
+        container.querySelector(
+          '.portfolio-history-card .portfolio-token-identity .svg-icon.currency-icon',
+        ),
+      ).not.toBeNull();
+      expect(
+        container
+          .querySelector(
+            '.portfolio-history-card .portfolio-token-identity img.currency-icon',
+          )
+          ?.getAttribute('src'),
+      ).toBe(decIconUrl);
+    });
+  });
+
   it('reloads only portfolio balances when changing account in the swap flow', async () => {
     const secondEthToken = {
       ...ethToken,

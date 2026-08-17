@@ -68,6 +68,8 @@ const EVM_TX_HASH_PATTERN = /^0x[a-fA-F0-9]{64}$/;
 const HIVE_TX_HASH_PATTERN = /^[a-fA-F0-9]{40}$/;
 const HIVE_TX_EXPLORER_BASE_URL = 'https://hivehub.dev/tx';
 const HIVE_ENGINE_TX_EXPLORER_BASE_URL = 'https://he.dtools.dev/tx';
+const HIVE_CORE_SYMBOLS = new Set(['HIVE', 'HBD', 'HP']);
+const HIVE_ENGINE_ASSET_ID_PREFIXES = ['hive_engine:', 'hive-engine:'];
 
 const normalizeExplorerBaseUrl = (url: string): string =>
   url.replace(/\/+$/, '');
@@ -253,8 +255,97 @@ const resolvePortfolioHistoryDisplayToAmount = (
 const resolvePortfolioAssetById = (
   assetId: string | null,
   assets: PortfolioCanonicalAsset[],
-): PortfolioCanonicalAsset | undefined =>
-  assetId ? assets.find((asset) => asset.assetId === assetId) : undefined;
+  hiveEngineTokenLogoUrls: Record<string, string> = {},
+): PortfolioCanonicalAsset | undefined => {
+  const trimmedAssetId = assetId?.trim();
+  if (!trimmedAssetId) {
+    return undefined;
+  }
+  const normalizedAssetId = trimmedAssetId.toLowerCase();
+
+  const asset = assets.find(
+    (asset) => asset.assetId.trim().toLowerCase() === normalizedAssetId,
+  );
+  if (asset) {
+    const hiveEngineLogoUrl =
+      asset.ecosystem === 'hive_engine'
+        ? hiveEngineTokenLogoUrls[asset.symbol.toUpperCase()]
+        : undefined;
+    return hiveEngineLogoUrl && !asset.logoUrl
+      ? { ...asset, logoUrl: hiveEngineLogoUrl }
+      : asset;
+  }
+
+  const hiveEngineSymbol = getPortfolioHistoryHiveEngineAssetSymbol(assetId);
+  if (hiveEngineSymbol) {
+    return {
+      assetId: trimmedAssetId,
+      ecosystem: 'hive_engine',
+      symbol: hiveEngineSymbol,
+      name: hiveEngineSymbol,
+      chainId: 'hive_engine',
+      address: null,
+      decimals: null,
+      isNative: false,
+      familyId: `hive_engine:${hiveEngineSymbol.toLowerCase()}`,
+      logoUrl: hiveEngineTokenLogoUrls[hiveEngineSymbol] ?? null,
+      priceUsd: 0,
+      rankScore: 0,
+    };
+  }
+
+  const hiveSymbol = getPortfolioHistoryHiveAssetSymbol(assetId);
+  if (hiveSymbol) {
+    return {
+      assetId: trimmedAssetId,
+      ecosystem: 'hive',
+      symbol: hiveSymbol,
+      name: hiveSymbol,
+      chainId: 'hive',
+      address: null,
+      decimals: 3,
+      isNative: true,
+      familyId: `hive:${hiveSymbol.toLowerCase()}`,
+      logoUrl: null,
+      priceUsd: 0,
+      rankScore: 0,
+    };
+  }
+
+  return undefined;
+};
+
+const getPortfolioHistoryHiveEngineAssetSymbol = (
+  assetId: string | null,
+): string | null => {
+  const normalizedAssetId = assetId?.trim() ?? '';
+  const lowerAssetId = normalizedAssetId.toLowerCase();
+  const prefix = HIVE_ENGINE_ASSET_ID_PREFIXES.find((candidate) =>
+    lowerAssetId.startsWith(candidate),
+  );
+  if (!prefix) {
+    return null;
+  }
+
+  const symbol = normalizedAssetId.slice(prefix.length).trim().toUpperCase();
+  return symbol || null;
+};
+
+const getPortfolioHistoryHiveAssetSymbol = (
+  assetId: string | null,
+): string | null => {
+  const normalizedAssetId = assetId?.trim() ?? '';
+  const lowerAssetId = normalizedAssetId.toLowerCase();
+  const prefix = ['hive:', 'hive-'].find((candidate) =>
+    lowerAssetId.startsWith(candidate),
+  );
+  if (!prefix) {
+    return null;
+  }
+
+  const symbol = normalizedAssetId.slice(prefix.length).trim().toUpperCase();
+  return HIVE_CORE_SYMBOLS.has(symbol) ? symbol : null;
+};
 
 const getPortfolioHistoryAssetSymbol = (
   assetId: string | null,
@@ -268,6 +359,13 @@ const getPortfolioHistoryAssetSymbol = (
   if (!assetId) {
     const fiatSymbol = fiatCurrency?.trim();
     return fiatSymbol ? fiatSymbol.toUpperCase() : '';
+  }
+
+  const hiveSymbol =
+    getPortfolioHistoryHiveAssetSymbol(assetId) ??
+    getPortfolioHistoryHiveEngineAssetSymbol(assetId);
+  if (hiveSymbol) {
+    return hiveSymbol;
   }
 
   const tail = assetId.split(':').filter(Boolean).pop() ?? assetId;
@@ -291,6 +389,7 @@ export const PortfolioHistoryDisplayUtils = {
   formatPortfolioHistoryAmount,
   resolvePortfolioHistoryDisplayToAmount,
   resolvePortfolioAssetById,
+  getPortfolioHistoryHiveEngineAssetSymbol,
   getPortfolioHistoryAssetSymbol,
   resolvePortfolioHistoryExplorerUrl,
   resolvePortfolioHistoryStatusLink,

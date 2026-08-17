@@ -298,6 +298,52 @@ describe('PortfolioHistoryDisplayUtils', () => {
       ).toBe(asset);
     });
 
+    it('matches EVM asset ids regardless of contract-address casing', () => {
+      const asset = createAsset({
+        assetId:
+          'evm:token:ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+      });
+
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioAssetById(
+          'evm:token:ethereum:0xA0B86991C6218B36C1D19D4A2E9EB0CE3606EB48',
+          [asset],
+        ),
+      ).toBe(asset);
+    });
+
+    it('builds a Hive core asset when the API catalog has no match', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioAssetById(
+          'hive-hive',
+          [],
+        ),
+      ).toEqual(
+        expect.objectContaining({
+          ecosystem: 'hive',
+          symbol: 'HIVE',
+          chainId: 'hive',
+        }),
+      );
+    });
+
+    it('builds a Hive Engine asset with its local token logo', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioAssetById(
+          'hive_engine:DEC',
+          [],
+          { DEC: 'https://example.com/dec.png' },
+        ),
+      ).toEqual(
+        expect.objectContaining({
+          ecosystem: 'hive_engine',
+          symbol: 'DEC',
+          chainId: 'hive_engine',
+          logoUrl: 'https://example.com/dec.png',
+        }),
+      );
+    });
+
     it('returns undefined for a null id or missing asset', () => {
       const asset = createAsset();
       expect(

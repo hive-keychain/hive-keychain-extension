@@ -528,6 +528,9 @@ export const Portfolio = ({
   const [portfolioChains, setPortfolioChains] =
     useState<PortfolioChainDisplayRecord>({});
   const [history, setHistory] = useState<PortfolioHistoryItem[]>([]);
+  const [hiveEngineTokenLogoUrls, setHiveEngineTokenLogoUrls] = useState<
+    Record<string, string>
+  >({});
   const [fromAssetId, setFromAssetId] = useState('');
   const [toAssetId, setToAssetId] = useState('');
   const [lastUsedSwapAssets, setLastUsedSwapAssets] =
@@ -601,6 +604,22 @@ export const Portfolio = ({
   const hasPreloadedSwapAvailableAssetsRef = useRef(false);
   const swapAvailableAssetsLoadedRef = useRef(false);
   const isSwapAvailableAssetsLoadInFlightRef = useRef(false);
+  const hiveTokensPromiseRef = useRef<
+    ReturnType<typeof TokensUtils.getAllTokens> | null
+  >(null);
+
+  const getHiveTokens = useCallback(() => {
+    if (hiveTokensPromiseRef.current) {
+      return hiveTokensPromiseRef.current;
+    }
+
+    const request = TokensUtils.getAllTokens().catch((error) => {
+      hiveTokensPromiseRef.current = null;
+      throw error;
+    });
+    hiveTokensPromiseRef.current = request;
+    return request;
+  }, []);
 
   const [accountOptions, setAccountOptions] = useState<AccountOption[]>(() =>
     buildDefaultPortfolioAccountOptions(hiveAccounts, evmAccounts),
@@ -755,6 +774,56 @@ export const Portfolio = ({
           ),
     [history, showCreatedExpiredHistory],
   );
+
+  const hiveEngineHistorySymbols = useMemo(() => {
+    const symbols = new Set<string>();
+    for (const item of history) {
+      for (const assetId of [item.fromAssetId, item.toAssetId]) {
+        const symbol =
+          PortfolioHistoryDisplayUtils.getPortfolioHistoryHiveEngineAssetSymbol(
+            assetId,
+          );
+        if (symbol) {
+          symbols.add(symbol);
+        }
+      }
+    }
+    return [...symbols].sort();
+  }, [history]);
+  const hiveEngineHistorySymbolsKey = hiveEngineHistorySymbols.join('|');
+
+  useEffect(() => {
+    if (!hiveEngineHistorySymbolsKey) {
+      setHiveEngineTokenLogoUrls({});
+      return;
+    }
+
+    let cancelled = false;
+    const historySymbols = new Set(hiveEngineHistorySymbols);
+    void getHiveTokens()
+      .then((tokens) => {
+        if (cancelled) {
+          return;
+        }
+
+        const logoUrls: Record<string, string> = {};
+        for (const token of tokens) {
+          const symbol = token.symbol.toUpperCase();
+          const icon = token.metadata.icon?.trim();
+          if (historySymbols.has(symbol) && icon) {
+            logoUrls[symbol] = ImageUtils.getImmutableImage(icon);
+          }
+        }
+        setHiveEngineTokenLogoUrls(logoUrls);
+      })
+      .catch((error) => {
+        Logger.error('Unable to load Hive Engine history token logos', error);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [getHiveTokens, hiveEngineHistorySymbolsKey]);
 
   const canonicalAssetsForRowResolution = useMemo(() => {
     const assetById = new Map<string, PortfolioCanonicalAsset>();
@@ -2065,7 +2134,7 @@ export const Portfolio = ({
           PortfolioUtils.sortHivePortfolioBalancesByDisplayOrder(
             portfolio[0]?.balances ?? [],
           );
-        const hiveTokens = await TokensUtils.getAllTokens();
+        const hiveTokens = await getHiveTokens();
         if (selectedAccountKey !== accountKey) return;
         const nextRows = sortedBalances.map((balance) => {
           const tokenIcon = hiveTokens
@@ -3673,11 +3742,13 @@ export const Portfolio = ({
               item={item}
               fromAsset={PortfolioHistoryDisplayUtils.resolvePortfolioAssetById(
                 item.fromAssetId,
-                assets,
+                canonicalAssetsForRowResolution,
+                hiveEngineTokenLogoUrls,
               )}
               toAsset={PortfolioHistoryDisplayUtils.resolvePortfolioAssetById(
                 item.toAssetId,
-                assets,
+                canonicalAssetsForRowResolution,
+                hiveEngineTokenLogoUrls,
               )}
               chains={toAssetEvmChains}
               portfolioChains={portfolioChains}
