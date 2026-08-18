@@ -457,25 +457,22 @@
   gap: var(--kc-space-2);
 }
 
-.portfolio-header-row {
-  display: grid;
-  gap: var(--kc-space-2);
-  grid-template-columns: minmax(0, 1fr) minmax(10.5rem, 14rem);
-  align-items: end;
+.portfolio-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--kc-space-3);
+  min-width: 0;
 
-  @media (max-width: 680px) {
-    grid-template-columns: 1fr;
+  &__account {
+    flex: 1.4 1 16rem;
+    min-width: min(100%, 14rem);
   }
 
   &__network {
-    min-width: 0;
-  }
-
-  .portfolio-account-row {
-    &__ens,
-    &__address {
-      line-height: 1.25;
-    }
+    flex: 0 1 12rem;
+    min-width: min(100%, 10.5rem);
+    max-width: 16rem;
   }
 }
 
@@ -568,15 +565,25 @@
   align-items: center;
   gap: var(--kc-space-2);
   min-width: 0;
+  width: 100%;
 
   &__avatar {
     width: 28px !important;
     height: 28px !important;
+    flex-shrink: 0;
   }
 
   &__text {
     min-width: 0;
     display: grid;
+  }
+
+  &__ens,
+  &__address {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.25;
   }
 
   &__ens {
@@ -587,9 +594,6 @@
   &__address {
     font-size: var(--kc-font-size-xs);
     color: var(--kc-color-text-secondary);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 }
 
@@ -597,8 +601,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--kc-space-1);
+  flex: 1 1 14rem;
+  min-width: min(100%, 12rem);
   width: 100%;
-  max-width: 24rem;
 
   label {
     font-size: var(--kc-font-size-sm);
@@ -609,7 +614,9 @@
   input {
     width: 100%;
     box-sizing: border-box;
-    padding: var(--kc-space-2) var(--kc-space-3);
+    height: 3.25rem;
+    min-height: 3.25rem;
+    padding: 0 var(--kc-space-3);
     font-family: inherit;
     font-size: var(--kc-font-size-md);
     line-height: 1.5;
@@ -634,16 +641,6 @@
       border-color: var(--kc-color-accent);
       box-shadow: 0 0 0 1px var(--kc-color-accent-muted);
     }
-  }
-}
-
-.portfolio-controls {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
-  gap: var(--kc-space-3);
-
-  @media (max-width: 680px) {
-    grid-template-columns: 1fr;
   }
 }
 

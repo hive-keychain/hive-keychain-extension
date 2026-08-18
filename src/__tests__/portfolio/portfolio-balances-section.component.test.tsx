@@ -24,15 +24,42 @@ describe('PortfolioBalancesSection', () => {
     renderNetworkOption: () => 'All networks',
   };
 
-  it('groups the account dropdown and token filter in one controls row', () => {
+  it('groups the account dropdown and token filter as siblings in one controls row', () => {
     const { container } = render(
       <PortfolioBalancesSection {...baseProps} rows={[]} />,
     );
 
     const controls = container.querySelector('.portfolio-controls');
+    const controlChildren = [...(controls?.children ?? [])];
 
+    expect(container.querySelector('.portfolio-header-row')).toBeNull();
     expect(controls?.querySelector('#portfolio-account')).not.toBeNull();
+    expect(controls?.querySelector('#portfolio-network')).toBeNull();
     expect(controls?.querySelector('#portfolio-token-filter')).not.toBeNull();
+    expect(controlChildren.map((child) => child.className)).toEqual([
+      'portfolio-overlay-select portfolio-controls__account',
+      'portfolio-token-filter',
+    ]);
+  });
+
+  it('places the network filter beside account and assets without a nested grid', () => {
+    const { container } = render(
+      <PortfolioBalancesSection
+        {...baseProps}
+        showNetworkFilter
+        rows={[]}
+      />,
+    );
+
+    const controls = container.querySelector('.portfolio-controls');
+    const controlChildren = [...(controls?.children ?? [])];
+
+    expect(container.querySelector('.portfolio-header-row')).toBeNull();
+    expect(controlChildren.map((child) => child.className)).toEqual([
+      'portfolio-overlay-select portfolio-controls__account',
+      'portfolio-overlay-select portfolio-controls__network',
+      'portfolio-token-filter',
+    ]);
   });
 
   it('filters visible rows by token filter and renders totals', () => {

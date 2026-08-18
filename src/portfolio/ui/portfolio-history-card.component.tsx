@@ -367,17 +367,25 @@ export const PortfolioHistoryCard = ({
   }
 
   const renderLeg = (
+    side: 'from' | 'to',
     label: string,
     amount: string,
     identity: PortfolioTokenIdentityProps,
   ) => (
-    <div className="portfolio-history-card__leg">
-      <span className="portfolio-history-card__leg-label">{label}</span>
-      {amount ? (
-        <span className="portfolio-history-card__leg-amount">{amount}</span>
-      ) : null}
-      <PortfolioTokenIdentity {...identity} />
-    </div>
+    <>
+      <span
+        className={`portfolio-history-card__leg-label portfolio-history-card__leg-label--${side}`}>
+        {label}
+      </span>
+      <span
+        className={`portfolio-history-card__leg-amount portfolio-history-card__leg-amount--${side}`}>
+        {amount || '\u00a0'}
+      </span>
+      <div
+        className={`portfolio-history-card__leg-identity portfolio-history-card__leg-identity--${side}`}>
+        <PortfolioTokenIdentity {...identity} />
+      </div>
+    </>
   );
 
   return (
@@ -389,6 +397,7 @@ export const PortfolioHistoryCard = ({
         onClick={() => setIsExpanded((previous) => !previous)}>
         <div className="portfolio-history-card__swap">
           {renderLeg(
+            'from',
             I18nUtils.getMessage('portfolio_history_from'),
             fromAmount,
             fromIdentity,
@@ -398,6 +407,7 @@ export const PortfolioHistoryCard = ({
             className="portfolio-history-card__between"
           />
           {renderLeg(
+            'to',
             I18nUtils.getMessage('portfolio_history_to'),
             toAmount,
             toIdentity,
