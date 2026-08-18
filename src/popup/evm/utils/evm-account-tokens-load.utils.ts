@@ -171,7 +171,7 @@ const loadNativeAndErc20TokensForChain = async (
     if (!Array.isArray(result?.tokens)) {
       throw new Error('Invalid discovered tokens response');
     }
-    await saveDiscoveredTokensCache(chain, address, result);
+    void saveDiscoveredTokensCache(chain, address, result);
   } catch (error) {
     Logger.error('Error while loading discovered EVM tokens', error);
     const cached = await EvmDiscoveryCacheUtils.getDiscoveredTokens(
@@ -225,19 +225,33 @@ const loadVisibleNativeAndErc20TokensForChain = async (
   retryCount = 0,
   previousBalances: NativeAndErc20Token[] = [],
   maxRetries = DEFAULT_MAX_LOAD_MORE_RETRIES,
+  options?: {
+    onUpdate?: (tokens: NativeAndErc20Token[]) => void;
+    shouldContinue?: () => boolean;
+  },
 ): Promise<NativeAndErc20Token[]> => {
   const { balances, shouldLoadMore } = await loadNativeAndErc20TokensForChain(
     chain,
     walletAddress,
-    { registerAddress: retryCount === 0 },
+    {
+      registerAddress: retryCount === 0,
+      shouldContinue: options?.shouldContinue,
+    },
   );
   const nextBalances =
     balances.length === 0 && previousBalances.length > 0
       ? previousBalances
       : balances;
   const visibleTokens = await getVisibleNativeAndErc20Tokens(nextBalances);
+  if (options?.shouldContinue?.() !== false) {
+    options?.onUpdate?.(visibleTokens);
+  }
 
-  if (!shouldLoadMore || retryCount >= maxRetries) {
+  if (
+    !shouldLoadMore ||
+    retryCount >= maxRetries ||
+    options?.shouldContinue?.() === false
+  ) {
     return visibleTokens;
   }
 
@@ -248,14 +262,17 @@ const loadVisibleNativeAndErc20TokensForChain = async (
     retryCount + 1,
     nextBalances,
     maxRetries,
+    options,
   );
 };
 
 type LoadVisibleNativeAndErc20TokensForSetupChainsOptions = {
   maxRetries?: number;
+  onChainUpdate?: (chain: EvmChain, tokens: NativeAndErc20Token[]) => void;
   onChainReady?: (chain: EvmChain, tokens: NativeAndErc20Token[]) => void;
   onChainError?: (chain: EvmChain, error: unknown) => void;
   onChainFinished?: (chain: EvmChain) => void;
+  shouldContinue?: () => boolean;
 };
 
 const loadVisibleNativeAndErc20TokensForSetupChains = async (
@@ -272,8 +289,14 @@ const loadVisibleNativeAndErc20TokensForSetupChains = async (
           0,
           [],
           options?.maxRetries,
+          {
+            onUpdate: (tokens) => options?.onChainUpdate?.(chain, tokens),
+            shouldContinue: options?.shouldContinue,
+          },
         );
-        options?.onChainReady?.(chain, tokens);
+        if (options?.shouldContinue?.() !== false) {
+          options?.onChainReady?.(chain, tokens);
+        }
         return tokens;
       } catch (error) {
         options?.onChainError?.(chain, error);

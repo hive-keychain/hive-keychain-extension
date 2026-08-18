@@ -10,6 +10,7 @@ import {
 } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { ChainType, EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { AsyncUtils } from 'src/utils/async.utils';
 
 const ethereumChain: EvmChain = {
   name: 'Ethereum',
@@ -77,6 +78,7 @@ describe('EvmAccountTokensLoadUtils', () => {
       .spyOn(EvmTokensUtils, 'filterTokensBasedOnSettings')
       .mockImplementation(async (tokens) => tokens);
     jest.spyOn(EvmTokensUtils, 'sortTokens').mockImplementation((tokens) => tokens);
+    jest.spyOn(AsyncUtils, 'sleep').mockResolvedValue(undefined);
   });
 
   it('registers the address and refreshes balances from rpc on first load', async () => {
@@ -178,6 +180,50 @@ describe('EvmAccountTokensLoadUtils', () => {
     expect(EvmTokensUtils.filterTokensBasedOnSettings).toHaveBeenCalled();
     expect(EvmTokensUtils.sortTokens).toHaveBeenCalled();
     expect(tokens).toEqual([nativeToken]);
+  });
+
+  it('starts setup-chain loads in parallel', async () => {
+    const polygonChain: EvmChain = {
+      ...ethereumChain,
+      name: 'Polygon',
+      chainId: '0x89',
+      mainToken: 'MATIC',
+    };
+    const discoveryResolvers = new Map<
+      string,
+      (response: DiscoveredTokensResponse) => void
+    >();
+    let resolveBothStarted: () => void = () => undefined;
+    const bothStarted = new Promise<void>((resolve) => {
+      resolveBothStarted = resolve;
+    });
+    (EvmLightNodeUtils.getDiscoveredTokens as jest.Mock).mockImplementation(
+      (chainId: string) =>
+        new Promise((resolve) => {
+          discoveryResolvers.set(chainId, resolve);
+          if (discoveryResolvers.size === 2) {
+            resolveBothStarted();
+          }
+        }),
+    );
+
+    const loadPromise =
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains(
+        [ethereumChain, polygonChain],
+        '0xabc',
+      );
+    await bothStarted;
+
+    expect(EvmLightNodeUtils.getDiscoveredTokens).toHaveBeenCalledTimes(2);
+    discoveryResolvers.get(ethereumChain.chainId)?.({
+      ...discoveredTokensResponse,
+      chainId: ethereumChain.chainId,
+    });
+    discoveryResolvers.get(polygonChain.chainId)?.({
+      ...discoveredTokensResponse,
+      chainId: polygonChain.chainId,
+    });
+    await loadPromise;
   });
 
   it('falls back per setup chain when discovery fails', async () => {
@@ -349,5 +395,130 @@ describe('EvmAccountTokensLoadUtils', () => {
 
     expect(EvmLightNodeUtils.getDiscoveredTokens).toHaveBeenCalledTimes(3);
     expect(tokens).toEqual([nativeToken]);
+  });
+
+  it('publishes the first chain result before waiting for a retry', async () => {
+    const runningResponse = {
+      ...discoveredTokensResponse,
+      catchupStatus: CatchupStatus.RUNNING,
+      pricingStatus: PricingStatus.PENDING,
+    };
+    (EvmLightNodeUtils.getDiscoveredTokens as jest.Mock)
+      .mockResolvedValueOnce(runningResponse)
+      .mockResolvedValueOnce(discoveredTokensResponse);
+    let resolveSleep: (() => void) | undefined;
+    const sleepStarted = new Promise<void>((resolveStarted) => {
+      (AsyncUtils.sleep as jest.Mock).mockImplementation(
+        () =>
+          new Promise<void>((resolve) => {
+            resolveSleep = resolve;
+            resolveStarted();
+          }),
+      );
+    });
+    const onUpdate = jest.fn();
+
+    const loadPromise =
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForChain(
+        ethereumChain,
+        '0xabc',
+        0,
+        [],
+        1,
+        { onUpdate },
+      );
+
+    await sleepStarted;
+    expect(onUpdate).toHaveBeenCalledTimes(1);
+    expect(onUpdate).toHaveBeenLastCalledWith([nativeToken]);
+
+    resolveSleep?.();
+    await loadPromise;
+    expect(onUpdate).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps prior balances when a retry temporarily returns empty', async () => {
+    const runningResponse = {
+      ...discoveredTokensResponse,
+      catchupStatus: CatchupStatus.RUNNING,
+      pricingStatus: PricingStatus.PENDING,
+    };
+    (EvmLightNodeUtils.getDiscoveredTokens as jest.Mock)
+      .mockResolvedValueOnce(runningResponse)
+      .mockResolvedValueOnce(discoveredTokensResponse);
+    (EvmTokensUtils.getTokenBalances as jest.Mock)
+      .mockResolvedValueOnce([nativeToken])
+      .mockResolvedValueOnce([]);
+    const onUpdate = jest.fn();
+
+    await EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForChain(
+      ethereumChain,
+      '0xabc',
+      0,
+      [],
+      1,
+      { onUpdate },
+    );
+
+    expect(onUpdate).toHaveBeenNthCalledWith(1, [nativeToken]);
+    expect(onUpdate).toHaveBeenNthCalledWith(2, [nativeToken]);
+  });
+
+  it('stops obsolete account retries after cancellation', async () => {
+    const runningResponse = {
+      ...discoveredTokensResponse,
+      catchupStatus: CatchupStatus.RUNNING,
+      pricingStatus: PricingStatus.PENDING,
+    };
+    (EvmLightNodeUtils.getDiscoveredTokens as jest.Mock).mockResolvedValue(
+      runningResponse,
+    );
+    let resolveSleep: (() => void) | undefined;
+    const sleepStarted = new Promise<void>((resolveStarted) => {
+      (AsyncUtils.sleep as jest.Mock).mockImplementation(
+        () =>
+          new Promise<void>((resolve) => {
+            resolveSleep = resolve;
+            resolveStarted();
+          }),
+      );
+    });
+    let shouldContinue = true;
+    const onUpdate = jest.fn();
+
+    const loadPromise =
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForChain(
+        ethereumChain,
+        '0xabc',
+        0,
+        [],
+        5,
+        { onUpdate, shouldContinue: () => shouldContinue },
+      );
+    await sleepStarted;
+    shouldContinue = false;
+    resolveSleep?.();
+    await loadPromise;
+
+    expect(EvmLightNodeUtils.getDiscoveredTokens).toHaveBeenCalledTimes(1);
+    expect(onUpdate).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not wait for discovery cache writes before publishing balances', async () => {
+    (
+      EvmDiscoveryCacheUtils.saveDiscoveredTokens as jest.Mock
+    ).mockImplementation(() => new Promise(() => undefined));
+    const onUpdate = jest.fn();
+
+    await EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForChain(
+      ethereumChain,
+      '0xabc',
+      0,
+      [],
+      0,
+      { onUpdate },
+    );
+
+    expect(onUpdate).toHaveBeenCalledWith([nativeToken]);
   });
 });

@@ -7,8 +7,10 @@ import {
 } from '@popup/multichain/interfaces/chains.interface';
 import AccountSelectorOrderUtils from '@popup/multichain/utils/account-selector-order.utils';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
+import { EvmActiveAccountUtils } from 'src/popup/evm/utils/evm-active-account.utils';
+import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import {
@@ -17,12 +19,33 @@ import {
 } from 'src/portfolio/portfolio-api.utils';
 import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
 import { Portfolio } from 'src/portfolio/portfolio.component';
+import { PortfolioSwapCatalogCacheUtils } from 'src/portfolio/portfolio-swap-catalog-cache.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
 
 jest.mock('src/popup/hive/utils/tokens.utils', () => ({
   __esModule: true,
   default: {
     getAllTokens: jest.fn().mockResolvedValue([]),
+  },
+}));
+
+jest.mock('src/popup/hive/utils/active-account.utils', () => ({
+  __esModule: true,
+  default: {
+    getActiveAccountNameFromLocalStorage: jest.fn().mockResolvedValue(undefined),
+  },
+}));
+
+jest.mock('src/popup/evm/utils/evm-active-account.utils', () => ({
+  EvmActiveAccountUtils: {
+    getSavedActiveAccountWallet: jest.fn(async (accounts) => accounts[0].wallet),
+  },
+}));
+
+jest.mock('src/portfolio/portfolio-swap-catalog-cache.utils', () => ({
+  PortfolioSwapCatalogCacheUtils: {
+    getCachedSwapCatalog: jest.fn().mockResolvedValue(null),
+    ensureSwapCatalogCached: jest.fn(),
   },
 }));
 
@@ -204,8 +227,22 @@ const maticToken = {
 describe('Portfolio', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    (
+      ActiveAccountUtils.getActiveAccountNameFromLocalStorage as jest.Mock
+    ).mockResolvedValue(undefined);
+    (
+      EvmActiveAccountUtils.getSavedActiveAccountWallet as jest.Mock
+    ).mockImplementation(async (accounts) => accounts[0].wallet);
     window.history.replaceState(null, '', '/#portfolio');
     mockPortfolioListAvailableAssets();
+    (
+      PortfolioSwapCatalogCacheUtils.getCachedSwapCatalog as jest.Mock
+    ).mockResolvedValue(null);
+    (
+      PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached as jest.Mock
+    ).mockImplementation(() =>
+      PortfolioApiUtils.listAvailableAssets({ mode: 'swap' }),
+    );
     jest
       .spyOn(ChainUtils, 'getAllSetupChainsForType')
       .mockResolvedValue([ethereumChain, polygonChain]);
@@ -400,7 +437,11 @@ describe('Portfolio', () => {
   });
 
   it('keeps the default EVM account selected instead of falling back to Hive', async () => {
-    jest.spyOn(PortfolioUtils, 'getPortfolio').mockResolvedValue([[], []]);
+    jest.spyOn(PortfolioUtils, 'getPortfolio').mockResolvedValue({
+      portfolio: [],
+      orderedTokenList: [],
+      tokens: [],
+    });
 
     const { rerender } = render(
       <Portfolio
@@ -466,8 +507,8 @@ describe('Portfolio', () => {
     jest
       .spyOn(AccountUtils, 'getExtendedAccounts')
       .mockResolvedValue([{ name: 'alice' } as never]);
-    jest.spyOn(PortfolioUtils, 'getPortfolio').mockResolvedValue([
-      [
+    jest.spyOn(PortfolioUtils, 'getPortfolio').mockResolvedValue({
+      portfolio: [
         {
           account: 'alice',
           balances: [
@@ -481,8 +522,9 @@ describe('Portfolio', () => {
           totalUSD: 0,
         },
       ],
-      ['HIVE', 'HBD', 'HP', 'DEC', 'BEE'],
-    ]);
+      orderedTokenList: ['HIVE', 'HBD', 'HP', 'DEC', 'BEE'],
+      tokens: [],
+    });
 
     const { container, getByText } = render(
       <Portfolio
@@ -511,8 +553,8 @@ describe('Portfolio', () => {
     jest
       .spyOn(AccountUtils, 'getExtendedAccounts')
       .mockResolvedValue([{ name: 'alice' } as never]);
-    jest.spyOn(PortfolioUtils, 'getPortfolio').mockResolvedValue([
-      [
+    jest.spyOn(PortfolioUtils, 'getPortfolio').mockResolvedValue({
+      portfolio: [
         {
           account: 'alice',
           balances: [
@@ -540,8 +582,9 @@ describe('Portfolio', () => {
           totalUSD: 35,
         },
       ],
-      ['HIVE', 'BEE'],
-    ]);
+      orderedTokenList: ['HIVE', 'BEE'],
+      tokens: [{ symbol: 'BEE', precision: 3, metadata: {} } as never],
+    });
     (TokensUtils.getAllTokens as jest.Mock).mockResolvedValue([
       { symbol: 'BEE', precision: 3, metadata: {} },
     ]);
@@ -597,8 +640,8 @@ describe('Portfolio', () => {
     jest
       .spyOn(AccountUtils, 'getExtendedAccounts')
       .mockResolvedValue([{ name: 'alice' } as never]);
-    jest.spyOn(PortfolioUtils, 'getPortfolio').mockResolvedValue([
-      [
+    jest.spyOn(PortfolioUtils, 'getPortfolio').mockResolvedValue({
+      portfolio: [
         {
           account: 'alice',
           balances: [{ symbol: 'DEC', balance: 10, usdValue: 1 }],
@@ -606,8 +649,15 @@ describe('Portfolio', () => {
           totalUSD: 1,
         },
       ],
-      ['DEC'],
-    ]);
+      orderedTokenList: ['DEC'],
+      tokens: [
+        {
+          symbol: 'DEC',
+          precision: 3,
+          metadata: { icon: decIconUrl },
+        } as never,
+      ],
+    });
     (TokensUtils.getAllTokens as jest.Mock).mockResolvedValue([
       {
         symbol: 'DEC',
@@ -707,6 +757,51 @@ describe('Portfolio', () => {
     expect(container.querySelector('.portfolio-flow')).toBeNull();
   });
 
+  it('renders direct swap from cached catalog while refresh remains pending', async () => {
+    window.history.replaceState(null, '', '/#swap');
+    (
+      PortfolioSwapCatalogCacheUtils.getCachedSwapCatalog as jest.Mock
+    ).mockResolvedValue({
+      response: {
+        mode: 'swap',
+        direction: null,
+        sourceAssetId: null,
+        assets: swapAssetsFixture,
+        chains: {},
+      },
+      fetchedAt: Date.now() - 2 * 60 * 60 * 1000,
+    });
+    (
+      PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached as jest.Mock
+    ).mockImplementation(() => new Promise(() => undefined));
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('.portfolio-flow')).not.toBeNull();
+      expect(container.querySelector('#portfolio-from-asset')).not.toBeNull();
+    });
+    expect(PortfolioApiUtils.listAssets).not.toHaveBeenCalled();
+    expect(PortfolioApiUtils.listHistory).not.toHaveBeenCalled();
+  });
+
   it('reuses cached portfolio balances when opening swap', async () => {
     const { container } = render(
       <Portfolio
@@ -776,8 +871,8 @@ describe('Portfolio', () => {
     jest
       .spyOn(AccountUtils, 'getExtendedAccounts')
       .mockResolvedValue([{ name: 'alice' } as never]);
-    jest.spyOn(PortfolioUtils, 'getPortfolio').mockResolvedValue([
-      [
+    jest.spyOn(PortfolioUtils, 'getPortfolio').mockResolvedValue({
+      portfolio: [
         {
           account: 'alice',
           balances: [],
@@ -785,8 +880,9 @@ describe('Portfolio', () => {
           totalUSD: 0,
         },
       ],
-      [],
-    ]);
+      orderedTokenList: [],
+      tokens: [],
+    });
 
     const { container } = render(
       <Portfolio
@@ -806,7 +902,11 @@ describe('Portfolio', () => {
       expect(PortfolioApiUtils.listAssets).toHaveBeenCalled(),
     );
 
-    jest.spyOn(PortfolioUtils, 'getPortfolio').mockResolvedValue([[], []]);
+    jest.spyOn(PortfolioUtils, 'getPortfolio').mockResolvedValue({
+      portfolio: [],
+      orderedTokenList: [],
+      tokens: [],
+    });
     (
       EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains as jest.Mock
     ).mockClear();
@@ -819,7 +919,7 @@ describe('Portfolio', () => {
 
     await waitFor(() => {
       expect(PortfolioApiUtils.listAssets).toHaveBeenCalledTimes(1);
-      expect(PortfolioApiUtils.listHistory).toHaveBeenCalledTimes(1);
+      expect(PortfolioApiUtils.listHistory).not.toHaveBeenCalled();
       expect(PortfolioUtils.getPortfolio).toHaveBeenCalled();
     });
   });
@@ -851,6 +951,8 @@ describe('Portfolio', () => {
     await waitFor(() => {
       expect(container.querySelector('#portfolio-account')).not.toBeNull();
     });
+
+    clickPortfolioNav(container, 'history');
 
     await waitFor(() => {
       expect(PortfolioApiUtils.listHistory).toHaveBeenCalledWith(1, {
@@ -995,7 +1097,7 @@ describe('Portfolio', () => {
 
     await waitFor(() => {
       expect(PortfolioApiUtils.listAssets).toHaveBeenCalledTimes(1);
-      expect(PortfolioApiUtils.listHistory).toHaveBeenCalledTimes(1);
+      expect(PortfolioApiUtils.listHistory).not.toHaveBeenCalled();
       expect(
         EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains,
       ).toHaveBeenCalledTimes(1);
@@ -2535,6 +2637,126 @@ describe('Portfolio', () => {
     });
   });
 
+  it('loads only the persisted EVM account after bootstrap resolves', async () => {
+    const firstAccount = {
+      id: 1,
+      wallet: { address: '0xabc' },
+    } as never;
+    const persistedAccount = {
+      id: 2,
+      wallet: { address: '0xdef' },
+    } as never;
+    (
+      EvmActiveAccountUtils.getSavedActiveAccountWallet as jest.Mock
+    ).mockResolvedValue(persistedAccount.wallet);
+
+    render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[firstAccount, persistedAccount]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress={undefined}
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(
+        EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains,
+      ).toHaveBeenCalledTimes(1);
+    });
+    expect(
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains,
+    ).toHaveBeenCalledWith(
+      [ethereumChain, polygonChain],
+      '0xdef',
+      expect.any(Object),
+    );
+  });
+
+  it('keeps a manual account choice authoritative while ordering resolves', async () => {
+    const firstAccount = {
+      id: 1,
+      seedId: 1,
+      wallet: { address: '0xabc' },
+    } as never;
+    const secondAccount = {
+      id: 2,
+      seedId: 1,
+      wallet: { address: '0xdef' },
+    } as never;
+    let resolveOrder: ((value: any) => void) | undefined;
+    jest
+      .spyOn(AccountSelectorOrderUtils, 'loadOrderedListItems')
+      .mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            resolveOrder = resolve;
+          }),
+      );
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[firstAccount, secondAccount]}
+        mk="test-mk"
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    fireEvent.click(
+      container.querySelector('#portfolio-account') as HTMLButtonElement,
+    );
+    await waitFor(() => {
+      expect(
+        container.querySelectorAll(
+          '#portfolio-account-listbox [role="option"]',
+        ),
+      ).toHaveLength(2);
+    });
+    fireEvent.click(
+      container.querySelectorAll(
+        '#portfolio-account-listbox [role="option"]',
+      )[1] as HTMLElement,
+    );
+
+    await act(async () => {
+      resolveOrder?.({
+        displayOrder: [
+          { type: 'evm', seedId: 1, accountId: 1 },
+          { type: 'evm', seedId: 1, accountId: 2 },
+        ],
+        listItems: [
+          { type: ChainType.EVM, id: 'evm-0xabc', account: firstAccount },
+          { type: ChainType.EVM, id: 'evm-0xdef', account: secondAccount },
+        ],
+      });
+    });
+
+    await waitFor(() => {
+      expect(
+        EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains,
+      ).toHaveBeenCalledTimes(1);
+    });
+    expect(
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains,
+    ).toHaveBeenCalledWith(
+      [ethereumChain, polygonChain],
+      '0xdef',
+      expect.any(Object),
+    );
+  });
+
   it('loads fiat ramp options and available buy assets when opening the buy section', async () => {
     (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockResolvedValue({
       mode: 'buy',
@@ -3201,8 +3423,8 @@ describe('Portfolio', () => {
     jest
       .spyOn(AccountUtils, 'getExtendedAccounts')
       .mockResolvedValue([{ name: 'alice' } as never]);
-    jest.spyOn(PortfolioUtils, 'getPortfolio').mockResolvedValue([
-      [
+    jest.spyOn(PortfolioUtils, 'getPortfolio').mockResolvedValue({
+      portfolio: [
         {
           account: 'alice',
           balances: [{ symbol: 'HIVE', balance: 10, usdValue: 10 }],
@@ -3210,8 +3432,9 @@ describe('Portfolio', () => {
           totalUSD: 10,
         },
       ],
-      ['HIVE'],
-    ]);
+      orderedTokenList: ['HIVE'],
+      tokens: [],
+    });
     (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
       assets: [swapAssetsFixture[0], hiveAsset],
       chains: {},

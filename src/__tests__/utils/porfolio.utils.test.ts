@@ -6,7 +6,6 @@ import { DynamicGlobalPropertiesUtils } from '@popup/hive/utils/dynamic-global-p
 import { HiveEngineConfigUtils } from '@popup/hive/utils/hive-engine-config.utils';
 import { HiveInternalMarketUtils } from '@popup/hive/utils/hive-internal-market.utils';
 import { HiveTxUtils } from '@popup/hive/utils/hive-tx.utils';
-import HiveUtils from '@popup/hive/utils/hive.utils';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Config from 'src/config';
@@ -315,15 +314,14 @@ describe('porfolio.utils', () => {
           total_vesting_fund_hive: '1000000',
           total_vesting_shares: '1000000000000',
         } as any);
-      jest.spyOn(HiveUtils, 'getCurrentMedianHistoryPrice').mockResolvedValue({} as any);
-      jest.spyOn(HiveUtils, 'getRewardFund').mockResolvedValue({} as any);
       jest.spyOn(CurrencyPricesUtils, 'getPrices').mockResolvedValue({
         hive: { usd: 2 },
         hive_dollar: { usd: 1 },
       } as CurrencyPrices);
       (TokensUtils.getUserBalance as jest.Mock).mockResolvedValue([]);
       (TokensUtils.getTokensMarket as jest.Mock).mockResolvedValue([]);
-      (TokensUtils.getAllTokens as jest.Mock).mockResolvedValue([]);
+      (TokensUtils.getAllTokens as jest.Mock).mockClear();
+      const loadTokens = jest.fn().mockResolvedValue([]);
       jest.spyOn(LocalStorageUtils, 'getValueFromLocalStorage').mockImplementation(
         async (key) => {
           if (key === LocalStorageKeyEnum.HIDDEN_TOKENS) return [];
@@ -345,9 +343,8 @@ describe('porfolio.utils', () => {
         vesting_shares: '1000000.000000 VESTS',
       } as ExtendedAccount;
 
-      const [portfolio, orderedTokenList] = await PortfolioUtils.getPortfolio([
-        extended,
-      ]);
+      const { portfolio, orderedTokenList, tokens } =
+        await PortfolioUtils.getPortfolio([extended], { loadTokens });
 
       expect(orderedTokenList.slice(0, 3)).toEqual(['HIVE', 'HBD', 'HP']);
       expect(portfolio).toHaveLength(1);
@@ -358,6 +355,106 @@ describe('porfolio.utils', () => {
       expect(symbols).toContain('HP');
       expect(portfolio[0].totalUSD).toBeGreaterThan(0);
       expect(portfolio[0].totalHive).toBeGreaterThan(0);
+      expect(tokens).toEqual([]);
+      expect(loadTokens).toHaveBeenCalledTimes(1);
+      expect(TokensUtils.getAllTokens).not.toHaveBeenCalled();
+      expect(AsyncUtils.sleep).not.toHaveBeenCalled();
+    });
+
+    it('starts independent Hive requests concurrently after RPC initialization', async () => {
+      (TokensUtils.getUserBalance as jest.Mock).mockClear();
+      (TokensUtils.getTokensMarket as jest.Mock).mockClear();
+      jest
+        .spyOn(PortfolioUtils, 'loadAndSetRPCsAndApis')
+        .mockResolvedValue(undefined);
+      let resolveGlobals: (value: any) => void = () => undefined;
+      let resolvePrices: (value: CurrencyPrices) => void = () => undefined;
+      let resolveBalances: (value: TokenBalance[]) => void = () => undefined;
+      let resolveMarkets: (value: TokenMarket[]) => void = () => undefined;
+      let resolveTokens: (value: Token[]) => void = () => undefined;
+      let resolveHidden: (value: string[]) => void = () => undefined;
+      let resolveOrders: (value: { hive: number; hbd: number }) => void =
+        () => undefined;
+      jest
+        .spyOn(
+          DynamicGlobalPropertiesUtils,
+          'getDynamicGlobalProperties',
+        )
+        .mockImplementation(
+          () => new Promise((resolve) => (resolveGlobals = resolve)),
+        );
+      jest
+        .spyOn(CurrencyPricesUtils, 'getPrices')
+        .mockImplementation(
+          () => new Promise((resolve) => (resolvePrices = resolve)),
+        );
+      (TokensUtils.getUserBalance as jest.Mock).mockImplementation(
+        () => new Promise((resolve) => (resolveBalances = resolve)),
+      );
+      (TokensUtils.getTokensMarket as jest.Mock).mockImplementation(
+        () => new Promise((resolve) => (resolveMarkets = resolve)),
+      );
+      const loadTokens = jest.fn(
+        () => new Promise<Token[]>((resolve) => (resolveTokens = resolve)),
+      );
+      jest
+        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+        .mockImplementation(
+          () => new Promise((resolve) => (resolveHidden = resolve)),
+        );
+      jest
+        .spyOn(HiveInternalMarketUtils, 'getHiveInternalMarketOrders')
+        .mockImplementation(
+          () => new Promise((resolve) => (resolveOrders = resolve)),
+        );
+      jest.spyOn(FormatUtils, 'toHP').mockReturnValue(0);
+
+      const portfolioPromise = PortfolioUtils.getPortfolio(
+        [
+          {
+            name: 'alice',
+            balance: '0.000 HIVE',
+            savings_balance: '0.000 HIVE',
+            hbd_balance: '0.000 HBD',
+            savings_hbd_balance: '0.000 HBD',
+            vesting_shares: '0.000000 VESTS',
+          } as ExtendedAccount,
+        ],
+        { loadTokens },
+      );
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(
+        DynamicGlobalPropertiesUtils.getDynamicGlobalProperties,
+      ).toHaveBeenCalledTimes(1);
+      expect(CurrencyPricesUtils.getPrices).toHaveBeenCalledTimes(1);
+      expect(TokensUtils.getUserBalance).toHaveBeenCalledTimes(1);
+      expect(TokensUtils.getTokensMarket).toHaveBeenCalledTimes(1);
+      expect(loadTokens).toHaveBeenCalledTimes(1);
+      expect(LocalStorageUtils.getValueFromLocalStorage).toHaveBeenCalledTimes(1);
+      expect(
+        HiveInternalMarketUtils.getHiveInternalMarketOrders,
+      ).toHaveBeenCalledTimes(1);
+
+      resolveGlobals({
+        total_vesting_fund_hive: '1',
+        total_vesting_shares: '1',
+      });
+      resolvePrices({
+        hive: { usd: 1 },
+        hive_dollar: { usd: 1 },
+      } as CurrencyPrices);
+      resolveBalances([]);
+      resolveMarkets([]);
+      resolveTokens([]);
+      resolveHidden([]);
+      resolveOrders({ hive: 0, hbd: 0 });
+
+      await expect(portfolioPromise).resolves.toMatchObject({
+        orderedTokenList: ['HIVE', 'HBD', 'HP'],
+        tokens: [],
+      });
     });
   });
 });

@@ -15,6 +15,7 @@ import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.inter
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAccountTokensLoadUtils } from '@popup/evm/utils/evm-account-tokens-load.utils';
+import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { evmChainIdToDecimalPathSegment } from '@popup/evm/utils/evm-light-node.utils';
@@ -56,6 +57,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
+import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import {
@@ -91,10 +93,8 @@ import {
   getPortfolioHiveOperations,
   PortfolioInAppConfirmationContext,
 } from 'src/portfolio/portfolio-in-app-confirmation.interface';
-import {
-  PortfolioHiveEngineBalanceBreakdown,
-  UserPortfolio,
-} from 'src/portfolio/portfolio.interface';
+import { PortfolioSwapCatalogCacheUtils } from 'src/portfolio/portfolio-swap-catalog-cache.utils';
+import { PortfolioHiveEngineBalanceBreakdown } from 'src/portfolio/portfolio.interface';
 import { PortfolioAccountAvatar } from 'src/portfolio/ui/portfolio-account-avatar.component';
 import { PortfolioBalancesSection } from 'src/portfolio/ui/portfolio-balances-section.component';
 import { PortfolioConfirmationStepComponent } from 'src/portfolio/ui/portfolio-confirmation-step.component';
@@ -520,6 +520,9 @@ export const Portfolio = ({
     [featureFlags],
   );
   const [selectedAccountKey, setSelectedAccountKey] = useState('');
+  const [hasResolvedInitialAccountSelection, setHasResolvedInitialAccountSelection] =
+    useState(false);
+  const selectedAccountKeyRef = useRef(selectedAccountKey);
   const [expandedPortfolioRowKeys, setExpandedPortfolioRowKeys] = useState<
     string[]
   >([]);
@@ -599,11 +602,18 @@ export const Portfolio = ({
   const [pendingInAppConfirmation, setPendingInAppConfirmation] =
     useState<PortfolioInAppConfirmationContext | null>(null);
   const hasUserSelectedAccountRef = useRef(false);
+  const initialActiveAccountTypeRef = useRef(activeAccountType);
+  const initialActiveEvmAccountAddressRef = useRef(activeEvmAccountAddress);
+  const initialActiveHiveAccountNameRef = useRef(activeHiveAccountName);
   const sectionRef = useRef(section);
-  const hasLoadedSharedPortfolioDataRef = useRef(false);
-  const hasPreloadedSwapAvailableAssetsRef = useRef(false);
+  const loadedPortfolioAccountKeyRef = useRef('');
+  const hasLoadedAssetsRef = useRef(false);
+  const isAssetsLoadInFlightRef = useRef(false);
+  const hasLoadedHistoryRef = useRef(false);
+  const isHistoryLoadInFlightRef = useRef(false);
   const swapAvailableAssetsLoadedRef = useRef(false);
   const isSwapAvailableAssetsLoadInFlightRef = useRef(false);
+  const setupEvmChainsPromiseRef = useRef<Promise<EvmChain[]> | null>(null);
   const hiveTokensPromiseRef = useRef<
     ReturnType<typeof TokensUtils.getAllTokens> | null
   >(null);
@@ -621,6 +631,20 @@ export const Portfolio = ({
     return request;
   }, []);
 
+  const getSetupEvmChains = useCallback(() => {
+    if (!setupEvmChainsPromiseRef.current) {
+      setupEvmChainsPromiseRef.current =
+        ChainUtils.getAllSetupChainsForType<EvmChain>(ChainType.EVM).catch(
+          (error) => {
+            setupEvmChainsPromiseRef.current = null;
+            throw error;
+          },
+        );
+    }
+
+    return setupEvmChainsPromiseRef.current;
+  }, []);
+
   const [accountOptions, setAccountOptions] = useState<AccountOption[]>(() =>
     buildDefaultPortfolioAccountOptions(hiveAccounts, evmAccounts),
   );
@@ -628,6 +652,10 @@ export const Portfolio = ({
   useEffect(() => {
     sectionRef.current = section;
   }, [section]);
+
+  useEffect(() => {
+    selectedAccountKeyRef.current = selectedAccountKey;
+  }, [selectedAccountKey]);
 
   useEffect(() => {
     replacePortfolioSectionHash(section);
@@ -676,30 +704,73 @@ export const Portfolio = ({
       evmAccounts,
     );
 
-    setAccountOptions(fallbackOptions);
-
-    if (!mk) {
-      return () => {
-        cancelled = true;
-      };
-    }
-
-    void AccountSelectorOrderUtils.loadOrderedListItems(
-      mk,
-      hiveAccounts,
-      visibleEvmAccounts,
-    )
-      .then(({ listItems }) => {
-        if (!cancelled) {
-          setAccountOptions(
+    const loadInitialAccountOptions = async () => {
+      const orderedOptionsPromise = mk
+        ? AccountSelectorOrderUtils.loadOrderedListItems(
+            mk,
+            hiveAccounts,
+            visibleEvmAccounts,
+          ).then(({ listItems }) =>
             buildPortfolioAccountOptionsFromListItems(listItems),
-          );
-        }
-      })
+          )
+        : Promise.resolve(fallbackOptions);
+      const savedHiveAccountNamePromise = initialActiveHiveAccountNameRef.current
+        ? Promise.resolve(initialActiveHiveAccountNameRef.current)
+        : ActiveAccountUtils.getActiveAccountNameFromLocalStorage();
+      const savedEvmAccountAddressPromise =
+        initialActiveEvmAccountAddressRef.current
+        ? Promise.resolve(initialActiveEvmAccountAddressRef.current)
+        : visibleEvmAccounts.length > 0
+          ? EvmActiveAccountUtils.getSavedActiveAccountWallet(
+              visibleEvmAccounts,
+            ).then((wallet) => wallet.address)
+          : Promise.resolve(undefined);
+
+      const [nextAccountOptions, savedHiveAccountName, savedEvmAccountAddress] =
+        await Promise.all([
+          orderedOptionsPromise,
+          savedHiveAccountNamePromise,
+          savedEvmAccountAddressPromise,
+        ]);
+      if (cancelled) {
+        return;
+      }
+
+      const nextAccountKey = resolveDefaultPortfolioAccountKey(
+        nextAccountOptions,
+        initialActiveAccountTypeRef.current,
+        savedEvmAccountAddress,
+        savedHiveAccountName,
+      );
+      setAccountOptions(nextAccountOptions);
+      setSelectedAccountKey((currentAccountKey) => {
+        const selectedKey =
+          hasUserSelectedAccountRef.current &&
+          nextAccountOptions.some(
+            (account) => account.key === currentAccountKey,
+          )
+            ? currentAccountKey
+            : nextAccountKey;
+        selectedAccountKeyRef.current = selectedKey;
+        return selectedKey;
+      });
+      setHasResolvedInitialAccountSelection(true);
+    };
+
+    void loadInitialAccountOptions()
       .catch((error) => {
         Logger.error('Unable to load portfolio account order', error);
         if (!cancelled) {
+          const fallbackAccountKey = resolveDefaultPortfolioAccountKey(
+            fallbackOptions,
+            initialActiveAccountTypeRef.current,
+            initialActiveEvmAccountAddressRef.current,
+            initialActiveHiveAccountNameRef.current,
+          );
           setAccountOptions(fallbackOptions);
+          selectedAccountKeyRef.current = fallbackAccountKey;
+          setSelectedAccountKey(fallbackAccountKey);
+          setHasResolvedInitialAccountSelection(true);
         }
       });
 
@@ -1561,49 +1632,25 @@ export const Portfolio = ({
   }, []);
 
   useEffect(() => {
-    if (!selectedAccountKey) return;
+    if (!hasResolvedInitialAccountSelection || !selectedAccountKey) return;
+
+    const shouldLoadBalances =
+      section === 'portfolio' || section === 'sell' || section === 'swap';
+    if (!shouldLoadBalances) return;
 
     const account = accountOptions.find(
       (item) => item.key === selectedAccountKey,
     );
     if (!account) return;
 
-    if (!hasLoadedSharedPortfolioDataRef.current) {
-      hasLoadedSharedPortfolioDataRef.current = true;
-      void initializePortfolioData();
-      return;
-    }
-
+    if (loadedPortfolioAccountKeyRef.current === selectedAccountKey) return;
+    loadedPortfolioAccountKeyRef.current = selectedAccountKey;
     void loadPortfolio({ clearRows: true });
-  }, [selectedAccountKey]);
-
-  useEffect(() => {
-    if (!accountOptions.length) return;
-
-    const nextAccountKey = resolveDefaultPortfolioAccountKey(
-      accountOptions,
-      activeAccountType,
-      activeEvmAccountAddress,
-      activeHiveAccountName,
-    );
-    if (!nextAccountKey) return;
-
-    setSelectedAccountKey((currentAccountKey) => {
-      if (hasUserSelectedAccountRef.current) {
-        return accountOptions.some(
-          (account) => account.key === currentAccountKey,
-        )
-          ? currentAccountKey
-          : nextAccountKey;
-      }
-
-      return nextAccountKey;
-    });
   }, [
     accountOptions,
-    activeAccountType,
-    activeEvmAccountAddress,
-    activeHiveAccountName,
+    hasResolvedInitialAccountSelection,
+    section,
+    selectedAccountKey,
   ]);
 
   useEffect(() => {
@@ -1638,6 +1685,7 @@ export const Portfolio = ({
 
   const handleSelectedAccountChange = useCallback((accountKey: string) => {
     hasUserSelectedAccountRef.current = true;
+    selectedAccountKeyRef.current = accountKey;
     setExpandedPortfolioRowKeys([]);
     setSelectedAccountKey(accountKey);
   }, []);
@@ -1675,9 +1723,7 @@ export const Portfolio = ({
 
     const loadSetupEvmChains = async () => {
       try {
-        const chains = await ChainUtils.getAllSetupChainsForType<EvmChain>(
-          ChainType.EVM,
-        );
+        const chains = await getSetupEvmChains();
         if (!cancelled) {
           setSetupEvmChains(chains);
         }
@@ -1694,7 +1740,7 @@ export const Portfolio = ({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [getSetupEvmChains]);
 
   useEffect(() => {
     let cancelled = false;
@@ -1977,19 +2023,33 @@ export const Portfolio = ({
 
     isSwapAvailableAssetsLoadInFlightRef.current = true;
     setIsSwapAvailableAssetsLoading(true);
+    let hasCachedCatalog = false;
     try {
-      const response = await PortfolioApiUtils.listAvailableAssets({
-        mode: 'swap',
-      });
+      const cached =
+        await PortfolioSwapCatalogCacheUtils.getCachedSwapCatalog();
+      if (cached) {
+        hasCachedCatalog = true;
+        setSwapAvailableAssets(cached.response.assets);
+        setPortfolioChains((current) =>
+          mergePortfolioChainRecords(current, cached.response.chains),
+        );
+        setHasLoadedSwapAvailableAssets(true);
+        setIsSwapAvailableAssetsLoading(false);
+        swapAvailableAssetsLoadedRef.current = true;
+      }
+
+      const response =
+        await PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached();
       setSwapAvailableAssets(response.assets);
       setPortfolioChains((current) =>
         mergePortfolioChainRecords(current, response.chains),
       );
-      swapAvailableAssetsLoadedRef.current = true;
+      swapAvailableAssetsLoadedRef.current = response.assets.length > 0;
     } catch (error) {
       Logger.error('Unable to load swap available assets', error);
-      setSwapAvailableAssets([]);
-      hasPreloadedSwapAvailableAssetsRef.current = false;
+      if (!hasCachedCatalog) {
+        setSwapAvailableAssets([]);
+      }
     } finally {
       isSwapAvailableAssetsLoadInFlightRef.current = false;
       setIsSwapAvailableAssetsLoading(false);
@@ -1998,13 +2058,12 @@ export const Portfolio = ({
   };
 
   const preloadSwapAvailableAssets = (): Promise<void> => {
-    if (hasPreloadedSwapAvailableAssetsRef.current) {
-      return Promise.resolve();
-    }
-
-    hasPreloadedSwapAvailableAssetsRef.current = true;
     return loadSwapAvailableAssets();
   };
+
+  useEffect(() => {
+    void preloadSwapAvailableAssets();
+  }, []);
 
   useEffect(() => {
     if (!isFiatRampSection(section)) {
@@ -2094,15 +2153,26 @@ export const Portfolio = ({
     );
   }, [fiatRampOptions, paymentMethodSelectOptions]);
 
-  const loadAssets = async () => {
+  const loadAssets = async (force = false) => {
+    if (
+      (!force && hasLoadedAssetsRef.current) ||
+      isAssetsLoadInFlightRef.current
+    ) {
+      return;
+    }
+
+    isAssetsLoadInFlightRef.current = true;
     try {
       const response = await PortfolioApiUtils.listAssets();
       setAssets(response.assets);
       setPortfolioChains((current) =>
         mergePortfolioChainRecords(current, response.chains),
       );
+      hasLoadedAssetsRef.current = true;
     } catch (error) {
       Logger.error('Unable to load portfolio assets', error);
+    } finally {
+      isAssetsLoadInFlightRef.current = false;
     }
   };
 
@@ -2126,16 +2196,15 @@ export const Portfolio = ({
         const extendedAccounts = await AccountUtils.getExtendedAccounts([
           account.account.name,
         ]);
-        const [portfolio] = (await PortfolioUtils.getPortfolio(
-          extendedAccounts,
-        )) as [UserPortfolio[], string[]];
-        if (selectedAccountKey !== accountKey) return;
+        const { portfolio, tokens: hiveTokens } =
+          await PortfolioUtils.getPortfolio(extendedAccounts, {
+            loadTokens: getHiveTokens,
+          });
+        if (selectedAccountKeyRef.current !== accountKey) return;
         const sortedBalances =
           PortfolioUtils.sortHivePortfolioBalancesByDisplayOrder(
             portfolio[0]?.balances ?? [],
           );
-        const hiveTokens = await getHiveTokens();
-        if (selectedAccountKey !== accountKey) return;
         const nextRows = sortedBalances.map((balance) => {
           const tokenIcon = hiveTokens
             .find((token) => token.symbol === balance.symbol)
@@ -2168,13 +2237,13 @@ export const Portfolio = ({
         });
         setRows(nextRows);
       } catch (error) {
-        if (selectedAccountKey !== accountKey) return;
+        if (selectedAccountKeyRef.current !== accountKey) return;
         Logger.error('Unable to load portfolio balances', error);
         setStatusMessage('portfolio_load_error');
         setStatusMessageParams(undefined);
         setRows([]);
       } finally {
-        if (selectedAccountKey === accountKey) {
+        if (selectedAccountKeyRef.current === accountKey) {
           setIsPortfolioLoading(false);
         }
       }
@@ -2191,10 +2260,8 @@ export const Portfolio = ({
     const failedChainNames: string[] = [];
 
     try {
-      const chains = await ChainUtils.getAllSetupChainsForType<EvmChain>(
-        ChainType.EVM,
-      );
-      if (selectedAccountKey !== accountKey) return;
+      const chains = await getSetupEvmChains();
+      if (selectedAccountKeyRef.current !== accountKey) return;
 
       const chainById = buildEvmPortfolioChainByIdMap(chains);
       const walletAddress = account.account.wallet.address;
@@ -2207,10 +2274,27 @@ export const Portfolio = ({
       }
 
       let finishedChains = 0;
+      const updatedChainIds = new Set<string>();
+
+      const updatePortfolioChainRows = (
+        chain: EvmChain,
+        tokens: NativeAndErc20Token[],
+      ) => {
+        if (selectedAccountKeyRef.current !== accountKey) return;
+        updatedChainIds.add(chain.chainId.toLowerCase());
+        setRows((previousRows) =>
+          mergeEvmPortfolioRowsForChain(
+            previousRows,
+            chain,
+            tokens,
+            chainById,
+          ),
+        );
+      };
 
       const markPortfolioChainLoadFinished = () => {
         finishedChains++;
-        if (selectedAccountKey !== accountKey) return;
+        if (selectedAccountKeyRef.current !== accountKey) return;
         if (finishedChains !== totalChains) return;
 
         setIsPortfolioLoading(false);
@@ -2233,19 +2317,16 @@ export const Portfolio = ({
         walletAddress,
         {
           maxRetries: EvmAccountTokensLoadUtils.DEFAULT_MAX_LOAD_MORE_RETRIES,
+          onChainUpdate: updatePortfolioChainRows,
           onChainReady: (chain, tokens) => {
-            if (selectedAccountKey !== accountKey) return;
-            setRows((previousRows) =>
-              mergeEvmPortfolioRowsForChain(
-                previousRows,
-                chain,
-                tokens,
-                chainById,
-              ),
-            );
+            if (!updatedChainIds.has(chain.chainId.toLowerCase())) {
+              updatePortfolioChainRows(chain, tokens);
+            }
           },
+          shouldContinue: () =>
+            selectedAccountKeyRef.current === accountKey,
           onChainError: (chain, error) => {
-            if (selectedAccountKey !== accountKey) return;
+            if (selectedAccountKeyRef.current !== accountKey) return;
             Logger.error(
               `Unable to load portfolio balances for ${chain.name}`,
               error,
@@ -2260,7 +2341,7 @@ export const Portfolio = ({
         },
       );
     } catch (error) {
-      if (selectedAccountKey !== accountKey) return;
+      if (selectedAccountKeyRef.current !== accountKey) return;
       Logger.error('Unable to load portfolio balances', error);
       setStatusMessage('portfolio_load_error');
       setStatusMessageParams(undefined);
@@ -2270,34 +2351,45 @@ export const Portfolio = ({
   };
 
   const loadHistory = async () => {
+    if (hasLoadedHistoryRef.current || isHistoryLoadInFlightRef.current) {
+      return;
+    }
+
+    isHistoryLoadInFlightRef.current = true;
     setIsHistoryLoading(true);
     setStatusMessage('');
     try {
       setHistory(await PortfolioApiUtils.listHistory(1, historyAddressFilters));
+      hasLoadedHistoryRef.current = true;
     } catch (error) {
       Logger.error('Unable to load portfolio history', error);
       setStatusMessage('portfolio_load_error');
       setHistory([]);
     } finally {
+      isHistoryLoadInFlightRef.current = false;
       setIsHistoryLoading(false);
     }
   };
 
-  const initializePortfolioData = async () => {
-    if (!selectedAccountKey) return;
+  useEffect(() => {
+    if (section === 'swap') {
+      return;
+    }
 
-    const account = accountOptions.find(
-      (item) => item.key === selectedAccountKey,
-    );
-    if (!account) return;
+    void loadAssets();
+  }, [section]);
 
-    await Promise.all([
-      loadPortfolio({ clearRows: true }),
-      loadAssets(),
-      loadHistory(),
-      preloadSwapAvailableAssets(),
-    ]);
-  };
+  useEffect(() => {
+    if (
+      section !== 'history' ||
+      !hasResolvedInitialAccountSelection ||
+      !selectedAccountKey
+    ) {
+      return;
+    }
+
+    void loadHistory();
+  }, [hasResolvedInitialAccountSelection, section, selectedAccountKey]);
 
   const handleRefreshPortfolioData = async () => {
     if (!selectedAccountKey || isRefreshing) return;
@@ -2306,8 +2398,7 @@ export const Portfolio = ({
     try {
       await Promise.all([
         loadPortfolio({ clearRows: true }),
-        loadAssets(),
-        loadHistory(),
+        loadAssets(true),
       ]);
     } finally {
       setIsRefreshing(false);
@@ -3774,7 +3865,7 @@ export const Portfolio = ({
           : false;
 
     // Wait for account + flow catalog only. Portfolio balances stream in via
-    // onChainReady so one slow RPC cannot block the whole swap/buy/sell form.
+    // onChainUpdate so one slow RPC cannot block the whole swap/buy/sell form.
     const showFlowLoadingSpinner =
       isQuoteAutoFetchSection(section) &&
       (!selectedAccountKey || isFlowCatalogLoading);

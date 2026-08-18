@@ -7,7 +7,6 @@ import { DynamicGlobalPropertiesUtils } from '@popup/hive/utils/dynamic-global-p
 import { HiveEngineConfigUtils } from '@popup/hive/utils/hive-engine-config.utils';
 import { HiveInternalMarketUtils } from '@popup/hive/utils/hive-internal-market.utils';
 import { HiveTxUtils } from '@popup/hive/utils/hive-tx.utils';
-import HiveUtils from '@popup/hive/utils/hive.utils';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Asset } from 'hive-keychain-commons';
@@ -45,23 +44,28 @@ const loadUsersTokens = async (
   accountNames: string[],
   onProgress?: (currentAccountIndex: number, currentAccount: string) => void,
 ) => {
-  let tempTokenBalanceList: any[] = [];
+  const userTokenBalances: {
+    username: string;
+    tokensBalance: TokenBalance[];
+  }[] = [];
 
   let currentAccountIndex = 0;
   for (const username of accountNames) {
     currentAccountIndex++;
     if (onProgress) onProgress(currentAccountIndex, username);
-    let tokensBalance: TokenBalance[] = await TokensUtils.getUserBalance(
+    const tokensBalance = await TokensUtils.getUserBalance(
       username,
     );
-    tempTokenBalanceList.push({
-      username: username,
-      tokensBalance: tokensBalance,
+    userTokenBalances.push({
+      username,
+      tokensBalance,
     });
-    await AsyncUtils.sleep(500);
+    if (currentAccountIndex < accountNames.length) {
+      await AsyncUtils.sleep(500);
+    }
   }
 
-  return tempTokenBalanceList;
+  return userTokenBalances;
 };
 
 const loadTokenMarket = async () => {
@@ -76,40 +80,69 @@ const loadTokenMarket = async () => {
   return tokensMarket;
 };
 
+export interface PortfolioLoadOptions {
+  onProgress?: (
+    currentAccountIndex: number,
+    currentAccount: string,
+  ) => void;
+  loadTokens?: () => Promise<Token[]>;
+}
+
+export interface PortfolioLoadResult {
+  portfolio: UserPortfolio[];
+  orderedTokenList: string[];
+  tokens: Token[];
+}
+
 const getPortfolio = async (
   extendedAccounts: ExtendedAccount[],
-  onProgress?: (currentAccountIndex: number, currentAccount: string) => void,
-) => {
+  options: PortfolioLoadOptions = {},
+): Promise<PortfolioLoadResult> => {
   await PortfolioUtils.loadAndSetRPCsAndApis();
-  const [globals, price, rewardFund] = await Promise.all([
+  const accountNames = extendedAccounts.map((account) => account.name);
+  const [
+    globals,
+    prices,
+    usersTokens,
+    tokensMarket,
+    tokens,
+    hiddenTokensList,
+    lockedOrdersEntries,
+  ] = await Promise.all([
     DynamicGlobalPropertiesUtils.getDynamicGlobalProperties(),
-    HiveUtils.getCurrentMedianHistoryPrice(),
-    HiveUtils.getRewardFund(),
-  ]);
-  const [prices, usersTokens, tokensMarket] = await Promise.all([
     CurrencyPricesUtils.getPrices() as unknown as CurrencyPrices,
-    loadUsersTokens(
-      extendedAccounts.map((acc: ExtendedAccount) => acc.name),
-      onProgress,
-    ),
+    loadUsersTokens(accountNames, options.onProgress),
     loadTokenMarket(),
+    options.loadTokens?.() ?? TokensUtils.getAllTokens(),
+    LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.HIDDEN_TOKENS,
+    ),
+    Promise.all(
+      accountNames.map(async (accountName) =>
+        [
+          accountName,
+          await HiveInternalMarketUtils.getHiveInternalMarketOrders(
+            accountName,
+          ),
+        ] as const,
+      ),
+    ),
   ]);
 
   const tokensFullList = getTokensFullList(usersTokens);
 
   const portfolio: UserPortfolio[] = [];
-  const tokens = await TokensUtils.getAllTokens();
-  const hiddenTokensList =
-    (await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.HIDDEN_TOKENS,
-    )) || [];
+  const hiddenTokenSymbols = Array.isArray(hiddenTokensList)
+    ? hiddenTokensList
+    : [];
+  const lockedOrdersByAccount = new Map(lockedOrdersEntries);
   for (const userTokens of usersTokens) {
     const userPortfolio = generateUserLayerTwoPortolio(
       userTokens,
       prices,
       tokensMarket,
       tokens,
-      hiddenTokensList,
+      hiddenTokenSymbols,
     );
     portfolio.push({
       account: userTokens.username,
@@ -136,10 +169,10 @@ const getPortfolio = async (
     } = extendedAccounts.find(
       (extAcc) => extAcc.name === userPortfolio.account,
     )!;
-    const lockedInOrders =
-      await HiveInternalMarketUtils.getHiveInternalMarketOrders(
-        userPortfolio.account,
-      );
+    const lockedInOrders = lockedOrdersByAccount.get(userPortfolio.account) ?? {
+      hive: 0,
+      hbd: 0,
+    };
     const totalHIVE =
       Asset.fromString(balance.toString()).amount +
       Asset.fromString(savings_balance.toString()).amount +
@@ -168,18 +201,14 @@ const getPortfolio = async (
   }
   for (const userPortfolio of portfolio) {
     let totalUSD = 0;
-    let totalHive = 0;
     for (const balance of userPortfolio.balances) {
-      const tokenMarket = tokensMarket.find(
-        (tm) => tm.symbol === balance.symbol,
-      );
       totalUSD += balance.usdValue;
     }
     userPortfolio.totalUSD = totalUSD;
     userPortfolio.totalHive = userPortfolio.totalUSD / (prices?.hive?.usd ?? 0);
   }
 
-  return [portfolio, orderedTokenList];
+  return { portfolio, orderedTokenList, tokens };
 };
 
 const HIVE_CORE_TOKEN_SYMBOLS = ['HIVE', 'HBD', 'HP'] as const;
