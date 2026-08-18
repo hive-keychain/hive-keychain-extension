@@ -166,29 +166,28 @@ const PortfolioBalancesSectionComponent = ({
       {hasAccounts ? (
         <div className="portfolio-sticky-menu-bar">
           <div className="portfolio-controls">
-            <div className="portfolio-header-row">
+            <PortfolioOverlayListSelect
+              id="portfolio-account"
+              className="portfolio-controls__account"
+              label={I18nUtils.getMessage('portfolio_account')}
+              value={selectedAccountKey}
+              onChange={onSelectedAccountChange}
+              options={accountOptions}
+              renderDisplay={renderAccountOption}
+              renderOption={renderAccountOption}
+            />
+            {showNetworkFilter && (
               <PortfolioOverlayListSelect
-                id="portfolio-account"
-                label={I18nUtils.getMessage('portfolio_account')}
-                value={selectedAccountKey}
-                onChange={onSelectedAccountChange}
-                options={accountOptions}
-                renderDisplay={renderAccountOption}
-                renderOption={renderAccountOption}
+                id="portfolio-network"
+                className="portfolio-controls__network"
+                label={I18nUtils.getMessage('portfolio_network')}
+                value={selectedNetwork}
+                onChange={onSelectedNetworkChange}
+                options={networkOptions}
+                renderDisplay={renderNetworkOption}
+                renderOption={renderNetworkOption}
               />
-              {showNetworkFilter && (
-                <PortfolioOverlayListSelect
-                  id="portfolio-network"
-                  className="portfolio-header-row__network"
-                  label={I18nUtils.getMessage('portfolio_network')}
-                  value={selectedNetwork}
-                  onChange={onSelectedNetworkChange}
-                  options={networkOptions}
-                  renderDisplay={renderNetworkOption}
-                  renderOption={renderNetworkOption}
-                />
-              )}
-            </div>
+            )}
             <div className="portfolio-token-filter">
               <label htmlFor="portfolio-token-filter">
                 {I18nUtils.getMessage('portfolio_assets')}
