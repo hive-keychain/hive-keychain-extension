@@ -14,11 +14,13 @@ export type PortfolioProviderId =
   | 'stealthex'
   | 'simpleswap'
   | 'letsexchange'
+  | 'instaswap'
   | 'changelly'
   | 'onramper'
   | 'moonpay'
   | 'ramp'
-  | 'transak';
+  | 'transak'
+  | 'mercuryo';
 
 export type PortfolioEcosystem =
   | 'evm'
@@ -161,9 +163,44 @@ export interface PortfolioQuoteRequestEcho {
   destinationChainId: string | null;
 }
 
+export type PortfolioAmountMissReason = 'below_min' | 'above_max';
+
+export interface PortfolioAmountHintProvider {
+  id: string;
+  name: string | null;
+  logo: string | null;
+}
+
+export interface PortfolioAmountHintBlockedProvider {
+  provider: PortfolioAmountHintProvider;
+  reason: PortfolioAmountMissReason;
+  min: string | null;
+  max: string | null;
+  suggestedAmount: string;
+  paymentMethod: string | null;
+}
+
+export interface PortfolioAmountHintNextUnlock {
+  amount: string;
+  direction: 'increase' | 'decrease';
+  additionalProviderCount: number;
+  providers: string[];
+}
+
+/**
+ * Sidecar on quote aggregation. Not ranked with quotes.
+ * Present when at least one eligible provider rejected the amount for min/max.
+ */
+export interface PortfolioQuoteAmountHints {
+  requestedAmount: string;
+  blocked: PortfolioAmountHintBlockedProvider[];
+  nextUnlock: PortfolioAmountHintNextUnlock | null;
+}
+
 export interface PortfolioQuoteResponse {
   request: PortfolioQuoteRequestEcho;
   quotes: PortfolioQuote[];
+  amountHints: PortfolioQuoteAmountHints | null;
 }
 
 export interface PortfolioQuoteRequestBody {
@@ -343,6 +380,8 @@ export interface PortfolioSwapAmountRangeDetails {
     min?: string | null;
     max?: string | null;
   }>;
+  /** Same model as the 200 quote sidecar; blocked providers may have null name/logo. */
+  amountHints?: PortfolioQuoteAmountHints | null;
 }
 
 export interface PortfolioApiErrorPayload {

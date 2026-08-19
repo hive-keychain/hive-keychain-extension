@@ -358,6 +358,7 @@ describe('PortfolioApiParser', () => {
           }),
         }),
       ],
+      amountHints: null,
     });
   });
 
@@ -392,6 +393,79 @@ describe('PortfolioApiParser', () => {
     });
 
     expect(response.quotes[0]?.comparableValue).toBe('99.5');
+  });
+
+  it('parses quote amountHints and defaults missing sidecar to null', () => {
+    const response = PortfolioApiParser.parsePortfolioQuoteResponse({
+      request: { mode: 'swap' },
+      quotes: [
+        {
+          quoteId: 'lifi:1',
+          provider: { id: 'lifi', name: 'LI.FI' },
+          fromAmount: '0.09',
+          estimatedToAmount: '220',
+        },
+      ],
+      amountHints: {
+        requestedAmount: '0.09',
+        blocked: [
+          {
+            provider: {
+              id: 'simpleswap',
+              name: 'SimpleSwap',
+              logo: 'https://example.com/simpleswap.png',
+            },
+            reason: 'below_min',
+            min: '0.1',
+            max: '10',
+            suggestedAmount: '0.1',
+            paymentMethod: null,
+          },
+        ],
+        nextUnlock: {
+          amount: '0.1',
+          direction: 'increase',
+          additionalProviderCount: 1,
+          providers: ['simpleswap'],
+        },
+      },
+    });
+
+    expect(response.amountHints).toEqual({
+      requestedAmount: '0.09',
+      blocked: [
+        {
+          provider: {
+            id: 'simpleswap',
+            name: 'SimpleSwap',
+            logo: 'https://example.com/simpleswap.png',
+          },
+          reason: 'below_min',
+          min: '0.1',
+          max: '10',
+          suggestedAmount: '0.1',
+          paymentMethod: null,
+        },
+      ],
+      nextUnlock: {
+        amount: '0.1',
+        direction: 'increase',
+        additionalProviderCount: 1,
+        providers: ['simpleswap'],
+      },
+    });
+    expect(
+      PortfolioApiParser.parsePortfolioQuoteResponse({
+        request: { mode: 'swap' },
+        quotes: [],
+      }).amountHints,
+    ).toBeNull();
+    expect(
+      PortfolioApiParser.parsePortfolioQuoteAmountHints({
+        requestedAmount: '1',
+        blocked: [{ provider: { id: 'lifi' }, reason: 'below_min' }],
+      }),
+    ).toBeNull();
   });
 
   it('parses payment methods on buy/sell quotes from string or object ids', () => {

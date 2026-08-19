@@ -4368,6 +4368,58 @@
   "portfolio_swap_amount_out_of_range_generic": {
     "message": "No quote available for the requested amount."
   },
+  "portfolio_amount_hint_increase": {
+    "message": "Increase to $1 to unlock $2 more providers.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "0.1"
+      },
+      "2": {
+        "content": "$2",
+        "example": "2"
+      }
+    }
+  },
+  "portfolio_amount_hint_decrease": {
+    "message": "Decrease to $1 to unlock $2 more providers.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "10"
+      },
+      "2": {
+        "content": "$2",
+        "example": "2"
+      }
+    }
+  },
+  "portfolio_amount_hint_increase_provider": {
+    "message": "Increase to $1 to unlock $2.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "0.1"
+      },
+      "2": {
+        "content": "$2",
+        "example": "SimpleSwap"
+      }
+    }
+  },
+  "portfolio_amount_hint_decrease_provider": {
+    "message": "Decrease to $1 to unlock $2.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "10"
+      },
+      "2": {
+        "content": "$2",
+        "example": "SimpleSwap"
+      }
+    }
+  },
   "portfolio_provider_execution_unavailable": {
     "message": "This provider cannot currently be executed from Keychain."
   },

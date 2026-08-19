@@ -1302,12 +1302,43 @@ export const Portfolio = ({
     [amountQuoteError?.fillAmount, flowMode, selectedFromRow?.balance],
   );
 
+  const quoteAmountHint = useMemo(
+    () =>
+      PortfolioApiUtils.resolvePortfolioQuoteAmountHint(
+        quoteResponse?.amountHints,
+      ),
+    [quoteResponse?.amountHints],
+  );
+
+  const canFillAmountHint = useMemo(
+    () =>
+      PortfolioApiUtils.canFillPortfolioMinimumAmount({
+        fillAmount: quoteAmountHint?.fillAmount,
+        availableBalance:
+          flowMode === 'swap' || flowMode === 'sell'
+            ? selectedFromRow?.balance
+            : undefined,
+        skipBalanceCheck:
+          process.env.PORTFOLIO_SKIP_BALANCE_CHECK === 'true' ||
+          flowMode === 'buy',
+      }),
+    [flowMode, quoteAmountHint?.fillAmount, selectedFromRow?.balance],
+  );
+
   const handleFillMinimumAmount = () => {
     if (!canFillMinimumAmount || !amountQuoteError?.fillAmount) {
       return;
     }
 
     setAmount(amountQuoteError.fillAmount);
+  };
+
+  const handleFillAmountHint = () => {
+    if (!canFillAmountHint || !quoteAmountHint?.fillAmount) {
+      return;
+    }
+
+    setAmount(quoteAmountHint.fillAmount);
   };
 
   const canRequestQuotes =
@@ -3413,8 +3444,31 @@ export const Portfolio = ({
         return null;
       }
 
+      const amountHintControl = quoteAmountHint ? (
+        canFillAmountHint ? (
+          <button
+            type="button"
+            className="portfolio-amount-hint portfolio-amount-hint--action"
+            onClick={handleFillAmountHint}
+            data-testid="portfolio-fill-amount-hint">
+            {I18nUtils.getMessage(
+              quoteAmountHint.key,
+              quoteAmountHint.params,
+            )}
+          </button>
+        ) : (
+          <p className="portfolio-amount-hint" role="status">
+            {I18nUtils.getMessage(
+              quoteAmountHint.key,
+              quoteAmountHint.params,
+            )}
+          </p>
+        )
+      ) : null;
+
       return (
-        <>
+        <div className="portfolio-quotes-section">
+          {amountHintControl}
           <button
             className="portfolio-quotes-toggle"
             onClick={() => setIsQuotesPanelExpanded((expanded) => !expanded)}
@@ -3431,7 +3485,7 @@ export const Portfolio = ({
               {quoteResponse.quotes.map((quote) => renderQuoteCard(quote))}
             </div>
           )}
-        </>
+        </div>
       );
     };
 

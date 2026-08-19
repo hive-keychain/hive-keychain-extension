@@ -657,6 +657,123 @@ describe('PortfolioApiUtils', () => {
     ).toBeNull();
   });
 
+  it('prefers amountHints nextUnlock when filling an out-of-range amount', () => {
+    expect(
+      PortfolioApiUtils.resolvePortfolioAmountQuoteError(
+        new PortfolioApiError({
+          code: 'SWAP_AMOUNT_OUT_OF_RANGE',
+          message: 'No quote available for the requested amount.',
+          details: {
+            mergedRange: {
+              min: '0.01',
+              max: '10',
+            },
+            amountHints: {
+              requestedAmount: '12',
+              blocked: [
+                {
+                  provider: { id: 'simpleswap', name: 'SimpleSwap', logo: null },
+                  reason: 'above_max',
+                  min: '0.01',
+                  max: '10',
+                  suggestedAmount: '10',
+                  paymentMethod: null,
+                },
+              ],
+              nextUnlock: {
+                amount: '10',
+                direction: 'decrease',
+                additionalProviderCount: 1,
+                providers: ['simpleswap'],
+              },
+            },
+          },
+        }),
+      ),
+    ).toEqual({
+      key: 'portfolio_swap_amount_out_of_range',
+      params: ['0.01', '10'],
+      fillAmount: '10',
+    });
+  });
+
+  it('maps quote amountHints nextUnlock to a fillable retry message', () => {
+    expect(
+      PortfolioApiUtils.resolvePortfolioQuoteAmountHint({
+        requestedAmount: '0.09',
+        blocked: [
+          {
+            provider: { id: 'simpleswap', name: 'SimpleSwap', logo: null },
+            reason: 'below_min',
+            min: '0.1',
+            max: '10',
+            suggestedAmount: '0.1',
+            paymentMethod: null,
+          },
+        ],
+        nextUnlock: {
+          amount: '0.1',
+          direction: 'increase',
+          additionalProviderCount: 1,
+          providers: ['simpleswap'],
+        },
+      }),
+    ).toEqual({
+      key: 'portfolio_amount_hint_increase_provider',
+      params: ['0.1', 'SimpleSwap'],
+      fillAmount: '0.1',
+    });
+    expect(
+      PortfolioApiUtils.resolvePortfolioQuoteAmountHint({
+        requestedAmount: '12',
+        blocked: [
+          {
+            provider: { id: 'simpleswap', name: null, logo: null },
+            reason: 'above_max',
+            min: '1',
+            max: '10',
+            suggestedAmount: '10',
+            paymentMethod: null,
+          },
+          {
+            provider: { id: 'changelly', name: null, logo: null },
+            reason: 'above_max',
+            min: '1',
+            max: '10',
+            suggestedAmount: '10',
+            paymentMethod: null,
+          },
+        ],
+        nextUnlock: {
+          amount: '10',
+          direction: 'decrease',
+          additionalProviderCount: 2,
+          providers: ['changelly', 'simpleswap'],
+        },
+      }),
+    ).toEqual({
+      key: 'portfolio_amount_hint_decrease',
+      params: ['10', '2'],
+      fillAmount: '10',
+    });
+    expect(
+      PortfolioApiUtils.resolvePortfolioQuoteAmountHint({
+        requestedAmount: '0.09',
+        blocked: [
+          {
+            provider: { id: 'simpleswap', name: 'SimpleSwap', logo: null },
+            reason: 'below_min',
+            min: '5',
+            max: '10',
+            suggestedAmount: '5',
+            paymentMethod: null,
+          },
+        ],
+        nextUnlock: null,
+      }),
+    ).toBeNull();
+  });
+
   it('allows filling the minimum amount only when balance covers it or balance check is skipped', () => {
     expect(
       PortfolioApiUtils.canFillPortfolioMinimumAmount({

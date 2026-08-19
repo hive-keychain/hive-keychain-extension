@@ -1,4 +1,8 @@
 import {
+  PortfolioAmountHintBlockedProvider,
+  PortfolioAmountHintNextUnlock,
+  PortfolioAmountHintProvider,
+  PortfolioAmountMissReason,
   PortfolioAssetsResponse,
   PortfolioAvailableAssetsResponse,
   PortfolioCanonicalAsset,
@@ -26,6 +30,7 @@ import {
   PortfolioFeaturesResponse,
   PortfolioMode,
   PortfolioQuote,
+  PortfolioQuoteAmountHints,
   PortfolioQuoteApproval,
   PortfolioQuoteFee,
   PortfolioQuoteRequestEcho,
@@ -67,6 +72,11 @@ const portfolioFailureActions: PortfolioFailureAction[] = [
   'submit_recovery_transaction',
   'create_new_exchange',
 ];
+const portfolioAmountMissReasons: PortfolioAmountMissReason[] = [
+  'below_min',
+  'above_max',
+];
+const portfolioAmountHintDirections = ['increase', 'decrease'] as const;
 const portfolioEcosystems: PortfolioEcosystem[] = [
   'evm',
   'hive',
@@ -430,11 +440,106 @@ const parsePortfolioQuoteRequestEcho = (
   };
 };
 
+const parsePortfolioAmountHintProvider = (
+  value: unknown,
+): PortfolioAmountHintProvider | null => {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  const id = readString(value, 'id').trim();
+  if (!id) {
+    return null;
+  }
+
+  return {
+    id,
+    name: readNullableString(value, 'name'),
+    logo: readNullableString(value, 'logo'),
+  };
+};
+
+const parsePortfolioAmountHintBlockedProvider = (
+  value: unknown,
+): PortfolioAmountHintBlockedProvider | null => {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  const provider = parsePortfolioAmountHintProvider(value.provider);
+  const suggestedAmount = readString(value, 'suggestedAmount').trim();
+  const reason = readNullableEnum(value.reason, portfolioAmountMissReasons);
+  if (!provider || !suggestedAmount || !reason) {
+    return null;
+  }
+
+  return {
+    provider,
+    reason,
+    min: readNullableString(value, 'min'),
+    max: readNullableString(value, 'max'),
+    suggestedAmount,
+    paymentMethod: readPaymentMethodId(value.paymentMethod),
+  };
+};
+
+const parsePortfolioAmountHintNextUnlock = (
+  value: unknown,
+): PortfolioAmountHintNextUnlock | null => {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  const amount = readString(value, 'amount').trim();
+  const direction = readNullableEnum(
+    value.direction,
+    portfolioAmountHintDirections,
+  );
+  if (!amount || !direction) {
+    return null;
+  }
+
+  return {
+    amount,
+    direction,
+    additionalProviderCount: readNullableNumber(
+      value,
+      'additionalProviderCount',
+    ) ?? 0,
+    providers: readStringArray(value.providers),
+  };
+};
+
+const parsePortfolioQuoteAmountHints = (
+  value: unknown,
+): PortfolioQuoteAmountHints | null => {
+  if (!isRecord(value) || !Array.isArray(value.blocked)) {
+    return null;
+  }
+
+  const blocked = value.blocked
+    .map((entry) => parsePortfolioAmountHintBlockedProvider(entry))
+    .filter(
+      (entry): entry is PortfolioAmountHintBlockedProvider => entry !== null,
+    );
+
+  if (blocked.length === 0) {
+    return null;
+  }
+
+  return {
+    requestedAmount: readString(value, 'requestedAmount'),
+    blocked,
+    nextUnlock: parsePortfolioAmountHintNextUnlock(value.nextUnlock),
+  };
+};
+
 const parsePortfolioQuoteResponse = (value: unknown): PortfolioQuoteResponse => {
   if (!isRecord(value)) {
     return {
       request: parsePortfolioQuoteRequestEcho(undefined),
       quotes: [],
+      amountHints: null,
     };
   }
 
@@ -447,6 +552,7 @@ const parsePortfolioQuoteResponse = (value: unknown): PortfolioQuoteResponse => 
   return {
     request: parsePortfolioQuoteRequestEcho(value.request),
     quotes,
+    amountHints: parsePortfolioQuoteAmountHints(value.amountHints),
   };
 };
 
@@ -793,5 +899,6 @@ export const PortfolioApiParser = {
   parsePortfolioFiatRampOptions,
   parsePortfolioHistoryItem,
   parsePortfolioHistoryResponse,
+  parsePortfolioQuoteAmountHints,
   parsePortfolioQuoteResponse,
 };

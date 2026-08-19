@@ -1001,6 +1001,39 @@
   }
 }
 
+.portfolio-quotes-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kc-space-2);
+  width: 100%;
+}
+
+.portfolio-amount-hint {
+  margin: 0;
+  color: var(--kc-color-text-secondary);
+  font-size: var(--kc-font-size-xs);
+  line-height: 1.4;
+
+  &--action {
+    align-self: flex-start;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--kc-color-text-secondary);
+    font: inherit;
+    font-size: var(--kc-font-size-xs);
+    line-height: 1.4;
+    text-align: left;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--kc-color-text-primary);
+    }
+  }
+}
+
 .portfolio-quotes-toggle {
   align-self: flex-start;
   padding: 0;

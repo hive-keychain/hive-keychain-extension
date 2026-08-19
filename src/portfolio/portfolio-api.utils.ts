@@ -12,6 +12,7 @@ import {
   PortfolioHistoryItem,
   PortfolioMode,
   PortfolioQuote,
+  PortfolioQuoteAmountHints,
   PortfolioQuoteRequestBody,
   PortfolioQuoteResponse,
   PortfolioSwapAmountRangeDetails,
@@ -164,6 +165,52 @@ const parsePortfolioApiErrorPayload = (payload: unknown): PortfolioApiError => {
   });
 };
 
+const withFillAmount = (
+  message: PortfolioLocalizedMessage,
+  fillAmount: string | undefined,
+): PortfolioLocalizedMessage =>
+  fillAmount ? { ...message, fillAmount } : message;
+
+export const resolvePortfolioQuoteAmountHint = (
+  amountHints: PortfolioQuoteAmountHints | null | undefined,
+): PortfolioLocalizedMessage | null => {
+  const nextUnlock = amountHints?.nextUnlock;
+  if (!nextUnlock?.amount.trim()) {
+    return null;
+  }
+
+  const providerId = nextUnlock.providers[0];
+  const namedProvider =
+    nextUnlock.additionalProviderCount === 1 && providerId
+      ? amountHints?.blocked.find((entry) => entry.provider.id === providerId)
+          ?.provider
+      : undefined;
+  const providerLabel =
+    namedProvider?.name?.trim() ||
+    namedProvider?.id.replace(/_/g, ' ') ||
+    '';
+
+  if (providerLabel) {
+    return {
+      key:
+        nextUnlock.direction === 'decrease'
+          ? 'portfolio_amount_hint_decrease_provider'
+          : 'portfolio_amount_hint_increase_provider',
+      params: [nextUnlock.amount, providerLabel],
+      fillAmount: nextUnlock.amount,
+    };
+  }
+
+  return {
+    key:
+      nextUnlock.direction === 'decrease'
+        ? 'portfolio_amount_hint_decrease'
+        : 'portfolio_amount_hint_increase',
+    params: [nextUnlock.amount, String(nextUnlock.additionalProviderCount)],
+    fillAmount: nextUnlock.amount,
+  };
+};
+
 export const resolvePortfolioAmountQuoteError = (
   error: unknown,
 ): PortfolioLocalizedMessage | null => {
@@ -181,54 +228,79 @@ export const resolvePortfolioAmountQuoteError = (
     typeof error.details?.fiatCurrency === 'string' && error.details.fiatCurrency.trim()
       ? error.details.fiatCurrency.trim().toUpperCase()
       : null;
+  const fillAmount =
+    resolvePortfolioQuoteAmountHint(
+      PortfolioApiParser.parsePortfolioQuoteAmountHints(
+        error.details?.amountHints,
+      ),
+    )?.fillAmount ||
+    min ||
+    undefined;
 
   if (min && max) {
     if (fiatCurrency) {
-      return {
-        key: 'portfolio_amount_out_of_range_fiat',
-        params: [min, max, fiatCurrency],
-        fillAmount: min,
-      };
+      return withFillAmount(
+        {
+          key: 'portfolio_amount_out_of_range_fiat',
+          params: [min, max, fiatCurrency],
+        },
+        fillAmount,
+      );
     }
 
-    return {
-      key: 'portfolio_swap_amount_out_of_range',
-      params: [min, max],
-      fillAmount: min,
-    };
+    return withFillAmount(
+      {
+        key: 'portfolio_swap_amount_out_of_range',
+        params: [min, max],
+      },
+      fillAmount,
+    );
   }
 
   if (min) {
     if (fiatCurrency) {
-      return {
-        key: 'portfolio_amount_below_minimum_fiat',
-        params: [min, fiatCurrency],
-        fillAmount: min,
-      };
+      return withFillAmount(
+        {
+          key: 'portfolio_amount_below_minimum_fiat',
+          params: [min, fiatCurrency],
+        },
+        fillAmount,
+      );
     }
 
-    return {
-      key: 'portfolio_amount_below_minimum',
-      params: [min],
-      fillAmount: min,
-    };
+    return withFillAmount(
+      {
+        key: 'portfolio_amount_below_minimum',
+        params: [min],
+      },
+      fillAmount,
+    );
   }
 
   if (max) {
     if (fiatCurrency) {
-      return {
-        key: 'portfolio_amount_above_maximum_fiat',
-        params: [max, fiatCurrency],
-      };
+      return withFillAmount(
+        {
+          key: 'portfolio_amount_above_maximum_fiat',
+          params: [max, fiatCurrency],
+        },
+        fillAmount,
+      );
     }
 
-    return {
-      key: 'portfolio_amount_above_maximum',
-      params: [max],
-    };
+    return withFillAmount(
+      {
+        key: 'portfolio_amount_above_maximum',
+        params: [max],
+      },
+      fillAmount,
+    );
   }
 
-  return { key: 'portfolio_swap_amount_out_of_range_generic' };
+  return withFillAmount(
+    { key: 'portfolio_swap_amount_out_of_range_generic' },
+    fillAmount,
+  );
 };
 
 export const resolvePortfolioQuoteStatusMessage = (
@@ -504,6 +576,7 @@ export const PortfolioApiUtils = {
   resolveExecutablePortfolioQuoteId,
   resolvePortfolioAmountQuoteError,
   resolvePortfolioExecutionRedirectUrl,
+  resolvePortfolioQuoteAmountHint,
   resolvePortfolioQuoteStatusMessage,
   resolvePortfolioSwapQuoteFetchErrorResult,
   resolveVisiblePortfolioSections,

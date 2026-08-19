@@ -2222,6 +2222,77 @@ describe('Portfolio', () => {
     }
   });
 
+  it('fills the amount from quote amountHints nextUnlock without replacing quotes', async () => {
+    const originalSkipBalanceCheck = process.env.PORTFOLIO_SKIP_BALANCE_CHECK;
+    delete process.env.PORTFOLIO_SKIP_BALANCE_CHECK;
+
+    try {
+      (PortfolioApiUtils.getQuotes as jest.Mock).mockResolvedValue({
+        quotes: [
+          {
+            quoteId: 'q1',
+            provider: 'lifi',
+            providerName: 'LI.FI',
+            providerLogoUrl: 'https://example.com/lifi.png',
+            estimatedToAmount: '220',
+            executionType: 'redirect',
+          },
+        ],
+        request: { mode: 'swap' },
+        amountHints: {
+          requestedAmount: '0.09',
+          blocked: [
+            {
+              provider: { id: 'simpleswap', name: 'SimpleSwap', logo: null },
+              reason: 'below_min',
+              min: '0.1',
+              max: '10',
+              suggestedAmount: '0.1',
+              paymentMethod: null,
+            },
+          ],
+          nextUnlock: {
+            amount: '0.1',
+            direction: 'increase',
+            additionalProviderCount: 1,
+            providers: ['simpleswap'],
+          },
+        },
+      });
+      (
+        PortfolioApiUtils.resolveExecutablePortfolioQuoteId as jest.Mock
+      ).mockReturnValue('q1');
+
+      const { container, getByTestId } = await renderSwapPortfolio({
+        amount: '0.09',
+      });
+
+      await waitFor(() => {
+        expect(getByTestId('portfolio-fill-amount-hint')).toBeTruthy();
+      });
+
+      expect(
+        getByTestId('portfolio-fill-amount-hint').textContent,
+      ).toMatch(/Increase to 0\.1 to unlock SimpleSwap|portfolio_amount_hint_increase_provider/);
+
+      fireEvent.click(getByTestId('portfolio-fill-amount-hint'));
+
+      expect(
+        (
+          container.querySelector(
+            '.portfolio-flow .portfolio-amount-field input[type="number"]',
+          ) as HTMLInputElement
+        ).value,
+      ).toBe('0.1');
+    } finally {
+      if (originalSkipBalanceCheck === undefined) {
+        delete process.env.PORTFOLIO_SKIP_BALANCE_CHECK;
+      } else {
+        process.env.PORTFOLIO_SKIP_BALANCE_CHECK = originalSkipBalanceCheck;
+      }
+    }
+  });
+
   it('shows a retry button in the swap quote input when no quote is available', async () => {
     (PortfolioApiUtils.getQuotes as jest.Mock).mockRejectedValue(
       new PortfolioApiError({
