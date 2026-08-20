@@ -7600,7 +7600,7 @@
     "description": "Delay caption message"
   },
   "evm_insufficient_token_balance": {
-    "message": "Saldo insuficiente de $1.",
+    "message": "Saldo insuficiente de $1. A transação falhará.",
     "description": "Insufficient token balance message on EVM balance change card"
   },
   "evm_transaction_result_error_message_insufficient_funds": {

@@ -4,6 +4,10 @@ import { TransactionOptions } from '@interfaces/keys.interface';
 import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface';
 import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
+import {
+  EvmSmartContractInfoErc20,
+  EvmSmartContractInfoNative,
+} from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import {
@@ -28,6 +32,8 @@ export type PortfolioEvmInAppConfirmationContext = {
   activeAccountOverride: EvmActiveAccount;
   transactionData: ProviderTransactionData;
   fields: ConfirmationPageEvmFields[];
+  swapAmount: number;
+  fromTokenInfo: EvmSmartContractInfoNative | EvmSmartContractInfoErc20;
   approveTransactionData?: ProviderTransactionData;
   approveFields?: ConfirmationPageEvmFields[];
   onConfirm: (

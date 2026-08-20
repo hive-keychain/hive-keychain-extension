@@ -22,6 +22,7 @@ import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings
 import { EvmRequestMessage } from 'src/dialog/interfaces/messages.interface';
 import { PortfolioEvmInAppConfirmationContext } from 'src/portfolio/portfolio-in-app-confirmation.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
+import { EvmSwapConfirmationBalance } from 'src/common-ui/evm/evm-swap-confirmation-balance.component';
 import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 
@@ -53,6 +54,7 @@ export const PortfolioEvmApprovalConfirmation = ({
     useState<GasFeeEstimationBase>();
   const [swapSelectedFee, setSwapSelectedFee] =
     useState<GasFeeEstimationBase>();
+  const [hasInsufficientBalance, setHasInsufficientBalance] = useState(false);
 
   useEffect(() => {
     transactionHook.setConfirmationPageFields([...approveFields, ...fields]);
@@ -210,6 +212,15 @@ export const PortfolioEvmApprovalConfirmation = ({
             setErrorMessage={handleErrors}
           />
         </div>
+        <EvmSwapConfirmationBalance
+          walletAddress={account.wallet.address}
+          chain={chain as EvmChain}
+          fromTokenInfo={context.fromTokenInfo}
+          swapAmount={context.swapAmount}
+          swapGasFee={swapSelectedFee}
+          approveGasFee={approveSelectedFee}
+          onInsufficientBalanceChange={setHasInsufficientBalance}
+        />
       </div>
 
       <div className="evm-bottom-panel">
@@ -218,11 +229,13 @@ export const PortfolioEvmApprovalConfirmation = ({
           label={'dialog_cancel'}
           onClick={handleClickOnCancel}
           type={ButtonType.ALTERNATIVE}></ButtonComponent>
-        <ButtonComponent
-          dataTestId="dialog_confirm-button"
-          label={'popup_html_confirm'}
-          onClick={handleClickOnConfirm}
-          type={ButtonType.IMPORTANT}></ButtonComponent>
+        {!hasInsufficientBalance && (
+          <ButtonComponent
+            dataTestId="dialog_confirm-button"
+            label={'popup_html_confirm'}
+            onClick={handleClickOnConfirm}
+            type={ButtonType.IMPORTANT}></ButtonComponent>
+        )}
       </div>
       <ConfirmationPopup transactionHook={transactionHook} />
     </div>

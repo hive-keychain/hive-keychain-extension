@@ -24,13 +24,28 @@ import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
+import { EvmSwapConfirmationBalance } from 'src/common-ui/evm/evm-swap-confirmation-balance.component';
+import { EvmSwapConfirmationBalanceUtils } from '@popup/evm/utils/evm-swap-confirmation-balance.utils';
 import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
+
+type LiFiSwapBalanceContext = {
+  swapAmount: number;
+  fromToken: {
+    address: string;
+    symbol: string;
+    name: string;
+    decimals: number;
+    logoURI?: string;
+  };
+};
+
 interface LiFiConfirmationPageNavigationParams {
   swapTransactionData: ProviderTransactionData;
   swapFields: ConfirmationPageEvmFields[];
   approveTransactionData?: ProviderTransactionData;
   approveFields: ConfirmationPageEvmFields[];
+  swapBalanceContext: LiFiSwapBalanceContext;
   message?: string;
   title?: string;
   skipTitleTranslation?: boolean;
@@ -50,6 +65,7 @@ const LiFiConfirmationPage = ({
   swapTransactionData,
   approveFields,
   swapFields,
+  swapBalanceContext,
   message,
   title,
   skipTitleTranslation,
@@ -68,6 +84,12 @@ const LiFiConfirmationPage = ({
     useState<GasFeeEstimationBase>();
   const [swapSelectedFee, setSwapSelectedFee] =
     useState<GasFeeEstimationBase>();
+  const [hasInsufficientBalance, setHasInsufficientBalance] = useState(false);
+
+  const swapFromTokenInfo = EvmSwapConfirmationBalanceUtils.resolveLiFiSwapFromTokenInfo(
+    swapTransactionData.chain as EvmChain,
+    swapBalanceContext.fromToken,
+  );
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -256,6 +278,15 @@ const LiFiConfirmationPage = ({
           transactionData={swapTransactionData}
           setErrorMessage={handleErrors}
         />
+        <EvmSwapConfirmationBalance
+          walletAddress={activeAccount.wallet.address}
+          chain={swapTransactionData.chain as EvmChain}
+          fromTokenInfo={swapFromTokenInfo}
+          swapAmount={swapBalanceContext.swapAmount}
+          swapGasFee={swapSelectedFee}
+          approveGasFee={approveSelectedFee}
+          onInsufficientBalanceChange={setHasInsufficientBalance}
+        />
       </div>
 
       <div className="evm-bottom-panel lifi-confirmation-page-actions">
@@ -264,11 +295,13 @@ const LiFiConfirmationPage = ({
           label={'dialog_cancel'}
           onClick={handleClickOnCancel}
           type={ButtonType.ALTERNATIVE}></ButtonComponent>
-        <ButtonComponent
-          dataTestId="dialog_confirm-button"
-          label={'popup_html_confirm'}
-          onClick={handleClickOnConfirm}
-          type={ButtonType.IMPORTANT}></ButtonComponent>
+        {!hasInsufficientBalance && (
+          <ButtonComponent
+            dataTestId="dialog_confirm-button"
+            label={'popup_html_confirm'}
+            onClick={handleClickOnConfirm}
+            type={ButtonType.IMPORTANT}></ButtonComponent>
+        )}
       </div>
       <ConfirmationPopup transactionHook={transactionHook} />
     </div>
@@ -283,6 +316,7 @@ const mapStateToProps = (state: RootState) => {
     approveTransactionData: params.approveTransactionData,
     approveFields: params.approveFields,
     swapFields: params.swapFields,
+    swapBalanceContext: params.swapBalanceContext,
     message: params.message,
     title: params.title,
     skipTitleTranslation: params.skipTitleTranslation,

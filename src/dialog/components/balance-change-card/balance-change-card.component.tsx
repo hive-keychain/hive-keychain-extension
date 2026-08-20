@@ -24,11 +24,11 @@ export const BalanceChangeCard = ({ balanceInfo }: Props) => {
       </div>
 
       {insufficientBalance ? (
-        <span className="insufficient-balance">
+        <div className="insufficient-balance">
           {I18nUtils.getMessage('evm_insufficient_token_balance', [
             insufficientBalance.symbol,
           ])}
-        </span>
+        </div>
       ) : (
         <div className="balance-change-rows">
           {balanceRows.map((balance, index) => (

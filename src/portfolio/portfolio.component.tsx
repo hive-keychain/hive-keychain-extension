@@ -82,6 +82,7 @@ import {
   PortfolioSwapQuoteFetchResult,
 } from 'src/portfolio/portfolio-api.utils';
 import { PortfolioEvmApprovalUtils } from 'src/portfolio/portfolio-evm-approval.utils';
+import { EvmSwapConfirmationBalanceUtils } from '@popup/evm/utils/evm-swap-confirmation-balance.utils';
 import { PortfolioFiatLocaleUtils } from 'src/portfolio/portfolio-fiat-locale.utils';
 import {
   PORTFOLIO_RECIPIENT_OTHER_VALUE,
@@ -2796,6 +2797,14 @@ export const Portfolio = ({
         })) as ConfirmationPageEvmFields[])
       : undefined;
 
+    const fromAssetForConfirmation = quote.fromAsset ?? fromCanonicalAsset;
+    const fromTokenInfo =
+      EvmSwapConfirmationBalanceUtils.resolvePortfolioSwapFromTokenInfo(
+        chain,
+        fromAssetForConfirmation,
+      );
+    const swapAmount = Number.parseFloat(quote.fromAmount ?? '0');
+
     return {
       kind: 'evm',
       executionId,
@@ -2806,6 +2815,8 @@ export const Portfolio = ({
       chain,
       activeAccountOverride,
       transactionData,
+      swapAmount,
+      fromTokenInfo,
       approveTransactionData,
       approveFields,
       fields: [

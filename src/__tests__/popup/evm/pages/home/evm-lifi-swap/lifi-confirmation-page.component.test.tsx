@@ -14,6 +14,12 @@ jest.mock('@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component', () => (
   GasFeePanel: (props: any) => mockGasFeePanel(props),
 }));
 
+jest.mock('src/common-ui/evm/evm-swap-confirmation-balance.component', () => ({
+  EvmSwapConfirmationBalance: () => (
+    <div data-testid="swap-confirmation-balance" />
+  ),
+}));
+
 jest.mock('@dialog/evm/requests/transaction-warnings/transaction.hook', () => ({
   useTransactionHook: jest.fn(),
 }));
@@ -74,6 +80,15 @@ describe('LiFiConfirmationPageComponent', () => {
                 type: EvmTransactionType.EIP_1559,
                 value: '0x0',
               },
+              swapBalanceContext: {
+                swapAmount: 1,
+                fromToken: {
+                  address: '0x00000000000000000000000000000000000000aa',
+                  symbol: 'USDC',
+                  name: 'USD Coin',
+                  decimals: 6,
+                },
+              },
             },
           },
         ],
@@ -108,6 +123,9 @@ describe('LiFiConfirmationPageComponent', () => {
 
     expect(fieldsPanels).toHaveLength(2);
     expect(gasFeePanels).toHaveLength(2);
+    expect(
+      container.querySelector('[data-testid="swap-confirmation-balance"]'),
+    ).not.toBeNull();
     fieldsPanels.forEach((fieldsPanel) => {
       expect(fieldsPanel.querySelector('[data-testid="gas-fee-panel"]')).toBe(
         null,

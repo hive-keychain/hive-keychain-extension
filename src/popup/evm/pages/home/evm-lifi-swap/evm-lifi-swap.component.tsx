@@ -636,6 +636,16 @@ export const EvmLifiSwap = ({
           : undefined,
       approveFields: approveFields,
       swapFields: swapFields,
+      swapBalanceContext: {
+        swapAmount: form.amount,
+        fromToken: {
+          address: form.fromSelectedToken!.address,
+          symbol: form.fromSelectedToken!.symbol,
+          name: form.fromSelectedToken!.name,
+          decimals: form.fromSelectedToken!.decimals ?? 18,
+          logoURI: form.fromSelectedToken!.logoURI,
+        },
+      },
       message: I18nUtils.getMessage('evm_lifi_swap_confirm_message', [
         form.fromSelectedToken?.symbol ?? '',
         form.toSelectedToken?.symbol ?? '',

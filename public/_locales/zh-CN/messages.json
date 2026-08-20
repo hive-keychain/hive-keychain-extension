@@ -7600,7 +7600,7 @@
     "description": "Delay caption message"
   },
   "evm_insufficient_token_balance": {
-    "message": "$1 余额不足。",
+    "message": "$1 余额不足。交易将失败。",
     "description": "Insufficient token balance message on EVM balance change card"
   },
   "evm_transaction_result_error_message_insufficient_funds": {

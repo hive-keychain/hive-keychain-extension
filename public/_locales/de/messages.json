@@ -7600,7 +7600,7 @@
     "description": "Delay caption message"
   },
   "evm_insufficient_token_balance": {
-    "message": "Unzureichendes $1-Guthaben.",
+    "message": "Unzureichendes $1-Guthaben. Die Transaktion wird fehlschlagen.",
     "description": "Insufficient token balance message on EVM balance change card"
   },
   "evm_transaction_result_error_message_insufficient_funds": {

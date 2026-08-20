@@ -52,6 +52,8 @@ const PortfolioConfirmationStep = ({
           activeAccount={context.activeAccountOverride}
           selectedAccount={context.activeAccountOverride}
           transactionData={context.transactionData}
+          tokenInfo={context.fromTokenInfo}
+          amount={context.swapAmount}
           afterConfirmAction={context.onConfirm}
           setErrorMessage={setErrorMessage}
         />
