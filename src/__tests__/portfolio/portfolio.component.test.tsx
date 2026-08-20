@@ -3031,8 +3031,9 @@ describe('Portfolio', () => {
       const optionTexts = [...accountOptions].map(
         (option) => option.textContent ?? '',
       );
-      expect(optionTexts).toHaveLength(1);
+      expect(optionTexts).toHaveLength(2);
       expect(optionTexts[0]).toContain('alice');
+      expect(optionTexts.some((text) => text.includes('Other'))).toBe(true);
     });
 
     fireEvent.click(
@@ -3063,8 +3064,161 @@ describe('Portfolio', () => {
       const optionTexts = [...accountOptions].map(
         (option) => option.textContent ?? '',
       );
-      expect(optionTexts).toHaveLength(1);
+      expect(optionTexts).toHaveLength(2);
       expect(optionTexts[0]).toContain('0xabc');
+      expect(optionTexts.some((text) => text.includes('Other'))).toBe(true);
+    });
+
+    const otherOption = [
+      ...container.querySelectorAll(
+        '#portfolio-flow-account-listbox [role="option"]',
+      ),
+    ].find((option) => (option.textContent ?? '').includes('Other'));
+    fireEvent.click(otherOption as HTMLButtonElement);
+
+    await waitFor(() => {
+      expect(
+        container.querySelector('[data-testid="portfolio-recipient-address"]'),
+      ).not.toBeNull();
+      expect(container.querySelector('#portfolio-recipient-account')).toBeNull();
+    });
+  });
+
+  it('does not show a redundant recipient field on buy after a cross-ecosystem swap selection', async () => {
+    const hiveAlice = { name: 'alice' } as never;
+    const evmAccount = {
+      id: 1,
+      wallet: { address: '0xabc' },
+      hide: false,
+    } as never;
+    const hiveAsset = {
+      assetId: 'hive:native:hive',
+      ecosystem: 'hive',
+      symbol: 'HIVE',
+      name: 'Hive',
+      chainId: 'hive',
+      address: null,
+      decimals: 3,
+      isNative: true,
+      familyId: 'hive',
+      logoUrl: null,
+      priceUsd: 0,
+      rankScore: 100,
+    };
+    const ethAsset = {
+      assetId: 'evm:native:ethereum',
+      ecosystem: 'evm',
+      symbol: 'ETH',
+      name: 'Ethereum',
+      chainId: 'ethereum',
+      address: null,
+      decimals: 18,
+      isNative: true,
+      familyId: 'eth',
+      logoUrl: null,
+      priceUsd: 0,
+      rankScore: 90,
+    };
+
+    (
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains as jest.Mock
+    ).mockImplementation(async (_chains, _walletAddress, options) => {
+      options?.onChainReady?.(ethereumChain, [ethToken]);
+      options?.onChainFinished?.(ethereumChain);
+      return [ethToken];
+    });
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
+      assets: [swapAssetsFixture[0], hiveAsset],
+      chains: {},
+    });
+    (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockImplementation(
+      async (params: {
+        mode: string;
+        direction?: string;
+        sourceAssetId?: string;
+      }) => {
+        if (params.mode === 'swap') {
+          return {
+            mode: 'swap',
+            direction: params.direction ?? null,
+            sourceAssetId: params.sourceAssetId ?? null,
+            assets: [swapAssetsFixture[0], hiveAsset],
+            chains: {},
+          };
+        }
+
+        if (params.mode === 'buy') {
+          return {
+            mode: 'buy',
+            direction: 'to',
+            sourceAssetId: null,
+            assets: [ethAsset],
+            chains: {},
+          };
+        }
+
+        return {
+          mode: params.mode,
+          direction: params.direction,
+          sourceAssetId: params.sourceAssetId ?? null,
+          assets: [],
+          chains: {},
+        };
+      },
+    );
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[hiveAlice]}
+        evmAccounts={[evmAccount]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName="alice"
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+    });
+
+    clickPortfolioNav(container, 'swap');
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-to-asset')).not.toBeNull();
+    });
+
+    await selectOverlayOption(container, 'portfolio-to-asset', (text) =>
+      text.includes('HIVE'),
+    );
+
+    await waitFor(() => {
+      expect(
+        container.querySelector('#portfolio-recipient-account'),
+      ).not.toBeNull();
+    });
+
+    clickPortfolioNav(container, 'buy');
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-to-asset')).not.toBeNull();
+    });
+
+    await selectOverlayOption(
+      container,
+      'portfolio-to-asset',
+      (text) => text.includes('Ethereum') || /\bETH\b/.test(text),
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-flow-account')).not.toBeNull();
+      expect(container.querySelector('#portfolio-recipient-account')).toBeNull();
+      expect(
+        container.querySelector('[data-testid="portfolio-recipient-address"]'),
+      ).toBeNull();
     });
   });
 

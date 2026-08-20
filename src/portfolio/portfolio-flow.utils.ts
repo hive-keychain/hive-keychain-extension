@@ -1504,6 +1504,26 @@ export const resolvePortfolioFlowAccountKindForAsset = (
 
 export const PORTFOLIO_RECIPIENT_OTHER_VALUE = 'other';
 
+export const resolvePortfolioRecipientFromAsset = (
+  mode: PortfolioMode,
+  fromAsset: PortfolioCanonicalAsset | undefined,
+): PortfolioCanonicalAsset | undefined => (mode === 'buy' ? undefined : fromAsset);
+
+export const requiresPortfolioRecipientAddressForMode = (
+  mode: PortfolioMode,
+  fromAsset: PortfolioCanonicalAsset | undefined,
+  toAsset: PortfolioCanonicalAsset | undefined,
+): boolean => {
+  if (mode === 'sell') {
+    return false;
+  }
+
+  return requiresPortfolioRecipientAddress(
+    resolvePortfolioRecipientFromAsset(mode, fromAsset),
+    toAsset,
+  );
+};
+
 export const requiresPortfolioRecipientAddress = (
   fromAsset: PortfolioCanonicalAsset | undefined,
   toAsset: PortfolioCanonicalAsset | undefined,
@@ -1619,11 +1639,13 @@ export const resolvePortfolioToAddress = ({
   recipientAddress,
   fromAsset,
   toAsset,
+  requireRecipientAddress = false,
 }: {
   fromAddress: string;
   recipientAddress: string;
   fromAsset: PortfolioCanonicalAsset | undefined;
   toAsset: PortfolioCanonicalAsset | undefined;
+  requireRecipientAddress?: boolean;
 }): string | undefined => {
   if (!toAsset) {
     return undefined;
@@ -1645,7 +1667,10 @@ export const resolvePortfolioToAddress = ({
     return normalizedRecipient;
   }
 
-  if (!requiresPortfolioRecipientAddress(fromAsset, toAsset)) {
+  if (
+    !requireRecipientAddress &&
+    !requiresPortfolioRecipientAddress(fromAsset, toAsset)
+  ) {
     return fromAddress;
   }
 
@@ -1752,23 +1777,30 @@ export const resolvePortfolioQuoteToAddress = ({
   recipientAddress,
   fromAsset,
   toAsset,
+  requireRecipientAddress = false,
 }: {
   fromAddress: string;
   recipientAddress: string;
   fromAsset: PortfolioCanonicalAsset | undefined;
   toAsset: PortfolioCanonicalAsset | undefined;
+  requireRecipientAddress?: boolean;
 }): string | undefined => {
   const resolvedToAddress = resolvePortfolioToAddress({
     fromAddress,
     recipientAddress,
     fromAsset,
     toAsset,
+    requireRecipientAddress,
   });
   if (resolvedToAddress) {
     return resolvedToAddress;
   }
 
-  if (!toAsset || !requiresPortfolioRecipientAddress(fromAsset, toAsset)) {
+  if (
+    !toAsset ||
+    (!requireRecipientAddress &&
+      !requiresPortfolioRecipientAddress(fromAsset, toAsset))
+  ) {
     return undefined;
   }
 
@@ -1815,7 +1847,9 @@ export const PortfolioFlowUtils = {
   resolvePortfolioQuoteFromAmountDecimals,
   normalizePortfolioRecipientAddress,
   requiresPortfolioRecipientAddress,
+  requiresPortfolioRecipientAddressForMode,
   resolvePortfolioQuotePlaceholderAddress,
+  resolvePortfolioRecipientFromAsset,
   resolvePortfolioQuoteToAddress,
   resolvePortfolioRecipientAccountKind,
   resolvePortfolioRecipientAddressKind,

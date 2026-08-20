@@ -1087,15 +1087,6 @@ export const Portfolio = ({
     return accountOptions.filter((account) => account.type === requiredType);
   }, [accountOptions, flowAccountKind, section]);
 
-  const flowOverlayAccountOptions = useMemo(
-    () =>
-      flowAccountOptions.map((account) => ({
-        value: account.key,
-        label: account.label,
-      })),
-    [flowAccountOptions],
-  );
-
   const flowSelectedAccount = useMemo(() => {
     if (section === 'buy' && flowAccountKind) {
       return (
@@ -1114,14 +1105,25 @@ export const Portfolio = ({
     selectedAccountKey,
   ]);
 
+  const flowMode = section as PortfolioMode;
+
+  const recipientFromCanonicalAsset = useMemo(
+    () =>
+      PortfolioFlowUtils.resolvePortfolioRecipientFromAsset(
+        flowMode,
+        fromCanonicalAsset,
+      ),
+    [flowMode, fromCanonicalAsset],
+  );
+
   const requiresRecipientInput = useMemo(
     () =>
-      section !== 'sell' &&
-      PortfolioFlowUtils.requiresPortfolioRecipientAddress(
+      PortfolioFlowUtils.requiresPortfolioRecipientAddressForMode(
+        flowMode,
         fromCanonicalAsset,
         toCanonicalAsset,
       ),
-    [fromCanonicalAsset, section, toCanonicalAsset],
+    [flowMode, fromCanonicalAsset, toCanonicalAsset],
   );
 
   const recipientAddressLabelKey = useMemo(
@@ -1151,6 +1153,36 @@ export const Portfolio = ({
 
   const shouldShowRecipientAccountSelect =
     requiresRecipientInput && recipientAccountOptions.length > 0;
+  const isBuyCustomDestinationSelected =
+    flowMode === 'buy' &&
+    recipientSelectValue === PORTFOLIO_RECIPIENT_OTHER_VALUE;
+  const requiresResolvedRecipientAddress =
+    requiresRecipientInput || isBuyCustomDestinationSelected;
+  const canSelectCustomBuyDestination =
+    section === 'buy' &&
+    Boolean(flowAccountKind) &&
+    !!toCanonicalAsset &&
+    !PortfolioFlowUtils.isDestinationOnlyPortfolioEcosystem(
+      toCanonicalAsset.ecosystem,
+    );
+
+  const flowOverlayAccountOptions = useMemo(
+    () => [
+      ...flowAccountOptions.map((account) => ({
+        value: account.key,
+        label: account.label,
+      })),
+      ...(canSelectCustomBuyDestination
+        ? [
+            {
+              value: PORTFOLIO_RECIPIENT_OTHER_VALUE,
+              label: I18nUtils.getMessage('global_other'),
+            },
+          ]
+        : []),
+    ],
+    [canSelectCustomBuyDestination, flowAccountOptions],
+  );
 
   const recipientOverlayAccountOptions = useMemo(
     () => [
@@ -1165,8 +1197,6 @@ export const Portfolio = ({
     ],
     [recipientAccountOptions],
   );
-
-  const flowMode = section as PortfolioMode;
 
   const selectedAccountFromAddress = useMemo(() => {
     if (!flowSelectedAccount) {
@@ -1190,13 +1220,15 @@ export const Portfolio = ({
     return PortfolioFlowUtils.resolvePortfolioToAddress({
       fromAddress: selectedAccountFromAddress,
       recipientAddress,
-      fromAsset: fromCanonicalAsset,
+      fromAsset: recipientFromCanonicalAsset,
       toAsset: toCanonicalAsset,
+      requireRecipientAddress: requiresResolvedRecipientAddress,
     });
   }, [
     flowMode,
-    fromCanonicalAsset,
+    recipientFromCanonicalAsset,
     recipientAddress,
+    requiresResolvedRecipientAddress,
     selectedAccountFromAddress,
     toCanonicalAsset,
   ]);
@@ -1213,13 +1245,15 @@ export const Portfolio = ({
     return PortfolioFlowUtils.resolvePortfolioQuoteToAddress({
       fromAddress: selectedAccountFromAddress,
       recipientAddress,
-      fromAsset: fromCanonicalAsset,
+      fromAsset: recipientFromCanonicalAsset,
       toAsset: toCanonicalAsset,
+      requireRecipientAddress: requiresResolvedRecipientAddress,
     });
   }, [
     flowMode,
-    fromCanonicalAsset,
+    recipientFromCanonicalAsset,
     recipientAddress,
+    requiresResolvedRecipientAddress,
     selectedAccountFromAddress,
     toCanonicalAsset,
   ]);
@@ -1721,6 +1755,21 @@ export const Portfolio = ({
     setSelectedAccountKey(accountKey);
   }, []);
 
+  const handleBuyDestinationChange = useCallback(
+    (value: string) => {
+      if (value === PORTFOLIO_RECIPIENT_OTHER_VALUE) {
+        setRecipientSelectValue(PORTFOLIO_RECIPIENT_OTHER_VALUE);
+        setRecipientAddress('');
+        return;
+      }
+
+      setRecipientSelectValue('');
+      setRecipientAddress('');
+      handleSelectedAccountChange(value);
+    },
+    [handleSelectedAccountChange],
+  );
+
   const handleRecipientSelectChange = useCallback(
     (value: string) => {
       setRecipientSelectValue(value);
@@ -1956,6 +2005,9 @@ export const Portfolio = ({
     resetFlowFormFields();
     if (section === 'portfolio') {
       setSelectedNetwork('');
+    }
+    if (section === 'buy') {
+      setFromAssetId('');
     }
     if (section !== 'buy' && section !== 'swap') {
       setToAssetFilter('');
@@ -3676,7 +3728,9 @@ export const Portfolio = ({
       mode === 'buy' && Boolean(flowAccountKind);
 
     const flowAccountSelectValue =
-      flowSelectedAccount?.key ||
+      (canSelectCustomBuyDestination && isBuyCustomDestinationSelected
+        ? PORTFOLIO_RECIPIENT_OTHER_VALUE
+        : flowSelectedAccount?.key) ||
       flowAccountOptions[0]?.key ||
       selectedAccountKey;
 
@@ -3686,11 +3740,33 @@ export const Portfolio = ({
           id="portfolio-flow-account"
           label={I18nUtils.getMessage('portfolio_account')}
           value={flowAccountSelectValue}
-          onChange={handleSelectedAccountChange}
+          onChange={
+            canSelectCustomBuyDestination
+              ? handleBuyDestinationChange
+              : handleSelectedAccountChange
+          }
           options={flowOverlayAccountOptions}
-          renderDisplay={renderAccountRow}
-          renderOption={renderAccountRow}
+          renderDisplay={
+            canSelectCustomBuyDestination
+              ? renderRecipientOption
+              : renderAccountRow
+          }
+          renderOption={
+            canSelectCustomBuyDestination
+              ? renderRecipientOption
+              : renderAccountRow
+          }
         />
+        {canSelectCustomBuyDestination && isBuyCustomDestinationSelected ? (
+          <InputComponent
+            id="portfolio-recipient-address"
+            type={InputType.TEXT}
+            value={recipientAddress}
+            onChange={setRecipientAddress}
+            error={recipientFieldError}
+            dataTestId="portfolio-recipient-address"
+          />
+        ) : null}
       </div>
     ) : null;
 

@@ -1344,6 +1344,29 @@ describe('PortfolioFlowUtils', () => {
     ).toBe(false);
   });
 
+  it('ignores swap source assets when deciding buy recipient requirements', () => {
+    expect(
+      PortfolioFlowUtils.requiresPortfolioRecipientAddressForMode(
+        'buy',
+        hiveAsset,
+        ethAsset,
+      ),
+    ).toBe(false);
+    expect(
+      PortfolioFlowUtils.requiresPortfolioRecipientAddressForMode(
+        'buy',
+        ethAsset,
+        btcAsset,
+      ),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRecipientFromAsset('buy', hiveAsset),
+    ).toBeUndefined();
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRecipientFromAsset('swap', hiveAsset),
+    ).toBe(hiveAsset);
+  });
+
   it('defaults toAddress to fromAddress for same-ecosystem swaps', () => {
     const evmAddress = '0x0000000000000000000000000000000000000001';
     expect(
@@ -1354,6 +1377,31 @@ describe('PortfolioFlowUtils', () => {
         toAsset: sepoliaEthAsset,
       }),
     ).toBe(evmAddress);
+  });
+
+  it('uses a custom destination when buy requires an explicit recipient', () => {
+    const fromAddress = '0x0000000000000000000000000000000000000001';
+    const otherAddress = '0x0000000000000000000000000000000000000002';
+    expect(
+      PortfolioFlowUtils.resolvePortfolioToAddress({
+        fromAddress,
+        recipientAddress: otherAddress,
+        fromAsset: undefined,
+        toAsset: ethAsset,
+        requireRecipientAddress: true,
+      }),
+    ).toBe(otherAddress);
+    expect(
+      PortfolioFlowUtils.resolvePortfolioQuoteToAddress({
+        fromAddress,
+        recipientAddress: '',
+        fromAsset: undefined,
+        toAsset: ethAsset,
+        requireRecipientAddress: true,
+      }),
+    ).toBe(
+      PortfolioFlowUtils.resolvePortfolioQuotePlaceholderAddress(ethAsset),
+    );
   });
 
   it('uses the recipient address for cross-ecosystem swaps', () => {
