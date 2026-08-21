@@ -82,7 +82,10 @@ import {
   PortfolioSwapQuoteFetchResult,
 } from 'src/portfolio/portfolio-api.utils';
 import { PortfolioEvmApprovalUtils } from 'src/portfolio/portfolio-evm-approval.utils';
+import { PortfolioEvmBalanceRefreshUtils } from 'src/portfolio/portfolio-evm-balance-refresh.utils';
 import { EvmSwapConfirmationBalanceUtils } from '@popup/evm/utils/evm-swap-confirmation-balance.utils';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { PortfolioFiatLocaleUtils } from 'src/portfolio/portfolio-fiat-locale.utils';
 import {
   PORTFOLIO_RECIPIENT_OTHER_VALUE,
@@ -524,6 +527,15 @@ export const Portfolio = ({
   const [hasResolvedInitialAccountSelection, setHasResolvedInitialAccountSelection] =
     useState(false);
   const selectedAccountKeyRef = useRef(selectedAccountKey);
+  const isPortfolioLoadingRef = useRef(false);
+  const loadPortfolioRef = useRef<
+    ((options?: { clearRows?: boolean }) => Promise<void>) | null
+  >(null);
+  const selectedEvmAddressRef = useRef<string | undefined>(undefined);
+  const portfolioEvmBalanceRefreshTimeoutRef = useRef<ReturnType<
+    typeof setTimeout
+  > | null>(null);
+  const pendingEvmBalanceRefreshRef = useRef(false);
   const [expandedPortfolioRowKeys, setExpandedPortfolioRowKeys] = useState<
     string[]
   >([]);
@@ -659,6 +671,10 @@ export const Portfolio = ({
   }, [selectedAccountKey]);
 
   useEffect(() => {
+    isPortfolioLoadingRef.current = isPortfolioLoading;
+  }, [isPortfolioLoading]);
+
+  useEffect(() => {
     replacePortfolioSectionHash(section);
   }, [section]);
 
@@ -783,6 +799,13 @@ export const Portfolio = ({
   const selectedAccount =
     accountOptions.find((account) => account.key === selectedAccountKey) ??
     accountOptions[0];
+
+  useEffect(() => {
+    selectedEvmAddressRef.current =
+      selectedAccount?.type === ChainType.EVM
+        ? selectedAccount.account.wallet.address
+        : undefined;
+  }, [selectedAccount]);
 
   const overlayAccountOptions = useMemo(
     () =>
@@ -2433,6 +2456,63 @@ export const Portfolio = ({
       setIsPortfolioLoading(false);
     }
   };
+
+  loadPortfolioRef.current = loadPortfolio;
+
+  useEffect(() => {
+    if (isPortfolioLoading || !pendingEvmBalanceRefreshRef.current) {
+      return;
+    }
+
+    pendingEvmBalanceRefreshRef.current = false;
+    void loadPortfolioRef.current?.({ clearRows: true });
+  }, [isPortfolioLoading]);
+
+  useEffect(() => {
+    const schedulePortfolioBalanceRefresh = () => {
+      if (portfolioEvmBalanceRefreshTimeoutRef.current) {
+        clearTimeout(portfolioEvmBalanceRefreshTimeoutRef.current);
+      }
+
+      portfolioEvmBalanceRefreshTimeoutRef.current = setTimeout(() => {
+        portfolioEvmBalanceRefreshTimeoutRef.current = null;
+        if (isPortfolioLoadingRef.current) {
+          pendingEvmBalanceRefreshRef.current = true;
+          return;
+        }
+        pendingEvmBalanceRefreshRef.current = false;
+        void loadPortfolioRef.current?.({ clearRows: true });
+      }, PortfolioEvmBalanceRefreshUtils.PORTFOLIO_EVM_BALANCE_REFRESH_DEBOUNCE_MS);
+    };
+
+    const onEvmBalanceChangeMessage = (message: BackgroundMessage) => {
+      const eventAddress =
+        PortfolioEvmBalanceRefreshUtils.resolvePortfolioEvmBalanceRefreshAddress(
+          message,
+        );
+      if (
+        !PortfolioEvmBalanceRefreshUtils.shouldRefreshPortfolioBalancesForEvmAddress(
+          eventAddress,
+          selectedEvmAddressRef.current,
+        )
+      ) {
+        return;
+      }
+
+      schedulePortfolioBalanceRefresh();
+    };
+
+    chrome.runtime.onMessage.addListener(onEvmBalanceChangeMessage);
+
+    return () => {
+      chrome.runtime.onMessage.removeListener(onEvmBalanceChangeMessage);
+      if (portfolioEvmBalanceRefreshTimeoutRef.current) {
+        clearTimeout(portfolioEvmBalanceRefreshTimeoutRef.current);
+        portfolioEvmBalanceRefreshTimeoutRef.current = null;
+      }
+      pendingEvmBalanceRefreshRef.current = false;
+    };
+  }, []);
 
   const loadHistory = async () => {
     if (hasLoadedHistoryRef.current || isHistoryLoadInFlightRef.current) {

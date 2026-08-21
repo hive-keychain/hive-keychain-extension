@@ -12,6 +12,7 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { Socket, io } from 'socket.io-client';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 import Logger from 'src/utils/logger.utils';
 import VaultUtils from 'src/utils/vault.utils';
@@ -195,6 +196,16 @@ const handleIncomingTransaction = async (payload: unknown) => {
   if (!registeredAddresses.has(address)) {
     return;
   }
+
+  void CommunicationUtils.runtimeSendMessage({
+    command: BackgroundCommand.EVM_INCOMING_TRANSACTION,
+    value: {
+      chainId,
+      address,
+      txId: payload.item.txId,
+    },
+  });
+
   chrome.notifications.create(getNotificationId(payload), {
     type: 'basic',
     iconUrl: '/assets/images/iconhive.png',

@@ -21,6 +21,8 @@ import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
 import { Portfolio } from 'src/portfolio/portfolio.component';
 import { PortfolioSwapCatalogCacheUtils } from 'src/portfolio/portfolio-swap-catalog-cache.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { PortfolioEvmBalanceRefreshUtils } from 'src/portfolio/portfolio-evm-balance-refresh.utils';
 
 jest.mock('src/popup/hive/utils/tokens.utils', () => ({
   __esModule: true,
@@ -3800,6 +3802,104 @@ describe('Portfolio', () => {
         '.portfolio-flow .portfolio-amount-field input[type="number"]',
       ) as HTMLInputElement;
       expect(buyAmountInput.value).toBe('');
+    });
+  });
+
+  it('refreshes EVM balances after resolved or incoming transactions for the selected account', async () => {
+    const originalDebounce =
+      PortfolioEvmBalanceRefreshUtils.PORTFOLIO_EVM_BALANCE_REFRESH_DEBOUNCE_MS;
+    Object.assign(PortfolioEvmBalanceRefreshUtils, {
+      PORTFOLIO_EVM_BALANCE_REFRESH_DEBOUNCE_MS: 0,
+    });
+
+    let runtimeMessageListener:
+      | ((message: { command?: string; value?: Record<string, string> }) => void)
+      | undefined;
+    const addListenerSpy = jest
+      .spyOn(chrome.runtime.onMessage, 'addListener')
+      .mockImplementation(((listener: typeof runtimeMessageListener) => {
+        runtimeMessageListener = listener;
+      }) as typeof chrome.runtime.onMessage.addListener);
+    jest
+      .spyOn(chrome.runtime.onMessage, 'removeListener')
+      .mockImplementation(
+        jest.fn() as typeof chrome.runtime.onMessage.removeListener,
+      );
+
+    (
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains as jest.Mock
+    ).mockImplementation(async (chains, _walletAddress, options) => {
+      for (const chain of chains) {
+        const tokens =
+          chain.chainId === ethereumChain.chainId ? [ethToken] : [maticToken];
+        options?.onChainReady?.(chain, tokens);
+        options?.onChainFinished?.(chain);
+      }
+      return [ethToken, maticToken];
+    });
+
+    const { container, unmount } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+      expect(container.querySelector('.portfolio-loading-more')).toBeNull();
+      expect(runtimeMessageListener).toBeDefined();
+    });
+
+    (
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains as jest.Mock
+    ).mockClear();
+
+    await act(async () => {
+      runtimeMessageListener?.({
+        command: BackgroundCommand.EVM_TRANSACTION_RESOLVED,
+        value: { from: '0xdef' },
+      });
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains,
+    ).not.toHaveBeenCalled();
+
+    await act(async () => {
+      runtimeMessageListener?.({
+        command: BackgroundCommand.EVM_TRANSACTION_RESOLVED,
+        value: { from: '0xAbC' },
+      });
+      runtimeMessageListener?.({
+        command: BackgroundCommand.EVM_INCOMING_TRANSACTION,
+        value: { address: '0xabc' },
+      });
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    await waitFor(() => {
+      expect(
+        EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains,
+      ).toHaveBeenCalledTimes(1);
+    });
+
+    unmount();
+    addListenerSpy.mockRestore();
+    Object.assign(PortfolioEvmBalanceRefreshUtils, {
+      PORTFOLIO_EVM_BALANCE_REFRESH_DEBOUNCE_MS: originalDebounce,
     });
   });
 });

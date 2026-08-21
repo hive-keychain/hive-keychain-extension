@@ -170,6 +170,14 @@ describe('evm-incoming-transactions.module', () => {
         message: 'Received 1 ETH',
       }),
     );
+    expect(chrome.runtime.sendMessage).toHaveBeenCalledWith({
+      command: 'evmIncomingTransaction',
+      value: {
+        chainId: '0x1',
+        address: ADDRESS,
+        txId: TRANSACTION_HASH,
+      },
+    });
 
     mockSocketHandlers.incoming_transaction({
       chainId: 1,
@@ -178,6 +186,7 @@ describe('evm-incoming-transactions.module', () => {
     });
     await flushAsync();
     expect(chrome.notifications.create).toHaveBeenCalledTimes(1);
+    expect(chrome.runtime.sendMessage).toHaveBeenCalledTimes(1);
   });
 
   it('disconnects after an internal wallet lock-state message', async () => {
