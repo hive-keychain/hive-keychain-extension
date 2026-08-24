@@ -1079,9 +1079,9 @@
     min-width: 0;
     box-sizing: border-box;
     border: none;
-    background: var(--input-background);
+    background: transparent;
     @include poppins400($input-font-size);
-    color: var(--main-font-color);
+    color: var(--kc-color-text-primary);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
