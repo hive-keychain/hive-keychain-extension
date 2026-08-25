@@ -110,4 +110,22 @@ describe('ComplexeCustomSelect', () => {
     await user.keyboard('{Enter}');
     expect(handleFooterClick).toHaveBeenCalledTimes(1);
   });
+
+  it('shows a placeholder when no item is selected', () => {
+    render(
+      <ComplexeCustomSelect
+        ariaLabel="Empty dropdown"
+        options={options}
+        selectedItem={{ label: '', value: '' }}
+        setSelectedItem={jest.fn()}
+        placeholder="Select a field"
+        skipPlaceholderTranslation
+      />,
+    );
+
+    expect(screen.getByText('Select a field')).toBeInTheDocument();
+    expect(screen.getByText('Select a field').closest('.selected-item')).toHaveClass(
+      'is-placeholder',
+    );
+  });
 });

@@ -1,9 +1,17 @@
 import { BaseApi } from 'src/api/base';
 
+const PEAKD_NOTIFICATIONS_BASE_URL = 'https://notifications.hivehub.dev';
+
+export const getPeakDNotificationsBaseUrl = () => PEAKD_NOTIFICATIONS_BASE_URL;
+
 const buildUrl = (url: string) => {
-  const baseURL = 'https://notifications.hivehub.dev';
-  return `${baseURL}/${url}`;
+  return `${PEAKD_NOTIFICATIONS_BASE_URL}/${url.replace(/^\/+/, '')}`;
 };
+
+export const getPeakDNotificationsPushUrl = (username: string) =>
+  `${getPeakDNotificationsBaseUrl()}/notifications/push/${encodeURIComponent(
+    username,
+  )}`;
 
 const get = async (url: string): Promise<any> => {
   return await BaseApi.get(buildUrl(url));

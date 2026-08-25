@@ -5099,9 +5099,49 @@
     "message": "Activated",
     "description": "Notification system active for this account"
   },
+  "html_popup_settings_notifications_channels_title": {
+    "message": "Delivery channels",
+    "description": "Title for local Hive notification drop/browser preferences"
+  },
+  "html_popup_settings_notifications_channels_caption": {
+    "message": "Choose where each operation should appear. Changes are saved locally for this account.",
+    "description": "Caption for local Hive notification channel preferences"
+  },
+  "html_popup_settings_notifications_operation": {
+    "message": "Operation",
+    "description": "Column header for notification operation name"
+  },
+  "html_popup_settings_notifications_operation_placeholder": {
+    "message": "Operation",
+    "description": "Placeholder for notification operation criteria input"
+  },
+  "html_popup_settings_notifications_channel_drop": {
+    "message": "Drop",
+    "description": "Toggle label for in-app notification dropdown"
+  },
+  "html_popup_settings_notifications_channel_browser": {
+    "message": "Push notification",
+    "description": "Toggle label for browser OS push notifications"
+  },
+  "html_popup_settings_notifications_channel_browser_tooltip": {
+    "message": "Show a system notification when this operation is received, even if Keychain is closed.",
+    "description": "Tooltip explaining the push notification channel toggle"
+  },
   "html_popup_settings_notifications_condition": {
     "message": "Condition",
     "description": "Condition"
+  },
+  "html_popup_settings_notifications_condition_field_placeholder": {
+    "message": "Field",
+    "description": "Placeholder for notification condition field dropdown"
+  },
+  "html_popup_settings_notifications_condition_operand_placeholder": {
+    "message": "Operator",
+    "description": "Placeholder for notification condition operator dropdown"
+  },
+  "html_popup_settings_notifications_condition_value_placeholder": {
+    "message": "Value",
+    "description": "Placeholder for notification condition value input"
   },
   "html_popup_reset_form": {
     "message": "Reset",
@@ -5280,8 +5320,8 @@
     "description": "Open advanced settings"
   },
   "notification_settings_select_all": {
-    "message": "Select all",
-    "description": "Select all criterias"
+    "message": "Add all",
+    "description": "Add all notification criteria operations"
   },
   "notification_settings_nothing_has_changed": {
     "message": "No changes detected",
@@ -7062,6 +7102,10 @@
   "evm_incoming_transaction_notification_title": {
     "message": "$1 · Incoming transaction on $2",
     "description": "Incoming EVM transaction notification title"
+  },
+  "hive_push_notification_title": {
+    "message": "$1 · Hive notification",
+    "description": "Incoming Hive push notification title"
   },
   "evm_tx_failed_notification_title": {
     "message": "Transaction failed",

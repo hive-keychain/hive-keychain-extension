@@ -36,9 +36,11 @@ const filterValuesList = (list: AutoCompleteValue[], query: string) => {
     if (typeof value !== 'string') {
       return false;
     }
+    const label = item?.label;
     const subLabel = item?.subLabel;
     return (
       value.toLowerCase().includes(query) ||
+      (typeof label === 'string' && label.toLowerCase().includes(query)) ||
       (typeof subLabel === 'string' && subLabel.toLowerCase().includes(query))
     );
   });

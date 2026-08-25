@@ -127,4 +127,11 @@ export enum LocalStorageKeyEnum {
 
   /** Ecosystem directory: `{ categories, fetchedAt }` with hourly TTL */
   ECOSYSTEM_DAPPS_CACHE = 'ECOSYSTEM_DAPPS_CACHE',
+
+  /**
+   * Per Hive account, per PeakD operation: whether to show in the in-app drop
+   * and/or as a browser OS notification.
+   * Shape: `{ [username]: { [operation]: { drop: boolean, browser: boolean } } }`
+   */
+  HIVE_NOTIFICATION_CHANNEL_PREFS = 'HIVE_NOTIFICATION_CHANNEL_PREFS',
 }

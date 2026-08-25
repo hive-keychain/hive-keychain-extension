@@ -1,11 +1,12 @@
 import '@testing-library/jest-dom';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Theme } from 'src/popup/theme.context';
 import { NotificationsAdvancedConfig } from 'src/peakd-notifications-config/notifications-advanced-config.component';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { PeakDNotificationsUtils } from 'src/popup/hive/utils/notifications/peakd-notifications.utils';
+import { HiveNotificationChannelPrefsUtils } from 'src/popup/hive/utils/notifications/hive-notification-channel-prefs.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import VaultUtils from 'src/utils/vault.utils';
@@ -38,6 +39,12 @@ describe('NotificationsAdvancedConfig', () => {
     jest
       .spyOn(PeakDNotificationsUtils, 'initializeForm')
       .mockReturnValue([]);
+    jest
+      .spyOn(HiveNotificationChannelPrefsUtils, 'getAccountChannelPrefs')
+      .mockResolvedValue({});
+    jest
+      .spyOn(HiveNotificationChannelPrefsUtils, 'setOperationChannelPref')
+      .mockResolvedValue({ browser: false });
   });
 
   afterEach(() => {
@@ -56,11 +63,53 @@ describe('NotificationsAdvancedConfig', () => {
     addButton.focus();
     await user.keyboard(' ');
 
-    await waitFor(() =>
-      expect(
-        screen.getByRole('button', { name: 'transfer' }),
-      ).toBeInTheDocument(),
-    );
+    const criteriaDisclosure = await screen.findByRole('button', {
+      name: 'Transfer',
+    });
+    expect(criteriaDisclosure).toHaveAttribute('aria-expanded', 'true');
+    expect(
+      document.getElementById('notification-criteria-0-conditions'),
+    ).toBeInTheDocument();
     expect(criteriaInput).toHaveValue('');
+    expect(HTMLElement.prototype.scrollIntoView).toHaveBeenCalled();
+  });
+
+  it('renders browser channel toggle on each configured criteria row', async () => {
+    jest.spyOn(PeakDNotificationsUtils, 'getAccountConfig').mockResolvedValue({
+      config: [{ operation: 'transfer' }],
+    } as any);
+    jest.spyOn(PeakDNotificationsUtils, 'initializeForm').mockReturnValue([
+      {
+        operation: 'transfer',
+        conditions: [{ field: 'to', operand: '==', value: 'alice' }],
+      },
+    ]);
+
+    render(<NotificationsAdvancedConfig />);
+
+    expect(
+      await screen.findByTestId('notification-channel-pref-transfer'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('notification-channel-drop-transfer'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByTestId('notification-channel-browser-transfer'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('notification-channel-pref-vote'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('does not render browser channel toggles when account config is empty', async () => {
+    render(<NotificationsAdvancedConfig />);
+
+    await screen.findByRole('button', {
+      name: 'html_popup_add_new_criteria',
+    });
+
+    expect(
+      screen.queryByTestId('notification-channel-pref-transfer'),
+    ).not.toBeInTheDocument();
   });
 });

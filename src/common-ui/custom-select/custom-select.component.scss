@@ -27,6 +27,10 @@
       @include poppins500(15px);
       user-select: none;
       color: var(--main-font-color);
+
+      &.is-placeholder {
+        opacity: 0.55;
+      }
     }
 
     &.white {

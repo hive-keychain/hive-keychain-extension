@@ -58,6 +58,7 @@ describe('PeakDNotificationsUtils', () => {
     expect(notification.linkUrl).toBe(notification.externalUrl);
     expect(notification.linkLabel).toBe('@bob/unsafe path/?x=<tag>');
     expect(notification.txUrl).toBe('https://hivehub.dev/tx/abc%2F123');
+    expect(notification.operation).toBe('vote');
   });
 
   it('keeps reblog notifications linkable without relying on translated HTML', async () => {

@@ -44,6 +44,8 @@ export interface Notification {
   type: NotificationType;
   isTypeLast: boolean;
   id: string;
+  /** PeakD operation name used for local channel prefs (e.g. transfer, vote). */
+  operation?: string;
   message: string;
   messageParams: string[];
   linkLabel?: string;

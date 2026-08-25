@@ -61,6 +61,8 @@ export interface CustomSelectProps<T> {
   enableDragAndDrop?: boolean;
   onOptionsReorder?: (options: T[]) => void;
   droppableId?: string;
+  placeholder?: string;
+  skipPlaceholderTranslation?: boolean;
 }
 
 let customSelectIdCounter = 0;
@@ -80,13 +82,21 @@ export function ComplexeCustomSelect<T extends OptionItem>(
     () => `keychain-custom-select-${++customSelectIdCounter}`,
   );
   const optionsId = `${selectId}-options`;
+  const hasSelectedLabel = Boolean(itemProps.selectedItem?.label);
+  const placeholderLabel = itemProps.placeholder
+    ? itemProps.skipPlaceholderTranslation
+      ? itemProps.placeholder
+      : I18nUtils.getMessage(itemProps.placeholder)
+    : '';
   const accessibleLabel =
     itemProps.ariaLabel ??
     (itemProps.label
       ? itemProps.skipLabelTranslation
         ? itemProps.label
         : I18nUtils.getMessage(itemProps.label)
-      : itemProps.selectedItem.label || 'Dropdown select');
+      : itemProps.selectedItem.label ||
+        placeholderLabel ||
+        'Dropdown select');
 
   useEffect(() => {
     setFilteredOptions(filter(query));
@@ -234,9 +244,16 @@ export function ComplexeCustomSelect<T extends OptionItem>(
 
   const customLabelRender = (selectProps: SelectRenderer<T>) => {
     methodsRef.current = selectProps.methods;
+    const selectedLabel = itemProps.formatSelectedItem
+      ? itemProps.formatSelectedItem(itemProps.selectedItem.label)
+      : itemProps.selectedItem.label;
+    const displayLabel = hasSelectedLabel ? selectedLabel : placeholderLabel;
+
     return (
       <div
-        className={`selected-item ${itemProps.selectedItem?.imgChip ? 'has-img-chip' : ''}`}
+        className={`selected-item ${itemProps.selectedItem?.imgChip ? 'has-img-chip' : ''} ${
+          !hasSelectedLabel && placeholderLabel ? 'is-placeholder' : ''
+        }`}
         onClick={() => {
           selectProps.methods.dropDown('close');
         }}>
@@ -317,13 +334,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
             )}
           </>
         )}
-        {!itemProps.renderOnlyIcon && (
-          <span>
-            {itemProps.formatSelectedItem
-              ? itemProps.formatSelectedItem(itemProps.selectedItem.label)
-              : itemProps.selectedItem.label}
-          </span>
-        )}
+        {!itemProps.renderOnlyIcon && <span>{displayLabel}</span>}
       </div>
     );
   };

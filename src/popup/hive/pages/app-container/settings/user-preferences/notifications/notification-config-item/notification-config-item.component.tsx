@@ -4,10 +4,13 @@ import {
   NotificationConfigFormItem,
 } from '@interfaces/notifications.interface';
 import { NotificationConfigItemConditionComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notification-config-item/notification-config-item-condition.component';
-import React, { useState } from 'react';
+import { HiveNotificationChannelPref } from '@popup/hive/utils/notifications/hive-notification-channel-prefs.utils';
+import { HiveNotificationOperationLabelUtils } from '@popup/hive/utils/notifications/hive-notification-operation-label.utils';
+import React, { useEffect, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { I18nUtils } from 'src/utils/i18n.utils';
@@ -17,6 +20,12 @@ interface Props {
   configForm: NotificationConfigForm;
   configFormItem: NotificationConfigFormItem;
   configFormItemIndex: number;
+  channelPref?: HiveNotificationChannelPref;
+  onChannelPrefChange?: (
+    channel: keyof HiveNotificationChannelPref,
+    value: boolean,
+  ) => void;
+  forceOpen?: boolean;
 }
 
 export const NotificationConfigItemComponent = ({
@@ -24,19 +33,26 @@ export const NotificationConfigItemComponent = ({
   configFormItem,
   updateConfig,
   configFormItemIndex,
+  channelPref,
+  onChannelPrefChange,
+  forceOpen = false,
 }: Props) => {
-  const [isOpen, setOpen] = useState<boolean>(false);
+  const [isOpen, setOpen] = useState<boolean>(forceOpen);
   const conditionsId = `notification-criteria-${configFormItemIndex}-conditions`;
+  const operation = configFormItem.operation;
+  const showChannelToggles = !!channelPref && !!onChannelPrefChange;
+
+  useEffect(() => {
+    if (forceOpen) {
+      setOpen(true);
+    }
+  }, [forceOpen]);
 
   const addNewCondition = () => {
-    // const newId = Math.max(
-    //   ...configForm[configFormItemIndex].conditions.map((c) => c.id),
-    // );
     updateConfig(
       configFormItemIndex,
       null,
       {
-        // id: newId + 1,
         field: '',
         operand: '',
         value: '',
@@ -61,24 +77,50 @@ export const NotificationConfigItemComponent = ({
 
   return (
     <div className="criteria">
-      <button
-        type="button"
-        className="operation-panel"
-        aria-expanded={isOpen}
-        aria-controls={conditionsId}
-        onClick={() => setOpen(!isOpen)}>
-        <div>{configFormItem.operation}</div>
-        <SVGIcon
-          icon={SVGIcons.GLOBAL_EXPAND_COLLAPSE}
-          className={`expand-detail-icon ${isOpen ? 'open' : 'closed'}`}
-        />
-      </button>
+      <div
+        className="criteria-header"
+        data-testid={
+          showChannelToggles
+            ? `notification-channel-pref-${operation}`
+            : undefined
+        }>
+        <button
+          type="button"
+          className="operation-panel"
+          aria-expanded={isOpen}
+          aria-controls={conditionsId}
+          onClick={() => setOpen(!isOpen)}>
+          <div>
+            {HiveNotificationOperationLabelUtils.formatNotificationOperationLabel(
+              operation,
+            )}
+          </div>
+          <SVGIcon
+            icon={SVGIcons.GLOBAL_EXPAND_COLLAPSE}
+            className={`expand-detail-icon ${isOpen ? 'open' : 'closed'}`}
+          />
+        </button>
+        {showChannelToggles && (
+          <div className="channel-toggles">
+            <CheckboxComponent
+              dataTestId={`notification-channel-browser-${operation}`}
+              checked={channelPref.browser}
+              onChange={(value) => onChannelPrefChange('browser', value)}
+              title="html_popup_settings_notifications_channel_browser"
+              ariaLabel={I18nUtils.getMessage(
+                'html_popup_settings_notifications_channel_browser',
+              )}
+              tooltipMessage="html_popup_settings_notifications_channel_browser_tooltip"
+            />
+          </div>
+        )}
+      </div>
 
       {configFormItem && isOpen && (
         <div
           id={conditionsId}
           className="conditions"
-          key={configFormItem.operation}>
+          key={operation}>
           {configFormItem.conditions &&
             configFormItem.conditions.map(
               (configFormItemCondition, configFormItemConditionIndex) => (

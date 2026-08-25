@@ -48,19 +48,24 @@ html {
           width: 80%;
           height: 95%;
           max-width: 900px;
+          min-height: 0;
+          overflow-y: auto;
 
           .form-container {
             border-radius: 40px;
             overflow: hidden;
             position: relative;
             padding-bottom: 40px;
+            flex: 1 1 auto;
+            min-height: 280px;
             .add-panel {
               display: flex;
               align-items: center;
               column-gap: 16px;
+              flex-shrink: 0;
 
               .add-button {
-                width: 50px;
+                width: 42px;
                 height: 42px;
                 display: flex;
                 align-items: center;
@@ -70,6 +75,9 @@ html {
                 background: transparent;
                 cursor: pointer;
                 color: var(--main-font-color);
+                flex-shrink: 0;
+                padding: 0;
+                box-sizing: border-box;
                 .svg-icon {
                   height: 18px;
                   width: 18px;
@@ -84,6 +92,7 @@ html {
             }
             .form-fields {
               flex: 1;
+              min-height: 0;
               overflow: auto;
               .criteria {
                 display: flex;
@@ -91,11 +100,19 @@ html {
                 row-gap: 16px;
                 cursor: pointer;
 
+                .criteria-header {
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  column-gap: 12px;
+                }
+
                 .operation-panel {
                   display: flex;
                   align-items: center;
                   justify-content: space-between;
-                  width: 100%;
+                  flex: 1;
+                  min-width: 0;
                   border: 0;
                   padding: 0;
                   background: transparent;
@@ -121,6 +138,22 @@ html {
                   .expand-detail-icon {
                     @include icon-size(18px);
                     @include open-close-rotate();
+                  }
+                }
+
+                .channel-toggles {
+                  display: flex;
+                  align-items: center;
+                  column-gap: 12px;
+                  flex-shrink: 0;
+
+                  .custom-checkbox-container {
+                    column-gap: 6px;
+
+                    .label {
+                      font-size: 12px;
+                      white-space: nowrap;
+                    }
                   }
                 }
 
@@ -187,6 +220,7 @@ html {
           .buttons-panel {
             display: flex;
             column-gap: 16px;
+            flex-shrink: 0;
           }
         }
       }

@@ -47,7 +47,7 @@ describe('NotificationConfigItemComponent', () => {
       />,
     );
 
-    const disclosure = screen.getByRole('button', { name: 'transfer' });
+    const disclosure = screen.getByRole('button', { name: 'Transfer' });
     expect(disclosure).toHaveAttribute('aria-expanded', 'false');
 
     disclosure.focus();
@@ -84,7 +84,7 @@ describe('NotificationConfigItemComponent', () => {
       />,
     );
 
-    await user.click(screen.getByRole('button', { name: 'transfer' }));
+    await user.click(screen.getByRole('button', { name: 'Transfer' }));
     const deleteSecondCondition = screen.getByRole('button', {
       name: 'html_popup_delete_condition 2',
     });
@@ -98,5 +98,40 @@ describe('NotificationConfigItemComponent', () => {
       null,
       ConfigFormUpdateAction.DELETE_CONDITION,
     );
+  });
+
+  it('renders browser channel toggle on the criteria row when provided', async () => {
+    const user = userEvent.setup();
+    const onChannelPrefChange = jest.fn();
+    const configFormItem = {
+      operation: 'transfer',
+      conditions: [],
+    } as NotificationConfigFormItem;
+
+    render(
+      <NotificationConfigItemComponent
+        configForm={[configFormItem]}
+        configFormItem={configFormItem}
+        updateConfig={jest.fn()}
+        configFormItemIndex={0}
+        channelPref={{ browser: false }}
+        onChannelPrefChange={onChannelPrefChange}
+      />,
+    );
+
+    expect(
+      screen.getByTestId('notification-channel-pref-transfer'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('notification-channel-drop-transfer'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByTestId('notification-channel-browser-transfer'),
+    ).toBeInTheDocument();
+
+    await user.click(
+      screen.getByTestId('notification-channel-browser-transfer'),
+    );
+    expect(onChannelPrefChange).toHaveBeenCalledWith('browser', true);
   });
 });

@@ -11,12 +11,18 @@ import {
 import { Screen } from '@interfaces/screen.interface';
 import { NotificationConfigItemComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notification-config-item/notification-config-item.component';
 import AccountUtils from '@popup/hive/utils/account.utils';
+import {
+  HiveNotificationAccountChannelPrefs,
+  HiveNotificationChannelPref,
+  HiveNotificationChannelPrefsUtils,
+} from '@popup/hive/utils/notifications/hive-notification-channel-prefs.utils';
+import { HiveNotificationOperationLabelUtils } from '@popup/hive/utils/notifications/hive-notification-operation-label.utils';
 import { PeakDNotificationsUtils } from '@popup/hive/utils/notifications/peakd-notifications.utils';
 import { Theme } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { MessageType } from '@reference-data/message-type.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
 import ButtonComponent, {
@@ -41,9 +47,12 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
+
 const NotificationsAdvancedConfigPage = () => {
   const [isActive, setActive] = useState(false);
   const [config, setConfig] = useState<NotificationConfig>();
+  const [channelPrefs, setChannelPrefs] =
+    useState<HiveNotificationAccountChannelPrefs>({});
 
   const [configForm, setConfigForm] = useState<NotificationConfigForm>();
 
@@ -58,9 +67,30 @@ const NotificationsAdvancedConfigPage = () => {
   const [ready, setReady] = useState(false);
 
   const [message, setMessage] = useState<Message>();
+  const [expandedCriteriaIndex, setExpandedCriteriaIndex] = useState<
+    number | null
+  >(null);
 
   const bottomFormFields = useRef<HTMLDivElement>(null);
   const topFormFields = useRef<HTMLDivElement>(null);
+
+  const operationAutocompleteValues = useMemo(
+    () =>
+      PeakDNotificationsUtils.operationFieldList.map((field) => ({
+        value: field.name,
+        label:
+          HiveNotificationOperationLabelUtils.formatNotificationOperationLabel(
+            field.name,
+          ),
+      })),
+    [],
+  );
+
+  const getOperationPref = (
+    operation: string,
+  ): HiveNotificationChannelPref =>
+    channelPrefs[operation] ??
+    HiveNotificationChannelPrefsUtils.DEFAULT_CHANNEL_PREF;
 
   useEffect(() => {
     init();
@@ -70,6 +100,16 @@ const NotificationsAdvancedConfigPage = () => {
     if (selectedAccount && selectedAccount.name)
       initConfig(selectedAccount?.name);
   }, [selectedAccount]);
+
+  useEffect(() => {
+    if (expandedCriteriaIndex === null) {
+      return;
+    }
+    bottomFormFields.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'end',
+    });
+  }, [expandedCriteriaIndex, configForm]);
 
   const init = async () => {
     const { ACTIVE_THEME, active_account_name } =
@@ -84,9 +124,12 @@ const NotificationsAdvancedConfigPage = () => {
   };
 
   const initConfig = async (active_account_name: string) => {
-    const userConfig = await PeakDNotificationsUtils.getAccountConfig(
-      active_account_name,
-    );
+    const [userConfig, prefs] = await Promise.all([
+      PeakDNotificationsUtils.getAccountConfig(active_account_name),
+      HiveNotificationChannelPrefsUtils.getAccountChannelPrefs(
+        active_account_name,
+      ),
+    ]);
 
     let conf: NotificationConfig = [];
     if (userConfig) {
@@ -98,6 +141,7 @@ const NotificationsAdvancedConfigPage = () => {
     setConfig(conf);
     const form = PeakDNotificationsUtils.initializeForm(conf);
     setConfigForm([...form]);
+    setChannelPrefs(prefs);
 
     setActive(!!userConfig);
   };
@@ -167,9 +211,10 @@ const NotificationsAdvancedConfigPage = () => {
         conditions: [{ field: '', operand: '', value: '' }],
         operation: newCriteria as OperationName | VirtualOperationName,
       });
+      const newIndex = newConfig.length - 1;
       setConfigForm(newConfig);
       setNewCriteria('');
-      bottomFormFields.current?.scrollIntoView({ behavior: 'smooth' });
+      setExpandedCriteriaIndex(newIndex);
     }
   };
 
@@ -225,6 +270,27 @@ const NotificationsAdvancedConfigPage = () => {
       }
       setConfigForm(newConfig);
     }
+  };
+
+  const handleChannelPrefChange = async (
+    operation: string,
+    channel: keyof HiveNotificationChannelPref,
+    value: boolean,
+  ) => {
+    if (!selectedAccount?.name) {
+      return;
+    }
+
+    const nextPref =
+      await HiveNotificationChannelPrefsUtils.setOperationChannelPref(
+        selectedAccount.name,
+        operation,
+        { [channel]: value },
+      );
+    setChannelPrefs((current) => ({
+      ...current,
+      [operation]: nextPref,
+    }));
   };
 
   return (
@@ -299,10 +365,9 @@ const NotificationsAdvancedConfigPage = () => {
                   onChange={setNewCriteria}
                   value={newCriteria}
                   type={InputType.TEXT}
-                  autocompleteValues={PeakDNotificationsUtils.operationFieldList.map(
-                    (field) => field.name,
-                  )}
+                  autocompleteValues={operationAutocompleteValues}
                   autocompletePrefix=""
+                  placeholder="html_popup_settings_notifications_operation_placeholder"
                 />
                 <button
                   type="button"
@@ -323,6 +388,17 @@ const NotificationsAdvancedConfigPage = () => {
                         configFormItem={configFormItem}
                         updateConfig={updateConfigForm}
                         configFormItemIndex={configFormItemIndex}
+                        channelPref={getOperationPref(configFormItem.operation)}
+                        onChannelPrefChange={(channel, value) =>
+                          handleChannelPrefChange(
+                            configFormItem.operation,
+                            channel,
+                            value,
+                          )
+                        }
+                        forceOpen={
+                          configFormItemIndex === expandedCriteriaIndex
+                        }
                       />
                       {configFormItemIndex !== configForm.length - 1 && (
                         <Separator type={'horizontal'} fullSize />
@@ -335,6 +411,7 @@ const NotificationsAdvancedConfigPage = () => {
               </div>
             </FormContainer>
           )}
+
           {!isActive && <div className="fill-space"></div>}
           <div className="buttons-panel">
             <ButtonComponent
