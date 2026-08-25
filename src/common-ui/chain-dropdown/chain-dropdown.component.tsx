@@ -123,7 +123,6 @@ const ChainDropdown = ({
           showOverlay
           generateImageIfNull
           enableDragAndDrop
-          droppableId="chain-dropdown-options"
           onOptionsReorder={handleOptionsReorder}
         />
       )}

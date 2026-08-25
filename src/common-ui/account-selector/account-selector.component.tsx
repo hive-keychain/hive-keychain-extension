@@ -27,13 +27,6 @@ import AccountSelectorOrderUtils, {
 } from '@popup/multichain/utils/account-selector-order.utils';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  DragDropContext,
-  Draggable,
-  DraggableProvidedDragHandleProps,
-  DropResult,
-  Droppable,
-} from 'react-beautiful-dnd';
 import { ConnectedProps, connect } from 'react-redux';
 import { ChainLogo } from 'src/common-ui/chain-logo/chain-logo.component';
 import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
@@ -41,6 +34,10 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
+import {
+  SortableDragHandleRef,
+  SortableListComponent,
+} from 'src/common-ui/sortable-list/sortable-list.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import {
   COPY_GENERIC_MESSAGE_KEY,
@@ -55,6 +52,7 @@ import {
 } from 'src/popup/evm/pages/home/settings/evm-accounts/evm-accounts-selection.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import FormatUtils from 'src/utils/format.utils';
+import Logger from 'src/utils/logger.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
@@ -472,11 +470,11 @@ const AccountSelector = ({
 
   const renderDragHandle = (
     item: AccountSelectorListItem,
-    dragHandle?: DraggableProvidedDragHandleProps | null,
+    dragHandleRef?: SortableDragHandleRef,
   ) => (
     <span
       className="account-selector-list-action drag-handle"
-      {...dragHandle}
+      ref={dragHandleRef}
       aria-label={`${I18nUtils.getMessage('popup_html_accounts')}: ${getAccountListItemSearchValue(item)}`}
       aria-keyshortcuts="ArrowUp ArrowDown"
       aria-disabled={isAccountListFiltered}
@@ -681,7 +679,7 @@ const AccountSelector = ({
 
   const renderAccountListItemActions = (
     item: AccountSelectorListItem,
-    dragHandle?: DraggableProvidedDragHandleProps | null,
+    dragHandleRef?: SortableDragHandleRef,
   ) => {
     const itemId = getAccountSelectorListItemId(item);
 
@@ -711,7 +709,7 @@ const AccountSelector = ({
           onClick={(event) => void handleAccountListItemCopy(event, item)}
         />
         <span onClick={stopListItemActionPropagation}>
-          {renderDragHandle(item, dragHandle)}
+          {renderDragHandle(item, dragHandleRef)}
         </span>
       </div>
     );
@@ -719,17 +717,17 @@ const AccountSelector = ({
 
   const renderAccountListItemTrailing = (
     item: AccountSelectorListItem,
-    dragHandle?: DraggableProvidedDragHandleProps | null,
+    dragHandleRef?: SortableDragHandleRef,
   ) => (
     <div className="account-selector-list-item-trailing">
       {renderAccountListItemChainIndicator(item)}
-      {renderAccountListItemActions(item, dragHandle)}
+      {renderAccountListItemActions(item, dragHandleRef)}
     </div>
   );
 
   const renderHiveAccount = (
     item: Extract<AccountSelectorListItem, { type: ChainType.HIVE }>,
-    dragHandle?: DraggableProvidedDragHandleProps | null,
+    dragHandleRef?: SortableDragHandleRef,
   ) => {
     const account = item.account;
 
@@ -754,14 +752,14 @@ const AccountSelector = ({
           placeholder={'/assets/images/placeholders/account-placeholder.png'}
         />
         <div className="account-selector-list-item-label">{account.name}</div>
-        {renderAccountListItemTrailing(item, dragHandle)}
+        {renderAccountListItemTrailing(item, dragHandleRef)}
       </div>
     );
   };
 
   const renderEvmAccount = (
     item: Extract<AccountSelectorListItem, { type: ChainType.EVM }>,
-    dragHandle?: DraggableProvidedDragHandleProps | null,
+    dragHandleRef?: SortableDragHandleRef,
   ) => {
     const account = item.account;
     const address = getEvmAccountAddress(account);
@@ -793,18 +791,18 @@ const AccountSelector = ({
           </div>
           <div className="address">{FormatUtils.shortenString(address, 4)}</div>
         </div>
-        {renderAccountListItemTrailing(item, dragHandle)}
+        {renderAccountListItemTrailing(item, dragHandleRef)}
       </div>
     );
   };
 
   const renderAccountListItem = (
     item: AccountSelectorListItem,
-    dragHandle?: DraggableProvidedDragHandleProps | null,
+    dragHandleRef?: SortableDragHandleRef,
   ) =>
     item.type === ChainType.HIVE
-      ? renderHiveAccount(item, dragHandle)
-      : renderEvmAccount(item, dragHandle);
+      ? renderHiveAccount(item, dragHandleRef)
+      : renderEvmAccount(item, dragHandleRef);
 
   const reorderAccountListItems = async (
     sourceIndex: number,
@@ -868,20 +866,12 @@ const AccountSelector = ({
           await EvmWalletUtils.promoteConnectedWalletAddress(activeEvmAddress);
         }
       }
+    } catch (error) {
+      setAccountListItems(accountListItems);
+      Logger.error('Unable to reorder accounts', error);
     } finally {
       setIsPersistingOrder(false);
     }
-  };
-
-  const onDragEnd = async (result: DropResult) => {
-    if (!result.destination) {
-      return;
-    }
-
-    await reorderAccountListItems(
-      result.source.index,
-      result.destination.index,
-    );
   };
 
   const handleDragHandleKeyDown = (
@@ -1103,40 +1093,18 @@ const AccountSelector = ({
               data-testid="account-selector-list"
               role="list"
               ref={accountListRef}>
-              <DragDropContext
-                onDragEnd={(dragResult) => void onDragEnd(dragResult)}>
-                <Droppable
-                  droppableId="account-selector-list"
-                  type="account-selector-list-item"
-                  isDropDisabled={isAccountListFiltered}>
-                  {(provided) => (
-                    <div
-                      className="account-selector-list-items"
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}>
-                      {filteredAccountListItems.map((item, index) => (
-                        <Draggable
-                          key={item.id}
-                          draggableId={item.id}
-                          index={index}
-                          isDragDisabled={isAccountListFiltered}>
-                          {(draggableProvided) => (
-                            <div
-                              ref={draggableProvided.innerRef}
-                              {...draggableProvided.draggableProps}>
-                              {renderAccountListItem(
-                                item,
-                                draggableProvided.dragHandleProps,
-                              )}
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
+              <SortableListComponent
+                className="account-selector-list-items"
+                items={filteredAccountListItems}
+                getItemId={(item) => item.id}
+                disabled={isAccountListFiltered || isPersistingOrder}
+                onReorder={(sourceIndex, destinationIndex) =>
+                  void reorderAccountListItems(sourceIndex, destinationIndex)
+                }>
+                {(item, _index, { dragHandleRef }) =>
+                  renderAccountListItem(item, dragHandleRef)
+                }
+              </SortableListComponent>
             </div>
             <Separator type="horizontal" fullSize />
             <div className="account-selector-create-actions">

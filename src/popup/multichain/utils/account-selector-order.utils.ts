@@ -103,7 +103,7 @@ const buildAccountSelectorListItems = (
   })),
   ...evmAccounts.map((account) => ({
     account,
-    id: `evm-${account.wallet?.address ?? account.address ?? account.id}`,
+    id: `evm-${account.seedId}-${account.id}`,
     type: ChainType.EVM as const,
   })),
 ];
@@ -317,8 +317,6 @@ const applyDisplayOrder = async (
   hiveAccounts: LocalAccount[];
   evmAccounts: EvmAccount[];
 }> => {
-  await saveDisplayOrder(mk, orderedRefs);
-
   const reorderedHive = reorderHiveAccountsByRefs(hiveAccounts, orderedRefs);
   await AccountUtils.saveAccounts(reorderedHive, mk);
 
@@ -352,6 +350,8 @@ const applyDisplayOrder = async (
     })),
     mk,
   );
+
+  await saveDisplayOrder(mk, orderedRefs);
 
   return {
     displayOrder: orderedRefs,

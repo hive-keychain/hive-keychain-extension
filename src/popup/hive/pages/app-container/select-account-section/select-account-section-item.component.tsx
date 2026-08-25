@@ -1,8 +1,8 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import React, { SyntheticEvent, useState } from 'react';
-import { DraggableProvidedDragHandleProps } from 'react-beautiful-dnd';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
+import type { SortableDragHandleRef } from 'src/common-ui/sortable-list/sortable-list.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import {
   COPY_GENERIC_MESSAGE_KEY,
@@ -15,7 +15,8 @@ interface AccountItemProps {
   selectedAccount: string;
   handleItemClicked: (value: LocalAccountListItem['value']) => void;
   closeDropdown: () => void;
-  dragHandle: DraggableProvidedDragHandleProps | null | undefined;
+  dragHandleRef: SortableDragHandleRef;
+  isDragging: boolean;
   isOnMain: boolean;
 }
 
@@ -25,7 +26,8 @@ export const SelectAccountSectionItemComponent = ({
   isLast,
   handleItemClicked,
   closeDropdown,
-  dragHandle,
+  dragHandleRef,
+  isDragging,
   isOnMain,
 }: AccountItemProps) => {
   const [hovered, setHovered] = useState<boolean>(false);
@@ -40,7 +42,7 @@ export const SelectAccountSectionItemComponent = ({
     if (isOnMain)
       return (
         <div className="icons-wrapper">
-          {selectedAccount === item.value && !hovered && (
+          {selectedAccount === item.value && !hovered && !isDragging && (
             <SVGIcon
               icon={SVGIcons.SELECT_ACTIVE}
               className="active-icon"
@@ -48,7 +50,7 @@ export const SelectAccountSectionItemComponent = ({
               hoverable
             />
           )}
-          {hovered && (
+          {(hovered || isDragging) && (
             <div
               className={`hovered-icons ${
                 process.env.IS_FIREFOX ? 'firefox' : ''
@@ -60,7 +62,7 @@ export const SelectAccountSectionItemComponent = ({
                 />
               </div>
               {!process.env.IS_FIREFOX && (
-                <span {...dragHandle}>
+                <span ref={dragHandleRef}>
                   <SVGIcon icon={SVGIcons.SELECT_DRAG} className="drag-icon" />
                 </span>
               )}

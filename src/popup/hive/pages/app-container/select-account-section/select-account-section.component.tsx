@@ -8,16 +8,11 @@ import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  DragDropContext,
-  Draggable,
-  DropResult,
-  Droppable,
-} from 'react-beautiful-dnd';
 import Select, { SelectRenderer } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
+import { SortableListComponent } from 'src/common-ui/sortable-list/sortable-list.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
@@ -122,20 +117,16 @@ const SelectAccountSection = ({
     handleClickOnSelector();
   };
 
-  const onDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
+  const reorderAccounts = (sourceIndex: number, destinationIndex: number) => {
+    if (sourceIndex === destinationIndex) return;
 
     const list = Array.from(options);
-    const [removed] = list.splice(result.source.index, 1);
-    list.splice(result.destination.index, 0, removed);
+    const [removed] = list.splice(sourceIndex, 1);
+    list.splice(destinationIndex, 0, removed);
     setStateIfMounted(setOptions, list);
 
     setAccounts(
-      AccountUtils.reorderAccounts(
-        accounts,
-        result.source.index,
-        result.destination.index,
-      ),
+      AccountUtils.reorderAccounts(accounts, sourceIndex, destinationIndex),
     );
   };
 
@@ -215,45 +206,25 @@ const SelectAccountSection = ({
 
     return (
       <div className="custom-select-dropdown">
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable
-            droppableId="droppable-account"
-            type="account"
-            isDropDisabled={!isOnMain}>
-            {(provided) => (
-              <div {...provided.droppableProps} ref={provided.innerRef}>
-                {options.map((option, index) => (
-                  <Draggable
-                    key={option.value}
-                    draggableId={option.value}
-                    isDragDisabled={!isOnMain}
-                    index={index}>
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}>
-                        <SelectAccountSectionItemComponent
-                          key={`option-${option.value}`}
-                          isLast={options.length - 1 === index}
-                          item={option}
-                          selectedAccount={displayedAccountName}
-                          handleItemClicked={(value) =>
-                            handleItemClicked(value)
-                          }
-                          isOnMain={isOnMain}
-                          dragHandle={provided.dragHandleProps}
-                          closeDropdown={() => methods.dropDown('close')}
-                        />
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
+        <SortableListComponent
+          items={options}
+          getItemId={(option) => option.value}
+          disabled={!isOnMain}
+          onReorder={reorderAccounts}>
+          {(option, index, { dragHandleRef, isDragging }) => (
+            <SelectAccountSectionItemComponent
+              key={`option-${option.value}`}
+              isLast={options.length - 1 === index}
+              item={option}
+              selectedAccount={displayedAccountName}
+              handleItemClicked={(value) => handleItemClicked(value)}
+              isOnMain={isOnMain}
+              dragHandleRef={dragHandleRef}
+              isDragging={isDragging}
+              closeDropdown={() => methods.dropDown('close')}
+            />
+          )}
+        </SortableListComponent>
         {accountActionLinks.map((actionLink) => (
           <div
             key={actionLink.testId}

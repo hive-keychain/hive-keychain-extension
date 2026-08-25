@@ -1,10 +1,10 @@
 import { ChainLogo } from '@common-ui/chain-logo/chain-logo.component';
 import { PreloadedImage } from '@common-ui/preloaded-image/preloaded-image.component';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
-import { DraggableProvidedDragHandleProps } from 'react-beautiful-dnd';
 import { OptionItem } from 'src/common-ui/custom-select/custom-select.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
+import type { SortableDragHandleRef } from 'src/common-ui/sortable-list/sortable-list.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { ColorsUtils } from 'src/utils/colors.utils';
 import { EnumUtils } from 'src/utils/enum.utils';
@@ -21,7 +21,8 @@ interface CustomSelectItemProps<T> {
   canDelete?: boolean;
   generateImageIfNull?: boolean;
   enableDragAndDrop?: boolean;
-  dragHandle?: DraggableProvidedDragHandleProps | null;
+  dragHandleRef?: SortableDragHandleRef;
+  isDragging?: boolean;
 }
 
 export function CustomSelectItemComponent<T extends OptionItem>({
@@ -36,7 +37,8 @@ export function CustomSelectItemComponent<T extends OptionItem>({
   canDelete = false,
   generateImageIfNull = false,
   enableDragAndDrop = false,
-  dragHandle,
+  dragHandleRef,
+  isDragging = false,
 }: CustomSelectItemProps<T>) {
   const [color, setColor] = useState<string>();
   const [hovered, setHovered] = useState(false);
@@ -58,14 +60,16 @@ export function CustomSelectItemComponent<T extends OptionItem>({
     if (enableDragAndDrop) {
       return (
         <div className="icons-wrapper">
-          {isSelected && !hovered && (
+          {isSelected && !hovered && !isDragging && (
             <SVGIcon icon={SVGIcons.SELECT_ACTIVE} className="active-icon" />
           )}
-          {hovered && !process.env.IS_FIREFOX && dragHandle && (
-            <span {...dragHandle}>
-              <SVGIcon icon={SVGIcons.SELECT_DRAG} className="drag-icon" />
-            </span>
-          )}
+          {(hovered || isDragging) &&
+            !process.env.IS_FIREFOX &&
+            dragHandleRef && (
+              <span ref={dragHandleRef}>
+                <SVGIcon icon={SVGIcons.SELECT_DRAG} className="drag-icon" />
+              </span>
+            )}
         </div>
       );
     }
