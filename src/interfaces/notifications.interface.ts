@@ -5,9 +5,17 @@ export type NotificationOperationName = OperationName | VirtualOperationName;
 
 export type NotificationConfig = NotificationConfigItem[];
 
+export const NOTIFICATION_PUSH_EXTENSION_NAME = 'pushNotification';
+
+export interface NotificationConfigExtension {
+  name: string;
+  value: boolean;
+}
+
 export interface NotificationConfigItem {
   operation: OperationName | VirtualOperationName;
   conditions?: NotificationConfigConditions;
+  extensions?: NotificationConfigExtension[];
 }
 
 export interface NotificationConfigConditions {
@@ -21,6 +29,7 @@ export type NotificationConfigForm = NotificationConfigFormItem[];
 export interface NotificationConfigFormItem {
   operation: NotificationOperationName;
   conditions: NotificationConfigFormCondition[];
+  pushNotification: boolean;
 }
 
 export interface NotificationConfigFormCondition {
@@ -44,7 +53,7 @@ export interface Notification {
   type: NotificationType;
   isTypeLast: boolean;
   id: string;
-  /** PeakD operation name used for local channel prefs (e.g. transfer, vote). */
+  /** PeakD operation name (e.g. transfer, vote). */
   operation?: string;
   message: string;
   messageParams: string[];

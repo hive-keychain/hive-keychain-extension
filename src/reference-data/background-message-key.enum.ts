@@ -63,6 +63,9 @@ export enum BackgroundCommand {
   KEYLESS_KEYCHAIN_REGISTER = 'KEYLESS_KEYCHAIN_REGISTER',
   VAULT_LOADED = 'VAULT_LOADED',
 
+  // Hive notifications
+  SYNC_HIVE_PUSH_NOTIFICATIONS = 'syncHivePushNotifications',
+
   SIDE_PANEL_CLOSED = 'SIDE_PANEL_CLOSED',
 }
 

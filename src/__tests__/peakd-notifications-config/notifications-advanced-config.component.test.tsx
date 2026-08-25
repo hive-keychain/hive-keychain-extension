@@ -6,7 +6,6 @@ import { Theme } from 'src/popup/theme.context';
 import { NotificationsAdvancedConfig } from 'src/peakd-notifications-config/notifications-advanced-config.component';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { PeakDNotificationsUtils } from 'src/popup/hive/utils/notifications/peakd-notifications.utils';
-import { HiveNotificationChannelPrefsUtils } from 'src/popup/hive/utils/notifications/hive-notification-channel-prefs.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import VaultUtils from 'src/utils/vault.utils';
@@ -39,12 +38,6 @@ describe('NotificationsAdvancedConfig', () => {
     jest
       .spyOn(PeakDNotificationsUtils, 'initializeForm')
       .mockReturnValue([]);
-    jest
-      .spyOn(HiveNotificationChannelPrefsUtils, 'getAccountChannelPrefs')
-      .mockResolvedValue({});
-    jest
-      .spyOn(HiveNotificationChannelPrefsUtils, 'setOperationChannelPref')
-      .mockResolvedValue({ browser: false });
   });
 
   afterEach(() => {
@@ -74,13 +67,14 @@ describe('NotificationsAdvancedConfig', () => {
     expect(HTMLElement.prototype.scrollIntoView).toHaveBeenCalled();
   });
 
-  it('renders browser channel toggle on each configured criteria row', async () => {
+  it('renders push notification toggle on each configured criteria row', async () => {
     jest.spyOn(PeakDNotificationsUtils, 'getAccountConfig').mockResolvedValue({
       config: [{ operation: 'transfer' }],
     } as any);
     jest.spyOn(PeakDNotificationsUtils, 'initializeForm').mockReturnValue([
       {
         operation: 'transfer',
+        pushNotification: true,
         conditions: [{ field: 'to', operand: '==', value: 'alice' }],
       },
     ]);
@@ -91,9 +85,6 @@ describe('NotificationsAdvancedConfig', () => {
       await screen.findByTestId('notification-channel-pref-transfer'),
     ).toBeInTheDocument();
     expect(
-      screen.queryByTestId('notification-channel-drop-transfer'),
-    ).not.toBeInTheDocument();
-    expect(
       screen.getByTestId('notification-channel-browser-transfer'),
     ).toBeInTheDocument();
     expect(
@@ -101,7 +92,7 @@ describe('NotificationsAdvancedConfig', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('does not render browser channel toggles when account config is empty', async () => {
+  it('does not render push notification toggles when account config is empty', async () => {
     render(<NotificationsAdvancedConfig />);
 
     await screen.findByRole('button', {

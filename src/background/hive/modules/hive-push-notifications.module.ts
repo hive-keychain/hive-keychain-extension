@@ -4,12 +4,13 @@ import {
 } from '@api/peakd-notifications';
 import BgdAccountsUtils from '@background/hive/utils/accounts.utils';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
+import { NotificationConfig } from '@interfaces/notifications.interface';
 import { DynamicGlobalPropertiesUtils } from '@popup/hive/utils/dynamic-global-properties.utils';
 import {
   PeakDRawNotification,
   PeakDNotificationContentUtils,
 } from '@popup/hive/utils/notifications/peakd-notification-content.utils';
-import { HiveNotificationChannelPrefsUtils } from '@popup/hive/utils/notifications/hive-notification-channel-prefs.utils';
+import { PeakDNotificationsUtils } from '@popup/hive/utils/notifications/peakd-notifications.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
@@ -32,6 +33,7 @@ let globalPropertiesPromise:
   | ReturnType<typeof DynamicGlobalPropertiesUtils.getDynamicGlobalProperties>
   | undefined;
 const eventSources = new Map<string, EventSource>();
+const accountConfigs = new Map<string, NotificationConfig>();
 const seenNotificationIds = new Set<string>();
 const notificationTargets = new Map<string, PushNotificationTarget>();
 
@@ -57,12 +59,14 @@ const getGlobalProperties = () => {
 const closeEventSource = (username: string) => {
   eventSources.get(username)?.close();
   eventSources.delete(username);
+  accountConfigs.delete(username);
 };
 
 const disconnect = () => {
   for (const username of [...eventSources.keys()]) {
     closeEventSource(username);
   }
+  accountConfigs.clear();
 };
 
 const isPushNotificationPayload = (
@@ -89,6 +93,10 @@ const getAccountsWithNotificationConfig = async (usernames: string[]) => {
         const userConfig = await PeakDNotificationsApi.get(`users/${username}`);
         if (userConfig) {
           configuredAccounts.push(username);
+          accountConfigs.set(
+            username,
+            Array.isArray(userConfig.config) ? userConfig.config : [],
+          );
         }
       } catch {
         Logger.warn(
@@ -112,12 +120,13 @@ const handlePushNotification = async (
 
   const operation =
     PeakDNotificationContentUtils.getPeakDOperationName(rawNotification);
-  const browserEnabled =
-    await HiveNotificationChannelPrefsUtils.isBrowserEnabledForOperation(
-      username,
+  const config = accountConfigs.get(username) ?? [];
+  if (
+    !PeakDNotificationsUtils.isPushNotificationEnabledForOperation(
+      config,
       operation,
-    );
-  if (!browserEnabled) {
+    )
+  ) {
     return;
   }
 
@@ -254,6 +263,25 @@ const onRuntimeMessage = (
   if (message.command === BackgroundCommand.VAULT_LOADED) {
     globalPropertiesPromise = undefined;
     void syncConnectionWithWalletState();
+    return;
+  }
+  if (message.command === BackgroundCommand.SYNC_HIVE_PUSH_NOTIFICATIONS) {
+    const payload = message.value as
+      | {
+          username?: string;
+          config?: NotificationConfig;
+          deleted?: boolean;
+        }
+      | undefined;
+    const username = payload?.username?.trim().toLowerCase();
+    if (username && HIVE_USERNAME_REGEX.test(username)) {
+      if (payload?.deleted) {
+        closeEventSource(username);
+      } else if (Array.isArray(payload?.config)) {
+        accountConfigs.set(username, payload.config);
+        connectAccount(username);
+      }
+    }
   }
 };
 

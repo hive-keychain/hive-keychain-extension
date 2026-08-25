@@ -100,11 +100,12 @@ describe('NotificationConfigItemComponent', () => {
     );
   });
 
-  it('renders browser channel toggle on the criteria row when provided', async () => {
+  it('renders push notification toggle on the criteria row when provided', async () => {
     const user = userEvent.setup();
-    const onChannelPrefChange = jest.fn();
+    const onPushNotificationChange = jest.fn();
     const configFormItem = {
       operation: 'transfer',
+      pushNotification: false,
       conditions: [],
     } as NotificationConfigFormItem;
 
@@ -114,8 +115,8 @@ describe('NotificationConfigItemComponent', () => {
         configFormItem={configFormItem}
         updateConfig={jest.fn()}
         configFormItemIndex={0}
-        channelPref={{ browser: false }}
-        onChannelPrefChange={onChannelPrefChange}
+        pushNotification={false}
+        onPushNotificationChange={onPushNotificationChange}
       />,
     );
 
@@ -123,15 +124,12 @@ describe('NotificationConfigItemComponent', () => {
       screen.getByTestId('notification-channel-pref-transfer'),
     ).toBeInTheDocument();
     expect(
-      screen.queryByTestId('notification-channel-drop-transfer'),
-    ).not.toBeInTheDocument();
-    expect(
       screen.getByTestId('notification-channel-browser-transfer'),
     ).toBeInTheDocument();
 
     await user.click(
       screen.getByTestId('notification-channel-browser-transfer'),
     );
-    expect(onChannelPrefChange).toHaveBeenCalledWith('browser', true);
+    expect(onPushNotificationChange).toHaveBeenCalledWith(true);
   });
 });

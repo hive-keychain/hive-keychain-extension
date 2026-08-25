@@ -11,11 +11,6 @@ import {
 import { Screen } from '@interfaces/screen.interface';
 import { NotificationConfigItemComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notification-config-item/notification-config-item.component';
 import AccountUtils from '@popup/hive/utils/account.utils';
-import {
-  HiveNotificationAccountChannelPrefs,
-  HiveNotificationChannelPref,
-  HiveNotificationChannelPrefsUtils,
-} from '@popup/hive/utils/notifications/hive-notification-channel-prefs.utils';
 import { HiveNotificationOperationLabelUtils } from '@popup/hive/utils/notifications/hive-notification-operation-label.utils';
 import { PeakDNotificationsUtils } from '@popup/hive/utils/notifications/peakd-notifications.utils';
 import { Theme } from '@popup/theme.context';
@@ -51,8 +46,6 @@ import { I18nUtils } from 'src/utils/i18n.utils';
 const NotificationsAdvancedConfigPage = () => {
   const [isActive, setActive] = useState(false);
   const [config, setConfig] = useState<NotificationConfig>();
-  const [channelPrefs, setChannelPrefs] =
-    useState<HiveNotificationAccountChannelPrefs>({});
 
   const [configForm, setConfigForm] = useState<NotificationConfigForm>();
 
@@ -86,12 +79,6 @@ const NotificationsAdvancedConfigPage = () => {
     [],
   );
 
-  const getOperationPref = (
-    operation: string,
-  ): HiveNotificationChannelPref =>
-    channelPrefs[operation] ??
-    HiveNotificationChannelPrefsUtils.DEFAULT_CHANNEL_PREF;
-
   useEffect(() => {
     init();
   }, []);
@@ -124,12 +111,9 @@ const NotificationsAdvancedConfigPage = () => {
   };
 
   const initConfig = async (active_account_name: string) => {
-    const [userConfig, prefs] = await Promise.all([
-      PeakDNotificationsUtils.getAccountConfig(active_account_name),
-      HiveNotificationChannelPrefsUtils.getAccountChannelPrefs(
-        active_account_name,
-      ),
-    ]);
+    const userConfig = await PeakDNotificationsUtils.getAccountConfig(
+      active_account_name,
+    );
 
     let conf: NotificationConfig = [];
     if (userConfig) {
@@ -141,7 +125,6 @@ const NotificationsAdvancedConfigPage = () => {
     setConfig(conf);
     const form = PeakDNotificationsUtils.initializeForm(conf);
     setConfigForm([...form]);
-    setChannelPrefs(prefs);
 
     setActive(!!userConfig);
   };
@@ -210,6 +193,7 @@ const NotificationsAdvancedConfigPage = () => {
       newConfig.push({
         conditions: [{ field: '', operand: '', value: '' }],
         operation: newCriteria as OperationName | VirtualOperationName,
+        pushNotification: true,
       });
       const newIndex = newConfig.length - 1;
       setConfigForm(newConfig);
@@ -266,31 +250,26 @@ const NotificationsAdvancedConfigPage = () => {
         newConfig.push({
           conditions: [{ field: '', operand: '', value: '' }],
           operation: criteria as OperationName | VirtualOperationName,
+          pushNotification: true,
         });
       }
       setConfigForm(newConfig);
     }
   };
 
-  const handleChannelPrefChange = async (
-    operation: string,
-    channel: keyof HiveNotificationChannelPref,
+  const handlePushNotificationChange = (
+    itemIndex: number,
     value: boolean,
   ) => {
-    if (!selectedAccount?.name) {
+    if (!configForm) {
       return;
     }
-
-    const nextPref =
-      await HiveNotificationChannelPrefsUtils.setOperationChannelPref(
-        selectedAccount.name,
-        operation,
-        { [channel]: value },
-      );
-    setChannelPrefs((current) => ({
-      ...current,
-      [operation]: nextPref,
-    }));
+    const newForm = [...configForm];
+    newForm[itemIndex] = {
+      ...newForm[itemIndex],
+      pushNotification: value,
+    };
+    setConfigForm(newForm);
   };
 
   return (
@@ -388,11 +367,10 @@ const NotificationsAdvancedConfigPage = () => {
                         configFormItem={configFormItem}
                         updateConfig={updateConfigForm}
                         configFormItemIndex={configFormItemIndex}
-                        channelPref={getOperationPref(configFormItem.operation)}
-                        onChannelPrefChange={(channel, value) =>
-                          handleChannelPrefChange(
-                            configFormItem.operation,
-                            channel,
+                        pushNotification={configFormItem.pushNotification}
+                        onPushNotificationChange={(value) =>
+                          handlePushNotificationChange(
+                            configFormItemIndex,
                             value,
                           )
                         }

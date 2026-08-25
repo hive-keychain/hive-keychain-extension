@@ -4,7 +4,6 @@ import {
   NotificationConfigFormItem,
 } from '@interfaces/notifications.interface';
 import { NotificationConfigItemConditionComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notification-config-item/notification-config-item-condition.component';
-import { HiveNotificationChannelPref } from '@popup/hive/utils/notifications/hive-notification-channel-prefs.utils';
 import { HiveNotificationOperationLabelUtils } from '@popup/hive/utils/notifications/hive-notification-operation-label.utils';
 import React, { useEffect, useState } from 'react';
 import ButtonComponent, {
@@ -20,11 +19,8 @@ interface Props {
   configForm: NotificationConfigForm;
   configFormItem: NotificationConfigFormItem;
   configFormItemIndex: number;
-  channelPref?: HiveNotificationChannelPref;
-  onChannelPrefChange?: (
-    channel: keyof HiveNotificationChannelPref,
-    value: boolean,
-  ) => void;
+  pushNotification?: boolean;
+  onPushNotificationChange?: (value: boolean) => void;
   forceOpen?: boolean;
 }
 
@@ -33,14 +29,15 @@ export const NotificationConfigItemComponent = ({
   configFormItem,
   updateConfig,
   configFormItemIndex,
-  channelPref,
-  onChannelPrefChange,
+  pushNotification,
+  onPushNotificationChange,
   forceOpen = false,
 }: Props) => {
   const [isOpen, setOpen] = useState<boolean>(forceOpen);
   const conditionsId = `notification-criteria-${configFormItemIndex}-conditions`;
   const operation = configFormItem.operation;
-  const showChannelToggles = !!channelPref && !!onChannelPrefChange;
+  const showPushToggle =
+    pushNotification !== undefined && !!onPushNotificationChange;
 
   useEffect(() => {
     if (forceOpen) {
@@ -80,7 +77,7 @@ export const NotificationConfigItemComponent = ({
       <div
         className="criteria-header"
         data-testid={
-          showChannelToggles
+          showPushToggle
             ? `notification-channel-pref-${operation}`
             : undefined
         }>
@@ -100,12 +97,12 @@ export const NotificationConfigItemComponent = ({
             className={`expand-detail-icon ${isOpen ? 'open' : 'closed'}`}
           />
         </button>
-        {showChannelToggles && (
+        {showPushToggle && (
           <div className="channel-toggles">
             <CheckboxComponent
               dataTestId={`notification-channel-browser-${operation}`}
-              checked={channelPref.browser}
-              onChange={(value) => onChannelPrefChange('browser', value)}
+              checked={pushNotification}
+              onChange={onPushNotificationChange}
               title="html_popup_settings_notifications_channel_browser"
               ariaLabel={I18nUtils.getMessage(
                 'html_popup_settings_notifications_channel_browser',

@@ -9,11 +9,14 @@ import {
   NotificationConfigConditions,
   NotificationConfigForm,
   NotificationConfigFormItem,
+  NotificationConfigItem,
   NotificationOperationName,
   NotificationType,
+  NOTIFICATION_PUSH_EXTENSION_NAME,
 } from '@interfaces/notifications.interface';
 import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
 import { PeakDNotificationContentUtils } from '@popup/hive/utils/notifications/peakd-notification-content.utils';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import moment from 'moment';
 
 const operationFieldList = [
@@ -467,19 +470,50 @@ const getAccountConfig = async (username: string) => {
   return PeakDNotificationsApi.get(`users/${username}`);
 };
 
+const isPushNotificationEnabled = (item: NotificationConfigItem): boolean => {
+  const extension = item.extensions?.find(
+    (entry) => entry.name === NOTIFICATION_PUSH_EXTENSION_NAME,
+  );
+  return extension?.value === true;
+};
+
+const isPushNotificationEnabledForOperation = (
+  config: NotificationConfig,
+  operation: string,
+): boolean =>
+  config.some(
+    (item) =>
+      item.operation === operation && isPushNotificationEnabled(item),
+  );
+
+const getPushNotificationFromExtensions = (
+  item: NotificationConfigItem,
+): boolean => isPushNotificationEnabled(item);
+
+const buildPushNotificationExtensions = (pushNotification: boolean) => {
+  if (!pushNotification) {
+    return undefined;
+  }
+  return [
+    {
+      name: NOTIFICATION_PUSH_EXTENSION_NAME,
+      value: true as const,
+    },
+  ];
+};
+
 const initializeForm = (config: NotificationConfig): NotificationConfigForm => {
   const configForm: NotificationConfigForm = [];
 
-  config.forEach((configItem, indexConfigItem) => {
+  config.forEach((configItem) => {
     const configFormItem: NotificationConfigFormItem = {
-      // id: indexConfigItem,
       operation: configItem.operation,
       conditions: [],
+      pushNotification: getPushNotificationFromExtensions(configItem),
     };
     if (configItem.conditions) {
-      Object.keys(configItem.conditions).forEach((field, indexCondition) => {
+      Object.keys(configItem.conditions).forEach((field) => {
         configFormItem.conditions?.push({
-          // id: indexCondition,
           field: field,
           operand: configItem.conditions
             ? Object.keys(configItem.conditions[field])[0]
@@ -499,15 +533,19 @@ const initializeForm = (config: NotificationConfig): NotificationConfigForm => {
 const formatConfigForm = (form: NotificationConfigForm) => {
   const config: NotificationConfig = [];
   for (const item of form) {
-    const criteria = {
+    const criteria: NotificationConfigItem = {
       operation: item.operation,
       conditions: {} as NotificationConfigConditions,
     };
     for (const condition of item.conditions) {
       if (condition.field.length > 0 && condition.operand.length > 0)
-        criteria.conditions[condition.field] = {
+        criteria.conditions![condition.field] = {
           [condition.operand]: condition.value,
         };
+    }
+    const extensions = buildPushNotificationExtensions(item.pushNotification);
+    if (extensions) {
+      criteria.extensions = extensions;
     }
     config.push(criteria);
   }
@@ -518,37 +556,45 @@ const getSuggestedConfig = (username: string) => {
   const configForm: NotificationConfigForm = [];
   configForm.push({
     operation: 'transfer',
+    pushNotification: true,
     conditions: [{ field: 'to', operand: '==', value: username }],
   });
   configForm.push({
     operation: 'comment',
+    pushNotification: true,
     conditions: [{ field: 'body', operand: 'regex', value: `@${username}` }],
   });
   configForm.push({
     operation: 'comment',
+    pushNotification: true,
     conditions: [
       { field: 'parent_author', operand: '==', value: `${username}` },
     ],
   });
   configForm.push({
     operation: 'recurrent_transfer',
+    pushNotification: true,
     conditions: [{ field: 'to', operand: '==', value: username }],
   });
   configForm.push({
     operation: 'delegate_vesting_shares',
+    pushNotification: true,
     conditions: [{ field: 'delegatee', operand: '==', value: username }],
   });
   configForm.push({
     operation: 'custom_json',
+    pushNotification: true,
     conditions: [{ field: 'id', operand: '==', value: 'follow' }],
   });
   configForm.push({
     operation: 'custom_json',
+    pushNotification: true,
     conditions: [{ field: 'id', operand: '==', value: 'reblog' }],
   });
   for (const sub of suggestedConfig) {
     configForm.push({
       operation: sub as NotificationOperationName,
+      pushNotification: true,
       conditions: [{ field: '', operand: '', value: '' }],
     });
   }
@@ -556,18 +602,42 @@ const getSuggestedConfig = (username: string) => {
   return configForm;
 };
 
+const notifyPushSubscriptionsSync = (payload: {
+  username: string;
+  config?: NotificationConfig;
+  deleted?: boolean;
+}) => {
+  void chrome.runtime
+    .sendMessage({
+      command: BackgroundCommand.SYNC_HIVE_PUSH_NOTIFICATIONS,
+      value: {
+        username: payload.username.trim().toLowerCase(),
+        config: payload.config,
+        deleted: payload.deleted === true,
+      },
+    })
+    .catch(() => undefined);
+};
+
 const saveConfiguration = async (
   form: NotificationConfigForm,
   account: LocalAccount,
 ) => {
   const config = formatConfigForm(form);
-  return await CustomJsonUtils.send(
+  const response = await CustomJsonUtils.send(
     ['update_account', { config }],
     account.name,
     account.keys.posting!,
     KeyType.POSTING,
     'notify',
   );
+  if (response?.tx_id) {
+    notifyPushSubscriptionsSync({
+      username: account.name,
+      config,
+    });
+  }
+  return response;
 };
 
 const getNotifications = async (
@@ -638,13 +708,20 @@ const markAllAsRead = async (activeAccount: ActiveAccount) => {
 };
 
 const deleteAccountConfig = async (activeAccount: ActiveAccount) => {
-  return await CustomJsonUtils.send(
+  const response = await CustomJsonUtils.send(
     ['delete_account', {}],
     activeAccount.name!,
     activeAccount.keys.posting!,
     KeyType.POSTING,
     'notify',
   );
+  if (response?.tx_id) {
+    notifyPushSubscriptionsSync({
+      username: activeAccount.name!,
+      deleted: true,
+    });
+  }
+  return response;
 };
 
 const saveDefaultConfig = async (activeAccount: ActiveAccount) => {
@@ -670,4 +747,5 @@ export const PeakDNotificationsUtils = {
   deleteAccountConfig,
   saveDefaultConfig,
   getSuggestedConfig,
+  isPushNotificationEnabledForOperation,
 };

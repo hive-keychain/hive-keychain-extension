@@ -3,6 +3,7 @@ import { KeyType } from '@interfaces/keys.interface';
 import type { ActiveAccount } from '@interfaces/active-account.interface';
 import type { LocalAccount } from '@interfaces/local-account.interface';
 import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import { PeakDNotificationsUtils } from 'src/popup/hive/utils/notifications/peakd-notifications.utils';
 
@@ -110,6 +111,7 @@ describe('PeakDNotificationsUtils', () => {
 
     expect(form).toHaveLength(1);
     expect(form[0].operation).toBe('transfer');
+    expect(form[0].pushNotification).toBe(false);
     expect(form[0].conditions).toEqual([
       { field: 'to', operand: '==', value: 'recipient' },
       { field: 'amount', operand: '>', value: '0' },
@@ -153,11 +155,33 @@ describe('PeakDNotificationsUtils', () => {
   describe('initializeForm / saveConfiguration', () => {
     it('initializes rows without conditions when omitted', () => {
       const form = PeakDNotificationsUtils.initializeForm([{ operation: 'vote' }]);
-      expect(form).toEqual([{ operation: 'vote', conditions: [] }]);
+      expect(form).toEqual([
+        { operation: 'vote', conditions: [], pushNotification: false },
+      ]);
     });
 
-    it('persists formatted config via CustomJson', async () => {
-      const send = jest.spyOn(CustomJsonUtils, 'send').mockResolvedValue({} as never);
+    it('reads pushNotification from extensions when present', () => {
+      const form = PeakDNotificationsUtils.initializeForm([
+        {
+          operation: 'transfer',
+          conditions: { to: { '==': 'bob' } },
+          extensions: [{ name: 'pushNotification', value: true }],
+        },
+      ]);
+
+      expect(form[0]).toEqual({
+        operation: 'transfer',
+        pushNotification: true,
+        conditions: [{ field: 'to', operand: '==', value: 'bob' }],
+      });
+    });
+
+    it('persists formatted config via CustomJson including push extensions', async () => {
+      const send = jest.spyOn(CustomJsonUtils, 'send').mockResolvedValue({
+        tx_id: 'tx1',
+      } as never);
+      const sendMessage = chrome.runtime.sendMessage as jest.Mock;
+      sendMessage.mockResolvedValue(undefined);
       const account = {
         name: 'alice',
         keys: { posting: 'postingKey' },
@@ -167,10 +191,16 @@ describe('PeakDNotificationsUtils', () => {
         [
           {
             operation: 'transfer',
+            pushNotification: true,
             conditions: [
               { field: 'to', operand: '==', value: 'bob' },
               { field: '', operand: '', value: 'ignored' },
             ],
+          },
+          {
+            operation: 'vote',
+            pushNotification: false,
+            conditions: [{ field: '', operand: '', value: '' }],
           },
         ],
         account,
@@ -184,6 +214,11 @@ describe('PeakDNotificationsUtils', () => {
               {
                 operation: 'transfer',
                 conditions: { to: { '==': 'bob' } },
+                extensions: [{ name: 'pushNotification', value: true }],
+              },
+              {
+                operation: 'vote',
+                conditions: {},
               },
             ],
           },
@@ -193,6 +228,24 @@ describe('PeakDNotificationsUtils', () => {
         KeyType.POSTING,
         'notify',
       );
+      expect(sendMessage).toHaveBeenCalledWith({
+        command: BackgroundCommand.SYNC_HIVE_PUSH_NOTIFICATIONS,
+        value: {
+          username: 'alice',
+          config: [
+            {
+              operation: 'transfer',
+              conditions: { to: { '==': 'bob' } },
+              extensions: [{ name: 'pushNotification', value: true }],
+            },
+            {
+              operation: 'vote',
+              conditions: {},
+            },
+          ],
+          deleted: false,
+        },
+      });
     });
   });
 
@@ -215,23 +268,39 @@ describe('PeakDNotificationsUtils', () => {
       );
     });
 
-    it('deleteAccountConfig sends delete_account', async () => {
-      const send = jest.spyOn(CustomJsonUtils, 'send').mockResolvedValue({} as never);
-      const active = { name: 'bob', keys: { posting: 'pk' } } as ActiveAccount;
+    it('deleteAccountConfig sends delete_account and syncs push subscriptions', async () => {
+      const send = jest
+        .spyOn(CustomJsonUtils, 'send')
+        .mockResolvedValue({ tx_id: 'tx-del' } as never);
+      const sendMessage = chrome.runtime.sendMessage as jest.Mock;
+      sendMessage.mockResolvedValue(undefined);
+      const active = { name: 'Bob', keys: { posting: 'pk' } } as ActiveAccount;
 
       await PeakDNotificationsUtils.deleteAccountConfig(active);
 
       expect(send).toHaveBeenCalledWith(
         ['delete_account', {}],
-        'bob',
+        'Bob',
         'pk',
         KeyType.POSTING,
         'notify',
       );
+      expect(sendMessage).toHaveBeenCalledWith({
+        command: BackgroundCommand.SYNC_HIVE_PUSH_NOTIFICATIONS,
+        value: {
+          username: 'bob',
+          config: undefined,
+          deleted: true,
+        },
+      });
     });
 
     it('saveDefaultConfig pushes suggested rules through update_account', async () => {
-      const send = jest.spyOn(CustomJsonUtils, 'send').mockResolvedValue({} as never);
+      const send = jest
+        .spyOn(CustomJsonUtils, 'send')
+        .mockResolvedValue({ tx_id: 'tx-default' } as never);
+      const sendMessage = chrome.runtime.sendMessage as jest.Mock;
+      sendMessage.mockResolvedValue(undefined);
       const active = { name: 'carol', keys: { posting: 'pk' } } as ActiveAccount;
 
       await PeakDNotificationsUtils.saveDefaultConfig(active);
@@ -252,6 +321,15 @@ describe('PeakDNotificationsUtils', () => {
         'pk',
         KeyType.POSTING,
         'notify',
+      );
+      expect(sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          command: BackgroundCommand.SYNC_HIVE_PUSH_NOTIFICATIONS,
+          value: expect.objectContaining({
+            username: 'carol',
+            deleted: false,
+          }),
+        }),
       );
     });
   });

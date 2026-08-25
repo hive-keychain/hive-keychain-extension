@@ -6,7 +6,7 @@ const mockGetAccountConfig = jest.fn();
 const mockGetGlobalProperties = jest.fn();
 const mockFormatNotification = jest.fn();
 const mockGetPeakDOperationName = jest.fn();
-const mockIsBrowserEnabled = jest.fn();
+const mockIsPushEnabled = jest.fn();
 
 class MockEventSource {
   url: string;
@@ -65,11 +65,11 @@ jest.mock(
 );
 
 jest.mock(
-  '@popup/hive/utils/notifications/hive-notification-channel-prefs.utils',
+  '@popup/hive/utils/notifications/peakd-notifications.utils',
   () => ({
-    HiveNotificationChannelPrefsUtils: {
-      isBrowserEnabledForOperation: (...args: unknown[]) =>
-        mockIsBrowserEnabled(...args),
+    PeakDNotificationsUtils: {
+      isPushNotificationEnabledForOperation: (...args: unknown[]) =>
+        mockIsPushEnabled(...args),
     },
   }),
 );
@@ -132,10 +132,17 @@ describe('hive-push-notifications.module', () => {
     mockAddWalletLockStateListener.mockReturnValue(jest.fn());
     mockGetGlobalProperties.mockResolvedValue({});
     mockGetPeakDOperationName.mockReturnValue('transfer');
-    mockIsBrowserEnabled.mockResolvedValue(true);
+    mockIsPushEnabled.mockReturnValue(true);
     mockGetAccountConfig.mockImplementation(async (path: string) => {
       if (path === `users/${USERNAME}`) {
-        return { config: [{ operation: 'transfer' }] };
+        return {
+          config: [
+            {
+              operation: 'transfer',
+              extensions: [{ name: 'pushNotification', value: true }],
+            },
+          ],
+        };
       }
       return undefined;
     });
@@ -197,10 +204,10 @@ describe('hive-push-notifications.module', () => {
     expect(chrome.notifications.create).toHaveBeenCalledTimes(1);
   });
 
-  it('skips browser notifications when the local channel pref disables them', async () => {
+  it('skips browser notifications when pushNotification extension is disabled', async () => {
     mockGetValueFromVault.mockResolvedValue('mk');
     mockGetAccounts.mockResolvedValue([{ name: USERNAME }]);
-    mockIsBrowserEnabled.mockResolvedValue(false);
+    mockIsPushEnabled.mockReturnValue(false);
 
     const { HivePushNotificationsModule } = await import(
       '@background/hive/modules/hive-push-notifications.module'
@@ -214,7 +221,15 @@ describe('hive-push-notifications.module', () => {
     } as MessageEvent<string>);
     await flushAsync();
 
-    expect(mockIsBrowserEnabled).toHaveBeenCalledWith(USERNAME, 'transfer');
+    expect(mockIsPushEnabled).toHaveBeenCalledWith(
+      [
+        {
+          operation: 'transfer',
+          extensions: [{ name: 'pushNotification', value: true }],
+        },
+      ],
+      'transfer',
+    );
     expect(chrome.notifications.create).not.toHaveBeenCalled();
   });
 
@@ -260,6 +275,77 @@ describe('hive-push-notifications.module', () => {
     await flushAsync();
 
     expect(mockEventSources.size).toBe(0);
+  });
+
+  it('connects and caches config when syncing after a notification save', async () => {
+    mockGetValueFromVault.mockResolvedValue('mk');
+    mockGetAccounts.mockResolvedValue([{ name: USERNAME }]);
+    mockGetAccountConfig.mockResolvedValue(undefined);
+    const addListenerSpy = jest.spyOn(chrome.runtime.onMessage, 'addListener');
+
+    const { HivePushNotificationsModule } = await import(
+      '@background/hive/modules/hive-push-notifications.module'
+    );
+    HivePushNotificationsModule.start();
+    await flushAsync();
+
+    expect(mockEventSources.size).toBe(0);
+
+    const listener = addListenerSpy.mock.calls[0][0];
+    const savedConfig = [
+      {
+        operation: 'transfer',
+        extensions: [{ name: 'pushNotification', value: true }],
+      },
+    ];
+    listener(
+      {
+        command: 'syncHivePushNotifications',
+        value: { username: USERNAME, config: savedConfig, deleted: false },
+      },
+      { id: chrome.runtime.id },
+    );
+    await flushAsync();
+
+    expect(mockEventSources.get(PUSH_URL)).toBeDefined();
+
+    mockIsPushEnabled.mockReturnValue(true);
+    mockEventSources.get(PUSH_URL)!.onmessage?.({
+      data: JSON.stringify(rawNotification),
+    } as MessageEvent<string>);
+    await flushAsync();
+
+    expect(mockIsPushEnabled).toHaveBeenCalledWith(savedConfig, 'transfer');
+    expect(chrome.notifications.create).toHaveBeenCalled();
+    addListenerSpy.mockRestore();
+  });
+
+  it('disconnects when syncing after notification config deletion', async () => {
+    mockGetValueFromVault.mockResolvedValue('mk');
+    mockGetAccounts.mockResolvedValue([{ name: USERNAME }]);
+    const addListenerSpy = jest.spyOn(chrome.runtime.onMessage, 'addListener');
+
+    const { HivePushNotificationsModule } = await import(
+      '@background/hive/modules/hive-push-notifications.module'
+    );
+    HivePushNotificationsModule.start();
+    await flushAsync();
+
+    const eventSource = mockEventSources.get(PUSH_URL);
+    expect(eventSource).toBeDefined();
+
+    const listener = addListenerSpy.mock.calls[0][0];
+    listener(
+      {
+        command: 'syncHivePushNotifications',
+        value: { username: USERNAME, deleted: true },
+      },
+      { id: chrome.runtime.id },
+    );
+    await flushAsync();
+
+    expect(eventSource!.close).toHaveBeenCalled();
+    addListenerSpy.mockRestore();
   });
 
   it('opens the transaction page when a push notification is clicked', async () => {

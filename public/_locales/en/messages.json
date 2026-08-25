@@ -5124,7 +5124,7 @@
     "description": "Toggle label for browser OS push notifications"
   },
   "html_popup_settings_notifications_channel_browser_tooltip": {
-    "message": "Show a system notification when this operation is received, even if Keychain is closed.",
+    "message": "Show a system notification when this operation is received, even if Keychain is closed. Saved with your notification config.",
     "description": "Tooltip explaining the push notification channel toggle"
   },
   "html_popup_settings_notifications_condition": {
