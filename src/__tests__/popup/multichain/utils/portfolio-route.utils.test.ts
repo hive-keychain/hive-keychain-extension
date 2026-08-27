@@ -26,6 +26,14 @@ describe('PortfolioRouteUtils', () => {
     expect(ExtensionPageUtils.openInTab).toHaveBeenCalledWith('portfolio.html');
   });
 
+  it('opens the portfolio buy page', () => {
+    PortfolioRouteUtils.openBuy();
+
+    expect(ExtensionPageUtils.openInTab).toHaveBeenCalledWith(
+      'portfolio.html#buy',
+    );
+  });
+
   it('opens the portfolio swap page', () => {
     PortfolioRouteUtils.openSwap();
 

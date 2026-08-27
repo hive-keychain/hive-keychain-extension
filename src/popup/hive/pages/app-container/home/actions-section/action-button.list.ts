@@ -17,7 +17,7 @@ export const ActionButtonList: ActionButton[] = [
   {
     label: 'popup_html_buy',
     icon: SVGIcons.BOTTOM_BAR_BUY,
-    nextScreen: Screen.BUY_COINS_PAGE,
+    onClick: PortfolioRouteUtils.openBuy,
   },
   {
     label: 'html_popup_swaps_process_swap',

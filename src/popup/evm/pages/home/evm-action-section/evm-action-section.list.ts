@@ -25,11 +25,11 @@ export const EvmActionButtonList = (
       nextScreen: EvmScreen.EVM_RECEIVE_PAGE,
       icon: SVGIcons.BOTTOM_BAR_RECEIVE,
     },
-    // {
-    //   label: 'popup_html_buy',
-    //   icon: SVGIcons.BOTTOM_BAR_BUY,
-    //   nextScreen: MultichainScreen.BUY_COINS_PAGE,
-    // },
+    {
+      label: 'popup_html_buy',
+      icon: SVGIcons.BOTTOM_BAR_BUY,
+      onClick: PortfolioRouteUtils.openBuy,
+    },
     {
       label: 'html_popup_swaps_process_swap',
       icon: SVGIcons.BOTTOM_BAR_SWAPS,
