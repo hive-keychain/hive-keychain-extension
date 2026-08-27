@@ -23,16 +23,11 @@ import {
 } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  DragDropContext,
-  Draggable,
-  DropResult,
-  Droppable,
-} from 'react-beautiful-dnd';
 import Select, { SelectRenderer } from 'react-dropdown-select';
 import { ConnectedProps, connect } from 'react-redux';
 import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
+import { SortableListComponent } from 'src/common-ui/sortable-list/sortable-list.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -173,13 +168,15 @@ const SelectAccountSection = ({
     }
   };
 
-  const onDragEnd = async (result: DropResult) => {
-    if (!result.destination || result.destination.index === result.source.index)
-      return;
+  const reorderAccounts = async (
+    sourceIndex: number,
+    destinationIndex: number,
+  ) => {
+    if (destinationIndex === sourceIndex) return;
 
     const list = Array.from(options);
-    const [removed] = list.splice(result.source.index, 1);
-    list.splice(result.destination.index, 0, removed);
+    const [removed] = list.splice(sourceIndex, 1);
+    list.splice(destinationIndex, 0, removed);
     setStateIfMounted(setOptions, list);
 
     const reorderedAccounts = await EvmWalletUtils.reorderAccounts(
@@ -251,47 +248,29 @@ const SelectAccountSection = ({
   }: SelectRenderer<EvmLocalAccountListItem>) => {
     return (
       <div className="custom-select-dropdown">
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable
-            droppableId="droppable-account"
-            type="account"
-            isDropDisabled={!isOnMain}>
-            {(provided) => (
-              <div {...provided.droppableProps} ref={provided.innerRef}>
-                {options.map((option, index) => (
-                  <Draggable
-                    key={option.value.account.wallet.address}
-                    draggableId={option.value.account.wallet.address}
-                    isDragDisabled={!isOnMain}
-                    index={index}>
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}>
-                        <EvmSelectAccountSectionItemComponent
-                          key={`option-${option.value.account.wallet.address!}`}
-                          isLast={options.length - 1 === index}
-                          item={option}
-                          selectedAccount={
-                            selectedAddress?.account.wallet.address!
-                          }
-                          handleItemClicked={(
-                            value: EvmLocalAccountListItem['value']['account']['wallet']['address'],
-                          ) => handleItemClicked(value)}
-                          isOnMain={isOnMain}
-                          dragHandle={provided.dragHandleProps}
-                          closeDropdown={() => methods.dropDown('close')}
-                        />
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
+        <SortableListComponent
+          items={options}
+          getItemId={(option) => option.value.account.wallet.address}
+          disabled={!isOnMain}
+          onReorder={(sourceIndex, destinationIndex) =>
+            void reorderAccounts(sourceIndex, destinationIndex)
+          }>
+          {(option, index, { dragHandleRef, isDragging }) => (
+            <EvmSelectAccountSectionItemComponent
+              key={`option-${option.value.account.wallet.address!}`}
+              isLast={options.length - 1 === index}
+              item={option}
+              selectedAccount={selectedAddress?.account.wallet.address!}
+              handleItemClicked={(
+                value: EvmLocalAccountListItem['value']['account']['wallet']['address'],
+              ) => handleItemClicked(value)}
+              isOnMain={isOnMain}
+              dragHandleRef={dragHandleRef}
+              isDragging={isDragging}
+              closeDropdown={() => methods.dropDown('close')}
+            />
+          )}
+        </SortableListComponent>
         <div
           className="manage-accounts-panel"
           onClick={handleOnManageAccountsClicked}>

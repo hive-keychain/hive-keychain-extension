@@ -1,11 +1,5 @@
 import FlatList from 'flatlist-react';
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  DragDropContext,
-  Draggable,
-  DropResult,
-  Droppable,
-} from 'react-beautiful-dnd';
 import type { SelectMethods } from 'react-dropdown-select';
 import Select, { SelectRenderer } from 'react-dropdown-select';
 import { ChainLogo } from 'src/common-ui/chain-logo/chain-logo.component';
@@ -14,6 +8,10 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
+import {
+  SortableDragHandleRef,
+  SortableListComponent,
+} from 'src/common-ui/sortable-list/sortable-list.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { ColorsUtils } from 'src/utils/colors.utils';
 import { EnumUtils } from 'src/utils/enum.utils';
@@ -94,9 +92,7 @@ export function ComplexeCustomSelect<T extends OptionItem>(
       ? itemProps.skipLabelTranslation
         ? itemProps.label
         : I18nUtils.getMessage(itemProps.label)
-      : itemProps.selectedItem.label ||
-        placeholderLabel ||
-        'Dropdown select');
+      : itemProps.selectedItem.label || placeholderLabel || 'Dropdown select');
 
   useEffect(() => {
     setFilteredOptions(filter(query));
@@ -371,9 +367,8 @@ export function ComplexeCustomSelect<T extends OptionItem>(
     index: number,
     optionsLength: number,
     closeOptionsDropdown: () => void,
-    dragHandle?: React.ComponentProps<
-      typeof CustomSelectItemComponent
-    >['dragHandle'],
+    dragHandleRef?: SortableDragHandleRef,
+    isDragging = false,
   ) => (
     <CustomSelectItemComponent
       key={getOptionDraggableId(option)}
@@ -392,17 +387,17 @@ export function ComplexeCustomSelect<T extends OptionItem>(
       }
       generateImageIfNull={shouldGenerateImageForItem(option)}
       enableDragAndDrop={isDragAndDropEnabled}
-      dragHandle={dragHandle}
+      dragHandleRef={dragHandleRef}
+      isDragging={isDragging}
     />
   );
 
-  const onDragEnd = (result: DropResult) => {
-    if (!result.destination || !itemProps.onOptionsReorder) return;
-    if (result.destination.index === result.source.index) return;
+  const reorderOptions = (sourceIndex: number, destinationIndex: number) => {
+    if (!itemProps.onOptionsReorder || destinationIndex === sourceIndex) return;
 
     const list = Array.from(filteredOptions);
-    const [removed] = list.splice(result.source.index, 1);
-    list.splice(result.destination.index, 0, removed);
+    const [removed] = list.splice(sourceIndex, 1);
+    list.splice(destinationIndex, 0, removed);
     itemProps.onOptionsReorder(list);
   };
 
@@ -423,38 +418,22 @@ export function ComplexeCustomSelect<T extends OptionItem>(
       );
     }
 
-    const droppableId = itemProps.droppableId ?? 'custom-select-options';
-
     return (
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId={droppableId} type="custom-select-option">
-          {(provided) => (
-            <div {...provided.droppableProps} ref={provided.innerRef}>
-              {filteredOptions.map((option, index) => (
-                <Draggable
-                  key={getOptionDraggableId(option)}
-                  draggableId={getOptionDraggableId(option)}
-                  index={index}>
-                  {(draggableProvided) => (
-                    <div
-                      ref={draggableProvided.innerRef}
-                      {...draggableProvided.draggableProps}>
-                      {renderSelectOption(
-                        option,
-                        index,
-                        filteredOptions.length,
-                        closeDropdown,
-                        draggableProvided.dragHandleProps,
-                      )}
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+      <SortableListComponent
+        items={filteredOptions}
+        getItemId={getOptionDraggableId}
+        onReorder={reorderOptions}>
+        {(option, index, { dragHandleRef, isDragging }) =>
+          renderSelectOption(
+            option,
+            index,
+            filteredOptions.length,
+            closeDropdown,
+            dragHandleRef,
+            isDragging,
+          )
+        }
+      </SortableListComponent>
     );
   };
 

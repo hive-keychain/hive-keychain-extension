@@ -1,5 +1,7 @@
 import AccountSelectorOrderUtils from '@popup/multichain/utils/account-selector-order.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import EncryptUtils from '@popup/hive/utils/encrypt.utils';
+import AccountUtils from '@popup/hive/utils/account.utils';
 import { AccountSelectorOrderRef } from '@interfaces/account-selector-order.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
@@ -68,6 +70,22 @@ describe('account-selector-order.utils', () => {
       { type: 'evm', seedId: 1, accountId: 0 },
       { type: 'evm', seedId: 1, accountId: 1 },
     ]);
+  });
+
+  it('builds unique EVM draggable ids from the account source identity', () => {
+    const sharedAddress = '0x0000000000000000000000000000000000000001';
+    const items = AccountSelectorOrderUtils.buildAccountSelectorListItems([], [
+      {
+        ...createEvmAccount(0, 0, false, 1),
+        wallet: { address: sharedAddress },
+      },
+      {
+        ...createEvmAccount(0, 1, false, 2),
+        wallet: { address: sharedAddress },
+      },
+    ]);
+
+    expect(items.map((item) => item.id)).toEqual(['evm-1-0', 'evm-2-0']);
   });
 
   it('mergeDisplayOrder drops removed accounts and appends new ones', () => {
@@ -162,5 +180,34 @@ describe('account-selector-order.utils', () => {
       { type: 'hive', name: accounts.local.justTwoKeys.name },
       { type: 'hive', name: 'new-hive' },
     ]);
+  });
+
+  it('does not save the canonical display order when account persistence fails', async () => {
+    const refs: AccountSelectorOrderRef[] = [
+      { type: 'hive', name: accounts.local.justTwoKeys.name },
+      { type: 'evm', seedId: 1, accountId: 0 },
+    ];
+    jest
+      .spyOn(AccountUtils, 'saveAccounts')
+      .mockRejectedValue(new Error('Unable to save Hive accounts'));
+    const reorderSpy = jest
+      .spyOn(EvmWalletUtils, 'reorderAccounts')
+      .mockResolvedValue([]);
+    const saveSpy = jest.spyOn(LocalStorageUtils, 'saveValueInLocalStorage');
+
+    await expect(
+      AccountSelectorOrderUtils.applyDisplayOrder(
+        mk.user.one,
+        refs,
+        [accounts.local.justTwoKeys],
+        [createEvmAccount(0, 0)],
+      ),
+    ).rejects.toThrow('Unable to save Hive accounts');
+
+    expect(saveSpy).not.toHaveBeenCalledWith(
+      LocalStorageKeyEnum.ACCOUNT_SELECTOR_DISPLAY_ORDER,
+      expect.anything(),
+    );
+    expect(reorderSpy).not.toHaveBeenCalled();
   });
 });

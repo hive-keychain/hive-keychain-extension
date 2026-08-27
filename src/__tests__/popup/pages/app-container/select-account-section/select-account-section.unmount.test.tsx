@@ -27,23 +27,20 @@ jest.mock('react-dropdown-select', () => ({
   },
 }));
 
-jest.mock('react-beautiful-dnd', () => ({
-  DragDropContext: ({ children }: any) => {
+jest.mock('src/common-ui/sortable-list/sortable-list.component', () => ({
+  SortableListComponent: ({ children, items }: any) => {
     const React = require('react');
-    return React.createElement(React.Fragment, null, children);
+    return React.createElement(
+      React.Fragment,
+      null,
+      items.map((item: unknown, index: number) =>
+        children(item, index, {
+          dragHandleRef: jest.fn(),
+          isDragging: false,
+        }),
+      ),
+    );
   },
-  Droppable: ({ children }: any) =>
-    children({
-      droppableProps: {},
-      innerRef: jest.fn(),
-      placeholder: null,
-    }),
-  Draggable: ({ children }: any) =>
-    children({
-      innerRef: jest.fn(),
-      draggableProps: {},
-      dragHandleProps: {},
-    }),
 }));
 
 describe('select-account-section unmount behavior', () => {

@@ -25,6 +25,7 @@ import { HiveScreen } from 'src/popup/hive/reference-data/hive-screen.enum';
 import { EvmScreen } from 'src/popup/evm/reference-data/evm-screen.enum';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
+import Logger from 'src/utils/logger.utils';
 import { MANAGE_ACCOUNT_SELECTED_NAME_PARAM } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/manage-account-selection.utils';
 import {
   MANAGE_EVM_SELECTED_ADDRESS_ID_PARAM,
@@ -73,45 +74,30 @@ jest.mock('@popup/evm/actions/active-account.actions', () => {
   };
 });
 
-jest.mock('react-beautiful-dnd', () => ({
-  DragDropContext: ({ children, onDragEnd }: any) => {
+jest.mock('src/common-ui/sortable-list/sortable-list.component', () => ({
+  SortableListComponent: ({ children, items, onReorder }: any) => {
     const React = require('react');
     return React.createElement(
       React.Fragment,
       null,
-      children,
+      items.map((item: unknown, index: number) =>
+        children(item, index, {
+          dragHandleRef: jest.fn(),
+          isDragging: false,
+        }),
+      ),
       React.createElement('button', {
         'data-testid': 'account-selector-mock-drag-last-to-first',
-        onClick: () =>
-          onDragEnd({
-            destination: { index: 0 },
-            source: { index: 3 },
-          }),
+        onClick: () => onReorder(3, 0),
         type: 'button',
       }),
       React.createElement('button', {
         'data-testid': 'account-selector-mock-drag-hive-swap',
-        onClick: () =>
-          onDragEnd({
-            destination: { index: 1 },
-            source: { index: 0 },
-          }),
+        onClick: () => onReorder(0, 1),
         type: 'button',
       }),
     );
   },
-  Droppable: ({ children }: any) =>
-    children({
-      droppableProps: {},
-      innerRef: jest.fn(),
-      placeholder: null,
-    }),
-  Draggable: ({ children }: any) =>
-    children({
-      dragHandleProps: {},
-      draggableProps: {},
-      innerRef: jest.fn(),
-    }),
 }));
 
 const hiveChain = {
@@ -1369,6 +1355,32 @@ describe('AccountSelectorComponent', () => {
 
     await waitFor(() => {
       expect(promoteConnectedWalletAddressSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  it('restores the previous account order when persistence fails', async () => {
+    const initialState = buildState();
+    jest
+      .spyOn(AccountSelectorOrderUtils, 'applyDisplayOrder')
+      .mockRejectedValue(new Error('Unable to persist account order'));
+    const loggerSpy = jest.spyOn(Logger, 'error').mockImplementation();
+
+    customRender(<AccountSelectorComponent selectedAccountType={ChainType.HIVE} />, {
+      initialState,
+    });
+
+    await userEvent.click(screen.getByTestId('account-selector-trigger'));
+    const initialOrder = getAccountSelectorRowTestIds();
+    await userEvent.click(
+      screen.getByTestId('account-selector-mock-drag-last-to-first'),
+    );
+
+    await waitFor(() => {
+      expect(getAccountSelectorRowTestIds()).toEqual(initialOrder);
+      expect(loggerSpy).toHaveBeenCalledWith(
+        'Unable to reorder accounts',
+        expect.any(Error),
+      );
     });
   });
 

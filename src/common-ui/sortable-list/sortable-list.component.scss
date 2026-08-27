@@ -1,0 +1,7 @@
+.sortable-list-item {
+  position: relative;
+
+  &--dragging {
+    opacity: 0.55;
+  }
+}
