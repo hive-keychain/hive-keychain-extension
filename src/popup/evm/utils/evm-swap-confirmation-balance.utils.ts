@@ -78,6 +78,7 @@ const resolvePortfolioSwapFromTokenInfo = (
     priceUsd: fromAsset.priceUsd ?? null,
     possibleSpam: false,
     verifiedContract: true,
+    validated: 0,
     isProxy: false,
     proxyTarget: null,
   };
@@ -110,6 +111,7 @@ const resolveLiFiSwapFromTokenInfo = (
     priceUsd: null,
     possibleSpam: false,
     verifiedContract: true,
+    validated: 0,
     isProxy: false,
     proxyTarget: null,
   };

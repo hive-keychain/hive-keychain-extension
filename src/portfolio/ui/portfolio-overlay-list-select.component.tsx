@@ -169,7 +169,6 @@ export const PortfolioOverlayListSelect = ({
       filterInputRef.current?.focus();
     }
     // Reset panel state only when opening.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   useEffect(() => {

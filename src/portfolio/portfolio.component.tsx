@@ -3185,7 +3185,7 @@ export const Portfolio = ({
   );
 
   const portfolioRowActions = useMemo(
-    (): PortfolioMode[] =>
+    (): Array<Exclude<PortfolioMode, 'bridge'>> =>
       selectedAccount?.type === ChainType.HIVE
         ? ['swap']
         : ['buy', 'sell', 'swap'],

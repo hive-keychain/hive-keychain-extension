@@ -40,18 +40,24 @@ export type PortfolioBalancesSectionProps = {
   tokenFilter: string;
   rows: PortfolioBalancesRow[];
   expandedRowKeys: string[];
-  rowActions: PortfolioMode[];
+  rowActions: Array<Exclude<PortfolioMode, 'bridge'>>;
   isLoadingMoreChains: boolean;
   onSelectedAccountChange: (accountKey: string) => void;
   onSelectedNetworkChange: (network: string) => void;
   onTokenFilterChange: (value: string) => void;
   onToggleRowExpanded: (rowKey: string) => void;
-  onOpenFlowForRow: (row: PortfolioBalancesRow, mode: PortfolioMode) => void;
+  onOpenFlowForRow: (
+    row: PortfolioBalancesRow,
+    mode: Exclude<PortfolioMode, 'bridge'>,
+  ) => void;
   renderAccountOption: (accountKey: string) => React.ReactNode;
   renderNetworkOption: (networkValue: string) => React.ReactNode;
 };
 
-const SECTION_ACTION_ICONS: Record<'buy' | 'sell' | 'swap', SVGIcons> = {
+const SECTION_ACTION_ICONS: Record<
+  Exclude<PortfolioMode, 'bridge'>,
+  SVGIcons
+> = {
   buy: SVGIcons.PORTFOLIO_BUY,
   sell: SVGIcons.PORTFOLIO_SELL,
   swap: SVGIcons.PORTFOLIO_SWAP,

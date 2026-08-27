@@ -913,7 +913,7 @@ export const buildCanonicalAssetChainFilterOptions = (
 ): PortfolioAssetChainFilterOption[] => {
   const optionsByIdentity = new Map<
     string,
-    PortfolioAssetChainFilterOption & { rankScore: number }
+    Omit<PortfolioAssetChainFilterOption, 'chipLabel'> & { rankScore: number }
   >();
 
   for (const asset of assets) {
@@ -1892,7 +1892,6 @@ export const PortfolioFlowUtils = {
   isEligibleToAssetForFromAsset,
   isHivePortfolioEcosystem,
   resolvePortfolioFlowAccountKindForAsset,
-  resolvePortfolioRecipientAccountKind,
   isPortfolioSwapExcludedAsset,
   isPortfolioSwapExcludedSymbol,
   isValidPortfolioRecipientAddress,
