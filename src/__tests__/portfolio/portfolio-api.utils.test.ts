@@ -24,9 +24,22 @@ describe('PortfolioApiUtils', () => {
       typeof LocalStorageUtils.saveValueInLocalStorage
     >;
 
+  const originalNodeEnv = process.env.NODE_ENV;
+  const originalDevGeoCountry = process.env.PORTFOLIO_DEV_GEO_COUNTRY;
+
   beforeEach(() => {
     jest.clearAllMocks();
     process.env.PORTFOLIO_API_URL = 'https://portfolio.example';
+    delete process.env.PORTFOLIO_DEV_GEO_COUNTRY;
+  });
+
+  afterEach(() => {
+    process.env.NODE_ENV = originalNodeEnv;
+    if (originalDevGeoCountry === undefined) {
+      delete process.env.PORTFOLIO_DEV_GEO_COUNTRY;
+    } else {
+      process.env.PORTFOLIO_DEV_GEO_COUNTRY = originalDevGeoCountry;
+    }
   });
 
   it('reuses an existing installation token', async () => {
@@ -229,6 +242,73 @@ describe('PortfolioApiUtils', () => {
       'https://portfolio.example/fiat-ramp/locale',
       expect.any(Object),
     );
+  });
+
+  it('attaches cf-ipcountry in development when PORTFOLIO_DEV_GEO_COUNTRY is set', async () => {
+    process.env.NODE_ENV = 'development';
+    process.env.PORTFOLIO_DEV_GEO_COUNTRY = 'ru';
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        countryCode: 'RU',
+        source: 'cdn_header',
+      }),
+    });
+
+    await PortfolioApiUtils.getFiatRampLocale();
+
+    const [, init] = (global.fetch as jest.Mock).mock.calls[0];
+    expect((init.headers as Headers).get('cf-ipcountry')).toBe('RU');
+  });
+
+  it('does not attach cf-ipcountry when PORTFOLIO_DEV_GEO_COUNTRY is unset', async () => {
+    process.env.NODE_ENV = 'development';
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        countryCode: null,
+        source: 'unavailable',
+      }),
+    });
+
+    await PortfolioApiUtils.getFiatRampLocale();
+
+    const [, init] = (global.fetch as jest.Mock).mock.calls[0];
+    expect((init.headers as Headers).has('cf-ipcountry')).toBe(false);
+  });
+
+  it('does not attach cf-ipcountry outside development builds', async () => {
+    process.env.NODE_ENV = 'production';
+    process.env.PORTFOLIO_DEV_GEO_COUNTRY = 'RU';
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        countryCode: null,
+        source: 'unavailable',
+      }),
+    });
+
+    await PortfolioApiUtils.getFiatRampLocale();
+
+    const [, init] = (global.fetch as jest.Mock).mock.calls[0];
+    expect((init.headers as Headers).has('cf-ipcountry')).toBe(false);
+  });
+
+  it('ignores invalid PORTFOLIO_DEV_GEO_COUNTRY values', async () => {
+    process.env.NODE_ENV = 'development';
+    process.env.PORTFOLIO_DEV_GEO_COUNTRY = 'RUSSIA';
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        countryCode: null,
+        source: 'unavailable',
+      }),
+    });
+
+    await PortfolioApiUtils.getFiatRampLocale();
+
+    const [, init] = (global.fetch as jest.Mock).mock.calls[0];
+    expect((init.headers as Headers).has('cf-ipcountry')).toBe(false);
   });
 
   it('throws structured portfolio api errors from quote requests', async () => {

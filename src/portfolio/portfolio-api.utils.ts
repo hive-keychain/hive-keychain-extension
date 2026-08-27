@@ -20,6 +20,7 @@ import {
 import { PortfolioApiParser } from 'src/portfolio/portfolio-api.parser';
 
 const CLIENT_TOKEN_HEADER = 'X-Keychain-Portfolio-Client-Token';
+const DEV_GEO_COUNTRY_HEADER = 'cf-ipcountry';
 
 export const DEFAULT_PORTFOLIO_FEATURE_FLAGS: PortfolioFeatureFlags = {
   swapBridge: true,
@@ -358,6 +359,20 @@ export const shouldSchedulePortfolioSwapQuoteAutoRefresh = (
 
 const getBaseUrl = () => (process.env.PORTFOLIO_API_URL ?? '').replace(/\/+$/, '');
 
+/** Dev-only geo spoof for portfolio API bans. Never sent outside development builds. */
+const getDevGeoCountryHeaderValue = (): string | undefined => {
+  if (process.env.NODE_ENV !== 'development') {
+    return undefined;
+  }
+
+  const country = process.env.PORTFOLIO_DEV_GEO_COUNTRY?.trim();
+  if (!country || !/^[A-Za-z]{2}$/.test(country)) {
+    return undefined;
+  }
+
+  return country.toUpperCase();
+};
+
 const createClientToken = (): string => {
   const bytes = crypto.getRandomValues(new Uint8Array(32));
   return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
@@ -395,6 +410,10 @@ const fetchJson = async (
   }
   if (isPrivate) {
     headers.set(CLIENT_TOKEN_HEADER, await getClientToken());
+  }
+  const devGeoCountry = getDevGeoCountryHeaderValue();
+  if (devGeoCountry) {
+    headers.set(DEV_GEO_COUNTRY_HEADER, devGeoCountry);
   }
 
   const response = await fetch(`${baseUrl}${path}`, { ...init, headers });
