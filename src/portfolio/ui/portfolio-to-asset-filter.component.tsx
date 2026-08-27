@@ -4,8 +4,12 @@ import {
 } from '@common-ui/custom-select/custom-select.component';
 import { SVGIcons } from '@common-ui/icons.enum';
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { PortfolioAssetChainFilterOption } from 'src/portfolio/portfolio-flow.utils';
+import {
+  PortfolioAssetChainFilterOption,
+  PortfolioFlowUtils,
+} from 'src/portfolio/portfolio-flow.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 
 import './portfolio-to-asset-filter.component.scss';
@@ -18,6 +22,7 @@ type Props = {
   chainFilter: string;
   onChainFilterChange: (value: string) => void;
   chainOptions: PortfolioAssetChainFilterOption[];
+  supportedEvmChains: EvmChain[];
   networkSelectOptions: OptionItem[];
   selectedNetworkOption: OptionItem;
 };
@@ -32,6 +37,7 @@ export const PortfolioToAssetFilter = ({
   chainFilter,
   onChainFilterChange,
   chainOptions,
+  supportedEvmChains,
   networkSelectOptions,
   selectedNetworkOption,
 }: Props) => {
@@ -43,8 +49,13 @@ export const PortfolioToAssetFilter = ({
   }, []);
 
   const quickNetworkOptions = useMemo(
-    () => chainOptions.slice(0, QUICK_NETWORK_CHIP_COUNT),
-    [chainOptions],
+    () =>
+      PortfolioFlowUtils.buildQuickPortfolioChainFilterOptions(
+        chainOptions,
+        supportedEvmChains,
+        QUICK_NETWORK_CHIP_COUNT,
+      ),
+    [chainOptions, supportedEvmChains],
   );
 
   const hasMoreNetworks = chainOptions.length > QUICK_NETWORK_CHIP_COUNT;

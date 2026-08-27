@@ -729,6 +729,90 @@ describe('PortfolioFlowUtils', () => {
     ).toEqual(['evm:1', 'hive', 'evm:11155111']);
   });
 
+  it('pins supported chains ahead of API-ranked chains in quick chip options', () => {
+    const catalogEthAsset = createTestCanonicalAsset({
+      assetId: 'evm:native:ethereum',
+      ecosystem: 'evm',
+      symbol: 'ETH',
+      name: 'Ether',
+      chainId: 'ethereum',
+      isNative: true,
+      familyId: 'eth',
+    });
+    const supportedEthereum = {
+      name: 'Ethereum',
+      chainId: '0x1',
+      logo: 'ethereum.svg',
+      openSeaChainId: 'ethereum',
+    } as never;
+    const chainOptions =
+      PortfolioFlowUtils.buildCanonicalAssetChainFilterOptions(
+        [
+          catalogEthAsset,
+          hiveAsset,
+          hiveEngineAsset,
+          createTestCanonicalAsset({
+            assetId: 'evm:native:146',
+            ecosystem: 'evm',
+            symbol: 'S',
+            name: 'Sonic',
+            chainId: '146',
+            isNative: true,
+            familyId: 'sonic',
+          }),
+          createTestCanonicalAsset({
+            assetId: 'evm:native:274',
+            ecosystem: 'evm',
+            symbol: 'X',
+            name: 'Chain274',
+            chainId: '274',
+            isNative: true,
+            familyId: 'chain274',
+          }),
+        ],
+        [supportedEthereum],
+        {
+          '146': {
+            id: '146',
+            name: '146',
+            logoUrl: null,
+            numericChainId: 146,
+            rankScore: 9900,
+          },
+          '274': {
+            id: '274',
+            name: '274',
+            logoUrl: null,
+            numericChainId: 274,
+            rankScore: 9800,
+          },
+          ethereum: {
+            id: 'ethereum',
+            name: 'Ethereum',
+            logoUrl: 'ethereum.svg',
+            numericChainId: 1,
+            rankScore: 100,
+          },
+        },
+      );
+
+    expect(chainOptions.map((option) => option.value)).toEqual([
+      'evm:146',
+      'evm:274',
+      'evm:ethereum',
+      'hive',
+      'hive_engine',
+    ]);
+
+    expect(
+      PortfolioFlowUtils.buildQuickPortfolioChainFilterOptions(
+        chainOptions,
+        [supportedEthereum],
+        3,
+      ).map((option) => option.value),
+    ).toEqual(['hive', 'hive_engine', 'evm:ethereum']);
+  });
+
   it('filters canonical assets by text and chain', () => {
     const assets = [hiveAsset, hiveEngineAsset, ethAsset, sepoliaEthAsset];
 

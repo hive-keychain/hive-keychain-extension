@@ -1003,6 +1003,77 @@ export const buildCanonicalAssetChainFilterOptions = (
     }));
 };
 
+/**
+ * Quick chips pin Keychain-supported networks first. Swap-catalog chain ids are often
+ * slugs (`ethereum`) while wallet defaults use hex/decimal ids (`0x1` / `1`), so matching
+ * goes through {@link resolveEvmChainForChainReference} rather than raw identity equality.
+ */
+export const buildQuickPortfolioChainFilterOptions = (
+  chainOptions: PortfolioAssetChainFilterOption[],
+  supportedEvmChains: EvmChain[],
+  maxCount: number,
+): PortfolioAssetChainFilterOption[] => {
+  const pinned: PortfolioAssetChainFilterOption[] = [];
+  const pinnedValues = new Set<string>();
+
+  const pinOption = (
+    option: PortfolioAssetChainFilterOption | undefined,
+  ): void => {
+    if (!option || pinnedValues.has(option.value)) {
+      return;
+    }
+
+    pinned.push(option);
+    pinnedValues.add(option.value);
+  };
+
+  const optionsByIdentity = new Map(
+    chainOptions.map((option) => [
+      getCanonicalAssetChainFilterIdentity(option.value),
+      option,
+    ]),
+  );
+
+  pinOption(optionsByIdentity.get(HIVE_CHAIN_FILTER_VALUE));
+  pinOption(optionsByIdentity.get(HIVE_ENGINE_CHAIN_FILTER_VALUE));
+
+  const activeSupportedChains = supportedEvmChains.filter(
+    (chain) => chain.active !== false,
+  );
+
+  for (const supportedChain of activeSupportedChains) {
+    const matchingOption = chainOptions.find((option) => {
+      if (pinnedValues.has(option.value)) {
+        return false;
+      }
+
+      const identity = getCanonicalAssetChainFilterIdentity(option.value);
+      if (
+        identity === HIVE_CHAIN_FILTER_VALUE ||
+        identity === HIVE_ENGINE_CHAIN_FILTER_VALUE
+      ) {
+        return false;
+      }
+
+      const resolved = resolveEvmChainForChainReference(
+        identity,
+        activeSupportedChains,
+      );
+      return (
+        !!resolved && chainIdsMatch(resolved.chainId, supportedChain.chainId)
+      );
+    });
+
+    pinOption(matchingOption);
+  }
+
+  const remainder = chainOptions.filter(
+    (option) => !pinnedValues.has(option.value),
+  );
+
+  return [...pinned, ...remainder].slice(0, maxCount);
+};
+
 const getCanonicalAssetTextMatchRank = (
   text: string,
   normalizedFilter: string,
@@ -1812,6 +1883,7 @@ export const PortfolioFlowUtils = {
   buildCanonicalAssetChainFilterOptions,
   buildCanonicalAssetChainFilterValue,
   buildCanonicalAssetSelectOptions,
+  buildQuickPortfolioChainFilterOptions,
   buildPortfolioFromSelectOptions,
   filterActionableSwapSourceAssets,
   filterCanonicalAssets,

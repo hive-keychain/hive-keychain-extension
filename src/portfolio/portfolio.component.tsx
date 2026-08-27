@@ -3742,6 +3742,7 @@ export const Portfolio = ({
               chainFilter={toAssetChainFilter}
               onChainFilterChange={setToAssetChainFilter}
               chainOptions={toAssetChainFilterOptions}
+              supportedEvmChains={defaultEvmChains}
               networkSelectOptions={toAssetChainSelectOptions}
               selectedNetworkOption={selectedToAssetChainOption}
             />
