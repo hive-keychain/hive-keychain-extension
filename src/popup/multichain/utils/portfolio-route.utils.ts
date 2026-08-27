@@ -3,6 +3,7 @@ import { MultichainScreen } from '@popup/multichain/reference-data/multichain-sc
 import { ExtensionPageUtils } from '@popup/multichain/utils/extension-page.utils';
 
 const PORTFOLIO_HASH = '#portfolio';
+const PORTFOLIO_SWAP_HASH = '#swap';
 const PORTFOLIO_PATH = 'portfolio.html';
 
 const parseHash = (hash: string): Screen | undefined =>
@@ -20,10 +21,16 @@ const open = (): void => {
   ExtensionPageUtils.openInTab(PORTFOLIO_PATH);
 };
 
+const openSwap = (): void => {
+  ExtensionPageUtils.openInTab(`${PORTFOLIO_PATH}${PORTFOLIO_SWAP_HASH}`);
+};
+
 export const PortfolioRouteUtils = {
   PORTFOLIO_HASH,
+  PORTFOLIO_SWAP_HASH,
   PORTFOLIO_PATH,
   clearHash,
   open,
+  openSwap,
   parseHash,
 };

@@ -3,7 +3,8 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 
 export interface ActionButton {
   label: string;
-  nextScreen: Screen;
+  nextScreen?: Screen;
   nextScreenParams?: any;
+  onClick?: () => void;
   icon: SVGIcons;
 }

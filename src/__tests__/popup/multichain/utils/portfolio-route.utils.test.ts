@@ -25,4 +25,12 @@ describe('PortfolioRouteUtils', () => {
 
     expect(ExtensionPageUtils.openInTab).toHaveBeenCalledWith('portfolio.html');
   });
+
+  it('opens the portfolio swap page', () => {
+    PortfolioRouteUtils.openSwap();
+
+    expect(ExtensionPageUtils.openInTab).toHaveBeenCalledWith(
+      'portfolio.html#swap',
+    );
+  });
 });

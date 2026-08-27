@@ -40,15 +40,22 @@ describe('home.component action-buttons tests:\n', () => {
   });
   it('Must open each page on each action button', async () => {
     for (let i = 0; i < ActionButtonList.length; i++) {
+      const actionButton = ActionButtonList[i];
+
       await act(async () => {
         await userEvent.click(
           screen.getByTestId(
-            dataTestIdButton.actionBtn.preFix + ActionButtonList[i].label,
+            dataTestIdButton.actionBtn.preFix + actionButton.label,
           ),
         );
       });
+
+      if (actionButton.onClick) {
+        continue;
+      }
+
       expect(
-        await screen.findByTestId(`${ActionButtonList[i].nextScreen}-page`),
+        await screen.findByTestId(`${actionButton.nextScreen}-page`),
       ).toBeInTheDocument();
       await act(async () => {
         await userEvent.click(screen.getByTestId(dataTestIdIcon.arrowBack));

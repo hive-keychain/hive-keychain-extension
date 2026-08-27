@@ -11,14 +11,26 @@ const ActionButton = ({
   icon,
   nextScreen,
   nextScreenParams,
+  onClick,
   navigateToWithParams,
 }: PropsType) => {
   const [hovered, setHovered] = useState(false);
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+      return;
+    }
+
+    if (nextScreen) {
+      navigateToWithParams(nextScreen, nextScreenParams);
+    }
+  };
+
   return (
     <div
       data-testid={`action-button-${label}`}
       className="action-button"
-      onClick={() => navigateToWithParams(nextScreen, nextScreenParams)}
+      onClick={handleClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}>
       <div className="icon-container">

@@ -1,6 +1,7 @@
 import { NativeAndErc20Token } from '@popup/evm/interfaces/active-account.interface';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
+import { PortfolioRouteUtils } from '@popup/multichain/utils/portfolio-route.utils';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { ActionButton } from 'src/interfaces/action-button.interface';
 
@@ -32,7 +33,7 @@ export const EvmActionButtonList = (
     {
       label: 'html_popup_swaps_process_swap',
       icon: SVGIcons.BOTTOM_BAR_SWAPS,
-      nextScreen: MultichainScreen.TOKEN_SWAP_PAGE,
+      onClick: PortfolioRouteUtils.openSwap,
     },
   ];
 };

@@ -1,5 +1,6 @@
 import { ActionButton } from '@interfaces/action-button.interface';
 import { Screen } from '@interfaces/screen.interface';
+import { PortfolioRouteUtils } from '@popup/multichain/utils/portfolio-route.utils';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 
 export const ActionButtonList: ActionButton[] = [
@@ -21,6 +22,6 @@ export const ActionButtonList: ActionButton[] = [
   {
     label: 'html_popup_swaps_process_swap',
     icon: SVGIcons.BOTTOM_BAR_SWAPS,
-    nextScreen: Screen.TOKEN_SWAP_PAGE,
+    onClick: PortfolioRouteUtils.openSwap,
   },
 ];

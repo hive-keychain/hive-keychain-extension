@@ -19,6 +19,7 @@ export const ActionsSectionComponent = ({
           icon={actionButton.icon}
           nextScreen={actionButton.nextScreen}
           nextScreenParams={actionButton.nextScreenParams}
+          onClick={actionButton.onClick}
         />
       ))}
     </div>
