@@ -4231,6 +4231,9 @@
   "portfolio_no_quote_available": {
     "message": "No quote available at the moment."
   },
+  "portfolio_no_services_in_country": {
+    "message": "No services are available in your country."
+  },
   "portfolio_no_history": {
     "message": "No portfolio history yet."
   },

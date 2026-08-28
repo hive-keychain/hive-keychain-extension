@@ -2346,6 +2346,32 @@ describe('Portfolio', () => {
     });
   });
 
+  it('shows a country unavailability status when all providers are geo-banned', async () => {
+    (PortfolioApiUtils.getQuotes as jest.Mock).mockRejectedValue(
+      new PortfolioApiError({
+        code: 'NO_SERVICES_IN_COUNTRY',
+        message: 'No services are available in your country',
+      }),
+    );
+
+    const { container } = await renderSwapPortfolio();
+
+    await waitFor(() => {
+      expect(PortfolioApiUtils.getQuotes).toHaveBeenCalledTimes(1);
+    });
+
+    await waitFor(() => {
+      expect(
+        container.querySelector(
+          '[data-testid="portfolio-swap-quote-retry-label"]',
+        ),
+      ).not.toBeNull();
+      expect(container.querySelector('.portfolio-status')?.textContent).toMatch(
+        /No services are available in your country|portfolio_no_services_in_country/,
+      );
+    });
+  });
+
   it('renders swap to assets using metadata from listAvailableAssets when they are not in listAssets', async () => {
     (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
       assets: [swapAssetsFixture[0]],

@@ -3411,6 +3411,7 @@ export const Portfolio = ({
     const hasStoppedSwapQuoteFetch =
       Boolean(amountQuoteError) ||
       statusMessage === 'portfolio_no_quote_available' ||
+      statusMessage === 'portfolio_no_services_in_country' ||
       statusMessage === 'portfolio_recipient_address_invalid' ||
       (quoteResponse !== undefined &&
         quoteResponse.quotes.length === 0 &&

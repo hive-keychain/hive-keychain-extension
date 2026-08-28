@@ -903,6 +903,14 @@ describe('PortfolioApiUtils', () => {
     ).toBe('portfolio_no_quote_available');
     expect(
       PortfolioApiUtils.resolvePortfolioQuoteStatusMessage(
+        new PortfolioApiError({
+          code: 'NO_SERVICES_IN_COUNTRY',
+          message: 'No services are available in your country',
+        }),
+      ),
+    ).toBe('portfolio_no_services_in_country');
+    expect(
+      PortfolioApiUtils.resolvePortfolioQuoteStatusMessage(
         new Error('portfolio_api_not_configured'),
       ),
     ).toBe('portfolio_api_not_configured');
@@ -961,6 +969,14 @@ describe('PortfolioApiUtils', () => {
           new PortfolioApiError({
             code: 'NO_QUOTE_AVAILABLE',
             message: 'No quote available.',
+          }),
+        ),
+      ).toEqual({ status: 'no_quote' });
+      expect(
+        PortfolioApiUtils.resolvePortfolioSwapQuoteFetchErrorResult(
+          new PortfolioApiError({
+            code: 'NO_SERVICES_IN_COUNTRY',
+            message: 'No services are available in your country',
           }),
         ),
       ).toEqual({ status: 'no_quote' });

@@ -312,6 +312,13 @@ export const resolvePortfolioQuoteStatusMessage = (
     return 'portfolio_no_quote_available';
   }
 
+  if (
+    error instanceof PortfolioApiError &&
+    error.code === 'NO_SERVICES_IN_COUNTRY'
+  ) {
+    return 'portfolio_no_services_in_country';
+  }
+
   if (error instanceof Error && error.message.startsWith('portfolio_')) {
     return error.message;
   }
@@ -345,7 +352,11 @@ export const resolvePortfolioSwapQuoteFetchErrorResult = (
     return { status: 'amount_out_of_range' };
   }
 
-  if (error instanceof PortfolioApiError && error.code === 'NO_QUOTE_AVAILABLE') {
+  if (
+    error instanceof PortfolioApiError &&
+    (error.code === 'NO_QUOTE_AVAILABLE' ||
+      error.code === 'NO_SERVICES_IN_COUNTRY')
+  ) {
     return { status: 'no_quote' };
   }
 
