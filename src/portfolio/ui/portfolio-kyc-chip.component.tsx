@@ -1,5 +1,7 @@
 import React from 'react';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { PortfolioQuoteKyc } from 'src/portfolio/portfolio-api.interface';
 import { I18nUtils } from 'src/utils/i18n.utils';
 
@@ -31,6 +33,13 @@ export const PortfolioKycChip = ({ kyc }: Props) => {
       data-testid="portfolio-kyc-chip"
       data-kyc={kyc}>
       {label}
+      {tooltipKey ? (
+        <SVGIcon
+          className="portfolio-kyc-chip__info"
+          icon={SVGIcons.GLOBAL_INFO}
+          dataTestId="portfolio-kyc-chip-info"
+        />
+      ) : null}
     </span>
   );
 

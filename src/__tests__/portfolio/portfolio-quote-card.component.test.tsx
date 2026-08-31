@@ -4,6 +4,15 @@ import { PortfolioQuote } from 'src/portfolio/portfolio-api.interface';
 import { PortfolioQuoteCard } from 'src/portfolio/ui/portfolio-quote-card.component';
 import { I18nUtils } from 'src/utils/i18n.utils';
 
+jest.mock('react-svg', () => ({
+  ReactSVG: ({
+    afterInjection,
+    ...props
+  }: React.HTMLAttributes<HTMLDivElement> & { afterInjection?: unknown }) => (
+    <div {...props} />
+  ),
+}));
+
 const createQuote = (overrides: Partial<PortfolioQuote> = {}): PortfolioQuote => ({
   quoteId: 'moonpay:card',
   provider: 'moonpay',
@@ -151,6 +160,7 @@ describe('PortfolioQuoteCard', () => {
     expect(screen.getByTestId('portfolio-kyc-chip').getAttribute('data-kyc')).toBe(
       'never',
     );
+    expect(screen.queryByTestId('portfolio-kyc-chip-info')).toBeNull();
 
     rerender(
       <PortfolioQuoteCard
@@ -166,6 +176,7 @@ describe('PortfolioQuoteCard', () => {
     expect(screen.getByTestId('portfolio-kyc-chip').getAttribute('data-kyc')).toBe(
       'possible',
     );
+    expect(screen.getByTestId('portfolio-kyc-chip-info')).toBeTruthy();
 
     rerender(
       <PortfolioQuoteCard

@@ -26,7 +26,6 @@ $tooltip-arrow-size: 6px;
     border-radius: 4px;
     color: var(--tooltip-text-color);
     background: var(--tooltip-background-color);
-    line-height: 1.2;
     z-index: 100;
     padding: 12px;
     width: 150px;
@@ -36,10 +35,12 @@ $tooltip-arrow-size: 6px;
     text-align: center;
 
     @include inter400(14px);
+    line-height: 1.4;
 
     .tooltip-inner {
       max-height: calc(100vh - 40px);
       overflow-y: auto;
+      padding-bottom: 2px;
       white-space: normal;
       overflow-wrap: anywhere;
       word-break: break-word;

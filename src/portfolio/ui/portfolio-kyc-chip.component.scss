@@ -3,6 +3,7 @@
   align-items: center;
   flex: 0 0 auto;
   padding: 1px var(--kc-space-2);
+  gap: 3px;
   border-radius: var(--kc-radius-pill, 999px);
   font-size: 0.625rem;
   font-weight: var(--kc-font-weight-semibold);
@@ -23,6 +24,28 @@
   &--typically_required {
     background: var(--kc-color-accent-muted);
     color: var(--kc-color-accent);
+  }
+
+  &__info {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 10px;
+    height: 10px;
+    line-height: 0;
+    overflow: hidden;
+
+    div,
+    svg {
+      display: block;
+      width: 10px;
+      height: 10px;
+    }
+
+    path {
+      stroke: currentColor;
+    }
   }
 
   &__tooltip {
