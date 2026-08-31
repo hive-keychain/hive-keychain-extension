@@ -156,6 +156,7 @@ const buildPortfolioInAppConfirmationFields = (
     value: React.createElement(PortfolioProviderValue, {
       label: providerLabel,
       logoUrl: quote.providerLogoUrl,
+      kyc: quote.kyc,
     }),
   });
 

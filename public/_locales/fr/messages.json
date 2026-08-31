@@ -4222,6 +4222,18 @@
   "portfolio_quote_payment_method": {
     "message": "Moyen de paiement"
   },
+  "portfolio_quote_kyc_never": {
+    "message": "Sans KYC"
+  },
+  "portfolio_quote_kyc_possible": {
+    "message": "KYC possible"
+  },
+  "portfolio_quote_kyc_possible_tooltip": {
+    "message": "Le KYC n'est généralement pas requis, mais le fournisseur peut le demander si la transaction est signalée."
+  },
+  "portfolio_quote_kyc_typically_required": {
+    "message": "KYC requis"
+  },
   "portfolio_no_assets": {
     "message": "No balances found for this account."
   },

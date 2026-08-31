@@ -12,6 +12,7 @@
   .portfolio-confirmation-provider {
     display: inline-flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: var(--kc-space-2);
     min-width: 0;
 

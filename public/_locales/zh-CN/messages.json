@@ -4222,6 +4222,18 @@
   "portfolio_quote_payment_method": {
     "message": "支付方式"
   },
+  "portfolio_quote_kyc_never": {
+    "message": "无需 KYC"
+  },
+  "portfolio_quote_kyc_possible": {
+    "message": "可能需要 KYC"
+  },
+  "portfolio_quote_kyc_possible_tooltip": {
+    "message": "通常不需要 KYC，但如果此交易被标记，提供商仍可能要求进行 KYC。"
+  },
+  "portfolio_quote_kyc_typically_required": {
+    "message": "需要 KYC"
+  },
   "portfolio_no_assets": {
     "message": "No balances found for this account."
   },

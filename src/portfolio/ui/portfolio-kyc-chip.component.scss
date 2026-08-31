@@ -1,0 +1,33 @@
+.portfolio-kyc-chip {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  padding: 1px var(--kc-space-2);
+  border-radius: var(--kc-radius-pill, 999px);
+  font-size: 0.625rem;
+  font-weight: var(--kc-font-weight-semibold);
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  white-space: nowrap;
+
+  &--never {
+    background: rgba(42, 160, 52, 0.16);
+    color: var(--green-success, #2aa034);
+  }
+
+  &--possible {
+    background: var(--kc-color-warning-muted, rgba(230, 167, 0, 0.16));
+    color: var(--kc-color-warning, #e6a700);
+  }
+
+  &--typically_required {
+    background: var(--kc-color-accent-muted);
+    color: var(--kc-color-accent);
+  }
+
+  &__tooltip {
+    display: inline-flex;
+    flex: 0 0 auto;
+    max-width: 100%;
+  }
+}

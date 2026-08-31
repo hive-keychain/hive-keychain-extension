@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import { PortfolioQuote } from 'src/portfolio/portfolio-api.interface';
 import { PortfolioQuoteCard } from 'src/portfolio/ui/portfolio-quote-card.component';
@@ -28,6 +28,7 @@ const createQuote = (overrides: Partial<PortfolioQuote> = {}): PortfolioQuote =>
   approval: null,
   transaction: null,
   paymentMethod: null,
+  kyc: 'never',
   ...overrides,
 });
 
@@ -43,11 +44,24 @@ describe('PortfolioQuoteCard', () => {
       if (key === 'portfolio_quote_payment_method') {
         return 'Payment method';
       }
+      if (key === 'portfolio_quote_kyc_never') {
+        return 'No KYC';
+      }
+      if (key === 'portfolio_quote_kyc_possible') {
+        return 'Possible KYC';
+      }
+      if (key === 'portfolio_quote_kyc_possible_tooltip') {
+        return 'KYC is usually not required, but the provider may request it if this transaction is flagged.';
+      }
+      if (key === 'portfolio_quote_kyc_typically_required') {
+        return 'KYC required';
+      }
       return key;
     });
   });
 
   afterEach(() => {
+    jest.useRealTimers();
     jest.restoreAllMocks();
   });
 
@@ -122,5 +136,70 @@ describe('PortfolioQuoteCard', () => {
     expect(
       screen.queryByTestId('portfolio-quote-card-payment-method'),
     ).toBeNull();
+  });
+
+  it('shows a KYC chip for never, possible, and typically_required quotes', () => {
+    const { rerender } = render(
+      <PortfolioQuoteCard
+        quote={createQuote()}
+        isSelected={false}
+        onSelect={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByTestId('portfolio-kyc-chip').textContent).toBe('No KYC');
+    expect(screen.getByTestId('portfolio-kyc-chip').getAttribute('data-kyc')).toBe(
+      'never',
+    );
+
+    rerender(
+      <PortfolioQuoteCard
+        quote={createQuote({ kyc: 'possible' })}
+        isSelected={false}
+        onSelect={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByTestId('portfolio-kyc-chip').textContent).toBe(
+      'Possible KYC',
+    );
+    expect(screen.getByTestId('portfolio-kyc-chip').getAttribute('data-kyc')).toBe(
+      'possible',
+    );
+
+    rerender(
+      <PortfolioQuoteCard
+        quote={createQuote({ kyc: 'typically_required' })}
+        isSelected={false}
+        onSelect={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByTestId('portfolio-kyc-chip').textContent).toBe(
+      'KYC required',
+    );
+    expect(screen.getByTestId('portfolio-kyc-chip').getAttribute('data-kyc')).toBe(
+      'typically_required',
+    );
+  });
+
+  it('explains the usually-no-KYC chip in a tooltip', () => {
+    jest.useFakeTimers();
+    render(
+      <PortfolioQuoteCard
+        quote={createQuote({ kyc: 'possible' })}
+        isSelected={false}
+        onSelect={jest.fn()}
+      />,
+    );
+
+    fireEvent.mouseEnter(screen.getByTestId('portfolio-kyc-chip-tooltip'));
+    act(() => {
+      jest.advanceTimersByTime(250);
+    });
+
+    expect(screen.getByTestId('tooltip-content').textContent).toBe(
+      'KYC is usually not required, but the provider may request it if this transaction is flagged.',
+    );
   });
 });

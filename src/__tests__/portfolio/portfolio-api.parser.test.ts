@@ -347,6 +347,7 @@ describe('PortfolioApiParser', () => {
           comparableValue: '3200',
           providerFee: { amount: '0.001', currency: 'ETH' },
           networkFeeEstimate: { amount: '0.0005', currency: 'ETH' },
+          kyc: 'never',
           routeMetadata: { tool: '1inch' },
           approval: {
             spender: '0x1111111254eeb25477b68fb85ed929f73a960582',
@@ -393,6 +394,71 @@ describe('PortfolioApiParser', () => {
     });
 
     expect(response.quotes[0]?.comparableValue).toBe('99.5');
+  });
+
+  it('parses kyc status from the provider object and defaults to never', () => {
+    const never = PortfolioApiParser.parsePortfolioQuoteResponse({
+      request: { mode: 'swap' },
+      quotes: [
+        {
+          quoteId: 'lifi:1',
+          provider: { id: 'lifi', name: 'LI.FI', kyc: 'never' },
+          fromAmount: '1',
+          estimatedToAmount: '0.99',
+        },
+      ],
+    });
+    const possible = PortfolioApiParser.parsePortfolioQuoteResponse({
+      request: { mode: 'buy' },
+      quotes: [
+        {
+          quoteId: 'simpleswap:1',
+          provider: { id: 'simpleswap', name: 'SimpleSwap', kyc: 'possible' },
+          fromAmount: '100',
+          estimatedToAmount: '0.05',
+        },
+      ],
+    });
+    const requiredFromProvider = PortfolioApiParser.parsePortfolioQuoteResponse({
+      request: { mode: 'buy' },
+      quotes: [
+        {
+          quoteId: 'moonpay:1',
+          provider: { id: 'moonpay', name: 'MoonPay', kyc: 'typically_required' },
+          fromAmount: '100',
+          estimatedToAmount: '0.05',
+        },
+      ],
+    });
+    const requiredFromQuoteRoot = PortfolioApiParser.parsePortfolioQuoteResponse({
+      request: { mode: 'buy' },
+      quotes: [
+        {
+          quoteId: 'ramp:1',
+          provider: { id: 'ramp', name: 'Ramp' },
+          fromAmount: '100',
+          estimatedToAmount: '0.05',
+          kyc: 'typically_required',
+        },
+      ],
+    });
+    const omitted = PortfolioApiParser.parsePortfolioQuoteResponse({
+      request: { mode: 'swap' },
+      quotes: [
+        {
+          quoteId: 'lifi:2',
+          provider: { id: 'lifi', name: 'LI.FI' },
+          fromAmount: '1',
+          estimatedToAmount: '0.99',
+        },
+      ],
+    });
+
+    expect(never.quotes[0]?.kyc).toBe('never');
+    expect(possible.quotes[0]?.kyc).toBe('possible');
+    expect(requiredFromProvider.quotes[0]?.kyc).toBe('typically_required');
+    expect(requiredFromQuoteRoot.quotes[0]?.kyc).toBe('typically_required');
+    expect(omitted.quotes[0]?.kyc).toBe('never');
   });
 
   it('parses quote amountHints and defaults missing sidecar to null', () => {

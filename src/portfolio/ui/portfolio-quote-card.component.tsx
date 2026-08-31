@@ -1,3 +1,4 @@
+import { PortfolioKycChip } from 'src/portfolio/ui/portfolio-kyc-chip.component';
 import { PortfolioLogoImage } from 'src/portfolio/ui/portfolio-logo-image.component';
 import React from 'react';
 import { PortfolioQuote } from 'src/portfolio/portfolio-api.interface';
@@ -60,6 +61,7 @@ export const PortfolioQuoteCard = ({
           />
           <div className="portfolio-quote-card__provider-text">
             <strong>{providerLabel}</strong>
+            <PortfolioKycChip kyc={quote.kyc} />
             {!isExecutable ? (
               <small>
                 {I18nUtils.getMessage('portfolio_quote_not_executable')}

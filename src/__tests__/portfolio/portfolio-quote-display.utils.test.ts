@@ -2,7 +2,10 @@ import { render, screen } from '@testing-library/react';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import React from 'react';
 import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-page.interface';
-import { PortfolioQuote } from 'src/portfolio/portfolio-api.interface';
+import {
+  PortfolioQuote,
+  PortfolioQuoteKyc,
+} from 'src/portfolio/portfolio-api.interface';
 import { PortfolioQuoteDisplayUtils } from 'src/portfolio/ui/portfolio-quote-display.utils';
 
 const createQuote = (overrides: Partial<PortfolioQuote> = {}): PortfolioQuote => ({
@@ -54,6 +57,7 @@ const createQuote = (overrides: Partial<PortfolioQuote> = {}): PortfolioQuote =>
   routeMetadata: null,
   transaction: null,
   paymentMethod: null,
+  kyc: 'never',
   ...overrides,
 });
 
@@ -63,6 +67,7 @@ const expectProviderField = (
   >[number],
   providerLabel: string,
   providerLogoUrl: string | null,
+  kyc: PortfolioQuoteKyc = 'never',
 ) => {
   expect(field.label).toBe('portfolio_provider');
   expect(React.isValidElement(field.value)).toBe(true);
@@ -74,6 +79,8 @@ const expectProviderField = (
     expect(screen.queryByRole('img')).toBeNull();
     expect(screen.getByText(providerLabel.slice(0, 1))).toBeTruthy();
   }
+  const chip = screen.getByTestId('portfolio-kyc-chip');
+  expect(chip.getAttribute('data-kyc')).toBe(kyc);
 };
 
 describe('PortfolioQuoteDisplayUtils', () => {
@@ -392,5 +399,22 @@ describe('PortfolioQuoteDisplayUtils', () => {
     );
 
     expectProviderField(fields[fields.length - 1], 'LI.FI', null);
+  });
+
+  it('shows a KYC chip on the confirmation provider', () => {
+    const fields = PortfolioQuoteDisplayUtils.buildPortfolioInAppConfirmationFields(
+      {
+        quote: createQuote({ kyc: 'typically_required' }),
+        fromAddress: '0xfrom',
+        toAddress: '0xfrom',
+      },
+    );
+
+    expectProviderField(
+      fields[fields.length - 1],
+      'LI.FI',
+      'https://example.com/lifi.png',
+      'typically_required',
+    );
   });
 });

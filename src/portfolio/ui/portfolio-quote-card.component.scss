@@ -56,7 +56,8 @@
   &__provider-text {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    align-items: flex-start;
+    gap: var(--kc-space-1);
     min-width: 0;
 
     strong {

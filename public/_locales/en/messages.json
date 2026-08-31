@@ -4281,6 +4281,12 @@
   },
   "portfolio_quote_network_fee": { "message": "Network fee" },
   "portfolio_quote_payment_method": { "message": "Payment method" },
+  "portfolio_quote_kyc_never": { "message": "No KYC" },
+  "portfolio_quote_kyc_possible": { "message": "Possible KYC" },
+  "portfolio_quote_kyc_possible_tooltip": {
+    "message": "KYC is usually not required, but the provider may request it if this transaction is flagged."
+  },
+  "portfolio_quote_kyc_typically_required": { "message": "KYC required" },
   "portfolio_view_all_quotes": {
     "message": "View all quotes ($1)",
     "placeholders": {

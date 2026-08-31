@@ -4222,6 +4222,18 @@
   "portfolio_quote_payment_method": {
     "message": "Metode pembayaran"
   },
+  "portfolio_quote_kyc_never": {
+    "message": "Tanpa KYC"
+  },
+  "portfolio_quote_kyc_possible": {
+    "message": "KYC mungkin"
+  },
+  "portfolio_quote_kyc_possible_tooltip": {
+    "message": "KYC biasanya tidak diperlukan, tetapi penyedia dapat memintanya jika transaksi ini ditandai."
+  },
+  "portfolio_quote_kyc_typically_required": {
+    "message": "KYC diperlukan"
+  },
   "portfolio_no_assets": {
     "message": "No balances found for this account."
   },

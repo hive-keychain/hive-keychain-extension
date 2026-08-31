@@ -34,6 +34,7 @@ import {
   PortfolioQuoteAmountHints,
   PortfolioQuoteApproval,
   PortfolioQuoteFee,
+  PortfolioQuoteKyc,
   PortfolioQuoteRequestEcho,
   PortfolioQuoteResponse,
   PortfolioQuoteTransaction,
@@ -44,6 +45,11 @@ import {
 const portfolioModes: PortfolioMode[] = ['buy', 'sell', 'swap', 'bridge'];
 const portfolioRouteTypes: PortfolioRouteType[] = ['swap', 'bridge'];
 const portfolioExecutionTypes: PortfolioExecutionType[] = ['in_app', 'redirect'];
+const portfolioQuoteKycStatuses: PortfolioQuoteKyc[] = [
+  'never',
+  'possible',
+  'typically_required',
+];
 const portfolioTransactionStatuses: PortfolioTransactionStatus[] = [
   'created',
   'pending',
@@ -428,6 +434,11 @@ const parsePortfolioQuote = (value: unknown): PortfolioQuote | null => {
     approval: parsePortfolioQuoteApproval(value.approval),
     transaction: parsePortfolioQuoteTransaction(value.transaction),
     paymentMethod: readPaymentMethodId(value.paymentMethod),
+    kyc:
+      (provider
+        ? readNullableEnum(provider.kyc, portfolioQuoteKycStatuses)
+        : null) ??
+      readEnum(value.kyc, portfolioQuoteKycStatuses, 'never'),
   };
 };
 

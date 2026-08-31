@@ -4,6 +4,8 @@ export type PortfolioRouteType = 'swap' | 'bridge';
 
 export type PortfolioExecutionType = 'in_app' | 'redirect';
 
+export type PortfolioQuoteKyc = 'never' | 'possible' | 'typically_required';
+
 export type PortfolioProviderId =
   | 'lifi'
   | 'uniswap'
@@ -149,6 +151,8 @@ export interface PortfolioQuote {
   transaction: PortfolioQuoteTransaction | null;
   /** Payment method for buy/sell quotes. Null for swap/bridge. */
   paymentMethod: string | null;
+  /** KYC likelihood for this quote's provider. */
+  kyc: PortfolioQuoteKyc;
 }
 
 export interface PortfolioQuoteRequestEcho {

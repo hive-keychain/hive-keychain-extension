@@ -1168,6 +1168,7 @@ describe('PortfolioApiUtils', () => {
         maxPriorityFeePerGas: null,
       },
       paymentMethod: null,
+      kyc: 'never',
       ...overrides,
     });
 
