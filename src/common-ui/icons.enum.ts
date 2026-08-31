@@ -212,6 +212,7 @@ export enum SVGIcons {
   SWAPS_STATUS_PROCESSING = 'swaps/swap-status/processing',
   SWAPS_STATUS_FINISHED = 'swaps/swap-status/finished',
   SWAPS_STATUS_CANCELED = 'swaps/swap-status/canceled',
+  SWAPS_STATUS_WARNING = 'swaps/swap-status/warning',
 
   WALLET_HBD_LOGO = 'wallet/hbd-logo',
   WALLET_HIVE_LOGO = 'wallet/hive-logo',

@@ -145,6 +145,31 @@ describe('PortfolioApiUtils', () => {
     );
   });
 
+  it('posts compliance review history requests with optional address filters', async () => {
+    getValueMock.mockResolvedValue('x'.repeat(64));
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        page: 1,
+        pageSize: 20,
+        hasMore: false,
+        items: [],
+      }),
+    });
+
+    await PortfolioApiUtils.listComplianceReviewHistory({
+      addresses: ['0xabc', 'alice'],
+    });
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      'https://portfolio.example/history/compliance-review',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ addresses: ['0xabc', 'alice'] }),
+      }),
+    );
+  });
+
   it('requests supported fiat ramp countries for the selected mode', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,

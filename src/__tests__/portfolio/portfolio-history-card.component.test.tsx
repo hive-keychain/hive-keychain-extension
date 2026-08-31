@@ -1,7 +1,8 @@
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { PortfolioCanonicalAsset, PortfolioHistoryItem } from 'src/portfolio/portfolio-api.interface';
 import { PortfolioHistoryCard } from 'src/portfolio/ui/portfolio-history-card.component';
+import { PortfolioHistoryDisplayUtils } from 'src/portfolio/ui/portfolio-history-display.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 
 jest.mock('react-svg', () => ({
@@ -143,5 +144,70 @@ describe('PortfolioHistoryCard', () => {
     expect(fromAmount).not.toBeNull();
     expect(fromAmount?.textContent).toBe('\u00a0');
     expect(toAmount?.textContent).toContain('0.00656');
+  });
+
+  it('shows compliance-specific details for verification_required rows', () => {
+    const openSupportUrlSpy = jest
+      .spyOn(PortfolioHistoryDisplayUtils, 'openPortfolioHistorySupportUrl')
+      .mockImplementation(() => undefined);
+
+    const { container, getByText } = render(
+      <PortfolioHistoryCard
+        item={createHistoryItem({
+          status: 'awaiting_compliance_action',
+          displayStatus: 'verification_required',
+          provider: 'changelly',
+          providerName: 'Changelly',
+          providerReferenceId: '4f2u8h9j6qdnys',
+          failureCode: 'aml_review',
+          failureAction: 'contact_support',
+          supportUrl: 'mailto:security@changelly.com',
+          providerStatus: 'hold',
+        })}
+        fromAsset={createAsset()}
+        toAsset={createAsset({
+          assetId: 'evm:native:ethereum',
+          symbol: 'ETH',
+          name: 'Ether',
+          address: null,
+          isNative: true,
+          familyId: 'eth',
+        })}
+        chains={[]}
+      />,
+    );
+
+    expect(
+      container.querySelector(
+        '.portfolio-history-card__status-icon--verification-required',
+      ),
+    ).not.toBeNull();
+
+    fireEvent.click(
+      container.querySelector('.portfolio-history-card__summary') as Element,
+    );
+
+    expect(
+      container.querySelector('.portfolio-history-card__compliance-notice'),
+    ).not.toBeNull();
+    expect(getByText('portfolio_history_exchange_id')).not.toBeNull();
+
+    const contactButton = container.querySelector(
+      '.portfolio-history-card__action-link--primary',
+    ) as HTMLButtonElement;
+    expect(contactButton).not.toBeNull();
+    fireEvent.click(contactButton);
+    expect(openSupportUrlSpy).toHaveBeenCalledWith(
+      'mailto:security@changelly.com',
+      expect.objectContaining({
+        item: expect.objectContaining({
+          providerReferenceId: '4f2u8h9j6qdnys',
+        }),
+        fromSymbol: 'USDC',
+        toSymbol: 'ETH',
+      }),
+    );
+
+    openSupportUrlSpy.mockRestore();
   });
 });

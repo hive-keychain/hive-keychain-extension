@@ -796,6 +796,59 @@ describe('PortfolioApiParser', () => {
     );
   });
 
+  it('parses compliance hold history items with verification_required displayStatus', () => {
+    expect(
+      PortfolioApiParser.parsePortfolioHistoryResponse({
+        page: 1,
+        pageSize: 20,
+        hasMore: false,
+        items: [
+          {
+            id: 'exec-compliance',
+            status: 'awaiting_compliance_action',
+            displayStatus: 'verification_required',
+            mode: 'swap',
+            provider: {
+              id: 'changelly',
+              name: 'Changelly',
+              logo: 'https://example.com/changelly.png',
+            },
+            providerReferenceId: '4f2u8h9j6qdnys',
+            executionType: 'redirect',
+            fromAmount: '2.15',
+            toAmount: '6764.9',
+            receivedAmount: null,
+            txHash: null,
+            providerStatus: 'hold',
+            lastProviderStatusRefreshAt: '2026-01-01T12:00:00.000Z',
+            failureCode: 'aml_review',
+            failureAction: 'contact_support',
+            providerStatusDetail: 'canRefund=true',
+            providerStatusUrl: null,
+            supportUrl: 'mailto:security@changelly.com',
+            submittedAt: '2026-01-01T00:00:00.000Z',
+            updatedAt: '2026-01-01T00:00:00.000Z',
+          },
+        ],
+      }),
+    ).toEqual(
+      expect.objectContaining({
+        items: [
+          expect.objectContaining({
+            status: 'awaiting_compliance_action',
+            displayStatus: 'verification_required',
+            provider: 'changelly',
+            providerReferenceId: '4f2u8h9j6qdnys',
+            failureCode: 'aml_review',
+            failureAction: 'contact_support',
+            supportUrl: 'mailto:security@changelly.com',
+            providerStatus: 'hold',
+          }),
+        ],
+      }),
+    );
+  });
+
   it('parses supported fiat ramp countries and normalizes country codes', () => {
     expect(
       PortfolioApiParser.parsePortfolioFiatRampCountriesResponse({

@@ -9,12 +9,22 @@ import {
 import { resolveEvmChainForChainReference } from 'src/portfolio/portfolio-flow.utils';
 import FormatUtils from 'src/utils/format.utils';
 
-export type PortfolioHistoryStatusKind = 'completed' | 'failed' | 'pending';
+export type PortfolioHistoryStatusKind =
+  | 'completed'
+  | 'failed'
+  | 'pending'
+  | 'verification_required';
 export type PortfolioHistoryStatusLinkKind = 'provider' | 'explorer';
 
 export type PortfolioHistoryStatusLink = {
   url: string;
   kind: PortfolioHistoryStatusLinkKind;
+};
+
+export type PortfolioHistorySupportMailtoContext = {
+  item: PortfolioHistoryItem;
+  fromSymbol: string;
+  toSymbol: string;
 };
 
 type PortfolioHistoryStatusInput =
@@ -49,16 +59,20 @@ const FAILED_STATUSES = new Set([
   'unknown',
 ]);
 
+const VERIFICATION_REQUIRED_STATUS = 'verification_required';
+
 const STATUS_ICONS: Record<PortfolioHistoryStatusKind, SVGIcons> = {
   completed: SVGIcons.SWAPS_STATUS_FINISHED,
   failed: SVGIcons.SWAPS_STATUS_CANCELED,
   pending: SVGIcons.SWAPS_STATUS_PROCESSING,
+  verification_required: SVGIcons.SWAPS_STATUS_WARNING,
 };
 
 const STATUS_MESSAGE_KEYS: Record<PortfolioHistoryStatusKind, string> = {
   completed: 'portfolio_history_status_completed',
   failed: 'portfolio_history_status_failed',
   pending: 'portfolio_history_status_pending',
+  verification_required: 'portfolio_history_status_verification_required',
 };
 
 const CREATED_OR_EXPIRED_STATUSES = new Set(['created', 'expired']);
@@ -156,12 +170,21 @@ const resolvePortfolioHistoryDisplayStatus = (
 ): string =>
   typeof input === 'string' ? input : input.displayStatus || input.status;
 
+const isPortfolioHistoryVerificationRequired = (
+  input: PortfolioHistoryStatusInput,
+): boolean =>
+  resolvePortfolioHistoryDisplayStatus(input).trim().toLowerCase() ===
+  VERIFICATION_REQUIRED_STATUS;
+
 const getPortfolioHistoryStatusKind = (
   status: PortfolioHistoryStatusInput,
 ): PortfolioHistoryStatusKind => {
   const normalized = resolvePortfolioHistoryDisplayStatus(status)
     .trim()
     .toLowerCase();
+  if (normalized === VERIFICATION_REQUIRED_STATUS) {
+    return 'verification_required';
+  }
   if (COMPLETED_STATUSES.has(normalized)) {
     return 'completed';
   }
@@ -205,12 +228,185 @@ const resolvePortfolioHistorySupportActionUrl = (
   return item.supportUrl?.trim() || null;
 };
 
+const MAILTO_SCHEME = 'mailto:';
+
+const appendPortfolioHistorySupportMailtoLine = (
+  lines: string[],
+  label: string,
+  value: string | null | undefined,
+): void => {
+  const trimmed = value?.trim();
+  if (trimmed) {
+    lines.push(`${label}: ${trimmed}`);
+  }
+};
+
+const formatPortfolioHistorySupportAmountLine = (
+  amount: string | null | undefined,
+  symbol: string,
+  label: string,
+): string | null => {
+  const trimmedAmount = amount?.trim();
+  const trimmedSymbol = symbol.trim();
+  if (!trimmedAmount) {
+    return null;
+  }
+
+  return `${label}: ${trimmedAmount}${trimmedSymbol ? ` ${trimmedSymbol}` : ''}`;
+};
+
+const buildPortfolioHistorySupportMailtoSubject = (
+  context: PortfolioHistorySupportMailtoContext,
+): string => {
+  const { item } = context;
+  const exchangeId = item.providerReferenceId?.trim();
+  const providerLabel = item.providerName?.trim() || item.provider.trim();
+
+  if (exchangeId) {
+    return `Compliance review - Exchange ${exchangeId}`;
+  }
+
+  if (providerLabel) {
+    return `Exchange support - ${providerLabel}`;
+  }
+
+  return 'Exchange support request';
+};
+
+const PORTFOLIO_HISTORY_SUPPORT_MAILTO_INTRO_COMPLIANCE =
+  'My swap appears to be stuck due to KYC/compliance verification. Could you please advise on the next steps?';
+
+const PORTFOLIO_HISTORY_SUPPORT_MAILTO_INTRO_DEFAULT =
+  'I am writing regarding an exchange transaction and would appreciate your assistance in reviewing the details below.';
+
+const buildPortfolioHistorySupportMailtoBody = (
+  context: PortfolioHistorySupportMailtoContext,
+): string => {
+  const { item, fromSymbol, toSymbol } = context;
+  const intro = isPortfolioHistoryVerificationRequired(item)
+    ? PORTFOLIO_HISTORY_SUPPORT_MAILTO_INTRO_COMPLIANCE
+    : PORTFOLIO_HISTORY_SUPPORT_MAILTO_INTRO_DEFAULT;
+  const lines = ['Hello,', '', intro, ''];
+
+  appendPortfolioHistorySupportMailtoLine(
+    lines,
+    'Exchange ID',
+    item.providerReferenceId,
+  );
+
+  const fromAmountLine = formatPortfolioHistorySupportAmountLine(
+    item.fromAmount,
+    fromSymbol,
+    'From amount',
+  );
+  if (fromAmountLine) {
+    lines.push(fromAmountLine);
+  }
+
+  const toAmountLine = formatPortfolioHistorySupportAmountLine(
+    item.toAmount,
+    toSymbol,
+    'To amount',
+  );
+  if (toAmountLine) {
+    lines.push(toAmountLine);
+  }
+
+  appendPortfolioHistorySupportMailtoLine(lines, 'From address', item.fromAddress);
+  appendPortfolioHistorySupportMailtoLine(lines, 'To address', item.toAddress);
+
+  lines.push('', 'Thank you for your assistance.');
+  return lines.join('\r\n');
+};
+
+const encodeMailtoQueryValue = (value: string): string =>
+  encodeURIComponent(value).replace(/%0A/g, '%0D%0A');
+
+const parseMailtoQueryString = (query: string): Record<string, string> => {
+  if (!query.trim()) {
+    return {};
+  }
+
+  const parsed: Record<string, string> = {};
+  const params = new URLSearchParams(query);
+  params.forEach((value, key) => {
+    parsed[key] = value;
+  });
+  return parsed;
+};
+
+const buildMailtoQueryString = (params: Record<string, string>): string =>
+  Object.entries(params)
+    .map(
+      ([key, value]) =>
+        `${encodeURIComponent(key)}=${encodeMailtoQueryValue(value)}`,
+    )
+    .join('&');
+
+const buildPortfolioHistorySupportMailtoUrl = (
+  supportUrl: string,
+  context: PortfolioHistorySupportMailtoContext,
+): string => {
+  const trimmedUrl = supportUrl.trim();
+  if (!trimmedUrl.toLowerCase().startsWith(MAILTO_SCHEME)) {
+    return trimmedUrl;
+  }
+
+  const withoutScheme = trimmedUrl.slice(MAILTO_SCHEME.length);
+  const queryIndex = withoutScheme.indexOf('?');
+  const address =
+    queryIndex >= 0 ? withoutScheme.slice(0, queryIndex) : withoutScheme;
+  const existingQuery =
+    queryIndex >= 0 ? withoutScheme.slice(queryIndex + 1) : '';
+  const queryParams = parseMailtoQueryString(existingQuery);
+
+  if (!queryParams.subject?.trim()) {
+    queryParams.subject = buildPortfolioHistorySupportMailtoSubject(context);
+  }
+
+  const enrichedBody = buildPortfolioHistorySupportMailtoBody(context);
+  const existingBody = queryParams.body?.trim();
+  queryParams.body = existingBody
+    ? `${existingBody}\r\n\r\n${enrichedBody}`
+    : enrichedBody;
+
+  const query = buildMailtoQueryString(queryParams);
+  return query ? `${MAILTO_SCHEME}${address}?${query}` : `${MAILTO_SCHEME}${address}`;
+};
+
+const openPortfolioHistorySupportUrl = (
+  url: string,
+  context?: PortfolioHistorySupportMailtoContext,
+): void => {
+  const trimmedUrl = url.trim();
+  if (!trimmedUrl) {
+    return;
+  }
+
+  const resolvedUrl =
+    trimmedUrl.toLowerCase().startsWith(MAILTO_SCHEME) && context
+      ? buildPortfolioHistorySupportMailtoUrl(trimmedUrl, context)
+      : trimmedUrl;
+
+  if (resolvedUrl.toLowerCase().startsWith(MAILTO_SCHEME)) {
+    window.open(resolvedUrl);
+    return;
+  }
+
+  chrome.tabs.create({ url: resolvedUrl });
+};
+
 const resolvePortfolioHistoryStatusLabelKey = (
   item: Pick<PortfolioHistoryItem, 'status' | 'failureCode'> &
     Partial<Pick<PortfolioHistoryItem, 'displayStatus'>>,
 ): string => {
+  const statusKind = getPortfolioHistoryStatusKind(item);
   const failureKey = resolvePortfolioHistoryFailureCodeMessageKey(item.failureCode);
-  if (failureKey && getPortfolioHistoryStatusKind(item) === 'failed') {
+
+  if (
+    failureKey &&
+    (statusKind === 'failed' || statusKind === 'verification_required')
+  ) {
     return failureKey;
   }
 
@@ -378,12 +574,15 @@ const getPortfolioHistoryAssetSymbol = (
 
 export const PortfolioHistoryDisplayUtils = {
   resolvePortfolioHistoryDisplayStatus,
+  isPortfolioHistoryVerificationRequired,
   getPortfolioHistoryStatusKind,
   getPortfolioHistoryStatusIcon,
   getPortfolioHistoryStatusMessageKey,
   resolvePortfolioHistoryFailureCodeMessageKey,
   resolvePortfolioHistoryFailureActionMessageKey,
   resolvePortfolioHistorySupportActionUrl,
+  buildPortfolioHistorySupportMailtoUrl,
+  openPortfolioHistorySupportUrl,
   resolvePortfolioHistoryStatusLabelKey,
   isCreatedOrExpiredHistoryStatus,
   formatPortfolioHistoryAmount,

@@ -149,6 +149,7 @@ jest.mock('src/portfolio/portfolio-api.utils', () => {
       ...actual.PortfolioApiUtils,
       listAssets: jest.fn().mockResolvedValue({ assets: [], chains: {} }),
       listHistory: jest.fn().mockResolvedValue([]),
+      listComplianceReviewHistory: jest.fn().mockResolvedValue([]),
       getFeatures: jest.fn().mockResolvedValue({
         swapBridge: true,
         buy: true,

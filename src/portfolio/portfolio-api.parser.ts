@@ -25,6 +25,7 @@ import {
   PortfolioHiveTransaction,
   PortfolioHiveTransferOperation,
   PortfolioHistoryItem,
+  PortfolioHistoryDisplayStatus,
   PortfolioHistoryResponse,
   PortfolioFeatureFlags,
   PortfolioFeaturesResponse,
@@ -37,11 +38,34 @@ import {
   PortfolioQuoteResponse,
   PortfolioQuoteTransaction,
   PortfolioRouteType,
+  PortfolioTransactionStatus,
 } from 'src/portfolio/portfolio-api.interface';
 
 const portfolioModes: PortfolioMode[] = ['buy', 'sell', 'swap', 'bridge'];
 const portfolioRouteTypes: PortfolioRouteType[] = ['swap', 'bridge'];
 const portfolioExecutionTypes: PortfolioExecutionType[] = ['in_app', 'redirect'];
+const portfolioTransactionStatuses: PortfolioTransactionStatus[] = [
+  'created',
+  'pending',
+  'awaiting_user_action',
+  'awaiting_compliance_action',
+  'submitted',
+  'completed',
+  'failed',
+  'expired',
+  'unknown',
+];
+const portfolioHistoryDisplayStatuses: PortfolioHistoryDisplayStatus[] = [
+  'created',
+  'pending',
+  'awaiting_action',
+  'verification_required',
+  'submitted',
+  'completed',
+  'failed',
+  'expired',
+  'unknown',
+];
 const portfolioFailureCodes: PortfolioFailureCode[] = [
   'unknown',
   'transaction_reverted',
@@ -778,7 +802,7 @@ const parsePortfolioExecution = (value: unknown): PortfolioExecution | null => {
 
   return {
     id,
-    status: readString(value, 'status'),
+    status: readEnum(value.status, portfolioTransactionStatuses, 'unknown'),
     mode: readString(value, 'mode'),
     provider: readString(value, 'provider'),
     providerReferenceId: readNullableString(value, 'providerReferenceId'),
@@ -811,7 +835,11 @@ const parsePortfolioHistoryItem = (
   return {
     ...execution,
     provider: provider ? readString(provider, 'id') : execution.provider,
-    displayStatus: readString(value, 'displayStatus'),
+    displayStatus: readEnum(
+      value.displayStatus,
+      portfolioHistoryDisplayStatuses,
+      'unknown',
+    ),
     executionType:
       value.executionType === null
         ? null

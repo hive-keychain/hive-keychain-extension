@@ -307,6 +307,14 @@
   }
 }
 
+.portfolio-main-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kc-space-4);
+  width: 100%;
+  min-width: 0;
+}
+
 .portfolio-page-frame {
   display: flex;
   flex-direction: column;

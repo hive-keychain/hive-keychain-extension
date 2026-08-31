@@ -276,9 +276,31 @@ export interface PortfolioFiatRampLocale {
   source: 'header' | 'ip_lookup' | 'client_lookup' | 'unavailable';
 }
 
+export type PortfolioTransactionStatus =
+  | 'created'
+  | 'pending'
+  | 'awaiting_user_action'
+  | 'awaiting_compliance_action'
+  | 'submitted'
+  | 'completed'
+  | 'failed'
+  | 'expired'
+  | 'unknown';
+
+export type PortfolioHistoryDisplayStatus =
+  | 'created'
+  | 'pending'
+  | 'awaiting_action'
+  | 'verification_required'
+  | 'submitted'
+  | 'completed'
+  | 'failed'
+  | 'expired'
+  | 'unknown';
+
 export interface PortfolioExecution {
   id: string;
-  status: string;
+  status: PortfolioTransactionStatus;
   mode: string;
   provider: string;
   providerReferenceId: string | null;
@@ -332,7 +354,7 @@ export type PortfolioFailureAction =
   | 'create_new_exchange';
 
 export interface PortfolioHistoryItem extends PortfolioExecution {
-  displayStatus: string;
+  displayStatus: PortfolioHistoryDisplayStatus;
   executionType: PortfolioExecutionType | null;
   txHash: string | null;
   providerName: string | null;

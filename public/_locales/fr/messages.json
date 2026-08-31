@@ -4252,6 +4252,33 @@
   "portfolio_history_status_pending": {
     "message": "Pending"
   },
+  "portfolio_history_status_verification_required": {
+    "message": "Verification required"
+  },
+  "portfolio_compliance_review_banner_summary": {
+    "message": "$1 swap(s) waiting for compliance review",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "portfolio_compliance_review_banner_explanation": {
+    "message": "These exchanges are paused by the provider for KYC or compliance review. Expand each swap to contact the provider with your Exchange ID."
+  },
+  "portfolio_compliance_review_banner_view_history": {
+    "message": "View in History"
+  },
+  "portfolio_history_compliance_explanation": {
+    "message": "The exchange provider paused this swap for compliance review. Contact them and include your Exchange ID below."
+  },
+  "portfolio_history_exchange_id": {
+    "message": "Exchange ID"
+  },
+  "portfolio_history_contact_provider": {
+    "message": "Contact provider"
+  },
   "portfolio_history_suggested_action": {
     "message": "Suggested action"
   },

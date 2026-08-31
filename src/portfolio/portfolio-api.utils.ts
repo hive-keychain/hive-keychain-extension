@@ -588,6 +588,23 @@ const listHistory = async (
   ).items;
 };
 
+const listComplianceReviewHistory = async (filters?: {
+  addresses?: string[];
+}): Promise<PortfolioHistoryItem[]> => {
+  const addresses = (filters?.addresses ?? [])
+    .map((address) => address.trim())
+    .filter((address) => address.length > 0);
+  const body = addresses.length > 0 ? { addresses } : {};
+
+  return PortfolioApiParser.parsePortfolioHistoryResponse(
+    await fetchJson(
+      '/history/compliance-review',
+      { method: 'POST', body: JSON.stringify(body) },
+      true,
+    ),
+  ).items;
+};
+
 export const PortfolioApiUtils = {
   canExecutePortfolioQuote,
   canFillPortfolioMinimumAmount,
@@ -600,6 +617,7 @@ export const PortfolioApiUtils = {
   isPortfolioQuoteRequestAborted,
   listAssets,
   listAvailableAssets,
+  listComplianceReviewHistory,
   listFiatRampCountries,
   listHistory,
   markSubmitted,

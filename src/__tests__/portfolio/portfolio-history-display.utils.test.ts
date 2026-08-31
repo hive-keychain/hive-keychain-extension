@@ -52,6 +52,20 @@ describe('PortfolioHistoryDisplayUtils', () => {
       ).toBe('pending');
     });
 
+    it('maps verification_required to its own status kind', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.getPortfolioHistoryStatusKind(
+          'verification_required',
+        ),
+      ).toBe('verification_required');
+      expect(
+        PortfolioHistoryDisplayUtils.getPortfolioHistoryStatusKind({
+          status: 'awaiting_compliance_action',
+          displayStatus: 'verification_required',
+        }),
+      ).toBe('verification_required');
+    });
+
     it('prefers displayStatus when a history item is provided', () => {
       expect(
         PortfolioHistoryDisplayUtils.getPortfolioHistoryStatusKind({
@@ -73,6 +87,11 @@ describe('PortfolioHistoryDisplayUtils', () => {
       expect(
         PortfolioHistoryDisplayUtils.getPortfolioHistoryStatusIcon('pending'),
       ).toBe(SVGIcons.SWAPS_STATUS_PROCESSING);
+      expect(
+        PortfolioHistoryDisplayUtils.getPortfolioHistoryStatusIcon(
+          'verification_required',
+        ),
+      ).toBe(SVGIcons.SWAPS_STATUS_WARNING);
     });
   });
 
@@ -87,6 +106,11 @@ describe('PortfolioHistoryDisplayUtils', () => {
       expect(
         PortfolioHistoryDisplayUtils.getPortfolioHistoryStatusMessageKey('created'),
       ).toBe('portfolio_history_status_pending');
+      expect(
+        PortfolioHistoryDisplayUtils.getPortfolioHistoryStatusMessageKey(
+          'verification_required',
+        ),
+      ).toBe('portfolio_history_status_verification_required');
     });
   });
 
@@ -212,6 +236,192 @@ describe('PortfolioHistoryDisplayUtils', () => {
           failureCode: 'refunded',
         }),
       ).toBe('portfolio_history_status_pending');
+    });
+
+    it('uses failure code labels for verification_required statuses', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistoryStatusLabelKey({
+          status: 'awaiting_compliance_action',
+          displayStatus: 'verification_required',
+          failureCode: 'aml_review',
+        }),
+      ).toBe('portfolio_history_failure_aml_review');
+    });
+  });
+
+  describe('isPortfolioHistoryVerificationRequired', () => {
+    it('returns true when displayStatus is verification_required', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.isPortfolioHistoryVerificationRequired({
+          status: 'awaiting_compliance_action',
+          displayStatus: 'verification_required',
+        }),
+      ).toBe(true);
+    });
+
+    it('returns false for other statuses', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.isPortfolioHistoryVerificationRequired(
+          'pending',
+        ),
+      ).toBe(false);
+    });
+  });
+
+  describe('buildPortfolioHistorySupportMailtoUrl', () => {
+    const context = {
+      item: {
+        id: 'exec-compliance',
+        status: 'awaiting_compliance_action',
+        displayStatus: 'verification_required',
+        mode: 'swap',
+        provider: 'changelly',
+        providerName: 'Changelly',
+        providerReferenceId: '4f2u8h9j6qdnys',
+        fromAssetId: 'evm:native:ethereum',
+        toAssetId: 'evm:token:ethereum:0xabc',
+        fromAmount: '2.15',
+        toAmount: '6764.9',
+        receivedAmount: null,
+        fromAddress: '0xabc123',
+        toAddress: '0xabc123',
+        redirectUrl: null,
+        transaction: null,
+        fiatCurrency: null,
+        paymentMethod: null,
+        submittedAt: '2026-01-01T00:00:00.000Z',
+        updatedAt: '2026-01-01T12:00:00.000Z',
+        executionType: 'redirect',
+        txHash: null,
+        providerLogoUrl: null,
+        providerStatus: 'hold',
+        lastProviderStatusRefreshAt: null,
+        failureCode: 'aml_review',
+        failureAction: 'contact_support',
+        providerStatusDetail: null,
+        providerStatusUrl: null,
+        supportUrl: 'mailto:security@changelly.com',
+      },
+      fromSymbol: 'ETH',
+      toSymbol: 'USDC',
+    } as const;
+
+    it('adds subject and body with swap details to mailto links', () => {
+      const url = PortfolioHistoryDisplayUtils.buildPortfolioHistorySupportMailtoUrl(
+        'mailto:security@changelly.com',
+        context,
+      );
+
+      expect(url.startsWith('mailto:security@changelly.com?')).toBe(true);
+      expect(url).not.toContain('+');
+
+      const params = new URLSearchParams(url.split('?')[1] ?? '');
+      expect(params.get('subject')).toBe(
+        'Compliance review - Exchange 4f2u8h9j6qdnys',
+      );
+      expect(params.get('body')).toContain(
+        'My swap appears to be stuck due to KYC/compliance verification. Could you please advise on the next steps?',
+      );
+      expect(params.get('body')).toContain('Exchange ID: 4f2u8h9j6qdnys');
+      expect(params.get('body')).toContain('From amount: 2.15 ETH');
+      expect(params.get('body')).toContain('To amount: 6764.9 USDC');
+      expect(params.get('body')).toContain('From address: 0xabc123');
+      expect(params.get('body')).toContain('To address: 0xabc123');
+      expect(params.get('body')).not.toContain('Provider:');
+      expect(params.get('body')).not.toContain('Status:');
+      expect(params.get('body')).not.toContain('Submitted:');
+    });
+
+    it('returns non-mailto URLs unchanged', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.buildPortfolioHistorySupportMailtoUrl(
+          'https://stealthex.io/contacts/',
+          context,
+        ),
+      ).toBe('https://stealthex.io/contacts/');
+    });
+  });
+
+  describe('openPortfolioHistorySupportUrl', () => {
+    beforeEach(() => {
+      global.window.open = jest.fn();
+      (global.chrome as any) = {
+        tabs: {
+          create: jest.fn(),
+        },
+      };
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('opens mailto links with window.open', () => {
+      PortfolioHistoryDisplayUtils.openPortfolioHistorySupportUrl(
+        'mailto:security@changelly.com',
+      );
+
+      expect(window.open).toHaveBeenCalledWith('mailto:security@changelly.com');
+      expect(chrome.tabs.create).not.toHaveBeenCalled();
+    });
+
+    it('enriches mailto links when history context is provided', () => {
+      PortfolioHistoryDisplayUtils.openPortfolioHistorySupportUrl(
+        'mailto:security@changelly.com',
+        {
+          item: {
+            id: 'exec-compliance',
+            status: 'awaiting_compliance_action',
+            displayStatus: 'verification_required',
+            mode: 'swap',
+            provider: 'changelly',
+            providerName: 'Changelly',
+            providerReferenceId: 'swap-123',
+            fromAssetId: null,
+            toAssetId: null,
+            fromAmount: '1',
+            toAmount: '2',
+            receivedAmount: null,
+            fromAddress: '0xabc',
+            toAddress: null,
+            redirectUrl: null,
+            transaction: null,
+            fiatCurrency: null,
+            paymentMethod: null,
+            submittedAt: '2026-01-01T00:00:00.000Z',
+            updatedAt: null,
+            executionType: null,
+            txHash: null,
+            providerLogoUrl: null,
+            providerStatus: null,
+            lastProviderStatusRefreshAt: null,
+            failureCode: 'aml_review',
+            failureAction: 'contact_support',
+            providerStatusDetail: null,
+            providerStatusUrl: null,
+            supportUrl: 'mailto:security@changelly.com',
+          },
+          fromSymbol: 'ETH',
+          toSymbol: 'USDC',
+        },
+      );
+
+      const openedUrl = (window.open as jest.Mock).mock.calls[0]?.[0] as string;
+      expect(openedUrl.startsWith('mailto:security@changelly.com?')).toBe(true);
+      const params = new URLSearchParams(openedUrl.split('?')[1] ?? '');
+      expect(params.get('body')).toContain('Exchange ID: swap-123');
+      expect(params.get('body')).toContain('From amount: 1 ETH');
+    });
+
+    it('opens web support links in a new tab', () => {
+      PortfolioHistoryDisplayUtils.openPortfolioHistorySupportUrl(
+        'https://stealthex.io/contacts/',
+      );
+
+      expect(chrome.tabs.create).toHaveBeenCalledWith({
+        url: 'https://stealthex.io/contacts/',
+      });
+      expect(window.open).not.toHaveBeenCalled();
     });
   });
 

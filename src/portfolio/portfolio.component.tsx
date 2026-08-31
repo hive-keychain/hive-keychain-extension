@@ -101,6 +101,7 @@ import { PortfolioSwapCatalogCacheUtils } from 'src/portfolio/portfolio-swap-cat
 import { PortfolioHiveEngineBalanceBreakdown } from 'src/portfolio/portfolio.interface';
 import { PortfolioAccountAvatar } from 'src/portfolio/ui/portfolio-account-avatar.component';
 import { PortfolioBalancesSection } from 'src/portfolio/ui/portfolio-balances-section.component';
+import { PortfolioComplianceReviewBanner } from 'src/portfolio/ui/portfolio-compliance-review-banner.component';
 import { PortfolioConfirmationStepComponent } from 'src/portfolio/ui/portfolio-confirmation-step.component';
 import { PortfolioHistoryCard } from 'src/portfolio/ui/portfolio-history-card.component';
 import { PortfolioHistoryDisplayUtils } from 'src/portfolio/ui/portfolio-history-display.utils';
@@ -544,6 +545,9 @@ export const Portfolio = ({
   const [portfolioChains, setPortfolioChains] =
     useState<PortfolioChainDisplayRecord>({});
   const [history, setHistory] = useState<PortfolioHistoryItem[]>([]);
+  const [complianceReviewItems, setComplianceReviewItems] = useState<
+    PortfolioHistoryItem[]
+  >([]);
   const [hiveEngineTokenLogoUrls, setHiveEngineTokenLogoUrls] = useState<
     Record<string, string>
   >({});
@@ -934,6 +938,34 @@ export const Portfolio = ({
 
     return [...assetById.values()];
   }, [assets, rampAvailableAssets, swapAvailableAssets]);
+
+  const complianceReviewAssetsByItemId = useMemo(() => {
+    const fromAssetsByItemId: Record<string, PortfolioCanonicalAsset | undefined> =
+      {};
+    const toAssetsByItemId: Record<string, PortfolioCanonicalAsset | undefined> =
+      {};
+
+    for (const item of complianceReviewItems) {
+      fromAssetsByItemId[item.id] =
+        PortfolioHistoryDisplayUtils.resolvePortfolioAssetById(
+          item.fromAssetId,
+          canonicalAssetsForRowResolution,
+          hiveEngineTokenLogoUrls,
+        );
+      toAssetsByItemId[item.id] =
+        PortfolioHistoryDisplayUtils.resolvePortfolioAssetById(
+          item.toAssetId,
+          canonicalAssetsForRowResolution,
+          hiveEngineTokenLogoUrls,
+        );
+    }
+
+    return { fromAssetsByItemId, toAssetsByItemId };
+  }, [
+    canonicalAssetsForRowResolution,
+    complianceReviewItems,
+    hiveEngineTokenLogoUrls,
+  ]);
 
   const swapSourceAssets = useMemo(
     () =>
@@ -2041,11 +2073,19 @@ export const Portfolio = ({
 
   const historyRefreshDeadlineRef = useRef(0);
 
+  const refreshPortfolioTransactionalHistory = useCallback(async () => {
+    const [historyItems, complianceItems] = await Promise.all([
+      PortfolioApiUtils.listHistory(1, historyAddressFilters),
+      PortfolioApiUtils.listComplianceReviewHistory(historyAddressFilters),
+    ]);
+    setHistory(historyItems);
+    setComplianceReviewItems(complianceItems);
+  }, [historyAddressFilters]);
+
   const refreshHistorySilently = useCallback(() => {
     historyRefreshDeadlineRef.current = 0;
     setHistoryRefreshCountdown(null);
-    void PortfolioApiUtils.listHistory(1, historyAddressFilters)
-      .then(setHistory)
+    void refreshPortfolioTransactionalHistory()
       .catch((error) => {
         Logger.error('Unable to auto-refresh portfolio history', error);
       })
@@ -2056,7 +2096,7 @@ export const Portfolio = ({
           PORTFOLIO_HISTORY_AUTO_REFRESH_INTERVAL_SECONDS,
         );
       });
-  }, [historyAddressFilters]);
+  }, [refreshPortfolioTransactionalHistory]);
 
   useEffect(() => {
     if (section !== 'history' || !selectedAccountKey) {
@@ -2523,12 +2563,13 @@ export const Portfolio = ({
     setIsHistoryLoading(true);
     setStatusMessage('');
     try {
-      setHistory(await PortfolioApiUtils.listHistory(1, historyAddressFilters));
+      await refreshPortfolioTransactionalHistory();
       hasLoadedHistoryRef.current = true;
     } catch (error) {
       Logger.error('Unable to load portfolio history', error);
       setStatusMessage('portfolio_load_error');
       setHistory([]);
+      setComplianceReviewItems([]);
     } finally {
       isHistoryLoadInFlightRef.current = false;
       setIsHistoryLoading(false);
@@ -2554,6 +2595,24 @@ export const Portfolio = ({
 
     void loadHistory();
   }, [hasResolvedInitialAccountSelection, section, selectedAccountKey]);
+
+  useEffect(() => {
+    if (!hasResolvedInitialAccountSelection || !selectedAccountKey) {
+      setComplianceReviewItems([]);
+      return;
+    }
+
+    void PortfolioApiUtils.listComplianceReviewHistory(historyAddressFilters)
+      .then(setComplianceReviewItems)
+      .catch((error) => {
+        Logger.error('Unable to load compliance review items', error);
+        setComplianceReviewItems([]);
+      });
+  }, [
+    hasResolvedInitialAccountSelection,
+    historyAddressFilters,
+    selectedAccountKey,
+  ]);
 
   const handleRefreshPortfolioData = async () => {
     if (!selectedAccountKey || isRefreshing) return;
@@ -2960,9 +3019,7 @@ export const Portfolio = ({
             quote.toAsset?.assetId,
           );
           setPendingInAppConfirmation(null);
-          setHistory(
-            await PortfolioApiUtils.listHistory(1, historyAddressFilters),
-          );
+          await refreshPortfolioTransactionalHistory();
           setSection('history');
         } catch (error) {
           resetLoading();
@@ -3038,9 +3095,7 @@ export const Portfolio = ({
             quote.toAsset?.assetId,
           );
           setPendingInAppConfirmation(null);
-          setHistory(
-            await PortfolioApiUtils.listHistory(1, historyAddressFilters),
-          );
+          await refreshPortfolioTransactionalHistory();
           setSection('history');
         } catch (error) {
           Logger.error('Portfolio transaction failed', error);
@@ -3142,9 +3197,7 @@ export const Portfolio = ({
           );
           setStatusMessage('portfolio_provider_opened');
         }
-        setHistory(
-          await PortfolioApiUtils.listHistory(1, historyAddressFilters),
-        );
+        await refreshPortfolioTransactionalHistory();
         setSection('history');
         return;
       }
@@ -4172,47 +4225,62 @@ export const Portfolio = ({
 
       <div className="portfolio-column">
         <main className="portfolio-main">
-          <section
-            className={`portfolio-page-frame${
-              isCompactPortfolioCard ? ' portfolio-page-frame--compact' : ''
-            }`}>
-            <div
-              className={`portfolio-card${
-                isCompactPortfolioCard ? ' portfolio-card--compact' : ''
+          <div className="portfolio-main-stack">
+            {!pendingInAppConfirmation && complianceReviewItems.length > 0 ? (
+              <PortfolioComplianceReviewBanner
+                items={complianceReviewItems}
+                fromAssetsByItemId={
+                  complianceReviewAssetsByItemId.fromAssetsByItemId
+                }
+                toAssetsByItemId={
+                  complianceReviewAssetsByItemId.toAssetsByItemId
+                }
+                isCompact={isCompactPortfolioCard}
+                onViewHistory={() => setSection('history')}
+              />
+            ) : null}
+            <section
+              className={`portfolio-page-frame${
+                isCompactPortfolioCard ? ' portfolio-page-frame--compact' : ''
               }`}>
-              <header className="portfolio-page-header">
-                <div className="portfolio-page-header__title">
-                  <h1>{I18nUtils.getMessage(pageTitleKey)}</h1>
-                  {showPortfolioRefreshButton && (
-                    <button
-                      aria-label={I18nUtils.getMessage('portfolio_refresh')}
-                      className="portfolio-refresh-button"
-                      disabled={isPortfolioLoading || isRefreshing}
-                      onClick={() => void handleRefreshPortfolioData()}
-                      title={I18nUtils.getMessage('portfolio_refresh')}
-                      type="button">
-                      <SVGIcon
-                        className={`portfolio-refresh-icon ${
-                          isRefreshing || isPortfolioLoading ? 'rotate' : ''
-                        }`}
-                        icon={SVGIcons.SWAPS_HISTORY_REFRESH}
-                      />
-                    </button>
-                  )}
-                </div>
-                {!pendingInAppConfirmation && (
-                  <p>{I18nUtils.getMessage(pageDescriptionKey)}</p>
-                )}
-              </header>
-              {renderSectionContent()}
-              {statusMessage &&
-                statusMessage !== 'portfolio_no_quote_available' && (
-                  <div className="portfolio-status" role="status">
-                    {I18nUtils.getMessage(statusMessage, statusMessageParams)}
+              <div
+                className={`portfolio-card${
+                  isCompactPortfolioCard ? ' portfolio-card--compact' : ''
+                }`}>
+                <header className="portfolio-page-header">
+                  <div className="portfolio-page-header__title">
+                    <h1>{I18nUtils.getMessage(pageTitleKey)}</h1>
+                    {showPortfolioRefreshButton && (
+                      <button
+                        aria-label={I18nUtils.getMessage('portfolio_refresh')}
+                        className="portfolio-refresh-button"
+                        disabled={isPortfolioLoading || isRefreshing}
+                        onClick={() => void handleRefreshPortfolioData()}
+                        title={I18nUtils.getMessage('portfolio_refresh')}
+                        type="button">
+                        <SVGIcon
+                          className={`portfolio-refresh-icon ${
+                            isRefreshing || isPortfolioLoading ? 'rotate' : ''
+                          }`}
+                          icon={SVGIcons.SWAPS_HISTORY_REFRESH}
+                        />
+                      </button>
+                    )}
                   </div>
-                )}
-            </div>
-          </section>
+                  {!pendingInAppConfirmation && (
+                    <p>{I18nUtils.getMessage(pageDescriptionKey)}</p>
+                  )}
+                </header>
+                {renderSectionContent()}
+                {statusMessage &&
+                  statusMessage !== 'portfolio_no_quote_available' && (
+                    <div className="portfolio-status" role="status">
+                      {I18nUtils.getMessage(statusMessage, statusMessageParams)}
+                    </div>
+                  )}
+              </div>
+            </section>
+          </div>
         </main>
       </div>
     </div>

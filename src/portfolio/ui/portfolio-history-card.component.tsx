@@ -103,6 +103,8 @@ export const PortfolioHistoryCard = ({
   const statusIcon = PortfolioHistoryDisplayUtils.getPortfolioHistoryStatusIcon(
     item,
   );
+  const isVerificationRequired =
+    PortfolioHistoryDisplayUtils.isPortfolioHistoryVerificationRequired(item);
   const statusLabel = I18nUtils.getMessage(
     PortfolioHistoryDisplayUtils.resolvePortfolioHistoryStatusLabelKey(item),
   );
@@ -113,6 +115,13 @@ export const PortfolioHistoryCard = ({
   const failureActionLabel = failureActionKey
     ? I18nUtils.getMessage(failureActionKey)
     : null;
+  const supportActionUrl =
+    PortfolioHistoryDisplayUtils.resolvePortfolioHistorySupportActionUrl(item);
+  const supportMailtoContext = {
+    item,
+    fromSymbol: fromIdentity.symbol,
+    toSymbol: toIdentity.symbol,
+  };
   const statusLink = PortfolioHistoryDisplayUtils.resolvePortfolioHistoryStatusLink(
     item,
     fromAsset,
@@ -299,7 +308,11 @@ export const PortfolioHistoryCard = ({
   }
   if (item.providerReferenceId) {
     detailRows.push({
-      label: I18nUtils.getMessage('portfolio_history_provider_reference'),
+      label: I18nUtils.getMessage(
+        isVerificationRequired
+          ? 'portfolio_history_exchange_id'
+          : 'portfolio_history_provider_reference',
+      ),
       value: renderCopyableValue(item.providerReferenceId),
     });
   }
@@ -328,6 +341,24 @@ export const PortfolioHistoryCard = ({
       ),
     });
   }
+  if (isVerificationRequired && supportActionUrl) {
+    detailRows.push({
+      label: I18nUtils.getMessage('portfolio_history_contact_provider'),
+      value: (
+        <button
+          type="button"
+          className="portfolio-history-card__action-link portfolio-history-card__action-link--primary"
+          onClick={() => {
+            PortfolioHistoryDisplayUtils.openPortfolioHistorySupportUrl(
+              supportActionUrl,
+              supportMailtoContext,
+            );
+          }}>
+          {I18nUtils.getMessage('portfolio_history_contact_provider')}
+        </button>
+      ),
+    });
+  }
   if (item.submittedAt) {
     detailRows.push({
       label: I18nUtils.getMessage('portfolio_history_submitted_at'),
@@ -346,9 +377,7 @@ export const PortfolioHistoryCard = ({
       value: renderCopyableValue(item.txHash),
     });
   }
-  if (failureActionLabel) {
-    const supportActionUrl =
-      PortfolioHistoryDisplayUtils.resolvePortfolioHistorySupportActionUrl(item);
+  if (!isVerificationRequired && failureActionLabel) {
     detailRows.push({
       label: I18nUtils.getMessage('portfolio_history_suggested_action'),
       value: supportActionUrl ? (
@@ -356,7 +385,10 @@ export const PortfolioHistoryCard = ({
           type="button"
           className="portfolio-history-card__action-link"
           onClick={() => {
-            chrome.tabs.create({ url: supportActionUrl });
+            PortfolioHistoryDisplayUtils.openPortfolioHistorySupportUrl(
+              supportActionUrl,
+              supportMailtoContext,
+            );
           }}>
           {failureActionLabel}
         </button>
@@ -417,7 +449,11 @@ export const PortfolioHistoryCard = ({
           <CustomTooltip message={statusLabel} skipTranslation position="top">
             <SVGIcon
               icon={statusIcon}
-              className="portfolio-history-card__status-icon"
+              className={`portfolio-history-card__status-icon${
+                isVerificationRequired
+                  ? ' portfolio-history-card__status-icon--verification-required'
+                  : ''
+              }`}
             />
           </CustomTooltip>
           {fullDate ? (
@@ -442,6 +478,11 @@ export const PortfolioHistoryCard = ({
         <div className="portfolio-history-card__details">
           {modeLabel ? (
             <span className="portfolio-history-card__mode-tag">{modeLabel}</span>
+          ) : null}
+          {isVerificationRequired ? (
+            <p className="portfolio-history-card__compliance-notice">
+              {I18nUtils.getMessage('portfolio_history_compliance_explanation')}
+            </p>
           ) : null}
           {detailRows.map((row) => (
             <div className="portfolio-history-card__detail-row" key={row.label}>
