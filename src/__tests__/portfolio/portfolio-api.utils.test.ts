@@ -1290,24 +1290,69 @@ describe('PortfolioApiUtils', () => {
   });
 
   describe('resolveVisiblePortfolioSections', () => {
-    it('hides buy, sell, and swap when their flags are off', () => {
+    it('hides buy, sell, and swap when their flags are deactivated', () => {
       expect(
         PortfolioApiUtils.resolveVisiblePortfolioSections({
-          swapBridge: false,
-          buy: false,
-          sell: true,
+          swapBridge: 'deactivated',
+          buy: 'deactivated',
+          sell: 'activated',
         }),
       ).toEqual(['portfolio', 'sell', 'history']);
     });
 
-    it('hides history when all trade features are off', () => {
+    it('shows coming soon sections without history when no flow is live', () => {
       expect(
         PortfolioApiUtils.resolveVisiblePortfolioSections({
-          swapBridge: false,
-          buy: false,
-          sell: false,
+          swapBridge: 'deactivated',
+          buy: 'comingSoon',
+          sell: 'comingSoon',
+        }),
+      ).toEqual(['portfolio', 'buy', 'sell']);
+    });
+
+    it('hides history when all trade features are deactivated', () => {
+      expect(
+        PortfolioApiUtils.resolveVisiblePortfolioSections({
+          swapBridge: 'deactivated',
+          buy: 'deactivated',
+          sell: 'deactivated',
         }),
       ).toEqual(['portfolio']);
+    });
+  });
+
+  describe('getPortfolioSectionFeatureState', () => {
+    const features = {
+      swapBridge: 'activated',
+      buy: 'comingSoon',
+      sell: 'deactivated',
+    } as const;
+
+    it('maps trade sections to their feature flags', () => {
+      expect(
+        PortfolioApiUtils.getPortfolioSectionFeatureState('buy', features),
+      ).toBe('comingSoon');
+      expect(
+        PortfolioApiUtils.getPortfolioSectionFeatureState('sell', features),
+      ).toBe('deactivated');
+      expect(
+        PortfolioApiUtils.getPortfolioSectionFeatureState('swap', features),
+      ).toBe('activated');
+      expect(
+        PortfolioApiUtils.getPortfolioSectionFeatureState('bridge', features),
+      ).toBe('activated');
+    });
+
+    it('returns null for ungoverned sections', () => {
+      expect(
+        PortfolioApiUtils.getPortfolioSectionFeatureState(
+          'portfolio',
+          features,
+        ),
+      ).toBeNull();
+      expect(
+        PortfolioApiUtils.getPortfolioSectionFeatureState('history', features),
+      ).toBeNull();
     });
   });
 });

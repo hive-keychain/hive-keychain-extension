@@ -28,6 +28,7 @@ import {
   PortfolioHistoryDisplayStatus,
   PortfolioHistoryResponse,
   PortfolioFeatureFlags,
+  PortfolioFeatureState,
   PortfolioFeaturesResponse,
   PortfolioMode,
   PortfolioQuote,
@@ -902,9 +903,36 @@ const parsePortfolioHistoryResponse = (
 };
 
 const DEFAULT_PORTFOLIO_FEATURE_FLAGS: PortfolioFeatureFlags = {
-  swapBridge: true,
-  buy: true,
-  sell: true,
+  swapBridge: 'activated',
+  buy: 'comingSoon',
+  sell: 'comingSoon',
+};
+
+const portfolioFeatureStates: PortfolioFeatureState[] = [
+  'activated',
+  'deactivated',
+  'comingSoon',
+];
+
+const readPortfolioFeatureState = (
+  record: Record<string, unknown>,
+  key: string,
+  fallback: PortfolioFeatureState,
+): PortfolioFeatureState => {
+  const value = record[key];
+  if (value === undefined) {
+    return fallback;
+  }
+  if (value === true) {
+    return 'activated';
+  }
+  if (value === false) {
+    return 'deactivated';
+  }
+  return typeof value === 'string' &&
+    portfolioFeatureStates.includes(value as PortfolioFeatureState)
+    ? (value as PortfolioFeatureState)
+    : 'deactivated';
 };
 
 const parsePortfolioFeaturesResponse = (
@@ -921,9 +949,21 @@ const parsePortfolioFeaturesResponse = (
   return {
     version: 1,
     features: {
-      swapBridge: readBoolean(features, 'swapBridge', true),
-      buy: readBoolean(features, 'buy', true),
-      sell: readBoolean(features, 'sell', true),
+      swapBridge: readPortfolioFeatureState(
+        features,
+        'swapBridge',
+        DEFAULT_PORTFOLIO_FEATURE_FLAGS.swapBridge,
+      ),
+      buy: readPortfolioFeatureState(
+        features,
+        'buy',
+        DEFAULT_PORTFOLIO_FEATURE_FLAGS.buy,
+      ),
+      sell: readPortfolioFeatureState(
+        features,
+        'sell',
+        DEFAULT_PORTFOLIO_FEATURE_FLAGS.sell,
+      ),
     },
   };
 };

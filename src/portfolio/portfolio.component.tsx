@@ -48,6 +48,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import { ComingSoonPanel } from 'src/common-ui/coming-soon-panel/coming-soon-panel.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -524,6 +525,9 @@ export const Portfolio = ({
     () => PortfolioApiUtils.resolveVisiblePortfolioSections(featureFlags),
     [featureFlags],
   );
+  const isCurrentSectionComingSoon =
+    PortfolioApiUtils.getPortfolioSectionFeatureState(section, featureFlags) ===
+    'comingSoon';
   const [selectedAccountKey, setSelectedAccountKey] = useState('');
   const [hasResolvedInitialAccountSelection, setHasResolvedInitialAccountSelection] =
     useState(false);
@@ -1756,7 +1760,9 @@ export const Portfolio = ({
     if (!hasResolvedInitialAccountSelection || !selectedAccountKey) return;
 
     const shouldLoadBalances =
-      section === 'portfolio' || section === 'sell' || section === 'swap';
+      section === 'portfolio' ||
+      ((section === 'sell' || section === 'swap') &&
+        !isCurrentSectionComingSoon);
     if (!shouldLoadBalances) return;
 
     const account = accountOptions.find(
@@ -1770,12 +1776,18 @@ export const Portfolio = ({
   }, [
     accountOptions,
     hasResolvedInitialAccountSelection,
+    isCurrentSectionComingSoon,
     section,
     selectedAccountKey,
   ]);
 
   useEffect(() => {
-    if (section !== 'buy' || !flowAccountKind || !flowAccountOptions.length) {
+    if (
+      section !== 'buy' ||
+      isCurrentSectionComingSoon ||
+      !flowAccountKind ||
+      !flowAccountOptions.length
+    ) {
       return;
     }
 
@@ -1801,6 +1813,7 @@ export const Portfolio = ({
     activeHiveAccountName,
     flowAccountKind,
     flowAccountOptions,
+    isCurrentSectionComingSoon,
     section,
   ]);
 
@@ -2213,7 +2226,7 @@ export const Portfolio = ({
   }, []);
 
   useEffect(() => {
-    if (!isFiatRampSection(section)) {
+    if (!isFiatRampSection(section) || isCurrentSectionComingSoon) {
       setFiatRampOptions(null);
       setRampAvailableAssets([]);
       return;
@@ -2250,15 +2263,15 @@ export const Portfolio = ({
     return () => {
       cancelled = true;
     };
-  }, [section]);
+  }, [isCurrentSectionComingSoon, section]);
 
   useEffect(() => {
-    if (section !== 'swap') {
+    if (section !== 'swap' || isCurrentSectionComingSoon) {
       return;
     }
 
     void loadSwapAvailableAssets();
-  }, [section]);
+  }, [isCurrentSectionComingSoon, section]);
 
   useEffect(() => {
     if (!fiatRampOptions?.fiatCurrencies.length) {
@@ -2577,12 +2590,12 @@ export const Portfolio = ({
   };
 
   useEffect(() => {
-    if (section === 'swap') {
+    if (section === 'swap' || isCurrentSectionComingSoon) {
       return;
     }
 
     void loadAssets();
-  }, [section]);
+  }, [isCurrentSectionComingSoon, section]);
 
   useEffect(() => {
     if (
@@ -2766,7 +2779,7 @@ export const Portfolio = ({
     swapQuoteAbortControllerRef.current = null;
     setIsFlowLoading(false);
 
-    if (!isQuoteAutoFetchSection(section)) {
+    if (!isQuoteAutoFetchSection(section) || isCurrentSectionComingSoon) {
       return;
     }
 
@@ -2778,6 +2791,7 @@ export const Portfolio = ({
     setAmountQuoteError(null);
     setIsSwapQuoteRequestPending(false);
   }, [
+    isCurrentSectionComingSoon,
     section,
     amount,
     fromAssetId,
@@ -2816,6 +2830,7 @@ export const Portfolio = ({
   useEffect(() => {
     if (
       !isQuoteAutoFetchSection(section) ||
+      isCurrentSectionComingSoon ||
       !canRequestQuotes ||
       pendingInAppConfirmation
     ) {
@@ -2856,6 +2871,7 @@ export const Portfolio = ({
       }
     };
   }, [
+    isCurrentSectionComingSoon,
     section,
     canRequestQuotes,
     pendingInAppConfirmation,
@@ -4158,6 +4174,10 @@ export const Portfolio = ({
       );
     }
 
+    if (isCurrentSectionComingSoon) {
+      return <ComingSoonPanel />;
+    }
+
     if (
       showInitialPortfolioSpinner ||
       showFlowLoadingSpinner ||
@@ -4188,7 +4208,9 @@ export const Portfolio = ({
       : 'portfolio_page_description';
   const isCompactPortfolioCard =
     Boolean(pendingInAppConfirmation) ||
-    (section !== 'portfolio' && section !== 'history');
+    (section !== 'portfolio' &&
+      section !== 'history' &&
+      !isCurrentSectionComingSoon);
   const showPortfolioRefreshButton =
     !pendingInAppConfirmation && section === 'portfolio';
 
@@ -4267,7 +4289,7 @@ export const Portfolio = ({
                       </button>
                     )}
                   </div>
-                  {!pendingInAppConfirmation && (
+                  {!pendingInAppConfirmation && !isCurrentSectionComingSoon && (
                     <p>{I18nUtils.getMessage(pageDescriptionKey)}</p>
                   )}
                 </header>

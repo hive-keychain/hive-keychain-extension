@@ -5,6 +5,7 @@ import {
   PortfolioAvailableAssetsResponse,
   PortfolioExecution,
   PortfolioFeatureFlags,
+  PortfolioFeatureState,
   PortfolioFiatRampCountry,
   PortfolioFiatRampLocale,
   PortfolioFiatRampOptions,
@@ -23,28 +24,58 @@ const CLIENT_TOKEN_HEADER = 'X-Keychain-Portfolio-Client-Token';
 const DEV_GEO_COUNTRY_HEADER = 'cf-ipcountry';
 
 export const DEFAULT_PORTFOLIO_FEATURE_FLAGS: PortfolioFeatureFlags = {
-  swapBridge: true,
-  buy: true,
-  sell: true,
+  swapBridge: 'activated',
+  buy: 'comingSoon',
+  sell: 'comingSoon',
 };
 
-/** Builds sidebar sections from product feature flags (history hidden when all flows are off). */
+type PortfolioNavSection = 'portfolio' | 'buy' | 'sell' | 'swap' | 'history';
+type PortfolioFeatureSection = PortfolioNavSection | 'bridge';
+
+const isPortfolioFeatureVisible = (
+  state: PortfolioFeatureState,
+): boolean => state === 'activated' || state === 'comingSoon';
+
+const isPortfolioFeatureActivated = (
+  state: PortfolioFeatureState,
+): boolean => state === 'activated';
+
+/** Maps a sidebar section to its `GET /features` status, or null when ungoverned. */
+export const getPortfolioSectionFeatureState = (
+  section: PortfolioFeatureSection,
+  features: PortfolioFeatureFlags,
+): PortfolioFeatureState | null => {
+  if (section === 'buy') {
+    return features.buy;
+  }
+  if (section === 'sell') {
+    return features.sell;
+  }
+  if (section === 'swap' || section === 'bridge') {
+    return features.swapBridge;
+  }
+  return null;
+};
+
+/** Builds sidebar sections from product feature flags (history hidden when no flow is live). */
 export const resolveVisiblePortfolioSections = (
   features: PortfolioFeatureFlags,
-): Array<'portfolio' | 'buy' | 'sell' | 'swap' | 'history'> => {
-  const sections: Array<'portfolio' | 'buy' | 'sell' | 'swap' | 'history'> = [
-    'portfolio',
-  ];
-  if (features.buy) {
+): PortfolioNavSection[] => {
+  const sections: PortfolioNavSection[] = ['portfolio'];
+  if (isPortfolioFeatureVisible(features.buy)) {
     sections.push('buy');
   }
-  if (features.sell) {
+  if (isPortfolioFeatureVisible(features.sell)) {
     sections.push('sell');
   }
-  if (features.swapBridge) {
+  if (isPortfolioFeatureVisible(features.swapBridge)) {
     sections.push('swap');
   }
-  if (features.buy || features.sell || features.swapBridge) {
+  if (
+    isPortfolioFeatureActivated(features.buy) ||
+    isPortfolioFeatureActivated(features.sell) ||
+    isPortfolioFeatureActivated(features.swapBridge)
+  ) {
     sections.push('history');
   }
   return sections;
@@ -611,6 +642,7 @@ export const PortfolioApiUtils = {
   createExecution,
   getClientToken,
   getFeatures,
+  getPortfolioSectionFeatureState,
   getFiatRampLocale,
   getFiatRampOptions,
   getQuotes,

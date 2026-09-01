@@ -151,9 +151,9 @@ jest.mock('src/portfolio/portfolio-api.utils', () => {
       listHistory: jest.fn().mockResolvedValue([]),
       listComplianceReviewHistory: jest.fn().mockResolvedValue([]),
       getFeatures: jest.fn().mockResolvedValue({
-        swapBridge: true,
-        buy: true,
-        sell: true,
+        swapBridge: 'activated',
+        buy: 'activated',
+        sell: 'activated',
       }),
       getQuotes: jest.fn().mockResolvedValue({ quotes: [] }),
       resolveExecutablePortfolioQuoteId: jest.fn().mockReturnValue(''),
@@ -238,6 +238,11 @@ describe('Portfolio', () => {
     ).mockImplementation(async (accounts) => accounts[0].wallet);
     window.history.replaceState(null, '', '/#portfolio');
     mockPortfolioListAvailableAssets();
+    (PortfolioApiUtils.getFeatures as jest.Mock).mockResolvedValue({
+      swapBridge: 'activated',
+      buy: 'activated',
+      sell: 'activated',
+    });
     (
       PortfolioSwapCatalogCacheUtils.getCachedSwapCatalog as jest.Mock
     ).mockResolvedValue(null);
@@ -287,6 +292,7 @@ describe('Portfolio', () => {
 
     await waitFor(() => {
       expect(getByTestId('portfolio-page')).toBeTruthy();
+      expect(getByTestId('portfolio-nav-history')).toBeTruthy();
     });
     expect(container.querySelector('.portfolio-app-shell')).not.toBeNull();
     expect(container.querySelector('.portfolio-sidebar')).not.toBeNull();
@@ -335,6 +341,83 @@ describe('Portfolio', () => {
     expect(container.querySelector('.portfolio-card-header')).toBeNull();
     expect(container.querySelector('.portfolio-page-header h1')).not.toBeNull();
     expect(container.querySelector('.portfolio-refresh-button')).toBeNull();
+  });
+
+  it('shows coming soon for buy and sell without loading those flows', async () => {
+    (PortfolioApiUtils.getFeatures as jest.Mock).mockResolvedValue({
+      swapBridge: 'activated',
+      buy: 'comingSoon',
+      sell: 'comingSoon',
+    });
+
+    const { container, getByTestId } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[]}
+        activeAccountType={ChainType.HIVE}
+        activeEvmAccountAddress={undefined}
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('portfolio-page')).toBeTruthy();
+      expect(getByTestId('portfolio-nav-buy')).toBeTruthy();
+      expect(getByTestId('portfolio-nav-sell')).toBeTruthy();
+      expect(getByTestId('portfolio-nav-swap')).toBeTruthy();
+      expect(getByTestId('portfolio-nav-history')).toBeTruthy();
+    });
+
+    clickPortfolioNav(container, 'buy');
+
+    await waitFor(() => {
+      expect(container.querySelector('.coming-soon-panel')).not.toBeNull();
+    });
+    expect(container.querySelector('.portfolio-flow')).toBeNull();
+    expect(PortfolioApiUtils.getFiatRampOptions).not.toHaveBeenCalled();
+
+    clickPortfolioNav(container, 'sell');
+
+    await waitFor(() => {
+      expect(container.querySelector('.coming-soon-panel')).not.toBeNull();
+    });
+    expect(container.querySelector('.portfolio-flow')).toBeNull();
+    expect(PortfolioApiUtils.getFiatRampOptions).not.toHaveBeenCalled();
+  });
+
+  it('hides deactivated features and falls back from their deep links', async () => {
+    window.history.replaceState(null, '', '/#buy');
+    (PortfolioApiUtils.getFeatures as jest.Mock).mockResolvedValue({
+      swapBridge: 'activated',
+      buy: 'deactivated',
+      sell: 'deactivated',
+    });
+
+    const { container, getByTestId } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[]}
+        activeAccountType={ChainType.HIVE}
+        activeEvmAccountAddress={undefined}
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('portfolio-page')).toBeTruthy();
+      expect(container.querySelector('[data-testid="portfolio-nav-buy"]')).toBeNull();
+      expect(container.querySelector('[data-testid="portfolio-nav-sell"]')).toBeNull();
+      expect(getByTestId('portfolio-nav-swap')).toBeTruthy();
+    });
+    expect(window.location.hash).toBe('#portfolio');
   });
 
   it('restores the current section from the URL hash', async () => {

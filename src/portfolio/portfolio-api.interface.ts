@@ -379,11 +379,19 @@ export interface PortfolioHistoryResponse {
   items: PortfolioHistoryItem[];
 }
 
-/** Product feature flags from `GET /features`. */
+/**
+ * Product availability from `GET /features`.
+ * `comingSoon` is visible in the sidebar but not executable.
+ */
+export type PortfolioFeatureState =
+  | 'activated'
+  | 'deactivated'
+  | 'comingSoon';
+
 export interface PortfolioFeatureFlags {
-  swapBridge: boolean;
-  buy: boolean;
-  sell: boolean;
+  swapBridge: PortfolioFeatureState;
+  buy: PortfolioFeatureState;
+  sell: PortfolioFeatureState;
 }
 
 export interface PortfolioFeaturesResponse {

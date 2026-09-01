@@ -942,4 +942,69 @@ describe('PortfolioApiParser', () => {
       PortfolioApiParser.parsePortfolioFiatRampCountriesResponse({}),
     ).toEqual({ countries: [] });
   });
+
+  it('parses GET /features statuses and coerces legacy booleans', () => {
+    expect(
+      PortfolioApiParser.parsePortfolioFeaturesResponse({
+        version: 1,
+        features: {
+          swapBridge: 'activated',
+          buy: 'comingSoon',
+          sell: 'deactivated',
+        },
+      }),
+    ).toEqual({
+      version: 1,
+      features: {
+        swapBridge: 'activated',
+        buy: 'comingSoon',
+        sell: 'deactivated',
+      },
+    });
+
+    expect(
+      PortfolioApiParser.parsePortfolioFeaturesResponse({
+        version: 1,
+        features: {
+          swapBridge: true,
+          buy: false,
+          sell: 'comingSoon',
+        },
+      }),
+    ).toEqual({
+      version: 1,
+      features: {
+        swapBridge: 'activated',
+        buy: 'deactivated',
+        sell: 'comingSoon',
+      },
+    });
+  });
+
+  it('defaults missing feature payloads to swap live and buy/sell coming soon', () => {
+    expect(PortfolioApiParser.parsePortfolioFeaturesResponse(null)).toEqual({
+      version: 1,
+      features: {
+        swapBridge: 'activated',
+        buy: 'comingSoon',
+        sell: 'comingSoon',
+      },
+    });
+
+    expect(
+      PortfolioApiParser.parsePortfolioFeaturesResponse({
+        version: 1,
+        features: {
+          swapBridge: 'on',
+        },
+      }),
+    ).toEqual({
+      version: 1,
+      features: {
+        swapBridge: 'deactivated',
+        buy: 'comingSoon',
+        sell: 'comingSoon',
+      },
+    });
+  });
 });

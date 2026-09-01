@@ -442,6 +442,23 @@
       max-width: calc(38.75rem + 2 * var(--kc-space-5));
     }
   }
+
+  .coming-soon-panel {
+    margin: 0;
+    padding: var(--kc-space-8) var(--kc-space-4);
+    background: transparent;
+    border: none;
+    color: var(--kc-color-text-primary);
+    text-align: center;
+
+    .title {
+      color: var(--kc-color-text-primary);
+    }
+
+    .description {
+      color: var(--kc-color-text-secondary);
+    }
+  }
 }
 
 .portfolio-history-toolbar {
