@@ -1,4 +1,4 @@
-import RPCModule from '@background/rpc.module';
+import RPCModule from '@background/hive/modules/rpc.module';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { config as HiveTxConfig } from 'hive-tx';

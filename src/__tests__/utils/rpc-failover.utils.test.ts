@@ -3,7 +3,7 @@ import RpcUtils from '@popup/hive/utils/rpc.utils';
 import { store } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { config as HiveTxConfig } from 'hive-tx';
-import RPCModule from '@background/rpc.module';
+import RPCModule from '@background/hive/modules/rpc.module';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import {
   isRpcNetworkError,
@@ -24,7 +24,7 @@ jest.mock('@popup/multichain/store', () => ({
   },
 }));
 
-jest.mock('@background/rpc.module', () => ({
+jest.mock('@background/hive/modules/rpc.module', () => ({
   __esModule: true,
   default: {
     setActiveRpc: jest.fn().mockResolvedValue(undefined),
