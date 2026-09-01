@@ -72,6 +72,47 @@ describe('PortfolioComplianceReviewBanner', () => {
     expect(container.firstChild).toBeNull();
   });
 
+  it('uses singular summary copy for one compliance item', () => {
+    const { getByText } = render(
+      <PortfolioComplianceReviewBanner
+        items={[createHistoryItem()]}
+        fromAssetsByItemId={{}}
+        toAssetsByItemId={{}}
+        onViewHistory={jest.fn()}
+      />,
+    );
+
+    expect(
+      getByText('portfolio_compliance_review_banner_summary_one'),
+    ).not.toBeNull();
+    expect(I18nUtils.getMessage).toHaveBeenCalledWith(
+      'portfolio_compliance_review_banner_summary_one',
+      ['1'],
+    );
+  });
+
+  it('uses plural summary copy for multiple compliance items', () => {
+    const { getByText } = render(
+      <PortfolioComplianceReviewBanner
+        items={[
+          createHistoryItem({ id: 'exec-1' }),
+          createHistoryItem({ id: 'exec-2' }),
+        ]}
+        fromAssetsByItemId={{}}
+        toAssetsByItemId={{}}
+        onViewHistory={jest.fn()}
+      />,
+    );
+
+    expect(
+      getByText('portfolio_compliance_review_banner_summary'),
+    ).not.toBeNull();
+    expect(I18nUtils.getMessage).toHaveBeenCalledWith(
+      'portfolio_compliance_review_banner_summary',
+      ['2'],
+    );
+  });
+
   it('expands to show compliance details and contact actions', () => {
     const onViewHistory = jest.fn();
     const openSupportUrlSpy = jest

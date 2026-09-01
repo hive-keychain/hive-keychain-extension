@@ -375,15 +375,19 @@ describe('Portfolio', () => {
     clickPortfolioNav(container, 'buy');
 
     await waitFor(() => {
-      expect(container.querySelector('.coming-soon-panel')).not.toBeNull();
+      expect(getByTestId('portfolio-coming-soon')).toBeTruthy();
     });
     expect(container.querySelector('.portfolio-flow')).toBeNull();
+    expect(container.querySelector('.portfolio-page-header')).toBeNull();
+    expect(
+      getByTestId('portfolio-nav-buy').querySelector('.portfolio-sidebar-soon'),
+    ).not.toBeNull();
     expect(PortfolioApiUtils.getFiatRampOptions).not.toHaveBeenCalled();
 
     clickPortfolioNav(container, 'sell');
 
     await waitFor(() => {
-      expect(container.querySelector('.coming-soon-panel')).not.toBeNull();
+      expect(getByTestId('portfolio-coming-soon')).toBeTruthy();
     });
     expect(container.querySelector('.portfolio-flow')).toBeNull();
     expect(PortfolioApiUtils.getFiatRampOptions).not.toHaveBeenCalled();

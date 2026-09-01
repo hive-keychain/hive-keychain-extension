@@ -73,7 +73,9 @@ export const PortfolioComplianceReviewBanner = ({
   }
 
   const summaryLabel = I18nUtils.getMessage(
-    'portfolio_compliance_review_banner_summary',
+    items.length === 1
+      ? 'portfolio_compliance_review_banner_summary_one'
+      : 'portfolio_compliance_review_banner_summary',
     [String(items.length)],
   );
 

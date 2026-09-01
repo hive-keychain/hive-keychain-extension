@@ -4267,8 +4267,11 @@
   "portfolio_history_status_verification_required": {
     "message": "Verification required"
   },
+  "portfolio_compliance_review_banner_summary_one": {
+    "message": "1 swap awaiting compliance review"
+  },
   "portfolio_compliance_review_banner_summary": {
-    "message": "$1 swap(s) waiting for compliance review",
+    "message": "$1 swaps awaiting compliance review",
     "placeholders": {
       "1": {
         "content": "$1",

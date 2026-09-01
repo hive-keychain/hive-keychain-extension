@@ -4149,6 +4149,25 @@
   "portfolio_section_swap": { "message": "Swap" },
   "portfolio_section_bridge": { "message": "Bridge" },
   "portfolio_section_history": { "message": "History" },
+  "portfolio_coming_soon_badge": { "message": "Soon" },
+  "portfolio_coming_soon_expected": {
+    "message": "Expected $1",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "Q4 2026"
+      }
+    }
+  },
+  "portfolio_coming_soon_description_buy": {
+    "message": "You'll soon be able to buy crypto with a card or bank transfer, without leaving Keychain."
+  },
+  "portfolio_coming_soon_description_sell": {
+    "message": "You'll soon be able to sell crypto for fiat, without leaving Keychain."
+  },
+  "portfolio_coming_soon_description_swap": {
+    "message": "You'll soon be able to swap and bridge tokens across supported chains."
+  },
   "portfolio_from_asset": { "message": "From" },
   "portfolio_to_asset": { "message": "To" },
   "portfolio_select_asset": { "message": "Select an asset" },
@@ -4453,8 +4472,11 @@
   "portfolio_history_status_verification_required": {
     "message": "Verification required"
   },
+  "portfolio_compliance_review_banner_summary_one": {
+    "message": "1 swap awaiting compliance review"
+  },
   "portfolio_compliance_review_banner_summary": {
-    "message": "$1 swap(s) waiting for compliance review",
+    "message": "$1 swaps awaiting compliance review",
     "placeholders": {
       "1": {
         "content": "$1",
