@@ -13,6 +13,41 @@ import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
+export const SWAP_END_EXCLUDED_TOKENS = new Set([
+  'SWAP.ETH',
+  'SWAP.BNB',
+  'SWAP.SOL',
+  'SWAP.USDT',
+  'SWAP.UNI',
+  'SWAP.USDC',
+  'SWAP.GIFU',
+  'SWAP.GALA',
+  'SWAP.BAT',
+  'SWAP.DAI',
+  'SWAP.LINK',
+  'SWAP.CUB',
+  'SWAP.POLY',
+  'SWAP.ENJ',
+  'SWAP.BUSD',
+  'SWAP.MATIC',
+  'SWAP.AAVE',
+  'SWAP.CRV',
+  'SWAP.AXS',
+  'SWAP.SLP',
+  'SWAP.DFY',
+  'SWAP.STATE',
+  'SWAP.KELP',
+  'SWAP.SIGNA',
+  'SWAP.SKP',
+  'SWAP.BZB',
+  'SWAP.PEPET',
+  'SWAP.VG',
+  'SWAP.PEPE',
+  'SWAP.TRUMP',
+  'SWAP.PUMP',
+  'SWAP.ETHER',
+]);
+
 const getSwapTokenStartList = async (account: ExtendedAccount) => {
   let userTokenList: TokenBalance[] = await TokensUtils.getUserBalance(
     account.name,

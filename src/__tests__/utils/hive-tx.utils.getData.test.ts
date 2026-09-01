@@ -14,6 +14,7 @@ jest.mock('hive-tx', () => {
 });
 
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 describe('HiveTxUtils.getData', () => {
   beforeEach(() => {
@@ -47,5 +48,16 @@ describe('HiveTxUtils.getData', () => {
     const out = await HiveTxUtils.getData('condenser_api.foo', ['x'], 'rows');
 
     expect(out).toEqual([{ id: 1 }]);
+  });
+
+  it('rethrows network errors instead of returning undefined', async () => {
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockResolvedValue(false);
+    mockHiveTxCall.mockRejectedValue(new Error('Failed to fetch'));
+
+    await expect(
+      HiveTxUtils.getData('condenser_api.get_accounts', ['alice']),
+    ).rejects.toThrow('Failed to fetch');
   });
 });
