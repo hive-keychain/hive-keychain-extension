@@ -305,6 +305,15 @@ describe('Portfolio', () => {
       '.portfolio-sidebar nav button',
     );
     expect(sidebarButtons).toHaveLength(5);
+    expect(
+      [...sidebarButtons].map((button) => button.getAttribute('data-testid')),
+    ).toEqual([
+      'portfolio-nav-portfolio',
+      'portfolio-nav-swap',
+      'portfolio-nav-buy',
+      'portfolio-nav-sell',
+      'portfolio-nav-history',
+    ]);
     expect(sidebarButtons[0].classList.contains('active')).toBe(true);
     expect(window.location.hash).toBe('#portfolio');
 

@@ -1290,6 +1290,16 @@ describe('PortfolioApiUtils', () => {
   });
 
   describe('resolveVisiblePortfolioSections', () => {
+    it('lists swap before buy and sell when all trade features are visible', () => {
+      expect(
+        PortfolioApiUtils.resolveVisiblePortfolioSections({
+          swapBridge: 'activated',
+          buy: 'comingSoon',
+          sell: 'comingSoon',
+        }),
+      ).toEqual(['portfolio', 'swap', 'buy', 'sell', 'history']);
+    });
+
     it('hides buy, sell, and swap when their flags are deactivated', () => {
       expect(
         PortfolioApiUtils.resolveVisiblePortfolioSections({

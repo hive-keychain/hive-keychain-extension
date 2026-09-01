@@ -126,9 +126,9 @@ import { I18nUtils } from 'src/utils/i18n.utils';
 type PortfolioSection = 'portfolio' | PortfolioMode | 'history';
 const PORTFOLIO_SECTION_HASHES: PortfolioSection[] = [
   'portfolio',
+  'swap',
   'buy',
   'sell',
-  'swap',
   'history',
 ];
 
@@ -3257,7 +3257,7 @@ export const Portfolio = ({
     (): Array<Exclude<PortfolioMode, 'bridge'>> =>
       selectedAccount?.type === ChainType.HIVE
         ? ['swap']
-        : ['buy', 'sell', 'swap'],
+        : ['swap', 'buy', 'sell'],
     [selectedAccount?.type],
   );
 

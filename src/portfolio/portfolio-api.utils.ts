@@ -62,14 +62,14 @@ export const resolveVisiblePortfolioSections = (
   features: PortfolioFeatureFlags,
 ): PortfolioNavSection[] => {
   const sections: PortfolioNavSection[] = ['portfolio'];
+  if (isPortfolioFeatureVisible(features.swapBridge)) {
+    sections.push('swap');
+  }
   if (isPortfolioFeatureVisible(features.buy)) {
     sections.push('buy');
   }
   if (isPortfolioFeatureVisible(features.sell)) {
     sections.push('sell');
-  }
-  if (isPortfolioFeatureVisible(features.swapBridge)) {
-    sections.push('swap');
   }
   if (
     isPortfolioFeatureActivated(features.buy) ||
