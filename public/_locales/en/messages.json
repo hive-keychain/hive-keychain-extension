@@ -4594,6 +4594,8 @@
   "portfolio_history_show_created_expired": {
     "message": "Show created/expired"
   },
+  "portfolio_history_address_filter": { "message": "Address" },
+  "portfolio_history_all_addresses": { "message": "All addresses" },
   "portfolio_page_description": {
     "message": "View balances and access portfolio services without changing your active Keychain account."
   },

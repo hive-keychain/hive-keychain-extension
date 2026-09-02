@@ -4417,6 +4417,12 @@
   "portfolio_history_show_created_expired": {
     "message": "Show created/expired"
   },
+  "portfolio_history_address_filter": {
+    "message": "地址"
+  },
+  "portfolio_history_all_addresses": {
+    "message": "全部地址"
+  },
   "portfolio_page_description": {
     "message": "View balances and access portfolio services without changing your active Keychain account."
   },

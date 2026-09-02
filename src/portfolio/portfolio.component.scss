@@ -474,6 +474,20 @@
   }
 }
 
+.portfolio-history-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--kc-space-3);
+  min-width: 0;
+
+  &__address {
+    flex: 1.4 1 16rem;
+    min-width: min(100%, 14rem);
+    max-width: 24rem;
+  }
+}
+
 .portfolio-history-toolbar {
   display: flex;
   flex-wrap: wrap;

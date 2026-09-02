@@ -1060,6 +1060,115 @@ describe('Portfolio', () => {
     });
   });
 
+  it('hides the history address filter when the wallet has a single account', async () => {
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-account')).not.toBeNull();
+    });
+
+    clickPortfolioNav(container, 'history');
+
+    await waitFor(() => {
+      expect(PortfolioApiUtils.listHistory).toHaveBeenCalled();
+    });
+
+    expect(
+      container.querySelector('#portfolio-history-address-filter'),
+    ).toBeNull();
+  });
+
+  it('filters history by the selected address and restores all addresses', async () => {
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[{ name: 'alice' } as never, { name: 'bob' } as never]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xAbC' },
+          } as never,
+          {
+            id: 2,
+            wallet: { address: '0xDef' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName="alice"
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-account')).not.toBeNull();
+    });
+
+    clickPortfolioNav(container, 'history');
+
+    await waitFor(() => {
+      expect(
+        container.querySelector('#portfolio-history-address-filter'),
+      ).not.toBeNull();
+      expect(PortfolioApiUtils.listHistory).toHaveBeenCalledWith(1, {
+        addresses: ['alice', 'bob', '0xAbC', '0xDef'],
+      });
+    });
+
+    await selectOverlayOption(
+      container,
+      'portfolio-history-address-filter',
+      (text) => text.includes('@alice'),
+    );
+
+    await waitFor(() => {
+      expect(PortfolioApiUtils.listHistory).toHaveBeenCalledWith(1, {
+        addresses: ['alice'],
+      });
+    });
+    expect(PortfolioApiUtils.listComplianceReviewHistory).toHaveBeenCalledWith({
+      addresses: ['alice', 'bob', '0xAbC', '0xDef'],
+    });
+    expect(
+      PortfolioApiUtils.listComplianceReviewHistory,
+    ).not.toHaveBeenCalledWith({
+      addresses: ['alice'],
+    });
+
+    await selectOverlayOption(
+      container,
+      'portfolio-history-address-filter',
+      (text) =>
+        text.includes('portfolio_history_all_addresses') ||
+        /all addresses/i.test(text),
+    );
+
+    await waitFor(() => {
+      expect(PortfolioApiUtils.listHistory).toHaveBeenLastCalledWith(1, {
+        addresses: ['alice', 'bob', '0xAbC', '0xDef'],
+      });
+    });
+  });
+
   it('renders Hive and Hive Engine token logos in history without API assets', async () => {
     const decIconUrl =
       'https://images.hive.blog/0x0/https://example.com/dec.png';

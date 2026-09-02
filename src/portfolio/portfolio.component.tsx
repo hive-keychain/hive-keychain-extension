@@ -208,6 +208,10 @@ const PORTFOLIO_SWAP_QUOTE_REFRESH_INTERVAL_SECONDS = 30;
 const PORTFOLIO_SWAP_QUOTE_DEBOUNCE_MS = 600;
 const PORTFOLIO_HISTORY_AUTO_REFRESH_INTERVAL_MS = 15_000;
 const PORTFOLIO_HISTORY_AUTO_REFRESH_INTERVAL_SECONDS = 15;
+const HISTORY_ADDRESS_FILTER_ALL = '';
+
+const getHistoryAddressFiltersKey = (addresses: string[]): string =>
+  addresses.join('|');
 
 const mergePortfolioChainRecords = (
   current: PortfolioChainDisplayRecord,
@@ -581,6 +585,9 @@ export const Portfolio = ({
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [showCreatedExpiredHistory, setShowCreatedExpiredHistory] =
     useState(false);
+  const [selectedHistoryAccountKey, setSelectedHistoryAccountKey] = useState(
+    HISTORY_ADDRESS_FILTER_ALL,
+  );
   const [isFlowLoading, setIsFlowLoading] = useState(false);
   const [isSwapQuoteRequestPending, setIsSwapQuoteRequestPending] =
     useState(false);
@@ -630,8 +637,9 @@ export const Portfolio = ({
   const loadedPortfolioAccountKeyRef = useRef('');
   const hasLoadedAssetsRef = useRef(false);
   const isAssetsLoadInFlightRef = useRef(false);
-  const hasLoadedHistoryRef = useRef(false);
-  const isHistoryLoadInFlightRef = useRef(false);
+  const loadedHistoryAddressFiltersKeyRef = useRef<string | null>(null);
+  const historyLoadInFlightFiltersKeyRef = useRef<string | null>(null);
+  const historyLoadRequestIdRef = useRef(0);
   const swapAvailableAssetsLoadedRef = useRef(false);
   const isSwapAvailableAssetsLoadInFlightRef = useRef(false);
   const setupEvmChainsPromiseRef = useRef<Promise<EvmChain[]> | null>(null);
@@ -824,7 +832,7 @@ export const Portfolio = ({
     [accountOptions],
   );
 
-  const historyAddressFilters = useMemo(() => {
+  const allWalletHistoryAddresses = useMemo(() => {
     const addressSet = new Set<string>();
 
     for (const account of hiveAccounts) {
@@ -841,8 +849,48 @@ export const Portfolio = ({
       }
     }
 
-    return { addresses: [...addressSet] };
+    return [...addressSet];
   }, [evmAccounts, hiveAccounts]);
+
+  const allWalletHistoryAddressFilters = useMemo(
+    () => ({ addresses: allWalletHistoryAddresses }),
+    [allWalletHistoryAddresses],
+  );
+
+  const historyAddressFilters = useMemo(() => {
+    if (!selectedHistoryAccountKey) {
+      return allWalletHistoryAddressFilters;
+    }
+
+    const account = accountOptions.find(
+      (item) => item.key === selectedHistoryAccountKey,
+    );
+    const address = account?.value?.trim();
+    if (!address) {
+      return allWalletHistoryAddressFilters;
+    }
+
+    return { addresses: [address] };
+  }, [
+    accountOptions,
+    allWalletHistoryAddressFilters,
+    selectedHistoryAccountKey,
+  ]);
+
+  const historyAddressFiltersKey = getHistoryAddressFiltersKey(
+    historyAddressFilters.addresses,
+  );
+  const showHistoryAddressFilter = accountOptions.length > 1;
+  const overlayHistoryAddressOptions = useMemo(
+    () => [
+      {
+        value: HISTORY_ADDRESS_FILTER_ALL,
+        label: I18nUtils.getMessage('portfolio_history_all_addresses'),
+      },
+      ...overlayAccountOptions,
+    ],
+    [overlayAccountOptions],
+  );
 
   const toAssetEvmChains = useMemo(() => {
     const chainById = buildEvmPortfolioChainByIdMap(setupEvmChains);
@@ -1824,6 +1872,13 @@ export const Portfolio = ({
     setSelectedAccountKey(accountKey);
   }, []);
 
+  const handleSelectedHistoryAccountChange = useCallback(
+    (accountKey: string) => {
+      setSelectedHistoryAccountKey(accountKey);
+    },
+    [],
+  );
+
   const handleBuyDestinationChange = useCallback(
     (value: string) => {
       if (value === PORTFOLIO_RECIPIENT_OTHER_VALUE) {
@@ -2087,13 +2142,19 @@ export const Portfolio = ({
   const historyRefreshDeadlineRef = useRef(0);
 
   const refreshPortfolioTransactionalHistory = useCallback(async () => {
+    const requestId = ++historyLoadRequestIdRef.current;
     const [historyItems, complianceItems] = await Promise.all([
       PortfolioApiUtils.listHistory(1, historyAddressFilters),
-      PortfolioApiUtils.listComplianceReviewHistory(historyAddressFilters),
+      PortfolioApiUtils.listComplianceReviewHistory(
+        allWalletHistoryAddressFilters,
+      ),
     ]);
+    if (requestId !== historyLoadRequestIdRef.current) {
+      return;
+    }
     setHistory(historyItems);
     setComplianceReviewItems(complianceItems);
-  }, [historyAddressFilters]);
+  }, [allWalletHistoryAddressFilters, historyAddressFilters]);
 
   const refreshHistorySilently = useCallback(() => {
     historyRefreshDeadlineRef.current = 0;
@@ -2567,27 +2628,45 @@ export const Portfolio = ({
     };
   }, []);
 
-  const loadHistory = async () => {
-    if (hasLoadedHistoryRef.current || isHistoryLoadInFlightRef.current) {
+  const loadHistory = useCallback(async () => {
+    if (loadedHistoryAddressFiltersKeyRef.current === historyAddressFiltersKey) {
+      return;
+    }
+    if (historyLoadInFlightFiltersKeyRef.current === historyAddressFiltersKey) {
       return;
     }
 
-    isHistoryLoadInFlightRef.current = true;
+    historyLoadInFlightFiltersKeyRef.current = historyAddressFiltersKey;
     setIsHistoryLoading(true);
+    setHistory([]);
     setStatusMessage('');
     try {
       await refreshPortfolioTransactionalHistory();
-      hasLoadedHistoryRef.current = true;
+      if (
+        historyLoadInFlightFiltersKeyRef.current === historyAddressFiltersKey
+      ) {
+        loadedHistoryAddressFiltersKeyRef.current = historyAddressFiltersKey;
+      }
     } catch (error) {
       Logger.error('Unable to load portfolio history', error);
+      if (
+        historyLoadInFlightFiltersKeyRef.current !== historyAddressFiltersKey
+      ) {
+        return;
+      }
       setStatusMessage('portfolio_load_error');
       setHistory([]);
       setComplianceReviewItems([]);
+      loadedHistoryAddressFiltersKeyRef.current = null;
     } finally {
-      isHistoryLoadInFlightRef.current = false;
-      setIsHistoryLoading(false);
+      if (
+        historyLoadInFlightFiltersKeyRef.current === historyAddressFiltersKey
+      ) {
+        historyLoadInFlightFiltersKeyRef.current = null;
+        setIsHistoryLoading(false);
+      }
     }
-  };
+  }, [historyAddressFiltersKey, refreshPortfolioTransactionalHistory]);
 
   useEffect(() => {
     if (section === 'swap' || isCurrentSectionComingSoon) {
@@ -2607,7 +2686,27 @@ export const Portfolio = ({
     }
 
     void loadHistory();
-  }, [hasResolvedInitialAccountSelection, section, selectedAccountKey]);
+  }, [
+    hasResolvedInitialAccountSelection,
+    historyAddressFiltersKey,
+    loadHistory,
+    section,
+    selectedAccountKey,
+  ]);
+
+  useEffect(() => {
+    if (!selectedHistoryAccountKey) {
+      return;
+    }
+
+    if (
+      !accountOptions.some(
+        (account) => account.key === selectedHistoryAccountKey,
+      )
+    ) {
+      setSelectedHistoryAccountKey(HISTORY_ADDRESS_FILTER_ALL);
+    }
+  }, [accountOptions, selectedHistoryAccountKey]);
 
   useEffect(() => {
     if (!hasResolvedInitialAccountSelection || !selectedAccountKey) {
@@ -2615,15 +2714,17 @@ export const Portfolio = ({
       return;
     }
 
-    void PortfolioApiUtils.listComplianceReviewHistory(historyAddressFilters)
+    void PortfolioApiUtils.listComplianceReviewHistory(
+      allWalletHistoryAddressFilters,
+    )
       .then(setComplianceReviewItems)
       .catch((error) => {
         Logger.error('Unable to load compliance review items', error);
         setComplianceReviewItems([]);
       });
   }, [
+    allWalletHistoryAddressFilters,
     hasResolvedInitialAccountSelection,
-    historyAddressFilters,
     selectedAccountKey,
   ]);
 
@@ -3304,6 +3405,17 @@ export const Portfolio = ({
       );
     },
     [accountOptions],
+  );
+
+  const renderHistoryAddressOption = useCallback(
+    (accountKey: string) => {
+      if (accountKey === HISTORY_ADDRESS_FILTER_ALL) {
+        return I18nUtils.getMessage('portfolio_history_all_addresses');
+      }
+
+      return renderAccountRow(accountKey);
+    },
+    [renderAccountRow],
   );
 
   const renderRecipientOption = useCallback(
@@ -4094,6 +4206,20 @@ export const Portfolio = ({
   };
 
   const renderHistory = () => {
+    const historyAddressFilter = showHistoryAddressFilter ? (
+      <div className="portfolio-history-filters">
+        <PortfolioOverlayListSelect
+          id="portfolio-history-address-filter"
+          className="portfolio-history-filters__address"
+          label={I18nUtils.getMessage('portfolio_history_address_filter')}
+          value={selectedHistoryAccountKey}
+          onChange={handleSelectedHistoryAccountChange}
+          options={overlayHistoryAddressOptions}
+          renderDisplay={renderHistoryAddressOption}
+          renderOption={renderHistoryAddressOption}
+        />
+      </div>
+    ) : null;
     const historyRefreshControl = renderHistoryRefreshControl();
     const historyVisibilityToggle = renderHistoryVisibilityToggle();
     const historyToolbar =
@@ -4103,10 +4229,27 @@ export const Portfolio = ({
           {historyVisibilityToggle}
         </div>
       ) : null;
+    const isHistoryAwaitingLoad =
+      isHistoryLoading ||
+      !hasResolvedInitialAccountSelection ||
+      !selectedAccountKey;
+
+    if (isHistoryAwaitingLoad && history.length === 0) {
+      return (
+        <>
+          {historyAddressFilter}
+          {historyToolbar}
+          <div className="rotating-logo-wrapper">
+            <RotatingLogoComponent />
+          </div>
+        </>
+      );
+    }
 
     if (visibleHistory.length === 0) {
       return (
         <>
+          {historyAddressFilter}
           {historyToolbar}
           <div className="portfolio-empty">
             {I18nUtils.getMessage('portfolio_no_history')}
@@ -4117,6 +4260,7 @@ export const Portfolio = ({
 
     return (
       <>
+        {historyAddressFilter}
         {historyToolbar}
         <div className="portfolio-history-list">
           {visibleHistory.map((item) => (
@@ -4162,9 +4306,6 @@ export const Portfolio = ({
       isQuoteAutoFetchSection(section) &&
       (!selectedAccountKey || isFlowCatalogLoading);
 
-    const showHistorySpinner =
-      isHistoryLoading && history.length === 0 && section === 'history';
-
     if (pendingInAppConfirmation) {
       return (
         <PortfolioConfirmationStepComponent
@@ -4186,11 +4327,7 @@ export const Portfolio = ({
       );
     }
 
-    if (
-      showInitialPortfolioSpinner ||
-      showFlowLoadingSpinner ||
-      showHistorySpinner
-    ) {
+    if (showInitialPortfolioSpinner || showFlowLoadingSpinner) {
       return (
         <div className="rotating-logo-wrapper">
           <RotatingLogoComponent />
