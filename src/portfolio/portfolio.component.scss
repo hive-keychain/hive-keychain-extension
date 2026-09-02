@@ -486,13 +486,19 @@
     min-width: min(100%, 14rem);
     max-width: 24rem;
   }
+
+  &__search {
+    flex: 1 1 14rem;
+    min-width: min(100%, 12rem);
+    max-width: none;
+  }
 }
 
 .portfolio-history-toolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: var(--kc-space-3);
   min-width: 0;
 }

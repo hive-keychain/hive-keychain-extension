@@ -1093,6 +1093,16 @@ describe('Portfolio', () => {
     expect(
       container.querySelector('#portfolio-history-address-filter'),
     ).toBeNull();
+    expect(
+      container.querySelector(
+        '.portfolio-history-toolbar .portfolio-quote-autorefresh',
+      ),
+    ).not.toBeNull();
+    expect(
+      container.querySelector(
+        '.portfolio-page-header .portfolio-quote-autorefresh',
+      ),
+    ).toBeNull();
   });
 
   it('filters history by the selected address and restores all addresses', async () => {
@@ -1167,6 +1177,120 @@ describe('Portfolio', () => {
         addresses: ['alice', 'bob', '0xAbC', '0xDef'],
       });
     });
+  });
+
+  it('filters history cards by a text query across item fields', async () => {
+    const createHistoryItem = (
+      overrides: Record<string, unknown> = {},
+    ) => ({
+      id: 'history-1',
+      status: 'completed',
+      displayStatus: 'completed',
+      mode: 'swap',
+      provider: 'lifi',
+      providerReferenceId: null,
+      fromAssetId: 'evm:native:ethereum',
+      toAssetId: 'evm:native:polygon',
+      fromAmount: '1',
+      toAmount: '0.99',
+      receivedAmount: '0.99',
+      fromAddress: '0xabc',
+      toAddress: '0xabc',
+      redirectUrl: null,
+      transaction: null,
+      fiatCurrency: null,
+      paymentMethod: null,
+      submittedAt: '2026-08-17T10:00:00.000Z',
+      updatedAt: '2026-08-17T10:01:00.000Z',
+      executionType: 'in_app',
+      txHash: null,
+      providerName: 'LI.FI',
+      providerLogoUrl: null,
+      providerStatus: 'completed',
+      lastProviderStatusRefreshAt: null,
+      failureCode: null,
+      failureAction: null,
+      providerStatusDetail: null,
+      providerStatusUrl: null,
+      supportUrl: null,
+      ...overrides,
+    });
+
+    (PortfolioApiUtils.listHistory as jest.Mock).mockResolvedValue([
+      createHistoryItem({
+        id: 'lifi-swap',
+        providerName: 'LI.FI',
+        fromAddress: '0xabc',
+      }),
+      createHistoryItem({
+        id: 'moonpay-buy',
+        mode: 'buy',
+        provider: 'moonpay',
+        providerName: 'MoonPay',
+        fromAddress: 'alice',
+        fromAssetId: 'fiat:USD',
+        toAssetId: 'hive-hive',
+      }),
+    ]);
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[{ name: 'alice' } as never]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName="alice"
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-account')).not.toBeNull();
+    });
+
+    clickPortfolioNav(container, 'history');
+
+    await waitFor(() => {
+      expect(
+        container.querySelector('#portfolio-history-text-filter'),
+      ).not.toBeNull();
+      expect(container.querySelectorAll('.portfolio-history-card')).toHaveLength(
+        2,
+      );
+    });
+
+    fireEvent.change(
+      container.querySelector(
+        '#portfolio-history-text-filter',
+      ) as HTMLInputElement,
+      { target: { value: 'moonpay' } },
+    );
+
+    expect(container.querySelectorAll('.portfolio-history-card')).toHaveLength(
+      1,
+    );
+
+    fireEvent.change(
+      container.querySelector(
+        '#portfolio-history-text-filter',
+      ) as HTMLInputElement,
+      { target: { value: 'does-not-exist' } },
+    );
+
+    expect(container.querySelector('.portfolio-empty')?.textContent).toMatch(
+      /portfolio_history_no_matching_results|No history matches your filter/i,
+    );
+    expect(container.querySelectorAll('.portfolio-history-card')).toHaveLength(
+      0,
+    );
   });
 
   it('renders Hive and Hive Engine token logos in history without API assets', async () => {

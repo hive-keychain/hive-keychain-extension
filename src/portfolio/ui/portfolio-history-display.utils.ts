@@ -572,6 +572,73 @@ const getPortfolioHistoryAssetSymbol = (
   return tail.toUpperCase();
 };
 
+const appendPortfolioHistorySearchableValues = (
+  values: string[],
+  value: unknown,
+): void => {
+  if (value == null) {
+    return;
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (trimmed) {
+      values.push(trimmed);
+    }
+    return;
+  }
+  if (
+    typeof value === 'number' ||
+    typeof value === 'boolean' ||
+    typeof value === 'bigint'
+  ) {
+    values.push(String(value));
+    return;
+  }
+  if (Array.isArray(value)) {
+    for (const entry of value) {
+      appendPortfolioHistorySearchableValues(values, entry);
+    }
+    return;
+  }
+  if (typeof value === 'object') {
+    for (const entry of Object.values(value as Record<string, unknown>)) {
+      appendPortfolioHistorySearchableValues(values, entry);
+    }
+  }
+};
+
+const doesPortfolioHistoryItemMatchTextFilter = (
+  item: PortfolioHistoryItem,
+  textFilter: string,
+): boolean => {
+  const needle = textFilter.trim().toLowerCase();
+  if (!needle) {
+    return true;
+  }
+
+  const values: string[] = [];
+  appendPortfolioHistorySearchableValues(values, item);
+
+  const fromSymbol = getPortfolioHistoryAssetSymbol(
+    item.fromAssetId,
+    undefined,
+    item.fiatCurrency,
+  );
+  const toSymbol = getPortfolioHistoryAssetSymbol(
+    item.toAssetId,
+    undefined,
+    item.fiatCurrency,
+  );
+  if (fromSymbol) {
+    values.push(fromSymbol);
+  }
+  if (toSymbol) {
+    values.push(toSymbol);
+  }
+
+  return values.some((value) => value.toLowerCase().includes(needle));
+};
+
 export const PortfolioHistoryDisplayUtils = {
   resolvePortfolioHistoryDisplayStatus,
   isPortfolioHistoryVerificationRequired,
@@ -590,6 +657,7 @@ export const PortfolioHistoryDisplayUtils = {
   resolvePortfolioAssetById,
   getPortfolioHistoryHiveEngineAssetSymbol,
   getPortfolioHistoryAssetSymbol,
+  doesPortfolioHistoryItemMatchTextFilter,
   resolvePortfolioHistoryExplorerUrl,
   resolvePortfolioHistoryStatusLink,
 };

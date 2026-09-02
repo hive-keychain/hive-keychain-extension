@@ -588,6 +588,7 @@ export const Portfolio = ({
   const [selectedHistoryAccountKey, setSelectedHistoryAccountKey] = useState(
     HISTORY_ADDRESS_FILTER_ALL,
   );
+  const [historyTextFilter, setHistoryTextFilter] = useState('');
   const [isFlowLoading, setIsFlowLoading] = useState(false);
   const [isSwapQuoteRequestPending, setIsSwapQuoteRequestPending] =
     useState(false);
@@ -913,7 +914,7 @@ export const Portfolio = ({
     [history],
   );
 
-  const visibleHistory = useMemo(
+  const historyAfterStatusFilter = useMemo(
     () =>
       showCreatedExpiredHistory
         ? history
@@ -924,6 +925,17 @@ export const Portfolio = ({
               ),
           ),
     [history, showCreatedExpiredHistory],
+  );
+
+  const visibleHistory = useMemo(
+    () =>
+      historyAfterStatusFilter.filter((item) =>
+        PortfolioHistoryDisplayUtils.doesPortfolioHistoryItemMatchTextFilter(
+          item,
+          historyTextFilter,
+        ),
+      ),
+    [historyAfterStatusFilter, historyTextFilter],
   );
 
   const hiveEngineHistorySymbols = useMemo(() => {
@@ -1920,6 +1932,10 @@ export const Portfolio = ({
 
   const handleTokenFilterChange = useCallback((value: string) => {
     setTokenFilter(value);
+  }, []);
+
+  const handleHistoryTextFilterChange = useCallback((value: string) => {
+    setHistoryTextFilter(value);
   }, []);
 
   useEffect(() => {
@@ -4207,37 +4223,63 @@ export const Portfolio = ({
 
   const renderHistory = () => {
     const historyAddressFilter = showHistoryAddressFilter ? (
-      <div className="portfolio-history-filters">
-        <PortfolioOverlayListSelect
-          id="portfolio-history-address-filter"
-          className="portfolio-history-filters__address"
-          label={I18nUtils.getMessage('portfolio_history_address_filter')}
-          value={selectedHistoryAccountKey}
-          onChange={handleSelectedHistoryAccountChange}
-          options={overlayHistoryAddressOptions}
-          renderDisplay={renderHistoryAddressOption}
-          renderOption={renderHistoryAddressOption}
+      <PortfolioOverlayListSelect
+        id="portfolio-history-address-filter"
+        className="portfolio-history-filters__address"
+        label={I18nUtils.getMessage('portfolio_history_address_filter')}
+        value={selectedHistoryAccountKey}
+        onChange={handleSelectedHistoryAccountChange}
+        options={overlayHistoryAddressOptions}
+        renderDisplay={renderHistoryAddressOption}
+        renderOption={renderHistoryAddressOption}
+      />
+    ) : null;
+    const historyTextFilterControl = (
+      <div className="portfolio-token-filter portfolio-history-filters__search">
+        <label htmlFor="portfolio-history-text-filter">
+          {I18nUtils.getMessage('portfolio_history_text_filter')}
+        </label>
+        <input
+          id="portfolio-history-text-filter"
+          type="text"
+          placeholder={I18nUtils.getMessage(
+            'portfolio_history_text_filter_placeholder',
+          )}
+          value={historyTextFilter}
+          onChange={(event) =>
+            handleHistoryTextFilterChange(event.target.value)
+          }
         />
       </div>
-    ) : null;
+    );
+    const historyFilters = (
+      <div className="portfolio-history-filters">
+        {historyAddressFilter}
+        {historyTextFilterControl}
+      </div>
+    );
     const historyRefreshControl = renderHistoryRefreshControl();
     const historyVisibilityToggle = renderHistoryVisibilityToggle();
     const historyToolbar =
       historyRefreshControl || historyVisibilityToggle ? (
         <div className="portfolio-history-toolbar">
-          {historyRefreshControl}
           {historyVisibilityToggle}
+          {historyRefreshControl}
         </div>
       ) : null;
     const isHistoryAwaitingLoad =
       isHistoryLoading ||
       !hasResolvedInitialAccountSelection ||
       !selectedAccountKey;
+    const emptyHistoryMessageKey =
+      historyTextFilter.trim() && historyAfterStatusFilter.length > 0
+        ? 'portfolio_history_no_matching_results'
+        : 'portfolio_no_history';
 
     if (isHistoryAwaitingLoad && history.length === 0) {
       return (
         <>
-          {historyAddressFilter}
+          {historyFilters}
           {historyToolbar}
           <div className="rotating-logo-wrapper">
             <RotatingLogoComponent />
@@ -4249,10 +4291,10 @@ export const Portfolio = ({
     if (visibleHistory.length === 0) {
       return (
         <>
-          {historyAddressFilter}
+          {historyFilters}
           {historyToolbar}
           <div className="portfolio-empty">
-            {I18nUtils.getMessage('portfolio_no_history')}
+            {I18nUtils.getMessage(emptyHistoryMessageKey)}
           </div>
         </>
       );
@@ -4260,7 +4302,7 @@ export const Portfolio = ({
 
     return (
       <>
-        {historyAddressFilter}
+        {historyFilters}
         {historyToolbar}
         <div className="portfolio-history-list">
           {visibleHistory.map((item) => (

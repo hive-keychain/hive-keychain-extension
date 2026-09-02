@@ -4393,6 +4393,15 @@
   "portfolio_history_all_addresses": {
     "message": "Semua alamat"
   },
+  "portfolio_history_text_filter": {
+    "message": "Filter"
+  },
+  "portfolio_history_text_filter_placeholder": {
+    "message": "Cari riwayat"
+  },
+  "portfolio_history_no_matching_results": {
+    "message": "Tidak ada riwayat yang cocok dengan filter Anda."
+  },
   "portfolio_page_description": {
     "message": "View balances and access portfolio services without changing your active Keychain account."
   },

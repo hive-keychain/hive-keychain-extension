@@ -1,5 +1,8 @@
 import { SVGIcons } from 'src/common-ui/icons.enum';
-import { PortfolioCanonicalAsset } from 'src/portfolio/portfolio-api.interface';
+import {
+  PortfolioCanonicalAsset,
+  PortfolioHistoryItem,
+} from 'src/portfolio/portfolio-api.interface';
 import { PortfolioHistoryDisplayUtils } from 'src/portfolio/ui/portfolio-history-display.utils';
 
 const createAsset = (
@@ -756,6 +759,119 @@ describe('PortfolioHistoryDisplayUtils', () => {
           [ethereumChain as any],
         ),
       ).toBeNull();
+    });
+  });
+
+  describe('doesPortfolioHistoryItemMatchTextFilter', () => {
+    const createHistoryItem = (
+      overrides: Partial<PortfolioHistoryItem> = {},
+    ): PortfolioHistoryItem => ({
+      id: 'history-1',
+      status: 'completed',
+      displayStatus: 'completed',
+      mode: 'swap',
+      provider: 'lifi',
+      providerReferenceId: 'ref-123',
+      fromAssetId: 'hive_engine:DEC',
+      toAssetId: 'evm:native:ethereum',
+      fromAmount: '20.28',
+      toAmount: '0.00656',
+      receivedAmount: '0.00656',
+      fromAddress: 'alice',
+      toAddress: '0xAbCDef',
+      redirectUrl: null,
+      transaction: {
+        chainId: '0x1',
+        to: '0xrouter',
+        data: '0xdead',
+        value: '0',
+      } as never,
+      fiatCurrency: null,
+      paymentMethod: null,
+      submittedAt: '2026-08-18T10:00:00.000Z',
+      updatedAt: '2026-08-18T10:01:00.000Z',
+      executionType: 'in_app',
+      txHash: '0xabc123def',
+      providerName: 'LI.FI',
+      providerLogoUrl: null,
+      providerStatus: 'completed',
+      lastProviderStatusRefreshAt: null,
+      failureCode: null,
+      failureAction: null,
+      providerStatusDetail: 'slippage exceeded',
+      providerStatusUrl: null,
+      supportUrl: null,
+      ...overrides,
+    });
+
+    it('matches any history item when the filter is empty', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.doesPortfolioHistoryItemMatchTextFilter(
+          createHistoryItem(),
+          '   ',
+        ),
+      ).toBe(true);
+    });
+
+    it('matches top-level fields case-insensitively', () => {
+      const item = createHistoryItem();
+
+      expect(
+        PortfolioHistoryDisplayUtils.doesPortfolioHistoryItemMatchTextFilter(
+          item,
+          'LI.FI',
+        ),
+      ).toBe(true);
+      expect(
+        PortfolioHistoryDisplayUtils.doesPortfolioHistoryItemMatchTextFilter(
+          item,
+          'alice',
+        ),
+      ).toBe(true);
+      expect(
+        PortfolioHistoryDisplayUtils.doesPortfolioHistoryItemMatchTextFilter(
+          item,
+          '20.28',
+        ),
+      ).toBe(true);
+      expect(
+        PortfolioHistoryDisplayUtils.doesPortfolioHistoryItemMatchTextFilter(
+          item,
+          '0xabc123',
+        ),
+      ).toBe(true);
+    });
+
+    it('matches nested transaction fields and derived asset symbols', () => {
+      const item = createHistoryItem();
+
+      expect(
+        PortfolioHistoryDisplayUtils.doesPortfolioHistoryItemMatchTextFilter(
+          item,
+          '0xrouter',
+        ),
+      ).toBe(true);
+      expect(
+        PortfolioHistoryDisplayUtils.doesPortfolioHistoryItemMatchTextFilter(
+          item,
+          'dec',
+        ),
+      ).toBe(true);
+      expect(
+        PortfolioHistoryDisplayUtils.doesPortfolioHistoryItemMatchTextFilter(
+          item,
+          'ethereum',
+        ),
+      ).toBe(true);
+    });
+
+    it('returns false when no field contains the filter', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.doesPortfolioHistoryItemMatchTextFilter(
+          createHistoryItem(),
+          'polygon',
+        ),
+      ).toBe(false);
     });
   });
 });

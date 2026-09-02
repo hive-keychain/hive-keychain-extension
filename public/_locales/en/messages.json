@@ -4596,6 +4596,11 @@
   },
   "portfolio_history_address_filter": { "message": "Address" },
   "portfolio_history_all_addresses": { "message": "All addresses" },
+  "portfolio_history_text_filter": { "message": "Filter" },
+  "portfolio_history_text_filter_placeholder": { "message": "Search history" },
+  "portfolio_history_no_matching_results": {
+    "message": "No history matches your filter."
+  },
   "portfolio_page_description": {
     "message": "View balances and access portfolio services without changing your active Keychain account."
   },

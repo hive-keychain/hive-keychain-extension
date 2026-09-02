@@ -4423,6 +4423,15 @@
   "portfolio_history_all_addresses": {
     "message": "Toutes les adresses"
   },
+  "portfolio_history_text_filter": {
+    "message": "Filtrer"
+  },
+  "portfolio_history_text_filter_placeholder": {
+    "message": "Rechercher dans l'historique"
+  },
+  "portfolio_history_no_matching_results": {
+    "message": "Aucun historique ne correspond à votre filtre."
+  },
   "portfolio_page_description": {
     "message": "View balances and access portfolio services without changing your active Keychain account."
   },

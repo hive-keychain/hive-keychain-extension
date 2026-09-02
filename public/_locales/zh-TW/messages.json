@@ -4393,6 +4393,15 @@
   "portfolio_history_all_addresses": {
     "message": "全部地址"
   },
+  "portfolio_history_text_filter": {
+    "message": "篩選"
+  },
+  "portfolio_history_text_filter_placeholder": {
+    "message": "搜尋歷史紀錄"
+  },
+  "portfolio_history_no_matching_results": {
+    "message": "沒有符合篩選條件的歷史紀錄。"
+  },
   "portfolio_page_description": {
     "message": "View balances and access portfolio services without changing your active Keychain account."
   },
