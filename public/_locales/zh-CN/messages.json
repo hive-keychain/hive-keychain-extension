@@ -4139,10 +4139,10 @@
     "message": "Portfolio"
   },
   "portfolio_section_buy": {
-    "message": "Buy"
+    "message": "购买"
   },
   "portfolio_section_sell": {
-    "message": "Sell"
+    "message": "出售"
   },
   "portfolio_section_swap": {
     "message": "Swap"
@@ -4151,7 +4151,7 @@
     "message": "Bridge"
   },
   "portfolio_section_history": {
-    "message": "History"
+    "message": "历史纪录"
   },
   "portfolio_from_asset": {
     "message": "From"
@@ -4160,28 +4160,28 @@
     "message": "To"
   },
   "portfolio_select_asset": {
-    "message": "Select an asset"
+    "message": "选择资产"
   },
   "portfolio_get_quotes": {
-    "message": "Get quotes"
+    "message": "查看报价"
   },
   "portfolio_continue": {
     "message": "Continue"
   },
   "portfolio_load_error": {
-    "message": "Unable to load portfolio data."
+    "message": "无法加载 portfolio 数据。"
   },
   "portfolio_native_execution_requires_evm": {
-    "message": "Native execution requires an EVM account."
+    "message": "原生执行需要 EVM 账户。"
   },
   "portfolio_chain_not_setup": {
-    "message": "Add the source chain to Keychain before signing."
+    "message": "签名前请先在 Keychain 中添加来源 chain。"
   },
   "portfolio_native_confirmation_message": {
-    "message": "Review the swap details below, then sign to confirm."
+    "message": "请核对下方 Swap 详情后签名确认。"
   },
   "portfolio_provider": {
-    "message": "Provider"
+    "message": "提供商"
   },
   "portfolio_confirmation_from": {
     "message": "From"
@@ -4190,34 +4190,34 @@
     "message": "To"
   },
   "portfolio_confirmation_to_account": {
-    "message": "To account"
+    "message": "到账户"
   },
   "portfolio_provider_opened": {
-    "message": "Provider page opened in a new tab."
+    "message": "已在新标签页打开提供商页面。"
   },
   "portfolio_execution_error": {
-    "message": "Unable to execute this quote."
+    "message": "无法执行此报价。"
   },
   "portfolio_api_not_configured": {
-    "message": "Portfolio API is not configured."
+    "message": "Portfolio API 未配置。"
   },
   "portfolio_country_code": {
-    "message": "Country code"
+    "message": "国家"
   },
   "portfolio_fiat_currency": {
-    "message": "Fiat currency"
+    "message": "法币"
   },
   "portfolio_payment_method": {
-    "message": "Payment method (optional)"
+    "message": "支付方式（可选）"
   },
   "portfolio_payment_method_none": {
     "message": "任意支付方式"
   },
   "portfolio_provider_execution_unavailable": {
-    "message": "This provider cannot currently be executed from Keychain."
+    "message": "此提供商目前无法从 Keychain 执行。"
   },
   "portfolio_quote_not_executable": {
-    "message": "Not executable in Keychain"
+    "message": "无法在 Keychain 中执行"
   },
   "portfolio_quote_payment_method": {
     "message": "支付方式"
@@ -4235,19 +4235,19 @@
     "message": "需要 KYC"
   },
   "portfolio_no_assets": {
-    "message": "No balances found for this account."
+    "message": "未找到此账户的余额。"
   },
   "portfolio_no_quotes": {
-    "message": "No quotes are currently available."
+    "message": "当前没有可用报价。"
   },
   "portfolio_no_quote_available": {
-    "message": "No quote available at the moment."
+    "message": "暂无可用报价。"
   },
   "portfolio_no_services_in_country": {
-    "message": "No services are available in your country."
+    "message": "您所在国家暂无可用服务。"
   },
   "portfolio_no_history": {
-    "message": "No portfolio history yet."
+    "message": "还没有 portfolio 历史记录。"
   },
   "portfolio_history_from": {
     "message": "From"
@@ -4265,13 +4265,13 @@
     "message": "Pending"
   },
   "portfolio_history_status_verification_required": {
-    "message": "Verification required"
+    "message": "需要验证"
   },
   "portfolio_compliance_review_banner_summary_one": {
-    "message": "1 swap awaiting compliance review"
+    "message": "1 笔 Swap 待 compliance 审核"
   },
   "portfolio_compliance_review_banner_summary": {
-    "message": "$1 swaps awaiting compliance review",
+    "message": "$1 笔 Swap 待 compliance 审核",
     "placeholders": {
       "1": {
         "content": "$1",
@@ -4280,118 +4280,118 @@
     }
   },
   "portfolio_compliance_review_banner_explanation": {
-    "message": "These exchanges are paused by the provider for KYC or compliance review. Expand each swap to contact the provider with your Exchange ID."
+    "message": "这些 exchanges 因 KYC 或 compliance 被提供商暂停。展开各 Swap 并用 Exchange ID 联系提供商。"
   },
   "portfolio_compliance_review_banner_view_history": {
-    "message": "View in History"
+    "message": "在历史纪录中查看"
   },
   "portfolio_history_compliance_explanation": {
-    "message": "The exchange provider paused this swap for compliance review. Contact them and include your Exchange ID below."
+    "message": "提供商已将此 Swap 暂停以进行 compliance 审核。请联系他们并提供 Exchange ID。"
   },
   "portfolio_history_exchange_id": {
     "message": "Exchange ID"
   },
   "portfolio_history_contact_provider": {
-    "message": "Contact provider"
+    "message": "联系提供商"
   },
   "portfolio_history_suggested_action": {
-    "message": "Suggested action"
+    "message": "建议操作"
   },
   "portfolio_history_failure_unknown": {
-    "message": "Unclassified failure"
+    "message": "未分类失败"
   },
   "portfolio_history_failure_transaction_reverted": {
-    "message": "On-chain transaction reverted"
+    "message": "On-chain 交易 reverted"
   },
   "portfolio_history_failure_slippage_exceeded": {
-    "message": "Output below allowed slippage"
+    "message": "Output 低于允许的 slippage"
   },
   "portfolio_history_failure_insufficient_balance": {
-    "message": "Insufficient token or gas balance"
+    "message": "Token 或 gas 余额不足"
   },
   "portfolio_history_failure_insufficient_allowance": {
-    "message": "Token allowance too low"
+    "message": "Token allowance 过低"
   },
   "portfolio_history_failure_out_of_gas": {
-    "message": "Transaction ran out of gas"
+    "message": "交易 gas 不足"
   },
   "portfolio_history_failure_expired": {
-    "message": "Quote or deposit window expired"
+    "message": "报价或入金窗口已过期"
   },
   "portfolio_history_failure_refunded": {
-    "message": "Provider refunded deposited funds"
+    "message": "提供商已退还存入资金"
   },
   "portfolio_history_failure_bridge_failed": {
-    "message": "Cross-chain route failed"
+    "message": "Cross-chain 路径失败"
   },
   "portfolio_history_failure_aml_review": {
-    "message": "Exchange held for compliance review"
+    "message": "Exchange 因 compliance 审核被暂停"
   },
   "portfolio_history_failure_amount_below_minimum": {
-    "message": "Amount below provider minimum"
+    "message": "金额低于提供商最低限额"
   },
   "portfolio_history_failure_canceled": {
-    "message": "Swap canceled by provider"
+    "message": "Swap 已被提供商取消"
   },
   "portfolio_history_failure_slippage_refund": {
-    "message": "Refunded due to slippage limits"
+    "message": "因 slippage 限制已退款"
   },
   "portfolio_history_failure_funds_returned": {
-    "message": "Funds returned to sender"
+    "message": "资金已退回发送方"
   },
   "portfolio_history_failure_manual_recovery_required": {
-    "message": "Manual recovery transaction may be required"
+    "message": "可能需要手动 recovery 交易"
   },
   "portfolio_history_failure_exchange_failed": {
-    "message": "Exchange provider reported failure"
+    "message": "Exchange 提供商报告失败"
   },
   "portfolio_history_failure_action_contact_support": {
-    "message": "Contact provider or product support"
+    "message": "联系提供商或产品支持"
   },
   "portfolio_history_failure_action_retry_swap": {
-    "message": "Start a new swap with a fresh quote"
+    "message": "用新报价重新发起 Swap"
   },
   "portfolio_history_failure_action_check_wallet_balance": {
-    "message": "Verify wallet balance and gas"
+    "message": "检查 wallet 余额和 gas"
   },
   "portfolio_history_failure_action_check_token_allowance": {
-    "message": "Approve token spending and retry"
+    "message": "Approve token 授权后重试"
   },
   "portfolio_history_failure_action_increase_slippage": {
-    "message": "Retry with higher slippage tolerance"
+    "message": "提高 slippage 后重试"
   },
   "portfolio_history_failure_action_wait_for_refund": {
-    "message": "Wait for refund to arrive"
+    "message": "等待退款到账"
   },
   "portfolio_history_failure_action_check_wallet": {
-    "message": "Check receiving wallet for returned funds"
+    "message": "检查收款 wallet 是否已退回资金"
   },
   "portfolio_history_failure_action_view_explorer": {
-    "message": "Inspect transaction on a block explorer"
+    "message": "在 block explorer 上查看交易"
   },
   "portfolio_history_failure_action_submit_recovery_transaction": {
-    "message": "Submit provider recovery transaction if offered"
+    "message": "如有提供，提交提供商 recovery 交易"
   },
   "portfolio_history_failure_action_create_new_exchange": {
-    "message": "Create a new exchange order"
+    "message": "创建新的 exchange 订单"
   },
   "portfolio_history_from_address": {
-    "message": "From address"
+    "message": "From 地址"
   },
   "portfolio_history_to_address": {
-    "message": "To address"
+    "message": "To 地址"
   },
   "portfolio_history_provider_reference": {
-    "message": "Provider reference"
+    "message": "提供商参考号"
   },
   "portfolio_history_provider_status": {
-    "message": "Provider status"
+    "message": "提供商状态"
   },
   "portfolio_history_block_explorer": {
     "message": "Block explorer"
   },
   "portfolio_history_view_on_provider": {
-    "message": "View on $1",
+    "message": "在 $1 上查看",
     "placeholders": {
       "1": {
         "content": "$1",
@@ -4400,22 +4400,22 @@
     }
   },
   "portfolio_history_view_on_explorer": {
-    "message": "View on block explorer"
+    "message": "在 block explorer 上查看"
   },
   "portfolio_history_tx_hash": {
     "message": "Transaction hash"
   },
   "portfolio_history_submitted_at": {
-    "message": "Submitted"
+    "message": "已提交"
   },
   "portfolio_history_updated_at": {
-    "message": "Last updated"
+    "message": "上次更新"
   },
   "portfolio_history_unknown_date": {
-    "message": "Unknown date"
+    "message": "未知日期"
   },
   "portfolio_history_show_created_expired": {
-    "message": "Show created/expired"
+    "message": "显示 created/expired"
   },
   "portfolio_history_address_filter": {
     "message": "地址"
@@ -4433,22 +4433,22 @@
     "message": "没有符合筛选条件的历史记录。"
   },
   "portfolio_page_description": {
-    "message": "View balances and access portfolio services without changing your active Keychain account."
+    "message": "查看余额并使用 portfolio 服务，无需切换当前 Keychain 账户。"
   },
   "portfolio_page_description_buy": {
-    "message": "Buy crypto with fiat through supported on-ramp providers."
+    "message": "通过支持的 on-ramp 提供商用 fiat 购买 crypto。"
   },
   "portfolio_page_description_sell": {
-    "message": "Sell crypto for fiat through supported off-ramp providers."
+    "message": "通过支持的 off-ramp 提供商将 crypto 卖成 fiat。"
   },
   "portfolio_page_description_swap": {
-    "message": "Exchange tokens across supported chains without switching your active account."
+    "message": "在支持的 chains 上兑换 tokens，无需切换当前账户。"
   },
   "portfolio_page_description_history": {
-    "message": "Track buy, sell, and swap activity for your Keychain accounts."
+    "message": "跟踪 Keychain 账户的购买、出售和 Swap 活动。"
   },
   "portfolio_no_quote_available_short": {
-    "message": "No quote available"
+    "message": "暂无报价"
   },
   "portfolio_account": {
     "message": "Account"
@@ -4457,7 +4457,7 @@
     "message": "Network"
   },
   "portfolio_all_networks": {
-    "message": "All networks"
+    "message": "全部 networks"
   },
   "portfolio_token": {
     "message": "Token"
@@ -4478,32 +4478,32 @@
     "message": "undelegating"
   },
   "portfolio_he_breakdown_expand": {
-    "message": "Show balance details"
+    "message": "显示余额详情"
   },
   "portfolio_he_breakdown_collapse": {
-    "message": "Hide balance details"
+    "message": "隐藏余额详情"
   },
   "portfolio_actions": {
-    "message": "Actions"
+    "message": "操作"
   },
   "portfolio_price": {
-    "message": "Price"
+    "message": "价格"
   },
   "portfolio_value": {
-    "message": "Value"
+    "message": "价值"
   },
   "portfolio_mode": {
-    "message": "Mode"
+    "message": "模式"
   },
   "portfolio_status": {
-    "message": "Status"
+    "message": "状态"
   },
   "portfolio_date": {
-    "message": "Date"
+    "message": "日期"
   },
   "portfolio_assets": { "message": "资产" },
   "portfolio_token_filter": {
-    "message": "Filter by name or symbol"
+    "message": "按名称或 symbol 筛选"
   },
   "portfolio_caption_message_total_value": {
     "message": "This amount reflects all your accounts' Hive and Hive Engine tokens, regardless of their form (liquid, staked, in savings or delegated)",
@@ -7481,11 +7481,11 @@
     "description": "Insufficient balance warning message"
   },
   "coming_soon_panel_title": {
-    "message": "Coming Soon",
+    "message": "即将推出",
     "description": "Coming soon panel title"
   },
   "coming_soon_panel_description": {
-    "message": "This feature is not available yet. Please check back later.",
+    "message": "此功能尚未开放，请稍后再来。",
     "description": "Coming soon panel description"
   },
   "evm_chain_non_supported": {
@@ -7838,5 +7838,373 @@
   },
   "portfolio_payment_method_auto_bank_transfer": {
     "message": "自动银行转账"
-  }
+  },
+  "paid_hive_account_creation_notification_title": {
+      "message": "Hive 账户已创建",
+      "description": "Title for the browser notification when a paid Hive account creation completes while Keychain is closed"
+    },
+  "paid_hive_account_creation_notification_message": {
+      "message": "您的 Hive 账户 $1 已创建并添加到 wallet",
+      "description": "Browser notification message when a paid Hive account creation completes while Keychain is closed"
+    },
+  "portfolio_coming_soon_badge": {
+      "message": "即将"
+    },
+  "portfolio_coming_soon_expected": {
+      "message": "预计 $1",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "Q4 2026"
+        }
+      }
+    },
+  "portfolio_coming_soon_description_buy": {
+      "message": "即将可在 Keychain 内用卡或银行转账购买 crypto。"
+    },
+  "portfolio_coming_soon_description_sell": {
+      "message": "即将可在 Keychain 内将 crypto 卖成 fiat。"
+    },
+  "portfolio_coming_soon_description_swap": {
+      "message": "即将可在支持的 chains 上 Swap 和 Bridge tokens。"
+    },
+  "portfolio_quote_auto_refresh_countdown": {
+      "message": "$1秒后刷新",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "30"
+        }
+      }
+    },
+  "portfolio_quote_refresh_now": {
+      "message": "立即刷新"
+    },
+  "portfolio_quote_retry": {
+      "message": "重试"
+    },
+  "portfolio_quote_refreshing": {
+      "message": "正在更新报价…"
+    },
+  "portfolio_insufficient_balance": {
+      "message": "$1 余额不足。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "HIVE"
+        }
+      }
+    },
+  "portfolio_history_auto_refresh_countdown": {
+      "message": "$1秒后自动刷新",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "15"
+        }
+      }
+    },
+  "portfolio_history_refresh_now": {
+      "message": "立即刷新"
+    },
+  "portfolio_history_refreshing": {
+      "message": "正在刷新…"
+    },
+  "portfolio_partial_load_error": {
+      "message": "部分 networks 无法加载：$1",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "Ethereum, Polygon"
+        }
+      }
+    },
+  "portfolio_confirmation_evm_destination": {
+      "message": "提供商地址"
+    },
+  "portfolio_confirmation_approval_amount": {
+      "message": "Approval 数量"
+    },
+  "portfolio_confirmation_approval_spender": {
+      "message": "Spender"
+    },
+  "portfolio_approving_smart_contract": {
+      "message": "正在 approval smart contract"
+    },
+  "portfolio_sending_transaction": {
+      "message": "正在发送交易"
+    },
+  "portfolio_recipient_hive_account": {
+      "message": "收款 Hive 账户"
+    },
+  "portfolio_recipient_bitcoin_address": {
+      "message": "Bitcoin 目标地址"
+    },
+  "portfolio_recipient_solana_address": {
+      "message": "Solana 目标地址"
+    },
+  "portfolio_recipient_sui_address": {
+      "message": "Sui 目标地址"
+    },
+  "portfolio_recipient_tron_address": {
+      "message": "Tron 目标地址"
+    },
+  "portfolio_recipient_destination_address": {
+      "message": "目标地址"
+    },
+  "portfolio_recipient_address_invalid": {
+      "message": "请输入此 Swap 的有效收款地址。"
+    },
+  "portfolio_estimated_amount": {
+      "message": "预估数量"
+    },
+  "portfolio_quote_provider_fee": {
+      "message": "提供商费用"
+    },
+  "portfolio_quote_provider_fee_undisclosed": {
+      "message": "提供商未披露"
+    },
+  "portfolio_quote_network_fee": {
+      "message": "Network 费用"
+    },
+  "portfolio_view_all_quotes": {
+      "message": "查看全部报价（$1）",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "3"
+        }
+      }
+    },
+  "portfolio_hide_quotes": {
+      "message": "隐藏报价"
+    },
+  "portfolio_swap_amount_out_of_range": {
+      "message": "金额必须介于 $1 和 $2 之间。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "2200"
+        },
+        "2": {
+          "content": "$2",
+          "example": "110000"
+        }
+      }
+    },
+  "portfolio_amount_out_of_range_fiat": {
+      "message": "金额必须介于 $1 和 $2 $3 之间。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "908"
+        },
+        "2": {
+          "content": "$2",
+          "example": "334910"
+        },
+        "3": {
+          "content": "$3",
+          "example": "TWD"
+        }
+      }
+    },
+  "portfolio_amount_below_minimum": {
+      "message": "最低金额为 $1。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "0.01123"
+        }
+      }
+    },
+  "portfolio_amount_below_minimum_fiat": {
+      "message": "最低金额为 $1 $2。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "908"
+        },
+        "2": {
+          "content": "$2",
+          "example": "TWD"
+        }
+      }
+    },
+  "portfolio_amount_above_maximum": {
+      "message": "最高金额为 $1。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "110000"
+        }
+      }
+    },
+  "portfolio_amount_above_maximum_fiat": {
+      "message": "最高金额为 $1 $2。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "334910"
+        },
+        "2": {
+          "content": "$2",
+          "example": "TWD"
+        }
+      }
+    },
+  "portfolio_swap_amount_out_of_range_generic": {
+      "message": "该金额暂无报价。"
+    },
+  "portfolio_amount_hint_increase": {
+      "message": "提高到 $1 可解锁另外 $2 个提供商。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "0.1"
+        },
+        "2": {
+          "content": "$2",
+          "example": "2"
+        }
+      }
+    },
+  "portfolio_amount_hint_decrease": {
+      "message": "降低到 $1 可解锁另外 $2 个提供商。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "10"
+        },
+        "2": {
+          "content": "$2",
+          "example": "2"
+        }
+      }
+    },
+  "portfolio_amount_hint_increase_provider": {
+      "message": "提高到 $1 可解锁 $2。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "0.1"
+        },
+        "2": {
+          "content": "$2",
+          "example": "SimpleSwap"
+        }
+      }
+    },
+  "portfolio_amount_hint_decrease_provider": {
+      "message": "降低到 $1 可解锁 $2。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "10"
+        },
+        "2": {
+          "content": "$2",
+          "example": "SimpleSwap"
+        }
+      }
+    },
+  "portfolio_history_exact_from_amount": {
+      "message": "精确 From 数量"
+    },
+  "portfolio_history_exact_to_amount": {
+      "message": "精确 To 数量"
+    },
+  "portfolio_history_received_amount": {
+      "message": "到账数量"
+    },
+  "portfolio_history_estimated_to_amount": {
+      "message": "预估 To 数量"
+    },
+  "portfolio_history_fiat_currency": {
+      "message": "法币"
+    },
+  "portfolio_history_payment_method": {
+      "message": "支付方式"
+    },
+  "portfolio_all_networks_short": {
+      "message": "全部"
+    },
+  "portfolio_to_asset_search": {
+      "message": "搜索 symbol 或 network"
+    },
+  "portfolio_more_networks": {
+      "message": "更多 networks"
+    },
+  "portfolio_symbol_filter": {
+      "message": "按 symbol 筛选"
+    },
+  "portfolio_to_asset_filter_hint": {
+      "message": "仅显示部分资产。搜索或选择 network 以缩小列表。"
+    },
+  "portfolio_to_asset_results_truncated": {
+      "message": "还有 $1 个资产匹配。请缩小搜索以查看。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "120"
+        }
+      }
+    },
+  "portfolio_no_matching_assets": {
+      "message": "没有符合筛选条件的资产。"
+    },
+  "portfolio_swap_no_wallet_tokens": {
+      "message": "此 wallet 没有任何 token。"
+    },
+  "portfolio_refresh": {
+      "message": "刷新 portfolio 数据"
+    },
+  "html_popup_settings_notifications_channels_title": {
+      "message": "送达渠道",
+      "description": "Title for local Hive notification drop/browser preferences"
+    },
+  "html_popup_settings_notifications_channels_caption": {
+      "message": "选择每项操作的显示位置。更改仅保存在此账户本地。",
+      "description": "Caption for local Hive notification channel preferences"
+    },
+  "html_popup_settings_notifications_operation": {
+      "message": "操作",
+      "description": "Column header for notification operation name"
+    },
+  "html_popup_settings_notifications_operation_placeholder": {
+      "message": "操作",
+      "description": "Placeholder for notification operation criteria input"
+    },
+  "html_popup_settings_notifications_channel_drop": {
+      "message": "Drop",
+      "description": "Toggle label for in-app notification dropdown"
+    },
+  "html_popup_settings_notifications_channel_browser": {
+      "message": "推送通知",
+      "description": "Toggle label for browser OS push notifications"
+    },
+  "html_popup_settings_notifications_channel_browser_tooltip": {
+      "message": "即使 Keychain 已关闭，收到此操作时也会显示系统通知。会随通知配置一起保存。",
+      "description": "Tooltip explaining the push notification channel toggle"
+    },
+  "html_popup_settings_notifications_condition_field_placeholder": {
+      "message": "字段",
+      "description": "Placeholder for notification condition field dropdown"
+    },
+  "html_popup_settings_notifications_condition_operand_placeholder": {
+      "message": "运算符",
+      "description": "Placeholder for notification condition operator dropdown"
+    },
+  "html_popup_settings_notifications_condition_value_placeholder": {
+      "message": "值",
+      "description": "Placeholder for notification condition value input"
+    },
+  "evm_light_node_assets_cache_warning": {
+      "message": "EVM 服务不可用。正在显示上次已知的资产信息；余额可能会刷新，但 token 和 NFT 详情可能过期。",
+      "description": "Warning shown when EVM token or NFT data is loaded from local cache because the light-node is unavailable"
+    },
+  "hive_push_notification_title": {
+      "message": "$1 · Hive 通知",
+      "description": "Incoming Hive push notification title"
+    }
 }

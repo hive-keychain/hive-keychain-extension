@@ -4139,10 +4139,10 @@
     "message": "Portfolio"
   },
   "portfolio_section_buy": {
-    "message": "Buy"
+    "message": "購買"
   },
   "portfolio_section_sell": {
-    "message": "Sell"
+    "message": "出售"
   },
   "portfolio_section_swap": {
     "message": "Swap"
@@ -4151,7 +4151,7 @@
     "message": "Bridge"
   },
   "portfolio_section_history": {
-    "message": "History"
+    "message": "歷史紀錄"
   },
   "portfolio_from_asset": {
     "message": "From"
@@ -4160,28 +4160,28 @@
     "message": "To"
   },
   "portfolio_select_asset": {
-    "message": "Select an asset"
+    "message": "選擇資產"
   },
   "portfolio_get_quotes": {
-    "message": "Get quotes"
+    "message": "查看報價"
   },
   "portfolio_continue": {
     "message": "Continue"
   },
   "portfolio_load_error": {
-    "message": "Unable to load portfolio data."
+    "message": "無法載入 portfolio 資料。"
   },
   "portfolio_native_execution_requires_evm": {
-    "message": "Native execution requires an EVM account."
+    "message": "原生執行需要 EVM 帳戶。"
   },
   "portfolio_chain_not_setup": {
-    "message": "Add the source chain to Keychain before signing."
+    "message": "簽名前請先在 Keychain 中新增來源 chain。"
   },
   "portfolio_native_confirmation_message": {
-    "message": "Review the swap details below, then sign to confirm."
+    "message": "請核對下方 Swap 詳情後簽名確認。"
   },
   "portfolio_provider": {
-    "message": "Provider"
+    "message": "提供商"
   },
   "portfolio_confirmation_from": {
     "message": "From"
@@ -4190,34 +4190,34 @@
     "message": "To"
   },
   "portfolio_confirmation_to_account": {
-    "message": "To account"
+    "message": "到帳戶"
   },
   "portfolio_provider_opened": {
-    "message": "Provider page opened in a new tab."
+    "message": "已在新分頁開啟提供商頁面。"
   },
   "portfolio_execution_error": {
-    "message": "Unable to execute this quote."
+    "message": "無法執行此報價。"
   },
   "portfolio_api_not_configured": {
-    "message": "Portfolio API is not configured."
+    "message": "Portfolio API 未設定。"
   },
   "portfolio_country_code": {
-    "message": "Country code"
+    "message": "國家"
   },
   "portfolio_fiat_currency": {
-    "message": "Fiat currency"
+    "message": "法幣"
   },
   "portfolio_payment_method": {
-    "message": "Payment method (optional)"
+    "message": "付款方式（選填）"
   },
   "portfolio_payment_method_none": {
     "message": "任何付款方式"
   },
   "portfolio_provider_execution_unavailable": {
-    "message": "This provider cannot currently be executed from Keychain."
+    "message": "此提供商目前無法從 Keychain 執行。"
   },
   "portfolio_quote_not_executable": {
-    "message": "Not executable in Keychain"
+    "message": "無法在 Keychain 中執行"
   },
   "portfolio_quote_payment_method": {
     "message": "付款方式"
@@ -4235,19 +4235,19 @@
     "message": "需要 KYC"
   },
   "portfolio_no_assets": {
-    "message": "No balances found for this account."
+    "message": "未找到此帳戶的餘額。"
   },
   "portfolio_no_quotes": {
-    "message": "No quotes are currently available."
+    "message": "目前沒有可用報價。"
   },
   "portfolio_no_quote_available": {
-    "message": "No quote available at the moment."
+    "message": "暫無可用報價。"
   },
   "portfolio_no_services_in_country": {
-    "message": "No services are available in your country."
+    "message": "您所在國家暫無可用服務。"
   },
   "portfolio_no_history": {
-    "message": "No portfolio history yet."
+    "message": "還沒有 portfolio 歷史紀錄。"
   },
   "portfolio_history_from": {
     "message": "From"
@@ -4265,103 +4265,103 @@
     "message": "Pending"
   },
   "portfolio_history_suggested_action": {
-    "message": "Suggested action"
+    "message": "建議操作"
   },
   "portfolio_history_failure_unknown": {
-    "message": "Unclassified failure"
+    "message": "未分類失敗"
   },
   "portfolio_history_failure_transaction_reverted": {
-    "message": "On-chain transaction reverted"
+    "message": "On-chain 交易 reverted"
   },
   "portfolio_history_failure_slippage_exceeded": {
-    "message": "Output below allowed slippage"
+    "message": "Output 低於允許的 slippage"
   },
   "portfolio_history_failure_insufficient_balance": {
-    "message": "Insufficient token or gas balance"
+    "message": "Token 或 gas 餘額不足"
   },
   "portfolio_history_failure_insufficient_allowance": {
-    "message": "Token allowance too low"
+    "message": "Token allowance 過低"
   },
   "portfolio_history_failure_out_of_gas": {
-    "message": "Transaction ran out of gas"
+    "message": "交易 gas 不足"
   },
   "portfolio_history_failure_expired": {
-    "message": "Quote or deposit window expired"
+    "message": "報價或入金窗口已過期"
   },
   "portfolio_history_failure_refunded": {
-    "message": "Provider refunded deposited funds"
+    "message": "提供商已退還存入資金"
   },
   "portfolio_history_failure_bridge_failed": {
-    "message": "Cross-chain route failed"
+    "message": "Cross-chain 路徑失敗"
   },
   "portfolio_history_failure_aml_review": {
-    "message": "Exchange held for compliance review"
+    "message": "Exchange 因 compliance 審核被暫停"
   },
   "portfolio_history_failure_amount_below_minimum": {
-    "message": "Amount below provider minimum"
+    "message": "金額低於提供商最低限額"
   },
   "portfolio_history_failure_canceled": {
-    "message": "Swap canceled by provider"
+    "message": "Swap 已被提供商取消"
   },
   "portfolio_history_failure_slippage_refund": {
-    "message": "Refunded due to slippage limits"
+    "message": "因 slippage 限制已退款"
   },
   "portfolio_history_failure_funds_returned": {
-    "message": "Funds returned to sender"
+    "message": "資金已退回發送方"
   },
   "portfolio_history_failure_manual_recovery_required": {
-    "message": "Manual recovery transaction may be required"
+    "message": "可能需要手動 recovery 交易"
   },
   "portfolio_history_failure_exchange_failed": {
-    "message": "Exchange provider reported failure"
+    "message": "Exchange 提供商報告失敗"
   },
   "portfolio_history_failure_action_contact_support": {
-    "message": "Contact provider or product support"
+    "message": "聯繫提供商或產品支援"
   },
   "portfolio_history_failure_action_retry_swap": {
-    "message": "Start a new swap with a fresh quote"
+    "message": "用新報價重新發起 Swap"
   },
   "portfolio_history_failure_action_check_wallet_balance": {
-    "message": "Verify wallet balance and gas"
+    "message": "檢查 wallet 餘額和 gas"
   },
   "portfolio_history_failure_action_check_token_allowance": {
-    "message": "Approve token spending and retry"
+    "message": "Approve token 授權後重試"
   },
   "portfolio_history_failure_action_increase_slippage": {
-    "message": "Retry with higher slippage tolerance"
+    "message": "提高 slippage 後重試"
   },
   "portfolio_history_failure_action_wait_for_refund": {
-    "message": "Wait for refund to arrive"
+    "message": "等待退款到帳"
   },
   "portfolio_history_failure_action_check_wallet": {
-    "message": "Check receiving wallet for returned funds"
+    "message": "檢查收款 wallet 是否已退回資金"
   },
   "portfolio_history_failure_action_view_explorer": {
-    "message": "Inspect transaction on a block explorer"
+    "message": "在 block explorer 上查看交易"
   },
   "portfolio_history_failure_action_submit_recovery_transaction": {
-    "message": "Submit provider recovery transaction if offered"
+    "message": "如有提供，提交提供商 recovery 交易"
   },
   "portfolio_history_failure_action_create_new_exchange": {
-    "message": "Create a new exchange order"
+    "message": "建立新的 exchange 訂單"
   },
   "portfolio_history_from_address": {
-    "message": "From address"
+    "message": "From 地址"
   },
   "portfolio_history_to_address": {
-    "message": "To address"
+    "message": "To 地址"
   },
   "portfolio_history_provider_reference": {
-    "message": "Provider reference"
+    "message": "提供商參考號"
   },
   "portfolio_history_provider_status": {
-    "message": "Provider status"
+    "message": "提供商狀態"
   },
   "portfolio_history_block_explorer": {
     "message": "Block explorer"
   },
   "portfolio_history_view_on_provider": {
-    "message": "View on $1",
+    "message": "在 $1 上查看",
     "placeholders": {
       "1": {
         "content": "$1",
@@ -4370,22 +4370,22 @@
     }
   },
   "portfolio_history_view_on_explorer": {
-    "message": "View on block explorer"
+    "message": "在 block explorer 上查看"
   },
   "portfolio_history_tx_hash": {
     "message": "Transaction hash"
   },
   "portfolio_history_submitted_at": {
-    "message": "Submitted"
+    "message": "已提交"
   },
   "portfolio_history_updated_at": {
-    "message": "Last updated"
+    "message": "上次更新"
   },
   "portfolio_history_unknown_date": {
-    "message": "Unknown date"
+    "message": "未知日期"
   },
   "portfolio_history_show_created_expired": {
-    "message": "Show created/expired"
+    "message": "顯示 created/expired"
   },
   "portfolio_history_address_filter": {
     "message": "地址"
@@ -4403,22 +4403,22 @@
     "message": "沒有符合篩選條件的歷史紀錄。"
   },
   "portfolio_page_description": {
-    "message": "View balances and access portfolio services without changing your active Keychain account."
+    "message": "查看餘額並使用 portfolio 服務，無需切換目前 Keychain 帳戶。"
   },
   "portfolio_page_description_buy": {
-    "message": "Buy crypto with fiat through supported on-ramp providers."
+    "message": "透過支援的 on-ramp 提供商用法幣購買 crypto。"
   },
   "portfolio_page_description_sell": {
-    "message": "Sell crypto for fiat through supported off-ramp providers."
+    "message": "透過支援的 off-ramp 提供商將 crypto 賣成法幣。"
   },
   "portfolio_page_description_swap": {
-    "message": "Exchange tokens across supported chains without switching your active account."
+    "message": "在支援的 chains 上兌換 tokens，無需切換目前帳戶。"
   },
   "portfolio_page_description_history": {
-    "message": "Track buy, sell, and swap activity for your Keychain accounts."
+    "message": "追蹤 Keychain 帳戶的購買、出售和 Swap 活動。"
   },
   "portfolio_no_quote_available_short": {
-    "message": "No quote available"
+    "message": "暫無報價"
   },
   "portfolio_account": {
     "message": "Account"
@@ -4427,7 +4427,7 @@
     "message": "Network"
   },
   "portfolio_all_networks": {
-    "message": "All networks"
+    "message": "全部 networks"
   },
   "portfolio_token": {
     "message": "Token"
@@ -4448,32 +4448,32 @@
     "message": "undelegating"
   },
   "portfolio_he_breakdown_expand": {
-    "message": "Show balance details"
+    "message": "顯示餘額詳情"
   },
   "portfolio_he_breakdown_collapse": {
-    "message": "Hide balance details"
+    "message": "隱藏餘額詳情"
   },
   "portfolio_actions": {
-    "message": "Actions"
+    "message": "操作"
   },
   "portfolio_price": {
-    "message": "Price"
+    "message": "價格"
   },
   "portfolio_value": {
-    "message": "Value"
+    "message": "價值"
   },
   "portfolio_mode": {
-    "message": "Mode"
+    "message": "模式"
   },
   "portfolio_status": {
-    "message": "Status"
+    "message": "狀態"
   },
   "portfolio_date": {
-    "message": "Date"
+    "message": "日期"
   },
   "portfolio_assets": { "message": "資產" },
   "portfolio_token_filter": {
-    "message": "Filter by name or symbol"
+    "message": "依名稱或 symbol 篩選"
   },
   "portfolio_caption_message_total_value": {
     "message": "This amount reflects all your accounts' Hive and Hive Engine tokens, regardless of their form (liquid, staked, in savings or delegated)",
@@ -7451,11 +7451,11 @@
     "description": "Insufficient balance warning message"
   },
   "coming_soon_panel_title": {
-    "message": "Coming Soon",
+    "message": "即將推出",
     "description": "Coming soon panel title"
   },
   "coming_soon_panel_description": {
-    "message": "This feature is not available yet. Please check back later.",
+    "message": "此功能尚未開放，請稍後再來。",
     "description": "Coming soon panel description"
   },
   "evm_chain_non_supported": {
@@ -7808,5 +7808,403 @@
   },
   "portfolio_payment_method_auto_bank_transfer": {
     "message": "自動銀行轉帳"
-  }
+  },
+  "paid_hive_account_creation_notification_title": {
+      "message": "Hive 帳戶已建立",
+      "description": "Title for the browser notification when a paid Hive account creation completes while Keychain is closed"
+    },
+  "paid_hive_account_creation_notification_message": {
+      "message": "您的 Hive 帳戶 $1 已建立並新增到 wallet",
+      "description": "Browser notification message when a paid Hive account creation completes while Keychain is closed"
+    },
+  "portfolio_coming_soon_badge": {
+      "message": "即將"
+    },
+  "portfolio_coming_soon_expected": {
+      "message": "預計 $1",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "Q4 2026"
+        }
+      }
+    },
+  "portfolio_coming_soon_description_buy": {
+      "message": "即將可在 Keychain 內用卡或銀行轉帳購買 crypto。"
+    },
+  "portfolio_coming_soon_description_sell": {
+      "message": "即將可在 Keychain 內將 crypto 賣成 fiat。"
+    },
+  "portfolio_coming_soon_description_swap": {
+      "message": "即將可在支援的 chains 上 Swap 和 Bridge tokens。"
+    },
+  "portfolio_quote_auto_refresh_countdown": {
+      "message": "$1秒後重新整理",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "30"
+        }
+      }
+    },
+  "portfolio_quote_refresh_now": {
+      "message": "立即重新整理"
+    },
+  "portfolio_quote_retry": {
+      "message": "重試"
+    },
+  "portfolio_quote_refreshing": {
+      "message": "正在更新報價…"
+    },
+  "portfolio_insufficient_balance": {
+      "message": "$1 餘額不足。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "HIVE"
+        }
+      }
+    },
+  "portfolio_history_auto_refresh_countdown": {
+      "message": "$1秒後自動重新整理",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "15"
+        }
+      }
+    },
+  "portfolio_history_refresh_now": {
+      "message": "立即重新整理"
+    },
+  "portfolio_history_refreshing": {
+      "message": "正在重新整理…"
+    },
+  "portfolio_partial_load_error": {
+      "message": "部分 networks 無法載入：$1",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "Ethereum, Polygon"
+        }
+      }
+    },
+  "portfolio_confirmation_evm_destination": {
+      "message": "提供商地址"
+    },
+  "portfolio_confirmation_approval_amount": {
+      "message": "Approval 數量"
+    },
+  "portfolio_confirmation_approval_spender": {
+      "message": "Spender"
+    },
+  "portfolio_approving_smart_contract": {
+      "message": "正在 approval smart contract"
+    },
+  "portfolio_sending_transaction": {
+      "message": "正在發送交易"
+    },
+  "portfolio_recipient_hive_account": {
+      "message": "收款 Hive 帳戶"
+    },
+  "portfolio_recipient_bitcoin_address": {
+      "message": "Bitcoin 目標地址"
+    },
+  "portfolio_recipient_solana_address": {
+      "message": "Solana 目標地址"
+    },
+  "portfolio_recipient_sui_address": {
+      "message": "Sui 目標地址"
+    },
+  "portfolio_recipient_tron_address": {
+      "message": "Tron 目標地址"
+    },
+  "portfolio_recipient_destination_address": {
+      "message": "目標地址"
+    },
+  "portfolio_recipient_address_invalid": {
+      "message": "請輸入此 Swap 的有效收款地址。"
+    },
+  "portfolio_estimated_amount": {
+      "message": "預估數量"
+    },
+  "portfolio_quote_provider_fee": {
+      "message": "提供商費用"
+    },
+  "portfolio_quote_provider_fee_undisclosed": {
+      "message": "提供商未披露"
+    },
+  "portfolio_quote_network_fee": {
+      "message": "Network 費用"
+    },
+  "portfolio_view_all_quotes": {
+      "message": "查看全部報價（$1）",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "3"
+        }
+      }
+    },
+  "portfolio_hide_quotes": {
+      "message": "隱藏報價"
+    },
+  "portfolio_swap_amount_out_of_range": {
+      "message": "金額必須介於 $1 和 $2 之間。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "2200"
+        },
+        "2": {
+          "content": "$2",
+          "example": "110000"
+        }
+      }
+    },
+  "portfolio_amount_out_of_range_fiat": {
+      "message": "金額必須介於 $1 和 $2 $3 之間。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "908"
+        },
+        "2": {
+          "content": "$2",
+          "example": "334910"
+        },
+        "3": {
+          "content": "$3",
+          "example": "TWD"
+        }
+      }
+    },
+  "portfolio_amount_below_minimum": {
+      "message": "最低金額為 $1。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "0.01123"
+        }
+      }
+    },
+  "portfolio_amount_below_minimum_fiat": {
+      "message": "最低金額為 $1 $2。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "908"
+        },
+        "2": {
+          "content": "$2",
+          "example": "TWD"
+        }
+      }
+    },
+  "portfolio_amount_above_maximum": {
+      "message": "最高金額為 $1。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "110000"
+        }
+      }
+    },
+  "portfolio_amount_above_maximum_fiat": {
+      "message": "最高金額為 $1 $2。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "334910"
+        },
+        "2": {
+          "content": "$2",
+          "example": "TWD"
+        }
+      }
+    },
+  "portfolio_swap_amount_out_of_range_generic": {
+      "message": "該金額暫無報價。"
+    },
+  "portfolio_amount_hint_increase": {
+      "message": "提高到 $1 可解鎖另外 $2 個提供商。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "0.1"
+        },
+        "2": {
+          "content": "$2",
+          "example": "2"
+        }
+      }
+    },
+  "portfolio_amount_hint_decrease": {
+      "message": "降低到 $1 可解鎖另外 $2 個提供商。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "10"
+        },
+        "2": {
+          "content": "$2",
+          "example": "2"
+        }
+      }
+    },
+  "portfolio_amount_hint_increase_provider": {
+      "message": "提高到 $1 可解鎖 $2。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "0.1"
+        },
+        "2": {
+          "content": "$2",
+          "example": "SimpleSwap"
+        }
+      }
+    },
+  "portfolio_amount_hint_decrease_provider": {
+      "message": "降低到 $1 可解鎖 $2。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "10"
+        },
+        "2": {
+          "content": "$2",
+          "example": "SimpleSwap"
+        }
+      }
+    },
+  "portfolio_history_exact_from_amount": {
+      "message": "精確 From 數量"
+    },
+  "portfolio_history_exact_to_amount": {
+      "message": "精確 To 數量"
+    },
+  "portfolio_history_received_amount": {
+      "message": "到帳數量"
+    },
+  "portfolio_history_estimated_to_amount": {
+      "message": "預估 To 數量"
+    },
+  "portfolio_history_fiat_currency": {
+      "message": "法幣"
+    },
+  "portfolio_history_payment_method": {
+      "message": "付款方式"
+    },
+  "portfolio_history_status_verification_required": {
+      "message": "需要驗證"
+    },
+  "portfolio_compliance_review_banner_summary_one": {
+      "message": "1 筆 Swap 待 compliance 審核"
+    },
+  "portfolio_compliance_review_banner_summary": {
+      "message": "$1 筆 Swap 待 compliance 審核",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "2"
+        }
+      }
+    },
+  "portfolio_compliance_review_banner_explanation": {
+      "message": "這些 exchanges 因 KYC 或 compliance 被提供商暫停。展開各 Swap 並用 Exchange ID 聯繫提供商。"
+    },
+  "portfolio_compliance_review_banner_view_history": {
+      "message": "在歷史紀錄中查看"
+    },
+  "portfolio_history_compliance_explanation": {
+      "message": "提供商已將此 Swap 暫停以進行 compliance 審核。請聯繫他們並提供 Exchange ID。"
+    },
+  "portfolio_history_exchange_id": {
+      "message": "Exchange ID"
+    },
+  "portfolio_history_contact_provider": {
+      "message": "聯繫提供商"
+    },
+  "portfolio_all_networks_short": {
+      "message": "全部"
+    },
+  "portfolio_to_asset_search": {
+      "message": "搜尋 symbol 或 network"
+    },
+  "portfolio_more_networks": {
+      "message": "更多 networks"
+    },
+  "portfolio_symbol_filter": {
+      "message": "依 symbol 篩選"
+    },
+  "portfolio_to_asset_filter_hint": {
+      "message": "僅顯示部分資產。搜尋或選擇 network 以縮小列表。"
+    },
+  "portfolio_to_asset_results_truncated": {
+      "message": "還有 $1 個資產符合。請縮小搜尋以查看。",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "120"
+        }
+      }
+    },
+  "portfolio_no_matching_assets": {
+      "message": "沒有符合篩選條件的資產。"
+    },
+  "portfolio_swap_no_wallet_tokens": {
+      "message": "此 wallet 沒有任何 token。"
+    },
+  "portfolio_refresh": {
+      "message": "重新整理 portfolio 資料"
+    },
+  "html_popup_settings_notifications_channels_title": {
+      "message": "送達管道",
+      "description": "Title for local Hive notification drop/browser preferences"
+    },
+  "html_popup_settings_notifications_channels_caption": {
+      "message": "選擇每項操作的顯示位置。變更僅儲存在此帳戶本地。",
+      "description": "Caption for local Hive notification channel preferences"
+    },
+  "html_popup_settings_notifications_operation": {
+      "message": "操作",
+      "description": "Column header for notification operation name"
+    },
+  "html_popup_settings_notifications_operation_placeholder": {
+      "message": "操作",
+      "description": "Placeholder for notification operation criteria input"
+    },
+  "html_popup_settings_notifications_channel_drop": {
+      "message": "Drop",
+      "description": "Toggle label for in-app notification dropdown"
+    },
+  "html_popup_settings_notifications_channel_browser": {
+      "message": "推播通知",
+      "description": "Toggle label for browser OS push notifications"
+    },
+  "html_popup_settings_notifications_channel_browser_tooltip": {
+      "message": "即使 Keychain 已關閉，收到此操作時也會顯示系統通知。會隨通知設定一起儲存。",
+      "description": "Tooltip explaining the push notification channel toggle"
+    },
+  "html_popup_settings_notifications_condition_field_placeholder": {
+      "message": "欄位",
+      "description": "Placeholder for notification condition field dropdown"
+    },
+  "html_popup_settings_notifications_condition_operand_placeholder": {
+      "message": "運算子",
+      "description": "Placeholder for notification condition operator dropdown"
+    },
+  "html_popup_settings_notifications_condition_value_placeholder": {
+      "message": "值",
+      "description": "Placeholder for notification condition value input"
+    },
+  "evm_light_node_assets_cache_warning": {
+      "message": "EVM 服務不可用。正在顯示上次已知的資產資訊；餘額可能會重新整理，但 token 和 NFT 詳情可能過期。",
+      "description": "Warning shown when EVM token or NFT data is loaded from local cache because the light-node is unavailable"
+    },
+  "hive_push_notification_title": {
+      "message": "$1 · Hive 通知",
+      "description": "Incoming Hive push notification title"
+    }
 }

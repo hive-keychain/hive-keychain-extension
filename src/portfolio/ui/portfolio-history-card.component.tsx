@@ -3,6 +3,13 @@ import { PortfolioLogoImage } from 'src/portfolio/ui/portfolio-logo-image.compon
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import moment from 'moment';
+import 'moment/locale/de';
+import 'moment/locale/es';
+import 'moment/locale/fr';
+import 'moment/locale/id';
+import 'moment/locale/pt';
+import 'moment/locale/zh-cn';
+import 'moment/locale/zh-tw';
 import React, { useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -38,6 +45,20 @@ export interface PortfolioHistoryCardProps {
 }
 
 const DATE_TOOLTIP_FORMAT = 'YYYY-MM-DD HH:mm';
+
+const getMomentLocale = (): string => {
+  const language = I18nUtils.getCurrentLanguage();
+  if (language === 'zh-CN') {
+    return 'zh-cn';
+  }
+  if (language === 'zh-TW') {
+    return 'zh-tw';
+  }
+  return language;
+};
+
+const formatPortfolioHistoryRelativeDate = (eventDate: string): string =>
+  moment(eventDate).locale(getMomentLocale()).fromNow();
 
 const resolveTokenIdentity = (
   assetId: string | null,
@@ -131,7 +152,7 @@ export const PortfolioHistoryCard = ({
 
   const eventDate = item.submittedAt ?? item.updatedAt;
   const relativeDate = eventDate
-    ? moment(eventDate).fromNow()
+    ? formatPortfolioHistoryRelativeDate(eventDate)
     : I18nUtils.getMessage('portfolio_history_unknown_date');
   const fullDate = eventDate
     ? moment(eventDate).format(DATE_TOOLTIP_FORMAT)

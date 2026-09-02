@@ -4139,10 +4139,10 @@
     "message": "Portfolio"
   },
   "portfolio_section_buy": {
-    "message": "Buy"
+    "message": "Comprar"
   },
   "portfolio_section_sell": {
-    "message": "Sell"
+    "message": "Vender"
   },
   "portfolio_section_swap": {
     "message": "Swap"
@@ -4151,7 +4151,7 @@
     "message": "Bridge"
   },
   "portfolio_section_history": {
-    "message": "History"
+    "message": "Histórico"
   },
   "portfolio_from_asset": {
     "message": "From"
@@ -4160,28 +4160,28 @@
     "message": "To"
   },
   "portfolio_select_asset": {
-    "message": "Select an asset"
+    "message": "Selecionar ativo"
   },
   "portfolio_get_quotes": {
-    "message": "Get quotes"
+    "message": "Ver cotações"
   },
   "portfolio_continue": {
-    "message": "Continue"
+    "message": "Continuar"
   },
   "portfolio_load_error": {
-    "message": "Unable to load portfolio data."
+    "message": "Não foi possível carregar os dados do portfolio."
   },
   "portfolio_native_execution_requires_evm": {
-    "message": "Native execution requires an EVM account."
+    "message": "A execução nativa requer uma conta EVM."
   },
   "portfolio_chain_not_setup": {
-    "message": "Add the source chain to Keychain before signing."
+    "message": "Adicione a chain de origem ao Keychain antes de assinar."
   },
   "portfolio_native_confirmation_message": {
-    "message": "Review the swap details below, then sign to confirm."
+    "message": "Revise os detalhes do Swap abaixo e assine para confirmar."
   },
   "portfolio_provider": {
-    "message": "Provider"
+    "message": "Provedor"
   },
   "portfolio_confirmation_from": {
     "message": "From"
@@ -4190,34 +4190,34 @@
     "message": "To"
   },
   "portfolio_confirmation_to_account": {
-    "message": "To account"
+    "message": "Para a conta"
   },
   "portfolio_provider_opened": {
-    "message": "Provider page opened in a new tab."
+    "message": "Página do provedor aberta em uma nova aba."
   },
   "portfolio_execution_error": {
-    "message": "Unable to execute this quote."
+    "message": "Não foi possível executar esta cotação."
   },
   "portfolio_api_not_configured": {
-    "message": "Portfolio API is not configured."
+    "message": "A API do Portfolio não está configurada."
   },
   "portfolio_country_code": {
-    "message": "Country code"
+    "message": "País"
   },
   "portfolio_fiat_currency": {
-    "message": "Fiat currency"
+    "message": "Moeda fiat"
   },
   "portfolio_payment_method": {
-    "message": "Payment method (optional)"
+    "message": "Método de pagamento (opcional)"
   },
   "portfolio_payment_method_none": {
     "message": "Qualquer método de pagamento"
   },
   "portfolio_provider_execution_unavailable": {
-    "message": "This provider cannot currently be executed from Keychain."
+    "message": "Este provedor não pode ser executado pelo Keychain agora."
   },
   "portfolio_quote_not_executable": {
-    "message": "Not executable in Keychain"
+    "message": "Não executável no Keychain"
   },
   "portfolio_quote_payment_method": {
     "message": "Método de pagamento"
@@ -4235,19 +4235,19 @@
     "message": "KYC necessário"
   },
   "portfolio_no_assets": {
-    "message": "No balances found for this account."
+    "message": "Nenhum saldo encontrado para esta conta."
   },
   "portfolio_no_quotes": {
-    "message": "No quotes are currently available."
+    "message": "Nenhuma cotação disponível no momento."
   },
   "portfolio_no_quote_available": {
-    "message": "No quote available at the moment."
+    "message": "Nenhuma cotação disponível no momento."
   },
   "portfolio_no_services_in_country": {
-    "message": "No services are available in your country."
+    "message": "Nenhum serviço disponível no seu país."
   },
   "portfolio_no_history": {
-    "message": "No portfolio history yet."
+    "message": "Ainda não há histórico de portfolio."
   },
   "portfolio_history_from": {
     "message": "From"
@@ -4256,112 +4256,112 @@
     "message": "To"
   },
   "portfolio_history_status_completed": {
-    "message": "Completed"
+    "message": "Concluído"
   },
   "portfolio_history_status_failed": {
-    "message": "Failed"
+    "message": "Falhou"
   },
   "portfolio_history_status_pending": {
-    "message": "Pending"
+    "message": "Pendente"
   },
   "portfolio_history_suggested_action": {
-    "message": "Suggested action"
+    "message": "Ação sugerida"
   },
   "portfolio_history_failure_unknown": {
-    "message": "Unclassified failure"
+    "message": "Falha não classificada"
   },
   "portfolio_history_failure_transaction_reverted": {
-    "message": "On-chain transaction reverted"
+    "message": "Transação on-chain reverted"
   },
   "portfolio_history_failure_slippage_exceeded": {
-    "message": "Output below allowed slippage"
+    "message": "Output abaixo do slippage permitido"
   },
   "portfolio_history_failure_insufficient_balance": {
-    "message": "Insufficient token or gas balance"
+    "message": "Saldo de token ou gas insuficiente"
   },
   "portfolio_history_failure_insufficient_allowance": {
-    "message": "Token allowance too low"
+    "message": "Allowance de token muito baixa"
   },
   "portfolio_history_failure_out_of_gas": {
-    "message": "Transaction ran out of gas"
+    "message": "A transação ficou sem gas"
   },
   "portfolio_history_failure_expired": {
-    "message": "Quote or deposit window expired"
+    "message": "Cotação ou janela de depósito expirada"
   },
   "portfolio_history_failure_refunded": {
-    "message": "Provider refunded deposited funds"
+    "message": "O provedor reembolsou os fundos depositados"
   },
   "portfolio_history_failure_bridge_failed": {
-    "message": "Cross-chain route failed"
+    "message": "Rota cross-chain falhou"
   },
   "portfolio_history_failure_aml_review": {
-    "message": "Exchange held for compliance review"
+    "message": "Exchange retido para revisão de compliance"
   },
   "portfolio_history_failure_amount_below_minimum": {
-    "message": "Amount below provider minimum"
+    "message": "Valor abaixo do mínimo do provedor"
   },
   "portfolio_history_failure_canceled": {
-    "message": "Swap canceled by provider"
+    "message": "Swap cancelado pelo provedor"
   },
   "portfolio_history_failure_slippage_refund": {
-    "message": "Refunded due to slippage limits"
+    "message": "Reembolsado devido aos limites de slippage"
   },
   "portfolio_history_failure_funds_returned": {
-    "message": "Funds returned to sender"
+    "message": "Fundos devolvidos ao remetente"
   },
   "portfolio_history_failure_manual_recovery_required": {
-    "message": "Manual recovery transaction may be required"
+    "message": "Pode ser necessária uma transação de recovery"
   },
   "portfolio_history_failure_exchange_failed": {
-    "message": "Exchange provider reported failure"
+    "message": "O provedor de exchange relatou uma falha"
   },
   "portfolio_history_failure_action_contact_support": {
-    "message": "Contact provider or product support"
+    "message": "Contate o provedor ou o suporte"
   },
   "portfolio_history_failure_action_retry_swap": {
-    "message": "Start a new swap with a fresh quote"
+    "message": "Inicie um novo Swap com uma cotação nova"
   },
   "portfolio_history_failure_action_check_wallet_balance": {
-    "message": "Verify wallet balance and gas"
+    "message": "Verifique o saldo da wallet e o gas"
   },
   "portfolio_history_failure_action_check_token_allowance": {
-    "message": "Approve token spending and retry"
+    "message": "Aprove o spending do token e tente de novo"
   },
   "portfolio_history_failure_action_increase_slippage": {
-    "message": "Retry with higher slippage tolerance"
+    "message": "Tente de novo com slippage mais alto"
   },
   "portfolio_history_failure_action_wait_for_refund": {
-    "message": "Wait for refund to arrive"
+    "message": "Aguarde o reembolso chegar"
   },
   "portfolio_history_failure_action_check_wallet": {
-    "message": "Check receiving wallet for returned funds"
+    "message": "Verifique a wallet receptora por fundos devolvidos"
   },
   "portfolio_history_failure_action_view_explorer": {
-    "message": "Inspect transaction on a block explorer"
+    "message": "Inspecione a transação em um block explorer"
   },
   "portfolio_history_failure_action_submit_recovery_transaction": {
-    "message": "Submit provider recovery transaction if offered"
+    "message": "Envie a transação de recovery do provedor se oferecida"
   },
   "portfolio_history_failure_action_create_new_exchange": {
-    "message": "Create a new exchange order"
+    "message": "Crie uma nova ordem de exchange"
   },
   "portfolio_history_from_address": {
-    "message": "From address"
+    "message": "Endereço de origem"
   },
   "portfolio_history_to_address": {
-    "message": "To address"
+    "message": "Endereço de destino"
   },
   "portfolio_history_provider_reference": {
-    "message": "Provider reference"
+    "message": "Referência do provedor"
   },
   "portfolio_history_provider_status": {
-    "message": "Provider status"
+    "message": "Status do provedor"
   },
   "portfolio_history_block_explorer": {
     "message": "Block explorer"
   },
   "portfolio_history_view_on_provider": {
-    "message": "View on $1",
+    "message": "Ver em $1",
     "placeholders": {
       "1": {
         "content": "$1",
@@ -4370,22 +4370,22 @@
     }
   },
   "portfolio_history_view_on_explorer": {
-    "message": "View on block explorer"
+    "message": "Ver no block explorer"
   },
   "portfolio_history_tx_hash": {
     "message": "Transaction hash"
   },
   "portfolio_history_submitted_at": {
-    "message": "Submitted"
+    "message": "Enviado"
   },
   "portfolio_history_updated_at": {
-    "message": "Last updated"
+    "message": "Última atualização"
   },
   "portfolio_history_unknown_date": {
-    "message": "Unknown date"
+    "message": "Data desconhecida"
   },
   "portfolio_history_show_created_expired": {
-    "message": "Show created/expired"
+    "message": "Mostrar created/expired"
   },
   "portfolio_history_address_filter": {
     "message": "Endereço"
@@ -4403,43 +4403,43 @@
     "message": "Nenhum histórico corresponde ao seu filtro."
   },
   "portfolio_page_description": {
-    "message": "View balances and access portfolio services without changing your active Keychain account."
+    "message": "Veja saldos e serviços de portfolio sem mudar a conta Keychain ativa."
   },
   "portfolio_page_description_buy": {
-    "message": "Buy crypto with fiat through supported on-ramp providers."
+    "message": "Compre crypto com fiat por provedores on-ramp suportados."
   },
   "portfolio_page_description_sell": {
-    "message": "Sell crypto for fiat through supported off-ramp providers."
+    "message": "Venda crypto por fiat por provedores off-ramp suportados."
   },
   "portfolio_page_description_swap": {
-    "message": "Exchange tokens across supported chains without switching your active account."
+    "message": "Troque tokens entre chains suportadas sem mudar a conta ativa."
   },
   "portfolio_page_description_history": {
-    "message": "Track buy, sell, and swap activity for your Keychain accounts."
+    "message": "Acompanhe a atividade de Comprar, Vender e Swap das contas Keychain."
   },
   "portfolio_no_quote_available_short": {
-    "message": "No quote available"
+    "message": "Sem cotação"
   },
   "portfolio_account": {
-    "message": "Account"
+    "message": "Conta"
   },
   "portfolio_network": {
     "message": "Network"
   },
   "portfolio_all_networks": {
-    "message": "All networks"
+    "message": "Todos os networks"
   },
   "portfolio_token": {
     "message": "Token"
   },
   "portfolio_he_breakdown_liquid": {
-    "message": "liquid"
+    "message": "líquido"
   },
   "portfolio_he_breakdown_staked": {
     "message": "staked"
   },
   "portfolio_he_breakdown_delegated": {
-    "message": "delegated"
+    "message": "delegado"
   },
   "portfolio_he_breakdown_unstaking": {
     "message": "unstaking"
@@ -4448,32 +4448,32 @@
     "message": "undelegating"
   },
   "portfolio_he_breakdown_expand": {
-    "message": "Show balance details"
+    "message": "Mostrar detalhes do saldo"
   },
   "portfolio_he_breakdown_collapse": {
-    "message": "Hide balance details"
+    "message": "Ocultar detalhes do saldo"
   },
   "portfolio_actions": {
-    "message": "Actions"
+    "message": "Ações"
   },
   "portfolio_price": {
-    "message": "Price"
+    "message": "Preço"
   },
   "portfolio_value": {
-    "message": "Value"
+    "message": "Valor"
   },
   "portfolio_mode": {
-    "message": "Mode"
+    "message": "Modo"
   },
   "portfolio_status": {
     "message": "Status"
   },
   "portfolio_date": {
-    "message": "Date"
+    "message": "Data"
   },
   "portfolio_assets": { "message": "Ativos" },
   "portfolio_token_filter": {
-    "message": "Filter by name or symbol"
+    "message": "Filtrar por nome ou símbolo"
   },
   "portfolio_caption_message_total_value": {
     "message": "Esse valor reflete todos os tokens da Hive e Hive Engine de suas contas, independentemente do seu formulário (líquido, estampado, em poupança ou delegado)",
@@ -7451,11 +7451,11 @@
     "description": "Insufficient balance warning message"
   },
   "coming_soon_panel_title": {
-    "message": "Coming Soon",
+    "message": "Em breve",
     "description": "Coming soon panel title"
   },
   "coming_soon_panel_description": {
-    "message": "This feature is not available yet. Please check back later.",
+    "message": "Este recurso ainda não está disponível. Volte mais tarde.",
     "description": "Coming soon panel description"
   },
   "evm_chain_non_supported": {
@@ -7808,5 +7808,403 @@
   },
   "portfolio_payment_method_auto_bank_transfer": {
     "message": "Transferência bancária automática"
-  }
+  },
+  "paid_hive_account_creation_notification_title": {
+      "message": "Conta Hive criada",
+      "description": "Title for the browser notification when a paid Hive account creation completes while Keychain is closed"
+    },
+  "paid_hive_account_creation_notification_message": {
+      "message": "Sua conta Hive $1 foi criada com sucesso e adicionada à wallet",
+      "description": "Browser notification message when a paid Hive account creation completes while Keychain is closed"
+    },
+  "portfolio_coming_soon_badge": {
+      "message": "Em breve"
+    },
+  "portfolio_coming_soon_expected": {
+      "message": "Previsto $1",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "Q4 2026"
+        }
+      }
+    },
+  "portfolio_coming_soon_description_buy": {
+      "message": "Em breve, compre crypto com cartão ou transferência, sem sair do Keychain."
+    },
+  "portfolio_coming_soon_description_sell": {
+      "message": "Em breve, venda crypto por fiat, sem sair do Keychain."
+    },
+  "portfolio_coming_soon_description_swap": {
+      "message": "Em breve, faça Swap e Bridge de tokens entre chains suportadas."
+    },
+  "portfolio_quote_auto_refresh_countdown": {
+      "message": "Atualizando em $1s",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "30"
+        }
+      }
+    },
+  "portfolio_quote_refresh_now": {
+      "message": "Atualizar agora"
+    },
+  "portfolio_quote_retry": {
+      "message": "Tentar de novo"
+    },
+  "portfolio_quote_refreshing": {
+      "message": "Atualizando cotações…"
+    },
+  "portfolio_insufficient_balance": {
+      "message": "Saldo de $1 insuficiente.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "HIVE"
+        }
+      }
+    },
+  "portfolio_history_auto_refresh_countdown": {
+      "message": "Atualizando em $1s",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "15"
+        }
+      }
+    },
+  "portfolio_history_refresh_now": {
+      "message": "Atualizar agora"
+    },
+  "portfolio_history_refreshing": {
+      "message": "Atualizando…"
+    },
+  "portfolio_partial_load_error": {
+      "message": "Alguns networks não puderam ser carregados: $1",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "Ethereum, Polygon"
+        }
+      }
+    },
+  "portfolio_confirmation_evm_destination": {
+      "message": "Endereço do provedor"
+    },
+  "portfolio_confirmation_approval_amount": {
+      "message": "Valor de approval"
+    },
+  "portfolio_confirmation_approval_spender": {
+      "message": "Spender"
+    },
+  "portfolio_approving_smart_contract": {
+      "message": "Aprovando smart contract"
+    },
+  "portfolio_sending_transaction": {
+      "message": "Enviando transação"
+    },
+  "portfolio_recipient_hive_account": {
+      "message": "Conta Hive destinatária"
+    },
+  "portfolio_recipient_bitcoin_address": {
+      "message": "Endereço de destino Bitcoin"
+    },
+  "portfolio_recipient_solana_address": {
+      "message": "Endereço de destino Solana"
+    },
+  "portfolio_recipient_sui_address": {
+      "message": "Endereço de destino Sui"
+    },
+  "portfolio_recipient_tron_address": {
+      "message": "Endereço de destino Tron"
+    },
+  "portfolio_recipient_destination_address": {
+      "message": "Endereço de destino"
+    },
+  "portfolio_recipient_address_invalid": {
+      "message": "Insira um endereço válido para este Swap."
+    },
+  "portfolio_estimated_amount": {
+      "message": "Valor estimado"
+    },
+  "portfolio_quote_provider_fee": {
+      "message": "Taxa do provedor"
+    },
+  "portfolio_quote_provider_fee_undisclosed": {
+      "message": "Não divulgado pelo provedor"
+    },
+  "portfolio_quote_network_fee": {
+      "message": "Taxa de network"
+    },
+  "portfolio_view_all_quotes": {
+      "message": "Ver cotações ($1)",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "3"
+        }
+      }
+    },
+  "portfolio_hide_quotes": {
+      "message": "Ocultar cotações"
+    },
+  "portfolio_swap_amount_out_of_range": {
+      "message": "O valor deve estar entre $1 e $2.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "2200"
+        },
+        "2": {
+          "content": "$2",
+          "example": "110000"
+        }
+      }
+    },
+  "portfolio_amount_out_of_range_fiat": {
+      "message": "O valor deve estar entre $1 e $2 $3.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "908"
+        },
+        "2": {
+          "content": "$2",
+          "example": "334910"
+        },
+        "3": {
+          "content": "$3",
+          "example": "TWD"
+        }
+      }
+    },
+  "portfolio_amount_below_minimum": {
+      "message": "O valor mínimo é $1.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "0.01123"
+        }
+      }
+    },
+  "portfolio_amount_below_minimum_fiat": {
+      "message": "O valor mínimo é $1 $2.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "908"
+        },
+        "2": {
+          "content": "$2",
+          "example": "TWD"
+        }
+      }
+    },
+  "portfolio_amount_above_maximum": {
+      "message": "O valor máximo é $1.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "110000"
+        }
+      }
+    },
+  "portfolio_amount_above_maximum_fiat": {
+      "message": "O valor máximo é $1 $2.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "334910"
+        },
+        "2": {
+          "content": "$2",
+          "example": "TWD"
+        }
+      }
+    },
+  "portfolio_swap_amount_out_of_range_generic": {
+      "message": "Nenhuma cotação para o valor solicitado."
+    },
+  "portfolio_amount_hint_increase": {
+      "message": "Aumente para $1 para liberar mais $2 provedores.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "0.1"
+        },
+        "2": {
+          "content": "$2",
+          "example": "2"
+        }
+      }
+    },
+  "portfolio_amount_hint_decrease": {
+      "message": "Diminua para $1 para liberar mais $2 provedores.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "10"
+        },
+        "2": {
+          "content": "$2",
+          "example": "2"
+        }
+      }
+    },
+  "portfolio_amount_hint_increase_provider": {
+      "message": "Aumente para $1 para liberar $2.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "0.1"
+        },
+        "2": {
+          "content": "$2",
+          "example": "SimpleSwap"
+        }
+      }
+    },
+  "portfolio_amount_hint_decrease_provider": {
+      "message": "Diminua para $1 para liberar $2.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "10"
+        },
+        "2": {
+          "content": "$2",
+          "example": "SimpleSwap"
+        }
+      }
+    },
+  "portfolio_history_exact_from_amount": {
+      "message": "Valor exato de origem"
+    },
+  "portfolio_history_exact_to_amount": {
+      "message": "Valor exato de destino"
+    },
+  "portfolio_history_received_amount": {
+      "message": "Valor recebido"
+    },
+  "portfolio_history_estimated_to_amount": {
+      "message": "Valor estimado de destino"
+    },
+  "portfolio_history_fiat_currency": {
+      "message": "Moeda fiat"
+    },
+  "portfolio_history_payment_method": {
+      "message": "Método de pagamento"
+    },
+  "portfolio_history_status_verification_required": {
+      "message": "Verificação necessária"
+    },
+  "portfolio_compliance_review_banner_summary_one": {
+      "message": "1 Swap aguardando revisão de compliance"
+    },
+  "portfolio_compliance_review_banner_summary": {
+      "message": "$1 Swaps aguardando revisão de compliance",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "2"
+        }
+      }
+    },
+  "portfolio_compliance_review_banner_explanation": {
+      "message": "Esses exchanges estão pausados por KYC ou compliance. Abra cada Swap para contatar o provedor com seu Exchange ID."
+    },
+  "portfolio_compliance_review_banner_view_history": {
+      "message": "Ver no Histórico"
+    },
+  "portfolio_history_compliance_explanation": {
+      "message": "O provedor pausou este Swap por compliance. Contate-o e informe seu Exchange ID."
+    },
+  "portfolio_history_exchange_id": {
+      "message": "Exchange ID"
+    },
+  "portfolio_history_contact_provider": {
+      "message": "Contatar provedor"
+    },
+  "portfolio_all_networks_short": {
+      "message": "Todos"
+    },
+  "portfolio_to_asset_search": {
+      "message": "Buscar símbolo ou network"
+    },
+  "portfolio_more_networks": {
+      "message": "Mais networks"
+    },
+  "portfolio_symbol_filter": {
+      "message": "Filtrar por símbolo"
+    },
+  "portfolio_to_asset_filter_hint": {
+      "message": "Mostrando os primeiros ativos. Busque ou escolha um network."
+    },
+  "portfolio_to_asset_results_truncated": {
+      "message": "$1 ativos a mais coincidem. Refine a busca para vê-los.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "120"
+        }
+      }
+    },
+  "portfolio_no_matching_assets": {
+      "message": "Nenhum ativo corresponde aos seus filtros."
+    },
+  "portfolio_swap_no_wallet_tokens": {
+      "message": "Esta wallet não tem nenhum token."
+    },
+  "portfolio_refresh": {
+      "message": "Atualizar dados do portfolio"
+    },
+  "html_popup_settings_notifications_channels_title": {
+      "message": "Canais de entrega",
+      "description": "Title for local Hive notification drop/browser preferences"
+    },
+  "html_popup_settings_notifications_channels_caption": {
+      "message": "Escolha onde cada operação deve aparecer. As alterações são salvas localmente para esta conta.",
+      "description": "Caption for local Hive notification channel preferences"
+    },
+  "html_popup_settings_notifications_operation": {
+      "message": "Operação",
+      "description": "Column header for notification operation name"
+    },
+  "html_popup_settings_notifications_operation_placeholder": {
+      "message": "Operação",
+      "description": "Placeholder for notification operation criteria input"
+    },
+  "html_popup_settings_notifications_channel_drop": {
+      "message": "Drop",
+      "description": "Toggle label for in-app notification dropdown"
+    },
+  "html_popup_settings_notifications_channel_browser": {
+      "message": "Notificação push",
+      "description": "Toggle label for browser OS push notifications"
+    },
+  "html_popup_settings_notifications_channel_browser_tooltip": {
+      "message": "Mostra uma notificação do sistema ao receber esta operação, mesmo com o Keychain fechado. Salvo com sua config de notificações.",
+      "description": "Tooltip explaining the push notification channel toggle"
+    },
+  "html_popup_settings_notifications_condition_field_placeholder": {
+      "message": "Campo",
+      "description": "Placeholder for notification condition field dropdown"
+    },
+  "html_popup_settings_notifications_condition_operand_placeholder": {
+      "message": "Operador",
+      "description": "Placeholder for notification condition operator dropdown"
+    },
+  "html_popup_settings_notifications_condition_value_placeholder": {
+      "message": "Valor",
+      "description": "Placeholder for notification condition value input"
+    },
+  "evm_light_node_assets_cache_warning": {
+      "message": "O serviço EVM está indisponível. Mostrando as últimas infos de assets; saldos podem atualizar, mas detalhes de token e NFT podem estar desatualizados.",
+      "description": "Warning shown when EVM token or NFT data is loaded from local cache because the light-node is unavailable"
+    },
+  "hive_push_notification_title": {
+      "message": "$1 · Notificação Hive",
+      "description": "Incoming Hive push notification title"
+    }
 }

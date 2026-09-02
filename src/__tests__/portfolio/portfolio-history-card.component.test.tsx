@@ -74,7 +74,33 @@ describe('PortfolioHistoryCard', () => {
   });
 
   afterEach(() => {
+    jest.useRealTimers();
     jest.restoreAllMocks();
+  });
+
+  it('formats relative dates in the active language', () => {
+    jest.spyOn(I18nUtils, 'getCurrentLanguage').mockReturnValue('fr');
+    jest.useFakeTimers().setSystemTime(new Date('2026-08-18T14:00:00.000Z'));
+
+    const { container } = render(
+      <PortfolioHistoryCard
+        item={createHistoryItem()}
+        fromAsset={createAsset()}
+        toAsset={createAsset({
+          assetId: 'evm:native:ethereum',
+          symbol: 'ETH',
+          name: 'Ether',
+          address: null,
+          isNative: true,
+          familyId: 'eth',
+        })}
+        chains={[]}
+      />,
+    );
+
+    expect(
+      container.querySelector('.portfolio-history-card__date')?.textContent,
+    ).toBe('il y a 4 heures');
   });
 
   it('keeps from and to labels, amounts, and identities on shared rows', () => {

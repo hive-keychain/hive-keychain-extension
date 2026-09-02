@@ -4139,10 +4139,10 @@
     "message": "Portfolio"
   },
   "portfolio_section_buy": {
-    "message": "Buy"
+    "message": "Beli"
   },
   "portfolio_section_sell": {
-    "message": "Sell"
+    "message": "Jual"
   },
   "portfolio_section_swap": {
     "message": "Swap"
@@ -4151,73 +4151,73 @@
     "message": "Bridge"
   },
   "portfolio_section_history": {
-    "message": "History"
+    "message": "Riwayat"
   },
   "portfolio_from_asset": {
-    "message": "From"
+    "message": "Dari"
   },
   "portfolio_to_asset": {
-    "message": "To"
+    "message": "Ke"
   },
   "portfolio_select_asset": {
-    "message": "Select an asset"
+    "message": "Pilih aset"
   },
   "portfolio_get_quotes": {
-    "message": "Get quotes"
+    "message": "Lihat penawaran"
   },
   "portfolio_continue": {
-    "message": "Continue"
+    "message": "Lanjut"
   },
   "portfolio_load_error": {
-    "message": "Unable to load portfolio data."
+    "message": "Tidak dapat memuat data portfolio."
   },
   "portfolio_native_execution_requires_evm": {
-    "message": "Native execution requires an EVM account."
+    "message": "Eksekusi native memerlukan akun EVM."
   },
   "portfolio_chain_not_setup": {
-    "message": "Add the source chain to Keychain before signing."
+    "message": "Tambahkan chain sumber ke Keychain sebelum menandatangani."
   },
   "portfolio_native_confirmation_message": {
-    "message": "Review the swap details below, then sign to confirm."
+    "message": "Tinjau detail Swap di bawah, lalu tanda tangani."
   },
   "portfolio_provider": {
-    "message": "Provider"
+    "message": "Penyedia"
   },
   "portfolio_confirmation_from": {
-    "message": "From"
+    "message": "Dari"
   },
   "portfolio_confirmation_to": {
-    "message": "To"
+    "message": "Ke"
   },
   "portfolio_confirmation_to_account": {
-    "message": "To account"
+    "message": "Ke akun"
   },
   "portfolio_provider_opened": {
-    "message": "Provider page opened in a new tab."
+    "message": "Halaman penyedia dibuka di tab baru."
   },
   "portfolio_execution_error": {
-    "message": "Unable to execute this quote."
+    "message": "Tidak dapat menjalankan penawaran ini."
   },
   "portfolio_api_not_configured": {
-    "message": "Portfolio API is not configured."
+    "message": "API Portfolio belum dikonfigurasi."
   },
   "portfolio_country_code": {
-    "message": "Country code"
+    "message": "Negara"
   },
   "portfolio_fiat_currency": {
-    "message": "Fiat currency"
+    "message": "Mata uang fiat"
   },
   "portfolio_payment_method": {
-    "message": "Payment method (optional)"
+    "message": "Metode pembayaran (opsional)"
   },
   "portfolio_payment_method_none": {
     "message": "Metode pembayaran apa saja"
   },
   "portfolio_provider_execution_unavailable": {
-    "message": "This provider cannot currently be executed from Keychain."
+    "message": "Penyedia ini belum bisa dijalankan dari Keychain."
   },
   "portfolio_quote_not_executable": {
-    "message": "Not executable in Keychain"
+    "message": "Tidak dapat dijalankan di Keychain"
   },
   "portfolio_quote_payment_method": {
     "message": "Metode pembayaran"
@@ -4235,133 +4235,133 @@
     "message": "KYC diperlukan"
   },
   "portfolio_no_assets": {
-    "message": "No balances found for this account."
+    "message": "Tidak ada saldo untuk akun ini."
   },
   "portfolio_no_quotes": {
-    "message": "No quotes are currently available."
+    "message": "Tidak ada penawaran saat ini."
   },
   "portfolio_no_quote_available": {
-    "message": "No quote available at the moment."
+    "message": "Tidak ada penawaran saat ini."
   },
   "portfolio_no_services_in_country": {
-    "message": "No services are available in your country."
+    "message": "Tidak ada layanan di negara Anda."
   },
   "portfolio_no_history": {
-    "message": "No portfolio history yet."
+    "message": "Belum ada riwayat portfolio."
   },
   "portfolio_history_from": {
-    "message": "From"
+    "message": "Dari"
   },
   "portfolio_history_to": {
-    "message": "To"
+    "message": "Ke"
   },
   "portfolio_history_status_completed": {
-    "message": "Completed"
+    "message": "Selesai"
   },
   "portfolio_history_status_failed": {
-    "message": "Failed"
+    "message": "Gagal"
   },
   "portfolio_history_status_pending": {
-    "message": "Pending"
+    "message": "Tertunda"
   },
   "portfolio_history_suggested_action": {
-    "message": "Suggested action"
+    "message": "Tindakan disarankan"
   },
   "portfolio_history_failure_unknown": {
-    "message": "Unclassified failure"
+    "message": "Kegagalan tidak terklasifikasi"
   },
   "portfolio_history_failure_transaction_reverted": {
-    "message": "On-chain transaction reverted"
+    "message": "Transaksi on-chain reverted"
   },
   "portfolio_history_failure_slippage_exceeded": {
-    "message": "Output below allowed slippage"
+    "message": "Output di bawah slippage yang diizinkan"
   },
   "portfolio_history_failure_insufficient_balance": {
-    "message": "Insufficient token or gas balance"
+    "message": "Saldo token atau gas tidak cukup"
   },
   "portfolio_history_failure_insufficient_allowance": {
-    "message": "Token allowance too low"
+    "message": "Allowance token terlalu rendah"
   },
   "portfolio_history_failure_out_of_gas": {
-    "message": "Transaction ran out of gas"
+    "message": "Transaksi kehabisan gas"
   },
   "portfolio_history_failure_expired": {
-    "message": "Quote or deposit window expired"
+    "message": "Penawaran atau jendela deposit kedaluwarsa"
   },
   "portfolio_history_failure_refunded": {
-    "message": "Provider refunded deposited funds"
+    "message": "Penyedia mengembalikan dana yang disetor"
   },
   "portfolio_history_failure_bridge_failed": {
-    "message": "Cross-chain route failed"
+    "message": "Rute cross-chain gagal"
   },
   "portfolio_history_failure_aml_review": {
-    "message": "Exchange held for compliance review"
+    "message": "Exchange ditahan untuk tinjauan compliance"
   },
   "portfolio_history_failure_amount_below_minimum": {
-    "message": "Amount below provider minimum"
+    "message": "Jumlah di bawah minimum penyedia"
   },
   "portfolio_history_failure_canceled": {
-    "message": "Swap canceled by provider"
+    "message": "Swap dibatalkan penyedia"
   },
   "portfolio_history_failure_slippage_refund": {
-    "message": "Refunded due to slippage limits"
+    "message": "Dikembalikan karena batas slippage"
   },
   "portfolio_history_failure_funds_returned": {
-    "message": "Funds returned to sender"
+    "message": "Dana dikembalikan ke pengirim"
   },
   "portfolio_history_failure_manual_recovery_required": {
-    "message": "Manual recovery transaction may be required"
+    "message": "Mungkin perlu transaksi recovery manual"
   },
   "portfolio_history_failure_exchange_failed": {
-    "message": "Exchange provider reported failure"
+    "message": "Penyedia exchange melaporkan kegagalan"
   },
   "portfolio_history_failure_action_contact_support": {
-    "message": "Contact provider or product support"
+    "message": "Hubungi penyedia atau dukungan"
   },
   "portfolio_history_failure_action_retry_swap": {
-    "message": "Start a new swap with a fresh quote"
+    "message": "Mulai Swap baru dengan penawaran baru"
   },
   "portfolio_history_failure_action_check_wallet_balance": {
-    "message": "Verify wallet balance and gas"
+    "message": "Periksa saldo wallet dan gas"
   },
   "portfolio_history_failure_action_check_token_allowance": {
-    "message": "Approve token spending and retry"
+    "message": "Approve pengeluaran token lalu coba lagi"
   },
   "portfolio_history_failure_action_increase_slippage": {
-    "message": "Retry with higher slippage tolerance"
+    "message": "Coba lagi dengan slippage lebih tinggi"
   },
   "portfolio_history_failure_action_wait_for_refund": {
-    "message": "Wait for refund to arrive"
+    "message": "Tunggu pengembalian dana tiba"
   },
   "portfolio_history_failure_action_check_wallet": {
-    "message": "Check receiving wallet for returned funds"
+    "message": "Periksa wallet penerima untuk dana kembali"
   },
   "portfolio_history_failure_action_view_explorer": {
-    "message": "Inspect transaction on a block explorer"
+    "message": "Periksa transaksi di block explorer"
   },
   "portfolio_history_failure_action_submit_recovery_transaction": {
-    "message": "Submit provider recovery transaction if offered"
+    "message": "Kirim transaksi recovery penyedia jika ditawarkan"
   },
   "portfolio_history_failure_action_create_new_exchange": {
-    "message": "Create a new exchange order"
+    "message": "Buat order exchange baru"
   },
   "portfolio_history_from_address": {
-    "message": "From address"
+    "message": "Alamat dari"
   },
   "portfolio_history_to_address": {
-    "message": "To address"
+    "message": "Alamat ke"
   },
   "portfolio_history_provider_reference": {
-    "message": "Provider reference"
+    "message": "Referensi penyedia"
   },
   "portfolio_history_provider_status": {
-    "message": "Provider status"
+    "message": "Status penyedia"
   },
   "portfolio_history_block_explorer": {
     "message": "Block explorer"
   },
   "portfolio_history_view_on_provider": {
-    "message": "View on $1",
+    "message": "Lihat di $1",
     "placeholders": {
       "1": {
         "content": "$1",
@@ -4370,22 +4370,22 @@
     }
   },
   "portfolio_history_view_on_explorer": {
-    "message": "View on block explorer"
+    "message": "Lihat di block explorer"
   },
   "portfolio_history_tx_hash": {
     "message": "Transaction hash"
   },
   "portfolio_history_submitted_at": {
-    "message": "Submitted"
+    "message": "Dikirim"
   },
   "portfolio_history_updated_at": {
-    "message": "Last updated"
+    "message": "Terakhir diperbarui"
   },
   "portfolio_history_unknown_date": {
-    "message": "Unknown date"
+    "message": "Tanggal tidak diketahui"
   },
   "portfolio_history_show_created_expired": {
-    "message": "Show created/expired"
+    "message": "Tampilkan created/expired"
   },
   "portfolio_history_address_filter": {
     "message": "Alamat"
@@ -4403,43 +4403,43 @@
     "message": "Tidak ada riwayat yang cocok dengan filter Anda."
   },
   "portfolio_page_description": {
-    "message": "View balances and access portfolio services without changing your active Keychain account."
+    "message": "Lihat saldo dan layanan portfolio tanpa ganti akun Keychain aktif."
   },
   "portfolio_page_description_buy": {
-    "message": "Buy crypto with fiat through supported on-ramp providers."
+    "message": "Beli crypto dengan fiat lewat penyedia on-ramp yang didukung."
   },
   "portfolio_page_description_sell": {
-    "message": "Sell crypto for fiat through supported off-ramp providers."
+    "message": "Jual crypto ke fiat lewat penyedia off-ramp yang didukung."
   },
   "portfolio_page_description_swap": {
-    "message": "Exchange tokens across supported chains without switching your active account."
+    "message": "Tukar token di chains yang didukung tanpa ganti akun aktif."
   },
   "portfolio_page_description_history": {
-    "message": "Track buy, sell, and swap activity for your Keychain accounts."
+    "message": "Lacak aktivitas Beli, Jual, dan Swap akun Keychain Anda."
   },
   "portfolio_no_quote_available_short": {
-    "message": "No quote available"
+    "message": "Tidak ada penawaran"
   },
   "portfolio_account": {
-    "message": "Account"
+    "message": "Akun"
   },
   "portfolio_network": {
     "message": "Network"
   },
   "portfolio_all_networks": {
-    "message": "All networks"
+    "message": "Semua network"
   },
   "portfolio_token": {
     "message": "Token"
   },
   "portfolio_he_breakdown_liquid": {
-    "message": "liquid"
+    "message": "likuid"
   },
   "portfolio_he_breakdown_staked": {
     "message": "staked"
   },
   "portfolio_he_breakdown_delegated": {
-    "message": "delegated"
+    "message": "delegasi"
   },
   "portfolio_he_breakdown_unstaking": {
     "message": "unstaking"
@@ -4448,19 +4448,19 @@
     "message": "undelegating"
   },
   "portfolio_he_breakdown_expand": {
-    "message": "Show balance details"
+    "message": "Tampilkan detail saldo"
   },
   "portfolio_he_breakdown_collapse": {
-    "message": "Hide balance details"
+    "message": "Sembunyikan detail saldo"
   },
   "portfolio_actions": {
-    "message": "Actions"
+    "message": "Aksi"
   },
   "portfolio_price": {
-    "message": "Price"
+    "message": "Harga"
   },
   "portfolio_value": {
-    "message": "Value"
+    "message": "Nilai"
   },
   "portfolio_mode": {
     "message": "Mode"
@@ -4469,11 +4469,11 @@
     "message": "Status"
   },
   "portfolio_date": {
-    "message": "Date"
+    "message": "Tanggal"
   },
   "portfolio_assets": { "message": "Aset" },
   "portfolio_token_filter": {
-    "message": "Filter by name or symbol"
+    "message": "Filter nama atau simbol"
   },
   "portfolio_caption_message_total_value": {
     "message": "Menampilkan total seluruh token Hive dan Hive Engine Anda termasuk(liquid, staked. in savings atau delegasi)",
@@ -7451,11 +7451,11 @@
     "description": "Insufficient balance warning message"
   },
   "coming_soon_panel_title": {
-    "message": "Coming Soon",
+    "message": "Segera hadir",
     "description": "Coming soon panel title"
   },
   "coming_soon_panel_description": {
-    "message": "This feature is not available yet. Please check back later.",
+    "message": "Fitur ini belum tersedia. Silakan cek lagi nanti.",
     "description": "Coming soon panel description"
   },
   "evm_chain_non_supported": {
@@ -7808,5 +7808,403 @@
   },
   "portfolio_payment_method_auto_bank_transfer": {
     "message": "Transfer bank otomatis"
-  }
+  },
+  "paid_hive_account_creation_notification_title": {
+      "message": "Akun Hive dibuat",
+      "description": "Title for the browser notification when a paid Hive account creation completes while Keychain is closed"
+    },
+  "paid_hive_account_creation_notification_message": {
+      "message": "Akun Hive $1 berhasil dibuat dan ditambahkan ke wallet Anda",
+      "description": "Browser notification message when a paid Hive account creation completes while Keychain is closed"
+    },
+  "portfolio_coming_soon_badge": {
+      "message": "Segera"
+    },
+  "portfolio_coming_soon_expected": {
+      "message": "Perkiraan $1",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "Q4 2026"
+        }
+      }
+    },
+  "portfolio_coming_soon_description_buy": {
+      "message": "Segera Anda bisa beli crypto dengan kartu atau transfer, tanpa keluar Keychain."
+    },
+  "portfolio_coming_soon_description_sell": {
+      "message": "Segera Anda bisa jual crypto ke fiat, tanpa keluar Keychain."
+    },
+  "portfolio_coming_soon_description_swap": {
+      "message": "Segera Anda bisa Swap dan Bridge token di chains yang didukung."
+    },
+  "portfolio_quote_auto_refresh_countdown": {
+      "message": "Muat ulang dalam $1s",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "30"
+        }
+      }
+    },
+  "portfolio_quote_refresh_now": {
+      "message": "Segarkan sekarang"
+    },
+  "portfolio_quote_retry": {
+      "message": "Coba lagi"
+    },
+  "portfolio_quote_refreshing": {
+      "message": "Memperbarui penawaran…"
+    },
+  "portfolio_insufficient_balance": {
+      "message": "Saldo $1 tidak cukup.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "HIVE"
+        }
+      }
+    },
+  "portfolio_history_auto_refresh_countdown": {
+      "message": "Memuat ulang dalam $1s",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "15"
+        }
+      }
+    },
+  "portfolio_history_refresh_now": {
+      "message": "Segarkan sekarang"
+    },
+  "portfolio_history_refreshing": {
+      "message": "Menyegarkan…"
+    },
+  "portfolio_partial_load_error": {
+      "message": "Beberapa network gagal dimuat: $1",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "Ethereum, Polygon"
+        }
+      }
+    },
+  "portfolio_confirmation_evm_destination": {
+      "message": "Alamat penyedia"
+    },
+  "portfolio_confirmation_approval_amount": {
+      "message": "Jumlah approval"
+    },
+  "portfolio_confirmation_approval_spender": {
+      "message": "Spender"
+    },
+  "portfolio_approving_smart_contract": {
+      "message": "Menyetujui smart contract"
+    },
+  "portfolio_sending_transaction": {
+      "message": "Mengirim transaksi"
+    },
+  "portfolio_recipient_hive_account": {
+      "message": "Akun Hive penerima"
+    },
+  "portfolio_recipient_bitcoin_address": {
+      "message": "Alamat tujuan Bitcoin"
+    },
+  "portfolio_recipient_solana_address": {
+      "message": "Alamat tujuan Solana"
+    },
+  "portfolio_recipient_sui_address": {
+      "message": "Alamat tujuan Sui"
+    },
+  "portfolio_recipient_tron_address": {
+      "message": "Alamat tujuan Tron"
+    },
+  "portfolio_recipient_destination_address": {
+      "message": "Alamat tujuan"
+    },
+  "portfolio_recipient_address_invalid": {
+      "message": "Masukkan alamat penerima yang valid untuk Swap ini."
+    },
+  "portfolio_estimated_amount": {
+      "message": "Jumlah perkiraan"
+    },
+  "portfolio_quote_provider_fee": {
+      "message": "Biaya penyedia"
+    },
+  "portfolio_quote_provider_fee_undisclosed": {
+      "message": "Tidak diungkap penyedia"
+    },
+  "portfolio_quote_network_fee": {
+      "message": "Biaya network"
+    },
+  "portfolio_view_all_quotes": {
+      "message": "Lihat penawaran ($1)",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "3"
+        }
+      }
+    },
+  "portfolio_hide_quotes": {
+      "message": "Sembunyikan penawaran"
+    },
+  "portfolio_swap_amount_out_of_range": {
+      "message": "Jumlah harus antara $1 dan $2.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "2200"
+        },
+        "2": {
+          "content": "$2",
+          "example": "110000"
+        }
+      }
+    },
+  "portfolio_amount_out_of_range_fiat": {
+      "message": "Jumlah harus antara $1 dan $2 $3.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "908"
+        },
+        "2": {
+          "content": "$2",
+          "example": "334910"
+        },
+        "3": {
+          "content": "$3",
+          "example": "TWD"
+        }
+      }
+    },
+  "portfolio_amount_below_minimum": {
+      "message": "Jumlah minimum adalah $1.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "0.01123"
+        }
+      }
+    },
+  "portfolio_amount_below_minimum_fiat": {
+      "message": "Jumlah minimum adalah $1 $2.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "908"
+        },
+        "2": {
+          "content": "$2",
+          "example": "TWD"
+        }
+      }
+    },
+  "portfolio_amount_above_maximum": {
+      "message": "Jumlah maksimum adalah $1.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "110000"
+        }
+      }
+    },
+  "portfolio_amount_above_maximum_fiat": {
+      "message": "Jumlah maksimum adalah $1 $2.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "334910"
+        },
+        "2": {
+          "content": "$2",
+          "example": "TWD"
+        }
+      }
+    },
+  "portfolio_swap_amount_out_of_range_generic": {
+      "message": "Tidak ada penawaran untuk jumlah ini."
+    },
+  "portfolio_amount_hint_increase": {
+      "message": "Naikkan ke $1 untuk buka $2 penyedia lagi.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "0.1"
+        },
+        "2": {
+          "content": "$2",
+          "example": "2"
+        }
+      }
+    },
+  "portfolio_amount_hint_decrease": {
+      "message": "Turunkan ke $1 untuk buka $2 penyedia lagi.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "10"
+        },
+        "2": {
+          "content": "$2",
+          "example": "2"
+        }
+      }
+    },
+  "portfolio_amount_hint_increase_provider": {
+      "message": "Naikkan ke $1 untuk buka $2.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "0.1"
+        },
+        "2": {
+          "content": "$2",
+          "example": "SimpleSwap"
+        }
+      }
+    },
+  "portfolio_amount_hint_decrease_provider": {
+      "message": "Turunkan ke $1 untuk buka $2.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "10"
+        },
+        "2": {
+          "content": "$2",
+          "example": "SimpleSwap"
+        }
+      }
+    },
+  "portfolio_history_exact_from_amount": {
+      "message": "Jumlah persis dari"
+    },
+  "portfolio_history_exact_to_amount": {
+      "message": "Jumlah persis ke"
+    },
+  "portfolio_history_received_amount": {
+      "message": "Jumlah diterima"
+    },
+  "portfolio_history_estimated_to_amount": {
+      "message": "Perkiraan jumlah ke"
+    },
+  "portfolio_history_fiat_currency": {
+      "message": "Mata uang fiat"
+    },
+  "portfolio_history_payment_method": {
+      "message": "Metode pembayaran"
+    },
+  "portfolio_history_status_verification_required": {
+      "message": "Verifikasi diperlukan"
+    },
+  "portfolio_compliance_review_banner_summary_one": {
+      "message": "1 Swap menunggu tinjauan compliance"
+    },
+  "portfolio_compliance_review_banner_summary": {
+      "message": "$1 Swap menunggu tinjauan compliance",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "2"
+        }
+      }
+    },
+  "portfolio_compliance_review_banner_explanation": {
+      "message": "Exchange ini dijeda penyedia untuk KYC atau compliance. Buka tiap Swap untuk hubungi penyedia dengan Exchange ID."
+    },
+  "portfolio_compliance_review_banner_view_history": {
+      "message": "Lihat di Riwayat"
+    },
+  "portfolio_history_compliance_explanation": {
+      "message": "Penyedia menjeda Swap ini untuk compliance. Hubungi mereka dan sertakan Exchange ID."
+    },
+  "portfolio_history_exchange_id": {
+      "message": "Exchange ID"
+    },
+  "portfolio_history_contact_provider": {
+      "message": "Hubungi penyedia"
+    },
+  "portfolio_all_networks_short": {
+      "message": "Semua"
+    },
+  "portfolio_to_asset_search": {
+      "message": "Cari simbol atau network"
+    },
+  "portfolio_more_networks": {
+      "message": "Network lainnya"
+    },
+  "portfolio_symbol_filter": {
+      "message": "Filter menurut simbol"
+    },
+  "portfolio_to_asset_filter_hint": {
+      "message": "Menampilkan aset pertama. Cari atau pilih network."
+    },
+  "portfolio_to_asset_results_truncated": {
+      "message": "$1 aset lagi cocok. Persempit pencarian untuk melihatnya.",
+      "placeholders": {
+        "1": {
+          "content": "$1",
+          "example": "120"
+        }
+      }
+    },
+  "portfolio_no_matching_assets": {
+      "message": "Tidak ada aset yang cocok dengan filter."
+    },
+  "portfolio_swap_no_wallet_tokens": {
+      "message": "Wallet ini tidak memiliki token."
+    },
+  "portfolio_refresh": {
+      "message": "Segarkan data portfolio"
+    },
+  "html_popup_settings_notifications_channels_title": {
+      "message": "Saluran pengiriman",
+      "description": "Title for local Hive notification drop/browser preferences"
+    },
+  "html_popup_settings_notifications_channels_caption": {
+      "message": "Pilih di mana setiap operasi muncul. Perubahan disimpan lokal untuk akun ini.",
+      "description": "Caption for local Hive notification channel preferences"
+    },
+  "html_popup_settings_notifications_operation": {
+      "message": "Operasi",
+      "description": "Column header for notification operation name"
+    },
+  "html_popup_settings_notifications_operation_placeholder": {
+      "message": "Operasi",
+      "description": "Placeholder for notification operation criteria input"
+    },
+  "html_popup_settings_notifications_channel_drop": {
+      "message": "Drop",
+      "description": "Toggle label for in-app notification dropdown"
+    },
+  "html_popup_settings_notifications_channel_browser": {
+      "message": "Notifikasi push",
+      "description": "Toggle label for browser OS push notifications"
+    },
+  "html_popup_settings_notifications_channel_browser_tooltip": {
+      "message": "Tampilkan notifikasi sistem saat operasi ini diterima, meski Keychain tertutup. Disimpan bersama config notifikasi.",
+      "description": "Tooltip explaining the push notification channel toggle"
+    },
+  "html_popup_settings_notifications_condition_field_placeholder": {
+      "message": "Bidang",
+      "description": "Placeholder for notification condition field dropdown"
+    },
+  "html_popup_settings_notifications_condition_operand_placeholder": {
+      "message": "Operator",
+      "description": "Placeholder for notification condition operator dropdown"
+    },
+  "html_popup_settings_notifications_condition_value_placeholder": {
+      "message": "Nilai",
+      "description": "Placeholder for notification condition value input"
+    },
+  "evm_light_node_assets_cache_warning": {
+      "message": "Layanan EVM tidak tersedia. Menampilkan info aset terakhir; saldo bisa refresh, tapi detail token dan NFT mungkin usang.",
+      "description": "Warning shown when EVM token or NFT data is loaded from local cache because the light-node is unavailable"
+    },
+  "hive_push_notification_title": {
+      "message": "$1 · Notifikasi Hive",
+      "description": "Incoming Hive push notification title"
+    }
 }
