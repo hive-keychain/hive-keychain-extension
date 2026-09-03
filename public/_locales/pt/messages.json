@@ -756,7 +756,7 @@
     "description": "Preferences and display: default side panel checkbox hint"
   },
   "popup_html_chain_settings": {
-    "message": "Configurações de chain",
+    "message": "Configurações de cadeias",
     "description": "Settings menu section for Hive and EVM chain-specific options"
   },
   "popup_html_help_and_about": {
@@ -3427,7 +3427,7 @@
     "description": "Account field on pending account creation payment page"
   },
   "html_popup_create_account_payment_chain": {
-    "message": "Chain",
+    "message": "Cadeia",
     "description": "Chain field on pending account creation payment page"
   },
   "html_popup_create_account_payment_token": {
@@ -4175,7 +4175,7 @@
     "message": "A execução nativa requer uma conta EVM."
   },
   "portfolio_chain_not_setup": {
-    "message": "Adicione a chain de origem ao Keychain antes de assinar."
+    "message": "Adicione a cadeia de origem ao Keychain antes de assinar."
   },
   "portfolio_native_confirmation_message": {
     "message": "Revise os detalhes do Swap abaixo e assine para confirmar."
@@ -4415,7 +4415,7 @@
     "message": "Venda crypto por fiat por provedores off-ramp suportados."
   },
   "portfolio_page_description_swap": {
-    "message": "Troque tokens entre chains suportadas sem mudar a conta ativa."
+    "message": "Troque tokens entre cadeias suportadas sem mudar a conta ativa."
   },
   "portfolio_page_description_history": {
     "message": "Acompanhe a atividade de Comprar, Vender e Swap das contas Keychain."
@@ -7839,7 +7839,7 @@
       "message": "Em breve, venda crypto por fiat, sem sair do Keychain."
     },
   "portfolio_coming_soon_description_swap": {
-      "message": "Em breve, faça Swap e Bridge de tokens entre chains suportadas."
+      "message": "Em breve, faça Swap e Bridge de tokens entre cadeias suportadas."
     },
   "portfolio_quote_auto_refresh_countdown": {
       "message": "Atualizando em $1s",

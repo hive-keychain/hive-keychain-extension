@@ -4175,7 +4175,7 @@
     "message": "La ejecución nativa requiere una cuenta EVM."
   },
   "portfolio_chain_not_setup": {
-    "message": "Añade la chain de origen a Keychain antes de firmar."
+    "message": "Añade la cadena de origen a Keychain antes de firmar."
   },
   "portfolio_native_confirmation_message": {
     "message": "Revisa los detalles del Swap abajo y firma para confirmar."
@@ -4415,7 +4415,7 @@
     "message": "Vende crypto por fiat a través de proveedores off-ramp compatibles."
   },
   "portfolio_page_description_swap": {
-    "message": "Intercambia tokens entre chains compatibles sin cambiar tu cuenta activa."
+    "message": "Intercambia tokens entre cadenas compatibles sin cambiar tu cuenta activa."
   },
   "portfolio_page_description_history": {
     "message": "Sigue la actividad de Comprar, Vender y Swap de tus cuentas Keychain."
@@ -7839,7 +7839,7 @@
       "message": "Pronto podrás vender crypto por fiat, sin salir de Keychain."
     },
   "portfolio_coming_soon_description_swap": {
-      "message": "Pronto podrás hacer Swap y Bridge de tokens entre chains compatibles."
+      "message": "Pronto podrás hacer Swap y Bridge de tokens entre cadenas compatibles."
     },
   "portfolio_quote_auto_refresh_countdown": {
       "message": "Actualizando en $1s",

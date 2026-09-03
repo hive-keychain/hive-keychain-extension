@@ -756,7 +756,7 @@
     "description": "Preferences and display: default side panel checkbox hint"
   },
   "popup_html_chain_settings": {
-    "message": "Pengaturan chain",
+    "message": "Pengaturan rantai",
     "description": "Settings menu section for Hive and EVM chain-specific options"
   },
   "popup_html_help_and_about": {
@@ -4175,7 +4175,7 @@
     "message": "Eksekusi native memerlukan akun EVM."
   },
   "portfolio_chain_not_setup": {
-    "message": "Tambahkan chain sumber ke Keychain sebelum menandatangani."
+    "message": "Tambahkan rantai sumber ke Keychain sebelum menandatangani."
   },
   "portfolio_native_confirmation_message": {
     "message": "Tinjau detail Swap di bawah, lalu tanda tangani."
@@ -4415,7 +4415,7 @@
     "message": "Jual crypto ke fiat lewat penyedia off-ramp yang didukung."
   },
   "portfolio_page_description_swap": {
-    "message": "Tukar token di chains yang didukung tanpa ganti akun aktif."
+    "message": "Tukar token di rantai yang didukung tanpa ganti akun aktif."
   },
   "portfolio_page_description_history": {
     "message": "Lacak aktivitas Beli, Jual, dan Swap akun Keychain Anda."
@@ -7839,7 +7839,7 @@
       "message": "Segera Anda bisa jual crypto ke fiat, tanpa keluar Keychain."
     },
   "portfolio_coming_soon_description_swap": {
-      "message": "Segera Anda bisa Swap dan Bridge token di chains yang didukung."
+      "message": "Segera Anda bisa Swap dan Bridge token di rantai yang didukung."
     },
   "portfolio_quote_auto_refresh_countdown": {
       "message": "Muat ulang dalam $1s",

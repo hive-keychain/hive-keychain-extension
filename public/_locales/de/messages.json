@@ -756,7 +756,7 @@
     "description": "Preferences and display: default side panel checkbox hint"
   },
   "popup_html_chain_settings": {
-    "message": "Chain-Einstellungen",
+    "message": "Ketten-Einstellungen",
     "description": "Settings menu section for Hive and EVM chain-specific options"
   },
   "popup_html_help_and_about": {
@@ -4175,7 +4175,7 @@
     "message": "Native Ausführung erfordert ein EVM-Konto."
   },
   "portfolio_chain_not_setup": {
-    "message": "Füge die Quell-chain in Keychain hinzu, bevor du signierst."
+    "message": "Füge die Quellkette in Keychain hinzu, bevor du signierst."
   },
   "portfolio_native_confirmation_message": {
     "message": "Prüfe die Swap-Details unten und signiere zur Bestätigung."
@@ -4415,7 +4415,7 @@
     "message": "Verkaufe crypto gegen fiat über unterstützte off-ramp Anbieter."
   },
   "portfolio_page_description_swap": {
-    "message": "Tausche Token über unterstützte chains, ohne das aktive Konto zu wechseln."
+    "message": "Tausche Token über unterstützte Ketten, ohne das aktive Konto zu wechseln."
   },
   "portfolio_page_description_history": {
     "message": "Verfolge Kaufen-, Verkaufen- und Swap-Aktivität deiner Keychain-Konten."
@@ -7839,7 +7839,7 @@
       "message": "Bald kannst du crypto gegen fiat verkaufen, ohne Keychain zu verlassen."
     },
   "portfolio_coming_soon_description_swap": {
-      "message": "Bald kannst du Token per Swap und Bridge über unterstützte chains tauschen."
+      "message": "Bald kannst du Token per Swap und Bridge über unterstützte Ketten tauschen."
     },
   "portfolio_quote_auto_refresh_countdown": {
       "message": "Aktualisiere in $1s",

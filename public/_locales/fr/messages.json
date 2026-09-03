@@ -4175,7 +4175,7 @@
     "message": "L'exécution native requiert un compte EVM."
   },
   "portfolio_chain_not_setup": {
-    "message": "Ajoutez la chain source dans Keychain avant de signer."
+    "message": "Ajoutez la chaîne source dans Keychain avant de signer."
   },
   "portfolio_native_confirmation_message": {
     "message": "Vérifiez les détails du Swap ci-dessous, puis signez."
@@ -4445,7 +4445,7 @@
     "message": "Vendez de la crypto contre du fiat via des fournisseurs off-ramp."
   },
   "portfolio_page_description_swap": {
-    "message": "Échangez des tokens entre chains sans changer de compte actif."
+    "message": "Échangez des tokens entre chaînes sans changer de compte actif."
   },
   "portfolio_page_description_history": {
     "message": "Suivez l'activité Acheter, Vendre et Swap de vos comptes Keychain."
@@ -6329,7 +6329,7 @@
     "description": "Modal title for editing a custom chain"
   },
   "evm_custom_chains_modal_title_edit_default": {
-    "message": "Edit supported chain",
+    "message": "Modifier la chaîne prise en charge",
     "description": "Modal title for editing a supported default EVM chain"
   },
   "evm_custom_chains_update": {
@@ -7057,7 +7057,7 @@
     "description": "Priority fee is higher than max fee"
   },
   "evm_gas_fee_warning_gas_price_below_minimum": {
-    "message": "Gas price is below the minimum for this chain",
+    "message": "Le prix du gas est inférieur au minimum pour cette chaîne",
     "description": "Legacy gas price is below the configured chain minimum"
   },
   "evm_gas_fee_warning_updated_after_insufficient_price": {
@@ -7869,7 +7869,7 @@
       "message": "Bientôt, vendez de la crypto contre du fiat, sans quitter Keychain."
     },
   "portfolio_coming_soon_description_swap": {
-      "message": "Bientôt, Swap et Bridge de tokens entre chains prises en charge."
+      "message": "Bientôt, Swap et Bridge de tokens entre chaînes prises en charge."
     },
   "portfolio_quote_auto_refresh_countdown": {
       "message": "Actualisation dans $1 s",

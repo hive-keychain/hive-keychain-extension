@@ -4175,7 +4175,7 @@
     "message": "原生执行需要 EVM 账户。"
   },
   "portfolio_chain_not_setup": {
-    "message": "签名前请先在 Keychain 中添加来源 chain。"
+    "message": "签名前请先在 Keychain 中添加来源链。"
   },
   "portfolio_native_confirmation_message": {
     "message": "请核对下方 Swap 详情后签名确认。"
@@ -4445,7 +4445,7 @@
     "message": "通过支持的 off-ramp 提供商将 crypto 卖成 fiat。"
   },
   "portfolio_page_description_swap": {
-    "message": "在支持的 chains 上兑换 tokens，无需切换当前账户。"
+    "message": "在支持的链上兑换 tokens，无需切换当前账户。"
   },
   "portfolio_page_description_history": {
     "message": "跟踪 Keychain 账户的购买、出售和 Swap 活动。"
@@ -7869,7 +7869,7 @@
       "message": "即将可在 Keychain 内将 crypto 卖成 fiat。"
     },
   "portfolio_coming_soon_description_swap": {
-      "message": "即将可在支持的 chains 上 Swap 和 Bridge tokens。"
+      "message": "即将可在支持的链上 Swap 和 Bridge tokens。"
     },
   "portfolio_quote_auto_refresh_countdown": {
       "message": "$1秒后刷新",
