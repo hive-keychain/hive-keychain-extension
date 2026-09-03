@@ -732,7 +732,7 @@
     "description": "Preferences and display: side panel display mode option"
   },
   "popup_html_display_mode_reopen_wallet_notice": {
-    "message": "Keychain s’ouvrira dans le mode d’affichage sélectionné après la réouverture du wallet.",
+    "message": "Keychain s’ouvrira dans le mode d’affichage sélectionné après la réouverture du portefeuille.",
     "description": "Preferences and display: selected display mode applies after reopening the wallet"
   },
   "popup_html_open_in_side_panel": {
@@ -4304,7 +4304,7 @@
     "message": "Échec non classé"
   },
   "portfolio_history_failure_transaction_reverted": {
-    "message": "Transaction on-chain reverted"
+    "message": "Transaction on-chain annulée"
   },
   "portfolio_history_failure_slippage_exceeded": {
     "message": "Sortie sous le slippage autorisé"
@@ -4355,7 +4355,7 @@
     "message": "Lancez un nouveau Swap avec une nouvelle offre"
   },
   "portfolio_history_failure_action_check_wallet_balance": {
-    "message": "Vérifiez le solde du wallet et le gas"
+    "message": "Vérifiez le solde du portefeuille et le gas"
   },
   "portfolio_history_failure_action_check_token_allowance": {
     "message": "Approvez la dépense du token et réessayez"
@@ -4367,7 +4367,7 @@
     "message": "Attendez l'arrivée du remboursement"
   },
   "portfolio_history_failure_action_check_wallet": {
-    "message": "Vérifiez le wallet destinataire pour les fonds"
+    "message": "Vérifiez le portefeuille destinataire pour les fonds"
   },
   "portfolio_history_failure_action_view_explorer": {
     "message": "Inspectez la transaction sur un block explorer"
@@ -6337,7 +6337,7 @@
     "description": "Save button when editing custom chain"
   },
   "evm_custom_chains_reset_default": {
-    "message": "Reset to default",
+    "message": "Rétablir par défaut",
     "description": "Button label to reset a supported EVM chain override"
   },
   "evm_custom_chains_error_not_found": {
@@ -7061,7 +7061,7 @@
     "description": "Legacy gas price is below the configured chain minimum"
   },
   "evm_gas_fee_warning_updated_after_insufficient_price": {
-    "message": "Insufficient gas price. Gas fees have been updated",
+    "message": "Prix du gas insuffisant. Les frais de gas ont été mis à jour",
     "description": "Recoverable warning shown after custom-chain legacy gas price is rejected by RPC"
   },
   "evm_transaction_result_error_message_underpriced": {
@@ -7847,7 +7847,7 @@
       "description": "Title for the browser notification when a paid Hive account creation completes while Keychain is closed"
     },
   "paid_hive_account_creation_notification_message": {
-      "message": "Votre compte Hive $1 a été créé et ajouté à votre wallet",
+      "message": "Votre compte Hive $1 a été créé et ajouté à votre portefeuille",
       "description": "Browser notification message when a paid Hive account creation completes while Keychain is closed"
     },
   "portfolio_coming_soon_badge": {
@@ -8160,7 +8160,7 @@
       "message": "Aucun actif ne correspond à vos filtres."
     },
   "portfolio_swap_no_wallet_tokens": {
-      "message": "Ce wallet n'a aucun token."
+      "message": "Ce portefeuille n'a aucun token."
     },
   "portfolio_refresh": {
       "message": "Actualiser les données du portfolio"

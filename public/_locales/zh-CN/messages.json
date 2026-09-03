@@ -4304,7 +4304,7 @@
     "message": "未分类失败"
   },
   "portfolio_history_failure_transaction_reverted": {
-    "message": "On-chain 交易 reverted"
+    "message": "On-chain 交易已回滚"
   },
   "portfolio_history_failure_slippage_exceeded": {
     "message": "Output 低于允许的 slippage"
@@ -4355,10 +4355,10 @@
     "message": "用新报价重新发起 Swap"
   },
   "portfolio_history_failure_action_check_wallet_balance": {
-    "message": "检查 wallet 余额和 gas"
+    "message": "检查钱包余额和 gas"
   },
   "portfolio_history_failure_action_check_token_allowance": {
-    "message": "Approve token 授权后重试"
+    "message": "批准 token 支出后重试"
   },
   "portfolio_history_failure_action_increase_slippage": {
     "message": "提高 slippage 后重试"
@@ -4367,7 +4367,7 @@
     "message": "等待退款到账"
   },
   "portfolio_history_failure_action_check_wallet": {
-    "message": "检查收款 wallet 是否已退回资金"
+    "message": "检查收款钱包是否已退回资金"
   },
   "portfolio_history_failure_action_view_explorer": {
     "message": "在 block explorer 上查看交易"
@@ -6777,7 +6777,7 @@
     "description": "Airdrop history item"
   },
   "evm_history_operation_reverted": {
-    "message": "$1 has been reverted",
+    "message": "$1 已回滚",
     "description": "Reverted operation message"
   },
   "evm_history_unlimited_approval_value": {
@@ -7061,7 +7061,7 @@
     "description": "Legacy gas price is below the configured chain minimum"
   },
   "evm_gas_fee_warning_updated_after_insufficient_price": {
-    "message": "Insufficient gas price. Gas fees have been updated",
+    "message": "gas 价格不足。gas 费用已更新",
     "description": "Recoverable warning shown after custom-chain legacy gas price is rejected by RPC"
   },
   "evm_transaction_result_error_message_underpriced": {
@@ -7699,7 +7699,7 @@
     "description": "Transaction result error message execution reverted"
   },
   "evm_transaction_result_error_message_execution_reverted_with_reason": {
-    "message": "Transaction execution was reverted by the contract : $1",
+    "message": "交易执行已被合约回滚 : $1",
     "description": "Transaction result error message execution reverted"
   },
   "evm_transaction_result_error_message_call_exception": {
@@ -7847,7 +7847,7 @@
       "description": "Title for the browser notification when a paid Hive account creation completes while Keychain is closed"
     },
   "paid_hive_account_creation_notification_message": {
-      "message": "您的 Hive 账户 $1 已创建并添加到 wallet",
+      "message": "您的 Hive 账户 $1 已创建并添加到钱包",
       "description": "Browser notification message when a paid Hive account creation completes while Keychain is closed"
     },
   "portfolio_coming_soon_badge": {
@@ -8160,7 +8160,7 @@
       "message": "没有符合筛选条件的资产。"
     },
   "portfolio_swap_no_wallet_tokens": {
-      "message": "此 wallet 没有任何 token。"
+      "message": "此钱包没有任何 token。"
     },
   "portfolio_refresh": {
       "message": "刷新 portfolio 数据"

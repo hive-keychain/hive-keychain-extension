@@ -4274,7 +4274,7 @@
     "message": "Falha não classificada"
   },
   "portfolio_history_failure_transaction_reverted": {
-    "message": "Transação on-chain reverted"
+    "message": "Transação on-chain revertida"
   },
   "portfolio_history_failure_slippage_exceeded": {
     "message": "Output abaixo do slippage permitido"
@@ -4325,10 +4325,10 @@
     "message": "Inicie um novo Swap com uma cotação nova"
   },
   "portfolio_history_failure_action_check_wallet_balance": {
-    "message": "Verifique o saldo da wallet e o gas"
+    "message": "Verifique o saldo da carteira e o gas"
   },
   "portfolio_history_failure_action_check_token_allowance": {
-    "message": "Aprove o spending do token e tente de novo"
+    "message": "Aprove o gasto do token e tente de novo"
   },
   "portfolio_history_failure_action_increase_slippage": {
     "message": "Tente de novo com slippage mais alto"
@@ -4337,7 +4337,7 @@
     "message": "Aguarde o reembolso chegar"
   },
   "portfolio_history_failure_action_check_wallet": {
-    "message": "Verifique a wallet receptora por fundos devolvidos"
+    "message": "Verifique a carteira receptora por fundos devolvidos"
   },
   "portfolio_history_failure_action_view_explorer": {
     "message": "Inspecione a transação em um block explorer"
@@ -6747,7 +6747,7 @@
     "description": "Airdrop history item"
   },
   "evm_history_operation_reverted": {
-    "message": "$1 has been reverted",
+    "message": "$1 foi revertido",
     "description": "Reverted operation message"
   },
   "evm_history_unlimited_approval_value": {
@@ -7031,7 +7031,7 @@
     "description": "Legacy gas price is below the configured chain minimum"
   },
   "evm_gas_fee_warning_updated_after_insufficient_price": {
-    "message": "Insufficient gas price. Gas fees have been updated",
+    "message": "O preço de gas é insuficiente. As taxas de gas foram atualizadas",
     "description": "Recoverable warning shown after custom-chain legacy gas price is rejected by RPC"
   },
   "evm_transaction_result_error_message_underpriced": {
@@ -7669,7 +7669,7 @@
     "description": "Transaction result error message execution reverted"
   },
   "evm_transaction_result_error_message_execution_reverted_with_reason": {
-    "message": "Transaction execution was reverted by the contract : $1",
+    "message": "A execução da transação foi revertida pelo contrato : $1",
     "description": "Transaction result error message execution reverted"
   },
   "evm_transaction_result_error_message_call_exception": {
@@ -7817,7 +7817,7 @@
       "description": "Title for the browser notification when a paid Hive account creation completes while Keychain is closed"
     },
   "paid_hive_account_creation_notification_message": {
-      "message": "Sua conta Hive $1 foi criada com sucesso e adicionada à wallet",
+      "message": "Sua conta Hive $1 foi criada com sucesso e adicionada à carteira",
       "description": "Browser notification message when a paid Hive account creation completes while Keychain is closed"
     },
   "portfolio_coming_soon_badge": {
@@ -8160,7 +8160,7 @@
       "message": "Nenhum ativo corresponde aos seus filtros."
     },
   "portfolio_swap_no_wallet_tokens": {
-      "message": "Esta wallet não tem nenhum token."
+      "message": "Esta carteira não tem nenhum token."
     },
   "portfolio_refresh": {
       "message": "Atualizar dados do portfolio"

@@ -4274,7 +4274,7 @@
     "message": "Nicht klassifizierter Fehler"
   },
   "portfolio_history_failure_transaction_reverted": {
-    "message": "On-chain Transaktion reverted"
+    "message": "On-chain Transaktion rückgängig gemacht"
   },
   "portfolio_history_failure_slippage_exceeded": {
     "message": "Output unter erlaubtem slippage"
@@ -4328,7 +4328,7 @@
     "message": "Wallet-Guthaben und gas prüfen"
   },
   "portfolio_history_failure_action_check_token_allowance": {
-    "message": "Token-Spending approven und erneut versuchen"
+    "message": "Token-Ausgaben genehmigen und erneut versuchen"
   },
   "portfolio_history_failure_action_increase_slippage": {
     "message": "Mit höherer slippage-Toleranz erneut versuchen"
@@ -6747,7 +6747,7 @@
     "description": "Airdrop history item"
   },
   "evm_history_operation_reverted": {
-    "message": "$1 has been reverted",
+    "message": "$1 wurde rückgängig gemacht",
     "description": "Reverted operation message"
   },
   "evm_history_unlimited_approval_value": {
@@ -7031,7 +7031,7 @@
     "description": "Legacy gas price is below the configured chain minimum"
   },
   "evm_gas_fee_warning_updated_after_insufficient_price": {
-    "message": "Insufficient gas price. Gas fees have been updated",
+    "message": "Der gas-Preis ist unzureichend. Die gas-Gebühren wurden aktualisiert",
     "description": "Recoverable warning shown after custom-chain legacy gas price is rejected by RPC"
   },
   "evm_transaction_result_error_message_underpriced": {
@@ -7669,7 +7669,7 @@
     "description": "Transaction result error message execution reverted"
   },
   "evm_transaction_result_error_message_execution_reverted_with_reason": {
-    "message": "Transaction execution was reverted by the contract : $1",
+    "message": "Die Transaktion wurde vom Vertrag rückgängig gemacht : $1",
     "description": "Transaction result error message execution reverted"
   },
   "evm_transaction_result_error_message_call_exception": {
