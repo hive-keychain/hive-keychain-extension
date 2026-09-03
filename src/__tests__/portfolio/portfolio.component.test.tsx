@@ -252,6 +252,9 @@ describe('Portfolio', () => {
       PortfolioApiUtils.listAvailableAssets({ mode: 'swap' }),
     );
     jest
+      .spyOn(PortfolioFlowUtils, 'getLastUsedSwapAssets')
+      .mockResolvedValue(null);
+    jest
       .spyOn(ChainUtils, 'getAllSetupChainsForType')
       .mockResolvedValue([ethereumChain, polygonChain]);
     jest
@@ -1790,6 +1793,221 @@ describe('Portfolio', () => {
     });
   });
 
+  it('keeps the swap form hidden until the active chain balances have loaded', async () => {
+    window.history.replaceState(null, '', '/#swap');
+
+    let finishPolygon: (() => void) | undefined;
+    const polygonLoad = new Promise<void>((resolve) => {
+      finishPolygon = resolve;
+    });
+
+    jest
+      .spyOn(PortfolioFlowUtils, 'getLastUsedSwapAssets')
+      .mockResolvedValue(null);
+    (
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains as jest.Mock
+    ).mockImplementation(async (_chains, _walletAddress, options) => {
+      options?.onChainReady?.(ethereumChain, [ethToken]);
+      options?.onChainFinished?.(ethereumChain);
+      await polygonLoad;
+      options?.onChainReady?.(polygonChain, [maticToken]);
+      options?.onChainFinished?.(polygonChain);
+      return [ethToken, maticToken];
+    });
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        chain={polygonChain}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('.rotating-logo-wrapper')).not.toBeNull();
+    });
+    expect(container.querySelector('.portfolio-flow')).toBeNull();
+    expect(container.querySelector('#portfolio-from-asset')).toBeNull();
+
+    await act(async () => {
+      finishPolygon?.();
+    });
+
+    await waitFor(() => {
+      const fromAsset = container.querySelector('#portfolio-from-asset');
+      expect(fromAsset).not.toBeNull();
+      expect(fromAsset?.textContent).toContain('MATIC');
+      expect(fromAsset?.textContent).not.toContain('ETH');
+    });
+  });
+
+  it('shows the swap form when the active chain is ready without waiting for other chains', async () => {
+    window.history.replaceState(null, '', '/#swap');
+
+    const polygonLoad = new Promise<void>(() => undefined);
+
+    jest
+      .spyOn(PortfolioFlowUtils, 'getLastUsedSwapAssets')
+      .mockResolvedValue(null);
+    (
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains as jest.Mock
+    ).mockImplementation(async (_chains, _walletAddress, options) => {
+      options?.onChainReady?.(ethereumChain, [ethToken]);
+      options?.onChainFinished?.(ethereumChain);
+      await polygonLoad;
+      options?.onChainReady?.(polygonChain, [maticToken]);
+      options?.onChainFinished?.(polygonChain);
+      return [ethToken, maticToken];
+    });
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        chain={ethereumChain}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      const fromAsset = container.querySelector('#portfolio-from-asset');
+      expect(fromAsset).not.toBeNull();
+      expect(fromAsset?.textContent).toContain('ETH');
+      expect(fromAsset?.textContent).not.toContain('MATIC');
+    });
+  });
+
+  it('restores the last-used from token without waiting for other chains', async () => {
+    window.history.replaceState(null, '', '/#swap');
+
+    const polygonLoad = new Promise<void>(() => undefined);
+
+    jest
+      .spyOn(PortfolioFlowUtils, 'getLastUsedSwapAssets')
+      .mockResolvedValue({
+        fromAssetId: 'evm:native:ethereum',
+        toAssetId: 'evm:native:polygon',
+      });
+    (
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains as jest.Mock
+    ).mockImplementation(async (_chains, _walletAddress, options) => {
+      options?.onChainReady?.(ethereumChain, [ethToken]);
+      options?.onChainFinished?.(ethereumChain);
+      await polygonLoad;
+      options?.onChainReady?.(polygonChain, [maticToken]);
+      options?.onChainFinished?.(polygonChain);
+      return [ethToken, maticToken];
+    });
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        chain={polygonChain}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      const fromAsset = container.querySelector('#portfolio-from-asset');
+      expect(fromAsset).not.toBeNull();
+      expect(fromAsset?.textContent).toContain('ETH');
+      expect(fromAsset?.textContent).not.toContain('MATIC');
+    });
+  });
+
+  it('keeps the swap form hidden until last-used from token can be restored', async () => {
+    window.history.replaceState(null, '', '/#swap');
+
+    let resolveLastUsed:
+      | ((value: { fromAssetId: string; toAssetId: string } | null) => void)
+      | undefined;
+    const lastUsedLoad = new Promise<{
+      fromAssetId: string;
+      toAssetId: string;
+    } | null>((resolve) => {
+      resolveLastUsed = resolve;
+    });
+
+    jest
+      .spyOn(PortfolioFlowUtils, 'getLastUsedSwapAssets')
+      .mockReturnValue(lastUsedLoad);
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        chain={polygonChain}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('.rotating-logo-wrapper')).not.toBeNull();
+    });
+    expect(container.querySelector('.portfolio-flow')).toBeNull();
+    expect(container.querySelector('#portfolio-from-asset')).toBeNull();
+
+    await act(async () => {
+      resolveLastUsed?.({
+        fromAssetId: 'evm:native:ethereum',
+        toAssetId: 'evm:native:polygon',
+      });
+    });
+
+    await waitFor(() => {
+      const fromAsset = container.querySelector('#portfolio-from-asset');
+      expect(fromAsset).not.toBeNull();
+      expect(fromAsset?.textContent).toContain('ETH');
+      expect(fromAsset?.textContent).not.toContain('MATIC');
+    });
+  });
+
   it('includes mainnet ETH in swap from options when another ETH chain is listed first', async () => {
     const optimismChain: EvmChain = {
       name: 'Optimism',
@@ -1810,6 +2028,8 @@ describe('Portfolio', () => {
     ).mockImplementation(async (_chains, _walletAddress, options) => {
       options?.onChainReady?.(ethereumChain, [ethToken]);
       options?.onChainFinished?.(ethereumChain);
+      options?.onChainReady?.(optimismChain, []);
+      options?.onChainFinished?.(optimismChain);
       return [ethToken];
     });
     (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
@@ -3545,6 +3765,8 @@ describe('Portfolio', () => {
     ).mockImplementation(async (_chains, _walletAddress, options) => {
       options?.onChainReady?.(ethereumChain, [ethToken]);
       options?.onChainFinished?.(ethereumChain);
+      options?.onChainReady?.(polygonChain, []);
+      options?.onChainFinished?.(polygonChain);
       return [ethToken];
     });
     (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({

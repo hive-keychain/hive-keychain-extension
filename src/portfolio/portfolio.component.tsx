@@ -585,6 +585,9 @@ export const Portfolio = ({
   const [amountQuoteError, setAmountQuoteError] =
     useState<PortfolioLocalizedMessage | null>(null);
   const [isPortfolioLoading, setIsPortfolioLoading] = useState(false);
+  const [hasLoadedPortfolioBalances, setHasLoadedPortfolioBalances] =
+    useState(false);
+  const [finishedEvmChainIds, setFinishedEvmChainIds] = useState<string[]>([]);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [showCreatedExpiredHistory, setShowCreatedExpiredHistory] =
     useState(false);
@@ -1884,6 +1887,8 @@ export const Portfolio = ({
     hasUserSelectedAccountRef.current = true;
     selectedAccountKeyRef.current = accountKey;
     setExpandedPortfolioRowKeys([]);
+    setHasLoadedPortfolioBalances(false);
+    setFinishedEvmChainIds([]);
     setSelectedAccountKey(accountKey);
   }, []);
 
@@ -2005,6 +2010,9 @@ export const Portfolio = ({
   };
 
   useEffect(() => {
+    setHasLoadedPortfolioBalances(false);
+    setFinishedEvmChainIds([]);
+
     // Buy destination account is independent of asset/amount selections.
     if (sectionRef.current === 'buy') {
       setRecipientAddress('');
@@ -2062,30 +2070,85 @@ export const Portfolio = ({
     [],
   );
 
+  const lastUsedFromOptionValue = useMemo(() => {
+    if (section !== 'swap' || !hasLoadedLastUsedSwapAssets) {
+      return undefined;
+    }
+
+    return PortfolioFlowUtils.resolveFromSelectOptionValueForAssetId(
+      lastUsedSwapAssets?.fromAssetId,
+      fromAssetOptions,
+      rows,
+      canonicalAssetsForRowResolution,
+      toAssetEvmChains,
+      portfolioChains,
+      swapSourceAssets,
+    );
+  }, [
+    canonicalAssetsForRowResolution,
+    fromAssetOptions,
+    hasLoadedLastUsedSwapAssets,
+    lastUsedSwapAssets?.fromAssetId,
+    portfolioChains,
+    rows,
+    section,
+    swapSourceAssets,
+    toAssetEvmChains,
+  ]);
+
+  const isSwapFromTokenReady = useMemo(
+    () =>
+      PortfolioFlowUtils.isSwapFromTokenReadyToSelect({
+        hasLoadedLastUsedSwapAssets,
+        lastUsedFromOptionValue,
+        fromAssetOptions,
+        rows,
+        activeChain: chain,
+        finishedEvmChainIds,
+        hasLoadedAllPortfolioBalances: hasLoadedPortfolioBalances,
+      }),
+    [
+      chain,
+      finishedEvmChainIds,
+      fromAssetOptions,
+      hasLoadedLastUsedSwapAssets,
+      hasLoadedPortfolioBalances,
+      lastUsedFromOptionValue,
+      rows,
+    ],
+  );
+
   useEffect(() => {
+    if (section !== 'swap' && section !== 'sell') {
+      return;
+    }
+
+    const isSwapFromAssetSelectionPending =
+      section === 'swap' && !isSwapFromTokenReady;
+
     if (!fromAssetOptions.length) {
-      if (fromAssetId) {
+      if (
+        fromAssetId &&
+        !isSwapFromAssetSelectionPending &&
+        !(section === 'swap' && isPortfolioLoading)
+      ) {
         setFromAssetId('');
       }
       return;
     }
 
-    if (section !== 'swap' && section !== 'sell') {
+    if (isSwapFromAssetSelectionPending) {
       return;
     }
 
-    const lastUsedFromOptionValue =
-      section === 'swap' && hasLoadedLastUsedSwapAssets
-        ? PortfolioFlowUtils.resolveFromSelectOptionValueForAssetId(
-            lastUsedSwapAssets?.fromAssetId,
-            fromAssetOptions,
-            rows,
-            canonicalAssetsForRowResolution,
-            toAssetEvmChains,
-            portfolioChains,
-            swapSourceAssets,
-          )
-        : undefined;
+    if (
+      fromAssetId &&
+      fromAssetOptions.some((option) => option.value === fromAssetId) &&
+      (section === 'swap' || hasUserSelectedFromAssetRef.current)
+    ) {
+      return;
+    }
+
     const preferredFromOptionValue =
       lastUsedFromOptionValue ??
       (section === 'swap'
@@ -2104,26 +2167,16 @@ export const Portfolio = ({
       return;
     }
 
-    if (
-      hasUserSelectedFromAssetRef.current &&
-      fromAssetOptions.some((option) => option.value === fromAssetId)
-    ) {
-      return;
-    }
-
     setFromAssetId(nextFromAssetId);
   }, [
-    canonicalAssetsForRowResolution,
     chain,
     fromAssetId,
     fromAssetOptions,
-    hasLoadedLastUsedSwapAssets,
-    lastUsedSwapAssets?.fromAssetId,
-    portfolioChains,
+    isPortfolioLoading,
+    isSwapFromTokenReady,
+    lastUsedFromOptionValue,
     rows,
     section,
-    swapSourceAssets,
-    toAssetEvmChains,
   ]);
 
   useEffect(() => {
@@ -2410,6 +2463,15 @@ export const Portfolio = ({
     );
   }, [fiatRampOptions, paymentMethodSelectOptions]);
 
+  const completePortfolioBalancesLoad = (accountKey: string) => {
+    if (selectedAccountKeyRef.current !== accountKey) {
+      return;
+    }
+
+    setIsPortfolioLoading(false);
+    setHasLoadedPortfolioBalances(true);
+  };
+
   const loadAssets = async (force = false) => {
     if (
       (!force && hasLoadedAssetsRef.current) ||
@@ -2500,9 +2562,7 @@ export const Portfolio = ({
         setStatusMessageParams(undefined);
         setRows([]);
       } finally {
-        if (selectedAccountKeyRef.current === accountKey) {
-          setIsPortfolioLoading(false);
-        }
+        completePortfolioBalancesLoad(accountKey);
       }
       return;
     }
@@ -2526,7 +2586,7 @@ export const Portfolio = ({
 
       if (totalChains === 0) {
         setRows([]);
-        setIsPortfolioLoading(false);
+        completePortfolioBalancesLoad(accountKey);
         return;
       }
 
@@ -2549,12 +2609,23 @@ export const Portfolio = ({
         );
       };
 
-      const markPortfolioChainLoadFinished = () => {
+      const markPortfolioChainLoadFinished = (loadedChain: EvmChain) => {
         finishedChains++;
         if (selectedAccountKeyRef.current !== accountKey) return;
+        setFinishedEvmChainIds((current) => {
+          if (
+            current.some((chainId) =>
+              chainId.toLowerCase() === loadedChain.chainId.toLowerCase(),
+            )
+          ) {
+            return current;
+          }
+
+          return [...current, loadedChain.chainId];
+        });
         if (finishedChains !== totalChains) return;
 
-        setIsPortfolioLoading(false);
+        completePortfolioBalancesLoad(accountKey);
         if (failedChainNames.length === 0) {
           return;
         }
@@ -2592,8 +2663,8 @@ export const Portfolio = ({
               failedChainNames.push(chain.name);
             }
           },
-          onChainFinished: () => {
-            markPortfolioChainLoadFinished();
+          onChainFinished: (loadedChain) => {
+            markPortfolioChainLoadFinished(loadedChain);
           },
         },
       );
@@ -2603,7 +2674,7 @@ export const Portfolio = ({
       setStatusMessage('portfolio_load_error');
       setStatusMessageParams(undefined);
       setRows([]);
-      setIsPortfolioLoading(false);
+      completePortfolioBalancesLoad(accountKey);
     }
   };
 
@@ -4367,11 +4438,17 @@ export const Portfolio = ({
           ? isRampAvailableAssetsLoading || isFiatRampOptionsLoading
           : false;
 
-    // Wait for account + flow catalog only. Portfolio balances stream in via
-    // onChainUpdate so one slow RPC cannot block the whole swap/buy/sell form.
+    // Wait for last-used or the active chain so the from token is stable,
+    // without blocking on every other chain's discovery retries.
+    const isSwapFormDataLoading =
+      section === 'swap' &&
+      (!hasResolvedInitialAccountSelection ||
+        !isSwapFromTokenReady ||
+        (fromAssetOptions.length > 0 && !fromAssetId));
+
     const showFlowLoadingSpinner =
       isQuoteAutoFetchSection(section) &&
-      (!selectedAccountKey || isFlowCatalogLoading);
+      (!selectedAccountKey || isFlowCatalogLoading || isSwapFormDataLoading);
 
     if (pendingInAppConfirmation) {
       return (

@@ -1482,6 +1482,52 @@ export const resolveDefaultSwapFromSelectOptionValue = (
   return pickHighestUsdPortfolioRow(gasCapableRows)?.key;
 };
 
+export const isSwapFromTokenReadyToSelect = ({
+  hasLoadedLastUsedSwapAssets,
+  lastUsedFromOptionValue,
+  fromAssetOptions,
+  rows,
+  activeChain,
+  finishedEvmChainIds,
+  hasLoadedAllPortfolioBalances,
+}: {
+  hasLoadedLastUsedSwapAssets: boolean;
+  lastUsedFromOptionValue?: string;
+  fromAssetOptions: PortfolioFlowSelectOption[];
+  rows: PortfolioFlowRow[];
+  activeChain?: Pick<Chain, 'type' | 'chainId'> | null;
+  finishedEvmChainIds: string[];
+  hasLoadedAllPortfolioBalances: boolean;
+}): boolean => {
+  if (!hasLoadedLastUsedSwapAssets) {
+    return false;
+  }
+
+  if (lastUsedFromOptionValue) {
+    return true;
+  }
+
+  if (hasLoadedAllPortfolioBalances) {
+    return true;
+  }
+
+  if (
+    !activeChain ||
+    activeChain.type !== ChainType.EVM ||
+    !finishedEvmChainIds.some((chainId) =>
+      chainIdsMatch(chainId, activeChain.chainId),
+    )
+  ) {
+    return false;
+  }
+
+  const optionValues = new Set(fromAssetOptions.map((option) => option.value));
+  return rows.some(
+    (row) =>
+      optionValues.has(row.key) && rowMatchesActiveChain(row, activeChain),
+  );
+};
+
 export const getLastUsedSwapAssets =
   async (): Promise<PortfolioSwapLastUsedAssets | null> => {
     const lastUsed = await LocalStorageUtils.getValueFromLocalStorage(
@@ -2003,6 +2049,7 @@ export const PortfolioFlowUtils = {
   formatPortfolioTokenBalance,
   getDefaultSelectOptionValue,
   resolveDefaultSwapFromSelectOptionValue,
+  isSwapFromTokenReadyToSelect,
   getHivePortfolioRowEcosystem,
   getHiveTokenIcon,
   getLastUsedSwapAssets,

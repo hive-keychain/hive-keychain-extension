@@ -366,6 +366,108 @@ describe('PortfolioFlowUtils', () => {
     });
   });
 
+  describe('isSwapFromTokenReadyToSelect', () => {
+    const ethereumChain = {
+      type: ChainType.EVM,
+      chainId: '0x1',
+    };
+    const polygonChain = {
+      type: ChainType.EVM,
+      chainId: '0x89',
+    };
+    const ethRow = {
+      key: '0x1:ETH:native',
+      symbol: 'ETH',
+      network: 'Ethereum',
+      balance: '0.5',
+      usdValue: 50,
+      chainId: '0x1',
+    };
+    const maticRow = {
+      key: '0x89:MATIC:native',
+      symbol: 'MATIC',
+      network: 'Polygon',
+      balance: '100',
+      usdValue: 80,
+      chainId: '0x89',
+    };
+    const toOptions = (rows: Array<{ key: string; symbol: string }>) =>
+      rows.map((row) => ({
+        label: row.symbol,
+        value: row.key,
+      }));
+
+    it('waits until last-used assets have been read', () => {
+      expect(
+        PortfolioFlowUtils.isSwapFromTokenReadyToSelect({
+          hasLoadedLastUsedSwapAssets: false,
+          lastUsedFromOptionValue: ethRow.key,
+          fromAssetOptions: toOptions([ethRow]),
+          rows: [ethRow],
+          activeChain: ethereumChain,
+          finishedEvmChainIds: ['0x1'],
+          hasLoadedAllPortfolioBalances: true,
+        }),
+      ).toBe(false);
+    });
+
+    it('is ready when the last-used from token is already in the list', () => {
+      expect(
+        PortfolioFlowUtils.isSwapFromTokenReadyToSelect({
+          hasLoadedLastUsedSwapAssets: true,
+          lastUsedFromOptionValue: ethRow.key,
+          fromAssetOptions: toOptions([ethRow]),
+          rows: [ethRow],
+          activeChain: polygonChain,
+          finishedEvmChainIds: ['0x1'],
+          hasLoadedAllPortfolioBalances: false,
+        }),
+      ).toBe(true);
+    });
+
+    it('is ready when the active chain has finished with a from token', () => {
+      expect(
+        PortfolioFlowUtils.isSwapFromTokenReadyToSelect({
+          hasLoadedLastUsedSwapAssets: true,
+          lastUsedFromOptionValue: undefined,
+          fromAssetOptions: toOptions([ethRow, maticRow]),
+          rows: [ethRow, maticRow],
+          activeChain: polygonChain,
+          finishedEvmChainIds: ['0x89'],
+          hasLoadedAllPortfolioBalances: false,
+        }),
+      ).toBe(true);
+    });
+
+    it('waits when the active chain has not finished even if another chain has', () => {
+      expect(
+        PortfolioFlowUtils.isSwapFromTokenReadyToSelect({
+          hasLoadedLastUsedSwapAssets: true,
+          lastUsedFromOptionValue: undefined,
+          fromAssetOptions: toOptions([ethRow]),
+          rows: [ethRow],
+          activeChain: polygonChain,
+          finishedEvmChainIds: ['0x1'],
+          hasLoadedAllPortfolioBalances: false,
+        }),
+      ).toBe(false);
+    });
+
+    it('is ready after all balances load even with no last-used or active-chain token', () => {
+      expect(
+        PortfolioFlowUtils.isSwapFromTokenReadyToSelect({
+          hasLoadedLastUsedSwapAssets: true,
+          lastUsedFromOptionValue: undefined,
+          fromAssetOptions: [],
+          rows: [],
+          activeChain: polygonChain,
+          finishedEvmChainIds: ['0x1', '0x89'],
+          hasLoadedAllPortfolioBalances: true,
+        }),
+      ).toBe(true);
+    });
+  });
+
   it('resolves a from-select option value from a preferred canonical asset id', () => {
     const rows = [
       {
