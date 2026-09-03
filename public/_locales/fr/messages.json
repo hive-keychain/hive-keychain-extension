@@ -220,7 +220,7 @@
     "description": "on popup main page"
   },
   "popup_html_tokens": {
-    "message": "Jetons",
+    "message": "Tokens",
     "description": "on popup main page"
   },
   "popup_html_witness": {
@@ -916,7 +916,7 @@
     "description": "On tokens page"
   },
   "popup_html_tokens_settings": {
-    "message": "Paramètres des jetons",
+    "message": "Paramètres des tokens",
     "description": "On tokens page"
   },
   "popup_html_tokens_settings_text": {
@@ -928,7 +928,7 @@
     "description": "On tokens page"
   },
   "popup_html_tokens_send_text": {
-    "message": "L'envoi de vos jetons peut prendre jusqu'à 30 secondes à confirmer, merci de patienter.",
+    "message": "L'envoi de vos tokens peut prendre jusqu'à 30 secondes à confirmer, merci de patienter.",
     "description": "On tokens page > Send"
   },
   "popup_html_tokens_operation_text": {
@@ -2007,7 +2007,7 @@
     "description": "When on automated tasks page"
   },
   "popup_html_automated_hive_engine_list_title": {
-    "message": "Jetons configurés pour le staking automatique",
+    "message": "Tokens configurés pour le staking automatique",
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autoclaim_rewards": {
@@ -2019,7 +2019,7 @@
     "description": "When on automated tasks page"
   },
   "popup_html_automated_hive_section_default_option_message": {
-    "message": "Ajouter un jeton au staking automatique",
+    "message": "Ajouter un token au staking automatique",
     "description": "When on automated tasks page > auto staking default option"
   },
   "popup_html_enable_autoclaim_rewards_info": {
@@ -2027,7 +2027,7 @@
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autostake_tokens_info": {
-    "message": "Le staking automatique de vos jetons peut augmenter vos gains",
+    "message": "Le staking automatique de vos tokens peut augmenter vos gains",
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autoclaim_accounts": {
@@ -2171,7 +2171,7 @@
     "description": "Shortcuts: switch to last used EVM network"
   },
   "popup_html_shortcut_no_tokens": {
-    "message": "Aucun jeton disponible",
+    "message": "Aucun token disponible",
     "description": "Shortcuts: empty token list for transfer"
   },
   "popup_html_shortcut_currency_hive": {
@@ -3015,11 +3015,11 @@
     "description": "token action"
   },
   "popup_html_stake_tokens": {
-    "message": "Staking du jeton",
+    "message": "Staking du token",
     "description": "stake token title"
   },
   "popup_html_unstake_tokens": {
-    "message": "Unstaking du jeton",
+    "message": "Unstaking du token",
     "description": "unstake token title"
   },
   "popup_html_delegate_tokens": {
@@ -3748,7 +3748,7 @@
     "description": "Error if trying to send too much of a token"
   },
   "hive_engine_not_existing_token_error": {
-    "message": "Le jeton $1 n’existe pas",
+    "message": "Le token $1 n’existe pas",
     "description": "Error if trying to send a token that doesn't exist"
   },
   "hive_engine_not_existing_user_error": {
@@ -4012,7 +4012,7 @@
     "description": "EVM Ledger blind signing disabled error"
   },
   "evm_ledger_clear_signing_fallback_warning": {
-    "message": "La signature claire Ledger sera tentée pour cette opération de jeton. Si les métadonnées du jeton sont indisponibles, votre Ledger peut afficher une confirmation de signature aveugle.",
+    "message": "La signature claire Ledger sera tentée pour cette opération de token. Si les métadonnées du token sont indisponibles, votre Ledger peut afficher une confirmation de signature aveugle.",
     "description": "Warning shown before signing an EVM token transaction with a Ledger"
   },
   "evm_ledger_unknown_error": {
@@ -4068,7 +4068,7 @@
     "description": "Token swaps : process"
   },
   "html_popup_swaps_slippage_definition": {
-    "message": "À chaque étape du swap, nous vérifions que le résultat final est supérieur à l’estimation moins le slippage. Sinon, le swap est annulé et les fonds sont renvoyés. Notez que certains swaps nécessitent plusieurs opérations et que vos fonds peuvent être renvoyés dans un autre jeton.",
+    "message": "À chaque étape du swap, nous vérifions que le résultat final est supérieur à l’estimation moins le slippage. Sinon, le swap est annulé et les fonds sont renvoyés. Notez que certains swaps nécessitent plusieurs opérations et que vos fonds peuvent être renvoyés dans un autre token.",
     "description": "Token swaps : process"
   },
   "local": {
@@ -4092,11 +4092,11 @@
     "description": "Value of token in USD"
   },
   "token": {
-    "message": "Jeton",
+    "message": "Token",
     "description": "Value of token in USD"
   },
   "tokens": {
-    "message": "Jetons",
+    "message": "Tokens",
     "description": "common use in extension referring to HE tokes"
   },
   "liquid_balance": {
@@ -4506,7 +4506,7 @@
     "message": "Filtrer par nom ou symbole"
   },
   "portfolio_caption_message_total_value": {
-    "message": "Ce montant reflète les jetons Hive et Hive Engine de tous vos comptes, quelle que soit leur forme (liquide, stakée, en épargne ou déléguée)",
+    "message": "Ce montant reflète les tokens Hive et Hive Engine de tous vos comptes, quelle que soit leur forme (liquide, stakée, en épargne ou déléguée)",
     "description": "portfolio main page, information total value"
   },
   "portfolio_filter_placeholder": {
@@ -4542,11 +4542,11 @@
     "description": "transaction expireed error"
   },
   "html_popup_swap_token_confirm_title": {
-    "message": "Confirmer le swap de jetons",
+    "message": "Confirmer le swap de tokens",
     "description": "Confirm token swap"
   },
   "html_popup_swap_token_confirm_message": {
-    "message": "Vous êtes sur le point de lancer un swap de jetons avec Keychain. Vous pouvez suivre son statut depuis l’écran d’historique des swaps.",
+    "message": "Vous êtes sur le point de lancer un swap de tokens avec Keychain. Vous pouvez suivre son statut depuis l’écran d’historique des swaps.",
     "description": "confirm token swap message"
   },
   "html_popup_swap_swap_id": {
@@ -4582,7 +4582,7 @@
     "description": "token swap"
   },
   "html_popup_swap_error_sending_token": {
-    "message": "Une erreur s’est produite lors de l’envoi des jetons à @$1.",
+    "message": "Une erreur s’est produite lors de l’envoi des tokens à @$1.",
     "description": "token swap general error message"
   },
   "local_accounts": {
@@ -4646,11 +4646,11 @@
     "description": "Keychain swap under maintenance"
   },
   "swap_start_end_token_should_be_different": {
-    "message": "Veuillez choisir deux jetons différents",
+    "message": "Veuillez choisir deux tokens différents",
     "description": "Start and end tokens should be differents"
   },
   "swap_not_enough_volume_error": {
-    "message": "Le volume sur cette paire de jetons est insuffisant pour effectuer ce swap",
+    "message": "Le volume sur cette paire de tokens est insuffisant pour effectuer ce swap",
     "description": "Operation impossible because not enough volume"
   },
   "swap_min_slippage_error": {
@@ -4658,11 +4658,11 @@
     "description": "Minimum slippage error"
   },
   "swap_caption": {
-    "message": "Keychain compare les différents fournisseurs pour s’assurer que vous obtenez vos jetons au meilleur taux possible.",
+    "message": "Keychain compare les différents fournisseurs pour s’assurer que vous obtenez vos tokens au meilleur taux possible.",
     "description": "Caption"
   },
   "swap_no_token": {
-    "message": "Vous n’avez actuellement aucun jeton HIVE, HBD ou Hive-Engine à swapper.",
+    "message": "Vous n’avez actuellement aucun token HIVE, HBD ou Hive-Engine à swapper.",
     "description": "Caption"
   },
   "swap_fee": {
@@ -4702,7 +4702,7 @@
     "description": "Swap server not responding error"
   },
   "bgd_ops_swap_start_success": {
-    "message": "Le swap a démarré avec succès ! Vous recevrez vos jetons dans quelques instants.",
+    "message": "Le swap a démarré avec succès ! Vous recevrez vos tokens dans quelques instants.",
     "description": "Success on swap request"
   },
   "service_unavailable_message": {
@@ -4718,7 +4718,7 @@
     "description": "When transfer not sent, swap status"
   },
   "swap_cannot_switch_tokens": {
-    "message": "Impossible d’inverser les jetons car vous n’avez aucun $1",
+    "message": "Impossible d’inverser les tokens car vous n’avez aucun $1",
     "description": "When trying to switch tokens (invert start and end)"
   },
   "swap_layer_two_delayed": {
@@ -4846,7 +4846,7 @@
     "description": "Need to accept pp on sign up page"
   },
   "html_tokens_none_available": {
-    "message": "Vous n’avez aucun jeton Hive Engine. Vous pouvez en acheter via notre fonctionnalité de swap.",
+    "message": "Vous n’avez aucun token Hive Engine. Vous pouvez en acheter via notre fonctionnalité de swap.",
     "description": "When no token available"
   },
   "html_tokens_issuer": {
@@ -4886,15 +4886,15 @@
     "description": "cancel unstake confirm message"
   },
   "html_popup_canceling_unstake_token": {
-    "message": "Annulation de l’unstake du jeton",
+    "message": "Annulation de l’unstake du token",
     "description": "Loading message unstake"
   },
   "html_popup_cancel_unstake_token_success": {
-    "message": "Annulation de l’unstake du jeton réussie",
+    "message": "Annulation de l’unstake du token réussie",
     "description": "Loading message unstake"
   },
   "html_popup_cancel_unstake_token_fail": {
-    "message": "L’annulation de l’unstake du jeton a échoué",
+    "message": "L’annulation de l’unstake du token a échoué",
     "description": "Loading message unstake"
   },
   "popup_html_multisig": {
@@ -5450,19 +5450,19 @@
     "description": "Blockchain chain block explorer"
   },
   "popup_html_create_blockchain_main_token": {
-    "message": "Nom du jeton principal",
+    "message": "Nom du token principal",
     "description": "Blockchain main token"
   },
   "popup_html_create_blockchain_token_hive": {
-    "message": "Nom du jeton Hive",
+    "message": "Nom du token Hive",
     "description": "Blockchain hive token"
   },
   "popup_html_create_blockchain_token_hbd": {
-    "message": "Nom du jeton HBD",
+    "message": "Nom du token HBD",
     "description": "Blockchain hbd token"
   },
   "popup_html_create_blockchain_token_hp": {
-    "message": "Nom du jeton HP",
+    "message": "Nom du token HP",
     "description": "Blockchain hp token"
   },
   "popup_html_evm_gas_fee_estimate_label": {
@@ -5970,7 +5970,7 @@
     "description": "Light-node address security reason"
   },
   "evm_security_reason_fake_token": {
-    "message": "Cette adresse a été liée à de fausses activités de jeton",
+    "message": "Cette adresse a été liée à de fausses activités de token",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_financial_crime": {
@@ -6034,11 +6034,11 @@
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_rug_pull_selfdestruct": {
-    "message": "Ce contrat peut s’autodétruire et casser la fonctionnalité du jeton.",
+    "message": "Ce contrat peut s’autodétruire et casser la fonctionnalité du token.",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_rug_pull_approval_abuse": {
-    "message": "Ce contrat peut abuser des approbations de jetons pour déplacer vos fonds.",
+    "message": "Ce contrat peut abuser des approbations de tokens pour déplacer vos fonds.",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_reinit": {
@@ -6114,15 +6114,15 @@
     "description": "Not used yet"
   },
   "evm_transaction_contract_honeypot": {
-    "message": "Ce jeton a été signalé comme honeypot potentiel",
+    "message": "Ce token a été signalé comme honeypot potentiel",
     "description": "Token honeypot warning from GoPlus"
   },
   "evm_transaction_contract_cannot_sell": {
-    "message": "Ce jeton peut ne pas être vendable",
+    "message": "Ce token peut ne pas être vendable",
     "description": "Token cannot sell all warning from GoPlus"
   },
   "evm_transaction_contract_high_tax": {
-    "message": "Ce jeton a des taxes d’achat ou de vente élevées",
+    "message": "Ce token a des taxes d’achat ou de vente élevées",
     "description": "Token high tax warning from GoPlus"
   },
   "evm_transaction_contract_rug_pull": {
@@ -6174,7 +6174,7 @@
     "description": "evm raw data "
   },
   "evm_main_token_amount": {
-    "message": "Montant du jeton principal",
+    "message": "Montant du token principal",
     "description": "Main token amount evm"
   },
   "evm_access_list": {
@@ -6222,7 +6222,7 @@
     "description": "All nft collections"
   },
   "evm_nft_token_id": {
-    "message": "ID du jeton",
+    "message": "ID du token",
     "description": "NFT token id"
   },
   "evm_nft_approve_all": {
@@ -6230,11 +6230,11 @@
     "description": "NFT approve all value"
   },
   "evm_nft_number_of_tokens": {
-    "message": "Nombre de jetons",
+    "message": "Nombre de tokens",
     "description": "NFT number of tokens"
   },
   "evm_nft_token_type": {
-    "message": "Type de jeton",
+    "message": "Type de token",
     "description": "Token type"
   },
   "global_other": {
@@ -6242,7 +6242,7 @@
     "description": "Global word"
   },
   "evm_tab_tokens": {
-    "message": "Jetons",
+    "message": "Tokens",
     "description": "Tokens tab"
   },
   "evm_tab_nfts": {
@@ -6302,7 +6302,7 @@
     "description": "Button label to remove every allowed chain for an EVM dapp"
   },
   "evm_custom_chains_caption": {
-    "message": "Les chaînes personnalisées ont une prise en charge limitée. Certaines fonctionnalités, comme la découverte de jetons et le chargement automatique de l’historique, peuvent être indisponibles.",
+    "message": "Les chaînes personnalisées ont une prise en charge limitée. Certaines fonctionnalités, comme la découverte de tokens et le chargement automatique de l’historique, peuvent être indisponibles.",
     "description": "Custom chains info caption"
   },
   "evm_custom_chains_delete": {
@@ -6710,11 +6710,11 @@
     "description": ""
   },
   "evm_history_operation_mint_batch": {
-    "message": "Vous avez minté $1 jetons de la collection $2",
+    "message": "Vous avez minté $1 tokens de la collection $2",
     "description": "Batch mint operation"
   },
   "evm_history_operation_mint_batch_pending": {
-    "message": "Mint de $1 jetons de la collection $2",
+    "message": "Mint de $1 tokens de la collection $2",
     "description": "Batch mint operation"
   },
   "evm_history_native_amount_paid": {
@@ -6746,7 +6746,7 @@
     "description": "Approve history item"
   },
   "evm_history_operation_approve_out_for_all": {
-    "message": "Vous avez autorisé $1 à gérer tous vos jetons $2",
+    "message": "Vous avez autorisé $1 à gérer tous vos tokens $2",
     "description": "Approve for all history item"
   },
   "evm_history_operation_swap": {
@@ -7189,7 +7189,7 @@
     "description": "Pay to smart contract"
   },
   "evm_add_custom_token": {
-    "message": "Ajouter un jeton personnalisé",
+    "message": "Ajouter un token personnalisé",
     "description": "Opens the add-token flow from manage tokens"
   },
   "evm_add_custom_nft": {
@@ -7197,7 +7197,7 @@
     "description": "Add a custom NFT"
   },
   "evm_custom_tokens_page_title": {
-    "message": "Gérer les jetons",
+    "message": "Gérer les tokens",
     "description": "Title for the ERC20 tokens management page"
   },
   "evm_custom_nfts_page_title": {
@@ -7205,23 +7205,23 @@
     "description": "Title for the custom NFT management page"
   },
   "evm_custom_tokens_page_empty": {
-    "message": "Aucun jeton personnalisé pour le moment. Utilisez Ajouter un jeton personnalisé pour enregistrer un contrat ERC20 pour ce réseau.",
+    "message": "Aucun token personnalisé pour le moment. Utilisez Ajouter un token personnalisé pour enregistrer un contrat ERC20 pour ce réseau.",
     "description": "Empty state for custom tokens section on manage tokens page"
   },
   "evm_custom_nfts_page_empty": {
-    "message": "Aucun NFT personnalisé pour le moment. Ajoutez-en un pour enregistrer des ID de jetons NFT pour ce réseau.",
+    "message": "Aucun NFT personnalisé pour le moment. Ajoutez-en un pour enregistrer des ID de tokens NFT pour ce réseau.",
     "description": "Empty state on custom NFT page"
   },
   "evm_custom_tokens_page_caption": {
-    "message": "Masquez les jetons détectés automatiquement, ou modifiez et supprimez les jetons personnalisés.<br/>Les paramètres s’appliquent par réseau. Les jetons avec un solde nul restent hors de la page d’accueil.",
+    "message": "Masquez les tokens détectés automatiquement, ou modifiez et supprimez les tokens personnalisés.<br/>Les paramètres s’appliquent par réseau. Les tokens avec un solde nul restent hors de la page d’accueil.",
     "description": "Intro caption on manage tokens page; may include a <br/> line break"
   },
   "evm_custom_tokens_section_title": {
-    "message": "Jetons personnalisés",
+    "message": "Tokens personnalisés",
     "description": "Custom token list section title on manage tokens page"
   },
   "evm_auto_detected_tokens_section_title": {
-    "message": "Jetons détectés automatiquement",
+    "message": "Tokens détectés automatiquement",
     "description": "Auto-detected token list section title on manage tokens page"
   },
   "evm_auto_detected_tokens_empty": {
@@ -7245,7 +7245,7 @@
     "description": "Restore an auto-detected token on the home page"
   },
   "evm_custom_nfts_page_caption": {
-    "message": "Les NFT personnalisés sont stockés par portefeuille et par réseau. Les entrées enregistrées restent ici même si vous ne possédez plus ces ID de jetons.",
+    "message": "Les NFT personnalisés sont stockés par portefeuille et par réseau. Les entrées enregistrées restent ici même si vous ne possédez plus ces ID de tokens.",
     "description": "Intro caption on custom NFT page"
   },
   "evm_custom_tokens_delete": {
@@ -7257,7 +7257,7 @@
     "description": "Remove a custom NFT entry from the list"
   },
   "evm_custom_tokens_delete_confirm": {
-    "message": "Supprimer \"$1\" de vos jetons personnalisés ? Cette action est irréversible.",
+    "message": "Supprimer \"$1\" de vos tokens personnalisés ? Cette action est irréversible.",
     "description": "Confirmation before deleting a custom token; $1 is symbol or name"
   },
   "evm_custom_nfts_delete_confirm": {
@@ -7265,7 +7265,7 @@
     "description": "Confirmation before deleting a custom NFT entry; $1 is the contract address"
   },
   "evm_custom_tokens_modal_title_edit": {
-    "message": "Modifier le jeton personnalisé",
+    "message": "Modifier le token personnalisé",
     "description": "Title when editing a saved custom ERC20 token"
   },
   "evm_custom_nfts_modal_title_edit": {
@@ -7277,15 +7277,15 @@
     "description": "Caption when editing a custom ERC20 token"
   },
   "evm_custom_nfts_modal_caption_edit": {
-    "message": "Remplacez la liste des ID de jetons pour ce contrat NFT. Le type de NFT reste le même.",
+    "message": "Remplacez la liste des ID de tokens pour ce contrat NFT. Le type de NFT reste le même.",
     "description": "Caption when editing a custom NFT entry"
   },
   "evm_wallet_tokens_filter_no_results": {
-    "message": "Aucun jeton trouvé",
+    "message": "Aucun token trouvé",
     "description": "Shown on wallet tokens tab when the search/filter has no matching tokens"
   },
   "evm_custom_erc20_empty_card_message": {
-    "message": "Vous n’avez encore aucun jeton personnalisé.</br> Pour commencer, cliquez sur la roue des paramètres.",
+    "message": "Vous n’avez encore aucun token personnalisé.</br> Pour commencer, cliquez sur la roue des paramètres.",
     "description": "Hint on wallet tokens tab when there are no custom ERC20 tokens"
   },
   "evm_custom_erc20_empty_card_hide": {
@@ -7301,7 +7301,7 @@
     "description": "Hint on wallet history tab for custom EVM chains"
   },
   "evm_add_custom_token_popup_title": {
-    "message": "Ajouter un jeton personnalisé",
+    "message": "Ajouter un token personnalisé",
     "description": "Add custom token popup title"
   },
   "evm_add_custom_nft_popup_title": {
@@ -7313,7 +7313,7 @@
     "description": "Smart contract address"
   },
   "evm_add_custom_token_popup_caption": {
-    "message": "Recherchez les jetons connus pour ce réseau. Si vous ne trouvez pas le jeton souhaité, ajoutez-le manuellement.",
+    "message": "Recherchez les tokens connus pour ce réseau. Si vous ne trouvez pas le token souhaité, ajoutez-le manuellement.",
     "description": "Browse step caption in the add custom token popup"
   },
   "evm_custom_tokens_add_section_title": {
@@ -7325,7 +7325,7 @@
     "description": "Opens the manual ERC20 form from the add token popup browse step"
   },
   "evm_known_tokens_search_label": {
-    "message": "Rechercher un jeton",
+    "message": "Rechercher un token",
     "description": "Known tokens search input label in the add token popup"
   },
   "evm_known_tokens_search_placeholder": {
@@ -7333,15 +7333,15 @@
     "description": "Known tokens search input placeholder in the add token popup"
   },
   "evm_known_tokens_loading": {
-    "message": "Chargement des jetons connus...",
+    "message": "Chargement des tokens connus...",
     "description": "Known tokens loading message in the add token popup"
   },
   "evm_known_tokens_empty": {
-    "message": "Aucun jeton connu trouvé pour ce réseau.",
+    "message": "Aucun token connu trouvé pour ce réseau.",
     "description": "Known tokens empty state in the add token popup"
   },
   "evm_known_tokens_error_loading": {
-    "message": "Impossible de charger les jetons connus pour ce réseau.",
+    "message": "Impossible de charger les tokens connus pour ce réseau.",
     "description": "Known tokens load error in the add token popup"
   },
   "evm_known_tokens_add": {
@@ -7349,15 +7349,15 @@
     "description": "Add known token button label in the add token popup"
   },
   "evm_watch_asset_title": {
-    "message": "Ajouter un jeton personnalisé",
+    "message": "Ajouter un token personnalisé",
     "description": "Title when a dApp requests wallet_watchAsset"
   },
   "evm_watch_asset_caption": {
-    "message": "$1 vous demande d’ajouter un jeton personnalisé à Keychain.",
+    "message": "$1 vous demande d’ajouter un token personnalisé à Keychain.",
     "description": "Caption when a dApp requests wallet_watchAsset; $1 is the dApp domain"
   },
   "evm_add_custom_nft_popup_caption": {
-    "message": "Ajoutez un contrat NFT et les ID de jetons que vous possédez. Keychain détectera si le contrat est ERC721 ou ERC1155.",
+    "message": "Ajoutez un contrat NFT et les ID de tokens que vous possédez. Keychain détectera si le contrat est ERC721 ou ERC1155.",
     "description": "Add custom NFT popup caption"
   },
   "evm_custom_nfts_field_collection_name": {
@@ -7365,7 +7365,7 @@
     "description": "Label for optional custom NFT collection display name"
   },
   "evm_custom_nfts_field_token_ids": {
-    "message": "ID de jetons",
+    "message": "ID de tokens",
     "description": "Label for NFT token IDs field"
   },
   "evm_custom_nfts_type_auto_detected": {
@@ -7377,7 +7377,7 @@
     "description": "Message explaining the detected NFT type; $1 is ERC721 or ERC1155"
   },
   "evm_custom_nfts_token_count": {
-    "message": "$1 ID de jetons enregistrés",
+    "message": "$1 ID de tokens enregistrés",
     "description": "Custom NFT token count label; $1 is the number of saved token IDs"
   },
   "evm_add_custom_asset_error_contract_address_invalid": {
@@ -7393,7 +7393,7 @@
     "description": "Validation error when saving a custom ERC20 without a symbol"
   },
   "evm_add_custom_token_error_name_required": {
-    "message": "Le nom du jeton est obligatoire.",
+    "message": "Le nom du token est obligatoire.",
     "description": "Validation error when saving a custom ERC20 without a name"
   },
   "evm_add_custom_token_error_decimals_invalid": {
@@ -7401,23 +7401,23 @@
     "description": "Validation error when custom ERC20 decimals are missing or out of range"
   },
   "evm_add_custom_nft_error_token_ids_required": {
-    "message": "Saisissez au moins un ID de jeton.",
+    "message": "Saisissez au moins un ID de token.",
     "description": "Validation error when saving a custom NFT without token IDs"
   },
   "evm_add_custom_nft_error_token_ids_format": {
-    "message": "Les ID de jetons doivent être des nombres décimaux ou des valeurs hexadécimales préfixées par 0x.",
+    "message": "Les ID de tokens doivent être des nombres décimaux ou des valeurs hexadécimales préfixées par 0x.",
     "description": "Validation error when custom NFT token IDs use an invalid format"
   },
   "evm_add_custom_token_error_save_failed": {
-    "message": "Impossible d’enregistrer ce jeton pour le moment.",
+    "message": "Impossible d’enregistrer ce token pour le moment.",
     "description": "Error when persisting a custom ERC20 token fails"
   },
   "evm_add_custom_token_error_fetch_erc20_metadata": {
-    "message": "Impossible de lire le nom et les décimales du jeton depuis la chaîne. Vérifiez l’adresse et assurez-vous qu’il s’agit d’un contrat ERC20 standard.",
+    "message": "Impossible de lire le nom et les décimales du token depuis la chaîne. Vérifiez l’adresse et assurez-vous qu’il s’agit d’un contrat ERC20 standard.",
     "description": "Error when fetching ERC20 name and decimals from chain fails"
   },
   "evm_add_custom_nft_error_token_ids_not_owned": {
-    "message": "Un ou plusieurs ID de jetons ne sont pas détenus par ce portefeuille.",
+    "message": "Un ou plusieurs ID de tokens ne sont pas détenus par ce portefeuille.",
     "description": "Error when listed NFT token IDs are not owned by the current wallet"
   },
   "evm_add_custom_nft_error_save_failed": {
@@ -7429,7 +7429,7 @@
     "description": "Error when the address is not a supported ERC721 or ERC1155 contract"
   },
   "evm_add_manually_discover": {
-    "message": "Découvrir les jetons",
+    "message": "Découvrir les tokens",
     "description": "Discover tokens"
   },
   "evm_pending_queued_transactions": {
@@ -7580,7 +7580,7 @@
     "description": "Completed"
   },
   "evm_lifi_swap_partially_completed": {
-    "message": "Partiellement terminé. Vous avez reçu un jeton différent, la valeur a été entièrement préservée",
+    "message": "Partiellement terminé. Vous avez reçu un token différent, la valeur a été entièrement préservée",
     "description": "Partially completed"
   },
   "evm_lifi_swap_refunded_completed": {
@@ -7616,7 +7616,7 @@
     "description": "No available quotes for the requested transfer"
   },
   "evm_lifi_swap_error_same_token_source_and_destination": {
-    "message": "Le même jeton ne peut pas être utilisé comme source et destination",
+    "message": "Le même token ne peut pas être utilisé comme source et destination",
     "description": "The same token cannot be used as source and destination"
   },
   "evm_lifi_swap_error_build_transaction": {

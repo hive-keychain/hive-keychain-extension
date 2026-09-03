@@ -1,5 +1,9 @@
 import { evmChainIdToDecimalPathSegment } from '@popup/evm/utils/evm-light-node.utils';
-import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import {
+  Chain,
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Decimal from 'decimal.js';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -30,6 +34,7 @@ export type PortfolioFlowRow = {
   symbol: string;
   network: string;
   balance: string;
+  usdValue?: number | null;
   decimals?: number;
   chainId?: string | null;
   isTestnet?: boolean;
@@ -1379,6 +1384,104 @@ export const getDefaultSelectOptionValue = (
   return options[0]?.value ?? '';
 };
 
+const isHivePortfolioRow = (row: PortfolioFlowRow): boolean =>
+  row.isHive === true || row.key.startsWith('hive:');
+
+const isHiveNativeGasRow = (row: PortfolioFlowRow): boolean =>
+  isHivePortfolioRow(row) && row.symbol.toUpperCase() === 'HIVE';
+
+const getPortfolioRowUsdValue = (row: PortfolioFlowRow): number =>
+  typeof row.usdValue === 'number' && Number.isFinite(row.usdValue)
+    ? row.usdValue
+    : 0;
+
+const pickHighestUsdPortfolioRow = (
+  rows: PortfolioFlowRow[],
+): PortfolioFlowRow | undefined => {
+  if (rows.length === 0) {
+    return undefined;
+  }
+
+  return rows.reduce((highest, row) =>
+    getPortfolioRowUsdValue(row) > getPortfolioRowUsdValue(highest)
+      ? row
+      : highest,
+  );
+};
+
+const rowMatchesActiveChain = (
+  row: PortfolioFlowRow,
+  activeChain: Pick<Chain, 'type' | 'chainId'>,
+): boolean => {
+  if (activeChain.type === ChainType.HIVE) {
+    return isHivePortfolioRow(row);
+  }
+
+  if (activeChain.type !== ChainType.EVM) {
+    return false;
+  }
+
+  const parsedRow = parsePortfolioEvmRowKey(row);
+  if (!parsedRow) {
+    return false;
+  }
+
+  return chainIdsMatch(parsedRow.chainReference, activeChain.chainId);
+};
+
+const hasNativeGasBalanceForRow = (
+  row: PortfolioFlowRow,
+  allRows: PortfolioFlowRow[],
+): boolean => {
+  if (isHivePortfolioRow(row)) {
+    return allRows.some(
+      (item) =>
+        isHiveNativeGasRow(item) && hasPositivePortfolioBalance(item.balance),
+    );
+  }
+
+  const parsedRow = parsePortfolioEvmRowKey(row);
+  if (!parsedRow) {
+    return false;
+  }
+
+  return allRows.some((item) => {
+    const parsedItem = parsePortfolioEvmRowKey(item);
+    return (
+      parsedItem !== null &&
+      parsedItem.contractAddress === null &&
+      chainIdsMatch(parsedItem.chainReference, parsedRow.chainReference) &&
+      hasPositivePortfolioBalance(item.balance)
+    );
+  });
+};
+
+export const resolveDefaultSwapFromSelectOptionValue = (
+  options: PortfolioFlowSelectOption[],
+  rows: PortfolioFlowRow[],
+  activeChain?: Pick<Chain, 'type' | 'chainId'> | null,
+): string | undefined => {
+  const optionValues = new Set(options.map((option) => option.value));
+  const eligibleRows = rows.filter((row) => optionValues.has(row.key));
+  const gasCapableRows = eligibleRows.filter((row) =>
+    hasNativeGasBalanceForRow(row, rows),
+  );
+
+  if (
+    activeChain &&
+    (activeChain.type === ChainType.HIVE || activeChain.type === ChainType.EVM)
+  ) {
+    const activeChainRows = gasCapableRows.filter((row) =>
+      rowMatchesActiveChain(row, activeChain),
+    );
+    if (activeChainRows.some((row) => getPortfolioRowUsdValue(row) > 0)) {
+      return pickHighestUsdPortfolioRow(activeChainRows)?.key;
+    }
+  }
+
+  return pickHighestUsdPortfolioRow(gasCapableRows)?.key;
+};
+
 export const getLastUsedSwapAssets =
   async (): Promise<PortfolioSwapLastUsedAssets | null> => {
     const lastUsed = await LocalStorageUtils.getValueFromLocalStorage(
@@ -1899,6 +2002,7 @@ export const PortfolioFlowUtils = {
   formatPortfolioHiveEngineBalanceBreakdown,
   formatPortfolioTokenBalance,
   getDefaultSelectOptionValue,
+  resolveDefaultSwapFromSelectOptionValue,
   getHivePortfolioRowEcosystem,
   getHiveTokenIcon,
   getLastUsedSwapAssets,

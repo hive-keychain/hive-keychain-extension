@@ -1,3 +1,4 @@
+import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { PortfolioCanonicalAsset } from 'src/portfolio/portfolio-api.interface';
 import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
@@ -181,6 +182,188 @@ describe('PortfolioFlowUtils', () => {
         'missing',
       ),
     ).toBe('a');
+  });
+
+  describe('resolveDefaultSwapFromSelectOptionValue', () => {
+    const ethereumChain = {
+      type: ChainType.EVM,
+      chainId: '0x1',
+    };
+    const polygonChain = {
+      type: ChainType.EVM,
+      chainId: '0x89',
+    };
+    const hiveChain = {
+      type: ChainType.HIVE,
+      chainId: 'hive',
+    };
+
+    const ethRow = {
+      key: '0x1:ETH:native',
+      symbol: 'ETH',
+      network: 'Ethereum',
+      balance: '0.5',
+      usdValue: 50,
+      chainId: '0x1',
+    };
+    const usdcRow = {
+      key: '0x1:USDC:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+      symbol: 'USDC',
+      network: 'Ethereum',
+      balance: '200',
+      usdValue: 200,
+      chainId: '0x1',
+    };
+    const maticRow = {
+      key: '0x89:MATIC:native',
+      symbol: 'MATIC',
+      network: 'Polygon',
+      balance: '100',
+      usdValue: 80,
+      chainId: '0x89',
+    };
+    const hiveRow = {
+      key: 'hive:HIVE',
+      symbol: 'HIVE',
+      network: 'Hive',
+      balance: '20',
+      usdValue: 10,
+      isHive: true,
+    };
+    const decRow = {
+      key: 'hive:DEC',
+      symbol: 'DEC',
+      network: 'Hive',
+      balance: '1000',
+      usdValue: 40,
+      isHive: true,
+    };
+
+    const toOptions = (
+      rows: Array<{ key: string; symbol: string }>,
+    ) =>
+      rows.map((row) => ({
+        label: row.symbol,
+        value: row.key,
+      }));
+
+    it('selects the highest USD token on the active EVM chain when native gas is available', () => {
+      expect(
+        PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
+          toOptions([ethRow, usdcRow, maticRow]),
+          [ethRow, usdcRow, maticRow],
+          ethereumChain,
+        ),
+      ).toBe(usdcRow.key);
+    });
+
+    it('prefers the active chain over a higher-USD token on another chain', () => {
+      expect(
+        PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
+          toOptions([usdcRow, maticRow]),
+          [ethRow, usdcRow, maticRow],
+          polygonChain,
+        ),
+      ).toBe(maticRow.key);
+    });
+
+    it('skips the active chain when it has no native gas and uses the highest USD token that can pay gas', () => {
+      const ethWithoutGas = { ...ethRow, balance: '0', usdValue: 0 };
+
+      expect(
+        PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
+          toOptions([usdcRow, maticRow]),
+          [ethWithoutGas, usdcRow, maticRow],
+          ethereumChain,
+        ),
+      ).toBe(maticRow.key);
+    });
+
+    it('falls back to the highest USD gas-capable token when the active chain has no USD value', () => {
+      const dustEth = { ...ethRow, usdValue: 0 };
+
+      expect(
+        PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
+          toOptions([dustEth, maticRow]),
+          [dustEth, maticRow],
+          ethereumChain,
+        ),
+      ).toBe(maticRow.key);
+    });
+
+    it('selects the highest USD token in the wallet when no active chain is provided', () => {
+      expect(
+        PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
+          toOptions([ethRow, usdcRow, maticRow]),
+          [ethRow, usdcRow, maticRow],
+        ),
+      ).toBe(usdcRow.key);
+    });
+
+    it('prefers Hive holdings when Hive is the active chain even if an EVM token is worth more', () => {
+      expect(
+        PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
+          toOptions([usdcRow, hiveRow, decRow]),
+          [ethRow, usdcRow, hiveRow, decRow],
+          hiveChain,
+        ),
+      ).toBe(decRow.key);
+    });
+
+    it('skips Hive tokens when HIVE gas balance is 0', () => {
+      const hiveWithoutGas = { ...hiveRow, balance: '0', usdValue: 0 };
+
+      expect(
+        PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
+          toOptions([usdcRow, decRow]),
+          [ethRow, usdcRow, hiveWithoutGas, decRow],
+          hiveChain,
+        ),
+      ).toBe(usdcRow.key);
+    });
+
+    it('keeps the earlier token when USD values are tied on the same chain', () => {
+      const daiRow = {
+        key: '0x1:DAI:0x6b175474e89094c44da98b954eedeac495271d0f',
+        symbol: 'DAI',
+        network: 'Ethereum',
+        balance: '200',
+        usdValue: 200,
+        chainId: '0x1',
+      };
+
+      expect(
+        PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
+          toOptions([usdcRow, daiRow]),
+          [ethRow, usdcRow, daiRow],
+          ethereumChain,
+        ),
+      ).toBe(usdcRow.key);
+    });
+
+    it('can select the native gas token when it has the highest USD value', () => {
+      const cheapUsdc = { ...usdcRow, usdValue: 10 };
+
+      expect(
+        PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
+          toOptions([ethRow, cheapUsdc]),
+          [ethRow, cheapUsdc],
+          ethereumChain,
+        ),
+      ).toBe(ethRow.key);
+    });
+
+    it('returns undefined when no option has native gas', () => {
+      const ethWithoutGas = { ...ethRow, balance: '0', usdValue: 0 };
+
+      expect(
+        PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
+          toOptions([usdcRow]),
+          [ethWithoutGas, usdcRow],
+          ethereumChain,
+        ),
+      ).toBeUndefined();
+    });
   });
 
   it('resolves a from-select option value from a preferred canonical asset id', () => {

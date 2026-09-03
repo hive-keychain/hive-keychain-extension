@@ -1728,6 +1728,68 @@ describe('Portfolio', () => {
     });
   });
 
+  it('defaults the swap from token to the highest USD holding on the active chain', async () => {
+    const oneEth = {
+      ...ethToken,
+      balance: BigInt('1000000000000000000'),
+    };
+    const tenMatic = {
+      ...maticToken,
+      balance: BigInt('10000000000000000000'),
+    };
+
+    jest
+      .spyOn(PortfolioFlowUtils, 'getLastUsedSwapAssets')
+      .mockResolvedValue(null);
+    (
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains as jest.Mock
+    ).mockImplementation(async (_chains, _walletAddress, options) => {
+      options?.onChainReady?.(ethereumChain, [oneEth]);
+      options?.onChainFinished?.(ethereumChain);
+      options?.onChainReady?.(polygonChain, [tenMatic]);
+      options?.onChainFinished?.(polygonChain);
+      return [oneEth, tenMatic];
+    });
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
+      assets: swapAssetsFixture,
+      chains: {},
+    });
+    mockPortfolioListAvailableAssets();
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        chain={polygonChain}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+    });
+
+    clickPortfolioNav(container, 'swap');
+
+    await waitFor(() => {
+      const fromAsset = container.querySelector('#portfolio-from-asset');
+      expect(fromAsset).not.toBeNull();
+      expect(fromAsset?.textContent).toContain('MATIC');
+      expect(fromAsset?.textContent).not.toContain('ETH');
+    });
+  });
+
   it('includes mainnet ETH in swap from options when another ETH chain is listed first', async () => {
     const optimismChain: EvmChain = {
       name: 'Optimism',

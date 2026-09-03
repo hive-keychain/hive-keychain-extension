@@ -28,6 +28,7 @@ import {
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import {
+  Chain,
   ChainType,
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
@@ -512,6 +513,7 @@ export const Portfolio = ({
   activeHiveAccountName,
   activeEvmAccountAddress,
   activeAccountType,
+  chain,
   mk,
   setErrorMessage,
   setTitleContainerProperties,
@@ -565,6 +567,7 @@ export const Portfolio = ({
     useState<PortfolioSwapLastUsedAssets | null>(null);
   const [hasLoadedLastUsedSwapAssets, setHasLoadedLastUsedSwapAssets] =
     useState(false);
+  const hasUserSelectedFromAssetRef = useRef(false);
   const [amount, setAmount] = useState('');
   const [fiatCurrency, setFiatCurrency] = useState(
     PortfolioFiatLocaleUtils.getPreferredFiatCurrencyCode(),
@@ -2017,6 +2020,7 @@ export const Portfolio = ({
     setToAssetId('');
     setToAssetFilter('');
     setToAssetChainFilter('');
+    hasUserSelectedFromAssetRef.current = false;
     resetFlowFormFields();
   }, [selectedAccountKey]);
 
@@ -2066,16 +2070,12 @@ export const Portfolio = ({
       return;
     }
 
-    if (fromAssetOptions.some((option) => option.value === fromAssetId)) {
+    if (section !== 'swap' && section !== 'sell') {
       return;
     }
 
-    if (section === 'swap' && !hasLoadedLastUsedSwapAssets) {
-      return;
-    }
-
-    const preferredFromOptionValue =
-      section === 'swap'
+    const lastUsedFromOptionValue =
+      section === 'swap' && hasLoadedLastUsedSwapAssets
         ? PortfolioFlowUtils.resolveFromSelectOptionValueForAssetId(
             lastUsedSwapAssets?.fromAssetId,
             fromAssetOptions,
@@ -2086,15 +2086,35 @@ export const Portfolio = ({
             swapSourceAssets,
           )
         : undefined;
-
-    setFromAssetId(
-      PortfolioFlowUtils.getDefaultSelectOptionValue(
-        fromAssetOptions,
-        preferredFromOptionValue,
-      ),
+    const preferredFromOptionValue =
+      lastUsedFromOptionValue ??
+      (section === 'swap'
+        ? PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
+            fromAssetOptions,
+            rows,
+            chain,
+          )
+        : undefined);
+    const nextFromAssetId = PortfolioFlowUtils.getDefaultSelectOptionValue(
+      fromAssetOptions,
+      preferredFromOptionValue,
     );
+
+    if (fromAssetId === nextFromAssetId) {
+      return;
+    }
+
+    if (
+      hasUserSelectedFromAssetRef.current &&
+      fromAssetOptions.some((option) => option.value === fromAssetId)
+    ) {
+      return;
+    }
+
+    setFromAssetId(nextFromAssetId);
   }, [
     canonicalAssetsForRowResolution,
+    chain,
     fromAssetId,
     fromAssetOptions,
     hasLoadedLastUsedSwapAssets,
@@ -3350,6 +3370,7 @@ export const Portfolio = ({
         PortfolioFlowUtils.hasPositivePortfolioBalance(row.balance) &&
         !row.isTestnet;
       resetFlowFormFields();
+      hasUserSelectedFromAssetRef.current = mode !== 'buy' && canUseAsFrom;
       setFromAssetId(mode === 'buy' || !canUseAsFrom ? '' : row.key);
       setToAssetId(
         mode === 'sell'
@@ -3902,7 +3923,10 @@ export const Portfolio = ({
           label={I18nUtils.getMessage('portfolio_from_asset')}
           options={fromAssetOptions}
           value={fromAssetId}
-          onChange={setFromAssetId}
+          onChange={(value) => {
+            hasUserSelectedFromAssetRef.current = true;
+            setFromAssetId(value);
+          }}
           renderOption={renderFromAssetIdentity}
           renderDisplay={renderFromAssetIdentity}
           disabled={fromAssetOptions.length === 0}
@@ -4521,6 +4545,7 @@ const mapStateToProps = (state: RootState) => ({
   activeHiveAccountName: state.hive.activeAccount?.account?.name,
   activeEvmAccountAddress: state.evm.activeAccount?.wallet?.address,
   activeAccountType: state.activeAccountType,
+  chain: state.chain as Chain,
   mk: state.mk,
 });
 
