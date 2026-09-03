@@ -6,8 +6,10 @@ import {
   ConfirmationPageFieldType,
 } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import {
+  isPortfolioHiveTransaction,
   PortfolioCanonicalAsset,
   PortfolioChainDisplayRecord,
+  PortfolioHiveTransaction,
   PortfolioQuote,
   PortfolioQuoteFee,
 } from 'src/portfolio/portfolio-api.interface';
@@ -95,6 +97,75 @@ const buildPortfolioConfirmationRecipientField = (
   };
 };
 
+const resolveHiveCustomJsonProviderAccount = (
+  json: string,
+): string | undefined => {
+  try {
+    const parsed: unknown = JSON.parse(json);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return undefined;
+    }
+
+    const payload = (parsed as { contractPayload?: unknown }).contractPayload;
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+      return undefined;
+    }
+
+    const to = (payload as { to?: unknown }).to;
+    if (typeof to !== 'string') {
+      return undefined;
+    }
+
+    const normalized = PortfolioFlowUtils.normalizePortfolioRecipientAddress(to);
+    return normalized || undefined;
+  } catch {
+    return undefined;
+  }
+};
+
+const resolveHiveProviderAccount = (
+  transaction: PortfolioHiveTransaction | null | undefined,
+): string | undefined => {
+  if (!transaction) {
+    return undefined;
+  }
+
+  for (const operation of transaction.operations) {
+    if (operation[0] === 'transfer') {
+      const to = PortfolioFlowUtils.normalizePortfolioRecipientAddress(
+        operation[1].to ?? '',
+      );
+      if (to) {
+        return to;
+      }
+    }
+
+    if (operation[0] === 'custom_json') {
+      const to = resolveHiveCustomJsonProviderAccount(operation[1].json);
+      if (to) {
+        return to;
+      }
+    }
+  }
+
+  return undefined;
+};
+
+const resolveHiveConfirmationTransaction = (
+  quote: PortfolioQuote,
+  hiveTransaction?: PortfolioHiveTransaction | null,
+): PortfolioHiveTransaction | null => {
+  if (hiveTransaction) {
+    return hiveTransaction;
+  }
+
+  if (quote.transaction && isPortfolioHiveTransaction(quote.transaction)) {
+    return quote.transaction;
+  }
+
+  return null;
+};
+
 export type PortfolioInAppConfirmationFieldInput = {
   quote: PortfolioQuote;
   fromAsset?: PortfolioCanonicalAsset | null;
@@ -103,6 +174,7 @@ export type PortfolioInAppConfirmationFieldInput = {
   toAddress: string;
   chains?: EvmChain[];
   portfolioChains?: PortfolioChainDisplayRecord;
+  hiveTransaction?: PortfolioHiveTransaction | null;
 };
 
 const buildPortfolioInAppConfirmationFields = (
@@ -116,11 +188,25 @@ const buildPortfolioInAppConfirmationFields = (
     toAddress,
     chains = [],
     portfolioChains = {},
+    hiveTransaction,
   } = input;
   const resolvedFromAsset = quote.fromAsset ?? fromAsset ?? null;
   const resolvedToAsset = quote.toAsset ?? toAsset ?? null;
+  const fields: ConfirmationPageFields[] = [];
 
-  const fields: ConfirmationPageFields[] = [
+  if (
+    fromAddress &&
+    resolvedFromAsset &&
+    isHivePortfolioEcosystem(resolvedFromAsset.ecosystem)
+  ) {
+    fields.push({
+      label: 'portfolio_confirmation_account',
+      value: fromAddress,
+      tag: ConfirmationPageFieldType.USERNAME,
+    });
+  }
+
+  fields.push(
     buildPortfolioConfirmationAmountField(
       'portfolio_confirmation_from',
       quote.fromAmount,
@@ -135,16 +221,32 @@ const buildPortfolioInAppConfirmationFields = (
       chains,
       portfolioChains,
     ),
-  ];
+  );
 
-  if (
+  const showsRecipient = Boolean(
     PortfolioFlowUtils.requiresPortfolioRecipientAddress(
       resolvedFromAsset ?? undefined,
       resolvedToAsset ?? undefined,
     ) &&
-    toAddress &&
-    toAddress !== fromAddress
+      toAddress &&
+      toAddress !== fromAddress,
+  );
+  const providerAccount = resolveHiveProviderAccount(
+    resolveHiveConfirmationTransaction(quote, hiveTransaction),
+  );
+  if (
+    providerAccount &&
+    providerAccount !== fromAddress &&
+    !(showsRecipient && providerAccount === toAddress)
   ) {
+    fields.push({
+      label: 'portfolio_confirmation_provider_account',
+      value: providerAccount,
+      tag: ConfirmationPageFieldType.USERNAME,
+    });
+  }
+
+  if (showsRecipient) {
     fields.push(
       buildPortfolioConfirmationRecipientField(toAddress, resolvedToAsset),
     );

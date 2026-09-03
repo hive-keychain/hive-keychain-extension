@@ -3223,6 +3223,7 @@ export const Portfolio = ({
         toAddress,
         chains: toAssetEvmChains,
         portfolioChains,
+        hiveTransaction: transaction,
       }),
       onConfirm: async (options?: TransactionOptions) => {
         try {

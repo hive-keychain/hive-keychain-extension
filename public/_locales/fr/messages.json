@@ -4183,6 +4183,9 @@
   "portfolio_provider": {
     "message": "Fournisseur"
   },
+  "portfolio_confirmation_account": {
+    "message": "Compte"
+  },
   "portfolio_confirmation_from": {
     "message": "De"
   },
@@ -7918,6 +7921,9 @@
           "example": "Ethereum, Polygon"
         }
       }
+    },
+  "portfolio_confirmation_provider_account": {
+      "message": "Compte du fournisseur"
     },
   "portfolio_confirmation_evm_destination": {
       "message": "Adresse du fournisseur"

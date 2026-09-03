@@ -4183,6 +4183,9 @@
   "portfolio_provider": {
     "message": "Penyedia"
   },
+  "portfolio_confirmation_account": {
+    "message": "Akun"
+  },
   "portfolio_confirmation_from": {
     "message": "Dari"
   },
@@ -7888,6 +7891,9 @@
           "example": "Ethereum, Polygon"
         }
       }
+    },
+  "portfolio_confirmation_provider_account": {
+      "message": "Akun penyedia"
     },
   "portfolio_confirmation_evm_destination": {
       "message": "Alamat penyedia"

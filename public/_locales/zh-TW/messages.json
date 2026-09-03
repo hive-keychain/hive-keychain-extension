@@ -4183,6 +4183,9 @@
   "portfolio_provider": {
     "message": "提供商"
   },
+  "portfolio_confirmation_account": {
+    "message": "帳號"
+  },
   "portfolio_confirmation_from": {
     "message": "From"
   },
@@ -7888,6 +7891,9 @@
           "example": "Ethereum, Polygon"
         }
       }
+    },
+  "portfolio_confirmation_provider_account": {
+      "message": "提供商帳戶"
     },
   "portfolio_confirmation_evm_destination": {
       "message": "提供商地址"

@@ -4225,9 +4225,11 @@
     "message": "Review the swap details below, then sign to confirm."
   },
   "portfolio_provider": { "message": "Provider" },
+  "portfolio_confirmation_account": { "message": "Account" },
   "portfolio_confirmation_from": { "message": "From" },
   "portfolio_confirmation_to": { "message": "To" },
   "portfolio_confirmation_to_account": { "message": "To account" },
+  "portfolio_confirmation_provider_account": { "message": "Provider account" },
   "portfolio_confirmation_evm_destination": { "message": "Provider address" },
   "portfolio_confirmation_approval_amount": { "message": "Approval amount" },
   "portfolio_confirmation_approval_spender": { "message": "Spender" },

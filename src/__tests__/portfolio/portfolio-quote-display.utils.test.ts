@@ -236,7 +236,12 @@ describe('PortfolioQuoteDisplayUtils', () => {
       },
     );
 
-    expect(fields[0]).toEqual(
+    expect(fields[0]).toEqual({
+      label: 'portfolio_confirmation_account',
+      value: 'alice',
+      tag: ConfirmationPageFieldType.USERNAME,
+    });
+    expect(fields[1]).toEqual(
       expect.objectContaining({
         label: 'portfolio_confirmation_from',
         tokenSymbol: 'HIVE',
@@ -244,7 +249,7 @@ describe('PortfolioQuoteDisplayUtils', () => {
         tokenNetworkLogoUrl: '/assets/images/wallet/hive-logo.svg',
       }),
     );
-    expect(fields[1]).toEqual(
+    expect(fields[2]).toEqual(
       expect.objectContaining({
         label: 'portfolio_confirmation_to',
         tokenSymbol: 'ETH',
@@ -293,6 +298,11 @@ describe('PortfolioQuoteDisplayUtils', () => {
     );
 
     expect(fields.slice(0, -1)).toEqual([
+      {
+        label: 'portfolio_confirmation_account',
+        value: 'alice',
+        tag: ConfirmationPageFieldType.USERNAME,
+      },
       {
         label: 'portfolio_confirmation_from',
         value: '1',
@@ -385,6 +395,194 @@ describe('PortfolioQuoteDisplayUtils', () => {
       },
     ]);
     expectProviderField(fields[fields.length - 1], 'LI.FI', 'https://example.com/lifi.png');
+  });
+
+  it('shows the signing Hive account and Keychain Swap provider account', () => {
+    const fields = PortfolioQuoteDisplayUtils.buildPortfolioInAppConfirmationFields(
+      {
+        quote: createQuote({
+          quoteId: 'keychain_swap:1',
+          provider: 'keychain_swap',
+          providerName: 'Keychain Swap',
+          providerLogoUrl: 'https://example.com/keychain-swap.png',
+          fromAsset: {
+            assetId: 'hive:native:hive',
+            ecosystem: 'hive',
+            symbol: 'HIVE',
+            name: 'Hive',
+            chainId: 'hive',
+            address: null,
+            decimals: 3,
+            isNative: true,
+            familyId: 'hive',
+            logoUrl: null,
+            priceUsd: 0,
+            rankScore: 0,
+          },
+          toAsset: {
+            assetId: 'hive:token:hive:SWAP.HIVE',
+            ecosystem: 'hive_engine',
+            symbol: 'SWAP.HIVE',
+            name: 'SWAP.HIVE',
+            chainId: 'hive',
+            address: null,
+            decimals: 8,
+            isNative: false,
+            familyId: 'swap.hive',
+            logoUrl: null,
+            priceUsd: 0,
+            rankScore: 0,
+          },
+          fromAmount: '1',
+          estimatedToAmount: '0.5',
+          comparableValue: '0.5',
+          transaction: {
+            method: 'active',
+            operations: [
+              [
+                'transfer',
+                {
+                  from: 'alice',
+                  to: 'keychain.swap',
+                  amount: '1.000 HIVE',
+                  memo: 'estimate-123',
+                },
+              ],
+            ],
+            expiration: '2026-06-24T12:10:00',
+            ref_block_num: 123,
+            ref_block_prefix: 456,
+            extensions: [],
+          },
+        }),
+        fromAddress: 'alice',
+        toAddress: 'alice',
+      },
+    );
+
+    expect(fields.slice(0, -1)).toEqual([
+      {
+        label: 'portfolio_confirmation_account',
+        value: 'alice',
+        tag: ConfirmationPageFieldType.USERNAME,
+      },
+      {
+        label: 'portfolio_confirmation_from',
+        value: '1',
+        tag: ConfirmationPageFieldType.AMOUNT,
+        tokenSymbol: 'HIVE',
+        tokenLogoUrl: undefined,
+        tokenNetwork: 'Hive',
+        tokenNetworkLogoUrl: '/assets/images/wallet/hive-logo.svg',
+      },
+      {
+        label: 'portfolio_confirmation_to',
+        value: '0.5',
+        tag: ConfirmationPageFieldType.AMOUNT,
+        tokenSymbol: 'SWAP.HIVE',
+        tokenLogoUrl: undefined,
+        tokenNetwork: 'Hive Engine',
+        tokenNetworkLogoUrl: '/assets/images/wallet/hive-engine.svg',
+      },
+      {
+        label: 'portfolio_confirmation_provider_account',
+        value: 'keychain.swap',
+        tag: ConfirmationPageFieldType.USERNAME,
+      },
+    ]);
+    expectProviderField(
+      fields[fields.length - 1],
+      'Keychain Swap',
+      'https://example.com/keychain-swap.png',
+    );
+  });
+
+  it('reads the Keychain Swap provider account from a Hive Engine custom_json', () => {
+    const fields = PortfolioQuoteDisplayUtils.buildPortfolioInAppConfirmationFields(
+      {
+        quote: createQuote({
+          quoteId: 'keychain_swap:2',
+          provider: 'keychain_swap',
+          providerName: 'Keychain Swap',
+          providerLogoUrl: null,
+          fromAsset: {
+            assetId: 'hive:token:hive:DEC',
+            ecosystem: 'hive_engine',
+            symbol: 'DEC',
+            name: 'Dark Energy Crystals',
+            chainId: 'hive',
+            address: null,
+            decimals: 3,
+            isNative: false,
+            familyId: 'dec',
+            logoUrl: null,
+            priceUsd: 0,
+            rankScore: 0,
+          },
+          toAsset: {
+            assetId: 'hive:native:hive',
+            ecosystem: 'hive',
+            symbol: 'HIVE',
+            name: 'Hive',
+            chainId: 'hive',
+            address: null,
+            decimals: 3,
+            isNative: true,
+            familyId: 'hive',
+            logoUrl: null,
+            priceUsd: 0,
+            rankScore: 0,
+          },
+          fromAmount: '100',
+          estimatedToAmount: '1',
+          comparableValue: '1',
+        }),
+        fromAddress: 'alice',
+        toAddress: 'alice',
+        hiveTransaction: {
+          method: 'active',
+          operations: [
+            [
+              'custom_json',
+              {
+                id: 'ssc-mainnet-hive',
+                json: JSON.stringify({
+                  contractName: 'tokens',
+                  contractAction: 'transfer',
+                  contractPayload: {
+                    symbol: 'DEC',
+                    to: '@keychain.swap',
+                    quantity: '100',
+                    memo: 'estimate-123',
+                  },
+                }),
+                required_auths: ['alice'],
+                required_posting_auths: [],
+              },
+            ],
+          ],
+          expiration: '2026-06-24T12:10:00',
+          ref_block_num: 123,
+          ref_block_prefix: 456,
+          extensions: [],
+        },
+      },
+    );
+
+    expect(fields).toEqual(
+      expect.arrayContaining([
+        {
+          label: 'portfolio_confirmation_account',
+          value: 'alice',
+          tag: ConfirmationPageFieldType.USERNAME,
+        },
+        {
+          label: 'portfolio_confirmation_provider_account',
+          value: 'keychain.swap',
+          tag: ConfirmationPageFieldType.USERNAME,
+        },
+      ]),
+    );
   });
 
   it('falls back to a letter avatar when the provider logo is missing', () => {
