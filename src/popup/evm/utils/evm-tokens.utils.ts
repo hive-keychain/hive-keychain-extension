@@ -40,8 +40,10 @@ import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
+import { EvmTokenMetadataCacheUtils } from '@popup/evm/utils/evm-token-metadata-cache.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Decimal from 'decimal.js';
 import { ethers } from 'ethers';
@@ -741,7 +743,86 @@ const getTokenInfo = async (
   const result =
     preFetchedContract ??
     (await EvmLightNodeUtils.getContract(chainId, address));
-  return mapLightNodeContractToTokenInfo(chainId, result);
+  const tokenInfo = mapLightNodeContractToTokenInfo(chainId, result);
+  if (
+    tokenInfo.type !== EVMSmartContractType.ERC20 ||
+    !('decimals' in tokenInfo)
+  ) {
+    return tokenInfo;
+  }
+
+  const metadata = result.metadata;
+  const missingName = !metadata?.name?.trim();
+  const missingSymbol = !metadata?.symbol?.trim();
+  const missingDecimals = !metadata || metadata.decimals == null;
+  if (!missingName && !missingSymbol && !missingDecimals) return tokenInfo;
+
+  try {
+    let contractPromise: Promise<ethers.Contract> | undefined;
+    const getContract = (): Promise<ethers.Contract> => {
+      if (!contractPromise) {
+        contractPromise = ChainUtils.getChain<EvmChain>(
+          ethers.toQuantity(chainId),
+        ).then(async (chain) => {
+          if (!chain) {
+            throw new Error('Chain unavailable for ERC20 metadata lookup');
+          }
+          const provider = await EthersUtils.getProvider(chain);
+          return new ethers.Contract(
+            address.toLowerCase(),
+            Erc20Abi,
+            provider,
+          );
+        });
+      }
+      return contractPromise;
+    };
+    const getTextMetadata = (method: 'name' | 'symbol'): Promise<string> =>
+      EvmTokenMetadataCacheUtils.getField(chainId, address, method, async () => {
+        try {
+          return await safeGetContractTextValue(await getContract(), method);
+        } catch {
+          Logger.warn(`ERC20 ${method} RPC fallback failed`);
+          return '';
+        }
+      });
+    const [name, symbol, decimals] = await Promise.all([
+      missingName ? getTextMetadata('name') : tokenInfo.name,
+      missingSymbol ? getTextMetadata('symbol') : tokenInfo.symbol,
+      missingDecimals
+        ? EvmTokenMetadataCacheUtils.getField(
+            chainId,
+            address,
+            'decimals',
+            async () => fetchErc20DecimalsFromContract(await getContract()),
+          )
+        : tokenInfo.decimals,
+    ]);
+    return { ...tokenInfo, name, symbol, decimals };
+  } catch (error) {
+    // Do not return the mapper's default of 18 when the token precision is unknown.
+    if (missingDecimals) throw error;
+    Logger.warn(
+      'ERC20 metadata RPC fallback failed; using light-node metadata',
+    );
+    return tokenInfo;
+  }
+};
+
+const fetchErc20DecimalsFromContract = async (
+  contract: ethers.Contract,
+): Promise<number> => {
+  const result: unknown = await contract.decimals();
+  const decimals = Number(result);
+  if (
+    (typeof result !== 'bigint' && typeof result !== 'number') ||
+    !Number.isInteger(decimals) ||
+    decimals < 0 ||
+    decimals > 255
+  ) {
+    throw new Error('Invalid ERC20 decimals from contract');
+  }
+  return decimals;
 };
 
 const fetchErc20NameAndDecimalsFromChain = async (
@@ -754,15 +835,11 @@ const fetchErc20NameAndDecimalsFromChain = async (
     Erc20Abi,
     provider,
   );
-  const [nameResult, decimalsResult] = await Promise.all([
+  const [nameResult, decimals] = await Promise.all([
     contract.name(),
-    contract.decimals(),
+    fetchErc20DecimalsFromContract(contract),
   ]);
   const name = String(nameResult ?? '').trim();
-  const decimals = Number(decimalsResult);
-  if (!Number.isFinite(decimals) || decimals < 0 || decimals > 255) {
-    throw new Error('Invalid ERC20 decimals from contract');
-  }
   return { name, decimals };
 };
 

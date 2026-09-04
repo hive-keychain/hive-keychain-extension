@@ -39,6 +39,7 @@ import Logger from 'src/utils/logger.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
 const MINUTE = 60;
+const HIVE_RPC_TIMEOUT_SECONDS = 3;
 
 const setRpc = async (rpc: Rpc) => {
   HiveTxConfig.node =
@@ -387,7 +388,9 @@ const getData = async (
   key?: string,
 ) => {
   try {
-    const response = await withRpcFailover(() => call(method, params, 3000));
+    const response = await withRpcFailover(() =>
+      call(method, params, HIVE_RPC_TIMEOUT_SECONDS),
+    );
     if (response?.result) {
       return key ? response.result[key] : response.result;
     }

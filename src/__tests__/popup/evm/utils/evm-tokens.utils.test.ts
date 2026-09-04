@@ -1,4 +1,5 @@
 import { EvmLightNodeApi } from '@api/evm-light-node';
+import { EvmLightNodeContractResponse } from '@popup/evm/interfaces/evm-light-node.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
@@ -8,7 +9,11 @@ import {
   EvmSmartContractInfoErc20,
   EvmSmartContractInfoNative,
 } from '@popup/evm/interfaces/evm-tokens.interface';
-import { ChainType } from '@popup/multichain/interfaces/chains.interface';
+import {
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
 import { UniswapV2RouterAbiMinimal } from '@popup/evm/reference-data/abi-protocol-decode.data';
@@ -37,6 +42,288 @@ const buildGasFeeEstimation = (
   maxFeePerGasInGwei: new Decimal(1),
   icon: SVGIcons.EVM_GAS_FEE_CUSTOM,
   name: 'popup_html_evm_custom_gas_fee_custom',
+});
+
+describe('getTokenInfo RPC metadata fallback', () => {
+  const address = '0x00000000000000000000000000000000000000aa';
+  const chain: EvmChain = {
+    chainId: '0x1',
+    name: 'Ethereum',
+    type: ChainType.EVM,
+    mainToken: 'ETH',
+    logo: '',
+    rpcs: [{ url: 'https://rpc.example' }],
+    defaultTransactionType: EvmTransactionType.EIP_1559,
+  };
+  let response: EvmLightNodeContractResponse;
+  let contract: {
+    name: jest.Mock;
+    symbol: jest.Mock;
+    decimals: jest.Mock;
+  };
+  let metadataStorage: Record<string, unknown>;
+
+  beforeEach(() => {
+    metadataStorage = {};
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockImplementation(async (key) => metadataStorage[key]);
+    jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockImplementation(async (key, value) => {
+        metadataStorage[key] = value;
+      });
+    response = {
+      id: 1,
+      chainId: 123,
+      address,
+      firstSeenBlock: 1,
+      lastSeenBlock: null,
+      abi: null,
+      contractType: 'ERC20',
+      verified: false,
+      isProxy: true,
+      proxyTarget: '0x00000000000000000000000000000000000000bb',
+      possibleSpam: true,
+      metadata: null,
+      price: { priceUsd: 2, fetchedAt: '2026-01-01T00:00:00.000Z' },
+    };
+    contract = {
+      name: jest.fn().mockResolvedValue('RPC Token'),
+      symbol: jest.fn().mockResolvedValue('RPC'),
+      decimals: jest.fn().mockResolvedValue(BigInt(6)),
+    };
+    jest
+      .spyOn(EvmLightNodeUtils, 'getContract')
+      .mockImplementation(async () => response);
+    jest.spyOn(ChainUtils, 'getChain').mockResolvedValue(chain);
+    jest
+      .spyOn(EthersUtils, 'getProvider')
+      .mockResolvedValue({} as ethers.JsonRpcProvider);
+    jest
+      .spyOn(ethers, 'Contract')
+      .mockImplementation(() => contract as unknown as ethers.Contract);
+  });
+
+  afterEach(() => jest.restoreAllMocks());
+
+  it('loads missing metadata from the requested chain and preserves light-node fields', async () => {
+    await expect(
+      EvmTokensUtils.getTokenInfo('1', address),
+    ).resolves.toMatchObject({
+      name: 'RPC Token',
+      symbol: 'RPC',
+      decimals: 6,
+      chainId: '1',
+      contractAddress: address,
+      verifiedContract: false,
+      possibleSpam: true,
+      isProxy: true,
+      proxyTarget: response.proxyTarget,
+      priceUsd: 2,
+    });
+    expect(ChainUtils.getChain).toHaveBeenCalledWith('0x1');
+    expect(EthersUtils.getProvider).toHaveBeenCalledWith(chain);
+    expect(ethers.Contract).toHaveBeenCalledWith(
+      address,
+      Erc20Abi,
+      expect.anything(),
+    );
+  });
+
+  it('fills only absent fields in prefetched metadata', async () => {
+    response.metadata = {
+      address,
+      name: 'Light-node name',
+      symbol: '',
+      decimals: null,
+      logoUrl: 'logo',
+      coingeckoId: 'token-id',
+    };
+    await expect(
+      EvmTokensUtils.getTokenInfo('0x1', address, response),
+    ).resolves.toMatchObject({
+      name: 'Light-node name',
+      symbol: 'RPC',
+      decimals: 6,
+      logo: 'logo',
+      coingeckoId: 'token-id',
+    });
+    expect(contract.name).not.toHaveBeenCalled();
+    expect(EvmLightNodeUtils.getContract).not.toHaveBeenCalled();
+  });
+
+  it('reuses persisted RPC metadata on later lookups without creating a provider', async () => {
+    await EvmTokensUtils.getTokenInfo('1', address);
+    jest.mocked(EthersUtils.getProvider).mockClear();
+    await expect(
+      EvmTokensUtils.getTokenInfo('0x1', address.toUpperCase()),
+    ).resolves.toMatchObject({ name: 'RPC Token', symbol: 'RPC', decimals: 6 });
+    expect(EthersUtils.getProvider).not.toHaveBeenCalled();
+    expect(contract.name).toHaveBeenCalledTimes(1);
+    expect(contract.symbol).toHaveBeenCalledTimes(1);
+    expect(contract.decimals).toHaveBeenCalledTimes(1);
+    expect(Object.values(metadataStorage)).toEqual(
+      expect.arrayContaining([
+        { value: 'RPC Token', fetchedAt: expect.any(Number) },
+        { value: 'RPC', fetchedAt: expect.any(Number) },
+        { value: 6, fetchedAt: expect.any(Number) },
+      ]),
+    );
+    expect(Object.keys(metadataStorage)).toHaveLength(3);
+  });
+
+  it('prefers current light-node fields over cached RPC fields', async () => {
+    await EvmTokensUtils.getTokenInfo('0x1', address);
+    response.metadata = {
+      address,
+      name: 'Updated name',
+      symbol: null,
+      decimals: 8,
+      logoUrl: 'updated-logo',
+      coingeckoId: null,
+    };
+    await expect(
+      EvmTokensUtils.getTokenInfo('0x1', address),
+    ).resolves.toMatchObject({
+      name: 'Updated name',
+      symbol: 'RPC',
+      decimals: 8,
+      logo: 'updated-logo',
+    });
+    expect(contract.symbol).toHaveBeenCalledTimes(1);
+  });
+
+  it('shares overlapping RPC calls while keeping each caller’s light-node fields', async () => {
+    const namedResponse: EvmLightNodeContractResponse = {
+      ...response,
+      metadata: {
+        address,
+        name: 'Backend name',
+        symbol: null,
+        decimals: null,
+        logoUrl: null,
+        coingeckoId: null,
+      },
+    };
+    const [first, second] = await Promise.all([
+      EvmTokensUtils.getTokenInfo('0x1', address, namedResponse),
+      EvmTokensUtils.getTokenInfo('1', address, response),
+    ]);
+    expect(first.name).toBe('Backend name');
+    expect(second.name).toBe('RPC Token');
+    expect(contract.name).toHaveBeenCalledTimes(1);
+    expect(contract.symbol).toHaveBeenCalledTimes(1);
+    expect(contract.decimals).toHaveBeenCalledTimes(1);
+  });
+
+  it('retries failed optional fields while reusing successful cached fields', async () => {
+    contract.name.mockRejectedValueOnce(new Error('reverted'));
+    await EvmTokensUtils.getTokenInfo('0x1', address);
+    await expect(
+      EvmTokensUtils.getTokenInfo('0x1', address),
+    ).resolves.toMatchObject({ name: 'RPC Token', symbol: 'RPC', decimals: 6 });
+    expect(contract.name).toHaveBeenCalledTimes(2);
+    expect(contract.symbol).toHaveBeenCalledTimes(1);
+    expect(contract.decimals).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps cached decimals when RPC is unavailable for a missing optional field', async () => {
+    contract.name.mockRejectedValueOnce(new Error('reverted'));
+    await EvmTokensUtils.getTokenInfo('0x1', address);
+    jest
+      .spyOn(EthersUtils, 'getProvider')
+      .mockRejectedValue(new Error('RPC unavailable'));
+    jest.spyOn(Logger, 'warn').mockImplementation(() => undefined);
+    await expect(
+      EvmTokensUtils.getTokenInfo('0x1', address),
+    ).resolves.toMatchObject({ name: '', symbol: 'RPC', decimals: 6 });
+    expect(contract.decimals).toHaveBeenCalledTimes(1);
+  });
+
+  it('skips RPC for complete metadata, including zero decimals', async () => {
+    response.metadata = {
+      address,
+      name: 'Token',
+      symbol: 'TOK',
+      decimals: 0,
+      logoUrl: null,
+      coingeckoId: null,
+    };
+    await expect(
+      EvmTokensUtils.getTokenInfo('0x1', address),
+    ).resolves.toMatchObject({ decimals: 0 });
+    expect(EthersUtils.getProvider).not.toHaveBeenCalled();
+  });
+
+  it('keeps resolved decimals when optional name and symbol methods revert', async () => {
+    contract.name.mockRejectedValue(new Error('reverted'));
+    contract.symbol.mockRejectedValue(new Error('reverted'));
+    contract.decimals.mockResolvedValue(BigInt(0));
+    await expect(
+      EvmTokensUtils.getTokenInfo('0x1', address),
+    ).resolves.toMatchObject({
+      name: '',
+      symbol: '',
+      decimals: 0,
+    });
+  });
+
+  it('rejects when decimals cannot be resolved instead of assuming 18', async () => {
+    contract.decimals.mockRejectedValue(new Error('decimals unavailable'));
+    await expect(EvmTokensUtils.getTokenInfo('0x1', address)).rejects.toThrow(
+      'decimals unavailable',
+    );
+  });
+
+  it.each([-1, 256, 1.5, null, undefined, '6'])(
+    'rejects invalid RPC decimals %s',
+    async (decimals) => {
+      contract.decimals.mockResolvedValue(decimals);
+      await expect(EvmTokensUtils.getTokenInfo('0x1', address)).rejects.toThrow(
+        'Invalid ERC20 decimals',
+      );
+    },
+  );
+
+  it('preserves usable metadata if the provider fails while resolving optional fields', async () => {
+    response.metadata = {
+      address,
+      name: null,
+      symbol: 'TOK',
+      decimals: 8,
+      logoUrl: null,
+      coingeckoId: null,
+    };
+    jest
+      .spyOn(EthersUtils, 'getProvider')
+      .mockRejectedValue(new Error('RPC unavailable'));
+    jest.spyOn(Logger, 'warn').mockImplementation(() => undefined);
+    await expect(
+      EvmTokensUtils.getTokenInfo('0x1', address),
+    ).resolves.toMatchObject({ symbol: 'TOK', decimals: 8 });
+    expect(Logger.warn).toHaveBeenCalled();
+  });
+
+  it('rejects provider failures when decimals are missing', async () => {
+    jest
+      .spyOn(EthersUtils, 'getProvider')
+      .mockRejectedValue(new Error('RPC unavailable'));
+    await expect(EvmTokensUtils.getTokenInfo('0x1', address)).rejects.toThrow(
+      'RPC unavailable',
+    );
+  });
+
+  it.each(['ERC721', 'ERC721Enumerable', 'ERC1155'])(
+    'does not query ERC20 metadata for %s',
+    async (type) => {
+      response.contractType = type;
+      await expect(
+        EvmTokensUtils.getTokenInfo('0x1', address),
+      ).resolves.toMatchObject({ type });
+      expect(EthersUtils.getProvider).not.toHaveBeenCalled();
+    },
+  );
 });
 
 describe('evm-tokens.utils proxy metadata tests:\n', () => {

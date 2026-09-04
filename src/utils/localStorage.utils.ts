@@ -1,9 +1,12 @@
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 
-type LocaleStorageObject = Partial<Record<LocalStorageKeyEnum, any>>;
+type LocalStorageKey =
+  | LocalStorageKeyEnum
+  | `${LocalStorageKeyEnum.EVM_RPC_TOKEN_METADATA}:${string}`;
+type LocaleStorageObject = Partial<Record<LocalStorageKey, any>>;
 
 const getValueFromLocalStorage = async (
-  key: LocalStorageKeyEnum,
+  key: LocalStorageKey,
 ): Promise<any> => {
   return new Promise((resolve) => {
     chrome.storage.local.get([key], function (result) {
@@ -23,7 +26,7 @@ const getMultipleValueFromLocalStorage = async (
 };
 
 const saveValueInLocalStorage = async (
-  key: LocalStorageKeyEnum,
+  key: LocalStorageKey,
   value: any,
 ): Promise<void> => {
   const storageValue: LocaleStorageObject = {};
