@@ -35,7 +35,7 @@ describe('HiveTxUtils.getData', () => {
     expect(mockHiveTxCall).toHaveBeenCalledWith(
       'condenser_api.get_accounts',
       ['alice'],
-      3000,
+      3,
     );
     expect(out).toEqual({ accounts: ['a'] });
   });
