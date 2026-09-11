@@ -105,6 +105,7 @@ import { PortfolioBalancesSection } from 'src/portfolio/ui/portfolio-balances-se
 import { PortfolioComingSoon } from 'src/portfolio/ui/portfolio-coming-soon.component';
 import { PortfolioComplianceReviewBanner } from 'src/portfolio/ui/portfolio-compliance-review-banner.component';
 import { PortfolioConfirmationStepComponent } from 'src/portfolio/ui/portfolio-confirmation-step.component';
+import { PortfolioHistoryPaginationUtils } from 'src/portfolio/portfolio-history-pagination.utils';
 import { PortfolioHistoryCard } from 'src/portfolio/ui/portfolio-history-card.component';
 import { PortfolioHistoryDisplayUtils } from 'src/portfolio/ui/portfolio-history-display.utils';
 import { PortfolioLogoImage } from 'src/portfolio/ui/portfolio-logo-image.component';
@@ -589,6 +590,8 @@ export const Portfolio = ({
     useState(false);
   const [finishedEvmChainIds, setFinishedEvmChainIds] = useState<string[]>([]);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
+  const [isHistoryLoadingMore, setIsHistoryLoadingMore] = useState(false);
+  const [historyHasMore, setHistoryHasMore] = useState(false);
   const [showCreatedExpiredHistory, setShowCreatedExpiredHistory] =
     useState(false);
   const [selectedHistoryAccountKey, setSelectedHistoryAccountKey] = useState(
@@ -647,6 +650,8 @@ export const Portfolio = ({
   const loadedHistoryAddressFiltersKeyRef = useRef<string | null>(null);
   const historyLoadInFlightFiltersKeyRef = useRef<string | null>(null);
   const historyLoadRequestIdRef = useRef(0);
+  const historyLoadedPageRef = useRef(1);
+  const isHistoryLoadingMoreRef = useRef(false);
   const swapAvailableAssetsLoadedRef = useRef(false);
   const isSwapAvailableAssetsLoadInFlightRef = useRef(false);
   const setupEvmChainsPromiseRef = useRef<Promise<EvmChain[]> | null>(null);
@@ -2230,22 +2235,60 @@ export const Portfolio = ({
 
   const historyRefreshDeadlineRef = useRef(0);
 
-  const refreshPortfolioTransactionalHistory = useCallback(async () => {
-    const requestId = ++historyLoadRequestIdRef.current;
-    const [historyItems, complianceItems] = await Promise.all([
-      PortfolioApiUtils.listHistory(1, historyAddressFilters),
-      PortfolioApiUtils.listComplianceReviewHistory(
-        allWalletHistoryAddressFilters,
-      ),
-    ]);
-    if (requestId !== historyLoadRequestIdRef.current) {
-      return;
-    }
-    setHistory(historyItems);
-    setComplianceReviewItems(complianceItems);
-  }, [allWalletHistoryAddressFilters, historyAddressFilters]);
+  const applyHistoryPageOne = useCallback(
+    (
+      pageOneItems: PortfolioHistoryItem[],
+      pageOneHasMore: boolean,
+      replaceHistory: boolean,
+    ) => {
+      if (replaceHistory) {
+        historyLoadedPageRef.current = 1;
+        setHistory(pageOneItems);
+        setHistoryHasMore(pageOneHasMore);
+        return;
+      }
+
+      const loadedPageCount = historyLoadedPageRef.current;
+      setHistory((currentItems) =>
+        PortfolioHistoryPaginationUtils.mergePortfolioHistoryPageOne(
+          currentItems,
+          pageOneItems,
+          loadedPageCount,
+        ),
+      );
+      if (loadedPageCount <= 1) {
+        setHistoryHasMore(pageOneHasMore);
+      }
+    },
+    [],
+  );
+
+  const refreshPortfolioTransactionalHistory = useCallback(
+    async (options?: { replaceHistory?: boolean }) => {
+      const requestId = ++historyLoadRequestIdRef.current;
+      const [historyResponse, complianceItems] = await Promise.all([
+        PortfolioApiUtils.listHistory(1, historyAddressFilters),
+        PortfolioApiUtils.listComplianceReviewHistory(
+          allWalletHistoryAddressFilters,
+        ),
+      ]);
+      if (requestId !== historyLoadRequestIdRef.current) {
+        return;
+      }
+      applyHistoryPageOne(
+        historyResponse.items,
+        historyResponse.hasMore,
+        options?.replaceHistory === true,
+      );
+      setComplianceReviewItems(complianceItems);
+    },
+    [allWalletHistoryAddressFilters, applyHistoryPageOne, historyAddressFilters],
+  );
 
   const refreshHistorySilently = useCallback(() => {
+    if (isHistoryLoadingMoreRef.current) {
+      return;
+    }
     historyRefreshDeadlineRef.current = 0;
     setHistoryRefreshCountdown(null);
     void refreshPortfolioTransactionalHistory()
@@ -2746,9 +2789,11 @@ export const Portfolio = ({
     historyLoadInFlightFiltersKeyRef.current = historyAddressFiltersKey;
     setIsHistoryLoading(true);
     setHistory([]);
+    setHistoryHasMore(false);
+    historyLoadedPageRef.current = 1;
     setStatusMessage('');
     try {
-      await refreshPortfolioTransactionalHistory();
+      await refreshPortfolioTransactionalHistory({ replaceHistory: true });
       if (
         historyLoadInFlightFiltersKeyRef.current === historyAddressFiltersKey
       ) {
@@ -2763,6 +2808,7 @@ export const Portfolio = ({
       }
       setStatusMessage('portfolio_load_error');
       setHistory([]);
+      setHistoryHasMore(false);
       setComplianceReviewItems([]);
       loadedHistoryAddressFiltersKeyRef.current = null;
     } finally {
@@ -2774,6 +2820,47 @@ export const Portfolio = ({
       }
     }
   }, [historyAddressFiltersKey, refreshPortfolioTransactionalHistory]);
+
+  const loadMoreHistory = useCallback(async () => {
+    if (
+      !historyHasMore ||
+      isHistoryLoadingMoreRef.current ||
+      isHistoryLoading
+    ) {
+      return;
+    }
+
+    const requestId = ++historyLoadRequestIdRef.current;
+    const nextPage = historyLoadedPageRef.current + 1;
+    isHistoryLoadingMoreRef.current = true;
+    setIsHistoryLoadingMore(true);
+    try {
+      const historyResponse = await PortfolioApiUtils.listHistory(
+        nextPage,
+        historyAddressFilters,
+      );
+      if (requestId !== historyLoadRequestIdRef.current) {
+        return;
+      }
+      setHistory((currentItems) =>
+        PortfolioHistoryPaginationUtils.appendPortfolioHistoryPage(
+          currentItems,
+          historyResponse.items,
+        ),
+      );
+      historyLoadedPageRef.current = nextPage;
+      setHistoryHasMore(historyResponse.hasMore);
+    } catch (error) {
+      Logger.error('Unable to load more portfolio history', error);
+      if (requestId !== historyLoadRequestIdRef.current) {
+        return;
+      }
+      setStatusMessage('portfolio_load_error');
+    } finally {
+      isHistoryLoadingMoreRef.current = false;
+      setIsHistoryLoadingMore(false);
+    }
+  }, [historyAddressFilters, historyHasMore, isHistoryLoading]);
 
   useEffect(() => {
     if (section === 'swap' || isCurrentSectionComingSoon) {
@@ -3665,7 +3752,7 @@ export const Portfolio = ({
       <button
         type="button"
         className="portfolio-quote-autorefresh"
-        disabled={isHistoryRefreshing}
+        disabled={isHistoryRefreshing || isHistoryLoadingMore}
         onClick={refreshHistorySilently}
         title={I18nUtils.getMessage('portfolio_history_refresh_now')}>
         <SVGIcon
@@ -4363,6 +4450,24 @@ export const Portfolio = ({
           {historyRefreshControl}
         </div>
       ) : null;
+    const historyLoadMore = isHistoryLoadingMore ? (
+      <div className="portfolio-loading-more">
+        <RotatingLogoComponent />
+      </div>
+    ) : historyHasMore ? (
+      <button
+        type="button"
+        className="load-more-panel portfolio-history-load-more"
+        data-testid="portfolio-history-load-more"
+        onClick={() => {
+          void loadMoreHistory();
+        }}>
+        <span className="label">
+          {I18nUtils.getMessage('popup_html_load_more')}
+        </span>
+        <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE} />
+      </button>
+    ) : null;
     const isHistoryAwaitingLoad =
       isHistoryLoading ||
       !hasResolvedInitialAccountSelection ||
@@ -4392,6 +4497,7 @@ export const Portfolio = ({
           <div className="portfolio-empty">
             {I18nUtils.getMessage(emptyHistoryMessageKey)}
           </div>
+          {historyLoadMore}
         </>
       );
     }
@@ -4419,6 +4525,7 @@ export const Portfolio = ({
               portfolioChains={portfolioChains}
             />
           ))}
+          {historyLoadMore}
         </div>
       </>
     );

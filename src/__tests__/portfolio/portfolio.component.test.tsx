@@ -110,6 +110,52 @@ const mockPortfolioListAvailableAssets = () => {
   );
 };
 
+const createPortfolioHistoryItem = (
+  overrides: Record<string, unknown> = {},
+) => ({
+  id: 'history-1',
+  status: 'completed',
+  displayStatus: 'completed',
+  mode: 'swap',
+  provider: 'lifi',
+  providerReferenceId: null,
+  fromAssetId: 'evm:native:ethereum',
+  toAssetId: 'evm:native:polygon',
+  fromAmount: '1',
+  toAmount: '0.99',
+  receivedAmount: '0.99',
+  fromAddress: '0xabc',
+  toAddress: '0xabc',
+  redirectUrl: null,
+  transaction: null,
+  fiatCurrency: null,
+  paymentMethod: null,
+  submittedAt: '2026-08-17T10:00:00.000Z',
+  updatedAt: '2026-08-17T10:01:00.000Z',
+  executionType: 'in_app',
+  txHash: null,
+  providerName: 'LI.FI',
+  providerLogoUrl: null,
+  providerStatus: 'completed',
+  lastProviderStatusRefreshAt: null,
+  failureCode: null,
+  failureAction: null,
+  providerStatusDetail: null,
+  providerStatusUrl: null,
+  supportUrl: null,
+  ...overrides,
+});
+
+const createPortfolioHistoryResponse = (
+  items: ReturnType<typeof createPortfolioHistoryItem>[],
+  overrides: { page?: number; hasMore?: boolean } = {},
+) => ({
+  page: overrides.page ?? 1,
+  pageSize: 50,
+  hasMore: overrides.hasMore ?? false,
+  items,
+});
+
 const clickPortfolioNav = (
   container: HTMLElement,
   section: 'portfolio' | 'buy' | 'sell' | 'swap' | 'history',
@@ -148,7 +194,12 @@ jest.mock('src/portfolio/portfolio-api.utils', () => {
     PortfolioApiUtils: {
       ...actual.PortfolioApiUtils,
       listAssets: jest.fn().mockResolvedValue({ assets: [], chains: {} }),
-      listHistory: jest.fn().mockResolvedValue([]),
+      listHistory: jest.fn().mockResolvedValue({
+        page: 1,
+        pageSize: 50,
+        hasMore: false,
+        items: [],
+      }),
       listComplianceReviewHistory: jest.fn().mockResolvedValue([]),
       getFeatures: jest.fn().mockResolvedValue({
         swapBridge: 'activated',
@@ -1182,59 +1233,225 @@ describe('Portfolio', () => {
     });
   });
 
-  it('filters history cards by a text query across item fields', async () => {
-    const createHistoryItem = (
-      overrides: Record<string, unknown> = {},
-    ) => ({
-      id: 'history-1',
-      status: 'completed',
-      displayStatus: 'completed',
-      mode: 'swap',
-      provider: 'lifi',
-      providerReferenceId: null,
-      fromAssetId: 'evm:native:ethereum',
-      toAssetId: 'evm:native:polygon',
-      fromAmount: '1',
-      toAmount: '0.99',
-      receivedAmount: '0.99',
-      fromAddress: '0xabc',
-      toAddress: '0xabc',
-      redirectUrl: null,
-      transaction: null,
-      fiatCurrency: null,
-      paymentMethod: null,
-      submittedAt: '2026-08-17T10:00:00.000Z',
-      updatedAt: '2026-08-17T10:01:00.000Z',
-      executionType: 'in_app',
-      txHash: null,
-      providerName: 'LI.FI',
-      providerLogoUrl: null,
-      providerStatus: 'completed',
-      lastProviderStatusRefreshAt: null,
-      failureCode: null,
-      failureAction: null,
-      providerStatusDetail: null,
-      providerStatusUrl: null,
-      supportUrl: null,
-      ...overrides,
+  it('hides load more when the first history page is complete', async () => {
+    (PortfolioApiUtils.listHistory as jest.Mock).mockResolvedValue(
+      createPortfolioHistoryResponse([createPortfolioHistoryItem()]),
+    );
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-account')).not.toBeNull();
     });
 
-    (PortfolioApiUtils.listHistory as jest.Mock).mockResolvedValue([
-      createHistoryItem({
-        id: 'lifi-swap',
-        providerName: 'LI.FI',
-        fromAddress: '0xabc',
-      }),
-      createHistoryItem({
-        id: 'moonpay-buy',
-        mode: 'buy',
-        provider: 'moonpay',
-        providerName: 'MoonPay',
-        fromAddress: 'alice',
-        fromAssetId: 'fiat:USD',
-        toAssetId: 'hive-hive',
-      }),
-    ]);
+    clickPortfolioNav(container, 'history');
+
+    await waitFor(() => {
+      expect(container.querySelectorAll('.portfolio-history-card')).toHaveLength(
+        1,
+      );
+    });
+
+    expect(
+      container.querySelector('[data-testid="portfolio-history-load-more"]'),
+    ).toBeNull();
+  });
+
+  it('loads the next history page and appends cards', async () => {
+    (PortfolioApiUtils.listHistory as jest.Mock)
+      .mockResolvedValueOnce(
+        createPortfolioHistoryResponse(
+          [createPortfolioHistoryItem({ id: 'page-1' })],
+          { hasMore: true },
+        ),
+      )
+      .mockResolvedValueOnce(
+        createPortfolioHistoryResponse(
+          [createPortfolioHistoryItem({ id: 'page-2' })],
+          { page: 2, hasMore: false },
+        ),
+      );
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-account')).not.toBeNull();
+    });
+
+    clickPortfolioNav(container, 'history');
+
+    await waitFor(() => {
+      expect(
+        container.querySelector('[data-testid="portfolio-history-load-more"]'),
+      ).not.toBeNull();
+      expect(container.querySelectorAll('.portfolio-history-card')).toHaveLength(
+        1,
+      );
+    });
+
+    fireEvent.click(
+      container.querySelector(
+        '[data-testid="portfolio-history-load-more"]',
+      ) as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
+      expect(PortfolioApiUtils.listHistory).toHaveBeenCalledWith(2, {
+        addresses: ['0xabc'],
+      });
+      expect(container.querySelectorAll('.portfolio-history-card')).toHaveLength(
+        2,
+      );
+    });
+
+    expect(
+      container.querySelector('[data-testid="portfolio-history-load-more"]'),
+    ).toBeNull();
+  });
+
+  it('keeps extra loaded history pages when refreshing page 1', async () => {
+    (PortfolioApiUtils.listHistory as jest.Mock)
+      .mockResolvedValueOnce(
+        createPortfolioHistoryResponse(
+          [
+            createPortfolioHistoryItem({ id: 'a' }),
+            createPortfolioHistoryItem({ id: 'b' }),
+          ],
+          { hasMore: true },
+        ),
+      )
+      .mockResolvedValueOnce(
+        createPortfolioHistoryResponse(
+          [createPortfolioHistoryItem({ id: 'c' })],
+          { page: 2, hasMore: false },
+        ),
+      )
+      .mockResolvedValueOnce(
+        createPortfolioHistoryResponse(
+          [
+            createPortfolioHistoryItem({ id: 'n' }),
+            createPortfolioHistoryItem({ id: 'a' }),
+          ],
+          { hasMore: true },
+        ),
+      );
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-account')).not.toBeNull();
+    });
+
+    clickPortfolioNav(container, 'history');
+
+    await waitFor(() => {
+      expect(
+        container.querySelector('[data-testid="portfolio-history-load-more"]'),
+      ).not.toBeNull();
+    });
+
+    fireEvent.click(
+      container.querySelector(
+        '[data-testid="portfolio-history-load-more"]',
+      ) as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelectorAll('.portfolio-history-card')).toHaveLength(
+        3,
+      );
+    });
+
+    fireEvent.click(
+      container.querySelector(
+        '.portfolio-history-toolbar .portfolio-quote-autorefresh',
+      ) as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelectorAll('.portfolio-history-card')).toHaveLength(
+        4,
+      );
+    });
+
+    expect(PortfolioApiUtils.listHistory).toHaveBeenLastCalledWith(1, {
+      addresses: ['0xabc'],
+    });
+    expect(
+      container.querySelector('[data-testid="portfolio-history-load-more"]'),
+    ).toBeNull();
+  });
+
+  it('filters history cards by a text query across item fields', async () => {
+    (PortfolioApiUtils.listHistory as jest.Mock).mockResolvedValue(
+      createPortfolioHistoryResponse([
+        createPortfolioHistoryItem({
+          id: 'lifi-swap',
+          providerName: 'LI.FI',
+          fromAddress: '0xabc',
+        }),
+        createPortfolioHistoryItem({
+          id: 'moonpay-buy',
+          mode: 'buy',
+          provider: 'moonpay',
+          providerName: 'MoonPay',
+          fromAddress: 'alice',
+          fromAssetId: 'fiat:USD',
+          toAssetId: 'hive-hive',
+        }),
+      ]),
+    );
 
     const { container } = render(
       <Portfolio
@@ -1316,40 +1533,42 @@ describe('Portfolio', () => {
         metadata: { icon: decIconUrl },
       },
     ]);
-    (PortfolioApiUtils.listHistory as jest.Mock).mockResolvedValue([
-      {
-        id: 'hive-history-without-api-assets',
-        status: 'completed',
-        displayStatus: 'completed',
-        mode: 'swap',
-        provider: 'lifi',
-        providerReferenceId: null,
-        fromAssetId: 'hive-hive',
-        toAssetId: 'hive_engine:DEC',
-        fromAmount: '1',
-        toAmount: '0.99',
-        receivedAmount: '0.99',
-        fromAddress: '0xabc',
-        toAddress: '0xabc',
-        redirectUrl: null,
-        transaction: null,
-        fiatCurrency: null,
-        paymentMethod: null,
-        submittedAt: '2026-08-17T10:00:00.000Z',
-        updatedAt: '2026-08-17T10:01:00.000Z',
-        executionType: 'redirect',
-        txHash: null,
-        providerName: 'LI.FI',
-        providerLogoUrl: null,
-        providerStatus: 'completed',
-        lastProviderStatusRefreshAt: null,
-        failureCode: null,
-        failureAction: null,
-        providerStatusDetail: null,
-        providerStatusUrl: null,
-        supportUrl: null,
-      },
-    ]);
+    (PortfolioApiUtils.listHistory as jest.Mock).mockResolvedValue(
+      createPortfolioHistoryResponse([
+        {
+          id: 'hive-history-without-api-assets',
+          status: 'completed',
+          displayStatus: 'completed',
+          mode: 'swap',
+          provider: 'lifi',
+          providerReferenceId: null,
+          fromAssetId: 'hive-hive',
+          toAssetId: 'hive_engine:DEC',
+          fromAmount: '1',
+          toAmount: '0.99',
+          receivedAmount: '0.99',
+          fromAddress: '0xabc',
+          toAddress: '0xabc',
+          redirectUrl: null,
+          transaction: null,
+          fiatCurrency: null,
+          paymentMethod: null,
+          submittedAt: '2026-08-17T10:00:00.000Z',
+          updatedAt: '2026-08-17T10:01:00.000Z',
+          executionType: 'redirect',
+          txHash: null,
+          providerName: 'LI.FI',
+          providerLogoUrl: null,
+          providerStatus: 'completed',
+          lastProviderStatusRefreshAt: null,
+          failureCode: null,
+          failureAction: null,
+          providerStatusDetail: null,
+          providerStatusUrl: null,
+          supportUrl: null,
+        },
+      ]),
+    );
     window.history.replaceState(null, '', '/#history');
 
     const { container } = render(

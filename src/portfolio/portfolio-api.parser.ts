@@ -878,7 +878,7 @@ const parsePortfolioHistoryResponse = (
   if (!isRecord(value)) {
     return {
       page: 1,
-      pageSize: 20,
+      pageSize: 50,
       hasMore: false,
       items: [],
     };
@@ -892,7 +892,7 @@ const parsePortfolioHistoryResponse = (
     pageSize:
       typeof value.pageSize === 'number' && Number.isFinite(value.pageSize)
         ? value.pageSize
-        : 20,
+        : 50,
     hasMore: readBoolean(value, 'hasMore'),
     items: Array.isArray(value.items)
       ? value.items

@@ -129,8 +129,15 @@ describe('PortfolioApiUtils', () => {
       }),
     });
 
-    await PortfolioApiUtils.listHistory(1, {
-      addresses: ['0xabc', 'alice', ' 0xdef '],
+    await expect(
+      PortfolioApiUtils.listHistory(1, {
+        addresses: ['0xabc', 'alice', ' 0xdef '],
+      }),
+    ).resolves.toEqual({
+      page: 1,
+      pageSize: 20,
+      hasMore: false,
+      items: [],
     });
 
     expect(global.fetch).toHaveBeenCalledWith(

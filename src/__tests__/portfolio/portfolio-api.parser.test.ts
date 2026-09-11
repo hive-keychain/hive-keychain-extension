@@ -862,6 +862,17 @@ describe('PortfolioApiParser', () => {
     );
   });
 
+  it('defaults history pagination metadata when the payload omits it', () => {
+    expect(
+      PortfolioApiParser.parsePortfolioHistoryResponse({ items: [] }),
+    ).toEqual({
+      page: 1,
+      pageSize: 50,
+      hasMore: false,
+      items: [],
+    });
+  });
+
   it('parses compliance hold history items with verification_required displayStatus', () => {
     expect(
       PortfolioApiParser.parsePortfolioHistoryResponse({

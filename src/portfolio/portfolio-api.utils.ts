@@ -11,6 +11,7 @@ import {
   PortfolioFiatRampOptions,
   PortfolioAssetsResponse,
   PortfolioHistoryItem,
+  PortfolioHistoryResponse,
   PortfolioMode,
   PortfolioQuote,
   PortfolioQuoteAmountHints,
@@ -601,7 +602,7 @@ const listHistory = async (
   filters?: {
     addresses?: string[];
   },
-): Promise<PortfolioHistoryItem[]> => {
+): Promise<PortfolioHistoryResponse> => {
   const addresses = (filters?.addresses ?? [])
     .map((address) => address.trim())
     .filter((address) => address.length > 0);
@@ -616,7 +617,7 @@ const listHistory = async (
       { method: 'POST', body: JSON.stringify(body) },
       true,
     ),
-  ).items;
+  );
 };
 
 const listComplianceReviewHistory = async (filters?: {
