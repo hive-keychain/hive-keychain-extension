@@ -33,6 +33,7 @@ import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import FormatUtils from 'src/utils/format.utils';
+import KeychainExportFileUtils from 'src/utils/keychain-export-file.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
@@ -406,7 +407,7 @@ const downloadMultichainAccounts = async (
   const url = window.URL.createObjectURL(data);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'accounts.kc';
+  a.download = KeychainExportFileUtils.getKeychainExportFileName();
   a.click();
 };
 

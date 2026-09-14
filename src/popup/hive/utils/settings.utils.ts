@@ -1,6 +1,7 @@
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { EXPORTABLE_SETTINGS_KEYS } from '@reference-data/exportable-settings.list';
+import KeychainExportFileUtils from 'src/utils/keychain-export-file.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 /* istanbul ignore next */
 const exportSettings = async () => {
@@ -14,7 +15,7 @@ const exportSettings = async () => {
   var url = window.URL.createObjectURL(data);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'settings.kc';
+  a.download = KeychainExportFileUtils.getKeychainExportFileName();
   a.click();
 };
 /* istanbul ignore next */

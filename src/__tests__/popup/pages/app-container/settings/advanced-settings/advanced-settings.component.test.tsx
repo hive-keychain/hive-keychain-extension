@@ -67,12 +67,17 @@ describe('advanced-settings.component tests:\n', () => {
     }
   });
 
-  it('Must not show the legacy settings import-export item', () => {
-    expect(
-      getAdvancedSettingsMenuItems(true).some(
-        (item) => item.nextScreen === Screen.SETTINGS_IMPORT_EXPORT,
-      ),
-    ).toBe(false);
+  it('shows import-export immediately before clear all data', () => {
+    const menuItems = getAdvancedSettingsMenuItems(true);
+    const importExportIndex = menuItems.findIndex(
+      (item) => item.nextScreen === Screen.SETTINGS_IMPORT_EXPORT,
+    );
+    const clearAllIndex = menuItems.findIndex(
+      (item) => item.nextScreen === Screen.SETTINGS_CLEAR_ALL_DATA,
+    );
+
+    expect(importExportIndex).toBeGreaterThanOrEqual(0);
+    expect(clearAllIndex).toBe(importExportIndex + 1);
   });
 
   it('Must open each menu page with no actions', async () => {

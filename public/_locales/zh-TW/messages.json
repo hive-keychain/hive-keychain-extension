@@ -268,7 +268,7 @@
     "description": "when keyless keychain is enabled"
   },
   "popup_html_setup": {
-    "message": "設定",
+    "message": "新增帳號",
     "description": "when adding new account"
   },
   "popup_html_private_key": {
@@ -292,7 +292,7 @@
     "description": "Import all keys"
   },
   "popup_html_import_permissions": {
-    "message": "載入設定",
+    "message": "匯入",
     "description": "Import permissions"
   },
   "popup_html_import_key": {
@@ -436,7 +436,7 @@
     "description": "on settings page"
   },
   "popup_html_import_export_settings": {
-    "message": "匯入/匯出設定",
+    "message": "匯入 / 匯出",
     "description": "on settings page"
   },
   "popup_html_automated_tasks": {
@@ -524,7 +524,7 @@
     "description": "on account / export settings"
   },
   "popup_html_export_permissions": {
-    "message": "匯出設定",
+    "message": "匯出",
     "description": "on import / export settings"
   },
   "popup_html_about_text": {

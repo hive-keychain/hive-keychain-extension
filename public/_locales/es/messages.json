@@ -268,7 +268,7 @@
     "description": "when keyless keychain is enabled"
   },
   "popup_html_setup": {
-    "message": "Instalación",
+    "message": "Agregar una cuenta",
     "description": "when adding new account"
   },
   "popup_html_private_key": {
@@ -292,7 +292,7 @@
     "description": "Import all keys"
   },
   "popup_html_import_permissions": {
-    "message": "Importar configuración",
+    "message": "Importar",
     "description": "Import permissions"
   },
   "popup_html_import_key": {
@@ -436,7 +436,7 @@
     "description": "on settings page"
   },
   "popup_html_import_export_settings": {
-    "message": "Importar / Exportar configuración",
+    "message": "Importar / Exportar",
     "description": "on settings page"
   },
   "popup_html_automated_tasks": {
@@ -524,7 +524,7 @@
     "description": "on account / export settings"
   },
   "popup_html_export_permissions": {
-    "message": "Exportar los ajustes",
+    "message": "Exportar",
     "description": "on import / export settings"
   },
   "popup_html_about_text": {

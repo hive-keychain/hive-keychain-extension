@@ -24,6 +24,7 @@ import {
 import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import FormatUtils from 'src/utils/format.utils';
+import KeychainExportFileUtils from 'src/utils/keychain-export-file.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 jest.mock(
@@ -247,6 +248,11 @@ describe('account.utils tests:\n', () => {
     const clickSpy = jest
       .spyOn(HTMLAnchorElement.prototype, 'click')
       .mockImplementation(() => undefined);
+    const downloadSpy = jest.spyOn(
+      HTMLAnchorElement.prototype,
+      'download',
+      'set',
+    );
 
     await AccountUtils.downloadAccounts(constants.accounts, mk.user.one);
 
@@ -269,10 +275,15 @@ describe('account.utils tests:\n', () => {
       },
     });
 
+    expect(downloadSpy).toHaveBeenCalledWith(
+      KeychainExportFileUtils.getKeychainExportFileName(),
+    );
+
     window.URL.createObjectURL = originalCreateObjectUrl;
     getEvmAccountsSpy.mockRestore();
     getSettingsSpy.mockRestore();
     clickSpy.mockRestore();
+    downloadSpy.mockRestore();
   });
 
   describe('getKeys tests:\n', () => {
