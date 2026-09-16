@@ -2,8 +2,10 @@ import { Screen } from '@interfaces/screen.interface';
 import { MessageType } from '@reference-data/message-type.enum';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
 import { ChainType } from '@popup/multichain/interfaces/chains.interface';
+import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
@@ -12,19 +14,58 @@ import FileUtils from 'src/utils/file.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
 describe('import-accounts-file.utils tests', () => {
+  const hiveChain = defaultChainList.find(
+    (chain) => chain.type === ChainType.HIVE,
+  )!;
+  const evmChain = {
+    name: 'Ethereum',
+    type: ChainType.EVM,
+    logo: '',
+    chainId: '0x1',
+    rpcs: [],
+  };
+
   afterEach(() => {
     jest.restoreAllMocks();
   });
 
-  const getStore = () =>
+  const getStore = (chain = initialEmptyStateStore.chain) =>
     getFakeStore({
       ...initialEmptyStateStore,
       mk: 'mk',
+      chain,
       hive: {
         ...initialEmptyStateStore.hive,
         accounts: [],
       },
     });
+
+  const mockHiveChainResolution = () => {
+    jest
+      .spyOn(ChainUtils, 'getAllSetupChainsForType')
+      .mockResolvedValue([hiveChain] as never);
+  };
+
+  const startImportAndGetListener = (reduxStore = getStore()) => {
+    jest.spyOn(ExtensionSurfaceUtils, 'isSidePanelPage').mockReturnValue(false);
+    jest
+      .spyOn(chrome.windows, 'getCurrent')
+      .mockImplementation((callback: any) =>
+        callback({ width: 400, left: 0, top: 0 }),
+      );
+    jest.spyOn(chrome.windows, 'create').mockResolvedValue({ id: 1 } as any);
+
+    let onMessageListener: ((message: any) => void) | undefined;
+    jest
+      .spyOn(chrome.runtime.onMessage, 'addListener')
+      .mockImplementation((listener: any) => {
+        onMessageListener = listener;
+      });
+
+    ImportAccountsFileUtils.startImportAccountsFromFile(reduxStore);
+
+    return { reduxStore, onMessageListener };
+  };
 
   it('opens the accounts import window from a popup', () => {
     jest.spyOn(ExtensionSurfaceUtils, 'isSidePanelPage').mockReturnValue(false);
@@ -88,7 +129,8 @@ describe('import-accounts-file.utils tests', () => {
   });
 
   it('applies a full backup callback to the store and navigates home', async () => {
-    const reduxStore = getStore();
+    mockHiveChainResolution();
+    const { reduxStore, onMessageListener } = startImportAndGetListener();
     const importedHiveAccounts = [accounts.local.one];
     const importedEvmAccounts = [
       {
@@ -102,26 +144,11 @@ describe('import-accounts-file.utils tests', () => {
       .spyOn(EvmWalletUtils, 'rebuildAccountsFromLocalStorage')
       .mockResolvedValue(importedEvmAccounts);
     jest.spyOn(EvmWalletUtils, 'invalidateRebuildAccountsCache');
-    jest.spyOn(ExtensionSurfaceUtils, 'isSidePanelPage').mockReturnValue(false);
-    jest
-      .spyOn(chrome.windows, 'getCurrent')
-      .mockImplementation((callback: any) =>
-        callback({ width: 400, left: 0, top: 0 }),
-      );
-    jest.spyOn(chrome.windows, 'create').mockResolvedValue({ id: 1 } as any);
-
-    let onMessageListener: ((message: any) => void) | undefined;
-    jest
-      .spyOn(chrome.runtime.onMessage, 'addListener')
-      .mockImplementation((listener: any) => {
-        onMessageListener = listener;
-      });
     const removeListenerSpy = jest.spyOn(
       chrome.runtime.onMessage,
       'removeListener',
     );
 
-    ImportAccountsFileUtils.startImportAccountsFromFile(reduxStore);
     expect(onMessageListener).toBeDefined();
 
     await onMessageListener!({
@@ -143,24 +170,63 @@ describe('import-accounts-file.utils tests', () => {
     expect(reduxStore.getState().message.type).toBe(MessageType.SUCCESS);
   });
 
+  it('switches the active chain to Hive when a mixed backup selects a Hive account', async () => {
+    mockHiveChainResolution();
+    const { reduxStore, onMessageListener } = startImportAndGetListener(
+      getStore(evmChain),
+    );
+    const importedHiveAccounts = [accounts.local.one];
+    jest
+      .spyOn(EvmWalletUtils, 'rebuildAccountsFromLocalStorage')
+      .mockResolvedValue([
+        {
+          id: 0,
+          seedId: 1,
+          wallet: { address: '0x1234567890123456789012345678901234567890' },
+          source: 'seed',
+        },
+      ] as any);
+
+    expect(reduxStore.getState().chain.type).toBe(ChainType.EVM);
+
+    await onMessageListener!({
+      command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
+      value: {
+        success: true,
+        accountType: 'all',
+        accounts: importedHiveAccounts,
+        message: 'import_html_success',
+      },
+    });
+
+    expect(reduxStore.getState().activeAccountType).toBe(ChainType.HIVE);
+    expect(reduxStore.getState().chain.type).toBe(ChainType.HIVE);
+    expect(reduxStore.getState().chain.chainId).toBe(hiveChain.chainId);
+  });
+
+  it('switches the active chain to Hive when importing Hive-only accounts from an EVM chain', async () => {
+    mockHiveChainResolution();
+    const { reduxStore, onMessageListener } = startImportAndGetListener(
+      getStore(evmChain),
+    );
+
+    await onMessageListener!({
+      command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
+      value: {
+        success: true,
+        accountType: 'hive',
+        accounts: [accounts.local.one],
+        message: 'import_html_success',
+      },
+    });
+
+    expect(reduxStore.getState().activeAccountType).toBe(ChainType.HIVE);
+    expect(reduxStore.getState().chain.type).toBe(ChainType.HIVE);
+    expect(reduxStore.getState().chain.chainId).toBe(hiveChain.chainId);
+  });
+
   it('shows an error message when the backup import fails', async () => {
-    const reduxStore = getStore();
-    jest.spyOn(ExtensionSurfaceUtils, 'isSidePanelPage').mockReturnValue(false);
-    jest
-      .spyOn(chrome.windows, 'getCurrent')
-      .mockImplementation((callback: any) =>
-        callback({ width: 400, left: 0, top: 0 }),
-      );
-    jest.spyOn(chrome.windows, 'create').mockResolvedValue({ id: 1 } as any);
-
-    let onMessageListener: ((message: any) => void) | undefined;
-    jest
-      .spyOn(chrome.runtime.onMessage, 'addListener')
-      .mockImplementation((listener: any) => {
-        onMessageListener = listener;
-      });
-
-    ImportAccountsFileUtils.startImportAccountsFromFile(reduxStore);
+    const { reduxStore, onMessageListener } = startImportAndGetListener();
 
     await onMessageListener!({
       command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,

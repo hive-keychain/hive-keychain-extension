@@ -15,6 +15,8 @@ import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { AddAccountMainComponent } from 'src/popup/hive/pages/add-account/add-account-main/add-account-main.component';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { ChainType } from 'src/popup/multichain/interfaces/chains.interface';
+import { defaultChainList } from 'src/popup/multichain/reference-data/chains.list';
+import { ChainUtils } from 'src/popup/multichain/utils/chain.utils';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 
 describe('add-account-main.component tests:\n', () => {
@@ -318,6 +320,11 @@ describe('add-account-main.component tests:\n', () => {
       jest
         .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
         .mockResolvedValue(importedHiveAccounts);
+      jest
+        .spyOn(ChainUtils, 'getAllSetupChainsForType')
+        .mockResolvedValue(
+          defaultChainList.filter((chain) => chain.type === ChainType.HIVE) as never,
+        );
 
       let onMessageListener: ((message: any) => Promise<void>) | undefined;
       jest
