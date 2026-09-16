@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { I18nUtils } from 'src/utils/i18n.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -147,5 +148,15 @@ describe('I18nUtils', () => {
       LocalStorageKeyEnum.ACTIVE_LANGUAGE,
       'pt',
     );
+  });
+
+  it('keeps moment dates in the same language as translated messages', async () => {
+    chrome.i18n.getUILanguage = jest.fn().mockReturnValue('zh-TW');
+    moment.locale('zh-tw');
+
+    await expect(I18nUtils.changeLanguage('fr')).resolves.toBe('fr');
+
+    expect(I18nUtils.getMessage('popup_html_confirm')).toBe('Confirmer');
+    expect(moment.locale()).toBe('fr');
   });
 });

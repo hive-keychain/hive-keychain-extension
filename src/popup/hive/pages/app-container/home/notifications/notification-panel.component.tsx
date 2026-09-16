@@ -1,6 +1,5 @@
 import { Notification } from '@interfaces/notifications.interface';
 import { RootState } from '@popup/multichain/store';
-import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
@@ -12,6 +11,7 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import { renderLocalizedNotificationMessage } from 'src/popup/hive/pages/app-container/home/notifications/notification-message.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
+import { MomentLocaleUtils } from 'src/utils/moment-locale.utils';
 interface NotificationPanelProps {
   isPanelOpened: boolean;
   notifications: Notification[];
@@ -130,7 +130,10 @@ export const NotificationPanel = ({
                   <div className="notification-content">
                     <div className="message">{renderMessage(notif)}</div>
                     <div className="date">
-                      {moment(notif.createdAt).fromNow()}
+                      {MomentLocaleUtils.formatFromNow(
+                        notif.createdAt,
+                        I18nUtils.getCurrentLanguage(),
+                      )}
                     </div>
                   </div>
                 </div>

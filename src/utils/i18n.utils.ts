@@ -2,6 +2,7 @@ import i18next, { i18n, TFunction, TOptions } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { MomentLocaleUtils } from 'src/utils/moment-locale.utils';
 
 import deMessages from '../../public/_locales/de/messages.json';
 import enMessages from '../../public/_locales/en/messages.json';
@@ -241,10 +242,11 @@ const getInstance = () => {
     return i18nInstance;
   }
 
+  const initialLocale = getSupportedLocale(getUILanguage());
   i18nInstance = i18next.createInstance();
   i18nInstance.use(initReactI18next).init({
     resources: getResources(),
-    lng: getSupportedLocale(getUILanguage()),
+    lng: initialLocale,
     fallbackLng: DEFAULT_LOCALE,
     defaultNS: TRANSLATION_NAMESPACE,
     ns: [TRANSLATION_NAMESPACE],
@@ -255,6 +257,7 @@ const getInstance = () => {
     returnNull: false,
     parseMissingKeyHandler: (key) => key,
   });
+  MomentLocaleUtils.syncMomentLocale(initialLocale);
 
   return i18nInstance;
 };
@@ -289,6 +292,7 @@ const emitLanguageChanged = (language: string) => {
 const changeLanguage = async (language: string) => {
   const supportedLocale = getEffectiveLanguage(language);
   await getInstance().changeLanguage(supportedLocale);
+  MomentLocaleUtils.syncMomentLocale(supportedLocale);
   emitLanguageChanged(supportedLocale);
   return supportedLocale;
 };
@@ -312,6 +316,7 @@ const saveLanguage = async (language: string) => {
 
 const resetForTesting = () => {
   i18nInstance = undefined;
+  MomentLocaleUtils.syncMomentLocale(DEFAULT_LOCALE);
 };
 
 export const I18nUtils = {
