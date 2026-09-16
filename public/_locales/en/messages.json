@@ -4891,8 +4891,8 @@
     "description": "Error message from blockchain: Posting key incorrect"
   },
   "ecosystem": {
-    "message": "Ecosystem",
-    "description": "Ecosystem"
+    "message": "DApps",
+    "description": "DApps"
   },
   "ecosystem_category_social": {
     "message": "Social",
