@@ -355,6 +355,17 @@ const encryptHiveAuthRequestData = async (
   return { encryptedHiveAuthRequestData, keylessAuthData };
 };
 
+const reencryptKeylessAuthDataUserDictionary = async (
+  oldMk: string,
+  newMk: string,
+): Promise<void> => {
+  const dictionary = await getKeylessAuthDataUserDictionaryFromPassword(oldMk);
+  if (!dictionary) {
+    return;
+  }
+  await storeKeylessAuthDataUserDictionary(dictionary, newMk);
+};
+
 export const KeylessKeychainUtils = {
   registerUserAndDapp,
   getKeylessAuthDataByUUID,
@@ -366,4 +377,5 @@ export const KeylessKeychainUtils = {
   getKeylessAuthDataUserDictionaryFromPassword,
   isKeylessAuthDataRegistered,
   encryptHiveAuthRequestData,
+  reencryptKeylessAuthDataUserDictionary,
 };

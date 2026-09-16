@@ -1,3 +1,5 @@
+import EncryptedLocalStorageUtils from 'src/utils/encrypted-local-storage.utils';
+import { isIdentityStorageKey } from '@reference-data/identity-storage-keys.list';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 
 type LocalStorageKey =
@@ -5,7 +7,7 @@ type LocalStorageKey =
   | `${LocalStorageKeyEnum.EVM_RPC_TOKEN_METADATA}:${string}`;
 type LocaleStorageObject = Partial<Record<LocalStorageKey, any>>;
 
-const getValueFromLocalStorage = async (
+export const getValueFromLocalStorageRaw = async (
   key: LocalStorageKey,
 ): Promise<any> => {
   return new Promise((resolve) => {
@@ -15,7 +17,7 @@ const getValueFromLocalStorage = async (
   });
 };
 
-const getMultipleValueFromLocalStorage = async (
+export const getMultipleValueFromLocalStorageRaw = async (
   keys: LocalStorageKeyEnum[],
 ): Promise<any> => {
   return new Promise((resolve) => {
@@ -25,7 +27,7 @@ const getMultipleValueFromLocalStorage = async (
   });
 };
 
-const saveValueInLocalStorage = async (
+export const saveValueInLocalStorageRaw = async (
   key: LocalStorageKey,
   value: any,
 ): Promise<void> => {
@@ -60,11 +62,60 @@ const saveValueInLocalStorage = async (
   });
 };
 
+const getValueFromLocalStorage = async (
+  key: LocalStorageKey,
+): Promise<any> => {
+  if (isIdentityStorageKey(key)) {
+    return EncryptedLocalStorageUtils.getEncryptedJson(
+      key as LocalStorageKeyEnum,
+    );
+  }
+  return getValueFromLocalStorageRaw(key);
+};
+
+const getMultipleValueFromLocalStorage = async (
+  keys: LocalStorageKeyEnum[],
+): Promise<any> => {
+  const result = await getMultipleValueFromLocalStorageRaw(keys);
+  if (!result) {
+    return result;
+  }
+
+  const decrypted = { ...result };
+  await Promise.all(
+    keys.map(async (key) => {
+      if (!isIdentityStorageKey(key) || !(key in result)) {
+        return;
+      }
+      decrypted[key] = await EncryptedLocalStorageUtils.getEncryptedJson(key);
+    }),
+  );
+  return decrypted;
+};
+
+const saveValueInLocalStorage = async (
+  key: LocalStorageKey,
+  value: any,
+): Promise<void> => {
+  if (isIdentityStorageKey(key)) {
+    await EncryptedLocalStorageUtils.saveEncryptedJson(
+      key as LocalStorageKeyEnum,
+      value,
+    );
+    return;
+  }
+  await saveValueInLocalStorageRaw(key, value);
+};
+
 const clearLocalStorage = async () => {
+  EncryptedLocalStorageUtils.clearCache();
   await chrome.storage.local.clear();
 };
 
 const removeFromLocalStorage = async (key: LocalStorageKeyEnum) => {
+  if (isIdentityStorageKey(key)) {
+    EncryptedLocalStorageUtils.removeCachedValue(key);
+  }
   await chrome.storage.local.remove(key);
 };
 

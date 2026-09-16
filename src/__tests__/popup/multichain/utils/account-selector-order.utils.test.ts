@@ -1,6 +1,5 @@
 import AccountSelectorOrderUtils from '@popup/multichain/utils/account-selector-order.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
-import EncryptUtils from '@popup/hive/utils/encrypt.utils';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { AccountSelectorOrderRef } from '@interfaces/account-selector-order.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -106,47 +105,46 @@ describe('account-selector-order.utils', () => {
     ]);
   });
 
-  it('saveDisplayOrder encrypts refs and getDecryptedDisplayOrder round-trips', async () => {
+  it('saveDisplayOrder stores the display-order payload', async () => {
     const refs: AccountSelectorOrderRef[] = [
       { type: 'hive', name: accounts.local.justTwoKeys.name },
       { type: 'evm', seedId: 1, accountId: 0 },
     ];
-    const saveSpy = jest.spyOn(LocalStorageUtils, 'saveValueInLocalStorage');
+    const saveSpy = jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockResolvedValue(undefined);
 
     await AccountSelectorOrderUtils.saveDisplayOrder(mk.user.one, refs);
 
-    const savedPayload = saveSpy.mock.calls[0][1];
     expect(saveSpy).toHaveBeenCalledWith(
       LocalStorageKeyEnum.ACCOUNT_SELECTOR_DISPLAY_ORDER,
-      expect.any(String),
+      { list: refs },
     );
-    expect(savedPayload).not.toContain(accounts.local.justTwoKeys.name);
 
     jest
       .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
-      .mockResolvedValue(savedPayload);
+      .mockResolvedValue({ list: refs });
 
     await expect(
       AccountSelectorOrderUtils.getDecryptedDisplayOrder(mk.user.one),
     ).resolves.toEqual(refs);
   });
 
-  it('re-encrypts plaintext legacy display order payloads on read', async () => {
+  it('reads plaintext legacy display order payloads without rewriting', async () => {
     const refs: AccountSelectorOrderRef[] = [
       { type: 'hive', name: accounts.local.justTwoKeys.name },
     ];
     jest
       .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
       .mockResolvedValue({ list: refs });
-    const saveSpy = jest.spyOn(LocalStorageUtils, 'saveValueInLocalStorage');
+    const saveSpy = jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockResolvedValue(undefined);
 
     await expect(
       AccountSelectorOrderUtils.getDecryptedDisplayOrder(mk.user.one),
     ).resolves.toEqual(refs);
-    expect(saveSpy).toHaveBeenCalledWith(
-      LocalStorageKeyEnum.ACCOUNT_SELECTOR_DISPLAY_ORDER,
-      expect.any(String),
-    );
+    expect(saveSpy).not.toHaveBeenCalled();
   });
 
   it('syncDisplayOrderWithAccounts appends a new hive account at the end', async () => {
@@ -154,14 +152,12 @@ describe('account-selector-order.utils', () => {
       { type: 'evm', seedId: 1, accountId: 0 },
       { type: 'hive', name: accounts.local.justTwoKeys.name },
     ];
-    const encrypted = await EncryptUtils.encryptJson(
-      { list: existing },
-      mk.user.one,
-    );
     jest
       .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
-      .mockResolvedValue(encrypted);
-    const saveSpy = jest.spyOn(LocalStorageUtils, 'saveValueInLocalStorage');
+      .mockResolvedValue({ list: existing });
+    const saveSpy = jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockResolvedValue(undefined);
 
     const hive = [
       accounts.local.justTwoKeys,
@@ -174,12 +170,15 @@ describe('account-selector-order.utils', () => {
       [],
     );
 
-    const savedPayload = saveSpy.mock.calls[0][1];
-    const decrypted = await EncryptUtils.decryptToJson(savedPayload, mk.user.one);
-    expect(decrypted.list).toEqual([
-      { type: 'hive', name: accounts.local.justTwoKeys.name },
-      { type: 'hive', name: 'new-hive' },
-    ]);
+    expect(saveSpy).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.ACCOUNT_SELECTOR_DISPLAY_ORDER,
+      {
+        list: [
+          { type: 'hive', name: accounts.local.justTwoKeys.name },
+          { type: 'hive', name: 'new-hive' },
+        ],
+      },
+    );
   });
 
   it('does not save the canonical display order when account persistence fails', async () => {
@@ -193,7 +192,9 @@ describe('account-selector-order.utils', () => {
     const reorderSpy = jest
       .spyOn(EvmWalletUtils, 'reorderAccounts')
       .mockResolvedValue([]);
-    const saveSpy = jest.spyOn(LocalStorageUtils, 'saveValueInLocalStorage');
+    const saveSpy = jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockResolvedValue(undefined);
 
     await expect(
       AccountSelectorOrderUtils.applyDisplayOrder(

@@ -1,4 +1,6 @@
 import AccountUtils from '@hiveapp/utils/account.utils';
+import { KeylessKeychainUtils } from '@background/utils/keyless-keychain.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -11,7 +13,9 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import EncryptedLocalStorageUtils from 'src/utils/encrypted-local-storage.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
+import { PendingHiveAccountCreationUtils } from 'src/utils/pending-hive-account-creation.utils';
 describe('change-password.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -19,6 +23,21 @@ describe('change-password.component tests:\n', () => {
     cleanup();
   });
   beforeEach(async () => {
+    jest
+      .spyOn(EvmWalletUtils, 'reencryptAccounts')
+      .mockResolvedValue([] as any);
+    jest
+      .spyOn(
+        PendingHiveAccountCreationUtils,
+        'reencryptPendingHiveAccountCreationRequests',
+      )
+      .mockResolvedValue(undefined);
+    jest
+      .spyOn(KeylessKeychainUtils, 'reencryptKeylessAuthDataUserDictionary')
+      .mockResolvedValue(undefined);
+    jest
+      .spyOn(EncryptedLocalStorageUtils, 'reencryptIdentitySettings')
+      .mockResolvedValue(undefined);
     await reactTestingLibrary.renderWithConfiguration(
       <HiveAppComponent />,
       initialStates.iniStateAs.defaultExistent,

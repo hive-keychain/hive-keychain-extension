@@ -20,6 +20,7 @@ describe('encrypt.utils tests:\n', () => {
     '0000009b000000770000005700000029000000ae0000008d000000ae00000046WHrXFxuZRaj4uDwLXR8vFw+tW0M7fUZqAfRqnqga+fvyVCNAEnutR76JDJ+Hi6zfX2bMEkzk2c/fnL2FZb9e+ZNoklar2xYnxvM3tXjkh8Qj0roAbwXfWt+DzjqMfeTvuzHzbgnCzir7r5v6NgDug0pBplvNAsk83kj5Kd3gBmJfhRieDf8VRk18bZ8DUmhGqu0U0EmFn9KqSE6HxOKo/sZFRu0In8090s/05IHro9OLCZQ3vEy6A0GPyzoc5PyL/a7qgNiERpK37e3h3LXZBG9HkmDh0HimY2GoQzBYr7sOKFrrmfZlT7rtIuXWfa0nhQSM1pI9Y1s9Y2GWkoiUlweNRuTuAwFAi+SuEHRHBtmokqkgChUUT4bNs0fGbszm3NuB3rqiCXj27kcVWw/aqglb0qJGT77cv2gqhqSKu3BJkw7KNwkjFRYow/5ScHvh6RP1hUPEpEavIiuYZEi0cMu7cmROyZYbc8XLDry8Jpc=';
 
   afterEach(() => {
+    EncryptUtils.clearDerivedKeyCache();
     jest.clearAllMocks();
     jest.resetModules();
     jest.restoreAllMocks();
@@ -113,6 +114,30 @@ describe('encrypt.utils tests:\n', () => {
 
     expect(await EncryptUtils.decryptToJson(encrypted, 'wrong password')).toBe(
       null,
+    );
+  });
+
+  it('encryptJsonWithSalt reuses the supplied salt and still decrypts', async () => {
+    const salt = EncryptUtils.generateAesGcmSaltBase64();
+    const first = await EncryptUtils.encryptJsonWithSalt(
+      accountPayload,
+      password,
+      salt,
+    );
+    const second = await EncryptUtils.encryptJsonWithSalt(
+      accountPayload,
+      password,
+      salt,
+    );
+
+    expect(JSON.parse(first).salt).toBe(salt);
+    expect(JSON.parse(second).salt).toBe(salt);
+    expect(JSON.parse(first).iv).not.toBe(JSON.parse(second).iv);
+    expect(await EncryptUtils.decryptToJson(first, password)).toEqual(
+      accountPayload,
+    );
+    expect(await EncryptUtils.decryptToJson(second, password)).toEqual(
+      accountPayload,
     );
   });
 

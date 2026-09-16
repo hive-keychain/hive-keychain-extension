@@ -211,6 +211,14 @@ const removePendingHiveAccountCreationRequest = async (
   );
 };
 
+const reencryptPendingHiveAccountCreationRequests = async (
+  oldMk: string,
+  newMk: string,
+): Promise<void> => {
+  const requests = await getPendingHiveAccountCreationRequests(oldMk);
+  await persistPendingHiveAccountCreationRequests(requests, newMk);
+};
+
 export const PendingHiveAccountCreationUtils = {
   savePendingHiveAccountCreationRequest,
   getPendingHiveAccountCreationRequests,
@@ -219,4 +227,5 @@ export const PendingHiveAccountCreationUtils = {
   updatePendingHiveAccountCreationStatus,
   upsertPendingHiveAccountCreationPaymentStatus,
   removePendingHiveAccountCreationRequest,
+  reencryptPendingHiveAccountCreationRequests,
 };

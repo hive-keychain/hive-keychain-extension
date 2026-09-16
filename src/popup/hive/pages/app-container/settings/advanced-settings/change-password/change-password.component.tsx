@@ -12,9 +12,12 @@ import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import AccountSelectorOrderUtils from '@popup/multichain/utils/account-selector-order.utils';
+import { KeylessKeychainUtils } from '@background/utils/keyless-keychain.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
+import EncryptedLocalStorageUtils from 'src/utils/encrypted-local-storage.utils';
+import { PendingHiveAccountCreationUtils } from 'src/utils/pending-hive-account-creation.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
 const ChangePassword = ({
@@ -44,11 +47,20 @@ const ChangePassword = ({
     }
     if (newPassword === newPasswordConfirm) {
       if (MkUtils.isPasswordValid(newPassword)) {
-        await AccountSelectorOrderUtils.reencryptDisplayOrder(
+        await AccountUtils.saveAccounts(accounts, newPassword);
+        await EvmWalletUtils.reencryptAccounts(oldPassword, newPassword);
+        await PendingHiveAccountCreationUtils.reencryptPendingHiveAccountCreationRequests(
           oldPassword,
           newPassword,
         );
-        await AccountUtils.saveAccounts(accounts, newPassword);
+        await KeylessKeychainUtils.reencryptKeylessAuthDataUserDictionary(
+          oldPassword,
+          newPassword,
+        );
+        await EncryptedLocalStorageUtils.reencryptIdentitySettings(
+          oldPassword,
+          newPassword,
+        );
         setMk(newPassword, true);
         navigateTo(Screen.HOME_PAGE, true);
         setSuccessMessage('popup_master_changed');

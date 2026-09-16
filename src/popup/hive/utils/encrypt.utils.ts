@@ -75,6 +75,44 @@ const deriveAesKey = async (
   );
 };
 
+const derivedKeyCache = new Map<string, CryptoKey>();
+
+const getDerivedKeyCacheKey = (
+  password: string,
+  salt: Uint8Array,
+  iterations: number,
+) => `${password}:${bytesToBase64(salt)}:${iterations}`;
+
+const getCachedAesKey = async (
+  password: string,
+  salt: Uint8Array,
+  iterations: number,
+) => {
+  const cacheKey = getDerivedKeyCacheKey(password, salt, iterations);
+  const cached = derivedKeyCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+  const key = await deriveAesKey(password, salt, iterations, [
+    'encrypt',
+    'decrypt',
+  ]);
+  derivedKeyCache.set(cacheKey, key);
+  return key;
+};
+
+const clearDerivedKeyCache = () => {
+  derivedKeyCache.clear();
+};
+
+const generateAesGcmSalt = () =>
+  getWebCrypto().getRandomValues(new Uint8Array(AES_GCM_SALT_SIZE));
+
+const parseEncryptedJsonV2Salt = (message: string): string | null => {
+  const { payload } = getVersionedPayload(message);
+  return payload?.salt ?? null;
+};
+
 const isObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
 
@@ -116,14 +154,18 @@ const getVersionedPayload = (
   }
 };
 
-const encryptV2 = async (content: string, encryptPassword: string) => {
-  const salt = getWebCrypto().getRandomValues(
-    new Uint8Array(AES_GCM_SALT_SIZE),
-  );
+const encryptV2 = async (
+  content: string,
+  encryptPassword: string,
+  saltBytes?: Uint8Array,
+) => {
+  const salt = saltBytes ?? generateAesGcmSalt();
   const iv = getWebCrypto().getRandomValues(new Uint8Array(AES_GCM_IV_SIZE));
-  const key = await deriveAesKey(encryptPassword, salt, PBKDF2_ITERATIONS, [
-    'encrypt',
-  ]);
+  const key = await getCachedAesKey(
+    encryptPassword,
+    salt,
+    PBKDF2_ITERATIONS,
+  );
   const ciphertext = await getWebCrypto().subtle.encrypt(
     { name: ENCRYPTION_ALGORITHM, iv },
     key,
@@ -157,9 +199,7 @@ const decryptV2 = async (
       return null;
     }
 
-    const key = await deriveAesKey(password, salt, payload.iterations, [
-      'decrypt',
-    ]);
+    const key = await getCachedAesKey(password, salt, payload.iterations);
     const decrypted = await getWebCrypto().subtle.decrypt(
       { name: ENCRYPTION_ALGORITHM, iv },
       key,
@@ -173,6 +213,18 @@ const decryptV2 = async (
 
 const encryptJson = async (content: any, encryptPassword: string) => {
   return encryptV2(JSON.stringify(content), encryptPassword);
+};
+
+const encryptJsonWithSalt = async (
+  content: any,
+  encryptPassword: string,
+  saltBase64: string,
+) => {
+  return encryptV2(
+    JSON.stringify(content),
+    encryptPassword,
+    base64ToBytes(saltBase64),
+  );
 };
 
 // Legacy compatibility-only string encryption for existing non-account callers.
@@ -284,6 +336,7 @@ const isEncryptedJsonV2 = (msg: string) =>
 
 const EncryptUtils = {
   encryptJson,
+  encryptJsonWithSalt,
   // Kept for legacy non-account storage compatibility only.
   encrypt: encryptLegacyCompat,
   encryptNoIV,
@@ -293,6 +346,9 @@ const EncryptUtils = {
   decrypt: LegacyEncryptUtils.decrypt,
   decryptNoIV,
   isEncryptedJsonV2,
+  parseEncryptedJsonV2Salt,
+  generateAesGcmSaltBase64: () => bytesToBase64(generateAesGcmSalt()),
+  clearDerivedKeyCache,
 };
 
 export default EncryptUtils;

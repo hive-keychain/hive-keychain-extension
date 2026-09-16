@@ -76,9 +76,16 @@ const login = async (mk: string) => {
 
 const saveMk = (newMk: string) => {
   VaultUtils.saveValueInVault(VaultKey.__MK, newMk);
+  void import('@background/hive/modules/local-storage.module').then(
+    (localStorageModule) =>
+      localStorageModule.default.checkAndUpdateLocalStorage(),
+  );
 };
 
 const lock = () => {
+  void import('src/utils/encrypted-local-storage.utils').then(
+    (encryptedLocalStorage) => encryptedLocalStorage.default.clearCache(),
+  );
   VaultUtils.removeFromVault(VaultKey.__MK);
 };
 

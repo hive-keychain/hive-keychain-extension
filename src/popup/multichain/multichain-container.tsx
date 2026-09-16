@@ -47,6 +47,7 @@ const MultichainContainer = ({
   hiveActiveAccountName,
   hiveActiveRpcUri,
   initialTheme,
+  mk,
   setChain,
 }: Props) => {
   const [theme, setTheme] = useState<Theme>(initialTheme ?? Theme.LIGHT);
@@ -179,7 +180,7 @@ const MultichainContainer = ({
           : Array.isArray(shortcutsValue)
             ? ShortcutsUtils.getShortcutsWithDefaultPresets(shortcutsValue)
             : ShortcutsUtils.DEFAULT_SHORTCUTS;
-      if (!hasMigratedShortcutPresets) {
+      if (!hasMigratedShortcutPresets && Array.isArray(shortcutsValue)) {
         LocalStorageUtils.saveValueInLocalStorage(
           LocalStorageKeyEnum.SHORTCUTS,
           shortcutsRef.current,
@@ -288,16 +289,35 @@ const MultichainContainer = ({
       if (areaName !== 'local') return;
       const change = changes[LocalStorageKeyEnum.SHORTCUTS];
       if (!change) return;
-      shortcutsRef.current = Array.isArray(change.newValue)
-        ? change.newValue
-        : [];
-      registerShortcuts(shortcutsRef.current);
+      void LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.SHORTCUTS,
+      ).then((shortcutsValue) => {
+        shortcutsRef.current = Array.isArray(shortcutsValue)
+          ? shortcutsValue
+          : [];
+        registerShortcuts(shortcutsRef.current);
+      });
     };
     chrome.storage.onChanged.addListener(handleStorageChange);
     return () => {
       chrome.storage.onChanged.removeListener(handleStorageChange);
     };
   }, [registerShortcuts]);
+
+  useEffect(() => {
+    if (!mk) {
+      return;
+    }
+    void LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.SHORTCUTS,
+    ).then((shortcutsValue) => {
+      if (!Array.isArray(shortcutsValue)) {
+        return;
+      }
+      shortcutsRef.current = shortcutsValue;
+      registerShortcuts(shortcutsValue);
+    });
+  }, [mk, registerShortcuts]);
 
   useEffect(() => {
     if (!shouldPersistActiveChainRef.current) {
@@ -340,6 +360,7 @@ const mapStateToProps = (state: RootState) => {
     evmActiveAccountReady: state.evm.activeAccount?.isReady,
     hiveActiveAccountName: state.hive.activeAccount?.name,
     hiveActiveRpcUri: state.hive.activeRpc?.uri,
+    mk: state.mk,
   };
 };
 type PropsFromRedux = ConnectedProps<typeof connector>;

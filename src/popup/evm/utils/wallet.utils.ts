@@ -1066,6 +1066,19 @@ const encryptAccountsInLocalStorage = async (
   );
 };
 
+const reencryptAccounts = async (oldMk: string, newMk: string) => {
+  const savedSeeds = await getAccountsFromLocalStorage(oldMk);
+  invalidateRebuildAccountsCache();
+  const encryptedAccounts = await EncryptUtils.encryptJson(
+    { list: savedSeeds },
+    newMk,
+  );
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_ACCOUNTS,
+    encryptedAccounts,
+  );
+};
+
 const getAccountsFromLocalStorage = async (mk: string) => {
   const wallets = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.EVM_ACCOUNTS,
@@ -1591,6 +1604,7 @@ export const EvmWalletUtils = {
   addLedgerAccounts,
   addImportedWallet,
   getAccountsFromLocalStorage,
+  reencryptAccounts,
   rebuildAccountsFromLocalStorage,
   invalidateRebuildAccountsCache,
   isWalletAddress,

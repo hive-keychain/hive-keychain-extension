@@ -239,26 +239,29 @@ const getDecryptedDisplayOrder = async (
     return [];
   }
 
-  if (isStoredDisplayOrderPayload(stored) || isStoredDisplayOrderRefArray(stored)) {
-    const refs = normalizeDecryptedDisplayOrder(stored);
-    await saveDisplayOrder(mk, refs);
-    return refs;
+  if (
+    isStoredDisplayOrderPayload(stored) ||
+    isStoredDisplayOrderRefArray(stored)
+  ) {
+    return normalizeDecryptedDisplayOrder(stored);
   }
 
-  const decrypted = await EncryptUtils.decryptToJson(stored, mk);
-  const refs = normalizeDecryptedDisplayOrder(decrypted);
-  return refs;
+  if (typeof stored === 'string') {
+    const decrypted = await EncryptUtils.decryptToJson(stored, mk);
+    return normalizeDecryptedDisplayOrder(decrypted);
+  }
+
+  return [];
 };
 
 const saveDisplayOrder = async (
-  mk: string,
+  _mk: string,
   refs: AccountSelectorOrderRef[],
 ): Promise<void> => {
   const payload: AccountSelectorDisplayOrderPayload = { list: refs };
-  const encrypted = await EncryptUtils.encryptJson(payload, mk);
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.ACCOUNT_SELECTOR_DISPLAY_ORDER,
-    encrypted,
+    payload,
   );
 };
 

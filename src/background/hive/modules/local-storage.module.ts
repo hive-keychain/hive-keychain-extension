@@ -5,9 +5,10 @@ import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
+import EncryptedLocalStorageUtils from 'src/utils/encrypted-local-storage.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
-export const CURRENT_LOCAL_STORAGE_VERSION = 6;
+export const CURRENT_LOCAL_STORAGE_VERSION = 7;
 const checkAndUpdateLocalStorage = async () => {
   const localStorageVersion = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,
@@ -187,12 +188,20 @@ const checkAndUpdateLocalStorage = async () => {
 
         saveNewLocalStorageVersion(6);
       }
+      case 6: {
+        const mk = await MkModule.getMk();
+        if (!mk) {
+          return;
+        }
+        await EncryptedLocalStorageUtils.migrateIdentitySettings(mk);
+        await saveNewLocalStorageVersion(7);
+      }
     }
   }
 };
 
-const saveNewLocalStorageVersion = (version: number) => {
-  LocalStorageUtils.saveValueInLocalStorage(
+const saveNewLocalStorageVersion = async (version: number) => {
+  await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,
     version,
   );

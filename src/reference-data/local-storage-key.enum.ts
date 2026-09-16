@@ -127,4 +127,7 @@ export enum LocalStorageKeyEnum {
 
   /** Ecosystem directory: `{ categories, fetchedAt }` with hourly TTL */
   ECOSYSTEM_DAPPS_CACHE = 'ECOSYSTEM_DAPPS_CACHE',
+
+  /** Shared PBKDF2 salt for identity-setting ciphertext. Not a secret; device-local. */
+  IDENTITY_STORAGE_SALT = 'IDENTITY_STORAGE_SALT',
 }
