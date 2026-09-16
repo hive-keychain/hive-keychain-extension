@@ -258,6 +258,8 @@ Put shared constants in the right place:
 - feature-local constants near the feature when not shared;
 - avoid duplicating hardcoded strings that already exist as constants or enums.
 
+New `LocalStorageKeyEnum` values are **not** exported automatically. Settings export and account backup only include `EXPORTABLE_SETTINGS_KEYS`. When adding a storage key, **ask the user before** adding it to that list. Never export secrets, encrypted accounts, auth tokens, caches, or session/runtime keys. See `.cursor/rules/exportable-settings.mdc`.
+
 ### Logging
 
 Logging exists, but it should remain meaningful.
