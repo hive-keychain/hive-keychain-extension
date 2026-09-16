@@ -7,7 +7,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
-const CURRENT_LOCAL_STORAGE_VERSION = 6;
+export const CURRENT_LOCAL_STORAGE_VERSION = 6;
 const checkAndUpdateLocalStorage = async () => {
   const localStorageVersion = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,

@@ -58,4 +58,7 @@ export const EXPORTABLE_SETTINGS_KEYS: LocalStorageKeyEnum[] = [
   LocalStorageKeyEnum.EVM_CUSTOM_HISTORY_INFO_CARD_HIDDEN,
   LocalStorageKeyEnum.EVM_CUSTOM_ERC20_EMPTY_CARD_HIDDEN,
   LocalStorageKeyEnum.EVM_CUSTOM_NFT_EMPTY_CARD_HIDDEN,
+  LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,
+  LocalStorageKeyEnum.EVM_ENS,
+  LocalStorageKeyEnum.EVM_SAVED_ADDRESSES,
 ];

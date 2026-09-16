@@ -1,4 +1,4 @@
-import SettingsUtils from '@hiveapp/utils/settings.utils';
+import AccountUtils from '@hiveapp/utils/account.utils';
 import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
@@ -9,8 +9,9 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import ImportAccountsFileUtils from 'src/popup/hive/utils/import-accounts-file.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
+
 describe('import-export-preferences.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -31,43 +32,35 @@ describe('import-export-preferences.component tests:\n', () => {
       screen.getByTestId(`${Screen.SETTINGS_IMPORT_EXPORT}-page`),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(
-        I18nUtils.getMessage('popup_html_import_permissions'),
-        { exact: true },
-      ),
+      screen.getByText(I18nUtils.getMessage('popup_html_import_permissions'), {
+        exact: true,
+      }),
     ).toBeInTheDocument();
   });
 
-  it('Must open import window', async () => {
-    const sImportSettings = jest.spyOn(SettingsUtils, 'importSettings');
+  it('Must open the accounts import flow', async () => {
+    const startImportSpy = jest
+      .spyOn(ImportAccountsFileUtils, 'startImportAccountsFromFile')
+      .mockImplementation(() => undefined);
     await act(async () => {
       await userEvent.click(
         screen.getByTestId(dataTestIdButton.menuPreFix + Icons.IMPORT),
       );
     });
-    expect(sImportSettings).toHaveBeenCalledTimes(1);
-    sImportSettings.mockRestore();
+    expect(startImportSpy).toHaveBeenCalledTimes(1);
+    startImportSpy.mockRestore();
   });
 
-  it('Must try to export settings file', async () => {
-    window.URL.createObjectURL = jest
-      .fn()
-      .mockImplementation((...args: any) => args);
-    const sExportSettings = jest.spyOn(SettingsUtils, 'exportSettings');
-    const sClick = jest
-      .spyOn(HTMLAnchorElement.prototype, 'click')
-      .mockImplementation(() => undefined);
-    LocalStorageUtils.getMultipleValueFromLocalStorage = jest
-      .fn()
-      .mockResolvedValueOnce(null);
+  it('Must export the encrypted accounts backup', async () => {
+    const downloadAccountsSpy = jest
+      .spyOn(AccountUtils, 'downloadAccounts')
+      .mockImplementation(() => Promise.resolve(undefined));
     await act(async () => {
       await userEvent.click(
         screen.getByTestId(dataTestIdButton.menuPreFix + Icons.EXPORT),
       );
     });
-    expect(sExportSettings).toHaveBeenCalledTimes(1);
-    expect(sClick).toHaveBeenCalledTimes(1);
-    sExportSettings.mockRestore();
-    sClick.mockRestore();
+    expect(downloadAccountsSpy).toHaveBeenCalledTimes(1);
+    downloadAccountsSpy.mockRestore();
   });
 });

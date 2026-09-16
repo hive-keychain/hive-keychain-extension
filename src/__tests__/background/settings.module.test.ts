@@ -230,4 +230,226 @@ describe('settings.module tests:\n', () => {
       noConfirm,
     );
   });
+
+  it('Must not overwrite live LOCAL_STORAGE_VERSION from the import file', async () => {
+    LocalStorageUtils.getValueFromLocalStorage = jest
+      .fn()
+      .mockResolvedValue(undefined);
+    const sSaveValueInLocalStorage = jest.spyOn(
+      LocalStorageUtils,
+      'saveValueInLocalStorage',
+    );
+
+    await SettingsModule.importSettings({
+      [LocalStorageKeyEnum.LOCAL_STORAGE_VERSION]: 2,
+      [LocalStorageKeyEnum.KEYCHAINIFY_ENABLED]: true,
+    });
+
+    expect(sSaveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.KEYCHAINIFY_ENABLED,
+      true,
+    );
+    expect(sSaveValueInLocalStorage).not.toHaveBeenCalledWith(
+      LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,
+      expect.anything(),
+    );
+  });
+
+  it('Must merge EVM ENS entries by address without replacing existing ones', async () => {
+    LocalStorageUtils.getValueFromLocalStorage = jest
+      .fn()
+      .mockImplementation((key: LocalStorageKeyEnum) => {
+        if (key === LocalStorageKeyEnum.EVM_ENS) {
+          return Promise.resolve([
+            {
+              address: '0xAAA',
+              ens: 'existing.eth',
+              expirationDate: 1,
+            },
+          ]);
+        }
+        return Promise.resolve(undefined);
+      });
+    const sSaveValueInLocalStorage = jest.spyOn(
+      LocalStorageUtils,
+      'saveValueInLocalStorage',
+    );
+
+    await SettingsModule.importSettings({
+      [LocalStorageKeyEnum.EVM_ENS]: [
+        {
+          address: '0xaaa',
+          ens: 'imported-duplicate.eth',
+          expirationDate: 2,
+        },
+        {
+          address: '0xBBB',
+          ens: 'imported.eth',
+          expirationDate: 3,
+        },
+      ],
+    });
+
+    expect(sSaveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.EVM_ENS,
+      [
+        {
+          address: '0xAAA',
+          ens: 'existing.eth',
+          expirationDate: 1,
+        },
+        {
+          address: '0xBBB',
+          ens: 'imported.eth',
+          expirationDate: 3,
+        },
+      ],
+    );
+  });
+
+  it('Must nested-merge EVM saved addresses by chain and address', async () => {
+    LocalStorageUtils.getValueFromLocalStorage = jest
+      .fn()
+      .mockImplementation((key: LocalStorageKeyEnum) => {
+        if (key === LocalStorageKeyEnum.EVM_SAVED_ADDRESSES) {
+          return Promise.resolve({
+            '0x1': {
+              '0xexisting': 'WALLET_ADDRESS',
+            },
+          });
+        }
+        return Promise.resolve(undefined);
+      });
+    const sSaveValueInLocalStorage = jest.spyOn(
+      LocalStorageUtils,
+      'saveValueInLocalStorage',
+    );
+
+    await SettingsModule.importSettings({
+      [LocalStorageKeyEnum.EVM_SAVED_ADDRESSES]: {
+        '0x1': {
+          '0ximported': 'SMART_CONTRACT',
+        },
+        '0x2': {
+          '0xother': 'WALLET_ADDRESS',
+        },
+      },
+    });
+
+    expect(sSaveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.EVM_SAVED_ADDRESSES,
+      {
+        '0x1': {
+          '0xexisting': 'WALLET_ADDRESS',
+          '0ximported': 'SMART_CONTRACT',
+        },
+        '0x2': {
+          '0xother': 'WALLET_ADDRESS',
+        },
+      },
+    );
+  });
+
+  it('Must normalize legacy settings shapes before importing', async () => {
+    LocalStorageUtils.getValueFromLocalStorage = jest
+      .fn()
+      .mockResolvedValue(undefined);
+    const sSaveValueInLocalStorage = jest.spyOn(
+      LocalStorageUtils,
+      'saveValueInLocalStorage',
+    );
+
+    await SettingsModule.importSettings({
+      [LocalStorageKeyEnum.LOCAL_STORAGE_VERSION]: 2,
+      [LocalStorageKeyEnum.AUTOLOCK]: JSON.stringify({
+        type: 1,
+        mn: 10,
+      }),
+      [LocalStorageKeyEnum.NO_CONFIRM]: JSON.stringify(noConfirm),
+      [LocalStorageKeyEnum.CURRENT_RPC]: {
+        uri: 'https://anyx.io',
+        testnet: false,
+      },
+      [LocalStorageKeyEnum.FAVORITE_USERS]: {
+        'keychain.tests': ['alice', { value: 'bob', subLabel: 'friend' }],
+      },
+    });
+
+    expect(sSaveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.AUTOLOCK,
+      { type: 1, mn: 10 },
+    );
+    expect(sSaveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.NO_CONFIRM,
+      noConfirm,
+    );
+    expect(sSaveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.CURRENT_RPC,
+      { uri: 'https://api.hive.blog', testnet: false },
+    );
+    expect(sSaveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.FAVORITE_USERS,
+      {
+        'keychain.tests': [
+          { label: 'alice', subLabel: '' },
+          { label: 'bob', subLabel: 'friend' },
+        ],
+      },
+    );
+    expect(sSaveValueInLocalStorage).not.toHaveBeenCalledWith(
+      LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,
+      expect.anything(),
+    );
+  });
+
+  it('Must skip unmergeable settings and keep importing the rest', async () => {
+    LocalStorageUtils.getValueFromLocalStorage = jest
+      .fn()
+      .mockResolvedValue(undefined);
+    const sSaveValueInLocalStorage = jest.spyOn(
+      LocalStorageUtils,
+      'saveValueInLocalStorage',
+    );
+    const sLoggerError = jest.spyOn(Logger, 'error');
+
+    await SettingsModule.importSettings({
+      [LocalStorageKeyEnum.KEYCHAINIFY_ENABLED]: true,
+      [LocalStorageKeyEnum.RPC_LIST]: 'not-an-array',
+      [LocalStorageKeyEnum.EVM_CUSTOM_TOKENS]: ['not-a-record'],
+      [LocalStorageKeyEnum.CLAIM_SAVINGS]: {
+        'keychain.tests': true,
+      },
+      [LocalStorageKeyEnum.EVM_ENS]: { address: '0xabc' },
+    });
+
+    expect(sSaveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.KEYCHAINIFY_ENABLED,
+      true,
+    );
+    expect(sSaveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.CLAIM_SAVINGS,
+      { 'keychain.tests': true },
+    );
+    expect(sSaveValueInLocalStorage).not.toHaveBeenCalledWith(
+      LocalStorageKeyEnum.RPC_LIST,
+      expect.anything(),
+    );
+    expect(sSaveValueInLocalStorage).not.toHaveBeenCalledWith(
+      LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
+      expect.anything(),
+    );
+    expect(sSaveValueInLocalStorage).not.toHaveBeenCalledWith(
+      LocalStorageKeyEnum.EVM_ENS,
+      expect.anything(),
+    );
+    expect(sLoggerError).toHaveBeenCalledWith(
+      'Ignoring unmergeable imported setting: rpc',
+    );
+    expect(sLoggerError).toHaveBeenCalledWith(
+      'Ignoring unmergeable imported setting: EVM_CUSTOM_TOKENS',
+    );
+    expect(sLoggerError).toHaveBeenCalledWith(
+      'Ignoring unmergeable imported setting: EVM_ENS',
+    );
+  });
 });

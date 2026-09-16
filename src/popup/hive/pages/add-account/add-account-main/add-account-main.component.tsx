@@ -1,46 +1,30 @@
-import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { Screen } from '@interfaces/screen.interface';
-import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
-import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmWalletSetupTabUtils } from '@popup/evm/utils/evm-wallet-setup-tab.utils';
-import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
-import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
+import ImportAccountsFileUtils from '@popup/hive/utils/import-accounts-file.utils';
 import { setChain } from '@popup/multichain/actions/chain.actions';
 import {
   navigateTo,
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
-import {
-  resetTitleContainerProperties,
-  setTitleContainerProperties,
-} from '@popup/multichain/actions/title-container.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import {
   Chain,
   ChainType,
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
-import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
 import { RootState } from '@popup/multichain/store';
 import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { buildAddAccountSetupTitleProperties } from 'src/popup/hive/pages/add-account/add-account-setup-title.utils';
 import React, { useLayoutEffect, useEffect, useState } from 'react';
-import { ConnectedProps, connect } from 'react-redux';
+import { ConnectedProps, connect, useStore } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { MenuItemComponent } from 'src/common-ui/menu/menu-item/menu-item.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
-import { setAccounts } from 'src/popup/hive/actions/account.actions';
-import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
-import AccountUtils from 'src/popup/hive/utils/account.utils';
-import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
-import { CommunicationUtils } from 'src/utils/communication.utils';
-import FileUtils from 'src/utils/file.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
-
 import { HtmlUtils } from 'src/utils/html.utils';
-import { I18nUtils } from 'src/utils/i18n.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 interface AddAccountNavigationParams {
   selectedAccountType?: ChainType;
@@ -61,19 +45,14 @@ const AddAccountMain = ({
   navigateToWithParams,
   accounts,
   evmAccountsCount,
-  setAccounts,
   setTitleContainerProperties,
-  resetTitleContainerProperties,
   isLedgerSupported,
   isEvmLedgerSupported,
   setChain,
   chain,
-  mk,
-  loadActiveAccount,
-  setActiveAccountType,
-  loadEvmActiveAccount,
   navigationParams,
 }: PropsFromRedux) => {
+  const reduxStore = useStore<RootState>();
   const [selectedAccountType, setSelectedAccountType] = useState<
     ChainType.HIVE | ChainType.EVM
   >(getInitialSelectedAccountType(navigationParams, chain));
@@ -146,110 +125,7 @@ const AddAccountMain = ({
   };
 
   const handleImportKeys = (): void => {
-    if (ExtensionSurfaceUtils.isSidePanelPage()) {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = '.kc';
-      input.style.display = 'none';
-      input.onchange = async (event) => {
-        const selectedFile = (event.target as HTMLInputElement).files?.[0];
-        if (!selectedFile) {
-          input.remove();
-          return;
-        }
-
-        chrome.runtime.onMessage.addListener(onSentBackAccountsListener);
-        const base64 = await FileUtils.toBase64(selectedFile);
-        const fileData = atob(base64);
-        CommunicationUtils.runtimeSendMessage({
-          command: BackgroundCommand.IMPORT_ACCOUNTS,
-          value: fileData,
-        });
-        input.remove();
-      };
-      document.body.appendChild(input);
-      input.click();
-      return;
-    }
-
-    chrome.windows.getCurrent(async (currentWindow) => {
-      const win: chrome.windows.CreateData = {
-        url: chrome.runtime.getURL('import-accounts.html'),
-        type: 'popup',
-        height: 600,
-        width: 435,
-        left: currentWindow.width! - 350 + currentWindow.left!,
-        top: currentWindow.top,
-      };
-      // Except on Firefox
-      //@ts-ignore
-      if (typeof InstallTrigger === undefined) win.focused = true;
-      const window = await chrome.windows.create(win);
-      // setImportWindow(window.id);
-      chrome.runtime.onMessage.addListener(onSentBackAccountsListener);
-    });
-  };
-
-  const onSentBackAccountsListener = async (message: BackgroundMessage) => {
-    if (message.command === BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS) {
-      if (
-        !(typeof message.value === 'string') &&
-        message.value?.success &&
-        message.value?.accountType === 'all'
-      ) {
-        const hiveAccounts =
-          message.value?.accounts?.length > 0
-            ? message.value.accounts
-            : ((await AccountUtils.getAccountsFromLocalStorage(mk)) ?? []);
-        EvmWalletUtils.invalidateRebuildAccountsCache();
-        const evmAccounts =
-          await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
-        setAccounts(hiveAccounts);
-        setEvmAccounts(evmAccounts);
-        if (hiveAccounts[0]) {
-          setActiveAccountType(ChainType.HIVE);
-          loadActiveAccount(hiveAccounts[0]);
-        }
-        if (chain?.type === ChainType.EVM && evmAccounts[0]) {
-          await loadEvmActiveAccount(chain as EvmChain, evmAccounts[0].wallet);
-        }
-        resetTitleContainerProperties();
-        navigateTo(Screen.HOME_PAGE, true);
-        chrome.runtime.onMessage.removeListener(onSentBackAccountsListener);
-        return;
-      }
-
-      if (
-        !(typeof message.value === 'string') &&
-        message.value?.success &&
-        message.value?.accountType === 'evm'
-      ) {
-        EvmWalletUtils.invalidateRebuildAccountsCache();
-        const evmAccounts =
-          await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
-        setEvmAccounts(evmAccounts);
-        if (chain?.type === ChainType.EVM && evmAccounts[0]) {
-          await loadEvmActiveAccount(chain as EvmChain, evmAccounts[0].wallet);
-        }
-        resetTitleContainerProperties();
-        navigateTo(Screen.HOME_PAGE, true);
-        chrome.runtime.onMessage.removeListener(onSentBackAccountsListener);
-        return;
-      }
-
-      if (
-        !(typeof message.value === 'string') &&
-        message.value?.accountType !== 'evm' &&
-        message.value?.accounts.length
-      ) {
-        setAccounts(message.value.accounts);
-        resetTitleContainerProperties();
-        setActiveAccountType(ChainType.HIVE);
-        loadActiveAccount(message.value.accounts[0]);
-        navigateTo(Screen.HOME_PAGE, true);
-      }
-      chrome.runtime.onMessage.removeListener(onSentBackAccountsListener);
-    }
+    ImportAccountsFileUtils.startImportAccountsFromFile(reduxStore);
   };
 
   const handleAddFromLedger = async () => {
@@ -465,7 +341,6 @@ const mapStateToProps = (state: RootState) => {
     isLedgerSupported: state.hive.appStatus.isLedgerSupported,
     isEvmLedgerSupported: state.evm.appStatus.isLedgerSupported,
     chain: state.chain as Chain,
-    mk: state.mk,
     navigationParams: (state.navigation.stack[0]?.params ??
       state.navigation.stack[0]?.previousParams) as
       | AddAccountNavigationParams
@@ -476,14 +351,8 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   navigateTo,
   navigateToWithParams,
-  setEvmAccounts,
-  setAccounts,
   setTitleContainerProperties,
-  resetTitleContainerProperties,
   setChain,
-  loadActiveAccount,
-  setActiveAccountType,
-  loadEvmActiveAccount,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
