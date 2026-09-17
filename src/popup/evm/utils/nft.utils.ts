@@ -15,7 +15,7 @@ import Logger from 'src/utils/logger.utils';
 const getImgFromMetadata = (metadata: EvmNFTMetadata): string => {
   if (!metadata || !metadata.image)
     return '/assets/images/placeholder-image.svg';
-  metadata.image = IpfsUtils.resolveIpfsUrl(metadata.image);
+  metadata.image = IpfsUtils.getPreferredIpfsUrl(metadata.image);
   return metadata.image;
 };
 

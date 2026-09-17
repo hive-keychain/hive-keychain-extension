@@ -1,32 +1,31 @@
 import { BaseApi } from 'src/api/base';
-import { IpfsUtils } from 'src/utils/ipfs.utils';
+import {
+  IpfsGatewayRequestError,
+  IpfsUtils,
+} from 'src/utils/ipfs.utils';
 
-const get = async (url: string): Promise<any> => {
-  return await BaseApi.get(url);
-};
-
-const getURI = async (uri: string) => {
-  const gatewayUrls = IpfsUtils.getIpfsGatewayUrls(uri);
-  const urls =
-    gatewayUrls.length > 0
-      ? gatewayUrls
-      : IpfsUtils.IPFS_GATEWAYS.map((gateway) =>
-          IpfsUtils.buildIpfsGatewayUrl(uri, gateway),
+const getURI = async (uri: string): Promise<any> => {
+  const ipfsPath = IpfsUtils.getIpfsPath(uri) ?? uri;
+  return IpfsUtils.requestIpfsResource(
+    uri,
+    async (url, signal) => {
+      const response = await BaseApi.getWithResponse(url, signal);
+      if (response.status < 200 || response.status >= 300) {
+        throw new IpfsGatewayRequestError(
+          `IPFS gateway returned HTTP ${response.status}`,
+          response.status,
         );
-  let lastError: unknown;
-
-  for (const gatewayUrl of urls) {
-    try {
-      const res = await get(gatewayUrl);
-      if (res !== undefined && res !== null) {
-        return res;
       }
-    } catch (err) {
-      lastError = err;
-    }
-  }
-
-  throw lastError ?? new Error(`Unable to resolve IPFS URI: ${uri}`);
+      if (response.data === undefined || response.data === null) {
+        throw new IpfsGatewayRequestError(
+          'IPFS gateway returned an empty response',
+          response.status,
+        );
+      }
+      return response.data;
+    },
+    { cacheKey: `metadata:${ipfsPath}` },
+  );
 };
 
 export const IPFSApi = {

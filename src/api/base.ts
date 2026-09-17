@@ -15,10 +15,14 @@ const parseJsonResponse = async (res: Response): Promise<unknown> => {
   }
 };
 
-const getWithResponse = async (url: string): Promise<ApiResponse> => {
+const getWithResponse = async (
+  url: string,
+  signal?: AbortSignal,
+): Promise<ApiResponse> => {
   const res = await fetch(url, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
+    signal,
   });
   return { status: res.status, data: await parseJsonResponse(res) };
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { IpfsUtils } from 'src/utils/ipfs.utils';
 
 const NFT_VIDEO_EXTENSION_REGEX = /\.(mp4|webm|ogg|ogv|mov|m4v)(?:[?#]|$)/i;
@@ -15,17 +15,50 @@ interface Props {
 
 export const EvmNftMedia = ({ src, className }: Props) => {
   const [hasError, setHasError] = useState(false);
-  const [gatewayIndex, setGatewayIndex] = useState(0);
-  const ipfsGatewayUrls = IpfsUtils.getIpfsGatewayUrls(src);
-  const resolvedSrc = ipfsGatewayUrls[gatewayIndex] ?? src;
-  const isPlaceholder = hasError || !src || src === NFT_PLACEHOLDER;
+  const [isResolvingIpfs, setIsResolvingIpfs] = useState(false);
+  const [resolvedSrc, setResolvedSrc] = useState(src);
+  const [resolvedGateway, setResolvedGateway] = useState('');
+  const excludedGatewaysRef = useRef<string[]>([]);
+  const resolutionIdRef = useRef(0);
+  const isIpfsMedia = !!IpfsUtils.getIpfsPath(src);
+  const isPlaceholder =
+    hasError || !src || src === NFT_PLACEHOLDER || isResolvingIpfs;
   const mediaSrc = isPlaceholder ? NFT_PLACEHOLDER : resolvedSrc;
   const mediaClassName = `nft-media ${className ?? ''} ${
     isPlaceholder ? 'placeholder' : ''
   }`.trim();
+  const resolveMediaGateway = async (excludedGateways: string[] = []) => {
+    if (!src || !isIpfsMedia) return;
+
+    const resolutionId = ++resolutionIdRef.current;
+    setIsResolvingIpfs(true);
+    try {
+      const resolution = await IpfsUtils.resolveIpfsUrl(src, {
+        bypassCache: excludedGateways.length > 0,
+        excludedGateways,
+      });
+      if (resolutionId !== resolutionIdRef.current) return;
+
+      setResolvedSrc(resolution.url);
+      setResolvedGateway(resolution.gateway);
+      setIsResolvingIpfs(false);
+    } catch {
+      if (resolutionId !== resolutionIdRef.current) return;
+
+      setIsResolvingIpfs(false);
+      setHasError(true);
+    }
+  };
+
   const handleError = () => {
-    if (gatewayIndex < ipfsGatewayUrls.length - 1) {
-      setGatewayIndex(gatewayIndex + 1);
+    if (isResolvingIpfs) return;
+
+    if (isIpfsMedia && resolvedGateway) {
+      IpfsUtils.reportGatewayFailure(resolvedGateway);
+      excludedGatewaysRef.current = [
+        ...new Set([...excludedGatewaysRef.current, resolvedGateway]),
+      ];
+      void resolveMediaGateway(excludedGatewaysRef.current);
       return;
     }
 
@@ -33,8 +66,17 @@ export const EvmNftMedia = ({ src, className }: Props) => {
   };
 
   useEffect(() => {
+    resolutionIdRef.current += 1;
+    excludedGatewaysRef.current = [];
     setHasError(false);
-    setGatewayIndex(0);
+    setResolvedGateway('');
+    setResolvedSrc(src);
+    setIsResolvingIpfs(isIpfsMedia);
+    if (isIpfsMedia) void resolveMediaGateway();
+
+    return () => {
+      resolutionIdRef.current += 1;
+    };
   }, [src]);
 
   if (!hasError && isNftVideoMedia(src)) {
