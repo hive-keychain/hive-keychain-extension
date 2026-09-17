@@ -159,4 +159,36 @@ describe('I18nUtils', () => {
     expect(I18nUtils.getMessage('popup_html_confirm')).toBe('Confirmer');
     expect(moment.locale()).toBe('fr');
   });
+
+  it('emits a language changed event when window.dispatchEvent is available', async () => {
+    const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
+
+    await expect(I18nUtils.changeLanguage('fr')).resolves.toBe('fr');
+
+    expect(dispatchEventSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: I18nUtils.LANGUAGE_CHANGED_EVENT,
+        detail: 'fr',
+      }),
+    );
+  });
+
+  it('still changes language when window.dispatchEvent is not a function', async () => {
+    chrome.i18n.getUILanguage = jest.fn().mockReturnValue('en-US');
+    const originalDispatchEvent = window.dispatchEvent;
+    Object.defineProperty(window, 'dispatchEvent', {
+      configurable: true,
+      value: undefined,
+    });
+
+    try {
+      await expect(I18nUtils.initLanguageFromStorage()).resolves.toBe('en');
+      expect(I18nUtils.getCurrentLanguage()).toBe('en');
+    } finally {
+      Object.defineProperty(window, 'dispatchEvent', {
+        configurable: true,
+        value: originalDispatchEvent,
+      });
+    }
+  });
 });

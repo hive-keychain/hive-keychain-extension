@@ -279,14 +279,23 @@ const getMessage = (key: string, params?: TranslationParams) => {
   return getMessageFromTFunction(getInstance().t, key, params);
 };
 
+const canDispatchLanguageChangedEvent = () => {
+  return (
+    typeof window !== 'undefined' &&
+    typeof window.dispatchEvent === 'function'
+  );
+};
+
 const emitLanguageChanged = (language: string) => {
-  if (typeof window === 'undefined') {
+  if (!canDispatchLanguageChangedEvent()) {
     return;
   }
 
-  window.dispatchEvent(new CustomEvent(LANGUAGE_CHANGED_EVENT, {
-    detail: language,
-  }));
+  window.dispatchEvent(
+    new CustomEvent(LANGUAGE_CHANGED_EVENT, {
+      detail: language,
+    }),
+  );
 };
 
 const changeLanguage = async (language: string) => {
