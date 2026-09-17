@@ -1,0 +1,63 @@
+.guided-tour-root.theme {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  overflow: hidden;
+  height: auto;
+  background: transparent;
+  background-image: none;
+}
+
+.guided-tour-pane {
+  position: fixed;
+  pointer-events: auto;
+  background: transparent;
+}
+
+.guided-tour-highlight {
+  position: fixed;
+  pointer-events: none;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.48);
+}
+
+.guided-tour-root.theme.dark .guided-tour-highlight {
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.72);
+}
+
+.guided-tour-tooltip {
+  position: fixed;
+  pointer-events: auto;
+  z-index: 2;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+  padding: 14px 16px;
+  background: var(--card-background);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  color: var(--main-font-color);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+
+  .guided-tour-tooltip-title {
+    @include poppins600(14px);
+    color: var(--main-font-color);
+  }
+
+  .guided-tour-tooltip-description {
+    @include poppins400(13px);
+    line-height: 1.4;
+    color: var(--main-font-color);
+  }
+
+  .guided-tour-dismiss-button {
+    width: 100%;
+    margin-top: 4px;
+  }
+}
+
+.guided-tour-root.theme.dark .guided-tour-tooltip {
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.55);
+}

@@ -350,6 +350,61 @@ describe('settings.module tests:\n', () => {
     );
   });
 
+  it('Must merge guided-tour progress by tour id keeping the furthest state', async () => {
+    LocalStorageUtils.getValueFromLocalStorage = jest
+      .fn()
+      .mockImplementation((key: LocalStorageKeyEnum) => {
+        if (key === LocalStorageKeyEnum.GUIDED_TOURS) {
+          return Promise.resolve({
+            add_evm_account: {
+              status: 'in_progress',
+              currentStep: 0,
+            },
+            local_only: {
+              status: 'completed',
+              currentStep: 1,
+            },
+          });
+        }
+        return Promise.resolve(undefined);
+      });
+    const sSaveValueInLocalStorage = jest.spyOn(
+      LocalStorageUtils,
+      'saveValueInLocalStorage',
+    );
+
+    await SettingsModule.importSettings({
+      [LocalStorageKeyEnum.GUIDED_TOURS]: {
+        add_evm_account: {
+          status: 'completed',
+          currentStep: 2,
+        },
+        imported_only: {
+          status: 'in_progress',
+          currentStep: 1,
+        },
+      },
+    });
+
+    expect(sSaveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.GUIDED_TOURS,
+      {
+        add_evm_account: {
+          status: 'completed',
+          currentStep: 2,
+        },
+        local_only: {
+          status: 'completed',
+          currentStep: 1,
+        },
+        imported_only: {
+          status: 'in_progress',
+          currentStep: 1,
+        },
+      },
+    );
+  });
+
   it('Must normalize legacy settings shapes before importing', async () => {
     LocalStorageUtils.getValueFromLocalStorage = jest
       .fn()

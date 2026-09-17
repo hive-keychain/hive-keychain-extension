@@ -62,6 +62,9 @@ export enum LocalStorageKeyEnum {
   // Onboard Tutorial
   SKIP_TUTORIAL = 'SKIP_TUTORIAL',
 
+  /** Per-tour guided-tour progress: `{ [tourId]: { status, currentStep } }` */
+  GUIDED_TOURS = 'GUIDED_TOURS',
+
   // To show the right type of account value
   ACCOUNT_VALUE_TYPE = 'ACCOUNT_VALUE_TYPE',
 

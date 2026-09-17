@@ -39,6 +39,7 @@ import {
 import { LoadingState } from '@popup/multichain/reducers/loading.reducer';
 import { RootState } from '@popup/multichain/store';
 import { UnifiedRouterComponent } from '@popup/multichain/unified-router.component';
+import { GuidedTourComponent } from '@popup/multichain/guided-tour/guided-tour.component';
 import {
   isAccountSetupScreenWithOwnCompletion,
   stackHasAccountSetupPage,
@@ -906,6 +907,7 @@ const UnlockedApp = ({
         switchToHiveEngineRpc,
       )}
       {renderMainLayoutNav()}
+      <GuidedTourComponent />
     </div>
   );
 };

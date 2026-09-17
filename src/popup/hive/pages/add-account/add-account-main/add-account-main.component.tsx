@@ -15,6 +15,7 @@ import {
 } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
+import { GuidedTourTarget } from '@reference-data/guided-tour.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { buildAddAccountSetupTitleProperties } from 'src/popup/hive/pages/add-account/add-account-setup-title.utils';
 import React, { useLayoutEffect, useEffect, useState } from 'react';
@@ -321,6 +322,7 @@ const AddAccountMain = ({
         <button
           className={getAddAccountTypeCardClassName(ChainType.EVM)}
           data-testid="add-account-type-evm"
+          data-guided-tour={GuidedTourTarget.ADD_ACCOUNT_TYPE_EVM}
           onClick={() => setSelectedAccountType(ChainType.EVM)}
           type="button">
           <SVGIcon icon={SVGIcons.BLOCKCHAIN_ETHEREUM} />
