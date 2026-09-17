@@ -1,6 +1,6 @@
 import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
-import { act, cleanup, screen } from '@testing-library/react';
+import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
@@ -110,6 +110,52 @@ describe('automated-tasks.component tests:\n', () => {
         });
         expect(sendMessage).toHaveBeenCalledTimes(1);
       });
+    });
+  });
+
+  describe('Hive Engine auto-stake tokens:\n', () => {
+    it('does not render a zero when no staking-enabled tokens are available', async () => {
+      const initialState = {
+        ...initialStates.iniStateAs.defaultExistent,
+        hive: {
+          ...initialStates.iniStateAs.defaultExistent.hive,
+          userTokens: {
+            loading: true,
+            list: [],
+          },
+        },
+      };
+      const store = await reactTestingLibrary.renderWithConfiguration(
+        <HiveAppComponent />,
+        initialState,
+        {
+          navigateToAfterMount: Screen.SETTINGS_AUTOMATED_TASKS,
+          app: {
+            accountsRelated: {
+              TokensUtils: {
+                getUserBalance: [],
+              },
+            },
+          },
+        },
+      );
+
+      await waitFor(() => {
+        expect(store.getState().hive.userTokens.loading).toBe(false);
+      });
+
+      const autoStakeCheckbox = screen.getByTestId(
+        'checkbox-autostake-tokens',
+      );
+      const hiveEngineTasks = autoStakeCheckbox.closest('.tasks');
+
+      expect(hiveEngineTasks).not.toBeNull();
+      const renderedTextNodes = Array.from(hiveEngineTasks!.childNodes)
+        .filter((node) => node.nodeType === Node.TEXT_NODE)
+        .map((node) => node.textContent?.trim())
+        .filter(Boolean);
+
+      expect(renderedTextNodes).not.toContain('0');
     });
   });
 });

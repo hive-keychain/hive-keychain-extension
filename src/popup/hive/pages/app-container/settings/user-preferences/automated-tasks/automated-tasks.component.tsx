@@ -408,9 +408,10 @@ const AutomatedTasks = ({
             onChange={handleSetAutoStake}
             hint="popup_html_enable_autostake_tokens_info"
           />
-          {selectedUserTokenOption &&
-            userTokenOptionList?.length &&
-            enabledAutoStake && (
+          {enabledAutoStake &&
+            selectedUserTokenOption &&
+            userTokenOptionList &&
+            userTokenOptionList.length > 0 && (
               <ComplexeCustomSelect
                 selectedItem={selectedUserTokenOption}
                 options={userTokenOptionList.filter(
