@@ -10,8 +10,9 @@ const mockIsPushEnabled = jest.fn();
 
 class MockEventSource {
   url: string;
+  readyState = 0;
   onmessage: ((event: MessageEvent<string>) => void) | null = null;
-  onerror: (() => void) | null = null;
+  onerror: ((event: Event) => void) | null = null;
   close = jest.fn();
 
   constructor(url: string) {
@@ -202,6 +203,38 @@ describe('hive-push-notifications.module', () => {
     } as MessageEvent<string>);
     await flushAsync();
     expect(chrome.notifications.create).toHaveBeenCalledTimes(1);
+  });
+
+  it('logs EventSource error details when the push stream fails', async () => {
+    mockGetValueFromVault.mockResolvedValue('mk');
+    mockGetAccounts.mockResolvedValue([{ name: USERNAME }]);
+
+    const { HivePushNotificationsModule } = await import(
+      '@background/hive/modules/hive-push-notifications.module'
+    );
+    const Logger = (await import('src/utils/logger.utils')).default;
+    HivePushNotificationsModule.start();
+    await flushAsync();
+
+    const eventSource = mockEventSources.get(PUSH_URL);
+    expect(eventSource).toBeDefined();
+    eventSource!.readyState = 0;
+    eventSource!.onerror?.(
+      new ErrorEvent('error', {
+        message: 'network error',
+        error: new Error('connection reset'),
+      }),
+    );
+
+    expect(Logger.warn).toHaveBeenCalledWith(
+      `Hive push notification stream error for @${USERNAME} (readyState=CONNECTING(0), type=error, url=${PUSH_URL}, message=network error, error=connection reset)`,
+    );
+
+    eventSource!.readyState = 2;
+    eventSource!.onerror?.(new Event('error'));
+    expect(Logger.warn).toHaveBeenCalledWith(
+      `Hive push notification stream error for @${USERNAME} (readyState=CLOSED(2), type=error, url=${PUSH_URL})`,
+    );
   });
 
   it('skips browser notifications when pushNotification extension is disabled', async () => {

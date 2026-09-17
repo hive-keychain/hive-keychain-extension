@@ -20,6 +20,11 @@ import VaultUtils from 'src/utils/vault.utils';
 
 const NOTIFICATION_ID_PREFIX = 'hive-push';
 const HIVE_USERNAME_REGEX = /^[a-z0-9.-]{3,16}$/;
+const EVENT_SOURCE_READY_STATE_LABEL: Record<number, string> = {
+  0: 'CONNECTING',
+  1: 'OPEN',
+  2: 'CLOSED',
+};
 
 type PushNotificationTarget = {
   txUrl?: string;
@@ -42,6 +47,37 @@ const getNotificationDedupKey = (username: string, notificationId: string) =>
 
 const getNotificationId = (username: string, notificationId: string) =>
   `${NOTIFICATION_ID_PREFIX}:${username}:${notificationId}`;
+
+const getEventSourceReadyStateLabel = (readyState: number): string =>
+  EVENT_SOURCE_READY_STATE_LABEL[readyState] ?? `UNKNOWN(${readyState})`;
+
+const getPushStreamErrorDetails = (
+  event: Event,
+  eventSource: EventSource,
+): string => {
+  const details = [
+    `readyState=${getEventSourceReadyStateLabel(eventSource.readyState)}(${
+      eventSource.readyState
+    })`,
+    `type=${event.type || 'error'}`,
+    `url=${eventSource.url}`,
+  ];
+  if (event instanceof ErrorEvent) {
+    if (event.message) {
+      details.push(`message=${event.message}`);
+    }
+    if (event.error) {
+      details.push(
+        `error=${
+          event.error instanceof Error
+            ? event.error.message
+            : String(event.error)
+        }`,
+      );
+    }
+  }
+  return details.join(', ');
+};
 
 const getGlobalProperties = () => {
   if (!globalPropertiesPromise) {
@@ -178,8 +214,13 @@ const connectAccount = (username: string) => {
       }
     })();
   };
-  eventSource.onerror = () => {
-    Logger.warn(`Hive push notification stream error for @${username}`);
+  eventSource.onerror = (event) => {
+    Logger.warn(
+      `Hive push notification stream error for @${username} (${getPushStreamErrorDetails(
+        event,
+        eventSource,
+      )})`,
+    );
   };
   eventSources.set(username, eventSource);
 };
