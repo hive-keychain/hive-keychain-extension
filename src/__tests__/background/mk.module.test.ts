@@ -3,6 +3,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
+import EncryptedLocalStorageUtils from 'src/utils/encrypted-local-storage.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
@@ -96,12 +97,18 @@ describe('mk.module tests:\n', () => {
     expect(await MkModule.login(mk.user.one)).toBe(true);
   });
 
-  it('Must set new MK', () => {
+  it('Must set new MK', async () => {
     const sSave = jest
       .spyOn(VaultUtils, 'saveValueInVault')
       .mockResolvedValue(true);
-    MkModule.saveMk(mk.user.two);
+    const afterUnlockSpy = jest
+      .spyOn(EncryptedLocalStorageUtils, 'migrateIdentitySettingsAfterUnlock')
+      .mockResolvedValue(undefined);
+
+    await MkModule.saveMk(mk.user.two);
+
     expect(sSave).toHaveBeenCalledWith(VaultKey.__MK, mk.user.two);
+    expect(afterUnlockSpy).toHaveBeenCalledWith(mk.user.two);
   });
 
   it('Must remove mk', () => {

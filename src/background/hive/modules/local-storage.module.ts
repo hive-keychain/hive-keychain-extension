@@ -196,6 +196,13 @@ const checkAndUpdateLocalStorage = async () => {
         await EncryptedLocalStorageUtils.migrateIdentitySettings(mk);
         await saveNewLocalStorageVersion(7);
       }
+      case 7: {
+        const mk = await MkModule.getMk();
+        if (!mk) {
+          return;
+        }
+        await EncryptedLocalStorageUtils.migrateIdentitySettings(mk);
+      }
     }
   }
 };

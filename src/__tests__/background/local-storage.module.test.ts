@@ -111,4 +111,39 @@ describe('local-storage.module tests:\n', () => {
       7,
     );
   });
+
+  it('re-migrates leftover plaintext identity settings when already at version 7', async () => {
+    jest.spyOn(MkModule, 'getMk').mockResolvedValue(mk.user.one);
+    const migrateSpy = jest
+      .spyOn(EncryptedLocalStorageUtils, 'migrateIdentitySettings')
+      .mockResolvedValue(undefined);
+    LocalStorageUtils.getValueFromLocalStorage = jest
+      .fn()
+      .mockResolvedValue(7);
+    const saveSpy = jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockResolvedValue(undefined);
+
+    await LocalStorageModule.checkAndUpdateLocalStorage();
+
+    expect(migrateSpy).toHaveBeenCalledWith(mk.user.one);
+    expect(saveSpy).not.toHaveBeenCalledWith(
+      LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,
+      expect.anything(),
+    );
+  });
+
+  it('does not migrate when already at version 7 and mk is missing', async () => {
+    jest.spyOn(MkModule, 'getMk').mockResolvedValue(undefined as any);
+    const migrateSpy = jest
+      .spyOn(EncryptedLocalStorageUtils, 'migrateIdentitySettings')
+      .mockResolvedValue(undefined);
+    LocalStorageUtils.getValueFromLocalStorage = jest
+      .fn()
+      .mockResolvedValue(7);
+
+    await LocalStorageModule.checkAndUpdateLocalStorage();
+
+    expect(migrateSpy).not.toHaveBeenCalled();
+  });
 });

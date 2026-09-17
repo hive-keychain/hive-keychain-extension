@@ -3,6 +3,7 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import * as mkActions from 'src/popup/multichain/actions/mk.actions';
+import EncryptedLocalStorageUtils from 'src/utils/encrypted-local-storage.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
 describe('mk.actions tests:\n', () => {
@@ -10,14 +11,19 @@ describe('mk.actions tests:\n', () => {
     jest.clearAllMocks();
   });
   describe('setMk tests:\n', () => {
-    test('Must set mk', () => {
+    test('Must set mk', async () => {
       const mockSave = jest
         .spyOn(VaultUtils, 'saveValueInVault')
-        .mockImplementation(() => Promise.resolve());
+        .mockResolvedValue(true);
+      const afterUnlockSpy = jest
+        .spyOn(EncryptedLocalStorageUtils, 'migrateIdentitySettingsAfterUnlock')
+        .mockResolvedValue(undefined);
       const fakeStore = getFakeStore(initialEmptyStateStore);
       fakeStore.dispatch<any>(mkActions.setMk(mk.user.two, false));
       expect(fakeStore.getState().mk).toBe(mk.user.two);
       expect(mockSave).toHaveBeenCalledWith(VaultKey.__MK, mk.user.two);
+      await mockSave.mock.results[0].value;
+      expect(afterUnlockSpy).toHaveBeenCalledWith(mk.user.two);
       mockSave.mockRestore();
     });
     test('As empty will still set mk', () => {

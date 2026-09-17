@@ -106,6 +106,10 @@ const getEncryptedJson = async (
     typeof stored === 'string' && EncryptUtils.isEncryptedJsonV2(stored);
 
   if (!isCiphertext) {
+    const resolvedMk = await resolveMk(mk);
+    if (resolvedMk) {
+      await saveEncryptedJson(key, stored, resolvedMk);
+    }
     return stored;
   }
 
@@ -179,6 +183,18 @@ const migrateIdentitySettings = async (mk: string): Promise<void> => {
   }
 };
 
+const migrateIdentitySettingsAfterUnlock = async (
+  mk: string,
+): Promise<void> => {
+  if (mk) {
+    await migrateIdentitySettings(mk);
+  }
+  const localStorageModule = await import(
+    '@background/hive/modules/local-storage.module'
+  );
+  await localStorageModule.default.checkAndUpdateLocalStorage();
+};
+
 const reencryptIdentitySettings = async (
   oldMk: string,
   newMk: string,
@@ -232,6 +248,7 @@ const EncryptedLocalStorageUtils = {
   getEncryptedJson,
   saveEncryptedJson,
   migrateIdentitySettings,
+  migrateIdentitySettingsAfterUnlock,
   reencryptIdentitySettings,
   clearCache,
   removeCachedValue,

@@ -1,12 +1,11 @@
 import { MultichainActionType } from '@popup/multichain/actions/action-type.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
+import EncryptedLocalStorageUtils from 'src/utils/encrypted-local-storage.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
 export const setMk = (mk: string, sendMk: boolean) => {
-  VaultUtils.saveValueInVault(VaultKey.__MK, mk);
-  void import('@background/hive/modules/local-storage.module').then(
-    (localStorageModule) =>
-      localStorageModule.default.checkAndUpdateLocalStorage(),
+  void VaultUtils.saveValueInVault(VaultKey.__MK, mk).then(() =>
+    EncryptedLocalStorageUtils.migrateIdentitySettingsAfterUnlock(mk),
   );
   return {
     type: MultichainActionType.SET_MK,

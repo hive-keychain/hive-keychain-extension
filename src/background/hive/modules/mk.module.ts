@@ -2,6 +2,7 @@ import { KeylessKeychainUtils } from '@background/utils/keyless-keychain.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
+import EncryptedLocalStorageUtils from 'src/utils/encrypted-local-storage.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
@@ -74,12 +75,9 @@ const login = async (mk: string) => {
   return false;
 };
 
-const saveMk = (newMk: string) => {
-  VaultUtils.saveValueInVault(VaultKey.__MK, newMk);
-  void import('@background/hive/modules/local-storage.module').then(
-    (localStorageModule) =>
-      localStorageModule.default.checkAndUpdateLocalStorage(),
-  );
+const saveMk = async (newMk: string) => {
+  await VaultUtils.saveValueInVault(VaultKey.__MK, newMk);
+  await EncryptedLocalStorageUtils.migrateIdentitySettingsAfterUnlock(newMk);
 };
 
 const lock = () => {

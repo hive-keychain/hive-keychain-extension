@@ -132,6 +132,43 @@ describe('encrypted-local-storage.utils', () => {
     ).resolves.toEqual(storedBefore);
   });
 
+  it('encrypts leftover plaintext identity keys on read when mk is present', async () => {
+    await saveValueInLocalStorageRaw(LocalStorageKeyEnum.FAVORITE_USERS, {
+      alice: [],
+    });
+
+    await expect(
+      EncryptedLocalStorageUtils.getEncryptedJson(
+        LocalStorageKeyEnum.FAVORITE_USERS,
+        mk.user.one,
+      ),
+    ).resolves.toEqual({ alice: [] });
+
+    const stored = await getValueFromLocalStorageRaw(
+      LocalStorageKeyEnum.FAVORITE_USERS,
+    );
+    expect(EncryptUtils.isEncryptedJsonV2(stored)).toBe(true);
+    expect(stored).not.toContain('alice');
+  });
+
+  it('leaves leftover plaintext identity keys untouched when mk is missing', async () => {
+    const plaintext = { alice: [] };
+    await saveValueInLocalStorageRaw(
+      LocalStorageKeyEnum.FAVORITE_USERS,
+      plaintext,
+    );
+    jest.spyOn(VaultUtils, 'getValueFromVault').mockResolvedValue(undefined);
+
+    await expect(
+      EncryptedLocalStorageUtils.getEncryptedJson(
+        LocalStorageKeyEnum.FAVORITE_USERS,
+      ),
+    ).resolves.toEqual(plaintext);
+    await expect(
+      getValueFromLocalStorageRaw(LocalStorageKeyEnum.FAVORITE_USERS),
+    ).resolves.toEqual(plaintext);
+  });
+
   it('reencrypts identity settings with a new password', async () => {
     await EncryptedLocalStorageUtils.saveEncryptedJson(
       LocalStorageKeyEnum.ACTIVE_ACCOUNT_NAME,
