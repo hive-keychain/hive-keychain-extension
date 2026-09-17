@@ -27,6 +27,34 @@
     "message": "Lewati",
     "description": "tutorial popup"
   },
+  "popup_html_guided_tour_add_evm_step1_title": {
+    "message": "Baru: dompet EVM",
+    "description": "guided tour add evm account step 1 title"
+  },
+  "popup_html_guided_tour_add_evm_step1_description": {
+    "message": "Buka menu akun untuk menambahkan akun EVM.",
+    "description": "guided tour add evm account step 1 description"
+  },
+  "popup_html_guided_tour_add_evm_step2_title": {
+    "message": "Tambah akun",
+    "description": "guided tour add evm account step 2 title"
+  },
+  "popup_html_guided_tour_add_evm_step2_description": {
+    "message": "Pilih Tambah akun untuk melanjutkan.",
+    "description": "guided tour add evm account step 2 description"
+  },
+  "popup_html_guided_tour_add_evm_step3_title": {
+    "message": "Pilih EVM",
+    "description": "guided tour add evm account step 3 title"
+  },
+  "popup_html_guided_tour_add_evm_step3_description": {
+    "message": "Pilih EVM untuk membuat atau mengimpor dompet. Kamu bisa melakukan ini nanti.",
+    "description": "guided tour add evm account step 3 description"
+  },
+  "popup_html_guided_tour_got_it": {
+    "message": "Mengerti",
+    "description": "guided tour last-step dismiss button"
+  },
   "popup_html_wrong_key_active": {
     "message": "Kunci tidak valid. Silahkan masukkan active key",
     "description": "while using wrong private key"

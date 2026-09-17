@@ -31,6 +31,7 @@ export const EXPORTABLE_SETTINGS_KEYS: LocalStorageKeyEnum[] = [
   LocalStorageKeyEnum.ACCOUNT_VALUE_TYPE,
   LocalStorageKeyEnum.ACCOUNT_SELECTOR_DISPLAY_ORDER,
   LocalStorageKeyEnum.SKIP_TUTORIAL,
+  LocalStorageKeyEnum.GUIDED_TOURS,
   LocalStorageKeyEnum.WALLET_HISTORY_FILTERS,
   LocalStorageKeyEnum.PORTFOLIO_FILTER,
   LocalStorageKeyEnum.PORTFOLIO_SWAP_LAST_USED_ASSETS,

@@ -27,6 +27,34 @@
     "message": "Skip",
     "description": "tutorial popup"
   },
+  "popup_html_guided_tour_add_evm_step1_title": {
+    "message": "新功能：EVM 钱包",
+    "description": "guided tour add evm account step 1 title"
+  },
+  "popup_html_guided_tour_add_evm_step1_description": {
+    "message": "打开帐号菜单以添加 EVM 帐号。",
+    "description": "guided tour add evm account step 1 description"
+  },
+  "popup_html_guided_tour_add_evm_step2_title": {
+    "message": "新增帐号",
+    "description": "guided tour add evm account step 2 title"
+  },
+  "popup_html_guided_tour_add_evm_step2_description": {
+    "message": "选择「新增帐号」以继续。",
+    "description": "guided tour add evm account step 2 description"
+  },
+  "popup_html_guided_tour_add_evm_step3_title": {
+    "message": "选择 EVM",
+    "description": "guided tour add evm account step 3 title"
+  },
+  "popup_html_guided_tour_add_evm_step3_description": {
+    "message": "选择 EVM 以创建或导入钱包。你也可以稍后再做。",
+    "description": "guided tour add evm account step 3 description"
+  },
+  "popup_html_guided_tour_got_it": {
+    "message": "知道了",
+    "description": "guided tour last-step dismiss button"
+  },
   "popup_html_wrong_key_active": {
     "message": "Wrong key. Please use active key",
     "description": "while using wrong private key"

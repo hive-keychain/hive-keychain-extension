@@ -26,6 +26,7 @@ import AccountSelectorOrderUtils, {
   AccountSelectorListItem,
 } from '@popup/multichain/utils/account-selector-order.utils';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { GuidedTourTarget } from '@reference-data/guided-tour.enum';
 import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { ChainLogo } from 'src/common-ui/chain-logo/chain-logo.component';
@@ -989,6 +990,7 @@ const AccountSelector = ({
           removeBorder ? 'remove-border' : ''
         }`}
         data-testid="account-selector-trigger"
+        data-guided-tour={GuidedTourTarget.ACCOUNT_SELECTOR_TRIGGER}
         role="button"
         tabIndex={0}
         aria-label={`${I18nUtils.getMessage('popup_html_accounts')}: ${
@@ -1111,6 +1113,7 @@ const AccountSelector = ({
               <button
                 className="account-selector-create-button"
                 data-testid="account-selector-create-button"
+                data-guided-tour={GuidedTourTarget.ACCOUNT_SELECTOR_CREATE_BUTTON}
                 onClick={() => void handleAddAccountClick()}
                 type="button">
                 <SVGIcon

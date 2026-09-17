@@ -1,5 +1,6 @@
 import { AutoLockType } from '@interfaces/autolock.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
+import { GuidedTourId, GuidedTourStatus } from '@reference-data/guided-tour.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import currencies from 'src/__tests__/utils-for-testing/data/currencies';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
@@ -102,6 +103,15 @@ const getValuefromLS = async (...args: any[]): Promise<any> => {
       return customData.hasOwnProperty('customAccounts')
         ? customData.customAccounts
         : undefined;
+    case LocalStorageKeyEnum.GUIDED_TOURS:
+      return customData.hasOwnProperty('customGuidedTours')
+        ? customData.customGuidedTours
+        : {
+            [GuidedTourId.ADD_EVM_ACCOUNT]: {
+              status: GuidedTourStatus.COMPLETED,
+              currentStep: 2,
+            },
+          };
     default:
       //Cases not being handled yet:
       // - HIVE_ENGINE_ACTIVE_CONFIG

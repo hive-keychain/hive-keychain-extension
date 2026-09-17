@@ -27,6 +27,34 @@
     "message": "Omitir",
     "description": "tutorial popup"
   },
+  "popup_html_guided_tour_add_evm_step1_title": {
+    "message": "Nuevo: billeteras EVM",
+    "description": "guided tour add evm account step 1 title"
+  },
+  "popup_html_guided_tour_add_evm_step1_description": {
+    "message": "Abre el menú de cuentas para agregar una cuenta EVM.",
+    "description": "guided tour add evm account step 1 description"
+  },
+  "popup_html_guided_tour_add_evm_step2_title": {
+    "message": "Agregar cuenta",
+    "description": "guided tour add evm account step 2 title"
+  },
+  "popup_html_guided_tour_add_evm_step2_description": {
+    "message": "Elige Agregar cuenta para continuar.",
+    "description": "guided tour add evm account step 2 description"
+  },
+  "popup_html_guided_tour_add_evm_step3_title": {
+    "message": "Selecciona EVM",
+    "description": "guided tour add evm account step 3 title"
+  },
+  "popup_html_guided_tour_add_evm_step3_description": {
+    "message": "Elige EVM para crear o importar una billetera. Puedes hacerlo más tarde si quieres.",
+    "description": "guided tour add evm account step 3 description"
+  },
+  "popup_html_guided_tour_got_it": {
+    "message": "Entendido",
+    "description": "guided tour last-step dismiss button"
+  },
   "popup_html_wrong_key_active": {
     "message": "Llave incorrecta. Use la llave activa",
     "description": "while using wrong private key"

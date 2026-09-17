@@ -27,6 +27,34 @@
     "message": "Skip",
     "description": "tutorial popup"
   },
+  "popup_html_guided_tour_add_evm_step1_title": {
+    "message": "New: EVM wallets",
+    "description": "guided tour add evm account step 1 title"
+  },
+  "popup_html_guided_tour_add_evm_step1_description": {
+    "message": "Open the account menu to add an EVM account.",
+    "description": "guided tour add evm account step 1 description"
+  },
+  "popup_html_guided_tour_add_evm_step2_title": {
+    "message": "Add an account",
+    "description": "guided tour add evm account step 2 title"
+  },
+  "popup_html_guided_tour_add_evm_step2_description": {
+    "message": "Choose Add account to continue.",
+    "description": "guided tour add evm account step 2 description"
+  },
+  "popup_html_guided_tour_add_evm_step3_title": {
+    "message": "Select EVM",
+    "description": "guided tour add evm account step 3 title"
+  },
+  "popup_html_guided_tour_add_evm_step3_description": {
+    "message": "Pick EVM to create or import a wallet. You can do this later if you want.",
+    "description": "guided tour add evm account step 3 description"
+  },
+  "popup_html_guided_tour_got_it": {
+    "message": "Got it",
+    "description": "guided tour last-step dismiss button"
+  },
   "popup_html_wrong_key_active": {
     "message": "Wrong key. Please use active key",
     "description": "while using wrong private key"

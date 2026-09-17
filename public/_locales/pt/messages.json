@@ -27,6 +27,34 @@
     "message": "Pular",
     "description": "tutorial popup"
   },
+  "popup_html_guided_tour_add_evm_step1_title": {
+    "message": "Novo: carteiras EVM",
+    "description": "guided tour add evm account step 1 title"
+  },
+  "popup_html_guided_tour_add_evm_step1_description": {
+    "message": "Abra o menu de contas para adicionar uma conta EVM.",
+    "description": "guided tour add evm account step 1 description"
+  },
+  "popup_html_guided_tour_add_evm_step2_title": {
+    "message": "Adicionar conta",
+    "description": "guided tour add evm account step 2 title"
+  },
+  "popup_html_guided_tour_add_evm_step2_description": {
+    "message": "Escolha Adicionar conta para continuar.",
+    "description": "guided tour add evm account step 2 description"
+  },
+  "popup_html_guided_tour_add_evm_step3_title": {
+    "message": "Selecione EVM",
+    "description": "guided tour add evm account step 3 title"
+  },
+  "popup_html_guided_tour_add_evm_step3_description": {
+    "message": "Escolha EVM para criar ou importar uma carteira. Você pode fazer isso depois, se quiser.",
+    "description": "guided tour add evm account step 3 description"
+  },
+  "popup_html_guided_tour_got_it": {
+    "message": "Entendido",
+    "description": "guided tour last-step dismiss button"
+  },
   "popup_html_wrong_key_active": {
     "message": "Chave incorreta. Por favor, use a chave active",
     "description": "while using wrong private key"

@@ -136,6 +136,7 @@ export interface CustomDataFromLocalStorage {
   customFavoriteUsers?: { [key: string]: string[] };
   customHiddenTokenList?: string[];
   customKeychainifyEnabled?: boolean;
+  customGuidedTours?: Record<string, { status: string; currentStep: number }>;
 }
 
 export interface MocksOverwrite {

@@ -11,6 +11,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
 import { ArrayUtils } from 'src/utils/array.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
+import { GuidedTourUtils } from 'src/utils/guided-tour.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { ObjectUtils } from 'src/utils/object.utils';
@@ -58,6 +59,7 @@ const MERGED_SETTINGS_KEYS: LocalStorageKeyEnum[] = [
   LocalStorageKeyEnum.CUSTOM_CHAINS,
   LocalStorageKeyEnum.EVM_ENS,
   LocalStorageKeyEnum.EVM_SAVED_ADDRESSES,
+  LocalStorageKeyEnum.GUIDED_TOURS,
   ...MERGED_LIST_SETTINGS_KEYS,
   ...MERGED_RECORD_SETTINGS_KEYS,
 ];
@@ -493,6 +495,24 @@ const mergeEvmSavedAddresses = async (
   );
 };
 
+const mergeGuidedTours = async (importedValue: unknown): Promise<void> => {
+  if (importedValue === undefined) return;
+
+  const importedRecord = getImportedObject(importedValue);
+  if (!importedRecord) {
+    ignoreUnmergeableSetting(LocalStorageKeyEnum.GUIDED_TOURS);
+    return;
+  }
+
+  const existingValue = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.GUIDED_TOURS,
+  );
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.GUIDED_TOURS,
+    GuidedTourUtils.mergeProgressMaps(existingValue, importedRecord),
+  );
+};
+
 const importSupportedSettings = async (
   importedSettings: ImportedSettings,
 ): Promise<void> => {
@@ -537,6 +557,7 @@ const importSupportedSettings = async (
   );
   await mergeEvmEns(settings[LocalStorageKeyEnum.EVM_ENS]);
   await mergeEvmSavedAddresses(settings[LocalStorageKeyEnum.EVM_SAVED_ADDRESSES]);
+  await mergeGuidedTours(settings[LocalStorageKeyEnum.GUIDED_TOURS]);
 };
 
 const importSettings = async (fileContent: unknown): Promise<void> => {
