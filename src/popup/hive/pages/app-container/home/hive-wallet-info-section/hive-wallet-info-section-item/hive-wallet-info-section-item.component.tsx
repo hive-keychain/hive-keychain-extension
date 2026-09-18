@@ -66,7 +66,7 @@ interface WalletSectionInfoItemProps {
   tokenInfo?: Token;
   tokenBalance?: TokenBalance;
   tokenMarket?: TokenMarket[];
-  icon: SVGIcons;
+  icon?: SVGIcons;
   defaultIcon?: SVGIcons;
   addBackground?: boolean;
   mainValue: string | Asset | number;
@@ -197,6 +197,10 @@ export const WalletInfoSectionItem = ({
     });
   };
 
+  const tokenIconSrc = tokenInfo?.metadata?.icon
+    ? ImageUtils.getImmutableImage(tokenInfo.metadata.icon)
+    : '';
+
   return (
     <div
       className={`wallet-info-row ${isExpanded ? 'opened' : ''}`}
@@ -213,30 +217,23 @@ export const WalletInfoSectionItem = ({
           aria-expanded={isExpanded}
           aria-controls={detailsId}
           onClick={toggleDropdown}>
-          {typeof icon === 'string' && (
+          {tokenInfo ? (
             <PreloadedImage
-              src={icon}
-              className="currency-icon"
-              addBackground={addBackground}
-              useDefaultSVG={icon || defaultIcon}
-            />
-          )}
-          {typeof icon !== 'string' && !tokenInfo && (
-            <SVGIcon
-              icon={icon}
-              className={`currency-icon ${
-                addBackground ? 'add-background' : ''
-              }`}
-            />
-          )}
-          {typeof icon !== 'string' && tokenInfo && (
-            <PreloadedImage
-              src={ImageUtils.getImmutableImage(tokenInfo?.metadata.icon)}
+              src={tokenIconSrc}
               className="currency-icon"
               addBackground={addBackground}
               symbol={tokenInfo.symbol}
-              useDefaultSVG={icon || defaultIcon}
+              useDefaultSVG={defaultIcon}
             />
+          ) : (
+            icon && (
+              <SVGIcon
+                icon={icon}
+                className={`currency-icon ${
+                  addBackground ? 'add-background' : ''
+                }`}
+              />
+            )
           )}
           <div className="main-value-label">{mainValueLabel}</div>
           <div className="value">

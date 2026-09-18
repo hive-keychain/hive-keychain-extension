@@ -73,8 +73,9 @@ export const PreloadedImage = ({
     existingImg.src = src;
 
     if (existingImg.complete) {
-      // Image is already cached, use it directly
-      setBackgroundColor(existingImg);
+      if (existingImg.naturalWidth > 0) {
+        setBackgroundColor(existingImg);
+      }
       return () => {
         isCancelled = true;
         existingImg.onerror = null;
@@ -93,8 +94,10 @@ export const PreloadedImage = ({
       }
       if (addBackground && useDefaultSVG) {
         setBackground('#e31337');
-      } else {
-        img.src = alt ?? '';
+        return;
+      }
+      if (alt) {
+        img.src = alt;
       }
     };
     img.src = src;
@@ -135,6 +138,10 @@ export const PreloadedImage = ({
       )}
     </>
   );
+
+  if (!src) {
+    return <>{errorFallback}</>;
+  }
 
   if (skipShimmer) {
     if (cachedPathError) {
