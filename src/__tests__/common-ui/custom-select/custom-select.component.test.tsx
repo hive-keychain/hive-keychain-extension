@@ -128,4 +128,31 @@ describe('ComplexeCustomSelect', () => {
       'is-placeholder',
     );
   });
+
+  it('marks the opened dropdown with the guided-tour target', async () => {
+    const user = userEvent.setup();
+    render(
+      <ComplexeCustomSelect
+        ariaLabel="Chain dropdown"
+        guidedTourTarget="chain-dropdown-trigger"
+        dropdownGuidedTourTarget="chain-dropdown-panel"
+        options={options}
+        selectedItem={options[0]}
+        setSelectedItem={jest.fn()}
+      />,
+    );
+
+    const select = screen.getByRole('combobox', { name: 'Chain dropdown' });
+    expect(select).toHaveAttribute(
+      'data-guided-tour',
+      'chain-dropdown-trigger',
+    );
+
+    await user.click(select);
+
+    expect(screen.getByRole('listbox').closest('.custom-select-dropdown')).toHaveAttribute(
+      'data-guided-tour',
+      'chain-dropdown-panel',
+    );
+  });
 });

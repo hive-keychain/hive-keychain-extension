@@ -63,6 +63,26 @@
     "message": "Mengerti",
     "description": "guided tour last-step dismiss button"
   },
+  "popup_html_guided_tour_add_evm_chains_step1_title": {
+    "message": "Selamat, akun EVM pertamamu sudah ditambahkan",
+    "description": "guided tour add evm chains step 1 title"
+  },
+  "popup_html_guided_tour_add_evm_chains_step1_description": {
+    "message": "Kamu bisa menambahkan chain di sini!",
+    "description": "guided tour add evm chains step 1 description"
+  },
+  "popup_html_guided_tour_add_evm_chains_step2_title": {
+    "message": "Pilih chain EVM atau klik Kelola chain untuk menambah",
+    "description": "guided tour add evm chains step 2 title"
+  },
+  "popup_html_guided_tour_add_evm_chains_step3_title": {
+    "message": "Pilih chain atau tambahkan secara manual",
+    "description": "guided tour add evm chains step 3 title"
+  },
+  "popup_html_guided_tour_add_evm_chains_step3_description": {
+    "message": "Token dan NFT terdeteksi otomatis di chain preset",
+    "description": "guided tour add evm chains step 3 description"
+  },
   "popup_html_wrong_key_active": {
     "message": "Kunci tidak valid. Silahkan masukkan active key",
     "description": "while using wrong private key"

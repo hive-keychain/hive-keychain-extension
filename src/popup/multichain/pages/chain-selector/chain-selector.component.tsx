@@ -15,6 +15,7 @@ import {
 } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { GuidedTourTarget } from '@reference-data/guided-tour.enum';
 import React, { KeyboardEvent, useCallback, useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { Badge, BadgeType } from 'src/common-ui/badge/badge.component';
@@ -367,7 +368,8 @@ const ChainSelector = ({
       <div
         className={`chain-selector-page ${
           hideTitle ? 'chain-selector-page--embedded' : ''
-        }`}>
+        }`}
+        data-guided-tour={GuidedTourTarget.CHAIN_SELECTOR}>
         <div className="search-container">
           <InputComponent
             classname="search-input"

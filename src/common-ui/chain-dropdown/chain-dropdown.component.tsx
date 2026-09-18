@@ -6,6 +6,7 @@ import { Chain, ChainType } from '@popup/multichain/interfaces/chains.interface'
 import { RootState } from '@popup/multichain/store';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { GuidedTourTarget } from '@reference-data/guided-tour.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import {
@@ -97,6 +98,8 @@ const ChainDropdown = ({
         <ComplexeCustomSelect
           additionalClassname="chain-selector"
           ariaLabel="Chain dropdown"
+          guidedTourTarget={GuidedTourTarget.CHAIN_DROPDOWN_TRIGGER}
+          dropdownGuidedTourTarget={GuidedTourTarget.CHAIN_DROPDOWN_PANEL}
           options={options}
           selectedItem={{
             key: chain.chainId,

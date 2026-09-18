@@ -2,6 +2,7 @@ import { Screen } from '@interfaces/screen.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { GuidedTourOverlayComponent } from '@popup/multichain/guided-tour/guided-tour-overlay.component';
 import { GUIDED_TOURS } from '@popup/multichain/guided-tour/guided-tours.list';
+import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { GuidedTourStatus } from '@reference-data/guided-tour.enum';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -37,6 +38,7 @@ const areRectsEqual = (
   left.borderRadius === right.borderRadius;
 
 const GuidedTour = ({
+  activeAccountType,
   currentPage,
   evmAccounts,
   hiveAccountsCount,
@@ -66,8 +68,10 @@ const GuidedTour = ({
     return GuidedTourUtils.getActiveTour(GUIDED_TOURS, progressMap, {
       hiveAccountsCount,
       evmAccountsCount: visibleEvmAccountsCount,
+      isEvmAccountSelected: activeAccountType === ChainType.EVM,
     });
   }, [
+    activeAccountType,
     hasHydrated,
     hiveAccountsCount,
     loading,
@@ -294,6 +298,7 @@ const mapStateToProps = (state: RootState) => ({
   mk: state.mk,
   hiveAccountsCount: state.hive.accounts.length,
   evmAccounts: state.evm.accounts as EvmAccount[],
+  activeAccountType: state.activeAccountType,
   currentPage: state.navigation.stack[0]?.currentPage,
   modal: state.modal,
   loading: state.loading.loadingOperations.length,

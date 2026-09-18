@@ -37,6 +37,41 @@ const addEvmTour: GuidedTourDefinition = {
   ],
 };
 
+const addEvmChainsTour: GuidedTourDefinition = {
+  id: GuidedTourId.ADD_EVM_CHAINS,
+  isEligible: ({ evmAccountsCount, isEvmAccountSelected }) =>
+    evmAccountsCount > 0 && isEvmAccountSelected,
+  steps: [
+    {
+      target: GuidedTourTarget.CHAIN_DROPDOWN_TRIGGER,
+      titleKey: 'chains-1',
+      descriptionKey: 'chains-1-desc',
+    },
+    {
+      target: GuidedTourTarget.CHAIN_DROPDOWN_PANEL,
+      titleKey: 'chains-2',
+      descriptionKey: 'chains-2-desc',
+    },
+    {
+      target: GuidedTourTarget.CHAIN_SELECTOR,
+      titleKey: 'chains-3',
+      descriptionKey: 'chains-3-desc',
+    },
+  ],
+};
+
+const hiveOnlyEligibility = {
+  hiveAccountsCount: 1,
+  evmAccountsCount: 0,
+  isEvmAccountSelected: false,
+};
+
+const evmSelectedEligibility = {
+  hiveAccountsCount: 1,
+  evmAccountsCount: 1,
+  isEvmAccountSelected: true,
+};
+
 describe('guided-tour.utils tests:\n', () => {
   afterEach(() => {
     document.body.innerHTML = '';
@@ -142,35 +177,62 @@ describe('guided-tour.utils tests:\n', () => {
   it('selects the first eligible unfinished tour', () => {
     expect(
       GuidedTourUtils.getActiveTour(
-        [addEvmTour],
+        [addEvmTour, addEvmChainsTour],
         {},
-        { hiveAccountsCount: 1, evmAccountsCount: 0 },
+        hiveOnlyEligibility,
       )?.id,
     ).toBe(GuidedTourId.ADD_EVM_ACCOUNT);
     expect(
       GuidedTourUtils.getActiveTour(
-        [addEvmTour],
+        [addEvmTour, addEvmChainsTour],
         {},
-        { hiveAccountsCount: 1, evmAccountsCount: 1 },
+        evmSelectedEligibility,
+      )?.id,
+    ).toBe(GuidedTourId.ADD_EVM_CHAINS);
+    expect(
+      GuidedTourUtils.getActiveTour(
+        [addEvmTour, addEvmChainsTour],
+        {},
+        {
+          hiveAccountsCount: 1,
+          evmAccountsCount: 1,
+          isEvmAccountSelected: false,
+        },
       ),
     ).toBeUndefined();
     expect(
       GuidedTourUtils.getActiveTour(
-        [addEvmTour],
+        [addEvmTour, addEvmChainsTour],
         {},
-        { hiveAccountsCount: 0, evmAccountsCount: 0 },
+        {
+          hiveAccountsCount: 0,
+          evmAccountsCount: 0,
+          isEvmAccountSelected: false,
+        },
       ),
     ).toBeUndefined();
     expect(
       GuidedTourUtils.getActiveTour(
-        [addEvmTour],
+        [addEvmTour, addEvmChainsTour],
         {
           [GuidedTourId.ADD_EVM_ACCOUNT]: {
             status: GuidedTourStatus.COMPLETED,
             currentStep: 3,
           },
         },
-        { hiveAccountsCount: 1, evmAccountsCount: 0 },
+        hiveOnlyEligibility,
+      ),
+    ).toBeUndefined();
+    expect(
+      GuidedTourUtils.getActiveTour(
+        [addEvmTour, addEvmChainsTour],
+        {
+          [GuidedTourId.ADD_EVM_CHAINS]: {
+            status: GuidedTourStatus.DISMISSED,
+            currentStep: 2,
+          },
+        },
+        evmSelectedEligibility,
       ),
     ).toBeUndefined();
   });

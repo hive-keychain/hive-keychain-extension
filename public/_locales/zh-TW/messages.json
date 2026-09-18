@@ -63,6 +63,26 @@
     "message": "知道了",
     "description": "guided tour last-step dismiss button"
   },
+  "popup_html_guided_tour_add_evm_chains_step1_title": {
+    "message": "恭喜新增你的第一個 EVM 帳戶",
+    "description": "guided tour add evm chains step 1 title"
+  },
+  "popup_html_guided_tour_add_evm_chains_step1_description": {
+    "message": "你可以在這裡新增鏈！",
+    "description": "guided tour add evm chains step 1 description"
+  },
+  "popup_html_guided_tour_add_evm_chains_step2_title": {
+    "message": "選擇一條 EVM 鏈，或點擊管理鏈來新增更多",
+    "description": "guided tour add evm chains step 2 title"
+  },
+  "popup_html_guided_tour_add_evm_chains_step3_title": {
+    "message": "選擇一條鏈或手動新增",
+    "description": "guided tour add evm chains step 3 title"
+  },
+  "popup_html_guided_tour_add_evm_chains_step3_description": {
+    "message": "預設鏈上的代幣和 NFT 會自動偵測",
+    "description": "guided tour add evm chains step 3 description"
+  },
   "popup_html_wrong_key_active": {
     "message": "Wrong key. Please use active key",
     "description": "while using wrong private key"

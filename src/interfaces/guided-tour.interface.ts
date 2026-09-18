@@ -16,6 +16,7 @@ export type GuidedToursStorage = Partial<
 export interface GuidedTourEligibilityContext {
   hiveAccountsCount: number;
   evmAccountsCount: number;
+  isEvmAccountSelected: boolean;
 }
 
 export type GuidedTourStepAdvanceOn = 'target-click' | 'next';
@@ -23,7 +24,7 @@ export type GuidedTourStepAdvanceOn = 'target-click' | 'next';
 export interface GuidedTourStep {
   target: GuidedTourTarget;
   titleKey: string;
-  descriptionKey: string;
+  descriptionKey?: string;
   advanceOn?: GuidedTourStepAdvanceOn;
 }
 

@@ -61,6 +61,8 @@ export interface CustomSelectProps<T> {
   droppableId?: string;
   placeholder?: string;
   skipPlaceholderTranslation?: boolean;
+  guidedTourTarget?: string;
+  dropdownGuidedTourTarget?: string;
 }
 
 let customSelectIdCounter = 0;
@@ -443,7 +445,10 @@ export function ComplexeCustomSelect<T extends OptionItem>(
       ref.current?.focus();
     }, 200);
     return (
-      <div ref={dropdownRef} className="custom-select-dropdown">
+      <div
+        ref={dropdownRef}
+        className="custom-select-dropdown"
+        data-guided-tour={itemProps.dropdownGuidedTourTarget}>
         {itemProps.filterable && !itemProps.customFilter && (
           <InputComponent
             onChange={setQuery}
@@ -502,6 +507,9 @@ export function ComplexeCustomSelect<T extends OptionItem>(
               ? `${optionsId}-option-${activeOptionIndex}`
               : undefined,
           onKeyDown: handleSelectKeyDown,
+          ...(itemProps.guidedTourTarget
+            ? { 'data-guided-tour': itemProps.guidedTourTarget }
+            : {}),
         }}
         className={`custom-select ${
           itemProps.background ? itemProps.background : ''

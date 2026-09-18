@@ -63,6 +63,26 @@
     "message": "Entendido",
     "description": "guided tour last-step dismiss button"
   },
+  "popup_html_guided_tour_add_evm_chains_step1_title": {
+    "message": "Parabéns por adicionar sua primeira conta EVM",
+    "description": "guided tour add evm chains step 1 title"
+  },
+  "popup_html_guided_tour_add_evm_chains_step1_description": {
+    "message": "Você pode adicionar chains aqui!",
+    "description": "guided tour add evm chains step 1 description"
+  },
+  "popup_html_guided_tour_add_evm_chains_step2_title": {
+    "message": "Selecione uma chain EVM ou clique em Gerenciar chains para adicionar mais",
+    "description": "guided tour add evm chains step 2 title"
+  },
+  "popup_html_guided_tour_add_evm_chains_step3_title": {
+    "message": "Selecione uma chain ou adicione uma manualmente",
+    "description": "guided tour add evm chains step 3 title"
+  },
+  "popup_html_guided_tour_add_evm_chains_step3_description": {
+    "message": "Tokens e NFTs serão detectados automaticamente nas chains predefinidas",
+    "description": "guided tour add evm chains step 3 description"
+  },
   "popup_html_wrong_key_active": {
     "message": "Chave incorreta. Por favor, use a chave active",
     "description": "while using wrong private key"

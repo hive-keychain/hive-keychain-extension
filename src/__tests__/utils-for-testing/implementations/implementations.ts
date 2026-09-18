@@ -111,6 +111,10 @@ const getValuefromLS = async (...args: any[]): Promise<any> => {
               status: GuidedTourStatus.COMPLETED,
               currentStep: 3,
             },
+            [GuidedTourId.ADD_EVM_CHAINS]: {
+              status: GuidedTourStatus.COMPLETED,
+              currentStep: 2,
+            },
           };
     default:
       //Cases not being handled yet:

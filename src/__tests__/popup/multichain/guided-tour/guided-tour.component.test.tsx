@@ -2,6 +2,7 @@ import '@testing-library/jest-dom';
 import { Screen } from '@interfaces/screen.interface';
 import { GuidedTourComponent } from '@popup/multichain/guided-tour/guided-tour.component';
 import { EvmAccountSource } from '@popup/evm/interfaces/wallet.interface';
+import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import {
   GuidedTourId,
   GuidedTourStatus,
@@ -35,6 +36,23 @@ const getTourState = () => ({
   evm: {
     ...initialStateForHome.evm,
     accounts: [],
+  },
+});
+
+const visibleEvmAccount = {
+  id: 1,
+  seedId: 1,
+  path: "m/44'/60'/0'/0/0",
+  source: EvmAccountSource.SEED,
+  hide: false,
+} as any;
+
+const getEvmSelectedTourState = () => ({
+  ...getTourState(),
+  activeAccountType: ChainType.EVM,
+  evm: {
+    ...initialStateForHome.evm,
+    accounts: [visibleEvmAccount],
   },
 });
 
@@ -104,15 +122,7 @@ describe('GuidedTourComponent', () => {
         ...getTourState(),
         evm: {
           ...initialStateForHome.evm,
-          accounts: [
-            {
-              id: 1,
-              seedId: 1,
-              path: "m/44'/60'/0'/0/0",
-              source: EvmAccountSource.SEED,
-              hide: false,
-            } as any,
-          ],
+          accounts: [visibleEvmAccount],
         },
       },
     );
@@ -390,5 +400,124 @@ describe('GuidedTourComponent', () => {
     });
 
     expect(screen.queryByTestId('guided-tour-overlay')).not.toBeInTheDocument();
+  });
+
+  it('shows the chain tour when an EVM account is selected for the first time', async () => {
+    renderTour(
+      <>
+        <button data-guided-tour={GuidedTourTarget.CHAIN_DROPDOWN_TRIGGER}>
+          Chains
+        </button>
+        <GuidedTourComponent />
+      </>,
+      getEvmSelectedTourState(),
+    );
+
+    expect(await screen.findByTestId('guided-tour-overlay')).toBeInTheDocument();
+    expect(screen.getByTestId('guided-tour-tooltip')).toHaveTextContent(
+      'Congrats on adding your first EVM account',
+    );
+    expect(screen.getByTestId('guided-tour-tooltip')).toHaveTextContent(
+      'You can add chains here!',
+    );
+  });
+
+  it('does not show the chain tour when EVM accounts exist but a Hive account is selected', async () => {
+    renderTour(
+      <>
+        <button data-guided-tour={GuidedTourTarget.CHAIN_DROPDOWN_TRIGGER}>
+          Chains
+        </button>
+        <GuidedTourComponent />
+      </>,
+      {
+        ...getEvmSelectedTourState(),
+        activeAccountType: ChainType.HIVE,
+      },
+    );
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(screen.queryByTestId('guided-tour-overlay')).not.toBeInTheDocument();
+  });
+
+  it('advances to the open dropdown step when the highlighted chain control is clicked', async () => {
+    const user = userEvent.setup();
+    const saveSpy = jest.spyOn(LocalStorageUtils, 'saveValueInLocalStorage');
+
+    renderTour(
+      <>
+        <button data-guided-tour={GuidedTourTarget.CHAIN_DROPDOWN_TRIGGER}>
+          Chains
+        </button>
+        <div data-guided-tour={GuidedTourTarget.CHAIN_DROPDOWN_PANEL}>
+          Enabled chains
+        </div>
+        <GuidedTourComponent />
+      </>,
+      getEvmSelectedTourState(),
+    );
+
+    expect(await screen.findByTestId('guided-tour-overlay')).toBeInTheDocument();
+
+    await user.click(screen.getByText('Chains'));
+
+    await waitFor(() => {
+      expect(saveSpy).toHaveBeenCalledWith(
+        LocalStorageKeyEnum.GUIDED_TOURS,
+        expect.objectContaining({
+          [GuidedTourId.ADD_EVM_CHAINS]: {
+            status: GuidedTourStatus.IN_PROGRESS,
+            currentStep: 1,
+          },
+        }),
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('guided-tour-tooltip')).toHaveTextContent(
+        'Select an EVM chain or click on Manage chains to add more',
+      );
+    });
+    expect(
+      screen.queryByTestId('guided-tour-dismiss-button'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows the manage-chains page copy after the dropdown step', async () => {
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockImplementation(async (key: LocalStorageKeyEnum) => {
+        if (key === LocalStorageKeyEnum.GUIDED_TOURS) {
+          return {
+            [GuidedTourId.ADD_EVM_CHAINS]: {
+              status: GuidedTourStatus.IN_PROGRESS,
+              currentStep: 1,
+            },
+          };
+        }
+        return undefined;
+      });
+
+    renderTour(
+      <>
+        <div data-guided-tour={GuidedTourTarget.CHAIN_SELECTOR}>
+          Select a chain
+        </div>
+        <GuidedTourComponent />
+      </>,
+      getEvmSelectedTourState(),
+    );
+
+    expect(await screen.findByTestId('guided-tour-overlay')).toBeInTheDocument();
+    expect(screen.getByTestId('guided-tour-tooltip')).toHaveTextContent(
+      'Select a chain or add one manually',
+    );
+    expect(screen.getByTestId('guided-tour-tooltip')).toHaveTextContent(
+      'Tokens and NFTs will be detected automatically on preset chains',
+    );
+    expect(screen.getByTestId('guided-tour-dismiss-button')).toBeInTheDocument();
   });
 });

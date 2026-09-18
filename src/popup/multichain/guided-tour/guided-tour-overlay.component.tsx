@@ -10,7 +10,7 @@ import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   targetRect: GuidedTourRect;
   titleKey: string;
-  descriptionKey: string;
+  descriptionKey?: string;
   showDismiss: boolean;
   showNext: boolean;
   blockTargetClick: boolean;
@@ -70,6 +70,11 @@ const GuidedTourOverlay = ({
     tooltipHeight,
   );
 
+  const title = I18nUtils.getMessage(titleKey);
+  const description = descriptionKey
+    ? I18nUtils.getMessage(descriptionKey)
+    : '';
+
   return (
     <div
       className={`guided-tour-root theme ${portalTheme}`}
@@ -114,12 +119,10 @@ const GuidedTourOverlay = ({
           left: layout.tooltip.left,
           width: layout.tooltip.width,
         }}>
-        <div className="guided-tour-tooltip-title">
-          {I18nUtils.getMessage(titleKey)}
-        </div>
-        <div className="guided-tour-tooltip-description">
-          {I18nUtils.getMessage(descriptionKey)}
-        </div>
+        <div className="guided-tour-tooltip-title">{title}</div>
+        {description && (
+          <div className="guided-tour-tooltip-description">{description}</div>
+        )}
         {showNext && (
           <ButtonComponent
             additionalClass="guided-tour-dismiss-button"
