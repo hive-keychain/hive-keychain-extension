@@ -14,13 +14,17 @@ export type GuidedToursStorage = Partial<
 >;
 
 export interface GuidedTourEligibilityContext {
+  hiveAccountsCount: number;
   evmAccountsCount: number;
 }
+
+export type GuidedTourStepAdvanceOn = 'target-click' | 'next';
 
 export interface GuidedTourStep {
   target: GuidedTourTarget;
   titleKey: string;
   descriptionKey: string;
+  advanceOn?: GuidedTourStepAdvanceOn;
 }
 
 export interface GuidedTourDefinition {

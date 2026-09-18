@@ -39,6 +39,7 @@ const areRectsEqual = (
 const GuidedTour = ({
   currentPage,
   evmAccounts,
+  hiveAccountsCount,
   loading,
   mk,
   modal,
@@ -63,10 +64,12 @@ const GuidedTour = ({
       return undefined;
     }
     return GuidedTourUtils.getActiveTour(GUIDED_TOURS, progressMap, {
+      hiveAccountsCount,
       evmAccountsCount: visibleEvmAccountsCount,
     });
   }, [
     hasHydrated,
+    hiveAccountsCount,
     loading,
     mk,
     modal,
@@ -212,6 +215,9 @@ const GuidedTour = ({
 
     const handleDocumentClick = (event: MouseEvent) => {
       const step = activeTour.steps[displayedStepIndex];
+      if (step.advanceOn === 'next') {
+        return;
+      }
       const targetElement = GuidedTourUtils.getTargetElement(step.target);
       const eventTarget = event.target;
       if (
@@ -253,6 +259,7 @@ const GuidedTour = ({
   const lastStepIndex = activeTour.steps.length - 1;
   const displayedStep = activeTour.steps[displayedStepIndex];
   const showDismiss = displayedStepIndex === lastStepIndex;
+  const showNext = displayedStep.advanceOn === 'next';
 
   const handleDismiss = () => {
     void persistProgress(
@@ -261,11 +268,21 @@ const GuidedTour = ({
     );
   };
 
+  const handleNext = () => {
+    void persistProgress(
+      activeTour.id,
+      GuidedTourUtils.getAdvancedProgress(displayedStepIndex, lastStepIndex),
+    );
+  };
+
   return createPortal(
     <GuidedTourOverlayComponent
+      blockTargetClick={showNext}
       descriptionKey={displayedStep.descriptionKey}
       onDismiss={handleDismiss}
+      onNext={handleNext}
       showDismiss={showDismiss}
+      showNext={showNext}
       targetRect={targetRect}
       titleKey={displayedStep.titleKey}
     />,
@@ -275,6 +292,7 @@ const GuidedTour = ({
 
 const mapStateToProps = (state: RootState) => ({
   mk: state.mk,
+  hiveAccountsCount: state.hive.accounts.length,
   evmAccounts: state.evm.accounts as EvmAccount[],
   currentPage: state.navigation.stack[0]?.currentPage,
   modal: state.modal,

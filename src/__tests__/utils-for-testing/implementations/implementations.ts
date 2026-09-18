@@ -109,7 +109,7 @@ const getValuefromLS = async (...args: any[]): Promise<any> => {
         : {
             [GuidedTourId.ADD_EVM_ACCOUNT]: {
               status: GuidedTourStatus.COMPLETED,
-              currentStep: 2,
+              currentStep: 3,
             },
           };
     default:

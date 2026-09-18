@@ -688,20 +688,27 @@ const AccountSelector = ({
       <div
         className="account-selector-list-item-actions"
         onClick={stopListItemActionPropagation}>
-        <SVGIcon
-          className="account-selector-list-action manage-icon"
-          dataTestId={`account-selector-manage-${itemId}`}
-          icon={SVGIcons.SELECT_MANAGE_ACCOUNT}
-          ariaLabel={`${I18nUtils.getMessage('manage_accounts')}: ${getAccountListItemSearchValue(item)}`}
-          onClick={(event) => {
-            stopListItemActionPropagation(event);
-            if (item.type === ChainType.HIVE) {
-              handleManageHiveAccountClick(item.account);
-            } else {
-              handleManageEvmAccountClick(item.account);
-            }
-          }}
-        />
+        <span
+          data-guided-tour={
+            isAccountListItemSelected(item)
+              ? GuidedTourTarget.ACCOUNT_SELECTOR_MANAGE_BUTTON
+              : undefined
+          }>
+          <SVGIcon
+            className="account-selector-list-action manage-icon"
+            dataTestId={`account-selector-manage-${itemId}`}
+            icon={SVGIcons.SELECT_MANAGE_ACCOUNT}
+            ariaLabel={`${I18nUtils.getMessage('manage_accounts')}: ${getAccountListItemSearchValue(item)}`}
+            onClick={(event) => {
+              stopListItemActionPropagation(event);
+              if (item.type === ChainType.HIVE) {
+                handleManageHiveAccountClick(item.account);
+              } else {
+                handleManageEvmAccountClick(item.account);
+              }
+            }}
+          />
+        </span>
         <SVGIcon
           className="account-selector-list-action copy-icon"
           dataTestId={`account-selector-copy-${itemId}`}

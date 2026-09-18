@@ -4,6 +4,7 @@ export enum GuidedTourId {
 
 export enum GuidedTourTarget {
   ACCOUNT_SELECTOR_TRIGGER = 'account-selector-trigger',
+  ACCOUNT_SELECTOR_MANAGE_BUTTON = 'account-selector-manage-button',
   ACCOUNT_SELECTOR_CREATE_BUTTON = 'account-selector-create-button',
   ADD_ACCOUNT_TYPE_EVM = 'add-account-type-evm',
 }

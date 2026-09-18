@@ -28,28 +28,36 @@
     "description": "tutorial popup"
   },
   "popup_html_guided_tour_add_evm_step1_title": {
-    "message": "Baru: dompet EVM",
+    "message": "Keychain sekarang multi-chain!",
     "description": "guided tour add evm account step 1 title"
   },
   "popup_html_guided_tour_add_evm_step1_description": {
-    "message": "Buka menu akun untuk menambahkan akun EVM.",
+    "message": "Kelola Hive dan EVM (Ethereum, Polygon, dll.) di satu tempat. Klik menu akun untuk melanjutkan.",
     "description": "guided tour add evm account step 1 description"
   },
   "popup_html_guided_tour_add_evm_step2_title": {
-    "message": "Tambah akun",
+    "message": "Kelola akun",
     "description": "guided tour add evm account step 2 title"
   },
   "popup_html_guided_tour_add_evm_step2_description": {
-    "message": "Pilih Tambah akun untuk melanjutkan.",
+    "message": "Sekarang kamu bisa mengelola akun langsung dari daftar akun",
     "description": "guided tour add evm account step 2 description"
   },
   "popup_html_guided_tour_add_evm_step3_title": {
-    "message": "Pilih EVM",
+    "message": "Tambah akun",
     "description": "guided tour add evm account step 3 title"
   },
   "popup_html_guided_tour_add_evm_step3_description": {
-    "message": "Pilih EVM untuk membuat atau mengimpor dompet. Kamu bisa melakukan ini nanti.",
+    "message": "Dan tambahkan akun baru dari sini",
     "description": "guided tour add evm account step 3 description"
+  },
+  "popup_html_guided_tour_add_evm_step4_title": {
+    "message": "Tambah akun EVM",
+    "description": "guided tour add evm account step 4 title"
+  },
+  "popup_html_guided_tour_add_evm_step4_description": {
+    "message": "Mari coba menambahkan akun EVM baru",
+    "description": "guided tour add evm account step 4 description"
   },
   "popup_html_guided_tour_got_it": {
     "message": "Mengerti",

@@ -12,7 +12,10 @@ interface Props {
   titleKey: string;
   descriptionKey: string;
   showDismiss: boolean;
+  showNext: boolean;
+  blockTargetClick: boolean;
   onDismiss: () => void;
+  onNext: () => void;
 }
 
 const toPaneStyle = (rect: GuidedTourRect): React.CSSProperties => ({
@@ -27,7 +30,10 @@ const GuidedTourOverlay = ({
   titleKey,
   descriptionKey,
   showDismiss,
+  showNext,
+  blockTargetClick,
   onDismiss,
+  onNext,
 }: Props) => {
   const { theme: contextTheme } = useThemeContext();
   const portalTheme = contextTheme ?? Theme.DARK;
@@ -45,7 +51,14 @@ const GuidedTourOverlay = ({
     if (nextHeight > 0 && nextHeight !== tooltipHeight) {
       setTooltipHeight(nextHeight);
     }
-  }, [descriptionKey, showDismiss, targetRect, titleKey, tooltipHeight]);
+  }, [
+    descriptionKey,
+    showDismiss,
+    showNext,
+    targetRect,
+    titleKey,
+    tooltipHeight,
+  ]);
 
   const viewport = {
     width: window.innerWidth,
@@ -82,7 +95,9 @@ const GuidedTourOverlay = ({
         style={toPaneStyle(layout.panes.bottom)}
       />
       <div
-        className="guided-tour-highlight"
+        className={`guided-tour-highlight${
+          blockTargetClick ? ' blocking' : ''
+        }`}
         data-testid="guided-tour-highlight"
         style={{
           ...toPaneStyle(layout.hole),
@@ -105,6 +120,16 @@ const GuidedTourOverlay = ({
         <div className="guided-tour-tooltip-description">
           {I18nUtils.getMessage(descriptionKey)}
         </div>
+        {showNext && (
+          <ButtonComponent
+            additionalClass="guided-tour-dismiss-button"
+            dataTestId="guided-tour-next-button"
+            height="small"
+            label="popup_html_next"
+            onClick={onNext}
+            type={ButtonType.IMPORTANT}
+          />
+        )}
         {showDismiss && (
           <ButtonComponent
             additionalClass="guided-tour-dismiss-button"

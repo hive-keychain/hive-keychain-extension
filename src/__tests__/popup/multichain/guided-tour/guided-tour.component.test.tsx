@@ -82,10 +82,13 @@ describe('GuidedTourComponent', () => {
       borderRadius: '16px',
     });
     expect(screen.getByTestId('guided-tour-tooltip')).toHaveTextContent(
-      'New: EVM wallets',
+      'Keychain is now multichain!',
     );
     expect(
       screen.queryByTestId('guided-tour-dismiss-button'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('guided-tour-next-button'),
     ).not.toBeInTheDocument();
   });
 
@@ -121,7 +124,7 @@ describe('GuidedTourComponent', () => {
     expect(screen.queryByTestId('guided-tour-overlay')).not.toBeInTheDocument();
   });
 
-  it('advances to the next step when the highlighted control is clicked', async () => {
+  it('advances to the manage step when the highlighted account selector is clicked', async () => {
     const user = userEvent.setup();
     const saveSpy = jest.spyOn(LocalStorageUtils, 'saveValueInLocalStorage');
 
@@ -129,6 +132,9 @@ describe('GuidedTourComponent', () => {
       <>
         <button data-guided-tour={GuidedTourTarget.ACCOUNT_SELECTOR_TRIGGER}>
           Accounts
+        </button>
+        <button data-guided-tour={GuidedTourTarget.ACCOUNT_SELECTOR_MANAGE_BUTTON}>
+          Manage
         </button>
         <button data-guided-tour={GuidedTourTarget.ACCOUNT_SELECTOR_CREATE_BUTTON}>
           Add account
@@ -155,9 +161,87 @@ describe('GuidedTourComponent', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('guided-tour-tooltip')).toHaveTextContent(
-        'Add an account',
+        'Manage accounts',
       );
     });
+    expect(screen.getByTestId('guided-tour-next-button')).toBeInTheDocument();
+    expect(screen.getByTestId('guided-tour-highlight')).toHaveClass('blocking');
+  });
+
+  it('advances from the manage step when Next is clicked', async () => {
+    const user = userEvent.setup();
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockImplementation(async (key: LocalStorageKeyEnum) => {
+        if (key === LocalStorageKeyEnum.GUIDED_TOURS) {
+          return {
+            [GuidedTourId.ADD_EVM_ACCOUNT]: {
+              status: GuidedTourStatus.IN_PROGRESS,
+              currentStep: 1,
+            },
+          };
+        }
+        return undefined;
+      });
+    const saveSpy = jest.spyOn(LocalStorageUtils, 'saveValueInLocalStorage');
+
+    renderTour(
+      <>
+        <button data-guided-tour={GuidedTourTarget.ACCOUNT_SELECTOR_MANAGE_BUTTON}>
+          Manage
+        </button>
+        <button data-guided-tour={GuidedTourTarget.ACCOUNT_SELECTOR_CREATE_BUTTON}>
+          Add account
+        </button>
+        <GuidedTourComponent />
+      </>,
+    );
+
+    expect(await screen.findByTestId('guided-tour-next-button')).toBeInTheDocument();
+
+    await user.click(screen.getByTestId('guided-tour-next-button'));
+
+    await waitFor(() => {
+      expect(saveSpy).toHaveBeenCalledWith(
+        LocalStorageKeyEnum.GUIDED_TOURS,
+        expect.objectContaining({
+          [GuidedTourId.ADD_EVM_ACCOUNT]: {
+            status: GuidedTourStatus.IN_PROGRESS,
+            currentStep: 2,
+          },
+        }),
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('guided-tour-tooltip')).toHaveTextContent(
+        'Add accounts',
+      );
+    });
+  });
+
+  it('does not show the tour when the user has no Hive account', async () => {
+    renderTour(
+      <>
+        <button data-guided-tour={GuidedTourTarget.ACCOUNT_SELECTOR_TRIGGER}>
+          Accounts
+        </button>
+        <GuidedTourComponent />
+      </>,
+      {
+        ...getTourState(),
+        hive: {
+          ...initialStateForHome.hive,
+          accounts: [],
+        },
+      },
+    );
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(screen.queryByTestId('guided-tour-overlay')).not.toBeInTheDocument();
   });
 
   it('highlights the last step when navigation mounted it before storage caught up', async () => {
@@ -168,7 +252,7 @@ describe('GuidedTourComponent', () => {
           return {
             [GuidedTourId.ADD_EVM_ACCOUNT]: {
               status: GuidedTourStatus.IN_PROGRESS,
-              currentStep: 1,
+              currentStep: 2,
             },
           };
         }
@@ -187,7 +271,7 @@ describe('GuidedTourComponent', () => {
 
     expect(await screen.findByTestId('guided-tour-overlay')).toBeInTheDocument();
     expect(screen.getByTestId('guided-tour-tooltip')).toHaveTextContent(
-      'Select EVM',
+      'Add an EVM account',
     );
     expect(screen.getByTestId('guided-tour-dismiss-button')).toBeInTheDocument();
 
@@ -197,7 +281,7 @@ describe('GuidedTourComponent', () => {
         expect.objectContaining({
           [GuidedTourId.ADD_EVM_ACCOUNT]: {
             status: GuidedTourStatus.IN_PROGRESS,
-            currentStep: 2,
+            currentStep: 3,
           },
         }),
       );
@@ -213,7 +297,7 @@ describe('GuidedTourComponent', () => {
           return {
             [GuidedTourId.ADD_EVM_ACCOUNT]: {
               status: GuidedTourStatus.IN_PROGRESS,
-              currentStep: 2,
+              currentStep: 3,
             },
           };
         }
@@ -240,7 +324,7 @@ describe('GuidedTourComponent', () => {
         expect.objectContaining({
           [GuidedTourId.ADD_EVM_ACCOUNT]: {
             status: GuidedTourStatus.DISMISSED,
-            currentStep: 2,
+            currentStep: 3,
           },
         }),
       );
@@ -256,7 +340,7 @@ describe('GuidedTourComponent', () => {
           return {
             [GuidedTourId.ADD_EVM_ACCOUNT]: {
               status: GuidedTourStatus.IN_PROGRESS,
-              currentStep: 2,
+              currentStep: 3,
             },
           };
         }
@@ -283,7 +367,7 @@ describe('GuidedTourComponent', () => {
         expect.objectContaining({
           [GuidedTourId.ADD_EVM_ACCOUNT]: {
             status: GuidedTourStatus.COMPLETED,
-            currentStep: 2,
+            currentStep: 3,
           },
         }),
       );

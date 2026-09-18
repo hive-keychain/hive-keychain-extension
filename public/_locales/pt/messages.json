@@ -28,28 +28,36 @@
     "description": "tutorial popup"
   },
   "popup_html_guided_tour_add_evm_step1_title": {
-    "message": "Novo: carteiras EVM",
+    "message": "O Keychain agora é multi-chain!",
     "description": "guided tour add evm account step 1 title"
   },
   "popup_html_guided_tour_add_evm_step1_description": {
-    "message": "Abra o menu de contas para adicionar uma conta EVM.",
+    "message": "Gerencie Hive e EVM (Ethereum, Polygon etc.) em um só lugar. Clique no menu de contas para continuar.",
     "description": "guided tour add evm account step 1 description"
   },
   "popup_html_guided_tour_add_evm_step2_title": {
-    "message": "Adicionar conta",
+    "message": "Gerenciar contas",
     "description": "guided tour add evm account step 2 title"
   },
   "popup_html_guided_tour_add_evm_step2_description": {
-    "message": "Escolha Adicionar conta para continuar.",
+    "message": "Agora você pode gerenciar suas contas diretamente na lista",
     "description": "guided tour add evm account step 2 description"
   },
   "popup_html_guided_tour_add_evm_step3_title": {
-    "message": "Selecione EVM",
+    "message": "Adicionar contas",
     "description": "guided tour add evm account step 3 title"
   },
   "popup_html_guided_tour_add_evm_step3_description": {
-    "message": "Escolha EVM para criar ou importar uma carteira. Você pode fazer isso depois, se quiser.",
+    "message": "E adicionar novas contas daqui",
     "description": "guided tour add evm account step 3 description"
+  },
+  "popup_html_guided_tour_add_evm_step4_title": {
+    "message": "Adicionar uma conta EVM",
+    "description": "guided tour add evm account step 4 title"
+  },
+  "popup_html_guided_tour_add_evm_step4_description": {
+    "message": "Vamos tentar adicionar uma nova conta EVM",
+    "description": "guided tour add evm account step 4 description"
   },
   "popup_html_guided_tour_got_it": {
     "message": "Entendido",

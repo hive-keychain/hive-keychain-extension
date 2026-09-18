@@ -10,7 +10,8 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const addEvmTour: GuidedTourDefinition = {
   id: GuidedTourId.ADD_EVM_ACCOUNT,
-  isEligible: ({ evmAccountsCount }) => evmAccountsCount === 0,
+  isEligible: ({ hiveAccountsCount, evmAccountsCount }) =>
+    hiveAccountsCount > 0 && evmAccountsCount === 0,
   steps: [
     {
       target: GuidedTourTarget.ACCOUNT_SELECTOR_TRIGGER,
@@ -18,14 +19,20 @@ const addEvmTour: GuidedTourDefinition = {
       descriptionKey: 'step-1-desc',
     },
     {
-      target: GuidedTourTarget.ACCOUNT_SELECTOR_CREATE_BUTTON,
+      target: GuidedTourTarget.ACCOUNT_SELECTOR_MANAGE_BUTTON,
       titleKey: 'step-2',
       descriptionKey: 'step-2-desc',
+      advanceOn: 'next',
+    },
+    {
+      target: GuidedTourTarget.ACCOUNT_SELECTOR_CREATE_BUTTON,
+      titleKey: 'step-3',
+      descriptionKey: 'step-3-desc',
     },
     {
       target: GuidedTourTarget.ADD_ACCOUNT_TYPE_EVM,
-      titleKey: 'step-3',
-      descriptionKey: 'step-3-desc',
+      titleKey: 'step-4',
+      descriptionKey: 'step-4-desc',
     },
   ],
 };
@@ -76,17 +83,17 @@ describe('guided-tour.utils tests:\n', () => {
   });
 
   it('advances one step at a time and completes on the last step', () => {
-    expect(GuidedTourUtils.getAdvancedProgress(0, 2)).toEqual({
+    expect(GuidedTourUtils.getAdvancedProgress(0, 3)).toEqual({
       status: GuidedTourStatus.IN_PROGRESS,
       currentStep: 1,
     });
-    expect(GuidedTourUtils.getAdvancedProgress(1, 2)).toEqual({
+    expect(GuidedTourUtils.getAdvancedProgress(1, 3)).toEqual({
       status: GuidedTourStatus.IN_PROGRESS,
       currentStep: 2,
     });
-    expect(GuidedTourUtils.getAdvancedProgress(2, 2)).toEqual({
+    expect(GuidedTourUtils.getAdvancedProgress(3, 3)).toEqual({
       status: GuidedTourStatus.COMPLETED,
-      currentStep: 2,
+      currentStep: 3,
     });
   });
 
@@ -112,10 +119,10 @@ describe('guided-tour.utils tests:\n', () => {
     expect(
       GuidedTourUtils.getRenderableStepIndex(
         addEvmTour.steps,
-        1,
+        2,
         (target) => presentTargets.has(target),
       ),
-    ).toBe(2);
+    ).toBe(3);
   });
 
   it('falls back to the latest reachable earlier step when the current target is missing', () => {
@@ -137,14 +144,21 @@ describe('guided-tour.utils tests:\n', () => {
       GuidedTourUtils.getActiveTour(
         [addEvmTour],
         {},
-        { evmAccountsCount: 0 },
+        { hiveAccountsCount: 1, evmAccountsCount: 0 },
       )?.id,
     ).toBe(GuidedTourId.ADD_EVM_ACCOUNT);
     expect(
       GuidedTourUtils.getActiveTour(
         [addEvmTour],
         {},
-        { evmAccountsCount: 1 },
+        { hiveAccountsCount: 1, evmAccountsCount: 1 },
+      ),
+    ).toBeUndefined();
+    expect(
+      GuidedTourUtils.getActiveTour(
+        [addEvmTour],
+        {},
+        { hiveAccountsCount: 0, evmAccountsCount: 0 },
       ),
     ).toBeUndefined();
     expect(
@@ -153,10 +167,10 @@ describe('guided-tour.utils tests:\n', () => {
         {
           [GuidedTourId.ADD_EVM_ACCOUNT]: {
             status: GuidedTourStatus.COMPLETED,
-            currentStep: 2,
+            currentStep: 3,
           },
         },
-        { evmAccountsCount: 0 },
+        { hiveAccountsCount: 1, evmAccountsCount: 0 },
       ),
     ).toBeUndefined();
   });

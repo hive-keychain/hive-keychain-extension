@@ -476,3 +476,19 @@
     }
   }
 }
+
+body:has(.guided-tour-root)
+  .account-selector-list-item:has([data-guided-tour]) {
+  .account-selector-list-item-chains {
+    display: none;
+  }
+
+  .account-selector-list-item-actions {
+    display: flex;
+  }
+
+  .account-selector-list-action.manage-icon {
+    display: flex;
+    pointer-events: auto;
+  }
+}

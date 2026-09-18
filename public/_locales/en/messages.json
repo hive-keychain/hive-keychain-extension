@@ -28,28 +28,36 @@
     "description": "tutorial popup"
   },
   "popup_html_guided_tour_add_evm_step1_title": {
-    "message": "New: EVM wallets",
+    "message": "Keychain is now multichain!",
     "description": "guided tour add evm account step 1 title"
   },
   "popup_html_guided_tour_add_evm_step1_description": {
-    "message": "Open the account menu to add an EVM account.",
+    "message": "Handle your Hive and EVM (Ethereum, Polygon, etc.) all in one place. Click the account menu to continue.",
     "description": "guided tour add evm account step 1 description"
   },
   "popup_html_guided_tour_add_evm_step2_title": {
-    "message": "Add an account",
+    "message": "Manage accounts",
     "description": "guided tour add evm account step 2 title"
   },
   "popup_html_guided_tour_add_evm_step2_description": {
-    "message": "Choose Add account to continue.",
+    "message": "You can now manage your accounts directly from the account list",
     "description": "guided tour add evm account step 2 description"
   },
   "popup_html_guided_tour_add_evm_step3_title": {
-    "message": "Select EVM",
+    "message": "Add accounts",
     "description": "guided tour add evm account step 3 title"
   },
   "popup_html_guided_tour_add_evm_step3_description": {
-    "message": "Pick EVM to create or import a wallet. You can do this later if you want.",
+    "message": "And add new accounts from here",
     "description": "guided tour add evm account step 3 description"
+  },
+  "popup_html_guided_tour_add_evm_step4_title": {
+    "message": "Add an EVM account",
+    "description": "guided tour add evm account step 4 title"
+  },
+  "popup_html_guided_tour_add_evm_step4_description": {
+    "message": "Let's try adding a new EVM account",
+    "description": "guided tour add evm account step 4 description"
   },
   "popup_html_guided_tour_got_it": {
     "message": "Got it",

@@ -28,28 +28,36 @@
     "description": "tutorial popup"
   },
   "popup_html_guided_tour_add_evm_step1_title": {
-    "message": "新功能：EVM 錢包",
+    "message": "Keychain 現已支援多鏈！",
     "description": "guided tour add evm account step 1 title"
   },
   "popup_html_guided_tour_add_evm_step1_description": {
-    "message": "開啟帳號選單以新增 EVM 帳號。",
+    "message": "在同一處管理 Hive 和 EVM（Ethereum、Polygon 等）。點擊帳號選單以繼續。",
     "description": "guided tour add evm account step 1 description"
   },
   "popup_html_guided_tour_add_evm_step2_title": {
-    "message": "新增帳號",
+    "message": "管理帳號",
     "description": "guided tour add evm account step 2 title"
   },
   "popup_html_guided_tour_add_evm_step2_description": {
-    "message": "選擇「新增帳號」以繼續。",
+    "message": "你現在可以直接在帳號列表中管理帳號",
     "description": "guided tour add evm account step 2 description"
   },
   "popup_html_guided_tour_add_evm_step3_title": {
-    "message": "選擇 EVM",
+    "message": "新增帳號",
     "description": "guided tour add evm account step 3 title"
   },
   "popup_html_guided_tour_add_evm_step3_description": {
-    "message": "選擇 EVM 以建立或匯入錢包。你也可以稍後再做。",
+    "message": "也可以從這裡新增帳號",
     "description": "guided tour add evm account step 3 description"
+  },
+  "popup_html_guided_tour_add_evm_step4_title": {
+    "message": "新增 EVM 帳號",
+    "description": "guided tour add evm account step 4 title"
+  },
+  "popup_html_guided_tour_add_evm_step4_description": {
+    "message": "來試試新增一個 EVM 帳號",
+    "description": "guided tour add evm account step 4 description"
   },
   "popup_html_guided_tour_got_it": {
     "message": "知道了",
