@@ -5231,7 +5231,7 @@
     "description": "Portfolio fetching message"
   },
   "html_popup_evm_add_wallet_method": {
-    "message": "Import or create an EVM wallet to use it accross all EVM chains",
+    "message": "Importe ou crie uma carteira EVM para usá-la em todas as chains EVM",
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_import_wallet": {
@@ -5579,7 +5579,7 @@
     "description": "Evm gas limit "
   },
   "popup_html_evm_transfer_successful": {
-    "message": "Transfer successful (to change)",
+    "message": "Transferência bem-sucedida",
     "description": "Evm transfer"
   },
   "popup_html_evm_gas_fee_not_selected": {
@@ -5779,7 +5779,7 @@
     "description": "Evm non existing error message"
   },
   "dialog_evm_user_rejected_method": {
-    "message": "User ",
+    "message": "A solicitação foi rejeitada pelo usuário",
     "description": "Evm deprecated/unsupported error message"
   },
   "dialog_evm_get_encryption_key": {
@@ -7211,7 +7211,7 @@
     "description": "Show testnets"
   },
   "avalanche_smart_contract": {
-    "message": "Avalanche Smart contract test"
+    "message": "Smart contract Avalanche"
   },
   "evm_pay_to_smart_contract": {
     "message": "Pay to Smart Contract",
@@ -7558,7 +7558,7 @@
     "description": "Error getting estimate"
   },
   "evm_lifi_swap_confirm_message": {
-    "message": ""
+    "message": "Confirme esta troca de $3 $1 para $2."
   },
   "evm_lifi_swap": {
     "message": "LiFi Swap",

@@ -5809,7 +5809,7 @@
     "description": "Evm non existing error message"
   },
   "dialog_evm_user_rejected_method": {
-    "message": "User ",
+    "message": "La requête a été rejetée par l’utilisateur",
     "description": "Evm deprecated/unsupported error message"
   },
   "dialog_evm_get_encryption_key": {
@@ -7241,7 +7241,7 @@
     "description": "Show testnets"
   },
   "avalanche_smart_contract": {
-    "message": "Test smart contract Avalanche"
+    "message": "Smart contract Avalanche"
   },
   "evm_pay_to_smart_contract": {
     "message": "Payer un smart contract",
@@ -7588,7 +7588,7 @@
     "description": "Error getting estimate"
   },
   "evm_lifi_swap_confirm_message": {
-    "message": ""
+    "message": "Veuillez confirmer cet échange de $3 $1 vers $2."
   },
   "evm_lifi_swap": {
     "message": "LiFi Swap",
