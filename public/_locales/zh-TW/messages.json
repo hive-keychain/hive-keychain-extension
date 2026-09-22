@@ -16,7 +16,7 @@
     "description": "tutorial popup"
   },
   "popup_html_tutorial_popup_description": {
-    "message": "If you are new to Keychain, or Hive in general, please check our onboarding tutorial.<br/>You can always access it later on in Settings > Help > Tutorial",
+    "message": "如果您剛開始使用 Keychain 或 Hive，請查看我們的新手教學。<br/>您之後也可以隨時在“設定 > 說明 > 教學”中開啟。",
     "description": "tutorial popup"
   },
   "popup_html_tutorial_popup_show_label": {
@@ -84,15 +84,15 @@
     "description": "guided tour add evm chains step 3 description"
   },
   "popup_html_wrong_key_active": {
-    "message": "Wrong key. Please use active key",
+    "message": "密鑰錯誤。請使用 active key",
     "description": "while using wrong private key"
   },
   "popup_html_wrong_key_posting": {
-    "message": "Wrong key. Please use posting key",
+    "message": "密鑰錯誤。請使用 posting key",
     "description": "while using wrong private key"
   },
   "popup_html_wrong_key_memo": {
-    "message": "Wrong key. Please use memo key",
+    "message": "密鑰錯誤。請使用 memo key",
     "description": "while using wrong private key"
   },
   "common_pending": {
@@ -231,11 +231,11 @@
     "description": "After clicking forgot password"
   },
   "popup_html_reset_desc": {
-    "message": "如果您忘記了密碼，您可以清除您的數據，但將重新再次輸入所有的密鑰。",
+    "message": "如果您忘記密碼，可以清除資料，但之後必須重新輸入所有金鑰。",
     "description": "text after clicking forgot password"
   },
   "popup_html_clear_all_data_desc": {
-    "message": "通過確認，您的所有數據都將遺失。 請確保您的密鑰保存在Keychain之外",
+    "message": "確認後，您的所有資料都會遺失。請確保已在 Keychain 之外儲存金鑰。",
     "description": "description of clear all data confirm page"
   },
   "popup_html_vm": {
@@ -280,7 +280,7 @@
     "description": "on popup main page"
   },
   "popup_html_witness": {
-    "message": "見證人",
+    "message": "Witnesses",
     "description": "on popup main page"
   },
   "popup_html_estimation_info": {
@@ -304,15 +304,15 @@
     "description": "Keyless keychain"
   },
   "popup_html_keyless_keychain_setup": {
-    "message": "Keychain is in keyless mode and will use HiveAuth to request transactions to be signed on your mobile device. \n Sign in to your favorite dApp with Keychain and scan the QR code to get started.",
+    "message": "Keychain 目前處於無密鑰模式，將使用 HiveAuth 請求您在行動裝置上簽署交易。\n 使用 Keychain 登入您常用的 dApp，然後掃描 QR 碼即可開始。",
     "description": "When setting up keyless keychain"
   },
   "popup_html_keyless_keychain_register": {
-    "message": "Keychain is in keyless mode and will use HiveAuth to authenticate you. \n Scan this QR code with your mobile device to get started.",
+    "message": "Keychain 目前處於無密鑰模式，將使用 HiveAuth 驗證您的身份。\n 使用行動裝置掃描此 QR 碼即可開始。",
     "description": "When setting up keyless keychain"
   },
   "popup_html_keyless_keychain_setup_qr": {
-    "message": "Scan the QR code with your mobile device to connect to HiveAuth.",
+    "message": "使用行動裝置掃描 QR 碼以連接 HiveAuth。",
     "description": "When setting up keyless keychain"
   },
   "popup_html_keyless_sessions": {
@@ -344,7 +344,7 @@
     "description": "placeholder for entering a ending date"
   },
   "popup_html_import_keys": {
-    "message": "匯入密鑰",
+    "message": "從 .kc 檔案匯入金鑰",
     "description": "Import all keys"
   },
   "popup_html_import_permissions": {
@@ -396,11 +396,11 @@
     "description": "On Accounts > Manage Authorities"
   },
   "popup_html_manage_accounts_authorities_text": {
-    "message": "Accounts with granted authorities can perform operations on your behalf. Most of the time, these authorizations are tied to a dApp or game and only authorize the posting authority. We recommend giving such authorities only when necessary and when the recipient is trusted.",
+    "message": "獲得授權的帳戶可以代表您執行操作。大多數情況下，這些授權與 dApp 或遊戲相關，並且只授予 posting authority。建議僅在必要且信任接收方時授予此類權限。",
     "description": "Accounts > Manage Authorities"
   },
   "popup_html_confirm_remove_account_authority_message": {
-    "message": "Please confirm that you want to remove @$2's $1 authority on your account.",
+    "message": "請確認要從您的帳戶中移除 @$2 的 $1 authority。",
     "description": "while confirming remove account authority: $2 is account, $1 is posting or active"
   },
   "popup_html_remove_account_authority": {
@@ -408,15 +408,15 @@
     "description": "while confirming remove account authority"
   },
   "html_popup_remove_authorized_account_operation": {
-    "message": "Removing authorized account",
+    "message": "正在移除已授權帳戶",
     "description": "remove authority operation"
   },
   "popup_html_remove_account_authority_successful": {
-    "message": "Successfully removed an account authority",
+    "message": "已成功移除帳戶權限",
     "description": "Success message remove account authority"
   },
   "popup_html_remove_account_authority_fail": {
-    "message": "Failed to remove an account authority",
+    "message": "移除帳戶權限失敗",
     "description": "Failed message remove account authority"
   },
   "popup_html_memo": {
@@ -440,7 +440,7 @@
     "description": "Generic button"
   },
   "popup_html_settings": {
-    "message": "設置",
+    "message": "設定",
     "description": "on settings page"
   },
   "popup_html_contacts": {
@@ -448,7 +448,7 @@
     "description": "Unified settings menu item"
   },
   "popup_html_contacts_intro": {
-    "message": "Save contacts you use most often to make transfers and other operations faster.",
+    "message": "儲存常用聯絡人，以便更快地進行轉帳和其他操作。",
     "description": "Intro on unified contacts settings page"
   },
   "popup_html_network": {
@@ -512,7 +512,7 @@
     "description": "on settings page"
   },
   "popup_html_favorite_accounts_no_favorites": {
-    "message": "No favorites saved for this account",
+    "message": "此帳戶尚未儲存收藏項",
     "description": "on favorite settings page results"
   },
   "popup_html_operation_popup": {
@@ -524,7 +524,7 @@
     "description": "on settings page"
   },
   "popup_html_clear": {
-    "message": "清除所有數據",
+    "message": "清除所有資料",
     "description": "on settings page"
   },
   "popup_html_al_default_title": {
@@ -552,7 +552,7 @@
     "description": "on autolock settings"
   },
   "popup_html_keychainify_text": {
-    "message": "此功能允許您在點擊網頁上支援的連結或直接在瀏覽器標籤頁中存取 URL 時觸發 Keychain 操作。 目前支持以下 Hivesigner 連結：轉讓、委託、自定義 JSON、見證代理和投票。",
+    "message": "此功能允許您在點擊網頁上支援的連結或直接在瀏覽器標籤頁中存取 URL 時觸發 Keychain 操作。 目前支持以下 Hivesigner 連結：轉讓、委託、自定義 JSON、witness代理和投票。",
     "description": "on keychainify settings"
   },
   "popup_html_enable_keychainify_title": {
@@ -572,11 +572,11 @@
     "description": "on import / export settings"
   },
   "popup_html_export_as_encrypted_file": {
-    "message": "Export as an encrypted file",
+    "message": "匯出為加密檔案",
     "description": "on import / export settings"
   },
   "popup_html_exported_accounts_QR": {
-    "message": "Export Accounts by QR Code",
+    "message": "透過 QR 碼匯出帳戶",
     "description": "on account / export settings"
   },
   "popup_html_export_permissions": {
@@ -584,7 +584,7 @@
     "description": "on import / export settings"
   },
   "popup_html_about_text": {
-    "message": "Hive Keychain 團隊由開發人員<a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a>和 Hive 見證人，包括 3 個全職開發人員帶領。我們還受益於 Splinterlands 的創意總監 <a href=\"https://peakd.com/@nateaguila\" target=\"_blank\">@nateaguila</a> 和許多其他社區成員的幫助。<br>< br>該項目目前由去中心化 Hive 基金 (DHF) 資助，最初的想法和資金是由 <a href=\"https://peakd.com/@aggroed\" target=\"_blank\">@aggroed</a> 和 <a href=\"https://peakd.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a>(見證人)透過他們共同經營的 Splinterlands，這是一款基於區塊鏈的可收藏集換式卡牌遊戲建立在 Hive 區塊鏈。請務必查看 <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterlands.io</a>!<br/><br/>有關更多我們的產品訊息(瀏覽器擴展和行動應用程式)，請訪問我們的<a href='https://hive-keychain.com' target='__blank'>登錄頁面</a>。",
+    "message": "<ul><li><span class='text'>Hive Keychain 團隊由全端開發者兼 Hive witness <a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a> 領導，另外兩位全職開發者 <a href=\"https://peakd.com/@cedricguillas\" target=\"_blank\">@cedricguillas</a> 和 <a href=\"https://peakd.com/@krios003\" target=\"_blank\">@krios003</a>，以及社群經理 <a href=\"https://peakd.com/@manuphotos\" target=\"_blank\">@manuphotos</a> 共同參與。我們的工作由 DHF 資助，感謝社群的支持。</span></li><div class='separator horizontal'></div><li><span class='text'>除了此擴充功能，我們還提供 Android 和 iOS 版 Hive 行動錢包、各種 Hive 工具，以及 Keychain Store。這是一款面向實體商家的行動應用程式，可協助商家接受 HIVE 和 HBD 付款。</span></li><div class='separator horizontal'></div><li><span class='text'>如需更多產品資訊（瀏覽器擴充功能和行動應用程式），請造訪我們的<a href='https://hive-keychain.com' target='__blank'>官方網站</a>。</span></li></ul>",
     "description": "on about keychain"
   },
   "popup_html_delete_account": {
@@ -608,11 +608,11 @@
     "description": "on manage accounts"
   },
   "popup_html_disable_witness_account_confirmation_message": {
-    "message": "You are about to disable @$1 witness account. Please confirm to proceed.",
+    "message": "您即將停用 @$1 的witness帳戶。請確認後繼續。",
     "description": "on my witness"
   },
   "popup_html_enable_witness_account_confirmation_message": {
-    "message": "You are about to enable @$1 witness account. Please confirm to proceed.",
+    "message": "您即將啟用 @$1 的witness帳戶。請確認後繼續。",
     "description": "on my witness"
   },
   "popup_html_show_qr": {
@@ -624,27 +624,27 @@
     "description": "on manage accounts"
   },
   "popup_html_qr_disclaimer1": {
-    "message": "This QR Code contains all your private keys for this account and should only be used to import your keys to the Hive Keychain mobile App.",
+    "message": "此 QR 碼包含該帳戶的所有私鑰，僅應用於將密鑰匯入 Hive Keychain 行動應用程式。",
     "description": "on manage accounts"
   },
   "popup_html_qr_check1": {
-    "message": "I am not sharing my screen or planning to share a screenshot of this QR Code with anyone",
+    "message": "我沒有共享螢幕，也不打算向任何人分享此 QR 碼的截圖",
     "description": "on settings accounts / export / qr"
   },
   "popup_html_qr_check2": {
-    "message": "I understand that sharing this QR Code with anyone may result in a loss of funds",
+    "message": "我明白與他人分享此 QR 碼可能導致資金損失",
     "description": "on settings accounts / export / qr"
   },
   "popup_html_qr_exported_set_disclaimer1": {
-    "message": "This QR Code contains all your private keys for this set of accounts, and should only be used to import your keys to the Hive Keychain mobile App.",
+    "message": "此 QR 碼包含這組帳戶的所有私鑰，僅應用於將密鑰匯入 Hive Keychain 行動應用程式。",
     "description": "on settings accounts / export / qr"
   },
   "popup_html_qr_exported_check1": {
-    "message": "I am not sharing my screen or planning to share a screenshot of these QR Codes with anyone",
+    "message": "我沒有共享螢幕，也不打算向任何人分享這些QR 碼的截圖",
     "description": "on settings accounts / export / qr"
   },
   "popup_html_qr_exported_check2": {
-    "message": "I understand that sharing these QR Codes with anyone may result in a loss of funds",
+    "message": "我明白與他人分享這些QR 碼可能導致資金損失",
     "description": "on settings accounts / export / qr"
   },
   "popup_html_qr_exported_show_button": {
@@ -652,11 +652,11 @@
     "description": "on settings accounts / export / qr"
   },
   "popup_html_qr_disclaimer2": {
-    "message": "DO NOT share it with anyone!",
+    "message": "切勿與任何人分享！",
     "description": "on manage accounts"
   },
   "popup_html_qr_disclaimer3": {
-    "message": "Use the left and right arrows to navigate through the accounts.",
+    "message": "使用左右箭頭瀏覽帳戶。",
     "description": "on manage accounts"
   },
   "popup_html_hide_qr": {
@@ -664,11 +664,11 @@
     "description": "on manage accounts"
   },
   "popup_html_set_new_rpc_as_active": {
-    "message": "將新的 RPC 節點設置為活動狀態",
+    "message": "將新的 RPC 節點設為啟用",
     "description": "in add rpc node screen"
   },
   "popup_html_set_new_account_history_as_active": {
-    "message": "Set new account history API as active",
+    "message": "將新的帳戶歷史記錄 API 設為啟用",
     "description": "in add rpc node screen"
   },
   "popup_html_notif_pref": {
@@ -680,11 +680,11 @@
     "description": "on preferences"
   },
   "popup_html_pref_export_transactions_info": {
-    "message": "Download your account's monetary transactions as a .csv file. You can omit the start or end date if necessary.<br/><br/>Depending on the number of transactions, this may take a little while. ",
+    "message": "將帳戶的資金交易下載為 .csv 檔案。如有需要，可以省略開始日期或結束日期。<br/><br/>根據交易數量，此過程可能需要一些時間。",
     "description": "on preferences"
   },
   "popup_html_pref_export_transactions_downloading_loading_message": {
-    "message": "Downloading transactions",
+    "message": "正在下載交易",
     "description": "Downloading transactions"
   },
   "popup_html_pref_export_transactions_generating_csv_loading_message": {
@@ -700,7 +700,7 @@
     "description": "Button label to remove every Hive permission for a dapp"
   },
   "popup_html_nothing_found_using_filter": {
-    "message": "Nothing found, try to clear your filter(s)",
+    "message": "未找到結果，請嘗試清除篩選條件",
     "description": "on multiple pages where filter is used"
   },
   "popup_html_add_rpc": {
@@ -712,7 +712,7 @@
     "description": "on preferences"
   },
   "popup_html_rpc_node": {
-    "message": "遠端程序呼叫 Node",
+    "message": "RPC 節點",
     "description": "on preferences"
   },
   "popup_none": {
@@ -740,7 +740,7 @@
     "description": "after clicking on copy username to clipboard button on home page"
   },
   "popup_html_detach_window_tooltip_text": {
-    "message": "Detach window\nShorcut: Ctrl + D",
+    "message": "分離視窗\n快捷鍵：Ctrl + D",
     "description": "after clicking on copy username to clipboard button on home page"
   },
   "popup_html_detach_window": {
@@ -792,7 +792,7 @@
     "description": "Preferences and display: selected display mode applies after reopening the wallet"
   },
   "popup_html_open_in_side_panel": {
-    "message": "Open in side panel",
+    "message": "在側邊欄中開啟",
     "description": "Preferences and display: open Keychain in the browser side panel"
   },
   "popup_html_try_side_panel": {
@@ -800,15 +800,15 @@
     "description": "Preferences and display: try Keychain in the browser side panel"
   },
   "popup_html_open_in_side_panel_hint": {
-    "message": "Open Keychain in the browser side panel for a larger, persistent view.",
+    "message": "在瀏覽器側邊欄中開啟 Keychain，以獲得更大且持續顯示的視圖。",
     "description": "Preferences and display: side panel action hint"
   },
   "popup_html_open_side_panel_by_default": {
-    "message": "Open side panel by default",
+    "message": "預設開啟側邊欄",
     "description": "Preferences and display: default to side panel on extension icon click"
   },
   "popup_html_open_side_panel_by_default_hint": {
-    "message": "When enabled, clicking the extension icon opens Keychain in the side panel instead of the popup.",
+    "message": "啟用後，點選擴充功能圖標將在側邊欄而不是彈出視窗中開啟 Keychain。",
     "description": "Preferences and display: default side panel checkbox hint"
   },
   "popup_html_chain_settings": {
@@ -820,7 +820,7 @@
     "description": "Settings menu section for support, tutorial, and Keychain information"
   },
   "popup_html_wrong_key_tooltip_text": {
-    "message": "This key doesn't seem to match your account. You won't be able to perform transactions with it. If you've changed it, remove this key and replace it with the new one.",
+    "message": "此密鑰似乎與您的帳戶不匹配，您將無法使用它執行交易。如果密鑰已更改，請移除此密鑰並替換為新密鑰。",
     "description": "after hoover on red wrong key -> manage accounts -> account keys list item"
   },
   "popup_html_change_password_text": {
@@ -856,7 +856,7 @@
     "description": "When initiating a HIVE or HBD transfer"
   },
   "popup_html_transfer_confirm_text": {
-    "message": "請確認您的轉移。此操作無法撤消。",
+    "message": "請確認您的轉帳。<br>此操作無法復原。",
     "description": "On transfer confirmation page"
   },
   "popup_html_transfer_confirm_cancel_recurrent": {
@@ -900,7 +900,7 @@
     "description": "On My witness page"
   },
   "popup_html_witness_information_witness_disabled_text": {
-    "message": "Witness currently disabled!",
+    "message": "Witness目前已停用！",
     "description": "On My witness page"
   },
   "popup_html_witness_information_account_creation_fee_label": {
@@ -992,7 +992,7 @@
     "description": "On tokens page > Send"
   },
   "popup_html_token_confirm_text": {
-    "message": "請確認您的轉移。此操作無法撤消。",
+    "message": "請確認您的轉帳。<br>此操作無法復原。",
     "description": "On tokens page > Send > Confirm"
   },
   "popup_html_current": {
@@ -1036,7 +1036,7 @@
     "description": "Main page > Delegate > Click on Outgoing"
   },
   "popup_html_button_label_cancel": {
-    "message": "Cancel",
+    "message": "取消",
     "description": "when using a cancel button"
   },
   "popup_html_total_incoming": {
@@ -1064,11 +1064,11 @@
     "description": "on settings page accounts > export acc sub menu"
   },
   "popup_html_export_all_accounts_as_QR": {
-    "message": "Export all accounts by QR Code",
+    "message": "透過 QR 碼匯出所有帳戶",
     "description": "on settings page accounts > export acc sub menu"
   },
   "popup_html_manage_no_accounts_authorities": {
-    "message": "No authority has been given to other accounts",
+    "message": "尚未向其他帳戶授予權限",
     "description": "On Accounts > Manage Authorities"
   },
   "popup_account_password_is_public_key": {
@@ -1076,7 +1076,7 @@
     "description": "If entered password is public key"
   },
   "popup_html_public_key_needed": {
-    "message": "Please enter a public key",
+    "message": "請輸入公鑰",
     "description": "If entered is private key"
   },
   "popup_accounts_already_registered": {
@@ -1108,7 +1108,7 @@
     "description": "When trying to perform an operation without a stored private $1 key"
   },
   "popup_missing_key_proposal": {
-    "message": "Please add your active key to vote for proposals.",
+    "message": "請新增 active key 以投票支援提案。",
     "description": "When voting for a proposal"
   },
   "popup_password_mismatch": {
@@ -1128,7 +1128,7 @@
     "description": "On send HIVE/HBD confirmation page, when memo is encrypted"
   },
   "popup_witness_key": {
-    "message": "請新增您的活躍金鑰以投票給見證人！",
+    "message": "請新增您的活躍金鑰以投票給witnesses！",
     "description": "When trying to vote for witness but user doenst have a stored active key"
   },
   "popup_next_powerdown": {
@@ -1208,7 +1208,7 @@
     "description": "on tokens page when trying to send tokens to a non existing user"
   },
   "popup_token_timeout": {
-    "message": "交易超時無回應。 請再次檢查您的代幣餘額，然後再嘗試發送。",
+    "message": "無法在 Hive Engine 上驗證此交易。這可能表示 Hive Engine 的區塊同步落後。請等待操作出現在歷史記錄中，或透過 Discord 聯絡 Hive Engine 團隊。",
     "description": "on tokens page when transaction timed out"
   },
   "popup_proxy": {
@@ -1216,27 +1216,27 @@
     "description": "on witness page "
   },
   "popup_success_wit": {
-    "message": "成功投票通過@$1作為見證人。",
+    "message": "成功投票通過@$1作為witness。",
     "description": "on witness page "
   },
   "popup_success_unvote_wit": {
-    "message": "成功未投票@$1作見證人。",
+    "message": "成功未投票@$1作witness。",
     "description": "on witness page when unvoting a witness"
   },
   "popup_success_witness_account_update": {
-    "message": "Successfully updated witness account.",
+    "message": "witness帳戶更新成功。",
     "description": "on my witness on success updating"
   },
   "popup_error_wit": {
-    "message": "為 @$1 作為見證人投票時出現錯誤。",
+    "message": "為 @$1 作為witness投票時出現錯誤。",
     "description": "on witness page "
   },
   "popup_error_witness_account_update": {
-    "message": "Error while updating witness account @$1.",
+    "message": "更新witness帳戶 @$1 時出錯。",
     "description": "on witness edit tab page on failure updating"
   },
   "popup_error_unvote_wit": {
-    "message": "取消@$1 作為見證人的投票時出現錯誤。",
+    "message": "取消@$1 作為witness的投票時出現錯誤。",
     "description": "on witness page when unvoting a witness"
   },
   "popup_success_proxy": {
@@ -1332,7 +1332,7 @@
     "description": "When website request a vote"
   },
   "dialog_data": {
-    "message": "數據<span class ='small'>（點擊以顯示）</span>",
+    "message": "資料",
     "description": "When website request a custom json"
   },
   "dialog_to": {
@@ -1364,7 +1364,7 @@
     "description": "When website request a post"
   },
   "dialog_body": {
-    "message": "數據<span class ='small'>（點擊以顯示）</span>",
+    "message": "內容",
     "description": "When website request a post"
   },
   "dialog_period": {
@@ -1384,7 +1384,7 @@
     "description": "When website request a post"
   },
   "dialog_options": {
-    "message": "數據<span class ='small'>（點擊以顯示）</span>",
+    "message": "選項",
     "description": "When website request a post"
   },
   "dialog_operations": {
@@ -1420,7 +1420,7 @@
     "description": "When website request a custom json"
   },
   "dialog_witness": {
-    "message": "見證人",
+    "message": "Witness",
     "description": "When website request a witness vote"
   },
   "dialog_vote": {
@@ -1431,10 +1431,10 @@
     "message": "確認"
   },
   "dialog_options_toggle": {
-    "message": "選項<span class ='small'>（點擊以顯示）</span>"
+    "message": "選項"
   },
   "dialog_data_toggle": {
-    "message": "數據<span class ='small'>（點擊以顯示）</span>"
+    "message": "資料"
   },
   "dialog_header_unlock": {
     "message": "解鎖Keychain",
@@ -1508,7 +1508,7 @@
     "description": "Website request title"
   },
   "dialog_title_wit": {
-    "message": "見證人投票",
+    "message": "Witness投票",
     "description": "Website request title"
   },
   "dialog_title_proxy": {
@@ -1604,7 +1604,7 @@
     "description": "Generic answer to websites when user cancel transaction (in the background so it wont show on screen)"
   },
   "bgd_lifecycle_request_pending_multisig": {
-    "message": "The request is currently pending multisig approval from other signers. You will be notified by Keychain if/when it is successfully broadcasted.",
+    "message": "此請求正在等待其他簽名者的多重簽名批准。如果請求成功廣播，Keychain 將通知您。",
     "description": "Generic answer to websites when the window is closed during multisig (in the background so it wont show on screen)"
   },
   "bgd_context_transfer_user": {
@@ -1653,10 +1653,10 @@
     "message": "目前網站正嘗試使用 $2 金鑰向帳戶 @$1 的 Hive Keychain 瀏覽器擴充功能發送轉移請求，該鑰尚未新增到錢包中。"
   },
   "bgd_ops_witness_voted": {
-    "message": "成功投票通過@$1作為見證人。"
+    "message": "成功投票通過@$1作為witness。"
   },
   "bgd_ops_witness_unvoted": {
-    "message": "成功未投票@$1作見證人。"
+    "message": "成功未投票@$1作witness。"
   },
   "bgd_ops_vote": {
     "message": "已成功為 @$1 的貼文 $2 投票，權重 $3%。"
@@ -1674,7 +1674,7 @@
     "message": "播送此交易時出錯，請稍後再試。"
   },
   "bgd_ops_error": {
-    "message": "播送此交易時出錯："
+    "message": "廣播此交易時發生錯誤："
   },
   "bgd_ops_add_account_error": {
     "message": "添加此帳號時出現錯誤。 請驗證其密鑰。"
@@ -1695,7 +1695,7 @@
     "message": "訊息簽署已成功。"
   },
   "bgd_ops_sign_requested": {
-    "message": "Transaction has been requested. Please check your keychain mobile app to sign it."
+    "message": "交易請求已傳送。請在 Keychain 行動應用程式中查看並簽名。"
   },
   "bgd_ops_sign_error": {
     "message": "無法簽署。"
@@ -1749,10 +1749,10 @@
     "message": "無法對訊息進行編碼。"
   },
   "bgd_ops_broadcast": {
-    "message": "交易已成功播送。"
+    "message": "交易已成功廣播。"
   },
   "bgd_ops_sign_tx": {
-    "message": "交易簽名已成功。"
+    "message": "交易已成功簽署。"
   },
   "bgd_ops_convert": {
     "message": "以@$2 的帳號成功開始將 $1 HBD 轉換為 HIVE。"
@@ -1770,13 +1770,13 @@
     "message": "已成功從帳戶@$3的@$2中刪除了$1授權。"
   },
   "bgd_ops_keyless_broadcast_success": {
-    "message": "Keyless transaction has been broadcasted successfully."
+    "message": "無密鑰交易已成功廣播。"
   },
   "bgd_ops_keyless_broadcast_error": {
-    "message": "Keyless transaction failed to broadcast."
+    "message": "無密鑰交易廣播失敗。"
   },
   "bgd_ops_challenge_success": {
-    "message": "$1 request has been processed successfully.",
+    "message": "$1 請求已成功處理。",
     "description": "Success message for encode/decode/sign operations."
   },
   "popup_account_redeem": {
@@ -1822,11 +1822,11 @@
     "description": "When adding new account. In a button, must keep short. "
   },
   "popup_html_add_by_auth": {
-    "message": "使用授權帳戶",
+    "message": "透過已授權帳戶匯入",
     "description": "When adding new account. In a button, must keep short."
   },
   "popup_html_chose_add_method": {
-    "message": "您可以通過輸入私鑰或主密碼來添加密鑰。<br/>或者，您可以指定授權帳號或匯入您的密鑰。",
+    "message": "匯入或建立 Hive 帳戶。",
     "description": "Text when adding new method."
   },
   "popup_html_auth_text": {
@@ -1855,7 +1855,7 @@
     "message": "您已成功輸入密鑰！"
   },
   "import_html_error": {
-    "message": "輸入密鑰時出錯。<br/> 請確保使用與輸出文件時相同的主密鑰。"
+    "message": "匯入金鑰時發生錯誤。<br/>請確認使用的密碼與匯出檔案時相同。"
   },
   "import_permissions_html_title": {
     "message": "匯入設定值"
@@ -1867,15 +1867,15 @@
     "message": "沒有擁有有效權限的帳戶。"
   },
   "popup_warning_phishing": {
-    "message": "@$1 已被列為潛在的網絡釣魚帳號，請檢查拼寫並確保它是您要轉移到的帳號。",
+    "message": "@$1 已被列為潛在的網路釣魚帳戶。請檢查拼字，並確認這是您要轉帳的帳戶。",
     "description": "When trying to transfer to a blacklisted account"
   },
   "popup_warning_phishing_domain": {
-    "message": "@$1 has been flagged as a malicious domain, check the spelling and make sure this is the dApp you want to use.",
+    "message": "@$1 已被標記為惡意域名。請檢查拼寫，並確認這是您要使用的 dApp。",
     "description": "When trying to transfer to a blacklisted account"
   },
   "popup_warning_private_key_in_memo": {
-    "message": "Sending a private key as memo is a huge security risk.",
+    "message": "在 memo 中傳送私鑰會帶來極大的安全風險。",
     "description": "When trying to use memo with a private key"
   },
   "popup_warning_exchange_deposit": {
@@ -1951,7 +1951,7 @@
     "description": "On savings menu"
   },
   "popup_html_withdraw_success": {
-    "message": "成功從儲蓄中提取$1",
+    "message": "已成功開始從儲蓄中提領 $1",
     "description": "On savings menu"
   },
   "popup_html_withdraw_fail": {
@@ -1983,7 +1983,7 @@
     "description": "On savings menu"
   },
   "popup_html_deposit_hbd_text": {
-    "message": "將 HBD 存入儲蓄目前可獲得由見證人決定的 $1% 年利率。",
+    "message": "將 HBD 存入儲蓄目前可獲得由witnesses決定的 $1% 年利率。",
     "description": "when withdrawing from savings"
   },
   "popup_html_savings": {
@@ -2015,11 +2015,11 @@
     "description": "When registering from request"
   },
   "dialog_register_keyless_title": {
-    "message": "Register Keyless Keychain",
+    "message": "註冊無密鑰 Keychain",
     "description": "When registering from request"
   },
   "dialog_header_keyless_username": {
-    "message": "Register Keyless Keychain",
+    "message": "註冊無密鑰 Keychain",
     "description": "When registering from request"
   },
   "dialog_register_keyless_loading": {
@@ -2027,15 +2027,15 @@
     "description": "When registering to keyless keychain"
   },
   "dialog_hiveauth_connection_failed": {
-    "message": "Failed to establish HiveAuth connection after 5 attempts",
+    "message": "嘗試 5 次後仍無法建立 HiveAuth 連接",
     "description": "When registering to keyless keychain via HiveAuth"
   },
   "dialog_anonymous_keyless_content": {
-    "message": "You are about to perform an anonymous keyless operation. Please enter your username to register your keyless keychain.",
+    "message": "您即將執行匿名無密鑰操作。請輸入使用者名以註冊無密鑰 Keychain。",
     "description": "When registering from request"
   },
   "dialog_keyless_unsupported_operation": {
-    "message": "$1 is not supported by keyless keychain.",
+    "message": "無密鑰 Keychain 不支援 $1。",
     "description": "When trying to perform an unsupported operation"
   },
   "dialog_keyless_username_required": {
@@ -2043,7 +2043,7 @@
     "description": "When trying to perform an unsupported anonymous operation"
   },
   "dialog_keyless_expired": {
-    "message": "Keyless authentication request has expired. Please try again.",
+    "message": "無密鑰身份驗證請求已過期。請重試。",
     "description": "When keyless tx expires"
   },
   "dialog_keyless_expire_in": {
@@ -2051,7 +2051,7 @@
     "description": "When keyless tx hasnt expired yet"
   },
   "popup_html_automated_intro": {
-    "message": "如果適合您的條件，設置將每小時執行自動化任務。",
+    "message": "設定符合條件時每小時執行的自動化工作。",
     "description": "When on automated tasks page"
   },
   "popup_html_automated_hive_section_title": {
@@ -2063,7 +2063,7 @@
     "description": "When on automated tasks page"
   },
   "popup_html_automated_hive_engine_list_title": {
-    "message": "Tokens set for automatic staking",
+    "message": "已設定自動質押的 Token",
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autoclaim_rewards": {
@@ -2075,7 +2075,7 @@
     "description": "When on automated tasks page"
   },
   "popup_html_automated_hive_section_default_option_message": {
-    "message": "Add a token to auto-staking",
+    "message": "新增要自動質押的 Token",
     "description": "When on automated tasks page > auto staking default option"
   },
   "popup_html_enable_autoclaim_rewards_info": {
@@ -2083,7 +2083,7 @@
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autostake_tokens_info": {
-    "message": "Automatically staking your tokens can increase your gains",
+    "message": "自動質押 Token 可以提高您的收益",
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autoclaim_accounts": {
@@ -2095,7 +2095,7 @@
     "description": "When on automated tasks page"
   },
   "popup_html_insufficient_hp_claim_accounts": {
-    "message": "Insufficient HP to claim accounts.",
+    "message": "HP 不足，無法領取帳戶。",
     "description": "When on automated tasks page"
   },
   "popup_html_proposal_request": {
@@ -2143,7 +2143,7 @@
     "description": "Shortcut key combo label"
   },
   "popup_html_shortcuts_key_combo_placeholder": {
-    "message": "按組合鍵",
+    "message": "請按下組合鍵",
     "description": "Shortcut key combo placeholder"
   },
   "popup_html_shortcuts_action": {
@@ -2275,7 +2275,7 @@
     "description": "while confirming power up and down"
   },
   "popup_html_confirm_cancel_power_down_title": {
-    "message": "Confirm cancel power down",
+    "message": "確認取消 Power Down",
     "description": "while confirming power up and down"
   },
   "popup_html_confirm_cancel_delegation_message": {
@@ -2283,7 +2283,7 @@
     "description": "while confirming power up and down"
   },
   "popup_html_confirm_cancel_withdraw_savings_message": {
-    "message": "Please confirm that you want to cancel this $1 withdraw from savings.",
+    "message": "請確認要取消這筆從儲蓄中提取 $1 的操作。",
     "description": "while confirming savings withdraw"
   },
   "popup_html_cancel_delegation": {
@@ -2443,7 +2443,7 @@
     "description": "Governance"
   },
   "popup_html_witness_page_expand_more_tooltip": {
-    "message": "Click to view full witness account information",
+    "message": "點選查看完整的witness帳戶資訊",
     "description": "Governance, witness page"
   },
   "html_popup_witness_display_voted_only": {
@@ -2451,11 +2451,11 @@
     "description": "Governance"
   },
   "html_popup_witness_vote_error_proxy": {
-    "message": "目前已設定代理，請在投票給見證人之前清除代理",
+    "message": "目前已設定代理，請在投票給witness之前清除代理",
     "description": "Governance"
   },
   "html_popup_proposal_vote_error_proxy": {
-    "message": "A proxy is currently set, please clear the proxy before voting for a proposal",
+    "message": "目前已設定代理。請先清除代理，再為提案投票",
     "description": "Governance"
   },
   "html_popup_currently_using_proxy": {
@@ -2467,11 +2467,11 @@
     "description": "Governance"
   },
   "html_popup_witness_proxy_definition": {
-    "message": "添加帳號作為代理這表示代理帳號可以在管理事務(投票給見證人和提案) 中使用您的 HP 的影響力。 這不會影響您在管理方面的 HP，並且您可以在任何給定時刻刪除代理。 ",
+    "message": "添加帳號作為代理這表示代理帳號可以在管理事務(投票給witnesses和提案) 中使用您的 HP 的影響力。 這不會影響您在管理方面的 HP，並且您可以在任何給定時刻刪除代理。 ",
     "description": "Proxy tab"
   },
   "html_popup_witness_has_proxy": {
-    "message": "代理帳號代表您做出管理決策。 如果您想自己投票給見證人和提案，您必須先刪除代理。",
+    "message": "代理帳號代表您做出管理決策。 如果您想自己投票給witnesses和提案，您必須先刪除代理。",
     "description": "Governance"
   },
   "html_popup_set_as_proxy": {
@@ -2483,7 +2483,7 @@
     "description": "Governance"
   },
   "html_popup_set_as_proxy_error": {
-    "message": "Error while setting user as proxy",
+    "message": "將使用者設為代理時出錯",
     "description": "Proxy"
   },
   "html_popup_clear_proxy_error": {
@@ -2511,11 +2511,11 @@
     "description": "Import settings failed message"
   },
   "html_popup_link_to_witness_website": {
-    "message": "欲了解更多訊息，請點擊此處訪問見證數據庫",
+    "message": "如需更多資訊，請點擊此處開啟witness資料庫",
     "description": "Link to witness website"
   },
   "html_popup_vote_for_witness": {
-    "message": "投票支持 $1 作為見證人",
+    "message": "投票支持 $1 作為witness",
     "description": "On main page, in the vote witness section"
   },
   "html_popup_made_with_love_by_stoodkev": {
@@ -2523,19 +2523,19 @@
     "description": "Footer"
   },
   "html_popup_vote_stoodkev_witness_error_30_votes": {
-    "message": "您已經為 30 位證人投票。 請在為@stoodkev 投票之前刪除一個",
+    "message": "您已經為 30 位witnesses投票。 請在為@stoodkev 投票之前刪除一個",
     "description": "Error message when vote for stoodkev as witness with 30 votes"
   },
   "html_popup_vote_witness_error_30_votes": {
-    "message": "You already voted for 30 witnesses. Please remove one before voting again",
+    "message": "您已經為 30 位witnesses投票。請先移除一票，再繼續投票",
     "description": "Error message when vote for stoodkev as witness with 30 votes"
   },
   "html_popup_vote_stoodkev_witness_success": {
-    "message": "成功投票給@stoodkev 作為見證人。 謝謝您的支持！",
+    "message": "成功投票給@stoodkev 作為witness。 謝謝您的支持！",
     "description": "Success message when vote for stoodkev as witness"
   },
   "html_popup_vote_cedricguillas_witness_success": {
-    "message": "Successfully voted @cedricguillas as a witness. Thanks for your support!",
+    "message": "已成功投票支援 @cedricguillas 成為witness。感謝您的支援！",
     "description": "Success message when vote for stoodkev as witness"
   },
   "html_popup_conversion_operation": {
@@ -2543,7 +2543,7 @@
     "description": "conversion operation"
   },
   "html_popup_revert_vesting_route_operation": {
-    "message": "Reverting Vesting route(s)",
+    "message": "正在還原 Vesting 路由",
     "description": "when the user decides to revert all vesting routes in his account"
   },
   "html_popup_delegation_operation": {
@@ -2555,19 +2555,19 @@
     "description": "delegation operation"
   },
   "html_popup_cancel_withdraw_savings_operation": {
-    "message": "Canceling withdraw from savings",
+    "message": "正在取消從儲蓄中提取",
     "description": "savings operation"
   },
   "html_popup_vote_witness_operation": {
-    "message": "投票給見證人",
+    "message": "投票給witness",
     "description": "vote witness operation"
   },
   "html_popup_unvote_witness_operation": {
-    "message": "取消對見證人的投票",
+    "message": "取消對witness的投票",
     "description": "unvote witness operation"
   },
   "html_popup_update_witness_operation": {
-    "message": "Updating witness account",
+    "message": "正在更新witness帳戶",
     "description": "When updating witness account"
   },
   "html_popup_witness_information_info_label": {
@@ -2643,7 +2643,7 @@
     "description": "Cancel transaction operation"
   },
   "html_popup_stop_recc_transfer_fund_operation": {
-    "message": "Stopping a recurrent transfer",
+    "message": "正在停止定期轉帳",
     "description": "Transfer fund operation"
   },
   "html_popup_transfer_token_operation": {
@@ -2707,15 +2707,15 @@
     "description": "In account's keys while using authorized account"
   },
   "popup_html_cancel_delegation_successful": {
-    "message": "成功取消委託",
+    "message": "已成功取消委託",
     "description": "Success message cancel delegation"
   },
   "popup_html_cancel_withdraw_savings_successful": {
-    "message": "Successfully canceled a withdraw of $1 $2 from savings",
+    "message": "已成功取消從儲蓄中提取 $1 $2",
     "description": "Success message cancel withdraw"
   },
   "popup_html_cancel_withdraw_savings_fail": {
-    "message": "Failed to cancel a $1 withdraw from savings",
+    "message": "取消從儲蓄中提取 $1 失敗",
     "description": "Failed message cancel withdraw"
   },
   "popup_html_cancel_delegation_fail": {
@@ -2739,7 +2739,7 @@
     "description": "Transfer tokens"
   },
   "popup_html_cancel_withdraw": {
-    "message": "Cancel withdraw from savings",
+    "message": "取消從儲蓄中提取",
     "description": "Cancel withdraw savings"
   },
   "popup_html_fill_form_error": {
@@ -2775,11 +2775,11 @@
     "description": "Node Rpc auto selection hint"
   },
   "popup_html_proxy_suggestion": {
-    "message": "被管理投票壓得喘不過氣來？ 將@keychain 設置為代理以自動關注 Keychain 團隊見證和提案投票。 您可以隨時從管理清單中更改此設置。",
+    "message": "治理投票太多嗎？將 @keychain 設為代理，即可自動跟隨 Keychain 團隊的witness與提案投票。您可以隨時在治理選單中變更此設定。",
     "description": "If no witness voted"
   },
   "popup_html_setting_proxy": {
-    "message": "設置代理",
+    "message": "正在設定代理",
     "description": "in proxy suggestion popup"
   },
   "popup_html_clearing_proxy": {
@@ -2871,7 +2871,7 @@
     "description": "Wallet information withdraw from savings"
   },
   "popup_html_wallet_info_fill_withdraw_savings": {
-    "message": "Successfully withdrawn $1 from savings",
+    "message": "已成功從儲蓄中提取 $1",
     "description": "Wallet information withdraw from savings"
   },
   "popup_html_wallet_info_power_down": {
@@ -3027,11 +3027,11 @@
     "description": "Wallet filters"
   },
   "popup_html_error_retrieving_witness_ranking": {
-    "message": "檢視見證排名時發生錯誤。 請稍後再試。",
+    "message": "檢視witness排名時發生錯誤。 請稍後再試。",
     "description": "Error while retrieving witness ranking, hivesql not down"
   },
   "popup_html_error_retrieving_witness_information": {
-    "message": "An error occured while retrieving the witness account information. Please try again later.",
+    "message": "取得witness帳戶資訊時出錯。請稍後重試。",
     "description": "Error while retrieving witness information, hivesql not down"
   },
   "popup_html_error_retrieving_incoming_delegations": {
@@ -3115,7 +3115,7 @@
     "description": "delegate token title"
   },
   "popup_html_cancel_delegation_tokens_success": {
-    "message": "成功取消委託",
+    "message": "已成功取消委託",
     "description": "delegate token title"
   },
   "popup_html_stake_tokens_confirm_text": {
@@ -3135,7 +3135,7 @@
     "description": "delegate token title"
   },
   "popup_html_load_more": {
-    "message": "點擊加載更多",
+    "message": "點擊載入更多內容",
     "description": "on wallet history"
   },
   "popup_html_transaction_list_is_empty": {
@@ -3263,11 +3263,11 @@
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autoclaim_savings_info": {
-    "message": "To claim your savings interest, Keychain will deposit or withdraw 0.001 HBD to/from your savings every 30 days",
+    "message": "為了領取儲蓄利息，Keychain 將每 30 天向您的儲蓄存入或提取 0.001 HBD",
     "description": "When on automated tasks page"
   },
   "html_popup_new_account_history": {
-    "message": "New account history API",
+    "message": "新的帳戶歷史記錄 API",
     "description": "Tokens setting page =>  add account history api"
   },
   "html_popup_new_rpc": {
@@ -3275,7 +3275,7 @@
     "description": "Tokens setting page =>  add rpc node"
   },
   "html_popup_new_rpc_save_success": {
-    "message": "New RPC node was saved successfully",
+    "message": "新 RPC 節點已成功儲存",
     "description": "Tokens setting page =>  add rpc node"
   },
   "html_popup_url_not_valid": {
@@ -3283,23 +3283,23 @@
     "description": "Tokens setting page"
   },
   "html_popup_new_account_history_save_success": {
-    "message": "New account history API was saved successfully",
+    "message": "新的帳戶歷史記錄 API 已成功儲存",
     "description": "Tokens setting page =>  add rpc node"
   },
   "html_popup_rpc_already_exist": {
-    "message": "This RPC is already in your list",
+    "message": "此 RPC 已在列表中",
     "description": "Tokens setting page =>  add rpc node"
   },
   "popup_html_transfer_recurrent_exchange_warning": {
-    "message": "Most exchanges do not accept recurrent transfers. If you proceed, your funds may be lost.",
+    "message": "大多數交易所不接受定期轉帳。如果繼續，您的資金可能會丟失。",
     "description": "Warning message during transfer if recurrent transfer and receiver is exchange"
   },
   "popup_html_transfer_recurrent_missing_field": {
-    "message": "Iteration and frequency are mandatory",
+    "message": "執行次數和頻率為必填項",
     "description": "Error message during transfer if missing iteration and/or frequency and recucrent"
   },
   "popup_html_whats_new": {
-    "message": "What's new in v$1",
+    "message": "v$1 的新增功能",
     "description": "What's new popup title"
   },
   "popup_html_whats_new_next": {
@@ -3315,15 +3315,15 @@
     "description": "What's new popup button"
   },
   "popup_html_vesting_routes_title": {
-    "message": "Your vesting routes have changed",
+    "message": "您的 Vesting 路由已更改",
     "description": "Vesting shares popup title"
   },
   "popup_html_vesting_routes_warning_message": {
-    "message": "If you didn't change them, please seek assistance on the Hive <a href=\"https://discord.gg/UpXnBQtJw7\" target=\"_blank\">Discord channel</a>.",
+    "message": "如果這不是您所做的更改，請前往 Hive <a href=\"https://discord.gg/UpXnBQtJw7\" target=\"_blank\">Discord 頻道</a>尋求說明。",
     "description": "Vesting shares popup warning message"
   },
   "popup_html_vesting_routes_handled_successfully": {
-    "message": "Your vesting routes have been secured!",
+    "message": "您的 Vesting 路由已受到保護！",
     "description": "Vesting shares end list being handled by user"
   },
   "popup_html_vesting_route_account_item_label": {
@@ -3343,7 +3343,7 @@
     "description": "wrong vesting routes popup, account item, revert button label"
   },
   "popup_html_vesting_route_account_item_button_skip_label": {
-    "message": "These changes were intentional",
+    "message": "這些更改是有意進行的",
     "description": "wrong vesting routes popup, account item, revert skip label"
   },
   "popup_html_vesting_route_item_details_non_existent_label": {
@@ -3371,7 +3371,7 @@
     "description": "wrong vesting routes popup, item details, autovest label/title"
   },
   "html_popup_tokens_timeout": {
-    "message": "This Hive Engine node is not replying. Please change the Hive Engine RPC node.",
+    "message": "此 Hive Engine 節點沒有響應。請更換 Hive Engine RPC 節點。",
     "description": "Token timeout error"
   },
   "popup_html_create_account_buy_account": {
@@ -3391,19 +3391,19 @@
     "description": "General"
   },
   "html_popup_create_account_username_already_used": {
-    "message": "Username is already used. Please pick a new one",
+    "message": "該使用者名已被使用。請選擇一個新使用者名",
     "description": "General"
   },
   "html_popup_create_account_account_name_not_valid": {
-    "message": "The account name is not valid. Make sure you don't have dots and hyphens next to each other, and that dot-separated segments are 3 characters long or more.",
+    "message": "帳戶名無效。請確保點號和連字符不相鄰，並且以點號分隔的每個部分至少包含 3 個字符。",
     "description": "General"
   },
   "html_popup_create_account_safely_copied_keys": {
-    "message": "I have safely copied my keys and saved them outside of Keychain",
+    "message": "我已安全複製密鑰並將其儲存在 Keychain 之外",
     "description": "checkbox content on create account page"
   },
   "html_popup_create_account_storage_understanding": {
-    "message": "I understand that Keychain should not be considered as the primary place of storage for my keys",
+    "message": "我明白 Keychain 不應被視為存儲密鑰的主要位置",
     "description": "checkbox content on create account page"
   },
   "html_popup_copy": {
@@ -3423,31 +3423,31 @@
     "description": "General"
   },
   "html_popup_ticket": {
-    "message": "$1 account creation ticket",
+    "message": "$1 個帳戶建立憑證",
     "description": "claim account ticket (one word)"
   },
   "html_popup_account_creation_not_enough_found": {
-    "message": "You don't have enough HIVE to buy an account",
+    "message": "您沒有足夠的 HIVE 來購買帳戶",
     "description": "claim account ticket (one word)"
   },
   "html_popup_create_account_buy_method_message": {
-    "message": "I agree to pay $1 HIVE with account @$2 to create this account",
+    "message": "我同意使用帳戶 @$2 支付 $1 HIVE 來建立此帳戶",
     "description": "Create account payment message"
   },
   "html_popup_create_account_claim_account_method_message": {
-    "message": "I agree to use one account creation ticket from @$1 to create this account",
+    "message": "我同意使用 @$1 的一個帳戶建立憑證來建立此帳戶",
     "description": "Create account payment message"
   },
   "html_popup_create_account_need_accept_terms_condition": {
-    "message": "You need to accept the terms and condition before creating account",
+    "message": "建立帳戶前，您需要接受條款和條件",
     "description": "Create account payment message"
   },
   "html_popup_create_account_need_copy": {
-    "message": "Make sure you have copied your keys before creating the account",
+    "message": "建立帳戶前，請確保已複製密鑰",
     "description": "Create account payment message"
   },
   "html_popup_create_account_successful": {
-    "message": "Your account has been successfully created and added to your Keychain",
+    "message": "您的帳戶已成功建立並新增到 Keychain",
     "description": "Create account successful message"
   },
   "html_popup_creating_account": {
@@ -3459,7 +3459,7 @@
     "description": "Loading message while preparing EVM paid Hive account creation"
   },
   "html_popup_create_account_failed": {
-    "message": "Your account creation has failed. Please try again later",
+    "message": "帳戶建立失敗。請稍後重試",
     "description": "Create account failed message"
   },
   "html_popup_create_account_pending_keep_open": {
@@ -3523,15 +3523,15 @@
     "description": "Total pending undelegate"
   },
   "popup_html_pending_undelegation": {
-    "message": "Pending outgoing undelegations",
+    "message": "待處理的對外取消委託",
     "description": "Pending undelegate"
   },
   "popup_html_undelegation_pending_until_message": {
-    "message": "After being canceled, delegations take 5 days to return to your available Hive Power balance",
+    "message": "委託取消後，需要 5 天才會返還到您的可用 Hive Power 餘額",
     "description": "Delegation list item pending until date"
   },
   "popup_html_withdraw_savings_until_message": {
-    "message": "Withdrawing from savings takes 3 days. Cancel the operation if you wish to keep your $1 in the savings.",
+    "message": "從儲蓄中提取需要 3 天。如果您希望將 $1 保留在儲蓄中，請取消此操作。",
     "description": "Withdraw saving list item pending until date"
   },
   "html_popup_governance_renewal_title": {
@@ -3539,15 +3539,15 @@
     "description": "Governance expiration renewal popup"
   },
   "html_popup_wrong_key_title": {
-    "message": "Wrong key(s) found",
+    "message": "發現錯誤密鑰",
     "description": "Wrong key popup"
   },
   "html_popup_wrong_key_introduction": {
-    "message": "Some wrong key(s) were found on your account @$1. Would you like to update them right now?",
+    "message": "在您的帳戶 @$1 中發現錯誤密鑰。是否立即更新？",
     "description": "Governance expiration renewal popup"
   },
   "html_popup_governance_renewal_introduction": {
-    "message": "Your governance votes are about to expire for the following accounts.<br/>If you want to keep them active, click on the renew button. To cancel the expiry, we will help you vote/unvote the return proposal. If you would rather review your votes manually, uncheck the checkbox to ignore.",
+    "message": "以下帳戶的治理投票即將到期。<br/>如果您希望保持投票有效，請點選續期按鈕。為了取消到期，我們將協助您對 return proposal 進行投票或取消投票。如果您希望手動檢查投票，請取消選中復選框以忽略。",
     "description": "Governance expiration renewal popup"
   },
   "html_popup_governance_renew": {
@@ -3559,7 +3559,7 @@
     "description": "Governance expiration ignore"
   },
   "html_popup_governance_expiration_read_more": {
-    "message": "Read more about governance expiration",
+    "message": "瞭解有關治理投票到期的更多資訊",
     "description": "Governance expiration description"
   },
   "html_popup_governance_renewing": {
@@ -3567,11 +3567,11 @@
     "description": "Governance expiration description"
   },
   "popup_html_transfer_to_saving_to_exchange_error": {
-    "message": "You are trying to transfer to the savings of an exchange. They might not be able to retrieve your transfer. Please use a regular transfer",
+    "message": "您正在嘗試轉帳到交易所的儲蓄帳戶，對方可能無法找回這筆轉帳。請使用普通轉帳",
     "description": "Transfer to savings of exchange platform warning message"
   },
   "popup_html_transfer_from_saving_to_exchange_error": {
-    "message": "You are trying to withdraw from your savings to an exchange. They might not be able to retrieve your transfer. Please use a regular transfer",
+    "message": "您正在嘗試從儲蓄中提取到交易所，對方可能無法找回這筆轉帳。請使用普通轉帳",
     "description": "Transfer from savings to an exchange platform warning message"
   },
   "popup_html_buy": {
@@ -3579,11 +3579,11 @@
     "description": "Main page buy button"
   },
   "html_popup_transak_description": {
-    "message": "Transak helps you buy HIVE using fiat. It supports credit cards, bank transfers, Apple Pay and MobiKwik in more than 100 countries (options vary per country). You will receive your HIVE directly in your Hive Keychain wallet.",
+    "message": "Transak 可說明您使用法幣購買 HIVE。它在 100 多個國家和地區支援信用卡、銀行轉帳、Apple Pay 和 MobiKwik（可用選項因國家和地區而異）。HIVE 將直接傳送到您的 Hive Keychain 錢包。",
     "description": "Buy coin, transak description"
   },
   "html_popup_blocktrades_description": {
-    "message": "With Blocktrades, quickly swap between other major cryptocurrencies and HIVE/HBD.",
+    "message": "透過 Blocktrades，您可以快速在其他主流加密貨幣與 HIVE/HBD 之間兌換。",
     "description": "Buy coin, blocktrades description"
   },
   "html_popup_exchanges": {
@@ -3611,11 +3611,11 @@
     "description": "Global"
   },
   "popup_html_pending_currency_timestamp": {
-    "message": "This conversion will be filled on $1 at $2",
+    "message": "此轉換將在 $1 的 $2 完成",
     "description": "Global"
   },
   "popup_html_pending_conversions": {
-    "message": "You have $1 pending $2 conversion(s)",
+    "message": "您有 $1 筆待處理的 $2 轉換",
     "description": "Global"
   },
   "popup_html_analytics": {
@@ -3627,7 +3627,7 @@
     "description": "Allow google analytics checkbox label"
   },
   "popup_html_analytics_allow_ga_hint": {
-    "message": "Allow us to record your activity on Google Analytics to help us improve the user experience on Hive Keychain",
+    "message": "允許我們透過 Google Analytics 記錄您的使用活動，以說明改善 Hive Keychain 的使用者體驗",
     "description": "Allow google analytics hint"
   },
   "popup_html_analytics_save": {
@@ -3643,23 +3643,23 @@
     "description": "do nothing button on wrong key popup"
   },
   "popup_html_analytics_accept_to_share": {
-    "message": "I agree to share usage data with Keychain",
+    "message": "我同意與 Keychain 分享使用資料",
     "description": "accept on analytics popup"
   },
   "popup_html_analytics_thank_you": {
-    "message": "Thank you for your help",
+    "message": "感謝您的說明",
     "description": "Thank you for your help"
   },
   "popup_html_analytics_title": {
-    "message": "Help us improve Keychain",
+    "message": "說明我們改進 Keychain",
     "description": "Analytics popup title"
   },
   "popup_html_analytics_message": {
-    "message": "Enable Keychain to gather anonymous non-sensitive data on the extension usage. This data will be used to enhance your user experience. You can opt out at any time from the 'Advanced Settings' section.",
+    "message": "允許 Keychain 收集有關擴充功能使用情況的匿名非敏感資料。這些資料將用於改善您的使用者體驗。您可以隨時在“高級設定”中選擇退出。",
     "description": "Analytics popup message"
   },
   "popup_html_analytics_privacy_policy_text": {
-    "message": "By continuing, you are accepting our",
+    "message": "繼續操作即表示您接受我們的",
     "description": "Followed by 'Privacy Policy'"
   },
   "popup_html_analytics_privacy_policy": {
@@ -3670,7 +3670,7 @@
     "message": "RC Delegations"
   },
   "popup_html_rc_delegations_text": {
-    "message": "You may delegate your Resource Credit (RC) to another user. Click on the Outgoing amount to review or make changes.",
+    "message": "您可以將資源積分（RC）委託給其他使用者。點選對外委託數量即可查看或修改。",
     "description": "Main page > Delegate RC"
   },
   "popup_html_username_missing": {
@@ -3686,11 +3686,11 @@
     "description": "cancel delegate rc operation"
   },
   "popup_html_rc_delegation_confirm_text": {
-    "message": "Please confirm your RC delegation.",
+    "message": "請確認您的 RC 委託。",
     "description": "On RC delegation confirmation page"
   },
   "popup_html_cancel_rc_delegation_confirm_text": {
-    "message": "Please confirm your want to cancel your RC delegation.",
+    "message": "請確認要取消您的 RC 委託。",
     "description": "On RC delegation confirmation page"
   },
   "popup_html_rc_delegation_title": {
@@ -3702,15 +3702,15 @@
     "description": "On RC delegation confirmation page"
   },
   "popup_html_rc_delegation_successful": {
-    "message": "You successfully delegated RC to $1",
+    "message": "您已成功將 RC 委託給 $1",
     "description": "On RC delegation confirmation page"
   },
   "popup_html_cancel_rc_delegation_successful": {
-    "message": "You successfully canceled your delegation to $1",
+    "message": "您已成功取消對 $1 的委託",
     "description": "On RC delegation confirmation page"
   },
   "popup_html_cancel_rc_delegation_failed": {
-    "message": "Your cancel delegation operation has failed",
+    "message": "取消委託操作失敗",
     "description": "On RC delegation confirmation page"
   },
   "popup_html_rc_delegation_to": {
@@ -3732,7 +3732,7 @@
     "description": "Help us button on survey popup"
   },
   "popup_html_public_key_not_matching": {
-    "message": "The public key doesn't match the public key on the blockchain. It might have been updated",
+    "message": "此公鑰與區塊鏈上的公鑰不匹配，鏈上公鑰可能已更新",
     "description": "select keys => public not matching"
   },
   "popup_html_add_using_ledger": {
@@ -3740,7 +3740,7 @@
     "description": "Add using ledger link"
   },
   "popup_html_ledger_not_detected": {
-    "message": "Ledger not detected. Make sure your Ledger is plugged and the Hive App is running",
+    "message": "未檢測到 Ledger。請確保 Ledger 已連接，並且 Hive 應用正在運行",
     "description": "Ledger not detected error message"
   },
   "popup_html_ledger_detected": {
@@ -3756,11 +3756,11 @@
     "description": "Ledger not available error message"
   },
   "html_ledger_not_detected": {
-    "message": "We couldn't detect your Ledger. If it is connected and unlocked already, please navigate to Keychain Advanced Settings and use the Link Ledger option.",
+    "message": "無法檢測到您的 Ledger。如果設備已連接並解鎖，請前往 Keychain 高級設定並使用“連接 Ledger”選項。",
     "description": "Ledger not available error message"
   },
   "html_ledger_no_device_selected": {
-    "message": "No Ledger device selected",
+    "message": "未選擇 Ledger 設備",
     "description": "Ledger not selected error message"
   },
   "html_ledger_unknown_error": {
@@ -3768,19 +3768,19 @@
     "description": "Ledger unknown error"
   },
   "html_popup_using_ledger": {
-    "message": "Key saved on Ledger",
+    "message": "密鑰已儲存在 Ledger 上",
     "description": "key using ledger label"
   },
   "html_ledger_error_while_signing": {
-    "message": "Error while signing transaction with Ledger",
+    "message": "使用 Ledger 簽署交易時出錯",
     "description": "Error while signing transaction with Ledger"
   },
   "html_ledger_error_while_connecting": {
-    "message": "Error while connecting to Ledger. Please make sure your Ledger is connected and Hive application is running",
+    "message": "連接 Ledger 時出錯。請確保 Ledger 已連接，並且 Hive 應用正在運行",
     "description": "Error while connecting to Ledger"
   },
   "html_popup_witness_already_voted": {
-    "message": "You already voted for this witness",
+    "message": "您已經為此witness投過票",
     "description": "Error if trying to vote for a witness that has alreay been voted for"
   },
   "html_popup_button_edit_label": {
@@ -3788,23 +3788,23 @@
     "description": "when using a button as to edit"
   },
   "html_popup_witness_not_voted": {
-    "message": "You did not vote for this witness, you can't unvote it",
+    "message": "您尚未為此witness投票，無法取消投票",
     "description": "Error if trying to unvote a witness that has not been voted for"
   },
   "html_popup_witness_not_existing": {
-    "message": "The witness you tried to vote for doesn't exist",
+    "message": "您嘗試投票的witness不存在",
     "description": "Error if trying to vote a witness that doesn't exist"
   },
   "bgd_ops_hive_engine_confirmation_error": {
-    "message": "The Hive Engine operation returned with the following error:  <br/><br/> Error: $1",
+    "message": "Hive Engine 操作返回以下錯誤：<br/><br/>錯誤：$1",
     "description": "Error while confirming transaction on hive engine"
   },
   "hive_engine_overdraw_balance_error": {
-    "message": "Your $1 balance is insufficient",
+    "message": "您的 $1 餘額不足",
     "description": "Error if trying to send too much of a token"
   },
   "hive_engine_not_existing_token_error": {
-    "message": "$1 token does not exist",
+    "message": "$1 Token 不存在",
     "description": "Error if trying to send a token that doesn't exist"
   },
   "hive_engine_not_existing_user_error": {
@@ -3812,31 +3812,31 @@
     "description": "Error if trying to send a token that doesn't exist"
   },
   "transaction_wrong_format_decimal_error": {
-    "message": "Wrong format. should have $1 decimals",
+    "message": "格式錯誤，應保留 $1 位小數",
     "description": "Error if formating is not correct, wrong decimal number"
   },
   "error_while_broadcasting": {
-    "message": "Your transaction returned an error <br/><br/>Error: $1",
+    "message": "您的交易返回錯誤<br/><br/>錯誤：$1",
     "description": "Generic error while broadcasting transaction"
   },
   "recurrent_transfer_recurrence_error": {
-    "message": "Cannot set a transfer recurrence that is less than $1 hours",
+    "message": "定期轉帳的間隔不能少於 $1 小時",
     "description": "Recurrent transfer recurrence"
   },
   "recurrent_transfer_recurrence_max_duration_error": {
-    "message": "Cannot set a transfer that would last for longer than $1 days",
+    "message": "不能設定持續時間超過 $1 天的轉帳",
     "description": "Recurrent transfer recurrence"
   },
   "recurrent_transfer_iterations_error": {
-    "message": "Executions must be at least 2, if you set executions to 1 the recurrent transfer will execute immediately and delete itself. You should use a normal transfer operation",
+    "message": "執行次數必須至少為 2。如果設定為 1，定期轉帳將立即執行並自動刪除。此情況應使用普通轉帳。",
     "description": "Recurrent transfer recurrence"
   },
   "set_same_proxy_error": {
-    "message": "This user is already set as your proxy.",
+    "message": "該使用者已被設為您的代理。",
     "description": "Proxy already set"
   },
   "power_down_hp_not_sufficient_error": {
-    "message": "Account does not have sufficient Hive Power for power down",
+    "message": "帳戶沒有足夠的 Hive Power 進行 Power Down",
     "description": "Error while trying to power down"
   },
   "already_has_authority_error": {
@@ -3852,7 +3852,7 @@
     "description": "Error if account has no authority to remove"
   },
   "html_popup_error_while_signing_transaction": {
-    "message": "An error occured while signing the transaction",
+    "message": "簽署交易時出錯",
     "description": "Generic error during signature"
   },
   "network_error_timeout": {
@@ -3860,7 +3860,7 @@
     "description": "When network timeout"
   },
   "html_popup_waiting_for_ledger_confirmation": {
-    "message": "Waiting for Ledger confirmation",
+    "message": "正在等待 Ledger 確認",
     "description": "loading message while waiting for cnfirmation on ledger"
   },
   "html_sign_with_ledger": {
@@ -3868,15 +3868,15 @@
     "description": "sign on ledger dialog title"
   },
   "html_popup_error_while_broadcasting": {
-    "message": "Error while broadcasting the transaction",
+    "message": "廣播交易時出錯",
     "description": "error while broadcasting the transaction"
   },
   "html_popup_broadcasting_transaction": {
-    "message": "Broadcasting transaction",
+    "message": "正在廣播交易",
     "description": "message while broadcasting the transaction"
   },
   "sign_buffer_ledger_error": {
-    "message": "Ledger is currently not compatible with the Sign Message function",
+    "message": "Ledger 目前不支援“簽署消息”功能",
     "description": "Error message if trying to sign a buffer with Ledger"
   },
   "error_ledger_denied_by_user": {
@@ -3884,79 +3884,79 @@
     "description": "Transaction rejected on Ledger"
   },
   "error_ledger_locked": {
-    "message": "Please unlock your Ledger",
+    "message": "請解鎖您的 Ledger",
     "description": "Transaction rejected on Ledger because it is locked"
   },
   "error_ledger_failed_to_parse_transaction": {
-    "message": "Ledger failed to parse the transaction. Contact us on Discord",
+    "message": "Ledger 無法解析交易。請透過 Discord 聯繫我們",
     "description": "transaction parsing failed on Ledger"
   },
   "error_ledger_bad_state": {
-    "message": "Ledger detected an error and switched to locked mode. Please reboot your device and try again",
+    "message": "Ledger 檢測到錯誤並已切換到鎖定模式。請重啓設備後重試",
     "description": "Bad state error on Ledger"
   },
   "error_ledger_internal_error": {
-    "message": "Ledger Internal Error. Please try to reboot your device and try again",
+    "message": "Ledger 內部錯誤。請重啓設備後重試",
     "description": "Internal error on Ledger"
   },
   "error_ledger_sign_hash": {
-    "message": "There was an error while blind signing the transaction.",
+    "message": "盲簽交易時出錯。",
     "description": "transaction blind signing failed on Ledger"
   },
   "error_ledger_app_not_supported": {
-    "message": "Seems like your App is not supported. Make sure the Hive App is running on your Ledger.",
+    "message": "您的應用似乎不受支援。請確保 Ledger 上的 Hive 應用正在運行。",
     "description": "transaction blind signing failed on Ledger"
   },
   "error_ledger_version_not_supported": {
-    "message": "The version of your Ledger's Hive App might be outdated. Update it and try again.",
+    "message": "Ledger 上的 Hive 應用版本可能已過時。請更新後重試。",
     "description": "transaction blind signing failed on Ledger"
   },
   "error_ledger_no_hash_sign_policy": {
-    "message": "Blind signing is not authorized on your device. Please enable 'Hash Signing' in the Hive App settings.",
+    "message": "設備未授權盲簽。請在 Hive 應用設定中啟用“Hash Signing”。",
     "description": "when user hasn't allowed hash sign policyon his ledger"
   },
   "error_ledger_hive_app_not_opened": {
-    "message": "Please open the Hive App on your Ledger.",
+    "message": "請在 Ledger 上開啟 Hive 應用。",
     "description": "when user hasn't allowed hash sign policyon his ledger"
   },
   "popup_html_need_active_key_for_claim_savings": {
-    "message": "You need to add your active key to Keychain to claim savings",
+    "message": "您需要將 active key 新增到 Keychain 才能領取儲蓄",
     "description": "automated tasks => need active key claim savings"
   },
   "popup_html_need_active_key_for_claim_accounts": {
-    "message": "You need to add your active key to Keychain to claim accounts",
+    "message": "您需要將 active key 新增到 Keychain 才能領取帳戶",
     "description": "automated tasks => need active key claim accounts"
   },
   "popup_html_need_posting_key_to_claim_rewards": {
-    "message": "You need to add your posting key to Keychain to claim rewards",
+    "message": "您需要將 posting key 新增到 Keychain 才能領取獎勵",
     "description": "automated tasks => need active key claim accounts"
   },
   "popup_html_create_account_username_too_long": {
-    "message": "Username is too long (max 16 characters)",
+    "message": "使用者名過長（最多 16 個字符）",
     "description": "create account => username too long"
   },
   "popup_html_create_account_username_case_not_valid": {
-    "message": "Username must only contain lowercase letters, numbers, hyphens and dots",
+    "message": "使用者名只能包含小寫字母、數字、連字符和點號",
     "description": "create account => username case not valid"
   },
   "popup_html_create_account_username_too_short": {
-    "message": "Username is too short (min 3 characters)",
+    "message": "使用者名過短（至少 3 個字符）",
     "description": "create account => username too short"
   },
   "popup_html_create_account_username_start_or_end_not_valid": {
-    "message": "Username must start with a letter and end with a letter or number",
+    "message": "使用者名必須以字母開頭，並以字母或數字結尾",
     "description": "create account => username start or end not valid"
   },
   "popup_html_cant_automatically_claim_ledger": {
-    "message": "You can't automatically claim because your key is saved on Ledger",
+    "message": "由於您的密鑰儲存在 Ledger 上，無法自動領取",
     "description": "automated tasks => cant claim with Ledger"
   },
   "popup_html_not_enough_rc_to_claim_account": {
-    "message": "You don't have enough RC to claim an account.",
+    "message": "您的 RC 不足，無法領取帳戶。",
     "description": "automated tasks => need more RC to claim account"
   },
   "popup_html_validate_transaction_on_ledger": {
-    "message": "Please confirm the transaction on your Ledger",
+    "message": "請在 Ledger 上確認交易",
     "description": "Message to remind user to accept transaction on his Ledger device"
   },
   "popup_html_add_account_with_ledger": {
@@ -3972,7 +3972,7 @@
     "description": "Title of add key from ledger page"
   },
   "add_accounts_from_ledger": {
-    "message": "Add accounts from Ledger",
+    "message": "從 Ledger 新增帳戶",
     "description": "Title of add accounts from ledger page"
   },
   "evm_add_accounts_from_ledger": {
@@ -3980,7 +3980,7 @@
     "description": "Title of add EVM accounts from ledger page"
   },
   "add_accounts_from_ledger_finished": {
-    "message": "Add accounts from Ledger",
+    "message": "從 Ledger 新增帳戶",
     "description": "Title of add accounts from ledger page"
   },
   "synchronize_ledger_button": {
@@ -3988,11 +3988,11 @@
     "description": "Synchronize Ledger button"
   },
   "ledger_select_account_caption": {
-    "message": "Select the accounts you want to import",
+    "message": "選擇要匯入的帳戶",
     "description": "Select account caption"
   },
   "ledger_add_missing_keys_caption": {
-    "message": "Some of the keys are missing for this account. Please add them manually to be able to fully use your account, or skip this step.",
+    "message": "此帳戶缺少部分密鑰。請手動新增這些密鑰以完整使用帳戶，或跳過此步驟。",
     "description": "Select account caption"
   },
   "ledger_add_key_use_master_key": {
@@ -4020,7 +4020,7 @@
     "description": "Add missing keys when import account from Ledger"
   },
   "ledger_account_discovery_caption": {
-    "message": "Link your Ledger to use your accounts on Keychain",
+    "message": "連接 Ledger，以便在 Keychain 中使用您的帳戶",
     "description": "synchronize ledger caption"
   },
   "evm_ledger_account_discovery_caption": {
@@ -4076,31 +4076,31 @@
     "description": "EVM Ledger unknown error"
   },
   "no_account_found_on_ledger_error": {
-    "message": "No account found on your Ledger. Make sure your added at least one and try again.",
+    "message": "Ledger 上未找到帳戶。請確保至少新增了一個帳戶，然後重試。",
     "description": "synchronize ledger caption"
   },
   "no_account_found_on_portfolio_error": {
-    "message": "No account found on your Keychain Portfolio. Make sure you add at least one and try again.",
+    "message": "Keychain Portfolio 中未找到帳戶。請確保至少新增了一個帳戶，然後重試。",
     "description": "portfolio section, loading accounts"
   },
   "all_ledger_accounts_already_imported": {
-    "message": "All the accounts on your Ledger have already been linked to Keychain",
+    "message": "Ledger 上的所有帳戶都已連接到 Keychain",
     "description": "while synchronizing ledger"
   },
   "add_accounts_from_ledger_sucessful": {
-    "message": "Your account(s) have been successfully added to Keychain",
+    "message": "您的帳戶已成功新增到 Keychain",
     "description": "Synchronize Ledger success message"
   },
   "add_key_from_ledger_sucessful": {
-    "message": "Key successfully linked to Keychain. You can now close this tab.",
+    "message": "密鑰已成功連接到 Keychain。您現在可以關閉此分頁。",
     "description": "Synchronize Ledger success message"
   },
   "popup_html_ledger_unknown_error": {
-    "message": "An unknown error occured. Please reboot your Ledger and try again",
+    "message": "發生未知錯誤。請重啓 Ledger 後重試",
     "description": "Ledger unknown error"
   },
   "add_key_from_ledger_caption": {
-    "message": "Link your Ledger to Keychain to use this key",
+    "message": "將 Ledger 連接到 Keychain 以使用此密鑰",
     "description": "Ledger add key"
   },
   "ledger_discover_key": {
@@ -4124,7 +4124,7 @@
     "description": "Token swaps : process"
   },
   "html_popup_swaps_slippage_definition": {
-    "message": "At each step of the swap, we check if the final result is superior to the estimation minus the slippage. If not, the swap is canceled and the funds are returned. Note that some swaps require several operations and your funds can be returned in a different token.",
+    "message": "在兌換的每個步驟中，我們都會檢查最終結果是否高於預估值減去滑點。如果不是，兌換將被取消，資金也會退回。請注意，某些兌換需要多項操作，退回的資金可能是另一種 Token。",
     "description": "Token swaps : process"
   },
   "local": {
@@ -4132,15 +4132,15 @@
     "description": "generic word"
   },
   "encode_with_memo_key_in_ledger": {
-    "message": "Your memo key is stored in Ledger. Ledger is currently not supporting encoding memo",
+    "message": "您的 memo key 儲存在 Ledger 上。Ledger 目前不支援加密 memo",
     "description": "Error while trying to encode a memo with memo key in ledger"
   },
   "decode_with_memo_key_in_ledger": {
-    "message": "Your memo key is stored in Ledger. Ledger is currently not supporting decoding memo",
+    "message": "您的 memo key 儲存在 Ledger 上。Ledger 目前不支援解密 memo",
     "description": "Error while trying to decode a memo with memo key in ledger"
   },
   "ledger_signing_hash": {
-    "message": "Keychain is requesting Ledger to sign the following hash. Make sure it correspond to what is displayed on your Ledger. <br /> $1",
+    "message": "Keychain 正在請求 Ledger 簽署以下哈希。請確保它與 Ledger 上顯示的內容一致。<br />$1",
     "description": "Ledger signing hash confirmation"
   },
   "token_value": {
@@ -4148,11 +4148,11 @@
     "description": "Value of token in USD"
   },
   "token": {
-    "message": "代幣",
+    "message": "Token",
     "description": "Value of token in USD"
   },
   "tokens": {
-    "message": "代幣",
+    "message": "Tokens",
     "description": "common use in extension referring to HE tokes"
   },
   "liquid_balance": {
@@ -4168,19 +4168,19 @@
     "description": "link button"
   },
   "ledger_link_device_caption": {
-    "message": "Link your device with your browser to be able to use it within Keychain",
+    "message": "將設備與瀏覽器連接，以便在 Keychain 中使用",
     "description": "link device caption"
   },
   "ledger_link_device_linked": {
-    "message": "Device successfully linked to Ledger",
+    "message": "設備已成功連接到 Ledger",
     "description": "link device success"
   },
   "ledger_reboot_with_ledger_live_error": {
-    "message": "An error on your Ledger was detected. Please use Ledger Live to reboot your Ledger and try again",
+    "message": "Ledger 檢測到錯誤。請使用 Ledger Live 重啓 Ledger 後重試",
     "description": "link device error"
   },
   "ledger_import_account_has_ledger": {
-    "message": "We detected an account using Ledger within the accounts you imported. To be able to use it please click <a target='_blank' href='$1'>here</a> to link your Ledger.",
+    "message": "在匯入的帳戶中檢測到使用 Ledger 的帳戶。要使用該帳戶，請點選<a target='_blank' href='$1'>此處</a>連接 Ledger。",
     "description": "link device error"
   },
   "portfolio": {
@@ -4222,7 +4222,7 @@
     "message": "查看報價"
   },
   "portfolio_continue": {
-    "message": "Continue"
+    "message": "繼續"
   },
   "portfolio_load_error": {
     "message": "無法載入 portfolio 資料。"
@@ -4489,7 +4489,7 @@
     "message": "全部 networks"
   },
   "portfolio_token": {
-    "message": "代幣"
+    "message": "Token"
   },
   "portfolio_he_breakdown_liquid": {
     "message": "liquid"
@@ -4537,7 +4537,7 @@
     "message": "依名稱或 symbol 篩選"
   },
   "portfolio_caption_message_total_value": {
-    "message": "This amount reflects all your accounts' Hive and Hive Engine tokens, regardless of their form (liquid, staked, in savings or delegated)",
+    "message": "此金額包含所有帳戶中的 Hive 和 Hive Engine Token，無論其形式為流動、已質押、儲蓄中或已委託",
     "description": "portfolio main page, information total value"
   },
   "portfolio_filter_placeholder": {
@@ -4569,7 +4569,7 @@
     "description": "portfolio table columns"
   },
   "broadcast_error_transaction_expired": {
-    "message": "This transaction has expired. This might be due to an invalid time on your device. Please make sure that your device time is synchronized online.",
+    "message": "此交易已過期，可能是設備時間不正確所致。請確保設備時間已在線同步。",
     "description": "transaction expireed error"
   },
   "html_popup_swap_token_confirm_title": {
@@ -4577,7 +4577,7 @@
     "description": "Confirm token swap"
   },
   "html_popup_swap_token_confirm_message": {
-    "message": "You are about to initiate a token swap using Keychain. You can track its status from the swap history screen.",
+    "message": "您即將使用 Keychain 發起 Token 兌換。可以在兌換歷史記錄頁面跟蹤狀態。",
     "description": "confirm token swap message"
   },
   "html_popup_swap_swap_id": {
@@ -4609,11 +4609,11 @@
     "description": "token swap"
   },
   "html_popup_swap_sending_token_successful": {
-    "message": "Your swap is on the way! Thank you for using our service!",
+    "message": "您的兌換正在處理中！感謝您使用我們的服務！",
     "description": "token swap"
   },
   "html_popup_swap_error_sending_token": {
-    "message": "There was an error while sending tokens to @$1.",
+    "message": "向 @$1 傳送 Token 時出錯。",
     "description": "token swap general error message"
   },
   "local_accounts": {
@@ -4669,31 +4669,31 @@
     "description": "Swap advanced parameters"
   },
   "swap_no_history": {
-    "message": "Your swap history is empty",
+    "message": "您的兌換歷史記錄為空",
     "description": "History swap empty"
   },
   "swap_under_maintenance": {
-    "message": "Keychain Swap is under maintenance, please try again later",
+    "message": "Keychain Swap 正在維護，請稍後重試",
     "description": "Keychain swap under maintenance"
   },
   "swap_start_end_token_should_be_different": {
-    "message": "Please choose two different tokens",
+    "message": "請選擇兩種不同的 Token",
     "description": "Start and end tokens should be differents"
   },
   "swap_not_enough_volume_error": {
-    "message": "There is not enough volume on this token pair to perform this swap",
+    "message": "此 Token 交易對的交易量不足，無法執行兌換",
     "description": "Operation impossible because not enough volume"
   },
   "swap_min_slippage_error": {
-    "message": "The slippage should be at least $1%",
+    "message": "滑點至少應為 $1%",
     "description": "Minimum slippage error"
   },
   "swap_caption": {
-    "message": "Keychain compares all the different providers to make sure you get your tokens at the best possible rate.",
+    "message": "Keychain 會比較所有不同的服務提供商，確保您以盡可能優惠的匯率獲得 Token。",
     "description": "Caption"
   },
   "swap_no_token": {
-    "message": "You don't have any HIVE, HBD or Hive-Engine token to swap at the moment.",
+    "message": "您目前沒有可兌換的 HIVE、HBD 或 Hive-Engine Token。",
     "description": "Caption"
   },
   "swap_fee": {
@@ -4717,27 +4717,27 @@
     "description": "swap see transaction"
   },
   "hive_tx_network_error": {
-    "message": "Network Timeout Error: Please check your connection!",
+    "message": "網路超時錯誤：請檢查您的網路連接！",
     "description": "General word"
   },
   "not_enough_rc": {
-    "message": "You don't have enough RC to broadcast this operation. Please wait for your RC to refill or power up.",
+    "message": "您的 RC 不足，無法廣播此操作。請等待 RC 恢復或增加 Hive Power。",
     "description": "Need more RC"
   },
   "swap_no_estimate_error": {
-    "message": "You need an estimate to be able to process",
+    "message": "您需要先獲得預估才能繼續處理",
     "description": "No estimate error"
   },
   "swap_server_unavailable": {
-    "message": "The swap server is currently unavailable, please try again later",
+    "message": "兌換伺服器目前不可用，請稍後重試",
     "description": "Swap server not responding error"
   },
   "bgd_ops_swap_start_success": {
-    "message": "The swap started successfully! You will get your tokens in a few moments.",
+    "message": "兌換已成功開始！您很快就會收到 Token。",
     "description": "Success on swap request"
   },
   "service_unavailable_message": {
-    "message": "This service is temporarly unavailable. We are working on fixing the issue, sorry for the inconvenience.",
+    "message": "此服務暫時不可用。我們正在修復問題，對由此帶來的不便深表歉意。",
     "description": "General service unavailable page message"
   },
   "swap_autorefresh": {
@@ -4749,27 +4749,27 @@
     "description": "When transfer not sent, swap status"
   },
   "swap_cannot_switch_tokens": {
-    "message": "Cannot switch tokens because you don't have any $1",
+    "message": "無法切換 Token，因為您沒有任何 $1",
     "description": "When trying to switch tokens (invert start and end)"
   },
   "swap_layer_two_delayed": {
-    "message": "Hive Engine is currently behind blocks. The swap might take longer than usual and has a bigger chance of aborting due to slippage.",
+    "message": "Hive Engine 目前區塊同步滯後。兌換可能比平時耗時更長，也更可能因滑點而中止。",
     "description": "When layer two is delayed"
   },
   "swap_min_hive_value_error": {
-    "message": "Minimum value should be equivalent to 1 HIVE (currently $1 HIVE)",
+    "message": "最低價值應相當於 1 HIVE（目前為 $1 HIVE）",
     "description": "When equilavent hive value is too small"
   },
   "tx_missing_active_auth": {
-    "message": "Active key is incorrect. Please update your key and try again.",
+    "message": "active key 不正確。請更新密鑰後重試。",
     "description": "Error message from blockchain: Active key incorrect"
   },
   "tx_missing_posting_auth": {
-    "message": "Posting key is incorrect. Please update your key and try again.",
+    "message": "posting key 不正確。請更新密鑰後重試。",
     "description": "Error message from blockchain: Posting key incorrect"
   },
   "ecosystem": {
-    "message": "去中心化應用程式",
+    "message": "dApp",
     "description": "DApps"
   },
   "ecosystem_category_social": {
@@ -4805,15 +4805,15 @@
     "description": "Logout"
   },
   "validation_error_mandatory": {
-    "message": "This field is required",
+    "message": "此字段為必填項",
     "description": "Form validation error: required"
   },
   "validation_error_greater_than_value": {
-    "message": "Value should be greater than $1",
+    "message": "數值應大於 $1",
     "description": "Form validation error: should be greater than"
   },
   "validation_error_less_or_equal_value": {
-    "message": "Value should be smaller than or equal to your balance",
+    "message": "數值應小於或等於您的餘額",
     "description": "Form validation error: should be less than (or equal)"
   },
   "message_container_title_success": {
@@ -4833,7 +4833,7 @@
     "description": "Message container success title"
   },
   "accept_terms_and_condition": {
-    "message": "I have read and agreed to the Hive Keychain <a target='__blank' href='https://hive-keychain.com/#/terms'>Terms of Service</a>, <a target='__blank' href='https://hive-keychain.com/#/privacy'>Privacy Policy</a>, and <a target='__blank' href='https://hive-keychain.com/#/fees'>Fees</a>",
+    "message": "我已閱讀並同意 Hive Keychain 的<a target='__blank' href='https://hive-keychain.com/#/terms'>服務條款</a>、<a target='__blank' href='https://hive-keychain.com/#/privacy'>隱私政策</a>和<a target='__blank' href='https://hive-keychain.com/#/fees'>費用說明</a>",
     "description": "Accept terms and conditions text"
   },
   "delete_label": {
@@ -4845,7 +4845,7 @@
     "description": "Copy error message"
   },
   "error_message_title": {
-    "message": "Oops! Something went wrong",
+    "message": "糟糕！出現了一些問題",
     "description": "there was an error"
   },
   "popup_html_currency": {
@@ -4873,11 +4873,11 @@
     "description": "Import file button title"
   },
   "html_popup_sign_up_need_accept_pp": {
-    "message": "You need to accept the terms and condition and privacy policies before continuing",
+    "message": "繼續前，您需要接受條款和條件以及隱私政策",
     "description": "Need to accept pp on sign up page"
   },
   "html_tokens_none_available": {
-    "message": "You don't have any Hive Engine token. You can buy some through our swap feature.",
+    "message": "您沒有任何 Hive Engine Token。您可以透過兌換功能購買。",
     "description": "When no token available"
   },
   "html_tokens_issuer": {
@@ -4885,7 +4885,7 @@
     "description": "Token issuer"
   },
   "html_add_available_authorities_caption": {
-    "message": "Alternatively, you can use an authorized account from the following list",
+    "message": "或者，您可以使用以下列表中的已授權帳戶",
     "description": "available authorities caption"
   },
   "html_popup_successfully_add_key": {
@@ -4905,7 +4905,7 @@
     "description": "Next transaction unstake"
   },
   "html_popup_remaining_transaction": {
-    "message": "$1 transactions remaining",
+    "message": "剩餘 $1 筆交易",
     "description": "remaining transaction unstake"
   },
   "html_popup_unstake_per_transaction": {
@@ -4913,7 +4913,7 @@
     "description": "remaining transaction unstake"
   },
   "html_popup_cancel_unstaking_message": {
-    "message": "Please confirm that you want to cancel your unstaking",
+    "message": "請確認要取消解除質押",
     "description": "cancel unstake confirm message"
   },
   "html_popup_canceling_unstake_token": {
@@ -4921,11 +4921,11 @@
     "description": "Loading message unstake"
   },
   "html_popup_cancel_unstake_token_success": {
-    "message": "Cancel token unstake successful",
+    "message": "已成功取消 Token 解除質押",
     "description": "Loading message unstake"
   },
   "html_popup_cancel_unstake_token_fail": {
-    "message": "Cancel token unstake has failed",
+    "message": "取消 Token 解除質押失敗",
     "description": "Loading message unstake"
   },
   "popup_html_multisig": {
@@ -4933,11 +4933,11 @@
     "description": "Multisig menu item"
   },
   "min_chrome_version": {
-    "message": "Please update your Chromium browser to the version 116 or newer, to be able to use the multisig features",
+    "message": "請將 Chromium 瀏覽器更新到 116 或更高版本，以使用多重簽名功能",
     "description": "When enabling multisig on old browsers"
   },
   "popup_html_multisig_intro": {
-    "message": "Enable Hive Multisig to listen to multisig requests for this account.\n Find more information about multisig in <a href='https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain' target='__blank'>this blog.</a>\nTo modify your account into a multisig account, use <a href='https://multisig.hive-keychain.com/' target='__blank'>the Hive Multisig dApp.</a>\nThis is an advanced feature, only use it if you know what you are doing.",
+    "message": "啟用 Hive Multisig 以接收此帳戶的多重簽名請求。\n 有關多重簽名的更多資訊，請查看<a href='https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain' target='__blank'>此博客文章。</a>\n要將帳戶改為多重簽名帳戶，請使用<a href='https://multisig.hive-keychain.com/' target='__blank'>Hive Multisig dApp。</a>\n這是一項高級功能，請僅在瞭解其工作原理時使用。",
     "description": "Multisig page intro"
   },
   "popup_html_enable_multisig": {
@@ -4945,11 +4945,11 @@
     "description": "Multisig page enable multisig"
   },
   "popup_html_enable_active_key_multisig": {
-    "message": "Enable active key multisig",
+    "message": "為 active key 啟用多重簽名",
     "description": "Multisig page enable active key multisig"
   },
   "popup_html_enable_posting_key_multisig": {
-    "message": "Enable posting key multisig",
+    "message": "為 posting key 啟用多重簽名",
     "description": "Multisig page enable posting key multisig"
   },
   "multisig_dialog_accept_tx": {
@@ -4961,11 +4961,11 @@
     "description": "Reject transaction coming from multisig"
   },
   "multisig_dialog_accept_reject_tx_caption": {
-    "message": "You received a signature request.",
+    "message": "您收到了一項簽名請求。",
     "description": "Reject transaction coming from multisig"
   },
   "multisig_dialog_transaction_signed_successfully": {
-    "message": "Your transaction was signed. You will be notified when it is broadcasted",
+    "message": "交易已簽名。交易廣播後，您將收到通知",
     "description": "Reject transaction coming from multisig"
   },
   "multisig_dialog_transaction_broadcasted": {
@@ -4993,35 +4993,35 @@
     "description": "Multisig transaction requested signer"
   },
   "multisig_key_is_ledger_hint": {
-    "message": "Your key uses Ledger. It is not compatible with our version of Multisig",
+    "message": "您的密鑰使用 Ledger，與目前版本的多重簽名功能不兼容",
     "description": "Explanation of why Ledger cannot work with multisig"
   },
   "multisig_processing_tx_through_multisig_server": {
-    "message": "Your transaction will be processed using the multisig server",
+    "message": "您的交易將透過多重簽名伺服器處理",
     "description": "Using multisig to process transaction"
   },
   "multisig_transaction_sent_to_signers": {
-    "message": "Your transaction was successfully sent to potential signers. You will be notified when it is broadcasted",
+    "message": "交易已成功傳送給潛在簽名者。交易廣播後，您將收到通知",
     "description": "Tx sent to multisig backend success message"
   },
   "multisig_disclaimer_message": {
-    "message": "Multisig detected : This transaction will be sent to the Hive Multisig server",
+    "message": "檢測到多重簽名：此交易將傳送到 Hive Multisig 伺服器",
     "description": "Message to inform user that multisig will be used"
   },
   "multisig_transmitting_to_multisig": {
-    "message": "Sending encoded transaction to Multisig server and potential signers",
+    "message": "正在將編碼後的交易傳送到 Multisig 伺服器和潛在簽名者",
     "description": "Message to inform user transmiting to multisig backend"
   },
   "multisig_transmitting_to_2fa": {
-    "message": "Sending encoded transaction to Multisig server and 2FA bot",
+    "message": "正在將編碼後的交易傳送到 Multisig 伺服器和雙重身份驗證機器人",
     "description": "Message to inform user transmiting to multisig backend"
   },
   "swap_multisig_transaction_sent_to_signers": {
-    "message": "Your transaction was successfully sent to potential signers. You will be notified when it is broadcasted. Once broadcasted, your swap will be processed.",
+    "message": "交易已成功傳送給潛在簽名者。交易廣播後，您將收到通知。廣播完成後，兌換將開始處理。",
     "description": "Tx sent to multisig backend success message"
   },
   "html_popup_ecosystem_retrieving_error": {
-    "message": "There was an error while retrieving the ecosystem. Please try again later",
+    "message": "取得生態系統資訊時出錯。請稍後重試",
     "description": "Ecosystem retrieving error"
   },
   "html_popup_click_to_refresh": {
@@ -5033,7 +5033,7 @@
     "description": "Notifications"
   },
   "html_popup_settings_notifications_caption": {
-    "message": "Configure your Peak Open Projects notifications. Be aware that changes might take time to be applied, and that this is an experimental feature.",
+    "message": "配置 Peak Open Projects 通知。請注意，更改可能需要一段時間才能生效，而且此功能仍處於實驗階段。",
     "description": "Notification caption introducing the feature"
   },
   "html_popup_settings_notifications_activated": {
@@ -5069,31 +5069,31 @@
     "description": "Delete criteria"
   },
   "notification_recurrent_transfer": {
-    "message": "@$1 started a $2 recurrent transfer to @$3 ($4 executions every $5 hours)",
+    "message": "@$1 向 @$3 發起了 $2 定期轉帳（每 $5 小時執行一次，共 $4 次）",
     "description": "Notification recurrent transfer"
   },
   "notification_follow": {
-    "message": "@$1 started following @$2",
+    "message": "@$1 開始關注 @$2",
     "description": "Notification follow"
   },
   "notification_unfollow": {
-    "message": "@$1 stopped following @$2",
+    "message": "@$1 已停止關注 @$2",
     "description": "Notification unfollow"
   },
   "notification_reblog": {
-    "message": "@$1 reblogged @$2's post {link}",
+    "message": "@$1 轉發了 @$2 的帖子 {link}",
     "description": "Notification reblog"
   },
   "notification_unreblog": {
-    "message": "@$1 unreblogged @$2's post {link}",
+    "message": "@$1 取消轉發 @$2 的帖子 {link}",
     "description": "Notification unreblog"
   },
   "notification_account_update": {
-    "message": "@$1's notification settings have been updated",
+    "message": "@$1 的通知設定已更新",
     "description": "Notification account updated"
   },
   "notification_mention": {
-    "message": "@$1 mentioned @$2 in {link}",
+    "message": "@$1 在 {link} 中提到了 @$2",
     "description": "Notification mentioned"
   },
   "notification_answer": {
@@ -5101,15 +5101,15 @@
     "description": "Notification reply"
   },
   "notification_account_witness_proxy": {
-    "message": "@$1 has set @$2 as a proxy",
+    "message": "@$1 已將 @$2 設為代理",
     "description": "Notification witness proxy"
   },
   "notification_account_witness_vote": {
-    "message": "@$1 has voted for @$2 as a witness",
+    "message": "@$1 已投票支援 @$2 成為witness",
     "description": "Notification witness proxy"
   },
   "notification_account_witness_unvote": {
-    "message": "@$1 has unvoted @$2 as a witness",
+    "message": "@$1 已取消對witness @$2 的投票",
     "description": "Notification witness proxy"
   },
   "notification_delegation": {
@@ -5117,11 +5117,11 @@
     "description": "notification delegation hp"
   },
   "notification_cancel_delegation": {
-    "message": "@$1 has canceled a delegation to @$2",
+    "message": "@$1 已取消對 @$2 的委託",
     "description": "notification cancel delegation hp"
   },
   "notification_requested_account_recovery": {
-    "message": "@$1 has requested recovery to @$2",
+    "message": "@$1 已向 @$2 請求恢復帳戶",
     "description": "notification recovery request"
   },
   "notification_recovered_account": {
@@ -5129,79 +5129,79 @@
     "description": "Notification accouht recovered"
   },
   "notification_set_power_down_route": {
-    "message": "Power down route has been changed from @$1 to @$2",
+    "message": "Power Down 路由已從 @$1 更改為 @$2",
     "description": "Notification set power down route"
   },
   "notification_fill_convert": {
-    "message": "@$1 has completed a conversion : $2 to $3",
+    "message": "@$1 已完成轉換：$2 轉為 $3",
     "description": "Notification fill convert"
   },
   "notification_author_reward": {
-    "message": "@$1 has received $2, $3, $4 as an author reward for {link}",
+    "message": "@$1 獲得了 $2、$3、$4 作為 {link} 的作者獎勵",
     "description": "Notification author reward"
   },
   "notification_comment_reward": {
-    "message": "@$1 has received $2 as an comment reward for {link}",
+    "message": "@$1 獲得了 $2 作為 {link} 的評論獎勵",
     "description": "Notification comment reward"
   },
   "notification_hbd_interest": {
-    "message": "@$1 received $2 as interest",
+    "message": "@$1 獲得了 $2 利息",
     "description": "Notification HBD interest received"
   },
   "notification_fill_power_down": {
-    "message": "@$1 received $2 as part of a power down",
+    "message": "@$1 收到了 Power Down 的一部分 $2",
     "description": "Notification power down received"
   },
   "notification_fill_power_down_other_account": {
-    "message": "@$1 received $2 as part of a power down of @$3",
+    "message": "@$1 收到了 @$3 Power Down 的一部分 $2",
     "description": "Notification power down received"
   },
   "notification_changed_recovery_account": {
-    "message": "@$1's recovery account has been change from @$2 to @$3",
+    "message": "@$1 的恢復帳戶已從 @$2 更改為 @$3",
     "description": "Notification for changed recovery account"
   },
   "notification_producer_reward": {
-    "message": "@$1 received $2 as a producer rewards",
+    "message": "@$1 獲得了 $2 區塊生產獎勵",
     "description": "Notification for producer rewards"
   },
   "notification_curation_reward": {
-    "message": "@$1 has received $2 as a curation reward for {link}",
+    "message": "@$1 獲得了 $2 作為 {link} 的策展獎勵",
     "description": "Notification for curation rewards"
   },
   "notification_failed_recurrent_transfer": {
-    "message": "$1 recurrent transfer from @$2 to @$3 has failed",
+    "message": "從 @$2 到 @$3 的 $1 定期轉帳失敗",
     "description": "Notification for failed recurrent transfer"
   },
   "notification_fill_collateralized_convert_request": {
-    "message": "@$1 has completed a conversion : $2 to $3",
+    "message": "@$1 已完成轉換：$2 轉為 $3",
     "description": "Notification collateralized convert request"
   },
   "notification_fill_transfer_from_savings": {
-    "message": "@$1 completed a withdrawal from savings of $2",
+    "message": "@$1 已完成從儲蓄中提取 $2",
     "description": "Fill withdraw savings notification"
   },
   "notification_fill_transfer_from_savings_from_other_account": {
-    "message": "@$1 completed a withdrawal from savings of $2 to @$3",
+    "message": "@$1 已完成從儲蓄中提取 $2 至 @$3",
     "description": "Fill withdraw savings notification"
   },
   "notification_returned_vesting_delegation": {
-    "message": "@$1 completed an undelegation. $2 are once again available",
+    "message": "@$1 已完成取消委託。$2 現已重新可用",
     "description": "Notification for when HP is avalable after undelegating"
   },
   "notification_comment_benefactor_reward": {
-    "message": "@$1 has received $2, $3, $4 as an comment benefactor reward for {link}",
+    "message": "@$1 獲得了 $2、$3、$4 作為 {link} 的評論受益人獎勵",
     "description": "Notification author reward"
   },
   "notification_fill_order": {
-    "message": "@$1 has filled an order from @$2 on the market. Bought $3 for $4",
+    "message": "@$1 已在市場上完成來自 @$2 的訂單，以 $4 買入 $3",
     "description": "Notification fill order"
   },
   "notification_change_recovery_account": {
-    "message": "@$1 has changed recovery account to @$2. This change will be effective in 30 days",
+    "message": "@$1 已將恢復帳戶更改為 @$2。此更改將在 30 天後生效",
     "description": "Notification change recovery account"
   },
   "notification_vote": {
-    "message": "@$1 has voted for {link}",
+    "message": "@$1 已為 {link} 投票",
     "description": "Notification for vote"
   },
   "notification_clear_config": {
@@ -5209,11 +5209,11 @@
     "description": "clear config notification"
   },
   "notification_set_all_as_read": {
-    "message": "Set all as read",
+    "message": "全部標為已讀",
     "description": "Set all notifications as read"
   },
   "notification_setting_all_as_read": {
-    "message": "Setting all notifications as read",
+    "message": "正在將所有通知標為已讀",
     "description": "Set all notifications as read"
   },
   "notification_settings_advanced_settings": {
@@ -5229,7 +5229,7 @@
     "description": "Select all criterias"
   },
   "portfolio_fetch_progress": {
-    "message": "Fetching data... $1/$2... Currently fetching @$3",
+    "message": "正在取得資料… $1/$2… 目前正在取得 @$3",
     "description": "Portfolio fetching message"
   },
   "html_popup_evm_add_wallet_method": {
@@ -5437,15 +5437,15 @@
     "description": "Two fa code label"
   },
   "notification_confirm_save": {
-    "message": "Are you sure you want to save your changes ?",
+    "message": "確定要儲存更改嗎？",
     "description": "Notification save changes message"
   },
   "export_transactions_fetching_error": {
-    "message": "There was an error while fetching your transactions. Please try again later",
+    "message": "取得交易時出錯。請稍後重試",
     "description": "Error while downloading transactions"
   },
   "export_transactions_incorrect_dates": {
-    "message": "Start date should be before end date",
+    "message": "開始日期應早於結束日期",
     "description": "Error while downloading transactions"
   },
   "popup_html_pref_export_transactions_loading_caption": {
@@ -5465,7 +5465,7 @@
     "description": "Blockchain chain name"
   },
   "popup_html_create_blockchain_symbol": {
-    "message": "象徵",
+    "message": "符號",
     "description": "Blockchain chain symbol"
   },
   "popup_html_create_blockchain_logo": {
@@ -5505,11 +5505,11 @@
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_fee": {
-    "message": "汽油費",
+    "message": "Gas 費用",
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_fee_estimated": {
-    "message": "預計汽油費",
+    "message": "預計 Gas 費用",
     "description": "EVM transaction result pending fee label"
   },
   "popup_html_evm_gas_fee_estimate_duration": {
@@ -5521,7 +5521,7 @@
     "description": "Evm Gas max fee estimate label"
   },
   "popup_html_evm_edit_gas_fee": {
-    "message": "編輯汽油費",
+    "message": "編輯 Gas 費用",
     "description": "Evm edit Gas fee label"
   },
   "popup_html_evm_custom_gas_fee_increased": {
@@ -5569,7 +5569,7 @@
     "description": "Max base fee evm transfer"
   },
   "popup_html_evm_gas_fee_form_gas_price": {
-    "message": "汽油價格 (Gwei)",
+    "message": "Gas 價格（Gwei）",
     "description": "Gas price evm transfer"
   },
   "popup_html_evm_gas_fee_form_priority_fee": {
@@ -5577,7 +5577,7 @@
     "description": "Evm priority fee"
   },
   "popup_html_evm_gas_fee_form_gas_limit": {
-    "message": "氣體限制",
+    "message": "Gas 上限",
     "description": "Evm gas limit "
   },
   "popup_html_evm_transfer_successful": {
@@ -5629,7 +5629,7 @@
     "description": "Evm transaction info"
   },
   "popup_html_evm_transaction_info_gas_limit": {
-    "message": "氣體限制",
+    "message": "Gas 上限",
     "description": "Evm transaction info"
   },
   "popup_html_evm_transaction_info_total_fee_per_gas": {
@@ -5641,7 +5641,7 @@
     "description": "Evm transaction info"
   },
   "popup_html_evm_transaction_info_gas_price": {
-    "message": "汽油價格",
+    "message": "Gas 價格",
     "description": "Evm transaction info"
   },
   "popup_html_evm_transaction_info_to": {
@@ -5657,7 +5657,7 @@
     "description": "Evm transaction info"
   },
   "popup_html_evm_transaction_info_final_gas_fee": {
-    "message": "最終汽油費",
+    "message": "最終 Gas 費用",
     "description": "Evm transaction info"
   },
   "popup_html_evm_speed_up_transaction": {
@@ -5669,7 +5669,7 @@
     "description": "Evm transaction info"
   },
   "popup_html_evm_gas_fee_loading": {
-    "message": "正在加載汽油費...",
+    "message": "正在載入 Gas 費用…",
     "description": "Shown while cancel/speed-up fee options are estimated"
   },
   "popup_html_evm_transaction_fee": {
@@ -5765,7 +5765,7 @@
     "description": "Signature request caption message"
   },
   "dialog_evm_sign_request_success": {
-    "message": "訊息已成功簽署",
+    "message": "您的訊息已成功簽署",
     "description": "Signature request success message"
   },
   "dialog_evm_unsupported_method": {
@@ -5817,15 +5817,15 @@
     "description": "Transaction metadata"
   },
   "popup_html_proposal_vote": {
-    "message": "Support Keychain Development",
+    "message": "支援 Keychain 開發",
     "description": "Proposal vote"
   },
   "error_otp_not_verified": {
-    "message": "Your One Time Password is incorrect. Please try again",
+    "message": "一次性密碼不正確。請重試",
     "description": "Error message if otp isn't verified"
   },
   "error_otp_already_used": {
-    "message": "Your One Time Password has already been used. Please use the next one.",
+    "message": "此一次性密碼已使用。請使用下一個密碼。",
     "description": "Error message if otp has been used already"
   },
   "dialog_evm_decrypt_request_permission_title": {
@@ -5953,7 +5953,7 @@
     "description": "Smart contract deployment transcation caption"
   },
   "evm_smart_contract_data": {
-    "message": "數據",
+    "message": "資料",
     "description": "Smart contract data field"
   },
   "evm_transaction_data": {
@@ -5965,7 +5965,7 @@
     "description": "SuccesFully sent evm transaction"
   },
   "evm_send_transaction_failed": {
-    "message": "廣播交易失敗",
+    "message": "交易在廣播期間失敗",
     "description": "Failed transaction"
   },
   "evm_transaction_domain_blacklisted": {
@@ -5993,7 +5993,7 @@
     "description": "Light-node address security reason"
   },
   "evm_security_reason_darkweb_transactions": {
-    "message": "此地址與暗網交易有關",
+    "message": "此地址曾與暗網交易有關",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_fake_kyc": {
@@ -6025,7 +6025,7 @@
     "description": "Light-node address security reason"
   },
   "evm_security_reason_money_laundering": {
-    "message": "此地址與洗錢有關",
+    "message": "此地址曾與洗錢活動有關",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_phishing_activities": {
@@ -6201,7 +6201,7 @@
     "description": "evm targeted account "
   },
   "evm_raw_data": {
-    "message": "原始數據",
+    "message": "原始資料",
     "description": "evm raw data "
   },
   "evm_main_token_amount": {
@@ -6213,7 +6213,7 @@
     "description": "Evm access list"
   },
   "evm_access_list_caption_message": {
-    "message": "該事務使用存取清單。您將無法選擇您的汽油費，因為訪問清單將嘗試優化交易成本",
+    "message": "此交易使用 access list。由於 access list 會嘗試優化交易成本，您無法自行選擇 Gas 費用",
     "description": "Evm access list caption message"
   },
   "evm_ens_recipient_not_existing": {
@@ -6941,7 +6941,7 @@
     "description": "sseds and account page"
   },
   "error_granularity": {
-    "message": "This operation isn't allowed under granularity rules",
+    "message": "粒度規則不允許此操作",
     "description": "Error message if granularity failed has been used already"
   },
   "evm_seeds_already_in_keychain": {
@@ -6973,7 +6973,7 @@
     "description": "Evm generic broadcast"
   },
   "evm_unable_to_reach_verify_transaction": {
-    "message": "Transaction verification is unavailable at the moment, proceed with caution",
+    "message": "由於 EVM 安全服務不可用，Keychain 無法驗證此網站、地址或合約。僅在信任此請求時繼續。",
     "description": "Error message if backend not available while fetch verify transaction info"
   },
   "evm_created_smart_contract": {
@@ -7153,7 +7153,7 @@
     "description": "Update chain"
   },
   "evm_chain_symbol": {
-    "message": "象徵",
+    "message": "符號",
     "description": "Chain symbol"
   },
   "evm_chain_decimals": {
@@ -7316,7 +7316,7 @@
     "description": "Shown on wallet tokens tab when the search/filter has no matching tokens"
   },
   "evm_custom_erc20_empty_card_message": {
-    "message": "You don't have any custom tokens yet.</br> To get started, click on the settings wheel.",
+    "message": "若要手動新增 Token，請點擊設定圖示。",
     "description": "Hint on wallet tokens tab when there are no custom ERC20 tokens"
   },
   "evm_custom_erc20_empty_card_hide": {
@@ -7324,7 +7324,7 @@
     "description": "Dismiss the custom ERC20 empty-state hint card"
   },
   "evm_custom_nft_empty_card_message": {
-    "message": "You don't have any custom NFTs yet.</br> To get started, click on the settings wheel.",
+    "message": "若要手動新增 NFT，請點擊設定圖示。",
     "description": "Hint on wallet NFT tab when there are no custom NFTs on a custom chain"
   },
   "evm_custom_history_info_card_message": {
@@ -7623,7 +7623,7 @@
     "description": "Manual intervention required"
   },
   "evm_lifi_swap_failed_out_of_gas": {
-    "message": "操作耗盡氣體",
+    "message": "操作耗盡了 Gas",
     "description": "Operation ran out of gas"
   },
   "evm_lifi_swap_failed_slippage": {
@@ -7775,7 +7775,7 @@
     "description": "Manage accounts"
   },
   "evm_switch_chain": {
-    "message": "開關鏈",
+    "message": "切換網路",
     "description": "Title for EVM switch chain confirmation dialog"
   },
   "evm_switch_chain_caption": {
@@ -7789,7 +7789,7 @@
     }
   },
   "reload_extension": {
-    "message": "重新加載擴充功能",
+    "message": "重新載入擴充功能",
     "description": "Button label to reload the extension"
   },
   "accessibility_back": {
@@ -7813,7 +7813,7 @@
     "description": "Accessible label for buttons that scroll to the top"
   },
   "evm_error_gas_estimate": {
-    "message": "氣體估計失敗。您需要輸入自訂汽油費。",
+    "message": "Gas 估算失敗。您需要輸入自定義 Gas 費用。",
     "description": "Gas estimation failed. You will need to enter a custom gas fee."
   },
   "portfolio_payment_method_credit_debit_card": {
@@ -8088,7 +8088,7 @@
     }
   },
   "portfolio_swap_amount_out_of_range_generic": {
-    "message": "該金額暫無報價。"
+    "message": "要求的金額目前沒有可用報價。"
   },
   "portfolio_amount_hint_increase": {
     "message": "提高到 $1 可解鎖另外 $2 個提供商。",

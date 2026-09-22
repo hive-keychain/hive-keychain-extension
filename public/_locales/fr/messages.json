@@ -280,7 +280,7 @@
     "description": "on popup main page"
   },
   "popup_html_witness": {
-    "message": "Témoins",
+    "message": "Witnesses",
     "description": "on popup main page"
   },
   "popup_html_estimation_info": {
@@ -552,7 +552,7 @@
     "description": "on autolock settings"
   },
   "popup_html_keychainify_text": {
-    "message": "Cette fonctionnalité vous permet de réaliser une opération Hive Keychain lorsque vous cliquez sur un lien pris en charge sur une page Web ou en accédant directement à l'URL dans un onglet du navigateur. Prend actuellement en charge les liens Hivesigner suivants : transferts, délégation, JSON personnalisé, proxy témoin et votes.",
+    "message": "Cette fonctionnalité vous permet de réaliser une opération Hive Keychain lorsque vous cliquez sur un lien pris en charge sur une page Web ou en accédant directement à l'URL dans un onglet du navigateur. Prend actuellement en charge les liens Hivesigner suivants : transferts, délégation, JSON personnalisé, proxy witness et votes.",
     "description": "on keychainify settings"
   },
   "popup_html_enable_keychainify_title": {
@@ -584,7 +584,7 @@
     "description": "on import / export settings"
   },
   "popup_html_about_text": {
-    "message": "L'équipe de Hive Keychain est dirigée par <a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a>, un développeur et witness sur Hive, et se compose d'un total de 3 développeurs à temps plein. Nous bénéficions également de l'aide de <a href=\"https://peakd.com/@nateaguila\" target=\"_blank\">@nateaguila</a>, directeur créatif de Splinterlands, et de nombreux autres membres de la communauté.<br><br>Alors que le projet est actuellement financé par le Decentralized Hive Fund (DHF), l'idée originale et les fonds ont été fournis par <a href=\"https://peakd.com/@aggroed\" target=\"_blank\">@aggroed</a> et <a href=\"https://peakd.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a> (witness) via leur entreprise commune Splinterlands, un jeu de cartes à collectionner construit sur Hive. N'oubliez pas d'y jeter un oeil à <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterlands. o</a>!<br/><br/>Pour plus d'informations sur nos produits (extensions et applications mobiles), visitez notre <a href='https://hive-keychain.com' target='__blank'>site web</a>.",
+    "message": "<ul><li><span class='text'>L'équipe Hive Keychain est dirigée par <a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a>, développeur full-stack et witness Hive, et complétée par deux autres développeurs à temps plein, <a href=\"https://peakd.com/@cedricguillas\" target=\"_blank\">@cedricguillas</a> et <a href=\"https://peakd.com/@krios003\" target=\"_blank\">@krios003</a>, ainsi que <a href=\"https://peakd.com/@manuphotos\" target=\"_blank\">@manuphotos</a>, notre Community Manager. Notre travail est financé par le DHF grâce au soutien de la communauté.</span></li><div class='separator horizontal'></div><li><span class='text'>En plus de cette extension, nous proposons des portefeuilles Hive mobiles pour Android et iOS, divers outils Hive et Keychain Store, une application mobile destinée aux commerces physiques souhaitant accepter HIVE et HBD comme moyens de paiement.</span></li><div class='separator horizontal'></div><li><span class='text'>Pour plus d'informations sur nos produits (extensions de navigateur et applications mobiles), consultez notre <a href='https://hive-keychain.com' target='__blank'>page d'accueil</a>.</span></li></ul>",
     "description": "on about keychain"
   },
   "popup_html_delete_account": {
@@ -676,7 +676,7 @@
     "description": "on preferences"
   },
   "popup_html_pref_info": {
-    "message": "Pour une meilleure expérience, vous pouvez mettre en whitelist les opérations non actives lorsque les dApps en font la requête. Vous ne recevrez pas de message de confirmation pour ces opérations.",
+    "message": "Pour une meilleure expérience, vous pouvez autoriser à l’avance les opérations qui ne nécessitent pas l’autorité active lorsque les dApps en font la demande. Aucune confirmation ne vous sera demandée pour ces opérations.",
     "description": "on preferences"
   },
   "popup_html_pref_export_transactions_info": {
@@ -692,7 +692,7 @@
     "description": "Generating csv"
   },
   "popup_html_no_pref": {
-    "message": "Aucune opération dans la whitelist",
+    "message": "Aucune opération autorisée à l’avance",
     "description": "on preferences"
   },
   "hive_dapps_connections_remove_all": {
@@ -1128,7 +1128,7 @@
     "description": "On send HIVE/HBD confirmation page, when memo is encrypted"
   },
   "popup_witness_key": {
-    "message": "Veuillez ajouter votre clé active pour voter pour les témoins !",
+    "message": "Veuillez ajouter votre clé active pour voter pour les witnesses !",
     "description": "When trying to vote for witness but user doenst have a stored active key"
   },
   "popup_next_powerdown": {
@@ -1216,11 +1216,11 @@
     "description": "on witness page "
   },
   "popup_success_wit": {
-    "message": "Voté avec succès pour @$1 en tant que témoin.",
+    "message": "Voté avec succès pour @$1 en tant que witness.",
     "description": "on witness page "
   },
   "popup_success_unvote_wit": {
-    "message": "Retiré le vote pour @$1 en tant que témoin.",
+    "message": "Retiré le vote pour @$1 en tant que witness.",
     "description": "on witness page when unvoting a witness"
   },
   "popup_success_witness_account_update": {
@@ -1340,7 +1340,7 @@
     "description": "When website request a transfer"
   },
   "dialog_tx": {
-    "message": "Transaction (cliquez pour afficher)",
+    "message": "Transaction",
     "description": "When website request signing a tx"
   },
   "dialog_amount": {
@@ -1388,7 +1388,7 @@
     "description": "When website request a post"
   },
   "dialog_operations": {
-    "message": "Opérations (cliquez pour afficher)",
+    "message": "Opérations",
     "description": "When website request a generic broadcast"
   },
   "dialog_max_payout": {
@@ -1420,7 +1420,7 @@
     "description": "When website request a custom json"
   },
   "dialog_witness": {
-    "message": "Témoin",
+    "message": "Witness",
     "description": "When website request a witness vote"
   },
   "dialog_vote": {
@@ -1508,7 +1508,7 @@
     "description": "Website request title"
   },
   "dialog_title_wit": {
-    "message": "Vote de témoin",
+    "message": "Vote de witness",
     "description": "Website request title"
   },
   "dialog_title_proxy": {
@@ -1656,7 +1656,7 @@
     "message": "A voté pour @$1 en tant que witness."
   },
   "bgd_ops_witness_unvoted": {
-    "message": "Retiré le vote pour @$1 en tant que témoin."
+    "message": "Retiré le vote pour @$1 en tant que witness."
   },
   "bgd_ops_vote": {
     "message": "Voté avec succès pour le poste $2 de @$1 à $3%."
@@ -2111,7 +2111,7 @@
     "description": "When user doesnt vote for proposal"
   },
   "popup_html_proposal_unvote_successful": {
-    "message": "Vote retiré !",
+    "message": "Votre vote a bien été retiré !",
     "description": "When user doesnt vote for proposal"
   },
   "popup_html_proposal_vote_fail": {
@@ -3103,7 +3103,7 @@
     "description": "delegate token title"
   },
   "popup_html_stake_tokens_success": {
-    "message": "Le stoken a été stake avec succès",
+    "message": "Token staké avec succès",
     "description": "stake token title"
   },
   "popup_html_unstake_tokens_success": {
@@ -3199,7 +3199,7 @@
     "description": "wallet information author reward"
   },
   "popup_html_token_wallet_info_comment_curation_reward": {
-    "message": "$1 reçu en curation",
+    "message": "Vous avez reçu $1 comme récompense de curation de commentaire",
     "description": "wallet information curation reward"
   },
   "popup_html_token_wallet_info_delegation_in": {
@@ -5535,7 +5535,7 @@
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_fee": {
-    "message": "Frais de gas",
+    "message": "Frais de Gas",
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_fee_estimated": {
@@ -5607,7 +5607,7 @@
     "description": "Evm priority fee"
   },
   "popup_html_evm_gas_fee_form_gas_limit": {
-    "message": "Limite de gas",
+    "message": "Limite de Gas",
     "description": "Evm gas limit "
   },
   "popup_html_evm_transfer_successful": {
@@ -6147,7 +6147,7 @@
     "description": "Checkbox message to bypass warning"
   },
   "evm_transaction_receiver_not_whitelisted": {
-    "message": "Cette adresse n’a pas été ajoutée à la liste blanche dans Keychain",
+    "message": "Cette adresse ne figure pas dans vos contacts Keychain",
     "description": "Checkbox message to bypass warning"
   },
   "evm_transaction_receiver_favorite_label": {
@@ -6155,7 +6155,7 @@
     "description": "Nickname for address"
   },
   "evm_transaction_receiver_potential_spoofing_whitelisted": {
-    "message": "Cette adresse ressemble à votre adresse en liste blanche $1 et pourrait être une tentative d’empoisonnement d’adresse. Veuillez vérifier que cette adresse est correcte.",
+    "message": "Cette adresse ressemble à l’adresse $1 de vos contacts et pourrait être une tentative d’empoisonnement d’adresse. Vérifiez que cette adresse est correcte.",
     "description": "potential spoofing warning"
   },
   "evm_transaction_receiver_potential_spoofing_local_accounts": {
@@ -6167,11 +6167,11 @@
     "description": "Smart contract uses a proxy"
   },
   "evm_transaction_contract_already_used": {
-    "message": "Vous avez ajouté ce smart contract à la liste blanche",
+    "message": "Vous avez déjà autorisé ce smart contract",
     "description": "Already used"
   },
   "evm_transaction_contract_not_used": {
-    "message": "Vous n’avez pas encore ajouté ce smart contract à la liste blanche",
+    "message": "Vous n’avez pas encore autorisé ce smart contract",
     "description": "Not used yet"
   },
   "evm_transaction_contract_honeypot": {
@@ -7003,7 +7003,7 @@
     "description": "Evm generic broadcast"
   },
   "evm_unable_to_reach_verify_transaction": {
-    "message": "La vérification de transaction est indisponible pour le moment, continuez avec prudence",
+    "message": "Keychain n’a pas pu vérifier ce site web, cette adresse ou ce contrat, car le service de sécurité EVM est indisponible. Continuez uniquement si vous faites confiance à cette requête.",
     "description": "Error message if backend not available while fetch verify transaction info"
   },
   "evm_created_smart_contract": {
@@ -7075,11 +7075,11 @@
     "description": "Add link on the addresses settings page"
   },
   "evm_addresses_no_whitelisted_account_yet": {
-    "message": "Aucun compte en liste blanche pour le moment.",
+    "message": "Aucun contact enregistré pour le moment.",
     "description": "Empty state on the contacts section of the addresses settings page"
   },
   "evm_addresses_no_whitelisted_smart_contract_yet": {
-    "message": "Aucun smart contract en liste blanche pour le moment.",
+    "message": "Aucun smart contract autorisé pour le moment.",
     "description": "Empty state on the smart contracts section of the addresses settings page"
   },
   "evm_contact_new_contact": {
@@ -7286,23 +7286,23 @@
     "description": "Auto-detected token list section title on manage tokens page"
   },
   "evm_auto_detected_tokens_empty": {
-    "message": "No auto-detected tokens found for this network.",
+    "message": "Aucun token détecté automatiquement sur ce réseau.",
     "description": "Empty state for auto-detected token list on manage tokens page"
   },
   "evm_auto_detected_tokens_loading": {
-    "message": "Loading auto-detected tokens...",
+    "message": "Chargement des tokens détectés automatiquement…",
     "description": "Loading state for auto-detected token list on manage tokens page"
   },
   "evm_auto_detected_tokens_error_loading": {
-    "message": "Could not load auto-detected tokens for this network.",
+    "message": "Impossible de charger les tokens détectés automatiquement pour ce réseau.",
     "description": "Error state for auto-detected token list on manage tokens page"
   },
   "evm_auto_detected_tokens_hide": {
-    "message": "Hide from home page",
+    "message": "Masquer de la page d’accueil",
     "description": "Hide an auto-detected token from the home page"
   },
   "evm_auto_detected_tokens_restore": {
-    "message": "Restore on home page",
+    "message": "Restaurer sur la page d’accueil",
     "description": "Restore an auto-detected token on the home page"
   },
   "evm_custom_nfts_page_caption": {
@@ -7346,7 +7346,7 @@
     "description": "Shown on wallet tokens tab when the search/filter has no matching tokens"
   },
   "evm_custom_erc20_empty_card_message": {
-    "message": "Pour ajouter des tokens manuellement, cliquez sur la roue.",
+    "message": "Pour ajouter des tokens manuellement, cliquez sur l’icône des paramètres.",
     "description": "Hint on wallet tokens tab when there are no custom ERC20 tokens"
   },
   "evm_custom_erc20_empty_card_hide": {
@@ -7354,7 +7354,7 @@
     "description": "Dismiss the custom ERC20 empty-state hint card"
   },
   "evm_custom_nft_empty_card_message": {
-    "message": "Pour ajouter des NFT manuellement, cliquez sur la roue.",
+    "message": "Pour ajouter des NFT manuellement, cliquez sur l’icône des paramètres.",
     "description": "Hint on wallet NFT tab when there are no custom NFTs on a custom chain"
   },
   "evm_custom_history_info_card_message": {
@@ -7653,7 +7653,7 @@
     "description": "Manual intervention required"
   },
   "evm_lifi_swap_failed_out_of_gas": {
-    "message": "L’opération a manqué de gas",
+    "message": "L’opération a manqué de Gas",
     "description": "Operation ran out of gas"
   },
   "evm_lifi_swap_failed_slippage": {

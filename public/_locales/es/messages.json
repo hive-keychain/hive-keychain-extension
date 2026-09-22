@@ -280,7 +280,7 @@
     "description": "on popup main page"
   },
   "popup_html_witness": {
-    "message": "Testigos",
+    "message": "Witnesses",
     "description": "on popup main page"
   },
   "popup_html_estimation_info": {
@@ -552,7 +552,7 @@
     "description": "on autolock settings"
   },
   "popup_html_keychainify_text": {
-    "message": "Esta característica te permite activar una operación de Hive Keychain al hacer clic en un enlace compatible en una página web o acceder a la URL directamente en una pestaña del navegador. Actualmente soporta los siguientes enlaces de Hivesigner: transferencias, delegación, JSON personalizado, proxy de testigo y votación.",
+    "message": "Esta característica te permite activar una operación de Hive Keychain al hacer clic en un enlace compatible en una página web o acceder a la URL directamente en una pestaña del navegador. Actualmente soporta los siguientes enlaces de Hivesigner: transferencias, delegación, JSON personalizado, proxy de witness y votación.",
     "description": "on keychainify settings"
   },
   "popup_html_enable_keychainify_title": {
@@ -584,7 +584,7 @@
     "description": "on import / export settings"
   },
   "popup_html_about_text": {
-    "message": "<ul><li><span class='text'>El equipo de Hive Keychain está liderado por <a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a>, un desarrollador completo y testigo de Hive, y completado por dos desarrolladores más a tiempo completo, <a href=\"https://peakd.com/@cedricguillas\" target=\"_blank\">@cedricguillas</a> y <a href=\"https://peakd.com/@krios003\" target=\"_blank\">@krios003</a>, y <a href=\"https://peakd.com/@manuphotos\" target=\"_blank\">@manuphotos</a>, nuestro Gerente de la Comunidad. Nuestro trabajo está financiado por el DHF, gracias al apoyo de la comunidad.</span></li><div class='separator horizontal'></div><li><span class='text'>Además de esta extensión, proporcionamos carteras móviles Hive para Android e iOS, varias herramientas de colmena, y Keychain Store, una aplicación móvil para empresas de ladrillo y mortero que deseen añadir el VIHE y el HBD como métodos de pago.</span></li><div class='separator horizontal'></div><li><span class='text'>Para más información sobre nuestros productos (extensiones del navegador y aplicaciones móviles), visite nuestra <a href='https://hive-keychain.com' target='__blank'>página de inicio</a>.</span></li></ul>",
+    "message": "<ul><li><span class='text'>El equipo de Hive Keychain está dirigido por <a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a>, desarrollador full-stack y witness de Hive, y lo completan otros dos desarrolladores a tiempo completo, <a href=\"https://peakd.com/@cedricguillas\" target=\"_blank\">@cedricguillas</a> y <a href=\"https://peakd.com/@krios003\" target=\"_blank\">@krios003</a>, junto con <a href=\"https://peakd.com/@manuphotos\" target=\"_blank\">@manuphotos</a>, nuestra responsable de la comunidad. Nuestro trabajo está financiado por el DHF gracias al apoyo de la comunidad.</span></li><div class='separator horizontal'></div><li><span class='text'>Además de esta extensión, ofrecemos monederos móviles de Hive para Android e iOS, varias herramientas de Hive y Keychain Store, una aplicación móvil para comercios físicos que deseen aceptar HIVE y HBD como métodos de pago.</span></li><div class='separator horizontal'></div><li><span class='text'>Para obtener más información sobre nuestros productos (extensiones de navegador y aplicaciones móviles), visita nuestra <a href='https://hive-keychain.com' target='__blank'>página web</a>.</span></li></ul>",
     "description": "on about keychain"
   },
   "popup_html_delete_account": {
@@ -592,11 +592,11 @@
     "description": "on manage accounts"
   },
   "popup_html_disable_witness": {
-    "message": "Desactivar testigo",
+    "message": "Desactivar witness",
     "description": "on manage accounts"
   },
   "popup_html_enable_witness": {
-    "message": "Activar testigo",
+    "message": "Activar witness",
     "description": "on manage accounts"
   },
   "popup_html_witness_rank_label": {
@@ -608,11 +608,11 @@
     "description": "on manage accounts"
   },
   "popup_html_disable_witness_account_confirmation_message": {
-    "message": "Está a punto de desactivar @$1 cuenta de testigos. Por favor, confirme para continuar.",
+    "message": "Está a punto de desactivar @$1 cuenta de witnesses. Por favor, confirme para continuar.",
     "description": "on my witness"
   },
   "popup_html_enable_witness_account_confirmation_message": {
-    "message": "Está a punto de habilitar la cuenta de testigo de @$1. Por favor, confirme para continuar.",
+    "message": "Está a punto de habilitar la cuenta de witness de @$1. Por favor, confirme para continuar.",
     "description": "on my witness"
   },
   "popup_html_show_qr": {
@@ -900,7 +900,7 @@
     "description": "On My witness page"
   },
   "popup_html_witness_information_witness_disabled_text": {
-    "message": "¡Testigo deshabilitado actualmente!",
+    "message": "¡Witness deshabilitado actualmente!",
     "description": "On My witness page"
   },
   "popup_html_witness_information_account_creation_fee_label": {
@@ -1220,23 +1220,23 @@
     "description": "on witness page "
   },
   "popup_success_unvote_wit": {
-    "message": "Se actualizó correctamente la cuenta de testigo @$1.",
+    "message": "Se actualizó correctamente la cuenta de witness @$1.",
     "description": "on witness when updating a witness"
   },
   "popup_success_witness_account_update": {
-    "message": "Se ha actualizado correctamente la cuenta de testigo.",
+    "message": "Se ha actualizado correctamente la cuenta de witness.",
     "description": "on my witness on success updating"
   },
   "popup_error_wit": {
-    "message": "Error al votar por @$1 como testigo.",
+    "message": "Error al votar por @$1 como witness.",
     "description": "on witness page "
   },
   "popup_error_witness_account_update": {
-    "message": "Error al actualizar la cuenta de testigo @$1.",
+    "message": "Error al actualizar la cuenta de witness @$1.",
     "description": "on witness edit tab page on failure updating"
   },
   "popup_error_unvote_wit": {
-    "message": "Error al anular el voto para @$1 como testigo.",
+    "message": "Error al anular el voto para @$1 como witness.",
     "description": "on witness page when unvoting a witness"
   },
   "popup_success_proxy": {
@@ -1420,7 +1420,7 @@
     "description": "When website request a custom json"
   },
   "dialog_witness": {
-    "message": "Testigo",
+    "message": "Witness",
     "description": "When website request a witness vote"
   },
   "dialog_vote": {
@@ -1983,7 +1983,7 @@
     "description": "On savings menu"
   },
   "popup_html_deposit_hbd_text": {
-    "message": "Depositar HBD a los ahorros actualmente produce un APR de $1% determinado por los testigos.",
+    "message": "Depositar HBD a los ahorros actualmente produce un APR de $1% determinado por los witnesses.",
     "description": "when withdrawing from savings"
   },
   "popup_html_savings": {
@@ -2439,11 +2439,11 @@
     "description": "Governance"
   },
   "popup_html_my_witness_page": {
-    "message": "Mi Testigo",
+    "message": "Mi Witness",
     "description": "Governance"
   },
   "popup_html_witness_page_expand_more_tooltip": {
-    "message": "Haga clic para ver la información completa de la cuenta de testigo",
+    "message": "Haga clic para ver la información completa de la cuenta de witness",
     "description": "Governance, witness page"
   },
   "html_popup_witness_display_voted_only": {
@@ -2451,7 +2451,7 @@
     "description": "Governance"
   },
   "html_popup_witness_vote_error_proxy": {
-    "message": "Un proxy está configurado actualmente, por favor borra el proxy antes de votar por un testigo",
+    "message": "Un proxy está configurado actualmente, por favor borra el proxy antes de votar por un witness",
     "description": "Governance"
   },
   "html_popup_proposal_vote_error_proxy": {
@@ -2467,11 +2467,11 @@
     "description": "Governance"
   },
   "html_popup_witness_proxy_definition": {
-    "message": "Añadir una cuenta como proxy significa que la cuenta proxy puede usar el peso de tu HP en asuntos de gobernanza (votando por testigos y propuestas). Esto no afectará tu HP con respecto a la curación y puedes remover el proxy en cualquier momento. ",
+    "message": "Añadir una cuenta como proxy significa que la cuenta proxy puede usar el peso de tu HP en asuntos de gobernanza (votando por witnesses y propuestas). Esto no afectará tu HP con respecto a la curación y puedes remover el proxy en cualquier momento. ",
     "description": "Proxy tab"
   },
   "html_popup_witness_has_proxy": {
-    "message": "La cuenta proxy toma decisiones de gobernanza en tu nombre. Si deseas votar por ti mismo a favor de los testigos y las propuestas, primero debes eliminar el proxy.",
+    "message": "La cuenta proxy toma decisiones de gobernanza en tu nombre. Si deseas votar por ti mismo a favor de los witnesses y las propuestas, primero debes eliminar el proxy.",
     "description": "Governance"
   },
   "html_popup_set_as_proxy": {
@@ -2511,11 +2511,11 @@
     "description": "Import settings failed message"
   },
   "html_popup_link_to_witness_website": {
-    "message": "Para más información, haz clic aquí para acceder a la base de datos de testigos",
+    "message": "Para más información, haz clic aquí para acceder a la base de datos de witnesses",
     "description": "Link to witness website"
   },
   "html_popup_vote_for_witness": {
-    "message": "Votar $1 como testigo",
+    "message": "Votar $1 como witness",
     "description": "On main page, in the vote witness section"
   },
   "html_popup_made_with_love_by_stoodkev": {
@@ -2523,19 +2523,19 @@
     "description": "Footer"
   },
   "html_popup_vote_stoodkev_witness_error_30_votes": {
-    "message": "Ya has votado por 30 testigos. Por favor, elimina uno antes de votar por @stoodkev",
+    "message": "Ya has votado por 30 witnesses. Por favor, elimina uno antes de votar por @stoodkev",
     "description": "Error message when vote for stoodkev as witness with 30 votes"
   },
   "html_popup_vote_witness_error_30_votes": {
-    "message": "Ya has votado por 30 testigos. Por favor, elimina uno antes de votar por uno nuevo",
+    "message": "Ya has votado por 30 witnesses. Por favor, elimina uno antes de votar por uno nuevo",
     "description": "Error message when vote for stoodkev as witness with 30 votes"
   },
   "html_popup_vote_stoodkev_witness_success": {
-    "message": "Votado con éxito @stoodkev como testigo. ¡Gracias por tu apoyo!",
+    "message": "Votado con éxito @stoodkev como witness. ¡Gracias por tu apoyo!",
     "description": "Success message when vote for stoodkev as witness"
   },
   "html_popup_vote_cedricguillas_witness_success": {
-    "message": "Votó con éxito a @cedricguillas como testigo. ¡Gracias por tu apoyo!",
+    "message": "Votó con éxito a @cedricguillas como witness. ¡Gracias por tu apoyo!",
     "description": "Success message when vote for stoodkev as witness"
   },
   "html_popup_conversion_operation": {
@@ -2559,15 +2559,15 @@
     "description": "savings operation"
   },
   "html_popup_vote_witness_operation": {
-    "message": "Votar a testigo",
+    "message": "Votar a witness",
     "description": "vote witness operation"
   },
   "html_popup_unvote_witness_operation": {
-    "message": "Retirar voto a un testigo",
+    "message": "Retirar voto a un witness",
     "description": "unvote witness operation"
   },
   "html_popup_update_witness_operation": {
-    "message": "Actualizando cuenta de testigo",
+    "message": "Actualizando cuenta de witness",
     "description": "When updating witness account"
   },
   "html_popup_witness_information_info_label": {
@@ -2607,19 +2607,19 @@
     "description": "When displaying my witness account global data"
   },
   "html_popup_witness_ranking_ordinal_st_label": {
-    "message": "",
+    "message": "º",
     "description": "When displaying my witness account global data"
   },
   "html_popup_witness_ranking_ordinal_nd_label": {
-    "message": "",
+    "message": "º",
     "description": "When displaying my witness account global data"
   },
   "html_popup_witness_ranking_ordinal_rd_label": {
-    "message": "",
+    "message": "º",
     "description": "When displaying my witness account global data"
   },
   "html_popup_witness_ranking_ordinal_th_label": {
-    "message": "",
+    "message": "º",
     "description": "When displaying my witness account global data"
   },
   "html_popup_witness_information_params_label": {
@@ -2775,7 +2775,7 @@
     "description": "Node Rpc auto selection hint"
   },
   "popup_html_proxy_suggestion": {
-    "message": "¿Te abruman los votos de gobernanza? Establece a @keychain como proxy para seguir automáticamente al testigo del equipo Keychain y los votos de las propuestas. Puedes cambiar esto en cualquier momento desde el menú de gobernanza.",
+    "message": "¿Te abruman los votos de gobernanza? Establece a @keychain como proxy para seguir automáticamente al witness del equipo Keychain y los votos de las propuestas. Puedes cambiar esto en cualquier momento desde el menú de gobernanza.",
     "description": "If no witness voted"
   },
   "popup_html_setting_proxy": {
@@ -3027,11 +3027,11 @@
     "description": "Wallet filters"
   },
   "popup_html_error_retrieving_witness_ranking": {
-    "message": "Se ha producido un error al recuperar la clasificación del testigo. Por favor, inténtalo más tarde.",
+    "message": "Se ha producido un error al recuperar la clasificación del witness. Por favor, inténtalo más tarde.",
     "description": "Error while retrieving witness ranking, hivesql not down"
   },
   "popup_html_error_retrieving_witness_information": {
-    "message": "Se ha producido un error al recuperar la información del testigo. Por favor, inténtalo más tarde.",
+    "message": "Se ha producido un error al recuperar la información del witness. Por favor, inténtalo más tarde.",
     "description": "Error while retrieving witness information, hivesql not down"
   },
   "popup_html_error_retrieving_incoming_delegations": {
@@ -3351,7 +3351,7 @@
     "description": "wrong vesting routes popup, item details, non existent label"
   },
   "popup_html_vesting_route_item_details_id_title": {
-    "message": "Identificación:",
+    "message": "ID: ",
     "description": "wrong vesting routes popup, item details, id label/title"
   },
   "popup_html_vesting_route_item_details_from_title": {
@@ -3780,7 +3780,7 @@
     "description": "Error while connecting to Ledger"
   },
   "html_popup_witness_already_voted": {
-    "message": "Ya has votado en este testigo",
+    "message": "Ya has votado en este witness",
     "description": "Error if trying to vote for a witness that has alreay been voted for"
   },
   "html_popup_button_edit_label": {
@@ -3788,11 +3788,11 @@
     "description": "when using a button as to edit"
   },
   "html_popup_witness_not_voted": {
-    "message": "No votaste por este testigo, no existe un voto a retirar",
+    "message": "No votaste por este witness, no existe un voto a retirar",
     "description": "Error if trying to unvote a witness that has not been voted for"
   },
   "html_popup_witness_not_existing": {
-    "message": "El testigo por el que intentaste votar no existe",
+    "message": "El witness por el que intentaste votar no existe",
     "description": "Error if trying to vote a witness that doesn't exist"
   },
   "bgd_ops_hive_engine_confirmation_error": {
@@ -4148,11 +4148,11 @@
     "description": "Value of token in USD"
   },
   "token": {
-    "message": "Simbólico",
+    "message": "Token",
     "description": "Value of token in USD"
   },
   "tokens": {
-    "message": "Fichas",
+    "message": "Tokens",
     "description": "common use in extension referring to HE tokes"
   },
   "liquid_balance": {
@@ -4489,7 +4489,7 @@
     "message": "Todos los networks"
   },
   "portfolio_token": {
-    "message": "Simbólico"
+    "message": "Token"
   },
   "portfolio_he_breakdown_liquid": {
     "message": "líquido"
@@ -5105,11 +5105,11 @@
     "description": "Notification witness proxy"
   },
   "notification_account_witness_vote": {
-    "message": "@$1 ha votado por @$2 como testigo",
+    "message": "@$1 ha votado por @$2 como witness",
     "description": "Notification witness proxy"
   },
   "notification_account_witness_unvote": {
-    "message": "@$1 dejo de votar a @$2 como testigo",
+    "message": "@$1 dejo de votar a @$2 como witness",
     "description": "Notification witness proxy"
   },
   "notification_delegation": {
@@ -5161,7 +5161,7 @@
     "description": "Notification for changed recovery account"
   },
   "notification_producer_reward": {
-    "message": "@$1 recibió $2 como recompensa de testigo",
+    "message": "@$1 recibió $2 como recompensa de witness",
     "description": "Notification for producer rewards"
   },
   "notification_curation_reward": {
@@ -5505,7 +5505,7 @@
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_fee": {
-    "message": "Tarifa de gas",
+    "message": "Tarifa de Gas",
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_fee_estimated": {
@@ -5577,7 +5577,7 @@
     "description": "Evm priority fee"
   },
   "popup_html_evm_gas_fee_form_gas_limit": {
-    "message": "límite de gas",
+    "message": "Límite de Gas",
     "description": "Evm gas limit "
   },
   "popup_html_evm_transfer_successful": {
@@ -6633,7 +6633,7 @@
     "description": "EVM light-node history: page title for SWAP"
   },
   "evm_history_op_airdrop_receive": {
-    "message": "Entrega por paracaídas",
+    "message": "Airdrop",
     "description": "EVM light-node history: page title for AIRDROP_RECEIVE (airdrop / incoming tokens)"
   },
   "evm_history_op_contract_call": {
@@ -6973,7 +6973,7 @@
     "description": "Evm generic broadcast"
   },
   "evm_unable_to_reach_verify_transaction": {
-    "message": "Transaction verification is unavailable at the moment, proceed with caution",
+    "message": "Keychain no pudo verificar este sitio web, dirección o contrato porque el servicio de seguridad EVM no está disponible. Continúa solo si confías en esta solicitud.",
     "description": "Error message if backend not available while fetch verify transaction info"
   },
   "evm_created_smart_contract": {
@@ -7316,7 +7316,7 @@
     "description": "Shown on wallet tokens tab when the search/filter has no matching tokens"
   },
   "evm_custom_erc20_empty_card_message": {
-    "message": "You don't have any custom tokens yet.</br> To get started, click on the settings wheel.",
+    "message": "Para añadir tokens manualmente, haz clic en el icono de ajustes.",
     "description": "Hint on wallet tokens tab when there are no custom ERC20 tokens"
   },
   "evm_custom_erc20_empty_card_hide": {
@@ -7324,7 +7324,7 @@
     "description": "Dismiss the custom ERC20 empty-state hint card"
   },
   "evm_custom_nft_empty_card_message": {
-    "message": "You don't have any custom NFTs yet.</br> To get started, click on the settings wheel.",
+    "message": "Para añadir NFT manualmente, haz clic en el icono de ajustes.",
     "description": "Hint on wallet NFT tab when there are no custom NFTs on a custom chain"
   },
   "evm_custom_history_info_card_message": {
@@ -7623,7 +7623,7 @@
     "description": "Manual intervention required"
   },
   "evm_lifi_swap_failed_out_of_gas": {
-    "message": "La operación se quedó sin gasolina.",
+    "message": "La operación se quedó sin Gas",
     "description": "Operation ran out of gas"
   },
   "evm_lifi_swap_failed_slippage": {
@@ -7775,7 +7775,7 @@
     "description": "Manage accounts"
   },
   "evm_switch_chain": {
-    "message": "cadena de interruptores",
+    "message": "Cambiar de red",
     "description": "Title for EVM switch chain confirmation dialog"
   },
   "evm_switch_chain_caption": {

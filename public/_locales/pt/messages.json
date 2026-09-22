@@ -280,7 +280,7 @@
     "description": "on popup main page"
   },
   "popup_html_witness": {
-    "message": "Testemunhas",
+    "message": "Witnesses",
     "description": "on popup main page"
   },
   "popup_html_estimation_info": {
@@ -304,15 +304,15 @@
     "description": "Keyless keychain"
   },
   "popup_html_keyless_keychain_setup": {
-    "message": "Keychain is in keyless mode and will use HiveAuth to request transactions to be signed on your mobile device. \n Sign in to your favorite dApp with Keychain and scan the QR code to get started.",
+    "message": "O Keychain está no modo sem chave e usará o HiveAuth para solicitar a assinatura de transações no seu dispositivo móvel.\n Entre no seu dApp favorito com o Keychain e escaneie o código QR para começar.",
     "description": "When setting up keyless keychain"
   },
   "popup_html_keyless_keychain_register": {
-    "message": "Keychain is in keyless mode and will use HiveAuth to authenticate you. \n Scan this QR code with your mobile device to get started.",
+    "message": "O Keychain está no modo sem chave e usará o HiveAuth para autenticar você.\n Escaneie este código QR com seu dispositivo móvel para começar.",
     "description": "When setting up keyless keychain"
   },
   "popup_html_keyless_keychain_setup_qr": {
-    "message": "Scan the QR code with your mobile device to connect to HiveAuth.",
+    "message": "Escaneie o código QR com seu dispositivo móvel para conectar-se ao HiveAuth.",
     "description": "When setting up keyless keychain"
   },
   "popup_html_keyless_sessions": {
@@ -552,7 +552,7 @@
     "description": "on autolock settings"
   },
   "popup_html_keychainify_text": {
-    "message": "Este recurso permite que você acione uma operação do Hive Keychain ao clicar em um link suportado em uma página da web ou acessar a URL diretamente em uma aba do navegador. Atualmente suporta os seguintes links do Hivesigner: transferências, delegação, JSON, proxy de testemunhas e votos.",
+    "message": "Este recurso permite que você acione uma operação do Hive Keychain ao clicar em um link suportado em uma página da web ou acessar a URL diretamente em uma aba do navegador. Atualmente suporta os seguintes links do Hivesigner: transferências, delegação, JSON, proxy de witnesses e votos.",
     "description": "on keychainify settings"
   },
   "popup_html_enable_keychainify_title": {
@@ -584,7 +584,7 @@
     "description": "on import / export settings"
   },
   "popup_html_about_text": {
-    "message": "<ul><li><span class='text'>O time do Hive Keychain team é liderado por <a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a>, um desenvolvedor full-stack e testemunha da Hive, e por mais dois desenvolvedores em tempo integral, <a href=\"https://peakd.com/@cedricguillas\" target=\"_blank\">@cedricguillas</a> e <a href=\"https://peakd.com/@theghost1980\" target=\"_blank\">@theghost1980</a>, e <a href=\"https://peakd.com/@manuphotos\" target=\"_blank\">@manuphotos</a>, nosso Gerente na Comunidade. Nosso trabalho é financiado pela DHF, obrigado a comunidade pelo suporte.</span></li><div class='separator horizontal'></div><li><span class='text'>Além dessa extenção, nós fornecemos carteiras da Hive para Android e iOS, varias ferramentas para Hive, e Keychain Store, um App mobile para empresas físicas que desejam adicionar Hive e HBD como meios de pagamento.</span></li><div class='separator horizontal'></div><li><span class='text'>Para mais informações dos nossos produtos (extenção de navegador e Apps mobile), visite nossa <a href='https://hive-keychain.com' target='__blank'>página</a>.</></li></ul>",
+    "message": "<ul><li><span class='text'>A equipe do Hive Keychain é liderada por <a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a>, desenvolvedor full-stack e witness da Hive, e conta com mais dois desenvolvedores em tempo integral, <a href=\"https://peakd.com/@cedricguillas\" target=\"_blank\">@cedricguillas</a> e <a href=\"https://peakd.com/@krios003\" target=\"_blank\">@krios003</a>, além de <a href=\"https://peakd.com/@manuphotos\" target=\"_blank\">@manuphotos</a>, nossa gerente de comunidade. Nosso trabalho é financiado pelo DHF, graças ao apoio da comunidade.</span></li><div class='separator horizontal'></div><li><span class='text'>Além desta extensão, oferecemos carteiras móveis da Hive para Android e iOS, diversas ferramentas da Hive e o Keychain Store, um aplicativo móvel para estabelecimentos físicos que desejam aceitar HIVE e HBD como formas de pagamento.</span></li><div class='separator horizontal'></div><li><span class='text'>Para mais informações sobre nossos produtos (extensões de navegador e aplicativos móveis), visite nossa <a href='https://hive-keychain.com' target='__blank'>página inicial</a>.</span></li></ul>",
     "description": "on about keychain"
   },
   "popup_html_delete_account": {
@@ -592,11 +592,11 @@
     "description": "on manage accounts"
   },
   "popup_html_disable_witness": {
-    "message": "Desabilitar testemunha",
+    "message": "Desabilitar witness",
     "description": "on manage accounts"
   },
   "popup_html_enable_witness": {
-    "message": "Habilitar testemunha",
+    "message": "Habilitar witness",
     "description": "on manage accounts"
   },
   "popup_html_witness_rank_label": {
@@ -608,11 +608,11 @@
     "description": "on manage accounts"
   },
   "popup_html_disable_witness_account_confirmation_message": {
-    "message": "Você está prestes a desativar a conta da testemunha @$1. Por favor, confirme para prosseguir.",
+    "message": "Você está prestes a desativar a conta da witness @$1. Por favor, confirme para prosseguir.",
     "description": "on my witness"
   },
   "popup_html_enable_witness_account_confirmation_message": {
-    "message": "Você está prestes a habilitar a conta da testemunha @$1. Por favor, confirme para prosseguir.",
+    "message": "Você está prestes a habilitar a conta da witness @$1. Por favor, confirme para prosseguir.",
     "description": "on my witness"
   },
   "popup_html_show_qr": {
@@ -692,7 +692,7 @@
     "description": "Generating csv"
   },
   "popup_html_no_pref": {
-    "message": "",
+    "message": "Nenhuma operação na whitelist",
     "description": "on preferences"
   },
   "hive_dapps_connections_remove_all": {
@@ -740,7 +740,7 @@
     "description": "after clicking on copy username to clipboard button on home page"
   },
   "popup_html_detach_window_tooltip_text": {
-    "message": "Destacar janela",
+    "message": "Destacar janela\nAtalho: Ctrl + D",
     "description": "after clicking on copy username to clipboard button on home page"
   },
   "popup_html_detach_window": {
@@ -860,7 +860,7 @@
     "description": "On transfer confirmation page"
   },
   "popup_html_transfer_confirm_cancel_recurrent": {
-    "message": "Por favor, confirme se deseja cancelar esta transferência recorrente.",
+    "message": "<br>Confirme que deseja cancelar esta transferência recorrente.",
     "description": "On transfer confirmation page"
   },
   "popup_html_transfer_from": {
@@ -900,7 +900,7 @@
     "description": "On My witness page"
   },
   "popup_html_witness_information_witness_disabled_text": {
-    "message": "Testemunha desativada no momento!",
+    "message": "Witness desativada no momento!",
     "description": "On My witness page"
   },
   "popup_html_witness_information_account_creation_fee_label": {
@@ -1128,7 +1128,7 @@
     "description": "On send HIVE/HBD confirmation page, when memo is encrypted"
   },
   "popup_witness_key": {
-    "message": "Por favor, adicione a sua chave active para votar nas testemunhas!",
+    "message": "Por favor, adicione a sua chave active para votar nas witnesses!",
     "description": "When trying to vote for witness but user doenst have a stored active key"
   },
   "popup_next_powerdown": {
@@ -1216,27 +1216,27 @@
     "description": "on witness page "
   },
   "popup_success_wit": {
-    "message": "Votou com sucesso para @$1 como testemunha.",
+    "message": "Votou com sucesso para @$1 como witness.",
     "description": "on witness page "
   },
   "popup_success_unvote_wit": {
-    "message": "Conta de testemunha @$1 atualizada com sucesso.",
+    "message": "Conta de witness @$1 atualizada com sucesso.",
     "description": "on witness when updating a witness"
   },
   "popup_success_witness_account_update": {
-    "message": "Conta de testemunha atualizada com sucesso.",
+    "message": "Conta de witness atualizada com sucesso.",
     "description": "on my witness on success updating"
   },
   "popup_error_wit": {
-    "message": "Erro ao votar para @$1 como testemunha.",
+    "message": "Erro ao votar para @$1 como witness.",
     "description": "on witness page "
   },
   "popup_error_witness_account_update": {
-    "message": "Erro ao atualizar a conta da testemunha @$1.",
+    "message": "Erro ao atualizar a conta da witness @$1.",
     "description": "on witness edit tab page on failure updating"
   },
   "popup_error_unvote_wit": {
-    "message": "Erro ao retirar a voto para @$1 como testemunha.",
+    "message": "Erro ao retirar a voto para @$1 como witness.",
     "description": "on witness page when unvoting a witness"
   },
   "popup_success_proxy": {
@@ -1420,7 +1420,7 @@
     "description": "When website request a custom json"
   },
   "dialog_witness": {
-    "message": "Testemunha",
+    "message": "Witness",
     "description": "When website request a witness vote"
   },
   "dialog_vote": {
@@ -1508,7 +1508,7 @@
     "description": "Website request title"
   },
   "dialog_title_wit": {
-    "message": "Voto da Testemunha",
+    "message": "Voto da Witness",
     "description": "Website request title"
   },
   "dialog_title_proxy": {
@@ -1528,7 +1528,7 @@
     "description": "Website request title"
   },
   "dialog_title_create_account": {
-    "message": "Criar Conta",
+    "message": "Criar conta reivindicada",
     "description": "Website request title"
   },
   "dialog_title_create_proposal": {
@@ -1653,10 +1653,10 @@
     "message": "O site atual está tentando enviar uma solicitação para a extensão de navegador Hive Keychain para a conta @$1 usando a chave $2, que não foi adicionado à carteira."
   },
   "bgd_ops_witness_voted": {
-    "message": "Votou com sucesso para @$1 como testemunha."
+    "message": "Votou com sucesso para @$1 como witness."
   },
   "bgd_ops_witness_unvoted": {
-    "message": "Retirado o voto para testemunha @$1 com sucesso. "
+    "message": "Retirado o voto para witness @$1 com sucesso. "
   },
   "bgd_ops_vote": {
     "message": "Votou com sucesso no post de @$1's $2 em $3%."
@@ -1695,7 +1695,7 @@
     "message": "Mensagem assinada com sucesso."
   },
   "bgd_ops_sign_requested": {
-    "message": "Transaction has been requested. Please check your keychain mobile app to sign it."
+    "message": "A transação foi solicitada. Verifique o aplicativo móvel do Keychain para assiná-la."
   },
   "bgd_ops_sign_error": {
     "message": "Não foi possível assinar."
@@ -1770,13 +1770,13 @@
     "message": "A autoridade $1 foi removida com sucesso de @$2 na conta @$3."
   },
   "bgd_ops_keyless_broadcast_success": {
-    "message": "Keyless transaction has been broadcasted successfully."
+    "message": "A transação sem chave foi transmitida com sucesso."
   },
   "bgd_ops_keyless_broadcast_error": {
-    "message": "Keyless transaction failed to broadcast."
+    "message": "Não foi possível transmitir a transação sem chave."
   },
   "bgd_ops_challenge_success": {
-    "message": "$1 request has been processed successfully.",
+    "message": "A solicitação $1 foi processada com sucesso.",
     "description": "Success message for encode/decode/sign operations."
   },
   "popup_account_redeem": {
@@ -1983,7 +1983,7 @@
     "description": "On savings menu"
   },
   "popup_html_deposit_hbd_text": {
-    "message": "Depósito de HBD para poupança gera atualmente uma APR de $1% determinada pelas testemunhas.",
+    "message": "Depósito de HBD para poupança gera atualmente uma APR de $1% determinada pelas witnesses.",
     "description": "when withdrawing from savings"
   },
   "popup_html_savings": {
@@ -2015,11 +2015,11 @@
     "description": "When registering from request"
   },
   "dialog_register_keyless_title": {
-    "message": "Register Keyless Keychain",
+    "message": "Registrar Keychain sem chave",
     "description": "When registering from request"
   },
   "dialog_header_keyless_username": {
-    "message": "Register Keyless Keychain",
+    "message": "Registrar Keychain sem chave",
     "description": "When registering from request"
   },
   "dialog_register_keyless_loading": {
@@ -2027,15 +2027,15 @@
     "description": "When registering to keyless keychain"
   },
   "dialog_hiveauth_connection_failed": {
-    "message": "Failed to establish HiveAuth connection after 5 attempts",
+    "message": "Não foi possível estabelecer conexão com o HiveAuth após 5 tentativas",
     "description": "When registering to keyless keychain via HiveAuth"
   },
   "dialog_anonymous_keyless_content": {
-    "message": "You are about to perform an anonymous keyless operation. Please enter your username to register your keyless keychain.",
+    "message": "Você está prestes a realizar uma operação anônima sem chave. Digite seu nome de usuário para registrar o Keychain sem chave.",
     "description": "When registering from request"
   },
   "dialog_keyless_unsupported_operation": {
-    "message": "$1 is not supported by keyless keychain.",
+    "message": "$1 não é compatível com o Keychain sem chave.",
     "description": "When trying to perform an unsupported operation"
   },
   "dialog_keyless_username_required": {
@@ -2043,7 +2043,7 @@
     "description": "When trying to perform an unsupported anonymous operation"
   },
   "dialog_keyless_expired": {
-    "message": "Keyless authentication request has expired. Please try again.",
+    "message": "A solicitação de autenticação sem chave expirou. Tente novamente.",
     "description": "When keyless tx expires"
   },
   "dialog_keyless_expire_in": {
@@ -2439,11 +2439,11 @@
     "description": "Governance"
   },
   "popup_html_my_witness_page": {
-    "message": "Minha Testemunha",
+    "message": "Minha Witness",
     "description": "Governance"
   },
   "popup_html_witness_page_expand_more_tooltip": {
-    "message": "Clique para ver todas as informações da conta de testemunha",
+    "message": "Clique para ver todas as informações da conta de witness",
     "description": "Governance, witness page"
   },
   "html_popup_witness_display_voted_only": {
@@ -2451,7 +2451,7 @@
     "description": "Governance"
   },
   "html_popup_witness_vote_error_proxy": {
-    "message": "Um proxy está atualmente definido. Por favor, limpe o proxy antes de votar em uma testemunha",
+    "message": "Um proxy está atualmente definido. Por favor, limpe o proxy antes de votar em uma witness",
     "description": "Governance"
   },
   "html_popup_proposal_vote_error_proxy": {
@@ -2467,11 +2467,11 @@
     "description": "Governance"
   },
   "html_popup_witness_proxy_definition": {
-    "message": "Adicionar uma conta como proxy significa que a conta de proxy pode usar o peso de seus HP em questões de governança (votação para testemunhas e propostas). Isso não afetará o seu HP em relação à curadoria, e você pode remover o proxy a qualquer momento. ",
+    "message": "Adicionar uma conta como proxy significa que a conta de proxy pode usar o peso de seus HP em questões de governança (votação para witnesses e propostas). Isso não afetará o seu HP em relação à curadoria, e você pode remover o proxy a qualquer momento. ",
     "description": "Proxy tab"
   },
   "html_popup_witness_has_proxy": {
-    "message": "A conta proxy toma decisões de governança em seu nome. Se quiser votar a favor de testemunhas e propostas por si mesmo, primeiro terá de remover o proxy.",
+    "message": "A conta proxy toma decisões de governança em seu nome. Se quiser votar a favor de witnesses e propostas por si mesmo, primeiro terá de remover o proxy.",
     "description": "Governance"
   },
   "html_popup_set_as_proxy": {
@@ -2511,11 +2511,11 @@
     "description": "Import settings failed message"
   },
   "html_popup_link_to_witness_website": {
-    "message": "Para mais informações, clique aqui para acessar o banco de dados de testemunhas",
+    "message": "Para mais informações, clique aqui para acessar o banco de dados de witnesses",
     "description": "Link to witness website"
   },
   "html_popup_vote_for_witness": {
-    "message": "Votar $1 como testemunha",
+    "message": "Votar $1 como witness",
     "description": "On main page, in the vote witness section"
   },
   "html_popup_made_with_love_by_stoodkev": {
@@ -2523,19 +2523,19 @@
     "description": "Footer"
   },
   "html_popup_vote_stoodkev_witness_error_30_votes": {
-    "message": "Você já votou em 30 testemunhas. Por favor, remova uma antes de votar em @stoodkev",
+    "message": "Você já votou em 30 witnesses. Por favor, remova uma antes de votar em @stoodkev",
     "description": "Error message when vote for stoodkev as witness with 30 votes"
   },
   "html_popup_vote_witness_error_30_votes": {
-    "message": "Você já votou em 30 testemunhas. Por favor, remova uma antes de votar novamente",
+    "message": "Você já votou em 30 witnesses. Por favor, remova uma antes de votar novamente",
     "description": "Error message when vote for stoodkev as witness with 30 votes"
   },
   "html_popup_vote_stoodkev_witness_success": {
-    "message": "Votou com sucesso @stoodkev como testemunha. Obrigado pelo seu apoio!",
+    "message": "Votou com sucesso @stoodkev como witness. Obrigado pelo seu apoio!",
     "description": "Success message when vote for stoodkev as witness"
   },
   "html_popup_vote_cedricguillas_witness_success": {
-    "message": "Votou com sucesso @cedricguillas como testemunha. Obrigado pelo seu apoio!",
+    "message": "Votou com sucesso @cedricguillas como witness. Obrigado pelo seu apoio!",
     "description": "Success message when vote for stoodkev as witness"
   },
   "html_popup_conversion_operation": {
@@ -2559,15 +2559,15 @@
     "description": "savings operation"
   },
   "html_popup_vote_witness_operation": {
-    "message": "Votando pela testemunha",
+    "message": "Votando pela witness",
     "description": "vote witness operation"
   },
   "html_popup_unvote_witness_operation": {
-    "message": "Retirando voto de testemunha",
+    "message": "Retirando voto de witness",
     "description": "unvote witness operation"
   },
   "html_popup_update_witness_operation": {
-    "message": "Atualizando conta de testemunha",
+    "message": "Atualizando conta de witness",
     "description": "When updating witness account"
   },
   "html_popup_witness_information_info_label": {
@@ -2775,7 +2775,7 @@
     "description": "Node Rpc auto selection hint"
   },
   "popup_html_proxy_suggestion": {
-    "message": "SObrecarregado dos votos de governança? Defina @keychain como proxy para seguir automaticamente as testemunhas e votos da proposta do Keychain. Você pode alterar isto a qualquer momento no menu de governança.",
+    "message": "SObrecarregado dos votos de governança? Defina @keychain como proxy para seguir automaticamente as witnesses e votos da proposta do Keychain. Você pode alterar isto a qualquer momento no menu de governança.",
     "description": "If no witness voted"
   },
   "popup_html_setting_proxy": {
@@ -3027,11 +3027,11 @@
     "description": "Wallet filters"
   },
   "popup_html_error_retrieving_witness_ranking": {
-    "message": "Ocorreu um erro ao recuperar o ranking das testemunhas. Por favor, tente novamente mais tarde.",
+    "message": "Ocorreu um erro ao recuperar o ranking das witnesses. Por favor, tente novamente mais tarde.",
     "description": "Error while retrieving witness ranking, hivesql not down"
   },
   "popup_html_error_retrieving_witness_information": {
-    "message": "Ocorreu um erro ao obter as informações da testemunha. Por favor, tente novamente mais tarde.",
+    "message": "Ocorreu um erro ao obter as informações da witness. Por favor, tente novamente mais tarde.",
     "description": "Error while retrieving witness information, hivesql not down"
   },
   "popup_html_error_retrieving_incoming_delegations": {
@@ -3395,7 +3395,7 @@
     "description": "General"
   },
   "html_popup_create_account_account_name_not_valid": {
-    "message": "Nome da conta não é válido",
+    "message": "O nome da conta não é válido. Verifique se não há pontos e hífens lado a lado e se cada segmento separado por pontos tem pelo menos 3 caracteres.",
     "description": "General"
   },
   "html_popup_create_account_safely_copied_keys": {
@@ -3780,7 +3780,7 @@
     "description": "Error while connecting to Ledger"
   },
   "html_popup_witness_already_voted": {
-    "message": "Você já votou nesta testemunha",
+    "message": "Você já votou nesta witness",
     "description": "Error if trying to vote for a witness that has alreay been voted for"
   },
   "html_popup_button_edit_label": {
@@ -3788,11 +3788,11 @@
     "description": "when using a button as to edit"
   },
   "html_popup_witness_not_voted": {
-    "message": "Você não votou nesta testemunha, não pode cancelar o voto",
+    "message": "Você não votou nesta witness, não pode cancelar o voto",
     "description": "Error if trying to unvote a witness that has not been voted for"
   },
   "html_popup_witness_not_existing": {
-    "message": "A testemunha que você tentou votar não existe",
+    "message": "A witness que você tentou votar não existe",
     "description": "Error if trying to vote a witness that doesn't exist"
   },
   "bgd_ops_hive_engine_confirmation_error": {
@@ -3932,19 +3932,19 @@
     "description": "automated tasks => need active key claim accounts"
   },
   "popup_html_create_account_username_too_long": {
-    "message": "Username is too long (max 16 characters)",
+    "message": "O nome de usuário é muito longo (máximo de 16 caracteres)",
     "description": "create account => username too long"
   },
   "popup_html_create_account_username_case_not_valid": {
-    "message": "Username must only contain lowercase letters, numbers, hyphens and dots",
+    "message": "O nome de usuário deve conter apenas letras minúsculas, números, hífens e pontos",
     "description": "create account => username case not valid"
   },
   "popup_html_create_account_username_too_short": {
-    "message": "Username is too short (min 3 characters)",
+    "message": "O nome de usuário é muito curto (mínimo de 3 caracteres)",
     "description": "create account => username too short"
   },
   "popup_html_create_account_username_start_or_end_not_valid": {
-    "message": "Username must start with a letter and end with a letter or number",
+    "message": "O nome de usuário deve começar com uma letra e terminar com uma letra ou número",
     "description": "create account => username start or end not valid"
   },
   "popup_html_cant_automatically_claim_ledger": {
@@ -4148,11 +4148,11 @@
     "description": "Value of token in USD"
   },
   "token": {
-    "message": "Símbolo",
+    "message": "Token",
     "description": "Value of token in USD"
   },
   "tokens": {
-    "message": "Fichas",
+    "message": "Tokens",
     "description": "common use in extension referring to HE tokes"
   },
   "liquid_balance": {
@@ -4489,7 +4489,7 @@
     "message": "Todos os networks"
   },
   "portfolio_token": {
-    "message": "Símbolo"
+    "message": "Token"
   },
   "portfolio_he_breakdown_liquid": {
     "message": "líquido"
@@ -5105,11 +5105,11 @@
     "description": "Notification witness proxy"
   },
   "notification_account_witness_vote": {
-    "message": "@$1 votou em @$2 para testemunha",
+    "message": "@$1 votou em @$2 para witness",
     "description": "Notification witness proxy"
   },
   "notification_account_witness_unvote": {
-    "message": "@$1 deixou de votar @$2 para testemunha",
+    "message": "@$1 deixou de votar @$2 para witness",
     "description": "Notification witness proxy"
   },
   "notification_delegation": {
@@ -5237,7 +5237,7 @@
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_import_wallet": {
-    "message": "Importar de uma frase-semente",
+    "message": "Importar de uma seed phrase",
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_create_wallet": {
@@ -5269,7 +5269,7 @@
     "description": "EVM > Add wallet main page > Import private key"
   },
   "html_popup_evm_invalid_mnemonic_length": {
-    "message": "Sua frase-semente deve ter 12 ou 24 palavras.",
+    "message": "Sua seed phrase deve ter 12 ou 24 palavras.",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_invalid_mnemonic_word": {
@@ -5277,7 +5277,7 @@
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_invalid_mnemonic_checksum": {
-    "message": "Esta frase-semente é inválida.",
+    "message": "Esta seed phrase é inválida.",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_choose_account": {
@@ -5289,15 +5289,15 @@
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
   "popup_html_import_wallet_from_seed": {
-    "message": "Importar da semente",
+    "message": "Importar da seed",
     "description": "Import wallet from seed phrase title"
   },
   "popup_html_create_new_wallet_create_seed": {
-    "message": "Criar frase-semente",
+    "message": "Criar seed phrase",
     "description": "Create seed phrase title"
   },
   "html_popup_evm_create_new_wallet_title": {
-    "message": "Salve sua frase-semente secreta",
+    "message": "Salve sua seed phrase secreta",
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
   "html_popup_evm_create_new_wallet_import": {
@@ -5337,7 +5337,7 @@
     "description": "24 words"
   },
   "html_popup_evm_create_wallet_verification_title": {
-    "message": "Verificação de frase-semente",
+    "message": "Verificação da seed phrase",
     "description": "evm account creation caption"
   },
   "html_popup_evm_create_wallet_verification_caption": {
@@ -5353,7 +5353,7 @@
     "description": "Verify word error"
   },
   "html_popup_evm_create_wallet_tips": {
-    "message": "Certifique-se de armazenar sua frase-semente em vários lugares e off-line. Se esta frase-semente for perdida, você não poderá recuperar sua conta",
+    "message": "Armazene sua seed phrase em vários locais e offline. Se ela for perdida, você não poderá recuperar sua conta",
     "description": "tips"
   },
   "html_popup_evm_create_wallet_tips1": {
@@ -5369,7 +5369,7 @@
     "description": "tips"
   },
   "html_popup_evm_create_wallet_display_mnemonic": {
-    "message": "Exibir frase-semente",
+    "message": "Exibir seed phrase",
     "description": "display seed phrase"
   },
   "html_popup_evm_create_wallet_hide_mnemonic": {
@@ -5385,15 +5385,15 @@
     "description": "show account in acct settings"
   },
   "html_popup_evm_create_wallet_copy_mnemonic": {
-    "message": "Copiar frase-semente",
+    "message": "Copiar seed phrase",
     "description": "display seed phrase"
   },
   "html_popup_evm_create_wallet_copied_mnemonic": {
-    "message": "Frase-semente copiada para a área de transferência",
+    "message": "Seed phrase copiada para a área de transferência",
     "description": "display seed phrase"
   },
   "evm_copy_seed_phrase_password_caption": {
-    "message": "Você está prestes a copiar sua frase-semente. Por motivos de segurança, digite sua senha para continuar.",
+    "message": "Você está prestes a copiar sua seed phrase. Por segurança, digite sua senha para continuar.",
     "description": "Prompt shown before copying an EVM seed phrase"
   },
   "html_popup_add_blockchain": {
@@ -5401,15 +5401,15 @@
     "description": "display seed phrase"
   },
   "html_popup_evm_create_wallet_copy_seed_phrase_error": {
-    "message": "Você não copiou sua frase-semente, copie-a antes de continuar",
+    "message": "Você ainda não copiou sua seed phrase. Copie-a antes de continuar",
     "description": "Error if seed phrase not copied"
   },
   "html_popup_evm_create_wallet_safely_copied_seed": {
-    "message": "Copiei com segurança minha frase-semente e salvei-a fora de Keychain",
+    "message": "Copiei minha seed phrase com segurança e a salvei fora do Keychain",
     "description": "checkbox content on create account page"
   },
   "html_popup_evm_create_wallet_storage_understanding": {
-    "message": "Entendo que Keychain não deve ser considerado o principal local de armazenamento da minha frase-semente",
+    "message": "Entendo que o Keychain não deve ser considerado o principal local de armazenamento da minha seed phrase",
     "description": "checkbox content on create account page"
   },
   "html_popup_evm_create_wallet_condition_missing": {
@@ -5505,7 +5505,7 @@
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_fee": {
-    "message": "Taxa de gás",
+    "message": "Taxa de Gas",
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_fee_estimated": {
@@ -5577,7 +5577,7 @@
     "description": "Evm priority fee"
   },
   "popup_html_evm_gas_fee_form_gas_limit": {
-    "message": "Limite de gás",
+    "message": "Limite de Gas",
     "description": "Evm gas limit "
   },
   "popup_html_evm_transfer_successful": {
@@ -6633,7 +6633,7 @@
     "description": "EVM light-node history: page title for SWAP"
   },
   "evm_history_op_airdrop_receive": {
-    "message": "Lançamento aéreo",
+    "message": "Airdrop",
     "description": "EVM light-node history: page title for AIRDROP_RECEIVE (airdrop / incoming tokens)"
   },
   "evm_history_op_contract_call": {
@@ -6869,7 +6869,7 @@
     "description": "Delete seed button"
   },
   "evm_delete_seed_confirmation_message": {
-    "message": "Tem certeza de que deseja excluir esta semente?",
+    "message": "Tem certeza de que deseja excluir esta seed?",
     "description": "Delete seed button"
   },
   "evm_delete_all_ledger_accounts_confirmation_message": {
@@ -6885,7 +6885,7 @@
     "description": "Delete EVM account button"
   },
   "evm_add_wallet_seed_button": {
-    "message": "Adicionar semente",
+    "message": "Adicionar seed",
     "description": "Add seed button"
   },
   "evm_add_nickname_to_address_popup_title": {
@@ -6901,7 +6901,7 @@
     "description": "Nickname"
   },
   "evm_seed_nickname": {
-    "message": "Nome da Semente",
+    "message": "Nome da Seed",
     "description": "Nickname"
   },
   "evm_edit_seed_nickname": {
@@ -6933,7 +6933,7 @@
     "description": "Open Ledger EVM wallet connection flow"
   },
   "evm_copy_seed": {
-    "message": "Copiar semente",
+    "message": "Copiar seed",
     "description": "Copy EVM seed menu item"
   },
   "evm_seeds_and_accounts": {
@@ -6945,7 +6945,7 @@
     "description": "Error message if granularity failed has been used already"
   },
   "evm_seeds_already_in_keychain": {
-    "message": "Esta semente já foi adicionada em Keychain",
+    "message": "Esta seed já foi adicionada ao Keychain",
     "description": "Seed already added in Keychain"
   },
   "evm_private_key_already_in_keychain": {
@@ -6973,7 +6973,7 @@
     "description": "Evm generic broadcast"
   },
   "evm_unable_to_reach_verify_transaction": {
-    "message": "Transaction verification is unavailable at the moment, proceed with caution",
+    "message": "O Keychain não pôde verificar este site, endereço ou contrato porque o serviço de segurança EVM está indisponível. Prossiga somente se confiar nesta solicitação.",
     "description": "Error message if backend not available while fetch verify transaction info"
   },
   "evm_created_smart_contract": {
@@ -7316,7 +7316,7 @@
     "description": "Shown on wallet tokens tab when the search/filter has no matching tokens"
   },
   "evm_custom_erc20_empty_card_message": {
-    "message": "You don't have any custom tokens yet.</br> To get started, click on the settings wheel.",
+    "message": "Para adicionar tokens manualmente, clique no ícone de configurações.",
     "description": "Hint on wallet tokens tab when there are no custom ERC20 tokens"
   },
   "evm_custom_erc20_empty_card_hide": {
@@ -7324,7 +7324,7 @@
     "description": "Dismiss the custom ERC20 empty-state hint card"
   },
   "evm_custom_nft_empty_card_message": {
-    "message": "You don't have any custom NFTs yet.</br> To get started, click on the settings wheel.",
+    "message": "Para adicionar NFTs manualmente, clique no ícone de configurações.",
     "description": "Hint on wallet NFT tab when there are no custom NFTs on a custom chain"
   },
   "evm_custom_history_info_card_message": {
@@ -7623,7 +7623,7 @@
     "description": "Manual intervention required"
   },
   "evm_lifi_swap_failed_out_of_gas": {
-    "message": "Operação ficou sem gás",
+    "message": "A operação ficou sem Gas",
     "description": "Operation ran out of gas"
   },
   "evm_lifi_swap_failed_slippage": {
@@ -7775,7 +7775,7 @@
     "description": "Manage accounts"
   },
   "evm_switch_chain": {
-    "message": "Cadeia de interruptores",
+    "message": "Trocar de rede",
     "description": "Title for EVM switch chain confirmation dialog"
   },
   "evm_switch_chain_caption": {

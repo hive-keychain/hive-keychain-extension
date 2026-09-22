@@ -112,7 +112,7 @@
     "description": "EVM blockchain seed"
   },
   "common_seeds": {
-    "message": "Samen",
+    "message": "Seeds",
     "description": "EVM blockchain seeds"
   },
   "common_experimental": {
@@ -3351,7 +3351,7 @@
     "description": "wrong vesting routes popup, item details, non existent label"
   },
   "popup_html_vesting_route_item_details_id_title": {
-    "message": "Ausweis:",
+    "message": "ID: ",
     "description": "wrong vesting routes popup, item details, id label/title"
   },
   "popup_html_vesting_route_item_details_from_title": {
@@ -6885,7 +6885,7 @@
     "description": "Delete EVM account button"
   },
   "evm_add_wallet_seed_button": {
-    "message": "Samen hinzufügen",
+    "message": "Seed hinzufügen",
     "description": "Add seed button"
   },
   "evm_add_nickname_to_address_popup_title": {
@@ -6933,11 +6933,11 @@
     "description": "Open Ledger EVM wallet connection flow"
   },
   "evm_copy_seed": {
-    "message": "Samen kopieren",
+    "message": "Seed kopieren",
     "description": "Copy EVM seed menu item"
   },
   "evm_seeds_and_accounts": {
-    "message": "Samen und Konten",
+    "message": "Seeds & Konten",
     "description": "sseds and account page"
   },
   "error_granularity": {
@@ -6973,7 +6973,7 @@
     "description": "Evm generic broadcast"
   },
   "evm_unable_to_reach_verify_transaction": {
-    "message": "Transaction verification is unavailable at the moment, proceed with caution",
+    "message": "Keychain konnte diese Website, Adresse oder diesen Vertrag nicht überprüfen, da der EVM-Sicherheitsdienst nicht verfügbar ist. Fahre nur fort, wenn du dieser Anfrage vertraust.",
     "description": "Error message if backend not available while fetch verify transaction info"
   },
   "evm_created_smart_contract": {
@@ -7316,7 +7316,7 @@
     "description": "Shown on wallet tokens tab when the search/filter has no matching tokens"
   },
   "evm_custom_erc20_empty_card_message": {
-    "message": "To add tokens manually, click on the settings wheel.",
+    "message": "Um Tokens manuell hinzuzufügen, klicke auf das Zahnrad.",
     "description": "Hint on wallet tokens tab when there are no custom ERC20 tokens"
   },
   "evm_custom_erc20_empty_card_hide": {
@@ -7324,7 +7324,7 @@
     "description": "Dismiss the custom ERC20 empty-state hint card"
   },
   "evm_custom_nft_empty_card_message": {
-    "message": "To add NFTs manually, click on the settings wheel.",
+    "message": "Um NFTs manuell hinzuzufügen, klicke auf das Zahnrad.",
     "description": "Hint on wallet NFT tab when there are no custom NFTs on a custom chain"
   },
   "evm_custom_history_info_card_message": {
@@ -7623,7 +7623,7 @@
     "description": "Manual intervention required"
   },
   "evm_lifi_swap_failed_out_of_gas": {
-    "message": "Der Operation ging das Benzin aus",
+    "message": "Der Operation ist das Gas ausgegangen",
     "description": "Operation ran out of gas"
   },
   "evm_lifi_swap_failed_slippage": {
@@ -7775,7 +7775,7 @@
     "description": "Manage accounts"
   },
   "evm_switch_chain": {
-    "message": "Kette wechseln",
+    "message": "Netzwerk wechseln",
     "description": "Title for EVM switch chain confirmation dialog"
   },
   "evm_switch_chain_caption": {
