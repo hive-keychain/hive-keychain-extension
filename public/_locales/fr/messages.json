@@ -4492,7 +4492,7 @@
     "message": "Aucun historique ne correspond à votre filtre."
   },
   "portfolio_page_description": {
-    "message": "Consultez soldes et services portfolio sans changer de compte Keychain."
+    "message": "Consultez vos soldes et accédez aux services du Portfolio sans changer de compte Keychain actif."
   },
   "portfolio_page_description_buy": {
     "message": "Achetez de la crypto avec du fiat via des fournisseurs on-ramp."
