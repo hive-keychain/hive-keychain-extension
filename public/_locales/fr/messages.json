@@ -4560,7 +4560,9 @@
   "portfolio_date": {
     "message": "Date"
   },
-  "portfolio_assets": { "message": "Actifs" },
+  "portfolio_assets": {
+    "message": "Actifs"
+  },
   "portfolio_token_filter": {
     "message": "Filtrer par nom ou symbole"
   },
@@ -7344,7 +7346,7 @@
     "description": "Shown on wallet tokens tab when the search/filter has no matching tokens"
   },
   "evm_custom_erc20_empty_card_message": {
-    "message": "Vous n’avez encore aucun token personnalisé.</br> Pour commencer, cliquez sur la roue des paramètres.",
+    "message": "Pour ajouter des tokens manuellement, cliquez sur la roue.",
     "description": "Hint on wallet tokens tab when there are no custom ERC20 tokens"
   },
   "evm_custom_erc20_empty_card_hide": {
@@ -7352,7 +7354,7 @@
     "description": "Dismiss the custom ERC20 empty-state hint card"
   },
   "evm_custom_nft_empty_card_message": {
-    "message": "Vous n’avez encore aucun NFT personnalisé.</br> Pour commencer, cliquez sur la roue des paramètres.",
+    "message": "Pour ajouter des NFT manuellement, cliquez sur la roue.",
     "description": "Hint on wallet NFT tab when there are no custom NFTs on a custom chain"
   },
   "evm_custom_history_info_card_message": {
@@ -7899,374 +7901,374 @@
     "message": "Virement bancaire automatique"
   },
   "paid_hive_account_creation_notification_title": {
-      "message": "Compte Hive créé",
-      "description": "Title for the browser notification when a paid Hive account creation completes while Keychain is closed"
-    },
+    "message": "Compte Hive créé",
+    "description": "Title for the browser notification when a paid Hive account creation completes while Keychain is closed"
+  },
   "paid_hive_account_creation_notification_message": {
-      "message": "Votre compte Hive $1 a été créé et ajouté à votre portefeuille",
-      "description": "Browser notification message when a paid Hive account creation completes while Keychain is closed"
-    },
+    "message": "Votre compte Hive $1 a été créé et ajouté à votre portefeuille",
+    "description": "Browser notification message when a paid Hive account creation completes while Keychain is closed"
+  },
   "portfolio_coming_soon_badge": {
-      "message": "Bientôt"
-    },
+    "message": "Bientôt"
+  },
   "portfolio_coming_soon_expected": {
-      "message": "Prévu $1",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "Q4 2026"
-        }
+    "message": "Prévu $1",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "Q4 2026"
       }
-    },
-  "portfolio_coming_soon_description_buy": {
-      "message": "Bientôt, achetez de la crypto par carte ou virement, sans quitter Keychain."
-    },
-  "portfolio_coming_soon_description_sell": {
-      "message": "Bientôt, vendez de la crypto contre du fiat, sans quitter Keychain."
-    },
-  "portfolio_coming_soon_description_swap": {
-      "message": "Bientôt, Swap et Bridge de tokens entre chaînes prises en charge."
-    },
-  "portfolio_quote_auto_refresh_countdown": {
-      "message": "Actualisation dans $1 s",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "30"
-        }
-      }
-    },
-  "portfolio_quote_refresh_now": {
-      "message": "Actualiser"
-    },
-  "portfolio_quote_retry": {
-      "message": "Réessayer"
-    },
-  "portfolio_quote_refreshing": {
-      "message": "Mise à jour offres…"
-    },
-  "portfolio_insufficient_balance": {
-      "message": "Solde $1 insuffisant.",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "HIVE"
-        }
-      }
-    },
-  "portfolio_history_auto_refresh_countdown": {
-      "message": "Actualisation dans $1 s",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "15"
-        }
-      }
-    },
-  "portfolio_history_refresh_now": {
-      "message": "Actualiser"
-    },
-  "portfolio_history_refreshing": {
-      "message": "Actualisation…"
-    },
-  "portfolio_partial_load_error": {
-      "message": "Certains réseaux n'ont pas pu être chargés : $1",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "Ethereum, Polygon"
-        }
-      }
-    },
-  "portfolio_confirmation_provider_account": {
-      "message": "Compte du fournisseur"
-    },
-  "portfolio_confirmation_evm_destination": {
-      "message": "Adresse du fournisseur"
-    },
-  "portfolio_confirmation_approval_amount": {
-      "message": "Montant d'approval"
-    },
-  "portfolio_confirmation_approval_spender": {
-      "message": "Spender"
-    },
-  "portfolio_approving_smart_contract": {
-      "message": "Approval du smart contract"
-    },
-  "portfolio_sending_transaction": {
-      "message": "Envoi de la transaction"
-    },
-  "portfolio_recipient_hive_account": {
-      "message": "Compte Hive destinataire"
-    },
-  "portfolio_recipient_bitcoin_address": {
-      "message": "Adresse de destination Bitcoin"
-    },
-  "portfolio_recipient_solana_address": {
-      "message": "Adresse de destination Solana"
-    },
-  "portfolio_recipient_sui_address": {
-      "message": "Adresse de destination Sui"
-    },
-  "portfolio_recipient_tron_address": {
-      "message": "Adresse de destination Tron"
-    },
-  "portfolio_recipient_destination_address": {
-      "message": "Adresse de destination"
-    },
-  "portfolio_recipient_address_invalid": {
-      "message": "Saisissez une adresse valide pour ce Swap."
-    },
-  "portfolio_estimated_amount": {
-      "message": "Montant estimé"
-    },
-  "portfolio_quote_provider_fee": {
-      "message": "Frais du fournisseur"
-    },
-  "portfolio_quote_provider_fee_undisclosed": {
-      "message": "Non divulgué par le fournisseur"
-    },
-  "portfolio_quote_network_fee": {
-      "message": "Frais de réseau"
-    },
-  "portfolio_view_all_quotes": {
-      "message": "Voir offres ($1)",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "3"
-        }
-      }
-    },
-  "portfolio_hide_quotes": {
-      "message": "Masquer les offres"
-    },
-  "portfolio_swap_amount_out_of_range": {
-      "message": "Le montant doit être entre $1 et $2.",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "2200"
-        },
-        "2": {
-          "content": "$2",
-          "example": "110000"
-        }
-      }
-    },
-  "portfolio_amount_out_of_range_fiat": {
-      "message": "Le montant doit être entre $1 et $2 $3.",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "908"
-        },
-        "2": {
-          "content": "$2",
-          "example": "334910"
-        },
-        "3": {
-          "content": "$3",
-          "example": "TWD"
-        }
-      }
-    },
-  "portfolio_amount_below_minimum": {
-      "message": "Le montant minimum est $1.",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "0.01123"
-        }
-      }
-    },
-  "portfolio_amount_below_minimum_fiat": {
-      "message": "Le montant minimum est $1 $2.",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "908"
-        },
-        "2": {
-          "content": "$2",
-          "example": "TWD"
-        }
-      }
-    },
-  "portfolio_amount_above_maximum": {
-      "message": "Le montant maximum est $1.",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "110000"
-        }
-      }
-    },
-  "portfolio_amount_above_maximum_fiat": {
-      "message": "Le montant maximum est $1 $2.",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "334910"
-        },
-        "2": {
-          "content": "$2",
-          "example": "TWD"
-        }
-      }
-    },
-  "portfolio_swap_amount_out_of_range_generic": {
-      "message": "Aucune offre pour le montant demandé."
-    },
-  "portfolio_amount_hint_increase": {
-      "message": "Passez à $1 pour débloquer $2 fournisseurs de plus.",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "0.1"
-        },
-        "2": {
-          "content": "$2",
-          "example": "2"
-        }
-      }
-    },
-  "portfolio_amount_hint_decrease": {
-      "message": "Passez à $1 pour débloquer $2 fournisseurs de plus.",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "10"
-        },
-        "2": {
-          "content": "$2",
-          "example": "2"
-        }
-      }
-    },
-  "portfolio_amount_hint_increase_provider": {
-      "message": "Passez à $1 pour débloquer $2.",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "0.1"
-        },
-        "2": {
-          "content": "$2",
-          "example": "SimpleSwap"
-        }
-      }
-    },
-  "portfolio_amount_hint_decrease_provider": {
-      "message": "Passez à $1 pour débloquer $2.",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "10"
-        },
-        "2": {
-          "content": "$2",
-          "example": "SimpleSwap"
-        }
-      }
-    },
-  "portfolio_history_exact_from_amount": {
-      "message": "Montant exact (De)"
-    },
-  "portfolio_history_exact_to_amount": {
-      "message": "Montant exact (À)"
-    },
-  "portfolio_history_received_amount": {
-      "message": "Montant reçu"
-    },
-  "portfolio_history_estimated_to_amount": {
-      "message": "Montant estimé (À)"
-    },
-  "portfolio_history_fiat_currency": {
-      "message": "Devise fiat"
-    },
-  "portfolio_history_payment_method": {
-      "message": "Moyen de paiement"
-    },
-  "portfolio_all_networks_short": {
-      "message": "Tous"
-    },
-  "portfolio_to_asset_search": {
-      "message": "Rechercher un symbole ou réseau"
-    },
-  "portfolio_more_networks": {
-      "message": "Plus de réseaux"
-    },
-  "portfolio_symbol_filter": {
-      "message": "Filtrer par symbole"
-    },
-  "portfolio_to_asset_filter_hint": {
-      "message": "Premiers actifs affichés. Cherchez ou choisissez un réseau."
-    },
-  "portfolio_to_asset_results_truncated": {
-      "message": "$1 actifs de plus correspondent. Affinez la recherche pour les voir.",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "120"
-        }
-      }
-    },
-  "portfolio_no_matching_assets": {
-      "message": "Aucun actif ne correspond à vos filtres."
-    },
-  "portfolio_swap_no_wallet_tokens": {
-      "message": "Ce portefeuille n'a aucun token."
-    },
-  "portfolio_refresh": {
-      "message": "Actualiser les données du portfolio"
-    },
-  "html_popup_settings_notifications_channels_title": {
-      "message": "Canaux de diffusion",
-      "description": "Title for local Hive notification drop/browser preferences"
-    },
-  "html_popup_settings_notifications_channels_caption": {
-      "message": "Choisissez où chaque opération doit apparaître. Les changements sont enregistrés localement pour ce compte.",
-      "description": "Caption for local Hive notification channel preferences"
-    },
-  "html_popup_settings_notifications_operation": {
-      "message": "Opération",
-      "description": "Column header for notification operation name"
-    },
-  "html_popup_settings_notifications_operation_placeholder": {
-      "message": "Opération",
-      "description": "Placeholder for notification operation criteria input"
-    },
-  "html_popup_settings_notifications_channel_drop": {
-      "message": "Drop",
-      "description": "Toggle label for in-app notification dropdown"
-    },
-  "html_popup_settings_notifications_channel_browser": {
-      "message": "Notification push",
-      "description": "Toggle label for browser OS push notifications"
-    },
-  "html_popup_settings_notifications_channel_browser_tooltip": {
-      "message": "Affiche une notification système à la réception, même si Keychain est fermé. Enregistré avec votre config de notifications.",
-      "description": "Tooltip explaining the push notification channel toggle"
-    },
-  "html_popup_settings_notifications_condition_field_placeholder": {
-      "message": "Champ",
-      "description": "Placeholder for notification condition field dropdown"
-    },
-  "html_popup_settings_notifications_condition_operand_placeholder": {
-      "message": "Opérateur",
-      "description": "Placeholder for notification condition operator dropdown"
-    },
-  "html_popup_settings_notifications_condition_value_placeholder": {
-      "message": "Valeur",
-      "description": "Placeholder for notification condition value input"
-    },
-  "evm_light_node_assets_cache_warning": {
-      "message": "Le service EVM est indisponible. Infos d'actifs en cache ; les soldes peuvent se rafraîchir, mais les détails token et NFT peuvent être obsolètes.",
-      "description": "Warning shown when EVM token or NFT data is loaded from local cache because the light-node is unavailable"
-    },
-  "hive_push_notification_title": {
-      "message": "$1 · Notification Hive",
-      "description": "Incoming Hive push notification title"
     }
+  },
+  "portfolio_coming_soon_description_buy": {
+    "message": "Bientôt, achetez de la crypto par carte ou virement, sans quitter Keychain."
+  },
+  "portfolio_coming_soon_description_sell": {
+    "message": "Bientôt, vendez de la crypto contre du fiat, sans quitter Keychain."
+  },
+  "portfolio_coming_soon_description_swap": {
+    "message": "Bientôt, Swap et Bridge de tokens entre chaînes prises en charge."
+  },
+  "portfolio_quote_auto_refresh_countdown": {
+    "message": "Actualisation dans $1 s",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "30"
+      }
+    }
+  },
+  "portfolio_quote_refresh_now": {
+    "message": "Actualiser"
+  },
+  "portfolio_quote_retry": {
+    "message": "Réessayer"
+  },
+  "portfolio_quote_refreshing": {
+    "message": "Mise à jour offres…"
+  },
+  "portfolio_insufficient_balance": {
+    "message": "Solde $1 insuffisant.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "HIVE"
+      }
+    }
+  },
+  "portfolio_history_auto_refresh_countdown": {
+    "message": "Actualisation dans $1 s",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "15"
+      }
+    }
+  },
+  "portfolio_history_refresh_now": {
+    "message": "Actualiser"
+  },
+  "portfolio_history_refreshing": {
+    "message": "Actualisation…"
+  },
+  "portfolio_partial_load_error": {
+    "message": "Certains réseaux n'ont pas pu être chargés : $1",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "Ethereum, Polygon"
+      }
+    }
+  },
+  "portfolio_confirmation_provider_account": {
+    "message": "Compte du fournisseur"
+  },
+  "portfolio_confirmation_evm_destination": {
+    "message": "Adresse du fournisseur"
+  },
+  "portfolio_confirmation_approval_amount": {
+    "message": "Montant d'approval"
+  },
+  "portfolio_confirmation_approval_spender": {
+    "message": "Spender"
+  },
+  "portfolio_approving_smart_contract": {
+    "message": "Approval du smart contract"
+  },
+  "portfolio_sending_transaction": {
+    "message": "Envoi de la transaction"
+  },
+  "portfolio_recipient_hive_account": {
+    "message": "Compte Hive destinataire"
+  },
+  "portfolio_recipient_bitcoin_address": {
+    "message": "Adresse de destination Bitcoin"
+  },
+  "portfolio_recipient_solana_address": {
+    "message": "Adresse de destination Solana"
+  },
+  "portfolio_recipient_sui_address": {
+    "message": "Adresse de destination Sui"
+  },
+  "portfolio_recipient_tron_address": {
+    "message": "Adresse de destination Tron"
+  },
+  "portfolio_recipient_destination_address": {
+    "message": "Adresse de destination"
+  },
+  "portfolio_recipient_address_invalid": {
+    "message": "Saisissez une adresse valide pour ce Swap."
+  },
+  "portfolio_estimated_amount": {
+    "message": "Montant estimé"
+  },
+  "portfolio_quote_provider_fee": {
+    "message": "Frais du fournisseur"
+  },
+  "portfolio_quote_provider_fee_undisclosed": {
+    "message": "Non divulgué par le fournisseur"
+  },
+  "portfolio_quote_network_fee": {
+    "message": "Frais de réseau"
+  },
+  "portfolio_view_all_quotes": {
+    "message": "Voir offres ($1)",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "3"
+      }
+    }
+  },
+  "portfolio_hide_quotes": {
+    "message": "Masquer les offres"
+  },
+  "portfolio_swap_amount_out_of_range": {
+    "message": "Le montant doit être entre $1 et $2.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "2200"
+      },
+      "2": {
+        "content": "$2",
+        "example": "110000"
+      }
+    }
+  },
+  "portfolio_amount_out_of_range_fiat": {
+    "message": "Le montant doit être entre $1 et $2 $3.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "908"
+      },
+      "2": {
+        "content": "$2",
+        "example": "334910"
+      },
+      "3": {
+        "content": "$3",
+        "example": "TWD"
+      }
+    }
+  },
+  "portfolio_amount_below_minimum": {
+    "message": "Le montant minimum est $1.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "0.01123"
+      }
+    }
+  },
+  "portfolio_amount_below_minimum_fiat": {
+    "message": "Le montant minimum est $1 $2.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "908"
+      },
+      "2": {
+        "content": "$2",
+        "example": "TWD"
+      }
+    }
+  },
+  "portfolio_amount_above_maximum": {
+    "message": "Le montant maximum est $1.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "110000"
+      }
+    }
+  },
+  "portfolio_amount_above_maximum_fiat": {
+    "message": "Le montant maximum est $1 $2.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "334910"
+      },
+      "2": {
+        "content": "$2",
+        "example": "TWD"
+      }
+    }
+  },
+  "portfolio_swap_amount_out_of_range_generic": {
+    "message": "Aucune offre pour le montant demandé."
+  },
+  "portfolio_amount_hint_increase": {
+    "message": "Passez à $1 pour débloquer $2 fournisseurs de plus.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "0.1"
+      },
+      "2": {
+        "content": "$2",
+        "example": "2"
+      }
+    }
+  },
+  "portfolio_amount_hint_decrease": {
+    "message": "Passez à $1 pour débloquer $2 fournisseurs de plus.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "10"
+      },
+      "2": {
+        "content": "$2",
+        "example": "2"
+      }
+    }
+  },
+  "portfolio_amount_hint_increase_provider": {
+    "message": "Passez à $1 pour débloquer $2.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "0.1"
+      },
+      "2": {
+        "content": "$2",
+        "example": "SimpleSwap"
+      }
+    }
+  },
+  "portfolio_amount_hint_decrease_provider": {
+    "message": "Passez à $1 pour débloquer $2.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "10"
+      },
+      "2": {
+        "content": "$2",
+        "example": "SimpleSwap"
+      }
+    }
+  },
+  "portfolio_history_exact_from_amount": {
+    "message": "Montant exact (De)"
+  },
+  "portfolio_history_exact_to_amount": {
+    "message": "Montant exact (À)"
+  },
+  "portfolio_history_received_amount": {
+    "message": "Montant reçu"
+  },
+  "portfolio_history_estimated_to_amount": {
+    "message": "Montant estimé (À)"
+  },
+  "portfolio_history_fiat_currency": {
+    "message": "Devise fiat"
+  },
+  "portfolio_history_payment_method": {
+    "message": "Moyen de paiement"
+  },
+  "portfolio_all_networks_short": {
+    "message": "Tous"
+  },
+  "portfolio_to_asset_search": {
+    "message": "Rechercher un symbole ou réseau"
+  },
+  "portfolio_more_networks": {
+    "message": "Plus de réseaux"
+  },
+  "portfolio_symbol_filter": {
+    "message": "Filtrer par symbole"
+  },
+  "portfolio_to_asset_filter_hint": {
+    "message": "Premiers actifs affichés. Cherchez ou choisissez un réseau."
+  },
+  "portfolio_to_asset_results_truncated": {
+    "message": "$1 actifs de plus correspondent. Affinez la recherche pour les voir.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "120"
+      }
+    }
+  },
+  "portfolio_no_matching_assets": {
+    "message": "Aucun actif ne correspond à vos filtres."
+  },
+  "portfolio_swap_no_wallet_tokens": {
+    "message": "Ce portefeuille n'a aucun token."
+  },
+  "portfolio_refresh": {
+    "message": "Actualiser les données du portfolio"
+  },
+  "html_popup_settings_notifications_channels_title": {
+    "message": "Canaux de diffusion",
+    "description": "Title for local Hive notification drop/browser preferences"
+  },
+  "html_popup_settings_notifications_channels_caption": {
+    "message": "Choisissez où chaque opération doit apparaître. Les changements sont enregistrés localement pour ce compte.",
+    "description": "Caption for local Hive notification channel preferences"
+  },
+  "html_popup_settings_notifications_operation": {
+    "message": "Opération",
+    "description": "Column header for notification operation name"
+  },
+  "html_popup_settings_notifications_operation_placeholder": {
+    "message": "Opération",
+    "description": "Placeholder for notification operation criteria input"
+  },
+  "html_popup_settings_notifications_channel_drop": {
+    "message": "Drop",
+    "description": "Toggle label for in-app notification dropdown"
+  },
+  "html_popup_settings_notifications_channel_browser": {
+    "message": "Notification push",
+    "description": "Toggle label for browser OS push notifications"
+  },
+  "html_popup_settings_notifications_channel_browser_tooltip": {
+    "message": "Affiche une notification système à la réception, même si Keychain est fermé. Enregistré avec votre config de notifications.",
+    "description": "Tooltip explaining the push notification channel toggle"
+  },
+  "html_popup_settings_notifications_condition_field_placeholder": {
+    "message": "Champ",
+    "description": "Placeholder for notification condition field dropdown"
+  },
+  "html_popup_settings_notifications_condition_operand_placeholder": {
+    "message": "Opérateur",
+    "description": "Placeholder for notification condition operator dropdown"
+  },
+  "html_popup_settings_notifications_condition_value_placeholder": {
+    "message": "Valeur",
+    "description": "Placeholder for notification condition value input"
+  },
+  "evm_light_node_assets_cache_warning": {
+    "message": "Le service EVM est indisponible. Infos d'actifs en cache ; les soldes peuvent se rafraîchir, mais les détails token et NFT peuvent être obsolètes.",
+    "description": "Warning shown when EVM token or NFT data is loaded from local cache because the light-node is unavailable"
+  },
+  "hive_push_notification_title": {
+    "message": "$1 · Notification Hive",
+    "description": "Incoming Hive push notification title"
+  }
 }

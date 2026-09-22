@@ -96,23 +96,23 @@
     "description": "while using wrong private key"
   },
   "common_pending": {
-    "message": "Pending",
+    "message": "待处理",
     "description": "EVM transaction pending status"
   },
   "common_testnet": {
-    "message": "Testnet",
+    "message": "测试网",
     "description": "EVM blockchain testnet"
   },
   "common_mainnet": {
-    "message": "Mainnet",
+    "message": "主网",
     "description": "EVM blockchain mainnet"
   },
   "common_seed": {
-    "message": "Seed",
+    "message": "种子",
     "description": "EVM blockchain seed"
   },
   "common_seeds": {
-    "message": "Seeds",
+    "message": "种子",
     "description": "EVM blockchain seeds"
   },
   "common_experimental": {
@@ -444,7 +444,7 @@
     "description": "on settings page"
   },
   "popup_html_contacts": {
-    "message": "Contacts",
+    "message": "联系方式",
     "description": "Unified settings menu item"
   },
   "popup_html_contacts_intro": {
@@ -452,19 +452,19 @@
     "description": "Intro on unified contacts settings page"
   },
   "popup_html_network": {
-    "message": "Network",
+    "message": "网络",
     "description": "Unified settings menu item for RPC settings"
   },
   "popup_html_connected_dapps": {
-    "message": "Connected dApps",
+    "message": "已连接 dApps",
     "description": "Unified settings menu item"
   },
   "evm_settings": {
-    "message": "EVM Settings",
+    "message": "EVM 设置",
     "description": "Unified settings menu item"
   },
   "hive_settings": {
-    "message": "Hive Settings",
+    "message": "Hive 设置",
     "description": "Unified settings menu item"
   },
   "popup_html_add_account": {
@@ -796,7 +796,7 @@
     "description": "Preferences and display: open Keychain in the browser side panel"
   },
   "popup_html_try_side_panel": {
-    "message": "Try the side panel",
+    "message": "尝试侧面板",
     "description": "Preferences and display: try Keychain in the browser side panel"
   },
   "popup_html_open_in_side_panel_hint": {
@@ -1056,7 +1056,7 @@
     "description": "on settings page"
   },
   "popup_html_account_authorities": {
-    "message": "Account authorities",
+    "message": "账户权限",
     "description": "Hive settings menu item"
   },
   "popup_html_export_accounts": {
@@ -1564,7 +1564,7 @@
     "description": "When requesting recurrent transfers"
   },
   "dialog_pair_id": {
-    "message": "Pair ID",
+    "message": "配对ID",
     "description": "When requesting recurrent transfers"
   },
   "dialog_executions": {
@@ -2127,91 +2127,91 @@
     "description": "Advanced settings sub menu"
   },
   "popup_html_shortcuts": {
-    "message": "Shortcuts",
+    "message": "快捷键",
     "description": "Shortcuts settings menu"
   },
   "popup_html_shortcuts_intro": {
-    "message": "Create keyboard shortcuts to navigate or change account. Be aware that some shortcuts may be intercepted by the browser and close the popup.",
+    "message": "创建键盘快捷键来导航或更改帐户。请注意，某些快捷方式可能会被浏览器拦截并关闭弹出窗口。",
     "description": "Shortcuts settings intro"
   },
   "popup_html_shortcuts_add_button": {
-    "message": "Add shortcut",
+    "message": "添加快捷方式",
     "description": "Add shortcut button"
   },
   "popup_html_shortcuts_key_combo": {
-    "message": "Shortcut",
+    "message": "捷径",
     "description": "Shortcut key combo label"
   },
   "popup_html_shortcuts_key_combo_placeholder": {
-    "message": "Press a key combination",
+    "message": "按组合键",
     "description": "Shortcut key combo placeholder"
   },
   "popup_html_shortcuts_action": {
-    "message": "Action",
+    "message": "行动",
     "description": "Shortcut action label"
   },
   "popup_html_shortcuts_target": {
-    "message": "Target",
+    "message": "目标",
     "description": "Shortcut target label"
   },
   "popup_html_shortcuts_delegation_type": {
-    "message": "Delegation type",
+    "message": "委托类型",
     "description": "Shortcut delegation type label"
   },
   "popup_html_shortcuts_power_type": {
-    "message": "Power type",
+    "message": "电源类型",
     "description": "Shortcut power type label"
   },
   "popup_html_shortcuts_save_button": {
-    "message": "Save shortcut",
+    "message": "保存快捷方式",
     "description": "Save shortcut button"
   },
   "popup_html_shortcuts_cancel_button": {
-    "message": "Cancel",
+    "message": "取消",
     "description": "Cancel shortcut button"
   },
   "popup_html_shortcuts_no_shortcuts": {
-    "message": "No shortcuts yet.",
+    "message": "还没有捷径。",
     "description": "No shortcuts message"
   },
   "popup_html_shortcuts_action_navigate": {
-    "message": "Navigate",
+    "message": "导航",
     "description": "Shortcut action navigate"
   },
   "popup_html_shortcuts_action_change_account": {
-    "message": "Change account",
+    "message": "更改帐户",
     "description": "Shortcut action change account"
   },
   "popup_html_shortcuts_duplicate": {
-    "message": "This shortcut is already assigned.",
+    "message": "该快捷方式已被指定。",
     "description": "Duplicate shortcut error"
   },
   "popup_html_shortcuts_missing_combo": {
-    "message": "Please enter a shortcut.",
+    "message": "请输入快捷方式。",
     "description": "Missing shortcut combo error"
   },
   "popup_html_shortcuts_missing_target": {
-    "message": "Please select a target.",
+    "message": "请选择一个目标。",
     "description": "Missing shortcut target error"
   },
   "popup_html_shortcuts_no_accounts": {
-    "message": "No accounts available.",
+    "message": "没有可用的帐户。",
     "description": "No accounts available for shortcuts"
   },
   "popup_html_shortcuts_action_change_chain": {
-    "message": "Change chain",
+    "message": "改变链条",
     "description": "Shortcut action change chain"
   },
   "popup_html_shortcuts_action_toggle_theme": {
-    "message": "Change theme",
+    "message": "更改主题",
     "description": "Shortcut action change theme"
   },
   "popup_html_shortcuts_action_open_in_tab": {
-    "message": "Open in side panel",
+    "message": "在侧面板中打开",
     "description": "Shortcut action open Keychain outside the popup"
   },
   "popup_html_shortcut_transfer_chain_label": {
-    "message": "Chain",
+    "message": "链",
     "description": "Shortcuts form: transfer chain selector label"
   },
   "popup_html_shortcut_account_type_hive": {
@@ -2219,15 +2219,15 @@
     "description": "Shortcuts: Hive account row subtitle in account picker"
   },
   "popup_html_shortcut_no_chains": {
-    "message": "No chains available",
+    "message": "没有可用的链条",
     "description": "Shortcuts: empty chain list"
   },
   "popup_html_shortcut_last_used_evm_chain": {
-    "message": "Last used EVM chain",
+    "message": "最后使用的 EVM 链",
     "description": "Shortcuts: switch to last used EVM network"
   },
   "popup_html_shortcut_no_tokens": {
-    "message": "No tokens available",
+    "message": "没有可用的代币",
     "description": "Shortcuts: empty token list for transfer"
   },
   "popup_html_shortcut_currency_hive": {
@@ -2239,7 +2239,7 @@
     "description": "Shortcuts: HBD transfer currency label"
   },
   "popup_html_shortcut_nav_HOME_PAGE": {
-    "message": "Home",
+    "message": "首页",
     "description": "Shortcut navigation target: home"
   },
   "popup_html_rpc_node_text": {
@@ -2319,7 +2319,7 @@
     "description": "In transfer fund page"
   },
   "popup_html_recurrent_transfers": {
-    "message": "Recurrent transfers",
+    "message": "经常性转移",
     "description": "In transfer fund page"
   },
   "popup_html_cancel_recurrent_transfer": {
@@ -2639,7 +2639,7 @@
     "description": "Transfer fund operation"
   },
   "html_popup_cancel_transaction_operation": {
-    "message": "Cancelling transaction",
+    "message": "取消交易",
     "description": "Cancel transaction operation"
   },
   "html_popup_stop_recc_transfer_fund_operation": {
@@ -2799,7 +2799,7 @@
     "description": "Contact support"
   },
   "popup_html_tutorial": {
-    "message": "Tutorial",
+    "message": "教程",
     "description": "Contact support"
   },
   "popup_html_wallet_info_transfer_in": {
@@ -3351,7 +3351,7 @@
     "description": "wrong vesting routes popup, item details, non existent label"
   },
   "popup_html_vesting_route_item_details_id_title": {
-    "message": "Id: ",
+    "message": "ID：",
     "description": "wrong vesting routes popup, item details, id label/title"
   },
   "popup_html_vesting_route_item_details_from_title": {
@@ -3595,15 +3595,15 @@
     "description": "Global"
   },
   "popup_html_active_recurrent_transfer": {
-    "message": "active recurrent transfer(s)",
+    "message": "主动定期转移）",
     "description": "Global"
   },
   "popup_html_pending_remaining_executions": {
-    "message": "$1 remaining execution(s)",
+    "message": "$1 剩余执行次数",
     "description": "Pending recurrent transfer remaining executions"
   },
   "popup_html_pending_recurrence": {
-    "message": "Every $1 hours",
+    "message": "每 $1 小时",
     "description": "Pending recurrent transfer recurrence every x hours"
   },
   "popup_html_pending_currency": {
@@ -3976,7 +3976,7 @@
     "description": "Title of add accounts from ledger page"
   },
   "evm_add_accounts_from_ledger": {
-    "message": "Add EVM accounts from Ledger",
+    "message": "从 Ledger 添加 EVM 帐户",
     "description": "Title of add EVM accounts from ledger page"
   },
   "add_accounts_from_ledger_finished": {
@@ -4024,7 +4024,7 @@
     "description": "synchronize ledger caption"
   },
   "evm_ledger_account_discovery_caption": {
-    "message": "Connect and unlock your Ledger, open the Ethereum app, then discover EVM accounts.",
+    "message": "连接并解锁您的 Ledger，打开以太坊应用程序，然后发现 EVM 帐户。",
     "description": "EVM Ledger account discovery caption"
   },
   "evm_ledger_derivation_path_bip44": {
@@ -4040,7 +4040,7 @@
     "description": "EVM Ledger legacy derivation path label"
   },
   "evm_ledger_derivation_next_index": {
-    "message": "Starts at index $1",
+    "message": "从索引 $1 开始",
     "description": "EVM Ledger derivation path next discovery index"
   },
   "evm_ledger_account_path_hint": {
@@ -4052,27 +4052,27 @@
     "description": "Default EVM Ledger wallet source name"
   },
   "evm_ledger_connect_device": {
-    "message": "Please connect your Ledger",
+    "message": "请连接您的 Ledger",
     "description": "EVM Ledger connection error"
   },
   "evm_ledger_unlock_device": {
-    "message": "Please unlock your Ledger",
+    "message": "请解锁您的 Ledger",
     "description": "EVM Ledger locked device error"
   },
   "evm_ledger_open_ethereum_app": {
-    "message": "Please open the Ethereum App on your Ledger",
+    "message": "请在您的 Ledger 上打开以太坊应用程序",
     "description": "EVM Ledger wrong or closed app error"
   },
   "evm_ledger_enable_blind_signing": {
-    "message": "Please enable blind signing in the Ethereum App settings on your Ledger",
+    "message": "请在 Ledger 上的以太坊应用程序设置中启用盲签名",
     "description": "EVM Ledger blind signing disabled error"
   },
   "evm_ledger_clear_signing_fallback_warning": {
-    "message": "Ledger clear signing will be attempted for this token operation. If token metadata is unavailable, your Ledger may show a blind-signing confirmation.",
+    "message": "此令牌操作将尝试 Ledger 明确签名。如果令牌元数据不可用，您的 Ledger 可能会显示盲签名确认。",
     "description": "Warning shown before signing an EVM token transaction with a Ledger"
   },
   "evm_ledger_unknown_error": {
-    "message": "An unknown Ledger error occurred. Please reconnect your Ledger, make sure you are in the Ethereum App and try again.",
+    "message": "发生未知 Ledger 错误。请重新连接您的 Ledger，确保您位于以太坊应用程序中，然后重试。",
     "description": "EVM Ledger unknown error"
   },
   "no_account_found_on_ledger_error": {
@@ -4148,11 +4148,11 @@
     "description": "Value of token in USD"
   },
   "token": {
-    "message": "Token",
+    "message": "代币",
     "description": "Value of token in USD"
   },
   "tokens": {
-    "message": "Tokens",
+    "message": "代币",
     "description": "common use in extension referring to HE tokes"
   },
   "liquid_balance": {
@@ -4192,7 +4192,7 @@
     "description": "portfolio main page"
   },
   "portfolio_section_portfolio": {
-    "message": "Portfolio"
+    "message": "文件夹"
   },
   "portfolio_section_buy": {
     "message": "购买"
@@ -4201,10 +4201,10 @@
     "message": "出售"
   },
   "portfolio_section_swap": {
-    "message": "Swap"
+    "message": "交换"
   },
   "portfolio_section_bridge": {
-    "message": "Bridge"
+    "message": "桥"
   },
   "portfolio_section_history": {
     "message": "历史纪录"
@@ -4348,7 +4348,7 @@
     "message": "提供商已将此 Swap 暂停以进行 compliance 审核。请联系他们并提供 Exchange ID。"
   },
   "portfolio_history_exchange_id": {
-    "message": "Exchange ID"
+    "message": "交换ID"
   },
   "portfolio_history_contact_provider": {
     "message": "联系提供商"
@@ -4447,7 +4447,7 @@
     "message": "提供商状态"
   },
   "portfolio_history_block_explorer": {
-    "message": "Block explorer"
+    "message": "区块浏览器"
   },
   "portfolio_history_view_on_provider": {
     "message": "在 $1 上查看",
@@ -4462,7 +4462,7 @@
     "message": "在 block explorer 上查看"
   },
   "portfolio_history_tx_hash": {
-    "message": "Transaction hash"
+    "message": "交易哈希"
   },
   "portfolio_history_submitted_at": {
     "message": "已提交"
@@ -4513,28 +4513,28 @@
     "message": "Account"
   },
   "portfolio_network": {
-    "message": "Network"
+    "message": "网络"
   },
   "portfolio_all_networks": {
     "message": "全部 networks"
   },
   "portfolio_token": {
-    "message": "Token"
+    "message": "代币"
   },
   "portfolio_he_breakdown_liquid": {
     "message": "liquid"
   },
   "portfolio_he_breakdown_staked": {
-    "message": "staked"
+    "message": "押注的"
   },
   "portfolio_he_breakdown_delegated": {
     "message": "delegated"
   },
   "portfolio_he_breakdown_unstaking": {
-    "message": "unstaking"
+    "message": "取消质押"
   },
   "portfolio_he_breakdown_undelegating": {
-    "message": "undelegating"
+    "message": "取消授权"
   },
   "portfolio_he_breakdown_expand": {
     "message": "显示余额详情"
@@ -4560,7 +4560,9 @@
   "portfolio_date": {
     "message": "日期"
   },
-  "portfolio_assets": { "message": "资产" },
+  "portfolio_assets": {
+    "message": "资产"
+  },
   "portfolio_token_filter": {
     "message": "按名称或 symbol 筛选"
   },
@@ -4797,7 +4799,7 @@
     "description": "Error message from blockchain: Posting key incorrect"
   },
   "ecosystem": {
-    "message": "DApps",
+    "message": "去中心化应用程序",
     "description": "DApps"
   },
   "ecosystem_category_social": {
@@ -5265,195 +5267,195 @@
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_import_wallet": {
-    "message": "Import from a seedphrase",
+    "message": "从助记词导入",
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_create_wallet": {
-    "message": "Create a new EVM wallet",
+    "message": "创建一个新的 EVM 钱包",
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_setup_import_text": {
-    "message": "Use your 12 or 24 words seed phrase to import your accounts into Keychain<br/>",
+    "message": "使用 12 或 24 个单词的助记词将您的帐户导入 Keychain<br/>",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_seed_phrase": {
-    "message": "Seed phrase",
+    "message": "种子短语",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_seed_phrase_placeholder": {
-    "message": "12 or 24 words seed phrase, separated by whitespace",
+    "message": "12 或 24 个单词的助记词，用空格分隔",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "popup_html_import_wallet_from_key": {
-    "message": "Import from a private key",
+    "message": "从私钥导入",
     "description": "EVM > Add wallet main page > Import private key"
   },
   "html_popup_evm_setup_import_key_text": {
-    "message": "Enter the private key of the EVM account you want to import.",
+    "message": "输入您要导入的 EVM 帐户的私钥。",
     "description": "EVM > Add wallet main page > Import private key"
   },
   "evm_invalid_private_key": {
-    "message": "This private key is invalid.",
+    "message": "该私钥无效。",
     "description": "EVM > Add wallet main page > Import private key"
   },
   "html_popup_evm_invalid_mnemonic_length": {
-    "message": "Your seedphrase should be 12 or 24 words long.",
+    "message": "您的助记词长度应为 12 或 24 个单词。",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_invalid_mnemonic_word": {
-    "message": "The word $1 of the seedphrase is incorrect.",
+    "message": "种子短语的 $1 一词不正确。",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_invalid_mnemonic_checksum": {
-    "message": "This seedphrase is invalid.",
+    "message": "该助记词无效。",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_choose_account": {
-    "message": "Select accounts",
+    "message": "选择账户",
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
   "html_popup_evm_choose_account_text": {
-    "message": "Select the accounts you wish to import to Keychain. You can add more later on from the account dropdown.",
+    "message": "选择您想要导入到 Keychain 的帐户。您可以稍后从帐户下拉列表中添加更多内容。",
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
   "popup_html_import_wallet_from_seed": {
-    "message": "Import from seed",
+    "message": "从种子导入",
     "description": "Import wallet from seed phrase title"
   },
   "popup_html_create_new_wallet_create_seed": {
-    "message": "Create seed phrase",
+    "message": "创建种子短语",
     "description": "Create seed phrase title"
   },
   "html_popup_evm_create_new_wallet_title": {
-    "message": "Save your secret seed phrase",
+    "message": "保存您的秘密种子短语",
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
   "html_popup_evm_create_new_wallet_import": {
-    "message": "Import",
+    "message": "进口",
     "description": "import accounts"
   },
   "html_popup_evm_error_select_account": {
-    "message": "Please select at least one account",
+    "message": "请至少选择一个帐户",
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
   "html_popup_chain_selector_page_title": {
-    "message": "Choose a blockchain",
+    "message": "选择区块链",
     "description": "setup blockchain page title"
   },
   "html_popup_chain_selector_page_caption": {
-    "message": "Choose your first blockchain to create or import an account. Don't worry, you can add more accounts later on.",
+    "message": "选择您的第一个区块链来创建或导入帐户。不用担心，您稍后可以添加更多帐户。",
     "description": "setup blockchain page caption"
   },
   "html_popup_deriving_wallets": {
-    "message": "Deriving wallets",
+    "message": "衍生钱包",
     "description": "Deriving wallets"
   },
   "html_popup_mnemonic_overlay": {
-    "message": "Make sure nobody is looking",
+    "message": "确保没有人在看",
     "description": "text on overlay while creating evm account"
   },
   "html_popup_evm_create_wallet_caption": {
-    "message": "Write down this secret recovery phrase and save it in a place that you trust and only you can access",
+    "message": "写下这个秘密恢复短语并将其保存在您信任且只有您可以访问的位置",
     "description": "evm account creation caption"
   },
   "html_popup_evm_12_words": {
-    "message": "12-words",
+    "message": "12字",
     "description": "12 words"
   },
   "html_popup_evm_24_words": {
-    "message": "24-words",
+    "message": "24字",
     "description": "24 words"
   },
   "html_popup_evm_create_wallet_verification_title": {
-    "message": "Seed phrase verification",
+    "message": "种子短语验证",
     "description": "evm account creation caption"
   },
   "html_popup_evm_create_wallet_verification_caption": {
-    "message": "Enter your words one by one. Between each word, press Enter to verify it.",
+    "message": "一一输入您的话。在每个单词之间，按 Enter 键进行验证。",
     "description": "evm account creation caption"
   },
   "html_popup_evm_create_wallet_verification_enter_word": {
-    "message": "Enter word #$1",
+    "message": "输入单词#$1",
     "description": "label of number to enter in verification page"
   },
   "html_popup_evm_create_wallet_verification_verify_word_error": {
-    "message": "Incorrect word",
+    "message": "用词错误",
     "description": "Verify word error"
   },
   "html_popup_evm_create_wallet_tips": {
-    "message": "Make sure to store your seed phrase in multiple places and offline. If this seed phrase is lost, you won't be able to recover your account",
+    "message": "确保将您的助记词存储在多个位置并离线存储。如果此助记词丢失，您将无法恢复您的帐户",
     "description": "tips"
   },
   "html_popup_evm_create_wallet_tips1": {
-    "message": "Save in a password manager",
+    "message": "保存在密码管理器中",
     "description": "tips"
   },
   "html_popup_evm_create_wallet_tips2": {
-    "message": "Store in a safe deposit box",
+    "message": "存放在保险箱中",
     "description": "tips"
   },
   "html_popup_evm_create_wallet_tips3": {
-    "message": "Write down and store in multiple secret places",
+    "message": "记下并存放在多个秘密地方",
     "description": "tips"
   },
   "html_popup_evm_create_wallet_display_mnemonic": {
-    "message": "Display seed phrase",
+    "message": "显示种子短语",
     "description": "display seed phrase"
   },
   "html_popup_evm_create_wallet_hide_mnemonic": {
-    "message": "Hide seed phrase",
+    "message": "隐藏助记词",
     "description": "display seed phrase"
   },
   "html_popup_evm_hide_account": {
-    "message": "Hide this account",
+    "message": "隐藏此帐户",
     "description": "hide account in acct settings"
   },
   "html_popup_evm_show_account": {
-    "message": "Show this account",
+    "message": "显示此帐户",
     "description": "show account in acct settings"
   },
   "html_popup_evm_create_wallet_copy_mnemonic": {
-    "message": "Copy seed phrase",
+    "message": "复制种子短语",
     "description": "display seed phrase"
   },
   "html_popup_evm_create_wallet_copied_mnemonic": {
-    "message": "Seed phrase copied to clipboard",
+    "message": "种子短语已复制到剪贴板",
     "description": "display seed phrase"
   },
   "evm_copy_seed_phrase_password_caption": {
-    "message": "You are about to copy your seed phrase. For security reasons, please enter your password to continue.",
+    "message": "您将要复制您的助记词。出于安全原因，请输入您的密码以继续。",
     "description": "Prompt shown before copying an EVM seed phrase"
   },
   "html_popup_add_blockchain": {
-    "message": "Add chain",
+    "message": "添加链条",
     "description": "display seed phrase"
   },
   "html_popup_evm_create_wallet_copy_seed_phrase_error": {
-    "message": "You haven't copied your seed phrase, please copy it before continuing",
+    "message": "您尚未复制助记词，请先复制它，然后再继续",
     "description": "Error if seed phrase not copied"
   },
   "html_popup_evm_create_wallet_safely_copied_seed": {
-    "message": "I have safely copied my seed phrase and saved it outside of Keychain",
+    "message": "我已安全复制我的助记词并将其保存在 Keychain 之外",
     "description": "checkbox content on create account page"
   },
   "html_popup_evm_create_wallet_storage_understanding": {
-    "message": "I understand that Keychain should not be considered as the primary place of storage for my seed phrase",
+    "message": "我了解 Keychain 不应被视为我的助记词的主要存储位置",
     "description": "checkbox content on create account page"
   },
   "html_popup_evm_create_wallet_condition_missing": {
-    "message": "You need to accept the conditions before creating an account.",
+    "message": "创建帐户之前您需要接受条件。",
     "description": "checkbox content on create account page"
   },
   "html_popup_evm_create_wallet_success_title": {
-    "message": "Wallet created",
+    "message": "钱包已创建",
     "description": "Title shown after successfully creating an EVM wallet in a detached tab"
   },
   "html_popup_evm_create_wallet_success_message": {
-    "message": "Your wallet has been successfully created and added to Keychain.",
+    "message": "您的钱包已成功创建并添加到Keychain。",
     "description": "Message shown after successfully creating an EVM wallet in a detached tab"
   },
   "html_popup_evm_creating_wallet": {
-    "message": "Creating wallet...",
+    "message": "正在创建钱包...",
     "description": "Loading caption while creating an EVM wallet"
   },
   "multisig_bot_two_fa_code": {
@@ -5481,79 +5483,79 @@
     "description": "Caption for download data"
   },
   "popup_html_create_blockchain": {
-    "message": "Create",
+    "message": "创造",
     "description": "Create blockchain button"
   },
   "popup_html_create_blockchain_chain_type": {
-    "message": "Chain type",
+    "message": "链条式",
     "description": "Blockchain chain type"
   },
   "popup_html_create_blockchain_name": {
-    "message": "Name",
+    "message": "姓名",
     "description": "Blockchain chain name"
   },
   "popup_html_create_blockchain_symbol": {
-    "message": "Symbol",
+    "message": "象征",
     "description": "Blockchain chain symbol"
   },
   "popup_html_create_blockchain_logo": {
-    "message": "Logo",
+    "message": "标识",
     "description": "Blockchain logo"
   },
   "popup_html_create_blockchain_chain_id": {
-    "message": "Chain ID",
+    "message": "链号",
     "description": "Blockchain chain id"
   },
   "popup_html_create_blockchain_block_explorer": {
-    "message": "Block explorer",
+    "message": "区块浏览器",
     "description": "Blockchain chain block explorer"
   },
   "popup_html_create_blockchain_main_token": {
-    "message": "Main token's name",
+    "message": "主要代币名称",
     "description": "Blockchain main token"
   },
   "popup_html_create_blockchain_token_hive": {
-    "message": "Hive token's name",
+    "message": "Hive 代币名称",
     "description": "Blockchain hive token"
   },
   "popup_html_create_blockchain_token_hbd": {
-    "message": "HBD token's name",
+    "message": "HBD 代币名称",
     "description": "Blockchain hbd token"
   },
   "popup_html_create_blockchain_token_hp": {
-    "message": "HP token's name",
+    "message": "HP 代币名称",
     "description": "Blockchain hp token"
   },
   "popup_html_evm_gas_fee_estimate_label": {
-    "message": "Estimate",
+    "message": "估计",
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_fee_estimate_duration_label": {
-    "message": "Duration",
+    "message": "期间",
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_fee": {
-    "message": "Gas fee",
+    "message": "汽油费",
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_fee_estimated": {
-    "message": "Estimated gas fee",
+    "message": "预计汽油费",
     "description": "EVM transaction result pending fee label"
   },
   "popup_html_evm_gas_fee_estimate_duration": {
-    "message": "~$1 seconds",
+    "message": "~$1 秒",
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_max_fee_label": {
-    "message": "Max fee",
+    "message": "最高费用",
     "description": "Evm Gas max fee estimate label"
   },
   "popup_html_evm_edit_gas_fee": {
-    "message": "Edit gas fee",
+    "message": "编辑汽油费",
     "description": "Evm edit Gas fee label"
   },
   "popup_html_evm_custom_gas_fee_increased": {
-    "message": "Increased",
+    "message": "增加",
     "description": "Increased"
   },
   "popup_html_evm_custom_gas_fee_low": {
@@ -5569,43 +5571,43 @@
     "description": "Fast gas fee tier"
   },
   "popup_html_evm_custom_gas_fee_custom": {
-    "message": "Custom",
+    "message": "风俗",
     "description": "Custom"
   },
   "popup_html_evm_suggested_by_dapp_gas_fee_custom": {
-    "message": "Suggested by dApp",
+    "message": "由 dApp 建议",
     "description": "Suggest by dapp"
   },
   "popup_html_add_custom_blockchain": {
-    "message": "Add custom blockchain",
+    "message": "添加自定义区块链",
     "description": "Add custom blockchain page title"
   },
   "popup_html_evm_history_transfer_in": {
-    "message": "You received $1 $2 from $3",
+    "message": "您从 $3 收到了 $1 $2",
     "description": "EVM history item transfer in"
   },
   "popup_html_evm_history_transfer_out": {
-    "message": "You sent $1 $2 to $3",
+    "message": "您已将 $1 $2 发送至 $3",
     "description": "EVM history item transfer out"
   },
   "popup_html_evm_history_loading_progression": {
-    "message": "$1 out of $2 blocks processed",
+    "message": "已处理 $2 块中的 $1",
     "description": "EVM history loading progress"
   },
   "popup_html_evm_gas_fee_form_base_fee": {
-    "message": "Max base fee per gas (Gwei)",
+    "message": "每项 Gas 的最高基本费用 (Gwei)",
     "description": "Max base fee evm transfer"
   },
   "popup_html_evm_gas_fee_form_gas_price": {
-    "message": "Gas price (Gwei)",
+    "message": "汽油价格 (Gwei)",
     "description": "Gas price evm transfer"
   },
   "popup_html_evm_gas_fee_form_priority_fee": {
-    "message": "Priority fee per gas (Gwei)",
+    "message": "每份天然气的优先费 (Gwei)",
     "description": "Evm priority fee"
   },
   "popup_html_evm_gas_fee_form_gas_limit": {
-    "message": "Gas limit",
+    "message": "气体限制",
     "description": "Evm gas limit "
   },
   "popup_html_evm_transfer_successful": {
@@ -5613,139 +5615,139 @@
     "description": "Evm transfer"
   },
   "popup_html_evm_gas_fee_not_selected": {
-    "message": "You need to select the gas fee before you can confirm",
+    "message": "您需要选择gas费用才可以确认",
     "description": "Evm transfer"
   },
   "popup_html_evm_transfer_speed_up": {
-    "message": "Speed up",
+    "message": "加快",
     "description": "Evm transfer"
   },
   "popup_html_evm_transfer_cancel": {
-    "message": "Cancel",
+    "message": "取消",
     "description": "Evm transfer"
   },
   "popup_html_evm_transfer_status_pending": {
-    "message": "Pending...",
+    "message": "待办的...",
     "description": "Evm transfer status"
   },
   "popup_html_evm_transfer_status_success": {
-    "message": "Success",
+    "message": "成功",
     "description": "Evm transfer status"
   },
   "popup_html_evm_transfer_status_failed": {
-    "message": "Failed",
+    "message": "失败的",
     "description": "Evm transfer status"
   },
   "evm_history_operation_reverted_status": {
-    "message": "Reverted",
+    "message": "已恢复",
     "description": "Reverted EVM transaction status"
   },
   "popup_html_evm_transfer_status_canceling": {
-    "message": "Canceling...",
+    "message": "正在取消...",
     "description": "Evm transfer status"
   },
   "popup_html_evm_transfer_status_canceled": {
-    "message": "Canceled",
+    "message": "取消",
     "description": "Evm transfer status"
   },
   "popup_html_evm_transfer_status_speeding_up": {
-    "message": "Speeding up...",
+    "message": "正在加速...",
     "description": "Evm transfer status"
   },
   "popup_html_evm_transaction_info_block_number": {
-    "message": "Block number",
+    "message": "区块编号",
     "description": "Evm transaction info"
   },
   "popup_html_evm_transaction_info_gas_limit": {
-    "message": "Gas limit",
+    "message": "气体限制",
     "description": "Evm transaction info"
   },
   "popup_html_evm_transaction_info_total_fee_per_gas": {
-    "message": "Total fee per gas",
+    "message": "每项 Gas 的总费用",
     "description": "Evm transaction info"
   },
   "popup_html_evm_transaction_info_priority_fee": {
-    "message": "Priority fee",
+    "message": "优先费",
     "description": "Evm transaction info"
   },
   "popup_html_evm_transaction_info_gas_price": {
-    "message": "Gas price",
+    "message": "汽油价格",
     "description": "Evm transaction info"
   },
   "popup_html_evm_transaction_info_to": {
-    "message": "To",
+    "message": "到",
     "description": "Evm transaction info"
   },
   "popup_html_evm_transaction_info_tx_hash": {
-    "message": "Transaction hash",
+    "message": "交易哈希",
     "description": "Evm transaction info"
   },
   "popup_html_evm_transaction_info_from": {
-    "message": "From",
+    "message": "从",
     "description": "Evm transaction info"
   },
   "popup_html_evm_transaction_info_final_gas_fee": {
-    "message": "Final gas fee",
+    "message": "最终汽油费",
     "description": "Evm transaction info"
   },
   "popup_html_evm_speed_up_transaction": {
-    "message": "Speed up",
+    "message": "加快",
     "description": "Evm transaction info"
   },
   "popup_html_evm_transaction_select_fee": {
-    "message": "Select fee",
+    "message": "选择费用",
     "description": "Evm transaction info"
   },
   "popup_html_evm_gas_fee_loading": {
-    "message": "Loading gas fees…",
+    "message": "正在加载汽油费...",
     "description": "Shown while cancel/speed-up fee options are estimated"
   },
   "popup_html_evm_transaction_fee": {
-    "message": "Fee",
+    "message": "费用",
     "description": "Evm fee"
   },
   "popup_html_evm_history_transaction_canceled": {
-    "message": "Transaction canceled",
+    "message": "交易已取消",
     "description": "Evm history transaction canceled"
   },
   "popup_html_evm_history_transaction_canceled_transfer_out_details": {
-    "message": "Canceled transfer of $1 $2 to $3",
+    "message": "已取消从 $1 $2 到 $3 的转移",
     "description": "Evm history transaction canceled"
   },
   "popup_html_evm_custom_fee_current": {
-    "message": "Current",
+    "message": "当前的",
     "description": "Custom fee current value"
   },
   "popup_html_evm_custom_fee_latest": {
-    "message": "Recent",
+    "message": "最近的",
     "description": "Custom fee latest value"
   },
   "popup_html_evm_loading_balances": {
-    "message": "Loading balances",
+    "message": "装载余额",
     "description": "Loading balances on main screen"
   },
   "evm_connect_wallet": {
-    "message": "Connect EVM wallet",
+    "message": "连接EVM钱包",
     "description": "Connect EVM wallet dialog title"
   },
   "popup_html_evm_dapp_status_connected_accounts": {
-    "message": "Connected Accounts",
+    "message": "关联账户",
     "description": "Evm dapp status"
   },
   "popup_html_evm_dapp_status_other_accounts": {
-    "message": "Unconnected Accounts",
+    "message": "未连接的帐户",
     "description": "Evm dapp status"
   },
   "popup_html_evm_dapp_status_disconnect_all": {
-    "message": "Disconnect all accounts",
+    "message": "断开所有帐户",
     "description": "Evm dapp status"
   },
   "popup_html_evm_dapp_status_caption": {
-    "message": "Connecting an account to this dApp will give it permission to see your address, account balance and activity, and to suggest transactions to approve.",
+    "message": "将帐户连接到此 dApp 将授予其查看您的地址、帐户余额和活动的权限，并建议批准交易。",
     "description": "Evm dapp status"
   },
   "popup_html_evm_dapp_status_show_all_connected": {
-    "message": "Show all connected dApps",
+    "message": "显示所有已连接的 dApps",
     "description": "Link from EVM dapp status popup to Connected dApps settings"
   },
   "popup_html_evm_dapp_status_open_details": {
@@ -5785,11 +5787,11 @@
     "description": "Evm domain"
   },
   "dialog_from": {
-    "message": "From",
+    "message": "从",
     "description": "General message"
   },
   "dialog_signature_request_caption": {
-    "message": "<b>$1</b> is asking you to sign the following message",
+    "message": "<b>$1</b> 要求您签署以下消息",
     "description": "Signature request caption message"
   },
   "dialog_evm_sign_request_success": {
@@ -5869,55 +5871,55 @@
     "description": "Request sign typed data dialog title"
   },
   "evm_operation_transfer": {
-    "message": "Transfer",
+    "message": "转移",
     "description": "Evm transaction operation : transfer"
   },
   "evm_operation_approve": {
-    "message": "Approve",
+    "message": "批准",
     "description": "Evm transaction operation : approve"
   },
   "evm_operation_transferFrom": {
-    "message": "Transfer from",
+    "message": "转自",
     "description": "Evm transaction operation : transfer from"
   },
   "evm_operation_safeTransferFrom": {
-    "message": "Safe transfer from",
+    "message": "安全转移自",
     "description": "Evm transaction operation : safe transfer from"
   },
   "evm_operation_to": {
-    "message": "To",
+    "message": "到",
     "description": "Evm transaction operation field to"
   },
   "evm_operation_spender": {
-    "message": "Spender",
+    "message": "斯彭德",
     "description": "Evm transaction operation field spender (ERC-20 approve)"
   },
   "evm_operation_from": {
-    "message": "From",
+    "message": "从",
     "description": "Evm transaction operation field from"
   },
   "evm_operation_amount": {
-    "message": "Amount",
+    "message": "数量",
     "description": "Evm transaction operation field amount"
   },
   "evm_operation_smart_contract_address": {
-    "message": "Smart contract",
+    "message": "智能合约",
     "description": "Evm smart contract address"
   },
   "evm_operation_action": {
-    "message": "Action",
+    "message": "行动",
     "description": "Evm smart contract action"
   },
   "evm_balance_change_title": {
-    "message": "Balance",
+    "message": "平衡",
     "description": "Confirmation page balance change panel"
   },
   "evm_balance_before": {
-    "message": "Before : ",
+    "message": "前 ：",
     "description": "Balance before transaction"
   },
   "evm_balance_after": {
-    "message": "After : ",
+    "message": "后 ：",
     "description": "Balance after transaction"
   },
   "evm_transaction_transaction_has_warning": {
@@ -5973,15 +5975,15 @@
     "description": "Connection not secured"
   },
   "evm_operation_contract_deployment_transaction": {
-    "message": "Smart contract deployment",
+    "message": "智能合约部署",
     "description": "Smart contract deployment transcation title"
   },
   "evm_contract_deployment_transaction_caption": {
-    "message": "You are deploying a smart contract",
+    "message": "您正在部署智能合约",
     "description": "Smart contract deployment transcation caption"
   },
   "evm_smart_contract_data": {
-    "message": "Data",
+    "message": "数据",
     "description": "Smart contract data field"
   },
   "evm_transaction_data": {
@@ -6201,55 +6203,55 @@
     "description": "Domain never visited warning message"
   },
   "evm_sign_typed_data_message": {
-    "message": "Message",
+    "message": "信息",
     "description": "Sign typed data message"
   },
   "evm_sign_typed_data_message_primary_type": {
-    "message": "Primary type",
+    "message": "初级型",
     "description": "Sign typed data message primary type"
   },
   "evm_chain_id": {
-    "message": "Chain Id",
+    "message": "链号",
     "description": "evm chain id"
   },
   "evm_chain": {
-    "message": "Chain",
+    "message": "链",
     "description": "evm chain"
   },
   "evm_domain_name": {
-    "message": "Name",
+    "message": "姓名",
     "description": "evm domain name"
   },
   "evm_domain_version": {
-    "message": "Version",
+    "message": "版本",
     "description": "evm domain version"
   },
   "evm_target_account": {
-    "message": "Account",
+    "message": "帐户",
     "description": "evm targeted account "
   },
   "evm_raw_data": {
-    "message": "Raw data",
+    "message": "原始数据",
     "description": "evm raw data "
   },
   "evm_main_token_amount": {
-    "message": "Main token amount",
+    "message": "主要代币数量",
     "description": "Main token amount evm"
   },
   "evm_access_list": {
-    "message": "Access list",
+    "message": "访问列表",
     "description": "Evm access list"
   },
   "evm_access_list_caption_message": {
-    "message": "This transaction is using an access list. You won't be able to chose your gas fee because the access list will try to optimise the cost of the transaction",
+    "message": "该事务使用访问列表。您将无法选择您的汽油费，因为访问列表将尝试优化交易成本",
     "description": "Evm access list caption message"
   },
   "evm_ens_recipient_not_existing": {
-    "message": "This ENS doesn't seem to be linked to a wallet",
+    "message": "这个ENS似乎没有链接到钱包",
     "description": "Evm ens not matching"
   },
   "evm_warning": {
-    "message": "Warning",
+    "message": "警告",
     "description": "Evm warning"
   },
   "evm_warning_possible_duplicated_transaction_title": {
@@ -6273,35 +6275,35 @@
     "description": "EIP-7702 warning message"
   },
   "evm_too_many_transaction_button": {
-    "message": "Block this app for $1 minute",
+    "message": "阻止此应用 $1 分钟",
     "description": "Label for block dapp button"
   },
   "evm_all_nft_collections": {
-    "message": "All NFT collections",
+    "message": "所有 NFT 集合",
     "description": "All nft collections"
   },
   "evm_nft_token_id": {
-    "message": "Token ID",
+    "message": "代币ID",
     "description": "NFT token id"
   },
   "evm_nft_approve_all": {
-    "message": "Approve All",
+    "message": "批准全部",
     "description": "NFT approve all value"
   },
   "evm_nft_number_of_tokens": {
-    "message": "Number of Tokens",
+    "message": "代币数量",
     "description": "NFT number of tokens"
   },
   "evm_nft_token_type": {
-    "message": "Token type",
+    "message": "代币类型",
     "description": "Token type"
   },
   "global_other": {
-    "message": "Other",
+    "message": "其他",
     "description": "Global word"
   },
   "evm_tab_tokens": {
-    "message": "Tokens",
+    "message": "代币",
     "description": "Tokens tab"
   },
   "evm_tab_nfts": {
@@ -6309,139 +6311,139 @@
     "description": "NFTs tab"
   },
   "evm_tab_history": {
-    "message": "History",
+    "message": "历史",
     "description": "History tab"
   },
   "evm_menu_contacts": {
-    "message": "Addresses",
+    "message": "地址",
     "description": "Addresses menu item"
   },
   "evm_menu_custom_chains": {
-    "message": "Manage chains",
+    "message": "管理连锁店",
     "description": "EVM settings: chain management"
   },
   "evm_menu_dapps_connections": {
-    "message": "Connected dApps",
+    "message": "已连接 dApps",
     "description": "EVM settings: connected dapps"
   },
   "evm_dapps_connections_empty": {
-    "message": "No connected dApp yet.",
+    "message": "尚未连接 dApp。",
     "description": "Empty state for EVM dapps connections page"
   },
   "evm_dapps_connections_unknown_account": {
-    "message": "Unknown account",
+    "message": "未知账户",
     "description": "Fallback label for an EVM dapp connection address that is not in the local wallet"
   },
   "evm_dapps_connections_addresses_option": {
-    "message": "Addresses",
+    "message": "地址",
     "description": "Option to manage connected addresses for an EVM dapp"
   },
   "evm_dapps_connections_chains_option": {
-    "message": "Chains",
+    "message": "链条",
     "description": "Option to manage allowed chains for an EVM dapp"
   },
   "evm_dapps_connections_chains_caption": {
-    "message": "Allowed chains let this dApp request activity on the selected networks.",
+    "message": "允许的链允许此 dApp 请求所选网络上的活动。",
     "description": "Caption for EVM dapp allowed chains popup"
   },
   "evm_dapps_connections_allowed_chains": {
-    "message": "Allowed Chains",
+    "message": "允许的连锁店",
     "description": "Title for EVM dapp allowed chains list"
   },
   "evm_dapps_connections_unknown_chain": {
-    "message": "Unknown chain",
+    "message": "未知链条",
     "description": "Fallback label for an EVM dapp allowed chain missing local metadata"
   },
   "evm_dapps_connections_no_chains": {
-    "message": "No allowed chains.",
+    "message": "不允许使用连锁店。",
     "description": "Empty state for an EVM dapp allowed chains popup"
   },
   "evm_dapps_connections_remove_all_chains": {
-    "message": "Remove all chains",
+    "message": "移除所有链条",
     "description": "Button label to remove every allowed chain for an EVM dapp"
   },
   "evm_custom_chains_caption": {
-    "message": "Custom chains have limited support. Features such as token discovery and automatic history loading may be unavailable.",
+    "message": "定制链的支持有限。令牌发现和自动历史记录加载等功能可能不可用。",
     "description": "Custom chains info caption"
   },
   "evm_custom_chains_delete": {
-    "message": "Delete",
+    "message": "删除",
     "description": "Remove an added custom EVM chain"
   },
   "evm_custom_chains_delete_confirm": {
-    "message": "Remove \"$1\" from your custom chains? This cannot be undone.",
+    "message": "从您的自定义链中删除“$1”？此操作无法撤消。",
     "description": "Confirmation before deleting a custom EVM chain; $1 is the chain name"
   },
   "evm_custom_chains_add": {
-    "message": "Add custom chain",
+    "message": "添加自定义链",
     "description": "Button to add a custom EVM chain"
   },
   "evm_custom_chains_modal_title": {
-    "message": "Add custom chain",
+    "message": "添加自定义链",
     "description": "Modal title for adding custom chain"
   },
   "evm_custom_chains_modal_title_edit": {
-    "message": "Edit custom chain",
+    "message": "编辑自定义链",
     "description": "Modal title for editing a custom chain"
   },
   "evm_custom_chains_modal_title_edit_default": {
-    "message": "Edit supported chain",
+    "message": "编辑支持的链",
     "description": "Modal title for editing a supported default EVM chain"
   },
   "evm_custom_chains_update": {
-    "message": "Save changes",
+    "message": "保存更改",
     "description": "Save button when editing custom chain"
   },
   "evm_custom_chains_reset_default": {
-    "message": "Reset to default",
+    "message": "重置为默认值",
     "description": "Button label to reset a supported EVM chain override"
   },
   "evm_custom_chains_error_not_found": {
-    "message": "This custom chain could not be found. Try refreshing the list.",
+    "message": "找不到此自定义链。尝试刷新列表。",
     "description": "When update targets a missing custom chain"
   },
   "evm_custom_chains_empty": {
-    "message": "No custom chains yet. Add one to connect to a chain that is not in the default list.",
+    "message": "还没有定制链。添加一个以连接到不在默认列表中的链。",
     "description": "Empty state for custom chains list"
   },
   "evm_custom_chains_field_name": {
-    "message": "Chain name",
+    "message": "连锁名称",
     "description": "Custom chain form field"
   },
   "evm_custom_chains_field_chain_id": {
-    "message": "Chain ID",
+    "message": "链号",
     "description": "Custom chain form field"
   },
   "evm_custom_chains_field_symbol": {
-    "message": "Currency symbol",
+    "message": "货币符号",
     "description": "Custom chain form field"
   },
   "evm_custom_chains_field_default_tx_type": {
-    "message": "Default transaction type",
+    "message": "默认交易类型",
     "description": "Custom chain form: EIP-1559 / legacy / etc."
   },
   "evm_custom_chains_tx_type_legacy": {
-    "message": "Legacy (type 0)",
+    "message": "旧版（类型 0）",
     "description": "EvmTransactionType"
   },
   "evm_custom_chains_tx_type_eip155": {
-    "message": "EIP-155 (type 1)",
+    "message": "EIP-155（类型 1）",
     "description": "EvmTransactionType"
   },
   "evm_custom_chains_tx_type_eip1559": {
-    "message": "EIP-1559 (type 2)",
+    "message": "EIP-1559（类型 2）",
     "description": "EvmTransactionType"
   },
   "evm_custom_chains_tx_type_eip4844": {
-    "message": "EIP-4844 (type 3)",
+    "message": "EIP-4844（类型 3）",
     "description": "EvmTransactionType"
   },
   "evm_custom_chains_tx_type_eip7702": {
-    "message": "EIP-7702 (type 4)",
+    "message": "EIP-7702（类型 4）",
     "description": "EvmTransactionType"
   },
   "evm_custom_chains_field_rpc": {
-    "message": "RPC URLs",
+    "message": "RPC 网址",
     "description": "Custom chain form section (one or more endpoints)"
   },
   "evm_custom_chains_field_rpc_placeholder": {
@@ -6449,387 +6451,387 @@
     "description": "Placeholder for RPC URL inputs"
   },
   "evm_custom_chains_add_rpc": {
-    "message": "Add another RPC URL",
+    "message": "添加另一个 RPC URL",
     "description": "Add another RPC row in custom chain form"
   },
   "evm_custom_chains_remove_rpc": {
-    "message": "Remove",
+    "message": "消除",
     "description": "Remove an RPC row in custom chain form"
   },
   "evm_custom_chains_field_explorer": {
-    "message": "Block explorer URL (optional)",
+    "message": "块浏览器 URL（可选）",
     "description": "Custom chain form field"
   },
   "evm_custom_chains_field_logo": {
-    "message": "Logo URL (optional)",
+    "message": "徽标 URL（可选）",
     "description": "Custom chain form field"
   },
   "evm_custom_chains_field_testnet": {
-    "message": "This is a testnet",
+    "message": "这是一个测试网",
     "description": "Custom chain form checkbox"
   },
   "evm_custom_chains_save": {
-    "message": "Save chain",
+    "message": "保存链",
     "description": "Save custom chain button"
   },
   "evm_custom_chains_error_name": {
-    "message": "Please enter a chain name.",
+    "message": "请输入连锁名称。",
     "description": "Custom chain validation"
   },
   "evm_custom_chains_error_symbol": {
-    "message": "Please enter a currency symbol.",
+    "message": "请输入货币符号。",
     "description": "Custom chain validation"
   },
   "evm_custom_chains_error_rpc": {
-    "message": "Please enter at least one valid HTTP or HTTPS RPC URL.",
+    "message": "请至少输入一个有效的 HTTP 或 HTTPS RPC URL。",
     "description": "Custom chain validation"
   },
   "evm_custom_chains_error_rpc_duplicate": {
-    "message": "Each RPC URL must be unique.",
+    "message": "每个 RPC URL 必须是唯一的。",
     "description": "Custom chain validation duplicate RPC"
   },
   "evm_custom_chains_error_rpc_unreachable": {
-    "message": "We could not reach every RPC. Each URL must respond to JSON-RPC (e.g. eth_blockNumber) over HTTP or HTTPS. Fix or remove failing endpoints and try again.",
+    "message": "我们无法到达每一个 RPC。每个 URL 必须通过 HTTP 或 HTTPS 响应 JSON-RPC（例如 eth_blockNumber）。修复或删除失败的端点，然后重试。",
     "description": "Custom chain save: an RPC check failed"
   },
   "evm_custom_chains_error_chain_id": {
-    "message": "Please enter a valid chain ID (decimal or 0x hex).",
+    "message": "请输入有效的链 ID（十进制或 0x 十六进制）。",
     "description": "Custom chain validation"
   },
   "evm_custom_chains_error_duplicate": {
-    "message": "A custom chain with this ID is already added.",
+    "message": "已添加具有此 ID 的自定义链。",
     "description": "Custom chain validation"
   },
   "evm_custom_chains_error_default_exists": {
-    "message": "This chain is already available as a default chain. Enable it from the chain list instead.",
+    "message": "该链已作为默认链提供。相反，从链表中启用它。",
     "description": "Custom chain validation"
   },
   "evm_custom_chains_error_generic": {
-    "message": "Could not save this chain. Please check your entries and try again.",
+    "message": "无法保存此链。请检查您的输入并重试。",
     "description": "Custom chain generic error"
   },
   "evm_custom_chains_chainlist_found": {
-    "message": "A matching chain was found in the public chain list (ChainList.org).",
+    "message": "在公链列表（ChainList.org）中找到匹配的链。",
     "description": "When chain ID matches ChainList.org data for add-custom-chain form"
   },
   "evm_custom_chains_chainlist_preload_link": {
-    "message": "Load details into the form",
+    "message": "将详细信息加载到表单中",
     "description": "Button to prefill add-custom-chain form from ChainList.org"
   },
   "evm_custom_chains_chainlist_looking_up": {
-    "message": "Looking up public chain data…",
+    "message": "查找公链数据...",
     "description": "While ChainList.org data is being fetched for the chain ID"
   },
   "evm_custom_chains_rpc_collapsed_summary": {
-    "message": "$1 RPC URL(s)",
+    "message": "$1 RPC 网址",
     "description": "Collapsed RPC panel after ChainList preload; $1 is the number of endpoints"
   },
   "evm_menu_advanced": {
-    "message": "Advanced",
+    "message": "先进的",
     "description": "Evm Advanced menu"
   },
   "evm_menu_rpc_node": {
-    "message": "RPC Node",
+    "message": "RPC 节点",
     "description": "Evm RPC node menu"
   },
   "evm_menu_security": {
-    "message": "Security",
+    "message": "安全",
     "description": "Evm Security menu"
   },
   "evm_menu_provider_compatibility": {
-    "message": "Provider compatibility",
+    "message": "提供商兼容性",
     "description": "Evm provider compatibility menu"
   },
   "evm_menu_advanced_smart_contracts": {
-    "message": "Smart Contracts",
+    "message": "智能合约",
     "description": "Evm Advanced smart contracts"
   },
   "evm_provider_compatibility_prefer_title": {
-    "message": "Prefer Keychain on legacy dApps",
+    "message": "更喜欢 Keychain 而不是旧版 dApps",
     "description": "Evm provider compatibility legacy preference title"
   },
   "evm_provider_compatibility_prefer_hint": {
-    "message": "Prioritize the use of Keychain over other wallets on websites that do not list all available wallets.",
+    "message": "在未列出所有可用钱包的网站上，优先使用 Keychain 而不是其他钱包。",
     "description": "Evm provider compatibility legacy preference hint"
   },
   "evm_provider_compatibility_warning": {
-    "message": "This can conflict with other installed wallets that also try to control the legacy provider.",
+    "message": "这可能会与其他也试图控制旧提供商的已安装钱包发生冲突。",
     "description": "Evm provider compatibility warning"
   },
   "evm_provider_compatibility_reload_note": {
-    "message": "Reload open dApp tabs after changing this setting so websites pick up the new provider order.",
+    "message": "更改此设置后重新加载打开的 dApp 选项卡，以便网站获取新的提供商订单。",
     "description": "Evm provider compatibility reload note"
   },
   "evm_menu_advanced_smart_contracts_display_spam_title": {
-    "message": "Display possible spam",
+    "message": "显示可能的垃圾邮件",
     "description": "Evm Advanced smart contract display possible spam option title"
   },
   "evm_menu_advanced_smart_contracts_display_spam_hint": {
-    "message": "Keychain will display smart contracts that have possibly been flagged as spam",
+    "message": "Keychain 将显示可能被标记为垃圾邮件的智能合约",
     "description": "Evm Advanced smart contract display possible spam option hint"
   },
   "evm_menu_advanced_smart_contracts_display_non_verified_title": {
-    "message": "Display non verified",
+    "message": "显示未验证",
     "description": "Evm Advanced smart contract display non verified option hint"
   },
   "evm_menu_advanced_smart_contracts_display_non_verified_hint": {
-    "message": "Keychain will display all smart contracts that haven't been verified yet",
+    "message": "Keychain 将显示所有尚未验证的智能合约",
     "description": "Evm Advanced smart contract display non verified option title"
   },
   "evm_nft_transfer": {
-    "message": "NFT Transfer",
+    "message": "NFT 转移",
     "description": "Nft transfer page title"
   },
   "evm_nft_transfer_address": {
-    "message": "Address",
+    "message": "地址",
     "description": "NFT Address"
   },
   "evm_history_op_native_send": {
-    "message": "Transfer",
+    "message": "转移",
     "description": "EVM light-node history: page title for NATIVE_SEND (native token)"
   },
   "evm_history_op_native_receive": {
-    "message": "Transfer",
+    "message": "转移",
     "description": "EVM light-node history: page title for NATIVE_RECEIVE (native token)"
   },
   "evm_history_op_erc20_send": {
-    "message": "Transfer",
+    "message": "转移",
     "description": "EVM light-node history: page title for ERC20_SEND (ERC-20)"
   },
   "evm_history_op_erc20_receive": {
-    "message": "Transfer",
+    "message": "转移",
     "description": "EVM light-node history: page title for ERC20_RECEIVE (ERC-20)"
   },
   "evm_history_op_erc20_approve": {
-    "message": "Approve",
+    "message": "批准",
     "description": "EVM light-node history: page title for ERC20_APPROVE (ERC-20)"
   },
   "evm_history_op_erc20_mint": {
-    "message": "Mint",
+    "message": "薄荷",
     "description": "EVM light-node history: page title for ERC20_MINT (ERC-20)"
   },
   "evm_history_op_erc20_burn": {
-    "message": "Burn",
+    "message": "烧伤",
     "description": "EVM light-node history: page title for ERC20_BURN (ERC-20)"
   },
   "evm_history_op_erc721_send": {
-    "message": "Transfer",
+    "message": "转移",
     "description": "EVM light-node history: page title for ERC721_SEND (ERC-721)"
   },
   "evm_history_op_erc721_receive": {
-    "message": "Transfer",
+    "message": "转移",
     "description": "EVM light-node history: page title for ERC721_RECEIVE (ERC-721)"
   },
   "evm_history_op_erc721_approve": {
-    "message": "Approve",
+    "message": "批准",
     "description": "EVM light-node history: page title for ERC721_APPROVE (ERC-721)"
   },
   "evm_history_op_erc721_approve_for_all": {
-    "message": "Approve for all",
+    "message": "批准所有人",
     "description": "EVM light-node history: page title for ERC721_APPROVE_FOR_ALL (ERC-721)"
   },
   "evm_history_op_erc721_mint": {
-    "message": "Mint",
+    "message": "薄荷",
     "description": "EVM light-node history: page title for ERC721_MINT (ERC-721)"
   },
   "evm_history_op_erc721_burn": {
-    "message": "Burn",
+    "message": "烧伤",
     "description": "EVM light-node history: page title for ERC721_BURN (ERC-721)"
   },
   "evm_history_op_erc1155_send": {
-    "message": "Transfer",
+    "message": "转移",
     "description": "EVM light-node history: page title for ERC1155_SEND (ERC-1155)"
   },
   "evm_history_op_erc1155_receive": {
-    "message": "Transfer",
+    "message": "转移",
     "description": "EVM light-node history: page title for ERC1155_RECEIVE (ERC-1155)"
   },
   "evm_history_op_erc1155_approve_for_all": {
-    "message": "Approve for all",
+    "message": "批准所有人",
     "description": "EVM light-node history: page title for ERC1155_APPROVE_FOR_ALL (ERC-1155)"
   },
   "evm_history_op_erc1155_mint": {
-    "message": "Mint",
+    "message": "薄荷",
     "description": "EVM light-node history: page title for ERC1155_MINT (ERC-1155)"
   },
   "evm_history_op_erc1155_burn": {
-    "message": "Burn",
+    "message": "烧伤",
     "description": "EVM light-node history: page title for ERC1155_BURN (ERC-1155)"
   },
   "evm_history_op_swap": {
-    "message": "Swap",
+    "message": "交换",
     "description": "EVM light-node history: page title for SWAP"
   },
   "evm_history_op_airdrop_receive": {
-    "message": "Airdrop",
+    "message": "空投",
     "description": "EVM light-node history: page title for AIRDROP_RECEIVE (airdrop / incoming tokens)"
   },
   "evm_history_op_contract_call": {
-    "message": "Contract call",
+    "message": "合约调用",
     "description": "EVM light-node history: page title for CONTRACT_CALL"
   },
   "evm_history_op_contract_deploy": {
-    "message": "Contract deploy",
+    "message": "合约部署",
     "description": "EVM light-node history: page title for CONTRACT_DEPLOY"
   },
   "evm_history_op_add_liquidity": {
-    "message": "Add liquidity",
+    "message": "增加流动性",
     "description": "EVM light-node history: page title for ADD_LIQUIDITY"
   },
   "evm_history_op_remove_liquidity": {
-    "message": "Remove liquidity",
+    "message": "消除流动性",
     "description": "EVM light-node history: page title for REMOVE_LIQUIDITY"
   },
   "evm_history_op_wrap": {
-    "message": "Wrap",
+    "message": "裹",
     "description": "EVM light-node history: page title for WRAP"
   },
   "evm_history_op_unwrap": {
-    "message": "Unwrap",
+    "message": "展开",
     "description": "EVM light-node history: page title for UNWRAP"
   },
   "evm_history_op_canceled_op": {
-    "message": "Canceled transaction",
+    "message": "已取消交易",
     "description": "EVM light-node history: page title for CANCELED_OP"
   },
   "evm_history_op_unknown": {
-    "message": "Transaction",
+    "message": "交易",
     "description": "EVM light-node history: page title for unknown or unrecognized op types"
   },
   "evm_history_generic_message": {
-    "message": "Transaction sent",
+    "message": "交易已发送",
     "description": "Evm history generic message in case there in not enough information"
   },
   "evm_history_smart_contract_creation_message": {
-    "message": "You created the $1 smart contract",
+    "message": "您创建了 $1 智能合约",
     "description": "Evm smart contract creation"
   },
   "evm_history_smart_contract_creation_message_no_address": {
-    "message": "You created a smart contract",
+    "message": "您创建了一个智能合约",
     "description": "Evm smart contract creation when created address is unknown"
   },
   "evm_history_smart_contract_creation_message_pending": {
-    "message": "Creating smart contract",
+    "message": "创建智能合约",
     "description": "Evm smart contract creation"
   },
   "evm_history_smart_contract": {
-    "message": "Smart Contract",
+    "message": "智能合约",
     "description": "Evm smart contract"
   },
   "evm_history_smart_contract_creation": {
-    "message": "Smart Contract creation",
+    "message": "智能合约创建",
     "description": "Evm smart contract creation"
   },
   "evm_history_operation_safe_transfer_from_erc721_in": {
-    "message": "You received $1#$2 from $3",
+    "message": "您从 $3 收到了 $1#$2",
     "description": ""
   },
   "evm_history_operation_safe_transfer_from_erc721_in_no_sender": {
-    "message": "You received $1#$2",
+    "message": "您收到 $1#$2",
     "description": ""
   },
   "evm_history_operation_safe_transfer_from_erc721_out": {
-    "message": "You sent $1#$2 to $3",
+    "message": "您已将 $1#$2 发送至 $3",
     "description": ""
   },
   "evm_history_operation_safe_transfer_from_erc721_out_pending": {
-    "message": "Sending $1#$2 to $3",
+    "message": "发送 $1#$2 到 $3",
     "description": ""
   },
   "evm_history_operation_safe_transfer_from_erc1155_in": {
-    "message": "You received $1 $2#$3 from $4",
+    "message": "您从 $4 收到了 $1 $2#$3",
     "description": ""
   },
   "evm_history_operation_safe_transfer_from_erc1155_in_no_sender": {
-    "message": "You received $1 $2#$3",
+    "message": "您收到 $1 $2#$3",
     "description": ""
   },
   "evm_history_operation_safe_transfer_from_erc1155_out": {
-    "message": "You sent $1 $2#$3 to $4",
+    "message": "您已将 $1 $2#$3 发送至 $4",
     "description": ""
   },
   "evm_history_operation_safe_transfer_from_erc1155_out_pending": {
-    "message": "Sending $1 $2#$3 to $4",
+    "message": "发送 $1 $2#$3 至 $4",
     "description": ""
   },
   "evm_history_operation_transfer_in": {
-    "message": "You received $1 $2 from $3",
+    "message": "您从 $3 收到了 $1 $2",
     "description": ""
   },
   "evm_history_operation_transfer_out": {
-    "message": "You sent $1 $2 to $3",
+    "message": "您已将 $1 $2 发送至 $3",
     "description": ""
   },
   "evm_history_operation_transfer_out_pending": {
-    "message": "Sending $1 $2 to $3",
+    "message": "发送 $1 $2 至 $3",
     "description": ""
   },
   "evm_history_operation_transfer_in_no_sender": {
-    "message": "You received $1 $2",
+    "message": "您收到 $1 $2",
     "description": ""
   },
   "evm_history_operation_mint_batch": {
-    "message": "You minted $1 tokens from the $2 collection",
+    "message": "您从 $2 集合中铸造了 $1 代币",
     "description": "Batch mint operation"
   },
   "evm_history_operation_mint_batch_pending": {
-    "message": "Minting $1 tokens from the $2 collection",
+    "message": "从 $2 集合中铸造 $1 代币",
     "description": "Batch mint operation"
   },
   "evm_history_native_amount_paid": {
-    "message": "Amount paid",
+    "message": "支付金额",
     "description": "Native token amount paid for a mint"
   },
   "evm_history_native_amount_received": {
-    "message": "Amount received",
+    "message": "收到金额",
     "description": "Native token amount received during a smart contract operation"
   },
   "evm_history_operation_approve_out_erc20": {
-    "message": "You approved $1 to use up to $2 $3",
+    "message": "您批准 $1 使用最多 $2 $3",
     "description": "Approve history item"
   },
   "evm_history_operation_approve_out_erc20_pending": {
-    "message": "Approving $1 to use up to $2 $3",
+    "message": "批准 $1 使用最多 $2 $3",
     "description": "Approve history item"
   },
   "evm_history_operation_approve_out_erc20_unlimited": {
-    "message": "You approved $1 to use unlimited $2",
+    "message": "您批准 $1 使用无限制的 $2",
     "description": "Approve unlimited history item"
   },
   "evm_history_operation_approve_out_erc721": {
-    "message": "You approved $1 to use $2#$3",
+    "message": "您批准 $1 使用 $2#$3",
     "description": "Approve history item"
   },
   "evm_history_operation_approve_out_erc721_pending": {
-    "message": "Approving $1 to use $2#$3",
+    "message": "批准 $1 使用 $2#$3",
     "description": "Approve history item"
   },
   "evm_history_operation_approve_out_for_all": {
-    "message": "You approved $1 to manage all your $2 tokens",
+    "message": "您批准 $1 管理您的所有 $2 代币",
     "description": "Approve for all history item"
   },
   "evm_history_operation_swap": {
-    "message": "You swapped $1 for $2",
+    "message": "您将 $1 替换为 $2",
     "description": "Swap history item"
   },
   "evm_history_operation_add_liquidity": {
-    "message": "You added liquidity ($1 for $2)",
+    "message": "您增加了流动性（$1 为 $2）",
     "description": "Add liquidity history item"
   },
   "evm_history_operation_remove_liquidity": {
-    "message": "You removed liquidity ($1 for $2)",
+    "message": "您移除了流动性（$1 为 $2）",
     "description": "Remove liquidity history item"
   },
   "evm_history_operation_wrap": {
-    "message": "You wrapped $1 into $2",
+    "message": "您将 $1 包装到 $2 中",
     "description": "Wrap history item"
   },
   "evm_history_operation_unwrap": {
-    "message": "You unwrapped $1 into $2",
+    "message": "您将 $1 解包到 $2 中",
     "description": "Unwrap history item"
   },
   "evm_history_operation_airdrop_receive": {
-    "message": "You received an airdrop",
+    "message": "您收到了空投",
     "description": "Airdrop history item"
   },
   "evm_history_operation_reverted": {
@@ -6837,135 +6839,135 @@
     "description": "Reverted operation message"
   },
   "evm_history_unlimited_approval_value": {
-    "message": "Unlimited $1",
+    "message": "无限 $1",
     "description": "Unlimited approval value"
   },
   "evm_history_operation_mint_erc20": {
-    "message": "You minted $1 $2",
+    "message": "您铸造了 $1 $2",
     "description": "ERC20 mint history item"
   },
   "evm_history_operation_burn_erc20": {
-    "message": "You burned $1 $2",
+    "message": "你烧伤了 $1 $2",
     "description": "ERC20 burn history item"
   },
   "evm_history_operation_burn_erc721": {
-    "message": "You burned $1#$2",
+    "message": "你烧伤了 $1#$2",
     "description": "ERC721 burn history item"
   },
   "evm_history_operation_burn_erc1155": {
-    "message": "You burned $1 $2#$3",
+    "message": "你烧伤了 $1 $2#$3",
     "description": "ERC1155 burn history item"
   },
   "evm_history_operation_mintNFTs": {
-    "message": "You minted $1#$2",
+    "message": "您铸造了 $1#$2",
     "description": "Mint single nft history item"
   },
   "evm_history_operation_mintNFTs_pending": {
-    "message": "Minting $1#$2",
+    "message": "铸造 $1#$2",
     "description": "Mint single nft history item"
   },
   "evm_history_operation_generic_smart_contract_messages_in": {
-    "message": "Included in '$1' call",
+    "message": "包含在“$1”调用中",
     "description": "Generic smart contract operation history label"
   },
   "evm_history_operation_generic_smart_contract_messages_out": {
-    "message": "Called $1",
+    "message": "称为 $1",
     "description": "Generic smart contract operation history label"
   },
   "evm_history_operation_generic_smart_contract_messages_pending": {
-    "message": "Called '$1'",
+    "message": "称为“$1”",
     "description": "Generic smart contract operation history label"
   },
   "evm_history_default_out_smart_contract_operation": {
-    "message": "Called a smart contract",
+    "message": "称为智能合约",
     "description": "Generic smart contract operation history label"
   },
   "evm_history_default_out_smart_contract_operation_pending": {
-    "message": "Calling a smart contract",
+    "message": "调用智能合约",
     "description": "Generic smart contract operation history label"
   },
   "evm_history_default_in_smart_contract_operation": {
-    "message": "Included in a smart contract call",
+    "message": "包含在智能合约调用中",
     "description": "Generic smart contract operation history label"
   },
   "evm_add_wallet_address_button": {
-    "message": "Add wallet address",
+    "message": "添加钱包地址",
     "description": "Add wallet address button"
   },
   "evm_delete_seed_button": {
-    "message": "Delete",
+    "message": "删除",
     "description": "Delete seed button"
   },
   "evm_delete_seed_confirmation_message": {
-    "message": "Are you sure you want to delete this seed ?",
+    "message": "您确定要删除该种子吗？",
     "description": "Delete seed button"
   },
   "evm_delete_all_ledger_accounts_confirmation_message": {
-    "message": "Are you sure you want to delete all Ledger accounts?",
+    "message": "您确定要删除所有 Ledger 帐户吗？",
     "description": "Delete all Ledger accounts confirmation message"
   },
   "evm_delete_all_imported_accounts_confirmation_message": {
-    "message": "Are you sure you want to delete all imported accounts?",
+    "message": "您确定要删除所有导入的帐户吗？",
     "description": "Delete all imported accounts confirmation message"
   },
   "evm_delete_account_confirmation_message": {
-    "message": "Are you sure you want to delete this account ?",
+    "message": "您确定要删除该帐户吗？",
     "description": "Delete EVM account button"
   },
   "evm_add_wallet_seed_button": {
-    "message": "Add seed",
+    "message": "添加种子",
     "description": "Add seed button"
   },
   "evm_add_nickname_to_address_popup_title": {
-    "message": "Add name",
+    "message": "添加姓名",
     "description": "Add nickname to address title"
   },
   "evm_add_nickname_to_address_popup_caption": {
-    "message": "Add a name to your address to identify it easier",
+    "message": "在您的地址中添加名称以便于识别",
     "description": "Add nickname to address caption"
   },
   "evm_address_nickname": {
-    "message": "Nickname",
+    "message": "昵称",
     "description": "Nickname"
   },
   "evm_seed_nickname": {
-    "message": "Seed Name",
+    "message": "种子名称",
     "description": "Nickname"
   },
   "evm_edit_seed_nickname": {
-    "message": "Edit name",
+    "message": "编辑姓名",
     "decription": "Edit seed nickname"
   },
   "evm_edit_address_name": {
-    "message": "Edit address name",
+    "message": "编辑地址名称",
     "description": "Edit wallet address nickname"
   },
   "evm_import_seed": {
-    "message": "Import",
+    "message": "进口",
     "description": "Import existing seed"
   },
   "evm_import_key": {
-    "message": "Import key",
+    "message": "导入密钥",
     "description": "Import existing private key"
   },
   "evm_imported_seed": {
-    "message": "Imported",
+    "message": "进口",
     "description": "Imported private key source name"
   },
   "evm_create_seed": {
-    "message": "Create",
+    "message": "创造",
     "description": "Create seed"
   },
   "evm_connect_ledger_wallet": {
-    "message": "Connect Ledger",
+    "message": "连接Ledger",
     "description": "Open Ledger EVM wallet connection flow"
   },
   "evm_copy_seed": {
-    "message": "Copy seed",
+    "message": "复制种子",
     "description": "Copy EVM seed menu item"
   },
   "evm_seeds_and_accounts": {
-    "message": "Seeds & Accounts",
+    "message": "种子和账户",
     "description": "sseds and account page"
   },
   "error_granularity": {
@@ -6973,31 +6975,31 @@
     "description": "Error message if granularity failed has been used already"
   },
   "evm_seeds_already_in_keychain": {
-    "message": "This seed was already added in Keychain",
+    "message": "该种子已添加到 Keychain 中",
     "description": "Seed already added in Keychain"
   },
   "evm_private_key_already_in_keychain": {
-    "message": "This EVM account was already added in Keychain",
+    "message": "此 EVM 帐户已添加到 Keychain 中",
     "description": "Private key already added in Keychain"
   },
   "evm_transfer": {
-    "message": "Transfer",
+    "message": "转移",
     "description": "Evm transfer"
   },
   "evm_mint_batch": {
-    "message": "Mint Batch",
+    "message": "薄荷批次",
     "description": "Evm mint batch"
   },
   "evm_approval": {
-    "message": "Approval",
+    "message": "赞同",
     "description": "Evm approval"
   },
   "evm_mint": {
-    "message": "Mint",
+    "message": "薄荷",
     "description": "Evm mint"
   },
   "evm_broadcast": {
-    "message": "Broadcast",
+    "message": "播送",
     "description": "Evm generic broadcast"
   },
   "evm_unable_to_reach_verify_transaction": {
@@ -7005,11 +7007,11 @@
     "description": "Error message if backend not available while fetch verify transaction info"
   },
   "evm_created_smart_contract": {
-    "message": "Created smart contract",
+    "message": "创建智能合约",
     "description": "Created smart contract label"
   },
   "evm_no_nfts_found": {
-    "message": "No NFTs found",
+    "message": "未找到 NFT",
     "description": "No nft"
   },
   "evm_tx_completed_notification_message": {
@@ -7033,59 +7035,59 @@
     "description": "Transaction completed title"
   },
   "evm_wallets": {
-    "message": "Wallets",
+    "message": "钱包",
     "description": "Evm wallets"
   },
   "evm_contact_no_label": {
-    "message": "No label",
+    "message": "无标签",
     "description": "Evm contact no label"
   },
   "evm_edit_contact_modal_title": {
-    "message": "Edit contact",
+    "message": "编辑联系人",
     "description": "Evm edit contact modal title"
   },
   "evm_contact_address": {
-    "message": "Address",
+    "message": "地址",
     "description": "Evm address"
   },
   "evm_contact_address_invalid": {
-    "message": "Enter a valid address.",
+    "message": "输入有效地址。",
     "description": "Validation error when saving a contact with an invalid EVM address"
   },
   "evm_contact_label": {
-    "message": "Label",
+    "message": "标签",
     "description": "Evm label"
   },
   "evm_delete_contact_link": {
-    "message": "Delete contact",
+    "message": "删除联系人",
     "description": "Evm delete contact link"
   },
   "evm_add_contact_link": {
-    "message": "Add contact",
+    "message": "添加联系人",
     "description": "Evm add contact link"
   },
   "evm_contacts_section": {
-    "message": "Contacts",
+    "message": "联系方式",
     "description": "Contacts section on the addresses settings page"
   },
   "evm_addresses_add": {
-    "message": "Add",
+    "message": "添加",
     "description": "Add link on the addresses settings page"
   },
   "evm_addresses_no_whitelisted_account_yet": {
-    "message": "No whitelisted account yet.",
+    "message": "尚无白名单帐户。",
     "description": "Empty state on the contacts section of the addresses settings page"
   },
   "evm_addresses_no_whitelisted_smart_contract_yet": {
-    "message": "No whitelisted smart contract yet.",
+    "message": "尚未列入白名单的智能合约。",
     "description": "Empty state on the smart contracts section of the addresses settings page"
   },
   "evm_contact_new_contact": {
-    "message": "New contact",
+    "message": "新联系人",
     "description": "Evm new contact"
   },
   "evm_fee_estimate_unknown_duration": {
-    "message": "Unknown",
+    "message": "未知",
     "description": "Unknown duration"
   },
   "evm_gas_fee_warning_not_available": {
@@ -7105,7 +7107,7 @@
     "description": "Transaction broadcasted message"
   },
   "evm_collection_name": {
-    "message": "Collection name",
+    "message": "藏品名称",
     "description": "Collection name"
   },
   "evm_gas_fee_warning_priority_fee_higher_than_max_fee": {
@@ -7129,11 +7131,11 @@
     "description": "Transaction result unknown error"
   },
   "evm_history_canceled_transaction": {
-    "message": "Canceled transaction",
+    "message": "已取消交易",
     "description": "Transaction canceled"
   },
   "evm_history_operation_canceled": {
-    "message": "You have canceled an operation",
+    "message": "您已取消操作",
     "description": "EVM history message for CANCELED_OP operations"
   },
   "evm_transaction_result_error_message_nonce_expired": {
@@ -7145,51 +7147,51 @@
     "description": "Transaction couldn't be canceled error message"
   },
   "evm_rpcs_not_responding_error": {
-    "message": "None of the RPCs are responding, please try again later.",
+    "message": "RPC 均未响应，请稍后重试。",
     "description": "All RPCs are not responding error message"
   },
   "evm_rpc_already_in_list": {
-    "message": "This RPC is already in the list",
+    "message": "该 RPC 已在列表中",
     "description": "RPC already in list error message"
   },
   "evm_add_rpc_not_working_warning": {
-    "message": "This RPC doesn't seem to be working. Are you sure you want to add it ?",
+    "message": "这个 RPC 似乎不起作用。您确定要添加它吗？",
     "description": "RPC not working warning message while adding new rpc"
   },
   "evm_add_http_rpc_warning": {
-    "message": "This RPC uses HTTP and is not encrypted. Only add it if you trust this endpoint.",
+    "message": "此 RPC 使用 HTTP 并且未加密。仅当您信任此端点时才添加它。",
     "description": "HTTP RPC warning message while adding a new EVM RPC from the popup"
   },
   "evm_add_rpc_invalid_chain_error": {
-    "message": "This RPC is not responding for the selected chain.",
+    "message": "此 RPC 对所选链没有响应。",
     "description": "Invalid chain error message while adding a new EVM RPC"
   },
   "evm_history_warning_potential_zero_amount_scam": {
-    "message": "This transaction might be a zero-amount scam. Be careful when transacting to this address.",
+    "message": "这笔交易可能是零金额骗局。到这个地址进行交易时要小心。",
     "description": "Potential zero amount scam warning message"
   },
   "evm_error_message_transfer_amount_exceeds_allowance": {
-    "message": "Transfer amount exceeds allowance",
+    "message": "转账金额超过津贴",
     "description": "Transaction result error message transfer amount exceeds allowance"
   },
   "evm_add_chain": {
-    "message": "Add chain",
+    "message": "添加链条",
     "description": "Add chain"
   },
   "evm_update_chain": {
-    "message": "Update chain",
+    "message": "更新链",
     "description": "Update chain"
   },
   "evm_chain_symbol": {
-    "message": "Symbol",
+    "message": "象征",
     "description": "Chain symbol"
   },
   "evm_chain_decimals": {
-    "message": "Decimals",
+    "message": "小数",
     "description": "Chain decimals"
   },
   "evm_chain_block_explorer": {
-    "message": "Block explorer",
+    "message": "区块浏览器",
     "description": "Chain block explorer"
   },
   "evm_chain_rpcs": {
@@ -7197,150 +7199,150 @@
     "description": "Chain rpc"
   },
   "evm_chain_name": {
-    "message": "Name",
+    "message": "姓名",
     "description": "Chain name"
   },
   "evm_add_chain_caption": {
-    "message": "$1 is asking you to add a new chain. Make sure you trust this chain before adding it.",
+    "message": "$1 要求您添加新链。添加之前请确保您信任该链。",
     "description": "Add chain caption"
   },
   "evm_update_chain_caption": {
-    "message": "$1 is asking to update an existing chain. This will add the RPC URLs to the existing list, but they will not become active automatically.",
+    "message": "$1 要求更新现有链。这会将 RPC URL 添加到现有列表中，但它们不会自动变为活动状态。",
     "description": "Update chain caption"
   },
   "html_popup_popular_chains": {
-    "message": "Popular chains",
+    "message": "热门连锁店",
     "description": "Popular chains"
   },
   "html_popup_testnet_chains": {
-    "message": "Testnets",
+    "message": "测试网",
     "description": "Testnet chains"
   },
   "html_popup_custom_chains": {
-    "message": "Custom chains",
+    "message": "定制链条",
     "description": "Custom chains section"
   },
   "html_popup_manage_chains": {
-    "message": "Manage chains",
+    "message": "管理连锁店",
     "description": "Manage chains page and dropdown action"
   },
   "html_popup_search_chains": {
-    "message": "Search chains...",
+    "message": "搜索链...",
     "description": "Search chains input placeholder"
   },
   "html_popup_manage_chains_empty_results": {
-    "message": "No chains match your search.",
+    "message": "没有符合您搜索条件的连锁店。",
     "description": "Empty state when Manage chains filters have no results"
   },
   "html_popup_non_popular_chains": {
-    "message": "Other chains",
+    "message": "其他连锁店",
     "description": "Non popular chains"
   },
   "popup_html_show_testnets": {
-    "message": "Show testnets",
+    "message": "显示测试网",
     "description": "Show testnets"
   },
   "avalanche_smart_contract": {
     "message": "Avalanche 智能合约"
   },
   "evm_pay_to_smart_contract": {
-    "message": "Pay to Smart Contract",
+    "message": "支付给智能合约",
     "description": "Pay to smart contract"
   },
   "evm_add_custom_token": {
-    "message": "Add custom token",
+    "message": "添加自定义令牌",
     "description": "Opens the add-token flow from manage tokens"
   },
   "evm_add_custom_nft": {
-    "message": "Add custom NFT",
+    "message": "添加自定义 NFT",
     "description": "Add a custom NFT"
   },
   "evm_custom_tokens_page_title": {
-    "message": "Manage tokens",
+    "message": "管理代币",
     "description": "Title for the ERC20 tokens management page"
   },
   "evm_custom_nfts_page_title": {
-    "message": "Custom NFTs",
+    "message": "自定义 NFTs",
     "description": "Title for the custom NFT management page"
   },
   "evm_custom_tokens_page_empty": {
-    "message": "No custom tokens yet. Use Add custom token to register an ERC20 contract for this network.",
+    "message": "还没有自定义令牌。使用添加自定义令牌为此网络注册 ERC20 合约。",
     "description": "Empty state for custom tokens section on manage tokens page"
   },
   "evm_custom_nfts_page_empty": {
-    "message": "No custom NFTs yet. Add one to register NFT token IDs for this network.",
+    "message": "还没有自定义 NFT。添加 1 以为此网络注册 NFT 令牌 ID。",
     "description": "Empty state on custom NFT page"
   },
   "evm_custom_tokens_page_caption": {
-    "message": "Hide auto-detected tokens, or edit and remove custom ones.<br/>Settings apply per network. Zero-balance tokens stay off the home page.",
+    "message": "隐藏自动检测到的令牌，或编辑和删除自定义令牌。<br/>设置适用于每个网络。零余额代币不在主页上。",
     "description": "Intro caption on manage tokens page; may include a <br/> line break"
   },
   "evm_custom_tokens_section_title": {
-    "message": "Custom tokens",
+    "message": "自定义代币",
     "description": "Custom token list section title on manage tokens page"
   },
   "evm_auto_detected_tokens_section_title": {
-    "message": "Auto-detected tokens",
+    "message": "自动检测到的令牌",
     "description": "Auto-detected token list section title on manage tokens page"
   },
   "evm_auto_detected_tokens_empty": {
-    "message": "No auto-detected tokens found for this network.",
+    "message": "未找到该网络的自动检测令牌。",
     "description": "Empty state for auto-detected token list on manage tokens page"
   },
   "evm_auto_detected_tokens_loading": {
-    "message": "Loading auto-detected tokens...",
+    "message": "正在加载自动检测到的令牌...",
     "description": "Loading state for auto-detected token list on manage tokens page"
   },
   "evm_auto_detected_tokens_error_loading": {
-    "message": "Could not load auto-detected tokens for this network.",
+    "message": "无法为此网络加载自动检测到的令牌。",
     "description": "Error state for auto-detected token list on manage tokens page"
   },
   "evm_auto_detected_tokens_hide": {
-    "message": "Hide from home page",
+    "message": "从主页隐藏",
     "description": "Hide an auto-detected token from the home page"
   },
   "evm_auto_detected_tokens_restore": {
-    "message": "Restore on home page",
+    "message": "在主页上恢复",
     "description": "Restore an auto-detected token on the home page"
   },
   "evm_custom_nfts_page_caption": {
-    "message": "Custom NFTs are stored per wallet and network. Saved entries stay here even if you no longer own those token IDs.",
+    "message": "自定义 NFT 按钱包和网络存储。即使您不再拥有这些令牌 ID，保存的条目也会保留在此处。",
     "description": "Intro caption on custom NFT page"
   },
   "evm_custom_tokens_delete": {
-    "message": "Delete",
+    "message": "删除",
     "description": "Remove a custom ERC20 token from the list"
   },
   "evm_custom_nfts_delete": {
-    "message": "Delete",
+    "message": "删除",
     "description": "Remove a custom NFT entry from the list"
   },
   "evm_custom_tokens_delete_confirm": {
-    "message": "Remove \"$1\" from your custom tokens? This cannot be undone.",
+    "message": "从您的自定义令牌中删除“$1”？此操作无法撤消。",
     "description": "Confirmation before deleting a custom token; $1 is symbol or name"
   },
   "evm_custom_nfts_delete_confirm": {
-    "message": "Remove \"$1\" from your custom NFTs? This cannot be undone.",
+    "message": "从您的自定义 NFT 中删除“$1”？此操作无法撤消。",
     "description": "Confirmation before deleting a custom NFT entry; $1 is the contract address"
   },
   "evm_custom_tokens_modal_title_edit": {
-    "message": "Edit custom token",
+    "message": "编辑自定义令牌",
     "description": "Title when editing a saved custom ERC20 token"
   },
   "evm_custom_nfts_modal_title_edit": {
-    "message": "Edit custom NFT",
+    "message": "编辑自定义 NFT",
     "description": "Title when editing a saved custom NFT entry"
   },
   "evm_custom_tokens_modal_caption_edit": {
-    "message": "Change the symbol or logo. Name and decimals are read from the contract when you save.",
+    "message": "更改符号或徽标。保存时会从合同中读取名称和小数位。",
     "description": "Caption when editing a custom ERC20 token"
   },
   "evm_custom_nfts_modal_caption_edit": {
-    "message": "Replace the token ID list for this NFT contract. The NFT type stays the same.",
+    "message": "替换此 NFT 合约的代币 ID 列表。 NFT 类型保持不变。",
     "description": "Caption when editing a custom NFT entry"
   },
   "evm_wallet_tokens_filter_no_results": {
-    "message": "No token found",
+    "message": "未找到令牌",
     "description": "Shown on wallet tokens tab when the search/filter has no matching tokens"
   },
   "evm_custom_erc20_empty_card_message": {
@@ -7348,7 +7350,7 @@
     "description": "Hint on wallet tokens tab when there are no custom ERC20 tokens"
   },
   "evm_custom_erc20_empty_card_hide": {
-    "message": "Hide",
+    "message": "隐藏",
     "description": "Dismiss the custom ERC20 empty-state hint card"
   },
   "evm_custom_nft_empty_card_message": {
@@ -7356,139 +7358,139 @@
     "description": "Hint on wallet NFT tab when there are no custom NFTs on a custom chain"
   },
   "evm_custom_history_info_card_message": {
-    "message": "On this custom chain, only transactions broadcasted by Keychain will be displayed",
+    "message": "在此自定义链上，仅显示 Keychain 广播的交易",
     "description": "Hint on wallet history tab for custom EVM chains"
   },
   "evm_add_custom_token_popup_title": {
-    "message": "Add custom token",
+    "message": "添加自定义令牌",
     "description": "Add custom token popup title"
   },
   "evm_add_custom_nft_popup_title": {
-    "message": "Add custom NFT",
+    "message": "添加自定义 NFT",
     "description": "Add custom NFT popup title"
   },
   "evm_smart_contract_address": {
-    "message": "Smart contract address",
+    "message": "智能合约地址",
     "description": "Smart contract address"
   },
   "evm_add_custom_token_popup_caption": {
-    "message": "Search known tokens for this network. If you do not find the token you need, add it manually.",
+    "message": "搜索该网络的已知令牌。如果您没有找到所需的令牌，请手动添加。",
     "description": "Browse step caption in the add custom token popup"
   },
   "evm_custom_tokens_add_section_title": {
-    "message": "Add a token",
+    "message": "添加令牌",
     "description": "Unused legacy key; known token list now lives in the add token popup"
   },
   "evm_add_custom_token_manually": {
-    "message": "Add manually",
+    "message": "手动添加",
     "description": "Opens the manual ERC20 form from the add token popup browse step"
   },
   "evm_known_tokens_search_label": {
-    "message": "Search token",
+    "message": "搜索令牌",
     "description": "Known tokens search input label in the add token popup"
   },
   "evm_known_tokens_search_placeholder": {
-    "message": "Name or contract address",
+    "message": "姓名或合同地址",
     "description": "Known tokens search input placeholder in the add token popup"
   },
   "evm_known_tokens_loading": {
-    "message": "Loading known tokens...",
+    "message": "正在加载已知令牌...",
     "description": "Known tokens loading message in the add token popup"
   },
   "evm_known_tokens_empty": {
-    "message": "No known tokens found for this network.",
+    "message": "未找到该网络的已知令牌。",
     "description": "Known tokens empty state in the add token popup"
   },
   "evm_known_tokens_error_loading": {
-    "message": "Could not load known tokens for this network.",
+    "message": "无法加载该网络的已知令牌。",
     "description": "Known tokens load error in the add token popup"
   },
   "evm_known_tokens_add": {
-    "message": "Add",
+    "message": "添加",
     "description": "Add known token button label in the add token popup"
   },
   "evm_watch_asset_title": {
-    "message": "Add custom token",
+    "message": "添加自定义令牌",
     "description": "Title when a dApp requests wallet_watchAsset"
   },
   "evm_watch_asset_caption": {
-    "message": "$1 is asking you to add a custom token to Keychain.",
+    "message": "$1 要求您向 Keychain 添加自定义令牌。",
     "description": "Caption when a dApp requests wallet_watchAsset; $1 is the dApp domain"
   },
   "evm_add_custom_nft_popup_caption": {
-    "message": "Add an NFT contract and the token IDs you own. Keychain will detect whether the contract is ERC721 or ERC1155.",
+    "message": "添加 NFT 合约和您拥有的代币 ID。 Keychain 将检测合约是 ERC721 还是 ERC1155。",
     "description": "Add custom NFT popup caption"
   },
   "evm_custom_nfts_field_collection_name": {
-    "message": "Collection name (optional)",
+    "message": "集合名称（可选）",
     "description": "Label for optional custom NFT collection display name"
   },
   "evm_custom_nfts_field_token_ids": {
-    "message": "Token IDs",
+    "message": "令牌 ID",
     "description": "Label for NFT token IDs field"
   },
   "evm_custom_nfts_type_auto_detected": {
-    "message": "The NFT type will be detected automatically when you save.",
+    "message": "保存时将自动检测 NFT 类型。",
     "description": "Message explaining NFT type auto detection"
   },
   "evm_custom_nfts_type_detected": {
-    "message": "This saved entry uses the $1 standard.",
+    "message": "此保存的条目使用 $1 标准。",
     "description": "Message explaining the detected NFT type; $1 is ERC721 or ERC1155"
   },
   "evm_custom_nfts_token_count": {
-    "message": "$1 saved token IDs",
+    "message": "$1 保存的令牌 ID",
     "description": "Custom NFT token count label; $1 is the number of saved token IDs"
   },
   "evm_add_custom_asset_error_contract_address_invalid": {
-    "message": "Enter a valid contract address.",
+    "message": "输入有效的合约地址。",
     "description": "Validation error when adding a custom EVM token or NFT with an invalid contract address"
   },
   "evm_add_custom_asset_error_contract_address_duplicate": {
-    "message": "This contract address is already added.",
+    "message": "该合约地址已添加。",
     "description": "Validation error when the contract address is already in custom tokens or NFTs"
   },
   "evm_add_custom_token_error_symbol_required": {
-    "message": "Symbol is required.",
+    "message": "符号为必填项。",
     "description": "Validation error when saving a custom ERC20 without a symbol"
   },
   "evm_add_custom_token_error_name_required": {
-    "message": "Token name is required.",
+    "message": "令牌名称是必需的。",
     "description": "Validation error when saving a custom ERC20 without a name"
   },
   "evm_add_custom_token_error_decimals_invalid": {
-    "message": "Enter a valid decimal count between 0 and 255.",
+    "message": "输入 0 到 255 之间的有效小数。",
     "description": "Validation error when custom ERC20 decimals are missing or out of range"
   },
   "evm_add_custom_nft_error_token_ids_required": {
-    "message": "Enter at least one token ID.",
+    "message": "输入至少一个令牌 ID。",
     "description": "Validation error when saving a custom NFT without token IDs"
   },
   "evm_add_custom_nft_error_token_ids_format": {
-    "message": "Token IDs must be decimal numbers or 0x-prefixed hex values.",
+    "message": "令牌 ID 必须是十进制数字或以 0x 为前缀的十六进制值。",
     "description": "Validation error when custom NFT token IDs use an invalid format"
   },
   "evm_add_custom_token_error_save_failed": {
-    "message": "Unable to save this token right now.",
+    "message": "目前无法保存此令牌。",
     "description": "Error when persisting a custom ERC20 token fails"
   },
   "evm_add_custom_token_error_fetch_erc20_metadata": {
-    "message": "Could not read token name and decimals from the chain. Check the address and that it is a standard ERC20 contract.",
+    "message": "无法从链中读取代币名称和小数点。检查地址并确认它是标准 ERC20 合约。",
     "description": "Error when fetching ERC20 name and decimals from chain fails"
   },
   "evm_add_custom_nft_error_token_ids_not_owned": {
-    "message": "One or more token IDs are not owned by this wallet.",
+    "message": "一个或多个代币 ID 不属于该钱包。",
     "description": "Error when listed NFT token IDs are not owned by the current wallet"
   },
   "evm_add_custom_nft_error_save_failed": {
-    "message": "Unable to save this NFT right now.",
+    "message": "目前无法保存此 NFT。",
     "description": "Error when persisting a custom NFT entry fails"
   },
   "evm_add_custom_nft_error_unsupported_contract": {
-    "message": "Could not detect a supported NFT contract at this address. Only ERC721 and ERC1155 contracts are supported.",
+    "message": "无法在此地址检测到受支持的 NFT 合约。仅支持 ERC721 和 ERC1155 合约。",
     "description": "Error when the address is not a supported ERC721 or ERC1155 contract"
   },
   "evm_add_manually_discover": {
-    "message": "Discover tokens",
+    "message": "发现代币",
     "description": "Discover tokens"
   },
   "evm_pending_queued_transactions": {
@@ -7496,11 +7498,11 @@
     "description": "Pending and queued transactions"
   },
   "evm_one_pending_transaction": {
-    "message": "You have 1 pending transaction",
+    "message": "您有 1 笔待处理交易",
     "description": "Pending transaction"
   },
   "evm_unknown_pending_transaction": {
-    "message": "Unknown pending transaction",
+    "message": "未知的待处理交易",
     "description": "Unknown pending transaction"
   },
   "evm_pending_transaction": {
@@ -7536,7 +7538,7 @@
     "description": "Error during cancel transaction"
   },
   "insufficient_balance_warning": {
-    "message": "Insufficient balance. Transaction will fail.",
+    "message": "余额不足。交易将会失败。",
     "description": "Insufficient balance warning message"
   },
   "coming_soon_panel_title": {
@@ -7548,174 +7550,174 @@
     "description": "Coming soon panel description"
   },
   "evm_chain_non_supported": {
-    "message": "Chain $1 is not supported by Keychain",
+    "message": "Keychain 不支持链 $1",
     "description": "Chain not supported error message"
   },
   "evm_request_add_chain_title": {
-    "message": "Add a chain",
+    "message": "添加链条",
     "description": "Request to add chain title"
   },
   "evm_request_add_chain_caption": {
-    "message": "$1 has requested to make an action on a chain you haven't setup yet. Do you want to add it to Keychain and proceed with that transaction?",
+    "message": "$1 已请求对您尚未设置的链执行操作。您想将其添加到 Keychain 并继续该交易吗？",
     "description": "Request to add chain caption"
   },
   "evm_request_add_custom_chain_title": {
-    "message": "Add a custom chain",
+    "message": "添加自定义链",
     "description": "Request to add a custom chain title"
   },
   "evm_request_add_custom_chain_caption": {
-    "message": "$1 requested a switch to chain $2, but Keychain doesn't know this chain yet. Add the custom chain details below to continue.",
+    "message": "$1 请求切换到链 $2，但 Keychain 尚不知道该链。添加下面的自定义链详细信息以继续。",
     "description": "Request to add a custom chain caption"
   },
   "evm_link_to_other_receiver": {
-    "message": "Click here to change the receiver",
+    "message": "点击此处更改接收者",
     "description": "Link to other receiver"
   },
   "evm_swap_receiver_address": {
-    "message": "Receiver address",
+    "message": "收件人地址",
     "description": "Swap receiver address"
   },
   "evm_processed_by": {
-    "message": "Processed by $1",
+    "message": "由 $1 处理",
     "description": "Processed by"
   },
   "evm_swap_approval_amount": {
-    "message": "Approval amount",
+    "message": "审批金额",
     "description": "Swap approval amount"
   },
   "swap_error_getting_estimate": {
-    "message": "Error getting estimate",
+    "message": "获取估计值时出错",
     "description": "Error getting estimate"
   },
   "evm_lifi_swap_confirm_message": {
     "message": "请确认将 $3 $1 兑换为 $2。"
   },
   "evm_lifi_swap": {
-    "message": "LiFi Swap",
+    "message": "LiFi 交换",
     "description": "LiFi Swap"
   },
   "evm_swap_operation": {
-    "message": "Swap",
+    "message": "交换",
     "description": "Swap operation"
   },
   "evm_approval_operation": {
-    "message": "Approve",
+    "message": "批准",
     "description": "Approval operation"
   },
   "evm_lifi_swap_amount_out": {
-    "message": "Amount out",
+    "message": "出金额",
     "description": "Amount out"
   },
   "evm_lifi_swap_amount_in": {
-    "message": "Amount in",
+    "message": "金额在",
     "description": "Amount in"
   },
   "evm_lifi_swap_status_wait_source_confirmation": {
-    "message": "Waiting for source confirmation",
+    "message": "等待来源确认",
     "description": "Waiting for source confirmation"
   },
   "evm_lifi_swap_status_wait_target_confirmation": {
-    "message": "Waiting for destination confirmation",
+    "message": "等待目的地确认",
     "description": "Waiting for destination confirmation"
   },
   "evm_lifi_swap_status_bridge_not_available": {
-    "message": "Bridge not available",
+    "message": "桥不可用",
     "description": "Bridge not available"
   },
   "evm_lifi_swap_status_chain_not_available": {
-    "message": "Chain not available",
+    "message": "链条不可用",
     "description": "Chain not available"
   },
   "evm_lifi_swap_refund_in_progress": {
-    "message": "Refund in progress",
+    "message": "退款正在进行中",
     "description": "Refund in progress"
   },
   "evm_lifi_swap_unknown_error": {
-    "message": "Unknown error",
+    "message": "未知错误",
     "description": "Unknown error"
   },
   "evm_lifi_swap_completed": {
-    "message": "Completed",
+    "message": "已完成",
     "description": "Completed"
   },
   "evm_lifi_swap_partially_completed": {
-    "message": "Partially completed. You received a different token, the value has been fully preserved",
+    "message": "部分完成。您收到了不同的令牌，该值已完全保留",
     "description": "Partially completed"
   },
   "evm_lifi_swap_refunded_completed": {
-    "message": "Refund completed",
+    "message": "退款完成",
     "description": "Refund completed"
   },
   "evm_lifi_swap_manual_intervention_required": {
-    "message": "Manual intervention required",
+    "message": "需要人工干预",
     "description": "Manual intervention required"
   },
   "evm_lifi_swap_failed_out_of_gas": {
-    "message": "Operation ran out of gas",
+    "message": "操作耗尽气体",
     "description": "Operation ran out of gas"
   },
   "evm_lifi_swap_failed_slippage": {
-    "message": "Slippage protection triggered",
+    "message": "触发打滑保护",
     "description": "Slippage protection triggered"
   },
   "evm_lifi_swap_failed_insufficient_allowance": {
-    "message": "Insufficient allowance",
+    "message": "津贴不足",
     "description": "Insufficient allowance"
   },
   "evm_lifi_swap_failed_insufficient_balance": {
-    "message": "Insufficient balance",
+    "message": "余额不足",
     "description": "Insufficient balance"
   },
   "evm_lifi_swap_failed_transaction_expired": {
-    "message": "Transaction expired",
+    "message": "交易已过期",
     "description": "Transaction expired"
   },
   "evm_lifi_swap_error_no_available_quotes": {
-    "message": "No available quotes for the requested transfer",
+    "message": "所请求的转让没有可用的报价",
     "description": "No available quotes for the requested transfer"
   },
   "evm_lifi_swap_error_same_token_source_and_destination": {
-    "message": "The same token cannot be used as source and destination",
+    "message": "同一令牌不能用作源和目标",
     "description": "The same token cannot be used as source and destination"
   },
   "evm_lifi_swap_error_build_transaction": {
-    "message": "Unable to build the swap transaction. Please try again or adjust your parameters.",
+    "message": "无法建立交换交易。请重试或调整参数。",
     "description": "LiFi failed to build transaction error"
   },
   "evm_lifi_swap_error_amount_too_low": {
-    "message": "Amount is too low for this swap. Try increasing the amount.",
+    "message": "此次交换的金额太低。尝试增加数量。",
     "description": "LiFi amount too low error"
   },
   "evm_lifi_swap_error_amount_too_high": {
-    "message": "Amount is too high or liquidity is insufficient. Try a smaller amount.",
+    "message": "金额过高或流动性不足。尝试较小的量。",
     "description": "LiFi amount too high or insufficient liquidity error"
   },
   "evm_lifi_swap_error_fees_exceed_amount": {
-    "message": "Network fees exceed the swap amount. Try a larger amount.",
+    "message": "网络费用超过交换金额。尝试更大的量。",
     "description": "LiFi fees higher than amount error"
   },
   "evm_lifi_swap_error_rate_limited": {
-    "message": "Too many requests. Please wait a moment before trying again.",
+    "message": "请求太多。请稍等片刻，然后重试。",
     "description": "LiFi rate limit error"
   },
   "evm_lifi_swap_error_service_unavailable": {
-    "message": "Swap service is temporarily unavailable. Please try again shortly.",
+    "message": "暂时不提供兑换服务。请稍后重试。",
     "description": "LiFi service unavailable error"
   },
   "evm_lifi_swap_error_invalid_request": {
-    "message": "Invalid swap parameters. Please check your selection and try again.",
+    "message": "无效的交换参数。请检查您的选择并重试。",
     "description": "LiFi invalid request error"
   },
   "evm_lifi_swap_approving_smart_contract": {
-    "message": "Approving smart contract",
+    "message": "批准智能合约",
     "description": "Approving smart contract"
   },
   "evm_lifi_swap_sending_swap_transaction": {
-    "message": "Sending swap transaction",
+    "message": "发送掉期交易",
     "description": "Sending swap transaction"
   },
   "evm_lifi_swap_delay_caption_message": {
-    "message": "Your swap might take a few minutes to appear in your history after the transaction is confirmed",
+    "message": "交易确认后，您的交换可能需要几分钟时间才会出现在您的历史记录中",
     "description": "Delay caption message"
   },
   "evm_insufficient_token_balance": {
@@ -7795,19 +7797,19 @@
     "description": "Transaction result error message slippage"
   },
   "evm_activity_tab": {
-    "message": "Activity",
+    "message": "活动",
     "description": "Activity tab"
   },
   "manage_accounts": {
-    "message": "Manage accounts",
+    "message": "管理账户",
     "description": "Manage accounts"
   },
   "evm_switch_chain": {
-    "message": "Switch chain",
+    "message": "开关链",
     "description": "Title for EVM switch chain confirmation dialog"
   },
   "evm_switch_chain_caption": {
-    "message": "$DOMAIN$ wants to use a different chain with your wallet.",
+    "message": "$DOMAIN$ 希望您的钱包使用不同的链。",
     "description": "Caption for EVM switch chain confirmation dialog",
     "placeholders": {
       "domain": {
@@ -7817,7 +7819,7 @@
     }
   },
   "reload_extension": {
-    "message": "Reload extension",
+    "message": "重新加载扩展",
     "description": "Button label to reload the extension"
   },
   "accessibility_back": {
@@ -7841,7 +7843,7 @@
     "description": "Accessible label for buttons that scroll to the top"
   },
   "evm_error_gas_estimate": {
-    "message": "Gas estimation failed. You will need to enter a custom gas fee.",
+    "message": "气体估计失败。您需要输入自定义汽油费。",
     "description": "Gas estimation failed. You will need to enter a custom gas fee."
   },
   "portfolio_payment_method_credit_debit_card": {
@@ -7899,374 +7901,374 @@
     "message": "自动银行转账"
   },
   "paid_hive_account_creation_notification_title": {
-      "message": "Hive 账户已创建",
-      "description": "Title for the browser notification when a paid Hive account creation completes while Keychain is closed"
-    },
+    "message": "Hive 账户已创建",
+    "description": "Title for the browser notification when a paid Hive account creation completes while Keychain is closed"
+  },
   "paid_hive_account_creation_notification_message": {
-      "message": "您的 Hive 账户 $1 已创建并添加到钱包",
-      "description": "Browser notification message when a paid Hive account creation completes while Keychain is closed"
-    },
+    "message": "您的 Hive 账户 $1 已创建并添加到钱包",
+    "description": "Browser notification message when a paid Hive account creation completes while Keychain is closed"
+  },
   "portfolio_coming_soon_badge": {
-      "message": "即将"
-    },
+    "message": "即将"
+  },
   "portfolio_coming_soon_expected": {
-      "message": "预计 $1",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "Q4 2026"
-        }
+    "message": "预计 $1",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "Q4 2026"
       }
-    },
-  "portfolio_coming_soon_description_buy": {
-      "message": "即将可在 Keychain 内用卡或银行转账购买 crypto。"
-    },
-  "portfolio_coming_soon_description_sell": {
-      "message": "即将可在 Keychain 内将 crypto 卖成 fiat。"
-    },
-  "portfolio_coming_soon_description_swap": {
-      "message": "即将可在支持的链上 Swap 和 Bridge tokens。"
-    },
-  "portfolio_quote_auto_refresh_countdown": {
-      "message": "$1秒后刷新",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "30"
-        }
-      }
-    },
-  "portfolio_quote_refresh_now": {
-      "message": "立即刷新"
-    },
-  "portfolio_quote_retry": {
-      "message": "重试"
-    },
-  "portfolio_quote_refreshing": {
-      "message": "正在更新报价…"
-    },
-  "portfolio_insufficient_balance": {
-      "message": "$1 余额不足。",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "HIVE"
-        }
-      }
-    },
-  "portfolio_history_auto_refresh_countdown": {
-      "message": "$1秒后自动刷新",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "15"
-        }
-      }
-    },
-  "portfolio_history_refresh_now": {
-      "message": "立即刷新"
-    },
-  "portfolio_history_refreshing": {
-      "message": "正在刷新…"
-    },
-  "portfolio_partial_load_error": {
-      "message": "部分 networks 无法加载：$1",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "Ethereum, Polygon"
-        }
-      }
-    },
-  "portfolio_confirmation_provider_account": {
-      "message": "提供商账户"
-    },
-  "portfolio_confirmation_evm_destination": {
-      "message": "提供商地址"
-    },
-  "portfolio_confirmation_approval_amount": {
-      "message": "Approval 数量"
-    },
-  "portfolio_confirmation_approval_spender": {
-      "message": "Spender"
-    },
-  "portfolio_approving_smart_contract": {
-      "message": "正在 approval smart contract"
-    },
-  "portfolio_sending_transaction": {
-      "message": "正在发送交易"
-    },
-  "portfolio_recipient_hive_account": {
-      "message": "收款 Hive 账户"
-    },
-  "portfolio_recipient_bitcoin_address": {
-      "message": "Bitcoin 目标地址"
-    },
-  "portfolio_recipient_solana_address": {
-      "message": "Solana 目标地址"
-    },
-  "portfolio_recipient_sui_address": {
-      "message": "Sui 目标地址"
-    },
-  "portfolio_recipient_tron_address": {
-      "message": "Tron 目标地址"
-    },
-  "portfolio_recipient_destination_address": {
-      "message": "目标地址"
-    },
-  "portfolio_recipient_address_invalid": {
-      "message": "请输入此 Swap 的有效收款地址。"
-    },
-  "portfolio_estimated_amount": {
-      "message": "预估数量"
-    },
-  "portfolio_quote_provider_fee": {
-      "message": "提供商费用"
-    },
-  "portfolio_quote_provider_fee_undisclosed": {
-      "message": "提供商未披露"
-    },
-  "portfolio_quote_network_fee": {
-      "message": "Network 费用"
-    },
-  "portfolio_view_all_quotes": {
-      "message": "查看全部报价（$1）",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "3"
-        }
-      }
-    },
-  "portfolio_hide_quotes": {
-      "message": "隐藏报价"
-    },
-  "portfolio_swap_amount_out_of_range": {
-      "message": "金额必须介于 $1 和 $2 之间。",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "2200"
-        },
-        "2": {
-          "content": "$2",
-          "example": "110000"
-        }
-      }
-    },
-  "portfolio_amount_out_of_range_fiat": {
-      "message": "金额必须介于 $1 和 $2 $3 之间。",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "908"
-        },
-        "2": {
-          "content": "$2",
-          "example": "334910"
-        },
-        "3": {
-          "content": "$3",
-          "example": "TWD"
-        }
-      }
-    },
-  "portfolio_amount_below_minimum": {
-      "message": "最低金额为 $1。",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "0.01123"
-        }
-      }
-    },
-  "portfolio_amount_below_minimum_fiat": {
-      "message": "最低金额为 $1 $2。",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "908"
-        },
-        "2": {
-          "content": "$2",
-          "example": "TWD"
-        }
-      }
-    },
-  "portfolio_amount_above_maximum": {
-      "message": "最高金额为 $1。",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "110000"
-        }
-      }
-    },
-  "portfolio_amount_above_maximum_fiat": {
-      "message": "最高金额为 $1 $2。",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "334910"
-        },
-        "2": {
-          "content": "$2",
-          "example": "TWD"
-        }
-      }
-    },
-  "portfolio_swap_amount_out_of_range_generic": {
-      "message": "该金额暂无报价。"
-    },
-  "portfolio_amount_hint_increase": {
-      "message": "提高到 $1 可解锁另外 $2 个提供商。",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "0.1"
-        },
-        "2": {
-          "content": "$2",
-          "example": "2"
-        }
-      }
-    },
-  "portfolio_amount_hint_decrease": {
-      "message": "降低到 $1 可解锁另外 $2 个提供商。",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "10"
-        },
-        "2": {
-          "content": "$2",
-          "example": "2"
-        }
-      }
-    },
-  "portfolio_amount_hint_increase_provider": {
-      "message": "提高到 $1 可解锁 $2。",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "0.1"
-        },
-        "2": {
-          "content": "$2",
-          "example": "SimpleSwap"
-        }
-      }
-    },
-  "portfolio_amount_hint_decrease_provider": {
-      "message": "降低到 $1 可解锁 $2。",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "10"
-        },
-        "2": {
-          "content": "$2",
-          "example": "SimpleSwap"
-        }
-      }
-    },
-  "portfolio_history_exact_from_amount": {
-      "message": "精确 From 数量"
-    },
-  "portfolio_history_exact_to_amount": {
-      "message": "精确 To 数量"
-    },
-  "portfolio_history_received_amount": {
-      "message": "到账数量"
-    },
-  "portfolio_history_estimated_to_amount": {
-      "message": "预估 To 数量"
-    },
-  "portfolio_history_fiat_currency": {
-      "message": "法币"
-    },
-  "portfolio_history_payment_method": {
-      "message": "支付方式"
-    },
-  "portfolio_all_networks_short": {
-      "message": "全部"
-    },
-  "portfolio_to_asset_search": {
-      "message": "搜索 symbol 或 network"
-    },
-  "portfolio_more_networks": {
-      "message": "更多 networks"
-    },
-  "portfolio_symbol_filter": {
-      "message": "按 symbol 筛选"
-    },
-  "portfolio_to_asset_filter_hint": {
-      "message": "仅显示部分资产。搜索或选择 network 以缩小列表。"
-    },
-  "portfolio_to_asset_results_truncated": {
-      "message": "还有 $1 个资产匹配。请缩小搜索以查看。",
-      "placeholders": {
-        "1": {
-          "content": "$1",
-          "example": "120"
-        }
-      }
-    },
-  "portfolio_no_matching_assets": {
-      "message": "没有符合筛选条件的资产。"
-    },
-  "portfolio_swap_no_wallet_tokens": {
-      "message": "此钱包没有任何 token。"
-    },
-  "portfolio_refresh": {
-      "message": "刷新 portfolio 数据"
-    },
-  "html_popup_settings_notifications_channels_title": {
-      "message": "送达渠道",
-      "description": "Title for local Hive notification drop/browser preferences"
-    },
-  "html_popup_settings_notifications_channels_caption": {
-      "message": "选择每项操作的显示位置。更改仅保存在此账户本地。",
-      "description": "Caption for local Hive notification channel preferences"
-    },
-  "html_popup_settings_notifications_operation": {
-      "message": "操作",
-      "description": "Column header for notification operation name"
-    },
-  "html_popup_settings_notifications_operation_placeholder": {
-      "message": "操作",
-      "description": "Placeholder for notification operation criteria input"
-    },
-  "html_popup_settings_notifications_channel_drop": {
-      "message": "Drop",
-      "description": "Toggle label for in-app notification dropdown"
-    },
-  "html_popup_settings_notifications_channel_browser": {
-      "message": "推送通知",
-      "description": "Toggle label for browser OS push notifications"
-    },
-  "html_popup_settings_notifications_channel_browser_tooltip": {
-      "message": "即使 Keychain 已关闭，收到此操作时也会显示系统通知。会随通知配置一起保存。",
-      "description": "Tooltip explaining the push notification channel toggle"
-    },
-  "html_popup_settings_notifications_condition_field_placeholder": {
-      "message": "字段",
-      "description": "Placeholder for notification condition field dropdown"
-    },
-  "html_popup_settings_notifications_condition_operand_placeholder": {
-      "message": "运算符",
-      "description": "Placeholder for notification condition operator dropdown"
-    },
-  "html_popup_settings_notifications_condition_value_placeholder": {
-      "message": "值",
-      "description": "Placeholder for notification condition value input"
-    },
-  "evm_light_node_assets_cache_warning": {
-      "message": "EVM 服务不可用。正在显示上次已知的资产信息；余额可能会刷新，但 token 和 NFT 详情可能过期。",
-      "description": "Warning shown when EVM token or NFT data is loaded from local cache because the light-node is unavailable"
-    },
-  "hive_push_notification_title": {
-      "message": "$1 · Hive 通知",
-      "description": "Incoming Hive push notification title"
     }
+  },
+  "portfolio_coming_soon_description_buy": {
+    "message": "即将可在 Keychain 内用卡或银行转账购买 crypto。"
+  },
+  "portfolio_coming_soon_description_sell": {
+    "message": "即将可在 Keychain 内将 crypto 卖成 fiat。"
+  },
+  "portfolio_coming_soon_description_swap": {
+    "message": "即将可在支持的链上 Swap 和 Bridge tokens。"
+  },
+  "portfolio_quote_auto_refresh_countdown": {
+    "message": "$1秒后刷新",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "30"
+      }
+    }
+  },
+  "portfolio_quote_refresh_now": {
+    "message": "立即刷新"
+  },
+  "portfolio_quote_retry": {
+    "message": "重试"
+  },
+  "portfolio_quote_refreshing": {
+    "message": "正在更新报价…"
+  },
+  "portfolio_insufficient_balance": {
+    "message": "$1 余额不足。",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "HIVE"
+      }
+    }
+  },
+  "portfolio_history_auto_refresh_countdown": {
+    "message": "$1秒后自动刷新",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "15"
+      }
+    }
+  },
+  "portfolio_history_refresh_now": {
+    "message": "立即刷新"
+  },
+  "portfolio_history_refreshing": {
+    "message": "正在刷新…"
+  },
+  "portfolio_partial_load_error": {
+    "message": "部分 networks 无法加载：$1",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "Ethereum, Polygon"
+      }
+    }
+  },
+  "portfolio_confirmation_provider_account": {
+    "message": "提供商账户"
+  },
+  "portfolio_confirmation_evm_destination": {
+    "message": "提供商地址"
+  },
+  "portfolio_confirmation_approval_amount": {
+    "message": "Approval 数量"
+  },
+  "portfolio_confirmation_approval_spender": {
+    "message": "斯彭德"
+  },
+  "portfolio_approving_smart_contract": {
+    "message": "正在 approval smart contract"
+  },
+  "portfolio_sending_transaction": {
+    "message": "正在发送交易"
+  },
+  "portfolio_recipient_hive_account": {
+    "message": "收款 Hive 账户"
+  },
+  "portfolio_recipient_bitcoin_address": {
+    "message": "Bitcoin 目标地址"
+  },
+  "portfolio_recipient_solana_address": {
+    "message": "Solana 目标地址"
+  },
+  "portfolio_recipient_sui_address": {
+    "message": "Sui 目标地址"
+  },
+  "portfolio_recipient_tron_address": {
+    "message": "Tron 目标地址"
+  },
+  "portfolio_recipient_destination_address": {
+    "message": "目标地址"
+  },
+  "portfolio_recipient_address_invalid": {
+    "message": "请输入此 Swap 的有效收款地址。"
+  },
+  "portfolio_estimated_amount": {
+    "message": "预估数量"
+  },
+  "portfolio_quote_provider_fee": {
+    "message": "提供商费用"
+  },
+  "portfolio_quote_provider_fee_undisclosed": {
+    "message": "提供商未披露"
+  },
+  "portfolio_quote_network_fee": {
+    "message": "Network 费用"
+  },
+  "portfolio_view_all_quotes": {
+    "message": "查看全部报价（$1）",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "3"
+      }
+    }
+  },
+  "portfolio_hide_quotes": {
+    "message": "隐藏报价"
+  },
+  "portfolio_swap_amount_out_of_range": {
+    "message": "金额必须介于 $1 和 $2 之间。",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "2200"
+      },
+      "2": {
+        "content": "$2",
+        "example": "110000"
+      }
+    }
+  },
+  "portfolio_amount_out_of_range_fiat": {
+    "message": "金额必须介于 $1 和 $2 $3 之间。",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "908"
+      },
+      "2": {
+        "content": "$2",
+        "example": "334910"
+      },
+      "3": {
+        "content": "$3",
+        "example": "TWD"
+      }
+    }
+  },
+  "portfolio_amount_below_minimum": {
+    "message": "最低金额为 $1。",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "0.01123"
+      }
+    }
+  },
+  "portfolio_amount_below_minimum_fiat": {
+    "message": "最低金额为 $1 $2。",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "908"
+      },
+      "2": {
+        "content": "$2",
+        "example": "TWD"
+      }
+    }
+  },
+  "portfolio_amount_above_maximum": {
+    "message": "最高金额为 $1。",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "110000"
+      }
+    }
+  },
+  "portfolio_amount_above_maximum_fiat": {
+    "message": "最高金额为 $1 $2。",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "334910"
+      },
+      "2": {
+        "content": "$2",
+        "example": "TWD"
+      }
+    }
+  },
+  "portfolio_swap_amount_out_of_range_generic": {
+    "message": "该金额暂无报价。"
+  },
+  "portfolio_amount_hint_increase": {
+    "message": "提高到 $1 可解锁另外 $2 个提供商。",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "0.1"
+      },
+      "2": {
+        "content": "$2",
+        "example": "2"
+      }
+    }
+  },
+  "portfolio_amount_hint_decrease": {
+    "message": "降低到 $1 可解锁另外 $2 个提供商。",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "10"
+      },
+      "2": {
+        "content": "$2",
+        "example": "2"
+      }
+    }
+  },
+  "portfolio_amount_hint_increase_provider": {
+    "message": "提高到 $1 可解锁 $2。",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "0.1"
+      },
+      "2": {
+        "content": "$2",
+        "example": "SimpleSwap"
+      }
+    }
+  },
+  "portfolio_amount_hint_decrease_provider": {
+    "message": "降低到 $1 可解锁 $2。",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "10"
+      },
+      "2": {
+        "content": "$2",
+        "example": "SimpleSwap"
+      }
+    }
+  },
+  "portfolio_history_exact_from_amount": {
+    "message": "精确 From 数量"
+  },
+  "portfolio_history_exact_to_amount": {
+    "message": "精确 To 数量"
+  },
+  "portfolio_history_received_amount": {
+    "message": "到账数量"
+  },
+  "portfolio_history_estimated_to_amount": {
+    "message": "预估 To 数量"
+  },
+  "portfolio_history_fiat_currency": {
+    "message": "法币"
+  },
+  "portfolio_history_payment_method": {
+    "message": "支付方式"
+  },
+  "portfolio_all_networks_short": {
+    "message": "全部"
+  },
+  "portfolio_to_asset_search": {
+    "message": "搜索 symbol 或 network"
+  },
+  "portfolio_more_networks": {
+    "message": "更多 networks"
+  },
+  "portfolio_symbol_filter": {
+    "message": "按 symbol 筛选"
+  },
+  "portfolio_to_asset_filter_hint": {
+    "message": "仅显示部分资产。搜索或选择 network 以缩小列表。"
+  },
+  "portfolio_to_asset_results_truncated": {
+    "message": "还有 $1 个资产匹配。请缩小搜索以查看。",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "120"
+      }
+    }
+  },
+  "portfolio_no_matching_assets": {
+    "message": "没有符合筛选条件的资产。"
+  },
+  "portfolio_swap_no_wallet_tokens": {
+    "message": "此钱包没有任何 token。"
+  },
+  "portfolio_refresh": {
+    "message": "刷新 portfolio 数据"
+  },
+  "html_popup_settings_notifications_channels_title": {
+    "message": "送达渠道",
+    "description": "Title for local Hive notification drop/browser preferences"
+  },
+  "html_popup_settings_notifications_channels_caption": {
+    "message": "选择每项操作的显示位置。更改仅保存在此账户本地。",
+    "description": "Caption for local Hive notification channel preferences"
+  },
+  "html_popup_settings_notifications_operation": {
+    "message": "操作",
+    "description": "Column header for notification operation name"
+  },
+  "html_popup_settings_notifications_operation_placeholder": {
+    "message": "操作",
+    "description": "Placeholder for notification operation criteria input"
+  },
+  "html_popup_settings_notifications_channel_drop": {
+    "message": "降低",
+    "description": "Toggle label for in-app notification dropdown"
+  },
+  "html_popup_settings_notifications_channel_browser": {
+    "message": "推送通知",
+    "description": "Toggle label for browser OS push notifications"
+  },
+  "html_popup_settings_notifications_channel_browser_tooltip": {
+    "message": "即使 Keychain 已关闭，收到此操作时也会显示系统通知。会随通知配置一起保存。",
+    "description": "Tooltip explaining the push notification channel toggle"
+  },
+  "html_popup_settings_notifications_condition_field_placeholder": {
+    "message": "字段",
+    "description": "Placeholder for notification condition field dropdown"
+  },
+  "html_popup_settings_notifications_condition_operand_placeholder": {
+    "message": "运算符",
+    "description": "Placeholder for notification condition operator dropdown"
+  },
+  "html_popup_settings_notifications_condition_value_placeholder": {
+    "message": "值",
+    "description": "Placeholder for notification condition value input"
+  },
+  "evm_light_node_assets_cache_warning": {
+    "message": "EVM 服务不可用。正在显示上次已知的资产信息；余额可能会刷新，但 token 和 NFT 详情可能过期。",
+    "description": "Warning shown when EVM token or NFT data is loaded from local cache because the light-node is unavailable"
+  },
+  "hive_push_notification_title": {
+    "message": "$1 · Hive 通知",
+    "description": "Incoming Hive push notification title"
+  }
 }
