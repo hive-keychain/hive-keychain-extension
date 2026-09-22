@@ -5731,27 +5731,27 @@
     "description": "Accessible label for disconnecting an account from the current dApp"
   },
   "dialog_evm_dapp_status_caption": {
-    "message": "Select which accounts you want to connect to $1. It will give it permission to see your address, account balance and activity, and to suggest transactions to approve.",
+    "message": "選擇要連接到 $1 的帳戶。對方將可查看你的地址、餘額和活動，並建議待核准的交易。",
     "description": "Evm dapp status"
   },
   "dialog_evm_sign_request": {
-    "message": "Signature request",
+    "message": "簽署請求",
     "description": "Evm Signature request dialog title"
   },
   "dialog_evm_sign_request_message": {
-    "message": "Message",
+    "message": "訊息",
     "description": "Evm Signature request dialog title"
   },
   "dialog_evm_sign_request_interacting_with": {
-    "message": "Interacting with",
+    "message": "互動對象",
     "description": "Evm Signature request interacting with"
   },
   "dialog_evm_sign_request_primary_type": {
-    "message": "Primary type",
+    "message": "主類型",
     "description": "Evm Signature request interacting with"
   },
   "dialog_evm_domain": {
-    "message": "Domain",
+    "message": "網域",
     "description": "Evm domain"
   },
   "dialog_from": {
@@ -5763,19 +5763,19 @@
     "description": "Signature request caption message"
   },
   "dialog_evm_sign_request_success": {
-    "message": "Your message was successfully signed",
+    "message": "訊息已成功簽署",
     "description": "Signature request success message"
   },
   "dialog_evm_unsupported_method": {
-    "message": "The method `$1` is not supported by Keychain",
+    "message": "Keychain 不支援方法 `$1`",
     "description": "Evm deprecated/unsupported error message"
   },
   "dialog_evm_non_existing_method": {
-    "message": "The method `$1` doesn't exist",
+    "message": "方法 `$1` 不存在",
     "description": "Evm non existing error message"
   },
   "dialog_evm_not_authorized_method": {
-    "message": "The method `$1` doesn't have authorization",
+    "message": "方法 `$1` 未獲授權",
     "description": "Evm non existing error message"
   },
   "dialog_evm_user_rejected_method": {
@@ -5783,31 +5783,31 @@
     "description": "Evm deprecated/unsupported error message"
   },
   "dialog_evm_get_encryption_key": {
-    "message": "$1 is trying to access your encryption key. Do you accept to share it ?",
+    "message": "$1 正在請求存取你的加密金鑰。是否分享？",
     "description": "Evm get encryption key message"
   },
   "dialog_evm_get_encryption_key_success": {
-    "message": "Successfully shared encryption key",
+    "message": "已成功分享加密金鑰",
     "description": "Evm get encryption key success"
   },
   "dialog_evm_decrypt_message_success": {
-    "message": "Successfully decrypted message",
+    "message": "訊息已成功解密",
     "description": "Evm decrypt message success"
   },
   "dialog_evm_decrypt_message_caption": {
-    "message": "$1 is trying to decrypt a message.",
+    "message": "$1 正在嘗試解密一則訊息。",
     "description": "Evm decrypt message caption"
   },
   "dialog_evm_decrypt_message_title": {
-    "message": "Decrypt message",
+    "message": "解密訊息",
     "description": "Evm decrypt message title"
   },
   "dialog_evm_decrypt_show_message": {
-    "message": "Show message",
+    "message": "顯示訊息",
     "description": "Evm decrypt message show button"
   },
   "dialog_evm_decrypt_send_transaction_title": {
-    "message": "Send transaction",
+    "message": "傳送交易",
     "description": "Evm send transaction title"
   },
   "popup_html_transaction_metadata": {
@@ -5827,15 +5827,15 @@
     "description": "Error message if otp has been used already"
   },
   "dialog_evm_decrypt_request_permission_title": {
-    "message": "Request permission",
+    "message": "請求權限",
     "description": "Request permission dialog title"
   },
   "dialog_evm_get_encryption_key_title": {
-    "message": "Request encryption key",
+    "message": "請求加密金鑰",
     "description": "Request encryption key dialog title"
   },
   "dialog_evm_sign_data_title": {
-    "message": "Request sign data",
+    "message": "請求簽署資料",
     "description": "Request sign typed data dialog title"
   },
   "evm_operation_transfer": {
@@ -5891,55 +5891,55 @@
     "description": "Balance after transaction"
   },
   "evm_transaction_transaction_has_warning": {
-    "message": "This transaction still has untreated warnings. Please resolve them all before proceeding",
+    "message": "此交易仍有未處理的警告。請全部解決後再繼續",
     "description": "Potential scam warning message"
   },
   "evm_transaction_warning_possible_scam": {
-    "message": "This address is listed as a potential scam",
+    "message": "此地址被列為潛在詐騙",
     "description": "Potential scam warning message"
   },
   "evm_send_transaction_ignore_warning": {
-    "message": "Proceed anyway",
+    "message": "仍然繼續",
     "description": "Acknowledge warning and continue"
   },
   "evm_risk_banner_message": {
-    "message": "$1 security issue(s) — highest risk: $2. Tap to review before confirming.",
+    "message": "$1 個安全問題 — 最高風險：$2。點按以在確認前查看。",
     "description": "Clickable risk banner on EVM confirmation pages"
   },
   "evm_risk_severity_high": {
-    "message": "Critical",
+    "message": "嚴重",
     "description": "High severity warning label"
   },
   "evm_risk_severity_medium": {
-    "message": "Warning",
+    "message": "警告",
     "description": "Medium severity warning label"
   },
   "evm_risk_severity_low": {
-    "message": "Notice",
+    "message": "提示",
     "description": "Low severity warning label"
   },
   "evm_risk_banner_review": {
-    "message": "Review warnings",
+    "message": "查看警告",
     "description": "CTA on the risk alert banner"
   },
   "evm_risk_modal_title_high": {
-    "message": "Critical security issue(s)",
+    "message": "嚴重安全問題",
     "description": "Title for high severity warning modal"
   },
   "evm_risk_modal_title_medium": {
-    "message": "Security warning",
+    "message": "安全警告",
     "description": "Title for medium severity warning modal"
   },
   "evm_risk_modal_title_low": {
-    "message": "Security notice",
+    "message": "安全提示",
     "description": "Title for low severity warning modal"
   },
   "evm_risk_warning_reviewed": {
-    "message": "Reviewed",
+    "message": "已查看",
     "description": "Label shown when a warning was acknowledged"
   },
   "evm_protocol_not_secured": {
-    "message": "This website is not using a safe connection",
+    "message": "此網站未使用安全連線",
     "description": "Connection not secured"
   },
   "evm_operation_contract_deployment_transaction": {
@@ -5955,219 +5955,219 @@
     "description": "Smart contract data field"
   },
   "evm_transaction_data": {
-    "message": "Data",
+    "message": "資料",
     "description": "Data field"
   },
   "evm_send_transaction_success": {
-    "message": "The transaction has been broadcasted successfully",
+    "message": "交易已成功廣播",
     "description": "SuccesFully sent evm transaction"
   },
   "evm_send_transaction_failed": {
-    "message": "Transaction failed during broadcast",
+    "message": "廣播交易失敗",
     "description": "Failed transaction"
   },
   "evm_transaction_domain_blacklisted": {
-    "message": "This domain has been flagged for suspicious behavior",
+    "message": "此網域因可疑行為被標記",
     "description": "Domain is blacklisted"
   },
   "evm_transaction_domain_fuzzy": {
-    "message": "This domain seems to be very similar to $1. Make sure that your are on the correct website",
+    "message": "此網域與 $1 非常相似。請確認你在正確的網站上",
     "description": "Domain is blacklisted"
   },
   "evm_transaction_domain_phishing": {
-    "message": "This website has been flagged as a potential phishing site",
+    "message": "此網站被標記為潛在釣魚站",
     "description": "Domain flagged by light-node security"
   },
   "evm_security_reason_blacklist_doubt": {
-    "message": "This address has been flagged for blacklist-related risk",
+    "message": "此地址因黑名單相關風險被標記",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_blackmail_activities": {
-    "message": "This address has been linked to blackmail activities",
+    "message": "此地址與勒索活動有關",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_cybercrime": {
-    "message": "This address has been linked to cybercrime",
+    "message": "此地址與網路犯罪有關",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_darkweb_transactions": {
-    "message": "This address has been linked to dark web transactions",
+    "message": "此地址與暗網交易有關",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_fake_kyc": {
-    "message": "This address has been linked to fake KYC activity",
+    "message": "此地址與虛假 KYC 有關",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_fake_token": {
-    "message": "This address has been linked to fake token activity",
+    "message": "此地址與假代幣活動有關",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_financial_crime": {
-    "message": "This address has been linked to financial crime",
+    "message": "此地址與金融犯罪有關",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_gas_abuse": {
-    "message": "This address has been linked to gas abuse",
+    "message": "此地址與 gas 濫用有關",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_honeypot_related_address": {
-    "message": "This address has been linked to honeypot-related activity",
+    "message": "此地址與蜜罐（honeypot）活動有關",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_malicious_mining_activities": {
-    "message": "This address has been linked to malicious mining",
+    "message": "此地址與惡意挖礦有關",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_mixer": {
-    "message": "This address has been linked to a mixer",
+    "message": "此地址與混幣器（mixer）有關",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_money_laundering": {
-    "message": "This address has been linked to money laundering",
+    "message": "此地址與洗錢有關",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_phishing_activities": {
-    "message": "This address has been linked to phishing activity",
+    "message": "此地址與釣魚活動有關",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_grouped_address_risk": {
-    "message": "This address has been flagged for security risks",
+    "message": "此地址因安全風險被標記",
     "description": "Grouped light-node address security summary"
   },
   "evm_security_reason_grouped_domain_risk": {
-    "message": "This website has been flagged for security risks",
+    "message": "此網站因安全風險被標記",
     "description": "Grouped light-node domain security summary"
   },
   "evm_security_warning_show_details": {
-    "message": "Show details",
+    "message": "顯示詳情",
     "description": "Expand grouped security warning reasons"
   },
   "evm_security_warning_hide_details": {
-    "message": "Hide details",
+    "message": "隱藏詳情",
     "description": "Collapse grouped security warning reasons"
   },
   "evm_security_reason_rug_pull": {
-    "message": "This is a deceptive request to a known rug-pull contract",
+    "message": "這是針對已知 rug-pull 合約的欺騙性請求",
     "description": "Light-node rug-pull summary when isRugPull is true"
   },
   "evm_security_reason_rug_pull_privilege_withdraw": {
-    "message": "This contract can withdraw your funds.",
+    "message": "此合約可以提取你的資金。",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_rug_pull_withdraw_missing": {
-    "message": "This contract may let others deposit, but can prevent withdrawals.",
+    "message": "此合約可能允許他人存入，但阻止提取。",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_rug_pull_blacklist": {
-    "message": "This contract can blacklist wallets and block selling or transfers.",
+    "message": "此合約可將錢包列入黑名單並阻止出售或轉帳。",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_rug_pull_selfdestruct": {
-    "message": "This contract can self-destruct and break token functionality.",
+    "message": "此合約可以自毀並破壞代幣功能。",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_rug_pull_approval_abuse": {
-    "message": "This contract can abuse token approvals to move your funds.",
+    "message": "此合約可能濫用代幣授權以轉移你的資金。",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_reinit": {
-    "message": "This address has been flagged for suspicious reinitialization behavior",
+    "message": "此地址因可疑的重新初始化行為被標記",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_sanctioned": {
-    "message": "This address appears on sanctions lists",
+    "message": "此地址出現在制裁名單上",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_stealing_attack": {
-    "message": "This address has been linked to stealing attacks",
+    "message": "此地址與盜取攻擊有關",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_scamsniffer_blacklist": {
-    "message": "This has been flagged by the ScamSniffer blacklist",
+    "message": "此項已被 ScamSniffer 黑名單標記",
     "description": "Light-node security reason"
   },
   "evm_security_reason_phishing_site": {
-    "message": "This website has been flagged as a phishing site",
+    "message": "此網站被標記為釣魚網站",
     "description": "Light-node domain security reason"
   },
   "evm_security_reason_address_risk": {
-    "message": "This website has been flagged for address risk: $1",
+    "message": "此網站因地址風險被標記：$1",
     "description": "Light-node domain security reason with dynamic risk value"
   },
   "evm_security_reason_nft_risk": {
-    "message": "This website has been flagged for NFT risk: $1",
+    "message": "此網站因 NFT 風險被標記：$1",
     "description": "Light-node domain security reason with dynamic NFT risk key"
   },
   "evm_security_reason_unknown": {
-    "message": "A security risk was detected: $1",
+    "message": "偵測到安全風險：$1",
     "description": "Fallback light-node security reason"
   },
   "evm_transaction_receiver_blacklisted": {
-    "message": "This address has been flagged for suspicious behavior",
+    "message": "此地址因可疑行為被標記",
     "description": "Receiver is blacklisted"
   },
   "evm_transaction_receiver_malicious": {
-    "message": "This address has been flagged as malicious",
+    "message": "此地址被標記為惡意",
     "description": "Receiver flagged by light-node address security"
   },
   "evm_transaction_warning_high_level_bypass_message": {
-    "message": "I know what I'm doing",
+    "message": "我知道自己在做什麼",
     "description": "Checkbox message to bypass warning"
   },
   "evm_transaction_receiver_not_whitelisted": {
-    "message": "This address hasn't been whitelisted in Keychain",
+    "message": "此地址尚未加入 Keychain 白名單",
     "description": "Checkbox message to bypass warning"
   },
   "evm_transaction_receiver_favorite_label": {
-    "message": "Nickname",
+    "message": "暱稱",
     "description": "Nickname for address"
   },
   "evm_transaction_receiver_potential_spoofing_whitelisted": {
-    "message": "This address looks similar to your whitelisted address $1 and could be an attempt of address poisoning. Please check that this address is correct.",
+    "message": "此地址與白名單地址 $1 相似，可能是地址投毒。請核對地址是否正確。",
     "description": "potential spoofing warning"
   },
   "evm_transaction_receiver_potential_spoofing_local_accounts": {
-    "message": "This address looks similar to your address $1 and could be an attempt of address poisoning. Please check that this address is correct.",
+    "message": "此地址與你的地址 $1 相似，可能是地址投毒。請核對地址是否正確。",
     "description": "potential spoofing warning"
   },
   "evm_transaction_contract_use_proxy": {
-    "message": "This contract is a proxy",
+    "message": "此合約是代理合約",
     "description": "Smart contract uses a proxy"
   },
   "evm_transaction_contract_already_used": {
-    "message": "You whitelisted this smart contract",
+    "message": "你已將此智能合約加入白名單",
     "description": "Already used"
   },
   "evm_transaction_contract_not_used": {
-    "message": "You haven't whitelisted this smart contract yet",
+    "message": "你尚未將此智能合約加入白名單",
     "description": "Not used yet"
   },
   "evm_transaction_contract_honeypot": {
-    "message": "This token has been flagged as a potential honeypot",
+    "message": "此代幣被標記為潛在蜜罐（honeypot）",
     "description": "Token honeypot warning from GoPlus"
   },
   "evm_transaction_contract_cannot_sell": {
-    "message": "This token may not be sellable",
+    "message": "此代幣可能無法出售",
     "description": "Token cannot sell all warning from GoPlus"
   },
   "evm_transaction_contract_high_tax": {
-    "message": "This token has high buy or sell tax",
+    "message": "此代幣買入或賣出稅較高",
     "description": "Token high tax warning from GoPlus"
   },
   "evm_transaction_contract_rug_pull": {
-    "message": "This contract has been flagged for potential rug-pull risk",
+    "message": "此合約因潛在 rug-pull 風險被標記",
     "description": "Rug pull warning from GoPlus"
   },
   "evm_transaction_nft_restricted_approval": {
-    "message": "This NFT collection has restricted approval risks",
+    "message": "此 NFT 系列存在受限授權風險",
     "description": "NFT restricted approval warning from GoPlus"
   },
   "evm_transaction_nft_transfer_without_approval": {
-    "message": "This NFT collection may allow transfers without approval",
+    "message": "此 NFT 系列可能允許未經授權的轉移",
     "description": "NFT transfer without approval warning from GoPlus"
   },
   "evm_domain_never_visited": {
-    "message": "We detected that this is the first time you visit this domain",
+    "message": "偵測到你是第一次造訪此網域",
     "description": "Domain never visited warning message"
   },
   "evm_sign_typed_data_message": {
@@ -6223,23 +6223,23 @@
     "description": "Evm warning"
   },
   "evm_warning_possible_duplicated_transaction_title": {
-    "message": "Possible duplicate",
+    "message": "可能重複",
     "description": "Possible duplicated malicious transaction title"
   },
   "evm_warning_possible_duplicated_transaction": {
-    "message": "This transaction is similar to a similar transaction you processed. This could be a malicious transaction.",
+    "message": "此交易與你處理過的一筆交易相似。可能是惡意交易。",
     "description": "Possible duplicated malicious transaction"
   },
   "evm_warning_possible_duplicated_transaction_sent_at": {
-    "message": "Sent on $1",
+    "message": "傳送於 $1",
     "description": "Possible duplicated malicious transaction sent on"
   },
   "evm_warning_eip7702_title": {
-    "message": "This action can give another contract control over your wallet",
+    "message": "此操作可能讓另一份合約控制你的錢包",
     "description": "EIP-7702 warning title"
   },
   "evm_warning_eip7702_message": {
-    "message": "This action can give another contract control over your wallet. Review with extreme caution as this could lead to a loss of funds.",
+    "message": "此操作可能讓另一份合約控制你的錢包。請極度謹慎，可能導致資金損失。",
     "description": "EIP-7702 warning message"
   },
   "evm_too_many_transaction_button": {
@@ -6983,15 +6983,15 @@
     "description": "No nft"
   },
   "evm_tx_completed_notification_message": {
-    "message": "Tx #$1 was completed",
+    "message": "Tx #$1 已完成",
     "description": "Transaction completed message"
   },
   "evm_tx_failed_notification_message": {
-    "message": "Tx #$1 has failed. For more details, click here.",
+    "message": "Tx #$1 已失敗。點此查看詳情。",
     "description": "Transaction completed message"
   },
   "evm_tx_completed_notification_title": {
-    "message": "Transaction completed",
+    "message": "交易已完成",
     "description": "Transaction completed title"
   },
   "evm_incoming_transaction_notification_title": {
@@ -6999,7 +6999,7 @@
     "description": "Incoming EVM transaction notification title"
   },
   "evm_tx_failed_notification_title": {
-    "message": "Transaction failed",
+    "message": "交易失敗",
     "description": "Transaction completed title"
   },
   "evm_wallets": {
@@ -7059,19 +7059,19 @@
     "description": "Unknown duration"
   },
   "evm_gas_fee_warning_not_available": {
-    "message": "The gas fee estimation is currently unavailable",
+    "message": "目前無法估算 gas 費用",
     "description": "Gas fee estimation not available"
   },
   "evm_gas_fee_warning_not_available_for_chain": {
-    "message": "The gas fee estimation is unavailable for this chain",
+    "message": "此鏈無法估算 gas 費用",
     "description": "Gas fee estimation not available for chain"
   },
   "evm_gas_fee_warning_transaction_will_revert": {
-    "message": "This transaction will revert",
+    "message": "此交易將會 revert",
     "description": "Gas fee warning shown when transaction simulation reverts"
   },
   "evm_transaction_broadcasted": {
-    "message": "Transaction was broadcasted. Please wait for it to be confirmed.",
+    "message": "交易已廣播。請等待確認。",
     "description": "Transaction broadcasted message"
   },
   "evm_collection_name": {
@@ -7079,11 +7079,11 @@
     "description": "Collection name"
   },
   "evm_gas_fee_warning_priority_fee_higher_than_max_fee": {
-    "message": "Max fee must be higher than priority fee",
+    "message": "最高費用必須高於優先費用",
     "description": "Priority fee is higher than max fee"
   },
   "evm_gas_fee_warning_gas_price_below_minimum": {
-    "message": "Gas price is below the minimum for this chain",
+    "message": "Gas 價格低於此鏈的最低值",
     "description": "Legacy gas price is below the configured chain minimum"
   },
   "evm_gas_fee_warning_updated_after_insufficient_price": {
@@ -7091,11 +7091,11 @@
     "description": "Recoverable warning shown after custom-chain legacy gas price is rejected by RPC"
   },
   "evm_transaction_result_error_message_underpriced": {
-    "message": "Fee is too low, please increase it",
+    "message": "費用過低，請提高",
     "description": "Transaction result error message underpriced"
   },
   "evm_transaction_result_unknown_error": {
-    "message": "An unknown error occurred",
+    "message": "發生未知錯誤",
     "description": "Transaction result unknown error"
   },
   "evm_history_canceled_transaction": {
@@ -7107,11 +7107,11 @@
     "description": "EVM history message for CANCELED_OP operations"
   },
   "evm_transaction_result_error_message_nonce_expired": {
-    "message": "Nonce expired, please try again",
+    "message": "Nonce 已過期，請重試",
     "description": "Transaction result error message nonce expired"
   },
   "evm_transaction_not_canceled_error": {
-    "message": "The transaction couldn't be canceled",
+    "message": "無法取消該交易",
     "description": "Transaction couldn't be canceled error message"
   },
   "evm_rpcs_not_responding_error": {
@@ -7462,7 +7462,7 @@
     "description": "Discover tokens"
   },
   "evm_pending_queued_transactions": {
-    "message": "You have 1 pending transaction and $1 queued transactions",
+    "message": "你有 1 筆待處理交易和 $1 筆排隊交易",
     "description": "Pending and queued transactions"
   },
   "evm_one_pending_transaction": {
@@ -7474,15 +7474,15 @@
     "description": "Unknown pending transaction"
   },
   "evm_pending_transaction": {
-    "message": "Pending transaction",
+    "message": "待處理交易",
     "description": "Pending transaction"
   },
   "evm_pending_transaction_warning": {
-    "message": "You have a pending transaction. No new transaction will be confirmed until the pending one is completed.",
+    "message": "你有一筆待處理交易。完成前不會確認新交易。",
     "description": "Pending transaction warning"
   },
   "evm_gas_fee_warning_gas_limit_too_low": {
-    "message": "Gas limit is too low. Should be at least 21000",
+    "message": "Gas limit 過低。至少應為 21000",
     "description": "Gas limit is too low"
   },
   "evm_nonce": {
@@ -7490,19 +7490,19 @@
     "description": "Nonce"
   },
   "evm_cancel_transaction": {
-    "message": "Cancel transaction",
+    "message": "取消交易",
     "description": "Cancel transaction"
   },
   "evm_canceled_transaction": {
-    "message": "Canceled transaction",
+    "message": "已取消的交易",
     "description": "Canceled transaction"
   },
   "evm_cancel_transaction_error": {
-    "message": "Error during cancel transaction",
+    "message": "取消交易時出錯",
     "description": "Error during cancel transaction"
   },
   "evm_cancel_transaction_confirm_message": {
-    "message": "You are about to cancel an unknown pending transaction.",
+    "message": "你即將取消一筆未知的待處理交易。",
     "description": "Error during cancel transaction"
   },
   "insufficient_balance_warning": {

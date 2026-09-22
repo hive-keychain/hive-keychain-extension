@@ -5731,23 +5731,23 @@
     "description": "Accessible label for disconnecting an account from the current dApp"
   },
   "dialog_evm_dapp_status_caption": {
-    "message": "Select which accounts you want to connect to $1. It will give it permission to see your address, account balance and activity, and to suggest transactions to approve.",
+    "message": "Pilih akun yang ingin dihubungkan ke $1. DApp dapat melihat alamat, saldo, dan aktivitas, serta menyarankan transaksi.",
     "description": "Evm dapp status"
   },
   "dialog_evm_sign_request": {
-    "message": "Signature request",
+    "message": "Permintaan tanda tangan",
     "description": "Evm Signature request dialog title"
   },
   "dialog_evm_sign_request_message": {
-    "message": "Message",
+    "message": "Pesan",
     "description": "Evm Signature request dialog title"
   },
   "dialog_evm_sign_request_interacting_with": {
-    "message": "Interacting with",
+    "message": "Berinteraksi dengan",
     "description": "Evm Signature request interacting with"
   },
   "dialog_evm_sign_request_primary_type": {
-    "message": "Primary type",
+    "message": "Tipe utama",
     "description": "Evm Signature request interacting with"
   },
   "dialog_evm_domain": {
@@ -5763,19 +5763,19 @@
     "description": "Signature request caption message"
   },
   "dialog_evm_sign_request_success": {
-    "message": "Your message was successfully signed",
+    "message": "Pesan berhasil ditandatangani",
     "description": "Signature request success message"
   },
   "dialog_evm_unsupported_method": {
-    "message": "The method `$1` is not supported by Keychain",
+    "message": "Metode `$1` tidak didukung Keychain",
     "description": "Evm deprecated/unsupported error message"
   },
   "dialog_evm_non_existing_method": {
-    "message": "The method `$1` doesn't exist",
+    "message": "Metode `$1` tidak ada",
     "description": "Evm non existing error message"
   },
   "dialog_evm_not_authorized_method": {
-    "message": "The method `$1` doesn't have authorization",
+    "message": "Metode `$1` tidak memiliki otorisasi",
     "description": "Evm non existing error message"
   },
   "dialog_evm_user_rejected_method": {
@@ -5783,31 +5783,31 @@
     "description": "Evm deprecated/unsupported error message"
   },
   "dialog_evm_get_encryption_key": {
-    "message": "$1 is trying to access your encryption key. Do you accept to share it ?",
+    "message": "$1 mencoba mengakses kunci enkripsi Anda. Izinkan?",
     "description": "Evm get encryption key message"
   },
   "dialog_evm_get_encryption_key_success": {
-    "message": "Successfully shared encryption key",
+    "message": "Kunci enkripsi berhasil dibagikan",
     "description": "Evm get encryption key success"
   },
   "dialog_evm_decrypt_message_success": {
-    "message": "Successfully decrypted message",
+    "message": "Pesan berhasil didekripsi",
     "description": "Evm decrypt message success"
   },
   "dialog_evm_decrypt_message_caption": {
-    "message": "$1 is trying to decrypt a message.",
+    "message": "$1 mencoba mendekripsi pesan.",
     "description": "Evm decrypt message caption"
   },
   "dialog_evm_decrypt_message_title": {
-    "message": "Decrypt message",
+    "message": "Dekripsi pesan",
     "description": "Evm decrypt message title"
   },
   "dialog_evm_decrypt_show_message": {
-    "message": "Show message",
+    "message": "Tampilkan pesan",
     "description": "Evm decrypt message show button"
   },
   "dialog_evm_decrypt_send_transaction_title": {
-    "message": "Send transaction",
+    "message": "Kirim transaksi",
     "description": "Evm send transaction title"
   },
   "popup_html_transaction_metadata": {
@@ -5827,15 +5827,15 @@
     "description": "Error message if otp has been used already"
   },
   "dialog_evm_decrypt_request_permission_title": {
-    "message": "Request permission",
+    "message": "Minta izin",
     "description": "Request permission dialog title"
   },
   "dialog_evm_get_encryption_key_title": {
-    "message": "Request encryption key",
+    "message": "Minta kunci enkripsi",
     "description": "Request encryption key dialog title"
   },
   "dialog_evm_sign_data_title": {
-    "message": "Request sign data",
+    "message": "Minta tanda tangan data",
     "description": "Request sign typed data dialog title"
   },
   "evm_operation_transfer": {
@@ -5891,55 +5891,55 @@
     "description": "Balance after transaction"
   },
   "evm_transaction_transaction_has_warning": {
-    "message": "This transaction still has untreated warnings. Please resolve them all before proceeding",
+    "message": "Transaksi ini masih punya peringatan. Selesaikan semuanya sebelum lanjut",
     "description": "Potential scam warning message"
   },
   "evm_transaction_warning_possible_scam": {
-    "message": "This address is listed as a potential scam",
+    "message": "Alamat ini tercatat sebagai potensi penipuan",
     "description": "Potential scam warning message"
   },
   "evm_send_transaction_ignore_warning": {
-    "message": "Proceed anyway",
+    "message": "Lanjutkan saja",
     "description": "Acknowledge warning and continue"
   },
   "evm_risk_banner_message": {
-    "message": "$1 security issue(s) — highest risk: $2. Tap to review before confirming.",
+    "message": "$1 masalah keamanan — risiko tertinggi: $2. Ketuk untuk meninjau.",
     "description": "Clickable risk banner on EVM confirmation pages"
   },
   "evm_risk_severity_high": {
-    "message": "Critical",
+    "message": "Kritis",
     "description": "High severity warning label"
   },
   "evm_risk_severity_medium": {
-    "message": "Warning",
+    "message": "Peringatan",
     "description": "Medium severity warning label"
   },
   "evm_risk_severity_low": {
-    "message": "Notice",
+    "message": "Pemberitahuan",
     "description": "Low severity warning label"
   },
   "evm_risk_banner_review": {
-    "message": "Review warnings",
+    "message": "Tinjau peringatan",
     "description": "CTA on the risk alert banner"
   },
   "evm_risk_modal_title_high": {
-    "message": "Critical security issue(s)",
+    "message": "Masalah keamanan kritis",
     "description": "Title for high severity warning modal"
   },
   "evm_risk_modal_title_medium": {
-    "message": "Security warning",
+    "message": "Peringatan keamanan",
     "description": "Title for medium severity warning modal"
   },
   "evm_risk_modal_title_low": {
-    "message": "Security notice",
+    "message": "Pemberitahuan keamanan",
     "description": "Title for low severity warning modal"
   },
   "evm_risk_warning_reviewed": {
-    "message": "Reviewed",
+    "message": "Ditinjau",
     "description": "Label shown when a warning was acknowledged"
   },
   "evm_protocol_not_secured": {
-    "message": "This website is not using a safe connection",
+    "message": "Situs ini tidak memakai koneksi aman",
     "description": "Connection not secured"
   },
   "evm_operation_contract_deployment_transaction": {
@@ -5959,215 +5959,215 @@
     "description": "Data field"
   },
   "evm_send_transaction_success": {
-    "message": "The transaction has been broadcasted successfully",
+    "message": "Transaksi berhasil disiarkan",
     "description": "SuccesFully sent evm transaction"
   },
   "evm_send_transaction_failed": {
-    "message": "Transaction failed during broadcast",
+    "message": "Transaksi gagal saat disiarkan",
     "description": "Failed transaction"
   },
   "evm_transaction_domain_blacklisted": {
-    "message": "This domain has been flagged for suspicious behavior",
+    "message": "Domain ini ditandai karena perilaku mencurigakan",
     "description": "Domain is blacklisted"
   },
   "evm_transaction_domain_fuzzy": {
-    "message": "This domain seems to be very similar to $1. Make sure that your are on the correct website",
+    "message": "Domain ini sangat mirip $1. Pastikan Anda di situs yang benar",
     "description": "Domain is blacklisted"
   },
   "evm_transaction_domain_phishing": {
-    "message": "This website has been flagged as a potential phishing site",
+    "message": "Situs ini ditandai sebagai potensi phishing",
     "description": "Domain flagged by light-node security"
   },
   "evm_security_reason_blacklist_doubt": {
-    "message": "This address has been flagged for blacklist-related risk",
+    "message": "Alamat ini ditandai karena risiko blacklist",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_blackmail_activities": {
-    "message": "This address has been linked to blackmail activities",
+    "message": "Alamat ini terkait aktivitas pemerasan",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_cybercrime": {
-    "message": "This address has been linked to cybercrime",
+    "message": "Alamat ini terkait kejahatan siber",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_darkweb_transactions": {
-    "message": "This address has been linked to dark web transactions",
+    "message": "Alamat ini terkait transaksi dark web",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_fake_kyc": {
-    "message": "This address has been linked to fake KYC activity",
+    "message": "Alamat ini terkait aktivitas KYC palsu",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_fake_token": {
-    "message": "This address has been linked to fake token activity",
+    "message": "Alamat ini terkait token palsu",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_financial_crime": {
-    "message": "This address has been linked to financial crime",
+    "message": "Alamat ini terkait kejahatan keuangan",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_gas_abuse": {
-    "message": "This address has been linked to gas abuse",
+    "message": "Alamat ini terkait penyalahgunaan gas",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_honeypot_related_address": {
-    "message": "This address has been linked to honeypot-related activity",
+    "message": "Alamat ini terkait aktivitas honeypot",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_malicious_mining_activities": {
-    "message": "This address has been linked to malicious mining",
+    "message": "Alamat ini terkait penambangan berbahaya",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_mixer": {
-    "message": "This address has been linked to a mixer",
+    "message": "Alamat ini terkait mixer",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_money_laundering": {
-    "message": "This address has been linked to money laundering",
+    "message": "Alamat ini terkait pencucian uang",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_phishing_activities": {
-    "message": "This address has been linked to phishing activity",
+    "message": "Alamat ini terkait aktivitas phishing",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_grouped_address_risk": {
-    "message": "This address has been flagged for security risks",
+    "message": "Alamat ini ditandai karena risiko keamanan",
     "description": "Grouped light-node address security summary"
   },
   "evm_security_reason_grouped_domain_risk": {
-    "message": "This website has been flagged for security risks",
+    "message": "Situs ini ditandai karena risiko keamanan",
     "description": "Grouped light-node domain security summary"
   },
   "evm_security_warning_show_details": {
-    "message": "Show details",
+    "message": "Tampilkan detail",
     "description": "Expand grouped security warning reasons"
   },
   "evm_security_warning_hide_details": {
-    "message": "Hide details",
+    "message": "Sembunyikan detail",
     "description": "Collapse grouped security warning reasons"
   },
   "evm_security_reason_rug_pull": {
-    "message": "This is a deceptive request to a known rug-pull contract",
+    "message": "Permintaan menipu ke kontrak rug-pull yang dikenal",
     "description": "Light-node rug-pull summary when isRugPull is true"
   },
   "evm_security_reason_rug_pull_privilege_withdraw": {
-    "message": "This contract can withdraw your funds.",
+    "message": "Kontrak ini dapat menarik dana Anda.",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_rug_pull_withdraw_missing": {
-    "message": "This contract may let others deposit, but can prevent withdrawals.",
+    "message": "Orang lain bisa setor, tapi penarikan bisa diblokir.",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_rug_pull_blacklist": {
-    "message": "This contract can blacklist wallets and block selling or transfers.",
+    "message": "Kontrak ini dapat mem-blacklist wallet dan memblokir jual/transfer.",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_rug_pull_selfdestruct": {
-    "message": "This contract can self-destruct and break token functionality.",
+    "message": "Kontrak ini dapat self-destruct dan merusak fungsi token.",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_rug_pull_approval_abuse": {
-    "message": "This contract can abuse token approvals to move your funds.",
+    "message": "Kontrak ini dapat menyalahgunakan approval untuk memindahkan dana.",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_reinit": {
-    "message": "This address has been flagged for suspicious reinitialization behavior",
+    "message": "Alamat ini ditandai karena inisialisasi ulang yang mencurigakan",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_sanctioned": {
-    "message": "This address appears on sanctions lists",
+    "message": "Alamat ini ada di daftar sanksi",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_stealing_attack": {
-    "message": "This address has been linked to stealing attacks",
+    "message": "Alamat ini terkait serangan pencurian",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_scamsniffer_blacklist": {
-    "message": "This has been flagged by the ScamSniffer blacklist",
+    "message": "Ini ditandai oleh blacklist ScamSniffer",
     "description": "Light-node security reason"
   },
   "evm_security_reason_phishing_site": {
-    "message": "This website has been flagged as a phishing site",
+    "message": "Situs ini ditandai sebagai situs phishing",
     "description": "Light-node domain security reason"
   },
   "evm_security_reason_address_risk": {
-    "message": "This website has been flagged for address risk: $1",
+    "message": "Situs ini ditandai karena risiko alamat: $1",
     "description": "Light-node domain security reason with dynamic risk value"
   },
   "evm_security_reason_nft_risk": {
-    "message": "This website has been flagged for NFT risk: $1",
+    "message": "Situs ini ditandai karena risiko NFT: $1",
     "description": "Light-node domain security reason with dynamic NFT risk key"
   },
   "evm_security_reason_unknown": {
-    "message": "A security risk was detected: $1",
+    "message": "Risiko keamanan terdeteksi: $1",
     "description": "Fallback light-node security reason"
   },
   "evm_transaction_receiver_blacklisted": {
-    "message": "This address has been flagged for suspicious behavior",
+    "message": "Alamat ini ditandai karena perilaku mencurigakan",
     "description": "Receiver is blacklisted"
   },
   "evm_transaction_receiver_malicious": {
-    "message": "This address has been flagged as malicious",
+    "message": "Alamat ini ditandai sebagai berbahaya",
     "description": "Receiver flagged by light-node address security"
   },
   "evm_transaction_warning_high_level_bypass_message": {
-    "message": "I know what I'm doing",
+    "message": "Saya tahu risikonya",
     "description": "Checkbox message to bypass warning"
   },
   "evm_transaction_receiver_not_whitelisted": {
-    "message": "This address hasn't been whitelisted in Keychain",
+    "message": "Alamat ini belum di-whitelist di Keychain",
     "description": "Checkbox message to bypass warning"
   },
   "evm_transaction_receiver_favorite_label": {
-    "message": "Nickname",
+    "message": "Nama panggilan",
     "description": "Nickname for address"
   },
   "evm_transaction_receiver_potential_spoofing_whitelisted": {
-    "message": "This address looks similar to your whitelisted address $1 and could be an attempt of address poisoning. Please check that this address is correct.",
+    "message": "Alamat ini mirip alamat whitelist $1 dan bisa jadi address poisoning. Periksa alamatnya.",
     "description": "potential spoofing warning"
   },
   "evm_transaction_receiver_potential_spoofing_local_accounts": {
-    "message": "This address looks similar to your address $1 and could be an attempt of address poisoning. Please check that this address is correct.",
+    "message": "Alamat ini mirip alamat Anda $1 dan bisa jadi address poisoning. Periksa alamatnya.",
     "description": "potential spoofing warning"
   },
   "evm_transaction_contract_use_proxy": {
-    "message": "This contract is a proxy",
+    "message": "Kontrak ini adalah proxy",
     "description": "Smart contract uses a proxy"
   },
   "evm_transaction_contract_already_used": {
-    "message": "You whitelisted this smart contract",
+    "message": "Anda sudah me-whitelist smart contract ini",
     "description": "Already used"
   },
   "evm_transaction_contract_not_used": {
-    "message": "You haven't whitelisted this smart contract yet",
+    "message": "Smart contract ini belum di-whitelist",
     "description": "Not used yet"
   },
   "evm_transaction_contract_honeypot": {
-    "message": "This token has been flagged as a potential honeypot",
+    "message": "Token ini ditandai sebagai potensi honeypot",
     "description": "Token honeypot warning from GoPlus"
   },
   "evm_transaction_contract_cannot_sell": {
-    "message": "This token may not be sellable",
+    "message": "Token ini mungkin tidak dapat dijual",
     "description": "Token cannot sell all warning from GoPlus"
   },
   "evm_transaction_contract_high_tax": {
-    "message": "This token has high buy or sell tax",
+    "message": "Token ini punya pajak beli atau jual yang tinggi",
     "description": "Token high tax warning from GoPlus"
   },
   "evm_transaction_contract_rug_pull": {
-    "message": "This contract has been flagged for potential rug-pull risk",
+    "message": "Kontrak ini ditandai karena risiko rug-pull",
     "description": "Rug pull warning from GoPlus"
   },
   "evm_transaction_nft_restricted_approval": {
-    "message": "This NFT collection has restricted approval risks",
+    "message": "Koleksi NFT ini punya risiko approval terbatas",
     "description": "NFT restricted approval warning from GoPlus"
   },
   "evm_transaction_nft_transfer_without_approval": {
-    "message": "This NFT collection may allow transfers without approval",
+    "message": "Koleksi NFT ini mungkin izinkan transfer tanpa approval",
     "description": "NFT transfer without approval warning from GoPlus"
   },
   "evm_domain_never_visited": {
-    "message": "We detected that this is the first time you visit this domain",
+    "message": "Ini tampaknya kunjungan pertama Anda ke domain ini",
     "description": "Domain never visited warning message"
   },
   "evm_sign_typed_data_message": {
@@ -6223,23 +6223,23 @@
     "description": "Evm warning"
   },
   "evm_warning_possible_duplicated_transaction_title": {
-    "message": "Possible duplicate",
+    "message": "Kemungkinan duplikat",
     "description": "Possible duplicated malicious transaction title"
   },
   "evm_warning_possible_duplicated_transaction": {
-    "message": "This transaction is similar to a similar transaction you processed. This could be a malicious transaction.",
+    "message": "Transaksi ini mirip dengan yang sudah Anda proses. Bisa jadi berbahaya.",
     "description": "Possible duplicated malicious transaction"
   },
   "evm_warning_possible_duplicated_transaction_sent_at": {
-    "message": "Sent on $1",
+    "message": "Dikirim pada $1",
     "description": "Possible duplicated malicious transaction sent on"
   },
   "evm_warning_eip7702_title": {
-    "message": "This action can give another contract control over your wallet",
+    "message": "Tindakan ini dapat memberi kontrak lain kendali atas wallet Anda",
     "description": "EIP-7702 warning title"
   },
   "evm_warning_eip7702_message": {
-    "message": "This action can give another contract control over your wallet. Review with extreme caution as this could lead to a loss of funds.",
+    "message": "Tindakan ini dapat memberi kontrak lain kendali atas wallet Anda. Hati-hati, dana bisa hilang.",
     "description": "EIP-7702 warning message"
   },
   "evm_too_many_transaction_button": {
@@ -6983,15 +6983,15 @@
     "description": "No nft"
   },
   "evm_tx_completed_notification_message": {
-    "message": "Tx #$1 was completed",
+    "message": "Tx #$1 selesai",
     "description": "Transaction completed message"
   },
   "evm_tx_failed_notification_message": {
-    "message": "Tx #$1 has failed. For more details, click here.",
+    "message": "Tx #$1 gagal. Ketuk di sini untuk detail.",
     "description": "Transaction completed message"
   },
   "evm_tx_completed_notification_title": {
-    "message": "Transaction completed",
+    "message": "Transaksi selesai",
     "description": "Transaction completed title"
   },
   "evm_incoming_transaction_notification_title": {
@@ -6999,7 +6999,7 @@
     "description": "Incoming EVM transaction notification title"
   },
   "evm_tx_failed_notification_title": {
-    "message": "Transaction failed",
+    "message": "Transaksi gagal",
     "description": "Transaction completed title"
   },
   "evm_wallets": {
@@ -7059,19 +7059,19 @@
     "description": "Unknown duration"
   },
   "evm_gas_fee_warning_not_available": {
-    "message": "The gas fee estimation is currently unavailable",
+    "message": "Estimasi biaya gas saat ini tidak tersedia",
     "description": "Gas fee estimation not available"
   },
   "evm_gas_fee_warning_not_available_for_chain": {
-    "message": "The gas fee estimation is unavailable for this chain",
+    "message": "Estimasi biaya gas tidak tersedia untuk chain ini",
     "description": "Gas fee estimation not available for chain"
   },
   "evm_gas_fee_warning_transaction_will_revert": {
-    "message": "This transaction will revert",
+    "message": "Transaksi ini akan revert",
     "description": "Gas fee warning shown when transaction simulation reverts"
   },
   "evm_transaction_broadcasted": {
-    "message": "Transaction was broadcasted. Please wait for it to be confirmed.",
+    "message": "Transaksi disiarkan. Tunggu konfirmasi.",
     "description": "Transaction broadcasted message"
   },
   "evm_collection_name": {
@@ -7079,11 +7079,11 @@
     "description": "Collection name"
   },
   "evm_gas_fee_warning_priority_fee_higher_than_max_fee": {
-    "message": "Max fee must be higher than priority fee",
+    "message": "Max fee harus lebih tinggi dari priority fee",
     "description": "Priority fee is higher than max fee"
   },
   "evm_gas_fee_warning_gas_price_below_minimum": {
-    "message": "Gas price is below the minimum for this chain",
+    "message": "Harga gas di bawah minimum chain ini",
     "description": "Legacy gas price is below the configured chain minimum"
   },
   "evm_gas_fee_warning_updated_after_insufficient_price": {
@@ -7091,11 +7091,11 @@
     "description": "Recoverable warning shown after custom-chain legacy gas price is rejected by RPC"
   },
   "evm_transaction_result_error_message_underpriced": {
-    "message": "Fee is too low, please increase it",
+    "message": "Biaya terlalu rendah, naikkan",
     "description": "Transaction result error message underpriced"
   },
   "evm_transaction_result_unknown_error": {
-    "message": "An unknown error occurred",
+    "message": "Terjadi kesalahan yang tidak diketahui",
     "description": "Transaction result unknown error"
   },
   "evm_history_canceled_transaction": {
@@ -7107,11 +7107,11 @@
     "description": "EVM history message for CANCELED_OP operations"
   },
   "evm_transaction_result_error_message_nonce_expired": {
-    "message": "Nonce expired, please try again",
+    "message": "Nonce kedaluwarsa, coba lagi",
     "description": "Transaction result error message nonce expired"
   },
   "evm_transaction_not_canceled_error": {
-    "message": "The transaction couldn't be canceled",
+    "message": "Transaksi tidak dapat dibatalkan",
     "description": "Transaction couldn't be canceled error message"
   },
   "evm_rpcs_not_responding_error": {
@@ -7462,7 +7462,7 @@
     "description": "Discover tokens"
   },
   "evm_pending_queued_transactions": {
-    "message": "You have 1 pending transaction and $1 queued transactions",
+    "message": "Ada 1 transaksi tertunda dan $1 dalam antrean",
     "description": "Pending and queued transactions"
   },
   "evm_one_pending_transaction": {
@@ -7474,15 +7474,15 @@
     "description": "Unknown pending transaction"
   },
   "evm_pending_transaction": {
-    "message": "Pending transaction",
+    "message": "Transaksi tertunda",
     "description": "Pending transaction"
   },
   "evm_pending_transaction_warning": {
-    "message": "You have a pending transaction. No new transaction will be confirmed until the pending one is completed.",
+    "message": "Ada transaksi tertunda. Transaksi baru tidak dikonfirmasi sebelum yang tertunda selesai.",
     "description": "Pending transaction warning"
   },
   "evm_gas_fee_warning_gas_limit_too_low": {
-    "message": "Gas limit is too low. Should be at least 21000",
+    "message": "Gas limit terlalu rendah. Minimal 21000",
     "description": "Gas limit is too low"
   },
   "evm_nonce": {
@@ -7490,19 +7490,19 @@
     "description": "Nonce"
   },
   "evm_cancel_transaction": {
-    "message": "Cancel transaction",
+    "message": "Batalkan transaksi",
     "description": "Cancel transaction"
   },
   "evm_canceled_transaction": {
-    "message": "Canceled transaction",
+    "message": "Transaksi dibatalkan",
     "description": "Canceled transaction"
   },
   "evm_cancel_transaction_error": {
-    "message": "Error during cancel transaction",
+    "message": "Gagal membatalkan transaksi",
     "description": "Error during cancel transaction"
   },
   "evm_cancel_transaction_confirm_message": {
-    "message": "You are about to cancel an unknown pending transaction.",
+    "message": "Anda akan membatalkan transaksi tertunda yang tidak dikenal.",
     "description": "Error during cancel transaction"
   },
   "insufficient_balance_warning": {

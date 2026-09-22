@@ -5731,27 +5731,27 @@
     "description": "Accessible label for disconnecting an account from the current dApp"
   },
   "dialog_evm_dapp_status_caption": {
-    "message": "Select which accounts you want to connect to $1. It will give it permission to see your address, account balance and activity, and to suggest transactions to approve.",
+    "message": "Elige las cuentas que quieres conectar a $1. Así podrá ver tu dirección, saldo y actividad, y sugerir transacciones.",
     "description": "Evm dapp status"
   },
   "dialog_evm_sign_request": {
-    "message": "Signature request",
+    "message": "Solicitud de firma",
     "description": "Evm Signature request dialog title"
   },
   "dialog_evm_sign_request_message": {
-    "message": "Message",
+    "message": "Mensaje",
     "description": "Evm Signature request dialog title"
   },
   "dialog_evm_sign_request_interacting_with": {
-    "message": "Interacting with",
+    "message": "Interactuando con",
     "description": "Evm Signature request interacting with"
   },
   "dialog_evm_sign_request_primary_type": {
-    "message": "Primary type",
+    "message": "Tipo principal",
     "description": "Evm Signature request interacting with"
   },
   "dialog_evm_domain": {
-    "message": "Domain",
+    "message": "Dominio",
     "description": "Evm domain"
   },
   "dialog_from": {
@@ -5763,19 +5763,19 @@
     "description": "Signature request caption message"
   },
   "dialog_evm_sign_request_success": {
-    "message": "Your message was successfully signed",
+    "message": "Tu mensaje se firmó correctamente",
     "description": "Signature request success message"
   },
   "dialog_evm_unsupported_method": {
-    "message": "The method `$1` is not supported by Keychain",
+    "message": "Keychain no admite el método `$1`",
     "description": "Evm deprecated/unsupported error message"
   },
   "dialog_evm_non_existing_method": {
-    "message": "The method `$1` doesn't exist",
+    "message": "El método `$1` no existe",
     "description": "Evm non existing error message"
   },
   "dialog_evm_not_authorized_method": {
-    "message": "The method `$1` doesn't have authorization",
+    "message": "El método `$1` no tiene autorización",
     "description": "Evm non existing error message"
   },
   "dialog_evm_user_rejected_method": {
@@ -5783,31 +5783,31 @@
     "description": "Evm deprecated/unsupported error message"
   },
   "dialog_evm_get_encryption_key": {
-    "message": "$1 is trying to access your encryption key. Do you accept to share it ?",
+    "message": "$1 quiere acceder a tu clave de cifrado. ¿Aceptas compartirla?",
     "description": "Evm get encryption key message"
   },
   "dialog_evm_get_encryption_key_success": {
-    "message": "Successfully shared encryption key",
+    "message": "Clave de cifrado compartida",
     "description": "Evm get encryption key success"
   },
   "dialog_evm_decrypt_message_success": {
-    "message": "Successfully decrypted message",
+    "message": "Mensaje descifrado correctamente",
     "description": "Evm decrypt message success"
   },
   "dialog_evm_decrypt_message_caption": {
-    "message": "$1 is trying to decrypt a message.",
+    "message": "$1 está intentando descifrar un mensaje.",
     "description": "Evm decrypt message caption"
   },
   "dialog_evm_decrypt_message_title": {
-    "message": "Decrypt message",
+    "message": "Descifrar mensaje",
     "description": "Evm decrypt message title"
   },
   "dialog_evm_decrypt_show_message": {
-    "message": "Show message",
+    "message": "Mostrar mensaje",
     "description": "Evm decrypt message show button"
   },
   "dialog_evm_decrypt_send_transaction_title": {
-    "message": "Send transaction",
+    "message": "Enviar transacción",
     "description": "Evm send transaction title"
   },
   "popup_html_transaction_metadata": {
@@ -5827,15 +5827,15 @@
     "description": "Error message if otp has been used already"
   },
   "dialog_evm_decrypt_request_permission_title": {
-    "message": "Request permission",
+    "message": "Solicitar permiso",
     "description": "Request permission dialog title"
   },
   "dialog_evm_get_encryption_key_title": {
-    "message": "Request encryption key",
+    "message": "Solicitar clave de cifrado",
     "description": "Request encryption key dialog title"
   },
   "dialog_evm_sign_data_title": {
-    "message": "Request sign data",
+    "message": "Solicitar firma de datos",
     "description": "Request sign typed data dialog title"
   },
   "evm_operation_transfer": {
@@ -5891,55 +5891,55 @@
     "description": "Balance after transaction"
   },
   "evm_transaction_transaction_has_warning": {
-    "message": "This transaction still has untreated warnings. Please resolve them all before proceeding",
+    "message": "Esta transacción aún tiene avisos sin resolver. Resuélvelos antes de continuar",
     "description": "Potential scam warning message"
   },
   "evm_transaction_warning_possible_scam": {
-    "message": "This address is listed as a potential scam",
+    "message": "Esta dirección figura como posible estafa",
     "description": "Potential scam warning message"
   },
   "evm_send_transaction_ignore_warning": {
-    "message": "Proceed anyway",
+    "message": "Continuar de todos modos",
     "description": "Acknowledge warning and continue"
   },
   "evm_risk_banner_message": {
-    "message": "$1 security issue(s) — highest risk: $2. Tap to review before confirming.",
+    "message": "$1 problema(s) de seguridad — riesgo máximo: $2. Toca para revisar.",
     "description": "Clickable risk banner on EVM confirmation pages"
   },
   "evm_risk_severity_high": {
-    "message": "Critical",
+    "message": "Crítico",
     "description": "High severity warning label"
   },
   "evm_risk_severity_medium": {
-    "message": "Warning",
+    "message": "Advertencia",
     "description": "Medium severity warning label"
   },
   "evm_risk_severity_low": {
-    "message": "Notice",
+    "message": "Aviso",
     "description": "Low severity warning label"
   },
   "evm_risk_banner_review": {
-    "message": "Review warnings",
+    "message": "Revisar avisos",
     "description": "CTA on the risk alert banner"
   },
   "evm_risk_modal_title_high": {
-    "message": "Critical security issue(s)",
+    "message": "Problema(s) de seguridad crítico(s)",
     "description": "Title for high severity warning modal"
   },
   "evm_risk_modal_title_medium": {
-    "message": "Security warning",
+    "message": "Aviso de seguridad",
     "description": "Title for medium severity warning modal"
   },
   "evm_risk_modal_title_low": {
-    "message": "Security notice",
+    "message": "Aviso de seguridad",
     "description": "Title for low severity warning modal"
   },
   "evm_risk_warning_reviewed": {
-    "message": "Reviewed",
+    "message": "Revisado",
     "description": "Label shown when a warning was acknowledged"
   },
   "evm_protocol_not_secured": {
-    "message": "This website is not using a safe connection",
+    "message": "Este sitio no usa una conexión segura",
     "description": "Connection not secured"
   },
   "evm_operation_contract_deployment_transaction": {
@@ -5955,219 +5955,219 @@
     "description": "Smart contract data field"
   },
   "evm_transaction_data": {
-    "message": "Data",
+    "message": "Datos",
     "description": "Data field"
   },
   "evm_send_transaction_success": {
-    "message": "The transaction has been broadcasted successfully",
+    "message": "La transacción se envió correctamente",
     "description": "SuccesFully sent evm transaction"
   },
   "evm_send_transaction_failed": {
-    "message": "Transaction failed during broadcast",
+    "message": "Error al transmitir la transacción",
     "description": "Failed transaction"
   },
   "evm_transaction_domain_blacklisted": {
-    "message": "This domain has been flagged for suspicious behavior",
+    "message": "Este dominio está marcado por comportamiento sospechoso",
     "description": "Domain is blacklisted"
   },
   "evm_transaction_domain_fuzzy": {
-    "message": "This domain seems to be very similar to $1. Make sure that your are on the correct website",
+    "message": "Este dominio se parece mucho a $1. Asegúrate de estar en el sitio correcto",
     "description": "Domain is blacklisted"
   },
   "evm_transaction_domain_phishing": {
-    "message": "This website has been flagged as a potential phishing site",
+    "message": "Este sitio está marcado como posible phishing",
     "description": "Domain flagged by light-node security"
   },
   "evm_security_reason_blacklist_doubt": {
-    "message": "This address has been flagged for blacklist-related risk",
+    "message": "Esta dirección está marcada por riesgo de lista negra",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_blackmail_activities": {
-    "message": "This address has been linked to blackmail activities",
+    "message": "Esta dirección se ha vinculado a chantaje",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_cybercrime": {
-    "message": "This address has been linked to cybercrime",
+    "message": "Esta dirección se ha vinculado a ciberdelitos",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_darkweb_transactions": {
-    "message": "This address has been linked to dark web transactions",
+    "message": "Esta dirección se ha vinculado a transacciones en la dark web",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_fake_kyc": {
-    "message": "This address has been linked to fake KYC activity",
+    "message": "Esta dirección se ha vinculado a KYC falso",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_fake_token": {
-    "message": "This address has been linked to fake token activity",
+    "message": "Esta dirección se ha vinculado a tokens falsos",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_financial_crime": {
-    "message": "This address has been linked to financial crime",
+    "message": "Esta dirección se ha vinculado a delitos financieros",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_gas_abuse": {
-    "message": "This address has been linked to gas abuse",
+    "message": "Esta dirección se ha vinculado a abuso de gas",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_honeypot_related_address": {
-    "message": "This address has been linked to honeypot-related activity",
+    "message": "Esta dirección se ha vinculado a actividad de honeypot",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_malicious_mining_activities": {
-    "message": "This address has been linked to malicious mining",
+    "message": "Esta dirección se ha vinculado a minería maliciosa",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_mixer": {
-    "message": "This address has been linked to a mixer",
+    "message": "Esta dirección se ha vinculado a un mixer",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_money_laundering": {
-    "message": "This address has been linked to money laundering",
+    "message": "Esta dirección se ha vinculado a blanqueo de capitales",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_phishing_activities": {
-    "message": "This address has been linked to phishing activity",
+    "message": "Esta dirección se ha vinculado a phishing",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_grouped_address_risk": {
-    "message": "This address has been flagged for security risks",
+    "message": "Esta dirección está marcada por riesgos de seguridad",
     "description": "Grouped light-node address security summary"
   },
   "evm_security_reason_grouped_domain_risk": {
-    "message": "This website has been flagged for security risks",
+    "message": "Este sitio está marcado por riesgos de seguridad",
     "description": "Grouped light-node domain security summary"
   },
   "evm_security_warning_show_details": {
-    "message": "Show details",
+    "message": "Mostrar detalles",
     "description": "Expand grouped security warning reasons"
   },
   "evm_security_warning_hide_details": {
-    "message": "Hide details",
+    "message": "Ocultar detalles",
     "description": "Collapse grouped security warning reasons"
   },
   "evm_security_reason_rug_pull": {
-    "message": "This is a deceptive request to a known rug-pull contract",
+    "message": "Petición engañosa a un contrato de rug-pull conocido",
     "description": "Light-node rug-pull summary when isRugPull is true"
   },
   "evm_security_reason_rug_pull_privilege_withdraw": {
-    "message": "This contract can withdraw your funds.",
+    "message": "Este contrato puede retirar tus fondos.",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_rug_pull_withdraw_missing": {
-    "message": "This contract may let others deposit, but can prevent withdrawals.",
+    "message": "Puede permitir depósitos, pero bloquear retiros.",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_rug_pull_blacklist": {
-    "message": "This contract can blacklist wallets and block selling or transfers.",
+    "message": "Este contrato puede poner wallets en lista negra y bloquear ventas o envíos.",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_rug_pull_selfdestruct": {
-    "message": "This contract can self-destruct and break token functionality.",
+    "message": "Este contrato puede autodestruirse y romper el token.",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_rug_pull_approval_abuse": {
-    "message": "This contract can abuse token approvals to move your funds.",
+    "message": "Este contrato puede abusar de approvals para mover tus fondos.",
     "description": "Light-node GoPlus rug-pull reason"
   },
   "evm_security_reason_reinit": {
-    "message": "This address has been flagged for suspicious reinitialization behavior",
+    "message": "Esta dirección está marcada por reinicialización sospechosa",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_sanctioned": {
-    "message": "This address appears on sanctions lists",
+    "message": "Esta dirección aparece en listas de sanciones",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_stealing_attack": {
-    "message": "This address has been linked to stealing attacks",
+    "message": "Esta dirección se ha vinculado a ataques de robo",
     "description": "Light-node address security reason"
   },
   "evm_security_reason_scamsniffer_blacklist": {
-    "message": "This has been flagged by the ScamSniffer blacklist",
+    "message": "Esto está marcado por la lista negra de ScamSniffer",
     "description": "Light-node security reason"
   },
   "evm_security_reason_phishing_site": {
-    "message": "This website has been flagged as a phishing site",
+    "message": "Este sitio está marcado como sitio de phishing",
     "description": "Light-node domain security reason"
   },
   "evm_security_reason_address_risk": {
-    "message": "This website has been flagged for address risk: $1",
+    "message": "Este sitio está marcado por riesgo de dirección: $1",
     "description": "Light-node domain security reason with dynamic risk value"
   },
   "evm_security_reason_nft_risk": {
-    "message": "This website has been flagged for NFT risk: $1",
+    "message": "Este sitio está marcado por riesgo de NFT: $1",
     "description": "Light-node domain security reason with dynamic NFT risk key"
   },
   "evm_security_reason_unknown": {
-    "message": "A security risk was detected: $1",
+    "message": "Se detectó un riesgo de seguridad: $1",
     "description": "Fallback light-node security reason"
   },
   "evm_transaction_receiver_blacklisted": {
-    "message": "This address has been flagged for suspicious behavior",
+    "message": "Esta dirección está marcada por comportamiento sospechoso",
     "description": "Receiver is blacklisted"
   },
   "evm_transaction_receiver_malicious": {
-    "message": "This address has been flagged as malicious",
+    "message": "Esta dirección está marcada como maliciosa",
     "description": "Receiver flagged by light-node address security"
   },
   "evm_transaction_warning_high_level_bypass_message": {
-    "message": "I know what I'm doing",
+    "message": "Sé lo que estoy haciendo",
     "description": "Checkbox message to bypass warning"
   },
   "evm_transaction_receiver_not_whitelisted": {
-    "message": "This address hasn't been whitelisted in Keychain",
+    "message": "Esta dirección no está en la lista blanca de Keychain",
     "description": "Checkbox message to bypass warning"
   },
   "evm_transaction_receiver_favorite_label": {
-    "message": "Nickname",
+    "message": "Apodo",
     "description": "Nickname for address"
   },
   "evm_transaction_receiver_potential_spoofing_whitelisted": {
-    "message": "This address looks similar to your whitelisted address $1 and could be an attempt of address poisoning. Please check that this address is correct.",
+    "message": "Esta dirección se parece a tu dirección de lista blanca $1 (posible envenenamiento). Comprueba que sea correcta.",
     "description": "potential spoofing warning"
   },
   "evm_transaction_receiver_potential_spoofing_local_accounts": {
-    "message": "This address looks similar to your address $1 and could be an attempt of address poisoning. Please check that this address is correct.",
+    "message": "Esta dirección se parece a tu dirección $1 (posible envenenamiento). Comprueba que sea correcta.",
     "description": "potential spoofing warning"
   },
   "evm_transaction_contract_use_proxy": {
-    "message": "This contract is a proxy",
+    "message": "Este contrato es un proxy",
     "description": "Smart contract uses a proxy"
   },
   "evm_transaction_contract_already_used": {
-    "message": "You whitelisted this smart contract",
+    "message": "Has puesto este smart contract en la lista blanca",
     "description": "Already used"
   },
   "evm_transaction_contract_not_used": {
-    "message": "You haven't whitelisted this smart contract yet",
+    "message": "Aún no has puesto este smart contract en la lista blanca",
     "description": "Not used yet"
   },
   "evm_transaction_contract_honeypot": {
-    "message": "This token has been flagged as a potential honeypot",
+    "message": "Este token está marcado como posible honeypot",
     "description": "Token honeypot warning from GoPlus"
   },
   "evm_transaction_contract_cannot_sell": {
-    "message": "This token may not be sellable",
+    "message": "Es posible que este token no se pueda vender",
     "description": "Token cannot sell all warning from GoPlus"
   },
   "evm_transaction_contract_high_tax": {
-    "message": "This token has high buy or sell tax",
+    "message": "Este token tiene un impuesto alto de compra o venta",
     "description": "Token high tax warning from GoPlus"
   },
   "evm_transaction_contract_rug_pull": {
-    "message": "This contract has been flagged for potential rug-pull risk",
+    "message": "Este contrato está marcado por posible riesgo de rug-pull",
     "description": "Rug pull warning from GoPlus"
   },
   "evm_transaction_nft_restricted_approval": {
-    "message": "This NFT collection has restricted approval risks",
+    "message": "Esta colección NFT tiene riesgos de approval restringido",
     "description": "NFT restricted approval warning from GoPlus"
   },
   "evm_transaction_nft_transfer_without_approval": {
-    "message": "This NFT collection may allow transfers without approval",
+    "message": "Esta colección NFT puede permitir envíos sin approval",
     "description": "NFT transfer without approval warning from GoPlus"
   },
   "evm_domain_never_visited": {
-    "message": "We detected that this is the first time you visit this domain",
+    "message": "Detectamos que es la primera vez que visitas este dominio",
     "description": "Domain never visited warning message"
   },
   "evm_sign_typed_data_message": {
@@ -6223,23 +6223,23 @@
     "description": "Evm warning"
   },
   "evm_warning_possible_duplicated_transaction_title": {
-    "message": "Possible duplicate",
+    "message": "Posible duplicado",
     "description": "Possible duplicated malicious transaction title"
   },
   "evm_warning_possible_duplicated_transaction": {
-    "message": "This transaction is similar to a similar transaction you processed. This could be a malicious transaction.",
+    "message": "Esta transacción se parece a otra que ya procesaste. Podría ser maliciosa.",
     "description": "Possible duplicated malicious transaction"
   },
   "evm_warning_possible_duplicated_transaction_sent_at": {
-    "message": "Sent on $1",
+    "message": "Enviado el $1",
     "description": "Possible duplicated malicious transaction sent on"
   },
   "evm_warning_eip7702_title": {
-    "message": "This action can give another contract control over your wallet",
+    "message": "Esta acción puede dar a otro contrato control sobre tu cartera",
     "description": "EIP-7702 warning title"
   },
   "evm_warning_eip7702_message": {
-    "message": "This action can give another contract control over your wallet. Review with extreme caution as this could lead to a loss of funds.",
+    "message": "Esta acción puede dar a otro contrato control sobre tu cartera. Revisa con mucho cuidado: podrías perder fondos.",
     "description": "EIP-7702 warning message"
   },
   "evm_too_many_transaction_button": {
@@ -6983,15 +6983,15 @@
     "description": "No nft"
   },
   "evm_tx_completed_notification_message": {
-    "message": "Tx #$1 was completed",
+    "message": "Tx #$1 se completó",
     "description": "Transaction completed message"
   },
   "evm_tx_failed_notification_message": {
-    "message": "Tx #$1 has failed. For more details, click here.",
+    "message": "Tx #$1 ha fallado. Toca aquí para más detalles.",
     "description": "Transaction completed message"
   },
   "evm_tx_completed_notification_title": {
-    "message": "Transaction completed",
+    "message": "Transacción completada",
     "description": "Transaction completed title"
   },
   "evm_incoming_transaction_notification_title": {
@@ -6999,7 +6999,7 @@
     "description": "Incoming EVM transaction notification title"
   },
   "evm_tx_failed_notification_title": {
-    "message": "Transaction failed",
+    "message": "Transacción fallida",
     "description": "Transaction completed title"
   },
   "evm_wallets": {
@@ -7059,19 +7059,19 @@
     "description": "Unknown duration"
   },
   "evm_gas_fee_warning_not_available": {
-    "message": "The gas fee estimation is currently unavailable",
+    "message": "La estimación de gas no está disponible ahora",
     "description": "Gas fee estimation not available"
   },
   "evm_gas_fee_warning_not_available_for_chain": {
-    "message": "The gas fee estimation is unavailable for this chain",
+    "message": "La estimación de gas no está disponible para esta cadena",
     "description": "Gas fee estimation not available for chain"
   },
   "evm_gas_fee_warning_transaction_will_revert": {
-    "message": "This transaction will revert",
+    "message": "Esta transacción se revertirá",
     "description": "Gas fee warning shown when transaction simulation reverts"
   },
   "evm_transaction_broadcasted": {
-    "message": "Transaction was broadcasted. Please wait for it to be confirmed.",
+    "message": "Transacción enviada. Espera a que se confirme.",
     "description": "Transaction broadcasted message"
   },
   "evm_collection_name": {
@@ -7079,11 +7079,11 @@
     "description": "Collection name"
   },
   "evm_gas_fee_warning_priority_fee_higher_than_max_fee": {
-    "message": "Max fee must be higher than priority fee",
+    "message": "La tarifa máxima debe ser mayor que la de prioridad",
     "description": "Priority fee is higher than max fee"
   },
   "evm_gas_fee_warning_gas_price_below_minimum": {
-    "message": "Gas price is below the minimum for this chain",
+    "message": "El precio de gas está por debajo del mínimo de esta cadena",
     "description": "Legacy gas price is below the configured chain minimum"
   },
   "evm_gas_fee_warning_updated_after_insufficient_price": {
@@ -7091,11 +7091,11 @@
     "description": "Recoverable warning shown after custom-chain legacy gas price is rejected by RPC"
   },
   "evm_transaction_result_error_message_underpriced": {
-    "message": "Fee is too low, please increase it",
+    "message": "La tarifa es demasiado baja, auméntala",
     "description": "Transaction result error message underpriced"
   },
   "evm_transaction_result_unknown_error": {
-    "message": "An unknown error occurred",
+    "message": "Ocurrió un error desconocido",
     "description": "Transaction result unknown error"
   },
   "evm_history_canceled_transaction": {
@@ -7107,11 +7107,11 @@
     "description": "EVM history message for CANCELED_OP operations"
   },
   "evm_transaction_result_error_message_nonce_expired": {
-    "message": "Nonce expired, please try again",
+    "message": "Nonce caducado, inténtalo de nuevo",
     "description": "Transaction result error message nonce expired"
   },
   "evm_transaction_not_canceled_error": {
-    "message": "The transaction couldn't be canceled",
+    "message": "No se pudo cancelar la transacción",
     "description": "Transaction couldn't be canceled error message"
   },
   "evm_rpcs_not_responding_error": {
@@ -7462,7 +7462,7 @@
     "description": "Discover tokens"
   },
   "evm_pending_queued_transactions": {
-    "message": "You have 1 pending transaction and $1 queued transactions",
+    "message": "Tienes 1 transacción pendiente y $1 en cola",
     "description": "Pending and queued transactions"
   },
   "evm_one_pending_transaction": {
@@ -7474,15 +7474,15 @@
     "description": "Unknown pending transaction"
   },
   "evm_pending_transaction": {
-    "message": "Pending transaction",
+    "message": "Transacción pendiente",
     "description": "Pending transaction"
   },
   "evm_pending_transaction_warning": {
-    "message": "You have a pending transaction. No new transaction will be confirmed until the pending one is completed.",
+    "message": "Tienes una transacción pendiente. No se confirmará ninguna nueva hasta que termine.",
     "description": "Pending transaction warning"
   },
   "evm_gas_fee_warning_gas_limit_too_low": {
-    "message": "Gas limit is too low. Should be at least 21000",
+    "message": "El límite de gas es demasiado bajo. Mínimo 21000",
     "description": "Gas limit is too low"
   },
   "evm_nonce": {
@@ -7490,19 +7490,19 @@
     "description": "Nonce"
   },
   "evm_cancel_transaction": {
-    "message": "Cancel transaction",
+    "message": "Cancelar transacción",
     "description": "Cancel transaction"
   },
   "evm_canceled_transaction": {
-    "message": "Canceled transaction",
+    "message": "Transacción cancelada",
     "description": "Canceled transaction"
   },
   "evm_cancel_transaction_error": {
-    "message": "Error during cancel transaction",
+    "message": "Error al cancelar la transacción",
     "description": "Error during cancel transaction"
   },
   "evm_cancel_transaction_confirm_message": {
-    "message": "You are about to cancel an unknown pending transaction.",
+    "message": "Vas a cancelar una transacción pendiente desconocida.",
     "description": "Error during cancel transaction"
   },
   "insufficient_balance_warning": {
