@@ -6967,7 +6967,7 @@
     "description": "Copy EVM seed menu item"
   },
   "evm_seeds_and_accounts": {
-    "message": "Phrases de récupération et comptes",
+    "message": "Seeds et comptes",
     "description": "sseds and account page"
   },
   "error_granularity": {
