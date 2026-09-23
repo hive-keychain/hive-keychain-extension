@@ -5535,11 +5535,11 @@
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_fee": {
-    "message": "Frais de Gas",
+    "message": "Frais de réseau",
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_fee_estimated": {
-    "message": "Frais de gas estimés",
+    "message": "Frais de réseau estimés",
     "description": "EVM transaction result pending fee label"
   },
   "popup_html_evm_gas_fee_estimate_duration": {
@@ -5551,7 +5551,7 @@
     "description": "Evm Gas max fee estimate label"
   },
   "popup_html_evm_edit_gas_fee": {
-    "message": "Modifier les frais de gas",
+    "message": "Modifier les frais de réseau",
     "description": "Evm edit Gas fee label"
   },
   "popup_html_evm_custom_gas_fee_increased": {
@@ -5615,7 +5615,7 @@
     "description": "Evm transfer"
   },
   "popup_html_evm_gas_fee_not_selected": {
-    "message": "Vous devez sélectionner les frais de gas avant de confirmer",
+    "message": "Vous devez sélectionner les frais de réseau avant de confirmer",
     "description": "Evm transfer"
   },
   "popup_html_evm_transfer_speed_up": {
@@ -5687,7 +5687,7 @@
     "description": "Evm transaction info"
   },
   "popup_html_evm_transaction_info_final_gas_fee": {
-    "message": "Frais de gas finaux",
+    "message": "Frais de réseau finaux",
     "description": "Evm transaction info"
   },
   "popup_html_evm_speed_up_transaction": {
@@ -5699,7 +5699,7 @@
     "description": "Evm transaction info"
   },
   "popup_html_evm_gas_fee_loading": {
-    "message": "Chargement des frais de gas…",
+    "message": "Chargement des frais de réseau…",
     "description": "Shown while cancel/speed-up fee options are estimated"
   },
   "popup_html_evm_transaction_fee": {
@@ -6243,7 +6243,7 @@
     "description": "Evm access list"
   },
   "evm_access_list_caption_message": {
-    "message": "Cette transaction utilise une liste d’accès. Vous ne pourrez pas choisir vos frais de gas car la liste d’accès essaiera d’optimiser le coût de la transaction",
+    "message": "Cette transaction utilise une liste d’accès. Vous ne pourrez pas choisir vos frais de réseau car la liste d’accès essaiera d’optimiser le coût de la transaction",
     "description": "Evm access list caption message"
   },
   "evm_ens_recipient_not_existing": {
@@ -7091,11 +7091,11 @@
     "description": "Unknown duration"
   },
   "evm_gas_fee_warning_not_available": {
-    "message": "L’estimation des frais de gas est actuellement indisponible",
+    "message": "L’estimation des frais de réseau est actuellement indisponible",
     "description": "Gas fee estimation not available"
   },
   "evm_gas_fee_warning_not_available_for_chain": {
-    "message": "L’estimation des frais de gas est indisponible pour cette chaîne",
+    "message": "L’estimation des frais de réseau est indisponible pour cette chaîne",
     "description": "Gas fee estimation not available for chain"
   },
   "evm_gas_fee_warning_transaction_will_revert": {
@@ -7119,7 +7119,7 @@
     "description": "Legacy gas price is below the configured chain minimum"
   },
   "evm_gas_fee_warning_updated_after_insufficient_price": {
-    "message": "Prix du gas insuffisant. Les frais de gas ont été mis à jour",
+    "message": "Prix du gas insuffisant. Les frais de réseau ont été mis à jour",
     "description": "Recoverable warning shown after custom-chain legacy gas price is rejected by RPC"
   },
   "evm_transaction_result_error_message_underpriced": {
@@ -7843,7 +7843,7 @@
     "description": "Accessible label for buttons that scroll to the top"
   },
   "evm_error_gas_estimate": {
-    "message": "L’estimation du gas a échoué. Vous devrez saisir des frais de gas personnalisés.",
+    "message": "L’estimation du gas a échoué. Vous devrez saisir des frais de réseau personnalisés.",
     "description": "Gas estimation failed. You will need to enter a custom gas fee."
   },
   "portfolio_payment_method_credit_debit_card": {

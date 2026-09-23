@@ -5535,11 +5535,11 @@
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_fee": {
-    "message": "Gas 费用",
+    "message": "网络费用",
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_fee_estimated": {
-    "message": "预计 Gas 费用",
+    "message": "预计网络费用",
     "description": "EVM transaction result pending fee label"
   },
   "popup_html_evm_gas_fee_estimate_duration": {
@@ -5551,7 +5551,7 @@
     "description": "Evm Gas max fee estimate label"
   },
   "popup_html_evm_edit_gas_fee": {
-    "message": "编辑 Gas 费用",
+    "message": "编辑网络费用",
     "description": "Evm edit Gas fee label"
   },
   "popup_html_evm_custom_gas_fee_increased": {
@@ -5615,7 +5615,7 @@
     "description": "Evm transfer"
   },
   "popup_html_evm_gas_fee_not_selected": {
-    "message": "您需要选择gas费用才可以确认",
+    "message": "您需要选择网络费用才可以确认",
     "description": "Evm transfer"
   },
   "popup_html_evm_transfer_speed_up": {
@@ -5687,7 +5687,7 @@
     "description": "Evm transaction info"
   },
   "popup_html_evm_transaction_info_final_gas_fee": {
-    "message": "最终 Gas 费用",
+    "message": "最终网络费用",
     "description": "Evm transaction info"
   },
   "popup_html_evm_speed_up_transaction": {
@@ -5699,7 +5699,7 @@
     "description": "Evm transaction info"
   },
   "popup_html_evm_gas_fee_loading": {
-    "message": "正在加载 Gas 费用…",
+    "message": "正在加载网络费用…",
     "description": "Shown while cancel/speed-up fee options are estimated"
   },
   "popup_html_evm_transaction_fee": {
@@ -6243,7 +6243,7 @@
     "description": "Evm access list"
   },
   "evm_access_list_caption_message": {
-    "message": "此交易使用 access list。由于 access list 会尝试优化交易成本，您无法自行选择 Gas 费用",
+    "message": "此交易使用 access list。由于 access list 会尝试优化交易成本，您无法自行选择网络费用",
     "description": "Evm access list caption message"
   },
   "evm_ens_recipient_not_existing": {
@@ -7091,11 +7091,11 @@
     "description": "Unknown duration"
   },
   "evm_gas_fee_warning_not_available": {
-    "message": "当前无法估算 gas 费用",
+    "message": "当前无法估算网络费用",
     "description": "Gas fee estimation not available"
   },
   "evm_gas_fee_warning_not_available_for_chain": {
-    "message": "此链无法估算 gas 费用",
+    "message": "此链无法估算网络费用",
     "description": "Gas fee estimation not available for chain"
   },
   "evm_gas_fee_warning_transaction_will_revert": {
@@ -7119,7 +7119,7 @@
     "description": "Legacy gas price is below the configured chain minimum"
   },
   "evm_gas_fee_warning_updated_after_insufficient_price": {
-    "message": "gas 价格不足。gas 费用已更新",
+    "message": "gas 价格不足。网络费用已更新",
     "description": "Recoverable warning shown after custom-chain legacy gas price is rejected by RPC"
   },
   "evm_transaction_result_error_message_underpriced": {
@@ -7843,7 +7843,7 @@
     "description": "Accessible label for buttons that scroll to the top"
   },
   "evm_error_gas_estimate": {
-    "message": "Gas 估算失败。您需要输入自定义 Gas 费用。",
+    "message": "Gas 估算失败。您需要输入自定义网络费用。",
     "description": "Gas estimation failed. You will need to enter a custom gas fee."
   },
   "portfolio_payment_method_credit_debit_card": {
