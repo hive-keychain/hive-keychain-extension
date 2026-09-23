@@ -5866,6 +5866,10 @@
     "message": "To",
     "description": "Evm transaction info"
   },
+  "popup_html_evm_transaction_info_date": {
+    "message": "Date",
+    "description": "Evm transaction info"
+  },
   "popup_html_evm_transaction_info_tx_hash": {
     "message": "Transaction hash",
     "description": "Evm transaction info"

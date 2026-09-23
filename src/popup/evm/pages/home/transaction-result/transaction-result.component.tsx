@@ -1001,8 +1001,7 @@ const EvmTransactionResult = ({
           )}
           {effectiveTimestamp && (
             <SmallDataCardComponent
-              label="Time"
-              skipLabelTranslation
+              label="popup_html_evm_transaction_info_date"
               value={moment(effectiveTimestamp).format(
                 'YYYY/MM/DD, hh:mm:ss a',
               )}

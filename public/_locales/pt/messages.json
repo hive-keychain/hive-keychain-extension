@@ -5648,6 +5648,10 @@
     "message": "Para",
     "description": "Evm transaction info"
   },
+  "popup_html_evm_transaction_info_date": {
+    "message": "Data",
+    "description": "Evm transaction info"
+  },
   "popup_html_evm_transaction_info_tx_hash": {
     "message": "Hash de transação",
     "description": "Evm transaction info"

@@ -5648,6 +5648,10 @@
     "message": "到",
     "description": "Evm transaction info"
   },
+  "popup_html_evm_transaction_info_date": {
+    "message": "日期",
+    "description": "Evm transaction info"
+  },
   "popup_html_evm_transaction_info_tx_hash": {
     "message": "交易哈希",
     "description": "Evm transaction info"
