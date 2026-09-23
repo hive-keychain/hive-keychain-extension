@@ -1296,7 +1296,7 @@
     "description": "When website requests a swap"
   },
   "dialog_to_amount": {
-    "message": "À",
+    "message": "Vers",
     "description": "When website requests a swap"
   },
   "dialog_approve": {
@@ -3714,7 +3714,7 @@
     "description": "On RC delegation confirmation page"
   },
   "popup_html_rc_delegation_to": {
-    "message": "À"
+    "message": "Vers"
   },
   "popup_html_rc_delegation_value": {
     "message": "Valeur"
@@ -4213,7 +4213,7 @@
     "message": "De"
   },
   "portfolio_to_asset": {
-    "message": "À"
+    "message": "Vers"
   },
   "portfolio_select_asset": {
     "message": "Choisir un actif"
@@ -4312,7 +4312,7 @@
     "message": "De"
   },
   "portfolio_history_to": {
-    "message": "À"
+    "message": "Vers"
   },
   "portfolio_history_status_completed": {
     "message": "Terminé"
@@ -5675,7 +5675,7 @@
     "description": "Evm transaction info"
   },
   "popup_html_evm_transaction_info_to": {
-    "message": "À",
+    "message": "Vers",
     "description": "Evm transaction info"
   },
   "popup_html_evm_transaction_info_tx_hash": {
@@ -5887,7 +5887,7 @@
     "description": "Evm transaction operation : safe transfer from"
   },
   "evm_operation_to": {
-    "message": "À",
+    "message": "Vers",
     "description": "Evm transaction operation field to"
   },
   "evm_operation_spender": {
