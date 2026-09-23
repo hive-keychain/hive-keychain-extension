@@ -108,11 +108,11 @@
     "description": "EVM blockchain mainnet"
   },
   "common_seed": {
-    "message": "Seed phrase",
+    "message": "Seed",
     "description": "EVM blockchain seed"
   },
   "common_seeds": {
-    "message": "Seed phrases",
+    "message": "Seeds",
     "description": "EVM blockchain seeds"
   },
   "common_experimental": {
@@ -5319,7 +5319,7 @@
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
   "popup_html_import_wallet_from_seed": {
-    "message": "Importer seed",
+    "message": "Importer depuis une seed",
     "description": "Import wallet from seed phrase title"
   },
   "popup_html_create_new_wallet_create_seed": {
@@ -5327,7 +5327,7 @@
     "description": "Create seed phrase title"
   },
   "html_popup_evm_create_new_wallet_title": {
-    "message": "Enregistrez votre phrase secrète de récupération",
+    "message": "Sauvegardez votre seed phrase",
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
   "html_popup_evm_create_new_wallet_import": {
@@ -6899,7 +6899,7 @@
     "description": "Delete seed button"
   },
   "evm_delete_seed_confirmation_message": {
-    "message": "Voulez-vous vraiment supprimer cette seed phrase ?",
+    "message": "Voulez-vous vraiment supprimer cette seed ?",
     "description": "Delete seed button"
   },
   "evm_delete_all_ledger_accounts_confirmation_message": {
@@ -6915,7 +6915,7 @@
     "description": "Delete EVM account button"
   },
   "evm_add_wallet_seed_button": {
-    "message": "Ajouter seed",
+    "message": "Ajouter une seed",
     "description": "Add seed button"
   },
   "evm_add_nickname_to_address_popup_title": {
@@ -6931,7 +6931,7 @@
     "description": "Nickname"
   },
   "evm_seed_nickname": {
-    "message": "Nom de la seed phrase",
+    "message": "Nom de la seed",
     "description": "Nickname"
   },
   "evm_edit_seed_nickname": {
@@ -6963,7 +6963,7 @@
     "description": "Open Ledger EVM wallet connection flow"
   },
   "evm_copy_seed": {
-    "message": "Copier la seed phrase",
+    "message": "Copier la seed",
     "description": "Copy EVM seed menu item"
   },
   "evm_seeds_and_accounts": {
@@ -6975,7 +6975,7 @@
     "description": "Error message if granularity failed has been used already"
   },
   "evm_seeds_already_in_keychain": {
-    "message": "Cette seed phrase a déjà été ajoutée dans Keychain",
+    "message": "Cette seed a déjà été ajoutée dans Keychain",
     "description": "Seed already added in Keychain"
   },
   "evm_private_key_already_in_keychain": {

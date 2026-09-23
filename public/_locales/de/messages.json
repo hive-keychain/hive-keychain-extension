@@ -108,7 +108,7 @@
     "description": "EVM blockchain mainnet"
   },
   "common_seed": {
-    "message": "Samen",
+    "message": "Seed",
     "description": "EVM blockchain seed"
   },
   "common_seeds": {
@@ -5237,7 +5237,7 @@
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_import_wallet": {
-    "message": "Import aus einer Seedphrase",
+    "message": "Import aus einer Seed-Phrase",
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_create_wallet": {
@@ -5245,15 +5245,15 @@
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_setup_import_text": {
-    "message": "Verwenden Sie Ihre 12 oder 24 Wörter lange Startphrase, um Ihre Konten in Keychain<br/> zu importieren",
+    "message": "Verwenden Sie Ihre Seed-Phrase aus 12 oder 24 Wörtern, um Ihre Konten in Keychain zu importieren<br/>",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_seed_phrase": {
-    "message": "Samenphrase",
+    "message": "Seed-Phrase",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_seed_phrase_placeholder": {
-    "message": "12 oder 24 Wörter Seed-Phrase, getrennt durch Leerzeichen",
+    "message": "Seed-Phrase mit 12 oder 24 Wörtern, getrennt durch Leerzeichen",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "popup_html_import_wallet_from_key": {
@@ -5269,15 +5269,15 @@
     "description": "EVM > Add wallet main page > Import private key"
   },
   "html_popup_evm_invalid_mnemonic_length": {
-    "message": "Ihre Seedphrase sollte 12 oder 24 Wörter lang sein.",
+    "message": "Ihre Seed-Phrase sollte 12 oder 24 Wörter lang sein.",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_invalid_mnemonic_word": {
-    "message": "Das Wort $1 der Seedphrase ist falsch.",
+    "message": "Das Wort $1 der Seed-Phrase ist falsch.",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_invalid_mnemonic_checksum": {
-    "message": "Diese Seedphrase ist ungültig.",
+    "message": "Diese Seed-Phrase ist ungültig.",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_choose_account": {
@@ -5289,7 +5289,7 @@
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
   "popup_html_import_wallet_from_seed": {
-    "message": "Import aus Saatgut",
+    "message": "Import aus Seed",
     "description": "Import wallet from seed phrase title"
   },
   "popup_html_create_new_wallet_create_seed": {
@@ -5297,7 +5297,7 @@
     "description": "Create seed phrase title"
   },
   "html_popup_evm_create_new_wallet_title": {
-    "message": "Speichern Sie Ihre geheime Startphrase",
+    "message": "Speichern Sie Ihre geheime Seed-Phrase",
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
   "html_popup_evm_create_new_wallet_import": {
@@ -5353,7 +5353,7 @@
     "description": "Verify word error"
   },
   "html_popup_evm_create_wallet_tips": {
-    "message": "Stellen Sie sicher, dass Sie Ihre Startphrase an mehreren Orten und offline speichern. Wenn diese Startphrase verloren geht, können Sie Ihr Konto nicht wiederherstellen",
+    "message": "Stellen Sie sicher, dass Sie Ihre Seed-Phrase an mehreren Orten und offline speichern. Wenn diese Seed-Phrase verloren geht, können Sie Ihr Konto nicht wiederherstellen",
     "description": "tips"
   },
   "html_popup_evm_create_wallet_tips1": {
@@ -5369,7 +5369,7 @@
     "description": "tips"
   },
   "html_popup_evm_create_wallet_display_mnemonic": {
-    "message": "Startphrase anzeigen",
+    "message": "Seed-Phrase anzeigen",
     "description": "display seed phrase"
   },
   "html_popup_evm_create_wallet_hide_mnemonic": {
@@ -5401,11 +5401,11 @@
     "description": "display seed phrase"
   },
   "html_popup_evm_create_wallet_copy_seed_phrase_error": {
-    "message": "Sie haben Ihre Startphrase nicht kopiert. Bitte kopieren Sie sie, bevor Sie fortfahren",
+    "message": "Sie haben Ihre Seed-Phrase nicht kopiert. Bitte kopieren Sie sie, bevor Sie fortfahren",
     "description": "Error if seed phrase not copied"
   },
   "html_popup_evm_create_wallet_safely_copied_seed": {
-    "message": "Ich habe meine Startphrase sicher kopiert und außerhalb von Keychain gespeichert.",
+    "message": "Ich habe meine Seed-Phrase sicher kopiert und außerhalb von Keychain gespeichert.",
     "description": "checkbox content on create account page"
   },
   "html_popup_evm_create_wallet_storage_understanding": {
@@ -6901,7 +6901,7 @@
     "description": "Nickname"
   },
   "evm_seed_nickname": {
-    "message": "Samenname",
+    "message": "Seed-Name",
     "description": "Nickname"
   },
   "evm_edit_seed_nickname": {

@@ -108,11 +108,11 @@
     "description": "EVM blockchain mainnet"
   },
   "common_seed": {
-    "message": "Semente",
+    "message": "Seed",
     "description": "EVM blockchain seed"
   },
   "common_seeds": {
-    "message": "Sementes",
+    "message": "Seeds",
     "description": "EVM blockchain seeds"
   },
   "common_experimental": {
@@ -5245,15 +5245,15 @@
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_setup_import_text": {
-    "message": "Use sua frase inicial de 12 ou 24 palavras para importar suas contas para Keychain<br/>",
+    "message": "Use sua seed phrase de 12 ou 24 palavras para importar suas contas para Keychain<br/>",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_seed_phrase": {
-    "message": "Frase-semente",
+    "message": "Seed phrase",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_seed_phrase_placeholder": {
-    "message": "Frase inicial de 12 ou 24 palavras, separadas por espaço em branco",
+    "message": "Seed phrase de 12 ou 24 palavras, separadas por espaços",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "popup_html_import_wallet_from_key": {
@@ -5273,7 +5273,7 @@
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_invalid_mnemonic_word": {
-    "message": "A palavra $1 da frase-chave está incorreta.",
+    "message": "A palavra $1 da seed phrase está incorreta.",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_invalid_mnemonic_checksum": {
@@ -5373,7 +5373,7 @@
     "description": "display seed phrase"
   },
   "html_popup_evm_create_wallet_hide_mnemonic": {
-    "message": "Ocultar frase inicial",
+    "message": "Ocultar seed phrase",
     "description": "display seed phrase"
   },
   "html_popup_evm_hide_account": {
@@ -6937,7 +6937,7 @@
     "description": "Copy EVM seed menu item"
   },
   "evm_seeds_and_accounts": {
-    "message": "Sementes e contas",
+    "message": "Seeds e contas",
     "description": "sseds and account page"
   },
   "error_granularity": {

@@ -108,11 +108,11 @@
     "description": "EVM blockchain mainnet"
   },
   "common_seed": {
-    "message": "Benih",
+    "message": "Seed",
     "description": "EVM blockchain seed"
   },
   "common_seeds": {
-    "message": "Seed",
+    "message": "Seeds",
     "description": "EVM blockchain seeds"
   },
   "common_experimental": {
@@ -5237,7 +5237,7 @@
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_import_wallet": {
-    "message": "Impor dari frase awal",
+    "message": "Impor dari seed phrase",
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_create_wallet": {
@@ -5245,11 +5245,11 @@
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_setup_import_text": {
-    "message": "Gunakan frase awal 12 atau 24 kata untuk mengimpor akun Anda ke Keychain<br/>",
+    "message": "Gunakan seed phrase berisi 12 atau 24 kata untuk mengimpor akun Anda ke Keychain<br/>",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_seed_phrase": {
-    "message": "Frase benih",
+    "message": "Seed phrase",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_seed_phrase_placeholder": {
@@ -5273,7 +5273,7 @@
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_invalid_mnemonic_word": {
-    "message": "Kata $1 pada frase awal salah.",
+    "message": "Kata $1 pada seed phrase salah.",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_invalid_mnemonic_checksum": {
@@ -5289,7 +5289,7 @@
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
   "popup_html_import_wallet_from_seed": {
-    "message": "Impor dari biji",
+    "message": "Impor dari seed",
     "description": "Import wallet from seed phrase title"
   },
   "popup_html_create_new_wallet_create_seed": {
@@ -5353,7 +5353,7 @@
     "description": "Verify word error"
   },
   "html_popup_evm_create_wallet_tips": {
-    "message": "Pastikan untuk menyimpan frase awal Anda di banyak tempat dan offline. Jika frase awal ini hilang, Anda tidak akan dapat memulihkan akun Anda",
+    "message": "Pastikan untuk menyimpan seed phrase Anda di banyak tempat dan offline. Jika seed phrase ini hilang, Anda tidak akan dapat memulihkan akun Anda",
     "description": "tips"
   },
   "html_popup_evm_create_wallet_tips1": {
@@ -5389,11 +5389,11 @@
     "description": "display seed phrase"
   },
   "html_popup_evm_create_wallet_copied_mnemonic": {
-    "message": "Frasa awal disalin ke papan klip",
+    "message": "Seed phrase disalin ke papan klip",
     "description": "display seed phrase"
   },
   "evm_copy_seed_phrase_password_caption": {
-    "message": "Anda akan menyalin frase awal Anda. Demi alasan keamanan, silakan masukkan kata sandi Anda untuk melanjutkan.",
+    "message": "Anda akan menyalin seed phrase Anda. Demi alasan keamanan, silakan masukkan kata sandi Anda untuk melanjutkan.",
     "description": "Prompt shown before copying an EVM seed phrase"
   },
   "html_popup_add_blockchain": {
@@ -5401,11 +5401,11 @@
     "description": "display seed phrase"
   },
   "html_popup_evm_create_wallet_copy_seed_phrase_error": {
-    "message": "Anda belum menyalin frase awal Anda, harap salin sebelum melanjutkan",
+    "message": "Anda belum menyalin seed phrase Anda, harap salin sebelum melanjutkan",
     "description": "Error if seed phrase not copied"
   },
   "html_popup_evm_create_wallet_safely_copied_seed": {
-    "message": "Saya telah menyalin frase awal saya dengan aman dan menyimpannya di luar Keychain",
+    "message": "Saya telah menyalin seed phrase saya dengan aman dan menyimpannya di luar Keychain",
     "description": "checkbox content on create account page"
   },
   "html_popup_evm_create_wallet_storage_understanding": {
@@ -6937,7 +6937,7 @@
     "description": "Copy EVM seed menu item"
   },
   "evm_seeds_and_accounts": {
-    "message": "Seed & Akun",
+    "message": "Seeds & Akun",
     "description": "sseds and account page"
   },
   "error_granularity": {

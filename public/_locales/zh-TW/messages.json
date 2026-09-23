@@ -108,11 +108,11 @@
     "description": "EVM blockchain mainnet"
   },
   "common_seed": {
-    "message": "種子",
+    "message": "Seed",
     "description": "EVM blockchain seed"
   },
   "common_seeds": {
-    "message": "種子",
+    "message": "Seeds",
     "description": "EVM blockchain seeds"
   },
   "common_experimental": {
@@ -5237,7 +5237,7 @@
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_import_wallet": {
-    "message": "從助記詞導入",
+    "message": "從 seed phrase 匯入",
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_create_wallet": {
@@ -5245,15 +5245,15 @@
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_setup_import_text": {
-    "message": "使用 12 或 24 個單字的助記詞將您的帳戶匯入 Keychain<br/>",
+    "message": "使用包含 12 或 24 個單字的 seed phrase 將帳戶匯入 Keychain<br/>",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_seed_phrase": {
-    "message": "種子短語",
+    "message": "Seed phrase",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_seed_phrase_placeholder": {
-    "message": "12 或 24 個單字的助記詞，用空格分隔",
+    "message": "12 或 24 個單字的 seed phrase，用空格分隔",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "popup_html_import_wallet_from_key": {
@@ -5269,15 +5269,15 @@
     "description": "EVM > Add wallet main page > Import private key"
   },
   "html_popup_evm_invalid_mnemonic_length": {
-    "message": "您的助記詞長度應為 12 或 24 個單字。",
+    "message": "您的 seed phrase 應為 12 或 24 個單字。",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_invalid_mnemonic_word": {
-    "message": "種子片語的 $1 一詞不正確。",
+    "message": "seed phrase 的第 $1 個詞不正確。",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_invalid_mnemonic_checksum": {
-    "message": "該助記詞無效。",
+    "message": "該 seed phrase 無效。",
     "description": "EVM > Add wallet main page > Import seed phrase"
   },
   "html_popup_evm_choose_account": {
@@ -5289,15 +5289,15 @@
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
   "popup_html_import_wallet_from_seed": {
-    "message": "從種子導入",
+    "message": "從 Seed 匯入",
     "description": "Import wallet from seed phrase title"
   },
   "popup_html_create_new_wallet_create_seed": {
-    "message": "建立種子短語",
+    "message": "建立 seed phrase",
     "description": "Create seed phrase title"
   },
   "html_popup_evm_create_new_wallet_title": {
-    "message": "儲存您的秘密種子短語",
+    "message": "儲存您的秘密 seed phrase",
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
   "html_popup_evm_create_new_wallet_import": {
@@ -5337,7 +5337,7 @@
     "description": "24 words"
   },
   "html_popup_evm_create_wallet_verification_title": {
-    "message": "種子短語驗證",
+    "message": "seed phrase 驗證",
     "description": "evm account creation caption"
   },
   "html_popup_evm_create_wallet_verification_caption": {
@@ -5353,7 +5353,7 @@
     "description": "Verify word error"
   },
   "html_popup_evm_create_wallet_tips": {
-    "message": "確保將您的助記詞儲存在多個位置並離線儲存。如果此助記詞遺失，您將無法恢復您的帳戶",
+    "message": "請將 seed phrase 保存在多個位置，並離線保存。如果遺失，您將無法恢復帳戶",
     "description": "tips"
   },
   "html_popup_evm_create_wallet_tips1": {
@@ -5369,11 +5369,11 @@
     "description": "tips"
   },
   "html_popup_evm_create_wallet_display_mnemonic": {
-    "message": "顯示種子短語",
+    "message": "顯示 seed phrase",
     "description": "display seed phrase"
   },
   "html_popup_evm_create_wallet_hide_mnemonic": {
-    "message": "隱藏助記詞",
+    "message": "隱藏 seed phrase",
     "description": "display seed phrase"
   },
   "html_popup_evm_hide_account": {
@@ -5385,15 +5385,15 @@
     "description": "show account in acct settings"
   },
   "html_popup_evm_create_wallet_copy_mnemonic": {
-    "message": "複製種子片語",
+    "message": "複製 seed phrase",
     "description": "display seed phrase"
   },
   "html_popup_evm_create_wallet_copied_mnemonic": {
-    "message": "種子短語已複製到剪貼簿",
+    "message": "seed phrase 已複製到剪貼簿",
     "description": "display seed phrase"
   },
   "evm_copy_seed_phrase_password_caption": {
-    "message": "您將要複製您的助記詞。出於安全原因，請輸入您的密碼以繼續。",
+    "message": "您即將複製 seed phrase。出於安全原因，請輸入密碼以繼續。",
     "description": "Prompt shown before copying an EVM seed phrase"
   },
   "html_popup_add_blockchain": {
@@ -5401,15 +5401,15 @@
     "description": "display seed phrase"
   },
   "html_popup_evm_create_wallet_copy_seed_phrase_error": {
-    "message": "您尚未複製助記詞，請先複製它，然後再繼續",
+    "message": "您尚未複製 seed phrase，請先複製後再繼續",
     "description": "Error if seed phrase not copied"
   },
   "html_popup_evm_create_wallet_safely_copied_seed": {
-    "message": "我已安全複製我的助記詞並將其保存在 Keychain 之外",
+    "message": "我已安全複製 seed phrase，並將其保存在 Keychain 之外",
     "description": "checkbox content on create account page"
   },
   "html_popup_evm_create_wallet_storage_understanding": {
-    "message": "我了解 Keychain 不應被視為我的助記詞的主要儲存位置",
+    "message": "我了解 Keychain 不應作為 seed phrase 的主要儲存位置",
     "description": "checkbox content on create account page"
   },
   "html_popup_evm_create_wallet_condition_missing": {
@@ -6869,7 +6869,7 @@
     "description": "Delete seed button"
   },
   "evm_delete_seed_confirmation_message": {
-    "message": "您確定要刪除該種子嗎？",
+    "message": "您確定要刪除該 Seed 嗎？",
     "description": "Delete seed button"
   },
   "evm_delete_all_ledger_accounts_confirmation_message": {
@@ -6885,7 +6885,7 @@
     "description": "Delete EVM account button"
   },
   "evm_add_wallet_seed_button": {
-    "message": "加入種子",
+    "message": "加入 Seed",
     "description": "Add seed button"
   },
   "evm_add_nickname_to_address_popup_title": {
@@ -6901,7 +6901,7 @@
     "description": "Nickname"
   },
   "evm_seed_nickname": {
-    "message": "種子名稱",
+    "message": "Seed 名稱",
     "description": "Nickname"
   },
   "evm_edit_seed_nickname": {
@@ -6933,11 +6933,11 @@
     "description": "Open Ledger EVM wallet connection flow"
   },
   "evm_copy_seed": {
-    "message": "複製種子",
+    "message": "複製 Seed",
     "description": "Copy EVM seed menu item"
   },
   "evm_seeds_and_accounts": {
-    "message": "種子和帳戶",
+    "message": "Seeds 和帳戶",
     "description": "sseds and account page"
   },
   "error_granularity": {
@@ -6945,7 +6945,7 @@
     "description": "Error message if granularity failed has been used already"
   },
   "evm_seeds_already_in_keychain": {
-    "message": "該種子已加入 Keychain 中",
+    "message": "該 Seed 已加入 Keychain 中",
     "description": "Seed already added in Keychain"
   },
   "evm_private_key_already_in_keychain": {
