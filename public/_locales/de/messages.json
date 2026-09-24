@@ -4155,6 +4155,10 @@
     "message": "24 Std.",
     "description": "Period label next to the token price change percentage"
   },
+  "wallet_token_price_data_provided_by": {
+    "message": "Daten bereitgestellt von",
+    "description": "Attribution prefix before the CoinGecko link under the token price chart"
+  },
   "token": {
     "message": "Token",
     "description": "Value of token in USD"

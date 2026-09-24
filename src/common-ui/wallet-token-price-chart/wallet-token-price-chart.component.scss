@@ -162,4 +162,21 @@
     margin-top: 2px;
     white-space: nowrap;
   }
+
+  &__attribution {
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+    column-gap: 4px;
+    margin-top: 4px;
+    @include poppins400(10px);
+    color: var(--main-font-color);
+    opacity: 0.55;
+
+    a {
+      color: inherit;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
 }
