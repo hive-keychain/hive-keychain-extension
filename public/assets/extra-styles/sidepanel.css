@@ -54,6 +54,7 @@ html.sidepanel-page
 html.sidepanel-page #root .theme:has(.popup-container .overlay),
 html.sidepanel-page #root .theme:has(.message-container .overlay),
 html.sidepanel-page #root .theme:has(.account-selector-overlay),
+html.sidepanel-page #root .theme:has(.wallet-token-detail-panel-overlay),
 html.sidepanel-page #root .theme:has(.contextual-menu-overlay) {
   border-color: #212838;
 }
@@ -101,7 +102,8 @@ html.sidepanel-page #root .theme .actions-section {
   position: absolute;
 }
 
-html.sidepanel-page #root .theme .account-selector-overlay {
+html.sidepanel-page #root .theme .account-selector-overlay,
+html.sidepanel-page #root .theme .wallet-token-detail-panel-overlay {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -110,12 +112,14 @@ html.sidepanel-page #root .theme .account-selector-overlay {
   transform: translate(-50%, -50%);
 }
 
-html.sidepanel-page #root .theme .account-selector-overlay .account-selector-backdrop {
+html.sidepanel-page #root .theme .account-selector-overlay .account-selector-backdrop,
+html.sidepanel-page #root .theme .wallet-token-detail-panel-overlay .wallet-token-detail-panel-backdrop {
   position: absolute;
   inset: 0;
 }
 
-html.sidepanel-page #root .theme .account-selector-overlay .account-selector-card {
+html.sidepanel-page #root .theme .account-selector-overlay .account-selector-card,
+html.sidepanel-page #root .theme .wallet-token-detail-panel-overlay .wallet-token-detail-panel-card {
   position: absolute;
   left: 0;
   right: 0;

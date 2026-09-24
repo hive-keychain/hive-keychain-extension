@@ -1,27 +1,22 @@
 .actions-panel {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 8px;
-  row-gap: 20px;
-  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
   align-items: stretch;
-
-  .wallet-action-button:only-child,
-  .wallet-action-button:last-child:nth-child(odd):not(:only-child) {
-    grid-column: 1 / -1;
-    justify-self: center;
-    width: calc((100% - 8px) / 2);
-  }
+  column-gap: 6px;
+  width: 100%;
 }
 
 .wallet-action-button {
   display: flex;
-  column-gap: 8px;
-  padding: 8px 12px;
-  width: 100%;
+  flex: 1 1 0;
+  flex-direction: column;
+  row-gap: 4px;
+  padding: 8px 4px;
+  width: auto;
   min-width: 0;
-  min-height: 58px;
-  border-radius: 13px;
+  min-height: 0;
+  border-radius: 10px;
   border: 1px solid var(--wallet-card-darker-border);
   box-sizing: border-box;
   align-items: center;
@@ -31,10 +26,33 @@
   color: inherit;
   font: inherit;
   cursor: pointer;
-  .title {
-    @include poppins400(14px);
-    color: var(--main-font-color);
+
+  .action-icon,
+  .svg-icon,
+  svg {
+    @include icon-size(26px);
+    flex-shrink: 0;
   }
+
+  // Portfolio swap/buy glyphs fill more of their viewBox than wallet icons.
+  .action-icon--optically-large,
+  .action-icon--optically-large.svg-icon,
+  .action-icon--optically-large svg {
+    @include icon-size(22px);
+  }
+
+  .title {
+    @include poppins400(11px);
+    color: var(--main-font-color);
+    text-align: center;
+    line-height: 1.2;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    word-break: break-word;
+  }
+
   svg path:not(.savings) {
     stroke: $red;
   }

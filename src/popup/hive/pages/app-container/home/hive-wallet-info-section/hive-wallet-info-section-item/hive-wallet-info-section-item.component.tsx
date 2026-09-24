@@ -15,13 +15,20 @@ import { navigateToWithParams } from '@popup/multichain/actions/navigation.actio
 import { RootState } from '@popup/multichain/store';
 import { Asset } from 'hive-keychain-commons';
 import ImageUtils from 'hive-keychain-commons/lib/utils/images.utils';
-import React, { BaseSyntheticEvent, useEffect, useRef, useState } from 'react';
+import React, {
+  BaseSyntheticEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { WalletInfoSectionItemButton } from 'src/common-ui/wallet-info-section-item-button/wallet-info-section-item-button.component';
+import { WalletTokenDetailPanel } from 'src/common-ui/wallet-token-detail-panel/wallet-token-detail-panel.component';
+import { WalletTokenPriceChart } from 'src/common-ui/wallet-token-price-chart/wallet-token-price-chart.component';
 import FormatUtils from 'src/utils/format.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
@@ -49,6 +56,9 @@ const walletInfoSectionActionButtonTestId = (
     case 'dialog_title_powerdown':
       return 'dropdown-menu-item-arrow_downward';
     case 'popup_html_send_transfer':
+      if (tokenSymbol === 'HIVE' || tokenSymbol === 'HBD') {
+        return `dropdown-menu-item-${SVGIcons.WALLET_SEND}`;
+      }
       return `icon-send-history-${tokenSymbol}`;
     case 'popup_html_token_stake':
       return `button-token-stake-${tokenSymbol}`;
@@ -56,6 +66,10 @@ const walletInfoSectionActionButtonTestId = (
       return `button-token-unstake-${tokenSymbol}`;
     case 'popup_html_token_delegate':
       return `button-token-delegate-${tokenSymbol}`;
+    case 'html_popup_swaps_process_swap':
+      return `dropdown-menu-item-${SVGIcons.PORTFOLIO_SWAP}`;
+    case 'popup_html_buy':
+      return `dropdown-menu-item-${SVGIcons.PORTFOLIO_BUY}`;
     default:
       return undefined;
   }
@@ -91,12 +105,11 @@ export const WalletInfoSectionItem = ({
   pendingUnstaking,
   navigateToWithParams,
 }: PropsFromRedux) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [detailsId] = useState(
     () => `hive-wallet-details-${tokenSymbol.replace(/[^a-zA-Z0-9_-]/g, '-')}`,
   );
   const [actionButtons, setActionButtons] = useState<ActionButton[]>([]);
-  const reff = useRef<HTMLDivElement>(null);
 
   const [hasButtonsInList, setHasButtonInList] = useState(false);
 
@@ -131,25 +144,30 @@ export const WalletInfoSectionItem = ({
     }
   };
 
-  const toggleDropdown = () => {
-    setIsExpanded(!isExpanded);
-    !process.env.IS_FIREFOX &&
-      reff.current?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-        inline: 'center',
-      });
+  const openPanel = () => {
+    setIsPanelOpen(true);
   };
+
+  const closePanel = useCallback(() => {
+    setIsPanelOpen(false);
+  }, []);
 
   const handleClick = (
     event: BaseSyntheticEvent,
     actionButton: ActionButton,
   ) => {
     event.stopPropagation();
-    navigateToWithParams(
-      actionButton.nextScreen,
-      actionButton.nextScreenParams,
-    );
+    closePanel();
+    if (actionButton.onClick) {
+      actionButton.onClick();
+      return;
+    }
+    if (actionButton.nextScreen) {
+      navigateToWithParams(
+        actionButton.nextScreen,
+        actionButton.nextScreenParams,
+      );
+    }
   };
 
   const handleHistoryClick = (
@@ -157,6 +175,7 @@ export const WalletInfoSectionItem = ({
     tokenBalance?: TokenBalance,
   ) => {
     event.stopPropagation();
+    closePanel();
     if (tokenBalance) {
       navigateToWithParams(HiveScreen.TOKENS_HISTORY, { tokenBalance });
     } else {
@@ -174,6 +193,7 @@ export const WalletInfoSectionItem = ({
 
   const goToTokenOutgoingDelegations = (event: BaseSyntheticEvent) => {
     event.stopPropagation();
+    closePanel();
     navigateToWithParams(HiveScreen.TOKENS_DELEGATIONS, {
       tokenBalance: tokenBalance,
       delegationType: DelegationType.OUTGOING,
@@ -183,6 +203,7 @@ export const WalletInfoSectionItem = ({
 
   const goToTokenIncomingDelegations = (event: BaseSyntheticEvent) => {
     event.stopPropagation();
+    closePanel();
     navigateToWithParams(HiveScreen.TOKENS_DELEGATIONS, {
       tokenBalance: tokenBalance,
       delegationType: DelegationType.INCOMING,
@@ -191,6 +212,7 @@ export const WalletInfoSectionItem = ({
   };
   const goToPendingUnstakePage = (event: BaseSyntheticEvent) => {
     event.stopPropagation();
+    closePanel();
     navigateToWithParams(HiveScreen.TOKENS_PENDING_UNSTAKE, {
       tokenInfo: tokenInfo,
       pendingUnstaking: pendingUnstaking,
@@ -202,9 +224,7 @@ export const WalletInfoSectionItem = ({
     : '';
 
   return (
-    <div
-      className={`wallet-info-row ${isExpanded ? 'opened' : ''}`}
-      ref={reff}>
+    <div className={`wallet-info-row ${isPanelOpen ? 'opened' : ''}`}>
       <div className="information-panel-hive">
         <button
           type="button"
@@ -214,9 +234,10 @@ export const WalletInfoSectionItem = ({
               : `dropdown-arrow-${tokenSymbol.toLowerCase()}`
           }
           className="wallet-info-disclosure"
-          aria-expanded={isExpanded}
-          aria-controls={detailsId}
-          onClick={toggleDropdown}>
+          aria-expanded={isPanelOpen}
+          aria-haspopup="dialog"
+          aria-controls={isPanelOpen ? detailsId : undefined}
+          onClick={openPanel}>
           {tokenInfo ? (
             <PreloadedImage
               src={tokenIconSrc}
@@ -249,19 +270,62 @@ export const WalletInfoSectionItem = ({
               )}
           </div>
         </button>
-        {isExpanded && (
-          <SVGIcon
-            icon={SVGIcons.WALLET_HISTORY_BUTTON}
-            className={`history-icon`}
-            dataTestId={`icon-token-history-${tokenSymbol}`}
-            ariaLabel={I18nUtils.getMessage('popup_html_history')}
-            onClick={($event) => handleHistoryClick($event, tokenBalance)}
-            hoverable
-          />
-        )}
       </div>
-      {isExpanded && (
-        <div id={detailsId} className="wallet-info-details">
+      <WalletTokenDetailPanel
+        isOpen={isPanelOpen}
+        onClose={closePanel}
+        title={mainValueLabel}
+        titleId={detailsId}
+        dataTestId={`wallet-token-detail-panel-${tokenSymbol}`}
+        logo={
+          tokenInfo ? (
+            <PreloadedImage
+              src={tokenIconSrc}
+              className="currency-icon"
+              addBackground={addBackground}
+              symbol={tokenInfo.symbol}
+              useDefaultSVG={defaultIcon}
+            />
+          ) : (
+            icon && (
+              <SVGIcon
+                icon={icon}
+                className={`currency-icon ${
+                  addBackground ? 'add-background' : ''
+                }`}
+              />
+            )
+          )
+        }
+        headerAction={
+          <div className="wallet-token-detail-panel-header-action">
+            <SVGIcon
+              icon={SVGIcons.WALLET_HISTORY_BUTTON}
+              className="history-icon"
+              dataTestId={`icon-token-history-${tokenSymbol}`}
+              ariaLabel={I18nUtils.getMessage('popup_html_history')}
+              onClick={($event) => handleHistoryClick($event, tokenBalance)}
+              hoverable
+            />
+          </div>
+        }
+        footer={
+          <div className="actions-panel">
+            {actionButtons.map((ab, index) => (
+              <WalletInfoSectionItemButton
+                key={`action-${ab.label}-${index}`}
+                actionButton={ab}
+                handleClick={handleClick}
+                dataTestId={walletInfoSectionActionButtonTestId(
+                  tokenSymbol,
+                  ab.label,
+                )}
+              />
+            ))}
+          </div>
+        }>
+        <div className="wallet-info-details">
+          <WalletTokenPriceChart symbol={tokenSymbol} />
           {tokenInfo && tokenBalance && tokenMarket && (
             <div
               className={`token-info-panel ${
@@ -444,21 +508,8 @@ export const WalletInfoSectionItem = ({
                 )}
             </div>
           )}
-          <div className="actions-panel">
-            {actionButtons.map((ab, index) => (
-              <WalletInfoSectionItemButton
-                key={`action-${ab.label}-${index}`}
-                actionButton={ab}
-                handleClick={handleClick}
-                dataTestId={walletInfoSectionActionButtonTestId(
-                  tokenSymbol,
-                  ab.label,
-                )}
-              />
-            ))}
-          </div>
         </div>
-      )}
+      </WalletTokenDetailPanel>
     </div>
   );
 };

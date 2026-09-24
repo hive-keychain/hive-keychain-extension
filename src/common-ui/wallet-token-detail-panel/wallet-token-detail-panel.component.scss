@@ -1,0 +1,232 @@
+.wallet-token-detail-panel-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+
+  .wallet-token-detail-panel-backdrop {
+    @include overlay;
+  }
+
+  .wallet-token-detail-panel-card {
+    @include form-panel;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    min-height: 300px;
+    max-height: 90vh;
+    box-sizing: border-box;
+    z-index: 21;
+    overflow: hidden;
+    row-gap: 32px;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .wallet-token-detail-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: 12px;
+    flex-shrink: 0;
+    position: relative;
+    min-height: 40px;
+    margin-bottom: 8px;
+  }
+
+  .wallet-token-detail-panel-identity {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: 12px;
+    min-width: 0;
+    padding: 0 40px;
+    box-sizing: border-box;
+  }
+
+  .wallet-token-detail-panel-logo {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .currency-icon,
+    .evm-token-logo,
+    img,
+    svg {
+      @include icon-size(36px);
+    }
+
+    .currency-icon-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .currency-icon.dual-icon {
+      @include icon-size(22px);
+    }
+
+    .currency-icon.dual-icon.right-icon {
+      margin-left: -8px;
+    }
+  }
+
+  .wallet-token-detail-panel-title {
+    @include poppins600(18px);
+    color: var(--main-font-color);
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .wallet-token-detail-panel-header-action {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .wallet-token-detail-panel-content {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    row-gap: 32px;
+  }
+
+  .wallet-token-detail-panel-footer {
+    flex-shrink: 0;
+    width: 100%;
+  }
+
+  .wallet-info-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 32px;
+    width: 100%;
+  }
+
+  .wallet-token-detail-panel-contract {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+  }
+
+  .wallet-token-detail-panel-contract-label {
+    @include poppins400(12px);
+    color: var(--main-font-color);
+    opacity: 0.7;
+  }
+
+  .wallet-token-detail-panel-contract-row {
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .wallet-token-detail-panel-contract-address {
+    @include poppins500(12px);
+    color: var(--main-font-color);
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-all;
+  }
+
+  .wallet-token-detail-panel-contract-copy,
+  .wallet-token-detail-panel-contract-explorer {
+    flex-shrink: 0;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+    color: var(--main-font-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .svg-icon,
+    svg {
+      @include icon-size(18px);
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $red;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+  }
+
+  .wallet-token-detail-panel-contract-explorer {
+    color: var(--main-font-color);
+  }
+
+  .history-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    --wallet-icon-border-color: var(--wallet-card-border);
+    rect {
+      fill: transparent;
+    }
+    path {
+      fill: $red;
+    }
+
+    svg:hover {
+      rect {
+        fill: $red;
+      }
+      path {
+        fill: white;
+      }
+      --wallet-icon-border-color: #{$red};
+    }
+  }
+
+  .token-info-panel {
+    @include poppins500(13px);
+    color: var(--main-font-color);
+    opacity: 0.7;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    row-gap: 4px;
+
+    .token-info-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      column-gap: 8px;
+
+      .label {
+        text-align: left;
+      }
+      .value {
+        text-align: right;
+      }
+      .icon {
+        @include icon-size(16px);
+      }
+    }
+
+    &.has-button-in-list {
+      .token-info-row {
+        grid-template-columns: 1fr 1fr 16px;
+      }
+    }
+  }
+}

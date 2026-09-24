@@ -20,6 +20,7 @@ import {
   within,
 } from 'src/__tests__/utils-for-testing/setups/render';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
+import * as copyToastUtils from 'src/common-ui/toast/copy-toast.utils';
 import React from 'react';
 
 describe('EvmCustomTokensPageComponent', () => {
@@ -230,6 +231,19 @@ describe('EvmCustomTokensPageComponent', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('Custom tokens')).toBeInTheDocument();
     expect(screen.getByText('USDC')).toBeInTheDocument();
+    const copyContractAddress = jest
+      .spyOn(copyToastUtils, 'copyTextWithToast')
+      .mockResolvedValue(true);
+    fireEvent.click(
+      screen.getByTestId(
+        'token-contract-address-0x0000000000000000000000000000000000000001',
+      ),
+    );
+    expect(copyContractAddress).toHaveBeenCalledWith(
+      '0x0000000000000000000000000000000000000001',
+      copyToastUtils.COPY_GENERIC_MESSAGE_KEY,
+    );
+    expect(screen.queryByTestId('custom-asset-popup')).not.toBeInTheDocument();
     const savedTokenRow = screen
       .getByTestId(
         'btn-delete-custom-token-0x0000000000000000000000000000000000000001',
@@ -273,7 +287,12 @@ describe('EvmCustomTokensPageComponent', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders auto-detected tokens for supported chains and lets them be hidden', async () => {
+  it('renders auto-detected tokens and toggles visibility only from the icon', async () => {
+    const copyContractAddress = jest
+      .spyOn(copyToastUtils, 'copyTextWithToast')
+      .mockResolvedValue(true);
+    const usdtAddress = '0x0000000000000000000000000000000000000002';
+
     customRender(<EvmCustomTokensPageComponent />, {
       initialState: {
         ...initialEmptyStateStore,
@@ -331,25 +350,42 @@ describe('EvmCustomTokensPageComponent', () => {
       ),
     ).not.toBeInTheDocument();
 
+    const usdtRow = screen.getByTestId(
+      `auto-detected-token-item-${usdtAddress}`,
+    );
+    expect(usdtRow).not.toHaveAttribute('role', 'button');
+
+    fireEvent.click(usdtRow);
+    expect(
+      EvmAutoDetectedTokenVisibilityUtils.hideAutoDetectedToken,
+    ).not.toHaveBeenCalled();
+
     fireEvent.click(
-      screen.getByTestId(
-        'auto-detected-token-item-0x0000000000000000000000000000000000000002',
-      ),
+      screen.getByTestId(`token-contract-address-${usdtAddress}`),
+    );
+    expect(copyContractAddress).toHaveBeenCalledWith(
+      usdtAddress,
+      copyToastUtils.COPY_GENERIC_MESSAGE_KEY,
+    );
+    expect(
+      EvmAutoDetectedTokenVisibilityUtils.hideAutoDetectedToken,
+    ).not.toHaveBeenCalled();
+
+    fireEvent.mouseEnter(screen.getByTestId(`token-address-${usdtAddress}`));
+    expect(await screen.findByTestId('tooltip-content')).toHaveTextContent(
+      usdtAddress,
+    );
+
+    fireEvent.click(
+      screen.getByTestId(`auto-detected-token-toggle-${usdtAddress}`),
     );
 
     await waitFor(() => {
       expect(
         EvmAutoDetectedTokenVisibilityUtils.hideAutoDetectedToken,
-      ).toHaveBeenCalledWith(
-        '0x1',
-        '0x0000000000000000000000000000000000000002',
-      );
+      ).toHaveBeenCalledWith('0x1', usdtAddress);
     });
-    expect(
-      screen.getByTestId(
-        'auto-detected-token-item-0x0000000000000000000000000000000000000002',
-      ),
-    ).toHaveClass('known-token-item--hidden');
+    expect(usdtRow).toHaveClass('known-token-item--hidden');
   });
 
   it('shows an empty auto-detected token state for supported chains', async () => {

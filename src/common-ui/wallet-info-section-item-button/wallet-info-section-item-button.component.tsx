@@ -1,5 +1,6 @@
 import { ActionButton } from '@popup/hive/pages/app-container/home/hive-wallet-info-section/hive-wallet-info-section-actions';
 import React, { BaseSyntheticEvent, useState } from 'react';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
@@ -16,6 +17,9 @@ export const WalletInfoSectionItemButton = ({
   dataTestId,
 }: WalletInfoSectionItemButtonProps) => {
   const [hovered, setHovered] = useState(false);
+  const isOpticallyLargeIcon =
+    actionButton.icon === SVGIcons.PORTFOLIO_SWAP ||
+    actionButton.icon === SVGIcons.PORTFOLIO_BUY;
 
   return (
     <button
@@ -27,7 +31,9 @@ export const WalletInfoSectionItemButton = ({
       onMouseLeave={() => setHovered(false)}>
       <SVGIcon
         icon={actionButton.icon}
-        className="action-icon"
+        className={`action-icon${
+          isOpticallyLargeIcon ? ' action-icon--optically-large' : ''
+        }`}
         hoverable
         forceHover={hovered}
       />

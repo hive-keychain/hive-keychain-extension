@@ -401,9 +401,6 @@ const EvmCustomTokensPage = ({
                         name={token.name ?? ''}
                         symbol={token.symbol ?? ''}
                         dataTestId={`auto-detected-token-item-${token.contractAddress}`}
-                        onActivate={() =>
-                          void toggleAutoDetectedTokenVisibility(token)
-                        }
                         action={
                           <button
                             type="button"

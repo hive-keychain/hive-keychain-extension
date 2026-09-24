@@ -1,10 +1,12 @@
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import ImageUtils from 'hive-keychain-commons/lib/utils/images.utils';
 import React from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { WalletInfoSectionItem } from 'src/popup/hive/pages/app-container/home/hive-wallet-info-section/hive-wallet-info-section-item/hive-wallet-info-section-item.component';
+import { I18nUtils } from 'src/utils/i18n.utils';
 
 jest.mock('react-svg', () => ({
   ReactSVG: ({
@@ -38,6 +40,10 @@ describe('Hive WalletInfoSectionItem', () => {
     pendingUnstaking: [],
     navigateToWithParams: jest.fn(),
   };
+
+  beforeEach(() => {
+    I18nUtils.getMessage = jest.fn((key: string) => key);
+  });
 
   it('renders native HIVE/HBD/HP logos from bundled SVG files', () => {
     const { rerender } = render(
@@ -153,5 +159,42 @@ describe('Hive WalletInfoSectionItem', () => {
       'src',
       '',
     );
+  });
+
+  it('opens the token detail panel instead of expanding the card', async () => {
+    const user = userEvent.setup();
+    render(
+      <WalletInfoSectionItem
+        {...connectedProps}
+        tokenSymbol="HIVE"
+        icon={SVGIcons.WALLET_HIVE_LOGO}
+        mainValue="1.000"
+        mainValueLabel="HIVE"
+      />,
+    );
+
+    const disclosure = screen.getByTestId('dropdown-arrow-hive');
+    expect(disclosure).toHaveAttribute('aria-expanded', 'false');
+    expect(
+      screen.queryByTestId('wallet-token-detail-panel-HIVE'),
+    ).not.toBeInTheDocument();
+
+    await user.click(disclosure);
+    expect(disclosure).toHaveAttribute('aria-expanded', 'true');
+    expect(
+      screen.getByTestId('wallet-token-detail-panel-HIVE'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId('wallet-token-detail-panel-HIVE-logo'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId('wallet-token-price-chart-HIVE'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId('wallet-token-detail-panel-HIVE-footer'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId('icon-token-history-HIVE'),
+    ).toBeInTheDocument();
   });
 });

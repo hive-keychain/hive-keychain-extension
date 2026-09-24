@@ -4147,6 +4147,14 @@
     "message": "Total value",
     "description": "Value of token in USD"
   },
+  "wallet_token_price_current": {
+    "message": "目前價格",
+    "description": "Label above the token price in the wallet token detail panel"
+  },
+  "wallet_token_price_change_24h": {
+    "message": "24小時",
+    "description": "Period label next to the token price change percentage"
+  },
   "token": {
     "message": "Token",
     "description": "Value of token in USD"

@@ -58,6 +58,7 @@ export enum SVGIcons {
 
   GLOBAL_ARROW = 'global/arrow',
   GLOBAL_ARROW_RIGHT = 'global/arrow-right',
+  GLOBAL_EXTERNAL_LINK = 'global/external-link',
   GLOBAL_DELETE = 'global/delete',
   GLOBAL_ERROR = 'global/error',
   GLOBAL_ADD_CIRCLE = 'global/add-circle',

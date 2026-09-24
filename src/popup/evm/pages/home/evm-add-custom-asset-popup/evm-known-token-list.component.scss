@@ -72,15 +72,36 @@
   min-width: 0;
 }
 
-.known-token-main-row {
+.known-token-main-row,
+.known-token-address-row {
   display: flex;
   align-items: center;
-  column-gap: 8px;
   min-width: 0;
+  max-width: 100%;
+}
+
+.known-token-main-row {
+  column-gap: 8px;
+}
+
+.known-token-address-row {
+  column-gap: 6px;
+
+  .known-token-address-tooltip {
+    min-width: 0;
+    max-width: 100%;
+
+    .tooltip-anchor {
+      min-width: 0;
+      max-width: 100%;
+    }
+  }
 }
 
 .known-token-symbol,
 .known-token-address {
+  display: block;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -94,6 +115,31 @@
 .known-token-address {
   @include poppins400(12px);
   color: var(--secondary-text-color);
+}
+
+.known-token-copy-button {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--secondary-text-color);
+  cursor: pointer;
+
+  .svg-icon {
+    width: 14px;
+    height: 14px;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
 }
 
 .known-token-add-button,

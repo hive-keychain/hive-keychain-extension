@@ -1,0 +1,165 @@
+.wallet-token-price-chart {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+
+  &__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    column-gap: 12px;
+  }
+
+  &__price-block {
+    display: flex;
+    flex-direction: column;
+    row-gap: 2px;
+    min-width: 0;
+  }
+
+  &__label {
+    @include poppins400(12px);
+    color: var(--main-font-color);
+    opacity: 0.7;
+  }
+
+  &__price {
+    @include poppins600(22px);
+    color: var(--main-font-color);
+    line-height: 1.2;
+  }
+
+  &__change {
+    @include poppins500(13px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    row-gap: 2px;
+    flex-shrink: 0;
+
+    &.positive {
+      color: #16a34a;
+    }
+
+    &.negative {
+      color: $red;
+    }
+  }
+
+  &__period {
+    @include poppins400(11px);
+    opacity: 0.7;
+    color: var(--main-font-color);
+  }
+
+  &__canvas {
+    position: relative;
+    width: 100%;
+  }
+
+  &__svg {
+    width: 100%;
+    height: 148px;
+    display: block;
+    overflow: visible;
+    cursor: crosshair;
+
+    &.positive {
+      .wallet-token-price-chart__line {
+        stroke: #16a34a;
+      }
+      .wallet-token-price-chart__gradient-start {
+        stop-color: rgba(22, 163, 74, 0.38);
+      }
+      .wallet-token-price-chart__gradient-end {
+        stop-color: rgba(22, 163, 74, 0);
+      }
+      .wallet-token-price-chart__dot {
+        fill: #16a34a;
+        stroke: var(--form-panel-background);
+      }
+      .wallet-token-price-chart__guide {
+        stroke: rgba(22, 163, 74, 0.35);
+      }
+    }
+
+    &.negative {
+      .wallet-token-price-chart__line {
+        stroke: $red;
+      }
+      .wallet-token-price-chart__gradient-start {
+        stop-color: rgba(227, 19, 55, 0.36);
+      }
+      .wallet-token-price-chart__gradient-end {
+        stop-color: rgba(227, 19, 55, 0);
+      }
+      .wallet-token-price-chart__dot {
+        fill: $red;
+        stroke: var(--form-panel-background);
+      }
+      .wallet-token-price-chart__guide {
+        stroke: rgba(227, 19, 55, 0.35);
+      }
+    }
+  }
+
+  &__line {
+    stroke-width: 2;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-miterlimit: 2;
+    vector-effect: non-scaling-stroke;
+    shape-rendering: geometricPrecision;
+  }
+
+  &__dot-hitbox {
+    fill: transparent;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  &__dot {
+    stroke-width: 2;
+
+    &.active {
+      stroke-width: 2.5;
+    }
+  }
+
+  &__guide {
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+  }
+
+  &__tooltip {
+    position: absolute;
+    transform: translate(-50%, calc(-100% - 10px));
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 6px 10px;
+    box-sizing: border-box;
+    pointer-events: none;
+    z-index: 2;
+    min-width: 84px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  &__tooltip-price {
+    @include poppins600(12px);
+    color: var(--main-font-color);
+  }
+
+  &__tooltip-time {
+    @include poppins400(10px);
+    color: var(--main-font-color);
+    opacity: 0.7;
+    margin-top: 2px;
+    white-space: nowrap;
+  }
+}

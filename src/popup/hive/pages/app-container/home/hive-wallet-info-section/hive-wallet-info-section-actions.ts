@@ -3,15 +3,23 @@ import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import { ConversionType } from '@popup/hive/pages/app-container/home/conversion/conversion-type.enum';
 import { PowerType } from '@popup/hive/pages/app-container/home/power-up-down/power-type.enum';
 import { TokenOperationType } from '@popup/hive/pages/app-container/home/tokens/token-operation/token-operation.component';
+import { PortfolioRouteUtils } from '@popup/multichain/utils/portfolio-route.utils';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 
 export interface ActionButton {
   label: string;
   labelParams?: string[];
   icon: SVGIcons;
-  nextScreen: Screen;
+  nextScreen?: Screen;
   nextScreenParams?: any;
+  onClick?: () => void;
 }
+
+const getPortfolioSwapAction = (): ActionButton => ({
+  label: 'html_popup_swaps_process_swap',
+  icon: SVGIcons.PORTFOLIO_SWAP,
+  onClick: PortfolioRouteUtils.openSwap,
+});
 
 export const HiveWalletInfoSectionActions = (
   tokenSymbol: string,
@@ -21,8 +29,7 @@ export const HiveWalletInfoSectionActions = (
   if (tokenSymbol === 'HBD') {
     return [
       {
-        label: 'popup_html_send',
-        labelParams: ['HBD'],
+        label: 'popup_html_send_transfer',
         icon: SVGIcons.WALLET_SEND,
         nextScreen: Screen.TRANSFER_FUND_PAGE,
         nextScreenParams: { selectedCurrency: 'hbd' },
@@ -41,12 +48,12 @@ export const HiveWalletInfoSectionActions = (
         nextScreen: Screen.SAVINGS_PAGE,
         nextScreenParams: { selectedCurrency: 'hbd' },
       },
+      getPortfolioSwapAction(),
     ];
   } else if (tokenSymbol === 'HIVE') {
     return [
       {
-        label: 'popup_html_send',
-        labelParams: ['HIVE'],
+        label: 'popup_html_send_transfer',
         icon: SVGIcons.WALLET_SEND,
         nextScreen: Screen.TRANSFER_FUND_PAGE,
         nextScreenParams: { selectedCurrency: 'hive' },
@@ -71,6 +78,7 @@ export const HiveWalletInfoSectionActions = (
         nextScreen: Screen.SAVINGS_PAGE,
         nextScreenParams: { selectedCurrency: 'hive' },
       },
+      getPortfolioSwapAction(),
     ];
   } else if (tokenSymbol === 'HP') {
     return [
@@ -136,6 +144,7 @@ export const HiveWalletInfoSectionActions = (
         icon: SVGIcons.WALLET_TOKEN_DELEGATIONS,
       });
     }
+    actions.push(getPortfolioSwapAction());
 
     return actions;
   }
