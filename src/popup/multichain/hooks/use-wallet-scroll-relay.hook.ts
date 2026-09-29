@@ -136,7 +136,11 @@ export const useWalletScrollRelay = ({
         !homeContent ||
         !walletScroll ||
         !walletWrapper ||
-        event.deltaY === 0
+        event.deltaY === 0 ||
+        (event.target instanceof Element &&
+          event.target.closest(
+            '.wallet-token-detail-panel-overlay, .account-selector-overlay',
+          ))
       ) {
         return;
       }

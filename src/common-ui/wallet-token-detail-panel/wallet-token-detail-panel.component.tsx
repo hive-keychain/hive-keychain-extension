@@ -23,6 +23,20 @@ const getFocusableElements = (container: HTMLElement) =>
 const getThemePortalRoot = (): HTMLElement =>
   document.querySelector<HTMLElement>('#root .theme') ?? document.body;
 
+export const scrollTokenDetailPanelContent = (
+  scrollTop: number,
+  deltaY: number,
+  scrollHeight: number,
+  clientHeight: number,
+): number => {
+  const maxScroll = Math.max(0, scrollHeight - clientHeight);
+  return Math.min(maxScroll, Math.max(0, scrollTop + deltaY));
+};
+
+const isTokenDetailPanelWheelTarget = (target: EventTarget | null): boolean =>
+  target instanceof Element &&
+  Boolean(target.closest('.wallet-token-detail-panel-overlay'));
+
 export const WalletTokenDetailPanel = ({
   isOpen,
   onClose,
@@ -35,6 +49,8 @@ export const WalletTokenDetailPanel = ({
   dataTestId = 'wallet-token-detail-panel',
 }: Props) => {
   const cardRef = useRef<HTMLDivElement | null>(null);
+  const overlayRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
   const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
@@ -66,6 +82,54 @@ export const WalletTokenDetailPanel = ({
       cancelAnimationFrame(animationFrame);
       document.removeEventListener('keydown', handleEscape);
       previouslyFocusedElementRef.current?.focus();
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleWheel = (event: WheelEvent) => {
+      const overlay = overlayRef.current;
+      const content = contentRef.current;
+      if (!overlay || !content || !isTokenDetailPanelWheelTarget(event.target)) {
+        return;
+      }
+      if (!overlay.contains(event.target as Node)) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      const target = event.target;
+      if (!(target instanceof Node) || !content.contains(target)) {
+        return;
+      }
+
+      const lineHeight = 16;
+      const delta =
+        event.deltaMode === WheelEvent.DOM_DELTA_LINE
+          ? event.deltaY * lineHeight
+          : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+            ? event.deltaY * content.clientHeight
+            : event.deltaY;
+
+      content.scrollTop = scrollTokenDetailPanelContent(
+        content.scrollTop,
+        delta,
+        content.scrollHeight,
+        content.clientHeight,
+      );
+    };
+
+    window.addEventListener('wheel', handleWheel, {
+      capture: true,
+      passive: false,
+    });
+    return () => {
+      window.removeEventListener('wheel', handleWheel, { capture: true });
     };
   }, [isOpen]);
 
@@ -101,6 +165,7 @@ export const WalletTokenDetailPanel = ({
   // account selector overlay (same frame width), while escaping the token row.
   return createPortal(
     <div
+      ref={overlayRef}
       className="wallet-token-detail-panel-overlay"
       data-testid={`${dataTestId}-overlay`}
       onKeyDown={handleKeyDown}>
@@ -135,7 +200,9 @@ export const WalletTokenDetailPanel = ({
           </div>
           {headerAction}
         </div>
-        <div className="wallet-token-detail-panel-content">{children}</div>
+        <div className="wallet-token-detail-panel-content" ref={contentRef}>
+          {children}
+        </div>
         {footer && (
           <div
             className="wallet-token-detail-panel-footer"

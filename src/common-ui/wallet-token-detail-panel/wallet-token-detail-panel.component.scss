@@ -2,6 +2,8 @@
   position: fixed;
   inset: 0;
   z-index: 20;
+  overflow: hidden;
+  overscroll-behavior: none;
 
   .wallet-token-detail-panel-backdrop {
     @include overlay;
@@ -19,6 +21,7 @@
     box-sizing: border-box;
     z-index: 21;
     overflow: hidden;
+    overscroll-behavior: none;
     row-gap: 32px;
 
     &:focus {
@@ -94,6 +97,7 @@
     flex: 1;
     min-height: 0;
     overflow-y: auto;
+    overscroll-behavior: contain;
     display: flex;
     flex-direction: column;
     row-gap: 32px;

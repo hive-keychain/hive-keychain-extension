@@ -221,4 +221,18 @@ describe('useWalletScrollRelay', () => {
     expect(walletWrapper.style.minHeight).toBe('360px');
     expect(walletScroll.scrollTop).toBe(10);
   });
+
+  it('does not move the page when the wheel starts inside the token detail panel', () => {
+    const { homeContent, walletScroll } = setupScrollRelay();
+    const panel = document.createElement('div');
+    panel.className = 'wallet-token-detail-panel-overlay';
+    const inner = document.createElement('div');
+    panel.appendChild(inner);
+    homeContent.appendChild(panel);
+
+    dispatchWheel(inner, 40);
+
+    expect(homeContent.scrollTop).toBe(0);
+    expect(walletScroll.scrollTop).toBe(0);
+  });
 });
