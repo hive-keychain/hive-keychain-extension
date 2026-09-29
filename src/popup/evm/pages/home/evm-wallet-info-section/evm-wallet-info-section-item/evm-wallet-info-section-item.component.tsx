@@ -8,6 +8,7 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { BaseSyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { EvmLightNodeApi } from '@api/evm-light-node';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
@@ -19,8 +20,13 @@ import {
 import { WalletInfoSectionItemButton } from 'src/common-ui/wallet-info-section-item-button/wallet-info-section-item-button.component';
 import { WalletTokenDetailPanel } from 'src/common-ui/wallet-token-detail-panel/wallet-token-detail-panel.component';
 import { WalletTokenPriceChart } from 'src/common-ui/wallet-token-price-chart/wallet-token-price-chart.component';
+import {
+  TokenPriceHistory,
+  WalletTokenPriceChartUtils,
+} from 'src/common-ui/wallet-token-price-chart/wallet-token-price-chart.utils';
 import FormatUtils from 'src/utils/format.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
+import Logger from 'src/utils/logger.utils';
 
 interface EVMWalletSectionInfoItemProps {
   token: NativeAndErc20Token;
@@ -66,6 +72,10 @@ export const WalletInfoSectionItem = ({
       )}`,
   );
   const [actionButtons, setActionButtons] = useState<ActionButton[]>([]);
+  const [priceHistory, setPriceHistory] = useState<TokenPriceHistory | null>(
+    null,
+  );
+  const [priceHistoryLoading, setPriceHistoryLoading] = useState(false);
   const contractAddress =
     token.tokenInfo.type === EVMSmartContractType.ERC20
       ? token.tokenInfo.contractAddress
@@ -78,11 +88,62 @@ export const WalletInfoSectionItem = ({
     init();
   }, []);
 
+  useEffect(() => {
+    if (!isPanelOpen) {
+      return;
+    }
+
+    const historyPath = chain?.chainId
+      ? WalletTokenPriceChartUtils.buildEvmPriceHistoryPath(
+          chain.chainId,
+          contractAddress,
+        )
+      : undefined;
+    if (!historyPath) {
+      setPriceHistory({ categories: [], seriesByCategory: {} });
+      setPriceHistoryLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    setPriceHistoryLoading(true);
+
+    const loadPriceHistory = async () => {
+      try {
+        const payload = await EvmLightNodeApi.get(historyPath);
+        if (!cancelled) {
+          setPriceHistory(
+            WalletTokenPriceChartUtils.parsePriceHistoryPayload(payload),
+          );
+        }
+      } catch (error) {
+        Logger.warn(
+          `Token price history unavailable (${historyPath}): ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+        );
+        if (!cancelled) {
+          setPriceHistory({ categories: [], seriesByCategory: {} });
+        }
+      } finally {
+        if (!cancelled) {
+          setPriceHistoryLoading(false);
+        }
+      }
+    };
+
+    void loadPriceHistory();
+    return () => {
+      cancelled = true;
+    };
+  }, [isPanelOpen, chain?.chainId, contractAddress]);
+
   const init = async () => {
     setActionButtons(EVMWalletInfoSectionActions(token));
   };
 
   const openPanel = () => {
+    setPriceHistoryLoading(true);
     setIsPanelOpen(true);
   };
 
@@ -225,7 +286,11 @@ export const WalletInfoSectionItem = ({
           </div>
         }>
         <div className="wallet-info-details">
-          <WalletTokenPriceChart symbol={token.tokenInfo.symbol} />
+          <WalletTokenPriceChart
+            symbol={token.tokenInfo.symbol}
+            priceHistory={priceHistory}
+            priceHistoryLoading={priceHistoryLoading}
+          />
           {contractAddress && (
             <div className="wallet-token-detail-panel-contract">
               <div className="wallet-token-detail-panel-contract-label">

@@ -4159,6 +4159,10 @@
     "message": "数据提供方",
     "description": "Attribution prefix before the CoinGecko link under the token price chart"
   },
+  "wallet_token_price_unavailable": {
+    "message": "暂无价格历史",
+    "description": "Shown when the token price chart has no history from the API"
+  },
   "token": {
     "message": "Token",
     "description": "Value of token in USD"

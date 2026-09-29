@@ -4167,6 +4167,10 @@
     "message": "Data provided by",
     "description": "Attribution prefix before the CoinGecko link under the token price chart"
   },
+  "wallet_token_price_unavailable": {
+    "message": "Price history unavailable",
+    "description": "Shown when the token price chart has no history from the API"
+  },
   "token": {
     "message": "Token",
     "description": "Value of token in USD"

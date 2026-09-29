@@ -1,18 +1,22 @@
 import {
   TokenPriceChartPoint,
   TokenPriceChartSeries,
+  TokenPriceHistory,
   WalletTokenPriceChartUtils,
 } from '@common-ui/wallet-token-price-chart/wallet-token-price-chart.utils';
-import React, { useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { I18nUtils } from 'src/utils/i18n.utils';
 
 interface Props {
   symbol: string;
-  /** Optional real series — falls back to deterministic fake data. */
+  /** Optional real series — falls back to deterministic fake data when no live history is passed. */
   points?: TokenPriceChartPoint[];
   currentPrice?: number;
   changePercent?: number;
   currencyPrefix?: string;
+  /** Live EVM history. When set, fake data is not used. */
+  priceHistory?: TokenPriceHistory | null;
+  priceHistoryLoading?: boolean;
 }
 
 interface ChartCoordinate {
@@ -135,9 +139,109 @@ export const WalletTokenPriceChart = ({
   currentPrice,
   changePercent,
   currencyPrefix = '$',
+  priceHistory,
+  priceHistoryLoading = false,
 }: Props) => {
   const [activeIndex, setActiveIndex] = useState<number>();
-  const series = resolveSeries(symbol, points, currentPrice, changePercent);
+  const [selectedCategory, setSelectedCategory] = useState<string>();
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
+  const [tooltipPlacement, setTooltipPlacement] = useState({
+    left: 0,
+    placeBelow: false,
+    ready: false,
+  });
+  const isLiveChart = priceHistory !== undefined || priceHistoryLoading;
+  const liveCategories = priceHistory?.categories ?? [];
+
+  useEffect(() => {
+    if (!priceHistory) {
+      return;
+    }
+    setSelectedCategory((current) => {
+      if (current && priceHistory.categories.includes(current)) {
+        return current;
+      }
+      return WalletTokenPriceChartUtils.getDefaultPriceHistoryCategory(
+        priceHistory.categories,
+      );
+    });
+    setActiveIndex(undefined);
+  }, [priceHistory]);
+
+  const resolvedCategory =
+    selectedCategory && liveCategories.includes(selectedCategory)
+      ? selectedCategory
+      : WalletTokenPriceChartUtils.getDefaultPriceHistoryCategory(
+          liveCategories,
+        );
+  const livePoints =
+    resolvedCategory && priceHistory
+      ? priceHistory.seriesByCategory[resolvedCategory]
+      : undefined;
+  const series: TokenPriceChartSeries | undefined = isLiveChart
+    ? livePoints && livePoints.length > 1
+      ? WalletTokenPriceChartUtils.getSeriesFromPoints(livePoints)
+      : undefined
+    : resolveSeries(symbol, points, currentPrice, changePercent);
+
+  useLayoutEffect(() => {
+    const canvas = canvasRef.current;
+    const tooltip = tooltipRef.current;
+    if (!series || activeIndex === undefined || !canvas || !tooltip) {
+      return;
+    }
+
+    const coordinate = buildChartGeometry(series.points).coordinates[activeIndex];
+    if (!coordinate || canvas.clientWidth <= 0) {
+      return;
+    }
+
+    const left = WalletTokenPriceChartUtils.getClampedTooltipCenter(
+      coordinate.x / CHART_WIDTH,
+      canvas.clientWidth,
+      tooltip.offsetWidth,
+    );
+    const pointY = (coordinate.y / CHART_HEIGHT) * canvas.clientHeight;
+    const placeBelow = WalletTokenPriceChartUtils.shouldPlaceTooltipBelow(
+      pointY,
+      tooltip.offsetHeight,
+    );
+
+    setTooltipPlacement((current) => {
+      if (
+        current.ready &&
+        current.left === left &&
+        current.placeBelow === placeBelow
+      ) {
+        return current;
+      }
+      return { left, placeBelow, ready: true };
+    });
+  }, [activeIndex, series]);
+
+  if (!series) {
+    return (
+      <div
+        className="wallet-token-price-chart"
+        data-testid={`wallet-token-price-chart-${symbol}`}>
+        <div
+          className="wallet-token-price-chart__status"
+          data-testid={`wallet-token-price-chart-status-${symbol}`}>
+          {I18nUtils.getMessage(
+            priceHistoryLoading
+              ? 'popup_html_loading'
+              : 'wallet_token_price_unavailable',
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  const periodLabel =
+    isLiveChart && resolvedCategory
+      ? resolvedCategory
+      : I18nUtils.getMessage('wallet_token_price_change_24h');
   const { linePath, areaPath, coordinates, stepX } = buildChartGeometry(
     series.points,
   );
@@ -206,11 +310,11 @@ export const WalletTokenPriceChart = ({
           data-testid={`wallet-token-price-chart-change-${symbol}`}>
           <span>{formattedChange}</span>
           <span className="wallet-token-price-chart__period">
-            {I18nUtils.getMessage('wallet_token_price_change_24h')}
+            {periodLabel}
           </span>
         </div>
       </div>
-      <div className="wallet-token-price-chart__canvas">
+      <div className="wallet-token-price-chart__canvas" ref={canvasRef}>
         <svg
           className={`wallet-token-price-chart__svg ${changeClassName}`}
           viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}
@@ -290,12 +394,24 @@ export const WalletTokenPriceChart = ({
         </svg>
         {activeCoordinate && (
           <div
+            ref={tooltipRef}
             className="wallet-token-price-chart__tooltip"
             data-testid={`wallet-token-price-chart-tooltip-${symbol}`}
-            style={{
-              left: `${(activeCoordinate.x / CHART_WIDTH) * 100}%`,
-              top: `${(activeCoordinate.y / CHART_HEIGHT) * 100}%`,
-            }}>
+            style={
+              tooltipPlacement.ready
+                ? {
+                    left: tooltipPlacement.left,
+                    top: `${(activeCoordinate.y / CHART_HEIGHT) * 100}%`,
+                    transform: tooltipPlacement.placeBelow
+                      ? 'translate(-50%, 12px)'
+                      : 'translate(-50%, calc(-100% - 10px))',
+                  }
+                : {
+                    left: `${(activeCoordinate.x / CHART_WIDTH) * 100}%`,
+                    top: `${(activeCoordinate.y / CHART_HEIGHT) * 100}%`,
+                    visibility: 'hidden',
+                  }
+            }>
             <div className="wallet-token-price-chart__tooltip-price">
               {currencyPrefix}
               {formatUsdPrice(activeCoordinate.point.price)}
@@ -303,6 +419,30 @@ export const WalletTokenPriceChart = ({
             <div className="wallet-token-price-chart__tooltip-time">
               {formatChartTimestamp(activeCoordinate.point.timestamp)}
             </div>
+          </div>
+        )}
+        {isLiveChart && liveCategories.length > 0 && (
+          <div
+            className="wallet-token-price-chart__categories"
+            role="tablist"
+            data-testid={`wallet-token-price-chart-categories-${symbol}`}>
+            {liveCategories.map((category) => (
+              <button
+                key={category}
+                type="button"
+                role="tab"
+                aria-selected={category === resolvedCategory}
+                className={`wallet-token-price-chart__category ${
+                  category === resolvedCategory ? 'selected' : ''
+                }`}
+                data-testid={`wallet-token-price-chart-category-${symbol}-${category}`}
+                onClick={() => {
+                  setSelectedCategory(category);
+                  setActiveIndex(undefined);
+                }}>
+                {category}
+              </button>
+            ))}
           </div>
         )}
         <div

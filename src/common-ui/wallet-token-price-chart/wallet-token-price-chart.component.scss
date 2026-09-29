@@ -163,6 +163,49 @@
     white-space: nowrap;
   }
 
+  &__status {
+    @include poppins400(12px);
+    color: var(--main-font-color);
+    opacity: 0.7;
+    min-height: 148px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__categories {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    column-gap: 6px;
+    row-gap: 6px;
+    margin-top: 8px;
+  }
+
+  &__category {
+    @include poppins500(11px);
+    border: 1px solid var(--wallet-card-darker-border);
+    background: transparent;
+    color: var(--main-font-color);
+    border-radius: 999px;
+    padding: 4px 10px;
+    cursor: pointer;
+
+    &.selected {
+      border-color: $red;
+      color: $red;
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $red;
+      outline-offset: 2px;
+    }
+  }
+
   &__attribution {
     display: flex;
     justify-content: flex-end;

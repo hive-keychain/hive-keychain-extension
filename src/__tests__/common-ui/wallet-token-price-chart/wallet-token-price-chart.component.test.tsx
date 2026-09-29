@@ -88,4 +88,86 @@ describe('WalletTokenPriceChart', () => {
       screen.getByTestId('wallet-token-price-chart-price-DAI'),
     ).toHaveTextContent('$1.01');
   });
+
+  it('lists every history category and switches the series without using fake data', async () => {
+    const user = userEvent.setup();
+    const priceHistory = WalletTokenPriceChartUtils.parsePriceHistoryPayload({
+      '7d': [
+        ['2026-09-22T00:00:00.000Z', 4],
+        ['2026-09-28T00:00:00.000Z', 2],
+      ],
+      '24h': [
+        ['2026-09-28T00:00:00.000Z', 1],
+        ['2026-09-28T12:00:00.000Z', 1.5],
+      ],
+      ignored: 'not-a-series',
+    });
+
+    render(
+      <WalletTokenPriceChart symbol="USDC" priceHistory={priceHistory} />,
+    );
+
+    expect(priceHistory.categories).toEqual(['7d', '24h']);
+    expect(
+      screen.getByTestId('wallet-token-price-chart-category-USDC-24h'),
+    ).toHaveAttribute('aria-selected', 'true');
+    expect(
+      screen.getByTestId('wallet-token-price-chart-price-USDC'),
+    ).toHaveTextContent('$1.50');
+    expect(
+      screen.getByTestId('wallet-token-price-chart-change-USDC'),
+    ).toHaveTextContent('+50.00%');
+    expect(
+      screen.getByTestId('wallet-token-price-chart-change-USDC'),
+    ).toHaveTextContent('24h');
+
+    await user.click(
+      screen.getByTestId('wallet-token-price-chart-category-USDC-7d'),
+    );
+
+    expect(
+      screen.getByTestId('wallet-token-price-chart-price-USDC'),
+    ).toHaveTextContent('$2.00');
+    expect(
+      screen.getByTestId('wallet-token-price-chart-change-USDC'),
+    ).toHaveTextContent('-50.00%');
+    expect(
+      screen.getByTestId('wallet-token-price-chart-change-USDC'),
+    ).toHaveTextContent('7d');
+  });
+
+  it('keeps the tooltip inside the chart near the horizontal edges', () => {
+    expect(
+      WalletTokenPriceChartUtils.getClampedTooltipCenter(1, 320, 120),
+    ).toBe(320 - 60 - 8);
+    expect(
+      WalletTokenPriceChartUtils.getClampedTooltipCenter(0, 320, 120),
+    ).toBe(60 + 8);
+    expect(
+      WalletTokenPriceChartUtils.getClampedTooltipCenter(0.5, 320, 120),
+    ).toBe(160);
+  });
+
+  it('places the tooltip below points that sit too close to the top edge', () => {
+    expect(WalletTokenPriceChartUtils.shouldPlaceTooltipBelow(8, 40)).toBe(
+      true,
+    );
+    expect(WalletTokenPriceChartUtils.shouldPlaceTooltipBelow(80, 40)).toBe(
+      false,
+    );
+  });
+
+  it('shows an empty state when live history has no categories', () => {
+    render(
+      <WalletTokenPriceChart
+        symbol="USDC"
+        priceHistory={{ categories: [], seriesByCategory: {} }}
+      />,
+    );
+
+    expect(
+      screen.getByTestId('wallet-token-price-chart-status-USDC'),
+    ).toHaveTextContent('wallet_token_price_unavailable');
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+  });
 });

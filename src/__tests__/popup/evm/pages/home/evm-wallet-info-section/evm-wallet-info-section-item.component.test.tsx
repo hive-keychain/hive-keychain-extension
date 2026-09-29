@@ -2,6 +2,7 @@ import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
+import { EvmLightNodeApi } from '@api/evm-light-node';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { NativeAndErc20Token } from 'src/popup/evm/interfaces/active-account.interface';
 import { EVMSmartContractType } from 'src/popup/evm/interfaces/evm-tokens.interface';
@@ -26,7 +27,14 @@ jest.mock('src/common-ui/toast/copy-toast.utils', () => ({
   copyTextWithToast: (...args: unknown[]) => mockCopyTextWithToast(...args),
 }));
 
+jest.mock('@api/evm-light-node', () => ({
+  EvmLightNodeApi: {
+    get: jest.fn(),
+  },
+}));
+
 const ethereumChain = {
+  chainId: '0x1',
   blockExplorer: { url: 'https://eth.blockscout.com/' },
 } as EvmChain;
 
@@ -37,6 +45,13 @@ describe('EVM WalletInfoSectionItem', () => {
     I18nUtils.getMessage = jest.fn((key: string) => key);
     mockCopyTextWithToast.mockClear();
     tabsCreate.mockClear();
+    (EvmLightNodeApi.get as jest.Mock).mockReset();
+    (EvmLightNodeApi.get as jest.Mock).mockResolvedValue({
+      '24h': [
+        ['2026-09-28T00:00:00.000Z', 1],
+        ['2026-09-28T01:00:00.000Z', 1.2],
+      ],
+    });
     (global as any).chrome = {
       tabs: { create: tabsCreate },
     };
@@ -243,5 +258,89 @@ describe('EVM WalletInfoSectionItem', () => {
     expect(
       screen.queryByTestId('wallet-token-detail-panel-contract-explorer-USDC'),
     ).not.toBeInTheDocument();
+  });
+
+  it('loads native token price history from the chain endpoint', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <WalletInfoSectionItem
+        token={
+          {
+            tokenInfo: {
+              symbol: 'ETH',
+              type: EVMSmartContractType.NATIVE,
+            },
+          } as unknown as NativeAndErc20Token
+        }
+        icon={SVGIcons.BLOCKCHAIN_ETHEREUM}
+        mainValue="1.0"
+        mainValueLabel="Ethereum"
+        mainValueSubLabel="ETH"
+        chain={ethereumChain}
+        navigateToWithParams={jest.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: /Ethereum/ }));
+
+    await waitFor(() =>
+      expect(EvmLightNodeApi.get).toHaveBeenCalledWith('price/1/history'),
+    );
+    expect(
+      await screen.findByTestId('wallet-token-price-chart-category-ETH-24h'),
+    ).toHaveAttribute('aria-selected', 'true');
+    expect(
+      screen.getByTestId('wallet-token-price-chart-price-ETH'),
+    ).toHaveTextContent('$1.20');
+  });
+
+  it('loads ERC20 price history from the token address endpoint', async () => {
+    const user = userEvent.setup();
+    const contractAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+    (EvmLightNodeApi.get as jest.Mock).mockResolvedValue({
+      '24h': [
+        ['2026-09-28T00:00:00.000Z', 0.99],
+        ['2026-09-28T01:00:00.000Z', 1],
+      ],
+      '7d': [
+        ['2026-09-22T00:00:00.000Z', 0.9],
+        ['2026-09-28T01:00:00.000Z', 1],
+      ],
+    });
+
+    render(
+      <WalletInfoSectionItem
+        token={
+          {
+            tokenInfo: {
+              symbol: 'USDC',
+              type: EVMSmartContractType.ERC20,
+              contractAddress,
+            },
+          } as unknown as NativeAndErc20Token
+        }
+        icon={SVGIcons.BLOCKCHAIN_ETHEREUM}
+        mainValue="5.0"
+        mainValueLabel="USDC"
+        mainValueSubLabel="USD Coin"
+        chain={ethereumChain}
+        navigateToWithParams={jest.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: /USDC/ }));
+
+    await waitFor(() =>
+      expect(EvmLightNodeApi.get).toHaveBeenCalledWith(
+        `price/1/${contractAddress.toLowerCase()}/history`,
+      ),
+    );
+    expect(
+      await screen.findByTestId('wallet-token-price-chart-category-USDC-24h'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId('wallet-token-price-chart-category-USDC-7d'),
+    ).toBeInTheDocument();
   });
 });
