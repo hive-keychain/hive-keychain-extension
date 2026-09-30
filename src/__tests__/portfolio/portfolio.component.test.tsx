@@ -2728,6 +2728,51 @@ describe('Portfolio', () => {
     }
   });
 
+  it('shows USD price hints under swap from and to amounts', async () => {
+    (PortfolioApiUtils.getQuotes as jest.Mock).mockResolvedValue({
+      quotes: [
+        {
+          quoteId: 'q1',
+          provider: 'lifi',
+          providerName: 'LiFi',
+          providerLogoUrl: null,
+          estimatedToAmount: '50',
+          executionType: 'redirect',
+          toAsset: {
+            priceUsd: 2,
+          },
+        },
+      ],
+      request: { mode: 'swap' },
+    });
+    (
+      PortfolioApiUtils.resolveExecutablePortfolioQuoteId as jest.Mock
+    ).mockReturnValue('q1');
+
+    const { container, queryByTestId } = await renderSwapPortfolio({
+      amount: '0',
+    });
+
+    expect(queryByTestId('portfolio-from-amount-usd')).toBeNull();
+    expect(queryByTestId('portfolio-to-amount-usd')).toBeNull();
+
+    const amountInput = container.querySelector(
+      '.portfolio-flow .portfolio-amount-field input[type="number"]',
+    ) as HTMLInputElement;
+    fireEvent.change(amountInput, { target: { value: '0.1' } });
+
+    await waitFor(() => {
+      expect(
+        container.querySelector('[data-testid="portfolio-from-amount-usd"]')
+          ?.textContent,
+      ).toBe('$10.00');
+      expect(
+        container.querySelector('[data-testid="portfolio-to-amount-usd"]')
+          ?.textContent,
+      ).toBe('$100.00');
+    });
+  });
+
   it('shows a loading spinner in the swap quote input while awaiting the first quote', async () => {
     let resolveQuotes!: (value: unknown) => void;
     const quotesPromise = new Promise((resolve) => {

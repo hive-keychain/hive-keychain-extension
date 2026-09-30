@@ -1492,6 +1492,31 @@ describe('PortfolioFlowUtils', () => {
     ]);
   });
 
+  it('formats swap amount USD hints from a positive token price', () => {
+    expect(PortfolioFlowUtils.formatPortfolioAmountUsdHint('0.1', 100)).toBe(
+      '$10.00',
+    );
+    expect(
+      PortfolioFlowUtils.formatPortfolioAmountUsdHint('1,234.5', 2),
+    ).toBe('$2,469.00');
+    expect(
+      PortfolioFlowUtils.formatPortfolioAmountUsdHint('50', 0, 2),
+    ).toBe('$100.00');
+    expect(
+      PortfolioFlowUtils.formatPortfolioAmountUsdHint('0.00002', 1),
+    ).toBe('$0.00002');
+    expect(
+      PortfolioFlowUtils.formatPortfolioAmountUsdHint('0.0000000001', 1),
+    ).toBe('<$0.000001');
+    expect(PortfolioFlowUtils.formatPortfolioAmountUsdHint('', 100)).toBeNull();
+    expect(PortfolioFlowUtils.formatPortfolioAmountUsdHint('0', 100)).toBeNull();
+    expect(PortfolioFlowUtils.formatPortfolioAmountUsdHint('1', 0)).toBeNull();
+    expect(
+      PortfolioFlowUtils.formatPortfolioAmountUsdHint('1', null, undefined),
+    ).toBeNull();
+    expect(PortfolioFlowUtils.formatPortfolioAmountUsdHint('abc', 2)).toBeNull();
+  });
+
   it('formats quote amounts using token decimals before API submission', () => {
     expect(
       PortfolioFlowUtils.formatPortfolioQuoteFromAmount('1.23456789', 6),

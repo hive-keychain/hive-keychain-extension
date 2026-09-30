@@ -3862,6 +3862,29 @@ export const Portfolio = ({
         quoteResponse?.quotes.length === 0)
         ? I18nUtils.getMessage('portfolio_no_quote_available_short')
         : null;
+    const fromAmountUsdHint =
+      mode === 'swap'
+        ? PortfolioFlowUtils.formatPortfolioAmountUsdHint(
+            amount,
+            selectedFromRow?.priceUsd,
+            selectedQuote?.fromAsset?.priceUsd,
+            fromCanonicalAsset?.priceUsd,
+          )
+        : null;
+    const toAmountUsdHint =
+      mode === 'swap'
+        ? PortfolioFlowUtils.formatPortfolioAmountUsdHint(
+            selectedQuote?.estimatedToAmount,
+            selectedQuote?.toAsset?.priceUsd,
+            toCanonicalAsset?.priceUsd,
+          )
+        : null;
+    const renderAmountUsdHint = (hint: string | null, testId: string) =>
+      hint ? (
+        <p className="portfolio-amount-usd-hint" data-testid={testId}>
+          {hint}
+        </p>
+      ) : null;
 
     const handleSwapQuoteInputClick = () => {
       if (!hasAvailableQuotes) {
@@ -3878,7 +3901,8 @@ export const Portfolio = ({
     };
 
     const estimatedAmountInput = isQuoteAutoFetchSection(mode) ? (
-      <div className="custom-input portfolio-swap-quote-field">
+      <>
+        <div className="custom-input portfolio-swap-quote-field">
         <div className="label">
           {I18nUtils.getMessage('portfolio_estimated_amount')}
         </div>
@@ -3959,9 +3983,11 @@ export const Portfolio = ({
                 />
               ) : null}
             </div>
+            </div>
           </div>
         </div>
-      </div>
+        {renderAmountUsdHint(toAmountUsdHint, 'portfolio-to-amount-usd')}
+      </>
     ) : (
       <div className="portfolio-amount-field">
         <InputComponent
@@ -4205,6 +4231,7 @@ export const Portfolio = ({
             canSetAmountToMax ? SVGIcons.INPUT_MAX : undefined
           }
         />
+        {renderAmountUsdHint(fromAmountUsdHint, 'portfolio-from-amount-usd')}
         {hasInsufficientFromBalance && (
           <p className="portfolio-field-error" role="alert">
             {I18nUtils.getMessage('portfolio_insufficient_balance', [

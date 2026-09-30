@@ -17,6 +17,7 @@ import {
 } from 'src/portfolio/portfolio-api.interface';
 import { PortfolioHiveEngineBalanceBreakdown } from 'src/portfolio/portfolio.interface';
 import { EvmAddressUtils } from 'src/utils/evm/evm-address.utils';
+import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const HIVE_CORE_SYMBOLS = new Set(['HIVE', 'HBD', 'HP']);
@@ -207,6 +208,45 @@ export const formatPortfolioQuoteFromAmount = (
   } catch {
     return normalizedAmount;
   }
+};
+
+const formatPortfolioAmountUsdHint = (
+  amount: string | null | undefined,
+  ...priceUsdCandidates: Array<number | null | undefined>
+): string | null => {
+  const priceUsd = priceUsdCandidates.find(
+    (price): price is number =>
+      typeof price === 'number' && Number.isFinite(price) && price > 0,
+  );
+  if (priceUsd === undefined || !amount?.trim()) {
+    return null;
+  }
+
+  let tokenAmount: Decimal;
+  try {
+    tokenAmount = new Decimal(amount.replace(/,/g, '').trim());
+  } catch {
+    return null;
+  }
+
+  if (!tokenAmount.isFinite() || tokenAmount.lte(0)) {
+    return null;
+  }
+
+  const usdValue = tokenAmount.mul(priceUsd);
+  if (!usdValue.isFinite() || usdValue.lte(0)) {
+    return null;
+  }
+
+  if (usdValue.lt('0.000001')) {
+    return '<$0.000001';
+  }
+
+  if (usdValue.lt('0.01')) {
+    return `$${usdValue.toFixed(6).replace(/0+$/, '').replace(/\.$/, '')}`;
+  }
+
+  return `$${FormatUtils.formatCurrencyValue(usdValue.toNumber(), 2)}`;
 };
 
 export const resolvePortfolioQuoteFromAmountDecimals = (options: {
@@ -2045,6 +2085,7 @@ export const PortfolioFlowUtils = {
   isPortfolioSwapExcludedSymbol,
   isValidPortfolioRecipientAddress,
   formatPortfolioQuoteFromAmount,
+  formatPortfolioAmountUsdHint,
   formatPortfolioHiveEngineBalanceBreakdown,
   formatPortfolioTokenBalance,
   getDefaultSelectOptionValue,

@@ -1079,6 +1079,14 @@
   width: 100%;
 }
 
+.portfolio-amount-usd-hint {
+  margin: var(--kc-space-1) 0 var(--kc-space-3);
+  padding-left: var(--kc-space-3);
+  color: var(--kc-color-text-secondary);
+  font-size: var(--kc-font-size-xs);
+  line-height: 1.2;
+}
+
 .portfolio-amount-hint {
   margin: 0;
   color: var(--kc-color-text-secondary);
