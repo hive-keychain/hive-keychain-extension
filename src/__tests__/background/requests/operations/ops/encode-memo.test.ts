@@ -86,7 +86,7 @@ describe('encode-memo tests:\n', () => {
     );
   });
 
-  it('Must use key_auths if method not memo', async () => {
+  it('Must use posting key_auths if method is posting', async () => {
     jest
       .spyOn(AccountUtils, 'getExtendedAccount')
       .mockResolvedValue(accounts.extended);
@@ -101,6 +101,72 @@ describe('encode-memo tests:\n', () => {
       accounts.extended.posting.key_auths[0][0],
       data.message,
     );
+  });
+
+  it('Must use memo_key when method casing does not match Memo', async () => {
+    jest
+      .spyOn(AccountUtils, 'getExtendedAccount')
+      .mockResolvedValue(accounts.extended);
+    const sEncode = jest.spyOn(MemoEncodeHiveJS, 'encode');
+    const requestHandler = new RequestsHandler();
+    requestHandler.data.key = userData.one.nonEncryptKeys.memo;
+    data.method = 'memo' as KeychainKeyTypes;
+    data.message = memo._default.decoded;
+    await encodeMessage(requestHandler, data);
+    expect(sEncode).toHaveBeenCalledWith(
+      userData.one.nonEncryptKeys.memo,
+      userData.one.encryptKeys.memo,
+      data.message,
+    );
+  });
+
+  it('Must use the requested key when method casing differs', async () => {
+    jest
+      .spyOn(AccountUtils, 'getExtendedAccount')
+      .mockResolvedValue(accounts.extended);
+    const sEncode = jest.spyOn(MemoEncodeHiveJS, 'encode');
+    const requestHandler = new RequestsHandler();
+    requestHandler.data.key = userData.one.nonEncryptKeys.active;
+    data.message = memo._default.decoded;
+
+    data.method = 'POSTING' as KeychainKeyTypes;
+    await encodeMessage(requestHandler, data);
+    expect(sEncode).toHaveBeenCalledWith(
+      userData.one.nonEncryptKeys.active,
+      accounts.extended.posting.key_auths[0][0],
+      data.message,
+    );
+
+    sEncode.mockClear();
+    data.method = 'active' as KeychainKeyTypes;
+    await encodeMessage(requestHandler, data);
+    expect(sEncode).toHaveBeenCalledWith(
+      userData.one.nonEncryptKeys.active,
+      accounts.extended.active.key_auths[0][0],
+      data.message,
+    );
+  });
+
+  it('Must return error if key type is invalid', async () => {
+    jest
+      .spyOn(AccountUtils, 'getExtendedAccount')
+      .mockResolvedValue(accounts.extended);
+    const sEncode = jest.spyOn(MemoEncodeHiveJS, 'encode');
+    const requestHandler = new RequestsHandler();
+    requestHandler.data.key = userData.one.nonEncryptKeys.memo;
+    data.method = 'owner' as KeychainKeyTypes;
+    data.message = memo._default.decoded;
+    const resultOperation = (await encodeMessage(
+      requestHandler,
+      data,
+    )) as ResultOperation;
+    const { success, result, error } = resultOperation.msg;
+    expect(success).toBe(false);
+    expect(result).toBeNull();
+    expect((error as Error).message).toBe(
+      'Invalid key type "owner". Expected Posting, Active, or Memo.',
+    );
+    expect(sEncode).not.toHaveBeenCalled();
   });
 
   it('Must return success', async () => {
