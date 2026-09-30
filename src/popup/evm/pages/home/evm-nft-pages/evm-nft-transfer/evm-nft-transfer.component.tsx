@@ -19,8 +19,7 @@ import {
 } from '@popup/evm/interfaces/evm-tokens.interface';
 import { ProviderTransactionData } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
-import { EvmNftCollectionListItem } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-collection/evm-nft-collection.component';
-import { EvmNftDetails } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-details/evm-ntf-details.component';
+import type { EvmNftCollectionListItem } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-collection/evm-nft-collection.component';
 import { ERC1155Abi, ERC721Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
@@ -34,7 +33,6 @@ import {
 } from '@popup/multichain/actions/loading.actions';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
-import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { ethers } from 'ethers';
@@ -42,7 +40,6 @@ import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { connect, ConnectedProps } from 'react-redux';
-import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
@@ -58,32 +55,46 @@ interface EvmNftTransferForm {
   nftId: string;
 }
 
+export interface EvmNftTransferFormParams {
+  receiverAddress?: string;
+  receiverUsername?: string;
+  amount?: number;
+  nftId?: string;
+  selectedToken?: EvmSmartContractInfo;
+}
+
+interface EvmNftTransferOwnProps {
+  collectionItem: EvmNftCollectionListItem;
+  initialFormParams?: EvmNftTransferFormParams;
+}
+
 const transferFormRules = FormUtils.createRules<EvmNftTransferForm>({
   receiverAddress: Joi.string().required(),
   amount: Joi.number().required().max(Joi.ref('$balance')),
   selectedToken: Joi.object().required(),
 });
 
-const EvmNftTransfer = ({
+const EvmNftTransferForm = ({
   collectionItem,
-  formParams,
+  initialFormParams,
   chain,
   localAccounts,
   activeAccount,
-  setTitleContainerProperties,
   addToLoadingList,
   removeFromLoadingList,
   setErrorMessage,
   navigateToWithParams,
 }: PropsFromRedux) => {
+  const restoredReceiverAddress =
+    initialFormParams?.receiverUsername ||
+    initialFormParams?.receiverAddress ||
+    '';
   const { control, handleSubmit, setValue, watch } =
     useForm<EvmNftTransferForm>({
       defaultValues: {
-        receiverAddress: formParams.receiverAddress
-          ? formParams.receiverUsername
-          : '',
+        receiverAddress: restoredReceiverAddress,
         selectedToken: collectionItem.collection.tokenInfo,
-        amount: 1,
+        amount: initialFormParams?.amount ?? 1,
         nftId: collectionItem.item.id,
       },
       resolver: (values, context, options) => {
@@ -123,11 +134,6 @@ const EvmNftTransfer = ({
   };
 
   useEffect(() => {
-    setTitleContainerProperties({
-      title: 'evm_nft_transfer',
-      isBackButtonEnabled: true,
-    });
-
     let cancelled = false;
     void loadAutocomplete(() => cancelled);
 
@@ -372,47 +378,46 @@ const EvmNftTransfer = ({
     }
   };
 
+  const submitTransfer = () => {
+    void handleSubmit(handleClickOnSend)();
+  };
+
   return (
     <div
-      className="evm-nft-transfer-funds-page"
-      data-testid={`${Screen.EVM_NFT_TRANSFER_PAGE}-page`}>
-      <FormContainer onSubmit={handleSubmit(handleClickOnSend)}>
-        <div className="form-fields">
-          <EvmNftDetails
-            collection={collectionItem.collection}
-            nft={collectionItem.item}
-            expanded={true}
-            nftSize="small"
-          />
-          <FormInputComponent
-            name="receiverAddress"
-            control={control}
-            type={InputType.TEXT}
-            logo={SVGIcons.INPUT_AT}
-            placeholder="evm_nft_transfer_address"
-            label="evm_nft_transfer_address"
-            autocompleteValues={autocompleteValues}
-          />
+      className="nft-send-form"
+      data-testid="nft-send-form"
+      onClick={(event) => event.stopPropagation()}>
+      <FormInputComponent
+        name="receiverAddress"
+        control={control}
+        type={InputType.TEXT}
+        logo={SVGIcons.INPUT_AT}
+        placeholder="evm_nft_transfer_address"
+        label="evm_nft_transfer_address"
+        autocompleteValues={autocompleteValues}
+        onEnterPress={submitTransfer}
+      />
 
-          {collectionItem.collection.tokenInfo.type ===
-            EVMSmartContractType.ERC1155 && (
-            <FormInputComponent
-              name="amount"
-              control={control}
-              type={InputType.NUMBER}
-              placeholder="popup_html_amount"
-              label="popup_html_amount"
-              customOnChange={(value) => {
-                setValue('amount', Number(value));
-              }}
-            />
-          )}
-        </div>
-        <ButtonComponent
-          onClick={handleSubmit(handleClickOnSend)}
-          label={'popup_html_send_transfer'}
+      {collectionItem.collection.tokenInfo.type ===
+        EVMSmartContractType.ERC1155 && (
+        <FormInputComponent
+          name="amount"
+          control={control}
+          type={InputType.NUMBER}
+          placeholder="popup_html_amount"
+          label="popup_html_amount"
+          customOnChange={(value) => {
+            setValue('amount', Number(value));
+          }}
+          onEnterPress={submitTransfer}
         />
-      </FormContainer>
+      )}
+      <ButtonComponent
+        onClick={submitTransfer}
+        label={'popup_html_send_transfer'}
+        additionalClass="send-button"
+        height="small"
+      />
     </div>
   );
 };
@@ -420,23 +425,17 @@ const EvmNftTransfer = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.evm.activeAccount,
-    collectionItem: state.navigation.stack[0].params
-      .collectionItem as EvmNftCollectionListItem,
-    formParams: state.navigation.stack[0].previousParams?.formParams
-      ? state.navigation.stack[0].previousParams?.formParams
-      : {},
     localAccounts: state.evm.accounts,
     chain: state.chain as EvmChain,
   };
 };
 
 const connector = connect(mapStateToProps, {
-  setTitleContainerProperties,
   addToLoadingList,
   removeFromLoadingList,
   setErrorMessage,
   navigateToWithParams,
 });
-type PropsFromRedux = ConnectedProps<typeof connector>;
+type PropsFromRedux = ConnectedProps<typeof connector> & EvmNftTransferOwnProps;
 
-export const EvmNFTTransferComponent = connector(EvmNftTransfer);
+export const EvmNftTransferFormComponent = connector(EvmNftTransferForm);

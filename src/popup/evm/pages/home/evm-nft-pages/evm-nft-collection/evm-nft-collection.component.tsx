@@ -4,6 +4,10 @@ import {
   EvmErc721TokenCollectionItem,
 } from '@popup/evm/interfaces/active-account.interface';
 import { EvmNftDetails } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-details/evm-ntf-details.component';
+import {
+  EvmNftTransferFormComponent,
+  type EvmNftTransferFormParams,
+} from '@popup/evm/pages/home/evm-nft-pages/evm-nft-transfer/evm-nft-transfer.component';
 import React, { useEffect, useState } from 'react';
 import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
@@ -19,18 +23,49 @@ export interface EvmNftCollectionListItem {
 interface Props {
   nftList: EvmNftCollectionListItem[];
   additionalClass?: string;
-  onSendClick: (item: EvmNftCollectionListItem) => void;
+  initialFormParams?: EvmNftTransferFormParams;
 }
+
+const isSameNft = (
+  listItem: EvmNftCollectionListItem,
+  other: EvmNftCollectionListItem,
+) =>
+  listItem.item.id === other.item.id &&
+  listItem.collection.tokenInfo.contractAddress.toLowerCase() ===
+    other.collection.tokenInfo.contractAddress.toLowerCase();
+
+const findNftListItem = (
+  nftList: EvmNftCollectionListItem[],
+  formParams?: EvmNftTransferFormParams,
+) => {
+  if (!formParams?.nftId) {
+    return undefined;
+  }
+  return nftList.find((listItem) => {
+    const sameId = listItem.item.id === formParams.nftId;
+    const contractAddress = formParams.selectedToken?.contractAddress;
+    if (!contractAddress) {
+      return sameId;
+    }
+    return (
+      sameId &&
+      listItem.collection.tokenInfo.contractAddress.toLowerCase() ===
+        contractAddress.toLowerCase()
+    );
+  });
+};
 
 export const EvmNftCollectionComponent = ({
   nftList,
   additionalClass,
-  onSendClick,
+  initialFormParams,
 }: Props) => {
   const backToTopHook = useBackToTop();
 
   const [selectedCollectionListItem, setSelectedCollectionListItem] =
-    useState<EvmNftCollectionListItem>();
+    useState<EvmNftCollectionListItem | undefined>(() =>
+      findNftListItem(nftList, initialFormParams),
+    );
 
   const [query, setQuery] = useState<string>('');
   const [filteredItems, setFilteredItems] =
@@ -53,15 +88,10 @@ export const EvmNftCollectionComponent = ({
         );
       }),
     );
-  }, [query]);
+  }, [nftList, query]);
 
   const handleClick = (listItem: EvmNftCollectionListItem) => {
     setSelectedCollectionListItem(listItem);
-  };
-
-  const handleClickOnSend = () => {
-    if (onSendClick && selectedCollectionListItem)
-      onSendClick(selectedCollectionListItem);
   };
 
   return (
@@ -78,22 +108,33 @@ export const EvmNftCollectionComponent = ({
         />
         <div className="nft-list" ref={backToTopHook.list}>
           {filteredItems &&
-            filteredItems.map((listItem, index) => (
-              <React.Fragment key={index}>
-                <EvmNftDetails
-                  nft={listItem.item}
-                  collection={listItem.collection}
-                  onClick={() => handleClick(listItem)}
-                  expanded={
-                    selectedCollectionListItem?.collection.tokenInfo
-                      .contractAddress ===
-                      listItem.collection.tokenInfo.contractAddress &&
-                    listItem.item.id === selectedCollectionListItem.item.id
-                  }
-                  onClickSend={() => handleClickOnSend()}
-                />
-              </React.Fragment>
-            ))}
+            filteredItems.map((listItem, index) => {
+              const isExpanded = Boolean(
+                selectedCollectionListItem &&
+                  isSameNft(selectedCollectionListItem, listItem),
+              );
+              const restoredItem = findNftListItem(nftList, initialFormParams);
+              return (
+                <React.Fragment key={index}>
+                  <EvmNftDetails
+                    nft={listItem.item}
+                    collection={listItem.collection}
+                    onClick={() => handleClick(listItem)}
+                    expanded={isExpanded}>
+                    {isExpanded && (
+                      <EvmNftTransferFormComponent
+                        collectionItem={listItem}
+                        initialFormParams={
+                          restoredItem && isSameNft(restoredItem, listItem)
+                            ? initialFormParams
+                            : undefined
+                        }
+                      />
+                    )}
+                  </EvmNftDetails>
+                </React.Fragment>
+              );
+            })}
           {backToTopHook.displayScrollToTop && (
             <BackToTopButton element={backToTopHook.list} />
           )}

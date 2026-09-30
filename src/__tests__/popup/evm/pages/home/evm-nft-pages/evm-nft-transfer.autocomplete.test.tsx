@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom';
 import { act, cleanup, fireEvent } from '@testing-library/react';
-import { Screen } from '@interfaces/screen.interface';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
-import { EvmNFTTransferComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-transfer/evm-nft-transfer.component';
+import { EvmNftCollectionListItem } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-collection/evm-nft-collection.component';
+import { EvmNftTransferFormComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-transfer/evm-nft-transfer.component';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import React from 'react';
@@ -15,16 +15,6 @@ import {
 } from 'src/__tests__/utils-for-testing/setups/render';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
-jest.mock(
-  'src/common-ui/_containers/form-container/form-container.component',
-  () => ({
-    FormContainer: ({ children, onSubmit }: any) => {
-      const React = require('react');
-      return React.createElement('form', { onSubmit }, children);
-    },
-  }),
-);
-
 jest.mock('src/common-ui/button/button.component', () => ({
   __esModule: true,
   default: ({ label, onClick, dataTestId }: any) => {
@@ -36,16 +26,6 @@ jest.mock('src/common-ui/button/button.component', () => ({
     );
   },
 }));
-
-jest.mock(
-  'src/popup/evm/pages/home/evm-nft-pages/evm-nft-details/evm-ntf-details.component',
-  () => ({
-    EvmNftDetails: () => {
-      const React = require('react');
-      return React.createElement('div', { 'data-testid': 'nft-details' });
-    },
-  }),
-);
 
 const createDeferred = <T,>() => {
   let resolve!: (value: T) => void;
@@ -94,33 +74,27 @@ describe('evm-nft-transfer autocomplete behavior', () => {
     ],
   };
 
+  const collectionItem = {
+    collection: {
+      tokenInfo: {
+        contractAddress: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        type: EVMSmartContractType.ERC721,
+        name: 'Example NFT',
+        symbol: 'NFT',
+        logo: '',
+      },
+    },
+    item: {
+      id: '1',
+      metadata: { image: 'https://example.com/nft.png' },
+    },
+  } as EvmNftCollectionListItem;
+
   const buildState = () => ({
     ...initialEmptyStateStore,
     navigation: {
       ...initialEmptyStateStore.navigation,
-      stack: [
-        {
-          currentPage: Screen.EVM_NFT_TRANSFER_PAGE,
-          params: {
-            collectionItem: {
-              collection: {
-                tokenInfo: {
-                  contractAddress:
-                    '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-                  type: EVMSmartContractType.ERC721,
-                  name: 'Example NFT',
-                  symbol: 'NFT',
-                  logo: '',
-                },
-              },
-              item: {
-                id: '1',
-                metadata: { image: 'https://example.com/nft.png' },
-              },
-            },
-          },
-        },
-      ],
+      stack: [],
     },
     chain: {
       ...initialEmptyStateStore.chain,
@@ -173,9 +147,12 @@ describe('evm-nft-transfer autocomplete behavior', () => {
       .spyOn(EvmAddressesUtils, 'enrichWhiteListAutocomplete')
       .mockReturnValue(enrichmentDeferred.promise);
 
-    customRender(<EvmNFTTransferComponent />, {
-      initialState: buildState(),
-    });
+    customRender(
+      <EvmNftTransferFormComponent collectionItem={collectionItem} />,
+      {
+        initialState: buildState(),
+      },
+    );
 
     const input = await screen.findByRole('textbox');
     fireEvent.focus(input);
@@ -201,9 +178,12 @@ describe('evm-nft-transfer autocomplete behavior', () => {
 
     const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    const { unmount } = customRender(<EvmNFTTransferComponent />, {
-      initialState: buildState(),
-    });
+    const { unmount } = customRender(
+      <EvmNftTransferFormComponent collectionItem={collectionItem} />,
+      {
+        initialState: buildState(),
+      },
+    );
 
     await waitFor(() => {
       expect(screen.getByRole('textbox')).toBeInTheDocument();

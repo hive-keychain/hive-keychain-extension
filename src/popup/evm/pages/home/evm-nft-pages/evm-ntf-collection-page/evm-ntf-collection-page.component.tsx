@@ -1,11 +1,7 @@
 import { EvmErc721Token } from '@popup/evm/interfaces/active-account.interface';
-import {
-  EvmNftCollectionComponent,
-  EvmNftCollectionListItem,
-} from '@popup/evm/pages/home/evm-nft-pages/evm-nft-collection/evm-nft-collection.component';
-import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { EvmNftCollectionComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-collection/evm-nft-collection.component';
+import type { EvmNftTransferFormParams } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-transfer/evm-nft-transfer.component';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
-import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect } from 'react';
@@ -13,8 +9,8 @@ import { connect, ConnectedProps } from 'react-redux';
 
 const EvmNftCollectionPage = ({
   collection,
+  initialFormParams,
   setTitleContainerProperties,
-  navigateToWithParams,
 }: PropsFromRedux) => {
   useEffect(() => {
     const collectionTitle =
@@ -28,12 +24,6 @@ const EvmNftCollectionPage = ({
     });
   }, []);
 
-  const goToSendNftPage = (item: EvmNftCollectionListItem) => {
-    navigateToWithParams(EvmScreen.EVM_NFT_TRANSFER_PAGE, {
-      collectionItem: item,
-    });
-  };
-
   return (
     <EvmNftCollectionComponent
       nftList={collection.collection.map((collectionItem) => {
@@ -42,7 +32,7 @@ const EvmNftCollectionPage = ({
           collection: collection,
         };
       })}
-      onSendClick={(item) => goToSendNftPage(item)}
+      initialFormParams={initialFormParams}
     />
   );
 };
@@ -51,12 +41,13 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.evm.activeAccount,
     collection: state.navigation.stack[0].params.collection as EvmErc721Token,
+    initialFormParams: state.navigation.stack[0].previousParams
+      ?.formParams as EvmNftTransferFormParams | undefined,
   };
 };
 
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
-  navigateToWithParams,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
