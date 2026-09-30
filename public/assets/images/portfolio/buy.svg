@@ -1,23 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-  <circle
-    cx="10.5"
-    cy="13"
-    r="7.5"
-    stroke="var(--wallet-icon-color)"
-    stroke-width="1.5"
-  />
+<svg
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
   <path
-    d="m10.5 8.5 3.7 2.1v4.2l-3.7 2.1-3.7-2.1v-4.2l3.7-2.1Z"
+    d="M12 3V11"
     stroke="var(--wallet-icon-color)"
+    stroke-width="1.27"
     stroke-linecap="round"
     stroke-linejoin="round"
-    stroke-width="1.5"
   />
   <path
-    d="m6.8 10.6 3.7 2.1 3.7-2.1M10.5 12.7v4.2M19 3v5M16.5 5.5h5"
+    d="M8.75 8L12 11.25L15.25 8"
     stroke="var(--wallet-icon-color)"
+    stroke-width="1.27"
     stroke-linecap="round"
     stroke-linejoin="round"
-    stroke-width="1.5"
+  />
+
+  <ellipse
+    cx="12"
+    cy="15"
+    rx="6.5"
+    ry="2.5"
+    stroke="var(--wallet-icon-color)"
+    stroke-width="1.27"
+  />
+  <path
+    d="M5.5 15V18C5.5 19.38 8.41 20.5 12 20.5C15.59 20.5 18.5 19.38 18.5 18V15"
+    stroke="var(--wallet-icon-color)"
+    stroke-width="1.27"
+    stroke-linecap="round"
   />
 </svg>

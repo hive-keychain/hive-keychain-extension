@@ -5,7 +5,7 @@ export enum SVGIcons {
   BLOCKCHAIN_POLYGON = 'blockchains/polygon',
   BLOCKCHAIN_HIVE = 'blockchains/hive',
 
-  BOTTOM_BAR_BUY = 'bottom-bar/buy',
+  BOTTOM_BAR_BUY = 'portfolio/buy',
   BOTTOM_BAR_ECOSYSTEM = 'bottom-bar/ecosystem',
   BOTTOM_BAR_RECEIVE = 'bottom-bar/receive',
   BOTTOM_BAR_SEND = 'bottom-bar/send',
