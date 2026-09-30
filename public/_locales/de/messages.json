@@ -8237,6 +8237,10 @@
   "portfolio_no_matching_assets": {
     "message": "Keine Assets passen zu deinen Filtern."
   },
+  "portfolio_swap_switch_tokens": {
+    "message": "Token tauschen",
+    "description": "Schaltfläche zwischen den Von- und Nach-Bereichen des Portfolio-Swaps"
+  },
   "portfolio_swap_no_wallet_tokens": {
     "message": "Diese Wallet hat keinen Token."
   },

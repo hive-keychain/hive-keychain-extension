@@ -8237,6 +8237,10 @@
   "portfolio_no_matching_assets": {
     "message": "Ningún activo coincide con tus filtros."
   },
+  "portfolio_swap_switch_tokens": {
+    "message": "Intercambiar tokens",
+    "description": "Botón entre los paneles de origen y destino del swap del portfolio"
+  },
   "portfolio_swap_no_wallet_tokens": {
     "message": "Esta billetera no tiene ningún token."
   },

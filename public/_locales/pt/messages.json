@@ -8237,6 +8237,10 @@
   "portfolio_no_matching_assets": {
     "message": "Nenhum ativo corresponde aos seus filtros."
   },
+  "portfolio_swap_switch_tokens": {
+    "message": "Trocar tokens",
+    "description": "Botão entre os painéis de origem e destino do swap do portfolio"
+  },
   "portfolio_swap_no_wallet_tokens": {
     "message": "Esta carteira não tem nenhum token."
   },

@@ -8237,6 +8237,10 @@
   "portfolio_no_matching_assets": {
     "message": "没有符合筛选条件的资产。"
   },
+  "portfolio_swap_switch_tokens": {
+    "message": "切换代币",
+    "description": "投资组合兑换页中来源与目标面板之间的按钮"
+  },
   "portfolio_swap_no_wallet_tokens": {
     "message": "此钱包没有任何 token。"
   },

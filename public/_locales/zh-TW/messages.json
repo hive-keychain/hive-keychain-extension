@@ -8237,6 +8237,10 @@
   "portfolio_no_matching_assets": {
     "message": "沒有符合篩選條件的資產。"
   },
+  "portfolio_swap_switch_tokens": {
+    "message": "切換代幣",
+    "description": "投資組合兌換頁中來源與目標面板之間的按鈕"
+  },
   "portfolio_swap_no_wallet_tokens": {
     "message": "此錢包沒有任何 token。"
   },

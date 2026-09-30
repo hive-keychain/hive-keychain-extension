@@ -2012,6 +2012,173 @@ describe('Portfolio', () => {
     });
   });
 
+  it('switches swap tokens when the destination asset is in the wallet', async () => {
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
+      assets: swapAssetsFixture,
+      chains: {},
+    });
+    mockPortfolioListAvailableAssets();
+
+    const { container, getByTestId } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+    });
+
+    clickPortfolioNav(container, 'swap');
+
+    await waitFor(() => {
+      expect(
+        container.querySelector('#portfolio-from-asset')?.textContent,
+      ).toContain('ETH');
+      expect(
+        container.querySelector('#portfolio-to-asset')?.textContent,
+      ).toContain('MATIC');
+    });
+
+    fireEvent.click(getByTestId('portfolio-swap-switch'));
+
+    await waitFor(() => {
+      expect(
+        container.querySelector('#portfolio-from-asset')?.textContent,
+      ).toContain('MATIC');
+      expect(
+        container.querySelector('#portfolio-from-asset')?.textContent,
+      ).not.toContain('ETH');
+      expect(
+        container.querySelector('#portfolio-to-asset')?.textContent,
+      ).toContain('ETH');
+      expect(
+        container.querySelector('#portfolio-to-asset')?.textContent,
+      ).not.toContain('MATIC');
+    });
+  });
+
+  it('keeps swap tokens when the destination asset is not in the from list', async () => {
+    const setErrorMessage = jest.fn();
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
+      assets: swapAssetsFixture,
+      chains: {},
+    });
+    (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockImplementation(
+      async (params: {
+        mode: string;
+        direction: string;
+        sourceAssetId?: string;
+      }) => {
+        if (params.mode === 'swap' && !params.direction) {
+          return {
+            mode: 'swap',
+            direction: null,
+            sourceAssetId: params.sourceAssetId ?? null,
+            assets: [
+              ...swapAssetsFixture,
+              {
+                assetId: 'evm:native:kaia',
+                ecosystem: 'evm',
+                symbol: 'KAIA',
+                name: 'Kaia',
+                chainId: 'kaia',
+                address: null,
+                decimals: 18,
+                isNative: true,
+                familyId: 'kaia',
+                logoUrl: null,
+                priceUsd: 0,
+                rankScore: 0,
+              },
+            ],
+            chains: {
+              kaia: {
+                id: 'kaia',
+                name: 'Kaia',
+                logoUrl: null,
+                numericChainId: 8217,
+                rankScore: 0,
+              },
+            },
+          };
+        }
+
+        return {
+          mode: params.mode,
+          direction: params.direction,
+          sourceAssetId: params.sourceAssetId ?? null,
+          assets: [],
+          chains: {},
+        };
+      },
+    );
+
+    const { container, getByTestId } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={setErrorMessage}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+    });
+
+    clickPortfolioNav(container, 'swap');
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-to-asset')).not.toBeNull();
+    });
+
+    await selectOverlayOption(container, 'portfolio-to-asset', (text) =>
+      text.includes('KAIA'),
+    );
+
+    await waitFor(() => {
+      expect(
+        container.querySelector('#portfolio-to-asset')?.textContent,
+      ).toContain('KAIA');
+    });
+
+    fireEvent.click(getByTestId('portfolio-swap-switch'));
+
+    expect(setErrorMessage).toHaveBeenCalledWith('swap_cannot_switch_tokens', [
+      'KAIA (Kaia)',
+    ]);
+    expect(
+      container.querySelector('#portfolio-from-asset')?.textContent,
+    ).toContain('ETH');
+    expect(
+      container.querySelector('#portfolio-to-asset')?.textContent,
+    ).toContain('KAIA');
+  });
+
   it('keeps the swap form hidden until the active chain balances have loaded', async () => {
     window.history.replaceState(null, '', '/#swap');
 

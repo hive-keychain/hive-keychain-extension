@@ -8237,6 +8237,10 @@
   "portfolio_no_matching_assets": {
     "message": "Tidak ada aset yang cocok dengan filter."
   },
+  "portfolio_swap_switch_tokens": {
+    "message": "Tukar token",
+    "description": "Tombol di antara panel dari dan ke pada swap portofolio"
+  },
   "portfolio_swap_no_wallet_tokens": {
     "message": "Dompet ini tidak memiliki token."
   },

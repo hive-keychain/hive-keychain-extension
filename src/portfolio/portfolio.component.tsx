@@ -3550,6 +3550,48 @@ export const Portfolio = ({
     ],
   );
 
+  const handleSwitchSwapAssets = () => {
+    const nextFromAssetId =
+      PortfolioFlowUtils.resolveFromSelectOptionValueForAssetId(
+        toAssetId,
+        fromAssetOptions,
+        rows,
+        canonicalAssetsForRowResolution,
+        toAssetEvmChains,
+        portfolioChains,
+        swapSourceAssets,
+      );
+
+    if (
+      !nextFromAssetId ||
+      nextFromAssetId === fromAssetId ||
+      !fromCanonicalAsset ||
+      !toCanonicalAsset ||
+      !PortfolioFlowUtils.isEligibleToAssetForFromAsset(
+        toCanonicalAsset,
+        fromCanonicalAsset,
+      )
+    ) {
+      const networkLabel = toCanonicalAsset
+        ? PortfolioFlowUtils.resolveCanonicalAssetNetworkLabel(
+            toCanonicalAsset,
+            toAssetEvmChains,
+            portfolioChains,
+          )
+        : '';
+      const tokenLabel =
+        toCanonicalAsset && networkLabel
+          ? `${toCanonicalAsset.symbol} (${networkLabel})`
+          : (toCanonicalAsset?.symbol ?? '');
+      setErrorMessage('swap_cannot_switch_tokens', [tokenLabel]);
+      return;
+    }
+
+    hasUserSelectedFromAssetRef.current = true;
+    setFromAssetId(nextFromAssetId);
+    setToAssetId(fromCanonicalAsset.assetId);
+  };
+
   const portfolioRowActions = useMemo(
     (): Array<Exclude<PortfolioMode, 'bridge'>> =>
       selectedAccount?.type === ChainType.HIVE
@@ -4303,6 +4345,13 @@ export const Portfolio = ({
                 </div>
               </div>
             </div>
+            <SVGIcon
+              className="portfolio-swap-switch"
+              dataTestId="portfolio-swap-switch"
+              icon={SVGIcons.SWAPS_SWITCH}
+              ariaLabel={I18nUtils.getMessage('portfolio_swap_switch_tokens')}
+              onClick={handleSwitchSwapAssets}
+            />
             <div className="portfolio-flow-group">
               {toAssetOptions.length > 0 ? (
                 <div className="portfolio-flow-pair-row">

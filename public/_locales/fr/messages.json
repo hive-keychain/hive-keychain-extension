@@ -8240,6 +8240,10 @@
   "portfolio_swap_no_wallet_tokens": {
     "message": "Ce portefeuille n'a aucun token."
   },
+  "portfolio_swap_switch_tokens": {
+    "message": "Inverser les tokens",
+    "description": "Bouton entre les panneaux source et destination du swap portfolio"
+  },
   "portfolio_refresh": {
     "message": "Actualiser les données du portfolio"
   },
