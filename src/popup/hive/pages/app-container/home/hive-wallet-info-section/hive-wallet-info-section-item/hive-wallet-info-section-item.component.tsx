@@ -22,6 +22,7 @@ import React, {
   useState,
 } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { KeychainApi } from 'src/api/keychain';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
@@ -29,9 +30,14 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { WalletInfoSectionItemButton } from 'src/common-ui/wallet-info-section-item-button/wallet-info-section-item-button.component';
 import { WalletTokenDetailPanel } from 'src/common-ui/wallet-token-detail-panel/wallet-token-detail-panel.component';
 import { WalletTokenPriceChart } from 'src/common-ui/wallet-token-price-chart/wallet-token-price-chart.component';
+import {
+  TokenPriceHistory,
+  WalletTokenPriceChartUtils,
+} from 'src/common-ui/wallet-token-price-chart/wallet-token-price-chart.utils';
 import FormatUtils from 'src/utils/format.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
+import Logger from 'src/utils/logger.utils';
 /**
  * Stable `data-testid` for wallet row actions and Hive-Engine token buttons.
  * Matches `src/__tests__/utils-for-testing/data-testid/data-testid-dropdown.ts`.
@@ -110,12 +116,56 @@ export const WalletInfoSectionItem = ({
     () => `hive-wallet-details-${tokenSymbol.replace(/[^a-zA-Z0-9_-]/g, '-')}`,
   );
   const [actionButtons, setActionButtons] = useState<ActionButton[]>([]);
+  const [priceHistory, setPriceHistory] = useState<TokenPriceHistory | null>(
+    null,
+  );
+  const [priceHistoryLoading, setPriceHistoryLoading] = useState(false);
+  const hivePriceHistoryPath =
+    WalletTokenPriceChartUtils.buildHivePriceHistoryPath(tokenSymbol);
 
   const [hasButtonsInList, setHasButtonInList] = useState(false);
 
   useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    if (!isPanelOpen || !hivePriceHistoryPath) {
+      return;
+    }
+
+    let cancelled = false;
+    setPriceHistoryLoading(true);
+
+    const loadPriceHistory = async () => {
+      try {
+        const payload = await KeychainApi.get(hivePriceHistoryPath);
+        if (!cancelled) {
+          setPriceHistory(
+            WalletTokenPriceChartUtils.parsePriceHistoryPayload(payload),
+          );
+        }
+      } catch (error) {
+        Logger.warn(
+          `Token price history unavailable (${hivePriceHistoryPath}): ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+        );
+        if (!cancelled) {
+          setPriceHistory({ categories: [], seriesByCategory: {} });
+        }
+      } finally {
+        if (!cancelled) {
+          setPriceHistoryLoading(false);
+        }
+      }
+    };
+
+    void loadPriceHistory();
+    return () => {
+      cancelled = true;
+    };
+  }, [isPanelOpen, hivePriceHistoryPath]);
 
   const init = async () => {
     setActionButtons(
@@ -145,6 +195,9 @@ export const WalletInfoSectionItem = ({
   };
 
   const openPanel = () => {
+    if (hivePriceHistoryPath) {
+      setPriceHistoryLoading(true);
+    }
     setIsPanelOpen(true);
   };
 
@@ -325,7 +378,13 @@ export const WalletInfoSectionItem = ({
           </div>
         }>
         <div className="wallet-info-details">
-          <WalletTokenPriceChart symbol={tokenSymbol} />
+          <WalletTokenPriceChart
+            symbol={tokenSymbol}
+            priceHistory={hivePriceHistoryPath ? priceHistory : undefined}
+            priceHistoryLoading={
+              hivePriceHistoryPath ? priceHistoryLoading : undefined
+            }
+          />
           {tokenInfo && tokenBalance && tokenMarket && (
             <div
               className={`token-info-panel ${

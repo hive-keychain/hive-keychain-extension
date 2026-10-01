@@ -103,6 +103,20 @@ const parsePriceHistoryPayload = (payload: unknown): TokenPriceHistory => {
   return { categories, seriesByCategory };
 };
 
+const HIVE_PRICE_HISTORY_ASSETS: Record<string, string> = {
+  HIVE: 'hive',
+  HP: 'hive',
+  HBD: 'hbd',
+};
+
+const buildHivePriceHistoryPath = (symbol: string): string | undefined => {
+  const asset = HIVE_PRICE_HISTORY_ASSETS[symbol.trim().toUpperCase()];
+  if (!asset) {
+    return undefined;
+  }
+  return `hive/v2/price/${asset}/history`;
+};
+
 const buildEvmPriceHistoryPath = (
   chainId: string,
   contractAddress?: string,
@@ -161,6 +175,7 @@ const shouldPlaceTooltipBelow = (
 export const WalletTokenPriceChartUtils = {
   buildFakeTokenPriceSeries,
   parsePriceHistoryPayload,
+  buildHivePriceHistoryPath,
   buildEvmPriceHistoryPath,
   getDefaultPriceHistoryCategory,
   getSeriesFromPoints,

@@ -4,9 +4,16 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ImageUtils from 'hive-keychain-commons/lib/utils/images.utils';
 import React from 'react';
+import { KeychainApi } from 'src/api/keychain';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { WalletInfoSectionItem } from 'src/popup/hive/pages/app-container/home/hive-wallet-info-section/hive-wallet-info-section-item/hive-wallet-info-section-item.component';
 import { I18nUtils } from 'src/utils/i18n.utils';
+
+jest.mock('src/api/keychain', () => ({
+  KeychainApi: {
+    get: jest.fn(),
+  },
+}));
 
 jest.mock('react-svg', () => ({
   ReactSVG: ({
@@ -43,6 +50,13 @@ describe('Hive WalletInfoSectionItem', () => {
 
   beforeEach(() => {
     I18nUtils.getMessage = jest.fn((key: string) => key);
+    (KeychainApi.get as jest.Mock).mockReset();
+    (KeychainApi.get as jest.Mock).mockResolvedValue({
+      '24h': [
+        ['2026-09-28T00:00:00.000Z', 1],
+        ['2026-09-28T01:00:00.000Z', 1.2],
+      ],
+    });
   });
 
   it('renders native HIVE/HBD/HP logos from bundled SVG files', () => {
@@ -196,5 +210,86 @@ describe('Hive WalletInfoSectionItem', () => {
     expect(
       screen.getByTestId('icon-token-history-HIVE'),
     ).toBeInTheDocument();
+    await screen.findByTestId('wallet-token-price-chart-category-HIVE-24h');
+    expect(KeychainApi.get).toHaveBeenCalledWith('hive/v2/price/hive/history');
+    expect(
+      screen.getByTestId('wallet-token-price-chart-price-HIVE'),
+    ).toHaveTextContent('$1.20');
+  });
+
+  it('loads HBD chart history and skips an empty 24h category', async () => {
+    const user = userEvent.setup();
+    (KeychainApi.get as jest.Mock).mockResolvedValue({
+      '24h': [],
+      '7d': [
+        ['2026-09-22T00:00:00.000Z', 1],
+        ['2026-09-28T00:00:00.000Z', 0.99],
+      ],
+    });
+
+    render(
+      <WalletInfoSectionItem
+        {...connectedProps}
+        tokenSymbol="HBD"
+        icon={SVGIcons.WALLET_HBD_LOGO}
+        mainValue="1.000"
+        mainValueLabel="HBD"
+      />,
+    );
+
+    await user.click(screen.getByTestId('dropdown-arrow-hbd'));
+
+    expect(KeychainApi.get).toHaveBeenCalledWith('hive/v2/price/hbd/history');
+    expect(
+      await screen.findByTestId('wallet-token-price-chart-category-HBD-7d'),
+    ).toHaveAttribute('aria-selected', 'true');
+    expect(
+      screen.queryByTestId('wallet-token-price-chart-category-HBD-24h'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByTestId('wallet-token-price-chart-price-HBD'),
+    ).toHaveTextContent('$0.9900');
+  });
+
+  it('loads Hive Power from the Hive price history', async () => {
+    const user = userEvent.setup();
+    render(
+      <WalletInfoSectionItem
+        {...connectedProps}
+        tokenSymbol="HP"
+        icon={SVGIcons.WALLET_HP_LOGO}
+        mainValue="1.000"
+        mainValueLabel="HP"
+      />,
+    );
+
+    await user.click(screen.getByTestId('dropdown-arrow-hp'));
+
+    expect(KeychainApi.get).toHaveBeenCalledWith('hive/v2/price/hive/history');
+    await screen.findByTestId('wallet-token-price-chart-category-HP-24h');
+    expect(
+      screen.getByTestId('wallet-token-price-chart-price-HP'),
+    ).toHaveTextContent('$1.20');
+  });
+
+  it('shows price history unavailable when the Hive chart request fails', async () => {
+    const user = userEvent.setup();
+    (KeychainApi.get as jest.Mock).mockRejectedValue(new Error('offline'));
+
+    render(
+      <WalletInfoSectionItem
+        {...connectedProps}
+        tokenSymbol="HIVE"
+        icon={SVGIcons.WALLET_HIVE_LOGO}
+        mainValue="1.000"
+        mainValueLabel="HIVE"
+      />,
+    );
+
+    await user.click(screen.getByTestId('dropdown-arrow-hive'));
+
+    expect(
+      await screen.findByTestId('wallet-token-price-chart-status-HIVE'),
+    ).toHaveTextContent('wallet_token_price_unavailable');
   });
 });

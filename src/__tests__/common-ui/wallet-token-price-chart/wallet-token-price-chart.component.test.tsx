@@ -157,6 +157,21 @@ describe('WalletTokenPriceChart', () => {
     );
   });
 
+  it('builds Hive, Hive Power, and HBD chart paths and leaves other symbols unset', () => {
+    expect(WalletTokenPriceChartUtils.buildHivePriceHistoryPath('HIVE')).toBe(
+      'hive/v2/price/hive/history',
+    );
+    expect(WalletTokenPriceChartUtils.buildHivePriceHistoryPath('HP')).toBe(
+      'hive/v2/price/hive/history',
+    );
+    expect(WalletTokenPriceChartUtils.buildHivePriceHistoryPath('hbd')).toBe(
+      'hive/v2/price/hbd/history',
+    );
+    expect(
+      WalletTokenPriceChartUtils.buildHivePriceHistoryPath('BEE'),
+    ).toBeUndefined();
+  });
+
   it('shows an empty state when live history has no categories', () => {
     render(
       <WalletTokenPriceChart
