@@ -106,7 +106,81 @@ const parsePriceHistoryPayload = (payload: unknown): TokenPriceHistory => {
 const HIVE_PRICE_HISTORY_ASSETS: Record<string, string> = {
   HIVE: 'hive',
   HP: 'hive',
+  'SWAP.HIVE': 'hive',
   HBD: 'hbd',
+};
+
+const HIVE_ENGINE_HISTORY_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+const toTradeTimestampMs = (timestamp: number): number =>
+  timestamp > 1e12 ? timestamp : timestamp * 1000;
+
+const hiveUsdAt = (
+  points: TokenPriceChartPoint[],
+  timestampMs: number,
+): number | undefined => {
+  let matched: number | undefined;
+  for (const point of points) {
+    if (point.timestamp > timestampMs) {
+      break;
+    }
+    matched = point.price;
+  }
+  return matched ?? points[0]?.price;
+};
+
+const buildHiveEnginePriceHistory = (
+  trades: { timestamp: number; price: string | number }[],
+  hiveUsdPoints: TokenPriceChartPoint[],
+  fallbackHiveUsd?: number,
+  now = Date.now(),
+): TokenPriceHistory => {
+  const windowStart = now - HIVE_ENGINE_HISTORY_WINDOW_MS;
+  const sortedHiveUsd = [...hiveUsdPoints]
+    .filter(
+      (point) =>
+        Number.isFinite(point.timestamp) && Number.isFinite(point.price),
+    )
+    .sort((left, right) => left.timestamp - right.timestamp);
+  const points: TokenPriceChartPoint[] = [];
+
+  const sortedTrades = [...trades].sort(
+    (left, right) => left.timestamp - right.timestamp,
+  );
+  for (const trade of sortedTrades) {
+    const timestamp = toTradeTimestampMs(Number(trade.timestamp));
+    const swapHivePrice = Number(trade.price);
+    if (
+      !Number.isFinite(timestamp) ||
+      timestamp < windowStart ||
+      timestamp > now ||
+      !Number.isFinite(swapHivePrice) ||
+      swapHivePrice <= 0
+    ) {
+      continue;
+    }
+
+    const hiveUsd = sortedHiveUsd.length
+      ? hiveUsdAt(sortedHiveUsd, timestamp)
+      : fallbackHiveUsd;
+    if (hiveUsd === undefined || !Number.isFinite(hiveUsd) || hiveUsd <= 0) {
+      continue;
+    }
+
+    points.push({
+      timestamp,
+      price: swapHivePrice * hiveUsd,
+    });
+  }
+
+  if (points.length < 2) {
+    return { categories: [], seriesByCategory: {} };
+  }
+
+  return {
+    categories: ['24h'],
+    seriesByCategory: { '24h': points },
+  };
 };
 
 const buildHivePriceHistoryPath = (symbol: string): string | undefined => {
@@ -176,6 +250,7 @@ export const WalletTokenPriceChartUtils = {
   buildFakeTokenPriceSeries,
   parsePriceHistoryPayload,
   buildHivePriceHistoryPath,
+  buildHiveEnginePriceHistory,
   buildEvmPriceHistoryPath,
   getDefaultPriceHistoryCategory,
   getSeriesFromPoints,

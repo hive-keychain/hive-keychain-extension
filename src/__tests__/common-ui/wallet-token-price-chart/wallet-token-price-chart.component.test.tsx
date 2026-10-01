@@ -164,12 +164,53 @@ describe('WalletTokenPriceChart', () => {
     expect(WalletTokenPriceChartUtils.buildHivePriceHistoryPath('HP')).toBe(
       'hive/v2/price/hive/history',
     );
+    expect(
+      WalletTokenPriceChartUtils.buildHivePriceHistoryPath('SWAP.HIVE'),
+    ).toBe('hive/v2/price/hive/history');
     expect(WalletTokenPriceChartUtils.buildHivePriceHistoryPath('hbd')).toBe(
       'hive/v2/price/hbd/history',
     );
     expect(
       WalletTokenPriceChartUtils.buildHivePriceHistoryPath('BEE'),
     ).toBeUndefined();
+  });
+
+  it('prices recent Hive Engine trades in USD and drops trades older than 24h', () => {
+    const now = Date.parse('2026-10-01T04:00:00.000Z');
+    const history = WalletTokenPriceChartUtils.buildHiveEnginePriceHistory(
+      [
+        { timestamp: (now - 48 * 60 * 60 * 1000) / 1000, price: '9' },
+        { timestamp: (now - 2 * 60 * 60 * 1000) / 1000, price: '2' },
+        { timestamp: (now - 60 * 1000) / 1000, price: '4' },
+      ],
+      [
+        { timestamp: now - 3 * 60 * 60 * 1000, price: 0.5 },
+        { timestamp: now - 30 * 60 * 1000, price: 1 },
+      ],
+      undefined,
+      now,
+    );
+
+    expect(history.categories).toEqual(['24h']);
+    expect(history.seriesByCategory['24h']).toEqual([
+      { timestamp: now - 2 * 60 * 60 * 1000, price: 1 },
+      { timestamp: now - 60 * 1000, price: 4 },
+    ]);
+  });
+
+  it('uses the current HIVE price when HIVE history is missing', () => {
+    const now = Date.parse('2026-10-01T04:00:00.000Z');
+    const history = WalletTokenPriceChartUtils.buildHiveEnginePriceHistory(
+      [
+        { timestamp: Math.floor((now - 120_000) / 1000), price: '1' },
+        { timestamp: Math.floor((now - 60_000) / 1000), price: '2' },
+      ],
+      [],
+      0.25,
+      now,
+    );
+
+    expect(history.seriesByCategory['24h']?.[1]?.price).toBe(0.5);
   });
 
   it('shows an empty state when live history has no categories', () => {

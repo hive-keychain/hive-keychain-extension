@@ -10,7 +10,10 @@ import {
   HiveWalletInfoSectionActions,
 } from '@popup/hive/pages/app-container/home/hive-wallet-info-section/hive-wallet-info-section-actions';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
-import TokensUtils from '@popup/hive/utils/tokens.utils';
+import { HiveEngineUtils } from '@popup/hive/utils/hive-engine.utils';
+import TokensUtils, {
+  isAcceptableSpread,
+} from '@popup/hive/utils/tokens.utils';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import { Asset } from 'hive-keychain-commons';
@@ -122,6 +125,7 @@ export const WalletInfoSectionItem = ({
   const [priceHistoryLoading, setPriceHistoryLoading] = useState(false);
   const hivePriceHistoryPath =
     WalletTokenPriceChartUtils.buildHivePriceHistoryPath(tokenSymbol);
+  const usesHiveEngineChart = Boolean(tokenInfo) && !hivePriceHistoryPath;
 
   const [hasButtonsInList, setHasButtonInList] = useState(false);
 
@@ -167,6 +171,75 @@ export const WalletInfoSectionItem = ({
     };
   }, [isPanelOpen, hivePriceHistoryPath]);
 
+  useEffect(() => {
+    if (!isPanelOpen || !usesHiveEngineChart) {
+      return;
+    }
+
+    const engineMarket = tokenMarket?.find(
+      (market) => market.symbol === tokenSymbol,
+    );
+    if (engineMarket && !isAcceptableSpread(tokenSymbol, engineMarket)) {
+      setPriceHistory({ categories: [], seriesByCategory: {} });
+      setPriceHistoryLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    setPriceHistoryLoading(true);
+
+    const loadHiveEnginePriceHistory = async () => {
+      try {
+        const [trades, hivePayload] = await Promise.all([
+          HiveEngineUtils.get<
+            { timestamp: number; price: string | number }[]
+          >({
+            contract: 'market',
+            table: 'tradesHistory',
+            query: { symbol: tokenSymbol },
+            limit: 1000,
+            offset: 0,
+            indexes: [{ index: 'symbol', descending: true }],
+          }),
+          KeychainApi.get('hive/v2/price/hive/history').catch(() => undefined),
+        ]);
+        const hiveHistory =
+          WalletTokenPriceChartUtils.parsePriceHistoryPayload(hivePayload);
+        const hiveUsdPoints =
+          hiveHistory.seriesByCategory['24h'] ??
+          hiveHistory.seriesByCategory[hiveHistory.categories[0]] ??
+          [];
+        if (!cancelled) {
+          setPriceHistory(
+            WalletTokenPriceChartUtils.buildHiveEnginePriceHistory(
+              Array.isArray(trades) ? trades : [],
+              hiveUsdPoints,
+              hive?.usd,
+            ),
+          );
+        }
+      } catch (error) {
+        Logger.warn(
+          `Hive Engine price history unavailable (${tokenSymbol}): ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+        );
+        if (!cancelled) {
+          setPriceHistory({ categories: [], seriesByCategory: {} });
+        }
+      } finally {
+        if (!cancelled) {
+          setPriceHistoryLoading(false);
+        }
+      }
+    };
+
+    void loadHiveEnginePriceHistory();
+    return () => {
+      cancelled = true;
+    };
+  }, [isPanelOpen, usesHiveEngineChart, tokenSymbol, tokenMarket, hive?.usd]);
+
   const init = async () => {
     setActionButtons(
       HiveWalletInfoSectionActions(tokenSymbol, tokenInfo, tokenBalance),
@@ -195,7 +268,7 @@ export const WalletInfoSectionItem = ({
   };
 
   const openPanel = () => {
-    if (hivePriceHistoryPath) {
+    if (hivePriceHistoryPath || usesHiveEngineChart) {
       setPriceHistoryLoading(true);
     }
     setIsPanelOpen(true);
@@ -380,9 +453,15 @@ export const WalletInfoSectionItem = ({
         <div className="wallet-info-details">
           <WalletTokenPriceChart
             symbol={tokenSymbol}
-            priceHistory={hivePriceHistoryPath ? priceHistory : undefined}
+            priceHistory={
+              hivePriceHistoryPath || usesHiveEngineChart
+                ? priceHistory
+                : undefined
+            }
             priceHistoryLoading={
-              hivePriceHistoryPath ? priceHistoryLoading : undefined
+              hivePriceHistoryPath || usesHiveEngineChart
+                ? priceHistoryLoading
+                : undefined
             }
           />
           {tokenInfo && tokenBalance && tokenMarket && (
