@@ -1506,6 +1506,19 @@ describe('PortfolioFlowUtils', () => {
     expect(PortfolioFlowUtils.formatPortfolioTokenBalance('n/a')).toBe('n/a');
   });
 
+  it('formats USD values to 2 decimals and marks non-zero dust as ~$0.00', () => {
+    expect(PortfolioFlowUtils.formatPortfolioUsdValue(0.056965)).toBe('$0.06');
+    expect(PortfolioFlowUtils.formatPortfolioUsdValue(0.011284)).toBe('$0.01');
+    expect(PortfolioFlowUtils.formatPortfolioUsdValue(0.031187)).toBe('$0.03');
+    expect(PortfolioFlowUtils.formatPortfolioUsdValue(0.005)).toBe('$0.01');
+    expect(PortfolioFlowUtils.formatPortfolioUsdValue(0.000484)).toBe('~$0.00');
+    expect(PortfolioFlowUtils.formatPortfolioUsdValue(0.000003)).toBe('~$0.00');
+    expect(PortfolioFlowUtils.formatPortfolioUsdValue(0)).toBe('$0.00');
+    expect(PortfolioFlowUtils.formatPortfolioUsdValue(1234.5)).toBe(
+      '$1,234.50',
+    );
+  });
+
   it('formats swap amount USD hints from a positive token price', () => {
     expect(PortfolioFlowUtils.formatPortfolioAmountUsdHint('0.1', 100)).toBe(
       '$10.00',
@@ -1518,10 +1531,10 @@ describe('PortfolioFlowUtils', () => {
     ).toBe('$100.00');
     expect(
       PortfolioFlowUtils.formatPortfolioAmountUsdHint('0.00002', 1),
-    ).toBe('$0.00002');
+    ).toBe('~$0.00');
     expect(
       PortfolioFlowUtils.formatPortfolioAmountUsdHint('0.0000000001', 1),
-    ).toBe('<$0.000001');
+    ).toBe('~$0.00');
     expect(PortfolioFlowUtils.formatPortfolioAmountUsdHint('', 100)).toBeNull();
     expect(PortfolioFlowUtils.formatPortfolioAmountUsdHint('0', 100)).toBeNull();
     expect(PortfolioFlowUtils.formatPortfolioAmountUsdHint('1', 0)).toBeNull();

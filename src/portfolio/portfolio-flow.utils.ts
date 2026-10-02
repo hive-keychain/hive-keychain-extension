@@ -217,6 +217,36 @@ export const formatPortfolioQuoteFromAmount = (
   }
 };
 
+const USD_DISPLAY_DECIMALS = 2;
+
+export const formatPortfolioUsdValue = (
+  value: number | string | Decimal,
+): string => {
+  let decimalValue: Decimal;
+  try {
+    decimalValue = new Decimal(value);
+  } catch {
+    return '—';
+  }
+
+  if (!decimalValue.isFinite()) {
+    return '—';
+  }
+
+  const rounded = decimalValue.toDecimalPlaces(
+    USD_DISPLAY_DECIMALS,
+    Decimal.ROUND_HALF_UP,
+  );
+  if (rounded.isZero() && !decimalValue.isZero()) {
+    return '~$0.00';
+  }
+
+  return `$${FormatUtils.formatCurrencyValue(
+    rounded.toNumber(),
+    USD_DISPLAY_DECIMALS,
+  )}`;
+};
+
 const formatPortfolioAmountUsdHint = (
   amount: string | null | undefined,
   ...priceUsdCandidates: Array<number | null | undefined>
@@ -245,15 +275,7 @@ const formatPortfolioAmountUsdHint = (
     return null;
   }
 
-  if (usdValue.lt('0.000001')) {
-    return '<$0.000001';
-  }
-
-  if (usdValue.lt('0.01')) {
-    return `$${FormatUtils.withCommas(usdValue.toString(), 6, true)}`;
-  }
-
-  return `$${FormatUtils.formatCurrencyValue(usdValue.toNumber(), 2)}`;
+  return formatPortfolioUsdValue(usdValue);
 };
 
 export const resolvePortfolioQuoteFromAmountDecimals = (options: {
@@ -2093,6 +2115,7 @@ export const PortfolioFlowUtils = {
   isValidPortfolioRecipientAddress,
   formatPortfolioQuoteFromAmount,
   formatPortfolioAmountUsdHint,
+  formatPortfolioUsdValue,
   formatPortfolioHiveEngineBalanceBreakdown,
   formatPortfolioTokenBalance,
   getDefaultSelectOptionValue,

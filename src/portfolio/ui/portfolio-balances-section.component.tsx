@@ -64,17 +64,7 @@ const SECTION_ACTION_ICONS: Record<
 };
 
 const formatUsd = (value: number | null): string =>
-  value === null ? '—' : `$${FormatUtils.formatCurrencyValue(value, 2)}`;
-
-const formatPrice = (value: number | null): string => {
-  if (value === null) {
-    return '—';
-  }
-  if (value >= 1) {
-    return formatUsd(value);
-  }
-  return `$${FormatUtils.withCommas(value, 6, true)}`;
-};
+  value === null ? '—' : PortfolioFlowUtils.formatPortfolioUsdValue(value);
 
 const formatTokenAmount = (value: string): string =>
   PortfolioFlowUtils.formatPortfolioTokenBalance(value);
@@ -303,7 +293,7 @@ const PortfolioBalancesSectionComponent = ({
                     )}
                   </span>
                   <span className="portfolio-number">
-                    {formatPrice(row.priceUsd)}
+                    {formatUsd(row.priceUsd)}
                   </span>
                   <strong className="portfolio-number">
                     {formatUsd(row.usdValue)}
