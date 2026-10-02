@@ -89,7 +89,10 @@ const buildApproveConfirmationFields = (
   portfolioChains: PortfolioChainDisplayRecord = {},
 ): ConfirmationPageFields[] => {
   const decimals = fromAsset?.decimals ?? 18;
-  const formattedAmount = ethers.formatUnits(approval.amount, decimals);
+  const formattedAmount = EvmFormatUtils.formatTokenBalance(
+    ethers.formatUnits(approval.amount, decimals),
+    decimals,
+  );
   const symbol = fromAsset?.symbol?.trim();
   const tokenNetwork = fromAsset
     ? PortfolioFlowUtils.resolveCanonicalAssetNetworkLabel(

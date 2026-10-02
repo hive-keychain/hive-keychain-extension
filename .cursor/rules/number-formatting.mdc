@@ -1,0 +1,29 @@
+---
+description: Format every displayed number with the existing formatters
+alwaysApply: true
+---
+
+# Displayed number formatting
+
+Any number shown to the user (balances, amounts, prices, fees, percentages, gas) must go through the existing formatters. Do not call `.toFixed()`, `parseFloat(...).toFixed(...)`, or build comma-separated strings in JSX or user-facing copy.
+
+## Hive and general UI
+
+Import `FormatUtils` from `src/utils/format.utils.ts`.
+
+- Amounts, balances, prices: `FormatUtils.withCommas` (default 3 decimals, thousand separators). Pass `removeTrailingZeros` only when the surrounding screen already does.
+- Values that may include `HIVE` or `HBD`: `FormatUtils.formatCurrencyValue`.
+- HP from vests: `FormatUtils.toFormattedHP`.
+- Compact large numbers (`k`, `M`, `G`, `T`): `FormatUtils.nFormatter`.
+- Variable precision that still needs commas: `FormatUtils.trimUselessZero`.
+
+## EVM UI
+
+Import `EvmFormatUtils` from `src/popup/evm/utils/evm-format.utils.ts`.
+
+- Token balances: `EvmFormatUtils.formatTokenBalance` (commas, trailing zeros trimmed, dust as `~0`).
+- Gas price: `EvmFormatUtils.formatGweiFromWei` or `EvmFormatUtils.formatGweiFromEth`.
+
+## Not display
+
+`.toFixed()` is fine for chain and operation payloads (Hive amounts at 3 decimals, VESTS at 6) and for internal math that is never rendered. Do not add a new formatter when one of these already covers the case.

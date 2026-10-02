@@ -178,7 +178,7 @@ describe('PortfolioQuoteDisplayUtils', () => {
       },
       {
         label: 'portfolio_confirmation_to',
-        value: '3200',
+        value: '3,200',
         tag: ConfirmationPageFieldType.AMOUNT,
         tokenSymbol: 'USDC',
         tokenLogoUrl: undefined,
@@ -314,7 +314,7 @@ describe('PortfolioQuoteDisplayUtils', () => {
       },
       {
         label: 'portfolio_confirmation_to',
-        value: '3200',
+        value: '3,200',
         tag: ConfirmationPageFieldType.AMOUNT,
         tokenSymbol: 'ETH',
         tokenLogoUrl: undefined,
@@ -381,7 +381,7 @@ describe('PortfolioQuoteDisplayUtils', () => {
       },
       {
         label: 'portfolio_confirmation_to',
-        value: '3200',
+        value: '3,200',
         tag: ConfirmationPageFieldType.AMOUNT,
         tokenSymbol: 'HIVE',
         tokenLogoUrl: undefined,

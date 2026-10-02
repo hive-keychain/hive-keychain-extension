@@ -68,10 +68,17 @@ export const hasPositivePortfolioBalance = (balance: string): boolean => {
 };
 
 export const formatPortfolioTokenBalance = (balance: string): string => {
-  const amount = Number(balance.replace(/,/g, ''));
-  return Number.isFinite(amount)
-    ? amount.toLocaleString(undefined, { maximumFractionDigits: 8 })
-    : balance;
+  const normalized = balance.replace(/,/g, '').trim();
+  if (!normalized || !Number.isFinite(Number(normalized))) {
+    return balance;
+  }
+
+  const fractionLength = normalized.split('.')[1]?.length ?? 0;
+  return FormatUtils.withCommas(
+    normalized,
+    Math.min(fractionLength, 18),
+    true,
+  );
 };
 
 export type { PortfolioHiveEngineBalanceBreakdown };
@@ -243,7 +250,7 @@ const formatPortfolioAmountUsdHint = (
   }
 
   if (usdValue.lt('0.01')) {
-    return `$${usdValue.toFixed(6).replace(/0+$/, '').replace(/\.$/, '')}`;
+    return `$${FormatUtils.withCommas(usdValue.toString(), 6, true)}`;
   }
 
   return `$${FormatUtils.formatCurrencyValue(usdValue.toNumber(), 2)}`;

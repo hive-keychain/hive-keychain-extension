@@ -3,6 +3,7 @@ import { PortfolioLogoImage } from 'src/portfolio/ui/portfolio-logo-image.compon
 import React from 'react';
 import { PortfolioQuote } from 'src/portfolio/portfolio-api.interface';
 import { PortfolioFiatLocaleUtils } from 'src/portfolio/portfolio-fiat-locale.utils';
+import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
 import { PortfolioQuoteDisplayUtils } from 'src/portfolio/ui/portfolio-quote-display.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 
@@ -70,7 +71,9 @@ export const PortfolioQuoteCard = ({
           </div>
         </div>
         <strong className="portfolio-quote-card__amount">
-          {quote.estimatedToAmount}
+          {PortfolioFlowUtils.formatPortfolioTokenBalance(
+            quote.estimatedToAmount,
+          )}
         </strong>
       </div>
 

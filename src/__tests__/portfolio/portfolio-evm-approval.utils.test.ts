@@ -143,7 +143,7 @@ describe('PortfolioEvmApprovalUtils', () => {
       expect(fields[0]).toEqual(
         expect.objectContaining({
           label: 'portfolio_confirmation_approval_amount',
-          value: '1.0',
+          value: '1',
           tag: ConfirmationPageFieldType.AMOUNT,
           tokenSymbol: 'USDC',
         }),

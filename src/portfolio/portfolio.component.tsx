@@ -3932,9 +3932,11 @@ export const Portfolio = ({
               }`}
               data-testid="portfolio-swap-quote-value"
               role={estimatedAmountErrorMessage ? 'alert' : undefined}>
-              {selectedQuote?.estimatedToAmount ??
-                estimatedAmountErrorMessage ??
-                ''}
+              {selectedQuote?.estimatedToAmount
+                ? PortfolioFlowUtils.formatPortfolioTokenBalance(
+                    selectedQuote.estimatedToAmount,
+                  )
+                : (estimatedAmountErrorMessage ?? '')}
             </div>
             <div className="portfolio-swap-quote-input__adornments">
               {showSwapQuoteActionButton ? (
@@ -3992,8 +3994,14 @@ export const Portfolio = ({
       <div className="portfolio-amount-field">
         <InputComponent
           label="portfolio_estimated_amount"
-          type={InputType.NUMBER}
-          value={selectedQuote?.estimatedToAmount ?? ''}
+          type={InputType.TEXT}
+          value={
+            selectedQuote?.estimatedToAmount
+              ? PortfolioFlowUtils.formatPortfolioTokenBalance(
+                  selectedQuote.estimatedToAmount,
+                )
+              : ''
+          }
           onChange={() => {}}
           disabled
           imageLogoUrl={selectedQuote?.providerLogoUrl ?? undefined}

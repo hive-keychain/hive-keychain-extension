@@ -236,8 +236,12 @@ export const PortfolioHistoryCard = ({
     amount: string,
     symbol: string,
   ): string => {
+    const formattedAmount =
+      PortfolioHistoryDisplayUtils.formatPortfolioHistoryAmount(amount);
     const normalizedSymbol = symbol.trim().toUpperCase();
-    return normalizedSymbol ? `${amount} ${normalizedSymbol}` : amount;
+    return normalizedSymbol
+      ? `${formattedAmount} ${normalizedSymbol}`
+      : formattedAmount;
   };
 
   if (item.fromAmount) {

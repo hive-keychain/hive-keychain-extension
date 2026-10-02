@@ -32,7 +32,7 @@ const formatPortfolioQuoteFee = (fee: PortfolioQuoteFee | null): string | null =
     return null;
   }
 
-  return `${fee.amount} ${fee.currency.trim().toUpperCase()}`;
+  return `${PortfolioFlowUtils.formatPortfolioTokenBalance(fee.amount)} ${fee.currency.trim().toUpperCase()}`;
 };
 
 const formatPortfolioQuoteEnumLabel = (value: string): string =>
@@ -63,7 +63,7 @@ const buildPortfolioConfirmationAmountField = (
 
   return {
     label,
-    value: amount,
+    value: PortfolioFlowUtils.formatPortfolioTokenBalance(amount),
     tag: ConfirmationPageFieldType.AMOUNT,
     tokenSymbol: symbol || undefined,
     tokenLogoUrl: asset?.logoUrl ?? undefined,

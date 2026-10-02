@@ -73,15 +73,11 @@ const formatPrice = (value: number | null): string => {
   if (value >= 1) {
     return formatUsd(value);
   }
-  return `$${value.toFixed(6).replace(/0+$/, '').replace(/\.$/, '')}`;
+  return `$${FormatUtils.withCommas(value, 6, true)}`;
 };
 
-const formatTokenAmount = (value: string): string => {
-  const amount = Number(value.replace(/,/g, ''));
-  return Number.isFinite(amount)
-    ? amount.toLocaleString(undefined, { maximumFractionDigits: 8 })
-    : value;
-};
+const formatTokenAmount = (value: string): string =>
+  PortfolioFlowUtils.formatPortfolioTokenBalance(value);
 
 const formatHiveEngineTokenAmount = (
   value: string | number,

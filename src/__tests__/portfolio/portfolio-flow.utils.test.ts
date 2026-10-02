@@ -1492,6 +1492,20 @@ describe('PortfolioFlowUtils', () => {
     ]);
   });
 
+  it('formats displayed token balances with grouping and without trailing zeros', () => {
+    expect(PortfolioFlowUtils.formatPortfolioTokenBalance('1234.5000')).toBe(
+      '1,234.5',
+    );
+    expect(PortfolioFlowUtils.formatPortfolioTokenBalance('3200')).toBe(
+      '3,200',
+    );
+    expect(PortfolioFlowUtils.formatPortfolioTokenBalance('0.0005')).toBe(
+      '0.0005',
+    );
+    expect(PortfolioFlowUtils.formatPortfolioTokenBalance('~0')).toBe('~0');
+    expect(PortfolioFlowUtils.formatPortfolioTokenBalance('n/a')).toBe('n/a');
+  });
+
   it('formats swap amount USD hints from a positive token price', () => {
     expect(PortfolioFlowUtils.formatPortfolioAmountUsdHint('0.1', 100)).toBe(
       '$10.00',
