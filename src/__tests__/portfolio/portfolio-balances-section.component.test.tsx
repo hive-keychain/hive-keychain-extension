@@ -148,4 +148,48 @@ describe('PortfolioBalancesSection', () => {
 
     expect(onOpenFlowForRow).toHaveBeenCalledWith(row, 'swap');
   });
+
+  it('formats Hive balances with token decimals and leaves other chains unchanged', () => {
+    const { container } = render(
+      <PortfolioBalancesSection
+        {...baseProps}
+        isHiveAccount
+        rows={[
+          {
+            key: 'hive:HP',
+            symbol: 'HP',
+            network: 'Hive',
+            balance: '5400.452721643283',
+            usdValue: 300,
+            priceUsd: 0.056965,
+            decimals: 3,
+          },
+          {
+            key: 'hive:HBD',
+            symbol: 'HBD',
+            network: 'Hive',
+            balance: '0',
+            usdValue: 0,
+            priceUsd: null,
+            decimals: 3,
+          },
+          {
+            key: 'eth',
+            symbol: 'ETH',
+            network: 'Ethereum',
+            balance: '1.23456789',
+            usdValue: 100,
+            priceUsd: 100,
+            decimals: 18,
+          },
+        ]}
+      />,
+    );
+
+    const amounts = [
+      ...container.querySelectorAll('.portfolio-amount-total'),
+    ].map((element) => element.textContent);
+
+    expect(amounts).toEqual(['0.000', '5,400.453', '1.23456789']);
+  });
 });

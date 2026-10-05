@@ -86,6 +86,14 @@ const formatHiveEngineTokenAmount = (
   return formatTokenAmount(String(amount));
 };
 
+const formatDisplayedTokenAmount = (row: PortfolioBalancesRow): string => {
+  if (row.network === 'Hive' || row.breakdown) {
+    return formatHiveEngineTokenAmount(row.balance, row.decimals);
+  }
+
+  return formatTokenAmount(row.balance);
+};
+
 const getHiveEngineBalanceBreakdownLabels = () => ({
   liquid: I18nUtils.getMessage('liquid_balance'),
   staked: I18nUtils.getMessage('popup_html_token_staking'),
@@ -275,20 +283,12 @@ const PortfolioBalancesSectionComponent = ({
                           }`}
                         />
                         <span className="portfolio-amount-total">
-                          {formatHiveEngineTokenAmount(
-                            row.balance,
-                            row.decimals,
-                          )}
+                          {formatDisplayedTokenAmount(row)}
                         </span>
                       </button>
                     ) : (
                       <span className="portfolio-amount-total">
-                        {row.breakdown
-                          ? formatHiveEngineTokenAmount(
-                              row.balance,
-                              row.decimals,
-                            )
-                          : formatTokenAmount(row.balance)}
+                        {formatDisplayedTokenAmount(row)}
                       </span>
                     )}
                   </span>
