@@ -157,7 +157,6 @@ export const EvmNftDetailsView = ({
       <ButtonComponent
         onClick={() => onSend?.()}
         label="popup_html_send_transfer"
-        logo={SVGIcons.WALLET_SEND}
         additionalClass="nft-details-send"
         dataTestId="nft-details-send"
         height="medium"

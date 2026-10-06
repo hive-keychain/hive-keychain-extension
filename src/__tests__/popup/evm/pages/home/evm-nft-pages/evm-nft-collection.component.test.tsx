@@ -91,6 +91,27 @@ describe('EvmNftCollectionComponent', () => {
     expect(screen.queryByTestId('nft-send-form')).not.toBeInTheDocument();
   });
 
+  it('sends the selected nft from the tile menu', async () => {
+    const user = userEvent.setup();
+    const onSendNft = jest.fn();
+
+    customRender(
+      <EvmNftCollectionComponent
+        nftList={[collectionItem]}
+        onSelectNft={jest.fn()}
+        onSendNft={onSendNft}
+      />,
+      {
+        initialState: buildState(),
+      },
+    );
+
+    await user.click(screen.getByTestId('nft-item-menu-1'));
+    await user.click(screen.getByTestId('nft-send-1'));
+
+    expect(onSendNft).toHaveBeenCalledWith(collectionItem);
+  });
+
   it('shows an erc1155 quantity under the artwork', () => {
     const onSelectNft = jest.fn();
     const erc1155Item = {
@@ -164,5 +185,50 @@ describe('EvmNftCollectionComponent', () => {
 
     expect(screen.getByText('Paper')).toBeInTheDocument();
     expect(screen.queryByText('Kitty #1')).not.toBeInTheDocument();
+  });
+
+  it('sorts the gallery by token id by default', () => {
+    const onSelectNft = jest.fn();
+    const laterId = {
+      ...collectionItem,
+      item: {
+        ...collectionItem.item,
+        id: '10',
+        metadata: {
+          name: 'Alpha',
+          image: 'https://example.com/alpha.png',
+        },
+      },
+    } as EvmNftCollectionListItem;
+    const earlierId = {
+      ...collectionItem,
+      item: {
+        ...collectionItem.item,
+        id: '2',
+        metadata: {
+          name: 'Zebra',
+          image: 'https://example.com/zebra.png',
+        },
+      },
+    } as EvmNftCollectionListItem;
+
+    customRender(
+      <EvmNftCollectionComponent
+        nftList={[laterId, earlierId]}
+        showFilter={false}
+        defaultSort="tokenId"
+        onSelectNft={onSelectNft}
+      />,
+      {
+        initialState: buildState(),
+      },
+    );
+
+    expect(screen.queryByTestId('nft-filter-button')).not.toBeInTheDocument();
+    expect(
+      screen
+        .getAllByText(/Alpha|Zebra/)
+        .map((element) => element.textContent),
+    ).toEqual(['Zebra', 'Alpha']);
   });
 });

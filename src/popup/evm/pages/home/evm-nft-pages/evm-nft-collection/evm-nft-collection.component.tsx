@@ -34,7 +34,10 @@ interface Props {
   contractAddress?: string;
   formattedContractAddress?: string;
   explorerUrl?: string;
+  showFilter?: boolean;
+  defaultSort?: NftGallerySort;
   onSelectNft: (listItem: EvmNftCollectionListItem) => void;
+  onSendNft?: (listItem: EvmNftCollectionListItem) => void;
 }
 
 const compareTokenIds = (left: string, right: string) =>
@@ -46,18 +49,21 @@ export const EvmNftCollectionComponent = ({
   contractAddress,
   formattedContractAddress,
   explorerUrl,
+  showFilter = true,
+  defaultSort = 'name',
   onSelectNft,
+  onSendNft,
 }: Props) => {
   const backToTopHook = useBackToTop();
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<NftGalleryFilter>('all');
-  const [sort, setSort] = useState<NftGallerySort>('name');
+  const [sort, setSort] = useState<NftGallerySort>(defaultSort);
 
   const visibleItems = useMemo(() => {
     const lowerCaseQuery = query.trim().toLowerCase();
     const matched = nftList.filter((listItem) => {
       const quantity = EvmNftDisplayUtils.getNftOwnedQuantity(listItem.item);
-      if (filter === 'multiple' && quantity <= 1) {
+      if (showFilter && filter === 'multiple' && quantity <= 1) {
         return false;
       }
       if (!lowerCaseQuery) {
@@ -97,7 +103,7 @@ export const EvmNftCollectionComponent = ({
         ),
       );
     });
-  }, [filter, nftList, query, sort]);
+  }, [filter, nftList, query, showFilter, sort]);
 
   const copyContractAddress = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -160,28 +166,30 @@ export const EvmNftCollectionComponent = ({
             placeholder="evm_nft_search_nft"
             logo={SVGIcons.INPUT_SEARCH}
           />
-          <EvmNftOptionsMenu
-            triggerLabel="evm_nft_filter"
-            active={filter !== 'all'}
-            testId="nft-filter-button"
-            items={[
-              {
-                label: 'evm_nft_filter_all',
-                selected: filter === 'all',
-                testId: 'nft-filter-all',
-                onClick: () => setFilter('all'),
-              },
-              {
-                label: 'evm_nft_filter_multiple',
-                selected: filter === 'multiple',
-                testId: 'nft-filter-multiple',
-                onClick: () => setFilter('multiple'),
-              },
-            ]}
-          />
+          {showFilter && (
+            <EvmNftOptionsMenu
+              triggerLabel="evm_nft_filter"
+              active={filter !== 'all'}
+              testId="nft-filter-button"
+              items={[
+                {
+                  label: 'evm_nft_filter_all',
+                  selected: filter === 'all',
+                  testId: 'nft-filter-all',
+                  onClick: () => setFilter('all'),
+                },
+                {
+                  label: 'evm_nft_filter_multiple',
+                  selected: filter === 'multiple',
+                  testId: 'nft-filter-multiple',
+                  onClick: () => setFilter('multiple'),
+                },
+              ]}
+            />
+          )}
           <EvmNftOptionsMenu
             triggerLabel="evm_nft_sort"
-            active={sort !== 'name'}
+            active={sort !== defaultSort}
             testId="nft-sort-button"
             items={[
               {
@@ -237,6 +245,15 @@ export const EvmNftCollectionComponent = ({
                   icon={SVGIcons.GLOBAL_MENU_DOTS}
                   testId={`nft-item-menu-${listItem.item.id}`}
                   items={[
+                    ...(onSendNft
+                      ? [
+                          {
+                            label: 'popup_html_send_transfer',
+                            testId: `nft-send-${listItem.item.id}`,
+                            onClick: () => onSendNft(listItem),
+                          },
+                        ]
+                      : []),
                     {
                       label: 'evm_nft_copy_token_id',
                       testId: `nft-copy-token-id-${listItem.item.id}`,

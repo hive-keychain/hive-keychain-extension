@@ -3,7 +3,6 @@ import {
   EvmNftCollectionComponent,
   EvmNftCollectionListItem,
 } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-collection/evm-nft-collection.component';
-import { EvmNftOptionsPanel } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-options-menu/evm-nft-options-menu.component';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmNftDisplayUtils } from '@popup/evm/utils/evm-nft-display.utils';
@@ -11,13 +10,8 @@ import { navigateToWithParams } from '@popup/multichain/actions/navigation.actio
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { SVGIcons } from 'src/common-ui/icons.enum';
-import {
-  COPY_GENERIC_MESSAGE_KEY,
-  copyTextWithToast,
-} from 'src/common-ui/toast/copy-toast.utils';
 
 const EvmNftCollectionPage = ({
   collection,
@@ -25,7 +19,6 @@ const EvmNftCollectionPage = ({
   setTitleContainerProperties,
   navigateToWithParams,
 }: PropsFromRedux) => {
-  const [menuOpen, setMenuOpen] = useState(false);
   const contractAddress = collection.tokenInfo.contractAddress;
   const formattedAddress = EvmFormatUtils.formatAddress(contractAddress);
   const collectionTitle = collection.tokenInfo.name?.trim() || formattedAddress;
@@ -41,11 +34,6 @@ const EvmNftCollectionPage = ({
       title: collectionTitle,
       isBackButtonEnabled: true,
       skipTitleTranslation: true,
-      rightAction: {
-        icon: SVGIcons.GLOBAL_MENU_DOTS,
-        callback: () => setMenuOpen((open) => !open),
-        dataTestId: 'nft-collection-menu',
-      },
     });
   }, [collectionTitle, setTitleContainerProperties]);
 
@@ -56,36 +44,15 @@ const EvmNftCollectionPage = ({
     });
   };
 
-  const menuItems = [
-    {
-      label: 'html_popup_copy',
-      testId: 'nft-collection-menu-copy',
-      onClick: () => {
-        void copyTextWithToast(contractAddress, COPY_GENERIC_MESSAGE_KEY);
-      },
-    },
-    ...(explorerUrl
-      ? [
-          {
-            label: 'portfolio_history_view_on_explorer',
-            testId: 'nft-collection-menu-explorer',
-            onClick: () => {
-              chrome.tabs.create({ url: explorerUrl });
-            },
-          },
-        ]
-      : []),
-  ];
+  const openSend = (listItem: EvmNftCollectionListItem) => {
+    navigateToWithParams(EvmScreen.EVM_NFT_TRANSFER_PAGE, {
+      collection: listItem.collection,
+      nftId: listItem.item.id,
+    });
+  };
 
   return (
     <div className="evm-nft-screen">
-      {menuOpen && (
-        <EvmNftOptionsPanel
-          className="nft-page-menu"
-          items={menuItems}
-          onClose={() => setMenuOpen(false)}
-        />
-      )}
       <EvmNftCollectionComponent
         nftList={collection.collection.map((collectionItem) => {
           return {
@@ -98,7 +65,10 @@ const EvmNftCollectionPage = ({
           showContractAddress ? formattedAddress : undefined
         }
         explorerUrl={explorerUrl}
+        showFilter={false}
+        defaultSort="tokenId"
         onSelectNft={openNft}
+        onSendNft={openSend}
       />
     </div>
   );
